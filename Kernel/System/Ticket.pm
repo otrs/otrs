@@ -6133,13 +6133,54 @@ sub TicketAcl {
     # do not execute acls it userid 1 is used
     return if $Param{UserID} && $Param{UserID} == 1;
 
+    my $ACLs       = $Self->{ConfigObject}->Get('TicketAcl');
+    my $AclModules = $Self->{ConfigObject}->Get('Ticket::Acl::Module');
+
     # only execute acls if ACL or ACL module is configured
-    if (
-        !$Self->{ConfigObject}->Get('TicketAcl')
-        && !$Self->{ConfigObject}->Get('Ticket::Acl::Module')
-        )
-    {
+    if ( !$ACLs && !$AclModules ) {
         return;
+    }
+
+    # find out which data we actually need
+    my %ApplicableAclModules;
+    my %RequiredChecks;
+
+    for my $ModuleName ( sort keys %{ $AclModules // {} } ) {
+        my $Module = $AclModules->{$ModuleName};
+        next if $Module->{ReturnType} && $Module->{ReturnType} ne $Param{ReturnType};
+        if ( $Module->{ReturnSubType} ) {
+            if ( ref( $Module->{ReturnSubType} ) eq 'HASH' ) {
+                next unless grep { $Param{ReturnSubType} eq $_ }
+                    @{ $Module->{ReturnSubType} };
+            }
+            else {
+                # a scalar, we hope
+                next unless $Module->{ReturnSubType} eq $Param{ReturnSubType};
+            }
+        }
+
+        # here only modules applicable to this Acl invocation remain
+        $ApplicableAclModules{$ModuleName} = $Module;
+
+        if ( $Module->{Checks} && ref( $Module->{Checks} ) eq 'ARRAY' ) {
+            $RequiredChecks{$_} = 1 for @{ $Module->{Checks} };
+        }
+        elsif ( $Module->{Checks} ) {
+            $RequiredChecks{ $Module->{Checks} } = 1;
+        }
+    }
+
+    for my $ACL ( values %{ $ACLs // {} } ) {
+        for my $Check ( sort keys %{ $ACL->{Properties} } ) {
+            $RequiredChecks{$Check} = 1;
+            if ( $Check eq 'Ticket' ) {
+                if ( ref( $ACL->{Properties}{$Check} ) eq 'HASH' ) {
+                    for my $InnerCheck ( sort keys %{ $ACL->{Properties}{$Check} } ) {
+                        $RequiredChecks{$InnerCheck} = 1;
+                    }
+                }
+            }
+        }
     }
 
     # get used interface for process management checks
@@ -7111,24 +7152,22 @@ sub TicketAcl {
     }
 
     # check acl module
-    my $Modules = $Self->{ConfigObject}->Get('Ticket::Acl::Module');
-    if ($Modules) {
+    MODULE:
+    for my $ModuleName ( sort keys %ApplicableAclModules ) {
+        my $Module = $ApplicableAclModules{$ModuleName};
 
-        MODULE:
-        for my $Module ( sort keys %{$Modules} ) {
-            next MODULE if !$Self->{MainObject}->Require( $Modules->{$Module}->{Module} );
+        next MODULE if !$Self->{MainObject}->Require( $Module->{Module} );
 
-            my $Generic = $Modules->{$Module}->{Module}->new(
-                %{$Self},
-                TicketObject => $Self,
-            );
-            $Generic->Run(
-                %Param,
-                Acl    => \%Acls,
-                Checks => \%Checks,
-                Config => $Modules->{$Module},
-            );
-        }
+        my $Generic = $Module->{Module}->new(
+            %{$Self},
+            TicketObject => $Self,
+        );
+        $Generic->Run(
+            %Param,
+            Acl    => \%Acls,
+            Checks => \%Checks,
+            Config => $Module,
+        );
     }
 
     # get used data
