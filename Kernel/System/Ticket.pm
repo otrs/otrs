@@ -6103,7 +6103,35 @@ or
         },
         ReturnType    => 'Ticket',
         ReturnSubType => 'State',
-    )
+    );
+
+If ACL modules are configured are configured in the C<Ticket::Acl::Module>
+config key, they are invoked during the call to C<TicketAcl>. The configuration
+of a module looks like this:
+
+
+     $ConfigObject->{'Ticket::Acl::Module'}->{'TheName'} = {
+         Module => 'Kernel::System::Ticket::Acl::TheAclModule',
+         Checks => ['Owner', 'Queue', 'SLA', 'Ticket'],
+         ReturnType => 'Ticket',
+         ReturnSubType => ['State', 'Service'],
+     };
+
+Each time the C<ReturnType> and one of the C<ReturnSubType> entries is identical
+to the same arguments passed to C<TicketAcl>, the module of the name in C<Module>
+is loaded, the C<new> method is called on it, and then the C<Run> method is called.
+
+The C<Checks> array reference in the configuration controls what arguments are passed.
+to the C<Run> method.
+Valid keys are C<CustomerUser>, C<DynamicField>, C<Frontend>, C<Owner>,
+C<Priority>, C<Process>, C<Queue>, C<Responsible>, C<Service>, C<SLA>, C<State>,
+C<Ticket> and C<Type>. If any of those are present, the C<Checks> argument passed to C<Run> contains an entry with the same name, and as a value the associated data.
+
+The C<Run> method can add entries to the C<Acl> param hash, which are then
+evaluated along with all other ACL. It should only add entries whose conditionals
+can be checked with the data specified in the C<Checks> configuration entry.
+
+The return value of the C<Run> method is ignored.
 
 =cut
 
