@@ -6175,6 +6175,12 @@ sub TicketAcl {
 
     for my $ModuleName ( sort keys %{ $AclModules // {} } ) {
         my $Module = $AclModules->{$ModuleName};
+        unless ( $Module->{Checks} ) {
+            $Self->{LogObject}->Log(
+                Priority => 'error',
+                Message => "ACL module $ModuleName has no 'Checks' configuration!",
+            );
+        }
         next if $Module->{ReturnType} && $Module->{ReturnType} ne $Param{ReturnType};
         if ( $Module->{ReturnSubType} ) {
             if ( ref( $Module->{ReturnSubType} ) eq 'HASH' ) {
