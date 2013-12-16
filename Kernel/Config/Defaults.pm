@@ -1761,6 +1761,18 @@ via the Preferences button after logging in.
             ClassName       => 'Kernel::System::Environment',
             Dependencies    => [qw/ConfigObject LogObject EncodeObject MainObject DBObject/],
         },
+        DynamicFieldObject => {
+            ClassName       => 'Kernel::System::DynamicField',
+            Dependencies    => [qw/ConfigObject LogObject EncodeObject MainObject DBObject/],
+        },
+        DynamicFieldBackendObject => {
+            ClassName       => 'Kernel::System::DynamicField::Backend',
+            Dependencies    => [qw/ConfigObject LogObject EncodeObject MainObject DBObject/],
+        },
+        LinkObject => {
+            ClassName       => 'Kernel::System::LinkObject',
+            Dependencies    => [qw/ConfigObject LogObject EncodeObject MainObject DBObject/],
+        },
 
     };
 
