@@ -1752,12 +1752,16 @@ via the Preferences button after logging in.
         },
         UnitTestObject    => {
             ClassName       => 'Kernel::System::UnitTest',
-            Dependencies    => [qw/ConfigObject LogObject EncodeObject MainObject DBObject TimeObject/],
         },
         PostMasterObject  => {
             ClassName       => 'Kernel::System::PostMaster',
             Dependencies    => [qw/ConfigObject LogObject EncodeObject MainObject DBObject TimeObject/],
-        }
+        },
+        EnvironmentObject => {
+            ClassName       => 'Kernel::System::Environment',
+            Dependencies    => [qw/ConfigObject LogObject EncodeObject MainObject DBObject/],
+        },
+
     };
 
     return;
