@@ -1674,7 +1674,92 @@ via the Preferences button after logging in.
             ],
         },
     };
+
     # --------------------------------------------------- #
+    # object names and dependencies
+    # ----------------------------------------------------#
+
+    $Self->{Objects} = {
+        ConfigObject  => {
+            ClassName       => 'Kernel::Config',
+        },
+        LogObject     => {
+            ClassName       => 'Kernel::System::Log',
+            Dependencies    => ['ConfigObject'],
+        },
+        EncodeObject  => {
+            ClassName       => 'Kernel::System::Encode',
+            Dependencies    => ['ConfigObject', 'LogObject'],
+        },
+        MainObject    => {
+            ClassName       => 'Kernel::System::Main',
+            Dependencies    => ['ConfigObject', 'LogObject', 'EncodeObject'],
+        },
+        TimeObject    => {
+            ClassName       => 'Kernel::System::Time',
+            Dependencies    => ['ConfigObject', 'LogObject', 'EncodeObject', 'MainObject'],
+        },
+        DBObject    => {
+            ClassName       => 'Kernel::System::DB',
+            Dependencies    => ['ConfigObject', 'LogObject', 'EncodeObject', 'MainObject', 'TimeObject'],
+        },
+        UserObject    => {
+            ClassName       => 'Kernel::System::User',
+            Dependencies    => ['ConfigObject', 'LogObject', 'EncodeObject', 'MainObject', 'TimeObject', 'DBObject'],
+        },
+        CustomerUserObject    => {
+            ClassName       => 'Kernel::System::CustomerUser',
+            Dependencies    => ['ConfigObject', 'LogObject', 'EncodeObject', 'MainObject', 'DBObject'],
+        },
+        CustomerGroupObject   => {
+            ClassName       => 'Kernel::System::CustomerGroup',
+            Dependencies    => ['ConfigObject', 'LogObject', 'EncodeObject', 'DBObject'],
+        },
+        GroupObject   => {
+            ClassName       => 'Kernel::System::Group',
+            Dependencies    => ['ConfigObject', 'LogObject', 'EncodeObject', 'MainObject', 'TimeObject', 'DBObject'],
+        },
+        TicketObject  => {
+            ClassName       => 'Kernel::System::Ticket',
+            Dependencies    => ['ConfigObject', 'LogObject', 'EncodeObject', 'MainObject', 'TimeObject', 'DBObject', 'GroupObject', 'QueueObject', 'CustomerUserObject' ],
+        },
+        QueueObject  => {
+            ClassName       => 'Kernel::System::Queue',
+            Dependencies    => ['ConfigObject', 'LogObject', 'EncodeObject', 'MainObject', 'DBObject', 'GroupObject', 'CustomerUserObject', 'CustomerGroupObject' ],
+        },
+        LayoutObject  => {
+            ClassName       => 'Kernel::Output::HTML::Layout',
+            Dependencies    => ['ConfigObject', 'LogObject', 'EncodeObject', 'MainObject', 'TimeObject', 'ParamObject'],
+        },
+        ParamObject   => {
+            ClassName       => 'Kernel::System::Web::Request',
+            Dependencies    => ['ConfigObject', 'LogObject', 'EncodeObject', 'MainObject'],
+        },
+        InterfaceAgentObject => {
+            ClassName     => 'Kernel::System::Web::InterfaceAgent',
+        },
+        AuthObject        => {
+            ClassName       => 'Kernel::System::Auth',
+            Dependencies    => [qw/ConfigObject LogObject EncodeObject MainObject DBObject TimeObject UserObject GroupObject/],
+        },
+        SessionObject     => {
+            ClassName       => 'Kernel::System::AuthSession',
+            Dependencies    => [qw/ConfigObject LogObject EncodeObject MainObject DBObject TimeObject/],
+        },
+        ValidObject       => {
+            ClassName       => 'Kernel::System::Valid',
+            Dependencies    => [qw/ConfigObject LogObject EncodeObject MainObject DBObject/],
+        },
+        UnitTestObject    => {
+            ClassName       => 'Kernel::System::UnitTest',
+            Dependencies    => [qw/ConfigObject LogObject EncodeObject MainObject DBObject TimeObject/],
+        },
+        PostMasterObject  => {
+            ClassName       => 'Kernel::System::PostMaster',
+            Dependencies    => [qw/ConfigObject LogObject EncodeObject MainObject DBObject TimeObject/],
+        }
+    };
+
     return;
 }
 

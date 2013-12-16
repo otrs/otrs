@@ -29,6 +29,8 @@ use Kernel::System::User;
 use Kernel::System::Group;
 use Kernel::Output::HTML::Layout;
 
+use Carp qw/confess/;
+
 =head1 NAME
 
 Kernel::System::ObjectManager - object and dependency manager
@@ -110,6 +112,8 @@ sub _BuildObject {
     my $FileName  = $ClassName;
     $FileName     =~ s{::}{/}g;
     $FileName    .= '.pm';
+    require $FileName;
+
     my %Args      = %{ $Self->{Specialization}{ $Param{Object} } // { } };
 
     my $Dependencies = $Self->Dependencies( %Param );
@@ -117,6 +121,7 @@ sub _BuildObject {
         for my $Dependency ( @{ $Dependencies } ) {
             $Self->Get( $Dependency );
         }
+        %Args = ($Self->ObjectHash(), %Args);
     }
 
     $Self->{Objects}{$Param{Object}} = $ClassName->new(%Args);
@@ -125,15 +130,15 @@ sub _BuildObject {
 sub ObjectConfigGet {
     my ($Self, %Param) = @_;
     my $ObjectName = $Param{Object};
-    if ($ObjectName eq 'Config') {
+    if ($ObjectName eq 'ConfigObject') {
         # hardcoded to facilitate bootstrapping
         return {
             ClassName       => 'Kernel::Config',
         };
     }
-    my $ObjConfig = $Self->Get('Config')->Get('Objects')->{$ObjectName};
+    my $ObjConfig = $Self->Get('ConfigObject')->Get('Objects')->{$ObjectName};
     unless ($ObjConfig) {
-        die "Object '$ObjectName' is not configured\n";
+        confess "Object '$ObjectName' is not configured\n";
     }
     return $ObjConfig;
 }

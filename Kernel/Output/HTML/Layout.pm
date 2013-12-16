@@ -417,6 +417,14 @@ sub new {
     return $Self;
 }
 
+sub AddParam {
+    my ( $Self, %Param ) = @_;
+
+    for my $Key (keys %Param) {
+        $Self->{$Key} = $Param{$Key};
+    }
+}
+
 sub SetEnv {
     my ( $Self, %Param ) = @_;
 
