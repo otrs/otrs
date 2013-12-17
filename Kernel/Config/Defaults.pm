@@ -1691,7 +1691,6 @@ via the Preferences button after logging in.
         },
         MainObject    => {
             ClassName       => 'Kernel::System::Main',
-            Dependencies    => ['ConfigObject', 'LogObject', 'EncodeObject'],
         },
         TimeObject    => {
             ClassName       => 'Kernel::System::Time',
