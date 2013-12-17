@@ -1685,7 +1685,6 @@ via the Preferences button after logging in.
         },
         LogObject     => {
             ClassName       => 'Kernel::System::Log',
-            Dependencies    => ['ConfigObject'],
         },
         EncodeObject  => {
             ClassName       => 'Kernel::System::Encode',

@@ -22,23 +22,18 @@ sub new {
     bless( $Self, $Type );
 
     # get needed objects
-    for my $Needed (qw(ConfigObject EncodeObject)) {
-        if ( $Param{$Needed} ) {
-            $Self->{$Needed} = $Param{$Needed};
-        }
-        else {
-            die "Got no $Needed!";
-        }
-    }
+    $Self->{ConfigObject} = $Kernel::OM->Get('ConfigObject');
 
     # set syslog facility
-    $Self->{SysLogFacility} = $Param{ConfigObject}->Get('LogModule::SysLog::Facility') || 'user';
+    $Self->{SysLogFacility} = $Self->{ConfigObject}->Get('LogModule::SysLog::Facility') || 'user';
 
     return $Self;
 }
 
 sub Log {
     my ( $Self, %Param ) = @_;
+
+    $Self->{EncodeObject} //= $Kernel::OM->Get('EncodeObject');
 
     # prepare data for byte output
     if ( $Self->{ConfigObject}->Get('LogModule::SysLog::Charset') =~ m/^utf-?8$/ ) {

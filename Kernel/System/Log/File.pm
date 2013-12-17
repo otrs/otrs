@@ -21,14 +21,7 @@ sub new {
     bless( $Self, $Type );
 
     # get needed objects
-    for (qw(ConfigObject EncodeObject)) {
-        if ( $Param{$_} ) {
-            $Self->{$_} = $Param{$_};
-        }
-        else {
-            die "Got no $_!";
-        }
-    }
+    $Self->{ConfigObject} = $Kernel::OM->Get('ConfigObject');
 
     # get logfile location
     $Self->{LogFile} = $Param{ConfigObject}->Get('LogModule::LogFile')
@@ -71,6 +64,9 @@ sub Log {
         print STDERR "\n";
         return;
     }
+
+    # lazily build EncodeObject
+    $Self->{EncodeObject} //= $Kernel::OM->Get('EncodeObject');
 
     # write log file
     $Self->{EncodeObject}->SetIO($FH);
