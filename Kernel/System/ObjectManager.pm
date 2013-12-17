@@ -60,10 +60,13 @@ Kernel::System::ObjectManager - object and dependency manager
 
 =item new()
 
+Creates a new instance of Kernel::System::ObjectManager.
+
     local $Kernel::OM = Kernel::System::ObjectManager->new(%Options)
 
-Creates a new instance of Kernel::System::ObjectManager. Options to this
-constructor are passed to any object that the object manager creates for you.
+Options to this constructor should have object names as keys, and hash
+references as values. The hash reference will be flattened and passed
+to the constructor of the object with the same name as option key.
 
 =cut
 
@@ -171,14 +174,6 @@ sub ObjectHash {
     my ($Self) = @_;
 
     return %{ $Self->{Objects} };
-}
-
-sub Has {
-    my ($Self, %Param) = @_;
-
-    my $ObjectName = $Param{Object};
-    die "Missing parameter 'Object'" unless $ObjectName;
-    return $Self->{Objects}{$ObjectName};
 }
 
 =item AddSpecialization()
