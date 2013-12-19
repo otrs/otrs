@@ -1780,7 +1780,54 @@ via the Preferences button after logging in.
             ClassName       => 'Kernel::System::LinkObject',
             Dependencies    => [qw/ConfigObject LogObject EncodeObject MainObject DBObject/],
         },
-
+        XMLObject => {
+            ClassName       => 'Kernel::System::XML',
+            Dependencies    => [qw/ConfigObject LogObject EncodeObject MainObject DBObject/],
+        },
+        YAMLObject => {
+            ClassName       => 'Kernel::System::YAML',
+            Dependencies    => [qw/ConfigObject LogObject EncodeObject MainObject/],
+        },
+        WebserviceObject => {
+            ClassName       => 'Kernel::System::GenericInterface::Webservice',
+            Dependencies    => [qw/ConfigObject LogObject EncodeObject MainObject TimeObject/],
+        },
+        JSONObject  => {
+            ClassName       => 'Kernel::System::JSON',
+            Dependencies    => [qw/ConfigObject LogObject EncodeObject/],
+        },
+        StatsObject => {
+            ClassName       => 'Kernel::System::Stats',
+            Dependencies    => [qw/ConfigObject LogObject EncodeObject DBObject MainObject TimeObject GroupObject UserObject/],
+        },
+        CSVObject => {
+            ClassName       => 'Kernel::System::CSV',
+            Dependencies    => [qw/ConfigObject LogObject EncodeObject/],
+        },
+        CheckItemObject => {
+            ClassName       => 'Kernel::System::CheckItem',
+            Dependencies    => [qw/ConfigObject LogObject EncodeObject MainObject/],
+        },
+        EmailObject => {
+            ClassName       => 'Kernel::System::Email',
+            Dependencies    => [qw/ConfigObject LogObject EncodeObject MainObject TimeObject DBObject/],
+        },
+        PDFObject => {
+            ClassName       => 'Kernel::System::PDF',
+            Dependencies    => [qw/ConfigObject LogObject EncodeObject MainObject/],
+        },
+        PIDObject => {
+            ClassName       => 'Kernel::System::PID',
+            Dependencies    => [qw/ConfigObject LogObject DBObject/],
+        },
+        GenericAgentObject => {
+            ClassName       => 'Kernel::System::GenericAgent',
+            Dependencies    => [qw/ConfigObject LogObject TimeObject TicketObject QueueObject DBObject MainObject EncodeObject/],
+        },
+        CryptObject => {
+            ClassName       => 'Kernel::System::Crypt',
+            Dependencies    => [qw/ConfigObject LogObject DBObject MainObject EncodeObject/],
+        },
     };
 
     return;

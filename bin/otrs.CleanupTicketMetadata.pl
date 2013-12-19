@@ -30,17 +30,7 @@ use lib dirname($RealBin) . '/Custom';
 
 use Getopt::Long;
 
-use Kernel::Config;
-use Kernel::System::Encode;
-use Kernel::System::Time;
-use Kernel::System::Log;
-use Kernel::System::Main;
-use Kernel::System::DB;
-use Kernel::System::User;
-use Kernel::System::Group;
-use Kernel::System::Queue;
-use Kernel::System::Ticket;
-use Kernel::System::VariableCheck qw(:all);
+use Kernel::System::ObjectManager;
 
 sub _CommonObjects {
     my %Objects;
