@@ -12,6 +12,8 @@ package Kernel::System::ObjectManager;
 use strict;
 use warnings;
 
+use Scalar::Util qw/weaken/;
+
 # use the "standard" modules directly, so that persistent environments
 # like mod_perl and FastCGI preload them at startup
 
@@ -68,6 +70,10 @@ Options to this constructor should have object names as keys, and hash
 references as values. The hash reference will be flattened and passed
 to the constructor of the object with the same name as option key.
 
+If the C<< Debug => 1 >> option is present, destruction of objects
+is checked, and a warning is emitted if objects persist after the
+attempt to destroy them.
+
 =cut
 
 
@@ -75,6 +81,7 @@ sub new {
     my ($Type, %Param) = @_;
     my $Self = bless {}, $Type;
 
+    $Self->{Debug} = delete $Param{Debug};
     $Self->{Specialization} = \%Param;
     $Self->{Objects} = {};
 
@@ -154,7 +161,7 @@ sub ObjectConfigGet {
 sub Dependencies {
     my ($Self, %Param) = @_;
     my $ObjConfig = $Self->ObjectConfigGet(%Param);
-    return @{ $ObjConfig->{Dependencies} };
+    return $ObjConfig->{Dependencies};
 }
 
 sub ClassName {
@@ -227,5 +234,55 @@ sub AddSpecialization {
 =back
 
 =cut
+
+sub DESTROY {
+    my ( $Self ) = @_;
+    # destroy objects before their dependencies are destroyed
+
+    # first step: get the dependencies into a single hash,
+    # so that the topological sorting goes faster
+    my %Dependencies;
+    for my $Object ( sort keys %{ $Self->{Objects} }) {
+        $Dependencies{ $Object } = $Self->Dependencies(
+            Object => $Object,
+        );
+    }
+
+    # second step: post-order recursive traversal
+    my %Seen;
+    my @OrderedObjects;
+    my $Traverser;
+    $Traverser = sub {
+        my ( $Obj ) = @_;
+        return if $Seen{$Obj}++;
+        $Traverser->( $_ ) for @{ $Dependencies{ $Obj } };
+        push @OrderedObjects, $Obj;
+    };
+    $Traverser->($_) for keys %Dependencies;
+    undef $Traverser;
+
+    # third step: destruction
+    if ( $Self->{Debug} ) {
+        for my $Object ( reverse @OrderedObjects ) {
+            my $Checker = $Self->{Objects}{$Object};
+            weaken($Checker);
+            delete $Self->{Objects}{$Object};
+            if (defined $Checker) {
+                warn "DESTRUCTION OF $Object FAILED!!\n";
+                if ( eval { require "Devel/Cycle.pm"; 1 } ) {
+                    Devel::Cycle::find_cycle($Checker);
+                }
+                else {
+                    warn "To get more debugging information, please install Devel::Cycle.";
+                }
+            }
+        }
+    }
+    else {
+        for my $Object ( reverse @OrderedObjects ) {
+            delete $Self->{Objects}{$Object};
+        }
+    }
+}
 
 1;
