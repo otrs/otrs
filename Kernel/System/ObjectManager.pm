@@ -118,10 +118,10 @@ sub _BuildObject {
     require $FileName;
 
     my %Args      = %{ $Self->{Specialization}{ $Param{Object} } // { } };
+    my $Config    = $Self->ObjectConfigGet( %Param );
 
-    my $Dependencies = $Self->Dependencies( %Param );
-    if ( $Dependencies ) {
-        for my $Dependency ( @{ $Dependencies } ) {
+    if ( !$Config->{OmAware} &&  $Config->{Dependencies} ) {
+        for my $Dependency ( @{ $Config->{Dependencies} } ) {
             $Self->Get( $Dependency );
         }
         %Args = ($Self->ObjectHash(), %Args);
@@ -137,11 +137,16 @@ sub ObjectConfigGet {
         # hardcoded to facilitate bootstrapping
         return {
             ClassName       => 'Kernel::Config',
+            Dependencies    => [],
+            OmAware         => 1,
         };
     }
     my $ObjConfig = $Self->Get('ConfigObject')->Get('Objects')->{$ObjectName};
     unless ($ObjConfig) {
         confess "Object '$ObjectName' is not configured\n";
+    }
+    unless ($ObjConfig->{Dependencies}) {
+        die "Object '$ObjectName' does not declare its dependencies\n";
     }
     return $ObjConfig;
 }
@@ -149,7 +154,7 @@ sub ObjectConfigGet {
 sub Dependencies {
     my ($Self, %Param) = @_;
     my $ObjConfig = $Self->ObjectConfigGet(%Param);
-    return $ObjConfig->{Dependencies};
+    return @{ $ObjConfig->{Dependencies} };
 }
 
 sub ClassName {

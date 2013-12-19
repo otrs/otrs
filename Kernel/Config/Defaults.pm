@@ -1682,15 +1682,23 @@ via the Preferences button after logging in.
     $Self->{Objects} = {
         ConfigObject  => {
             ClassName       => 'Kernel::Config',
+            Dependencies    => [],
+            OmAware         => 1,
         },
         LogObject     => {
             ClassName       => 'Kernel::System::Log',
+            Dependencies    => ['ConfigObject', 'EncodeObject'],
+            OmAware         => 1,
         },
         EncodeObject  => {
             ClassName       => 'Kernel::System::Encode',
+            Dependencies    => [],
+            OmAware         => 1,
         },
         MainObject    => {
             ClassName       => 'Kernel::System::Main',
+            Dependencies    => ['ConfigObject', 'LogObject', 'EncodeObject'],
+            OmAware         => 1,
         },
         TimeObject    => {
             ClassName       => 'Kernel::System::Time',
@@ -1749,6 +1757,8 @@ via the Preferences button after logging in.
         },
         UnitTestObject    => {
             ClassName       => 'Kernel::System::UnitTest',
+            Dependencies    => [qw/ConfigObject LogObject EncodeObject MainObject DBObject TimeObject/],
+            OmAware         => 1,
         },
         PostMasterObject  => {
             ClassName       => 'Kernel::System::PostMaster',
