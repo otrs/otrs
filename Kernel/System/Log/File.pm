@@ -22,6 +22,8 @@ sub new {
 
     # get needed objects
     $Self->{ConfigObject} = $Kernel::OM->Get('ConfigObject');
+    $Self->{EncodeObject} = $Kernel::OM->Get('EncodeObject');
+
 
     # get logfile location
     $Self->{LogFile} = $Param{ConfigObject}->Get('LogModule::LogFile')
@@ -64,9 +66,6 @@ sub Log {
         print STDERR "\n";
         return;
     }
-
-    # lazily build EncodeObject
-    $Self->{EncodeObject} //= $Kernel::OM->Get('EncodeObject');
 
     # write log file
     $Self->{EncodeObject}->SetIO($FH);

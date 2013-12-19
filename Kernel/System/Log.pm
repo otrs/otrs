@@ -51,6 +51,8 @@ sub new {
     my $Self = {};
     bless( $Self, $Type );
 
+    $Self->{EncodeObject} = $Kernel::OM->Get('EncodeObject');
+
     my $ConfigObject = $Kernel::OM->Get('ConfigObject');
     $Self->{ProductVersion} = $ConfigObject->Get('Product') . ' ';
     $Self->{ProductVersion} .= $ConfigObject->Get('Version');
@@ -264,10 +266,6 @@ sub GetLog {
     if ( $Self->{IPC} ) {
         shmread( $Self->{Key}, $String, 0, $Self->{IPCSize} ) || die "$!";
     }
-
-    # since EncodeObject depends on LogObject, the EncodeObject
-    # here must be built outside the Kernel::System::Log constructor
-    $Self->{EncodeObject} //= $Kernel::OM->Get('EncodeObject');
 
     # encode the string
     $Self->{EncodeObject}->EncodeInput( \$String );

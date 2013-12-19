@@ -23,6 +23,7 @@ sub new {
 
     # get needed objects
     $Self->{ConfigObject} = $Kernel::OM->Get('ConfigObject');
+    $Self->{EncodeObject} = $Kernel::OM->Get('EncodeObject');
 
     # set syslog facility
     $Self->{SysLogFacility} = $Self->{ConfigObject}->Get('LogModule::SysLog::Facility') || 'user';
@@ -32,8 +33,6 @@ sub new {
 
 sub Log {
     my ( $Self, %Param ) = @_;
-
-    $Self->{EncodeObject} //= $Kernel::OM->Get('EncodeObject');
 
     # prepare data for byte output
     if ( $Self->{ConfigObject}->Get('LogModule::SysLog::Charset') =~ m/^utf-?8$/ ) {
