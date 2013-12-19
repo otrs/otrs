@@ -160,18 +160,31 @@ sub ClassName {
 
 =item ObjectHash()
 
-    $SomeModule->new($Kernel::OM->ObjectHash());
-
 Returns a hash of all the already instantiated objects.
 The keys are the object names, and the values are the objects themselves.
 
 This method is useful for creating objects of classes that are
 not aware of the object manager yet.
 
+    $SomeModule->new($Kernel::OM->ObjectHash());
+
+If the C<Objects> parameter is present, it is interpreted as a list of
+object names that must be part of the returned hash.
+
+    $SomeModule->new(
+        $Kernel::OM->ObjectHash(
+            Objects => ['TicketObject', 'DynamicFieldObject'],
+        ),
+    );
+
 =cut
 
 sub ObjectHash {
-    my ($Self) = @_;
+    my ( $Self, %Param ) = @_;
+
+    if ( $Param{Objects} ) {
+        $Self->Get( $_ ) for @{ $Param{Objects} };
+    }
 
     return %{ $Self->{Objects} };
 }
