@@ -1760,6 +1760,10 @@ via the Preferences button after logging in.
             Dependencies    => [qw/ConfigObject LogObject EncodeObject MainObject DBObject TimeObject/],
             OmAware         => 1,
         },
+        UnitTestHelperObject    => {
+            ClassName       => 'Kernel::System::UnitTest::Helper',
+            Dependencies    => [qw/ConfigObject LogObject EncodeObject MainObject DBObject/],
+        },
         PostMasterObject  => {
             ClassName       => 'Kernel::System::PostMaster',
             Dependencies    => [qw/ConfigObject LogObject EncodeObject MainObject DBObject TimeObject/],
@@ -1827,6 +1831,14 @@ via the Preferences button after logging in.
         CryptObject => {
             ClassName       => 'Kernel::System::Crypt',
             Dependencies    => [qw/ConfigObject LogObject DBObject MainObject EncodeObject/],
+        },
+        DebugLogObject => {
+            ClassName       => 'Kernel::System::GenericInterface::DebugLog',
+            Dependencies    => [qw/ConfigObject LogObject DBObject MainObject EncodeObject/],
+        },
+        TaskManagerObject => {
+            ClassName       => 'Kernel::System::Scheduler::TaskManager',
+            Dependencies    => [qw/ConfigObject LogObject DBObject MainObject TimeObject EncodeObject/],
         },
     };
 
