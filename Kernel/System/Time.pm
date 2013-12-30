@@ -505,6 +505,7 @@ sub WorkingTime {
         $Year  = $Year + 1900;
         $Month = $Month + 1;
         my $CDate = "$Year-$Month-$Day";
+	my $CTime00 = $Param{StartTime} - ( ( $Hour * 60  + $Min ) * 60 + $Sec );	# 00:00:00
 
         # count nothing because of vacation
         if (
@@ -519,28 +520,28 @@ sub WorkingTime {
             if ( $TimeWorkingHours->{ $LDay{$WDay} } ) {
                 for ( @{ $TimeWorkingHours->{ $LDay{$WDay} } } ) {
 
-                    # count minutes on same date and same hour of start/end date
-                    # within service hour => start counting and finish immediatly
+                    # same date and same hour of start/end date within service hour 
+		    # => start counting and finish immediatly
                     if ( $ADate eq $BDate && $AHour == $BHour && $AHour == $_ ) {
-                        return ( ( $BMin - $AMin ) * 60 );
+                        return $Param{StopTime} - $Param{StartTime};
                     }
 
                     # do nothing because we are on start day and not yet within service hour
                     elsif ( $CDate eq $ADate && $_ < $AHour ) {
                     }
 
-                    # count minutes because we are on start day and within start hour
+                    # we are on start day and within start hour => count to end of this hour
                     elsif ( $CDate eq $ADate && $AHour == $_ ) {
-                        $Counted = $Counted + ( 60 - $AMin ) * 60;
+                        $Counted += ( $CTime00 + ( $_ + 1 ) * 60 * 60 ) - $Param{StartTime};
                     }
 
                     # do nothing because we are on end day but greater than service hour
                     elsif ( $CDate eq $BDate && $BHour < $_ ) {
                     }
 
-                    # count minutes because we are on end day and within end hour
+                    # we are on end day and within end hour => count from start of this hour
                     elsif ( $CDate eq $BDate && $BHour == $_ ) {
-                        $Counted = $Counted + $BMin * 60;
+			$Counted += $Param{StopTime} - ( $CTime00 + $_ * 60 * 60 );
                     }
 
                     # count full hour because we are in service hour that is greater than
@@ -553,7 +554,14 @@ sub WorkingTime {
         }
 
         # reduce time => go to next day 00:00:00
-        $Param{StartTime} = $Param{StartTime} + 60 * 60 * ( 24 - $Hour ) - 60 * $Min - $Sec;
+        $Param{StartTime} = $Self->Date2SystemTime(
+            Year   => $Year,
+            Month  => $Month,
+            Day    => $Day,
+            Hour   => 23,
+            Minute => 59,
+            Second => 59,
+        ) + 1;
     }
     return $Counted;
 }
@@ -561,10 +569,10 @@ sub WorkingTime {
 =item DestinationTime()
 
 get the destination time based on the current calendar working time (fallback: default
-system working time) configuragtion.
+system working time) configuration.
 
 The algorithm roughly works as follows:
-    - Check if the start time is acutally in the configured working time.
+    - Check if the start time is actually in the configured working time.
         - If not, set it to the next working time second. Example: start time is
             on a weekend, start time would be set to 8:00 on the following Monday.
     - Then the diff time (in seconds) is added to the start time incrementally, only considering
@@ -572,7 +580,7 @@ The algorithm roughly works as follows:
         they would be spread over the configured working hours. If we have 8-20, 24 hours would be
         spread over 2 days (13/11 hours).
 
-NOTE: Currently, the implementation stops silently after 100 iterations, making it impossible to
+NOTE: Currently, the implementation stops silently after 600 iterations, making it impossible to
     specify longer escalation times, for example.
 
     my $DestinationTime = $TimeObject->DestinationTime(
@@ -620,8 +628,6 @@ sub DestinationTime {
     }
     my $DestinationTime = $Param{StartTime};
     my $CTime           = $Param{StartTime};
-    my $FirstTurn       = 1;
-    $Param{Time}++;
 
     my %LDay = (
         1 => 'Mon',
@@ -635,13 +641,15 @@ sub DestinationTime {
 
     my $LoopCounter;
 
+    LOOP:
     while ( $Param{Time} > 1 ) {
         $LoopCounter++;
-        last if $LoopCounter > 100;
+        last if $LoopCounter > 600;
 
         my ( $Second, $Minute, $Hour, $Day, $Month, $Year, $WDay ) = localtime $CTime;  ## no critic
         $Year  = $Year + 1900;
         $Month = $Month + 1;
+	my $CTime00 = $CTime - ( ( $Hour * 60  + $Minute ) * 60 + $Second );	# 00:00:00
 
         # Skip vacation days, or days without working hours, do not count.
         if (
@@ -650,70 +658,43 @@ sub DestinationTime {
             || !$TimeWorkingHours->{ $LDay{$WDay} }
             )
         {
-
-            if ($FirstTurn) {
-                $DestinationTime = $Self->Date2SystemTime(
-                    Year   => $Year,
-                    Month  => $Month,
-                    Day    => $Day,
-                    Hour   => 0,
-                    Minute => 0,
-                    Second => 0,
-                );
-            }
-            $DestinationTime = $DestinationTime + 60 * 60 * 24;
-            $FirstTurn       = 0;
+	    # Set destination time to next day, 00:00:00
+	    $DestinationTime = $Self->Date2SystemTime(
+		Year   => $Year,
+		Month  => $Month,
+		Day    => $Day,
+		Hour   => 23,
+		Minute => 59,
+		Second => 59,
+	    ) + 1;
         }
 
         # Regular day with working hours
         else {
+	    HOUR:
             for my $H ( $Hour .. 23 ) {
 
                 # Check if we have a working hour
                 if ( grep { $H == $_ } @{ $TimeWorkingHours->{ $LDay{$WDay} } } ) {
                     if ( $Param{Time} > 60 * 60 ) {
-                        if ( $Minute != 0 && $FirstTurn ) {
-                            my $Max = 60 - $Minute;
-                            $Param{Time} = $Param{Time} - ( $Max * 60 );
-                            $DestinationTime = $DestinationTime + ( $Max * 60 );
-                            $FirstTurn = 0;
-                        }
-                        else {
-                            $Param{Time} = $Param{Time} - ( 60 * 60 );
-                            $DestinationTime = $DestinationTime + ( 60 * 60 );
-                            $FirstTurn = 0;
-                        }
+			my $RestOfHour = 3600 - ( $Minute * 60 + $Second );
+			$DestinationTime += $RestOfHour;
+			$Param{Time} = $Param{Time} - $RestOfHour;
                     }
-                    elsif ( $Param{Time} > 1 * 60 ) {
-                        for my $M ( 0 .. 59 ) {
-                            if ( $Param{Time} > 1 ) {
-                                $Param{Time}     = $Param{Time} - 60;
-                                $DestinationTime = $DestinationTime + 60;
-                                $FirstTurn       = 0;
-                            }
-                        }
-                    }
-                    else {
-                        last;
+		    else {
+			$DestinationTime += $Param{Time};
+                        last LOOP;
                     }
                 }
 
                 # Not a working hour
                 else {
-                    if ($FirstTurn) {
-                        $DestinationTime = $Self->Date2SystemTime(
-                            Year   => $Year,
-                            Month  => $Month,
-                            Day    => $Day,
-                            Hour   => $H,
-                            Minute => 0,
-                            Second => 0,
-                        );
-                    }
-                    if ( $Param{Time} > 59 ) {
-                        $DestinationTime = $DestinationTime + ( 60 * 60 );
-                    }
+		    my $RestOfHour = 3600 - ( $Minute * 60 + $Second );
+		    $DestinationTime += $RestOfHour;
                 }
+		# Here we are always aligned at an hour boundary
+		$Minute = 0;
+		$Second = 0;
             }
         }
 
@@ -722,46 +703,21 @@ sub DestinationTime {
             Year   => $Year,
             Month  => $Month,
             Day    => $Day,
-            Hour   => 0,
-            Minute => 0,
-            Second => 0,
-        ) + ( 60 * 60 * 24 );
+            Hour   => 23,
+            Minute => 59,
+            Second => 59,
+        ) + 1;
 
-        # Protect local time zone problems on your machine
-        # (e. g. summertime -> wintertime) and not getting over to the next day.
-        if ( $NewCTime == $CTime ) {
-            $CTime = $CTime + ( 60 * 60 * 24 );
-
-            # reduce destination time diff between today and tomorrow
-            my ( $NextSecond, $NextMinute, $NextHour, $NextDay, $NextMonth, $NextYear )
-                = localtime $CTime;    ## no critic
-            $NextYear  = $NextYear + 1900;
-            $NextMonth = $NextMonth + 1;
-
-            my $Diff = (
-                $Self->Date2SystemTime(
-                    Year   => $NextYear,
-                    Month  => $NextMonth,
-                    Day    => $NextDay,
-                    Hour   => 0,
-                    Minute => 0,
-                    Second => 0,
-                    ) - $Self->Date2SystemTime(
-                    Year   => $Year,
-                    Month  => $Month,
-                    Day    => $Day,
-                    Hour   => 0,
-                    Minute => 0,
-                    Second => 0,
-                    )
-            ) - ( 60 * 60 * 24 );
-            $DestinationTime = $DestinationTime - $Diff;
-        }
+	# Compensate for switching to/from daylight saving time
+	# (day is shorter or longer than 24h)
+        if ( $NewCTime != $CTime00 + 24 * 60 * 60 ) {
+	    my $Diff = $NewCTime - $CTime00 - 24 * 60 * 60;
+#	    warn "Diff: $Diff on $Year-$Month-$Day\n";
+	    $DestinationTime += $Diff;
+	}
 
         # Set next loop time to 00:00:00 of next day.
-        else {
-            $CTime = $NewCTime;
-        }
+	$CTime = $NewCTime;
     }
 
     # return destination time - e. g. with diff of calendar time zone
