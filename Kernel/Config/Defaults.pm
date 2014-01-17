@@ -1840,6 +1840,16 @@ via the Preferences button after logging in.
             ClassName       => 'Kernel::System::Scheduler::TaskManager',
             Dependencies    => [qw/ConfigObject LogObject DBObject MainObject TimeObject EncodeObject/],
         },
+        SysConfigObject => {
+            ClassName       => 'Kernel::System::SysConfig',
+            Dependencies    => [qw/ConfigObject LogObject DBObject MainObject TimeObject EncodeObject LanguageObject/],
+
+        },
+        LanguageObject => {
+            ClassName       => 'Kernel::Language',
+            Dependencies    => [qw/ConfigObject LogObject MainObject EncodeObject/],
+
+        },
     };
 
     return;
