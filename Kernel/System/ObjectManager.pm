@@ -111,12 +111,12 @@ sub Get {
     die "Error: Missing parameter (object name)\n"
         unless $ObjectName;
 
-    $Self->_BuildObject(Object => $ObjectName);
+    $Self->_ObjectBuild(Object => $ObjectName);
 
     return $Self->{Objects}{$ObjectName};
 }
 
-sub _BuildObject {
+sub _ObjectBuild {
     my ($Self, %Param) = @_;
     my $ClassName = $Self->ClassName(%Param);
     my $FileName  = $ClassName;
