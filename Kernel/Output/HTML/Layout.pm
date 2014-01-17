@@ -417,6 +417,13 @@ sub new {
     return $Self;
 }
 
+=item AddParam()
+
+Add Parameters the same way as if they were added to C<< ->new() >>.
+
+=cut
+
+
 sub AddParam {
     my ( $Self, %Param ) = @_;
 
