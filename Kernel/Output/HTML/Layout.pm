@@ -421,6 +421,10 @@ sub new {
 
 Add Parameters the same way as if they were added to C<< ->new() >>.
 
+    $LayoutObject->AddParam(
+        SessionID   => $SessionID,
+    );
+
 =cut
 
 
