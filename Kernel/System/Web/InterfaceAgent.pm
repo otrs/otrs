@@ -1,6 +1,6 @@
 # --
 # Kernel/System/Web/InterfaceAgent.pm - the agent interface file (incl. auth)
-# Copyright (C) 2001-2013 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2014 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -723,11 +723,12 @@ sub Run {
             $Param{AccessRw} = 1;
         }
         else {
+            PERMISSION:
             for my $Permission (qw(GroupRo Group)) {
                 my $AccessOk = 0;
                 my $Group    = $ModuleReg->{$Permission};
                 my $Key      = "UserIs$Permission";
-                next if !$Group;
+                next PERMISSION if !$Group;
                 if ( ref $Group eq 'ARRAY' ) {
                     for ( @{$Group} ) {
                         next if !$_;
@@ -784,10 +785,12 @@ sub Run {
             else {
                 $PreModuleList{Init} = $PreModule;
             }
+
+            MODULE:
             for my $PreModuleKey ( sort keys %PreModuleList ) {
                 my $PreModule = $PreModuleList{$PreModuleKey};
-                next if !$PreModule;
-                next if !$Self->{MainObject}->Require($PreModule);
+                next MODULE if !$PreModule;
+                next MODULE if !$Self->{MainObject}->Require($PreModule);
 
                 # debug info
                 if ( $Self->{Debug} ) {

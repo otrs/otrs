@@ -1,6 +1,6 @@
 # --
 # Kernel/Modules/AgentDashboardCommon.pm - common base for agent dashboards
-# Copyright (C) 2001-2013 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2014 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -513,7 +513,7 @@ sub Run {
             my @Groups = split /;/, $Config->{$Name}->{Group};
             GROUP:
             for my $Group (@Groups) {
-                my $Permission = 'UserIsGroup[' . $Group . ']';
+                my $Permission = 'UserIsGroupRo[' . $Group . ']';
                 if ( defined $Self->{$Permission} && $Self->{$Permission} eq 'Yes' ) {
                     $PermissionOK = 1;
                     last GROUP;
@@ -749,7 +749,7 @@ sub _Element {
         my @Groups = split /;/, $Configs->{$Name}->{Group};
         GROUP:
         for my $Group (@Groups) {
-            my $Permission = 'UserIsGroup[' . $Group . ']';
+            my $Permission = 'UserIsGroupRo[' . $Group . ']';
             if ( defined $Self->{$Permission} && $Self->{$Permission} eq 'Yes' ) {
                 $PermissionOK = 1;
                 last GROUP;

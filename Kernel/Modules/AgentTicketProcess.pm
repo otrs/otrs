@@ -1,6 +1,6 @@
 # --
 # Kernel/Modules/AgentTicketProcess.pm - to create process tickets
-# Copyright (C) 2001-2013 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2014 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -5183,11 +5183,12 @@ sub _GetQueues {
         );
 
         # build selection string
+        QUEUEID:
         for my $QueueID ( sort keys %Queues ) {
             my %QueueData = $Self->{QueueObject}->QueueGet( ID => $QueueID );
 
             # permission check, can we create new tickets in queue
-            next if !$UserGroups{ $QueueData{GroupID} };
+            next QUEUEID if !$UserGroups{ $QueueData{GroupID} };
 
             my $String = $Self->{ConfigObject}->Get('Ticket::Frontend::NewQueueSelectionString')
                 || '<Realname> <<Email>> - Queue: <Queue>';

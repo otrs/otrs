@@ -1,6 +1,6 @@
 # --
 # Kernel/System/PostMaster/Filter/MatchDBSource.pm - sub part of PostMaster.pm
-# Copyright (C) 2001-2013 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2014 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -77,10 +77,10 @@ sub Run {
                     Line => $Param{GetParam}->{$_},
                 );
                 my $LocalMatched;
-                RECIPIENTS:
+                RECIPIENT:
                 for my $Recipients (@EmailAddresses) {
                     my $Email = $Self->{ParserObject}->GetEmailAddress( Email => $Recipients );
-                    next if !$Email;
+                    next RECIPIENT if !$Email;
                     if ( $Email =~ /^$SearchEmail$/i ) {
                         $LocalMatched = 1;
                         if ($SearchEmail) {
@@ -93,7 +93,7 @@ sub Run {
                                     "$Prefix'$Param{GetParam}->{$_}' =~ /$Match{$_}/i matched!",
                             );
                         }
-                        last RECIPIENTS;
+                        last RECIPIENT;
                     }
                 }
                 if ( !$LocalMatched ) {

@@ -1,10 +1,36 @@
-3.4.0.betaX 20??-??-??
+#3.4.0.beta1 20??-??-??
+ - 2014-01-10 Fixed bug#[10145](http://bugs.otrs.org/show_bug.cgi?id=10145) - %A is not correctly substituted in Language::Time().
+ - 2014-01-10 Make it possible to pass HTTP headers to WebUserAgent, thanks to Renée Bäcker.
+ - 2014-01-10 Added functionality to unlock just one single ticket in otrs.UnlockTickets.pl, thanks to Martin Gross @ rtt.ag.
+ - 2014-01-07 Fixed bug#[10140](http://bugs.otrs.org/show_bug.cgi?id=10140) - Unable to search using before/after in Date Dynamic Fields.
+ - 2014-01-06 Fixed bug#[10008](http://bugs.otrs.org/show_bug.cgi?id=10008) - Customer user is automatically added to Cc at response for email-internal in AgentTicketCompose.
+ - 2014-01-03 Fixed bug#[9978](http://bugs.otrs.org/show_bug.cgi?id=9978) - Activity Dialog for Customer shows "No Process configured!".
+ - 2014-01-03 Fixed bug#[10134](http://bugs.otrs.org/show_bug.cgi?id=10134) - Missing information on icon actions for SMIME certificates and keys.
+ - 2014-01-02 Fixed bug#[10116](http://bugs.otrs.org/show_bug.cgi?id=10116) - Random ordering of columns in "Small" ticket lists.
+ - 2013-12-23 Fixed bug#[10094](http://bugs.otrs.org/show_bug.cgi?id=10094) - Former FAO OTRSACLExtensions not available in the ACL Editor.
  - 2013-12-16 Improved mail address parsing speed, thanks to Moritz Lenz!
- - 2013-12-13 Fixed bug#[10074](http://bugs.otrs.org/show_bug.cgi?id=10074) - Error if no queue matched in DashboardEventsTicketCalendar.
  - 2013-12-13 Fixed bug#[10090](http://bugs.otrs.org/show_bug.cgi?id=10090) - Problems with special characters in Kernel/System/WebUserAgent.pm.
  - 2013-12-12 Added additional information to install commands for different distributions (see perl bin/otrs.CheckModules.pl -h) for more information.
 
-#3.3.4 201?-??-??
+#3.3.4 2014-01-28
+ - 2014-01-14 Fixed bug#[10158](http://bugs.otrs.org/show_bug.cgi?id=10158) - Missing quoting in State::StateGetStatesByType().
+ - 2014-01-14 Fixed bug#[10048](http://bugs.otrs.org/show_bug.cgi?id=10048) - RPM upgrade breaks permissions on config files.
+ - 2014-01-14 Fixed bug#[8969](http://bugs.otrs.org/show_bug.cgi?id=8969) - FAQ module Language files installation fails (Kernel/Language permissions).
+ - 2014-01-10 Updated traditional Chinese translation.
+ - 2014-01-10 Updated Brazilian Portugese translation, thanks to Murilo Moreira de Oliveira!
+ - 2014-01-10 Fixed bug#[10079](http://bugs.otrs.org/show_bug.cgi?id=10079) - Cannot operate OTRS on IE7 because of JavaScript error.
+ - 2014-01-10 Fixed bug#[10113](http://bugs.otrs.org/show_bug.cgi?id=10113) - Management dashboard setting doesn't show up when agent only has RO on stats.
+ - 2014-01-10 Fixed bug#[10088](http://bugs.otrs.org/show_bug.cgi?id=10088) - Error messages on recieving mailer daemons.
+ - 2014-01-10 Fixed bug#[10011](http://bugs.otrs.org/show_bug.cgi?id=10011) - Management Dashboard: X-Axis element labels may overlap.
+ - 2014-01-09 Fixed bug#[10012](http://bugs.otrs.org/show_bug.cgi?id=10012) - Management Dashboard: strings not translatable.
+ - 2014-01-06 Added Hebrew translation file, thanks to Amir Elion!
+ - 2013-12-20 Fixed bug#[10099](http://bugs.otrs.org/show_bug.cgi?id=10099) - Missing challenge token checks on customer interface.
+ - 2013-12-18 Fixed bug#[10110](http://bugs.otrs.org/show_bug.cgi?id=10110) - Stats list may show too few or too many stats.
+ - 2013-12-17 Fixed bug#[10103](http://bugs.otrs.org/show_bug.cgi?id=10103) - ArticleTypeID is always undef in AgentTicketCompose
+ - 2013-12-16 Updated Russian translation, thanks to Yuriy Kolesnikov.
+ - 2013-12-16 Fixed bug#[10080](http://bugs.otrs.org/show_bug.cgi?id=10080) - Bad group check in otrs-scheduler-linux.
+ - 2013-12-16 Fixed bug#[10097](http://bugs.otrs.org/show_bug.cgi?id=10097) - $Param{NextState} is always undef in AgentTicketCompose.
+ - 2013-12-13 Fixed bug#[10074](http://bugs.otrs.org/show_bug.cgi?id=10074) - Error if no queue matched in DashboardEventsTicketCalendar.
  - 2013-12-12 Fixed bug#[965](http://bugs.otrs.org/show_bug.cgi?id=9650) - Special character in customer id breaks Open Tickets in AgentTicketZoom.
  - 2013-12-12 Added functionality to disable access to tickets of other customers with the same customer company in customer interface.
  - 2013-12-12 Fixed bug#[9702](http://bugs.otrs.org/show_bug.cgi?id=9702) - Wrong article type with external ticketnumber recognition i.c.w. follow-up reject option.

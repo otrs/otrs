@@ -1,6 +1,6 @@
 # --
 # Kernel/Modules/Installer.pm - provides the DB installer
-# Copyright (C) 2001-2013 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2014 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -1109,7 +1109,7 @@ sub ReConfigure {
 
     # write new config file
     ## no critic
-    open( my $Out, '>', $ConfigFile )
+    open( my $Out, '>:utf8', $ConfigFile )
         || return "Can't open $ConfigFile: $!";
     print $Out $Config;
     ## use critic

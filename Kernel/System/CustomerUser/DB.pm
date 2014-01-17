@@ -1,6 +1,6 @@
 # --
 # Kernel/System/CustomerUser/DB.pm - some customer user functions
-# Copyright (C) 2001-2013 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2014 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -475,7 +475,6 @@ sub CustomerIDs {
         SPLIT:
         for my $Split ( ';', ',', '|' ) {
 
-            # next if separator is not there
             next SPLIT if $Data{UserCustomerIDs} !~ /\Q$Split\E/;
 
             # split it

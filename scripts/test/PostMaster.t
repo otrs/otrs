@@ -1,6 +1,6 @@
 # --
 # PostMaster.t - PostMaster tests
-# Copyright (C) 2001-2013 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2014 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -920,8 +920,10 @@ Some Content in Body
         TicketID      => $Return[1],
         DynamicFields => 1,
     );
+
+    TEST:
     for my $Test (@Tests) {
-        next if !$Test->{Check};
+        next TEST if !$Test->{Check};
         for my $Key ( sort keys %{ $Test->{Check} } ) {
             $Self->Is(
                 $Ticket{$Key},

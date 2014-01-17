@@ -1,6 +1,6 @@
 # --
 # Kernel/System/Stats.pm - all stats core functions
-# Copyright (C) 2001-2013 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2014 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -446,10 +446,11 @@ sub StatsUpdate {
         $StatOld->{$Key} = $StatNew->{$Key};
     }
 
+    KEY:
     for my $Key ( sort keys %{$StatOld} ) {
 
         # Don't store the behaviour data
-        next if $Key eq 'ObjectBehaviours';
+        next KEY if $Key eq 'ObjectBehaviours';
 
         if ( $Key eq 'UseAsXvalue' || $Key eq 'UseAsValueSeries' || $Key eq 'UseAsRestriction' ) {
             my $Index = 0;
@@ -629,17 +630,36 @@ fetches all statistics that the current user may see
 sub StatsListGet {
     my ( $Self, %Param ) = @_;
 
-    my $CacheKey = 'StatsListGet::' . ( join '::', %Param );
-    my $Cache = $Self->{CacheObject}->Get(
+    my @SearchResult;
+
+    # Only cache the XML search as we need to filter based on user permissions later
+    my $CacheKey = 'StatsListGet::XMLSearch';
+    my $Cache    = $Self->{CacheObject}->Get(
         Type => 'Stats',
         Key  => $CacheKey,
     );
-    return $Cache if ref $Cache eq 'HASH';
 
-    my @SearchResult;
-    if ( !( @SearchResult = $Self->{XMLObject}->XMLHashSearch( Type => 'Stats' ) ) ) {
-        $Self->_AutomaticSampleImport();
-        return if !( @SearchResult = $Self->{XMLObject}->XMLHashSearch( Type => 'Stats' ) );
+    # Do we have a cache available?
+    if ( ref $Cache eq 'ARRAY' ) {
+        @SearchResult = @{$Cache};
+    }
+    else {
+        # No cache. Is there stats data yet?
+        if ( !( @SearchResult = $Self->{XMLObject}->XMLHashSearch( Type => 'Stats' ) ) ) {
+
+            # Import sample stats
+            $Self->_AutomaticSampleImport();
+
+            # Load stats again
+            return if !( @SearchResult = $Self->{XMLObject}->XMLHashSearch( Type => 'Stats' ) );
+        }
+        $Self->{CacheObject}->Set(
+            Type  => 'Stats',
+            Key   => $CacheKey,
+            Value => \@SearchResult,
+            TTL   => 24 * 60 * 60,
+        );
+
     }
 
     # get user groups
@@ -679,13 +699,6 @@ sub StatsListGet {
             $Result{$StatID} = $Stat;
         }
     }
-
-    $Self->{CacheObject}->Set(
-        Type  => 'Stats',
-        Key   => $CacheKey,
-        Value => \%Result,
-        TTL   => 24 * 60 * 60,
-    );
 
     return \%Result;
 }
@@ -1429,9 +1442,11 @@ sub GetStaticFiles {
 
     # read files
     my %Filelist;
+
+    DIRECTORY:
     while ( defined( my $Filename = readdir DIR ) ) {
-        next if $Filename eq '.';
-        next if $Filename eq '..';
+        next DIRECTORY if $Filename eq '.';
+        next DIRECTORY if $Filename eq '..';
         if ( $Filename =~ m{^(.*)\.pm$}x ) {
             if ( !defined $StaticFiles{$1} ) {
                 $Filelist{$1} = $1;
@@ -1647,10 +1662,11 @@ sub Export {
 
     # wrapper to change ids in used spelling
     # wrap permissions
+    PERMISSION:
     for my $ID ( @{ $StatsXML->{Permission} } ) {
-        next if !$ID;
+        next PERMISSION if !$ID;
         my $Name = $Self->{GroupObject}->GroupLookup( GroupID => $ID->{Content} );
-        next if !$Name;
+        next PERMISSION if !$Name;
         $ID->{Content} = $Name;
     }
 
@@ -2153,7 +2169,7 @@ sub _StatsParamsGenerate {
         PARAMITEM:
         for my $ParamItem ( @{$Params} ) {
 
-            next if !defined $UserGetParam{ $ParamItem->{Name} };
+            next PARAMITEM if !defined $UserGetParam{ $ParamItem->{Name} };
 
             # param is array
             if ( $ParamItem->{Multiple} ) {
@@ -3845,18 +3861,6 @@ sub _AutomaticSampleImport {
     while ( defined( my $Filename = readdir DIRE ) ) {
         if ( $Filename =~ m{^.*\.$Language\.xml$}x ) {
 
-            # check filesize
-            #            my $Filesize = -s $Directory.$Filename;
-            #            if ($Filesize > $MaxFilesize) {
-            #                print "File: $Filename too big! max. $MaxFilesize byte allowed.\n";
-            #                $CommonObject{LogObject}->Log(
-            #                    Priority => 'error',
-            #                    Message => "Can't file imported: $Directory.$Filename",
-            #                );
-            #                next;
-            #            }
-
-            # read file
             my $Filehandle;
             if ( !open $Filehandle, '<', $Directory . $Filename ) {    ## no critic
                 $Self->{LogObject}->Log(

@@ -1,6 +1,6 @@
 # --
 # Kernel/Modules/CustomerTicketMessage.pm - to handle customer messages
-# Copyright (C) 2001-2013 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2014 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -222,6 +222,10 @@ sub Run {
         return $Output;
     }
     elsif ( $Self->{Subaction} eq 'StoreNew' ) {
+
+        # challenge token check for write action
+        $Self->{LayoutObject}->ChallengeTokenCheck( Type => 'Customer' );
+
         my $NextScreen = $Self->{Config}->{NextScreenAfterNewTicket};
         my %Error;
 
@@ -614,6 +618,7 @@ sub Run {
         }
 
         # write attachments
+        ATTACHMENT:
         for my $Attachment (@AttachmentData) {
 
             # skip, deleted not used inline images
@@ -628,7 +633,7 @@ sub Run {
                 $GetParam{Body} =~ s/(ContentID=)$ContentIDLinkEncode/$1$ContentID/g;
 
                 # ignore attachment if not linked in body
-                next if $GetParam{Body} !~ /(\Q$ContentIDHTMLQuote\E|\Q$ContentID\E)/i;
+                next ATTACHMENT if $GetParam{Body} !~ /(\Q$ContentIDHTMLQuote\E|\Q$ContentID\E)/i;
             }
 
             # write existing file to backend
@@ -1162,8 +1167,9 @@ sub _MaskNew {
     }
 
     # show attachments
+    ATTACHMENT:
     for my $Attachment ( @{ $Param{Attachments} } ) {
-        next if $Attachment->{ContentID} && $Self->{LayoutObject}->{BrowserRichText};
+        next ATTACHMENT if $Attachment->{ContentID} && $Self->{LayoutObject}->{BrowserRichText};
         $Self->{LayoutObject}->Block(
             Name => 'Attachment',
             Data => $Attachment,

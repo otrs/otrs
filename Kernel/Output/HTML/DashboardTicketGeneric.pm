@@ -1,6 +1,6 @@
 # --
 # Kernel/Output/HTML/DashboardTicketGeneric.pm
-# Copyright (C) 2001-2013 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2014 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -561,8 +561,9 @@ sub Run {
 
     # if no cache or new list result, do count lookup
     if ( !$Summary || !$CacheUsed ) {
+        TYPE:
         for my $Type ( sort keys %TicketSearchSummary ) {
-            next if !$TicketSearchSummary{$Type};
+            next TYPE if !$TicketSearchSummary{$Type};
 
             # copy original column filter
             my %ColumnFilter = %{ $Self->{ColumnFilter} };
@@ -1193,9 +1194,10 @@ sub Run {
 
     # show tickets
     my $Count = 0;
+    TICKETID:
     for my $TicketID ( @{$TicketIDs} ) {
         $Count++;
-        next if $Count < $Self->{StartHit};
+        next TICKETID if $Count < $Self->{StartHit};
         my %Ticket = $Self->{TicketObject}->TicketGet(
             TicketID      => $TicketID,
             UserID        => $Self->{UserID},
@@ -1837,8 +1839,9 @@ sub _SearchParamsGet {
         }
     }
 
+    STRING:
     for my $String (@Params) {
-        next if !$String;
+        next STRING if !$String;
         my ( $Key, $Value ) = split /=/, $String;
 
         # push ARRAYREF attributes directly in an ARRAYREF
