@@ -1794,7 +1794,7 @@ via the Preferences button after logging in.
         },
         WebserviceObject => {
             ClassName       => 'Kernel::System::GenericInterface::Webservice',
-            Dependencies    => [qw/ConfigObject LogObject EncodeObject MainObject TimeObject/],
+            Dependencies    => [qw/ConfigObject LogObject EncodeObject MainObject TimeObject DBObject/],
         },
         JSONObject  => {
             ClassName       => 'Kernel::System::JSON',
