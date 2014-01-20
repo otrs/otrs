@@ -32,6 +32,9 @@ use Getopt::Std;
 use Proc::Daemon;
 
 use Kernel::System::ObjectManager;
+use Kernel::System::DB;
+use Kernel::System::PID;
+use Kernel::Scheduler;
 
 # defie PID name
 my $PIDName = 'otrs.Scheduler';
@@ -51,6 +54,12 @@ if ( $Opts{h} ) {
     _Help();
     exit 1;
 }
+
+local $Kernel::OM = Kernel::System::ObjectManager->new(
+    LogObject => {
+        LogPrefix => 'OTRS-otrs.Scheduler',
+    },
+);
 
 # check if a stop request is sent
 if ( $Opts{a} && $Opts{a} eq "stop" ) {
@@ -514,14 +523,12 @@ sub _Help {
 }
 
 sub _CommonObjects {
-    $Kernel::OM = Kernel::System::ObjectManager->new(
-        LogObject => {
-            LogPrefix => 'OTRS-otrs.Scheduler',
-        },
-    );
     my %CommonObject = $Kernel::OM->ObjectHash(
-        Objects => [qw/ConfigObject EncodeObject LogObject MainObject TimeObject DBObject PIDObject/],
+        Objects => ['ConfigObject', 'EncodeObject', 'LogObject', 'MainObject', 'TimeObject' ],
     );
+
+    $CommonObject{DBObject}   = Kernel::System::DB->new(%CommonObject);
+    $CommonObject{PIDObject}  = Kernel::System::PID->new(%CommonObject);
     return %CommonObject;
 }
 

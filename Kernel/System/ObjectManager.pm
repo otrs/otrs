@@ -1,6 +1,6 @@
 # --
 # Kernel/System/ObjectManager.pm - central object and dependency manager
-# Copyright (C) 2001-2013 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2014 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -230,6 +230,25 @@ sub AddSpecialization {
     }
     return;
 }
+
+=item ObjectsDiscard()
+
+Discards all internally stored objects, so that the next access to objects
+creates them newly.
+
+    $Kernel::OM->ObjectsDiscard();
+
+Mostly used for tests that rely on fresh objects.
+
+=cut
+
+
+sub ObjectsDiscard {
+    my ( $Self, %Param ) = @_;
+    $Self->{Objects} = {};
+    return 1;
+}
+
 
 =back
 
