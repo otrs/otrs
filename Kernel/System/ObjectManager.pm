@@ -33,6 +33,10 @@ use Kernel::Output::HTML::Layout;
 
 use Carp qw/confess/;
 
+# Contains the top-level object being retrieved;
+# used to generate better error messages.
+our $CurrentObject;
+
 =head1 NAME
 
 Kernel::System::ObjectManager - object and dependency manager
@@ -111,6 +115,13 @@ sub Get {
     die "Error: Missing parameter (object name)\n"
         unless $ObjectName;
 
+    # record the object we are about to retrieve to potentially
+    # build better error messages
+    # needs to be a statement-modifying 'if', otherwise 'local'
+    # is local to the scope of the 'if'-block
+    local $CurrentObject = $ObjectName if !$CurrentObject;
+
+
     $Self->_ObjectBuild(Object => $ObjectName);
 
     return $Self->{Objects}{$ObjectName};
@@ -134,7 +145,18 @@ sub _ObjectBuild {
         %Args = ($Self->ObjectHash(), %Args);
     }
 
-    $Self->{Objects}{$Param{Object}} = $ClassName->new(%Args);
+    my $NewObject = $ClassName->new(%Args);
+    unless ( defined $NewObject ) {
+        if ( $CurrentObject && $CurrentObject ne $Param{Object} ) {
+            confess "$CurrentObject depends on $Param{Object}, but the"
+                . " constructor of $Param{Object} (class $ClassName) returned undef.";
+        }
+        else {
+            confess "The contrustructor of $Param{Object} (class $ClassName) returned undef.";
+        }
+    }
+    $Self->{Objects}{$Param{Object}} = $NewObject;
+    return $NewObject;
 }
 
 sub ObjectConfigGet {
@@ -150,10 +172,21 @@ sub ObjectConfigGet {
     }
     my $ObjConfig = $Self->Get('ConfigObject')->Get('Objects')->{$ObjectName};
     unless ($ObjConfig) {
-        confess "Object '$ObjectName' is not configured\n";
+        if ( $CurrentObject && $CurrentObject ne $ObjectName ) {
+            confess "$CurrentObject depends on $ObjectName, but $ObjectName is not configured";
+        }
+        else {
+            confess "Object '$ObjectName' is not configured\n";
+        }
     }
     unless ($ObjConfig->{Dependencies}) {
-        die "Object '$ObjectName' does not declare its dependencies\n";
+        if ( $CurrentObject && $CurrentObject ne $ObjectName ) {
+            confess "$CurrentObject depends on $ObjectName,"
+                . " but $ObjectName does not declare its dependencies.\n";
+        }
+        else {
+            confess "Object '$ObjectName' does not declare its dependencies\n";
+        }
     }
     return $ObjConfig;
 }
