@@ -1742,6 +1742,7 @@ via the Preferences button after logging in.
         },
         InterfaceAgentObject => {
             ClassName     => 'Kernel::System::Web::InterfaceAgent',
+            Dependencies  => [],
         },
         AuthObject        => {
             ClassName       => 'Kernel::System::Auth',
