@@ -179,15 +179,7 @@ sub ObjectConfigGet {
             confess "Object '$ObjectName' is not configured\n";
         }
     }
-    unless ($ObjConfig->{Dependencies}) {
-        if ( $CurrentObject && $CurrentObject ne $ObjectName ) {
-            confess "$CurrentObject depends on $ObjectName,"
-                . " but $ObjectName does not declare its dependencies.\n";
-        }
-        else {
-            confess "Object '$ObjectName' does not declare its dependencies\n";
-        }
-    }
+    $ObjConfig->{Dependencies} ||= $Self->Get('ConfigObject')->Get('ObjectManager')->{DefaultDependencies};
     return $ObjConfig;
 }
 
