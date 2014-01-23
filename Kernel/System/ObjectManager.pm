@@ -85,9 +85,10 @@ sub new {
     my ($Type, %Param) = @_;
     my $Self = bless {}, $Type;
 
-    $Self->{Debug} = delete $Param{Debug};
+    $Self->{Debug}          = delete $Param{Debug};
     $Self->{Specialization} = \%Param;
-    $Self->{Objects} = {};
+    $Self->{Objects}        = {};
+    $Self->{Config}         = {};
 
     return $Self;
 }
@@ -159,6 +160,16 @@ sub _ObjectBuild {
     return $NewObject;
 }
 
+=item ObjectConfigGet()
+
+Returns the configuration for a given object
+
+    my $Config = $Kernel::OM->ObjectConfigGet(
+        Object  => 'TicketObject',      # Mandatory
+    );
+
+=cut
+
 sub ObjectConfigGet {
     my ($Self, %Param) = @_;
     my $ObjectName = $Param{Object};
@@ -170,7 +181,10 @@ sub ObjectConfigGet {
             OmAware         => 1,
         };
     }
-    my $ObjConfig = $Self->Get('ConfigObject')->Get('Objects')->{$ObjectName};
+
+    my $ObjConfig = $Self->{Config}{$ObjectName};
+    $ObjConfig ||= $Self->Get('ConfigObject')->Get('Objects')->{$ObjectName};
+
     unless ($ObjConfig) {
         if ( $CurrentObject && $CurrentObject ne $ObjectName ) {
             confess "$CurrentObject depends on $ObjectName, but $ObjectName is not configured";
@@ -181,6 +195,32 @@ sub ObjectConfigGet {
     }
     $ObjConfig->{Dependencies} ||= $Self->Get('ConfigObject')->Get('ObjectManager')->{DefaultDependencies};
     return $ObjConfig;
+}
+
+=item ObjectRegister()
+
+Registers an object with the object manager.
+
+    $Kernel::OM->ObjectRegister(
+        Name            => 'MyNewObject',       # Mandatory
+        Dependencies    => ['ConfigObject'],    # Optional; falls back to default dependencies
+        Object          => $TheNewObject,       # Optional
+    );
+
+=cut
+
+sub ObjectRegister {
+    my ( $Self, %Param ) = @_;
+
+    for my $Param ( 'Name', 'ClassName' ) {
+        die "Missing parameter $Param" unless $Param{$Param};
+    }
+
+    my $Object = delete $Param{Object};
+    $Self->{Objects}{ $Param{Name} } = $Object if $Object;
+
+    my $Name = delete $Param{Name};
+    $Self->{Config}{$Name} = \%Param;
 }
 
 sub Dependencies {
