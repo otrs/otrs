@@ -73,7 +73,7 @@ sub TicketAcceleratorIndex {
     my @ViewableLockIDs = $Self->{LockObject}->LockViewableLock(
         Type => 'ID',
     );
-    my %ViewableLockIDs = ( map { $_ => 1 } @ViewableLockIDs ); # for lookup
+    my %ViewableLockIDs = ( map { $_ => 1 } @ViewableLockIDs );          # for lookup
     my @ViewableStateIDs = $Self->{StateObject}->StateGetStatesByType(
         Type   => 'Viewable',
         Result => 'ID',
@@ -113,9 +113,10 @@ sub TicketAcceleratorIndex {
 
     # CustomQueue add on
     return if !$Self->{DBObject}->Prepare(
-	# Differentiate between total and unlocked tickets
+
+        # Differentiate between total and unlocked tickets
         SQL => "
-            SELECT count(*), st.ticket_lock_id 
+            SELECT count(*), st.ticket_lock_id
             FROM ticket st, queue sq, personal_queues suq
             WHERE st.ticket_state_id IN ( ${\(join ', ', @ViewableStateIDs)} )
                 AND st.queue_id = sq.id
@@ -123,28 +124,28 @@ sub TicketAcceleratorIndex {
                 AND suq.queue_id = st.queue_id
                 AND sq.group_id IN ( ${\(join ', ', @GroupIDs)} )
                 AND suq.user_id = $Param{UserID}
-	        GROUP BY st.ticket_lock_id",
+                GROUP BY st.ticket_lock_id",
     );
 
-    my %CustomQueueHashes = ( 
-        QueueID => 0, 
-        Queue => 'CustomQueue', 
-        MaxAge => 0,
-        Count => 0,
-        Total => 0,
+    my %CustomQueueHashes = (
+        QueueID => 0,
+        Queue   => 'CustomQueue',
+        MaxAge  => 0,
+        Count   => 0,
+        Total   => 0,
     );
     while ( my @Row = $Self->{DBObject}->FetchrowArray() ) {
         $CustomQueueHashes{Total} += $Row[0];
-        if ( $ViewableLockIDs{$Row[1]} ) {
+        if ( $ViewableLockIDs{ $Row[1] } ) {
             $CustomQueueHashes{Count} += $Row[0];
         }
     }
     push @{ $Queues{Queues} }, \%CustomQueueHashes;
-    
+
     # set some things
     if ( $Param{QueueID} == 0 ) {
-	$Queues{TicketsShown} = $CustomQueueHashes{Total};
-	$Queues{TicketsAvail} = $CustomQueueHashes{Count};
+        $Queues{TicketsShown} = $CustomQueueHashes{Total};
+        $Queues{TicketsAvail} = $CustomQueueHashes{Count};
     }
 
     # prepare the tickets in Queue bar (all data only with my/your Permission)
@@ -162,33 +163,33 @@ sub TicketAcceleratorIndex {
 
     my %QueuesSeen;
     while ( my @Row = $Self->{DBObject}->FetchrowArray() ) {
-	my $Queue = $Row[1];
-	my $QueueData = $QueuesSeen{$Queue}; 	# ref to HASH
-	if ( ! $QueueData ) {
-	    $QueueData = $QueuesSeen{$Queue} = { 
-		QueueID => $Row[0], 
-		Queue	=> $Queue, 
-		Total	=> 0,
-		Count	=> 0, 
-		MaxAge	=> 0,
-	    };
-	    push @{ $Queues{Queues} }, $QueueData;
-	}
-	my $Count = $Row[4];
-	$QueueData->{Total} += $Count;
+        my $Queue     = $Row[1];
+        my $QueueData = $QueuesSeen{$Queue};    # ref to HASH
+        if ( !$QueueData ) {
+            $QueueData = $QueuesSeen{$Queue} = {
+                QueueID => $Row[0],
+                Queue   => $Queue,
+                Total   => 0,
+                Count   => 0,
+                MaxAge  => 0,
+            };
+            push @{ $Queues{Queues} }, $QueueData;
+        }
+        my $Count = $Row[4];
+        $QueueData->{Total} += $Count;
 
-	if ( $ViewableLockIDs{$Row[3]} ) {
-	    $QueueData->{Count} += $Count;
+        if ( $ViewableLockIDs{ $Row[3] } ) {
+            $QueueData->{Count} += $Count;
 
-	    my $MaxAge = $Self->{TimeObject}->SystemTime() - $Row[2];
-	    $QueueData->{MaxAge} = $MaxAge if $MaxAge > $QueueData->{MaxAge};
+            my $MaxAge = $Self->{TimeObject}->SystemTime() - $Row[2];
+            $QueueData->{MaxAge} = $MaxAge if $MaxAge > $QueueData->{MaxAge};
 
-	    # get the oldest queue id
-	    if ( $QueueData->{MaxAge} > $Queues{MaxAge} ) {
-		$Queues{MaxAge}          = $QueueData->{MaxAge};
-		$Queues{QueueIDOfMaxAge} = $QueueData->{QueueID};
-	    }
-	}
+            # get the oldest queue id
+            if ( $QueueData->{MaxAge} > $Queues{MaxAge} ) {
+                $Queues{MaxAge}          = $QueueData->{MaxAge};
+                $Queues{QueueIDOfMaxAge} = $QueueData->{QueueID};
+            }
+        }
 
         # set some things
         if ( $Param{QueueID} eq $Queue ) {
