@@ -335,10 +335,9 @@ sub TicketAcceleratorIndex {
     push @{ $Queues{Queues} }, \%CustomQueueHashes;    
 
     # prepare the tickets in Queue bar (all data only with my/your Permission)
-    # First query gets _all_ tickets (regardless of lock)
     return if !$Self->{DBObject}->Prepare(
         SQL => "
-	    SELECT queue_id, queue, count(*)
+            SELECT queue_id, queue, min(create_time_unix), s_lock, count(*)
             FROM ticket_index
             WHERE group_id IN ( ${\(join ', ', @GroupIDs)} )
             GROUP BY queue_id, queue
@@ -347,49 +346,38 @@ sub TicketAcceleratorIndex {
 
     my %QueuesSeen;
     while ( my @Row = $Self->{DBObject}->FetchrowArray() ) {
-	my $Queue  = $Row[1];
-	my %QueueData = (
-	    QueueID => $Row[0], 
-	    Queue	=> $Queue, 
-	    Total	=> $Row[2], 
-	    Count	=> 0, 
-	    MaxAge	=> 0,
-	);
-	push @{ $Queues{Queues} }, \%QueueData;
-	$QueuesSeen{$Queue} = \%QueueData;
-    }    
+	my $Queue = $Row[1];
+	my $QueueData = $QueuesSeen{$Queue}; 	# ref to HASH
+	if ( ! $QueueData ) {
+	    $QueueData = $QueuesSeen{$Queue} = { 
+		QueueID => $Row[0], 
+		Queue	=> $Queue, 
+		Total	=> 0,
+		Count	=> 0, 
+		MaxAge	=> 0,
+	    };
+	    push @{ $Queues{Queues} }, $QueueData;
+	}
+	my $Count = $Row[4];
+	$QueueData->{Total} += $Count;
 
-    my $ViewableLocks = join( ', ', ( map { "'$_'" } @ViewableLocks ) );
-    return if !$Self->{DBObject}->Prepare(
-        SQL => "
-            SELECT queue_id, queue, min(create_time_unix), count(*)
-            FROM ticket_index
-            WHERE group_id IN ( ${\(join ', ', @GroupIDs)} )
-	      AND s_lock in ( $ViewableLocks )
-            GROUP BY queue_id, queue
-            ORDER BY queue",
-    );
+	if ( $ViewableLocks{$Row[3]} ) {
+	    $QueueData->{Count} += $Count;
 
-    while ( my @Row = $Self->{DBObject}->FetchrowArray() ) {
-	my $Count  = $Row[3];
-	my $MaxAge = $Self->{TimeObject}->SystemTime() - $Row[2];
+	    my $MaxAge = $Self->{TimeObject}->SystemTime() - $Row[2];
+	    $QueueData->{MaxAge} = $MaxAge if $MaxAge > $QueueData->{MaxAge};
 
-	# Merge with existing data for the queue
-	my $Queue  = $Row[1];
-	my $QueueData = $QueuesSeen{$Queue};	# ref to HASH
-	$QueueData->{Count} = $Row[3];
-	$QueueData->{MaxAge} = $MaxAge if $MaxAge > $QueueData->{MaxAge};
+	    # get the oldest queue id
+	    if ( $QueueData->{MaxAge} > $Queues{MaxAge} ) {
+		$Queues{MaxAge}          = $QueueData->{MaxAge};
+		$Queues{QueueIDOfMaxAge} = $QueueData->{QueueID};
+	    }
+	}
 
         # set some things
         if ( $Param{QueueID} eq $Queue ) {
             $Queues{TicketsShown} = $QueueData->{Total};
             $Queues{TicketsAvail} = $QueueData->{Count};
-        }
-
-        # get the oldest queue id
-        if ( $QueueData->{MaxAge} > $Queues{MaxAge} ) {
-            $Queues{MaxAge}          = $QueueData->{MaxAge};
-            $Queues{QueueIDOfMaxAge} = $QueueData->{QueueID};
         }
     }
 
