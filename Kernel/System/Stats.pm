@@ -1,6 +1,6 @@
 # --
 # Kernel/System/Stats.pm - all stats core functions
-# Copyright (C) 2001-2013 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2014 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -219,7 +219,11 @@ sub StatsGet {
         $Self->{LogObject}->Log( Priority => 'error', Message => 'Need StatID!' );
     }
 
-    my $CacheKey = 'StatsGet::' . ( join '::', %Param );
+    $Param{NoObjectAttributes} = $Param{NoObjectAttributes} ? 1 : 0;
+
+    my $CacheKey
+        = "StatsGet::StatID::$Param{StatID}::NoObjectAttributes::$Param{NoObjectAttributes}";
+
     my $Cache = $Self->{CacheObject}->Get(
         Type => 'Stats',
         Key  => $CacheKey,
@@ -633,20 +637,22 @@ sub StatsListGet {
 
     # Only cache the XML search as we need to filter based on user permissions later
     my $CacheKey = 'StatsListGet::XMLSearch';
-    my $Cache = $Self->{CacheObject}->Get(
+    my $Cache    = $Self->{CacheObject}->Get(
         Type => 'Stats',
         Key  => $CacheKey,
     );
 
     # Do we have a cache available?
-    if (ref $Cache eq 'ARRAY') {
-        @SearchResult = @{ $Cache };
+    if ( ref $Cache eq 'ARRAY' ) {
+        @SearchResult = @{$Cache};
     }
     else {
         # No cache. Is there stats data yet?
         if ( !( @SearchResult = $Self->{XMLObject}->XMLHashSearch( Type => 'Stats' ) ) ) {
+
             # Import sample stats
             $Self->_AutomaticSampleImport();
+
             # Load stats again
             return if !( @SearchResult = $Self->{XMLObject}->XMLHashSearch( Type => 'Stats' ) );
         }
@@ -714,8 +720,11 @@ lists all stats id's
 sub GetStatsList {
     my ( $Self, %Param ) = @_;
 
-    my $CacheKey = 'GetStatsList::' . ( join '::', %Param );
-    my $Cache = $Self->{CacheObject}->Get(
+    $Param{OrderBy}   ||= 'ID';
+    $Param{Direction} ||= 'ASC';
+
+    my $CacheKey = "GetStatsList::OrderBy::$Param{OrderBy}::Direction::$Param{Direction}";
+    my $Cache    = $Self->{CacheObject}->Get(
         Type => 'Stats',
         Key  => $CacheKey,
     );
@@ -725,8 +734,6 @@ sub GetStatsList {
 
     my @SortArray;
 
-    $Param{OrderBy} ||= 'ID';
-
     if ( $Param{OrderBy} eq 'ID' ) {
         @SortArray = sort { $a <=> $b } keys %ResultHash;
     }
@@ -735,7 +742,7 @@ sub GetStatsList {
             = sort { $ResultHash{$a}->{ $Param{OrderBy} } cmp $ResultHash{$b}->{ $Param{OrderBy} } }
             keys %ResultHash;
     }
-    if ( $Param{Direction} && $Param{Direction} eq 'DESC' ) {
+    if ( $Param{Direction} eq 'DESC' ) {
         @SortArray = reverse @SortArray;
     }
 
@@ -1514,7 +1521,7 @@ sub GetObjectName {
 
 get behaviours that a statistic supports
 
-    my %Behaviours = $StatsObject->GetObjectBehaviours(
+    my $Behaviours = $StatsObject->GetObjectBehaviours(
         ObjectModule => 'Kernel::System::Stats::Dynamic::TicketList',
     );
 
@@ -1532,8 +1539,9 @@ sub GetObjectBehaviours {
     my $Module = $Param{ObjectModule};
 
     # check if it is cached
-    return $Self->{'Cache::ObjectBehaviours'}->{$Module}
-        if $Self->{'Cache::ObjectBehaviours'}->{$Module};
+    if ($Self ->{'Cache::ObjectBehaviours'}->{$Module}) {
+        return $Self->{'Cache::ObjectBehaviours'}->{$Module}
+    }
 
     # load module, return if module does not exist
     # (this is important when stats are uninstalled, see also bug# 4269)
@@ -1546,7 +1554,7 @@ sub GetObjectBehaviours {
     my %ObjectBehaviours = $StatObject->GetObjectBehaviours();
 
     # cache the result
-    $Self->{'Cache::ObjectBehaviours'}->{$Module} = %ObjectBehaviours;
+    $Self->{'Cache::ObjectBehaviours'}->{$Module} = \%ObjectBehaviours;
 
     return \%ObjectBehaviours;
 }

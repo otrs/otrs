@@ -1,6 +1,6 @@
 # --
 # Kernel/System/Web/InterfaceAgent.pm - the agent interface file (incl. auth)
-# Copyright (C) 2001-2013 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2014 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -219,7 +219,7 @@ sub Run {
                         Type => 'Info',
                         What => 'Message',
                         )
-                        || 'Login failed! Your username or password was entered incorrectly.',
+                        || 'Login failed! Your user name or password was entered incorrectly.',
                     LoginFailed => 1,
                     User        => $User,
                     %Param,

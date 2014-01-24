@@ -1,6 +1,6 @@
 # --
 # Kernel/Modules/AgentTicketCompose.pm - to compose and send a message
-# Copyright (C) 2001-2013 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2014 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -1232,7 +1232,7 @@ sub Run {
         # use customer database email
         # do not add customer email to cc, if article type is email-internal
         my $DataArticleType
-            = $Self->{TicketObject}->ArticleTypeLookup( ArticleType => $Data{ArticleTypeID} );
+            = $Self->{TicketObject}->ArticleTypeLookup( ArticleTypeID => $Data{ArticleTypeID} );
         if (
             $Self->{ConfigObject}->Get('Ticket::Frontend::ComposeAddCustomerAddress')
             && $DataArticleType !~ m{internal}
