@@ -1725,6 +1725,9 @@ via the Preferences button after logging in.
         CustomerUserObject    => {
             ClassName       => 'Kernel::System::CustomerUser',
         },
+        CustomerCompanyObject => {
+            ClassName       => 'Kernel::System::CustomerCompany',
+        },
         CustomerGroupObject   => {
             ClassName       => 'Kernel::System::CustomerGroup',
         },
