@@ -16,6 +16,8 @@ package Kernel::System::Log;
 use strict;
 use warnings;
 
+use Carp ();
+
 =head1 NAME
 
 Kernel::System::Log - global log interface
@@ -50,6 +52,9 @@ sub new {
     # allocate new hash for object
     my $Self = {};
     bless( $Self, $Type );
+
+    Carp::confess '$Kernel::OM is not defined, please initialize your object manager'
+        unless defined $Kernel::OM;
 
     $Self->{EncodeObject} = $Kernel::OM->Get('EncodeObject');
 
