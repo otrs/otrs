@@ -379,10 +379,15 @@ sub FormatTimeString {
         if ($Short) {
             $T =~ s/(\d\d:\d\d):\d\d/$1/g;
         }
+        
+        my @MONS = qw/Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec/;
+        
         $ReturnString =~ s/\%T/$T/g;
         $ReturnString =~ s/\%D/$D/g;
         $ReturnString =~ s/\%M/$M/g;
         $ReturnString =~ s/\%Y/$Y/g;
+        $ReturnString =~ s{(\%B)}{$Self->Get($MONS[$M-1]);}egx;
+        
         if ( $Self->{TimeZone} && $Config ne 'DateFormatShort' ) {
             return $ReturnString . " ($Self->{TimeZone})";
         }
