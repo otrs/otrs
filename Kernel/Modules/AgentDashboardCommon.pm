@@ -122,7 +122,7 @@ sub Run {
                 }
                 my $StatsPermissionGroups = join(';', @StatsPermissionGroupNames);
 
-                # replace all line breaks with spaces (otherwise $Text{""} will not work correctly)
+                # replace all line breaks with spaces (otherwise Translate() will not work correctly)
                 $StatsHash->{$StatID}->{Description} =~ s{\r?\n|\r}{ }msxg;
 
                 my $Description = $Self->{LayoutObject}->{LanguageObject}
@@ -655,12 +655,6 @@ sub Run {
         }
     }
 
-    # get output back
-    my $Refresh = '';
-    if ( $Self->{UserRefreshTime} ) {
-        $Refresh = 60 * $Self->{UserRefreshTime};
-    }
-
     # build main menu
     my $MainMenuConfig = $Self->{ConfigObject}->Get($MainMenuConfigKey);
     if ( IsHashRefWithData($MainMenuConfig) ) {
@@ -728,7 +722,7 @@ sub Run {
         }
     }
 
-    my $Output = $Self->{LayoutObject}->Header( Refresh => $Refresh, );
+    my $Output = $Self->{LayoutObject}->Header();
     $Output .= $Self->{LayoutObject}->NavigationBar();
     $Output .= $Self->{LayoutObject}->Output(
         TemplateFile => $Self->{Action},

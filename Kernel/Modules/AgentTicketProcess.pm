@@ -210,7 +210,8 @@ sub Run {
                     $Param{RenderLocked} = 1;
 
                     # notify the agent that the ticket was locked
-                    push @{ $Param{Notify} }, $TicketNumber . ': $Text{"Ticket locked."}';
+                    push @{ $Param{Notify} }, "$TicketNumber: "
+                        . $Self->{LayoutObject}->{LanguageObject}->Translate("Ticket locked.");
                 }
 
                 # set lock
@@ -1980,12 +1981,9 @@ sub _OutputActivityDialog {
         # the selects, so we get the complete JSOnDocumentComplete code
         # and deliver it in the FooterJS block.
         # This Javascript Part is executed in
-        # AgentTicketProcess.dtl
+        # AgentTicketProcess.tt
         $Self->{LayoutObject}->Block(
             Name => 'FooterJS',
-            Data => {
-                Bindings => $Self->{LayoutObject}->{EnvRef}->{JSOnDocumentComplete},
-            },
         );
 
         $FooterCSSClass = 'Centered';
@@ -4071,6 +4069,11 @@ sub _StoreActivityDialog {
                 # get the current server Timestamp
                 my $CurrentTimeStamp = $Self->{TimeObject}->CurrentTimestamp();
                 $TicketParam{Title} = "$Param{ProcessName} - $CurrentTimeStamp";
+
+                # use article subject from the web request if any
+                if ( IsStringWithData( $Param{GetParam}->{Subject} ) ) {
+                    $TicketParam{Title} = $Param{GetParam}->{Subject};
+                }
             }
 
             # create a new ticket
