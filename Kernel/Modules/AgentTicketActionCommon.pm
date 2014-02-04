@@ -698,6 +698,15 @@ sub Run {
             }
         }
 
+        # set priority
+        if ( $Self->{Config}->{Priority} && $GetParam{NewPriorityID} ) {
+            $Self->{TicketObject}->TicketPrioritySet(
+                TicketID   => $Self->{TicketID},
+                PriorityID => $GetParam{NewPriorityID},
+                UserID     => $Self->{UserID},
+            );
+        }
+
         # add note
         my $ArticleID = '';
         if ( $Self->{Config}->{Note} && ( $GetParam{Subject} || $GetParam{Body} ) ) {
@@ -818,15 +827,6 @@ sub Run {
                 ObjectID           => $ObjectID,
                 Value              => $DynamicFieldValues{ $DynamicFieldConfig->{Name} },
                 UserID             => $Self->{UserID},
-            );
-        }
-
-        # set priority
-        if ( $Self->{Config}->{Priority} && $GetParam{NewPriorityID} ) {
-            $Self->{TicketObject}->TicketPrioritySet(
-                TicketID   => $Self->{TicketID},
-                PriorityID => $GetParam{NewPriorityID},
-                UserID     => $Self->{UserID},
             );
         }
 
