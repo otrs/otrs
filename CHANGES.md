@@ -1,4 +1,13 @@
 #3.4.0.beta1 20??-??-??
+ - 2014-02-03 Follow-up for bug#[6802](http://bugs.otrs.org/show_bug.cgi?id=6802) - Consider window resize properly.
+ - 2014-02-03 Fixed bug#[10177](http://bugs.otrs.org/show_bug.cgi?id=10177) - Missing sources in tarball.
+ - 2014-02-03 Fixed bug#[9616](http://bugs.otrs.org/show_bug.cgi?id=9616) - Too long activities and transitions are not displayed correctly.
+ - 2014-02-03 Fixed bug#[7440](http://bugs.otrs.org/show_bug.cgi?id=7440) - Ticket overviews don't show column headers for priority and unread articles in small mode.
+ - 2014-02-03 Added process management canvas label spacer to avoid overlapping transition labels.
+ - 2014-01-31 Fixed bug#[6802](http://bugs.otrs.org/show_bug.cgi?id=6802) - Navigation broken if many modules installed.
+ - 2014-01-31 Fixed bug#[4512](http://bugs.otrs.org/show_bug.cgi?id=4512) - HTMLUtils ToAscii forces line breake on fixed line-length 78.
+ - 2014-01-31 Fixed bug#[6671](http://bugs.otrs.org/show_bug.cgi?id=6671) - GenericAgent - Ticket-Action should be renamed to Ticket-Attribute.
+ - 2014-01-31 Fixed bug#[6742](http://bugs.otrs.org/show_bug.cgi?id=6742) - Move mask in new window: Note is not required.
  - 2014-01-27 Use Template::Toolkit for template rendering instead of DTL. Upgrading instructions for Perl code will follow in the developer manual.
  - 2014-01-24 Removed json2.js, it is no longer needed because all supported browser have built-in json support now (see bug#10079).
  - 2014-01-10 Fixed bug#[10145](http://bugs.otrs.org/show_bug.cgi?id=10145) - %A is not correctly substituted in Language::Time().
@@ -9,6 +18,25 @@
  - 2013-12-12 Added additional information to install commands for different distributions (see perl bin/otrs.CheckModules.pl -h) for more information.
 
 #3.3.5 2014-??-??
+ - 2014-02-06 Fixed bug#[9970](http://bugs.otrs.org/show_bug.cgi?id=9970) - Problem with DBUpgrade-to-3.3.pl on Oracle databases.
+ - 2014-02-04 Fixed bug#[10220](http://bugs.otrs.org/show_bug.cgi?id=10220) - Invalid Statistics not displayed in overview.
+ - 2014-02-04 Fixed bug#[10218](http://bugs.otrs.org/show_bug.cgi?id=10218) - Header X-UA-Compatible in HeaderSmall.tt/HeaderSmall.dtl not set.
+ - 2014-01-31 Fixed bug#[10212](http://bugs.otrs.org/show_bug.cgi?id=10212) - My tickets & Company tickets in 3.3.4.
+ - 2014-01-31 Fixed bug#[10211](http://bugs.otrs.org/show_bug.cgi?id=10211) - Dashbord: Widget DefaultColumns is not working.
+ - 2014-01-31 Fixed bug#[10163](http://bugs.otrs.org/show_bug.cgi?id=10163) - subject shows only 30 characters.
+ - 2014-01-31 Fixed bug#[10193](http://bugs.otrs.org/show_bug.cgi?id=10193) - Expired cookie bug in customer interface..
+ - 2014-01-31 Fixed bug#[8729](http://bugs.otrs.org/show_bug.cgi?id=8729) - Oracle ignores NLS_DATE_FORMAT set in environment.
+ - 2014-01-31 Fixed bug#[10207](http://bugs.otrs.org/show_bug.cgi?id=10207) - DynamicField Search-Function in CustomerFrontend is not working.
+ - 2014-01-31 Fixed bug#[8729](http://bugs.otrs.org/show_bug.cgi?id=8729) - Oracle ignores NLS_DATE_FORMAT set in environment.
+ - 2014-01-30 Fixed bug#[9868](http://bugs.otrs.org/show_bug.cgi?id=9868) - Queues in popup box are not sorted by alphabetical order.
+ - 2014-01-30 Fixed bug#[9678](http://bugs.otrs.org/show_bug.cgi?id=9678) - Locked tickets don't unlock when customer closes ticket.
+ - 2014-01-30 Fixed bug#[8656](http://bugs.otrs.org/show_bug.cgi?id=8656) - Clicking the cancel button in the Add Web services screen results in an error no matter what data was filled in.
+ - 2014-01-30 Fixed bug#[10209](http://bugs.otrs.org/show_bug.cgi?id=10209) - When opening tree selection dialog, the search field should get the focus.
+ - 2014-01-28 Fixed bug#[10205](http://bugs.otrs.org/show_bug.cgi?id=10205) - GenericInterface: Mandatory TimeUnits can't be 0.
+ - 2014-01-28 Fixed bug#[10196](http://bugs.otrs.org/show_bug.cgi?id=10196) - Ticket merge action does not notify the owner of the existing ticket.
+ - 2014-01-28 Fixed bug#[10130](http://bugs.otrs.org/show_bug.cgi?id=10130) - Events Ticket Calendar not working.
+ - 2014-01-28 Fixed bug#[9692](http://bugs.otrs.org/show_bug.cgi?id=9692) - On PhoneOutbound articles,  the FROM field shows Customer ID instead Agent ID.
+ - 2014-01-28 Fixed bug#[10147](http://bugs.otrs.org/show_bug.cgi?id=10147) - Cache may remain incorrectly in SearchProfile.
  - 2014-01-24 Fixed bug#[10189](http://bugs.otrs.org/show_bug.cgi?id=10189) - ProcessManagement: Use article subject if no ticket title is set.
  - 2014-01-24 Fixed bug#[9654](http://bugs.otrs.org/show_bug.cgi?id=9654) - TicketUpdate operation doesn't work when authenticated as a customer.
  - 2014-01-24 Fixed bug#[10137](http://bugs.otrs.org/show_bug.cgi?id=10137) - Generic interface TicketCreate operation doesn't work when authenticated as a customer.

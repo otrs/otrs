@@ -139,9 +139,8 @@ sub Run {
 
     # error screen, don't show ticket
     if ( !$Access ) {
-        my $TranslatableMessage = $Self->{LayoutObject}->{LanguageObject}->Get(
-            "We are sorry, you do not have permissions anymore to access this ticket in its"
-                . " current state. "
+        my $TranslatableMessage = $Self->{LayoutObject}->{LanguageObject}->Translate(
+            "We are sorry, you do not have permissions anymore to access this ticket in its current state. "
         );
 
         return $Self->{LayoutObject}->NoPermission(
@@ -746,7 +745,7 @@ sub MaskAgentZoom {
     # get MoveQueuesStrg
     if ( $Self->{ConfigObject}->Get('Ticket::Frontend::MoveType') =~ /^form$/i ) {
         $MoveQueues{0}
-            = '- ' . $Self->{LayoutObject}->{LanguageObject}->Get('Move') . ' -';
+            = '- ' . $Self->{LayoutObject}->{LanguageObject}->Translate('Move') . ' -';
         $Param{MoveQueuesStrg} = $Self->{LayoutObject}->AgentQueueListOption(
             Name           => 'DestQueueID',
             Data           => \%MoveQueues,
@@ -1135,7 +1134,8 @@ sub MaskAgentZoom {
         next DYNAMICFIELD if $Ticket{ 'DynamicField_' . $DynamicFieldConfig->{Name} } eq '';
 
         # use translation here to be able to reduce the character length in the template
-        my $Label = $Self->{LayoutObject}->{LanguageObject}->Get( $DynamicFieldConfig->{Label} );
+        my $Label
+            = $Self->{LayoutObject}->{LanguageObject}->Translate( $DynamicFieldConfig->{Label} );
 
         if (
             $IsProcessTicket &&
@@ -1298,7 +1298,8 @@ sub MaskAgentZoom {
             $Self->{LayoutObject}->Block(
                 Name => 'ProcessWidgetDynamicFieldGroupSeparator',
                 Data => {
-                    Name => $Self->{LayoutObject}->{LanguageObject}->Get('Fields with no group'),
+                    Name =>
+                        $Self->{LayoutObject}->{LanguageObject}->Translate('Fields with no group'),
                 },
             );
         }
@@ -1941,7 +1942,7 @@ sub _ArticleItem {
 
                 # get StandardResponsesStrg
                 $Param{StandardResponses}->{0}
-                    = '- ' . $Self->{LayoutObject}->{LanguageObject}->Get('Reply') . ' -';
+                    = '- ' . $Self->{LayoutObject}->{LanguageObject}->Translate('Reply') . ' -';
 
                 # build html string
                 my $StandardResponsesStrg = $Self->{LayoutObject}->BuildSelection(
@@ -2000,7 +2001,8 @@ sub _ArticleItem {
                 }
                 if ( $RecipientCount > 1 ) {
                     $Param{StandardResponses}->{0}
-                        = '- ' . $Self->{LayoutObject}->{LanguageObject}->Get('Reply All') . ' -';
+                        = '- '
+                        . $Self->{LayoutObject}->{LanguageObject}->Translate('Reply All') . ' -';
 
                     $StandardResponsesStrg = $Self->{LayoutObject}->BuildSelection(
                         Name => 'ResponseID',
@@ -2070,7 +2072,8 @@ sub _ArticleItem {
 
                     # get StandarForwardsStrg
                     $Param{StandardForwards}->{0}
-                        = '- ' . $Self->{LayoutObject}->{LanguageObject}->Get('Forward') . ' -';
+                        = '- '
+                        . $Self->{LayoutObject}->{LanguageObject}->Translate('Forward') . ' -';
 
                     # build html string
                     my $StandarForwardsStrg = $Self->{LayoutObject}->BuildSelection(
@@ -2554,11 +2557,6 @@ sub _ArticleItem {
             HTMLResultMode => 1,
             LinkFeature    => 1,
         );
-
-        # do charset check
-        if ( my $CharsetText = $Self->{LayoutObject}->CheckCharset( %Ticket, %Article ) ) {
-            $Article{BodyNote} = $CharsetText;
-        }
     }
 
     # security="restricted" may break SSO - disable this feature if requested

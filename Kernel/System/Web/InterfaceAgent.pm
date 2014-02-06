@@ -142,6 +142,13 @@ sub Run {
         },
     );
 
+    my $CookieSecureAttribute;
+    if ( $Self->{ConfigObject}->Get('HttpType') eq 'https' ) {
+
+        # Restrict Cookie to HTTPS if it is used.
+        $CookieSecureAttribute = 1;
+    }
+
     # check common objects
     $Self->{DBObject} = $Kernel::OM->Get('DBObject');
     if ( !$Self->{DBObject} || $Self->{ParamObject}->Error() ) {
@@ -348,7 +355,7 @@ sub Run {
                     Value    => $NewSessionID,
                     Expires  => $Expires,
                     Path     => $Self->{ConfigObject}->Get('ScriptAlias'),
-                    Secure   => scalar $SecureAttribute,
+                    Secure   => scalar $CookieSecureAttribute,
                     HTTPOnly => 1,
                 ),
             },
@@ -403,8 +410,12 @@ sub Run {
         $LayoutObject->AddParam(
             SetCookies => {
                 SessionIDCookie => $Self->{ParamObject}->SetCookie(
-                    Key   => $Param{SessionName},
-                    Value => '',
+                    Key      => $Param{SessionName},
+                    Value    => '',
+                    Expires  => '-1y',
+                    Path     => $Self->{ConfigObject}->Get('ScriptAlias'),
+                    Secure   => scalar $CookieSecureAttribute,
+                    HTTPOnly => 1,
                 ),
             },
             %UserData,
@@ -645,8 +656,12 @@ sub Run {
             $LayoutObject->AddParam(
                 SetCookies => {
                     SessionIDCookie => $Self->{ParamObject}->SetCookie(
-                        Key   => $Param{SessionName},
-                        Value => '',
+                        Key      => $Param{SessionName},
+                        Value    => '',
+                        Expires  => '-1y',
+                        Path     => $Self->{ConfigObject}->Get('ScriptAlias'),
+                        Secure   => scalar $CookieSecureAttribute,
+                        HTTPOnly => 1,
                     ),
                 },
                 %Param,

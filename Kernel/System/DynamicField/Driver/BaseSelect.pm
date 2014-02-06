@@ -215,8 +215,13 @@ sub EditFieldRender {
     );
 
     if ( $FieldConfig->{TreeView} ) {
-        my $TreeSelectionMessage = $Param{LayoutObject}->{LanguageObject}->Get("Show Tree Selection");
-        $HTMLString .= ' <a href="#" title="' .  $TreeSelectionMessage . '" class="ShowTreeSelection">' . $TreeSelectionMessage . '</a>';
+        my $TreeSelectionMessage
+            = $Param{LayoutObject}->{LanguageObject}->Translate("Show Tree Selection");
+        $HTMLString
+            .= ' <a href="#" title="'
+            . $TreeSelectionMessage
+            . '" class="ShowTreeSelection">'
+            . $TreeSelectionMessage . '</a>';
     }
 
     if ( $Param{Mandatory} ) {
@@ -284,9 +289,8 @@ EOF
     # call EditLabelRender on the common Driver
     my $LabelString = $Self->EditLabelRender(
         %Param,
-        DynamicFieldConfig => $Param{DynamicFieldConfig},
-        Mandatory          => $Param{Mandatory} || '0',
-        FieldName          => $FieldName,
+        Mandatory => $Param{Mandatory} || '0',
+        FieldName => $FieldName,
     );
 
     my $Data = {
@@ -397,7 +401,7 @@ sub DisplayValueRender {
     if ( $Param{DynamicFieldConfig}->{Config}->{TranslatableValues} ) {
 
         # translate value
-        $Value = $Param{LayoutObject}->{LanguageObject}->Get($Value);
+        $Value = $Param{LayoutObject}->{LanguageObject}->Translate($Value);
     }
 
     # set title as value after update and before limit
@@ -523,14 +527,19 @@ sub SearchFieldRender {
     );
 
     if ( $FieldConfig->{TreeView} ) {
-        my $TreeSelectionMessage = $Param{LayoutObject}->{LanguageObject}->Get("Show Tree Selection");
-        $HTMLString .= ' <a href="#" title="' .  $TreeSelectionMessage . '" class="ShowTreeSelection">' . $TreeSelectionMessage . '</a>';
+        my $TreeSelectionMessage
+            = $Param{LayoutObject}->{LanguageObject}->Translate("Show Tree Selection");
+        $HTMLString
+            .= ' <a href="#" title="'
+            . $TreeSelectionMessage
+            . '" class="ShowTreeSelection">'
+            . $TreeSelectionMessage . '</a>';
     }
 
     # call EditLabelRender on the common Driver
     my $LabelString = $Self->EditLabelRender(
-        DynamicFieldConfig => $Param{DynamicFieldConfig},
-        FieldName          => $FieldName,
+        %Param,
+        FieldName => $FieldName,
     );
 
     my $Data = {
@@ -600,7 +609,7 @@ sub SearchFieldParameterBuild {
                     && defined $Param{LayoutObject}
                     )
                 {
-                    $DisplayItem = $Param{LayoutObject}->{LanguageObject}->Get($DisplayItem);
+                    $DisplayItem = $Param{LayoutObject}->{LanguageObject}->Translate($DisplayItem);
                 }
 
                 push @DisplayItemList, $DisplayItem;
@@ -620,7 +629,7 @@ sub SearchFieldParameterBuild {
                 && defined $Param{LayoutObject}
                 )
             {
-                $DisplayValue = $Param{LayoutObject}->{LanguageObject}->Get($DisplayValue);
+                $DisplayValue = $Param{LayoutObject}->{LanguageObject}->Translate($DisplayValue);
             }
         }
     }
@@ -801,7 +810,7 @@ sub ValueLookup {
             {
 
                 # translate value
-                $Value = $Param{LanguageObject}->Get($Value);
+                $Value = $Param{LanguageObject}->Translate($Value);
             }
         }
     }
@@ -973,7 +982,7 @@ sub ColumnFilterValuesGet {
 
             my $OriginalValueName = $ColumnFilterValues->{$ValueKey};
             $ColumnFilterValues->{$ValueKey}
-                = $Param{LayoutObject}->{LanguageObject}->Get($OriginalValueName);
+                = $Param{LayoutObject}->{LanguageObject}->Translate($OriginalValueName);
         }
     }
 

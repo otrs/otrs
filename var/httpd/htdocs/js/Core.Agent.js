@@ -48,7 +48,9 @@ Core.Agent = (function (TargetNS) {
          * private variables for navigation
          */
         var NavigationTimer = {},
-            NavigationDuration = 500;
+            NavigationDuration = 500,
+            InitialNavigationContainerHeight = $('#NavigationContainer').css('height'),
+            NavigationResizeTimeout;
 
         /**
          * @function
@@ -83,6 +85,11 @@ Core.Agent = (function (TargetNS) {
                 if ($Element.parent().attr('id') !== 'Navigation' || Core.Config.Get('OpenMainMenuOnHover')) {
                     $Element.addClass('Active').attr('aria-expanded', true)
                         .siblings().removeClass('Active');
+
+                    // Resize the container in order to display subitems
+                    // Due to the needed overflow: hidden property of the
+                    // container, they would be hidden otherwise
+                    $('#NavigationContainer').css('height', '500px');
                 }
 
                 // If Timeout is set for this nav element, clear it
@@ -97,7 +104,7 @@ Core.Agent = (function (TargetNS) {
                 // Set Timeout for closing nav
                 CreateSubnavCloseTimeout($Element, function () {
                     $Element.removeClass('Active').attr('aria-expanded', false);
-
+                    $('#NavigationContainer').css('height', InitialNavigationContainerHeight);
                 });
             })
             .bind('click', function (Event) {
@@ -109,6 +116,8 @@ Core.Agent = (function (TargetNS) {
                 else {
                     $Element.addClass('Active').attr('aria-expanded', true)
                         .siblings().removeClass('Active');
+                    $('#NavigationContainer').css('height', '300px');
+
                     // If Timeout is set for this nav element, clear it
                     ClearSubnavCloseTimeout($Element);
                 }
@@ -149,7 +158,90 @@ Core.Agent = (function (TargetNS) {
             Core.Agent.Search.OpenSearchDialog();
             return false;
         });
+
+        TargetNS.ResizeNavigationBar();
+        $(window).resize(function() {
+            window.clearTimeout(NavigationResizeTimeout);
+            NavigationResizeTimeout = window.setTimeout(function () {
+                TargetNS.ResizeNavigationBar();
+            }, 400);
+        });
     }
+
+    function NavigationBarShowSlideButton(Direction, Difference) {
+
+        var Opposites = (Direction === 'Right') ? 'Left' : 'Right';
+
+        if (!$('#NavigationContainer').find('.NavigationBarNavigate' + Direction).length) {
+
+            $('#NavigationContainer')
+                .append('<a href="#" class="Hidden NavigationBarNavigate' + Direction + '"><i class="icon-chevron-' + Direction.toLowerCase() + '"></i></a>')
+                .find('.NavigationBarNavigate' + Direction)
+                .delay(500)
+                .fadeIn()
+                .bind('click', function() {
+                    if (Direction === 'Right') {
+                        $('#Navigation')
+                            .css('left', 'auto')
+                            .animate({
+                                'right': '0px'
+                            }, 'fast', function() {
+                                $('#NavigationContainer')
+                                    .find('.NavigationBarNavigate' + Direction)
+                                    .fadeOut('300', function() {
+                                        $(this).remove();
+                                    });
+                                NavigationBarShowSlideButton(Opposites, Difference);
+                            });
+                    }
+                    else {
+                        $('#Navigation')
+                            .animate({
+                                'left': '0px'
+                            }, 'fast', function() {
+                                $(this).css('right', 'auto');
+                                $('#NavigationContainer')
+                                    .find('.NavigationBarNavigate' + Direction)
+                                    .fadeOut('300', function() {
+                                        $(this).remove();
+                                    });
+                                NavigationBarShowSlideButton(Opposites, Difference);
+                            });
+                    }
+
+                    return false;
+                });
+        }
+
+    }
+
+    /**
+     * @function
+     * @return nothing
+     *      This function checks if the navigation bar needs to be resized and equipped
+     *      with slider navigation buttons. This can only happen if there are too many
+     *      navigation icons.
+     */
+    TargetNS.ResizeNavigationBar = function () {
+
+        var NavigationBarWidth = 0,
+            Difference;
+
+        $('#Navigation li').each(function() {
+            NavigationBarWidth += parseInt($(this).outerWidth(), 10);
+        });
+        NavigationBarWidth = NavigationBarWidth + 1;
+        $('#Navigation').css('width', NavigationBarWidth + 'px');
+
+        if (NavigationBarWidth > $('#NavigationContainer').outerWidth()) {
+            NavigationBarShowSlideButton('Right', parseInt($('#NavigationContainer').outerWidth() - NavigationBarWidth, 10));
+        }
+        else if (NavigationBarWidth < $('#NavigationContainer').outerWidth()) {
+            $('.NavigationBarNavigateRight, NavigationBarNavigateLeft').remove();
+        }
+    };
+
+
     /**
      * @function
      * @return nothing

@@ -122,7 +122,8 @@ sub Run {
                 Message => $Self->{LayoutObject}->{LanguageObject}
                     ->Get('Sorry, you need to be the ticket owner to perform this action.'),
                 Comment =>
-                    $Self->{LayoutObject}->{LanguageObject}->Get('Please change the owner first.'),
+                    $Self->{LayoutObject}->{LanguageObject}
+                    ->Translate('Please change the owner first.'),
             );
 
             # show back link
@@ -501,15 +502,6 @@ sub Run {
             $Error{'DestQueueIDInvalid'} = 'ServerError';
         }
 
-        # Body and Subject must both be filled in or both be empty
-        if ( $GetParam{Subject} eq '' && $GetParam{Body} ne '' ) {
-            $Error{'SubjectInvalid'} = 'ServerError';
-        }
-
-        if ( $GetParam{Subject} ne '' && $GetParam{Body} eq '' ) {
-            $Error{'BodyInvalid'} = 'ServerError';
-        }
-
         # check time units
         if (
             $Self->{ConfigObject}->Get('Ticket::Frontend::AccountTime')
@@ -546,6 +538,21 @@ sub Run {
                     )
                 {
                     $Error{'DateInvalid'} = 'ServerError';
+                }
+            }
+        }
+
+        if ( !$IsUpload ) {
+            if ( $Self->{Config}->{Note} && $Self->{Config}->{NoteMandatory} ) {
+
+                # check subject
+                if ( !$GetParam{Subject} ) {
+                    $Error{'SubjectInvalid'} = 'ServerError';
+                }
+
+                # check body
+                if ( !$GetParam{Body} ) {
+                    $Error{'BodyInvalid'} = 'ServerError';
                 }
             }
         }
@@ -863,7 +870,7 @@ sub Run {
     # add note (send no notification)
     my $ArticleID;
 
-    if ( $GetParam{Body} ) {
+    if ( $GetParam{Body} || $GetParam{Subject} ) {
 
         # get pre-loaded attachments
         my @AttachmentData = $Self->{UploadCacheObject}->FormIDGetAllFilesData(
@@ -1244,6 +1251,11 @@ sub AgentMove {
         );
     }
 
+    if ( $Self->{Config}->{NoteMandatory} ) {
+        $Param{SubjectRequired} = 'Validate_Required';
+        $Param{BodyRequired}    = 'Validate_Required';
+    }
+
     # add rich text editor
     if ( $Self->{LayoutObject}->{BrowserRichText} ) {
 
@@ -1254,6 +1266,23 @@ sub AgentMove {
         $Self->{LayoutObject}->Block(
             Name => 'RichText',
             Data => \%Param,
+        );
+    }
+
+    if ( $Self->{Config}->{NoteMandatory} ) {
+        $Self->{LayoutObject}->Block(
+            Name => 'SubjectLabelMandatory',
+        );
+        $Self->{LayoutObject}->Block(
+            Name => 'RichTextLabelMandatory',
+        );
+    }
+    else {
+        $Self->{LayoutObject}->Block(
+            Name => 'SubjectLabel',
+        );
+        $Self->{LayoutObject}->Block(
+            Name => 'RichTextLabel',
         );
     }
 

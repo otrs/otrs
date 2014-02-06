@@ -368,8 +368,13 @@ sub Run {
             if ( $Self->{TicketID} ) {
                 my %Ticket = $Self->{TicketObject}->TicketGet( TicketID => $Self->{TicketID} );
                 $Output .= $Self->{LayoutObject}->Notify(
-                    Info => 'Ticket "%s" created!", "' . $Ticket{TicketNumber},
-                    Link => $Self->{LayoutObject}->{Baselink} . 'Action=AgentTicketZoom;TicketID=' . $Ticket{TicketID},
+                    Info => $Self->{LayoutObject}->{LanguageObject}->Translate(
+                        'Ticket "%s" created!',
+                        $Ticket{TicketNumber},
+                    ),
+                    Link => $Self->{LayoutObject}->{Baselink}
+                        . 'Action=AgentTicketZoom;TicketID='
+                        . $Ticket{TicketID},
                 );
             }
 

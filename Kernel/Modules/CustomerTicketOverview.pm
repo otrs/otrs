@@ -127,32 +127,35 @@ sub Run {
                 Name   => 'All',
                 Prio   => 1000,
                 Search => {
-                    OrderBy        => $Self->{OrderBy},
-                    SortBy         => $Self->{SortBy},
-                    CustomerUserID => $Self->{UserID},
-                    Permission     => 'ro',
+                    CustomerUserLogin => $Self->{UserID},
+                    OrderBy           => $Self->{OrderBy},
+                    SortBy            => $Self->{SortBy},
+                    CustomerUserID    => $Self->{UserID},
+                    Permission        => 'ro',
                 },
             },
             Open => {
                 Name   => 'Open',
                 Prio   => 1100,
                 Search => {
-                    StateType      => 'Open',
-                    OrderBy        => $Self->{OrderBy},
-                    SortBy         => $Self->{SortBy},
-                    CustomerUserID => $Self->{UserID},
-                    Permission     => 'ro',
+                    CustomerUserLogin => $Self->{UserID},
+                    StateType         => 'Open',
+                    OrderBy           => $Self->{OrderBy},
+                    SortBy            => $Self->{SortBy},
+                    CustomerUserID    => $Self->{UserID},
+                    Permission        => 'ro',
                 },
             },
             Closed => {
                 Name   => 'Closed',
                 Prio   => 1200,
                 Search => {
-                    StateType      => 'Closed',
-                    OrderBy        => $Self->{OrderBy},
-                    SortBy         => $Self->{SortBy},
-                    CustomerUserID => $Self->{UserID},
-                    Permission     => 'ro',
+                    CustomerUserLogin => $Self->{UserID},
+                    StateType         => 'Closed',
+                    OrderBy           => $Self->{OrderBy},
+                    SortBy            => $Self->{SortBy},
+                    CustomerUserID    => $Self->{UserID},
+                    Permission        => 'ro',
                 },
             },
         },
@@ -649,7 +652,7 @@ sub ShowTicketStatus {
         $Article{CustomerAge}
             = $Self->{LayoutObject}->CustomerAge( Age => $Ticket{Age}, Space => ' ' ) || 0;
         $Article{Body}
-            = $Self->{LayoutObject}->{LanguageObject}->Get('This item has no articles yet.');
+            = $Self->{LayoutObject}->{LanguageObject}->Translate('This item has no articles yet.');
     }
 
     # otherwise return article information

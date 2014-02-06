@@ -204,7 +204,7 @@ sub Run {
 
         # translate description
         if ( $Self->{LayoutObject}->{LanguageObject} ) {
-            $VerifyInfo{Description} = $Self->{LayoutObject}->{LanguageObject}->Get(
+            $VerifyInfo{Description} = $Self->{LayoutObject}->{LanguageObject}->Translate(
                 $VerifyInfo{Description}
             );
         }
@@ -424,7 +424,8 @@ sub Run {
                 Data     => "$Name $Version - "
                     . $Self->{LayoutObject}->{LanguageObject}
                     ->Translate("Package not correctly deployed! Please reinstall the package."),
-                Link => $Self->{LayoutObject}->{Baselink} . 'Action=AdminPackageManager;Subaction=View;Name='
+                Link => $Self->{LayoutObject}->{Baselink}
+                    . 'Action=AdminPackageManager;Subaction=View;Name='
                     . $Name
                     . ';Version='
                     . $Version,
@@ -1369,7 +1370,8 @@ sub Run {
             Data     => "$ReinstallKey $NeedReinstall{$ReinstallKey} - "
                 . $Self->{LayoutObject}->{LanguageObject}
                 ->Translate("Package not correctly deployed! Please reinstall the package."),
-            Link => $Self->{LayoutObject}->{Baselink} . 'Action=AdminPackageManager;Subaction=View;Name='
+            Link => $Self->{LayoutObject}->{Baselink}
+                . 'Action=AdminPackageManager;Subaction=View;Name='
                 . $ReinstallKey
                 . ';Version='
                 . $NeedReinstall{$ReinstallKey},
@@ -1541,7 +1543,7 @@ sub _InstallHandling {
 
     # translate description
     if ( $Self->{LayoutObject}->{LanguageObject} ) {
-        $VerifyInfo{Description} = $Self->{LayoutObject}->{LanguageObject}->Get(
+        $VerifyInfo{Description} = $Self->{LayoutObject}->{LanguageObject}->Translate(
             $VerifyInfo{Description}
         );
     }
