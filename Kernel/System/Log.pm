@@ -34,7 +34,7 @@ All log functions.
 
 =item new()
 
-create a log object
+create a log object. Do not use it directly, instead use:
 
     use Kernel::System::ObjectManager;
     local $Kernel::OM = Kernel::System::ObjectManager->new(

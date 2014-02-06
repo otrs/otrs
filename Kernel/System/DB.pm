@@ -34,44 +34,26 @@ All database functions to connect/insert/update/delete/... to a database.
 
 =item new()
 
-create database object with database connect
+create database object, with database connect..
+Usually you do not use it directly, instead use:
 
-    use Kernel::Config;
-    use Kernel::System::Encode;
-    use Kernel::System::Log;
-    use Kernel::System::Main;
-    use Kernel::System::DB;
-
-    my $ConfigObject = Kernel::Config->new();
-    my $EncodeObject = Kernel::System::Encode->new(
-        ConfigObject => $ConfigObject,
-    );
-    my $LogObject = Kernel::System::Log->new(
-        ConfigObject => $ConfigObject,
-        EncodeObject => $EncodeObject,
-    );
-    my $MainObject = Kernel::System::Main->new(
-        ConfigObject => $ConfigObject,
-        EncodeObject => $EncodeObject,
-        LogObject    => $LogObject,
-    );
-    my $DBObject = Kernel::System::DB->new(
-        ConfigObject => $ConfigObject,
-        EncodeObject => $EncodeObject,
-        LogObject    => $LogObject,
-        MainObject   => $MainObject,
-        # if you don't supply the following parameters, the ones found in
-        # Kernel/Config.pm are used instead:
-        DatabaseDSN  => 'DBI:odbc:database=123;host=localhost;',
-        DatabaseUser => 'user',
-        DatabasePw   => 'somepass',
-        Type         => 'mysql',
-        Attribute => {
-            LongTruncOk => 1,
-            LongReadLen => 100*1024,
+    use Kernel::System::ObjectManager;
+    local $Kernel::OM = Kernel::System::ObjectManager->new(
+        DBObject => {
+            # if you don't supply the following parameters, the ones found in
+            # Kernel/Config.pm are used instead:
+            DatabaseDSN  => 'DBI:odbc:database=123;host=localhost;',
+            DatabaseUser => 'user',
+            DatabasePw   => 'somepass',
+            Type         => 'mysql',
+            Attribute => {
+                LongTruncOk => 1,
+                LongReadLen => 100*1024,
+            },
+            AutoConnectNo => 0, # 0|1 disable auto-connect to database in constructor
         },
-        AutoConnectNo => 0, # 0|1 disable auto-connect to database in constructor
     );
+    my $DBObject = $Kernel::OM->Get('DBObject');
 
 =cut
 

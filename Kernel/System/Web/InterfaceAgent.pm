@@ -30,15 +30,18 @@ the global agent web interface (incl. auth, session, ...)
 
 =item new()
 
-create agent web interface object
-
-    use Kernel::System::Web::InterfaceAgent;
-
-    my $Debug = 0;
-    my $InterfaceAgent = Kernel::System::Web::InterfaceAgent->new(
-        Debug      => $Debug,
-        WebRequest => CGI::Fast->new(), # optional, e. g. if fast cgi is used, the CGI object is already provided
+create agent web interface object. Do not use it directly, instead use:
+    
+    use Kernel::System::ObjectManager;
+    my $Debug = 0,
+    local $Kernel::OM = Kernel::System::ObjectManager->new(
+        InterfaceAgentObject => {
+            Debug   => 0,
+            WebRequest => CGI::Fast->new(), # optional, e. g. if fast cgi is used,
+                                            # the CGI object is already provided
+        }
     );
+    my $InterfaceAgent = $Kernel::OM->Get('InterfaceAgentObject');
 
 =cut
 

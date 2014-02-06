@@ -34,7 +34,7 @@ functions to define test cases.
 
 =item new()
 
-create unit test object
+create unit test object. Do not use it directly, instead use:
 
     use Kernel::System::ObjectManager;
     local $Kernel::OM = Kernel::System::ObjectManager->new();

@@ -35,48 +35,15 @@ All generic html functions. E. g. to get options fields, template processing, ..
 
 =item new()
 
-create a new object
+create a new object. Do not use it directly, instead use:
 
-    use Kernel::Config;
-    use Kernel::System::Encode;
-    use Kernel::System::Log;
-    use Kernel::System::Time;
-    use Kernel::System::Main;
-    use Kernel::System::Web::Request;
-    use Kernel::Output::HTML::Layout;
-
-    my $ConfigObject = Kernel::Config->new();
-    my $EncodeObject = Kernel::System::Encode->new(
-        ConfigObject => $ConfigObject,
+    use Kernel::System::ObjectManager;
+    local $Kernel::OM = Kernel::System::ObjectManager->new(
+        LayoutObject {
+            Lang    => 'de',
+        },
     );
-    my $LogObject = Kernel::System::Log->new(
-        ConfigObject => $ConfigObject,
-        EncodeObject => $EncodeObject,
-    );
-    my $MainObject = Kernel::System::Main->new(
-        ConfigObject => $ConfigObject,
-        EncodeObject => $EncodeObject,
-        LogObject    => $LogObject,
-    );
-    my $TimeObject = Kernel::System::Time->new(
-        ConfigObject => $ConfigObject,
-        LogObject    => $LogObject,
-    );
-    my $RequestObject = Kernel::System::Web::Request->new(
-        ConfigObject => $ConfigObject,
-        LogObject    => $LogObject,
-        EncodeObject => $EncodeObject,
-        MainObject   => $MainObject,
-    );
-    my $LayoutObject = Kernel::Output::HTML::Layout->new(
-        ConfigObject  => $ConfigObject,
-        LogObject     => $LogObject,
-        MainObject    => $MainObject,
-        TimeObject    => $TimeObject,
-        ParamObject   => $RequestObject,
-        EncodeObject  => $EncodeObject,
-        Lang          => 'de',
-    );
+    my $LayoutObject = $Kernel::OM->Get('LayoutObject');
 
     in addition for NavigationBar() you need
         DBObject

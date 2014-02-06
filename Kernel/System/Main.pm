@@ -35,7 +35,7 @@ All main functions to load modules, die, and handle files.
 
 =item new()
 
-create new object
+create new object. Do not use it directly, instead use:
 
     use Kernel::System::ObjectManager;
     local $Kernel::OM = Kernel::System::ObjectManager->new();
