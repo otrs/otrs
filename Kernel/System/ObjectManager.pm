@@ -130,7 +130,8 @@ sub Get {
 
 sub _ObjectBuild {
     my ($Self, %Param) = @_;
-    my $ClassName = $Self->ClassName(%Param);
+    my $Config    = $Self->ObjectConfigGet(%Param);
+    my $ClassName = $Config->{ClassName};
     my $FileName  = $ClassName;
     $FileName     =~ s{::}{/}g;
     $FileName    .= '.pm';
@@ -223,18 +224,6 @@ sub ObjectRegister {
     $Self->{Config}{$Name} = \%Param;
 }
 
-sub Dependencies {
-    my ($Self, %Param) = @_;
-    my $ObjConfig = $Self->ObjectConfigGet(%Param);
-    return $ObjConfig->{Dependencies};
-}
-
-sub ClassName {
-    my ($Self, %Param) = @_;
-    my $ObjConfig = $Self->ObjectConfigGet(%Param);
-    return $ObjConfig->{ClassName};
-}
-
 =item ObjectHash()
 
 Returns a hash of all the already instantiated objects.
@@ -303,7 +292,8 @@ creates them newly.
 
     $Kernel::OM->ObjectsDiscard();
 
-Mostly used for tests that rely on fresh objects.
+Mostly used for tests that rely on fresh objects, or to avoid large
+memory consumption in long-running processes.
 
 =cut
 
@@ -327,9 +317,9 @@ sub DESTROY {
     # so that the topological sorting goes faster
     my %Dependencies;
     for my $Object ( sort keys %{ $Self->{Objects} }) {
-        $Dependencies{ $Object } = $Self->Dependencies(
+        $Dependencies{ $Object } = $Self->ObjectConfigGet(
             Object => $Object,
-        );
+        )->{Dependencies};
     }
 
     # second step: post-order recursive traversal
