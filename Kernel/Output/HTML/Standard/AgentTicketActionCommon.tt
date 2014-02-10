@@ -82,7 +82,7 @@
 [% WRAPPER JSOnDocumentComplete %]
 <script type="text/javascript">//<![CDATA[
 $('#TypeID').bind('change', function (Event) {
-    Core.AJAX.FormUpdate($('#Compose'), 'AJAXUpdate', 'TypeID', [ 'ServiceID', 'SLAID', 'NewOwnerID', 'OldOwnerID', 'NewResponsibleID', 'NewStateID', 'NewPriorityID' [% Data.DynamicFieldNamesStrg %] ]);
+    Core.AJAX.FormUpdate($('#Compose'), 'AJAXUpdate', 'TypeID', [ 'NewQueueID', 'ServiceID', 'SLAID', 'NewOwnerID', 'OldOwnerID', 'NewResponsibleID', 'NewStateID', 'NewPriorityID' [% Data.DynamicFieldNamesStrg %] ]);
 });
 //]]></script>
 [% END %]

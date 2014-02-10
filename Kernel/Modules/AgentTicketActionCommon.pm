@@ -12,6 +12,7 @@ package Kernel::Modules::AgentTicketActionCommon;
 use strict;
 use warnings;
 
+use Kernel::System::Type;
 use Kernel::System::State;
 use Kernel::System::Web::UploadCache;
 use Kernel::System::DynamicField;
@@ -38,6 +39,7 @@ sub new {
     $Self->{UploadCacheObject}  = Kernel::System::Web::UploadCache->new(%Param);
     $Self->{DynamicFieldObject} = Kernel::System::DynamicField->new(%Param);
     $Self->{BackendObject}      = Kernel::System::DynamicField::Backend->new(%Param);
+    $Self->{TypeObject}        = Kernel::System::Type->new(%Param);
 
     # get form id
     $Self->{FormID} = $Self->{ParamObject}->GetParam( Param => 'FormID' );
@@ -884,6 +886,7 @@ sub Run {
         my $CustomerUser = $Ticket{CustomerUserID};
 
         my $ServiceID;
+        my $TypeID;
 
         # get service value from param if field is visible in the screen
         if ( $Self->{ConfigObject}->Get('Ticket::Service') && $Self->{Config}->{Service} ) {
@@ -893,6 +896,12 @@ sub Run {
         # otherwise use ticket service value since it can't be changed
         elsif ( $Self->{ConfigObject}->Get('Ticket::Service') ) {
             $ServiceID = $Ticket{ServiceID} || '';
+        }
+
+        # get type value from param if field is visible in the screen
+        if ( $Self->{ConfigObject}->Get('Ticket::Type') ) {
+            my $TypeID = $GetParam{TypeID};
+            $Type = $Self->{TypeObject}->TypeLookup( TypeID => $TypeID );
         }
 
         my $QueueID = $GetParam{NewQueueID} || $Ticket{QueueID};
@@ -913,6 +922,11 @@ sub Run {
         if ( $Self->{ConfigObject}->Get('Ticket::Frontend::ListType') eq 'tree' ) {
             $TreeView = 1;
         }
+        
+        my %QueueIDs = $Self->{TicketObject}->TicketMoveList(
+            Type=>$Type, 
+            UserID=>$Self->{UserID}
+        );
 
         my $Owners = $Self->_GetOwners(
             %GetParam,
@@ -1072,6 +1086,13 @@ sub Run {
                     SelectedID   => $GetParam{SLAID},
                     PossibleNone => 1,
                     Translation  => 0,
+                    Max          => 100,
+                },
+                {
+                    Name         => 'NewQueueID',
+                    Data         => \%QueueIDs,
+                    Translation  => 0,
+                    PossibleNone => 1,
                     Max          => 100,
                 },
                 @DynamicFieldAJAX,
