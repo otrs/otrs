@@ -137,7 +137,10 @@ sub _ObjectBuild {
     $FileName    .= '.pm';
     require $FileName;
 
-    my %Args      = %{ $Self->{Specialization}{ $Param{Object} } // { } };
+    my %Args      = (
+        %{ $Config->{Specialization} // {} },
+        %{ $Self->{Specialization}{ $Param{Object} } // { } },
+    );
     my $Config    = $Self->ObjectConfigGet( %Param );
 
     if ( !$Config->{OmAware} &&  $Config->{Dependencies} ) {
@@ -206,6 +209,9 @@ Registers an object with the object manager.
         Name            => 'MyNewObject',       # Mandatory
         Dependencies    => ['ConfigObject'],    # Optional; falls back to default dependencies
         Object          => $TheNewObject,       # Optional
+        Specialization  => {                    # Optional
+            YourArgsHere    => 1,
+        }
     );
 
 =cut
