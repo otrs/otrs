@@ -476,7 +476,10 @@ sub ValueSet {
 
     # If an ObjectType handler is registered, use it.
     if ( ref $Self->{$DynamicFieldObjectHandler} ) {
-        return $Self->{$DynamicFieldObjectHandler}->PostValueSet(%Param);
+        return $Self->{$DynamicFieldObjectHandler}->PostValueSet(
+            OldValue => $OldValue,
+            %Param,
+        );
     }
 
     return 1;
