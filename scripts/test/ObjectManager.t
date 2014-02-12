@@ -11,12 +11,14 @@ use strict;
 use warnings;
 use vars (qw($Self));
 
+use Scalar::Util qw/weaken/;
+
 use Kernel::System::ObjectManager;
 
 local $Kernel::OM = Kernel::System::ObjectManager->new(
     DummyObject => {
         Data => 'Test payload',
-        }
+    }
 );
 
 $Self->True( $Kernel::OM, 'Could build object manager' );
@@ -38,3 +40,20 @@ $Self->Is(
     'Test payload',
     'Speciailization of late registered object',
 );
+
+weaken($Dummy);
+
+$Self->True( $Dummy, 'Object still alive' );
+
+$Kernel::OM->ObjectsDiscard();
+
+$Self->True( !$Dummy, 'ObjectsDiscard without arguments deleted object' );
+
+$Dummy = $Kernel::OM->Get('DummyObject');
+weaken($Dummy);
+$Self->True( $Dummy, 'Object created again' );
+
+$Kernel::OM->ObjectsDiscard(
+    Objects => ['DummyObject'],
+);
+$Self->True( !$Dummy, 'ObjectsDiscard with list of objects deleted object' );

@@ -293,20 +293,39 @@ sub AddSpecialization {
 
 =item ObjectsDiscard()
 
-Discards all internally stored objects, so that the next access to objects
-creates them newly.
+Discards internally stored objects, so that the next access to objects
+creates them newly. If a list of object names is passed, only those
+objects are destroyed; otherwise all stored objects are detroyed.
 
     $Kernel::OM->ObjectsDiscard();
 
+    $Kernel::OM->ObjectsDiscard(
+        Objects => ['TicketObject', 'QueueObject'],
+
+    );
+
 Mostly used for tests that rely on fresh objects, or to avoid large
 memory consumption in long-running processes.
+
+Note that if you pass a list of objects to be destroyed, they are destroyed
+in in the order they were passed; otherwise they are passed in reverse
+dependency order.
 
 =cut
 
 
 sub ObjectsDiscard {
     my ( $Self, %Param ) = @_;
-    $Self->{Objects} = {};
+
+    if ( $Param{Objects} ) {
+        for my $Object ( @{ $Param{Objects} } ) {
+            delete $Self->{Objects}{ $Object };
+        }
+    }
+    else {
+        # initialize ordered destruction
+        $Self->_DESTROY();
+    }
     return 1;
 }
 
@@ -315,7 +334,7 @@ sub ObjectsDiscard {
 
 =cut
 
-sub DESTROY {
+sub _DESTROY {
     my ( $Self ) = @_;
     # destroy objects before their dependencies are destroyed
 
@@ -363,6 +382,11 @@ sub DESTROY {
             delete $Self->{Objects}{$Object};
         }
     }
+}
+
+sub DESTROY {
+    my ( $Self ) = @_;
+    $Self->_DESTROY();
 }
 
 1;
