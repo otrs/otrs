@@ -107,6 +107,10 @@ if ( !$WebGroup ) {
     print STDERR "ERROR: --web-group=<WEB_GROUP>\n";
     exit 1;
 }
+if ( -l $DestDir ) {
+    print STDERR "ERROR: <OTRS_HOME> is a symlink\n";
+    exit 1;
+}
 
 # Check that the users exist
 my ( $WebUserID, $OtrsUserID, $AdminUserID );
