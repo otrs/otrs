@@ -366,7 +366,7 @@ sub _DESTROY {
             weaken($Checker);
             delete $Self->{Objects}{$Object};
             if (defined $Checker) {
-                warn "DESTRUCTION OF $Object FAILED!!\n";
+                warn "DESTRUCTION OF $Object FAILED!\n";
                 if ( eval { require "Devel/Cycle.pm"; 1 } ) {
                     Devel::Cycle::find_cycle($Checker);
                 }
