@@ -1748,6 +1748,9 @@ via the Preferences button after logging in.
             ClassName       => 'Kernel::Output::HTML::Layout',
             Dependencies    => [@DefaultDependencies, 'ParamObject'],
         },
+        PackageObject => {
+            ClassName       => 'Kernel::System::Package',
+        },
         ParamObject   => {
             ClassName       => 'Kernel::System::Web::Request',
         },
