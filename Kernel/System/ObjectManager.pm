@@ -141,7 +141,6 @@ sub _ObjectBuild {
         %{ $Config->{Specialization} // {} },
         %{ $Self->{Specialization}{ $Param{Object} } // { } },
     );
-    my $Config    = $Self->ObjectConfigGet( %Param );
 
     if ( !$Config->{OmAware} &&  $Config->{Dependencies} ) {
         for my $Dependency ( @{ $Config->{Dependencies} } ) {
