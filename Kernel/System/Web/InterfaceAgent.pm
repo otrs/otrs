@@ -83,7 +83,7 @@ sub BuildOM {
             WebRequest => $Param{WebRequest} || 0,
         },
     );
-    $OM->AddSpecialization(
+    $OM->ObjectParamAdd(
         LogPrefix => $OM->Get('ConfigObject')->Get('CGILogPrefix'),
     );
 
@@ -133,7 +133,7 @@ sub Run {
         }
     }
 
-    $Kernel::OM->AddSpecialization(
+    $Kernel::OM->ObjectParamAdd(
         LayoutObject => {
             Lang => $Param{Lang}
         },

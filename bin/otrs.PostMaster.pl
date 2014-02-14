@@ -92,7 +92,7 @@ eval {
         exit 1;
     }
 
-    $Kernel::OM->AddSpecialization(
+    $Kernel::OM->ObjectParamAdd(
         PostMasterObject => {
             Email   => \@Email,
             Trusted => $Opts{'t'},

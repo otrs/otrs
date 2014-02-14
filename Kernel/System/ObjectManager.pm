@@ -85,10 +85,10 @@ sub new {
     my ($Type, %Param) = @_;
     my $Self = bless {}, $Type;
 
-    $Self->{Debug}          = delete $Param{Debug};
-    $Self->{Specialization} = \%Param;
-    $Self->{Objects}        = {};
-    $Self->{Config}         = {};
+    $Self->{Debug}      = delete $Param{Debug};
+    $Self->{Param}      = \%Param;
+    $Self->{Objects}    = {};
+    $Self->{Config}     = {};
 
     return $Self;
 }
@@ -138,8 +138,8 @@ sub _ObjectBuild {
     require $FileName;
 
     my %Args      = (
-        %{ $Config->{Specialization} // {} },
-        %{ $Self->{Specialization}{ $Param{Object} } // { } },
+        %{ $Config->{Param} // {} },
+        %{ $Self->{Param}{ $Param{Object} } // { } },
     );
 
     if ( !$Config->{OmAware} &&  $Config->{Dependencies} ) {
@@ -208,7 +208,7 @@ Registers an object with the object manager.
         Name            => 'MyNewObject',       # Mandatory
         Dependencies    => ['ConfigObject'],    # Optional; falls back to default dependencies
         Object          => $TheNewObject,       # Optional
-        Specialization  => {                    # Optional
+        Param           => {                    # Optional
             YourArgsHere    => 1,
         }
     );
@@ -260,13 +260,13 @@ sub ObjectHash {
     return %{ $Self->{Objects} };
 }
 
-=item AddSpecialization()
+=item ObjectParamAdd()
 
 Adds arguments that will be passed to constructors of classes
 when they are created, in the same format as the C<new()> method
 receives them.
 
-    $Kernel::OM->AddSpecialization(
+    $Kernel::OM->ObjectParamAdd(
         TicketObject => {
             Key => 'Value',
         },
@@ -274,17 +274,17 @@ receives them.
 
 =cut
 
-sub AddSpecialization {
+sub ObjectParamAdd {
     my ($Self, %Param) = @_;
 
     for my $Key ( keys %Param ) {
         if ( ref($Param{$Key}) eq 'HASH' ) {
             for my $K ( sort keys %{ $Param{$Key} } ) {
-                $Self->{Specialization}{$Key}{$K} = $Param{$Key}{$K};
+                $Self->{Param}{$Key}{$K} = $Param{$Key}{$K};
             }
         }
         else {
-            $Self->{Specialization}{$Key} = $Param{$Key};
+            $Self->{Param}{$Key} = $Param{$Key};
         }
     }
     return;
