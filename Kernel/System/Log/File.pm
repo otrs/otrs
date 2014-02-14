@@ -20,17 +20,18 @@ sub new {
     my $Self = {};
     bless( $Self, $Type );
 
+
     # get needed objects
     $Self->{ConfigObject} = $Kernel::OM->Get('ConfigObject');
     $Self->{EncodeObject} = $Kernel::OM->Get('EncodeObject');
 
 
     # get logfile location
-    $Self->{LogFile} = $Param{ConfigObject}->Get('LogModule::LogFile')
+    $Self->{LogFile} = $Self->{ConfigObject}->Get('LogModule::LogFile')
         || die 'Need LogModule::LogFile param in Config.pm';
 
     # get log file suffix
-    if ( $Param{ConfigObject}->Get('LogModule::LogFile::Date') ) {
+    if ( $Self->{ConfigObject}->Get('LogModule::LogFile::Date') ) {
         my ( $s, $m, $h, $D, $M, $Y, $WD, $YD, $DST ) = localtime( time() );    ## no critic
         $Y = $Y + 1900;
         $M++;
