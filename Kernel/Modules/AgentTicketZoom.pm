@@ -704,6 +704,7 @@ sub MaskAgentZoom {
             ArticleMaxLimit => $ArticleMaxLimit,
             ArticleBox      => \@ArticleBox,
             Pagination      => $Pagination,
+            Page            => $Page,
         );
     }
 
@@ -1611,6 +1612,7 @@ sub _ArticleTree {
                     ArticleID      => $ArticleID,
                     ZoomExpand     => $Self->{ZoomExpand},
                     ZoomExpandSort => $Self->{ZoomExpandSort},
+                    Page           => $Param{Page},
                 },
             );
         }
@@ -1622,6 +1624,7 @@ sub _ArticleTree {
                     ArticleID      => $ArticleID,
                     ZoomExpand     => $Self->{ZoomExpand},
                     ZoomExpandSort => $Self->{ZoomExpandSort},
+                    Page           => $Param{Page},
                 },
             );
         }
