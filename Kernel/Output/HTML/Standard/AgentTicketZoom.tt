@@ -504,6 +504,17 @@ $('.ShowFieldInfoOverlay').bind('click', function() {
 [% RenderBlockStart("Tree") %]
 <div class="TicketList">
     <div class="ControlRow">
+[% RenderBlockStart("ArticlePages") %]
+        <div class="ArticlePages">
+            <ul>
+                <li>[% Translate('Pages:') | html %]</li>
+                [% FOREACH page IN [1 .. Data.Pages]; %]
+                    <li [% IF page == Data.CurrentPage %]class="Active"[% END %]>
+                        <a href="[% Env("Baselink") %]Action=AgentTicketZoom;TicketID=[% Data.TicketID | uri %];ArticlePage=[% page %]" title="[% Translate('Page') %] [% page %]" data-page="[% page %]">[% page %]</a><li>
+                [% END; %]
+            </ul>
+        </div>
+[% RenderBlockEnd("ArticlePages") %]
 [% RenderBlockStart("ArticleFilterDialogLink") %]
         <div class="ArticleFilter Icons">
             <span class="InvisibleText">[% Translate("Article Filter") | html %]:</span>

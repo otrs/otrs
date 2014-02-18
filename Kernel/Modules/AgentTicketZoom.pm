@@ -25,6 +25,7 @@ use Kernel::System::ProcessManagement::TransitionAction;
 use Kernel::System::SystemAddress;
 
 use Kernel::System::VariableCheck qw(:all);
+use POSIX qw/ceil/;
 
 sub new {
     my ( $Type, %Param ) = @_;
@@ -519,13 +520,18 @@ sub MaskAgentZoom {
     else {
         $NeedPagination = 1;
         $ArticleCount = $Self->{TicketObject}->ArticleCount(
-            TicketID    => $Self->{TicketID},
+            TicketID    => $Ticket{TicketID},
         );
+    }
+
+    my $Pages;
+    if ( $NeedPagination ) {
+        $Pages = ceil( $ArticleCount / $Limit );
     }
     # TODO: UI for pagination
 
     # add counter
-    my $Count = 0;
+    my $Count = ($Page - 1) * $Limit;
     for my $Article (@ArticleBox) {
         $Count++;
         $Article->{Count} = $Count;
@@ -680,6 +686,16 @@ sub MaskAgentZoom {
     # only show article tree if articles are present
     if (@ArticleBox) {
 
+        my $Pagination;
+
+        if ( $NeedPagination) {
+            $Pagination = {
+                Pages       => $Pages,
+                CurrentPage => $Page,
+                TicketID    => $Ticket{TicketID},
+            };
+        }
+
         # show article tree
         $Param{ArticleTree} = $Self->_ArticleTree(
             Ticket          => \%Ticket,
@@ -687,6 +703,7 @@ sub MaskAgentZoom {
             ArticleID       => $ArticleID,
             ArticleMaxLimit => $ArticleMaxLimit,
             ArticleBox      => \@ArticleBox,
+            Pagination      => $Pagination,
         );
     }
 
@@ -1576,6 +1593,13 @@ sub _ArticleTree {
             TableClasses => $TableClasses,
         },
     );
+
+    if ( $Param{Pagination} ) {
+        $Self->{LayoutObject}->Block(
+            Name => 'ArticlePages',
+            Data => $Param{Pagination},
+        );
+    }
 
     # check if expand/collapse view is usable (only for less then 300 articles)
     if ( $#ArticleBox < $ArticleMaxLimit ) {
