@@ -506,7 +506,7 @@ $('.ShowFieldInfoOverlay').bind('click', function() {
     <div class="ControlRow">
 [% RenderBlockStart("ArticlePages") %]
         <div class="ArticlePages">
-            <span>[% Translate('Pages:') | html %]</span>
+            <h3>[% Translate('Pages:') | html %]</h3>
             <ul>
                 [% FOREACH page IN [1 .. Data.Pages]; %]
                     <li [% IF page == Data.CurrentPage %]class="Active"[% END %]>
