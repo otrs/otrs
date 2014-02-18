@@ -1282,6 +1282,16 @@ example of how to access the hash ref
 Note: If an attachment with html body content is available, the attachment id
 is returned as 'AttachmentIDOfHTMLBody' in hash ref.
 
+You can limit the list of returned elements with the C<Page> and C<Limit>
+parameters:
+
+    my @ArticleBox = $TicketObject->ArticleContentIndex(
+        TicketID    => 123,
+        UserID      => 1,
+        Limit       => 5,
+        Page        => 3,   # get 11th to 16th element
+    );
+
 =cut
 
 sub ArticleContentIndex {
@@ -1300,6 +1310,8 @@ sub ArticleContentIndex {
         ArticleType   => $Param{ArticleType},
         UserID        => $Param{UserID},
         DynamicFields => $Param{DynamicFields},
+        Page          => $Param{Page},
+        Limit         => $Param{Limit},
     );
 
     # article attachments of each article
@@ -1398,6 +1410,18 @@ to get only a dedicated count you can use Limit and Order attributes
         Limit    => 5,
     );
 
+You can also provide an offset by passing the C<Page> argument. To get the
+6th to 10th article, you can say
+
+    my @ArticleIndex = $TicketObject->ArticleGet(
+        TicketID => 123,
+        UserID   => 123,
+        Limit    => 5,
+        Page     => 2,
+    );
+
+Page numbers start with 1.
+
 =cut
 
 sub ArticleGet {
@@ -1494,7 +1518,13 @@ sub ArticleGet {
         $SQL .= ' ORDER BY sa.create_time, sa.id ASC';
     }
 
-    return if !$Self->{DBObject}->Prepare( SQL => $SQL, Bind => \@Bind, Limit => $Param{Limit} );
+    my $Start;
+
+    if ( $Param{Page} ) {
+        $Start = $Param{Limit} * ( $Param{Page} - 1 );
+    }
+
+    return if !$Self->{DBObject}->Prepare( SQL => $SQL, Bind => \@Bind, Limit => $Param{Limit}, Start => $Start );
     my %Ticket;
     while ( my @Row = $Self->{DBObject}->FetchrowArray() ) {
         my %Data;
