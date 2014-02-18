@@ -1856,6 +1856,36 @@ sub ArticleGet {
     return @Content;
 }
 
+=item ArticleCount()
+
+Returns the number of articles for a ticket
+
+    my $ArticleCount = $TicketID->ArticleCount(
+        TicketID    => 123,
+    );
+
+=cut
+
+sub ArticleCount {
+    my ( $Self, %Param ) = @_;
+
+    # check needed stuff
+    if ( !$Param{TicketID} ) {
+        $Self->{LogObject}->Log( Priority => 'error', Message => 'Need TicketID!' );
+        return;
+    }
+
+    my $SQL = 'SELECT COUNT(id) FROM article WHERE ticket_id = ?';
+    return if !$Self->{DBObject}->Prepare( SQL => $SQL, Bind => [ \$Param{TicketID} ] );
+
+    my $Count;
+    while ( my @Row = $Self->{DBObject}->FetchrowArray() ) {
+        $Count = $Row[0];
+    }
+
+    return $Count;
+}
+
 =begin Internal:
 
 =cut

@@ -482,13 +482,47 @@ sub MaskAgentZoom {
 
     # generate shown articles
 
+    my $Page  = $Self->{ParamObject}->GetParam( Param => 'ArticlePage' ) || 1;
+    my $Limit = $Self->{ConfigObject}->Get( 'Ticket::Frontend::MaxArticlesPerPage' );
+
+    # We need to find out whether pagination is actually necessary.
+    # The easiest way would be count the articles, but that would slow
+    # down the most common case (fewer articles than $Limit in the ticket).
+    # So instead we use the following trick:
+    # 1) if the $Page > 1, we need pagination
+    # 2) if not, request $Limit + 1 articles. If $Limit + 1 are actually
+    #    returned, pagination is necessary
+    my $Extra          = $Page > 1 ? 0 : 1;
+    my $NeedPagination;
+    my $ArticleCount;
+
     # get content
     my @ArticleBox = $Self->{TicketObject}->ArticleContentIndex(
         TicketID                   => $Self->{TicketID},
         StripPlainBodyAsAttachment => $Self->{StripPlainBodyAsAttachment},
         UserID                     => $Self->{UserID},
+        Page                       => $Page,
+        Limit                      => $Limit + $Extra,
         DynamicFields => 0,    # fetch later only for the article(s) to display
     );
+    if ( $Page == 1 && @ArticleBox > $Limit ) {
+        pop @ArticleBox;
+        $NeedPagination = 1;
+        $ArticleCount = $Self->{TicketObject}->ArticleCount(
+            TicketID    => $Self->{TicketID},
+        );
+    }
+    elsif ( $Page == 1 ) {
+        $ArticleCount = @ArticleBox;
+        $NeedPagination = 0;
+    }
+    else {
+        $NeedPagination = 1;
+        $ArticleCount = $Self->{TicketObject}->ArticleCount(
+            TicketID    => $Self->{TicketID},
+        );
+    }
+    # TODO: UI for pagination
 
     # add counter
     my $Count = 0;
