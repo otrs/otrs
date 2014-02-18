@@ -643,7 +643,8 @@ sub MaskAgentZoom {
 
     # check if expand view is usable (only for less then 400 article)
     # if you have more articles is going to be slow and not usable
-    my $ArticleMaxLimit = 400;
+    my $ArticleMaxLimit = $Self->{ConfigObject}->Get('Ticket::Frontend::MaxArticlesZoomExpand')
+        // 400;
     if ( $Self->{ZoomExpand} && $#ArticleBox > $ArticleMaxLimit ) {
         $Self->{ZoomExpand} = 0;
     }
@@ -1602,7 +1603,8 @@ sub _ArticleTree {
         );
     }
 
-    # check if expand/collapse view is usable (only for less then 300 articles)
+    # check if expand/collapse view is usable (not available for too many
+    # articles)
     if ( $#ArticleBox < $ArticleMaxLimit ) {
         if ( $Self->{ZoomExpand} ) {
             $Self->{LayoutObject}->Block(
