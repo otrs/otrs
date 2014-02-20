@@ -1848,6 +1848,18 @@ via the Preferences button after logging in.
             Dependencies    => [qw/ConfigObject LogObject MainObject EncodeObject/],
 
         },
+        StandardTemplateObject => {
+            ClassName       => 'Kernel::System::StandardTemplate',
+        },
+        SystemAddressObject    => {
+            ClassName       => 'Kernel::System::SystemAddress',
+        },
+        ServiceObject           => {
+            ClassName       => 'Kernel::System::Service',
+        },
+        TypeObject           => {
+            ClassName       => 'Kernel::System::Type',
+        },
     };
 
     return;
