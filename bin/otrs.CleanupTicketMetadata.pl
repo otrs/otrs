@@ -32,21 +32,17 @@ use Getopt::Long;
 
 use Kernel::System::ObjectManager;
 
-sub _CommonObjects {
-    my %Objects;
-    $Objects{ConfigObject} = Kernel::Config->new();
-    $Objects{EncodeObject} = Kernel::System::Encode->new(%Objects);
-    $Objects{LogObject}    = Kernel::System::Log->new(
+local $Kernel::OM = Kernel::System::ObjectManager->new(
+    LogObject => {
         LogPrefix => 'OTRS-otrs.CleanupTicketMetadata.pl',
-        %Objects,
+    }
+);
+
+sub _CommonObjects {
+    $Kernel::OM->ObjectsDiscard();
+    my %Objects = $Kernel::OM->ObjectHash(
+        Objects => [qw/ConfigObject TimeObject UserObject GroupObject TicketObject/],
     );
-    $Objects{TimeObject}   = Kernel::System::Time->new(%Objects);
-    $Objects{MainObject}   = Kernel::System::Main->new(%Objects);
-    $Objects{DBObject}     = Kernel::System::DB->new(%Objects);
-    $Objects{UserObject}   = Kernel::System::User->new(%Objects);
-    $Objects{GroupObject}  = Kernel::System::Group->new(%Objects);
-    $Objects{QueueObject}  = Kernel::System::Queue->new(%Objects);
-    $Objects{TicketObject} = Kernel::System::Ticket->new(%Objects);
 
     return \%Objects;
 }
