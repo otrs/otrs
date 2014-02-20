@@ -58,15 +58,12 @@ local $Kernel::OM = Kernel::System::ObjectManager->new(
         LogPrefix => 'OTRS-otrs.Test',
     },
 );
-my %CommonObject = $Kernel::OM->ObjectHash(
-    Objects => [qw/ConfigObject EncodeObject LogObject MainObject/],
-);
 
 # create needed objects
 
 if ( $Opts{o} && lc( $Opts{o} ) eq 'delete' ) {
     print "Deleting all Loader cache files...\n";
-    my @DeletedFiles = $CommonObject{LoaderObject}->CacheDelete();
+    my @DeletedFiles = $Kernel::OM->Get('LoaderObject')->CacheDelete();
     if (@DeletedFiles) {
         print "The following files were deleted:\n\t";
         print join "\n\t", @DeletedFiles;

@@ -31,6 +31,7 @@ use lib dirname($RealBin) . '/Custom';
 use Getopt::Std;
 
 use Kernel::System::ObjectManager;
+use Kernel::System::GenericInterface::DebugLog;
 
 sub PrintHelp {
     print <<"EOF";

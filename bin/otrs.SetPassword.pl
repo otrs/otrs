@@ -38,9 +38,7 @@ local $Kernel::OM = Kernel::System::ObjectManager->new(
         LogPrefix => 'OTRS-otrs.SetPassword.pl',
     },
 );
-my %CommonObject = $Kernel::OM->ObjectHash(
-    Objects => [qw/ConfigObject EncodeObject LogObject MainObject TimeObject DBObject/],
-);
+my $AccountObject;
 
 my %Options;
 GetOptions(
@@ -63,12 +61,14 @@ my %AccountList;
 # define which object we need to operate on, default to UserObject
 # search if login exists
 if ( $Type eq 'customer' ) {
-    %AccountList = $CommonObject{AccountObject}->CustomerSearch(
+    $AccountObject = $Kernel::OM->Get('CustomerUserObject');
+    %AccountList = $AccountObject->CustomerSearch(
         UserLogin => $Login,
     );
 }
 else {
-    %AccountList = $CommonObject{AccountObject}->UserSearch(
+    $AccountObject = $Kernel::OM->Get('UserObject');
+    %AccountList = $AccountObject->UserSearch(
         UserLogin => $Login,
     );
 }
@@ -81,11 +81,11 @@ if ( !scalar %AccountList ) {
 
 # if no password has been provided, generate one
 if ( !$Pw ) {
-    $Pw = $CommonObject{AccountObject}->GenerateRandomPassword( Size => 12 );
+    $Pw = $AccountObject->GenerateRandomPassword( Size => 12 );
     print "Generated password '$Pw'\n";
 }
 
-my $Result = $CommonObject{AccountObject}->SetPassword(
+my $Result = $AccountObject->SetPassword(
     UserLogin => $Login,
     PW        => $Pw,
 );

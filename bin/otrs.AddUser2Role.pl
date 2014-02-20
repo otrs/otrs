@@ -31,8 +31,16 @@ use lib dirname($RealBin) . '/Custom';
 use Getopt::Std;
 use Kernel::System::ObjectManager;
 
+local $Kernel::OM = Kernel::System::ObjectManager->new(
+    LogObject => {
+        LogPrefix => 'OTRS-otrs.AddUser2Role.pl',
+    },
+);
+
 # create common objects
-my %CommonObject = ();
+my %CommonObject = $Kernel::OM->ObjectHash(
+    Objects => [qw/UserObject GroupObject/],
+);
 
 # get options
 my %Opts;

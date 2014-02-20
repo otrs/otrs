@@ -27,6 +27,7 @@ use FindBin qw($RealBin);
 use lib dirname($RealBin);
 use lib dirname($RealBin) . '/Kernel/cpan-lib';
 use lib dirname($RealBin) . '/Custom';
+use Kernel::System::ObjectManager;
 
 
 # common objects

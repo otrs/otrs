@@ -49,13 +49,13 @@ local $Kernel::OM = Kernel::System::ObjectManager->new(
     },
 );
 my %CommonObject = $Kernel::OM->ObjectHash(
-    Objects => [qw/ConfigObject EncodeObject LogObject MainObject TimeObject/],
+    Objects => [qw/TicketObject/],
 );
 
 # create needed objects
 
 # get all tickets
-my @TicketIDs = $CommonObject{TicketObject}->TicketSearch(
+my @TicketIDs = $Kernel::OM->Get('TicketObject')->TicketSearch(
 
     # result (required)
     Result => 'ARRAY',
@@ -69,7 +69,7 @@ my @TicketIDs = $CommonObject{TicketObject}->TicketSearch(
 my $Count = 0;
 for my $TicketID (@TicketIDs) {
     $Count++;
-    $CommonObject{TicketObject}->TicketEscalationIndexBuild(
+    $Kernel::OM->Get('TicketObject')->TicketEscalationIndexBuild(
         TicketID => $TicketID,
         UserID   => 1,
     );

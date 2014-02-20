@@ -1860,6 +1860,23 @@ via the Preferences button after logging in.
         TypeObject           => {
             ClassName       => 'Kernel::System::Type',
         },
+        CacheObject          => {
+            ClassName       => 'Kernel::System::Cache',
+            Dependencies    => [qw/ConfigObject LogObject MainObject EncodeObject/],
+        },
+        ACLObject            => {
+            ClassName       => 'Kernel::System::ACL::DB::ACL',
+        },
+        StateObject          => {
+            ClassName       => 'Kernel::System::State',
+        },
+        LockObject          => {
+            ClassName       => 'Kernel::System::Lock',
+        },
+        LoaderObject         => {
+            ClassName       => 'Kernel::System::Loader',
+            Dependencies    => [qw/ConfigObject LogObject MainObject EncodeObject/],
+        },
     };
 
     return;

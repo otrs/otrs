@@ -47,14 +47,12 @@ local $Kernel::OM = Kernel::System::ObjectManager->new(
         LogPrefix => 'OTRS-otrs.RebuildFulltextIndex.pl',
     },
 );
-my %CommonObject = $Kernel::OM->ObjectHash(
-    Objects => [qw/ConfigObject EncodeObject LogObject MainObject TimeObject/],
-);
 
 # create needed objects
+my $TicketObject = $Kernel::OM->Get('TicketObject');
 
 # get all tickets
-my @TicketIDs = $CommonObject{TicketObject}->TicketSearch(
+my @TicketIDs = $TicketObject->TicketSearch(
 
     # result (required)
     Result => 'ARRAY',
@@ -71,13 +69,13 @@ for my $TicketID (@TicketIDs) {
     $Count++;
 
     # get articles
-    my @ArticleIndex = $CommonObject{TicketObject}->ArticleIndex(
+    my @ArticleIndex = $TicketObject->ArticleIndex(
         TicketID => $TicketID,
         UserID   => 1,
     );
 
     for my $ArticleID (@ArticleIndex) {
-        $CommonObject{TicketObject}->ArticleIndexBuild(
+        $TicketObject->ArticleIndexBuild(
             ArticleID => $ArticleID,
             UserID    => 1,
         );
