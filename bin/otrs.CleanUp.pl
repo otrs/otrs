@@ -48,7 +48,7 @@ local $Kernel::OM = Kernel::System::ObjectManager->new(
     },
 );
 my %CommonObject = $Kernel::OM->ObjectHash(
-    Objects => [qw/ConfigObject EncodeObject LogObject MainObject TimeObject/],
+    Objects => [qw/LogObject SessionObject/],
 );
 
 # create tmp storage objects
@@ -62,7 +62,7 @@ else {
     print " failed.\n";
 }
 print "Cleaning up SessionData...";
-if ( $CommonObject{AuthSessionObject}->CleanUp() ) {
+if ( $CommonObject{SessionObject}->CleanUp() ) {
     print " done.\n";
 }
 else {
