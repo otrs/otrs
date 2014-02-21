@@ -35,6 +35,10 @@ use Getopt::Std;
 
 use Kernel::System::ObjectManager;
 
+local $Kernel::OM = Kernel::System::ObjectManager->new(
+    LogPrefix => 'OTRS-otrs.Scheduler',
+);
+
 # to store service name
 my $Service = 'OTRSScheduler';
 
@@ -600,9 +604,9 @@ sub _Status {
 }
 
 sub _CommonObjects {
-    my %CommonObject;
-        LogPrefix => 'OTRS-otrs.Scheduler',
-        %CommonObject,
+    $Kernel::OM->ObjectsDiscard();
+    my %CommonObject = $Kernel::OM->ObjectHash(
+        Objects => ['LogObject', 'ConfigObject', 'PIDObject'],
     );
     return %CommonObject;
 }
