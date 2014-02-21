@@ -156,8 +156,8 @@
                             <div class="Clear"></div>
                         </div>
                     </li>
-                    <li><span class="Key">$Config{"Ticket::Hook"}:</span> <span>$QData{"TicketNumber"}</span></li>
-
+                    <li><span id="InfoTicketNumber" class="Key"> $Data{"Hook"}: <span>$QData{"TicketNumber"}</span></li>
+ 
 <!-- dtl:block:Type -->
                     <li><span class="Key">$Text{"Type"}:</span> <span title="$QData{"Type"}">$QData{"Type"}</span></li>
 <!-- dtl:block:Type -->
