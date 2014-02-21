@@ -14,6 +14,7 @@
 #   -->> All changes of this file will be lost after an update! <<--
 #
 # --
+## nofilter(TidyAll::Plugin::OTRS::Perl::LayoutObject)
 
 package Kernel::Config::Defaults;
 
