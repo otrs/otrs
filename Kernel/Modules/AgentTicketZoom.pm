@@ -528,7 +528,6 @@ sub MaskAgentZoom {
     if ( $NeedPagination ) {
         $Pages = ceil( $ArticleCount / $Limit );
     }
-    # TODO: UI for pagination
 
     # add counter
     my $Count = ($Page - 1) * $Limit;
