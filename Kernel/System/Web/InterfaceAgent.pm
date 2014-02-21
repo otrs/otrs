@@ -31,7 +31,7 @@ the global agent web interface (incl. auth, session, ...)
 =item new()
 
 create agent web interface object. Do not use it directly, instead use:
-    
+
     use Kernel::System::ObjectManager;
     my $Debug = 0,
     local $Kernel::OM = Kernel::System::ObjectManager->new(
@@ -56,8 +56,11 @@ sub new {
     # get debug level
     $Self->{Debug} = $Param{Debug} || 0;
 
-    for my $Object ( qw/ ConfigObject LogObject EncodeObject SessionObject
-            MainObject TimeObject ParamObject UserObject GroupObject / ) {
+    for my $Object (
+        qw/ ConfigObject LogObject EncodeObject SessionObject
+        MainObject TimeObject ParamObject UserObject GroupObject /
+        )
+    {
         $Self->{$Object} = $Kernel::OM->Get($Object);
     }
 
@@ -75,7 +78,6 @@ sub new {
 # static method!
 sub BuildOM {
     my ( $Type, %Param ) = @_;
-
 
     # create common framework objects 1/2
     my $OM = Kernel::System::ObjectManager->new(
@@ -168,9 +170,9 @@ sub Run {
         }
     }
 
-
     # application and add-on application common objects
     my %CommonObject = %{ $Self->{ConfigObject}->Get('Frontend::CommonObject') };
+
     # ensure that few required modules are included in ObjectHash()
     $Kernel::OM->Get('TicketObject');
 
@@ -483,6 +485,7 @@ sub Run {
                 Key   => 'UserToken',
                 Value => $Token,
             );
+            USERS:
             for my $UserID ( sort keys %UserList ) {
                 my %UserData = $Self->{UserObject}->GetUserData(
                     UserID => $UserID,
@@ -490,7 +493,7 @@ sub Run {
                 );
                 if (%UserData) {
                     $User = $UserData{UserLogin};
-                    last;
+                    last USERS;
                 }
             }
         }
@@ -753,12 +756,13 @@ sub Run {
                 my $Key      = "UserIs$Permission";
                 next PERMISSION if !$Group;
                 if ( ref $Group eq 'ARRAY' ) {
+                    INNER:
                     for ( @{$Group} ) {
-                        next if !$_;
-                        next if !$UserData{ $Key . "[$_]" };
-                        next if $UserData{ $Key . "[$_]" } ne 'Yes';
+                        next INNER if !$_;
+                        next INNER if !$UserData{ $Key . "[$_]" };
+                        next INNER if $UserData{ $Key . "[$_]" } ne 'Yes';
                         $AccessOk = 1;
-                        last;
+                        last INNER;
                     }
                 }
                 else {

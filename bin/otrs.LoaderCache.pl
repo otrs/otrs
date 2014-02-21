@@ -78,15 +78,15 @@ if ( $Opts{o} && lc( $Opts{o} ) eq 'generate' ) {
     print "Generating loader cache files...\n";
 
     # Force loader also on development systems where it might be turned off.
-    $CommonObject{ConfigObject}->Set(
+    $Kernel::OM->Get('ConfigObject')->Set(
         Key   => 'Loader::Enabled::JS',
         Value => 1,
     );
-    $CommonObject{ConfigObject}->Set(
+    $Kernel::OM->Get('ConfigObject')->Set(
         Key   => 'Loader::Enabled::CSS',
         Value => 1,
     );
-    my @FrontendModules = $CommonObject{LoaderObject}->CacheGenerate();
+    my @FrontendModules = $Kernel::OM->Get('LoaderObject')->CacheGenerate();
     for my $FrontendModule (@FrontendModules) {
         print "    $FrontendModule\n";
 

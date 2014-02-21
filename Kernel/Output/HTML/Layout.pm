@@ -389,7 +389,7 @@ sub new {
 
 =item AddParam()
 
-Add Parameters the same way as if they were added to C<< ->new() >>.
+Add Parameters the same way as if they were supplied to method new.
 
     $LayoutObject->AddParam(
         SessionID   => $SessionID,
@@ -397,11 +397,10 @@ Add Parameters the same way as if they were added to C<< ->new() >>.
 
 =cut
 
-
 sub AddParam {
     my ( $Self, %Param ) = @_;
 
-    for my $Key (keys %Param) {
+    for my $Key ( sort keys %Param ) {
         $Self->{$Key} = $Param{$Key};
     }
 }

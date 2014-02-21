@@ -34,7 +34,7 @@ construct a helper object.
     use Kernel::System::ObjectManager;
     local $Kernel::OM = Kernel::System::ObjectManager->new(
         UnitTestHelperObject => {
-            RestoreSystemConfiguration => 1,        # optional, save ZZZAuto.pm 
+            RestoreSystemConfiguration => 1,        # optional, save ZZZAuto.pm
                                                     # and restore it in the destructor
         },
     );

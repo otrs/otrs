@@ -7,6 +7,11 @@
 # did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
 # --
 
+## nofilter(TidyAll::Plugin::OTRS::Perl::PodNewDoc)
+## nofilter(TidyAll::Plugin::OTRS::Perl::PodSpelling)
+## nofilter(TidyAll::Plugin::OTRS::Perl::Require)
+## nofilter(TidyAll::Plugin::OTRS::Perl::SyntaxCheck)
+
 package Kernel::System::ObjectManager;
 
 use strict;
@@ -44,7 +49,7 @@ Kernel::System::ObjectManager - object and dependency manager
 =head1 SYNOPSIS
 
     use Kernel::System::ObjectManager;
-    
+
     # it's important to store the object in this variable,
     # since many modules expect it that way.
     local $Kernel::OM = Kernel::System::ObjectManager->new(
@@ -55,7 +60,7 @@ Kernel::System::ObjectManager - object and dependency manager
     );
 
     # now you can retrieve any configured object:
-    
+
     unless ($Kernel::OM->Get('DBObject')->Prepare('SELECT 1')) {
         die "Houston, we have a problem!";
     }
@@ -80,15 +85,14 @@ attempt to destroy them.
 
 =cut
 
-
 sub new {
-    my ($Type, %Param) = @_;
+    my ( $Type, %Param ) = @_;
     my $Self = bless {}, $Type;
 
-    $Self->{Debug}      = delete $Param{Debug};
-    $Self->{Param}      = \%Param;
-    $Self->{Objects}    = {};
-    $Self->{Config}     = {};
+    $Self->{Debug}   = delete $Param{Debug};
+    $Self->{Param}   = \%Param;
+    $Self->{Objects} = {};
+    $Self->{Config}  = {};
 
     return $Self;
 }
@@ -107,11 +111,12 @@ L<Kernel::System::Ticket> object.
 =cut
 
 sub Get {
+
     # Optimize the heck out of the common case:
-    return $_[0]->{Objects}{$_[1]} if $_[1] && $_[0]->{Objects}{$_[1]};
+    return $_[0]->{Objects}{ $_[1] } if $_[1] && $_[0]->{Objects}{ $_[1] };
 
     # OK, not so easy
-    my ($Self, $ObjectName) = @_;
+    my ( $Self, $ObjectName ) = @_;
 
     die "Error: Missing parameter (object name)\n"
         unless $ObjectName;
@@ -122,31 +127,30 @@ sub Get {
     # is local to the scope of the 'if'-block
     local $CurrentObject = $ObjectName if !$CurrentObject;
 
-
-    $Self->_ObjectBuild(Object => $ObjectName);
+    $Self->_ObjectBuild( Object => $ObjectName );
 
     return $Self->{Objects}{$ObjectName};
 }
 
 sub _ObjectBuild {
-    my ($Self, %Param) = @_;
+    my ( $Self, %Param ) = @_;
     my $Config    = $Self->ObjectConfigGet(%Param);
     my $ClassName = $Config->{ClassName};
     my $FileName  = $ClassName;
-    $FileName     =~ s{::}{/}g;
-    $FileName    .= '.pm';
+    $FileName =~ s{::}{/}g;
+    $FileName .= '.pm';
     require $FileName;
 
-    my %Args      = (
+    my %Args = (
         %{ $Config->{Param} // {} },
-        %{ $Self->{Param}{ $Param{Object} } // { } },
+        %{ $Self->{Param}{ $Param{Object} } // {} },
     );
 
-    if ( !$Config->{OmAware} &&  $Config->{Dependencies} ) {
+    if ( !$Config->{OmAware} && $Config->{Dependencies} ) {
         for my $Dependency ( @{ $Config->{Dependencies} } ) {
-            $Self->Get( $Dependency );
+            $Self->Get($Dependency);
         }
-        %Args = ($Self->ObjectHash(), %Args);
+        %Args = ( $Self->ObjectHash(), %Args );
     }
 
     my $NewObject = $ClassName->new(%Args);
@@ -159,7 +163,7 @@ sub _ObjectBuild {
             confess "The contrustructor of $Param{Object} (class $ClassName) returned undef.";
         }
     }
-    $Self->{Objects}{$Param{Object}} = $NewObject;
+    $Self->{Objects}{ $Param{Object} } = $NewObject;
     return $NewObject;
 }
 
@@ -174,14 +178,15 @@ Returns the configuration for a given object
 =cut
 
 sub ObjectConfigGet {
-    my ($Self, %Param) = @_;
+    my ( $Self, %Param ) = @_;
     my $ObjectName = $Param{Object};
-    if ($ObjectName eq 'ConfigObject') {
+    if ( $ObjectName eq 'ConfigObject' ) {
+
         # hardcoded to facilitate bootstrapping
         return {
-            ClassName       => 'Kernel::Config',
-            Dependencies    => [],
-            OmAware         => 1,
+            ClassName    => 'Kernel::Config',
+            Dependencies => [],
+            OmAware      => 1,
         };
     }
 
@@ -196,7 +201,8 @@ sub ObjectConfigGet {
             confess "Object '$ObjectName' is not configured\n";
         }
     }
-    $ObjConfig->{Dependencies} ||= $Self->Get('ConfigObject')->Get('ObjectManager')->{DefaultDependencies};
+    $ObjConfig->{Dependencies}
+        ||= $Self->Get('ConfigObject')->Get('ObjectManager')->{DefaultDependencies};
     return $ObjConfig;
 }
 
@@ -254,7 +260,7 @@ sub ObjectHash {
     my ( $Self, %Param ) = @_;
 
     if ( $Param{Objects} ) {
-        $Self->Get( $_ ) for @{ $Param{Objects} };
+        $Self->Get($_) for @{ $Param{Objects} };
     }
 
     return %{ $Self->{Objects} };
@@ -275,10 +281,10 @@ receives them.
 =cut
 
 sub ObjectParamAdd {
-    my ($Self, %Param) = @_;
+    my ( $Self, %Param ) = @_;
 
-    for my $Key ( keys %Param ) {
-        if ( ref($Param{$Key}) eq 'HASH' ) {
+    for my $Key ( sort keys %Param ) {
+        if ( ref( $Param{$Key} ) eq 'HASH' ) {
             for my $K ( sort keys %{ $Param{$Key} } ) {
                 $Self->{Param}{$Key}{$K} = $Param{$Key}{$K};
             }
@@ -312,13 +318,12 @@ dependency order.
 
 =cut
 
-
 sub ObjectsDiscard {
     my ( $Self, %Param ) = @_;
 
     if ( $Param{Objects} ) {
         for my $Object ( @{ $Param{Objects} } ) {
-            delete $Self->{Objects}{ $Object };
+            delete $Self->{Objects}{$Object};
         }
     }
     else {
@@ -328,20 +333,20 @@ sub ObjectsDiscard {
     return 1;
 }
 
-
 =back
 
 =cut
 
 sub _DESTROY {
-    my ( $Self ) = @_;
+    my ($Self) = @_;
+
     # destroy objects before their dependencies are destroyed
 
     # first step: get the dependencies into a single hash,
     # so that the topological sorting goes faster
     my %Dependencies;
-    for my $Object ( sort keys %{ $Self->{Objects} }) {
-        $Dependencies{ $Object } = $Self->ObjectConfigGet(
+    for my $Object ( sort keys %{ $Self->{Objects} } ) {
+        $Dependencies{$Object} = $Self->ObjectConfigGet(
             Object => $Object,
         )->{Dependencies};
     }
@@ -351,9 +356,9 @@ sub _DESTROY {
     my @OrderedObjects;
     my $Traverser;
     $Traverser = sub {
-        my ( $Obj ) = @_;
+        my ($Obj) = @_;
         return if $Seen{$Obj}++;
-        $Traverser->( $_ ) for @{ $Dependencies{ $Obj } };
+        $Traverser->($_) for @{ $Dependencies{$Obj} };
         push @OrderedObjects, $Obj;
     };
     $Traverser->($_) for keys %Dependencies;
@@ -365,9 +370,9 @@ sub _DESTROY {
             my $Checker = $Self->{Objects}{$Object};
             weaken($Checker);
             delete $Self->{Objects}{$Object};
-            if (defined $Checker) {
+            if ( defined $Checker ) {
                 warn "DESTRUCTION OF $Object FAILED!\n";
-                if ( eval { require "Devel/Cycle.pm"; 1 } ) {
+                if ( eval { require Devel::Cycle; 1 } ) {
                     Devel::Cycle::find_cycle($Checker);
                 }
                 else {
@@ -384,7 +389,7 @@ sub _DESTROY {
 }
 
 sub DESTROY {
-    my ( $Self ) = @_;
+    my ($Self) = @_;
     $Self->_DESTROY();
 }
 
