@@ -701,18 +701,18 @@ sub AutoResponse {
         TicketID => $Param{TicketID},
         UserID   => $Param{UserID},
     );
-
-    # prepare subject (insert old subject)
-    my $Subject = $Param{OrigHeader}->{Subject} || '';
-    $Subject = $Self->{TicketObject}->TicketSubjectClean(
-        TicketNumber => $Ticket{TicketNumber},
-        Subject      => $Subject,
+    $AutoResponse{Subject} = $Self->_Replace(
+        RichText => 0,
+        Text     => $AutoResponse{Subject},
+        Data     => {
+            %{ $Param{OrigHeader} },
+            From => $Param{OrigHeader}->{To},
+            To   => $Param{OrigHeader}->{From},
+        },
+        TicketID => $Param{TicketID},
+        UserID   => $Param{UserID},
     );
-    if ( $AutoResponse{Subject} =~ /<OTRS_CUSTOMER_SUBJECT\[(.+?)\]>/ ) {
-        my $SubjectChar = $1;
-        $Subject =~ s/^(.{$SubjectChar}).*$/$1 [...]/;
-        $AutoResponse{Subject} =~ s/<OTRS_CUSTOMER_SUBJECT\[.+?\]>/$Subject/g;
-    }
+
     $AutoResponse{Subject} = $Self->{TicketObject}->TicketSubjectBuild(
         TicketNumber => $Ticket{TicketNumber},
         Subject      => $AutoResponse{Subject},
@@ -1097,7 +1097,7 @@ sub _Replace {
         ATTRIBUTE:
         for my $Attribute ( sort keys %Recipient ) {
             next ATTRIBUTE if !defined $Recipient{$Attribute};
-            $Param{Text} =~ s/$Tag$_$End/$Recipient{$Attribute}/gi;
+            $Param{Text} =~ s/$Tag$Attribute$End/$Recipient{$Attribute}/gi;
         }
     }
 
