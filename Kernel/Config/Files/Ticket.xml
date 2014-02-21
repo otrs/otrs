@@ -9677,7 +9677,7 @@ Thanks for your help!
         <Group>Ticket</Group>
         <SubGroup>Frontend::Agent::Ticket::ViewEmailNew</SubGroup>
         <Setting>
-            <String Regex="^\d+%?$">620</String>
+            <String Regex="^\d+%?$">610</String>
         </Setting>
     </ConfigItem>
     <ConfigItem Name="Ticket::Frontend::AgentTicketEmail###RichTextHeight" Required="0" Valid="1">
@@ -9693,7 +9693,7 @@ Thanks for your help!
         <Group>Ticket</Group>
         <SubGroup>Frontend::Agent::Ticket::ViewPhoneNew</SubGroup>
         <Setting>
-            <String Regex="^\d+%?$">620</String>
+            <String Regex="^\d+%?$">610</String>
         </Setting>
     </ConfigItem>
     <ConfigItem Name="Ticket::Frontend::AgentTicketPhone###RichTextHeight" Required="0" Valid="1">
