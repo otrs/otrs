@@ -900,6 +900,9 @@ sub _Mask {
         }
     }
 
+    # set display options
+    $Param{Hook} = $Self->{ConfigObject}->Get('Ticket::Hook') || 'Ticket#';
+
     # ticket priority flag
     if ( $Self->{Config}->{AttributesView}->{Priority} ) {
         $Self->{LayoutObject}->Block(
@@ -1439,8 +1442,8 @@ sub _Mask {
                     Data => {
                         %File,
                         Action => 'Download',
-                        Link =>
-                            "\$Env{\"Baselink\"}Action=CustomerTicketAttachment;ArticleID=$Article{ArticleID};FileID=$FileID",
+                        Link => $Self->{LayoutObject}->{Baselink} .
+                            "Action=CustomerTicketAttachment;ArticleID=$Article{ArticleID};FileID=$FileID",
                         Image  => 'disk-s.png',
                         Target => $Target,
                     },

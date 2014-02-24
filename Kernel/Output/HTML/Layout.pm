@@ -2634,7 +2634,8 @@ sub BuildDateSelection {
     my $Validate = $Param{Validate} || 0;
 
     # Validate that the date is in the future (e. g. pending times)
-    my $ValidateDateInFuture = $Param{ValidateDateInFuture} || 0;
+    my $ValidateDateInFuture    = $Param{ValidateDateInFuture}    || 0;
+    my $ValidateDateNotInFuture = $Param{ValidateDateNotInFuture} || 0;
 
     my ( $s, $m, $h, $D, $M, $Y ) = $Self->{UserTimeObject}->SystemTime2Date(
         SystemTime => $Self->{UserTimeObject}->SystemTime() + $DiffTime,
@@ -2741,8 +2742,17 @@ sub BuildDateSelection {
     if ($Validate) {
         $DateValidateClasses
             .= "Validate_DateDay Validate_DateYear_${Prefix}Year Validate_DateMonth_${Prefix}Month";
+
+        if ( $Format eq 'DateInputFormatLong' ) {
+            $DateValidateClasses
+                .= " Validate_DateHour_${Prefix}Hour Validate_DateMinute_${Prefix}Minute";
+        }
+
         if ($ValidateDateInFuture) {
             $DateValidateClasses .= " Validate_DateInFuture";
+        }
+        if ($ValidateDateNotInFuture) {
+            $DateValidateClasses .= " Validate_DateNotInFuture";
         }
     }
 
@@ -2839,19 +2849,15 @@ sub BuildDateSelection {
 
     # optional checkbox
     if ($Optional) {
-        my $Checked       = '';
-        my $ValidateClass = '';
+        my $Checked = '';
         if ($Used) {
             $Checked = ' checked="checked"';
-        }
-        if ($Required) {
-            $ValidateClass = ' class="Validate_Required"';
         }
         $Output .= "<input type=\"checkbox\" name=\""
             . $Prefix
             . "Used\" id=\"" . $Prefix . "Used\" value=\"1\""
             . $Checked
-            . $ValidateClass
+            . " class=\"$Class\""
             . " title=\""
             . $Self->{LanguageObject}->Translate('Check to activate this date')
             . "\" />&nbsp;";
@@ -2873,7 +2879,8 @@ sub BuildDateSelection {
         Year: $("#" + Core.App.EscapeSelector("' . $Prefix . '") + "Year"),
         Hour: $("#" + Core.App.EscapeSelector("' . $Prefix . '") + "Hour"),
         Minute: $("#" + Core.App.EscapeSelector("' . $Prefix . '") + "Minute"),
-        DateInFuture: ' . ( $ValidateDateInFuture ? 'true' : 'false' ) . ',
+        DateInFuture: ' .    ( $ValidateDateInFuture    ? 'true' : 'false' ) . ',
+        DateNotInFuture: ' . ( $ValidateDateNotInFuture ? 'true' : 'false' ) . ',
         WeekDayStart: ' . $WeekDayStart . '
     });';
     $Self->AddJSOnDocumentComplete( Code => $DatepickerJS );
