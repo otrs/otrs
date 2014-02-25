@@ -1881,6 +1881,11 @@ via the Preferences button after logging in.
             ClassName       => 'Kernel::System::Loader',
             Dependencies    => [qw/ConfigObject LogObject MainObject EncodeObject/],
         },
+        AutoReponseObject   => {
+            ClassName       => 'Kernel::System::AutoResponse',
+            Dependencies    => [@DefaultDependencies, qw/SystemAddressObject/],
+            OmAware         => 1,
+        },
     };
 
     return;
