@@ -1721,6 +1721,7 @@ via the Preferences button after logging in.
         DBObject    => {
             ClassName       => 'Kernel::System::DB',
             Dependencies    => ['ConfigObject', 'LogObject', 'EncodeObject', 'MainObject', 'TimeObject'],
+            OmAware         => 1,
         },
         UserObject    => {
             ClassName       => 'Kernel::System::User',

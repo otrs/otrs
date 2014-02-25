@@ -15,7 +15,6 @@ use warnings;
 
 use DBI;
 
-use Kernel::System::Time;
 use Kernel::System::VariableCheck qw(:all);
 
 =head1 NAME
@@ -61,28 +60,15 @@ sub new {
     my ( $Type, %Param ) = @_;
 
     # allocate new hash for object
-    my $Self = {};
+    my $Self = {
+        $Kernel::OM->ObjectHash(Objects =>
+            [qw(ConfigObject LogObject MainObject EncodeObject TimeObject)]
+        )
+    };
     bless( $Self, $Type );
 
     # 0=off; 1=updates; 2=+selects; 3=+Connects;
     $Self->{Debug} = $Param{Debug} || 0;
-
-    # get needed objects
-    for my $Needed (qw(ConfigObject LogObject MainObject EncodeObject)) {
-        if ( $Param{$Needed} ) {
-            $Self->{$Needed} = $Param{$Needed};
-        }
-        else {
-            die "Got no $Needed!";
-        }
-    }
-
-    if ( $Param{TimeObject} ) {
-        $Self->{TimeObject} = $Param{TimeObject};
-    }
-    else {
-        $Self->{TimeObject} = Kernel::System::Time->new( %{$Self} );
-    }
 
     # get config data
     $Self->{DSN}  = $Param{DatabaseDSN}  || $Self->{ConfigObject}->Get('DatabaseDSN');
