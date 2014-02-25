@@ -1868,6 +1868,8 @@ via the Preferences button after logging in.
         },
         ACLObject            => {
             ClassName       => 'Kernel::System::ACL::DB::ACL',
+            Dependencies    => [@DefaultDependencies, qw/CacheObject YAMLObject UserObject/],
+            OMAware         => 1,
         },
         StateObject          => {
             ClassName       => 'Kernel::System::State',

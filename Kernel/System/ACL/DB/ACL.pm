@@ -12,11 +12,7 @@ package Kernel::System::ACL::DB::ACL;
 use strict;
 use warnings;
 
-use Kernel::System::YAML;
-
-use Kernel::System::Cache;
 use Kernel::System::VariableCheck qw(:all);
-use Kernel::System::User;
 
 =head1 NAME
 
@@ -46,20 +42,15 @@ sub new {
     my ( $Type, %Param ) = @_;
 
     # allocate new hash for object
-    my $Self = {};
+    my $Self = {
+        $Kernel::OM->ObjectHash(
+            Objects => [
+                qw(ConfigObject EncodeObject LogObject TimeObject MainObject
+                    DBObject CacheObject YAMLObject UserObject)
+                ]
+        ),
+    };
     bless( $Self, $Type );
-
-    # get needed objects
-    for my $Needed (qw(ConfigObject EncodeObject LogObject TimeObject MainObject DBObject)) {
-        die "Got no $Needed!" if !$Param{$Needed};
-
-        $Self->{$Needed} = $Param{$Needed};
-    }
-
-    # create additional objects
-    $Self->{CacheObject} = Kernel::System::Cache->new( %{$Self} );
-    $Self->{YAMLObject}  = Kernel::System::YAML->new( %{$Self} );
-    $Self->{UserObject}  = Kernel::System::User->new( %{$Self} );
 
     # get the cache TTL (in seconds)
     $Self->{CacheTTL}
