@@ -12,8 +12,6 @@ package Kernel::System::Auth;
 use strict;
 use warnings;
 
-use Kernel::System::Valid;
-
 =head1 NAME
 
 Kernel::System::Auth - agent authentication module.
@@ -42,18 +40,15 @@ sub new {
     my ( $Type, %Param ) = @_;
 
     # allocate new hash for object
-    my $Self = {};
+    my $Self = {
+        $Kernel::OM->ObjectHash(
+            Objects => [
+                qw(LogObject ConfigObject DBObject UserObject GroupObject
+                    MainObject EncodeObject TimeObject ValidObject)
+            ],
+        ),
+    };
     bless( $Self, $Type );
-
-    # check needed objects
-    for (
-        qw(LogObject ConfigObject DBObject UserObject GroupObject MainObject EncodeObject TimeObject)
-        )
-    {
-        $Self->{$_} = $Param{$_} || die "No $_!";
-    }
-
-    $Self->{ValidObject} = Kernel::System::Valid->new( %{$Self} );
 
     # load auth modules
     COUNT:

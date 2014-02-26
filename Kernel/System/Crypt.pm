@@ -51,21 +51,24 @@ sub new {
     my ( $Type, %Param ) = @_;
 
     # allocate new hash for object
-    my $Self = {};
+    my $Self = {
+        $Kernel::OM->ObjectHash(
+            Objects => [ qw(ConfigObject EncodeObject LogObject MainObject
+                DBObject FileTempObject TimeObject ) ],
+
+        ),
+    };
     bless( $Self, $Type );
 
     $Self->{Debug} = $Param{Debug} || 0;
 
-    # get needed objects
-    for (qw( ConfigObject EncodeObject LogObject MainObject DBObject CryptType )) {
+    # get needed parameters
+    for (qw( CryptType )) {
         $Self->{$_} = $Param{$_} || die "Got no $_!";
     }
 
     # check if module is enabled
     return if !$Self->{ConfigObject}->Get( $Param{CryptType} );
-
-    # create file template object
-    $Self->{FileTempObject} = Kernel::System::FileTemp->new( %{$Self} );
 
     # reset ISA for testability and peristent environments
     @ISA = ();
@@ -73,9 +76,6 @@ sub new {
     # load generator crypt module
     $Self->{GenericModule} = "Kernel::System::Crypt::$Param{CryptType}";
     return if !$Self->{MainObject}->RequireBaseClass( $Self->{GenericModule} );
-
-    # time object
-    $Self->{TimeObject} = Kernel::System::Time->new( %{$Self} );
 
     # call init()
     $Self->_Init();

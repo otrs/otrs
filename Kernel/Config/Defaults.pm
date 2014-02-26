@@ -1762,7 +1762,8 @@ via the Preferences button after logging in.
         },
         AuthObject        => {
             ClassName       => 'Kernel::System::Auth',
-            Dependencies    => [@DefaultDependencies, qw/UserObject GroupObject/],
+            Dependencies    => [@DefaultDependencies, qw/UserObject GroupObject ValidObject/],
+            OmAware         => 1,
         },
         SessionObject     => {
             ClassName       => 'Kernel::System::AuthSession',
@@ -1833,6 +1834,12 @@ via the Preferences button after logging in.
         },
         CryptObject => {
             ClassName       => 'Kernel::System::Crypt',
+            Dependencies    => [@DefaultDependencies, qw/TicketObject QueueObject TimeObject/],
+            OmAware         => 1,
+        },
+        FileTempObject => {
+            ClassName       => 'Kernel::System::FileTemp',
+            Dependencies    => [qw/ConfigObject/],
         },
         DebugLogObject => {
             ClassName       => 'Kernel::System::GenericInterface::DebugLog',
