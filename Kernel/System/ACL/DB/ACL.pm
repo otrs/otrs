@@ -868,7 +868,6 @@ sub ACLDump {
     my $CurrentTime = $Self->{TimeObject}->CurrentTimestamp();
 
     # get user data of the current user to use for the file comment
-    $Self->{UserObject} = Kernel::System::User->new( %{$Self} );
     my %User = $Self->{UserObject}->GetUserData(
         UserID => $Param{UserID},
     );
