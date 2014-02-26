@@ -15,6 +15,7 @@ use utf8;
 use Kernel::System::Crypt;
 
 use vars qw($Self);
+use Kernel::Config;
 use Kernel::System::Main;
 use Kernel::System::Email;
 use Kernel::System::Ticket;
@@ -24,7 +25,7 @@ use Kernel::Output::HTML::ArticleCheckSMIME;
 use Kernel::System::HTMLUtils;
 
 # create local objects
-my $ConfigObject = $Kernel::OM->Get('ConfigObject');
+my $ConfigObject = Kernel::Config->new();
 my $HomeDir      = $ConfigObject->Get('Home');
 my $CertPath     = $ConfigObject->Get('SMIME::CertPath');
 my $PrivatePath  = $ConfigObject->Get('SMIME::PrivatePath');

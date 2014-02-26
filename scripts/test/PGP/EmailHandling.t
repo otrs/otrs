@@ -12,6 +12,7 @@ use warnings;
 use vars (qw($Self));
 use utf8;
 
+use Kernel::Config;
 use Kernel::Output::HTML::ArticleCheckPGP;
 use Kernel::Output::HTML::Layout;
 use Kernel::System::Crypt;
@@ -23,7 +24,7 @@ use Kernel::System::Web::Request;
 use Kernel::System::HTMLUtils;
 
 # create local config object
-my $ConfigObject = $Kernel::OM->Get('ConfigObject');
+my $ConfigObject = Kernel::Config->new();
 
 # set config
 $ConfigObject->Set(

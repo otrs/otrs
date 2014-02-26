@@ -1834,8 +1834,6 @@ via the Preferences button after logging in.
         },
         CryptObject => {
             ClassName       => 'Kernel::System::Crypt',
-            Dependencies    => [@DefaultDependencies, qw/TicketObject QueueObject TimeObject/],
-            OmAware         => 1,
         },
         FileTempObject => {
             ClassName       => 'Kernel::System::FileTemp',
