@@ -351,7 +351,7 @@ sub ObjectsDiscard {
         my ($Obj) = @_;
         return if $Seen{$Obj}++;
         $Traverser->($_) for sort keys %{ $ReverseDeps{$Obj} };
-        unshift @OrderedObjects, $Obj;
+        push @OrderedObjects, $Obj;
     };
 
     if ( $Param{Objects} ) {
@@ -362,22 +362,9 @@ sub ObjectsDiscard {
     }
     undef $Traverser;
 
-    # if we only need to destroy some objects, we can don't
-    # have to destroy all objects:
-    if ( $Param{Objects} ) {
-        my %ToDestroy;
-        for ( @{ $Param{Objects} } ) {
-            $ToDestroy{$_} = 1;
-        }
-        OBJECTS:
-        while ( @OrderedObjects && !$ToDestroy{ $OrderedObjects[0] } ) {
-            shift @OrderedObjects;
-        }
-    }
-
     # third step: destruction
     if ( $Self->{Debug} ) {
-        for my $Object ( reverse @OrderedObjects ) {
+        for my $Object ( @OrderedObjects ) {
             my $Checker = $Self->{Objects}{$Object};
             weaken($Checker);
             delete $Self->{Objects}{$Object};
@@ -393,7 +380,7 @@ sub ObjectsDiscard {
         }
     }
     else {
-        for my $Object ( reverse @OrderedObjects ) {
+        for my $Object ( @OrderedObjects ) {
             delete $Self->{Objects}{$Object};
         }
     }
