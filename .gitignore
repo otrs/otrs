@@ -58,7 +58,9 @@ Kernel/System/Fred
 Kernel/System/Fred.pm
 Kernel/System/DBListener
 var/fred
-var/httpd/htdocs/js/Fred*js
+var/httpd/htdocs/js/*Fred*js
+var/httpd/htdocs/skins/Agent/default/css/*Fred*css
+var/httpd/htdocs/skins/Customer/default/css/*Fred*css
 
 # Support
 Support.sopm

@@ -4500,7 +4500,7 @@
             <!--
             <String Regex="">[% Env("CGIHandle") %]?Action=AgentTicketCustomer;TicketID=[% Data.TicketID | html %]</String>
             -->
-            <String Regex="">[% Env("CGIHandle") %]?Action=AgentCustomerInformationCenter;CustomerID=[% Data.CustomerID | html %]</String>
+            <String Regex="">[% Env("CGIHandle") %]?Action=AgentCustomerInformationCenter;CustomerID=[% Data.CustomerID | uri %]</String>
         </Setting>
     </ConfigItem>
     <ConfigItem Name="CustomerDBLinkTarget" Required="1" Valid="1">
@@ -8513,6 +8513,7 @@
                 <Item>Errors-To</Item>
                 <Item>References</Item>
                 <Item>In-Reply-To</Item>
+                <Item>Auto-Submitted</Item>
                 <Item>X-Loop</Item>
                 <Item>X-Spam-Flag</Item>
                 <Item>X-Spam-Level</Item>
