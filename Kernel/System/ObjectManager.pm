@@ -7,7 +7,6 @@
 # did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
 # --
 
-## nofilter(TidyAll::Plugin::OTRS::Perl::PodNewDoc)
 ## nofilter(TidyAll::Plugin::OTRS::Perl::PodSpelling)
 ## nofilter(TidyAll::Plugin::OTRS::Perl::Require)
 ## nofilter(TidyAll::Plugin::OTRS::Perl::SyntaxCheck)
@@ -72,6 +71,8 @@ Kernel::System::ObjectManager - object and dependency manager
 =item new()
 
 Creates a new instance of Kernel::System::ObjectManager.
+
+    use Kernel::System::ObjectManager;
 
     local $Kernel::OM = Kernel::System::ObjectManager->new(%Options)
 
