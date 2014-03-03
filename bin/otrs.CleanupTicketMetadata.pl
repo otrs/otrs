@@ -41,7 +41,7 @@ local $Kernel::OM = Kernel::System::ObjectManager->new(
 sub _CommonObjects {
     $Kernel::OM->ObjectsDiscard();
     my %Objects = $Kernel::OM->ObjectHash(
-        Objects => [qw/ConfigObject TimeObject UserObject GroupObject TicketObject/],
+        Objects => [qw(ConfigObject TimeObject UserObject GroupObject TicketObject)],
     );
 
     return \%Objects;

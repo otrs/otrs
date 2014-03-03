@@ -36,7 +36,7 @@ local $Kernel::OM = Kernel::System::ObjectManager->new(
     },
 );
 my %CommonObject = $Kernel::OM->ObjectHash(
-    Objects => [qw/ConfigObject EncodeObject LogObject MainObject TimeObject DBObject/],
+    Objects => [qw(ConfigObject EncodeObject LogObject MainObject TimeObject DBObject)],
 );
 
 # check args

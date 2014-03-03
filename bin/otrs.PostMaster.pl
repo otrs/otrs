@@ -63,7 +63,7 @@ local $Kernel::OM = Kernel::System::ObjectManager->new(
     },
 );
 my %CommonObject = $Kernel::OM->ObjectHash(
-    Objects => [qw/ConfigObject EncodeObject LogObject MainObject TimeObject/],
+    Objects => [qw(ConfigObject EncodeObject LogObject MainObject TimeObject)],
 );
 
 # Wrap the majority of the script in an "eval" block so that any

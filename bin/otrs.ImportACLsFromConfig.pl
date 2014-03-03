@@ -38,7 +38,7 @@ local $Kernel::OM = Kernel::System::ObjectManager->new(
     },
 );
 my %CommonObject = $Kernel::OM->ObjectHash(
-    Objects => [qw/ConfigObject EncodeObject LogObject TimeObject MainObject DBObject ACLObject/],
+    Objects => [qw(ConfigObject EncodeObject LogObject TimeObject MainObject DBObject ACLObject)],
 );
 
 # check if there are already entries in the database

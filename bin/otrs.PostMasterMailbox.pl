@@ -62,7 +62,7 @@ local $Kernel::OM = Kernel::System::ObjectManager->new(
     },
 );
 my %CommonObject = $Kernel::OM->ObjectHash(
-    Objects => [qw/ConfigObject EncodeObject LogObject MainObject TimeObject DBObject PIDObject/],
+    Objects => [qw(ConfigObject EncodeObject LogObject MainObject TimeObject DBObject PIDObject)],
 );
 
 # create pid lock

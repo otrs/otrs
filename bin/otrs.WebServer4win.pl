@@ -83,7 +83,7 @@ if ( $Opts{a} && $Opts{a} eq "stop" ) {
     # create common objects
     local $Kernel::OM = _OM();
     my %CommonObject = $Kernel::OM->ObjectHash(
-        Objects => [qw/ConfObject EncodeObject LogObject MainObject TimeObject DBObject/],
+        Objects => [qw(ConfObject EncodeObject LogObject MainObject TimeObject DBObject)],
     );
 
     # stop the Web Server Service (same as "stop"" in service control manger)
@@ -119,7 +119,7 @@ elsif ( $Opts{a} && $Opts{a} eq "reload" ) {
     # create common objects
     local $Kernel::OM = _OM();
     my %CommonObject = $Kernel::OM->ObjectHash(
-        Objects => [qw/ConfObject EncodeObject LogObject MainObject TimeObject DBObject/],
+        Objects => [qw(ConfObject EncodeObject LogObject MainObject TimeObject DBObject)],
     );
 
     # log daemon reload request
@@ -149,7 +149,7 @@ elsif ( $Opts{a} && $Opts{a} eq "start" ) {
     # create common objects
     local $Kernel::OM = _OM();
     my %CommonObject = $Kernel::OM->ObjectHash(
-        Objects => [qw/ConfObject EncodeObject LogObject MainObject TimeObject DBObject/],
+        Objects => [qw(ConfObject EncodeObject LogObject MainObject TimeObject DBObject)],
     );
 
     # get current service status
@@ -193,7 +193,7 @@ sub _Start {
     # create common objects
     local $Kernel::OM = _OM();
     my %CommonObject = $Kernel::OM->ObjectHash(
-        Objects => [qw/ConfObject EncodeObject LogObject MainObject TimeObject DBObject/],
+        Objects => [qw(ConfObject EncodeObject LogObject MainObject TimeObject DBObject)],
     );
 
     # get default log path from configuration
@@ -380,7 +380,7 @@ sub _Stop {
     # create common objects
     local $Kernel::OM = _OM();
     my %CommonObject = $Kernel::OM->ObjectHash(
-        Objects => [qw/ConfObject EncodeObject LogObject MainObject TimeObject DBObject/],
+        Objects => [qw(ConfObject EncodeObject LogObject MainObject TimeObject DBObject)],
     );
 
     # stop the service (this can be called because is part of the main loop)
@@ -408,7 +408,7 @@ sub _Status {
     # create common objects
     local $Kernel::OM = _OM();
     my %CommonObject = $Kernel::OM->ObjectHash(
-        Objects => [qw/ConfObject EncodeObject LogObject MainObject TimeObject DBObject/],
+        Objects => [qw(ConfObject EncodeObject LogObject MainObject TimeObject DBObject)],
     );
 
     # log daemon stop
@@ -453,7 +453,7 @@ sub _AutoRestart {
     # create common objects
     local $Kernel::OM = _OM();
     my %CommonObject = $Kernel::OM->ObjectHash(
-        Objects => [qw/ConfObject EncodeObject LogObject MainObject TimeObject DBObject/],
+        Objects => [qw(ConfObject EncodeObject LogObject MainObject TimeObject DBObject)],
     );
 
     # Log daemon start-up
@@ -502,7 +502,7 @@ sub _AutoStop {
     # create common objects
     local $Kernel::OM = _OM();
     my %CommonObject = $Kernel::OM->ObjectHash(
-        Objects => [qw/ConfObject EncodeObject LogObject MainObject TimeObject DBObject/],
+        Objects => [qw(ConfObject EncodeObject LogObject MainObject TimeObject DBObject)],
     );
 
     if ( $Param{Message} ) {

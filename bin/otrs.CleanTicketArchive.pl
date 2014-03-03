@@ -37,7 +37,7 @@ local $Kernel::OM = Kernel::System::ObjectManager->new(
     },
 );
 my %CommonObject = $Kernel::OM->ObjectHash(
-    Objects => [qw/ConfigObject EncodeObject LogObject MainObject TimeObject DBObject TicketObject/],
+    Objects => [qw(ConfigObject EncodeObject LogObject MainObject TimeObject DBObject TicketObject)],
 );
 
 # print header

@@ -90,7 +90,7 @@ for my $DatabaseType (@DatabaseType) {
         },
     );
     my %CommonObject = $Kernel::OM->ObjectHash(
-        Objects => [qw/ConfigObject/],
+        Objects => ['ConfigObject'],
     );
     $CommonObject{ConfigObject}->Set(
         Key   => 'Database::Type',
@@ -103,7 +103,7 @@ for my $DatabaseType (@DatabaseType) {
 
     # now that the config is set, we can ask for all the required objects
     %CommonObject = $Kernel::OM->ObjectHash(
-        Objects => [qw/ConfigObject XMLObject DBObject/],
+        Objects => [qw(ConfigObject XMLObject DBObject)],
     );
 
     # parse xml package

@@ -49,7 +49,7 @@ local $Kernel::OM = Kernel::System::ObjectManager->new(
     },
 );
 my %CommonObject = $Kernel::OM->ObjectHash(
-    Objects => [qw/TicketObject/],
+    Objects => ['TicketObject'],
 );
 
 # create needed objects

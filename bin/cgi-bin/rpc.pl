@@ -64,10 +64,10 @@ sub Dispatch {
     );
 
     my %CommonObject = $Kernel::OM->ObjectHash(
-        Objects => [qw/ConfigObject EncodeObject LogObject MainObject DBObject
+        Objects => [qw(ConfigObject EncodeObject LogObject MainObject DBObject
                       PIDObject TimeObject UserObject GroupObject QueueObject
                       CustomerUserObject CustomerCompanyObject TicketObject
-                      LinkObject/],
+                      LinkObject)],
     );
 
     my $RequiredUser     = $CommonObject{ConfigObject}->Get('SOAP::User');
@@ -132,10 +132,10 @@ sub DispatchMultipleTicketMethods {
     );
 
     my %CommonObject = $Kernel::OM->ObjectHash(
-        Objects => [qw/ConfigObject EncodeObject LogObject MainObject DBObject
+        Objects => [qw(ConfigObject EncodeObject LogObject MainObject DBObject
                       PIDObject TimeObject UserObject GroupObject QueueObject
                       CustomerUserObject CustomerCompanyObject TicketObject
-                      LinkObject/],
+                      LinkObject)],
     );
 
     my $RequiredUser     = $CommonObject{ConfigObject}->Get('SOAP::User');

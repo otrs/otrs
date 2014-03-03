@@ -48,7 +48,7 @@ local $Kernel::OM = Kernel::System::ObjectManager->new(
     },
 );
 my %CommonObject = $Kernel::OM->ObjectHash(
-    Objects => [qw/LogObject SessionObject/],
+    Objects => [qw(LogObject SessionObject)],
 );
 
 # create tmp storage objects

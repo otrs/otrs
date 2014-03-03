@@ -42,7 +42,7 @@ local $Kernel::OM = Kernel::System::ObjectManager->new(
     },
 );
 my %CommonObject = $Kernel::OM->ObjectHash(
-    Objects => [qw/ConfigObject EncodeObject LogObject CSVObject TimeObject MainObject DBObject GroupObject UserObject StatsObject CheckItemObject EmailObject PDFObject/],
+    Objects => [qw(ConfigObject EncodeObject LogObject CSVObject TimeObject MainObject DBObject GroupObject UserObject StatsObject CheckItemObject EmailObject PDFObject)],
 );
 
 # get options

@@ -41,7 +41,7 @@ local $Kernel::OM = Kernel::System::ObjectManager->new(
     },
 );
 my %CommonObject = $Kernel::OM->ObjectHash(
-    Objects => [qw/ConfigObject EncodeObject MainObject DBObject ServiceObject/],
+    Objects => [qw(ConfigObject EncodeObject MainObject DBObject ServiceObject)],
 );
 
 my $NoOptions = $ARGV[0] ? 0 : 1;

@@ -64,7 +64,7 @@ local $Kernel::OM = Kernel::System::ObjectManager->new(
     },
 );
 my %CommonObject = $Kernel::OM->ObjectHash(
-    Objects => [qw/ConfigObject EncodeObject LogObject MainObject DBObject CryptObject/],
+    Objects => [qw(ConfigObject EncodeObject LogObject MainObject DBObject CryptObject)],
 );
 
 # check for force option to activate SMIME support in SysConfig during the execution of this script

@@ -126,7 +126,7 @@ sub PipeEmail {
         },
     );
     my %CommonObject = $Kernel::OM->ObjectHash(
-        Objects => [qw/ConfigObject EncodeObject TimeObject LogObject MainObject DBObject/],
+        Objects => [qw(ConfigObject EncodeObject TimeObject LogObject MainObject DBObject)],
     );
 
     # debug info

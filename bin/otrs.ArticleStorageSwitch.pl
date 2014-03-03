@@ -63,7 +63,7 @@ local $Kernel::OM = Kernel::System::ObjectManager->new(
     },
 );
 my %CommonObject = $Kernel::OM->ObjectHash(
-    Objects => [qw/ConfigObject TimeObject PIDObject TicketObject/],
+    Objects => [qw(ConfigObject TimeObject PIDObject TicketObject)],
 );
 
 # create needed objects

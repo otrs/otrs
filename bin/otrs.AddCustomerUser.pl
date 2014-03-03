@@ -37,8 +37,8 @@ local $Kernel::OM = Kernel::System::ObjectManager->new(
     },
 );
 my %CommonObject = $Kernel::OM->ObjectHash(
-    Objects => [qw/ConfigObject EncodeObject LogObject TimeObject
-                  MainObject DBObject CustomerUserObject/],
+    Objects => [qw(ConfigObject EncodeObject LogObject TimeObject
+                  MainObject DBObject CustomerUserObject)],
 );
 
 my %Options;

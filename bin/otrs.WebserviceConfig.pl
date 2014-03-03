@@ -57,7 +57,7 @@ local $Kernel::OM = Kernel::System::ObjectManager->new(
     },
 );
 my %CommonObject = $Kernel::OM->ObjectHash(
-    Objects => [qw/WebserviceObject MainObject YAMLObject/],
+    Objects => [qw(WebserviceObject MainObject YAMLObject)],
 );
 
 # validate -a param

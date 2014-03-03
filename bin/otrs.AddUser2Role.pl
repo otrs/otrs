@@ -39,7 +39,7 @@ local $Kernel::OM = Kernel::System::ObjectManager->new(
 
 # create common objects
 my %CommonObject = $Kernel::OM->ObjectHash(
-    Objects => [qw/UserObject GroupObject/],
+    Objects => [qw(UserObject GroupObject)],
 );
 
 # get options

@@ -16,7 +16,7 @@ package Kernel::System::ObjectManager;
 use strict;
 use warnings;
 
-use Scalar::Util qw/weaken/;
+use Scalar::Util qw(weaken);
 
 # use the "standard" modules directly, so that persistent environments
 # like mod_perl and FastCGI preload them at startup
@@ -35,7 +35,7 @@ use Kernel::System::User;
 use Kernel::System::Group;
 use Kernel::Output::HTML::Layout;
 
-use Carp qw/confess/;
+use Carp qw(confess);
 
 # Contains the top-level object being retrieved;
 # used to generate better error messages.

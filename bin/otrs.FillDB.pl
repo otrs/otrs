@@ -55,8 +55,8 @@ sub _OM {
     );
 
     # eagerly construct the objects
-    for my $Object (qw/Config Time Log Main DB User CustomerUser Group
-            Queue Ticket Link DynamicField DynamicFieldBackend/) {
+    for my $Object (qw(Config Time Log Main DB User CustomerUser Group
+            Queue Ticket Link DynamicField DynamicFieldBackend)) {
         $Kernel::OM->Get($Object . 'Object');
     }
 

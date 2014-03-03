@@ -1762,7 +1762,7 @@ via the Preferences button after logging in.
         },
         AuthObject        => {
             ClassName       => 'Kernel::System::Auth',
-            Dependencies    => [@DefaultDependencies, qw/UserObject GroupObject ValidObject/],
+            Dependencies    => [@DefaultDependencies, qw(UserObject GroupObject ValidObject)],
             OmAware         => 1,
         },
         SessionObject     => {
@@ -1798,7 +1798,7 @@ via the Preferences button after logging in.
         },
         YAMLObject => {
             ClassName       => 'Kernel::System::YAML',
-            Dependencies    => [qw/ConfigObject LogObject EncodeObject MainObject/],
+            Dependencies    => [qw(ConfigObject LogObject EncodeObject MainObject)],
         },
         WebserviceObject => {
             ClassName       => 'Kernel::System::GenericInterface::Webservice',
@@ -1808,36 +1808,36 @@ via the Preferences button after logging in.
         },
         StatsObject => {
             ClassName       => 'Kernel::System::Stats',
-            Dependencies    => [@DefaultDependencies, qw/GroupObject UserObject/],
+            Dependencies    => [@DefaultDependencies, qw(GroupObject UserObject)],
         },
         CSVObject => {
             ClassName       => 'Kernel::System::CSV',
-            Dependencies    => [qw/ConfigObject LogObject EncodeObject/],
+            Dependencies    => [qw(ConfigObject LogObject EncodeObject)],
         },
         CheckItemObject => {
             ClassName       => 'Kernel::System::CheckItem',
-            Dependencies    => [qw/ConfigObject LogObject EncodeObject MainObject/],
+            Dependencies    => [qw(ConfigObject LogObject EncodeObject MainObject)],
         },
         EmailObject => {
             ClassName       => 'Kernel::System::Email',
         },
         PDFObject => {
             ClassName       => 'Kernel::System::PDF',
-            Dependencies    => [qw/ConfigObject LogObject EncodeObject MainObject/],
+            Dependencies    => [qw(ConfigObject LogObject EncodeObject MainObject)],
         },
         PIDObject => {
             ClassName       => 'Kernel::System::PID',
         },
         GenericAgentObject => {
             ClassName       => 'Kernel::System::GenericAgent',
-            Dependencies    => [@DefaultDependencies, qw/TicketObject QueueObject/],
+            Dependencies    => [@DefaultDependencies, qw(TicketObject QueueObject)],
         },
         CryptObject => {
             ClassName       => 'Kernel::System::Crypt',
         },
         FileTempObject => {
             ClassName       => 'Kernel::System::FileTemp',
-            Dependencies    => [qw/ConfigObject/],
+            Dependencies    => [qw(ConfigObject)],
         },
         DebugLogObject => {
             ClassName       => 'Kernel::System::GenericInterface::DebugLog',
@@ -1847,12 +1847,12 @@ via the Preferences button after logging in.
         },
         SysConfigObject => {
             ClassName       => 'Kernel::System::SysConfig',
-            Dependencies    => [@DefaultDependencies, qw/LanguageObject/],
+            Dependencies    => [@DefaultDependencies, qw(LanguageObject)],
 
         },
         LanguageObject => {
             ClassName       => 'Kernel::Language',
-            Dependencies    => [qw/ConfigObject LogObject MainObject EncodeObject/],
+            Dependencies    => [qw(ConfigObject LogObject MainObject EncodeObject)],
 
         },
         StandardTemplateObject => {
@@ -1869,11 +1869,11 @@ via the Preferences button after logging in.
         },
         CacheObject          => {
             ClassName       => 'Kernel::System::Cache',
-            Dependencies    => [qw/ConfigObject LogObject MainObject EncodeObject/],
+            Dependencies    => [qw(ConfigObject LogObject MainObject EncodeObject)],
         },
         ACLObject            => {
             ClassName       => 'Kernel::System::ACL::DB::ACL',
-            Dependencies    => [@DefaultDependencies, qw/CacheObject YAMLObject UserObject/],
+            Dependencies    => [@DefaultDependencies, qw(CacheObject YAMLObject UserObject)],
             OMAware         => 1,
         },
         StateObject          => {
@@ -1884,11 +1884,11 @@ via the Preferences button after logging in.
         },
         LoaderObject         => {
             ClassName       => 'Kernel::System::Loader',
-            Dependencies    => [qw/ConfigObject LogObject MainObject EncodeObject/],
+            Dependencies    => [qw(ConfigObject LogObject MainObject EncodeObject)],
         },
         AutoReponseObject   => {
             ClassName       => 'Kernel::System::AutoResponse',
-            Dependencies    => [@DefaultDependencies, qw/SystemAddressObject/],
+            Dependencies    => [@DefaultDependencies, qw(SystemAddressObject)],
             OmAware         => 1,
         },
     };

@@ -51,7 +51,7 @@ local $Kernel::OM = Kernel::System::ObjectManager->new(
     },
 );
 my %CommonObject = $Kernel::OM->ObjectHash(
-    Objects => [qw/ConfigObject EncodeObject LogObject MainObject TimeObject DBObject UserObject TicketObject/],
+    Objects => [qw(ConfigObject EncodeObject LogObject MainObject TimeObject DBObject UserObject TicketObject)],
 );
 
 # disable ticket events

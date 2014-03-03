@@ -50,7 +50,7 @@ EOF
         },
     );
     my %CommonObject = $Kernel::OM->ObjectHash(
-        Objects => [qw/ConfigObject EncodeObject LogObject MainObject TimeObject DBObject/],
+        Objects => [qw(ConfigObject EncodeObject LogObject MainObject TimeObject DBObject)],
     );
 
     my $Home = $CommonObject{ConfigObject}->Get('Home');

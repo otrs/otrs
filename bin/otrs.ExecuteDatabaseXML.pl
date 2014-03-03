@@ -37,7 +37,7 @@ local $Kernel::OM = Kernel::System::ObjectManager->new(
     },
 );
 my %CommonObject = $Kernel::OM->ObjectHash(
-    Objects => [qw/ConfigObject EncodeObject TimeObject MainObject DBObject XMLObject/],
+    Objects => [qw(ConfigObject EncodeObject TimeObject MainObject DBObject XMLObject)],
 );
 
 print "otrs.ExecuteDatabaseXML.pl - Execute XML DDL in the OTRS database\n";

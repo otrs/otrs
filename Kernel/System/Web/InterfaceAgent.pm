@@ -57,8 +57,8 @@ sub new {
     $Self->{Debug} = $Param{Debug} || 0;
 
     for my $Object (
-        qw/ ConfigObject LogObject EncodeObject SessionObject
-        MainObject TimeObject ParamObject UserObject GroupObject /
+        qw( ConfigObject LogObject EncodeObject SessionObject
+        MainObject TimeObject ParamObject UserObject GroupObject )
         )
     {
         $Self->{$Object} = $Kernel::OM->Get($Object);
