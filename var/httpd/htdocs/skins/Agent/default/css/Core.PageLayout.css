@@ -190,6 +190,10 @@ body.Popup {
     padding: 5px 20px 5px 5px;
 }
 
+.MainBox .ContentColumn .LayoutPopup > .Content {
+    background-color: transparent;
+}
+
 .LayoutPopup > .Footer {
     padding: 5px;
     border-top: 1px solid #999;

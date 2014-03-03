@@ -42,41 +42,49 @@
     </div>
 
     <div class="ContentColumn">
-        <form action="[% Env("CGIHandle") %]" method="post" enctype="multipart/form-data" name="[% Data.FormName %]" id="[% Data.FormID %]" class="Validate PreventMultipleSubmits">
-            <input type="hidden" name="Action" value="[% Env("Action") %]"/>
-            <input type="hidden" name="Subaction" value="[% Data.Subaction | html %]"/>
-            <input type="hidden" name="TicketID" value="[% Data.TicketID | html %]"/>
-            <input type="hidden" name="ProcessEntityID" value="[% Data.ProcessEntityID | html %]"/>
-            <input type="hidden" name="ActivityDialogEntityID" value="[% Data.ActivityDialogEntityID | html %]"/>
-            <input type="hidden" name="Expand" id="Expand" value=""/>
-            <input type="hidden" name="AJAXDialog" id="AJAXDialog" value="[% Data.AJAXDialog | html %]"/>
-            <input type="hidden" name="FormID" value="[% Data.FormID | html %]"/>
-            <div class="LayoutPopup ARIARoleMain">
+
+        <div class="WidgetSimple">
+            <div class="Header">
+                <h2>[% Translate("Ticket Information") | html %]</h2>
+            </div>
+
+            <div class="Content">
+
+                <form action="[% Env("CGIHandle") %]" method="post" enctype="multipart/form-data" name="[% Data.FormName %]" id="[% Data.FormID %]" class="Validate PreventMultipleSubmits">
+                    <input type="hidden" name="Action" value="[% Env("Action") %]"/>
+                    <input type="hidden" name="Subaction" value="[% Data.Subaction | html %]"/>
+                    <input type="hidden" name="TicketID" value="[% Data.TicketID | html %]"/>
+                    <input type="hidden" name="ProcessEntityID" value="[% Data.ProcessEntityID | html %]"/>
+                    <input type="hidden" name="ActivityDialogEntityID" value="[% Data.ActivityDialogEntityID | html %]"/>
+                    <input type="hidden" name="Expand" id="Expand" value=""/>
+                    <input type="hidden" name="AJAXDialog" id="AJAXDialog" value="[% Data.AJAXDialog | html %]"/>
+                    <input type="hidden" name="FormID" value="[% Data.FormID | html %]"/>
+                    <div class="LayoutPopup ARIARoleMain">
 [% RenderBlockStart("Header") %]
-                <div class="Header">
-                    <h1>
-                        [% Data.Name | html %]
+                        <div class="Header">
+                            <h1>
+                                [% Data.Name | html %]
 [% RenderBlockStart("DescriptionShort") %]
-                        - [% Data.DescriptionShort | html %]
+                                - [% Data.DescriptionShort | html %]
 [% RenderBlockEnd("DescriptionShort") %]
-                    </h1>
-                    <p>
+                            </h1>
+                            <p>
 [% RenderBlockStart("DescriptionLong") %]
-                        [% Data.DescriptionLong | html %] -
+                                [% Data.DescriptionLong | html %] -
 [% RenderBlockEnd("DescriptionLong") %]
 [% RenderBlockStart("CancelLink") %]
-                        <a class="CancelClosePopup" href="#">[% Translate("Cancel & close window") | html %]</a>
+                                <a class="CancelClosePopup" href="#">[% Translate("Cancel & close window") | html %]</a>
 [% RenderBlockEnd("CancelLink") %]
-                    </p>
+                            </p>
 [% RenderBlockStart("PropertiesLock") %]
-                    <p>
-                        [% Translate("The ticket has been locked") | html %].
-                        <a class="UndoClosePopup" href="[% Env("Baselink") %]Action=AgentTicketLock;Subaction=Unlock;TicketID=[% Data.TicketID %];[% Env("ChallengeTokenParam") | html %]">
-                            [% Translate("Undo & close window") | html %]
-                        </a>
-                    </p>
+                            <p>
+                                [% Translate("The ticket has been locked") | html %].
+                                <a class="UndoClosePopup" href="[% Env("Baselink") %]Action=AgentTicketLock;Subaction=Unlock;TicketID=[% Data.TicketID %];[% Env("ChallengeTokenParam") | html %]">
+                                    [% Translate("Undo & close window") | html %]
+                                </a>
+                            </p>
 [% RenderBlockEnd("PropertiesLock") %]
-                </div>
+                        </div>
 [% RenderBlockEnd("Header") %]
-                <div class="Content">
-                    <fieldset class="TableLike">
+                        <div class="Content">
+                            <fieldset class="TableLike">

@@ -646,6 +646,7 @@ fieldset.TableLike.Narrow > .Row > .Value {
 
 iframe.Signature {
     border: 1px solid #888;
+    background-color: #FFF;
 }
 
 /**

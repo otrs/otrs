@@ -333,26 +333,6 @@ dd {
     color: #999;
 }
 
-.MainBox.FormScreen > h1,
-.MainBox.FormScreen > .AsteriskExplanation {
-    margin-left: 24%;
-}
-
-.MainBox.FormScreen.NoSidebar > h1,
-.MainBox.FormScreen.NoSidebar > .AsteriskExplanation {
-    margin-left: 30%;
-}
-
-.RTL .MainBox.FormScreen > h1,
-.RTL .MainBox.FormScreen > .AsteriskExplanation {
-    margin-right: 24%;
-}
-
-.RTL .MainBox.FormScreen.NoSidebar > h1,
-.RTL .MainBox.FormScreen.NoSidebar > .AsteriskExplanation {
-    margin-right: 30%;
-}
-
 .OverviewBox > h1 {
     margin: 0;
     padding: 8px 11px 7px;
