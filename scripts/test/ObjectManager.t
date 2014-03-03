@@ -57,3 +57,36 @@ $Kernel::OM->ObjectsDiscard(
     Objects => ['DummyObject'],
 );
 $Self->True( !$Dummy, 'ObjectsDiscard with list of objects deleted object' );
+
+# now test that all configured objects can be created and then destroyed;
+# that way we know there are no cyclic references in the constructors
+
+my @Objects = sort keys %{ $Kernel::OM->Get('ConfigObject')->Get('Objects') };
+
+# some objects need extra data/configuration; exlcude them
+my %Exclude = (
+    CryptObject          => 1, # needs CryptType
+    PostMasterObject     => 1, # needs Email
+    StatsObject          => 1, # needs UserID
+    UnitTestHelperObject => 1, # needs UnitTestObject
+);
+@Objects = grep { !$Exclude{ $_ } } @Objects;
+
+my %AllObjects = $Kernel::OM->ObjectHash(
+    Objects => \@Objects,
+);
+
+for my $ObjectName ( sort keys %AllObjects ) {
+    weaken( $AllObjects{ $ObjectName } );
+}
+
+$Kernel::OM->ObjectsDiscard();
+
+for my $ObjectName ( sort keys %AllObjects ) {
+    $Self->True(
+        !defined($AllObjects{ $ObjectName }),
+        "ObjectsDiscard got rid of $ObjectName",
+    );
+}
+
+1;
