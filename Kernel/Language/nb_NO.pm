@@ -159,7 +159,7 @@ sub Data {
         'system' => 'system',
         'Customer Info' => 'Kunde info',
         'Customer Information' => 'Kundeinformasjon',
-        'Customer Company' => 'Kundebedrift',
+        'Customer' => 'Kundebedrift',
         'Customer Companies' => 'Kundefirma',
         'Company' => 'Bedrift',
         'go!' => 'Start!',
@@ -703,7 +703,7 @@ sub Data {
         'Phone-Ticket' => 'Henvendelser',
         'Search Tickets' => 'Søk i saker',
         'Edit Customer Users' => 'Rediger kundebrukere',
-        'Edit Customer Company' => 'Rediger kundebedrift',
+        'Edit Customer' => 'Rediger kundebedrift',
         'Bulk Action' => 'Masseredigering',
         'Bulk Actions on Tickets' => 'Masseredigering på saker',
         'Send Email and create a new Ticket' => 'Send e-post og opprett en ny sak',
@@ -3136,8 +3136,8 @@ sub Data {
         'Create new process ticket' => '',
         'Custom text for the page shown to customers that have no tickets yet.' =>
             'Tekst som vises for kunder som ikke har noen saker enda.',
-        'Customer Company Administration' => '',
-        'Customer Company Information' => '',
+        'Customer Administration' => '',
+        'Customer Information' => '',
         'Customer User <-> Groups' => '',
         'Customer User <-> Services' => '',
         'Customer User Administration' => '',
@@ -3886,9 +3886,9 @@ sub Data {
             '',
         'Event module that updates customer user service membership if login changes.' =>
             '',
-        'Event module that updates customer users after an update of the Customer Company.' =>
+        'Event module that updates customer users after an update of the Customer.' =>
             '',
-        'Event module that updates tickets after an update of the Customer Company.' =>
+        'Event module that updates tickets after an update of the Customer.' =>
             '',
         'Event module that updates tickets after an update of the Customer User.' =>
             '',
@@ -4865,7 +4865,7 @@ sub Data {
         ' (work units)' => ' (arbeidsenheter)',
         'A response is a default text which helps your agents to write faster answers to customers.' =>
             'Et ferdigsvar er en standard tekst som hjelper saksbehandlere til å skrive raskere tilbakemeldinger til kunder',
-        'Add Customer Company' => 'Legg til kundebedrift',
+        'Add Customer' => 'Legg til kundebedrift',
         'Add Response' => 'Legg til Ferdigsvar',
         'Add customer company' => 'Legg til kundebedrift',
         'Add response' => 'Nytt ferdigsvar',
@@ -4886,7 +4886,7 @@ sub Data {
         'Create and manage companies.' => 'Administrasjon av firma',
         'Create and manage response templates.' => 'Administrasjon av responsmaler.',
         'Currently only MySQL is supported in the web installer.' => 'For øyeblikket er kun MySQL støttet i webinstallasjonen.',
-        'Customer Company Management' => 'Administrasjon: Kundebedrifter',
+        'Customer Management' => 'Administrasjon: Kundebedrifter',
         'Customer Data' => 'Kundeinformasjon',
         'Customer automatically added in Cc.' => 'Kunde automatisk lagt til i Cc',
         'Customer will be needed to have a customer history and to login via customer panel.' =>

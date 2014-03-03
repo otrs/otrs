@@ -153,7 +153,7 @@ sub Data {
         'system' => 'システム',
         'Customer Info' => '顧客情報',
         'Customer Information' => '顧客情報',
-        'Customer Company' => '顧客企業',
+        'Customer' => '顧客企業',
         'Customer Companies' => '顧客企業',
         'Company' => '企業名',
         'go!' => '実行！',
@@ -697,7 +697,7 @@ sub Data {
         'Phone-Ticket' => '電話チケット',
         'Search Tickets' => 'チケット検索',
         'Edit Customer Users' => '顧客ユーザー編集',
-        'Edit Customer Company' => '顧客企業編集',
+        'Edit Customer' => '顧客企業編集',
         'Bulk Action' => '一括処理',
         'Bulk Actions on Tickets' => 'チケットへの一括処理',
         'Send Email and create a new Ticket' => 'メール送信と新規チケット作成',
@@ -3130,8 +3130,8 @@ sub Data {
         'Create new process ticket' => '新規プロセスチケットの作成',
         'Custom text for the page shown to customers that have no tickets yet.' =>
             '顧客に対して表示されるチケットがまだ無いページのための、カスタム・テキストです。',
-        'Customer Company Administration' => '顧客企業管理',
-        'Customer Company Information' => '顧客企業情報',
+        'Customer Administration' => '顧客企業管理',
+        'Customer Information' => '顧客企業情報',
         'Customer User <-> Groups' => '顧客ユーザー <-> グループ',
         'Customer User <-> Services' => '顧客ユーザー <-> サービス',
         'Customer User Administration' => '顧客ユーザー管理',
@@ -3882,9 +3882,9 @@ SystemAddressに関して"<Realname> <<Email>>"は受信者の名前およびE�
             '',
         'Event module that updates customer user service membership if login changes.' =>
             '',
-        'Event module that updates customer users after an update of the Customer Company.' =>
+        'Event module that updates customer users after an update of the Customer.' =>
             '',
-        'Event module that updates tickets after an update of the Customer Company.' =>
+        'Event module that updates tickets after an update of the Customer.' =>
             '',
         'Event module that updates tickets after an update of the Customer User.' =>
             '',
@@ -4860,7 +4860,7 @@ SystemAddressに関して"<Realname> <<Email>>"は受信者の名前およびE�
         # OBSOLETE ENTRIES FOR REFERENCE, DO NOT TRANSLATE!
         #
         ' (work units)' => ' (稼働時間)',
-        'Add Customer Company' => '顧客企業を追加',
+        'Add Customer' => '顧客企業を追加',
         'Add Response' => '応答を登録',
         'Add customer company' => '顧客企業を追加',
         'Add response' => '応答を追加',
@@ -4878,7 +4878,7 @@ SystemAddressに関して"<Realname> <<Email>>"は受信者の名前およびE�
         'Create and manage companies.' => '企業の作成と管理',
         'Create and manage response templates.' => '応答テンプレートの作成と管理',
         'Currently only MySQL is supported in the web installer.' => '現在のインストーラーはMySQLのみサポートしています。',
-        'Customer Company Management' => '顧客企業管理',
+        'Customer Management' => '顧客企業管理',
         'Customer Data' => '顧客情報',
         'Customer will be needed to have a customer history and to login via customer panel.' =>
             '顧客は顧客履歴の使用と顧客パネルからログインするために必要です。',

@@ -152,7 +152,7 @@ sub Data {
         'system' => 'system',
         'Customer Info' => 'Kundeinfo',
         'Customer Information' => 'Kundeoplysninger',
-        'Customer Company' => 'Kunde/Firma',
+        'Customer' => 'Kunde/Firma',
         'Customer Companies' => 'Kunde/Firmaer',
         'Company' => 'Firma',
         'go!' => 'kør',
@@ -696,7 +696,7 @@ sub Data {
         'Phone-Ticket' => 'Ny Sag',
         'Search Tickets' => 'Søg sager',
         'Edit Customer Users' => 'Rediger kundebrugere',
-        'Edit Customer Company' => 'Rediger kunde-firma',
+        'Edit Customer' => 'Rediger kunde-firma',
         'Bulk Action' => 'Massehandling',
         'Bulk Actions on Tickets' => 'Massehandlinger på sager',
         'Send Email and create a new Ticket' => 'Send mail og opret en ny sag',
@@ -3129,8 +3129,8 @@ sub Data {
         'Create new process ticket' => '',
         'Custom text for the page shown to customers that have no tickets yet.' =>
             'Tekst til den side, der vises til kunder, der endnu ikke har nogen sager.',
-        'Customer Company Administration' => 'Kunde-Firma-administration',
-        'Customer Company Information' => 'Kunde-Firma-information',
+        'Customer Administration' => 'Kunde-Firma-administration',
+        'Customer Information' => 'Kunde-Firma-information',
         'Customer User <-> Groups' => '',
         'Customer User <-> Services' => '',
         'Customer User Administration' => 'Kunde-administration',
@@ -3879,9 +3879,9 @@ sub Data {
             '',
         'Event module that updates customer user service membership if login changes.' =>
             '',
-        'Event module that updates customer users after an update of the Customer Company.' =>
+        'Event module that updates customer users after an update of the Customer.' =>
             '',
-        'Event module that updates tickets after an update of the Customer Company.' =>
+        'Event module that updates tickets after an update of the Customer.' =>
             '',
         'Event module that updates tickets after an update of the Customer User.' =>
             '',
@@ -4858,7 +4858,7 @@ sub Data {
         ' (work units)' => ' (arbejdsenheder)',
         'A response is a default text which helps your agents to write faster answers to customers.' =>
             'Et svar er en skabelon, der hjælper dine agenter med at skrive hurtige og ensartede svar til kunderne.',
-        'Add Customer Company' => 'Tilføj kunde/firma',
+        'Add Customer' => 'Tilføj kunde/firma',
         'Add Response' => 'Tilføj svar',
         'Add customer company' => 'Tilføj kunde/firma',
         'Add response' => 'Tilføj svar',
@@ -4871,7 +4871,7 @@ sub Data {
         'Create and manage companies.' => 'Administrer firmaer.',
         'Create and manage response templates.' => 'Administrer svar-skabeloner.',
         'Currently only MySQL is supported in the web installer.' => 'Pt. understøttes kun MySQL af web-installeren.',
-        'Customer Company Management' => 'Administrer Kunde/Firma',
+        'Customer Management' => 'Administrer Kunde/Firma',
         'Customer Data' => 'Kundedata',
         'Customer automatically added in Cc.' => 'Kunde automatisk tilføjet i Cc.',
         'Customer will be needed to have a customer history and to login via customer panel.' =>

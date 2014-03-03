@@ -152,7 +152,7 @@ sub Data {
         'system' => 'система',
         'Customer Info' => 'Потребителски данни',
         'Customer Information' => '',
-        'Customer Company' => 'Компания',
+        'Customer' => 'Компания',
         'Customer Companies' => '',
         'Company' => 'Компания',
         'go!' => 'ОК!',
@@ -696,7 +696,7 @@ sub Data {
         'Phone-Ticket' => 'Билет телефонно обаждане',
         'Search Tickets' => 'Търсене на билети',
         'Edit Customer Users' => 'Редакция на клиент-потребители',
-        'Edit Customer Company' => '',
+        'Edit Customer' => '',
         'Bulk Action' => 'Събирателно действие',
         'Bulk Actions on Tickets' => 'Събирателно действие върху билети',
         'Send Email and create a new Ticket' => 'Изпращане на е-поща и създаване на нов билет',
@@ -3129,8 +3129,8 @@ sub Data {
         'Create new process ticket' => '',
         'Custom text for the page shown to customers that have no tickets yet.' =>
             '',
-        'Customer Company Administration' => '',
-        'Customer Company Information' => '',
+        'Customer Administration' => '',
+        'Customer Information' => '',
         'Customer User <-> Groups' => '',
         'Customer User <-> Services' => '',
         'Customer User Administration' => '',
@@ -3879,9 +3879,9 @@ sub Data {
             '',
         'Event module that updates customer user service membership if login changes.' =>
             '',
-        'Event module that updates customer users after an update of the Customer Company.' =>
+        'Event module that updates customer users after an update of the Customer.' =>
             '',
-        'Event module that updates tickets after an update of the Customer Company.' =>
+        'Event module that updates tickets after an update of the Customer.' =>
             '',
         'Event module that updates tickets after an update of the Customer User.' =>
             '',
@@ -4856,9 +4856,9 @@ sub Data {
         # OBSOLETE ENTRIES FOR REFERENCE, DO NOT TRANSLATE!
         #
         ' (work units)' => ' (работни единици)',
-        'Add Customer Company' => 'Добавяне на клиент-фирма',
+        'Add Customer' => 'Добавяне на клиент-фирма',
         'Attachments <-> Responses' => 'Прикачени файлове <-> Опашки',
-        'Customer Company Management' => 'Управление на клиент-фирма',
+        'Customer Management' => 'Управление на клиент-фирма',
         'Customer Data' => 'Данни за потребителя',
         'Database-User' => 'Потребител на СУБД',
         'Escalation in' => 'Улеличение на приоритета в',

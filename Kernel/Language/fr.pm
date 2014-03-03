@@ -159,7 +159,7 @@ sub Data {
         'system' => 'système',
         'Customer Info' => 'Information client',
         'Customer Information' => 'Information client',
-        'Customer Company' => 'Entreprise du client',
+        'Customer' => 'Entreprise du client',
         'Customer Companies' => 'Entreprises clientes',
         'Company' => 'Entreprise',
         'go!' => 'c\'est parti !',
@@ -703,7 +703,7 @@ sub Data {
         'Phone-Ticket' => 'Ticket Téléphone',
         'Search Tickets' => 'Recherche de tickets',
         'Edit Customer Users' => 'Editer clients',
-        'Edit Customer Company' => 'Éditer l\'entreprise cliente',
+        'Edit Customer' => 'Éditer l\'entreprise cliente',
         'Bulk Action' => 'Action groupée',
         'Bulk Actions on Tickets' => 'Action groupées sur les tickets',
         'Send Email and create a new Ticket' => 'Envoyer un E-mail et créer un nouveau Ticket',
@@ -3136,8 +3136,8 @@ sub Data {
         'Create new process ticket' => '',
         'Custom text for the page shown to customers that have no tickets yet.' =>
             '',
-        'Customer Company Administration' => '',
-        'Customer Company Information' => '',
+        'Customer Administration' => '',
+        'Customer Information' => '',
         'Customer User <-> Groups' => '',
         'Customer User <-> Services' => '',
         'Customer User Administration' => '',
@@ -3886,9 +3886,9 @@ sub Data {
             '',
         'Event module that updates customer user service membership if login changes.' =>
             '',
-        'Event module that updates customer users after an update of the Customer Company.' =>
+        'Event module that updates customer users after an update of the Customer.' =>
             '',
-        'Event module that updates tickets after an update of the Customer Company.' =>
+        'Event module that updates tickets after an update of the Customer.' =>
             '',
         'Event module that updates tickets after an update of the Customer User.' =>
             '',
@@ -4862,7 +4862,7 @@ sub Data {
         #
         # OBSOLETE ENTRIES FOR REFERENCE, DO NOT TRANSLATE!
         #
-        'Add Customer Company' => 'Ajouter un client au service',
+        'Add Customer' => 'Ajouter un client au service',
         'Add Response' => 'Ajouter Réponse',
         'Add customer company' => 'Ajouter une entreprise cliente',
         'Add response' => 'Ajouter réponse',
@@ -4875,7 +4875,7 @@ sub Data {
         'Create and manage companies.' => 'Créer et gérer les entreprises.',
         'Create and manage response templates.' => 'Créer et gérer les modèles de réponse.',
         'Currently only MySQL is supported in the web installer.' => 'Pour le moment, seul MySQL est supporté pour cet installateur web.',
-        'Customer Company Management' => 'Gestion des services clients',
+        'Customer Management' => 'Gestion des services clients',
         'Customer Data' => 'Données client',
         'Customer automatically added in Cc.' => 'Client automatiquement ajouté dans Cc.',
         'Customer will be needed to have a customer history and to login via customer panel.' =>

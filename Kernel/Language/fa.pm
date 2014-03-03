@@ -156,7 +156,7 @@ sub Data {
         'system' => 'سیستم',
         'Customer Info' => 'اطلاعات مشترک',
         'Customer Information' => 'اطلاعات مشترک',
-        'Customer Company' => 'شرکت/سازمان مشترک',
+        'Customer' => 'شرکت/سازمان مشترک',
         'Customer Companies' => 'شرکت/سازمان‌های مشترک',
         'Company' => 'شرکت/سازمان',
         'go!' => 'تائید!',
@@ -700,7 +700,7 @@ sub Data {
         'Phone-Ticket' => 'درخواست تلفنی',
         'Search Tickets' => 'جستجو در درخواست‌ها',
         'Edit Customer Users' => 'ویرایش مشترکین',
-        'Edit Customer Company' => 'ویرایش شرکت/سازمان مشترک',
+        'Edit Customer' => 'ویرایش شرکت/سازمان مشترک',
         'Bulk Action' => 'اعمال کلی',
         'Bulk Actions on Tickets' => 'اعمال کلی روی درخواست‌ها',
         'Send Email and create a new Ticket' => 'ارسال ایمیل و ایجاد درخواست جدید',
@@ -3133,8 +3133,8 @@ sub Data {
         'Create new process ticket' => '',
         'Custom text for the page shown to customers that have no tickets yet.' =>
             'متن سفارشی شده برای نمایش به مشترکین برای جاهایی که هیچ درخواستی موجود نیست.',
-        'Customer Company Administration' => '',
-        'Customer Company Information' => '',
+        'Customer Administration' => '',
+        'Customer Information' => '',
         'Customer User <-> Groups' => '',
         'Customer User <-> Services' => '',
         'Customer User Administration' => '',
@@ -3883,9 +3883,9 @@ sub Data {
             '',
         'Event module that updates customer user service membership if login changes.' =>
             '',
-        'Event module that updates customer users after an update of the Customer Company.' =>
+        'Event module that updates customer users after an update of the Customer.' =>
             '',
-        'Event module that updates tickets after an update of the Customer Company.' =>
+        'Event module that updates tickets after an update of the Customer.' =>
             '',
         'Event module that updates tickets after an update of the Customer User.' =>
             '',
@@ -4860,7 +4860,7 @@ sub Data {
         # OBSOLETE ENTRIES FOR REFERENCE, DO NOT TRANSLATE!
         #
         ' (work units)' => ' (واحد کار)',
-        'Add Customer Company' => 'افزودن شرکت مشترک ',
+        'Add Customer' => 'افزودن شرکت مشترک ',
         'Add Response' => 'افزودن پاسخ',
         'Add customer company' => 'افزودن شرکت مشترک',
         'Add response' => 'افزودن پاسخ',
@@ -4874,7 +4874,7 @@ sub Data {
         'Create and manage companies.' => 'ساخت و مدیریت سازمان‌ها',
         'Create and manage response templates.' => 'ساخت و مدیریت قالب پاسخ‌ها',
         'Currently only MySQL is supported in the web installer.' => 'هم اکنون فقط MySQL در نصب‌کننده تحت وب پشتیبانی می‌شود.',
-        'Customer Company Management' => 'مدیریت شرکت مشترک',
+        'Customer Management' => 'مدیریت شرکت مشترک',
         'Customer Data' => 'اطلاعات مشترک',
         'Customer will be needed to have a customer history and to login via customer panel.' =>
             'مشترک نیاز دارد که دارای تاریخچه مشترک باشد و از پنل مشترک وارد شود.',

@@ -151,7 +151,7 @@ sub Data {
         'system' => 'sistema',
         'Customer Info' => 'Kliento info',
         'Customer Information' => 'Kliento informacija',
-        'Customer Company' => 'Kliento organizacija',
+        'Customer' => 'Kliento organizacija',
         'Customer Companies' => 'Kliento organizacijos',
         'Company' => 'Organizacija',
         'go!' => 'eiti!',
@@ -695,7 +695,7 @@ sub Data {
         'Phone-Ticket' => 'Triktis telefonu',
         'Search Tickets' => 'Ieškoti trikčių',
         'Edit Customer Users' => 'Redaguoti kliento naudotojus',
-        'Edit Customer Company' => 'Redaguoti kliento organizaciją',
+        'Edit Customer' => 'Redaguoti kliento organizaciją',
         'Bulk Action' => 'Masinis veiksmas',
         'Bulk Actions on Tickets' => 'Masinis veiksmas triktims',
         'Send Email and create a new Ticket' => 'Išsiųsti el. laišką ir sukurti naują triktį',
@@ -3128,8 +3128,8 @@ sub Data {
         'Create new process ticket' => '',
         'Custom text for the page shown to customers that have no tickets yet.' =>
             '',
-        'Customer Company Administration' => '',
-        'Customer Company Information' => '',
+        'Customer Administration' => '',
+        'Customer Information' => '',
         'Customer User <-> Groups' => '',
         'Customer User <-> Services' => '',
         'Customer User Administration' => '',
@@ -3878,9 +3878,9 @@ sub Data {
             '',
         'Event module that updates customer user service membership if login changes.' =>
             '',
-        'Event module that updates customer users after an update of the Customer Company.' =>
+        'Event module that updates customer users after an update of the Customer.' =>
             '',
-        'Event module that updates tickets after an update of the Customer Company.' =>
+        'Event module that updates tickets after an update of the Customer.' =>
             '',
         'Event module that updates tickets after an update of the Customer User.' =>
             '',
@@ -4854,7 +4854,7 @@ sub Data {
         #
         # OBSOLETE ENTRIES FOR REFERENCE, DO NOT TRANSLATE!
         #
-        'Add Customer Company' => 'Pridėti kliento organizaciją',
+        'Add Customer' => 'Pridėti kliento organizaciją',
         'Add Response' => 'Pridėti atsakymą',
         'Add customer company' => 'Pridėti organizaciją',
         'Add response' => 'Pridėti atsakymą',
@@ -4866,7 +4866,7 @@ sub Data {
         'Create and manage companies.' => 'Kurti ir valdyti organizacijas.',
         'Create and manage response templates.' => 'Kurti ir valdyti atsakymų šablonus.',
         'Currently only MySQL is supported in the web installer.' => 'Šiuo metu web-įdiegimo sąsajoje palaikomas tik MySQL.',
-        'Customer Company Management' => 'Kliento  valdymas',
+        'Customer Management' => 'Kliento  valdymas',
         'Customer Data' => 'Kliento duomenys',
         'Customer will be needed to have a customer history and to login via customer panel.' =>
             'Klientas bus reikalingas turėti klientų istorijai ir prisijungimui per klientų skydelį.',

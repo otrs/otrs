@@ -159,7 +159,7 @@ sub Data {
         'system' => 'sistema',
         'Customer Info' => 'Informazioni Cliente',
         'Customer Information' => 'Informazioni Cliente',
-        'Customer Company' => 'Società del Cliente',
+        'Customer' => 'Società del Cliente',
         'Customer Companies' => 'Società dei Clienti',
         'Company' => 'Società',
         'go!' => 'vai!',
@@ -703,7 +703,7 @@ sub Data {
         'Phone-Ticket' => 'Richiesta-Telefonica',
         'Search Tickets' => 'Ricerca Richieste',
         'Edit Customer Users' => 'Modifica Utenti Clienti',
-        'Edit Customer Company' => 'Modifica Società Cliente',
+        'Edit Customer' => 'Modifica Società Cliente',
         'Bulk Action' => 'Operazioni Multiple',
         'Bulk Actions on Tickets' => 'Operazione multipla sulle richieste',
         'Send Email and create a new Ticket' => 'Manda una email e crea una nuova richiesta',
@@ -3137,8 +3137,8 @@ Nota: Questa tabella rappresenta l\'ordine di esecuzione delle ACL. Se è necess
         'Create new process ticket' => '',
         'Custom text for the page shown to customers that have no tickets yet.' =>
             '',
-        'Customer Company Administration' => 'Amministrazione società cliente',
-        'Customer Company Information' => 'Informazioni società cliente',
+        'Customer Administration' => 'Amministrazione società cliente',
+        'Customer Information' => 'Informazioni società cliente',
         'Customer User <-> Groups' => '',
         'Customer User <-> Services' => '',
         'Customer User Administration' => 'Amministrazione utenti cliente',
@@ -3887,9 +3887,9 @@ Nota: Questa tabella rappresenta l\'ordine di esecuzione delle ACL. Se è necess
             '',
         'Event module that updates customer user service membership if login changes.' =>
             '',
-        'Event module that updates customer users after an update of the Customer Company.' =>
+        'Event module that updates customer users after an update of the Customer.' =>
             '',
-        'Event module that updates tickets after an update of the Customer Company.' =>
+        'Event module that updates tickets after an update of the Customer.' =>
             '',
         'Event module that updates tickets after an update of the Customer User.' =>
             '',
@@ -4866,7 +4866,7 @@ Nota: Questa tabella rappresenta l\'ordine di esecuzione delle ACL. Se è necess
         ' (work units)' => ' (unità di lavoro)',
         'A response is a default text which helps your agents to write faster answers to customers.' =>
             'Una risposta è costituita dal testo standard per facilitare gli agenti nella risposta ai clienti.',
-        'Add Customer Company' => 'Aggiungi Società Cliente',
+        'Add Customer' => 'Aggiungi Società Cliente',
         'Add Response' => 'Aggiungi risposta',
         'Add customer company' => 'Aggiungi Società Cliente',
         'Add response' => 'Aggiungi risposta',
@@ -4887,7 +4887,7 @@ Nota: Questa tabella rappresenta l\'ordine di esecuzione delle ACL. Se è necess
         'Create and manage companies.' => 'Crea e gestisce le compagnie',
         'Create and manage response templates.' => 'Crea e gestisce i template di risposta.',
         'Currently only MySQL is supported in the web installer.' => 'Momentaneamente è supportato sulo MySQL dall\'installer web.',
-        'Customer Company Management' => 'Gestione Società Cliente',
+        'Customer Management' => 'Gestione Società Cliente',
         'Customer Data' => 'Dati del cliente',
         'Customer will be needed to have a customer history and to login via customer panel.' =>
             'Il cliente necessiterà di uno storico, e di effettuare il login tramite il pannello cliente.',

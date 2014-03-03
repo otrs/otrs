@@ -162,7 +162,7 @@ sub Data {
         'system' => 'система',
         'Customer Info' => 'Информация о клиенте',
         'Customer Information' => 'Информация о клиенте',
-        'Customer Company' => 'Компания клиента',
+        'Customer' => 'Компания клиента',
         'Customer Companies' => 'Компании клиента',
         'Company' => 'Компания',
         'go!' => 'ОК!',
@@ -706,7 +706,7 @@ sub Data {
         'Phone-Ticket' => 'Телефонный звонок',
         'Search Tickets' => 'Поиск заявок',
         'Edit Customer Users' => 'Редактировать клиентов',
-        'Edit Customer Company' => 'Редактировать компании клиентов',
+        'Edit Customer' => 'Редактировать компании клиентов',
         'Bulk Action' => 'Массовое действие',
         'Bulk Actions on Tickets' => 'Массовое действие над заявками',
         'Send Email and create a new Ticket' => 'Отправить письмо и создать новую заявку',
@@ -3140,8 +3140,8 @@ sub Data {
         'Create new process ticket' => '',
         'Custom text for the page shown to customers that have no tickets yet.' =>
             '',
-        'Customer Company Administration' => 'Управление компаниями клиентов',
-        'Customer Company Information' => 'Информация о компании клиента',
+        'Customer Administration' => 'Управление компаниями клиентов',
+        'Customer Information' => 'Информация о компании клиента',
         'Customer User <-> Groups' => 'Клиенты <-> Группы',
         'Customer User <-> Services' => 'Клиенты <-> Сервисы',
         'Customer User Administration' => 'Управление клиентами',
@@ -3894,9 +3894,9 @@ sub Data {
             'Регистрация модуля обработки события. Для большей производительности вы должны задать событие (например: Event => TicketCreate). Это возможно только в случае, если все динамические поля заявки нуждаются в одном и том же событии.',
         'Event module that updates customer user service membership if login changes.' =>
             'Модуль обработки события, который обновляет принадлежность сервисов клиентов после смены логина клиента.',
-        'Event module that updates customer users after an update of the Customer Company.' =>
+        'Event module that updates customer users after an update of the Customer.' =>
             'Модуль обработки события, который обновляет клиентов после обновления Компании клиента.',
-        'Event module that updates tickets after an update of the Customer Company.' =>
+        'Event module that updates tickets after an update of the Customer.' =>
             'Модуль обработки события, который обновляет заявки клиентов после обновления Компании клиента.',
         'Event module that updates tickets after an update of the Customer User.' =>
             'Модуль обработки события, который обновляет заявки клиентов после обновления учетной записи клиента.',
@@ -4906,12 +4906,12 @@ sub Data {
         'A web mail client' => 'Почтовый веб-клиент',
         'About OTRS' => 'О OTRS',
         'Absolut Period' => 'Точный период',
-        'Add Customer Company' => 'Добавить компанию клиента',
+        'Add Customer' => 'Добавить компанию клиента',
         'Add Response' => 'Добавить ответ',
         'Add System Address' => 'Добавить системный адрес',
         'Add User' => 'Добавить пользователя',
         'Add a new Agent.' => 'Добавить пользователя',
-        'Add a new Customer Company.' => 'Добавить компанию клиента',
+        'Add a new Customer.' => 'Добавить компанию клиента',
         'Add a new Group.' => 'Добавить новую группу',
         'Add a new Notification.' => 'Добавить уведомление',
         'Add a new Priority.' => 'Создать приоритет.',
@@ -5029,7 +5029,7 @@ sub Data {
         'Create your first Ticket' => 'Добавить первую заявку',
         'CreateTicket' => 'Создание заявки',
         'Currently only MySQL is supported in the web installer.' => 'На текущий момент веб-инсталлятор поддерживает только MySQL.',
-        'Customer Company Management' => 'Управление компанией клиента',
+        'Customer Management' => 'Управление компанией клиента',
         'Customer Data' => 'Учетные данные клиента',
         'Customer Move Notify' => 'Извещать клиента о перемещении',
         'Customer Owner Notify' => 'Извещать клиента о смене владельца',

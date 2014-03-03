@@ -158,7 +158,7 @@ sub Data {
         'system' => 'système',
         'Customer Info' => 'Renseignements sur le client',
         'Customer Information' => 'Renseignements sur le client',
-        'Customer Company' => 'Entreprise cliente',
+        'Customer' => 'Entreprise cliente',
         'Customer Companies' => 'Entreprises clientes',
         'Company' => 'Entreprise ',
         'go!' => 'c\'est parti!',
@@ -702,7 +702,7 @@ sub Data {
         'Phone-Ticket' => 'Demande par téléphone',
         'Search Tickets' => 'Recherche de demande',
         'Edit Customer Users' => 'Éditer les utilisateurs clients',
-        'Edit Customer Company' => 'Éditer l\'entreprise cliente',
+        'Edit Customer' => 'Éditer l\'entreprise cliente',
         'Bulk Action' => 'Action groupée',
         'Bulk Actions on Tickets' => 'Actions groupées sur les demandes',
         'Send Email and create a new Ticket' => 'Envoyer un courriel et créer une nouvelle demande',
@@ -3135,8 +3135,8 @@ sub Data {
         'Create new process ticket' => '',
         'Custom text for the page shown to customers that have no tickets yet.' =>
             'Texte personnalisé pour la page affichée aux clients qui n\'ont pas encore de demande.',
-        'Customer Company Administration' => '',
-        'Customer Company Information' => '',
+        'Customer Administration' => '',
+        'Customer Information' => '',
         'Customer User <-> Groups' => '',
         'Customer User <-> Services' => '',
         'Customer User Administration' => '',
@@ -3885,9 +3885,9 @@ sub Data {
             'Enregistrement du module des évènements. Pour une meilleure performance, vous pouvez créer un déclencheur d\'évènement (p.ex. Évènement => Créer une demande (Event => TicketCreate)). La création n\'est possible que si les champs dynamiques requièrent tous le même évènement.',
         'Event module that updates customer user service membership if login changes.' =>
             '',
-        'Event module that updates customer users after an update of the Customer Company.' =>
+        'Event module that updates customer users after an update of the Customer.' =>
             '',
-        'Event module that updates tickets after an update of the Customer Company.' =>
+        'Event module that updates tickets after an update of the Customer.' =>
             '',
         'Event module that updates tickets after an update of the Customer User.' =>
             '',
@@ -5098,12 +5098,12 @@ sub Data {
         'Action \'$Param{Action}\' not found!' => 'L\'action \'$Param{Action}\' n\'a pas été trouvé.',
         'Activates TypeAhead for the autocomplete feature, that enables users to type in whatever speed they desire, without losing any information. Often this means that keystrokes entered will not be displayed on the screen immediately.' =>
             'Active la fonction de frappe continue « TypeAhead » pour la saisie automatique. Ceci permet à l\'utilisateur de taper à la vitesse désirée sans perte d\'information. Souvent cela signifie que les caractères frappés ne seront pas affichés à l\'écran immédiatement.',
-        'Add Customer Company' => 'Ajouter un client au service',
+        'Add Customer' => 'Ajouter un client au service',
         'Add Response' => 'Ajouter une réponse',
         'Add System Address' => 'Ajouter une adresse dans le système',
         'Add User' => 'Ajouter un utilisateur.',
         'Add a new Agent.' => 'Ajoute un nouvel agent.',
-        'Add a new Customer Company.' => 'Ajouter une nouvelle entreprise cliente.',
+        'Add a new Customer.' => 'Ajouter une nouvelle entreprise cliente.',
         'Add a new Group.' => 'Ajouter un nouveau groupe.',
         'Add a new Notification.' => 'Ajouter une nouvelle notification.',
         'Add a new Priority.' => 'Ajouter une nouvelle priorité.',
@@ -5542,7 +5542,7 @@ sub Data {
         'Croatia' => 'Croatie, République de',
         'Curacao' => 'Curacao',
         'Currently only MySQL is supported in the web installer.' => 'Pour le moment, seul MySQL est supporté par cet installateur web.',
-        'Customer Company Management' => 'Gestion des entreprises clientes',
+        'Customer Management' => 'Gestion des entreprises clientes',
         'Customer Data' => 'Renseignements du client ',
         'Customer Move Notify' => 'Notification lors d\'un changement de file',
         'Customer Owner Notify' => 'Notification lors d\'un changement de propriétaire',

@@ -155,7 +155,7 @@ sub Data {
         'system' => 'Sustav',
         'Customer Info' => 'Korisnički info',
         'Customer Information' => 'Informacije o korisniku',
-        'Customer Company' => 'Korisnikova tvrtka',
+        'Customer' => 'Korisnikova tvrtka',
         'Customer Companies' => 'Korisnikove tvrtke',
         'Company' => 'Tvrtka',
         'go!' => 'Start!',
@@ -699,7 +699,7 @@ sub Data {
         'Phone-Ticket' => 'Telefonska kartica',
         'Search Tickets' => 'Traženje kartice',
         'Edit Customer Users' => 'Uredi korisnike',
-        'Edit Customer Company' => 'Uredi korisničku tvrtku',
+        'Edit Customer' => 'Uredi korisničku tvrtku',
         'Bulk Action' => 'Masovna akcija',
         'Bulk Actions on Tickets' => 'Masovne akcije na karticama',
         'Send Email and create a new Ticket' => 'Pošalji E-poštu i kreiraj novu karticu',
@@ -3132,8 +3132,8 @@ sub Data {
         'Create new process ticket' => '',
         'Custom text for the page shown to customers that have no tickets yet.' =>
             '',
-        'Customer Company Administration' => '',
-        'Customer Company Information' => '',
+        'Customer Administration' => '',
+        'Customer Information' => '',
         'Customer User <-> Groups' => '',
         'Customer User <-> Services' => '',
         'Customer User Administration' => '',
@@ -3882,9 +3882,9 @@ sub Data {
             '',
         'Event module that updates customer user service membership if login changes.' =>
             '',
-        'Event module that updates customer users after an update of the Customer Company.' =>
+        'Event module that updates customer users after an update of the Customer.' =>
             '',
-        'Event module that updates tickets after an update of the Customer Company.' =>
+        'Event module that updates tickets after an update of the Customer.' =>
             '',
         'Event module that updates tickets after an update of the Customer User.' =>
             '',
@@ -4859,7 +4859,7 @@ sub Data {
         # OBSOLETE ENTRIES FOR REFERENCE, DO NOT TRANSLATE!
         #
         ' (work units)' => ' (elementi posla)',
-        'Add Customer Company' => 'Dodaj korisničku tvrtku',
+        'Add Customer' => 'Dodaj korisničku tvrtku',
         'Add Response' => 'Dodaj odgovor',
         'Add customer company' => 'Dodaj korisničku tvrtku',
         'Add response' => 'Dodaj odgovor',
@@ -4873,7 +4873,7 @@ sub Data {
         'Create and manage companies.' => 'Kreiranje i upravljanje tvrtkama.',
         'Create and manage response templates.' => 'Kreiranje i upravljanje predlošcima odgovora.',
         'Currently only MySQL is supported in the web installer.' => 'Trenutno je samo MySQL podržan u Web Instalaciji.',
-        'Customer Company Management' => 'Uređivanje korisničkih tvrtki',
+        'Customer Management' => 'Uređivanje korisničkih tvrtki',
         'Customer Data' => 'Podaci o korisniku',
         'Customer will be needed to have a customer history and to login via customer panel.' =>
             'Potreban je korisnik da bi imali pristup dnevniku prijava na korisnički panel.',

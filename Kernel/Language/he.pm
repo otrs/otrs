@@ -156,7 +156,7 @@ sub Data {
         'system' => 'מערכת',
         'Customer Info' => 'מידע לקוח',
         'Customer Information' => 'מידע לקוח',
-        'Customer Company' => 'חברת הלקוח',
+        'Customer' => 'חברת הלקוח',
         'Customer Companies' => 'חברות הלקוח',
         'Company' => 'חברה',
         'go!' => 'התחל!',
@@ -700,7 +700,7 @@ sub Data {
         'Phone-Ticket' => 'פניה בטלפון',
         'Search Tickets' => 'חפש פניה',
         'Edit Customer Users' => 'ערוך משתמשי לקוח',
-        'Edit Customer Company' => 'ערוך את חברת הלקוח',
+        'Edit Customer' => 'ערוך את חברת הלקוח',
         'Bulk Action' => 'פעולה גורפת',
         'Bulk Actions on Tickets' => 'פעולות גורפות על פניות',
         'Send Email and create a new Ticket' => 'שלח דוא"ל וצור פניה חדשה',
@@ -3134,8 +3134,8 @@ sub Data {
         'Create new process ticket' => 'צור ונהל פניית תהליך חדשה',
         'Custom text for the page shown to customers that have no tickets yet.' =>
             'טקסט מותאם לעמוד שמוצג ללקוחות שעדיין אין להם פניות',
-        'Customer Company Administration' => 'ניהול חברות לקוחות',
-        'Customer Company Information' => 'מידע על חברות לקוחות',
+        'Customer Administration' => 'ניהול חברות לקוחות',
+        'Customer Information' => 'מידע על חברות לקוחות',
         'Customer User <-> Groups' => 'משתמש לקוח <-> קבוצות',
         'Customer User <-> Services' => 'משתמש לקוח <-> שירותים',
         'Customer User Administration' => 'ניהול משתמשי לקוח',
@@ -3888,9 +3888,9 @@ sub Data {
             '',
         'Event module that updates customer user service membership if login changes.' =>
             '',
-        'Event module that updates customer users after an update of the Customer Company.' =>
+        'Event module that updates customer users after an update of the Customer.' =>
             '',
-        'Event module that updates tickets after an update of the Customer Company.' =>
+        'Event module that updates tickets after an update of the Customer.' =>
             '',
         'Event module that updates tickets after an update of the Customer User.' =>
             '',

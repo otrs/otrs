@@ -153,7 +153,7 @@ sub Data {
         'system' => '系統',
         'Customer Info' => '用戶信息',
         'Customer Information' => '用戶信息',
-        'Customer Company' => '用戶單位',
+        'Customer' => '用戶單位',
         'Customer Companies' => '用戶單位',
         'Company' => '單位',
         'go!' => '開始!',
@@ -697,7 +697,7 @@ sub Data {
         'Phone-Ticket' => '電話工單',
         'Search Tickets' => '搜索工單',
         'Edit Customer Users' => '編輯用戶帳戶',
-        'Edit Customer Company' => '編輯用戶單位',
+        'Edit Customer' => '編輯用戶單位',
         'Bulk Action' => '批量處理',
         'Bulk Actions on Tickets' => '批量處理工單',
         'Send Email and create a new Ticket' => '發送郵件並創建新工單',
@@ -3131,8 +3131,8 @@ sub Data {
         'Create new process ticket' => '創建流程工單',
         'Custom text for the page shown to customers that have no tickets yet.' =>
             '',
-        'Customer Company Administration' => '用戶單位管理',
-        'Customer Company Information' => '用戶單位信息',
+        'Customer Administration' => '用戶單位管理',
+        'Customer Information' => '用戶單位信息',
         'Customer User <-> Groups' => '用戶 <-> 組',
         'Customer User <-> Services' => '用戶 <-> 服務',
         'Customer User Administration' => '用戶管理',
@@ -3885,9 +3885,9 @@ sub Data {
             '',
         'Event module that updates customer user service membership if login changes.' =>
             '',
-        'Event module that updates customer users after an update of the Customer Company.' =>
+        'Event module that updates customer users after an update of the Customer.' =>
             '',
-        'Event module that updates tickets after an update of the Customer Company.' =>
+        'Event module that updates tickets after an update of the Customer.' =>
             '',
         'Event module that updates tickets after an update of the Customer User.' =>
             '',
@@ -4866,7 +4866,7 @@ sub Data {
         ' (work units)' => '(分鐘)',
         '(before/after)' => '(相對)',
         '(between)' => '(絕對)',
-        'Add Customer Company' => '添加用戶單位',
+        'Add Customer' => '添加用戶單位',
         'Add Response' => '添加回復',
         'Add customer company' => '添加用戶單位',
         'Add response' => '添加回復',
@@ -4887,7 +4887,7 @@ sub Data {
         'Create and manage companies.' => '創建和管理用戶單位.',
         'Create and manage response templates.' => '創建和管理回復模板.',
         'Currently only MySQL is supported in the web installer.' => 'Web安裝向導目前僅支持MySQL。',
-        'Customer Company Management' => '管理用戶單位',
+        'Customer Management' => '管理用戶單位',
         'Customer Data' => '用戶數據',
         'Customer will be needed to have a customer history and to login via customer panel.' =>
             '需要建立用戶檔案以記錄服務過程，並可让用戶從自助服務界面登錄。',

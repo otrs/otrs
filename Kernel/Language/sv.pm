@@ -153,7 +153,7 @@ sub Data {
         'system' => 'System',
         'Customer Info' => 'Kundinfo',
         'Customer Information' => 'Kundinformation',
-        'Customer Company' => 'Kundföretag',
+        'Customer' => 'Kundföretag',
         'Customer Companies' => 'Kundföretag',
         'Company' => 'Företag',
         'go!' => 'Starta!',
@@ -697,7 +697,7 @@ sub Data {
         'Phone-Ticket' => 'Telefonärende',
         'Search Tickets' => 'Sök ärenden',
         'Edit Customer Users' => 'Redigera Kundanvändare',
-        'Edit Customer Company' => 'Redigera Kundföretag',
+        'Edit Customer' => 'Redigera Kundföretag',
         'Bulk Action' => 'Massförändring',
         'Bulk Actions on Tickets' => 'Massförändring av Ärenden',
         'Send Email and create a new Ticket' => 'Skicka E-post och skapa nytt Ärende',
@@ -3131,8 +3131,8 @@ sub Data {
         'Create new process ticket' => '',
         'Custom text for the page shown to customers that have no tickets yet.' =>
             '',
-        'Customer Company Administration' => '',
-        'Customer Company Information' => '',
+        'Customer Administration' => '',
+        'Customer Information' => '',
         'Customer User <-> Groups' => '',
         'Customer User <-> Services' => '',
         'Customer User Administration' => '',
@@ -3883,9 +3883,9 @@ sub Data {
             '',
         'Event module that updates customer user service membership if login changes.' =>
             '',
-        'Event module that updates customer users after an update of the Customer Company.' =>
+        'Event module that updates customer users after an update of the Customer.' =>
             '',
-        'Event module that updates tickets after an update of the Customer Company.' =>
+        'Event module that updates tickets after an update of the Customer.' =>
             '',
         'Event module that updates tickets after an update of the Customer User.' =>
             '',
@@ -4862,9 +4862,9 @@ sub Data {
         # OBSOLETE ENTRIES FOR REFERENCE, DO NOT TRANSLATE!
         #
         ' (work units)' => ' (arbetsenheter)',
-        'Add Customer Company' => 'Lägg till Kundföretag',
+        'Add Customer' => 'Lägg till Kundföretag',
         'Attachments <-> Responses' => '<Bifogade filer <-> Svar',
-        'Customer Company Management' => 'Kundföretagshantering',
+        'Customer Management' => 'Kundföretagshantering',
         'Customer Data' => 'Kunddata',
         'Database-User' => 'Databas-Användare',
         'Escalation in' => 'Eskalering om',

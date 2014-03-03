@@ -157,7 +157,7 @@ sub Data {
         'system' => 'systeem',
         'Customer Info' => 'Klantinformatie',
         'Customer Information' => 'Klantinformatie',
-        'Customer Company' => 'Bedrijf',
+        'Customer' => 'Bedrijf',
         'Customer Companies' => 'Bedrijven',
         'Company' => 'Bedrijf',
         'go!' => 'start!',
@@ -701,7 +701,7 @@ sub Data {
         'Phone-Ticket' => 'Telefoon ticket',
         'Search Tickets' => 'Zoek tickets',
         'Edit Customer Users' => 'Wijzig klanten',
-        'Edit Customer Company' => 'Wijzig bedrijf',
+        'Edit Customer' => 'Wijzig bedrijf',
         'Bulk Action' => 'Bulk actie',
         'Bulk Actions on Tickets' => 'Bulk actie op tickets',
         'Send Email and create a new Ticket' => 'Verstuur e-mail en maak een nieuw ticket aan',
@@ -3134,8 +3134,8 @@ sub Data {
         'Create new process ticket' => 'Maak en nieuw proces-ticket aan',
         'Custom text for the page shown to customers that have no tickets yet.' =>
             '',
-        'Customer Company Administration' => 'Beheren van bedrijven',
-        'Customer Company Information' => 'Bedrijfsinformatie',
+        'Customer Administration' => 'Beheren van bedrijven',
+        'Customer Information' => 'Bedrijfsinformatie',
         'Customer User <-> Groups' => 'Klanten <-> Groepen',
         'Customer User <-> Services' => 'Klanten <-> Services',
         'Customer User Administration' => 'Beheren van klanten',
@@ -3884,9 +3884,9 @@ sub Data {
             '',
         'Event module that updates customer user service membership if login changes.' =>
             '',
-        'Event module that updates customer users after an update of the Customer Company.' =>
+        'Event module that updates customer users after an update of the Customer.' =>
             '',
-        'Event module that updates tickets after an update of the Customer Company.' =>
+        'Event module that updates tickets after an update of the Customer.' =>
             '',
         'Event module that updates tickets after an update of the Customer User.' =>
             '',
@@ -4863,7 +4863,7 @@ sub Data {
         ' (work units)' => ' (in minuten)',
         'A response is a default text which helps your agents to write faster answers to customers.' =>
             'Een antwoord is een standaard-tekst die uw behandelaars helpt sneller te reageren op tickets van klanten.',
-        'Add Customer Company' => 'Bedrijf toevoegen',
+        'Add Customer' => 'Bedrijf toevoegen',
         'Add Response' => 'Nieuw antwoord',
         'Add customer company' => 'Nieuw bedrijf',
         'Add response' => 'Nieuw antwoord',
@@ -4878,7 +4878,7 @@ sub Data {
         'Create and manage companies.' => 'Aanmaken en beheren van bedrijven.',
         'Create and manage response templates.' => 'Aanmaken en beheren van voorgedefiniëerde antwoorden.',
         'Currently only MySQL is supported in the web installer.' => 'Alleen MySQL wordt ondersteund door de web installer.',
-        'Customer Company Management' => 'Beheer bedrijven',
+        'Customer Management' => 'Beheer bedrijven',
         'Customer Data' => 'Klantgegevens',
         'Customer automatically added in Cc.' => 'Klant automatisch toegevoegd als CC.',
         'Customer will be needed to have a customer history and to login via customer panel.' =>

@@ -153,7 +153,7 @@ sub Data {
         'system' => 'järjestelmä',
         'Customer Info' => 'Tietoa asiakkaasta',
         'Customer Information' => 'Asiakastiedot',
-        'Customer Company' => 'Asiakasyritys',
+        'Customer' => 'Asiakasyritys',
         'Customer Companies' => 'Asiakasyritykset',
         'Company' => 'Yritys',
         'go!' => 'mene!',
@@ -697,7 +697,7 @@ sub Data {
         'Phone-Ticket' => 'Puhelin',
         'Search Tickets' => 'Etsi tikettejä',
         'Edit Customer Users' => 'Muokkaa asiakaskäyttäjää',
-        'Edit Customer Company' => 'Muokkaa asiakasyritystä',
+        'Edit Customer' => 'Muokkaa asiakasyritystä',
         'Bulk Action' => 'Massa-ajo',
         'Bulk Actions on Tickets' => 'Messatoimenpide tiketeille',
         'Send Email and create a new Ticket' => 'Lähetä sähklöposti ja luo uusi tiketti',
@@ -3130,8 +3130,8 @@ sub Data {
         'Create new process ticket' => '',
         'Custom text for the page shown to customers that have no tickets yet.' =>
             'Räätälöity teksti asiakkaille, joilla ei vielä ole tikettejä.',
-        'Customer Company Administration' => '',
-        'Customer Company Information' => '',
+        'Customer Administration' => '',
+        'Customer Information' => '',
         'Customer User <-> Groups' => '',
         'Customer User <-> Services' => '',
         'Customer User Administration' => '',
@@ -3880,9 +3880,9 @@ sub Data {
             '',
         'Event module that updates customer user service membership if login changes.' =>
             '',
-        'Event module that updates customer users after an update of the Customer Company.' =>
+        'Event module that updates customer users after an update of the Customer.' =>
             '',
-        'Event module that updates tickets after an update of the Customer Company.' =>
+        'Event module that updates tickets after an update of the Customer.' =>
             '',
         'Event module that updates tickets after an update of the Customer User.' =>
             '',
@@ -4857,14 +4857,14 @@ sub Data {
         # OBSOLETE ENTRIES FOR REFERENCE, DO NOT TRANSLATE!
         #
         ' (work units)' => ' (esim. minuutteina)',
-        'Add Customer Company' => 'Lisää asiakasyritys',
+        'Add Customer' => 'Lisää asiakasyritys',
         'Add customer company' => 'Lisää asiakasyritys',
         'Attachments <-> Responses' => 'Liitteet <-> Vastaukset',
         'Complete registration and continue' => 'Suorita rekisteröinti ja jatka',
         'Create and manage companies.' => 'Luo ja hallinnoi yrityksiä.',
         'Create and manage response templates.' => 'Luo ja hallinnoi vastausmalleja.',
         'Currently only MySQL is supported in the web installer.' => 'Voit asentaa järjestelmän web näkymästä vain MySQL-tietokantaan.',
-        'Customer Company Management' => 'Asiakasyrityksien hallinta',
+        'Customer Management' => 'Asiakasyrityksien hallinta',
         'Customer Data' => 'Asiakastieto',
         'Customer automatically added in Cc.' => 'Asiakas lisäättiin automaattisesti CC-kenttäät.',
         'CustomerID Search' => 'AsiakasID haku',

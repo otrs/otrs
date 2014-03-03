@@ -154,7 +154,7 @@ sub Data {
         'system' => 'System',
         'Customer Info' => 'Informacje o kliencie',
         'Customer Information' => 'Informacje o kliencie',
-        'Customer Company' => 'Firma klienta',
+        'Customer' => 'Firma klienta',
         'Customer Companies' => 'Firmy klientów',
         'Company' => 'Firma',
         'go!' => 'Start!',
@@ -698,7 +698,7 @@ sub Data {
         'Phone-Ticket' => 'Zgłoszenie telefoniczne',
         'Search Tickets' => 'Szukaj zgłoszeń',
         'Edit Customer Users' => 'Edycja kont klienta',
-        'Edit Customer Company' => 'Edycja firm',
+        'Edit Customer' => 'Edycja firm',
         'Bulk Action' => 'Akcja grupowa',
         'Bulk Actions on Tickets' => 'Akcje grupowe na zgłoszeniach',
         'Send Email and create a new Ticket' => 'Wylij e-mail i utwórz nowe zgłoszenie',
@@ -3134,8 +3134,8 @@ sub Data {
         'Create new process ticket' => 'Utwórz nowe zgłoszenie',
         'Custom text for the page shown to customers that have no tickets yet.' =>
             'Wybrany tekst ukazywany klientom którzy nie dokonali dotychczas żadnych zgłoszeń.',
-        'Customer Company Administration' => 'Zarządzanie firmami',
-        'Customer Company Information' => 'Informacje o firmie klienta',
+        'Customer Administration' => 'Zarządzanie firmami',
+        'Customer Information' => 'Informacje o firmie klienta',
         'Customer User <-> Groups' => 'Użytkownicy Klienta <-> Grupy',
         'Customer User <-> Services' => 'Użytkownicy Klienta <-> Serwisy',
         'Customer User Administration' => 'Zarządzanie Kontami Klienta',
@@ -3886,9 +3886,9 @@ sub Data {
             '',
         'Event module that updates customer user service membership if login changes.' =>
             'Moduł zdarzeń modyfikujący przynależność konta klienta do serwisu po zmianie loginu.',
-        'Event module that updates customer users after an update of the Customer Company.' =>
+        'Event module that updates customer users after an update of the Customer.' =>
             'Moduł zdarzeń modyfikujący konta klienta po zmianie firmy klienta.',
-        'Event module that updates tickets after an update of the Customer Company.' =>
+        'Event module that updates tickets after an update of the Customer.' =>
             'Moduł zdarzeń modyfikujący zgłoszenie po zmianie firmy klienta.',
         'Event module that updates tickets after an update of the Customer User.' =>
             'Moduł zdarzeń modyfikujący zgłoszenie po zmianie konta klienta.',
@@ -4868,7 +4868,7 @@ sub Data {
         ' On' => 'W dniu',
         'A response is a default text which helps your agents to write faster answers to customers.' =>
             'Odpowiedź to domyślny tekst, który pomaga twoim agentom szybciej tworzyć odpowiedzi do klientów.',
-        'Add Customer Company' => 'Dodaj Firmę',
+        'Add Customer' => 'Dodaj Firmę',
         'Add Response' => 'Dodaj odpowiedź',
         'Add customer company' => 'Dodaj firmę',
         'Add response' => 'Dodaj odpowiedź',
@@ -4889,7 +4889,7 @@ sub Data {
         'Create and manage response templates.' => 'Ustawienia szablonów odpowiedzi.',
         'CreateTicket' => 'Tworzenie zgłoszenia',
         'Currently only MySQL is supported in the web installer.' => 'Obecnie instalator web wspiera jedynie bazę danych MySQL.',
-        'Customer Company Management' => 'Zarządzanie firmami',
+        'Customer Management' => 'Zarządzanie firmami',
         'Customer Data' => 'Dane klienta',
         'Customer Interface' => 'Interfejs klienta',
         'Customer automatically added in Cc.' => 'Klient automatycznie dodany do DW.',

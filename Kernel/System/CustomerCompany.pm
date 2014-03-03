@@ -24,7 +24,7 @@ Kernel::System::CustomerCompany - customer company lib
 
 =head1 SYNOPSIS
 
-All Customer Company functions. E.g. to add and update customer companies.
+All Customer functions. E.g. to add and update customer companies.
 
 =head1 PUBLIC INTERFACE
 
@@ -122,7 +122,7 @@ add a new customer company
 
     my $ID = $CustomerCompanyObject->CustomerCompanyAdd(
         CustomerID              => 'example.com',
-        CustomerCompanyName     => 'New Customer Company Inc.',
+        CustomerCompanyName     => 'New Customer Inc.',
         CustomerCompanyStreet   => '5201 Blue Lagoon Drive',
         CustomerCompanyZIP      => '33126',
         CustomerCompanyCity     => 'Miami',
@@ -181,7 +181,7 @@ get customer company attributes
 Returns:
 
     %CustomerCompany = (
-        'CustomerCompanyName'    => 'Customer Company Inc.',
+        'CustomerCompanyName'    => 'Customer Inc.',
         'CustomerID'             => 'example.com',
         'CustomerCompanyStreet'  => '5201 Blue Lagoon Drive',
         'CustomerCompanyZIP'     => '33126',
@@ -233,7 +233,7 @@ update customer company attributes
     $CustomerCompanyObject->CustomerCompanyUpdate(
         CustomerCompanyID       => 'oldexample.com', # required for CustomerCompanyID-update
         CustomerID              => 'example.com',
-        CustomerCompanyName     => 'New Customer Company Inc.',
+        CustomerCompanyName     => 'New Customer Inc.',
         CustomerCompanyStreet   => '5201 Blue Lagoon Drive',
         CustomerCompanyZIP      => '33126',
         CustomerCompanyLocation => 'Miami',
@@ -334,7 +334,7 @@ get list of customer companies.
 Returns:
 
 %List = {
-          'example.com' => 'example.com Customer Company Inc.        ',
+          'example.com' => 'example.com Customer Inc.        ',
           'acme.com'    => 'acme.com Acme, Inc.        '
         };
 

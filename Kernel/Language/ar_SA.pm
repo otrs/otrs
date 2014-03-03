@@ -153,7 +153,7 @@ sub Data {
         'system' => 'النظام',
         'Customer Info' => 'معلومات العميل',
         'Customer Information' => '',
-        'Customer Company' => '',
+        'Customer' => '',
         'Customer Companies' => '',
         'Company' => '',
         'go!' => 'ابدأ!',
@@ -697,7 +697,7 @@ sub Data {
         'Phone-Ticket' => 'بطاقة-هاتف',
         'Search Tickets' => 'أبحث في البطاقات',
         'Edit Customer Users' => 'تعديل معلومات العملاء',
-        'Edit Customer Company' => '',
+        'Edit Customer' => '',
         'Bulk Action' => 'تنفيذ جماعي',
         'Bulk Actions on Tickets' => 'العمليات الجماعية على البطاقات',
         'Send Email and create a new Ticket' => 'أرسل البريد و أنشيء بطاقة جديدة',
@@ -3130,8 +3130,8 @@ sub Data {
         'Create new process ticket' => '',
         'Custom text for the page shown to customers that have no tickets yet.' =>
             '',
-        'Customer Company Administration' => '',
-        'Customer Company Information' => '',
+        'Customer Administration' => '',
+        'Customer Information' => '',
         'Customer User <-> Groups' => '',
         'Customer User <-> Services' => '',
         'Customer User Administration' => '',
@@ -3880,9 +3880,9 @@ sub Data {
             '',
         'Event module that updates customer user service membership if login changes.' =>
             '',
-        'Event module that updates customer users after an update of the Customer Company.' =>
+        'Event module that updates customer users after an update of the Customer.' =>
             '',
-        'Event module that updates tickets after an update of the Customer Company.' =>
+        'Event module that updates tickets after an update of the Customer.' =>
             '',
         'Event module that updates tickets after an update of the Customer User.' =>
             '',

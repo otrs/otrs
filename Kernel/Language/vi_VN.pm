@@ -150,7 +150,7 @@ sub Data {
         'system' => 'hệ thống',
         'Customer Info' => 'Thông tin khách hàng',
         'Customer Information' => '',
-        'Customer Company' => 'Công ty khách hàng',
+        'Customer' => 'Công ty khách hàng',
         'Customer Companies' => '',
         'Company' => 'Công ty',
         'go!' => 'tiếp tục!',
@@ -694,7 +694,7 @@ sub Data {
         'Phone-Ticket' => 'Thẻ Cuộc gọi',
         'Search Tickets' => 'Tìm kiếm thẻ',
         'Edit Customer Users' => 'Sửa người dùng khách hàng',
-        'Edit Customer Company' => '',
+        'Edit Customer' => '',
         'Bulk Action' => 'Lệnh lô',
         'Bulk Actions on Tickets' => 'Lệnh lô trên các thẻ',
         'Send Email and create a new Ticket' => 'Gửi e-mail và tạo 1 thẻ mới',
@@ -3127,8 +3127,8 @@ sub Data {
         'Create new process ticket' => '',
         'Custom text for the page shown to customers that have no tickets yet.' =>
             '',
-        'Customer Company Administration' => '',
-        'Customer Company Information' => '',
+        'Customer Administration' => '',
+        'Customer Information' => '',
         'Customer User <-> Groups' => '',
         'Customer User <-> Services' => '',
         'Customer User Administration' => '',
@@ -3877,9 +3877,9 @@ sub Data {
             '',
         'Event module that updates customer user service membership if login changes.' =>
             '',
-        'Event module that updates customer users after an update of the Customer Company.' =>
+        'Event module that updates customer users after an update of the Customer.' =>
             '',
-        'Event module that updates tickets after an update of the Customer Company.' =>
+        'Event module that updates tickets after an update of the Customer.' =>
             '',
         'Event module that updates tickets after an update of the Customer User.' =>
             '',
@@ -4854,9 +4854,9 @@ sub Data {
         # OBSOLETE ENTRIES FOR REFERENCE, DO NOT TRANSLATE!
         #
         ' (work units)' => ' (các đơn vị làm việc)',
-        'Add Customer Company' => 'Thêm công ty khách hàng',
+        'Add Customer' => 'Thêm công ty khách hàng',
         'Attachments <-> Responses' => 'Các đính kèm <-> Các trả lời',
-        'Customer Company Management' => 'Quản trị công ty khách hàng',
+        'Customer Management' => 'Quản trị công ty khách hàng',
         'Customer Data' => 'Dữ liệu khách hàng',
         'Database-User' => 'Người dùng cơ sở dữ liệu',
         'Escalation in' => 'Tiếp tục trong',
