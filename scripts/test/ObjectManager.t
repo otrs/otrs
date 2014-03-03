@@ -89,4 +89,28 @@ for my $ObjectName ( sort keys %AllObjects ) {
     );
 }
 
+my %SomeObjects = $Kernel::OM->ObjectHash(
+    Objects => ['ConfigObject', 'TicketObject', 'DBObject'],
+);
+for my $ObjectName ( sort keys %SomeObjects ) {
+    weaken( $SomeObjects{ $ObjectName } );
+}
+
+$Kernel::OM->ObjectsDiscard(
+    Objects => ['DBObject'],
+);
+
+$Self->True(
+    !$SomeObjects{DBObject},
+    'ObjectDiscard discared DBObject',
+);
+$Self->True(
+    !$SomeObjects{TicketObject},
+    'ObjectDiscard discared TicketObject, because DBObject depends on it',
+);
+$Self->True(
+    $SomeObjects{ConfigObject},
+    'ObjectDiscard did not discard ConfigObject',
+);
+
 1;

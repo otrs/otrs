@@ -300,8 +300,9 @@ sub ObjectParamAdd {
 =item ObjectsDiscard()
 
 Discards internally stored objects, so that the next access to objects
-creates them newly. If a list of object names is passed, only those
-objects are destroyed; otherwise all stored objects are detroyed.
+creates them newly. If a list of object names is passed, an attempt is made
+to only discard those objects and their recursive dependencies, though slightly more objects might actually be destroyed.  If no list of object names is
+passed, all stored objects are detroyed.
 
     $Kernel::OM->ObjectsDiscard();
 
@@ -321,25 +322,6 @@ dependency order.
 
 sub ObjectsDiscard {
     my ( $Self, %Param ) = @_;
-
-    if ( $Param{Objects} ) {
-        for my $Object ( @{ $Param{Objects} } ) {
-            delete $Self->{Objects}{$Object};
-        }
-    }
-    else {
-        # initialize ordered destruction
-        $Self->_DESTROY();
-    }
-    return 1;
-}
-
-=back
-
-=cut
-
-sub _DESTROY {
-    my ($Self) = @_;
 
     # destroy objects before their dependencies are destroyed
 
@@ -362,8 +344,22 @@ sub _DESTROY {
         $Traverser->($_) for @{ $Dependencies{$Obj} };
         push @OrderedObjects, $Obj;
     };
-    $Traverser->($_) for keys %Dependencies;
+
+    $Traverser->($_) for sort keys %Dependencies;
     undef $Traverser;
+
+    # if we only need to destroy some objects, we can don't
+    # have to destroy all objects:
+    if ( $Param{Objects} ) {
+        my %ToDestroy;
+        for ( @{ $Param{Objects} } ) {
+            $ToDestroy{$_} = 1;
+        }
+        OBJECTS:
+        while ( @OrderedObjects && !$ToDestroy{ $OrderedObjects[0] } ) {
+            shift @OrderedObjects;
+        }
+    }
 
     # third step: destruction
     if ( $Self->{Debug} ) {
@@ -387,11 +383,16 @@ sub _DESTROY {
             delete $Self->{Objects}{$Object};
         }
     }
+    return 1;
 }
+
+=back
+
+=cut
 
 sub DESTROY {
     my ($Self) = @_;
-    $Self->_DESTROY();
+    $Self->ObjectsDiscard();
 }
 
 1;
