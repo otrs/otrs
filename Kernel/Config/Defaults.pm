@@ -1871,7 +1871,7 @@ via the Preferences button after logging in.
             ClassName       => 'Kernel::System::Cache',
             Dependencies    => [qw(ConfigObject LogObject MainObject EncodeObject)],
         },
-        ACLObject            => {
+        ACLDBACLObject      => {
             ClassName       => 'Kernel::System::ACL::DB::ACL',
             Dependencies    => [@DefaultDependencies, qw(CacheObject YAMLObject UserObject)],
             OMAware         => 1,

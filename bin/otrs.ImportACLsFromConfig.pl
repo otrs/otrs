@@ -38,7 +38,8 @@ local $Kernel::OM = Kernel::System::ObjectManager->new(
     },
 );
 my %CommonObject = $Kernel::OM->ObjectHash(
-    Objects => [qw(ConfigObject EncodeObject LogObject TimeObject MainObject DBObject ACLObject)],
+    Objects =>
+        [qw(ConfigObject EncodeObject LogObject TimeObject MainObject DBObject ACLDBACLObject)],
 );
 
 # check if there are already entries in the database
@@ -79,7 +80,7 @@ ACL:
 for my $ACLName ( sort keys %{$ACLs} ) {
 
     # try adding the ACL
-    my $ACLID = $CommonObject{ACLObject}->ACLAdd(
+    my $ACLID = $CommonObject{ACLDBACLObject}->ACLAdd(
         Name           => $ACLName,
         Comment        => 'Imported at ' . $TimeStamp,
         StopAfterMatch => $ACLs->{$ACLName}->{StopAfterMatch},
