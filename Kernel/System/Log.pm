@@ -53,8 +53,9 @@ sub new {
     my $Self = {};
     bless( $Self, $Type );
 
-    Carp::confess( '$Kernel::OM is not defined, please initialize your object manager' )
-        unless defined $Kernel::OM;
+    if ( !$Kernel::OM ) {
+        Carp::confess( '$Kernel::OM is not defined, please initialize your object manager' )
+    }
 
     $Self->{EncodeObject} = $Kernel::OM->Get('EncodeObject');
 
