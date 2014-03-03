@@ -300,9 +300,9 @@ sub ObjectParamAdd {
 =item ObjectsDiscard()
 
 Discards internally stored objects, so that the next access to objects
-creates them newly. If a list of object names is passed, an attempt is made
-to only discard those objects and their recursive dependencies, though slightly more objects might actually be destroyed.  If no list of object names is
-passed, all stored objects are detroyed.
+creates them newly. If a list of object names is passed, only
+the supplied objects and their recursive dependencies are destroyed.
+If no list of object names is passed, all stored objects are detroyed.
 
     $Kernel::OM->ObjectsDiscard();
 
@@ -327,11 +327,20 @@ sub ObjectsDiscard {
 
     # first step: get the dependencies into a single hash,
     # so that the topological sorting goes faster
-    my %Dependencies;
+    my %ReverseDeps;
+    my @AllObjects;
     for my $Object ( sort keys %{ $Self->{Objects} } ) {
-        $Dependencies{$Object} = $Self->ObjectConfigGet(
+        my $Deps = $Self->ObjectConfigGet(
             Object => $Object,
         )->{Dependencies};
+
+        for my $D (@$Deps) {
+
+            # undef happens to be the value that uses the least amount
+            # of memory in perl, and we are only interested in the keys
+            $ReverseDeps{$D}{$Object} = undef;
+        }
+        push @AllObjects, $Object;
     }
 
     # second step: post-order recursive traversal
@@ -341,11 +350,16 @@ sub ObjectsDiscard {
     $Traverser = sub {
         my ($Obj) = @_;
         return if $Seen{$Obj}++;
-        $Traverser->($_) for @{ $Dependencies{$Obj} };
-        push @OrderedObjects, $Obj;
+        $Traverser->($_) for sort keys %{ $ReverseDeps{$Obj} };
+        unshift @OrderedObjects, $Obj;
     };
 
-    $Traverser->($_) for sort keys %Dependencies;
+    if ( $Param{Objects} ) {
+        $Traverser->($_) for @{ $Param{Objects} };
+    }
+    else {
+        $Traverser->($_) for @AllObjects;
+    }
     undef $Traverser;
 
     # if we only need to destroy some objects, we can don't
