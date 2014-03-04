@@ -106,7 +106,7 @@ $Self->True(
 );
 $Self->True(
     !$SomeObjects{TicketObject},
-    'ObjectDiscard discared TicketObject, because DBObject depends on it',
+    'ObjectDiscard discared TicketObject, because it depends on DBObject',
 );
 $Self->True(
     $SomeObjects{ConfigObject},
