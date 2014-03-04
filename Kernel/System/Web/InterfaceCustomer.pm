@@ -65,8 +65,8 @@ sub new {
 
     );
 
-    for my $Needed ( qw( EncodeObject LogObject MainObject TimeObject ParamObject ) ) {
-        $Self->{ $Needed } = $Kernel::OM->Get( $Needed );
+    for my $Needed (qw( EncodeObject LogObject MainObject TimeObject ParamObject )) {
+        $Self->{$Needed} = $Kernel::OM->Get($Needed);
     }
 
     # debug info
@@ -132,7 +132,7 @@ sub Run {
 
     $Kernel::OM->ObjectParamAdd(
         LayoutObject => {
-            Lang    => $Param{Lang},
+            Lang => $Param{Lang},
         },
         LanguageObject => {
             UserLanguage => $Param{Lang},
@@ -159,9 +159,9 @@ sub Run {
     }
 
     # create common framework objects 2/2
-    $Self->{UserObject} = $Kernel::OM->Get( 'CustomerUserObject' );
-    for my $Needed ( qw(GroupObject SessionObject) ) {
-        $Self->{ $Needed } = $Kernel::OM->Get( $Needed );
+    $Self->{UserObject} = $Kernel::OM->Get('CustomerUserObject');
+    for my $Needed (qw(GroupObject SessionObject)) {
+        $Self->{$Needed} = $Kernel::OM->Get($Needed);
     }
 
     # application and add on application common objects
@@ -200,7 +200,7 @@ sub Run {
         my $PostPw = $Self->{ParamObject}->GetParam( Param => 'Password', Raw => 1 ) || '';
 
         # create AuthObject
-        my $AuthObject = Kernel::System::CustomerAuth->new( %{$Self} );
+        my $AuthObject = $Kernel::OM->Get('CustomerAuthObject');
 
         # check submitted data
         my $User = $AuthObject->Auth( User => $PostUser, Pw => $PostPw );
@@ -753,7 +753,7 @@ sub Run {
         my $LayoutObject = Kernel::Output::HTML::Layout->new( %{$Self}, Lang => $Param{Lang} );
 
         # create AuthObject
-        my $AuthObject = Kernel::System::CustomerAuth->new( %{$Self} );
+        my $AuthObject = $Kernel::OM->Get('CustomerAuthObject');
         if ( $AuthObject->GetOption( What => 'PreAuth' ) ) {
 
             # automatic login

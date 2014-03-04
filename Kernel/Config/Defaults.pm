@@ -1765,6 +1765,9 @@ via the Preferences button after logging in.
             Dependencies    => [@DefaultDependencies, qw(UserObject GroupObject ValidObject)],
             OmAware         => 1,
         },
+        CustomerAuthObject => {
+            ClassName       => 'Kernel::System::CustomerAuth',
+        },
         SessionObject     => {
             ClassName       => 'Kernel::System::AuthSession',
         },
