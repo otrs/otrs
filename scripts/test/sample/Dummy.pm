@@ -23,4 +23,9 @@ sub Data {
     return $Self->{Data};
 }
 
+sub DESTROY {
+    $Kernel::OM->Get('Dummy2Object');
+
+}
+
 1;
