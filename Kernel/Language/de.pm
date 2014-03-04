@@ -2214,7 +2214,7 @@ sub Data {
         # Template: AgentCustomerInformationCenterBlank
 
         # Template: AgentCustomerInformationCenterSearch
-        'Customer ID' => 'Kunden-ID',
+        'Customer ID' => 'Kundennummer',
         'Customer User' => 'Kundenbenutzer',
 
         # Template: AgentCustomerSearch
