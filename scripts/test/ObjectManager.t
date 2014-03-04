@@ -134,7 +134,7 @@ $Kernel::OM->ObjectsDiscard(
 );
 $Self->True( !$Dummy, 'ObjectsDiscard with list of objects deleted object' );
 
-# we don't want Dummy objects to participate the in the rest of the tests
-delete $Kernel::OM->{Config};
+# Clean up
+$Kernel::OM->ObjectsDiscard();
 
 1;
