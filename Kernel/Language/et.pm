@@ -151,7 +151,7 @@ sub Data {
         'system' => 'süsteem',
         'Customer Info' => 'Kliendiinfo',
         'Customer Information' => 'Kliendi informatsioon',
-        'Customer Company' => 'Kliendi ettevõte',
+        'Customer' => 'Kliendi ettevõte',
         'Customer Companies' => 'Kliendi ettevõtted',
         'Company' => 'Ettevõte',
         'go!' => 'Start!',
@@ -695,7 +695,7 @@ sub Data {
         'Phone-Ticket' => 'Telefonist',
         'Search Tickets' => 'Otsi intsidente',
         'Edit Customer Users' => 'Klientkasutajate muutmine',
-        'Edit Customer Company' => 'Klientettevõtte muutmine',
+        'Edit Customer' => 'Klientettevõtte muutmine',
         'Bulk Action' => 'Hulgitegevus',
         'Bulk Actions on Tickets' => 'Hulgitegevus intsidentidel',
         'Send Email and create a new Ticket' => 'Saada e-kiri ja loo uus intsident',
@@ -3128,8 +3128,8 @@ sub Data {
         'Create new process ticket' => '',
         'Custom text for the page shown to customers that have no tickets yet.' =>
             '',
-        'Customer Company Administration' => '',
-        'Customer Company Information' => '',
+        'Customer Administration' => '',
+        'Customer Information' => '',
         'Customer User <-> Groups' => '',
         'Customer User <-> Services' => '',
         'Customer User Administration' => '',
@@ -3878,9 +3878,9 @@ sub Data {
             '',
         'Event module that updates customer user service membership if login changes.' =>
             '',
-        'Event module that updates customer users after an update of the Customer Company.' =>
+        'Event module that updates customer users after an update of the Customer.' =>
             '',
-        'Event module that updates tickets after an update of the Customer Company.' =>
+        'Event module that updates tickets after an update of the Customer.' =>
             '',
         'Event module that updates tickets after an update of the Customer User.' =>
             '',
@@ -4857,14 +4857,14 @@ sub Data {
         ' (work units)' => ' (tööühikud)',
         'A response is a default text which helps your agents to write faster answers to customers.' =>
             'Vastus on vaiketekst, mis aitab töötajatel klientidele kiiremini vastuseid kirjutada.',
-        'Add Customer Company' => 'Klientettevõtte lisamine',
+        'Add Customer' => 'Klientettevõtte lisamine',
         'Add Response' => 'Vastuse lisamine',
         'Add customer company' => 'Lisa klientettevõte',
         'Add response' => 'Lisa vastus',
         'Attachments <-> Responses' => 'Manused <-> Vastused',
         'Create and manage companies.' => 'Ettevõtete loomine ja haldamine.',
         'Create and manage response templates.' => 'Vastusemallide loomine ja haldamine.',
-        'Customer Company Management' => 'Klientettevõtete haldamine',
+        'Customer Management' => 'Klientettevõtete haldamine',
         'Customer Data' => 'Kliendi andmed',
         'Customer will be needed to have a customer history and to login via customer panel.' =>
             'Klient on vajalik kliendi ajaloo loomiseks ning kliendipaneeli kaudu sisselogimiseks.',

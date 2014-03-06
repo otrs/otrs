@@ -150,7 +150,7 @@ sub Data {
         'system' => 'sistēma',
         'Customer Info' => 'Klienta informācija',
         'Customer Information' => '',
-        'Customer Company' => 'Klienta organizācija/uzņēmums',
+        'Customer' => 'Klienta organizācija/uzņēmums',
         'Customer Companies' => '',
         'Company' => 'Organizācija/uzņēmums',
         'go!' => 'Sākt!',
@@ -694,7 +694,7 @@ sub Data {
         'Phone-Ticket' => 'Telefonisks pieteikums',
         'Search Tickets' => 'Meklēt pieteikumos',
         'Edit Customer Users' => 'Labot klientu datus',
-        'Edit Customer Company' => 'Labot klientu organizāciju/uzņēmumu datus',
+        'Edit Customer' => 'Labot klientu organizāciju/uzņēmumu datus',
         'Bulk Action' => '',
         'Bulk Actions on Tickets' => 'Veikt darbības ar vairākiem pieteikumiem uzreiz',
         'Send Email and create a new Ticket' => 'Nosūtīt e-pastu un izveidot jaunu problēmas pieteikumu',
@@ -3127,8 +3127,8 @@ sub Data {
         'Create new process ticket' => '',
         'Custom text for the page shown to customers that have no tickets yet.' =>
             '',
-        'Customer Company Administration' => '',
-        'Customer Company Information' => '',
+        'Customer Administration' => '',
+        'Customer Information' => '',
         'Customer User <-> Groups' => '',
         'Customer User <-> Services' => '',
         'Customer User Administration' => '',
@@ -3877,9 +3877,9 @@ sub Data {
             '',
         'Event module that updates customer user service membership if login changes.' =>
             '',
-        'Event module that updates customer users after an update of the Customer Company.' =>
+        'Event module that updates customer users after an update of the Customer.' =>
             '',
-        'Event module that updates tickets after an update of the Customer Company.' =>
+        'Event module that updates tickets after an update of the Customer.' =>
             '',
         'Event module that updates tickets after an update of the Customer User.' =>
             '',
@@ -4854,9 +4854,9 @@ sub Data {
         # OBSOLETE ENTRIES FOR REFERENCE, DO NOT TRANSLATE!
         #
         ' (work units)' => ' (darba laika vienības)',
-        'Add Customer Company' => 'Pievienot klienta organizāciju/uzņēmumu',
+        'Add Customer' => 'Pievienot klienta organizāciju/uzņēmumu',
         'Attachments <-> Responses' => 'Pielikumi <-> Atbildes',
-        'Customer Company Management' => 'Klienta organizāciju/uzņēmumu datu pārvaldība',
+        'Customer Management' => 'Klienta organizāciju/uzņēmumu datu pārvaldība',
         'Customer Data' => 'Klienta dati',
         'Database-User' => 'Datubāzes lietotāja parole',
         'Escalation in' => 'Eskalēt',

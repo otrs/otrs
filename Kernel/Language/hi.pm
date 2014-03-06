@@ -153,7 +153,7 @@ sub Data {
         'system' => 'प्रणाली',
         'Customer Info' => 'ग्राहक की जानकारी',
         'Customer Information' => 'ग्राहक की जानकारी',
-        'Customer Company' => 'ग्राहक की कंपनी',
+        'Customer' => 'ग्राहक की कंपनी',
         'Customer Companies' => 'ग्राहक की कंपनियां',
         'Company' => 'कंपनी',
         'go!' => 'आगे जाना',
@@ -697,7 +697,7 @@ sub Data {
         'Phone-Ticket' => 'फोन टिकट',
         'Search Tickets' => 'टिकटें खोजें',
         'Edit Customer Users' => 'ग्राहक प्रयोक्ता संपादित करें',
-        'Edit Customer Company' => 'ग्राहक कंपनी संपादित करें',
+        'Edit Customer' => 'ग्राहक कंपनी संपादित करें',
         'Bulk Action' => 'थोक क्रिया',
         'Bulk Actions on Tickets' => 'टिकटों पर थोक क्रिया',
         'Send Email and create a new Ticket' => 'ईमेल भेजें और नया टिकट बनाएँ',
@@ -3130,8 +3130,8 @@ sub Data {
         'Create new process ticket' => '',
         'Custom text for the page shown to customers that have no tickets yet.' =>
             'कस्टम पाठ जो उन ग्राहकों को दिखाया जाएगा जिनके पास अभी तक कोई टिकट नहीं है।',
-        'Customer Company Administration' => '',
-        'Customer Company Information' => '',
+        'Customer Administration' => '',
+        'Customer Information' => '',
         'Customer User <-> Groups' => '',
         'Customer User <-> Services' => '',
         'Customer User Administration' => '',
@@ -3880,9 +3880,9 @@ sub Data {
             '',
         'Event module that updates customer user service membership if login changes.' =>
             '',
-        'Event module that updates customer users after an update of the Customer Company.' =>
+        'Event module that updates customer users after an update of the Customer.' =>
             '',
-        'Event module that updates tickets after an update of the Customer Company.' =>
+        'Event module that updates tickets after an update of the Customer.' =>
             '',
         'Event module that updates tickets after an update of the Customer User.' =>
             '',
@@ -4856,7 +4856,7 @@ sub Data {
         #
         # OBSOLETE ENTRIES FOR REFERENCE, DO NOT TRANSLATE!
         #
-        'Add Customer Company' => 'ग्राहक कंपनी जोड़ें',
+        'Add Customer' => 'ग्राहक कंपनी जोड़ें',
         'Add Response' => 'प्रतिक्रिया जोड़ें',
         'Add customer company' => 'ग्राहक कंपनी जोड़ें',
         'Add response' => 'प्रतिक्रिया जोड़ें',
@@ -4874,7 +4874,7 @@ sub Data {
         'Create and manage companies.' => 'कंपनियों को बनाएँ और प्रबंधन करें।',
         'Create and manage response templates.' => 'प्रतिक्रिया टेम्पलेट्स को बनाएँ और प्रबंधन करें।',
         'Currently only MySQL is supported in the web installer.' => 'वर्तमान में केवल MySQL वेब संस्थापक में समर्थित है।',
-        'Customer Company Management' => 'ग्राहक कंपनी प्रबंधन',
+        'Customer Management' => 'ग्राहक कंपनी प्रबंधन',
         'Customer Data' => 'ग्राहक आंकड़ा',
         'Customer will be needed to have a customer history and to login via customer panel.' =>
             'ग्राहक को एक ग्राहक इतिहास की आवश्यकता होगी और ग्राहक पटल के माध्यम से प्रवेश की।',

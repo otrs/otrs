@@ -150,7 +150,7 @@ sub Data {
         'system' => 'sistem',
         'Customer Info' => 'Info Pelanggan',
         'Customer Information' => 'Informasi Pelanggan',
-        'Customer Company' => 'Firma Pelanggan',
+        'Customer' => 'Firma Pelanggan',
         'Customer Companies' => 'Firma Pelanggan',
         'Company' => 'Firma',
         'go!' => 'mula!',
@@ -694,7 +694,7 @@ sub Data {
         'Phone-Ticket' => 'Tiket-Telefon',
         'Search Tickets' => 'Cari Tiket',
         'Edit Customer Users' => 'Audit Pengguna Pelanggan',
-        'Edit Customer Company' => 'Audit Syarikat Pelanggan',
+        'Edit Customer' => 'Audit Syarikat Pelanggan',
         'Bulk Action' => 'Tindakan pukal',
         'Bulk Actions on Tickets' => 'Tindakan Pukal pada Tiket',
         'Send Email and create a new Ticket' => 'Hantar Emel dan cipta satu tiket baru',
@@ -3127,8 +3127,8 @@ sub Data {
         'Create new process ticket' => '',
         'Custom text for the page shown to customers that have no tickets yet.' =>
             'Teks direka untuk halaman yang ditunjukkan kepada pelanggan yang belum mempunyai tiket.',
-        'Customer Company Administration' => '',
-        'Customer Company Information' => '',
+        'Customer Administration' => '',
+        'Customer Information' => '',
         'Customer User <-> Groups' => '',
         'Customer User <-> Services' => '',
         'Customer User Administration' => '',
@@ -3877,9 +3877,9 @@ sub Data {
             'Pendaftaran modul acara. Untuk lebih prestasi anda boleh mentakrifkan acara pencetus (contoh: Event => TicketCreate). Ini hanya mungkin jika kesemua medan dinamik Tiket perlu acara yang sama.',
         'Event module that updates customer user service membership if login changes.' =>
             '',
-        'Event module that updates customer users after an update of the Customer Company.' =>
+        'Event module that updates customer users after an update of the Customer.' =>
             '',
-        'Event module that updates tickets after an update of the Customer Company.' =>
+        'Event module that updates tickets after an update of the Customer.' =>
             '',
         'Event module that updates tickets after an update of the Customer User.' =>
             '',
@@ -4859,7 +4859,7 @@ sub Data {
         '","30' => '","30',
         'A response is a default text which helps your agents to write faster answers to customers.' =>
             'Sambutan adalah teks lalai yang membantu ejen anda untuk menulis jawapan yang lebih cepat kepada pelanggan.',
-        'Add Customer Company' => 'Tambah syarikat',
+        'Add Customer' => 'Tambah syarikat',
         'Add Response' => 'Tambah Tindak Balas',
         'Add customer company' => 'Tambah syarikat',
         'Add response' => 'Tambah jawapan',
@@ -4883,7 +4883,7 @@ sub Data {
         'Create and manage companies.' => 'Mewujudkan dan menguruskan syarikat.',
         'Create and manage response templates.' => 'Mewujudkan dan menguruskan templat tindak balas.',
         'Currently only MySQL is supported in the web installer.' => 'Kini hanya MySQL disokong pada pemasangan Web.',
-        'Customer Company Management' => 'Pelanggan syarikat pengurusan',
+        'Customer Management' => 'Pelanggan syarikat pengurusan',
         'Customer Data' => 'Data pelanggan',
         'Customer automatically added in Cc.' => 'Pelanggan secara automatik ditambah pada Cc.',
         'Customer will be needed to have a customer history and to login via customer panel.' =>

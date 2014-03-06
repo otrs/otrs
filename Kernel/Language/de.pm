@@ -151,7 +151,7 @@ sub Data {
         'system' => 'System',
         'Customer Info' => 'Kundeninformation',
         'Customer Information' => 'Kundeninformation',
-        'Customer Company' => 'Kunde',
+        'Customer' => 'Kunde',
         'Customer Companies' => 'Kunden',
         'Company' => 'Firma',
         'go!' => 'Start!',
@@ -695,7 +695,7 @@ sub Data {
         'Phone-Ticket' => 'Telefon-Ticket',
         'Search Tickets' => 'Ticket-Suche',
         'Edit Customer Users' => 'Kundenbenutzer bearbeiten',
-        'Edit Customer Company' => 'Kundenfirma bearbeiten',
+        'Edit Customer' => 'Kundenfirma bearbeiten',
         'Bulk Action' => 'Sammel-Aktion',
         'Bulk Actions on Tickets' => 'Sammel-Action an Tickets',
         'Send Email and create a new Ticket' => 'E-Mail senden und neues Ticket erstellen',
@@ -2214,7 +2214,7 @@ sub Data {
         # Template: AgentCustomerInformationCenterBlank
 
         # Template: AgentCustomerInformationCenterSearch
-        'Customer ID' => 'Kunden-ID',
+        'Customer ID' => 'Kundennummer',
         'Customer User' => 'Kundenbenutzer',
 
         # Template: AgentCustomerSearch
@@ -3145,8 +3145,8 @@ sub Data {
         'Create new process ticket' => '',
         'Custom text for the page shown to customers that have no tickets yet.' =>
             '',
-        'Customer Company Administration' => 'Kundenverwaltung',
-        'Customer Company Information' => 'Kundeninformation',
+        'Customer Administration' => 'Kundenverwaltung',
+        'Customer Information' => 'Kundeninformation',
         'Customer User <-> Groups' => 'Kundenbenutzer <-> Gruppen',
         'Customer User <-> Services' => 'Kundenbenutzer <-> Services',
         'Customer User Administration' => 'Kundenbenutzerverwaltung',
@@ -3895,9 +3895,9 @@ sub Data {
             '',
         'Event module that updates customer user service membership if login changes.' =>
             '',
-        'Event module that updates customer users after an update of the Customer Company.' =>
+        'Event module that updates customer users after an update of the Customer.' =>
             '',
-        'Event module that updates tickets after an update of the Customer Company.' =>
+        'Event module that updates tickets after an update of the Customer.' =>
             '',
         'Event module that updates tickets after an update of the Customer User.' =>
             '',

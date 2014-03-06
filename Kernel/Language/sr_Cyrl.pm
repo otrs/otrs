@@ -151,7 +151,7 @@ sub Data {
         'system' => 'Систем',
         'Customer Info' => 'Кориснички инфо',
         'Customer Information' => 'Информације о кориснику',
-        'Customer Company' => 'Корисникова фирма',
+        'Customer' => 'Корисникова фирма',
         'Customer Companies' => 'Корисникове фирме',
         'Company' => 'Фирма',
         'go!' => 'Старт!',
@@ -695,7 +695,7 @@ sub Data {
         'Phone-Ticket' => 'Телефонски тикет',
         'Search Tickets' => 'Тражење тикета',
         'Edit Customer Users' => 'Уреди кориснике',
-        'Edit Customer Company' => 'Уреди корисничку фирму',
+        'Edit Customer' => 'Уреди корисничку фирму',
         'Bulk Action' => 'Масовна акција',
         'Bulk Actions on Tickets' => 'Масовне акције на тикетима',
         'Send Email and create a new Ticket' => 'Пошањи имејл и креирај нови тикет',
@@ -3128,8 +3128,8 @@ sub Data {
         'Create new process ticket' => '',
         'Custom text for the page shown to customers that have no tickets yet.' =>
             '',
-        'Customer Company Administration' => '',
-        'Customer Company Information' => '',
+        'Customer Administration' => '',
+        'Customer Information' => '',
         'Customer User <-> Groups' => '',
         'Customer User <-> Services' => '',
         'Customer User Administration' => '',
@@ -3878,9 +3878,9 @@ sub Data {
             '',
         'Event module that updates customer user service membership if login changes.' =>
             '',
-        'Event module that updates customer users after an update of the Customer Company.' =>
+        'Event module that updates customer users after an update of the Customer.' =>
             '',
-        'Event module that updates tickets after an update of the Customer Company.' =>
+        'Event module that updates tickets after an update of the Customer.' =>
             '',
         'Event module that updates tickets after an update of the Customer User.' =>
             '',
@@ -4855,7 +4855,7 @@ sub Data {
         # OBSOLETE ENTRIES FOR REFERENCE, DO NOT TRANSLATE!
         #
         ' (work units)' => ' (елементи посла)',
-        'Add Customer Company' => 'Додај корисничку фирму',
+        'Add Customer' => 'Додај корисничку фирму',
         'Add Response' => 'Додај одговор',
         'Add customer company' => 'Додај корисничку фирму',
         'Add response' => 'Додај одговор',
@@ -4870,7 +4870,7 @@ sub Data {
         'Create and manage companies.' => 'Креирање и управљање фирмама.',
         'Create and manage response templates.' => 'Креирање и управљање шаблонима одговора.',
         'Currently only MySQL is supported in the web installer.' => 'Тренутно је само "MySQL" подржан у Web Инсталацији.',
-        'Customer Company Management' => 'Уређивање корисничких фирми',
+        'Customer Management' => 'Уређивање корисничких фирми',
         'Customer Data' => 'Подаци о кориснику',
         'Customer will be needed to have a customer history and to login via customer panel.' =>
             'Корисници су потребни да би могли да имате историјат за корисника и да би могли да се пријаве на клијентски портал.',

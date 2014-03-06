@@ -156,7 +156,7 @@ sub Data {
         'system' => 'sistema',
         'Customer Info' => 'Información del cliente',
         'Customer Information' => 'Información del cliente',
-        'Customer Company' => 'Empresa del cliente',
+        'Customer' => 'Empresa del cliente',
         'Customer Companies' => 'Empresas de los clientes',
         'Company' => 'Empresa',
         'go!' => '¡ir!',
@@ -700,7 +700,7 @@ sub Data {
         'Phone-Ticket' => 'Ticket telefónico',
         'Search Tickets' => 'Buscar tickets',
         'Edit Customer Users' => 'Editar clientes',
-        'Edit Customer Company' => 'Editar la empresa del cliente',
+        'Edit Customer' => 'Editar la empresa del cliente',
         'Bulk Action' => 'Acción en masa',
         'Bulk Actions on Tickets' => 'Acción en masa sobre tickets',
         'Send Email and create a new Ticket' => 'Enviar un correo y crear un nuevo ticket',
@@ -3133,8 +3133,8 @@ sub Data {
         'Create new process ticket' => '',
         'Custom text for the page shown to customers that have no tickets yet.' =>
             '',
-        'Customer Company Administration' => 'Administración de las empresas cliente',
-        'Customer Company Information' => 'Información de la empresa cliente',
+        'Customer Administration' => 'Administración de las empresas cliente',
+        'Customer Information' => 'Información de la empresa cliente',
         'Customer User <-> Groups' => '',
         'Customer User <-> Services' => '',
         'Customer User Administration' => 'Administración de los usuarios cliente',
@@ -3883,9 +3883,9 @@ sub Data {
             '',
         'Event module that updates customer user service membership if login changes.' =>
             '',
-        'Event module that updates customer users after an update of the Customer Company.' =>
+        'Event module that updates customer users after an update of the Customer.' =>
             '',
-        'Event module that updates tickets after an update of the Customer Company.' =>
+        'Event module that updates tickets after an update of the Customer.' =>
             '',
         'Event module that updates tickets after an update of the Customer User.' =>
             '',
@@ -4860,12 +4860,12 @@ sub Data {
         # OBSOLETE ENTRIES FOR REFERENCE, DO NOT TRANSLATE!
         #
         ' (work units)' => ' (unidades de trabajo)',
-        'Add Customer Company' => 'Añadir una empresa cliente',
+        'Add Customer' => 'Añadir una empresa cliente',
         'Add customer company' => 'Añadir una empresa cliente',
         'Attachments <-> Responses' => 'Adjuntos <-> Respuestas',
         'Complete registration and continue' => 'Terminar el registro y continuar',
         'Currently only MySQL is supported in the web installer.' => 'Actualmente el instalador web sólo acepta MySQL.',
-        'Customer Company Management' => 'Gestión de las empresas cliente',
+        'Customer Management' => 'Gestión de las empresas cliente',
         'Customer Data' => 'Datos del cliente',
         'Customer automatically added in Cc.' => 'Cliente añadido automáticamente en Cc.',
         'Customer will be needed to have a customer history and to login via customer panel.' =>

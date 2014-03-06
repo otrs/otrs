@@ -152,7 +152,7 @@ sub Data {
         'system' => 'σύστημα',
         'Customer Info' => 'Προφίλ Πελάτη',
         'Customer Information' => 'Πληροφορίες Πελάτη',
-        'Customer Company' => 'Οργανισμός Πελάτη',
+        'Customer' => 'Οργανισμός Πελάτη',
         'Customer Companies' => '',
         'Company' => 'Οργανισμός',
         'go!' => 'Εκτέλεση!',
@@ -697,7 +697,7 @@ sub Data {
         'Phone-Ticket' => 'Δελτίο Τηλεφώνου',
         'Search Tickets' => 'Αναζήτηση Δελτίων',
         'Edit Customer Users' => 'Αλλαγή Χρηστών-πελατών',
-        'Edit Customer Company' => 'Αλλαγή Εταιρείας Πελάτη',
+        'Edit Customer' => 'Αλλαγή Εταιρείας Πελάτη',
         'Bulk Action' => 'Μαζική ενέργεια',
         'Bulk Actions on Tickets' => 'Μαζική Ενέργεια Δελτίων',
         'Send Email and create a new Ticket' => 'Αποστολη email και δημιουργια νεου Δελτίου',
@@ -3135,8 +3135,8 @@ sub Data {
         'Create new process ticket' => '',
         'Custom text for the page shown to customers that have no tickets yet.' =>
             '',
-        'Customer Company Administration' => '',
-        'Customer Company Information' => '',
+        'Customer Administration' => '',
+        'Customer Information' => '',
         'Customer User <-> Groups' => '',
         'Customer User <-> Services' => '',
         'Customer User Administration' => '',
@@ -3885,9 +3885,9 @@ sub Data {
             '',
         'Event module that updates customer user service membership if login changes.' =>
             '',
-        'Event module that updates customer users after an update of the Customer Company.' =>
+        'Event module that updates customer users after an update of the Customer.' =>
             '',
-        'Event module that updates tickets after an update of the Customer Company.' =>
+        'Event module that updates tickets after an update of the Customer.' =>
             '',
         'Event module that updates tickets after an update of the Customer User.' =>
             '',
@@ -4863,9 +4863,9 @@ sub Data {
         # OBSOLETE ENTRIES FOR REFERENCE, DO NOT TRANSLATE!
         #
         ' (work units)' => ' (μονάδες εργασίας)',
-        'Add Customer Company' => 'Προσθήκη Οργανισμου Πελάτη',
+        'Add Customer' => 'Προσθήκη Οργανισμου Πελάτη',
         'Attachments <-> Responses' => 'Συνημμένα <-> Απαντήσεις',
-        'Customer Company Management' => 'Διαχείρηση Οργανισμού Πελάτη',
+        'Customer Management' => 'Διαχείρηση Οργανισμού Πελάτη',
         'Customer Data' => 'Δεδομένα Πελάτη',
         'Database-User' => 'Ονομα χρήστη βάσης',
         'Escalation in' => 'Αναβάθμιση σε',

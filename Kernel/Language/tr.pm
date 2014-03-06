@@ -151,7 +151,7 @@ sub Data {
         'system' => 'sistem',
         'Customer Info' => 'Müşteri Bilgisi',
         'Customer Information' => 'Müşteri Bilgileri',
-        'Customer Company' => 'Müşteri Şirketi',
+        'Customer' => 'Müşteri Şirketi',
         'Customer Companies' => 'Müşteri Şirketleri',
         'Company' => 'Şirket',
         'go!' => 'Başla!',
@@ -695,7 +695,7 @@ sub Data {
         'Phone-Ticket' => 'Telefon-Bilet',
         'Search Tickets' => 'Biletleri Ara',
         'Edit Customer Users' => 'Müşteri Kullanıcıları Belirle',
-        'Edit Customer Company' => '',
+        'Edit Customer' => '',
         'Bulk Action' => 'Toplu İşlem',
         'Bulk Actions on Tickets' => 'Biletler Üzerinde Toplu İşlem',
         'Send Email and create a new Ticket' => 'E-Postayı gönder ve yeni Bilet oluştur',
@@ -3128,8 +3128,8 @@ sub Data {
         'Create new process ticket' => '',
         'Custom text for the page shown to customers that have no tickets yet.' =>
             '',
-        'Customer Company Administration' => 'Müşteri Şirket Yönetimi',
-        'Customer Company Information' => 'Müşteri Şirket Bilgisi',
+        'Customer Administration' => 'Müşteri Şirket Yönetimi',
+        'Customer Information' => 'Müşteri Şirket Bilgisi',
         'Customer User <-> Groups' => '',
         'Customer User <-> Services' => '',
         'Customer User Administration' => 'Müşteri Kullanıcı Yönetimi',
@@ -3878,9 +3878,9 @@ sub Data {
             '',
         'Event module that updates customer user service membership if login changes.' =>
             '',
-        'Event module that updates customer users after an update of the Customer Company.' =>
+        'Event module that updates customer users after an update of the Customer.' =>
             '',
-        'Event module that updates tickets after an update of the Customer Company.' =>
+        'Event module that updates tickets after an update of the Customer.' =>
             '',
         'Event module that updates tickets after an update of the Customer User.' =>
             '',
@@ -4879,12 +4879,12 @@ sub Data {
         'A response is default text to write faster answer (with default text) to customers.' =>
             'Bir yanıt, müşterilere daha hızlı cevap yazabilmek için önceden hazırlanan metindir.',
         'Absolut Period' => 'Belirli Süre',
-        'Add Customer Company' => 'Müşteri Şirketi Ekle',
+        'Add Customer' => 'Müşteri Şirketi Ekle',
         'Add Response' => 'Cevap ekle',
         'Add System Address' => 'Sistem Adresi Ekle',
         'Add User' => 'Kullanıcı Ekle',
         'Add a new Agent.' => 'Yeni bir Aracı ekle.',
-        'Add a new Customer Company.' => 'Yeni bir Müşteri Şirket ekle.',
+        'Add a new Customer.' => 'Yeni bir Müşteri Şirket ekle.',
         'Add a new Group.' => 'Yeni bir Grup ekle.',
         'Add a new Notification.' => 'yeni bildirim ekle',
         'Add a new Priority.' => 'yeni bir öncelik ekle',
@@ -4980,7 +4980,7 @@ sub Data {
             'Farklı aracı gruplarının (örneğin satınalma bölümü, destek bölümü, satış bölümü, ...) erişim izinlerini düzenlemek için yeni grupları oluştur.',
         'CreateTicket' => 'Bilet Oluştur',
         'Current Impact Rating' => 'Şu Andaki Etki Oranı',
-        'Customer Company Management' => 'Müşteri Şirket Yönetimi',
+        'Customer Management' => 'Müşteri Şirket Yönetimi',
         'Customer Data' => 'Müşteri Verisi',
         'Customer Move Notify' => 'Müşteri Taşıma Bildirimi',
         'Customer Owner Notify' => 'Müşteri Sahip Bildirimi',

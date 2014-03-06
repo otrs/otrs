@@ -157,7 +157,7 @@ sub Data {
         'system' => 'systém',
         'Customer Info' => 'Informace o klientovi',
         'Customer Information' => 'Informace o klientovi',
-        'Customer Company' => 'Společnost klienta',
+        'Customer' => 'Společnost klienta',
         'Customer Companies' => '',
         'Company' => 'Společnost',
         'go!' => 'jdi!',
@@ -701,7 +701,7 @@ sub Data {
         'Phone-Ticket' => 'Telefonní Tiket',
         'Search Tickets' => 'Vyhledávání Tiketů',
         'Edit Customer Users' => 'Editace uživatelů zákazníka',
-        'Edit Customer Company' => 'Editace společnosti zákazníka',
+        'Edit Customer' => 'Editace společnosti zákazníka',
         'Bulk Action' => 'Hromadná akce',
         'Bulk Actions on Tickets' => 'Hromadná akce na tiketech',
         'Send Email and create a new Ticket' => 'Zaslat Email a vytvořit nový tiket',
@@ -3134,8 +3134,8 @@ sub Data {
         'Create new process ticket' => '',
         'Custom text for the page shown to customers that have no tickets yet.' =>
             '',
-        'Customer Company Administration' => '',
-        'Customer Company Information' => '',
+        'Customer Administration' => '',
+        'Customer Information' => '',
         'Customer User <-> Groups' => '',
         'Customer User <-> Services' => '',
         'Customer User Administration' => '',
@@ -3884,9 +3884,9 @@ sub Data {
             '',
         'Event module that updates customer user service membership if login changes.' =>
             '',
-        'Event module that updates customer users after an update of the Customer Company.' =>
+        'Event module that updates customer users after an update of the Customer.' =>
             '',
-        'Event module that updates tickets after an update of the Customer Company.' =>
+        'Event module that updates tickets after an update of the Customer.' =>
             '',
         'Event module that updates tickets after an update of the Customer User.' =>
             '',
@@ -4861,12 +4861,12 @@ sub Data {
         # OBSOLETE ENTRIES FOR REFERENCE, DO NOT TRANSLATE!
         #
         ' (work units)' => ' (jednotky práce)',
-        'Add Customer Company' => 'Přidat Společnost Zákazníka',
+        'Add Customer' => 'Přidat Společnost Zákazníka',
         'Add customer company' => 'Přidat společnost zákazníka',
         'Attachments <-> Responses' => 'Přílohy <-> Odpovědi',
         'Bounce Article to a different mail address' => 'Odeslat na jinou adresu',
         'CreateTicket' => 'Vytvořit Tiket',
-        'Customer Company Management' => 'Správa Společnosti Zákazníka',
+        'Customer Management' => 'Správa Společnosti Zákazníka',
         'Customer Data' => 'Data Zákazníka',
         'Database-User' => 'Uživatel',
         'Due Date' => 'Datum splatnosti',

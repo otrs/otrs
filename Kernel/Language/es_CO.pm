@@ -151,7 +151,7 @@ sub Data {
         'system' => 'sistema',
         'Customer Info' => 'Informaci√≥n del Cliente',
         'Customer Information' => 'Informaci√≥n del Cliente',
-        'Customer Company' => 'Compa√±√≠a del Cliente',
+        'Customer' => 'Compa√±√≠a del Cliente',
         'Customer Companies' => 'Compa√±√≠as de los Clientes',
         'Company' => 'Compa√±√≠a',
         'go!' => 'ir',
@@ -695,7 +695,7 @@ sub Data {
         'Phone-Ticket' => 'Ticket Telef√≥nico',
         'Search Tickets' => 'Buscar Tickets',
         'Edit Customer Users' => 'Editar Clientes',
-        'Edit Customer Company' => 'Editar Compa√±√≠a de Clientes',
+        'Edit Customer' => 'Editar Compa√±√≠a de Clientes',
         'Bulk Action' => 'Acci√≥n M√∫ltiple',
         'Bulk Actions on Tickets' => 'Acci√≥n M√∫ltiple sobre Tickets',
         'Send Email and create a new Ticket' => 'Enviar un correo y crear un nuevo ticket',
@@ -3128,8 +3128,8 @@ sub Data {
         'Create new process ticket' => '',
         'Custom text for the page shown to customers that have no tickets yet.' =>
             'Texto personalizado que ver√°n los clientes que a√∫n no han creado tickets.',
-        'Customer Company Administration' => '',
-        'Customer Company Information' => '',
+        'Customer Administration' => '',
+        'Customer Information' => '',
         'Customer User <-> Groups' => '',
         'Customer User <-> Services' => '',
         'Customer User Administration' => '',
@@ -3878,9 +3878,9 @@ sub Data {
             '',
         'Event module that updates customer user service membership if login changes.' =>
             '',
-        'Event module that updates customer users after an update of the Customer Company.' =>
+        'Event module that updates customer users after an update of the Customer.' =>
             '',
-        'Event module that updates tickets after an update of the Customer Company.' =>
+        'Event module that updates tickets after an update of the Customer.' =>
             '',
         'Event module that updates tickets after an update of the Customer User.' =>
             '',
@@ -4886,12 +4886,12 @@ sub Data {
         'Account Type' => 'Tipo de cuenta',
         'Activates TypeAhead for the autocomplete feature, that enables users to type in whatever speed they desire, without losing any information. Often this means that keystrokes entered will not be displayed on the screen immediately.' =>
             'Activa TypeAhead para la funcionalidad de autocompletar, lo que le permite a los usuarios teclear a cualquier velocidad, sin perder informaci√≥n. Con frecuencia, esto significa que las pulsaciones del teclado no se mostrar√°n de forma inmediata en la pantalla.',
-        'Add Customer Company' => 'A√±adir Compa√±√≠a de Cliente',
+        'Add Customer' => 'A√±adir Compa√±√≠a de Cliente',
         'Add Response' => 'A√±adir Respuesta',
         'Add System Address' => 'A√±adir Direcci√≥n de Sistema',
         'Add User' => 'A√±adir Usuario',
         'Add a new Agent.' => 'A√±adir un nuevo Agente',
-        'Add a new Customer Company.' => 'A√±adir una nueva Compa√±√≠a del Cliente.',
+        'Add a new Customer.' => 'A√±adir una nueva Compa√±√≠a del Cliente.',
         'Add a new Group.' => 'A√±adir nuevo Grupo',
         'Add a new Notification.' => 'Agregar una nueva Notificaci√≥n',
         'Add a new Priority.' => 'A√±adir una nueva Prioridad.',
@@ -5078,7 +5078,7 @@ sub Data {
         'Create/Expires' => 'Creaci√≥n/Caducidad',
         'CreateTicket' => 'CrearTicket',
         'Currently only MySQL is supported in the web installer.' => 'Actualmente s√≥lo MySQL est√° disponible en el instalador web.',
-        'Customer Company Management' => 'Administraci√≥n de Compa√±√≠as del Cliente',
+        'Customer Management' => 'Administraci√≥n de Compa√±√≠as del Cliente',
         'Customer Data' => 'Informaci√≥n del cliente',
         'Customer Move Notify' => 'Notificar al Cliente al Mover',
         'Customer Owner Notify' => 'Notificar al Propietario al Mover',

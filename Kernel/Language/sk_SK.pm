@@ -151,7 +151,7 @@ sub Data {
         'system' => 'Systém',
         'Customer Info' => 'Zákazníke info',
         'Customer Information' => '',
-        'Customer Company' => '',
+        'Customer' => '',
         'Customer Companies' => '',
         'Company' => '',
         'go!' => 'štart!',
@@ -695,7 +695,7 @@ sub Data {
         'Phone-Ticket' => 'Telefonická požiadavka',
         'Search Tickets' => 'Hľadaj požiadavky',
         'Edit Customer Users' => 'Uprav zákazníckeho užívateľa.',
-        'Edit Customer Company' => '',
+        'Edit Customer' => '',
         'Bulk Action' => 'Hromadná akcia',
         'Bulk Actions on Tickets' => 'hromadné akcie na požiadavkách.',
         'Send Email and create a new Ticket' => 'Pošli e-mail a vytvor novú požiadavku',
@@ -3128,8 +3128,8 @@ sub Data {
         'Create new process ticket' => '',
         'Custom text for the page shown to customers that have no tickets yet.' =>
             '',
-        'Customer Company Administration' => '',
-        'Customer Company Information' => '',
+        'Customer Administration' => '',
+        'Customer Information' => '',
         'Customer User <-> Groups' => '',
         'Customer User <-> Services' => '',
         'Customer User Administration' => '',
@@ -3878,9 +3878,9 @@ sub Data {
             '',
         'Event module that updates customer user service membership if login changes.' =>
             '',
-        'Event module that updates customer users after an update of the Customer Company.' =>
+        'Event module that updates customer users after an update of the Customer.' =>
             '',
-        'Event module that updates tickets after an update of the Customer Company.' =>
+        'Event module that updates tickets after an update of the Customer.' =>
             '',
         'Event module that updates tickets after an update of the Customer User.' =>
             '',

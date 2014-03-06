@@ -156,7 +156,7 @@ sub Data {
         'system' => 'rendszer',
         'Customer Info' => 'Ügyfél Info',
         'Customer Information' => 'Ügyfél információ',
-        'Customer Company' => 'Ügyfél cég',
+        'Customer' => 'Ügyfél cég',
         'Customer Companies' => 'Ügyfél cégek',
         'Company' => 'Cég',
         'go!' => 'Indítás!',
@@ -700,7 +700,7 @@ sub Data {
         'Phone-Ticket' => 'Telefon-jegy',
         'Search Tickets' => 'Jegyek keresése',
         'Edit Customer Users' => 'Ügyfél felhasználó szerkesztése',
-        'Edit Customer Company' => 'Ügyfél cég szerkesztése',
+        'Edit Customer' => 'Ügyfél cég szerkesztése',
         'Bulk Action' => 'Csoportos művelet',
         'Bulk Actions on Tickets' => 'Csoportos művelet jegyeken',
         'Send Email and create a new Ticket' => 'E-mail küldése és új Jegy létrehozása',
@@ -3133,8 +3133,8 @@ sub Data {
         'Create new process ticket' => '',
         'Custom text for the page shown to customers that have no tickets yet.' =>
             '',
-        'Customer Company Administration' => '',
-        'Customer Company Information' => '',
+        'Customer Administration' => '',
+        'Customer Information' => '',
         'Customer User <-> Groups' => '',
         'Customer User <-> Services' => '',
         'Customer User Administration' => '',
@@ -3883,9 +3883,9 @@ sub Data {
             '',
         'Event module that updates customer user service membership if login changes.' =>
             '',
-        'Event module that updates customer users after an update of the Customer Company.' =>
+        'Event module that updates customer users after an update of the Customer.' =>
             '',
-        'Event module that updates tickets after an update of the Customer Company.' =>
+        'Event module that updates tickets after an update of the Customer.' =>
             '',
         'Event module that updates tickets after an update of the Customer User.' =>
             '',
@@ -4860,11 +4860,11 @@ sub Data {
         # OBSOLETE ENTRIES FOR REFERENCE, DO NOT TRANSLATE!
         #
         ' (work units)' => ' (munkaegység)',
-        'Add Customer Company' => 'Ügyfél cég hozzáadása',
+        'Add Customer' => 'Ügyfél cég hozzáadása',
         'Attachments <-> Responses' => 'Levélmellékletek <-> Válaszok',
         'Create and manage companies.' => 'Cégek létrehozása és kezelése',
         'Create and manage response templates.' => 'Válasz sablonok létrehozása és kezelése',
-        'Customer Company Management' => 'Ügyfél cégek kezelése',
+        'Customer Management' => 'Ügyfél cégek kezelése',
         'Customer Data' => 'Ügyfél adatok',
         'Customers <-> Services' => 'Ügyfelek <-> Szolgáltatások',
         'Database-User' => 'Adatbázis felhasználó',

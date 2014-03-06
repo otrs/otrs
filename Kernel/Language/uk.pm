@@ -151,7 +151,7 @@ sub Data {
         'system' => 'система',
         'Customer Info' => 'Інформація про агента',
         'Customer Information' => 'Інформація про агента',
-        'Customer Company' => 'Компанія клієнта',
+        'Customer' => 'Компанія клієнта',
         'Customer Companies' => 'Компанії клієнта',
         'Company' => 'Компанія',
         'go!' => 'розпочати!',
@@ -695,7 +695,7 @@ sub Data {
         'Phone-Ticket' => 'Заявка з телефонний дзвінок',
         'Search Tickets' => 'Пошук заявок',
         'Edit Customer Users' => 'Редагувати клієнтів',
-        'Edit Customer Company' => 'Редагувати компанії клієнтів',
+        'Edit Customer' => 'Редагувати компанії клієнтів',
         'Bulk Action' => 'Масова дія',
         'Bulk Actions on Tickets' => 'Масова дія над заявками',
         'Send Email and create a new Ticket' => 'Відправити лист і створити нову заявку',
@@ -3128,8 +3128,8 @@ sub Data {
         'Create new process ticket' => '',
         'Custom text for the page shown to customers that have no tickets yet.' =>
             '',
-        'Customer Company Administration' => '',
-        'Customer Company Information' => '',
+        'Customer Administration' => '',
+        'Customer Information' => '',
         'Customer User <-> Groups' => '',
         'Customer User <-> Services' => '',
         'Customer User Administration' => '',
@@ -3878,9 +3878,9 @@ sub Data {
             '',
         'Event module that updates customer user service membership if login changes.' =>
             '',
-        'Event module that updates customer users after an update of the Customer Company.' =>
+        'Event module that updates customer users after an update of the Customer.' =>
             '',
-        'Event module that updates tickets after an update of the Customer Company.' =>
+        'Event module that updates tickets after an update of the Customer.' =>
             '',
         'Event module that updates tickets after an update of the Customer User.' =>
             '',
@@ -4855,14 +4855,14 @@ sub Data {
         # OBSOLETE ENTRIES FOR REFERENCE, DO NOT TRANSLATE!
         #
         ' (work units)' => ' ( робочі одиниці)',
-        'Add Customer Company' => 'Додати компанію клієнта',
+        'Add Customer' => 'Додати компанію клієнта',
         'Add Response' => 'Додати відповідь',
         'Add customer company' => 'Додати компанію клієнта',
         'Add response' => 'Додати відповідь',
         'Attachments <-> Responses' => 'Прикріплені файли <-> Відповіді',
         'Create and manage companies.' => 'Створення й керування компаніями.',
         'Create and manage response templates.' => 'Створення й керування шаблонами відповідей.',
-        'Customer Company Management' => 'Керування компанією клієнта',
+        'Customer Management' => 'Керування компанією клієнта',
         'Customer Data' => 'Облікові дані клієнта',
         'Customers <-> Services' => 'Клієнти <-> Сервіси',
         'Database-User' => 'Користувач бази даних',

@@ -151,7 +151,7 @@ sub Data {
         'system' => 'Sistema',
         'Customer Info' => 'Informació del client',
         'Customer Information' => 'Informació del client',
-        'Customer Company' => 'Empresa del client',
+        'Customer' => 'Empresa del client',
         'Customer Companies' => 'Empreses del client',
         'Company' => 'Empresa',
         'go!' => 'anar!',
@@ -695,7 +695,7 @@ sub Data {
         'Phone-Ticket' => 'Tiquet-Telefònic',
         'Search Tickets' => 'Cercar tiquets',
         'Edit Customer Users' => 'Editar els usuaris del client',
-        'Edit Customer Company' => 'Editar empresa del client',
+        'Edit Customer' => 'Editar empresa del client',
         'Bulk Action' => 'Acció múltiple',
         'Bulk Actions on Tickets' => 'Acció múltiple en tiquets',
         'Send Email and create a new Ticket' => 'Enviar un correu i crear un nou tiquet',
@@ -3128,8 +3128,8 @@ sub Data {
         'Create new process ticket' => '',
         'Custom text for the page shown to customers that have no tickets yet.' =>
             '',
-        'Customer Company Administration' => '',
-        'Customer Company Information' => '',
+        'Customer Administration' => '',
+        'Customer Information' => '',
         'Customer User <-> Groups' => '',
         'Customer User <-> Services' => '',
         'Customer User Administration' => '',
@@ -3878,9 +3878,9 @@ sub Data {
             '',
         'Event module that updates customer user service membership if login changes.' =>
             '',
-        'Event module that updates customer users after an update of the Customer Company.' =>
+        'Event module that updates customer users after an update of the Customer.' =>
             '',
-        'Event module that updates tickets after an update of the Customer Company.' =>
+        'Event module that updates tickets after an update of the Customer.' =>
             '',
         'Event module that updates tickets after an update of the Customer User.' =>
             '',
@@ -4857,7 +4857,7 @@ sub Data {
         ' (work units)' => ' (unitats de treball)',
         'A response is a default text which helps your agents to write faster answers to customers.' =>
             'Una resposta és un text predeterminat que ajuda als seus agents a escriure respostes més ràpides als clients.',
-        'Add Customer Company' => 'Afegir empresa del client',
+        'Add Customer' => 'Afegir empresa del client',
         'Add Response' => 'Afegir resposta',
         'Add customer company' => 'Afegir empresa del client',
         'Add response' => 'Afegir resposta',
@@ -4873,7 +4873,7 @@ sub Data {
         'Configures a default TicketDynmicField setting. "Name" defines the dynamic field which should be used, "Value" is the data that will be set, and "Event" defines the trigger event. Please check the developer manual (http://doc.otrs.org/), chapter "Ticket Event Module".' =>
             'Configura un valor CampDinamicDeTiquet per defecte. "Nom", defineix el camp dinàmic que s\'ha d\'utilitzar, "Valor" són les dades que es crearà, i "Esdeveniment" defineix l\'esdeveniment de gallet. Per favor, consulti el manual del desenvolupador (http://doc.otrs.org/), en el capítol "Mòdul d\'esdeveniments de tiquet".',
         'Currently only MySQL is supported in the web installer.' => 'Actualment només se suporta MySQL en l\'instal·lador web.',
-        'Customer Company Management' => 'Administració de empresa del client',
+        'Customer Management' => 'Administració de empresa del client',
         'Customer Data' => 'Informació del client',
         'Customer will be needed to have a customer history and to login via customer panel.' =>
             'El client haurà de comptar amb un historial de client i accedir a través del panell de clients.',

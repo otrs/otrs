@@ -156,7 +156,7 @@ sub Data {
         'system' => 'Sistema',
         'Customer Info' => 'Informação do Cliente',
         'Customer Information' => 'Informação do Cliente',
-        'Customer Company' => 'Empresa de Clientes',
+        'Customer' => 'Empresa de Clientes',
         'Customer Companies' => 'Empresas de Clientes',
         'Company' => 'Empresa',
         'go!' => 'ir!',
@@ -700,7 +700,7 @@ sub Data {
         'Phone-Ticket' => 'Chamado Fone',
         'Search Tickets' => 'Pesquisar Chamados',
         'Edit Customer Users' => 'Editar Clientes (Usuários)',
-        'Edit Customer Company' => 'Editar Empresa de Clientes',
+        'Edit Customer' => 'Editar Empresa de Clientes',
         'Bulk Action' => 'Ação em Massa',
         'Bulk Actions on Tickets' => 'Ações em massa em chamados',
         'Send Email and create a new Ticket' => 'Enviar e-mail e criar novo chamado',
@@ -3136,8 +3136,8 @@ sub Data {
         'Create new process ticket' => 'Criar novo chamado via processo',
         'Custom text for the page shown to customers that have no tickets yet.' =>
             'Texto personalizado para a página mostrada aos clientes que não têm chamados ainda.',
-        'Customer Company Administration' => 'Administração de Empresas de Cliente',
-        'Customer Company Information' => 'Informação da Empresa do Cliente',
+        'Customer Administration' => 'Administração de Empresas de Cliente',
+        'Customer Information' => 'Informação da Empresa do Cliente',
         'Customer User <-> Groups' => 'Cliente <-> Grupos',
         'Customer User <-> Services' => 'Cliente <-> Serviços',
         'Customer User Administration' => 'Administração de Usuários Cliente',
@@ -3888,9 +3888,9 @@ sub Data {
             '',
         'Event module that updates customer user service membership if login changes.' =>
             '',
-        'Event module that updates customer users after an update of the Customer Company.' =>
+        'Event module that updates customer users after an update of the Customer.' =>
             '',
-        'Event module that updates tickets after an update of the Customer Company.' =>
+        'Event module that updates tickets after an update of the Customer.' =>
             '',
         'Event module that updates tickets after an update of the Customer User.' =>
             '',
@@ -4870,7 +4870,7 @@ sub Data {
         '(e.g. Text or Te*t)' => '(ex.: Texto ou Tes*o)',
         'A response is a default text which helps your agents to write faster answers to customers.' =>
             'A resposta é um texto padrão que ajuda os atendentes a escrever respostas mais rápidas aos clientes.',
-        'Add Customer Company' => 'Adicionar Empresa de Clientes',
+        'Add Customer' => 'Adicionar Empresa de Clientes',
         'Add Response' => 'Adicionar Resposta',
         'Add customer company' => 'Adicionar Empresa de Clientes',
         'Add response' => 'Adicionar Resposta',
@@ -4891,7 +4891,7 @@ sub Data {
         'Create and manage companies.' => 'Criar e gerenciar empresas.',
         'Create and manage response templates.' => 'Criar e gerenciar modelos de respostas.',
         'Currently only MySQL is supported in the web installer.' => 'Atualmente, apenas o MySQL é suportado pelo instalador web.',
-        'Customer Company Management' => 'Gerenciamento de Empresa de Clientes',
+        'Customer Management' => 'Gerenciamento de Empresa de Clientes',
         'Customer Data' => 'Dados do Cliente',
         'Customer automatically added in Cc.' => 'Cliente automaticamente adicionado à Cc.',
         'Customer history' => 'Histórico de cliente',
