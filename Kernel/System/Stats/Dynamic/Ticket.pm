@@ -41,6 +41,7 @@ sub new {
     $Self->{PriorityObject}     = Kernel::System::Priority->new( %{$Self} );
     $Self->{LockObject}         = Kernel::System::Lock->new( %{$Self} );
     $Self->{CustomerUser}       = Kernel::System::CustomerUser->new( %{$Self} );
+    $Self->{CustomerCompany}    = Kernel::System::CustomerCompany->new( %{$Self} );
     $Self->{ServiceObject}      = Kernel::System::Service->new( %{$Self} );
     $Self->{SLAObject}          = Kernel::System::SLA->new( %{$Self} );
     $Self->{TypeObject}         = Kernel::System::Type->new( %{$Self} );
@@ -438,7 +439,10 @@ sub GetObjectAttributes {
         my %CustomerID;
         while ( my @Row = $Self->{DBObject}->FetchrowArray() ) {
             if ( $Row[0] ) {
-                $CustomerID{ $Row[0] } = $Row[0];
+                my %CustomerCompany = $Self->{CustomerCompany}->CustomerCompanyGet(
+                    CustomerID => $Row[0],
+                );
+                $CustomerID{ $Row[0] } = $Row[0] . " (" . $CustomerCompany{CustomerCompanyName} . ")";
             }
         }
 
