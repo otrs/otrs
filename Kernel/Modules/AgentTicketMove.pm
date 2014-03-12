@@ -75,7 +75,7 @@ sub Run {
 
     # check permissions
     my $Access = $Self->{TicketObject}->TicketPermission(
-        Type     => 'move',
+        Type     => 'move_into',
         TicketID => $Self->{TicketID},
         UserID   => $Self->{UserID}
     );
