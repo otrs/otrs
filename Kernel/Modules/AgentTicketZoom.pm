@@ -757,7 +757,7 @@ sub MaskAgentZoom {
         )
     {
         my $Access = $Self->{TicketObject}->TicketPermission(
-            Type     => 'move',
+            Type     => 'move_into',
             TicketID => $Ticket{TicketID},
             UserID   => $Self->{UserID},
             LogNo    => 1,
