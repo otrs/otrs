@@ -756,6 +756,7 @@ sub _ShowEdit {
     $Param{ACLKeysLevel4Prefixes} = $Self->{LayoutObject}->BuildSelection(
         Data => {
             ''         => 'Standard',
+            '[NOT]'    => 'Standard NOT',
             '[RegExp]' => 'Regex',
             '[regexp]' => 'Regex (ignore case)',
         },

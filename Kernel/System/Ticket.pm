@@ -7166,12 +7166,27 @@ sub TicketAcl {
                     my $MatchProperty = 0;
                     for my $Item ( @{ $Step{$PropertiesHash}->{$Key}->{$Data} } ) {
                         if ( ref $UsedChecks{$Key}->{$Data} eq 'ARRAY' ) {
+                            
                             my $MatchItem = 0;
-                            for my $Array ( @{ $UsedChecks{$Key}->{$Data} } ) {
+                            if ( substr( $Item, 0, length('[NOT]') ) eq '[NOT]' )
+                            {
+                              $MatchItem = 1;
+                            }
 
+                            my $Array;
+                            for $Array ( @{ $UsedChecks{$Key}->{$Data} } ) {
+                                if ( substr( $Item, 0, length('[NOT]') ) eq '[NOT]' )
+                                {
+                                    my $notValue = substr $Item, length('[NOT]');
+                                    if ( $notValue eq $Array ) {
+                                        $MatchItem = 0;
+                                        last;
+                                    }
+                                }
                                 # eq match
-                                if ( $Item eq $Array ) {
+                                elsif ( $Item eq $Array ) {
                                     $MatchItem = 1;
+                                    last;
                                 }
 
                                 # regexp match case-sensitive
@@ -7179,6 +7194,7 @@ sub TicketAcl {
                                     my $RegExp = substr $Item, 8;
                                     if ( $Array =~ /$RegExp/ ) {
                                         $MatchItem = 1;
+                                        last;
                                     }
                                 }
 
@@ -7187,27 +7203,41 @@ sub TicketAcl {
                                     my $RegExp = substr $Item, 8;
                                     if ( $Array =~ /$RegExp/i ) {
                                         $MatchItem = 1;
+                                        last;
                                     }
                                 }
-                                if ($MatchItem) {
-                                    $MatchProperty = 1;
+                            }
+                            if ($MatchItem) {
+                                $MatchProperty = 1;
 
-                                    # debug log
-                                    if ( $Self->{Debug} > 4 ) {
-                                        $Self->{LogObject}->Log(
-                                            Priority => 'debug',
-                                            Message =>
-                                                "Workflow '$Acl/$Key/$Data' MatchedARRAY ($Item eq $Array)",
-                                        );
-                                    }
+                                # debug log
+                                if ( $Self->{Debug} > 4 ) {
+                                    $Self->{LogObject}->Log(
+                                        Priority => 'debug',
+                                        Message =>
+                                            "Workflow '$Acl/$Key/$Data' MatchedARRAY ($Item eq $Array)",
+                                    );
                                 }
                             }
                         }
                         elsif ( defined $UsedChecks{$Key}->{$Data} ) {
                             my $MatchItem = 0;
 
+                            
+                            if ( substr( $Item, 0, length('[NOT]') ) eq '[NOT]' )
+                            {
+                              my $notValue = substr $Item, length('[NOT]');
+                              if ( $notValue eq $UsedChecks{$Key}->{$Data} ) {
+                                $MatchItem = 0;
+                              }
+                              else
+                              {
+                                $MatchItem = 1;
+                              }
+                            }
+                            
                             # eq match
-                            if ( $Item eq $UsedChecks{$Key}->{$Data} ) {
+                            elsif ( $Item eq $UsedChecks{$Key}->{$Data} ) {
                                 $MatchItem = 1;
                             }
 
