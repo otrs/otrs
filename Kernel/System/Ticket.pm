@@ -7165,21 +7165,22 @@ sub TicketAcl {
                 for my $Data ( sort keys %{ $Step{$PropertiesHash}->{$Key} } ) {
                     my $MatchProperty = 0;
                     for my $Item ( @{ $Step{$PropertiesHash}->{$Key}->{$Data} } ) {
+                        my $ItemUsingNot = ( substr( $Item, 0, length('[NOT]') ) eq '[NOT]' );
+                        
                         if ( ref $UsedChecks{$Key}->{$Data} eq 'ARRAY' ) {
                             
                             my $MatchItem = 0;
-                            if ( substr( $Item, 0, length('[NOT]') ) eq '[NOT]' )
-                            {
-                              $MatchItem = 1;
+                            if ( $ItemUsingNot ) {
+                              $MatchItem = 1; #When using [NOT]: We started matched, and unmatch if anything matches
                             }
 
                             my $Array;
                             for $Array ( @{ $UsedChecks{$Key}->{$Data} } ) {
-                                if ( substr( $Item, 0, length('[NOT]') ) eq '[NOT]' )
+                                if ( $ItemUsingNot )
                                 {
-                                    my $notValue = substr $Item, length('[NOT]');
-                                    if ( $notValue eq $Array ) {
-                                        $MatchItem = 0;
+                                    my $NotValue = substr $Item, length('[NOT]');
+                                    if ( $NotValue eq $Array ) {
+                                        $MatchItem = 0; #We are unmatching with [NOT]
                                         last;
                                     }
                                 }
@@ -7224,11 +7225,11 @@ sub TicketAcl {
                             my $MatchItem = 0;
 
                             
-                            if ( substr( $Item, 0, length('[NOT]') ) eq '[NOT]' )
+                            if ( $ItemUsingNot )
                             {
-                              my $notValue = substr $Item, length('[NOT]');
-                              if ( $notValue eq $UsedChecks{$Key}->{$Data} ) {
-                                $MatchItem = 0;
+                              my $NotValue = substr $Item, length('[NOT]');
+                              if ( $NotValue eq $UsedChecks{$Key}->{$Data} ) {
+                                $MatchItem = 0; #Unmatching with [NOT]
                               }
                               else
                               {
