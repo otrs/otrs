@@ -7175,37 +7175,13 @@ sub TicketAcl {
                             }
 
                             my $Array;
-                            for $Array ( @{ $UsedChecks{$Key}->{$Data} } ) {
-                                if ( $ItemUsingNot )
+                            for $Array ( @{ $UsedChecks{$Key}->{$Data} } )
+                            {
+                                my $LoopResult = $Self->CompareMatchWithText( Match=>$Item, Text=>$Array, SingleItem=>0 );
+                                if ( $LoopResult != -1 )
                                 {
-                                    my $NotValue = substr $Item, length('[NOT]');
-                                    if ( $NotValue eq $Array ) {
-                                        $MatchItem = 0; #We are unmatching with [NOT]
-                                        last;
-                                    }
-                                }
-                                # eq match
-                                elsif ( $Item eq $Array ) {
-                                    $MatchItem = 1;
+                                    $MatchItem = $LoopResult;
                                     last;
-                                }
-
-                                # regexp match case-sensitive
-                                elsif ( substr( $Item, 0, 8 ) eq '[RegExp]' ) {
-                                    my $RegExp = substr $Item, 8;
-                                    if ( $Array =~ /$RegExp/ ) {
-                                        $MatchItem = 1;
-                                        last;
-                                    }
-                                }
-
-                                # regexp match case-insensitive
-                                elsif ( substr( $Item, 0, 8 ) eq '[regexp]' ) {
-                                    my $RegExp = substr $Item, 8;
-                                    if ( $Array =~ /$RegExp/i ) {
-                                        $MatchItem = 1;
-                                        last;
-                                    }
                                 }
                             }
                             if ($MatchItem) {
@@ -7222,42 +7198,10 @@ sub TicketAcl {
                             }
                         }
                         elsif ( defined $UsedChecks{$Key}->{$Data} ) {
-                            my $MatchItem = 0;
-
                             
-                            if ( $ItemUsingNot )
-                            {
-                              my $NotValue = substr $Item, length('[NOT]');
-                              if ( $NotValue eq $UsedChecks{$Key}->{$Data} ) {
-                                $MatchItem = 0; #Unmatching with [NOT]
-                              }
-                              else
-                              {
-                                $MatchItem = 1;
-                              }
-                            }
+                            my $Text = $UsedChecks{$Key}->{$Data};
+                            my $MatchItem = $Self->CompareMatchWithText( Match=>$Item, Text=>$Text, SingleItem=>1 );
                             
-                            # eq match
-                            elsif ( $Item eq $UsedChecks{$Key}->{$Data} ) {
-                                $MatchItem = 1;
-                            }
-
-                            # regexp match case-sensitive
-                            elsif ( substr( $Item, 0, 8 ) eq '[RegExp]' ) {
-                                my $RegExp = substr $Item, 8;
-                                if ( $UsedChecks{$Key}->{$Data} =~ /$RegExp/ ) {
-                                    $MatchItem = 1;
-                                }
-                            }
-
-                            # regexp match case-insensitive
-                            elsif ( substr( $Item, 0, 8 ) eq '[regexp]' ) {
-                                my $RegExp = substr $Item, 8;
-                                if ( $UsedChecks{$Key}->{$Data} =~ /$RegExp/i ) {
-                                    $MatchItem = 1;
-                                }
-                            }
-
                             if ($MatchItem) {
                                 $MatchProperty = 1;
 
@@ -7488,40 +7432,23 @@ sub TicketAcl {
 
             # possible list
             for my $ID ( sort keys %Data ) {
-                my $Match = 0;
-                for my $New ( @{ $Step{Possible}->{Ticket}->{ $Param{ReturnSubType} } } ) {
-
-                    # eq match
-                    if ( $Data{$ID} eq $New ) {
-                        $Match = 1;
-                    }
-
-                    # regexp match case-sensitive
-                    elsif ( substr( $New, 0, 8 ) eq '[RegExp]' ) {
-                        my $RegExp = substr $New, 8;
-                        if ( $Data{$ID} =~ /$RegExp/ ) {
-                            $Match = 1;
-                        }
-                    }
-
-                    # regexp match case-insensitive
-                    elsif ( substr( $New, 0, 8 ) eq '[regexp]' ) {
-                        my $RegExp = substr $New, 8;
-                        if ( $Data{$ID} =~ /$RegExp/i ) {
-                            $Match = 1;
-                        }
-                    }
-
-                    if ($Match) {
-                        $NewTmpData{$ID} = $Data{$ID};
-                        if ( $Self->{Debug} > 4 ) {
-                            $Self->{LogObject}->Log(
-                                Priority => 'debug',
-                                Message =>
-                                    "Workflow '$Acl' param '$Data{$ID}' used with Possible:'$Param{ReturnType}:$Param{ReturnSubType}'",
-                            );
-                        }
-                    }
+                
+                for my $New ( @{ $Step{Possible}->{Ticket}->{ $Param{ReturnSubType} } } )
+                {
+                  # This should work nearly the same as the existing code except
+                  # the old code would keep matching for everything once a match was found (Only side effect might be confusing logs)
+                  
+                  my $Match = $Self->CompareMatchWithText( Match=>$New, Text=>$Data{$ID}, SingleItem=>1 );
+                  if ($Match) {
+                      $NewTmpData{$ID} = $Data{$ID};
+                      if ( $Self->{Debug} > 4 ) {
+                          $Self->{LogObject}->Log(
+                              Priority => 'debug',
+                              Message =>
+                                  "Workflow '$Acl' param '$Data{$ID}' used with Possible:'$Param{ReturnType}:$Param{ReturnSubType}'",
+                          );
+                      }
+                  }
                 }
             }
         }
@@ -7547,26 +7474,9 @@ sub TicketAcl {
             for my $ID ( sort keys %Data ) {
                 my $Match = 1;
                 for my $New ( @{ $Step{PossibleNot}->{Ticket}->{ $Param{ReturnSubType} } } ) {
-
-                    # eq match
-                    if ( $Data{$ID} eq $New ) {
-                        $Match = 0;
-                    }
-
-                    # regexp match case-sensitive
-                    elsif ( substr( $New, 0, 8 ) eq '[RegExp]' ) {
-                        my $RegExp = substr $New, 8;
-                        if ( $Data{$ID} =~ /$RegExp/ ) {
-                            $Match = 0;
-                        }
-                    }
-
-                    # regexp match case-insensitive
-                    elsif ( substr( $New, 0, 8 ) eq '[regexp]' ) {
-                        my $RegExp = substr $New, 8;
-                        if ( $Data{$ID} =~ /$RegExp/i ) {
-                            $Match = 0;
-                        }
+                    my $LoopResult = $Self->CompareMatchWithText( Match=>$New, Text=>$Data{$ID}, SingleItem=>1 );
+                    if ( $LoopResult ) {
+                      $Match = 0;
                     }
                 }
                 if ($Match) {
@@ -8107,6 +8017,54 @@ sub DESTROY {
     $Self->EventHandlerTransaction();
 
     return 1;
+}
+
+
+sub CompareMatchWithText {
+  my ( $Self, %Param ) = @_;
+  my $Match=$Param{Match};
+  my $Text=$Param{Text};
+  
+  if ( substr( $Match, 0, length('[NOT]') ) eq '[NOT]' ) {
+      my $NotValue = substr $Match, length('[NOT]');
+      if ( $NotValue eq $Text ) {
+          return 0;
+      }
+      else {
+        if ($Param{SingleItem}) {
+          return 1;
+        }
+        else {
+          return -1; #skip item
+        }
+      }
+  }
+  # eq match
+  elsif ( $Match eq $Text ) {
+      return 1;
+  }
+  # regexp match case-sensitive
+  elsif ( substr( $Match, 0, 8 ) eq '[RegExp]' ) {
+      my $RegExp = substr $Match, 8;
+      if ( $Text =~ /$RegExp/ ) {
+          return 1;
+      }
+  }
+  # regexp match case-insensitive
+  elsif ( substr( $Match, 0, 8 ) eq '[regexp]' ) {
+      my $RegExp = substr $Match, 8;
+      if ( $Text =~ /$RegExp/i ) {
+          return 1;
+      }
+  }
+  
+  if ($Param{SingleItem}) {
+    return 0;
+  }
+  else {
+    return -1; #skip item
+  }
+  
 }
 
 # COMPAT: to OTRS 1.x and 2.x (can be removed later)
