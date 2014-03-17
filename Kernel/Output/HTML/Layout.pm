@@ -46,6 +46,21 @@ create a new object. Do not use it directly, instead use:
     );
     my $LayoutObject = $Kernel::OM->Get('LayoutObject');
 
+In some cases (like the installer) you may need the LayoutObject
+without having a DBObject or SessionObject (that are needed for
+C<NavigationBar()>. In those cases you can pass the option
+I<NoDBObject>.
+
+    use Kernel::System::ObjectManager;
+    local $Kernel::OM = Kernel::System::ObjectManager->new(
+        LayoutObject {
+            Lang            => 'de',
+            NoNavigationBar => 1,
+        },
+    );
+    my $LayoutObject = $Kernel::OM->Get('LayoutObject');
+
+
 =cut
 
 sub new {
@@ -59,12 +74,19 @@ sub new {
     $Self->{Debug} = 0;
 
     for my $Object (
-        qw(DBObject ConfigObject LogObject TimeObject MainObject EncodeObject
-        ParamObject SessionObject TicketObject GroupObject HTMLUtilsObject
-        JSONObject)
+        qw(ConfigObject LogObject TimeObject MainObject EncodeObject
+        JSONObject ParamObject)
         )
     {
         $Self->{$Object} //= $Kernel::OM->Get($Object);
+    }
+
+    if ( !$Param{NoNavigationBar} ) {
+        $Self->{DBObject}        //= $Kernel::OM->Get('DBObject');
+        $Self->{SessionObject}   //= $Kernel::OM->Get('SessionObject');
+        $Self->{TicketObject}    //= $Kernel::OM->Get('TicketObject');
+        $Self->{GroupObject}     //= $Kernel::OM->Get('GroupObject');
+        $Self->{HTMLUtilsObject} //= $Kernel::OM->Get('HTMLUtilsObject');
     }
 
     # reset block data

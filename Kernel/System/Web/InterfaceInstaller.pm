@@ -114,6 +114,12 @@ sub Run {
     $Param{Subaction}  = $Self->{ParamObject}->GetParam( Param => 'Subaction' )  || '';
     $Param{NextScreen} = $Self->{ParamObject}->GetParam( Param => 'NextScreen' ) || '';
 
+    local $Kernel::OM = Kernel::System::ObjectManager->new(
+        LayoutObject => {
+            NoNavigationBar => 1,
+        },
+    );
+
     $Kernel::OM->ObjectParamAdd(
         LayoutObject => {
             %Param,
