@@ -764,7 +764,7 @@ sub _ShowEdit {
         Class          => 'ItemPrefix',
         ID             => 'Prefixes',
         Sort           => 'IndividualKey',
-        SortIndividual => [ '', '[RegExp]', '[regexp]' ],
+        SortIndividual => [ '', '[NOT]', '[RegExp]', '[regexp]' ],
         Translation    => 0,
     );
 
