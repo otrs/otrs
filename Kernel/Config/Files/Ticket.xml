@@ -1038,10 +1038,10 @@
         <Setting>
             <Option SelectedID="Age">
                 <Item Key="Age">Age</Item>
-                <Item Key="TicketNumber">Ticket</Item>
-                <Item Key="Title">Subject</Item>
+                <Item Key="Ticket">Ticket</Item>
+                <Item Key="Subject">Subject</Item>
                 <Item Key="Queue">Queue</Item>
-                <Item Key="EscalationTime">TicketEscalation</Item>
+                <Item Key="TicketEscalation">TicketEscalation</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -1134,11 +1134,11 @@
         <Setting>
             <Option SelectedID="Age">
                 <Item Key="Age">Age</Item>
-                <Item Key="TicketNumber">Ticket</Item>
-                <Item Key="Title">Subject</Item>
+                <Item Key="Ticket">Ticket</Item>
+                <Item Key="Subject">Subject</Item>
                 <Item Key="Queue">Queue</Item>
                 <Item Key="Priority">Priority</Item>
-                <Item Key="EscalationTime">TicketEscalation</Item>
+                <Item Key="TicketEscalation">TicketEscalation</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -1179,8 +1179,8 @@
         <Setting>
             <Option SelectedID="EscalationTime">
                 <Item Key="Age">Age</Item>
-                <Item Key="TicketNumber">Ticket</Item>
-                <Item Key="Title">Subject</Item>
+                <Item Key="Ticket">Ticket</Item>
+                <Item Key="Subject">Subject</Item>
                 <Item Key="Queue">Queue</Item>
                 <Item Key="Priority">Priority</Item>
                 <Item Key="EscalationTime">EscalationTime</Item>
@@ -1240,8 +1240,8 @@
         <Setting>
             <Option SelectedID="Age">
                 <Item Key="Age">Age</Item>
-                <Item Key="TicketNumber">Ticket</Item>
-                <Item Key="Title">Subject</Item>
+                <Item Key="Ticket">Ticket</Item>
+                <Item Key="Subject">Subject</Item>
                 <Item Key="Queue">Queue</Item>
                 <Item Key="Priority">Priority</Item>
                 <Item Key="EscalationTime">EscalationTime</Item>
@@ -1514,8 +1514,8 @@
         <Setting>
             <Option SelectedID="Age">
                 <Item Key="Age">Age</Item>
-                <Item Key="TicketNumber">Ticket</Item>
-                <Item Key="Title">Subject</Item>
+                <Item Key="Ticket">Ticket</Item>
+                <Item Key="Subject">Subject</Item>
                 <Item Key="Queue">Queue</Item>
                 <Item Key="Priority">Priority</Item>
                 <Item Key="EscalationTime">EscalationTime</Item>
@@ -1540,8 +1540,8 @@
         <Setting>
             <Option SelectedID="Age">
                 <Item Key="Age">Age</Item>
-                <Item Key="TicketNumber">Ticket</Item>
-                <Item Key="Title">Subject</Item>
+                <Item Key="Ticket">Ticket</Item>
+                <Item Key="Subject">Subject</Item>
                 <Item Key="Queue">Queue</Item>
                 <Item Key="Priority">Priority</Item>
                 <Item Key="EscalationTime">EscalationTime</Item>
@@ -1566,8 +1566,8 @@
         <Setting>
             <Option SelectedID="Age">
                 <Item Key="Age">Age</Item>
-                <Item Key="TicketNumber">Ticket</Item>
-                <Item Key="Title">Subject</Item>
+                <Item Key="Ticket">Ticket</Item>
+                <Item Key="Subject">Subject</Item>
                 <Item Key="Queue">Queue</Item>
                 <Item Key="Priority">Priority</Item>
                 <Item Key="EscalationTime">EscalationTime</Item>
@@ -6745,8 +6745,8 @@
         <Setting>
             <Option SelectedID="Age">
                 <Item Key="Age">Age</Item>
-                <Item Key="TicketNumber">Ticket</Item>
-                <Item Key="Title">Subject</Item>
+                <Item Key="Ticket">Ticket</Item>
+                <Item Key="Subject">Subject</Item>
                 <Item Key="Queue">Queue</Item>
                 <Item Key="Priority">Priority</Item>
                 <Item Key="EscalationTime">EscalationTime</Item>
