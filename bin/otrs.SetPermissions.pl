@@ -76,6 +76,7 @@ Usage: otrs.SetPermissions.pl
     [--admin-group=<ADMIN_GROUP>]
     [--admin-group-writable]
     [--secure]  (paranoid mode: all files readonly, does not work with PackageManager)
+    [--symlinks]  (follow symlinks)
     [--not-root]
     <OTRS_HOME>
 
