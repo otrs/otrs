@@ -853,6 +853,28 @@ sub SendEmail {
     # check if there is an error
     if (%Error) {
 
+        # get last customer article or selected article
+        my %Data;
+        if ( $GetParam{ArticleID} ) {
+            %Data = $Self->{TicketObject}->ArticleGet(
+                ArticleID     => $GetParam{ArticleID},
+                DynamicFields => 1,
+            );
+
+            # Check if article is from the same TicketID as we checked permissions for.
+            if ( $Data{TicketID} ne $Self->{TicketID} ) {
+                return $Self->{LayoutObject}->ErrorScreen(
+                    Message => "Article does not belong to ticket $Self->{TicketID}!",
+                );
+            }
+        }
+        else {
+            %Data = $Self->{TicketObject}->ArticleLastCustomerArticle(
+                TicketID      => $Self->{TicketID},
+                DynamicFields => 1,
+            );
+        }
+
         my $QueueID = $Self->{TicketObject}->TicketQueueID( TicketID => $Self->{TicketID} );
         my $Output = $Self->{LayoutObject}->Header(
             Type      => 'Small',
@@ -873,6 +895,7 @@ sub SendEmail {
             MultipleCustomerBcc => \@MultipleCustomerBcc,
             Attachments         => \@Attachments,
             DynamicFieldHTML    => \%DynamicFieldHTML,
+            %Data,
             %GetParam,
         );
         $Output .= $Self->{LayoutObject}->Footer(
