@@ -417,13 +417,13 @@ sub _MaskUpdate {
     # keep all possible attribute values
     # to check if stored configurations are missing /
     # were set to invalid in the meantime
-    my %FieldData;
+    my %AttributeValues;
     my %ShownUsers = $Self->{UserObject}->UserList(
         Type  => 'Long',
         Valid => 1,
     );
-    $FieldData{Owner}   = \%ShownUsers;
-    $JobData{OwnerStrg} = $Self->{LayoutObject}->BuildSelection(
+    $AttributeValues{Owner} = \%ShownUsers;
+    $JobData{OwnerStrg}     = $Self->{LayoutObject}->BuildSelection(
         Data        => \%ShownUsers,
         Name        => 'OwnerIDs',
         Multiple    => 1,
@@ -487,8 +487,8 @@ sub _MaskUpdate {
         UserID => 1,
         Action => $Self->{Action},
     );
-    $FieldData{State}    = \%State;
-    $JobData{StatesStrg} = $Self->{LayoutObject}->BuildSelection(
+    $AttributeValues{State} = \%State;
+    $JobData{StatesStrg}    = $Self->{LayoutObject}->BuildSelection(
         Data       => \%State,
         Name       => 'StateIDs',
         Multiple   => 1,
@@ -534,9 +534,9 @@ sub _MaskUpdate {
         Title       => $Self->{LayoutObject}->{LanguageObject}->Translate('Time unit'),
     );
 
-    my %Queue            = $Self->{QueueObject}->GetAllQueues();
-    $FieldData{Queue}    = \%Queue;
-    $JobData{QueuesStrg} = $Self->{LayoutObject}->AgentQueueListOption(
+    my %Queue               = $Self->{QueueObject}->GetAllQueues();
+    $AttributeValues{Queue} = \%Queue;
+    $JobData{QueuesStrg}    = $Self->{LayoutObject}->AgentQueueListOption(
         Data               => \%Queue,
         Size               => 5,
         Multiple           => 1,
@@ -559,8 +559,8 @@ sub _MaskUpdate {
         UserID => 1,
         Action => $Self->{Action},
     );
-    $FieldData{Priority}     = \%Priority;
-    $JobData{PrioritiesStrg} = $Self->{LayoutObject}->BuildSelection(
+    $AttributeValues{Priority} = \%Priority;
+    $JobData{PrioritiesStrg}   = $Self->{LayoutObject}->BuildSelection(
         Data       => \%Priority,
         Name       => 'PriorityIDs',
         Size       => 5,
@@ -669,8 +669,8 @@ sub _MaskUpdate {
         UserID => 1,
         Action => $Self->{Action},
     );
-    $FieldData{Lock}     = \%Lock;
-    $JobData{LockOption} = $Self->{LayoutObject}->BuildSelection(
+    $AttributeValues{Lock} = \%Lock;
+    $JobData{LockOption}   = $Self->{LayoutObject}->BuildSelection(
         Data       => \%Lock,
         Name       => 'LockIDs',
         Multiple   => 1,
@@ -732,8 +732,8 @@ sub _MaskUpdate {
         my %Type = $Self->{TypeObject}->TypeList(
             UserID => $Self->{UserID},
         );
-        $FieldData{Type}    = \%Type;
-        $JobData{TypesStrg} = $Self->{LayoutObject}->BuildSelection(
+        $AttributeValues{Type} = \%Type;
+        $JobData{TypesStrg}    = $Self->{LayoutObject}->BuildSelection(
             Data        => \%Type,
             Name        => 'TypeIDs',
             SelectedID  => $JobData{TypeIDs},
@@ -772,8 +772,8 @@ sub _MaskUpdate {
         );
         my %NewService = %Service;
 
-        $FieldData{Service}    = \%Service;
-        $JobData{ServicesStrg} = $Self->{LayoutObject}->BuildSelection(
+        $AttributeValues{Service} = \%Service;
+        $JobData{ServicesStrg}    = $Self->{LayoutObject}->BuildSelection(
             Data        => \%Service,
             Name        => 'ServiceIDs',
             SelectedID  => $JobData{ServiceIDs},
@@ -797,8 +797,8 @@ sub _MaskUpdate {
         my %SLA = $Self->{SLAObject}->SLAList(
             UserID => $Self->{UserID}
         );
-        $FieldData{SLA}    = \%SLA;
-        $JobData{SLAsStrg} = $Self->{LayoutObject}->BuildSelection(
+        $AttributeValues{SLA} = \%SLA;
+        $JobData{SLAsStrg}    = $Self->{LayoutObject}->BuildSelection(
             Data        => \%SLA,
             Name        => 'SLAIDs',
             SelectedID  => $JobData{SLAIDs},
@@ -831,8 +831,8 @@ sub _MaskUpdate {
     # ticket responsible string
     if ( $Self->{ConfigObject}->Get('Ticket::Responsible') ) {
 
-        $FieldData{Responsible}   = \%ShownUsers;
-        $JobData{ResponsibleStrg} = $Self->{LayoutObject}->BuildSelection(
+        $AttributeValues{Responsible} = \%ShownUsers;
+        $JobData{ResponsibleStrg}     = $Self->{LayoutObject}->BuildSelection(
             Data        => \%ShownUsers,
             Name        => 'ResponsibleIDs',
             Size        => 5,
@@ -1081,45 +1081,34 @@ sub _MaskUpdate {
 
         # store a copy of the data of the current attribute
         # for better code readability
-        my %CurrentFieldData;
-        if ( IsHashRefWithData( $FieldData{ $Attribute } ) ) {
-            %CurrentFieldData = %{ $FieldData{ $Attribute } };
+        my %CurrentAttributeValues;
+        if ( IsHashRefWithData( $AttributeValues{ $Attribute } ) ) {
+            %CurrentAttributeValues = %{ $AttributeValues{ $Attribute } };
         }
 
         # each attribute can be used as a filter or as a new / set attribute
         FIELD:
         for my $Field ( ( "${ Attribute }IDs", "New${ Attribute }ID" ) ) {
 
-            # check if the current field can store
-            # multiple values (filter) or only one (set)
-            if ( $Field eq "${ Attribute }IDs" ) {
+            # skip if no configuration is stored
+            next FIELD if !$JobData{ $Field };
 
-                # skip if no configuration is stored
-                next FIELD if !IsArrayRefWithData( $JobData{ $Field } );
-
-                # loop over every stored config value
-                ENTITY:
-                for my $Entity ( @{ $JobData{ $Field } } ) {
-
-                    # skip if the stored value is still valid
-                    next ENTITY if $CurrentFieldData{ $Entity };
-
-                    # if not display the warning text
-                    $Self->{LayoutObject}->Block(
-                        Name => 'Invalid'. $Field,
-                    );
-
-                    # display warning only once
-                    next FIELD;
-                }
+            # build selection structure to work with and
+            # make code more readable
+            my @JobSelections;
+            if ( IsArrayRefWithData( $JobData{ $Field } ) ) {
+                @JobSelections = @{ $JobData{ $Field } };
             }
-            elsif ( $Field eq "New${ Attribute }ID" ) {
+            else {
+                push @JobSelections, $JobData{ $Field };
+            }
 
-                # skip if no configuration is stored
-                next FIELD if !$JobData{ $Field };
+            # loop over every stored config value
+            SELECTION:
+            for my $Selection ( sort @JobSelections ) {
 
                 # skip if the stored value is still valid
-                next FIELD if $CurrentFieldData{ $JobData{ $Field } };
+                next SELECTION if $CurrentAttributeValues{ $Selection };
 
                 # if not display the warning text
                 $Self->{LayoutObject}->Block(
