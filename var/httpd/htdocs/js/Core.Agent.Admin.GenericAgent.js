@@ -52,6 +52,124 @@ Core.Agent.Admin.GenericAgent = (function (TargetNS) {
         $('#EventType').bind('change', function (){
             TargetNS.ToogleEventSelect($(this).val());
         });
+
+        // bind removal of notification text to the change event
+        // of each select with an invalid selection stored
+        $('select').each( function() {
+
+            // skip if no selection has become invalid
+            if ( $('#Invalid'+ $(this).attr('id') ).length === 0 ) {
+                return true;
+            }
+
+            // bind notification removal on element change
+            $(this).bind('change', function() {
+                $('#Invalid'+ $(this).attr('id') ).remove();
+            });
+        });
+
+        // register submit function after selection validation
+        // to check if configuration values that have become invalid
+        // have been changed or not. If not a warning message should
+        // be displayed to inform the user
+        Core.Form.Validate.SetSubmitFunction( $('form[name=compose]'), function( Form ) {
+
+            // get all unchanged select field labels and the
+            // label of the widget they are in so we can display
+            // them to the user in the warning dialog
+            var InvalidUnchanged = new Array();
+            $('select').each( function() {
+
+                // skip if no selection has become invalid or it was changed
+                if ( $('#Invalid'+ $(this).attr('id') ).length === 0 ) {
+                    return true;
+                }
+
+                // get label of unchanged filed
+                var FieldLabel  = $('label[for='+ $(this).attr('id') +']').html().replace(':', '');
+                // get the widget label
+                var WidgetLabel = $('#'+ $(this).attr('id') ).parents('.WidgetSimple').find('.Header h2').html();
+
+                InvalidUnchanged.push( FieldLabel +' ('+ WidgetLabel +')' );
+            });
+
+            // submit the form and return
+            // if no invalid selection was found
+            if ( InvalidUnchanged.length === 0 ) {
+
+                Form.submit();
+                return true;
+            }
+
+            // build the warning message HTML
+            var DialogHTML = '<span class="Warning">';
+
+            // use the matching warning text for a single or multiple selections
+            if ( InvalidUnchanged.length === 1 ) {
+                DialogHTML += TargetNS.Localization.InvalidDialogSingle;
+            }
+            else {
+                DialogHTML += TargetNS.Localization.InvalidDialogMulti;
+            }
+
+            // some formatting
+            DialogHTML += "</span> \
+            <br> \
+            <br> \
+            <ul>";
+
+            // add each selection and widget label that we gathered earlier
+            $.each( InvalidUnchanged, function( Index, Value ) {
+                DialogHTML += '<li>- '+ Value +'</li>';
+            });
+
+            // formatting and the question to the user
+            DialogHTML += "\
+            </ul> \
+            <br> \
+            <span>"+ TargetNS.Localization.InvalidDialogQuestion +"</span>";
+
+            // show the dialog with two options:
+            // 1.) 'Change' - change the invalid select fields
+            // 2.) 'Save'   - save the configuration anyway
+            Core.UI.Dialog.ShowDialog({
+                Modal:               true,
+                Title:               TargetNS.Localization.InvalidDialogTitle,
+                HTML:                DialogHTML,
+                PositionTop:         '240px',
+                PositionLeft:        'Center',
+                CloseOnClickOutside: true,
+                CloseOnEscape:       true,
+                Buttons:    [
+                                {
+                                    Class: 'Primary',
+                                    Label: TargetNS.Localization.InvalidDialogChange,
+                                    Type: 'Close',
+                                },
+                                {
+                                    Label: TargetNS.Localization.InvalidDialogSave,
+                                    Function: function () {
+
+                                        // if the job configuration with the invalid values
+                                        // should get stored anyway, submit the form and
+                                        // disable the submit button to prevent multiple submits
+                                        Form.submit();
+
+                                        window.setTimeout(function () {
+                                            Core.Form.EnableForm( $('form[name=compose]') );
+                                        }, 0);
+                                    }
+                                }
+                            ]
+            });
+
+            // since the modal dialog is asynchronous we need to reenable the
+            // submit button in case the user wants to change the configuration
+            window.setTimeout(function () {
+                Core.Form.EnableForm( $('form[name=compose]') );
+            }, 5);
+            return false;
+        });
     };
 
     TargetNS.ToogleEventSelect = function (SelectedEventType) {
