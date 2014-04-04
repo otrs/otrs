@@ -35,6 +35,7 @@ print "bin/otrs.SetPermissions.pl - set OTRS file permissions\n";
 print "Copyright (C) 2001-2014 OTRS AG, http://otrs.com/\n";
 
 my $Secure             = 0;
+my $Symlinks           = 0;
 my $Version            = 0;
 my $Help               = 0;
 my $NotRoot            = 0;
@@ -48,6 +49,7 @@ my $AdminGroup         = 'root';
 
 GetOptions(
     'secure'               => \$Secure,
+    'symlinks'             => \$Symlinks,
     'not-root'             => \$NotRoot,
     'version'              => \$Version,
     'help'                 => \$Help,
@@ -74,6 +76,7 @@ Usage: otrs.SetPermissions.pl
     [--admin-group=<ADMIN_GROUP>]
     [--admin-group-writable]
     [--secure]  (paranoid mode: all files readonly, does not work with PackageManager)
+    [--symlinks]  (follow symlinks)
     [--not-root]
     <OTRS_HOME>
 
@@ -127,7 +130,7 @@ if ($Secure) {
 
     # In secure mode, make files read-only by default
     File::Find::find(
-        { wanted => \&MakeReadOnly, no_chdir => 1 },
+        { wanted => \&MakeReadOnly, no_chdir => 1, follow => $Symlinks },
         $DestDir . "/"
     );    # append / to follow symlinks
 
@@ -138,7 +141,7 @@ else {
 
     # set all files writeable for webserver user (needed for package manager)
     File::Find::find(
-        { wanted => \&MakeWritable, no_chdir => 1 },
+        { wanted => \&MakeWritable, no_chdir => 1, follow => $Symlinks },
         $DestDir . "/"
     );    # append / to follow symlinks
 
@@ -187,14 +190,14 @@ for my $Dir (@Dirs) {
     }
 }
 File::Find::find(
-    { wanted => \&MakeWritableSetGid, no_chdir => 1 },
+    { wanted => \&MakeWritableSetGid, no_chdir => 1, follow => $Symlinks },
     @Dirs
 );
 
 # set all bin/* as executable
 print "Setting permissions on $DestDir/bin/*\n";
 File::Find::find(
-    { wanted => \&MakeExecutable, no_chdir => 1 },
+    { wanted => \&MakeExecutable, no_chdir => 1, follow => $Symlinks },
     "$DestDir/bin"
 );
 
