@@ -200,58 +200,12 @@ sub GetParam {
     $Self->{HeaderObject}->combine($What);
     my $Line = $Self->{HeaderObject}->get($What) || '';
     chomp($Line);
-    my $ReturnLine = '';
-    my %Remember;
 
-    # Since email headers are supposed to be ASCII (but sometimes
-    # aren't), decoding with something like UTF-7 is wrong in the
-    # general case, and turns '+autoreply' into '櫫梭'.
-    # So only do that for encodings that are a superset of ASCII:
-    my $HeaderEncoding = $Self->{EncodeObject}->FindAsciiSupersetEncoding(
-        Encodings => [ $Self->GetCharset() ],
+    my $ReturnLine = $Self->_DecodeMimewords(
+        String => $Line,
+        WHAT   => $What,
     );
 
-    for my $Array ( $Self->_DecodeMimewords( String => $Line ) ) {
-        for ( @{$Array} ) {
-
-            # I don't know, but decode_mimewords() returns each mime
-            # word two times! Remember to the old one. :-(
-            if ( !$Remember{ $Array->[0] } ) {
-                if ( $Array->[0] && $Array->[1] ) {
-                    $Remember{ $Array->[0] } = 1;
-                }
-
-                # Workaround for OE problem:
-                # If a header contains =?iso-8859-1?Q?Fr=F6hlich=2C_Roman?=
-                # which is decoded ->Fröhlich, Roman<- which gets an problem
-                # because this means two email addresses. We add " at
-                # the start and at the end of this types of words mime.
-                if ( $What =~ /^(From|To|Cc)/ && $Array->[1] ) {
-                    if ( $Array->[0] !~ /^("|')/ && $Array->[0] =~ /,/ ) {
-                        $Array->[0] = '"' . $Array->[0] . '"';
-                        $Remember{ $Array->[0] } = 1;
-                    }
-                }
-
-                $ReturnLine .= $Self->{EncodeObject}->Convert2CharsetInternal(
-                    Text  => $Array->[0],
-                    From  => $Array->[1] || $HeaderEncoding,
-                    Check => 1,
-                );
-            }
-            else {
-                $Remember{ $Array->[0] } = undef;
-            }
-        }
-    }
-
-    # debug
-    if ( $Self->{Debug} > 1 ) {
-        $Self->{LogObject}->Log(
-            Priority => 'debug',
-            Message  => "Get: $What; ReturnLine: $ReturnLine; OrigLine: $Line",
-        );
-    }
     return $ReturnLine;
 }
 
@@ -727,8 +681,10 @@ sub PartsAttachments {
 
     # check if there is no recommended_filename or subject -> add file-NoFilenamePartCounter
     if ( $Part->head()->recommended_filename() ) {
-        $PartData{Filename}
-            = $Self->_DecodeMimewords( String => $Part->head()->recommended_filename() );
+        $PartData{Filename} = $Self->_DecodeMimewords(
+            String => $Part->head()->recommended_filename(),
+            Encode => 'utf-8'
+        );
         $PartData{ContentDisposition} = $Part->head()->get('Content-Disposition');
         if ( $PartData{ContentDisposition} ) {
             my %Data = $Self->GetContentTypeParams(
@@ -755,16 +711,7 @@ sub PartsAttachments {
     # Guess the filename for nested messages (see bug#1970).
     elsif ( $PartData{ContentType} eq 'message/rfc822' ) {
         my ($SubjectString) = $Part->as_string() =~ m/^Subject: ([^\n]*(\n[ \t][^\n]*)*)/m;
-        my $Subject;
-        for my $Decoded ( $Self->_DecodeMimewords( String => $SubjectString ) ) {
-            if ( $Decoded->[0] ) {
-                $Subject .= $Self->{EncodeObject}->Convert2CharsetInternal(
-                    Text  => $Decoded->[0],
-                    From  => $Decoded->[1] || 'us-ascii',
-                    Check => 1,
-                );
-            }
-        }
+        my $Subject = $Self->_DecodeMimewords( String => $SubjectString );
 
         # trim whitespace
         $Subject =~ s/^\s+|\n|\s+$//;
@@ -968,21 +915,79 @@ in the corect byte (e.g. for utf-8 encoded strings), see bug$9418 for more detai
 sub _DecodeMimewords {
     my ( $Self, %Param ) = @_;
 
+    my $What = $Param{WHAT} || '';
+
     my $String = $Param{String};
+    my $ReturnString = '';
+    my %Remember;
+    my $DecodedString = '';
+    my $PrevEncode;
 
-    # check is the string in encoded quote printable (e.g '=?utf-8?Q?=D0=95?=')
-    if ( $String =~ m{\A = \? ([^\?]+) \? Q \?}msx ) {
+    # Since email headers are supposed to be ASCII (but sometimes
+    # aren't), decoding with something like UTF-7 is wrong in the
+    # general case, and turns '+autoreply' into '櫫梭'.
+    # So only do that for encodings that are a superset of ASCII:
+    my $HeaderEncoding = $Self->{EncodeObject}->FindAsciiSupersetEncoding(
+        Encodings => [ $Self->GetCharset() ],
+    );
 
-        # use capturing group as encoding
-        my $Encoding = $1;
+    for my $Array ( decode_mimewords($String) ) {
+        for ( @{$Array} ) {
 
-        # remove multiple encoding lines, as the line could be splitted in the middle of the byte
-        # but leave the first (regular expession will convert cases like ...=D0?= =?utf-8?Q?=BE...
-        # into ...=D0=BE...)
-        # the result will be a "concatenated string" that will be sent to decode_mnimewords()
-        $String =~ s{\? = \s+ = \? $Encoding \? Q \?}{}gmsx;
+            # I don't know, but decode_mimewords() returns each mime
+            # word two times! Remember to the old one. :-(
+            if ( !$Remember{ $Array->[0] } ) {
+                if ( $Array->[0] && $Array->[1] ) {
+                    $Remember{ $Array->[0] } = 1;
+                }
+
+                # Workaround for OE problem:
+                # If a header contains =?iso-8859-1?Q?Fr=F6hlich=2C_Roman?=
+                # which is decoded ->Fröhlich, Roman<- which gets an problem
+                # because this means two email addresses. We add " at
+                # the start and at the end of this types of words mime.
+                if ( $What =~ /^(From|To|Cc)/ && $Array->[1] ) {
+                    if ( $Array->[0] !~ /^("|')/ && $Array->[0] =~ /,/ ) {
+                        $Array->[0] = '"' . $Array->[0] . '"';
+                        $Remember{ $Array->[0] } = 1;
+                    }
+                }
+                if (
+                    $DecodedString ne ''
+                    && ( !$PrevEncode || !$Array->[1] || lc( $PrevEncode ) ne lc( $Array->[1] ) )
+                    )
+                {
+                    $ReturnString .= $Self->{EncodeObject}->Convert2CharsetInternal(
+                        Text  => $DecodedString,
+                        From  => $PrevEncode || $Param{Encode} || $HeaderEncoding,
+                        Check => 1,
+                    );
+                    $DecodedString = '';
+                }
+                $DecodedString .= $Array->[0];
+                $PrevEncode = $Array->[1];
+            }
+            else {
+                $Remember{ $Array->[0] } = undef;
+            }
+        }
     }
-    return decode_mimewords($String);
+    if ( $DecodedString ne '' ) {
+        $ReturnString .= $Self->{EncodeObject}->Convert2CharsetInternal(
+            Text  => $DecodedString,
+            From  => $PrevEncode || $Param{Encode} || $HeaderEncoding,
+            Check => 1,
+        );
+    }
+
+    # debug
+    if ( $Self->{Debug} > 1 ) {
+        $Self->{LogObject}->Log(
+            Priority => 'debug',
+            Message  => "Get: $What; ReturnString: $ReturnString; OrigString: $String",
+        );
+    }
+    return $ReturnString;
 }
 
 =item _MailAddressParse()
