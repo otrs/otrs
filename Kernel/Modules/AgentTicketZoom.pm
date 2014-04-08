@@ -49,6 +49,7 @@ sub new {
 
     # get params
     $Self->{ArticleID}      = $Self->{ParamObject}->GetParam( Param => 'ArticleID' );
+    $Self->{ArticlePage}    = $Self->{ParamObject}->GetParam( Param => 'ArticlePage' );
     $Self->{ZoomExpand}     = $Self->{ParamObject}->GetParam( Param => 'ZoomExpand' );
     $Self->{ZoomExpandSort} = $Self->{ParamObject}->GetParam( Param => 'ZoomExpandSort' );
     if ( !defined $Self->{ZoomExpand} ) {
@@ -483,8 +484,23 @@ sub MaskAgentZoom {
 
     # generate shown articles
 
-    my $Page = $Self->{ParamObject}->GetParam( Param => 'ArticlePage' ) || 1;
     my $Limit = $Self->{ConfigObject}->Get('Ticket::Frontend::MaxArticlesPerPage');
+
+    my $Page;
+
+    if ( $Self->{ArticleID} ) {
+        $Page = $Self->{TicketObject}->ArticlePage(
+            TicketID    => $Self->{TicketID},
+            ArticleID   => $Self->{ArticleID},
+            RowsPerPage => $Limit,
+        );
+    }
+    elsif ( $Self->{ArticlePage} ) {
+        $Page = $Self->{ArticlePage};
+    }
+    else {
+        $Page = 1;
+    }
 
     # We need to find out whether pagination is actually necessary.
     # The easiest way would be count the articles, but that would slow

@@ -19,6 +19,7 @@ use Kernel::System::Notification;
 use Kernel::System::EmailParser;
 
 use Kernel::System::VariableCheck qw(:all);
+use POSIX qw(ceil);
 
 =head1 NAME
 
@@ -1886,6 +1887,52 @@ sub ArticleCount {
     }
 
     return $Count;
+}
+
+=item ArticlePage()
+
+Get the page number of a given article when pagination is active
+
+    my $Page = $TicketObject->ArticlePage(
+        TicketID    => 123,
+        ArticleID   => 4242,
+        RowsPerPage => 20,
+    );
+
+=cut
+
+sub ArticlePage {
+    my ( $Self, %Param ) = @_;
+
+    for my $Needed ( qw(ArticleID TicketID RowsPerPage) ) {
+        if ( !$Param{ $Needed } ) {
+            $Self->{LogObject}->Log(
+                Priority => 'error',
+                Message => "Need $Needed!"
+            );
+            return;
+        }
+    }
+
+    $Self->{DBObject}->Prepare(
+        SQL  => 'SELECT create_time FROM article WHERE id = ?',
+        Bind => [ \$Param{ArticleID} ],
+    );
+
+    my ( $CreateTime ) = $Self->{DBObject}->FetchrowArray();
+
+    my $SQL = 'SELECT COUNT(id) FROM article WHERE ticket_id = ? AND create_time  <= ?';
+    return if !$Self->{DBObject}->Prepare(
+        SQL  => $SQL,
+        Bind => [ \$Param{TicketID}, \$CreateTime ],
+    );
+
+    my $Count;
+    while ( my @Row = $Self->{DBObject}->FetchrowArray() ) {
+        $Count = $Row[0];
+    }
+
+    return ceil( $Count / $Param{RowsPerPage} );
 }
 
 =begin Internal:

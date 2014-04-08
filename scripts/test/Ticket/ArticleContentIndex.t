@@ -118,6 +118,17 @@ $Self->Is(
     'ArticleCount',
 );
 
+$Self->Is(
+    $TicketObject->ArticlePage(
+        TicketID    => $TicketID,
+        ArticleID   => $ArticleBox[0]{ArticleID},
+        RowsPerPage => 10,
+    ),
+    2,
+    'ArticlePage works',
+
+);
+
 # Cleanup
 $TicketObject->TicketDelete(
     TicketID => $TicketID,
