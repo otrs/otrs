@@ -1374,6 +1374,12 @@ sub Data {
         'Edit job' => 'Job bearbeiten',
         'Run job' => 'Job ausführen',
         'Affected Tickets' => 'Betroffene Tickets',
+        'Invalid selection' => 'Ungültige Auswahl',
+        "Do you want to 'Change' or 'Save' the current configuration?" => "Möchten Sie die momentane Konfiguration 'Ändern' oder 'Speichern'?",
+        'Previous selection (partially) no longer valid!' => 'Vorherige Auswahl (teilweise) nicht mehr gültig!',
+        'Previous selection no longer valid!' => 'Vorherige Auswahl nicht mehr gültig!',
+        'The following attribute configured for this job has become (partially) invalid and was not changed:' => 'Das folgende, für diesen Job konfigurierte Attribut ist (teilweise) ungültig aber nicht geändert geworden:',
+        'The following attributes configured for this job have become (partially) invalid and were not changed:' => 'Die folgenden, für diesen Job konfigurierten Attribute sind (teilweise) ungültig aber nicht geändert geworden:',
 
         # Template: AdminGenericInterfaceDebugger
         'GenericInterface Debugger for Web Service %s' => 'GenericInterface Debugger für Webservice',

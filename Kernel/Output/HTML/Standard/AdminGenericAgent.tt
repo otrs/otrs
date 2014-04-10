@@ -88,7 +88,7 @@
 
 
 [% RenderBlockStart("Edit") %]
-        <form action="[% Env("CGIHandle") %]" method="post" name="compose" class="Validate PreventMultipleSubmits">
+        <form action="[% Env("CGIHandle") %]" method="post" name="compose" id="JobConfig" class="Validate PreventMultipleSubmits">
             <div class="WidgetSimple">
                 <div class="Header">
                     <h2>[% Translate("Job Settings") | html %]</h2>
@@ -256,7 +256,13 @@ Core.Agent.Admin.GenericAgent.Init({
         DuplicateEventMsg: [% Translate("This event is already attached to the job, Please use a different one.") | JSON %],
         DeleteEventMsg: [% Translate("Delete this Event Trigger") | JSON %],
         DeleteMsg: [% Translate("Delete") | JSON %],
-        CancelMsg: [% Translate("Cancel") | JSON %]
+        CancelMsg: [% Translate("Cancel") | JSON %],
+        InvalidDialogSingle: [% Translate("The following attribute configured for this job has become (partially) invalid and was not changed:") | JSON %],
+        InvalidDialogMulti: [% Translate("The following attributes configured for this job have become (partially) invalid and were not changed:") | JSON %],
+        InvalidDialogQuestion: [% Translate("Do you want to 'Change' or 'Save' the current configuration?") | JSON %],
+        InvalidDialogTitle: [% Translate("Invalid selection") | JSON %],
+        InvalidDialogChange: [% Translate("Change") | JSON %],
+        InvalidDialogSave: [% Translate("Save") | JSON %]
     }
 });
 //]]></script>
@@ -311,6 +317,9 @@ Core.Agent.Admin.GenericAgent.Init({
                         <label for="TypeIDs">[% Translate("Type") | html %]:</label>
                         <div class="Field">
                             [% Data.TypesStrg %]
+[% RenderBlockStart("InvalidTypeIDs") %]
+                            <div id="InvalidTypeIDs" class="Warning InvalidSelection">[% Translate("Previous selection (partially) no longer valid!") | html %]</div>
+[% RenderBlockEnd("InvalidTypeIDs") %]
                         </div>
                         <div class="Clear"></div>
 [% RenderBlockEnd("TicketType") %]
@@ -362,36 +371,54 @@ Core.Agent.Admin.GenericAgent.Init({
                         <label for="ServiceIDs">[% Translate("Service") | html %]:</label>
                         <div class="Field">
                             [% Data.ServicesStrg %]
+[% RenderBlockStart("InvalidServiceIDs") %]
+                            <div id="InvalidServiceIDs" class="Warning InvalidSelection">[% Translate("Previous selection (partially) no longer valid!") | html %]</div>
+[% RenderBlockEnd("InvalidServiceIDs") %]
                         </div>
                         <div class="Clear"></div>
 
                         <label for="SLAIDs">[% Translate("Service Level Agreement") | html %]:</label>
                         <div class="Field">
                             [% Data.SLAsStrg %]
+[% RenderBlockStart("InvalidSLAIDs") %]
+                            <div id="InvalidSLAIDs" class="Warning InvalidSelection">[% Translate("Previous selection (partially) no longer valid!") | html %]</div>
+[% RenderBlockEnd("InvalidSLAIDs") %]
                         </div>
                         <div class="Clear"></div>
 [% RenderBlockEnd("TicketService") %]
                         <label for="PriorityIDs">[% Translate("Priority") | html %]:</label>
                         <div class="Field">
                             [% Data.PrioritiesStrg %]
+[% RenderBlockStart("InvalidPriorityIDs") %]
+                            <div id="InvalidPriorityIDs" class="Warning InvalidSelection">[% Translate("Previous selection (partially) no longer valid!") | html %]</div>
+[% RenderBlockEnd("InvalidPriorityIDs") %]
                         </div>
                         <div class="Clear"></div>
 
                         <label for="QueueIDs">[% Translate("Queue") | html %]:</label>
                         <div class="Field">
                             [% Data.QueuesStrg %]
+[% RenderBlockStart("InvalidQueueIDs") %]
+                            <div id="InvalidQueueIDs" class="Warning InvalidSelection">[% Translate("Previous selection (partially) no longer valid!") | html %]</div>
+[% RenderBlockEnd("InvalidQueueIDs") %]
                         </div>
                         <div class="Clear"></div>
 
                         <label for="StateIDs">[% Translate("State") | html %]:</label>
                         <div class="Field">
                             [% Data.StatesStrg %]
+[% RenderBlockStart("InvalidStateIDs") %]
+                            <div id="InvalidStateIDs" class="Warning InvalidSelection">[% Translate("Previous selection (partially) no longer valid!") | html %]</div>
+[% RenderBlockEnd("InvalidStateIDs") %]
                         </div>
                         <div class="Clear"></div>
 
                         <label for="OwnerIDs">[% Translate("Agent") | html %]/[% Translate("Owner") | html %]:</label>
                         <div class="Field">
                             [% Data.OwnerStrg %]
+[% RenderBlockStart("InvalidOwnerIDs") %]
+                            <div id="InvalidOwnerIDs" class="Warning InvalidSelection">[% Translate("Previous selection (partially) no longer valid!") | html %]</div>
+[% RenderBlockEnd("InvalidOwnerIDs") %]
                         </div>
                         <div class="Clear"></div>
 
@@ -399,6 +426,9 @@ Core.Agent.Admin.GenericAgent.Init({
                         <label for="ResponsibleIDs">[% Translate("Agent") | html %]/[% Translate("Responsible") | html %]:</label>
                         <div class="Field">
                             [% Data.ResponsibleStrg %]
+[% RenderBlockStart("InvalidResponsibleIDs") %]
+                            <div id="InvalidResponsibleIDs" class="Warning InvalidSelection">[% Translate("Previous selection (partially) no longer valid!") | html %]</div>
+[% RenderBlockEnd("InvalidResponsibleIDs") %]
                         </div>
                         <div class="Clear"></div>
 [% RenderBlockEnd("TicketResponsible") %]
@@ -406,6 +436,9 @@ Core.Agent.Admin.GenericAgent.Init({
                         <label for="LockIDs">[% Translate("Ticket lock") | html %]:</label>
                         <div class="Field">
                             [% Data.LockOption %]
+[% RenderBlockStart("InvalidLockIDs") %]
+                            <div id="InvalidLockIDs" class="Warning InvalidSelection">[% Translate("Previous selection (partially) no longer valid!") | html %]</div>
+[% RenderBlockEnd("InvalidLockIDs") %]
                         </div>
                         <div class="Clear"></div>
 [% RenderBlockStart("DynamicField") %]
@@ -415,6 +448,9 @@ Core.Agent.Admin.GenericAgent.Init({
                         [% Data.Label %]
                         <div class="Field">
                             [% Data.Field %]
+[% RenderBlockStart("InvalidDynamicFieldElement") %]
+                            <div id="InvalidSearch_DynamicField_[% Data.Name %]" class="Warning InvalidSelection">[% Translate("Previous selection (partially) no longer valid!") | html %]</div>
+[% RenderBlockEnd("InvalidDynamicFieldElement") %]
                         </div>
                         <div class="Clear"></div>
 [% RenderBlockEnd("DynamicFieldElement") %]
@@ -594,30 +630,45 @@ Core.Agent.Admin.GenericAgent.Init({
                         <label for="NewServiceID">[% Translate("Set new service") | html %]:</label>
                         <div class="Field">
                             [% Data.NewServicesStrg %]
+[% RenderBlockStart("InvalidNewServiceID") %]
+                            <div id="InvalidNewServiceID" class="Warning InvalidSelection">[% Translate("Previous selection no longer valid!") | html %]</div>
+[% RenderBlockEnd("InvalidNewServiceID") %]
                         </div>
                         <div class="Clear"></div>
 
                         <label for="NewSLAID">[% Translate("Set new Service Level Agreement") | html %]:</label>
                         <div class="Field">
                             [% Data.NewSLAsStrg %]
+[% RenderBlockStart("InvalidNewSLAID") %]
+                            <div id="InvalidNewSLAID" class="Warning InvalidSelection">[% Translate("Previous selection no longer valid!") | html %]</div>
+[% RenderBlockEnd("InvalidNewSLAID") %]
                         </div>
                         <div class="Clear"></div>
 [% RenderBlockEnd("NewTicketService") %]
                         <label for="NewPriorityID">[% Translate("Set new priority") | html %]:</label>
                         <div class="Field">
                             [% Data.NewPrioritiesStrg %]
+[% RenderBlockStart("InvalidNewPriorityID") %]
+                            <div id="InvalidNewPriorityID" class="Warning InvalidSelection">[% Translate("Previous selection no longer valid!") | html %]</div>
+[% RenderBlockEnd("InvalidNewPriorityID") %]
                         </div>
                         <div class="Clear"></div>
 
                         <label for="NewQueueID">[% Translate("Set new queue") | html %]:</label>
                         <div class="Field">
                             [% Data.NewQueuesStrg %]
+[% RenderBlockStart("InvalidNewQueueID") %]
+                            <div id="InvalidNewQueueID" class="Warning InvalidSelection">[% Translate("Previous selection no longer valid!") | html %]</div>
+[% RenderBlockEnd("InvalidNewQueueID") %]
                         </div>
                         <div class="Clear"></div>
 
                         <label for="NewStateID">[% Translate("Set new state") | html %]:</label>
                         <div class="Field">
                             [% Data.NewStatesStrg %]
+[% RenderBlockStart("InvalidNewStateID") %]
+                            <div id="InvalidNewStateID" class="Warning InvalidSelection">[% Translate("Previous selection no longer valid!") | html %]</div>
+[% RenderBlockEnd("InvalidNewStateID") %]
                         </div>
                         <div class="Clear"></div>
 
@@ -631,6 +682,9 @@ Core.Agent.Admin.GenericAgent.Init({
                         <label for="NewOwnerID">[% Translate("Set new agent") | html %]/[% Translate("new owner") | html %]:</label>
                         <div class="Field">
                             [% Data.NewOwnerStrg %]
+[% RenderBlockStart("InvalidNewOwnerID") %]
+                            <div id="InvalidNewOwnerID" class="Warning InvalidSelection">[% Translate("Previous selection no longer valid!") | html %]</div>
+[% RenderBlockEnd("InvalidNewOwnerID") %]
                         </div>
                         <div class="Clear"></div>
 
@@ -638,6 +692,9 @@ Core.Agent.Admin.GenericAgent.Init({
                         <label for="NewResponsibleID">[% Translate("Set new agent") | html %]/[% Translate("new responsible") | html %]:</label>
                         <div class="Field">
                             [% Data.NewResponsibleStrg %]
+[% RenderBlockStart("InvalidNewResponsibleID") %]
+                            <div id="InvalidNewResponsibleID" class="Warning InvalidSelection">[% Translate("Previous selection no longer valid!") | html %]</div>
+[% RenderBlockEnd("InvalidNewResponsibleID") %]
                         </div>
                         <div class="Clear"></div>
 [% RenderBlockEnd("NewTicketResponsible") %]
@@ -645,6 +702,9 @@ Core.Agent.Admin.GenericAgent.Init({
                         <label for="NewLockID">[% Translate("Set new ticket lock") | html %]:</label>
                         <div class="Field">
                             [% Data.NewLockOption %]
+[% RenderBlockStart("InvalidNewLockID") %]
+                            <div id="InvalidNewLockID" class="Warning InvalidSelection">[% Translate("Previous selection no longer valid!") | html %]</div>
+[% RenderBlockEnd("InvalidNewLockID") %]
                         </div>
                         <div class="Clear"></div>
 
@@ -669,6 +729,9 @@ Core.Agent.Admin.GenericAgent.Init({
                         <label for="NewTypeID">[% Translate("New type") | html %]:</label>
                         <div class="Field">
                             [% Data.NewTypesStrg %]
+[% RenderBlockStart("InvalidNewTypeID") %]
+                            <div id="InvalidNewTypeID" class="Warning InvalidSelection">[% Translate("Previous selection no longer valid!") | html %]</div>
+[% RenderBlockEnd("InvalidNewTypeID") %]
                         </div>
                         <div class="Clear"></div>
 [% RenderBlockEnd("NewTicketType") %]
@@ -679,6 +742,9 @@ Core.Agent.Admin.GenericAgent.Init({
                         [% Data.Label %]
                         <div class="Field">
                             [% Data.Field %]
+[% RenderBlockStart("InvalidNewDynamicFieldElement") %]
+                            <div id="InvalidDynamicField_[% Data.Name %]" class="Warning InvalidSelection">[% Translate("Previous selection no longer valid!") | html %]</div>
+[% RenderBlockEnd("InvalidNewDynamicFieldElement") %]
                         </div>
                         <div class="Clear"></div>
 [% RenderBlockEnd("NewDynamicFieldElement") %]

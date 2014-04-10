@@ -414,11 +414,16 @@ sub _MaskUpdate {
         $TreeView = 1;
     }
 
+    # keep all possible attribute values
+    # to check if stored configurations are missing /
+    # were set to invalid in the meantime
+    my %AttributeValues;
     my %ShownUsers = $Self->{UserObject}->UserList(
         Type  => 'Long',
         Valid => 1,
     );
-    $JobData{OwnerStrg} = $Self->{LayoutObject}->BuildSelection(
+    $AttributeValues{Owner} = \%ShownUsers;
+    $JobData{OwnerStrg}     = $Self->{LayoutObject}->BuildSelection(
         Data        => \%ShownUsers,
         Name        => 'OwnerIDs',
         Multiple    => 1,
@@ -478,25 +483,20 @@ sub _MaskUpdate {
         SelectedID => $JobData{ScheduleDays},
     );
 
-    $JobData{StatesStrg} = $Self->{LayoutObject}->BuildSelection(
-        Data => {
-            $Self->{StateObject}->StateList(
-                UserID => 1,
-                Action => $Self->{Action},
-            ),
-        },
+    my %State = $Self->{StateObject}->StateList(
+        UserID => 1,
+        Action => $Self->{Action},
+    );
+    $AttributeValues{State} = \%State;
+    $JobData{StatesStrg}    = $Self->{LayoutObject}->BuildSelection(
+        Data       => \%State,
         Name       => 'StateIDs',
         Multiple   => 1,
         Size       => 5,
         SelectedID => $JobData{StateIDs},
     );
     $JobData{NewStatesStrg} = $Self->{LayoutObject}->BuildSelection(
-        Data => {
-            $Self->{StateObject}->StateList(
-                UserID => 1,
-                Action => $Self->{Action},
-            ),
-        },
+        Data       => \%State,
         Name       => 'NewStateID',
         Size       => 5,
         Multiple   => 0,
@@ -533,8 +533,11 @@ sub _MaskUpdate {
         Translation => 1,
         Title       => $Self->{LayoutObject}->{LanguageObject}->Translate('Time unit'),
     );
-    $JobData{QueuesStrg} = $Self->{LayoutObject}->AgentQueueListOption(
-        Data               => { $Self->{QueueObject}->GetAllQueues(), },
+
+    my %Queue               = $Self->{QueueObject}->GetAllQueues();
+    $AttributeValues{Queue} = \%Queue;
+    $JobData{QueuesStrg}    = $Self->{LayoutObject}->AgentQueueListOption(
+        Data               => \%Queue,
         Size               => 5,
         Multiple           => 1,
         Name               => 'QueueIDs',
@@ -543,7 +546,7 @@ sub _MaskUpdate {
         OnChangeSubmit     => 0,
     );
     $JobData{NewQueuesStrg} = $Self->{LayoutObject}->AgentQueueListOption(
-        Data           => { $Self->{QueueObject}->GetAllQueues(), },
+        Data           => \%Queue,
         Size           => 5,
         Multiple       => 0,
         Name           => 'NewQueueID',
@@ -551,25 +554,21 @@ sub _MaskUpdate {
         TreeView       => $TreeView,
         OnChangeSubmit => 0,
     );
-    $JobData{PrioritiesStrg} = $Self->{LayoutObject}->BuildSelection(
-        Data => {
-            $Self->{PriorityObject}->PriorityList(
-                UserID => 1,
-                Action => $Self->{Action},
-            ),
-        },
+
+    my %Priority = $Self->{PriorityObject}->PriorityList(
+        UserID => 1,
+        Action => $Self->{Action},
+    );
+    $AttributeValues{Priority} = \%Priority;
+    $JobData{PrioritiesStrg}   = $Self->{LayoutObject}->BuildSelection(
+        Data       => \%Priority,
         Name       => 'PriorityIDs',
         Size       => 5,
         Multiple   => 1,
         SelectedID => $JobData{PriorityIDs},
     );
     $JobData{NewPrioritiesStrg} = $Self->{LayoutObject}->BuildSelection(
-        Data => {
-            $Self->{PriorityObject}->PriorityList(
-                UserID => 1,
-                Action => $Self->{Action},
-            ),
-        },
+        Data       => \%Priority,
         Name       => 'NewPriorityID',
         Size       => 5,
         Multiple   => 0,
@@ -664,25 +663,22 @@ sub _MaskUpdate {
         Name       => 'Valid',
         SelectedID => defined( $JobData{Valid} ) ? $JobData{Valid} : 1,
     );
-    $JobData{LockOption} = $Self->{LayoutObject}->BuildSelection(
-        Data => {
-            $Self->{LockObject}->LockList(
-                UserID => 1,
-                Action => $Self->{Action},
-            ),
-        },
+
+
+    my %Lock = $Self->{LockObject}->LockList(
+        UserID => 1,
+        Action => $Self->{Action},
+    );
+    $AttributeValues{Lock} = \%Lock;
+    $JobData{LockOption}   = $Self->{LayoutObject}->BuildSelection(
+        Data       => \%Lock,
         Name       => 'LockIDs',
         Multiple   => 1,
         Size       => 3,
         SelectedID => $JobData{LockIDs},
     );
     $JobData{NewLockOption} = $Self->{LayoutObject}->BuildSelection(
-        Data => {
-            $Self->{LockObject}->LockList(
-                UserID => 1,
-                Action => $Self->{Action},
-            ),
-        },
+        Data       => \%Lock,
         Name       => 'NewLockID',
         Size       => 3,
         Multiple   => 0,
@@ -733,8 +729,11 @@ sub _MaskUpdate {
 
     # build type string
     if ( $Self->{ConfigObject}->Get('Ticket::Type') ) {
-        my %Type = $Self->{TypeObject}->TypeList( UserID => $Self->{UserID}, );
-        $JobData{TypesStrg} = $Self->{LayoutObject}->BuildSelection(
+        my %Type = $Self->{TypeObject}->TypeList(
+            UserID => $Self->{UserID},
+        );
+        $AttributeValues{Type} = \%Type;
+        $JobData{TypesStrg}    = $Self->{LayoutObject}->BuildSelection(
             Data        => \%Type,
             Name        => 'TypeIDs',
             SelectedID  => $JobData{TypeIDs},
@@ -772,7 +771,9 @@ sub _MaskUpdate {
             UserID       => $Self->{UserID},
         );
         my %NewService = %Service;
-        $JobData{ServicesStrg} = $Self->{LayoutObject}->BuildSelection(
+
+        $AttributeValues{Service} = \%Service;
+        $JobData{ServicesStrg}    = $Self->{LayoutObject}->BuildSelection(
             Data        => \%Service,
             Name        => 'ServiceIDs',
             SelectedID  => $JobData{ServiceIDs},
@@ -792,8 +793,12 @@ sub _MaskUpdate {
             Translation => 0,
             Max         => 200,
         );
-        my %SLA = $Self->{SLAObject}->SLAList( UserID => $Self->{UserID}, );
-        $JobData{SLAsStrg} = $Self->{LayoutObject}->BuildSelection(
+
+        my %SLA = $Self->{SLAObject}->SLAList(
+            UserID => $Self->{UserID}
+        );
+        $AttributeValues{SLA} = \%SLA;
+        $JobData{SLAsStrg}    = $Self->{LayoutObject}->BuildSelection(
             Data        => \%SLA,
             Name        => 'SLAIDs',
             SelectedID  => $JobData{SLAIDs},
@@ -825,7 +830,9 @@ sub _MaskUpdate {
 
     # ticket responsible string
     if ( $Self->{ConfigObject}->Get('Ticket::Responsible') ) {
-        $JobData{ResponsibleStrg} = $Self->{LayoutObject}->BuildSelection(
+
+        $AttributeValues{Responsible} = \%ShownUsers;
+        $JobData{ResponsibleStrg}     = $Self->{LayoutObject}->BuildSelection(
             Data        => \%ShownUsers,
             Name        => 'ResponsibleIDs',
             Size        => 5,
@@ -929,6 +936,35 @@ sub _MaskUpdate {
                     Field => $DynamicFieldHTML->{Field},
                 },
             );
+
+            # check if the current dynamic field has a 'PossibleValues' configuration
+            # and if there are configured values stored in the JobData that might
+            # have become invalid in the meantime
+            if (
+                IsHashRefWithData( $DynamicFieldConfig->{Config} )
+                && IsHashRefWithData( $DynamicFieldConfig->{Config}->{PossibleValues} )
+                && IsArrayRefWithData( $JobData{'Search_DynamicField_'. $DynamicFieldConfig->{Name} } )
+            ) {
+
+                # loop over each stored configured value...
+                SELECTION:
+                for my $CurrentSelection ( sort @{ $JobData{'Search_DynamicField_'. $DynamicFieldConfig->{Name} } } ) {
+
+                    # ... skip if it's still a 'PossibleValue'
+                    next SELECTION if $DynamicFieldConfig->{Config}->{PossibleValues}->{ $CurrentSelection };
+
+                    # ... if not display the warning message
+                    $Self->{LayoutObject}->Block(
+                        Name => 'InvalidDynamicFieldElement',
+                        Data => {
+                            Name => $DynamicFieldConfig->{Name},
+                        },
+                    );
+
+                    # ... but only once
+                    last SELECTION;
+                }
+            }
         }
     }
 
@@ -1008,6 +1044,81 @@ sub _MaskUpdate {
                 Field => $DynamicFieldHTML->{Field},
             },
         );
+
+        # check if the current dynamic field has a 'PossibleValues' configuration
+        # and if there are configured values stored in the JobData that might
+        # have become invalid in the meantime
+        if (
+            IsHashRefWithData( $DynamicFieldConfig->{Config} )
+            && IsHashRefWithData( $DynamicFieldConfig->{Config}->{PossibleValues} )
+            && IsArrayRefWithData( $JobData{'DynamicField_'. $DynamicFieldConfig->{Name} } )
+        ) {
+
+            # loop over each stored configured value...
+            SELECTION:
+            for my $CurrentSelection ( sort @{ $JobData{'DynamicField_'. $DynamicFieldConfig->{Name} } } ) {
+
+                # ... skip if it's still a 'PossibleValue'
+                next SELECTION if $DynamicFieldConfig->{Config}->{PossibleValues}->{ $CurrentSelection };
+
+                # ... if not display the warning message
+                $Self->{LayoutObject}->Block(
+                    Name => 'InvalidNewDynamicFieldElement',
+                    Data => {
+                        Name => $DynamicFieldConfig->{Name},
+                    },
+                );
+
+                # ... but only once
+                last SELECTION;
+            }
+        }
+    }
+
+    # loop over each attribute that might become invalid
+    ATTRIBUTE:
+    for my $Attribute ( qw(Type Service SLA Queue Priority State Owner Responsible Lock) ) {
+
+        # store a copy of the data of the current attribute
+        # for better code readability
+        my %CurrentAttributeValues;
+        if ( IsHashRefWithData( $AttributeValues{ $Attribute } ) ) {
+            %CurrentAttributeValues = %{ $AttributeValues{ $Attribute } };
+        }
+
+        # each attribute can be used as a filter or as a new / set attribute
+        FIELD:
+        for my $Field ( ( "${ Attribute }IDs", "New${ Attribute }ID" ) ) {
+
+            # skip if no configuration is stored
+            next FIELD if !$JobData{ $Field };
+
+            # build selection structure to work with and
+            # make code more readable
+            my @JobSelections;
+            if ( IsArrayRefWithData( $JobData{ $Field } ) ) {
+                @JobSelections = @{ $JobData{ $Field } };
+            }
+            else {
+                push @JobSelections, $JobData{ $Field };
+            }
+
+            # loop over every stored config value
+            SELECTION:
+            for my $Selection ( sort @JobSelections ) {
+
+                # skip if the stored value is still valid
+                next SELECTION if $CurrentAttributeValues{ $Selection };
+
+                # if not display the warning text
+                $Self->{LayoutObject}->Block(
+                    Name => 'Invalid'. $Field,
+                );
+
+                # display warning only once
+                next FIELD;
+            }
+        }
     }
 
     # get registered event triggers from the config

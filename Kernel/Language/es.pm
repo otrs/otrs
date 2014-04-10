@@ -1366,6 +1366,12 @@ sub Data {
         'Edit job' => 'Editar el trabajo',
         'Run job' => 'Ejecutar el trabajo',
         'Affected Tickets' => 'Tickets afectados',
+        'Invalid selection' => '',
+        "Do you want to 'Change' or 'Save' the current configuration?" => '',
+        'Previous selection (partially) no longer valid!' => '',
+        'Previous selection no longer valid!' => '',
+        'The following attribute configured for this job has become (partially) invalid and was not changed:' => '',
+        'The following attributes configured for this job have become (partially) invalid and were not changed:' => '',
 
         # Template: AdminGenericInterfaceDebugger
         'GenericInterface Debugger for Web Service %s' => 'Depurador de la interfaz genérica para el servicio web %s',
