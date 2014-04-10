@@ -6172,24 +6172,22 @@ sub TicketAcl {
     # find out which data we actually need
     my %ApplicableAclModules;
     my %RequiredChecks;
+    my $CheckAll = 0;
 
+    MODULENAME:
     for my $ModuleName ( sort keys %{ $AclModules // {} } ) {
         my $Module = $AclModules->{$ModuleName};
-        unless ( $Module->{Checks} ) {
-            $Self->{LogObject}->Log(
-                Priority => 'error',
-                Message => "ACL module $ModuleName has no 'Checks' configuration!",
-            );
+        if ( $Module->{ReturnType} && $Module->{ReturnType} ne $Param{ReturnType} ) {
+            next MODULENAME;
         }
-        next if $Module->{ReturnType} && $Module->{ReturnType} ne $Param{ReturnType};
         if ( $Module->{ReturnSubType} ) {
             if ( ref( $Module->{ReturnSubType} ) eq 'HASH' ) {
-                next unless grep { $Param{ReturnSubType} eq $_ }
+                next MODULENAME unless grep { $Param{ReturnSubType} eq $_ }
                     @{ $Module->{ReturnSubType} };
             }
             else {
                 # a scalar, we hope
-                next unless $Module->{ReturnSubType} eq $Param{ReturnSubType};
+                next MODULENAME unless $Module->{ReturnSubType} eq $Param{ReturnSubType};
             }
         }
 
@@ -6202,12 +6200,15 @@ sub TicketAcl {
         elsif ( $Module->{Checks} ) {
             $RequiredChecks{ $Module->{Checks} } = 1;
         }
+        else {
+            $CheckAll = 1;
+        }
     }
 
-    return if !%ApplicableAclModules && !$ACLs;
+    return if !%ApplicableAclModules && !$ACLs && !$CheckAll;
 
     for my $ACL ( values %{ $ACLs // {} } ) {
-        for my $Source (qw/ Properties PropertiesDatabase/ ) {
+        for my $Source (qw/ Properties PropertiesDatabase/) {
             for my $Check ( sort keys %{ $ACL->{$Source} } ) {
                 my $CleanedUp = $Check;
                 $CleanedUp =~ s/(?:ID|Name|Login)$//;
@@ -6318,12 +6319,12 @@ sub TicketAcl {
     }
 
     # check for ProcessEntityID if set as parameter (ProcessManagement)
-    if ( $RequiredChecks{Process} && $Param{ProcessEntityID} ) {
+    if ( ( $CheckAll || $RequiredChecks{Process} ) && $Param{ProcessEntityID} ) {
         $Checks{Process}{ProcessEntityID} = $Param{ProcessEntityID};
     }
 
     # check for ActivityDialogEntityID if set as parameter (ProcessManagement)
-    if ( $RequiredChecks{Process} && $Param{ActivityDialogEntityID} ) {
+    if ( ( $CheckAll || $RequiredChecks{Process} ) && $Param{ActivityDialogEntityID} ) {
         my $ActivityDialog = $Self->{ActivityDialogObject}->ActivityDialogGet(
             ActivityDialogEntityID => $Param{ActivityDialogEntityID},
             Interface              => $Interface,
@@ -6334,7 +6335,7 @@ sub TicketAcl {
     }
 
     # check for ActivityEntityID if set as parameter (ProcessManagement)
-    if ( $RequiredChecks{Process} && $Param{ActivityEntityID} ) {
+    if ( ( $CheckAll || $RequiredChecks{Process} ) && $Param{ActivityEntityID} ) {
         my $Activity = $Self->{ActivityObject}->ActivityGet(
             Interface        => $Interface,
             ActivityEntityID => $Param{ActivityEntityID},
@@ -6399,7 +6400,7 @@ sub TicketAcl {
     }
 
     # use user data
-    if ( $RequiredChecks{User} && $Param{UserID} ) {
+    if ( ( $CheckAll || $RequiredChecks{User} ) && $Param{UserID} ) {
         my %User = $Self->{UserObject}->GetUserData(
             UserID => $Param{UserID},
         );
@@ -6432,7 +6433,7 @@ sub TicketAcl {
     }
 
     # use customer user data
-    if ( $RequiredChecks{CustomerUser} && $Param{CustomerUserID} ) {
+    if ( ( $CheckAll || $RequiredChecks{CustomerUser} ) && $Param{CustomerUserID} ) {
         my %CustomerUser = $Self->{CustomerUserObject}->CustomerUserDataGet(
             User => $Param{CustomerUserID},
         );
@@ -6470,7 +6471,9 @@ sub TicketAcl {
     }
 
     # create hash with the ticket information stored in the database
-    if ( $RequiredChecks{CustomerUser} && IsStringWithData( $ChecksDatabase{Ticket}->{CustomerUserID} ) ) {
+    if ( ( $CheckAll || $RequiredChecks{CustomerUser} )
+        && IsStringWithData( $ChecksDatabase{Ticket}->{CustomerUserID} ) )
+    {
 
         # check if database data matches current data (performance)
         if (
@@ -6499,7 +6502,7 @@ sub TicketAcl {
     }
 
     # use queue data (if given)
-    if ( $RequiredChecks{Queue} ) {
+    if ( $CheckAll || $RequiredChecks{Queue} ) {
         if ( $Param{QueueID} ) {
             my %Queue = $Self->{QueueObject}->QueueGet( ID => $Param{QueueID} );
             $Checks{Queue} = \%Queue;
@@ -6527,7 +6530,9 @@ sub TicketAcl {
     }
 
     # create hash with the ticket information stored in the database
-    if ( $RequiredChecks{Queue} && IsPositiveInteger( $ChecksDatabase{Ticket}->{QueueID} ) ) {
+    if ( ( $CheckAll || $RequiredChecks{Queue} )
+        && IsPositiveInteger( $ChecksDatabase{Ticket}->{QueueID} ) )
+    {
 
         # check if database data matches current data (performance)
         if (
@@ -6546,7 +6551,7 @@ sub TicketAcl {
     }
 
     # use service data (if given)
-    if ( $RequiredChecks{Service} ) {
+    if ( $CheckAll || $RequiredChecks{Service} ) {
         if ( $Param{ServiceID} ) {
             my %Service = $Self->{ServiceObject}->ServiceGet(
                 ServiceID => $Param{ServiceID},
@@ -6605,7 +6610,7 @@ sub TicketAcl {
     }
 
     # use type data (if given)
-    if ( $RequiredChecks{Type} ) {
+    if ( $CheckAll || $RequiredChecks{Type} ) {
         if ( $Param{TypeID} ) {
             my %Type = $Self->{TypeObject}->TypeGet(
                 ID     => $Param{TypeID},
@@ -6619,16 +6624,16 @@ sub TicketAcl {
         }
         elsif ( $Param{Type} ) {
 
-        # TODO Attention!
-        #
-        # The parameter type can contain not only the wanted ticket type, because also
-        # some other functions in Kernel/System/Ticket.pm use a type paremeter, for example
-        # MoveList() etc... These functions could be rewritten to not
-        # use a Type parameter, or the functions that call TicketAcl() could be modified to
-        # not just pass the complete Param-Hash, but instead a new parameter, like FrontEndParameter.
-        #
-        # As a workaround we lookup the TypeList first, and compare if the type parameter
-        # is found in the list, so we can be more sure that it is the type that we want here.
+       # TODO Attention!
+       #
+       # The parameter type can contain not only the wanted ticket type, because also
+       # some other functions in Kernel/System/Ticket.pm use a type paremeter, for example
+       # MoveList() etc... These functions could be rewritten to not
+       # use a Type parameter, or the functions that call TicketAcl() could be modified to
+       # not just pass the complete Param-Hash, but instead a new parameter, like FrontEndParameter.
+       #
+       # As a workaround we lookup the TypeList first, and compare if the type parameter
+       # is found in the list, so we can be more sure that it is the type that we want here.
 
             # lookup the type list (workaround for described problem)
             my %TypeList = reverse $Self->{TypeObject}->TypeList();
@@ -6681,7 +6686,8 @@ sub TicketAcl {
         }
     }
 
-    if ( $RequiredChecks{Priority} ) {
+    if ( $CheckAll || $RequiredChecks{Priority} ) {
+
         # use priority data (if given)
         if ( $Param{NewPriorityID} && !$Param{PriorityID} ) {
             $Param{PriorityID} = $Param{NewPriorityID}
@@ -6749,7 +6755,7 @@ sub TicketAcl {
     }
 
     # use SLA data (if given)
-    if ( $RequiredChecks{SLA} ) {
+    if ( $CheckAll || $RequiredChecks{SLA} ) {
         if ( $Param{SLAID} ) {
             my %SLA = $Self->{SLAObject}->SLAGet(
                 SLAID  => $Param{SLAID},
@@ -6811,7 +6817,7 @@ sub TicketAcl {
     }
 
     # use state data (if given)
-    if ( $RequiredChecks{State} ) {
+    if ( $CheckAll || $RequiredChecks{State} ) {
         if ( $Param{NextStateID} && !$Param{StateID} ) {
             $Param{StateID} = $Param{NextStateID}
         }
@@ -6875,7 +6881,7 @@ sub TicketAcl {
     }
 
     # use owner data (if given)
-    if ( $RequiredChecks{Owner} ) {
+    if ( $CheckAll || $RequiredChecks{Owner} ) {
         if (
             $Param{NewOwnerID}
             && !$Param{OwnerID}
@@ -7050,7 +7056,7 @@ sub TicketAcl {
     # use responsible data (if given)
     $Param{ResponsibleID} ||= $Param{NewResponsibleID};
 
-    if ( $RequiredChecks{Responsible} ) {
+    if ( $CheckAll || $RequiredChecks{Responsible} ) {
         if ( $Param{ResponsibleID} ) {
             my %Responsible = $Self->{UserObject}->GetUserData(
                 UserID => $Param{ResponsibleID},
