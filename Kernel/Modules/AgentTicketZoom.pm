@@ -644,8 +644,10 @@ sub MaskAgentZoom {
         $Param{WidgetTitle} = $Self->{DisplaySettings}->{ProcessDisplay}->{WidgetTitle};
     }
 
-    # only show article tree if articles are present
-    if (@ArticleBox) {
+    # only show article tree if articles are present,
+    # or if a filter is set (so that the user has the option to
+    # disable the filter)
+    if (@ArticleBox || $Self->{ArticleFilter}) {
 
         my $Pagination;
 
