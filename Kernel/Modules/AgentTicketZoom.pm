@@ -400,7 +400,7 @@ sub Run {
             )
         {
             my @IDs = split /,/, $1;
-            $Self->{ArticleFilter}->{ArticleTypeID} = { map { $_ => 1 } @IDs };
+            $Self->{ArticleFilter}->{ArticleTypeID} = \@IDs,
         }
 
         # extract ArticleSenderTypeIDs
@@ -410,7 +410,7 @@ sub Run {
             )
         {
             my @IDs = split /,/, $1;
-            $Self->{ArticleFilter}->{SenderTypeID} = { map { $_ => 1 } @IDs };
+            $Self->{ArticleFilter}->{ArticleSenderTypeID} = \@IDs,
         }
     }
 
@@ -521,6 +521,7 @@ sub MaskAgentZoom {
         Page                       => $Page,
         Limit                      => $Limit + $Extra,
         DynamicFields => 0,    # fetch later only for the article(s) to display
+        %{  $Self->{ArticleFilter} // {} }, # limit by ArticleSenderTypeID/ArticleTypeID
     );
     if ( $Page == 1 && @ArticleBox > $Limit ) {
         pop @ArticleBox;
@@ -600,62 +601,6 @@ sub MaskAgentZoom {
         }
     }
 
-    # remember shown article ids if article filter is activated in sysconfig
-    if ( $Self->{ArticleFilterActive} && $Self->{ArticleFilter} ) {
-
-        # reset shown article ids
-        $Self->{ArticleFilter}->{ShownArticleIDs} = undef;
-
-        my $NewArticleID = '';
-        my $Count        = 0;
-
-        ARTICLE:
-        for my $Article (@ArticleBox) {
-
-            # article type id does not match
-            if (
-                $Self->{ArticleFilter}->{ArticleTypeID}
-                && !$Self->{ArticleFilter}->{ArticleTypeID}->{ $Article->{ArticleTypeID} }
-                )
-            {
-                next ARTICLE;
-            }
-
-            # article sender type id does not match
-            if (
-                $Self->{ArticleFilter}->{SenderTypeID}
-                && !$Self->{ArticleFilter}->{SenderTypeID}->{ $Article->{SenderTypeID} }
-                )
-            {
-                next ARTICLE;
-            }
-
-            # count shown articles
-            $Count++;
-
-            # remember article id
-            $Self->{ArticleFilter}->{ShownArticleIDs}->{ $Article->{ArticleID} } = 1;
-
-            # set article id to first shown article
-            if ( $Count == 1 ) {
-                $NewArticleID = $Article->{ArticleID};
-            }
-
-            # set article id to last shown customer article
-            if ( $Article->{SenderType} eq 'customer' ) {
-                $NewArticleID = $Article->{ArticleID};
-            }
-        }
-
-        # change article id if it was filtered out
-        if ( $NewArticleID && !$Self->{ArticleFilter}->{ShownArticleIDs}->{$ArticleID} ) {
-            $ArticleID = $NewArticleID;
-        }
-
-        # add current article id
-        $Self->{ArticleFilter}->{ShownArticleIDs}->{$ArticleID} = 1;
-    }
-
     # check if expand view is usable (only for less then 400 article)
     # if you have more articles is going to be slow and not usable
     my $ArticleMaxLimit = $Self->{ConfigObject}->Get('Ticket::Frontend::MaxArticlesZoomExpand')
@@ -729,17 +674,6 @@ sub MaskAgentZoom {
     ARTICLE:
     for my $ArticleTmp (@ArticleBoxShown) {
         my %Article = %$ArticleTmp;
-
-        # article filter is activated in sysconfig and there are articles that passed the filter
-        if ( $Self->{ArticleFilterActive} ) {
-            if ( $Self->{ArticleFilter} && $Self->{ArticleFilter}->{ShownArticleIDs} ) {
-
-                # do not show article if it does not match the filter
-                if ( !$Self->{ArticleFilter}->{ShownArticleIDs}->{ $Article{ArticleID} } ) {
-                    next ARTICLE;
-                }
-            }
-        }
 
         $Self->_ArticleItem(
             Ticket            => \%Ticket,
@@ -1517,7 +1451,7 @@ sub MaskAgentZoom {
         # build article type list for filter dialog
         $Param{ArticleTypeFilterString} = $Self->{LayoutObject}->BuildSelection(
             Data        => \%ArticleTypes,
-            SelectedID  => [ keys %{ $Self->{ArticleFilter}->{ArticleTypeID} } ],
+            SelectedID  =>  $Self->{ArticleFilter}->{ArticleTypeID},
             Translation => 1,
             Multiple    => 1,
             Sort        => 'AlphanumericValue',
@@ -1532,7 +1466,7 @@ sub MaskAgentZoom {
         # build article sender type list for filter dialog
         $Param{ArticleSenderTypeFilterString} = $Self->{LayoutObject}->BuildSelection(
             Data        => \%ArticleSenderTypes,
-            SelectedID  => [ keys %{ $Self->{ArticleFilter}->{SenderTypeID} } ],
+            SelectedID  => $Self->{ArticleFilter}->{SenderTypeID},
             Translation => 1,
             Multiple    => 1,
             Sort        => 'AlphanumericValue',
