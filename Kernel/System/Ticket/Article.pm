@@ -1313,6 +1313,8 @@ sub ArticleContentIndex {
         DynamicFields => $Param{DynamicFields},
         Page          => $Param{Page},
         Limit         => $Param{Limit},
+        ArticleTypeID => $Param{ArticleTypeID},
+        SenderTypeID  => $Param{ArticleSenderTypeID},
     );
 
     # article attachments of each article
@@ -1378,9 +1380,11 @@ returns articles in array / hash by given ticket id but
 only requested article types
 
     my @ArticleIndex = $TicketObject->ArticleGet(
-        TicketID    => 123,
-        ArticleType => [ $ArticleType1, $ArticleType2 ],
-        UserID      => 123,
+        TicketID      => 123,
+        ArticleType   => [ $ArticleType1, $ArticleType2 ],
+        # or
+        ArticleTypeID => [ $ArticleTypeID1, $ArticleTypeID2 ],
+        UserID        => 123,
     );
 
 returns articles in array / hash by given ticket id but
@@ -1391,6 +1395,8 @@ certain views)
     my @ArticleIndex = $TicketObject->ArticleGet(
         TicketID            => 123,
         ArticleSenderType   => [ $ArticleSenderType1, $ArticleSenderType2 ],
+        # or
+        ArticleSenderTypeID => [ $ArticleSenderTypeID1, $ArticleSenderTypeID2 ],
         UserID              => 123,
     );
 
@@ -1454,6 +1460,13 @@ sub ArticleGet {
             $ArticleTypeSQL = " AND sa.article_type_id IN ($ArticleTypeSQL)";
         }
     }
+    my $ArticleTypeIDSQL = '';
+    if ( IsArrayRefWithData $Param{ArticleTypeID} ) {
+        my $QuotedIDs = join ', ',
+                        map { $Self->{DBObject}->Quote($_, 'Integer') }
+                        @{ $Param{ArticleTypeID} };
+        $ArticleTypeIDSQL = " AND sa.article_type_id IN ($QuotedIDs)";
+    }
 
     # sender type lookup
     my $SenderTypeSQL = '';
@@ -1472,6 +1485,14 @@ sub ArticleGet {
         if ($SenderTypeSQL) {
             $SenderTypeSQL = " AND sa.article_sender_type_id IN ($SenderTypeSQL)";
         }
+    }
+
+    my $SenderTypeIDSQL;
+    if ( IsArrayRefWithData $Param{ArticleSenderTypeID} ) {
+        my $QuotedIDs = join ', ',
+                        map { $Self->{DBObject}->Quote($_, 'Integer') }
+                        @{ $Param{ArticleSenderType} };
+        $SenderTypeIDSQL = " AND sa.article_sender_type_id IN ($QuotedIDs)";
     }
 
     # sql query
@@ -1505,10 +1526,16 @@ sub ArticleGet {
     if ($ArticleTypeSQL) {
         $SQL .= $ArticleTypeSQL;
     }
+    if ($ArticleTypeIDSQL) {
+        $SQL .= $ArticleTypeIDSQL;
+    }
 
     # add sender types
     if ($SenderTypeSQL) {
         $SQL .= $SenderTypeSQL;
+    }
+    if ($SenderTypeIDSQL) {
+        $SQL .= $SenderTypeIDSQL;
     }
 
     # set order
