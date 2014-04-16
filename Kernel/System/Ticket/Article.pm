@@ -1949,10 +1949,10 @@ sub ArticleCount {
             return 0;
         }
 
-        my $Op = ($Param{Order} // 'ASC') eq 'DESC' ? '>=' : '<=';
+        my $Op = ($Param{Order} // 'ASC') eq 'DESC' ? '>' : '<';
 
-        $SQL .= " AND create_time $Op ?";
-        push @Bind, \$CreateTime;
+        $SQL .= " AND (create_time $Op ? OR (create_time = ? AND id $Op= ?))";
+        push @Bind, \$CreateTime, \$CreateTime, \$Param{UpToArticleID};
     }
 
     return if !$Self->{DBObject}->Prepare( SQL => $SQL, Bind => \@Bind );
