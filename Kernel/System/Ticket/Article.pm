@@ -1245,6 +1245,7 @@ returns an array with hash ref (hash contains result of ArticleGet())
         TicketID      => 123,
         DynamicFields => 1,         # 0 or 1, default 1. To include or not the dynamic field values on the return structure.
         UserID        => 1,
+        Order         => 'ASC',     # 'ASC' or 'DESC', default 'ASC'
     );
 
 or with "StripPlainBodyAsAttachment => 1" feature to not include first
@@ -1272,7 +1273,12 @@ only with given article types
         TicketID    => 123,
         UserID      => 1,
         ArticleType => [ $ArticleType1, $ArticleType2 ],
+        # or
+        ArticleTypeID => [ $ArticleTypeID1, $ArticleTypeID2 ],
     );
+
+Likewise C<ArticleSenderTypeID> allows filtering of only articles with
+the given sender type IDs.
 
 example of how to access the hash ref
 
@@ -1315,6 +1321,7 @@ sub ArticleContentIndex {
         Limit         => $Param{Limit},
         ArticleTypeID => $Param{ArticleTypeID},
         SenderTypeID  => $Param{ArticleSenderTypeID},
+        Order         => $Param{Order},
     );
 
     # article attachments of each article
@@ -1886,11 +1893,18 @@ sub ArticleGet {
 
 =item ArticleCount()
 
-Returns the number of articles for a ticket
+Returns the number of articles for a ticket, possibly filtered by
+ArticleSenderTypeID and ArticleTypeID
 
     my $ArticleCount = $TicketID->ArticleCount(
-        TicketID    => 123,
+        TicketID            => 123,
+        ArticleTypeID       => [1, 2], # optional
+        ArticleSenderTypeID => [1, 2], # optional
     );
+
+If the argument C<UpToArticleID> is given, only articles that would normally
+shown before (and including) this article are shown; C<Order> (which can
+be C<ASC> or C<DESC>) controls whether ascending or descending order is used.
 
 =cut
 
@@ -1904,7 +1918,44 @@ sub ArticleCount {
     }
 
     my $SQL = 'SELECT COUNT(id) FROM article WHERE ticket_id = ?';
-    return if !$Self->{DBObject}->Prepare( SQL => $SQL, Bind => [ \$Param{TicketID} ] );
+    $SQL .= $Self->{DBObject}->SQLForList(
+        Column      => 'article_type_id',
+        Values      => $Param{ArticleTypeID},
+        LeadingAND  => 1,
+        Type        => 'Integer',
+    );
+    $SQL .= $Self->{DBObject}->SQLForList(
+        Column      => 'article_sender_type_id',
+        Values      => $Param{ArticleSenderTypeID},
+        LeadingAND  => 1,
+        Type        => 'Integer',
+    );
+
+    my @Bind = ( \$Param{TicketID} );
+
+    if ( defined $Param{UpToArticleID} ) {
+        $Self->{DBObject}->Prepare(
+            SQL  => 'SELECT create_time FROM article WHERE id = ?',
+            Bind => [ \$Param{UpToArticleID} ],
+        );
+
+        my $CreateTime;
+
+        while ( my @Row = $Self->{DBObject}->FetchrowArray() ) {
+            $CreateTime = $Row[0];
+        }
+
+        if ( !defined $CreateTime) {
+            return 0;
+        }
+
+        my $Op = ($Param{Order} // 'ASC') eq 'DESC' ? '>=' : '<=';
+
+        $SQL .= " AND create_time $Op ?";
+        push @Bind, \$CreateTime;
+    }
+
+    return if !$Self->{DBObject}->Prepare( SQL => $SQL, Bind => \@Bind );
 
     my $Count;
     while ( my @Row = $Self->{DBObject}->FetchrowArray() ) {
@@ -1919,9 +1970,12 @@ sub ArticleCount {
 Get the page number of a given article when pagination is active
 
     my $Page = $TicketObject->ArticlePage(
-        TicketID    => 123,
-        ArticleID   => 4242,
-        RowsPerPage => 20,
+        TicketID            => 123,
+        ArticleID           => 4242,
+        RowsPerPage         => 20,
+        ArticleTypeID       => [1, 2], # optional
+        ArticleSenderTypeID => [1],    # optional
+        Order               => 'DESC', # optional, 'ASC' or 'DESC'
     );
 
 =cut
@@ -1939,23 +1993,13 @@ sub ArticlePage {
         }
     }
 
-    $Self->{DBObject}->Prepare(
-        SQL  => 'SELECT create_time FROM article WHERE id = ?',
-        Bind => [ \$Param{ArticleID} ],
+    my $Count = $Self->ArticleCount(
+        TicketID            => $Param{TicketID},
+        UpToArticleID       => $Param{ArticleID},
+        ArticleSenderTypeID => $Param{ArticleSenderTypeID},
+        ArticleTypeID       => $Param{ArticleTypeID},
+        Order               => $Param{Order},
     );
-
-    my ( $CreateTime ) = $Self->{DBObject}->FetchrowArray();
-
-    my $SQL = 'SELECT COUNT(id) FROM article WHERE ticket_id = ? AND create_time  <= ?';
-    return if !$Self->{DBObject}->Prepare(
-        SQL  => $SQL,
-        Bind => [ \$Param{TicketID}, \$CreateTime ],
-    );
-
-    my $Count;
-    while ( my @Row = $Self->{DBObject}->FetchrowArray() ) {
-        $Count = $Row[0];
-    }
 
     return ceil( $Count / $Param{RowsPerPage} );
 }
