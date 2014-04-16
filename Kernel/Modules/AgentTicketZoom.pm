@@ -513,6 +513,8 @@ sub MaskAgentZoom {
     my $NeedPagination;
     my $ArticleCount;
 
+    my $Order = $Self->{ZoomExpandSort} eq 'reverse' ? 'DESC' : 'ASC';
+
     # get content
     my @ArticleBox = $Self->{TicketObject}->ArticleContentIndex(
         TicketID                   => $Self->{TicketID},
@@ -520,6 +522,7 @@ sub MaskAgentZoom {
         UserID                     => $Self->{UserID},
         Page                       => $Page,
         Limit                      => $Limit + $Extra,
+        Order                      => $Order,
         DynamicFields => 0,    # fetch later only for the article(s) to display
         %{  $Self->{ArticleFilter} // {} }, # limit by ArticleSenderTypeID/ArticleTypeID
     );
@@ -581,15 +584,9 @@ sub MaskAgentZoom {
 
         # set selected article
         if ( !$ArticleID ) {
-            if ( @ArticleBox && $Self->{ZoomExpandSort} eq 'normal' ) {
-
+            if ( @ArticleBox ) {
                 # set first article as default if normal sort
                 $ArticleID = $ArticleBox[0]->{ArticleID};
-            }
-            elsif ( @ArticleBox && $Self->{ZoomExpandSort} eq 'reverse' ) {
-
-                # set last article as default if reverse sort
-                $ArticleID = $ArticleBox[$#ArticleBox]->{ArticleID};
             }
 
             # set last customer article as selected article replacing last set
@@ -622,12 +619,6 @@ sub MaskAgentZoom {
     }
     else {
         @ArticleBoxShown = @ArticleBox;
-    }
-
-    # resort article order
-    if ( $Self->{ZoomExpandSort} eq 'reverse' ) {
-        @ArticleBox      = reverse @ArticleBox;
-        @ArticleBoxShown = reverse @ArticleBoxShown;
     }
 
     # set display options
