@@ -1460,13 +1460,12 @@ sub ArticleGet {
             $ArticleTypeSQL = " AND sa.article_type_id IN ($ArticleTypeSQL)";
         }
     }
-    my $ArticleTypeIDSQL = '';
-    if ( IsArrayRefWithData $Param{ArticleTypeID} ) {
-        my $QuotedIDs = join ', ',
-                        map { $Self->{DBObject}->Quote($_, 'Integer') }
-                        @{ $Param{ArticleTypeID} };
-        $ArticleTypeIDSQL = " AND sa.article_type_id IN ($QuotedIDs)";
-    }
+    my $ArticleTypeIDSQL = $Self->{DBObject}->SQLForList(
+        Column      => 'sa.article_type_id',
+        Values      => $Param{ArticleTypeID},
+        Type        => 'Integer',
+        LeadingAND  => 1,
+    );
 
     # sender type lookup
     my $SenderTypeSQL = '';
@@ -1487,13 +1486,12 @@ sub ArticleGet {
         }
     }
 
-    my $SenderTypeIDSQL;
-    if ( IsArrayRefWithData $Param{ArticleSenderTypeID} ) {
-        my $QuotedIDs = join ', ',
-                        map { $Self->{DBObject}->Quote($_, 'Integer') }
-                        @{ $Param{ArticleSenderType} };
-        $SenderTypeIDSQL = " AND sa.article_sender_type_id IN ($QuotedIDs)";
-    }
+    my $SenderTypeIDSQL = $Self->{DBObject}->SQLForList(
+        Column      => 'sa.article_sender_type_id',
+        Values      => $Param{ArticleSenderTypeID},
+        Type        => 'Integer',
+        LeadingAND  => 1,
+    );
 
     # sql query
     my @Content;
