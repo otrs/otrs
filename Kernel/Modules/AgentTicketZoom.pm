@@ -486,6 +486,7 @@ sub MaskAgentZoom {
 
     my $Limit = $Self->{ConfigObject}->Get('Ticket::Frontend::MaxArticlesPerPage');
 
+    my $Order = $Self->{ZoomExpandSort} eq 'reverse' ? 'DESC' : 'ASC';
     my $Page;
 
     if ( $Self->{ArticleID} ) {
@@ -493,6 +494,8 @@ sub MaskAgentZoom {
             TicketID    => $Self->{TicketID},
             ArticleID   => $Self->{ArticleID},
             RowsPerPage => $Limit,
+            Order       => $Order,
+            %{  $Self->{ArticleFilter} // {} },
         );
     }
     elsif ( $Self->{ArticlePage} ) {
@@ -513,7 +516,6 @@ sub MaskAgentZoom {
     my $NeedPagination;
     my $ArticleCount;
 
-    my $Order = $Self->{ZoomExpandSort} eq 'reverse' ? 'DESC' : 'ASC';
 
     # get content
     my @ArticleBox = $Self->{TicketObject}->ArticleContentIndex(
