@@ -528,11 +528,12 @@ sub MaskAgentZoom {
         DynamicFields => 0,    # fetch later only for the article(s) to display
         %{  $Self->{ArticleFilter} // {} }, # limit by ArticleSenderTypeID/ArticleTypeID
     );
-    if ( $Page == 1 && @ArticleBox > $Limit ) {
+    if ( @ArticleBox > $Limit || !@ArticleBox && $Page > 1 ) {
         pop @ArticleBox;
         $NeedPagination = 1;
         $ArticleCount   = $Self->{TicketObject}->ArticleCount(
             TicketID => $Self->{TicketID},
+            %{  $Self->{ArticleFilter} // {} },
         );
     }
     elsif ( $Page == 1 ) {
