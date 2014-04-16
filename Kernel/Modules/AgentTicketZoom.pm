@@ -1462,7 +1462,7 @@ sub MaskAgentZoom {
         # build article sender type list for filter dialog
         $Param{ArticleSenderTypeFilterString} = $Self->{LayoutObject}->BuildSelection(
             Data        => \%ArticleSenderTypes,
-            SelectedID  => $Self->{ArticleFilter}->{SenderTypeID},
+            SelectedID  => $Self->{ArticleFilter}->{ArticleSenderTypeID},
             Translation => 1,
             Multiple    => 1,
             Sort        => 'AlphanumericValue',

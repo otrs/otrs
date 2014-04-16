@@ -1313,15 +1313,15 @@ sub ArticleContentIndex {
     }
 
     my @ArticleBox = $Self->ArticleGet(
-        TicketID      => $Param{TicketID},
-        ArticleType   => $Param{ArticleType},
-        UserID        => $Param{UserID},
-        DynamicFields => $Param{DynamicFields},
-        Page          => $Param{Page},
-        Limit         => $Param{Limit},
-        ArticleTypeID => $Param{ArticleTypeID},
-        SenderTypeID  => $Param{ArticleSenderTypeID},
-        Order         => $Param{Order},
+        TicketID             => $Param{TicketID},
+        ArticleType          => $Param{ArticleType},
+        UserID               => $Param{UserID},
+        DynamicFields        => $Param{DynamicFields},
+        Page                 => $Param{Page},
+        Limit                => $Param{Limit},
+        ArticleTypeID        => $Param{ArticleTypeID},
+        ArticleSenderTypeID  => $Param{ArticleSenderTypeID},
+        Order                => $Param{Order},
     );
 
     # article attachments of each article
