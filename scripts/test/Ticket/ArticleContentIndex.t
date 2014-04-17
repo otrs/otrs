@@ -45,11 +45,11 @@ my @ArticleIDs;
 my %ArticleTypes = $TicketObject->ArticleTypeList(
     Result => 'HASH',
 );
-my @ArticleTypeIDs = (sort keys %ArticleTypes)[0..4];
+my @ArticleTypeIDs     = ( sort keys %ArticleTypes )[ 0 .. 4 ];
 my %ArticleSenderTypes = $TicketObject->ArticleSenderTypeList(
     Result => 'HASH',
 );
-my @SenderTypeIDs = (sort keys %ArticleSenderTypes)[0..1];
+my @SenderTypeIDs = ( sort keys %ArticleSenderTypes )[ 0 .. 1 ];
 
 for my $Number ( 1 .. 15 ) {
     my $ArticleID = $TicketObject->ArticleCreate(
@@ -143,7 +143,7 @@ $Self->Is(
     TicketID          => $TicketID,
     DynamicFieldields => 0,
     UserID            => 1,
-    ArticleTypeID     => [@ArticleTypeIDs[0, 1]],
+    ArticleTypeID     => [ @ArticleTypeIDs[ 0, 1 ] ],
 );
 
 $Self->Is(
@@ -152,11 +152,20 @@ $Self->Is(
     'Filtering by ArticleTypeID',
 );
 
+$Self->Is(
+    $TicketObject->ArticleCount(
+        TicketID => $TicketID,
+        ArticleTypeID => [ @ArticleTypeIDs[ 0, 1 ] ],
+    ),
+    6,
+    'ArticleCount is consistent with ArticleContentIndex (ArticleTypeID)',
+);
+
 @ArticleBox = $TicketObject->ArticleContentIndex(
     TicketID            => $TicketID,
     DynamicFieldields   => 0,
     UserID              => 1,
-    ArticleSenderTypeID => [$SenderTypeIDs[0]],
+    ArticleSenderTypeID => [ $SenderTypeIDs[0] ],
 );
 
 $Self->Is(
@@ -165,6 +174,40 @@ $Self->Is(
     'Filtering by ArticleSenderTypeID',
 );
 
+$Self->Is(
+    $TicketObject->ArticleCount(
+        TicketID            => $TicketID,
+        ArticleSenderTypeID => [ $SenderTypeIDs[0] ],
+    ),
+    7,
+    'ArticleCount is consistent with ArticleContentIndex (ArticleSenderTypeID)',
+);
+
+@ArticleBox = $TicketObject->ArticleContentIndex(
+    TicketID            => $TicketID,
+    DynamicFieldields   => 0,
+    UserID              => 1,
+    ArticleSenderTypeID => [ $SenderTypeIDs[0] ],
+    Limit               => 4,
+    Page                => 2,
+);
+
+$Self->Is(
+    scalar(@ArticleBox),
+    3,
+    'Filtering by ArticleSenderTypeID plus pagination',
+);
+
+$Self->Is(
+    $TicketObject->ArticlePage(
+        TicketID      => $TicketID,
+        ArticleID     => $ArticleIDs[13],
+        ArticleTypeID => [ $ArticleTypeIDs[ 13 % 5 ] ],
+        RowsPerPage   => 2,
+    ),
+    2,
+    'ArticlePage with filtering by ArticleTypeID',
+);
 
 # Cleanup
 $TicketObject->TicketDelete(
