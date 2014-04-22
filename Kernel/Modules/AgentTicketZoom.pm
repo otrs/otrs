@@ -547,6 +547,8 @@ sub MaskAgentZoom {
         );
     }
 
+    $Page ||= 1;
+
     my $Pages;
     if ($NeedPagination) {
         $Pages = ceil( $ArticleCount / $Limit );
