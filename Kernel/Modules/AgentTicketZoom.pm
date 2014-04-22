@@ -554,9 +554,13 @@ sub MaskAgentZoom {
 
     # add counter
     my $Count = ( $Page - 1 ) * $Limit;
+    my $ArticleIDFound = 0;
     for my $Article (@ArticleBox) {
         $Count++;
         $Article->{Count} = $Count;
+        if ( $Self->{ArticleID} && $Self->{ArticleID} == $Article->{ArticleID} ) {
+            $ArticleIDFound = 1;
+        }
     }
 
     my %ArticleFlags = $Self->{TicketObject}->ArticleFlagsOfTicketGet(
@@ -566,7 +570,7 @@ sub MaskAgentZoom {
 
     # get selected or last customer article
     my $ArticleID;
-    if ( $Self->{ArticleID} ) {
+    if ( $ArticleIDFound ) {
         $ArticleID = $Self->{ArticleID};
     }
     else {
