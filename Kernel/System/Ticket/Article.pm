@@ -1467,12 +1467,13 @@ sub ArticleGet {
             $ArticleTypeSQL = " AND sa.article_type_id IN ($ArticleTypeSQL)";
         }
     }
-    my $ArticleTypeIDSQL = $Self->{DBObject}->SQLForList(
-        Column      => 'sa.article_type_id',
-        Values      => $Param{ArticleTypeID},
-        Type        => 'Integer',
-        LeadingAND  => 1,
-    );
+    my $ArticleTypeIDSQL = '';
+    if ( IsArrayRefWithData $Param{ArticleTypeID} ) {
+        my $QuotedIDs = join ', ',
+                        map { $Self->{DBObject}->Quote($_, 'Integer') }
+                        @{ $Param{ArticleTypeID} };
+        $ArticleTypeIDSQL = " AND sa.article_type_id IN ($QuotedIDs)";
+    }
 
     # sender type lookup
     my $SenderTypeSQL = '';
@@ -1493,12 +1494,13 @@ sub ArticleGet {
         }
     }
 
-    my $SenderTypeIDSQL = $Self->{DBObject}->SQLForList(
-        Column      => 'sa.article_sender_type_id',
-        Values      => $Param{ArticleSenderTypeID},
-        Type        => 'Integer',
-        LeadingAND  => 1,
-    );
+    my $SenderTypeIDSQL;
+    if ( IsArrayRefWithData $Param{ArticleSenderTypeID} ) {
+        my $QuotedIDs = join ', ',
+                        map { $Self->{DBObject}->Quote($_, 'Integer') }
+                        @{ $Param{ArticleSenderTypeID} };
+        $SenderTypeIDSQL = " AND sa.article_sender_type_id IN ($QuotedIDs)";
+    }
 
     # sql query
     my @Content;
@@ -1918,20 +1920,17 @@ sub ArticleCount {
     }
 
     my $SQL = 'SELECT COUNT(id) FROM article WHERE ticket_id = ?';
-    $SQL .= $Self->{DBObject}->SQLForList(
-        Column      => 'article_type_id',
-        Values      => $Param{ArticleTypeID},
-        LeadingAND  => 1,
-        Type        => 'Integer',
-    );
-    $SQL .= $Self->{DBObject}->SQLForList(
-        Column      => 'article_sender_type_id',
-        Values      => $Param{ArticleSenderTypeID},
-        LeadingAND  => 1,
-        Type        => 'Integer',
-    );
-
     my @Bind = ( \$Param{TicketID} );
+    if ( IsArrayRefWithData $Param{ArticleTypeID} ) {
+        $SQL .= sprintf ' AND article_type_id IN (%s) ',
+                join ', ', ('?') x @{ $Param{ArticleTypeID} };
+        push @Bind, map { \$_ } @{ $Param{ArticleTypeID} };
+    }
+    if ( IsArrayRefWithData $Param{ArticleSenderTypeID} ) {
+        $SQL .= sprintf ' AND article_sender_type_id IN (%s) ',
+                join ', ', ('?') x @{ $Param{ArticleSenderTypeID} };
+        push @Bind, map { \$_ } @{ $Param{ArticleSenderTypeID} };
+    }
 
     if ( defined $Param{UpToArticleID} ) {
         $Self->{DBObject}->Prepare(

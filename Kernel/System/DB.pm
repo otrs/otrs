@@ -1463,55 +1463,6 @@ sub QueryStringEscape {
     return $Param{QueryString};
 }
 
-=item SQLForList()
-
-Generates a piece of SQL to check if a column is in a list of supplied values.
-Returns an empty string if C<Values> isn't an array reference with at
-least one element.
-
-    my $SQL = $DBObject->SQLForList(
-        Column  => 'id',
-        Values  => [1, 2, 3],
-        Type    => 'Integer',
-    );
-
-This generates a piece of SQL like
-
-    "id IN (1, 2, 3)"
-
-If the parameter C<< LeadingAND => 1 >> is also passed, the SQL looks like
-
-    "AND id IN (1, 2, 3)"
-
-suitable for concatenation with other WHERE-conditions
-
-=cut
-
-sub SQLForList {
-    my ( $Self, %Param ) = @_;
-
-    # check needed stuff
-    for my $Key (qw(Column)) {
-        if ( !defined $Param{$Key} ) {
-            $Self->{LogObject}->Log( Priority => 'error', Message => "Need $Key!" );
-            return;
-        }
-    }
-
-    if ( IsArrayRefWithData( $Param{Values} ) ) {
-        my @Quoted    = map { $Self->Quote($_, $Param{Type}) } @{ $Param{Values} };
-        my $QuotedStr = join ', ', @Quoted;
-        my $SQL       = "$Param{Column} in ($QuotedStr)";
-        if ( $Param{LeadingAND}) {
-            $SQL = "AND $SQL";
-        }
-        return $SQL;
-    }
-    else {
-        return '';
-    }
-}
-
 =begin Internal:
 
 =cut
