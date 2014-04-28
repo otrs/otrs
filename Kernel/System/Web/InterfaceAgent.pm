@@ -120,6 +120,7 @@ sub Run {
 
     # check if the browser sends the SessionID cookie and set the SessionID-cookie
     # as SessionID! GET or POST SessionID have the lowest priority.
+    my $BrowserHasCookie = 0;
     if ( $Self->{ConfigObject}->Get('SessionUseCookie') ) {
         $Param{SessionIDCookie} = $Self->{ParamObject}->GetCookie( Key => $Param{SessionName} );
         if ( $Param{SessionIDCookie} ) {
@@ -238,6 +239,17 @@ sub Run {
 
         # login is successful
         my %UserData = $Self->{UserObject}->GetUserData( User => $User, Valid => 1 );
+
+        # check if the browser supports cookies
+
+        if ( $Self->{ParamObject}->GetCookie( Key => 'OTRSBrowserHasCookie' ) ) {
+            $Kernel::OM->ObjectParamAdd(
+                LayoutObject => {
+                    BrowserHasCookie => 1,
+                },
+            );
+        }
+
 
         # check needed data
         if ( !$UserData{UserID} || !$UserData{UserLogin} ) {
