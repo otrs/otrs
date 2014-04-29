@@ -590,6 +590,7 @@ sub Login {
         # ( the session cookie isn't available at that time ).
         $Output .= "Set-Cookie: " . $Self->{ParamObject}->SetCookie(
             Key     => 'OTRSBrowserHasCookie',
+            Path    => $Self->{ConfigObject}->Get('ScriptAlias'),
             Value   => 1,
             Expires => '1y',
         );
