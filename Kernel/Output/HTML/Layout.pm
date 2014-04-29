@@ -588,11 +588,19 @@ sub Login {
         # always set a cookie, so that at the time the user submits
         # the password, we know already if the browser supports cookies.
         # ( the session cookie isn't available at that time ).
+        my $CookieSecureAttribute = 0;
+        if ( $Self->{ConfigObject}->Get('HttpType') eq 'https' ) {
+
+            # Restrict Cookie to HTTPS if it is used.
+            $CookieSecureAttribute = 1;
+        }
         $Output .= "Set-Cookie: " . $Self->{ParamObject}->SetCookie(
-            Key     => 'OTRSBrowserHasCookie',
-            Path    => $Self->{ConfigObject}->Get('ScriptAlias'),
-            Value   => 1,
-            Expires => '1y',
+            Key      => 'OTRSBrowserHasCookie',
+            Value    => 1,
+            Expires  => '1y',
+            Path     => $Self->{ConfigObject}->Get('ScriptAlias'),
+            Secure   => $CookieSecureAttribute,
+            HttpOnly => 1,
         );
     }
 
