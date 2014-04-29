@@ -3822,7 +3822,7 @@ sub RichTextDocumentServe {
 
     # build base url for inline images
     my $SessionID = '';
-    if ( $Self->{SessionID} && !$Self->{SessionIDCookie} && ! $Self->{BrowserHasCookie} ) {
+    if ( $Self->{SessionID} && !$Self->{SessionIDCookie} ) {
         $SessionID = ';' . $Self->{SessionName} . '=' . $Self->{SessionID};
     }
 
