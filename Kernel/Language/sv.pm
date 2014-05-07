@@ -1326,16 +1326,16 @@ sub Data {
         'Archive search option' => '',
         'Ticket Action' => '',
         'Set new service' => '',
-        'Set new Service Level Agreement' => '',
-        'Set new priority' => '',
-        'Set new queue' => '',
+        'Set new Service Level Agreement' => 'Ang nytt servicenivåavtal',
+        'Set new priority' => 'Ange ny prioritet',
+        'Set new queue' => 'Ange ny kö',
         'Set new state' => '',
         'Pending date' => 'Väntande datum',
         'Set new agent' => 'Ange ny handläggare',
         'new owner' => '',
         'new responsible' => '',
         'Set new ticket lock' => '',
-        'New customer' => '',
+        'New customer' => 'Ny kund',
         'New customer ID' => '',
         'New title' => '',
         'New type' => '',
@@ -2146,14 +2146,14 @@ sub Data {
         # Template: AdminSLA
         'SLA Management' => 'SLA',
         'Add SLA' => 'Lägg till SLA',
-        'Edit SLA' => '',
-        'Please write only numbers!' => '',
+        'Edit SLA' => 'Redigera SLA',
+        'Please write only numbers!' => 'Skriv bara siffror!',
 
         # Template: AdminSMIME
         'S/MIME Management' => 'S/MIME',
-        'Add certificate' => '',
-        'Add private key' => '',
-        'Filter for certificates' => '',
+        'Add certificate' => 'Lägg till certifikat',
+        'Add private key' => 'Lägg till privat nyckel',
+        'Filter for certificates' => 'Filter för certifikat',
         'Filter for SMIME certs' => '',
         'To show certificate details click on a certificate icon.' => '',
         'To manage private certificate relations click on a private key icon.' =>
@@ -2672,7 +2672,7 @@ sub Data {
         'Select this customer as the main customer.' => 'Sätt den här användaren som den primära användaren',
         'Remove Ticket Customer User' => '',
         'Get all' => 'Hämta alla',
-        'Text Template' => '',
+        'Text Template' => 'Textmall',
 
         # Template: AgentTicketEscalation
 
@@ -2689,8 +2689,8 @@ sub Data {
         # Template: AgentTicketMerge
         'Ticket Merge' => 'Slå samman',
         'You need to use a ticket number!' => 'Du måste ange ett ärendenummer!',
-        'A valid ticket number is required.' => '',
-        'Need a valid email address.' => '',
+        'A valid ticket number is required.' => 'Att giltigt ärendenummer krävs.',
+        'Need a valid email address.' => 'Behöver en giltig e-postadress.',
 
         # Template: AgentTicketMove
         'Move Ticket' => 'Flytta ärende',
@@ -2715,7 +2715,7 @@ sub Data {
         # Template: AgentTicketOverviewPreview
 
         # Template: AgentTicketOverviewSmall
-        'Reset overview' => '',
+        'Reset overview' => 'Återställ översikt',
         'Column Filters Form' => '',
 
         # Template: AgentTicketOwner
@@ -2743,8 +2743,8 @@ sub Data {
         # Template: AgentTicketPriority
 
         # Template: AgentTicketProcess
-        'Create New Process Ticket' => '',
-        'Process' => '',
+        'Create New Process Ticket' => 'Skapa nytt processärende',
+        'Process' => 'Process',
 
         # Template: AgentTicketProcessNavigationBar
 
@@ -2758,18 +2758,18 @@ sub Data {
         'Create New' => 'Skapa ny',
         'Profile link' => '',
         'Save changes in template' => '',
-        'Filters in use' => '',
-        'Additional filters' => '',
+        'Filters in use' => 'Använda filter',
+        'Additional filters' => 'Ytterligare filter',
         'Add another attribute' => 'Lägg till ett annat attribut',
         'Output' => 'Resultatbild',
         'Fulltext' => 'Fritext',
-        'Remove' => '',
+        'Remove' => 'Ta bort',
         'Searches in the attributes From, To, Cc, Subject and the article body, overriding other attributes with the same name.' =>
             'Sökningar i attributen Från, Till, CC, Ärende och meddelandetext åsidosätter andra attribut med samma namn.',
         'Customer User Login' => 'kundanvändare loginnamn',
         'Created in Queue' => 'Skapad i Kö',
         'Lock state' => '',
-        'Watcher' => '',
+        'Watcher' => 'Bevakare',
         'Article Create Time (before/after)' => '',
         'Article Create Time (between)' => '',
         'Ticket Create Time (before/after)' => '',
@@ -2830,11 +2830,11 @@ sub Data {
 
         # Template: CustomerFooter
         'Powered by' => 'Drivs av',
-        'One or more errors occurred!' => '',
-        'Close this dialog' => '',
+        'One or more errors occurred!' => 'Ett eller fler fel inträffade!',
+        'Close this dialog' => 'Stäng dialog',
         'Could not open popup window. Please disable any popup blockers for this application.' =>
-            '',
-        'There are currently no elements available to select from.' => '',
+            'Kund einte öppnapopupfönster. Avaktivera popupblockerare för denna applikation.',
+        'There are currently no elements available to select from.' => 'Det finns inga poster att välja just nu.',
 
         # Template: CustomerFooterSmall
 
@@ -2843,15 +2843,15 @@ sub Data {
         # Template: CustomerHeaderSmall
 
         # Template: CustomerLogin
-        'JavaScript Not Available' => '',
+        'JavaScript Not Available' => 'Javaskript är avstängt',
         'In order to experience OTRS, you\'ll need to enable JavaScript in your browser.' =>
-            '',
-        'Browser Warning' => '',
-        'The browser you are using is too old.' => '',
+            'För att OTRS ska fungera behöver javaskript vara påslaget i din webbläsare.',
+        'Browser Warning' => 'Browservarning',
+        'The browser you are using is too old.' => 'Din webbläsare är för gammal.',
         'OTRS runs with a huge lists of browsers, please upgrade to one of these.' =>
-            '',
+            'OTRS fungerar i många webbläsare. Uppdatera till en av dessa.',
         'Please see the documentation or ask your admin for further information.' =>
-            '',
+            'Läs dokumentationen eller kontakta en administratör för mer information.',
         'Login' => 'Inloggning',
         'User name' => 'Användarnamn',
         'Your user name' => 'Ditt användarnamn',
@@ -2861,13 +2861,13 @@ sub Data {
         'Not yet registered?' => '',
         'Request new password' => 'Be om nytt lösenord',
         'Your User Name' => 'Ditt användarnamn',
-        'A new password will be sent to your email address.' => '',
+        'A new password will be sent to your email address.' => 'Ett nytt lösenord kommer skickas till din e-postadress.',
         'Create Account' => 'Skapa konto',
-        'Please fill out this form to receive login credentials.' => '',
+        'Please fill out this form to receive login credentials.' => 'Fyll i detta formulär för att få dina inloggningsuppgifter.',
         'How we should address you' => '',
         'Your First Name' => 'Ditt förnamn',
         'Your Last Name' => 'Ditt efternamn',
-        'Your email address (this will become your username)' => '',
+        'Your email address (this will become your username)' => 'Din e-postadress (som blir ditt användarnamn)',
 
         # Template: CustomerNavigationBar
         'Edit personal preferences' => 'Ändra personliga inställningar',
