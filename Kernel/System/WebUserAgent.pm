@@ -13,6 +13,7 @@ use strict;
 use warnings;
 
 use HTTP::Headers;
+use List::Util qw(first);
 use LWP::UserAgent;
 
 use Kernel::System::Encode;
@@ -188,6 +189,20 @@ sub Request {
 
         # init agent
         my $UserAgent = LWP::UserAgent->new();
+
+        # set credentials
+        if ( $Param{Credentials} ) {
+            my %CredentialParams    = %{ $Param{Credentials} || {} };
+            my @Keys                = qw(Location Realm User Password);
+            my $AllCredentialParams = !first { !defined $_ }@CredentialParams{@Keys};
+
+            if ($AllCredentialParams) {
+                $UserAgent->credentials(
+                    @CredentialParams{@Keys},
+                );
+            }
+        }
+        
 
         # set headers
         if ( $Param{Header} ) {
