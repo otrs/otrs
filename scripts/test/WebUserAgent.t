@@ -139,6 +139,21 @@ my @Tests = (
         Return  => 'REQUEST',
         Matches => qr!Content-Type:\s+text/json!,
     },
+    {
+        Name    => 'GET - http - Credentials ' . $TestNumber++,
+        URL     => "http://jigsaw.w3.org/HTTP/Basic",
+        Timeout => '100',
+        Proxy   => $Proxy,
+        Success => '1',
+        Credentials  => {
+            User     => 'guest',
+            Password => 'guest',
+            Realm    => 'test',
+            Location => 'jigsaw.w3.org',
+        },
+        Return  => 'REQUEST',
+        Matches => qr!Your browser made it!,
+    },
 );
 
 # get repository list

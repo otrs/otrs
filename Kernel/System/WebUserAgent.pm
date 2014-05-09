@@ -139,6 +139,20 @@ You can even pass some headers
         },
     );
 
+If you need to set credentials
+
+    my %Response = $WebUserAgentObject->Request(
+        URL          => 'http://example.com/someurl',
+        Type         => 'POST',
+        Data         => [ Attribute => 'Value', Attribute => 'OtherValue' ],
+        Credentials  => {
+            User     => 'otrs_user',
+            Password => 'otrs_password',
+            Realm    => 'OTRS Unittests',
+            Location => 'ftp.otrs.org:80',
+        },
+    );
+
 =cut
 
 sub Request {
