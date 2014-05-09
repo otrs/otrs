@@ -244,7 +244,7 @@ for my $Test (@Tests) {
         if ( $Test->{Matches} ) {
             $Self->True(
                 ( ${ $Response{Content} } =~ $Test->{Matches} ) || undef,
-                "$Test->{Name} - Matches - $Response{Content}",
+                "$Test->{Name} - Matches",
             );
         }
     }
