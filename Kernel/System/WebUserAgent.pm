@@ -264,7 +264,7 @@ sub Request {
     if ( $Param{Return} && $Param{Return} eq 'REQUEST' ) {
         return (
             Status  => $Response->status_line(),
-            Content => $Response->request()->as_string(),
+            Content => \$Response->request()->as_string(),
         );
     }
 
