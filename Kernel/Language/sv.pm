@@ -265,14 +265,14 @@ sub Data {
         'Time Zone' => 'Tidszon',
         'Pending till' => 'Väntande tills',
         'Don\'t use the Superuser account to work with OTRS! Create new Agents and work with these accounts instead.' =>
-            'Använd inte superuser-kontot för att arbeta med OTRS! Skapa nya handläggare och arbeta med dom istället.',
+            'Använd inte superuserkontot för att arbeta med OTRS! Skapa nya handläggare och arbeta med dom istället.',
         'Dispatching by email To: field.' => 'Skickar iväg enligt e-postmeddelandets till-fält.',
         'Dispatching by selected Queue.' => 'Skickar iväg enligt vald kö.',
         'No entry found!' => 'Ingen inmatning funnen!',
         'Session invalid. Please log in again.' => 'Ogiltig session. Vänligen logga in igen.',
         'Session has timed out. Please log in again.' => 'Sessionstiden har löpt ut.  Vänligen logga in igen.',
         'Session limit reached! Please try again later.' => 'För många samtidiga sessioner! Försök igen senare.',
-        'No Permission!' => 'Ej Behörig!',
+        'No Permission!' => 'Ej behörig!',
         '(Click here to add)' => '(Klicka här för att lägga till)',
         'Preview' => 'Förhandsvisning',
         'Package not correctly deployed! Please reinstall the package.' =>
@@ -2090,12 +2090,12 @@ sub Data {
             '',
         'OTRS-ID' => '',
         'You don\'t have an OTRS-ID yet?' => '',
-        'Sign up now' => '',
-        'Forgot your password?' => '',
-        'Retrieve a new one' => '',
+        'Sign up now' => 'Registrera dig nu',
+        'Forgot your password?' => 'Glömt ditt lösenord?',
+        'Retrieve a new one' => 'Begär ett nytt',
         'This data will be frequently transferred to OTRS Group when you register this system.' =>
             '',
-        'Attribute' => '',
+        'Attribute' => 'Attribut',
         'FQDN' => '',
         'Optional description of this system.' => '',
         'This will allow the system to send additional support data information to OTRS Group.' =>
@@ -2858,13 +2858,13 @@ sub Data {
         'Your password' => 'Ditt lösenord',
         'Forgot password?' => 'Glömt lösenord?',
         'Log In' => 'Logga in',
-        'Not yet registered?' => '',
+        'Not yet registered?' => 'Har du inte registrerat dig än?',
         'Request new password' => 'Be om nytt lösenord',
         'Your User Name' => 'Ditt användarnamn',
         'A new password will be sent to your email address.' => 'Ett nytt lösenord kommer skickas till din e-postadress.',
         'Create Account' => 'Skapa konto',
         'Please fill out this form to receive login credentials.' => 'Fyll i detta formulär för att få dina inloggningsuppgifter.',
-        'How we should address you' => '',
+        'How we should address you' => 'Tilltal',
         'Your First Name' => 'Ditt förnamn',
         'Your Last Name' => 'Ditt efternamn',
         'Your email address (this will become your username)' => 'Din e-postadress (som blir ditt användarnamn)',
@@ -2878,7 +2878,7 @@ sub Data {
         # Template: CustomerRichTextEditor
 
         # Template: CustomerTicketMessage
-        'Service level agreement' => '',
+        'Service level agreement' => 'Servicenivåavtal',
 
         # Template: CustomerTicketOverview
         'Welcome!' => 'Välkommen!',
@@ -2886,8 +2886,8 @@ sub Data {
         'Create your first ticket' => 'Skapa ditt första ärende',
 
         # Template: CustomerTicketPrint
-        'Ticket Print' => '',
-        'Ticket Dynamic Fields' => '',
+        'Ticket Print' => 'Skriv ut ärende',
+        'Ticket Dynamic Fields' => 'Dynamiska fält i ärende',
 
         # Template: CustomerTicketProcess
 
@@ -2895,15 +2895,15 @@ sub Data {
 
         # Template: CustomerTicketSearch
         'Profile' => 'Profil',
-        'e. g. 10*5155 or 105658*' => '',
-        'Fulltext search in tickets (e. g. "John*n" or "Will*")' => '',
+        'e. g. 10*5155 or 105658*' => 't.ex. 10*5155 eller 105658*',
+        'Fulltext search in tickets (e. g. "John*n" or "Will*")' => 'Fulltextsök i ärenden (t.ex. "John*n" eller "Will*")',
         'Carbon Copy' => 'Kopia',
         'Types' => 'Typer',
         'Time restrictions' => 'Tidsrestriktioner',
         'No time settings' => 'Inga tidsinställningar',
         'Only tickets created' => 'Bara ärenden skapade',
         'Only tickets created between' => 'Bara ärenden skapade mellan',
-        'Ticket archive system' => '',
+        'Ticket archive system' => 'System för ärendearkivering',
         'Save search as template?' => 'Spara sökning som mall?',
         'Save as Template?' => 'Spara som mall?',
         'Save as Template' => 'Spara som mall',
@@ -2918,17 +2918,17 @@ sub Data {
         # Template: CustomerTicketSearchResultShort
         'of' => 'av',
         'Page' => 'Sida',
-        'Search Results for' => '',
+        'Search Results for' => 'Sökresultat för',
 
         # Template: CustomerTicketZoom
-        'Expand article' => '',
-        'Next Steps' => '',
+        'Expand article' => 'Expandera artikel',
+        'Next Steps' => 'Nästa steg',
         'Reply' => 'Svara',
 
         # Template: CustomerWarning
 
         # Template: DashboardEventsTicketCalendar
-        'All-day' => '',
+        'All-day' => 'Heldag',
         'Sunday' => 'Söndag',
         'Monday' => 'Måndag',
         'Tuesday' => 'Tisdag',
@@ -2944,21 +2944,21 @@ sub Data {
         'Fr' => 'Fr',
         'Sa' => 'Lö',
         'Event Information' => '',
-        'Ticket fields' => '',
-        'Dynamic fields' => '',
+        'Ticket fields' => 'Ärendefält',
+        'Dynamic fields' => 'Dynamiska fält',
 
         # Template: Datepicker
-        'Invalid date (need a future date)!' => '',
-        'Previous' => '',
-        'Open date selection' => '',
+        'Invalid date (need a future date)!' => 'Ogiltigt datum (måste vara i framtiden)!',
+        'Previous' => 'Föregående',
+        'Open date selection' => 'Öppna datumväljare',
 
         # Template: Error
-        'Oops! An Error occurred.' => '',
-        'Error Message' => '',
-        'You can' => '',
-        'Send a bugreport' => '',
+        'Oops! An Error occurred.' => 'Hoppsan! Ett fel har inträffat.',
+        'Error Message' => 'Felmeddelande',
+        'You can' => 'Du kan',
+        'Send a bugreport' => 'Skicka en buggrapport',
         'go back to the previous page' => 'gå tillbaka till föregående sida',
-        'Error Details' => '',
+        'Error Details' => 'Detaljer',
 
         # Template: Footer
         'Top of page' => 'Överst på sidan',
@@ -2984,67 +2984,67 @@ sub Data {
         # Template: HeaderSmall
 
         # Template: Installer
-        'JavaScript not available' => '',
-        'Database Settings' => '',
+        'JavaScript not available' => 'Javaskript är inte konfigurerat',
+        'Database Settings' => 'Databasinställningar',
         'General Specifications and Mail Settings' => '',
         'Welcome to %s' => 'Välkommen till %s',
-        'Web site' => '',
-        'Mail check successful.' => '',
-        'Error in the mail settings. Please correct and try again.' => '',
+        'Web site' => 'Webbplats',
+        'Mail check successful.' => 'Mailkontroll genomförd.',
+        'Error in the mail settings. Please correct and try again.' => 'Fel i e-postinställningarna. Justera och försök igen.',
 
         # Template: InstallerConfigureMail
-        'Configure Outbound Mail' => '',
-        'Outbound mail type' => '',
-        'Select outbound mail type.' => '',
-        'Outbound mail port' => '',
-        'Select outbound mail port.' => '',
-        'SMTP host' => '',
-        'SMTP host.' => '',
-        'SMTP authentication' => '',
-        'Does your SMTP host need authentication?' => '',
-        'SMTP auth user' => '',
-        'Username for SMTP auth.' => '',
-        'SMTP auth password' => '',
-        'Password for SMTP auth.' => '',
-        'Configure Inbound Mail' => '',
-        'Inbound mail type' => '',
-        'Select inbound mail type.' => '',
-        'Inbound mail host' => '',
-        'Inbound mail host.' => '',
-        'Inbound mail user' => '',
-        'User for inbound mail.' => '',
-        'Inbound mail password' => '',
-        'Password for inbound mail.' => '',
-        'Result of mail configuration check' => '',
-        'Check mail configuration' => '',
-        'Skip this step' => '',
+        'Configure Outbound Mail' => 'Ställ in utgående e-post',
+        'Outbound mail type' => 'Utgående e-post - typ',
+        'Select outbound mail type.' => 'Välj typ för utgående e-post',
+        'Outbound mail port' => 'Utgående e-post port',
+        'Select outbound mail port.' => 'Väljt port för utgående e-post',
+        'SMTP host' => 'SMTP-server',
+        'SMTP host.' => 'SMTP-server.',
+        'SMTP authentication' => 'SMTP autentisering',
+        'Does your SMTP host need authentication?' => 'Kräver den SMTP-server autentisering?',
+        'SMTP auth user' => 'Användare SMTP-server',
+        'Username for SMTP auth.' => 'Användarnamn för SMTP-autentisering.',
+        'SMTP auth password' => 'Lösenord',
+        'Password for SMTP auth.' => 'Lösenordet för SMTP-autentisering',
+        'Configure Inbound Mail' => 'Ställ in inkommande e-post',
+        'Inbound mail type' => 'Inkommande e-post - typ',
+        'Select inbound mail type.' => 'Välj typ av inkommande e-post',
+        'Inbound mail host' => 'Mailserver',
+        'Inbound mail host.' => 'Mailserver.',
+        'Inbound mail user' => 'Användare inkommande e-post',
+        'User for inbound mail.' => 'Användare för inkommande e-post',
+        'Inbound mail password' => 'Lösenord',
+        'Password for inbound mail.' => 'Lösenord till användaren för inkommande e-post',
+        'Result of mail configuration check' => 'Resultat - kontroll av e-postinställningar',
+        'Check mail configuration' => 'Testa inställningarna',
+        'Skip this step' => 'Hoppa öcer detta steg',
 
         # Template: InstallerDBResult
-        'Database setup successful!' => '',
+        'Database setup successful!' => 'Databaskonfiguration gick bra!',
 
         # Template: InstallerDBStart
-        'Install Type' => '',
-        'Create a new database for OTRS' => '',
-        'Use an existing database for OTRS' => '',
+        'Install Type' => 'Installationstyp',
+        'Create a new database for OTRS' => 'Skapa en ny databas för OTRS',
+        'Use an existing database for OTRS' => 'Använd en existerande databas för OTRS',
 
         # Template: InstallerDBmssql
-        'Database name' => '',
-        'Check database settings' => '',
-        'Result of database check' => '',
-        'Database check successful.' => '',
-        'Database User' => '',
+        'Database name' => 'Databasnamn',
+        'Check database settings' => 'Kontrollera databasinställningar',
+        'Result of database check' => 'Resultat - test av databasinställningar',
+        'Database check successful.' => 'Databastest gick bra.',
+        'Database User' => 'Databasanvändare',
         'New' => 'Nytt',
         'A new database user with limited permissions will be created for this OTRS system.' =>
-            '',
-        'Repeat Password' => '',
-        'Generated password' => '',
+            'En ny databasanvändare med begränsad behörighet kommer att skapas för detta OTRS-system.',
+        'Repeat Password' => 'Repetera lösenordet',
+        'Generated password' => 'Skapat lösenord',
 
         # Template: InstallerDBmysql
-        'Passwords do not match' => '',
+        'Passwords do not match' => 'Lösenorden stämmer inte överens',
 
         # Template: InstallerDBoracle
-        'SID' => '',
-        'Port' => '',
+        'SID' => 'SID',
+        'Port' => 'Port',
 
         # Template: InstallerDBpostgresql
 
@@ -3057,8 +3057,8 @@ sub Data {
         'Your OTRS Team' => 'Ditt OTRS-Team',
 
         # Template: InstallerLicense
-        'Accept license' => 'Acceptera licens',
-        'Don\'t accept license' => 'Acceptera inte licens',
+        'Accept license' => 'Acceptera licensvillkor',
+        'Don\'t accept license' => 'Acceptera inte licensvillkor',
 
         # Template: InstallerLicenseText
 
@@ -3088,28 +3088,28 @@ sub Data {
 
         # Template: Login
         'Lost your password?' => 'Glömt lösenordet?',
-        'Request New Password' => '',
-        'Back to login' => '',
+        'Request New Password' => 'Begär nytt lösenord',
+        'Back to login' => 'Tillbaka till inloggning',
 
         # Template: Motd
-        'Message of the Day' => '',
+        'Message of the Day' => 'Dagens meddelande',
 
         # Template: NoPermission
-        'Insufficient Rights' => '',
-        'Back to the previous page' => '',
+        'Insufficient Rights' => 'Otillräcklig behörighet',
+        'Back to the previous page' => 'Tillbaka till föregående sida',
 
         # Template: Notify
 
         # Template: Pagination
-        'Show first page' => '',
-        'Show previous pages' => '',
-        'Show page %s' => '',
-        'Show next pages' => '',
-        'Show last page' => '',
+        'Show first page' => 'Visa första sidan',
+        'Show previous pages' => 'Visa föregående sidor',
+        'Show page %s' => 'Visa sida %s',
+        'Show next pages' => 'Visa följande sidor',
+        'Show last page' => 'Visa sista sidan',
 
         # Template: PictureUpload
         'Need FormID!' => '',
-        'No file found!' => '',
+        'No file found!' => 'Filen hittades inte!',
         'The file is not an image that can be shown inline!' => '',
 
         # Template: PrintFooter
@@ -3316,7 +3316,7 @@ sub Data {
         'Controls if the ticket and article seen flags are removed when a ticket is archived.' =>
             '',
         'Converts HTML mails into text messages.' => 'Konvertera HTML-mail till textmeddelanden.',
-        'Create New process ticket' => '',
+        'Create New process ticket' => 'Skapa nytt processärende',
         'Create and manage Service Level Agreements (SLAs).' => '',
         'Create and manage agents.' => 'Skapa och hantera handläggare.',
         'Create and manage attachments.' => 'Skapa och hantera bilagor.',
