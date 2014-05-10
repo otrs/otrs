@@ -1310,41 +1310,41 @@ sub Data {
         'No pending time settings.' => 'Inga Avvaktar-Tider',
         'Ticket pending time reached' => 'Ärende väntetid nådd',
         'Ticket pending time reached between' => 'Ärende väntetid nådd mellan',
-        'Escalation times' => '',
-        'No escalation time settings.' => 'Inga Eskalerings-Tider',
-        'Ticket escalation time reached' => 'Ärende Eskaleringstid nådd',
-        'Ticket escalation time reached between' => 'Ärende Eskaleringstid nådd mellan',
-        'Escalation - first response time' => '',
-        'Ticket first response time reached' => 'Ärende första responstid nådd',
-        'Ticket first response time reached between' => 'Ärende första responstid nådd mellan',
-        'Escalation - update time' => '',
-        'Ticket update time reached' => 'Ärende uppdateringstid nådd',
-        'Ticket update time reached between' => 'Ärende uppdaterings tid nådd mellan',
-        'Escalation - solution time' => '',
-        'Ticket solution time reached' => 'Ärende lösningstid nådd',
-        'Ticket solution time reached between' => 'Ärende lösningstid nådd mellan',
+        'Escalation times' => 'Eskaleringstider',
+        'No escalation time settings.' => 'Inga eskaleringstider är definierade',
+        'Ticket escalation time reached' => 'Ärendets eskaleringstid nådd',
+        'Ticket escalation time reached between' => 'Ärendets eskaleringstid nådd mellan',
+        'Escalation - first response time' => 'Eskalering - tid till första svar',
+        'Ticket first response time reached' => 'Ärendets första svarstid nådd',
+        'Ticket first response time reached between' => 'Ärendets första svarstid nådd mellan',
+        'Escalation - update time' => 'Eskalering - uppdatering',
+        'Ticket update time reached' => 'Ärendets uppdateringstid nådd',
+        'Ticket update time reached between' => 'Ärendets uppdateringstid nådd mellan',
+        'Escalation - solution time' => 'Eskalering - tid till lösning',
+        'Ticket solution time reached' => 'Ärendets lösningstid nådd',
+        'Ticket solution time reached between' => 'Ärendets lösningstid nådd mellan',
         'Archive search option' => '',
-        'Ticket Action' => '',
-        'Set new service' => '',
-        'Set new Service Level Agreement' => 'Ang nytt servicenivåavtal',
+        'Ticket Action' => 'Ärendeåtgärd',
+        'Set new service' => 'Ange ny tjänst',
+        'Set new Service Level Agreement' => 'Ange nytt servicenivåavtal',
         'Set new priority' => 'Ange ny prioritet',
         'Set new queue' => 'Ange ny kö',
-        'Set new state' => '',
+        'Set new state' => 'Ange ny status',
         'Pending date' => 'Väntande datum',
         'Set new agent' => 'Ange ny handläggare',
-        'new owner' => '',
-        'new responsible' => '',
+        'new owner' => 'ny ägare',
+        'new responsible' => 'ny ansvarig',
         'Set new ticket lock' => '',
         'New customer' => 'Ny kund',
-        'New customer ID' => '',
-        'New title' => '',
-        'New type' => '',
-        'New Dynamic Field Values' => '',
+        'New customer ID' => 'Nytt kund-ID',
+        'New title' => 'Ny titel',
+        'New type' => 'Ny typ',
+        'New Dynamic Field Values' => 'Nytt värde för dynamiskt fält',
         'Archive selected tickets' => '',
         'Add Note' => 'Lägg till anteckning',
         'Time units' => 'Tidsenheter',
-        '(work units)' => '',
-        'Ticket Commands' => '',
+        '(work units)' => '(arbetsenheter)',
+        'Ticket Commands' => 'Ärendekommandon',
         'Send agent/customer notifications on changes' => 'Meddela handläggare/kund när ändringar sker',
         'CMD' => 'CMD',
         'This command will be executed. ARG[0] will be the ticket number. ARG[1] the ticket id.' =>
@@ -1355,27 +1355,27 @@ sub Data {
         'Execute Custom Module' => '',
         'Param %s key' => '',
         'Param %s value' => '',
-        'Save Changes' => '',
+        'Save Changes' => 'Spara ändringar',
         'Results' => 'Resultat',
         '%s Tickets affected! What do you want to do?' => '',
         'Warning: You used the DELETE option. All deleted tickets will be lost!' =>
             '',
-        'Edit job' => '',
-        'Run job' => '',
-        'Affected Tickets' => '',
+        'Edit job' => 'Redigera jobb',
+        'Run job' => 'Kör jobb',
+        'Affected Tickets' => 'Berörda ärenden',
 
         # Template: AdminGenericInterfaceDebugger
         'GenericInterface Debugger for Web Service %s' => '',
         'Web Services' => '',
-        'Debugger' => '',
+        'Debugger' => 'Debugger',
         'Go back to web service' => '',
-        'Clear' => '',
+        'Clear' => 'Rensa',
         'Do you really want to clear the debug log of this web service?' =>
             '',
         'Request List' => '',
         'Time' => 'Tid',
-        'Remote IP' => '',
-        'Loading' => '',
+        'Remote IP' => 'Fjärr-IP',
+        'Loading' => 'Laddar',
         'Select a single request to see its details.' => '',
         'Filter by type' => '',
         'Filter from' => '',
@@ -1508,14 +1508,14 @@ sub Data {
         'Certification Authority (CA) Directory' => '',
         'The full path of the certification authority directory where the CA certificates are stored in the file system.' =>
             '',
-        'e.g. /opt/otrs/var/certificates/SOAP/CA' => '',
-        'Proxy Server' => '',
+        'e.g. /opt/otrs/var/certificates/SOAP/CA' => 't.ex. /opt/otrs/var/certificates/SOAP/CA',
+        'Proxy Server' => 'Proxyserver',
         'URI of a proxy server to be used (if needed).' => '',
         'e.g. http://proxy_hostname:8080' => '',
-        'Proxy User' => '',
-        'The user name to be used to access the proxy server.' => '',
-        'Proxy Password' => '',
-        'The password for the proxy user.' => '',
+        'Proxy User' => 'Användarnamn',
+        'The user name to be used to access the proxy server.' => 'Användarnamnet som behövs för proxyservern',
+        'Proxy Password' => 'Lösenord',
+        'The password for the proxy user.' => 'Lösenordet för användaren',
 
         # Template: AdminGenericInterfaceWebservice
         'GenericInterface Web Service Management' => '',
@@ -1581,16 +1581,16 @@ sub Data {
 
         # Template: AdminGroup
         'WARNING: When you change the name of the group \'admin\', before making the appropriate changes in the SysConfig, you will be locked out of the administrations panel! If this happens, please rename the group back to admin per SQL statement.' =>
-            'VARNING: När du ändrar namnet på gruppen \'admin\', innan du gör lämpliga ändringar i SysConfig, kommer du låsas ut ur administrationspanelen! Om detta inträffar, döp om grubben tillbaka till admin via SQL. ',
+            'VARNING: När du ändrar namnet på gruppen \'admin\', innan du gör ändringar i SysConfig, kommer du låsas ut från administrationspanelen! Om detta inträffar, döp om gruppen tillbaka till admin via SQL. ',
         'Group Management' => 'grupphantering',
-        'Add group' => '',
+        'Add group' => 'Lägg till grupp',
         'The admin group is to get in the admin area and the stats group to get stats area.' =>
             '\'admin\'-gruppen ger tillgång till Admin-arean, \'stats\'-gruppen till Statistik-arean.',
         'Create new groups to handle access permissions for different groups of agent (e. g. purchasing department, support department, sales department, ...). ' =>
             '',
         'It\'s useful for ASP solutions. ' => '',
-        'Add Group' => 'Lägg till Grupp',
-        'Edit Group' => '',
+        'Add Group' => 'Lägg till grupp',
+        'Edit Group' => 'Redigera grupp',
 
         # Template: AdminLog
         'System Log' => 'Systemlogg',
@@ -1747,7 +1747,7 @@ sub Data {
             'Om du bara vill hantera e-postadressen, använd EMAILADDRESS:info@example.com i Från, Till eller CC.',
         'If you use Regular Expressions, you also can use the matched value in () as [***] in the \'Set\' action.' =>
             '',
-        'Delete this filter' => '',
+        'Delete this filter' => 'Radera detta filter!',
         'Add PostMaster Filter' => '',
         'Edit PostMaster Filter' => '',
         'The name is required.' => '',
@@ -1833,7 +1833,7 @@ sub Data {
         'Customer interface does not support internal article types.' => '',
 
         # Template: AdminProcessManagementPath
-        'Path' => '',
+        'Path' => 'Sökväg',
         'Edit this transition' => '',
         'Transition Actions' => '',
         'You can assign Transition Actions to this Transition by dragging the elements with the mouse from the left list to the right list.' =>
@@ -1846,7 +1846,7 @@ sub Data {
         # Template: AdminProcessManagementPopupResponse
 
         # Template: AdminProcessManagementProcessAccordion
-        'Activities' => '',
+        'Activities' => 'Aktiviteter',
         'Filter Activities...' => '',
         'Create New Activity' => '',
         'Filter Activity Dialogs...' => '',
@@ -1856,7 +1856,7 @@ sub Data {
         'Filter Transition Actions...' => '',
 
         # Template: AdminProcessManagementProcessEdit
-        'Edit Process' => '',
+        'Edit Process' => 'Redigera process',
         'Print process information' => '',
         'Delete Process' => '',
         'Delete Inactive Process' => '',
@@ -1871,7 +1871,7 @@ sub Data {
             '',
         'Actions can be assigned to a Transition by dropping the Action Element onto the label of a Transition.' =>
             '',
-        'Edit Process Information' => '',
+        'Edit Process Information' => 'Redigera processinformation',
         'The selected state does not exist.' => '',
         'Add and Edit Activities, Activity Dialogs and Transitions' => '',
         'Show EntityIDs' => '',
@@ -2088,7 +2088,7 @@ sub Data {
             '',
         'You need to log in with your OTRS-ID to deregister your system.' =>
             '',
-        'OTRS-ID' => '',
+        'OTRS-ID' => 'OTRS-ID',
         'You don\'t have an OTRS-ID yet?' => '',
         'Sign up now' => 'Registrera dig nu',
         'Forgot your password?' => 'Glömt ditt lösenord?',
@@ -2096,31 +2096,31 @@ sub Data {
         'This data will be frequently transferred to OTRS Group when you register this system.' =>
             '',
         'Attribute' => 'Attribut',
-        'FQDN' => '',
-        'Optional description of this system.' => '',
+        'FQDN' => 'FQDN',
+        'Optional description of this system.' => 'Alternativ beskrivning av detta system',
         'This will allow the system to send additional support data information to OTRS Group.' =>
             '',
-        'Service Center' => '',
+        'Service Center' => 'Servicecenter',
         'Support Data Management' => '',
-        'Register' => '',
-        'Deregister System' => '',
+        'Register' => 'Registrera',
+        'Deregister System' => 'Avregistrera system',
         'Continuing with this step will deregister the system from OTRS Group.' =>
-            '',
-        'Deregister' => '',
-        'You can modify registration settings here.' => '',
+            'Om du fortsätter kommer du avregistrera detta system från OTRS-gruppen.',
+        'Deregister' => 'Avregistrera',
+        'You can modify registration settings here.' => 'Du kan ändra registreringsinställningarna här.',
 
         # Template: AdminRole
-        'Role Management' => 'Roller',
-        'Add role' => '',
+        'Role Management' => 'Hantera roller',
+        'Add role' => 'Lägg till roll',
         'Create a role and put groups in it. Then add the role to the users.' =>
             'Skapa en roll och lägg grupper i den. Lägg sedan till rollen till användare.',
         'There are no roles defined. Please use the \'Add\' button to create a new role.' =>
             '',
-        'Add Role' => 'Lägg till Roll',
-        'Edit Role' => '',
+        'Add Role' => 'Lägg till roll',
+        'Edit Role' => 'Redigera roll',
 
         # Template: AdminRoleGroup
-        'Manage Role-Group Relations' => '',
+        'Manage Role-Group Relations' => 'Hantera Roll-grupp-kopplingar',
         'Filter for Roles' => '',
         'Select the role:group permissions.' => '',
         'If nothing is selected, then there are no permissions in this group (tickets will not be available for the role).' =>
@@ -2150,7 +2150,7 @@ sub Data {
         'Please write only numbers!' => 'Skriv bara siffror!',
 
         # Template: AdminSMIME
-        'S/MIME Management' => 'S/MIME',
+        'S/MIME Management' => 'Hantera S/MIME',
         'Add certificate' => 'Lägg till certifikat',
         'Add private key' => 'Lägg till privat nyckel',
         'Filter for certificates' => 'Filtrera certifikat',
@@ -2165,15 +2165,15 @@ sub Data {
             'På det här sättet kan du redigera certifikat och nycklar på filsystemet.',
         'Hash' => 'Hash',
         'Handle related certificates' => '',
-        'Read certificate' => '',
-        'Delete this certificate' => '',
+        'Read certificate' => 'Läs certifikat',
+        'Delete this certificate' => 'Radera detta certifikat',
         'Add Certificate' => 'Lägg till Certifikat',
         'Add Private Key' => 'Lägg till Privat Nyckel',
         'Secret' => 'Hemlighet',
-        'Related Certificates for' => '',
-        'Delete this relation' => '',
-        'Available Certificates' => '',
-        'Relate this certificate' => '',
+        'Related Certificates for' => 'Relaterade certifikat för',
+        'Delete this relation' => 'Ta bort denna koppling',
+        'Available Certificates' => 'Tillgängliga certifikat',
+        'Relate this certificate' => 'Koppla detta certifikat',
 
         # Template: AdminSMIMECertRead
         'SMIME Certificate' => 'SMIME-certifikat',
@@ -2209,7 +2209,7 @@ sub Data {
         'There is at least one parameter missing for the binding. Please check it.' =>
             '',
         'Result format' => '',
-        'Run Query' => '',
+        'Run Query' => 'Kör fråga',
 
         # Template: AdminService
         'Service Management' => 'Hantera tjänster',
@@ -2223,8 +2223,8 @@ sub Data {
             '',
         'You can manually trigger the Support Data sending by pressing this button:' =>
             '',
-        'Send Update' => '',
-        'Sending Update...' => '',
+        'Send Update' => 'Skicka uppdatering',
+        'Sending Update...' => 'Skickar uppdatering',
         'Support Data information was successfully sent.' => '',
         'Was not possible to send Support Data information.' => '',
         'Update Result' => '',
@@ -2250,7 +2250,7 @@ sub Data {
         'Detail View for SessionID' => '',
 
         # Template: AdminSignature
-        'Signature Management' => 'Signaturer',
+        'Signature Management' => 'Hantera signaturer',
         'Add signature' => 'Lägg till signatur',
         'Add Signature' => 'Lägg till signatur',
         'Edit Signature' => 'Redigera signatur',
@@ -2269,7 +2269,7 @@ sub Data {
         'Navigate by searching in %s settings' => '',
         'Navigate by selecting config groups' => '',
         'Download all system config changes' => '',
-        'Export settings' => '',
+        'Export settings' => 'Exportera inställningar',
         'Load SysConfig settings from file' => '',
         'Import settings' => '',
         'Import Settings' => '',
@@ -2278,7 +2278,7 @@ sub Data {
         'Elements' => 'Element',
 
         # Template: AdminSysConfigEdit
-        'Edit Config Settings' => '',
+        'Edit Config Settings' => 'Redigera inställningar',
         'This config item is only available in a higher config level!' =>
             '',
         'Reset this setting' => '',
@@ -2305,22 +2305,22 @@ sub Data {
         'Block' => 'Blockera',
         'AccessKey' => 'ÅtkomstTangent',
         'Add NavBar entry' => '',
-        'Year' => '',
-        'Month' => '',
-        'Day' => '',
+        'Year' => 'År',
+        'Month' => 'Månad',
+        'Day' => 'Dag',
         'Invalid year' => '',
         'Invalid month' => '',
         'Invalid day' => '',
         'Show more' => '',
 
         # Template: AdminSystemAddress
-        'System Email Addresses Management' => 'System-emailadresser',
-        'Add system address' => '',
+        'System Email Addresses Management' => 'System-e-postadresser',
+        'Add system address' => 'Lägg till e-postadress',
         'All incoming email with this address in To or Cc will be dispatched to the selected queue.' =>
             '',
-        'Email address' => '',
-        'Display name' => '',
-        'Add System Email Address' => '',
+        'Email address' => 'E-postadress',
+        'Display name' => 'Visningsnamn',
+        'Add System Email Address' => 'Lägg till e-postadress för system',
         'Edit System Email Address' => '',
         'The display name and email address will be shown on mail you send.' =>
             '',
@@ -2410,8 +2410,8 @@ sub Data {
         'in' => 'om',
 
         # Template: AgentDashboardCommon
-        'Available Columns' => '',
-        'Visible Columns (order by drag & drop)' => '',
+        'Available Columns' => 'Tillgängliga kolumner',
+        'Visible Columns (order by drag & drop)' => 'Synliga kolumner (dra och släpp för att ändra ordning)',
 
         # Template: AgentDashboardCustomerCompanyInformation
 
@@ -2633,32 +2633,32 @@ sub Data {
             '',
         'Next ticket state' => 'Nästa ärendestatus',
         'Inform sender' => 'Informera avsändare',
-        'Send mail' => 'Skicka e-post!',
+        'Send mail' => 'Skicka e-post',
 
         # Template: AgentTicketBulk
-        'Ticket Bulk Action' => 'Ärendemassförändring',
+        'Ticket Bulk Action' => 'Ändra ärenden i bulk',
         'Send Email' => 'Skicka e-post',
         'Merge to' => 'Slå samman med',
-        'Invalid ticket identifier!' => '',
+        'Invalid ticket identifier!' => 'Ogiltitg ärende-ID!',
         'Merge to oldest' => 'Slå samman till äldsta',
         'Link together' => 'Länka',
-        'Link to parent' => '',
-        'Unlock tickets' => '',
+        'Link to parent' => 'Länka till förälder',
+        'Unlock tickets' => 'Lås upp ärenden',
 
         # Template: AgentTicketClose
 
         # Template: AgentTicketCompose
         'Compose answer for ticket' => 'Författa svar till ärende',
-        'Please include at least one recipient' => '',
-        'Remove Ticket Customer' => '',
+        'Please include at least one recipient' => 'Ange minst en mottagare',
+        'Remove Ticket Customer' => 'Ta bort kund från ärendet',
         'Please remove this entry and enter a new one with the correct value.' =>
             '',
-        'Remove Cc' => '',
-        'Remove Bcc' => '',
+        'Remove Cc' => 'Ta bort CC',
+        'Remove Bcc' => 'Ta bort BCC',
         'Address book' => 'Adressbok',
         'Pending Date' => 'Väntar till',
         'for pending* states' => 'för väntetillstånd',
-        'Date Invalid!' => '',
+        'Date Invalid!' => 'Ogiltigt datum!',
 
         # Template: AgentTicketCustomer
         'Change customer of ticket' => 'Ändra kund för ärende',
@@ -2683,8 +2683,8 @@ sub Data {
 
         # Template: AgentTicketHistory
         'History of' => 'Historik för',
-        'History Content' => '',
-        'Zoom view' => '',
+        'History Content' => 'Historik',
+        'Zoom view' => 'Detaljvy',
 
         # Template: AgentTicketMerge
         'Ticket Merge' => 'Slå samman',
@@ -2790,36 +2790,36 @@ sub Data {
         # Template: AgentTicketSearchResultPrint
 
         # Template: AgentTicketZoom
-        'Article filter' => '',
+        'Article filter' => 'Artikelfilter',
         'Article Type' => 'Artikeltyp',
-        'Sender Type' => '',
+        'Sender Type' => 'Avsändare - typ',
         'Save filter settings as default' => 'Spara filterinställningar som standard',
-        'Archive' => '',
-        'This ticket is archived.' => '',
+        'Archive' => 'Arkivera',
+        'This ticket is archived.' => 'Detta ärende är arkiverat.',
         'Locked' => 'Låst',
-        'Linked Objects' => '',
-        'Article(s)' => '',
-        'Change Queue' => '',
+        'Linked Objects' => 'Länkade objekt',
+        'Article(s)' => 'Artiklar',
+        'Change Queue' => 'Ändra kö',
         'There are no dialogs available at this point in the process.' =>
-            '',
+            'Det finns inga dialogrutor i denna del av processen.',
         'This item has no articles yet.' => '',
-        'Add Filter' => '',
+        'Add Filter' => 'Lägg till filter',
         'Set' => 'Använd',
-        'Reset Filter' => '',
+        'Reset Filter' => 'Återställ filter',
         'Show one article' => 'Visa en artikel',
         'Show all articles' => 'Visa alla artiklar',
         'Unread articles' => 'Olästa artiklar',
-        'No.' => '',
+        'No.' => 'Nej.',
         'Important' => 'Viktigt',
         'Unread Article!' => 'Oläst artikel!',
         'Incoming message' => 'Inkommande meddelande',
         'Outgoing message' => 'Utgående meddelande',
         'Internal message' => 'Internt meddelande',
-        'Resize' => '',
+        'Resize' => 'Storleksändra',
 
         # Template: AttachmentBlocker
         'To protect your privacy, remote content was blocked.' => '',
-        'Load blocked content.' => '',
+        'Load blocked content.' => 'Ladda blockerat innehåll.',
 
         # Template: Copyright
 
@@ -3073,18 +3073,18 @@ sub Data {
         'Log' => 'Logg',
         'LogModule' => 'LoggningsModul',
         'Log backend to use.' => '',
-        'LogFile' => '',
+        'LogFile' => 'Loggfil',
         'Webfrontend' => 'Webb-gränssnitt',
-        'Default language' => '',
-        'Default language.' => '',
-        'CheckMXRecord' => 'KontrolleraMXFält',
+        'Default language' => 'Förvalt språk',
+        'Default language.' => 'Förvalt språk.',
+        'CheckMXRecord' => 'Kontrollera MX-fält',
         'Email addresses that are manually entered are checked against the MX records found in DNS. Don\'t use this option if your DNS is slow or does not resolve public addresses.' =>
-            '',
+            'E-postadresser som anges för hand kontrolleras mot MX-poster i DNS. Använd inte detta alternativ om din DNS-server är långsam eller om den inte klarar av att resolva publika adresser.',
 
         # Template: LinkObject
         'Object#' => '',
-        'Add links' => '',
-        'Delete links' => '',
+        'Add links' => 'Lägg till länkar',
+        'Delete links' => 'Radera länkar',
 
         # Template: Login
         'Lost your password?' => 'Glömt lösenordet?',
