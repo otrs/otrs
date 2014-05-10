@@ -831,7 +831,7 @@ sub Data {
         'Edit Customer Company' => 'Redigera Kundföretag',
         'Bulk Action' => 'Massförändring',
         'Bulk Actions on Tickets' => 'Massförändring av Ärenden',
-        'Send Email and create a new Ticket' => 'Skicka E-post och skapa nytt Ärende',
+        'Send Email and create a new Ticket' => 'Skicka E-post och skapa nytt ärende',
         'Create new Email Ticket and send this out (Outbound)' => 'Skapa nytt e-postärende och skicka detta (utgående)',
         'Create new Phone Ticket (Inbound)' => 'Skapa nytt telefonärende (Inkommande)',
         'Address %s replaced with registered customer address.' => '',
@@ -870,12 +870,12 @@ sub Data {
         'Shown Columns' => 'Visa kolumner',
         'Your email with ticket number "<OTRS_TICKET>" is merged to "<OTRS_MERGE_TO_TICKET>".' =>
             'Ditt e-postärende med nummer "<OTRS_TICKET>" har slagits samman med "<OTRS_MERGE_TO_TICKET>".',
-        'Ticket %s: first response time is over (%s)!' => 'Ärende %s: första åtgärdstid har passerats (%s)!',
-        'Ticket %s: first response time will be over in %s!' => 'Ärende %s: första åtgärdstid har passerats om %s!',
+        'Ticket %s: first response time is over (%s)!' => 'Ärende %s: tid för första svar har passerats (%s)!',
+        'Ticket %s: first response time will be over in %s!' => 'Ärende %s: tid för första svar löper ut om %s!',
         'Ticket %s: update time is over (%s)!' => 'Ärende %s: uppdateringstid har passerats (%s)!',
-        'Ticket %s: update time will be over in %s!' => 'Ärende %s: uppdateringstid har passerats om %s!',
+        'Ticket %s: update time will be over in %s!' => 'Ärende %s: uppdateringstid löper ut om %s!',
         'Ticket %s: solution time is over (%s)!' => 'Ärende %s: lösningstid har passerats (%s)!',
-        'Ticket %s: solution time will be over in %s!' => 'Ärende %s: lösningstid har passerats om %s!',
+        'Ticket %s: solution time will be over in %s!' => 'Ärende %s: lösningstid löper ut om %s!',
         'There are more escalated tickets!' => 'Det finns fler eskalerade ärenden!',
         'Plain Format' => 'Enkelt format',
         'Reply All' => 'Svara alla',
@@ -991,20 +991,20 @@ sub Data {
 
         # Template: AdminACL
         'ACL Management' => 'Hantera behörigheter',
-        'Filter for ACLs' => '',
+        'Filter for ACLs' => 'Filtrera behörigheter',
         'Filter' => 'Filter',
         'ACL Name' => 'Namn på behörighet',
         'Actions' => 'Åtgärder',
-        'Create New ACL' => '',
-        'Deploy ACLs' => '',
+        'Create New ACL' => 'Skapa ny behörighet',
+        'Deploy ACLs' => 'Produktionssätt behörighet',
         'Export ACLs' => 'Exportera behörigheter',
         'Configuration import' => 'Importera konfiguration',
         'Here you can upload a configuration file to import ACLs to your system. The file needs to be in .yml format as exported by the ACL editor module.' =>
             '',
         'This field is required.' => 'Detta fält är obligatoriskt',
-        'Overwrite existing ACLs?' => 'Skirv över existerande behörigheter?',
-        'Upload ACL configuration' => '',
-        'Import ACL configuration(s)' => '',
+        'Overwrite existing ACLs?' => 'Skriv över existerande behörigheter?',
+        'Upload ACL configuration' => 'ladda upp behörighetskonfiguration',
+        'Import ACL configuration(s)' => 'Improtera behörighetskonfiguration(er)',
         'To create a new ACL you can either import ACLs which were exported from another system or create a complete new one.' =>
             '',
         'Changes to the ACLs here only affect the behavior of the system, if you deploy the ACL data afterwards. By deploying the ACL data, the newly made changes will be written to the configuration.' =>
@@ -1028,8 +1028,8 @@ sub Data {
         'Change settings' => 'Ändra inställningar',
         'Set up what you want to change if the criteria match. Keep in mind that \'Possible\' is a white list, \'PossibleNot\' a black list.' =>
             '',
-        'Check the official' => '',
-        'documentation' => '',
+        'Check the official' => 'Se den officiella',
+        'documentation' => 'dokumentationen',
         'Show or hide the content' => 'Visa eller dölj innehållet',
         'Edit ACL information' => 'Redigera behörighetsinformation',
         'Stop after match' => 'Avsluta efter träff',
@@ -1040,9 +1040,9 @@ sub Data {
         'Do you really want to delete this ACL?' => '',
         'This item still contains sub items. Are you sure you want to remove this item including its sub items?' =>
             '',
-        'An item with this name is already present.' => '',
-        'Add all' => '',
-        'There was an error reading the ACL data.' => '',
+        'An item with this name is already present.' => 'Ett objekt med detta namn finns redan',
+        'Add all' => 'Lägg till alla',
+        'There was an error reading the ACL data.' => 'Ett fel inträffade när behörighetsdata skulle läsas.',
 
         # Template: AdminACLNew
         'Create a new ACL by submitting the form data. After creating the ACL, you will be able to add configuration items in edit mode.' =>
@@ -1065,29 +1065,29 @@ sub Data {
         'Response' => 'Svar',
         'Auto response from' => 'Autosvar från',
         'Reference' => 'Referens',
-        'You can use the following tags' => '',
+        'You can use the following tags' => 'Du kan använda dessa taggar',
         'To get the first 20 character of the subject.' => 'För att få dom första 20 tecknen i ärenderaden',
         'To get the first 5 lines of the email.' => 'För att få dom första fem raderna i mejlet',
         'To get the realname of the sender (if given).' => 'För att få avsändarens riktiga namn (om angivet).',
-        'To get the article attribute' => '',
+        'To get the article attribute' => 'För att få artikelattribut',
         ' e. g.' => ' t.ex.',
         'Options of the current customer user data' => '',
-        'Ticket owner options' => '',
-        'Ticket responsible options' => '',
-        'Options of the current user who requested this action' => '',
+        'Ticket owner options' => 'Ärendeägare - alternativ',
+        'Ticket responsible options' => 'Ärendeansvarig - alternativ',
+        'Options of the current user who requested this action' => 'Alternativ för användare som begärde åtgärden',
         'Options of the ticket data' => '',
         'Options of ticket dynamic fields internal key values' => '',
         'Options of ticket dynamic fields display values, useful for Dropdown and Multiselect fields' =>
             '',
-        'Config options' => '',
+        'Config options' => 'Inställningsalternativ',
         'Example response' => 'Exempelsvar',
 
         # Template: AdminCustomerCompany
         'Customer Management' => 'Hantera kunder',
-        'Wildcards like \'*\' are allowed.' => '',
+        'Wildcards like \'*\' are allowed.' => 'Jokertecken som \'*\' kan användas.',
         'Add customer' => 'Lägg till kund',
         'Select' => 'Välj',
-        'Please enter a search term to look for customers.' => '',
+        'Please enter a search term to look for customers.' => 'Ange ett sökbegrepp för att hitta kunder.',
         'Add Customer' => 'Lägg till kund',
         'Edit Customer' => 'Redigera kund',
 
@@ -1097,7 +1097,7 @@ sub Data {
         'Add customer user' => 'Lägg till kundanvändare',
         'Hint' => 'Tips',
         'Customer user are needed to have a customer history and to login via customer panel.' =>
-            '',
+            'Kundanvändare behövs för att spåra historik för kund och för att kunna logga in till kundytan.',
         'Last Login' => 'Senaste inloggning',
         'Login as' => 'Logga in som',
         'Switch to customer' => 'Växla till kund',
@@ -1110,7 +1110,7 @@ sub Data {
         'This email address failed MX check.' => 'Denna e-postadress klarade inte MX-kontroll.',
         'DNS problem, please check your configuration and the error log.' =>
             'DNS-problem. Se över inställningarna och felloggen.',
-        'The syntax of this email address is incorrect.' => 'Formatet för denna e-postadress är felaktigt.',
+        'The syntax of this email address is incorrect.' => 'Formatet för e-postadressen är felaktigt.',
 
         # Template: AdminCustomerUserGroup
         'Manage Customer-Group Relations' => 'Hantera kopplingar mellan kunder och grupper',
@@ -1171,7 +1171,7 @@ sub Data {
         # Template: AdminDynamicFieldCheckbox
         'Field' => 'Fält',
         'Go back to overview' => 'Tillbaka till översikt',
-        'General' => '',
+        'General' => 'Allmänt',
         'This field is required, and the value should be alphabetic and numeric characters only.' =>
             '',
         'Must be unique and only accept alphabetic and numeric characters.' =>
@@ -1186,15 +1186,15 @@ sub Data {
             '',
         'Field type' => 'Fälttyp',
         'Object type' => 'Objekttyp',
-        'Internal field' => '',
-        'This field is protected and can\'t be deleted.' => '',
-        'Field Settings' => '',
-        'Default value' => '',
-        'This is the default value for this field.' => '',
+        'Internal field' => 'Internt fält',
+        'This field is protected and can\'t be deleted.' => 'Detta fält är skyddat och kan inte raderas',
+        'Field Settings' => 'Fältinställningar',
+        'Default value' => 'Förvalt värde',
+        'This is the default value for this field.' => 'Detta är det förvalda värdet för detta fält.',
 
         # Template: AdminDynamicFieldDateTime
-        'Default date difference' => '',
-        'This field must be numeric.' => '',
+        'Default date difference' => 'Förvald tidsskillnad',
+        'This field must be numeric.' => 'Detta fält måste vara numeriskt.',
         'The difference from NOW (in seconds) to calculate the field default value (e.g. 3600 or -60).' =>
             '',
         'Define years period' => '',
@@ -1237,16 +1237,16 @@ sub Data {
             '',
 
         # Template: AdminEmail
-        'Admin Notification' => 'Admin-meddelanden',
+        'Admin Notification' => 'Adminmeddelanden',
         'With this module, administrators can send messages to agents, group or role members.' =>
             'Med denna modul kan administratörer skicka meddelanden till handläggare och medlemmar i grupper och roller.',
-        'Create Administrative Message' => '',
-        'Your message was sent to' => '',
-        'Send message to users' => '',
-        'Send message to group members' => '',
-        'Group members need to have permission' => '',
-        'Send message to role members' => '',
-        'Also send to customers in groups' => '',
+        'Create Administrative Message' => 'Skapa adminmeddelande',
+        'Your message was sent to' => 'Ditt meddelande skickades till',
+        'Send message to users' => 'Skicka meddelande till användare',
+        'Send message to group members' => 'Skicka meddelande till gruppmedlemmar',
+        'Group members need to have permission' => 'Gruppmedlemmar måste ha behörighet',
+        'Send message to role members' => 'Skicka meddelande till användare med en viss roll',
+        'Also send to customers in groups' => 'Skicka även till kunder i grupper',
         'Body' => 'Meddelandetext',
         'Send' => 'Skicka',
 
@@ -1254,7 +1254,7 @@ sub Data {
         'Generic Agent' => '',
         'Add job' => '',
         'Last run' => 'Senaste körning',
-        'Run Now!' => 'Kör Nu!',
+        'Run Now!' => 'Kör nu!',
         'Delete this task' => '',
         'Run this task' => '',
         'Job Settings' => '',
@@ -1739,7 +1739,7 @@ sub Data {
         'Average' => 'Medel',
 
         # Template: AdminPostMasterFilter
-        'PostMaster Filter Management' => 'PostMaster Filter',
+        'PostMaster Filter Management' => 'PostMaster filter',
         'Add filter' => 'Lägg till filter',
         'To dispatch or filter incoming emails based on email headers. Matching using Regular Expressions is also possible.' =>
             '',
@@ -1762,15 +1762,15 @@ sub Data {
         # Template: AdminPriority
         'Priority Management' => 'Hantera prioriteter',
         'Add priority' => 'Lägg till prioritet',
-        'Add Priority' => 'Lägg till Prioritet',
+        'Add Priority' => 'Lägg till prioritet',
         'Edit Priority' => 'Redigera prioritet',
 
         # Template: AdminProcessManagement
-        'Process Management' => '',
-        'Filter for Processes' => '',
-        'Process Name' => '',
-        'Create New Process' => '',
-        'Synchronize All Processes' => '',
+        'Process Management' => 'Hantera processer',
+        'Filter for Processes' => 'Filtrera processer',
+        'Process Name' => 'Processnamn',
+        'Create New Process' => 'Skapa ny process',
+        'Synchronize All Processes' => 'Synkronisera alla processer',
         'Here you can upload a configuration file to import a process to your system. The file needs to be in .yml format as exported by process management module.' =>
             '',
         'Upload process configuration' => '',
@@ -1951,18 +1951,18 @@ sub Data {
         'Add a new Parameter' => '',
 
         # Template: AdminQueue
-        'Manage Queues' => '',
-        'Add queue' => '',
-        'Add Queue' => '',
-        'Edit Queue' => '',
-        'Sub-queue of' => '',
+        'Manage Queues' => 'Hantera köer',
+        'Add queue' => 'Lägg till kö',
+        'Add Queue' => 'Lägg till kö',
+        'Edit Queue' => 'Redigera kö',
+        'Sub-queue of' => 'Underkö till',
         'Unlock timeout' => 'Tidsintervall för borttagning av lås',
         '0 = no unlock' => '0 = ingen upplåsning',
         'Only business hours are counted.' => 'Endast kontorstid räknas.',
         'If an agent locks a ticket and does not close it before the unlock timeout has passed, the ticket will unlock and will become available for other agents.' =>
-            '',
+            'Om en handläggare låser ett ärende och inte avslutar det innan upplåsningstiden passerats kommer ärendet låsas upp och göras tillgängligt för andra handläggare.',
         'Notify by' => 'Meddela via',
-        '0 = no escalation' => '0 = ingen upptrappning',
+        '0 = no escalation' => '0 = ingen eskalering',
         'If there is not added a customer contact, either email-external or phone, to a new ticket before the time defined here expires, the ticket is escalated.' =>
             '',
         'If there is an article added, such as a follow-up via email or the customer portal, the escalation update time is reset. If there is no customer contact, either email-external or phone, added to a ticket before the time defined here expires, the ticket is escalated.' =>
@@ -1975,18 +1975,18 @@ sub Data {
         'Ticket lock after a follow up' => 'Ärendet låses efter uppföljningsmail',
         'If a ticket is closed and the customer sends a follow up the ticket will be locked to the old owner.' =>
             '',
-        'System address' => '',
-        'Will be the sender address of this queue for email answers.' => 'Avsändaradress för email i denna Kö.',
+        'System address' => 'Systemadress',
+        'Will be the sender address of this queue for email answers.' => 'Avsändaradress för e-post i denna Kö.',
         'Default sign key' => '',
-        'The salutation for email answers.' => 'Hälsningsfras för email-svar.',
-        'The signature for email answers.' => 'Signatur för email-svar.',
+        'The salutation for email answers.' => 'Hälsningsfras för e-postsvar.',
+        'The signature for email answers.' => 'Signatur för e-postsvar.',
 
         # Template: AdminQueueAutoResponse
-        'Manage Queue-Auto Response Relations' => '',
-        'Filter for Queues' => '',
-        'Filter for Auto Responses' => '',
-        'Auto Responses' => 'AutoSvar',
-        'Change Auto Response Relations for Queue' => '',
+        'Manage Queue-Auto Response Relations' => 'Hantera autosvar för köer',
+        'Filter for Queues' => 'Filtrera köer',
+        'Filter for Auto Responses' => 'Filtrera autosvar',
+        'Auto Responses' => 'Autosvar',
+        'Change Auto Response Relations for Queue' => 'Ändra autosvarrelationer för kö.',
 
         # Template: AdminQueueTemplates
         'Manage Template-Queue Relations' => '',
@@ -2144,7 +2144,7 @@ sub Data {
         'Change Agent Relations for Role' => '',
 
         # Template: AdminSLA
-        'SLA Management' => 'SLA',
+        'SLA Management' => 'Hantera SLA',
         'Add SLA' => 'Lägg till SLA',
         'Edit SLA' => 'Redigera SLA',
         'Please write only numbers!' => 'Skriv bara siffror!',
@@ -2153,14 +2153,14 @@ sub Data {
         'S/MIME Management' => 'S/MIME',
         'Add certificate' => 'Lägg till certifikat',
         'Add private key' => 'Lägg till privat nyckel',
-        'Filter for certificates' => 'Filter för certifikat',
-        'Filter for SMIME certs' => '',
-        'To show certificate details click on a certificate icon.' => '',
+        'Filter for certificates' => 'Filtrera certifikat',
+        'Filter for SMIME certs' => 'Filtrera SMIME-certifikat',
+        'To show certificate details click on a certificate icon.' => 'För att visa certifikatdetaljer klicka på certifikatikonen.',
         'To manage private certificate relations click on a private key icon.' =>
             '',
         'Here you can add relations to your private certificate, these will be embedded to the SMIME signature every time you use this certificate to sign an email.' =>
             '',
-        'See also' => 'Se också',
+        'See also' => 'Se även',
         'In this way you can directly edit the certification and private keys in file system.' =>
             'På det här sättet kan du redigera certifikat och nycklar på filsystemet.',
         'Hash' => 'Hash',
@@ -2176,15 +2176,15 @@ sub Data {
         'Relate this certificate' => '',
 
         # Template: AdminSMIMECertRead
-        'SMIME Certificate' => '',
+        'SMIME Certificate' => 'SMIME-certifikat',
         'Close window' => 'Stäng fönstret',
 
         # Template: AdminSalutation
-        'Salutation Management' => 'Hantering av Hälsningsfraser',
-        'Add salutation' => '',
-        'Add Salutation' => 'Lägg till Hälsningsfras',
-        'Edit Salutation' => '',
-        'Example salutation' => '',
+        'Salutation Management' => 'Hantera hälsningsfraser',
+        'Add salutation' => 'Lägg till hälsningsfras',
+        'Add Salutation' => 'Lägg till hälsningsfras',
+        'Edit Salutation' => 'Redigera häsningsfras',
+        'Example salutation' => 'Exempel på hälsningsfras',
 
         # Template: AdminScheduler
         'This option will force Scheduler to start even if the process is still registered in the database' =>
@@ -2196,14 +2196,14 @@ sub Data {
         # Template: AdminSecureMode
         'Secure mode needs to be enabled!' => '',
         'Secure mode will (normally) be set after the initial installation is completed.' =>
-            'Säkert läge använda (normalt) efter iledande installation är slutförd.',
+            'Säkert läge konfigureras vanligen efter att inledande installation är slutförd.',
         'If secure mode is not activated, activate it via SysConfig because your application is already running.' =>
             '',
 
         # Template: AdminSelectBox
-        'SQL Box' => 'SQL Box',
+        'SQL Box' => 'SQL-tolk',
         'Here you can enter SQL to send it directly to the application database.' =>
-            '',
+            'Här kan du köra SQL-frågor direkt mot databasen.',
         'The syntax of your SQL query has a mistake. Please check it.' =>
             '',
         'There is at least one parameter missing for the binding. Please check it.' =>
@@ -2212,11 +2212,11 @@ sub Data {
         'Run Query' => '',
 
         # Template: AdminService
-        'Service Management' => 'Tjänster',
-        'Add service' => '',
-        'Add Service' => 'Lägg till Tjänst',
-        'Edit Service' => '',
-        'Sub-service of' => '',
+        'Service Management' => 'Hantera tjänster',
+        'Add service' => 'Lägg till tjänst',
+        'Add Service' => 'Lägg till tjänst',
+        'Edit Service' => 'Redigera tjänst',
+        'Sub-service of' => 'Undertjänst till',
 
         # Template: AdminServiceCenterSupportDataCollector
         'This data is sent to OTRS Group on a regular basis. To stop sending this data please update your system registration.' =>
@@ -2251,21 +2251,21 @@ sub Data {
 
         # Template: AdminSignature
         'Signature Management' => 'Signaturer',
-        'Add signature' => '',
-        'Add Signature' => 'Lägg till Signatur',
-        'Edit Signature' => '',
-        'Example signature' => '',
+        'Add signature' => 'Lägg till signatur',
+        'Add Signature' => 'Lägg till signatur',
+        'Edit Signature' => 'Redigera signatur',
+        'Example signature' => 'Exempelsignatur',
 
         # Template: AdminState
         'State Management' => 'Status',
-        'Add state' => '',
+        'Add state' => 'Lägg till status',
         'Please also update the states in SysConfig where needed.' => '',
         'Add State' => 'Lägg till Status',
-        'Edit State' => '',
-        'State type' => '',
+        'Edit State' => 'Redigera status',
+        'State type' => 'Statustyp',
 
         # Template: AdminSysConfig
-        'SysConfig' => 'SysConfig',
+        'SysConfig' => 'Systeminställningar',
         'Navigate by searching in %s settings' => '',
         'Navigate by selecting config groups' => '',
         'Download all system config changes' => '',
@@ -2340,38 +2340,38 @@ sub Data {
         'Your email address is' => '',
 
         # Template: AdminTemplateAttachment
-        'Manage Templates <-> Attachments Relations' => '',
-        'Filter for Attachments' => '',
-        'Change Template Relations for Attachment' => '',
-        'Change Attachment Relations for Template' => '',
+        'Manage Templates <-> Attachments Relations' => 'Hantera mallar <-> bilagekopplingar',
+        'Filter for Attachments' => 'Filtrera bilagor',
+        'Change Template Relations for Attachment' => 'Ändra mallkopplingar för bilaga',
+        'Change Attachment Relations for Template' => 'Ändra bilagekopplingar för mallar',
         'Toggle active for all' => '',
         'Link %s to selected %s' => '',
 
         # Template: AdminType
-        'Type Management' => 'Ärendetyp',
-        'Add ticket type' => '',
-        'Add Type' => 'Lägg till Typ',
-        'Edit Type' => '',
+        'Type Management' => 'Hantera ärendetyper',
+        'Add ticket type' => 'Lägg till ärendetyp',
+        'Add Type' => 'Lägg till typ',
+        'Edit Type' => 'Redigera typ',
 
         # Template: AdminUser
-        'Add agent' => '',
-        'Agents will be needed to handle tickets.' => '',
-        'Don\'t forget to add a new agent to groups and/or roles!' => '',
-        'Please enter a search term to look for agents.' => '',
-        'Last login' => '',
-        'Switch to agent' => '',
-        'Add Agent' => '',
-        'Edit Agent' => '',
+        'Add agent' => 'Lägg till handläggare',
+        'Agents will be needed to handle tickets.' => 'Handläggare krävs för att arbeta med ärenden.',
+        'Don\'t forget to add a new agent to groups and/or roles!' => 'Glöm inte koppla nya handläggare till grupper och/eller roller!',
+        'Please enter a search term to look for agents.' => 'Sök efter handläggare.',
+        'Last login' => 'Senast inloggad',
+        'Switch to agent' => 'Växla till handläggare',
+        'Add Agent' => 'Lägg till handläggare',
+        'Edit Agent' => 'Redigera handläggare',
         'Firstname' => 'Förnamn',
         'Lastname' => 'Efternamn',
-        'Will be auto-generated if left empty.' => '',
+        'Will be auto-generated if left empty.' => 'Skapas automatiskt om tom.',
         'Start' => 'Start',
         'End' => 'Slut',
 
         # Template: AdminUserGroup
-        'Manage Agent-Group Relations' => '',
-        'Change Group Relations for Agent' => '',
-        'Change Agent Relations for Group' => '',
+        'Manage Agent-Group Relations' => 'Hantera handläggare-grupper',
+        'Change Group Relations for Agent' => 'Ändra gruppkopplingar för handläggare',
+        'Change Agent Relations for Group' => 'Ändra handläggarkopplingar för grupp',
         'note' => '',
         'Permissions to add notes to tickets in this group/queue.' => '',
         'owner' => 'Ägare',
@@ -2380,7 +2380,7 @@ sub Data {
 
         # Template: AgentBook
         'Address Book' => 'Adressbok',
-        'Search for a customer' => '',
+        'Search for a customer' => 'Sök användare',
         'Add email address %s to the To field' => '',
         'Add email address %s to the Cc field' => '',
         'Add email address %s to the Bcc field' => '',
@@ -2416,7 +2416,7 @@ sub Data {
         # Template: AgentDashboardCustomerCompanyInformation
 
         # Template: AgentDashboardCustomerIDStatus
-        'Escalated tickets' => '',
+        'Escalated tickets' => 'Eskalerade ärenden',
 
         # Template: AgentDashboardCustomerUserList
         'Customer information' => 'Kundinformation',
@@ -2467,7 +2467,7 @@ sub Data {
         'out of office' => '',
 
         # Template: AgentDashboardUserOutOfOffice
-        'until' => '',
+        'until' => 'till',
 
         # Template: AgentHTMLReferenceForms
 
@@ -2501,9 +2501,9 @@ sub Data {
         'Apply these changes' => 'Verkställ ändringar',
 
         # Template: AgentStatsDelete
-        'Delete stat' => '',
+        'Delete stat' => 'Radera statistik',
         'Stat#' => 'Stat#',
-        'Do you really want to delete this stat?' => '',
+        'Do you really want to delete this stat?' => 'Vill du verkligen readera denna stsistik?',
 
         # Template: AgentStatsEditRestrictions
         'Step %s' => '',
@@ -3315,14 +3315,14 @@ sub Data {
             '',
         'Controls if the ticket and article seen flags are removed when a ticket is archived.' =>
             '',
-        'Converts HTML mails into text messages.' => '',
+        'Converts HTML mails into text messages.' => 'Konvertera HTML-mail till textmeddelanden.',
         'Create New process ticket' => '',
         'Create and manage Service Level Agreements (SLAs).' => '',
         'Create and manage agents.' => 'Skapa och hantera handläggare.',
         'Create and manage attachments.' => 'Skapa och hantera bilagor.',
         'Create and manage customer users.' => 'Skapa och hantera kundanvändare.',
         'Create and manage customers.' => 'Skapa och hantera kunder.',
-        'Create and manage dynamic fields.' => '',
+        'Create and manage dynamic fields.' => 'Skapa och hantera dynamiska fält.',
         'Create and manage event based notifications.' => '',
         'Create and manage groups.' => 'Skapa och hantera grupper.',
         'Create and manage queues.' => 'Skapa och hantera köer.',
@@ -3338,13 +3338,13 @@ sub Data {
         'Create and manage web services.' => 'Skapa och hantera webbtjänster.',
         'Create new email ticket and send this out (outbound)' => 'Skapa nytt e-postärende och skicka detta (utgående)',
         'Create new phone ticket (inbound)' => 'Skapa nytt telefonärende (inkommande)',
-        'Create new process ticket' => '',
+        'Create new process ticket' => 'Skapa nytt processärende',
         'Custom text for the page shown to customers that have no tickets yet.' =>
             '',
-        'Customer Company Administration' => '',
-        'Customer Company Information' => '',
-        'Customer User <-> Groups' => '',
-        'Customer User <-> Services' => '',
+        'Customer Company Administration' => 'Hantera kundorganisationer',
+        'Customer Company Information' => 'Hantera information om kundorganisationer',
+        'Customer User <-> Groups' => 'Kundanvändare <-> Grupper',
+        'Customer User <-> Services' => 'Kundanvändare <-> Tjänster',
         'Customer User Administration' => 'Hantera kundanvändare',
         'Customer Users' => 'Kundanvändare',
         'Customer item (icon) which shows the closed tickets of this customer as info block. Setting CustomerUserLogin to 1 searches for tickets based on login name rather than CustomerID.' =>
@@ -3352,7 +3352,7 @@ sub Data {
         'Customer item (icon) which shows the open tickets of this customer as info block. Setting CustomerUserLogin to 1 searches for tickets based on login name rather than CustomerID.' =>
             '',
         'CustomerName' => '',
-        'Customers <-> Groups' => '',
+        'Customers <-> Groups' => 'Kunder <-> Grupper',
         'Data used to export the search result in CSV format.' => '',
         'Date / Time' => 'Datum/tid',
         'Debugs the translation set. If this is set to "Yes" all strings (text) without translations are written to STDERR. This can be helpful when you are creating a new translation file. Otherwise, this option should remain set to "No".' =>
