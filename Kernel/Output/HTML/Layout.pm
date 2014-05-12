@@ -475,6 +475,10 @@ return html for browser to redirect
         ExtURL => "http://some.example.com/",
     );
 
+During login action, C<Login => 1> should be passed to Redirect(),
+which indicates that if the browser has cookie support, it is OK
+for the session cookie to be not yet set.
+
 =cut
 
 sub Redirect {
@@ -541,7 +545,7 @@ sub Redirect {
     my $Output = $Cookies . $Self->Output( TemplateFile => 'Redirect', Data => \%Param );
 
     # add session id to redirect if no cookie is enabled
-    if ( !$Self->{SessionIDCookie}  && !$Self->{BrowserHasCookie} ) {
+    if ( !$Self->{SessionIDCookie}  && !($Self->{BrowserHasCookie} && $Param{Login} ) ) {
 
         # rewrite location header
         $Output =~ s{
@@ -594,7 +598,7 @@ sub Login {
             # Restrict Cookie to HTTPS if it is used.
             $CookieSecureAttribute = 1;
         }
-        $Output .= "Set-Cookie: " . $Self->{ParamObject}->SetCookie(
+        $Self->{SetCookies}{OTRSBrowserHasCookie} = $Self->{ParamObject}->SetCookie(
             Key      => 'OTRSBrowserHasCookie',
             Value    => 1,
             Expires  => '1y',
