@@ -2927,6 +2927,27 @@ sub CustomerLogin {
     # set Action parameter for the loader
     $Self->{Action} = 'CustomerLogin';
 
+    if ( $Self->{ConfigObject}->Get('SessionUseCookie') ) {
+        # always set a cookie, so that at the time the user submits
+        # the password, we know already if the browser supports cookies.
+        # ( the session cookie isn't available at that time ).
+        my $CookieSecureAttribute = 0;
+        if ( $Self->{ConfigObject}->Get('HttpType') eq 'https' ) {
+
+            # Restrict Cookie to HTTPS if it is used.
+            $CookieSecureAttribute = 1;
+        }
+        $Self->{SetCookies}{OTRSBrowserHasCookie} = $Self->{ParamObject}->SetCookie(
+            Key      => 'OTRSBrowserHasCookie',
+            Value    => 1,
+            Expires  => '1y',
+            Path     => $Self->{ConfigObject}->Get('ScriptAlias'),
+            Secure   => $CookieSecureAttribute,
+            HttpOnly => 1,
+        );
+    }
+
+
     # add cookies if exists
     if ( $Self->{SetCookies} && $Self->{ConfigObject}->Get('SessionUseCookie') ) {
         for ( sort keys %{ $Self->{SetCookies} } ) {
