@@ -291,7 +291,7 @@ sub ProviderGenerateResponse {
     }
 
     my $OperationResponse = $Self->{Operation} . 'Response';
-    my $HTTPCode          = $Param{HTTPCode} || 200;
+    my $HTTPCode          = 200;
 
     # check success param
     if ( !$Param{Success} ) {
@@ -306,9 +306,8 @@ sub ProviderGenerateResponse {
         # override OperationResponse string to Fault to make the corect SOAP envelope
         $OperationResponse = 'Fault';
 
-        # overide HTTPCode to 500 if no
-        # custom HTTP code was provided
-        $HTTPCode = 500 if !$Param{HTTPCode};
+        # overide HTTPCode to 500
+        $HTTPCode = 500;
     }
 
     # prepare data
