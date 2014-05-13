@@ -294,6 +294,10 @@ sub Run {
         return $Self->_GenerateErrorResponse( ErrorMessage => $FunctionResult->{ErrorMessage} );
     }
 
+    # store the HTTPCode so we can pass it
+    # to the transport backend later
+    my $HTTPCode = $FunctionResult->{HTTPCode};
+
     #
     # Map the outgoing data based on configured mapping.
     #
@@ -348,8 +352,9 @@ sub Run {
     #
 
     $FunctionResult = $Self->{TransportObject}->ProviderGenerateResponse(
-        Success => 1,
-        Data    => $DataOut,
+        Success  => 1,
+        HTTPCode => $HTTPCode,
+        Data     => $DataOut,
     );
 
     if ( !$FunctionResult->{Success} ) {
