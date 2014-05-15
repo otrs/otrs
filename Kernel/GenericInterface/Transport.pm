@@ -199,6 +199,7 @@ generate an outgoing web service request, receive the response and return its da
 
     $Result = {
         Success         => 1,                   # 0 or 1
+        HTTPCode        => 404,                 # http code, optional
         ErrorMessage    => '',                  # in case of error
         Data            => {
             ...
