@@ -31,6 +31,24 @@
 </div>
 <div class="Clear"></div>
 
+[% RenderBlockStart("TicketOptions") %]
+                    <label>[% Translate("Options") | html %]:</label>
+                    <div class="Field">
+
+<!-- OutputFilterHook_TicketOptionsBegin -->
+
+[% RenderBlockStart("OptionCustomer") %]
+                        <a href="#" id="OptionCustomer">[ [% Translate("Customer user") | html %] ]</a>
+[% RenderBlockEnd("OptionCustomer") %]
+
+<!-- OutputFilterHook_TicketOptionsEnd -->
+
+                    </div>
+                    <div class="Clear"></div>
+[% RenderBlockEnd("TicketOptions") %]
+
+<!-- OutputFilterHook_NoTicketOptionsFallback -->
+
 [% RenderBlockStart("rw:Article:DescriptionShort") %]
 <div class="Field FieldExplanation">[% Data.DescriptionShort %]</div>
 [% RenderBlockEnd("rw:Article:DescriptionShort") %]

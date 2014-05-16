@@ -28,6 +28,8 @@
                 </div>
                 <div class="Spacing Clear"></div>
 [% RenderBlockEnd("ProcessList") %]
+
+<!-- OutputFilterHook_NoTicketOptionsFallback -->
             </fieldset>
         </form>
         <div id="AJAXLoader" class="Spacing Center Hidden">

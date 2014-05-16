@@ -309,13 +309,25 @@ Core.Agent.TicketAction = (function (TargetNS) {
      *      customer into the main window, closing the dialog.
      */
     TargetNS.UpdateCustomer = function (Customer) {
-        var $UpdateForm = $('form[name=compose]', parent.document);
-        $UpdateForm
-            .find('#ExpandCustomerName').val('2')
-            .end()
-            .find('#PreSelectedCustomerUser').val(Customer)
-            .end()
-            .submit();
+
+           //  because parent page is created by AJAX, and after submit we give wrong page view
+            //  for AgentTicketProcess we set customer data from look up page on diferent way
+            if ( parent.Core.Config.Get('Action')  === 'AgentTicketProcess'){
+                 $('#PreSelectedCustomerUser', parent.document).val(Customer);
+                 $('#SelectedCustomerUser', parent.document).val(Customer);
+                 $('#CustomerAutoComplete', parent.document).focus();
+                 // without set focus on CustomerID, on submit form threw exception that this field is empty
+                 $('#CustomerID', parent.document).focus();
+            }
+            else{
+                var $UpdateForm = $('form[name=compose]', parent.document);
+                $UpdateForm
+                .find('#ExpandCustomerName').val('2')
+                .end()
+                .find('#PreSelectedCustomerUser').val(Customer)
+                .end()
+                .submit();
+            }
 
         // Because we are in an iframe, we need to call the parent frames javascript function
         // with a jQuery object which is in the parent frames context
