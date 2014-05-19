@@ -516,19 +516,39 @@ sub MaskAgentZoom {
     my $NeedPagination;
     my $ArticleCount;
 
-
-    # get content
-    my @ArticleBox = $Self->{TicketObject}->ArticleContentIndex(
+    my @ArticleContentArgs = (
         TicketID                   => $Self->{TicketID},
         StripPlainBodyAsAttachment => $Self->{StripPlainBodyAsAttachment},
         UserID                     => $Self->{UserID},
-        Page                       => $Page,
         Limit                      => $Limit + $Extra,
         Order                      => $Order,
         DynamicFields => 0,    # fetch later only for the article(s) to display
         %{  $Self->{ArticleFilter} // {} }, # limit by ArticleSenderTypeID/ArticleTypeID
+
     );
-    if ( @ArticleBox > $Limit || !@ArticleBox && $Page > 1 ) {
+
+    # get content
+    my @ArticleBox = $Self->{TicketObject}->ArticleContentIndex(
+        @ArticleContentArgs,
+        Page => $Page,
+    );
+
+    if ( !@ArticleBox && $Page > 1 ) {
+        # if the page argument is past the actual number of pages,
+        # assume page 1 instead.
+        # This can happen when a new article filter was added.
+        $Page = 1;
+        @ArticleBox = $Self->{TicketObject}->ArticleContentIndex(
+            @ArticleContentArgs,
+            Page => $Page,
+        );
+        $ArticleCount   = $Self->{TicketObject}->ArticleCount(
+            TicketID => $Self->{TicketID},
+            %{  $Self->{ArticleFilter} // {} },
+        );
+        $NeedPagination = $ArticleCount > $Limit;
+    }
+    elsif ( @ArticleBox > $Limit ) {
         pop @ArticleBox;
         $NeedPagination = 1;
         $ArticleCount   = $Self->{TicketObject}->ArticleCount(
