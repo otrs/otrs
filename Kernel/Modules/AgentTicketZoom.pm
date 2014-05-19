@@ -564,6 +564,7 @@ sub MaskAgentZoom {
         $NeedPagination = 1;
         $ArticleCount   = $Self->{TicketObject}->ArticleCount(
             TicketID => $Ticket{TicketID},
+            %{  $Self->{ArticleFilter} // {} },
         );
     }
 
