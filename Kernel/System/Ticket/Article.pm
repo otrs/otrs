@@ -1313,15 +1313,15 @@ sub ArticleContentIndex {
     }
 
     my @ArticleBox = $Self->ArticleGet(
-        TicketID             => $Param{TicketID},
-        ArticleType          => $Param{ArticleType},
-        UserID               => $Param{UserID},
-        DynamicFields        => $Param{DynamicFields},
-        Page                 => $Param{Page},
-        Limit                => $Param{Limit},
-        ArticleTypeID        => $Param{ArticleTypeID},
-        ArticleSenderTypeID  => $Param{ArticleSenderTypeID},
-        Order                => $Param{Order},
+        TicketID            => $Param{TicketID},
+        ArticleType         => $Param{ArticleType},
+        UserID              => $Param{UserID},
+        DynamicFields       => $Param{DynamicFields},
+        Page                => $Param{Page},
+        Limit               => $Param{Limit},
+        ArticleTypeID       => $Param{ArticleTypeID},
+        ArticleSenderTypeID => $Param{ArticleSenderTypeID},
+        Order               => $Param{Order},
     );
 
     # article attachments of each article
@@ -1468,10 +1468,10 @@ sub ArticleGet {
         }
     }
     my $ArticleTypeIDSQL = '';
-    if ( IsArrayRefWithData $Param{ArticleTypeID} ) {
+    if ( IsArrayRefWithData( $Param{ArticleTypeID} ) ) {
         my $QuotedIDs = join ', ',
-                        map { $Self->{DBObject}->Quote($_, 'Integer') }
-                        @{ $Param{ArticleTypeID} };
+            map { $Self->{DBObject}->Quote( $_, 'Integer' ) }
+            @{ $Param{ArticleTypeID} };
         $ArticleTypeIDSQL = " AND sa.article_type_id IN ($QuotedIDs)";
     }
 
@@ -1495,10 +1495,10 @@ sub ArticleGet {
     }
 
     my $SenderTypeIDSQL;
-    if ( IsArrayRefWithData $Param{ArticleSenderTypeID} ) {
+    if ( IsArrayRefWithData( $Param{ArticleSenderTypeID} ) ) {
         my $QuotedIDs = join ', ',
-                        map { $Self->{DBObject}->Quote($_, 'Integer') }
-                        @{ $Param{ArticleSenderTypeID} };
+            map { $Self->{DBObject}->Quote( $_, 'Integer' ) }
+            @{ $Param{ArticleSenderTypeID} };
         $SenderTypeIDSQL = " AND sa.article_sender_type_id IN ($QuotedIDs)";
     }
 
@@ -1919,16 +1919,16 @@ sub ArticleCount {
         return;
     }
 
-    my $SQL = 'SELECT COUNT(id) FROM article WHERE ticket_id = ?';
+    my $SQL  = 'SELECT COUNT(id) FROM article WHERE ticket_id = ?';
     my @Bind = ( \$Param{TicketID} );
-    if ( IsArrayRefWithData $Param{ArticleTypeID} ) {
+    if ( IsArrayRefWithData( $Param{ArticleTypeID} ) ) {
         $SQL .= sprintf ' AND article_type_id IN (%s) ',
-                join ', ', ('?') x @{ $Param{ArticleTypeID} };
+            join ', ', ('?') x @{ $Param{ArticleTypeID} };
         push @Bind, map { \$_ } @{ $Param{ArticleTypeID} };
     }
-    if ( IsArrayRefWithData $Param{ArticleSenderTypeID} ) {
+    if ( IsArrayRefWithData( $Param{ArticleSenderTypeID} ) ) {
         $SQL .= sprintf ' AND article_sender_type_id IN (%s) ',
-                join ', ', ('?') x @{ $Param{ArticleSenderTypeID} };
+            join ', ', ('?') x @{ $Param{ArticleSenderTypeID} };
         push @Bind, map { \$_ } @{ $Param{ArticleSenderTypeID} };
     }
 
@@ -1944,11 +1944,11 @@ sub ArticleCount {
             $CreateTime = $Row[0];
         }
 
-        if ( !defined $CreateTime) {
+        if ( !defined $CreateTime ) {
             return 0;
         }
 
-        my $Op = ($Param{Order} // 'ASC') eq 'DESC' ? '>' : '<';
+        my $Op = ( $Param{Order} // 'ASC' ) eq 'DESC' ? '>' : '<';
 
         $SQL .= " AND (create_time $Op ? OR (create_time = ? AND id $Op= ?))";
         push @Bind, \$CreateTime, \$CreateTime, \$Param{UpToArticleID};
@@ -1982,11 +1982,11 @@ Get the page number of a given article when pagination is active
 sub ArticlePage {
     my ( $Self, %Param ) = @_;
 
-    for my $Needed ( qw(ArticleID TicketID RowsPerPage) ) {
-        if ( !$Param{ $Needed } ) {
+    for my $Needed (qw(ArticleID TicketID RowsPerPage)) {
+        if ( !$Param{$Needed} ) {
             $Self->{LogObject}->Log(
                 Priority => 'error',
-                Message => "Need $Needed!"
+                Message  => "Need $Needed!"
             );
             return;
         }
