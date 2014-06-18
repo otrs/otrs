@@ -51,10 +51,12 @@
                             <li class="Transition">
                                 [% Data.Transition %]
                                 <span></span>
+                                <div class="SxpacingTop" id="EditPath">
+                                    <a href="#" data-entity="" data-id="" data-action="AdminProcessManagementTransition" data-subaction="TransitionEdit" class="CallForAction AsPopup_Redirect Edit_Confirm PopupType_Transition"><span>[% Translate("Edit this transition") | html %]</span></a>
+                                </div>
                             </li>
                             <li id="EndActivity" class="EndActivity"></li>
                         </ul>
-                        <div id="EditPath"><a href="#" data-action="AdminProcessManagementTransition" data-subaction="TransitionEdit" class="AsPopup_Redirect Edit_Confirm PopupType_Transition">[% Translate("Edit this transition") | html %]</a></div>
                     </div>
                 </div>
 
