@@ -38,6 +38,7 @@ sub new {
     $Self->{UploadCacheObject}  = Kernel::System::Web::UploadCache->new(%Param);
     $Self->{DynamicFieldObject} = Kernel::System::DynamicField->new(%Param);
     $Self->{BackendObject}      = Kernel::System::DynamicField::Backend->new(%Param);
+    $Self->{UserObject}         = $Kernel::OM->Get('UserObject');
 
     # get params
     $Self->{TicketUnlock} = $Self->{ParamObject}->GetParam( Param => 'TicketUnlock' );
@@ -1056,8 +1057,10 @@ sub AgentMove {
         USER:
         for my $User ( reverse @{ $Param{OldUser} } ) {
             next USER if $UserHash{ $User->{UserID} };
-            $UserHash{ $User->{UserID} } = "$Counter: $User->{UserLastname} "
-                . "$User->{UserFirstname} ($User->{UserLogin})";
+            my %OldOwner = $Self->{UserObject}->GetUserData(
+                UserID => $User->{UserID}
+            );
+            $UserHash{ $User->{UserID} } = "$Counter:  $OldOwner{UserFullname}";
             $Counter++;
         }
     }
@@ -1389,8 +1392,10 @@ sub _GetOldOwners {
         USER:
         for my $User ( reverse @OldUserInfo ) {
             next USER if $UserHash{ $User->{UserID} };
-            $UserHash{ $User->{UserID} } = "$Counter: $User->{UserLastname} "
-                . "$User->{UserFirstname} ($User->{UserLogin})";
+            my %OldOwner = $Self->{UserObject}->GetUserData(
+                UserID => $User->{UserID}
+            );
+            $UserHash{ $User->{UserID} } = "$Counter:  $OldOwner{UserFullname}";
             $Counter++;
         }
     }

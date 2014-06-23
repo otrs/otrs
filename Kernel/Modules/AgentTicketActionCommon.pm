@@ -38,6 +38,7 @@ sub new {
     $Self->{UploadCacheObject}  = Kernel::System::Web::UploadCache->new(%Param);
     $Self->{DynamicFieldObject} = Kernel::System::DynamicField->new(%Param);
     $Self->{BackendObject}      = Kernel::System::DynamicField::Backend->new(%Param);
+    $Self->{UserObject}         = $Kernel::OM->Get('UserObject');
 
     # get form id
     $Self->{FormID} = $Self->{ParamObject}->GetParam( Param => 'FormID' );
@@ -1435,10 +1436,12 @@ sub _Mask {
                 # skip if old owner is already in the list
                 next USER if $SeenOldOwner{ $User->{UserID} };
                 $SeenOldOwner{ $User->{UserID} } = 1;
+                my %OldOwner = $Self->{UserObject}->GetUserData(
+                    UserID => $User->{UserID}
+                );
                 push @OldOwners, {
                     Key   => $User->{UserID},
-                    Value => "$Counter: $User->{UserLastname} "
-                        . "$User->{UserFirstname} ($User->{UserLogin})"
+                    Value => "$Counter: $OldOwner{UserFullname}"
                 };
                 $Counter++;
             }
@@ -1941,13 +1944,11 @@ sub _GetOldOwners {
         my $Counter = 1;
         USER:
         for my $User ( reverse @OldUserInfo ) {
-
             next USER if $UserHash{ $User->{UserID} };
-
-            $UserHash{ $User->{UserID} }
-                = "$Counter: $User->{UserLastname} $User->{UserFirstname} ($User->{UserLogin})";
-        }
-        continue {
+            my %OldOwner = $Self->{UserObject}->GetUserData(
+                UserID => $User->{UserID}
+            );
+            $UserHash{ $User->{UserID} } = "$Counter:  $OldOwner{UserFullname}";
             $Counter++;
         }
     }
