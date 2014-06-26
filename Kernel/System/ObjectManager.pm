@@ -329,6 +329,18 @@ dependency order.
 sub ObjectsDiscard {
     my ( $Self, %Param ) = @_;
 
+    # fire outstanding events before destroying anything
+    my $HasQueuedTransactions = 1;
+    while ( $HasQueuedTransactions ) {
+        $HasQueuedTransactions = 0;
+        for my $EventHandler ( @{ $Self->{EventHandlers} } ) {
+            if ($EventHandler->EventHandlerHasQueuedTransactions) {
+                $HasQueuedTransactions = 1;
+                $EventHandler->EventHandlerTransaction();
+            }
+        }
+    }
+
     # destroy objects before their dependencies are destroyed
 
     # first step: get the dependencies into a single hash,
@@ -410,6 +422,29 @@ sub ObjectsDiscard {
         $Self->{DestroyAttempts}--;
     }
 
+    return 1;
+}
+
+=item ObjectRegisterEventHandler()
+
+Registers an object that can handle asynchronous events.
+
+    $Kernel::OM->ObjectRegisterEventHandler(
+        EventHandler => $EventHandlerObject,
+    );
+
+The C<EventHandler> object should inherit from L<Kernel::System::EventHandler>.
+The object manager will call that object's C<EventHandlerHasQueuedTransactions>
+method, and if that returns a true value, calls its C<EventHandlerTransaction> method.
+
+=cut
+
+sub ObjectRegisterEventHandler {
+    my ( $Self, %Param ) = @_;
+    if ( !$Param{EventHandler} ) {
+        die "Missing parameter EventHandler";
+    }
+    push @{ $Self->{EventHandlers} }, $Param{EventHandler};
     return 1;
 }
 
