@@ -330,7 +330,7 @@ sub ObjectsDiscard {
     my ( $Self, %Param ) = @_;
 
     # fire outstanding events before destroying anything
-    my $HasQueuedTransactions = 1;
+    my $HasQueuedTransactions;
     EVENTS:
     for my $Counter (1..10) {
         $HasQueuedTransactions = 0;
