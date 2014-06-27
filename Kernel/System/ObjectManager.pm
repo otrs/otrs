@@ -347,6 +347,7 @@ sub ObjectsDiscard {
     if ( $HasQueuedTransactions ) {
         warn "Unable to handle all pending events in 10 iterations";
     }
+    delete $Self->{EventHandlers};
 
     # destroy objects before their dependencies are destroyed
 
