@@ -331,7 +331,8 @@ sub ObjectsDiscard {
 
     # fire outstanding events before destroying anything
     my $HasQueuedTransactions = 1;
-    while ( $HasQueuedTransactions ) {
+    EVENTS:
+    for my $Counter (1..10) {
         $HasQueuedTransactions = 0;
         for my $EventHandler ( @{ $Self->{EventHandlers} } ) {
             if ($EventHandler->EventHandlerHasQueuedTransactions) {
@@ -339,6 +340,12 @@ sub ObjectsDiscard {
                 $EventHandler->EventHandlerTransaction();
             }
         }
+        if ( !$HasQueuedTransactions ) {
+            last EVENTS;
+        }
+    }
+    if ( $HasQueuedTransactions ) {
+        warn "Unable to handle all pending events in 10 iterations";
     }
 
     # destroy objects before their dependencies are destroyed
