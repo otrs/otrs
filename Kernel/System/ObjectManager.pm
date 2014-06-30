@@ -335,6 +335,9 @@ sub ObjectsDiscard {
     for my $Counter (1..10) {
         $HasQueuedTransactions = 0;
         for my $EventHandler ( @{ $Self->{EventHandlers} } ) {
+            # since the event handlers are weak references,
+            # they might be undef by now.
+            next if !defined $EventHandler;
             if ($EventHandler->EventHandlerHasQueuedTransactions) {
                 $HasQueuedTransactions = 1;
                 $EventHandler->EventHandlerTransaction();
@@ -453,6 +456,7 @@ sub ObjectRegisterEventHandler {
         die "Missing parameter EventHandler";
     }
     push @{ $Self->{EventHandlers} }, $Param{EventHandler};
+    weaken( $Self->{EventHandlers}[-1] );
     return 1;
 }
 
