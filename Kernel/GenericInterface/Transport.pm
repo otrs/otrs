@@ -65,15 +65,15 @@ create an object.
         EncodeObject   => $EncodeObject,
         LogObject      => $LogObject,
         MainObject     => $MainObject,
-        DebuggerObject => $DebuggerObject,
     );
     my $TransportObject = Kernel::GenericInterface::Transport->new(
-        ConfigObject  => $ConfigObject,
-        LogObject     => $LogObject,
-        DBObject      => $DBObject,
-        MainObject    => $MainObject,
-        TimeObject    => $TimeObject,
-        EncodeObject  => $EncodeObject,
+        ConfigObject   => $ConfigObject,
+        LogObject      => $LogObject,
+        DBObject       => $DBObject,
+        MainObject     => $MainObject,
+        TimeObject     => $TimeObject,
+        EncodeObject   => $EncodeObject,
+        DebuggerObject => $DebuggerObject,
 
         TransportConfig => {
             Type => 'HTTP::SOAP',
