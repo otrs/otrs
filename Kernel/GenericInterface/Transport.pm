@@ -61,10 +61,12 @@ create an object.
         MainObject   => $MainObject,
     );
     my $DebuggerObject = Kernel::GenericInterface::Debugger->new(
-        ConfigObject   => $ConfigObject,
-        EncodeObject   => $EncodeObject,
-        LogObject      => $LogObject,
-        MainObject     => $MainObject,
+        ConfigObject => $ConfigObject,
+        EncodeObject => $EncodeObject,
+        LogObject    => $LogObject,
+        MainObject   => $MainObject,
+        TimeObject   => $TimeObject,
+        DBObject     => $DBObject,
     );
     my $TransportObject = Kernel::GenericInterface::Transport->new(
         ConfigObject   => $ConfigObject,
