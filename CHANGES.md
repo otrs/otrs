@@ -1,4 +1,5 @@
 #3.4.0.beta1 20??-??-??
+ - 2014-07-14 Added possibility to reply directly to internal and external notes.
  - 2014-07-10 Fixed bug#[10623](http://bugs.otrs.org/show_bug.cgi?id=10623) - Ticket owner is not shown regardless what is configured, thanks to Renee Bäcker.
  - 2014-07-10 Changed default settings to use a quick connect string instead of SID to connect to an oracle database, because SID is not working with an Oracle RAC cluster.
  - 2014-07-10 Changed default settings of oracles NLS_LANG variable from UTF8 to AL32UTF8 to fix problems with 4 byte unicode character.
@@ -77,6 +78,7 @@
  - 2013-12-12 Added additional information to install commands for different distributions (see perl bin/otrs.CheckModules.pl -h) for more information.
 
 #3.3.9 2014-??-??
+ - 2014-07-14 Fixed bug#[10595](http://bugs.otrs.org/show_bug.cgi?id=10595) - Standard Replies are false sorted in Ticket Zoom select box, thanks to S7.
  - 2014-07-07 Fixed bug#[10534](http://bugs.otrs.org/show_bug.cgi?id=10534) - Wildcard hacking the customer information center, thanks to S7.
  - 2014-07-03 Fixed bug#[10586](http://bugs.otrs.org/show_bug.cgi?id=10586) - In Customer Portal no attachments are shown.
  - 2014-06-30 Fixed bug#[6601](http://bugs.otrs.org/show_bug.cgi?id=6601) - Changing search options changes order of fields, thanks to S7.
