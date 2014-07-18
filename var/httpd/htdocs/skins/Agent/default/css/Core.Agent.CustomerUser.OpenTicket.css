@@ -11,16 +11,8 @@
 
 @media screen,projection,tv,handheld {
 
-.ItemRow .OpenTicket {
-    padding-left: 2px;
-}
-
 .ItemRow i.OpenTicket {
     color: red;
-}
-
-.ItemRow .NoOpenTicket {
-    padding-left: 2px;
 }
 
 .ItemRow i.NoOpenTicket {
