@@ -751,6 +751,18 @@ sub QueueAdd {
         $QueueID = $Row[0];
     }
 
+    # get queue data with updated name for QueueCreate event
+    my %Queue = $Self->QueueGet( Name => $Param{Name} );
+
+    # trigger event
+    $Self->EventHandler(
+        Event => 'QueueCreate',
+        Data  => {
+            Queue => \%Queue,
+        },
+        UserID => $Param{UserID},
+    );
+
     # reset cache
     $Self->{CacheInternalObject}->CleanUp();
 
