@@ -19,6 +19,7 @@ use Kernel::System::StandardTemplate;
 use Kernel::System::SysConfig;
 use Kernel::System::Time;
 use Kernel::System::Valid;
+use Kernel::System::EventHandler;
 
 =head1 NAME
 
@@ -108,6 +109,16 @@ sub new {
         FollowUpID          => 1,
         FollowUpLock        => 0,
     };
+
+    use base qw(Kernel::System::EventHandler);
+
+    $Self->EventHandlerInit(
+        Config     => 'Queue::EventModulePost',
+        BaseObject => 'QueueObject',
+        Objects    => {
+            %{$Self},
+        },
+    );
 
     return $Self;
 }
@@ -740,6 +751,18 @@ sub QueueAdd {
         $QueueID = $Row[0];
     }
 
+    # get queue data with updated name for QueueCreate event
+    my %Queue = $Self->QueueGet( Name => $Param{Name} );
+
+    # trigger event
+    $Self->EventHandler(
+        Event => 'QueueCreate',
+        Data  => {
+            Queue => \%Queue,
+        },
+        UserID => $Param{UserID},
+    );
+
     # reset cache
     $Self->{CacheInternalObject}->CleanUp();
 
@@ -1026,7 +1049,7 @@ sub QueueUpdate {
     }
 
     # sql
-    return if !$Self->{DBObject}->Do(
+    my $Result = $Self->{DBObject}->Do(
         SQL => 'UPDATE queue SET name = ?, comments = ?, group_id = ?, '
             . ' unlock_timeout = ?, first_response_time = ?, first_response_notify = ?, '
             . ' update_time = ?, update_notify = ?, solution_time = ?, '
@@ -1044,6 +1067,21 @@ sub QueueUpdate {
             \$Param{SignatureID},       \$Param{ValidID},             \$Param{UserID},
             \$Param{QueueID},
         ],
+    );
+
+    return if !$Result;
+
+    # get queue data with updated name for QueueUpdate event
+    my %Queue = $Self->QueueGet( Name => $Param{Name} );
+
+    # trigger event
+    $Self->EventHandler(
+        Event => 'QueueUpdate',
+        Data  => {
+            Queue    => \%Queue,
+            OldQueue => \%OldQueue,
+        },
+        UserID => $Param{UserID},
     );
 
     # reset cache
