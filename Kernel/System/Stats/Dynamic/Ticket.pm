@@ -266,6 +266,20 @@ sub GetObjectAttributes {
             },
         },
         {
+            Name             => 'Change Time',
+            UseAsXvalue      => 1,
+            UseAsValueSeries => 1,
+            UseAsRestriction => 1,
+            Element          => 'ChangeTime',
+            TimePeriodFormat => 'DateInputFormat',    # 'DateInputFormatLong',
+            Block            => 'Time',
+            TimeStop         => $Today,
+            Values           => {
+                TimeStart => 'TicketChangeTimeNewerDate',
+                TimeStop  => 'TicketChangeTimeOlderDate',
+            },
+        },
+        {
             Name             => 'Close Time',
             UseAsXvalue      => 1,
             UseAsValueSeries => 1,
