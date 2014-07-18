@@ -280,4 +280,18 @@ for my $TicketID (@TicketIDs) {
     );
 }
 
+# clean up queues
+
+for my $QueueID (@Queues) {
+
+    my $Success = $Self->{DBObject}->Do(
+        SQL  => 'DELETE FROM queue WHERE id = ?',
+        Bind => [ \$QueueID ],
+    );
+    $Self->True(
+        $Success,
+        "Removed Queue  $QueueID",
+    );
+}
+
 1;
