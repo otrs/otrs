@@ -37,7 +37,7 @@
 [% RenderBlockStart("CustomerItem") %]
 [% RenderBlockStart("CustomerItemRow") %]
     <label>[% Translate(Data.Text) | html %]:</label>
-    <p class="Value FixedValueSmall ItemRow" title="Links">
+    <p class="Value FixedValueSmall ItemRow" title="[% Translate(Data.Text) | html %]">
         <a class="[% Data.CSSClass %]" href="[% Data.URL %]" target="[% Data.Target %]" title="[% Translate(Data.Text) | html %]">
             <i class="fa [% Data.IconName %]"></i>
             [% Data.Extension | html %]
