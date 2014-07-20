@@ -4801,9 +4801,10 @@
                     <Item Key="CSSClassOpenTicket">OpenTicket</Item>
                     <Item Key="CSSClassNoOpenTicket">NoOpenTicket</Item>
                     <Item Key="Target">_blank</Item>
-                    <Item Key="Text" Translatable="1">Open tickets (customer)</Item>
+                    <Item Key="Text" Translatable="1">Open tickets</Item>
                     <Item Key="Action">AgentTicketSearch</Item>
                     <Item Key="Subaction">Search</Item>
+                    <Item Key="IconName">fa-building</Item>
                     <Item Key="IconNameOpenTicket">fa-exclamation-circle</Item>
                     <Item Key="IconNameNoOpenTicket">fa-check-circle</Item>
                 </Hash>
@@ -4822,9 +4823,12 @@
                     <Item Key="CSSClassOpenTicket">OpenTicket</Item>
                     <Item Key="CSSClassNoOpenTicket">NoOpenTicket</Item>
                     <Item Key="Target">_blank</Item>
-                    <Item Key="Text" Translatable="1">Open tickets (customer user)</Item>
+                    <Item Key="Text" Translatable="1">Open tickets</Item>
                     <Item Key="Action">AgentTicketSearch</Item>
                     <Item Key="Subaction">Search</Item>
+                    <Item Key="IconName">fa-user</Item>
+                    <Item Key="IconNameOpenTicket">fa-exclamation-circle</Item>
+                    <Item Key="IconNameNoOpenTicket">fa-check-circle</Item>
                 </Hash>
             </Setting>
     </ConfigItem>
@@ -4841,9 +4845,12 @@
                     <Item Key="CSSClassOpenTicket">OpenTicket</Item>
                     <Item Key="CSSClassNoOpenTicket">NoOpenTicket</Item>
                     <Item Key="Target">_blank</Item>
-                    <Item Key="Text" Translatable="1">Closed tickets (customer)</Item>
+                    <Item Key="Text" Translatable="1">Closed tickets</Item>
                     <Item Key="Action">AgentTicketSearch</Item>
                     <Item Key="Subaction">Search</Item>
+                    <Item Key="IconName">fa-building</Item>
+                    <Item Key="IconNameOpenTicket">fa-exclamation-circle</Item>
+                    <Item Key="IconNameNoOpenTicket">fa-check-circle</Item>
                 </Hash>
             </Setting>
     </ConfigItem>
@@ -4860,9 +4867,12 @@
                     <Item Key="CSSClassOpenTicket">OpenTicket</Item>
                     <Item Key="CSSClassNoOpenTicket">NoOpenTicket</Item>
                     <Item Key="Target">_blank</Item>
-                    <Item Key="Text" Translatable="1">Closed tickets (customer user)</Item>
+                    <Item Key="Text" Translatable="1">Closed tickets</Item>
                     <Item Key="Action">AgentTicketSearch</Item>
                     <Item Key="Subaction">Search</Item>
+                    <Item Key="IconName">fa-user</Item>
+                    <Item Key="IconNameOpenTicket">fa-exclamation-circle</Item>
+                    <Item Key="IconNameNoOpenTicket">fa-check-circle</Item>
                 </Hash>
             </Setting>
     </ConfigItem>

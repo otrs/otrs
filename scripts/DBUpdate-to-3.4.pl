@@ -317,8 +317,32 @@ sub _MigrateFontAwesome {
             'IconName' => 'fa-xing',
         },
         '15-OpenTickets' => {
+            'Text'                 => 'Open tickets',
+            'IconName'             => 'fa-building',
             'IconNameOpenTicket'   => 'fa-exclamation-circle',
             'IconNameNoOpenTicket' => 'fa-check-circle',
+        },
+        '16-OpenTicketsForCustomerUserLogin' => {
+            'Text'                 => 'Open tickets',
+            'IconName'             => 'fa-user',
+            'IconNameOpenTicket'   => 'fa-exclamation-circle',
+            'IconNameNoOpenTicket' => 'fa-check-circle',
+        },
+        '17-ClosedTickets' => {
+            'Text'                 => 'Closed tickets',
+            'IconName'             => 'fa-building',
+            'IconNameOpenTicket'   => 'fa-check-circle',
+            'IconNameNoOpenTicket' => 'fa-exclamation-circle',
+            'CSSClassNoOpenTicket' => 'OpenTicket',
+            'CSSClassOpenTicket'   => 'NoOpenTicket',
+        },
+        '18-ClosedTicketsForCustomerUserLogin' => {
+            'Text'                 => 'Closed tickets',
+            'IconName'             => 'fa-user',
+            'IconNameOpenTicket'   => 'fa-check-circle',
+            'IconNameNoOpenTicket' => 'fa-exclamation-circle',
+            'CSSClassNoOpenTicket' => 'OpenTicket',
+            'CSSClassOpenTicket'   => 'NoOpenTicket',
         },
     );
 
