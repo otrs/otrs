@@ -1037,17 +1037,28 @@ sub _Dump {
         return;
     }
 
-    # data is a scalar reference
-    if ( ref ${$Data} eq 'SCALAR' ) {
+    my $PossibleRefs = $Self->{ConfigObject}->Get('PossibleDumperReferences');
+    if (
+        !$PossibleRefs
+        || ref $PossibleRefs ne 'ARRAY'
+    ) {
+        $PossibleRefs = [];
+    }
 
-        # start recursion
-        $Self->_Dump( ${$Data} );
+    my $DataRef = ref ${$Data};
+    # check if we have a dumpable reference
+    if ( !scalar grep { $DataRef eq $_ } @{ $PossibleRefs } ) {
 
+        $Self->{LogObject}->Log(
+            Priority => 'error',
+            Message  => "Unknown ref '" . ref( ${$Data} ) . "'!",
+        );
         return;
     }
 
-    # data is a hash reference
+    # special HASH ref handling
     if ( ref ${$Data} eq 'HASH' ) {
+
         KEY:
         for my $Key ( sort keys %{ ${$Data} } ) {
             next KEY if !defined ${$Data}->{$Key};
@@ -1055,36 +1066,22 @@ sub _Dump {
             # start recursion
             $Self->_Dump( \${$Data}->{$Key} );
         }
-
-        return;
     }
+    # special ARRAY ref handling
+    elsif ( ref ${$Data} eq 'ARRAY' ) {
 
-    # data is a array reference
-    if ( ref ${$Data} eq 'ARRAY' ) {
         KEY:
-        for my $Key ( 0 .. $#{ ${$Data} } ) {
+        for my $Key ( @{ ${$Data} } ) {
             next KEY if !defined ${$Data}->[$Key];
 
             # start recursion
             $Self->_Dump( \${$Data}->[$Key] );
         }
-
-        return;
     }
-
-    # data is a ref reference
-    if ( ref ${$Data} eq 'REF' ) {
-
+    else {
         # start recursion
         $Self->_Dump( ${$Data} );
-
-        return;
     }
-
-    $Self->{LogObject}->Log(
-        Priority => 'error',
-        Message  => "Unknown ref '" . ref( ${$Data} ) . "'!",
-    );
 
     return;
 }
