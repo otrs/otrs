@@ -1294,12 +1294,24 @@ sub Run {
             );
         }
 
-        # customer info (customer name)
+        # customer info
+        my %CustomerInfo;
         if ( $Param{Config}->{CustomerInfo} ) {
             if ( $Article{CustomerUserID} ) {
                 $Article{CustomerName} = $Self->{CustomerUserObject}->CustomerName(
                     UserLogin => $Article{CustomerUserID},
                 );
+
+                %CustomerInfo = $Self->{CustomerUserObject}->CustomerUserDataGet(
+                    User => $Article{CustomerUserID},
+                );
+
+                INFOKEY:
+                for my $InfoKey ( keys %CustomerInfo ) {
+                    next INFOKEY if $InfoKey =~ m{\ACustomer}xms;
+
+                    $CustomerInfo{ 'Customer' . $InfoKey } = $CustomerInfo{$InfoKey};
+                }
             }
         }
 
@@ -1485,7 +1497,9 @@ sub Run {
                         . $ResponsibleInfo{'UserLastname'};
                 }
                 else {
-                    $DataValue = $Article{$TicketColumn} || $UserInfo{$TicketColumn};
+                    $DataValue = $Article{$TicketColumn}
+                        || $UserInfo{$TicketColumn}
+                        || $CustomerInfo{$TicketColumn};
                 }
 
                 $Self->{LayoutObject}->Block(
