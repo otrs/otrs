@@ -3416,6 +3416,7 @@ sub Data {
         'Customer item (icon) which shows the open tickets of this customer as info block. Setting CustomerUserLogin to 1 searches for tickets based on login name rather than CustomerID.' =>
             '',
         'CustomerName' => 'Kundenname',
+        'CustomerCompanyName' => 'Kundenfirma',
         'Customers <-> Groups' => '',
         'Data used to export the search result in CSV format.' => '',
         'Date / Time' => 'Datum / Zeit',
