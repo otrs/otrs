@@ -157,6 +157,11 @@ sub Run {
         DynamicFields => 1,
     );
 
+    # get clickable queue path
+    $Ticket{QueueClickable} = $Self->{LayoutObject}->TicketClickableQueue(
+        Queue => $Ticket{Queue},
+    );
+
     # get ACL restrictions
     my %PossibleActions;
     my $Counter = 0;
