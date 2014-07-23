@@ -174,6 +174,7 @@ sub Run {
     if ($Count) {
         $IconNameStatus = $Param{Config}->{IconNameOpenTicket};
     }
+
     # generate block
     $Self->{LayoutObject}->Block(
         Name => 'CustomerItemRow',

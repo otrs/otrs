@@ -15,12 +15,8 @@ use warnings;
 use MIME::Base64;
 use File::Copy;
 
-use Kernel::System::Cache;
-use Kernel::System::JSON;
-use Kernel::System::Loader;
 use Kernel::System::SysConfig;
 use Kernel::System::WebUserAgent;
-use Kernel::System::XML;
 use Kernel::System::EventHandler;
 use Kernel::System::VariableCheck qw(:all);
 
@@ -3408,7 +3404,7 @@ sub _MergedPackages {
     if ( !defined $Param{Structure}->{PackageMerge} ) {
         $Self->{LogObject}->Log(
             Priority => 'error',
-            Message => 'PackageMerge not defined!',
+            Message  => 'PackageMerge not defined!',
         );
 
         return;
@@ -3575,7 +3571,7 @@ sub _CheckDBMerged {
     if ( !defined $Param{Database} ) {
         $Self->{LogObject}->Log(
             Priority => 'error',
-            Message => 'Database not defined!',
+            Message  => 'Database not defined!',
         );
 
         return;
