@@ -2491,7 +2491,10 @@ sub NavigationBar {
             next MENUMODULE if !$Object;
 
             # run module
-            %NavBar = ( %NavBar, $Object->Run( %Param, Config => $Jobs{$Job} ) );
+            %NavBar = (
+                %NavBar,
+                $Object->Run( %Param, Config => $Jobs{$Job}, NavBar => \%NavBar || {} )
+            );
         }
     }
 
@@ -2535,6 +2538,19 @@ sub NavigationBar {
             );
         }
     }
+
+    # get user preferences for custom nav bar item ordering
+    my %UserPreferences = $Self->{UserObject}->GetPreferences(
+        UserID => $Self->{UserID},
+    );
+
+    my $NavbarOrderItems = $UserPreferences{'UserNavBarItemsOrder'} || '';
+    $Self->Block(
+        Name => 'NavbarOrderItems',
+        Data => {
+            'NavbarOrderItems' => $NavbarOrderItems,
+        },
+    );
 
     # show search icon if any search router is configured
     if ( IsHashRefWithData( $Self->{ConfigObject}->Get('Frontend::Search') ) ) {
@@ -3053,6 +3069,15 @@ sub CustomerHeader {
         }
     }
 
+    # fix IE bug if in filename is the word attachment
+    my $File = $Param{Filename} || $Self->{Action} || 'unknown';
+    if ( $Self->{BrowserBreakDispositionHeader} ) {
+        $File =~ s/attachment/bttachment/gi;
+    }
+
+    # set file name for "save page as"
+    $Param{ContentDisposition} = "filename=\"$File.html\"";
+
     # area and title
     if (
         !$Param{Area}
@@ -3359,7 +3384,10 @@ sub CustomerNavigationBar {
             );
 
             # run module
-            %NavBarModule = ( %NavBarModule, $Object->Run( %Param, Config => $Jobs{$Job} ) );
+            %NavBarModule = (
+                %NavBarModule,
+                $Object->Run( %Param, Config => $Jobs{$Job}, NavBarModule => \%NavBarModule || {} )
+            );
         }
     }
 

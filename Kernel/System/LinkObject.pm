@@ -13,8 +13,6 @@ use strict;
 use warnings;
 
 use Kernel::System::CacheInternal;
-use Kernel::System::CheckItem;
-use Kernel::System::Valid;
 
 =head1 NAME
 
@@ -44,15 +42,15 @@ sub new {
     my ( $Type, %Param ) = @_;
 
     # allocate new hash for object
-    my $Self = {};
+    my $Self = {
+        $Kernel::OM->ObjectHash(
+            Objects => [
+                qw( DBObject ConfigObject LogObject MainObject CheckItemObject )
+            ],
+        ),
+    };
     bless( $Self, $Type );
 
-    # check needed objects
-    for (qw(DBObject ConfigObject LogObject MainObject EncodeObject TimeObject)) {
-        $Self->{$_} = $Param{$_} || die;
-    }
-    $Self->{CheckItemObject}     = Kernel::System::CheckItem->new( %{$Self} );
-    $Self->{ValidObject}         = Kernel::System::Valid->new( %{$Self} );
     $Self->{CacheInternalObject} = Kernel::System::CacheInternal->new(
         %{$Self},
         Type => 'LinkObject',
@@ -630,10 +628,10 @@ sub LinkCleanup {
     return if !$StateID;
 
     # get current time
-    my $Now = $Self->{TimeObject}->SystemTime();
+    my $Now = $Kernel::OM->Get('TimeObject')->SystemTime();
 
     # calculate delete time
-    my $DeleteTime = $Self->{TimeObject}->SystemTime2TimeStamp(
+    my $DeleteTime = $Kernel::OM->Get('TimeObject')->SystemTime2TimeStamp(
         SystemTime => ( $Now - $Param{Age} ),
     );
 
@@ -1201,12 +1199,13 @@ Return
     };
 
     my $LinkList = $LinkObject->LinkListWithData(
-        Object    => 'Ticket',
-        Key       => '321',
-        Object2   => 'FAQ',         # (optional)
-        State     => 'Valid',
-        Type      => 'ParentChild', # (optional)
-        Direction => 'Target',      # (optional) default Both (Source|Target|Both)
+        Object                          => 'Ticket',
+        Key                             => '321',
+        Object2                         => 'FAQ',         # (optional)
+        State                           => 'Valid',
+        Type                            => 'ParentChild', # (optional)
+        Direction                       => 'Target',      # (optional) default Both (Source|Target|Both)
+        IgnoreLinkedTicketStateTypes    => 0|1            # (optional) default 0
         UserID    => 1,
     );
 
@@ -1258,6 +1257,48 @@ sub LinkListWithData {
         next OBJECT if $Success;
 
         delete $LinkList->{$Object};
+    }
+
+    if ( $Param{IgnoreLinkedTicketStateTypes} ) {
+
+        # get config, which ticket state types should not be included in linked tickets overview
+        my @IgnoreLinkedTicketStateTypes
+            = @{ $Self->{ConfigObject}->Get('LinkObject::IgnoreLinkedTicketStateTypes') // [] };
+
+        if (@IgnoreLinkedTicketStateTypes) {
+            my %IgnoreLinkTicketStateTypesHash;
+            map { $IgnoreLinkTicketStateTypesHash{$_}++ } @IgnoreLinkedTicketStateTypes;
+
+            # remove tickets with configured ticket state types from list
+            OBJECT:
+            for my $Object ( sort keys %{$LinkList} ) {
+                next OBJECT if $Object ne 'Ticket';
+
+                LINKTYPE:
+                for my $LinkType ( sort keys %{ $LinkList->{$Object} } ) {
+
+                    DIRECTION:
+                    for my $Direction ( sort keys %{ $LinkList->{$Object}->{$LinkType} } ) {
+
+                        TICKETID:
+                        for my $TicketID (
+                            sort keys %{ $LinkList->{$Object}->{$LinkType}->{$Direction} }
+                            )
+                        {
+
+                            next TICKETID
+                                if
+                                !$IgnoreLinkTicketStateTypesHash{
+                                $LinkList->{$Object}->{$LinkType}
+                                    ->{$Direction}->{$TicketID}->{StateType}
+                                };
+
+                            delete $LinkList->{$Object}->{$LinkType}->{$Direction}->{$TicketID};
+                        }
+                    }
+                }
+            }
+        }
     }
 
     # clean the hash
@@ -2188,7 +2229,7 @@ sub StateList {
     if ( $Param{Valid} ) {
 
         # create the valid id string
-        my $ValidIDs = join ', ', $Self->{ValidObject}->ValidIDsGet();
+        my $ValidIDs = join ', ', $Kernel::OM->Get('ValidObject')->ValidIDsGet();
 
         $SQLWhere = "WHERE valid_id IN ( $ValidIDs )";
     }

@@ -57,8 +57,6 @@ sub new {
         Carp::confess('$Kernel::OM is not defined, please initialize your object manager')
     }
 
-    $Self->{EncodeObject} = $Kernel::OM->Get('EncodeObject');
-
     my $ConfigObject = $Kernel::OM->Get('ConfigObject');
     $Self->{ProductVersion} = $ConfigObject->Get('Product') . ' ';
     $Self->{ProductVersion} .= $ConfigObject->Get('Version');
@@ -193,22 +191,12 @@ sub Log {
 
             eval { $VersionString = $Package1->VERSION || ''; };    ## no critic
 
-            # Version is present
+            # version is present
             if ($VersionString) {
-                $VersionString = 'v' . $VersionString;
+                $VersionString = ' (v' . $VersionString . ')';
             }
 
-            # OTRS modules do not have a version variable
-            elsif ( index( $Package1, 'Kernel::' ) > -1 ) {
-                $VersionString = $Self->{ProductVersion};
-            }
-
-            # Other modules
-            else {
-                $VersionString = 'unknown version';
-            }
-
-            $Error .= "   Module: $Subroutine2 ($VersionString) Line: $Line1\n";
+            $Error .= "   Module: $Subroutine2$VersionString Line: $Line1\n";
 
             last COUNT if !$Line2;
         }
@@ -274,7 +262,7 @@ sub GetLog {
     }
 
     # encode the string
-    $Self->{EncodeObject}->EncodeInput( \$String );
+    $Kernel::OM->Get('EncodeObject')->EncodeInput( \$String );
 
     return $String;
 }

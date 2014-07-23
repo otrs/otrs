@@ -1,4 +1,22 @@
 #3.4.0.beta1 20??-??-??
+ - 2014-07-22 Fixed bug#[10644](http://bugs.otrs.org/show_bug.cgi?id=10644) - Module parameters in GenericAgent are copied to ticket parameters
+ - 2017-07-21 Changed Action based Ticket ACLs format from a hash form to an array form just like the other ACLs, including possiblilty to define Action based Ticket ACLs in the PossibleNot and PossibleAdd sections.
+ - 2017-07-21 Added new Tiket ACL debugging options.
+ - 2014-07-21 Added [Not], [NotRegExp] and [Notregexp] modifiers for all Ticket ACL sections.
+ - 2014-07-21 Added possibility to combine different Ticket ACLs with Possible, PossibleAdd and PossibleNot sections.
+ - 2014-07-21 Added PossibleAdd section to Ticket ACls.
+ - 2014-07-21 Added "My Services" feature including: "Status View", "Tickets in My Services" filter for ticket based dashboard dashlets and more notification options under agent preferences.
+ - 2014-07-21 Added DTL -> TT migration script for templates.
+ - 2014-07-18 Changed customer user item to font awesome, thanks to Nils Leideck.
+ - 2014-07-16 Added Generic Interface Transport HTTP REST
+ - 2014-07-14 Added possibility to reply directly to internal and external notes.
+ - 2014-07-10 Fixed bug#[10623](http://bugs.otrs.org/show_bug.cgi?id=10623) - Ticket owner is not shown regardless what is configured, thanks to Renee Bäcker.
+ - 2014-07-10 Changed default settings to use a quick connect string instead of SID to connect to an oracle database, because SID is not working with an Oracle RAC cluster.
+ - 2014-07-10 Changed default settings of oracles NLS_LANG variable from UTF8 to AL32UTF8 to fix problems with 4 byte unicode character.
+ - 2014-07-08 Linked tickets of a specific type (e.g. merged) can now be hidden via SysConfig option.
+ - 2014-07-08 Added: Customizable main navigation bar item sorting on a per-user basis with drag & drop.
+ - 2014-07-07 Fixed bug#[7531](http://bugs.otrs.org/show_bug.cgi?id=7531) - Queue and Service delimiter '::' should be replaced in the output by ': :' to allow browsers a line break.
+ - 2014-06-30 Fixed bug#[10581](http://bugs.otrs.org/show_bug.cgi?id=10581) - wrong underline color in ivory slim menu module links..
  - 2014-06-26 Fixed bug#[10396](http://bugs.otrs.org/show_bug.cgi?id=10396) - OTRS, MySQL, utf8 charset and non-BMP characters problem(thanks to ib.pl).
  - 2014-06-23 Fixed bug#[10522](http://bugs.otrs.org/show_bug.cgi?id=10522) - HTTP 500 error when uploading attachments to ticket on Windows.
  - 2014-06-23 Added edit and delete icon fonts to process management canvas elements, thanks to Nils Leideck.
@@ -70,6 +88,11 @@
  - 2013-12-12 Added additional information to install commands for different distributions (see perl bin/otrs.CheckModules.pl -h) for more information.
 
 #3.3.9 2014-??-??
+ - 2014-07-17 Fixed bug#[10612](http://bugs.otrs.org/show_bug.cgi?id=10612) - Wrong Time in DashboardField "Changed", thanks to S7.
+ - 2014-07-10 Fixed bug#[10595](http://bugs.otrs.org/show_bug.cgi?id=10595) - Standard Replies are false sorted in Ticket Zoom select box.
+ - 2014-07-07 Fixed bug#[10534](http://bugs.otrs.org/show_bug.cgi?id=10534) - Wildcard hacking the customer information center, thanks to S7.
+ - 2014-07-03 Fixed bug#[10586](http://bugs.otrs.org/show_bug.cgi?id=10586) - In Customer Portal no attachments are shown.
+ - 2014-06-30 Fixed bug#[6601](http://bugs.otrs.org/show_bug.cgi?id=6601) - Changing search options changes order of fields, thanks to S7.
  - 2014-06-23 Fixed bug#[10246](http://bugs.otrs.org/show_bug.cgi?id=10246) - ProcessManagement: ConditionLinking OR in a Transition doesn't work.
  - 2014-06-23 Fixed bug#[10559](http://bugs.otrs.org/show_bug.cgi?id=10559) - "Previous Owner" don't use the FirstnameLastnameOrder configuration.
  - 2014-06-23 Fixed bug#[10532](http://bugs.otrs.org/show_bug.cgi?id=10532) - PostMasterMailbox.pl hangs parsing mails.
@@ -714,7 +737,7 @@
  - 2013-04-29 Updated Polish translation file, thanks to ib.pl!
  - 2013-04-29 Fixed bug#[9040](http://bugs.otrs.org/show_bug.cgi?id=9040) - CustomerTicketPrint crashes when no attributes are configured to be printed.
  - 2013-04-26 Added UnitTest for case sensivity parameter of customer databases
- - 2013-04-23 Fixed bug#[9362](http://bugs.otrs.org/show_bug.cgi?id=9362) - cannot redirect to external url containing & caracter.
+ - 2013-04-23 Fixed bug#[9362](http://bugs.otrs.org/show_bug.cgi?id=9362) - cannot redirect to external url containing & character.
  - 2013-04-23 Fixed bug#[7856](http://bugs.otrs.org/show_bug.cgi?id=7856) - Statistics only use non archived tickets.
  - 2013-04-23 Fixed bug#[9072](http://bugs.otrs.org/show_bug.cgi?id=9072) - Reply to email-internal includes customer users email in Cc. field.
  - 2013-04-22 Fixed bug#[9349](http://bugs.otrs.org/show_bug.cgi?id=9349) - SQL warnings on Oracle DB if more than 4k characters are sent to the database.
@@ -2742,7 +2765,7 @@
  - 2010-09-02 Fixed bug#[5780](http://bugs.otrs.org/show_bug.cgi?id=5780) - Have to resize window when replying on ticket.
  - 2010-09-02 Fixed bug#[5638](http://bugs.otrs.org/show_bug.cgi?id=5638) - Strange labels/buttons in TicketSearch "Create New  Delete".
  - 2010-09-02 Fixed bug#[5629](http://bugs.otrs.org/show_bug.cgi?id=5629) - Search Dialog of new Ticket Search Feature is not working with IE7.
- - 2010-09-02 Fixed bug#[5582](http://bugs.otrs.org/show_bug.cgi?id=5582) - Ticket::Frontend::MergeText and special carachters.
+ - 2010-09-02 Fixed bug#[5582](http://bugs.otrs.org/show_bug.cgi?id=5582) - Ticket::Frontend::MergeText and special character.
  - 2010-09-01 Fixed bug#[5851](http://bugs.otrs.org/show_bug.cgi?id=5851) - 3 AJAX refresh indicators are shown at the top of the AgentTicketPhone page.
  - 2010-09-01 Fixed bug#[5835](http://bugs.otrs.org/show_bug.cgi?id=5835) - Client side validation without JavaScript broken in
     customer interface.

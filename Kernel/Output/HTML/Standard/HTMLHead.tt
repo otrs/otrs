@@ -9,27 +9,7 @@
 <head>
     <meta http-equiv="Content-type" content="text/html;charset=utf-8" />
 [% RenderBlockStart("MetaHttpEquivRefresh") %]
-[% WRAPPER JSOnDocumentComplete %]
-<script type="text/javascript">
-// We don't use an http refresh header any more because it causes problems with
-//  open dialogs / popups (see bug#7135 and others).
-var RefreshSeconds = parseInt("[% Data.Refresh | html %]", 10) || 0;
-if (RefreshSeconds) {
-    window.setInterval(function() {
-        // If there are any open overlay dialogs, don't refresh
-        if ($('.Dialog:visible').length) {
-            return;
-        }
-        // If there are open child popup windows, don't refresh
-        if (Core && Core.UI && Core.UI.Popup && Core.UI.Popup.HasOpenPopups()) {
-            return;
-        }
-        // Now we can reload
-        window.location.reload();
-    }, RefreshSeconds *  1000);
-}
-</script>
-[% END %]
+[% INCLUDE "HTMLHeadRefresh.tt" %]
 [% RenderBlockEnd("MetaHttpEquivRefresh") %]
 [% RenderBlockStart("MetaLink") %]
     <link rel="[% Data.Rel | html %]" type="[% Data.Type | html %]" title="[% Data.Title | html %]" href="[% Data.Href %]" />
@@ -123,6 +103,6 @@ if (RefreshSeconds) {
 
     <title>[% Data.TitleArea | html %] [% Config("ProductName") %]</title>
 
-[% InsertTemplate("HTMLHeadBlockEvents.tt") %]
+[% INCLUDE "HTMLHeadBlockEvents.tt" %]
 
 </head>

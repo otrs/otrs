@@ -102,28 +102,26 @@ sub LoadDefaults {
     $Self->{DatabasePw} = 'some-pass';
 
     # DatabaseDSN
-    # (The database DSN for MySQL ==> more: "man DBD::mysql")
+    # The database DSN for MySQL ==> more: "perldoc DBD::mysql"
     $Self->{DatabaseDSN} = "DBI:mysql:database=<OTRS_CONFIG_Database>;host=<OTRS_CONFIG_DatabaseHost>;";
 
-# (The database DSN for PostgreSQL ==> more: "man DBD::Pg")
+    # The database DSN for PostgreSQL ==> more: "perldoc DBD::Pg"
 #    $Self->{DatabaseDSN} = "DBI:Pg:dbname=<OTRS_CONFIG_Database>;host=<OTRS_CONFIG_DatabaseHost>;";
 
-    # (The database DSN for DBI:ODBC ==> more: "man DBD::ODBC")
+    # The database DSN for Microsoft SQL Server - only supported if OTRS is
+    # installed on Windows as well
     #    $Self->{DatabaseDSN} = "DBI:ODBC:$Self->{Database}";
     # If you use ODBC, no database auto detection is possible,
     # so set the database type here. Possible: mysq,postgresql,mssql,oracle
     #    $Self->{'Database::Type'} = 'mssql';
 
-# (The database DSN for Oracle ==> more: "man DBD::oracle")
-#    $Self->{DatabaseDSN} = "DBI:Oracle:sid=$Self->{Database};host=$Self->{DatabaseHost};port=1521;";
-#    $Self->{DatabaseDSN} = "DBI:Oracle:sid=vingador;host=vingador;port=1521;";
-# if needed, oracle env settings
-#    $ENV{ORACLE_HOME} = '/opt/ora9/product/9.2';
-#    $ENV{ORACLE_HOME} = '/oracle/Ora92';
+    # The database DSN for Oracle ==> more: "perldoc DBD::oracle"
+#    $Self->{DatabaseDSN} = "DBI:Oracle://$Self->{DatabaseHost}:1521/$Self->{Database}";
+#
+#    $ENV{ORACLE_HOME}     = '/path/to/your/oracle';
 #    $ENV{NLS_DATE_FORMAT} = 'YYYY-MM-DD HH24:MI:SS';
-#    $ENV{NLS_LANG} = "german_germany.utf8";
-#    $ENV{NLS_LANG} = "german_germany.we8iso8859p15";
-#    $ENV{NLS_LANG} = "american_america.we8iso8859p1";
+#    $ENV{NLS_LANG}        = 'AMERICAN_AMERICA.AL32UTF8';
+#    $ENV{NLS_LANG}        = 'GERMAN_GERMANY.AL32UTF8';
 
     # If you want to use an init sql after connect, use this here.
     # (e. g. can be used for mysql encoding between client and server)
@@ -919,6 +917,7 @@ sub LoadDefaults {
         'Core.UI.js',
         'Core.UI.Accordion.js',
         'Core.UI.Datepicker.js',
+        'Core.UI.DnD.js',
         'Core.UI.Resizable.js',
         'Core.UI.Table.js',
         'Core.UI.Accessibility.js',
@@ -1702,7 +1701,7 @@ via the Preferences button after logging in.
         },
         LogObject     => {
             ClassName       => 'Kernel::System::Log',
-            Dependencies    => ['ConfigObject', 'EncodeObject'],
+            Dependencies    => [qw(ConfigObject EncodeObject)],
             OmAware         => 1,
         },
         EncodeObject  => {
@@ -1712,16 +1711,16 @@ via the Preferences button after logging in.
         },
         MainObject    => {
             ClassName       => 'Kernel::System::Main',
-            Dependencies    => ['ConfigObject', 'LogObject', 'EncodeObject'],
+            Dependencies    => [qw(LogObject EncodeObject)],
             OmAware         => 1,
         },
         TimeObject    => {
             ClassName       => 'Kernel::System::Time',
-            Dependencies    => ['ConfigObject', 'LogObject', 'EncodeObject', 'MainObject'],
+            Dependencies    => [qw(ConfigObject LogObject EncodeObject MainObject CacheObject)],
         },
         DBObject    => {
             ClassName       => 'Kernel::System::DB',
-            Dependencies    => ['ConfigObject', 'LogObject', 'EncodeObject', 'MainObject', 'TimeObject'],
+            Dependencies    => [qw(ConfigObject LogObject EncodeObject MainObject TimeObject)],
             OmAware         => 1,
         },
         UserObject    => {
@@ -1729,6 +1728,8 @@ via the Preferences button after logging in.
         },
         CustomerUserObject    => {
             ClassName       => 'Kernel::System::CustomerUser',
+            Dependencies    => [@DefaultDependencies, qw(CustomerCompanyObject)],
+            OmAware         => 1,
         },
         CustomerCompanyObject => {
             ClassName       => 'Kernel::System::CustomerCompany',
@@ -1738,27 +1739,22 @@ via the Preferences button after logging in.
         },
         GroupObject   => {
             ClassName       => 'Kernel::System::Group',
+            Dependencies    => [qw(DBObject ConfigObject LogObject ValidObject)],
+            OmAware         => 1,
         },
         TicketObject  => {
             ClassName       => 'Kernel::System::Ticket',
-            Dependencies    => [@DefaultDependencies, 'GroupObject', 'QueueObject', 'CustomerUserObject' ],
+            Dependencies    => [@DefaultDependencies, qw(GroupObject QueueObject CustomerUserObject)],
         },
         QueueObject  => {
             ClassName       => 'Kernel::System::Queue',
-            Dependencies    => [@DefaultDependencies, 'DBObject', 'GroupObject', 'CustomerUserObject', 'CustomerGroupObject' ],
+            Dependencies    => [qw(DBObject ConfigObject LogObject MainObject ValidObject)],
+            OmAware         => 1,
         },
         LayoutObject  => {
             ClassName       => 'Kernel::Output::HTML::Layout',
             OmAware         => 1,
-            Dependencies    => [
-                @DefaultDependencies,
-                'ParamObject',
-                'SessionObject',
-                'TicketObject',
-                'GroupObject',
-                'HTMLUtilsObject',
-                'JSONObject'
-            ],
+            Dependencies    => [@DefaultDependencies, qw(ParamObject SessionObject TicketObject GroupObject HTMLUtilsObject JSONObject)],
         },
         HTMLUtilsObject => {
             ClassName => 'Kernel::System::HTMLUtils',
@@ -1766,6 +1762,8 @@ via the Preferences button after logging in.
         },
         PackageObject => {
             ClassName       => 'Kernel::System::Package',
+            Dependencies    => [@DefaultDependencies, qw(CacheObject JSONObject LoaderObject XMLObject)],
+            OmAware         => 1,
         },
         ParamObject   => {
             ClassName       => 'Kernel::System::Web::Request',
@@ -1807,9 +1805,12 @@ via the Preferences button after logging in.
         },
         LinkObject => {
             ClassName       => 'Kernel::System::LinkObject',
+            Dependencies    => [qw(DBObject ConfigObject LogObject MainObject CheckItemObject)],
+            OmAware         => 1,
         },
         XMLObject => {
             ClassName       => 'Kernel::System::XML',
+            Dependencies    => [@DefaultDependencies, 'CacheObject'],
         },
         YAMLObject => {
             ClassName       => 'Kernel::System::YAML',
@@ -1824,7 +1825,8 @@ via the Preferences button after logging in.
         },
         StatsObject => {
             ClassName       => 'Kernel::System::Stats',
-            Dependencies    => [@DefaultDependencies, qw(GroupObject UserObject)],
+            Dependencies    => [qw(ConfigObject LogObject GroupObject TimeObject MainObject DBObject EncodeObject XMLObject CacheObject)],
+            OmAware         => 1,
         },
         CSVObject => {
             ClassName       => 'Kernel::System::CSV',
@@ -1832,7 +1834,8 @@ via the Preferences button after logging in.
         },
         CheckItemObject => {
             ClassName       => 'Kernel::System::CheckItem',
-            Dependencies    => [qw(ConfigObject LogObject EncodeObject MainObject)],
+            Dependencies    => [qw(ConfigObject LogObject)],
+            OmAware         => 1,
         },
         EmailObject => {
             ClassName       => 'Kernel::System::Email',
@@ -1863,8 +1866,8 @@ via the Preferences button after logging in.
         },
         SysConfigObject => {
             ClassName       => 'Kernel::System::SysConfig',
-            Dependencies    => [@DefaultDependencies, qw(LanguageObject)],
-
+            Dependencies    => [@DefaultDependencies, qw(LanguageObject CacheObject)],
+            OmAware         => 1,
         },
         LanguageObject => {
             ClassName       => 'Kernel::Language',
@@ -1879,12 +1882,18 @@ via the Preferences button after logging in.
         ServiceObject           => {
             ClassName       => 'Kernel::System::Service',
         },
+        SLAObject           => {
+            ClassName       => 'Kernel::System::SLA',
+        },
         TypeObject           => {
             ClassName       => 'Kernel::System::Type',
+            Dependencies    => [qw(DBObject ConfigObject LogObject)],
+            OmAware         => 1,
         },
         CacheObject          => {
             ClassName       => 'Kernel::System::Cache',
-            Dependencies    => [qw(ConfigObject LogObject MainObject EncodeObject)],
+            Dependencies    => [qw(MainObject ConfigObject LogObject)],
+            OmAware         => 1,
         },
         ACLDBACLObject      => {
             ClassName       => 'Kernel::System::ACL::DB::ACL',
@@ -1893,6 +1902,8 @@ via the Preferences button after logging in.
         },
         StateObject          => {
             ClassName       => 'Kernel::System::State',
+            Dependencies    => [qw(DBObject ConfigObject LogObject ValidObject)],
+            OmAware         => 1,
         },
         PriorityObject      => {
             ClassName       => 'Kernel::System::Priority',
@@ -1906,7 +1917,7 @@ via the Preferences button after logging in.
         },
         AutoReponseObject   => {
             ClassName       => 'Kernel::System::AutoResponse',
-            Dependencies    => [@DefaultDependencies, qw(SystemAddressObject)],
+            Dependencies    => [qw(ConfigObject LogObject DBObject)],
             OmAware         => 1,
         },
     };
