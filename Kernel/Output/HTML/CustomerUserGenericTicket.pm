@@ -170,9 +170,9 @@ sub Run {
         $CSSClass = $Param{Config}->{CSSClassOpenTicket};
     }
 
-    my $IconName = $Param{Config}->{IconNameNoOpenTicket};
+    my $IconNameStatus = $Param{Config}->{IconNameNoOpenTicket};
     if ($Count) {
-        $IconName = $Param{Config}->{IconNameOpenTicket};
+        $IconNameStatus = $Param{Config}->{IconNameOpenTicket};
     }
 
     # generate block
@@ -180,10 +180,10 @@ sub Run {
         Name => 'CustomerItemRow',
         Data => {
             %{ $Param{Config} },
-            CSSClass  => $CSSClass,
-            Extension => " ($Count)",
-            URL       => $URL,
-            IconName  => $IconName,
+            CSSClass        => $CSSClass,
+            Extension       => " ($Count)",
+            URL             => $URL,
+            IconNameStatus  => $IconNameStatus,
         },
     );
 
