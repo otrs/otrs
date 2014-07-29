@@ -172,6 +172,21 @@
             </Hash>
         </Setting>
     </ConfigItem>
+    <ConfigItem Name="PossibleDumperReferences" Required="1" Valid="1">
+        <Description Translatable="1">This configuration defines the possible references the Dump function of the MainObject can handle. Other references than those that are configured will get logged.</Description>
+        <Group>Framework</Group>
+        <SubGroup>Core</SubGroup>
+        <Setting>
+            <Hash>
+                <Item>SCALAR</Item>
+                <Item>ARRAY</Item>
+                <Item>HASH</Item>
+                <Item>REF</Item>
+                <Item>REF</Item>
+                <Item>JSON::PP::Boolean</Item>
+            </Hash>
+        </Setting>
+    </ConfigItem>
     <ConfigItem Name="CustomerHeadline" Required="1" Valid="1">
         <Description Translatable="1">The headline shown in the customer interface.</Description>
         <Group>Framework</Group>

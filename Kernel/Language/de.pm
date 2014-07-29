@@ -4362,6 +4362,8 @@ sub Data {
             '',
         'It is possible to configure different themes, for example to distinguish between agents and customers, to be used on a per-domain basis within the application. Using a regular expression (regex), you can configure a Key/Content pair to match a domain. The value in "Key" should match the domain, and the value in "Content" should be a valid theme on your system. Please see the example entries for the proper form of the regex.' =>
             '',
+        'This configuration defines the possible references the Dump function of the MainObject can handle. Other references than those that are configured will get logged.' =>
+            'Diese Konfiguration definiert die möglichen Referenzen, die mit der Dump Funktion des Main-Objekts verarbeitet werden können. Andere Referenzen als die konfigurierten werden geloggt.',
         'Lastname, Firstname' => 'Nachname, Vorname',
         'Lastname, Firstname (UserLogin)' => 'Nachname, Vorname (BenutzerLogin)',
         'Link agents to groups.' => 'Agenten zu Gruppen zuordnen.',
