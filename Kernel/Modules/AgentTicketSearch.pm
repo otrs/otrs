@@ -581,6 +581,7 @@ sub Run {
             ContentSearchPrefix => '*',
             ContentSearchSuffix => '*',
             FullTextIndex       => 1,
+            CustomerIDRaw => $GetParam{CustomerID},
             %GetParam,
             %DynamicFieldSearchParameters,
         );
