@@ -2111,7 +2111,10 @@ sub TicketServiceList {
     }
     my %Services;
     if ( !$Param{CustomerUserID} ) {
-        %Services = $Self->{ServiceObject}->ServiceList( UserID => 1, );
+        %Services = $Self->{ServiceObject}->ServiceList( 
+            UserID          => 1, 
+            KeepChildren    => $Self->{ConfigObject}->Get('Ticket::Service::KeepChildren'),
+        );
     }
     else {
         %Services = $Self->{ServiceObject}->CustomerUserServiceMemberList(
