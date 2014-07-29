@@ -1153,6 +1153,31 @@ sub TicketMetaItems {
     return @Result;
 }
 
+sub TicketClickableQueue {
+    my ($Self, %Param) = @_;
+
+    if ( !$Param{Queue} ) {
+        $Self->FatalError( Message => 'Need Queue in param!' );
+    }
+
+    my $QueueObject = $Kernel::OM->Get('QueueObject');
+
+    my $QueueName = '';
+    my @LinkedParts;
+
+    for my $Part ( split /::/, $Param{Queue} ) {
+        $QueueName .= $QueueName ? "::$Part" : $Part;
+
+        my $ID   = $QueueObject->QueueLookup( Queue => $QueueName );
+        my $Link = sprintf '<a href="%sAction=AgentTicketQueue;QueueID=%s;View=Small">%s</a>',
+            $Self->{Baselink}, $ID, $Part;
+        push @LinkedParts, $Link;
+    }
+
+    my $HTML = join '::', @LinkedParts;
+    return $HTML;
+}
+
 1;
 
 =back
