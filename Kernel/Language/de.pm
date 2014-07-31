@@ -1161,7 +1161,7 @@ sub Data {
         # Template: AdminDynamicField
         'Dynamic Fields Management' => 'Verwaltung dynamischer Felder',
         'Add new field for object' => 'Neues Feld hinzufügen für Objekt',
-        'To add a new field, select the field type form one of the object\'s list, the object defines the boundary of the field and it can\'t be changed after the field creation.' =>
+        'To add a new field, select the field type from one of the object\'s list, the object defines the boundary of the field and it can\'t be changed after the field creation.' =>
             'Zum Anlegen eines neuen Feldes, wählen Sie den Feldtyp aus der Objekliste aus. Das Objekt definiert die Zugehörigkeit des Feldes und kann nach Erstellung nicht mehr geändert werden.',
         'Dynamic Fields List' => 'Liste der dynamischen Felder',
         'Dynamic fields per page' => 'Dynamische Felder pro Seite',
@@ -2091,7 +2091,7 @@ sub Data {
             '',
         'If you have any questions that have not been answered by this Data Protection Policy or if you require more detailed information about a specific topic, please contact info@otrs.com.' =>
             '',
-        'If you deregister your system, you will loose these benefits:' =>
+        'If you deregister your system, you will lose these benefits:' =>
             'Wenn Sie Ihr System deregistrieren verlieren Sie folgende Vorteile:',
         'You need to log in with your OTRS-ID to deregister your system.' =>
             'Um Ihr System zu deregistrieren, loggen Sie sich bitte mit Ihrer OTRS-ID ein.',
@@ -2161,11 +2161,11 @@ sub Data {
         'Add certificate' => 'Zertifikat hinzufügen',
         'Add private key' => 'Privaten Schlüssel hinzufügen',
         'Filter for certificates' => 'Filter für Zertifikate',
-        'Filter for SMIME certs' => 'Filter für SMIME-Zertifikate',
+        'Filter for S/MIME certs' => 'Filter für SMIME-Zertifikate',
         'To show certificate details click on a certificate icon.' => 'Zertifikatsdetails können Sie mit einem Klick auf das Zertifikats-Icon aufrufen.',
         'To manage private certificate relations click on a private key icon.' =>
             'Um Zertifikats-Zugehörigkeiten zu verwalten können Sie auf das Icon eines privaten Schlüssels klicken.',
-        'Here you can add relations to your private certificate, these will be embedded to the SMIME signature every time you use this certificate to sign an email.' =>
+        'Here you can add relations to your private certificate, these will be embedded to the S/MIME signature every time you use this certificate to sign an email.' =>
             'Hier können Sie Zugehörigkeiten zu Ihren privaten Zertifikaten hinzufügen, diese werden in die SMIME-Signatur eingebettet, wenn Sie das Zertifikat zum Signieren einer Mail benutzen.',
         'See also' => 'Siehe auch',
         'In this way you can directly edit the certification and private keys in file system.' =>
@@ -2183,7 +2183,7 @@ sub Data {
         'Relate this certificate' => 'Dieses Zertifikat zuordnen',
 
         # Template: AdminSMIMECertRead
-        'SMIME Certificate' => 'SMIME-Zertifikat',
+        'S/MIME Certificate' => 'SMIME-Zertifikat',
         'Close window' => 'Fenster schließen',
 
         # Template: AdminSalutation
