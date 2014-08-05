@@ -233,15 +233,17 @@ Core.AJAX = (function (TargetNS) {
      * @private
      * @param {Object} Data The new field data.
      *                  The keys are the IDs of the fields to be updated.
+     * @param {Array} FieldsToUpdate List of fields that have to be updated
      * @return nothing
      * @description Updates the given fields with the given data
      */
-    function UpdateFormElements(Data) {
+    function UpdateFormElements(Data, FieldsToUpdate) {
         if (typeof Data !== 'object') {
             return;
         }
-        $.each(Data, function (Key, Value) {
+        $.each(FieldsToUpdate, function( Index, Key ) {
             var $Element = $('#' + Key);
+            var Value    = Data[Key];
 
             // special case to update ticket attachments
             if (Key === 'TicketAttachments') {
