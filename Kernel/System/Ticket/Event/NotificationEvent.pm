@@ -179,6 +179,13 @@ sub Run {
                         $Match = 1;
                         last VALUE;
                     }
+                    elsif ( lc substr( $Value, 0, 8 ) eq '[regexp]' ) {
+                        my $RegExp = substr $Value, 8;
+                        if ( $Ticket{$Key} =~ /$RegExp/i ) {
+                            $Match = 1;
+                            last;
+                        }
+                    }
                 }
             }
 
