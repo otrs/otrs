@@ -189,6 +189,38 @@ $Self->True(
     "Invalid object name causes an exception",
 );
 
+
+# Test that classes only create other objects in their constructors
+# that are declared as dependencies
+for my $Package ( @Objects ) {
+    $Kernel::OM->ObjectsDiscard();
+
+    # extract dependencies into $Kernel::OM->
+    $Kernel::OM->_ObjectBuild( Package => $Package, DependenciesOnly => 1 );
+    for my $Dep ( @{ $Kernel::OM->{ObjectDependencies}{ $Package } } ) {
+        $Kernel::OM->Get( $Dep );
+    }
+    my %ObjectHashBefore = %{ $Kernel::OM->{Objects} };
+
+    my $Dummy = $Kernel::OM->Get( $Package );
+
+    my %ObjectHashAfter = %{ $Kernel::OM->{Objects} };
+
+    # now diff the hashes, but ignore $Package, because that's expected to be
+    # built
+
+    delete $ObjectHashAfter{ $Package };
+
+    my @UndeclaredDependencies = grep { ! exists $ObjectHashBefore{ $_ } }
+        sort keys %ObjectHashAfter;
+    $Self->Is(
+        join(', ', @UndeclaredDependencies),
+        '',
+        "$Package has no undeclared dependencies",
+    );
+
+}
+
 # Clean up
 $Kernel::OM->ObjectsDiscard();
 

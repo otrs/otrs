@@ -219,6 +219,8 @@ sub _ObjectBuild {
 
     $Self->{ObjectDependencies}->{$Package} = $Dependencies;
 
+    return if $Param{DependenciesOnly};
+
     my $NewObject = $Package->new(
         %{ $Self->{Param}->{$Package} // {} }
     );
