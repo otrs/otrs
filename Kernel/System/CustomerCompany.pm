@@ -16,6 +16,8 @@ use base qw(Kernel::System::EventHandler);
 
 our @ObjectDependencies = (
     'Kernel::Config',
+    'Kernel::System::Cache',
+    'Kernel::System::DB',
     'Kernel::System::Log',
     'Kernel::System::Main',
 );

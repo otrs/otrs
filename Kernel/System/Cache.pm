@@ -14,6 +14,7 @@ use warnings;
 
 our @ObjectDependencies = (
     'Kernel::Config',
+    'Kernel::System::Cache::FileStorable',
     'Kernel::System::Log',
 );
 

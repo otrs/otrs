@@ -17,6 +17,7 @@ our @ObjectDependencies = (
     'Kernel::System::CheckItem',
     'Kernel::System::DB',
     'Kernel::System::Log',
+    'Kernel::System::SLA::PreferencesDB',
     'Kernel::System::Valid',
 );
 

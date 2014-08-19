@@ -14,8 +14,10 @@ use warnings;
 
 our @ObjectDependencies = (
     'Kernel::Config',
+    'Kernel::System::DB',
     'Kernel::System::Log',
     'Kernel::System::Main',
+    'Kernel::System::Time',
 );
 
 =head1 NAME

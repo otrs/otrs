@@ -204,24 +204,22 @@ sub _ObjectBuild {
         }
     }
 
-    # Kernel::Config does not declare its dependencies (they would have to be in
-    #   Kernel::Config::Defaults), so assume [] in this case.
-    my $Dependencies = [];
 
-    if ( $Package ne 'Kernel::Config' ) {
-        no strict 'refs';    ## no critic
-        if ( !exists ${ $Package . '::' }{ObjectDependencies} ) {
-            $Self->_DieWithError( Error => "$Package does not declare its object dependencies!" );
-        }
-        $Dependencies = \@{ $Package . '::ObjectDependencies' };
-
-        if ( ${ $Package . '::ObjectManagerDisabled' } ) {
-            $Self->_DieWithError( Error => "$Package cannot be loaded via ObjectManager!" );
-        }
-
-        use strict 'refs';
+    no strict 'refs';    ## no critic
+    if ( !exists ${ $Package . '::' }{ObjectDependencies} ) {
+        $Self->_DieWithError( Error => "$Package does not declare its object dependencies!" );
     }
+    my $Dependencies = \@{ $Package . '::ObjectDependencies' };
+
+    if ( ${ $Package . '::ObjectManagerDisabled' } ) {
+        $Self->_DieWithError( Error => "$Package cannot be loaded via ObjectManager!" );
+    }
+
+    use strict 'refs';
+
     $Self->{ObjectDependencies}->{$Package} = $Dependencies;
+
+    return if $Param{DependenciesOnly};
 
     my $NewObject = $Package->new(
         %{ $Self->{Param}->{$Package} // {} }
