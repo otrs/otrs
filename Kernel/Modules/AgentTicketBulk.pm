@@ -595,7 +595,7 @@ sub Run {
             }
 
             # time units for email
-            if ( $GetParam{ 'EmailTimeUnits' && $EmailArticleID } ) {
+            if ( $GetParam{ 'EmailTimeUnits'} && $EmailArticleID ) {
                 if ( $Self->{ConfigObject}->Get('Ticket::Frontend::BulkAccountedTime') ) {
                     $Self->{TicketObject}->TicketAccountTime(
                         TicketID  => $TicketID,
