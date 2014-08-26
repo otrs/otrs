@@ -1586,7 +1586,10 @@ sub Run {
         # build service string
         if ( $Self->{ConfigObject}->Get('Ticket::Service') ) {
 
-            my %Service = $Self->{ServiceObject}->ServiceList( UserID => $Self->{UserID}, );
+            my %Service = $Self->{ServiceObject}->ServiceList( 
+                UserID          => $Self->{UserID}, 
+                KeepChildren    => $Self->{ConfigObject}->Get('Ticket::Service::KeepChildren'),
+            );
             $Param{ServicesStrg} = $Self->{LayoutObject}->BuildSelection(
                 Data        => \%Service,
                 Name        => 'ServiceIDs',
