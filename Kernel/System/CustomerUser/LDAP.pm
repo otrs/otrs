@@ -151,6 +151,9 @@ sub new {
 
     # get valid filter if used
     $Self->{ValidFilter} = $Self->{CustomerUserMap}->{CustomerUserValidFilter} || '';
+    
+    # get member attr if used
+    $Self->{MemberAttr} = $Self->{CustomerUserMap}->{CustomerUserMemberAttr} || 'memberUid';
 
     # connect first if Die is enabled, make sure that connection is possible, else die
     if ( $Self->{Die} ) {
@@ -384,6 +387,7 @@ sub CustomerSearch {
     }
 
     my %Users;
+    my %UsersDn;
     for my $Entry ( $Result->all_entries() ) {
 
         my $CustomerString = '';
@@ -403,8 +407,9 @@ sub CustomerSearch {
         $CustomerString =~ s/^(.*)\s(.+?\@.+?\..+?)(\s|)$/"$1" <$2>/;
 
         if ( defined $Entry->get_value( $Self->{CustomerKey} ) ) {
-            $Users{ $Self->_ConvertFrom( $Entry->get_value( $Self->{CustomerKey} ) ) }
-                = $CustomerString;
+            my $Key = $Self->_ConvertFrom( $Entry->get_value( $Self->{CustomerKey} ) );
+            $Users{ $Key } = $CustomerString;
+            $UsersDn{ $Key } = $Entry->dn();
         }
     }
 
@@ -413,10 +418,17 @@ sub CustomerSearch {
 
         for my $Filter2 ( sort keys %Users ) {
 
+            my $MemberFilter = $Self->{MemberAttr} . '=';
+            if ($Self->{MemberAttr} eq 'member') {
+                $MemberFilter .= $UsersDn{$Filter2};
+            } else {
+                $MemberFilter .= $Filter2;
+            }
+        
             my $Result2 = $Self->{LDAP}->search(
                 base      => $Self->{GroupDN},
                 scope     => $Self->{SScope},
-                filter    => 'memberUid=' . $Filter2,
+                filter    => $MemberFilter,
                 sizelimit => $Self->{UserSearchListLimit},
                 attrs     => ['1.1'],
             );
