@@ -172,8 +172,20 @@ sub CheckEmail {
                 # mx record lookup
                 my @MXRecords = Net::DNS::mx( $Resolver, $Host );
                 if ( !@MXRecords ) {
-                    $Error = "no mail exchanger (mx) found!";
-                    $Self->{ErrorType} = 'InvalidMX';
+                    $Self->{LogObject}->Log(
+                       Priority => 'notice',
+                       Message  => "$Host has no mail exchanger (MX) defined, trying A resource record instead",
+                    );
+                    # A resource record lookup
+                    my @ARecords = $Resolver->query($Host, 'A');
+                    if ( !@ARecords ) {
+                        $Self->{LogObject}->Log(
+                           Priority => 'error',
+                           Message  => "$Host has no mail exchanger (MX) or A resource record defined.",
+                        );
+                        $Error = "no mail exchanger (mx) or a resource record found!";
+                        $Self->{ErrorType} = 'InvalidMX';
+                    }
                 }
             }
         }
