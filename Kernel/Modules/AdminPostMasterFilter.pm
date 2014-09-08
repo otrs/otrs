@@ -1,5 +1,5 @@
 # --
-# Kernel/Modules/AdminPostMasterFilter.pm - to add/update/delete filters
+# Kernel/Modules/AdminPostMasterFilter.pm - to add/update/delete filters - testing 
 # Copyright (C) 2001-2014 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
