@@ -870,13 +870,13 @@ $EmailParserObject = Kernel::System::EmailParser->new(
 
 $Self->Is(
     $EmailParserObject->GetParam( WHAT => 'To' ),
-    'Евгений Васильев Новоподзалупинский <xxzzyy@gmail.com>',
-    "#21 GetParam(WHAT => 'To' Multiline encode quote printable)",
+    'QBQB Евгений Васильев Новоподзалупинский <xxzzyy@gmail.com>',
+    "#21 GetParam(WHAT => 'To' Multiline encode)",
 );
 $Self->Is(
     $EmailParserObject->GetParam( WHAT => 'Subject' ),
-    'Евгений Васильев Новоподзалупинский <xxzzyy@gmail.com>',
-    "#21 GetParam(WHAT => 'Subject' Multiline encode quote printable)",
+    'QBQB Евгений Васильев Новоподзалупинский <xxzzyy@gmail.com>',
+    "#21 GetParam(WHAT => 'Subject' Multiline encode)",
 );
 
 @Array = ();
