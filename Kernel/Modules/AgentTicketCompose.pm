@@ -1,6 +1,7 @@
 # --
 # Kernel/Modules/AgentTicketCompose.pm - to compose and send a message
 # Copyright (C) 2001-2014 OTRS AG, http://otrs.com/
+# Copyright (C) 2013-2014 Informatyka Boguslawski sp. z o.o. sp.k., http://www.ib.pl/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -12,6 +13,7 @@ package Kernel::Modules::AgentTicketCompose;
 use strict;
 use warnings;
 
+use Kernel::Modules::AgentTicketPrint;
 use Kernel::System::CheckItem;
 use Kernel::System::StdAttachment;
 use Kernel::System::State;
@@ -49,6 +51,11 @@ sub new {
     $Self->{SystemAddress}       = Kernel::System::SystemAddress->new(%Param);
     $Self->{DynamicFieldObject}  = Kernel::System::DynamicField->new(%Param);
     $Self->{BackendObject}       = Kernel::System::DynamicField::Backend->new(%Param);
+
+    # for attaching ticket printout if enabled
+    if ( $Self->{ConfigObject}->Get('Ticket::Frontend::AttachTicketPrintoutOnComposeEnabled') ) {
+        $Self->{PrintObject} = Kernel::Modules::AgentTicketPrint->new(%Param);
+    }
 
     # get form id
     $Self->{FormID} = $Self->{ParamObject}->GetParam( Param => 'FormID' );
@@ -478,6 +485,35 @@ sub Run {
                 FormID => $Self->{FormID},
                 %UploadStuff,
             );
+        }
+
+        # attachment add ticket printout if enabled
+        if ( $Self->{ConfigObject}->Get('Ticket::Frontend::AttachTicketPrintoutOnComposeEnabled') && $Self->{PrintObject} ) {
+            if ( $Self->{ParamObject}->GetParam( Param => 'AttachmentAddTicketPrintout' ) ) {
+                %Error = ();
+                $Error{AttachmentAddTicketPrintout} = 1;
+
+                my $Printout = $Self->{PrintObject}->Run(
+                    TicketID => $Self->{TicketID},
+                    PrintoutOnly => 1,
+                );
+
+                if ($Printout && (ref($Printout) eq "HASH")) {
+                    $Self->{UploadCacheObject}->FormIDAddFile(
+                        FormID => $GetParam{FormID},
+                        Disposition => 'attachment',
+                        Filename    => $Printout->{'Filename'},
+                        Content     => $Printout->{'Content'},
+                        ContentType => $Printout->{'ContentType'},
+                    );
+                }
+                else {
+                    $Self->{'LogObject'}->Log(
+                        'Priority' => 'error',
+                        'Message'  => 'Error attaching ticket printout on compose (tictekid=' . $Self->{TicketID} . ')',
+                    );
+                }
+            }
         }
 
         # get all attachments meta data
@@ -1900,6 +1936,14 @@ sub _Mask {
             Data => $Attachment,
         );
     }
+
+    # show add printout attachment button if enabled
+    if ( $Self->{ConfigObject}->Get('Ticket::Frontend::AttachTicketPrintoutOnComposeEnabled') && $Self->{PrintObject} ) {
+        $Self->{LayoutObject}->Block(
+           Name => 'AttachmentAddTicketPrintoutButton',
+           Data => \%Param,
+        );
+    };
 
     # create & return output
     return $Self->{LayoutObject}->Output(

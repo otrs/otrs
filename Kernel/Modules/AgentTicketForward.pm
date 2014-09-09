@@ -1,6 +1,7 @@
 # --
 # Kernel/Modules/AgentTicketForward.pm - to forward a message
 # Copyright (C) 2001-2014 OTRS AG, http://otrs.com/
+# Copyright (C) 2013-2014 Informatyka Boguslawski sp. z o.o. sp.k., http://www.ib.pl/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -12,6 +13,7 @@ package Kernel::Modules::AgentTicketForward;
 use strict;
 use warnings;
 
+use Kernel::Modules::AgentTicketPrint;
 use Kernel::System::CheckItem;
 use Kernel::System::CustomerUser;
 use Kernel::System::DynamicField;
@@ -49,6 +51,11 @@ sub new {
     $Self->{StdAttachmentObject} = Kernel::System::StdAttachment->new(%Param);
     $Self->{SystemAddress}       = Kernel::System::SystemAddress->new(%Param);
     $Self->{UploadCacheObject}   = Kernel::System::Web::UploadCache->new(%Param);
+
+    # for attaching ticket printout if enabled
+    if ( $Self->{ConfigObject}->Get('Ticket::Frontend::AttachTicketPrintoutOnForwardEnabled') ) {
+        $Self->{PrintObject} = Kernel::Modules::AgentTicketPrint->new(%Param);
+    }
 
     # get params
     for (
@@ -842,6 +849,35 @@ sub SendEmail {
         );
     }
 
+    # attachment add ticket printout if enabled
+    if ( $Self->{ConfigObject}->Get('Ticket::Frontend::AttachTicketPrintoutOnForwardEnabled') && $Self->{PrintObject} ) {
+        if ( $Self->{ParamObject}->GetParam( Param => 'AttachmentAddTicketPrintout' ) ) {
+            %Error = ();
+            $Error{AttachmentAddTicketPrintout} = 1;
+
+            my $Printout = $Self->{PrintObject}->Run(
+                TicketID => $Self->{TicketID},
+                PrintoutOnly => 1,
+            );
+
+            if ($Printout && (ref($Printout) eq "HASH")) {
+                $Self->{UploadCacheObject}->FormIDAddFile(
+                    FormID => $GetParam{FormID},
+                    Disposition => 'attachment',
+                    Filename    => $Printout->{'Filename'},
+                    Content     => $Printout->{'Content'},
+                    ContentType => $Printout->{'ContentType'},
+                );
+            }
+            else {
+                $Self->{'LogObject'}->Log(
+                    'Priority' => 'error',
+                    'Message'  => 'Error attaching ticket printout on forward (tictekid=' . $Self->{TicketID} . ')',
+                );
+            }
+        }
+    }
+
     # get all attachments meta data
     my @Attachments = $Self->{UploadCacheObject}->FormIDGetAllFilesMeta(
         FormID => $GetParam{FormID},
@@ -1516,6 +1552,14 @@ sub _Mask {
             Data => $Attachment,
         );
     }
+
+    # show add printout attachment button if enabled
+    if ( $Self->{ConfigObject}->Get('Ticket::Frontend::AttachTicketPrintoutOnForwardEnabled') && $Self->{PrintObject} ) {
+        $Self->{LayoutObject}->Block(
+           Name => 'AttachmentAddTicketPrintoutButton',
+           Data => \%Param,
+        );
+    };
 
     # add rich text editor
     if ( $Self->{LayoutObject}->{BrowserRichText} ) {

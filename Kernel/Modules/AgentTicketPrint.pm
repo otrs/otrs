@@ -1,6 +1,7 @@
 # --
 # Kernel/Modules/AgentTicketPrint.pm - print layout for agent interface
 # Copyright (C) 2001-2014 OTRS AG, http://otrs.com/
+# Copyright (C) 2014 Informatyka Boguslawski sp. z o.o. sp.k., http://www.ib.pl/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -302,12 +303,22 @@ sub Run {
         $h = sprintf( "%02d", $h );
         $m = sprintf( "%02d", $m );
         my $PDFString = $Self->{PDFObject}->DocumentOutput();
-        return $Self->{LayoutObject}->Attachment(
-            Filename    => $Filename . "_" . "$Y-$M-$D" . "_" . "$h-$m.pdf",
-            ContentType => "application/pdf",
-            Content     => $PDFString,
-            Type        => 'attachment',
-        );
+
+        if ( $Param{'PrintoutOnly'} ) {
+            return {
+                Filename => $Filename . "_" . "$Y$M$D" . "_" . "$h$m.pdf",
+                Content => $PDFString,
+                ContentType => "application/pdf",
+            };
+        }
+        else {
+            return $Self->{LayoutObject}->Attachment(
+                Filename    => $Filename . "_" . "$Y$M$D" . "_" . "$h$m.pdf",
+                ContentType => "application/pdf",
+                Content     => $PDFString,
+                Type        => 'attachment',
+            );
+       }
     }
 
     # generate html output
@@ -377,8 +388,20 @@ sub Run {
         # add footer
         $Output .= $Self->{LayoutObject}->PrintFooter();
 
-        # return output
-        return $Output;
+        if ( $Param{'PrintoutOnly'} ) {
+            # HTML output is not ready for attaching (internal links, etc.)
+            $Self->{'LogObject'}->Log(
+                'Priority' => 'error',
+                'Message'  => 'HTML format is not supported for printout attaching (tictekid=' . $Self->{TicketID} . ')',
+            );
+
+            return
+        }
+        else {
+            # return output
+            return $Output;
+       }
+
     }
 }
 

@@ -1,6 +1,7 @@
 # --
 # AgentTicketForward.dtl - provides HTML form for AgentTicketForward
 # Copyright (C) 2001-2014 OTRS AG, http://otrs.com/
+# Copyright (C) 2014 Informatyka Boguslawski sp. z o.o. sp.k., http://www.ib.pl/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -308,6 +309,23 @@ $Include{"RichTextEditor"}
                             <input id="FileUpload" name="FileUpload" type="file" size="40" />
                             <input type="hidden" id="AttachmentUpload" name="AttachmentUpload" value="0" />
                         </li>
+<!-- dtl:block:AttachmentAddTicketPrintoutButton -->
+                        <li>
+                            $Text{"Warning: printout will include internal information also!"}
+                            <button type="button" id="AttachmentAddTicketPrintoutButton" name="AttachmentAddTicketPrintoutButton" value="AddTicketPrintout" class="SpacingLeft">$Text{"Attach ticket printout"}</button>
+                            <input type="hidden" id="AttachmentAddTicketPrintout" name="AttachmentAddTicketPrintout" />
+<!--dtl:js_on_document_complete-->
+<script type="text/javascript">//<![CDATA[
+    $('#AttachmentAddTicketPrintoutButton').bind('click', function () {
+        var $Form = $('#AttachmentAddTicketPrintoutButton').closest('form');
+        $('#AttachmentAddTicketPrintout').val(1);
+        Core.Form.Validate.DisableValidation($Form);
+        $Form.trigger('submit');
+    });
+//]]></script>
+<!--dtl:js_on_document_complete-->
+                        </li>
+<!-- dtl:block:AttachmentAddTicketPrintoutButton -->
                     </ul>
 <!--dtl:js_on_document_complete-->
 <script type="text/javascript">//<![CDATA[
