@@ -2,7 +2,7 @@
 # Kernel/Language/pl.pm - provides Polish language translation
 # Copyright (C) 2003-2010 Tomasz Melissa <janek at rumianek.com>
 # Copyright (C) 2009 Artur Skalski <skal.ar at wp.pl>
-# Copyright (C) 2011-2013 Informatyka Boguslawski sp. z o.o. sp.k., http://www.ib.pl/
+# Copyright (C) 2011-2014 Informatyka Boguslawski sp. z o.o. sp.k., http://www.ib.pl/
 # Copyright (C) 2014 Wojciech Myrda <wmyrda at auticon.pl>, http://www.auticon.pl
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
@@ -2690,6 +2690,8 @@ sub Data {
         'Pending Date' => 'Termin oczekiwania',
         'for pending* states' => 'dla statusów oczekujące*',
         'Date Invalid!' => 'Niepoprawna data!',
+        'Warning: printout will include internal information also!' => 'Uwaga: wydruk obejmie również informacje wewnętrzne!',
+        'Attach ticket printout' => 'Załącz wydruk zgłoszenia',
 
         # Template: AgentTicketCustomer
         'Change customer of ticket' => 'Zmień klienta dla zgłoszenia',
