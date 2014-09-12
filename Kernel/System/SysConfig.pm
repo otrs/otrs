@@ -1,6 +1,7 @@
 # --
 # Kernel/System/SysConfig.pm - all system config tool functions
 # Copyright (C) 2001-2014 OTRS AG, http://otrs.com/
+# Copyright (C) 2014 Informatyka Boguslawski sp. z o.o. sp.k., http://www.ib.pl/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -167,10 +168,10 @@ sub WriteDefault {
     if ( $Self->{utf8} ) {
         $Out .= "use utf8;\n";
     }
-    $Out .= "sub Load {\n";
+    $Out .= "{ no warnings 'redefine'; sub Load {\n";
     $Out .= "    my (\$File, \$Self) = \@_;\n";
     $Out .= $File;
-    $Out .= "}\n";
+    $Out .= "} }\n";
     $Out .= "1;\n";
 
     return $Self->_FileWriteAtomic(
@@ -372,10 +373,10 @@ sub CreateConfig {
     if ( $Self->{utf8} ) {
         $Out .= "use utf8;\n";
     }
-    $Out .= "sub Load {\n";
+    $Out .= "{ no warnings 'redefine'; sub Load {\n";
     $Out .= "    my (\$File, \$Self) = \@_;\n";
     $Out .= $File;
-    $Out .= "}\n";
+    $Out .= "} } \n";
     $Out .= "1;\n";
 
     return $Self->_FileWriteAtomic(
