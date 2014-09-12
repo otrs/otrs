@@ -1,6 +1,7 @@
 # --
 # Kernel/System/Ticket/ArticleStorageFS.pm - article storage module for OTRS kernel
 # Copyright (C) 2001-2014 OTRS AG, http://otrs.com/
+# Copyright (C) 2014 Informatyka Boguslawski sp. z o.o. sp.k., http://www.ib.pl/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -16,6 +17,7 @@ use File::Path qw();
 use MIME::Base64 qw();
 use Time::HiRes qw();
 use Unicode::Normalize qw();
+use Compress::Zlib;
 
 use Kernel::System::VariableCheck qw(:all);
 
@@ -25,6 +27,20 @@ sub ArticleStorageInit {
     # ArticleDataDir
     $Self->{ArticleDataDir} = $Self->{ConfigObject}->Get('ArticleDir')
         || die 'Got no ArticleDir!';
+
+    # get compression settings from config
+    $Self->{CompressedExt} =
+        $Self->{ConfigObject}->Get('Ticket::ArticleStorage::CompressedExt') || '.content_gzipped';
+    $Self->{CompressEnabled} =
+        $Self->{ConfigObject}->Get('Ticket::ArticleStorage::CompressEnabled') || 0;
+    $Self->{CompressIncludeRegexp} =
+        $Self->{ConfigObject}->Get('Ticket::ArticleStorage::CompressIncludeRegexp') || '';
+    $Self->{CompressExcludeRegexp} =
+        $Self->{ConfigObject}->Get('Ticket::ArticleStorage::CompressExcludeRegexp') || '^.+\.(7z|arj|avi|bz2|gz|jpeg|jpg|mp3|mp4|mpg|mpeg|rar|xz|zip)$';
+    $Self->{CompressMinSize} =
+        $Self->{ConfigObject}->Get('Ticket::ArticleStorage::CompressMinSize') || 4096;  # default 4kB
+    $Self->{CompressMaxSize} =
+        $Self->{ConfigObject}->Get('Ticket::ArticleStorage::CompressMaxSize') || 0;  # default no upper limit
 
     # create ArticleContentPath
     my ( $Sec, $Min, $Hour, $Day, $Month, $Year ) = $Self->{TimeObject}->SystemTime2Date(
@@ -146,16 +162,19 @@ sub ArticleDeletePlain {
         }
     }
 
-    # delete from fs
+    # delete from fs plain.txt and/or its compressed version
     my $ContentPath = $Self->ArticleGetContentPath( ArticleID => $Param{ArticleID} );
-    my $File = "$Self->{ArticleDataDir}/$ContentPath/$Param{ArticleID}/plain.txt";
-    if ( -f $File ) {
-        if ( !unlink $File ) {
-            $Self->{LogObject}->Log(
-                Priority => 'error',
-                Message  => "Can't remove: $File: $!!",
-            );
-            return;
+    my @Filenames = ('plain.txt', 'plain.txt' . $Self->{CompressedExt} );
+    for (@Filenames) {
+        my $File = "$Self->{ArticleDataDir}/$ContentPath/$Param{ArticleID}/" . $_;
+        if ( -f $File ) {
+            if ( !unlink $File ) {
+                $Self->{LogObject}->Log(
+                    Priority => 'error',
+                    Message  => "Can't remove: $File: $!!",
+                );
+                return;
+            }
         }
     }
 
@@ -192,7 +211,8 @@ sub ArticleDeleteAttachment {
         );
 
         for my $File (@List) {
-            if ( $File !~ /(\/|\\)plain.txt$/ ) {
+            if ( $File !~ /(\/|\\)plain.txt$/
+                && $File !~ /(\/|\\)plain.txt$Self->{CompressedExt}$/ ) {
                 if ( !unlink "$File" ) {
                     $Self->{LogObject}->Log(
                         Priority => 'error',
@@ -243,11 +263,51 @@ sub ArticleWritePlain {
     # write article to fs 1:1
     File::Path::mkpath( [$Path], 0, 0770 );    ## no critic
 
+    my $Filename = 'plain.txt';
+    my $Content = $Param{Email};
+
+    my $Filesize;
+
+    # determine content size in bytes (not chars in unicode)
+    {
+        use bytes;
+        $Filesize = length($Content);
+    }
+
+    # decide if compression is required and compress file if so before writing
+    if ($Self->{CompressEnabled}
+        && ( !$Self->{CompressIncludeRegexp}
+            || $Filename =~ /$Self->{CompressIncludeRegexp}/i )
+        && ( !$Self->{CompressExcludeRegexp}
+            || $Filename !~ /$Self->{CompressExcludeRegexp}/i ) 
+        && ( !$Self->{CompressMinSize}
+            || $Filesize >= $Self->{CompressMinSize} )
+        && ( !$Self->{CompressMaxSize}
+            || $Filesize <= $Self->{CompressMaxSize} ) ) {
+
+        # memGzip requires single-byte characters
+        $Self->{EncodeObject}->EncodeOutput( \$Content );
+
+        $Content = Compress::Zlib::memGzip($Content);
+
+        if ($Content) {
+            # add extension to compressed file if compression suceeded
+            $Filename .= $Self->{CompressedExt};
+        }
+        else {
+            # fallback to uncompressed file on compression error
+            $Content = $Param{Email};
+            $Self->{LogObject}->Log(
+                Priority => 'error',
+                Message => "Error compressing file $Path/$Filename (" . $gzerrno . ')!' );
+        }
+    }
+
     # write article to fs
     my $Success = $Self->{MainObject}->FileWrite(
-        Location   => "$Path/plain.txt",
+        Location   => $Path . '/' . $Filename,
         Mode       => 'binmode',
-        Content    => \$Param{Email},
+        Content    => \$Content,
         Permission => '660',
     );
     return if !$Success;
@@ -363,12 +423,60 @@ sub ArticleWriteAttachment {
         );
     }
 
+    my $Filename = $Param{Filename};
+    my $Content = $Param{Content};
+    my $Filesize;
+
+    # determine content size in bytes (not chars in unicode)
+    {
+        use bytes;
+        $Filesize = length($Content);
+    }
+
+    # decide if compression is required and compress file if so before writing
+    if ($Self->{CompressEnabled}
+        && ( !$Self->{CompressIncludeRegexp}
+            || $Filename =~ /$Self->{CompressIncludeRegexp}/i )
+        && ( !$Self->{CompressExcludeRegexp}
+            || $Filename !~ /$Self->{CompressExcludeRegexp}/i )
+        && ( !$Self->{CompressMinSize}
+            || $Filesize >= $Self->{CompressMinSize} )
+        && ( !$Self->{CompressMaxSize}
+            || $Filesize <= $Self->{CompressMaxSize} ) ) {
+
+        # memGzip requires single-byte characters
+        $Self->{EncodeObject}->EncodeOutput( \$Content );
+
+        $Content = Compress::Zlib::memGzip($Content);
+
+        if ($Content) {
+            # add extension to compressed file if compression suceeded
+            $Filename .= $Self->{CompressedExt};
+
+            # write attachment size before compression
+            $Self->{MainObject}->FileWrite(
+                Directory  => $Param{Path},
+                Filename   => "$Param{Filename}.content_size",
+                Mode       => 'binmode',
+                Content    => \$Filesize,
+                Permission => 660,
+            );
+        }
+        else {
+            # fallback to uncompressed file on compression error
+            $Content = $Param{Content};
+            $Self->{LogObject}->Log(
+                Priority => 'error',
+                Message => "Error compressing file $Param{Path}/$Filename (" . $gzerrno . ')!' );
+        }
+    }
+
     # write attachment content to fs
     my $SuccessContent = $Self->{MainObject}->FileWrite(
         Directory  => $Param{Path},
-        Filename   => $Param{Filename},
+        Filename   => $Filename,
         Mode       => 'binmode',
-        Content    => \$Param{Content},
+        Content    => \$Content,
         Permission => 660,
     );
     return if !$SuccessContent;
@@ -392,7 +500,7 @@ sub ArticlePlain {
     # get content path
     my $ContentPath = $Self->ArticleGetContentPath( ArticleID => $Param{ArticleID} );
 
-    # open plain article
+    # open and return plain article...
     if ( -f "$Self->{ArticleDataDir}/$ContentPath/$Param{ArticleID}/plain.txt" ) {
 
         # read whole article
@@ -403,6 +511,26 @@ sub ArticlePlain {
         );
         return if !$Data;
         return ${$Data};
+    }
+    # ...or its compressed version after decopression
+    elsif ( -f "$Self->{ArticleDataDir}/$ContentPath/$Param{ArticleID}/plain.txt"
+        . $Self->{CompressedExt} ) {
+        my $Data = $Self->{MainObject}->FileRead(
+            Directory => "$Self->{ArticleDataDir}/$ContentPath/$Param{ArticleID}/",
+            Filename  => 'plain.txt' . $Self->{CompressedExt} ,
+            Mode      => 'binmode',
+        );
+        return if !$Data;
+
+        my $DecompressedData = Compress::Zlib::memGunzip($Data);
+
+        if (!$DecompressedData) {
+            $Self->{LogObject}->Log(
+                Priority => 'error',
+                Message => "Error decompressing file $Self->{ArticleDataDir}/$ContentPath/$Param{ArticleID}/plain.txt"
+                    . $Self->{CompressedExt} . ' (' . $gzerrno . ')!' );
+        }
+        return $DecompressedData;
     }
 
     # return if only delete in my backend
@@ -454,27 +582,22 @@ sub ArticleAttachmentIndexRaw {
     );
 
     for my $Filename ( sort @List ) {
-        my $FileSize    = -s $Filename;
-        my $FileSizeRaw = $FileSize;
 
         # do not use control file
         next if $Filename =~ /\.content_alternative$/;
         next if $Filename =~ /\.content_id$/;
         next if $Filename =~ /\.content_type$/;
+		next if $Filename =~ /\.content_size$/;
         next if $Filename =~ /\/plain.txt$/;
+		next if $Filename =~ /\/plain.txt$Self->{CompressedExt}$/;
 
-        # human readable file size
-        if ($FileSize) {
-            if ( $FileSize > ( 1024 * 1024 ) ) {
-                $FileSize = sprintf "%.1f MBytes", ( $FileSize / ( 1024 * 1024 ) );
-            }
-            elsif ( $FileSize > 1024 ) {
-                $FileSize = sprintf "%.1f KBytes", ( ( $FileSize / 1024 ) );
-            }
-            else {
-                $FileSize = $FileSize . ' Bytes';
-            }
+        my $IsCompressed = $Filename =~ /$Self->{CompressedExt}$/;
+        my $CompressedFilename = $Filename;
+        if ($IsCompressed) {
+            $Filename =~ s/$Self->{CompressedExt}$//;
         }
+
+        my $FileSize    = -s $Filename;
 
         # read content type
         my $ContentType = '';
@@ -506,6 +629,25 @@ sub ArticleAttachmentIndexRaw {
                     $Alternative = ${$Content};
                 }
             }
+
+            # size (optional); if no .content_size file exists - compressed file size will be returned
+            if ( $IsCompressed && -e "$Filename.content_size" ) {
+                my $Content = $Self->{MainObject}->FileRead(
+                    Location => "$Filename.content_size",
+                );
+                if ($Content) {
+                    $FileSize = ${$Content};
+                }
+            }
+        }
+
+        elsif ($IsCompressed) {
+
+            # for compressed files we need content_type file
+            $Self->{LogObject}->Log(
+                Priority => 'error',
+                Message => "File $Filename.content_type not found for $CompressedFilename!" );
+            return;
         }
 
         # read content type (old style)
@@ -522,6 +664,20 @@ sub ArticleAttachmentIndexRaw {
 
         # strip filename
         $Filename =~ s!^.*/!!;
+
+        # human readable file size
+        my $FileSizeRaw = $FileSize;
+        if (defined $FileSize) {
+            if ( $FileSize > ( 1024 * 1024 ) ) {
+                $FileSize = sprintf "%.1f MBytes", ( $FileSize / ( 1024 * 1024 ) );
+            }
+            elsif ( $FileSize > 1024 ) {
+                $FileSize = sprintf "%.1f KBytes", ( ( $FileSize / 1024 ) );
+            }
+            else {
+                $FileSize = $FileSize . ' Bytes';
+            }
+        }
 
         # add the info the the hash
         $Counter++;
@@ -614,7 +770,15 @@ sub ArticleAttachment {
             next if $Filename =~ /\.content_alternative$/;
             next if $Filename =~ /\.content_id$/;
             next if $Filename =~ /\.content_type$/;
+            next if $Filename =~ /\.content_size$/;
             next if $Filename =~ /\/plain.txt$/;
+            next if $Filename =~ /\/plain.txt$Self->{CompressedExt}$/;
+
+            my $IsCompressed = $Filename =~ /$Self->{CompressedExt}$/;
+            my $CompressedFilename = $Filename;
+            if ($IsCompressed) {
+                $Filename =~ s/$Self->{CompressedExt}$//;
+            }
 
             # add the info the the hash
             $Counter++;
@@ -631,11 +795,25 @@ sub ArticleAttachment {
 
                     # read content
                     $Content = $Self->{MainObject}->FileRead(
-                        Location => $Filename,
+                        Location => $CompressedFilename,
                         Mode     => 'binmode',
                     );
                     return if !$Content;
-                    $Data{Content} = ${$Content};
+
+                    if ($IsCompressed) {
+                        my $DecompressedData = Compress::Zlib::memGunzip($Content);
+
+                        if (!$DecompressedData) {
+                            $Self->{LogObject}->Log(
+                                Priority => 'error',
+                                Message => "Error decompressing file $CompressedFilename"
+                                    . ' (' . $gzerrno . ')!' );
+                        }
+                        $Data{Content} = $DecompressedData;
+                    }
+                    else {
+                        $Data{Content} = ${$Content};
+                    }
 
                     # content id (optional)
                     if ( -e "$Filename.content_id" ) {
@@ -656,6 +834,14 @@ sub ArticleAttachment {
                             $Data{Alternative} = ${$Content};
                         }
                     }
+                }
+                elsif ($IsCompressed) {
+
+                    # for compressed files we need content_type file
+                    $Self->{LogObject}->Log(
+                        Priority => 'error',
+                        Message => "File $Filename.content_type not found for $CompressedFilename!" );
+                    return;
                 }
                 else {
 

@@ -254,6 +254,57 @@
             <String Regex="">&lt;OTRS_CONFIG_Home&gt;/var/article</String>
         </Setting>
     </ConfigItem>
+    <ConfigItem Name="Ticket::ArticleStorage::CompressedExt" Required="1" Valid="1">
+        <Description Translatable="1">Defines extra extension added to compressed article file names. Use different extension than found in regular file names and don't change this value after files have been compressed with this setting (requires manual extension change in already compressed files after changing this value).</Description>
+        <Group>Ticket</Group>
+        <SubGroup>Core::Ticket</SubGroup>
+        <Setting>
+            <String Regex=".+">.content_gzipped</String>
+        </Setting>
+    </ConfigItem>
+    <ConfigItem Name="Ticket::ArticleStorage::CompressEnabled" Required="0" Valid="0">
+        <Description Translatable="1">Enables article files compression in article storage modules that support this function.</Description>
+        <Group>Ticket</Group>
+        <SubGroup>Core::Ticket</SubGroup>
+        <Setting>
+            <Option SelectedID="0">
+                <Item Key="1">Yes</Item>
+                <Item Key="0">No</Item>
+            </Option>
+        </Setting>
+    </ConfigItem>
+    <ConfigItem Name="Ticket::ArticleStorage::CompressIncludeRegexp" Required="0" Valid="0">
+        <Description Translatable="1">If compression enabled, compress only files with name that matches (case-insensitive) this regexp (set empty value to accept all filenames).</Description>
+        <Group>Ticket</Group>
+        <SubGroup>Core::Ticket</SubGroup>
+        <Setting>
+            <String Regex=""></String>
+        </Setting>
+    </ConfigItem>
+    <ConfigItem Name="Ticket::ArticleStorage::CompressExcludeRegexp" Required="0" Valid="0">
+        <Description Translatable="1">If compression enabled, don't compress files with name that matches (case insensitive) this regexp (empty value disables excluding). This setting takes precedence over CompressIncludeRegexp setting.</Description>
+        <Group>Ticket</Group>
+        <SubGroup>Core::Ticket</SubGroup>
+        <Setting>
+            <String Regex="">^.+\.(7z|arj|avi|bz2|gz|jpeg|jpg|mp3|mp4|mpg|mpeg|rar|xz|zip)$</String>
+        </Setting>
+    </ConfigItem>
+    <ConfigItem Name="Ticket::ArticleStorage::CompressMinSize" Required="0" Valid="0">
+        <Description Translatable="1">If compression enabled, don't compress files with size in bytes less than value specified here (0 disables this filter).</Description>
+        <Group>Ticket</Group>
+        <SubGroup>Core::Ticket</SubGroup>
+        <Setting>
+            <String Regex="^[0-9]+$">4096</String>
+        </Setting>
+    </ConfigItem>
+    <ConfigItem Name="Ticket::ArticleStorage::CompressMaxSize" Required="0" Valid="0">
+        <Description Translatable="1">If compression enabled, don't compress files with size in bytes greater than value specified here (0 disables this filter).</Description>
+        <Group>Ticket</Group>
+        <SubGroup>Core::Ticket</SubGroup>
+        <Setting>
+            <String Regex="^[0-9]+$">0</String>
+        </Setting>
+    </ConfigItem>
     <ConfigItem Name="Ticket::EventModulePost###100-ArchiveRestore" Required="0" Valid="1">
         <Description Translatable="1">Restores a ticket from the archive (only if the event is a state change, from closed to any open available state).</Description>
         <Group>Ticket</Group>
