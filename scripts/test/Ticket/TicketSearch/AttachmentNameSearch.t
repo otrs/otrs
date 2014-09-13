@@ -7,19 +7,23 @@
 # did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
 # --
 
-## no critic (Modules::RequireExplicitPackage)
 use strict;
 use warnings;
 use utf8;
+
 use vars (qw($Self));
 
 use Kernel::System::VariableCheck qw(:all);
 
-my $HelperObject = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
+# get needed objects
 my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
+my $HelperObject = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
+my $MainObject   = $Kernel::OM->Get('Kernel::System::Main');
 my $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
 
-#get a random id
+my $UserID = 1;
+
+# get a random id
 my $RandomID = $HelperObject->GetRandomID();
 
 $ConfigObject->Set(
@@ -60,7 +64,7 @@ $Self->True(
 my %TicketEntryOne = $TicketObject->TicketGet(
     TicketID      => $TicketID1,
     DynamicFields => 0,
-    UserID        => $Self->{UserID},
+    UserID        => $UserID,
 );
 
 $Self->True(
@@ -94,7 +98,7 @@ $Self->True(
 my %TicketEntryTwo = $TicketObject->TicketGet(
     TicketID      => $TicketID2,
     DynamicFields => 0,
-    UserID        => $Self->{UserID},
+    UserID        => $UserID,
 );
 
 $Self->True(
@@ -134,10 +138,10 @@ for my $TicketID (@TicketIDs) {
         next ARTICLE if $ArticleCounter == 1;
 
         # add attachment only to second article
-        my $Location = $Self->{ConfigObject}->Get('Home')
+        my $Location = $ConfigObject->Get('Home')
             . "/scripts/test/sample/StdAttachment/StdAttachment-Test1.txt";
 
-        my $ContentRef = $Self->{MainObject}->FileRead(
+        my $ContentRef = $MainObject->FileRead(
             Location => $Location,
             Mode     => 'binmode',
             Type     => 'Local',
@@ -173,10 +177,10 @@ my $ArticleID = $TicketObject->ArticleCreate(
 );
 
 # add attachment only to second article
-my $Location = $Self->{ConfigObject}->Get('Home')
-    . "/scripts/test/sample/StdAttachment/StdAttachment-Test1.txt";
+my $Location
+    = $ConfigObject->Get('Home') . '/scripts/test/sample/StdAttachment/StdAttachment-Test1.txt';
 
-my $ContentRef = $Self->{MainObject}->FileRead(
+my $ContentRef = $MainObject->FileRead(
     Location => $Location,
     Mode     => 'binmode',
     Type     => 'Local',

@@ -9,20 +9,24 @@
 
 use strict;
 use warnings;
+use utf8;
+
 use vars (qw($Self));
 
 use File::Basename;
 use File::Copy;
 
-use Kernel::System::FileTemp;
+use Kernel::System::ObjectManager;
+
+# get needed objects
+my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
 
 my $Filename;
 my $TempDir;
 my $FH;
 
 {
-
-    my $FileTempObject = Kernel::System::FileTemp->new( %{$Self} );
+    my $FileTempObject = $Kernel::OM->Get('Kernel::System::FileTemp');
 
     ( $FH, $Filename ) = $FileTempObject->TempFile();
 
@@ -43,7 +47,7 @@ my $FH;
         "TempDir $TempDir exists",
     );
 
-    my $ConfiguredTempDir = $Self->{ConfigObject}->Get('TempDir');
+    my $ConfiguredTempDir = $ConfigObject->Get('TempDir');
     $ConfiguredTempDir =~ s{/+}{/}smxg;
 
     $Self->Is(
@@ -53,7 +57,7 @@ my $FH;
     );
 
     $Self->True(
-        ( copy( $Self->{ConfigObject}->Get('Home') . '/scripts/test/FileTemp.t', "$TempDir/" ) ),
+        ( copy( $ConfigObject->Get('Home') . '/scripts/test/FileTemp.t', "$TempDir/" ) ),
         'Copy test to tempdir',
     );
 
@@ -62,6 +66,8 @@ my $FH;
         'Copied file exists in tempdir',
     );
 
+    # destroy the file temp object
+    $Kernel::OM->ObjectsDiscard( Objects => ['Kernel::System::FileTemp'] );
 }
 
 $Self->False(

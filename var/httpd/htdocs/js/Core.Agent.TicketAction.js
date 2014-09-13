@@ -155,7 +155,7 @@ Core.Agent.TicketAction = (function (TargetNS) {
                 Core.Config.Set('TextIsSpellChecked', '1');
             });
 
-            if ( parseInt(Core.Config.Get('RichTextSet')) === 0){
+            if ( parseInt(Core.Config.Get('RichTextSet'), 10) === 0){
                 $('#RichTextField, .RichTextField').on('change', '#RichText', function() {
                     if (Core.Config.Get('TextIsSpellChecked') === '1'){
                         Core.Config.Set('TextIsSpellChecked', '0');
@@ -165,6 +165,7 @@ Core.Agent.TicketAction = (function (TargetNS) {
 
             Core.Form.Validate.SetSubmitFunction($('form[name=compose]'), function(Form) {
                 if ( $('#RichText').val() && !$('#RichText').hasClass('ValidationIgnore') && parseInt(Core.Config.Get('TextIsSpellChecked'), 10) === 0 ) {
+                    Core.App.Publish('Event.Agent.TicketAction.NeedSpellCheck', [$('#RichText')]);
                     Core.UI.Dialog.ShowContentDialog('<p>' + Core.Config.Get('SpellCheckNeededMsg') + '</p>', '', '150px', 'Center', true, [
                         {
                             Label: '<span>' + Core.Config.Get('DialogCloseMsg') + '</span>',
@@ -224,7 +225,7 @@ Core.Agent.TicketAction = (function (TargetNS) {
                     $('#RichText').val($('#RichText').data('defaultvalue'));
 
                     // set RichText contents separately
-                    var Instance = CKEDITOR.instances['RichText'];
+                    var Instance = CKEDITOR.instances.RichText;
                     Instance.setData($('#RichText').data('defaultvalue'));
                 }
 
@@ -241,6 +242,18 @@ Core.Agent.TicketAction = (function (TargetNS) {
                 }
             }
         });
+
+        // Subscribe to NeedSpellCheck event to open RTE widget if collapsed, if spellcheck is needed on submit
+        Core.App.Subscribe('Event.Agent.TicketAction.NeedSpellCheck', function ($TextElement) {
+            var $Widget = $TextElement.closest('div.WidgetSimple');
+
+            if ($Widget.attr('id') !== 'WidgetArticle' || $Widget.hasClass('Expanded')) {
+                return;
+            }
+
+            $Widget.find('div.WidgetAction.Toggle > a').trigger('click');
+        });
+
     };
 
     /**

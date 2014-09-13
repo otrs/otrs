@@ -7,20 +7,24 @@
 # did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
 # --
 
-## no critic (Modules::RequireExplicitPackage)
 use strict;
 use warnings;
 use utf8;
+
 use vars (qw($Self));
 
 use Kernel::System::VariableCheck qw(:all);
 
+# get needed objects
+my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
 my $HelperObject = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
+
+my $UserID = 1;
 
 # ticket index accelerator tests
 for my $Module ( 'RuntimeDB', 'StaticDB' ) {
 
-    #get a random id
+    # get a random id
     my $RandomID = $HelperObject->GetRandomID();
 
     # Make sure that the TicketObject gets recreated for each loop.
@@ -78,7 +82,7 @@ for my $Module ( 'RuntimeDB', 'StaticDB' ) {
     my %TicketEntryOne = $TicketObject->TicketGet(
         TicketID      => $TicketID1,
         DynamicFields => 0,
-        UserID        => $Self->{UserID},
+        UserID        => $UserID,
     );
 
     $Self->True(
@@ -112,7 +116,7 @@ for my $Module ( 'RuntimeDB', 'StaticDB' ) {
     my %TicketEntryTwo = $TicketObject->TicketGet(
         TicketID      => $TicketID2,
         DynamicFields => 0,
-        UserID        => $Self->{UserID},
+        UserID        => $UserID,
     );
 
     $Self->True(

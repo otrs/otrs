@@ -203,6 +203,7 @@ sub ArticleCreate {
         );
     }
     elsif ( $Param{MimeType} && $Param{MimeType} eq "application/json" ) {
+
         # Keep JSON body unchanged
     }
 
@@ -747,7 +748,7 @@ sub ArticleCreate {
                 next USER if $DoNotSendMute{$UserID};
 
                 # send notification
-                $Self->SendAgetNotification(
+                $Self->SendAgentNotification(
                     Type                  => $Param{HistoryType},
                     RecipientID           => $UserID,
                     CustomerMessageParams => {%Param},

@@ -1,5 +1,16 @@
 #4.0.0.beta2 20??-??-??
-- 2014-09-04 Fixed bug#[10708](http://bugs.otrs.org/show_bug.cgi?id=10708) - ProcessManagement: ActivityDialog Description short and long are not displaying.
+ - 2014-09-12 Fixed bug#[10724](http://bugs.otrs.org/show_bug.cgi?id=10724) - Sorting of DynamicField object types based on its Prio does not work.
+ - 2014-09-12 Added Apache MD5 as a new password hashing backend, thanks to Norihiro Tanaka.
+ - 2014-09-12 Make KeepChildren in service lists configurable, thanks to Peter Krall.
+ - 2014-09-12 Fixed bug#[5189](http://bugs.otrs.org/show_bug.cgi?id=5189) - Queue name not updated in QueueView after rename for StaticDB.
+ - 2014-09-12 Fixed bug#[10718](http://bugs.otrs.org/show_bug.cgi?id=10718) - Typo in $HOME/Kernel/System/Ticket/Article.pm.
+ - 2014-09-12 Fixed bug#[10582](http://bugs.otrs.org/show_bug.cgi?id=10582) - Adding templates with same name in AdminTemplate leads to SQl error message.
+ - 2014-09-10 Fixed bug#[8008](http://bugs.otrs.org/show_bug.cgi?id=8008) - Session ID should not be visible in the address bar after logging in if cookies are used.
+ - 2014-09-10 Fixed bug#[10717](http://bugs.otrs.org/show_bug.cgi?id=10717) - Incomplete error message creating CryptObject.
+ - 2014-09-09 Fixed bug#[10715](http://bugs.otrs.org/show_bug.cgi?id=10715) - Wrong object name in CloseParentAfterClosedChilds.pm.
+ - 2014-09-09 Fixed bug#[10714](http://bugs.otrs.org/show_bug.cgi?id=10714) - Wrong Object call in TicketUpdate Operation.
+ - 3024-09-09 Followup fix for bug#[9418](http://bugs.otrs.org/show_bug.cgi?id=9418) - Incorrect decoding email subject and From token
+ - 2014-09-04 Fixed bug#[10708](http://bugs.otrs.org/show_bug.cgi?id=10708) - ProcessManagement: ActivityDialog Description short and long are not displaying.
 
 #4.0.0.beta1 2014-09-09
  - 2014-09-03 Fixed bug#[10208](http://bugs.otrs.org/show_bug.cgi?id=10208) - Added additional checks to see if something has changed and invalidates a spell check which had already been done, thanks to S7.
@@ -121,6 +132,8 @@
  - 2013-12-12 Added additional information to install commands for different distributions (see perl bin/otrs.CheckModules.pl -h) for more information.
 
 #3.3.9 2014-09-09
+ - 2014-09-12 Fixed bug#[10710](http://bugs.otrs.org/show_bug.cgi?id=10710) - Adding agent with username that has already existed in AdminUser leads to SQL error message, thanks to S7.
+ - 2014-09-12 Fixed bug#[10703](http://bugs.otrs.org/show_bug.cgi?id=10703) - Fulltext field is not added by defoult if there are not default fields in Ticket search, thanks to S7.
  - 2014-08-29 Fixed bug#[10697](http://bugs.otrs.org/show_bug.cgi?id=10697) - Column name in CSV report of stats is lowercase.
  - 2014-08-29 Fixed bug#[10652](http://bugs.otrs.org/show_bug.cgi?id=10652) - Process tickets without any articles create empty lines in AgentTicketSearch CSV result file.
  - 2014-08-29 Fixed bug#[10607](http://bugs.otrs.org/show_bug.cgi?id=10607) - SQL Box can change the database.

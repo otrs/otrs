@@ -143,6 +143,17 @@
             </Option>
         </Setting>
     </ConfigItem>
+    <ConfigItem Name="Ticket::Service::KeepChildren" Required="1" Valid="1">
+        <Description Translatable="1">Retains all services in listings even if they are children of invalid elements.</Description>
+        <Group>Ticket</Group>
+        <SubGroup>Core::Ticket</SubGroup>
+        <Setting>
+            <Option SelectedID="0">
+                <Item Key="0">No</Item>
+                <Item Key="1">Yes</Item>
+            </Option>
+        </Setting>
+    </ConfigItem>
     <ConfigItem Name="Ticket::Service::Default::UnknownCustomer" Required="1" Valid="1">
         <Description Translatable="1">Allows default services to be selected also for non existing customers.</Description>
         <Group>Ticket</Group>
@@ -1231,7 +1242,7 @@
         </Setting>
     </ConfigItem>
     <ConfigItem Name="Ticket::Frontend::NeedAccountedTime" Required="1" Valid="1">
-        <Description Translatable="1">Defines if time accounting is mandatory in the agent interface.</Description>
+        <Description Translatable="1">Defines if time accounting is mandatory in the agent interface. If activated, a note must be entered for all ticket actions (no matter if the note itself is configured as active or is originally mandatory for the individual ticket action screen).</Description>
         <Group>Ticket</Group>
         <SubGroup>Frontend::Agent</SubGroup>
         <Setting>
@@ -1870,7 +1881,7 @@
         </Setting>
     </ConfigItem>
     <ConfigItem Name="Ticket::Frontend::AgentTicketFreeText###Note" Required="0" Valid="1">
-        <Description Translatable="1">Allows adding notes in the ticket free text screen of the agent interface.</Description>
+        <Description Translatable="1">Allows adding notes in the ticket free text screen of the agent interface. Can be overwritten by Ticket::Frontend::NeedAccountedTime.</Description>
         <Group>Ticket</Group>
         <SubGroup>Frontend::Agent::Ticket::ViewFreeText</SubGroup>
         <Setting>
@@ -1881,7 +1892,7 @@
         </Setting>
     </ConfigItem>
     <ConfigItem Name="Ticket::Frontend::AgentTicketFreeText###NoteMandatory" Required="0" Valid="1">
-        <Description Translatable="1">Sets if note must be filled in by the agent.</Description>
+        <Description Translatable="1">Sets if note must be filled in by the agent. Can be overwritten by Ticket::Frontend::NeedAccountedTime.</Description>
         <Group>Ticket</Group>
         <SubGroup>Frontend::Agent::Ticket::ViewFreeText</SubGroup>
         <Setting>
@@ -2617,7 +2628,7 @@
         </Setting>
     </ConfigItem>
     <ConfigItem Name="Ticket::Frontend::AgentTicketClose###Note" Required="0" Valid="1">
-        <Description Translatable="1">Allows adding notes in the close ticket screen of the agent interface.</Description>
+        <Description Translatable="1">Allows adding notes in the close ticket screen of the agent interface. Can be overwritten by Ticket::Frontend::NeedAccountedTime.</Description>
         <Group>Ticket</Group>
         <SubGroup>Frontend::Agent::Ticket::ViewClose</SubGroup>
         <Setting>
@@ -2628,7 +2639,7 @@
         </Setting>
     </ConfigItem>
     <ConfigItem Name="Ticket::Frontend::AgentTicketClose###NoteMandatory" Required="0" Valid="1">
-        <Description Translatable="1">Sets if note must be filled in by the agent.</Description>
+        <Description Translatable="1">Sets if note must be filled in by the agent. Can be overwritten by Ticket::Frontend::NeedAccountedTime.</Description>
         <Group>Ticket</Group>
         <SubGroup>Frontend::Agent::Ticket::ViewClose</SubGroup>
         <Setting>
@@ -2887,7 +2898,7 @@
         </Setting>
     </ConfigItem>
     <ConfigItem Name="Ticket::Frontend::AgentTicketNote###Note" Required="0" Valid="1">
-        <Description Translatable="1">Allows adding notes in the ticket note screen of the agent interface.</Description>
+        <Description Translatable="1">Allows adding notes in the ticket note screen of the agent interface. Can be overwritten by Ticket::Frontend::NeedAccountedTime.</Description>
         <Group>Ticket</Group>
         <SubGroup>Frontend::Agent::Ticket::ViewNote</SubGroup>
         <Setting>
@@ -2898,7 +2909,7 @@
         </Setting>
     </ConfigItem>
     <ConfigItem Name="Ticket::Frontend::AgentTicketNote###NoteMandatory" Required="0" Valid="1">
-        <Description Translatable="1">Sets if note must be filled in by the agent.</Description>
+        <Description Translatable="1">Sets if note must be filled in by the agent. Can be overwritten by Ticket::Frontend::NeedAccountedTime.</Description>
         <Group>Ticket</Group>
         <SubGroup>Frontend::Agent::Ticket::ViewNote</SubGroup>
         <Setting>
@@ -3156,7 +3167,7 @@
         </Setting>
     </ConfigItem>
     <ConfigItem Name="Ticket::Frontend::AgentTicketOwner###Note" Required="0" Valid="1">
-        <Description Translatable="1">Allows adding notes in the ticket owner screen of a zoomed ticket in the agent interface.</Description>
+        <Description Translatable="1">Allows adding notes in the ticket owner screen of a zoomed ticket in the agent interface. Can be overwritten by Ticket::Frontend::NeedAccountedTime.</Description>
         <Group>Ticket</Group>
         <SubGroup>Frontend::Agent::Ticket::ViewOwner</SubGroup>
         <Setting>
@@ -3167,7 +3178,7 @@
         </Setting>
     </ConfigItem>
     <ConfigItem Name="Ticket::Frontend::AgentTicketOwner###NoteMandatory" Required="0" Valid="1">
-        <Description Translatable="1">Sets if note must be filled in by the agent.</Description>
+        <Description Translatable="1">Sets if note must be filled in by the agent. Can be overwritten by Ticket::Frontend::NeedAccountedTime.</Description>
         <Group>Ticket</Group>
         <SubGroup>Frontend::Agent::Ticket::ViewOwner</SubGroup>
         <Setting>
@@ -3423,7 +3434,7 @@
         </Setting>
     </ConfigItem>
     <ConfigItem Name="Ticket::Frontend::AgentTicketPending###Note" Required="0" Valid="1">
-        <Description Translatable="1">Allows adding notes in the ticket pending screen of a zoomed ticket in the agent interface.</Description>
+        <Description Translatable="1">Allows adding notes in the ticket pending screen of a zoomed ticket in the agent interface. Can be overwritten by Ticket::Frontend::NeedAccountedTime.</Description>
         <Group>Ticket</Group>
         <SubGroup>Frontend::Agent::Ticket::ViewPending</SubGroup>
         <Setting>
@@ -3434,7 +3445,7 @@
         </Setting>
     </ConfigItem>
     <ConfigItem Name="Ticket::Frontend::AgentTicketPending###NoteMandatory" Required="0" Valid="1">
-        <Description Translatable="1">Sets if note must be filled in by the agent.</Description>
+        <Description Translatable="1">Sets if note must be filled in by the agent. Can be overwritten by Ticket::Frontend::NeedAccountedTime.</Description>
         <Group>Ticket</Group>
         <SubGroup>Frontend::Agent::Ticket::ViewPending</SubGroup>
         <Setting>
@@ -3692,7 +3703,7 @@
         </Setting>
     </ConfigItem>
     <ConfigItem Name="Ticket::Frontend::AgentTicketPriority###Note" Required="0" Valid="1">
-        <Description Translatable="1">Allows adding notes in the ticket priority screen of a zoomed ticket in the agent interface.</Description>
+        <Description Translatable="1">Allows adding notes in the ticket priority screen of a zoomed ticket in the agent interface. Can be overwritten by Ticket::Frontend::NeedAccountedTime.</Description>
         <Group>Ticket</Group>
         <SubGroup>Frontend::Agent::Ticket::ViewPriority</SubGroup>
         <Setting>
@@ -3703,7 +3714,7 @@
         </Setting>
     </ConfigItem>
     <ConfigItem Name="Ticket::Frontend::AgentTicketPriority###NoteMandatory" Required="0" Valid="1">
-        <Description Translatable="1">Sets if note must be filled in by the agent.</Description>
+        <Description Translatable="1">Sets if note must be filled in by the agent. Can be overwritten by Ticket::Frontend::NeedAccountedTime.</Description>
         <Group>Ticket</Group>
         <SubGroup>Frontend::Agent::Ticket::ViewPriority</SubGroup>
         <Setting>
@@ -3961,7 +3972,7 @@
         </Setting>
     </ConfigItem>
     <ConfigItem Name="Ticket::Frontend::AgentTicketResponsible###Note" Required="0" Valid="1">
-        <Description Translatable="1">Allows adding notes in the ticket responsible screen of the agent interface.</Description>
+        <Description Translatable="1">Allows adding notes in the ticket responsible screen of the agent interface. Can be overwritten by Ticket::Frontend::NeedAccountedTime.</Description>
         <Group>Ticket</Group>
         <SubGroup>Frontend::Agent::Ticket::ViewResponsible</SubGroup>
         <Setting>
@@ -3972,7 +3983,7 @@
         </Setting>
     </ConfigItem>
     <ConfigItem Name="Ticket::Frontend::AgentTicketResponsible###NoteMandatory" Required="0" Valid="1">
-        <Description Translatable="1">Sets if note must be filled in by the agent.</Description>
+        <Description Translatable="1">Sets if note must be filled in by the agent. Can be overwritten by Ticket::Frontend::NeedAccountedTime.</Description>
         <Group>Ticket</Group>
         <SubGroup>Frontend::Agent::Ticket::ViewResponsible</SubGroup>
         <Setting>
@@ -4260,7 +4271,7 @@
         </Setting>
     </ConfigItem>
     <ConfigItem Name="Ticket::Frontend::AgentTicketMove###Note" Required="0" Valid="1">
-        <Description Translatable="1">Allows adding notes in the ticket free text screen of the agent interface.</Description>
+        <Description Translatable="1">Allows adding notes in the ticket free text screen of the agent interface. Can be overwritten by Ticket::Frontend::NeedAccountedTime.</Description>
         <Group>Ticket</Group>
         <SubGroup>Frontend::Agent::Ticket::ViewMove</SubGroup>
         <Setting>
@@ -4271,7 +4282,7 @@
         </Setting>
     </ConfigItem>
     <ConfigItem Name="Ticket::Frontend::AgentTicketMove###NoteMandatory" Required="0" Valid="1">
-        <Description Translatable="1">Sets if note must be filled in by the agent.</Description>
+        <Description Translatable="1">Sets if note must be filled in by the agent. Can be overwritten by Ticket::Frontend::NeedAccountedTime.</Description>
         <Group>Ticket</Group>
         <SubGroup>Frontend::Agent::Ticket::ViewMove</SubGroup>
         <Setting>
@@ -7014,7 +7025,7 @@
     <ConfigItem Name="Ticket::Frontend::CustomerTicketSearch###SearchArticleCSVTree" Required="1" Valid="1">
         <Description Translatable="1">Exports the whole article tree in search result (it can affect the system performance).</Description>
         <Group>Ticket</Group>
-        <SubGroup>Frontend::Agent::Ticket::ViewSearch</SubGroup>
+        <SubGroup>Frontend::Customer::Ticket::ViewSearch</SubGroup>
         <Setting>
             <Option SelectedID="0">
                 <Item Key="0">No</Item>
@@ -8304,6 +8315,29 @@
                 <Item>ArticleAgentNotification</Item>
                 <Item>ArticleCustomerNotification</Item>
             </Array>
+        </Setting>
+    </ConfigItem>
+    <ConfigItem Name="Events###Queue" Required="1" Valid="1">
+        <Description Translatable="1">List of all queue events to be displayed in the GUI.</Description>
+        <Group>Ticket</Group>
+        <SubGroup>Frontend::Admin</SubGroup>
+        <Setting>
+            <Array>
+                <Item>QueueCreate</Item>
+                <Item>QueueUpdate</Item>
+            </Array>
+        </Setting>
+    </ConfigItem>
+    <ConfigItem Name="Queue::EventModulePost###130-UpdateQueue" Required="0" Valid="1">
+        <Description Translatable="1">Event module that performs an update statement on TicketIndex to rename the queue name there if needed and if StaticDB is actually used.</Description>
+        <Group>Ticket</Group>
+        <SubGroup>Core::Queue</SubGroup>
+        <Setting>
+            <Hash>
+                <Item Key="Module">Kernel::System::Queue::Event::TicketAcceleratorUpdate</Item>
+                <Item Key="Event">QueueUpdate</Item>
+                <Item Key="Transaction">0</Item>
+            </Hash>
         </Setting>
     </ConfigItem>
     <ConfigItem Name="Frontend::Admin::AdminNotificationEvent###RichText" Required="0" Valid="1">
