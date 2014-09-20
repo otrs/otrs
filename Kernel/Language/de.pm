@@ -768,7 +768,7 @@ sub Data {
         'Available tickets' => 'Verfügbare Tickets',
         'Escalation' => 'Eskalation',
         'last-search' => 'Letzte Suche',
-        'QueueView' => 'Queue-Ansicht',
+        'QueueView' => 'Ansicht nach Queues',
         'Ticket Escalation View' => 'Ansicht nach Ticket-Eskalationen',
         'Message from' => 'Nachricht von',
         'End message' => 'Ende der Nachricht',
@@ -4689,7 +4689,8 @@ sub Data {
         'Sends the notifications which are configured in the admin interface under "Notfication (Event)".' =>
             '',
         'Service update notification' => 'Service-Update-Benachrichtigung',
-        'Service view' => 'Dienstansicht',
+        'Service view' => 'Ansicht nach Services',
+        'ServiceView' => 'Ansicht nach Services',
         'Set sender email addresses for this system.' => 'Absendeadressen für dieses System verwalten.',
         'Set the default height (in pixels) of inline HTML articles in AgentTicketZoom.' =>
             '',
