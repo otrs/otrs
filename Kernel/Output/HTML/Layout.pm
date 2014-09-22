@@ -983,6 +983,8 @@ sub Redirect {
         $Param{Redirect} .= $Param{OP};
     }
 
+    $Param{Redirect} =~ s/\?$//;
+
     # check if IIS 6 is used, add absolute url for IIS workaround
     # see also:
     #  o http://bugs.otrs.org/show_bug.cgi?id=2230
@@ -996,7 +998,7 @@ sub Redirect {
     my $Output = $Cookies . $Self->Output( TemplateFile => 'Redirect', Data => \%Param );
 
     # add session id to redirect if no cookie is enabled
-    if ( !$Self->{SessionIDCookie} ) {
+    if ( !$Self->{ConfigObject}->Get('SessionUseCookie') && !$Self->{SessionIDCookie} ) {
 
         # rewrite location header
         $Output =~ s{
