@@ -368,6 +368,12 @@
         <div class="ContentColumn">
 
             <div class="WidgetSimple">
+                 <div class="Header">
+                     <div class="WidgetAction Toggle">
+                         <a href="#" title="[% Translate("Show or hide the content") | html %]"><i class="fa fa-caret-right"></i><i class="fa fa-caret-down"></i></a>
+                     </div>
+                     <h2>[% Translate("Ticket Actions") | html %]</h2>
+                 </div>
                 <div class="Content">
                     <div class="ActionRow">
                         <ul class="Actions">
@@ -484,12 +490,12 @@ $('.ShowFieldInfoOverlay').bind('click', function() {
             <div class="WidgetSimple Expanded" id="DynamicFieldsWidget">
                 <div class="Header">
                     <div class="WidgetAction Toggle"><a href="#" title="[% Translate("Show or hide the content") | html %]"><i class="fa fa-caret-right"></i><i class="fa fa-caret-down"></i></a></div>
-                    <h2>[% Translate(Data.WidgetTitle) | html %]</h2>
+                    <h2>[% Translate("Process Activities") | html %]</h2>
                 </div>
 [% RenderBlockStart("NextActivityDialogs") %]
                 <div class="LightRow Bottom">
                     <ul class="Actions">
-                        <li><strong>[% Data.ActivityName | html %] [% Translate("Dialogs") | html %]:</strong></li>
+                        <li><strong>[% Data.ActivityName | html %]:</strong></li>
 [% RenderBlockStart("ActivityDialog") %]
                         <li>
                             <a title="[% Data.Name | html %]" class="AsPopup PopupType_TicketAction" href="[% Env("Baselink") %]Action=AgentTicketProcess;Subaction=DisplayActivityDialog;TicketID=[% Data.TicketID | uri %];ProcessEntityID=[% Data.ProcessEntityID | uri %];ActivityDialogEntityID=[% Data.ActivityDialogEntityID | uri %]">[% Data.Name | html %]</a>
@@ -502,6 +508,13 @@ $('.ShowFieldInfoOverlay').bind('click', function() {
                     <div class="Clear"></div>
                 </div>
 [% RenderBlockEnd("NextActivityDialogs") %]
+            </div>
+
+            <div class="WidgetSimple Expanded" id="DynamicFieldsWidget">
+                <div class="Header">
+                    <div class="WidgetAction Toggle"><a href="#" title="[% Translate("Show or hide the content") | html %]"><i class="fa fa-caret-right"></i><i class="fa fa-caret-down"></i></a></div>
+                    <h2>[% Translate(Data.WidgetTitle) | html %]</h2>
+                </div>
                 <div class="Content ProcessInfo">
                     <div class="ProcessInformation">
                         <fieldset>
