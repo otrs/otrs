@@ -775,7 +775,8 @@ sub Run {
             return $Self->{LayoutObject}->Attachment(
                 Filename    => $CSVFile . "_" . "$Y-$M-$D" . "_" . "$h-$m.csv",
                 ContentType => "text/csv; charset=" . $Self->{LayoutObject}->{UserCharset},
-                Content     => $CSV,
+                # added BOM for proper UTF-8 handling in Excel
+                Content     => chr(0xFEFF) . $CSV,
             );
         }
         elsif ( $GetParam{ResultForm} eq 'Print' ) {
