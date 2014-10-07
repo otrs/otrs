@@ -147,7 +147,7 @@ sub Data {
         'Signatures' => '署名',
         'Customer' => '顧客',
         'CustomerID' => '顧客ID',
-        'CustomerIDs' => '顧客ID',
+        'CustomerIDs' => '顧客IDs',
         'customer' => '顧客',
         'agent' => '担当者',
         'system' => 'システム',
