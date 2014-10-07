@@ -723,6 +723,36 @@ sub Run {
             return;
         }
 
+        # check for email restrictions
+        my $Restrictions = $Self->{ConfigObject}->Get('CustomerPanelCreateAccount::MailRestrictions');
+        if ( @{ $Restrictions || [] } ) {
+            my $Alternates = join '|', @{$Restrictions};
+            my $Regex = eval{ qr/$Alternates/ };
+
+            if ( $@ ) {
+                $Self->{LogObject}->Log(
+                    Priority => 'error',
+                    Message  => 'Please check your restrictions, these are not valid regular expressions',
+                );
+            }
+            elsif ( $GetParams{UserEmail} !~ $Regex ) {
+                $LayoutObject->Block( Name => 'SignupError' );
+                $LayoutObject->Print(
+                    Output => \$LayoutObject->CustomerLogin(
+                        Title => 'Login',
+                        Message =>
+                            'This email address is not allowed to register. Please contact support staff.',
+                        UserTitle     => $GetParams{UserTitle},
+                        UserFirstname => $GetParams{UserFirstname},
+                        UserLastname  => $GetParams{UserLastname},
+                        UserEmail     => $GetParams{UserEmail},
+                    ),
+                );
+
+                return;
+            }
+        }
+
         # create account
         my $Now = $Self->{TimeObject}->SystemTime2TimeStamp(
             SystemTime => $Self->{TimeObject}->SystemTime(),
