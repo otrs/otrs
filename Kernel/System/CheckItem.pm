@@ -156,7 +156,7 @@ sub CheckEmail {
                 $Resolver->nameservers($Nameserver);
             }
 
-            # A-record lookup
+            # A-record lookup to verify proper DNS setup
             my $Packet = $Resolver->send( $Host, 'A' );
             if ( !$Packet ) {
                 $Self->{ErrorType} = 'InvalidDNS';
@@ -172,8 +172,19 @@ sub CheckEmail {
                 # mx record lookup
                 my @MXRecords = Net::DNS::mx( $Resolver, $Host );
                 if ( !@MXRecords ) {
-                    $Error = "no mail exchanger (mx) found!";
-                    $Self->{ErrorType} = 'InvalidMX';
+                    $Self->{LogObject}->Log(
+                       Priority => 'notice',
+                       Message  => "$Host has no mail exchanger (MX) defined, trying A resource record instead",
+                    );
+                    # see if our previous A-record lookup returned a RR
+                    if(scalar($Packet->answer) eq 0) {
+                        $Self->{LogObject}->Log(
+                           Priority => 'error',
+                           Message  => "$Host has no mail exchanger (MX) or A resource record defined.",
+                        );
+                        $Error = "no mail exchanger (mx) or a resource record found!";
+                        $Self->{ErrorType} = 'InvalidMX';
+                    }
                 }
             }
         }
