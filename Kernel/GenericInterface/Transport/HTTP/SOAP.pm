@@ -782,12 +782,14 @@ sub _Output {
     # for all other browser 'Status:' should be used here
     # this breaks apache though
 
+    # Get SOAP Version config for response
+    my $SOAPVersion = $Kernel::OM->Get('Kernel::Config')->Get('SOAP::Version');
     # prepare data
     $Param{Content}  ||= '';
     $Param{HTTPCode} ||= 500;
     my $ContentType;
     if ( $Param{HTTPCode} eq 200 ) {
-        $ContentType = 'application/soap+xml';
+        $ContentType = $SOAPVersion;
     }
     else {
         $ContentType = 'text/plain';
