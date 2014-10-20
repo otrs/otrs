@@ -535,9 +535,9 @@ sub TicketSearch {
         my $Index = 1;
         for my $Key ( sort keys %{ $Param{NotTicketFlag} } ) {
             $SQLFrom .= "LEFT JOIN ticket_flag ntf$Index ON st.id = ntf$Index.ticket_id  "
-                     . " AND ntf$Index.ticket_key = '" . $Self->{DBObject}->Quote($Key) . "'"
+                     . " AND ntf$Index.ticket_key = '" . $DBObject->Quote($Key) . "'"
                      . " AND ntf$Index.create_by = "
-                        . $Self->{DBObject}->Quote( $TicketFlagUserID, 'Integer' );
+                        . $DBObject->Quote( $TicketFlagUserID, 'Integer' );
             $Index++;
         }
     }
@@ -1087,7 +1087,7 @@ sub TicketSearch {
             return if !defined $Value;
 
             $SQLExt .= " AND (ntf$Index.ticket_value IS NULL "
-                       . "OR ntf$Index.ticket_value <> '" . $Self->{DBObject}->Quote($Value) . "')";
+                       . "OR ntf$Index.ticket_value <> '" . $DBObject->Quote($Value) . "')";
 
             $Index++;
         }

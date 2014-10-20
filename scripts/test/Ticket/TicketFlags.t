@@ -350,6 +350,51 @@ for my $UserID (@UserIDs) {
     }
 }
 
+# tests for the NotTicketFlag TicketSearch feature
+
+$TicketObject->TicketFlagSet(
+    TicketID => $TicketID,
+    Key      => 'JustOne',
+    Value    => 42,
+    UserID   => $UserIDs[0],
+);
+
+my $Count = $TicketObject->TicketSearch(
+    TicketID            => $TicketID,
+    TicketFlagUserID    => $UserIDs[0],
+    UserID              => 1,
+    NotTicketFlag       => {
+        JustOne             => 42,
+    },
+    Result              => 'COUNT',
+);
+
+$Self->Is($Count, 0, 'NotTicketFlag excludes ticket with correct flag value');
+
+$Count = $TicketObject->TicketSearch(
+    TicketID            => $TicketID,
+    TicketFlagUserID    => $UserIDs[0],
+    UserID              => 1,
+    NotTicketFlag       => {
+        JustOne             => 999,
+    },
+    Result              => 'COUNT',
+);
+
+$Self->Is($Count, 1, 'NotTicketFlag ignores flags with different value');
+
+$Count = $TicketObject->TicketSearch(
+    TicketID            => $TicketID,
+    TicketFlagUserID    => $UserIDs[1],
+    UserID              => 1,
+    NotTicketFlag       => {
+        JustOne             => 42,
+    },
+    Result              => 'COUNT',
+);
+
+$Self->Is($Count, 1, 'NotTicketFlag ignores flags from other users');
+
 # delete tickets
 for my $TicketID (@TicketIDs) {
     $Self->True(
