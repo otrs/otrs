@@ -402,7 +402,7 @@ sub TicketAcceleratorIndex {
         SQL => "
             SELECT count(*), ti.s_lock
             FROM ticket_index ti
-            JOIN personal_queues suq ON suq.queue_id = ti.queue_id
+                JOIN personal_queues suq ON suq.queue_id = ti.queue_id
             WHERE ti.group_id IN ( ${\(join ', ', @GroupIDs)} )
                 AND suq.user_id = $Param{UserID}
             GROUP BY ti.s_lock",
@@ -502,9 +502,9 @@ sub TicketAcceleratorRebuild {
     my $SQL = "
         SELECT st.id, st.queue_id, sq.name, sq.group_id, slt.name, tsd.name, st.create_time_unix
         FROM ticket st
-        JOIN queue sq             ON st.queue_id = sq.id
-        JOIN ticket_state tsd     ON st.ticket_state_id = tsd.id
-        JOIN ticket_lock_type slt ON st.ticket_lock_id = slt.id
+            JOIN queue sq             ON st.queue_id = sq.id
+            JOIN ticket_state tsd     ON st.ticket_state_id = tsd.id
+            JOIN ticket_lock_type slt ON st.ticket_lock_id = slt.id
         WHERE st.ticket_state_id IN ( ${\(join ', ', @ViewableStateIDs)} )
             AND st.archive_flag = 0";
 
