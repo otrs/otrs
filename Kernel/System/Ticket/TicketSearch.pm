@@ -537,7 +537,8 @@ sub TicketSearch {
             $SQLFrom .= "LEFT JOIN ticket_flag ntf$Index ON st.id = ntf$Index.ticket_id  "
                      . " AND ntf$Index.ticket_key = '" . $DBObject->Quote($Key) . "'"
                      . " AND ntf$Index.create_by = "
-                        . $DBObject->Quote( $TicketFlagUserID, 'Integer' );
+                        . $DBObject->Quote( $TicketFlagUserID, 'Integer' )
+                     . ' ';
             $Index++;
         }
     }
