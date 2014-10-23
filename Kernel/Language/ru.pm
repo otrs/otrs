@@ -4737,7 +4737,7 @@ sub Data {
         'Sends the notifications which are configured in the admin interface under "Notfication (Event)".' =>
             'Отсылать уведомления, настроенные администратором в разделе Уведомленя о событиях.',
         'Service update notification' => 'Уведомление об изменении сервиса',
-        'Service view' => 'Обзор сервисов',
+        'ServiceView' => 'Обзор сервисов',
         'Set sender email addresses for this system.' => 'Задать адрес отправителя для этой системы.',
         'Set the default height (in pixels) of inline HTML articles in AgentTicketZoom.' =>
             'Задает высоту (в пикселах) по умолчанию для inline HTML сообщений в AgentTicketZoom.',

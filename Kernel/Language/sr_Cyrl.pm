@@ -4725,7 +4725,7 @@ sub Data {
         'Sends the notifications which are configured in the admin interface under "Notfication (Event)".' =>
             '',
         'Service update notification' => 'Обавештења о ажурирању услуге',
-        'Service view' => 'Преглед услуге',
+        'ServiceView' => 'Преглед услуге',
         'Set sender email addresses for this system.' => 'Подеси системску адресу пошиљаоца.',
         'Set the default height (in pixels) of inline HTML articles in AgentTicketZoom.' =>
             '',

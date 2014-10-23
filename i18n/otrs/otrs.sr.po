@@ -13735,7 +13735,7 @@ msgid "Service update notification"
 msgstr "Обавештења о ажурирању услуге"
 
 #. SysConfig
-msgid "Service view"
+msgid "ServiceView"
 msgstr "Преглед услуге"
 
 #. SysConfig

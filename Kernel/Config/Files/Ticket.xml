@@ -7323,7 +7323,7 @@
                 <NavBarName>Ticket</NavBarName>
                 <NavBar>
                     <Description Translatable="1">Overview of all open Tickets</Description>
-                    <Name Translatable="1">Service view</Name>
+                    <Name Translatable="1">ServiceView</Name>
                     <Link>Action=AgentTicketService</Link>
                     <LinkOption></LinkOption>
                     <NavBar>Ticket</NavBar>
