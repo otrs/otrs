@@ -13731,7 +13731,7 @@ msgid "Service update notification"
 msgstr ""
 
 #. SysConfig
-msgid "Service view"
+msgid "ServiceView"
 msgstr ""
 
 #. SysConfig

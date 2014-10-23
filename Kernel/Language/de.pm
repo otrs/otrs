@@ -4725,7 +4725,7 @@ sub Data {
         'Sends the notifications which are configured in the admin interface under "Notfication (Event)".' =>
             '',
         'Service update notification' => 'Service-Update-Benachrichtigung',
-        'Service view' => 'Dienstansicht',
+        'ServiceView' => 'Dienstansicht',
         'Set sender email addresses for this system.' => 'Absendeadressen für dieses System verwalten.',
         'Set the default height (in pixels) of inline HTML articles in AgentTicketZoom.' =>
             '',

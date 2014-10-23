@@ -4733,7 +4733,7 @@ sub Data {
         'Sends the notifications which are configured in the admin interface under "Notfication (Event)".' =>
             'Sender varslingene som er spesifiserte i admin-delen under "Melding (Hendelse)"',
         'Service update notification' => '',
-        'Service view' => '',
+        'ServiceView' => '',
         'Set sender email addresses for this system.' => 'Sett opp avsenderadresse for denne installasjonen',
         'Set the default height (in pixels) of inline HTML articles in AgentTicketZoom.' =>
             '',

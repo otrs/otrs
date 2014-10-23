@@ -4725,7 +4725,7 @@ sub Data {
         'Sends the notifications which are configured in the admin interface under "Notfication (Event)".' =>
             'Env√≠a las notificaciones que se configuran en la interfaz de administraci√≥n, bajo "Notificaci√≥n (Evento)".',
         'Service update notification' => '',
-        'Service view' => '',
+        'ServiceView' => '',
         'Set sender email addresses for this system.' => 'Define la direcci√≥n de correo electr√≥nico remitente del sistema.',
         'Set the default height (in pixels) of inline HTML articles in AgentTicketZoom.' =>
             'Define la altura por defecto (en pixeles) de art√≠culos HTML en l√≠nea en la vista detallada del ticket de la interfaz del agente.',

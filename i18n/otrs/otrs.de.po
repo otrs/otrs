@@ -13742,7 +13742,7 @@ msgid "Service update notification"
 msgstr "Service-Update-Benachrichtigung"
 
 #. SysConfig
-msgid "Service view"
+msgid "ServiceView"
 msgstr "Dienstansicht"
 
 #. SysConfig
