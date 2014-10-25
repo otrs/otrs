@@ -169,8 +169,10 @@ $('#MappingInboundConfigureButton').bind('click', function(){
                                 <thead>
                                     <tr>
                                         <th>[% Translate("Event") | html %]</th>
-                                        <th>[% Translate("Asynchronous") | html %]</th>
-                                        <th>[% Translate("Delete") | html %]</th>
+                                        <th class="Center">[% Translate("Asynchronous") | html %]</th>
+                                        <th class="Center">[% Translate("Condition") | html %]</th>
+                                        <th class="HideOnChange Center">[% Translate("Edit") | html %]</th>
+                                        <th class="HideOnChange Center">[% Translate("Delete") | html %]</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -185,10 +187,17 @@ $('#MappingInboundConfigureButton').bind('click', function(){
 [% RenderBlockStart("EventRow") %]
                                     <tr>
                                         <td class="AsBlock">[% Data.Event | html %]</td>
-                                        <td>[% Data.Asynchronous | html %]</td>
-                                        <td class="Center">
-                                            <a id="DeleteEvent[% Data.Event | html %]" class="TrashCan DeleteEvent" href="#" title="[% Translate("Delete this event") | html %]">
-                                                [% Translate("Delete this event") | html %]
+                                        <td class="Center">[% Translate(Data.Asynchronous) | html %]</td>
+                                        <td class="Center">[% Translate(Data.Condition) | html %]</td>
+                                        <td class="HideOnChange Center">
+                                            <a 
+                                                id="EditEvent[% Data.Event | html %]" class="EditEvent" href="[% Env("Baselink") %]Action=[% Data.InvokerEventConfigDialog %];Subaction=Change;WebserviceID=[% Data.WebserviceID | uri %];Invoker=[% Data.Invoker | uri %];Event=[% Data.Event | uri %];" title="[% Translate("Edit this event") | html %]">
+                                                <i class="fa fa-edit"></i>
+                                            </a>
+                                        </td>
+                                        <td class="HideOnChange Center">
+                                            <a id="DeleteEvent[% Data.Event | html %]" class="DeleteEvent" href="#" title="[% Translate("Delete this event") | html %]">
+                                                <i class="fa fa-trash-o"></i>
                                             </a>
                                         </td>
                                     </tr>

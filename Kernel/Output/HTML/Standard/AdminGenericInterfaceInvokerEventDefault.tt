@@ -1,0 +1,293 @@
+# --
+# AdminGenericInterfaceInvokerEvent.tt - provides HTML form for Admin Generic Interface
+# Copyright (C) 2001-2014 OTRS AG, http://otrs.com/
+# --
+# This software comes with ABSOLUTELY NO WARRANTY. For details, see
+# the enclosed file COPYING for license information (AGPL). If you
+# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# --
+<div class="MainBox ARIARoleMain LayoutFixedSidebar SidebarFirst AdminGenericInterfaceInvokerEventDefault">
+    <h1>[% Translate("GenericInterface Invoker Event Settings for Web Service %s", Data.WebserviceName) | html %]</h1>
+    <div class="GenericInterfaceWebserviceConfigPath">
+        <h3>
+            [% Config("GenericInterface::Webservice::Path::Separator") %]
+            <a href="[% Env("Baselink") %]Action=AdminGenericInterfaceWebservice">[% Translate("Web Services") | html %]</a>
+
+            [% Config("GenericInterface::Webservice::Path::Separator") %]
+            <a href="[% Env("Baselink") %]Action=AdminGenericInterfaceWebservice;Subaction=Change;WebserviceID=[% Data.WebserviceID | uri %]">[% Data.WebserviceName | html %]</a>
+
+            [% Config("GenericInterface::Webservice::Path::Separator") %]
+            [% Translate("Invoker") | html %] 
+            <a href="[% Env("Baselink") %]Action=[% Data.InvokerTypeFrontendModule | uri %];Subaction=Change;Invoker=[% Data.Invoker | uri %];WebserviceID=[% Data.WebserviceID | uri %]">[% Data.Invoker | html %]</a>
+
+            [% Config("GenericInterface::Webservice::Path::Separator") %]
+            [% Translate("Event") | html %] 
+            [% Translate(Data.Event) | html %]
+        </h3>
+    </div>
+
+    <div class="SidebarColumn">
+        <div class="WidgetSimple">
+            <div class="Header">
+                <h2>[% Translate("Actions") | html %]</h2>
+            </div>
+            <div class="Content">
+                <ul class="ActionList">
+                    <li>
+                        <a href="[% Env("Baselink") %]Action=[% Data.InvokerTypeFrontendModule | uri %];Subaction=Change;Invoker=[% Data.Invoker | uri %];WebserviceID=[% Data.WebserviceID | uri %]" class="CallForAction Fullsize Center">
+                            <span><i class="fa fa-caret-left"></i> [% Translate("Go back to") | html %] [% Data.LowerCaseActionType | html %]</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="ContentColumn">
+
+        <form id='TransitionForm' action="[% Env("CGIHandle") %]" method="get" class="Validate PreventMultipleSubmits">
+            <input type="hidden" name="Action" value="[% Env("Action") %]"/>
+            <input type="hidden" name="Subaction" value="[% Data.Subaction | html %]Action"/>
+            <input type="hidden" name="WebserviceID" value="[% Data.WebserviceID | html %]" id="WebserviceID"/>
+            <input type="hidden" name="Invoker" value="[% Data.Invoker | html %]" />
+            <input type="hidden" name="InvokerType" value="[% Data.InvokerType | html %]" />
+            <input type="hidden" name="Event" value="[% Data.Event | html %]" />
+            <input type="hidden" name="EventType" value="[% Data.EventType | html %]" />
+            <input type="hidden" name="ConditionConfig" value=""/>
+
+            <div class="WidgetSimple">
+                <div class="Header">
+                    <h2>[% Translate("General Settings") | html %]</h2>
+                </div>
+                <div class="Content">
+                    <fieldset class="TableLike FixedLabel" id="GeneralEventSettings">
+                        <label for="Event">[% Translate("Event") | html %]:</label>
+                        <div class="Field">
+                            <input type="text" readonly="readonly" name="Event" class="Validate_Required W50pc" value="[% Translate( Data.Event ) | html %]" id="Event" />
+                        </div>
+                        <div class="Clear"></div>
+                        <label for="EventType">[% Translate("Event type") | html %]:</label>
+                        <div class="Field">
+                            <input type="text" readonly="readonly" name="EventType" class="Validate_Required W50pc" value="[% Translate( Data.EventType ) | html %]" id="EventType" />
+                        </div>
+                        <div class="Clear"></div>
+                    </fieldset>
+                </div>
+            </div>
+
+            <div class="WidgetSimple Expanded">
+                <div class="Header">
+                    <div class="WidgetAction Toggle">
+                        <a href="#" title="[% Translate("Show or hide the content") | html %]"><i class="fa fa-caret-right"></i><i class="fa fa-caret-down"></i></a>
+                    </div>
+                    <h2>[% Translate( Data.EventType ) %] [% Translate("Event") %] [% Translate("Conditions") | html %]</h2>
+                </div>
+                <div class="Content LayoutGrid">
+                    <fieldset class="TableLike FixedLabel" id="PresentConditionsContainer">
+                        <label for="OverallConditionLinking">[% Translate("Type of Linking between Conditions") | html %]:</label>
+                        <div class="Field">
+                            [% Data.OverallConditionLinking %]
+                        </div>
+                        <br />
+                        <div class="Clear"></div>
+[% RenderBlockStart("ConditionItemEditRow") %]
+                        <label for="Condition[[% Data.Index | html %]]">[% Translate("Condition") | html %] [% Data.Index | html %]:</label>
+                        <div class="Field ConditionField" id="Condition[[% Data.Index | html %]]">
+                            <button class="Remove" type="button" name="ConditionRemove[[% Data.Index | html %]]" title="[% Translate("Remove this Condition") | html %]">
+                                [% Translate("Remove this Condition") | html %]
+                            </button>
+                            <div class="Condition">
+                                <fieldset class="TableLike FixedLabelSmall">
+                                    <label for="ConditionLinking[[% Data.Index | html %]]">[% Translate("Type of Linking") | html %]:</label>
+                                    <div class="Field">
+                                        [% Data.ConditionLinking %]
+                                    </div>
+                                    <div class="Clear"></div>
+                                    <label>[% Translate("Fields") | html %]:</label>
+                                    <div class="Field">
+[% RenderBlockStart("ConditionItemEditRowField") %]
+                                        <fieldset class="Fields">
+                                            <label for="ConditionFieldName[[% Data.Index | html %]][[% Data.FieldIndex | html %]]">[% Translate("Name") | html %]:</label>
+                                            <input type="text" name="ConditionFieldName[[% Data.Index | html %]][[% Data.FieldIndex | html %]]" class="Validate_Required" value="[% Data.FieldIndex | html %]" id="ConditionFieldName[[% Data.Index | html %]][[% Data.FieldIndex | html %]]" />
+                                            <label for="ConditionFieldType[[% Data.Index | html %]][[% Data.FieldIndex | html %]]">[% Translate("Type") | html %]:</label>
+                                            [% Data.ConditionFieldType %]
+                                            &nbsp;<label for="ConditionFieldValue[[% Data.Index | html %]][[% Data.FieldIndex | html %]]">[% Translate("Value") | html %]:</label>
+                                            <input type="text" name="ConditionFieldValue[[% Data.Index | html %]][[% Data.FieldIndex | html %]]" class="Validate_Required" value="[% Data.Match | html %]" id="ConditionFieldValue[[% Data.Index | html %]][[% Data.FieldIndex | html %]]" />
+                                            <button class="Remove" type="button" name="ConditionFieldRemove[[% Data.Index | html %]][[% Data.FieldIndex | html %]]" title="[% Translate("Remove this Field") | html %]">
+                                                [% Translate("Remove this Field") | html %]
+                                            </button>
+                                            <div id="ConditionFieldName[[% Data.Index | html %]][[% Data.FieldIndex | html %]]Error" class="TooltipErrorMessage">
+                                                [% Translate("This field is required.") | html %]
+                                            </div>
+                                            <div id="ConditionFieldValue[[% Data.Index | html %]][[% Data.FieldIndex | html %]]Error" class="TooltipErrorMessage">
+                                                [% Translate("This field is required.") | html %]
+                                            </div>
+                                        </fieldset>
+[% RenderBlockEnd("ConditionItemEditRowField") %]
+                                        <button class="Add ConditionFieldAdd" type="button" title="[% Translate("Add a new Field") | html %]">
+                                            [% Translate("Add a new Field") | html %]
+                                        </button>
+                                    </div>
+                                </fieldset>
+                            </div>
+                            <div class="Clear"></div>
+                        </div>
+[% RenderBlockEnd("ConditionItemEditRow") %]
+
+[% RenderBlockStart("ConditionItemInitRow") %]
+                        <label for="Condition[1]">[% Translate("Condition") | html %] 1:</label>
+                        <div class="Field ConditionField" id="Condition[1]">
+                            <div class="Condition">
+                                <fieldset class="TableLike FixedLabelSmall">
+                                    <label for="ConditionLinking[1]">[% Translate("Type of Linking") | html %]:</label>
+                                    <div class="Field">
+                                        [% Data.ConditionLinking %]
+                                    </div>
+                                    <div class="Clear"></div>
+                                    <label>[% Translate("Fields") | html %]:</label>
+                                    <div class="Field">
+                                        <fieldset class="Fields">
+                                            <label for="ConditionFieldName[1][1]">[% Translate("Name") | html %]:</label>
+                                            <input type="text" name="ConditionFieldName[1][1]" class="Validate_Required" id="ConditionFieldName[1][1]" />
+                                            <label for="ConditionFieldType[1][1]">[% Translate("Type") | html %]:</label>
+                                            [% Data.ConditionFieldType %]
+                                            &nbsp;<label for="ConditionFieldValue[1][1]">[% Translate("Value") | html %]:</label>
+                                            <input type="text" name="ConditionFieldValue[1][1]"  class="Validate_Required" id="ConditionFieldValue[1][1]" />
+                                            <button class="Remove" type="button" name="ConditionFieldRemove[1][1]" title="[% Translate("Remove this Field") | html %]">
+                                                [% Translate("Remove this Field") | html %]
+                                            </button>
+                                            <div id="ConditionFieldName[1][1]Error" class="TooltipErrorMessage">
+                                                [% Translate("This field is required.") | html %]
+                                            </div>
+                                            <div id="ConditionFieldValue[1][1]Error" class="TooltipErrorMessage">
+                                                [% Translate("This field is required.") | html %]
+                                            </div>
+                                        </fieldset>
+                                        <button class="Add ConditionFieldAdd" type="button" title="[% Translate("Add a new Field") | html %]">
+                                            [% Translate("Add a new Field") | html %]
+                                        </button>
+                                    </div>
+                                </fieldset>
+                            </div>
+                            <div class="Clear"></div>
+                        </div>
+[% RenderBlockEnd("ConditionItemInitRow") %]
+                        <button type="button" id="ConditionAdd">[% Translate("Add New Condition") | html %]</button>
+                    </fieldset>
+                </div>
+            </div>
+<!-- Invisible submit button to allow form submit on pressing enter/return without javascript -->
+            <input type="image" width="0" height="0" style="display: none;" />
+
+            <fieldset class="TableLike">
+                <div class="Field Spacing">
+                    <button class="Primary CallForAction" type="submit" id="Submit" title="[% Translate("Save") | html %]" value="[% Translate("Save") | html %]">
+                        <span>[% Translate("Save") | html %]</span>
+                    </button>
+
+                    [% Translate("or") | html %]
+                    <button class="CallForAction" type="submit" id="SaveAndFinishButton" value="[% Translate("Save and finish") | html %]">
+                        <span>[% Translate("Save and finish") | html %]</span>
+                    </button>
+                    <input type="hidden" name="ReturnToAction" id="ReturnToAction" value="" />
+    [% WRAPPER JSOnDocumentComplete %]
+    <script type="text/javascript">//<![CDATA[
+    $('#SaveAndFinishButton').bind('click', function(){
+    $('#ReturnToAction').val(1);
+    });
+    //]]></script>
+    [% END %]
+
+                    [% Translate("or") | html %]
+                    <a href="[% Env("Baselink") %]Action=[% Data.InvokerTypeFrontendModule | uri %];Subaction=Change;Invoker=[% Data.Invoker | uri %];WebserviceID=[% Data.WebserviceID | uri %]">[% Translate("Cancel") | html %]</a>
+
+                </div>
+            </fieldset>
+            <div class="Clear"></div>
+
+        </form>
+
+        <div id="ConditionContainer" style="display:none;">
+            <label for="Condition[_INDEX_]">[% Translate("Condition") | html %] _INDEX_:</label>
+            <div class="Field ConditionField" id="Condition[_INDEX_]">
+                <button class="Remove" type="button" name="ConditionRemove[_INDEX_]" title="[% Translate("Remove this Condition") | html %]">
+                    [% Translate("Remove this Condition") | html %]
+                </button>
+                <div class="Condition">
+                    <fieldset class="TableLike FixedLabelSmall">
+                        <label for="ConditionLinking[_INDEX_]">[% Translate("Type of Linking") | html %]:</label>
+                        <div class="Field">
+                            [% Data.FreshConditionLinking %]
+                        </div>
+                        <div class="Clear"></div>
+                        <label>[% Translate("Fields") | html %]:</label>
+                        <div class="Field">
+                            <fieldset class="Fields">
+                                <label for="ConditionFieldName[_INDEX_][1]">[% Translate("Name") | html %]:</label>
+                                <input type="text" name="ConditionFieldName[_INDEX_][1]" class="Validate_Required" id="ConditionFieldName[_INDEX_][1]" />
+                                <label for="ConditionFieldType[_INDEX_][1]">[% Translate("Type") | html %]:</label>
+                                [% Data.FreshConditionFieldType %]
+                                &nbsp;<label for="ConditionFieldValue[_INDEX_][1]">[% Translate("Value") | html %]:</label>
+                                <input type="text" name="ConditionFieldValue[_INDEX_][1]" class="Validate_Required" id="ConditionFieldValue[_INDEX_][1]" />
+                                <button class="Remove" type="button" name="ConditionFieldRemove[_INDEX_][1]" title="[% Translate("Remove this Field") | html %]">
+                                    [% Translate("Remove this Field") | html %]
+                                </button>
+                                <div id="ConditionFieldName[_INDEX_][1]Error" class="TooltipErrorMessage">
+                                    [% Translate("This field is required.") | html %]
+                                </div>
+                                <div id="ConditionFieldValue[_INDEX_][1]Error" class="TooltipErrorMessage">
+                                    [% Translate("This field is required.") | html %]
+                                </div>
+                            </fieldset>
+                            <button type="button" class="Add ConditionFieldAdd" title="[% Translate("Add a new Field") | html %]">
+                                [% Translate("Add a new Field") | html %]
+                            </button>
+                        </div>
+                    </fieldset>
+                </div>
+            </div>
+        </div>
+
+        <div id="ConditionFieldContainer" style="display:none;">
+            <fieldset class="Fields">
+                <label for="ConditionFieldName[_INDEX_][_FIELDINDEX_]">[% Translate("Name") | html %]:</label>
+                <input type="text" name="ConditionFieldName[_INDEX_][_FIELDINDEX_]" class="Validate_Required" id="ConditionFieldName[_INDEX_][_FIELDINDEX_]" />
+                <label for="ConditionFieldType[_INDEX_][_FIELDINDEX_]">[% Translate("Type") | html %]:</label>
+                [% Data.FreshConditionFieldType %]
+                &nbsp;<label for="ConditionFieldValue[_INDEX_][_FIELDINDEX_]">[% Translate("Value") | html %]:</label>
+                <input type="text" name="ConditionFieldValue[_INDEX_][_FIELDINDEX_]" class="Validate_Required" id="ConditionFieldValue[_INDEX_][_FIELDINDEX_]" />
+                <button class="Remove" type="button" name="ConditionFieldRemove[_INDEX_][_FIELDINDEX_]" title="[% Translate("Remove this Field") | html %]">
+                    [% Translate("Remove this Field") | html %]
+                </button>
+                <div id="ConditionFieldName[_INDEX_][_FIELDINDEX_]Error" class="TooltipErrorMessage">
+                    [% Translate("This field is required.") | html %]
+                </div>
+                <div id="ConditionFieldValue[_INDEX_][_FIELDINDEX_]Error" class="TooltipErrorMessage">
+                    [% Translate("This field is required.") | html %]
+                </div>
+            </fieldset>
+        </div>
+
+    </div>
+</div>
+
+<div class="Hidden" id="DeleteDialogContainer">
+    <span class="WarningDialog ">&nbsp;</span>
+    <p id="DeleteDialog" class="Center Warning">
+        [% Translate("Do you really want to delete this field condition?") | html %]
+    </p>
+    <div class="SpacingTop"></div>
+</div>
+
+[% WRAPPER JSOnDocumentComplete %]
+<script type="text/javascript">//<![CDATA[
+Core.Agent.Admin.GenericInterfaceInvokerEvent.InitEdit({
+    WebserviceID: [% Data.WebserviceID | html %],
+    DeletedString: "[% Data.DeletedString | html %]",
+    Localization: {
+        DeleteKeyMappingMsg: [% Translate("Delete this Key Mapping") | JSON %],
+        DeleteMsg: [% Translate("Delete") | JSON %],
+        CancelMsg: [% Translate("Cancel") | JSON %]
+    }
+});
+//]]></script>
+[% END %]

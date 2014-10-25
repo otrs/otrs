@@ -602,6 +602,12 @@ sub _ShowScreen {
             $Asynchronous = 'Yes'
         }
 
+        # set if is Condition
+        my $Condition = 'No';
+        if ( $Event->{Condition} ) {
+            $Condition = 'Yes'
+        }
+
         # set the event type ( event object like Article or Ticket) not currently in use
         # but left if is needed in future
         my $EventType;
@@ -613,13 +619,31 @@ sub _ShowScreen {
             }
         }
 
+        # get configured Invoker Event registration
+        my $InvokerEventConfig
+            = $Self->{ConfigObject}->Get( 'GenericInterface::Invoker::Event::Module' );
+
+        # check for valid Invoker Event registration
+        if ( !IsHashRefWithData($InvokerEventConfig) ) {
+            return $Self->{LayoutObject}->ErrorScreen(
+                Message => "Could not get registered configuration for Invoker Event",
+            );
+        }
+
+        # get the configuration dialog for the event
+        $TemplateData{InvokerEventConfigDialog} 
+            = $InvokerEventConfig->{ $Param{InvokerConfig}->{Type} }->{'ConfigDialog'};
+
         # paint each event row in event triggers table
         $Self->{LayoutObject}->Block(
             Name => 'EventRow',
             Data => {
+                %Param,
+                %TemplateData,
                 Event        => $Event->{Event},
                 Type         => $EventType || '-',
                 Asynchronous => $Asynchronous,
+                Condition    => $Condition,
             },
         );
     }
