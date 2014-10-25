@@ -136,6 +136,15 @@ sub Run {
                         );
                     }
 
+#-- nils
+open ERLOG, ">>/tmp/error.log";
+use Data::Dumper;
+print ERLOG "\n#--- START ---#\n";
+print ERLOG Dumper( $ConditionCheckResult );
+print ERLOG "#--- END ---#\n";
+close ERLOG;
+#-- nils
+
                     next EVENT if ref $ConditionCheckResult ne 1;
 
                     # create a scheduler task for later execution
@@ -587,12 +596,22 @@ sub _ConditionCheck {
             }
             elsif ( $ActualCondition->{Fields}->{$Field}->{Type} eq 'Module' ) {
 
+#-- nils
+open ERLOG, ">>/tmp/error.log";
+use Data::Dumper;
+print ERLOG "\n#--- START ---#\n";
+print ERLOG Dumper( $ActualCondition->{Fields}->{$Field} );
+print ERLOG "#--- END ---#\n";
+close ERLOG;
+#-- nils
                 # Load Validation Modules
                 # Default location for validation modules:
-                # Kernel/System/GenericInterface/EventValidation/
-                if (
-                    !$Kernel::OM->Get('Kernel::System::Main')
-                    ->Require( $ActualCondition->{Fields}->{$Field}->{Match} )
+                # Kernel/GenericInterface/Event/Validation/
+                if ( 
+                        !$Kernel::OM->Get('Kernel::System::Main')->Require(
+                            'Kernel::GenericInterface::Event::Validation::' 
+                            . $ActualCondition->{Fields}->{$Field}->{Match} 
+                        )
                     )
                 {
                     $Kernel::OM->Get('Kernel::System::Log')->Log(
@@ -605,8 +624,16 @@ sub _ConditionCheck {
                 }
 
                 # create new ValidateModuleObject
-                my $ValidateModuleObject = $ActualCondition->{Fields}->{$Field}->{Match}->new();
+                my $ValidateModuleObject = $Kernel::OM->Get('Kernel::GenericInterface::Event::Validation::' . $ActualCondition->{Fields}->{$Field}->{Match} )->new();
 
+#-- nils
+open ERLOG, ">>/tmp/error.log";
+use Data::Dumper;
+print ERLOG "\n#--- START ---#\n";
+print ERLOG Dumper( $ValidateModuleObject );
+print ERLOG "#--- END ---#\n";
+close ERLOG;
+#-- nils
                 # handle "Data" Param to ValidateModule's "Validate" subroutine
                 if ( $ValidateModuleObject->Validate( Data => $Param{Data} ) ) {
                     $FieldSuccess++;
