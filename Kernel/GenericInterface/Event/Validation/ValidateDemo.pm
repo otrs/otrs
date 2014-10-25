@@ -74,15 +74,6 @@ sub new {
 sub Validate {
     my ( $Self, %Param ) = @_;
 
-#-- nils
-open ERLOG, ">>/tmp/error.log";
-use Data::Dumper;
-print ERLOG "\n#--- START ---#\n";
-print ERLOG Dumper( %Param );
-print ERLOG "#--- END ---#\n";
-close ERLOG;
-#-- nils
-
     for my $Needed (qw(Data)) {
         if ( !defined $Param{$Needed} ) {
             $Kernel::OM->Get('Kernel::System::Log')
@@ -91,14 +82,15 @@ close ERLOG;
         }
     }
 
-    # Check if we have Data to check against transitions conditions
+    # Check if we have Data to check against conditions
     if ( !IsHashRefWithData( $Param{Data} ) ) {
         $Kernel::OM->Get('Kernel::System::Log')
             ->Log( Priority => 'error', Message => "Data has no values!", );
         return;
     }
 
-    if ( $Param{Data}{Queue} && $Param{Data}{Queue} eq 'Raw' ) {
+    # check object data (e.g. ticket queue)
+    if ( $Param{Data}->{Queue} && $Param{Data}->{Queue} eq 'Postmaster' ) {
         return 1;
     }
 
