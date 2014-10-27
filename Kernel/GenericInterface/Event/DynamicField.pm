@@ -71,15 +71,6 @@ sub DataGet {
 sub _SerializeConfig {
     my ( $Self, %Param ) = @_;
 
-#-- nils
-open ERLOG, ">>/tmp/error.log";
-use Data::Dumper;
-print ERLOG "\n#--- START ---#\n";
-print ERLOG Dumper( %Param );
-print ERLOG "#--- END ---#\n";
-close ERLOG;
-#-- nils
-
     # check needed stuff
     for (qw(Data)) {
         if ( !$Param{$_} ) {
@@ -100,24 +91,25 @@ close ERLOG;
 
         if ( IsHashRefWithData( $Param{Data}->{$ConfigItem} ) ) {
             
-            # my %SerializedSubHash;
+            # todo: add recursion for sub hashes
 
-            # SUBHASHITEM:
-            # for my $SubHashItem ( $Param{Data}->{$ConfigItem} ) {
-
-            #     %SerializedSubHash = $Self->_SerializeConfig(
-            #         Data  => $Param{Data}->{$ConfigItem},
-            #         Prefix => $Prefix . '_',
-            #     );
-
-            #     %SerializedConfigItemHash = ( %SerializedConfigItemHash, %SerializedSubHash);
-            # }
         }
-        else {
+        elsif ( IsArrayRefWithData($Param{Data}->{$ConfigItem}) ) {
+
+            # todo: add recursion for sub arrays
+
+        }
+        elsif ( IsStringWithData($Param{Data}->{$ConfigItem}) ) {
 
             $Prefix = $Prefix . $ConfigItem;
             $SerializedConfigItemHash{$Prefix} = $Param{Data}->{$ConfigItem};
             $Prefix = $Param{Prefix} || 'Config_';
+        }
+        else {
+
+            $Kernel::OM->Get('Kernel::System::Log')
+                ->Log( Priority => 'error', Message => "Invalid data type." );
+            return;
         }
 
     }
