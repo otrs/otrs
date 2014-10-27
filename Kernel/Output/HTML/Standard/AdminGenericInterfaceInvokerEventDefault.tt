@@ -44,7 +44,7 @@
     </div>
     <div class="ContentColumn">
 
-        <form id='TransitionForm' action="[% Env("CGIHandle") %]" method="get" class="Validate PreventMultipleSubmits">
+        <form id='EventForm' action="[% Env("CGIHandle") %]" method="post" class="Validate PreventMultipleSubmits">
             <input type="hidden" name="Action" value="[% Env("Action") %]"/>
             <input type="hidden" name="Subaction" value="[% Data.Subaction | html %]Action"/>
             <input type="hidden" name="WebserviceID" value="[% Data.WebserviceID | html %]" id="WebserviceID"/>

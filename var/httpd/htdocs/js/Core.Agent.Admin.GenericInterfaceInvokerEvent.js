@@ -88,11 +88,11 @@ Core.Agent.Admin.GenericInterfaceInvokerEvent= (function (TargetNS) {
         });
 
         $('#Submit').bind('click', function() {
-            $('#TransitionForm').submit();
+            $('#EventForm').submit();
             return false;
         });
 
-        Core.Form.Validate.SetSubmitFunction($('#TransitionForm'), function (Form) {
+        Core.Form.Validate.SetSubmitFunction($('#EventForm'), function (Form) {
             var ConditionConfig = TargetNS.GetConditionConfig($('#PresentConditionsContainer').find('.ConditionField'));
             $('input[name=ConditionConfig]').val(Core.JSON.Stringify(ConditionConfig));
 

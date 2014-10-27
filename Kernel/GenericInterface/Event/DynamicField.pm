@@ -52,13 +52,77 @@ sub DataGet {
     }
 
     # get object data
-    my $ObjectData = $Kernel::OM->Get('Kernel::System::DynamicField')->DynamicFieldGet(
+    my $PreObjectData = $Kernel::OM->Get('Kernel::System::DynamicField')->DynamicFieldGet(
         ID => $Param{Data}->{NewData}->{ID},
     );
 
-    # return object data
-    return $ObjectData;
+    # prepare object data
+    my %SerializedPreObjectDataConfig = $Self->_SerializeConfig(
+        Data => $PreObjectData->{Config},
+    );
 
+    my %ObjectData = ( %{$PreObjectData}, %SerializedPreObjectDataConfig );
+
+    # return object data
+    return %ObjectData;
+
+}
+
+sub _SerializeConfig {
+    my ( $Self, %Param ) = @_;
+
+#-- nils
+open ERLOG, ">>/tmp/error.log";
+use Data::Dumper;
+print ERLOG "\n#--- START ---#\n";
+print ERLOG Dumper( %Param );
+print ERLOG "#--- END ---#\n";
+close ERLOG;
+#-- nils
+
+    # check needed stuff
+    for (qw(Data)) {
+        if ( !$Param{$_} ) {
+            $Kernel::OM->Get('Kernel::System::Log')
+                ->Log( Priority => 'error', Message => "Need $_!" );
+            return;
+        }
+    }
+
+    # prepare serialized config item hash
+    my %SerializedConfigItemHash;
+
+    # prepare prefix
+    my $Prefix = $Param{Prefix} || 'Config_';
+
+    CONFIGITEM:
+    for my $ConfigItem ( sort keys %{$Param{Data}} ) {
+
+        if ( IsHashRefWithData( $Param{Data}->{$ConfigItem} ) ) {
+            
+            # my %SerializedSubHash;
+
+            # SUBHASHITEM:
+            # for my $SubHashItem ( $Param{Data}->{$ConfigItem} ) {
+
+            #     %SerializedSubHash = $Self->_SerializeConfig(
+            #         Data  => $Param{Data}->{$ConfigItem},
+            #         Prefix => $Prefix . '_',
+            #     );
+
+            #     %SerializedConfigItemHash = ( %SerializedConfigItemHash, %SerializedSubHash);
+            # }
+        }
+        else {
+
+            $Prefix = $Prefix . $ConfigItem;
+            $SerializedConfigItemHash{$Prefix} = $Param{Data}->{$ConfigItem};
+            $Prefix = $Param{Prefix} || 'Config_';
+        }
+
+    }
+
+    return %SerializedConfigItemHash;
 }
 
 1;

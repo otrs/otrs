@@ -334,7 +334,7 @@ sub _ShowEdit {
 #'Hash'   => 'Hash',
 #'Array'  => 'Array',
             'Regexp' => 'Regexp',
-            'Module' => 'Transition Validation Module'
+            'Module' => 'Validation Module'
         },
         SelectedID  => 'String',
         Name        => "ConditionFieldType[_INDEX_][_FIELDINDEX_]",
@@ -396,7 +396,7 @@ sub _ShowEdit {
 #'Hash'   => 'Hash',
 #'Array'  => 'Array',
                         'Regexp' => 'Regexp',
-                        'Module' => 'Transition Validation Module'
+                        'Module' => 'Validation Module'
                     },
                     Name        => "ConditionFieldType[$Condition][$Field]",
                     Sort        => 'AlphanumericKey',
@@ -445,7 +445,7 @@ sub _ShowEdit {
 #'Hash'   => 'Hash',
 #'Array'  => 'Array',
                 'Regexp' => 'Regexp',
-                'Module' => 'Transition Validation Module'
+                'Module' => 'Validation Module'
             },
             Name        => 'ConditionFieldType[_INDEX_][_FIELDINDEX_]',
             Sort        => 'AlphanumericKey',
