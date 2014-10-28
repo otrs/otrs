@@ -12,7 +12,7 @@ package Kernel::GenericInterface::Event::DynamicField;
 use strict;
 use warnings;
 
-use Kernel::System::VariableCheck qw(IsHashRefWithData);
+use Kernel::System::VariableCheck qw(IsHashRefWithData IsArrayRefWithData);
 
 our @ObjectDependencies = (
     'Kernel::System::Log',
@@ -56,12 +56,19 @@ sub DataGet {
         ID => $Param{Data}->{NewData}->{ID},
     );
 
-    # prepare object data
-    my %SerializedPreObjectDataConfig = $Self->_SerializeConfig(
-        Data => $PreObjectData->{Config},
+    # prepare object data config
+    my %SerializedPreObjectDataConfigHash;
+    my %PreObjectDataConfigHash = %{$PreObjectData->{Config}};
+    # $Self->_SerializeConfig(
+    #     Data  => \%PreObjectDataConfigHash,
+    #     SHash => \%SerializedPreObjectDataConfigHash,
+    # );
+    _SerializeConfig(
+        Data  => \%PreObjectDataConfigHash,
+        SHash => \%SerializedPreObjectDataConfigHash,
     );
 
-    my %ObjectData = ( %{$PreObjectData}, %SerializedPreObjectDataConfig );
+    my %ObjectData = ( %{$PreObjectData}, %SerializedPreObjectDataConfigHash );
 
     # return object data
     return %ObjectData;
@@ -69,52 +76,96 @@ sub DataGet {
 }
 
 sub _SerializeConfig {
-    my ( $Self, %Param ) = @_;
+    my ( %Param ) = @_;
 
     # check needed stuff
-    for (qw(Data)) {
+    for (qw(Data SHash)) {
         if ( !$Param{$_} ) {
-            $Kernel::OM->Get('Kernel::System::Log')
-                ->Log( Priority => 'error', Message => "Need $_!" );
+            print "Got no $_!\n";
             return;
         }
     }
 
-    # prepare serialized config item hash
-    my %SerializedConfigItemHash;
+    my @ConfigContainer;
+    my $DataType = 'Hash';
+
+    if ( IsHashRefWithData( $Param{Data} ) ) {
+        @ConfigContainer = sort keys %{ $Param{Data} };
+    }
+    else {
+        @ConfigContainer = sort @{ $Param{Data} };
+        $DataType = 'Array';
+    }
 
     # prepare prefix
     my $Prefix = $Param{Prefix} || 'Config_';
 
+    my $ArrayCount = 0;
+
     CONFIGITEM:
-    for my $ConfigItem ( sort keys %{$Param{Data}} ) {
+    for my $ConfigItem ( @ConfigContainer ) {
 
-        if ( IsHashRefWithData( $Param{Data}->{$ConfigItem} ) ) {
-            
-            # todo: add recursion for sub hashes
+        next CONFIGITEM if !$ConfigItem;
 
+        # check if param data is an hash- or array-ref
+        if ( $DataType eq 'Hash' ) {
+
+            # we got a hash ref
+            if ( IsHashRefWithData( $Param{Data}->{$ConfigItem} ) ) {
+
+                _SerializeConfig(
+                    Data   => $Param{Data}->{$ConfigItem},
+                    SHash  => $Param{SHash},
+                    Prefix => $Prefix . $ConfigItem . '_',
+                );
+            }
+            elsif ( IsArrayRefWithData( $Param{Data}->{$ConfigItem} ) ) {
+
+                _SerializeConfig(
+                    Data => $Param{Data}->{$ConfigItem},
+                    SHash  => $Param{SHash},
+                    Prefix => $Prefix . $ConfigItem . '_',
+                );
+            }
+            else {
+
+                $Prefix = $Prefix . $ConfigItem;
+                $Param{SHash}->{$Prefix} = $Param{Data}->{$ConfigItem};
+                $Prefix = $Param{Prefix} || 'Config_';
+            }
         }
-        elsif ( IsArrayRefWithData($Param{Data}->{$ConfigItem}) ) {
 
-            # todo: add recursion for sub arrays
-
-        }
-        elsif ( IsStringWithData($Param{Data}->{$ConfigItem}) ) {
-
-            $Prefix = $Prefix . $ConfigItem;
-            $SerializedConfigItemHash{$Prefix} = $Param{Data}->{$ConfigItem};
-            $Prefix = $Param{Prefix} || 'Config_';
-        }
+        # we got an array ref
         else {
 
-            $Kernel::OM->Get('Kernel::System::Log')
-                ->Log( Priority => 'error', Message => "Invalid data type." );
-            return;
-        }
+            if ( IsHashRefWithData( $Param{Data}->[$ConfigItem] ) ) {
 
+                _SerializeConfig(
+                    Data => $Param{Data}->{$ConfigItem},
+                    SHash  => $Param{SHash},
+                    Prefix => $Prefix . $ConfigItem . '_',
+                );
+            }
+            elsif ( IsArrayRefWithData( $Param{Data}->[$ConfigItem] ) ) {
+
+                _SerializeConfig(
+                    Data => $Param{Data}->{$ConfigItem},
+                    SHash  => $Param{SHash},
+                    Prefix => $Prefix . $ConfigItem . '_',
+                );
+            }
+            else {
+
+                $Prefix = $Prefix . $ArrayCount;
+                $Param{SHash}->{$Prefix} = $ConfigItem;
+                $Prefix = $Param{Prefix} || 'Config_';
+            }
+
+            $ArrayCount++;
+        }
     }
 
-    return %SerializedConfigItemHash;
+    return 1;
 }
 
 1;
