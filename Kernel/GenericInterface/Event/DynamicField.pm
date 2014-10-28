@@ -111,18 +111,13 @@ sub _SerializeConfig {
         if ( $DataType eq 'Hash' ) {
 
             # we got a hash ref
-            if ( IsHashRefWithData( $Param{Data}->{$ConfigItem} ) ) {
-
+            if (
+                IsHashRefWithData( $Param{Data}->{$ConfigItem} )
+                || IsArrayRefWithData( $Param{Data}->{$ConfigItem} )
+                )
+            {
                 _SerializeConfig(
                     Data   => $Param{Data}->{$ConfigItem},
-                    SHash  => $Param{SHash},
-                    Prefix => $Prefix . $ConfigItem . '_',
-                );
-            }
-            elsif ( IsArrayRefWithData( $Param{Data}->{$ConfigItem} ) ) {
-
-                _SerializeConfig(
-                    Data => $Param{Data}->{$ConfigItem},
                     SHash  => $Param{SHash},
                     Prefix => $Prefix . $ConfigItem . '_',
                 );
@@ -138,18 +133,10 @@ sub _SerializeConfig {
         # we got an array ref
         else {
 
-            if ( IsHashRefWithData( $Param{Data}->[$ConfigItem] ) ) {
+            if ( IsHashRefWithData($ConfigItem) || IsArrayRefWithData($ConfigItem) ) {
 
                 _SerializeConfig(
-                    Data => $Param{Data}->{$ConfigItem},
-                    SHash  => $Param{SHash},
-                    Prefix => $Prefix . $ConfigItem . '_',
-                );
-            }
-            elsif ( IsArrayRefWithData( $Param{Data}->[$ConfigItem] ) ) {
-
-                _SerializeConfig(
-                    Data => $Param{Data}->{$ConfigItem},
+                    Data   => $ConfigItem,
                     SHash  => $Param{SHash},
                     Prefix => $Prefix . $ConfigItem . '_',
                 );
