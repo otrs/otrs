@@ -1067,6 +1067,17 @@
             </Option>
         </Setting>
     </ConfigItem>
+	<ConfigItem Name="Ticket::Frontend::AgentAccountedTime" Required="0" Valid="1">
+        <Description Translatable="1">Defines if agent time accounting for ticket is displayed.</Description>
+        <Group>Ticket</Group>
+        <SubGroup>Frontend::Agent</SubGroup>
+        <Setting>
+            <Option SelectedID="0">
+                <Item Key="0">No</Item>
+                <Item Key="1">Yes</Item>
+            </Option>
+        </Setting>
+    </ConfigItem>
     <ConfigItem Name="Ticket::Frontend::TimeUnits" Required="1" Valid="1">
         <Description Translatable="1">Sets the prefered time units (e.g. work units, hours, minutes).</Description>
         <Group>Ticket</Group>
@@ -7248,6 +7259,21 @@ $QData{"Body"}
                     <JavaScript>thirdparty/jquery-tablesorter-2.0.5/jquery.tablesorter.js</JavaScript>
                     <JavaScript>Core.UI.Table.Sort.js</JavaScript>
                     <JavaScript>Core.Agent.TicketZoom.js</JavaScript>
+                </Loader>
+            </FrontendModuleReg>
+        </Setting>
+    </ConfigItem>
+	<ConfigItem Name="Frontend::Module###AgentTicketAccountedTime" Required="0" Valid="1">
+        <Description Translatable="1">Frontend module registration for the agent interface.</Description>
+        <Group>Ticket</Group>
+        <SubGroup>Frontend::Agent::ModuleRegistration</SubGroup>
+        <Setting>
+            <FrontendModuleReg>
+                <Description>View ticket accounted time.</Description>
+                <Title>Accounted Time</Title>
+                <NavBarName>Article</NavBarName>
+				<Loader>
+                    <CSS>Core.AgentTicketAccountedTime.css</CSS>
                 </Loader>
             </FrontendModuleReg>
         </Setting>

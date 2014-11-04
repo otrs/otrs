@@ -180,6 +180,16 @@
                         <div class="Clear"></div>
 
 <!-- dtl:block:TotalAccountedTime -->
+<!-- dtl:block:TotalAccountedTimeLink -->
+                        <label>$Text{"Accounted time"}:</label>
+                        <p class="Value"><a href="$Env{"Baselink"}Action=AgentTicketAccountedTime;TicketID=$LQData{"TicketID"}" class="AsPopup">$Data{"TicketTimeUnits"}</a></p>
+                        <div class="Clear"></div>
+<!-- dtl:block:TotalAccountedTimeLink -->
+<!-- dtl:block:AgentAccountedTime -->
+                        <label>$Text{"Your acct. time"}:</label>
+                        <p class="Value">$Data{"AgentAccountedTime"}</p>
+                        <div class="Clear"></div>
+<!-- dtl:block:AgentAccountedTime -->
 <!-- dtl:block:PendingUntil -->
                         <label>$Text{"Pending till"}:</label>
                         <p class="Value $QData{"PendingUntilClass"}">
@@ -542,6 +552,7 @@ $Data{"ArticleItems"}
                         <th class="Direction Sortable"><a href="#" title="$Text{"Direction"}"><span class="Direction"><!--Direction--></span></a></th>
                         <th class="From Sortable"><a href="#">$Text{"From"}</a></th>
                         <th class="Subject Sortable"><a href="#">$Text{"Subject"}</a></th>
+                        <th class="AccountedTime"><a href="#">$Text{"Time"}</a></th>
                         <th class="Created Sortable"><a href="#">$Text{"Created"}</a></th>
                         <th class="Attachments Last">
                             <a href="#" title="$Text{"Attachments"}">
@@ -601,6 +612,9 @@ $Data{"ArticleItems"}
                         <td class="Subject">
                             <div title="$QData{"Subject"}"><a href="#">$QData{"Subject","36"}</a></div>
                             <input type="hidden" class="SortData" value="$QData{"Subject"}" />
+                        </td>
+                        <td class="AccountedTime">
+                            <div title="$QData{"AccountedTime"}"><a href="#">$QData{"AccountedTime"}</a></div>
                         </td>
                         <td class="Created">
                             <a href="#">$TimeShort{"$QData{"Created"}"}</a>

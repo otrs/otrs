@@ -1,0 +1,60 @@
+# --
+# Kernel/Output/HTML/Standard/AgentTicketAccountedTime.pm - agent accounted time table
+# Copyright (C) 2001-2014 OTRS AG, http://otrs.com/
+# --
+# This software comes with ABSOLUTELY NO WARRANTY. For details, see
+# the enclosed file COPYING for license information (AGPL). If you
+# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# --
+
+<div class="LayoutPopup ARIARoleMain">
+    <div class="Header">        
+        <h1>Accounted time: [$Config{"Ticket::Hook"}$QData{"TicketNumber"}] – $QData{"Title"}</h1>
+        
+        <p>
+            <a class="CancelClosePopup" href="#">$Text{"Close window"}</a>
+        </p>
+            
+    </div>
+
+    <div class="Content">
+    
+<!-- dtl:block:AgentAccountedTimeTable -->
+        <table class="DataTable" id="AgentAccountedTime">
+            <thead>
+                <th class="Name">$Text{"Agent Name"}</th>
+                <th class="Email">$Text{"Email"}</th>
+                <th>$Text{"# of articles"}</th>
+                <th>$Text{"Accounted Time"}</th>
+            </thead>
+            <tbody>
+<!-- dtl:block:AgentAccountedTimeRow -->
+                <tr class="Row">
+                    <td class="Name">$QData{"Name"}</td>
+                    <td class="Email">$QData{"Email"}</td>
+                    <td>$QData{"ArticleNumber"}</td>
+                    <td class="AccountedTime">
+                        <a href="#" title="$QData{"AccountedTimeHours"}h $QData{"AccountedTimeMinutes"}m">$QData{"AccountedTime"}</a>
+                    </td>
+                </tr>	
+<!-- dtl:block:AgentAccountedTimeRow -->
+                <tr class="Row Last">
+                    <td class="Total Name" colspan="3">$Text{"Total"}</td>
+                    <td class="Total">
+                        <a href="#" title="$QData{"TotalAccountedTimeHours"}h $QData{"TotalAccountedTimeMinutes"}m">$QData{"TotalAccountedTime"}</a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+<!-- dtl:block:AgentAccountedTimeTable -->
+<!-- dtl:block:AgentAccountedTimeEmpty -->
+        <p>$Text{"This ticket has no time accounted yet!"}</p>
+<!-- dtl:block:AgentAccountedTimeEmpty -->
+        
+        <div class="Buttons">
+            <button class="CancelClosePopup">$Text{"Close"}</button>
+        </div>
+    
+    </div>
+
+</div>

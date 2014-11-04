@@ -873,13 +873,63 @@ sub MaskAgentZoom {
         );
     }
 
-    # show total accounted time if feature is active:
-    if ( $Self->{ConfigObject}->Get('Ticket::Frontend::AccountTime') ) {
+    # show agent accounted time if feature is active
+    if ( $Self->{ConfigObject}->Get('Ticket::Frontend::AccountTime') &&
+         $Self->{ConfigObject}->Get('Ticket::Frontend::AgentAccountedTime') ) {
+         
         $Ticket{TicketTimeUnits} = $Self->{TicketObject}->TicketAccountedTimeGet(%Ticket);
-        $Self->{LayoutObject}->Block(
-            Name => 'TotalAccountedTime',
-            Data => \%Ticket,
-        );
+        
+        # show total accounted time if it exists
+        if ( $Ticket{TicketTimeUnits} ) {
+        
+            $Self->{LayoutObject}->Block(
+                   Name => 'TotalAccountedTimeLink',
+                   Data => \%Ticket,
+            );
+                
+            # db query
+            return if !$Self->{DBObject}->Prepare(
+                SQL  => 'SELECT time_unit FROM time_accounting WHERE ticket_id = ? AND create_by = ?',
+                Bind => [ \$Ticket{TicketID}, \$Self->{UserID} ],
+            );
+            
+            # add all times
+            my $AgentAccountedTime = 0;
+            while ( my @Row = $Self->{DBObject}->FetchrowArray() ) {
+                $Row[0] =~ s/,/./g;
+                $AgentAccountedTime += $Row[0];
+            }
+
+            # output block if there is agent accounted time
+            if ( $AgentAccountedTime ) {
+            
+                $Ticket{AgentAccountedTime} = $AgentAccountedTime;
+                $Self->{LayoutObject}->Block(
+                    Name => 'AgentAccountedTime',
+                    Data => \%Ticket,
+                );
+                
+            }
+            
+        }
+        
+    } else {
+
+        # show total accounted time if feature is active
+        if ( $Self->{ConfigObject}->Get('Ticket::Frontend::AccountTime') ) {
+            $Ticket{TicketTimeUnits} = $Self->{TicketObject}->TicketAccountedTimeGet(%Ticket);
+            
+            if ( $Ticket{TicketTimeUnits} ) {
+            
+                $Self->{LayoutObject}->Block(
+                    Name => 'TotalAccountedTime',
+                    Data => \%Ticket,
+                );
+                
+            }
+            
+        }
+        
     }
 
     # show pending until, if set:
@@ -1630,6 +1680,16 @@ sub _ArticleTree {
             TicketNumber => $Article{TicketNumber},
             Subject => $Article{Subject} || '',
         );
+        
+        my $ArticleAccountedTime;
+        
+        if ( $Self->{ConfigObject}->Get('Ticket::Frontend::AccountTime') &&
+             $Self->{ConfigObject}->Get('Ticket::Frontend::AgentAccountedTime') ) {
+             
+            $ArticleAccountedTime = $Self->{TicketObject}->ArticleAccountedTimeGet(
+                ArticleID => $Article{ArticleID},
+            );
+        }
 
         # check if we need to show also expand/collapse icon
         $Self->{LayoutObject}->Block(
@@ -1641,6 +1701,7 @@ sub _ArticleTree {
                 Subject        => $TmpSubject,
                 ZoomExpand     => $Self->{ZoomExpand},
                 ZoomExpandSort => $Self->{ZoomExpandSort},
+                AccountedTime  => $ArticleAccountedTime || '',
             },
         );
 
