@@ -7149,7 +7149,7 @@
             </Hash>
         </Setting>
     </ConfigItem>
-    <ConfigItem Name="PreferencesGroups###FollowUpNotify" Required="0" Valid="1">
+    <ConfigItem Name="PreferencesGroups###FollowUpNotifyOwner" Required="0" Valid="1">
         <Description Translatable="1">Parameters for the FollowUpNotify object in the preference view of the agent interface.</Description>
         <Group>Ticket</Group>
         <SubGroup>Frontend::Agent::Preferences</SubGroup>
@@ -7157,8 +7157,32 @@
             <Hash>
                 <Item Key="Module">Kernel::Output::HTML::PreferencesGeneric</Item>
                 <Item Key="Column">Email Settings</Item>
-                <Item Key="Label" Translatable="1">Ticket follow up notification</Item>
-                <Item Key="Desc" Translatable="1">Send me a notification if a customer sends a follow up and I'm the owner of the ticket or the ticket is unlocked and is in one of my queues/services.</Item>
+                <Item Key="Label" Translatable="1">Ticket follow up notification for locked tickets</Item>
+                <Item Key="Desc" Translatable="1">Send me a notification if a customer sends a follow up and I'm the owner of the ticket.</Item>
+                <Item Key="Key" Translatable="1">Send ticket follow up notifications</Item>
+                <Item Key="Data">
+                    <Hash>
+                        <Item Key="0" Translatable="1">No</Item>
+                        <Item Key="1" Translatable="1">Yes</Item>
+                    </Hash>
+                </Item>
+                <Item Key="DataSelected">0</Item>
+                <Item Key="PrefKey">UserSendFollowUpNotificationOwner</Item>
+                <Item Key="Prio">2000</Item>
+                <Item Key="Active">1</Item>
+            </Hash>
+        </Setting>
+    </ConfigItem>
+    <ConfigItem Name="PreferencesGroups###FollowUpNotifyUnlocked" Required="0" Valid="1">
+        <Description Translatable="1">Parameters for the FollowUpNotify object in the preference view of the agent interface.</Description>
+        <Group>Ticket</Group>
+        <SubGroup>Frontend::Agent::Preferences</SubGroup>
+        <Setting>
+            <Hash>
+                <Item Key="Module">Kernel::Output::HTML::PreferencesGeneric</Item>
+                <Item Key="Column">Email Settings</Item>
+                <Item Key="Label" Translatable="1">Ticket follow up notification for unlocked tickets</Item>
+                <Item Key="Desc" Translatable="1">Send me a notification if a customer sends a follow up and the ticket is unlocked and is in one of my queues/services.</Item>
                 <Item Key="Key" Translatable="1">Send ticket follow up notifications if subscribed to</Item>
                 <Item Key="Data">
                     <Hash>
@@ -7170,8 +7194,8 @@
                     </Hash>
                 </Item>
                 <Item Key="DataSelected">0</Item>
-                <Item Key="PrefKey">UserSendFollowUpNotification</Item>
-                <Item Key="Prio">2000</Item>
+                <Item Key="PrefKey">UserSendFollowUpNotificationUnlocked</Item>
+                <Item Key="Prio">2001</Item>
                 <Item Key="Active">1</Item>
             </Hash>
         </Setting>
