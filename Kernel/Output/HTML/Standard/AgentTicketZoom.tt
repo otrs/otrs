@@ -242,6 +242,7 @@
 [% RenderBlockEnd("SolutionTime") %]
                     </fieldset>
 
+
                     <fieldset class="TableLike FixedLabelSmall Narrow">
                         <label>[% Translate("CustomerID") | html %]:</label>
                         <p class="Value">
@@ -254,6 +255,18 @@
                         <div class="Clear"></div>
 
 [% RenderBlockEnd("TotalAccountedTime") %]
+[% RenderBlockStart("TotalAccountedTimeLink") %]
+                        <label>[% Translate("Accounted time") | html %]:</label>
+                        <p class="Value"><a href="[% Env("Baselink") %]Action=AgentTicketAccountedTime;TicketID=[% Data.TicketID | uri %]" class="AsPopup">[% Data.TicketTimeUnits %]</a></p>
+                        <div class="Clear"></div>
+
+[% RenderBlockEnd("TotalAccountedTimeLink") %]
+[% RenderBlockStart("AgentAccountedTime") %]
+                        <label>[% Translate("Your acct. time") | html %]</label>
+                        <p class="Value">[% Data.AgentAccountedTime | html%]</p>
+                        <div class="Clear"></div>
+
+[% RenderBlockEnd("AgentAccountedTime") %]
 [% RenderBlockStart("PendingUntil") %]
                         <label>[% Translate("Pending till") | html %]:</label>
                         <p class="Value [% Data.PendingUntilClass | html %]">
@@ -655,6 +668,9 @@ $('.ShowFieldInfoOverlay').bind('click', function() {
                                 <th class="Direction Sortable"><a href="#" title="[% Translate("Direction") | html %]"><i class="fa fa-exchange"></i></a></th>
                                 <th class="From Sortable"><a href="#">[% Translate("From") | html %]</a></th>
                                 <th class="Subject Sortable"><a href="#">[% Translate("Subject") | html %]</a></th>
+[% RenderBlockStart("AccountedTimeHeader") %]
+                                <th class="AccountedTime"><a href="#">[% Translate("Time") %]</a></th>
+[% RenderBlockEnd("AccountedTimeHeader") %]
                                 <th class="Created Sortable"><a href="#">[% Translate("Created") | html %]</a></th>
                                 <th class="Attachments Last">
                                     <a href="#" title="[% Translate("Attachments") | html %]">
@@ -723,6 +739,11 @@ $('.ShowFieldInfoOverlay').bind('click', function() {
                                     <div title="[% Data.Subject | html %]"><a href="#">[% Data.Subject | truncate(36) | html %]</a></div>
                                     <input type="hidden" class="SortData" value="[% Data.Subject | html %]" />
                                 </td>
+[% RenderBlockStart("AccountedTimeColumn") %]
+                                <td class="AccountedTime">
+                                    <div title="[% Data.AccountedTime | html %]"><a href="#">[% Data.AccountedTime | html %]</a></div>
+                                </td>
+[% RenderBlockEnd("AccountedTimeColumn") %]
                                 <td class="Created">
                                     <a href="#">[% Data.Created | Localize("TimeShort") %]</a>
 # Include custom sorting information: date in ISO format.
@@ -892,6 +913,7 @@ if ($('#Article_[% Data.ArticleID %]').length) {
         </div>
 
 [% PROCESS ArticleActionMenu.tt %]
+
 
         <div class="Content">
             <div class="ArticleMailHeader">

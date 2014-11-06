@@ -1137,13 +1137,58 @@ sub MaskAgentZoom {
         );
     }
 
-    # show total accounted time if feature is active:
+    # show accounted time if feature is active
     if ( $Self->{ConfigObject}->Get('Ticket::Frontend::AccountTime') ) {
+
         $Ticket{TicketTimeUnits} = $Self->{TicketObject}->TicketAccountedTimeGet(%Ticket);
-        $Self->{LayoutObject}->Block(
-            Name => 'TotalAccountedTime',
-            Data => \%Ticket,
-        );
+        
+        # show total accounted time if it exists
+        if ( $Ticket{TicketTimeUnits} ) {
+        
+            # show also agent accounted time if enabled
+            if ( $Self->{ConfigObject}->Get('Ticket::Frontend::AgentAccountedTime') ) {
+            
+                # output total accounted time with a link
+                $Self->{LayoutObject}->Block(
+                       Name => 'TotalAccountedTimeLink',
+                       Data => \%Ticket,
+                );
+                    
+                # db query
+                return if !$Self->{DBObject}->Prepare(
+                    SQL  => 'SELECT time_unit FROM time_accounting WHERE ticket_id = ? AND create_by = ?',
+                    Bind => [ \$Ticket{TicketID}, \$Self->{UserID} ],
+                );
+                
+                # add all times
+                my $AgentAccountedTime = 0;
+                while ( my @Row = $Self->{DBObject}->FetchrowArray() ) {
+                    $Row[0] =~ s/,/./g;
+                    $AgentAccountedTime += $Row[0];
+                }
+
+                # output block if there is agent accounted time
+                if ( $AgentAccountedTime ) {
+                    $Ticket{AgentAccountedTime} = $AgentAccountedTime;
+                    $Self->{LayoutObject}->Block(
+                        Name => 'AgentAccountedTime',
+                        Data => \%Ticket,
+                    );
+                }
+                
+            } else {
+                
+                # output total accounted time only
+                $Self->{LayoutObject}->Block(
+                    Name => 'TotalAccountedTime',
+                    Data => \%Ticket,
+
+                );
+            
+            }
+            
+        }
+        
     }
 
     # show pending until, if set:
@@ -1337,6 +1382,7 @@ sub MaskAgentZoom {
         FieldFilter => $Self->{DynamicFieldFilter} || {},
     );
 
+
     # to store dynamic fields to be displayed in the process widget and in the sidebar
     my ( @FieldsWidget, @FieldsSidebar );
 
@@ -1415,6 +1461,7 @@ sub MaskAgentZoom {
             },
         );
     }
+
 
     if ($IsProcessTicket) {
 
@@ -1718,6 +1765,7 @@ sub MaskAgentZoom {
             );
         }
 
+
     }
 
     # check if ticket need to be marked as seen
@@ -1857,6 +1905,15 @@ sub _ArticleTree {
                 Data => {%Param},
             );
         }
+    }
+    
+    # show article accounted time header if feature enabled
+    if ( $Self->{ConfigObject}->Get('Ticket::Frontend::AccountTime') &&
+         $Self->{ConfigObject}->Get('Ticket::Frontend::ArticleAccountedTimeColumn') ) {
+     
+        $Self->{LayoutObject}->Block(
+            Name => 'AccountedTimeHeader',
+        );
     }
 
     # show article tree
@@ -2010,6 +2067,22 @@ sub _ArticleTree {
                 }
             }
 
+            # show article accounted time column if enabled
+            if ( $Self->{ConfigObject}->Get('Ticket::Frontend::AccountTime') &&
+                 $Self->{ConfigObject}->Get('Ticket::Frontend::ArticleAccountedTimeColumn') ) {
+                 
+                my $ArticleAccountedTime = $Self->{TicketObject}->ArticleAccountedTimeGet(
+                    ArticleID => $Article{ArticleID},
+                );
+                
+                $Self->{LayoutObject}->Block(
+                    Name => 'AccountedTimeColumn',
+                    Data => {
+                        AccountedTime => $ArticleAccountedTime || '0',
+                    },
+                );
+            }
+        
             # show attachment info
             # Bugfix for IE7: a table cell should not be empty
             # (because otherwise the cell borders are not shown):
@@ -3097,6 +3170,7 @@ sub _ArticleMenu {
                         ForwardElementID     => 'ForwardTemplateID',
                         Type                 => $Param{Type},
                     };
+
 
                 }
                 else {

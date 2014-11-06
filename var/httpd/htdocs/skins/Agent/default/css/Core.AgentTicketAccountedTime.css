@@ -1,0 +1,38 @@
+/**
+ * @project     OTRS (http://www.otrs.org) - Agent Frontend
+ * @copyright   OTRS AG
+ * @license     AGPL (http://www.gnu.org/licenses/agpl.txt)
+ */
+
+/**
+ * @package     Skin "Default"
+ * @section     Application
+ * @subsection  AgentTicketAccountedTime
+ */
+
+@media screen,projection,tv,handheld {
+
+/**
+ * @subsection  General
+ */
+
+.TotalLabel,
+.TotalValue {
+    background: #eee !important;
+    color: #4b4b4b;
+    font-size: 11px;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+.TotalLabel {
+    text-align: right;
+    border-right: 1px solid #ccc !important;
+}
+
+.TotalValue {
+    font-weight: bold;
+}
+
+} /* end @media */
+
