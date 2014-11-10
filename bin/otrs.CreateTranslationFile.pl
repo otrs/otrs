@@ -74,7 +74,7 @@ Optional Parameters
 EOF
 }
 
-# common objects
+# create object manager
 local $Kernel::OM = Kernel::System::ObjectManager->new(
     'Kernel::System::Log' => {
         LogPrefix => 'OTRS-otrs.CreateTranslationFile.pl',
@@ -194,14 +194,6 @@ sub HandleLanguage {
         # i.e. FAQ_2_0 or FAQ20
         $Module =~ s{ [_0-9]+ .+ \z }{}xms;
 
-        # special handling of some ITSM modules
-        if ( $Module eq 'ITSMIncidentProblemManagement' ) {
-            $Module = 'ITSMTicket';
-        }
-        elsif ( $Module eq 'ITSMConfigurationManagement' ) {
-            $Module = 'ITSMConfigItem';
-        }
-
         # save module directory in target file
         $TargetFile = "$ModuleDirectory/Kernel/Language/${Language}_$Module.pm";
 
@@ -257,7 +249,7 @@ sub HandleLanguage {
         print "\nReading template files:\n";
     }
 
-    my @TranslationStrings = ();
+    my @TranslationStrings;
 
     for my $File (@List) {
 
