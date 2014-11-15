@@ -98,7 +98,7 @@ sub Run {
                     # prepare event type
                     my $EventType;
 
-                    # set the event type (event object like Article or Ticket) and event conditon
+                    # set the event type (event object like Article or Ticket) and event condition
                     EVENTTYPE:
                     for my $Type ( sort keys %RegisteredEvents ) {
 
