@@ -190,13 +190,13 @@ $('#MappingInboundConfigureButton').bind('click', function(){
                                         <td class="Center">[% Translate(Data.Asynchronous) | html %]</td>
                                         <td class="Center">[% Translate(Data.Condition) | html %]</td>
                                         <td class="HideOnChange Center">
-                                            <a 
-                                                id="EditEvent[% Data.Event | html %]" class="EditEvent" href="[% Env("Baselink") %]Action=[% Data.InvokerEventConfigDialog %];Subaction=Change;WebserviceID=[% Data.WebserviceID | uri %];Invoker=[% Data.Invoker | uri %];Event=[% Data.Event | uri %];" title="[% Translate("Edit this event") | html %]">
+                                            <a id="EditEvent[% Data.Event | html %]" class="EditEvent" href="[% Env("Baselink") %]Action=[% Data.InvokerEventConfigDialog %];Subaction=Change;WebserviceID=[% Data.WebserviceID | uri %];Invoker=[% Data.Invoker | uri %];Event=[% Data.Event | uri %];" title="[% Translate("Edit this event") | html %]">
                                                 <i class="fa fa-edit"></i>
                                             </a>
                                         </td>
                                         <td class="HideOnChange Center">
                                             <a id="DeleteEvent[% Data.Event | html %]" class="DeleteEvent" href="#" title="[% Translate("Delete this event") | html %]">
+                                                [% Translate("Delete this event") | html %]
                                                 <i class="fa fa-trash-o"></i>
                                             </a>
                                         </td>
