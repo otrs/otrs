@@ -196,7 +196,6 @@ $('#MappingInboundConfigureButton').bind('click', function(){
                                         </td>
                                         <td class="HideOnChange Center">
                                             <a id="DeleteEvent[% Data.Event | html %]" class="DeleteEvent" href="#" title="[% Translate("Delete this event") | html %]">
-                                                [% Translate("Delete this event") | html %]
                                                 <i class="fa fa-trash-o"></i>
                                             </a>
                                         </td>

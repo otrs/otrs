@@ -25,7 +25,6 @@
             [% Translate(Data.Event) | html %]
         </h3>
     </div>
-
     <div class="SidebarColumn">
         <div class="WidgetSimple">
             <div class="Header">
@@ -43,7 +42,6 @@
         </div>
     </div>
     <div class="ContentColumn">
-
         <form id='EventForm' action="[% Env("CGIHandle") %]" method="post" class="Validate PreventMultipleSubmits">
             <input type="hidden" name="Action" value="[% Env("Action") %]"/>
             <input type="hidden" name="Subaction" value="[% Data.Subaction | html %]Action"/>
@@ -53,7 +51,6 @@
             <input type="hidden" name="Event" value="[% Data.Event | html %]" />
             <input type="hidden" name="EventType" value="[% Data.EventType | html %]" />
             <input type="hidden" name="ConditionConfig" value=""/>
-
             <div class="WidgetSimple">
                 <div class="Header">
                     <h2>[% Translate("General Settings") | html %]</h2>
@@ -73,7 +70,6 @@
                     </fieldset>
                 </div>
             </div>
-
             <div class="WidgetSimple Expanded">
                 <div class="Header">
                     <div class="WidgetAction Toggle">
@@ -177,13 +173,11 @@
             </div>
 <!-- Invisible submit button to allow form submit on pressing enter/return without javascript -->
             <input type="image" width="0" height="0" style="display: none;" />
-
             <fieldset class="TableLike">
                 <div class="Field Spacing">
                     <button class="Primary CallForAction" type="submit" id="Submit" title="[% Translate("Save") | html %]" value="[% Translate("Save") | html %]">
                         <span>[% Translate("Save") | html %]</span>
                     </button>
-
                     [% Translate("or") | html %]
                     <button class="CallForAction" type="submit" id="SaveAndFinishButton" value="[% Translate("Save and finish") | html %]">
                         <span>[% Translate("Save and finish") | html %]</span>
@@ -196,16 +190,12 @@
     });
     //]]></script>
     [% END %]
-
                     [% Translate("or") | html %]
                     <a href="[% Env("Baselink") %]Action=[% Data.InvokerTypeFrontendModule | uri %];Subaction=Change;Invoker=[% Data.Invoker | uri %];WebserviceID=[% Data.WebserviceID | uri %]">[% Translate("Cancel") | html %]</a>
-
                 </div>
             </fieldset>
             <div class="Clear"></div>
-
         </form>
-
         <div id="ConditionContainer" style="display:none;">
             <label for="Condition[_INDEX_]">[% Translate("Condition") | html %] _INDEX_:</label>
             <div class="Field ConditionField" id="Condition[_INDEX_]">
@@ -246,7 +236,6 @@
                 </div>
             </div>
         </div>
-
         <div id="ConditionFieldContainer" style="display:none;">
             <fieldset class="Fields">
                 <label for="ConditionFieldName[_INDEX_][_FIELDINDEX_]">[% Translate("Name") | html %]:</label>
@@ -266,16 +255,7 @@
                 </div>
             </fieldset>
         </div>
-
     </div>
-</div>
-
-<div class="Hidden" id="DeleteDialogContainer">
-    <span class="WarningDialog ">&nbsp;</span>
-    <p id="DeleteDialog" class="Center Warning">
-        [% Translate("Do you really want to delete this field condition?") | html %]
-    </p>
-    <div class="SpacingTop"></div>
 </div>
 
 [% WRAPPER JSOnDocumentComplete %]
