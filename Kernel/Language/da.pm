@@ -416,6 +416,20 @@ sub Data {
         'Problems processing server result. Please try again later.' => 'Problemer med at behandle svaret fra serveren. Prøv venligst igen senere.',
         'Username and password do not match. Please try again.' => 'Brugernavn og password passer ikke. Prøv venligst igen.',
         'The selected process is invalid!' => 'Den valgte proces er ugyldig.',
+        'Upgrade to %s now!' => '',
+        '%s Go to the upgrade center %s' => '',
+        'The license for your %s is about to expire. Please make contact with %s to renew your contract!' =>
+            '',
+        'An update for your %s is available, but there is a conflict with your framework version! Please update your framework first!' =>
+            '',
+        'Your system was successfully upgraded to %s.' => '',
+        'There was a problem during the upgrade to %s.' => '',
+        '%s was correctly reinstalled.' => '',
+        'There was a problem reinstalling %s.' => '',
+        'Your %s was successfully updated.' => '',
+        'There was a problem during the upgrade of %s.' => '',
+        '%s was correctly uninstalled.' => '',
+        'There was a problem uninstalling %s.' => '',
 
         # Template: AAACalendar
         'New Year\'s Day' => 'Nytårsdag',
@@ -639,6 +653,8 @@ sub Data {
         'Groups' => 'Grupper',
         'Dynamic Fields' => 'Dynamiske Felter',
         'Dynamic Field Values' => '',
+        'Invalid Dynamic Fields' => '',
+        'Invalid Dynamic Field Values' => '',
         'GenericInterface Webservices' => '',
         'Processes' => 'Processer',
         'Months Between First And Last Ticket' => 'Måneder mellem første og sidste sag',
@@ -680,6 +696,7 @@ sub Data {
         'Environment Variables' => '',
         'Webserver Version' => '',
         'Could not determine webserver version.' => '',
+        'Loaded Apache Modules' => '',
         'CGI Accelerator Usage' => '',
         'You should use FastCGI or mod_perl to increase your performance.' =>
             '',
@@ -1261,6 +1278,7 @@ sub Data {
             '',
         'Do you really want to delete this event trigger?' => '',
         'Add Event Trigger' => '',
+        'Add Event' => '',
         'To add a new event select the event object and event name and click on the "+" button' =>
             '',
         'Duplicate event.' => '',
@@ -1680,6 +1698,61 @@ sub Data {
         'To get the first 5 lines of the body (of the latest customer article).' =>
             'For at få de første 5 linier af beskeden (af den seneste agent-indlæg).',
 
+        # Template: AdminOTRSBusinessInstalled
+        'Manage %s' => '',
+        'Downgrade to OTRS Free' => '',
+        '%s makes contact regularly with cloud.otrs.com to check on available updates and the validity of the underlying contract.' =>
+            '',
+        'Unauthorized Usage Detected' => '',
+        'This system uses the %s without a proper license! Please make contact with %s to renew or activate your contract!' =>
+            '',
+        '%s not Correctly Installed' => '',
+        'Your %s is not correctly installed. Please reinstall it with the button below.' =>
+            '',
+        'Reinstall %s' => '',
+        'Your %s is not correctly installed, and there is also an update available.' =>
+            '',
+        'You can either reinstall your current version or perform an update with the buttons below (update recommended).' =>
+            '',
+        'Update %s' => '',
+        '%s Not Yet Available' => '',
+        '%s will be available soon.' => '',
+        '%s Update Available' => '',
+        'An update for your %s is available! Please update at your earliest!' =>
+            '',
+        '%s Correctly Deployed' => '',
+        'Congratulations, your %s is correctly installed and up to date!' =>
+            '',
+
+        # Template: AdminOTRSBusinessNotInstalled
+        'Upgrade to %s' => '',
+        '%s will be available soon. Please check again in a few days.' =>
+            '',
+        'Your OTRS Free is the base for all future actions. Please register first before you continue with the upgrade process of %s!' =>
+            '',
+        'Register this System' => '',
+        'Before you can benefit from %s, please contact %s to get your %s contract.' =>
+            '',
+        'Connection to cloud.otrs.com via HTTPS couldn\'t be established. Please make sure that your OTRS can connect to cloud.otrs.com via port 443.' =>
+            '',
+        'We are happy to welcome you as one of our contracting partners to upgrade to %s. You can start the upgrade now!' =>
+            '',
+
+        # Template: AdminOTRSBusinessUninstall
+        'Cancel downgrade and go back' => '',
+        'Go to OTRS Package Manager' => '',
+        'Sorry, but currently you can\'t downgrade due to the following packages which depend on %s:' =>
+            '',
+        'Vendor' => 'Leverandør',
+        'Please uninstall the packages first using the package manager and try again.' =>
+            '',
+        'You are about to downgrade to OTRS Free and will lose the following features and all data related to these:' =>
+            '',
+        'Chat' => '',
+        'Timeline view in ticket zoom' => '',
+        'DynamicField ContactWithData' => '',
+        'The %s skin' => '',
+
         # Template: AdminPGP
         'PGP Management' => 'PGP-styring',
         'Use this feature if you want to work with PGP keys.' => 'Brug denne funktion, hvis du vil arbejde med PGP-nøgler.',
@@ -1712,7 +1785,6 @@ sub Data {
         'Did not find a required feature? OTRS Group provides their service contract customers with exclusive Add-Ons:' =>
             'Fandt du ikke den ønskede funktionalitet? OTRS Group tilbyder deres servicekontrakt-kunder eksklusive tilføjelser:',
         'Online Repository' => 'Online lagerdepot',
-        'Vendor' => 'Leverandør',
         'Module documentation' => 'Modul-dokumentation',
         'Upgrade' => 'Opgrader',
         'Local Repository' => 'Lokalt lagerdepot',
@@ -2199,6 +2271,7 @@ sub Data {
 
         # Template: AdminSMIMECertRead
         'Close window' => 'Luk vindue',
+        'Certificate details' => '',
 
         # Template: AdminSalutation
         'Salutation Management' => 'Administrer Indledninger',
@@ -2419,6 +2492,7 @@ sub Data {
         'Add ticket type' => 'Tilføj sagstype',
         'Add Type' => 'Tilføj type',
         'Edit Type' => 'Rediger type',
+        'A type with this name already exists!' => '',
 
         # Template: AdminUser
         'Add agent' => 'Tilføj agent',
@@ -2490,6 +2564,7 @@ sub Data {
         '%s closed ticket(s) of %s' => '%s lukkede sager af %s',
         'New phone ticket from %s' => 'Nye sager fra %s',
         'New email ticket to %s' => 'Nye mail-sager til %s',
+        'Start chat' => '',
 
         # Template: AgentDashboardProductNotify
         '%s %s is available!' => '%s %s er tilgængelig',
@@ -2786,6 +2861,7 @@ sub Data {
         'Please include at least one customer for the ticket.' => 'Der skal være mindst én kunde til sagen.',
         'To queue' => 'Til kø',
         'Chat protocol' => '',
+        'The chat will be appended as a separate article.' => '',
 
         # Template: AgentTicketPlain
         'Email Text Plain View' => 'Vis mailens kildetekst',
@@ -2859,6 +2935,7 @@ sub Data {
         'Ticket Timeline View' => '',
         'Article Overview' => 'Indlægsoversigt',
         'Article(s)' => 'Indlæg',
+        'Page' => 'Side',
         'Add Filter' => 'Tilføj filter',
         'Set' => 'Indstil',
         'Reset Filter' => 'Nulstil filter',
@@ -2873,14 +2950,20 @@ sub Data {
         'Outgoing message' => 'Udgående besked',
         'Internal message' => 'Intern besked',
         'Resize' => 'Ændr størrelse',
+        'Mark this article as read' => '',
         'Show Full Text' => '',
         'Full Article Text' => '',
         'No more events found. Please try changing the filter settings.' =>
+            '',
+        'Article could not be opened! Perhaps it is on another article page?' =>
             '',
 
         # Template: AttachmentBlocker
         'To protect your privacy, remote content was blocked.' => 'For at beskytte dit privatliv blev fjernindhold blokeret.',
         'Load blocked content.' => 'Vis blokeret indhold',
+
+        # Template: ChatStartForm
+        'First message' => '',
 
         # Template: CustomerError
         'Traceback' => 'Tilbagesporing',
@@ -2906,6 +2989,7 @@ sub Data {
         'In order to experience OTRS, you\'ll need to enable JavaScript in your browser.' =>
             'For at opleve OTRS, skal du aktivere JavaScript i din browser.',
         'Browser Warning' => 'Browser-advarsel',
+        'One moment please, you are being redirected...' => '',
         'Login' => 'Login',
         'User name' => 'Brugernavn',
         'Your user name' => 'Dit brugernavn',
@@ -2927,6 +3011,9 @@ sub Data {
         'Incoming Chat Requests' => '',
         'You have unanswered chat requests' => '',
         'Edit personal preferences' => 'Rediger dine personlige indstillinger',
+
+        # Template: CustomerRichTextEditor
+        'Split Quote' => '',
 
         # Template: CustomerTicketMessage
         'Service level agreement' => 'Service level agreement',
@@ -2962,7 +3049,6 @@ sub Data {
 
         # Template: CustomerTicketSearchResultShort
         'of' => 'af',
-        'Page' => 'Side',
         'Search Results for' => 'Søgeresultater for',
         'Remove this Search Term.' => 'Fjern dette søgekriterie.',
 
@@ -3089,8 +3175,8 @@ sub Data {
         'Your OTRS Team' => 'Dit OTRS Team',
 
         # Template: InstallerLicense
-        'Accept license' => 'Accepter licens',
         'Don\'t accept license' => 'Accepter ikke icensen',
+        'Accept license and continue' => '',
 
         # Template: InstallerSystem
         'The identifier of the system. Each ticket number and each HTTP session ID contain this number.' =>
@@ -3855,6 +3941,8 @@ sub Data {
         'Defines the module that shows the currently loged in customers in the customer interface.' =>
             '',
         'Defines the module to authenticate customers.' => '',
+        'Defines the module to display a notification in different interfaces on different occasions for OTRS Business Solution™.' =>
+            '',
         'Defines the module to display a notification in the agent interface if the scheduler is not running.' =>
             '',
         'Defines the module to display a notification in the agent interface, if the agent is logged in while having out-of-office active.' =>
@@ -4035,6 +4123,7 @@ sub Data {
         'Deletes a session if the session id is used with an invalid remote IP address.' =>
             '',
         'Deletes requested sessions if they have timed out.' => '',
+        'Deploy and manage OTRS Business Solution™.' => '',
         'Determines if the list of possible queues to move to ticket into should be displayed in a dropdown list or in a new window in the agent interface. If "New Window" is set you can add a move note to the ticket.' =>
             '',
         'Determines if the statistics module may generate ticket lists.' =>
@@ -4158,7 +4247,9 @@ sub Data {
         'Enables S/MIME support.' => 'Aktiverer S/MIME-understøttelse',
         'Enables customers to create their own accounts.' => 'Lader kunder oprette deres egne konti.',
         'Enables file upload in the package manager frontend.' => '',
-        'Enables or disable the debug mode over frontend interface.' => '',
+        'Enables or disables the caching for templates. WARNING: Do NOT disable template caching for production environments for it will cause a massive performance drop! This setting should only be disabled for debugging reasons!' =>
+            '',
+        'Enables or disables the debug mode over frontend interface.' => '',
         'Enables or disables the ticket watcher feature, to keep track of tickets without being the owner nor the responsible.' =>
             '',
         'Enables performance log (to log the page response time). It will affect the system performance. Frontend::Module###AdminPerformanceLog must be enabled.' =>
@@ -5159,6 +5250,8 @@ sub Data {
         'Specifies whether all storage backends should be checked when looking for attachements. This is only required for installations where some attachements are in the file system, and others in the database.' =>
             '',
         'Specify how many sub directory levels to use when creating cache files. This should prevent too many cache files being in one directory.' =>
+            '',
+        'Specify the channel to be used to fetch OTRS Business Solution™ updates. Warning: Development releases might not be complete, your system might experience unrecoverable errors and on extreme cases could become unresponsive!' =>
             '',
         'Standard available permissions for agents within the application. If more permissions are needed, they can be entered here. Permissions must be defined to be effective. Some other good permissions have also been provided built-in: note, close, pending, customer, freetext, move, compose, responsible, forward, and bounce. Make sure that "rw" is always the last registered permission.' =>
             '',

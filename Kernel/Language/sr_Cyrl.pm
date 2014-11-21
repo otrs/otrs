@@ -415,6 +415,20 @@ sub Data {
         'Problems processing server result. Please try again later.' => 'Проблеми у обради резултата сервера. Молимо покушајте поново касније.',
         'Username and password do not match. Please try again.' => 'Корисничко име и лозинка се не поклапају. Молимо покушајте поново.',
         'The selected process is invalid!' => 'Означени процес је неважећи!',
+        'Upgrade to %s now!' => 'Ажурирај сада на %s!',
+        '%s Go to the upgrade center %s' => '%s Иди у центар за ажурирање %s',
+        'The license for your %s is about to expire. Please make contact with %s to renew your contract!' =>
+            '',
+        'An update for your %s is available, but there is a conflict with your framework version! Please update your framework first!' =>
+            '',
+        'Your system was successfully upgraded to %s.' => '',
+        'There was a problem during the upgrade to %s.' => '',
+        '%s was correctly reinstalled.' => '%s је коректно реинсталирана.',
+        'There was a problem reinstalling %s.' => 'Проблем при реинсталацији %s.',
+        'Your %s was successfully updated.' => 'Ваша %s је успешно ажурирана.',
+        'There was a problem during the upgrade of %s.' => '',
+        '%s was correctly uninstalled.' => '%s је коректно деинсталирана.',
+        'There was a problem uninstalling %s.' => 'Проблем при деинсталацији %s.',
 
         # Template: AAACalendar
         'New Year\'s Day' => 'Нова година',
@@ -638,6 +652,8 @@ sub Data {
         'Groups' => 'Групе',
         'Dynamic Fields' => 'Динамичка поља',
         'Dynamic Field Values' => 'Вредности динамичког поља',
+        'Invalid Dynamic Fields' => 'Неисправна динамичка поља.',
+        'Invalid Dynamic Field Values' => 'Неисправнe vrednosti динамичких поља.',
         'GenericInterface Webservices' => 'GenericInterface веб сервис',
         'Processes' => 'Процеси',
         'Months Between First And Last Ticket' => 'Месеци између првог и последњег тикета',
@@ -679,6 +695,7 @@ sub Data {
         'Environment Variables' => 'Променљиве за окружење',
         'Webserver Version' => 'Веб сервер верзија',
         'Could not determine webserver version.' => 'Не може да препозна веб сервер верзију.',
+        'Loaded Apache Modules' => '',
         'CGI Accelerator Usage' => 'Употреба CGI Accelerator',
         'You should use FastCGI or mod_perl to increase your performance.' =>
             'За повећање перформанси треба да користите FastCGI или mod_perl.',
@@ -1260,6 +1277,7 @@ sub Data {
             'Уколико је догађај тикета отказао, биће примењен тикет филтер да потврди да ли тикет одговара. Само тада ће се посао на тикету покренути.',
         'Do you really want to delete this event trigger?' => 'Да ли стварно желите да обришете овај окидач догађаја?',
         'Add Event Trigger' => 'Додај окидач догађаја',
+        'Add Event' => 'Додај догађај',
         'To add a new event select the event object and event name and click on the "+" button' =>
             'За додавање новог догађаја изаберите објект догађаја и име догађаја па кликните на "+" дугме',
         'Duplicate event.' => 'Направи дупликат догађаја.',
@@ -1679,6 +1697,61 @@ sub Data {
         'To get the first 5 lines of the body (of the latest customer article).' =>
             'Да видите првих 5 линија поруке (последњег чланка оператера).',
 
+        # Template: AdminOTRSBusinessInstalled
+        'Manage %s' => 'Управљај са %s',
+        'Downgrade to OTRS Free' => '',
+        '%s makes contact regularly with cloud.otrs.com to check on available updates and the validity of the underlying contract.' =>
+            '',
+        'Unauthorized Usage Detected' => 'Детектована неовлаштена употреба',
+        'This system uses the %s without a proper license! Please make contact with %s to renew or activate your contract!' =>
+            '',
+        '%s not Correctly Installed' => '',
+        'Your %s is not correctly installed. Please reinstall it with the button below.' =>
+            '',
+        'Reinstall %s' => 'Реинсталирај %s',
+        'Your %s is not correctly installed, and there is also an update available.' =>
+            '',
+        'You can either reinstall your current version or perform an update with the buttons below (update recommended).' =>
+            '',
+        'Update %s' => 'Ажурирај %s',
+        '%s Not Yet Available' => '%s није још доступно',
+        '%s will be available soon.' => '%s ће бити ускоро доступно',
+        '%s Update Available' => '%s доступно ажурирање',
+        'An update for your %s is available! Please update at your earliest!' =>
+            '',
+        '%s Correctly Deployed' => '',
+        'Congratulations, your %s is correctly installed and up to date!' =>
+            '',
+
+        # Template: AdminOTRSBusinessNotInstalled
+        'Upgrade to %s' => '',
+        '%s will be available soon. Please check again in a few days.' =>
+            '',
+        'Your OTRS Free is the base for all future actions. Please register first before you continue with the upgrade process of %s!' =>
+            '',
+        'Register this System' => 'Региструј овај систем',
+        'Before you can benefit from %s, please contact %s to get your %s contract.' =>
+            '',
+        'Connection to cloud.otrs.com via HTTPS couldn\'t be established. Please make sure that your OTRS can connect to cloud.otrs.com via port 443.' =>
+            '',
+        'We are happy to welcome you as one of our contracting partners to upgrade to %s. You can start the upgrade now!' =>
+            '',
+
+        # Template: AdminOTRSBusinessUninstall
+        'Cancel downgrade and go back' => '',
+        'Go to OTRS Package Manager' => '',
+        'Sorry, but currently you can\'t downgrade due to the following packages which depend on %s:' =>
+            '',
+        'Vendor' => 'Продавац',
+        'Please uninstall the packages first using the package manager and try again.' =>
+            '',
+        'You are about to downgrade to OTRS Free and will lose the following features and all data related to these:' =>
+            '',
+        'Chat' => '',
+        'Timeline view in ticket zoom' => '',
+        'DynamicField ContactWithData' => '',
+        'The %s skin' => '',
+
         # Template: AdminPGP
         'PGP Management' => 'Управљање PGP кључевима',
         'Use this feature if you want to work with PGP keys.' => 'Употреби ову могућност за рад са PGP кључевима.',
@@ -1711,7 +1784,6 @@ sub Data {
         'Did not find a required feature? OTRS Group provides their service contract customers with exclusive Add-Ons:' =>
             'Нисте пронашли потребну функционалност? OTRS Група обезбеђује својим клијентима сервисни уговор са ексклузивним додатним модулима.',
         'Online Repository' => 'Мрежно спремиште',
-        'Vendor' => 'Продавац',
         'Module documentation' => 'Документација модула',
         'Upgrade' => 'Ажурирање',
         'Local Repository' => 'Локално спремиште',
@@ -2198,6 +2270,7 @@ sub Data {
 
         # Template: AdminSMIMECertRead
         'Close window' => 'Затвори прозор',
+        'Certificate details' => 'Детаљи сертификата',
 
         # Template: AdminSalutation
         'Salutation Management' => 'Управљање поздравима',
@@ -2226,7 +2299,7 @@ sub Data {
             'Најмање један параметар недостаје за повезивање. Молимо проверите.',
         'Result format' => 'Формат резултата',
         'Run Query' => 'Покрени упит',
-        'Query is executed.' => '',
+        'Query is executed.' => 'Упит је извршен',
 
         # Template: AdminService
         'Service Management' => 'Управљање услугама',
@@ -2418,6 +2491,7 @@ sub Data {
         'Add ticket type' => 'Додај тип тикета',
         'Add Type' => 'Додај Тип ',
         'Edit Type' => 'У реди Тип',
+        'A type with this name already exists!' => '',
 
         # Template: AdminUser
         'Add agent' => 'Додај оператера',
@@ -2489,6 +2563,7 @@ sub Data {
         '%s closed ticket(s) of %s' => '%s затворених тикета од %s',
         'New phone ticket from %s' => 'Нови телефонски тикет од %s',
         'New email ticket to %s' => 'Нови имејл тикет од %s',
+        'Start chat' => '',
 
         # Template: AgentDashboardProductNotify
         '%s %s is available!' => '%s %s је доступно!',
@@ -2680,7 +2755,7 @@ sub Data {
         'Previous Owner' => 'Претходни власник',
         'Next state' => 'Следећи статус',
         'Add Article' => 'Додај чланак',
-        'Create an Article' => '',
+        'Create an Article' => 'Креирај чланак',
         'Spell check' => 'Провера правописа',
         'Text Template' => 'Шаблон текста',
         'Setting a template will overwrite any text or attachment.' => '',
@@ -2785,6 +2860,7 @@ sub Data {
         'Please include at least one customer for the ticket.' => 'Молимо да укључите бар једног корисника за тикет.',
         'To queue' => 'У ред',
         'Chat protocol' => 'Протокол ћаскања',
+        'The chat will be appended as a separate article.' => '',
 
         # Template: AgentTicketPlain
         'Email Text Plain View' => 'Преглед неформатиране поруке',
@@ -2845,7 +2921,7 @@ sub Data {
         'Sender Type' => 'Тип пошиљаоца',
         'Save filter settings as default' => 'Сачувај подешавања филтера као подразумевана',
         'Event Type Filter' => '',
-        'Event Type' => '',
+        'Event Type' => 'Тип догађаја',
         'Save as default' => '',
         'Archive' => 'Архивирај',
         'This ticket is archived.' => 'Овај тикет је архивиран',
@@ -2858,6 +2934,7 @@ sub Data {
         'Ticket Timeline View' => '',
         'Article Overview' => 'Преглед чланка',
         'Article(s)' => 'Чланак/Чланци',
+        'Page' => 'Страна',
         'Add Filter' => 'Додај Филтер',
         'Set' => 'Подеси',
         'Reset Filter' => 'Ресетуј Филтер',
@@ -2872,14 +2949,20 @@ sub Data {
         'Outgoing message' => 'Одлазна порука',
         'Internal message' => 'Интерна порука',
         'Resize' => 'Промена величине',
-        'Show Full Text' => '',
-        'Full Article Text' => '',
+        'Mark this article as read' => '',
+        'Show Full Text' => 'Прикажи цео текст',
+        'Full Article Text' => 'Текст целог чланка',
         'No more events found. Please try changing the filter settings.' =>
+            '',
+        'Article could not be opened! Perhaps it is on another article page?' =>
             '',
 
         # Template: AttachmentBlocker
         'To protect your privacy, remote content was blocked.' => 'Да бисте заштитили своју приватност, удаљени садржај је блокиран.',
         'Load blocked content.' => 'Учитај блокирани садржај.',
+
+        # Template: ChatStartForm
+        'First message' => 'Прва порука',
 
         # Template: CustomerError
         'Traceback' => 'Испрати уназад',
@@ -2905,6 +2988,7 @@ sub Data {
         'In order to experience OTRS, you\'ll need to enable JavaScript in your browser.' =>
             'Како би сте користили OTRS неопходно је да активирате JavaScript у вашем веб претраживачу.',
         'Browser Warning' => 'Упозорење веб претраживача',
+        'One moment please, you are being redirected...' => '',
         'Login' => 'Пријављивање',
         'User name' => 'Корисничко име',
         'Your user name' => 'Ваше корисничко име',
@@ -2926,6 +3010,9 @@ sub Data {
         'Incoming Chat Requests' => 'Долазни захтеви за ћаскање',
         'You have unanswered chat requests' => '',
         'Edit personal preferences' => 'Уреди личне поставке',
+
+        # Template: CustomerRichTextEditor
+        'Split Quote' => '',
 
         # Template: CustomerTicketMessage
         'Service level agreement' => 'Споразум о нивоу услуге',
@@ -2961,7 +3048,6 @@ sub Data {
 
         # Template: CustomerTicketSearchResultShort
         'of' => 'од',
-        'Page' => 'Страна',
         'Search Results for' => 'Резултати претраживања за',
         'Remove this Search Term.' => 'Уклони овај израз за претрагу.',
 
@@ -3088,8 +3174,8 @@ sub Data {
         'Your OTRS Team' => 'Ваш OTRS тим',
 
         # Template: InstallerLicense
-        'Accept license' => 'Прихвати лиценцу',
         'Don\'t accept license' => 'Не прихватај лиценцу',
+        'Accept license and continue' => 'Прихвати лиценцу и настави',
 
         # Template: InstallerSystem
         'The identifier of the system. Each ticket number and each HTTP session ID contain this number.' =>
@@ -3854,6 +3940,8 @@ sub Data {
         'Defines the module that shows the currently loged in customers in the customer interface.' =>
             'Дефинише модул који приказује све тренутно пријављене кориснике у интерфејсу корисника.',
         'Defines the module to authenticate customers.' => 'Дефинише модул за аутентификацију корисника.',
+        'Defines the module to display a notification in different interfaces on different occasions for OTRS Business Solution™.' =>
+            '',
         'Defines the module to display a notification in the agent interface if the scheduler is not running.' =>
             'Дефинише модул за приказивање обавештења у интерфејсу оператера ако планер не ради.',
         'Defines the module to display a notification in the agent interface, if the agent is logged in while having out-of-office active.' =>
@@ -4034,6 +4122,7 @@ sub Data {
         'Deletes a session if the session id is used with an invalid remote IP address.' =>
             'Брише сесију уколико је ИД сесије коришћен преко неважеће удаљене IP адресе.',
         'Deletes requested sessions if they have timed out.' => 'Брише захтевану сесију ако је истекло време.',
+        'Deploy and manage OTRS Business Solution™.' => '',
         'Determines if the list of possible queues to move to ticket into should be displayed in a dropdown list or in a new window in the agent interface. If "New Window" is set you can add a move note to the ticket.' =>
             'Одређује да ли листа могућих редова за премештање у тикет треба да буде приказана у падајућој листи или у новом прозору у интерфејсу оператера. Ако је подешен "Нови прозор" можете додавати напомене о премештању у тикет.',
         'Determines if the statistics module may generate ticket lists.' =>
@@ -4157,7 +4246,9 @@ sub Data {
         'Enables S/MIME support.' => 'Omogućava S/MIME podršku.',
         'Enables customers to create their own accounts.' => 'Омогућава корисницима да креирају сопствене налоге.',
         'Enables file upload in the package manager frontend.' => '',
-        'Enables or disable the debug mode over frontend interface.' => '',
+        'Enables or disables the caching for templates. WARNING: Do NOT disable template caching for production environments for it will cause a massive performance drop! This setting should only be disabled for debugging reasons!' =>
+            '',
+        'Enables or disables the debug mode over frontend interface.' => '',
         'Enables or disables the ticket watcher feature, to keep track of tickets without being the owner nor the responsible.' =>
             '',
         'Enables performance log (to log the page response time). It will affect the system performance. Frontend::Module###AdminPerformanceLog must be enabled.' =>
@@ -4197,7 +4288,7 @@ sub Data {
             '',
         'Event module that updates tickets after an update of the Customer.' =>
             '',
-        'Events Ticket Calendar' => '',
+        'Events Ticket Calendar' => 'Календар догађаја тикета',
         'Execute SQL statements.' => 'Изврши SQL наредбе.',
         'Executes follow up checks on In-Reply-To or References headers for mails that don\'t have a ticket number in the subject.' =>
             '',
@@ -5159,6 +5250,8 @@ sub Data {
             '',
         'Specify how many sub directory levels to use when creating cache files. This should prevent too many cache files being in one directory.' =>
             'Навођење колико нивоа поддиректоријума да користи приликом креирања кеш фајлова. То би требало да спречи превише кеш фајлова у једном директоријуму.',
+        'Specify the channel to be used to fetch OTRS Business Solution™ updates. Warning: Development releases might not be complete, your system might experience unrecoverable errors and on extreme cases could become unresponsive!' =>
+            '',
         'Standard available permissions for agents within the application. If more permissions are needed, they can be entered here. Permissions must be defined to be effective. Some other good permissions have also been provided built-in: note, close, pending, customer, freetext, move, compose, responsible, forward, and bounce. Make sure that "rw" is always the last registered permission.' =>
             'Стандардне расположиве дозволе за оператере унутар апликације. Уколико је потребно више дозвола они могу унети овде. Дозволе морају бити дефинисане да буду ефективне. Неке друге дозволе су такође обезбеђене уграђивањем у: напомену, затвори, на чекању, клијент, слободан текст, помери, отвори, одговоран, проследи и поврати. Обезбеди да "rw" увек буде последња регистрована дозвола.',
         'Start number for statistics counting. Every new stat increments this number.' =>

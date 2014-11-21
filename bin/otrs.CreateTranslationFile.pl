@@ -50,9 +50,10 @@ may be installed or linked into the system!
     otrs.CreateTranslationFile.pl -l all
 
 Since OTRS 4 public translations are managed in transifex. Use the -p switch to
-update the .pot/.po files.
+update the .pot files and the -P switch to update both .pot and .po files (usually not needed).
 
     otrs.CreateTranslationFile.pl -l <Language> -p
+    otrs.CreateTranslationFile.pl -l <Language> -P
 
 Translating Extension Modules
 =============================
@@ -68,8 +69,6 @@ Optional Parameters
 =============================
 
   To output debug information, use -v.
-
-  To write PO files, use -p.
 
 EOF
 }
@@ -94,8 +93,7 @@ my $BreakLineAfterChars = 60;
 
     # check params
     if ( $Opts{l} && $Opts{l} eq 'all' ) {
-        my %DefaultUsedLanguages
-            = %{ $Kernel::OM->Get('Kernel::Config')->Get('DefaultUsedLanguages') };
+        my %DefaultUsedLanguages = %{ $Kernel::OM->Get('Kernel::Config')->Get('DefaultUsedLanguages') };
         @Languages = sort keys %DefaultUsedLanguages;
 
         # ignore en*.pm files
@@ -122,9 +120,10 @@ my $BreakLineAfterChars = 60;
         HandleLanguage(
             Language => $Language,
             Module   => $Opts{m},
-            WritePO  => exists $Opts{p} ? 1 : 0,
-            Stats    => \%Stats,
-            Verbose  => exists $Opts{v} ? 1 : 0,
+            WritePOT => ( exists $Opts{p} || exists $Opts{P} ) ? 1 : 0,
+            WritePO => exists $Opts{P} ? 1 : 0,
+            Stats   => \%Stats,
+            Verbose => exists $Opts{v} ? 1 : 0,
         );
     }
 
@@ -159,7 +158,6 @@ sub HandleLanguage {
 
     my $Language = $Param{Language};
     my $Module   = $Param{Module};
-    my $WritePO  = $Param{WritePO};
 
     my $ModuleDirectory = $Module;
     my $LanguageFile;
@@ -227,7 +225,7 @@ sub HandleLanguage {
 
     my %POTranslations;
 
-    if ($WritePO) {
+    if ( $Param{WritePOT} || $Param{WritePO} ) {
         %POTranslations = LoadPOFile(
             TargetPOFile => $TargetPOFile,
         );
@@ -235,8 +233,7 @@ sub HandleLanguage {
 
     # open .tt files and write new translation file
     my %UsedWords;
-    my $Directory
-        = $IsSubTranslation
+    my $Directory = $IsSubTranslation
         ? "$ModuleDirectory/Kernel/Output/HTML/$DefaultTheme"
         : "$Home/Kernel/Output/HTML/$DefaultTheme";
 
@@ -273,17 +270,18 @@ sub HandleLanguage {
         $Content =~ s{
             Translate\(
                 \s*
-                "(.*?)(?<!\\)"
+                (["'])(.*?)(?<!\\)\1
                 \s*
                 (?:,[^\)]+)?
             \)
             (?:\s|[|])
         }
         {
-            my $Word = $1 // '';
+            my $Word = $2 // '';
 
-            # unescape any \" signs
+            # unescape any \" or \' signs
             $Word =~ s{\\"}{"}smxg;
+            $Word =~ s{\\'}{'}smxg;
 
             if ($Word && !exists $UsedWords{$Word}) {
 
@@ -334,8 +332,7 @@ sub HandleLanguage {
         next STRING if $IsSubTranslation && exists $LanguageCoreObject->{Translation}->{$String};
 
         # lookup for existing translation
-        $UsedWords{$String}
-            = $POTranslations{$String}
+        $UsedWords{$String} = $POTranslations{$String}
             || ( $IsSubTranslation ? $LanguageObject : $LanguageCoreObject )->{Translation}
             ->{$String};
 
@@ -348,14 +345,14 @@ sub HandleLanguage {
         $Param{Stats}->{ $Param{Language} }->{$String} = $Translation;
     }
 
-    if ($WritePO) {
-        if ( !$POTFileWritten++ ) {
-            WritePOTFile(
-                TranslationStrings => \@TranslationStrings,
-                TargetPOTFile      => $TargetPOTFile,
-                Module             => $Module,
-            );
-        }
+    if ( $Param{WritePOT} && !$POTFileWritten++ ) {
+        WritePOTFile(
+            TranslationStrings => \@TranslationStrings,
+            TargetPOTFile      => $TargetPOTFile,
+            Module             => $Module,
+        );
+    }
+    if ( $Param{WritePO} ) {
         WritePOFile(
             TranslationStrings => \@TranslationStrings,
             TargetPOTFile      => $TargetPOTFile,

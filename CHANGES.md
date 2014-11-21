@@ -1,4 +1,27 @@
-#4.0.0.? ????-??-??
+#4.0.1 2014-11-25
+ - 2014-11-20 Updated translations, thanks to all translators.
+ - 2014-11-18 Fixed bug#[10879](http://bugs.otrs.org/show_bug.cgi?id=10879) - GenericInterfae: TicketSearch operation does not take escalation parameters.
+ - 2014-11-18 Fixed bug#[10812](http://bugs.otrs.org/show_bug.cgi?id=10812) - SOAP Response is always in version SOAP 1.2.
+ - 2014-11-18 Fixed bug#[10083](http://bugs.otrs.org/show_bug.cgi?id=10083) - SMIME and Email address detection is case sensitive (for the right part)..
+ - 2014-11-18 Fixed bug#[10841](http://bugs.otrs.org/show_bug.cgi?id=10841) - ORA-00932 in DBUpdate-to-4.pl.
+ - 2014-11-18 Fixed bug#[10872](http://bugs.otrs.org/show_bug.cgi?id=10872) - Dynamic field regular expressions don't work.
+ - 2014-11-18 Fixed bug#[10712](http://bugs.otrs.org/show_bug.cgi?id=10712) - Incorrect utf8 in ZZZAuto.pm (via SysConfig).
+ - 2014-11-18 Fixed bug#[10826](http://bugs.otrs.org/show_bug.cgi?id=10826) - German - Translation Problem.
+ - 2014-11-18 Fixed bug#[10506](http://bugs.otrs.org/show_bug.cgi?id=10506) - Title mouse over text is truncated.
+ - 2014-11-18 Fixed bug#[10678](http://bugs.otrs.org/show_bug.cgi?id=10678) - Dates off by one on area diagram in dashboard widget.
+ - 2014-11-18 Added new Swahili language translation, thanks to all translators.
+
+#4.0.0.rc1 2014-11-18
+ - 2014-10-30 Updated translation files, thanks to all translators.
+ - 2014-11-12 Fixed bug#[10866](http://bugs.otrs.org/show_bug.cgi?id=10866) - Wrong default article shown in AgentTicketZoom.
+ - 2014-11-11 Fixed bug#[7369](http://bugs.otrs.org/show_bug.cgi?id=7369) - LinkQoute fails for some characters in hash or parameter.
+ - 2014-11-11 Fixed bug#[8404](http://bugs.otrs.org/show_bug.cgi?id=8404) - Wrong sorting of responses dropdown in TicketZoom.
+ - 2014-11-11 Fixed bug#[8781](http://bugs.otrs.org/show_bug.cgi?id=8781) - 508 Compliance: In Ticket Overviews the title attribute of large view link is incorrect.
+ - 2014-11-10 Fixed bug#[10669](http://bugs.otrs.org/show_bug.cgi?id=10669) - Maxlength validation of textarea dynamic fields does not work correctly in IE.
+ - 2014-11-10 Fixed bug#[10471](http://bugs.otrs.org/show_bug.cgi?id=10471) - Missing translations for tooltips of TicketOverviewSmall columns.
+ - 2014-11-10 Fixed bug#[10850](http://bugs.otrs.org/show_bug.cgi?id=10850) - Double-quoted special characters in title of dynamic field sidebar output in TicketZoom.
+ - 2014-11-07 Fixed bug#[10856](http://bugs.otrs.org/show_bug.cgi?id=10856) - TicketHistoryGet() dynamic field values.
+ - 2014-11-07 Fixed bug#[10805](http://bugs.otrs.org/show_bug.cgi?id=10805) - Open tickets in 3 days show right function but wrong number.
  - 2014-11-04 Added the possibility to define a sleeptime to a lot of .pl scripts.
  - 2014-11-04 Fixed bug#[10838](http://bugs.otrs.org/show_bug.cgi?id=10838) - Adding types with same name in AdminType leads to SQL error message.
  - 2014-11-03 Fixed bug#[10799](http://bugs.otrs.org/show_bug.cgi?id=10799) - AgentTicketFreeText displays Service on top of queue.

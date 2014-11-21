@@ -68,7 +68,15 @@ div.Headline .Flag {
  */
 
 #ArticleItems .Header h2 {
-    padding-right: 245px;
+    float: left;
+}
+
+#ArticleItems .WidgetSimple .Header {
+    overflow: hidden;
+}
+
+#ArticleItems .WidgetSimple .Header h2 {
+    max-width: 80%;
 }
 
 #ArticleTableBody {
@@ -360,7 +368,7 @@ div.Headline .Flag {
 
 .ChronicalView > ul {
     display: block;
-    width: 50%;
+    width: 49.9%;
     float: left;
     margin-top: 20px;
     border-left: 1px solid #aaa;
@@ -651,8 +659,9 @@ div.Headline .Flag {
 }
 
 .ChronicalView > ul > li.NewTicket {
+    left: 50%;
     bottom: 10px;
-    margin-left: -85px;
+    margin-left: -86px;
     position: absolute;
     width: 150px;
     text-align: center;
@@ -732,6 +741,10 @@ div.Headline .Flag {
 .ChronicalArticleiFrame {
     width: 800px;
     height: 400px;
+}
+
+.ActionsChronicalView .Actions li select {
+    max-width: 120px;
 }
 
 /* Define colors for different event types */
