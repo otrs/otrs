@@ -972,6 +972,7 @@ sub MaskAgentZoom {
     # run ticket menu modules
     if ( ref $Self->{ConfigObject}->Get('Ticket::Frontend::MenuModule') eq 'HASH' ) {
         my %Menus = %{ $Self->{ConfigObject}->Get('Ticket::Frontend::MenuModule') };
+        my %MenuClusters;
         MENU:
         for my $Menu ( sort keys %Menus ) {
 
@@ -997,10 +998,48 @@ sub MaskAgentZoom {
                 $Item->{Class} = "AsPopup PopupType_$Menus{$Menu}->{PopupType}";
             }
 
+            if ( !$Menus{$Menu}->{Cluster} ) {
+
+                # display item
+                $Self->{LayoutObject}->Block(
+                    Name => 'TicketMenu',
+                    Data => $Item,
+                );
+            }
+            else {
+
+                # store item in a cluster
+                $MenuClusters{ $Menus{$Menu}->{Cluster} }->{ $Menu } = $Item;
+            }
+        }
+
+        MENUCLUSTER:
+        for my $Cluster ( sort keys %MenuClusters ) {
+
             $Self->{LayoutObject}->Block(
                 Name => 'TicketMenu',
-                Data => $Item,
+                Data => {
+                    Name        => $Cluster,
+                    Link        => '#',
+                    LinkParam   => '',
+                    CSS         => undef,
+                    Description => $Cluster,
+                },
             );
+
+            $Self->{LayoutObject}->Block(
+                Name => 'TicketMenuSubContainer',
+                Data => '',
+            );
+
+            MENUCLUSTERITEM:
+            for my $ClusterItem ( sort keys $MenuClusters{$Cluster} ) {
+
+                $Self->{LayoutObject}->Block(
+                    Name => 'TicketMenuSubContainerItem',
+                    Data => $MenuClusters{$Cluster}->{$ClusterItem},
+                );
+            }
         }
     }
 

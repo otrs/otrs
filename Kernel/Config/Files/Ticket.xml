@@ -5209,11 +5209,12 @@
             <Hash>
                 <Item Key="Module">Kernel::Output::HTML::TicketMenuGeneric</Item>
                 <Item Key="Name">Back</Item>
-                <Item Key="Description" Translatable="1">Back</Item>
+                <Item Key="Description" Translatable="1">Go back</Item>
                 <Item Key="Action"></Item>
                 <Item Key="Link">[% Env("LastScreenOverview") %];TicketID=[% Data.TicketID | html %]</Item>
                 <Item Key="Target"></Item>
                 <Item Key="PopupType"></Item>
+                <Item Key="Cluster"></Item>
             </Hash>
         </Setting>
     </ConfigItem>
@@ -5225,8 +5226,10 @@
             <Hash>
                 <Item Key="Module">Kernel::Output::HTML::TicketMenuLock</Item>
                 <Item Key="Name">Lock</Item>
+                <Item Key="Description" Translatable="1">Lock / unlock this ticket</Item>
                 <Item Key="Action">AgentTicketLock</Item>
                 <Item Key="Target"></Item>
+                <Item Key="Cluster"></Item>
             </Hash>
         </Setting>
     </ConfigItem>
@@ -5238,11 +5241,12 @@
             <Hash>
                 <Item Key="Module">Kernel::Output::HTML::TicketMenuGeneric</Item>
                 <Item Key="Name">History</Item>
-                <Item Key="Description" Translatable="1">Show the ticket history</Item>
+                <Item Key="Description" Translatable="1">Show the history for this ticket</Item>
                 <Item Key="Action">AgentTicketHistory</Item>
                 <Item Key="Link">Action=AgentTicketHistory;TicketID=[% Data.TicketID | html %]</Item>
                 <Item Key="Target"></Item>
                 <Item Key="PopupType">TicketHistory</Item>
+                <Item Key="Cluster"></Item>
             </Hash>
         </Setting>
     </ConfigItem>
@@ -5260,6 +5264,7 @@
                 <Item Key="LinkParam">target="print"</Item>
                 <Item Key="Target"></Item>
                 <Item Key="PopupType">TicketAction</Item>
+                <Item Key="Cluster"></Item>
             </Hash>
         </Setting>
     </ConfigItem>
@@ -5271,11 +5276,12 @@
             <Hash>
                 <Item Key="Module">Kernel::Output::HTML::TicketMenuGeneric</Item>
                 <Item Key="Name">Priority</Item>
-                <Item Key="Description" Translatable="1">Change the ticket priority</Item>
+                <Item Key="Description" Translatable="1">Change the priority for this ticket</Item>
                 <Item Key="Action">AgentTicketPriority</Item>
                 <Item Key="Link">Action=AgentTicketPriority;TicketID=[% Data.TicketID | html %]</Item>
                 <Item Key="Target"></Item>
                 <Item Key="PopupType">TicketAction</Item>
+                <Item Key="Cluster"></Item>
             </Hash>
         </Setting>
     </ConfigItem>
@@ -5292,6 +5298,7 @@
                 <Item Key="Link">Action=AgentTicketFreeText;TicketID=[% Data.TicketID | html %]</Item>
                 <Item Key="Target"></Item>
                 <Item Key="PopupType">TicketAction</Item>
+                <Item Key="Cluster"></Item>
             </Hash>
         </Setting>
     </ConfigItem>
@@ -5308,6 +5315,7 @@
                 <Item Key="Link">Action=AgentLinkObject;SourceObject=Ticket;SourceKey=[% Data.TicketID | html %]</Item>
                 <Item Key="Target"></Item>
                 <Item Key="PopupType">TicketAction</Item>
+                <Item Key="Cluster"></Item>
             </Hash>
         </Setting>
     </ConfigItem>
@@ -5324,6 +5332,7 @@
                 <Item Key="Link">Action=AgentTicketOwner;TicketID=[% Data.TicketID | html %]</Item>
                 <Item Key="Target"></Item>
                 <Item Key="PopupType">TicketAction</Item>
+                <Item Key="Cluster"></Item>
             </Hash>
         </Setting>
     </ConfigItem>
@@ -5335,11 +5344,12 @@
             <Hash>
                 <Item Key="Module">Kernel::Output::HTML::TicketMenuResponsible</Item>
                 <Item Key="Name">Responsible</Item>
-                <Item Key="Description" Translatable="1">Change the responsible person for this ticket</Item>
+                <Item Key="Description" Translatable="1">Change the responsible for this ticket</Item>
                 <Item Key="Action">AgentTicketResponsible</Item>
                 <Item Key="Link">Action=AgentTicketResponsible;TicketID=[% Data.TicketID | html %]</Item>
                 <Item Key="Target"></Item>
                 <Item Key="PopupType">TicketAction</Item>
+                <Item Key="Cluster"></Item>
             </Hash>
         </Setting>
     </ConfigItem>
@@ -5356,6 +5366,7 @@
                 <Item Key="Link">Action=AgentTicketCustomer;TicketID=[% Data.TicketID | html %]</Item>
                 <Item Key="Target"></Item>
                 <Item Key="PopupType">TicketAction</Item>
+                <Item Key="Cluster"></Item>
             </Hash>
         </Setting>
     </ConfigItem>
@@ -5372,6 +5383,7 @@
                 <Item Key="Link">Action=AgentTicketNote;TicketID=[% Data.TicketID | html %]</Item>
                 <Item Key="Target"></Item>
                 <Item Key="PopupType">TicketAction</Item>
+                <Item Key="Cluster"></Item>
             </Hash>
         </Setting>
     </ConfigItem>
@@ -5383,11 +5395,12 @@
             <Hash>
                 <Item Key="Module">Kernel::Output::HTML::TicketMenuGeneric</Item>
                 <Item Key="Name">Phone Call Outbound</Item>
-                <Item Key="Description" Translatable="1">Phone Call Outbound</Item>
+                <Item Key="Description" Translatable="1">Add an outbound phone call to this ticket</Item>
                 <Item Key="Action">AgentTicketPhoneOutbound</Item>
                 <Item Key="Link">Action=AgentTicketPhoneOutbound;TicketID=[% Data.TicketID | html %]</Item>
                 <Item Key="Target"></Item>
                 <Item Key="PopupType">TicketAction</Item>
+                <Item Key="Cluster"></Item>
             </Hash>
         </Setting>
     </ConfigItem>
@@ -5399,11 +5412,12 @@
             <Hash>
                 <Item Key="Module">Kernel::Output::HTML::TicketMenuGeneric</Item>
                 <Item Key="Name">Phone Call Inbound</Item>
-                <Item Key="Description" Translatable="1">Phone Call Inbound</Item>
+                <Item Key="Description" Translatable="1">Add an inbound phone call to this ticket</Item>
                 <Item Key="Action">AgentTicketPhoneInbound</Item>
                 <Item Key="Link">Action=AgentTicketPhoneInbound;TicketID=[% Data.TicketID | html %]</Item>
                 <Item Key="Target"></Item>
                 <Item Key="PopupType">TicketAction</Item>
+                <Item Key="Cluster"></Item>
             </Hash>
         </Setting>
     </ConfigItem>
@@ -5415,11 +5429,12 @@
             <Hash>
                 <Item Key="Module">Kernel::Output::HTML::TicketMenuGeneric</Item>
                 <Item Key="Name">E-Mail Outbound</Item>
-                <Item Key="Description" Translatable="1">Write a new, outgoing mail</Item>
+                <Item Key="Description" Translatable="1">Send new outgoing mail from this ticket</Item>
                 <Item Key="Action">AgentTicketEmailOutbound</Item>
                 <Item Key="Link">Action=AgentTicketEmailOutbound;TicketID=[% Data.TicketID | html %]</Item>
                 <Item Key="Target"></Item>
                 <Item Key="PopupType">TicketAction</Item>
+                <Item Key="Cluster"></Item>
             </Hash>
         </Setting>
     </ConfigItem>
@@ -5431,11 +5446,12 @@
             <Hash>
                 <Item Key="Module">Kernel::Output::HTML::TicketMenuGeneric</Item>
                 <Item Key="Name">Merge</Item>
-                <Item Key="Description" Translatable="1">Merge into a different ticket</Item>
+                <Item Key="Description" Translatable="1">Merge this ticket and all articles into a another ticket</Item>
                 <Item Key="Action">AgentTicketMerge</Item>
                 <Item Key="Link">Action=AgentTicketMerge;TicketID=[% Data.TicketID | html %]</Item>
                 <Item Key="Target"></Item>
                 <Item Key="PopupType">TicketAction</Item>
+                <Item Key="Cluster"></Item>
             </Hash>
         </Setting>
     </ConfigItem>
@@ -5452,6 +5468,7 @@
                 <Item Key="Link">Action=AgentTicketPending;TicketID=[% Data.TicketID | html %]</Item>
                 <Item Key="Target"></Item>
                 <Item Key="PopupType">TicketAction</Item>
+                <Item Key="Cluster"></Item>
             </Hash>
         </Setting>
     </ConfigItem>
@@ -5464,7 +5481,9 @@
                 <Item Key="Module">Kernel::Output::HTML::TicketMenuTicketWatcher</Item>
                 <Item Key="Action">AgentTicketWatcher</Item>
                 <Item Key="Name">Watch</Item>
+                <Item Key="Description" Translatable="1">Watch this ticket</Item>
                 <Item Key="Target"></Item>
+                <Item Key="Cluster"></Item>
             </Hash>
         </Setting>
     </ConfigItem>
@@ -5481,6 +5500,7 @@
                 <Item Key="Link">Action=AgentTicketClose;TicketID=[% Data.TicketID | html %]</Item>
                 <Item Key="Target"></Item>
                 <Item Key="PopupType">TicketAction</Item>
+                <Item Key="Cluster"></Item>
             </Hash>
         </Setting>
     </ConfigItem>
@@ -5497,11 +5517,12 @@
                 <Item Key="Link">Action=AgentTicketMove;TicketID=[% Data.TicketID %];DestQueue=Delete</Item>
                 <Item Key="Target"></Item>
                 <Item Key="PopupType"></Item>
+                <Item Key="Cluster"></Item>
             </Hash>
         </Setting>
     </ConfigItem>
-    <ConfigItem Name="Ticket::Frontend::MenuModule###470-Spam" Required="0" Valid="0">
-        <Description Translatable="1">Shows a link to set a ticket as spam in the ticket zoom view of the agent interface. Additional access control to show or not show this link can be done by using Key "Group" and Content like "rw:group1;move_into:group2".</Description>
+    <ConfigItem Name="Ticket::Frontend::MenuModule###470-Junk" Required="0" Valid="0">
+        <Description Translatable="1">Shows a link to set a ticket as junk in the ticket zoom view of the agent interface. Additional access control to show or not show this link can be done by using Key "Group" and Content like "rw:group1;move_into:group2".</Description>
         <Group>Ticket</Group>
         <SubGroup>Frontend::Agent::Ticket::MenuModule</SubGroup>
         <Setting>
@@ -5509,10 +5530,11 @@
                 <Item Key="Module">Kernel::Output::HTML::TicketMenuGeneric</Item>
                 <Item Key="Name">Spam</Item>
                 <Item Key="Action">AgentTicketMove</Item>
-                <Item Key="Description" Translatable="1">Mark as Spam!</Item>
-                <Item Key="Link">Action=AgentTicketMove;TicketID=[% Data.TicketID %];DestQueue=Delete</Item>
+                <Item Key="Description" Translatable="1">Mark this ticket as junk!</Item>
+                <Item Key="Link">Action=AgentTicketMove;TicketID=[% Data.TicketID %];DestQueue=Junk</Item>
                 <Item Key="Target"></Item>
                 <Item Key="PopupType"></Item>
+                <Item Key="Cluster"></Item>
             </Hash>
         </Setting>
     </ConfigItem>
@@ -7617,9 +7639,11 @@
                 <NavBarName>Ticket</NavBarName>
                 <Loader>
                     <CSS>Core.Agent.TicketProcess.css</CSS>
+                    <CSS>Core.Agent.TicketMenuModuleCluster.css</CSS>
                     <JavaScript>thirdparty/jquery-tablesorter-2.0.5/jquery.tablesorter.js</JavaScript>
                     <JavaScript>Core.UI.Table.Sort.js</JavaScript>
                     <JavaScript>Core.Agent.TicketZoom.js</JavaScript>
+                    <JavaScript>Core.Agent.TicketMenuModuleCluster.js</JavaScript>
                 </Loader>
             </FrontendModuleReg>
         </Setting>

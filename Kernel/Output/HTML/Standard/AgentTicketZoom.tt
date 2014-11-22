@@ -369,14 +369,32 @@
         <div class="ContentColumn">
 
             <div class="WidgetSimple">
-                <div class="Content">
-                    <div class="ActionRow">
-                        <ul class="Actions">
+                <div id="TicketMenuWidgetContent" class="Content">
+                    <div id="TicketMenuContainer" class="ActionRow">
+                        <ul id="TicketMenu" class="Actions">
+#[% RenderBlockStart("TicketMenu") %]
+#                            <li>
+#                                <a href="[% Env("Baselink") %][% Data.Link | Interpolate %]" class="[% Data.Class | html %]" [% Data.LinkParam %] title="[% Translate(Data.Description) | html %]">[% Translate(Data.Name) | html %]</a>
+#                            </li>
+#[% RenderBlockEnd("TicketMenu") %]
+
+# -- nils
 [% RenderBlockStart("TicketMenu") %]
-                            <li>
+                            <li id="nav-[% Data.NameForID %]" class="[% Data.CSS %]">
                                 <a href="[% Env("Baselink") %][% Data.Link | Interpolate %]" class="[% Data.Class | html %]" [% Data.LinkParam %] title="[% Translate(Data.Description) | html %]">[% Translate(Data.Name) | html %]</a>
+[% RenderBlockStart("TicketMenuSubContainer") %]
+                                <ul id="nav-[% Data.NameForID %]-container">
+[% RenderBlockStart("TicketMenuSubContainerItem") %]
+                                    <li id="nav-[% Data.NameTop %]-[% Data.NameForID %]">
+                                        <a href="[% Env("Baselink") %][% Data.Link | Interpolate %]" class="[% Data.Class | html %]" [% Data.LinkParam %] title="[% Translate(Data.Description) | html %]">[% Translate(Data.Name) | html %]</a>
+                                    </li>
+[% RenderBlockEnd("TicketMenuSubContainerItem") %]
+                                </ul>
+[% RenderBlockEnd("TicketMenuSubContainer") %]
                             </li>
 [% RenderBlockEnd("TicketMenu") %]
+# -- nils
+
 [% RenderBlockStart("TicketMenuPhoneAsDropdown") %]
                             <li>
                                 <form title="[% Translate(Data.Name) | html %]" action="[% Env("CGIHandle") %]" method="get" id="[% Data.FormID | html %]">
@@ -429,6 +447,11 @@ $('#[% Data.FormID | html %] select[name=[% Data.PhoneElementID | html %]]').bin
                     </div>
                 </div>
             </div>
+[% WRAPPER JSOnDocumentComplete %]
+<script type="text/javascript">//<![CDATA[
+    Core.Agent.TicketMenuModuleCluster.Init();
+//]]></script>
+[% END %]
 
 [% RenderBlockStart("ProcessWidget") %]
 [% WRAPPER JSOnDocumentComplete %]

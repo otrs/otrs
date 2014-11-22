@@ -1,0 +1,171 @@
+/**
+ * This file containts the CSS Styles for the ticket menu
+ * module cluster navigation
+ *
+ * @project     OTRS (http://www.otrs.org) - Agent Frontend
+ * @copyright   OTRS AG
+ * @license     AGPL (http://www.gnu.org/licenses/agpl.txt)
+ */
+
+/**
+ * @package     Skin "Default"
+ * @section     Header
+ */
+
+@media screen,projection,tv,handheld {
+
+/**
+ * @subsection      TicketMenu Level-0
+ */
+
+#TicketMenuWidgetContent {
+    height: 11px;
+}
+
+#TicketMenuContainer {
+    position: absolute;
+    top: 65px;
+    left: 10px;
+    z-index: 10;
+    width: 98%; 
+    height: 35px;
+    overflow: hidden;
+}
+
+#TicketMenuContainer #TicketMenu {
+    left: 0px;
+    position: absolute;
+}
+
+.RTL #TicketMenuContainer {
+    left: auto;
+    right: 10px;
+}
+
+#TicketMenuContainer > a {
+    z-index: 100;
+}
+
+#TicketMenuContainer > a.TicketMenuBarNavigateRight {
+    right: 0px;
+}
+
+#TicketMenuContainer > a.TicketMenuBarNavigateLeft {
+    left: 0px;
+}
+
+#TicketMenuContainer > a:hover {
+    padding-top: 1px;
+    padding-left: 1px;
+    width: 19px;
+    height: 33px;
+}
+
+#TicketMenuContainer > a i {
+    margin-top: 10px;
+    display: block;
+}
+
+#TicketMenuContainer > .fa-check {
+    position: absolute;
+    font-size: 15px;
+    top: 8px;
+    color: #777;
+    display: none;
+}
+
+/**
+ * @subsection      Main hover effect
+ */
+
+#TicketMenu > li > a#GlobalSearchNav {
+    padding-right: 21px;
+}
+
+#TicketMenu > li > a#GlobalSearchNav i {
+    font-size: 15px;
+    margin-top: 5px;
+}
+
+.RTL #TicketMenu > li > a#GlobalSearchNav {
+    padding-right: 4px;
+    padding-left: 26px;
+}
+
+/**
+ * @subsection      Search icon
+ */
+
+#TicketMenu .Search {
+    width: 16px;
+}
+
+#TicketMenu a i {
+    top: 2px;
+    left: 15px;
+    font-size: 20px;
+    position: absolute;
+}
+
+/**
+ * @subsection      TicketMenu Second level
+ */
+
+#TicketMenu > li > ul {
+    display: none;
+}
+
+#TicketMenu > .Active > ul {
+    position: absolute;
+    top: 28px;
+    display: block;
+    min-width: 240px;
+    z-index: 99;
+    background: #f2f2f2;
+}
+
+.RTL #TicketMenu > .Active > ul {
+    left: auto;
+    right: -9px;
+}
+
+#TicketMenu > .Active > ul > li {
+    font-size: 11px;
+    line-height: 11px;
+    margin-top: -1px;
+    position: relative;
+    float: none;
+    border-bottom: 1px solid #BBBBBB;
+}
+
+#TicketMenu > .Active > ul > li:first-child {
+    padding-left: 0px;
+}
+
+#TicketMenu > .Active > ul > li:hover {
+    background: #F92;
+}
+
+#TicketMenu > .Active > ul > li::after {
+    content: "";
+}
+
+#TicketMenu > .Active > ul > li:hover > a {
+    color: #000;
+    border: none;
+/*    border-bottom: 2px solid #F92; */
+}
+
+#TicketMenu > .Active > ul > li > a {
+    display: block;
+    position: relative;
+    padding: 6px;
+    float: none;
+/*    border-bottom: 2px solid #f2f2f2; */
+}
+
+#TicketMenu > .Active > ul > li:last-child {
+    border-bottom: none;
+}
+
+} /* end @media */
