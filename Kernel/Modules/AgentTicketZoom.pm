@@ -1022,14 +1022,17 @@ sub MaskAgentZoom {
                     Name        => $Cluster,
                     Link        => '#',
                     LinkParam   => '',
-                    CSS         => undef,
-                    Description => $Cluster,
+                    Class       => $Cluster . 'Cluster',
+                    Description => $Cluster . ' action cluster',
                 },
             );
 
             $Self->{LayoutObject}->Block(
                 Name => 'TicketMenuSubContainer',
-                Data => '',
+                Data => {
+                    Name  => $Cluster . 'Cluster',
+                    Class => $Cluster . 'Cluster',
+                },
             );
 
             MENUCLUSTERITEM:

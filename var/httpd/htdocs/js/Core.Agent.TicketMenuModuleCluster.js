@@ -1,5 +1,5 @@
 // --
-// Core.Agent.TicketMenuModuleCluster.js - provides the application functions
+// Core.Agent.TicketMenuModuleCluster.js - provides the ticket menu cluster functions
 // Copyright (C) 2001-2013 OTRS AG, http://otrs.org/
 // --
 // This software comes with ABSOLUTELY NO WARRANTY. For details, see

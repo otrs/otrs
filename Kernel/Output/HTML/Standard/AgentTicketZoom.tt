@@ -367,25 +367,17 @@
 [% RenderBlockEnd("LinkTableSimple") %]
         </div>
         <div class="ContentColumn">
-
             <div class="WidgetSimple">
                 <div id="TicketMenuWidgetContent" class="Content">
                     <div id="TicketMenuContainer" class="ActionRow">
                         <ul id="TicketMenu" class="Actions">
-#[% RenderBlockStart("TicketMenu") %]
-#                            <li>
-#                                <a href="[% Env("Baselink") %][% Data.Link | Interpolate %]" class="[% Data.Class | html %]" [% Data.LinkParam %] title="[% Translate(Data.Description) | html %]">[% Translate(Data.Name) | html %]</a>
-#                            </li>
-#[% RenderBlockEnd("TicketMenu") %]
-
-# -- nils
 [% RenderBlockStart("TicketMenu") %]
-                            <li id="nav-[% Data.NameForID %]" class="[% Data.CSS %]">
-                                <a href="[% Env("Baselink") %][% Data.Link | Interpolate %]" class="[% Data.Class | html %]" [% Data.LinkParam %] title="[% Translate(Data.Description) | html %]">[% Translate(Data.Name) | html %]</a>
+                            <li id="nav-[% Data.Name %]">
+                                <a href="[% Env("Baselink") %][% Data.Link | Interpolate %]" class="[% Data.Class %]" [% Data.LinkParam %] title="[% Translate(Data.Description) | html %]">[% Translate(Data.Name) | html %]</a>
 [% RenderBlockStart("TicketMenuSubContainer") %]
-                                <ul id="nav-[% Data.NameForID %]-container">
+                                <ul id="nav-[% Data.Name %]-container" class="[% Data.Class | html %]">
 [% RenderBlockStart("TicketMenuSubContainerItem") %]
-                                    <li id="nav-[% Data.NameTop %]-[% Data.NameForID %]">
+                                    <li id="nav-[% Data.Name %]">
                                         <a href="[% Env("Baselink") %][% Data.Link | Interpolate %]" class="[% Data.Class | html %]" [% Data.LinkParam %] title="[% Translate(Data.Description) | html %]">[% Translate(Data.Name) | html %]</a>
                                     </li>
 [% RenderBlockEnd("TicketMenuSubContainerItem") %]
@@ -393,8 +385,6 @@
 [% RenderBlockEnd("TicketMenuSubContainer") %]
                             </li>
 [% RenderBlockEnd("TicketMenu") %]
-# -- nils
-
 [% RenderBlockStart("TicketMenuPhoneAsDropdown") %]
                             <li>
                                 <form title="[% Translate(Data.Name) | html %]" action="[% Env("CGIHandle") %]" method="get" id="[% Data.FormID | html %]">
