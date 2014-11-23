@@ -784,12 +784,21 @@ sub GetStatTable {
 
     # escape search attributes for ticket search
     my %AttributesToEscape = (
-        'CustomerID' => 1,
-        'Title'      => 1,
+        'Title' => 1,
     );
 
     ATTRIBUTE:
     for my $Key ( sort keys %{ $Param{Restrictions} } ) {
+
+        if ( $Key eq "CustomerID" ) {
+            $Key = "CustomerIDRaw";
+            $Param{Restrictions}->{$Key} = $Param{Restrictions}->{CustomerID};
+        }
+
+        if ( $Key eq "CustomerUserLogin" ) {
+            $Key = "CustomerUserLoginRaw";
+            $Param{Restrictions}->{$Key} = $Param{Restrictions}->{CustomerUserLogin};
+        }
 
         next ATTRIBUTE if !$AttributesToEscape{$Key};
 

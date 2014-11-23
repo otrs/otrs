@@ -938,8 +938,7 @@ sub _ReportingValues {
     # escape search attributes for ticket search
     #
     my %AttributesToEscape = (
-        'CustomerID' => 1,
-        'Title'      => 1,
+        'Title' => 1,
     );
 
     # get ticket search relevant attributes
@@ -963,6 +962,15 @@ sub _ReportingValues {
             $TicketSearch{$Attribute} = $SearchAttributes->{$Attribute};
         }
 
+        if ( $Attribute eq "CustomerID" ) {
+            $Attribute = "CustomerIDRaw";
+            $TicketSearch{$Attribute} = $TicketSearch{CustomerID};
+        }
+
+        if ( $Attribute eq "CustomerUserLogin" ) {
+            $Attribute = "CustomerUserLoginRaw";
+            $TicketSearch{$Attribute} = $TicketSearch{CustomerUserLogin};
+        }
         next ATTRIBUTE if !$AttributesToEscape{$Attribute};
 
         # escape search parameters for ticket search

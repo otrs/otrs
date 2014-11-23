@@ -1108,7 +1108,11 @@ sub TicketSearch {
 
         next ATTRIBUTE if !defined $Param{$Key};
 
-        next ATTRIBUTE if ( ( $Key eq 'CustomerID' ) && ( defined $Param{CustomerIDRaw} ) );
+        next ATTRIBUTE
+            if (
+            ( $Key eq 'CustomerID' )
+            && ( defined $Param{CustomerIDRaw} && $Param{CustomerIDRaw} )
+            );
         next ATTRIBUTE
             if ( ( $Key eq 'CustomerUserLogin' ) && ( defined $Param{CustomerUserLoginRaw} ) );
 
@@ -1126,7 +1130,15 @@ sub TicketSearch {
             next VALUE if !$Value;
 
             # replace wild card search
-            $Value =~ s/\*/%/gi;
+            if (
+                !(
+                    $Key eq 'CustomerIDRaw'
+                    || $Key eq 'CustomerUserLoginRaw'
+                )
+                )
+            {
+                $Value =~ s/\*/%/gi;
+            }
 
             # check search attribute, we do not need to search for *
             next VALUE if $Value =~ /^\%{1,3}$/;

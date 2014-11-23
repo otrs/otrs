@@ -123,8 +123,8 @@ sub Run {
 
         # get single params
         for my $Parameter (
-            qw(TicketNumber Title From To Cc Subject Body CustomerID
-            CustomerUserLogin Agent SearchInArchive
+            qw(TicketNumber Title From To Cc Subject Body CustomerID CustomerIDRaw
+            CustomerUserLogin CustomerUserLoginRaw Agent SearchInArchive
             NewTitle
             NewCustomerID NewPendingTime NewPendingTimeType NewCustomerUserLogin
             NewStateID NewQueueID NewPriorityID NewOwnerID NewResponsibleID

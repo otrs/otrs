@@ -180,7 +180,7 @@ sub Run {
     # get search string params (get submitted params)
     else {
         for my $Key (
-            qw(TicketNumber Title From To Cc Subject Body CustomerID CustomerUserLogin StateType
+            qw(TicketNumber Title From To Cc Subject Body CustomerID CustomerIDRaw CustomerUserLogin CustomerUserLoginRaw StateType
             Agent ResultForm TimeSearchType ChangeTimeSearchType CloseTimeSearchType LastChangeTimeSearchType EscalationTimeSearchType
             UseSubQueues AttachmentName
             ArticleTimeSearchType SearchInArchive
@@ -1271,11 +1271,19 @@ sub Run {
             },
             {
                 Key   => 'CustomerID',
-                Value => 'CustomerID',
+                Value => 'CustomerID (free search)',
+            },
+            {
+                Key   => 'CustomerIDRaw',
+                Value => 'CustomerID (exact search)',
             },
             {
                 Key   => 'CustomerUserLogin',
-                Value => 'Customer User Login',
+                Value => 'Customer User Login (free search)',
+            },
+            {
+                Key   => 'CustomerUserLoginRaw',
+                Value => 'Customer User Login (exact search)',
             },
             {
                 Key   => 'StateIDs',

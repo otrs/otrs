@@ -101,11 +101,13 @@ sub Run {
 
         if ( $ColumnName eq 'CustomerID' ) {
             push @{ $ColumnFilter{$ColumnName} }, $FilterValue;
+            push @{ $ColumnFilter{CustomerIDRaw} }, $FilterValue;
             $GetColumnFilter{$ColumnName} = $FilterValue;
         }
         elsif ( $ColumnName eq 'CustomerUserID' ) {
-            push @{ $ColumnFilter{CustomerUserLogin} }, $FilterValue;
-            $GetColumnFilter{$ColumnName} = $FilterValue;
+            push @{ $ColumnFilter{CustomerUserLogin} },    $FilterValue;
+            push @{ $ColumnFilter{CustomerUserLoginRaw} }, $FilterValue;
+            $GetColumnFilter{CustomerUserLogin} = $FilterValue;
         }
         else {
             push @{ $ColumnFilter{ $ColumnName . 'IDs' } }, $FilterValue;
