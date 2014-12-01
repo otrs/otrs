@@ -1,0 +1,69 @@
+# --
+# AgentDashboardTicketOwnerOverview.tt - provides HTML for Ticket Owner Overview
+# Copyright (C) 2001-2014 OTRS AG, http://otrs.com/
+# --
+# This software comes with ABSOLUTELY NO WARRANTY. For details, see
+# the enclosed file COPYING for license information (AGPL). If you
+# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# --
+
+<table class="DataTable">
+    <thead>
+        <tr>
+[% RenderBlockStart("ContentLargeTicketOwnerOverviewHeaderStatus") %]
+            <th>[% Translate(Data.Text) | html %]</th>
+[% RenderBlockEnd("ContentLargeTicketOwnerOverviewHeaderStatus") %]
+            <th class="OwnerOverviewTotals">[% Translate("Totals") | html %]</th>
+        </tr>
+    </thead>
+    <tbody>
+[% RenderBlockStart("ContentLargeTicketOwnerOverviewOwnerName") %]
+        <tr class="Row">
+            <td>[% Data.OwnerName | html %]</td>
+[% RenderBlockStart("ContentLargeTicketOwnerOverviewOwnerResults") %]
+            <td><a class="AsBlock" href="[% Env("Baselink") %]Action=AgentTicketSearch;Subaction=Search;[% Env("ChallengeTokenParam") | html %];StateIDs=[% Data.StateID | uri %];OwnerIDs=[% Data.OwnerID | uri %];[% Data.Sort | html %]">[% Translate(Data.Number) | html %]</a></td>
+[% RenderBlockEnd("ContentLargeTicketOwnerOverviewOwnerResults") %]
+[% RenderBlockStart("ContentLargeTicketOwnerOverviewOwnerTotal") %]
+            <td><a class="OwnerOverviewTotals AsBlock" href="[% Env("Baselink") %]Action=AgentTicketSearch;Subaction=Search;[% Env("ChallengeTokenParam") | html %];OwnerIDs=[% Data.OwnerID | uri %];[% Data.StateIDs | html %];[% Data.Sort | html %]">[% Translate(Data.Number) | html %]</a></td>
+[% RenderBlockEnd("ContentLargeTicketOwnerOverviewOwnerTotal") %]
+        </tr>
+[% RenderBlockEnd("ContentLargeTicketOwnerOverviewOwnerName") %]
+[% RenderBlockStart("ContentLargeTicketOwnerOverviewStatusTotalRow") %]
+        <tr class="Row">
+            <td class="OwnerOverviewTotals">[% Translate("Totals") | html %]</td>
+[% RenderBlockStart("ContentLargeTicketOwnerOverviewStatusTotal") %]
+            <td class="OwnerOverviewTotals"><a class="AsBlock" href="[% Env("Baselink") %]Action=AgentTicketSearch;Subaction=Search;[% Env("ChallengeTokenParam") | html %];StateIDs=[% Data.StateID | uri %];[% Data.OwnerIDs | html %];[% Data.Sort | html %]">[% Translate(Data.Number) | html %]</a></td>
+[% RenderBlockEnd("ContentLargeTicketOwnerOverviewStatusTotal") %]
+            <td class="OwnerOverviewTotals"></td>
+        </tr>
+[% RenderBlockEnd("ContentLargeTicketOwnerOverviewStatusTotalRow") %]
+[% RenderBlockStart("ContentLargeTicketOwnerOverviewNone") %]
+        <tr>
+            <td colspan="[% Data.ColumnCount | html %]">
+                [% Translate("No data found.") | html %]
+            </td>
+        </tr>
+[% RenderBlockEnd("ContentLargeTicketOwnerOverviewNone") %]
+    </tbody>
+</table>
+
+[% RenderBlockStart("ContentLargeTicketOwnerOverviewRefresh") %]
+[% WRAPPER JSOnDocumentComplete %]
+<script type="text/javascript">//<![CDATA[
+Core.Config.Set('RefreshSeconds_[% Data.NameHTML | html %]', parseInt("[% Data.RefreshTime | html %]", 10) || 0);
+if (Core.Config.Get('RefreshSeconds_[% Data.NameHTML | html %]')) {
+    Core.Config.Set('Timer_[% Data.NameHTML | html %]', window.setTimeout(function() {
+
+        // get active filter
+        var Filter = $('#Dashboard[% Data.Name | html %]-box').find('.Tab.Actions li.Selected a').attr('data-filter');
+        $('#Dashboard[% Data.Name | html %]-box').addClass('Loading');
+        Core.AJAX.ContentUpdate($('#Dashboard[% Data.Name | html %]'), '[% Env("Baselink") %]Action=[% Env("Action") %];Subaction=Element;Name=[% Data.Name | html %];Filter=' + Filter + ';CustomerID=[% Data.CustomerID | html %]', function () {
+            Core.UI.Table.InitCSSPseudoClasses($('#Dashboard[% Data.Name | html %]'));
+            $('#Dashboard[% Data.Name | html %]-box').removeClass('Loading');
+        });
+        clearTimeout(Core.Config.Get('Timer_[% Data.NameHTML | html %]'));
+    }, Core.Config.Get('RefreshSeconds_[% Data.NameHTML | html %]') * 1000));
+}
+//]]></script>
+[% END %]
+[% RenderBlockEnd("ContentLargeTicketOwnerOverviewRefresh") %]
