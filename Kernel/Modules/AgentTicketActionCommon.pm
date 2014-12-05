@@ -1661,6 +1661,16 @@ sub _Mask {
             }
         }
 
+        my $ACL = $Self->{TicketObject}->TicketAcl(
+            %Ticket,
+            ReturnType    => 'Ticket',
+            ReturnSubType => 'NewOwner',
+            Data          => \%ShownUsers,
+            UserID        => $Self->{UserID},
+        );
+
+        %ShownUsers = $Self->{TicketObject}->TicketAclData() if $ACL;
+
         # get old owner
         my @OldUserInfo = $Self->{TicketObject}->TicketOwnerList( TicketID => $Self->{TicketID} );
         $Param{OwnerStrg} = $Self->{LayoutObject}->BuildSelection(
@@ -1697,9 +1707,19 @@ sub _Mask {
             $OldOwnerSelectedID = $OldUserInfo[0]->{UserID} . '1';
         }
 
+        my $OldOwnerACL = $Self->{TicketObject}->TicketAcl(
+            %Ticket,
+            ReturnType    => 'Ticket',
+            ReturnSubType => 'OldOwner',
+            Data          => { map{ $_->{Key} => $_->{Value} }@OldOwners },
+            UserID        => $Self->{UserID},
+        );
+
+        my %OldOwnersShown = $Self->{TicketObject}->TicketAclData() if $OldOwnerACL;
+
         # build string
         $Param{OldOwnerStrg} = $Self->{LayoutObject}->BuildSelection(
-            Data         => \@OldOwners,
+            Data         => \%OldOwnersShown,
             SelectedID   => $OldOwnerSelectedID,
             Name         => 'OldOwnerID',
             Class        => $Param{OldOwnerInvalid} || ' ',
@@ -1742,6 +1762,16 @@ sub _Mask {
                 $ShownUsers{$UserID} = $AllGroupsMembers{$UserID};
             }
         }
+
+        my $ACL = $Self->{TicketObject}->TicketAcl(
+            %Ticket,
+            ReturnType    => 'Ticket',
+            ReturnSubType => 'NewResponsible',
+            Data          => \%ShownUsers,
+            UserID        => $Self->{UserID},
+        );
+
+        %ShownUsers = $Self->{TicketObject}->TicketAclData() if $ACL;
 
         # get responsible
         $Param{ResponsibleStrg} = $Self->{LayoutObject}->BuildSelection(
