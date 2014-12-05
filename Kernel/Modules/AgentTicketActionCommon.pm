@@ -679,7 +679,7 @@ sub Run {
                     push @NotifyDone, $GetParam{OldOwnerID};
                 }
             }
-            elsif ( $GetParam{NewOwnerID} ) {
+            elsif ( $GetParam{NewOwnerID} && $GetParam{NewOwnerID} ne $Ticket{OwnerID} ) {
                 $Self->{TicketObject}->TicketLockSet(
                     TicketID => $Self->{TicketID},
                     Lock     => 'lock',
@@ -702,7 +702,7 @@ sub Run {
 
         # set new responsible
         if ( $Self->{ConfigObject}->Get('Ticket::Responsible') && $Self->{Config}->{Responsible} ) {
-            if ( $GetParam{NewResponsibleID} ) {
+            if ($GetParam{NewResponsibleID} && $GetParam{NewResponsibleID} ne $Ticket{ResponsibleID} ) {
                 my $BodyText = $Self->{LayoutObject}->RichText2Ascii(
                     String => $GetParam{Body} || '',
                 );
@@ -1665,7 +1665,7 @@ sub _Mask {
         my @OldUserInfo = $Self->{TicketObject}->TicketOwnerList( TicketID => $Self->{TicketID} );
         $Param{OwnerStrg} = $Self->{LayoutObject}->BuildSelection(
             Data         => \%ShownUsers,
-            SelectedID   => $Param{NewOwnerID},
+            SelectedID   => $Param{NewOwnerID} || $Ticket{OwnerID},
             Name         => 'NewOwnerID',
             Class        => $Param{NewOwnerInvalid} || ' ',
             Size         => 1,
@@ -1746,7 +1746,7 @@ sub _Mask {
         # get responsible
         $Param{ResponsibleStrg} = $Self->{LayoutObject}->BuildSelection(
             Data         => \%ShownUsers,
-            SelectedID   => $Param{NewResponsibleID},
+            SelectedID   => $Param{NewResponsibleID} || $Ticket{ResponsibleID},
             Name         => 'NewResponsibleID',
             PossibleNone => 1,
             Size         => 1,
