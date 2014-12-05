@@ -65,7 +65,7 @@ sub BuildSelectionJSON {
             }
         }
 
-        if ( !defined( $Param{Data} ) {
+        if ( !defined( $Param{Data} ) ) {
             if ( !$Param{PossibleNone} ) {
                 $Self->{LogObject}->Log(
                     Priority => 'error',
