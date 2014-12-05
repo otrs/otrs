@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<otrs_config version="1.0" init="Application">
+
+    <ConfigItem Name="Frontend::Module###AdminGenericInterfaceInvokerEventDefault" Required="0" Valid="1">
+        <Description Translatable="1">Frontend module registration for the agent interface.</Description>
+        <Group>GenericInterface</Group>
+        <SubGroup>Frontend::Admin::ModuleRegistration</SubGroup>
+        <Setting>
+            <FrontendModuleReg>
+                <Group>admin</Group>
+                <Description>Admin</Description>
+                <Title Translatable="1">GenericInterface Webservice Invoker Event GUI</Title>
+                <Loader>
+                    <CSS>Core.Agent.Admin.GenericInterface.css</CSS>
+                    <CSS_IE7>Core.Agent.Admin.GenericInterface.IE7.css</CSS_IE7>
+                    <JavaScript>Core.Agent.Admin.GenericInterfaceInvokerEvent.js</JavaScript>
+                </Loader>
+            </FrontendModuleReg>
+        </Setting>
+    </ConfigItem>
+
+    <ConfigItem Name="GenericInterface::Invoker::Event::Module###Test::TestSimple" Required="0" Valid="0">
+        <Description Translatable="1">GenericInterface module registration for the invoker event layer.</Description>
+        <Group>GenericInterface</Group>
+        <SubGroup>GenericInterface::Invoker::Event::ModuleRegistration</SubGroup>
+        <Setting>
+            <Hash>
+                <Item Key="ConfigDialog">AdminGenericInterfaceInvokerEventDefault</Item>
+            </Hash>
+        </Setting>
+    </ConfigItem>
+
+</otrs_config>
