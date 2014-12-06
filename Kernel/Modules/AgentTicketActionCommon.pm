@@ -1766,7 +1766,7 @@ sub _Mask {
         my $ACL = $Self->{TicketObject}->TicketAcl(
             %Ticket,
             ReturnType    => 'Ticket',
-            ReturnSubType => 'NewResponsible',
+            ReturnSubType => 'Responsible',
             Data          => \%ShownUsers,
             UserID        => $Self->{UserID},
         );
