@@ -4177,7 +4177,7 @@ msgstr "Allgemein"
 msgid ""
 "This field is required, and the value should be alphabetic and numeric "
 "characters only."
-msgstr "Diese Feld wird benötigt, und der Wert darf nur Buchstaben und Zahlen enthalten."
+msgstr "Dieses Feld wird benötigt, und der Wert darf nur Buchstaben und Zahlen enthalten."
 
 #. Template: AdminDynamicFieldCheckbox
 msgid "Must be unique and only accept alphabetic and numeric characters."
@@ -4357,7 +4357,7 @@ msgstr "Anzahl der Zeilen"
 
 #. Template: AdminDynamicFieldText
 msgid "Specify the height (in lines) for this field in the edit mode."
-msgstr "Gibt die Anzahl der Zeilen für diese Feld im Bearbeitungsmodus an."
+msgstr "Gibt die Anzahl der Zeilen für dieses Feld im Bearbeitungsmodus an."
 
 #. Template: AdminDynamicFieldText
 msgid "Number of cols"
