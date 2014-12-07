@@ -1641,6 +1641,7 @@ sub Run {
             Multiple   => 1,
             Size       => 5,
             SelectedID => $GetParam{OwnerIDs},
+            Sort       => 'AlphanumericValue',
         );
         $Param{CreatedUserStrg} = $Self->{LayoutObject}->BuildSelection(
             Data       => \@ShownUsers,
@@ -1648,6 +1649,7 @@ sub Run {
             Multiple   => 1,
             Size       => 5,
             SelectedID => $GetParam{CreatedUserIDs},
+            Sort       => 'AlphanumericValue',
         );
         if ( $Self->{ConfigObject}->Get('Ticket::Watcher') ) {
             $Param{WatchUserStrg} = $Self->{LayoutObject}->BuildSelection(
@@ -1656,6 +1658,7 @@ sub Run {
                 Multiple   => 1,
                 Size       => 5,
                 SelectedID => $GetParam{WatchUserIDs},
+                Sort       => 'AlphanumericValue',
             );
         }
         if ( $Self->{ConfigObject}->Get('Ticket::Responsible') ) {
@@ -1665,6 +1668,7 @@ sub Run {
                 Multiple   => 1,
                 Size       => 5,
                 SelectedID => $GetParam{ResponsibleIDs},
+                Sort       => 'AlphanumericValue',
             );
         }
 
