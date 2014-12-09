@@ -414,6 +414,20 @@ sub Data {
         'Problems processing server result. Please try again later.' => '',
         'Username and password do not match. Please try again.' => 'Tên người dùng và mật khẩu không khớp. Vui lòng thử lại.',
         'The selected process is invalid!' => 'Quá trình chọn không hợp lệ!',
+        'Upgrade to %s now!' => 'Bây giờ! nâng cấp lên % s ',
+        '%s Go to the upgrade center %s' => '% s Tới trung tâm nâng cấp% s',
+        'The license for your %s is about to expire. Please make contact with %s to renew your contract!' =>
+            'Các giấy phép cho% s của bạn sắp hết hạn. Hãy liên hệ với% s để gia hạn hợp đồng của bạn!',
+        'An update for your %s is available, but there is a conflict with your framework version! Please update your framework first!' =>
+            'Bản cập nhật cho% s của bạn có sẵn, nhưng có một cuộc xung đột với phiên bản khuôn khổ của bạn! Vui lòng cập nhật khuôn khổ của bạn trước !',
+        'Your system was successfully upgraded to %s.' => 'Hệ thống của bạn đã được nâng cấp thành công đến% s.',
+        'There was a problem during the upgrade to %s.' => 'Có một vấn đề trong quá trình nâng cấp đến% s',
+        '%s was correctly reinstalled.' => '% s đã được cài đặt lại một cách chính xác.',
+        'There was a problem reinstalling %s.' => 'Có một vấn đề trong lúc cài đặt lại% s.',
+        'Your %s was successfully updated.' => '% S của bạn đã được cập nhật thành công.',
+        'There was a problem during the upgrade of %s.' => 'Có một vấn đề trong quá trình nâng cấp của% s.',
+        '%s was correctly uninstalled.' => '% s đã được gỡ bỏ cài đặt một cách chính xác.',
+        'There was a problem uninstalling %s.' => 'Có một vấn đề gỡ bỏ cài đặt% s.',
 
         # Template: AAACalendar
         'New Year\'s Day' => 'Ngày đầu năm mới',
@@ -568,11 +582,11 @@ sub Data {
         'OTRS' => 'Open Technology Real Services',
         'Table Presence' => 'Bảng hiện diện',
         'Internal Error: Could not open file.' => 'Lỗi nội bộ: không thể mở tập tin.',
-        'Table Check' => '',
-        'Internal Error: Could not read file.' => '',
-        'Tables found which are not present in the database.' => '',
-        'Database Size' => '',
-        'Could not determine database size.' => '',
+        'Table Check' => 'Bảng kiểm tra',
+        'Internal Error: Could not read file.' => 'Lỗi nội bộ: không thể đọc hồ sơ.',
+        'Tables found which are not present in the database.' => 'Bàn tìm thấy mà không có trong cơ sở dữ liệu.',
+        'Database Size' => 'Cơ sở dữ liệu kích cỡ',
+        'Could not determine database size.' => 'Không thể xác định kích thước cơ sở dữ liệu.',
         'Database Version' => '',
         'Could not determine database version.' => '',
         'Client Connection Charset' => '',
@@ -637,6 +651,8 @@ sub Data {
         'Groups' => 'Nhóm',
         'Dynamic Fields' => '',
         'Dynamic Field Values' => '',
+        'Invalid Dynamic Fields' => '',
+        'Invalid Dynamic Field Values' => '',
         'GenericInterface Webservices' => '',
         'Processes' => 'Quy trình',
         'Months Between First And Last Ticket' => '',
@@ -678,6 +694,7 @@ sub Data {
         'Environment Variables' => '',
         'Webserver Version' => '',
         'Could not determine webserver version.' => '',
+        'Loaded Apache Modules' => '',
         'CGI Accelerator Usage' => '',
         'You should use FastCGI or mod_perl to increase your performance.' =>
             '',
@@ -979,12 +996,12 @@ sub Data {
         'Upload ACL configuration' => 'Cấu hình tải lên ACL',
         'Import ACL configuration(s)' => 'Nhập khẩu cấu hình ACL (s)',
         'To create a new ACL you can either import ACLs which were exported from another system or create a complete new one.' =>
-            '',
+            'Để tạo một ACL mới bạn có thể ACL nhập khẩu được xuất khẩu từ một hệ thống khác hoặc tạo một hình mới hoàn thành.',
         'Changes to the ACLs here only affect the behavior of the system, if you deploy the ACL data afterwards. By deploying the ACL data, the newly made changes will be written to the configuration.' =>
-            '',
-        'ACLs' => '',
+            'Những thay đổi trong ACL ở đây chỉ ảnh hưởng đến hành vi của hệ thống, nếu bạn triển khai các dữ liệu ACL sau đó. Bằng cách triển khai các dữ liệu ACL, những thay đổi mới được thực hiện sẽ được ghi vào cấu hình.',
+        'ACLs' => 'Danh sách kiểm soát truy cập',
         'Please note: This table represents the execution order of the ACLs. If you need to change the order in which ACLs are executed, please change the names of the affected ACLs.' =>
-            '',
+            'Xin lưu ý: Bảng này đại diện cho thứ tự thực hiện các ACL. Nếu bạn cần thay đổi thứ tự mà ACL được thực hiện, hãy thay đổi tên của các ACL bị ảnh hưởng.',
         'ACL name' => 'tên ACL = Danh sách kiểm soát truy cập',
         'Validity' => 'Hiệu lực',
         'Copy' => 'Bản sao',
@@ -1044,45 +1061,45 @@ sub Data {
         'To get the realname of the sender (if given).' => 'Lấy tên thực của người gửi (nếu đã cho)',
         'To get the article attribute' => 'Để có được các thuộc tính bài viết',
         ' e. g.' => 'Thí dụ',
-        'Options of the current customer user data' => '',
+        'Options of the current customer user data' => 'Tùy chọn của dữ liệu người dùng của khách hàng hiện tại',
         'Ticket owner options' => 'Sự lựa chọn chủ sở hữu vé',
-        'Ticket responsible options' => '',
-        'Options of the current user who requested this action' => '',
-        'Options of the ticket data' => '',
-        'Options of ticket dynamic fields internal key values' => '',
+        'Ticket responsible options' => 'Vé tùy chọn chịu trách nhiệm',
+        'Options of the current user who requested this action' => 'Các tùy chọn của người dùng hiện tại yêu cầu hành động này',
+        'Options of the ticket data' => 'Tùy chọn các dữ liệu của vé',
+        'Options of ticket dynamic fields internal key values' => 'Tùy chọn của vé lĩnh vực năng động giá trị chính của nội bộ',
         'Options of ticket dynamic fields display values, useful for Dropdown and Multiselect fields' =>
-            '',
-        'Config options' => '',
-        'Example response' => '',
+            'Tùy chọn của vé lĩnh vực năng động hiển thị giá trị, hữu ích cho Dropdown và Multiselect lĩnh vực',
+        'Config options' => 'Tùy chọn cấu hình',
+        'Example response' => 'Ví dụ phản hồi',
 
         # Template: AdminCustomerCompany
         'Customer Management' => 'Quản lý khách hàng',
-        'Wildcards like \'*\' are allowed.' => '',
-        'Add customer' => '',
+        'Wildcards like \'*\' are allowed.' => 'Ký hiệu đại diện như \'*\' được cho phép.',
+        'Add customer' => 'Thêm khách hàng',
         'Select' => 'Chọn',
-        'Please enter a search term to look for customers.' => '',
-        'Add Customer' => '',
+        'Please enter a search term to look for customers.' => 'Vui lòng nhập một thuật ngữ tìm kiếm để tìm kiếm khách hàng.',
+        'Add Customer' => 'Thêm khách hàng',
 
         # Template: AdminCustomerUser
-        'Customer User Management' => '',
-        'Back to search results' => '',
-        'Add customer user' => '',
+        'Customer User Management' => 'Quản lý khách hàng và người dùng',
+        'Back to search results' => 'Trở lại kết quả tìm kiếm',
+        'Add customer user' => 'Thêm khách hàng',
         'Hint' => '',
         'Customer user are needed to have a customer history and to login via customer panel.' =>
-            '',
+            'Người sử dụng của khách hàng là cần thiết để có một lịch sử khách hàng và đăng nhập thông qua bảng điều khiển của khách hàng.',
         'Last Login' => 'Đăng nhập cuối',
         'Login as' => 'Đăng nhập với',
         'Switch to customer' => 'Chuyển sang khách hàng',
-        'Add Customer User' => '',
-        'Edit Customer User' => '',
+        'Add Customer User' => 'Thêm khách hàng ',
+        'Edit Customer User' => 'Chỉnh sửa sử dụng khách hàng',
         'This field is required and needs to be a valid email address.' =>
             'Lĩnh vực này được yêu cầu và cần phải là một địa chỉ email hợp lệ.',
         'This email address is not allowed due to the system configuration.' =>
             'Địa chỉ email này là không được phép do cấu hình hệ thống.',
-        'This email address failed MX check.' => '',
+        'This email address failed MX check.' => 'Địa chỉ email này đã thất bại MX kiểm tra.',
         'DNS problem, please check your configuration and the error log.' =>
             '',
-        'The syntax of this email address is incorrect.' => '',
+        'The syntax of this email address is incorrect.' => 'Cú pháp của địa chỉ email này là không chính xác.',
 
         # Template: AdminCustomerUserGroup
         'Manage Customer-Group Relations' => 'Nhóm quản lý quan hệ khách hàng',
@@ -1091,24 +1108,24 @@ sub Data {
         'Just use this feature if you want to define group permissions for customers.' =>
             'Chỉ cần sử dụng tính năng này nếu bạn muốn xác định cho phép nhóm cho khách hàng.',
         'Enable it here!' => 'Kích hoạt tại đây!',
-        'Edit Customer Default Groups' => '',
+        'Edit Customer Default Groups' => 'Chỉnh sửa khách hàng mặc định Groups',
         'These groups are automatically assigned to all customers.' => 'Các nhóm này sẽ được tự động gán cho tất cả khách hàng.',
         'You can manage these groups via the configuration setting "CustomerGroupAlwaysGroups".' =>
-            '',
-        'Filter for Groups' => '',
-        'Just start typing to filter...' => '',
-        'Select the customer:group permissions.' => '',
+            'Bạn có thể quản lý các nhóm thông qua các thiết lập cấu hình "CustomerGroupAlwaysGroups".',
+        'Filter for Groups' => 'Bộ lọc cho các nhóm',
+        'Just start typing to filter...' => 'Chỉ cần bắt đầu nhập để lọc ...',
+        'Select the customer:group permissions.' => 'Chọn khách hàng: cho phép nhóm.',
         'If nothing is selected, then there are no permissions in this group (tickets will not be available for the customer).' =>
-            '',
+            'Nếu không có gì được chọn, sau đó không có quyền truy cập trong nhóm này (vé sẽ không có sẵn cho khách hàng).',
         'Search Results' => 'Kết quả tìm kiếm',
         'Customers' => 'Những khách hàng',
         'No matches found.' => 'Không tìm thấy những sự phù hợp',
         'Change Group Relations for Customer' => 'Thay đổi quan hệ nhóm cho khách hàng',
         'Change Customer Relations for Group' => 'Thay đổi quan hệ khách hàng cho Tập đoàn',
-        'Toggle %s Permission for all' => '',
-        'Toggle %s permission for %s' => '',
-        'Customer Default Groups:' => '',
-        'No changes can be made to these groups.' => '',
+        'Toggle %s Permission for all' => 'Toggle% s Cho phép tất cả',
+        'Toggle %s permission for %s' => 'Toggle cho phép% s cho% s',
+        'Customer Default Groups:' => 'Nhóm khách hàng mặc định:',
+        'No changes can be made to these groups.' => 'Không có thay đổi có thể được thực hiện cho các nhóm này. ',
         'ro' => 'Chỉ đọc',
         'Read only access to the ticket in this group/queue.' => 'Quyền chỉ đọc truy cập vào thẻ trong nhóm/hàng đợi này.',
         'rw' => 'đọc và ghi',
@@ -1118,18 +1135,18 @@ sub Data {
         # Template: AdminCustomerUserService
         'Manage Customer-Services Relations' => 'Quản lý quan hệ khách hàng-Dịch vụ',
         'Edit default services' => 'Những dịch vụ chỉnh sửa mặc định',
-        'Filter for Services' => '',
-        'Allocate Services to Customer' => '',
-        'Allocate Customers to Service' => '',
-        'Toggle active state for all' => '',
+        'Filter for Services' => 'Bộ lọc cho các dịch vụ',
+        'Allocate Services to Customer' => 'Phân bổ Dịch vụ cho Khách hàng',
+        'Allocate Customers to Service' => 'Phân bổ khách hàng đến với dịch vụ ',
+        'Toggle active state for all' => 'Trạng thái hoạt động Toggle cho tất cả',
         'Active' => 'Hoạt động',
-        'Toggle active state for %s' => '',
+        'Toggle active state for %s' => 'Toggle trạng thái hoạt động cho% s',
 
         # Template: AdminDynamicField
-        'Dynamic Fields Management' => '',
-        'Add new field for object' => '',
+        'Dynamic Fields Management' => 'Quản lý năng động Fields',
+        'Add new field for object' => 'Thêm lĩnh vực mới cho đối tượng',
         'To add a new field, select the field type from one of the object\'s list, the object defines the boundary of the field and it can\'t be changed after the field creation.' =>
-            '',
+            'Để thêm một lĩnh vực mới, chọn loại trường từ một danh sách các đối tượng, các đối tượng xác định ranh giới của lĩnh vực này và nó không thể được thay đổi sau khi thành lập trường.',
         'Dynamic Fields List' => '',
         'Dynamic fields per page' => '',
         'Label' => 'Nhản hiệu',
@@ -1259,6 +1276,7 @@ sub Data {
             'Nếu một sự kiện vé bị sa thải bộ lọc vé sẽ được áp dụng để kiểm tra xem vé phù hợp. Chỉ khi đó công việc được chạy trên vé đó.',
         'Do you really want to delete this event trigger?' => 'Bạn có thực sự muốn xóa kích hoạt sự kiện này?',
         'Add Event Trigger' => 'Thêm sự kiện kích hoạt',
+        'Add Event' => '',
         'To add a new event select the event object and event name and click on the "+" button' =>
             'Để thêm một sự kiện mới chọn đối tượng và tên của sự kiện và nhấn vào nút "+"',
         'Duplicate event.' => 'Sự kiện trùng lặp.',
@@ -1678,6 +1696,64 @@ sub Data {
         'To get the first 5 lines of the body (of the latest customer article).' =>
             '',
 
+        # Template: AdminOTRSBusinessInstalled
+        'Manage %s' => '',
+        'Downgrade to OTRS Free' => '',
+        '%s makes contact regularly with cloud.otrs.com to check on available updates and the validity of the underlying contract.' =>
+            '',
+        'Unauthorized Usage Detected' => '',
+        'This system uses the %s without a proper license! Please make contact with %s to renew or activate your contract!' =>
+            '',
+        '%s not Correctly Installed' => '',
+        'Your %s is not correctly installed. Please reinstall it with the button below.' =>
+            '',
+        'Reinstall %s' => '',
+        'Your %s is not correctly installed, and there is also an update available.' =>
+            '',
+        'You can either reinstall your current version or perform an update with the buttons below (update recommended).' =>
+            '',
+        'Update %s' => '',
+        '%s Not Yet Available' => '',
+        '%s will be available soon.' => '',
+        '%s Update Available' => '',
+        'An update for your %s is available! Please update at your earliest!' =>
+            '',
+        '%s Correctly Deployed' => '',
+        'Congratulations, your %s is correctly installed and up to date!' =>
+            '',
+
+        # Template: AdminOTRSBusinessNotInstalled
+        'Upgrade to %s' => '',
+        '%s will be available soon. Please check again in a few days.' =>
+            '',
+        'Please have a look at %s for more information.' => '',
+        'Your OTRS Free is the base for all future actions. Please register first before you continue with the upgrade process of %s!' =>
+            '',
+        'Register this System' => '',
+        'Before you can benefit from %s, please contact %s to get your %s contract.' =>
+            '',
+        'Connection to cloud.otrs.com via HTTPS couldn\'t be established. Please make sure that your OTRS can connect to cloud.otrs.com via port 443.' =>
+            '',
+        'With your existing contract you can only use a small part of the %s.' =>
+            '',
+        'If you would like to take full advantage of the %s get your contract upgraded now! Contact %s.' =>
+            '',
+
+        # Template: AdminOTRSBusinessUninstall
+        'Cancel downgrade and go back' => '',
+        'Go to OTRS Package Manager' => '',
+        'Sorry, but currently you can\'t downgrade due to the following packages which depend on %s:' =>
+            '',
+        'Vendor' => 'Người bán',
+        'Please uninstall the packages first using the package manager and try again.' =>
+            '',
+        'You are about to downgrade to OTRS Free and will lose the following features and all data related to these:' =>
+            '',
+        'Chat' => '',
+        'Timeline view in ticket zoom' => '',
+        'DynamicField ContactWithData' => '',
+        'The %s skin' => '',
+
         # Template: AdminPGP
         'PGP Management' => 'Quản trị PGP',
         'Use this feature if you want to work with PGP keys.' => '',
@@ -1707,17 +1783,16 @@ sub Data {
         'Install' => 'Cài đặt',
         'Install Package' => '',
         'Update repository information' => '',
-        'Did not find a required feature? OTRS Group provides their service contract customers with exclusive Add-Ons:' =>
-            '',
         'Online Repository' => 'Kho trực tuyến',
-        'Vendor' => 'Người bán',
         'Module documentation' => '',
         'Upgrade' => 'Nâng cấp',
         'Local Repository' => 'Kho cục bộ',
         'This package is verified by OTRSverify (tm)' => '',
         'Uninstall' => 'Gỡ cài đặt',
         'Reinstall' => 'Cài lại',
-        'Feature Add-Ons' => '',
+        'Features for %s customers only' => '',
+        'With %s, you can benefit from the following optional features. Please make contact with %s if you need more information.' =>
+            '',
         'Download package' => '',
         'Rebuild package' => '',
         'Metadata' => '',
@@ -2018,6 +2093,7 @@ sub Data {
         # Template: AdminRegistration
         'System Registration Management' => '',
         'Edit details' => '',
+        'Show transmitted data' => '',
         'Deregister system' => '',
         'Overview of registered systems' => '',
         'System Registration' => '',
@@ -2026,6 +2102,9 @@ sub Data {
         'Unique ID' => '',
         'Last communication with registration server' => '',
         'Send support data' => '',
+        'System deregistration not possible' => '',
+        'Please note that you can\'t deregister your system if you\'re using the %s or having a valid service contract.' =>
+            '',
         'OTRS-ID Login' => '',
         'System registration is a service of OTRS Group, which provides a lot of advantages!' =>
             '',
@@ -2128,6 +2207,14 @@ sub Data {
             '',
         'Deregister' => '',
         'You can modify registration settings here.' => '',
+        'Overview of transmitted data' => '',
+        'There is no data regularly sent from your system to %s.' => '',
+        'The following data is sent at minimum every 3 days from your system to %s.' =>
+            '',
+        'The data will be transferred in JSON format via a secure https connection.' =>
+            '',
+        'System Registration Data' => '',
+        'Support Data' => '',
 
         # Template: AdminRole
         'Role Management' => 'Quản trị vai trò',
@@ -2197,6 +2284,7 @@ sub Data {
 
         # Template: AdminSMIMECertRead
         'Close window' => '',
+        'Certificate details' => '',
 
         # Template: AdminSalutation
         'Salutation Management' => 'Quản trị lời chào',
@@ -2270,7 +2358,6 @@ sub Data {
         'Download File' => '',
         'A file containing the support bundle will be downloaded to the local system. Please save the file and send it to the OTRS Group, using an alternate method.' =>
             '',
-        'Support Data' => '',
         'Error: Support data could not be collected (%s).' => '',
         'Details' => '',
 
@@ -2417,6 +2504,7 @@ sub Data {
         'Add ticket type' => '',
         'Add Type' => 'Thêm loại',
         'Edit Type' => '',
+        'A type with this name already exists!' => '',
 
         # Template: AdminUser
         'Add agent' => '',
@@ -2488,6 +2576,7 @@ sub Data {
         '%s closed ticket(s) of %s' => '',
         'New phone ticket from %s' => '',
         'New email ticket to %s' => '',
+        'Start chat' => '',
 
         # Template: AgentDashboardProductNotify
         '%s %s is available!' => '',
@@ -2784,6 +2873,7 @@ sub Data {
         'Please include at least one customer for the ticket.' => '',
         'To queue' => '',
         'Chat protocol' => '',
+        'The chat will be appended as a separate article.' => '',
 
         # Template: AgentTicketPlain
         'Email Text Plain View' => '',
@@ -2851,13 +2941,13 @@ sub Data {
         'Locked' => 'Đã khóa',
         'Linked Objects' => '',
         'Change Queue' => '',
-        'Dialogs' => '',
         'There are no dialogs available at this point in the process.' =>
             '',
         'This item has no articles yet.' => '',
         'Ticket Timeline View' => '',
         'Article Overview' => '',
         'Article(s)' => '',
+        'Page' => 'Trang',
         'Add Filter' => '',
         'Set' => 'Thiết đặt',
         'Reset Filter' => '',
@@ -2872,16 +2962,20 @@ sub Data {
         'Outgoing message' => '',
         'Internal message' => '',
         'Resize' => '',
+        'Mark this article as read' => '',
         'Show Full Text' => '',
         'Full Article Text' => '',
         'No more events found. Please try changing the filter settings.' =>
             '',
-        'This is a chat log. Please zoom this entry in order to see the complete log.' =>
+        'Article could not be opened! Perhaps it is on another article page?' =>
             '',
 
         # Template: AttachmentBlocker
         'To protect your privacy, remote content was blocked.' => '',
         'Load blocked content.' => '',
+
+        # Template: ChatStartForm
+        'First message' => '',
 
         # Template: CustomerError
         'Traceback' => 'Truy nguyên',
@@ -2907,6 +3001,7 @@ sub Data {
         'In order to experience OTRS, you\'ll need to enable JavaScript in your browser.' =>
             '',
         'Browser Warning' => '',
+        'One moment please, you are being redirected...' => '',
         'Login' => 'Đăng nhập',
         'User name' => '',
         'Your user name' => '',
@@ -2928,6 +3023,9 @@ sub Data {
         'Incoming Chat Requests' => '',
         'You have unanswered chat requests' => '',
         'Edit personal preferences' => '',
+
+        # Template: CustomerRichTextEditor
+        'Split Quote' => '',
 
         # Template: CustomerTicketMessage
         'Service level agreement' => '',
@@ -2963,7 +3061,6 @@ sub Data {
 
         # Template: CustomerTicketSearchResultShort
         'of' => 'của',
-        'Page' => 'Trang',
         'Search Results for' => '',
         'Remove this Search Term.' => '',
 
@@ -3004,9 +3101,6 @@ sub Data {
         'Send a bugreport' => '',
         'go back to the previous page' => '',
         'Error Details' => '',
-
-        # Template: Footer
-        'Top of page' => '',
 
         # Template: FooterJS
         'If you now leave this page, all open popup windows will be closed, too!' =>
@@ -3093,8 +3187,8 @@ sub Data {
         'Your OTRS Team' => 'Đội OTRS của bạn',
 
         # Template: InstallerLicense
-        'Accept license' => 'Chấp nhận giấy phép',
         'Don\'t accept license' => 'Không chấp nhận giấy phép',
+        'Accept license and continue' => '',
 
         # Template: InstallerSystem
         'The identifier of the system. Each ticket number and each HTTP session ID contain this number.' =>
@@ -3438,6 +3532,8 @@ sub Data {
         'Define dynamic field name for start time. This field has to be manually added to the system as Ticket: "Date / Time" and must be activated in ticket creation screens and/or in any other ticket action screens.' =>
             '',
         'Define the max depth of queues.' => '',
+        'Define the start day of the week for the date picker for the indicated calendar.' =>
+            '',
         'Define the start day of the week for the date picker.' => '',
         'Defines a customer item, which generates a LinkedIn icon at the end of a customer info block.' =>
             '',
@@ -3843,6 +3939,8 @@ sub Data {
         'Defines the maximum length (in characters) for a scheduler task data. WARNING: Do not modify this setting unless you are sure of the current Database length for \'task_data\' filed from \'scheduler_data_list\' table.' =>
             '',
         'Defines the maximum number of pages per PDF file.' => '',
+        'Defines the maximum number of quoted lines to be added to responses.' =>
+            '',
         'Defines the maximum size (in MB) of the log file.' => '',
         'Defines the module that shows a generic notification in the agent interface. Either "Text" - if configured - or the contents of "File" will be displayed.' =>
             '',
@@ -3855,6 +3953,8 @@ sub Data {
         'Defines the module that shows the currently loged in customers in the customer interface.' =>
             '',
         'Defines the module to authenticate customers.' => '',
+        'Defines the module to display a notification in different interfaces on different occasions for OTRS Business Solution™.' =>
+            '',
         'Defines the module to display a notification in the agent interface if the scheduler is not running.' =>
             '',
         'Defines the module to display a notification in the agent interface, if the agent is logged in while having out-of-office active.' =>
@@ -4035,6 +4135,7 @@ sub Data {
         'Deletes a session if the session id is used with an invalid remote IP address.' =>
             '',
         'Deletes requested sessions if they have timed out.' => '',
+        'Deploy and manage OTRS Business Solution™.' => '',
         'Determines if the list of possible queues to move to ticket into should be displayed in a dropdown list or in a new window in the agent interface. If "New Window" is set you can add a move note to the ticket.' =>
             '',
         'Determines if the statistics module may generate ticket lists.' =>
@@ -4158,7 +4259,9 @@ sub Data {
         'Enables S/MIME support.' => '',
         'Enables customers to create their own accounts.' => '',
         'Enables file upload in the package manager frontend.' => '',
-        'Enables or disable the debug mode over frontend interface.' => '',
+        'Enables or disables the caching for templates. WARNING: Do NOT disable template caching for production environments for it will cause a massive performance drop! This setting should only be disabled for debugging reasons!' =>
+            '',
+        'Enables or disables the debug mode over frontend interface.' => '',
         'Enables or disables the ticket watcher feature, to keep track of tickets without being the owner nor the responsible.' =>
             '',
         'Enables performance log (to log the page response time). It will affect the system performance. Frontend::Module###AdminPerformanceLog must be enabled.' =>
@@ -5160,6 +5263,8 @@ sub Data {
             '',
         'Specify how many sub directory levels to use when creating cache files. This should prevent too many cache files being in one directory.' =>
             '',
+        'Specify the channel to be used to fetch OTRS Business Solution™ updates. Warning: Development releases might not be complete, your system might experience unrecoverable errors and on extreme cases could become unresponsive!' =>
+            '',
         'Standard available permissions for agents within the application. If more permissions are needed, they can be entered here. Permissions must be defined to be effective. Some other good permissions have also been provided built-in: note, close, pending, customer, freetext, move, compose, responsible, forward, and bounce. Make sure that "rw" is always the last registered permission.' =>
             '',
         'Start number for statistics counting. Every new stat increments this number.' =>
@@ -5192,6 +5297,14 @@ sub Data {
             '',
         'The headline shown in the customer interface.' => '',
         'The identifier for a ticket, e.g. Ticket#, Call#, MyTicket#. The default is Ticket#.' =>
+            '',
+        'The logo shown in the header of the agent interface for the skin "default". See "AgentLogo" for further description.' =>
+            '',
+        'The logo shown in the header of the agent interface for the skin "ivory". See "AgentLogo" for further description.' =>
+            '',
+        'The logo shown in the header of the agent interface for the skin "ivory-slim". See "AgentLogo" for further description.' =>
+            '',
+        'The logo shown in the header of the agent interface for the skin "slim". See "AgentLogo" for further description.' =>
             '',
         'The logo shown in the header of the agent interface. The URL to the image can be a relative URL to the skin image directory, or a full URL to a remote web server.' =>
             '',
@@ -5235,6 +5348,8 @@ sub Data {
         'Toggles display of OTRS FeatureAddons list in PackageManager.' =>
             '',
         'Toolbar Item for a shortcut.' => '',
+        'Turns off SSL certificate validation, for example if you use a transparent HTTPS proxy. Use at your own risk!' =>
+            '',
         'Turns on drag and drop for the main navigation.' => '',
         'Turns on the animations used in the GUI. If you have problems with these animations (e.g. performance issues), you can turn them off here.' =>
             '',

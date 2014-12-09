@@ -64,8 +64,10 @@ sub Set {
 
     for my $Needed (qw(Type Key Value TTL)) {
         if ( !defined $Param{$Needed} ) {
-            $Kernel::OM->Get('Kernel::System::Log')
-                ->Log( Priority => 'error', Message => "Need $Needed!" );
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
+                Priority => 'error',
+                Message  => "Need $Needed!"
+            );
             return;
         }
     }
@@ -112,8 +114,10 @@ sub Get {
     # check needed stuff
     for my $Needed (qw(Type Key)) {
         if ( !defined $Param{$Needed} ) {
-            $Kernel::OM->Get('Kernel::System::Log')
-                ->Log( Priority => 'error', Message => "Need $Needed!" );
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
+                Priority => 'error',
+                Message  => "Need $Needed!"
+            );
             return;
         }
     }
@@ -147,8 +151,10 @@ sub Delete {
     # check needed stuff
     for my $Needed (qw(Type Key)) {
         if ( !defined $Param{$Needed} ) {
-            $Kernel::OM->Get('Kernel::System::Log')
-                ->Log( Priority => 'error', Message => "Need $Needed!" );
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
+                Priority => 'error',
+                Message  => "Need $Needed!"
+            );
             return;
         }
     }
@@ -171,7 +177,7 @@ sub CleanUp {
 
     my @TypeList = $MainObject->DirectoryRead(
         Directory => $Self->{CacheDirectory},
-        Filter => $Param{Type} || '*',
+        Filter    => $Param{Type} || '*',
     );
 
     if ( $Param{KeepTypes} ) {
@@ -218,7 +224,13 @@ sub CleanUp {
 
     # We use finddepth so that the most deeply nested files will be deleted first,
     #   and then the directories above are already empty and can just be removed.
-    File::Find::finddepth( $FileCallback, @TypeList );
+    File::Find::finddepth(
+        {
+            wanted   => $FileCallback,
+            no_chdir => 1,
+        },
+        @TypeList
+    );
 
     return 1;
 }
@@ -228,8 +240,10 @@ sub _GetFilenameAndCacheDirectory {
 
     for my $Needed (qw(Type Key)) {
         if ( !defined $Param{$Needed} ) {
-            $Kernel::OM->Get('Kernel::System::Log')
-                ->Log( Priority => 'error', Message => "Need $Needed!" );
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
+                Priority => 'error',
+                Message  => "Need $Needed!"
+            );
             return;
         }
     }

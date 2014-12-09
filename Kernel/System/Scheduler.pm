@@ -21,6 +21,7 @@ our @ObjectDependencies = (
     'Kernel::System::Cache',
     'Kernel::System::Log',
     'Kernel::System::PID',
+    'Kernel::System::Registration',
     'Kernel::System::Scheduler::TaskManager',
     'Kernel::System::Time',
 );
@@ -68,8 +69,7 @@ sub new {
     my $Self = {};
     bless( $Self, $Type );
 
-    $Self->{PIDUpdateTime}
-        = $Kernel::OM->Get('Kernel::Config')->Get('Scheduler::PIDUpdateTime') || 60;
+    $Self->{PIDUpdateTime} = $Kernel::OM->Get('Kernel::Config')->Get('Scheduler::PIDUpdateTime') || 60;
 
     $Kernel::OM->Get('Kernel::System::Cache')->Configure(
         CacheInMemory => 0,
@@ -94,6 +94,9 @@ sub Run {
 
     # try to update PID changed time
     $Self->_PIDChangedTimeUpdate();
+
+    # Perform sanity checks
+    $Self->_SanityChecks();
 
     # get all tasks
     my @TaskList = $Kernel::OM->Get('Kernel::System::Scheduler::TaskManager')->TaskList();
@@ -120,8 +123,7 @@ sub Run {
                 Priority => 'error',
                 Message  => "Task $TaskItem->{ID} will be deleted bacause type is not set!",
             );
-            $Kernel::OM->Get('Kernel::System::Scheduler::TaskManager')
-                ->TaskDelete( ID => $TaskItem->{ID} );
+            $Kernel::OM->Get('Kernel::System::Scheduler::TaskManager')->TaskDelete( ID => $TaskItem->{ID} );
 
             next TASKITEM;
         }
@@ -134,16 +136,13 @@ sub Run {
         next TASKITEM if ( $TaskDueTime gt $SystemTime );
 
         # get task data
-        my %TaskData
-            = $Kernel::OM->Get('Kernel::System::Scheduler::TaskManager')
-            ->TaskGet( ID => $TaskItem->{ID} );
+        my %TaskData = $Kernel::OM->Get('Kernel::System::Scheduler::TaskManager')->TaskGet( ID => $TaskItem->{ID} );
         if ( !%TaskData ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
                 Message  => 'Got invalid task data!',
             );
-            $Kernel::OM->Get('Kernel::System::Scheduler::TaskManager')
-                ->TaskDelete( ID => $TaskItem->{ID} );
+            $Kernel::OM->Get('Kernel::System::Scheduler::TaskManager')->TaskDelete( ID => $TaskItem->{ID} );
 
             # skip if cant get task data
             next TASKITEM;
@@ -154,8 +153,7 @@ sub Run {
                 Priority => 'error',
                 Message  => 'Got invalid data inside task data!',
             );
-            $Kernel::OM->Get('Kernel::System::Scheduler::TaskManager')
-                ->TaskDelete( ID => $TaskItem->{ID} );
+            $Kernel::OM->Get('Kernel::System::Scheduler::TaskManager')->TaskDelete( ID => $TaskItem->{ID} );
 
             # skip if can't get task data -> data
             next TASKITEM;
@@ -175,8 +173,7 @@ sub Run {
                 Message  => "Can't create $TaskItem->{Type} task handler object! $@",
             );
 
-            $Kernel::OM->Get('Kernel::System::Scheduler::TaskManager')
-                ->TaskDelete( ID => $TaskItem->{ID} );
+            $Kernel::OM->Get('Kernel::System::Scheduler::TaskManager')->TaskDelete( ID => $TaskItem->{ID} );
 
             # skip if can't create task handler
             next TASKITEM;
@@ -210,8 +207,7 @@ sub Run {
                 );
 
                 # delete the task
-                $Kernel::OM->Get('Kernel::System::Scheduler::TaskManager')
-                    ->TaskDelete( ID => $TaskItem->{ID} );
+                $Kernel::OM->Get('Kernel::System::Scheduler::TaskManager')->TaskDelete( ID => $TaskItem->{ID} );
 
                 next TASKITEM;
             }
@@ -225,8 +221,7 @@ sub Run {
         else {
 
             # delete the task
-            $Kernel::OM->Get('Kernel::System::Scheduler::TaskManager')
-                ->TaskDelete( ID => $TaskItem->{ID} );
+            $Kernel::OM->Get('Kernel::System::Scheduler::TaskManager')->TaskDelete( ID => $TaskItem->{ID} );
         }
     }
 
@@ -294,6 +289,70 @@ sub TaskRegister {
 
     # otherwise return the task ID
     return $TaskID;
+}
+
+=item _SanityChecks()
+
+performs checks for the currently registered tasks.
+
+=cut
+
+sub _SanityChecks {
+    my ( $Self, %Param ) = @_;
+
+    $Self->_SanityCheckSystemRegistration();
+
+    return 1;
+}
+
+sub _SanityCheckSystemRegistration {
+    my ( $Self, %Param ) = @_;
+
+    my %RegistrationData = $Kernel::OM->Get('Kernel::System::Registration')->RegistrationDataGet();
+
+    # get all tasks
+    my $TaskManagerObject          = $Kernel::OM->Get('Kernel::System::Scheduler::TaskManager');
+    my @TaskList                   = $TaskManagerObject->TaskList();
+    my @RegistrationUpdateTaskList = grep { $_->{Type} eq 'RegistrationUpdate' } @TaskList;
+
+    # Registered system, must have RegistrationUpdate task.
+    if ( $RegistrationData{State} && $RegistrationData{State} eq 'registered' ) {
+
+        # Is there exactly 1 task?
+        if ( scalar @RegistrationUpdateTaskList == 1 ) {
+            return 1;
+        }
+        elsif ( scalar @RegistrationUpdateTaskList == 0 ) {
+
+            # Ok, RegistrationUpdate task is missing. Create it.
+            $TaskManagerObject->TaskAdd(
+                Type => 'RegistrationUpdate',
+                Data => {
+                    ReSchedule => 1,
+                },
+            );
+        }
+        else {
+            # Ok, there is more than one task. Remove the others.
+            shift @RegistrationUpdateTaskList;
+            for my $RegistrationUpdateTask (@RegistrationUpdateTaskList) {
+                $TaskManagerObject->TaskDelete(
+                    ID => $RegistrationUpdateTask->{ID}
+                );
+            }
+        }
+    }
+
+    # Not registered system, may not have RegistrationUpdate task.
+    else {
+        # Delete any remaining tasks.
+        for my $RegistrationUpdateTask (@RegistrationUpdateTaskList) {
+            $TaskManagerObject->TaskDelete(
+                ID => $RegistrationUpdateTask->{ID}
+            );
+        }
+    }
+    return 1;
 }
 
 =item _PIDChangedTimeUpdate()

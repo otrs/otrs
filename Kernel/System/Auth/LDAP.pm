@@ -66,27 +66,21 @@ sub new {
         );
         return;
     }
-    $Self->{SearchUserDN}
-        = $ConfigObject->Get( 'AuthModule::LDAP::SearchUserDN' . $Param{Count} ) || '';
-    $Self->{SearchUserPw}
-        = $ConfigObject->Get( 'AuthModule::LDAP::SearchUserPw' . $Param{Count} ) || '';
-    $Self->{GroupDN} = $ConfigObject->Get( 'AuthModule::LDAP::GroupDN' . $Param{Count} )
+    $Self->{SearchUserDN} = $ConfigObject->Get( 'AuthModule::LDAP::SearchUserDN' . $Param{Count} ) || '';
+    $Self->{SearchUserPw} = $ConfigObject->Get( 'AuthModule::LDAP::SearchUserPw' . $Param{Count} ) || '';
+    $Self->{GroupDN}      = $ConfigObject->Get( 'AuthModule::LDAP::GroupDN' . $Param{Count} )
         || '';
-    $Self->{AccessAttr}
-        = $ConfigObject->Get( 'AuthModule::LDAP::AccessAttr' . $Param{Count} )
+    $Self->{AccessAttr} = $ConfigObject->Get( 'AuthModule::LDAP::AccessAttr' . $Param{Count} )
         || 'memberUid';
     $Self->{UserAttr} = $ConfigObject->Get( 'AuthModule::LDAP::UserAttr' . $Param{Count} )
         || 'DN';
-    $Self->{UserSuffix}
-        = $ConfigObject->Get( 'AuthModule::LDAP::UserSuffix' . $Param{Count} ) || '';
-    $Self->{UserLowerCase}
-        = $ConfigObject->Get( 'AuthModule::LDAP::UserLowerCase' . $Param{Count} ) || 0;
-    $Self->{DestCharset} = $ConfigObject->Get( 'AuthModule::LDAP::Charset' . $Param{Count} )
+    $Self->{UserSuffix}    = $ConfigObject->Get( 'AuthModule::LDAP::UserSuffix' . $Param{Count} )    || '';
+    $Self->{UserLowerCase} = $ConfigObject->Get( 'AuthModule::LDAP::UserLowerCase' . $Param{Count} ) || 0;
+    $Self->{DestCharset}   = $ConfigObject->Get( 'AuthModule::LDAP::Charset' . $Param{Count} )
         || 'utf-8';
 
     # ldap filter always used
-    $Self->{AlwaysFilter}
-        = $ConfigObject->Get( 'AuthModule::LDAP::AlwaysFilter' . $Param{Count} ) || '';
+    $Self->{AlwaysFilter} = $ConfigObject->Get( 'AuthModule::LDAP::AlwaysFilter' . $Param{Count} ) || '';
 
     # Net::LDAP new params
     if ( $ConfigObject->Get( 'AuthModule::LDAP::Params' . $Param{Count} ) ) {
@@ -104,13 +98,17 @@ sub GetOption {
 
     # check needed stuff
     if ( !$Param{What} ) {
-        $Kernel::OM->Get('Kernel::System::Log')
-            ->Log( Priority => 'error', Message => "Need What!" );
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
+            Priority => 'error',
+            Message  => "Need What!"
+        );
         return;
     }
 
     # module options
-    my %Option = ( PreAuth => 0, );
+    my %Option = (
+        PreAuth => 0,
+    );
 
     # return option
     return $Option{ $Param{What} };
@@ -122,8 +120,10 @@ sub Auth {
     # check needed stuff
     for (qw(User Pw)) {
         if ( !$Param{$_} ) {
-            $Kernel::OM->Get('Kernel::System::Log')
-                ->Log( Priority => 'error', Message => "Need $_!" );
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
+                Priority => 'error',
+                Message  => "Need $_!"
+            );
             return;
         }
     }
@@ -180,7 +180,10 @@ sub Auth {
     }
     my $Result = '';
     if ( $Self->{SearchUserDN} && $Self->{SearchUserPw} ) {
-        $Result = $LDAP->bind( dn => $Self->{SearchUserDN}, password => $Self->{SearchUserPw} );
+        $Result = $LDAP->bind(
+            dn       => $Self->{SearchUserDN},
+            password => $Self->{SearchUserPw}
+        );
     }
     else {
         $Result = $LDAP->bind();
@@ -212,7 +215,7 @@ sub Auth {
     $Result = $LDAP->search(
         base   => $Self->{BaseDN},
         filter => $Filter,
-        attrs  => ['1.1'],
+        attrs  => [ $Self->{UID} ],
     );
     if ( $Result->code() ) {
         $Kernel::OM->Get('Kernel::System::Log')->Log(
@@ -226,12 +229,14 @@ sub Auth {
 
     # get whole user dn
     my $UserDN = '';
+    my $User   = '';
     for my $Entry ( $Result->all_entries() ) {
         $UserDN = $Entry->dn();
+        $User   = $Entry->get_value( $Self->{UID} );
     }
 
     # log if there is no LDAP user entry
-    if ( !$UserDN ) {
+    if ( !$UserDN || !$User ) {
 
         # failed login note
         $Kernel::OM->Get('Kernel::System::Log')->Log(
@@ -313,7 +318,10 @@ sub Auth {
     }
 
     # bind with user data -> real user auth.
-    $Result = $LDAP->bind( dn => $UserDN, password => $Param{Pw} );
+    $Result = $LDAP->bind(
+        dn       => $UserDN,
+        password => $Param{Pw}
+    );
     if ( $Result->code() ) {
 
         # failed login note
@@ -348,7 +356,7 @@ sub Auth {
     # take down session
     $LDAP->unbind();
     $LDAP->disconnect();
-    return $Param{User};
+    return $User;
 }
 
 sub _ConvertTo {

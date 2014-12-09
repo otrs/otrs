@@ -32,7 +32,7 @@ use Getopt::Long;
 
 use Kernel::System::ObjectManager;
 
-# create common objects
+# create object manager
 local $Kernel::OM = Kernel::System::ObjectManager->new(
     'Kernel::System::Log' => {
         LogPrefix => 'OTRS-otrs.GenerateStats.pl',
@@ -44,7 +44,7 @@ local $Kernel::OM = Kernel::System::ObjectManager->new(
 
 # get options
 Getopt::Long::Configure('no_ignore_case');
-my %Opts = ();
+my %Opts;
 GetOptions(
     'number|n=n'     => \$Opts{n},
     'param|p=s'      => \$Opts{p},
@@ -64,7 +64,7 @@ if ( $Opts{h} || !$Opts{n} ) {
     print "otrs.GenerateStats.pl - OTRS cmd stats\n";
     print "Copyright (C) 2001-2014 OTRS AG, http://otrs.com/\n";
     print
-        "usage: otrs.GenerateStats.pl -n <StatNumber> [-p <PARAM_STRING>] [-o <DIRECTORY>] [-r <RECIPIENT> -r ... -s <SENDER>] [-m <MESSAGE>] [-l <LANGUAGE>] [-f CSV|Print] [-S <SEPARATOR>] [-F <FILENAME> [-R]\n";
+        "usage: otrs.GenerateStats.pl -n <StatNumber> [-p <PARAM_STRING>] [-o <DIRECTORY>] [-r <RECIPIENT> -r ... -s <SENDER>] [-m <MESSAGE>] [-l <LANGUAGE>] [-f CSV|Excel|Print] [-S <SEPARATOR>] [-F <FILENAME> [-R]\n";
     print
         "       <PARAM_STRING> e. g. 'Year=1977&Month=10' (only for static files)\n";
     print "       <DIRECTORY> /output/dir/\n";
@@ -109,7 +109,8 @@ if ( $Opts{l} ) {
 }
 
 # format
-my $Format = ( defined $Opts{f} && $Opts{f} eq 'Print' ) ? 'Print' : 'CSV';
+$Opts{f} //= 'CSV';
+my $Format = $Opts{f};
 
 # separator (for CSV files)
 # for backwards compatibility no comma as default
@@ -140,7 +141,7 @@ my ( $s, $m, $h, $D, $M, $Y ) =
     SystemTime => $Kernel::OM->Get('Kernel::System::Time')->SystemTime(),
     );
 
-my %GetParam = ();
+my %GetParam;
 my $Stat = $Kernel::OM->Get('Kernel::System::Stats')->StatsGet( StatID => $StatID );
 
 if ( $Stat->{StatType} eq 'static' ) {
@@ -153,17 +154,23 @@ if ( $Stat->{StatType} eq 'static' ) {
     my $Params = $Kernel::OM->Get('Kernel::System::Stats')->GetParams( StatID => $StatID );
     for my $ParamItem ( @{$Params} ) {
         if ( !$ParamItem->{Multiple} ) {
-            my $Value = GetParam( Param => $ParamItem->{Name}, );
+            my $Value = GetParam(
+                Param => $ParamItem->{Name},
+            );
             if ( defined $Value ) {
                 $GetParam{ $ParamItem->{Name} } =
-                    GetParam( Param => $ParamItem->{Name}, );
+                    GetParam(
+                    Param => $ParamItem->{Name},
+                    );
             }
             elsif ( defined $ParamItem->{SelectedID} ) {
                 $GetParam{ $ParamItem->{Name} } = $ParamItem->{SelectedID};
             }
         }
         else {
-            my @Value = GetArray( Param => $ParamItem->{Name}, );
+            my @Value = GetArray(
+                Param => $ParamItem->{Name},
+            );
             if (@Value) {
                 $GetParam{ $ParamItem->{Name} } = \@Value;
             }
@@ -289,7 +296,8 @@ if ( $Format eq 'Print' && $Kernel::OM->Get('Kernel::System::PDF') ) {
         # if first page
         if ( $Counter == 1 ) {
             $Kernel::OM->Get('Kernel::System::PDF')->PageNew(
-                %PageParam, FooterRight => $Page . ' ' . $Counter,
+                %PageParam,
+                FooterRight => $Page . ' ' . $Counter,
             );
         }
 
@@ -331,6 +339,41 @@ if ( $Format eq 'Print' && $Kernel::OM->Get('Kernel::System::PDF') ) {
         Filename    => $Filename . ".pdf",
         ContentType => "application/pdf",
         Content     => $PDFString,
+        Encoding    => "base64",
+        Disposition => "attachment",
+    );
+}
+elsif ( $Format eq 'Excel' ) {
+
+    # Create the Excel data
+    my $Output;
+    warn "creating data";
+
+    # Only add the name if parameter is set
+    if ( $Opts{R} ) {
+        $Output .= "Name: $Title; Created: $Time\n";
+    }
+    $Output .= $Kernel::OM->Get('Kernel::System::CSV')->Array2CSV(
+        Head   => $HeadArrayRef,
+        Data   => \@StatArray,
+        Format => 'Excel',
+    );
+
+    # save the Excel with the title and timestamp as filename, or read it from param
+    my $Filename;
+    if ( $Opts{F} ) {
+        $Filename = $Opts{F};
+    }
+    else {
+        $Filename = $Kernel::OM->Get('Kernel::System::Stats')->StringAndTimestamp2Filename(
+            String => $Stat->{Title} . " Created",
+        );
+    }
+
+    %Attachment = (
+        Filename    => $Filename . ".xlsx",
+        ContentType => "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        Content     => $Output,
         Encoding    => "base64",
         Disposition => "attachment",
     );

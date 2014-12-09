@@ -52,8 +52,8 @@ my $Service = 'OTRSScheduler';
 my $ServiceStatus = {};
 
 # get options
-my %Opts = ();
-getopt( 'hafw', \%Opts );
+my %Opts;
+getopt( 'aw', \%Opts );
 
 BEGIN {
 
@@ -343,8 +343,7 @@ sub _ServiceStart {
 
     # delete old log files
     my $DaysToKeep = $ConfigObject->Get('Scheduler::Log::DaysToKeep') || 10;
-    my $DaysToKeepSystemTime
-        = $TimeObject->SystemTime() - $DaysToKeep * 24 * 60 * 60;
+    my $DaysToKeepSystemTime = $TimeObject->SystemTime() - $DaysToKeep * 24 * 60 * 60;
 
     my @LogFiles = glob("$LogPath/*.log");
 
@@ -671,7 +670,7 @@ sub _AutoRestart {
     # Log daemon start-up
     $LogObject->Log(
         Priority => 'notice',
-        Message => $Param{Message} || 'Unknown reason to restart',
+        Message  => $Param{Message} || 'Unknown reason to restart',
     );
 
     # delete process ID lock

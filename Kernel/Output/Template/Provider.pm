@@ -70,13 +70,15 @@ sub OTRSInit {
     # define cache type
     $Self->{CacheType} = 'TemplateProvider';
 
+    # caching can be disabled for debugging reasons
+    $Self->{CachingEnabled} = $Kernel::OM->Get('Kernel::Config')->Get('Frontend::TemplateCache') // 1;
+
     #
     # Pre-compute the list of not cacheable Templates. If a pre-output filter is
     #   registered for a particular or for all templates, the template cannot be
     #   cached any more.
     #
-    $Self->{FilterElementPre}
-        = $Kernel::OM->Get('Kernel::Config')->Get('Frontend::Output::FilterElementPre');
+    $Self->{FilterElementPre} = $Kernel::OM->Get('Kernel::Config')->Get('Frontend::Output::FilterElementPre');
 
     my %UncacheableTemplates;
 
@@ -140,8 +142,7 @@ sub _fetch {
 
     $self->debug("_fetch($name)") if $self->{DEBUG};
 
-    my $TemplateIsCacheable
-        = !$self->{UncacheableTemplates}->{ALL} && !$self->{UncacheableTemplates}->{$t_name};
+    my $TemplateIsCacheable = !$self->{UncacheableTemplates}->{ALL} && !$self->{UncacheableTemplates}->{$t_name};
 
     # Check in-memory template cache if we already had this template.
     $self->{_TemplateCache} //= {};
@@ -156,7 +157,7 @@ sub _fetch {
     }
 
     # Check if the template exists, is cacheable and if a cached version exists.
-    if ( -e $name && $TemplateIsCacheable ) {
+    if ( -e $name && $TemplateIsCacheable && $self->{CachingEnabled} ) {
 
         my $template_mtime = $self->_template_modified($name);
         my $CacheKey       = $self->_compiled_filename($name) . '::' . $template_mtime;
@@ -301,13 +302,14 @@ sub _compile {
             if ($TemplateIsCacheable) {
                 my $CacheKey = $compfile . '::' . $data->{time};
 
-                #print STDERR "Writing cache $CacheKey\n";
-                $Kernel::OM->Get('Kernel::System::Cache')->Set(
-                    Type  => $self->{CacheType},
-                    TTL   => 60 * 60 * 24,
-                    Key   => $CacheKey,
-                    Value => $parsedoc,
-                );
+                if ( $self->{CachingEnabled} ) {
+                    $Kernel::OM->Get('Kernel::System::Cache')->Set(
+                        Type  => $self->{CacheType},
+                        TTL   => 60 * 60 * 24,
+                        Key   => $CacheKey,
+                        Value => $parsedoc,
+                    );
+                }
             }
         }
 
@@ -421,7 +423,7 @@ sub _PreProcessTemplateContent {
             # run output filter
             $Object->Run(
                 %{$FilterConfig},
-                Data => \$Content,
+                Data         => \$Content,
                 TemplateFile => $TemplateFileWithoutTT || '',
             );
         }

@@ -22,6 +22,7 @@ our @ObjectDependencies = (
     'Kernel::Config',
     'Kernel::System::Encode',
     'Kernel::System::Log',
+    'Kernel::System::Main',
 );
 
 =head1 NAME
@@ -137,9 +138,10 @@ sub Request {
     my $Response;
 
     {
-
-        # set HTTPS proxy for ssl requests, localize %ENV because of mod_perl
-        local %ENV = %ENV;
+        # Set HTTPS proxy for ssl requests. We must not use "local %ENV" here!
+        # See http://bugs.otrs.org/show_bug.cgi?id=10577.
+        # It should also not be needed as we have PerlOptions +SetupEnv in our apache
+        #   configuration, and %ENV will be repopulated for every request.
 
         # if a proxy is set, extract it and use it as environment variables for HTTPS
         if ( $Self->{Proxy} =~ /:\/\/(.*)\// ) {
@@ -161,6 +163,23 @@ sub Request {
 
         # init agent
         my $UserAgent = LWP::UserAgent->new();
+
+        # In some scenarios like transparent HTTPS proxies, it can be neccessary to turn off
+        #   SSL certificate validation.
+        if ( $Kernel::OM->Get('Kernel::Config')->Get('WebUserAgent::DisableSSLVerification') ) {
+            my $Loaded = $Kernel::OM->Get('Kernel::System::Main')->Require(
+                'Net::SSLeay',
+                Silent => 1,
+            );
+            if ($Loaded) {
+                $UserAgent->ssl_opts(
+                    verify_hostname => 0,
+                );
+                $UserAgent->ssl_opts(
+                    SSL_verify_mode => Net::SSLeay::VERIFY_NONE(),
+                );
+            }
+        }
 
         # set credentials
         if ( $Param{Credentials} ) {

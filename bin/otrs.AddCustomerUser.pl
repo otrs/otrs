@@ -28,9 +28,11 @@ use lib dirname($RealBin);
 use lib dirname($RealBin) . '/Kernel/cpan-lib';
 use lib dirname($RealBin) . '/Custom';
 
+use Getopt::Std;
+
 use Kernel::System::ObjectManager;
 
-# create common objects
+# create object manager
 local $Kernel::OM = Kernel::System::ObjectManager->new(
     'Kernel::System::Log' => {
         LogPrefix => 'OTRS-otrs.AddCustomerUser.pl',
@@ -38,7 +40,6 @@ local $Kernel::OM = Kernel::System::ObjectManager->new(
 );
 
 my %Options;
-use Getopt::Std;
 getopt( 'flpgec', \%Options );
 if ( !$ARGV[0] ) {
     print
@@ -65,8 +66,7 @@ $Param{UserPassword}   = $Options{p};
 $Param{UserEmail}      = $Options{e};
 
 if (
-    $Param{UID}
-    = $Kernel::OM->Get('Kernel::System::CustomerUser')->CustomerUserAdd( %Param, ChangeUserID => 1 )
+    $Param{UID} = $Kernel::OM->Get('Kernel::System::CustomerUser')->CustomerUserAdd( %Param, ChangeUserID => 1 )
     )
 {
     print "Customer user added. Username is $Param{UID}\n";

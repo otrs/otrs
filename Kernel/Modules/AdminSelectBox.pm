@@ -42,7 +42,7 @@ sub Run {
 
     $Param{ResultFormatStrg} = $Self->{LayoutObject}->BuildSelection(
         Name => 'ResultFormat',
-        Data => [ 'HTML', 'CSV' ],
+        Data => [ 'HTML', 'CSV', 'Excel' ],
     );
 
     if ( !$Self->{ConfigObject}->Get('AdminSelectBox::AllowDatabaseModification') ) {
@@ -90,7 +90,13 @@ sub Run {
         if ( !%Errors ) {
 
             # fetch database and add row blocks
-            if ( $Self->{DBObject}->Prepare( SQL => $Param{SQL}, Limit => $Param{Max} ) ) {
+            if (
+                $Self->{DBObject}->Prepare(
+                    SQL   => $Param{SQL},
+                    Limit => $Param{Max}
+                )
+                )
+            {
 
                 my @Data;
                 my $MatchesFound;
@@ -118,7 +124,11 @@ sub Run {
                     $MatchesFound = 1;
 
                     # get csv data
-                    if ( $Param{ResultFormat} eq 'CSV' ) {
+                    if (
+                        $Param{ResultFormat} eq 'CSV'
+                        || $Param{ResultFormat} eq 'Excel'
+                        )
+                    {
                         push @Data, \@Row;
                         next ROW;
                     }
@@ -174,7 +184,7 @@ sub Run {
                 my $TimeStamp = $Self->{TimeObject}->CurrentTimestamp();
                 $TimeStamp =~ s/[:-]//g;
                 $TimeStamp =~ s/ /-/;
-                my $FileName = 'admin-select-' . $TimeStamp . '.csv';
+                my $FileName = 'admin-select-' . $TimeStamp;
 
                 # generate csv output
                 if ( $Param{ResultFormat} eq 'CSV' ) {
@@ -184,10 +194,26 @@ sub Run {
                         Separator => $UserCSVSeparator,
                     );
                     return $Self->{LayoutObject}->Attachment(
-                        Filename    => "$FileName",
+                        Filename    => "$FileName" . ".csv",
                         ContentType => 'text/csv',
                         Content     => $CSV,
                         Type        => 'attachment'
+                    );
+                }
+
+                # generate Excel output
+                elsif ( $Param{ResultFormat} eq 'Excel' ) {
+                    my $Excel = $Self->{CSVObject}->Array2CSV(
+                        Head   => \@Head,
+                        Data   => \@Data,
+                        Format => 'Excel',
+                    );
+                    return $Self->{LayoutObject}->Attachment(
+                        Filename => "$FileName" . ".xlsx",
+                        ContentType =>
+                            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                        Content => $Excel,
+                        Type    => 'attachment'
                     );
                 }
 
@@ -206,8 +232,7 @@ sub Run {
                     Type => 'Error',
                     What => 'Message',
                 );
-                $Errors{ErrorType}
-                    = ( $Errors{ErrorMessage} =~ /bind/i ) ? 'BindParam' : 'SQLSyntax';
+                $Errors{ErrorType} = ( $Errors{ErrorMessage} =~ /bind/i ) ? 'BindParam' : 'SQLSyntax';
                 $Errors{SQLInvalid} = 'ServerError';
             }
         }

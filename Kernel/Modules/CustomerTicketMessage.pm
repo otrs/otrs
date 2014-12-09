@@ -117,8 +117,7 @@ sub Run {
         next DYNAMICFIELD if !$DynamicField;
         next DYNAMICFIELD if !$DynamicFieldValues{$DynamicField};
 
-        $DynamicFieldACLParameters{ 'DynamicField_' . $DynamicField }
-            = $DynamicFieldValues{$DynamicField};
+        $DynamicFieldACLParameters{ 'DynamicField_' . $DynamicField } = $DynamicFieldValues{$DynamicField};
     }
     $GetParam{DynamicField} = \%DynamicFieldACLParameters;
 
@@ -195,8 +194,7 @@ sub Run {
                         my %Filter = $Self->{TicketObject}->TicketAclData();
 
                         # convert Filer key => key back to key => value using map
-                        %{$PossibleValuesFilter}
-                            = map { $_ => $PossibleValues->{$_} }
+                        %{$PossibleValuesFilter} = map { $_ => $PossibleValues->{$_} }
                             keys %Filter;
                     }
                 }
@@ -246,8 +244,7 @@ sub Run {
 
         # fallback, if no destination is given
         if ( !$NewQueueID ) {
-            my $Queue
-                = $Self->{ParamObject}->GetParam( Param => 'Queue' )
+            my $Queue = $Self->{ParamObject}->GetParam( Param => 'Queue' )
                 || $Self->{Config}->{'QueueDefault'}
                 || '';
             if ($Queue) {
@@ -359,8 +356,7 @@ sub Run {
                         my %Filter = $Self->{TicketObject}->TicketAclData();
 
                         # convert Filer key => key back to key => value using map
-                        %{$PossibleValuesFilter}
-                            = map { $_ => $PossibleValues->{$_} }
+                        %{$PossibleValuesFilter} = map { $_ => $PossibleValues->{$_} }
                             keys %Filter;
                     }
                 }
@@ -722,6 +718,12 @@ sub Run {
             QueueID        => $QueueID      || 1,
             Services       => $Services,
         );
+        my $Types = $Self->_GetTypes(
+            %GetParam,
+            %ACLCompatGetParam,
+            CustomerUserID => $CustomerUser || '',
+            QueueID        => $QueueID      || 1,
+        );
 
         # update Dynamic Fields Possible Values via AJAX
         my @DynamicFieldAJAX;
@@ -818,6 +820,14 @@ sub Run {
                     Translation  => 0,
                     Max          => 100,
                 },
+                {
+                    Name         => 'TypeID',
+                    Data         => $Types,
+                    SelectedID   => $GetParam{TypeID},
+                    PossibleNone => 1,
+                    Translation  => 0,
+                    Max          => 100,
+                },
                 @DynamicFieldAJAX,
             ],
         );
@@ -877,8 +887,7 @@ sub _GetServices {
     return \%Service if !$Param{QueueID} && !$Param{TicketID};
 
     # get options for default services for unknown customers
-    my $DefaultServiceUnknownCustomer
-        = $Self->{ConfigObject}->Get('Ticket::Service::Default::UnknownCustomer');
+    my $DefaultServiceUnknownCustomer = $Self->{ConfigObject}->Get('Ticket::Service::Default::UnknownCustomer');
 
     # get service list
     if ( $Param{CustomerUserID} || $DefaultServiceUnknownCustomer ) {
@@ -916,7 +925,10 @@ sub _GetTos {
     my $Module = $Self->{ConfigObject}->Get('CustomerPanel::NewTicketQueueSelectionModule')
         || 'Kernel::Output::HTML::CustomerNewTicketQueueSelectionGeneric';
     if ( $Self->{MainObject}->Require($Module) ) {
-        my $Object = $Module->new( %{$Self}, Debug => $Self->{Debug}, );
+        my $Object = $Module->new(
+            %{$Self},
+            Debug => $Self->{Debug},
+        );
 
         # log loaded module
         if ( $Self->{Debug} > 1 ) {
@@ -925,7 +937,13 @@ sub _GetTos {
                 Message  => "Module: $Module loaded!",
             );
         }
-        %NewTos = ( $Object->Run( Env => $Self, ACLParams => \%Param ), ( '', => '-' ) );
+        %NewTos = (
+            $Object->Run(
+                Env       => $Self,
+                ACLParams => \%Param
+            ),
+            ( '', => '-' )
+        );
     }
     else {
         return $Self->{LayoutObject}->FatalDie(
@@ -966,7 +984,10 @@ sub _MaskNew {
         my $Module = $Self->{ConfigObject}->Get('CustomerPanel::NewTicketQueueSelectionModule')
             || 'Kernel::Output::HTML::CustomerNewTicketQueueSelectionGeneric';
         if ( $Self->{MainObject}->Require($Module) ) {
-            my $Object = $Module->new( %{$Self}, Debug => $Self->{Debug}, );
+            my $Object = $Module->new(
+                %{$Self},
+                Debug => $Self->{Debug},
+            );
 
             # log loaded module
             if ( $Self->{Debug} > 1 ) {
@@ -975,7 +996,13 @@ sub _MaskNew {
                     Message  => "Module: $Module loaded!",
                 );
             }
-            %NewTos = ( $Object->Run( Env => $Self, ACLParams => \%Param ), ( '', => '-' ) );
+            %NewTos = (
+                $Object->Run(
+                    Env       => $Self,
+                    ACLParams => \%Param
+                ),
+                ( '', => '-' )
+            );
         }
         else {
             return $Self->{LayoutObject}->FatalError();
@@ -1244,8 +1271,7 @@ sub _GetFieldsToUpdate {
 
     # set the fields that can be updatable via AJAXUpdate
     if ( !$Param{OnlyDynamicFields} ) {
-        @UpdatableFields
-            = qw( Dest ServiceID SLAID PriorityID );
+        @UpdatableFields = qw( Dest ServiceID SLAID PriorityID );
     }
 
     # cycle trough the activated Dynamic Fields for this screen

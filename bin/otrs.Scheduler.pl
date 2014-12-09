@@ -39,8 +39,8 @@ use Kernel::System::VariableCheck qw(:all);
 my $PIDName = 'otrs.Scheduler';
 
 # get options
-my %Opts = ();
-getopt( 'hfapw', \%Opts );
+my %Opts;
+getopt( 'apw', \%Opts );
 
 local $Kernel::OM = Kernel::System::ObjectManager->new(
     'Kernel::System::Log' => {
@@ -142,7 +142,7 @@ elsif ( $Opts{a} && $Opts{a} eq "reload" ) {
 
     # log daemon stop
     $Kernel::OM->Get('Kernel::System::Log')->Log(
-        Priority => 'notice',
+        Priority => 'debug',
         Message  => "Scheduler Daemon reload request! PID $SchedulerPID{PID}",
     );
     exit 0;
@@ -269,10 +269,8 @@ sub _Start {
         }
 
         # delete old log files
-        my $DaysToKeep
-            = $Kernel::OM->Get('Kernel::Config')->Get('Scheduler::Log::DaysToKeep') || 10;
-        my $DaysToKeepSystemTime
-            = $Kernel::OM->Get('Kernel::System::Time')->SystemTime() - $DaysToKeep * 24 * 60 * 60;
+        my $DaysToKeep = $Kernel::OM->Get('Kernel::Config')->Get('Scheduler::Log::DaysToKeep') || 10;
+        my $DaysToKeepSystemTime = $Kernel::OM->Get('Kernel::System::Time')->SystemTime() - $DaysToKeep * 24 * 60 * 60;
 
         my @LogFiles = glob("$LogPath/*.log");
 
@@ -299,7 +297,7 @@ sub _Start {
 
                 # log old backup file deleted
                 $Kernel::OM->Get('Kernel::System::Log')->Log(
-                    Priority => 'notice',
+                    Priority => 'debug',
                     Message  => "Scheduler deleted old backup file $LogFile!",
                 );
             }
@@ -405,8 +403,7 @@ sub _Start {
 
     my $SleepTime = $Kernel::OM->Get('Kernel::Config')->Get('Scheduler::SleepTime') || 1;
 
-    my $RestartAfterSeconds
-        = $Kernel::OM->Get('Kernel::Config')->Get('Scheduler::RestartAfterSeconds')
+    my $RestartAfterSeconds = $Kernel::OM->Get('Kernel::Config')->Get('Scheduler::RestartAfterSeconds')
         || ( 60 * 60 * 24 );    # default 1 day
 
     my $StartTime = $Kernel::OM->Get('Kernel::System::Time')->SystemTime();
@@ -578,7 +575,7 @@ sub _Status {
 
     # log daemon stop
     $Kernel::OM->Get('Kernel::System::Log')->Log(
-        Priority => 'notice',
+        Priority => 'debug',
         Message  => "Scheduler Daemon status request! PID $SchedulerPID{PID}",
     );
 
@@ -605,7 +602,7 @@ sub _AutoRestart {
     # Log daemon start-up
     $Kernel::OM->Get('Kernel::System::Log')->Log(
         Priority => 'notice',
-        Message => $Param{Message} || 'Unknown reason to restart',
+        Message  => $Param{Message} || 'Unknown reason to restart',
     );
 
     # delete process ID lock
@@ -667,8 +664,7 @@ sub _AutoStop {
 
         # delete process ID lock
         # scheduler should not delete PIDs from other hosts at this point
-        my $PIDDelSuccess
-            = $Kernel::OM->Get('Kernel::System::PID')->PIDDelete( Name => $SchedulerPID{Name} );
+        my $PIDDelSuccess = $Kernel::OM->Get('Kernel::System::PID')->PIDDelete( Name => $SchedulerPID{Name} );
 
         # get the sleeptime from config
         my $SleepTime = $Kernel::OM->Get('Kernel::Config')->Get('Scheduler::SleepTime') || 1;

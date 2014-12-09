@@ -19,6 +19,7 @@ our @ObjectDependencies = (
     'Kernel::System::AuthSession',
     'Kernel::System::DB',
     'Kernel::System::Encode',
+    'Kernel::System::Email',
     'Kernel::System::Group',
     'Kernel::System::Log',
     'Kernel::System::Main',
@@ -78,9 +79,11 @@ sub new {
         'Kernel::System::Web::Request' => {
             WebRequest => $Param{WebRequest} || 0,
         },
+
+        # Don't autoconnect as this would cause internal server errors on failure.
         'Kernel::System::DB' => {
             AutoConnectNo => 1,
-        }
+        },
     );
 
     $Self->{EncodeObject}  = $Kernel::OM->Get('Kernel::System::Encode');
@@ -164,9 +167,15 @@ sub Run {
         $CookieSecureAttribute = 1;
     }
 
-    # check common objects
     $Self->{DBObject} = $Kernel::OM->Get('Kernel::System::DB');
     my $DBCanConnect = $Self->{DBObject}->Connect();
+
+    # Restore original behaviour of Kernel::System::DB for all objects created in future
+    $Kernel::OM->ObjectParamAdd(
+        'Kernel::System::DB' => {
+            AutoConnectNo => undef,
+        },
+    );
     if ( !$DBCanConnect || $Self->{ParamObject}->Error() ) {
         my $LayoutObject = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
         if ( !$DBCanConnect ) {
@@ -189,16 +198,7 @@ sub Run {
     $Self->{TicketObject} = $Kernel::OM->Get('Kernel::System::Ticket');
 
     for my $Key ( sort keys %CommonObject ) {
-        if ( $Self->{MainObject}->Require( $CommonObject{$Key} ) ) {
-            $Self->{$Key} = $CommonObject{$Key}->new( %{$Self} );
-        }
-        else {
-
-            # print error
-            $Kernel::OM->Get('Kernel::Output::HTML::Layout')
-                ->FatalError( Comment => 'Please contact your administrator' );
-            return;
-        }
+        $Self->{$Key} //= $Kernel::OM->Get( $CommonObject{$Key} );
     }
 
     # get common application and add-on application params
@@ -211,17 +211,38 @@ sub Run {
     $Param{Action} =~ s/\W//g;
 
     # check request type
-    if ( $Param{Action} eq 'Login' ) {
+    if ( $Param{Action} eq 'PreLogin' ) {
+        my $LayoutObject = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
+        $Param{RequestedURL} = $Param{RequestedURL} || "Action=AgentDashboard";
+
+        # login screen
+        $LayoutObject->Print(
+            Output => \$LayoutObject->Login(
+                Title => 'Login',
+                Mode  => 'PreLogin',
+                %Param,
+            ),
+        );
+
+        return;
+    }
+    elsif ( $Param{Action} eq 'Login' ) {
 
         # get params
         my $PostUser = $Self->{ParamObject}->GetParam( Param => 'User' ) || '';
-        my $PostPw = $Self->{ParamObject}->GetParam( Param => 'Password', Raw => 1 ) || '';
+        my $PostPw = $Self->{ParamObject}->GetParam(
+            Param => 'Password',
+            Raw   => 1
+        ) || '';
 
         # create AuthObject
         my $AuthObject = $Kernel::OM->Get('Kernel::System::Auth');
 
         # check submitted data
-        my $User = $AuthObject->Auth( User => $PostUser, Pw => $PostPw );
+        my $User = $AuthObject->Auth(
+            User => $PostUser,
+            Pw   => $PostPw
+        );
 
         # login is invalid
         if ( !$User ) {
@@ -276,7 +297,10 @@ sub Run {
         }
 
         # login is successful
-        my %UserData = $Self->{UserObject}->GetUserData( User => $User, Valid => 1 );
+        my %UserData = $Self->{UserObject}->GetUserData(
+            User  => $User,
+            Valid => 1
+        );
 
         # check if the browser supports cookies
 
@@ -369,6 +393,7 @@ sub Run {
                 $TimeOffset = $TimeOffset / 60;
                 $TimeOffset =~ s/-/+/;
             }
+
             $Self->{UserObject}->SetPreferences(
                 UserID => $UserData{UserID},
                 Key    => 'UserTimeZone',
@@ -421,7 +446,7 @@ sub Run {
 
         # redirect with new session id and old params
         # prepare old redirect URL -- do not redirect to Login or Logout (loop)!
-        if ( $Param{RequestedURL} =~ /Action=(Logout|Login|LostPassword)/ ) {
+        if ( $Param{RequestedURL} =~ /Action=(Logout|Login|LostPassword|PreLogin)/ ) {
             $Param{RequestedURL} = '';
         }
 
@@ -514,8 +539,9 @@ sub Run {
 
         $LayoutObject->Print(
             Output => \$LayoutObject->Login(
-                Title   => 'Logout',
-                Message => $LogoutMessage,
+                Title       => 'Logout',
+                Message     => $LogoutMessage,
+                MessageType => 'Logout',
                 %Param,
             ),
         );
@@ -564,7 +590,10 @@ sub Run {
         }
 
         # get user data
-        my %UserData = $Self->{UserObject}->GetUserData( User => $User, Valid => 1 );
+        my %UserData = $Self->{UserObject}->GetUserData(
+            User  => $User,
+            Valid => 1
+        );
         if ( !$UserData{UserID} ) {
 
             # Security: pretend that password reset instructions were actually sent to
@@ -581,7 +610,7 @@ sub Run {
         }
 
         # create email object
-        my $EmailObject = Kernel::System::Email->new( %{$Self} );
+        my $EmailObject = $Kernel::OM->Get('Kernel::System::Email');
 
         # send password reset token
         if ( !$Token ) {
@@ -643,7 +672,10 @@ sub Run {
         $UserData{NewPW} = $Self->{UserObject}->GenerateRandomPassword();
 
         # update new password
-        $Self->{UserObject}->SetPassword( UserLogin => $User, PW => $UserData{NewPW} );
+        $Self->{UserObject}->SetPassword(
+            UserLogin => $User,
+            PW        => $UserData{NewPW}
+        );
 
         # send notify email
         my $Body = $Self->{ConfigObject}->Get('NotificationBodyLostPassword')
@@ -667,12 +699,15 @@ sub Run {
             );
             return;
         }
+        my $Message = $LayoutObject->{LanguageObject}->Translate(
+            'Sent new password to %s. Please check your email.',
+            $UserData{UserEmail},
+        );
         $LayoutObject->Print(
             Output => \$LayoutObject->Login(
-                Title => 'Login',
-                Message =>
-                    "Sent new password to \%s. Please check your email.\", \"$UserData{UserEmail}",
-                User => $User,
+                Title   => 'Login',
+                Message => $Message,
+                User    => $User,
                 %Param,
             ),
         );
@@ -690,7 +725,7 @@ sub Run {
             # automatic login
             $Param{RequestedURL} = $LayoutObject->LinkEncode( $Param{RequestedURL} );
             print $LayoutObject->Redirect(
-                OP => "Action=Login&RequestedURL=$Param{RequestedURL}",
+                OP => "Action=PreLogin&RequestedURL=$Param{RequestedURL}",
             );
             return;
         }
@@ -748,7 +783,7 @@ sub Run {
                 # automatic re-login
                 $Param{RequestedURL} = $LayoutObject->LinkEncode( $Param{RequestedURL} );
                 print $LayoutObject->Redirect(
-                    OP => "?Action=Login&RequestedURL=$Param{RequestedURL}",
+                    OP => "?Action=PreLogin&RequestedURL=$Param{RequestedURL}",
                 );
                 return;
             }
@@ -983,15 +1018,16 @@ sub Run {
     }
 
     # print an error screen
-    my %Data = $Self->{SessionObject}->GetSessionIDData( SessionID => $Param{SessionID}, );
+    my %Data = $Self->{SessionObject}->GetSessionIDData(
+        SessionID => $Param{SessionID},
+    );
     $Kernel::OM->ObjectParamAdd(
         'Kernel::Output::HTML::Layout' => {
             %Param,
             %Data,
         },
     );
-    $Kernel::OM->Get('Kernel::Output::HTML::Layout')
-        ->FatalError( Comment => 'Please contact your administrator' );
+    $Kernel::OM->Get('Kernel::Output::HTML::Layout')->FatalError( Comment => 'Please contact your administrator' );
     return;
 }
 

@@ -33,7 +33,7 @@ use Kernel::System::ObjectManager;
 
 # get options
 my %Opts;
-getopt( 'hn', \%Opts );
+getopt( 'n', \%Opts );
 if ( $Opts{h} ) {
     print <<EOF;
 $0 - generate caches for dashboard stats widgets
@@ -99,8 +99,7 @@ sub Run {
             Value => 1,
         );
 
-        my $UserWidgetConfigSetting
-            = 'UserDashboardStatsStatsConfiguration' . ( 1000 + $StatID ) . "-Stats";
+        my $UserWidgetConfigSetting = 'UserDashboardStatsStatsConfiguration' . ( 1000 + $StatID ) . "-Stats";
 
         # Calculate the cache for each user, if needed. If several users have the same settings
         #   for a stat, the cache will not be recalculated.

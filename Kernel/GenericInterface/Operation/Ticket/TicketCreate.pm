@@ -58,8 +58,7 @@ sub new {
         $Self->{$Needed} = $Param{$Needed};
     }
 
-    $Self->{Config}
-        = $Kernel::OM->Get('Kernel::Config')->Get('GenericInterface::Operation::TicketCreate');
+    $Self->{Config} = $Kernel::OM->Get('Kernel::Config')->Get('GenericInterface::Operation::TicketCreate');
 
     return $Self;
 }
@@ -232,6 +231,7 @@ sub Run {
         );
     }
 
+    my $PermissionUserID = $UserID;
     if ( $UserType eq 'Customer' ) {
         $UserID = $Kernel::OM->Get('Kernel::Config')->Get('CustomerPanelUserID')
     }
@@ -298,7 +298,7 @@ sub Run {
     # check create permissions
     my $Permission = $Self->CheckCreatePermissions(
         Ticket   => $Ticket,
-        UserID   => $UserID,
+        UserID   => $PermissionUserID,
         UserType => $UserType,
     );
 

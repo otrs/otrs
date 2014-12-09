@@ -105,8 +105,7 @@ $Self->Is(
 );
 
 # Working with CSVString with \n
-my $String
-    = '"field1";"field2";"field3"' . "\n" . '"a' . "\n"
+my $String = '"field1";"field2";"field3"' . "\n" . '"a' . "\n"
     . 'b";"FirstLine' . "\n"
     . 'SecondLine";"4"' . "\n";
 $Array = $CSVObject->CSV2Array(
@@ -142,8 +141,7 @@ $Self->Is(
 );
 
 # Working with CSVString with \r
-$String
-    = '"field1";"field2";"field3"' . "\r" . '"a' . "\r"
+$String = '"field1";"field2";"field3"' . "\r" . '"a' . "\r"
     . 'b";"FirstLine' . "\r"
     . 'SecondLine";"4"' . "\r";
 $Array = $CSVObject->CSV2Array(
@@ -226,5 +224,27 @@ for my $Row ( 0 .. $#TableData ) {
         );
     }
 }
+
+# -------------------------------------------------
+# tests export in Excel file - bug# 10656
+# -------------------------------------------------
+
+$TextWithNewLine = "Some chinese characters: 你好.\n";
+@TableData       = (
+    [ 'TestData1', '你好' ],
+    [ 'TestData2', '晚安' ],
+    [ 'TestData3', '早安' ],
+    [ 11,          $TextWithNewLine ],
+);
+
+my $Excel = $CSVObject->Array2CSV(
+    Head => [ 'RowA', 'RowB', ],
+    Data => \@TableData,
+);
+
+$Self->True(
+    $Excel,
+    'Array2CSV() with Format => Excel return data',
+);
 
 1;

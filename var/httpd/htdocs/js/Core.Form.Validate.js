@@ -226,10 +226,13 @@ Core.Form.Validate = (function (TargetNS) {
             return (Text.length && Text !== '-');
         }
 
-        // for rich text areas, update the linked field for the validation first
+        // for richtextareas, get editor code and remove all tags and whitespace
+        // keep tags if images are embedded because of inline-images
         if (Core.UI.RichTextEditor.IsEnabled($Element)) {
-            CKEDITOR.instances[$Element.attr('id')].updateElement();
-            Value = $Element.val();
+            Value = CKEDITOR.instances[Element.id].getData();
+            if (!Value.match(/<img/)) {
+                Value = Value.replace(/\s+|&nbsp;|<\/?\w+[^>]*\/?>/g, '');
+            }
         }
 
         // checkable inputs
@@ -259,7 +262,7 @@ Core.Form.Validate = (function (TargetNS) {
         // JS takes new lines '\n\r' in textarea elements as 1 character '\n' for length
         // calculation purposes therefore is needed to re-add the '\r' to get the correct length
         // for validation and match to perl and database criteria
-        return ( Value.replace(/\n\r?/g, "\n\r").length <= $(Element).attr('maxlength') );
+        return ( Value.replace(/\n\r?/g, "\n\r").length <= $(Element).data('maxlength') );
     }, "");
 
     $.validator.addMethod("Validate_DateYear", function (Value, Element) {

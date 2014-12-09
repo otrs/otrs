@@ -30,7 +30,7 @@ use lib dirname($RealBin) . '/Custom';
 
 use Kernel::System::ObjectManager;
 
-# common objects
+# create object manager
 local $Kernel::OM = Kernel::System::ObjectManager->new(
     'Kernel::System::Log' => {
         LogPrefix => 'OTRS-otrs.DeleteSessionIDs.pl',
@@ -56,8 +56,7 @@ if ( ( $Command eq '--all' ) || ( $Command eq '--showall' ) ) {
             print " SessionID $SessionID!\n";
         }
         elsif (
-            $Kernel::OM->Get('Kernel::System::AuthSession')
-            ->RemoveSessionID( SessionID => $SessionID )
+            $Kernel::OM->Get('Kernel::System::AuthSession')->RemoveSessionID( SessionID => $SessionID )
             )
         {
             print " SessionID $SessionID deleted.\n";
@@ -84,8 +83,7 @@ elsif ( ( $Command eq '--expired' ) || ( $Command eq '--showexpired' ) ) {
             print " SessionID $SessionID expired!\n";
         }
         elsif (
-            $Kernel::OM->Get('Kernel::System::AuthSession')
-            ->RemoveSessionID( SessionID => $SessionID )
+            $Kernel::OM->Get('Kernel::System::AuthSession')->RemoveSessionID( SessionID => $SessionID )
             )
         {
             print " SessionID $SessionID deleted (too old).\n";
@@ -102,8 +100,7 @@ elsif ( ( $Command eq '--expired' ) || ( $Command eq '--showexpired' ) ) {
             print " SessionID $SessionID idle timeout!\n";
         }
         elsif (
-            $Kernel::OM->Get('Kernel::System::AuthSession')
-            ->RemoveSessionID( SessionID => $SessionID )
+            $Kernel::OM->Get('Kernel::System::AuthSession')->RemoveSessionID( SessionID => $SessionID )
             )
         {
             print " SessionID $SessionID deleted (idle timeout).\n";

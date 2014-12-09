@@ -55,14 +55,27 @@ sub BuildSelectionJSON {
         my %Param = %{$Data};
 
         # check needed stuff
-        for (qw(Name Data)) {
+        for (qw(Name)) {
             if ( !defined $Param{$_} ) {
-                $Self->{LogObject}->Log( Priority => 'error', Message => "Need $_!" );
+                $Self->{LogObject}->Log(
+                    Priority => 'error',
+                    Message  => "Need $_!"
+                );
                 return;
             }
         }
 
-        if ( ref $Param{Data} eq '' ) {
+        if ( !defined( $Param{Data} ) ) {
+            if ( !$Param{PossibleNone} ) {
+                $Self->{LogObject}->Log(
+                    Priority => 'error',
+                    Message  => "Need Data!"
+                );
+                return;
+            }
+            $DataHash{''} = '-';
+        }
+        elsif ( ref $Param{Data} eq '' ) {
             $DataHash{ $Param{Name} } = $Param{Data};
         }
         elsif ( defined $Param{KeepData} && $Param{KeepData} ) {

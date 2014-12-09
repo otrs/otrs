@@ -372,7 +372,10 @@ sub Do {
 
     # check needed stuff
     if ( !$Param{SQL} ) {
-        $Kernel::OM->Get('Kernel::System::Log')->Log( Priority => 'error', Message => 'Need SQL!' );
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
+            Priority => 'error',
+            Message  => 'Need SQL!'
+        );
         return;
     }
 
@@ -422,16 +425,6 @@ sub Do {
             Caller   => 1,
             Priority => 'debug',
             Message  => "DB.pm->Do ($Self->{DoCounter}) SQL: '$Param{SQL}'",
-        );
-    }
-
-    # check length, don't use more than 4 k
-    if ( bytes::length( $Param{SQL} ) > 4 * 1024 ) {
-        $Kernel::OM->Get('Kernel::System::Log')->Log(
-            Caller   => 1,
-            Priority => 'notice',
-            Message  => 'Your SQL is longer than 4k, this does not work on many '
-                . 'databases. Use bind instead! SQL: ' . $Param{SQL},
         );
     }
 
@@ -494,7 +487,10 @@ sub Prepare {
 
     # check needed stuff
     if ( !$Param{SQL} ) {
-        $Kernel::OM->Get('Kernel::System::Log')->Log( Priority => 'error', Message => 'Need SQL!' );
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
+            Priority => 'error',
+            Message  => 'Need SQL!'
+        );
         return;
     }
     if ( defined $Param{Encode} ) {
@@ -1046,8 +1042,10 @@ sub QueryCondition {
     # check needed stuff
     for (qw(Key Value)) {
         if ( !$Param{$_} ) {
-            $Kernel::OM->Get('Kernel::System::Log')
-                ->Log( Priority => 'error', Message => "Need $_!" );
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
+                Priority => 'error',
+                Message  => "Need $_!"
+            );
             return;
         }
     }
@@ -1274,12 +1272,12 @@ sub QueryCondition {
                         $WordSQL = "'" . $WordSQL . "'";
                     }
 
-# check if database supports LIKE in large text types
-# the first condition is a little bit opaque
-# CaseSensitive of the database defines, if the database handles case sensitivity or not
-# and the parameter $CaseSensitive defines, if the customer database should do case sensitive statements or not.
-# so if the database dont support case sensitivity or the configuration of the customer database want to do this
-# then we prevent the LOWER() statements.
+        # check if database supports LIKE in large text types
+        # the first condition is a little bit opaque
+        # CaseSensitive of the database defines, if the database handles case sensitivity or not
+        # and the parameter $CaseSensitive defines, if the customer database should do case sensitive statements or not.
+        # so if the database dont support case sensitivity or the configuration of the customer database want to do this
+        # then we prevent the LOWER() statements.
                     if ( !$Self->GetDatabaseFunction('CaseSensitive') || $CaseSensitive ) {
                         $SQLA .= "$Key $Type $WordSQL";
                     }
@@ -1323,12 +1321,12 @@ sub QueryCondition {
                         $WordSQL = "'" . $WordSQL . "'";
                     }
 
-# check if database supports LIKE in large text types
-# the first condition is a little bit opaque
-# CaseSensitive of the database defines, if the database handles case sensitivity or not
-# and the parameter $CaseSensitive defines, if the customer database should do case sensitive statements or not.
-# so if the database dont support case sensitivity or the configuration of the customer database want to do this
-# then we prevent the LOWER() statements.
+        # check if database supports LIKE in large text types
+        # the first condition is a little bit opaque
+        # CaseSensitive of the database defines, if the database handles case sensitivity or not
+        # and the parameter $CaseSensitive defines, if the customer database should do case sensitive statements or not.
+        # so if the database dont support case sensitivity or the configuration of the customer database want to do this
+        # then we prevent the LOWER() statements.
                     if ( !$Self->GetDatabaseFunction('CaseSensitive') || $CaseSensitive ) {
                         $SQLA .= "$Key $Type $WordSQL";
                     }
@@ -1464,8 +1462,10 @@ sub QueryStringEscape {
     # check needed stuff
     for my $Key (qw(QueryString)) {
         if ( !defined $Param{$Key} ) {
-            $Kernel::OM->Get('Kernel::System::Log')
-                ->Log( Priority => 'error', Message => "Need $Key!" );
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
+                Priority => 'error',
+                Message  => "Need $Key!"
+            );
             return;
         }
     }

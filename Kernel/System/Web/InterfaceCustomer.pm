@@ -79,9 +79,11 @@ sub new {
         'Kernel::System::Web::Request' => {
             WebRequest => $Param{WebRequest} || 0,
         },
+
+        # Don't autoconnect as this would cause internal server errors on failure.
         'Kernel::System::DB' => {
             AutoConnectNo => 1,
-        }
+        },
     );
 
     $Self->{EncodeObject} = $Kernel::OM->Get('Kernel::System::Encode');
@@ -162,9 +164,15 @@ sub Run {
         },
     );
 
-    # check common objects
     $Self->{DBObject} = $Kernel::OM->Get('Kernel::System::DB');
     my $DBCanConnect = $Self->{DBObject}->Connect();
+
+    # Restore original behaviour of Kernel::System::DB for all objects created in future
+    $Kernel::OM->ObjectParamAdd(
+        'Kernel::System::DB' => {
+            AutoConnectNo => undef,
+        },
+    );
     if ( !$DBCanConnect || $Self->{ParamObject}->Error() ) {
         my $LayoutObject = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
         if ( !$DBCanConnect ) {
@@ -190,17 +198,7 @@ sub Run {
     # application and add on application common objects
     my %CommonObject = %{ $Self->{ConfigObject}->Get('CustomerFrontend::CommonObject') };
     for my $Key ( sort keys %CommonObject ) {
-        if ( $Self->{MainObject}->Require( $CommonObject{$Key} ) ) {
-
-            # workaround for bug# 977 - do not use GroupObject in Kernel::System::Ticket
-            $Self->{$Key} = $CommonObject{$Key}->new( %{$Self}, GroupObject => undef );
-        }
-        else {
-
-            # print error
-            my $LayoutObject = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
-            $LayoutObject->CustomerFatalError( Comment => 'Please contact your administrator' );
-        }
+        $Self->{$Key} //= $Kernel::OM->Get( $CommonObject{$Key} );
     }
 
     # get common application and add on application params
@@ -213,17 +211,37 @@ sub Run {
     $Param{Action} =~ s/\W//g;
 
     # check request type
-    if ( $Param{Action} eq 'Login' ) {
+    if ( $Param{Action} eq 'PreLogin' ) {
+        my $LayoutObject = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
+
+        # login screen
+        $LayoutObject->Print(
+            Output => \$LayoutObject->CustomerLogin(
+                Title => 'Login',
+                Mode  => 'PreLogin',
+                %Param,
+            ),
+        );
+
+        return;
+    }
+    elsif ( $Param{Action} eq 'Login' ) {
 
         # get params
         my $PostUser = $Self->{ParamObject}->GetParam( Param => 'User' ) || '';
-        my $PostPw = $Self->{ParamObject}->GetParam( Param => 'Password', Raw => 1 ) || '';
+        my $PostPw = $Self->{ParamObject}->GetParam(
+            Param => 'Password',
+            Raw   => 1
+        ) || '';
 
         # create AuthObject
         my $AuthObject = $Kernel::OM->Get('Kernel::System::CustomerAuth');
 
         # check submitted data
-        my $User = $AuthObject->Auth( User => $PostUser, Pw => $PostPw );
+        my $User = $AuthObject->Auth(
+            User => $PostUser,
+            Pw   => $PostPw
+        );
 
         my $Expires = '+' . $Self->{ConfigObject}->Get('SessionMaxTime') . 's';
         if ( !$Self->{ConfigObject}->Get('SessionUseCookieAfterBrowserClose') ) {
@@ -278,7 +296,10 @@ sub Run {
         }
 
         # login is successful
-        my %UserData = $Self->{UserObject}->CustomerUserDataGet( User => $User, Valid => 1 );
+        my %UserData = $Self->{UserObject}->CustomerUserDataGet(
+            User  => $User,
+            Valid => 1
+        );
 
         # check if the browser supports cookies
         if ( $Self->{ParamObject}->GetCookie( Key => 'OTRSBrowserHasCookie' ) ) {
@@ -412,7 +433,7 @@ sub Run {
 
         # redirect with new session id and old params
         # prepare old redirect URL -- do not redirect to Login or Logout (loop)!
-        if ( $Param{RequestedURL} =~ /Action=(Logout|Login|LostPassword)/ ) {
+        if ( $Param{RequestedURL} =~ /Action=(Logout|Login|LostPassword|PreLogin)/ ) {
             $Param{RequestedURL} = '';
         }
 
@@ -452,7 +473,9 @@ sub Run {
         }
 
         # get session data
-        my %UserData = $Self->{SessionObject}->GetSessionIDData( SessionID => $Param{SessionID}, );
+        my %UserData = $Self->{SessionObject}->GetSessionIDData(
+            SessionID => $Param{SessionID},
+        );
 
         # create new LayoutObject with new '%Param' and '%UserData'
         $Kernel::OM->ObjectParamAdd(
@@ -496,8 +519,9 @@ sub Run {
 
         $LayoutObject->Print(
             Output => \$LayoutObject->CustomerLogin(
-                Title   => 'Logout',
-                Message => $LogoutMessage,
+                Title       => 'Logout',
+                Message     => $LogoutMessage,
+                MessageType => 'Logout',
                 %Param,
             ),
         );
@@ -626,8 +650,10 @@ sub Run {
         $UserData{NewPW} = $Self->{UserObject}->GenerateRandomPassword();
 
         # update new password
-        my $Success
-            = $Self->{UserObject}->SetPassword( UserLogin => $User, PW => $UserData{NewPW} );
+        my $Success = $Self->{UserObject}->SetPassword(
+            UserLogin => $User,
+            PW        => $UserData{NewPW}
+        );
 
         if ( !$Success ) {
             $LayoutObject->Print(
@@ -662,12 +688,15 @@ sub Run {
             );
             return;
         }
+        my $Message = $LayoutObject->{LanguageObject}->Translate(
+            'Sent new password to %s. Please check your email.',
+            $UserData{UserEmail},
+        );
         $LayoutObject->Print(
             Output => \$LayoutObject->CustomerLogin(
-                Title => 'Login',
-                Message =>
-                    "Sent new password to \%s. Please check your email.\", \"$UserData{UserEmail}",
-                User => $User,
+                Title   => 'Login',
+                Message => $Message,
+                User    => $User,
             ),
         );
         return 1;
@@ -731,12 +760,10 @@ sub Run {
 
         # check for mail address restrictions
         my @Whitelist = @{
-            $Self->{ConfigObject}
-                ->Get('CustomerPanelCreateAccount::MailRestrictions::Whitelist') // []
+            $Self->{ConfigObject}->Get('CustomerPanelCreateAccount::MailRestrictions::Whitelist') // []
         };
         my @Blacklist = @{
-            $Self->{ConfigObject}
-                ->Get('CustomerPanelCreateAccount::MailRestrictions::Blacklist') // []
+            $Self->{ConfigObject}->Get('CustomerPanelCreateAccount::MailRestrictions::Blacklist') // []
         };
 
         my $WhitelistMatched;
@@ -883,7 +910,7 @@ sub Run {
             # automatic login
             $Param{RequestedURL} = $LayoutObject->LinkEncode( $Param{RequestedURL} );
             print $LayoutObject->Redirect(
-                OP => "Action=Login;RequestedURL=$Param{RequestedURL}",
+                OP => "Action=PreLogin;RequestedURL=$Param{RequestedURL}",
             );
             return;
         }
@@ -931,11 +958,25 @@ sub Run {
                     }
             );
 
+            $Kernel::OM->ObjectsDiscard( Objects => ['Kernel::Output::HTML::Layout'] );
             my $LayoutObject = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
 
-            # redirect to alternate login
-            if ( $Self->{ConfigObject}->Get('CustomerPanelLoginURL') ) {
+            # create AuthObject
+            my $AuthObject = $Kernel::OM->Get('Kernel::System::CustomerAuth');
+            if ( $AuthObject->GetOption( What => 'PreAuth' ) ) {
 
+                # automatic re-login
+                $Param{RequestedURL} = $LayoutObject->LinkEncode( $Param{RequestedURL} );
+                print $LayoutObject->Redirect(
+                    OP => "?Action=PreLogin&RequestedURL=$Param{RequestedURL}",
+                );
+                return;
+            }
+
+            # redirect to alternate login
+            elsif ( $Self->{ConfigObject}->Get('CustomerPanelLoginURL') ) {
+
+                # redirect to alternate login
                 $Param{RequestedURL} = $LayoutObject->LinkEncode( $Param{RequestedURL} );
                 print $LayoutObject->Redirect(
                     ExtURL => $Self->{ConfigObject}->Get('CustomerPanelLoginURL')
@@ -1167,7 +1208,9 @@ sub Run {
     }
 
     # print an error screen
-    my %Data = $Self->{SessionObject}->GetSessionIDData( SessionID => $Param{SessionID}, );
+    my %Data = $Self->{SessionObject}->GetSessionIDData(
+        SessionID => $Param{SessionID},
+    );
     $Kernel::OM->ObjectParamAdd(
         'Kernel::Output::HTML::Layout' => {
             %Param,

@@ -112,10 +112,11 @@ sub new {
         CodeUninstall => 'ARRAY',
         CodeReinstall => 'ARRAY',
     };
-    $Self->{PackageMapFileList} = { File => 'ARRAY', };
+    $Self->{PackageMapFileList} = {
+        File => 'ARRAY',
+    };
 
-    $Self->{PackageVerifyURL}
-        = 'https://pav.otrs.com/otrs/public.pl';
+    $Self->{PackageVerifyURL} = 'https://pav.otrs.com/otrs/public.pl';
 
     $Self->{Home} = $Self->{ConfigObject}->Get('Home');
 
@@ -302,7 +303,7 @@ add a package to local repository
 
     $PackageObject->RepositoryAdd(
         String => $FileString,
-        FromCloud => 0, # optional 1 or 0
+        FromCloud => 0, # optional 1 or 0, it indicates if package came from Cloud or not
     );
 
 =cut
@@ -359,7 +360,7 @@ sub RepositoryAdd {
 
     if ($PackageExists) {
         $DBObject->Do(
-            SQL => 'DELETE FROM package_repository WHERE name = ? AND version = ?',
+            SQL  => 'DELETE FROM package_repository WHERE name = ? AND version = ?',
             Bind => [ \$Structure{Name}->{Content}, \$Structure{Version}->{Content} ],
         );
     }
@@ -418,7 +419,10 @@ sub RepositoryRemove {
         push @Bind, \$Param{Version};
     }
 
-    return if !$Kernel::OM->Get('Kernel::System::DB')->Do( SQL => $SQL, Bind => \@Bind );
+    return if !$Kernel::OM->Get('Kernel::System::DB')->Do(
+        SQL  => $SQL,
+        Bind => \@Bind
+    );
 
     # get cache object
     my $CacheObject = $Kernel::OM->Get('Kernel::System::Cache');
@@ -440,7 +444,7 @@ install a package
 
     $PackageObject->PackageInstall(
         String    => $FileString
-        FromCloud => 1, # optional 1 or 0
+        FromCloud => 1, # optional 1 or 0, it indicates if package's origin is Cloud or not
     );
 
 =cut
@@ -545,8 +549,7 @@ sub PackageInstall {
     # install database (pre)
     if ( $Structure{DatabaseInstall} && $Structure{DatabaseInstall}->{pre} ) {
 
-        my $DatabaseInstall
-            = $Self->_CheckDBMerged( Database => $Structure{DatabaseInstall}->{pre} );
+        my $DatabaseInstall = $Self->_CheckDBMerged( Database => $Structure{DatabaseInstall}->{pre} );
 
         if ( IsArrayRefWithData($DatabaseInstall) ) {
             $Self->_Database( Database => $DatabaseInstall );
@@ -561,7 +564,10 @@ sub PackageInstall {
     }
 
     # add package
-    return if !$Self->RepositoryAdd( String => $Param{String}, FromCloud => $FromCloud );
+    return if !$Self->RepositoryAdd(
+        String    => $Param{String},
+        FromCloud => $FromCloud
+    );
 
     # update package status
     return if !$Kernel::OM->Get('Kernel::System::DB')->Do(
@@ -580,8 +586,7 @@ sub PackageInstall {
     # install database (post)
     if ( $Structure{DatabaseInstall} && $Structure{DatabaseInstall}->{post} ) {
 
-        my $DatabaseInstall
-            = $Self->_CheckDBMerged( Database => $Structure{DatabaseInstall}->{post} );
+        my $DatabaseInstall = $Self->_CheckDBMerged( Database => $Structure{DatabaseInstall}->{post} );
 
         if ( IsArrayRefWithData($DatabaseInstall) ) {
             $Self->_Database( Database => $DatabaseInstall );
@@ -663,7 +668,10 @@ sub PackageReinstall {
         for my $File ( @{ $Structure{Filelist} } ) {
 
             # install file
-            $Self->_FileInstall( File => $File, Reinstall => 1 );
+            $Self->_FileInstall(
+                File      => $File,
+                Reinstall => 1
+            );
         }
     }
 
@@ -1116,8 +1124,10 @@ sub PackageUninstall {
 
     # check needed stuff
     if ( !defined $Param{String} ) {
-        $Kernel::OM->Get('Kernel::System::Log')
-            ->Log( Priority => 'error', Message => 'String not defined!' );
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
+            Priority => 'error',
+            Message  => 'String not defined!'
+        );
         return;
     }
 
@@ -1258,6 +1268,8 @@ returns a list of available on-line packages
         URL  => '',
         Lang => 'en',
         Cache => 0,   # (optional) do not use cached data
+        FromCloud => 1, # optional 1 or 0, it indicates if a Cloud Service
+                        # should be used for getting the packages list
     );
 
 =cut
@@ -1397,7 +1409,13 @@ sub PackageOnlineList {
 
         if ( $Package->{Framework} ) {
 
-            if ( $Self->_CheckFramework( Framework => $Package->{Framework}, NoLog => 1 ) ) {
+            if (
+                $Self->_CheckFramework(
+                    Framework => $Package->{Framework},
+                    NoLog     => 1
+                )
+                )
+            {
                 $FWCheckOk                    = 1;
                 $PackageForRequestedFramework = 1;
             }

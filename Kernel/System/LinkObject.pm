@@ -73,7 +73,6 @@ Return
     my %PossibleTypesList = $LinkObject->PossibleTypesList(
         Object1 => 'Ticket',
         Object2 => 'FAQ',
-        UserID  => 1,
     );
 
 =cut
@@ -82,7 +81,7 @@ sub PossibleTypesList {
     my ( $Self, %Param ) = @_;
 
     # check needed stuff
-    for my $Argument (qw(Object1 Object2 UserID)) {
+    for my $Argument (qw(Object1 Object2)) {
         if ( !$Param{$Argument} ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
@@ -93,9 +92,7 @@ sub PossibleTypesList {
     }
 
     # get possible link list
-    my %PossibleLinkList = $Self->PossibleLinkList(
-        UserID => $Param{UserID},
-    );
+    my %PossibleLinkList = $Self->PossibleLinkList();
 
     # remove not needed entries
     POSSIBLELINK:
@@ -114,9 +111,7 @@ sub PossibleTypesList {
     }
 
     # get type list
-    my %TypeList = $Self->TypeList(
-        UserID => $Param{UserID},
-    );
+    my %TypeList = $Self->TypeList();
 
     # check types
     POSSIBLELINK:
@@ -156,7 +151,6 @@ Return
 
     my %PossibleObjectsList = $LinkObject->PossibleObjectsList(
         Object => 'Ticket',
-        UserID => 1,
     );
 
 =cut
@@ -165,7 +159,7 @@ sub PossibleObjectsList {
     my ( $Self, %Param ) = @_;
 
     # check needed stuff
-    for my $Argument (qw(Object UserID)) {
+    for my $Argument (qw(Object)) {
         if ( !$Param{$Argument} ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
@@ -176,9 +170,7 @@ sub PossibleObjectsList {
     }
 
     # get possible link list
-    my %PossibleLinkList = $Self->PossibleLinkList(
-        UserID => $Param{UserID},
-    );
+    my %PossibleLinkList = $Self->PossibleLinkList();
 
     # investigate the possible object list
     my %PossibleObjectsList;
@@ -221,21 +213,12 @@ Return
         },
     );
 
-    my %PossibleLinkList = $LinkObject->PossibleLinkList(
-        UserID => 1,
-    );
+    my %PossibleLinkList = $LinkObject->PossibleLinkList();
 
 =cut
 
 sub PossibleLinkList {
     my ( $Self, %Param ) = @_;
-
-    # check needed stuff
-    if ( !$Param{UserID} ) {
-        $Kernel::OM->Get('Kernel::System::Log')
-            ->Log( Priority => 'error', Message => 'Need UserID!' );
-        return;
-    }
 
     # get needed objects
     my $ConfigObject    = $Kernel::OM->Get('Kernel::Config');
@@ -304,9 +287,7 @@ sub PossibleLinkList {
     }
 
     # get type list
-    my %TypeList = $Self->TypeList(
-        UserID => $Param{UserID},
-    );
+    my %TypeList = $Self->TypeList();
 
     # check types
     POSSIBLELINK:
@@ -375,8 +356,7 @@ sub LinkAdd {
 
         # lookup the object id
         $Param{ $Object . 'ID' } = $Self->ObjectLookup(
-            Name   => $Param{$Object},
-            UserID => $Param{UserID},
+            Name => $Param{$Object},
         );
 
         next OBJECT if $Param{ $Object . 'ID' };
@@ -393,7 +373,6 @@ sub LinkAdd {
     my %PossibleTypesList = $Self->PossibleTypesList(
         Object1 => $Param{SourceObject},
         Object2 => $Param{TargetObject},
-        UserID  => $Param{UserID},
     );
 
     # check if wanted link type is possible
@@ -408,8 +387,7 @@ sub LinkAdd {
 
     # lookup state id
     my $StateID = $Self->StateLookup(
-        Name   => $Param{State},
-        UserID => $Param{UserID},
+        Name => $Param{State},
     );
 
     # lookup type id
@@ -469,7 +447,6 @@ sub LinkAdd {
         # get type data
         my %TypeData = $Self->TypeGet(
             TypeID => $TypeID,
-            UserID => $Param{UserID},
         );
 
         return 1 if !$TypeData{Pointed};
@@ -510,9 +487,8 @@ sub LinkAdd {
 
             # check the type groups
             my $TypeGroupCheck = $Self->PossibleType(
-                Type1  => $Type,
-                Type2  => $Param{Type},
-                UserID => $Param{UserID},
+                Type1 => $Type,
+                Type2 => $Param{Type},
             );
 
             next TYPE if $TypeGroupCheck;
@@ -528,14 +504,12 @@ sub LinkAdd {
     }
 
     # get backend of source object
-    my $BackendSourceObject
-        = $Kernel::OM->Get( 'Kernel::System::LinkObject::' . $Param{SourceObject} );
+    my $BackendSourceObject = $Kernel::OM->Get( 'Kernel::System::LinkObject::' . $Param{SourceObject} );
 
     return if !$BackendSourceObject;
 
     # get backend of target object
-    my $BackendTargetObject
-        = $Kernel::OM->Get( 'Kernel::System::LinkObject::' . $Param{TargetObject} );
+    my $BackendTargetObject = $Kernel::OM->Get( 'Kernel::System::LinkObject::' . $Param{TargetObject} );
 
     return if !$BackendTargetObject;
 
@@ -604,7 +578,6 @@ return true
     $True = $LinkObject->LinkCleanup(
         State  => 'Temporary',
         Age    => ( 60 * 60 * 24 ),
-        UserID => 1,
     );
 
 =cut
@@ -613,7 +586,7 @@ sub LinkCleanup {
     my ( $Self, %Param ) = @_;
 
     # check needed stuff
-    for my $Argument (qw(State Age UserID)) {
+    for my $Argument (qw(State Age)) {
         if ( !$Param{$Argument} ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
@@ -625,8 +598,7 @@ sub LinkCleanup {
 
     # lookup state id
     my $StateID = $Self->StateLookup(
-        Name   => $Param{State},
-        UserID => $Param{UserID},
+        Name => $Param{State},
     );
 
     return if !$StateID;
@@ -693,8 +665,7 @@ sub LinkDelete {
 
         # lookup the object id
         $Param{ $Object . 'ID' } = $Self->ObjectLookup(
-            Name   => $Param{$Object},
-            UserID => $Param{UserID},
+            Name => $Param{$Object},
         );
 
         next OBJECT if $Param{ $Object . 'ID' };
@@ -759,7 +730,6 @@ sub LinkDelete {
         # lookup the object name
         $Existing{$Object} = $Self->ObjectLookup(
             ObjectID => $Existing{ $Object . 'ID' },
-            UserID   => $Param{UserID},
         );
 
         next OBJECT if $Existing{$Object};
@@ -775,18 +745,15 @@ sub LinkDelete {
     # lookup state
     $Existing{State} = $Self->StateLookup(
         StateID => $Existing{StateID},
-        UserID  => $Param{UserID},
     );
 
     # get backend of source object
-    my $BackendSourceObject
-        = $Kernel::OM->Get( 'Kernel::System::LinkObject::' . $Existing{SourceObject} );
+    my $BackendSourceObject = $Kernel::OM->Get( 'Kernel::System::LinkObject::' . $Existing{SourceObject} );
 
     return if !$BackendSourceObject;
 
     # get backend of target object
-    my $BackendTargetObject
-        = $Kernel::OM->Get( 'Kernel::System::LinkObject::' . $Existing{TargetObject} );
+    my $BackendTargetObject = $Kernel::OM->Get( 'Kernel::System::LinkObject::' . $Existing{TargetObject} );
 
     return if !$BackendTargetObject;
 
@@ -882,8 +849,7 @@ sub LinkDeleteAll {
 
     # get state list
     my %StateList = $Self->StateList(
-        Valid  => 0,
-        UserID => $Param{UserID},
+        Valid => 0,
     );
 
     # delete all links
@@ -996,16 +962,14 @@ sub LinkList {
 
     # lookup object id
     my $ObjectID = $Self->ObjectLookup(
-        Name   => $Param{Object},
-        UserID => $Param{UserID},
+        Name => $Param{Object},
     );
 
     return if !$ObjectID;
 
     # lookup state id
     my $StateID = $Self->StateLookup(
-        Name   => $Param{State},
-        UserID => $Param{UserID},
+        Name => $Param{State},
     );
 
     # prepare SQL statement
@@ -1058,13 +1022,11 @@ sub LinkList {
         # lookup object name
         my $TargetObject = $Self->ObjectLookup(
             ObjectID => $LinkData->{TargetObjectID},
-            UserID   => $Param{UserID},
         );
 
         # get type data
         my %TypeData = $Self->TypeGet(
             TypeID => $LinkData->{TypeID},
-            UserID => $Param{UserID},
         );
 
         $TypePointedList{ $TypeData{Name} } = $TypeData{Pointed};
@@ -1101,13 +1063,11 @@ sub LinkList {
         # lookup object name
         my $SourceObject = $Self->ObjectLookup(
             ObjectID => $LinkData->{SourceObjectID},
-            UserID   => $Param{UserID},
         );
 
         # get type data
         my %TypeData = $Self->TypeGet(
             TypeID => $LinkData->{TypeID},
-            UserID => $Param{UserID},
         );
 
         $TypePointedList{ $TypeData{Name} } = $TypeData{Pointed};
@@ -1251,8 +1211,7 @@ sub LinkListWithData {
 
         # check if backend object can be loaded
         if (
-            !$Kernel::OM->Get('Kernel::System::Main')
-            ->Require( 'Kernel::System::LinkObject::' . $Object )
+            !$Kernel::OM->Get('Kernel::System::Main')->Require( 'Kernel::System::LinkObject::' . $Object )
             )
         {
             delete $LinkList->{$Object};
@@ -1468,15 +1427,13 @@ sub LinkKeyListWithData {
 lookup a link object
 
     $ObjectID = $LinkObject->ObjectLookup(
-        Name   => 'Ticket',
-        UserID => 1,
+        Name => 'Ticket',
     );
 
     or
 
     $Name = $LinkObject->ObjectLookup(
         ObjectID => 12,
-        UserID   => 1,
     );
 
 =cut
@@ -1490,13 +1447,6 @@ sub ObjectLookup {
             Priority => 'error',
             Message  => 'Need ObjectID or Name!',
         );
-        return;
-    }
-
-    # check needed stuff
-    if ( !$Param{UserID} ) {
-        $Kernel::OM->Get('Kernel::System::Log')
-            ->Log( Priority => 'error', Message => 'Need UserID!' );
         return;
     }
 
@@ -1650,8 +1600,10 @@ sub TypeLookup {
 
     # check needed stuff
     if ( !$Param{UserID} ) {
-        $Kernel::OM->Get('Kernel::System::Log')
-            ->Log( Priority => 'error', Message => 'Need UserID!' );
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
+            Priority => 'error',
+            Message  => 'Need UserID!'
+        );
         return;
     }
 
@@ -1794,7 +1746,6 @@ Return
 
     %TypeData = $LinkObject->TypeGet(
         TypeID => 444,
-        UserID => 123,
     );
 
 =cut
@@ -1803,7 +1754,7 @@ sub TypeGet {
     my ( $Self, %Param ) = @_;
 
     # check needed stuff
-    for my $Argument (qw(TypeID UserID)) {
+    for my $Argument (qw(TypeID)) {
         if ( !$Param{$Argument} ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
@@ -1904,21 +1855,12 @@ Return
         },
     }
 
-    my %TypeList = $LinkObject->TypeList(
-        UserID => 1,
-    );
+    my %TypeList = $LinkObject->TypeList();
 
 =cut
 
 sub TypeList {
     my ( $Self, %Param ) = @_;
-
-    # check needed stuff
-    if ( !$Param{UserID} ) {
-        $Kernel::OM->Get('Kernel::System::Log')
-            ->Log( Priority => 'error', Message => 'Need UserID!' );
-        return;
-    }
 
     # get type list
     my $TypeListRef = $Kernel::OM->Get('Kernel::Config')->Get('LinkObject::Type') || {};
@@ -1977,21 +1919,12 @@ Return
         ],
     );
 
-    my %TypeGroupList = $LinkObject->TypeGroupList(
-        UserID => 1,
-    );
+    my %TypeGroupList = $LinkObject->TypeGroupList();
 
 =cut
 
 sub TypeGroupList {
     my ( $Self, %Param ) = @_;
-
-    # check needed stuff
-    if ( !$Param{UserID} ) {
-        $Kernel::OM->Get('Kernel::System::Log')
-            ->Log( Priority => 'error', Message => 'Need UserID!' );
-        return;
-    }
 
     # get possible type groups
     my $TypeGroupListRef = $Kernel::OM->Get('Kernel::Config')->Get('LinkObject::TypeGroup') || {};
@@ -2033,9 +1966,7 @@ sub TypeGroupList {
     }
 
     # get type list
-    my %TypeList = $Self->TypeList(
-        UserID => $Param{UserID},
-    );
+    my %TypeList = $Self->TypeList();
 
     # check types
     TYPEGROUP:
@@ -2072,9 +2003,8 @@ sub TypeGroupList {
 return true if both types are NOT together in a type group
 
     my $True = $LinkObject->PossibleType(
-        Type1  => 'Normal',
-        Type2  => 'ParentChild',
-        UserID => 1,
+        Type1 => 'Normal',
+        Type2 => 'ParentChild',
     );
 
 =cut
@@ -2083,7 +2013,7 @@ sub PossibleType {
     my ( $Self, %Param ) = @_;
 
     # check needed stuff
-    for my $Argument (qw( Type1 Type2 UserID )) {
+    for my $Argument (qw(Type1 Type2)) {
         if ( !$Param{$Argument} ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
@@ -2094,9 +2024,7 @@ sub PossibleType {
     }
 
     # get type group list
-    my %TypeGroupList = $Self->TypeGroupList(
-        UserID => $Param{UserID},
-    );
+    my %TypeGroupList = $Self->TypeGroupList();
 
     # check all type groups
     TYPEGROUP:
@@ -2116,15 +2044,13 @@ sub PossibleType {
 lookup a link state
 
     $StateID = $LinkObject->StateLookup(
-        Name   => 'Valid',
-        UserID => 1,
+        Name => 'Valid',
     );
 
     or
 
     $Name = $LinkObject->StateLookup(
         StateID => 56,
-        UserID  => 1,
     );
 
 =cut
@@ -2138,13 +2064,6 @@ sub StateLookup {
             Priority => 'error',
             Message  => 'Need StateID or Name!',
         );
-        return;
-    }
-
-    # check needed stuff
-    if ( !$Param{UserID} ) {
-        $Kernel::OM->Get('Kernel::System::Log')
-            ->Log( Priority => 'error', Message => 'Need UserID!' );
         return;
     }
 
@@ -2254,21 +2173,13 @@ Return
     }
 
     my %StateList = $LinkObject->StateList(
-        Valid  => 0,   # (optional) default 1 (0|1)
-        UserID => 1,
+        Valid => 0,   # (optional) default 1 (0|1)
     );
 
 =cut
 
 sub StateList {
     my ( $Self, %Param ) = @_;
-
-    # check needed stuff
-    if ( !$Param{UserID} ) {
-        $Kernel::OM->Get('Kernel::System::Log')
-            ->Log( Priority => 'error', Message => 'Need UserID!' );
-        return;
-    }
 
     # set valid param
     if ( !defined $Param{Valid} ) {

@@ -21,7 +21,7 @@ Core.UI = Core.UI || {};
  *      CKEDITOR
  */
 Core.UI.RichTextEditor = (function (TargetNS) {
-    var $FormID;
+    var $FormID, TimeOutRTEOnChange;
 
     /**
      * @function
@@ -47,6 +47,10 @@ Core.UI.RichTextEditor = (function (TargetNS) {
             Instance,
             UserLanguage;
 
+        if (isJQueryObject($EditorArea) && $EditorArea.hasClass('HasCKEInstance')) {
+            return false;
+        }
+
         if (isJQueryObject($EditorArea) && $EditorArea.length === 1) {
             EditorID = $EditorArea.attr('id');
         }
@@ -55,29 +59,28 @@ Core.UI.RichTextEditor = (function (TargetNS) {
             Core.Exception.Throw('RichTextEditor: Need exactly one EditorArea!', 'TypeError');
         }
 
-        // remove the CKEditor instance if already exists
-        Instance = CKEDITOR.instances[EditorID];
-        if (Instance) {
-            Instance.destroy(true);
-        }
+        // mark the editor textarea as linked with an RTE instance to avoid multiple instances
+        $EditorArea.addClass('HasCKEInstance');
 
         CKEDITOR.on('instanceCreated', function (Editor) {
             CKEDITOR.addCss(Core.Config.Get('RichText.EditingAreaCSS'));
 
             // Remove the validation error tooltip if content is added to the editor
             Editor.editor.on('change', function(evt) {
-                Core.Form.Validate.ValidateElement($(Editor.editor.element.$));
+                window.clearTimeout(TimeOutRTEOnChange);
+                TimeOutRTEOnChange = window.setTimeout(function () {
+                    Core.Form.Validate.ValidateElement($(Editor.editor.element.$));
+                }, 250);
             });
 
             // if spell checker is used on paste new content should spell check again
             Editor.editor.on('paste', function(evt) {
-                Core.Config.Set('TextIsSpellChecked', '0');
+                Core.Config.Set('TextIsSpellChecked', false);
             });
             // if spell checker is used on any key new content should spell check again
             Editor.editor.on('key', function(evt) {
-                Core.Config.Set('TextIsSpellChecked', '0');
+                Core.Config.Set('TextIsSpellChecked', false);
             });
-
         });
 
         // The format for the language is different between OTRS and CKEditor (see bug#8024)
@@ -226,13 +229,13 @@ Core.UI.RichTextEditor = (function (TargetNS) {
     TargetNS.IsEnabled = function ($EditorArea) {
         var EditorID = '';
 
-        if (isJQueryObject($EditorArea) && $EditorArea.length === 1) {
-            EditorID = $EditorArea.attr('id');
-            if ($('#cke_' + Core.App.EscapeSelector(EditorID)).length) {
-                return true;
-            }
+        if (typeof CKEDITOR === 'undefined') {
+            return false;
         }
 
+        if (isJQueryObject($EditorArea) && $EditorArea.length) {
+            return (CKEDITOR.instances[$EditorArea[0].id] ? true : false);
+        }
         return false;
     };
 

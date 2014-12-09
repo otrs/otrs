@@ -35,6 +35,13 @@ use Plack::Runner;
 
 use Kernel::System::ObjectManager;
 
+# create object manager
+local $Kernel::OM = Kernel::System::ObjectManager->new(
+    'Kernel::System::Log' => {
+        LogPrefix => 'OTRS-otrs.WebServer',
+    },
+);
+
 # to store service name
 my $Service = 'OTRSWebServer';
 
@@ -42,8 +49,8 @@ my $Service = 'OTRSWebServer';
 my $ServiceStatus = {};
 
 # get options
-my %Opts = ();
-getopt( 'haf', \%Opts );
+my %Opts;
+getopt( 'a', \%Opts );
 
 BEGIN {
 
@@ -110,9 +117,6 @@ elsif ( $Opts{a} && $Opts{a} eq "status" ) {
 # check if a reload request is sent
 elsif ( $Opts{a} && $Opts{a} eq "reload" ) {
 
-    # create common objects
-    local $Kernel::OM = _OM();
-
     # log daemon reload request
     $Kernel::OM->Get('Kernel::System::Log')->Log(
         Priority => 'notice',
@@ -175,9 +179,6 @@ sub _Help {
 
 sub _Start {
 
-    # create common objects
-    local $Kernel::OM = _OM();
-
     # get default log path from configuration
     my $LogPath = $Kernel::OM->Get('Kernel::Config')->Get('Home') . '/var/log';
 
@@ -197,9 +198,8 @@ sub _Start {
     }
 
     # delete old log files
-    my $DaysToKeep = 10;
-    my $DaysToKeepSystemTime
-        = $Kernel::OM->Get('Kernel::System::Time')->SystemTime() - $DaysToKeep * 24 * 60 * 60;
+    my $DaysToKeep           = 10;
+    my $DaysToKeepSystemTime = $Kernel::OM->Get('Kernel::System::Time')->SystemTime() - $DaysToKeep * 24 * 60 * 60;
 
     my @LogFiles = glob("$LogPath/*.log");
 
@@ -382,9 +382,6 @@ sub _Status {
     # 3 => 'The service is stopping.',
     # 1 => 'The service is not running.',
 
-    # create common objects
-    local $Kernel::OM = _OM();
-
     # log daemon stop
     $Kernel::OM->Get('Kernel::System::Log')->Log(
         Priority => 'notice',
@@ -413,24 +410,13 @@ sub _Status {
     exit 0;
 }
 
-sub _OM {
-    return Kernel::System::ObjectManager->new(
-        'Kernel::System::Log' => {
-            LogPrefix => 'OTRS-otrs.WebServer',
-            }
-    );
-}
-
 sub _AutoRestart {
     my (%Param) = @_;
-
-    # create common objects
-    local $Kernel::OM = _OM();
 
     # Log daemon start-up
     $Kernel::OM->Get('Kernel::System::Log')->Log(
         Priority => 'notice',
-        Message => $Param{Message} || 'Unknown reason to restart',
+        Message  => $Param{Message} || 'Unknown reason to restart',
     );
 
     # Send service control a stop message otherwise the execution of a new server will not be
@@ -469,9 +455,6 @@ sub _AutoRestart {
 
 sub _AutoStop {
     my (%Param) = @_;
-
-    # create common objects
-    local $Kernel::OM = _OM();
 
     if ( $Param{Message} ) {
 
