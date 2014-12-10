@@ -1338,6 +1338,16 @@ sub Run {
         my $BackendObject = $Kernel::OM->Get('Kernel::System::DynamicField::Backend');
         my $UserObject    = $Kernel::OM->Get('Kernel::System::User');
 
+        # get customer company data if CustomerCompanySupport is enabled
+        my %CompanyData;
+        if ( $ConfigObject->Get('CustomerUser')->{CustomerCompanySupport} ) {
+            if ( $Ticket{CustomerID} ) {
+                %CompanyData = $Kernel::OM->Get('Kernel::System::CustomerCompany')->CustomerCompanyGet(
+                    CustomerID => $Ticket{CustomerID},
+                );
+            }
+        }
+
         # show all needed columns
         COLUMN:
         for my $Column (@Columns) {
@@ -1493,17 +1503,29 @@ sub Run {
                     }
                     $DataValue = $CustomerName;
                 }
-                elsif ( $Column eq 'CompanyName' ) {
-
+                elsif ( $Column eq 'CompanyName' && $ConfigObject->Get('CustomerUser')->{CustomerCompanySupport} ) {
                     # get customer company name
-                    my %CompanyData;
-                    if ( $Ticket{CustomerID} ) {
-                        %CompanyData
-                            = $Kernel::OM->Get('Kernel::System::CustomerCompany')->CustomerCompanyGet(
-                                CustomerID => $Ticket{CustomerID},
-                            );
+                    if ( IsHashRefWithData(\%CompanyData ) ) {
+                        $DataValue = $CompanyData{CustomerCompanyName};
                     }
-                    $DataValue = $CompanyData{CustomerCompanyName};
+                }
+                elsif ( $Column eq 'CompanyCity' && $ConfigObject->Get('CustomerUser')->{CustomerCompanySupport} ) {
+                    # get customer company city
+                    if ( IsHashRefWithData(\%CompanyData ) ) {
+                        $DataValue = $CompanyData{CustomerCompanyCity};
+                    }
+                }
+                elsif ( $Column eq 'CompanyCountry' && $ConfigObject->Get('CustomerUser')->{CustomerCompanySupport} ) {
+                    # get customer company country
+                    if ( IsHashRefWithData(\%CompanyData ) ) {
+                        $DataValue = $CompanyData{CustomerCompanyCountry};
+                    }
+                }
+                elsif ( $Column eq 'CompanyComment' && $ConfigObject->Get('CustomerUser')->{CustomerCompanySupport} ) {
+                    # get customer company comment
+                    if ( IsHashRefWithData(\%CompanyData ) ) {
+                        $DataValue = $CompanyData{CustomerCompanyComment};
+                    }
                 }
                 else {
                     $DataValue = $Ticket{$Column};
