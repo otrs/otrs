@@ -36,7 +36,7 @@ sub Run {
     # ------------------------------------------------------------ #
     if ( $Self->{Subaction} eq 'Change' ) {
         my $ID = $ParamObject->GetParam( Param => 'ID' ) || '';
-        my %Data = $Kernel::OM->Get('Kernel::System::AutoResponse')->AutoResponseGet(
+        my %Data = $AutoResponseObject->AutoResponseGet(
             ID => $ID,
         );
 
