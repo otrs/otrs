@@ -12,8 +12,6 @@ package Kernel::Modules::Redirect;
 use strict;
 use warnings;
 
-#use Kernel::System::CustomerUser;
-
 sub new {
     my ( $Type, %Param ) = @_;
 
@@ -22,7 +20,7 @@ sub new {
     bless( $Self, $Type );
 
     # check needed objects
-    for (qw(ParamObject DBObject LayoutObject LogObject ConfigObject )) {
+    for (qw(ParamObject LayoutObject)) {
         if ( !$Self->{$_} ) {
             $Self->{LayoutObject}->FatalError( Message => "Got no $_!" );
         }
