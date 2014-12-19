@@ -404,16 +404,21 @@ sub Run {
                 }
 
                 # redirect
+                my $NextScreen = $Self->{ConfigObject}->Get('AddUserNextScreen') || '';
                 if (
-                    !$Self->{ConfigObject}->Get('Frontend::Module')->{AdminUserGroup}
-                    && $Self->{ConfigObject}->Get('Frontend::Module')->{AdminRoleUser}
+                    ( !$Self->{ConfigObject}->Get('Frontend::Module')->{AdminUserGroup}
+                    && $Self->{ConfigObject}->Get('Frontend::Module')->{AdminRoleUser} 
+                    && !$NextScreen ) ||
+                    $NextScreen eq 'RoleUser'
                     )
                 {
                     return $Self->{LayoutObject}->Redirect(
                         OP => "Action=AdminRoleUser;Subaction=User;ID=$UserID",
                     );
                 }
-                if ( $Self->{ConfigObject}->Get('Frontend::Module')->{AdminUserGroup} ) {
+                elsif (
+                    ( $Self->{ConfigObject}->Get('Frontend::Module')->{AdminUserGroup} && !$NextScreen )
+                    || $NextScreen eq 'UserGroup' ) {
                     return $Self->{LayoutObject}->Redirect(
                         OP => "Action=AdminUserGroup;Subaction=User;ID=$UserID",
                     );
