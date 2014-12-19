@@ -5516,6 +5516,22 @@
             </Hash>
         </Setting>
     </ConfigItem>
+    <ConfigItem Name="Ticket::Frontend::MenuModule###510-Redirect" Required="0" Valid="0">
+        <Description Translatable="1">Shows a link in the menu to redirect the agent in the ticket zoom view of the agent interface.</Description>
+        <Group>Ticket</Group>
+        <SubGroup>Frontend::Agent::Ticket::MenuModule</SubGroup>
+        <Setting>
+            <Hash>
+                <Item Key="Module">Kernel::Output::HTML::TicketMenuGeneric</Item>
+                <Item Key="Name">Redirect</Item>
+                <Item Key="Description" Translatable="1">Redirect</Item>
+                <Item Key="Action"></Item>
+                <Item Key="Link">Action=Redirect;Url=[% "http://www.example.com" | html %]</Item>
+                <Item Key="Target"></Item>
+                <Item Key="PopupType">TicketAction</Item>
+            </Hash>
+        </Setting>
+    </ConfigItem>
     <ConfigItem Name="Ticket::Frontend::OverviewMenuModule###001-Sort" Required="0" Valid="1">
         <Description Translatable="1">Shows a select of ticket attributes to order the queue view ticket list. The possible selections can be configured via 'TicketOverviewMenuSort###SortAttributes'.</Description>
         <Group>Ticket</Group>
