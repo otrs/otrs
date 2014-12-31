@@ -36,13 +36,16 @@ use Kernel::System::ObjectManager;
 my %Opts;
 my $Compress    = '';
 my $CompressCMD = '';
+my $CompressEXT = '';
+my $CompressINL = 0; # Compress inline using pipes
 my $DB          = '';
 my $DBDump      = '';
-getopt( 'hcrtd', \%Opts );
+
+getopt( 'hcrtdi', \%Opts );
 if ( exists $Opts{h} ) {
     print "backup.pl - backup script\n";
     print "Copyright (C) 2001-2014 OTRS AG, http://otrs.com/\n";
-    print "usage: backup.pl -d /data_backup_dir/ [-c gzip|bzip2] [-r 30] [-t fullbackup|nofullbackup|dbonly]\n";
+    print "usage: backup.pl -d /data_backup_dir/ [-c gzip|bzip2|xz] [ -i ] [-r 30] [-t fullbackup|nofullbackup|dbonly]\n";
     exit 1;
 }
 
@@ -57,13 +60,29 @@ elsif ( !-d $Opts{d} ) {
 }
 
 # check compress mode
-if ( $Opts{c} && $Opts{c} =~ m/bzip2/i ) {
-    $Compress    = 'j';
-    $CompressCMD = 'bzip2';
-}
-else {
-    $Compress    = 'z';
-    $CompressCMD = 'gzip';
+if ( $Opts{c} ) {
+    if ( $Opts{i} ) {
+    	$CompressINL = 1;
+    }
+    if ( $Opts{c} =~ m/gzip/i ) {
+    	$Compress    = 'z';
+    	$CompressCMD = 'gzip';
+    	$CompressEXT = 'gz';
+    }
+    elsif ( $Opts{c} =~ m/xz/i ) {
+    	$Compress    = 'J';
+    	$CompressCMD = 'xz';
+    	$CompressEXT = 'bz';
+    }
+    elsif ( $Opts{c} =~ m/bzip2/i ) {
+    	$Compress    = 'j';
+    	$CompressCMD = 'bzip2';
+    	$CompressEXT = 'bz';
+    }
+    else {
+    	print STDERR "ERROR: Invalid compression algorithm: $Opts{c}\n";
+    	exit 1;
+    }
 }
 
 # check backup type
@@ -149,8 +168,9 @@ if ( !mkdir($Directory) ) {
 }
 
 # backup Kernel/Config.pm
-print "Backup $Directory/Config.tar.gz ... ";
-if ( !system("tar -czf $Directory/Config.tar.gz Kernel/Config*") ) {
+my $BackupFN = "$Directory/Config.tar.$CompressEXT";
+print "Backup $BackupFN ... ";
+if ( !system("tar -cf$Compress $BackupFN Kernel/Config*") ) {
     print "done\n";
 }
 else {
@@ -165,9 +185,10 @@ if ($DBOnlyBackup) {
 }
 else {
     if ($FullBackup) {
-        print "Backup $Directory/Application.tar.gz ... ";
+        $BackupFN = "Backup $Directory/Application.tar.$CompressEXT";
+        print "Backup $BackupFN ... ";
         my $Excludes = "--exclude=var/tmp --exclude=js-cache --exclude=css-cache --exclude=.git";
-        if ( !system("tar $Excludes -czf $Directory/Application.tar.gz .") ) {
+        if ( !system("tar $Excludes -cf$Compress $BackupFN .") ) {
             print "done\n";
         }
         else {
@@ -179,8 +200,9 @@ else {
 
     # backup vardir
     else {
-        print "Backup $Directory/VarDir.tar.gz ... ";
-        if ( !system("tar -czf $Directory/VarDir.tar.gz var/") ) {
+        $BackupFN = "Backup $Directory/VarDir.tar.$CompressEXT";
+        print "Backup $BackupFN ... ";
+        if ( !system("tar -cf$Compress $BackupFN var/") ) {
             print "done\n";
         }
         else {
@@ -192,8 +214,9 @@ else {
 
     # backup datadir
     if ( $ArticleDir !~ m/\Q$Home\E/ ) {
-        print "Backup $Directory/DataDir.tar.gz ... ";
-        if ( !system("tar -czf $Directory/DataDir.tar.gz $ArticleDir") ) {
+        $BackupFN = "Backup $Directory/DataDir.tar.$CompressEXT";
+        print "Backup $BackupFN ... ";
+        if ( !system("tar -cf$Compress $BackupFN $ArticleDir") ) {
             print "done\n";
         }
         else {
@@ -205,12 +228,18 @@ else {
 }
 
 # backup database
+my $DBDumpCMD;
 if ( $DB =~ m/mysql/i ) {
     print "Dump $DB rdbms ... ";
     if ($DatabasePw) {
         $DatabasePw = "-p'$DatabasePw'";
     }
-    if ( !system("$DBDump -u $DatabaseUser $DatabasePw -h $DatabaseHost $Database > $Directory/DatabaseBackup.sql") ) {
+    if ($CompressINL) {
+    	$DBDumpCMD = "$DBDump -u $DatabaseUser $DatabasePw -h $DatabaseHost $Database | $CompressCMD -c > $Directory/DatabaseBackup.sql.$CompressEXT";
+    } else {
+    	$DBDumpCMD = "$DBDump -u $DatabaseUser $DatabasePw -h $DatabaseHost $Database > $Directory/DatabaseBackup.sql"
+    }
+    if ( !system($DBDumpCMD) ) {
         print "done\n";
     }
     else {
@@ -231,7 +260,13 @@ else {
         $DatabaseHost = "-h $DatabaseHost"
     }
 
-    if ( !system("$DBDump -f $Directory/DatabaseBackup.sql $DatabaseHost -U $DatabaseUser $Database") ) {
+    if ($CompressINL) {
+    	$DBDumpCMD = "$DBDump $DatabaseHost -U $DatabaseUser $Database | $CompressCMD -c > $Directory/DatabaseBackup.sql.$CompressEXT";
+    } else {
+    	$DBDumpCMD = "$DBDump -f $Directory/DatabaseBackup.sql $DatabaseHost -U $DatabaseUser $Database";
+    }
+
+    if ( !system($DBDumpCMD) ) {
         print "done\n";
     }
     else {
@@ -241,15 +276,17 @@ else {
     }
 }
 
-# compressing database
-print "Compress SQL-file... ";
-if ( !system("$CompressCMD $Directory/DatabaseBackup.sql") ) {
-    print "done\n";
-}
-else {
-    print "failed\n";
-    RemoveIncompleteBackup($Directory);
-    die "Backup failed\n";
+# compressing database unless compressed inline
+unless ($CompressINL) {
+    print "Compress SQL-file... ";
+    if ( !system("$CompressCMD $Directory/DatabaseBackup.sql") ) {
+    	print "done\n";
+    }
+    else {
+    	print "failed\n";
+    	RemoveIncompleteBackup($Directory);
+    	die "Backup failed\n";
+    }
 }
 
 # remove old backups only after everything worked well
