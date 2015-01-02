@@ -165,7 +165,7 @@ sub CustomerCompanyList {
     $Self->{DBObject}->Prepare(
         SQL   => $CompleteSQL,
         Bind  => \@Bind,
-        Limit => 50000,
+        Limit => $Self->{SearchListLimit},
     );
 
     # fetch the result
