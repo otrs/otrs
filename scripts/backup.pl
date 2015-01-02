@@ -41,8 +41,6 @@ my $CompressINL = 0; # Compress inline using pipes
 my $DB          = '';
 my $DBDump      = '';
 
-#getopts( 'c:d:hir:t:', \%Opts );
-#getopt( 'hrtdi', \%Opts );
 getopt( 'chrtdiq', \%Opts );
 if ( exists $Opts{h} ) {
     print "backup.pl - backup script\n";
