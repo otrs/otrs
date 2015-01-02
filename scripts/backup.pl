@@ -41,11 +41,13 @@ my $CompressINL = 0; # Compress inline using pipes
 my $DB          = '';
 my $DBDump      = '';
 
-getopt( 'hcrtdi', \%Opts );
+#getopts( 'c:d:hir:t:', \%Opts );
+#getopt( 'hrtdi', \%Opts );
+getopt( 'chrtdiq', \%Opts );
 if ( exists $Opts{h} ) {
     print "backup.pl - backup script\n";
     print "Copyright (C) 2001-2014 OTRS AG, http://otrs.com/\n";
-    print "usage: backup.pl -d /data_backup_dir/ [-c gzip|bzip2|xz] [ -i ] [-r 30] [-t fullbackup|nofullbackup|dbonly]\n";
+    print "usage: backup.pl -d /data_backup_dir/ [-c gzip|bzip2|xz] [ -i ] [ -r 30 ] [-t fullbackup|nofullbackup|dbonly]\n";
     exit 1;
 }
 
@@ -60,6 +62,7 @@ elsif ( !-d $Opts{d} ) {
 }
 
 # check compress mode
+#if ( $Opts{c} ) {
 if ( $Opts{c} ) {
     if ( $Opts{i} ) {
     	$CompressINL = 1;
@@ -72,7 +75,7 @@ if ( $Opts{c} ) {
     elsif ( $Opts{c} =~ m/xz/i ) {
     	$Compress    = 'J';
     	$CompressCMD = 'xz';
-    	$CompressEXT = 'bz';
+    	$CompressEXT = 'xz';
     }
     elsif ( $Opts{c} =~ m/bzip2/i ) {
     	$Compress    = 'j';
@@ -170,7 +173,7 @@ if ( !mkdir($Directory) ) {
 # backup Kernel/Config.pm
 my $BackupFN = "$Directory/Config.tar.$CompressEXT";
 print "Backup $BackupFN ... ";
-if ( !system("tar -cf$Compress $BackupFN Kernel/Config*") ) {
+if ( !system("tar -c -$Compress -f $BackupFN Kernel/Config*") ) {
     print "done\n";
 }
 else {
@@ -185,10 +188,10 @@ if ($DBOnlyBackup) {
 }
 else {
     if ($FullBackup) {
-        $BackupFN = "Backup $Directory/Application.tar.$CompressEXT";
+        $BackupFN = "$Directory/Application.tar.$CompressEXT";
         print "Backup $BackupFN ... ";
         my $Excludes = "--exclude=var/tmp --exclude=js-cache --exclude=css-cache --exclude=.git";
-        if ( !system("tar $Excludes -cf$Compress $BackupFN .") ) {
+        if ( !system("tar -c $Excludes -$Compress -f $BackupFN .") ) {
             print "done\n";
         }
         else {
@@ -200,9 +203,9 @@ else {
 
     # backup vardir
     else {
-        $BackupFN = "Backup $Directory/VarDir.tar.$CompressEXT";
+        $BackupFN = "$Directory/VarDir.tar.$CompressEXT";
         print "Backup $BackupFN ... ";
-        if ( !system("tar -cf$Compress $BackupFN var/") ) {
+        if ( !system("tar -c -$Compress -f $BackupFN var/") ) {
             print "done\n";
         }
         else {
@@ -214,9 +217,9 @@ else {
 
     # backup datadir
     if ( $ArticleDir !~ m/\Q$Home\E/ ) {
-        $BackupFN = "Backup $Directory/DataDir.tar.$CompressEXT";
+        $BackupFN = "$Directory/DataDir.tar.$CompressEXT";
         print "Backup $BackupFN ... ";
-        if ( !system("tar -cf$Compress $BackupFN $ArticleDir") ) {
+        if ( !system("tar -c -$Compress -f $BackupFN $ArticleDir") ) {
             print "done\n";
         }
         else {
