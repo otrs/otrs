@@ -78,7 +78,7 @@ if ( $Opts{c} ) {
     elsif ( $Opts{c} =~ m/bzip2/i ) {
     	$Compress    = 'j';
     	$CompressCMD = 'bzip2';
-    	$CompressEXT = 'bz';
+    	$CompressEXT = 'bz2';
     }
     else {
     	print STDERR "ERROR: Invalid compression algorithm: $Opts{c}\n";
