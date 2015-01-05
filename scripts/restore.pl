@@ -36,11 +36,12 @@ use Kernel::System::ObjectManager;
 my %Opts;
 my $DB     = '';
 my $DBDump = '';
-getopt( 'hbd', \%Opts );
+my $DecompressINL = 0; # Decompress database inline using pipes
+getopt( 'hbdi', \%Opts );
 if ( exists $Opts{h} ) {
     print "restore.pl - restore script\n";
     print "Copyright (C) 2001-2014 OTRS AG, http://otrs.com/\n";
-    print "usage: restore.pl -b /data_backup/<TIME>/ -d /opt/otrs/\n";
+    print "usage: restore.pl -b /data_backup/<TIME>/ -d /opt/otrs/ [ -i ]\n";
     exit 1;
 }
 if ( !$Opts{b} ) {
@@ -58,6 +59,9 @@ if ( !$Opts{d} ) {
 elsif ( !-d $Opts{d} ) {
     print STDERR "ERROR: No such directory: $Opts{d}\n";
     exit 1;
+}
+if ( $Opts{i} )
+	$DecompressINL = 1;
 }
 
 # restore config
@@ -186,86 +190,134 @@ if ( -e "$Opts{b}/DataDir.tar.gz" ) {
 }
 
 # import database
-if ( $DB =~ m/mysql/i ) {
-    print "create $DB\n";
-    if ($DatabasePw) {
-        $DatabasePw = "-p'$DatabasePw'";
-    }
-    if ( -e "$Opts{b}/DatabaseBackup.sql.gz" ) {
-        print "decompresses SQL-file ...\n";
-        system("gunzip $Opts{b}/DatabaseBackup.sql.gz");
-        print "cat SQL-file into $DB database\n";
-        system(
-            "mysql -f -u$DatabaseUser $DatabasePw -h$DatabaseHost $Database < $Opts{b}/DatabaseBackup.sql"
-        );
-        print "compress SQL-file...\n";
-        system("gzip $Opts{b}/DatabaseBackup.sql");
-    } elsif ( -e "$Opts{b}/DatabaseBackup.sql.bz2" ) {
-        print "decompresses SQL-file ...\n";
-        system("bunzip2 $Opts{b}/DatabaseBackup.sql.bz2");
-        print "cat SQL-file into $DB database\n";
-        system(
-            "mysql -f -u$DatabaseUser $DatabasePw -h$DatabaseHost $Database < $Opts{b}/DatabaseBackup.sql"
-        );
-        print "compress SQL-file...\n";
-        system("bzip2 $Opts{b}/DatabaseBackup.sql");
-    } elsif ( -e "$Opts{b}/DatabaseBackup.sql.xz" ) {
-        print "decompresses SQL-file ...\n";
-        system("unxz $Opts{b}/DatabaseBackup.sql.bz2");
-        print "cat SQL-file into $DB database\n";
-        system(
-            "mysql -f -u$DatabaseUser $DatabasePw -h$DatabaseHost $Database < $Opts{b}/DatabaseBackup.sql"
-        );
-        print "compress SQL-file...\n";
-        system("unxz $Opts{b}/DatabaseBackup.sql");
+my $dbdumpopencmd = undef;
+if ($DecompressINL) {
+    if ( $db =~ m/mysql/i ) {
+        print "create $DB\n";
+        if ($DatabasePw) {
+            $DatabasePw = "-p'$DatabasePw'";
+        }
+
+        # Get the right file
+        if ( -e "$Opts{b}/DatabaseBackup.sql.gz" ) {
+            $dbdumpopencmd = "zcat $Opts{b}/DatabaseBackup.sql.gz";
+        } elsif ( -e "$Opts{b}/DatabaseBackup.sql.bz2" ) {
+            $dbdumpopencmd = "bzcat $Opts{b}/DatabaseBackup.sql.bz2";
+        } elsif ( -e "$Opts{b}/DatabaseBackup.sql.xz" ) {
+            $dbdumpopencmd = "xzcat $Opts{b}/DatabaseBackup.sql.xz";
+        } else {
+            print STDERR "Can't find database dump file";
+            exit 1;
+        }
+        print "decompresses and import SQL-file ...\n";
+        system("$dbdumpopencmd | mysql -f -u$DatabaseUser $DatabasePw -h$DatabaseHost $Database");
+    } else {
+        if ($DatabaseHost) {
+            $DatabaseHost = "-h $DatabaseHost"
+        }
+
+        # set password via environment variable if there is one
+        if ($DatabasePw) {
+            $ENV{'PGPASSWORD'} = $DatabasePw;
+        }
+
+        # Get the right file
+        if ( -e "$Opts{b}/DatabaseBackup.sql.gz" ) {
+            $dbdumpopencmd = "zcat $Opts{b}/DatabaseBackup.sql.gz";
+        } elsif ( -e "$Opts{b}/DatabaseBackup.sql.bz2" ) {
+            $dbdumpopencmd = "bzcat $Opts{b}/DatabaseBackup.sql.bz2";
+        } elsif ( -e "$Opts{b}/DatabaseBackup.sql.xz" ) {
+            $dbdumpopencmd = "xzcat $Opts{b}/DatabaseBackup.sql.xz";
+        } else {
+            print STDERR "Can't find database dump file";
+            exit 1;
+        }
+
+        print "decompresses and import SQL-file ...\n";
+        system("$dbdumpopencmd | psql -U$DatabaseUser $DatabaseHost $Database");
     }
 } else {
-    if ($DatabaseHost) {
-        $DatabaseHost = "-h $DatabaseHost"
-    }
-
-    if ( -e "$Opts{b}/DatabaseBackup.sql.gz" ) {
-        print "decompresses SQL-file ...\n";
-        system("gunzip $Opts{b}/DatabaseBackup.sql.gz");
-
-        # set password via environment variable if there is one
+    if ( $db =~ m/mysql/i ) {
+        print "create $DB\n";
         if ($DatabasePw) {
-            $ENV{'PGPASSWORD'} = $DatabasePw;
+            $DatabasePw = "-p'$DatabasePw'";
         }
-        print "cat SQL-file into $DB database\n";
-        system(
-            "cat $Opts{b}/DatabaseBackup.sql | psql -U$DatabaseUser $DatabaseHost $Database"
-        );
-        print "compress SQL-file...\n";
-        system("gzip $Opts{b}/DatabaseBackup.sql");
-    } elsif ( -e "$Opts{b}/DatabaseBackup.sql.bz2" ) {
-        print "decompresses SQL-file ...\n";
-        system("bunzip2 $Opts{b}/DatabaseBackup.sql.bz2");
+        if ( -e "$Opts{b}/DatabaseBackup.sql.gz" ) {
+            print "decompresses SQL-file ...\n";
+            system("gunzip $Opts{b}/DatabaseBackup.sql.gz");
+            print "cat SQL-file into $DB database\n";
+            system(
+                "mysql -f -u$DatabaseUser $DatabasePw -h$DatabaseHost $Database < $Opts{b}/DatabaseBackup.sql"
+            );
+            print "compress SQL-file...\n";
+            system("gzip $Opts{b}/DatabaseBackup.sql");
+        } elsif ( -e "$Opts{b}/DatabaseBackup.sql.bz2" ) {
+            print "decompresses SQL-file ...\n";
+            system("bunzip2 $Opts{b}/DatabaseBackup.sql.bz2");
+            print "cat SQL-file into $DB database\n";
+            system(
+                "mysql -f -u$DatabaseUser $DatabasePw -h$DatabaseHost $Database < $Opts{b}/DatabaseBackup.sql"
+            );
+            print "compress SQL-file...\n";
+            system("bzip2 $Opts{b}/DatabaseBackup.sql");
+        } elsif ( -e "$Opts{b}/DatabaseBackup.sql.xz" ) {
+            print "decompresses SQL-file ...\n";
+            system("unxz $Opts{b}/DatabaseBackup.sql.bz2");
+            print "cat SQL-file into $DB database\n";
+            system(
+                "mysql -f -u$DatabaseUser $DatabasePw -h$DatabaseHost $Database < $Opts{b}/DatabaseBackup.sql"
+            );
+            print "compress SQL-file...\n";
+            system("unxz $Opts{b}/DatabaseBackup.sql");
+        }
+    } else {
+        if ($DatabaseHost) {
+            $DatabaseHost = "-h $DatabaseHost"
+        }
 
-        # set password via environment variable if there is one
-        if ($DatabasePw) {
-            $ENV{'PGPASSWORD'} = $DatabasePw;
-        }
-        print "cat SQL-file into $DB database\n";
-        system(
-            "cat $Opts{b}/DatabaseBackup.sql | psql -U$DatabaseUser $DatabaseHost $Database"
-        );
-        print "compress SQL-file...\n";
-        system("bzip2 $Opts{b}/DatabaseBackup.sql");
-    } elsif ( -e "$Opts{b}/DatabaseBackup.sql.xz" ) {
-        print "decompresses SQL-file ...\n";
-        system("unxz $Opts{b}/DatabaseBackup.sql.xz");
+        if ( -e "$Opts{b}/DatabaseBackup.sql.gz" ) {
+            print "decompresses SQL-file ...\n";
+            system("gunzip $Opts{b}/DatabaseBackup.sql.gz");
 
-        # set password via environment variable if there is one
-        if ($DatabasePw) {
-            $ENV{'PGPASSWORD'} = $DatabasePw;
+            # set password via environment variable if there is one
+            if ($DatabasePw) {
+                $ENV{'PGPASSWORD'} = $DatabasePw;
+            }
+            print "cat SQL-file into $DB database\n";
+            system(
+                "cat $Opts{b}/DatabaseBackup.sql | psql -U$DatabaseUser $DatabaseHost $Database"
+            );
+            print "compress SQL-file...\n";
+            system("gzip $Opts{b}/DatabaseBackup.sql");
+        } elsif ( -e "$Opts{b}/DatabaseBackup.sql.bz2" ) {
+            print "decompresses SQL-file ...\n";
+            system("bunzip2 $Opts{b}/DatabaseBackup.sql.bz2");
+
+            # set password via environment variable if there is one
+            if ($DatabasePw) {
+                $ENV{'PGPASSWORD'} = $DatabasePw;
+            }
+            print "cat SQL-file into $DB database\n";
+            system(
+                "cat $Opts{b}/DatabaseBackup.sql | psql -U$DatabaseUser $DatabaseHost $Database"
+            );
+            print "compress SQL-file...\n";
+            system("bzip2 $Opts{b}/DatabaseBackup.sql");
+        } elsif ( -e "$Opts{b}/DatabaseBackup.sql.xz" ) {
+            print "decompresses SQL-file ...\n";
+            system("unxz $Opts{b}/DatabaseBackup.sql.xz");
+
+            # set password via environment variable if there is one
+            if ($DatabasePw) {
+                $ENV{'PGPASSWORD'} = $DatabasePw;
+            }
+            print "cat SQL-file into $DB database\n";
+            system(
+                "cat $Opts{b}/DatabaseBackup.sql | psql -U$DatabaseUser $DatabaseHost $Database"
+            );
+            print "compress SQL-file...\n";
+            system("xz $Opts{b}/DatabaseBackup.sql");
         }
-        print "cat SQL-file into $DB database\n";
-        system(
-            "cat $Opts{b}/DatabaseBackup.sql | psql -U$DatabaseUser $DatabaseHost $Database"
-        );
-        print "compress SQL-file...\n";
-        system("xz $Opts{b}/DatabaseBackup.sql");
     }
 }
 
