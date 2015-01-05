@@ -200,8 +200,7 @@ if ( $DB =~ m/mysql/i ) {
         );
         print "compress SQL-file...\n";
         system("gzip $Opts{b}/DatabaseBackup.sql");
-    }
-    elsif ( -e "$Opts{b}/DatabaseBackup.sql.bz2" ) {
+    } elsif ( -e "$Opts{b}/DatabaseBackup.sql.bz2" ) {
         print "decompresses SQL-file ...\n";
         system("bunzip2 $Opts{b}/DatabaseBackup.sql.bz2");
         print "cat SQL-file into $DB database\n";
@@ -210,9 +209,17 @@ if ( $DB =~ m/mysql/i ) {
         );
         print "compress SQL-file...\n";
         system("bzip2 $Opts{b}/DatabaseBackup.sql");
+    } elsif ( -e "$Opts{b}/DatabaseBackup.sql.xz" ) {
+        print "decompresses SQL-file ...\n";
+        system("unxz $Opts{b}/DatabaseBackup.sql.bz2");
+        print "cat SQL-file into $DB database\n";
+        system(
+            "mysql -f -u$DatabaseUser $DatabasePw -h$DatabaseHost $Database < $Opts{b}/DatabaseBackup.sql"
+        );
+        print "compress SQL-file...\n";
+        system("unxz $Opts{b}/DatabaseBackup.sql");
     }
-}
-else {
+} else {
     if ($DatabaseHost) {
         $DatabaseHost = "-h $DatabaseHost"
     }
@@ -231,8 +238,7 @@ else {
         );
         print "compress SQL-file...\n";
         system("gzip $Opts{b}/DatabaseBackup.sql");
-    }
-    elsif ( -e "$Opts{b}/DatabaseBackup.sql.bz2" ) {
+    } elsif ( -e "$Opts{b}/DatabaseBackup.sql.bz2" ) {
         print "decompresses SQL-file ...\n";
         system("bunzip2 $Opts{b}/DatabaseBackup.sql.bz2");
 
@@ -246,5 +252,20 @@ else {
         );
         print "compress SQL-file...\n";
         system("bzip2 $Opts{b}/DatabaseBackup.sql");
+    } elsif ( -e "$Opts{b}/DatabaseBackup.sql.xz" ) {
+        print "decompresses SQL-file ...\n";
+        system("unxz $Opts{b}/DatabaseBackup.sql.xz");
+
+        # set password via environment variable if there is one
+        if ($DatabasePw) {
+            $ENV{'PGPASSWORD'} = $DatabasePw;
+        }
+        print "cat SQL-file into $DB database\n";
+        system(
+            "cat $Opts{b}/DatabaseBackup.sql | psql -U$DatabaseUser $DatabaseHost $Database"
+        );
+        print "compress SQL-file...\n";
+        system("xz $Opts{b}/DatabaseBackup.sql");
     }
 }
+
