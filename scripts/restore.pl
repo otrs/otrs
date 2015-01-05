@@ -65,6 +65,10 @@ print "Restore $Opts{b}/Config.tar.gz ...\n";
 chdir( $Opts{d} );
 if ( -e "$Opts{b}/Config.tar.gz" ) {
     system("tar -xzf $Opts{b}/Config.tar.gz");
+} elsif ( -e "$Opts{b}/Config.tar.bz2" ) {
+    system("tar -xjf $Opts{b}/Config.tar.bz2");
+} elsif ( -e "$Opts{b}/Config.tar.xz" ) {
+    system("tar -xJf $Opts{b}/Config.tar.xz");
 }
 
 # create common objects
@@ -149,18 +153,36 @@ chdir($Home);
 if ( -e "$Opts{b}/Application.tar.gz" ) {
     print "Restore $Opts{b}/Application.tar.gz ...\n";
     system("tar -xzf $Opts{b}/Application.tar.gz");
+} elsif ( -e "$Opts{b}/Application.tar.bz2" ) {
+    print "Restore $Opts{b}/Application.tar.bz2 ...\n";
+    system("tar -xjf $Opts{b}/Application.tar.bz2");
+} elsif ( -e "$Opts{b}/Application.tar.xz" ) {
+    print "Restore $Opts{b}/Application.tar.xz ...\n";
+    system("tar -xJf $Opts{b}/Application.tar.xz");
 }
 
 # extract vardir
 if ( -e "$Opts{b}/VarDir.tar.gz" ) {
     print "Restore $Opts{b}/VarDir.tar.gz ...\n";
     system("tar -xzf $Opts{b}/VarDir.tar.gz");
+} elsif ( -e "$Opts{b}/VarDir.tar.bz2" ) {
+    print "Restore $Opts{b}/VarDir.tar.bz2 ...\n";
+    system("tar -xjf $Opts{b}/VarDir.tar.bz2");
+} elsif ( -e "$Opts{b}/VarDir.tar.xz" ) {
+    print "Restore $Opts{b}/VarDir.tar.xz ...\n";
+    system("tar -xJf $Opts{b}/VarDir.tar.xz");
 }
 
 # extract datadir
 if ( -e "$Opts{b}/DataDir.tar.gz" ) {
     print "Restore $Opts{b}/DataDir.tar.gz ...\n";
     system("tar -xzf $Opts{b}/DataDir.tar.gz");
+} elsif ( -e "$Opts{b}/DataDir.tar.bz2" ) {
+    print "Restore $Opts{b}/DataDir.tar.bz2 ...\n";
+    system("tar -xjf $Opts{b}/DataDir.tar.bz2");
+} elsif ( -e "$Opts{b}/DataDir.tar.xz" ) {
+    print "Restore $Opts{b}/DataDir.tar.xz ...\n";
+    system("tar -xJf $Opts{b}/DataDir.tar.xz");
 }
 
 # import database
