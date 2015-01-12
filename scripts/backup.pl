@@ -63,26 +63,26 @@ elsif ( !-d $Opts{d} ) {
 #if ( $Opts{c} ) {
 if ( $Opts{c} ) {
     if ( $Opts{i} ) {
-    	$CompressINL = 1;
+        $CompressINL = 1;
     }
     if ( $Opts{c} =~ m/gzip/i ) {
-    	$Compress    = 'z';
-    	$CompressCMD = 'gzip';
-    	$CompressEXT = 'gz';
+        $Compress    = 'z';
+        $CompressCMD = 'gzip';
+        $CompressEXT = 'gz';
     }
     elsif ( $Opts{c} =~ m/xz/i ) {
-    	$Compress    = 'J';
-    	$CompressCMD = 'xz';
-    	$CompressEXT = 'xz';
+        $Compress    = 'J';
+        $CompressCMD = 'xz';
+        $CompressEXT = 'xz';
     }
     elsif ( $Opts{c} =~ m/bzip2/i ) {
-    	$Compress    = 'j';
-    	$CompressCMD = 'bzip2';
-    	$CompressEXT = 'bz2';
+        $Compress    = 'j';
+        $CompressCMD = 'bzip2';
+        $CompressEXT = 'bz2';
     }
     else {
-    	print STDERR "ERROR: Invalid compression algorithm: $Opts{c}\n";
-    	exit 1;
+        print STDERR "ERROR: Invalid compression algorithm: $Opts{c}\n";
+        exit 1;
     }
 }
 
@@ -236,9 +236,9 @@ if ( $DB =~ m/mysql/i ) {
         $DatabasePw = "-p'$DatabasePw'";
     }
     if ($CompressINL) {
-    	$DBDumpCMD = "$DBDump -u $DatabaseUser $DatabasePw -h $DatabaseHost $Database | $CompressCMD -c > $Directory/DatabaseBackup.sql.$CompressEXT";
+        $DBDumpCMD = "$DBDump -u $DatabaseUser $DatabasePw -h $DatabaseHost $Database | $CompressCMD -c > $Directory/DatabaseBackup.sql.$CompressEXT";
     } else {
-    	$DBDumpCMD = "$DBDump -u $DatabaseUser $DatabasePw -h $DatabaseHost $Database > $Directory/DatabaseBackup.sql"
+        $DBDumpCMD = "$DBDump -u $DatabaseUser $DatabasePw -h $DatabaseHost $Database > $Directory/DatabaseBackup.sql"
     }
     if ( !system($DBDumpCMD) ) {
         print "done\n";
@@ -262,9 +262,9 @@ else {
     }
 
     if ($CompressINL) {
-    	$DBDumpCMD = "$DBDump $DatabaseHost -U $DatabaseUser $Database | $CompressCMD -c > $Directory/DatabaseBackup.sql.$CompressEXT";
+        $DBDumpCMD = "$DBDump $DatabaseHost -U $DatabaseUser $Database | $CompressCMD -c > $Directory/DatabaseBackup.sql.$CompressEXT";
     } else {
-    	$DBDumpCMD = "$DBDump -f $Directory/DatabaseBackup.sql $DatabaseHost -U $DatabaseUser $Database";
+        $DBDumpCMD = "$DBDump -f $Directory/DatabaseBackup.sql $DatabaseHost -U $DatabaseUser $Database";
     }
 
     if ( !system($DBDumpCMD) ) {
@@ -281,12 +281,12 @@ else {
 unless ($CompressINL) {
     print "Compress SQL-file... ";
     if ( !system("$CompressCMD $Directory/DatabaseBackup.sql") ) {
-    	print "done\n";
+        print "done\n";
     }
     else {
-    	print "failed\n";
-    	RemoveIncompleteBackup($Directory);
-    	die "Backup failed\n";
+        print "failed\n";
+        RemoveIncompleteBackup($Directory);
+        die "Backup failed\n";
     }
 }
 
