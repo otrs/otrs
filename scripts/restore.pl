@@ -37,6 +37,7 @@ my %Opts;
 my $DB     = '';
 my $DBDump = '';
 my $DecompressINL = 0; # Decompress database inline using pipes
+
 getopt( 'hbdi', \%Opts );
 if ( exists $Opts{h} ) {
     print "restore.pl - restore script\n";
@@ -60,8 +61,8 @@ elsif ( !-d $Opts{d} ) {
     print STDERR "ERROR: No such directory: $Opts{d}\n";
     exit 1;
 }
-if ( $Opts{i} )
-	$DecompressINL = 1;
+if ( $Opts{i} ) {
+    $DecompressINL = 1;
 }
 
 # restore config
@@ -192,7 +193,7 @@ if ( -e "$Opts{b}/DataDir.tar.gz" ) {
 # import database
 my $dbdumpopencmd = undef;
 if ($DecompressINL) {
-    if ( $db =~ m/mysql/i ) {
+    if ( $DB =~ m/mysql/i ) {
         print "create $DB\n";
         if ($DatabasePw) {
             $DatabasePw = "-p'$DatabasePw'";
@@ -237,7 +238,7 @@ if ($DecompressINL) {
         system("$dbdumpopencmd | psql -U$DatabaseUser $DatabaseHost $Database");
     }
 } else {
-    if ( $db =~ m/mysql/i ) {
+    if ( $DB =~ m/mysql/i ) {
         print "create $DB\n";
         if ($DatabasePw) {
             $DatabasePw = "-p'$DatabasePw'";
