@@ -158,10 +158,12 @@ chdir($Home);
 if ( -e "$Opts{b}/Application.tar.gz" ) {
     print "Restore $Opts{b}/Application.tar.gz ...\n";
     system("tar -xzf $Opts{b}/Application.tar.gz");
-} elsif ( -e "$Opts{b}/Application.tar.bz2" ) {
+}
+elsif ( -e "$Opts{b}/Application.tar.bz2" ) {
     print "Restore $Opts{b}/Application.tar.bz2 ...\n";
     system("tar -xjf $Opts{b}/Application.tar.bz2");
-} elsif ( -e "$Opts{b}/Application.tar.xz" ) {
+}
+elsif ( -e "$Opts{b}/Application.tar.xz" ) {
     print "Restore $Opts{b}/Application.tar.xz ...\n";
     system("tar -xJf $Opts{b}/Application.tar.xz");
 }
@@ -170,10 +172,12 @@ if ( -e "$Opts{b}/Application.tar.gz" ) {
 if ( -e "$Opts{b}/VarDir.tar.gz" ) {
     print "Restore $Opts{b}/VarDir.tar.gz ...\n";
     system("tar -xzf $Opts{b}/VarDir.tar.gz");
-} elsif ( -e "$Opts{b}/VarDir.tar.bz2" ) {
+}
+elsif ( -e "$Opts{b}/VarDir.tar.bz2" ) {
     print "Restore $Opts{b}/VarDir.tar.bz2 ...\n";
     system("tar -xjf $Opts{b}/VarDir.tar.bz2");
-} elsif ( -e "$Opts{b}/VarDir.tar.xz" ) {
+}
+elsif ( -e "$Opts{b}/VarDir.tar.xz" ) {
     print "Restore $Opts{b}/VarDir.tar.xz ...\n";
     system("tar -xJf $Opts{b}/VarDir.tar.xz");
 }
@@ -182,10 +186,12 @@ if ( -e "$Opts{b}/VarDir.tar.gz" ) {
 if ( -e "$Opts{b}/DataDir.tar.gz" ) {
     print "Restore $Opts{b}/DataDir.tar.gz ...\n";
     system("tar -xzf $Opts{b}/DataDir.tar.gz");
-} elsif ( -e "$Opts{b}/DataDir.tar.bz2" ) {
+}
+elsif ( -e "$Opts{b}/DataDir.tar.bz2" ) {
     print "Restore $Opts{b}/DataDir.tar.bz2 ...\n";
     system("tar -xjf $Opts{b}/DataDir.tar.bz2");
-} elsif ( -e "$Opts{b}/DataDir.tar.xz" ) {
+}
+elsif ( -e "$Opts{b}/DataDir.tar.xz" ) {
     print "Restore $Opts{b}/DataDir.tar.xz ...\n";
     system("tar -xJf $Opts{b}/DataDir.tar.xz");
 }
@@ -202,17 +208,21 @@ if ($DecompressINL) {
         # Get the right file
         if ( -e "$Opts{b}/DatabaseBackup.sql.gz" ) {
             $dbdumpopencmd = "zcat $Opts{b}/DatabaseBackup.sql.gz";
-        } elsif ( -e "$Opts{b}/DatabaseBackup.sql.bz2" ) {
+        }
+        elsif ( -e "$Opts{b}/DatabaseBackup.sql.bz2" ) {
             $dbdumpopencmd = "bzcat $Opts{b}/DatabaseBackup.sql.bz2";
-        } elsif ( -e "$Opts{b}/DatabaseBackup.sql.xz" ) {
+        }
+        elsif ( -e "$Opts{b}/DatabaseBackup.sql.xz" ) {
             $dbdumpopencmd = "xzcat $Opts{b}/DatabaseBackup.sql.xz";
-        } else {
+        }
+        else {
             print STDERR "Can't find database dump file";
             exit 1;
         }
         print "decompresses and import SQL-file ...\n";
         system("$dbdumpopencmd | mysql -f -u$DatabaseUser $DatabasePw -h$DatabaseHost $Database");
-    } else {
+    }
+    else {
         if ($DatabaseHost) {
             $DatabaseHost = "-h $DatabaseHost"
         }
@@ -225,11 +235,14 @@ if ($DecompressINL) {
         # Get the right file
         if ( -e "$Opts{b}/DatabaseBackup.sql.gz" ) {
             $dbdumpopencmd = "zcat $Opts{b}/DatabaseBackup.sql.gz";
-        } elsif ( -e "$Opts{b}/DatabaseBackup.sql.bz2" ) {
+        }
+        elsif ( -e "$Opts{b}/DatabaseBackup.sql.bz2" ) {
             $dbdumpopencmd = "bzcat $Opts{b}/DatabaseBackup.sql.bz2";
-        } elsif ( -e "$Opts{b}/DatabaseBackup.sql.xz" ) {
+        }
+        elsif ( -e "$Opts{b}/DatabaseBackup.sql.xz" ) {
             $dbdumpopencmd = "xzcat $Opts{b}/DatabaseBackup.sql.xz";
-        } else {
+        }
+        else {
             print STDERR "Can't find database dump file";
             exit 1;
         }
@@ -237,7 +250,8 @@ if ($DecompressINL) {
         print "decompresses and import SQL-file ...\n";
         system("$dbdumpopencmd | psql -U$DatabaseUser $DatabaseHost $Database");
     }
-} else {
+}
+else {
     if ( $DB =~ m/mysql/i ) {
         print "create $DB\n";
         if ($DatabasePw) {
@@ -252,7 +266,8 @@ if ($DecompressINL) {
             );
             print "compress SQL-file...\n";
             system("gzip $Opts{b}/DatabaseBackup.sql");
-        } elsif ( -e "$Opts{b}/DatabaseBackup.sql.bz2" ) {
+        }
+        elsif ( -e "$Opts{b}/DatabaseBackup.sql.bz2" ) {
             print "decompresses SQL-file ...\n";
             system("bunzip2 $Opts{b}/DatabaseBackup.sql.bz2");
             print "cat SQL-file into $DB database\n";
@@ -261,7 +276,8 @@ if ($DecompressINL) {
             );
             print "compress SQL-file...\n";
             system("bzip2 $Opts{b}/DatabaseBackup.sql");
-        } elsif ( -e "$Opts{b}/DatabaseBackup.sql.xz" ) {
+        }
+        elsif ( -e "$Opts{b}/DatabaseBackup.sql.xz" ) {
             print "decompresses SQL-file ...\n";
             system("unxz $Opts{b}/DatabaseBackup.sql.bz2");
             print "cat SQL-file into $DB database\n";
@@ -271,7 +287,8 @@ if ($DecompressINL) {
             print "compress SQL-file...\n";
             system("unxz $Opts{b}/DatabaseBackup.sql");
         }
-    } else {
+    }
+    else {
         if ($DatabaseHost) {
             $DatabaseHost = "-h $DatabaseHost"
         }
@@ -290,7 +307,8 @@ if ($DecompressINL) {
             );
             print "compress SQL-file...\n";
             system("gzip $Opts{b}/DatabaseBackup.sql");
-        } elsif ( -e "$Opts{b}/DatabaseBackup.sql.bz2" ) {
+        }
+        elsif ( -e "$Opts{b}/DatabaseBackup.sql.bz2" ) {
             print "decompresses SQL-file ...\n";
             system("bunzip2 $Opts{b}/DatabaseBackup.sql.bz2");
 
@@ -304,7 +322,8 @@ if ($DecompressINL) {
             );
             print "compress SQL-file...\n";
             system("bzip2 $Opts{b}/DatabaseBackup.sql");
-        } elsif ( -e "$Opts{b}/DatabaseBackup.sql.xz" ) {
+        }
+        elsif ( -e "$Opts{b}/DatabaseBackup.sql.xz" ) {
             print "decompresses SQL-file ...\n";
             system("unxz $Opts{b}/DatabaseBackup.sql.xz");
 
