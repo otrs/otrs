@@ -232,14 +232,16 @@ else {
 my $DBDumpCMD;
 if ( $DB =~ m/mysql/i ) {
     print "Dump $DB rdbms ... ";
-    if ($DatabasePw) {
+    if ( $DatabasePw ) {
         $DatabasePw = "-p'$DatabasePw'";
     }
-    if ($CompressINL) {
+    if ( $CompressINL ) {
         $DBDumpCMD = "$DBDump -u $DatabaseUser $DatabasePw -h $DatabaseHost $Database | $CompressCMD -c > $Directory/DatabaseBackup.sql.$CompressEXT";
-    } else {
+    }
+    else {
         $DBDumpCMD = "$DBDump -u $DatabaseUser $DatabasePw -h $DatabaseHost $Database > $Directory/DatabaseBackup.sql"
     }
+
     if ( !system($DBDumpCMD) ) {
         print "done\n";
     }
@@ -253,17 +255,18 @@ else {
     print "Dump $DB rdbms ... ";
 
     # set password via environment variable if there is one
-    if ($DatabasePw) {
+    if ( $DatabasePw ) {
         $ENV{'PGPASSWORD'} = $DatabasePw;
     }
 
-    if ($DatabaseHost) {
+    if ( $DatabaseHost ) {
         $DatabaseHost = "-h $DatabaseHost"
     }
 
-    if ($CompressINL) {
+    if ( $CompressINL ) {
         $DBDumpCMD = "$DBDump $DatabaseHost -U $DatabaseUser $Database | $CompressCMD -c > $Directory/DatabaseBackup.sql.$CompressEXT";
-    } else {
+    }
+    else {
         $DBDumpCMD = "$DBDump -f $Directory/DatabaseBackup.sql $DatabaseHost -U $DatabaseUser $Database";
     }
 
@@ -388,3 +391,4 @@ sub RemoveIncompleteBackup {
         print STDERR "failed\n";
     }
 }
+
