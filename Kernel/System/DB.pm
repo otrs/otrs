@@ -1365,7 +1365,7 @@ sub QueryCondition {
                     );
                     return "1=0";
                 }
-                elsif ( $SQL !~ m/ AND $/ ) {
+                elsif ( $SQL ne '' && $SQL !~ m/(?: AND |\()$/ ) {
                     $SQL .= ' AND ';
                 }
             }
@@ -1380,7 +1380,7 @@ sub QueryCondition {
                     );
                     return "1=0";
                 }
-                elsif ( $SQL !~ m/ OR $/ ) {
+                elsif ( $SQL ne '' && $SQL !~ m/(?: OR |\()$/ ) {
                     $SQL .= ' OR ';
                 }
             }
@@ -1397,6 +1397,15 @@ sub QueryCondition {
             $Open++;
         }
         if ( $Array[$Position] eq ')' ) {
+
+            # remove trailing conditions
+            $SQL =~ s/(?: (?:AND|OR) |\s*)$//g;
+
+            if ( $SQL =~ m/\($/ ) {
+
+                # remove trailing left bracket
+                $SQL =~ s/\($//;
+            }
             $SQL .= $Array[$Position];
             if (
                 $Position < $#Array
