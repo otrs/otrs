@@ -95,36 +95,12 @@ sub StateFilterValuesGet {
         return;
     }
 
+    my $TicketIDString = $Self->_TicketIDStringGet(
+        TicketIDs => $Param{TicketIDs},
+    );
+
     # get database object
     my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
-
-    my $TicketIDString = '';
-    if ( $Param{TicketIDs} && ref $Param{TicketIDs} eq 'ARRAY' && @{ $Param{TicketIDs} } ) {
-
-        # integer quote the category ids
-        for my $TicketID ( @{ $Param{TicketIDs} } ) {
-            $DBObject->Quote( $TicketID, 'Integer' );
-        }
-
-        my @SortedIDs = sort @{ $Param{TicketIDs} };
-
-        # split IN statement with more than 900 elements in more statements bombined with OR
-        # because Oracle doesn't support more than 1000 elements in one IN statement.
-        my @SQLStrings;
-        LOOP:
-        while ( scalar @SortedIDs ) {
-
-            my @SortedIDsPart = splice @SortedIDs, 0, 900;
-
-            my $IDString = join ',', @SortedIDsPart;
-
-            push @SQLStrings, " t.id IN ($IDString) ";
-        }
-
-        my $SQLString = join ' OR ', @SQLStrings;
-
-        $TicketIDString .= 'AND ( ' . $SQLString . ' ) ';
-    }
 
     return if !$DBObject->Prepare(
         SQL => "SELECT DISTINCT(t.ticket_state_id), ts.name"
@@ -186,36 +162,12 @@ sub QueueFilterValuesGet {
         return;
     }
 
+    my $TicketIDString = $Self->_TicketIDStringGet(
+        TicketIDs => $Param{TicketIDs},
+    );
+
     # get database object
     my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
-
-    my $TicketIDString = '';
-    if ( $Param{TicketIDs} && ref $Param{TicketIDs} eq 'ARRAY' && @{ $Param{TicketIDs} } ) {
-
-        # integer quote the category ids
-        for my $TicketID ( @{ $Param{TicketIDs} } ) {
-            $DBObject->Quote( $TicketID, 'Integer' );
-        }
-
-        my @SortedIDs = sort @{ $Param{TicketIDs} };
-
-        # split IN statement with more than 900 elements in more statements bombined with OR
-        # because Oracle doesn't support more than 1000 elements in one IN statement.
-        my @SQLStrings;
-        LOOP:
-        while ( scalar @SortedIDs ) {
-
-            my @SortedIDsPart = splice @SortedIDs, 0, 900;
-
-            my $IDString = join ',', @SortedIDsPart;
-
-            push @SQLStrings, " t.id IN ($IDString) ";
-        }
-
-        my $SQLString = join ' OR ', @SQLStrings;
-
-        $TicketIDString .= 'AND ( ' . $SQLString . ' ) ';
-    }
 
     return if !$DBObject->Prepare(
         SQL => "SELECT DISTINCT(t.queue_id), q.name"
@@ -275,36 +227,12 @@ sub PriorityFilterValuesGet {
         return;
     }
 
+    my $TicketIDString = $Self->_TicketIDStringGet(
+        TicketIDs => $Param{TicketIDs},
+    );
+
     # get database object
     my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
-
-    my $TicketIDString = '';
-    if ( $Param{TicketIDs} && ref $Param{TicketIDs} eq 'ARRAY' && @{ $Param{TicketIDs} } ) {
-
-        # integer quote the category ids
-        for my $TicketID ( @{ $Param{TicketIDs} } ) {
-            $DBObject->Quote( $TicketID, 'Integer' );
-        }
-
-        my @SortedIDs = sort @{ $Param{TicketIDs} };
-
-        # split IN statement with more than 900 elements in more statements bombined with OR
-        # because Oracle doesn't support more than 1000 elements in one IN statement.
-        my @SQLStrings;
-        LOOP:
-        while ( scalar @SortedIDs ) {
-
-            my @SortedIDsPart = splice @SortedIDs, 0, 900;
-
-            my $IDString = join ',', @SortedIDsPart;
-
-            push @SQLStrings, " t.id IN ($IDString) ";
-        }
-
-        my $SQLString = join ' OR ', @SQLStrings;
-
-        $TicketIDString .= 'AND ( ' . $SQLString . ' ) ';
-    }
 
     return if !$DBObject->Prepare(
         SQL => "SELECT DISTINCT(t.ticket_priority_id), tp.name"
@@ -364,36 +292,12 @@ sub TypeFilterValuesGet {
         return;
     }
 
+    my $TicketIDString = $Self->_TicketIDStringGet(
+        TicketIDs => $Param{TicketIDs},
+    );
+
     # get database object
     my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
-
-    my $TicketIDString = '';
-    if ( $Param{TicketIDs} && ref $Param{TicketIDs} eq 'ARRAY' && @{ $Param{TicketIDs} } ) {
-
-        # integer quote the category ids
-        for my $TicketID ( @{ $Param{TicketIDs} } ) {
-            $DBObject->Quote( $TicketID, 'Integer' );
-        }
-
-        my @SortedIDs = sort @{ $Param{TicketIDs} };
-
-        # split IN statement with more than 900 elements in more statements bombined with OR
-        # because Oracle doesn't support more than 1000 elements in one IN statement.
-        my @SQLStrings;
-        LOOP:
-        while ( scalar @SortedIDs ) {
-
-            my @SortedIDsPart = splice @SortedIDs, 0, 900;
-
-            my $IDString = join ',', @SortedIDsPart;
-
-            push @SQLStrings, " t.id IN ($IDString) ";
-        }
-
-        my $SQLString = join ' OR ', @SQLStrings;
-
-        $TicketIDString .= 'AND ( ' . $SQLString . ' ) ';
-    }
 
     return if !$DBObject->Prepare(
         SQL => "SELECT DISTINCT(t.type_id), tt.name"
@@ -454,36 +358,12 @@ sub LockFilterValuesGet {
         return;
     }
 
+    my $TicketIDString = $Self->_TicketIDStringGet(
+        TicketIDs => $Param{TicketIDs},
+    );
+
     # get database object
     my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
-
-    my $TicketIDString = '';
-    if ( $Param{TicketIDs} && ref $Param{TicketIDs} eq 'ARRAY' && @{ $Param{TicketIDs} } ) {
-
-        # integer quote the category ids
-        for my $TicketID ( @{ $Param{TicketIDs} } ) {
-            $DBObject->Quote( $TicketID, 'Integer' );
-        }
-
-        my @SortedIDs = sort @{ $Param{TicketIDs} };
-
-        # split IN statement with more than 900 elements in more statements bombined with OR
-        # because Oracle doesn't support more than 1000 elements in one IN statement.
-        my @SQLStrings;
-        LOOP:
-        while ( scalar @SortedIDs ) {
-
-            my @SortedIDsPart = splice @SortedIDs, 0, 900;
-
-            my $IDString = join ',', @SortedIDsPart;
-
-            push @SQLStrings, " t.id IN ($IDString) ";
-        }
-
-        my $SQLString = join ' OR ', @SQLStrings;
-
-        $TicketIDString .= 'AND ( ' . $SQLString . ' ) ';
-    }
 
     return if !$DBObject->Prepare(
         SQL => "SELECT DISTINCT(t.ticket_lock_id), tlt.name"
@@ -543,36 +423,12 @@ sub ServiceFilterValuesGet {
         return;
     }
 
+    my $TicketIDString = $Self->_TicketIDStringGet(
+        TicketIDs => $Param{TicketIDs},
+    );
+
     # get database object
     my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
-
-    my $TicketIDString = '';
-    if ( $Param{TicketIDs} && ref $Param{TicketIDs} eq 'ARRAY' && @{ $Param{TicketIDs} } ) {
-
-        # integer quote the category ids
-        for my $TicketID ( @{ $Param{TicketIDs} } ) {
-            $DBObject->Quote( $TicketID, 'Integer' );
-        }
-
-        my @SortedIDs = sort @{ $Param{TicketIDs} };
-
-        # split IN statement with more than 900 elements in more statements bombined with OR
-        # because Oracle doesn't support more than 1000 elements in one IN statement.
-        my @SQLStrings;
-        LOOP:
-        while ( scalar @SortedIDs ) {
-
-            my @SortedIDsPart = splice @SortedIDs, 0, 900;
-
-            my $IDString = join ',', @SortedIDsPart;
-
-            push @SQLStrings, " t.id IN ($IDString) ";
-        }
-
-        my $SQLString = join ' OR ', @SQLStrings;
-
-        $TicketIDString .= 'AND ( ' . $SQLString . ' ) ';
-    }
 
     return if !$DBObject->Prepare(
         SQL => "SELECT DISTINCT(t.service_id), s.name"
@@ -632,36 +488,12 @@ sub SLAFilterValuesGet {
         return;
     }
 
+    my $TicketIDString = $Self->_TicketIDStringGet(
+        TicketIDs => $Param{TicketIDs},
+    );
+
     # get database object
     my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
-
-    my $TicketIDString = '';
-    if ( $Param{TicketIDs} && ref $Param{TicketIDs} eq 'ARRAY' && @{ $Param{TicketIDs} } ) {
-
-        # integer quote the category ids
-        for my $TicketID ( @{ $Param{TicketIDs} } ) {
-            $DBObject->Quote( $TicketID, 'Integer' );
-        }
-
-        my @SortedIDs = sort @{ $Param{TicketIDs} };
-
-        # split IN statement with more than 900 elements in more statements bombined with OR
-        # because Oracle doesn't support more than 1000 elements in one IN statement.
-        my @SQLStrings;
-        LOOP:
-        while ( scalar @SortedIDs ) {
-
-            my @SortedIDsPart = splice @SortedIDs, 0, 900;
-
-            my $IDString = join ',', @SortedIDsPart;
-
-            push @SQLStrings, " t.id IN ($IDString) ";
-        }
-
-        my $SQLString = join ' OR ', @SQLStrings;
-
-        $TicketIDString .= 'AND ( ' . $SQLString . ' ) ';
-    }
 
     return if !$DBObject->Prepare(
         SQL => "SELECT DISTINCT(t.sla_id), s.name"
@@ -717,36 +549,12 @@ sub CustomerFilterValuesGet {
         return;
     }
 
+    my $TicketIDString = $Self->_TicketIDStringGet(
+        TicketIDs => $Param{TicketIDs},
+    );
+
     # get database object
     my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
-
-    my $TicketIDString = '';
-    if ( $Param{TicketIDs} && ref $Param{TicketIDs} eq 'ARRAY' && @{ $Param{TicketIDs} } ) {
-
-        # integer quote the category ids
-        for my $TicketID ( @{ $Param{TicketIDs} } ) {
-            $DBObject->Quote( $TicketID, 'Integer' );
-        }
-
-        my @SortedIDs = sort @{ $Param{TicketIDs} };
-
-        # split IN statement with more than 900 elements in more statements bombined with OR
-        # because Oracle doesn't support more than 1000 elements in one IN statement.
-        my @SQLStrings;
-        LOOP:
-        while ( scalar @SortedIDs ) {
-
-            my @SortedIDsPart = splice @SortedIDs, 0, 900;
-
-            my $IDString = join ',', @SortedIDsPart;
-
-            push @SQLStrings, " t.id IN ($IDString) ";
-        }
-
-        my $SQLString = join ' OR ', @SQLStrings;
-
-        $TicketIDString .= 'AND ( ' . $SQLString . ' ) ';
-    }
 
     return if !$DBObject->Prepare(
         SQL => "SELECT DISTINCT(t.customer_id)"
@@ -802,36 +610,12 @@ sub CustomerUserIDFilterValuesGet {
         return;
     }
 
+    my $TicketIDString = $Self->_TicketIDStringGet(
+        TicketIDs => $Param{TicketIDs},
+    );
+
     # get database object
     my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
-
-    my $TicketIDString = '';
-    if ( $Param{TicketIDs} && ref $Param{TicketIDs} eq 'ARRAY' && @{ $Param{TicketIDs} } ) {
-
-        # integer quote the category ids
-        for my $TicketID ( @{ $Param{TicketIDs} } ) {
-            $DBObject->Quote( $TicketID, 'Integer' );
-        }
-
-        my @SortedIDs = sort @{ $Param{TicketIDs} };
-
-        # split IN statement with more than 900 elements in more statements bombined with OR
-        # because Oracle doesn't support more than 1000 elements in one IN statement.
-        my @SQLStrings;
-        LOOP:
-        while ( scalar @SortedIDs ) {
-
-            my @SortedIDsPart = splice @SortedIDs, 0, 900;
-
-            my $IDString = join ',', @SortedIDsPart;
-
-            push @SQLStrings, " t.id IN ($IDString) ";
-        }
-
-        my $SQLString = join ' OR ', @SQLStrings;
-
-        $TicketIDString .= 'AND ( ' . $SQLString . ' ) ';
-    }
 
     return if !$DBObject->Prepare(
         SQL => "SELECT DISTINCT(t.customer_user_id)"
@@ -891,36 +675,12 @@ sub OwnerFilterValuesGet {
         return;
     }
 
+    my $TicketIDString = $Self->_TicketIDStringGet(
+        TicketIDs => $Param{TicketIDs},
+    );
+
     # get database object
     my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
-
-    my $TicketIDString = '';
-    if ( $Param{TicketIDs} && ref $Param{TicketIDs} eq 'ARRAY' && @{ $Param{TicketIDs} } ) {
-
-        # integer quote the category ids
-        for my $TicketID ( @{ $Param{TicketIDs} } ) {
-            $DBObject->Quote( $TicketID, 'Integer' );
-        }
-
-        my @SortedIDs = sort @{ $Param{TicketIDs} };
-
-        # split IN statement with more than 900 elements in more statements bombined with OR
-        # because Oracle doesn't support more than 1000 elements in one IN statement.
-        my @SQLStrings;
-        LOOP:
-        while ( scalar @SortedIDs ) {
-
-            my @SortedIDsPart = splice @SortedIDs, 0, 900;
-
-            my $IDString = join ',', @SortedIDsPart;
-
-            push @SQLStrings, " t.id IN ($IDString) ";
-        }
-
-        my $SQLString = join ' OR ', @SQLStrings;
-
-        $TicketIDString .= 'AND ( ' . $SQLString . ' ) ';
-    }
 
     return if !$DBObject->Prepare(
         SQL => "SELECT DISTINCT(t.user_id)"
@@ -995,36 +755,12 @@ sub ResponsibleFilterValuesGet {
         return;
     }
 
+    my $TicketIDString = $Self->_TicketIDStringGet(
+        TicketIDs => $Param{TicketIDs},
+    );
+
     # get database object
     my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
-
-    my $TicketIDString = '';
-    if ( $Param{TicketIDs} && ref $Param{TicketIDs} eq 'ARRAY' && @{ $Param{TicketIDs} } ) {
-
-        # integer quote the category ids
-        for my $TicketID ( @{ $Param{TicketIDs} } ) {
-            $DBObject->Quote( $TicketID, 'Integer' );
-        }
-
-        my @SortedIDs = sort @{ $Param{TicketIDs} };
-
-        # split IN statement with more than 900 elements in more statements bombined with OR
-        # because Oracle doesn't support more than 1000 elements in one IN statement.
-        my @SQLStrings;
-        LOOP:
-        while ( scalar @SortedIDs ) {
-
-            my @SortedIDsPart = splice @SortedIDs, 0, 900;
-
-            my $IDString = join ',', @SortedIDsPart;
-
-            push @SQLStrings, " t.id IN ($IDString) ";
-        }
-
-        my $SQLString = join ' OR ', @SQLStrings;
-
-        $TicketIDString .= 'AND ( ' . $SQLString . ' ) ';
-    }
 
     return if !$DBObject->Prepare(
         SQL => "SELECT DISTINCT(t.responsible_user_id)"
@@ -1094,40 +830,17 @@ sub DynamicFieldFilterValuesGet {
         }
     }
 
+    my $TicketIDString = $Self->_TicketIDStringGet(
+        TicketIDs  => $Param{TicketIDs},
+        ColumnName => 'object_id',
+    );
+
     if ( !IsArrayRefWithData( $Param{TicketIDs} ) ) {
         $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'error',
             Message  => 'TicketIDs must be an array ref!',
         );
         return;
-    }
-
-    my $TicketIDString = '';
-    if ( $Param{TicketIDs} && ref $Param{TicketIDs} eq 'ARRAY' && @{ $Param{TicketIDs} } ) {
-
-        # integer quote the category ids
-        for my $TicketID ( @{ $Param{TicketIDs} } ) {
-            $DBObject->Quote( $TicketID, 'Integer' );
-        }
-
-        my @SortedIDs = sort @{ $Param{TicketIDs} };
-
-        # split IN statement with more than 900 elements in more statements bombined with OR
-        # because Oracle doesn't support more than 1000 elements in one IN statement.
-        my @SQLStrings;
-        LOOP:
-        while ( scalar @SortedIDs ) {
-
-            my @SortedIDsPart = splice @SortedIDs, 0, 900;
-
-            my $IDString = join ',', @SortedIDsPart;
-
-            push @SQLStrings, " object_id IN ($IDString) ";
-        }
-
-        my $SQLString = join ' OR ', @SQLStrings;
-
-        $TicketIDString .= 'AND ( ' . $SQLString . ' ) ';
     }
 
     my $ValueType = 'value_text';
@@ -1235,6 +948,57 @@ sub _GeneralDataGet {
 
     return \%DataList;
 }
+
+sub _TicketIDStringGet {
+    my ( $Self, %Param ) = @_;
+
+    # check needed stuff
+    for my $Needed (qw(TicketIDs)) {
+        if ( !$Param{$Needed} ) {
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
+                Priority => 'error',
+                Message  => "Need $Needed!",
+            );
+            return;
+        }
+    }
+
+    my $ColumnName = $Param{ColumnName} || 't.id';
+
+    my $TicketIDString = '';
+    if ( $Param{TicketIDs} && ref $Param{TicketIDs} eq 'ARRAY' && @{ $Param{TicketIDs} } ) {
+
+        # get database object
+        my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
+
+        # integer quote the category ids
+        for my $TicketID ( @{ $Param{TicketIDs} } ) {
+            $DBObject->Quote( $TicketID, 'Integer' );
+        }
+
+        my @SortedIDs = sort @{ $Param{TicketIDs} };
+
+        # split IN statement with more than 900 elements in more statements bombined with OR
+        # because Oracle doesn't support more than 1000 elements in one IN statement.
+        my @SQLStrings;
+        LOOP:
+        while ( scalar @SortedIDs ) {
+
+            my @SortedIDsPart = splice @SortedIDs, 0, 900;
+
+            my $IDString = join ',', @SortedIDsPart;
+
+            push @SQLStrings, " $ColumnName IN ($IDString) ";
+        }
+
+        my $SQLString = join ' OR ', @SQLStrings;
+
+        $TicketIDString .= ' AND ( ' . $SQLString . ' ) ';
+    }
+
+    return $TicketIDString;
+}
+
 
 =back
 
