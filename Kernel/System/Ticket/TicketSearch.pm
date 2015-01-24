@@ -2215,10 +2215,26 @@ sub _InConditionGet {
 
     # quote values
     for my $Value (@SortedIDs) {
-        return if !defined $Kernel::OM->Get('Kernel::System::DB')->Quote( $Value, 'Integer' );
+        $Kernel::OM->Get('Kernel::System::DB')->Quote( $Value, 'Integer' );
     }
 
-    return " AND $Param{TableColumn} IN (" . ( join ',', @SortedIDs ) . ")";
+    # split IN statement with more than 900 elements in more statements bombined with OR
+    # because Oracle doesn't support more than 1000 elements in one IN statement.
+    my @SQLStrings;
+    LOOP:
+    while ( scalar @SortedIDs ) {
+
+        my @SortedIDsPart = splice @SortedIDs, 0, 900;
+
+        my $IDString = join ',', @SortedIDsPart;
+
+        push @SQLStrings, " $Param{TableColumn} IN ($IDString) ";
+    }
+
+    my $SQL = join ' OR ', @SQLStrings;
+    $SQL = ' ( ' . $SQL . ' ) ';
+
+    return $SQL;
 }
 
 1;
