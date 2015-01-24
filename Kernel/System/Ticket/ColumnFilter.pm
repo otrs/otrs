@@ -103,7 +103,7 @@ sub StateFilterValuesGet {
 
         # integer quote the category ids
         for my $TicketID ( @{ $Param{TicketIDs} } ) {
-            $Self->{DBObject}->Quote( $TicketID, 'Integer' );
+            $DBObject->Quote( $TicketID, 'Integer' );
         }
 
         my @SortedIDs = sort @{ $Param{TicketIDs} };
@@ -194,7 +194,7 @@ sub QueueFilterValuesGet {
 
         # integer quote the category ids
         for my $TicketID ( @{ $Param{TicketIDs} } ) {
-            $Self->{DBObject}->Quote( $TicketID, 'Integer' );
+            $DBObject->Quote( $TicketID, 'Integer' );
         }
 
         my @SortedIDs = sort @{ $Param{TicketIDs} };
@@ -283,7 +283,7 @@ sub PriorityFilterValuesGet {
 
         # integer quote the category ids
         for my $TicketID ( @{ $Param{TicketIDs} } ) {
-            $Self->{DBObject}->Quote( $TicketID, 'Integer' );
+            $DBObject->Quote( $TicketID, 'Integer' );
         }
 
         my @SortedIDs = sort @{ $Param{TicketIDs} };
@@ -372,7 +372,7 @@ sub TypeFilterValuesGet {
 
         # integer quote the category ids
         for my $TicketID ( @{ $Param{TicketIDs} } ) {
-            $Self->{DBObject}->Quote( $TicketID, 'Integer' );
+            $DBObject->Quote( $TicketID, 'Integer' );
         }
 
         my @SortedIDs = sort @{ $Param{TicketIDs} };
@@ -462,7 +462,7 @@ sub LockFilterValuesGet {
 
         # integer quote the category ids
         for my $TicketID ( @{ $Param{TicketIDs} } ) {
-            $Self->{DBObject}->Quote( $TicketID, 'Integer' );
+            $DBObject->Quote( $TicketID, 'Integer' );
         }
 
         my @SortedIDs = sort @{ $Param{TicketIDs} };
@@ -551,7 +551,7 @@ sub ServiceFilterValuesGet {
 
         # integer quote the category ids
         for my $TicketID ( @{ $Param{TicketIDs} } ) {
-            $Self->{DBObject}->Quote( $TicketID, 'Integer' );
+            $DBObject->Quote( $TicketID, 'Integer' );
         }
 
         my @SortedIDs = sort @{ $Param{TicketIDs} };
@@ -640,7 +640,7 @@ sub SLAFilterValuesGet {
 
         # integer quote the category ids
         for my $TicketID ( @{ $Param{TicketIDs} } ) {
-            $Self->{DBObject}->Quote( $TicketID, 'Integer' );
+            $DBObject->Quote( $TicketID, 'Integer' );
         }
 
         my @SortedIDs = sort @{ $Param{TicketIDs} };
@@ -725,7 +725,7 @@ sub CustomerFilterValuesGet {
 
         # integer quote the category ids
         for my $TicketID ( @{ $Param{TicketIDs} } ) {
-            $Self->{DBObject}->Quote( $TicketID, 'Integer' );
+            $DBObject->Quote( $TicketID, 'Integer' );
         }
 
         my @SortedIDs = sort @{ $Param{TicketIDs} };
@@ -810,7 +810,7 @@ sub CustomerUserIDFilterValuesGet {
 
         # integer quote the category ids
         for my $TicketID ( @{ $Param{TicketIDs} } ) {
-            $Self->{DBObject}->Quote( $TicketID, 'Integer' );
+            $DBObject->Quote( $TicketID, 'Integer' );
         }
 
         my @SortedIDs = sort @{ $Param{TicketIDs} };
@@ -899,7 +899,7 @@ sub OwnerFilterValuesGet {
 
         # integer quote the category ids
         for my $TicketID ( @{ $Param{TicketIDs} } ) {
-            $Self->{DBObject}->Quote( $TicketID, 'Integer' );
+            $DBObject->Quote( $TicketID, 'Integer' );
         }
 
         my @SortedIDs = sort @{ $Param{TicketIDs} };
@@ -1003,7 +1003,7 @@ sub ResponsibleFilterValuesGet {
 
         # integer quote the category ids
         for my $TicketID ( @{ $Param{TicketIDs} } ) {
-            $Self->{DBObject}->Quote( $TicketID, 'Integer' );
+            $DBObject->Quote( $TicketID, 'Integer' );
         }
 
         my @SortedIDs = sort @{ $Param{TicketIDs} };
@@ -1107,7 +1107,7 @@ sub DynamicFieldFilterValuesGet {
 
         # integer quote the category ids
         for my $TicketID ( @{ $Param{TicketIDs} } ) {
-            $Self->{DBObject}->Quote( $TicketID, 'Integer' );
+            $DBObject->Quote( $TicketID, 'Integer' );
         }
 
         my @SortedIDs = sort @{ $Param{TicketIDs} };
