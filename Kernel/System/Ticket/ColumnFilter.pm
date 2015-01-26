@@ -95,16 +95,18 @@ sub StateFilterValuesGet {
         return;
     }
 
+    my $TicketIDString = $Self->_TicketIDStringGet(
+        TicketIDs => $Param{TicketIDs},
+    );
+
     # get database object
     my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
-
-    my @TicketIDs = @{ $Param{TicketIDs} };
-    my $TicketIDString = join ', ', sort @TicketIDs;
 
     return if !$DBObject->Prepare(
         SQL => "SELECT DISTINCT(t.ticket_state_id), ts.name"
             . " FROM ticket t, ticket_state ts"
-            . " WHERE t.id IN ($TicketIDString) AND t.ticket_state_id = ts.id"
+            . " WHERE t.ticket_state_id = ts.id"
+            . $TicketIDString
             . " ORDER BY t.ticket_state_id DESC",
     );
 
@@ -160,16 +162,18 @@ sub QueueFilterValuesGet {
         return;
     }
 
+    my $TicketIDString = $Self->_TicketIDStringGet(
+        TicketIDs => $Param{TicketIDs},
+    );
+
     # get database object
     my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
-
-    my @TicketIDs = @{ $Param{TicketIDs} };
-    my $TicketIDString = join ', ', sort @TicketIDs;
 
     return if !$DBObject->Prepare(
         SQL => "SELECT DISTINCT(t.queue_id), q.name"
             . " FROM ticket t, queue q"
-            . " WHERE t.id IN ($TicketIDString) AND t.queue_id = q.id"
+            . " WHERE t.queue_id = q.id"
+            . $TicketIDString
             . " ORDER BY t.queue_id DESC",
     );
 
@@ -223,16 +227,18 @@ sub PriorityFilterValuesGet {
         return;
     }
 
+    my $TicketIDString = $Self->_TicketIDStringGet(
+        TicketIDs => $Param{TicketIDs},
+    );
+
     # get database object
     my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
-
-    my @TicketIDs = @{ $Param{TicketIDs} };
-    my $TicketIDString = join ', ', sort @TicketIDs;
 
     return if !$DBObject->Prepare(
         SQL => "SELECT DISTINCT(t.ticket_priority_id), tp.name"
             . " FROM ticket t, ticket_priority tp"
-            . " WHERE t.id IN ($TicketIDString) AND t.ticket_priority_id = tp.id"
+            . " WHERE t.ticket_priority_id = tp.id"
+            . $TicketIDString
             . " ORDER BY t.ticket_priority_id DESC",
     );
 
@@ -286,16 +292,18 @@ sub TypeFilterValuesGet {
         return;
     }
 
+    my $TicketIDString = $Self->_TicketIDStringGet(
+        TicketIDs => $Param{TicketIDs},
+    );
+
     # get database object
     my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
-
-    my @TicketIDs = @{ $Param{TicketIDs} };
-    my $TicketIDString = join ', ', sort @TicketIDs;
 
     return if !$DBObject->Prepare(
         SQL => "SELECT DISTINCT(t.type_id), tt.name"
             . " FROM ticket t, ticket_type tt"
-            . " WHERE t.id IN ($TicketIDString) AND t.type_id = tt.id"
+            . " WHERE AND t.type_id = tt.id"
+            . $TicketIDString
             . " ORDER BY t.type_id DESC",
     );
 
@@ -350,16 +358,18 @@ sub LockFilterValuesGet {
         return;
     }
 
+    my $TicketIDString = $Self->_TicketIDStringGet(
+        TicketIDs => $Param{TicketIDs},
+    );
+
     # get database object
     my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
-
-    my @TicketIDs = @{ $Param{TicketIDs} };
-    my $TicketIDString = join ', ', sort @TicketIDs;
 
     return if !$DBObject->Prepare(
         SQL => "SELECT DISTINCT(t.ticket_lock_id), tlt.name"
             . " FROM ticket t, ticket_lock_type tlt"
-            . " WHERE t.id IN ($TicketIDString) AND t.ticket_lock_id = tlt.id"
+            . " WHERE ticket_lock_id = tlt.id"
+            . $TicketIDString
             . " ORDER BY t.ticket_lock_id DESC",
     );
 
@@ -413,16 +423,18 @@ sub ServiceFilterValuesGet {
         return;
     }
 
+    my $TicketIDString = $Self->_TicketIDStringGet(
+        TicketIDs => $Param{TicketIDs},
+    );
+
     # get database object
     my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
-
-    my @TicketIDs = @{ $Param{TicketIDs} };
-    my $TicketIDString = join ', ', sort @TicketIDs;
 
     return if !$DBObject->Prepare(
         SQL => "SELECT DISTINCT(t.service_id), s.name"
             . " FROM ticket t, service s"
-            . " WHERE t.id IN ($TicketIDString) AND t.service_id = s.id"
+            . " WHERE t.service_id = s.id"
+            . $TicketIDString
             . " ORDER BY t.service_id DESC",
     );
 
@@ -476,16 +488,18 @@ sub SLAFilterValuesGet {
         return;
     }
 
+    my $TicketIDString = $Self->_TicketIDStringGet(
+        TicketIDs => $Param{TicketIDs},
+    );
+
     # get database object
     my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
-
-    my @TicketIDs = @{ $Param{TicketIDs} };
-    my $TicketIDString = join ', ', sort @TicketIDs;
 
     return if !$DBObject->Prepare(
         SQL => "SELECT DISTINCT(t.sla_id), s.name"
             . " FROM ticket t, sla s"
-            . " WHERE t.id IN ($TicketIDString) AND t.sla_id = s.id"
+            . " WHERE t.sla_id = s.id"
+            . $TicketIDString
             . " ORDER BY t.sla_id DESC",
     );
 
@@ -535,16 +549,18 @@ sub CustomerFilterValuesGet {
         return;
     }
 
+    my $TicketIDString = $Self->_TicketIDStringGet(
+        TicketIDs => $Param{TicketIDs},
+    );
+
     # get database object
     my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
-
-    my @TicketIDs = @{ $Param{TicketIDs} };
-    my $TicketIDString = join ', ', sort @TicketIDs;
 
     return if !$DBObject->Prepare(
         SQL => "SELECT DISTINCT(t.customer_id)"
             . " FROM ticket t"
-            . " WHERE t.id IN ($TicketIDString)"
+            . " WHERE 1 = 1"
+            . $TicketIDString
             . " ORDER BY t.customer_id DESC",
     );
 
@@ -594,16 +610,18 @@ sub CustomerUserIDFilterValuesGet {
         return;
     }
 
+    my $TicketIDString = $Self->_TicketIDStringGet(
+        TicketIDs => $Param{TicketIDs},
+    );
+
     # get database object
     my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
-
-    my @TicketIDs = @{ $Param{TicketIDs} };
-    my $TicketIDString = join ', ', sort @TicketIDs;
 
     return if !$DBObject->Prepare(
         SQL => "SELECT DISTINCT(t.customer_user_id)"
             . " FROM ticket t"
-            . " WHERE t.id IN ($TicketIDString)"
+            . " WHERE 1 = 1"
+            . $TicketIDString
             . " ORDER BY t.customer_user_id DESC",
     );
 
@@ -657,16 +675,18 @@ sub OwnerFilterValuesGet {
         return;
     }
 
+    my $TicketIDString = $Self->_TicketIDStringGet(
+        TicketIDs => $Param{TicketIDs},
+    );
+
     # get database object
     my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
-
-    my @TicketIDs = @{ $Param{TicketIDs} };
-    my $TicketIDString = join ', ', sort @TicketIDs;
 
     return if !$DBObject->Prepare(
         SQL => "SELECT DISTINCT(t.user_id)"
             . " FROM ticket t"
-            . " WHERE t.id IN ($TicketIDString)"
+            . " WHERE 1 = 1"
+            . $TicketIDString
             . " ORDER BY t.user_id DESC",
     );
 
@@ -735,16 +755,18 @@ sub ResponsibleFilterValuesGet {
         return;
     }
 
+    my $TicketIDString = $Self->_TicketIDStringGet(
+        TicketIDs => $Param{TicketIDs},
+    );
+
     # get database object
     my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
-
-    my @TicketIDs = @{ $Param{TicketIDs} };
-    my $TicketIDString = join ', ', sort @TicketIDs;
 
     return if !$DBObject->Prepare(
         SQL => "SELECT DISTINCT(t.responsible_user_id)"
             . " FROM ticket t"
-            . " WHERE t.id IN ($TicketIDString)"
+            . " WHERE 1 = 1"
+            . $TicketIDString
             . " ORDER BY t.responsible_user_id DESC",
     );
 
@@ -808,6 +830,11 @@ sub DynamicFieldFilterValuesGet {
         }
     }
 
+    my $TicketIDString = $Self->_TicketIDStringGet(
+        TicketIDs  => $Param{TicketIDs},
+        ColumnName => 'object_id',
+    );
+
     if ( !IsArrayRefWithData( $Param{TicketIDs} ) ) {
         $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'error',
@@ -815,9 +842,6 @@ sub DynamicFieldFilterValuesGet {
         );
         return;
     }
-
-    my @TicketIDs = @{ $Param{TicketIDs} };
-    my $TicketIDString = join ', ', sort @TicketIDs;
 
     my $ValueType = 'value_text';
     if ( $Param{ValueType} && $Param{ValueType} eq 'DateTime' ) {
@@ -835,7 +859,7 @@ sub DynamicFieldFilterValuesGet {
             "SELECT DISTINCT($ValueType)"
             . ' FROM dynamic_field_value'
             . ' WHERE field_id = ?'
-            . " AND object_id IN ($TicketIDString)"
+            . $TicketIDString
             . " ORDER BY $ValueType DESC",
         Bind => [ \$Param{FieldID} ],
     );
@@ -924,6 +948,57 @@ sub _GeneralDataGet {
 
     return \%DataList;
 }
+
+sub _TicketIDStringGet {
+    my ( $Self, %Param ) = @_;
+
+    # check needed stuff
+    for my $Needed (qw(TicketIDs)) {
+        if ( !$Param{$Needed} ) {
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
+                Priority => 'error',
+                Message  => "Need $Needed!",
+            );
+            return;
+        }
+    }
+
+    my $ColumnName = $Param{ColumnName} || 't.id';
+
+    my $TicketIDString = '';
+    if ( $Param{TicketIDs} && ref $Param{TicketIDs} eq 'ARRAY' && @{ $Param{TicketIDs} } ) {
+
+        # get database object
+        my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
+
+        # integer quote the category ids
+        for my $TicketID ( @{ $Param{TicketIDs} } ) {
+            $DBObject->Quote( $TicketID, 'Integer' );
+        }
+
+        my @SortedIDs = sort @{ $Param{TicketIDs} };
+
+        # split IN statement with more than 900 elements in more statements bombined with OR
+        # because Oracle doesn't support more than 1000 elements in one IN statement.
+        my @SQLStrings;
+        LOOP:
+        while ( scalar @SortedIDs ) {
+
+            my @SortedIDsPart = splice @SortedIDs, 0, 900;
+
+            my $IDString = join ',', @SortedIDsPart;
+
+            push @SQLStrings, " $ColumnName IN ($IDString) ";
+        }
+
+        my $SQLString = join ' OR ', @SQLStrings;
+
+        $TicketIDString .= ' AND ( ' . $SQLString . ' ) ';
+    }
+
+    return $TicketIDString;
+}
+
 
 =back
 
