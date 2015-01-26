@@ -943,7 +943,7 @@ msgstr "Pendiente hasta"
 msgid ""
 "Don't use the Superuser account to work with OTRS! Create new Agents and "
 "work with these accounts instead."
-msgstr "No usue la cuenta de superusuario para trabajar con OTRS. Cree nuevos agentes y trabaje con esas cuentas."
+msgstr "No use la cuenta de superusuario para trabajar con OTRS. Cree nuevos agentes y trabaje con esas cuentas."
 
 #. Template: AAABase
 msgid "Dispatching by email To: field."
