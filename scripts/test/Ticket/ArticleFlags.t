@@ -264,6 +264,98 @@ for my $Test (@Tests) {
     );
 }
 
+# test searching for article flags
+
+my @SearchTestFlagsSet = qw( f1 f2 f3 );
+my @SearchTestFlagsNotSet = qw( f4 f5 );
+
+for my $Flag (@SearchTestFlagsSet) {
+    my $Set = $TicketObject->ArticleFlagSet(
+        ArticleID => $ArticleID,
+        Key       => $Flag,
+        Value     => 42,
+        UserID    => 1,
+    );
+
+    $Self->True(
+        $Set,
+        "Can set article flag $Flag",
+    );
+}
+
+my @FlagSearchTests = (
+    {
+        Search  => {
+            ArticleFlag => {
+                f1      => 42,
+                f2      => 42,
+            },
+        },
+        Expected    => 1,
+        Name        => "Can find ticket when searching for two article flags",
+    },
+    {
+        Search  => {
+            ArticleFlag => {
+                f1      => 42,
+                f2      => 1,
+            },
+        },
+        Expected    => 0,
+        Name        => "Wrong flag value leads to no match",
+    },
+    {
+        Search  => {
+            NotArticleFlag => {
+                f1      => 23,
+                f4      => 42,
+                f5      => 'nothing much',
+            },
+        },
+        Expected    => 1,
+        Name        => "Non-matching NotArticleFlag do not prevent finding of ticket",
+    },
+    {
+        Search  => {
+            NotArticleFlag => {
+                f1      => 42,
+            },
+        },
+        Expected    => 0,
+        Name        => "NotArticleFlag can prevent tickets from being found",
+    },
+    {
+        Search  => {
+            ArticleFlag => {
+                f2      => 42,
+            },
+            NotArticleFlag => {
+                f1      => 23,
+                f4      => 42,
+                f5      => 'nothing much',
+            },
+        },
+        Expected    => 1,
+        Name        => "Combining ArticleFlag and NotArticleFlag",
+    },
+);
+
+for my $Test (@FlagSearchTests) {
+    my $Found = $TicketObject->TicketSearch(
+        TicketID    => $TicketID,
+        Result      => 'COUNT',
+        UserID      => 1,
+        %{ $Test->{Search} },
+    );
+
+    $Self->Is(
+        $Found,
+        $Test->{Expected},
+        $Test->{Name},
+    );
+}
+
+
 # the ticket is no longer needed
 $TicketObject->TicketDelete(
     TicketID => $TicketID,

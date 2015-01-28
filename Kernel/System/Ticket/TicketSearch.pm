@@ -132,6 +132,9 @@ To find tickets in your system.
             SmallerThanEquals => '2002-02-02 02:02:02',
         }
 
+        # User ID for searching tickets by ticket flags (defaults to UserID)
+        TicketFlagUserID => 1,
+
         # search for ticket flags
         TicketFlag => {
             Seen => 1,
@@ -142,6 +145,20 @@ To find tickets in your system.
         NotTicketFlag => {
             Seen => 1,
         },
+
+        # User ID for searching tickets by article flags (defaults to UserID)
+        ArticleFlagUserID => 1,
+
+
+        # search for tickets by the presence of flags on articles
+        ArticleFlag => {
+            Important => 1,
+        }
+
+        # search for tickets by the absence of flags on articles
+        NotArticleFlag => {
+            Important => 1,
+        }
 
         # article stuff (optional)
         From    => '%spam@example.com%',
@@ -524,6 +541,17 @@ sub TicketSearch {
         my $Index = 1;
         for my $Key ( sort keys %{ $Param{TicketFlag} } ) {
             $SQLFrom .= "INNER JOIN ticket_flag tf$Index ON st.id = tf$Index.ticket_id ";
+            $Index++;
+        }
+    }
+
+    # add article and article_flag tables
+    if ( $Param{ArticleFlag} ) {
+        my $Index = 1;
+        for my $Key ( sort keys %{ $Param{ArticleFlag} } ) {
+            $SQLFrom .= "INNER JOIN article ataf$Index ON st.id = ataf$Index.ticket_id ";
+            $SQLFrom .=
+                "INNER JOIN article_flag taf$Index ON ataf$Index.id = taf$Index.article_id ";
             $Index++;
         }
     }
@@ -1082,6 +1110,25 @@ sub TicketSearch {
         }
     }
 
+    # add article flag extension
+    if ( $Param{ArticleFlag} ) {
+        my $ArticleFlagUserID = $Param{ArticleFlagUserID} || $Param{UserID};
+        return if !defined $ArticleFlagUserID;
+
+        my $Index = 1;
+        for my $Key ( sort keys %{ $Param{ArticleFlag} } ) {
+            my $Value = $Param{ArticleFlag}->{$Key};
+            return if !defined $Value;
+
+            $SQLExt .= " AND taf$Index.article_key = '" . $DBObject->Quote($Key) . "'";
+            $SQLExt .= " AND taf$Index.article_value = '" . $DBObject->Quote($Value) . "'";
+            $SQLExt .= " AND taf$Index.create_by = "
+                . $DBObject->Quote( $ArticleFlagUserID, 'Integer' );
+
+            $Index++;
+        }
+    }
+
     if ( $Param{NotTicketFlag} ) {
         my $Index = 1;
         for my $Key ( sort keys %{ $Param{NotTicketFlag} } ) {
@@ -1094,6 +1141,27 @@ sub TicketSearch {
             $Index++;
         }
     }
+
+    if ( $Param{NotArticleFlag} ) {
+        my $ArticleFlagUserID = $Param{ArticleFlagUserID} // $Param{UserID};
+        my $Index = 1;
+        for my $Key ( sort keys %{ $Param{NotArticleFlag} } ) {
+            my $Value = $Param{NotArticleFlag}->{$Key};
+            return if !defined $Value;
+
+            $SQLExt .= " AND NOT EXISTS (SELECT na$Index.id "
+                        . " FROM article na$Index"
+                        . " JOIN article_flag naf$Index "
+                        . " WHERE naf$Index.article_key = '" . $DBObject->Quote($Key) . "' "
+                        . " AND naf$Index.article_value = '" . $DBObject->Quote($Value) . "' "
+                        . " AND naf$Index.create_by = "
+                            . $DBObject->Quote($ArticleFlagUserID, 'Integer')
+                        . " AND na$Index.ticket_id = st.id) ";
+
+            $Index++;
+        }
+    }
+
 
     # other ticket stuff
     my %FieldSQLMap = (
