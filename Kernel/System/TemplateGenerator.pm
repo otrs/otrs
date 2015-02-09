@@ -412,11 +412,12 @@ sub Template {
 
     # replace place holder stuff
     my $TemplateText = $Self->_Replace(
-        RichText => $Self->{RichText},
-        Text     => $Template{Template} || '',
-        TicketID => $Param{TicketID} || '',
-        Data     => $Param{Data} || {},
-        UserID   => $Param{UserID},
+        RichText  => $Self->{RichText},
+        Text      => $Template{Template} || '',
+        TicketID  => $Param{TicketID} || '',
+        Data      => $Param{Data} || {},
+        UserID    => $Param{UserID},
+        ArticleID => $Param{ArticleID} || '',
     );
 
     return $TemplateText;
@@ -977,7 +978,13 @@ sub _Replace {
     }
 
     my %Ticket;
-    if ( $Param{TicketID} ) {
+    if ( $Param{ArticleID} ) {
+        %Article = $Kernel::OM->Get('Kernel::System::Ticket')->ArticleGet(
+            ArticleID     => $Param{ArticleID},
+            DynamicFields => 1,
+        );
+    }
+    elsif ( $Param{TicketID} ) {
         %Ticket = $Kernel::OM->Get('Kernel::System::Ticket')->TicketGet(
             TicketID      => $Param{TicketID},
             DynamicFields => 1,
@@ -1184,7 +1191,7 @@ sub _Replace {
     # get the dynamic fields for ticket object
     my $DynamicFieldList = $DynamicFieldObject->DynamicFieldListGet(
         Valid      => 1,
-        ObjectType => ['Ticket'],
+        ObjectType => ['Ticket', 'Article'],
     ) || [];
 
     # cycle through the activated Dynamic Fields for this screen
