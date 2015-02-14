@@ -643,6 +643,9 @@ sub _SendNotification {
         for my $Key ( sort keys %Recipient ) {
 
             next KEY if !$Recipient{$Key};
+            
+            # do not convert email addresses to HTML
+            next KEY if ($Key eq 'Email');
 
             $Recipient{$Key} = $HTMLUtilsObject->ToHTML(
                 String => $Recipient{$Key},
