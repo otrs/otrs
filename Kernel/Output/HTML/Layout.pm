@@ -5001,6 +5001,8 @@ sub WrapPlainText {
         return;
     }
 
+    $Param{PlainText} =~ s/\r\n?/\n/g;
+
     # Return PlainText if we have less than MaxCharacters
     if ( length $Param{PlainText} < $Param{MaxCharacters} ) {
         return $Param{PlainText};
