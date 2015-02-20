@@ -599,7 +599,7 @@ sub Run {
 
             # set DSN for Config.pm
             $DB{ConfigDSN} = 'DBI:Oracle://$Self->{DatabaseHost}:' . $DB{DBPort} . '/' . $DB{DBSID};
-            $DB{DSN}       = "DBI:Oracle://$Self->{DBHost}:$DB{DBPort}/$Self->{DBSID}";
+            $DB{DSN}       = "DBI:Oracle://$DB{DBHost}:$DB{DBPort}/$DB{DBSID}";
             $Self->{ConfigObject}->Set(
                 Key   => 'Database::Connect',
                 Value => "ALTER SESSION SET NLS_DATE_FORMAT = 'YYYY-MM-DD HH24:MI:SS'",
@@ -1170,7 +1170,7 @@ sub ConnectToDB {
         $Param{DSN} = "DBI:Pg:host=$Param{DBHost};dbname=$Param{DBName}";
     }
     elsif ( $Param{DBType} eq 'oracle' ) {
-        $Param{DSN} = "DBI:Oracle:host=$Param{DBHost};sid=$Param{DBSID};port=$Param{DBPort};"
+        $Param{DSN} = "DBI:Oracle://$Param{DBHost}:$Param{DBPort}/$Param{DBSID}";
     }
 
     # extract driver to load for install test
