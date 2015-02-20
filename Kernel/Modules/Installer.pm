@@ -598,7 +598,7 @@ sub Run {
         elsif ( $DB{DBType} eq 'oracle' ) {
 
             # set DSN for Config.pm
-            $DB{ConfigDSN} = 'DBI:Oracle://$Self->{DatabaseHost}:' . $DB{DBPort} . '/' . $DB{DBSID};
+            $DB{ConfigDSN} = 'DBI:Oracle://$Self->{DatabaseHost}/$Self->{Database}';
             $DB{DSN}       = "DBI:Oracle://$DB{DBHost}:$DB{DBPort}/$DB{DBSID}";
             $Self->{ConfigObject}->Set(
                 Key   => 'Database::Connect',
@@ -650,13 +650,25 @@ sub Run {
         }
 
         # ReConfigure Config.pm
-        my $ReConfigure = $Self->ReConfigure(
-            DatabaseDSN  => $DB{ConfigDSN},
-            DatabaseHost => $DB{DBHost},
-            Database     => $DB{DBName},
-            DatabaseUser => $DB{OTRSDBUser},
-            DatabasePw   => $DB{OTRSDBPassword},
-        );
+        my $ReConfigure;
+        if ( $DB{DBType} eq 'oracle' ) {
+            $ReConfigure = $Self->ReConfigure(
+                DatabaseDSN  => $DB{ConfigDSN},
+                DatabaseHost => $DB{DBHost} . ':' . $DB{DBPort},
+                Database     => $DB{DBSID},
+                DatabaseUser => $DB{OTRSDBUser},
+                DatabasePw   => $DB{OTRSDBPassword},
+            );
+        }
+        else {
+            $ReConfigure = $Self->ReConfigure(
+                DatabaseDSN  => $DB{ConfigDSN},
+                DatabaseHost => $DB{DBHost},
+                Database     => $DB{DBName},
+                DatabaseUser => $DB{OTRSDBUser},
+                DatabasePw   => $DB{OTRSDBPassword},
+            );
+        }
 
         if ($ReConfigure) {
             my $Output =
