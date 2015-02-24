@@ -91,12 +91,21 @@ Core.Agent.TicketAction = (function (TargetNS) {
      */
     function AddMailAddress($Link) {
         var $Element = $('#' + $Link.attr('rel')),
-            NewValue = $Element.val();
+            NewValue = $Element.val(),
+            NewData;
         if (NewValue.length) {
             NewValue = NewValue + ', ';
         }
         NewValue = NewValue + Core.Data.Get($Link.closest('tr'), 'Email');
         $Element.val(NewValue);
+        if (typeof $Element.attr("data-customerkey") !== 'undefined' ){
+            NewData = $Element.attr("data-customerkey");
+            if(NewData.length){
+                NewData = NewData + ', ';
+            }
+            NewData = NewData + Core.Data.Get($Link, 'customerkey');
+            $Element.attr("data-customerkey",NewData);
+        }
     }
 
     /**
@@ -270,7 +279,8 @@ Core.Agent.TicketAction = (function (TargetNS) {
 
                 $.each($('#ToCustomer').val().split(/, ?/), function(Index, Value){
                     $To.val(Value);
-                    parent.Core.Agent.CustomerSearch.AddTicketCustomer( 'ToCustomer', Value );
+                    var CustomerKey = Core.Data.Get($('#ToCustomer'), "customerkey").split(/, ?/);
+                    parent.Core.Agent.CustomerSearch.AddTicketCustomer( 'ToCustomer',Value , CustomerKey[Index] );
                 });
 
                 $.each($('#CcCustomer').val().split(/, ?/), function(Index, Value){
