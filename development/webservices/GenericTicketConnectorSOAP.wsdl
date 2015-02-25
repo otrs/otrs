@@ -848,6 +848,29 @@
                         type="xsd:string"
                         minOccurs="0">
                     </xsd:element>
+		<!-- Begin code added by Andrey Fedorov 02.2015-->
+                    <xsd:element
+                        name="DynamicField_X"
+                        type="xsd:string"
+                        minOccurs="0">
+                    </xsd:element>
+
+                    <xsd:element
+                        name="EscalationDestinationDate"
+                        type="xsd:string"
+                        minOccurs="0">
+                    </xsd:element>
+                    <xsd:element
+                        name="EscalationDestinationIn"
+                        type="xsd:string"
+                        minOccurs="0">
+                    </xsd:element>
+                    <xsd:element
+                        name="EscalationDestinationTime"
+                        type="xsd:string"
+                        minOccurs="0">
+                    </xsd:element>
+		<!-- End code added by Andrey Fedorov -->
                     <xsd:element
                         name="EscalationResponseTime"
                         type="xsd:string"
@@ -864,11 +887,108 @@
                         type="xsd:string"
                         maxOccurs="1">
                     </xsd:element>
+		<!-- Begin code added by Andrey Fedorov 02.2015-->
+                    <xsd:element
+                        name="EscalationTimeWorkingTime"
+                        type="xsd:string"
+                        minOccurs="0">
+                    </xsd:element>
+		<!-- End code added by Andrey Fedorov -->
                     <xsd:element
                         name="EscalationUpdateTime"
                         type="xsd:string"
                         minOccurs="0">
                     </xsd:element>
+		<!-- Begin code added by Andrey Fedorov 02.2015-->
+                    <xsd:element
+                        name="FirstResponseTimeEscalation"
+                        type="xsd:string"
+                        minOccurs="0">
+                    </xsd:element>
+                    <xsd:element
+                        name="FirstResponseTimeNotification"
+                        type="xsd:string"
+                        minOccurs="0">
+                    </xsd:element>
+                    <xsd:element
+                        name="FirstResponseTimeDestinationTime"
+                        type="xsd:string"
+                        minOccurs="0">
+                    </xsd:element>
+                    <xsd:element
+                        name="FirstResponseTimeDestinationDate"
+                        type="xsd:string"
+                        minOccurs="0">
+                    </xsd:element>
+                    <xsd:element
+                        name="FirstResponseTimeWorkingTime"
+                        type="xsd:string"
+                        minOccurs="0">
+                    </xsd:element>
+                    <xsd:element
+                        name="FirstResponseTime"
+                        type="xsd:string"
+                        minOccurs="0">
+                    </xsd:element>
+
+                    <xsd:element
+                        name="UpdateTimeEscalation"
+                        type="xsd:string"
+                        minOccurs="0">
+                    </xsd:element>
+                    <xsd:element
+                        name="UpdateTimeNotification"
+                        type="xsd:string"
+                        minOccurs="0">
+                    </xsd:element>
+                    <xsd:element
+                        name="UpdateTimeDestinationTime"
+                        type="xsd:string"
+                        minOccurs="0">
+                    </xsd:element>
+                    <xsd:element
+                        name="UpdateTimeDestinationDate"
+                        type="xsd:string"
+                        minOccurs="0">
+                    </xsd:element>
+                    <xsd:element
+                        name="UpdateTimeWorkingTime"
+                        type="xsd:string"
+                        minOccurs="0">
+                    </xsd:element>
+                    <xsd:element
+                        name="UpdateTime"
+                        type="xsd:string"
+                        minOccurs="0">
+                    </xsd:element>
+
+                    <xsd:element
+                        name="FirstResponse"
+                        type="xsd:string"
+                        minOccurs="0">
+                    </xsd:element>
+                    <xsd:element
+                        name="FirstResponseInMin"
+                        type="xsd:string"
+                        minOccurs="0">
+                    </xsd:element>
+                    <xsd:element
+                        name="FirstResponseDiffInMin"
+                        type="xsd:string"
+                        minOccurs="0">
+                    </xsd:element>
+
+                    <xsd:element
+                        name="SolutionInMin"
+                        type="xsd:string"
+                        minOccurs="0">
+                    </xsd:element>
+                    <xsd:element
+                        name="SolutionDiffInMin"
+                        type="xsd:string"
+                        minOccurs="0">
+                    </xsd:element>
+		<!-- End code added by Andrey Fedorov -->
                     <xsd:element
                         name="FirstLock"
                         type="xsd:string"
@@ -967,6 +1087,33 @@
                         type="xsd:string"
                         minOccurs="1">
                     </xsd:element>
+		<!-- Begin code added by Andrey Fedorov 02.2015-->
+                    <xsd:element
+                        name="SolutionTimeEscalation"
+                        type="xsd:string"
+                        minOccurs="0">
+                    </xsd:element>
+                    <xsd:element
+                        name="SolutionTimeNotification"
+                        type="xsd:string"
+                        minOccurs="0">
+                    </xsd:element>
+                    <xsd:element
+                        name="SolutionTimeDestinationDate"
+                        type="xsd:string"
+                        minOccurs="0">
+                    </xsd:element>
+                    <xsd:element
+                        name="SolutionTimeDestinationTime"
+                        type="xsd:string"
+                        minOccurs="0">
+                    </xsd:element>
+                    <xsd:element
+                        name="SolutionTimeWorkingTime"
+                        type="xsd:string"
+                        minOccurs="0">
+                    </xsd:element>
+		<!-- End code added by Andrey Fedorov -->
                     <xsd:element
                         name="State"
                         type="xsd:string"
@@ -1140,6 +1287,13 @@
                         type="xsd:string"
                         minOccurs="0">
                     </xsd:element>
+		    <!-- Begin of code by Andrey Fedorov -->
+                    <xsd:element
+                        name="DynamicField_X"
+                        type="xsd:string"
+                        minOccurs="0">
+                    </xsd:element>
+		    <!-- End of code by Andrey Fedorov -->
                     <xsd:element
                         name="EscalationResponseTime"
                         type="xsd:string"
