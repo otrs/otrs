@@ -1177,6 +1177,21 @@ sub _MaskRun {
         }
     }
 
+    # prepare archive flag
+    if ( $Self->{ConfigObject}->Get('Ticket::ArchiveSystem') ) {
+
+        $JobData{SearchInArchive} ||= '';
+        if ( $JobData{SearchInArchive} eq 'AllTickets' ) {
+            $JobData{ArchiveFlags} = [ 'y', 'n' ];
+        }
+        elsif ( $JobData{SearchInArchive} eq 'ArchivedTickets' ) {
+            $JobData{ArchiveFlags} = ['y'];
+        }
+        else {
+            $JobData{ArchiveFlags} = ['n'];
+        }
+    }
+
     # perform ticket search
     my $Counter = $Self->{TicketObject}->TicketSearch(
         Result          => 'COUNT',
