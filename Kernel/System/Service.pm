@@ -101,7 +101,7 @@ sub ServiceList {
     # read cache
     my $CacheKey = 'ServiceList::Valid::' . $Param{Valid};
 
-    if ( defined $Param{KeepChildren} && $Param{KeepChildren} eq '1' ) {
+    if ( $Param{Valid} && defined $Param{KeepChildren} && $Param{KeepChildren} eq '1' ) {
         $CacheKey .= '::KeepChildren::' . $Param{KeepChildren};
     }
 
