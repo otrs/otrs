@@ -1650,7 +1650,12 @@ sub Ascii2Html {
     }
 
     # newline
-    if ( $Param{NewLine} && length( ${$Text} ) < 140_000 ) {
+    if (
+        $Self->{ConfigObject}->Get('Frontend::WrapText')
+        && $Param{NewLine}
+        && length( ${$Text} ) < 140_000
+        )
+    {
         ${$Text} =~ s/(\n\r|\r\r\n|\r\n)/\n/g;
         ${$Text} =~ s/\r/\n/g;
         ${$Text} =~ s/(.{4,$Param{NewLine}})(?:\s|\z)/$1\n/gm;
@@ -5028,7 +5033,11 @@ sub WrapPlainText {
     }
 
     # Return PlainText if we have less than MaxCharacters
-    if ( length $Param{PlainText} < $Param{MaxCharacters} ) {
+    if (
+        !$Self->{ConfigObject}->Get('Frontend::WrapText')
+        || length $Param{PlainText} < $Param{MaxCharacters}
+        )
+    {
         return $Param{PlainText};
     }
 

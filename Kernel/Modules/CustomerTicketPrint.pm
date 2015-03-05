@@ -1083,9 +1083,10 @@ sub _HTMLMask {
 
                 # html quoting
                 $Article{Body} = $Self->{LayoutObject}->Ascii2Html(
-                    NewLine => $Self->{ConfigObject}->Get('DefaultViewNewLine'),
-                    Text    => $Article{Body},
-                    VMax    => $Self->{ConfigObject}->Get('DefaultViewLines') || 5000,
+                    NewLine        => $Self->{ConfigObject}->Get('DefaultViewNewLine'),
+                    Text           => $Article{Body},
+                    VMax           => $Self->{ConfigObject}->Get('DefaultViewLines') || 5000,
+                    HTMLResultMode => 1,
                 );
             }
         }

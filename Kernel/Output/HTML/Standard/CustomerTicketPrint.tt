@@ -212,9 +212,9 @@
 [% INCLUDE "ChatDisplay.tt" %]
 [% ELSE %]
 [% Data.TextNote %]
-                                    <pre>
+                                    <div class="ArticleBody">
 [% Data.Body %]
-                                    </pre>
+                                    </div>
 [% END %]
                                 </td>
                             </tr>

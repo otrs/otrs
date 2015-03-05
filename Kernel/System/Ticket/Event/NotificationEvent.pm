@@ -970,7 +970,7 @@ sub _SendNotification {
 
         if (%Article) {
 
-            if ( $Article{Body} ) {
+            if ( $ConfigObject->Get('Frontend::WrapText') && $Article{Body} ) {
 
                 # Use the same line length as HTMLUtils::toAscii to avoid
                 #   line length problems.

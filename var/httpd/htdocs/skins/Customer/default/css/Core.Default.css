@@ -354,6 +354,7 @@ form select.Error {
  */
 .ArticleBody{
     font-family: monospace,fixed;
+    word-wrap: break-word;
 }
 
 

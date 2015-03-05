@@ -384,6 +384,17 @@
             </Option>
         </Setting>
     </ConfigItem>
+    <ConfigItem Name="Frontend::WrapText" Required="1" Valid="1">
+        <Description Translatable="1">Enables or disables to force to rewrap a text input in text area.</Description>
+        <Group>Framework</Group>
+        <SubGroup>Core::Web</SubGroup>
+        <Setting>
+            <Option SelectedID="1">
+                <Item Key="0">No</Item>
+                <Item Key="1">Yes</Item>
+            </Option>
+        </Setting>
+    </ConfigItem>
     <ConfigItem Name="DisableMSIFrameSecurityRestricted" Required="0" Valid="1">
         <Description Translatable="1">Disable restricted security for IFrames in IE. May be required for SSO to work in IE8.</Description>
         <Group>Framework</Group>

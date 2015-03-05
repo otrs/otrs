@@ -555,7 +555,11 @@ sub AutoResponse {
     }
 
     # format body (only if longer than 86 chars)
-    if ( $Param{OrigHeader}->{Body} ) {
+    if (
+        $Kernel::OM->Get('Kernel::Config')->Get('Frontend::WrapText')
+        && $Param{OrigHeader}->{Body}
+        )
+    {
         if ( length $Param{OrigHeader}->{Body} > 86 ) {
             my @Lines = split /\n/, $Param{OrigHeader}->{Body};
             LINE:
@@ -735,7 +739,11 @@ sub NotificationAgent {
     }
 
     # format body (only if longer the 86 chars)
-    if ( $Param{CustomerMessageParams}->{Body} ) {
+    if (
+        $Kernel::OM->Get('Kernel::Config')->Get('Frontend::WrapText')
+        && $Param{CustomerMessageParams}->{Body}
+        )
+    {
         if ( length $Param{CustomerMessageParams}->{Body} > 86 ) {
             my @Lines = split /\n/, $Param{CustomerMessageParams}->{Body};
             LINE:
