@@ -770,8 +770,8 @@ sub Run {
                             Secure   => scalar $CookieSecureAttribute,
                             HTTPOnly => 1,
                         ),
-                        %Param,
                     },
+                    %Param,
                     }
             );
 
