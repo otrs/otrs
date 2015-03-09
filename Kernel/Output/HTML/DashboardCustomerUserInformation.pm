@@ -103,8 +103,8 @@ sub Run {
                     Label => $Entry->[1],
                     Value => $CustomerUser{$Key},
                     URL =>
-                        '[% Env("Baselink") %]Action=AdminCustomerUser;Subaction=Change;UserLogin=[% Data.UserLogin | uri %];Nav=Agent',
-                    Target => '',
+                        '[% Env("Baselink") %]Action=AdminCustomerUser;Subaction=Change;ID=[% Data.UserLogin | uri %];Nav=None',
+                    Target => 'PopUp',
                 },
             );
 
