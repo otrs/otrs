@@ -72,6 +72,8 @@ install -m 644 scripts/apache2-httpd.include.conf $RPM_BUILD_ROOT/etc/httpd/conf
 if test -e /opt/otrs/RELEASE; then
     cat /opt/otrs/RELEASE|grep VERSION|sed 's/VERSION = //'|sed 's/ /-/g' > /tmp/otrs-old.tmp
 fi
+
+%post
 # useradd
 export OTRSUSER=otrs
 echo -n "Check OTRS user ... "
@@ -82,8 +84,6 @@ if id $OTRSUSER >/dev/null 2>&1; then
 else
     useradd $OTRSUSER -d /opt/otrs/ -s /bin/false -g apache -c 'OTRS System User' && echo "$OTRSUSER added."
 fi
-
-%post
 # run OTRS permission setting.
 /opt/otrs/bin/otrs.SetPermissions.pl --web-group=apache
 # if it's a major-update backup old version templates (maybe not compatible!)
