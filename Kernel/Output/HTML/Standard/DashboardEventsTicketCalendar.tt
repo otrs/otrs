@@ -65,6 +65,9 @@
                 week: [% Translate("week") | JSON %],
                 day: [% Translate("day") | JSON %]
             },
+[% RenderBlockStart("CalendarFirstDay") %]
+            FirstDay: [% Data.FirstDay | html %],
+[% RenderBlockEnd("CalendarFirstDay") %]
             Events: [
 [% RenderBlockStart("CalendarEvent") %]
                 {

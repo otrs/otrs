@@ -135,6 +135,14 @@ sub Run {
     my $TimeObject   = $Kernel::OM->Get('Kernel::System::Time');
     my $LayoutObject = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
 
+    # Configure calendar's first day of the week.
+    my %Data;
+    $Data{FirstDay} = $ConfigObject->{DashboardEventsTicketCalendar}->{FirstDay} || 0;
+    $LayoutObject->Block(
+         Name => 'CalendarFirstDay',
+         Data => \%Data,
+    );
+
     if (%Tickets) {
         TICKET:
         for my $TicketID ( sort keys %Tickets ) {
