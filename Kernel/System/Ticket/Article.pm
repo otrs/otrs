@@ -3058,7 +3058,7 @@ sub SendCustomerNotification {
     $Notification{Subject} =~ s/<OTRS_CUSTOMER_DATA_.+?>/-/gi;
 
     # format body
-    if ( $Article{Body} ) {
+    if ( $ConfigObject->Get('Frontend::WrapText') && $Article{Body} ) {
         $Article{Body} =~ s/(^>.+|.{4,72})(?:\s|\z)/$1\n/gm;
     }
     for ( sort keys %Article ) {

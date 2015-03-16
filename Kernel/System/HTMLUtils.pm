@@ -96,6 +96,7 @@ sub ToAscii {
 
     # pre-process <blockquote> and <div style=\"cite\"
     my %Cite;
+     my $WrapText = $Kernel::OM->Get('Kernel::Config')->Get('Filter::Output::WrapText');
     $Counter = 0;
     $Param{String} =~ s{
         <blockquote(.*?)>(.+?)</blockquote>
@@ -105,7 +106,7 @@ sub ToAscii {
             String => $2,
         );
         # force line breaking
-        if ( length $Ascii > $LineLength ) {
+        if ( $WrapText && length $Ascii > $LineLength ) {
             $Ascii =~ s/(.{4,$LineLength})(?:\s|\z)/$1\n/gm;
         }
         $Ascii =~ s/^(.*?)$/> $1/gm;
@@ -122,7 +123,7 @@ sub ToAscii {
             String => $1,
         );
         # force line breaking
-        if ( length $Ascii > $LineLength ) {
+        if ( $WrapText && length $Ascii > $LineLength ) {
             $Ascii =~ s/(.{4,$LineLength})(?:\s|\z)/$1\n/gm;
         }
         $Ascii =~ s/^(.*?)$/> $1/gm;
@@ -526,7 +527,7 @@ sub ToAscii {
     $Param{String} =~ s/^\s*\n\s*\n/\n/mg;
 
     # force line breaking
-    if ( length $Param{String} > $LineLength ) {
+    if ( $WrapText && length $Param{String} > $LineLength ) {
         $Param{String} =~ s/(.{4,$LineLength})(?:\s|\z)/$1\n/gm;
     }
 

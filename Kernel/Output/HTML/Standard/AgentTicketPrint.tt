@@ -248,9 +248,9 @@
 [% IF Data.IsChat == 1 %]
 [% INCLUDE "ChatDisplay.tt" %]
 [% ELSE %]
-                                    <pre>
+                                    <div class="ArticleBody">
 [% Data.Body %]
-                                    </pre>
+                                    </div>
 [% END %]
                                 </td>
                             </tr>
