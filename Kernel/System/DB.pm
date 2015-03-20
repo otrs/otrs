@@ -1064,30 +1064,32 @@ sub QueryCondition {
     $Param{Value} =~ s/^\s+//g;
     $Param{Value} =~ s/\s+$//g;
 
-    # add base brackets
-    if ( $Param{Value} !~ /^(?<!\\)\(/ || $Param{Value} !~ /(?<!\\)\)$/ ) {
-        $Param{Value} = '(' . $Param{Value} . ')';
-    }
+    # remove empty quote expressions
+    $Param{Value} =~ s/(?<!\\)((?:\\\\)*)""/$1/g;
 
-    # quote ".+?" expressions
-    # for example ("some and me" AND !some), so "some and me" is used for search 1:1
     my $Count = 0;
-    my %Expression;
+    my @Expression;
+
+    $Param{Value} =~ s/(?<!\\)((?:\\\\)*)(###\d+###)/$1\\$2/g;
+
+    # quote double excape and ".+?" expressions
+    # for example ("some and me" AND !some), so "some and me" is used for search 1:1
     $Param{Value} =~ s{
-        "(.+?)"
+        (?<!\\)((?:\\\\)*)"((?:.*?[^\\])(?:\\\\)*)(?:"|$)
     }
     {
-        $Count++;
-        my $Item = $1;
-        $Expression{"###$Count###"} = $Item;
-        "###$Count###";
+        $Expression[$Count] = $1 . $2;
+        "###" . ( $Count++ ) . "###";
     }egx;
 
-    # remove empty parentheses
-    $Param{Value} =~ s/(?<!\\)\(\s*(?<!\\)\)//g;
-
-    # remove double spaces
-    $Param{Value} =~ s/\s+/ /g;
+    # quote double excape expressions
+    $Param{Value} =~ s{
+        (?<!\\)((?:\\\\)+)
+    }
+    {
+        $Expression[$Count] = $1;
+        "###" . ( $Count++ ) . "###";
+    }egx;
 
     # replace + by &&
     $Param{Value} =~ s/\+/&&/g;
@@ -1102,52 +1104,79 @@ sub QueryCondition {
     $Param{Value} =~ s/\*/%/g;
 
     # remove double %% (also if there is only whitespace in between)
-    $Param{Value} =~ s/%\s*%/%/g;
-
-    # replace '%!%' by '!%' (done if * is added by search frontend)
-    $Param{Value} =~ s/\%!\%/!%/g;
+    $Param{Value} =~ s/%(?:\s*%)+/%/g;
 
     # replace '%!' by '!%' (done if * is added by search frontend)
     $Param{Value} =~ s/\%!/!%/g;
 
     # remove leading/trailing conditions
-    $Param{Value} =~ s/(&&|\|\|)(?<!\\)\)$/)/g;
-    $Param{Value} =~ s/^(?<!\\)\((&&|\|\|)/(/g;
-
-    # clean up not needed spaces in condistions
-    # removed spaces examples
-    # [SPACE](, [SPACE]), [SPACE]|, [SPACE]&
-    # example not removed spaces
-    # [SPACE]\\(, [SPACE]\\), [SPACE]\\&
-    $Param{Value} =~ s{(
-        \s
-        (
-              (?<!\\) \(
-            | (?<!\\) \)
-            |         \|
-            | (?<!\\) &
-        )
-    )}{$2}xg;
-
-    # removed spaces examples
-    # )[SPACE], )[SPACE], |[SPACE], &[SPACE]
-    # example not removed spaces
-    # \\([SPACE], \\)[SPACE], \\&[SPACE]
-    $Param{Value} =~ s{(
-        (
-              (?<!\\) \(
-            | (?<!\\) \)
-            |         \|
-            | (?<!\\) &
-        )
-        \s
-    )}{$2}xg;
+    $Param{Value} =~ s/(?:&&|\|\|)\s*$//g;
+    $Param{Value} =~ s/^\s*(?:&&|\|\|)//g;
 
     # use extended condition mode
-    # 1. replace " " by "&&"
     if ( $Param{Extended} ) {
-        $Param{Value} =~ s/\s/&&/g;
+
+        # clean up not needed spaces in condistions
+        # removed spaces examples
+        # [SPACE](, [SPACE]), [SPACE]||, [SPACE]&&
+        # example not removed spaces
+        # [SPACE]\\(, [SPACE]\\), [SPACE]\\||, [SPACE]\\&&,
+        $Param{Value} =~ s{(
+            \s+
+            (
+                  (?<!\\) \(
+                | (?<!\\) \)
+                | (?<!\\) \|\|
+                | (?<!\\) &&
+            )
+        )}{$2}xg;
+
+        # removed spaces examples
+        # )[SPACE], )[SPACE], ||[SPACE], &&[SPACE]
+        # example not removed spaces
+        # \\([SPACE], \\)[SPACE], ||[SPACE], \\&&[SPACE], ![SPACE]
+        $Param{Value} =~ s{(
+            (
+                  (?<!\\) \(
+                | (?<!\\) \)
+                | (?<!\\) \|\|
+                | (?<!\\) &&
+                | (?<!\\) !
+            )
+            \s+
+        )}{$2}xg;
+
+        # replace " " by "&&"
+        $Param{Value} =~ s/\s+/&&/g;
     }
+
+    my $Prev;
+
+    do {
+        $Prev = $Param{Value};
+
+        # check simultaneous usage both AND and OR conditions
+        if ( $Param{Value} =~ m/(?<!\\)\|\|\s*&&|(?<!\\)&&\s*\|\|/ ) {
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
+                Priority => 'notice',
+                Message =>
+                    "Invalid condition '$Param{Value}', simultaneous usage both AND and OR conditions!",
+            );
+            return '1=0';
+        }
+
+        # remove double conditions
+        $Param{Value} =~ s/(?<!\\)&&(?:\s*&&)*/&&/g;
+        $Param{Value} =~ s/(?<!\\)\|\|(?:\s*\|\|)*/||/g;
+
+        # remove leading/trailing conditions
+        $Param{Value} =~ s/(?<!\\)\(\s*(?:&&|\|\|)/(/g;
+        $Param{Value} =~ s/(?<!\\)(?:&&|\|\|)\s*\)/)/g;
+
+        # remove empty parentheses
+        $Param{Value} =~ s/(?<!\\)\(\s*\)//g;
+
+    } while ( $Prev ne $Param{Value} );
 
     # get col.
     my @Keys;
@@ -1163,261 +1192,184 @@ sub QueryCondition {
     my $Close = 0;
 
     # for processing
-    my @Array     = split( //, $Param{Value} );
-    my $SQL       = '';
-    my $Word      = '';
-    my $Not       = 0;
-    my $Backslash = 0;
+    my $SQL   = '';
+    my $Not   = 0;
+    my $Multi = 0;
 
-    my $SpecialCharacters = $Self->_SpecialCharactersGet();
-
-    POSITION:
-    for my $Position ( 0 .. $#Array ) {
-
-        # find word
-        if ($Backslash) {
-            $Word .= $Array[$Position];
-            $Backslash = 0;
-            next POSITION;
-        }
-
-        # remember if next token is a part of word
-        elsif (
-            $Array[$Position] eq '\\'
-            && $Position < $#Array
-            && (
-                $SpecialCharacters->{ $Array[ $Position + 1 ] }
-                || $Array[ $Position + 1 ] eq '\\'
+    WORD:
+    for my $Word (
+        $Param{Value} =~ m{
+            \s*
+            (
+                .*?
             )
+            \s*
+            (
+                  (?<!\\) \(
+                | (?<!\\) \)
+                | (?<!\\) \|\|
+                | (?<!\\) &&
+                | $
             )
-        {
-            $Backslash = 1;
-            next POSITION;
-        }
+        }xg
+        )
+    {
+        next WORD if $Word eq '';
 
-        # remember if it's a NOT condition
-        elsif ( $Word eq '' && $Array[$Position] eq '!' ) {
-            $Not = 1;
-            next POSITION;
-        }
-        elsif ( $Array[$Position] eq '&' ) {
-            if ( $Position >= 1 && $Array[ $Position - 1 ] eq '&' ) {
-                next POSITION;
-            }
-            if ( $Position == $#Array || $Array[ $Position + 1 ] ne '&' ) {
-                $Word .= $Array[$Position];
-                next POSITION;
-            }
-        }
-        elsif ( $Array[$Position] eq '|' ) {
-            if ( $Position >= 1 && $Array[ $Position - 1 ] eq '|' ) {
-                next POSITION;
-            }
-            if ( $Position == $#Array || $Array[ $Position + 1 ] ne '|' ) {
-                $Word .= $Array[$Position];
-                next POSITION;
-            }
-        }
-        elsif ( !$SpecialCharacters->{ $Array[$Position] } ) {
-            $Word .= $Array[$Position];
-            next POSITION;
-        }
-
-        # if word exists, do something with it
-        if ( $Word ne '' ) {
-
-            # remove escape characters from $Word
-            $Word =~ s{\\}{}smxg;
-
-            # replace word if it's an "some expression" expression
-            if ( $Expression{$Word} ) {
-                $Word = $Expression{$Word};
-            }
-
-            # database quote
-            $Word = $SearchPrefix . $Word . $SearchSuffix;
-            $Word =~ s/\*/%/g;
-            $Word =~ s/%%/%/g;
-            $Word =~ s/%%/%/g;
-
-            # perform quoting depending on query type
-            if ( $Word =~ m/%/ ) {
-                $Word = $Self->Quote( $Word, 'Like' );
-            }
-            else {
-                $Word = $Self->Quote($Word);
-            }
-
-            # if it's a NOT LIKE condition
-            if ($Not) {
-                $Not = 0;
-
-                my $SQLA;
-                for my $Key (@Keys) {
-                    if ($SQLA) {
-                        $SQLA .= ' AND ';
-                    }
-
-                    # check if like is used
-                    my $Type = 'NOT LIKE';
-                    if ( $Word !~ m/%/ ) {
-                        $Type = '!=';
-                    }
-
-                    my $WordSQL = $Word;
-                    if ($BindMode) {
-                        $WordSQL = "?";
-                    }
-                    else {
-                        $WordSQL = "'" . $WordSQL . "'";
-                    }
-
-        # check if database supports LIKE in large text types
-        # the first condition is a little bit opaque
-        # CaseSensitive of the database defines, if the database handles case sensitivity or not
-        # and the parameter $CaseSensitive defines, if the customer database should do case sensitive statements or not.
-        # so if the database dont support case sensitivity or the configuration of the customer database want to do this
-        # then we prevent the LOWER() statements.
-                    if ( !$Self->GetDatabaseFunction('CaseSensitive') || $CaseSensitive ) {
-                        $SQLA .= "$Key $Type $WordSQL";
-                    }
-                    elsif ( $Self->GetDatabaseFunction('LcaseLikeInLargeText') ) {
-                        $SQLA .= "LCASE($Key) $Type LCASE($WordSQL)";
-                    }
-                    else {
-                        $SQLA .= "LOWER($Key) $Type LOWER($WordSQL)";
-                    }
-
-                    if ( $Type eq 'NOT LIKE' && !$BindMode ) {
-                        $SQLA .= " $LikeEscapeString";
-                    }
-
-                    if ($BindMode) {
-                        push @BindValues, $Word;
-                    }
-                }
-                $SQL .= '(' . $SQLA . ') ';
-            }
-
-            # if it's a LIKE condition
-            else {
-                my $SQLA;
-                for my $Key (@Keys) {
-                    if ($SQLA) {
-                        $SQLA .= ' OR ';
-                    }
-
-                    # check if like is used
-                    my $Type = 'LIKE';
-                    if ( $Word !~ m/%/ ) {
-                        $Type = '=';
-                    }
-
-                    my $WordSQL = $Word;
-                    if ($BindMode) {
-                        $WordSQL = "?";
-                    }
-                    else {
-                        $WordSQL = "'" . $WordSQL . "'";
-                    }
-
-        # check if database supports LIKE in large text types
-        # the first condition is a little bit opaque
-        # CaseSensitive of the database defines, if the database handles case sensitivity or not
-        # and the parameter $CaseSensitive defines, if the customer database should do case sensitive statements or not.
-        # so if the database dont support case sensitivity or the configuration of the customer database want to do this
-        # then we prevent the LOWER() statements.
-                    if ( !$Self->GetDatabaseFunction('CaseSensitive') || $CaseSensitive ) {
-                        $SQLA .= "$Key $Type $WordSQL";
-                    }
-                    elsif ( $Self->GetDatabaseFunction('LcaseLikeInLargeText') ) {
-                        $SQLA .= "LCASE($Key) $Type LCASE($WordSQL)";
-                    }
-                    else {
-                        $SQLA .= "LOWER($Key) $Type LOWER($WordSQL)";
-                    }
-
-                    if ( $Type eq 'LIKE' && !$BindMode ) {
-                        $SQLA .= " $LikeEscapeString";
-                    }
-
-                    if ($BindMode) {
-                        push @BindValues, $Word;
-                    }
-                }
-                $SQL .= '(' . $SQLA . ') ';
-            }
-
-            # reset word
-            $Word = '';
-        }
-
-        # check AND and OR conditions
-        if ( $Array[ $Position + 1 ] ) {
-
-            # if it's an AND condition
-            if ( $Array[$Position] eq '&' && $Array[ $Position + 1 ] eq '&' ) {
-                if ( $SQL =~ m/ OR $/ ) {
-                    $Kernel::OM->Get('Kernel::System::Log')->Log(
-                        Priority => 'notice',
-                        Message =>
-                            "Invalid condition '$Param{Value}', simultaneous usage both AND and OR conditions!",
-                    );
-                    return "1=0";
-                }
-                elsif ( $SQL !~ m/ AND $/ ) {
-                    $SQL .= ' AND ';
-                }
-            }
-
-            # if it's an OR condition
-            elsif ( $Array[$Position] eq '|' && $Array[ $Position + 1 ] eq '|' ) {
-                if ( $SQL =~ m/ AND $/ ) {
-                    $Kernel::OM->Get('Kernel::System::Log')->Log(
-                        Priority => 'notice',
-                        Message =>
-                            "Invalid condition '$Param{Value}', simultaneous usage both AND and OR conditions!",
-                    );
-                    return "1=0";
-                }
-                elsif ( $SQL !~ m/ OR $/ ) {
-                    $SQL .= ' OR ';
-                }
-            }
-        }
-
-        # add ( or ) for query
-        if ( $Array[$Position] eq '(' ) {
-            if ( $SQL ne '' && $SQL !~ /(?: (?:AND|OR) |\(\s*)$/ ) {
-                $SQL .= ' AND ';
-            }
-            $SQL .= $Array[$Position];
+        # do special characters
+        if ( $Word eq '(' ) {
+            $SQL .= $Word;
 
             # remember for syntax check
             $Open++;
+
+            next WORD;
         }
-        if ( $Array[$Position] eq ')' ) {
-            $SQL .= $Array[$Position];
-            if (
-                $Position < $#Array
-                && ( $Position > $#Array - 1 || $Array[ $Position + 1 ] ne ')' )
-                && (
-                    $Position > $#Array - 2
-                    || $Array[ $Position + 1 ] ne '&'
-                    || $Array[ $Position + 2 ] ne '&'
-                )
-                && (
-                    $Position > $#Array - 2
-                    || $Array[ $Position + 1 ] ne '|'
-                    || $Array[ $Position + 2 ] ne '|'
-                )
-                )
-            {
-                $SQL .= ' AND ';
-            }
+        if ( $Word eq ')' ) {
+            $SQL .= $Word;
 
             # remember for syntax check
             $Close++;
+
+            next WORD;
+        }
+        if ( $Word eq '&&' ) {
+            $SQL .= ' AND ';
+            $Multi = 1;
+            next WORD;
+        }
+        if ( $Word eq '||' ) {
+            $SQL .= ' OR ';
+            $Multi = 1;
+            next WORD;
+        }
+
+        # replace word if it's an "some expression" expression
+        $Word =~ s/(?<!\\)((?:\\\\)*)###(\d+)###/$1$Expression[$2]/g;
+
+        # remove escape characters from $Word
+        $Word =~ s/(?<!\\)((?:\\\\)*)\\([^\\]|$)/$1$2/g;
+
+        # replace double escape characters by single
+        $Word =~ s/\\\\/\\/g;
+
+        # remember if it's a NOT condition
+        $Not = $Word =~ s/^!//;
+
+        # database quote
+        $Word = $SearchPrefix . $Word . $SearchSuffix;
+        $Word =~ s/\*/%/g;
+        $Word =~ s/%+/%/g;
+
+        # perform quoting depending on query type
+        if ( $Word =~ m/%/ ) {
+            $Word = $Self->Quote( $Word, 'Like' );
+        }
+        else {
+            $Word = $Self->Quote($Word);
+        }
+
+        my $SQLA;
+
+        # if it's a NOT LIKE condition
+        if ($Not) {
+            for my $Key (@Keys) {
+                if ($SQLA) {
+                    $SQLA .= ' AND ';
+                }
+
+                # check if like is used
+                my $Type = 'NOT LIKE';
+                if ( $Word !~ m/%/ ) {
+                    $Type = '!=';
+                }
+
+                my $WordSQL = $Word;
+                if ($BindMode) {
+                    $WordSQL = "?";
+                }
+                else {
+                    $WordSQL = "'" . $WordSQL . "'";
+                }
+
+# check if database supports LIKE in large text types
+# the first condition is a little bit opaque
+# CaseSensitive of the database defines, if the database handles case sensitivity or not
+# and the parameter $CaseSensitive defines, if the customer database should do case sensitive statements or not.
+# so if the database dont support case sensitivity or the configuration of the customer database want to do this
+# then we prevent the LOWER() statements.
+                if ( !$Self->GetDatabaseFunction('CaseSensitive') || $CaseSensitive ) {
+                    $SQLA .= "$Key $Type $WordSQL";
+                }
+                elsif ( $Self->GetDatabaseFunction('LcaseLikeInLargeText') ) {
+                    $SQLA .= "LCASE($Key) $Type LCASE($WordSQL)";
+                }
+                else {
+                    $SQLA .= "LOWER($Key) $Type LOWER($WordSQL)";
+                }
+
+                if ( $Type eq 'NOT LIKE' && !$BindMode ) {
+                    $SQLA .= " $LikeEscapeString";
+                }
+
+                if ($BindMode) {
+                    push @BindValues, $Word;
+                }
+            }
+        }
+
+        # if it's a LIKE condition
+        else {
+            for my $Key (@Keys) {
+                if ($SQLA) {
+                    $SQLA .= ' OR ';
+                }
+
+                # check if like is used
+                my $Type = 'LIKE';
+                if ( $Word !~ m/%/ ) {
+                    $Type = '=';
+                }
+
+                my $WordSQL = $Word;
+                if ($BindMode) {
+                    $WordSQL = "?";
+                }
+                else {
+                    $WordSQL = "'" . $WordSQL . "'";
+                }
+
+# check if database supports LIKE in large text types
+# the first condition is a little bit opaque
+# CaseSensitive of the database defines, if the database handles case sensitivity or not
+# and the parameter $CaseSensitive defines, if the customer database should do case sensitive statements or not.
+# so if the database dont support case sensitivity or the configuration of the customer database want to do this
+# then we prevent the LOWER() statements.
+                if ( !$Self->GetDatabaseFunction('CaseSensitive') || $CaseSensitive ) {
+                    $SQLA .= "$Key $Type $WordSQL";
+                }
+                elsif ( $Self->GetDatabaseFunction('LcaseLikeInLargeText') ) {
+                    $SQLA .= "LCASE($Key) $Type LCASE($WordSQL)";
+                }
+                else {
+                    $SQLA .= "LOWER($Key) $Type LOWER($WordSQL)";
+                }
+
+                if ( $Type eq 'LIKE' && !$BindMode ) {
+                    $SQLA .= " $LikeEscapeString";
+                }
+
+                if ($BindMode) {
+                    push @BindValues, $Word;
+                }
+            }
+        }
+
+        if ( $#Keys > 1 ) {
+            $SQL .= '(' . $SQLA . ') ';
+        }
+        else {
+            $SQL .= $SQLA;
         }
     }
 
@@ -1428,6 +1380,11 @@ sub QueryCondition {
             Message  => "Invalid condition '$Param{Value}', $Open open and $Close close!",
         );
         return "1=0";
+    }
+
+    # add base brackets
+    if ( $Multi && ( $Param{Value} !~ /^(?<!\\)\(/ || $Param{Value} !~ /(?<!\\)\)$/ ) ) {
+        $SQL = '(' . $SQL . ')';
     }
 
     if ($BindMode) {

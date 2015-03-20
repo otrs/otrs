@@ -873,7 +873,7 @@ my @Queries = (
             Some7  => 0,
             Some8  => 0,
             Some9  => 0,
-            Some10 => 0,
+            Some10 => 1,
         },
     },
 );
@@ -1060,6 +1060,13 @@ for my $Key ( sort keys %Fill ) {
         Result => {
             Some0 => 0,
             Some1 => 1,
+        },
+    },
+    {
+        Query  => '0 && (&& &&) && otrs',
+        Result => {
+            Some0 => 1,
+            Some1 => 0,
         },
     },
 );
