@@ -671,31 +671,11 @@ sub ArticleCreate {
                     UserID => $UserID,
                     Valid  => 1,
                 );
-                next USER if !$UserData{UserSendFollowUpNotification};
+                next USER if !$UserData{UserSendFollowUpNotificationUnlocked};
 
                 # check UserSendNewTicketNotification to non owners or watchers
                 if ( !$OwnerUserIDs{$UserID} && !$WatcherUserIDs{$UserID} ) {
-                    if ( $UserData{UserSendFollowUpNotification} eq 'MyQueues' ) {
-                        next USER if !$MyQueuesUserIDs{$UserID};
-                    }
-                    elsif ( $UserData{UserSendFollowUpNotification} eq 'MyServices' ) {
-                        next USER if !$MyServicesUserIDs{$UserID};
-                    }
-                    elsif ( $UserData{UserSendFollowUpNotification} eq 'MyQueuesOrMyServices' ) {
-                        next USER if !$MyQueuesUserIDs{$UserID} && !$MyServicesUserIDs{$UserID};
-                    }
-                    elsif ( $UserData{UserSendFollowUpNotification} eq 'MyQueuesAndMyServices' ) {
-                        next USER if !$MyQueuesUserIDs{$UserID} || !$MyServicesUserIDs{$UserID};
-                    }
-                    else {
-                        $Kernel::OM->Get('Kernel::System::Log')->Log(
-                            Priority => 'error',
-                            Message  => "Invalid UserSendNewTicketNotification option"
-                                . " '$UserData{UserSendNewTicketNotification}'"
-                                . " for user '$UserData{UserLogin}' ",
-                        );
-                        next USER;
-                    }
+                    next USER;
                 }
 
                 # remember already sent info
@@ -744,7 +724,7 @@ sub ArticleCreate {
                     UserID => $UserID,
                     Valid  => 1,
                 );
-                next USER if !$UserData{UserSendFollowUpNotification};
+                next USER if !$UserData{UserSendFollowUpNotificationOwner};
 
                 # remember already sent info
                 $AlreadySent{$UserID} = 1;
@@ -761,70 +741,6 @@ sub ArticleCreate {
                     Queue                 => $Param{Queue},
                     UserID                => $Param{UserID},
                 );
-            }
-
-            # send the rest of agents follow ups
-            # get subscribed users from My Queues in form of a hash
-            my %MyQueuesUserIDs = map { $_ => 1 } $Self->GetSubscribedUserIDsByQueueID(
-                QueueID => $Ticket{QueueID}
-            );
-
-            # get subscribed users from My Services in form of a hash
-            my %MyServicesUserIDs;
-            if ( $Ticket{ServiceID} ) {
-                %MyServicesUserIDs = map { $_ => 1 } $Self->GetSubscribedUserIDsByServiceID(
-                    ServiceID => $Ticket{ServiceID},
-                );
-            }
-
-            # combine both subscribed users list (this will also remove duplicates)
-            my %SubscribedUserIDs = ( %MyQueuesUserIDs, %MyServicesUserIDs );
-
-            USER:
-            for my $UserID ( sort keys %SubscribedUserIDs ) {
-                next USER if !$UserID;
-                next USER if $UserID == 1;
-                next USER if $UserID eq $Param{UserID};
-
-                # do not send to this user
-                next USER if $DoNotSend{$UserID};
-
-                # check if already sent
-                next USER if $AlreadySent{$UserID};
-
-                # check personal settings
-                my %UserData = $UserObject->GetUserData(
-                    UserID => $UserID,
-                    Valid  => 1,
-                );
-
-                # TODO: check $UserData{UserSendFollowUpNotification} eq 2 is used, otherwise this
-                # part of the code is unreachable
-                if (
-                    $UserData{UserSendFollowUpNotification}
-                    && $UserData{UserSendFollowUpNotification} eq '2'
-                    && $Ticket{OwnerID} ne 1
-                    && $Ticket{OwnerID} ne $Param{UserID}
-                    && $Ticket{OwnerID} ne $UserData{UserID}
-                    )
-                {
-
-                    # remember already sent info
-                    $AlreadySent{$UserID} = 1;
-
-                    # do not send to this user (mute)
-                    next USER if $DoNotSendMute{$UserID};
-
-                    # send notification
-                    $Self->SendAgentNotification(
-                        Type                  => $Param{HistoryType},
-                        RecipientID           => $UserID,
-                        CustomerMessageParams => {%Param},
-                        TicketID              => $Param{TicketID},
-                        Queue                 => $Param{Queue},
-                        UserID                => $Param{UserID},
-                    );
-                }
             }
         }
     }
