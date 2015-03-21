@@ -863,7 +863,7 @@ sub _Element {
     return if !$Content;
 
     # set cache (html page cache)
-    if ( !$CacheUsed && $Config{CacheTTL} ) {
+    if ( !$CacheUsed && $Config{CacheTTL} && $CacheKey !~ /(FAQ-LastChange|FAQ-LastCreate)/i ) {
         $Self->{CacheObject}->Set(
             Type  => 'Dashboard',
             Key   => $CacheKey,
