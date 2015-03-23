@@ -734,10 +734,17 @@ sub MaskAgentZoom {
                 $Item->{Class} = "AsPopup PopupType_$Menus{$Menu}->{PopupType}";
             }
 
-            $Self->{LayoutObject}->Block(
-                Name => 'TicketMenu',
-                Data => $Item,
-            );
+            if ($Menus{$Menu}->{ExternalLink} && $Menus{$Menu}->{ExternalLink} == 1) {
+                $Self->{LayoutObject}->Block(
+                    Name => 'TicketMenuExternalLink',
+                    Data => $Item,
+                );
+            } else {
+                $Self->{LayoutObject}->Block(
+                    Name => 'TicketMenu',
+                    Data => $Item,
+                );
+            }
         }
     }
 
