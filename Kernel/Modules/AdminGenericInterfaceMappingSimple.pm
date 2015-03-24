@@ -1,5 +1,5 @@
 # --
-# Kernel/Modules/AdminGenericInterfaceMappingSimple.pm - provides a TransportHTTPSOAP view for admins
+# Kernel/Modules/AdminGenericInterfaceMappingSimple.pm - provides a TransportHTTPSOAP view for administrators
 # Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
@@ -13,27 +13,14 @@ use strict;
 use warnings;
 
 use Kernel::System::VariableCheck qw(:all);
-use Kernel::System::GenericInterface::Webservice;
-use Kernel::System::Valid;
 
-use Kernel::System::VariableCheck qw(:all);
+our $ObjectManagerDisabled = 1;
 
 sub new {
     my ( $Type, %Param ) = @_;
 
     my $Self = {%Param};
     bless( $Self, $Type );
-
-    for (qw(ParamObject LayoutObject LogObject ConfigObject)) {
-        if ( !$Self->{$_} ) {
-            $Self->{LayoutObject}->FatalError( Message => "Got no $_!" );
-        }
-    }
-
-    # create additional objects
-    $Self->{ValidObject} = Kernel::System::Valid->new( %{$Self} );
-    $Self->{WebserviceObject} =
-        Kernel::System::GenericInterface::Webservice->new( %{$Self} );
 
     $Self->{DeletedString} = '_GenericInterface_Mapping_Simple_DeletedString_Dont_Use_It_String_Please';
 
@@ -43,13 +30,16 @@ sub new {
 sub Run {
     my ( $Self, %Param ) = @_;
 
-    my $WebserviceID = $Self->{ParamObject}->GetParam( Param => 'WebserviceID' )
+    # get param object
+    my $ParamObject = $Kernel::OM->Get('Kernel::System::Web::Request');
+
+    my $WebserviceID = $ParamObject->GetParam( Param => 'WebserviceID' )
         || '';
-    my $Operation = $Self->{ParamObject}->GetParam( Param => 'Operation' )
+    my $Operation = $ParamObject->GetParam( Param => 'Operation' )
         || '';
-    my $Invoker = $Self->{ParamObject}->GetParam( Param => 'Invoker' )
+    my $Invoker = $ParamObject->GetParam( Param => 'Invoker' )
         || '';
-    my $Direction = $Self->{ParamObject}->GetParam( Param => 'Direction' )
+    my $Direction = $ParamObject->GetParam( Param => 'Direction' )
         || '';
 
     my $CommunicationType = IsStringWithData($Operation) ? 'Provider'  : 'Requester';
@@ -62,29 +52,33 @@ sub Run {
         : 'Simple Mapping for Incoming Data';
 
     # get configured Actions
-    my $ActionsConfig = $Self->{ConfigObject}->Get( 'GenericInterface::' . $ActionType . '::Module' );
+    my $ActionsConfig = $Kernel::OM->Get('Kernel::Config')->Get( 'GenericInterface::' . $ActionType . '::Module' );
+
+    # get layout object
+    my $LayoutObject = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
 
     # check for valid action backend
     if ( !IsHashRefWithData($ActionsConfig) ) {
-        return $Self->{LayoutObject}->ErrorScreen(
+        return $LayoutObject->ErrorScreen(
             Message => "Could not get registered configuration for action type $ActionType",
         );
     }
 
     # check for WebserviceID
     if ( !$WebserviceID ) {
-        return $Self->{LayoutObject}->ErrorScreen(
+        return $LayoutObject->ErrorScreen(
             Message => "Need WebserviceID!",
         );
     }
 
-    # get webservice configuration
+    # get web service configuration
+    my $WebserviceObject = $Kernel::OM->Get('Kernel::System::GenericInterface::Webservice');
     my $WebserviceData =
-        $Self->{WebserviceObject}->WebserviceGet( ID => $WebserviceID );
+        $WebserviceObject->WebserviceGet( ID => $WebserviceID );
 
-    # check for valid webservice configuration
+    # check for valid web service configuration
     if ( !IsHashRefWithData($WebserviceData) ) {
-        return $Self->{LayoutObject}->ErrorScreen(
+        return $LayoutObject->ErrorScreen(
             Message => "Could not get data for WebserviceID $WebserviceID",
         );
     }
@@ -94,7 +88,7 @@ sub Run {
 
     # check for valid action backend
     if ( !$ActionBackend ) {
-        return $Self->{LayoutObject}->ErrorScreen(
+        return $LayoutObject->ErrorScreen(
             Message => "Could not get backend for $ActionType $Action",
         );
     }
@@ -105,7 +99,7 @@ sub Run {
     my $WebserviceName = $WebserviceData->{Name};
 
     # ------------------------------------------------------------ #
-    # subaction Change: load webservice and show edit screen
+    # subaction Change: load web service and show edit screen
     # ------------------------------------------------------------ #
     if ( $Self->{Subaction} eq 'Add' || $Self->{Subaction} eq 'Change' ) {
 
@@ -179,7 +173,7 @@ sub Run {
     else {
 
         # challenge token check for write action
-        $Self->{LayoutObject}->ChallengeTokenCheck();
+        $LayoutObject->ChallengeTokenCheck();
 
         # get parameter from web browser
         my $GetParam = $Self->_GetParams();
@@ -231,7 +225,7 @@ sub Run {
             ->{Config} = \%NewMapping;
 
         # otherwise save configuration and return to overview screen
-        my $Success = $Self->{WebserviceObject}->WebserviceUpdate(
+        my $Success = $WebserviceObject->WebserviceUpdate(
             ID      => $WebserviceID,
             Name    => $WebserviceData->{Name},
             Config  => $WebserviceData->{Config},
@@ -241,17 +235,17 @@ sub Run {
 
         # check for successful web service update
         if ( !$Success ) {
-            return $Self->{LayoutObject}->ErrorScreen(
+            return $LayoutObject->ErrorScreen(
                 Message => "Could not update configuration data for WebserviceID $WebserviceID",
             );
         }
 
-        # save and finish button: go to Webservice.
-        if ( $Self->{ParamObject}->GetParam( Param => 'ReturnToAction' ) ) {
+        # save and finish button: go to web service.
+        if ( $ParamObject->GetParam( Param => 'ReturnToAction' ) ) {
             my $RedirectURL = "Action=$ActionFrontendModule;Subaction=Change;$ActionType=$Action;"
                 . "WebserviceID=$WebserviceID;";
 
-            return $Self->{LayoutObject}->Redirect(
+            return $LayoutObject->Redirect(
                 OP => $RedirectURL,
             );
         }
@@ -328,8 +322,11 @@ sub _ShowEdit {
     # set action for go back button
     $Param{LowerCaseActionType} = lc $Param{ActionType};
 
-    my $Output = $Self->{LayoutObject}->Header();
-    $Output .= $Self->{LayoutObject}->NavigationBar();
+    # get layout object
+    my $LayoutObject = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
+
+    my $Output = $LayoutObject->Header();
+    $Output .= $LayoutObject->NavigationBar();
 
     my $MappingConfig = $Param{WebserviceData};
     my %Error;
@@ -356,7 +353,7 @@ sub _ShowEdit {
     $Param{DefaultValueTypeError}  = $Error{DefaultValueType}  || '';
 
     # select object for keys
-    $Param{DefaultKeyTypeStrg} = $Self->{LayoutObject}->BuildSelection(
+    $Param{DefaultKeyTypeStrg} = $LayoutObject->BuildSelection(
         Data => [
             {
                 Key   => 'Keep',
@@ -377,7 +374,7 @@ sub _ShowEdit {
         PossibleNone => 0,
         Translate    => 0,
     );
-    $Param{KeyMapTypeStrg} = $Self->{LayoutObject}->BuildSelection(
+    $Param{KeyMapTypeStrg} = $LayoutObject->BuildSelection(
         Data => [
             {
                 Key   => 'KeyMapExact',
@@ -394,7 +391,7 @@ sub _ShowEdit {
     );
 
     # select objects for values
-    $Param{DefaultValueTypeStrg} = $Self->{LayoutObject}->BuildSelection(
+    $Param{DefaultValueTypeStrg} = $LayoutObject->BuildSelection(
         Data => [
             {
                 Key   => 'Keep',
@@ -416,7 +413,7 @@ sub _ShowEdit {
         Translate    => 0,
     );
 
-    $Param{ValueMapTypeStrg} = $Self->{LayoutObject}->BuildSelection(
+    $Param{ValueMapTypeStrg} = $LayoutObject->BuildSelection(
         Data => [
             {
                 Key   => 'ValueMapExact',
@@ -432,7 +429,7 @@ sub _ShowEdit {
         Translate    => 0,
     );
 
-    $Self->{LayoutObject}->Block(
+    $LayoutObject->Block(
         Name => 'KeyTemplate',
         Data => {
             Classes => 'KeyTemplate Hidden',
@@ -442,7 +439,7 @@ sub _ShowEdit {
     );
 
     # set value index
-    $Self->{LayoutObject}->Block(
+    $LayoutObject->Block(
         Name => 'ValueTemplateRowIndex',
         Data => {
             KeyIndex   => '',
@@ -455,7 +452,7 @@ sub _ShowEdit {
         my $KeyMapTypeStrgError = $Error{ 'KeyMapTypeStrg' . $KeyIndex } || '';
 
         # build map type selection
-        my $KeyMapTypeStrg = $Self->{LayoutObject}->BuildSelection(
+        my $KeyMapTypeStrg = $LayoutObject->BuildSelection(
             Data => [
                 {
                     Key   => 'KeyMapExact',
@@ -472,7 +469,7 @@ sub _ShowEdit {
             PossibleNone => 0,
             Translate    => 0,
         );
-        $Self->{LayoutObject}->Block(
+        $LayoutObject->Block(
             Name => 'KeyTemplate',
             Data => {
                 KeyIndex       => $KeyIndex,
@@ -487,7 +484,7 @@ sub _ShowEdit {
         for my $ValueIndex ( 1 .. $MappingConfig->{ 'ValueCounter' . $KeyIndex } ) {
             my $ValueMapTypeStrgError = $Error{ 'ValueMapTypeStrg' . $KeyIndex . '_' . $ValueIndex }
                 || '';
-            my $ValueMapTypeStrg = $Self->{LayoutObject}->BuildSelection(
+            my $ValueMapTypeStrg = $LayoutObject->BuildSelection(
                 Data => [
                     {
                         Key   => 'ValueMapExact',
@@ -507,7 +504,7 @@ sub _ShowEdit {
             );
 
             # build map type selection
-            $Self->{LayoutObject}->Block(
+            $LayoutObject->Block(
                 Name => 'ValueTemplateRow',
                 Data => {
                     KeyIndex       => $KeyIndex,
@@ -524,7 +521,7 @@ sub _ShowEdit {
         }
 
         # set index value
-        $Self->{LayoutObject}->Block(
+        $LayoutObject->Block(
             Name => 'ValueTemplateRowIndex',
             Data => {
                 KeyIndex   => $KeyIndex,
@@ -535,24 +532,24 @@ sub _ShowEdit {
     }
 
     # set key index
-    $Self->{LayoutObject}->Block(
+    $LayoutObject->Block(
         Name => 'KeyCounter',
         Data => {
             KeyIndex => $MappingConfig->{KeyCounter} || 0,
         },
     );
 
-    $Self->{LayoutObject}->Block(
+    $LayoutObject->Block(
         Name => 'ValueTemplate',
         Data => { %Param, },
     );
 
-    $Output .= $Self->{LayoutObject}->Output(
+    $Output .= $LayoutObject->Output(
         TemplateFile => 'AdminGenericInterfaceMappingSimple',
         Data         => { %Param, },
     );
 
-    $Output .= $Self->{LayoutObject}->Footer();
+    $Output .= $LayoutObject->Footer();
     return $Output;
 }
 
@@ -560,6 +557,9 @@ sub _GetParams {
     my ( $Self, %Param ) = @_;
 
     my $GetParam;
+
+    # get param object
+    my $ParamObject = $Kernel::OM->Get('Kernel::System::Web::Request');
 
     # get parameters from web browser
     PARAM_NAME:
@@ -570,11 +570,11 @@ sub _GetParams {
         )
     {
         $GetParam->{$ParamName} =
-            $Self->{ParamObject}->GetParam( Param => $ParamName ) || '';
+            $ParamObject->GetParam( Param => $ParamName ) || '';
         if ( $GetParam->{$ParamName} eq '' ) {
             if ( $ParamName =~ /(DefaultKeyMapTo|DefaultValueMapTo)/i ) {
                 my $ParamPart = substr( $ParamName, 0, -5 );
-                if ( $Self->{ParamObject}->GetParam( Param => $ParamPart . 'Type' ) ne 'MapTo' ) {
+                if ( $ParamObject->GetParam( Param => $ParamPart . 'Type' ) ne 'MapTo' ) {
                     next PARAM_NAME;
                 }
             }
@@ -584,17 +584,17 @@ sub _GetParams {
 
     # get key counter param (it can be zero if just defaults where defined)
     $GetParam->{KeyCounter} =
-        $Self->{ParamObject}->GetParam( Param => 'KeyCounter' ) || 0;
+        $ParamObject->GetParam( Param => 'KeyCounter' ) || 0;
 
     # get params for keys
     my $KeyIndex = 0;
     KEYCOUNTER:
     for my $KeyCounter ( 1 .. $GetParam->{KeyCounter} ) {
-        next KEYCOUNTER if !$Self->{ParamObject}->GetParam( Param => 'KeyIndex' . $KeyCounter );
+        next KEYCOUNTER if !$ParamObject->GetParam( Param => 'KeyIndex' . $KeyCounter );
         $KeyIndex++;
         KEY_ITEM:
         for my $KeyItem (qw(KeyMapTypeStrg KeyName KeyMapNew ValueCounter)) {
-            my $KeyAux = $Self->{ParamObject}->GetParam( Param => $KeyItem . $KeyCounter ) // '';
+            my $KeyAux = $ParamObject->GetParam( Param => $KeyItem . $KeyCounter ) // '';
             $GetParam->{ $KeyItem . $KeyIndex } = $KeyAux;
             if ( $KeyItem eq 'ValueCounter' && $KeyAux eq '' ) {
                 $GetParam->{ $KeyItem . $KeyIndex } = 0;
@@ -610,7 +610,7 @@ sub _GetParams {
         for my $ValueCounter ( 1 .. $GetParam->{ 'ValueCounter' . $KeyIndex } ) {
             my $Suffix = $KeyCounter . '_' . $ValueCounter;
             if (
-                $Self->{ParamObject}->GetParam( Param => 'ValueName' . $Suffix ) eq
+                $ParamObject->GetParam( Param => 'ValueName' . $Suffix ) eq
                 $Self->{DeletedString}
                 )
             {
@@ -618,7 +618,7 @@ sub _GetParams {
             }
             $ValueIndex++;
             for my $ValueItem (qw(ValueMapTypeStrg ValueName ValueMapNew)) {
-                my $ValAux = $Self->{ParamObject}->GetParam( Param => $ValueItem . $Suffix ) // '';
+                my $ValAux = $ParamObject->GetParam( Param => $ValueItem . $Suffix ) // '';
                 $GetParam->{ $ValueItem . $KeyIndex . '_' . $ValueIndex } = $ValAux;
                 $GetParam->{Error}->{ $ValueItem . $KeyIndex . '_' . $ValueIndex } = 'ServerError'
                     if $ValAux eq '';
