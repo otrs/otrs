@@ -304,40 +304,6 @@ my @FlagSearchTests = (
         Expected    => 0,
         Name        => "Wrong flag value leads to no match",
     },
-    {
-        Search  => {
-            NotArticleFlag => {
-                f1      => 23,
-                f4      => 42,
-                f5      => 'nothing much',
-            },
-        },
-        Expected    => 1,
-        Name        => "Non-matching NotArticleFlag do not prevent finding of ticket",
-    },
-    {
-        Search  => {
-            NotArticleFlag => {
-                f1      => 42,
-            },
-        },
-        Expected    => 0,
-        Name        => "NotArticleFlag can prevent tickets from being found",
-    },
-    {
-        Search  => {
-            ArticleFlag => {
-                f2      => 42,
-            },
-            NotArticleFlag => {
-                f1      => 23,
-                f4      => 42,
-                f5      => 'nothing much',
-            },
-        },
-        Expected    => 1,
-        Name        => "Combining ArticleFlag and NotArticleFlag",
-    },
 );
 
 for my $Test (@FlagSearchTests) {
