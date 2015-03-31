@@ -37,8 +37,10 @@ To find tickets in your system.
         # result limit
         Limit => 100,
 
-        # Use TicketSearch as a ticket filter on a single ticket
+        # Use TicketSearch as a ticket filter on a single ticket,
+        # or a predefined ticket list
         TicketID     => 1234,
+        TicketID     => [1234, 1235],
 
         # ticket number (optional) as STRING or as ARRAYREF
         TicketNumber => '%123546%',
@@ -513,10 +515,15 @@ sub TicketSearch {
 
     my $SQLExt = ' WHERE 1=1';
 
-    # Limit the search to just one TicketID (used by the GenericAgent
+    # Limit the search to just one (or a list) TicketID (used by the GenericAgent
     #   to filter for events on single tickets with the job's ticket filter).
     if ( $Param{TicketID} ) {
-        $SQLExt .= ' AND st.id = ' . $DBObject->Quote( $Param{TicketID}, 'Integer' );
+        $SQLExt .= $Self->_InConditionGet(
+            TableColumn => 'st.id',
+            IDRef       => ref($Param{TicketID})
+                           ? $Param{TicketID}
+                           : [ $DBObject->Quote($Param{TicketID}, 'Integer') ],
+        );
     }
 
     # add ticket flag table
