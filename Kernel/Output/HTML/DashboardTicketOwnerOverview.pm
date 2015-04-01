@@ -102,7 +102,7 @@ sub Run {
             Limit      => 1000,
             States     => [ values %ConfiguredStates ],
             QueueIDs   => \@ViewableQueueIDs,
-            UserID     => 1,
+            UserID     => $Self->{UserID},
             Permission => 'ro',
         );
     }
