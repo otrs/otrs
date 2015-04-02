@@ -82,7 +82,7 @@ sub Check {
 
     # check needed stuff
     for (qw(Text)) {
-        if ( !$Param{$_} ) {
+        if ( !defined $Param{$_} ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
                 Message  => "Need $_!"
