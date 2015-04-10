@@ -945,7 +945,8 @@ sub LoadDefaults {
         'Core.Form.Validate.js',
         'Core.Agent.js',
         'Core.Agent.Search.js',
-        'Core.Agent.CustomerInformationCenterSearch.js'
+        'Core.Agent.CustomerInformationCenterSearch.js',
+        'Core.Agent.CustomerUserInformationCenterSearch.js'
     ];
 
     # --------------------------------------------------- #

@@ -15,6 +15,7 @@ use warnings;
 
 use Kernel::System::Cache;
 use Kernel::System::CustomerCompany;
+use Kernel::System::CustomerUser;
 use Kernel::System::DynamicField;
 use Kernel::System::DynamicField::Backend;
 use Kernel::System::VariableCheck qw(:all);
@@ -38,6 +39,7 @@ sub new {
 
     $Self->{CacheObject}           = $Kernel::OM->Get('Kernel::System::Cache');
     $Self->{CustomerCompanyObject} = Kernel::System::CustomerCompany->new(%Param);
+    $Self->{CustomerUserObject}    = Kernel::System::CustomerUser->new(%Param);
 
     $Self->{SlaveDBObject}     = $Self->{DBObject};
     $Self->{SlaveTicketObject} = $Self->{TicketObject};
@@ -83,6 +85,12 @@ sub Run {
         $BackendConfigKey  = 'AgentCustomerInformationCenter::Backend';
         $MainMenuConfigKey = 'AgentCustomerInformationCenter::MainMenu';
         $UserSettingsKey   = 'UserCustomerInformationCenter';
+    }
+
+    if ( $Self->{Action} eq 'AgentCustomerUserInformationCenter' ) {
+        $BackendConfigKey  = 'AgentCustomerUserInformationCenter::Backend';
+        $MainMenuConfigKey = 'AgentCustomerUserInformationCenter::MainMenu';
+        $UserSettingsKey   = 'UserCustomerUserInformationCenter';
     }
 
     # load backends
@@ -176,6 +184,25 @@ sub Run {
         }
     }
 
+    if ( $Self->{Action} eq 'AgentCustomerUserInformationCenter' ) {
+
+        $Self->{CustomerUserID} = $Self->{ParamObject}->GetParam( Param => 'CustomerUserID' );
+
+        # check CustomerUserID presence for all subactions that need it
+        if ( $Self->{Subaction} ne 'UpdatePosition' ) {
+            if ( !$Self->{CustomerUserID} || $Self->{CustomerUserID} =~ /[*|%]/i ) {
+                my $Output = $Self->{LayoutObject}->Header();
+                $Output .= $Self->{LayoutObject}->NavigationBar();
+                $Output .= $Self->{LayoutObject}->Output(
+                    TemplateFile => 'AgentCustomerUserInformationCenterBlank',
+                    Data         => \%Param,
+                );
+                $Output .= $Self->{LayoutObject}->Footer();
+                return $Output;
+            }
+        }
+    }
+
     # update/close item
     if ( $Self->{Subaction} eq 'UpdateRemove' ) {
 
@@ -204,6 +231,10 @@ sub Run {
         my $URL = "Action=$Self->{Action}";
         if ( $Self->{CustomerID} ) {
             $URL .= ";CustomerID=" . $Self->{LayoutObject}->LinkEncode( $Self->{CustomerID} );
+        }
+
+        if ( $Self->{CustomerUserID} ) {
+            $URL .= ";CustomerUserLogin=" . $Self->{LayoutObject}->LinkEncode( $Self->{CustomerUserID} );
         }
 
         return $Self->{LayoutObject}->Redirect(
@@ -313,6 +344,10 @@ sub Run {
         my $URL = "Action=$Self->{Action}";
         if ( $Self->{CustomerID} ) {
             $URL .= ";CustomerID=" . $Self->{LayoutObject}->LinkEncode( $Self->{CustomerID} );
+        }
+
+        if ( $Self->{CustomerUserID} ) {
+            $URL .= ";CustomerUserLogin=" . $Self->{LayoutObject}->LinkEncode( $Self->{CustomerUserID} );
         }
 
         return $Self->{LayoutObject}->Redirect(
@@ -503,6 +538,25 @@ sub Run {
         }
     }
 
+    if ( $Self->{Action} eq 'AgentCustomerUserInformationCenter' ) {
+
+        $ContentBlockData{CustomerUserID} = $Self->{CustomerUserID};
+
+        # H1 title
+        $ContentBlockData{CustomerUserIDTitle} = $Self->{CustomerUserID};
+
+        my %CustomerUserData = $Self->{CustomerUserObject}->CustomerUserDataGet(
+            User => $Self->{CustomerUserID},
+        );
+
+        if ( $CustomerUserData{UserFirstname} ) {
+            my $CustomerUserName = $Self->{CustomerUserObject}->CustomerName(
+                UserLogin => $Self->{CustomerUserID},
+            );
+            $ContentBlockData{CustomerUserIDTitle} = "$CustomerUserName ($Self->{CustomerUserID})";
+        }
+    }
+
     # show dashboard
     $Self->{LayoutObject}->Block(
         Name => 'Content',
@@ -589,10 +643,11 @@ sub Run {
             Name => $Element{Config}->{Block},
             Data => {
                 %{ $Element{Config} },
-                Name       => $Name,
-                NameForm   => $NameForm,
-                Content    => ${ $Element{Content} },
-                CustomerID => $Self->{CustomerID} || '',
+                Name           => $Name,
+                NameForm       => $NameForm,
+                Content        => ${ $Element{Content} },
+                CustomerID     => $Self->{CustomerID} || '',
+                CustomerUserID => $Self->{CustomerUserID} || '',
             },
         );
 
@@ -667,6 +722,7 @@ sub Run {
                 Data => {
                     %{ $MainMenuConfig->{$MainMenuItem} },
                     CustomerID => $Self->{CustomerID},
+                    CustomerUserID => $Self->{CustomerUserID},
                 },
             );
         }
@@ -792,6 +848,7 @@ sub _Element {
         Config                => $Configs->{$Name},
         Name                  => $Name,
         CustomerID            => $Self->{CustomerID} || '',
+        CustomerUserID        => $Self->{CustomerUserID} || '',
         SortBy                => $SortBy,
         OrderBy               => $OrderBy,
         ColumnFilter          => $ColumnFilter,
@@ -809,10 +866,11 @@ sub _Element {
 
     if ( $Param{FilterContentOnly} ) {
         my $FilterContent = $Object->FilterContent(
-            FilterColumn => $Param{FilterColumn},
-            Config       => $Configs->{$Name},
-            Name         => $Name,
-            CustomerID   => $Self->{CustomerID} || '',
+            FilterColumn     => $Param{FilterColumn},
+            Config           => $Configs->{$Name},
+            Name             => $Name,
+            CustomerID       => $Self->{CustomerID} || '',
+            CustomerUserID   => $Self->{CustomerUserID} || '',
         );
         return $FilterContent;
     }
@@ -854,8 +912,9 @@ sub _Element {
     if ( !defined $Content || $SortBy ) {
         $CacheUsed = 0;
         $Content   = $Object->Run(
-            AJAX       => $Param{AJAX},
-            CustomerID => $Self->{CustomerID} || '',
+            AJAX           => $Param{AJAX},
+            CustomerID     => $Self->{CustomerID} || '',
+            CustomerUserID => $Self->{CustomerUserID} || '',
         );
     }
 
