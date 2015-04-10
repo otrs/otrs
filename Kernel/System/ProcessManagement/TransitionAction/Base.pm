@@ -86,7 +86,7 @@ sub _ReplaceTicketAttributes {
             )
         {
             my $TicketAttribute = $1;
-            $Param{Config}->{$Attribute} =~ s/<OTRS_(?i:TICKET)_$1>/$Param{Ticket}->{$TicketAttribute}/msxg; #//= '';
+            $Param{Config}->{$Attribute} =~ s/<OTRS_(?i:TICKET)_$1>/$Param{Ticket}->{$TicketAttribute}/msxg // '';
         }
     }
 
