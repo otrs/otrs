@@ -175,6 +175,28 @@ my @NeededModules = (
         },
     },
     {
+        Module    => 'Authen::SASL',
+        Required  => 0,
+        Comment   => 'Required for SASL authentication to LDAP server.',
+        InstTypes => {
+            aptget => 'libauthen-sasl-perl',
+            ppm    => 'Authen-SASL',
+            zypper => 'perl-Authen-SASL',
+        },
+        Depends => [
+            {
+                Module    => 'GSSAPI',
+                Required  => 0,
+                Comment   => 'Required for the GSSAPI SASL authentication mechanism.',
+                InstTypes => {
+                    aptget => 'libgssapi-perl',
+                    ppm    => 'GSSAPI',
+                    zypper => 'perl-GSSAPI',
+                },
+            },
+        ],
+    },
+    {
         Module    => 'Crypt::Eksblowfish::Bcrypt',
         Required  => 0,
         Comment   => 'For strong password hashing.',

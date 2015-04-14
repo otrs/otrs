@@ -70,6 +70,8 @@ sub new {
         );
         return;
     }
+    $Self->{SASL} = $ConfigObject->Get( 'Customer::AuthModule::LDAP::SASL' . $Param{Count} )
+        || '';
     $Self->{SearchUserDN} = $ConfigObject->Get( 'Customer::AuthModule::LDAP::SearchUserDN' . $Param{Count} )
         || '';
     $Self->{SearchUserPw} = $ConfigObject->Get( 'Customer::AuthModule::LDAP::SearchUserPw' . $Param{Count} )
@@ -178,14 +180,33 @@ sub Auth {
         return;
     }
     my $Result = '';
-    if ( $Self->{SearchUserDN} && $Self->{SearchUserPw} ) {
-        $Result = $LDAP->bind(
-            dn       => $Self->{SearchUserDN},
-            password => $Self->{SearchUserPw}
-        );
-    }
-    else {
-        $Result = $LDAP->bind();
+    if ($Self->{SASL}) {
+        eval 'use Authen::SASL';
+        if ($@) {
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
+                Priority => 'error',
+                Message  => $@,
+            );
+        }
+        my $SASL = Authen::SASL->new(mechanism => $Self->{SASL});
+        # sasl bind with username and password
+        if ( $Self->{SearchUserDN} && $Self->{SearchUserPw} ) {
+            $SASL->callback(user => $Self->{SearchUserDN});
+            $SASL->callback(pass => $Self->{SearchUserPw});
+            $Result = $Self->{LDAP}->bind( $Self->{SearchUserDN}, sasl => $SASL );
+        } else {
+            $Result = $Self->{LDAP}->bind(sasl => $SASL);
+        }
+    } else {
+        if ( $Self->{SearchUserDN} && $Self->{SearchUserPw} ) {
+            $Result = $LDAP->bind(
+                dn       => $Self->{SearchUserDN},
+                password => $Self->{SearchUserPw}
+            );
+        }
+        else {
+            $Result = $LDAP->bind();
+        }
     }
     if ( $Result->code() ) {
         $Kernel::OM->Get('Kernel::System::Log')->Log(

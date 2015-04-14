@@ -360,6 +360,10 @@ sub LoadDefaults {
     # for non ldap posixGroups objectclass (with full user dn)
 #    $Self->{'AuthModule::LDAP::UserAttr'} = 'DN';
 
+    # The SASL authentication mechanism to bind to the LDAP server
+    # examples: GSSAPI DIGEST-MD5 PLAIN CRAM-MD5 EXTERNAL ANONYMOUS
+#    $Self->{'AuthModule::LDAP::SASL'} = '';
+
     # The following is valid but would only be necessary if the
     # anonymous user do NOT have permission to read from the LDAP tree
 #    $Self->{'AuthModule::LDAP::SearchUserDN'} = '';
@@ -432,6 +436,10 @@ sub LoadDefaults {
 #    $Self->{'AuthSyncModule::LDAP::Host'} = 'ldap.example.com';
 #    $Self->{'AuthSyncModule::LDAP::BaseDN'} = 'dc=example,dc=com';
 #    $Self->{'AuthSyncModule::LDAP::UID'} = 'uid';
+
+    # The SASL authentication mechanism to bind to the LDAP server
+    # examples: GSSAPI DIGEST-MD5 PLAIN CRAM-MD5 EXTERNAL ANONYMOUS
+#    $Self->{'AuthSyncModule::LDAP::SASL'} = '';
 
     # The following is valid but would only be necessary if the
     # anonymous user do NOT have permission to read from the LDAP tree
@@ -1260,6 +1268,10 @@ via the Preferences button after logging in.
     # for non ldap posixGroups objectclass (full user dn)
 #    $Self->{'Customer::AuthModule::LDAP::UserAttr'} = 'DN';
 
+    # The SASL authentication mechanism to bind to the LDAP server
+    # examples: GSSAPI DIGEST-MD5 PLAIN CRAM-MD5 EXTERNAL ANONYMOUS
+#    $Self->{'Customer::AuthModule::LDAP::SASL'} = '';
+
     # The following is valid but would only be necessary if the
     # anonymous user do NOT have permission to read from the LDAP tree
 #    $Self->{'Customer::AuthModule::LDAP::SearchUserDN'} = '';
@@ -1416,6 +1428,8 @@ via the Preferences button after logging in.
 #            BaseDN => 'ou=seas,o=csuh',
 #            # search scope (one|sub)
 #            SSCOPE => 'sub',
+#            # the SASL authentication mechanism to bind to the LDAP server
+#            SASL => '', # ie: DIGEST-MD5 PLAIN CRAM-MD5 EXTERNAL ANONYMOUS GSSAPI
 #            # The following is valid but would only be necessary if the
 #            # anonymous user does NOT have permission to read from the LDAP tree
 #            UserDN => '',
