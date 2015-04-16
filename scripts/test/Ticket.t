@@ -301,6 +301,33 @@ $Self->True(
     'TicketSearch() (HASH:TicketNumber)',
 );
 
+%TicketIDs = $TicketObject->TicketSearch(
+    Result       => 'HASH',
+    Limit        => 100,
+    TicketID     => $TicketID,
+    UserID       => 1,
+    Permission   => 'rw',
+);
+
+$Self->True(
+    $TicketIDs{$TicketID},
+    'TicketSearch() (HAHS:TicketID)',
+);
+
+%TicketIDs = $TicketObject->TicketSearch(
+    Result       => 'HASH',
+    Limit        => 100,
+    TicketID     => [$TicketID, 42],
+    UserID       => 1,
+    Permission   => 'rw',
+);
+
+$Self->True(
+    $TicketIDs{$TicketID},
+    'TicketSearch() (HAHS:TicketID as ARRAYREF)',
+);
+
+
 my $Count = $TicketObject->TicketSearch(
     Result       => 'COUNT',
     TicketNumber => $Ticket{TicketNumber},
