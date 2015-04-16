@@ -520,7 +520,7 @@ sub TicketSearch {
     if ( $Param{TicketID} ) {
         $SQLExt .= $Self->_InConditionGet(
             TableColumn => 'st.id',
-            IDRef       => ref($Param{TicketID})
+            IDRef       => ref($Param{TicketID}) && ref($Param{TicketID}) eq 'ARRAY'
                            ? $Param{TicketID}
                            : [ $DBObject->Quote($Param{TicketID}, 'Integer') ],
         );
