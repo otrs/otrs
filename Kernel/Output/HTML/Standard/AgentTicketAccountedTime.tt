@@ -1,0 +1,70 @@
+# --
+# AgentTicketAccountedTime.tt - provides HTML for agent accounted time table
+# Copyright (C) 2001-2014 OTRS AG, http://otrs.com/
+# --
+# This software comes with ABSOLUTELY NO WARRANTY. For details, see
+# the enclosed file COPYING for license information (AGPL). If you
+# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# --
+
+<div class="LayoutPopup ARIARoleMain">
+
+    <div class="Header">
+        <h1>
+            [% Translate("Accounted time for") | html %] [% Config("Ticket::Hook") %]: [% Data.TicketNumber %] - [% Data.Title | html %]
+        </h1>
+        <p>
+            <a href="#" class="CancelClosePopup">[% Translate("Close window") | html %]</a>
+        </p>
+    </div>
+
+    <div class="Content">
+        <div class="WidgetSimple">
+            <div class="Header">
+                <h2>
+                    [% Translate("Agent Accounted Time") | html %]
+                </h2>
+            </div>
+            <div class="Content">
+                <table class="DataTable">
+                    <thead>
+                        <tr>
+                            <th>[% Translate("Agent Name") | html %]</th>
+                            <th>[% Translate("Email") | html %]</th>
+                            <th>[% Translate("# of articles") | html %]</th>
+                            <th>[% Translate("Accounted Time") | html %]</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+[% RenderBlockStart("AgentAccountedTimeRow") %]
+                        <tr>
+                            <td>
+                                [% Data.Name | html %]
+                            </td>
+                            <td>
+                                [% Data.Email | html %]
+                            </td>
+                            <td>
+                                [% Data.ArticleNumber | html %]
+                            <td>
+                                [% Data.AccountedTime | html %]
+                            </td>
+                        </tr>
+[% RenderBlockEnd("AgentAccountedTimeRow") %]
+                        <tr class="Last">
+                            <td class="TotalLabel" colspan="3">
+                                [% Translate("Total") | html %]
+                            </td>
+                            <td class="TotalValue">
+                                [% Data.TotalAccountedTime | html %]
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+[% RenderBlockStart("AgentAccountedTimeEmpty") %]
+                <p>[% Translate("This ticket has no time accounted yet!") %]</p>
+[% RenderBlockEnd("AgentAccountedTimeEmpty") %]
+            </div>
+        </div>
+    </div>
+</div>
