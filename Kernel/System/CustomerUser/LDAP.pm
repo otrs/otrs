@@ -95,6 +95,9 @@ sub new {
         return;
     }
 
+    # sasl mechanism
+    $Self->{SASL} = $Self->{CustomerUserMap}->{Params}->{SASL} || '';
+
     # search user
     $Self->{SearchUserDN} = $Self->{CustomerUserMap}->{Params}->{UserDN} || '';
     $Self->{SearchUserPw} = $Self->{CustomerUserMap}->{Params}->{UserPw} || '';
@@ -184,14 +187,33 @@ sub _Connect {
     }
 
     my $Result;
-    if ( $Self->{SearchUserDN} && $Self->{SearchUserPw} ) {
-        $Result = $Self->{LDAP}->bind(
-            dn       => $Self->{SearchUserDN},
-            password => $Self->{SearchUserPw},
-        );
-    }
-    else {
-        $Result = $Self->{LDAP}->bind();
+    if ($Self->{SASL}) {
+        eval 'use Authen::SASL';
+        if ($@) {
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
+                Priority => 'error',
+                Message  => $@,
+            );
+        }
+        my $SASL = Authen::SASL->new(mechanism => $Self->{SASL});
+        # sasl bind with username and password
+        if ( $Self->{SearchUserDN} && $Self->{SearchUserPw} ) {
+            $SASL->callback(user => $Self->{SearchUserDN});
+            $SASL->callback(pass => $Self->{SearchUserPw});
+            $Result = $Self->{LDAP}->bind( $Self->{SearchUserDN}, sasl => $SASL );
+        } else {
+            $Result = $Self->{LDAP}->bind(sasl => $SASL);
+        }
+    } else {
+        if ( $Self->{SearchUserDN} && $Self->{SearchUserPw} ) {
+            $Result = $Self->{LDAP}->bind(
+                dn       => $Self->{SearchUserDN},
+                password => $Self->{SearchUserPw},
+            );
+        }
+        else {
+            $Result = $Self->{LDAP}->bind();
+        }
     }
 
     if ( $Result->code() ) {

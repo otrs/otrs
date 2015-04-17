@@ -62,6 +62,7 @@ sub new {
     $Self->{Host}         = $ConfigObject->Get( 'AuthSyncModule::LDAP::Host' . $Param{Count} );
     $Self->{BaseDN}       = $ConfigObject->Get( 'AuthSyncModule::LDAP::BaseDN' . $Param{Count} );
     $Self->{UID}          = $ConfigObject->Get( 'AuthSyncModule::LDAP::UID' . $Param{Count} );
+    $Self->{SASL}         = $ConfigObject->Get( 'AuthSyncModule::LDAP::SASL' . $Param{Count} ) || '';
     $Self->{SearchUserDN} = $ConfigObject->Get( 'AuthSyncModule::LDAP::SearchUserDN' . $Param{Count} ) || '';
     $Self->{SearchUserPw} = $ConfigObject->Get( 'AuthSyncModule::LDAP::SearchUserPw' . $Param{Count} ) || '';
     $Self->{GroupDN}      = $ConfigObject->Get( 'AuthSyncModule::LDAP::GroupDN' . $Param{Count} )
@@ -127,14 +128,37 @@ sub Sync {
         return;
     }
     my $Result;
-    if ( $Self->{SearchUserDN} && $Self->{SearchUserPw} ) {
-        $Result = $LDAP->bind(
-            dn       => $Self->{SearchUserDN},
-            password => $Self->{SearchUserPw}
-        );
-    }
-    else {
-        $Result = $LDAP->bind();
+    if ($Self->{SASL}) {
+        eval 'use Authen::SASL';
+        if ($@) {
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
+                Priority => 'error',
+                Message  => $@,
+            );
+        }
+
+        my $SASL = Authen::SASL->new(mechanism => $Self->{SASL});
+
+        # sasl bind with username and password
+        if ( $Self->{SearchUserDN} && $Self->{SearchUserPw} ) {
+            $SASL->callback(user => $Self->{SearchUserDN} );
+            $SASL->callback(pass => $Self->{SearchUserPw} );
+            $Result = $LDAP->bind( $Self->{SearchUserDN}, sasl => $SASL );
+        } else {
+            $Result = $LDAP->bind(sasl => $SASL);
+        }
+
+    } else {
+        # simple bind
+        if ( $Self->{SearchUserDN} && $Self->{SearchUserPw} ) {
+            $Result = $LDAP->bind(
+                dn       => $Self->{SearchUserDN},
+                password => $Self->{SearchUserPw}
+            );
+        }
+        else {
+            $Result = $LDAP->bind();
+        }
     }
     if ( $Result->code() ) {
         $Kernel::OM->Get('Kernel::System::Log')->Log(
