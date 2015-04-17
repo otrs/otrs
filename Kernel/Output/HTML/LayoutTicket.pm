@@ -117,6 +117,15 @@ sub AgentCustomerViewTable {
                 Key   => $Field->[1],
                 Value => $Param{Data}->{ $Field->[0] },
             );
+
+            if ($Field->[5] =~ /^image\/.+/) {
+                    use MIME::Base64;
+                    $Record{LinkStart} = "<img style=\"max-width:96px;max-height:96px;\" src=\"data:$Field->[5];base64," .
+                                         MIME::Base64::encode_base64($Param{Data}->{ $Field->[0] }, '') .
+                                         "\" alt=\"$Field->[1]\" />";
+                    $Record{Value} = "";
+            }
+
             if ( $Field->[6] ) {
                 $Record{LinkStart} = "<a href=\"$Field->[6]\"";
                 if ( $Field->[8] ) {
