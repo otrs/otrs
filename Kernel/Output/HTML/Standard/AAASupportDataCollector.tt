@@ -200,7 +200,7 @@
 [% Translate("Orphaned Records In ticket_lock_index Table") | html %]
 [% Translate("Table ticket_lock_index contains orphaned records. Please run otrs/bin/otrs.CleanTicketIndex.pl to clean the StaticDB index.") | html %]
 [% Translate("Orphaned Records In ticket_index Table") | html %]
-[% Translate("Table ticket_index contains orphaned records. Please run otrs/bin/otrs.CleanTicketIndex.pl to clean the StaticDB index.") | html %]
+[% Translate('Table ticket_lock_index contains orphaned records. Please run bin/otrs.Console.pl "Maint::Ticket::QueueIndexCleanup" to clean the StaticDB index.') | html %]
 
 # Webserver/EnvironnmentVariables.pm
 [% Translate("Environment Variables") | html %]
@@ -217,6 +217,8 @@
 [% Translate("You should use FastCGI or mod_perl to increase your performance.") | html %]
 [% Translate("mod_deflate Usage") | html %]
 [% Translate("Please install mod_deflate to improve GUI speed.") | html %]
+[% Translate("mod_filter Usage") | html %]
+[% Translate("Please install mod_filter if mod_deflate is used.") | html %]
 [% Translate("mod_headers Usage") | html %]
 [% Translate("Please install mod_headers to improve GUI speed.") | html %]
 [% Translate("Apache::Reload Usage") | html %]

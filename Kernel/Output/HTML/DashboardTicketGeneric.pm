@@ -319,7 +319,7 @@ sub Preferences {
         @ColumnsAvailable = grep { $Self->{Config}->{DefaultColumns}->{$_} }
             keys %{ $Self->{Config}->{DefaultColumns} };
         @ColumnsEnabled = grep { $Self->{Config}->{DefaultColumns}->{$_} eq '2' }
-            keys %{ $Self->{Config}->{DefaultColumns} };
+            sort { $Self->_DefaultColumnSort() } keys %{ $Self->{Config}->{DefaultColumns} };
     }
 
     # check if the user has filter preferences for this widget
@@ -2070,7 +2070,7 @@ sub _SearchParamsGet {
                 next STRING if $2 eq $Self->{ProcessManagementActivityID};
             }
 
-            $DynamicFieldsParameters{$1}->{$2} = $Value;
+            push @{ $DynamicFieldsParameters{$1}->{$2} }, $Value;
         }
 
         elsif ( !defined $TicketSearch{$Key} ) {
@@ -2129,6 +2129,9 @@ sub _SearchParamsGet {
         Type   => 'ro',
     );
     my @ViewableQueueIDs = sort keys %ViewableQueues;
+    if ( !@ViewableQueueIDs ) {
+        @ViewableQueueIDs = (999_999);
+    }
 
     # get the custom services from agent preferences
     # set the service ids to an array of non existing service ids (0)

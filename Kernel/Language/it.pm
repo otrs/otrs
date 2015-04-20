@@ -602,6 +602,8 @@ sub Data {
         'Setting character_set_database needs to be UNICODE or UTF8.' => 'Il parametro character_set_database deve essere UNICODE o UTF8.',
         'Table Charset' => 'Charset della Tabella',
         'There were tables found which do not have utf8 as charset.' => 'Sono state trovate tabelle che non hanno il charset impostato a utf8',
+        'InnoDB Log File Size' => '',
+        'The setting innodb_log_file_size must be at least 256 MB.' => '',
         'Maximum Query Size' => 'Dimensione Massima della Query',
         'The setting \'max_allowed_packet\' must be higher than 20 MB.' =>
             'Il parametro \'max_allowed_packet\' deve essere maggiore di 20 MB.',
@@ -707,6 +709,8 @@ sub Data {
             '',
         'mod_deflate Usage' => 'Utilizzo di mod_deflate',
         'Please install mod_deflate to improve GUI speed.' => 'Si suggerisce l\'installazione di mod_deflate per migliorare i tempi di risposta dell\'interfaccia utente',
+        'mod_filter Usage' => '',
+        'Please install mod_filter if mod_deflate is used.' => '',
         'mod_headers Usage' => 'Utilizzo di mod_headers',
         'Please install mod_headers to improve GUI speed.' => 'Si suggerisce l\'installazione di mod_headers per migliorare i tempi di risposta dell\'interfaccia utente',
         'Apache::Reload Usage' => 'Utilizzo di Apache::Relaod',
@@ -863,6 +867,7 @@ sub Data {
         'Create new Email Ticket' => 'Crea una nuova richiesta via email',
         'Phone-Ticket' => 'Richiesta-Telefonica',
         'Search Tickets' => 'Ricerca Richieste',
+        'Customer Realname' => '',
         'Customer History' => '',
         'Edit Customer Users' => 'Modifica Utenti Clienti',
         'Edit Customer' => 'Modifica cliente',
@@ -1293,6 +1298,7 @@ sub Data {
         'This event is already attached to the job, Please use a different one.' =>
             'Questo evento è già collegato al job, specificarne uno diverso',
         'Delete this Event Trigger' => 'Cancella questo Event Trigger',
+        'Remove selection' => '',
         'Select Tickets' => 'Seleziona Ticket',
         '(e. g. 10*5155 or 105658*)' => '(per esempio \'10*5155\' o \'105658*\')',
         '(e. g. 234321)' => '(per esempio \'234321\')',
@@ -2047,6 +2053,7 @@ sub Data {
         'Remove this Condition' => 'Rimuovi questa Condizione',
         'Type of Linking' => 'Tipo di Collegamento',
         'Remove this Field' => 'Rimuovi questo campo',
+        'And can\'t be repeated on the same condition.' => '',
         'Add a new Field' => 'Aggiungi un nuovo campo',
         'Add New Condition' => 'Aggiungi nuova condizione',
 

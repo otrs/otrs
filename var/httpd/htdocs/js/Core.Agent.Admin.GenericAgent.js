@@ -14,25 +14,93 @@ Core.Agent = Core.Agent || {};
 Core.Agent.Admin = Core.Agent.Admin || {};
 
 /**
- * @namespace
- * @exports TargetNS as Core.Agent.Admin.GenericAgentEvent
+ * @namespace Core.Agent.Admin.GenericAgentEvent
+ * @memberof Core.Agent.Admin
+ * @author OTRS AG
  * @description
  *      This namespace contains the special module functions for the GenericInterface job module.
  */
 Core.Agent.Admin.GenericAgent = (function (TargetNS) {
 
     /**
-     * @variable
      * @private
-     *     This variable stores the parameters that are passed from the DTL and contain all the data that the dialog needs.
+     * @name DialogData
+     * @memberof Core.Agent.Admin.GenericAgentEvent
+     * @member {Array}
+     * @description
+     *     This variable stores the parameters that are passed from the TT and contain all the data that the dialog needs.
      */
     var DialogData = [];
 
     /**
+     * @private
+     * @name AddSelectClearButton
+     * @memberof Core.Agent.Admin.GenericAgentEvent
      * @function
-     * @param {Object} Params, initialization and internationalization parameters.
-     * @return nothing
-     *      This function initialize correctly all other function according to the local language
+     * @description
+     *      Adds a button next to every select field to clear the selection.
+     *      Only select fields with size > 1 are selected (no dropdowns).
+     */
+    function AddSelectClearButton() {
+        var $SelectFields = $('select');
+
+        // Loop over all select fields available on the page
+        $SelectFields.each(function () {
+            var Size = parseInt($(this).attr('size'), 10),
+                $SelectField = $(this),
+                SelectID = this.id,
+                ButtonHTML = '<a href="#" title="' + TargetNS.Localization.RemoveSelection + '" class="GenericAgentClearSelect" data-select="' + SelectID + '"><span>' + TargetNS.Localization.RemoveSelection + '</span><i class="fa fa-undo"></i></a>';
+
+
+            // Only handle select fields with a size > 1, leave all single-dropdown fields untouched
+            if (isNaN(Size) || Size <= 1) {
+                return;
+            }
+
+            // If select field has a tree selection icon already,
+            // // we want to insert the new code after that element
+            if ($SelectField.next('a.ShowTreeSelection').length) {
+                $SelectField = $SelectField.next('a.ShowTreeSelection');
+            }
+
+            // insert button HTML
+            $SelectField.after(ButtonHTML);
+        });
+
+        // Bind click event on newly inserted button
+        // The name of the corresponding select field is saved in a data attribute
+        $('.GenericAgentClearSelect').on('click.ClearSelect', function () {
+            var SelectID = $(this).data('select'),
+                $SelectField = $('#' + SelectID);
+
+            if (!$SelectField.length) {
+                return;
+            }
+
+            // Clear field value
+            $SelectField.val('');
+            $(this).blur();
+
+            return false;
+        });
+    }
+
+    /**
+     * @name Localization
+     * @memberof Core.Agent.Admin.GenericAgentEvent
+     * @member {Array}
+     * @description
+     *     The localization array for translation strings.
+     */
+    TargetNS.Localization = undefined;
+
+    /**
+     * @name Init
+     * @memberof Core.Agent.Admin.GenericAgentEvent
+     * @function
+     * @param {Object} Params - Initialization and internationalization parameters.
+     * @description
+     *      This function initialize correctly all other function according to the local language.
      */
     TargetNS.Init = function (Params) {
 
@@ -53,8 +121,18 @@ Core.Agent.Admin.GenericAgent = (function (TargetNS) {
         $('#EventType').bind('change', function (){
             TargetNS.ToogleEventSelect($(this).val());
         });
+
+        AddSelectClearButton();
     };
 
+    /**
+     * @name ToogleEventSelect
+     * @memberof Core.Agent.Admin.GenericAgentEvent
+     * @function
+     * @param {String} SelectedEventType - Event Type.
+     * @description
+     *      Toggles the event selection.
+     */
     TargetNS.ToogleEventSelect = function (SelectedEventType) {
         $('.EventList').addClass('Hidden');
         $('#' + SelectedEventType + 'Event').removeClass('Hidden');
@@ -62,11 +140,13 @@ Core.Agent.Admin.GenericAgent = (function (TargetNS) {
 
 
     /**
+     * @name AddEvent
+     * @memberof Core.Agent.Admin.GenericAgentEvent
      * @function
-     * @param {String} EventType, the type of event trigger to assign to an jobr
-     * i.e ticket or article
-     * @return nothing
-     *      This function calls the AddEvent action on the server
+     * @returns {Boolean} Returns false, if event already exists.
+     * @param {String} EventType - The type of event trigger to assign to a job i.e. ticket or article.
+     * @description
+     *      This function calls the AddEvent action on the server.
      */
     TargetNS.AddEvent = function (EventType) {
 
@@ -110,10 +190,14 @@ Core.Agent.Admin.GenericAgent = (function (TargetNS) {
     };
 
     /**
+     * @name ShowDeleteEventDialog
+     * @memberof Core.Agent.Admin.GenericAgentEvent
      * @function
-     * @param {EventObject} event object of the clicked element.
-     * @return nothing
-     *      This function shows a confirmation dialog with 2 buttons
+     * @param {EventObject} Event - Object of the clicked element.
+     * @param {jQueryObject} Object
+     * @param {String} EventName
+     * @description
+     *      This function shows a confirmation dialog with 2 buttons.
      */
     TargetNS.ShowDeleteEventDialog = function(Event, Object, EventName){
         var LocalDialogData;
@@ -147,12 +231,13 @@ Core.Agent.Admin.GenericAgent = (function (TargetNS) {
     };
 
     /**
+     * @name ShowDuplicatedDialog
+     * @memberof Core.Agent.Admin.GenericAgentEvent
      * @function
-     * @param {string} Field ID object of the element should receive the focus on close event.
-     * @return nothing
+     * @description
      *      This function shows an alert dialog for duplicated entries.
      */
-    TargetNS.ShowDuplicatedDialog = function(Field){
+    TargetNS.ShowDuplicatedDialog = function() {
         Core.UI.Dialog.ShowAlert(
             TargetNS.Localization.DuplicateEventTitle,
             TargetNS.Localization.DuplicateEventMsg,

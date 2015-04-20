@@ -600,6 +600,8 @@ sub Data {
         'Setting character_set_database needs to be UNICODE or UTF8.' => '',
         'Table Charset' => '',
         'There were tables found which do not have utf8 as charset.' => '',
+        'InnoDB Log File Size' => '',
+        'The setting innodb_log_file_size must be at least 256 MB.' => '',
         'Maximum Query Size' => '',
         'The setting \'max_allowed_packet\' must be higher than 20 MB.' =>
             '',
@@ -705,6 +707,8 @@ sub Data {
             '',
         'mod_deflate Usage' => '',
         'Please install mod_deflate to improve GUI speed.' => '',
+        'mod_filter Usage' => '',
+        'Please install mod_filter if mod_deflate is used.' => '',
         'mod_headers Usage' => '',
         'Please install mod_headers to improve GUI speed.' => '',
         'Apache::Reload Usage' => '',
@@ -861,6 +865,7 @@ sub Data {
         'Create new Email Ticket' => 'Maak nieuw e-mail ticket aan',
         'Phone-Ticket' => 'Telefoon ticket',
         'Search Tickets' => 'Zoek tickets',
+        'Customer Realname' => '',
         'Customer History' => '',
         'Edit Customer Users' => 'Wijzig klanten',
         'Edit Customer' => 'Klant bewerken',
@@ -1291,6 +1296,7 @@ sub Data {
         'This event is already attached to the job, Please use a different one.' =>
             'Dit event is al gekoppeld aan deze taak. Kies een andere.',
         'Delete this Event Trigger' => 'Verwijder deze event trigger.',
+        'Remove selection' => '',
         'Select Tickets' => '',
         '(e. g. 10*5155 or 105658*)' => '(bijvoorbeeld 10*5155 or 105658*)',
         '(e. g. 234321)' => '(bijvoorbeeld 234321)',
@@ -2045,6 +2051,7 @@ sub Data {
         'Remove this Condition' => 'Verwijder conditie',
         'Type of Linking' => 'Type koppeling',
         'Remove this Field' => 'Verwijder dit veld',
+        'And can\'t be repeated on the same condition.' => '',
         'Add a new Field' => 'Nieuw veld',
         'Add New Condition' => 'Nieuwe conditie',
 

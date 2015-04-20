@@ -598,6 +598,8 @@ Matatizo<br>&nbsp;-utendaji wa matatizo<br><br> tafadhali kumbuka kwamba mambo y
         'Setting character_set_database needs to be UNICODE or UTF8.' => 'Mpangilio character_set_database unahitaji kuwa UNICODE au UTF8.',
         'Table Charset' => 'Seti ya herufi ya jedwali',
         'There were tables found which do not have utf8 as charset.' => 'Kuna majedwali yalipatikana hayana utf8 kana seti ya herufi',
+        'InnoDB Log File Size' => '',
+        'The setting innodb_log_file_size must be at least 256 MB.' => '',
         'Maximum Query Size' => 'Kiwango cha juu ukubwa wa ulizo',
         'The setting \'max_allowed_packet\' must be higher than 20 MB.' =>
             'Mpangilio \'kiwango cha juu_kinachoruhusiwa_cha paketi\' lazima kiwe kikubwa zaidi ya MB 20',
@@ -703,6 +705,8 @@ Matatizo<br>&nbsp;-utendaji wa matatizo<br><br> tafadhali kumbuka kwamba mambo y
             'Tumia FastCGI au mod_perl kuongeza uwezo wako.',
         'mod_deflate Usage' => 'Matumizi ya mod_deflate',
         'Please install mod_deflate to improve GUI speed.' => 'Tafadhali sanidi mod_deflate kuboresha kasi ya GUI.',
+        'mod_filter Usage' => '',
+        'Please install mod_filter if mod_deflate is used.' => '',
         'mod_headers Usage' => 'Matumizi ya mod_headers',
         'Please install mod_headers to improve GUI speed.' => 'Tafadhali sanidi mod_deflate kuboresha kasi ya GUI.',
         'Apache::Reload Usage' => 'Apache::Pakia matumizi',
@@ -859,6 +863,7 @@ Matatizo<br>&nbsp;-utendaji wa matatizo<br><br> tafadhali kumbuka kwamba mambo y
         'Create new Email Ticket' => 'Tengeneza tiketi ya barua pepe mpya',
         'Phone-Ticket' => 'Simu-Tiketi',
         'Search Tickets' => 'Tafuta tiketi',
+        'Customer Realname' => '',
         'Customer History' => '',
         'Edit Customer Users' => 'Badili watuamiaji wa mteja',
         'Edit Customer' => 'Badili mteja',
@@ -1289,6 +1294,7 @@ Matatizo<br>&nbsp;-utendaji wa matatizo<br><br> tafadhali kumbuka kwamba mambo y
         'This event is already attached to the job, Please use a different one.' =>
             'Tukio hili tayari limeweambatanishwa na kazi, tafadhali tumia lingine.',
         'Delete this Event Trigger' => 'Futa kichochezi cha tukio hili',
+        'Remove selection' => '',
         'Select Tickets' => 'Chagua tiketi',
         '(e. g. 10*5155 or 105658*)' => '(Mfano 10*5155 au 105658)',
         '(e. g. 234321)' => '(Mfano 234321)',
@@ -2043,6 +2049,7 @@ Matatizo<br>&nbsp;-utendaji wa matatizo<br><br> tafadhali kumbuka kwamba mambo y
         'Remove this Condition' => 'Ondoa sharti hili',
         'Type of Linking' => 'Aina ya kiunganishi',
         'Remove this Field' => 'Ondoa uga huu',
+        'And can\'t be repeated on the same condition.' => '',
         'Add a new Field' => 'Ongeza uga mpya',
         'Add New Condition' => 'Ongeza sharti jipya',
 

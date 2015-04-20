@@ -7,7 +7,7 @@ Windows, FreeBSD, OpenBSD and Mac OS 10.x. Do you receive many e-mails and
 want to answer them with a team of agents? You're going to love OTRS!
 
 You can find a list of features in the
-[online documentation](http://otrs.github.io/doc/manual/admin/4.0/en/html/otrs.html#features-of-otrs).
+[online documentation](http://otrs.github.io/doc/manual/admin/5.0/en/html/otrs.html#features-of-otrs).
 
 
 License
@@ -90,7 +90,7 @@ Directories & Files
     |   |
     |   |---- /Output/        (all output generating modules)
     |   |      |---- /HTML/
-    |   |             |--- /Standard/*.dtl (all dtl files for Standard theme)
+    |   |             |--- /Standard/*.tt (all tt files for Standard theme)
     |   |
     |   |--- /GenericInterface (GenericInterface framework)
     |          |--- /Invoker/ (invoker backends)

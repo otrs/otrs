@@ -596,6 +596,8 @@ sub Data {
         'Setting character_set_database needs to be UNICODE or UTF8.' => '',
         'Table Charset' => '',
         'There were tables found which do not have utf8 as charset.' => '',
+        'InnoDB Log File Size' => '',
+        'The setting innodb_log_file_size must be at least 256 MB.' => '',
         'Maximum Query Size' => '',
         'The setting \'max_allowed_packet\' must be higher than 20 MB.' =>
             '',
@@ -701,6 +703,8 @@ sub Data {
             '',
         'mod_deflate Usage' => '',
         'Please install mod_deflate to improve GUI speed.' => '',
+        'mod_filter Usage' => '',
+        'Please install mod_filter if mod_deflate is used.' => '',
         'mod_headers Usage' => '',
         'Please install mod_headers to improve GUI speed.' => '',
         'Apache::Reload Usage' => '',
@@ -857,6 +861,7 @@ sub Data {
         'Create new Email Ticket' => 'Skapa nytt e-postärende',
         'Phone-Ticket' => 'Telefonärende',
         'Search Tickets' => 'Sök ärenden',
+        'Customer Realname' => '',
         'Customer History' => 'Kundhistorik',
         'Edit Customer Users' => 'Redigera Kundanvändare',
         'Edit Customer' => 'Redigera kund',
@@ -1287,6 +1292,7 @@ sub Data {
         'This event is already attached to the job, Please use a different one.' =>
             '',
         'Delete this Event Trigger' => '',
+        'Remove selection' => '',
         'Select Tickets' => 'Välj ärenden',
         '(e. g. 10*5155 or 105658*)' => 't.ex. 10*5144 eller 105658*',
         '(e. g. 234321)' => 't.ex. 163736',
@@ -2041,6 +2047,7 @@ sub Data {
         'Remove this Condition' => '',
         'Type of Linking' => '',
         'Remove this Field' => '',
+        'And can\'t be repeated on the same condition.' => '',
         'Add a new Field' => '',
         'Add New Condition' => '',
 
@@ -2817,7 +2824,7 @@ sub Data {
 
         # Template: AgentTicketCompose
         'Compose answer for ticket' => 'Författa svar till ärende',
-        'Please include at least one recipient' => '',
+        'Please include at least one recipient' => 'Vänligen ange minst en mottagare',
         'Remove Ticket Customer' => '',
         'Please remove this entry and enter a new one with the correct value.' =>
             '',
@@ -2835,7 +2842,7 @@ sub Data {
         'Example Template' => 'Exempelmall',
         'From queue' => 'Från kö',
         'To customer user' => 'Till kundanvändare',
-        'Please include at least one customer user for the ticket.' => '',
+        'Please include at least one customer user for the ticket.' => 'Vänligen ange minst en kundanvändare för ärendet.',
         'Select this customer as the main customer.' => 'Sätt den här användaren som den primära användaren',
         'Remove Ticket Customer User' => '',
         'Get all' => 'Hämta alla',
@@ -2884,7 +2891,7 @@ sub Data {
         'Split Into New Phone Ticket' => '',
         'Save Chat Into New Phone Ticket' => '',
         'Create New Phone Ticket' => 'Skapa nytt telefonärende',
-        'Please include at least one customer for the ticket.' => '',
+        'Please include at least one customer for the ticket.' => 'Vänligen ange minst en kund för ärendet.',
         'To queue' => 'Till kö',
         'Chat protocol' => '',
         'The chat will be appended as a separate article.' => '',

@@ -684,7 +684,7 @@ sub Run {
                     push @NotifyDone, $GetParam{OldOwnerID};
                 }
             }
-            elsif ( $GetParam{NewOwnerID} ) {
+            elsif ( $GetParam{NewOwnerType} eq 'New' && $GetParam{NewOwnerID} ) {
                 $Self->{TicketObject}->TicketLockSet(
                     TicketID => $Self->{TicketID},
                     Lock     => 'lock',
@@ -1997,7 +1997,7 @@ sub _Mask {
         my %ReplyToUserIDs;
         if ( $Self->{ReplyToArticle} ) {
             my @ReplyToParts = $Self->{EmailParserObject}->SplitAddressLine(
-                Line => $Self->{ReplyToArticleContent}->{To},
+                Line => $Self->{ReplyToArticleContent}->{To} || '',
             );
 
             REPLYTOPART:

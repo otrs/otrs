@@ -603,6 +603,8 @@ sub Data {
         'Setting character_set_database needs to be UNICODE or UTF8.' => 'Innstillingen character_set_database må være UNICODE eller UTF8.',
         'Table Charset' => 'Tabel tegnsett',
         'There were tables found which do not have utf8 as charset.' => 'Det ble funnet tabeller som ikke er satt som utf8',
+        'InnoDB Log File Size' => '',
+        'The setting innodb_log_file_size must be at least 256 MB.' => '',
         'Maximum Query Size' => 'Maksimum størrelse på spørring',
         'The setting \'max_allowed_packet\' must be higher than 20 MB.' =>
             'Innstillingen \'max_allowed_packet\' må være større enn 20 MB.',
@@ -708,6 +710,8 @@ sub Data {
             'Du bør benytte FastCGI eller mod_perl for å forbedre ytelsen.',
         'mod_deflate Usage' => 'mod_deflate status',
         'Please install mod_deflate to improve GUI speed.' => 'Vennligst installer mod_deflate for å forbedre hastigheten på GUI.',
+        'mod_filter Usage' => '',
+        'Please install mod_filter if mod_deflate is used.' => '',
         'mod_headers Usage' => 'mod_headers status',
         'Please install mod_headers to improve GUI speed.' => 'Vennligst installer mod_headers for å forbedre hastigheten på GUI.',
         'Apache::Reload Usage' => 'Apache::Reload status',
@@ -864,6 +868,7 @@ sub Data {
         'Create new Email Ticket' => 'Opprett ny sak ved å sende e-post',
         'Phone-Ticket' => 'Henvendelser',
         'Search Tickets' => 'Søk i saker',
+        'Customer Realname' => '',
         'Customer History' => '',
         'Edit Customer Users' => 'Rediger kundebrukere',
         'Edit Customer' => 'Endre kunde',
@@ -1294,6 +1299,7 @@ sub Data {
         'This event is already attached to the job, Please use a different one.' =>
             '',
         'Delete this Event Trigger' => 'Fjern denne Hendelses Utløseren',
+        'Remove selection' => '',
         'Select Tickets' => '',
         '(e. g. 10*5155 or 105658*)' => 'f.eks. 10*5144 eller 105658*',
         '(e. g. 234321)' => 'f.eks. 234321',
@@ -2048,6 +2054,7 @@ sub Data {
         'Remove this Condition' => 'Slett denne tilstanden',
         'Type of Linking' => 'Koblingtype',
         'Remove this Field' => 'Fjern dette feltet',
+        'And can\'t be repeated on the same condition.' => '',
         'Add a new Field' => 'Legg til et nytt felt',
         'Add New Condition' => 'Legg til ny tilstand',
 

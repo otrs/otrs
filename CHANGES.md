@@ -1,4 +1,15 @@
 #5.0.0.beta1 20??-??-??
+ - 2015-04-16 Added possibility to use list of TicketIDs (array reference) as a parameter for TicketSearch().
+ - 2015-04-13 Addition to fix of bug#[10712](http://bugs.otrs.org/show_bug.cgi?id=10712) - Incorrect utf8 in ZZZAuto.pm (via SysConfig) also for hash keys.
+ - 2015-04-10 Support customer company data in ticket small overviews, thanks to Renée Bäcker.
+ - 2015-04-10 Added searching for article flags, thanks to Moritz Lenz.
+ - 2015-04-09 Added no match message for administration screens that use filters, thanks to S7.
+ - 2015-04-01 Added link from dashboard queue overview to AgentTicketQueue for better usability, thanks to Norihiro Tanaka.
+ - 2015-03-31 Fixed bug#[11200](http://bugs.otrs.org/show_bug.cgi?id=11200) - Wrong realization of  Dynamic Fields in SOAP Response.
+ - 2015-03-24 Added new console interface for a massively improved user and developer experience on the commandline.
+ - 2015-03-24 Removed Kernel::System::Crypt layer to use Kernel::System::Crypt::PGP and ::SMIME directly.
+ - 2015-03-20 Let LWP::UserAgent handle https-proxy commands, thanks to Michiel Beijen.
+ - 2015-03-20 Added possibility to specify minimum log level, thanks to Renée Bäcker.
  - 2015-02-23 Added Ping() to Kernel::System::DB.pm API.
  - 2015-02-06 Fixed bug#[11054](http://bugs.otrs.org/show_bug.cgi?id=11054) - HTMLUtils::Safety breaks links.
  - 2015-02-03 Fixed bug#[11029](http://bugs.otrs.org/show_bug.cgi?id=11029) - Improved wording for responsible to make it more consistent.
@@ -9,7 +20,49 @@
  - 2015-01-07 Fixed ticket# 2015010142053495 - Unable to change password in customer interface.
  - 2015-01-06 Added ACLs handling for Owner and Responsible on screen load for AgentTicketOwner and AgentTicketResponsible.
 
-#4.0.7 2015-??-??
+#4.0.8 2015-??-??
+ - 2015-04-20 Fixed bug#[10961](http://bugs.otrs.org/show_bug.cgi?id=10961) - Adding email recipients via addressbook does not update customer information.
+ - 2015-04-17 Fixed bug#[11244](http://bugs.otrs.org/show_bug.cgi?id=11244) - Slave database not used in OTRS 4.
+ - 2015-04-16 Fixed bug#[11123](http://bugs.otrs.org/show_bug.cgi?id=11123) - DynamicFieldText RegEx message problem on create and edit.
+ - 2015-04-14 Fixed bug#[11226](http://bugs.otrs.org/show_bug.cgi?id=11226) - Tags in transition actions work only if there is only a tag in the field.
+ - 2015-04-10 Fixed bug#[11237](http://bugs.otrs.org/show_bug.cgi?id=11237) - SpellChecker logs an error if text is empty or '0'.
+ - 2015-04-10 Fixed issue with double SessionID parameter in some links.
+ - 2015-04-10 Fixed bug#[11167](http://bugs.otrs.org/show_bug.cgi?id=11167) - DashboardEventsTicketCalendar week starting day should be configurable.
+ - 2015-04-10 Fixed bug#[11185](http://bugs.otrs.org/show_bug.cgi?id=11185) - Mismatch between shown columns order and default columns order and in DashboardTicketGeneric.
+ - 2015-04-10 Fixed bug#[11163](http://bugs.otrs.org/show_bug.cgi?id=11163) - Uninitialized value warning in Excel output in AgentTicketSearch.
+ - 2015-04-09 Fixed bug#[11156](http://bugs.otrs.org/show_bug.cgi?id=11156) - No translated headers in Excel output in AgentTicketSearch.
+ - 2015-04-09 Fixed bug#[11219](http://bugs.otrs.org/show_bug.cgi?id=11219) - Uninitialized warning in Kernel::Output::HTML::DashboardCalendar.
+ - 2015-04-09 Fixed bug#[11232](http://bugs.otrs.org/show_bug.cgi?id=11232) - OTRS does not recognize language "vi" as it only provides "vi_VI".
+ - 2015-04-07 Fixed display bug in IE when showing ticket list tables with only one entry (Ticket#2015031842001505).
+ - 2015-04-02 Fixed bug#[11161](http://bugs.otrs.org/show_bug.cgi?id=11161) - ticket_history table is always joined in TicketSearch.
+ - 2015-04-01 Fixed bug#[11214](http://bugs.otrs.org/show_bug.cgi?id=11214) - Ticket Zoom JS breaks on French language.
+ - 2015-03-31 Fixed bug#[11211](http://bugs.otrs.org/show_bug.cgi?id=11211) - REST WADL file does not pass validation tests.
+ - 2015-03-30 Fixed bug#[11207](http://bugs.otrs.org/show_bug.cgi?id=11207) - Wrong column encoding in Kernel::System::Notification::NotificationGet().
+ - 2015-03-30 Fixed bug#[9449](http://bugs.otrs.org/show_bug.cgi?id=9449) - Generic Agent ticket actions can't be unselect.
+ - 2015-03-28 Fixed bug#[11204](http://bugs.otrs.org/show_bug.cgi?id=11204) - SOAP WSDL file does not pass validation tests.
+ - 2015-03-27 Fixed bug#[11202](http://bugs.otrs.org/show_bug.cgi?id=11202) - Dashboard errors on only admin group user.
+ - 2015-03-27 Fixed bug#[11201](http://bugs.otrs.org/show_bug.cgi?id=11201) - GI: Use of uninitialized value in string ne at AdminGenericInterfaceWebservice.pm.
+ - 2015-03-26 Fixed bug#[11199](http://bugs.otrs.org/show_bug.cgi?id=11199) - GI MappingSinple screen is not consistent.
+ - 2015-03-26 Fixed bug#[10837](http://bugs.otrs.org/show_bug.cgi?id=10837) - Reply in process ticket on webrequest article  fills customer mail into "cc" instead of "to".
+ - 2015-03-26 Fixed bug#[10978](http://bugs.otrs.org/show_bug.cgi?id=10978) - AgentTicketCompose: Deactivate ArticleTypes isn't possible.
+ - 2015-03-26 Improved ServiceList() cache, tanks to Norihiro Tanaka.
+ - 2015-03-26 Fixed bug#[11117](http://bugs.otrs.org/show_bug.cgi?id=11117) - AutoResponse messages not "comply" Customer Language.
+ - 2015-03-26 Fixed bug#[10995](http://bugs.otrs.org/show_bug.cgi?id=10995) - Characters not correctly managed by OTRS scripts..
+
+#4.0.7 2015-03-31
+ - 2015-03-25 Updated translations, thanks to all translators.
+ - 2015-03-24 Fixed bug#[11189](http://bugs.otrs.org/show_bug.cgi?id=11189) - Go to Dashboard link in No Permissions screen is broken.
+ - 2015-03-23 Fixed bug#[11194](http://bugs.otrs.org/show_bug.cgi?id=11194) - Download button for dashboard stats visible even if no permissions for AgentStats exist..
+ - 2015-03-23 Fixed bug#[11104](http://bugs.otrs.org/show_bug.cgi?id=11104) - Invalid utf-8 parameters not filtered sufficciently.
+ - 2015-03-20 Fixed bug#[11072](http://bugs.otrs.org/show_bug.cgi?id=11072) - DynamicField Filter in AgentDashboard accepts only one value.
+ - 2015-03-20 Fixed bug#[10702](http://bugs.otrs.org/show_bug.cgi?id=10702) - Can't select customer and/or public interface in AdminACL.
+ - 2015-03-20 Fixed bug#[11178](http://bugs.otrs.org/show_bug.cgi?id=11178) - Undefined variable warning with "Reply to note" in AgentTicketZoom.
+ - 2015-03-20 Fixed bug#[11188](http://bugs.otrs.org/show_bug.cgi?id=11188) - SOAP WSDL TicketGet response is incomplete.
+ - 2015-03-20 Fixed bug#[10816](http://bugs.otrs.org/show_bug.cgi?id=10816) - apache2 with mod_deflate enabled will not start.
+ - 2015-03-19 Fixed bug#[11181](http://bugs.otrs.org/show_bug.cgi?id=11181) - outputfilters pre not matching on includes.
+ - 2015-03-13 Fixed bug#[11119](http://bugs.otrs.org/show_bug.cgi?id=11119) - Activity Dialog can't be hidden if ACL features Action condition in CustomerTicketZoom.
+ - 2015-03-13 Fixed bug#[11136](http://bugs.otrs.org/show_bug.cgi?id=11136) - uninitialized value $RealName NotificationEvent.pm line 717.
+ - 2015-03-13 Fixed bug#[11106](http://bugs.otrs.org/show_bug.cgi?id=11106) - Owner type is ignored if set previous owner to blanc in AgentTicketOwner.
  - 2015-03-06 Fixed bug#[11084](http://bugs.otrs.org/show_bug.cgi?id=11142) - Transition do not store more than one criteria in a condition.
  - 2015-03-06 Fixed bug#[11142](http://bugs.otrs.org/show_bug.cgi?id=11142) - At times, undefined variable warning in agent interface.
  - 2015-03-06 Fixed bug#[11147](http://bugs.otrs.org/show_bug.cgi?id=11147) - SLA can not be set over Free Fields Dialog.

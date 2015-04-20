@@ -152,7 +152,7 @@
                 <Item Key="hr">Hrvatski</Item>
                 <Item Key="hu">Magyar</Item>
                 <Item Key="it">Italiano</Item>
-                <Item Key="ja">Japanese (&amp;#x65e5;&amp;#x672c;&amp;#x8a9e)</Item>
+                <Item Key="ja">Japanese (&amp;#x65e5;&amp;#x672c;&amp;#x8a9e;)</Item>
                 <Item Key="lt">Lietuvi&#371; kalba</Item>
                 <Item Key="lv">Latvijas</Item>
                 <Item Key="ms">Malay</Item>
@@ -611,6 +611,19 @@
             </Option>
         </Setting>
     </ConfigItem>
+    <ConfigItem Name="MinimumLogLevel" Required="1" Valid="1">
+        <Description Translatable="1">Set minimum loglevel. If you select 'error', just errors are logged. With 'debug' you get all logging messages.</Description>
+        <Group>Framework</Group>
+        <SubGroup>Core::Log</SubGroup>
+        <Setting>
+            <Option SelectedID="error">
+                <Item Key="error">error</Item>
+                <Item Key="notice">notice</Item>
+                <Item Key="info">info</Item>
+                <Item Key="debug">debug</Item>
+            </Option>
+        </Setting>
+    </ConfigItem>
     <ConfigItem Name="SendmailModule" Required="1" Valid="1" ConfigLevel="200">
         <Description Translatable="1">Defines the module to send emails. "Sendmail" directly uses the sendmail binary of your operating system. Any of the "SMTP" mechanisms use a specified (external) mailserver. "DoNotSendEmail" doesn't send emails and it is useful for test systems.</Description>
         <Group>Framework</Group>
@@ -724,7 +737,7 @@
         </Setting>
     </ConfigItem>
     <ConfigItem Name="InfoFile" Required="1" Valid="1" ConfigLevel="300">
-        <Description Translatable="1">File that is displayed in the Kernel::Modules::AgentInfo module, if located under Kernel/Output/HTML/Standard/AgentInfo.dtl.</Description>
+        <Description Translatable="1">File that is displayed in the Kernel::Modules::AgentInfo module, if located under Kernel/Output/HTML/Standard/AgentInfo.tt.</Description>
         <Group>Framework</Group>
         <SubGroup>Frontend::Agent</SubGroup>
         <Setting>
@@ -3846,7 +3859,7 @@ You can log in via the following URL:
         </Setting>
     </ConfigItem>
     <ConfigItem Name="CustomerPanel::InfoFile" Required="0" Valid="0">
-        <Description Translatable="1">Defines the path of the shown info file, that is located under Kernel/Output/HTML/Standard/CustomerAccept.dtl.</Description>
+        <Description Translatable="1">Defines the path of the shown info file, that is located under Kernel/Output/HTML/Standard/CustomerAccept.tt.</Description>
         <Group>Framework</Group>
         <SubGroup>Frontend::Customer</SubGroup>
         <Setting>
