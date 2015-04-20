@@ -1,6 +1,7 @@
 # --
 # Kernel/Modules/AgentTicketZoom.pm - to get a closer view
 # Copyright (C) 2001-2014 OTRS AG, http://otrs.com/
+# Copyright (C) 2015 Informatyka Boguslawski sp. z o.o. sp.k., http://www.ib.pl/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -2302,13 +2303,16 @@ sub _ArticleItem {
         my $ArticleTime = $Self->{TicketObject}->ArticleAccountedTimeGet(
             ArticleID => $Article{ArticleID}
         );
-        $Self->{LayoutObject}->Block(
-            Name => 'ArticleAccountedTime',
-            Data => {
-                Key   => 'Time',
-                Value => $ArticleTime,
-            },
-        );
+
+        if ($ArticleTime) {
+            $Self->{LayoutObject}->Block(
+                Name => 'ArticleAccountedTime',
+                Data => {
+                    Key   => 'Time',
+                    Value => $ArticleTime,
+                },
+            );
+        };
     }
 
     # get the dynamic fields for article object
