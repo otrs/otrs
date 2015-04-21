@@ -789,8 +789,7 @@ iframe.TextOption.Customer {
  * @subsection global search
  */
 #SearchForm,
-#AgentCustomerInformationCenterSearchForm,
-#AgentCustomerUserInformationCenterSearchForm {
+#AgentCustomerInformationCenterSearchForm {
     width: 560px;
     padding-right: 20px;
 }
