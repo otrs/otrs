@@ -123,6 +123,18 @@ sub Check {
         $Head->combine('Content-Type');
         my $ContentType = $Head->get('Content-Type');
 
+        # workaround for handling SMIME v3 messages (Content-Type: application/octet-stream; name="smime.p7m")
+        if (
+            $ContentType
+            && $ContentType =~ /application\/octet-stream;\s+name="smime.p7m"/i
+            )
+        {
+            $Message =~ s/application\/octet-stream;/application\/pkcs7-mime;/g
+            $ContentType =~ s/application\/octet-stream;/application\/pkcs7-mime;/g
+        }
+        # EO workaround for handling SMIME v3 messages (Content-Type: application/octet-stream; name="smime.p7m")
+
+
         if (
             $ContentType
             && $ContentType =~ /application\/(x-pkcs7|pkcs7)-mime/i
