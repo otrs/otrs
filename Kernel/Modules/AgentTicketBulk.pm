@@ -317,6 +317,7 @@ sub Run {
 
     # process tickets
     my @TicketIDSelected;
+    my @ResultTicketIDs;
     my $LockedTickets = '';
     my $ActionFlag    = 0;
     my $Counter       = 1;
@@ -429,6 +430,7 @@ sub Run {
 
         # do some actions on tickets
         if ( ( $Self->{Subaction} eq 'Do' ) && ( !%Error ) ) {
+            push @ResultTicketIDs, $TicketID;
 
             # challenge token check for write action
             $Self->{LayoutObject}->ChallengeTokenCheck();
@@ -695,6 +697,7 @@ sub Run {
                     MergeTicketID => $TicketID,
                     UserID        => $Self->{UserID},
                 );
+                @ResultTicketIDs = ( $MainTicketID );
             }
 
             # link all tickets to a parent
@@ -750,8 +753,12 @@ sub Run {
 
     # redirect
     if ($ActionFlag) {
+        my $DestURL = @ResultTicketIDs == 1
+            ? "Action=AgentTicketZoom;TicketID=$ResultTicketIDs[0]"
+            : ( $Self->{LastScreenOverview} || 'Action=AgentDashboard' );
+
         return $Self->{LayoutObject}->PopupClose(
-            URL => ( $Self->{LastScreenOverview} || 'Action=AgentDashboard' ),
+            URL => $DestURL,
         );
     }
 
