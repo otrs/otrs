@@ -1,4 +1,6 @@
 #5.0.0.beta1 20??-??-??
+ - 2015-04-21 Improved performance of ticket merging in bulk action, thanks to Moritz Lenz.
+ - 2015-04-21 Added support for multiple mirror databases (failsafe).
  - 2015-04-16 Added possibility to use list of TicketIDs (array reference) as a parameter for TicketSearch().
  - 2015-04-13 Addition to fix of bug#[10712](http://bugs.otrs.org/show_bug.cgi?id=10712) - Incorrect utf8 in ZZZAuto.pm (via SysConfig) also for hash keys.
  - 2015-04-10 Support customer company data in ticket small overviews, thanks to Renée Bäcker.
@@ -21,6 +23,7 @@
  - 2015-01-06 Added ACLs handling for Owner and Responsible on screen load for AgentTicketOwner and AgentTicketResponsible.
 
 #4.0.8 2015-??-??
+ - 2015-04-21 Activated customer company support for the default customer user configuration.
  - 2015-04-20 Fixed bug#[10961](http://bugs.otrs.org/show_bug.cgi?id=10961) - Adding email recipients via addressbook does not update customer information.
  - 2015-04-17 Fixed bug#[11244](http://bugs.otrs.org/show_bug.cgi?id=11244) - Slave database not used in OTRS 4.
  - 2015-04-16 Fixed bug#[11123](http://bugs.otrs.org/show_bug.cgi?id=11123) - DynamicFieldText RegEx message problem on create and edit.
