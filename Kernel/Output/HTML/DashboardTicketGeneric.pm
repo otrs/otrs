@@ -260,22 +260,22 @@ sub new {
         'EscalationSolutionTime' => 1,
     };
 
-    # remove CustomerID if Customer Information Center
+    # remove CustomerID or CustomerUser if Customer Information Center
     if ( $Self->{Action} eq 'AgentCustomerInformationCenter' ) {
-        delete $Self->{ColumnFilter}->{CustomerID};
-        delete $Self->{GetColumnFilter}->{CustomerID};
-        delete $Self->{GetColumnFilterSelect}->{CustomerID};
-        delete $Self->{ValidFilterableColumns}->{CustomerID};
-        delete $Self->{ValidSortableColumns}->{CustomerID};
-    }
-
-    # remove CustomerUserID if Customer User Information Center
-    if ( $Self->{Action} eq 'AgentCustomerUserInformationCenter' ) {
-        delete $Self->{ColumnFilter}->{CustomerUserID};
-        delete $Self->{GetColumnFilter}->{CustomerUserID};
-        delete $Self->{GetColumnFilterSelect}->{CustomerUserID};
-        delete $Self->{ValidFilterableColumns}->{CustomerUserID};
-        delete $Self->{ValidSortableColumns}->{CustomerUserID};
+        if ( $Param{CustomerID} ) {
+            delete $Self->{ColumnFilter}->{CustomerID};
+            delete $Self->{GetColumnFilter}->{CustomerID};
+            delete $Self->{GetColumnFilterSelect}->{CustomerID};
+            delete $Self->{ValidFilterableColumns}->{CustomerID};
+            delete $Self->{ValidSortableColumns}->{CustomerID};
+        }
+        if ( $Param{CustomerUserID} ) {
+            delete $Self->{ColumnFilter}->{CustomerUserID};
+            delete $Self->{GetColumnFilter}->{CustomerUserID};
+            delete $Self->{GetColumnFilterSelect}->{CustomerUserID};
+            delete $Self->{ValidFilterableColumns}->{CustomerUserID};
+            delete $Self->{ValidSortableColumns}->{CustomerUserID};            
+        }
     }
 
     $Self->{UseTicketService} = $ConfigObject->Get('Ticket::Service') || 0;
@@ -355,16 +355,16 @@ sub Preferences {
 
     # remove CustomerID if Customer Information Center
     if ( $Self->{Action} eq 'AgentCustomerInformationCenter' ) {
-        delete $Columns{Columns}->{CustomerID};
-        @ColumnsEnabled             = grep { $_ ne 'CustomerID' } @ColumnsEnabled;
-        @ColumnsAvailableNotEnabled = grep { $_ ne 'CustomerID' } @ColumnsAvailableNotEnabled;
-    }
-
-    # remove CustomerUserID if Customer User Information Center
-    if ( $Self->{Action} eq 'AgentCustomerUserInformationCenter' ) {
-        delete $Columns{Columns}->{CustomerUserID};
-        @ColumnsEnabled             = grep { $_ ne 'CustomerUserID' } @ColumnsEnabled;
-        @ColumnsAvailableNotEnabled = grep { $_ ne 'CustomerUserID' } @ColumnsAvailableNotEnabled;
+        if ( $Param{CustomerID} ) {
+            delete $Columns{Columns}->{CustomerID};
+            @ColumnsEnabled             = grep { $_ ne 'CustomerID' } @ColumnsEnabled;
+            @ColumnsAvailableNotEnabled = grep { $_ ne 'CustomerID' } @ColumnsAvailableNotEnabled;
+        }
+        if ( $Param{CustomerUserID} ) {
+            delete $Columns{Columns}->{CustomerUserID};
+            @ColumnsEnabled             = grep { $_ ne 'CustomerUserID' } @ColumnsEnabled;
+            @ColumnsAvailableNotEnabled = grep { $_ ne 'CustomerUserID' } @ColumnsAvailableNotEnabled;
+        }
     }
 
     my @Params = (
@@ -868,7 +868,8 @@ sub Run {
 
         # skip CustomerID if Customer Information Center
         if (
-            $Self->{Action} eq 'AgentCustomerInformationCenter'
+            $Self->{Action} eq 'AgentCustomerInformationCenter' 
+            && $Param{CustomerID}
             && $HeaderColumn eq 'CustomerID'
             )
         {
@@ -877,7 +878,8 @@ sub Run {
 
         # skip CustomerUserID if Customer User Information Center
         if (
-            $Self->{Action} eq 'AgentCustomerUserInformationCenter'
+            $Self->{Action} eq 'AgentCustomerInformationCenter'
+            && $Param{CustomerUserID}
             && $HeaderColumn eq 'CustomerUserID'
             )
         {
@@ -1390,6 +1392,7 @@ sub Run {
             # skip CustomerID if Customer Information Center
             if (
                 $Self->{Action} eq 'AgentCustomerInformationCenter'
+                && $Param{CustomerID}
                 && $Column eq 'CustomerID'
                 )
             {
@@ -1398,7 +1401,8 @@ sub Run {
 
             # skip CustomerUserID if Customer User Information Center
             if (
-                $Self->{Action} eq 'AgentCustomerUserInformationCenter'
+                $Self->{Action} eq 'AgentCustomerInformationCenter'
+                && $Param{CustomerUserID}
                 && $Column eq 'CustomerUserID'
                 )
             {

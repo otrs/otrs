@@ -39,7 +39,7 @@
         <tr>
             <td>
 [% RenderBlockStart("ContentLargeCustomerUserListRowCustomerKeyLink") %]
-                <a href="[% Env("Baselink") %]Action=AgentCustomerUserInformationCenter;CustomerUserID=[% Data.CustomerKey | uri %]" class="MasterActionLink">
+                <a href="[% Env("Baselink") %]Action=AgentCustomerInformationCenter;CustomerUserID=[% Data.CustomerKey | uri %]" class="MasterActionLink">
                     [% Data.CustomerKey | html %]
                 </a>
 [% RenderBlockEnd("ContentLargeCustomerUserListRowCustomerKeyLink") %]

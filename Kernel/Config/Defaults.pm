@@ -945,8 +945,7 @@ sub LoadDefaults {
         'Core.Form.Validate.js',
         'Core.Agent.js',
         'Core.Agent.Search.js',
-        'Core.Agent.CustomerInformationCenterSearch.js',
-        'Core.Agent.CustomerUserInformationCenterSearch.js'
+        'Core.Agent.CustomerInformationCenterSearch.js'
     ];
 
     # --------------------------------------------------- #
@@ -1366,7 +1365,7 @@ via the Preferences button after logging in.
 #        # admin can change customer preferences
 #        AdminSetPreferences => 1,
 #        # use customer company support (reference to company, See CustomerCompany settings)
-#        CustomerCompanySupport => 1,
+        CustomerCompanySupport => 1,
         # cache time to live in sec. - cache any database queries
         CacheTTL => 60 * 60 * 24,
 #        # just a read only source

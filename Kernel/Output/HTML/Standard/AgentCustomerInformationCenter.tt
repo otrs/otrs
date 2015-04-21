@@ -9,7 +9,12 @@
 
 [% RenderBlockStart("Content") %]
 <div class="MainBox ARIARoleMain LayoutFixedSidebar SidebarLast">
+
+    [% IF Data.CustomerIDTitle %]
     <h1>[% Translate("Customer Information Center") | html %] &mdash; <a href="#" id="CustomerInformationCenterHeading">[% Data.CustomerIDTitle | html %]</a></h1>
+    [% ELSIF Data.CustomerUserIDTitle %]
+    <h1>[% Translate("Customer Information Center") | html %] &mdash; <a href="#" id="CustomerInformationCenterHeading">[% Data.CustomerUserIDTitle | html %]</a></h1>
+    [% END %]
 
 [% WRAPPER JSOnDocumentComplete %]
 <script type="text/javascript">//<![CDATA[

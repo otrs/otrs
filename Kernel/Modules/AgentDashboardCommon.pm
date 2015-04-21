@@ -41,6 +41,31 @@ sub new {
     $Self->{CustomerCompanyObject} = Kernel::System::CustomerCompany->new(%Param);
     $Self->{CustomerUserObject}    = Kernel::System::CustomerUser->new(%Param);
 
+    $Self->{SlaveDBObject}     = $Self->{DBObject};
+    $Self->{SlaveTicketObject} = $Self->{TicketObject};
+
+    # use a slave db to search dashboard date
+    if ( $Self->{ConfigObject}->Get('Core::MirrorDB::DSN') ) {
+
+        $Self->{SlaveDBObject} = Kernel::System::DB->new(
+            LogObject    => $Param{LogObject},
+            ConfigObject => $Param{ConfigObject},
+            MainObject   => $Param{MainObject},
+            EncodeObject => $Param{EncodeObject},
+            DatabaseDSN  => $Self->{ConfigObject}->Get('Core::MirrorDB::DSN'),
+            DatabaseUser => $Self->{ConfigObject}->Get('Core::MirrorDB::User'),
+            DatabasePw   => $Self->{ConfigObject}->Get('Core::MirrorDB::Password'),
+        );
+
+        if ( $Self->{SlaveDBObject} ) {
+
+            $Self->{SlaveTicketObject} = Kernel::System::Ticket->new(
+                %Param,
+                DBObject => $Self->{SlaveDBObject},
+            );
+        }
+    }
+
     # create extra needed objects
     $Self->{DynamicFieldObject} = Kernel::System::DynamicField->new(%Param);
     $Self->{BackendObject}      = Kernel::System::DynamicField::Backend->new(%Param);
@@ -57,15 +82,18 @@ sub Run {
     my $UserSettingsKey   = 'UserDashboard';
 
     if ( $Self->{Action} eq 'AgentCustomerInformationCenter' ) {
-        $BackendConfigKey  = 'AgentCustomerInformationCenter::Backend';
-        $MainMenuConfigKey = 'AgentCustomerInformationCenter::MainMenu';
-        $UserSettingsKey   = 'UserCustomerInformationCenter';
-    }
 
-    if ( $Self->{Action} eq 'AgentCustomerUserInformationCenter' ) {
-        $BackendConfigKey  = 'AgentCustomerUserInformationCenter::Backend';
-        $MainMenuConfigKey = 'AgentCustomerUserInformationCenter::MainMenu';
-        $UserSettingsKey   = 'UserCustomerUserInformationCenter';
+        if ( $Self->{CustomerID} = $Self->{ParamObject}->GetParam( Param => 'CustomerID' ) ) {
+            $BackendConfigKey  = 'AgentCustomerInformationCenter::Backend';
+            $MainMenuConfigKey = 'AgentCustomerInformationCenter::MainMenu';
+        }
+
+        if ( $Self->{CustomerUserID} = $Self->{ParamObject}->GetParam( Param => 'CustomerUserID' ) ) {
+            $BackendConfigKey  = 'AgentCustomerUserInformationCenter::Backend';
+            $MainMenuConfigKey = 'AgentCustomerUserInformationCenter::MainMenu';
+        }
+
+        $UserSettingsKey   = 'UserCustomerInformationCenter';
     }
 
     # load backends
@@ -142,41 +170,43 @@ sub Run {
 
     if ( $Self->{Action} eq 'AgentCustomerInformationCenter' ) {
 
-        $Self->{CustomerID} = $Self->{ParamObject}->GetParam( Param => 'CustomerID' );
-
-        # check CustomerID presence for all subactions that need it
+        # check CustomerID or CustomerUserID presence for all subactions that need it
         if ( $Self->{Subaction} ne 'UpdatePosition' ) {
             if ( !$Self->{CustomerID} || $Self->{CustomerID} =~ /[*|%]/i ) {
-                my $Output = $Self->{LayoutObject}->Header();
-                $Output .= $Self->{LayoutObject}->NavigationBar();
-                $Output .= $Self->{LayoutObject}->Output(
-                    TemplateFile => 'AgentCustomerInformationCenterBlank',
-                    Data         => \%Param,
-                );
-                $Output .= $Self->{LayoutObject}->Footer();
-                return $Output;
+
+                if ( !$Self->{CustomerUserID} || $Self->{CustomerUserID} =~ /[*|%]/i ) {
+
+                    my $Output = $Self->{LayoutObject}->Header();
+                    $Output .= $Self->{LayoutObject}->NavigationBar();
+                    $Output .= $Self->{LayoutObject}->Output(
+                        TemplateFile => 'AgentCustomerInformationCenterBlank',
+                        Data         => \%Param,
+                    );
+                    $Output .= $Self->{LayoutObject}->Footer();
+                    return $Output;
+                }
             }
         }
     }
 
-    if ( $Self->{Action} eq 'AgentCustomerUserInformationCenter' ) {
+    # if ( $Self->{Action} eq 'AgentCustomerUserInformationCenter' ) {
 
-        $Self->{CustomerUserID} = $Self->{ParamObject}->GetParam( Param => 'CustomerUserID' );
+    #     $Self->{CustomerUserID} = $Self->{ParamObject}->GetParam( Param => 'CustomerUserID' );
 
-        # check CustomerUserID presence for all subactions that need it
-        if ( $Self->{Subaction} ne 'UpdatePosition' ) {
-            if ( !$Self->{CustomerUserID} || $Self->{CustomerUserID} =~ /[*|%]/i ) {
-                my $Output = $Self->{LayoutObject}->Header();
-                $Output .= $Self->{LayoutObject}->NavigationBar();
-                $Output .= $Self->{LayoutObject}->Output(
-                    TemplateFile => 'AgentCustomerUserInformationCenterBlank',
-                    Data         => \%Param,
-                );
-                $Output .= $Self->{LayoutObject}->Footer();
-                return $Output;
-            }
-        }
-    }
+    #     # check CustomerUserID presence for all subactions that need it
+    #     if ( $Self->{Subaction} ne 'UpdatePosition' ) {
+    #         if ( !$Self->{CustomerUserID} || $Self->{CustomerUserID} =~ /[*|%]/i ) {
+    #             my $Output = $Self->{LayoutObject}->Header();
+    #             $Output .= $Self->{LayoutObject}->NavigationBar();
+    #             $Output .= $Self->{LayoutObject}->Output(
+    #                 TemplateFile => 'AgentCustomerUserInformationCenterBlank',
+    #                 Data         => \%Param,
+    #             );
+    #             $Output .= $Self->{LayoutObject}->Footer();
+    #             return $Output;
+    #         }
+    #     }
+    # }
 
     # update/close item
     if ( $Self->{Subaction} eq 'UpdateRemove' ) {
@@ -499,38 +529,60 @@ sub Run {
 
     if ( $Self->{Action} eq 'AgentCustomerInformationCenter' ) {
 
-        $ContentBlockData{CustomerID} = $Self->{CustomerID};
+        if ( $Self->{CustomerID} ) {
 
-        # H1 title
-        $ContentBlockData{CustomerIDTitle} = $Self->{CustomerID};
+            $ContentBlockData{CustomerID} = $Self->{CustomerID};
 
-        my %CustomerCompanyData = $Self->{CustomerCompanyObject}->CustomerCompanyGet(
-            CustomerID => $Self->{CustomerID},
-        );
+            # H1 title
+            $ContentBlockData{CustomerIDTitle} = $Self->{CustomerID};
 
-        if ( $CustomerCompanyData{CustomerCompanyName} ) {
-            $ContentBlockData{CustomerIDTitle} = "$CustomerCompanyData{CustomerCompanyName} ($Self->{CustomerID})";
-        }
-    }
-
-    if ( $Self->{Action} eq 'AgentCustomerUserInformationCenter' ) {
-
-        $ContentBlockData{CustomerUserID} = $Self->{CustomerUserID};
-
-        # H1 title
-        $ContentBlockData{CustomerUserIDTitle} = $Self->{CustomerUserID};
-
-        my %CustomerUserData = $Self->{CustomerUserObject}->CustomerUserDataGet(
-            User => $Self->{CustomerUserID},
-        );
-
-        if ( $CustomerUserData{UserFirstname} ) {
-            my $CustomerUserName = $Self->{CustomerUserObject}->CustomerName(
-                UserLogin => $Self->{CustomerUserID},
+            my %CustomerCompanyData = $Self->{CustomerCompanyObject}->CustomerCompanyGet(
+                CustomerID => $Self->{CustomerID},
             );
-            $ContentBlockData{CustomerUserIDTitle} = "$CustomerUserName ($Self->{CustomerUserID})";
+
+            if ( $CustomerCompanyData{CustomerCompanyName} ) {
+                $ContentBlockData{CustomerIDTitle} = "$CustomerCompanyData{CustomerCompanyName} ($Self->{CustomerID})";
+            }
+        }
+
+        if ( $Self->{CustomerUserID} ) {
+
+            $ContentBlockData{CustomerUserID} = $Self->{CustomerUserID};
+
+            # H1 title
+            $ContentBlockData{CustomerUserIDTitle} = $Self->{CustomerUserID};
+
+            my %CustomerUserData = $Self->{CustomerUserObject}->CustomerUserDataGet(
+                User => $Self->{CustomerUserID},
+            );
+
+            if ( $CustomerUserData{UserFirstname} ) {
+                my $CustomerUserName = $Self->{CustomerUserObject}->CustomerName(
+                    UserLogin => $Self->{CustomerUserID},
+                );
+                $ContentBlockData{CustomerUserIDTitle} = "$CustomerUserName ($Self->{CustomerUserID})";
+            }
         }
     }
+
+    # if ( $Self->{Action} eq 'AgentCustomerUserInformationCenter' ) {
+
+    #     $ContentBlockData{CustomerUserID} = $Self->{CustomerUserID};
+
+    #     # H1 title
+    #     $ContentBlockData{CustomerUserIDTitle} = $Self->{CustomerUserID};
+
+    #     my %CustomerUserData = $Self->{CustomerUserObject}->CustomerUserDataGet(
+    #         User => $Self->{CustomerUserID},
+    #     );
+
+    #     if ( $CustomerUserData{UserFirstname} ) {
+    #         my $CustomerUserName = $Self->{CustomerUserObject}->CustomerName(
+    #             UserLogin => $Self->{CustomerUserID},
+    #         );
+    #         $ContentBlockData{CustomerUserIDTitle} = "$CustomerUserName ($Self->{CustomerUserID})";
+    #     }
+    # }
 
     # show dashboard
     $Self->{LayoutObject}->Block(
@@ -639,7 +691,7 @@ sub Run {
             PARAM:
             for my $Param ( @{ $Element{Preferences} } ) {
 
-                # special parameters are added, which do not have a tt block,
+                # special parameters are added, which do not have a dtl block,
                 # because the displayed fields are added with the output filter,
                 # so there is no need to call any block here
                 next PARAM if !$Param->{Block};
@@ -838,9 +890,6 @@ sub _Element {
     # get module preferences
     my @Preferences = $Object->Preferences();
     return @Preferences if $Param{PreferencesOnly};
-
-    # Perform the actual data fetching and computation on the slave db, if configured
-    local $Kernel::System::DB::UseSlaveDB = 1;
 
     if ( $Param{FilterContentOnly} ) {
         my $FilterContent = $Object->FilterContent(
