@@ -5981,7 +5981,7 @@
         </Setting>
     </ConfigItem>
     <ConfigItem Name="Ticket::Frontend::MenuModule###000-Back" Required="0" Valid="1">
-        <Description Translatable="1">Shows a link in the menu to go back in the ticket zoom view of the agent interface.</Description>
+        <Description Translatable="1">Shows a link in the menu to go back in the ticket zoom view of the agent interface. Additional access control to show or not show this link can be done by using Key "Group" and Content like "rw:group1;move_into:group2". To cluster menu items use for Key "Cluster" and for the Content any "Name" you want to see in the UI.</Description>
         <Group>Ticket</Group>
         <SubGroup>Frontend::Agent::Ticket::MenuModule</SubGroup>
         <Setting>
@@ -5998,7 +5998,7 @@
         </Setting>
     </ConfigItem>
     <ConfigItem Name="Ticket::Frontend::MenuModule###100-Lock" Required="0" Valid="1">
-        <Description Translatable="1">Shows a link in the menu to lock/unlock tickets in the ticket zoom view of the agent interface.</Description>
+        <Description Translatable="1">Shows a link in the menu to lock/unlock tickets in the ticket zoom view of the agent interface. Additional access control to show or not show this link can be done by using Key "Group" and Content like "rw:group1;move_into:group2". To cluster menu items use for Key "Cluster" and for the Content any "Name" you want to see in the UI.</Description>
         <Group>Ticket</Group>
         <SubGroup>Frontend::Agent::Ticket::MenuModule</SubGroup>
         <Setting>
@@ -6013,7 +6013,7 @@
         </Setting>
     </ConfigItem>
     <ConfigItem Name="Ticket::Frontend::MenuModule###200-History" Required="0" Valid="1">
-        <Description Translatable="1">Shows a link in the menu to access the history of a ticket in the ticket zoom view of the agent interface.</Description>
+        <Description Translatable="1">Shows a link in the menu to access the history of a ticket in the ticket zoom view of the agent interface. Additional access control to show or not show this link can be done by using Key "Group" and Content like "rw:group1;move_into:group2". To cluster menu items use for Key "Cluster" and for the Content any "Name" you want to see in the UI.</Description>
         <Group>Ticket</Group>
         <SubGroup>Frontend::Agent::Ticket::MenuModule</SubGroup>
         <Setting>
@@ -6030,7 +6030,7 @@
         </Setting>
     </ConfigItem>
     <ConfigItem Name="Ticket::Frontend::MenuModule###210-Print" Required="0" Valid="1">
-        <Description Translatable="1">Shows a link in the menu to print a ticket or an article in the ticket zoom view of the agent interface.</Description>
+        <Description Translatable="1">Shows a link in the menu to print a ticket or an article in the ticket zoom view of the agent interface. Additional access control to show or not show this link can be done by using Key "Group" and Content like "rw:group1;move_into:group2". To cluster menu items use for Key "Cluster" and for the Content any "Name" you want to see in the UI.</Description>
         <Group>Ticket</Group>
         <SubGroup>Frontend::Agent::Ticket::MenuModule</SubGroup>
         <Setting>
@@ -6048,7 +6048,7 @@
         </Setting>
     </ConfigItem>
     <ConfigItem Name="Ticket::Frontend::MenuModule###300-Priority" Required="0" Valid="1">
-        <Description Translatable="1">Shows a link in the menu to see the priority of a ticket in the ticket zoom view of the agent interface.</Description>
+        <Description Translatable="1">Shows a link in the menu to see the priority of a ticket in the ticket zoom view of the agent interface. Additional access control to show or not show this link can be done by using Key "Group" and Content like "rw:group1;move_into:group2". To cluster menu items use for Key "Cluster" and for the Content any "Name" you want to see in the UI.</Description>
         <Group>Ticket</Group>
         <SubGroup>Frontend::Agent::Ticket::MenuModule</SubGroup>
         <Setting>
@@ -6065,7 +6065,7 @@
         </Setting>
     </ConfigItem>
     <ConfigItem Name="Ticket::Frontend::MenuModule###310-FreeText" Required="0" Valid="1">
-        <Description Translatable="1">Shows a link in the menu to add a free text field in the ticket zoom view of the agent interface.</Description>
+        <Description Translatable="1">Shows a link in the menu to add a free text field in the ticket zoom view of the agent interface. Additional access control to show or not show this link can be done by using Key "Group" and Content like "rw:group1;move_into:group2". To cluster menu items use for Key "Cluster" and for the Content any "Name" you want to see in the UI.</Description>
         <Group>Ticket</Group>
         <SubGroup>Frontend::Agent::Ticket::MenuModule</SubGroup>
         <Setting>
@@ -6082,7 +6082,7 @@
         </Setting>
     </ConfigItem>
     <ConfigItem Name="Ticket::Frontend::MenuModule###320-Link" Required="0" Valid="1">
-        <Description Translatable="1">Shows a link in the menu that allows linking a ticket with another object in the ticket zoom view of the agent interface.</Description>
+        <Description Translatable="1">Shows a link in the menu that allows linking a ticket with another object in the ticket zoom view of the agent interface.  Additional access control to show or not show this link can be done by using Key "Group" and Content like "rw:group1;move_into:group2". To cluster menu items use for Key "Cluster" and for the Content any "Name" you want to see in the UI.</Description>
         <Group>Ticket</Group>
         <SubGroup>Frontend::Agent::Ticket::MenuModule</SubGroup>
         <Setting>
@@ -6099,7 +6099,7 @@
         </Setting>
     </ConfigItem>
     <ConfigItem Name="Ticket::Frontend::MenuModule###400-Owner" Required="0" Valid="1">
-        <Description Translatable="1">Shows a link in the menu to see the owner of a ticket in the ticket zoom view of the agent interface.</Description>
+        <Description Translatable="1">Shows a link in the menu to see the owner of a ticket in the ticket zoom view of the agent interface. Additional access control to show or not show this link can be done by using Key "Group" and Content like "rw:group1;move_into:group2". To cluster menu items use for Key "Cluster" and for the Content any "Name" you want to see in the UI.</Description>
         <Group>Ticket</Group>
         <SubGroup>Frontend::Agent::Ticket::MenuModule</SubGroup>
         <Setting>
@@ -6116,7 +6116,7 @@
         </Setting>
     </ConfigItem>
     <ConfigItem Name="Ticket::Frontend::MenuModule###410-Responsible" Required="0" Valid="1">
-        <Description Translatable="1">Shows a link in the menu to see the responsible agent of a ticket in the ticket zoom view of the agent interface.</Description>
+        <Description Translatable="1">Shows a link in the menu to see the responsible agent of a ticket in the ticket zoom view of the agent interface. Additional access control to show or not show this link can be done by using Key "Group" and Content like "rw:group1;move_into:group2". To cluster menu items use for Key "Cluster" and for the Content any "Name" you want to see in the UI.</Description>
         <Group>Ticket</Group>
         <SubGroup>Frontend::Agent::Ticket::MenuModule</SubGroup>
         <Setting>
@@ -6133,7 +6133,7 @@
         </Setting>
     </ConfigItem>
     <ConfigItem Name="Ticket::Frontend::MenuModule###420-Customer" Required="0" Valid="1">
-        <Description Translatable="1">Shows a link in the menu to see the customer who requested the ticket in the ticket zoom view of the agent interface.</Description>
+        <Description Translatable="1">Shows a link in the menu to see the customer who requested the ticket in the ticket zoom view of the agent interface. Additional access control to show or not show this link can be done by using Key "Group" and Content like "rw:group1;move_into:group2". To cluster menu items use for Key "Cluster" and for the Content any "Name" you want to see in the UI.</Description>
         <Group>Ticket</Group>
         <SubGroup>Frontend::Agent::Ticket::MenuModule</SubGroup>
         <Setting>
@@ -6150,7 +6150,7 @@
         </Setting>
     </ConfigItem>
     <ConfigItem Name="Ticket::Frontend::MenuModule###420-Note" Required="0" Valid="1">
-        <Description Translatable="1">Shows a link in the menu to add a note in the ticket zoom view of the agent interface.</Description>
+        <Description Translatable="1">Shows a link in the menu to add a note in the ticket zoom view of the agent interface. Additional access control to show or not show this link can be done by using Key "Group" and Content like "rw:group1;move_into:group2". To cluster menu items use for Key "Cluster" and for the Content any "Name" you want to see in the UI.</Description>
         <Group>Ticket</Group>
         <SubGroup>Frontend::Agent::Ticket::MenuModule</SubGroup>
         <Setting>
@@ -6167,7 +6167,7 @@
         </Setting>
     </ConfigItem>
     <ConfigItem Name="Ticket::Frontend::MenuModule###425-Phone Call Outbound" Required="0" Valid="1">
-        <Description Translatable="1">Shows a link in the menu to add a note in the ticket zoom view of the agent interface.</Description>
+        <Description Translatable="1">Shows a link in the menu to add a note in the ticket zoom view of the agent interface. Additional access control to show or not show this link can be done by using Key "Group" and Content like "rw:group1;move_into:group2". To cluster menu items use for Key "Cluster" and for the Content any "Name" you want to see in the UI.</Description>
         <Group>Ticket</Group>
         <SubGroup>Frontend::Agent::Ticket::MenuModule</SubGroup>
         <Setting>
@@ -6184,7 +6184,7 @@
         </Setting>
     </ConfigItem>
     <ConfigItem Name="Ticket::Frontend::MenuModule###426-Phone Call Inbound" Required="0" Valid="1">
-        <Description Translatable="1">Shows a link in the menu to add a note in the ticket zoom view of the agent interface.</Description>
+        <Description Translatable="1">Shows a link in the menu to add a note in the ticket zoom view of the agent interface. Additional access control to show or not show this link can be done by using Key "Group" and Content like "rw:group1;move_into:group2". To cluster menu items use for Key "Cluster" and for the Content any "Name" you want to see in the UI.</Description>
         <Group>Ticket</Group>
         <SubGroup>Frontend::Agent::Ticket::MenuModule</SubGroup>
         <Setting>
@@ -6201,7 +6201,7 @@
         </Setting>
     </ConfigItem>
     <ConfigItem Name="Ticket::Frontend::MenuModule###427-Email Outbound" Required="0" Valid="1">
-        <Description Translatable="1">Shows a link in the menu to send an outbound email in the ticket zoom view of the agent interface.</Description>
+        <Description Translatable="1">Shows a link in the menu to send an outbound email in the ticket zoom view of the agent interface. Additional access control to show or not show this link can be done by using Key "Group" and Content like "rw:group1;move_into:group2". To cluster menu items use for Key "Cluster" and for the Content any "Name" you want to see in the UI.</Description>
         <Group>Ticket</Group>
         <SubGroup>Frontend::Agent::Ticket::MenuModule</SubGroup>
         <Setting>
@@ -6218,7 +6218,7 @@
         </Setting>
     </ConfigItem>
     <ConfigItem Name="Ticket::Frontend::MenuModule###430-Merge" Required="0" Valid="1">
-        <Description Translatable="1">Shows a link in the menu that allows merging tickets in the ticket zoom view of the agent interface.</Description>
+        <Description Translatable="1">Shows a link in the menu that allows merging tickets in the ticket zoom view of the agent interface. Additional access control to show or not show this link can be done by using Key "Group" and Content like "rw:group1;move_into:group2". To cluster menu items use for Key "Cluster" and for the Content any "Name" you want to see in the UI.</Description>
         <Group>Ticket</Group>
         <SubGroup>Frontend::Agent::Ticket::MenuModule</SubGroup>
         <Setting>
@@ -6235,7 +6235,7 @@
         </Setting>
     </ConfigItem>
     <ConfigItem Name="Ticket::Frontend::MenuModule###440-Pending" Required="0" Valid="1">
-        <Description Translatable="1">Shows a link in the menu to set a ticket as pending in the ticket zoom view of the agent interface.</Description>
+        <Description Translatable="1">Shows a link in the menu to set a ticket as pending in the ticket zoom view of the agent interface. Additional access control to show or not show this link can be done by using Key "Group" and Content like "rw:group1;move_into:group2". To cluster menu items use for Key "Cluster" and for the Content any "Name" you want to see in the UI.</Description>
         <Group>Ticket</Group>
         <SubGroup>Frontend::Agent::Ticket::MenuModule</SubGroup>
         <Setting>
@@ -6252,7 +6252,7 @@
         </Setting>
     </ConfigItem>
     <ConfigItem Name="Ticket::Frontend::MenuModule###448-Watch" Required="0" Valid="1">
-        <Description Translatable="1">Shows a link in the menu for subscribing / unsubscribing from a ticket in the ticket zoom view of the agent interface.</Description>
+        <Description Translatable="1">Shows a link in the menu for subscribing / unsubscribing from a ticket in the ticket zoom view of the agent interface. Additional access control to show or not show this link can be done by using Key "Group" and Content like "rw:group1;move_into:group2". To cluster menu items use for Key "Cluster" and for the Content any "Name" you want to see in the UI.</Description>
         <Group>Ticket</Group>
         <SubGroup>Frontend::Agent::Ticket::MenuModule</SubGroup>
         <Setting>
@@ -6267,7 +6267,7 @@
         </Setting>
     </ConfigItem>
     <ConfigItem Name="Ticket::Frontend::MenuModule###450-Close" Required="0" Valid="1">
-        <Description Translatable="1">Shows a link in the menu to close a ticket in the ticket zoom view of the agent interface.</Description>
+        <Description Translatable="1">Shows a link in the menu to close a ticket in the ticket zoom view of the agent interface. Additional access control to show or not show this link can be done by using Key "Group" and Content like "rw:group1;move_into:group2". To cluster menu items use for Key "Cluster" and for the Content any "Name" you want to see in the UI.</Description>
         <Group>Ticket</Group>
         <SubGroup>Frontend::Agent::Ticket::MenuModule</SubGroup>
         <Setting>
@@ -6284,7 +6284,7 @@
         </Setting>
     </ConfigItem>
     <ConfigItem Name="Ticket::Frontend::MenuModule###460-Delete" Required="0" Valid="0">
-        <Description Translatable="1">Shows a link in the menu to delete a ticket in the ticket zoom view of the agent interface. Additional access control to show or not show this link can be done by using Key "Group" and Content like "rw:group1;move_into:group2".</Description>
+        <Description Translatable="1">Shows a link in the menu to delete a ticket in the ticket zoom view of the agent interface. Additional access control to show or not show this link can be done by using Key "Group" and Content like "rw:group1;move_into:group2". To cluster menu items use for Key "Cluster" and for the Content any "Name" you want to see in the UI.</Description>
         <Group>Ticket</Group>
         <SubGroup>Frontend::Agent::Ticket::MenuModule</SubGroup>
         <Setting>
@@ -6301,7 +6301,7 @@
         </Setting>
     </ConfigItem>
     <ConfigItem Name="Ticket::Frontend::MenuModule###470-Junk" Required="0" Valid="0">
-        <Description Translatable="1">Shows a link to set a ticket as junk in the ticket zoom view of the agent interface. Additional access control to show or not show this link can be done by using Key "Group" and Content like "rw:group1;move_into:group2".</Description>
+        <Description Translatable="1">Shows a link to set a ticket as junk in the ticket zoom view of the agent interface. Additional access control to show or not show this link can be done by using Key "Group" and Content like "rw:group1;move_into:group2". To cluster menu items use for Key "Cluster" and for the Content any "Name" you want to see in the UI.</Description>
         <Group>Ticket</Group>
         <SubGroup>Frontend::Agent::Ticket::MenuModule</SubGroup>
         <Setting>
@@ -8433,7 +8433,7 @@
                     <JavaScript>thirdparty/jquery-tablesorter-2.0.5/jquery.tablesorter.js</JavaScript>
                     <JavaScript>Core.UI.Table.Sort.js</JavaScript>
                     <JavaScript>Core.Agent.TicketZoom.js</JavaScript>
-                    <JavaScript>Core.Agent.TicketMenuModuleCluster.js</JavaScript>
+                    <JavaScript>Core.Agent.TicketMenuModuleClusterXXX.js</JavaScript>
                 </Loader>
             </FrontendModuleReg>
         </Setting>

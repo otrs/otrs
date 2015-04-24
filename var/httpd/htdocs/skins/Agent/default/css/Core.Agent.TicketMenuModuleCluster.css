@@ -61,52 +61,6 @@
     height: 33px;
 }
 
-#TicketMenuContainer > a i {
-    margin-top: 10px;
-    display: block;
-}
-
-#TicketMenuContainer > .fa-check {
-    position: absolute;
-    font-size: 15px;
-    top: 8px;
-    color: #777;
-    display: none;
-}
-
-/**
- * @subsection      Main hover effect
- */
-
-#TicketMenu > li > a#GlobalSearchNav {
-    padding-right: 21px;
-}
-
-#TicketMenu > li > a#GlobalSearchNav i {
-    font-size: 15px;
-    margin-top: 5px;
-}
-
-.RTL #TicketMenu > li > a#GlobalSearchNav {
-    padding-right: 4px;
-    padding-left: 26px;
-}
-
-/**
- * @subsection      Search icon
- */
-
-#TicketMenu .Search {
-    width: 16px;
-}
-
-#TicketMenu a i {
-    top: 2px;
-    left: 15px;
-    font-size: 20px;
-    position: absolute;
-}
-
 /**
  * @subsection      TicketMenu Second level
  */
@@ -115,7 +69,7 @@
     display: none;
 }
 
-#TicketMenu > .Active > ul {
+#TicketMenu > li:hover > ul {
     position: absolute;
     top: 28px;
     display: block;
@@ -124,12 +78,12 @@
     background: #f2f2f2;
 }
 
-.RTL #TicketMenu > .Active > ul {
+.RTL #TicketMenu > li:hover > ul {
     left: auto;
     right: -9px;
 }
 
-#TicketMenu > .Active > ul > li {
+#TicketMenu > li:hover > ul > li {
     font-size: 11px;
     line-height: 11px;
     margin-top: -1px;
@@ -138,31 +92,31 @@
     border-bottom: 1px solid #BBBBBB;
 }
 
-#TicketMenu > .Active > ul > li:first-child {
+#TicketMenu > li:hover > ul > li:first-child {
     padding-left: 0px;
 }
 
-#TicketMenu > .Active > ul > li:hover {
+#TicketMenu > li:hover > ul > li:hover {
     background: #F92;
 }
 
-#TicketMenu > .Active > ul > li::after {
+#TicketMenu > li:hover > ul > li::after {
     content: "";
 }
 
-#TicketMenu > .Active > ul > li:hover > a {
+#TicketMenu > li:hover > ul > li:hover > a {
     color: #000;
     border: none;
 }
 
-#TicketMenu > .Active > ul > li > a {
+#TicketMenu > li:hover > ul > li > a {
     display: block;
     position: relative;
     padding: 6px;
     float: none;
 }
 
-#TicketMenu > .Active > ul > li:last-child {
+#TicketMenu > li:hover > ul > li:last-child {
     border-bottom: none;
 }
 

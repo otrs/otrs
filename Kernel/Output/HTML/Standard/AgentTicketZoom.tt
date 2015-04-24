@@ -437,11 +437,6 @@ $('#[% Data.FormID | html %] select[name=[% Data.PhoneElementID | html %]]').bin
                     </div>
                 </div>
             </div>
-[% WRAPPER JSOnDocumentComplete %]
-<script type="text/javascript">//<![CDATA[
-    Core.Agent.TicketMenuModuleCluster.Init();
-//]]></script>
-[% END %]
 
 [% RenderBlockStart("ProcessWidget") %]
 [% WRAPPER JSOnDocumentComplete %]
