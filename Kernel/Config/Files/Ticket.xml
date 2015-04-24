@@ -8433,7 +8433,6 @@
                     <JavaScript>thirdparty/jquery-tablesorter-2.0.5/jquery.tablesorter.js</JavaScript>
                     <JavaScript>Core.UI.Table.Sort.js</JavaScript>
                     <JavaScript>Core.Agent.TicketZoom.js</JavaScript>
-                    <JavaScript>Core.Agent.TicketMenuModuleClusterXXX.js</JavaScript>
                 </Loader>
             </FrontendModuleReg>
         </Setting>
