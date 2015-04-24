@@ -1,6 +1,6 @@
 # --
 # AgentTicketForward.tt - provides HTML form for AgentTicketForward
-# Copyright (C) 2001-2014 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -352,20 +352,22 @@
                 </div>
                 <div class="Clear"></div>
 
-                <label>[% Translate("Pending Date") | html %] ([% Translate("for pending* states") | html %]):</label>
+                <label>[% Translate("Pending date") | html %]:</label>
                 <div class="Field">
                     [% Data.PendingDateString %]
                     <div id="DayServerError" class="TooltipErrorMessage"><p>[% Translate("Date Invalid!") | html %]</p></div>
                     <div id="HourServerError" class="TooltipErrorMessage"><p>[% Translate("Date Invalid!") | html %]</p></div>
+                    <p class="FieldExplanation">[% Translate("For all pending* states.") | html %]</p>
                 </div>
                 <div class="Clear"></div>
 
+[% RenderBlockStart("ArticleType") %]
                 <label for="ArticleTypeID">[% Translate("Article type") | html %]:</label>
                 <div class="Field">
                     [% Data.ArticleTypesStrg %]
                 </div>
                 <div class="Clear"></div>
-
+[% RenderBlockEnd("ArticleType") %]
 [% RenderBlockStart("DynamicField") %]
                 <div class="Row Row_DynamicField_[% Data.Name | html %]">
                     [% Data.Label %]

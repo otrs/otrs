@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 # --
 # otrs.Scheduler.pl - provides Scheduler Daemon control on Unix like OS
-# Copyright (C) 2001-2014 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
 # --
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU AFFERO General Public License as published by
@@ -142,7 +142,7 @@ elsif ( $Opts{a} && $Opts{a} eq "reload" ) {
 
     # log daemon stop
     $Kernel::OM->Get('Kernel::System::Log')->Log(
-        Priority => 'notice',
+        Priority => 'debug',
         Message  => "Scheduler Daemon reload request! PID $SchedulerPID{PID}",
     );
     exit 0;
@@ -168,7 +168,7 @@ exit 1;
 # Internal
 sub _Help {
     print "otrs.Scheduler.pl - OTRS Scheduler Daemon\n";
-    print "Copyright (C) 2001-2014 OTRS AG, http://otrs.com/\n";
+    print "Copyright (C) 2001-2015 OTRS AG, http://otrs.com/\n";
     print "Usage: otrs.Scheduler.pl -a <ACTION> (start|stop|status|reload) [-f (force)]\n";
     print "       otrs.Scheduler.pl -w 1 (Watchdog mode)\n";
 
@@ -297,11 +297,14 @@ sub _Start {
 
                 # log old backup file deleted
                 $Kernel::OM->Get('Kernel::System::Log')->Log(
-                    Priority => 'notice',
+                    Priority => 'debug',
                     Message  => "Scheduler deleted old backup file $LogFile!",
                 );
             }
         }
+
+        # disconnect form DB before daemon, it will prevent DB connection issues, see bug 10492
+        $Kernel::OM->Get('Kernel::System::DB')->Disconnect();
 
         # create a new daemon object
         my $Daemon = Proc::Daemon->new();
@@ -575,7 +578,7 @@ sub _Status {
 
     # log daemon stop
     $Kernel::OM->Get('Kernel::System::Log')->Log(
-        Priority => 'notice',
+        Priority => 'debug',
         Message  => "Scheduler Daemon status request! PID $SchedulerPID{PID}",
     );
 

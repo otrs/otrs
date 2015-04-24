@@ -1,6 +1,6 @@
 # --
 # Kernel/System/Ticket/ArticleStorageFS.pm - article storage module for OTRS kernel
-# Copyright (C) 2001-2014 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -872,15 +872,27 @@ sub ArticleAttachment {
     # try database, if no content is found
     return if !$DBObject->Prepare(
         SQL => '
-            SELECT content_type, content, content_id, content_alternative, disposition, filename
+            SELECT id
             FROM article_attachment
             WHERE article_id = ?
             ORDER BY filename, id',
-        Bind   => [ \$Param{ArticleID} ],
-        Limit  => $Param{FileID},
-        Encode => [ 1, 0, 0, 0, 1, 1 ],
+        Bind  => [ \$Param{ArticleID} ],
+        Limit => $Param{FileID},
     );
 
+    my $AttachmentID;
+    while ( my @Row = $DBObject->FetchrowArray() ) {
+        $AttachmentID = $Row[0];
+    }
+
+    return if !$DBObject->Prepare(
+        SQL => '
+            SELECT content_type, content, content_id, content_alternative, disposition, filename
+            FROM article_attachment
+            WHERE id = ?',
+        Bind   => [ \$AttachmentID ],
+        Encode => [ 1, 0, 0, 0, 1, 1 ],
+    );
     while ( my @Row = $DBObject->FetchrowArray() ) {
 
         $Data{ContentType} = $Row[0];

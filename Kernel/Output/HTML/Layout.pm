@@ -1,6 +1,6 @@
 # --
 # Kernel/Output/HTML/Layout.pm - provides generic HTML output
-# Copyright (C) 2001-2014 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -147,6 +147,16 @@ sub new {
                     last LANGUAGE;
                 }
             }
+            if ( !$Self->{UserLanguage} ) {
+                for my $Language ( reverse sort keys %Data ) {
+
+                    # If Browser requests 'vi', also offer 'vi_VI' even though we don't have 'vi'
+                    if ( $Language =~ m/^$BrowserLang/smxi ) {
+                        $Self->{UserLanguage} = $Language;
+                        last LANGUAGE;
+                    }
+                }
+            }
         }
         $Self->{UserLanguage} ||= $Self->{ConfigObject}->Get('DefaultLanguage') || 'en';
     }
@@ -184,11 +194,36 @@ sub new {
     # set text direction
     $Self->{TextDirection} = $Self->{LanguageObject}->{TextDirection};
 
-    # check Frontend::Output::FilterElementPre
-    $Self->{FilterElementPre} = $Self->{ConfigObject}->Get('Frontend::Output::FilterElementPre');
-
     # check Frontend::Output::FilterElementPost
-    $Self->{FilterElementPost} = $Self->{ConfigObject}->Get('Frontend::Output::FilterElementPost');
+    $Self->{FilterElementPost} = {};
+
+    my %FilterElementPost = %{ $Self->{ConfigObject}->Get('Frontend::Output::FilterElementPost') // {} };
+
+    FILTER:
+    for my $Filter ( sort keys %FilterElementPost ) {
+
+        # extract filter config
+        my $FilterConfig = $FilterElementPost{$Filter};
+
+        next FILTER if !$FilterConfig || ref $FilterConfig ne 'HASH';
+
+        # extract template list
+        my %TemplateList = %{ $FilterConfig->{Templates} || {} };
+
+        if ( !%TemplateList || $TemplateList{ALL} ) {
+
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
+                Priority => 'error',
+                Message  => <<EOF,
+$FilterConfig->{Module} will be ignored because it wants to operate on all templates or does not specify a template list.
+EOF
+            );
+
+            next FILTER;
+        }
+
+        $Self->{FilterElementPost}->{$Filter} = $FilterElementPost{$Filter};
+    }
 
     # check Frontend::Output::FilterContent
     $Self->{FilterContent} = $Self->{ConfigObject}->Get('Frontend::Output::FilterContent');
@@ -1439,6 +1474,7 @@ sub Print {
     #   http://bugs.otrs.org/show_bug.cgi?id=9802.
     if ( $INC{'CGI/Fast.pm'} || $ENV{FCGI_ROLE} || $ENV{FCGI_SOCKET_PATH} ) {    # are we on FCGI?
         $Self->{EncodeObject}->EncodeOutput( $Param{Output} );
+        binmode STDOUT, ':bytes';
     }
 
     print ${ $Param{Output} };
@@ -3120,6 +3156,7 @@ sub CustomerLogin {
 
     # set Action parameter for the loader
     $Self->{Action} = 'CustomerLogin';
+    $Param{'XLoginHeader'} = 1;
 
     if ( $Self->{ConfigObject}->Get('SessionUseCookie') ) {
 
@@ -4709,16 +4746,18 @@ sub _BuildSelectionDataRefCreate {
         }
     }
 
-    # Max option
-    # REMARK: Don't merge the Max handling with Ascii2Html function call of
-    # the HTMLQuote handling. In this case you lose the max handling if you
-    # deactivate HTMLQuote
-    if ( $OptionRef->{Max} ) {
+    # SelectedID and SelectedValue option
+    if ( defined $OptionRef->{SelectedID} || $OptionRef->{SelectedValue} ) {
         for my $Row ( @{$DataRef} ) {
-
-            # REMARK: This is the same solution as in Ascii2Html
-            if ( length $Row > $OptionRef->{Max} ) {
-                $Row = substr( $Row, 0, $OptionRef->{Max} - 5 ) . '[...]';
+            if (
+                (
+                    $OptionRef->{SelectedID}->{ $Row->{Key} }
+                    || $OptionRef->{SelectedValue}->{ $Row->{Value} }
+                )
+                && !$DisabledElements{ $Row->{Value} }
+                )
+            {
+                $Row->{Selected} = 1;
             }
         }
     }
@@ -4737,30 +4776,6 @@ sub _BuildSelectionDataRefCreate {
         unshift( @{$DataRef}, \%None );
     }
 
-    # SelectedID and SelectedValue option
-    if ( defined $OptionRef->{SelectedID} || $OptionRef->{SelectedValue} ) {
-        for my $Row ( @{$DataRef} ) {
-            if (
-                (
-                    $OptionRef->{SelectedID}->{ $Row->{Key} }
-                    || $OptionRef->{SelectedValue}->{ $Row->{Value} }
-                )
-                && !$DisabledElements{ $Row->{Value} }
-                )
-            {
-                $Row->{Selected} = 1;
-            }
-        }
-    }
-
-    # HTMLQuote option
-    if ( $OptionRef->{HTMLQuote} ) {
-        for my $Row ( @{$DataRef} ) {
-            $Row->{Key}   = $Self->Ascii2Html( Text => $Row->{Key} );
-            $Row->{Value} = $Self->Ascii2Html( Text => $Row->{Value} );
-        }
-    }
-
     # TreeView option
     if ( $OptionRef->{TreeView} ) {
 
@@ -4772,10 +4787,58 @@ sub _BuildSelectionDataRefCreate {
             my @Fragment = split '::', $Row->{Value};
             $Row->{Value} = pop @Fragment;
 
+            # TODO: Here we are combining Max with HTMLQuote, check below for the REMARK:
+            # Max and HTMLQuote needs to be done before spaces insert but after the split of the
+            # parents, then it is not possible to do it outside
+            if ( $OptionRef->{HTMLQuote} ) {
+                $Row->{Value} = $Self->Ascii2Html(
+                    Text => $Row->{Value},
+                    Max  => $OptionRef->{Max},
+                );
+            }
+            elsif ( $OptionRef->{Max} ) {
+                if ( length $Row->{Value} > $OptionRef->{Max} ) {
+                    $Row->{Value} = substr( $Row->{Value}, 0, $OptionRef->{Max} - 5 ) . '[...]';
+                }
+            }
+
             my $Space = '&nbsp;&nbsp;' x scalar @Fragment;
             $Space ||= '';
 
             $Row->{Value} = $Space . $Row->{Value};
+        }
+    }
+    else {
+
+        # HTMLQuote option
+        if ( $OptionRef->{HTMLQuote} ) {
+            for my $Row ( @{$DataRef} ) {
+                $Row->{Key}   = $Self->Ascii2Html( Text => $Row->{Key} );
+                $Row->{Value} = $Self->Ascii2Html( Text => $Row->{Value} );
+            }
+        }
+
+        # TODO: Check this comment!
+        # Max option
+        # REMARK: Don't merge the Max handling with Ascii2Html function call of
+        # the HTMLQuote handling. In this case you lose the max handling if you
+        # deactivate HTMLQuote
+        if ( $OptionRef->{Max} ) {
+
+            # REMARK: This is the same solution as in Ascii2Html
+            for my $Row ( @{$DataRef} ) {
+
+                if ( ref $Row eq 'HASH' ) {
+                    if ( length $Row->{Value} > $OptionRef->{Max} ) {
+                        $Row->{Value} = substr( $Row->{Value}, 0, $OptionRef->{Max} - 5 ) . '[...]';
+                    }
+                }
+                else {
+                    if ( length $Row > $OptionRef->{Max} ) {
+                        $Row = substr( $Row, 0, $OptionRef->{Max} - 5 ) . '[...]';
+                    }
+                }
+            }
         }
     }
 

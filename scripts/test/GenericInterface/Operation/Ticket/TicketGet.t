@@ -1,12 +1,13 @@
 # --
 # TicketGet.t - TicketConnector interface tests for TicketConnector backend
-# Copyright (C) 2001-2014 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
 # did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
 # --
 
+## no critic (Modules::RequireExplicitPackage)
 use strict;
 use warnings;
 use utf8;
@@ -28,6 +29,12 @@ my $MainObject   = $Kernel::OM->Get('Kernel::System::Main');
 # get a random id
 my $RandomID = int rand 1_000_000_000;
 
+# disable SessionCheckRemoteIP setting
+$ConfigObject->Set(
+    Key   => 'SessionCheckRemoteIP',
+    Value => 0,
+);
+
 # helper object
 # skip SSL certificate verification
 $Kernel::OM->ObjectParamAdd(
@@ -36,15 +43,30 @@ $Kernel::OM->ObjectParamAdd(
         SkipSSLVerify              => 1,
     },
 );
+
 my $HelperObject = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
 
 # create a new user for current test
-my $UserLogin = $HelperObject->TestUserCreate();
-my $Password  = $UserLogin;
+my $UserLogin = $HelperObject->TestUserCreate(
+    Groups => ['users'],
+);
+my $Password = $UserLogin;
 
 my $UserID = $Kernel::OM->Get('Kernel::System::User')->UserLookup(
     UserLogin => $UserLogin,
 );
+
+# create a new user without permissions for current test
+my $UserLogin2 = $HelperObject->TestUserCreate();
+my $Password2  = $UserLogin2;
+
+# create a customer where a ticket will use and will have permissions
+my $CustomerUserLogin = $HelperObject->TestCustomerUserCreate();
+my $CustomerPassword  = $CustomerUserLogin;
+
+# create a customer that will not have permissions
+my $CustomerUserLogin2 = $HelperObject->TestCustomerUserCreate();
+my $CustomerPassword2  = $CustomerUserLogin2;
 
 my %SkipFields = (
     Age                       => 1,
@@ -274,6 +296,35 @@ for my $Key ( sort keys %TicketEntryOne ) {
     }
 }
 
+my $FormatDynamicFields = sub {
+    my %Param = @_;
+
+    my %TicketRaw = %{ $Param{Ticket} };
+    my %Ticket;
+    my @DynamicFields;
+
+    ATTRIBUTE:
+    for my $Attribute ( sort keys %TicketRaw ) {
+
+        if ( $Attribute =~ m{\A DynamicField_(.*) \z}msx ) {
+            push @DynamicFields, {
+                Name  => $1,
+                Value => $TicketRaw{$Attribute},
+            };
+            next ATTRIBUTE;
+        }
+
+        $Ticket{$Attribute} = $TicketRaw{$Attribute};
+    }
+
+    # add dynamic fields array into 'DynamicField' hash key if any
+    if (@DynamicFields) {
+        $Ticket{DynamicField} = \@DynamicFields;
+    }
+
+    return %Ticket;
+};
+
 # get the Ticket entry
 # with dynamic fields
 my %TicketEntryOneDF = $TicketObject->TicketGet(
@@ -295,6 +346,10 @@ for my $Key ( sort keys %TicketEntryOneDF ) {
         delete $TicketEntryOneDF{$Key};
     }
 }
+
+%TicketEntryOneDF = $FormatDynamicFields->(
+    Ticket => \%TicketEntryOneDF,
+);
 
 # add ticket id
 push @TicketIDs, $TicketID1;
@@ -402,6 +457,10 @@ for my $Key ( sort keys %TicketEntryTwoDF ) {
     }
 }
 
+%TicketEntryTwoDF = $FormatDynamicFields->(
+    Ticket => \%TicketEntryTwoDF,
+);
+
 # add ticket id
 push @TicketIDs, $TicketID2;
 
@@ -455,7 +514,7 @@ my $TicketID4 = $TicketObject->TicketCreate(
     Lock         => 'lock',
     Priority     => '3 normal',
     State        => 'new',
-    CustomerID   => '654321',
+    CustomerID   => $CustomerUserLogin,
     CustomerUser => 'customerFour@example.com',
     OwnerID      => 1,
     UserID       => 1,
@@ -490,7 +549,7 @@ my $ArticleID42 = $TicketObject->ArticleCreate(
     TicketID    => $TicketID4,
     ArticleType => 'phone',
     SenderType  => 'agent',
-    From        => 'Anot Real Agent <email@example.com>',
+    From        => 'A not Real Agent <email@example.com>',
     To          => 'Customer A <customer-a@example.com>',
     Cc          => 'Customer B <customer-b@example.com>',
     ReplyTo     => 'Customer B <customer-b@example.com>',
@@ -621,15 +680,15 @@ for my $Key ( sort keys %TicketEntryFour ) {
 # add ticket id
 push @TicketIDs, $TicketID4;
 
-# set webservice name
+# set web-service name
 my $WebserviceName = '-Test-' . $RandomID;
 
-# create webservice object
+# create web-service object
 my $WebserviceObject = $Kernel::OM->Get('Kernel::System::GenericInterface::Webservice');
 $Self->Is(
     'Kernel::System::GenericInterface::Webservice',
     ref $WebserviceObject,
-    "Create webservice object",
+    "Create web service object",
 );
 
 my $WebserviceID = $WebserviceObject->WebserviceAdd(
@@ -649,7 +708,7 @@ my $WebserviceID = $WebserviceObject->WebserviceAdd(
 );
 $Self->True(
     $WebserviceID,
-    "Added Webservice",
+    "Added Web Service",
 );
 
 # get remote host with some precautions for certain unit test systems
@@ -661,17 +720,17 @@ if ( $FQDN ne 'yourhost.example.com' && gethostbyname($FQDN) ) {
     $Host = $FQDN;
 }
 
-# try to resolve localhost instead
+# try to resolve local-host instead
 if ( !$Host && gethostbyname('localhost') ) {
     $Host = 'localhost';
 }
 
-# use hard coded localhost IP address
+# use hard-coded local-host IP address
 if ( !$Host ) {
     $Host = '127.0.0.1';
 }
 
-# prepare webservice config
+# prepare web-service config
 my $RemoteSystem =
     $ConfigObject->Get('HttpType')
     . '://'
@@ -728,7 +787,7 @@ my $WebserviceConfig = {
     },
 };
 
-# update webservice with real config
+# update web-service with real config
 # the update is needed because we are using
 # the WebserviceID for the Endpoint in config
 my $WebserviceUpdate = $WebserviceObject->WebserviceUpdate(
@@ -740,7 +799,7 @@ my $WebserviceUpdate = $WebserviceObject->WebserviceUpdate(
 );
 $Self->True(
     $WebserviceUpdate,
-    "Updated Webservice $WebserviceID - $WebserviceName",
+    "Updated Web Service $WebserviceID - $WebserviceName",
 );
 
 # Get SessionID
@@ -752,7 +811,7 @@ $Self->Is(
     "SessionID - Create requester object",
 );
 
-# start requester with our webservice
+# start requester with our web-service
 my $RequesterSessionResult = $RequesterSessionObject->Run(
     WebserviceID => $WebserviceID,
     Invoker      => 'SessionCreate',
@@ -763,9 +822,10 @@ my $RequesterSessionResult = $RequesterSessionObject->Run(
 );
 
 my $NewSessionID = $RequesterSessionResult->{Data}->{SessionID};
-my @Tests        = (
+
+my @Tests = (
     {
-        Name                    => 'Test 1',
+        Name                    => 'Empty Request',
         SuccessRequest          => 1,
         RequestData             => {},
         ExpectedReturnLocalData => {
@@ -789,7 +849,7 @@ my @Tests        = (
         Operation => 'TicketGet',
     },
     {
-        Name           => 'Test 2',
+        Name           => 'Wrong TicketID',
         SuccessRequest => 1,
         RequestData    => {
             TicketID => 'NotTicketID',
@@ -797,9 +857,9 @@ my @Tests        = (
         ExpectedReturnLocalData => {
             Data => {
                 Error => {
-                    ErrorCode => 'TicketGet.NotValidTicketID',
+                    ErrorCode => 'TicketGet.AccessDenied',
                     ErrorMessage =>
-                        'TicketGet: Could not get Ticket data in Kernel::GenericInterface::Operation::Ticket::TicketGet::Run()'
+                        'TicketGet: User does not have access to the ticket!'
                     }
             },
             Success => 1
@@ -807,9 +867,9 @@ my @Tests        = (
         ExpectedReturnRemoteData => {
             Data => {
                 Error => {
-                    ErrorCode => 'TicketGet.NotValidTicketID',
+                    ErrorCode => 'TicketGet.AccessDenied',
                     ErrorMessage =>
-                        'TicketGet: Could not get Ticket data in Kernel::GenericInterface::Operation::Ticket::TicketGet::Run()'
+                        'TicketGet: User does not have access to the ticket!'
                     }
             },
             Success => 1
@@ -817,7 +877,7 @@ my @Tests        = (
         Operation => 'TicketGet',
     },
     {
-        Name           => 'Test 3',
+        Name           => 'Test Ticket 1',
         SuccessRequest => '1',
         RequestData    => {
             TicketID => $TicketID1,
@@ -825,25 +885,19 @@ my @Tests        = (
         ExpectedReturnRemoteData => {
             Success => 1,
             Data    => {
-                Ticket => {
-                    %TicketEntryOne,
-                },
+                Ticket => \%TicketEntryOne,
             },
         },
         ExpectedReturnLocalData => {
             Success => 1,
             Data    => {
-                Ticket => [
-                    {
-                        %TicketEntryOne,
-                    }
-                ],
+                Ticket => [ \%TicketEntryOne, ],
             },
         },
         Operation => 'TicketGet',
     },
     {
-        Name           => 'Test 4',
+        Name           => 'Test Ticket 2',
         SuccessRequest => '1',
         RequestData    => {
             TicketID => $TicketID2,
@@ -851,25 +905,19 @@ my @Tests        = (
         ExpectedReturnRemoteData => {
             Success => 1,
             Data    => {
-                Ticket => {
-                    %TicketEntryTwo,
-                },
+                Ticket => \%TicketEntryTwo,
             },
         },
         ExpectedReturnLocalData => {
             Success => 1,
             Data    => {
-                Ticket => [
-                    {
-                        %TicketEntryTwo,
-                    }
-                ],
+                Ticket => [ \%TicketEntryTwo, ],
             },
         },
         Operation => 'TicketGet',
     },
     {
-        Name           => 'Test 5',
+        Name           => 'Test Ticket 3',
         SuccessRequest => '1',
         RequestData    => {
             TicketID => $TicketID3,
@@ -877,25 +925,19 @@ my @Tests        = (
         ExpectedReturnRemoteData => {
             Success => 1,
             Data    => {
-                Ticket => {
-                    %TicketEntryThree,
-                },
+                Ticket => \%TicketEntryThree,
             },
         },
         ExpectedReturnLocalData => {
             Success => 1,
             Data    => {
-                Ticket => [
-                    {
-                        %TicketEntryThree,
-                    }
-                ],
+                Ticket => [ \%TicketEntryThree, ],
             },
         },
         Operation => 'TicketGet',
     },
     {
-        Name           => 'Test 6',
+        Name           => 'Test Ticket 4',
         SuccessRequest => '1',
         RequestData    => {
             TicketID => $TicketID4,
@@ -903,25 +945,19 @@ my @Tests        = (
         ExpectedReturnRemoteData => {
             Success => 1,
             Data    => {
-                Ticket => {
-                    %TicketEntryFour,
-                },
+                Ticket => \%TicketEntryFour,
             },
         },
         ExpectedReturnLocalData => {
             Success => 1,
             Data    => {
-                Ticket => [
-                    {
-                        %TicketEntryFour,
-                    }
-                ],
+                Ticket => [ \%TicketEntryFour, ],
             },
         },
         Operation => 'TicketGet',
     },
     {
-        Name           => 'Test 7',
+        Name           => 'Test Ticket 1 With DF',
         SuccessRequest => '1',
         RequestData    => {
             TicketID      => $TicketID1,
@@ -930,25 +966,19 @@ my @Tests        = (
         ExpectedReturnRemoteData => {
             Success => 1,
             Data    => {
-                Ticket => {
-                    %TicketEntryOneDF,
-                },
+                Ticket => \%TicketEntryOneDF,
             },
         },
         ExpectedReturnLocalData => {
             Success => 1,
             Data    => {
-                Ticket => [
-                    {
-                        %TicketEntryOneDF,
-                    }
-                ],
+                Ticket => [ \%TicketEntryOneDF, ],
             },
         },
         Operation => 'TicketGet',
     },
     {
-        Name           => 'Test 8',
+        Name           => 'Test Ticket 2 With DF',
         SuccessRequest => '1',
         RequestData    => {
             TicketID      => $TicketID2,
@@ -957,25 +987,19 @@ my @Tests        = (
         ExpectedReturnRemoteData => {
             Success => 1,
             Data    => {
-                Ticket => {
-                    %TicketEntryTwoDF,
-                },
+                Ticket => \%TicketEntryTwoDF,
             },
         },
         ExpectedReturnLocalData => {
             Success => 1,
             Data    => {
-                Ticket => [
-                    {
-                        %TicketEntryTwoDF,
-                    }
-                ],
+                Ticket => [ \%TicketEntryTwoDF, ],
             },
         },
         Operation => 'TicketGet',
     },
     {
-        Name           => 'Test 9',
+        Name           => 'Test Ticket 1 + 2 With DF',
         SuccessRequest => '1',
         RequestData    => {
             TicketID      => "$TicketID1, $TicketID2",
@@ -984,33 +1008,19 @@ my @Tests        = (
         ExpectedReturnRemoteData => {
             Success => 1,
             Data    => {
-                Ticket => [
-                    {
-                        %TicketEntryOneDF,
-                    },
-                    {
-                        %TicketEntryTwoDF,
-                    },
-                ],
+                Ticket => [ \%TicketEntryOneDF, \%TicketEntryTwoDF, ],
             },
         },
         ExpectedReturnLocalData => {
             Success => 1,
             Data    => {
-                Ticket => [
-                    {
-                        %TicketEntryOneDF,
-                    },
-                    {
-                        %TicketEntryTwoDF,
-                    },
-                    ]
+                Ticket => [ \%TicketEntryOneDF, \%TicketEntryTwoDF, ],
             },
         },
         Operation => 'TicketGet',
     },
     {
-        Name           => 'Test 10',
+        Name           => 'Test Ticket 4 With All Articles',
         SuccessRequest => '1',
         RequestData    => {
             TicketID    => $TicketID4,
@@ -1030,16 +1040,18 @@ my @Tests        = (
             Data    => {
                 Ticket => [
                     {
-                        %TicketEntryFour,
-                        Article => \@ArticleWithoutAttachments,
-                    }
+                        (
+                            %TicketEntryFour,
+                            Article => \@ArticleWithoutAttachments,
+                            )
+                    },
                 ],
             },
         },
         Operation => 'TicketGet',
     },
     {
-        Name           => 'Test 11',
+        Name           => 'Test Ticket 4 With All Articles and Attachments',
         SuccessRequest => '1',
         RequestData    => {
             TicketID    => $TicketID4,
@@ -1060,11 +1072,152 @@ my @Tests        = (
             Data    => {
                 Ticket => [
                     {
-                        %TicketEntryFour,
-                        Article => \@ArticleBox,
-                    }
+                        (
+                            %TicketEntryFour,
+                            Article => \@ArticleBox,
+                            )
+                    },
                 ],
             },
+        },
+        Operation => 'TicketGet',
+    },
+    {
+        Name           => 'Test Ticket 4 With All Articles and Attachments (With sessionID)',
+        SuccessRequest => '1',
+        RequestData    => {
+            TicketID    => $TicketID4,
+            AllArticles => 1,
+            Attachments => 1,
+        },
+        Auth => {
+            SessionID => $NewSessionID,
+        },
+        ExpectedReturnRemoteData => {
+            Success => 1,
+            Data    => {
+                Ticket => {
+                    %TicketEntryFour,
+                    Article => \@ArticleBox,
+                },
+            },
+        },
+        ExpectedReturnLocalData => {
+            Success => 1,
+            Data    => {
+                Ticket => [
+                    {
+                        (
+                            %TicketEntryFour,
+                            Article => \@ArticleBox,
+                            )
+                    },
+                ],
+            },
+        },
+        Operation => 'TicketGet',
+    },
+    {
+        Name           => 'Test Ticket 4 With All Articles and Attachments (No Permission)',
+        SuccessRequest => '1',
+        RequestData    => {
+            TicketID    => $TicketID4,
+            AllArticles => 1,
+            Attachments => 1,
+        },
+        Auth => {
+            UserLogin => $UserLogin2,
+            Password  => $Password2,
+        },
+        ExpectedReturnLocalData => {
+            Data => {
+                Error => {
+                    ErrorCode => 'TicketGet.AccessDenied',
+                    ErrorMessage =>
+                        'TicketGet: User does not have access to the ticket!'
+                    }
+            },
+            Success => 1
+        },
+        ExpectedReturnRemoteData => {
+            Data => {
+                Error => {
+                    ErrorCode => 'TicketGet.AccessDenied',
+                    ErrorMessage =>
+                        'TicketGet: User does not have access to the ticket!'
+                    }
+            },
+            Success => 1
+        },
+        Operation => 'TicketGet',
+    },
+    {
+        Name           => 'Test Ticket 4 With All Articles and Attachments (Customer)',
+        SuccessRequest => '1',
+        RequestData    => {
+            TicketID    => $TicketID4,
+            AllArticles => 1,
+            Attachments => 1,
+        },
+        Auth => {
+            CustomerUserLogin => $CustomerUserLogin,
+            Password          => $CustomerPassword,
+        },
+        ExpectedReturnRemoteData => {
+            Success => 1,
+            Data    => {
+                Ticket => {
+                    %TicketEntryFour,
+                    Article => \@ArticleBox,
+                },
+            },
+        },
+        ExpectedReturnLocalData => {
+            Success => 1,
+            Data    => {
+                Ticket => [
+                    {
+                        (
+                            %TicketEntryFour,
+                            Article => \@ArticleBox,
+                            )
+                    },
+                ],
+            },
+        },
+        Operation => 'TicketGet',
+    },
+    {
+        Name           => 'Test Ticket 4 With All Articles and Attachments (Customer No Permission)',
+        SuccessRequest => '1',
+        RequestData    => {
+            TicketID    => $TicketID4,
+            AllArticles => 1,
+            Attachments => 1,
+        },
+        Auth => {
+            CustomerUserLogin => $CustomerUserLogin2,
+            Password          => $CustomerPassword2,
+        },
+        ExpectedReturnLocalData => {
+            Data => {
+                Error => {
+                    ErrorCode => 'TicketGet.AccessDenied',
+                    ErrorMessage =>
+                        'TicketGet: User does not have access to the ticket!'
+                    }
+            },
+            Success => 1
+        },
+        ExpectedReturnRemoteData => {
+            Data => {
+                Error => {
+                    ErrorCode => 'TicketGet.AccessDenied',
+                    ErrorMessage =>
+                        'TicketGet: User does not have access to the ticket!'
+                    }
+            },
+            Success => 1
         },
         Operation => 'TicketGet',
     },
@@ -1099,13 +1252,20 @@ for my $Test (@Tests) {
         "$Test->{Name} - Create local object",
     );
 
-    # start requester with our webservice
+    my %Auth = (
+        UserLogin => $UserLogin,
+        Password  => $Password,
+    );
+    if ( IsHashRefWithData( $Test->{Auth} ) ) {
+        %Auth = %{ $Test->{Auth} };
+    }
+
+    # start requester with our web-service
     my $LocalResult = $LocalObject->Run(
         WebserviceID => $WebserviceID,
         Invoker      => $Test->{Operation},
         Data         => {
-            UserLogin => $UserLogin,
-            Password  => $Password,
+            %Auth,
             %{ $Test->{RequestData} },
         },
     );
@@ -1125,14 +1285,14 @@ for my $Test (@Tests) {
         "$Test->{Name} - Create requester object",
     );
 
-    # start requester with our webservice
+    # start requester with our web-service
     my $RequesterResult = $RequesterObject->Run(
         WebserviceID => $WebserviceID,
         Invoker      => $Test->{Operation},
         Data         => {
-            SessionID => $NewSessionID,
+            %Auth,
             %{ $Test->{RequestData} },
-            }
+        },
     );
 
     # check result
@@ -1160,6 +1320,13 @@ for my $Test (@Tests) {
                     }
                     if ( $SkipFields{$Key} ) {
                         delete $Item->{$Key};
+                    }
+                    if ( $Key eq 'DynamicField' ) {
+                        for my $DF ( @{ $Item->{$Key} } ) {
+                            if ( !$DF->{Value} ) {
+                                $DF->{Value} = '';
+                            }
+                        }
                     }
                 }
 
@@ -1200,6 +1367,13 @@ for my $Test (@Tests) {
                         if ( $SkipFields{$Key} ) {
                             delete $Item->{$Key};
                         }
+                        if ( $Key eq 'DynamicField' ) {
+                            for my $DF ( @{ $Item->{$Key} } ) {
+                                if ( !$DF->{Value} ) {
+                                    $DF->{Value} = '';
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -1210,6 +1384,13 @@ for my $Test (@Tests) {
                     }
                     if ( $SkipFields{$Key} ) {
                         delete $RequesterResult->{Data}->{Ticket}->{$Key};
+                    }
+                    if ( $Key eq 'DynamicField' ) {
+                        for my $DF ( @{ $RequesterResult->{Data}->{Ticket}->{$Key} } ) {
+                            if ( !$DF->{Value} ) {
+                                $DF->{Value} = '';
+                            }
+                        }
                     }
                 }
 
@@ -1245,7 +1426,7 @@ for my $Test (@Tests) {
     $Self->IsDeeply(
         $RequesterResult,
         $Test->{ExpectedReturnRemoteData},
-        "$Test->{Name} - Requester success status (needs configured and running webserver)",
+        "$Test->{Name} - Requester success status (needs configured and running web server)",
     );
 
     if ( $Test->{ExpectedReturnLocalData} ) {
@@ -1267,14 +1448,14 @@ for my $Test (@Tests) {
 
 # clean up
 
-# clean up webservice
+# clean up web-service
 my $WebserviceDelete = $WebserviceObject->WebserviceDelete(
     ID     => $WebserviceID,
     UserID => $UserID,
 );
 $Self->True(
     $WebserviceDelete,
-    "Deleted Webservice $WebserviceID",
+    "Deleted Web Service $WebserviceID",
 );
 
 for my $TicketID (@TicketIDs) {

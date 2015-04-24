@@ -1,6 +1,6 @@
 # --
 # CustomerAutoCompletion.t - frontend test AgentTicketPhone
-# Copyright (C) 2001-2014 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -39,7 +39,7 @@ $Selenium->RunTest(
     sub {
 
         my $Helper = Kernel::System::UnitTest::Helper->new(
-            RestoreSystemConfiguration => 0,
+            RestoreSystemConfiguration => 1,
         );
 
         my $TestUserLogin = $Helper->TestUserCreate(
@@ -133,7 +133,7 @@ $Selenium->RunTest(
                 "Found entries in the autocomplete dropdown for input string $AutocompleteInput",
             );
         }
-        }
+    }
 );
 
 1;

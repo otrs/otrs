@@ -1,6 +1,6 @@
 # --
 # AdminOTRSBusinessInstalled.tt - provides HTML form for AdminOTRSBusiness
-# Copyright (C) 2001-2014 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -47,7 +47,7 @@
                 <h2 class="Center">[% Translate("Unauthorized Usage Detected") | html %]</h2>
             </div>
             <div class="Content">
-                <div class="BusinessLogo NoSpin Error">
+                <div class="BusinessLogo Error">
                     <span></span>
                     <i class="fa fa-times-circle"></i>
                 </div>
@@ -64,7 +64,7 @@
                 <h2>[% Translate("%s not Correctly Installed", OTRSBusinessLabel) %]</h2>
             </div>
             <div class="Content">
-                <div class="BusinessLogo NoSpin Error">
+                <div class="BusinessLogo Error">
                     <span></span>
                     <i class="fa fa-times-circle"></i>
                 </div>
@@ -84,7 +84,7 @@
                 <h2>[% Translate("%s not Correctly Installed", OTRSBusinessLabel) %]</h2>
             </div>
             <div class="Content">
-                <div class="BusinessLogo NoSpin Error">
+                <div class="BusinessLogo Error">
                     <span></span>
                     <i class="fa fa-times-circle"></i>
                 </div>

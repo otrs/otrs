@@ -1,6 +1,6 @@
 # --
 # Kernel/GenericInterface/Operation/Ticket/TicketGet.pm - GenericInterface Ticket Get operation backend
-# Copyright (C) 2001-2014 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -130,7 +130,12 @@ one or more ticket entries in one call.
                     ArchiveFlag        => 'y',
 
                     # If DynamicFields => 1 was passed, you'll get an entry like this for each dynamic field:
-                    DynamicField_X     => 'value_x',
+                    DynamicField => [
+                        {
+                            Name  => 'some name',
+                            Value => 'some value',
+                        },
+                    ],
 
                     # (time stamps of expected escalations)
                     EscalationResponseTime           (unix time stamp of response time escalation)
@@ -199,7 +204,12 @@ one or more ticket entries in one call.
                             IncomingTime
 
                             # If DynamicFields => 1 was passed, you'll get an entry like this for each dynamic field:
-                            DynamicField_X     => 'value_x',
+                            DynamicField => [
+                                {
+                                    Name  => 'some name',
+                                    Value => 'some value',
+                                },
+                            ],
 
                             Attachment => [
                                 {
@@ -278,6 +288,24 @@ sub Run {
             ErrorMessage => "TicketGet: Structure for TicketID is not correct!",
         );
     }
+
+    TICKET:
+    for my $TicketID (@TicketIDs) {
+
+        my $Access = $Self->CheckAccessPermissions(
+            TicketID => $TicketID,
+            UserID   => $UserID,
+            UserType => $UserType,
+        );
+
+        next TICKET if $Access;
+
+        return $Self->ReturnError(
+            ErrorCode    => 'TicketGet.AccessDenied',
+            ErrorMessage => 'TicketGet: User does not have access to the ticket!',
+        );
+    }
+
     my $DynamicFields     = $Param{Data}->{DynamicFields}     || 0;
     my $Extended          = $Param{Data}->{Extended}          || 0;
     my $AllArticles       = $Param{Data}->{AllArticles}       || 0;
@@ -298,14 +326,14 @@ sub Run {
         my $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
 
         # get the Ticket entry
-        my %TicketEntry = $TicketObject->TicketGet(
+        my %TicketEntryRaw = $TicketObject->TicketGet(
             TicketID      => $TicketID,
             DynamicFields => $DynamicFields,
             Extended      => $Extended,
             UserID        => $UserID,
         );
 
-        if ( !IsHashRefWithData( \%TicketEntry ) ) {
+        if ( !IsHashRefWithData( \%TicketEntryRaw ) ) {
 
             $ErrorMessage = 'Could not get Ticket data'
                 . ' in Kernel::GenericInterface::Operation::Ticket::TicketGet::Run()';
@@ -314,6 +342,29 @@ sub Run {
                 ErrorCode    => 'TicketGet.NotValidTicketID',
                 ErrorMessage => "TicketGet: $ErrorMessage",
             );
+        }
+
+        my %TicketEntry;
+        my @DynamicFields;
+
+        # remove all dynamic fields form main ticket hash and set them into an array.
+        ATTRIBUTE:
+        for my $Attribute ( sort keys %TicketEntryRaw ) {
+
+            if ( $Attribute =~ m{\A DynamicField_(.*) \z}msx ) {
+                push @DynamicFields, {
+                    Name  => $1,
+                    Value => $TicketEntryRaw{$Attribute},
+                };
+                next ATTRIBUTE;
+            }
+
+            $TicketEntry{$Attribute} = $TicketEntryRaw{$Attribute};
+        }
+
+        # add dynamic fields array into 'DynamicField' hash key if any
+        if (@DynamicFields) {
+            $TicketEntry{DynamicField} = \@DynamicFields;
         }
 
         # set Ticket entry data
@@ -326,7 +377,7 @@ sub Run {
             next TICKET;
         }
 
-        my @ArticleBox = $TicketObject->ArticleGet(
+        my @ArticleBoxRaw = $TicketObject->ArticleGet(
             TicketID          => $TicketID,
             ArticleSenderType => $ArticleSenderType,
             DynamicFields     => $DynamicFields,
@@ -338,7 +389,7 @@ sub Run {
 
         # start article loop
         ARTICLE:
-        for my $Article (@ArticleBox) {
+        for my $Article (@ArticleBoxRaw) {
 
             next ARTICLE if !$Attachments;
 
@@ -376,7 +427,38 @@ sub Run {
         }    # finish article loop
 
         # set Ticket entry data
-        $TicketBundle->{Article} = \@ArticleBox;
+        if (@ArticleBoxRaw) {
+
+            my @ArticleBox;
+
+            for my $ArticleRaw (@ArticleBoxRaw) {
+                my %Article;
+                my @DynamicFields;
+
+                # remove all dynamic fields form main article hash and set them into an array.
+                ATTRIBUTE:
+                for my $Attribute ( sort keys %{$ArticleRaw} ) {
+
+                    if ( $Attribute =~ m{\A DynamicField_(.*) \z}msx ) {
+                        push @DynamicFields, {
+                            Name  => $1,
+                            Value => $ArticleRaw->{$Attribute},
+                        };
+                        next ATTRIBUTE;
+                    }
+
+                    $Article{$Attribute} = $ArticleRaw->{$Attribute};
+                }
+
+                # add dynamic fields array into 'DynamicField' hash key if any
+                if (@DynamicFields) {
+                    $Article{DynamicField} = \@DynamicFields;
+                }
+
+                push @ArticleBox, \%Article;
+            }
+            $TicketBundle->{Article} = \@ArticleBox;
+        }
 
         # add
         push @Item, $TicketBundle;

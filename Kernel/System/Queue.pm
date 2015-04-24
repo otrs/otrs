@@ -1,6 +1,6 @@
 # --
 # Kernel/System/Queue.pm - lib for queue functions
-# Copyright (C) 2001-2014 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -404,16 +404,15 @@ sub GetAllQueues {
     my $CacheKey;
     if ( $Param{UserID} ) {
 
-        # get group ids
-        my @GroupIDs = $Kernel::OM->Get('Kernel::System::Group')->GroupMemberList(
+        # get group list
+        my %GroupList = $Kernel::OM->Get('Kernel::System::Group')->PermissionUserGet(
             UserID => $Param{UserID},
             Type   => $Type,
-            Result => 'ID',
         );
 
-        return if !@GroupIDs;
+        return if !%GroupList;
 
-        my $GroupString = join ', ', sort @GroupIDs;
+        my $GroupString = join ', ', sort keys %GroupList;
         $CacheKey = "GetAllQueues::UserID::${Type}::${GroupString}::$Param{UserID}";
 
         # check cache
@@ -768,6 +767,15 @@ sub QueueAdd {
         return;
     }
 
+    # check if a queue with this name already exists
+    if ( $Self->NameExistsCheck( Name => $Param{Name} ) ) {
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
+            Priority => 'error',
+            Message  => "A queue with name '$Param{Name}' already exists!"
+        );
+        return;
+    }
+
     # get needed objects
     my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
     my $DBObject     = $Kernel::OM->Get('Kernel::System::DB');
@@ -1114,14 +1122,19 @@ sub QueueUpdate {
     my %AllQueue = $Self->QueueList( Valid => 0 );
     my %OldQueue = $Self->QueueGet( ID => $Param{QueueID} );
 
-    for ( sort keys %AllQueue ) {
-        if ( $AllQueue{$_} =~ /^\Q$Param{Name}\E$/i && $_ != $Param{QueueID} ) {
-            $Kernel::OM->Get('Kernel::System::Log')->Log(
-                Priority => 'error',
-                Message  => "Queue '$Param{Name}' exists! Can't updated queue '$OldQueue{Name}'.",
-            );
-            return;
-        }
+    # check if a queue with this name already exists
+    if (
+        $Self->NameExistsCheck(
+            ID   => $Param{QueueID},
+            Name => $Param{Name}
+        )
+        )
+    {
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
+            Priority => 'error',
+            Message  => "A queue with name '$Param{Name}' already exists!"
+        );
+        return;
     }
 
     # get database object
@@ -1324,6 +1337,42 @@ sub DESTROY {
     $Self->EventHandlerTransaction();
 
     return 1;
+}
+
+=item NameExistsCheck()
+
+return 1 if another queue with this name already exists
+
+    $Exist = $QueueObject->NameExistsCheck(
+        Name => 'Some::Queue',
+        ID => 1, # optional
+    );
+
+=cut
+
+sub NameExistsCheck {
+    my ( $Self, %Param ) = @_;
+
+    # get database object
+    my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
+    return if !$DBObject->Prepare(
+        SQL  => 'SELECT id FROM queue WHERE name = ?',
+        Bind => [ \$Param{Name} ],
+    );
+
+    # fetch the result
+    my $Flag;
+    while ( my @Row = $DBObject->FetchrowArray() ) {
+        if ( !$Param{ID} || $Param{ID} ne $Row[0] ) {
+            $Flag = 1;
+        }
+    }
+
+    if ($Flag) {
+        return 1;
+    }
+
+    return 0;
 }
 
 1;

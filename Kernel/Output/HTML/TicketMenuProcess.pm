@@ -1,6 +1,6 @@
 # --
 # Kernel/Output/HTML/TicketMenuProcess.pm
-# Copyright (C) 2001-2014 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -88,11 +88,15 @@ sub Run {
 
     # group check
     if ( $Param{Config}->{Group} ) {
+
         my @Items = split /;/, $Param{Config}->{Group};
+
         my $AccessOk;
         ITEM:
         for my $Item (@Items) {
+
             my ( $Permission, $Name ) = split /:/, $Item;
+
             if ( !$Permission || !$Name ) {
                 $Self->{LogObject}->Log(
                     Priority => 'error',
@@ -100,21 +104,23 @@ sub Run {
                         . "Need something like '\$Permission:\$Group;'",
                 );
             }
-            my @Groups = $Self->{GroupObject}->GroupMemberList(
+
+            my %Groups = $Self->{GroupObject}->PermissionUserGet(
                 UserID => $Self->{UserID},
                 Type   => $Permission,
-                Result => 'Name',
             );
-            next ITEM if !@Groups;
 
-            GROUP:
-            for my $Group (@Groups) {
-                if ( $Group eq $Name ) {
-                    $AccessOk = 1;
-                    last GROUP;
-                }
-            }
+            next ITEM if !%Groups;
+
+            my %GroupsReverse = reverse %Groups;
+
+            next ITEM if !$GroupsReverse{$Name};
+
+            $AccessOk = 1;
+
+            last ITEM;
         }
+
         return if !$AccessOk;
     }
 

@@ -1,6 +1,6 @@
 # --
 # Kernel/System/OTRSBusiness.pm - OTRSBusiness deployment backend
-# Copyright (C) 2001-2014 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -16,18 +16,22 @@ use Kernel::System::VariableCheck qw(:all);
 
 our @ObjectDependencies = (
     'Kernel::Config',
+    'Kernel::System::Cache',
     'Kernel::System::CloudService',
+    'Kernel::System::DynamicField',
+    'Kernel::System::DynamicField::Backend',
     'Kernel::System::Log',
+    'Kernel::System::DB',
     'Kernel::System::Package',
     'Kernel::System::SystemData',
     'Kernel::System::Time',
 );
 
 # If we cannot connect to cloud.otrs.com for more than the first period, show a warning.
-my $NoConnectWarningPeriod = 60 * 60 * 24 * 5;
+my $NoConnectWarningPeriod = 60 * 60 * 24 * 5;    # 5 days
 
 # If we cannot connect to cloud.otrs.com for more than the second period, show an error.
-my $NoConnectErrorPeriod = 60 * 60 * 24 * 10;
+my $NoConnectErrorPeriod = 60 * 60 * 24 * 15;     # 15 days
 
 # If the contract is about to expire in less than this time, show a hint
 my $ContractExpiryWarningPeriod = 60 * 60 * 24 * 30;
@@ -67,6 +71,10 @@ sub new {
     # Get OTRSBusiness::ReleaseChannel from SysConfig (Stable = 1, Development = 0)
     $Self->{OnlyStable} = $Kernel::OM->Get('Kernel::Config')->Get('OTRSBusiness::ReleaseChannel') // 1;
 
+    # Set cache params
+    $Self->{CacheType} = 'OTRSBusiness';
+    $Self->{CacheTTL}  = 60 * 60 * 24 * 30;    # 30 days
+
     return $Self;
 }
 
@@ -82,12 +90,34 @@ the file system.
 sub OTRSBusinessIsInstalled {
     my ( $Self, %Param ) = @_;
 
-    return $Self->_GetOTRSBusinessPackageFromRepository() ? 1 : 0;
+    my $CacheObject = $Kernel::OM->Get('Kernel::System::Cache');
+
+    # as the check for installed packages can be
+    # very expensive, we want to use caching here
+    my $Cache = $CacheObject->Get(
+        Type => $Self->{CacheType},
+        TTL  => $Self->{CacheTTL},
+        Key  => 'OTRSBusinessIsInstalled',
+    );
+
+    return $Cache if defined $Cache;
+
+    my $IsInstalled = $Self->_GetOTRSBusinessPackageFromRepository() ? 1 : 0;
+
+    # set cache
+    $CacheObject->Set(
+        Type  => $Self->{CacheType},
+        TTL   => $Self->{CacheTTL},
+        Key   => 'OTRSBusinessIsInstalled',
+        Value => $IsInstalled,
+    );
+
+    return $IsInstalled;
 }
 
 =item OTRSBusinessIsAvailable()
 
-checks if OTRSBusiness is available for the current framework.
+checks with cloud.otrs.com if OTRSBusiness is available for the current framework.
 
 =cut
 
@@ -116,11 +146,36 @@ sub OTRSBusinessIsAvailable {
             Operation     => 'BusinessVersionCheck',
         );
 
-        if ( $OperationResult->{Data}->{LatestVersionForCurrentFramework} ) {
-            return 1;
+        if ( $OperationResult->{Success} ) {
+            $Self->HandleBusinessVersionCheckCloudServiceResult(
+                OperationResult => $OperationResult,
+            );
+
+            if ( $OperationResult->{Data}->{LatestVersionForCurrentFramework} ) {
+                return 1;
+            }
         }
     }
     return;
+}
+
+=item OTRSBusinessIsAvailableOffline()
+
+retrieves the latest result of the BusinessVersionCheck cloud service
+that was stored in the system_data table.
+
+returns 1 if available.
+
+=cut
+
+sub OTRSBusinessIsAvailableOffline {
+    my ( $Self, %Param ) = @_;
+
+    my %BusinessVersionCheck = $Kernel::OM->Get('Kernel::System::SystemData')->SystemDataGroupGet(
+        Group => 'OTRSBusiness',
+    );
+
+    return $BusinessVersionCheck{LatestVersionForCurrentFramework} ? 1 : 0;
 }
 
 =item OTRSBusinessIsCorrectlyDeployed()
@@ -138,10 +193,31 @@ sub OTRSBusinessIsCorrectlyDeployed {
     # Package not found -> return failure
     return if !$Package;
 
-    return $Kernel::OM->Get('Kernel::System::Package')->DeployCheck(
+    # first check the regular way if the files are present and the package
+    # itself is installed correctly
+    return if !$Kernel::OM->Get('Kernel::System::Package')->DeployCheck(
         Name    => $Package->{Name}->{Content},
         Version => $Package->{Version}->{Content},
     );
+
+    # check if all tables have been created correctly
+    # we can't rely on any .opm file here, so we just check
+    # the list of tables manually
+    my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
+
+    TABLES:
+    for my $Table (qw(chat chat_participant chat_message)) {
+
+        # if a table does not exist, $TablePresent will be 'undef' for this table
+        my $TablePresent = $DBObject->Do(
+            SQL   => "SELECT * FROM $Table",
+            Limit => 1,
+        );
+
+        return if !$TablePresent;
+    }
+
+    return 1;
 }
 
 =item OTRSBusinessIsReinstallable()
@@ -271,19 +347,30 @@ sub OTRSBusinessGetDependencies {
     my @Packages = $Kernel::OM->Get('Kernel::System::Package')->RepositoryList();
 
     my @DependentPackages;
+    PACKAGE:
     for my $Package (@Packages) {
-        my $Dependencies = $Package->{PackageRequired} // [];
-        for my $Dependency ( @{$Dependencies} ) {
-            if ( $Dependency->{Content} eq 'OTRSBusiness' ) {
-                push @DependentPackages, {
-                    Name        => $Package->{Name}->{Content},
-                    Vendor      => $Package->{Vendor}->{Content},
-                    Version     => $Package->{Version}->{Content},
-                    Description => $Package->{Description},
-                };
-            }
+
+        next PACKAGE if !IsHashRefWithData($Package);
+        next PACKAGE if !IsArrayRefWithData( $Package->{PackageRequired} );
+
+        DEPENDENCY:
+        for my $Dependency ( @{ $Package->{PackageRequired} } ) {
+
+            next DEPENDENCY if !IsHashRefWithData($Dependency);
+            next DEPENDENCY if !$Dependency->{Content};
+            next DEPENDENCY if $Dependency->{Content} ne 'OTRSBusiness';
+
+            push @DependentPackages, {
+                Name        => $Package->{Name}->{Content},
+                Vendor      => $Package->{Vendor}->{Content},
+                Version     => $Package->{Version}->{Content},
+                Description => $Package->{Description},
+            };
+
+            last DEPENDENCY;
         }
     }
+
     return \@DependentPackages;
 }
 
@@ -363,7 +450,7 @@ Returns the current entitlement status.
 
     $Status = 'entitled';   # everything is OK
     $Status = 'warning';    # last check was OK, and we are in the waiting period
-    $Status = 'forbidden';  # not entitled
+    $Status = 'forbidden';  # not entitled (either because the server said so or because the last check was too long ago)
 
 =cut
 
@@ -381,10 +468,9 @@ sub OTRSBusinessEntitlementStatus {
     my $RegistrationState = $Kernel::OM->Get('Kernel::System::SystemData')->SystemDataGet(
         Key => 'Registration::State',
     );
-    if (!$RegistrationState || $RegistrationState ne 'registered') {
+    if ( !$RegistrationState || $RegistrationState ne 'registered' ) {
         return 'forbidden';
     }
-
 
     # OK. Let's look at the system_data cache now and use it if appropriate
     my %EntitlementData = $Kernel::OM->Get('Kernel::System::SystemData')->SystemDataGroupGet(
@@ -395,6 +481,7 @@ sub OTRSBusinessEntitlementStatus {
         return 'forbidden';
     }
 
+    # Check when the last successful BusinessPermission check was made.
     my $LastUpdateSystemTime = $Kernel::OM->Get('Kernel::System::Time')->TimeStamp2SystemTime(
         String => $EntitlementData{LastUpdateTime},
     );
@@ -460,6 +547,10 @@ sub HandleBusinessPermissionCloudServiceResult {
 
     return if !$OperationResult->{Success};
 
+    # We store the current time as LastUpdateTime so that we know when the last
+    #   permission check could be successfully made with the server. This is needed
+    #   to determine if the results can still be used later, if a connection to
+    #   cloud.otrs.com cannot be made temporarily.
     my %StoreData = (
         BusinessPermission => $OperationResult->{Data}->{BusinessPermission} // 0,
         ExpiryDate         => $OperationResult->{Data}->{ExpiryDate}         // '',
@@ -573,10 +664,23 @@ sub OTRSBusinessInstall {
     my $PackageString = $Self->_OTRSBusinessFileGet();
     return if !$PackageString;
 
-    return $Kernel::OM->Get('Kernel::System::Package')->PackageInstall(
+    my $Install = $Kernel::OM->Get('Kernel::System::Package')->PackageInstall(
         String    => $PackageString,
         FromCloud => 1,
     );
+
+    return $Install if !$Install;
+
+    # now that we know that OTRSBusiness has been installed,
+    # we can just preset the cache instead of just swiping it.
+    $Kernel::OM->Get('Kernel::System::Cache')->Set(
+        Type  => $Self->{CacheType},
+        TTL   => $Self->{CacheTTL},
+        Key   => 'OTRSBusinessIsInstalled',
+        Value => 1,
+    );
+
+    return $Install;
 }
 
 =item OTRSBusinessReinstall()
@@ -635,14 +739,77 @@ sub OTRSBusinessUninstall {
     # Package not found -> return failure
     return if !$Package;
 
+    # TODO: the following code is now Deprecated and should be removed in further versions of OTRS
+    # get a list of all dynamic fields for ticket and article
+    my $DynamicFieldObject = $Kernel::OM->Get('Kernel::System::DynamicField');
+    my $DynamicFieldList   = $DynamicFieldObject->DynamicFieldListGet(
+        Valid      => 0,
+        ObjectType => [ 'Ticket', 'Article' ],
+    );
+
+    # filter only dynamic fields added by OTRSBusiness
+    my %OTRSBusinessDynamicFieldTypes = (
+        ContactWithData => 1,
+        Database        => 1,
+    );
+
+    my $DynamicFieldBackendObject = $Kernel::OM->Get('Kernel::System::DynamicField::Backend');
+
+    DYNAMICFIELD:
+    for my $DynamicFieldConfig ( @{$DynamicFieldList} ) {
+        next DYNAMICFIELD if !IsHashRefWithData($DynamicFieldConfig);
+        next DYNAMICFIELD if !$OTRSBusinessDynamicFieldTypes{ $DynamicFieldConfig->{FieldType} };
+
+        # remove data from the field
+        my $ValuesDeleteSuccess = $DynamicFieldBackendObject->AllValuesDelete(
+            DynamicFieldConfig => $DynamicFieldConfig,
+            UserID             => 1,
+        );
+
+        if ( !$ValuesDeleteSuccess ) {
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
+                Priority => 'error',
+                Message  => "Values from dynamic field $DynamicFieldConfig->{Name} could not be deleted!",
+            );
+        }
+
+        my $Success = $DynamicFieldObject->DynamicFieldDelete(
+            ID      => $DynamicFieldConfig->{ID},
+            UserID  => 1,
+            Reorder => 1,
+        );
+
+        if ( !$Success ) {
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
+                Priority => 'error',
+                Message  => "Dynamic field $DynamicFieldConfig->{Name} could not be deleted!",
+            );
+        }
+    }
+
+    # TODO: end Deprecated
+
     my $PackageString = $Kernel::OM->Get('Kernel::System::Package')->RepositoryGet(
         Name    => $Package->{Name}->{Content},
         Version => $Package->{Version}->{Content},
     );
 
-    return $Kernel::OM->Get('Kernel::System::Package')->PackageUninstall(
+    my $Uninstall = $Kernel::OM->Get('Kernel::System::Package')->PackageUninstall(
         String => $PackageString,
     );
+
+    return $Uninstall if !$Uninstall;
+
+    # now that we know that OTRSBusiness has been uninstalled,
+    # we can just preset the cache instead of just swiping it.
+    $Kernel::OM->Get('Kernel::System::Cache')->Set(
+        Type  => $Self->{CacheType},
+        TTL   => $Self->{CacheTTL},
+        Key   => 'OTRSBusinessIsInstalled',
+        Value => 0,
+    );
+
+    return $Uninstall;
 }
 
 sub _GetOTRSBusinessPackageFromRepository {

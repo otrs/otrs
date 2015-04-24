@@ -1,6 +1,6 @@
 # --
 # Kernel/Output/HTML/NotificationCustomerOTRSBusiness.pm
-# Copyright (C) 2001-2014 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -55,7 +55,7 @@ sub Run {
         my $Text = $Self->{LayoutObject}->{LanguageObject}->Translate(
             'This system uses the %s without a proper license! Please make contact with %s to renew or activate your contract!',
             $OTRSBusinessLabel,
-            'sales@otrs.com', # no mailto link as these are currently not displayed in the CI
+            'sales@otrs.com',    # no mailto link as these are currently not displayed in the CI
         );
         $Output .= $Self->{LayoutObject}->Notify(
             Data     => $Text,

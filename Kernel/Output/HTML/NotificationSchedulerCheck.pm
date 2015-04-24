@@ -1,6 +1,6 @@
 # --
 # Kernel/Output/HTML/NotificationSchedulerCheck.pm
-# Copyright (C) 2001-2014 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -51,7 +51,7 @@ sub Run {
     if (%PID) {
 
         # get the PID update time
-        my $PIDUpdateTime = $Self->{ConfigObject}->Get('Scheduler::PIDUpdateTime') || 60.0;
+        my $PIDUpdateTime = $Self->{ConfigObject}->Get('Scheduler::PIDUpdateTime') || 600;
 
         # get current time
         my $Time = time();
@@ -96,10 +96,9 @@ sub Run {
 
     # check if user needs to be notified
     # get current user groups
-    my %Groups = $Self->{GroupObject}->GroupMemberList(
+    my %Groups = $Self->{GroupObject}->PermissionUserGet(
         UserID => $Self->{UserID},
         Type   => 'move_into',
-        Result => 'HASH',
     );
 
     # reverse groups hash for easy look up

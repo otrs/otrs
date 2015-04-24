@@ -1,6 +1,6 @@
 # --
 # SysConfig.t - SysConfig tests
-# Copyright (C) 2001-2014 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -208,13 +208,13 @@ $Self->True(
 %Ah = (
     'Test' => 123,
     A      => [ 1, 3, 4 ],
-    B       => { a => 1 },
+    B => { a => 1 },
     special => undef
 );
 %Bh = (
     'Test' => 123,
     A      => [ 1, 3, 4 ],
-    B       => { a => 1 },
+    B => { a => 1 },
     special => undef
 );
 $Diff = $SysConfigObject->_DataDiff(

@@ -1,6 +1,6 @@
 # --
 # Kernel/System/Service.pm - all service function
-# Copyright (C) 2001-2014 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -101,7 +101,7 @@ sub ServiceList {
     # read cache
     my $CacheKey = 'ServiceList::Valid::' . $Param{Valid};
 
-    if ( defined $Param{KeepChildren} && $Param{KeepChildren} eq '1' ) {
+    if ( $Param{Valid} && defined $Param{KeepChildren} && $Param{KeepChildren} eq '1' ) {
         $CacheKey .= '::KeepChildren::' . $Param{KeepChildren};
     }
 
@@ -158,7 +158,7 @@ sub ServiceList {
         delete $ServiceList{$ServiceID};
     }
 
-    # delete invalid services and childs
+    # delete invalid services and children
     if ( !defined $Param{KeepChildren} || !$Param{KeepChildren} ) {
         for my $ServiceID ( sort keys %ServiceList ) {
 

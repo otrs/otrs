@@ -1,6 +1,6 @@
 # --
 # AdminSelectBox.t - frontend tests for AdminSQL
-# Copyright (C) 2001-2014 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -26,10 +26,18 @@ my $Selenium = Kernel::System::UnitTest::Selenium->new(
 $Selenium->RunTest(
     sub {
 
+        my $Helper = Kernel::System::UnitTest::Helper->new(
+            RestoreSystemConfiguration => 0,
+        );
+
+        my $TestUserLogin = $Helper->TestUserCreate(
+            Groups => ['admin'],
+        ) || die "Did not get test user";
+
         $Selenium->Login(
             Type     => 'Agent',
-            User     => 'root@localhost',
-            Password => 'root',
+            User     => $TestUserLogin,
+            Password => $TestUserLogin,
         );
 
         my $ScriptAlias = $ConfigObject->Get('ScriptAlias');
@@ -78,7 +86,7 @@ $Selenium->RunTest(
             3,
             "Result table body rows found",
         );
-        }
+    }
 );
 
 1;

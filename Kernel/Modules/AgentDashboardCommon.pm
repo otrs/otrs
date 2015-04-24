@@ -1,6 +1,6 @@
 # --
 # Kernel/Modules/AgentDashboardCommon.pm - common base for agent dashboards
-# Copyright (C) 2001-2014 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -20,6 +20,8 @@ use Kernel::System::DynamicField::Backend;
 use Kernel::System::VariableCheck qw(:all);
 use Kernel::System::Stats;
 
+our $ObjectManagerDisabled = 1;
+
 sub new {
     my ( $Type, %Param ) = @_;
 
@@ -36,31 +38,6 @@ sub new {
 
     $Self->{CacheObject}           = $Kernel::OM->Get('Kernel::System::Cache');
     $Self->{CustomerCompanyObject} = Kernel::System::CustomerCompany->new(%Param);
-
-    $Self->{SlaveDBObject}     = $Self->{DBObject};
-    $Self->{SlaveTicketObject} = $Self->{TicketObject};
-
-    # use a slave db to search dashboard date
-    if ( $Self->{ConfigObject}->Get('Core::MirrorDB::DSN') ) {
-
-        $Self->{SlaveDBObject} = Kernel::System::DB->new(
-            LogObject    => $Param{LogObject},
-            ConfigObject => $Param{ConfigObject},
-            MainObject   => $Param{MainObject},
-            EncodeObject => $Param{EncodeObject},
-            DatabaseDSN  => $Self->{ConfigObject}->Get('Core::MirrorDB::DSN'),
-            DatabaseUser => $Self->{ConfigObject}->Get('Core::MirrorDB::User'),
-            DatabasePw   => $Self->{ConfigObject}->Get('Core::MirrorDB::Password'),
-        );
-
-        if ( $Self->{SlaveDBObject} ) {
-
-            $Self->{SlaveTicketObject} = Kernel::System::Ticket->new(
-                %Param,
-                DBObject => $Self->{SlaveDBObject},
-            );
-        }
-    }
 
     # create extra needed objects
     $Self->{DynamicFieldObject} = Kernel::System::DynamicField->new(%Param);
@@ -161,7 +138,7 @@ sub Run {
 
         # check CustomerID presence for all subactions that need it
         if ( $Self->{Subaction} ne 'UpdatePosition' ) {
-            if ( !$Self->{CustomerID} || $Self->{CustomerID} =~ /[*|%]/i ) {
+            if ( !$Self->{CustomerID} ) {
                 my $Output = $Self->{LayoutObject}->Header();
                 $Output .= $Self->{LayoutObject}->NavigationBar();
                 $Output .= $Self->{LayoutObject}->Output(
@@ -607,7 +584,7 @@ sub Run {
             PARAM:
             for my $Param ( @{ $Element{Preferences} } ) {
 
-                # special parameters are added, which do not have a dtl block,
+                # special parameters are added, which do not have a tt block,
                 # because the displayed fields are added with the output filter,
                 # so there is no need to call any block here
                 next PARAM if !$Param->{Block};
@@ -680,11 +657,28 @@ sub Run {
             # dynamic fields will be translated in the next block
             next COLUMN if $Column =~ m{ \A DynamicField_ }xms;
 
+            my $TranslatedWord = $Column;
+            if ( $Column eq 'EscalationTime' ) {
+                $TranslatedWord = 'Service Time';
+            }
+            elsif ( $Column eq 'EscalationResponseTime' ) {
+                $TranslatedWord = 'First Response Time';
+            }
+            elsif ( $Column eq 'EscalationSolutionTime' ) {
+                $TranslatedWord = 'Solution Time';
+            }
+            elsif ( $Column eq 'EscalationUpdateTime' ) {
+                $TranslatedWord = 'Update Time';
+            }
+            elsif ( $Column eq 'PendingTime' ) {
+                $TranslatedWord = 'Pending till';
+            }
+
             $Self->{LayoutObject}->Block(
                 Name => 'ColumnTranslation',
                 Data => {
                     ColumnName      => $Column,
-                    TranslateString => $Column,
+                    TranslateString => $TranslatedWord,
                 },
             );
             $Self->{LayoutObject}->Block(
@@ -787,6 +781,9 @@ sub _Element {
     # get module preferences
     my @Preferences = $Object->Preferences();
     return @Preferences if $Param{PreferencesOnly};
+
+    # Perform the actual data fetching and computation on the slave db, if configured
+    local $Kernel::System::DB::UseSlaveDB = 1;
 
     if ( $Param{FilterContentOnly} ) {
         my $FilterContent = $Object->FilterContent(

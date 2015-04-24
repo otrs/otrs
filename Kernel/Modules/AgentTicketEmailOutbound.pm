@@ -1,6 +1,6 @@
 # --
 # Kernel/Modules/AgentTicketEmailOutbound.pm - to send a new outbound message
-# Copyright (C) 2001-2014 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -699,10 +699,6 @@ sub Form {
         BodyClass => 'Popup',
     );
 
-    # build references string
-    my $References = defined $Data{References} ? $Data{References} . ' ' : '';
-    $References .= defined $Data{MessageID} ? $Data{MessageID} : '';
-
     $Output .= $Self->_Mask(
         TicketNumber => $Ticket{TicketNumber},
         TicketID     => $Self->{TicketID},
@@ -724,8 +720,10 @@ sub Form {
         Attachments         => \@Attachments,
         %Data,
         %GetParam,
-        InReplyTo        => $Data{MessageID},
-        References       => $References,
+        # We start a new communication here, so don't send any references.
+        #   This might lead to information disclosure (domain names; see bug#11246).
+        InReplyTo        => '',
+        References       => '',
         DynamicFieldHTML => \%DynamicFieldHTML,
     );
     $Output .= $Self->{LayoutObject}->Footer(

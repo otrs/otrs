@@ -1,6 +1,6 @@
 # --
 # Motd.tt - provides HTML message of the day
-# Copyright (C) 2001-2014 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -12,6 +12,6 @@
         <h2 class="Center">[% Translate("Message of the Day") | html %]</h2>
     </div>
     <div class="Content">
-        <p>This is the message of the day. You can edit this in Kernel/Output/HTML/Standard/Motd.dtl.</p>
+        <p>This is the message of the day. You can edit this in Kernel/Output/HTML/Standard/Motd.tt.</p>
     </div>
 </div>

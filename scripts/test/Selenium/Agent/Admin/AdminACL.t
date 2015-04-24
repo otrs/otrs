@@ -1,6 +1,6 @@
 # --
 # AdminACL.t - frontend tests for the ACL admin screen
-# Copyright (C) 2001-2014 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -32,23 +32,12 @@ $Selenium->RunTest(
             RestoreSystemConfiguration => 0,
         );
 
-        my $CheckAlertJS = <<"JAVASCRIPT";
-(function () {
-    var lastAlert = undefined;
-    window.alert = function (message) {
-        lastAlert = message;
-    };
-    window.getLastAlert = function () {
-        var result = lastAlert;
-        lastAlert = undefined;
-        return result;
-    };
-}());
-JAVASCRIPT
+        # defined user language for testing if message is being translated correctly
+        my $Language = "de";
 
         my $TestUserLogin = $Helper->TestUserCreate(
             Groups   => ['admin'],
-            Language => 'de',
+            Language => $Language,
         ) || die "Did not get test user";
 
         $Selenium->Login(
@@ -146,18 +135,18 @@ JAVASCRIPT
         );
 
         # now we should not be able to add the same element again, an alert box should appear
-        $Selenium->execute_script($CheckAlertJS);
         $Selenium->find_element( ".ItemAddLevel1 option[value='Properties']", 'css' )->click();
+
         my $LanguageObject = Kernel::Language->new(
-            UserLanguage => 'de',
+            UserLanguage => $Language,
         );
+
         $Self->Is(
-            $Selenium->execute_script(
-                "return window.getLastAlert()"
-            ),
+            $Selenium->get_alert_text(),
             $LanguageObject->Get('An item with this name is already present.'),
             'Check for opened alert text',
         );
+        $Selenium->accept_alert();
 
         # now lets add the CustomerUser element on level 2
         $Selenium->find_element( "#ACLMatch .ItemAdd option[value='CustomerUser']", 'css' )->click();
@@ -199,7 +188,28 @@ JAVASCRIPT
             '1',
             'Check for .AddAll element',
         );
-        }
+
+        # delete test ACL from the database
+        my $ACLObject = $Kernel::OM->Get('Kernel::System::ACL::DB::ACL');
+        my $UserID    = $Kernel::OM->Get('Kernel::System::User')->UserLookup(
+            UserLogin => $TestUserLogin,
+        );
+        my $ACLID = $ACLObject->ACLGet(
+            Name   => $RandomID,
+            UserID => $UserID,
+        )->{ID};
+
+        my $Success = $ACLObject->ACLDelete(
+            ID     => $ACLID,
+            UserID => $UserID,
+        );
+
+        $Self->True(
+            $Success,
+            "Deleted $RandomID ACL",
+        );
+
+    }
 );
 
 1;

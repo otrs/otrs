@@ -1,12 +1,14 @@
 # 
 # Translators:
+# Lars Åge Kamfjord <lars-transifex@kamfjord.org>, 2014
 # LarsMagnusHerland <lars.magnus@herland.priv.no>, 2014
 # LarsMagnusHerland <lars.magnus@herland.priv.no>, 2014
+# Lars Åge Kamfjord <lars-transifex@kamfjord.org>, 2014
 msgid ""
 msgstr ""
 "Project-Id-Version: OTRS\n"
 "POT-Creation-Date: 2014-08-08 19:10+0200\n"
-"PO-Revision-Date: 2014-11-13 04:56+0000\n"
+"PO-Revision-Date: 2015-04-10 03:43+0000\n"
 "Last-Translator: Carlos Rodríguez <carlos.rodriguez@otrs.com>\n"
 "Language-Team: Norwegian Bokmål (Norway) (http://www.transifex.com/projects/p/OTRS/language/nb_NO/)\n"
 "MIME-Version: 1.0\n"
@@ -811,12 +813,12 @@ msgstr "Vennligst kontakt administratoren"
 msgid ""
 "Authentication succeeded, but no customer record is found in the customer "
 "backend. Please contact your administrator."
-msgstr ""
+msgstr "Pålogging var vellykket, men ingen kundeoppføring er funnet i kundemodulen. Kontakt din administrator"
 
 #. Template: AAABase
 msgid ""
 "This e-mail address already exists. Please log in or reset your password."
-msgstr ""
+msgstr "Epostadressen finnes allerede. Vennligst logg inn eller nullstill passordet ditt."
 
 #. Template: AAABase
 msgid "Logout"
@@ -836,7 +838,7 @@ msgstr "Saksbehandler oppdatert"
 
 #. Template: AAABase
 msgid "Database Selection"
-msgstr ""
+msgstr "Databasevalg"
 
 #. Template: AAABase
 msgid "Create Database"
@@ -890,7 +892,7 @@ msgstr "Skriv inn passordet for databasebrukeren."
 msgid ""
 "If you have set a root password for your database, it must be entered here. "
 "If not, leave this field empty."
-msgstr ""
+msgstr "Hvis du har satt et root-passord for din database må det bli skrevet inn her. Hvis ikke, la dette feltet være tomt."
 
 #. Template: AAABase
 msgid "Database already contains data - it should be empty!"
@@ -903,7 +905,7 @@ msgstr "Innlogging kreves"
 #. Template: AAABase
 msgid ""
 "It is currently not possible to login due to a scheduled system maintenance."
-msgstr ""
+msgstr "Det er for tiden ikke mulig å logge inn på grunn et planlagt vedlikehold"
 
 #. Template: AAABase
 msgid "Password is needed!"
@@ -1275,13 +1277,8 @@ msgstr "Hei %s"
 
 #. Template: AAABase
 msgid ""
-"This email address already exists. Please log in or reset your password."
-msgstr "Denne e-postadressen finnes allerede. Vennligst logg inn eller nullstill passordet."
-
-#. Template: AAABase
-msgid ""
 "This email address is not allowed to register. Please contact support staff."
-msgstr ""
+msgstr "Denne epostadressen er ikke tillatt å registrere. Kontakt brukerstøtten."
 
 #. Template: AAABase
 msgid ""
@@ -1352,13 +1349,13 @@ msgstr "7-dagers statistikk"
 msgid ""
 "Process Management information from database is not in sync with the system "
 "configuration, please synchronize all processes."
-msgstr ""
+msgstr "Prosessstyringsinformasjon fra databasen er ikke synkronisert med systemkonfigurasjon. Vennligst synkroniser alle prosesser"
 
 #. Template: AAABase
 msgid ""
 "Package not verified by the OTRS Group! It is recommended not to use this "
 "package."
-msgstr ""
+msgstr "Pakken er ikke verifisert av OTRS-gruppen! Det er anbefalt å ikke bruke denne pakken."
 
 #. Template: AAABase
 msgid ""
@@ -1367,7 +1364,7 @@ msgid ""
 "problems<br>&nbsp;-Performance problems<br><br>Please note that issues that "
 "are caused by working with this package are not covered by OTRS service "
 "contracts!<br><br>"
-msgstr ""
+msgstr "<br>Hvis du fortsetter å bruke denne pakken, kan følgende skje:\n<br><br>&nbsp;-Sikkerhetsproblemer<br>&nbsp;-Stabilitetsproblemer<br>&nbsp;Ytelsesproblemer<br><br>Vær oppmerksom på at problemer forårsaket av denne pakken ikke er dekket av OTRS supportkontrakter."
 
 #. Template: AAABase
 msgid "Mark"
@@ -1474,23 +1471,79 @@ msgid "Scheduler is not running."
 msgstr "Oppgaveplanleggeren kjører ikke."
 
 #. Template: AAABase
-msgid "Can't contact registration server. Please try again later."
+msgid "All sessions have been killed, except for your own."
 msgstr ""
+
+#. Template: AAABase
+msgid "Can't contact registration server. Please try again later."
+msgstr "Kan ikke kontakte registreringsserver. Prøv igjen senere."
 
 #. Template: AAABase
 msgid "No content received from registration server. Please try again later."
-msgstr ""
+msgstr "Fikk ikke noe innhold fra registreringsserver. Prøv igjen senere."
 
 #. Template: AAABase
 msgid "Problems processing server result. Please try again later."
-msgstr ""
+msgstr "Problemer med å prosessere serverresultat. Prøv igjen senere."
 
 #. Template: AAABase
 msgid "Username and password do not match. Please try again."
-msgstr ""
+msgstr "Brukernavn og passord stemmer ikke overens. Prøv igjen."
 
 #. Template: AAABase
 msgid "The selected process is invalid!"
+msgstr "Valgt prosess er ikke gyldig!"
+
+#. Template: AAABase
+msgid "Upgrade to %s now!"
+msgstr ""
+
+#. Template: AAABase
+msgid "%s Go to the upgrade center %s"
+msgstr ""
+
+#. Template: AAABase
+msgid ""
+"The license for your %s is about to expire. Please make contact with %s to "
+"renew your contract!"
+msgstr ""
+
+#. Template: AAABase
+msgid ""
+"An update for your %s is available, but there is a conflict with your "
+"framework version! Please update your framework first!"
+msgstr ""
+
+#. Template: AAABase
+msgid "Your system was successfully upgraded to %s."
+msgstr ""
+
+#. Template: AAABase
+msgid "There was a problem during the upgrade to %s."
+msgstr ""
+
+#. Template: AAABase
+msgid "%s was correctly reinstalled."
+msgstr ""
+
+#. Template: AAABase
+msgid "There was a problem reinstalling %s."
+msgstr ""
+
+#. Template: AAABase
+msgid "Your %s was successfully updated."
+msgstr ""
+
+#. Template: AAABase
+msgid "There was a problem during the upgrade of %s."
+msgstr ""
+
+#. Template: AAABase
+msgid "%s was correctly uninstalled."
+msgstr ""
+
+#. Template: AAABase
+msgid "There was a problem uninstalling %s."
 msgstr ""
 
 #. Template: AAACalendar
@@ -2022,7 +2075,7 @@ msgstr ""
 
 #. Template: AAASupportDataCollector
 msgid "Internal Error: Could not open file."
-msgstr ""
+msgstr "Intern feil: Kan ikke åpne fil."
 
 #. Template: AAASupportDataCollector
 msgid "Table Check"
@@ -2058,7 +2111,7 @@ msgstr ""
 
 #. Template: AAASupportDataCollector
 msgid "Setting character_set_client needs to be utf8."
-msgstr ""
+msgstr "Innstillingen character_set_client må være utf8"
 
 #. Template: AAASupportDataCollector
 msgid "Server Database Charset"
@@ -2074,11 +2127,19 @@ msgstr "Tabel tegnsett"
 
 #. Template: AAASupportDataCollector
 msgid "There were tables found which do not have utf8 as charset."
+msgstr "Det ble funnet tabeller som ikke er satt som utf8"
+
+#. Template: AAASupportDataCollector
+msgid "InnoDB Log File Size"
+msgstr ""
+
+#. Template: AAASupportDataCollector
+msgid "The setting innodb_log_file_size must be at least 256 MB."
 msgstr ""
 
 #. Template: AAASupportDataCollector
 msgid "Maximum Query Size"
-msgstr ""
+msgstr "Maksimum størrelse på spørring"
 
 #. Template: AAASupportDataCollector
 msgid "The setting 'max_allowed_packet' must be higher than 20 MB."
@@ -2086,13 +2147,13 @@ msgstr "Innstillingen 'max_allowed_packet' må være større enn 20 MB."
 
 #. Template: AAASupportDataCollector
 msgid "Query Cache Size"
-msgstr ""
+msgstr "Spørring mellomlagringsstørrelse"
 
 #. Template: AAASupportDataCollector
 msgid ""
 "The setting 'query_cache_size' should be used (higher than 10 MB but not "
 "more than 512 MB)."
-msgstr ""
+msgstr "Innstillingen 'query_cache_size' bør brukes (over 10MB, men ikke større enn 512MB)"
 
 #. Template: AAASupportDataCollector
 msgid "Default Storage Engine"
@@ -2101,7 +2162,7 @@ msgstr "Standard lagringsmotor"
 #. Template: AAASupportDataCollector
 msgid ""
 "Tables with a different storage engine than the default engine were found."
-msgstr ""
+msgstr "Tabeller med en annen lagringsmotor enn standardmotoren ble funnet"
 
 #. Template: AAASupportDataCollector
 msgid "MySQL 5.x or higher is required."
@@ -2109,11 +2170,11 @@ msgstr "MySQL 5.x eller høyere er nødvendig."
 
 #. Template: AAASupportDataCollector
 msgid "NLS_LANG Setting"
-msgstr ""
+msgstr "NLS_LANG innstilling"
 
 #. Template: AAASupportDataCollector
 msgid "NLS_LANG must be set to AL32UTF8 (e.g. GERMAN_GERMANY.AL32UTF8)."
-msgstr ""
+msgstr "NLS_LANG må bli satt til AL32UTF8 (f.eks. GERMAN_GERMANY.AL32UTF8)."
 
 #. Template: AAASupportDataCollector
 msgid "NLS_DATE_FORMAT Setting"
@@ -2454,6 +2515,14 @@ msgid "Please install mod_deflate to improve GUI speed."
 msgstr "Vennligst installer mod_deflate for å forbedre hastigheten på GUI."
 
 #. Template: AAASupportDataCollector
+msgid "mod_filter Usage"
+msgstr ""
+
+#. Template: AAASupportDataCollector
+msgid "Please install mod_filter if mod_deflate is used."
+msgstr ""
+
+#. Template: AAASupportDataCollector
 msgid "mod_headers Usage"
 msgstr "mod_headers status"
 
@@ -2489,6 +2558,10 @@ msgstr "Du bør benytte PerlEx for å forbedre ytelsen."
 #. Template: AAATicket
 msgid "Status View"
 msgstr "Statusvisning"
+
+#. Template: AAATicket
+msgid "Service View"
+msgstr ""
 
 #. Template: AAATicket
 msgid "Bulk"
@@ -2811,6 +2884,10 @@ msgid "Bounce Article to a different mail address"
 msgstr ""
 
 #. Template: AAATicket
+msgid "Reply to note"
+msgstr ""
+
+#. Template: AAATicket
 msgid "new"
 msgstr "ny"
 
@@ -3049,6 +3126,14 @@ msgstr "Henvendelser"
 #. Template: AAATicket
 msgid "Search Tickets"
 msgstr "Søk i saker"
+
+#. Template: AAATicket
+msgid "Customer Realname"
+msgstr ""
+
+#. Template: AAATicket
+msgid "Customer History"
+msgstr ""
 
 #. Template: AAATicket
 msgid "Edit Customer Users"
@@ -4507,6 +4592,10 @@ msgid "Delete this Event Trigger"
 msgstr "Fjern denne Hendelses Utløseren"
 
 #. Template: AdminGenericAgent
+msgid "Remove selection"
+msgstr ""
+
+#. Template: AdminGenericAgent
 msgid "Select Tickets"
 msgstr ""
 
@@ -5924,6 +6013,189 @@ msgstr "For å få de første 20 tegn av emnefeltet (fra den siste kundesaken)."
 msgid "To get the first 5 lines of the body (of the latest customer article)."
 msgstr "For å få de første 5 linjene av meldingen (fra den siste kundesaken)."
 
+#. Template: AdminOTRSBusinessInstalled
+msgid "Manage %s"
+msgstr ""
+
+#. Template: AdminOTRSBusinessInstalled
+msgid "Downgrade to OTRS Free"
+msgstr ""
+
+#. Template: AdminOTRSBusinessInstalled
+msgid ""
+"%s makes contact regularly with cloud.otrs.com to check on available updates"
+" and the validity of the underlying contract."
+msgstr ""
+
+#. Template: AdminOTRSBusinessInstalled
+msgid "Unauthorized Usage Detected"
+msgstr ""
+
+#. Template: AdminOTRSBusinessInstalled
+msgid ""
+"This system uses the %s without a proper license! Please make contact with "
+"%s to renew or activate your contract!"
+msgstr ""
+
+#. Template: AdminOTRSBusinessInstalled
+msgid "%s not Correctly Installed"
+msgstr ""
+
+#. Template: AdminOTRSBusinessInstalled
+msgid ""
+"Your %s is not correctly installed. Please reinstall it with the button "
+"below."
+msgstr ""
+
+#. Template: AdminOTRSBusinessInstalled
+msgid "Reinstall %s"
+msgstr ""
+
+#. Template: AdminOTRSBusinessInstalled
+msgid ""
+"Your %s is not correctly installed, and there is also an update available."
+msgstr ""
+
+#. Template: AdminOTRSBusinessInstalled
+msgid ""
+"You can either reinstall your current version or perform an update with the "
+"buttons below (update recommended)."
+msgstr ""
+
+#. Template: AdminOTRSBusinessInstalled
+msgid "Update %s"
+msgstr ""
+
+#. Template: AdminOTRSBusinessInstalled
+msgid "%s Not Yet Available"
+msgstr ""
+
+#. Template: AdminOTRSBusinessInstalled
+msgid "%s will be available soon."
+msgstr ""
+
+#. Template: AdminOTRSBusinessInstalled
+msgid "%s Update Available"
+msgstr ""
+
+#. Template: AdminOTRSBusinessInstalled
+msgid "An update for your %s is available! Please update at your earliest!"
+msgstr ""
+
+#. Template: AdminOTRSBusinessInstalled
+msgid "%s Correctly Deployed"
+msgstr ""
+
+#. Template: AdminOTRSBusinessInstalled
+msgid "Congratulations, your %s is correctly installed and up to date!"
+msgstr ""
+
+#. Template: AdminOTRSBusinessNotInstalled
+msgid "Upgrade to %s"
+msgstr ""
+
+#. Template: AdminOTRSBusinessNotInstalled
+msgid "%s will be available soon. Please check again in a few days."
+msgstr ""
+
+#. Template: AdminOTRSBusinessNotInstalled
+msgid "Please have a look at %s for more information."
+msgstr ""
+
+#. Template: AdminOTRSBusinessNotInstalled
+msgid ""
+"Your OTRS Free is the base for all future actions. Please register first "
+"before you continue with the upgrade process of %s!"
+msgstr ""
+
+#. Template: AdminOTRSBusinessNotInstalled
+msgid "Register this System"
+msgstr ""
+
+#. Template: AdminOTRSBusinessNotInstalled
+msgid ""
+"System Registration is disabled for your system. Please check your "
+"configuration."
+msgstr ""
+
+#. Template: AdminOTRSBusinessNotInstalled
+msgid ""
+"Before you can benefit from %s, please contact %s to get your %s contract."
+msgstr ""
+
+#. Template: AdminOTRSBusinessNotInstalled
+msgid ""
+"Connection to cloud.otrs.com via HTTPS couldn't be established. Please make "
+"sure that your OTRS can connect to cloud.otrs.com via port 443."
+msgstr ""
+
+#. Template: AdminOTRSBusinessNotInstalled
+msgid "With your existing contract you can only use a small part of the %s."
+msgstr ""
+
+#. Template: AdminOTRSBusinessNotInstalled
+msgid ""
+"If you would like to take full advantage of the %s get your contract "
+"upgraded now! Contact %s."
+msgstr ""
+
+#. Template: AdminOTRSBusinessUninstall
+msgid "Cancel downgrade and go back"
+msgstr ""
+
+#. Template: AdminOTRSBusinessUninstall
+msgid "Go to OTRS Package Manager"
+msgstr ""
+
+#. Template: AdminOTRSBusinessUninstall
+msgid ""
+"Sorry, but currently you can't downgrade due to the following packages which"
+" depend on %s:"
+msgstr ""
+
+#. Template: AdminOTRSBusinessUninstall
+msgid "Vendor"
+msgstr "Forhandler"
+
+#. Template: AdminOTRSBusinessUninstall
+msgid ""
+"Please uninstall the packages first using the package manager and try again."
+msgstr ""
+
+#. Template: AdminOTRSBusinessUninstall
+msgid ""
+"You are about to downgrade to OTRS Free and will lose the following features"
+" and all data related to these:"
+msgstr ""
+
+#. Template: AdminOTRSBusinessUninstall
+msgid "Chat"
+msgstr ""
+
+#. Template: AdminOTRSBusinessUninstall
+msgid "Timeline view in ticket zoom"
+msgstr ""
+
+#. Template: AdminOTRSBusinessUninstall
+msgid "DynamicField ContactWithData"
+msgstr ""
+
+#. Template: AdminOTRSBusinessUninstall
+msgid "DynamicField Database"
+msgstr ""
+
+#. Template: AdminOTRSBusinessUninstall
+msgid "SLA Selection Dialog"
+msgstr ""
+
+#. Template: AdminOTRSBusinessUninstall
+msgid "Ticket Attachment View"
+msgstr ""
+
+#. Template: AdminOTRSBusinessUninstall
+msgid "The %s skin"
+msgstr ""
+
 #. Template: AdminPGP
 msgid "PGP Management"
 msgstr "Administrasjon: PGP"
@@ -6022,18 +6294,8 @@ msgid "Update repository information"
 msgstr "Oppdater pakkelager-informasjon"
 
 #. Template: AdminPackageManager
-msgid ""
-"Did not find a required feature? OTRS Group provides their service contract "
-"customers with exclusive Add-Ons:"
-msgstr ""
-
-#. Template: AdminPackageManager
 msgid "Online Repository"
 msgstr "Pakkelager på nettet"
-
-#. Template: AdminPackageManager
-msgid "Vendor"
-msgstr "Forhandler"
 
 #. Template: AdminPackageManager
 msgid "Module documentation"
@@ -6060,8 +6322,14 @@ msgid "Reinstall"
 msgstr "re-installer"
 
 #. Template: AdminPackageManager
-msgid "Feature Add-Ons"
-msgstr "Tilleggstjenester"
+msgid "Features for %s customers only"
+msgstr ""
+
+#. Template: AdminPackageManager
+msgid ""
+"With %s, you can benefit from the following optional features. Please make "
+"contact with %s if you need more information."
+msgstr ""
 
 #. Template: AdminPackageManager
 msgid "Download package"
@@ -6851,6 +7119,10 @@ msgid "Remove this Field"
 msgstr "Fjern dette feltet"
 
 #. Template: AdminProcessManagementTransition
+msgid "And can't be repeated on the same condition."
+msgstr ""
+
+#. Template: AdminProcessManagementTransition
 msgid "Add a new Field"
 msgstr "Legg til et nytt felt"
 
@@ -6903,6 +7175,10 @@ msgstr "Legg til kø"
 #. Template: AdminQueue
 msgid "Edit Queue"
 msgstr "Endre kø"
+
+#. Template: AdminQueue
+msgid "A queue with this name already exists!"
+msgstr ""
 
 #. Template: AdminQueue
 msgid "Sub-queue of"
@@ -7044,6 +7320,10 @@ msgid "Edit details"
 msgstr "Endre detaljer"
 
 #. Template: AdminRegistration
+msgid "Show transmitted data"
+msgstr ""
+
+#. Template: AdminRegistration
 msgid "Deregister system"
 msgstr ""
 
@@ -7073,6 +7353,30 @@ msgstr ""
 
 #. Template: AdminRegistration
 msgid "Send support data"
+msgstr ""
+
+#. Template: AdminRegistration
+msgid "System registration not possible"
+msgstr ""
+
+#. Template: AdminRegistration
+msgid ""
+"Please note that you can't register your system if your scheduler is not "
+"running correctly!"
+msgstr ""
+
+#. Template: AdminRegistration
+msgid "Instructions"
+msgstr ""
+
+#. Template: AdminRegistration
+msgid "System deregistration not possible"
+msgstr ""
+
+#. Template: AdminRegistration
+msgid ""
+"Please note that you can't deregister your system if you're using the %s or "
+"having a valid service contract."
 msgstr ""
 
 #. Template: AdminRegistration
@@ -7410,6 +7714,32 @@ msgstr "Avregistrere"
 msgid "You can modify registration settings here."
 msgstr ""
 
+#. Template: AdminRegistration
+msgid "Overview of transmitted data"
+msgstr ""
+
+#. Template: AdminRegistration
+msgid "There is no data regularly sent from your system to %s."
+msgstr ""
+
+#. Template: AdminRegistration
+msgid ""
+"The following data is sent at minimum every 3 days from your system to %s."
+msgstr ""
+
+#. Template: AdminRegistration
+msgid ""
+"The data will be transferred in JSON format via a secure https connection."
+msgstr ""
+
+#. Template: AdminRegistration
+msgid "System Registration Data"
+msgstr ""
+
+#. Template: AdminRegistration
+msgid "Support Data"
+msgstr ""
+
 #. Template: AdminRole
 msgid "Role Management"
 msgstr "Administrasjon: Roller"
@@ -7481,6 +7811,22 @@ msgstr "opprett"
 #. Template: AdminRoleGroup
 msgid "Permissions to create tickets in this group/queue."
 msgstr "Rettighet til å opprette saker i denne gruppen/køen."
+
+#. Template: AdminRoleGroup
+msgid "note"
+msgstr "notis"
+
+#. Template: AdminRoleGroup
+msgid "Permissions to add notes to tickets in this group/queue."
+msgstr "Rettigheter for å svare på saker i denne gruppen/køen"
+
+#. Template: AdminRoleGroup
+msgid "owner"
+msgstr "Eier"
+
+#. Template: AdminRoleGroup
+msgid "Permissions to change the owner of tickets in this group/queue."
+msgstr "Rettigheter til å endre eier av saker i denne gruppen/køen"
 
 #. Template: AdminRoleGroup
 msgid "priority"
@@ -7618,6 +7964,10 @@ msgstr "Relater dette sertifikatet"
 #. Template: AdminSMIMECertRead
 msgid "Close window"
 msgstr "Lukk vindu"
+
+#. Template: AdminSMIMECertRead
+msgid "Certificate details"
+msgstr ""
 
 #. Template: AdminSalutation
 msgid "Salutation Management"
@@ -7815,7 +8165,7 @@ msgstr ""
 
 #. Template: AdminServiceCenterSupportDataCollector
 msgid ""
-"The email address for this user is invalid, this ption has been disabled."
+"The email address for this user is invalid, this option has been disabled."
 msgstr ""
 
 #. Template: AdminServiceCenterSupportDataCollector
@@ -7835,10 +8185,6 @@ msgid ""
 "A file containing the support bundle will be downloaded to the local system."
 " Please save the file and send it to the OTRS Group, using an alternate "
 "method."
-msgstr ""
-
-#. Template: AdminServiceCenterSupportDataCollector
-msgid "Support Data"
 msgstr ""
 
 #. Template: AdminServiceCenterSupportDataCollector
@@ -8224,8 +8570,8 @@ msgid "Customer Sessions"
 msgstr "Kunde-sesjoner"
 
 #. Template: AdminSystemMaintenanceEdit
-msgid "Kill all Sessions, exept current"
-msgstr "Terminer alle sesjoner, untatt gjeldende"
+msgid "Kill all Sessions, except for your own"
+msgstr ""
 
 #. Template: AdminTemplate
 msgid "Manage Templates"
@@ -8389,22 +8735,6 @@ msgstr "Endre gruppekoplinger for saksbehandler"
 msgid "Change Agent Relations for Group"
 msgstr "Endre saksbehandlerkoplinger for gruppe"
 
-#. Template: AdminUserGroup
-msgid "note"
-msgstr "notis"
-
-#. Template: AdminUserGroup
-msgid "Permissions to add notes to tickets in this group/queue."
-msgstr "Rettigheter for å svare på saker i denne gruppen/køen"
-
-#. Template: AdminUserGroup
-msgid "owner"
-msgstr "Eier"
-
-#. Template: AdminUserGroup
-msgid "Permissions to change the owner of tickets in this group/queue."
-msgstr "Rettigheter til å endre eier av saker i denne gruppen/køen"
-
 #. Template: AgentBook
 msgid "Address Book"
 msgstr "Adressebok"
@@ -8504,6 +8834,10 @@ msgstr "Ny telefonsak fra %s"
 #. Template: AgentDashboardCustomerUserList
 msgid "New email ticket to %s"
 msgstr "Ny e-postsak til %s"
+
+#. Template: AgentDashboardCustomerUserList
+msgid "Start chat"
+msgstr ""
 
 #. Template: AgentDashboardProductNotify
 msgid "%s %s is available!"
@@ -9035,6 +9369,10 @@ msgid "Next state"
 msgstr "Neste status"
 
 #. Template: AgentTicketActionCommon
+msgid "For all pending* states."
+msgstr ""
+
+#. Template: AgentTicketActionCommon
 msgid "Add Article"
 msgstr ""
 
@@ -9074,6 +9412,10 @@ msgstr "Informer involverte saksbehandlere"
 msgid ""
 "Here you can select additional agents which should receive a notification "
 "regarding the new article."
+msgstr ""
+
+#. Template: AgentTicketActionCommon
+msgid "Note will be (also) received by:"
 msgstr ""
 
 #. Template: AgentTicketBounce
@@ -9163,14 +9505,6 @@ msgstr "Fjern Bcc"
 #. Template: AgentTicketCompose
 msgid "Address book"
 msgstr "Adressebok"
-
-#. Template: AgentTicketCompose
-msgid "Pending Date"
-msgstr "Utsatt til"
-
-#. Template: AgentTicketCompose
-msgid "for pending* states"
-msgstr "for vente-tilstander"
 
 #. Template: AgentTicketCompose
 msgid "Date Invalid!"
@@ -9334,6 +9668,10 @@ msgstr "Til kø"
 
 #. Template: AgentTicketPhone
 msgid "Chat protocol"
+msgstr ""
+
+#. Template: AgentTicketPhone
+msgid "The chat will be appended as a separate article."
 msgstr ""
 
 #. Template: AgentTicketPlain
@@ -9575,6 +9913,10 @@ msgid "Article(s)"
 msgstr "Innlegg"
 
 #. Template: AgentTicketZoom
+msgid "Page"
+msgstr "Side"
+
+#. Template: AgentTicketZoom
 msgid "Add Filter"
 msgstr "Legg til filter"
 
@@ -9646,6 +9988,20 @@ msgstr ""
 msgid "No more events found. Please try changing the filter settings."
 msgstr ""
 
+#. Template: AgentTicketZoom
+msgid ""
+"To open links in the following article, you might need to press Ctrl or Cmd "
+"or Shift key while clicking the link (depending on your browser and OS)."
+msgstr ""
+
+#. Template: AgentTicketZoom
+msgid "Close this message"
+msgstr "Lukk denne meldingen"
+
+#. Template: AgentTicketZoom
+msgid "Article could not be opened! Perhaps it is on another article page?"
+msgstr ""
+
 #. Template: AttachmentBlocker
 msgid "To protect your privacy, remote content was blocked."
 msgstr ""
@@ -9653,6 +10009,10 @@ msgstr ""
 #. Template: AttachmentBlocker
 msgid "Load blocked content."
 msgstr "Last inn blokkert innhold"
+
+#. Template: ChatStartForm
+msgid "First message"
+msgstr ""
 
 #. Template: CustomerError
 msgid "Traceback"
@@ -9792,6 +10152,10 @@ msgstr ""
 msgid "Edit personal preferences"
 msgstr "Endre personlige innstillinger"
 
+#. Template: CustomerRichTextEditor
+msgid "Split Quote"
+msgstr ""
+
 #. Template: CustomerTicketMessage
 msgid "Service level agreement"
 msgstr "Tjenestenivåavtale"
@@ -9891,10 +10255,6 @@ msgstr "Skriv ut til"
 #. Template: CustomerTicketSearchResultShort
 msgid "of"
 msgstr "av"
-
-#. Template: CustomerTicketSearchResultShort
-msgid "Page"
-msgstr "Side"
 
 #. Template: CustomerTicketSearchResultShort
 msgid "Search Results for"
@@ -10054,6 +10414,10 @@ msgstr ""
 #. Template: Header
 msgid "You are logged in as"
 msgstr "Du er innlogget som"
+
+#. Template: Header
+msgid "There are new chat requests available. Please visit the chat manager."
+msgstr ""
 
 #. Template: Installer
 msgid "JavaScript not available"
@@ -10376,10 +10740,6 @@ msgstr "Utilstrekkelige rettigheter"
 msgid "Back to the previous page"
 msgstr "Tilbake til forrige side"
 
-#. Template: Notify
-msgid "Close this message"
-msgstr "Lukk denne meldingen"
-
 #. Template: Pagination
 msgid "Show first page"
 msgstr "Vis første side"
@@ -10429,6 +10789,10 @@ msgid "Go back to the previous page"
 msgstr "Tilbake til forrige side"
 
 #. SysConfig
+msgid " (work units)"
+msgstr ""
+
+#. SysConfig
 msgid "\"%s\"-notification sent to \"%s\"."
 msgstr "«%s»-varsling sendt til «%s»."
 
@@ -10449,10 +10813,18 @@ msgid "(UserLogin) Lastname, Firstname"
 msgstr ""
 
 #. SysConfig
+msgid "A Website"
+msgstr ""
+
+#. SysConfig
 msgid ""
 "A list of dynamic fields that are merged into the main ticket during a merge"
 " operation. Only dynamic fields that are empty in the main ticket will be "
 "set."
+msgstr ""
+
+#. SysConfig
+msgid "A picture"
 msgstr ""
 
 #. SysConfig
@@ -10606,8 +10978,9 @@ msgid ""
 msgstr "Saksbehandlermodul som sjekker innkommende e-post i Zoom-visning dersom S/MIME-nøkkelen er tilgjengelig og korrekt."
 
 #. SysConfig
-msgid "Agent interface notification module to check the used charset."
-msgstr "Saksbehandlermodul som sjekker tegnsettet som er brukt."
+msgid ""
+"Agent interface notification module to see the number of locked tickets."
+msgstr ""
 
 #. SysConfig
 msgid ""
@@ -11040,6 +11413,10 @@ msgid "Comment for new history entries in the customer interface."
 msgstr "Kommentar for nye historiske innlegg i kundeportalen."
 
 #. SysConfig
+msgid "Comment2"
+msgstr ""
+
+#. SysConfig
 msgid "Company Status"
 msgstr "Bedriftstatus"
 
@@ -11200,6 +11577,10 @@ msgid "Create new process ticket"
 msgstr ""
 
 #. SysConfig
+msgid "Custom RSS Feed"
+msgstr ""
+
+#. SysConfig
 msgid ""
 "Custom text for the page shown to customers that have no tickets yet (if you"
 " need those text translated add them to a custom translation module)."
@@ -11246,6 +11627,14 @@ msgstr ""
 #. SysConfig
 msgid "Customer request via web."
 msgstr "Kundeforespørsel via web."
+
+#. SysConfig
+msgid "Customer user search"
+msgstr ""
+
+#. SysConfig
+msgid "CustomerID search"
+msgstr ""
 
 #. SysConfig
 msgid "CustomerName"
@@ -11361,6 +11750,18 @@ msgstr ""
 
 #. SysConfig
 msgid "Define the max depth of queues."
+msgstr ""
+
+#. SysConfig
+msgid "Define the queue comment 2."
+msgstr ""
+
+#. SysConfig
+msgid "Define the service comment 2."
+msgstr ""
+
+#. SysConfig
+msgid "Define the sla comment 2."
 msgstr ""
 
 #. SysConfig
@@ -12701,6 +13102,12 @@ msgstr "Definerer modulen for å autentisere kunder."
 
 #. SysConfig
 msgid ""
+"Defines the module to display a notification in different interfaces on "
+"different occasions for OTRS Business Solution™."
+msgstr ""
+
+#. SysConfig
+msgid ""
 "Defines the module to display a notification in the agent interface if the "
 "scheduler is not running."
 msgstr ""
@@ -13013,7 +13420,7 @@ msgstr ""
 #. SysConfig
 msgid ""
 "Defines the receipent target of the phone ticket and the sender of the email"
-" ticket (\"Queue\" shows all queues, \"SystemAddress\" displays all system "
+" ticket (\"Queue\" shows all queues, \"System address\" displays all system "
 "addresses) in the agent interface."
 msgstr ""
 
@@ -13269,6 +13676,10 @@ msgstr ""
 
 #. SysConfig
 msgid "Deletes requested sessions if they have timed out."
+msgstr ""
+
+#. SysConfig
+msgid "Deploy and manage OTRS Business Solution™."
 msgstr ""
 
 #. SysConfig
@@ -13774,6 +14185,10 @@ msgid "Escalation view"
 msgstr "Eskaleringsvisning"
 
 #. SysConfig
+msgid "EscalationTime"
+msgstr ""
+
+#. SysConfig
 msgid ""
 "Event module registration. For more performance you can define a trigger "
 "event (e. g. Event => TicketCreate)."
@@ -13876,6 +14291,10 @@ msgid "Filter incoming emails."
 msgstr "Filtrering av innkommende e-poster"
 
 #. SysConfig
+msgid "First Queue"
+msgstr ""
+
+#. SysConfig
 msgid "FirstLock"
 msgstr "FørsteLås"
 
@@ -13965,6 +14384,10 @@ msgstr "Nettsidetema"
 
 #. SysConfig
 msgid "Fulltext index regex filters to remove parts of the text."
+msgstr ""
+
+#. SysConfig
+msgid "Fulltext search"
 msgstr ""
 
 #. SysConfig
@@ -14120,7 +14543,7 @@ msgid ""
 "If \"HTTPBasicAuth\" was selected for Customer::AuthModule, you can specify "
 "to strip leading parts of user names (e. g. for domains like "
 "example_domain\\user to user)."
-msgstr "Hvis \"HTTPBasicAuth\" er valgt som Customer::AuthModule kan du velge å ta vekk deler av brukernavnet (f.eks. gjøre \"domene\\bruker\" om til \"bruker\")."
+msgstr ""
 
 #. SysConfig
 msgid ""
@@ -14369,6 +14792,12 @@ msgstr ""
 
 #. SysConfig
 msgid ""
+"If enabled, the customer can search for tickets in all services (regardless "
+"what services are assigned to the customer)."
+msgstr ""
+
+#. SysConfig
+msgid ""
 "If enabled, the different overviews (Dashboard, LockedView, QueueView) will "
 "automatically refresh after the specified time."
 msgstr "Hvis slått på vil de forskjellige oversiktene (Kontrollpanel, kø-oversikt, osv.) automatisk oppdateres etter angitt tid."
@@ -14501,6 +14930,10 @@ msgid "Lastname, Firstname (UserLogin)"
 msgstr "Etternavn, Fornavn (Brukernavn)"
 
 #. SysConfig
+msgid "Left"
+msgstr ""
+
+#. SysConfig
 msgid "Link agents to groups."
 msgstr "Koble saksbehandlere til grupper"
 
@@ -14599,6 +15032,10 @@ msgstr ""
 msgid ""
 "List of default Standard Templates which are assigned automatically to new "
 "Queues upon creation."
+msgstr ""
+
+#. SysConfig
+msgid "List view"
 msgstr ""
 
 #. SysConfig
@@ -14874,6 +15311,10 @@ msgid "New Ticket [%s] created (Q=%s;P=%s;S=%s)."
 msgstr "Ny sak [%s] opprettet (Q=%s;P=%s;S=%s)."
 
 #. SysConfig
+msgid "New Window"
+msgstr ""
+
+#. SysConfig
 msgid "New email ticket"
 msgstr "Ny e-postsak"
 
@@ -14910,6 +15351,10 @@ msgid "No Notification"
 msgstr "Ingen varsling"
 
 #. SysConfig
+msgid "None"
+msgstr ""
+
+#. SysConfig
 msgid "Notification sent to \"%s\"."
 msgstr "Varsling sendt til «%s»."
 
@@ -14942,6 +15387,10 @@ msgstr "Antall saker som vises per side i et søkeresultat i kundeportalen."
 #. SysConfig
 msgid "Old: \"%s\" New: \"%s\""
 msgstr "Gammel: «%s» Ny: «%s»"
+
+#. SysConfig
+msgid "Online"
+msgstr ""
 
 #. SysConfig
 msgid "Open tickets (customer user)"
@@ -15436,11 +15885,21 @@ msgid ""
 msgstr ""
 
 #. SysConfig
+msgid "Right"
+msgstr ""
+
+#. SysConfig
 msgid "Roles <-> Groups"
 msgstr "Roller <-> Grupper"
 
 #. SysConfig
 msgid "Running Process Tickets"
+msgstr ""
+
+#. SysConfig
+msgid ""
+"Runs an initial wildcard search of the existing customer company when "
+"accessing the AdminCustomerCompany module."
 msgstr ""
 
 #. SysConfig
@@ -15462,12 +15921,17 @@ msgid "S/MIME Certificate Upload"
 msgstr "Opplasting av S/MIME-sertifikat"
 
 #. SysConfig
+msgid "Sample command output"
+msgstr ""
+
+#. SysConfig
 msgid ""
 "Saves the attachments of articles. \"DB\" stores all data in the database "
 "(not recommended for storing big attachments). \"FS\" stores the data on the"
 " filesystem; this is faster but the webserver should run under the OTRS "
 "user. You can switch between the modules even on a system that is already in"
-" production without any loss of data."
+" production without any loss of data. Note: Searching for attachment names "
+"is not supported when \"FS\" is used."
 msgstr ""
 
 #. SysConfig
@@ -15488,6 +15952,10 @@ msgstr ""
 
 #. SysConfig
 msgid "Search backend router."
+msgstr ""
+
+#. SysConfig
+msgid "Second Queue"
 msgstr ""
 
 #. SysConfig
@@ -16730,6 +17198,14 @@ msgid "SolutionInMin"
 msgstr ""
 
 #. SysConfig
+msgid "Some description!"
+msgstr ""
+
+#. SysConfig
+msgid "Some picture description!"
+msgstr ""
+
+#. SysConfig
 msgid ""
 "Sorts the tickets (ascendingly or descendingly) when a single queue is "
 "selected in the queue view and after the tickets are sorted by priority. "
@@ -16921,6 +17397,14 @@ msgstr ""
 msgid ""
 "Specify how many sub directory levels to use when creating cache files. This"
 " should prevent too many cache files being in one directory."
+msgstr ""
+
+#. SysConfig
+msgid ""
+"Specify the channel to be used to fetch OTRS Business Solution™ updates. "
+"Warning: Development releases might not be complete, your system might "
+"experience unrecoverable errors and on extreme cases could become "
+"unresponsive!"
 msgstr ""
 
 #. SysConfig
@@ -17194,6 +17678,16 @@ msgid "Toolbar Item for a shortcut."
 msgstr ""
 
 #. SysConfig
+msgid "Tree view"
+msgstr ""
+
+#. SysConfig
+msgid ""
+"Turns off SSL certificate validation, for example if you use a transparent "
+"HTTPS proxy. Use at your own risk!"
+msgstr ""
+
+#. SysConfig
 msgid "Turns on drag and drop for the main navigation."
 msgstr ""
 
@@ -17321,6 +17815,10 @@ msgstr ""
 
 #. SysConfig
 msgid "Write a new, outgoing mail"
+msgstr ""
+
+#. SysConfig
+msgid "Yes, but hide archived tickets"
 msgstr ""
 
 #. SysConfig

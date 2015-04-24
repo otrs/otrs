@@ -1,6 +1,6 @@
 # --
 # Kernel/System/PostMaster.pm - the global PostMaster module for OTRS
-# Copyright (C) 2001-2014 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -129,7 +129,10 @@ sub new {
 
 to execute the run process
 
-    $PostMasterObject->Run();
+    $PostMasterObject->Run(
+        Queue   => 'Junk',  # optional, specify target queue for new tickets
+        QueueID => 1,       # optional, specify target queue for new tickets
+    );
 
 return params
 

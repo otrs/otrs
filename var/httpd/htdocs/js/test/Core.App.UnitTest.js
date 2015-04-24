@@ -9,7 +9,7 @@
 
 "use strict";
 
-var OTRS = OTRS || {};
+var Core = Core || {};
 Core.App = Core.App || {};
 
 Core.App = (function (Namespace) {
@@ -59,7 +59,7 @@ Core.App = (function (Namespace) {
             // Subscribe to channel
             Handle = Core.App.Subscribe('UNITTEST1', function () {
                 Counter++;
-            })
+            });
 
             // publish channel
             Core.App.Publish('UNITTEST1');

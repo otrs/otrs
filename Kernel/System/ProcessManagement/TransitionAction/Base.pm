@@ -1,6 +1,6 @@
 # --
 # Kernel/System/ProcessManagement/TransitionAction/Base.pm - Base class for transition actions
-# Copyright (C) 2001-2014 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -77,13 +77,20 @@ sub _ReplaceTicketAttributes {
 
     for my $Attribute ( sort keys %{ $Param{Config} } ) {
 
-        if (
+        # replace ticket attributes such as <OTRS_Ticket_Dynamic_Field_Name1> or
+        # <OTRS_TICKET_Dynamic_Field_Name1>
+        # <OTRS_Ticket_*> is deprecated and should be removed in further versions of OTRS
+        my $Count = 0;
+        REPLACEMENT:
+        while (
             $Param{Config}->{$Attribute}
-            && $Param{Config}->{$Attribute} =~ m{\A<OTRS_Ticket_([A-Za-z0-9_]+)>\z}msx
+            && $Param{Config}->{$Attribute} =~ m{<OTRS_TICKET_([A-Za-z0-9_]+)>}msxi
+            && $Count++ < 1000
             )
         {
             my $TicketAttribute = $1;
-            $Param{Config}->{$Attribute} = $Param{Ticket}->{$TicketAttribute} //= '';
+            $Param{Config}->{$Attribute}
+                =~ s{<OTRS_TICKET_$TicketAttribute>}{$Param{Ticket}->{$TicketAttribute} // ''}ige;
         }
     }
 

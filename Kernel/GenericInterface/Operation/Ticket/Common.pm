@@ -1,6 +1,6 @@
 # --
 # Kernel/GenericInterface/Operation/Ticket/Common.pm - Ticket common operation functions
-# Copyright (C) 2001-2014 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -1302,6 +1302,17 @@ sub CreateAttachment {
 
 =item CheckCreatePermissions ()
 
+Tests if the user have the permissions to create a ticket on a determined queue
+
+    my $Result = $CommonObject->CheckCreatePermissions(
+        Ticket     => $TicketHashReference,
+        UserID     => 123,                      # or 'CustomerLogin'
+        UserType   => 'Agent',                  # or 'Customer'
+    );
+
+returns:
+    $Success = 1                                # if everything is OK
+
 =cut
 
 sub CheckCreatePermissions {
@@ -1318,10 +1329,9 @@ sub CheckCreatePermissions {
     my %UserGroups;
 
     if ( $Param{UserType} ne 'Customer' ) {
-        %UserGroups = $Kernel::OM->Get('Kernel::System::Group')->GroupMemberList(
+        %UserGroups = $Kernel::OM->Get('Kernel::System::Group')->PermissionUserGet(
             UserID => $Param{UserID},
             Type   => 'create',
-            Result => 'HASH',
         );
     }
     else {
@@ -1344,6 +1354,45 @@ sub CheckCreatePermissions {
     return if !$UserGroups{ $QueueData{GroupID} };
 
     return 1;
+}
+
+=item CheckAccessPermissions()
+
+Tests if the user have access permissions over a ticket
+
+    my $Result = $CommonObject->CheckAccessPermissions(
+        TicketID   => 123,
+        UserID     => 123,                      # or 'CustomerLogin'
+        UserType   => 'Agent',                  # or 'Customer'
+    );
+
+returns:
+    $Success = 1                                # if everything is OK
+
+=cut
+
+sub CheckAccessPermissions {
+    my ( $Self, %Param ) = @_;
+
+    # check needed stuff
+    for my $Needed (qw(TicketID UserID UserType)) {
+        if ( !$Param{$Needed} ) {
+            return;
+        }
+    }
+
+    my $TicketPermissionFunction = 'TicketPermission';
+    if ( $Param{UserType} eq 'Customer' ) {
+        $TicketPermissionFunction = 'TicketCustomerPermission';
+    }
+
+    my $Access = $Kernel::OM->Get('Kernel::System::Ticket')->$TicketPermissionFunction(
+        Type     => 'ro',
+        TicketID => $Param{TicketID},
+        UserID   => $Param{UserID},
+    );
+
+    return $Access;
 }
 
 =begin Internal:

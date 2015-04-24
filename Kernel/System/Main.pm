@@ -1,6 +1,6 @@
 # --
 # Kernel/System/Main.pm - main core components
-# Copyright (C) 2001-2014 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -1056,6 +1056,16 @@ sub _Dump {
 
             # start recursion
             $Self->_Dump( \${$Data}->{$Key} );
+
+            my $KeyNew = $Key;
+
+            $Self->_Dump( \$KeyNew );
+
+            if ( $Key ne $KeyNew ) {
+
+                ${$Data}->{$KeyNew} = ${$Data}->{$Key};
+                delete ${$Data}->{$Key};
+            }
         }
 
         return;

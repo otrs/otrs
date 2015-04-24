@@ -1,6 +1,6 @@
 # --
 # AgentTicketBulk.tt - provides HTML form for bulk mask
-# Copyright (C) 2001-2014 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -11,8 +11,6 @@
 <form action="[% Env("CGIHandle") %]" method="post" enctype="multipart/form-data" name="compose" class="Validate">
     <input type="hidden" name="Action" value="[% Env("Action") %]"/>
     <input type="hidden" name="Subaction" value="Do"/>
-    <input type="hidden" name="NoteFormID" value="[% Data.NoteFormID | html %]"/>
-    <input type="hidden" name="EmailFormID" value="[% Data.EmailFormID | html %]"/>
 
     <div class="LayoutPopup ARIARoleMain">
         <div class="Header">
@@ -162,6 +160,7 @@
                         [% Data.DateString %]
                         <div id="DayServerError" class="TooltipErrorMessage"><p>[% Translate("Date invalid!") | html %]</p></div>
                         <div id="HourServerError" class="TooltipErrorMessage"><p>[% Translate("Date invalid!") | html %]</p></div>
+                        <p class="FieldExplanation">[% Translate("For all pending* states.") | html %]</p>
                     </div>
                     <div class="Clear"></div>
 [% RenderBlockEnd("StatePending") %]
@@ -219,6 +218,16 @@
                         </div>
                     </div>
                     <div class="Clear"></div>
+[% WRAPPER JSOnDocumentComplete %]
+<script type="text/javascript">//<![CDATA[
+$('#MergeTo').bind('blur', function() {
+    if ($(this).val()) {
+        $('#OptionMergeTo').prop('checked', true);
+    }
+});
+//]]></script>
+[% END %]
+
 
                     <label for="LinkTogether">[% Translate("Link together") | html %]:</label>
                     <div class="Field">

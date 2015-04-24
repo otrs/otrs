@@ -1,6 +1,6 @@
 # --
-# AdminQueue.t - frontend tests for AdminState
-# Copyright (C) 2001-2014 OTRS AG, http://otrs.com/
+# AdminQueue.t - frontend tests for AdminQueue
+# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -188,7 +188,26 @@ $Selenium->RunTest(
             '',
             "#Comment updated value",
         );
-        }
+
+        # Since there are no tickets that rely on our test queue, we can remove them again
+        # from the DB.
+        my $QueueID = $Kernel::OM->Get('Kernel::System::Queue')->QueueLookup(
+            Queue => $RandomID,
+        );
+        my $Success = $Kernel::OM->Get('Kernel::System::DB')->Do(
+            SQL => "DELETE FROM queue WHERE id = $QueueID",
+        );
+        $Self->True(
+            $Success,
+            "QueueDelete - $RandomID",
+        );
+
+        # Make sure the cache is correct.
+        $Kernel::OM->Get('Kernel::System::Cache')->CleanUp(
+            Type => 'Queue',
+        );
+
+    }
 );
 
 1;

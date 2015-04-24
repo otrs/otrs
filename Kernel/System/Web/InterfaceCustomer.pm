@@ -1,6 +1,6 @@
 # --
 # Kernel/System/Web/InterfaceCustomer.pm - the customer interface file (incl. auth)
-# Copyright (C) 2001-2014 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -164,7 +164,9 @@ sub Run {
         },
     );
 
+    # get needed objects
     $Self->{DBObject} = $Kernel::OM->Get('Kernel::System::DB');
+
     my $DBCanConnect = $Self->{DBObject}->Connect();
 
     # Restore original behaviour of Kernel::System::DB for all objects created in future
@@ -177,14 +179,14 @@ sub Run {
         my $LayoutObject = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
         if ( !$DBCanConnect ) {
             $LayoutObject->CustomerFatalError(
-                Comment => 'Please contact your administrator',
+                Comment => $LayoutObject->{LanguageObject}->Translate('Please contact your administrator'),
             );
             return;
         }
         if ( $Self->{ParamObject}->Error() ) {
             $LayoutObject->CustomerFatalError(
                 Message => $Self->{ParamObject}->Error(),
-                Comment => 'Please contact your administrator',
+                Comment => $LayoutObject->{LanguageObject}->Translate('Please contact your administrator'),
             );
             return;
         }
@@ -286,7 +288,8 @@ sub Run {
                         What => 'Message',
                         )
                         || $AuthObject->GetLastErrorMessage()
-                        || 'Login failed! Your user name or password was entered incorrectly.',
+                        || $LayoutObject->{LanguageObject}
+                        ->Translate('Login failed! Your user name or password was entered incorrectly.'),
                     User        => $PostUser,
                     LoginFailed => 1,
                     %Param,
@@ -329,7 +332,9 @@ sub Run {
                 Output => \$LayoutObject->CustomerLogin(
                     Title => 'Panic!',
                     Message =>
-                        'Authentication succeeded, but no customer record is found in the customer backend. Please contact your administrator.',
+                        $LayoutObject->{LanguageObject}->Translate(
+                        'Authentication succeeded, but no customer record is found in the customer backend. Please contact your administrator.'
+                        ),
                     %Param,
                 ),
             );
@@ -466,7 +471,7 @@ sub Run {
             # show login screen
             print $LayoutObject->CustomerLogin(
                 Title   => 'Logout',
-                Message => 'Session invalid. Please log in again.',
+                Message => $LayoutObject->{LanguageObject}->Translate('Session invalid. Please log in again.'),
                 %Param,
             );
             return;
@@ -495,11 +500,14 @@ sub Run {
             },
         );
 
+        $Kernel::OM->ObjectsDiscard( Objects => ['Kernel::Output::HTML::Layout'] );
         my $LayoutObject = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
 
         # remove session id
         if ( !$Self->{SessionObject}->RemoveSessionID( SessionID => $Param{SessionID} ) ) {
-            $LayoutObject->CustomerFatalError( Comment => 'Please contact your administrator' );
+            $LayoutObject->CustomerFatalError(
+                Comment => $LayoutObject->{LanguageObject}->Translate('Please contact your administrator')
+            );
             return;
         }
 
@@ -541,7 +549,7 @@ sub Run {
             $LayoutObject->Print(
                 Output => \$LayoutObject->CustomerLogin(
                     Title   => 'Login',
-                    Message => 'Feature not active!',
+                    Message => $LayoutObject->{LanguageObject}->Translate('Feature not active!'),
                 ),
             );
             return;
@@ -580,7 +588,8 @@ sub Run {
             $LayoutObject->Print(
                 Output => \$LayoutObject->CustomerLogin(
                     Title   => 'Login',
-                    Message => 'Sent password reset instructions. Please check your email.',
+                    Message => $LayoutObject->{LanguageObject}
+                        ->Translate('Sent password reset instructions. Please check your email.'),
                 ),
             );
             return;
@@ -614,14 +623,15 @@ sub Run {
             );
             if ( !$Sent ) {
                 $LayoutObject->FatalError(
-                    Comment => 'Please contact your administrator'
+                    Comment => $LayoutObject->{LanguageObject}->Translate('Please contact your administrator'),
                 );
                 return;
             }
             $LayoutObject->Print(
                 Output => \$LayoutObject->CustomerLogin(
                     Title   => 'Login',
-                    Message => 'Sent password reset instructions. Please check your email.',
+                    Message => $LayoutObject->{LanguageObject}
+                        ->Translate('Sent password reset instructions. Please check your email.'),
                     %Param,
                 ),
             );
@@ -660,7 +670,8 @@ sub Run {
                 Output => \$LayoutObject->CustomerLogin(
                     Title => 'Login',
                     Message =>
-                        "Reset password unsuccessful. Please contact your administrator",
+                        $LayoutObject->{LanguageObject}
+                        ->Translate('Reset password unsuccessful. Please contact your administrator'),
                     User => $User,
                 ),
             );
@@ -688,12 +699,15 @@ sub Run {
             );
             return;
         }
+        my $Message = $LayoutObject->{LanguageObject}->Translate(
+            'Sent new password to %s. Please check your email.',
+            $UserData{UserEmail},
+        );
         $LayoutObject->Print(
             Output => \$LayoutObject->CustomerLogin(
-                Title => 'Login',
-                Message =>
-                    "Sent new password to \%s. Please check your email.\", \"$UserData{UserEmail}",
-                User => $User,
+                Title   => 'Login',
+                Message => $Message,
+                User    => $User,
             ),
         );
         return 1;
@@ -712,7 +726,7 @@ sub Run {
             $LayoutObject->Print(
                 Output => \$LayoutObject->CustomerLogin(
                     Title   => 'Login',
-                    Message => 'Feature not active!',
+                    Message => $LayoutObject->{LanguageObject}->Translate('Feature not active!'),
                 ),
             );
             return;
@@ -745,7 +759,8 @@ sub Run {
                 Output => \$LayoutObject->CustomerLogin(
                     Title => 'Login',
                     Message =>
-                        'This email address already exists. Please log in or reset your password.',
+                        $LayoutObject->{LanguageObject}
+                        ->Translate('This e-mail address already exists. Please log in or reset your password.'),
                     UserTitle     => $GetParams{UserTitle},
                     UserFirstname => $GetParams{UserFirstname},
                     UserLastname  => $GetParams{UserLastname},
@@ -770,7 +785,9 @@ sub Run {
                 $Self->{LogObject}->Log(
                     Priority => 'error',
                     Message =>
-                        'The customer panel mail address whitelist contains the invalid regular expression $WhitelistEntry, please check and correct it.',
+                        $LayoutObject->{LanguageObject}->Translate(
+                        'The customer panel mail address whitelist contains the invalid regular expression $WhitelistEntry, please check and correct it.'
+                        ),
                 );
             }
             elsif ( $GetParams{UserEmail} =~ $Regex ) {
@@ -784,7 +801,9 @@ sub Run {
                 $Self->{LogObject}->Log(
                     Priority => 'error',
                     Message =>
-                        'The customer panel mail address blacklist contains the invalid regular expression $BlacklistEntry, please check and correct it.',
+                        $LayoutObject->{LanguageObject}->Translate(
+                        'The customer panel mail address blacklist contains the invalid regular expression $BlacklistEntry, please check and correct it.'
+                        ),
                 );
             }
             elsif ( $GetParams{UserEmail} =~ $Regex ) {
@@ -798,7 +817,8 @@ sub Run {
                 Output => \$LayoutObject->CustomerLogin(
                     Title => 'Login',
                     Message =>
-                        'This email address is not allowed to register. Please contact support staff.',
+                        $LayoutObject->{LanguageObject}
+                        ->Translate('This email address is not allowed to register. Please contact support staff.'),
                     UserTitle     => $GetParams{UserTitle},
                     UserFirstname => $GetParams{UserFirstname},
                     UserLastname  => $GetParams{UserLastname},
@@ -985,8 +1005,9 @@ sub Run {
             # show login
             $LayoutObject->Print(
                 Output => \$LayoutObject->CustomerLogin(
-                    Title   => 'Login',
-                    Message => $Self->{SessionObject}->SessionIDErrorMessage(),
+                    Title => 'Login',
+                    Message =>
+                        $LayoutObject->{LanguageObject}->Translate( $Self->{SessionObject}->SessionIDErrorMessage() ),
                     %Param,
                 ),
             );
@@ -1015,7 +1036,7 @@ sub Run {
             $LayoutObject->Print(
                 Output => \$LayoutObject->CustomerLogin(
                     Title   => 'Panic!',
-                    Message => 'Panic! Invalid Session!!!',
+                    Message => $LayoutObject->{LanguageObject}->Translate('Panic! Invalid Session!!!'),
                     %Param,
                 ),
             );
@@ -1033,7 +1054,9 @@ sub Run {
                 Message =>
                     "Module Kernel::Modules::$Param{Action} not registered in Kernel/Config.pm!",
             );
-            $LayoutObject->CustomerFatalError( Comment => 'Please contact your administrator' );
+            $LayoutObject->CustomerFatalError(
+                Comment => $LayoutObject->{LanguageObject}->Translate('Please contact your administrator'),
+            );
             return;
         }
 
@@ -1095,6 +1118,7 @@ sub Run {
             },
         );
 
+        $Kernel::OM->ObjectsDiscard( Objects => ['Kernel::Output::HTML::Layout'] );
         my $LayoutObject = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
 
         # updated last request time
@@ -1215,7 +1239,9 @@ sub Run {
         },
     );
     my $LayoutObject = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
-    $LayoutObject->CustomerFatalError( Comment => 'Please contact your administrator' );
+    $LayoutObject->CustomerFatalError(
+        Comment => $LayoutObject->{LanguageObject}->Translate('Please contact your administrator'),
+    );
     return;
 }
 

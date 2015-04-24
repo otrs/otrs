@@ -1,6 +1,6 @@
 # --
 # Kernel/System/Auth.pm - provides the authentication
-# Copyright (C) 2001-2014 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -272,10 +272,9 @@ sub Auth {
 
         # check if user is allow to login
         # get current user groups
-        my %Groups = $Kernel::OM->Get('Kernel::System::Group')->GroupMemberList(
+        my %Groups = $Kernel::OM->Get('Kernel::System::Group')->PermissionUserGet(
             UserID => $UserID,
             Type   => 'move_into',
-            Result => 'HASH',
         );
 
         # reverse groups hash for easy look up

@@ -1,14 +1,15 @@
 # 
 # Translators:
 # Martin Gruner <martin.gruner@otrs.com>, 2014
+# Vladislav Yaroslavlev <vladon@vladon.com>, 2014
 # Yuri Kolesniov <ynkolesnikov@gmail.com>, 2014
-# Yuri Kolesniov <ynkolesnikov@gmail.com>, 2014
+# Yuri Kolesniov <ynkolesnikov@gmail.com>, 2014-2015
 msgid ""
 msgstr ""
 "Project-Id-Version: OTRS\n"
 "POT-Creation-Date: 2014-08-08 19:10+0200\n"
-"PO-Revision-Date: 2014-11-13 06:39+0000\n"
-"Last-Translator: Yuri Kolesniov <ynkolesnikov@gmail.com>\n"
+"PO-Revision-Date: 2015-04-10 03:43+0000\n"
+"Last-Translator: Carlos Rodríguez <carlos.rodriguez@otrs.com>\n"
 "Language-Team: Russian (http://www.transifex.com/projects/p/OTRS/language/ru/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -390,7 +391,7 @@ msgstr "Связь (потомок)"
 
 #. Template: AAABase
 msgid "Normal"
-msgstr "Обычный"
+msgstr "Обычная"
 
 #. Template: AAABase
 msgid "Parent"
@@ -442,7 +443,7 @@ msgstr "Пароль"
 
 #. Template: AAABase
 msgid "Preferences"
-msgstr "Предпочтения"
+msgstr "Настройки"
 
 #. Template: AAABase
 msgid "Salutation"
@@ -602,11 +603,11 @@ msgstr "Тема"
 
 #. Template: AAABase
 msgid "Created"
-msgstr "Создан"
+msgstr "Создан/а"
 
 #. Template: AAABase
 msgid "Created by"
-msgstr "Создавший"
+msgstr "Создал"
 
 #. Template: AAABase
 msgid "Changed"
@@ -614,7 +615,7 @@ msgstr "Изменен"
 
 #. Template: AAABase
 msgid "Changed by"
-msgstr "Изменивший"
+msgstr "Изменил"
 
 #. Template: AAABase
 msgid "Search"
@@ -706,7 +707,7 @@ msgstr "Категория"
 
 #. Template: AAABase
 msgid "Viewer"
-msgstr "Просмотр"
+msgstr "Средство просмотра"
 
 #. Template: AAABase
 msgid "Expand"
@@ -766,7 +767,7 @@ msgstr "Количество напоминаний: %s!"
 
 #. Template: AAABase
 msgid "The recommended charset for your language is %s!"
-msgstr "Рекомендуемая кодировка для вашего языка: %s"
+msgstr "Рекомендуемая кодировка для вашего языка: %s !"
 
 #. Template: AAABase
 msgid "Change your password."
@@ -825,7 +826,7 @@ msgstr "Выход"
 
 #. Template: AAABase
 msgid "Logout successful. Thank you for using %s!"
-msgstr "Вы успешно вышли из системы. Благодарим за пользование системой %s !"
+msgstr "Вы успешно вышли из системы. Благодарим за использование %s !"
 
 #. Template: AAABase
 msgid "Feature not active!"
@@ -841,7 +842,7 @@ msgstr "Выбор базы данных"
 
 #. Template: AAABase
 msgid "Create Database"
-msgstr "Создать базу"
+msgstr "Создать базу данных"
 
 #. Template: AAABase
 msgid "System Settings"
@@ -857,7 +858,7 @@ msgstr "Закончено"
 
 #. Template: AAABase
 msgid "Install OTRS"
-msgstr "Инсталлировать OTRS"
+msgstr "Установите OTRS"
 
 #. Template: AAABase
 msgid "Intro"
@@ -932,7 +933,7 @@ msgstr "вернуть"
 
 #. Template: AAABase
 msgid "Facility"
-msgstr "Приспособление"
+msgstr "Объект"
 
 #. Template: AAABase
 msgid "Time Zone"
@@ -974,7 +975,7 @@ msgstr "Срок жизни сессии прошел. Пожалуйста по
 
 #. Template: AAABase
 msgid "No Permission!"
-msgstr "Нет доступа!"
+msgstr "Нет прав доступа!"
 
 #. Template: AAABase
 msgid "(Click here to add)"
@@ -994,11 +995,11 @@ msgstr "%s не доступен для записи!"
 
 #. Template: AAABase
 msgid "Cannot create %s!"
-msgstr "Не могу создать %s!"
+msgstr "Невозможно создать %s!"
 
 #. Template: AAABase
 msgid "Check to activate this date"
-msgstr "Активировать эту дату"
+msgstr "Отметьте, чтобы активировать эту дату"
 
 #. Template: AAABase
 msgid "You have Out of Office enabled, would you like to disable it?"
@@ -1106,7 +1107,7 @@ msgstr "Клиент онлайн: %s"
 
 #. Template: AAABase
 msgid "Online Agent: %s"
-msgstr "Пользователь онлайн: %s"
+msgstr "Агент онлайн: %s"
 
 #. Template: AAABase
 msgid "Calendar"
@@ -1214,11 +1215,11 @@ msgstr "Местоположение"
 
 #. Template: AAABase
 msgid "installed"
-msgstr "Установлено"
+msgstr "установлено"
 
 #. Template: AAABase
 msgid "uninstalled"
-msgstr "Деинсталлировано"
+msgstr "деинсталлировано"
 
 #. Template: AAABase
 msgid ""
@@ -1268,16 +1269,11 @@ msgstr "Уважаемая %s,"
 
 #. Template: AAABase
 msgid "Dear %s,"
-msgstr "Уважаемый(ая)"
+msgstr "Уважаемый/-ая %s,"
 
 #. Template: AAABase
 msgid "Hello %s,"
 msgstr "Здравствуйте, %s."
-
-#. Template: AAABase
-msgid ""
-"This email address already exists. Please log in or reset your password."
-msgstr "Такой адрес электронной почты уже существует. Пожалуйста, войдите, или сбросьте свой пароль."
 
 #. Template: AAABase
 msgid ""
@@ -1404,7 +1400,7 @@ msgstr "Удалить форматирование"
 
 #. Template: AAABase
 msgid "Show/Hide Hidden Elements"
-msgstr "Показ скрытых элементов"
+msgstr "Показать/Скрыть скрытые элементы"
 
 #. Template: AAABase
 msgid "Align Left"
@@ -1475,6 +1471,10 @@ msgid "Scheduler is not running."
 msgstr "Планировщик не запущен."
 
 #. Template: AAABase
+msgid "All sessions have been killed, except for your own."
+msgstr "Завершить все сеансы, кроме вашего собственного."
+
+#. Template: AAABase
 msgid "Can't contact registration server. Please try again later."
 msgstr "Не удалось соединиться с сервером, попробуйте повторить позже."
 
@@ -1493,6 +1493,58 @@ msgstr "Имя пользователя и пароль не соовпадаю�
 #. Template: AAABase
 msgid "The selected process is invalid!"
 msgstr "Выбранный процесс - неправильный!"
+
+#. Template: AAABase
+msgid "Upgrade to %s now!"
+msgstr "Обновите до %s !"
+
+#. Template: AAABase
+msgid "%s Go to the upgrade center %s"
+msgstr "%s Перейдите в центр обновления %s"
+
+#. Template: AAABase
+msgid ""
+"The license for your %s is about to expire. Please make contact with %s to "
+"renew your contract!"
+msgstr "Лицензия на ваш продукт %s истекает. Свяжитесь, пожалуйста с %s для обновления контракта!"
+
+#. Template: AAABase
+msgid ""
+"An update for your %s is available, but there is a conflict with your "
+"framework version! Please update your framework first!"
+msgstr "Обновление для вашего продукта %s доступна, но оно не соответствует версии вашего основного продукта! Обновите его сначала!"
+
+#. Template: AAABase
+msgid "Your system was successfully upgraded to %s."
+msgstr "Ваша система успешно обновлена до %s."
+
+#. Template: AAABase
+msgid "There was a problem during the upgrade to %s."
+msgstr "Обнаружены проблемы при обновлении до %s."
+
+#. Template: AAABase
+msgid "%s was correctly reinstalled."
+msgstr "%s была корректно переустановлена."
+
+#. Template: AAABase
+msgid "There was a problem reinstalling %s."
+msgstr "Обнаружены проблемы при переустановке %s."
+
+#. Template: AAABase
+msgid "Your %s was successfully updated."
+msgstr "Ваша %s была успешно обновлена."
+
+#. Template: AAABase
+msgid "There was a problem during the upgrade of %s."
+msgstr "Обнаружены проблемы при обновлении %s."
+
+#. Template: AAABase
+msgid "%s was correctly uninstalled."
+msgstr "%s была корректно деинсталлирована."
+
+#. Template: AAABase
+msgid "There was a problem uninstalling %s."
+msgstr "Обнаружены проблемы при деинсталляции %s. "
 
 #. Template: AAACalendar
 msgid "New Year's Day"
@@ -1632,7 +1684,7 @@ msgstr "Декабрь"
 
 #. Template: AAAPreferences
 msgid "Preferences updated successfully!"
-msgstr "Настройки успешно обновлены"
+msgstr "Настройки успешно обновлены!"
 
 #. Template: AAAPreferences
 msgid "User Profile"
@@ -1664,7 +1716,7 @@ msgstr "Подтвердите пароль"
 
 #. Template: AAAPreferences
 msgid "Spelling Dictionary"
-msgstr "Словарь"
+msgstr "Словарь правописания"
 
 #. Template: AAAPreferences
 msgid "Default spelling dictionary"
@@ -1724,7 +1776,7 @@ msgstr "Разделитель CSV"
 
 #. Template: AAAStats
 msgid "Stat"
-msgstr "Статистика"
+msgstr "Отчет"
 
 #. Template: AAAStats
 msgid "Sum"
@@ -1875,11 +1927,11 @@ msgstr "Создано агентом (владельцем)"
 
 #. Template: AAAStats
 msgid "Created Priority"
-msgstr "Приоритет"
+msgstr "Созданный Приоритет"
 
 #. Template: AAAStats
 msgid "Created State"
-msgstr "Состояние"
+msgstr "Созданное Состояние"
 
 #. Template: AAAStats
 msgid "Create Time"
@@ -1907,7 +1959,7 @@ msgstr "Порядок сортировки"
 
 #. Template: AAAStats
 msgid "Order by"
-msgstr "Сортировка"
+msgstr "Сортировка по"
 
 #. Template: AAAStats
 msgid "Limit"
@@ -1931,7 +1983,7 @@ msgstr "Первая блокировка"
 
 #. Template: AAAStats
 msgid "Evaluation by"
-msgstr "Заблокировано"
+msgstr "Оценка по"
 
 #. Template: AAAStats
 msgid "Total Time"
@@ -2019,7 +2071,7 @@ msgstr "OTRS"
 
 #. Template: AAASupportDataCollector
 msgid "Table Presence"
-msgstr ""
+msgstr "Наличие таблиц"
 
 #. Template: AAASupportDataCollector
 msgid "Internal Error: Could not open file."
@@ -2027,7 +2079,7 @@ msgstr "Внутренняя ошибка: невозможно открыть �
 
 #. Template: AAASupportDataCollector
 msgid "Table Check"
-msgstr ""
+msgstr "Таблица проверки"
 
 #. Template: AAASupportDataCollector
 msgid "Internal Error: Could not read file."
@@ -2055,7 +2107,7 @@ msgstr "Не удалось определить версию базы данн�
 
 #. Template: AAASupportDataCollector
 msgid "Client Connection Charset"
-msgstr ""
+msgstr "Кодировка клиентского соединения"
 
 #. Template: AAASupportDataCollector
 msgid "Setting character_set_client needs to be utf8."
@@ -2076,6 +2128,14 @@ msgstr "Кодировка для таблицы"
 #. Template: AAASupportDataCollector
 msgid "There were tables found which do not have utf8 as charset."
 msgstr "Найдены таблицы в кодировке, отличной от utf8."
+
+#. Template: AAASupportDataCollector
+msgid "InnoDB Log File Size"
+msgstr "Размер файла журнала InnoDB "
+
+#. Template: AAASupportDataCollector
+msgid "The setting innodb_log_file_size must be at least 256 MB."
+msgstr "Значение параметра innodb_log_file_size должно быть больше 256 МВ."
 
 #. Template: AAASupportDataCollector
 msgid "Maximum Query Size"
@@ -2126,7 +2186,7 @@ msgstr "NLS_DATE_FORMAT должен быть задан в виде 'YYYY-MM-DD
 
 #. Template: AAASupportDataCollector
 msgid "NLS_DATE_FORMAT Setting SQL Check"
-msgstr ""
+msgstr "Параметр NLS_DATE_FORMAT для SQL Check"
 
 #. Template: AAASupportDataCollector
 msgid "Setting client_encoding needs to be UNICODE or UTF8."
@@ -2170,11 +2230,11 @@ msgstr "Использование разделов диска"
 
 #. Template: AAASupportDataCollector
 msgid "Distribution"
-msgstr "Распределение"
+msgstr "Распостранение"
 
 #. Template: AAASupportDataCollector
 msgid "Could not determine distribution."
-msgstr "Не удалось определить распределение."
+msgstr "Не удалось определить дистрибутив ОС"
 
 #. Template: AAASupportDataCollector
 msgid "Kernel Version"
@@ -2364,11 +2424,11 @@ msgstr "Список пакетов"
 
 #. Template: AAASupportDataCollector
 msgid "SystemID"
-msgstr "Системный ID"
+msgstr "SystemID"
 
 #. Template: AAASupportDataCollector
 msgid "Your SystemID setting is invalid, it should only contain digits."
-msgstr "Ваш SystemID неверен. Он должен содержать только цифры."
+msgstr "Ваш SystemID неверен. Он должен состоять только из цифр."
 
 #. Template: AAASupportDataCollector
 msgid "OTRS Version"
@@ -2455,12 +2515,20 @@ msgid "Please install mod_deflate to improve GUI speed."
 msgstr "Установите mod_deflate для повышения скорости GUI."
 
 #. Template: AAASupportDataCollector
+msgid "mod_filter Usage"
+msgstr "Использование mod_filter "
+
+#. Template: AAASupportDataCollector
+msgid "Please install mod_filter if mod_deflate is used."
+msgstr "Установите  mod_filter, если используете mod_deflate."
+
+#. Template: AAASupportDataCollector
 msgid "mod_headers Usage"
 msgstr "Использование mod_headers"
 
 #. Template: AAASupportDataCollector
 msgid "Please install mod_headers to improve GUI speed."
-msgstr "Установите  install mod_headers для повышения скорости GUI."
+msgstr "Установите mod_headers для повышения скорости GUI."
 
 #. Template: AAASupportDataCollector
 msgid "Apache::Reload Usage"
@@ -2492,12 +2560,16 @@ msgid "Status View"
 msgstr "Просмотр статуса"
 
 #. Template: AAATicket
+msgid "Service View"
+msgstr "Обзор сервисов"
+
+#. Template: AAATicket
 msgid "Bulk"
 msgstr "Массовое действие"
 
 #. Template: AAATicket
 msgid "Lock"
-msgstr "Блокировка"
+msgstr "Блокировать"
 
 #. Template: AAATicket
 msgid "Unlock"
@@ -2621,7 +2693,7 @@ msgstr "Тип заявки"
 
 #. Template: AAATicket
 msgid "Ticket Types"
-msgstr "Типы заявки"
+msgstr "Типы заявок"
 
 #. Template: AAATicket
 msgid "Compose"
@@ -2673,7 +2745,7 @@ msgstr "Email"
 
 #. Template: AAATicket
 msgid "email"
-msgstr "Email"
+msgstr "email"
 
 #. Template: AAATicket
 msgid "Close"
@@ -2705,7 +2777,7 @@ msgstr "Это"
 
 #. Template: AAATicket
 msgid "to open it in a new window."
-msgstr "открыть в новом окне"
+msgstr "открыть в новом окне."
 
 #. Template: AAATicket
 msgid "This is a HTML email. Click here to show it."
@@ -2721,15 +2793,15 @@ msgstr "Объединить"
 
 #. Template: AAATicket
 msgid "merged"
-msgstr "объединенный"
+msgstr "объединенные"
 
 #. Template: AAATicket
 msgid "closed successful"
-msgstr "закрыт успешно"
+msgstr "закрыта успешно"
 
 #. Template: AAATicket
 msgid "closed unsuccessful"
-msgstr "закрыт неуспешно"
+msgstr "закрыта неуспешно"
 
 #. Template: AAATicket
 msgid "Locked Tickets Total"
@@ -2789,7 +2861,7 @@ msgstr "Просмотр очереди"
 
 #. Template: AAATicket
 msgid "Ticket Escalation View"
-msgstr "Просмотр заявок с эскалацией"
+msgstr "Просмотр эскалированных заявок"
 
 #. Template: AAATicket
 msgid "Message from"
@@ -2809,19 +2881,23 @@ msgstr "Конец пересылаемого сообщения"
 
 #. Template: AAATicket
 msgid "Bounce Article to a different mail address"
-msgstr ""
+msgstr "Перенаправить сообщение на другой почтовый адрес"
+
+#. Template: AAATicket
+msgid "Reply to note"
+msgstr "Ответить на сообщение"
 
 #. Template: AAATicket
 msgid "new"
-msgstr "новый"
+msgstr "новая"
 
 #. Template: AAATicket
 msgid "open"
-msgstr "открытый"
+msgstr "открыта"
 
 #. Template: AAATicket
 msgid "Open"
-msgstr "Открытый"
+msgstr "Открытые"
 
 #. Template: AAATicket
 msgid "Open tickets"
@@ -2829,11 +2905,11 @@ msgstr "Открытые заявки"
 
 #. Template: AAATicket
 msgid "closed"
-msgstr "закрытый"
+msgstr "закрыта"
 
 #. Template: AAATicket
 msgid "Closed"
-msgstr "Закрытый"
+msgstr "Закрытые"
 
 #. Template: AAATicket
 msgid "Closed tickets"
@@ -2841,7 +2917,7 @@ msgstr "Закрытые заявки"
 
 #. Template: AAATicket
 msgid "removed"
-msgstr "удаленный"
+msgstr "удаленная"
 
 #. Template: AAATicket
 msgid "pending reminder"
@@ -2893,11 +2969,11 @@ msgstr "веб-заявка"
 
 #. Template: AAATicket
 msgid "lock"
-msgstr "блокирован"
+msgstr "блокировать"
 
 #. Template: AAATicket
 msgid "unlock"
-msgstr "разблокирован"
+msgstr "разблокировать"
 
 #. Template: AAATicket
 msgid "very low"
@@ -2973,7 +3049,7 @@ msgstr "Телефонный звонок"
 
 #. Template: AAATicket
 msgid "Ticket \"%s\" created!"
-msgstr "Создана заявка «%s»."
+msgstr "Создана заявка «%s»!"
 
 #. Template: AAATicket
 msgid "Ticket Number"
@@ -3037,19 +3113,27 @@ msgstr "Добавить в список наблюдаемых заявок"
 
 #. Template: AAATicket
 msgid "Email-Ticket"
-msgstr "Письмо"
+msgstr "Заявка по почте"
 
 #. Template: AAATicket
 msgid "Create new Email Ticket"
-msgstr "Создать новую заявку"
+msgstr "Создать заявку по email"
 
 #. Template: AAATicket
 msgid "Phone-Ticket"
-msgstr "Телефонный звонок"
+msgstr "Заявка по телефону"
 
 #. Template: AAATicket
 msgid "Search Tickets"
 msgstr "Поиск заявок"
+
+#. Template: AAATicket
+msgid "Customer Realname"
+msgstr ""
+
+#. Template: AAATicket
+msgid "Customer History"
+msgstr "История клиента"
 
 #. Template: AAATicket
 msgid "Edit Customer Users"
@@ -3125,7 +3209,7 @@ msgstr "Не наблюдать"
 
 #. Template: AAATicket
 msgid "Lock it to work on it"
-msgstr "Заблокировать, чтобы работать"
+msgstr "Заблокировать, чтобы работать с нею"
 
 #. Template: AAATicket
 msgid "Unlock to give it back to the queue"
@@ -3137,11 +3221,11 @@ msgstr "Показать историю заявки"
 
 #. Template: AAATicket
 msgid "Print this ticket"
-msgstr "Печать этой заявки"
+msgstr "Напечатать эту заявку"
 
 #. Template: AAATicket
 msgid "Print this article"
-msgstr "Печать этого сообщения"
+msgstr "Напечтаать это сообщение"
 
 #. Template: AAATicket
 msgid "Split"
@@ -3331,29 +3415,29 @@ msgstr "Ваш выбор предпочитаемых очередей. Так�
 
 #. Template: AAATicket
 msgid "Custom Queue"
-msgstr "Резервная очередь"
+msgstr "Пользовательская очередь"
 
 #. Template: AAATicket
 msgid "QueueView refresh time"
-msgstr "Время обновления монитора очередей"
+msgstr "Время обновления обзора очередей"
 
 #. Template: AAATicket
 msgid ""
 "If enabled, the QueueView will automatically refresh after the specified "
 "time."
-msgstr "Монитор очередей будет автоматически обновляться через указанный промежуток времени."
+msgstr "Обзор очередей будет автоматически обновляться через указанный промежуток времени."
 
 #. Template: AAATicket
 msgid "Refresh QueueView after"
-msgstr "Обновлять монитор очередей каждые"
+msgstr "Обновлять обзор очередей каждые"
 
 #. Template: AAATicket
 msgid "Screen after new ticket"
-msgstr "Раздел после создания новой заявки"
+msgstr "Экран после создания новой заявки"
 
 #. Template: AAATicket
 msgid "Show this screen after I created a new ticket"
-msgstr "Показывать этот раздел после создания заявки"
+msgstr "Показывать этот экран после создания заявки"
 
 #. Template: AAATicket
 msgid "Closed Tickets"
@@ -3361,15 +3445,15 @@ msgstr "Закрытые заявки"
 
 #. Template: AAATicket
 msgid "Show closed tickets."
-msgstr "Показывать закрытые заявки"
+msgstr "Показывать закрытые заявки."
 
 #. Template: AAATicket
 msgid "Max. shown Tickets a page in QueueView."
-msgstr "Максимальное количество заявок при просмотре очереди"
+msgstr "Максимальное количество заявок на странице при просмотре очереди."
 
 #. Template: AAATicket
 msgid "Ticket Overview \"Small\" Limit"
-msgstr "Обзор заявок - лимит режима «Маленький»"
+msgstr "Обзор заявок - лимит режима «Краткий»"
 
 #. Template: AAATicket
 msgid "Ticket limit per page for Ticket Overview \"Small\""
@@ -3435,7 +3519,7 @@ msgstr "Входящий звонок"
 
 #. Template: AAATicket
 msgid "Reminder Reached"
-msgstr "Напоминание истекает"
+msgstr "Наступило время Напоминания"
 
 #. Template: AAATicket
 msgid "Reminder Tickets"
@@ -3542,7 +3626,7 @@ msgstr "Синхронизировать ACL"
 
 #. Template: AdminACL
 msgid "Export ACLs"
-msgstr "Экспорт  ACLs"
+msgstr "Экспорт  ACL"
 
 #. Template: AdminACL
 msgid "Configuration import"
@@ -3552,7 +3636,7 @@ msgstr "Импорт конфигурации"
 msgid ""
 "Here you can upload a configuration file to import ACLs to your system. The "
 "file needs to be in .yml format as exported by the ACL editor module."
-msgstr "Здесь вы можете загрузить конфигурационный файл для импорта ACL в вашу систему. Файл должен быть в формате .yml, экспортированыый из редактора  ACL."
+msgstr "Здесь вы можете загрузить конфигурационный файл для импорта ACL в вашу систему. Файл должен быть в формате .yml, экспортированный из редактора  ACL."
 
 #. Template: AdminACL
 msgid "This field is required."
@@ -3585,14 +3669,14 @@ msgstr "Изменения в ACL, сделанные здесь будут ак
 
 #. Template: AdminACL
 msgid "ACLs"
-msgstr "ACLs"
+msgstr "ACL"
 
 #. Template: AdminACL
 msgid ""
 "Please note: This table represents the execution order of the ACLs. If you "
 "need to change the order in which ACLs are executed, please change the names"
 " of the affected ACLs."
-msgstr "Помните: Эта таблица отображает порядок выполнения ACLs. Если вы хотите изменить порядок в котором они исполняются, измените их имена"
+msgstr "Помните: Эта таблица отображает порядок выполнения ACL. Если вы хотите изменить порядок в котором они исполняются, измените их имена."
 
 #. Template: AdminACL
 msgid "ACL name"
@@ -3685,7 +3769,7 @@ msgstr "Сохранить и закончить"
 
 #. Template: AdminACLEdit
 msgid "Do you really want to delete this ACL?"
-msgstr "Вы действительно хотите удалить этот ACL"
+msgstr "Вы действительно хотите удалить этот ACL?"
 
 #. Template: AdminACLEdit
 msgid ""
@@ -3831,7 +3915,7 @@ msgstr "Пример ответа"
 
 #. Template: AdminCustomerCompany
 msgid "Customer Management"
-msgstr "Управление компаниями"
+msgstr "Управление клиентами"
 
 #. Template: AdminCustomerCompany
 msgid "Wildcards like '*' are allowed."
@@ -3855,7 +3939,7 @@ msgstr "Добавить компанию"
 
 #. Template: AdminCustomerUser
 msgid "Customer User Management"
-msgstr "Управление клиентами"
+msgstr "Управление пользователями клиентов"
 
 #. Template: AdminCustomerUser
 msgid "Back to search results"
@@ -3901,7 +3985,7 @@ msgstr "Это поле обязательно, и должно быть кор�
 
 #. Template: AdminCustomerUser
 msgid "This email address is not allowed due to the system configuration."
-msgstr "Этот адрес электронной почты не разрешен в конфигурации системы."
+msgstr "Такой адрес электронной почты не разрешен в конфигурации системы."
 
 #. Template: AdminCustomerUser
 msgid "This email address failed MX check."
@@ -3938,7 +4022,7 @@ msgstr "Включить функцию!"
 
 #. Template: AdminCustomerUserGroup
 msgid "Edit Customer Default Groups"
-msgstr "Редактировать группы по-умолчанию клиента"
+msgstr "Редактировать группы клиента по-умолчанию "
 
 #. Template: AdminCustomerUserGroup
 msgid "These groups are automatically assigned to all customers."
@@ -3956,7 +4040,7 @@ msgstr "Фильтры для Групп"
 
 #. Template: AdminCustomerUserGroup
 msgid "Just start typing to filter..."
-msgstr "Начните вводить символы фильтра..."
+msgstr "Начните вводить символы для фильтрации..."
 
 #. Template: AdminCustomerUserGroup
 msgid "Select the customer:group permissions."
@@ -3966,7 +4050,7 @@ msgstr "Выберите разрешения клиент:группа."
 msgid ""
 "If nothing is selected, then there are no permissions in this group (tickets"
 " will not be available for the customer)."
-msgstr "Если ничего не выбрано, тогда у этой группы не будет прав (заявки будут недоступны клиенту)."
+msgstr "Если ничего не выбрано, тогда у клиентов в этой группе не будет прав (заявки будут недоступны клиенту)."
 
 #. Template: AdminCustomerUserGroup
 msgid "Search Results"
@@ -3982,7 +4066,7 @@ msgstr "Совпадений не найдено."
 
 #. Template: AdminCustomerUserGroup
 msgid "Change Group Relations for Customer"
-msgstr "Изменить связи с группами для клиента"
+msgstr "Изменить связи групп с клиентами"
 
 #. Template: AdminCustomerUserGroup
 msgid "Change Customer Relations for Group"
@@ -4018,7 +4102,7 @@ msgstr "Чтение/запись"
 
 #. Template: AdminCustomerUserGroup
 msgid "Full read and write access to the tickets in this group/queue."
-msgstr "Полные права на заявки в данной группе/очереди"
+msgstr "Полные права на чтение и запись для заявок в данной группе/очереди."
 
 #. Template: AdminCustomerUserService
 msgid "Manage Customer-Services Relations"
@@ -4065,7 +4149,7 @@ msgid ""
 "To add a new field, select the field type from one of the object's list, the"
 " object defines the boundary of the field and it can't be changed after the "
 "field creation."
-msgstr "Чтобы добавить новое поле, выберите один из типов из появившегося списка, тип определяет ограничения для поля и он не может быть изменен после создания поля."
+msgstr "Чтобы добавить новое поле, выберите один из типов из появившегося списка, тип определяет границы использования для поля и он не может быть изменен после создания поля."
 
 #. Template: AdminDynamicField
 msgid "Dynamic Fields List"
@@ -4077,7 +4161,7 @@ msgstr "Динамических полей на страницу"
 
 #. Template: AdminDynamicField
 msgid "Label"
-msgstr "Надпись"
+msgstr "Название"
 
 #. Template: AdminDynamicField
 msgid "Order"
@@ -4095,7 +4179,7 @@ msgstr "Удалить это поле"
 msgid ""
 "Do you really want to delete this dynamic field? ALL associated data will be"
 " LOST!"
-msgstr "Вы действительно хотите удалить это динамическое поле? ВСЕ связанные данные будут ПОТЕРЯНЫ!"
+msgstr "Вы действительно хотите удалить это динамическое поле? ВСЕ связанные с ним данные будут ПОТЕРЯНЫ!"
 
 #. Template: AdminDynamicField
 msgid "Delete field"
@@ -4107,7 +4191,7 @@ msgstr "Поле"
 
 #. Template: AdminDynamicFieldCheckbox
 msgid "Go back to overview"
-msgstr "Обратно в обзор"
+msgstr "Вернуться к обзору"
 
 #. Template: AdminDynamicFieldCheckbox
 msgid "General"
@@ -4117,11 +4201,11 @@ msgstr "Общие"
 msgid ""
 "This field is required, and the value should be alphabetic and numeric "
 "characters only."
-msgstr "Данное поле ввода обязательно, и может состоять только из латинских букв и цифр."
+msgstr "Данное поле обязательно, и может состоять только из букв и цифр."
 
 #. Template: AdminDynamicFieldCheckbox
 msgid "Must be unique and only accept alphabetic and numeric characters."
-msgstr "Должно быть уникальным, и может состоять только из латинских букв и цифр."
+msgstr "Должно быть уникальным, и может состоять только из букв и цифр."
 
 #. Template: AdminDynamicFieldCheckbox
 msgid "Changing this value will require manual changes in the system."
@@ -4175,7 +4259,7 @@ msgstr "Это значение по умолчанию для данного п
 
 #. Template: AdminDynamicFieldDateTime
 msgid "Default date difference"
-msgstr "Разница дат по умолчанию"
+msgstr "Диапазон дат по умолчанию"
 
 #. Template: AdminDynamicFieldDateTime
 msgid "This field must be numeric."
@@ -4195,15 +4279,15 @@ msgstr "Задать период лет"
 msgid ""
 "Activate this feature to define a fixed range of years (in the future and in"
 " the past) to be displayed on the year part of the field."
-msgstr "Активируйте эту возможность для задания фиксированного диапазона лет (в прошлое и в будущее) для отображения в части поля, показывающей год."
+msgstr "Активируйте эту возможность для задания фиксированного диапазона лет (в прошлом и в будущем) для отображения в части поля, показывающей год."
 
 #. Template: AdminDynamicFieldDateTime
 msgid "Years in the past"
-msgstr "Лет в прошлое"
+msgstr "Лет в прошлом"
 
 #. Template: AdminDynamicFieldDateTime
 msgid "Years in the past to display (default: 5 years)."
-msgstr "Число лет в прошлое для отображения (по умолчанию: 5 лет)"
+msgstr "Число лет в прошлом для отображения (по умолчанию: 5 лет)"
 
 #. Template: AdminDynamicFieldDateTime
 msgid "Years in the future"
@@ -4261,7 +4345,7 @@ msgstr "Добавить пустое значение"
 
 #. Template: AdminDynamicFieldDropdown
 msgid "Activate this option to create an empty selectable value."
-msgstr "Отметьте эту опцию для создания пустого выбирабельного значения."
+msgstr "Отметьте эту опцию для создания пустого выбираемого значения."
 
 #. Template: AdminDynamicFieldDropdown
 msgid "Tree View"
@@ -4269,7 +4353,7 @@ msgstr "Иерархический вид"
 
 #. Template: AdminDynamicFieldDropdown
 msgid "Activate this option to display values as a tree."
-msgstr "Включите для отображения в иерархическом виде"
+msgstr "Включите для отображения в иерархическом виде."
 
 #. Template: AdminDynamicFieldDropdown
 msgid "Translatable values"
@@ -4279,7 +4363,7 @@ msgstr "Переводимые значения"
 msgid ""
 "If you activate this option the values will be translated to the user "
 "defined language."
-msgstr "Если включить эту опцию, значения будут переведены на заданный язык."
+msgstr "Если включить эту опцию, значения, при отображении, будут переведены на заданный язык."
 
 #. Template: AdminDynamicFieldDropdown
 msgid "Note"
@@ -4289,7 +4373,7 @@ msgstr "Заметка"
 msgid ""
 "You need to add the translations manually into the language translation "
 "files."
-msgstr "Вам необходимо вручную добавить переводы в файлы переводов для языков."
+msgstr "Вам необходимо вручную добавить переводы значений в файлы переводов для используемых языков."
 
 #. Template: AdminDynamicFieldText
 msgid "Number of rows"
@@ -4309,7 +4393,7 @@ msgstr "Задает ширину (в символах) для этого пол
 
 #. Template: AdminDynamicFieldText
 msgid "Check RegEx"
-msgstr "Проверить регулярное выражение"
+msgstr "Регулярное выражение для проверки"
 
 #. Template: AdminDynamicFieldText
 msgid ""
@@ -4341,15 +4425,15 @@ msgstr "Уведомление администратором"
 msgid ""
 "With this module, administrators can send messages to agents, group or role "
 "members."
-msgstr "С помощью этого модуля администраторы могут отправлять сообщения агентам, членам группы или роли."
+msgstr "С помощью этого модуля администраторы могут отправлять сообщения агентам, являющимся членом группы или роли."
 
 #. Template: AdminEmail
 msgid "Create Administrative Message"
-msgstr "Создать административное сообщение"
+msgstr "Создать сообщение администратора"
 
 #. Template: AdminEmail
 msgid "Your message was sent to"
-msgstr "Ваше сообщение было отправлено к"
+msgstr "Ваше сообщение было отправлено"
 
 #. Template: AdminEmail
 msgid "Send message to users"
@@ -4389,7 +4473,7 @@ msgstr "Добавить задание"
 
 #. Template: AdminGenericAgent
 msgid "Last run"
-msgstr "Последний запуск"
+msgstr "Дата последнего запуска"
 
 #. Template: AdminGenericAgent
 msgid "Run Now!"
@@ -4469,7 +4553,7 @@ msgstr "Удалить это событие"
 msgid ""
 "Additionally or alternatively to a periodic execution, you can define ticket"
 " events that will trigger this job."
-msgstr "Дополнительно или или вместо запуска по расписанию, вы можете задать события для заявки, которое включит эту задачу"
+msgstr "Дополнительно или или вместо запуска по расписанию, вы можете задать события для заявки, которые запустят эту задачу."
 
 #. Template: AdminGenericAgent
 msgid ""
@@ -4493,11 +4577,11 @@ msgstr "Добавить событие"
 msgid ""
 "To add a new event select the event object and event name and click on the "
 "\"+\" button"
-msgstr "Чтобы добавить новое событие выберите тип, событие и щелкните \"+\" кнопку."
+msgstr "Чтобы добавить новое событие выберите объект и имя события и щелкните кнопку \"+\" "
 
 #. Template: AdminGenericAgent
 msgid "Duplicate event."
-msgstr "Дублировать событие"
+msgstr "Дублировать событие."
 
 #. Template: AdminGenericAgent
 msgid "This event is already attached to the job, Please use a different one."
@@ -4505,7 +4589,11 @@ msgstr "Это событие уже назначено задаче. Выбер
 
 #. Template: AdminGenericAgent
 msgid "Delete this Event Trigger"
-msgstr "Удаление Триггера События"
+msgstr "Удалить этот Триггер События"
+
+#. Template: AdminGenericAgent
+msgid "Remove selection"
+msgstr ""
 
 #. Template: AdminGenericAgent
 msgid "Select Tickets"
@@ -4545,7 +4633,7 @@ msgstr "Когда создана"
 
 #. Template: AdminGenericAgent
 msgid "No create time settings."
-msgstr "Без учета времени создания"
+msgstr "Без учета времени создания."
 
 #. Template: AdminGenericAgent
 msgid "Ticket created"
@@ -4577,7 +4665,7 @@ msgstr "Когда изменена"
 
 #. Template: AdminGenericAgent
 msgid "No change time settings."
-msgstr "Не изменять параметры времени"
+msgstr "Нет настройки времени изменения."
 
 #. Template: AdminGenericAgent
 msgid "Ticket changed"
@@ -4593,7 +4681,7 @@ msgstr "Когда закрыта"
 
 #. Template: AdminGenericAgent
 msgid "No close time settings."
-msgstr "Без учета времени закрытия"
+msgstr "Без учета времени закрытия."
 
 #. Template: AdminGenericAgent
 msgid "Ticket closed"
@@ -4609,15 +4697,15 @@ msgstr "Когда отложена"
 
 #. Template: AdminGenericAgent
 msgid "No pending time settings."
-msgstr "Без учета времени, когда запрос был отложен"
+msgstr "Без учета времени напоминания."
 
 #. Template: AdminGenericAgent
 msgid "Ticket pending time reached"
-msgstr "Заявка была отложена"
+msgstr "Достигнуто время напоминания по заявке"
 
 #. Template: AdminGenericAgent
 msgid "Ticket pending time reached between"
-msgstr "Заявка была отложена между"
+msgstr "Время напоминания по заявке достигнуто между"
 
 #. Template: AdminGenericAgent
 msgid "Escalation times"
@@ -4641,11 +4729,11 @@ msgstr "Эскалация - время первого ответа"
 
 #. Template: AdminGenericAgent
 msgid "Ticket first response time reached"
-msgstr "Первый ответ"
+msgstr "Время первого ответа по заявке достигнуто"
 
 #. Template: AdminGenericAgent
 msgid "Ticket first response time reached between"
-msgstr "Первый ответ между"
+msgstr "Время первого ответа по заявке достигнуто между"
 
 #. Template: AdminGenericAgent
 msgid "Escalation - update time"
@@ -4653,11 +4741,11 @@ msgstr "Эскалация - время обновления"
 
 #. Template: AdminGenericAgent
 msgid "Ticket update time reached"
-msgstr "Заявка была обновлена"
+msgstr "Время обновления для заявки достигнуто"
 
 #. Template: AdminGenericAgent
 msgid "Ticket update time reached between"
-msgstr "Заявка была обновлена между"
+msgstr "Время обновления для заявки достигнуто между"
 
 #. Template: AdminGenericAgent
 msgid "Escalation - solution time"
@@ -4665,15 +4753,15 @@ msgstr "Эскалация - время решения"
 
 #. Template: AdminGenericAgent
 msgid "Ticket solution time reached"
-msgstr "Заявка была решена"
+msgstr "Время решения заявки достигнуто"
 
 #. Template: AdminGenericAgent
 msgid "Ticket solution time reached between"
-msgstr "Заявка была решена между"
+msgstr "Время решения заявки достигнуто между"
 
 #. Template: AdminGenericAgent
 msgid "Archive search option"
-msgstr "Поиск в архиве"
+msgstr "Опция Поиск в архиве"
 
 #. Template: AdminGenericAgent
 msgid "Update/Add Ticket Attributes"
@@ -4745,7 +4833,7 @@ msgstr "Архивировать выбранные заявки"
 
 #. Template: AdminGenericAgent
 msgid "Add Note"
-msgstr "Добавить заметку"
+msgstr "Добавить заметку/сообщение"
 
 #. Template: AdminGenericAgent
 msgid "Time units"
@@ -4757,11 +4845,11 @@ msgstr "Выполнить действия над заявкой"
 
 #. Template: AdminGenericAgent
 msgid "Send agent/customer notifications on changes"
-msgstr "Отправлять уведомление агенту при изменениях"
+msgstr "Отправить уведомление агенту/клиенту при изменениях"
 
 #. Template: AdminGenericAgent
 msgid "CMD"
-msgstr "Команда"
+msgstr "Команда/CMD"
 
 #. Template: AdminGenericAgent
 msgid ""
@@ -4785,11 +4873,11 @@ msgstr "Запустить пользовательский модуль"
 
 #. Template: AdminGenericAgent
 msgid "Param %s key"
-msgstr "Параметр %s: ключ"
+msgstr "Параметр %s ключ"
 
 #. Template: AdminGenericAgent
 msgid "Param %s value"
-msgstr "Параметр %s: значение"
+msgstr "Параметр %s значение"
 
 #. Template: AdminGenericAgent
 msgid "Save Changes"
@@ -4797,7 +4885,7 @@ msgstr "Сохранить изменения"
 
 #. Template: AdminGenericAgent
 msgid "Results"
-msgstr "Результат"
+msgstr "Результаты"
 
 #. Template: AdminGenericAgent
 msgid "%s Tickets affected! What do you want to do?"
@@ -4817,7 +4905,7 @@ msgstr "Запустить задание"
 
 #. Template: AdminGenericAgent
 msgid "Affected Tickets"
-msgstr "Выбранные задания"
+msgstr "Выбранные заявки"
 
 #. Template: AdminGenericInterfaceDebugger
 msgid "GenericInterface Debugger for Web Service %s"
@@ -4889,11 +4977,11 @@ msgstr "Детали запроса (Request)"
 
 #. Template: AdminGenericInterfaceDebugger
 msgid "An error occurred during communication."
-msgstr "Ошибка при попытке связи"
+msgstr "Ошибка при попытке связи."
 
 #. Template: AdminGenericInterfaceDebugger
 msgid "Show or hide the content."
-msgstr "Показать или убрать содержимое"
+msgstr "Показать или убрать содержимое."
 
 #. Template: AdminGenericInterfaceDebugger
 msgid "Clear debug log"
@@ -4944,7 +5032,7 @@ msgstr ""
 msgid ""
 "This OTRS invoker backend module will be called to prepare the data to be "
 "sent to the remote system, and to process its response data."
-msgstr ""
+msgstr "Этот модуль OTRS invoker будет вызываться для подготовки данных, отправляемых в удаленную систему и для обработки ответных данных."
 
 #. Template: AdminGenericInterfaceInvokerDefault
 msgid "Mapping for outgoing request data"
@@ -4972,7 +5060,7 @@ msgstr ""
 
 #. Template: AdminGenericInterfaceInvokerDefault
 msgid "Asynchronous"
-msgstr "Асинхронно"
+msgstr "Асинхронный"
 
 #. Template: AdminGenericInterfaceInvokerDefault
 msgid "This invoker will be triggered by the configured events."
@@ -4982,7 +5070,7 @@ msgstr "Этот invoker будет вызван при наступлении �
 msgid ""
 "Asynchronous event triggers are handled by the OTRS Scheduler in background "
 "(recommended)."
-msgstr "Асинхронные триггеры событий будут обрабатываться Планировщиком OTRS в фоновом режиме (рекомендуется)"
+msgstr "Асинхронные триггеры событий будут обрабатываться Планировщиком OTRS в фоновом режиме (рекомендуется)."
 
 #. Template: AdminGenericInterfaceInvokerDefault
 msgid ""
@@ -5052,7 +5140,7 @@ msgstr ""
 
 #. Template: AdminGenericInterfaceMappingSimple
 msgid "matching the"
-msgstr ""
+msgstr "соответствует"
 
 #. Template: AdminGenericInterfaceMappingSimple
 msgid "to new key"
@@ -5332,7 +5420,7 @@ msgstr ""
 
 #. Template: AdminGenericInterfaceTransportHTTPSOAP
 msgid "URI to indicate a specific location for accessing a service."
-msgstr ""
+msgstr "URI для указания специального расположения для доступа к сервису."
 
 #. Template: AdminGenericInterfaceTransportHTTPSOAP
 msgid "e.g. http://local.otrs.com:8000/Webservice/Example"
@@ -5461,7 +5549,7 @@ msgstr "Пароль пользователя прокси"
 
 #. Template: AdminGenericInterfaceWebservice
 msgid "GenericInterface Web Service Management"
-msgstr "Интерфейс управления Веб-сервисами"
+msgstr "Управление  GenericInterface Web Service"
 
 #. Template: AdminGenericInterfaceWebservice
 msgid "Add web service"
@@ -5546,11 +5634,11 @@ msgstr "Порог отладки"
 #. Template: AdminGenericInterfaceWebservice
 msgid ""
 "In provider mode, OTRS offers web services which are used by remote systems."
-msgstr ""
+msgstr "В режиме provider, OTRS предлагает веб-сервисы используемые удаленной системой."
 
 #. Template: AdminGenericInterfaceWebservice
 msgid "In requester mode, OTRS uses web services of remote systems."
-msgstr ""
+msgstr "В режиме requester, OTRS использует веб-сервисы удаленной системы."
 
 #. Template: AdminGenericInterfaceWebservice
 msgid ""
@@ -5583,7 +5671,7 @@ msgstr "Удалить это действие"
 msgid ""
 "At least one %s has a controller that is either not active or not present, "
 "please check the controller registration or delete the %s"
-msgstr ""
+msgstr "По крайней мере один %s имеет controller, который или неактивен, или отсутствует, проверьте, пожалуйста, controller registration или удалите %s"
 
 #. Template: AdminGenericInterfaceWebservice
 msgid "Delete webservice"
@@ -5591,7 +5679,7 @@ msgstr "Удалить веб-сервис"
 
 #. Template: AdminGenericInterfaceWebservice
 msgid "Delete operation"
-msgstr "Операция удаления"
+msgstr "Удалить операцию"
 
 #. Template: AdminGenericInterfaceWebservice
 msgid "Delete invoker"
@@ -5739,7 +5827,7 @@ msgstr "Удалить учетную запись"
 
 #. Template: AdminMailAccount
 msgid "Fetch mail"
-msgstr "Забрать письмо"
+msgstr "Забрать почту"
 
 #. Template: AdminMailAccount
 msgid "Add Mail Account"
@@ -5793,7 +5881,7 @@ msgstr "Администрирование системы"
 
 #. Template: AdminNavigationBar
 msgid "Online Admin Manual"
-msgstr "Online Руководство администратора"
+msgstr "Онлайн-руководство администратора"
 
 #. Template: AdminNotification
 msgid "Notification Management"
@@ -5876,7 +5964,7 @@ msgstr "Соответствие телу письма"
 
 #. Template: AdminNotificationEvent
 msgid "Include attachments to notification"
-msgstr "Добавить вложения в уведомление"
+msgstr "Включить вложения в уведомление"
 
 #. Template: AdminNotificationEvent
 msgid "Recipient"
@@ -5925,6 +6013,189 @@ msgstr "Первые 20 символов темы из последнего со
 msgid "To get the first 5 lines of the body (of the latest customer article)."
 msgstr "Первые 5 строк последнего сообщения клиента"
 
+#. Template: AdminOTRSBusinessInstalled
+msgid "Manage %s"
+msgstr "Упровление %s"
+
+#. Template: AdminOTRSBusinessInstalled
+msgid "Downgrade to OTRS Free"
+msgstr "Возврат к бесплатной версии OTRS "
+
+#. Template: AdminOTRSBusinessInstalled
+msgid ""
+"%s makes contact regularly with cloud.otrs.com to check on available updates"
+" and the validity of the underlying contract."
+msgstr "%s выполняет регулярную связь с cloud.otrs.com для проверки доступных обновлений и срока действия основного договора."
+
+#. Template: AdminOTRSBusinessInstalled
+msgid "Unauthorized Usage Detected"
+msgstr "Обнаружено несанкционированное использование "
+
+#. Template: AdminOTRSBusinessInstalled
+msgid ""
+"This system uses the %s without a proper license! Please make contact with "
+"%s to renew or activate your contract!"
+msgstr "Эта система использует %s без соответствующей лицензии! Свяжитесь, пожалуйста с %s для обновления или активации вашего контракта!"
+
+#. Template: AdminOTRSBusinessInstalled
+msgid "%s not Correctly Installed"
+msgstr "%s некорректно установлен"
+
+#. Template: AdminOTRSBusinessInstalled
+msgid ""
+"Your %s is not correctly installed. Please reinstall it with the button "
+"below."
+msgstr "Ваш %s  некорректно установлен. Пожалуйста, переустановите его с помощью кнопки расположенной ниже."
+
+#. Template: AdminOTRSBusinessInstalled
+msgid "Reinstall %s"
+msgstr "Переустановите %s "
+
+#. Template: AdminOTRSBusinessInstalled
+msgid ""
+"Your %s is not correctly installed, and there is also an update available."
+msgstr "Ваш %s некорректно установлен, а также доступно обновление для него."
+
+#. Template: AdminOTRSBusinessInstalled
+msgid ""
+"You can either reinstall your current version or perform an update with the "
+"buttons below (update recommended)."
+msgstr "Вы можете либо переустановить текущую версию продукта, либо обновить его с помощью кнопок расположенных ниже (рекомендуется выполнить обновление)."
+
+#. Template: AdminOTRSBusinessInstalled
+msgid "Update %s"
+msgstr "Обновить %s "
+
+#. Template: AdminOTRSBusinessInstalled
+msgid "%s Not Yet Available"
+msgstr "%s в данный момент еще недоступен"
+
+#. Template: AdminOTRSBusinessInstalled
+msgid "%s will be available soon."
+msgstr "%s скоро будет доступен."
+
+#. Template: AdminOTRSBusinessInstalled
+msgid "%s Update Available"
+msgstr "Доступно обновление для %s"
+
+#. Template: AdminOTRSBusinessInstalled
+msgid "An update for your %s is available! Please update at your earliest!"
+msgstr "Обновление для вашего %s  доступно! Обновите его в ближайшее время!"
+
+#. Template: AdminOTRSBusinessInstalled
+msgid "%s Correctly Deployed"
+msgstr "%s правильно развернут/установлен"
+
+#. Template: AdminOTRSBusinessInstalled
+msgid "Congratulations, your %s is correctly installed and up to date!"
+msgstr "Поздравляем, ваш %s правильно установлен и имеет последнюю версию!"
+
+#. Template: AdminOTRSBusinessNotInstalled
+msgid "Upgrade to %s"
+msgstr "Обновление до %s"
+
+#. Template: AdminOTRSBusinessNotInstalled
+msgid "%s will be available soon. Please check again in a few days."
+msgstr "Обновление для %s будет скоро доступно. Проверьте повторно в ближайшие дни."
+
+#. Template: AdminOTRSBusinessNotInstalled
+msgid "Please have a look at %s for more information."
+msgstr "Пожалуйста, обратитесь к %s за дополнительной информацией."
+
+#. Template: AdminOTRSBusinessNotInstalled
+msgid ""
+"Your OTRS Free is the base for all future actions. Please register first "
+"before you continue with the upgrade process of %s!"
+msgstr "Ваш OTRS Free является основой для всех будущих действий. Зарегистрируйтесь сначала, до продолжения работ по обновлению %s! "
+
+#. Template: AdminOTRSBusinessNotInstalled
+msgid "Register this System"
+msgstr "Зарегистрируйте эту систему"
+
+#. Template: AdminOTRSBusinessNotInstalled
+msgid ""
+"System Registration is disabled for your system. Please check your "
+"configuration."
+msgstr "System Registration отключена для вашей системы. Проверьте настройки."
+
+#. Template: AdminOTRSBusinessNotInstalled
+msgid ""
+"Before you can benefit from %s, please contact %s to get your %s contract."
+msgstr "Для получения пользы от использования %s, свяжитесь с %s для получения вашего контракта на %s."
+
+#. Template: AdminOTRSBusinessNotInstalled
+msgid ""
+"Connection to cloud.otrs.com via HTTPS couldn't be established. Please make "
+"sure that your OTRS can connect to cloud.otrs.com via port 443."
+msgstr "Соединение с cloud.otrs.com по HTTPS не может быть установлено. Убедитесь, что ваша система OTRS использует порт 443 для соединения с cloud.otrs.com."
+
+#. Template: AdminOTRSBusinessNotInstalled
+msgid "With your existing contract you can only use a small part of the %s."
+msgstr "Ваш существующий контракт позволяет использовать лишь малую часть возможностей %s."
+
+#. Template: AdminOTRSBusinessNotInstalled
+msgid ""
+"If you would like to take full advantage of the %s get your contract "
+"upgraded now! Contact %s."
+msgstr "Если вы желаете получить все возможности %s обновите свой контракт! Свяжитесь с %s."
+
+#. Template: AdminOTRSBusinessUninstall
+msgid "Cancel downgrade and go back"
+msgstr "Прервать процесс возврата к предыдущей версии и вернуться назад"
+
+#. Template: AdminOTRSBusinessUninstall
+msgid "Go to OTRS Package Manager"
+msgstr "Перейти к Менеджеру пакетов OTRS "
+
+#. Template: AdminOTRSBusinessUninstall
+msgid ""
+"Sorry, but currently you can't downgrade due to the following packages which"
+" depend on %s:"
+msgstr "Извините, но вы не можете сделать возврат к предыдущей версии из-за следующих пакетов, которые зависят от %s:"
+
+#. Template: AdminOTRSBusinessUninstall
+msgid "Vendor"
+msgstr "Изготовитель"
+
+#. Template: AdminOTRSBusinessUninstall
+msgid ""
+"Please uninstall the packages first using the package manager and try again."
+msgstr "Пожалуйста, деинсталлируйте сначала пакеты с помощью Менеджера пакетов и попробуйте повторить заново."
+
+#. Template: AdminOTRSBusinessUninstall
+msgid ""
+"You are about to downgrade to OTRS Free and will lose the following features"
+" and all data related to these:"
+msgstr "Вы собираетесь выполнить откат к базовой OTRS и потеряете следующие возможности и данные с ними связанные:"
+
+#. Template: AdminOTRSBusinessUninstall
+msgid "Chat"
+msgstr "Чат"
+
+#. Template: AdminOTRSBusinessUninstall
+msgid "Timeline view in ticket zoom"
+msgstr "Хронологический вид при подробном просмотре заявки"
+
+#. Template: AdminOTRSBusinessUninstall
+msgid "DynamicField ContactWithData"
+msgstr ""
+
+#. Template: AdminOTRSBusinessUninstall
+msgid "DynamicField Database"
+msgstr "База данных Динамических полей"
+
+#. Template: AdminOTRSBusinessUninstall
+msgid "SLA Selection Dialog"
+msgstr "Диалог выбора SLA "
+
+#. Template: AdminOTRSBusinessUninstall
+msgid "Ticket Attachment View"
+msgstr "Обзор вложений заявки"
+
+#. Template: AdminOTRSBusinessUninstall
+msgid "The %s skin"
+msgstr "Обложка %s"
+
 #. Template: AdminPGP
 msgid "PGP Management"
 msgstr "Управление подписями PGP"
@@ -5967,7 +6238,7 @@ msgstr "Истекает"
 
 #. Template: AdminPGP
 msgid "Delete this key"
-msgstr "Удалить ключ"
+msgstr "Удалите этот ключ"
 
 #. Template: AdminPGP
 msgid "Add PGP Key"
@@ -6023,18 +6294,8 @@ msgid "Update repository information"
 msgstr "Обновить информацию репозитория"
 
 #. Template: AdminPackageManager
-msgid ""
-"Did not find a required feature? OTRS Group provides their service contract "
-"customers with exclusive Add-Ons:"
-msgstr "Не нашли требующуюся функцию? Клиентам заключившим сервисный контракт, OTRS Group предлагает набор расширений(Add-One)"
-
-#. Template: AdminPackageManager
 msgid "Online Repository"
 msgstr "Онлайновый репозиторий"
-
-#. Template: AdminPackageManager
-msgid "Vendor"
-msgstr "Изготовитель"
 
 #. Template: AdminPackageManager
 msgid "Module documentation"
@@ -6054,15 +6315,21 @@ msgstr "Этот пакет проверен с помощью OTRSverify (tm)"
 
 #. Template: AdminPackageManager
 msgid "Uninstall"
-msgstr "Удалить"
+msgstr "Деинсталлировать"
 
 #. Template: AdminPackageManager
 msgid "Reinstall"
 msgstr "Переустановить"
 
 #. Template: AdminPackageManager
-msgid "Feature Add-Ons"
-msgstr "Адд-Оны с дополнительными возможностями/функциями"
+msgid "Features for %s customers only"
+msgstr "Эти возможности доступны тоько для клиентов - %s "
+
+#. Template: AdminPackageManager
+msgid ""
+"With %s, you can benefit from the following optional features. Please make "
+"contact with %s if you need more information."
+msgstr "С %s, вы получите следующие дополнительные возможности. Свяжитесь с %s если нуждаетесь в дополнительной информации."
 
 #. Template: AdminPackageManager
 msgid "Download package"
@@ -6138,7 +6405,7 @@ msgstr "Включение этой функции может сказаться
 
 #. Template: AdminPerformanceLog
 msgid "Disable it here!"
-msgstr "Отключить функцию!"
+msgstr "Отключите ее здесь!"
 
 #. Template: AdminPerformanceLog
 msgid "Logfile too large!"
@@ -6198,7 +6465,7 @@ msgstr "Среднее"
 
 #. Template: AdminPostMasterFilter
 msgid "PostMaster Filter Management"
-msgstr "Управление фильтром PostMaster"
+msgstr "Управление фильтрами PostMaster"
 
 #. Template: AdminPostMasterFilter
 msgid "Add filter"
@@ -6208,7 +6475,7 @@ msgstr "Добавить фильтр"
 msgid ""
 "To dispatch or filter incoming emails based on email headers. Matching using"
 " Regular Expressions is also possible."
-msgstr "Для распределения или фильтрации входящей электронной почты по заголовкам. Возможна также проверка и по регулярным выражениям."
+msgstr "Для распределения или фильтрации входящей электронной почты по заголовкам. Возможна также проверка и с использованием регулярных выражений."
 
 #. Template: AdminPostMasterFilter
 msgid ""
@@ -6268,7 +6535,7 @@ msgstr "Выставить заголовки письма"
 
 #. Template: AdminPostMasterFilter
 msgid "Set email header"
-msgstr "Выставить заголовки письма"
+msgstr "Выставить заголовок письма"
 
 #. Template: AdminPostMasterFilter
 msgid "Set value"
@@ -6276,7 +6543,7 @@ msgstr "Установить значение"
 
 #. Template: AdminPostMasterFilter
 msgid "The field needs to be a literal word."
-msgstr "Это поле должно быть буквальной строкой."
+msgstr "Значение поля должно быть литералом."
 
 #. Template: AdminPriority
 msgid "Priority Management"
@@ -6852,6 +7119,10 @@ msgid "Remove this Field"
 msgstr "Удалить это поле"
 
 #. Template: AdminProcessManagementTransition
+msgid "And can't be repeated on the same condition."
+msgstr ""
+
+#. Template: AdminProcessManagementTransition
 msgid "Add a new Field"
 msgstr "Добавить новое поле"
 
@@ -6906,8 +7177,12 @@ msgid "Edit Queue"
 msgstr "Изменить очередь"
 
 #. Template: AdminQueue
+msgid "A queue with this name already exists!"
+msgstr "Очередь с таким именем уже существует!"
+
+#. Template: AdminQueue
 msgid "Sub-queue of"
-msgstr "Подочередь очереди"
+msgstr "Подочередь для"
 
 #. Template: AdminQueue
 msgid "Unlock timeout"
@@ -6915,7 +7190,7 @@ msgstr "Срок блокировки"
 
 #. Template: AdminQueue
 msgid "0 = no unlock"
-msgstr "0 — без блокировки"
+msgstr "0 = не разблокировать"
 
 #. Template: AdminQueue
 msgid "Only business hours are counted."
@@ -7018,7 +7293,7 @@ msgstr "Изменить Автоответ для Очереди"
 
 #. Template: AdminQueueTemplates
 msgid "Manage Template-Queue Relations"
-msgstr "Управление сязями Щаблон - Очередь"
+msgstr "Управление связями Шаблон - Очередь"
 
 #. Template: AdminQueueTemplates
 msgid "Filter for Templates"
@@ -7043,6 +7318,10 @@ msgstr "Управление регистрацией"
 #. Template: AdminRegistration
 msgid "Edit details"
 msgstr "Редактировать информацию"
+
+#. Template: AdminRegistration
+msgid "Show transmitted data"
+msgstr "Показать переданные данные"
 
 #. Template: AdminRegistration
 msgid "Deregister system"
@@ -7077,6 +7356,30 @@ msgid "Send support data"
 msgstr "Выслать данные для технической поддержки"
 
 #. Template: AdminRegistration
+msgid "System registration not possible"
+msgstr "Регистрация системы/System registration невозможна"
+
+#. Template: AdminRegistration
+msgid ""
+"Please note that you can't register your system if your scheduler is not "
+"running correctly!"
+msgstr "Вы не можете зарегистрировать вашу систему если планировщик работает некорректно!"
+
+#. Template: AdminRegistration
+msgid "Instructions"
+msgstr "Инструкции"
+
+#. Template: AdminRegistration
+msgid "System deregistration not possible"
+msgstr "Разрегистрация системы невозможна"
+
+#. Template: AdminRegistration
+msgid ""
+"Please note that you can't deregister your system if you're using the %s or "
+"having a valid service contract."
+msgstr "Помните, что вы не можете разрегистрировать свою систему, если используете %s или имеете действующий контракт на поддержку."
+
+#. Template: AdminRegistration
 msgid "OTRS-ID Login"
 msgstr "Уч. запись OTRS-ID"
 
@@ -7088,7 +7391,7 @@ msgstr "Регистрация системы - это сервис от OTRS Gr
 
 #. Template: AdminRegistration
 msgid "Read more"
-msgstr "Подробно"
+msgstr "Читайте дополнительно"
 
 #. Template: AdminRegistration
 msgid "You need to log in with your OTRS-ID to register your system."
@@ -7231,7 +7534,7 @@ msgstr "Последующее объяснение показывает вам 
 
 #. Template: AdminRegistration
 msgid "Data Handling with 'System Registration'"
-msgstr ""
+msgstr "Управление данными с помощью 'System Registration'"
 
 #. Template: AdminRegistration
 msgid ""
@@ -7284,29 +7587,29 @@ msgstr "Поправка к Политике защиты данных"
 msgid ""
 "OTRS Group reserves the right to amend this security and data protection "
 "policy if required by technical developments."
-msgstr ""
+msgstr "OTRS Group оставляет за собой право вносить изменения в данную политику безопасности и защиты данных, если это требуется в технических целях разработки."
 
 #. Template: AdminRegistration
 msgid ""
 "In this case we will also adapt our information regarding data protection "
 "accordingly."
-msgstr ""
+msgstr "В этом случае мы также изменим нашу информацию, касающуюся защиты данных соответственно."
 
 #. Template: AdminRegistration
 msgid ""
 "Please regularly refer to the latest version of our Data Protection Policy."
-msgstr ""
+msgstr "Пожалуйста, регулярно обращайтесь к последней версии нашей Политики по защите данных."
 
 #. Template: AdminRegistration
 msgid "Right to Information"
-msgstr ""
+msgstr "Право на информацию"
 
 #. Template: AdminRegistration
 msgid ""
 "You have the right to demand information concerning the data saved about "
 "you, its origin and recipients, as well as the purpose of the data "
 "processing at any time."
-msgstr ""
+msgstr "Вы имеете право требовать информацию о данных, сохраненных о вас, их происхождение и получателей, а также цели обработки данных в любое время."
 
 #. Template: AdminRegistration
 msgid ""
@@ -7322,14 +7625,14 @@ msgstr "Дополнительная информация"
 msgid ""
 "Your trust is very important to us. We are willing to inform you about the "
 "processing of your personal details at any time."
-msgstr ""
+msgstr "Ваше доверие очень важно для нас. Мы готовы сообщить Вам об обработке личных данных в любое время. "
 
 #. Template: AdminRegistration
 msgid ""
 "If you have any questions that have not been answered by this Data "
 "Protection Policy or if you require more detailed information about a "
 "specific topic, please contact info@otrs.com."
-msgstr ""
+msgstr "Если у вас есть какие-либо вопросы, которые не нашли ответа в этой Политике защиты данных или если вам нужна более подробная информация о конкретной теме, пожалуйста, свяжитесь с нами через info@otrs.com."
 
 #. Template: AdminRegistration
 msgid "If you deregister your system, you will lose these benefits:"
@@ -7349,7 +7652,7 @@ msgstr "У Вас еще нет уч. записи OTRS-ID?"
 
 #. Template: AdminRegistration
 msgid "Sign up now"
-msgstr "Войти"
+msgstr "Зарегистрируйтесь сейчас"
 
 #. Template: AdminRegistration
 msgid "Forgot your password?"
@@ -7410,6 +7713,32 @@ msgstr "Удалить регистрацию"
 #. Template: AdminRegistration
 msgid "You can modify registration settings here."
 msgstr "Вы можете изменить параметры регистрации здесь."
+
+#. Template: AdminRegistration
+msgid "Overview of transmitted data"
+msgstr "Обзор переданных данных"
+
+#. Template: AdminRegistration
+msgid "There is no data regularly sent from your system to %s."
+msgstr "Отсутствуют, регулярно пересылаемые, данные от вашей системы в %s."
+
+#. Template: AdminRegistration
+msgid ""
+"The following data is sent at minimum every 3 days from your system to %s."
+msgstr "Следующие данные отсылаются, как минимум, каждые 3 дня из вашей системы в %s."
+
+#. Template: AdminRegistration
+msgid ""
+"The data will be transferred in JSON format via a secure https connection."
+msgstr "Данные будут переданы в JSON формате через защищенное https соединение."
+
+#. Template: AdminRegistration
+msgid "System Registration Data"
+msgstr "Данные System Registration"
+
+#. Template: AdminRegistration
+msgid "Support Data"
+msgstr "Данные для поддержки"
 
 #. Template: AdminRole
 msgid "Role Management"
@@ -7473,7 +7802,7 @@ msgstr "переместить"
 
 #. Template: AdminRoleGroup
 msgid "Permissions to move tickets into this group/queue."
-msgstr "Права на перемещение заявок в эту группу/очередь"
+msgstr "Права на перемещение заявок в эту группу/очередь."
 
 #. Template: AdminRoleGroup
 msgid "create"
@@ -7482,6 +7811,22 @@ msgstr "создание"
 #. Template: AdminRoleGroup
 msgid "Permissions to create tickets in this group/queue."
 msgstr "Права на создание заявок в этой группе/очереди"
+
+#. Template: AdminRoleGroup
+msgid "note"
+msgstr "заметка"
+
+#. Template: AdminRoleGroup
+msgid "Permissions to add notes to tickets in this group/queue."
+msgstr "Права на добавление заметок в заявки в этой группе/очереди."
+
+#. Template: AdminRoleGroup
+msgid "owner"
+msgstr "владелец"
+
+#. Template: AdminRoleGroup
+msgid "Permissions to change the owner of tickets in this group/queue."
+msgstr "Права на смену владельца заявок в этой группе/очереди."
 
 #. Template: AdminRoleGroup
 msgid "priority"
@@ -7553,14 +7898,14 @@ msgstr "Для показа подробностей сертификата на
 
 #. Template: AdminSMIME
 msgid "To manage private certificate relations click on a private key icon."
-msgstr ""
+msgstr "Для управления личным сертификатом кликните по значку личного ключа."
 
 #. Template: AdminSMIME
 msgid ""
 "Here you can add relations to your private certificate, these will be "
 "embedded to the S/MIME signature every time you use this certificate to sign"
 " an email."
-msgstr ""
+msgstr "Здесь вы можете добавить связи с вашим личным сертификатом, они будут включаться в подпись S/MIME каждый раз, когда вы используете этот сертификат для подписи письма."
 
 #. Template: AdminSMIME
 msgid "See also"
@@ -7619,6 +7964,10 @@ msgstr "Связать этот сертификат"
 #. Template: AdminSMIMECertRead
 msgid "Close window"
 msgstr "Закрыть окно"
+
+#. Template: AdminSMIMECertRead
+msgid "Certificate details"
+msgstr "Подробности сертификата"
 
 #. Template: AdminSalutation
 msgid "Salutation Management"
@@ -7721,12 +8070,12 @@ msgstr "Подсервис сервиса"
 msgid ""
 "This data is sent to OTRS Group on a regular basis. To stop sending this "
 "data please update your system registration."
-msgstr "Эти данные отправляются в OTRS Group на регулярной основе. Для прекращения передачи данных, обновите профиль вашей регистрации."
+msgstr "Эти данные отправляются в OTRS Group на регулярной основе. Чтобы прекратить отправку этих данных, обновите регистрацию вашей системы."
 
 #. Template: AdminServiceCenterSupportDataCollector
 msgid ""
 "You can manually trigger the Support Data sending by pressing this button:"
-msgstr "Вы можете вручную переключить передачу Support Data нажатием на эту кнопку."
+msgstr "Вы можете вручную запустить передачу данных поддержки нажатием на эту кнопку:"
 
 #. Template: AdminServiceCenterSupportDataCollector
 msgid "Send Update"
@@ -7763,18 +8112,18 @@ msgid ""
 "To enable data sending, please register your system with OTRS Group or "
 "update your system registration information (make sure to activate the 'send"
 " support data' option.)"
-msgstr ""
+msgstr "Для включения возможности отсылки данных, зарегистрируйте свою систему в OTRS Group или обновите ваши регистрационные данные (убедитесь, что активирована функция 'send support data/послать данные для поддержки'.)"
 
 #. Template: AdminServiceCenterSupportDataCollector
 msgid ""
 "A support bundle (including: system registration information, support data, "
 "a list of installed packages and all locally modified source code files) can"
 " be generated by pressing this button:"
-msgstr ""
+msgstr "Пакет поддержки (включая сведения о регистрации системы, данные поддержки, список установленных пакетов и локально изменённые файлы с исходным кодом) можно сгенерировать нажатием этой кнопки:"
 
 #. Template: AdminServiceCenterSupportDataCollector
 msgid "Generate Support Bundle"
-msgstr ""
+msgstr "Сгенерировать пакет поддержки"
 
 #. Template: AdminServiceCenterSupportDataCollector
 msgid "Generating..."
@@ -7782,11 +8131,11 @@ msgstr "Выполняется..."
 
 #. Template: AdminServiceCenterSupportDataCollector
 msgid "It was not possible to generate the Support Bundle."
-msgstr ""
+msgstr "Не удалось сгенерировать Пакет поддержки/ Support Bundle."
 
 #. Template: AdminServiceCenterSupportDataCollector
 msgid "Generate Result"
-msgstr ""
+msgstr "Результат генерации"
 
 #. Template: AdminServiceCenterSupportDataCollector
 msgid "Support Bundle"
@@ -7816,7 +8165,7 @@ msgstr "Пакет поддержки слишком велик для отпр�
 
 #. Template: AdminServiceCenterSupportDataCollector
 msgid ""
-"The email address for this user is invalid, this ption has been disabled."
+"The email address for this user is invalid, this option has been disabled."
 msgstr "Электронный адрес получателя неверный, эта функция будет отключена."
 
 #. Template: AdminServiceCenterSupportDataCollector
@@ -7837,10 +8186,6 @@ msgid ""
 " Please save the file and send it to the OTRS Group, using an alternate "
 "method."
 msgstr "Файл, содержащий пакет поддержки будет загружен в вашу локальную систему. Сохраните файл и отправьте его в OTRS Group, используя альтернативный способ."
-
-#. Template: AdminServiceCenterSupportDataCollector
-msgid "Support Data"
-msgstr "Данные для поддержки"
 
 #. Template: AdminServiceCenterSupportDataCollector
 msgid "Error: Support data could not be collected (%s)."
@@ -7888,7 +8233,7 @@ msgstr "Сеанс"
 
 #. Template: AdminSession
 msgid "Kill"
-msgstr "Закрыть"
+msgstr "Завершить"
 
 #. Template: AdminSession
 msgid "Detail View for SessionID"
@@ -8186,7 +8531,7 @@ msgstr "Вы действительно желаете удалить этот �
 
 #. Template: AdminSystemMaintenanceEdit
 msgid "Edit System Maintenance %s"
-msgstr ""
+msgstr "Редактировать график техобслуживания %s"
 
 #. Template: AdminSystemMaintenanceEdit
 msgid "Edit System Maintenance information"
@@ -8198,11 +8543,11 @@ msgstr "Некорректная дата!"
 
 #. Template: AdminSystemMaintenanceEdit
 msgid "Login message"
-msgstr ""
+msgstr "Сообщение при входе"
 
 #. Template: AdminSystemMaintenanceEdit
 msgid "Show login message"
-msgstr ""
+msgstr "Показать сообщение при входе"
 
 #. Template: AdminSystemMaintenanceEdit
 msgid "Notify message"
@@ -8225,8 +8570,8 @@ msgid "Customer Sessions"
 msgstr "Сеансы клиента"
 
 #. Template: AdminSystemMaintenanceEdit
-msgid "Kill all Sessions, exept current"
-msgstr "Завершить все сеансы, кроме текущего"
+msgid "Kill all Sessions, except for your own"
+msgstr "Завершить все сеансы, кроме вашего собственного"
 
 #. Template: AdminTemplate
 msgid "Manage Templates"
@@ -8320,7 +8665,7 @@ msgstr "Редактировать тип"
 
 #. Template: AdminType
 msgid "A type with this name already exists!"
-msgstr ""
+msgstr "Тип с таким именем уже существует!"
 
 #. Template: AdminUser
 msgid "Add agent"
@@ -8390,22 +8735,6 @@ msgstr "Изменить связи с группами для агента"
 msgid "Change Agent Relations for Group"
 msgstr "Изменить связи с агентами для группы"
 
-#. Template: AdminUserGroup
-msgid "note"
-msgstr "заметка"
-
-#. Template: AdminUserGroup
-msgid "Permissions to add notes to tickets in this group/queue."
-msgstr "Права на добавление заметок в заявки в этой группе/очереди."
-
-#. Template: AdminUserGroup
-msgid "owner"
-msgstr "владелец"
-
-#. Template: AdminUserGroup
-msgid "Permissions to change the owner of tickets in this group/queue."
-msgstr "Права на смену владельца заявок в этой группе/очереди."
-
 #. Template: AgentBook
 msgid "Address Book"
 msgstr "Адресная книга"
@@ -8448,7 +8777,7 @@ msgstr "Такой адрес уже существует в списке адр
 
 #. Template: AgentCustomerSearch
 msgid "It is going to be deleted from the field, please try again."
-msgstr ""
+msgstr "Данные будут удалены из поля, пожалуйста, попробуйте еще раз."
 
 #. Template: AgentCustomerTableView
 msgid "Note: Customer is invalid!"
@@ -8464,7 +8793,7 @@ msgstr "в"
 
 #. Template: AgentDashboardCommon
 msgid "Available Columns"
-msgstr "Доступные для отображения"
+msgstr "Колонки, доступные для отображения"
 
 #. Template: AgentDashboardCommon
 msgid "Visible Columns (order by drag & drop)"
@@ -8504,15 +8833,19 @@ msgstr "Новая телефонная заявка от %s"
 
 #. Template: AgentDashboardCustomerUserList
 msgid "New email ticket to %s"
-msgstr "Новая заявка по почте от %s"
+msgstr "Новая заявка по почте в %s"
+
+#. Template: AgentDashboardCustomerUserList
+msgid "Start chat"
+msgstr "Начать чат"
 
 #. Template: AgentDashboardProductNotify
 msgid "%s %s is available!"
-msgstr "%s %s доступен"
+msgstr "%s %s доступен!"
 
 #. Template: AgentDashboardProductNotify
 msgid "Please update now."
-msgstr "Обновите сейчас"
+msgstr "Обновите сейчас."
 
 #. Template: AgentDashboardProductNotify
 msgid "Release Note"
@@ -8524,7 +8857,7 @@ msgstr "Уровень"
 
 #. Template: AgentDashboardRSSOverview
 msgid "Posted %s ago."
-msgstr "Опубликовано %s"
+msgstr "Опубликовано %s назад."
 
 #. Template: AgentDashboardStats
 msgid ""
@@ -8533,15 +8866,15 @@ msgstr "Содержимое статистики готовится для ва
 
 #. Template: AgentDashboardStats
 msgid "Grouped"
-msgstr ""
+msgstr "Сгруппированная"
 
 #. Template: AgentDashboardStats
 msgid "Stacked"
-msgstr ""
+msgstr "С накоплением"
 
 #. Template: AgentDashboardStats
 msgid "Expanded"
-msgstr ""
+msgstr "Развернутая"
 
 #. Template: AgentDashboardStats
 msgid "Stream"
@@ -8641,7 +8974,7 @@ msgstr "перейти к добавлению связи"
 
 #. Template: AgentPreferences
 msgid "Edit your preferences"
-msgstr "Измените ваши настройки"
+msgstr "Измените ваши личные настройки"
 
 #. Template: AgentSchedulerInfo
 msgid "General Information"
@@ -8653,7 +8986,7 @@ msgstr "Планировщик это отдельный процесс OTRS в�
 
 #. Template: AgentSchedulerInfo
 msgid "(e.g. Generic Interface asynchronous invoker tasks)"
-msgstr ""
+msgstr "(например, задачи Generic Interface асинхронного invoker)"
 
 #. Template: AgentSchedulerInfo
 msgid ""
@@ -8810,7 +9143,7 @@ msgstr "Показать как виджет Дайджеста"
 msgid ""
 "Provide the statistic as a widget that agents can activate in their "
 "dashboard."
-msgstr "Предоставляет статистику как виджет, который агент может активировать в своем Дайджесте."
+msgstr "Представляет отчет как виджет, который агент может активировать в своем Дайджесте."
 
 #. Template: AgentStatsEditSpecification
 msgid "Please note"
@@ -8961,7 +9294,7 @@ msgstr "по"
 
 #. Template: AgentStatsViewSettings
 msgid "not changable for dashboard statistics"
-msgstr "Неизменяемо для виджетов статистики в Дайджесте"
+msgstr "неизменяемо для виджетов статистики в Дайджесте"
 
 #. Template: AgentStatsViewSettings
 msgid "Select Chart Type"
@@ -8973,15 +9306,15 @@ msgstr "Тип диаграммы"
 
 #. Template: AgentStatsViewSettings
 msgid "Multi Bar Chart"
-msgstr ""
+msgstr "Многоколоночная гистограмма"
 
 #. Template: AgentStatsViewSettings
 msgid "Multi Line Chart"
-msgstr ""
+msgstr "Многолинейный график"
 
 #. Template: AgentStatsViewSettings
 msgid "Stacked Area Chart"
-msgstr ""
+msgstr "Диаграмма с областями с накоплением"
 
 #. Template: AgentTicketActionCommon
 msgid "Change Free Text of Ticket"
@@ -9036,6 +9369,10 @@ msgid "Next state"
 msgstr "Следующее состояние"
 
 #. Template: AgentTicketActionCommon
+msgid "For all pending* states."
+msgstr "Для всех состояний \"ожидает ...\""
+
+#. Template: AgentTicketActionCommon
 msgid "Add Article"
 msgstr "Добавить заметку"
 
@@ -9057,7 +9394,7 @@ msgstr "Создание шаблона перезаписывает любой 
 
 #. Template: AgentTicketActionCommon
 msgid "Note type"
-msgstr "Тип заметки"
+msgstr "Тип заметки/сообщения"
 
 #. Template: AgentTicketActionCommon
 msgid "Inform Agent"
@@ -9076,6 +9413,10 @@ msgid ""
 "Here you can select additional agents which should receive a notification "
 "regarding the new article."
 msgstr "Здесь вы можете выбрать дополнительных агентов, которые получат уведомление в зависимости от нового сообщения/заметки"
+
+#. Template: AgentTicketActionCommon
+msgid "Note will be (also) received by:"
+msgstr "Сообщение будет (также) получено:"
 
 #. Template: AgentTicketBounce
 msgid "Bounce Ticket"
@@ -9166,14 +9507,6 @@ msgid "Address book"
 msgstr "Адресная книга"
 
 #. Template: AgentTicketCompose
-msgid "Pending Date"
-msgstr "Ожидать до"
-
-#. Template: AgentTicketCompose
-msgid "for pending* states"
-msgstr "для состояний \"ожидает ...\""
-
-#. Template: AgentTicketCompose
 msgid "Date Invalid!"
 msgstr "Неверная дата!"
 
@@ -9219,7 +9552,7 @@ msgstr "Получить всех"
 
 #. Template: AgentTicketEmailOutbound
 msgid "E-Mail Outbound"
-msgstr ""
+msgstr "Перенаправить почтовое сообщение"
 
 #. Template: AgentTicketForward
 msgid "Forward ticket: %s - %s"
@@ -9227,7 +9560,7 @@ msgstr "Переслать заявку: %s - %s"
 
 #. Template: AgentTicketHistory
 msgid "History of"
-msgstr "История по"
+msgstr "История для"
 
 #. Template: AgentTicketHistory
 msgid "History Content"
@@ -9239,7 +9572,7 @@ msgstr "Подробный показ"
 
 #. Template: AgentTicketMerge
 msgid "Ticket Merge"
-msgstr "Объединить заявку"
+msgstr "Объединение заявки"
 
 #. Template: AgentTicketMerge
 msgid "You need to use a ticket number!"
@@ -9291,7 +9624,7 @@ msgstr "Переместить заявку в другую очередь"
 
 #. Template: AgentTicketOverviewMedium
 msgid "Change queue"
-msgstr "Переместить в другую очередь"
+msgstr "Сменить очередь"
 
 #. Template: AgentTicketOverviewNavBar
 msgid "Change search options"
@@ -9311,7 +9644,7 @@ msgstr "Сбросить настройки просмотра"
 
 #. Template: AgentTicketOverviewSmall
 msgid "Column Filters Form"
-msgstr ""
+msgstr "Форма фильтра колонок"
 
 #. Template: AgentTicketPhone
 msgid "Split Into New Phone Ticket"
@@ -9327,7 +9660,7 @@ msgstr "Создать телефонную заявку"
 
 #. Template: AgentTicketPhone
 msgid "Please include at least one customer for the ticket."
-msgstr "Пожалуйста, включите хотя бы одного клиента в заявку."
+msgstr "Пожалуйста, введите хотя бы одного клиента для заявки."
 
 #. Template: AgentTicketPhone
 msgid "To queue"
@@ -9336,6 +9669,10 @@ msgstr "В очередь"
 #. Template: AgentTicketPhone
 msgid "Chat protocol"
 msgstr "Протокол чата"
+
+#. Template: AgentTicketPhone
+msgid "The chat will be appended as a separate article."
+msgstr "Содержание чата будет добавлено в виде отдельной заметки."
 
 #. Template: AgentTicketPlain
 msgid "Email Text Plain View"
@@ -9399,11 +9736,11 @@ msgstr "Сохранить изменения в шаблоне"
 
 #. Template: AgentTicketSearch
 msgid "Filters in use"
-msgstr "Используемые фильтры"
+msgstr "Используемые атрибуты фильтра"
 
 #. Template: AgentTicketSearch
 msgid "Additional filters"
-msgstr "Дополнительные фильтры"
+msgstr "Дополнительные атрибуты фильтра"
 
 #. Template: AgentTicketSearch
 msgid "Add another attribute"
@@ -9565,7 +9902,7 @@ msgstr "Этот элемент пока не имеет заметок."
 
 #. Template: AgentTicketZoom
 msgid "Ticket Timeline View"
-msgstr ""
+msgstr "Хронологический вид заявки"
 
 #. Template: AgentTicketZoom
 msgid "Article Overview"
@@ -9574,6 +9911,10 @@ msgstr "Обзор заметок/сообщений"
 #. Template: AgentTicketZoom
 msgid "Article(s)"
 msgstr "сообщений"
+
+#. Template: AgentTicketZoom
+msgid "Page"
+msgstr "Страница"
 
 #. Template: AgentTicketZoom
 msgid "Add Filter"
@@ -9597,7 +9938,7 @@ msgstr "Отобразить все сообщения"
 
 #. Template: AgentTicketZoom
 msgid "Show Ticket Timeline View"
-msgstr ""
+msgstr "Показать заявку в хронологическом виде"
 
 #. Template: AgentTicketZoom
 msgid "Unread articles"
@@ -9647,6 +9988,20 @@ msgstr "Полный текст заметки/сообщения"
 msgid "No more events found. Please try changing the filter settings."
 msgstr "Больше событий не найдено. Попробуйте изменить параметры фильтра."
 
+#. Template: AgentTicketZoom
+msgid ""
+"To open links in the following article, you might need to press Ctrl or Cmd "
+"or Shift key while clicking the link (depending on your browser and OS)."
+msgstr "Для открытия ссылки в следующем сообщении/заметке необходимо нажать и удерживать клавишу Ctrl или Cmd или Shift и кликнуть по ссылке (зависит от вашего браузера и ОС)."
+
+#. Template: AgentTicketZoom
+msgid "Close this message"
+msgstr "Закрыть это сообщение"
+
+#. Template: AgentTicketZoom
+msgid "Article could not be opened! Perhaps it is on another article page?"
+msgstr "Заметка не может быть открыта! Возможно, она на другой странице заметок?"
+
 #. Template: AttachmentBlocker
 msgid "To protect your privacy, remote content was blocked."
 msgstr "Для защиты конфиденциальности, содержимое из внешнего источника было заблокировано"
@@ -9654,6 +10009,10 @@ msgstr "Для защиты конфиденциальности, содержи
 #. Template: AttachmentBlocker
 msgid "Load blocked content."
 msgstr "Загрузить заблокированное содержимое."
+
+#. Template: ChatStartForm
+msgid "First message"
+msgstr "Первое сообщение"
 
 #. Template: CustomerError
 msgid "Traceback"
@@ -9793,6 +10152,10 @@ msgstr "Есть неотвеченные вопросы чата"
 msgid "Edit personal preferences"
 msgstr "Редактировать персональные настройки"
 
+#. Template: CustomerRichTextEditor
+msgid "Split Quote"
+msgstr ""
+
 #. Template: CustomerTicketMessage
 msgid "Service level agreement"
 msgstr "Соглашение об уровне сервиса"
@@ -9892,10 +10255,6 @@ msgstr "Вывести как"
 #. Template: CustomerTicketSearchResultShort
 msgid "of"
 msgstr "из"
-
-#. Template: CustomerTicketSearchResultShort
-msgid "Page"
-msgstr "Страница"
 
 #. Template: CustomerTicketSearchResultShort
 msgid "Search Results for"
@@ -10055,6 +10414,10 @@ msgstr ""
 #. Template: Header
 msgid "You are logged in as"
 msgstr "Вы вошли как"
+
+#. Template: Header
+msgid "There are new chat requests available. Please visit the chat manager."
+msgstr "Доступны новые чат - запросы. Перейдите к управлению чатами."
 
 #. Template: Installer
 msgid "JavaScript not available"
@@ -10377,10 +10740,6 @@ msgstr "Недостаточно прав"
 msgid "Back to the previous page"
 msgstr "Обратно на предыдущую страницу"
 
-#. Template: Notify
-msgid "Close this message"
-msgstr "Закрыть это сообщение"
-
 #. Template: Pagination
 msgid "Show first page"
 msgstr "Показать первую страницу"
@@ -10430,6 +10789,10 @@ msgid "Go back to the previous page"
 msgstr "Перейти на предыдущую страницу"
 
 #. SysConfig
+msgid " (work units)"
+msgstr "(единиц времени)"
+
+#. SysConfig
 msgid "\"%s\"-notification sent to \"%s\"."
 msgstr "%s: уведомление отправлено на %s."
 
@@ -10450,11 +10813,19 @@ msgid "(UserLogin) Lastname, Firstname"
 msgstr "(UserLogin) Фамилия, Имя"
 
 #. SysConfig
+msgid "A Website"
+msgstr "Веб сайт"
+
+#. SysConfig
 msgid ""
 "A list of dynamic fields that are merged into the main ticket during a merge"
 " operation. Only dynamic fields that are empty in the main ticket will be "
 "set."
 msgstr "Список динамических полей, которые объединяются в главной заявке при слиянии. Только динамические поля, имеющие пустые значения в главной заявке будут установлены/заполнены."
+
+#. SysConfig
+msgid "A picture"
+msgstr "Рисунок"
 
 #. SysConfig
 msgid ""
@@ -10607,8 +10978,9 @@ msgid ""
 msgstr "Модуль проверки входящих emails в окне Ticket-Zoom-View если S/MIME-key доступен и верен."
 
 #. SysConfig
-msgid "Agent interface notification module to check the used charset."
-msgstr "Вызов модуля проверки используемого набора символов в интерфейсе агента."
+msgid ""
+"Agent interface notification module to see the number of locked tickets."
+msgstr "Модуль уведомлений в интерфейсе агента для просмотра количества заблокированных заявок."
 
 #. SysConfig
 msgid ""
@@ -11041,6 +11413,10 @@ msgid "Comment for new history entries in the customer interface."
 msgstr "Комметарий для новых записей истории в интерфейсе клиента."
 
 #. SysConfig
+msgid "Comment2"
+msgstr "Комментарий2"
+
+#. SysConfig
 msgid "Company Status"
 msgstr "Информация по компании клиента"
 
@@ -11058,7 +11434,7 @@ msgstr "Настройка Процессов"
 
 #. SysConfig
 msgid "Configure and manage ACLs."
-msgstr "Создание/Редактирование и управление ACL"
+msgstr "Настройка и управление ACL."
 
 #. SysConfig
 msgid "Configure your own log text for PGP."
@@ -11114,79 +11490,79 @@ msgstr "Создать новую процессную заявку"
 
 #. SysConfig
 msgid "Create and manage Service Level Agreements (SLAs)."
-msgstr "Создание и управление Соглашениями об Уровне Сервиса (SLA-ми)."
+msgstr "Создание Соглашений об уровне сервиса (SLA) и управление ими."
 
 #. SysConfig
 msgid "Create and manage agents."
-msgstr "Создание и управление агентами."
+msgstr "Создание агентов и управление ими."
 
 #. SysConfig
 msgid "Create and manage attachments."
-msgstr "Создание и управление вложениями."
+msgstr "Создание вложений и управление ими."
 
 #. SysConfig
 msgid "Create and manage customer users."
-msgstr "Создание и управление клиентом."
+msgstr "Создание пользователей клиентов и управление ими."
 
 #. SysConfig
 msgid "Create and manage customers."
-msgstr "Создание и управление компаниями."
+msgstr "Создание клиентов и управление ими."
 
 #. SysConfig
 msgid "Create and manage dynamic fields."
-msgstr "Создание и управление динамическими полями."
+msgstr "Создание динамических полей и управление ими."
 
 #. SysConfig
 msgid "Create and manage event based notifications."
-msgstr "Создание и управление уведомлениями по событию."
+msgstr "Создание уведомлений по событиям и управление ими."
 
 #. SysConfig
 msgid "Create and manage groups."
-msgstr "Создание и управление группами."
+msgstr "Создание групп и управление ими."
 
 #. SysConfig
 msgid "Create and manage queues."
-msgstr "Создание и управление очередями."
+msgstr "Создание очередей и управление ими."
 
 #. SysConfig
 msgid "Create and manage responses that are automatically sent."
-msgstr "Создание и управление автоответами."
+msgstr "Создание автоответов и управление ими."
 
 #. SysConfig
 msgid "Create and manage roles."
-msgstr "Создание и управление ролями."
+msgstr "Создание ролей и управление ими."
 
 #. SysConfig
 msgid "Create and manage salutations."
-msgstr "Создание и управление приветствиями."
+msgstr "Создание приветствий и управление ими."
 
 #. SysConfig
 msgid "Create and manage services."
-msgstr "Создание и управление сервисами."
+msgstr "Создание сервисов и управление ими."
 
 #. SysConfig
 msgid "Create and manage signatures."
-msgstr "Создание и управление подписями."
+msgstr "Создание подписей и управление ими."
 
 #. SysConfig
 msgid "Create and manage templates."
-msgstr "Создание и управление шаблонами."
+msgstr "Создание шаблонов и управление ими."
 
 #. SysConfig
 msgid "Create and manage ticket priorities."
-msgstr "Создание и управление приоритетами заявок."
+msgstr "Создание приоритетов заявок и управление ими."
 
 #. SysConfig
 msgid "Create and manage ticket states."
-msgstr "Создание и управление состояними заявок."
+msgstr "Создание состояний заявок и управление ими."
 
 #. SysConfig
 msgid "Create and manage ticket types."
-msgstr "Создание и управление типами заявок."
+msgstr "Создание типов заявок и управление ими."
 
 #. SysConfig
 msgid "Create and manage web services."
-msgstr "Создание и управление веб-сервисами."
+msgstr "Создание веб-сервисов и управление ими."
 
 #. SysConfig
 msgid "Create new email ticket and send this out (outbound)"
@@ -11199,6 +11575,10 @@ msgstr "Создать телефонную заявку (входящую)"
 #. SysConfig
 msgid "Create new process ticket"
 msgstr "Создать новую процессную заявку"
+
+#. SysConfig
+msgid "Custom RSS Feed"
+msgstr "Пользовательская лента RSS "
 
 #. SysConfig
 msgid ""
@@ -11220,7 +11600,7 @@ msgstr "Клиенты <-> Сервисы"
 
 #. SysConfig
 msgid "Customer User Administration"
-msgstr "Управление клиентами"
+msgstr "Управление пользователями клиентов"
 
 #. SysConfig
 msgid "Customer Users"
@@ -11247,6 +11627,14 @@ msgstr "Показать количество открытых заявок кл
 #. SysConfig
 msgid "Customer request via web."
 msgstr "Веб-запрос пользователя."
+
+#. SysConfig
+msgid "Customer user search"
+msgstr "Поиск клиента"
+
+#. SysConfig
+msgid "CustomerID search"
+msgstr "Поиск по CustomerID"
 
 #. SysConfig
 msgid "CustomerName"
@@ -11363,6 +11751,18 @@ msgstr "Задайте имя динамического поля для нач�
 #. SysConfig
 msgid "Define the max depth of queues."
 msgstr "Задайте максимальный уровень вложенности для очередей"
+
+#. SysConfig
+msgid "Define the queue comment 2."
+msgstr "Внести Комментарий 2 для очереди."
+
+#. SysConfig
+msgid "Define the service comment 2."
+msgstr "Внести Комментарий 2 для сервиса."
+
+#. SysConfig
+msgid "Define the sla comment 2."
+msgstr "Внести Комментарий 2 для SLA."
 
 #. SysConfig
 msgid ""
@@ -12702,6 +13102,12 @@ msgstr "Задает модуль аутентификации клиентов"
 
 #. SysConfig
 msgid ""
+"Defines the module to display a notification in different interfaces on "
+"different occasions for OTRS Business Solution™."
+msgstr ""
+
+#. SysConfig
+msgid ""
 "Defines the module to display a notification in the agent interface if the "
 "scheduler is not running."
 msgstr "Задает модуль который показывает уведомление в интерфейсе агента, если не запущен Планировщик."
@@ -13009,14 +13415,14 @@ msgstr "Задает очередь по умолчанию для postmaster."
 
 #. SysConfig
 msgid "Defines the priority in which the information is logged and presented."
-msgstr ""
+msgstr "Задает приоритет с которым информация журналируется и отображается."
 
 #. SysConfig
 msgid ""
 "Defines the receipent target of the phone ticket and the sender of the email"
-" ticket (\"Queue\" shows all queues, \"SystemAddress\" displays all system "
+" ticket (\"Queue\" shows all queues, \"System address\" displays all system "
 "addresses) in the agent interface."
-msgstr "Задает получателя телефонной заявки и отправителя для почтовой заявки (\"Queue\" показывает все очереди, \"SystemAddress\" показывает все системные адреса) в интерфейсе агента"
+msgstr ""
 
 #. SysConfig
 msgid ""
@@ -13273,6 +13679,10 @@ msgid "Deletes requested sessions if they have timed out."
 msgstr "Удаляет запрошенные сеансы с истекшим сроком."
 
 #. SysConfig
+msgid "Deploy and manage OTRS Business Solution™."
+msgstr "Развертывание и управление OTRS Business Solution™."
+
+#. SysConfig
 msgid ""
 "Determines if the list of possible queues to move to ticket into should be "
 "displayed in a dropdown list or in a new window in the agent interface. If "
@@ -13455,7 +13865,7 @@ msgstr "Параметры отображения динамических по�
 msgid ""
 "Dynamic fields shown in the email outbound screen of the agent interface. "
 "Possible settings: 0 = Disabled, 1 = Enabled, 2 = Enabled and required."
-msgstr ""
+msgstr "Список Динамических полей, показываемых на экране перенаправления почтового сообщения в интерфейсе агента. Возможные значения: 0 - не показывать, 1 - показывать, 2 - показывать, значение обязательно."
 
 #. SysConfig
 msgid ""
@@ -13598,7 +14008,7 @@ msgid ""
 "Dynamic fields shown in the ticket search screen of the agent interface. "
 "Possible settings: 0 = Disabled, 1 = Enabled, 2 = Enabled and shown by "
 "default."
-msgstr "Параметры показа динамических полей на экране параметров поиска в интерфейсе агента. Возможные значения: 0 = не показывать, 1 - показывать, 2 - показывать и ???."
+msgstr "Перечень динамических полей на экране выбора атрибутов поиска в интерфейсе агента. Возможные значения: 0 = не показывать, 1 - можно выбрать из списка, 2 - включено по умолчанию."
 
 #. SysConfig
 msgid ""
@@ -13683,11 +14093,11 @@ msgid ""
 "template caching for production environments for it will cause a massive "
 "performance drop! This setting should only be disabled for debugging "
 "reasons!"
-msgstr ""
+msgstr "Включает или отключает кэширование для шаблонов. ВНИМАНИЕ: НЕ отключайте кэширование шаблонов в рабочей системе, так как это приведет к значительному снижению производительности! Этот параметр следует отключать только для целей отладки!"
 
 #. SysConfig
 msgid "Enables or disables the debug mode over frontend interface."
-msgstr ""
+msgstr "Включает или выключает режим отладки через интерфейс системы."
 
 #. SysConfig
 msgid ""
@@ -13736,11 +14146,11 @@ msgstr "Зарегистрировать заявку в Процессе"
 
 #. SysConfig
 msgid "Escalation response time finished"
-msgstr ""
+msgstr "Эскалация - время первого ответа наступило"
 
 #. SysConfig
 msgid "Escalation response time forewarned"
-msgstr ""
+msgstr "Эскалация - предупреждение о наступлении времени первого ответа"
 
 #. SysConfig
 msgid "Escalation response time in effect"
@@ -13748,11 +14158,11 @@ msgstr ""
 
 #. SysConfig
 msgid "Escalation solution time finished"
-msgstr ""
+msgstr "Эскалация - время выполнения наступило"
 
 #. SysConfig
 msgid "Escalation solution time forewarned"
-msgstr ""
+msgstr "Эскалация - предупреждение о наступлении времени решения"
 
 #. SysConfig
 msgid "Escalation solution time in effect"
@@ -13773,6 +14183,10 @@ msgstr ""
 #. SysConfig
 msgid "Escalation view"
 msgstr "Просмотр эскалированных заявок"
+
+#. SysConfig
+msgid "EscalationTime"
+msgstr "EscalationTime"
 
 #. SysConfig
 msgid ""
@@ -13818,7 +14232,7 @@ msgstr "Календарь событий по заявкам"
 
 #. SysConfig
 msgid "Execute SQL statements."
-msgstr "Выполнить SQL запрос."
+msgstr "Выполнить SQL-запросы."
 
 #. SysConfig
 msgid ""
@@ -13877,6 +14291,10 @@ msgid "Filter incoming emails."
 msgstr "Фильтрация входящей почты."
 
 #. SysConfig
+msgid "First Queue"
+msgstr "Имя первой Очереди"
+
+#. SysConfig
 msgid "FirstLock"
 msgstr "Дата первой блокировки"
 
@@ -13886,11 +14304,11 @@ msgstr "Дата первого ответа"
 
 #. SysConfig
 msgid "FirstResponseDiffInMin"
-msgstr ""
+msgstr "FirstResponseDiffInMin"
 
 #. SysConfig
 msgid "FirstResponseInMin"
-msgstr ""
+msgstr "FirstResponseInMin"
 
 #. SysConfig
 msgid "Firstname Lastname"
@@ -13967,6 +14385,10 @@ msgstr "Тема интерфеса"
 #. SysConfig
 msgid "Fulltext index regex filters to remove parts of the text."
 msgstr "Регулярное выражение для удаления части текста в запросе полнотекстового поиска."
+
+#. SysConfig
+msgid "Fulltext search"
+msgstr "Полнотекстовый поиск"
 
 #. SysConfig
 msgid ""
@@ -14121,7 +14543,7 @@ msgid ""
 "If \"HTTPBasicAuth\" was selected for Customer::AuthModule, you can specify "
 "to strip leading parts of user names (e. g. for domains like "
 "example_domain\\user to user)."
-msgstr "Если \"HTTPBasicAuth\" было выбрано для Customer::AuthModule, вы можете задать удаление части имени пользователя ( т.е. для домена типа example_domain\\user получится user)."
+msgstr ""
 
 #. SysConfig
 msgid ""
@@ -14370,6 +14792,12 @@ msgstr "Если включено, номер версии OTRS будет уд�
 
 #. SysConfig
 msgid ""
+"If enabled, the customer can search for tickets in all services (regardless "
+"what services are assigned to the customer)."
+msgstr ""
+
+#. SysConfig
+msgid ""
 "If enabled, the different overviews (Dashboard, LockedView, QueueView) will "
 "automatically refresh after the specified time."
 msgstr "Если включено, экраны обзоров (дайджест, просмотр заблокированных, просмотр очереди) будут автоматически обновляться по истечении указанного времени."
@@ -14502,6 +14930,10 @@ msgid "Lastname, Firstname (UserLogin)"
 msgstr "Фамилия, Имя (UserLogin)"
 
 #. SysConfig
+msgid "Left"
+msgstr ""
+
+#. SysConfig
 msgid "Link agents to groups."
 msgstr "Связать агентов с группами."
 
@@ -14603,6 +15035,10 @@ msgid ""
 msgstr "Список по умолчанию для Стандартных Шаблонов, которые назначаются автоматически при создании новой очереди."
 
 #. SysConfig
+msgid "List view"
+msgstr "Вид в виде списка"
+
+#. SysConfig
 msgid "Locked ticket."
 msgstr "Заблокирована заявка."
 
@@ -14653,7 +15089,7 @@ msgstr "Управления PGP ключами для шифрования по
 
 #. SysConfig
 msgid "Manage POP3 or IMAP accounts to fetch email from."
-msgstr "Управление POP3 или IMAP учетными записями для получения почтовых сообщений."
+msgstr "Управление учётными записями POP3 или IMAP для получения почтовых сообщений."
 
 #. SysConfig
 msgid "Manage S/MIME certificates for email encryption."
@@ -14807,13 +15243,13 @@ msgstr "Модуль для формирования статистки о за�
 msgid ""
 "Module to generate html OpenSearch profile for short ticket search in the "
 "agent interface."
-msgstr ""
+msgstr "Модуль для генерации HTML OpenSearch шаблонов для быстрого поиска заявок в интерфейсе агента."
 
 #. SysConfig
 msgid ""
 "Module to generate html OpenSearch profile for short ticket search in the "
 "customer interface."
-msgstr ""
+msgstr "Модуль для генерации HTML OpenSearch шаблонов для быстрого поиска заявок в интерфейсе клиента."
 
 #. SysConfig
 msgid "Module to generate ticket solution and response time statistics."
@@ -14875,6 +15311,10 @@ msgid "New Ticket [%s] created (Q=%s;P=%s;S=%s)."
 msgstr "Новая заявка [%s] (Q=%s;P=%s;S=%s)."
 
 #. SysConfig
+msgid "New Window"
+msgstr "Новое окно"
+
+#. SysConfig
 msgid "New email ticket"
 msgstr "Новая заявка по email"
 
@@ -14911,6 +15351,10 @@ msgid "No Notification"
 msgstr "Нет уведомлений"
 
 #. SysConfig
+msgid "None"
+msgstr ""
+
+#. SysConfig
 msgid "Notification sent to \"%s\"."
 msgstr "Уведомление отправлено на %s."
 
@@ -14943,6 +15387,10 @@ msgstr "Количество заявок которое показываетс�
 #. SysConfig
 msgid "Old: \"%s\" New: \"%s\""
 msgstr "Прежнее состояние: %s, новое состояние: %s"
+
+#. SysConfig
+msgid "Online"
+msgstr "Online"
 
 #. SysConfig
 msgid "Open tickets (customer user)"
@@ -15347,7 +15795,7 @@ msgstr "Права, требуемые для закрытия заявки в �
 msgid ""
 "Required permissions to use the email outbound screen in the agent "
 "interface."
-msgstr ""
+msgstr "Права, требуемые для создания исходящего письма клиенуа в интерфейсе агента."
 
 #. SysConfig
 msgid ""
@@ -15437,12 +15885,22 @@ msgid ""
 msgstr "Оставляет все сервисы в списке, даже если они являются потомками от недействительных элементов."
 
 #. SysConfig
+msgid "Right"
+msgstr ""
+
+#. SysConfig
 msgid "Roles <-> Groups"
 msgstr "Роли <-> Группы"
 
 #. SysConfig
 msgid "Running Process Tickets"
 msgstr "Запущенные Процессные заявки"
+
+#. SysConfig
+msgid ""
+"Runs an initial wildcard search of the existing customer company when "
+"accessing the AdminCustomerCompany module."
+msgstr "Выполняет начальный поиск по символу подстановки в списке компаний клиентов в модуле AdminCustomerCompany."
 
 #. SysConfig
 msgid ""
@@ -15463,13 +15921,18 @@ msgid "S/MIME Certificate Upload"
 msgstr "Загрузка сертификата S/MIME"
 
 #. SysConfig
+msgid "Sample command output"
+msgstr ""
+
+#. SysConfig
 msgid ""
 "Saves the attachments of articles. \"DB\" stores all data in the database "
 "(not recommended for storing big attachments). \"FS\" stores the data on the"
 " filesystem; this is faster but the webserver should run under the OTRS "
 "user. You can switch between the modules even on a system that is already in"
-" production without any loss of data."
-msgstr "Сохраняет вложения из сообщений/заметок. \"DB\" - сохраняет их в БД (не рекомендуется для больших вложений). \"FS\" - сохраняет данные в файловой системе; это быстрее, но веб-сервер должен запускаться от имени пользователя OTRS. Вы можете переключать это значение в процессе работы без потери данных."
+" production without any loss of data. Note: Searching for attachment names "
+"is not supported when \"FS\" is used."
+msgstr "Сохраняет вложения из сообщений/заметок. \"DB\" - сохраняет их в БД (не рекомендуется для больших вложений). \"FS\" - сохраняет данные в файловой системе; это быстрее, но веб-сервер должен запускаться от имени пользователя OTRS. Вы можете переключать это значение в процессе работы без потери данных. \nПримечание: Поиск по именам вложений не поддерживается при использовании \"FS\"."
 
 #. SysConfig
 msgid "Schedule a maintenance period."
@@ -15490,6 +15953,10 @@ msgstr "Модуль поиска по умолчанию."
 #. SysConfig
 msgid "Search backend router."
 msgstr "Модуль поиска."
+
+#. SysConfig
+msgid "Second Queue"
+msgstr "Вторая очередь"
 
 #. SysConfig
 msgid "Select your frontend Theme."
@@ -15898,7 +16365,7 @@ msgstr "Задает количество строк отображаемых в
 
 #. SysConfig
 msgid "Sets the options for PGP binary."
-msgstr ""
+msgstr "Задает настройки для модуля PGP."
 
 #. SysConfig
 msgid ""
@@ -16358,7 +16825,7 @@ msgstr "Показывает пункт меню Ответственный пр
 msgid ""
 "Shows a link in the menu to send an outbound email in the ticket zoom view "
 "of the agent interface."
-msgstr ""
+msgstr "Показывает пункт меню для перенаправления почтового сообщения на экране подробного просмотра заявки в интерфейсе агента."
 
 #. SysConfig
 msgid ""
@@ -16542,7 +17009,7 @@ msgstr "Показывает все сообщения заявки в разв�
 msgid ""
 "Shows all the customer identifiers in a multi-select field (not useful if "
 "you have a lot of customer identifiers)."
-msgstr ""
+msgstr "Показывает все идентификаторы клиентов в поле типа \"multi-select\" (не следует использовать при наличии большого количества таких идентификаторов)."
 
 #. SysConfig
 msgid ""
@@ -16724,11 +17191,19 @@ msgstr "Окрас"
 
 #. SysConfig
 msgid "SolutionDiffInMin"
-msgstr ""
+msgstr "SolutionDiffInMin"
 
 #. SysConfig
 msgid "SolutionInMin"
-msgstr ""
+msgstr "SolutionInMin"
+
+#. SysConfig
+msgid "Some description!"
+msgstr "Некоторое описание!"
+
+#. SysConfig
+msgid "Some picture description!"
+msgstr "Некоторое описание рисунка!"
 
 #. SysConfig
 msgid ""
@@ -16926,6 +17401,14 @@ msgstr "Задает количество уровней подкаталога 
 
 #. SysConfig
 msgid ""
+"Specify the channel to be used to fetch OTRS Business Solution™ updates. "
+"Warning: Development releases might not be complete, your system might "
+"experience unrecoverable errors and on extreme cases could become "
+"unresponsive!"
+msgstr "Задает канал для получения обновлений OTRS Business Solution™. Предупреждение: Development-релизы могут быть незавершенными, в вашей системе могут проявляться неисправимые ошибки и в экстремальных случаях она может перестать отвечать на запросы!"
+
+#. SysConfig
+msgid ""
 "Standard available permissions for agents within the application. If more "
 "permissions are needed, they can be entered here. Permissions must be "
 "defined to be effective. Some other good permissions have also been provided"
@@ -17040,25 +17523,25 @@ msgstr "Идентфикатор заявки, например, Заявка№
 msgid ""
 "The logo shown in the header of the agent interface for the skin "
 "\"default\". See \"AgentLogo\" for further description."
-msgstr ""
+msgstr "Логотип, отображаемый в заголовке экрана в интерфейсе агента для окраса \"default\". Смотрите описание \"AgentLogo\" для дальгейших пояснений."
 
 #. SysConfig
 msgid ""
 "The logo shown in the header of the agent interface for the skin \"ivory\". "
 "See \"AgentLogo\" for further description."
-msgstr ""
+msgstr "Логотип, отображаемый в заголовке экрана в интерфейсе агента для окраса \"ivory\". Смотрите описание \"AgentLogo\" для дальгейших пояснений."
 
 #. SysConfig
 msgid ""
 "The logo shown in the header of the agent interface for the skin \"ivory-"
 "slim\". See \"AgentLogo\" for further description."
-msgstr ""
+msgstr "Логотип, отображаемый в заголовке экрана в интерфейсе агента для окраса \"ivory-slim\". Смотрите описание \"AgentLogo\" для дальгейших пояснений."
 
 #. SysConfig
 msgid ""
 "The logo shown in the header of the agent interface for the skin \"slim\". "
 "See \"AgentLogo\" for further description."
-msgstr ""
+msgstr "Логотип, отображаемый в заголовке экрана в интерфейсе агента для окраса \"slim\". Смотрите описание \"AgentLogo\" для дальгейших пояснений."
 
 #. SysConfig
 msgid ""
@@ -17195,8 +17678,18 @@ msgid "Toolbar Item for a shortcut."
 msgstr "Описание ярлыка(иконки) для навигационной панели."
 
 #. SysConfig
+msgid "Tree view"
+msgstr "Иерархический вид"
+
+#. SysConfig
+msgid ""
+"Turns off SSL certificate validation, for example if you use a transparent "
+"HTTPS proxy. Use at your own risk!"
+msgstr "Выключает проверку SSL сертификата, например, при использовании \"прозрачного\" HTTPS proxy. Вы иможете использовать эту опцию на свой страх и риск."
+
+#. SysConfig
 msgid "Turns on drag and drop for the main navigation."
-msgstr ""
+msgstr "Включает возможность \"drag and drop\" для основной навигации."
 
 #. SysConfig
 msgid ""
@@ -17297,7 +17790,7 @@ msgstr "Использовать этот окрас интерфейса"
 
 #. SysConfig
 msgid "Webservice path separator."
-msgstr ""
+msgstr "Разделитель пути для описания веб-сервиса."
 
 #. SysConfig
 msgid ""
@@ -17323,6 +17816,10 @@ msgstr "При слиянии/объединении заявок, клиент 
 #. SysConfig
 msgid "Write a new, outgoing mail"
 msgstr "Написать новое исходящее почтовое сообщение"
+
+#. SysConfig
+msgid "Yes, but hide archived tickets"
+msgstr "Да, скрыть архивированные заявки"
 
 #. SysConfig
 msgid ""

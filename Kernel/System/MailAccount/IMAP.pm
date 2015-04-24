@@ -1,6 +1,6 @@
 # --
 # Kernel/System/MailAccount/IMAP.pm - lib for imap accounts
-# Copyright (C) 2001-2014 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -52,7 +52,7 @@ sub Connect {
     my $IMAPObject = Net::IMAP::Simple->new(
         $Param{Host},
         timeout => $Param{Timeout},
-        debug   => $Param{Debug}
+        debug   => $Param{Debug} || undef,
     );
     if ( !$IMAPObject ) {
         return (

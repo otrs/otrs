@@ -1,6 +1,6 @@
 # --
 # Kernel/Modules/AgentUserSearch.pm - a module used for the autocomplete feature
-# Copyright (C) 2001-2014 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -66,11 +66,9 @@ sub Run {
                 next GROUPNAME if !$GroupID;
 
                 # get users in group
-                my %Users = $Self->{GroupObject}->GroupMemberList(
+                my %Users = $Self->{GroupObject}->PermissionGroupGet(
                     GroupID => $GroupID,
                     Type    => 'ro',
-                    Result  => 'HASH',
-                    Cached  => 1,
                 );
 
                 my @UserIDs = keys %Users;

@@ -1,6 +1,6 @@
 # --
 # Kernel/Output/HTML/ArticleComposeCrypt.pm
-# Copyright (C) 2001-2014 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -13,7 +13,11 @@ use strict;
 use warnings;
 
 use Mail::Address;
-use Kernel::System::Crypt;
+
+our @ObjectDependencies = (
+    'Kernel::System::Crypt::PGP',
+    'Kernel::System::Crypt::SMIME',
+);
 
 sub new {
     my ( $Type, %Param ) = @_;
@@ -76,6 +80,7 @@ sub Run {
         Name       => 'CryptKeyID',
         SelectedID => $Param{CryptKeyID} || '',
         Class      => $Class,
+        Max        => 150,
     );
     $Self->{LayoutObject}->Block(
         Name => 'Option',
@@ -120,9 +125,9 @@ sub Data {
     elsif (@SearchAddress) {
 
         # check pgp backend
-        my $CryptObjectPGP = Kernel::System::Crypt->new( %{$Self}, CryptType => 'PGP' );
-        if ($CryptObjectPGP) {
-            my @PublicKeys = $CryptObjectPGP->PublicKeySearch(
+        my $PGPObject = $Kernel::OM->Get('Kernel::System::Crypt::PGP');
+        if ($PGPObject) {
+            my @PublicKeys = $PGPObject->PublicKeySearch(
                 Search => $SearchAddress[0]->address(),
             );
             for my $DataRef (@PublicKeys) {
@@ -152,9 +157,9 @@ sub Data {
         }
 
         # check smime backend
-        my $CryptObjectSMIME = Kernel::System::Crypt->new( %{$Self}, CryptType => 'SMIME' );
-        if ($CryptObjectSMIME) {
-            my @PublicKeys = $CryptObjectSMIME->CertificateSearch(
+        my $SMIMEObject = $Kernel::OM->Get('Kernel::System::Crypt::SMIME');
+        if ($SMIMEObject) {
+            my @PublicKeys = $SMIMEObject->CertificateSearch(
                 Search => $SearchAddress[0]->address(),
             );
             for my $DataRef (@PublicKeys) {

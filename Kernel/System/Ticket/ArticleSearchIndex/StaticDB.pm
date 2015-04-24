@@ -1,6 +1,6 @@
 # --
 # Kernel/System/Ticket/ArticleSearchIndex/StaticDB.pm - article search index backend static
-# Copyright (C) 2001-2014 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -26,12 +26,13 @@ sub ArticleIndexBuild {
         if ( !$Param{$Needed} ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
-                Message  => "Need $Needed!"
+                Message  => "Need $Needed!",
             );
             return;
         }
     }
 
+    # get article data
     my %Article = $Self->ArticleGet(
         ArticleID     => $Param{ArticleID},
         UserID        => $Param{UserID},
@@ -47,12 +48,11 @@ sub ArticleIndexBuild {
             );
         }
     }
-    for my $Key (qw(Body)) {
-        if ( $Article{$Key} ) {
-            $Article{$Key} = $Self->_ArticleIndexString(
-                String => $Article{$Key},
-            );
-        }
+
+    if ( $Article{Body} ) {
+        $Article{Body} = $Self->_ArticleIndexString(
+            String => $Article{Body},
+        );
     }
 
     # get database object
@@ -186,6 +186,7 @@ sub _ArticleIndexQuerySQLExt {
     my $FullTextSQL = '';
     KEY:
     for my $Key ( sort keys %FieldSQLMapFullText ) {
+
         next KEY if !$Param{Data}->{$Key};
 
         # replace * by % for SQL like
@@ -202,10 +203,11 @@ sub _ArticleIndexQuerySQLExt {
         if ( $Param{Data}->{ConditionInline} ) {
             $FullTextSQL .= $DBObject->QueryCondition(
                 Key          => $FieldSQLMapFullText{$Key},
-                Value        => $Param{Data}->{$Key},
+                Value        => lc $Param{Data}->{$Key},
                 SearchPrefix => $Param{Data}->{ContentSearchPrefix},
                 SearchSuffix => $Param{Data}->{ContentSearchSuffix},
                 Extended     => 1,
+                CaseSensitive => 1,    # data in article_search are already stored in lower cases
             );
         }
         else {
@@ -233,6 +235,7 @@ sub _ArticleIndexQuerySQLExt {
             $FullTextSQL .= " $Field LIKE '$Value'";
         }
     }
+
     if ($FullTextSQL) {
         $SQLExt = ' AND (' . $FullTextSQL . ')';
     }
@@ -246,7 +249,7 @@ sub _ArticleIndexString {
     if ( !defined $Param{String} ) {
         $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'error',
-            Message  => "Need String!"
+            Message  => "Need String!",
         );
         return;
     }
@@ -279,14 +282,19 @@ sub _ArticleIndexString {
         last WORD if $Count > $WordCountMax;
 
         if ( $List{$Word} ) {
+
             $List{$Word}++;
+
             next WORD;
         }
         else {
+
             $List{$Word} = 1;
+
             if ($IndexString) {
                 $IndexString .= ' ';
             }
+
             $IndexString .= $Word
         }
     }
@@ -301,7 +309,7 @@ sub _ArticleIndexStringToWord {
     if ( !defined $Param{String} ) {
         $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'error',
-            Message  => "Need String!"
+            Message  => "Need String!",
         );
         return;
     }
@@ -309,9 +317,47 @@ sub _ArticleIndexStringToWord {
     # get config object
     my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
 
-    my $Config   = $ConfigObject->Get('Ticket::SearchIndex::Attribute');
-    my %StopWord = %{ $ConfigObject->Get('Ticket::SearchIndex::StopWords') || {} };
-    my @Filters  = @{ $ConfigObject->Get('Ticket::SearchIndex::Filters') || [] };
+    my $Config      = $ConfigObject->Get('Ticket::SearchIndex::Attribute');
+    my @Filters     = @{ $ConfigObject->Get('Ticket::SearchIndex::Filters') || [] };
+    my $StopWordRaw = $ConfigObject->Get('Ticket::SearchIndex::StopWords') || {};
+
+    # error handling
+    if ( !$StopWordRaw || ref $StopWordRaw ne 'HASH' ) {
+
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
+            Priority => 'error',
+            Message  => "Invalid config option Ticket::SearchIndex::StopWords! "
+                . "Please reset the search index options to reactivate the factory defaults.",
+        );
+
+        return;
+    }
+
+    my %StopWord;
+    LANGUAGE:
+    for my $Language ( sort keys %{$StopWordRaw} ) {
+
+        if ( !$Language || !$StopWordRaw->{$Language} || ref $StopWordRaw->{$Language} ne 'ARRAY' ) {
+
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
+                Priority => 'error',
+                Message  => "Invalid config option Ticket::SearchIndex::StopWords###$Language! "
+                    . "Please reset this option to reactivate the factory defaults.",
+            );
+
+            next LANGUAGE;
+        }
+
+        WORD:
+        for my $Word ( @{ $StopWordRaw->{$Language} } ) {
+
+            next WORD if !$Word;
+
+            $Word = lc $Word;
+
+            $StopWord{$Word} = 1;
+        }
+    }
 
     # get words
     my $LengthMin = $Param{WordLengthMin} || $Config->{WordLengthMin} || 3;
@@ -321,24 +367,24 @@ sub _ArticleIndexStringToWord {
     WORD:
     for my $Word ( split /\s+/, ${ $Param{String} } ) {
 
-        # Apply filters
+        # apply filters
         for my $Filter (@Filters) {
             $Word =~ s/$Filter//g;
         }
 
+        next WORD if !$Word;
+
         # convert to lowercase to avoid LOWER()/LCASE() in the DB query
         $Word = lc $Word;
 
+        next WORD if $StopWord{$Word};
+
         # only index words/strings within length boundaries
         my $Length = length $Word;
-        if ( $Length < $LengthMin || $Length > $LengthMax ) {
-            next WORD;
-        }
 
-        # Remove StopWords
-        if ( $Word && $StopWord{$Word} ) {
-            next WORD;
-        }
+        next WORD if $Length < $LengthMin;
+        next WORD if $Length > $LengthMax;
+
         push @ListOfWords, $Word;
     }
 

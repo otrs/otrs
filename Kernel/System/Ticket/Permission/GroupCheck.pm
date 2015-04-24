@@ -1,7 +1,7 @@
 # --
 # Kernel/System/Ticket/Permission/GroupCheck.pm - the sub module of
 # the global ticket handle
-# Copyright (C) 2001-2014 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -38,7 +38,7 @@ sub Run {
         if ( !$Param{$_} ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
-                Message  => "Need $_!"
+                Message  => "Need $_!",
             );
             return;
         }
@@ -51,21 +51,17 @@ sub Run {
     );
 
     # get ticket group
-    my $QueueGroupID = $Kernel::OM->Get('Kernel::System::Queue')->GetQueueGroupID( QueueID => $Ticket{QueueID} );
-
-    # get user groups
-    my @GroupIDs = $Kernel::OM->Get('Kernel::System::Group')->GroupMemberList(
-        UserID => $Param{UserID},
-        Type   => $Param{Type},
-        Result => 'ID',
+    my $QueueGroupID = $Kernel::OM->Get('Kernel::System::Queue')->GetQueueGroupID(
+        QueueID => $Ticket{QueueID},
     );
 
-    # looking for group id, return access if user is in group
-    for my $GroupID (@GroupIDs) {
-        return 1 if $GroupID eq $QueueGroupID;
-    }
+    # get user groups
+    my %GroupList = $Kernel::OM->Get('Kernel::System::Group')->PermissionUserGet(
+        UserID => $Param{UserID},
+        Type   => $Param{Type},
+    );
 
-    # return no access
+    return 1 if $GroupList{$QueueGroupID};
     return;
 }
 

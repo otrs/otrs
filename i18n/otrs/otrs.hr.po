@@ -1,10 +1,13 @@
 # 
 # Translators:
+# Krešimir Raič, 2015
+# Mirjana Gabriel <mirjana.gabriel2@gmail.com>, 2015
+# S7 Design d.o.o. <otrs@s7designcreative.com>, 2015
 msgid ""
 msgstr ""
 "Project-Id-Version: OTRS\n"
 "POT-Creation-Date: 2014-08-08 19:10+0200\n"
-"PO-Revision-Date: 2014-11-13 04:56+0000\n"
+"PO-Revision-Date: 2015-04-10 03:43+0000\n"
 "Last-Translator: Carlos Rodríguez <carlos.rodriguez@otrs.com>\n"
 "Language-Team: Croatian (http://www.transifex.com/projects/p/OTRS/language/hr/)\n"
 "MIME-Version: 1.0\n"
@@ -175,7 +178,7 @@ msgstr "tjedan"
 
 #. Template: AAABase
 msgid "week(s)"
-msgstr "sedmica/e"
+msgstr "tjedan/tjedni"
 
 #. Template: AAABase
 msgid "year"
@@ -315,7 +318,7 @@ msgstr "G."
 
 #. Template: AAABase
 msgid "Mrs."
-msgstr "Gđ."
+msgstr "Gđa"
 
 #. Template: AAABase
 msgid "Next"
@@ -335,7 +338,7 @@ msgstr "...Natrag"
 
 #. Template: AAABase
 msgid "-none-"
-msgstr "-niti-jedan-"
+msgstr "-nijedan-"
 
 #. Template: AAABase
 msgid "none"
@@ -403,7 +406,7 @@ msgstr "Pogodak"
 
 #. Template: AAABase
 msgid "Hits"
-msgstr "Pogotci"
+msgstr "Pogodci"
 
 #. Template: AAABase
 msgid "Text"
@@ -475,15 +478,15 @@ msgstr "korisnik"
 
 #. Template: AAABase
 msgid "agent"
-msgstr "Zaposlenik"
+msgstr "zaposlenik"
 
 #. Template: AAABase
 msgid "system"
-msgstr "Sustav"
+msgstr "sustav"
 
 #. Template: AAABase
 msgid "Customer Info"
-msgstr "Korisnički info"
+msgstr "Korisnički info."
 
 #. Template: AAABase
 msgid "Customer Information"
@@ -607,7 +610,7 @@ msgstr "kreirao"
 
 #. Template: AAABase
 msgid "Changed"
-msgstr "Mijenjeno"
+msgstr "Mijenjano"
 
 #. Template: AAABase
 msgid "Changed by"
@@ -687,7 +690,7 @@ msgstr "Gore"
 
 #. Template: AAABase
 msgid "Down"
-msgstr "Dole"
+msgstr "Dolje"
 
 #. Template: AAABase
 msgid "Add"
@@ -751,7 +754,7 @@ msgstr "Nova poruka!"
 
 #. Template: AAABase
 msgid "Please answer this ticket(s) to get back to the normal queue view!"
-msgstr "Molimo, odgovorite na ovu karticu da bi ste se vratili na normalan pregled repa!"
+msgstr "Molimo, odgovorite na ovu karticu da bi ste se vratili na normalan pregled reda!"
 
 #. Template: AAABase
 msgid "You have %s new message(s)!"
@@ -767,7 +770,7 @@ msgstr "Preporučena kodna stranica za vaš jezik je %s!"
 
 #. Template: AAABase
 msgid "Change your password."
-msgstr "Promjenite lozinku."
+msgstr "Promijenite lozinku."
 
 #. Template: AAABase
 msgid "Please activate %s first!"
@@ -799,7 +802,7 @@ msgstr "Neuspješna prijava! Korisničko ime i/ili lozinka nisu valjani."
 
 #. Template: AAABase
 msgid "There is no acount with that user name."
-msgstr "Račun s tim korisničkim imenom"
+msgstr "Ne postoji račun s tim korisničkim imenom."
 
 #. Template: AAABase
 msgid "Please contact your administrator"
@@ -929,7 +932,7 @@ msgstr "obrnuto"
 
 #. Template: AAABase
 msgid "Facility"
-msgstr "Instalacija"
+msgstr "Mogućnost"
 
 #. Template: AAABase
 msgid "Time Zone"
@@ -963,7 +966,7 @@ msgstr ""
 
 #. Template: AAABase
 msgid "Session has timed out. Please log in again."
-msgstr "Vrijeme sesije je isteklo. Molimo prijavite se ponovno."
+msgstr "Vrijeme sjednice je isteklo. Molimo prijavite se ponovno."
 
 #. Template: AAABase
 msgid "Session limit reached! Please try again later."
@@ -975,7 +978,7 @@ msgstr "Nemate dozvolu!"
 
 #. Template: AAABase
 msgid "(Click here to add)"
-msgstr "(Klikni ovde za dodavanje)"
+msgstr "(Klikni ovdje za dodavanje)"
 
 #. Template: AAABase
 msgid "Preview"
@@ -1273,11 +1276,6 @@ msgstr "Zdravo %s,"
 
 #. Template: AAABase
 msgid ""
-"This email address already exists. Please log in or reset your password."
-msgstr ""
-
-#. Template: AAABase
-msgid ""
 "This email address is not allowed to register. Please contact support staff."
 msgstr ""
 
@@ -1472,6 +1470,10 @@ msgid "Scheduler is not running."
 msgstr ""
 
 #. Template: AAABase
+msgid "All sessions have been killed, except for your own."
+msgstr ""
+
+#. Template: AAABase
 msgid "Can't contact registration server. Please try again later."
 msgstr ""
 
@@ -1489,6 +1491,58 @@ msgstr ""
 
 #. Template: AAABase
 msgid "The selected process is invalid!"
+msgstr ""
+
+#. Template: AAABase
+msgid "Upgrade to %s now!"
+msgstr ""
+
+#. Template: AAABase
+msgid "%s Go to the upgrade center %s"
+msgstr ""
+
+#. Template: AAABase
+msgid ""
+"The license for your %s is about to expire. Please make contact with %s to "
+"renew your contract!"
+msgstr ""
+
+#. Template: AAABase
+msgid ""
+"An update for your %s is available, but there is a conflict with your "
+"framework version! Please update your framework first!"
+msgstr ""
+
+#. Template: AAABase
+msgid "Your system was successfully upgraded to %s."
+msgstr ""
+
+#. Template: AAABase
+msgid "There was a problem during the upgrade to %s."
+msgstr ""
+
+#. Template: AAABase
+msgid "%s was correctly reinstalled."
+msgstr ""
+
+#. Template: AAABase
+msgid "There was a problem reinstalling %s."
+msgstr ""
+
+#. Template: AAABase
+msgid "Your %s was successfully updated."
+msgstr ""
+
+#. Template: AAABase
+msgid "There was a problem during the upgrade of %s."
+msgstr ""
+
+#. Template: AAABase
+msgid "%s was correctly uninstalled."
+msgstr ""
+
+#. Template: AAABase
+msgid "There was a problem uninstalling %s."
 msgstr ""
 
 #. Template: AAACalendar
@@ -2075,6 +2129,14 @@ msgid "There were tables found which do not have utf8 as charset."
 msgstr ""
 
 #. Template: AAASupportDataCollector
+msgid "InnoDB Log File Size"
+msgstr ""
+
+#. Template: AAASupportDataCollector
+msgid "The setting innodb_log_file_size must be at least 256 MB."
+msgstr ""
+
+#. Template: AAASupportDataCollector
 msgid "Maximum Query Size"
 msgstr ""
 
@@ -2237,7 +2299,7 @@ msgstr ""
 
 #. Template: AAASupportDataCollector
 msgid "Tickets"
-msgstr "kartice"
+msgstr "Kartice"
 
 #. Template: AAASupportDataCollector
 msgid "Ticket History Entries"
@@ -2452,6 +2514,14 @@ msgid "Please install mod_deflate to improve GUI speed."
 msgstr ""
 
 #. Template: AAASupportDataCollector
+msgid "mod_filter Usage"
+msgstr ""
+
+#. Template: AAASupportDataCollector
+msgid "Please install mod_filter if mod_deflate is used."
+msgstr ""
+
+#. Template: AAASupportDataCollector
 msgid "mod_headers Usage"
 msgstr ""
 
@@ -2487,6 +2557,10 @@ msgstr ""
 #. Template: AAATicket
 msgid "Status View"
 msgstr "Pregled statusa"
+
+#. Template: AAATicket
+msgid "Service View"
+msgstr ""
 
 #. Template: AAATicket
 msgid "Bulk"
@@ -2646,7 +2720,7 @@ msgstr "Ažuriranje odgovornog"
 
 #. Template: AAATicket
 msgid "Sender"
-msgstr "Pošiljaoc"
+msgstr "Pošiljatelj"
 
 #. Template: AAATicket
 msgid "Article"
@@ -2806,6 +2880,10 @@ msgstr ""
 
 #. Template: AAATicket
 msgid "Bounce Article to a different mail address"
+msgstr ""
+
+#. Template: AAATicket
+msgid "Reply to note"
 msgstr ""
 
 #. Template: AAATicket
@@ -3049,6 +3127,14 @@ msgid "Search Tickets"
 msgstr "Traženje kartice"
 
 #. Template: AAATicket
+msgid "Customer Realname"
+msgstr ""
+
+#. Template: AAATicket
+msgid "Customer History"
+msgstr ""
+
+#. Template: AAATicket
 msgid "Edit Customer Users"
 msgstr "Uredi korisnike"
 
@@ -3290,11 +3376,11 @@ msgstr "Obavijest o nastavku kartice"
 msgid ""
 "Send me a notification if a customer sends a follow up and I'm the owner of "
 "the ticket or the ticket is unlocked and is in one of my subscribed queues."
-msgstr ""
+msgstr "Pošalji mi obavjest ako korisnik slijedi tiket a ja sam vlasnik tiketa ili ako je tiket otključan u nekom od mojih redova."
 
 #. Template: AAATicket
 msgid "Send ticket follow up notifications"
-msgstr ""
+msgstr "Pošalji obavjest o praćenju tiketa"
 
 #. Template: AAATicket
 msgid "Ticket lock timeout notification"
@@ -3670,7 +3756,7 @@ msgstr ""
 
 #. Template: AdminACLEdit
 msgid "Save"
-msgstr "Sačuvaj"
+msgstr "Spremi"
 
 #. Template: AdminACLEdit
 msgid "or"
@@ -3678,7 +3764,7 @@ msgstr "ili"
 
 #. Template: AdminACLEdit
 msgid "Save and finish"
-msgstr ""
+msgstr "Spremi i završi"
 
 #. Template: AdminACLEdit
 msgid "Do you really want to delete this ACL?"
@@ -3778,7 +3864,7 @@ msgstr "Da vidite prvih 5 redaka poruke"
 
 #. Template: AdminAutoResponse
 msgid "To get the realname of the sender (if given)."
-msgstr "Da vidite ime pošiljaoca (ako je dostupno)"
+msgstr "Da vidite ime pošiljatelja (ako je dostupno)"
 
 #. Template: AdminAutoResponse
 msgid "To get the article attribute"
@@ -4505,6 +4591,10 @@ msgid "Delete this Event Trigger"
 msgstr ""
 
 #. Template: AdminGenericAgent
+msgid "Remove selection"
+msgstr ""
+
+#. Template: AdminGenericAgent
 msgid "Select Tickets"
 msgstr ""
 
@@ -4790,7 +4880,7 @@ msgstr "Vrijednost parametra %s"
 
 #. Template: AdminGenericAgent
 msgid "Save Changes"
-msgstr "Sačuvaj promjene"
+msgstr "Spremi promjene"
 
 #. Template: AdminGenericAgent
 msgid "Results"
@@ -4989,7 +5079,7 @@ msgstr ""
 
 #. Template: AdminGenericInterfaceInvokerDefault
 msgid "Save and continue"
-msgstr ""
+msgstr "Spremi i nastavi"
 
 #. Template: AdminGenericInterfaceInvokerDefault
 msgid "Delete this Invoker"
@@ -5922,6 +6012,189 @@ msgstr "Vidjeti prvih 20 slova predmeta (posljednjeg članka zaposlenika)"
 msgid "To get the first 5 lines of the body (of the latest customer article)."
 msgstr "Vidjeti prvih 5 redaka poruke (posljednjeg članka zaposlenika)."
 
+#. Template: AdminOTRSBusinessInstalled
+msgid "Manage %s"
+msgstr ""
+
+#. Template: AdminOTRSBusinessInstalled
+msgid "Downgrade to OTRS Free"
+msgstr ""
+
+#. Template: AdminOTRSBusinessInstalled
+msgid ""
+"%s makes contact regularly with cloud.otrs.com to check on available updates"
+" and the validity of the underlying contract."
+msgstr ""
+
+#. Template: AdminOTRSBusinessInstalled
+msgid "Unauthorized Usage Detected"
+msgstr ""
+
+#. Template: AdminOTRSBusinessInstalled
+msgid ""
+"This system uses the %s without a proper license! Please make contact with "
+"%s to renew or activate your contract!"
+msgstr ""
+
+#. Template: AdminOTRSBusinessInstalled
+msgid "%s not Correctly Installed"
+msgstr ""
+
+#. Template: AdminOTRSBusinessInstalled
+msgid ""
+"Your %s is not correctly installed. Please reinstall it with the button "
+"below."
+msgstr ""
+
+#. Template: AdminOTRSBusinessInstalled
+msgid "Reinstall %s"
+msgstr ""
+
+#. Template: AdminOTRSBusinessInstalled
+msgid ""
+"Your %s is not correctly installed, and there is also an update available."
+msgstr ""
+
+#. Template: AdminOTRSBusinessInstalled
+msgid ""
+"You can either reinstall your current version or perform an update with the "
+"buttons below (update recommended)."
+msgstr ""
+
+#. Template: AdminOTRSBusinessInstalled
+msgid "Update %s"
+msgstr ""
+
+#. Template: AdminOTRSBusinessInstalled
+msgid "%s Not Yet Available"
+msgstr ""
+
+#. Template: AdminOTRSBusinessInstalled
+msgid "%s will be available soon."
+msgstr ""
+
+#. Template: AdminOTRSBusinessInstalled
+msgid "%s Update Available"
+msgstr ""
+
+#. Template: AdminOTRSBusinessInstalled
+msgid "An update for your %s is available! Please update at your earliest!"
+msgstr ""
+
+#. Template: AdminOTRSBusinessInstalled
+msgid "%s Correctly Deployed"
+msgstr ""
+
+#. Template: AdminOTRSBusinessInstalled
+msgid "Congratulations, your %s is correctly installed and up to date!"
+msgstr ""
+
+#. Template: AdminOTRSBusinessNotInstalled
+msgid "Upgrade to %s"
+msgstr ""
+
+#. Template: AdminOTRSBusinessNotInstalled
+msgid "%s will be available soon. Please check again in a few days."
+msgstr ""
+
+#. Template: AdminOTRSBusinessNotInstalled
+msgid "Please have a look at %s for more information."
+msgstr ""
+
+#. Template: AdminOTRSBusinessNotInstalled
+msgid ""
+"Your OTRS Free is the base for all future actions. Please register first "
+"before you continue with the upgrade process of %s!"
+msgstr ""
+
+#. Template: AdminOTRSBusinessNotInstalled
+msgid "Register this System"
+msgstr ""
+
+#. Template: AdminOTRSBusinessNotInstalled
+msgid ""
+"System Registration is disabled for your system. Please check your "
+"configuration."
+msgstr ""
+
+#. Template: AdminOTRSBusinessNotInstalled
+msgid ""
+"Before you can benefit from %s, please contact %s to get your %s contract."
+msgstr ""
+
+#. Template: AdminOTRSBusinessNotInstalled
+msgid ""
+"Connection to cloud.otrs.com via HTTPS couldn't be established. Please make "
+"sure that your OTRS can connect to cloud.otrs.com via port 443."
+msgstr ""
+
+#. Template: AdminOTRSBusinessNotInstalled
+msgid "With your existing contract you can only use a small part of the %s."
+msgstr ""
+
+#. Template: AdminOTRSBusinessNotInstalled
+msgid ""
+"If you would like to take full advantage of the %s get your contract "
+"upgraded now! Contact %s."
+msgstr ""
+
+#. Template: AdminOTRSBusinessUninstall
+msgid "Cancel downgrade and go back"
+msgstr ""
+
+#. Template: AdminOTRSBusinessUninstall
+msgid "Go to OTRS Package Manager"
+msgstr ""
+
+#. Template: AdminOTRSBusinessUninstall
+msgid ""
+"Sorry, but currently you can't downgrade due to the following packages which"
+" depend on %s:"
+msgstr ""
+
+#. Template: AdminOTRSBusinessUninstall
+msgid "Vendor"
+msgstr "Snabdjevač"
+
+#. Template: AdminOTRSBusinessUninstall
+msgid ""
+"Please uninstall the packages first using the package manager and try again."
+msgstr ""
+
+#. Template: AdminOTRSBusinessUninstall
+msgid ""
+"You are about to downgrade to OTRS Free and will lose the following features"
+" and all data related to these:"
+msgstr ""
+
+#. Template: AdminOTRSBusinessUninstall
+msgid "Chat"
+msgstr ""
+
+#. Template: AdminOTRSBusinessUninstall
+msgid "Timeline view in ticket zoom"
+msgstr ""
+
+#. Template: AdminOTRSBusinessUninstall
+msgid "DynamicField ContactWithData"
+msgstr ""
+
+#. Template: AdminOTRSBusinessUninstall
+msgid "DynamicField Database"
+msgstr ""
+
+#. Template: AdminOTRSBusinessUninstall
+msgid "SLA Selection Dialog"
+msgstr ""
+
+#. Template: AdminOTRSBusinessUninstall
+msgid "Ticket Attachment View"
+msgstr ""
+
+#. Template: AdminOTRSBusinessUninstall
+msgid "The %s skin"
+msgstr "tema"
+
 #. Template: AdminPGP
 msgid "PGP Management"
 msgstr "Upravljanje PGP ključevima"
@@ -6020,18 +6293,8 @@ msgid "Update repository information"
 msgstr "Ažuriraj informacije o spremištu"
 
 #. Template: AdminPackageManager
-msgid ""
-"Did not find a required feature? OTRS Group provides their service contract "
-"customers with exclusive Add-Ons:"
-msgstr ""
-
-#. Template: AdminPackageManager
 msgid "Online Repository"
 msgstr "Mrežno spremište"
-
-#. Template: AdminPackageManager
-msgid "Vendor"
-msgstr "Snabdjevač"
 
 #. Template: AdminPackageManager
 msgid "Module documentation"
@@ -6058,7 +6321,13 @@ msgid "Reinstall"
 msgstr "Instaliraj ponovo"
 
 #. Template: AdminPackageManager
-msgid "Feature Add-Ons"
+msgid "Features for %s customers only"
+msgstr ""
+
+#. Template: AdminPackageManager
+msgid ""
+"With %s, you can benefit from the following optional features. Please make "
+"contact with %s if you need more information."
 msgstr ""
 
 #. Template: AdminPackageManager
@@ -6667,7 +6936,7 @@ msgstr ""
 
 #. Template: AdminProcessManagementProcessEdit
 msgid "Save settings"
-msgstr ""
+msgstr "Spremi postavke"
 
 #. Template: AdminProcessManagementProcessEdit
 msgid "Save Activities, Activity Dialogs and Transitions"
@@ -6849,6 +7118,10 @@ msgid "Remove this Field"
 msgstr ""
 
 #. Template: AdminProcessManagementTransition
+msgid "And can't be repeated on the same condition."
+msgstr ""
+
+#. Template: AdminProcessManagementTransition
 msgid "Add a new Field"
 msgstr ""
 
@@ -6901,6 +7174,10 @@ msgstr "Dodaj rep"
 #. Template: AdminQueue
 msgid "Edit Queue"
 msgstr "Uredi rep"
+
+#. Template: AdminQueue
+msgid "A queue with this name already exists!"
+msgstr ""
 
 #. Template: AdminQueue
 msgid "Sub-queue of"
@@ -7042,6 +7319,10 @@ msgid "Edit details"
 msgstr ""
 
 #. Template: AdminRegistration
+msgid "Show transmitted data"
+msgstr ""
+
+#. Template: AdminRegistration
 msgid "Deregister system"
 msgstr ""
 
@@ -7071,6 +7352,30 @@ msgstr ""
 
 #. Template: AdminRegistration
 msgid "Send support data"
+msgstr ""
+
+#. Template: AdminRegistration
+msgid "System registration not possible"
+msgstr ""
+
+#. Template: AdminRegistration
+msgid ""
+"Please note that you can't register your system if your scheduler is not "
+"running correctly!"
+msgstr ""
+
+#. Template: AdminRegistration
+msgid "Instructions"
+msgstr ""
+
+#. Template: AdminRegistration
+msgid "System deregistration not possible"
+msgstr ""
+
+#. Template: AdminRegistration
+msgid ""
+"Please note that you can't deregister your system if you're using the %s or "
+"having a valid service contract."
 msgstr ""
 
 #. Template: AdminRegistration
@@ -7408,6 +7713,32 @@ msgstr ""
 msgid "You can modify registration settings here."
 msgstr ""
 
+#. Template: AdminRegistration
+msgid "Overview of transmitted data"
+msgstr ""
+
+#. Template: AdminRegistration
+msgid "There is no data regularly sent from your system to %s."
+msgstr ""
+
+#. Template: AdminRegistration
+msgid ""
+"The following data is sent at minimum every 3 days from your system to %s."
+msgstr ""
+
+#. Template: AdminRegistration
+msgid ""
+"The data will be transferred in JSON format via a secure https connection."
+msgstr ""
+
+#. Template: AdminRegistration
+msgid "System Registration Data"
+msgstr ""
+
+#. Template: AdminRegistration
+msgid "Support Data"
+msgstr ""
+
 #. Template: AdminRole
 msgid "Role Management"
 msgstr "Upravljanje ulogama"
@@ -7479,6 +7810,22 @@ msgstr "kreiranje"
 #. Template: AdminRoleGroup
 msgid "Permissions to create tickets in this group/queue."
 msgstr "Pravo da se karticu kreira u ovoj grupi/repu."
+
+#. Template: AdminRoleGroup
+msgid "note"
+msgstr "napomena"
+
+#. Template: AdminRoleGroup
+msgid "Permissions to add notes to tickets in this group/queue."
+msgstr "Dozvola za dodavanje napomena na kartice u ovoj grupi/repu."
+
+#. Template: AdminRoleGroup
+msgid "owner"
+msgstr "Vlasnik"
+
+#. Template: AdminRoleGroup
+msgid "Permissions to change the owner of tickets in this group/queue."
+msgstr "Dozvole za promjenu vlasnika kartice u ovoj grupi/repu."
 
 #. Template: AdminRoleGroup
 msgid "priority"
@@ -7616,6 +7963,10 @@ msgstr ""
 #. Template: AdminSMIMECertRead
 msgid "Close window"
 msgstr "Zatvori prozor"
+
+#. Template: AdminSMIMECertRead
+msgid "Certificate details"
+msgstr ""
 
 #. Template: AdminSalutation
 msgid "Salutation Management"
@@ -7813,7 +8164,7 @@ msgstr ""
 
 #. Template: AdminServiceCenterSupportDataCollector
 msgid ""
-"The email address for this user is invalid, this ption has been disabled."
+"The email address for this user is invalid, this option has been disabled."
 msgstr ""
 
 #. Template: AdminServiceCenterSupportDataCollector
@@ -7833,10 +8184,6 @@ msgid ""
 "A file containing the support bundle will be downloaded to the local system."
 " Please save the file and send it to the OTRS Group, using an alternate "
 "method."
-msgstr ""
-
-#. Template: AdminServiceCenterSupportDataCollector
-msgid "Support Data"
 msgstr ""
 
 #. Template: AdminServiceCenterSupportDataCollector
@@ -8222,7 +8569,7 @@ msgid "Customer Sessions"
 msgstr ""
 
 #. Template: AdminSystemMaintenanceEdit
-msgid "Kill all Sessions, exept current"
+msgid "Kill all Sessions, except for your own"
 msgstr ""
 
 #. Template: AdminTemplate
@@ -8387,22 +8734,6 @@ msgstr "Promijeni veze s grupama za zaposlenika"
 msgid "Change Agent Relations for Group"
 msgstr "Promijeni veze s zaposlnicima za grupu"
 
-#. Template: AdminUserGroup
-msgid "note"
-msgstr "napomena"
-
-#. Template: AdminUserGroup
-msgid "Permissions to add notes to tickets in this group/queue."
-msgstr "Dozvola za dodavanje napomena na kartice u ovoj grupi/repu."
-
-#. Template: AdminUserGroup
-msgid "owner"
-msgstr "Vlasnik"
-
-#. Template: AdminUserGroup
-msgid "Permissions to change the owner of tickets in this group/queue."
-msgstr "Dozvole za promjenu vlasnika kartice u ovoj grupi/repu."
-
 #. Template: AgentBook
 msgid "Address Book"
 msgstr "Adresar"
@@ -8501,6 +8832,10 @@ msgstr ""
 
 #. Template: AgentDashboardCustomerUserList
 msgid "New email ticket to %s"
+msgstr ""
+
+#. Template: AgentDashboardCustomerUserList
+msgid "Start chat"
 msgstr ""
 
 #. Template: AgentDashboardProductNotify
@@ -9033,6 +9368,10 @@ msgid "Next state"
 msgstr "Sljedeći status"
 
 #. Template: AgentTicketActionCommon
+msgid "For all pending* states."
+msgstr ""
+
+#. Template: AgentTicketActionCommon
 msgid "Add Article"
 msgstr ""
 
@@ -9074,6 +9413,10 @@ msgid ""
 "regarding the new article."
 msgstr ""
 
+#. Template: AgentTicketActionCommon
+msgid "Note will be (also) received by:"
+msgstr ""
+
 #. Template: AgentTicketBounce
 msgid "Bounce Ticket"
 msgstr ""
@@ -9096,7 +9439,7 @@ msgstr "Naredni status kartice"
 
 #. Template: AgentTicketBounce
 msgid "Inform sender"
-msgstr "Obavijesti pošiljaoca"
+msgstr "Obavijesti pošiljatelja"
 
 #. Template: AgentTicketBounce
 msgid "Send mail"
@@ -9161,14 +9504,6 @@ msgstr ""
 #. Template: AgentTicketCompose
 msgid "Address book"
 msgstr "Adresar"
-
-#. Template: AgentTicketCompose
-msgid "Pending Date"
-msgstr "Datum čekanja"
-
-#. Template: AgentTicketCompose
-msgid "for pending* states"
-msgstr "za stanja čekanja"
 
 #. Template: AgentTicketCompose
 msgid "Date Invalid!"
@@ -9334,6 +9669,10 @@ msgstr "U rep"
 msgid "Chat protocol"
 msgstr ""
 
+#. Template: AgentTicketPhone
+msgid "The chat will be appended as a separate article."
+msgstr ""
+
 #. Template: AgentTicketPlain
 msgid "Email Text Plain View"
 msgstr "Pregled neformatirane poruke"
@@ -9392,7 +9731,7 @@ msgstr ""
 
 #. Template: AgentTicketSearch
 msgid "Save changes in template"
-msgstr "Sačuvaj promjene u predlošku"
+msgstr "Spremi promjene u predlošku"
 
 #. Template: AgentTicketSearch
 msgid "Filters in use"
@@ -9518,7 +9857,7 @@ msgstr ""
 
 #. Template: AgentTicketZoom
 msgid "Save filter settings as default"
-msgstr "Sačuvaj postavke filtra kao zadane"
+msgstr "Spremi postavke filtra kao zadane"
 
 #. Template: AgentTicketZoom
 msgid "Event Type Filter"
@@ -9530,7 +9869,7 @@ msgstr ""
 
 #. Template: AgentTicketZoom
 msgid "Save as default"
-msgstr ""
+msgstr "Spremi kao zadano"
 
 #. Template: AgentTicketZoom
 msgid "Archive"
@@ -9571,6 +9910,10 @@ msgstr ""
 #. Template: AgentTicketZoom
 msgid "Article(s)"
 msgstr "Članak/ci"
+
+#. Template: AgentTicketZoom
+msgid "Page"
+msgstr "Strana"
 
 #. Template: AgentTicketZoom
 msgid "Add Filter"
@@ -9644,6 +9987,20 @@ msgstr ""
 msgid "No more events found. Please try changing the filter settings."
 msgstr ""
 
+#. Template: AgentTicketZoom
+msgid ""
+"To open links in the following article, you might need to press Ctrl or Cmd "
+"or Shift key while clicking the link (depending on your browser and OS)."
+msgstr ""
+
+#. Template: AgentTicketZoom
+msgid "Close this message"
+msgstr ""
+
+#. Template: AgentTicketZoom
+msgid "Article could not be opened! Perhaps it is on another article page?"
+msgstr ""
+
 #. Template: AttachmentBlocker
 msgid "To protect your privacy, remote content was blocked."
 msgstr ""
@@ -9651,6 +10008,10 @@ msgstr ""
 #. Template: AttachmentBlocker
 msgid "Load blocked content."
 msgstr "Učitaj blokirani sadržaj."
+
+#. Template: ChatStartForm
+msgid "First message"
+msgstr ""
 
 #. Template: CustomerError
 msgid "Traceback"
@@ -9790,6 +10151,10 @@ msgstr ""
 msgid "Edit personal preferences"
 msgstr "Uredite osobne postavke"
 
+#. Template: CustomerRichTextEditor
+msgid "Split Quote"
+msgstr ""
+
 #. Template: CustomerTicketMessage
 msgid "Service level agreement"
 msgstr "Sporazum o razini usluge"
@@ -9868,11 +10233,11 @@ msgstr ""
 
 #. Template: CustomerTicketSearch
 msgid "Save as Template?"
-msgstr "Sačuvati kao predložak?"
+msgstr "Spremi kao predložak?"
 
 #. Template: CustomerTicketSearch
 msgid "Save as Template"
-msgstr ""
+msgstr "Spremi kao predložak"
 
 #. Template: CustomerTicketSearch
 msgid "Template Name"
@@ -9889,10 +10254,6 @@ msgstr "Izlaz na"
 #. Template: CustomerTicketSearchResultShort
 msgid "of"
 msgstr "od"
-
-#. Template: CustomerTicketSearchResultShort
-msgid "Page"
-msgstr "Strana"
 
 #. Template: CustomerTicketSearchResultShort
 msgid "Search Results for"
@@ -10052,6 +10413,10 @@ msgstr ""
 #. Template: Header
 msgid "You are logged in as"
 msgstr "Prijavljeni ste kao"
+
+#. Template: Header
+msgid "There are new chat requests available. Please visit the chat manager."
+msgstr ""
 
 #. Template: Installer
 msgid "JavaScript not available"
@@ -10215,7 +10580,7 @@ msgstr ""
 
 #. Template: InstallerDBmssql
 msgid "New"
-msgstr "Nov"
+msgstr "Novi"
 
 #. Template: InstallerDBmssql
 msgid ""
@@ -10374,10 +10739,6 @@ msgstr "Nedovoljna ovlaštenja"
 msgid "Back to the previous page"
 msgstr "Vratite se na prethodnu stranicu"
 
-#. Template: Notify
-msgid "Close this message"
-msgstr ""
-
 #. Template: Pagination
 msgid "Show first page"
 msgstr "Pokaži prvu stranicu"
@@ -10427,6 +10788,10 @@ msgid "Go back to the previous page"
 msgstr "Vratite se na prethodnu stranicu"
 
 #. SysConfig
+msgid " (work units)"
+msgstr ""
+
+#. SysConfig
 msgid "\"%s\"-notification sent to \"%s\"."
 msgstr "\"%s\" - obavijest poslana k \"%s\"."
 
@@ -10447,10 +10812,18 @@ msgid "(UserLogin) Lastname, Firstname"
 msgstr ""
 
 #. SysConfig
+msgid "A Website"
+msgstr ""
+
+#. SysConfig
 msgid ""
 "A list of dynamic fields that are merged into the main ticket during a merge"
 " operation. Only dynamic fields that are empty in the main ticket will be "
 "set."
+msgstr ""
+
+#. SysConfig
+msgid "A picture"
 msgstr ""
 
 #. SysConfig
@@ -10604,8 +10977,9 @@ msgid ""
 msgstr "Modul sučelja zaposlenih za provjeru dolaznih poruka u uvećanom pregledu kartice ako \"S/MIME\"-ključ postoji i dostupan je."
 
 #. SysConfig
-msgid "Agent interface notification module to check the used charset."
-msgstr "Modul sučelja zaposlenih za provjeru upotrijebljenog skupa znakova."
+msgid ""
+"Agent interface notification module to see the number of locked tickets."
+msgstr ""
 
 #. SysConfig
 msgid ""
@@ -11038,6 +11412,10 @@ msgid "Comment for new history entries in the customer interface."
 msgstr "Komentar za nove povijesne unose u korisničkom sučelju."
 
 #. SysConfig
+msgid "Comment2"
+msgstr ""
+
+#. SysConfig
 msgid "Company Status"
 msgstr ""
 
@@ -11198,6 +11576,10 @@ msgid "Create new process ticket"
 msgstr ""
 
 #. SysConfig
+msgid "Custom RSS Feed"
+msgstr ""
+
+#. SysConfig
 msgid ""
 "Custom text for the page shown to customers that have no tickets yet (if you"
 " need those text translated add them to a custom translation module)."
@@ -11244,6 +11626,14 @@ msgstr ""
 #. SysConfig
 msgid "Customer request via web."
 msgstr "Korisnički Web zahtjev."
+
+#. SysConfig
+msgid "Customer user search"
+msgstr ""
+
+#. SysConfig
+msgid "CustomerID search"
+msgstr ""
 
 #. SysConfig
 msgid "CustomerName"
@@ -11359,6 +11749,18 @@ msgstr ""
 
 #. SysConfig
 msgid "Define the max depth of queues."
+msgstr ""
+
+#. SysConfig
+msgid "Define the queue comment 2."
+msgstr ""
+
+#. SysConfig
+msgid "Define the service comment 2."
+msgstr ""
+
+#. SysConfig
+msgid "Define the sla comment 2."
 msgstr ""
 
 #. SysConfig
@@ -12699,6 +13101,12 @@ msgstr "Određuje modul za autentikaciju korisnika."
 
 #. SysConfig
 msgid ""
+"Defines the module to display a notification in different interfaces on "
+"different occasions for OTRS Business Solution™."
+msgstr ""
+
+#. SysConfig
+msgid ""
 "Defines the module to display a notification in the agent interface if the "
 "scheduler is not running."
 msgstr ""
@@ -13011,7 +13419,7 @@ msgstr ""
 #. SysConfig
 msgid ""
 "Defines the receipent target of the phone ticket and the sender of the email"
-" ticket (\"Queue\" shows all queues, \"SystemAddress\" displays all system "
+" ticket (\"Queue\" shows all queues, \"System address\" displays all system "
 "addresses) in the agent interface."
 msgstr ""
 
@@ -13267,6 +13675,10 @@ msgstr ""
 
 #. SysConfig
 msgid "Deletes requested sessions if they have timed out."
+msgstr ""
+
+#. SysConfig
+msgid "Deploy and manage OTRS Business Solution™."
 msgstr ""
 
 #. SysConfig
@@ -13772,6 +14184,10 @@ msgid "Escalation view"
 msgstr "Pregled eskalacija"
 
 #. SysConfig
+msgid "EscalationTime"
+msgstr ""
+
+#. SysConfig
 msgid ""
 "Event module registration. For more performance you can define a trigger "
 "event (e. g. Event => TicketCreate)."
@@ -13874,6 +14290,10 @@ msgid "Filter incoming emails."
 msgstr "Filtriranje dolaznih poruka."
 
 #. SysConfig
+msgid "First Queue"
+msgstr ""
+
+#. SysConfig
 msgid "FirstLock"
 msgstr ""
 
@@ -13963,6 +14383,10 @@ msgstr ""
 
 #. SysConfig
 msgid "Fulltext index regex filters to remove parts of the text."
+msgstr ""
+
+#. SysConfig
+msgid "Fulltext search"
 msgstr ""
 
 #. SysConfig
@@ -14367,6 +14791,12 @@ msgstr ""
 
 #. SysConfig
 msgid ""
+"If enabled, the customer can search for tickets in all services (regardless "
+"what services are assigned to the customer)."
+msgstr ""
+
+#. SysConfig
+msgid ""
 "If enabled, the different overviews (Dashboard, LockedView, QueueView) will "
 "automatically refresh after the specified time."
 msgstr ""
@@ -14499,6 +14929,10 @@ msgid "Lastname, Firstname (UserLogin)"
 msgstr ""
 
 #. SysConfig
+msgid "Left"
+msgstr ""
+
+#. SysConfig
 msgid "Link agents to groups."
 msgstr "Poveži zaposlene sa gupama."
 
@@ -14597,6 +15031,10 @@ msgstr ""
 msgid ""
 "List of default Standard Templates which are assigned automatically to new "
 "Queues upon creation."
+msgstr ""
+
+#. SysConfig
+msgid "List view"
 msgstr ""
 
 #. SysConfig
@@ -14872,6 +15310,10 @@ msgid "New Ticket [%s] created (Q=%s;P=%s;S=%s)."
 msgstr "Nova kartica [%s] otvorena (Q=%s;P=%s;S=%s)."
 
 #. SysConfig
+msgid "New Window"
+msgstr ""
+
+#. SysConfig
 msgid "New email ticket"
 msgstr "Nova kartica E-pošte"
 
@@ -14908,6 +15350,10 @@ msgid "No Notification"
 msgstr ""
 
 #. SysConfig
+msgid "None"
+msgstr ""
+
+#. SysConfig
 msgid "Notification sent to \"%s\"."
 msgstr "Obavijest poslana k \"%s\"."
 
@@ -14940,6 +15386,10 @@ msgstr ""
 #. SysConfig
 msgid "Old: \"%s\" New: \"%s\""
 msgstr "Staro: \"%s\" Novo: \"%s\""
+
+#. SysConfig
+msgid "Online"
+msgstr ""
 
 #. SysConfig
 msgid "Open tickets (customer user)"
@@ -15327,7 +15777,7 @@ msgstr ""
 msgid ""
 "Replaces the original sender with current customer's email address on "
 "compose answer in the ticket compose screen of the agent interface."
-msgstr "Zamjenjuje originalnog pošiljaoca adresom E-pošte trenutnog korisnika pri kreiranju odgovora u prozoru za pisanje odgovora sučelja zaposlenika."
+msgstr "Zamjenjuje originalnog pošiljatelja adresom E-pošte trenutnog korisnika pri kreiranju odgovora u prozoru za pisanje odgovora sučelja zaposlenika."
 
 #. SysConfig
 msgid ""
@@ -15434,11 +15884,21 @@ msgid ""
 msgstr ""
 
 #. SysConfig
+msgid "Right"
+msgstr ""
+
+#. SysConfig
 msgid "Roles <-> Groups"
 msgstr "Uloge <-> Grupe"
 
 #. SysConfig
 msgid "Running Process Tickets"
+msgstr ""
+
+#. SysConfig
+msgid ""
+"Runs an initial wildcard search of the existing customer company when "
+"accessing the AdminCustomerCompany module."
 msgstr ""
 
 #. SysConfig
@@ -15460,12 +15920,17 @@ msgid "S/MIME Certificate Upload"
 msgstr "Slanje \"S/MIME\" sertifikata"
 
 #. SysConfig
+msgid "Sample command output"
+msgstr ""
+
+#. SysConfig
 msgid ""
 "Saves the attachments of articles. \"DB\" stores all data in the database "
 "(not recommended for storing big attachments). \"FS\" stores the data on the"
 " filesystem; this is faster but the webserver should run under the OTRS "
 "user. You can switch between the modules even on a system that is already in"
-" production without any loss of data."
+" production without any loss of data. Note: Searching for attachment names "
+"is not supported when \"FS\" is used."
 msgstr ""
 
 #. SysConfig
@@ -15486,6 +15951,10 @@ msgstr ""
 
 #. SysConfig
 msgid "Search backend router."
+msgstr ""
+
+#. SysConfig
+msgid "Second Queue"
 msgstr ""
 
 #. SysConfig
@@ -15593,7 +16062,7 @@ msgstr ""
 
 #. SysConfig
 msgid "Set sender email addresses for this system."
-msgstr "Sistemska adresa pošiljaoca."
+msgstr "Sistemska adresa pošiljatelja."
 
 #. SysConfig
 msgid ""
@@ -16717,7 +17186,7 @@ msgstr ""
 
 #. SysConfig
 msgid "Skin"
-msgstr ""
+msgstr "Tema"
 
 #. SysConfig
 msgid "SolutionDiffInMin"
@@ -16725,6 +17194,14 @@ msgstr ""
 
 #. SysConfig
 msgid "SolutionInMin"
+msgstr ""
+
+#. SysConfig
+msgid "Some description!"
+msgstr ""
+
+#. SysConfig
+msgid "Some picture description!"
 msgstr ""
 
 #. SysConfig
@@ -16919,6 +17396,14 @@ msgstr ""
 msgid ""
 "Specify how many sub directory levels to use when creating cache files. This"
 " should prevent too many cache files being in one directory."
+msgstr ""
+
+#. SysConfig
+msgid ""
+"Specify the channel to be used to fetch OTRS Business Solution™ updates. "
+"Warning: Development releases might not be complete, your system might "
+"experience unrecoverable errors and on extreme cases could become "
+"unresponsive!"
 msgstr ""
 
 #. SysConfig
@@ -17192,6 +17677,16 @@ msgid "Toolbar Item for a shortcut."
 msgstr ""
 
 #. SysConfig
+msgid "Tree view"
+msgstr ""
+
+#. SysConfig
+msgid ""
+"Turns off SSL certificate validation, for example if you use a transparent "
+"HTTPS proxy. Use at your own risk!"
+msgstr ""
+
+#. SysConfig
 msgid "Turns on drag and drop for the main navigation."
 msgstr ""
 
@@ -17319,6 +17814,10 @@ msgstr "Kada su kartice spojeni, korisnik može biti informiran E-poštom postav
 
 #. SysConfig
 msgid "Write a new, outgoing mail"
+msgstr ""
+
+#. SysConfig
+msgid "Yes, but hide archived tickets"
 msgstr ""
 
 #. SysConfig

@@ -1,6 +1,6 @@
 # --
 # Kernel/System/Web/InterfaceAgent.pm - the agent interface file (incl. auth)
-# Copyright (C) 2001-2014 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -14,6 +14,7 @@ use warnings;
 
 our @ObjectDependencies = (
     'Kernel::Config',
+    'Kernel::Language',
     'Kernel::Output::HTML::Layout',
     'Kernel::System::Auth',
     'Kernel::System::AuthSession',
@@ -195,8 +196,6 @@ sub Run {
 
     # application and add-on application common objects
     my %CommonObject = %{ $Self->{ConfigObject}->Get('Frontend::CommonObject') };
-    $Self->{TicketObject} = $Kernel::OM->Get('Kernel::System::Ticket');
-
     for my $Key ( sort keys %CommonObject ) {
         $Self->{$Key} //= $Kernel::OM->Get( $CommonObject{$Key} );
     }
@@ -286,8 +285,9 @@ sub Run {
                         Type => 'Info',
                         What => 'Message',
                         )
-                        || $AuthObject->GetLastErrorMessage()
-                        || 'Login failed! Your user name or password was entered incorrectly.',
+                        || $LayoutObject->{LanguageObject}->Translate( $AuthObject->GetLastErrorMessage() )
+                        || $LayoutObject->{LanguageObject}
+                        ->Translate('Login failed! Your user name or password was entered incorrectly.'),
                     LoginFailed => 1,
                     User        => $User,
                     %Param,
@@ -339,12 +339,14 @@ sub Run {
 
         # get groups rw/ro
         for my $Type (qw(rw ro)) {
-            my %GroupData = $Self->{GroupObject}->GroupMemberList(
-                Result => 'HASH',
-                Type   => $Type,
+
+            my %GroupData = $Self->{GroupObject}->PermissionUserGet(
                 UserID => $UserData{UserID},
+                Type   => $Type,
             );
+
             for ( sort keys %GroupData ) {
+
                 if ( $Type eq 'rw' ) {
                     $UserData{"UserIsGroup[$GroupData{$_}]"} = 'Yes';
                 }
@@ -480,7 +482,7 @@ sub Run {
             $LayoutObject->Print(
                 Output => \$LayoutObject->Login(
                     Title   => 'Logout',
-                    Message => 'Session invalid. Please log in again.',
+                    Message => $LayoutObject->{LanguageObject}->Translate('Session invalid. Please log in again.'),
                     %Param,
                 ),
             );
@@ -560,7 +562,7 @@ sub Run {
             $LayoutObject->Print(
                 Output => \$LayoutObject->Login(
                     Title   => 'Login',
-                    Message => 'Feature not active!',
+                    Message => $LayoutObject->{LanguageObject}->Translate('Feature not active!'),
                 ),
             );
             return;
@@ -699,12 +701,15 @@ sub Run {
             );
             return;
         }
+        my $Message = $LayoutObject->{LanguageObject}->Translate(
+            'Sent new password to %s. Please check your email.',
+            $UserData{UserEmail},
+        );
         $LayoutObject->Print(
             Output => \$LayoutObject->Login(
-                Title => 'Login',
-                Message =>
-                    "Sent new password to \%s. Please check your email.\", \"$UserData{UserEmail}",
-                User => $User,
+                Title   => 'Login',
+                Message => $Message,
+                User    => $User,
                 %Param,
             ),
         );
@@ -765,9 +770,9 @@ sub Run {
                             Secure   => scalar $CookieSecureAttribute,
                             HTTPOnly => 1,
                         ),
-                        %Param,
                     },
-                    }
+                    %Param,
+                },
             );
 
             $Kernel::OM->ObjectsDiscard( Objects => ['Kernel::Output::HTML::Layout'] );
@@ -798,8 +803,9 @@ sub Run {
             # show login
             $LayoutObject->Print(
                 Output => \$LayoutObject->Login(
-                    Title   => 'Login',
-                    Message => $Self->{SessionObject}->SessionIDErrorMessage(),
+                    Title => 'Login',
+                    Message =>
+                        $LayoutObject->{LanguageObject}->Translate( $Self->{SessionObject}->SessionIDErrorMessage() ),
                     %Param,
                 ),
             );

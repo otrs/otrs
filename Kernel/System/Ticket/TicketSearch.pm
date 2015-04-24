@@ -1,6 +1,6 @@
 # --
 # Kernel/System/Ticket/TicketSearch.pm - all ticket search functions
-# Copyright (C) 2001-2014 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -37,8 +37,10 @@ To find tickets in your system.
         # result limit
         Limit => 100,
 
-        # Use TicketSearch as a ticket filter on a single ticket
+        # Use TicketSearch as a ticket filter on a single ticket,
+        # or a predefined ticket list
         TicketID     => 1234,
+        TicketID     => [1234, 1235],
 
         # ticket number (optional) as STRING or as ARRAYREF
         TicketNumber => '%123546%',
@@ -132,6 +134,9 @@ To find tickets in your system.
             SmallerThanEquals => '2002-02-02 02:02:02',
         }
 
+        # User ID for searching tickets by ticket flags (defaults to UserID)
+        TicketFlagUserID => 1,
+
         # search for ticket flags
         TicketFlag => {
             Seen => 1,
@@ -141,6 +146,15 @@ To find tickets in your system.
         # one given:
         NotTicketFlag => {
             Seen => 1,
+        },
+
+        # User ID for searching tickets by article flags (defaults to UserID)
+        ArticleFlagUserID => 1,
+
+
+        # search for tickets by the presence of flags on articles
+        ArticleFlag => {
+            Important => 1,
         },
 
         # article stuff (optional)
@@ -305,6 +319,7 @@ sub TicketSearch {
     if ( !$Param{ContentSearch} ) {
         $Param{ContentSearch} = 'AND';
     }
+
     my %SortOptions = (
         Owner                  => 'st.user_id',
         Responsible            => 'st.responsible_user_id',
@@ -500,7 +515,7 @@ sub TicketSearch {
     # use also history table if required
     ARGUMENT:
     for my $Key ( sort keys %Param ) {
-        if ( $Key =~ /^(Ticket(Close|Change)Time(Newer|Older)(Date|Minutes)|Created.+?)/ ) {
+        if ( $Param{$Key} && $Key =~ /^(Ticket(Close|Change)Time(Newer|Older)(Date|Minutes)|Created.+?)/ ) {
             $SQLFrom .= 'INNER JOIN ticket_history th ON st.id = th.ticket_id ';
             last ARGUMENT;
         }
@@ -513,10 +528,15 @@ sub TicketSearch {
 
     my $SQLExt = ' WHERE 1=1';
 
-    # Limit the search to just one TicketID (used by the GenericAgent
+    # Limit the search to just one (or a list) TicketID (used by the GenericAgent
     #   to filter for events on single tickets with the job's ticket filter).
     if ( $Param{TicketID} ) {
-        $SQLExt .= ' AND st.id = ' . $DBObject->Quote( $Param{TicketID}, 'Integer' );
+        $SQLExt .= $Self->_InConditionGet(
+            TableColumn => 'st.id',
+            IDRef       => ref( $Param{TicketID} ) && ref( $Param{TicketID} ) eq 'ARRAY'
+            ? $Param{TicketID}
+            : [ $DBObject->Quote( $Param{TicketID}, 'Integer' ) ],
+        );
     }
 
     # add ticket flag table
@@ -524,6 +544,17 @@ sub TicketSearch {
         my $Index = 1;
         for my $Key ( sort keys %{ $Param{TicketFlag} } ) {
             $SQLFrom .= "INNER JOIN ticket_flag tf$Index ON st.id = tf$Index.ticket_id ";
+            $Index++;
+        }
+    }
+
+    # add article and article_flag tables
+    if ( $Param{ArticleFlag} ) {
+        my $Index = 1;
+        for my $Key ( sort keys %{ $Param{ArticleFlag} } ) {
+            $SQLFrom .= "INNER JOIN article ataf$Index ON st.id = ataf$Index.ticket_id ";
+            $SQLFrom .=
+                "INNER JOIN article_flag taf$Index ON ataf$Index.id = taf$Index.article_id ";
             $Index++;
         }
     }
@@ -866,33 +897,32 @@ sub TicketSearch {
         }
     }
 
-    my @GroupIDs;
+    my %GroupList;
 
     # user groups
     if ( $Param{UserID} && $Param{UserID} != 1 ) {
 
         # get users groups
-        @GroupIDs = $Kernel::OM->Get('Kernel::System::Group')->GroupMemberList(
+        %GroupList = $Kernel::OM->Get('Kernel::System::Group')->PermissionUserGet(
             UserID => $Param{UserID},
             Type   => $Param{Permission} || 'ro',
-            Result => 'ID',
         );
 
         # return if we have no permissions
-        return if !@GroupIDs;
+        return if !%GroupList;
     }
 
     # customer groups
     elsif ( $Param{CustomerUserID} ) {
 
-        @GroupIDs = $Kernel::OM->Get('Kernel::System::CustomerGroup')->GroupMemberList(
+        %GroupList = $Kernel::OM->Get('Kernel::System::CustomerGroup')->GroupMemberList(
             UserID => $Param{CustomerUserID},
             Type   => $Param{Permission} || 'ro',
-            Result => 'ID',
+            Result => 'HASH',
         );
 
         # return if we have no permissions
-        return if !@GroupIDs;
+        return if !%GroupList;
 
         # get all customer ids
         $SQLExt .= ' AND (';
@@ -929,8 +959,11 @@ sub TicketSearch {
     }
 
     # add group ids to sql string
-    if (@GroupIDs) {
-        $SQLExt .= " AND sq.group_id IN (${\(join ', ' , sort {$a <=> $b} @GroupIDs)}) ";
+    if (%GroupList) {
+
+        my $GroupIDString = join ',', sort keys %GroupList;
+
+        $SQLExt .= " AND sq.group_id IN ($GroupIDString) ";
     }
 
     # current priority lookup
@@ -1080,6 +1113,25 @@ sub TicketSearch {
         }
     }
 
+    # add article flag extension
+    if ( $Param{ArticleFlag} ) {
+        my $ArticleFlagUserID = $Param{ArticleFlagUserID} || $Param{UserID};
+        return if !defined $ArticleFlagUserID;
+
+        my $Index = 1;
+        for my $Key ( sort keys %{ $Param{ArticleFlag} } ) {
+            my $Value = $Param{ArticleFlag}->{$Key};
+            return if !defined $Value;
+
+            $SQLExt .= " AND taf$Index.article_key = '" . $DBObject->Quote($Key) . "'";
+            $SQLExt .= " AND taf$Index.article_value = '" . $DBObject->Quote($Value) . "'";
+            $SQLExt .= " AND taf$Index.create_by = "
+                . $DBObject->Quote( $ArticleFlagUserID, 'Integer' );
+
+            $Index++;
+        }
+    }
+
     if ( $Param{NotTicketFlag} ) {
         my $Index = 1;
         for my $Key ( sort keys %{ $Param{NotTicketFlag} } ) {
@@ -1126,7 +1178,13 @@ sub TicketSearch {
             next VALUE if !$Value;
 
             # replace wild card search
-            $Value =~ s/\*/%/gi;
+            if (
+                $Key ne 'CustomerIDRaw'
+                && $Key ne 'CustomerUserLoginRaw'
+                )
+            {
+                $Value =~ s/\*/%/gi;
+            }
 
             # check search attribute, we do not need to search for *
             next VALUE if $Value =~ /^\%{1,3}$/;
@@ -2177,6 +2235,97 @@ sub TicketSearch {
     }
 }
 
+=item SearchStringStopWordsFind()
+
+Find stop words within given search string.
+
+    my $StopWords = $TicketObject->SearchStringStopWordsFind(
+        SearchStrings => {
+            'Fulltext' => '(this AND is) OR test',
+            'From'     => 'myself',
+        },
+    );
+
+    Returns Hashref with found stop words.
+
+=cut
+
+sub SearchStringStopWordsFind {
+    my ( $Self, %Param ) = @_;
+
+    # check needed stuff
+    for my $Key (qw(SearchStrings)) {
+        if ( !$Param{$Key} ) {
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
+                Priority => 'error',
+                Message  => "Need $Key!",
+            );
+            return;
+        }
+    }
+
+    # create lower case stop words
+    my %StopWordRaw = %{ $Kernel::OM->Get('Kernel::Config')->Get('Ticket::SearchIndex::StopWords') || {} };
+    my %StopWord;
+    WORD:
+    for my $Word ( sort keys %StopWordRaw ) {
+
+        next WORD if !$Word;
+        $Word = lc $Word;
+        $StopWord{$Word} = 1;
+    }
+
+    my %StopWordsFound;
+    SEARCHSTRING:
+    for my $Key ( sort keys %{ $Param{SearchStrings} } ) {
+        my $SearchString = $Param{SearchStrings}->{$Key};
+        my %Result       = $Kernel::OM->Get('Kernel::System::DB')->QueryCondition(
+            'Key'      => '.',             # resulting SQL is irrelevant
+            'Value'    => $SearchString,
+            'BindMode' => 1,
+        );
+
+        next SEARCHSTRING if !%Result || ref $Result{Values} ne 'ARRAY' || !@{ $Result{Values} };
+
+        my %Words;
+        for my $Value ( @{ $Result{Values} } ) {
+            my @Words = split '\s+', $$Value;
+            for my $Word (@Words) {
+                $Words{ lc $Word } = 1;
+            }
+        }
+
+        @{ $StopWordsFound{$Key} } = grep { $StopWord{$_} } sort keys %Words;
+    }
+
+    return \%StopWordsFound;
+}
+
+=item SearchStringStopWordsUsageWarningActive()
+
+Checks if warnings for stop words in search strings are active or not.
+
+    my $WarningActive = $TicketObject->SearchStringStopWordsUsageWarningActive();
+
+=cut
+
+sub SearchStringStopWordsUsageWarningActive {
+    my ( $Self, %Param ) = @_;
+
+    my $ConfigObject        = $Kernel::OM->Get('Kernel::Config');
+    my $SearchIndexModule   = $ConfigObject->Get('Ticket::SearchIndexModule');
+    my $WarnOnStopWordUsage = $ConfigObject->Get('Ticket::SearchIndex::WarnOnStopWordUsage') || 0;
+    if (
+        $SearchIndexModule eq 'Kernel::System::Ticket::ArticleSearchIndex::StaticDB'
+        && $WarnOnStopWordUsage
+        )
+    {
+        return 1;
+    }
+
+    return 0;
+}
+
 =begin Internal:
 
 =cut
@@ -2214,11 +2363,36 @@ sub _InConditionGet {
     my @SortedIDs = sort { $a <=> $b } @{ $Param{IDRef} };
 
     # quote values
+    SORTEDID:
     for my $Value (@SortedIDs) {
-        return if !defined $Kernel::OM->Get('Kernel::System::DB')->Quote( $Value, 'Integer' );
+        next SORTEDID if !defined $Kernel::OM->Get('Kernel::System::DB')->Quote( $Value, 'Integer' );
     }
 
-    return " AND $Param{TableColumn} IN (" . ( join ',', @SortedIDs ) . ")";
+    # split IN statement with more than 900 elements in more statements combined with OR
+    # because Oracle doesn't support more than 1000 elements for one IN statement.
+    my @SQLStrings;
+    while ( scalar @SortedIDs ) {
+
+        # remove section in the array
+        my @SortedIDsPart = splice @SortedIDs, 0, 900;
+
+        # link together IDs
+        my $IDString = join ', ', @SortedIDsPart;
+
+        # add new statement
+        push @SQLStrings, " $Param{TableColumn} IN ($IDString) ";
+    }
+
+    my $SQL = '';
+    if (@SQLStrings) {
+
+        # combine statements
+        $SQL = join ' OR ', @SQLStrings;
+
+        # encapsulate conditions
+        $SQL = ' AND ( ' . $SQL . ' ) ';
+    }
+    return $SQL;
 }
 
 1;

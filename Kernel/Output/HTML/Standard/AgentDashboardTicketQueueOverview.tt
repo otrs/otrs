@@ -1,6 +1,6 @@
 # --
 # AgentDashboardTicketQueueOverview.tt - provides HTML for Ticket Queue Overview
-# Copyright (C) 2001-2014 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -19,7 +19,7 @@
     <tbody>
 [% RenderBlockStart("ContentLargeTicketQueueOverviewQueueName") %]
         <tr class="Row">
-            <td>[% Data.QueueName | html %]</td>
+            <td><a class="AsBlock" href="[% Env("Baselink") %]Action=AgentTicketQueue;QueueID=[% Data.QueueID | uri %]">[% Data.QueueName | html %]</a></td>
 [% RenderBlockStart("ContentLargeTicketQueueOverviewQueueResults") %]
             <td><a class="AsBlock" href="[% Env("Baselink") %]Action=AgentTicketSearch;Subaction=Search;[% Env("ChallengeTokenParam") | html %];StateIDs=[% Data.StateID | uri %];QueueIDs=[% Data.QueueID | uri %];[% Data.Sort | html %]">[% Translate(Data.Number) | html %]</a></td>
 [% RenderBlockEnd("ContentLargeTicketQueueOverviewQueueResults") %]

@@ -1,6 +1,6 @@
 # --
 # Kernel/Modules/AgentStats.pm - stats module
-# Copyright (C) 2001-2014 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -30,7 +30,7 @@ sub new {
     for my $NeededData (
         qw(
         GroupObject   ParamObject  DBObject   ModuleReg  LayoutObject
-        LogObject     ConfigObject UserObject MainObject TimeObject
+        LogObject     ConfigObject UserObject MainObject TimeObject TicketObject
         SessionObject UserID       Subaction  AccessRo   SessionID
         EncodeObject
         )
@@ -677,6 +677,44 @@ sub Run {
                 Priority => 'Error',
             );
         }
+
+        # Show warning if restrictions contain stop words within ticket search.
+        if (
+            $Stat->{UseAsRestriction}
+            && ref $Stat->{UseAsRestriction} eq 'ARRAY'
+            && $Self->{TicketObject}->SearchStringStopWordsUsageWarningActive()
+            )
+        {
+            my %StopWordFields = $Self->_StopWordFieldsGet();
+            my %StopWordStrings;
+
+            RESTRICTION:
+            for my $Restriction ( @{ $Stat->{UseAsRestriction} } ) {
+                next RESTRICTION if !$Restriction->{Name};
+                next RESTRICTION if !$StopWordFields{ $Restriction->{Name} };
+                next RESTRICTION if !$Restriction->{SelectedValues};
+                next RESTRICTION if ref $Restriction->{SelectedValues} ne 'ARRAY';
+
+                for my $StopWordString ( @{ $Restriction->{SelectedValues} } ) {
+                    $StopWordStrings{ $Restriction->{Name} } = $StopWordString;
+                }
+            }
+
+            if (%StopWordStrings) {
+                my %StopWordsServerErrors = $Self->_StopWordsServerErrorsGet(%StopWordStrings);
+                if (%StopWordsServerErrors) {
+                    my $Info = $Self->{LayoutObject}->{LanguageObject}->Translate(
+                        'Please check restrictions of this stat for errors.'
+                    );
+
+                    $Output .= $Self->{LayoutObject}->Notify(
+                        Info     => $Info,
+                        Priority => 'Error',
+                    );
+                }
+            }
+        }
+
         $Output .= $Self->_Notify(
             StatData => $Stat,
             Section  => 'All'
@@ -1105,6 +1143,7 @@ sub Run {
             my $Stat             = $Self->{StatsObject}->StatsGet( StatID => $Param{StatID} );
             my $Index            = 0;
             my $SelectFieldError = 0;
+            my $StopWordError    = 0;
             $Data{StatType} = $Stat->{StatType};
 
             OBJECTATTRIBUTE:
@@ -1183,8 +1222,24 @@ sub Run {
                         );
                     }
                 }
-                $Index++;
 
+                # check for stop words
+                my %StopWordFields = $Self->_StopWordFieldsGet();
+
+                # only check if a stop word has been found in any one of the input fields
+                # as soon as a stop word has been found, no further check of other input fields is necessary
+                if ( !$StopWordError && $StopWordFields{$Element} ) {
+                    my $Value = join( ' ', @{ $Data{UseAsRestriction}[$Index]{SelectedValues} } );
+                    my %StopWordsServerErrors = $Self->_StopWordsServerErrorsGet(
+                        $Element => $Value,
+                    );
+
+                    if (%StopWordsServerErrors) {
+                        $StopWordError = 1;
+                    }
+                }
+
+                $Index++;
             }
 
             $Data{UseAsRestriction} ||= [];
@@ -1194,7 +1249,7 @@ sub Run {
                 StatData => \%Data,
                 Section  => 'Restrictions'
             );
-            if ( @Notify || $SelectFieldError ) {
+            if ( @Notify || $SelectFieldError || $StopWordError ) {
                 $Subaction = 'EditRestrictions';
             }
             elsif ( $Param{Back} ) {
@@ -1852,6 +1907,23 @@ sub Run {
             $BlockData{Element} = $ObjectAttribute->{Element};
             $BlockData{Name}    = $ObjectAttribute->{Name};
 
+            # stop word check
+            my %StopWordFields = $Self->_StopWordFieldsGet();
+            if ( $StopWordFields{ $ObjectAttribute->{Name} } ) {
+                my %StopWordsServerErrors = $Self->_StopWordsServerErrorsGet(
+                    $ObjectAttribute->{Name} => $BlockData{SelectedValue},
+                );
+
+                if ( $StopWordsServerErrors{ $ObjectAttribute->{Name} . 'Invalid' } ) {
+                    $BlockData{Invalid} = $StopWordsServerErrors{ $ObjectAttribute->{Name} . 'Invalid' };
+
+                    if ( $StopWordsServerErrors{ $ObjectAttribute->{Name} . 'InvalidTooltip' } ) {
+                        $BlockData{InvalidTooltip}
+                            = $StopWordsServerErrors{ $ObjectAttribute->{Name} . 'InvalidTooltip' };
+                    }
+                }
+            }
+
             # show the attribute block
             $Self->{LayoutObject}->Block(
                 Name => 'Attribute',
@@ -1934,27 +2006,26 @@ sub Run {
         if ( !$Self->{AccessRw} ) {
             my $UserPermission = 0;
 
-            # get user groups
-            my @Groups = $Self->{GroupObject}->GroupMemberList(
-                UserID => $Self->{UserID},
-                Type   => 'ro',
-                Result => 'ID',
-            );
-
             return $Self->{LayoutObject}->NoPermission( WithHeader => 'yes' ) if !$Stat->{Valid};
 
-            MARKE:
+            # get user groups
+            my %GroupList = $Self->{GroupObject}->PermissionUserGet(
+                UserID => $Self->{UserID},
+                Type   => 'ro',
+            );
+
+            GROUPID:
             for my $GroupID ( @{ $Stat->{Permission} } ) {
-                for my $UserGroup (@Groups) {
-                    if ( $GroupID == $UserGroup ) {
-                        $UserPermission = 1;
-                        last MARKE;
-                    }
-                }
+
+                next GROUPID if !$GroupID;
+                next GROUPID if !$GroupList{$GroupID};
+
+                $UserPermission = 1;
+
+                last GROUPID;
             }
 
             return $Self->{LayoutObject}->NoPermission( WithHeader => 'yes' ) if !$UserPermission;
-
         }
 
         # get params
@@ -2421,7 +2492,7 @@ sub Run {
                     Filename    => $Filename . '.pdf',
                     ContentType => 'application/pdf',
                     Content     => $PDFString,
-                    Type        => 'attachment',
+                    Type        => 'inline',
                 );
             }
 
@@ -2991,6 +3062,66 @@ sub _OutputHTMLTable {
     }
     $Output .= "</table>\n";
     return $Output;
+}
+
+sub _StopWordsServerErrorsGet {
+    my ( $Self, %Param ) = @_;
+
+    if ( !%Param ) {
+        $Self->{LayoutObject}->FatalError( Message => "Got no values to check." );
+    }
+
+    my %StopWordsServerErrors;
+    if ( !$Self->{TicketObject}->SearchStringStopWordsUsageWarningActive() ) {
+        return %StopWordsServerErrors;
+    }
+
+    my %SearchStrings;
+
+    FIELD:
+    for my $Field ( sort keys %Param ) {
+        next FIELD if !defined $Param{$Field};
+        next FIELD if !length $Param{$Field};
+
+        $SearchStrings{$Field} = $Param{$Field};
+    }
+
+    if (%SearchStrings) {
+
+        my $StopWords = $Self->{TicketObject}->SearchStringStopWordsFind(
+            SearchStrings => \%SearchStrings
+        );
+
+        FIELD:
+        for my $Field ( sort keys %{$StopWords} ) {
+            next FIELD if !defined $StopWords->{$Field};
+            next FIELD if ref $StopWords->{$Field} ne 'ARRAY';
+            next FIELD if !@{ $StopWords->{$Field} };
+
+            $StopWordsServerErrors{ $Field . 'Invalid' }        = 'ServerError';
+            $StopWordsServerErrors{ $Field . 'InvalidTooltip' } = $Self->{LayoutObject}->{LanguageObject}->Translate(
+                'Please remove the following words because they cannot be used for the ticket restrictions:'
+                )
+                . ' '
+                . join( ',', sort @{ $StopWords->{$Field} } );
+        }
+    }
+
+    return %StopWordsServerErrors;
+}
+
+sub _StopWordFieldsGet {
+    my ( $Self, %Param ) = @_;
+
+    my %StopWordFields = (
+        'From'    => 1,
+        'To'      => 1,
+        'Cc'      => 1,
+        'Subject' => 1,
+        'Body'    => 1,
+    );
+
+    return %StopWordFields;
 }
 
 =end Internal:

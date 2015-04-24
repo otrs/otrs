@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 # --
 # scripts/backup.pl - the backup script
-# Copyright (C) 2001-2014 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
 # --
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU AFFERO General Public License as published by
@@ -41,9 +41,8 @@ my $DBDump      = '';
 getopt( 'hcrtd', \%Opts );
 if ( exists $Opts{h} ) {
     print "backup.pl - backup script\n";
-    print "Copyright (C) 2001-2014 OTRS AG, http://otrs.com/\n";
-    print
-        "usage: backup.pl -d /data_backup_dir/ [-c gzip|bzip2] [-r 30] [-t fullbackup|nofullbackup|dbonly]\n";
+    print "Copyright (C) 2001-2015 OTRS AG, http://otrs.com/\n";
+    print "usage: backup.pl -d /data_backup_dir/ [-c gzip|bzip2] [-r 30] [-t fullbackup|nofullbackup|dbonly]\n";
     exit 1;
 }
 
@@ -88,7 +87,7 @@ local $Kernel::OM = Kernel::System::ObjectManager->new(
     },
     'Kernel::System::DB' => {
         AutoConnectNo => 1,
-        }
+    },
 );
 
 my $DatabaseHost = $Kernel::OM->Get('Kernel::Config')->Get('DatabaseHost');
@@ -112,7 +111,7 @@ elsif ( $DatabaseDSN =~ m/:pg/i ) {
     $DB     = 'PostgreSQL';
     $DBDump = 'pg_dump';
     if ( $DatabaseDSN !~ m/host=/i ) {
-        $DatabaseHost = ''
+        $DatabaseHost = '';
     }
 }
 else {
@@ -151,12 +150,7 @@ if ( !mkdir($Directory) ) {
 
 # backup Kernel/Config.pm
 print "Backup $Directory/Config.tar.gz ... ";
-if (
-    !system(
-        "tar -czf $Directory/Config.tar.gz Kernel/Config*"
-    )
-    )
-{
+if ( !system("tar -czf $Directory/Config.tar.gz Kernel/Config*") ) {
     print "done\n";
 }
 else {
@@ -216,12 +210,7 @@ if ( $DB =~ m/mysql/i ) {
     if ($DatabasePw) {
         $DatabasePw = "-p'$DatabasePw'";
     }
-    if (
-        !system(
-            "$DBDump -u $DatabaseUser $DatabasePw -h $DatabaseHost $Database > $Directory/DatabaseBackup.sql"
-        )
-        )
-    {
+    if ( !system("$DBDump -u $DatabaseUser $DatabasePw -h $DatabaseHost $Database > $Directory/DatabaseBackup.sql") ) {
         print "done\n";
     }
     else {
@@ -242,12 +231,7 @@ else {
         $DatabaseHost = "-h $DatabaseHost"
     }
 
-    if (
-        !system(
-            "$DBDump -f $Directory/DatabaseBackup.sql $DatabaseHost -U $DatabaseUser $Database"
-        )
-        )
-    {
+    if ( !system("$DBDump -f $Directory/DatabaseBackup.sql $DatabaseHost -U $DatabaseUser $Database") ) {
         print "done\n";
     }
     else {

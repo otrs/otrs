@@ -1,6 +1,6 @@
 # --
 # Kernel/System/ObjectManager.pm - central object and dependency manager
-# Copyright (C) 2001-2014 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -137,6 +137,11 @@ sub new {
     for my $Parameter ( sort keys %Param ) {
         $Self->{Param}->{$Parameter} = $Param{$Parameter};
     }
+
+    # Kernel::System::Encode->new() initializes the environment, so we need to
+    #   already create an instance here to make sure it is always done and done
+    #   at the beginning of things.
+    $Self->Get('Kernel::System::Encode');
 
     return $Self;
 }

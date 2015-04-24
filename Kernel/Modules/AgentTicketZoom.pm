@@ -1,6 +1,6 @@
 # --
 # Kernel/Modules/AgentTicketZoom.pm - to get a closer view
-# Copyright (C) 2001-2014 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -11,6 +11,8 @@ package Kernel::Modules::AgentTicketZoom;
 
 use strict;
 use warnings;
+
+use POSIX qw/ceil/;
 
 use Kernel::System::CustomerUser;
 use Kernel::System::DynamicField;
@@ -24,9 +26,9 @@ use Kernel::System::ProcessManagement::Transition;
 use Kernel::System::ProcessManagement::TransitionAction;
 use Kernel::System::SystemAddress;
 use Kernel::System::JSON;
-
 use Kernel::System::VariableCheck qw(:all);
-use POSIX qw/ceil/;
+
+our $ObjectManagerDisabled = 1;
 
 sub new {
     my ( $Type, %Param ) = @_;
@@ -80,6 +82,15 @@ sub new {
     my %UserPreferences = $Self->{UserObject}->GetPreferences(
         UserID => $Self->{UserID},
     );
+
+    if ( !defined $Self->{DoNotShowBrowserLinkMessage} ) {
+        if ( $UserPreferences{UserAgentDoNotShowBrowserLinkMessage} ) {
+            $Self->{DoNotShowBrowserLinkMessage} = 1;
+        }
+        else {
+            $Self->{DoNotShowBrowserLinkMessage} = 0;
+        }
+    }
 
     if ( !defined $Self->{ZoomExpand} ) {
         if (
@@ -1266,20 +1277,11 @@ sub MaskAgentZoom {
         # get next activity dialogs
         my $NextActivityDialogs;
         if ( $Ticket{$ActivityEntityIDField} ) {
-            $NextActivityDialogs = $ActivityData;
+            $NextActivityDialogs = ${ActivityData}->{ActivityDialog} // {};
         }
         my $ActivityName = $ActivityData->{Name};
 
-        if ( IsHashRefWithData($NextActivityDialogs) ) {
-
-            # we don't need the whole Activity config,
-            # just the Activity Dialogs of the current Activity
-            if ( IsHashRefWithData( $NextActivityDialogs->{ActivityDialog} ) ) {
-                %{$NextActivityDialogs} = %{ $NextActivityDialogs->{ActivityDialog} };
-            }
-            else {
-                $NextActivityDialogs = {};
-            }
+        if ($NextActivityDialogs) {
 
             # we have to check if the current user has the needed permissions to view the
             # different activity dialogs, so we loop over every activity dialog and check if there
@@ -2270,10 +2272,12 @@ sub _ArticleTree {
             }
 
             # special treatment for certain types, e.g. external notes from customers
-            elsif ($Item->{ArticleID}
+            elsif (
+                $Item->{ArticleID}
                 && $Item->{HistoryType} eq 'AddNote'
                 && IsHashRefWithData( $ArticlesByArticleID->{ $Item->{ArticleID} } )
-                && $ArticlesByArticleID->{ $Item->{ArticleID} }->{SenderType} eq 'customer' )
+                && $ArticlesByArticleID->{ $Item->{ArticleID} }->{SenderType} eq 'customer'
+                )
             {
                 $Item->{Class} = 'TypeIncoming';
 
@@ -2283,16 +2287,20 @@ sub _ArticleTree {
             }
 
             # special treatment for certain types, e.g. external notes from customers
-            elsif ($Item->{ArticleID}
+            elsif (
+                $Item->{ArticleID}
                 && IsHashRefWithData( $ArticlesByArticleID->{ $Item->{ArticleID} } )
-                && $ArticlesByArticleID->{ $Item->{ArticleID} }->{ArticleType} eq 'chat-external' )
+                && $ArticlesByArticleID->{ $Item->{ArticleID} }->{ArticleType} eq 'chat-external'
+                )
             {
                 $Item->{HistoryType} = 'ChatExternal';
                 $Item->{Class}       = 'TypeIncoming';
             }
-            elsif ($Item->{ArticleID}
+            elsif (
+                $Item->{ArticleID}
                 && IsHashRefWithData( $ArticlesByArticleID->{ $Item->{ArticleID} } )
-                && $ArticlesByArticleID->{ $Item->{ArticleID} }->{ArticleType} eq 'chat-internal' )
+                && $ArticlesByArticleID->{ $Item->{ArticleID} }->{ArticleType} eq 'chat-internal'
+                )
             {
                 $Item->{HistoryType} = 'ChatInternal';
                 $Item->{Class}       = 'TypeInternal';
@@ -2363,7 +2371,7 @@ sub _ArticleTree {
 
                             $Item->{ArticleData}->{BodyChat} .= $Self->{LayoutObject}->Output(
                                 Template =>
-                                    '<div class="ChatMessage">[[% Data.CreateTime | html %]] - [% Data.MessageText | html %]</div>',
+                                    '<div class="ChatMessage SystemGenerated"><span>[[% Data.CreateTime | html %]]</span> - [% Data.MessageText | html %]</div>',
                                 Data => $MessageData,
                             );
                         }
@@ -2371,13 +2379,18 @@ sub _ArticleTree {
 
                             $Item->{ArticleData}->{BodyChat} .= $Self->{LayoutObject}->Output(
                                 Template =>
-                                    '<div class="ChatMessage">[[% Data.CreateTime | html %]] - [% Data.ChatterName | html %]: [% Data.MessageText | html %]</div>',
+                                    '<div class="ChatMessage"><span>[[% Data.CreateTime | html %]]</span> - [% Data.ChatterName | html %]: [% Data.MessageText | html %]</div>',
                                 Data => $MessageData,
                             );
                         }
                         $ItemCounter++;
-                        last CHATITEM if $ItemCounter == 3;
+                        last CHATITEM if $ItemCounter == 7;
                     }
+                }
+                else {
+
+                    # remove empty lines
+                    $Item->{ArticleData}->{Body} =~ s{^[\n\r]+}{}xmsg;
                 }
             }
             else {
@@ -2914,6 +2927,13 @@ sub _ArticleItem {
         Name => $ViewMode,
         Data => {%Article},
     );
+
+    # show message about links in iframes, if user didn't close it already
+    if ( $ViewMode eq 'BodyHTML' && !$Self->{DoNotShowBrowserLinkMessage} ) {
+        $Self->{LayoutObject}->Block(
+            Name => 'BrowserLinkMessage',
+        );
+    }
 
     # restore plain body for further processing by ArticleViewModules
     if ( !$Self->{RichText} || !$Article{AttachmentIDOfHTMLBody} ) {

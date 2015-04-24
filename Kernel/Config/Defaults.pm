@@ -82,7 +82,7 @@ sub LoadDefaults {
 
     # ProductName
     # (Application name displayed in frontend.)
-    $Self->{ProductName} = 'OTRS 4';
+    $Self->{ProductName} = 'OTRS 5';
 
     # --------------------------------------------------- #
     # database settings                                   #
@@ -174,7 +174,7 @@ sub LoadDefaults {
         'hr' => 'Hrvatski',
         'hu' => 'Magyar',
         'it' => 'Italiano',
-        'ja' => 'Japanese (&#x65e5;&#x672c;&#x8a9e)',
+        'ja' => 'Japanese (&#x65e5;&#x672c;&#x8a9e;)',
         'lt' => 'Lietuvių kalba',
         'lv' => 'Latvijas',
         'ms' => 'Malay',
@@ -608,7 +608,7 @@ sub LoadDefaults {
     # Kernel::Modules::AgentInfo check key, if this user preferences key
     # is true, then the message is already accepted
 #    $Self->{InfoKey} = 'wpt22';
-    # shown InfoFile located under Kernel/Output/HTML/Standard/AgentInfo.dtl
+    # shown InfoFile located under Kernel/Output/HTML/Standard/AgentInfo.tt
 #    $Self->{InfoFile} = 'AgentInfo';
 
     # --------------------------------------------------- #
@@ -817,6 +817,8 @@ sub LoadDefaults {
 
     # tmp dir
     $Self->{TempDir} = '<OTRS_CONFIG_Home>/var/tmp';
+    # article dir
+    $Self->{ArticleDir} = '<OTRS_CONFIG_Home>/var/article';
 
     # html template dirs
     $Self->{TemplateDir}       = '<OTRS_CONFIG_Home>/Kernel/Output';
@@ -1177,7 +1179,7 @@ You can log in via the following URL:
     # Kernel::Modules::CustomerAccept check key, if this user preferences key
     # is true, then the message is already accepted
 #    $Self->{'CustomerPanel::InfoKey'} = 'CustomerAccept1';
-    # shown InfoFile located under Kernel/Output/HTML/Standard/CustomerAccept.dtl
+    # shown InfoFile located under Kernel/Output/HTML/Standard/CustomerAccept.tt
 #    $Self->{'CustomerPanel::InfoFile'} = 'CustomerAccept';
 
     # CustomerPanelLostPassword
@@ -1362,8 +1364,8 @@ via the Preferences button after logging in.
 #        AutoLoginCreationPrefix => 'auto',
 #        # admin can change customer preferences
 #        AdminSetPreferences => 1,
-#        # use customer company support (reference to company, See CustomerCompany settings)
-#        CustomerCompanySupport => 1,
+        # use customer company support (reference to company, See CustomerCompany settings)
+        CustomerCompanySupport => 1,
         # cache time to live in sec. - cache any database queries
         CacheTTL => 60 * 60 * 24,
 #        # just a read only source

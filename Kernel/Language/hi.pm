@@ -358,8 +358,6 @@ sub Data {
         'Dear Mrs. %s,' => 'प्रिय श्रीमती %s,',
         'Dear %s,' => 'प्रिय %s,',
         'Hello %s,' => 'नमस्कार %s,',
-        'This email address already exists. Please log in or reset your password.' =>
-            'यह ईमेल पता पहले से मौजूद है। प्रवेश करें या अपने कूटशब्द को पुनर्स्थापित करें।',
         'This email address is not allowed to register. Please contact support staff.' =>
             '',
         'New account created. Sent login information to %s. Please check your email.' =>
@@ -417,6 +415,20 @@ sub Data {
         'Problems processing server result. Please try again later.' => '',
         'Username and password do not match. Please try again.' => '',
         'The selected process is invalid!' => '',
+        'Upgrade to %s now!' => '',
+        '%s Go to the upgrade center %s' => '',
+        'The license for your %s is about to expire. Please make contact with %s to renew your contract!' =>
+            '',
+        'An update for your %s is available, but there is a conflict with your framework version! Please update your framework first!' =>
+            '',
+        'Your system was successfully upgraded to %s.' => '',
+        'There was a problem during the upgrade to %s.' => '',
+        '%s was correctly reinstalled.' => '',
+        'There was a problem reinstalling %s.' => '',
+        'Your %s was successfully updated.' => '',
+        'There was a problem during the upgrade of %s.' => '',
+        '%s was correctly uninstalled.' => '',
+        'There was a problem uninstalling %s.' => '',
 
         # Template: AAACalendar
         'New Year\'s Day' => '',
@@ -584,6 +596,8 @@ sub Data {
         'Setting character_set_database needs to be UNICODE or UTF8.' => '',
         'Table Charset' => '',
         'There were tables found which do not have utf8 as charset.' => '',
+        'InnoDB Log File Size' => '',
+        'The setting innodb_log_file_size must be at least 256 MB.' => '',
         'Maximum Query Size' => '',
         'The setting \'max_allowed_packet\' must be higher than 20 MB.' =>
             '',
@@ -689,6 +703,8 @@ sub Data {
             '',
         'mod_deflate Usage' => '',
         'Please install mod_deflate to improve GUI speed.' => '',
+        'mod_filter Usage' => '',
+        'Please install mod_filter if mod_deflate is used.' => '',
         'mod_headers Usage' => '',
         'Please install mod_headers to improve GUI speed.' => '',
         'Apache::Reload Usage' => '',
@@ -701,6 +717,7 @@ sub Data {
 
         # Template: AAATicket
         'Status View' => 'स्तर दृश्य',
+        'Service View' => '',
         'Bulk' => 'थोक',
         'Lock' => 'लॉक',
         'Unlock' => 'अनलॉक',
@@ -782,6 +799,7 @@ sub Data {
         'Forwarded message from' => '',
         'End forwarded message' => '',
         'Bounce Article to a different mail address' => '',
+        'Reply to note' => '',
         'new' => 'नया',
         'open' => 'खुला',
         'Open' => 'खुला',
@@ -843,6 +861,8 @@ sub Data {
         'Create new Email Ticket' => 'नया ईमेल टिकट बनाएँ।',
         'Phone-Ticket' => 'फोन टिकट',
         'Search Tickets' => 'टिकटें खोजें',
+        'Customer Realname' => '',
+        'Customer History' => '',
         'Edit Customer Users' => 'ग्राहक प्रयोक्ता संपादित करें',
         'Edit Customer' => 'ग्राहक संपादित करें',
         'Bulk Action' => 'थोक क्रिया',
@@ -1272,6 +1292,7 @@ sub Data {
         'This event is already attached to the job, Please use a different one.' =>
             '',
         'Delete this Event Trigger' => '',
+        'Remove selection' => '',
         'Select Tickets' => '',
         '(e. g. 10*5155 or 105658*)' => '(उदा: 10*5155 o 105658*)',
         '(e. g. 234321)' => '(उदा: 234321)',
@@ -1685,6 +1706,69 @@ sub Data {
         'To get the first 5 lines of the body (of the latest customer article).' =>
             'मुख्य-भाग (नवीनतम ग्राहक अनुच्छेद  के) के पहले 5 लाइनें प्राप्त करने के लिए।',
 
+        # Template: AdminOTRSBusinessInstalled
+        'Manage %s' => '',
+        'Downgrade to OTRS Free' => '',
+        '%s makes contact regularly with cloud.otrs.com to check on available updates and the validity of the underlying contract.' =>
+            '',
+        'Unauthorized Usage Detected' => '',
+        'This system uses the %s without a proper license! Please make contact with %s to renew or activate your contract!' =>
+            '',
+        '%s not Correctly Installed' => '',
+        'Your %s is not correctly installed. Please reinstall it with the button below.' =>
+            '',
+        'Reinstall %s' => '',
+        'Your %s is not correctly installed, and there is also an update available.' =>
+            '',
+        'You can either reinstall your current version or perform an update with the buttons below (update recommended).' =>
+            '',
+        'Update %s' => '',
+        '%s Not Yet Available' => '',
+        '%s will be available soon.' => '',
+        '%s Update Available' => '',
+        'An update for your %s is available! Please update at your earliest!' =>
+            '',
+        '%s Correctly Deployed' => '',
+        'Congratulations, your %s is correctly installed and up to date!' =>
+            '',
+
+        # Template: AdminOTRSBusinessNotInstalled
+        'Upgrade to %s' => '',
+        '%s will be available soon. Please check again in a few days.' =>
+            '',
+        'Please have a look at %s for more information.' => '',
+        'Your OTRS Free is the base for all future actions. Please register first before you continue with the upgrade process of %s!' =>
+            '',
+        'Register this System' => '',
+        'System Registration is disabled for your system. Please check your configuration.' =>
+            '',
+        'Before you can benefit from %s, please contact %s to get your %s contract.' =>
+            '',
+        'Connection to cloud.otrs.com via HTTPS couldn\'t be established. Please make sure that your OTRS can connect to cloud.otrs.com via port 443.' =>
+            '',
+        'With your existing contract you can only use a small part of the %s.' =>
+            '',
+        'If you would like to take full advantage of the %s get your contract upgraded now! Contact %s.' =>
+            '',
+
+        # Template: AdminOTRSBusinessUninstall
+        'Cancel downgrade and go back' => '',
+        'Go to OTRS Package Manager' => '',
+        'Sorry, but currently you can\'t downgrade due to the following packages which depend on %s:' =>
+            '',
+        'Vendor' => 'विक्रेता',
+        'Please uninstall the packages first using the package manager and try again.' =>
+            '',
+        'You are about to downgrade to OTRS Free and will lose the following features and all data related to these:' =>
+            '',
+        'Chat' => '',
+        'Timeline view in ticket zoom' => '',
+        'DynamicField ContactWithData' => '',
+        'DynamicField Database' => '',
+        'SLA Selection Dialog' => '',
+        'Ticket Attachment View' => '',
+        'The %s skin' => '',
+
         # Template: AdminPGP
         'PGP Management' => 'PGP प्रबंधन',
         'Use this feature if you want to work with PGP keys.' => 'इस सुविधा का उपयोग करें यदि आप PGP कुंजी के साथ काम करना चाहते हैं।',
@@ -1714,17 +1798,16 @@ sub Data {
         'Install' => 'स्थापित',
         'Install Package' => 'संकुल स्थापित करें',
         'Update repository information' => 'कोष जानकारी अद्यतन करें',
-        'Did not find a required feature? OTRS Group provides their service contract customers with exclusive Add-Ons:' =>
-            '',
         'Online Repository' => 'ऑनलाइन कोष',
-        'Vendor' => 'विक्रेता',
         'Module documentation' => 'मॉड्यूल दस्तावेज',
         'Upgrade' => 'उन्नयन',
         'Local Repository' => 'स्थानीय कोष',
         'This package is verified by OTRSverify (tm)' => '',
         'Uninstall' => 'स्थापना रद्द',
         'Reinstall' => 'पुनर्स्थापना',
-        'Feature Add-Ons' => '',
+        'Features for %s customers only' => '',
+        'With %s, you can benefit from the following optional features. Please make contact with %s if you need more information.' =>
+            '',
         'Download package' => 'संकुल डाउनलोड करें ',
         'Rebuild package' => 'संकुल फिर से बनाएँ',
         'Metadata' => 'मेटाडेटा',
@@ -1964,6 +2047,7 @@ sub Data {
         'Remove this Condition' => '',
         'Type of Linking' => '',
         'Remove this Field' => '',
+        'And can\'t be repeated on the same condition.' => '',
         'Add a new Field' => '',
         'Add New Condition' => '',
 
@@ -1982,6 +2066,7 @@ sub Data {
         'Add queue' => 'श्रेणी जोड़ें',
         'Add Queue' => 'श्रेणी जोड़ें',
         'Edit Queue' => 'श्रेणी को संपादित करें',
+        'A queue with this name already exists!' => '',
         'Sub-queue of' => 'की उप-श्रेणी',
         'Unlock timeout' => 'अनलॉक समय समाप्त',
         '0 = no unlock' => '0 = कोई अनलॉक  नहीं',
@@ -2025,6 +2110,7 @@ sub Data {
         # Template: AdminRegistration
         'System Registration Management' => '',
         'Edit details' => '',
+        'Show transmitted data' => '',
         'Deregister system' => '',
         'Overview of registered systems' => '',
         'System Registration' => '',
@@ -2033,6 +2119,13 @@ sub Data {
         'Unique ID' => '',
         'Last communication with registration server' => '',
         'Send support data' => '',
+        'System registration not possible' => '',
+        'Please note that you can\'t register your system if your scheduler is not running correctly!' =>
+            '',
+        'Instructions' => '',
+        'System deregistration not possible' => '',
+        'Please note that you can\'t deregister your system if you\'re using the %s or having a valid service contract.' =>
+            '',
         'OTRS-ID Login' => '',
         'System registration is a service of OTRS Group, which provides a lot of advantages!' =>
             '',
@@ -2135,6 +2228,14 @@ sub Data {
             '',
         'Deregister' => '',
         'You can modify registration settings here.' => '',
+        'Overview of transmitted data' => '',
+        'There is no data regularly sent from your system to %s.' => '',
+        'The following data is sent at minimum every 3 days from your system to %s.' =>
+            '',
+        'The data will be transferred in JSON format via a secure https connection.' =>
+            '',
+        'System Registration Data' => '',
+        'Support Data' => '',
 
         # Template: AdminRole
         'Role Management' => 'भूमिका प्रबंधन',
@@ -2204,6 +2305,7 @@ sub Data {
 
         # Template: AdminSMIMECertRead
         'Close window' => 'विंडो बंद करें',
+        'Certificate details' => '',
 
         # Template: AdminSalutation
         'Salutation Management' => 'अभिवादन प्रबंधन',
@@ -2269,7 +2371,7 @@ sub Data {
         'Send by Email' => '',
         'The support bundle is too large to send it by email, this option has been disabled.' =>
             '',
-        'The email address for this user is invalid, this ption has been disabled.' =>
+        'The email address for this user is invalid, this option has been disabled.' =>
             '',
         'Sending' => '',
         'The support bundle will be sent to OTRS Group via email automatically.' =>
@@ -2277,7 +2379,6 @@ sub Data {
         'Download File' => '',
         'A file containing the support bundle will be downloaded to the local system. Please save the file and send it to the OTRS Group, using an alternate method.' =>
             '',
-        'Support Data' => '',
         'Error: Support data could not be collected (%s).' => '',
         'Details' => '',
 
@@ -2496,6 +2597,7 @@ sub Data {
         '%s closed ticket(s) of %s' => '',
         'New phone ticket from %s' => '',
         'New email ticket to %s' => '',
+        'Start chat' => '',
 
         # Template: AgentDashboardProductNotify
         '%s %s is available!' => '%s %s उपलब्ध है',
@@ -2686,6 +2788,7 @@ sub Data {
         'Please set a new owner!' => 'कृपया नया स्वामी सेट करें',
         'Previous Owner' => 'पिछला स्वामी',
         'Next state' => 'अगली स्थिति',
+        'For all pending* states.' => '',
         'Add Article' => '',
         'Create an Article' => '',
         'Spell check' => 'वर्तनी की जाँच',
@@ -2697,6 +2800,7 @@ sub Data {
         'Inform involved Agents' => 'शामिल प्रतिनिधियॊ को सूचित करें',
         'Here you can select additional agents which should receive a notification regarding the new article.' =>
             '',
+        'Note will be (also) received by:' => '',
 
         # Template: AgentTicketBounce
         'Bounce Ticket' => '',
@@ -2727,8 +2831,6 @@ sub Data {
         'Remove Cc' => '',
         'Remove Bcc' => '',
         'Address book' => 'पता पुस्तिका',
-        'Pending Date' => 'विचाराधीन दिनांक',
-        'for pending* states' => 'विचाराधीन* स्थिति के लिए',
         'Date Invalid!' => 'अवैध दिनांक',
 
         # Template: AgentTicketCustomer
@@ -2792,6 +2894,7 @@ sub Data {
         'Please include at least one customer for the ticket.' => '',
         'To queue' => 'श्रेणी में',
         'Chat protocol' => '',
+        'The chat will be appended as a separate article.' => '',
 
         # Template: AgentTicketPlain
         'Email Text Plain View' => 'सरल पाठ ईमेल दृश्य',
@@ -2865,6 +2968,7 @@ sub Data {
         'Ticket Timeline View' => '',
         'Article Overview' => '',
         'Article(s)' => 'अनुच्छेद',
+        'Page' => 'पृष्ठ',
         'Add Filter' => 'निस्पादक जोड़ें',
         'Set' => 'निर्धारित करें',
         'Reset Filter' => 'निस्पादक को फिर से निर्धारित करें',
@@ -2884,10 +2988,18 @@ sub Data {
         'Full Article Text' => '',
         'No more events found. Please try changing the filter settings.' =>
             '',
+        'To open links in the following article, you might need to press Ctrl or Cmd or Shift key while clicking the link (depending on your browser and OS).' =>
+            '',
+        'Close this message' => '',
+        'Article could not be opened! Perhaps it is on another article page?' =>
+            '',
 
         # Template: AttachmentBlocker
         'To protect your privacy, remote content was blocked.' => '',
         'Load blocked content.' => 'लोड विषयवस्तु अवरुद्ध',
+
+        # Template: ChatStartForm
+        'First message' => '',
 
         # Template: CustomerError
         'Traceback' => 'ट्रेसबैक',
@@ -2936,6 +3048,9 @@ sub Data {
         'You have unanswered chat requests' => '',
         'Edit personal preferences' => 'व्यक्तिगत वरीयताएँ संपादित करें',
 
+        # Template: CustomerRichTextEditor
+        'Split Quote' => '',
+
         # Template: CustomerTicketMessage
         'Service level agreement' => 'सेवा स्तर अनुबंध',
 
@@ -2970,7 +3085,6 @@ sub Data {
 
         # Template: CustomerTicketSearchResultShort
         'of' => 'की',
-        'Page' => 'पृष्ठ',
         'Search Results for' => 'के लिए परिणाम खोजें',
         'Remove this Search Term.' => '',
 
@@ -3025,6 +3139,8 @@ sub Data {
 
         # Template: Header
         'You are logged in as' => 'आप इस रूप में प्रवॆशित हैं।',
+        'There are new chat requests available. Please visit the chat manager.' =>
+            '',
 
         # Template: Installer
         'JavaScript not available' => 'जावास्क्रिप्ट उपलब्ध नहीं है।',
@@ -3136,9 +3252,6 @@ sub Data {
         'Insufficient Rights' => 'अपर्याप्त अधिकार',
         'Back to the previous page' => 'पिछले पृष्ठ पर वापस जाएँ',
 
-        # Template: Notify
-        'Close this message' => '',
-
         # Template: Pagination
         'Show first page' => 'पहला पृष्ठ दिखाएँ ',
         'Show previous pages' => 'पिछले पृष्ठ दिखाएँ',
@@ -3162,13 +3275,16 @@ sub Data {
         'Go back to the previous page' => 'पिछले पृष्ठ पर वापस जाएँ',
 
         # SysConfig
+        ' (work units)' => '',
         '"%s"-notification sent to "%s".' => '"%s"-प्रतिनिधि अधिसूचना भेजें"%s"।',
         '%s' => 'विविध %s।',
         '%s time unit(s) accounted. Now total %s time unit(s).' => '%S समय लेखाकरण दर्ज की गई। नई कुल %S इकाई समय।',
         '(UserLogin) Firstname Lastname' => '',
         '(UserLogin) Lastname, Firstname' => '',
+        'A Website' => '',
         'A list of dynamic fields that are merged into the main ticket during a merge operation. Only dynamic fields that are empty in the main ticket will be set.' =>
             '',
+        'A picture' => '',
         'ACL module that allows closing parent tickets only if all its children are already closed ("State" shows which states are not available for the parent ticket until all child tickets are closed).' =>
             'ACL मॉड्यूल जनक टिकटों तभी बंद करने की अनुमति देता है जब उसके सभी चिल्ड्रन पहले से ही बंद हो।(" स्थिति" से पता चलता है की कोंनसी स्थिति जनक टिकटों के लिए उपलब्ध नहीं हैं जब तक कि सभी चिल्ड्रन टिकटें बंद न हो)।',
         'Access Control Lists (ACL)' => '',
@@ -3217,8 +3333,8 @@ sub Data {
             'संचरण में प्रतिनिधि अंतरफलक मॉड्यूल से वर्णन खोज का उपयोग।',
         'Agent interface module to check incoming emails in the Ticket-Zoom-View if the S/MIME-key is available and true.' =>
             'प्रतिनिधि अंतरफलक मॉड्यूल टिकट-ज़ूम-दृश्य में आने वाली ईमेल की जाँच करने के लिए अगर एस / MIME-कुंजी उपलब्ध है और सही है।',
-        'Agent interface notification module to check the used charset.' =>
-            'प्रयुक्त चारसेट की जाँच के लिए प्रतिनिधि अंतरफलक अधिसूचना मॉड्यूल।',
+        'Agent interface notification module to see the number of locked tickets.' =>
+            '',
         'Agent interface notification module to see the number of tickets an agent is responsible for.' =>
             'एक प्रतिनिधि के उत्तरदायी टिकट की संख्या देखने के लिए प्रतिनिधि अंतरफलक अधिसूचना मॉड्यूल। ',
         'Agent interface notification module to see the number of tickets in My Services.' =>
@@ -3352,6 +3468,7 @@ sub Data {
         'Columns that can be filtered in the watch view of the agent interface. Possible settings: 0 = Disabled, 1 = Available, 2 = Enabled by default. Note: Only Ticket attributes and Dynamic Fields (DynamicField_NameX) are allowed.' =>
             '',
         'Comment for new history entries in the customer interface.' => 'ग्राहक अंतरफलक में इतिहास नई प्रविष्टियों के लिए टिप्पणी।',
+        'Comment2' => '',
         'Company Status' => '',
         'Company Tickets' => 'कंपनी के टिकट',
         'Company name which will be included in outgoing emails as an X-Header.' =>
@@ -3397,6 +3514,7 @@ sub Data {
         'Create new email ticket and send this out (outbound)' => 'नया ईमेल टिकट बनाएँ और इस बाहर (आउटबाउंड) भेजें',
         'Create new phone ticket (inbound)' => 'नया फोन टिकट (इनबाउंड)बनाएँ',
         'Create new process ticket' => '',
+        'Custom RSS Feed' => '',
         'Custom text for the page shown to customers that have no tickets yet (if you need those text translated add them to a custom translation module).' =>
             '',
         'Customer Administration' => '',
@@ -3410,6 +3528,8 @@ sub Data {
         'Customer item (icon) which shows the open tickets of this customer as info block. Setting CustomerUserLogin to 1 searches for tickets based on login name rather than CustomerID.' =>
             '',
         'Customer request via web.' => 'ग्राहक वेब अनुरोध।',
+        'Customer user search' => '',
+        'CustomerID search' => '',
         'CustomerName' => '',
         'Customers <-> Groups' => 'ग्राहकों<->समूहों',
         'Data used to export the search result in CSV format.' => 'CSV प्रारूप में खोज परिणाम भेजने के लिए उपयोग होनेवाला आंकड़ा।',
@@ -3442,6 +3562,9 @@ sub Data {
         'Define dynamic field name for start time. This field has to be manually added to the system as Ticket: "Date / Time" and must be activated in ticket creation screens and/or in any other ticket action screens.' =>
             '',
         'Define the max depth of queues.' => '',
+        'Define the queue comment 2.' => '',
+        'Define the service comment 2.' => '',
+        'Define the sla comment 2.' => '',
         'Define the start day of the week for the date picker for the indicated calendar.' =>
             '',
         'Define the start day of the week for the date picker.' => 'दिनांक पिकर के लिए सप्ताह की शुरुआत के दिन निर्धारित करें।',
@@ -3863,6 +3986,8 @@ sub Data {
         'Defines the module that shows the currently loged in customers in the customer interface.' =>
             'ग्राहक अंतरफलक में वर्तमान में सभी प्रवॆशित ग्राहकों को दिखाने वाले मॉड्यूल को परिभाषित करता है।',
         'Defines the module to authenticate customers.' => 'ग्राहकों को प्रमाणित करने वाले मॉड्यूल को परिभाषित करता है।',
+        'Defines the module to display a notification in different interfaces on different occasions for OTRS Business Solution™.' =>
+            '',
         'Defines the module to display a notification in the agent interface if the scheduler is not running.' =>
             '',
         'Defines the module to display a notification in the agent interface, if the agent is logged in while having out-of-office active.' =>
@@ -3962,8 +4087,8 @@ sub Data {
         'Defines the postmaster default queue.' => 'डाकपाल तयशुदा श्रेणी को परिभाषित करता है।',
         'Defines the priority in which the information is logged and presented.' =>
             '',
-        'Defines the receipent target of the phone ticket and the sender of the email ticket ("Queue" shows all queues, "SystemAddress" displays all system addresses) in the agent interface.' =>
-            'प्रतिनिधि अंतरफलक के फोन टिकट के प्राप्तकर्ता लक्ष्य और ईमेल के प्रेषक टिकट को परिभाषित करता है (सभी श्रेणी को "श्रेणी"दिखाता है,"SystemAddress" सभी प्रणाली पते को प्रदर्शित करता है)।',
+        'Defines the receipent target of the phone ticket and the sender of the email ticket ("Queue" shows all queues, "System address" displays all system addresses) in the agent interface.' =>
+            '',
         'Defines the receipent target of the tickets ("Queue" shows all queues, "SystemAddress" displays all system addresses) in the customer interface.' =>
             'प्रतिनिधि अंतरफलक के फोन टिकट के प्राप्तकर्ता लक्ष्य को परिभाषित करता है (सभी श्रेणी को "श्रेणी"दिखाता है,"SystemAddress" सभी प्रणाली पते को प्रदर्शित करता है)।',
         'Defines the required permission to show a ticket in the escalation view of the agent interface.' =>
@@ -4043,6 +4168,7 @@ sub Data {
         'Deletes a session if the session id is used with an invalid remote IP address.' =>
             'एक सत्र यदि सत्र पहचान अवैध दूरदराज के IP पते के साथ इस्तेमाल किया जाता है को नष्ट कर देता है।',
         'Deletes requested sessions if they have timed out.' => 'अनुरोध सत्र को नष्ट कर देता है यदि उनका समय समाप्त हो गया है।',
+        'Deploy and manage OTRS Business Solution™.' => '',
         'Determines if the list of possible queues to move to ticket into should be displayed in a dropdown list or in a new window in the agent interface. If "New Window" is set you can add a move note to the ticket.' =>
             'प्रतिनिधि अंतरफलक में संभव श्रेणीयों की सूची जिनमें टिकटों को स्थानांतरित कर सकते है उनको एक ड्रॉपडाउन सूची में या एक नई विंडो में प्रदर्शित किया जाना चाहिए। यदि "नई विंडो" निर्धारित है तो आप टिकटों के लिए एक स्थानांतरित टिप्पणी जोड़ सकते हैं।',
         'Determines if the statistics module may generate ticket lists.' =>
@@ -4194,6 +4320,7 @@ sub Data {
         'Escalation update time forewarned' => '',
         'Escalation update time in effect' => '',
         'Escalation view' => 'संवर्धित दृश्य',
+        'EscalationTime' => '',
         'Event module registration. For more performance you can define a trigger event (e. g. Event => TicketCreate).' =>
             '',
         'Event module registration. For more performance you can define a trigger event (e. g. Event => TicketCreate). This is only possible if all Ticket dynamic fields need the same event.' =>
@@ -4229,6 +4356,7 @@ sub Data {
         'Filter for debugging Transitions. Note: More filters can be added in the format <OTRS_TICKET_Attribute> e.g. <OTRS_TICKET_Priority>.' =>
             '',
         'Filter incoming emails.' => 'आने वाले ईमेल निस्पादक।',
+        'First Queue' => '',
         'FirstLock' => '',
         'FirstResponse' => '',
         'FirstResponseDiffInMin' => '',
@@ -4256,6 +4384,7 @@ sub Data {
         'Frontend module registration for the customer interface.' => 'ग्राहक अंतरफलक के लिए दृश्यपटल मॉड्यूल पंजीकरण।',
         'Frontend theme' => 'दृश्यपटल थीम',
         'Fulltext index regex filters to remove parts of the text.' => '',
+        'Fulltext search' => '',
         'General ticket data shown in the ticket overviews (fall-back). Possible settings: 0 = Disabled, 1 = Available, 2 = Enabled by default. Note that TicketNumber can not be disabled, because it is necessary.' =>
             '',
         'GenericAgent' => 'सामान्य प्रतिनिधि',
@@ -4381,6 +4510,8 @@ sub Data {
             'यदि सक्रिय है,टिकट फोन और ईमेल टिकट नये विंडो में खुल जाएगा।',
         'If enabled, the OTRS version tag will be removed from the Webinterface, the HTTP headers and the X-Headers of outgoing mails.' =>
             '',
+        'If enabled, the customer can search for tickets in all services (regardless what services are assigned to the customer).' =>
+            '',
         'If enabled, the different overviews (Dashboard, LockedView, QueueView) will automatically refresh after the specified time.' =>
             '',
         'If enabled, the first level of the main menu opens on mouse hover (instead of click only).' =>
@@ -4418,6 +4549,7 @@ sub Data {
             'विभिन्न थीम विन्यस्त करना संभव है,उदाहरण के लिए विभिन्न प्रतिनिधि और ग्राहकों के बीच भेद करने के लिए,अनुप्रयोग में प्रति एक डोमेन के आधार पर इस्तेमाल किया जा सकता हैं। एक नियमित अभिव्यक्ति(Regex) का उपयोग करना,आप एक कुंजी/सामग्री जोड़ी विन्यस्त करने एक डोमेन मिलान कर सकते हैं। डोमेन में "कुंजी" मान से मेल खाना चाहिए और "सामग्री" में मूल्य अपने प्रणाली पर एक वैध थीम होना चाहिए। regex के उचित रूप के लिए उदाहरण प्रविष्टियों को देखें।',
         'Lastname, Firstname' => '',
         'Lastname, Firstname (UserLogin)' => '',
+        'Left' => '',
         'Link agents to groups.' => 'प्रतिनिधिओं को समूहों से जोडें।',
         'Link agents to roles.' => 'प्रतिनिधिओं को भूमिकाओं से जोडें।',
         'Link attachments to templates.' => '',
@@ -4450,6 +4582,7 @@ sub Data {
         'List of all ticket events to be displayed in the GUI.' => '',
         'List of default Standard Templates which are assigned automatically to new Queues upon creation.' =>
             '',
+        'List view' => '',
         'Locked ticket.' => 'लॉक।',
         'Log file for the ticket counter.' => 'टिकट काउंटर के लिए अभिलेख फ़ाइल।',
         'Loop-Protection! No auto-response sent to "%s".' => 'सुरक्षालूप "%s"।',
@@ -4532,6 +4665,7 @@ sub Data {
             '',
         'NameX' => '',
         'New Ticket [%s] created (Q=%s;P=%s;S=%s).' => 'नया टिकट [%s] बनाया (Q=%s;P=%s;S=%s)।',
+        'New Window' => '',
         'New email ticket' => 'नया ईमेल टिकट',
         'New owner is "%s" (ID=%s).' => 'स्वामी अद्यतन"%s" (ID=%s)।',
         'New phone ticket' => 'नया फोन टिकट',
@@ -4542,6 +4676,7 @@ sub Data {
         'Next possible ticket states after adding a phone note in the ticket phone outbound screen of the agent interface.' =>
             'प्रतिनिधि अंतरफलक के टिकट फोन आउटबाउंड स्क्रीन में एक फोन टिप्पणी जोड़ने के बाद टिकट की अगली संभव स्थिति।',
         'No Notification' => '',
+        'None' => '',
         'Notification sent to "%s".' => 'ग्राहक अधिसूचना भेजें"%s"।',
         'Notifications (Event)' => 'अधिसूचनाएँ (घटना)',
         'Number of displayed tickets' => 'प्रदर्शित टिकट की संख्या',
@@ -4552,6 +4687,7 @@ sub Data {
         'Number of tickets to be displayed in each page of a search result in the customer interface.' =>
             'ग्राहक अंतरफलक में एक खोज परिणाम के प्रत्येक पृष्ठ में प्रदर्शित होने के लिए टिकटों की संख्या।',
         'Old: "%s" New: "%s"' => 'पुराना: "%s". नया: "%s"।',
+        'Online' => '',
         'Open tickets (customer user)' => '',
         'Open tickets (customer)' => '',
         'Out Of Office' => '',
@@ -4692,13 +4828,17 @@ sub Data {
             'संग्रह से टिकट पुनर्स्थापित करता है(केवल यदि घटना एक स्थिति परिवर्तन है,किसी भी खुले उपलब्ध स्थिति से बंद के लिए)।',
         'Retains all services in listings even if they are children of invalid elements.' =>
             '',
+        'Right' => '',
         'Roles <-> Groups' => 'भूमिकाएं <-> समूहों',
         'Running Process Tickets' => '',
+        'Runs an initial wildcard search of the existing customer company when accessing the AdminCustomerCompany module.' =>
+            '',
         'Runs an initial wildcard search of the existing customer users when accessing the AdminCustomerUser module.' =>
             '',
         'Runs the system in "Demo" mode. If set to "Yes", agents can change preferences, such as selection of language and theme via the agent web interface. These changes are only valid for the current session. It will not be possible for agents to change their passwords.' =>
             '"प्रदर्शन" मोड में प्रणाली चलाता है। यदि "हाँ" पर निर्धारित है,प्रतिनिधि वरीयताओं को बदल सकते हैं,इस तरह की भाषा के चयन के रूप में और थीम प्रतिनिधि वेब अंतरफलक के द्वारा। ये परिवर्तन केवल वर्तमान सत्र के लिए मान्य हैं। प्रतिनिधियो को अपना कूटशब्द बदलना संभव नहीं होगा।',
         'S/MIME Certificate Upload' => 'S/MIME प्रमाण पत्र अपलोड करें।',
+        'Sample command output' => '',
         'Saves the attachments of articles. "DB" stores all data in the database (not recommended for storing big attachments). "FS" stores the data on the filesystem; this is faster but the webserver should run under the OTRS user. You can switch between the modules even on a system that is already in production without any loss of data.' =>
             'अनुच्छेदो के संलग्नक सुरक्षित करता है। "DB" आंकड़ाकोष में सभी आंकड़ों को संग्रहीत करता है(बड़े संलग्नक संग्रहीत करने के लिए अनुशंसित नहीं)। "FS" फाइल प्रणाली पर संग्रहीत करता है;यह तेज है, लेकिन वेबसर्वर OTRS उपयोगकर्ता के अधीन चलाना चाहिए। आप मॉड्यूल बदल सकते यहां तक कि कोई प्रणाली पहले से ही उत्पादन में है बिना आंकड़ो को हानि पहुँचायें।',
         'Schedule a maintenance period.' => '',
@@ -4706,6 +4846,7 @@ sub Data {
         'Search User' => '',
         'Search backend default router.' => 'बैकेंड तयशुदा अनुर्मागक खोजें।',
         'Search backend router.' => 'बैकेंड अनुर्मागक खोजें।',
+        'Second Queue' => '',
         'Select your frontend Theme.' => 'आपकी दृश्यपटल थीम चुनें।',
         'Selects the cache backend to use.' => '',
         'Selects the module to handle uploads via the web interface. "DB" stores all uploads in the database, "FS" uses the file system.' =>
@@ -5111,6 +5252,8 @@ sub Data {
         'Skin' => 'सतही',
         'SolutionDiffInMin' => '',
         'SolutionInMin' => '',
+        'Some description!' => '',
+        'Some picture description!' => '',
         'Sorts the tickets (ascendingly or descendingly) when a single queue is selected in the queue view and after the tickets are sorted by priority. Values: 0 = ascending (oldest on top, default), 1 = descending (youngest on top). Use the QueueID for the key and 0 or 1 for value.' =>
             'टिकटों(आरोही या अवरोही) को क्रमबद्ध करता है जब श्रेणी दृश्य में एक ही श्रेणी का चयन किया जाता है और टिकट प्राथमिकता के आधार पर बाद में क्रमबद्ध किए जाते हैं। मान:0=आरोही(शीर्ष में सबसे पुराना,तयशुदा),1=अवरोही(शीर्ष में नवीनतम)। कुंजी के लिए QueueID और मूल्य के लिए 0 या 1 का प्रयोग करें।',
         'Sorts the tickets (ascendingly or descendingly) when a single queue is selected in the service view and after the tickets are sorted by priority. Values: 0 = ascending (oldest on top, default), 1 = descending (youngest on top). Use the ServiceID for the key and 0 or 1 for value.' =>
@@ -5169,6 +5312,8 @@ sub Data {
         'Specifies whether all storage backends should be checked when looking for attachements. This is only required for installations where some attachements are in the file system, and others in the database.' =>
             '',
         'Specify how many sub directory levels to use when creating cache files. This should prevent too many cache files being in one directory.' =>
+            '',
+        'Specify the channel to be used to fetch OTRS Business Solution™ updates. Warning: Development releases might not be complete, your system might experience unrecoverable errors and on extreme cases could become unresponsive!' =>
             '',
         'Standard available permissions for agents within the application. If more permissions are needed, they can be entered here. Permissions must be defined to be effective. Some other good permissions have also been provided built-in: note, close, pending, customer, freetext, move, compose, responsible, forward, and bounce. Make sure that "rw" is always the last registered permission.' =>
             'मानक अनुप्रयोग के भीतर प्रतिनिधियों के लिए उपलब्ध अनुमतियाँ। यदि अधिक अनुमतियों की आवश्यकता है,उन्हें यहाँ दर्ज किया जा सकता। अनुमतियों के लिए प्रभावी होगा परिभाषित किया जाना चाहिए। कुछ अन्य अच्छी अन्तर्निहित अनुमतियाँ भी प्रदान की है: टिप्पणी,विचाराधीन,बंद,ग्राहक,मुक्त पाठ,स्थानांतरित,रचना,उत्तरदायी,अग्रेषण और फलांग। सुनिश्चित करें कि "rw" हमेशा अंतिम पंजीकृत अनुमति हैं।',
@@ -5253,6 +5398,9 @@ sub Data {
         'Toggles display of OTRS FeatureAddons list in PackageManager.' =>
             '',
         'Toolbar Item for a shortcut.' => 'टूलबार वस्तु किसी शॉर्टकट के लिए।',
+        'Tree view' => '',
+        'Turns off SSL certificate validation, for example if you use a transparent HTTPS proxy. Use at your own risk!' =>
+            '',
         'Turns on drag and drop for the main navigation.' => '',
         'Turns on the animations used in the GUI. If you have problems with these animations (e.g. performance issues), you can turn them off here.' =>
             'GUI में इस्तेमाल एनिमेशन प्रारंभ करते हैं। यदि आपको इन एनिमेशन के साथ समस्या है(उदाहरण के लिए प्रदर्शन के मुद्दों),यहां आप उन्हें बंद कर सकते हैं।',
@@ -5290,6 +5438,7 @@ sub Data {
         'When tickets are merged, the customer can be informed per email by setting the check box "Inform Sender". In this text area, you can define a pre-formatted text which can later be modified by the agents.' =>
             'जब टिकटों को विलय कर रहे हैं, चेक बॉक्स "सूचित प्रेषक" निर्धारित करने के बाद ग्राहक को ईमेल द्वारा सूचित किया जा सकता है। इस पाठ क्षेत्र में,आप एक पूर्व स्वरूपित पाठ परिभाषित कर सकते हैं जो बाद में प्रतिनिधियों द्वारा संशोधित किया जा सकता है। ',
         'Write a new, outgoing mail' => '',
+        'Yes, but hide archived tickets' => '',
         'Your queue selection of your favorite queues. You also get notified about those queues via email if enabled.' =>
             'अपनी श्रेणी का चयन करें पसंदीदा श्रेणीयो से। आपको उन श्रेणीयो के बारे में ईमेल द्वारा अधिसूचित किया जाएगा। सक्रिय होने पर।',
         'Your service selection of your favorite services. You also get notified about those services via email if enabled.' =>

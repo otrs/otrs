@@ -1,6 +1,6 @@
 # --
 # Kernel/Output/HTML/DashboardCustomerUserList.pm
-# Copyright (C) 2001-2014 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -89,7 +89,7 @@ sub Run {
     # get customer user object
     my $CustomerUserObject = $Kernel::OM->Get('Kernel::System::CustomerUser');
 
-    my $CustomerIDs = { $CustomerUserObject->CustomerSearch( CustomerID => $Param{CustomerID} ) };
+    my $CustomerIDs = { $CustomerUserObject->CustomerSearch( CustomerIDRaw => $Param{CustomerID} ) };
 
     # add page nav bar
     my $Total = scalar keys %{$CustomerIDs};
@@ -137,10 +137,9 @@ sub Run {
         );
 
         # get user groups, where the user has the rw privilege
-        my %Groups = $GroupObject->GroupMemberList(
+        my %Groups = $GroupObject->PermissionUserGet(
             UserID => $Self->{UserID},
             Type   => 'rw',
-            Result => 'HASH',
         );
 
         # if the user is a member in this group he can access the feature
@@ -246,7 +245,8 @@ sub Run {
 
         if (
             $Kernel::OM->Get('Kernel::Config')->Get('ChatEngine::Active')
-            && $LayoutObject->{"UserIsGroup[$ChatStartingAgentsGroup]"}
+            && defined $LayoutObject->{"UserIsGroup[$ChatStartingAgentsGroup]"}
+            && $LayoutObject->{"UserIsGroup[$ChatStartingAgentsGroup]"} eq 'Yes'
             && $Kernel::OM->Get('Kernel::Config')->Get('ChatEngine::ChatDirection::AgentToCustomer')
             )
         {

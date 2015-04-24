@@ -1,6 +1,6 @@
 # --
 # Kernel/Output/HTML/TicketOverviewSmall.pm
-# Copyright (C) 2001-2014 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -266,11 +266,28 @@ sub ActionRow {
             # dynamic fields will be translated in the next block
             next COLUMN if $Column =~ m{ \A DynamicField_ }xms;
 
+            my $TranslatedWord = $Column;
+            if ( $Column eq 'EscalationTime' ) {
+                $TranslatedWord = 'Service Time';
+            }
+            elsif ( $Column eq 'EscalationResponseTime' ) {
+                $TranslatedWord = 'First Response Time';
+            }
+            elsif ( $Column eq 'EscalationSolutionTime' ) {
+                $TranslatedWord = 'Solution Time';
+            }
+            elsif ( $Column eq 'EscalationUpdateTime' ) {
+                $TranslatedWord = 'Update Time';
+            }
+            elsif ( $Column eq 'PendingTime' ) {
+                $TranslatedWord = 'Pending till';
+            }
+
             $Self->{LayoutObject}->Block(
                 Name => 'ColumnTranslation',
                 Data => {
                     ColumnName      => $Column,
-                    TranslateString => $Column,
+                    TranslateString => $TranslatedWord,
                 },
             );
             $Self->{LayoutObject}->Block(
@@ -1293,12 +1310,24 @@ sub Run {
             );
         }
 
-        # customer info (customer name)
+        # customer info
+        my %CustomerInfo;
         if ( $Param{Config}->{CustomerInfo} ) {
             if ( $Article{CustomerUserID} ) {
                 $Article{CustomerName} = $Self->{CustomerUserObject}->CustomerName(
                     UserLogin => $Article{CustomerUserID},
                 );
+
+                %CustomerInfo = $Self->{CustomerUserObject}->CustomerUserDataGet(
+                    User => $Article{CustomerUserID},
+                );
+
+                INFOKEY:
+                for my $InfoKey ( sort keys %CustomerInfo ) {
+                    next INFOKEY if $InfoKey =~ m{\ACustomer}xms;
+
+                    $CustomerInfo{ 'Customer' . $InfoKey } = $CustomerInfo{$InfoKey};
+                }
             }
         }
 
@@ -1481,7 +1510,9 @@ sub Run {
                         . $ResponsibleInfo{'UserLastname'};
                 }
                 else {
-                    $DataValue = $Article{$TicketColumn} || $UserInfo{$TicketColumn};
+                    $DataValue = $Article{$TicketColumn}
+                        || $UserInfo{$TicketColumn}
+                        || $CustomerInfo{$TicketColumn};
                 }
 
                 $Self->{LayoutObject}->Block(

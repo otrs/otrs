@@ -1,6 +1,6 @@
 # --
 # Kernel/System/User.pm - some user functions
-# Copyright (C) 2001-2014 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -339,7 +339,7 @@ sub UserAdd {
         if ( !$Param{$_} ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
-                Message  => "Need $_!"
+                Message  => "Need $_!",
             );
             return;
         }
@@ -439,9 +439,6 @@ sub UserAdd {
     $Kernel::OM->Get('Kernel::System::Cache')->CleanUp(
         Type => $Self->{CacheType},
     );
-    $Kernel::OM->Get('Kernel::System::Cache')->CleanUp(
-        Type => 'Group'
-    );
 
     return $UserID;
 }
@@ -471,7 +468,7 @@ sub UserUpdate {
         if ( !$Param{$_} ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
-                Message  => "Need $_!"
+                Message  => "Need $_!",
             );
             return;
         }
@@ -518,12 +515,6 @@ sub UserUpdate {
         ],
     );
 
-    # log notice
-    $Kernel::OM->Get('Kernel::System::Log')->Log(
-        Priority => 'notice',
-        Message  => "User: '$Param{UserLogin}' updated successfully ($Param{ChangeUserID})!",
-    );
-
     # check pw
     if ( $Param{UserPw} ) {
         $Self->SetPassword(
@@ -539,12 +530,28 @@ sub UserUpdate {
         Value  => $Param{UserEmail}
     );
 
+    # get cache object
+    my $CacheObject = $Kernel::OM->Get('Kernel::System::Cache');
+
     # delete cache
-    $Kernel::OM->Get('Kernel::System::Cache')->CleanUp(
+    $CacheObject->CleanUp(
         Type => $Self->{CacheType},
     );
-    $Kernel::OM->Get('Kernel::System::Cache')->CleanUp(
-        Type => 'Group',
+
+    # TODO Not needed to delete the cache if ValidID or Name was nat changed
+
+    my $SystemPermissionConfig = $Kernel::OM->Get('Kernel::Config')->Get('System::Permission') || [];
+
+    for my $Type ( @{$SystemPermissionConfig}, 'rw' ) {
+
+        $CacheObject->Delete(
+            Type => 'GroupPermissionUserGet',
+            Key  => 'PermissionUserGet::' . $Param{UserID} . '::' . $Type,
+        );
+    }
+
+    $CacheObject->CleanUp(
+        Type => 'GroupPermissionGroupGet',
     );
 
     return 1;
@@ -968,8 +975,8 @@ return a hash with all users
 
     my %List = $UserObject->UserList(
         Type          => 'Short', # Short|Long, default Short
-        Valid         => 1,       # not required, default 0
-        NoOutOfOffice => 1,       # optional, default 0
+        Valid         => 1,       # default 1
+        NoOutOfOffice => 1,       # (optional) default 0
     );
 
 =cut
@@ -1091,14 +1098,13 @@ generate a random password
 sub GenerateRandomPassword {
     my ( $Self, %Param ) = @_;
 
-    # Generated passwords are eight characters long by default.
+    # generated passwords are eight characters long by default.
     my $Size = $Param{Size} || 8;
 
     my $Password = $Kernel::OM->Get('Kernel::System::Main')->GenerateRandomString(
         Length => $Size,
     );
 
-    # Return the password.
     return $Password;
 }
 
@@ -1140,14 +1146,43 @@ sub SetPreferences {
         && defined $Param{Value}
         && $User{ $Param{Key} } eq $Param{Value};
 
-    # delete cache
+    # get config object
+    my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
+
+    # get configuration for the full name order
+    my $FirstnameLastNameOrder = $ConfigObject->Get('FirstnameLastnameOrder') || 0;
+
+    # create cachekey
     my $Login = $Self->UserLookup( UserID => $Param{UserID} );
-    $Kernel::OM->Get('Kernel::System::Cache')->CleanUp(
-        Type => $Self->{CacheType},
+    my @CacheKeys = (
+        'GetUserData::User::' . $Login . '::0::' . $FirstnameLastNameOrder . '::0',
+        'GetUserData::User::' . $Login . '::0::' . $FirstnameLastNameOrder . '::1',
+        'GetUserData::User::' . $Login . '::1::' . $FirstnameLastNameOrder . '::0',
+        'GetUserData::User::' . $Login . '::1::' . $FirstnameLastNameOrder . '::1',
+        'GetUserData::UserID::' . $Param{UserID} . '::0::' . $FirstnameLastNameOrder . '::0',
+        'GetUserData::UserID::' . $Param{UserID} . '::0::' . $FirstnameLastNameOrder . '::1',
+        'GetUserData::UserID::' . $Param{UserID} . '::1::' . $FirstnameLastNameOrder . '::0',
+        'GetUserData::UserID::' . $Param{UserID} . '::1::' . $FirstnameLastNameOrder . '::1',
+        'UserList::Short::0::' . $FirstnameLastNameOrder,
+        'UserList::Short::1::' . $FirstnameLastNameOrder,
+        'UserList::Long::0::' . $FirstnameLastNameOrder,
+        'UserList::Long::1::' . $FirstnameLastNameOrder,
     );
 
+    # get cache object
+    my $CacheObject = $Kernel::OM->Get('Kernel::System::Cache');
+
+    # delete cache
+    for my $CacheKey (@CacheKeys) {
+
+        $CacheObject->Delete(
+            Type => $Self->{CacheType},
+            Key  => $CacheKey,
+        );
+    }
+
     # get user preferences config
-    my $GeneratorModule = $Kernel::OM->Get('Kernel::Config')->Get('User::PreferencesModule')
+    my $GeneratorModule = $ConfigObject->Get('User::PreferencesModule')
         || 'Kernel::System::User::Preferences::DB';
 
     # get generator preferences module

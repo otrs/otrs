@@ -1,6 +1,6 @@
 # --
 # Kernel/System/DB.pm - the global database wrapper to support different databases
-# Copyright (C) 2001-2014 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -14,6 +14,7 @@ use strict;
 use warnings;
 
 use DBI;
+use List::Util();
 
 use Kernel::System::VariableCheck qw(:all);
 
@@ -24,6 +25,8 @@ our @ObjectDependencies = (
     'Kernel::System::Main',
     'Kernel::System::Time',
 );
+
+our $UseSlaveDB = 0;
 
 =head1 NAME
 
@@ -81,6 +84,8 @@ sub new {
     $Self->{DSN}  = $Param{DatabaseDSN}  || $ConfigObject->Get('DatabaseDSN');
     $Self->{USER} = $Param{DatabaseUser} || $ConfigObject->Get('DatabaseUser');
     $Self->{PW}   = $Param{DatabasePw}   || $ConfigObject->Get('DatabasePw');
+
+    $Self->{IsSlaveDB} = $Param{IsSlaveDB};
 
     $Self->{SlowLog} = $Param{'Database::SlowLog'}
         || $ConfigObject->Get('Database::SlowLog');
@@ -206,6 +211,10 @@ sub Connect {
         $Self->{dbh}->{pg_enable_utf8} = 1;
     }
 
+    if ( $Self->{SlaveDBObject} ) {
+        $Self->{SlaveDBObject}->Connect();
+    }
+
     return $Self->{dbh};
 }
 
@@ -232,6 +241,10 @@ sub Disconnect {
     # do disconnect
     if ( $Self->{dbh} ) {
         $Self->{dbh}->disconnect();
+    }
+
+    if ( $Self->{SlaveDBObject} ) {
+        $Self->{SlaveDBObject}->Disconnect();
     }
 
     return 1;
@@ -428,16 +441,6 @@ sub Do {
         );
     }
 
-    # check length, don't use more than 4 k
-    if ( bytes::length( $Param{SQL} ) > 4 * 1024 ) {
-        $Kernel::OM->Get('Kernel::System::Log')->Log(
-            Caller   => 1,
-            Priority => 'notice',
-            Message  => 'Your SQL is longer than 4k, this does not work on many '
-                . 'databases. Use bind instead! SQL: ' . $Param{SQL},
-        );
-    }
-
     # send sql to database
     if ( !$Self->{dbh}->do( $Param{SQL}, undef, @Array ) ) {
         $Kernel::OM->Get('Kernel::System::Log')->Log(
@@ -449,6 +452,64 @@ sub Do {
     }
 
     return 1;
+}
+
+sub _InitSlaveDB {
+    my ( $Self, %Param ) = @_;
+
+    # Run only once!
+    return $Self->{SlaveDBObject} if $Self->{_InitSlaveDB}++;
+
+    my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
+    my $MasterDSN    = $ConfigObject->Get('DatabaseDSN');
+
+    # Don't create slave if we are already in a slave, or if we are not in the master,
+    #   such as in an external customer user database handle.
+    if ( $Self->{IsSlaveDB} || $MasterDSN ne $Self->{DSN} ) {
+        return $Self->{SlaveDBObject};
+    }
+
+    my %SlaveConfiguration = (
+        %{ $ConfigObject->Get('Core::MirrorDB::AdditionalMirrors') // {} },
+        0 => {
+            DSN      => $ConfigObject->Get('Core::MirrorDB::DSN'),
+            User     => $ConfigObject->Get('Core::MirrorDB::User'),
+            Password => $ConfigObject->Get('Core::MirrorDB::Password'),
+            }
+    );
+
+    return $Self->{SlaveDBObject} if !%SlaveConfiguration;
+
+    SLAVE_INDEX:
+    for my $SlaveIndex ( List::Util::shuffle( keys %SlaveConfiguration ) ) {
+
+        my %CurrentSlave = %{ $SlaveConfiguration{$SlaveIndex} // {} };
+        next SLAVE_INDEX if !%CurrentSlave;
+
+        # If a slave is configured and it is not already used in the current object
+        #   and we are actually in the master connection object: then create a slave.
+        if (
+            $CurrentSlave{DSN}
+            && $CurrentSlave{User}
+            && $CurrentSlave{Password}
+            )
+        {
+            my $SlaveDBObject = Kernel::System::DB->new(
+                DatabaseDSN   => $CurrentSlave{DSN},
+                DatabaseUser  => $CurrentSlave{User},
+                DatabasePw    => $CurrentSlave{Password},
+                AutoConnectNo => 1,
+                IsSlaveDB     => 1,
+            );
+            if ( $SlaveDBObject->Connect() ) {
+                $Self->{SlaveDBObject} = $SlaveDBObject;
+                return $Self->{SlaveDBObject};
+            }
+        }
+    }
+
+    # No connect was possible.
+    return;
 }
 
 =item Prepare()
@@ -503,6 +564,21 @@ sub Prepare {
         );
         return;
     }
+
+    $Self->{_PreparedOnSlaveDB} = 0;
+
+    # Route SELECT statements to the DB slave if requested and a slave is configured.
+    if (
+        $UseSlaveDB
+        && !$Self->{IsSlaveDB}
+        && $Self->_InitSlaveDB()    # this is very cheap after the first call (cached)
+        && $SQL =~ m{\A\s*SELECT}xms
+        )
+    {
+        $Self->{_PreparedOnSlaveDB} = 1;
+        return $Self->{SlaveDBObject}->Prepare(%Param);
+    }
+
     if ( defined $Param{Encode} ) {
         $Self->{Encode} = $Param{Encode};
     }
@@ -523,7 +599,7 @@ sub Prepare {
             $SQL .= " LIMIT $Limit";
         }
         elsif ( $Self->{Backend}->{'DB::Limit'} eq 'top' ) {
-            $SQL =~ s{ \A (SELECT ([ ]DISTINCT|)) }{$1 TOP $Limit}xmsi;
+            $SQL =~ s{ \A \s* (SELECT ([ ]DISTINCT|)) }{$1 TOP $Limit}xmsi;
         }
         else {
             $Self->{Limit} = $Limit;
@@ -621,6 +697,10 @@ to process the results of a SELECT statement
 
 sub FetchrowArray {
     my $Self = shift;
+
+    if ( $Self->{_PreparedOnSlaveDB} ) {
+        return $Self->{SlaveDBObject}->FetchrowArray();
+    }
 
     # work with cursors if database don't support limit
     if ( !$Self->{Backend}->{'DB::Limit'} && $Self->{Limit} ) {
@@ -1234,7 +1314,7 @@ sub QueryCondition {
         }
 
         # if word exists, do something with it
-        if ($Word) {
+        if ( $Word ne '' ) {
 
             # remove escape characters from $Word
             $Word =~ s{\\}{}smxg;
@@ -1488,6 +1568,34 @@ sub QueryStringEscape {
     $Param{QueryString} =~ s{(?<!\\)([$SpecialCharacters])}{\\$1}smxg;
 
     return $Param{QueryString};
+}
+
+=item Ping()
+
+checks if the  database is reachable
+
+    my $Success = $DBObject->Ping();
+
+=cut
+
+sub Ping {
+    my ( $Self, %Param ) = @_;
+
+    # debug
+    if ( $Self->{Debug} > 2 ) {
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
+            Caller   => 1,
+            Priority => 'debug',
+            Message  => 'DB.pm->Ping',
+        );
+    }
+
+    # do disconnect
+    if ( $Self->{dbh} ) {
+        return $Self->{dbh}->ping();
+    }
+
+    return;
 }
 
 =begin Internal:

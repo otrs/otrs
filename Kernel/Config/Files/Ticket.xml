@@ -46,9 +46,9 @@
         <SubGroup>Core::Ticket</SubGroup>
         <Setting>
             <Option SelectedID="Left">
-                <Item Key="Left">Left</Item>
-                <Item Key="Right">Right</Item>
-                <Item Key="None">None</Item>
+                <Item Key="Left" Translatable="1">Left</Item>
+                <Item Key="Right" Translatable="1">Right</Item>
+                <Item Key="None" Translatable="1">None</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -66,7 +66,7 @@
         <Group>Ticket</Group>
         <SubGroup>Core::Ticket</SubGroup>
         <Setting>
-            <String Regex="">My Queues</String>
+            <String Regex="" Translatable="1">My Queues</String>
         </Setting>
     </ConfigItem>
     <ConfigItem Name="Ticket::CustomService" Required="1" Valid="1">
@@ -74,7 +74,7 @@
         <Group>Ticket</Group>
         <SubGroup>Core::Ticket</SubGroup>
         <Setting>
-            <String Regex="">My Services</String>
+            <String Regex="" Translatable="1">My Services</String>
         </Setting>
     </ConfigItem>
     <ConfigItem Name="Ticket::NewArticleIgnoreSystemSender" Required="1" Valid="1">
@@ -83,8 +83,8 @@
         <SubGroup>Core::Ticket</SubGroup>
         <Setting>
             <Option SelectedID="0">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -94,8 +94,8 @@
         <SubGroup>Core::Ticket</SubGroup>
         <Setting>
             <Option SelectedID="0">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -105,8 +105,8 @@
         <SubGroup>Core::Ticket</SubGroup>
         <Setting>
             <Option SelectedID="0">
-                <Item Key="1">Yes</Item>
-                <Item Key="0">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -116,8 +116,8 @@
         <SubGroup>Core::Ticket</SubGroup>
         <Setting>
             <Option SelectedID="1">
-                <Item Key="1">Yes</Item>
-                <Item Key="0">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -127,8 +127,8 @@
         <SubGroup>Core::Ticket</SubGroup>
         <Setting>
             <Option SelectedID="0">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -138,8 +138,8 @@
         <SubGroup>Core::Ticket</SubGroup>
         <Setting>
             <Option SelectedID="0">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -149,8 +149,8 @@
         <SubGroup>Core::Ticket</SubGroup>
         <Setting>
             <Option SelectedID="0">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -160,8 +160,8 @@
         <SubGroup>Core::Ticket</SubGroup>
         <Setting>
             <Option SelectedID="0">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -171,8 +171,8 @@
         <SubGroup>Core::Ticket</SubGroup>
         <Setting>
             <Option SelectedID="0">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -182,8 +182,8 @@
         <SubGroup>Core::Ticket</SubGroup>
         <Setting>
             <Option SelectedID="1">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -193,8 +193,8 @@
         <SubGroup>Core::Ticket</SubGroup>
         <Setting>
             <Option SelectedID="1">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -204,9 +204,9 @@
         <SubGroup>Core::Ticket</SubGroup>
         <Setting>
             <Option SelectedID="0">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
-                <Item Key="2">Yes, but hide archived tickets</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
+                <Item Key="2" Translatable="1">Yes, but hide archived tickets</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -224,8 +224,8 @@
         <SubGroup>Core::Ticket</SubGroup>
         <Setting>
             <Option SelectedID="1">
-                <Item Key="1">Yes</Item>
-                <Item Key="0">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -243,8 +243,8 @@
         <SubGroup>Core::Ticket</SubGroup>
         <Setting>
             <Option SelectedID="0">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -257,7 +257,7 @@
         </Setting>
     </ConfigItem>
     <ConfigItem Name="Ticket::IndexModule" Required="1" Valid="1">
-        <Description Translatable="1">IndexAccelerator: to choose your backend TicketViewAccelerator module. "RuntimeDB" generates each queue view on the fly from ticket table (no performance problems up to approx. 60.000 tickets in total and 6.000 open tickets in the system). "StaticDB" is the most powerful module, it uses an extra ticket-index table that works like a view (recommended if more than 80.000 and 6.000 open tickets are stored in the system). Use the script "bin/otrs.RebuildTicketIndex.pl" for initial index update.</Description>
+        <Description Translatable="1">IndexAccelerator: to choose your backend TicketViewAccelerator module. "RuntimeDB" generates each queue view on the fly from ticket table (no performance problems up to approx. 60.000 tickets in total and 6.000 open tickets in the system). "StaticDB" is the most powerful module, it uses an extra ticket-index table that works like a view (recommended if more than 80.000 and 6.000 open tickets are stored in the system). Use the command "bin/otrs.Console.pl Maint::Ticket::QueueIndexRebuild" for initial index creation.</Description>
         <Group>Ticket</Group>
         <SubGroup>Core::Ticket</SubGroup>
         <Setting>
@@ -266,7 +266,7 @@
         </Setting>
     </ConfigItem>
     <ConfigItem Name="Ticket::StorageModule" Required="1" Valid="1" ConfigLevel="200">
-        <Description Translatable="1">Saves the attachments of articles. "DB" stores all data in the database (not recommended for storing big attachments). "FS" stores the data on the filesystem; this is faster but the webserver should run under the OTRS user. You can switch between the modules even on a system that is already in production without any loss of data.</Description>
+        <Description Translatable="1">Saves the attachments of articles. "DB" stores all data in the database (not recommended for storing big attachments). "FS" stores the data on the filesystem; this is faster but the webserver should run under the OTRS user. You can switch between the modules even on a system that is already in production without any loss of data. Note: Searching for attachment names is not supported when "FS" is used.</Description>
         <Group>Ticket</Group>
         <SubGroup>Core::Ticket</SubGroup>
         <Setting>
@@ -280,8 +280,8 @@
         <SubGroup>Core::Ticket</SubGroup>
         <Setting>
             <Option SelectedID="0">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -479,7 +479,7 @@
         </Setting>
     </ConfigItem>
     <ConfigItem Name="Ticket::SearchIndexModule" Required="1" Valid="1" ConfigLevel="200">
-        <Description Translatable="1">Helps to extend your articles full-text search (From, To, Cc, Subject and Body search). Runtime will do full-text searches on live data (it works fine for up to 50.000 tickets). StaticDB will strip all articles and will build an index after article creation, increasing fulltext searches about 50%. To create an initial index use "bin/otrs.RebuildFulltextIndex.pl".</Description>
+        <Description Translatable="1">Helps to extend your articles full-text search (From, To, Cc, Subject and Body search). Runtime will do full-text searches on live data (it works fine for up to 50.000 tickets). StaticDB will strip all articles and will build an index after article creation, increasing fulltext searches about 50%. To create an initial index use "bin/otrs.Console.pl Maint::Ticket::FulltextIndexRebuild".</Description>
         <Group>Ticket</Group>
         <SubGroup>Core::FulltextSearch</SubGroup>
         <Setting>
@@ -487,8 +487,19 @@
             </Option>
         </Setting>
     </ConfigItem>
+    <ConfigItem Name="Ticket::SearchIndex::WarnOnStopWordUsage" Required="1" Valid="1">
+        <Description Translatable="1">Display a warning and prevent search when using stop words within fulltext search.</Description>
+        <Group>Ticket</Group>
+        <SubGroup>Core::FulltextSearch</SubGroup>
+        <Setting>
+            <Option SelectedID="0">
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
+            </Option>
+        </Setting>
+    </ConfigItem>
     <ConfigItem Name="Ticket::SearchIndex::Attribute" Required="1" Valid="1" ConfigLevel="200">
-        <Description Translatable="1">Basic fulltext index settings. Execute "bin/otrs.RebuildFulltextIndex.pl" in order to generate a new index.</Description>
+        <Description Translatable="1">Basic fulltext index settings. Execute "bin/otrs.Console.pl Maint::Ticket::FulltextIndexRebuild" in order to generate a new index.</Description>
         <Group>Ticket</Group>
         <SubGroup>Core::FulltextSearch</SubGroup>
         <Setting>
@@ -507,36 +518,804 @@
             <Array>
                 <Item><![CDATA[[,\&\<\>\?"\!\*\|;\[\]\(\)\+\$\^=]]]></Item>
                 <Item><![CDATA[^[':.]|[':.]$]]></Item>
+                <Item><![CDATA[^[^a-zA-Z0-9]+$]]></Item>
             </Array>
         </Setting>
     </ConfigItem>
-    <ConfigItem Name="Ticket::SearchIndex::StopWords" Required="1" Valid="1" ConfigLevel="200">
-        <Description Translatable="1">Stop words for fulltext index. These words will be removed.</Description>
+    <ConfigItem Name="Ticket::SearchIndex::StopWords###en" Required="0" Valid="1" ConfigLevel="200">
+        <Description Translatable="1">German stop words for fulltext index. These words will be removed from the search index.</Description>
         <Group>Ticket</Group>
         <SubGroup>Core::FulltextSearch</SubGroup>
         <Setting>
-            <Hash>
-                <Item Key="der">1</Item>
-                <Item Key="die">1</Item>
-                <Item Key="das">1</Item>
-                <Item Key="und">1</Item>
-                <Item Key="in">1</Item>
-                <Item Key="vom">1</Item>
-                <Item Key="zu">1</Item>
-                <Item Key="im">1</Item>
-                <Item Key="den">1</Item>
-                <Item Key="auf">1</Item>
-                <Item Key="als">1</Item>
-
-                <Item Key="the">1</Item>
-                <Item Key="of">1</Item>
-                <Item Key="and">1</Item>
-                <Item Key="in">1</Item>
-                <Item Key="to">1</Item>
-                <Item Key="a">1</Item>
-                <Item Key="is">1</Item>
-                <Item Key="for">1</Item>
-            </Hash>
+            <Array>
+                <Item>a</Item>
+                <Item>about</Item>
+                <Item>above</Item>
+                <Item>after</Item>
+                <Item>again</Item>
+                <Item>against</Item>
+                <Item>all</Item>
+                <Item>am</Item>
+                <Item>an</Item>
+                <Item>and</Item>
+                <Item>any</Item>
+                <Item>are</Item>
+                <Item>aren't</Item>
+                <Item>as</Item>
+                <Item>at</Item>
+                <Item>be</Item>
+                <Item>because</Item>
+                <Item>been</Item>
+                <Item>before</Item>
+                <Item>being</Item>
+                <Item>below</Item>
+                <Item>between</Item>
+                <Item>both</Item>
+                <Item>but</Item>
+                <Item>by</Item>
+                <Item>can't</Item>
+                <Item>cannot</Item>
+                <Item>could</Item>
+                <Item>couldn't</Item>
+                <Item>did</Item>
+                <Item>didn't</Item>
+                <Item>do</Item>
+                <Item>does</Item>
+                <Item>doesn't</Item>
+                <Item>doing</Item>
+                <Item>don't</Item>
+                <Item>down</Item>
+                <Item>during</Item>
+                <Item>each</Item>
+                <Item>few</Item>
+                <Item>for</Item>
+                <Item>from</Item>
+                <Item>further</Item>
+                <Item>had</Item>
+                <Item>hadn't</Item>
+                <Item>has</Item>
+                <Item>hasn't</Item>
+                <Item>have</Item>
+                <Item>haven't</Item>
+                <Item>having</Item>
+                <Item>he</Item>
+                <Item>he'd</Item>
+                <Item>he'll</Item>
+                <Item>he's</Item>
+                <Item>her</Item>
+                <Item>here</Item>
+                <Item>here's</Item>
+                <Item>hers</Item>
+                <Item>herself</Item>
+                <Item>him</Item>
+                <Item>himself</Item>
+                <Item>his</Item>
+                <Item>how</Item>
+                <Item>how's</Item>
+                <Item>i</Item>
+                <Item>i'd</Item>
+                <Item>i'll</Item>
+                <Item>i'm</Item>
+                <Item>i've</Item>
+                <Item>if</Item>
+                <Item>in</Item>
+                <Item>into</Item>
+                <Item>is</Item>
+                <Item>isn't</Item>
+                <Item>it</Item>
+                <Item>it's</Item>
+                <Item>its</Item>
+                <Item>itself</Item>
+                <Item>let's</Item>
+                <Item>me</Item>
+                <Item>more</Item>
+                <Item>most</Item>
+                <Item>mustn't</Item>
+                <Item>my</Item>
+                <Item>myself</Item>
+                <Item>no</Item>
+                <Item>nor</Item>
+                <Item>not</Item>
+                <Item>of</Item>
+                <Item>off</Item>
+                <Item>on</Item>
+                <Item>once</Item>
+                <Item>only</Item>
+                <Item>or</Item>
+                <Item>other</Item>
+                <Item>ought</Item>
+                <Item>our</Item>
+                <Item>ours</Item>
+                <Item>ourselves</Item>
+                <Item>out</Item>
+                <Item>over</Item>
+                <Item>own</Item>
+                <Item>same</Item>
+                <Item>shan't</Item>
+                <Item>she</Item>
+                <Item>she'd</Item>
+                <Item>she'll</Item>
+                <Item>she's</Item>
+                <Item>should</Item>
+                <Item>shouldn't</Item>
+                <Item>so</Item>
+                <Item>some</Item>
+                <Item>such</Item>
+                <Item>than</Item>
+                <Item>that</Item>
+                <Item>that's</Item>
+                <Item>the</Item>
+                <Item>their</Item>
+                <Item>theirs</Item>
+                <Item>them</Item>
+                <Item>themselves</Item>
+                <Item>then</Item>
+                <Item>there</Item>
+                <Item>there's</Item>
+                <Item>these</Item>
+                <Item>they</Item>
+                <Item>they'd</Item>
+                <Item>they'll</Item>
+                <Item>they're</Item>
+                <Item>they've</Item>
+                <Item>this</Item>
+                <Item>those</Item>
+                <Item>through</Item>
+                <Item>to</Item>
+                <Item>too</Item>
+                <Item>under</Item>
+                <Item>until</Item>
+                <Item>up</Item>
+                <Item>very</Item>
+                <Item>was</Item>
+                <Item>wasn't</Item>
+                <Item>we</Item>
+                <Item>we'd</Item>
+                <Item>we'll</Item>
+                <Item>we're</Item>
+                <Item>we've</Item>
+                <Item>were</Item>
+                <Item>weren't</Item>
+                <Item>what</Item>
+                <Item>what's</Item>
+                <Item>when</Item>
+                <Item>when's</Item>
+                <Item>where</Item>
+                <Item>where's</Item>
+                <Item>which</Item>
+                <Item>while</Item>
+                <Item>who</Item>
+                <Item>who's</Item>
+                <Item>whom</Item>
+                <Item>why</Item>
+                <Item>why's</Item>
+                <Item>with</Item>
+                <Item>won't</Item>
+                <Item>would</Item>
+                <Item>wouldn't</Item>
+                <Item>you</Item>
+                <Item>you'd</Item>
+                <Item>you'll</Item>
+                <Item>you're</Item>
+                <Item>you've</Item>
+                <Item>your</Item>
+                <Item>yours</Item>
+                <Item>yourself</Item>
+                <Item>yourselves</Item>
+            </Array>
+        </Setting>
+    </ConfigItem>
+    <ConfigItem Name="Ticket::SearchIndex::StopWords###de" Required="0" Valid="1" ConfigLevel="200">
+        <Description Translatable="1">German stop words for fulltext index. These words will be removed from the search index.</Description>
+        <Group>Ticket</Group>
+        <SubGroup>Core::FulltextSearch</SubGroup>
+        <Setting>
+            <Array>
+                <Item>aber</Item>
+                <Item>als</Item>
+                <Item>am</Item>
+                <Item>an</Item>
+                <Item>auch</Item>
+                <Item>auf</Item>
+                <Item>aus</Item>
+                <Item>bei</Item>
+                <Item>bin</Item>
+                <Item>bis</Item>
+                <Item>bist</Item>
+                <Item>da</Item>
+                <Item>dadurch</Item>
+                <Item>daher</Item>
+                <Item>darum</Item>
+                <Item>das</Item>
+                <Item>daß</Item>
+                <Item>dass</Item>
+                <Item>dein</Item>
+                <Item>deine</Item>
+                <Item>dem</Item>
+                <Item>den</Item>
+                <Item>der</Item>
+                <Item>des</Item>
+                <Item>dessen</Item>
+                <Item>deshalb</Item>
+                <Item>die</Item>
+                <Item>dies</Item>
+                <Item>dieser</Item>
+                <Item>dieses</Item>
+                <Item>doch</Item>
+                <Item>dort</Item>
+                <Item>du</Item>
+                <Item>durch</Item>
+                <Item>ein</Item>
+                <Item>eine</Item>
+                <Item>einem</Item>
+                <Item>einen</Item>
+                <Item>einer</Item>
+                <Item>eines</Item>
+                <Item>er</Item>
+                <Item>es</Item>
+                <Item>euer</Item>
+                <Item>eure</Item>
+                <Item>für</Item>
+                <Item>hatte</Item>
+                <Item>hatten</Item>
+                <Item>hattest</Item>
+                <Item>hattet</Item>
+                <Item>hier</Item>
+                <Item>hinter</Item>
+                <Item>ich</Item>
+                <Item>ihr</Item>
+                <Item>ihre</Item>
+                <Item>im</Item>
+                <Item>in</Item>
+                <Item>ist</Item>
+                <Item>ja</Item>
+                <Item>jede</Item>
+                <Item>jedem</Item>
+                <Item>jeden</Item>
+                <Item>jeder</Item>
+                <Item>jedes</Item>
+                <Item>jener</Item>
+                <Item>jenes</Item>
+                <Item>jetzt</Item>
+                <Item>kann</Item>
+                <Item>kannst</Item>
+                <Item>können</Item>
+                <Item>könnt</Item>
+                <Item>machen</Item>
+                <Item>mein</Item>
+                <Item>meine</Item>
+                <Item>mit</Item>
+                <Item>muß</Item>
+                <Item>mußt</Item>
+                <Item>musst</Item>
+                <Item>müssen</Item>
+                <Item>müßt</Item>
+                <Item>nach</Item>
+                <Item>nachdem</Item>
+                <Item>nein</Item>
+                <Item>nicht</Item>
+                <Item>nun</Item>
+                <Item>oder</Item>
+                <Item>seid</Item>
+                <Item>sein</Item>
+                <Item>seine</Item>
+                <Item>sich</Item>
+                <Item>sie</Item>
+                <Item>sind</Item>
+                <Item>soll</Item>
+                <Item>sollen</Item>
+                <Item>sollst</Item>
+                <Item>sollt</Item>
+                <Item>sonst</Item>
+                <Item>soweit</Item>
+                <Item>sowie</Item>
+                <Item>und</Item>
+                <Item>unser</Item>
+                <Item>unsere</Item>
+                <Item>unter</Item>
+                <Item>vom</Item>
+                <Item>von</Item>
+                <Item>vor</Item>
+                <Item>wann</Item>
+                <Item>warum</Item>
+                <Item>was</Item>
+                <Item>weiter</Item>
+                <Item>weitere</Item>
+                <Item>wenn</Item>
+                <Item>wer</Item>
+                <Item>werde</Item>
+                <Item>werden</Item>
+                <Item>werdet</Item>
+                <Item>weshalb</Item>
+                <Item>wie</Item>
+                <Item>wieder</Item>
+                <Item>wieso</Item>
+                <Item>wir</Item>
+                <Item>wird</Item>
+                <Item>wirst</Item>
+                <Item>wo</Item>
+                <Item>woher</Item>
+                <Item>wohin</Item>
+                <Item>zu</Item>
+                <Item>zum</Item>
+                <Item>zur</Item>
+                <Item>über</Item>
+            </Array>
+        </Setting>
+    </ConfigItem>
+    <ConfigItem Name="Ticket::SearchIndex::StopWords###es" Required="0" Valid="1" ConfigLevel="200">
+        <Description Translatable="1">Spanish stop words for fulltext index. These words will be removed from the search index.</Description>
+        <Group>Ticket</Group>
+        <SubGroup>Core::FulltextSearch</SubGroup>
+        <Setting>
+            <Array>
+                <Item>un</Item>
+                <Item>una</Item>
+                <Item>unas</Item>
+                <Item>unos</Item>
+                <Item>uno</Item>
+                <Item>sobre</Item>
+                <Item>todo</Item>
+                <Item>también</Item>
+                <Item>tras</Item>
+                <Item>otro</Item>
+                <Item>algún</Item>
+                <Item>alguno</Item>
+                <Item>alguna</Item>
+                <Item>algunos</Item>
+                <Item>algunas</Item>
+                <Item>ser</Item>
+                <Item>es</Item>
+                <Item>soy</Item>
+                <Item>eres</Item>
+                <Item>somos</Item>
+                <Item>sois</Item>
+                <Item>estoy</Item>
+                <Item>esta</Item>
+                <Item>estamos</Item>
+                <Item>estais</Item>
+                <Item>estan</Item>
+                <Item>como</Item>
+                <Item>en</Item>
+                <Item>para</Item>
+                <Item>atras</Item>
+                <Item>porque</Item>
+                <Item>por qué</Item>
+                <Item>estado</Item>
+                <Item>estaba</Item>
+                <Item>ante</Item>
+                <Item>antes</Item>
+                <Item>siendo</Item>
+                <Item>ambos</Item>
+                <Item>pero</Item>
+                <Item>por</Item>
+                <Item>poder</Item>
+                <Item>puede</Item>
+                <Item>puedo</Item>
+                <Item>podemos</Item>
+                <Item>podeis</Item>
+                <Item>pueden</Item>
+                <Item>fui</Item>
+                <Item>fue</Item>
+                <Item>fuimos</Item>
+                <Item>fueron</Item>
+                <Item>hacer</Item>
+                <Item>hago</Item>
+                <Item>hace</Item>
+                <Item>hacemos</Item>
+                <Item>haceis</Item>
+                <Item>hacen</Item>
+                <Item>cada</Item>
+                <Item>fin</Item>
+                <Item>incluso</Item>
+                <Item>primero</Item>
+                <Item>desde</Item>
+                <Item>conseguir</Item>
+                <Item>consigo</Item>
+                <Item>consigue</Item>
+                <Item>consigues</Item>
+                <Item>conseguimos</Item>
+                <Item>consiguen</Item>
+                <Item>ir</Item>
+                <Item>voy</Item>
+                <Item>va</Item>
+                <Item>vamos</Item>
+                <Item>vais</Item>
+                <Item>van</Item>
+                <Item>vaya</Item>
+                <Item>gueno</Item>
+                <Item>ha</Item>
+                <Item>tener</Item>
+                <Item>tengo</Item>
+                <Item>tiene</Item>
+                <Item>tenemos</Item>
+                <Item>teneis</Item>
+                <Item>tienen</Item>
+                <Item>el</Item>
+                <Item>la</Item>
+                <Item>lo</Item>
+                <Item>las</Item>
+                <Item>los</Item>
+                <Item>su</Item>
+                <Item>aqui</Item>
+                <Item>mio</Item>
+                <Item>tuyo</Item>
+                <Item>ellos</Item>
+                <Item>ellas</Item>
+                <Item>nos</Item>
+                <Item>nosotros</Item>
+                <Item>vosotros</Item>
+                <Item>vosotras</Item>
+                <Item>si</Item>
+                <Item>dentro</Item>
+                <Item>solo</Item>
+                <Item>solamente</Item>
+                <Item>saber</Item>
+                <Item>sabes</Item>
+                <Item>sabe</Item>
+                <Item>sabemos</Item>
+                <Item>sabeis</Item>
+                <Item>saben</Item>
+                <Item>ultimo</Item>
+                <Item>largo</Item>
+                <Item>bastante</Item>
+                <Item>haces</Item>
+                <Item>muchos</Item>
+                <Item>aquellos</Item>
+                <Item>aquellas</Item>
+                <Item>sus</Item>
+                <Item>entonces</Item>
+                <Item>tiempo</Item>
+                <Item>verdad</Item>
+                <Item>verdadero</Item>
+                <Item>verdadera</Item>
+                <Item>cierto</Item>
+                <Item>ciertos</Item>
+                <Item>cierta</Item>
+                <Item>ciertas</Item>
+                <Item>intentar</Item>
+                <Item>intento</Item>
+                <Item>intenta</Item>
+                <Item>intentas</Item>
+                <Item>intentamos</Item>
+                <Item>intentais</Item>
+                <Item>intentan</Item>
+                <Item>dos</Item>
+                <Item>bajo</Item>
+                <Item>arriba</Item>
+                <Item>encima</Item>
+                <Item>usar</Item>
+                <Item>uso</Item>
+                <Item>usas</Item>
+                <Item>usa</Item>
+                <Item>usamos</Item>
+                <Item>usais</Item>
+                <Item>usan</Item>
+                <Item>emplear</Item>
+                <Item>empleo</Item>
+                <Item>empleas</Item>
+                <Item>emplean</Item>
+                <Item>ampleamos</Item>
+                <Item>empleais</Item>
+                <Item>valor</Item>
+                <Item>muy</Item>
+                <Item>era</Item>
+                <Item>eras</Item>
+                <Item>eramos</Item>
+                <Item>eran</Item>
+                <Item>modo</Item>
+                <Item>bien</Item>
+                <Item>cual</Item>
+                <Item>cuando</Item>
+                <Item>donde</Item>
+                <Item>mientras</Item>
+                <Item>quien</Item>
+                <Item>con</Item>
+                <Item>entre</Item>
+                <Item>sin</Item>
+                <Item>trabajo</Item>
+                <Item>trabajar</Item>
+                <Item>trabajas</Item>
+                <Item>trabaja</Item>
+                <Item>trabajamos</Item>
+                <Item>trabajais</Item>
+                <Item>trabajan</Item>
+                <Item>podria</Item>
+                <Item>podrias</Item>
+                <Item>podriamos</Item>
+                <Item>podrian</Item>
+                <Item>podriais</Item>
+                <Item>yo</Item>
+                <Item>aquel</Item>
+            </Array>
+        </Setting>
+    </ConfigItem>
+    <ConfigItem Name="Ticket::SearchIndex::StopWords###fr" Required="0" Valid="1" ConfigLevel="200">
+        <Description Translatable="1">French stop words for fulltext index. These words will be removed from the search index.</Description>
+        <Group>Ticket</Group>
+        <SubGroup>Core::FulltextSearch</SubGroup>
+        <Setting>
+            <Array>
+                <Item>alors</Item>
+                <Item>au</Item>
+                <Item>aucuns</Item>
+                <Item>aussi</Item>
+                <Item>autre</Item>
+                <Item>avant</Item>
+                <Item>avec</Item>
+                <Item>avoir</Item>
+                <Item>bon</Item>
+                <Item>car</Item>
+                <Item>ce</Item>
+                <Item>cela</Item>
+                <Item>ces</Item>
+                <Item>ceux</Item>
+                <Item>chaque</Item>
+                <Item>ci</Item>
+                <Item>comme</Item>
+                <Item>comment</Item>
+                <Item>dans</Item>
+                <Item>des</Item>
+                <Item>du</Item>
+                <Item>dedans</Item>
+                <Item>dehors</Item>
+                <Item>depuis</Item>
+                <Item>deux</Item>
+                <Item>devrait</Item>
+                <Item>doit</Item>
+                <Item>donc</Item>
+                <Item>dos</Item>
+                <Item>droite</Item>
+                <Item>début</Item>
+                <Item>elle</Item>
+                <Item>elles</Item>
+                <Item>en</Item>
+                <Item>encore</Item>
+                <Item>essai</Item>
+                <Item>est</Item>
+                <Item>et</Item>
+                <Item>eu</Item>
+                <Item>fait</Item>
+                <Item>faites</Item>
+                <Item>fois</Item>
+                <Item>font</Item>
+                <Item>force</Item>
+                <Item>haut</Item>
+                <Item>hors</Item>
+                <Item>ici</Item>
+                <Item>il</Item>
+                <Item>ils</Item>
+                <Item>je</Item>
+                <Item>juste</Item>
+                <Item>la</Item>
+                <Item>le</Item>
+                <Item>les</Item>
+                <Item>leur</Item>
+                <Item>là</Item>
+                <Item>ma</Item>
+                <Item>maintenant</Item>
+                <Item>mais</Item>
+                <Item>mes</Item>
+                <Item>mine</Item>
+                <Item>moins</Item>
+                <Item>mon</Item>
+                <Item>mot</Item>
+                <Item>même</Item>
+                <Item>ni</Item>
+                <Item>nommés</Item>
+                <Item>notre</Item>
+                <Item>nous</Item>
+                <Item>nouveaux</Item>
+                <Item>ou</Item>
+                <Item>où</Item>
+                <Item>par</Item>
+                <Item>parce</Item>
+                <Item>parole</Item>
+                <Item>pas</Item>
+                <Item>personnes</Item>
+                <Item>peut</Item>
+                <Item>peu</Item>
+                <Item>pièce</Item>
+                <Item>plupart</Item>
+                <Item>pour</Item>
+                <Item>pourquoi</Item>
+                <Item>quand</Item>
+                <Item>que</Item>
+                <Item>quel</Item>
+                <Item>quelle</Item>
+                <Item>quelles</Item>
+                <Item>quels</Item>
+                <Item>qui</Item>
+                <Item>sa</Item>
+                <Item>sans</Item>
+                <Item>ses</Item>
+                <Item>seulement</Item>
+                <Item>si</Item>
+                <Item>sien</Item>
+                <Item>son</Item>
+                <Item>sont</Item>
+                <Item>sous</Item>
+                <Item>soyez</Item>
+                <Item>sujet</Item>
+                <Item>sur</Item>
+                <Item>ta</Item>
+                <Item>tandis</Item>
+                <Item>tellement</Item>
+                <Item>tels</Item>
+                <Item>tes</Item>
+                <Item>ton</Item>
+                <Item>tous</Item>
+                <Item>tout</Item>
+                <Item>trop</Item>
+                <Item>très</Item>
+                <Item>tu</Item>
+                <Item>valeur</Item>
+                <Item>voie</Item>
+                <Item>voient</Item>
+                <Item>vont</Item>
+                <Item>votre</Item>
+                <Item>vous</Item>
+                <Item>vu</Item>
+                <Item>ça</Item>
+                <Item>étaient</Item>
+                <Item>état</Item>
+                <Item>étions</Item>
+                <Item>été</Item>
+                <Item>être</Item>
+            </Array>
+        </Setting>
+    </ConfigItem>
+    <ConfigItem Name="Ticket::SearchIndex::StopWords###it" Required="0" Valid="1" ConfigLevel="200">
+        <Description Translatable="1">Italian stop words for fulltext index. These words will be removed from the search index.</Description>
+        <Group>Ticket</Group>
+        <SubGroup>Core::FulltextSearch</SubGroup>
+        <Setting>
+            <Array>
+                <Item>a</Item>
+                <Item>adesso</Item>
+                <Item>ai</Item>
+                <Item>al</Item>
+                <Item>alla</Item>
+                <Item>allo</Item>
+                <Item>allora</Item>
+                <Item>altre</Item>
+                <Item>altri</Item>
+                <Item>altro</Item>
+                <Item>anche</Item>
+                <Item>ancora</Item>
+                <Item>avere</Item>
+                <Item>aveva</Item>
+                <Item>avevano</Item>
+                <Item>ben</Item>
+                <Item>buono</Item>
+                <Item>che</Item>
+                <Item>chi</Item>
+                <Item>cinque</Item>
+                <Item>comprare</Item>
+                <Item>con</Item>
+                <Item>consecutivi</Item>
+                <Item>consecutivo</Item>
+                <Item>cosa</Item>
+                <Item>cui</Item>
+                <Item>da</Item>
+                <Item>del</Item>
+                <Item>della</Item>
+                <Item>dello</Item>
+                <Item>dentro</Item>
+                <Item>deve</Item>
+                <Item>devo</Item>
+                <Item>di</Item>
+                <Item>doppio</Item>
+                <Item>due</Item>
+                <Item>e</Item>
+                <Item>ecco</Item>
+                <Item>fare</Item>
+                <Item>fine</Item>
+                <Item>fino</Item>
+                <Item>fra</Item>
+                <Item>gente</Item>
+                <Item>giu</Item>
+                <Item>ha</Item>
+                <Item>hai</Item>
+                <Item>hanno</Item>
+                <Item>ho</Item>
+                <Item>il</Item>
+                <Item>indietro</Item>
+                <Item>invece</Item>
+                <Item>io</Item>
+                <Item>la</Item>
+                <Item>lavoro</Item>
+                <Item>le</Item>
+                <Item>lei</Item>
+                <Item>lo</Item>
+                <Item>loro</Item>
+                <Item>lui</Item>
+                <Item>lungo</Item>
+                <Item>ma</Item>
+                <Item>me</Item>
+                <Item>meglio</Item>
+                <Item>molta</Item>
+                <Item>molti</Item>
+                <Item>molto</Item>
+                <Item>nei</Item>
+                <Item>nella</Item>
+                <Item>no</Item>
+                <Item>noi</Item>
+                <Item>nome</Item>
+                <Item>nostro</Item>
+                <Item>nove</Item>
+                <Item>nuovi</Item>
+                <Item>nuovo</Item>
+                <Item>o</Item>
+                <Item>oltre</Item>
+                <Item>ora</Item>
+                <Item>otto</Item>
+                <Item>peggio</Item>
+                <Item>pero</Item>
+                <Item>persone</Item>
+                <Item>piu</Item>
+                <Item>poco</Item>
+                <Item>primo</Item>
+                <Item>promesso</Item>
+                <Item>qua</Item>
+                <Item>quarto</Item>
+                <Item>quasi</Item>
+                <Item>quattro</Item>
+                <Item>quello</Item>
+                <Item>questo</Item>
+                <Item>qui</Item>
+                <Item>quindi</Item>
+                <Item>quinto</Item>
+                <Item>rispetto</Item>
+                <Item>sara</Item>
+                <Item>secondo</Item>
+                <Item>sei</Item>
+                <Item>sembra</Item>
+                <Item>sembrava</Item>
+                <Item>senza</Item>
+                <Item>sette</Item>
+                <Item>sia</Item>
+                <Item>siamo</Item>
+                <Item>siete</Item>
+                <Item>solo</Item>
+                <Item>sono</Item>
+                <Item>sopra</Item>
+                <Item>soprattutto</Item>
+                <Item>sotto</Item>
+                <Item>stati</Item>
+                <Item>stato</Item>
+                <Item>stesso</Item>
+                <Item>su</Item>
+                <Item>subito</Item>
+                <Item>sul</Item>
+                <Item>sulla</Item>
+                <Item>tanto</Item>
+                <Item>te</Item>
+                <Item>tempo</Item>
+                <Item>terzo</Item>
+                <Item>tra</Item>
+                <Item>tre</Item>
+                <Item>triplo</Item>
+                <Item>ultimo</Item>
+                <Item>un</Item>
+                <Item>una</Item>
+                <Item>uno</Item>
+                <Item>va</Item>
+                <Item>vai</Item>
+                <Item>voi</Item>
+                <Item>volte</Item>
+                <Item>vostro</Item>
+            </Array>
+        </Setting>
+    </ConfigItem>
+    <ConfigItem Name="Ticket::SearchIndex::StopWords###Custom" Required="0" Valid="0" ConfigLevel="200">
+        <Description Translatable="1">Customizable stop words for fulltext index. These words will be removed from the search index.</Description>
+        <Group>Ticket</Group>
+        <SubGroup>Core::FulltextSearch</SubGroup>
+        <Setting>
+            <Array>
+                <Item>MyStopWord</Item>
+            </Array>
         </Setting>
     </ConfigItem>
     <ConfigItem Name="Ticket::EventModulePost###98-ArticleSearchIndex" Required="0" Valid="1">
@@ -557,7 +1336,7 @@
         <Setting>
             <Hash>
                 <Item Key="Module">Kernel::Output::HTML::TicketOverviewSmall</Item>
-                <Item Key="Name">Small</Item>
+                <Item Key="Name" Translatable="1">Small</Item>
                 <Item Key="NameShort">S</Item>
                 <Item Key="ModulePriority">100</Item>
                 <Item Key="CustomerInfo">1</Item>
@@ -582,7 +1361,7 @@
         <Setting>
             <Hash>
                 <Item Key="Module">Kernel::Output::HTML::TicketOverviewMedium</Item>
-                <Item Key="Name">Medium</Item>
+                <Item Key="Name" Translatable="1">Medium</Item>
                 <Item Key="NameShort">M</Item>
                 <Item Key="ModulePriority">200</Item>
                 <Item Key="CustomerInfo">0</Item>
@@ -598,7 +1377,7 @@
         <Setting>
             <Hash>
                 <Item Key="Module">Kernel::Output::HTML::TicketOverviewPreview</Item>
-                <Item Key="Name">Large</Item>
+                <Item Key="Name" Translatable="1">Large</Item>
                 <Item Key="NameShort">L</Item>
                 <Item Key="ModulePriority">300</Item>
                 <Item Key="CustomerInfo">0</Item>
@@ -661,8 +1440,8 @@
         <SubGroup>Frontend::Agent</SubGroup>
         <Setting>
             <Option SelectedID="tree">
-                <Item Key="tree">tree</Item>
-                <Item Key="list">list</Item>
+                <Item Key="tree" Translatable="1">Tree view</Item>
+                <Item Key="list" Translatable="1">List view</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -672,8 +1451,8 @@
         <SubGroup>Core::TicketWatcher</SubGroup>
         <Setting>
             <Option SelectedID="0">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -694,8 +1473,8 @@
         <SubGroup>Core::TicketBulkAction</SubGroup>
         <Setting>
             <Option SelectedID="1">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -716,8 +1495,8 @@
         <SubGroup>Frontend::Agent::Ticket::ViewZoom</SubGroup>
         <Setting>
             <Option SelectedID="0">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -727,8 +1506,8 @@
         <SubGroup>Frontend::Agent::Ticket::ViewZoom</SubGroup>
         <Setting>
             <Option SelectedID="0">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -738,8 +1517,8 @@
         <SubGroup>Frontend::Agent::Ticket::ViewZoom</SubGroup>
         <Setting>
             <Option SelectedID="reverse">
-                <Item Key="reverse">reverse</Item>
-                <Item Key="normal">normal</Item>
+                <Item Key="reverse" Translatable="1">reverse</Item>
+                <Item Key="normal" Translatable="1">normal</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -783,8 +1562,8 @@
         <SubGroup>Frontend::Agent::Ticket::ViewZoom</SubGroup>
         <Setting>
             <Option SelectedID="0">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -794,8 +1573,8 @@
         <SubGroup>Frontend::Agent::Ticket::ViewZoom</SubGroup>
         <Setting>
             <Option SelectedID="1">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -805,8 +1584,8 @@
         <SubGroup>Frontend::Agent::Ticket::ViewZoom</SubGroup>
         <Setting>
             <Option SelectedID="0">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -816,8 +1595,8 @@
         <SubGroup>Frontend::Agent::Ticket::ViewHistory</SubGroup>
         <Setting>
             <Option SelectedID="normal">
-                <Item Key="reverse">reverse</Item>
-                <Item Key="normal">normal</Item>
+                <Item Key="reverse" Translatable="1">reverse</Item>
+                <Item Key="normal" Translatable="1">normal</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -933,8 +1712,8 @@
         <SubGroup>Frontend::Agent</SubGroup>
         <Setting>
             <Option SelectedID="1">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -952,8 +1731,8 @@
         <SubGroup>Frontend::Agent</SubGroup>
         <Setting>
             <Option SelectedID="1">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -987,8 +1766,8 @@
         <SubGroup>Frontend::Customer::TicketOverview</SubGroup>
         <Setting>
             <Option SelectedID="">
-                <Item Key="">No</Item>
-                <Item Key="Sortable">Yes</Item>
+                <Item Key="" Translatable="1">No</Item>
+                <Item Key="Sortable" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -998,8 +1777,8 @@
         <SubGroup>Frontend::Customer</SubGroup>
         <Setting>
             <Option SelectedID="0">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -1009,9 +1788,9 @@
         <SubGroup>Frontend::Customer</SubGroup>
         <Setting>
             <Hash>
-                <Item Key="Title">Welcome!</Item>
-                <Item Key="Text">Please click the button below to create your first ticket.</Item>
-                <Item Key="Button">Create your first ticket</Item>
+                <Item Key="Title" Translatable="1">Welcome!</Item>
+                <Item Key="Text" Translatable="1">Please click the button below to create your first ticket.</Item>
+                <Item Key="Button" Translatable="1">Create your first ticket</Item>
             </Hash>
         </Setting>
     </ConfigItem>
@@ -1032,8 +1811,8 @@
         <SubGroup>Frontend::Customer::TicketOverview</SubGroup>
         <Setting>
             <Option SelectedID="0">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -1043,8 +1822,8 @@
         <SubGroup>Frontend::Customer::TicketOverview</SubGroup>
         <Setting>
             <Option SelectedID="0">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -1063,8 +1842,8 @@
         <SubGroup>Frontend::Agent::Ticket::ViewQueue</SubGroup>
         <Setting>
             <Option SelectedID="0">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -1074,8 +1853,8 @@
         <SubGroup>Frontend::Agent::Ticket::ViewQueue</SubGroup>
         <Setting>
             <Option SelectedID="0">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -1101,8 +1880,8 @@
         <SubGroup>Frontend::Agent::Ticket::ViewQueue</SubGroup>
         <Setting>
             <Option SelectedID="1">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -1123,11 +1902,11 @@
         <SubGroup>Frontend::Agent::Ticket::ViewQueue</SubGroup>
         <Setting>
             <Option SelectedID="Age">
-                <Item Key="Age">Age</Item>
-                <Item Key="TicketNumber">TicketNumber</Item>
-                <Item Key="Title">Title</Item>
-                <Item Key="Queue">Queue</Item>
-                <Item Key="EscalationTime">EscalationTime</Item>
+                <Item Key="Age" Translatable="1">Age</Item>
+                <Item Key="TicketNumber" Translatable="1">TicketNumber</Item>
+                <Item Key="Title" Translatable="1">Title</Item>
+                <Item Key="Queue" Translatable="1">Queue</Item>
+                <Item Key="EscalationTime" Translatable="1">EscalationTime</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -1137,8 +1916,8 @@
         <SubGroup>Frontend::Agent::Ticket::ViewQueue</SubGroup>
         <Setting>
             <Option SelectedID="1">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -1148,8 +1927,8 @@
         <SubGroup>Frontend::Agent::Ticket::ViewQueue</SubGroup>
         <Setting>
             <Option SelectedID="Up">
-                <Item Key="Down">Down</Item>
-                <Item Key="Up">Up</Item>
+                <Item Key="Down" Translatable="1">Down</Item>
+                <Item Key="Up" Translatable="1">Up</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -1159,8 +1938,8 @@
         <SubGroup>Frontend::Agent::Ticket::ViewService</SubGroup>
         <Setting>
             <Option SelectedID="0">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -1170,8 +1949,8 @@
         <SubGroup>Frontend::Agent::Ticket::ViewService</SubGroup>
         <Setting>
             <Option SelectedID="0">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -1192,11 +1971,11 @@
         <SubGroup>Frontend::Agent::Ticket::ViewService</SubGroup>
         <Setting>
             <Option SelectedID="Age">
-                <Item Key="Age">Age</Item>
-                <Item Key="TicketNumber">TicketNumber</Item>
-                <Item Key="Title">Title</Item>
-                <Item Key="Queue">Queue</Item>
-                <Item Key="EscalationTime">EscalationTime</Item>
+                <Item Key="Age" Translatable="1">Age</Item>
+                <Item Key="TicketNumber" Translatable="1">TicketNumber</Item>
+                <Item Key="Title" Translatable="1">Title</Item>
+                <Item Key="Queue" Translatable="1">Queue</Item>
+                <Item Key="EscalationTime" Translatable="1">EscalationTime</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -1206,8 +1985,8 @@
         <SubGroup>Frontend::Agent::Ticket::ViewService</SubGroup>
         <Setting>
             <Option SelectedID="1">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -1217,8 +1996,8 @@
         <SubGroup>Frontend::Agent::Ticket::ViewService</SubGroup>
         <Setting>
             <Option SelectedID="Up">
-                <Item Key="Down">Down</Item>
-                <Item Key="Up">Up</Item>
+                <Item Key="Down" Translatable="1">Down</Item>
+                <Item Key="Up" Translatable="1">Up</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -1228,8 +2007,8 @@
         <SubGroup>Frontend::Agent</SubGroup>
         <Setting>
             <Option SelectedID="1">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -1238,7 +2017,7 @@
         <Group>Ticket</Group>
         <SubGroup>Frontend::Agent</SubGroup>
         <Setting>
-            <String Regex=""> (work units)</String>
+            <String Regex="" Translatable="1"> (work units)</String>
         </Setting>
     </ConfigItem>
     <ConfigItem Name="Ticket::Frontend::NeedAccountedTime" Required="1" Valid="1">
@@ -1247,8 +2026,8 @@
         <SubGroup>Frontend::Agent</SubGroup>
         <Setting>
             <Option SelectedID="0">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -1258,8 +2037,8 @@
         <SubGroup>Frontend::Agent</SubGroup>
         <Setting>
             <Option SelectedID="1">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -1269,8 +2048,8 @@
         <SubGroup>Frontend::Agent</SubGroup>
         <Setting>
             <Option SelectedID="0">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -1288,12 +2067,12 @@
         <SubGroup>Frontend::Agent::Ticket::ViewStatus</SubGroup>
         <Setting>
             <Option SelectedID="Age">
-                <Item Key="Age">Age</Item>
-                <Item Key="TicketNumber">TicketNumber</Item>
-                <Item Key="Title">Title</Item>
-                <Item Key="Queue">Queue</Item>
-                <Item Key="Priority">Priority</Item>
-                <Item Key="EscalationTime">EscalationTime</Item>
+                <Item Key="Age" Translatable="1">Age</Item>
+                <Item Key="TicketNumber" Translatable="1">TicketNumber</Item>
+                <Item Key="Title" Translatable="1">Title</Item>
+                <Item Key="Queue" Translatable="1">Queue</Item>
+                <Item Key="Priority" Translatable="1">Priority</Item>
+                <Item Key="EscalationTime" Translatable="1">EscalationTime</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -1303,8 +2082,8 @@
         <SubGroup>Frontend::Agent::Ticket::ViewStatus</SubGroup>
         <Setting>
             <Option SelectedID="Down">
-                <Item Key="Down">Down</Item>
-                <Item Key="Up">Up</Item>
+                <Item Key="Down" Translatable="1">Down</Item>
+                <Item Key="Up" Translatable="1">Up</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -1333,12 +2112,12 @@
         <SubGroup>Frontend::Agent::Ticket::ViewEscalation</SubGroup>
         <Setting>
             <Option SelectedID="EscalationTime">
-                <Item Key="Age">Age</Item>
-                <Item Key="TicketNumber">TicketNumber</Item>
-                <Item Key="Title">Title</Item>
-                <Item Key="Queue">Queue</Item>
-                <Item Key="Priority">Priority</Item>
-                <Item Key="EscalationTime">EscalationTime</Item>
+                <Item Key="Age" Translatable="1">Age</Item>
+                <Item Key="TicketNumber" Translatable="1">TicketNumber</Item>
+                <Item Key="Title" Translatable="1">Title</Item>
+                <Item Key="Queue" Translatable="1">Queue</Item>
+                <Item Key="Priority" Translatable="1">Priority</Item>
+                <Item Key="EscalationTime" Translatable="1">EscalationTime</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -1348,8 +2127,8 @@
         <SubGroup>Frontend::Agent::Ticket::ViewEscalation</SubGroup>
         <Setting>
             <Option SelectedID="Up">
-                <Item Key="Down">Down</Item>
-                <Item Key="Up">Up</Item>
+                <Item Key="Down" Translatable="1">Down</Item>
+                <Item Key="Up" Translatable="1">Up</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -1359,8 +2138,8 @@
         <SubGroup>Frontend::Agent::Ticket::ViewSearch</SubGroup>
         <Setting>
             <Option SelectedID="1">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -1394,12 +2173,12 @@
         <SubGroup>Frontend::Agent::Ticket::ViewSearch</SubGroup>
         <Setting>
             <Option SelectedID="Age">
-                <Item Key="Age">Age</Item>
-                <Item Key="TicketNumber">TicketNumber</Item>
-                <Item Key="Title">Title</Item>
-                <Item Key="Queue">Queue</Item>
-                <Item Key="Priority">Priority</Item>
-                <Item Key="EscalationTime">EscalationTime</Item>
+                <Item Key="Age" Translatable="1">Age</Item>
+                <Item Key="TicketNumber" Translatable="1">TicketNumber</Item>
+                <Item Key="Title" Translatable="1">Title</Item>
+                <Item Key="Queue" Translatable="1">Queue</Item>
+                <Item Key="Priority" Translatable="1">Priority</Item>
+                <Item Key="EscalationTime" Translatable="1">EscalationTime</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -1409,8 +2188,8 @@
         <SubGroup>Frontend::Agent::Ticket::ViewSearch</SubGroup>
         <Setting>
             <Option SelectedID="Down">
-                <Item Key="Down">Down</Item>
-                <Item Key="Up">Up</Item>
+                <Item Key="Down" Translatable="1">Down</Item>
+                <Item Key="Up" Translatable="1">Up</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -1420,8 +2199,8 @@
         <SubGroup>Frontend::Agent::Ticket::ViewSearch</SubGroup>
         <Setting>
             <Option SelectedID="0">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -1463,8 +2242,8 @@
         <SubGroup>Frontend::Agent::Ticket::ViewSearch</SubGroup>
         <Setting>
             <Option SelectedID="0">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -1668,12 +2447,12 @@
         <SubGroup>Frontend::Agent::Ticket::ViewLocked</SubGroup>
         <Setting>
             <Option SelectedID="Age">
-                <Item Key="Age">Age</Item>
-                <Item Key="TicketNumber">TicketNumber</Item>
-                <Item Key="Title">Title</Item>
-                <Item Key="Queue">Queue</Item>
-                <Item Key="Priority">Priority</Item>
-                <Item Key="EscalationTime">EscalationTime</Item>
+                <Item Key="Age" Translatable="1">Age</Item>
+                <Item Key="TicketNumber" Translatable="1">TicketNumber</Item>
+                <Item Key="Title" Translatable="1">Title</Item>
+                <Item Key="Queue" Translatable="1">Queue</Item>
+                <Item Key="Priority" Translatable="1">Priority</Item>
+                <Item Key="EscalationTime" Translatable="1">EscalationTime</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -1683,8 +2462,8 @@
         <SubGroup>Frontend::Agent::Ticket::ViewLocked</SubGroup>
         <Setting>
             <Option SelectedID="Up">
-                <Item Key="Down">Down</Item>
-                <Item Key="Up">Up</Item>
+                <Item Key="Down" Translatable="1">Down</Item>
+                <Item Key="Up" Translatable="1">Up</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -1694,12 +2473,12 @@
         <SubGroup>Frontend::Agent::Ticket::ViewResponsible</SubGroup>
         <Setting>
             <Option SelectedID="Age">
-                <Item Key="Age">Age</Item>
-                <Item Key="TicketNumber">TicketNumber</Item>
-                <Item Key="Title">Title</Item>
-                <Item Key="Queue">Queue</Item>
-                <Item Key="Priority">Priority</Item>
-                <Item Key="EscalationTime">EscalationTime</Item>
+                <Item Key="Age" Translatable="1">Age</Item>
+                <Item Key="TicketNumber" Translatable="1">TicketNumber</Item>
+                <Item Key="Title" Translatable="1">Title</Item>
+                <Item Key="Queue" Translatable="1">Queue</Item>
+                <Item Key="Priority" Translatable="1">Priority</Item>
+                <Item Key="EscalationTime" Translatable="1">EscalationTime</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -1709,8 +2488,8 @@
         <SubGroup>Frontend::Agent::Ticket::ViewResponsible</SubGroup>
         <Setting>
             <Option SelectedID="Up">
-                <Item Key="Down">Down</Item>
-                <Item Key="Up">Up</Item>
+                <Item Key="Down" Translatable="1">Down</Item>
+                <Item Key="Up" Translatable="1">Up</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -1720,12 +2499,12 @@
         <SubGroup>Frontend::Agent::Ticket::ViewWatch</SubGroup>
         <Setting>
             <Option SelectedID="Age">
-                <Item Key="Age">Age</Item>
-                <Item Key="TicketNumber">TicketNumber</Item>
-                <Item Key="Title">Title</Item>
-                <Item Key="Queue">Queue</Item>
-                <Item Key="Priority">Priority</Item>
-                <Item Key="EscalationTime">EscalationTime</Item>
+                <Item Key="Age" Translatable="1">Age</Item>
+                <Item Key="TicketNumber" Translatable="1">TicketNumber</Item>
+                <Item Key="Title" Translatable="1">Title</Item>
+                <Item Key="Queue" Translatable="1">Queue</Item>
+                <Item Key="Priority" Translatable="1">Priority</Item>
+                <Item Key="EscalationTime" Translatable="1">EscalationTime</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -1735,8 +2514,8 @@
         <SubGroup>Frontend::Agent::Ticket::ViewWatch</SubGroup>
         <Setting>
             <Option SelectedID="Up">
-                <Item Key="Down">Down</Item>
-                <Item Key="Up">Up</Item>
+                <Item Key="Down" Translatable="1">Down</Item>
+                <Item Key="Up" Translatable="1">Up</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -1745,7 +2524,7 @@
         <Group>Ticket</Group>
         <SubGroup>Frontend::Agent::Ticket::ViewFreeText</SubGroup>
         <Setting>
-            <String Regex="">rw</String>
+            <String Regex="" Translatable="1">rw</String>
         </Setting>
     </ConfigItem>
     <ConfigItem Name="Ticket::Frontend::AgentTicketFreeText###RequiredLock" Required="0" Valid="1">
@@ -1754,8 +2533,8 @@
         <SubGroup>Frontend::Agent::Ticket::ViewFreeText</SubGroup>
         <Setting>
             <Option SelectedID="0">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -1765,8 +2544,8 @@
         <SubGroup>Frontend::Agent::Ticket::ViewFreeText</SubGroup>
         <Setting>
             <Option SelectedID="1">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -1776,8 +2555,8 @@
         <SubGroup>Frontend::Agent::Ticket::ViewFreeText</SubGroup>
         <Setting>
             <Option SelectedID="1">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -1787,8 +2566,8 @@
         <SubGroup>Frontend::Agent::Ticket::ViewFreeText</SubGroup>
         <Setting>
             <Option SelectedID="0">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -1798,8 +2577,8 @@
         <SubGroup>Frontend::Agent::Ticket::ViewFreeText</SubGroup>
         <Setting>
             <Option SelectedID="0">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -1809,8 +2588,8 @@
         <SubGroup>Frontend::Agent::Ticket::ViewFreeText</SubGroup>
         <Setting>
             <Option SelectedID="0">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -1820,8 +2599,8 @@
         <SubGroup>Frontend::Agent::Ticket::ViewFreeText</SubGroup>
         <Setting>
             <Option SelectedID="0">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -1831,8 +2610,8 @@
         <SubGroup>Frontend::Agent::Ticket::ViewFreeText</SubGroup>
         <Setting>
             <Option SelectedID="0">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -1842,8 +2621,8 @@
         <SubGroup>Frontend::Agent::Ticket::ViewFreeText</SubGroup>
         <Setting>
             <Option SelectedID="0">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -1853,8 +2632,8 @@
         <SubGroup>Frontend::Agent::Ticket::ViewFreeText</SubGroup>
         <Setting>
             <Option SelectedID="0">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -1886,8 +2665,8 @@
         <SubGroup>Frontend::Agent::Ticket::ViewFreeText</SubGroup>
         <Setting>
             <Option SelectedID="0">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -1897,8 +2676,8 @@
         <SubGroup>Frontend::Agent::Ticket::ViewFreeText</SubGroup>
         <Setting>
             <Option SelectedID="0">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -1924,8 +2703,8 @@
         <SubGroup>Frontend::Agent::Ticket::ViewFreeText</SubGroup>
         <Setting>
             <Option SelectedID="0">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -1966,8 +2745,8 @@
         <SubGroup>Frontend::Agent::Ticket::ViewFreeText</SubGroup>
         <Setting>
             <Option SelectedID="0">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -1986,8 +2765,8 @@
         <SubGroup>Frontend::Agent::Ticket::ViewFreeText</SubGroup>
         <Setting>
             <Option SelectedID="1">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -2021,8 +2800,8 @@
         <SubGroup>Frontend::Agent::Ticket::ViewPhoneOutbound</SubGroup>
         <Setting>
             <Option SelectedID="1">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -2110,8 +2889,8 @@
         <SubGroup>Frontend::Agent::Ticket::ViewPhoneInbound</SubGroup>
         <Setting>
             <Option SelectedID="0">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -2191,8 +2970,8 @@
         <SubGroup>Frontend::Agent</SubGroup>
         <Setting>
             <Option SelectedID="1">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -2202,19 +2981,19 @@
         <SubGroup>Frontend::Agent</SubGroup>
         <Setting>
             <Option SelectedID="1">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
     <ConfigItem Name="Ticket::Frontend::NewQueueSelectionType" Required="1" Valid="1">
-        <Description Translatable="1">Defines the receipent target of the phone ticket and the sender of the email ticket ("Queue" shows all queues, "SystemAddress" displays all system addresses) in the agent interface.</Description>
+        <Description Translatable="1">Defines the receipent target of the phone ticket and the sender of the email ticket ("Queue" shows all queues, "System address" displays all system addresses) in the agent interface.</Description>
         <Group>Ticket</Group>
         <SubGroup>Frontend::Agent</SubGroup>
         <Setting>
             <Option SelectedID="Queue">
-                <Item Key="Queue">Queue</Item>
-                <Item Key="SystemAddress">SystemAddress</Item>
+                <Item Key="Queue" Translatable="1">Queue</Item>
+                <Item Key="SystemAddress" Translatable="1">System address</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -2232,8 +3011,8 @@
         <SubGroup>Frontend::Agent</SubGroup>
         <Setting>
             <Hash>
-                <Item Key="1">First Queue!</Item>
-                <Item Key="2">Second Queue!</Item>
+                <Item Key="1" Translatable="1">First Queue</Item>
+                <Item Key="2" Translatable="1">Second Queue</Item>
             </Hash>
         </Setting>
     </ConfigItem>
@@ -2243,8 +3022,8 @@
         <SubGroup>Frontend::Agent</SubGroup>
         <Setting>
             <Option SelectedID="1">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -2254,8 +3033,8 @@
         <SubGroup>Frontend::Agent</SubGroup>
         <Setting>
             <Option SelectedID="0">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -2290,8 +3069,8 @@
         <SubGroup>Frontend::Agent::Ticket::ViewPhoneNew</SubGroup>
         <Setting>
             <Option SelectedID="1">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -2368,8 +3147,8 @@
         <SubGroup>Frontend::Agent::Ticket::ViewPhoneNew</SubGroup>
         <Setting>
             <Option SelectedID="0">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -2379,8 +3158,8 @@
         <SubGroup>Frontend::Agent::Ticket::ViewPhoneNew</SubGroup>
         <Setting>
             <Option SelectedID="0">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -2471,8 +3250,8 @@
         <SubGroup>Frontend::Agent::Ticket::ViewEmailNew</SubGroup>
         <Setting>
             <Option SelectedID="0">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -2482,8 +3261,8 @@
         <SubGroup>Frontend::Agent::Ticket::ViewEmailNew</SubGroup>
         <Setting>
             <Option SelectedID="0">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -2502,8 +3281,8 @@
         <SubGroup>Frontend::Agent::Ticket::ViewClose</SubGroup>
         <Setting>
             <Option SelectedID="1">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -2513,8 +3292,8 @@
         <SubGroup>Frontend::Agent::Ticket::ViewClose</SubGroup>
         <Setting>
             <Option SelectedID="0">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -2524,8 +3303,8 @@
         <SubGroup>Frontend::Agent::Ticket::ViewClose</SubGroup>
         <Setting>
             <Option SelectedID="0">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -2536,8 +3315,8 @@
         <SubGroup>Frontend::Agent::Ticket::ViewClose</SubGroup>
         <Setting>
             <Option SelectedID="0">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -2547,8 +3326,8 @@
         <SubGroup>Frontend::Agent::Ticket::ViewClose</SubGroup>
         <Setting>
             <Option SelectedID="0">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -2559,8 +3338,8 @@
         <SubGroup>Frontend::Agent::Ticket::ViewClose</SubGroup>
         <Setting>
             <Option SelectedID="0">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -2570,8 +3349,8 @@
         <SubGroup>Frontend::Agent::Ticket::ViewClose</SubGroup>
         <Setting>
             <Option SelectedID="0">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -2581,8 +3360,8 @@
         <SubGroup>Frontend::Agent::Ticket::ViewClose</SubGroup>
         <Setting>
             <Option SelectedID="0">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -2592,8 +3371,8 @@
         <SubGroup>Frontend::Agent::Ticket::ViewClose</SubGroup>
         <Setting>
             <Option SelectedID="0">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -2603,8 +3382,8 @@
         <SubGroup>Frontend::Agent::Ticket::ViewClose</SubGroup>
         <Setting>
             <Option SelectedID="1">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -2633,8 +3412,8 @@
         <SubGroup>Frontend::Agent::Ticket::ViewClose</SubGroup>
         <Setting>
             <Option SelectedID="1">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -2644,8 +3423,8 @@
         <SubGroup>Frontend::Agent::Ticket::ViewClose</SubGroup>
         <Setting>
             <Option SelectedID="1">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -2671,8 +3450,8 @@
         <SubGroup>Frontend::Agent::Ticket::ViewClose</SubGroup>
         <Setting>
             <Option SelectedID="0">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -2682,8 +3461,8 @@
         <SubGroup>Frontend::Agent::Ticket::ViewClose</SubGroup>
         <Setting>
             <Option SelectedID="0">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -2713,8 +3492,8 @@
         <SubGroup>Frontend::Agent::Ticket::ViewClose</SubGroup>
         <Setting>
             <Option SelectedID="0">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -2733,8 +3512,8 @@
         <SubGroup>Frontend::Agent::Ticket::ViewClose</SubGroup>
         <Setting>
             <Option SelectedID="0">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -2769,8 +3548,8 @@
         <SubGroup>Frontend::Agent::Ticket::ViewNote</SubGroup>
         <Setting>
             <Option SelectedID="0">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -2780,8 +3559,8 @@
         <SubGroup>Frontend::Agent::Ticket::ViewNote</SubGroup>
         <Setting>
             <Option SelectedID="0">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -2791,8 +3570,8 @@
         <SubGroup>Frontend::Agent::Ticket::ViewNote</SubGroup>
         <Setting>
             <Option SelectedID="0">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -2803,8 +3582,8 @@
         <SubGroup>Frontend::Agent::Ticket::ViewNote</SubGroup>
         <Setting>
             <Option SelectedID="0">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -2814,8 +3593,8 @@
         <SubGroup>Frontend::Agent::Ticket::ViewNote</SubGroup>
         <Setting>
             <Option SelectedID="0">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -2826,8 +3605,8 @@
         <SubGroup>Frontend::Agent::Ticket::ViewNote</SubGroup>
         <Setting>
             <Option SelectedID="0">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -2837,8 +3616,8 @@
         <SubGroup>Frontend::Agent::Ticket::ViewNote</SubGroup>
         <Setting>
             <Option SelectedID="0">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -2848,8 +3627,8 @@
         <SubGroup>Frontend::Agent::Ticket::ViewNote</SubGroup>
         <Setting>
             <Option SelectedID="0">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -2859,8 +3638,8 @@
         <SubGroup>Frontend::Agent::Ticket::ViewNote</SubGroup>
         <Setting>
             <Option SelectedID="0">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -2870,8 +3649,8 @@
         <SubGroup>Frontend::Agent::Ticket::ViewNote</SubGroup>
         <Setting>
             <Option SelectedID="0">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -2903,8 +3682,8 @@
         <SubGroup>Frontend::Agent::Ticket::ViewNote</SubGroup>
         <Setting>
             <Option SelectedID="1">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -2914,8 +3693,8 @@
         <SubGroup>Frontend::Agent::Ticket::ViewNote</SubGroup>
         <Setting>
             <Option SelectedID="1">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -2941,8 +3720,8 @@
         <SubGroup>Frontend::Agent::Ticket::ViewNote</SubGroup>
         <Setting>
             <Option SelectedID="0">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -2952,8 +3731,8 @@
         <SubGroup>Frontend::Agent::Ticket::ViewNote</SubGroup>
         <Setting>
             <Option SelectedID="0">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -2983,8 +3762,8 @@
         <SubGroup>Frontend::Agent::Ticket::ViewNote</SubGroup>
         <Setting>
             <Option SelectedID="0">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -3003,8 +3782,8 @@
         <SubGroup>Frontend::Agent::Ticket::ViewNote</SubGroup>
         <Setting>
             <Option SelectedID="0">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -3039,8 +3818,8 @@
         <SubGroup>Frontend::Agent::Ticket::ViewOwner</SubGroup>
         <Setting>
             <Option SelectedID="0">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -3050,8 +3829,8 @@
         <SubGroup>Frontend::Agent::Ticket::ViewOwner</SubGroup>
         <Setting>
             <Option SelectedID="0">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -3061,8 +3840,8 @@
         <SubGroup>Frontend::Agent::Ticket::ViewOwner</SubGroup>
         <Setting>
             <Option SelectedID="0">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -3073,8 +3852,8 @@
         <SubGroup>Frontend::Agent::Ticket::ViewOwner</SubGroup>
         <Setting>
             <Option SelectedID="0">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -3084,8 +3863,8 @@
         <SubGroup>Frontend::Agent::Ticket::ViewOwner</SubGroup>
         <Setting>
             <Option SelectedID="0">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -3096,8 +3875,8 @@
         <SubGroup>Frontend::Agent::Ticket::ViewOwner</SubGroup>
         <Setting>
             <Option SelectedID="0">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -3107,8 +3886,8 @@
         <SubGroup>Frontend::Agent::Ticket::ViewOwner</SubGroup>
         <Setting>
             <Option SelectedID="1">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -3118,8 +3897,8 @@
         <SubGroup>Frontend::Agent::Ticket::ViewOwner</SubGroup>
         <Setting>
             <Option SelectedID="1">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -3129,8 +3908,8 @@
         <SubGroup>Frontend::Agent::Ticket::ViewOwner</SubGroup>
         <Setting>
             <Option SelectedID="0">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -3140,8 +3919,8 @@
         <SubGroup>Frontend::Agent::Ticket::ViewOwner</SubGroup>
         <Setting>
             <Option SelectedID="0">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -3183,8 +3962,8 @@
         <SubGroup>Frontend::Agent::Ticket::ViewOwner</SubGroup>
         <Setting>
             <Option SelectedID="1">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -3210,8 +3989,8 @@
         <SubGroup>Frontend::Agent::Ticket::ViewOwner</SubGroup>
         <Setting>
             <Option SelectedID="0">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -3221,8 +4000,8 @@
         <SubGroup>Frontend::Agent::Ticket::ViewOwner</SubGroup>
         <Setting>
             <Option SelectedID="0">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -3252,8 +4031,8 @@
         <SubGroup>Frontend::Agent::Ticket::ViewOwner</SubGroup>
         <Setting>
             <Option SelectedID="0">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -3272,8 +4051,8 @@
         <SubGroup>Frontend::Agent::Ticket::ViewOwner</SubGroup>
         <Setting>
             <Option SelectedID="0">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -3307,8 +4086,8 @@
         <SubGroup>Frontend::Agent::Ticket::ViewPending</SubGroup>
         <Setting>
             <Option SelectedID="1">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -3318,8 +4097,8 @@
         <SubGroup>Frontend::Agent::Ticket::ViewPending</SubGroup>
         <Setting>
             <Option SelectedID="0">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -3329,8 +4108,8 @@
         <SubGroup>Frontend::Agent::Ticket::ViewPending</SubGroup>
         <Setting>
             <Option SelectedID="0">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -3341,8 +4120,8 @@
         <SubGroup>Frontend::Agent::Ticket::ViewPending</SubGroup>
         <Setting>
             <Option SelectedID="0">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -3352,8 +4131,8 @@
         <SubGroup>Frontend::Agent::Ticket::ViewPending</SubGroup>
         <Setting>
             <Option SelectedID="0">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -3364,8 +4143,8 @@
         <SubGroup>Frontend::Agent::Ticket::ViewPending</SubGroup>
         <Setting>
             <Option SelectedID="0">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -3375,8 +4154,8 @@
         <SubGroup>Frontend::Agent::Ticket::ViewPending</SubGroup>
         <Setting>
             <Option SelectedID="0">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -3386,8 +4165,8 @@
         <SubGroup>Frontend::Agent::Ticket::ViewPending</SubGroup>
         <Setting>
             <Option SelectedID="0">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -3397,8 +4176,8 @@
         <SubGroup>Frontend::Agent::Ticket::ViewPending</SubGroup>
         <Setting>
             <Option SelectedID="0">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -3408,8 +4187,8 @@
         <SubGroup>Frontend::Agent::Ticket::ViewPending</SubGroup>
         <Setting>
             <Option SelectedID="1">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -3439,8 +4218,8 @@
         <SubGroup>Frontend::Agent::Ticket::ViewPending</SubGroup>
         <Setting>
             <Option SelectedID="1">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -3450,8 +4229,8 @@
         <SubGroup>Frontend::Agent::Ticket::ViewPending</SubGroup>
         <Setting>
             <Option SelectedID="1">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -3477,8 +4256,8 @@
         <SubGroup>Frontend::Agent::Ticket::ViewPending</SubGroup>
         <Setting>
             <Option SelectedID="0">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -3488,8 +4267,8 @@
         <SubGroup>Frontend::Agent::Ticket::ViewPending</SubGroup>
         <Setting>
             <Option SelectedID="0">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -3519,8 +4298,8 @@
         <SubGroup>Frontend::Agent::Ticket::ViewPending</SubGroup>
         <Setting>
             <Option SelectedID="0">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -3539,8 +4318,8 @@
         <SubGroup>Frontend::Agent::Ticket::ViewPending</SubGroup>
         <Setting>
             <Option SelectedID="0">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -3575,8 +4354,8 @@
         <SubGroup>Frontend::Agent::Ticket::ViewPriority</SubGroup>
         <Setting>
             <Option SelectedID="1">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -3586,8 +4365,8 @@
         <SubGroup>Frontend::Agent::Ticket::ViewPriority</SubGroup>
         <Setting>
             <Option SelectedID="0">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -3597,8 +4376,8 @@
         <SubGroup>Frontend::Agent::Ticket::ViewPriority</SubGroup>
         <Setting>
             <Option SelectedID="0">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -3609,8 +4388,8 @@
         <SubGroup>Frontend::Agent::Ticket::ViewPriority</SubGroup>
         <Setting>
             <Option SelectedID="0">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -3620,8 +4399,8 @@
         <SubGroup>Frontend::Agent::Ticket::ViewPriority</SubGroup>
         <Setting>
             <Option SelectedID="0">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -3632,8 +4411,8 @@
         <SubGroup>Frontend::Agent::Ticket::ViewPriority</SubGroup>
         <Setting>
             <Option SelectedID="0">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -3643,8 +4422,8 @@
         <SubGroup>Frontend::Agent::Ticket::ViewPriority</SubGroup>
         <Setting>
             <Option SelectedID="0">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -3654,8 +4433,8 @@
         <SubGroup>Frontend::Agent::Ticket::ViewPriority</SubGroup>
         <Setting>
             <Option SelectedID="0">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -3665,8 +4444,8 @@
         <SubGroup>Frontend::Agent::Ticket::ViewPriority</SubGroup>
         <Setting>
             <Option SelectedID="0">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -3676,8 +4455,8 @@
         <SubGroup>Frontend::Agent::Ticket::ViewPriority</SubGroup>
         <Setting>
             <Option SelectedID="0">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -3708,8 +4487,8 @@
         <SubGroup>Frontend::Agent::Ticket::ViewPriority</SubGroup>
         <Setting>
             <Option SelectedID="1">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -3719,8 +4498,8 @@
         <SubGroup>Frontend::Agent::Ticket::ViewPriority</SubGroup>
         <Setting>
             <Option SelectedID="1">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -3746,8 +4525,8 @@
         <SubGroup>Frontend::Agent::Ticket::ViewPriority</SubGroup>
         <Setting>
             <Option SelectedID="0">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -3757,8 +4536,8 @@
         <SubGroup>Frontend::Agent::Ticket::ViewPriority</SubGroup>
         <Setting>
             <Option SelectedID="0">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -3788,8 +4567,8 @@
         <SubGroup>Frontend::Agent::Ticket::ViewPriority</SubGroup>
         <Setting>
             <Option SelectedID="1">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -3808,8 +4587,8 @@
         <SubGroup>Frontend::Agent::Ticket::ViewPriority</SubGroup>
         <Setting>
             <Option SelectedID="0">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -3844,8 +4623,8 @@
         <SubGroup>Frontend::Agent::Ticket::ViewResponsible</SubGroup>
         <Setting>
             <Option SelectedID="0">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -3855,8 +4634,8 @@
         <SubGroup>Frontend::Agent::Ticket::ViewResponsible</SubGroup>
         <Setting>
             <Option SelectedID="0">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -3866,8 +4645,8 @@
         <SubGroup>Frontend::Agent::Ticket::ViewResponsible</SubGroup>
         <Setting>
             <Option SelectedID="0">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -3878,8 +4657,8 @@
         <SubGroup>Frontend::Agent::Ticket::ViewResponsible</SubGroup>
         <Setting>
             <Option SelectedID="0">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -3889,8 +4668,8 @@
         <SubGroup>Frontend::Agent::Ticket::ViewResponsible</SubGroup>
         <Setting>
             <Option SelectedID="0">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -3901,8 +4680,8 @@
         <SubGroup>Frontend::Agent::Ticket::ViewResponsible</SubGroup>
         <Setting>
             <Option SelectedID="0">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -3912,8 +4691,8 @@
         <SubGroup>Frontend::Agent::Ticket::ViewResponsible</SubGroup>
         <Setting>
             <Option SelectedID="0">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -3923,8 +4702,8 @@
         <SubGroup>Frontend::Agent::Ticket::ViewResponsible</SubGroup>
         <Setting>
             <Option SelectedID="0">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -3934,8 +4713,8 @@
         <SubGroup>Frontend::Agent::Ticket::ViewResponsible</SubGroup>
         <Setting>
             <Option SelectedID="1">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -3945,8 +4724,8 @@
         <SubGroup>Frontend::Agent::Ticket::ViewResponsible</SubGroup>
         <Setting>
             <Option SelectedID="0">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -3977,8 +4756,8 @@
         <SubGroup>Frontend::Agent::Ticket::ViewResponsible</SubGroup>
         <Setting>
             <Option SelectedID="1">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -3988,8 +4767,8 @@
         <SubGroup>Frontend::Agent::Ticket::ViewResponsible</SubGroup>
         <Setting>
             <Option SelectedID="1">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -4015,8 +4794,8 @@
         <SubGroup>Frontend::Agent::Ticket::ViewResponsible</SubGroup>
         <Setting>
             <Option SelectedID="0">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -4026,8 +4805,8 @@
         <SubGroup>Frontend::Agent::Ticket::ViewResponsible</SubGroup>
         <Setting>
             <Option SelectedID="0">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -4057,8 +4836,8 @@
         <SubGroup>Frontend::Agent::Ticket::ViewResponsible</SubGroup>
         <Setting>
             <Option SelectedID="0">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -4077,8 +4856,8 @@
         <SubGroup>Frontend::Agent::Ticket::ViewResponsible</SubGroup>
         <Setting>
             <Option SelectedID="1">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -4104,8 +4883,8 @@
         <SubGroup>Frontend::Agent::Ticket::ViewBulk</SubGroup>
         <Setting>
             <Option SelectedID="1">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -4115,8 +4894,8 @@
         <SubGroup>Frontend::Agent::Ticket::ViewBulk</SubGroup>
         <Setting>
             <Option SelectedID="1">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -4126,8 +4905,8 @@
         <SubGroup>Frontend::Agent::Ticket::ViewBulk</SubGroup>
         <Setting>
             <Option SelectedID="1">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -4137,8 +4916,8 @@
         <SubGroup>Frontend::Agent::Ticket::ViewBulk</SubGroup>
         <Setting>
             <Option SelectedID="1">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -4148,8 +4927,8 @@
         <SubGroup>Frontend::Agent::Ticket::ViewBulk</SubGroup>
         <Setting>
             <Option SelectedID="1">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -4181,8 +4960,8 @@
         <SubGroup>Frontend::Agent::Ticket::ViewBulk</SubGroup>
         <Setting>
             <Option SelectedID="1">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -4221,8 +5000,8 @@
         <SubGroup>Frontend::Agent::Ticket::ViewMove</SubGroup>
         <Setting>
             <Option SelectedID="form">
-                <Item Key="link">New Window</Item>
-                <Item Key="form">Dropdown</Item>
+                <Item Key="link" Translatable="1">New Window</Item>
+                <Item Key="form" Translatable="1">Dropdown</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -4232,8 +5011,8 @@
         <SubGroup>Frontend::Agent::Ticket::ViewMove</SubGroup>
         <Setting>
             <Option SelectedID="1">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -4243,8 +5022,8 @@
         <SubGroup>Frontend::Agent::Ticket::ViewMove</SubGroup>
         <Setting>
             <Option SelectedID="1">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -4265,8 +5044,8 @@
         <SubGroup>Frontend::Agent::Ticket::ViewMove</SubGroup>
         <Setting>
             <Option SelectedID="0">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -4276,8 +5055,8 @@
         <SubGroup>Frontend::Agent::Ticket::ViewMove</SubGroup>
         <Setting>
             <Option SelectedID="0">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -4287,8 +5066,8 @@
         <SubGroup>Frontend::Agent::Ticket::ViewMove</SubGroup>
         <Setting>
             <Option SelectedID="0">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -4306,8 +5085,8 @@
         <SubGroup>Frontend::Agent::Ticket::ViewBounce</SubGroup>
         <Setting>
             <Option SelectedID="1">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -4354,8 +5133,8 @@
         <SubGroup>Frontend::Agent::Ticket::ViewCompose</SubGroup>
         <Setting>
             <Option SelectedID="1">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -4436,8 +5215,8 @@
         <SubGroup>Frontend::Agent::Ticket::ViewCompose</SubGroup>
         <Setting>
             <Option SelectedID="1">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -4447,8 +5226,8 @@
         <SubGroup>Frontend::Agent::Ticket::ViewCompose</SubGroup>
         <Setting>
             <Option SelectedID="0">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -4458,8 +5237,8 @@
         <SubGroup>Frontend::Agent::Ticket::ViewCompose</SubGroup>
         <Setting>
             <Option SelectedID="0">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -4477,8 +5256,8 @@
         <SubGroup>Frontend::Agent::Ticket::ViewForward</SubGroup>
         <Setting>
             <Option SelectedID="1">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -4537,8 +5316,8 @@
         <SubGroup>Frontend::Agent::Ticket::ViewEmailOutbound</SubGroup>
         <Setting>
             <Option SelectedID="1">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -4588,7 +5367,7 @@
         <Group>Ticket</Group>
         <SubGroup>Frontend::Agent::Ticket::ViewMerge</SubGroup>
         <Setting>
-            <String Regex="">rw</String>
+            <String Regex="" Translatable="1">rw</String>
         </Setting>
     </ConfigItem>
     <ConfigItem Name="Ticket::Frontend::AgentTicketMerge###RequiredLock" Required="0" Valid="1">
@@ -4597,8 +5376,8 @@
         <SubGroup>Frontend::Agent::Ticket::ViewMerge</SubGroup>
         <Setting>
             <Option SelectedID="1">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -4617,8 +5396,8 @@
         <SubGroup>Frontend::Agent::Ticket::ViewCustomer</SubGroup>
         <Setting>
             <Option SelectedID="0">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -4681,7 +5460,7 @@
         </Setting>
     </ConfigItem>
     <ConfigItem Name="Ticket::UnlockStateType" Required="1" Valid="1">
-        <Description Translatable="1">Defines the valid states for unlocked tickets. To unlock tickets the script "bin/otrs.UnlockTickets.pl" can be used.</Description>
+        <Description Translatable="1">Defines the valid states for unlocked tickets. To unlock tickets the script "bin/otrs.Console.pl Maint::Ticket::UnlockTimeout" can be used.</Description>
         <Group>Ticket</Group>
         <SubGroup>Core::Ticket</SubGroup>
         <Setting>
@@ -4697,8 +5476,8 @@
         <SubGroup>Core::Ticket</SubGroup>
         <Setting>
             <Option SelectedID="0">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -4708,8 +5487,8 @@
         <SubGroup>Core::Ticket</SubGroup>
         <Setting>
             <Option SelectedID="0">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -4779,7 +5558,7 @@
         <Setting>
             <Hash>
                 <Item Key="Module">Kernel::Output::HTML::ToolBarLink</Item>
-                <Item Key="Name">Queue view</Item>
+                <Item Key="Name" Translatable="1">Queue view</Item>
                 <Item Key="Link">Action=AgentTicketQueue</Item>
                 <Item Key="Action">AgentTicketQueue</Item>
                 <Item Key="AccessKey">q</Item>
@@ -4796,7 +5575,7 @@
         <Setting>
             <Hash>
                 <Item Key="Module">Kernel::Output::HTML::ToolBarLink</Item>
-                <Item Key="Name">Status view</Item>
+                <Item Key="Name" Translatable="1">Status view</Item>
                 <Item Key="Link">Action=AgentTicketStatusView</Item>
                 <Item Key="Action">AgentTicketStatusView</Item>
                 <Item Key="AccessKey">S</Item>
@@ -4813,7 +5592,7 @@
         <Setting>
             <Hash>
                 <Item Key="Module">Kernel::Output::HTML::ToolBarLink</Item>
-                <Item Key="Name">Escalation view</Item>
+                <Item Key="Name" Translatable="1">Escalation view</Item>
                 <Item Key="Link">Action=AgentTicketEscalationView</Item>
                 <Item Key="Action">AgentTicketEscalationView</Item>
                 <Item Key="AccessKey">w</Item>
@@ -4830,7 +5609,7 @@
         <Setting>
             <Hash>
                 <Item Key="Module">Kernel::Output::HTML::ToolBarLink</Item>
-                <Item Key="Name">New phone ticket</Item>
+                <Item Key="Name" Translatable="1">New phone ticket</Item>
                 <Item Key="Link">Action=AgentTicketPhone</Item>
                 <Item Key="Action">AgentTicketPhone</Item>
                 <Item Key="AccessKey"></Item>
@@ -4847,7 +5626,7 @@
         <Setting>
             <Hash>
                 <Item Key="Module">Kernel::Output::HTML::ToolBarLink</Item>
-                <Item Key="Name">New email ticket</Item>
+                <Item Key="Name" Translatable="1">New email ticket</Item>
                 <Item Key="Link">Action=AgentTicketEmail</Item>
                 <Item Key="Action">AgentTicketEmail</Item>
                 <Item Key="AccessKey"></Item>
@@ -4864,7 +5643,7 @@
         <Setting>
             <Hash>
                 <Item Key="Module">Kernel::Output::HTML::ToolBarLink</Item>
-                <Item Key="Name">New process ticket</Item>
+                <Item Key="Name" Translatable="1">New process ticket</Item>
                 <Item Key="Link">Action=AgentTicketProcess</Item>
                 <Item Key="Action">AgentTicketProcess</Item>
                 <Item Key="AccessKey">p</Item>
@@ -4915,7 +5694,7 @@
         </Setting>
     </ConfigItem>
     <ConfigItem Name="Frontend::ToolBarModule###8-Ticket::TicketLocked" Required="0" Valid="1">
-        <Description Translatable="1">Agent interface notification module to check the used charset.</Description>
+        <Description Translatable="1">Agent interface notification module to see the number of locked tickets.</Description>
         <Group>Ticket</Group>
         <SubGroup>Frontend::Agent::ToolBarModule</SubGroup>
         <Setting>
@@ -4957,8 +5736,8 @@
         <Setting>
             <Hash>
                 <Item Key="Module">Kernel::Output::HTML::ToolBarTicketSearchProfile</Item>
-                <Item Key="Description">Search-Template</Item>
-                <Item Key="Name">Search-Template</Item>
+                <Item Key="Description" Translatable="1">Search template</Item>
+                <Item Key="Name" Translatable="1">Search template</Item>
                 <Item Key="Block">ToolBarSearchProfile</Item>
                 <Item Key="MaxWidth">40</Item>
                 <Item Key="Priority">1990010</Item>
@@ -4972,8 +5751,8 @@
         <Setting>
             <Hash>
                 <Item Key="Module">Kernel::Output::HTML::ToolBarGeneric</Item>
-                <Item Key="Description">Fulltext search</Item>
-                <Item Key="Name">Fulltext-Search</Item>
+                <Item Key="Description" Translatable="1">Fulltext search</Item>
+                <Item Key="Name" Translatable="1">Fulltext search</Item>
                 <Item Key="Block">ToolBarSearchFulltext</Item>
                 <Item Key="Size">10</Item>
                 <Item Key="CSS">Core.Agent.Toolbar.FulltextSearch.css</Item>
@@ -4988,8 +5767,8 @@
         <Setting>
             <Hash>
                 <Item Key="Module">Kernel::Output::HTML::ToolBarGeneric</Item>
-                <Item Key="Description">CustomerID Search</Item>
-                <Item Key="Name">CustomerID search</Item>
+                <Item Key="Description" Translatable="1">CustomerID search</Item>
+                <Item Key="Name" Translatable="1">CustomerID search</Item>
                 <Item Key="Block">ToolBarCICSearchCustomerID</Item>
                 <Item Key="Size">10</Item>
                 <Item Key="CSS">Core.Agent.Toolbar.CICSearch.css</Item>
@@ -5004,8 +5783,8 @@
         <Setting>
             <Hash>
                 <Item Key="Module">Kernel::Output::HTML::ToolBarGeneric</Item>
-                <Item Key="Description">CustomerUser Search</Item>
-                <Item Key="Name">Customer user search</Item>
+                <Item Key="Description" Translatable="1">Customer user search</Item>
+                <Item Key="Name" Translatable="1">Customer user search</Item>
                 <Item Key="Block">ToolBarCICSearchCustomerUser</Item>
                 <Item Key="Size">10</Item>
                 <Item Key="CSS">Core.Agent.Toolbar.CICSearch.css</Item>
@@ -5825,8 +6604,8 @@
         <Setting>
             <Hash>
                 <Item Key="Module">Kernel::Output::HTML::DashboardTicketGeneric</Item>
-                <Item Key="Title">Reminder Tickets</Item>
-                <Item Key="Description">All tickets with a reminder set where the reminder date has been reached</Item>
+                <Item Key="Title" Translatable="1">Reminder Tickets</Item>
+                <Item Key="Description" Translatable="1">All tickets with a reminder set where the reminder date has been reached</Item>
                 <Item Key="Attributes">TicketPendingTimeOlderMinutes=1;StateType=pending reminder;SortBy=PendingTime;OrderBy=Down;</Item>
                 <Item Key="Filter">Locked</Item>
                 <Item Key="Time">UntilTime</Item>
@@ -5871,8 +6650,8 @@
         <Setting>
             <Hash>
                 <Item Key="Module">Kernel::Output::HTML::DashboardTicketGeneric</Item>
-                <Item Key="Title">Escalated Tickets</Item>
-                <Item Key="Description">All escalated tickets</Item>
+                <Item Key="Title" Translatable="1">Escalated Tickets</Item>
+                <Item Key="Description" Translatable="1">All escalated tickets</Item>
                 <Item Key="Attributes">TicketEscalationTimeOlderMinutes=1;SortBy=EscalationTime;OrderBy=Down;</Item>
                 <Item Key="Filter">All</Item>
                 <Item Key="Time">EscalationTime</Item>
@@ -5917,8 +6696,8 @@
         <Setting>
             <Hash>
                 <Item Key="Module">Kernel::Output::HTML::DashboardTicketGeneric</Item>
-                <Item Key="Title">New Tickets</Item>
-                <Item Key="Description">All new tickets, these tickets have not been worked on yet</Item>
+                <Item Key="Title" Translatable="1">New Tickets</Item>
+                <Item Key="Description" Translatable="1">All new tickets, these tickets have not been worked on yet</Item>
                 <Item Key="Attributes">StateType=new;</Item>
                 <Item Key="Filter">All</Item>
                 <Item Key="Time">Age</Item>
@@ -5963,8 +6742,8 @@
         <Setting>
             <Hash>
                 <Item Key="Module">Kernel::Output::HTML::DashboardTicketGeneric</Item>
-                <Item Key="Title">Open Tickets / Need to be answered</Item>
-                <Item Key="Description">All open tickets, these tickets have already been worked on, but need a response</Item>
+                <Item Key="Title" Translatable="1">Open Tickets / Need to be answered</Item>
+                <Item Key="Description" Translatable="1">All open tickets, these tickets have already been worked on, but need a response</Item>
                 <Item Key="Attributes">StateType=open;</Item>
                 <Item Key="Filter">All</Item>
                 <Item Key="Time">Age</Item>
@@ -6009,7 +6788,7 @@
         <Setting>
             <Hash>
                 <Item Key="Module">Kernel::Output::HTML::DashboardTicketStatsGeneric</Item>
-                <Item Key="Title">7 Day Stats</Item>
+                <Item Key="Title" Translatable="1">7 Day Stats</Item>
                 <Item Key="Changed">1</Item>
                 <Item Key="Closed">1</Item>
                 <Item Key="Permission">rw</Item>
@@ -6027,7 +6806,7 @@
         <Setting>
             <Hash>
                 <Item Key="Module">Kernel::Output::HTML::DashboardCalendar</Item>
-                <Item Key="Title">Upcoming Events</Item>
+                <Item Key="Title" Translatable="1">Upcoming Events</Item>
                 <Item Key="Permission">rw</Item>
                 <Item Key="OwnerOnly"></Item>
                 <Item Key="Block">ContentSmall</Item>
@@ -6149,8 +6928,8 @@
         <SubGroup>Frontend::Agent::Dashboard::TicketFilters</SubGroup>
         <Setting>
             <Option SelectedID="1">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -6181,8 +6960,8 @@
         <Setting>
             <Hash>
                 <Item Key="Module">Kernel::Output::HTML::DashboardTicketGeneric</Item>
-                <Item Key="Title">Reminder Tickets</Item>
-                <Item Key="Description">All tickets with a reminder set where the reminder date has been reached</Item>
+                <Item Key="Title" Translatable="1">Reminder Tickets</Item>
+                <Item Key="Description" Translatable="1">All tickets with a reminder set where the reminder date has been reached</Item>
                 <Item Key="Attributes">TicketPendingTimeOlderMinutes=1;StateType=pending reminder;SortBy=PendingTime;OrderBy=Down;</Item>
                 <Item Key="Filter">Locked</Item>
                 <Item Key="Time">UntilTime</Item>
@@ -6227,8 +7006,8 @@
         <Setting>
             <Hash>
                 <Item Key="Module">Kernel::Output::HTML::DashboardTicketGeneric</Item>
-                <Item Key="Title">Escalated Tickets</Item>
-                <Item Key="Description">All escalated tickets</Item>
+                <Item Key="Title" Translatable="1">Escalated Tickets</Item>
+                <Item Key="Description" Translatable="1">All escalated tickets</Item>
                 <Item Key="Attributes">TicketEscalationTimeOlderMinutes=1;SortBy=EscalationTime;OrderBy=Down;</Item>
                 <Item Key="Filter">All</Item>
                 <Item Key="Time">EscalationTime</Item>
@@ -6273,8 +7052,8 @@
         <Setting>
             <Hash>
                 <Item Key="Module">Kernel::Output::HTML::DashboardTicketGeneric</Item>
-                <Item Key="Title">New Tickets</Item>
-                <Item Key="Description">All new tickets, these tickets have not been worked on yet</Item>
+                <Item Key="Title" Translatable="1">New Tickets</Item>
+                <Item Key="Description" Translatable="1">All new tickets, these tickets have not been worked on yet</Item>
                 <Item Key="Attributes">StateType=new;</Item>
                 <Item Key="Filter">All</Item>
                 <Item Key="Time">Age</Item>
@@ -6319,8 +7098,8 @@
         <Setting>
             <Hash>
                 <Item Key="Module">Kernel::Output::HTML::DashboardTicketGeneric</Item>
-                <Item Key="Title">Open Tickets / Need to be answered</Item>
-                <Item Key="Description">All open tickets, these tickets have already been worked on, but need a response</Item>
+                <Item Key="Title" Translatable="1">Open Tickets / Need to be answered</Item>
+                <Item Key="Description" Translatable="1">All open tickets, these tickets have already been worked on, but need a response</Item>
                 <Item Key="Attributes">StateType=open;</Item>
                 <Item Key="Filter">All</Item>
                 <Item Key="Time">Age</Item>
@@ -6572,12 +7351,12 @@
                 <Item Key="Key" Translatable="1">Refresh Overviews after</Item>
                 <Item Key="Data">
                     <Hash>
-                        <Item Key="0">off</Item>
-                        <Item Key="2"> 2 minutes</Item>
-                        <Item Key="5"> 5 minutes</Item>
-                        <Item Key="7"> 7 minutes</Item>
-                        <Item Key="10">10 minutes</Item>
-                        <Item Key="15">15 minutes</Item>
+                        <Item Key="0" Translatable="1">off</Item>
+                        <Item Key="2" Translatable="1"> 2 minutes</Item>
+                        <Item Key="5" Translatable="1"> 5 minutes</Item>
+                        <Item Key="7" Translatable="1"> 7 minutes</Item>
+                        <Item Key="10" Translatable="1">10 minutes</Item>
+                        <Item Key="15" Translatable="1">15 minutes</Item>
                     </Hash>
                 </Item>
                 <Item Key="DataSelected">0</Item>
@@ -6713,9 +7492,9 @@
         <SubGroup>Frontend::Queue::Preferences</SubGroup>
         <Setting>
             <Hash>
-                <Item Key="Module">Kernel::Output::HTML::QueuePreferencesGeneric</Item>
-                <Item Key="Label">Comment2</Item>
-                <Item Key="Desc">Define the queue comment 2.</Item>
+                <Item Key="Module">Kernel::Output::HTML::QueuePreferences::Generic</Item>
+                <Item Key="Label" Translatable="1">Comment2</Item>
+                <Item Key="Desc" Translatable="1">Define the queue comment 2.</Item>
                 <Item Key="Block">TextArea</Item>
                 <Item Key="Cols">50</Item>
                 <Item Key="Rows">5</Item>
@@ -6729,9 +7508,9 @@
         <SubGroup>Frontend::Service::Preferences</SubGroup>
         <Setting>
             <Hash>
-                <Item Key="Module">Kernel::Output::HTML::ServicePreferencesGeneric</Item>
-                <Item Key="Label">Comment2</Item>
-                <Item Key="Desc">Define the service comment 2.</Item>
+                <Item Key="Module">Kernel::Output::HTML::ServicePreferences::Generic</Item>
+                <Item Key="Label" Translatable="1">Comment2</Item>
+                <Item Key="Desc" Translatable="1">Define the service comment 2.</Item>
                 <Item Key="Block">TextArea</Item>
                 <Item Key="Cols">50</Item>
                 <Item Key="Rows">5</Item>
@@ -6745,9 +7524,9 @@
         <SubGroup>Frontend::SLA::Preferences</SubGroup>
         <Setting>
             <Hash>
-                <Item Key="Module">Kernel::Output::HTML::SLAPreferencesGeneric</Item>
-                <Item Key="Label">Comment2</Item>
-                <Item Key="Desc">Define the sla comment 2.</Item>
+                <Item Key="Module">Kernel::Output::HTML::SLAPreferences::Generic</Item>
+                <Item Key="Label" Translatable="1">Comment2</Item>
+                <Item Key="Desc" Translatable="1">Define the sla comment 2.</Item>
                 <Item Key="Block">TextArea</Item>
                 <Item Key="Cols">50</Item>
                 <Item Key="Rows">5</Item>
@@ -6761,8 +7540,8 @@
         <SubGroup>Core::Ticket</SubGroup>
         <Setting>
             <Option SelectedID="0">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -6772,8 +7551,8 @@
         <SubGroup>Core::Ticket</SubGroup>
         <Setting>
             <Option SelectedID="0">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -6794,8 +7573,8 @@
         <SubGroup>Frontend::Customer::Ticket::ViewNew</SubGroup>
         <Setting>
             <Option SelectedID="1">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -6814,8 +7593,8 @@
         <SubGroup>Frontend::Customer::Ticket::ViewNew</SubGroup>
         <Setting>
             <Option SelectedID="1">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -6834,8 +7613,8 @@
         <SubGroup>Frontend::Customer::Ticket::ViewNew</SubGroup>
         <Setting>
             <Option SelectedID="1">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -6853,8 +7632,8 @@
         <SubGroup>Frontend::Customer::Ticket::ViewNew</SubGroup>
         <Setting>
             <Option SelectedID="1">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -6864,8 +7643,8 @@
         <SubGroup>Frontend::Customer::Ticket::ViewNew</SubGroup>
         <Setting>
             <Option SelectedID="1">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -6876,8 +7655,8 @@
         <SubGroup>Frontend::Customer::Ticket::ViewNew</SubGroup>
         <Setting>
             <Option SelectedID="0">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -6887,8 +7666,8 @@
         <SubGroup>Frontend::Customer::Ticket::ViewNew</SubGroup>
         <Setting>
             <Option SelectedID="0">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -6959,8 +7738,8 @@
         <SubGroup>Frontend::Customer::Ticket::ViewNew</SubGroup>
         <Setting>
             <Hash>
-                <Item Key="Junk">First Queue</Item>
-                <Item Key="Misc">Second Queue</Item>
+                <Item Key="Junk" Translatable="1">First Queue</Item>
+                <Item Key="Misc" Translatable="1">Second Queue</Item>
             </Hash>
         </Setting>
     </ConfigItem>
@@ -7021,8 +7800,8 @@
         <SubGroup>Frontend::Customer::Ticket::ViewZoom</SubGroup>
         <Setting>
             <Option SelectedID="1">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -7041,8 +7820,8 @@
         <SubGroup>Frontend::Customer::Ticket::ViewZoom</SubGroup>
         <Setting>
             <Option SelectedID="1">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -7120,8 +7899,8 @@
         <SubGroup>Frontend::Customer::Ticket::ViewSearch</SubGroup>
         <Setting>
             <Option SelectedID="Down">
-                <Item Key="Down">Down</Item>
-                <Item Key="Up">Up</Item>
+                <Item Key="Down" Translatable="1">Down</Item>
+                <Item Key="Up" Translatable="1">Up</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -7131,8 +7910,19 @@
         <SubGroup>Frontend::Customer::Ticket::ViewSearch</SubGroup>
         <Setting>
             <Option SelectedID="1">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
+            </Option>
+        </Setting>
+    </ConfigItem>
+    <ConfigItem Name="Customer::TicketSearch::AllServices" Required="1" Valid="1">
+        <Description Translatable="1">If enabled, the customer can search for tickets in all services (regardless what services are assigned to the customer).</Description>
+        <Group>Ticket</Group>
+        <SubGroup>Frontend::Customer::Ticket::ViewSearch</SubGroup>
+        <Setting>
+            <Option SelectedID="0">
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -7142,8 +7932,8 @@
         <SubGroup>Frontend::Customer::Ticket::ViewSearch</SubGroup>
         <Setting>
             <Option SelectedID="0">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -7204,12 +7994,12 @@
                 <Item Key="Key" Translatable="1">Refresh interval</Item>
                 <Item Key="Data">
                     <Hash>
-                        <Item Key="">off</Item>
-                        <Item Key="2"> 2 minutes</Item>
-                        <Item Key="5"> 5 minutes</Item>
-                        <Item Key="7"> 7 minutes</Item>
-                        <Item Key="10">10 minutes</Item>
-                        <Item Key="15">15 minutes</Item>
+                        <Item Key="" Translatable="1">off</Item>
+                        <Item Key="2" Translatable="1"> 2 minutes</Item>
+                        <Item Key="5" Translatable="1"> 5 minutes</Item>
+                        <Item Key="7" Translatable="1"> 7 minutes</Item>
+                        <Item Key="10" Translatable="1">10 minutes</Item>
+                        <Item Key="15" Translatable="1">15 minutes</Item>
                     </Hash>
                 </Item>
                 <Item Key="PrefKey">UserRefreshTime</Item>
@@ -8391,8 +9181,8 @@
         <SubGroup>Core::Ticket</SubGroup>
         <Setting>
             <Option SelectedID="0">
-                <Item Key="1">Yes</Item>
-                <Item Key="0">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -8490,8 +9280,8 @@
         <SubGroup>Frontend::Admin::AdminNotificationEvent</SubGroup>
         <Setting>
             <Option SelectedID="1">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -8800,10 +9590,15 @@
                 <Item>AgentTicketPhoneOutbound</Item>
                 <Item>AgentTicketPrint</Item>
                 <Item>AgentTicketPriority</Item>
+                <Item>AgentTicketProcess</Item>
                 <Item>AgentTicketResponsible</Item>
                 <Item>AgentTicketWatcher</Item>
                 <Item>AgentTicketZoom</Item>
                 <Item>AgentLinkObject</Item>
+                <Item>CustomerTicketMessage</Item>
+                <Item>CustomerTicketPrint</Item>
+                <Item>CustomerTicketProcess</Item>
+                <Item>CustomerTicketZoom</Item>
             </Array>
         </Setting>
     </ConfigItem>
@@ -8821,8 +9616,8 @@
         <SubGroup>Core::TicketACL</SubGroup>
         <Setting>
             <Option SelectedID="0">
-                    <Item Key="0">No</Item>
-                    <Item Key="1">Yes</Item>
+                    <Item Key="0" Translatable="1">No</Item>
+                    <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -8896,8 +9691,8 @@
         <SubGroup>Core::PostMaster</SubGroup>
         <Setting>
             <Option SelectedID="1">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -8907,8 +9702,8 @@
         <SubGroup>Core::PostMaster</SubGroup>
         <Setting>
             <Option SelectedID="0">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -8918,8 +9713,8 @@
         <SubGroup>Core::PostMaster</SubGroup>
         <Setting>
             <Option SelectedID="0">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -8929,8 +9724,8 @@
         <SubGroup>Core::PostMaster</SubGroup>
         <Setting>
             <Option SelectedID="0">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -8940,8 +9735,8 @@
         <SubGroup>Core::PostMaster</SubGroup>
         <Setting>
             <Option SelectedID="0">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -9004,8 +9799,8 @@
         <SubGroup>Core::PostMaster</SubGroup>
         <Setting>
             <Option SelectedID="0">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -9014,7 +9809,7 @@
         <Group>Ticket</Group>
         <SubGroup>Core::PostMaster</SubGroup>
         <Setting>
-            <String Regex="^[0-9]{1,2}$">12</String>
+            <String Regex="^([1-9]|[1-9][0-9])$">12</String>
         </Setting>
     </ConfigItem>
     <ConfigItem Name="PostmasterX-Header" Required="1" Valid="1">
@@ -9094,7 +9889,6 @@
         <Setting>
             <Hash>
                 <Item Key="Module">Kernel::System::PostMaster::Filter::Match</Item>
-                <Item Key="StopAfterMatch">0</Item>
                 <Item Key="Match">
                     <Hash>
                         <Item Key="From">noreply@</Item>
@@ -9115,7 +9909,6 @@
         <Setting>
             <Hash>
                 <Item Key="Module">Kernel::System::PostMaster::Filter::Match</Item>
-                <Item Key="StopAfterMatch">0</Item>
                 <Item Key="Match">
                     <Hash>
                         <Item Key="Subject">SomeNumber:(\d\d\d\d)</Item>
@@ -9137,7 +9930,6 @@
         <Setting>
             <Hash>
                 <Item Key="Module">Kernel::System::PostMaster::Filter::NewTicketReject</Item>
-                <Item Key="StopAfterMatch">0</Item>
                 <Item Key="Match">
                     <Hash>
                         <Item Key="From">@example.com</Item>
@@ -9346,8 +10138,8 @@ Thanks for your help!
         <SubGroup>Core::PostMaster</SubGroup>
         <Setting>
             <Option SelectedID="1">
-                <Item Key="0">No</Item>
-                <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -9615,7 +10407,7 @@ Thanks for your help!
             <Hash>
                 <Item Key="DisplayName" Translatable="1">Article</Item>
                 <Item Key="Module">Kernel::System::DynamicField::ObjectType::Article</Item>
-                <Item Key="Prio">100</Item>
+                <Item Key="Prio">110</Item>
             </Hash>
         </Setting>
     </ConfigItem>
@@ -9627,7 +10419,7 @@ Thanks for your help!
             <Hash>
                 <Item Key="DisplayName" Translatable="1">Ticket</Item>
                 <Item Key="Module">Kernel::System::DynamicField::ObjectType::Ticket</Item>
-                <Item Key="Prio">110</Item>
+                <Item Key="Prio">100</Item>
             </Hash>
         </Setting>
     </ConfigItem>
@@ -10462,13 +11254,14 @@ Thanks for your help!
         </Setting>
     </ConfigItem>
     <ConfigItem Name="Ticket::Frontend::AgentTicketStatusView###DefaultColumns" Required="0" Valid="1">
-        <Description Translatable="1">Columns that can be filtered in the status view of the agent interface. Possible settings: 0 = Disabled, 1 = Available, 2 = Enabled by default. Note: Only Ticket attributes and Dynamic Fields (DynamicField_NameX) are allowed.</Description>
+        <Description Translatable="1">Columns that can be filtered in the status view of the agent interface. Possible settings: 0 = Disabled, 1 = Available, 2 = Enabled by default. Note: Only Ticket attributes, Dynamic Fields (DynamicField_NameX) and Customer attributes (e.g. CustomerUserPhone, CustomerCompanyName, ...) are allowed.</Description>
         <Group>Ticket</Group>
         <SubGroup>Frontend::Agent::Ticket::ViewStatus</SubGroup>
         <Setting>
             <Hash>
                 <Item Key="Age">2</Item>
                 <Item Key="Changed">1</Item>
+                <Item Key="CustomerCompanyName">1</Item>
                 <Item Key="CustomerID">2</Item>
                 <Item Key="CustomerName">1</Item>
                 <Item Key="CustomerUserID">1</Item>
@@ -10492,13 +11285,14 @@ Thanks for your help!
         </Setting>
     </ConfigItem>
     <ConfigItem Name="Ticket::Frontend::AgentTicketQueue###DefaultColumns" Required="0" Valid="1">
-        <Description Translatable="1">Columns that can be filtered in the queue view of the agent interface. Possible settings: 0 = Disabled, 1 = Available, 2 = Enabled by default. Note: Only Ticket attributes and Dynamic Fields (DynamicField_NameX) are allowed.</Description>
+        <Description Translatable="1">Columns that can be filtered in the queue view of the agent interface. Possible settings: 0 = Disabled, 1 = Available, 2 = Enabled by default. Note: Only Ticket attributes, Dynamic Fields (DynamicField_NameX) and Customer attributes (e.g. CustomerUserPhone, CustomerCompanyName, ...) are allowed.</Description>
         <Group>Ticket</Group>
         <SubGroup>Frontend::Agent::Ticket::ViewQueue</SubGroup>
         <Setting>
             <Hash>
                 <Item Key="Age">2</Item>
                 <Item Key="Changed">1</Item>
+                <Item Key="CustomerCompanyName">1</Item>
                 <Item Key="CustomerID">2</Item>
                 <Item Key="CustomerName">1</Item>
                 <Item Key="CustomerUserID">1</Item>
@@ -10522,13 +11316,14 @@ Thanks for your help!
         </Setting>
     </ConfigItem>
     <ConfigItem Name="Ticket::Frontend::AgentTicketResponsibleView###DefaultColumns" Required="0" Valid="1">
-        <Description Translatable="1">Columns that can be filtered in the responsible view of the agent interface. Possible settings: 0 = Disabled, 1 = Available, 2 = Enabled by default. Note: Only Ticket attributes and Dynamic Fields (DynamicField_NameX) are allowed.</Description>
+        <Description Translatable="1">Columns that can be filtered in the responsible view of the agent interface. Possible settings: 0 = Disabled, 1 = Available, 2 = Enabled by default. Note: Only Ticket attributes, Dynamic Fields (DynamicField_NameX) and Customer attributes (e.g. CustomerUserPhone, CustomerCompanyName, ...) are allowed.</Description>
         <Group>Ticket</Group>
         <SubGroup>Frontend::Agent::Ticket::ViewResponsible</SubGroup>
         <Setting>
             <Hash>
                 <Item Key="Age">2</Item>
                 <Item Key="Changed">1</Item>
+                <Item Key="CustomerCompanyName">1</Item>
                 <Item Key="CustomerID">2</Item>
                 <Item Key="CustomerName">1</Item>
                 <Item Key="CustomerUserID">1</Item>
@@ -10552,13 +11347,14 @@ Thanks for your help!
         </Setting>
     </ConfigItem>
     <ConfigItem Name="Ticket::Frontend::AgentTicketWatchView###DefaultColumns" Required="0" Valid="1">
-        <Description Translatable="1">Columns that can be filtered in the watch view of the agent interface. Possible settings: 0 = Disabled, 1 = Available, 2 = Enabled by default. Note: Only Ticket attributes and Dynamic Fields (DynamicField_NameX) are allowed.</Description>
+        <Description Translatable="1">Columns that can be filtered in the watch view of the agent interface. Possible settings: 0 = Disabled, 1 = Available, 2 = Enabled by default. Note: Only Ticket attributes, Dynamic Fields (DynamicField_NameX) and Customer attributes (e.g. CustomerUserPhone, CustomerCompanyName, ...) are allowed.</Description>
         <Group>Ticket</Group>
         <SubGroup>Frontend::Agent::Ticket::ViewWatch</SubGroup>
         <Setting>
             <Hash>
                 <Item Key="Age">2</Item>
                 <Item Key="Changed">1</Item>
+                <Item Key="CustomerCompanyName">1</Item>
                 <Item Key="CustomerID">2</Item>
                 <Item Key="CustomerName">1</Item>
                 <Item Key="CustomerUserID">1</Item>
@@ -10582,13 +11378,14 @@ Thanks for your help!
         </Setting>
     </ConfigItem>
     <ConfigItem Name="Ticket::Frontend::AgentTicketLockedView###DefaultColumns" Required="0" Valid="1">
-        <Description Translatable="1">Columns that can be filtered in the locked view of the agent interface. Possible settings: 0 = Disabled, 1 = Available, 2 = Enabled by default. Note: Only Ticket attributes and Dynamic Fields (DynamicField_NameX) are allowed.</Description>
+        <Description Translatable="1">Columns that can be filtered in the locked view of the agent interface. Possible settings: 0 = Disabled, 1 = Available, 2 = Enabled by default. Note: Only Ticket attributes, Dynamic Fields (DynamicField_NameX) and Customer attributes (e.g. CustomerUserPhone, CustomerCompanyName, ...) are allowed.</Description>
         <Group>Ticket</Group>
         <SubGroup>Frontend::Agent::Ticket::ViewLocked</SubGroup>
         <Setting>
             <Hash>
                 <Item Key="Age">2</Item>
                 <Item Key="Changed">1</Item>
+                <Item Key="CustomerCompanyName">1</Item>
                 <Item Key="CustomerID">2</Item>
                 <Item Key="CustomerName">1</Item>
                 <Item Key="CustomerUserID">1</Item>
@@ -10612,13 +11409,14 @@ Thanks for your help!
         </Setting>
     </ConfigItem>
     <ConfigItem Name="Ticket::Frontend::AgentTicketEscalationView###DefaultColumns" Required="0" Valid="1">
-        <Description Translatable="1">Columns that can be filtered in the escalation view of the agent interface. Possible settings: 0 = Disabled, 1 = Available, 2 = Enabled by default. Note: Only Ticket attributes and Dynamic Fields (DynamicField_NameX) are allowed.</Description>
+        <Description Translatable="1">Columns that can be filtered in the escalation view of the agent interface. Possible settings: 0 = Disabled, 1 = Available, 2 = Enabled by default. Note: Only Ticket attributes, Dynamic Fields (DynamicField_NameX) and Customer attributes (e.g. CustomerUserPhone, CustomerCompanyName, ...) are allowed.</Description>
         <Group>Ticket</Group>
         <SubGroup>Frontend::Agent::Ticket::ViewEscalation</SubGroup>
         <Setting>
             <Hash>
                 <Item Key="Age">2</Item>
                 <Item Key="Changed">1</Item>
+                <Item Key="CustomerCompanyName">1</Item>
                 <Item Key="CustomerID">2</Item>
                 <Item Key="CustomerName">1</Item>
                 <Item Key="CustomerUserID">1</Item>
@@ -10642,13 +11440,14 @@ Thanks for your help!
         </Setting>
     </ConfigItem>
     <ConfigItem Name="Ticket::Frontend::AgentTicketSearch###DefaultColumns" Required="0" Valid="1">
-         <Description Translatable="1">Columns that can be filtered in the ticket search result view of the agent interface. Possible settings: 0 = Disabled, 1 = Available, 2 = Enabled by default. Note: Only Ticket attributes and Dynamic Fields (DynamicField_NameX) are allowed.</Description>
+        <Description Translatable="1">Columns that can be filtered in the ticket search result view of the agent interface. Possible settings: 0 = Disabled, 1 = Available, 2 = Enabled by default. Note: Only Ticket attributes, Dynamic Fields (DynamicField_NameX) and Customer attributes (e.g. CustomerUserPhone, CustomerCompanyName, ...) are allowed.</Description>
        <Group>Ticket</Group>
         <SubGroup>Frontend::Agent::Ticket::ViewSearch</SubGroup>
         <Setting>
             <Hash>
                 <Item Key="Age">2</Item>
                 <Item Key="Changed">1</Item>
+                <Item Key="CustomerCompanyName">1</Item>
                 <Item Key="CustomerID">2</Item>
                 <Item Key="CustomerName">1</Item>
                 <Item Key="CustomerUserID">1</Item>
@@ -10672,13 +11471,14 @@ Thanks for your help!
         </Setting>
     </ConfigItem>
     <ConfigItem Name="Ticket::Frontend::AgentTicketService###DefaultColumns" Required="0" Valid="1">
-        <Description Translatable="1">Columns that can be filtered in the service view of the agent interface. Possible settings: 0 = Disabled, 1 = Available, 2 = Enabled by default. Note: Only Ticket attributes and Dynamic Fields (DynamicField_NameX) are allowed.</Description>
+        <Description Translatable="1">Columns that can be filtered in the service view of the agent interface. Possible settings: 0 = Disabled, 1 = Available, 2 = Enabled by default. Note: Only Ticket attributes, Dynamic Fields (DynamicField_NameX) and Customer attributes (e.g. CustomerUserPhone, CustomerCompanyName, ...) are allowed.</Description>
         <Group>Ticket</Group>
         <SubGroup>Frontend::Agent::Ticket::ViewQueue</SubGroup>
         <Setting>
             <Hash>
                 <Item Key="Age">2</Item>
                 <Item Key="Changed">1</Item>
+                <Item Key="CustomerCompanyName">1</Item>
                 <Item Key="CustomerID">2</Item>
                 <Item Key="CustomerName">1</Item>
                 <Item Key="CustomerUserID">1</Item>

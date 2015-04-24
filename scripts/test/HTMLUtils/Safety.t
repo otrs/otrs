@@ -1,6 +1,6 @@
 # --
 # Safety.t - HTMLUtils tests
-# Copyright (C) 2001-2014 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -40,6 +40,26 @@ my @Tests = (
         Result => {
             Output  => '<a href="">Some Text</a>',
             Replace => 1,
+        },
+        Name => 'Safety - simple'
+    },
+    {
+        Input =>
+            '<a href="https://www.yoururl.tld/sub/online-assessment/index.php" target="_blank">https://www.yoururl.tld/sub/online-assessment/index.php</a>',
+        Result => {
+            Output =>
+                '<a href="https://www.yoururl.tld/sub/online-assessment/index.php" target="_blank">https://www.yoururl.tld/sub/online-assessment/index.php</a>',
+            Replace => 0,
+        },
+        Name => 'Safety - simple'
+    },
+    {
+        Input =>
+            "<a href='https://www.yoururl.tld/sub/online-assessment/index.php' target='_blank'>https://www.yoururl.tld/sub/online-assessment/index.php</a>",
+        Result => {
+            Output =>
+                "<a href='https://www.yoururl.tld/sub/online-assessment/index.php' target='_blank'>https://www.yoururl.tld/sub/online-assessment/index.php</a>",
+            Replace => 0,
         },
         Name => 'Safety - simple'
     },

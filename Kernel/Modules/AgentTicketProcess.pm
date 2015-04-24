@@ -1,6 +1,6 @@
 # --
 # Kernel/Modules/AgentTicketProcess.pm - to create process tickets
-# Copyright (C) 2001-2014 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -13,22 +13,23 @@ package Kernel::Modules::AgentTicketProcess;
 use strict;
 use warnings;
 
+use Kernel::System::CheckItem;
+use Kernel::System::CustomerUser;
+use Kernel::System::DynamicField::Backend;
+use Kernel::System::DynamicField;
+use Kernel::System::Lock;
+use Kernel::System::Priority;
 use Kernel::System::ProcessManagement::Activity;
 use Kernel::System::ProcessManagement::ActivityDialog;
 use Kernel::System::ProcessManagement::TransitionAction;
 use Kernel::System::ProcessManagement::Transition;
 use Kernel::System::ProcessManagement::Process;
-use Kernel::System::DynamicField;
-use Kernel::System::DynamicField::Backend;
-use Kernel::System::State;
-use Kernel::System::Web::UploadCache;
 use Kernel::System::Service;
 use Kernel::System::SLA;
-use Kernel::System::Lock;
-use Kernel::System::Priority;
-use Kernel::System::CustomerUser;
+use Kernel::System::State;
 use Kernel::System::Type;
 use Kernel::System::VariableCheck qw(:all);
+use Kernel::System::Web::UploadCache;
 
 sub new {
     my ( $Type, %Param ) = @_;
@@ -71,7 +72,9 @@ sub new {
     );
     $Self->{CustomerUserObject} = Kernel::System::CustomerUser->new(%Param);
     $Self->{TypeObject}         = Kernel::System::Type->new(%Param);
-    $Self->{DynamicField}       = $Self->{DynamicFieldObject}->DynamicFieldListGet(
+    $Self->{CheckItemObject}    = Kernel::System::CheckItem->new(%Param);
+
+    $Self->{DynamicField} = $Self->{DynamicFieldObject}->DynamicFieldListGet(
         Valid      => 1,
         ObjectType => 'Ticket',
     );
@@ -279,25 +282,45 @@ sub Run {
         ProcessState => \@ProcessStates,
         Interface    => ['AgentInterface'],
     );
+
+    # also get the list of processes initiated by customers, as an activity dialog might be
+    # configured for the agent interface
+    my $FollowupProcessList = $Self->{ProcessObject}->ProcessList(
+        ProcessState => \@ProcessStates,
+        Interface    => [ 'AgentInterface', 'CustomerInterface' ],
+    );
+
     my $ProcessEntityID = $Self->{ParamObject}->GetParam( Param => 'ProcessEntityID' );
 
-    if ( !IsHashRefWithData($ProcessList) ) {
+    if ( !IsHashRefWithData($ProcessList) && !IsHashRefWithData($FollowupProcessList) ) {
         return $Self->{LayoutObject}->ErrorScreen(
             Message => 'No Process configured!',
             Comment => 'Please contact the admin.',
         );
     }
 
-    # validate the ProcessList with stored acls
+    # prepare process list for ACLs, use only entities instead of names, convert from
+    #   P1 => Name to P1 => P1. As ACLs should work only against entities
+    my %ProcessListACL = map { $_ => $_ } sort keys %{$ProcessList};
+
+    # validate the ProcessList with stored ACLs
     my $ACL = $Self->{TicketObject}->TicketAcl(
         ReturnType    => 'Process',
         ReturnSubType => '-',
-        Data          => $ProcessList,
+        Data          => \%ProcessListACL,
         UserID        => $Self->{UserID},
     );
 
     if ( IsHashRefWithData($ProcessList) && $ACL ) {
-        %{$ProcessList} = $Self->{TicketObject}->TicketAclData();
+
+        # get ACL results
+        my %ACLData = $Self->{TicketObject}->TicketAclData();
+
+        # recover process names
+        my %ReducedProcessList = map { $_ => $ProcessList->{$_} } sort keys %ACLData;
+
+        # replace original process list with the reduced one
+        $ProcessList = \%ReducedProcessList;
     }
 
     # get form id
@@ -308,17 +331,16 @@ sub Run {
         $Self->{FormID} = $Self->{UploadCacheObject}->FormIDCreate();
     }
 
-    # If we have no Subaction or Subaction is 'Create' and submitted ProcessEntityID is invalid
-    # Display the ProcessList
-    if (
-        !$Self->{Subaction}
-        || (
-            $Self->{Subaction} eq 'DisplayActivityDialog'
-            && !$ProcessList->{$ProcessEntityID}
-            && $Self->{IsMainWindow}
-        )
-        )
-    {
+    # if we have no subaction display the process list to start a new one
+    if ( !$Self->{Subaction} ) {
+
+        # to display the process list is mandatory to have processes that agent can start
+        if ( !IsHashRefWithData($ProcessList) ) {
+            return $Self->{LayoutObject}->ErrorScreen(
+                Message => 'No Process configured!',
+                Comment => 'Please contact the admin.',
+            );
+        }
 
         # get process id (if any, a process should be pre-selected)
         $Param{ProcessID} = $Self->{ParamObject}->GetParam( Param => 'ID' );
@@ -359,7 +381,7 @@ sub Run {
     # if invalid process is detected on a ActivityDilog pop-up screen show an error message
     elsif (
         $Self->{Subaction} eq 'DisplayActivityDialog'
-        && !$ProcessList->{$ProcessEntityID}
+        && !$FollowupProcessList->{$ProcessEntityID}
         && !$Self->{IsMainWindow}
         )
     {
@@ -993,19 +1015,35 @@ sub _GetParam {
         if ( $CurrentField eq 'PendingTime' ) {
             my $Prefix = 'PendingTime';
 
+            # Ok, we need to try to find the target state now
             my %StateData;
-            if ( !$GetParam{StateID} ) {
-                $GetParam{StateID} = $Self->{ParamObject}->GetParam( Param => 'StateID' );
 
-                # Important: if we didn't have a ParamObject->GetParam StateID,
-                # we may need to get it from configs
-                # so only if submitted mark ValuesGotten as 1
-                $ValuesGotten{StateID} = 1 if ( $GetParam{StateID} );
+            # Was something submitted from the GUI?
+            my $TargetStateID = $Self->{ParamObject}->GetParam( Param => 'StateID' );
+            if ($TargetStateID) {
+                %StateData = $Self->{StateObject}->StateGet(
+                    ID => $TargetStateID,
+                );
             }
 
-            if ( $GetParam{StateID} ) {
+            # Fallback 1: default value of dialog field State
+            if ( !%StateData && $ActivityDialog->{Fields}{State}{DefaultValue} ) {
                 %StateData = $Self->{StateObject}->StateGet(
-                    ID => $GetParam{StateID},
+                    Name => $ActivityDialog->{Fields}{State}{DefaultValue},
+                );
+            }
+
+            # Fallback 2: default value of dialog field StateID
+            if ( !%StateData && $ActivityDialog->{Fields}{StateID}{DefaultValue} ) {
+                %StateData = $Self->{StateObject}->StateGet(
+                    ID => $ActivityDialog->{Fields}{StateID}{DefaultValue},
+                );
+            }
+
+            # Fallback 3: existing ticket state
+            if ( !%StateData && %Ticket ) {
+                %StateData = $Self->{StateObject}->StateGet(
+                    ID => $Ticket{StateID},
                 );
             }
 
@@ -2267,7 +2305,7 @@ sub _RenderDynamicField {
     );
 
     my %Data = (
-        Name    => $DynamicFieldHTML->{Name},
+        Name    => $DynamicFieldConfig->{Name},
         Label   => $DynamicFieldHTML->{Label},
         Content => $DynamicFieldHTML->{Field},
     );
@@ -2480,11 +2518,9 @@ sub _RenderArticle {
             Valid => 1,
         );
         my $GID = $Self->{QueueObject}->GetQueueGroupID( QueueID => $Param{Ticket}->{QueueID} );
-        my %MemberList = $Self->{GroupObject}->GroupMemberList(
+        my %MemberList = $Self->{GroupObject}->PermissionGroupGet(
             GroupID => $GID,
             Type    => 'note',
-            Result  => 'HASH',
-            Cached  => 1,
         );
         for my $UserID ( sort keys %MemberList ) {
             $ShownUsers{$UserID} = $AllGroupsMembers{$UserID};
@@ -2616,10 +2652,6 @@ sub _RenderCustomer {
     if ( $Data{MandatoryClass} && $Data{MandatoryClass} ne '' ) {
         $Self->{LayoutObject}->Block(
             Name => 'LabelSpanCustomerUser',
-            Data => {},
-        );
-        $Self->{LayoutObject}->Block(
-            Name => 'LabelSpanCustomerID',
             Data => {},
         );
     }
@@ -3716,7 +3748,7 @@ sub _RenderState {
         };
     }
 
-    my $States = $Self->_GetStates( %{ $Param{Ticket} } );
+    my $States = $Self->_GetStates( %{ $Param{GetParam} } );
 
     my %Data = (
         Label            => $Self->{LayoutObject}->{LanguageObject}->Translate("Next ticket state"),
@@ -4114,17 +4146,27 @@ sub _StoreActivityDialog {
                     );
                 }
 
-                my $CustomerID = $Param{GetParam}{CustomerID};
-                if ( !$CustomerID ) {
-                    $Error{'CustomerID'} = 1;
-                }
-                $TicketParam{CustomerID} = $CustomerID;
+                # CustomerID should not be mandatory as in other screens
+                $TicketParam{CustomerID} = $Param{GetParam}{CustomerID} || '';
 
                 # Unfortunately TicketCreate needs 'CustomerUser' as param instead of 'CustomerUserID'
                 my $CustomerUserID = $Self->{ParamObject}->GetParam( Param => 'SelectedCustomerUser' );
+
+                # fall-back, if customer auto-complete does not shown any results, then try to use
+                # the content of the original field as customer user id
                 if ( !$CustomerUserID ) {
-                    $CustomerUserID = $Self->{ParamObject}->GetParam( Param => 'SelectedUserID' );
+
+                    $CustomerUserID = $Self->{ParamObject}->GetParam( Param => 'CustomerUserID' );
+
+                    # check email address
+                    for my $Email ( Mail::Address->parse($CustomerUserID) ) {
+                        if ( !$Self->{CheckItemObject}->CheckEmail( Address => $Email->address() ) )
+                        {
+                            $Error{'CustomerUserID'} = 1;
+                        }
+                    }
                 }
+
                 if ( !$CustomerUserID ) {
                     $Error{'CustomerUserID'} = 1;
                 }
@@ -4201,7 +4243,7 @@ sub _StoreActivityDialog {
         if ( !$ProcessEntityID )
         {
             return $Self->{LayoutObject}->FatalError(
-                Message => "Missing ProcessEntityID, check your ActivityDialogHeader.dtl!",
+                Message => "Missing ProcessEntityID, check your ActivityDialogHeader.tt!",
             );
         }
 
@@ -5182,11 +5224,9 @@ sub _GetResponsibles {
     if ( $Param{TicketID} ) {
         if ( $Param{QueueID} && !$Param{AllUsers} ) {
             my $GID = $Self->{QueueObject}->GetQueueGroupID( QueueID => $Param{QueueID} );
-            my %MemberList = $Self->{GroupObject}->GroupMemberList(
+            my %MemberList = $Self->{GroupObject}->PermissionGroupGet(
                 GroupID => $GID,
                 Type    => 'responsible',
-                Result  => 'HASH',
-                Cached  => 1,
             );
             for my $UserID ( sort keys %MemberList ) {
                 $ShownUsers{$UserID} = $AllGroupsMembers{$UserID};
@@ -5229,10 +5269,9 @@ sub _GetResponsibles {
         # show all users who are rw in the queue group
         elsif ( $Param{QueueID} ) {
             my $GID = $Self->{QueueObject}->GetQueueGroupID( QueueID => $Param{QueueID} );
-            my %MemberList = $Self->{GroupObject}->GroupMemberList(
+            my %MemberList = $Self->{GroupObject}->PermissionGroupGet(
                 GroupID => $GID,
                 Type    => 'responsible',
-                Result  => 'HASH',
             );
             for my $KeyMember ( sort keys %MemberList ) {
                 if ( $AllGroupsMembers{$KeyMember} ) {
@@ -5270,11 +5309,9 @@ sub _GetOwners {
     if ( $Param{TicketID} ) {
         if ( $Param{QueueID} && !$Param{AllUsers} ) {
             my $GID = $Self->{QueueObject}->GetQueueGroupID( QueueID => $Param{QueueID} );
-            my %MemberList = $Self->{GroupObject}->GroupMemberList(
+            my %MemberList = $Self->{GroupObject}->PermissionGroupGet(
                 GroupID => $GID,
                 Type    => 'owner',
-                Result  => 'HASH',
-                Cached  => 1,
             );
             for my $UserID ( sort keys %MemberList ) {
                 $ShownUsers{$UserID} = $AllGroupsMembers{$UserID};
@@ -5317,10 +5354,9 @@ sub _GetOwners {
         # show all users who are rw in the queue group
         elsif ( $Param{QueueID} ) {
             my $GID = $Self->{QueueObject}->GetQueueGroupID( QueueID => $Param{QueueID} );
-            my %MemberList = $Self->{GroupObject}->GroupMemberList(
+            my %MemberList = $Self->{GroupObject}->PermissionGroupGet(
                 GroupID => $GID,
                 Type    => 'owner',
-                Result  => 'HASH',
             );
             for my $KeyMember ( sort keys %MemberList ) {
                 if ( $AllGroupsMembers{$KeyMember} ) {
@@ -5462,10 +5498,9 @@ sub _GetQueues {
         }
 
         # get permission queues
-        my %UserGroups = $Self->{GroupObject}->GroupMemberList(
+        my %UserGroups = $Self->{GroupObject}->PermissionUserGet(
             UserID => $Self->{UserID},
             Type   => $PermissionType,
-            Result => 'HASH',
         );
 
         # build selection string

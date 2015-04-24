@@ -1,6 +1,6 @@
 # --
 # Kernel/Output/HTML/NavBarAgentTicketProcess.pm - to show or hide AgentTicketProcess menu item
-# Copyright (C) 2001-2014 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -118,16 +118,28 @@ sub Run {
                 Interface    => ['AgentInterface'],
             );
 
-            # validate the ProcessList with stored acls
+            # prepare process list for ACLs, use only entities instead of names, convert from
+            #   P1 => Name to P1 => P1. As ACLs should work only against entities
+            my %ProcessListACL = map { $_ => $_ } sort keys %{$ProcessList};
+
+            # validate the ProcessList with stored ACLs
             my $ACL = $Self->{TicketObject}->TicketAcl(
                 ReturnType    => 'Process',
                 ReturnSubType => '-',
-                Data          => $ProcessList,
+                Data          => \%ProcessListACL,
                 UserID        => $Self->{UserID},
             );
 
             if ( IsHashRefWithData($ProcessList) && $ACL ) {
-                %{$ProcessList} = $Self->{TicketObject}->TicketAclData();
+
+                # get ACL results
+                my %ACLData = $Self->{TicketObject}->TicketAclData();
+
+                # recover process names
+                my %ReducedProcessList = map { $_ => $ProcessList->{$_} } sort keys %ACLData;
+
+                # replace original process list with the reduced one
+                $ProcessList = \%ReducedProcessList;
             }
 
             # set the value to show or hide the menu item (based in process list)

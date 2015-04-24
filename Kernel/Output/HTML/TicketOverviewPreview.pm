@@ -1,6 +1,6 @@
 # --
 # Kernel/Output/HTML/TicketOverviewPreview.pm
-# Copyright (C) 2001-2014 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -17,6 +17,10 @@ use Kernel::System::SystemAddress;
 use Kernel::System::DynamicField;
 use Kernel::System::DynamicField::Backend;
 use Kernel::System::VariableCheck qw(:all);
+
+our @ObjectDependencies = (
+    'Kernel::System::JSON',
+);
 
 sub new {
     my ( $Type, %Param ) = @_;
@@ -40,6 +44,19 @@ sub new {
 
     # get dynamic field config for frontend module
     $Self->{DynamicFieldFilter} = $Self->{ConfigObject}->Get("Ticket::Frontend::OverviewPreview")->{DynamicField};
+
+    my %Preferences = $Self->{UserObject}->GetPreferences(
+        UserID => $Self->{UserID},
+    );
+
+    # set stored filters if present
+    my $StoredFiltersKey = 'UserStoredFilterColumns-' . $Self->{Action};
+    if ( $Preferences{$StoredFiltersKey} ) {
+        my $StoredFilters = $Kernel::OM->Get('Kernel::System::JSON')->Decode(
+            Data => $Preferences{$StoredFiltersKey},
+        );
+        $Self->{StoredFilters} = $StoredFilters;
+    }
 
     # get the dynamic fields for this screen
     $Self->{DynamicField} = $Self->{DynamicFieldObject}->DynamicFieldListGet(
@@ -744,7 +761,7 @@ sub _Show {
             }
         }
 
-        # define proper DTL block based on permissions
+        # define proper tt block based on permissions
         my $CustomerIDBlock = $Access ? 'CustomerIDRW' : 'CustomerIDRO';
 
         $Self->{LayoutObject}->Block(

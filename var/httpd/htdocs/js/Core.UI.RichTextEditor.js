@@ -13,20 +13,41 @@ var Core = Core || {};
 Core.UI = Core.UI || {};
 
 /**
- * @namespace
- * @exports TargetNS as Core.UI.RichTextEditor
+ * @namespace Core.UI.RichTextEditor
+ * @memberof Core.UI
+ * @author OTRS AG
  * @description
- *      Richtext Editor
- * @requires
- *      CKEDITOR
+ *      Richtext Editor.
  */
 Core.UI.RichTextEditor = (function (TargetNS) {
-    var $FormID;
+    /**
+     * @private
+     * @name $FormID
+     * @memberof Core.UI.RichTextEditor
+     * @member {jQueryObject}
+     * @description
+     *      Hidden input field with name FormID.
+     */
+    var $FormID,
 
     /**
-     * @function
      * @private
-     * @description Check in the window which hidden element has a name same to 'FormID' and return it like a JQuery object
+     * @name TimeOutRTEOnChange
+     * @memberof Core.UI.RichTextEditor
+     * @member {Object}
+     * @description
+     *      Object to handle timeout.
+     */
+        TimeOutRTEOnChange;
+
+    /**
+     * @private
+     * @name CheckFormID
+     * @memberof Core.UI.RichTextEditor
+     * @function
+     * @returns {jQueryObject} FormID element.
+     * @description
+     *      Check in the window which hidden element has a name same to 'FormID' and return it like a JQuery object.
      */
     function CheckFormID() {
         if (typeof $FormID === 'undefined') {
@@ -36,10 +57,13 @@ Core.UI.RichTextEditor = (function (TargetNS) {
     }
 
     /**
+     * @name Init
+     * @memberof Core.UI.RichTextEditor
      * @function
-     * @param {jQueryObject} $EditorArea The jQuery object of the element that will be a rich text editor
-     * @return nothing
-     *      This function initializes the application and executes the needed functions
+     * @returns {Boolean} Returns false on error.
+     * @param {jQueryObject} $EditorArea - The jQuery object of the element that will be a rich text editor.
+     * @description
+     *      This function initializes the application and executes the needed functions.
      */
     TargetNS.Init = function ($EditorArea) {
         var EditorID = '',
@@ -63,23 +87,24 @@ Core.UI.RichTextEditor = (function (TargetNS) {
         $EditorArea.addClass('HasCKEInstance');
 
         CKEDITOR.on('instanceCreated', function (Editor) {
-
             CKEDITOR.addCss(Core.Config.Get('RichText.EditingAreaCSS'));
 
             // Remove the validation error tooltip if content is added to the editor
             Editor.editor.on('change', function(evt) {
-                Core.Form.Validate.ValidateElement($(Editor.editor.element.$));
+                window.clearTimeout(TimeOutRTEOnChange);
+                TimeOutRTEOnChange = window.setTimeout(function () {
+                    Core.Form.Validate.ValidateElement($(Editor.editor.element.$));
+                }, 250);
             });
 
             // if spell checker is used on paste new content should spell check again
             Editor.editor.on('paste', function(evt) {
-                Core.Config.Set('TextIsSpellChecked', '0');
+                Core.Config.Set('TextIsSpellChecked', false);
             });
             // if spell checker is used on any key new content should spell check again
             Editor.editor.on('key', function(evt) {
-                Core.Config.Set('TextIsSpellChecked', '0');
+                Core.Config.Set('TextIsSpellChecked', false);
             });
-
         });
 
         // The format for the language is different between OTRS and CKEditor (see bug#8024)
@@ -98,7 +123,7 @@ Core.UI.RichTextEditor = (function (TargetNS) {
             forcePasteAsPlainText: false,
             format_tags: 'p;h1;h2;h3;h4;h5;h6;pre',
             fontSize_sizes: '8px;10px;12px;16px;18px;20px;22px;24px;26px;28px;30px;',
-            extraAllowedContent: 'div table tr td th colgroup col style[*]{*}',
+            extraAllowedContent: 'div table tr td th colgroup col img style[*]{*}',
             enterMode: CKEDITOR.ENTER_BR,
             shiftEnterMode: CKEDITOR.ENTER_BR,
             contentsLangDirection: Core.Config.Get('RichText.TextDir', 'ltr'),
@@ -166,9 +191,11 @@ Core.UI.RichTextEditor = (function (TargetNS) {
     };
 
     /**
+     * @name InitAll
+     * @memberof Core.UI.RichTextEditor
      * @function
-     * @return nothing
-     *      This function initializes as a rich text editor every textarea element that containing the RichText class
+     * @description
+     *      This function initializes as a rich text editor every textarea element that containing the RichText class.
      */
     TargetNS.InitAll = function () {
         $('textarea.RichText').each(function () {
@@ -177,10 +204,13 @@ Core.UI.RichTextEditor = (function (TargetNS) {
     };
 
     /**
+     * @name GetRTE
+     * @memberof Core.UI.RichTextEditor
      * @function
-     * @param {jQueryObject} $EditorArea The jQuery object of the element that is a rich text editor
-     * @return The rich text editor length
-     *      This function return the length for a rich text editor object
+     * @returns {jQueryObject} jQuery object of the corresponsing RTE element.
+     * @param {jQueryObject} $EditorArea - The jQuery object of the element that is a rich text editor.
+     * @description
+     *      Get RTE jQuery element.
      */
     TargetNS.GetRTE = function ($EditorArea) {
         if (isJQueryObject($EditorArea)) {
@@ -190,10 +220,12 @@ Core.UI.RichTextEditor = (function (TargetNS) {
     };
 
     /**
+     * @name UpdateLinkedField
+     * @memberof Core.UI.RichTextEditor
      * @function
-     * @param {jQueryObject} $EditorArea The jQuery object of the element that is a rich text editor
-     * @return nothing
-     *      This function updates the linked field for a rich text editor
+     * @param {jQueryObject} $EditorArea - The jQuery object of the element that is a rich text editor.
+     * @description
+     *      This function updates the linked field for a rich text editor.
      */
     TargetNS.UpdateLinkedField = function ($EditorArea) {
         var EditorID = '',
@@ -220,29 +252,34 @@ Core.UI.RichTextEditor = (function (TargetNS) {
     };
 
     /**
+     * @name IsEnabled
+     * @memberof Core.UI.RichTextEditor
      * @function
-     * @param {jQueryObject} $EditorArea The jQuery object of the element that is a rich text editor
-     * @return nothing
-     *      This function check if a rich text editor is enable in this moment
+     * @returns {Boolean} True if RTE is enabled, false otherwise
+     * @param {jQueryObject} $EditorArea - The jQuery object of the element that is a rich text editor.
+     * @description
+     *      This function check if a rich text editor is enable in this moment.
      */
     TargetNS.IsEnabled = function ($EditorArea) {
         var EditorID = '';
 
-        if (isJQueryObject($EditorArea) && $EditorArea.length === 1) {
-            EditorID = $EditorArea.attr('id');
-            if ($('#cke_' + Core.App.EscapeSelector(EditorID)).length) {
-                return true;
-            }
+        if (typeof CKEDITOR === 'undefined') {
+            return false;
         }
 
+        if (isJQueryObject($EditorArea) && $EditorArea.length) {
+            return (CKEDITOR.instances[$EditorArea[0].id] ? true : false);
+        }
         return false;
     };
 
     /**
+     * @name Focus
+     * @memberof Core.UI.RichTextEditor
      * @function
-     * @param {jQueryObject} $EditorArea The jQuery object of the element that is a rich text editor
-     * @return nothing
-     *      This function check if a rich text editor has the browser focus enabled
+     * @param {jQueryObject} $EditorArea - The jQuery object of the element that is a rich text editor.
+     * @description
+     *      This function focusses the given RTE.
      */
     TargetNS.Focus = function ($EditorArea) {
         var EditorID = '';

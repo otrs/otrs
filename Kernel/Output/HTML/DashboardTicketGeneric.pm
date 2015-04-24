@@ -1,6 +1,6 @@
 # --
 # Kernel/Output/HTML/DashboardTicketGeneric.pm
-# Copyright (C) 2001-2014 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -310,7 +310,7 @@ sub Preferences {
         @ColumnsAvailable = grep { $Self->{Config}->{DefaultColumns}->{$_} }
             keys %{ $Self->{Config}->{DefaultColumns} };
         @ColumnsEnabled = grep { $Self->{Config}->{DefaultColumns}->{$_} eq '2' }
-            keys %{ $Self->{Config}->{DefaultColumns} };
+            sort { $Self->_DefaultColumnSort() } keys %{ $Self->{Config}->{DefaultColumns} };
     }
 
     # check if the user has filter preferences for this widget
@@ -1879,9 +1879,12 @@ sub _SearchParamsGet {
             sort { $Self->_DefaultColumnSort() } keys %{ $Self->{Config}->{DefaultColumns} };
     }
     if ($PreferencesColumn) {
-        @Columns = grep { $PreferencesColumn->{Columns}->{$_} eq '1' }
-            sort { $Self->_DefaultColumnSort() } keys %{ $Self->{Config}->{DefaultColumns} };
-
+        if ( $PreferencesColumn->{Columns} && %{ $PreferencesColumn->{Columns} } ) {
+            @Columns = grep {
+                defined $PreferencesColumn->{Columns}->{$_}
+                    && $PreferencesColumn->{Columns}->{$_} eq '1'
+            } sort { $Self->_DefaultColumnSort() } keys %{ $Self->{Config}->{DefaultColumns} };
+        }
         if ( $PreferencesColumn->{Order} && @{ $PreferencesColumn->{Order} } ) {
             @Columns = @{ $PreferencesColumn->{Order} };
         }
@@ -1978,13 +1981,22 @@ sub _SearchParamsGet {
         next STRING if !$String;
         my ( $Key, $Value ) = split /=/, $String;
 
+        if ( $Key eq 'CustomerID' ) {
+            $Key = "CustomerIDRaw";
+        }
+
         # push ARRAYREF attributes directly in an ARRAYREF
         if (
             $Key
             =~ /^(StateType|StateTypeIDs|Queues|QueueIDs|Types|TypeIDs|States|StateIDs|Priorities|PriorityIDs|Services|ServiceIDs|SLAs|SLAIDs|Locks|LockIDs|OwnerIDs|ResponsibleIDs|WatchUserIDs|ArchiveFlags)$/
             )
         {
-            push @{ $TicketSearch{$Key} }, $Value;
+            if ( $Value =~ m{,}smx ) {
+                push @{ $TicketSearch{$Key} }, split( /,/, $Value );
+            }
+            else {
+                push @{ $TicketSearch{$Key} }, $Value;
+            }
         }
 
         # check if parameter is a dynamic field and capture dynamic field name (with DynamicField_)
@@ -2004,7 +2016,7 @@ sub _SearchParamsGet {
                 next STRING if $2 eq $Self->{ProcessManagementActivityID};
             }
 
-            $DynamicFieldsParameters{$1}->{$2} = $Value;
+            push @{ $DynamicFieldsParameters{$1}->{$2} }, $Value;
         }
 
         elsif ( !defined $TicketSearch{$Key} ) {
@@ -2058,6 +2070,9 @@ sub _SearchParamsGet {
         Type   => 'ro',
     );
     my @ViewableQueueIDs = sort keys %ViewableQueues;
+    if ( !@ViewableQueueIDs ) {
+        @ViewableQueueIDs = (999_999);
+    }
 
     # get the custom services from agent preferences
     # set the service ids to an array of non existing service ids (0)
@@ -2075,28 +2090,28 @@ sub _SearchParamsGet {
     my %TicketSearchSummary = (
         Locked => {
             OwnerIDs => [ $Self->{UserID}, ],
-            Locks    => [ 'lock', 'tmp_lock' ],
+            LockIDs  => [ '2', '3' ],           # 'lock' and 'tmp_lock'
         },
         Watcher => {
             WatchUserIDs => [ $Self->{UserID}, ],
-            Locks        => undef,
+            LockIDs      => $TicketSearch{LockIDs} // undef,
         },
         Responsible => {
             ResponsibleIDs => [ $Self->{UserID}, ],
-            Locks          => undef,
+            LockIDs        => $TicketSearch{LockIDs} // undef,
         },
         MyQueues => {
             QueueIDs => \@MyQueues,
-            Locks    => undef,
+            LockIDs  => $TicketSearch{LockIDs} // undef,
         },
         MyServices => {
             QueueIDs   => \@ViewableQueueIDs,
             ServiceIDs => \@MyServiceIDs,
-            Locks      => undef,
+            LockIDs    => $TicketSearch{LockIDs} // undef,
         },
         All => {
             OwnerIDs => undef,
-            Locks    => undef,
+            LockIDs  => $TicketSearch{LockIDs} // undef,
         },
     );
 
@@ -2113,7 +2128,6 @@ sub _SearchParamsGet {
         TicketSearch        => \%TicketSearch,
         TicketSearchSummary => \%TicketSearchSummary,
     );
-
 }
 
 sub _DefaultColumnSort {

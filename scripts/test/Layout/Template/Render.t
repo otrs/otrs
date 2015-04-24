@@ -1,6 +1,6 @@
 # --
 # scripts/test/Layout/Template/Render.t - layout testscript
-# Copyright (C) 2001-2014 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -142,6 +142,14 @@ my @Tests = (
             DateTime => '2000-01-01 00:00:00',
         },
         Template => '[% Data.DateTime | Localize("Date") %]',
+        Result   => '01.01.2000',
+    },
+    {
+        Name => 'Localize() as function call',
+        Data => {
+            DateTime => '2000-01-01 00:00:00',
+        },
+        Template => '[% Localize(Data.DateTime, "Date") %]',
         Result   => '01.01.2000',
     },
     {
@@ -311,9 +319,13 @@ console.log(22);
 [% PROCESS "JSOnDocumentCompleteInsert" -%]',
         Result => '
 console.log(11);
+
 console.log(12);
+
 console.log(23);
+
 console.log(21);
+
 console.log(22);
 ',
     },

@@ -1,6 +1,6 @@
 # --
 # Kernel/System/Auth/DB.pm - provides the db authentication
-# Copyright (C) 2001-2014 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -141,11 +141,11 @@ sub Auth {
 
             if ( $Magic eq '$apr1$' ) {
                 $CryptedPw = apache_md5_crypt( $Pw, $Salt );
-                $Method = 'unix_md5_crypt';
+                $Method = 'apache_md5_crypt';
             }
             else {
                 $CryptedPw = unix_md5_crypt( $Pw, $Salt );
-                $Method = 'apache_md5_crypt';
+                $Method = 'unix_md5_crypt';
             }
 
         }

@@ -1,6 +1,6 @@
 # --
 # AgentDashboardUserOnline.tt - provides HTML for global dashboard
-# Copyright (C) 2001-2014 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -90,12 +90,12 @@ $('a.DashboardUserOnlineChatStart').off('click').on('click', function() {
     Core.UI.Dialog.ShowContentDialog($Dialog.html(), [% Translate('Start chat') | JSON %], '100px', 'Center', true);
 
     // Only enable button if there is a message
-    $('.Dialog input[name="ChatStartFirstMessage"]').on('keyup', function(){
+    $('.Dialog textarea[name="ChatStartFirstMessage"]').on('keyup', function(){
         $('.Dialog button').prop('disabled', $(this).val().length ? false : true );
     });
 
     $('.Dialog form').on('submit', function(){
-        if (!$('.Dialog input[name=ChatStartFirstMessage]').val().length) {
+        if (!$('.Dialog textarea[name=ChatStartFirstMessage]').val().length) {
             return false;
         }
         // Close after submit

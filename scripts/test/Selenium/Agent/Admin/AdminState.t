@@ -1,6 +1,6 @@
 # --
 # AdminState.t - frontend tests for AdminState
-# Copyright (C) 2001-2014 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -163,7 +163,26 @@ $Selenium->RunTest(
             '',
             "#Comment updated value",
         );
-        }
+
+        # Since there are no tickets that rely on our test state, we can remove them again
+        # from the DB.
+        my $StateID = $Kernel::OM->Get('Kernel::System::State')->StateLookup(
+            State => $RandomID,
+        );
+        my $Success = $Kernel::OM->Get('Kernel::System::DB')->Do(
+            SQL => "DELETE FROM ticket_state WHERE id = $StateID",
+        );
+        $Self->True(
+            $Success,
+            "StateDelete - $RandomID",
+        );
+
+        # Make sure the cache is correct.
+        $Kernel::OM->Get('Kernel::System::Cache')->CleanUp(
+            Type => 'State',
+        );
+
+    }
 );
 
 1;

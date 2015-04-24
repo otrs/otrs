@@ -1,6 +1,6 @@
 # --
 # Kernel/System/DynamicField/Driver/TextArea.pm - Delegate for DynamicField TextArea Driver
-# Copyright (C) 2001-2014 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -169,8 +169,9 @@ sub EditFieldRender {
     # Notice that some browsers count new lines \n\r as only 1 character. In these cases the
     # validation framework might generate an error while the user is still capable to enter text in the
     # textarea. Otherwise the maxlenght property will prevent to enter more text than the maximum.
+    my $MaxLength = $Param{MaxLength} // $Self->{MaxLength};
     my $HTMLString = <<"EOF";
-<textarea class="$FieldClass" id="$FieldName" name="$FieldName" title="$FieldLabelEscaped" rows="$RowsNumber" cols="$ColsNumber" data-maxlength="$Self->{MaxLength}">$ValueEscaped</textarea>
+<textarea class="$FieldClass" id="$FieldName" name="$FieldName" title="$FieldLabelEscaped" rows="$RowsNumber" cols="$ColsNumber" data-maxlength="$MaxLength">$ValueEscaped</textarea>
 EOF
 
     # for client side validation
@@ -179,7 +180,7 @@ EOF
     my $ErrorMessage1 = $Param{LayoutObject}->{LanguageObject}->Translate("This field is required or");
     my $ErrorMessage2 = $Param{LayoutObject}->{LanguageObject}->Translate("The field content is too long!");
     my $ErrorMessage3
-        = $Param{LayoutObject}->{LanguageObject}->Translate( "Maximum size is %s characters.", $Self->{MaxLength} );
+        = $Param{LayoutObject}->{LanguageObject}->Translate( "Maximum size is %s characters.", $MaxLength );
 
     if ( $Param{Mandatory} ) {
         $HTMLString .= <<"EOF";
@@ -251,9 +252,8 @@ sub EditFieldValueValidate {
         $ServerError = 1;
     }
     elsif ( length $Value > $Self->{MaxLength} ) {
-        $ServerError = 1;
-        $ErrorMessage
-            = "The field content is too long! Maximum size is $Self->{MaxLength} characters.";
+        $ServerError  = 1;
+        $ErrorMessage = "The field content is too long! Maximum size is $Self->{MaxLength} characters.";
     }
     elsif (
         IsArrayRefWithData( $Param{DynamicFieldConfig}->{Config}->{RegExList} )

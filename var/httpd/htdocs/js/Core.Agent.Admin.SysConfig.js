@@ -14,19 +14,22 @@ Core.Agent = Core.Agent || {};
 Core.Agent.Admin = Core.Agent.Admin || {};
 
 /**
- * @namespace
- * @exports TargetNS as Core.Agent.Admin.SysConfig
+ * @namespace Core.Agent.Admin.SysConfig
+ * @memberof Core.Agent.Admin
+ * @author OTRS AG
  * @description
  *      This namespace contains the special module functions for the SysConfig module.
  */
 Core.Agent.Admin.SysConfig = (function (TargetNS) {
     /**
+     * @name Init
+     * @memberof Core.Agent.Admin.SysConfig
      * @function
-     * @return nothing
-     *      This function initializes the special module functions
+     * @description
+     *      Initializes SysConfig screen.
      */
     TargetNS.Init = function () {
-        $('#AdminSysConfig h3 input:checkbox').click(function () {
+        $('#AdminSysConfig h3 input[type="checkbox"]').click(function () {
             $(this).parent('h3').parent('fieldset').toggleClass('Invalid');
         });
     };

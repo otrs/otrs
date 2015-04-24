@@ -1,6 +1,6 @@
 # --
 # Kernel/Output/HTML/LayoutTicket.pm - provides generic ticket HTML output
-# Copyright (C) 2001-2014 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -904,6 +904,7 @@ sub TicketListShow {
         SelectedID  => $PageShown,
         Translation => 0,
         Data        => \%Data,
+        Sort        => 'NumericValue',
     );
 
     # nav bar at the beginning of a overview
@@ -1062,20 +1063,18 @@ sub TicketListShow {
                         %Param,
                     },
                 );
+            }
+        }    # end show column filters preferences
 
-                # check if there was stored filters, and print a link to delete them
-                if ( IsHashRefWithData( $Object->{StoredFilters} ) ) {
-                    $Env->{LayoutObject}->Block(
-                        Name => 'DocumentActionRowRemoveColumnFilters',
-                        Data => {
-                            CSS => "ContextSettings RemoveFilters",
-                            %Param,
-                        },
-                    );
-                }
-
-            }    # end show column filters preferences
-
+        # check if there was stored filters, and print a link to delete them
+        if ( IsHashRefWithData( $Object->{StoredFilters} ) ) {
+            $Env->{LayoutObject}->Block(
+                Name => 'DocumentActionRowRemoveColumnFilters',
+                Data => {
+                    CSS => "ContextSettings RemoveFilters",
+                    %Param,
+                },
+            );
         }
     }
 

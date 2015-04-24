@@ -1,6 +1,6 @@
 # --
 # Kernel/Output/HTML/DashboardStats.pm
-# Copyright (C) 2001-2014 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -623,9 +623,33 @@ sub Run {
         );
 
         my $Stat = $StatsObject->StatsGet( StatID => $StatID );
+
+        # check permission for AgentStats
+        my $StatsReg = $Kernel::OM->Get('Kernel::Config')->Get('Frontend::Module')->{'AgentStats'};
+        my $StatsPermission;
+        if ( !$StatsReg->{GroupRo} && !$StatsReg->{Group} ) {
+            $StatsPermission = 1;
+        }
+        else {
+            TYPE:
+            for my $Type (qw(GroupRo Group)) {
+                my $StatsGroups = ref $StatsReg->{$Type} eq 'ARRAY' ? $StatsReg->{$Type} : [ $StatsReg->{$Type} ];
+                GROUP:
+                for my $StatsGroup ( @{$StatsGroups} ) {
+                    next GROUP if !$StatsGroup;
+                    next GROUP if !$LayoutObject->{"UserIsGroupRo[$StatsGroup]"};
+                    next GROUP if $LayoutObject->{"UserIsGroupRo[$StatsGroup]"} ne 'Yes';
+                    $StatsPermission = 1;
+                    last TYPE;
+                }
+            }
+        }
+
+        # add download buttons if agent has permission for AgentStats
         my $StatFormat = $Stat->{Format};
         if (
-            IsArrayRefWithData($StatFormat)
+            $StatsPermission
+            && IsArrayRefWithData($StatFormat)
             && grep { $_ eq 'Print' || $_ eq 'CSV' } @{$StatFormat}
             )
         {

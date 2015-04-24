@@ -1,6 +1,6 @@
 # --
 # Kernel/System/Stats.pm - all stats core functions
-# Copyright (C) 2001-2014 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -22,6 +22,7 @@ our @ObjectDependencies = (
     'Kernel::Config',
     'Kernel::Language',
     'Kernel::System::Cache',
+    'Kernel::System::DB',
     'Kernel::System::Encode',
     'Kernel::System::Group',
     'Kernel::System::Log',
@@ -667,15 +668,15 @@ sub StatsListGet {
     }
 
     # get user groups
-    my @Groups = $Kernel::OM->Get('Kernel::System::Group')->GroupMemberList(
+    my %GroupList = $Kernel::OM->Get('Kernel::System::Group')->PermissionUserGet(
         UserID => $Self->{UserID},
         Type   => 'ro',
-        Result => 'ID',
     );
 
     my %Result;
 
     for my $StatID (@SearchResult) {
+
         my $Stat = $Self->StatsGet(
             StatID             => $StatID,
             NoObjectAttributes => 1,
@@ -683,23 +684,23 @@ sub StatsListGet {
 
         my $UserPermission = 0;
         if ( $Param{AccessRw} || $Self->{UserID} == 1 ) {
+
             $UserPermission = 1;
         }
-
-        # these function is similar like other function in the code perhaps we should
-        # merge them
-        # permission check
         elsif ( $Stat->{Valid} ) {
-            MARKE:
+
+            GROUPID:
             for my $GroupID ( @{ $Stat->{Permission} } ) {
-                for my $UserGroup (@Groups) {
-                    if ( $GroupID == $UserGroup ) {
-                        $UserPermission = 1;
-                        last MARKE;
-                    }
-                }
+
+                next GROUPID if !$GroupID;
+                next GROUPID if !$GroupList{$GroupID};
+
+                $UserPermission = 1;
+
+                last GROUPID;
             }
         }
+
         if ( $UserPermission == 1 ) {
             $Result{$StatID} = $Stat;
         }
@@ -2005,29 +2006,12 @@ sub StatsRun {
         return;
     }
 
-    # get config object
-    my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
-
-    # use the mirror db if configured
-    if ( $ConfigObject->Get('Core::MirrorDB::DSN') ) {
-        my $ExtraDatabaseObject = Kernel::System::DB->new(
-            DatabaseDSN  => $ConfigObject->Get('Core::MirrorDB::DSN'),
-            DatabaseUser => $ConfigObject->Get('Core::MirrorDB::User'),
-            DatabasePw   => $ConfigObject->Get('Core::MirrorDB::Password'),
-        );
-        if ( !$ExtraDatabaseObject ) {
-            $Kernel::OM->Get('Kernel::System::Log')->Log(
-                Priority => 'error',
-                Message  => 'There is no MirroDB!',
-            );
-            return;
-        }
-        $Self->{DBSlaveObject} = $ExtraDatabaseObject;
-    }
-
     my $Stat = $Self->StatsGet( StatID => $Param{StatID} );
     my %GetParam = %{ $Param{GetParam} };
     my @Result;
+
+    # Perform calculations on the slave DB, if configured.
+    local $Kernel::System::DB::UseSlaveDB = 1;
 
     # get data if it is a static stats
     if ( $Stat->{StatType} eq 'static' ) {

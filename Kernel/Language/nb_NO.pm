@@ -241,14 +241,14 @@ sub Data {
         'There is no acount with that user name.' => 'Det finnes ingen konto med det brukernavnet',
         'Please contact your administrator' => 'Vennligst kontakt administratoren',
         'Authentication succeeded, but no customer record is found in the customer backend. Please contact your administrator.' =>
-            '',
+            'Pålogging var vellykket, men ingen kundeoppføring er funnet i kundemodulen. Kontakt din administrator',
         'This e-mail address already exists. Please log in or reset your password.' =>
-            '',
+            'Epostadressen finnes allerede. Vennligst logg inn eller nullstill passordet ditt.',
         'Logout' => 'Logg ut',
         'Logout successful. Thank you for using %s!' => 'Utlogging utført.  Takk for at du brukte %s!',
         'Feature not active!' => 'Funksjon ikke aktivert!',
         'Agent updated!' => 'Saksbehandler oppdatert',
-        'Database Selection' => '',
+        'Database Selection' => 'Databasevalg',
         'Create Database' => 'Opprett database',
         'System Settings' => 'Systeminnstillinger',
         'Mail Configuration' => 'E-postoppsett',
@@ -262,11 +262,11 @@ sub Data {
         'Enter the password for the administrative database user.' => 'Skriv inn passordet for administrator-databasebrukeren.',
         'Enter the password for the database user.' => 'Skriv inn passordet for databasebrukeren.',
         'If you have set a root password for your database, it must be entered here. If not, leave this field empty.' =>
-            '',
+            'Hvis du har satt et root-passord for din database må det bli skrevet inn her. Hvis ikke, la dette feltet være tomt.',
         'Database already contains data - it should be empty!' => 'Databasen inneholder allerede data - den må være tom!',
         'Login is needed!' => 'Innlogging kreves',
         'It is currently not possible to login due to a scheduled system maintenance.' =>
-            '',
+            'Det er for tiden ikke mulig å logge inn på grunn et planlagt vedlikehold',
         'Password is needed!' => 'Passord er påkrevd!',
         'Take this Customer' => 'Velg denne kunden',
         'Take this User' => 'Velg denne brukeren',
@@ -364,10 +364,8 @@ sub Data {
         'Dear Mrs. %s,' => 'Kjære %s',
         'Dear %s,' => 'Kjære %s',
         'Hello %s,' => 'Hei %s',
-        'This email address already exists. Please log in or reset your password.' =>
-            'Denne e-postadressen finnes allerede. Vennligst logg inn eller nullstill passordet.',
         'This email address is not allowed to register. Please contact support staff.' =>
-            '',
+            'Denne epostadressen er ikke tillatt å registrere. Kontakt brukerstøtten.',
         'New account created. Sent login information to %s. Please check your email.' =>
             'En ny konto har blitt opprettet. Brukernavn og passord er sendt til %s. Vennligst sjekk e-posten din.',
         'Please press Back and try again.' => 'Vennligst gå tilbake og prøv på nytt',
@@ -386,11 +384,12 @@ sub Data {
         'OTRS News' => 'OTRS-nyheter',
         '7 Day Stats' => '7-dagers statistikk',
         'Process Management information from database is not in sync with the system configuration, please synchronize all processes.' =>
-            '',
+            'Prosessstyringsinformasjon fra databasen er ikke synkronisert med systemkonfigurasjon. Vennligst synkroniser alle prosesser',
         'Package not verified by the OTRS Group! It is recommended not to use this package.' =>
-            '',
+            'Pakken er ikke verifisert av OTRS-gruppen! Det er anbefalt å ikke bruke denne pakken.',
         '<br>If you continue to install this package, the following issues may occur!<br><br>&nbsp;-Security problems<br>&nbsp;-Stability problems<br>&nbsp;-Performance problems<br><br>Please note that issues that are caused by working with this package are not covered by OTRS service contracts!<br><br>' =>
-            '',
+            '<br>Hvis du fortsetter å bruke denne pakken, kan følgende skje:
+<br><br>&nbsp;-Sikkerhetsproblemer<br>&nbsp;-Stabilitetsproblemer<br>&nbsp;Ytelsesproblemer<br><br>Vær oppmerksom på at problemer forårsaket av denne pakken ikke er dekket av OTRS supportkontrakter.',
         'Mark' => 'Merk',
         'Unmark' => 'Fjern merking',
         'Bold' => 'Halvfet',
@@ -417,12 +416,26 @@ sub Data {
         'Redo' => 'Omgjør',
         'Scheduler process is registered but might not be running.' => 'Oppgaveplanlegger prosessen er registrert men kjører kanskje ikke.',
         'Scheduler is not running.' => 'Oppgaveplanleggeren kjører ikke.',
-        'Can\'t contact registration server. Please try again later.' => '',
+        'Can\'t contact registration server. Please try again later.' => 'Kan ikke kontakte registreringsserver. Prøv igjen senere.',
         'No content received from registration server. Please try again later.' =>
+            'Fikk ikke noe innhold fra registreringsserver. Prøv igjen senere.',
+        'Problems processing server result. Please try again later.' => 'Problemer med å prosessere serverresultat. Prøv igjen senere.',
+        'Username and password do not match. Please try again.' => 'Brukernavn og passord stemmer ikke overens. Prøv igjen.',
+        'The selected process is invalid!' => 'Valgt prosess er ikke gyldig!',
+        'Upgrade to %s now!' => '',
+        '%s Go to the upgrade center %s' => '',
+        'The license for your %s is about to expire. Please make contact with %s to renew your contract!' =>
             '',
-        'Problems processing server result. Please try again later.' => '',
-        'Username and password do not match. Please try again.' => '',
-        'The selected process is invalid!' => '',
+        'An update for your %s is available, but there is a conflict with your framework version! Please update your framework first!' =>
+            '',
+        'Your system was successfully upgraded to %s.' => '',
+        'There was a problem during the upgrade to %s.' => '',
+        '%s was correctly reinstalled.' => '',
+        'There was a problem reinstalling %s.' => '',
+        'Your %s was successfully updated.' => '',
+        'There was a problem during the upgrade of %s.' => '',
+        '%s was correctly uninstalled.' => '',
+        'There was a problem uninstalling %s.' => '',
 
         # Template: AAACalendar
         'New Year\'s Day' => 'Nyttårsdagen',
@@ -576,7 +589,7 @@ sub Data {
         'Operating System' => 'Operativsystem',
         'OTRS' => 'OTRS',
         'Table Presence' => '',
-        'Internal Error: Could not open file.' => '',
+        'Internal Error: Could not open file.' => 'Intern feil: Kan ikke åpne fil.',
         'Table Check' => 'Tabell sjekk',
         'Internal Error: Could not read file.' => 'Intern feil: Kan ikke lese filen.',
         'Tables found which are not present in the database.' => 'Tabeller funnet som ikke er tilgjengelig i databasen.',
@@ -585,24 +598,26 @@ sub Data {
         'Database Version' => 'Databaseversjon',
         'Could not determine database version.' => 'Kunne ikke bestemme databaseversjon.',
         'Client Connection Charset' => '',
-        'Setting character_set_client needs to be utf8.' => '',
+        'Setting character_set_client needs to be utf8.' => 'Innstillingen character_set_client må være utf8',
         'Server Database Charset' => 'Tjener databasetegnsett',
         'Setting character_set_database needs to be UNICODE or UTF8.' => 'Innstillingen character_set_database må være UNICODE eller UTF8.',
         'Table Charset' => 'Tabel tegnsett',
-        'There were tables found which do not have utf8 as charset.' => '',
-        'Maximum Query Size' => '',
+        'There were tables found which do not have utf8 as charset.' => 'Det ble funnet tabeller som ikke er satt som utf8',
+        'InnoDB Log File Size' => '',
+        'The setting innodb_log_file_size must be at least 256 MB.' => '',
+        'Maximum Query Size' => 'Maksimum størrelse på spørring',
         'The setting \'max_allowed_packet\' must be higher than 20 MB.' =>
             'Innstillingen \'max_allowed_packet\' må være større enn 20 MB.',
-        'Query Cache Size' => '',
+        'Query Cache Size' => 'Spørring mellomlagringsstørrelse',
         'The setting \'query_cache_size\' should be used (higher than 10 MB but not more than 512 MB).' =>
-            '',
+            'Innstillingen \'query_cache_size\' bør brukes (over 10MB, men ikke større enn 512MB)',
         'Default Storage Engine' => 'Standard lagringsmotor',
         'Tables with a different storage engine than the default engine were found.' =>
-            '',
+            'Tabeller med en annen lagringsmotor enn standardmotoren ble funnet',
         'MySQL 5.x or higher is required.' => 'MySQL 5.x eller høyere er nødvendig.',
-        'NLS_LANG Setting' => '',
+        'NLS_LANG Setting' => 'NLS_LANG innstilling',
         'NLS_LANG must be set to AL32UTF8 (e.g. GERMAN_GERMANY.AL32UTF8).' =>
-            '',
+            'NLS_LANG må bli satt til AL32UTF8 (f.eks. GERMAN_GERMANY.AL32UTF8).',
         'NLS_DATE_FORMAT Setting' => '',
         'NLS_DATE_FORMAT must be set to \'YYYY-MM-DD HH24:MI:SS\'.' => '',
         'NLS_DATE_FORMAT Setting SQL Check' => '',
@@ -695,6 +710,8 @@ sub Data {
             'Du bør benytte FastCGI eller mod_perl for å forbedre ytelsen.',
         'mod_deflate Usage' => 'mod_deflate status',
         'Please install mod_deflate to improve GUI speed.' => 'Vennligst installer mod_deflate for å forbedre hastigheten på GUI.',
+        'mod_filter Usage' => '',
+        'Please install mod_filter if mod_deflate is used.' => '',
         'mod_headers Usage' => 'mod_headers status',
         'Please install mod_headers to improve GUI speed.' => 'Vennligst installer mod_headers for å forbedre hastigheten på GUI.',
         'Apache::Reload Usage' => 'Apache::Reload status',
@@ -707,6 +724,7 @@ sub Data {
 
         # Template: AAATicket
         'Status View' => 'Statusvisning',
+        'Service View' => '',
         'Bulk' => 'Masseendring',
         'Lock' => 'Ta sak',
         'Unlock' => 'Frigi sak',
@@ -788,6 +806,7 @@ sub Data {
         'Forwarded message from' => 'Videresend meldingen fra',
         'End forwarded message' => 'Avslutt videresendt melding',
         'Bounce Article to a different mail address' => '',
+        'Reply to note' => '',
         'new' => 'ny',
         'open' => 'åpen',
         'Open' => 'Åpen',
@@ -849,6 +868,8 @@ sub Data {
         'Create new Email Ticket' => 'Opprett ny sak ved å sende e-post',
         'Phone-Ticket' => 'Henvendelser',
         'Search Tickets' => 'Søk i saker',
+        'Customer Realname' => '',
+        'Customer History' => '',
         'Edit Customer Users' => 'Rediger kundebrukere',
         'Edit Customer' => 'Endre kunde',
         'Bulk Action' => 'Masseredigering',
@@ -1278,6 +1299,7 @@ sub Data {
         'This event is already attached to the job, Please use a different one.' =>
             '',
         'Delete this Event Trigger' => 'Fjern denne Hendelses Utløseren',
+        'Remove selection' => '',
         'Select Tickets' => '',
         '(e. g. 10*5155 or 105658*)' => 'f.eks. 10*5144 eller 105658*',
         '(e. g. 234321)' => 'f.eks. 234321',
@@ -1691,6 +1713,69 @@ sub Data {
         'To get the first 5 lines of the body (of the latest customer article).' =>
             'For å få de første 5 linjene av meldingen (fra den siste kundesaken).',
 
+        # Template: AdminOTRSBusinessInstalled
+        'Manage %s' => '',
+        'Downgrade to OTRS Free' => '',
+        '%s makes contact regularly with cloud.otrs.com to check on available updates and the validity of the underlying contract.' =>
+            '',
+        'Unauthorized Usage Detected' => '',
+        'This system uses the %s without a proper license! Please make contact with %s to renew or activate your contract!' =>
+            '',
+        '%s not Correctly Installed' => '',
+        'Your %s is not correctly installed. Please reinstall it with the button below.' =>
+            '',
+        'Reinstall %s' => '',
+        'Your %s is not correctly installed, and there is also an update available.' =>
+            '',
+        'You can either reinstall your current version or perform an update with the buttons below (update recommended).' =>
+            '',
+        'Update %s' => '',
+        '%s Not Yet Available' => '',
+        '%s will be available soon.' => '',
+        '%s Update Available' => '',
+        'An update for your %s is available! Please update at your earliest!' =>
+            '',
+        '%s Correctly Deployed' => '',
+        'Congratulations, your %s is correctly installed and up to date!' =>
+            '',
+
+        # Template: AdminOTRSBusinessNotInstalled
+        'Upgrade to %s' => '',
+        '%s will be available soon. Please check again in a few days.' =>
+            '',
+        'Please have a look at %s for more information.' => '',
+        'Your OTRS Free is the base for all future actions. Please register first before you continue with the upgrade process of %s!' =>
+            '',
+        'Register this System' => '',
+        'System Registration is disabled for your system. Please check your configuration.' =>
+            '',
+        'Before you can benefit from %s, please contact %s to get your %s contract.' =>
+            '',
+        'Connection to cloud.otrs.com via HTTPS couldn\'t be established. Please make sure that your OTRS can connect to cloud.otrs.com via port 443.' =>
+            '',
+        'With your existing contract you can only use a small part of the %s.' =>
+            '',
+        'If you would like to take full advantage of the %s get your contract upgraded now! Contact %s.' =>
+            '',
+
+        # Template: AdminOTRSBusinessUninstall
+        'Cancel downgrade and go back' => '',
+        'Go to OTRS Package Manager' => '',
+        'Sorry, but currently you can\'t downgrade due to the following packages which depend on %s:' =>
+            '',
+        'Vendor' => 'Forhandler',
+        'Please uninstall the packages first using the package manager and try again.' =>
+            '',
+        'You are about to downgrade to OTRS Free and will lose the following features and all data related to these:' =>
+            '',
+        'Chat' => '',
+        'Timeline view in ticket zoom' => '',
+        'DynamicField ContactWithData' => '',
+        'DynamicField Database' => '',
+        'SLA Selection Dialog' => '',
+        'Ticket Attachment View' => '',
+        'The %s skin' => '',
+
         # Template: AdminPGP
         'PGP Management' => 'Administrasjon: PGP',
         'Use this feature if you want to work with PGP keys.' => 'Bruk denne funksjonen hvis du vil jobbe med PGP-nøkler',
@@ -1720,17 +1805,16 @@ sub Data {
         'Install' => 'Installer',
         'Install Package' => 'Installer pakke',
         'Update repository information' => 'Oppdater pakkelager-informasjon',
-        'Did not find a required feature? OTRS Group provides their service contract customers with exclusive Add-Ons:' =>
-            '',
         'Online Repository' => 'Pakkelager på nettet',
-        'Vendor' => 'Forhandler',
         'Module documentation' => 'Modul-dokumentasjon',
         'Upgrade' => 'Oppgrader',
         'Local Repository' => 'Lokalt pakkelager',
         'This package is verified by OTRSverify (tm)' => '',
         'Uninstall' => 'Avinstaller',
         'Reinstall' => 're-installer',
-        'Feature Add-Ons' => 'Tilleggstjenester',
+        'Features for %s customers only' => '',
+        'With %s, you can benefit from the following optional features. Please make contact with %s if you need more information.' =>
+            '',
         'Download package' => 'Last ned pakke',
         'Rebuild package' => 'Gjenoppbygg pakke',
         'Metadata' => 'Metadata',
@@ -1970,6 +2054,7 @@ sub Data {
         'Remove this Condition' => 'Slett denne tilstanden',
         'Type of Linking' => 'Koblingtype',
         'Remove this Field' => 'Fjern dette feltet',
+        'And can\'t be repeated on the same condition.' => '',
         'Add a new Field' => 'Legg til et nytt felt',
         'Add New Condition' => 'Legg til ny tilstand',
 
@@ -1988,6 +2073,7 @@ sub Data {
         'Add queue' => 'Ny kø',
         'Add Queue' => 'Legg til kø',
         'Edit Queue' => 'Endre kø',
+        'A queue with this name already exists!' => '',
         'Sub-queue of' => 'Under-kø av',
         'Unlock timeout' => 'Tidsintervall for å sette sak tilgjengelig for andre',
         '0 = no unlock' => '0 = ikke gjør saker tilgjengelig',
@@ -2031,6 +2117,7 @@ sub Data {
         # Template: AdminRegistration
         'System Registration Management' => '',
         'Edit details' => 'Endre detaljer',
+        'Show transmitted data' => '',
         'Deregister system' => '',
         'Overview of registered systems' => '',
         'System Registration' => '',
@@ -2039,6 +2126,13 @@ sub Data {
         'Unique ID' => '',
         'Last communication with registration server' => '',
         'Send support data' => '',
+        'System registration not possible' => '',
+        'Please note that you can\'t register your system if your scheduler is not running correctly!' =>
+            '',
+        'Instructions' => '',
+        'System deregistration not possible' => '',
+        'Please note that you can\'t deregister your system if you\'re using the %s or having a valid service contract.' =>
+            '',
         'OTRS-ID Login' => '',
         'System registration is a service of OTRS Group, which provides a lot of advantages!' =>
             '',
@@ -2141,6 +2235,14 @@ sub Data {
             '',
         'Deregister' => 'Avregistrere',
         'You can modify registration settings here.' => '',
+        'Overview of transmitted data' => '',
+        'There is no data regularly sent from your system to %s.' => '',
+        'The following data is sent at minimum every 3 days from your system to %s.' =>
+            '',
+        'The data will be transferred in JSON format via a secure https connection.' =>
+            '',
+        'System Registration Data' => '',
+        'Support Data' => '',
 
         # Template: AdminRole
         'Role Management' => 'Administrasjon: Roller',
@@ -2210,6 +2312,7 @@ sub Data {
 
         # Template: AdminSMIMECertRead
         'Close window' => 'Lukk vindu',
+        'Certificate details' => '',
 
         # Template: AdminSalutation
         'Salutation Management' => 'Administrasjon: Hilsninger',
@@ -2275,7 +2378,7 @@ sub Data {
         'Send by Email' => 'Send på e-post',
         'The support bundle is too large to send it by email, this option has been disabled.' =>
             '',
-        'The email address for this user is invalid, this ption has been disabled.' =>
+        'The email address for this user is invalid, this option has been disabled.' =>
             '',
         'Sending' => 'Sender',
         'The support bundle will be sent to OTRS Group via email automatically.' =>
@@ -2283,7 +2386,6 @@ sub Data {
         'Download File' => 'Last ned fil',
         'A file containing the support bundle will be downloaded to the local system. Please save the file and send it to the OTRS Group, using an alternate method.' =>
             '',
-        'Support Data' => '',
         'Error: Support data could not be collected (%s).' => '',
         'Details' => 'Detaljer',
 
@@ -2502,6 +2604,7 @@ sub Data {
         '%s closed ticket(s) of %s' => '%s lukkede sak(er) av %s',
         'New phone ticket from %s' => 'Ny telefonsak fra %s',
         'New email ticket to %s' => 'Ny e-postsak til %s',
+        'Start chat' => '',
 
         # Template: AgentDashboardProductNotify
         '%s %s is available!' => '%s %s er tilgjengelig!',
@@ -2692,6 +2795,7 @@ sub Data {
         'Please set a new owner!' => 'Vennligst sett en ny eier!',
         'Previous Owner' => 'Forrige eier',
         'Next state' => 'Neste status',
+        'For all pending* states.' => '',
         'Add Article' => '',
         'Create an Article' => '',
         'Spell check' => 'Stavekontroll',
@@ -2703,6 +2807,7 @@ sub Data {
         'Inform involved Agents' => 'Informer involverte saksbehandlere',
         'Here you can select additional agents which should receive a notification regarding the new article.' =>
             '',
+        'Note will be (also) received by:' => '',
 
         # Template: AgentTicketBounce
         'Bounce Ticket' => 'Oversend sak',
@@ -2733,8 +2838,6 @@ sub Data {
         'Remove Cc' => 'Fjern Cc',
         'Remove Bcc' => 'Fjern Bcc',
         'Address book' => 'Adressebok',
-        'Pending Date' => 'Utsatt til',
-        'for pending* states' => 'for vente-tilstander',
         'Date Invalid!' => 'Ugyldig dato',
 
         # Template: AgentTicketCustomer
@@ -2798,6 +2901,7 @@ sub Data {
         'Please include at least one customer for the ticket.' => 'Vennligst oppgi minst en kunde for denne saken',
         'To queue' => 'Til kø',
         'Chat protocol' => '',
+        'The chat will be appended as a separate article.' => '',
 
         # Template: AgentTicketPlain
         'Email Text Plain View' => 'e-post Enkel Tekstvisning',
@@ -2871,6 +2975,7 @@ sub Data {
         'Ticket Timeline View' => '',
         'Article Overview' => '',
         'Article(s)' => 'Innlegg',
+        'Page' => 'Side',
         'Add Filter' => 'Legg til filter',
         'Set' => 'Sett',
         'Reset Filter' => 'Nullstill filter',
@@ -2890,10 +2995,18 @@ sub Data {
         'Full Article Text' => '',
         'No more events found. Please try changing the filter settings.' =>
             '',
+        'To open links in the following article, you might need to press Ctrl or Cmd or Shift key while clicking the link (depending on your browser and OS).' =>
+            '',
+        'Close this message' => 'Lukk denne meldingen',
+        'Article could not be opened! Perhaps it is on another article page?' =>
+            '',
 
         # Template: AttachmentBlocker
         'To protect your privacy, remote content was blocked.' => '',
         'Load blocked content.' => 'Last inn blokkert innhold',
+
+        # Template: ChatStartForm
+        'First message' => '',
 
         # Template: CustomerError
         'Traceback' => 'Tilbakesporing',
@@ -2942,6 +3055,9 @@ sub Data {
         'You have unanswered chat requests' => '',
         'Edit personal preferences' => 'Endre personlige innstillinger',
 
+        # Template: CustomerRichTextEditor
+        'Split Quote' => '',
+
         # Template: CustomerTicketMessage
         'Service level agreement' => 'Tjenestenivåavtale',
 
@@ -2976,7 +3092,6 @@ sub Data {
 
         # Template: CustomerTicketSearchResultShort
         'of' => 'av',
-        'Page' => 'Side',
         'Search Results for' => 'Søkeresultater for',
         'Remove this Search Term.' => '',
 
@@ -3031,6 +3146,8 @@ sub Data {
 
         # Template: Header
         'You are logged in as' => 'Du er innlogget som',
+        'There are new chat requests available. Please visit the chat manager.' =>
+            '',
 
         # Template: Installer
         'JavaScript not available' => 'JavaScript er ikke tilgjengelig',
@@ -3142,9 +3259,6 @@ sub Data {
         'Insufficient Rights' => 'Utilstrekkelige rettigheter',
         'Back to the previous page' => 'Tilbake til forrige side',
 
-        # Template: Notify
-        'Close this message' => 'Lukk denne meldingen',
-
         # Template: Pagination
         'Show first page' => 'Vis første side',
         'Show previous pages' => 'Vis foregående sider',
@@ -3168,13 +3282,16 @@ sub Data {
         'Go back to the previous page' => 'Tilbake til forrige side',
 
         # SysConfig
+        ' (work units)' => '',
         '"%s"-notification sent to "%s".' => '«%s»-varsling sendt til «%s».',
         '%s' => '%s',
         '%s time unit(s) accounted. Now total %s time unit(s).' => '%s minutt(er) lagt til. Total tid er %s minutt(er).',
         '(UserLogin) Firstname Lastname' => '(Brukernavn) Fornavn Etternavn',
         '(UserLogin) Lastname, Firstname' => '',
+        'A Website' => '',
         'A list of dynamic fields that are merged into the main ticket during a merge operation. Only dynamic fields that are empty in the main ticket will be set.' =>
             '',
+        'A picture' => '',
         'ACL module that allows closing parent tickets only if all its children are already closed ("State" shows which states are not available for the parent ticket until all child tickets are closed).' =>
             'ACL-modul som lar en stenge overordnede saker kun hvis alle undersakene deres har blitt stengte ("Status" viser hvilke statuser som ikke er tilgjengelige inntil alle undersaker er stengte).',
         'Access Control Lists (ACL)' => '',
@@ -3223,8 +3340,8 @@ sub Data {
             'Saksbehandlermodul som gir tilgang til søkeprofiler via navigasjonsområdet.',
         'Agent interface module to check incoming emails in the Ticket-Zoom-View if the S/MIME-key is available and true.' =>
             'Saksbehandlermodul som sjekker innkommende e-post i Zoom-visning dersom S/MIME-nøkkelen er tilgjengelig og korrekt.',
-        'Agent interface notification module to check the used charset.' =>
-            'Saksbehandlermodul som sjekker tegnsettet som er brukt.',
+        'Agent interface notification module to see the number of locked tickets.' =>
+            '',
         'Agent interface notification module to see the number of tickets an agent is responsible for.' =>
             'Saksbehandlermodul som viser antall saker en saksbehandler er ansvarlig for',
         'Agent interface notification module to see the number of tickets in My Services.' =>
@@ -3358,6 +3475,7 @@ sub Data {
         'Columns that can be filtered in the watch view of the agent interface. Possible settings: 0 = Disabled, 1 = Available, 2 = Enabled by default. Note: Only Ticket attributes and Dynamic Fields (DynamicField_NameX) are allowed.' =>
             '',
         'Comment for new history entries in the customer interface.' => 'Kommentar for nye historiske innlegg i kundeportalen.',
+        'Comment2' => '',
         'Company Status' => 'Bedriftstatus',
         'Company Tickets' => 'Bedriftsaker',
         'Company name which will be included in outgoing emails as an X-Header.' =>
@@ -3403,6 +3521,7 @@ sub Data {
         'Create new email ticket and send this out (outbound)' => 'Opprett en ny e-post-sak og send (utgående)',
         'Create new phone ticket (inbound)' => 'Opprett en ny telefonhenvendelse (innkommende)',
         'Create new process ticket' => '',
+        'Custom RSS Feed' => '',
         'Custom text for the page shown to customers that have no tickets yet (if you need those text translated add them to a custom translation module).' =>
             '',
         'Customer Administration' => '',
@@ -3416,6 +3535,8 @@ sub Data {
         'Customer item (icon) which shows the open tickets of this customer as info block. Setting CustomerUserLogin to 1 searches for tickets based on login name rather than CustomerID.' =>
             '',
         'Customer request via web.' => 'Kundeforespørsel via web.',
+        'Customer user search' => '',
+        'CustomerID search' => '',
         'CustomerName' => 'Kundenavn',
         'Customers <-> Groups' => 'Kunder <-> Grupper',
         'Data used to export the search result in CSV format.' => 'Data brukt for å eksportere søkeresultatet i CSV-format.',
@@ -3448,6 +3569,9 @@ sub Data {
         'Define dynamic field name for start time. This field has to be manually added to the system as Ticket: "Date / Time" and must be activated in ticket creation screens and/or in any other ticket action screens.' =>
             '',
         'Define the max depth of queues.' => '',
+        'Define the queue comment 2.' => '',
+        'Define the service comment 2.' => '',
+        'Define the sla comment 2.' => '',
         'Define the start day of the week for the date picker for the indicated calendar.' =>
             '',
         'Define the start day of the week for the date picker.' => 'Setter dag for ukestart i datovelgeren.',
@@ -3869,6 +3993,8 @@ sub Data {
         'Defines the module that shows the currently loged in customers in the customer interface.' =>
             '',
         'Defines the module to authenticate customers.' => 'Definerer modulen for å autentisere kunder.',
+        'Defines the module to display a notification in different interfaces on different occasions for OTRS Business Solution™.' =>
+            '',
         'Defines the module to display a notification in the agent interface if the scheduler is not running.' =>
             '',
         'Defines the module to display a notification in the agent interface, if the agent is logged in while having out-of-office active.' =>
@@ -3968,7 +4094,7 @@ sub Data {
         'Defines the postmaster default queue.' => '',
         'Defines the priority in which the information is logged and presented.' =>
             '',
-        'Defines the receipent target of the phone ticket and the sender of the email ticket ("Queue" shows all queues, "SystemAddress" displays all system addresses) in the agent interface.' =>
+        'Defines the receipent target of the phone ticket and the sender of the email ticket ("Queue" shows all queues, "System address" displays all system addresses) in the agent interface.' =>
             '',
         'Defines the receipent target of the tickets ("Queue" shows all queues, "SystemAddress" displays all system addresses) in the customer interface.' =>
             '',
@@ -4049,6 +4175,7 @@ sub Data {
         'Deletes a session if the session id is used with an invalid remote IP address.' =>
             '',
         'Deletes requested sessions if they have timed out.' => '',
+        'Deploy and manage OTRS Business Solution™.' => '',
         'Determines if the list of possible queues to move to ticket into should be displayed in a dropdown list or in a new window in the agent interface. If "New Window" is set you can add a move note to the ticket.' =>
             '',
         'Determines if the statistics module may generate ticket lists.' =>
@@ -4200,6 +4327,7 @@ sub Data {
         'Escalation update time forewarned' => '',
         'Escalation update time in effect' => '',
         'Escalation view' => 'Eskaleringsvisning',
+        'EscalationTime' => '',
         'Event module registration. For more performance you can define a trigger event (e. g. Event => TicketCreate).' =>
             '',
         'Event module registration. For more performance you can define a trigger event (e. g. Event => TicketCreate). This is only possible if all Ticket dynamic fields need the same event.' =>
@@ -4235,6 +4363,7 @@ sub Data {
         'Filter for debugging Transitions. Note: More filters can be added in the format <OTRS_TICKET_Attribute> e.g. <OTRS_TICKET_Priority>.' =>
             '',
         'Filter incoming emails.' => 'Filtrering av innkommende e-poster',
+        'First Queue' => '',
         'FirstLock' => 'FørsteLås',
         'FirstResponse' => 'FørsteTilbakemelding',
         'FirstResponseDiffInMin' => 'FørsteTilbakemeldingDiffIMin',
@@ -4262,6 +4391,7 @@ sub Data {
         'Frontend module registration for the customer interface.' => '',
         'Frontend theme' => 'Nettsidetema',
         'Fulltext index regex filters to remove parts of the text.' => '',
+        'Fulltext search' => '',
         'General ticket data shown in the ticket overviews (fall-back). Possible settings: 0 = Disabled, 1 = Available, 2 = Enabled by default. Note that TicketNumber can not be disabled, because it is necessary.' =>
             '',
         'GenericAgent' => 'Administrasjon: Generisk Saksbehandler',
@@ -4387,6 +4517,8 @@ sub Data {
             'Hvis slått på vil telefonsak og e-postsak bli åpnet i nye vinduer.',
         'If enabled, the OTRS version tag will be removed from the Webinterface, the HTTP headers and the X-Headers of outgoing mails.' =>
             '',
+        'If enabled, the customer can search for tickets in all services (regardless what services are assigned to the customer).' =>
+            '',
         'If enabled, the different overviews (Dashboard, LockedView, QueueView) will automatically refresh after the specified time.' =>
             'Hvis slått på vil de forskjellige oversiktene (Kontrollpanel, kø-oversikt, osv.) automatisk oppdateres etter angitt tid.',
         'If enabled, the first level of the main menu opens on mouse hover (instead of click only).' =>
@@ -4424,6 +4556,7 @@ sub Data {
             '',
         'Lastname, Firstname' => 'Etternavn, Fornavn',
         'Lastname, Firstname (UserLogin)' => 'Etternavn, Fornavn (Brukernavn)',
+        'Left' => '',
         'Link agents to groups.' => 'Koble saksbehandlere til grupper',
         'Link agents to roles.' => 'Koble saksbehandlere til roller',
         'Link attachments to templates.' => 'Koble vedlegg til maler',
@@ -4456,6 +4589,7 @@ sub Data {
         'List of all ticket events to be displayed in the GUI.' => '',
         'List of default Standard Templates which are assigned automatically to new Queues upon creation.' =>
             '',
+        'List view' => '',
         'Locked ticket.' => 'Sak satt som privat.',
         'Log file for the ticket counter.' => 'Loggfil for sakstelleren',
         'Loop-Protection! No auto-response sent to "%s".' => 'Loop-Protection! No auto-response sent to «%s».',
@@ -4538,6 +4672,7 @@ sub Data {
             '',
         'NameX' => '',
         'New Ticket [%s] created (Q=%s;P=%s;S=%s).' => 'Ny sak [%s] opprettet (Q=%s;P=%s;S=%s).',
+        'New Window' => '',
         'New email ticket' => 'Ny e-postsak',
         'New owner is "%s" (ID=%s).' => 'Ny saksbehandler er «%s» (ID=%s).',
         'New phone ticket' => 'Ny telefonsak',
@@ -4548,6 +4683,7 @@ sub Data {
         'Next possible ticket states after adding a phone note in the ticket phone outbound screen of the agent interface.' =>
             '',
         'No Notification' => 'Ingen varsling',
+        'None' => '',
         'Notification sent to "%s".' => 'Varsling sendt til «%s».',
         'Notifications (Event)' => 'Varslinger (Hendelse)',
         'Number of displayed tickets' => 'Antall viste saker',
@@ -4558,6 +4694,7 @@ sub Data {
         'Number of tickets to be displayed in each page of a search result in the customer interface.' =>
             'Antall saker som vises per side i et søkeresultat i kundeportalen.',
         'Old: "%s" New: "%s"' => 'Gammel: «%s» Ny: «%s»',
+        'Online' => '',
         'Open tickets (customer user)' => 'Åpne saker (kunde-bruker)',
         'Open tickets (customer)' => 'Åpne saker (kunder)',
         'Out Of Office' => '',
@@ -4698,13 +4835,17 @@ sub Data {
             'Gjenoppretter en sak fra arkivet (kun hvis hendelsen er en statusendring, fra avsluttet til en vilkårlig åpen/tilgjengelig status).',
         'Retains all services in listings even if they are children of invalid elements.' =>
             '',
+        'Right' => '',
         'Roles <-> Groups' => 'Roller <-> Grupper',
         'Running Process Tickets' => '',
+        'Runs an initial wildcard search of the existing customer company when accessing the AdminCustomerCompany module.' =>
+            '',
         'Runs an initial wildcard search of the existing customer users when accessing the AdminCustomerUser module.' =>
             '',
         'Runs the system in "Demo" mode. If set to "Yes", agents can change preferences, such as selection of language and theme via the agent web interface. These changes are only valid for the current session. It will not be possible for agents to change their passwords.' =>
             '',
         'S/MIME Certificate Upload' => 'Opplasting av S/MIME-sertifikat',
+        'Sample command output' => '',
         'Saves the attachments of articles. "DB" stores all data in the database (not recommended for storing big attachments). "FS" stores the data on the filesystem; this is faster but the webserver should run under the OTRS user. You can switch between the modules even on a system that is already in production without any loss of data.' =>
             '',
         'Schedule a maintenance period.' => '',
@@ -4712,6 +4853,7 @@ sub Data {
         'Search User' => 'Søk etter bruker',
         'Search backend default router.' => '',
         'Search backend router.' => '',
+        'Second Queue' => '',
         'Select your frontend Theme.' => 'Velg tema for webvisningen.',
         'Selects the cache backend to use.' => '',
         'Selects the module to handle uploads via the web interface. "DB" stores all uploads in the database, "FS" uses the file system.' =>
@@ -5117,6 +5259,8 @@ sub Data {
         'Skin' => 'Webtema',
         'SolutionDiffInMin' => '',
         'SolutionInMin' => '',
+        'Some description!' => '',
+        'Some picture description!' => '',
         'Sorts the tickets (ascendingly or descendingly) when a single queue is selected in the queue view and after the tickets are sorted by priority. Values: 0 = ascending (oldest on top, default), 1 = descending (youngest on top). Use the QueueID for the key and 0 or 1 for value.' =>
             '',
         'Sorts the tickets (ascendingly or descendingly) when a single queue is selected in the service view and after the tickets are sorted by priority. Values: 0 = ascending (oldest on top, default), 1 = descending (youngest on top). Use the ServiceID for the key and 0 or 1 for value.' =>
@@ -5175,6 +5319,8 @@ sub Data {
         'Specifies whether all storage backends should be checked when looking for attachements. This is only required for installations where some attachements are in the file system, and others in the database.' =>
             '',
         'Specify how many sub directory levels to use when creating cache files. This should prevent too many cache files being in one directory.' =>
+            '',
+        'Specify the channel to be used to fetch OTRS Business Solution™ updates. Warning: Development releases might not be complete, your system might experience unrecoverable errors and on extreme cases could become unresponsive!' =>
             '',
         'Standard available permissions for agents within the application. If more permissions are needed, they can be entered here. Permissions must be defined to be effective. Some other good permissions have also been provided built-in: note, close, pending, customer, freetext, move, compose, responsible, forward, and bounce. Make sure that "rw" is always the last registered permission.' =>
             'Standard tilgjengelige rettigheter for saksbehandlere i systemet. Hvis flere rettigheter trengs kan de skrives inn her. Noen andre fine rettigheter finnes også innebygde: note, close, pending, customer, freetext, move, compose, responsible, forward og bounce. Pass på at "rw" alltid er den siste i listen.',
@@ -5259,6 +5405,9 @@ sub Data {
         'Toggles display of OTRS FeatureAddons list in PackageManager.' =>
             '',
         'Toolbar Item for a shortcut.' => '',
+        'Tree view' => '',
+        'Turns off SSL certificate validation, for example if you use a transparent HTTPS proxy. Use at your own risk!' =>
+            '',
         'Turns on drag and drop for the main navigation.' => '',
         'Turns on the animations used in the GUI. If you have problems with these animations (e.g. performance issues), you can turn them off here.' =>
             '',
@@ -5296,6 +5445,7 @@ sub Data {
         'When tickets are merged, the customer can be informed per email by setting the check box "Inform Sender". In this text area, you can define a pre-formatted text which can later be modified by the agents.' =>
             '',
         'Write a new, outgoing mail' => '',
+        'Yes, but hide archived tickets' => '',
         'Your queue selection of your favorite queues. You also get notified about those queues via email if enabled.' =>
             'Her velger du dine utvalgte køer. Du vil også få varslinger fra disse køene, hvis du har valgt det.',
         'Your service selection of your favorite services. You also get notified about those services via email if enabled.' =>

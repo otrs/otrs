@@ -1,10 +1,12 @@
 # 
 # Translators:
+# David Krotil <david.krotil@krotilovi.cz>, 2015
+# Tomas Reznicek <tomas.reznicek@gmail.com>, 2015
 msgid ""
 msgstr ""
 "Project-Id-Version: OTRS\n"
 "POT-Creation-Date: 2014-08-08 19:10+0200\n"
-"PO-Revision-Date: 2014-11-13 04:56+0000\n"
+"PO-Revision-Date: 2015-04-10 03:43+0000\n"
 "Last-Translator: Carlos Rodríguez <carlos.rodriguez@otrs.com>\n"
 "Language-Team: Czech (http://www.transifex.com/projects/p/OTRS/language/cs/)\n"
 "MIME-Version: 1.0\n"
@@ -63,31 +65,31 @@ msgstr "Storno"
 
 #. Template: AAABase
 msgid "Reset"
-msgstr ""
+msgstr "Vyresetovat"
 
 #. Template: AAABase
 msgid "more than ... ago"
-msgstr ""
+msgstr "více než ... nazpět"
 
 #. Template: AAABase
 msgid "in more than ..."
-msgstr ""
+msgstr "za více než ..."
 
 #. Template: AAABase
 msgid "within the last ..."
-msgstr ""
+msgstr "během posledních ..."
 
 #. Template: AAABase
 msgid "within the next ..."
-msgstr ""
+msgstr "během příštího"
 
 #. Template: AAABase
 msgid "Created within the last"
-msgstr ""
+msgstr "Vytvořeno během posledních"
 
 #. Template: AAABase
 msgid "Created more than ... ago"
-msgstr ""
+msgstr "Vytvořeno více než ... nazpět"
 
 #. Template: AAABase
 msgid "Today"
@@ -115,7 +117,7 @@ msgstr "den(dní)"
 
 #. Template: AAABase
 msgid "d"
-msgstr ""
+msgstr "d"
 
 #. Template: AAABase
 msgid "hour"
@@ -151,11 +153,11 @@ msgstr "minut(a)(y)"
 
 #. Template: AAABase
 msgid "Minutes"
-msgstr ""
+msgstr "Minut"
 
 #. Template: AAABase
 msgid "m"
-msgstr ""
+msgstr "m"
 
 #. Template: AAABase
 msgid "month"
@@ -191,23 +193,23 @@ msgstr "rok(y)"
 
 #. Template: AAABase
 msgid "second(s)"
-msgstr "vteřina(y)"
+msgstr "sekunda(y)"
 
 #. Template: AAABase
 msgid "seconds"
-msgstr "vteřin"
+msgstr "sekund"
 
 #. Template: AAABase
 msgid "second"
-msgstr "vteřina"
+msgstr "sekunda"
 
 #. Template: AAABase
 msgid "s"
-msgstr ""
+msgstr "s"
 
 #. Template: AAABase
 msgid "Time unit"
-msgstr ""
+msgstr "Časové jednotky"
 
 #. Template: AAABase
 msgid "wrote"
@@ -223,7 +225,7 @@ msgstr "Chyba"
 
 #. Template: AAABase
 msgid "Bug Report"
-msgstr "Upozornění na chybu"
+msgstr "Hlášení o chybě"
 
 #. Template: AAABase
 msgid "Attention"
@@ -239,7 +241,7 @@ msgstr "Modul"
 
 #. Template: AAABase
 msgid "Modulefile"
-msgstr "Modulový soubor"
+msgstr "Soubor modulu"
 
 #. Template: AAABase
 msgid "Subfunction"
@@ -279,7 +281,7 @@ msgstr "neplatný"
 
 #. Template: AAABase
 msgid "Invalid"
-msgstr ""
+msgstr "Chybný"
 
 #. Template: AAABase
 msgid "* invalid"
@@ -355,7 +357,7 @@ msgstr "prosíme neupravovat!"
 
 #. Template: AAABase
 msgid "Need Action"
-msgstr ""
+msgstr "Vyžaduje akci"
 
 #. Template: AAABase
 msgid "AddLink"
@@ -459,19 +461,19 @@ msgstr "Podpisy"
 
 #. Template: AAABase
 msgid "Customer"
-msgstr "Klient"
+msgstr "Zákazník"
 
 #. Template: AAABase
 msgid "CustomerID"
-msgstr "ID klienta"
+msgstr "ID zákazníka"
 
 #. Template: AAABase
 msgid "CustomerIDs"
-msgstr "ID klienta"
+msgstr "ID zákazníka"
 
 #. Template: AAABase
 msgid "customer"
-msgstr "klient"
+msgstr "zákazník"
 
 #. Template: AAABase
 msgid "agent"
@@ -483,15 +485,15 @@ msgstr "systém"
 
 #. Template: AAABase
 msgid "Customer Info"
-msgstr "Informace o klientovi"
+msgstr "Informace o zákazníkovi"
 
 #. Template: AAABase
 msgid "Customer Information"
-msgstr "Informace o klientovi"
+msgstr "Informace o zákazníkovi"
 
 #. Template: AAABase
 msgid "Customer Companies"
-msgstr ""
+msgstr "Zákazníkovi společnosti"
 
 #. Template: AAABase
 msgid "Company"
@@ -627,7 +629,7 @@ msgstr "mezi"
 
 #. Template: AAABase
 msgid "before/after"
-msgstr ""
+msgstr "před/po"
 
 #. Template: AAABase
 msgid "Fulltext Search"
@@ -635,7 +637,7 @@ msgstr "Fulltextové vyhledávání"
 
 #. Template: AAABase
 msgid "Data"
-msgstr ""
+msgstr "Data"
 
 #. Template: AAABase
 msgid "Options"
@@ -643,7 +645,7 @@ msgstr "Možnosti"
 
 #. Template: AAABase
 msgid "Title"
-msgstr "Nadpis"
+msgstr "Název"
 
 #. Template: AAABase
 msgid "Item"
@@ -655,7 +657,7 @@ msgstr "Vymazat"
 
 #. Template: AAABase
 msgid "Edit"
-msgstr "Editovat"
+msgstr "Upravit"
 
 #. Template: AAABase
 msgid "View"
@@ -723,23 +725,23 @@ msgstr "Velký"
 
 #. Template: AAABase
 msgid "Date picker"
-msgstr ""
+msgstr "Výběr data"
 
 #. Template: AAABase
 msgid "Show Tree Selection"
-msgstr ""
+msgstr "Ukázat stromový výběr"
 
 #. Template: AAABase
 msgid "The field content is too long!"
-msgstr ""
+msgstr "Obsah pole je příliš dlouhý!"
 
 #. Template: AAABase
 msgid "Maximum size is %s characters."
-msgstr ""
+msgstr "Maximální velikost je s% znaků."
 
 #. Template: AAABase
 msgid "This field is required or"
-msgstr ""
+msgstr "Toto pole je povinné nebo"
 
 #. Template: AAABase
 msgid "New message"
@@ -771,7 +773,7 @@ msgstr "Změňte si heslo."
 
 #. Template: AAABase
 msgid "Please activate %s first!"
-msgstr ""
+msgstr "Prosím aktivujte nejdříve %s "
 
 #. Template: AAABase
 msgid "No suggestions"
@@ -799,22 +801,22 @@ msgstr "Přihlášení neúspěšné! Vaše uživatelské jméno či heslo bylo 
 
 #. Template: AAABase
 msgid "There is no acount with that user name."
-msgstr ""
+msgstr "Neexistuje účet s tímto uživatelským jménem"
 
 #. Template: AAABase
 msgid "Please contact your administrator"
-msgstr ""
+msgstr "Prosím kontaktujte svého administrátora"
 
 #. Template: AAABase
 msgid ""
 "Authentication succeeded, but no customer record is found in the customer "
 "backend. Please contact your administrator."
-msgstr ""
+msgstr "Přihlášení bylo úspěšné, ale neexistuje žádný zákaznický záznam v zákaznické sekci. Prosím kontaktujte vašeho správce."
 
 #. Template: AAABase
 msgid ""
 "This e-mail address already exists. Please log in or reset your password."
-msgstr ""
+msgstr "Tato emailová adresa již existuje. Prosím přihlašte se nebo vyresetujte své heslo."
 
 #. Template: AAABase
 msgid "Logout"
@@ -830,15 +832,15 @@ msgstr "Funkce je neaktivní!"
 
 #. Template: AAABase
 msgid "Agent updated!"
-msgstr ""
+msgstr "Operátor aktualizován!"
 
 #. Template: AAABase
 msgid "Database Selection"
-msgstr ""
+msgstr "Výběr databáze"
 
 #. Template: AAABase
 msgid "Create Database"
-msgstr "Vytvořit Databazi"
+msgstr "Vytvořit Databázi"
 
 #. Template: AAABase
 msgid "System Settings"
@@ -878,21 +880,21 @@ msgstr "Databáze smazána."
 
 #. Template: AAABase
 msgid "Enter the password for the administrative database user."
-msgstr ""
+msgstr "Zadejte heslo pro administrátora databáze."
 
 #. Template: AAABase
 msgid "Enter the password for the database user."
-msgstr ""
+msgstr "Zadejte heslo pro uživatele databáze."
 
 #. Template: AAABase
 msgid ""
 "If you have set a root password for your database, it must be entered here. "
 "If not, leave this field empty."
-msgstr ""
+msgstr "Pokud jste nastavili heslo root-a pro vaši databázi, musíte jej zde zadat. Pokud ne, tak nechte toto pole prázdné."
 
 #. Template: AAABase
 msgid "Database already contains data - it should be empty!"
-msgstr ""
+msgstr "Databáze obsahuje data - měla by být prázdná."
 
 #. Template: AAABase
 msgid "Login is needed!"
@@ -901,7 +903,7 @@ msgstr "Vyžadováno přihlášení!"
 #. Template: AAABase
 msgid ""
 "It is currently not possible to login due to a scheduled system maintenance."
-msgstr ""
+msgstr "Z důvodu pravidelné údržby systému se není možné aktuálně přihlásit."
 
 #. Template: AAABase
 msgid "Password is needed!"
@@ -943,7 +945,7 @@ msgstr "Čekání na vyřízení do"
 msgid ""
 "Don't use the Superuser account to work with OTRS! Create new Agents and "
 "work with these accounts instead."
-msgstr ""
+msgstr "Pro běžnou práci v OTRS nepoužívejte Superuživatele. Vytvořte nové Uživatele a pracujte místo toho s nimi."
 
 #. Template: AAABase
 msgid "Dispatching by email To: field."
@@ -995,7 +997,7 @@ msgstr "Nemohu vytvořit %s!"
 
 #. Template: AAABase
 msgid "Check to activate this date"
-msgstr ""
+msgstr "Označte k aktivaci tohoto data"
 
 #. Template: AAABase
 msgid "You have Out of Office enabled, would you like to disable it?"
@@ -1003,7 +1005,7 @@ msgstr "Máte nastaveno \"Mimo kancelář\". Přejete si to vypnout?"
 
 #. Template: AAABase
 msgid "News about OTRS releases!"
-msgstr ""
+msgstr "Novinky o OTRS verzích!"
 
 #. Template: AAABase
 msgid "Customer %s added"
@@ -1067,15 +1069,15 @@ msgstr "Zákazník aktualizován!"
 
 #. Template: AAABase
 msgid "Customer company added!"
-msgstr ""
+msgstr "Přidána zákazníkova společnost!"
 
 #. Template: AAABase
 msgid "Customer company updated!"
-msgstr ""
+msgstr "Zákazníkova společnosti aktualizována!"
 
 #. Template: AAABase
 msgid "Note: Company is invalid!"
-msgstr ""
+msgstr "Upozornění: Společnost je chybná!"
 
 #. Template: AAABase
 msgid "Mail account added!"
@@ -1119,7 +1121,7 @@ msgstr "Název souboru"
 
 #. Template: AAABase
 msgid "Type"
-msgstr "Typ Tiketu"
+msgstr "Typ"
 
 #. Template: AAABase
 msgid "Size"
@@ -1127,7 +1129,7 @@ msgstr "Velikost"
 
 #. Template: AAABase
 msgid "Upload"
-msgstr ""
+msgstr "Nahrát na server"
 
 #. Template: AAABase
 msgid "Directory"
@@ -1225,27 +1227,27 @@ msgstr "Bezpečnostní poznámka: Aktivujte %s protože aplikace stále běží!
 
 #. Template: AAABase
 msgid "Unable to parse repository index document."
-msgstr ""
+msgstr "Nebylo možno načíst dokument indexu repozitáře"
 
 #. Template: AAABase
 msgid ""
 "No packages for your framework version found in this repository, it only "
 "contains packages for other framework versions."
-msgstr ""
+msgstr "Nebyly nalezeny balíčky pro vaši verzi frameworku v tomto repozitáři, pouze obsahuje balíčky pro jiné verze frameworku."
 
 #. Template: AAABase
 msgid "No packages, or no new packages, found in selected repository."
-msgstr ""
+msgstr "Nebyly nalezeny žádné nebo žádné nové baličky pro vybraný repozitář."
 
 #. Template: AAABase
 msgid "Edit the system configuration settings."
-msgstr ""
+msgstr "Editace systémových nastavení."
 
 #. Template: AAABase
 msgid ""
 "ACL information from database is not in sync with the system configuration, "
 "please deploy all ACLs."
-msgstr ""
+msgstr "ACL informace z databáze nejsou synchronizované se systémovými nastaveními, prosím aktualizujte všechny ACL."
 
 #. Template: AAABase
 msgid "printed at"
@@ -1273,18 +1275,13 @@ msgstr "Dobrý den %s,"
 
 #. Template: AAABase
 msgid ""
-"This email address already exists. Please log in or reset your password."
-msgstr ""
-
-#. Template: AAABase
-msgid ""
 "This email address is not allowed to register. Please contact support staff."
-msgstr ""
+msgstr "Tato emailová adresa nemá povolení pro registraci. Prosím kontaktute technickou podporu."
 
 #. Template: AAABase
 msgid ""
 "New account created. Sent login information to %s. Please check your email."
-msgstr ""
+msgstr "Byl vytvořen nový účet. Odeslány přihlašovací údaje na %s. Prosím zkontrolujte svojí emailovou schránku."
 
 #. Template: AAABase
 msgid "Please press Back and try again."
@@ -1292,11 +1289,11 @@ msgstr "Prosím klikněte na \"Zpět\" a opakujte pokus"
 
 #. Template: AAABase
 msgid "Sent password reset instructions. Please check your email."
-msgstr ""
+msgstr "Odeslány instrukce pro obnovu hesla, Prosím zkontrolujte svojí emailovou schránku."
 
 #. Template: AAABase
 msgid "Sent new password to %s. Please check your email."
-msgstr ""
+msgstr "Odesláno nové heslo na %s. Prosím zkontrolujte svojí emailovou schránku."
 
 #. Template: AAABase
 msgid "Upcoming Events"
@@ -1328,7 +1325,7 @@ msgstr "Zobrazeno"
 
 #. Template: AAABase
 msgid "Shown customer users"
-msgstr ""
+msgstr "Zobrazeni uživatelé zákazníka"
 
 #. Template: AAABase
 msgid "News"
@@ -1350,13 +1347,13 @@ msgstr "Statistiky za 7 dnů"
 msgid ""
 "Process Management information from database is not in sync with the system "
 "configuration, please synchronize all processes."
-msgstr ""
+msgstr "Informace Správy procesů získaná z databáze není synchronizována se systémovou konfigurací, prosím synchronizujte všechny procesy."
 
 #. Template: AAABase
 msgid ""
 "Package not verified by the OTRS Group! It is recommended not to use this "
 "package."
-msgstr ""
+msgstr "Balíček není zkontrolován OTRS Group! Není doporučeno jeho používání."
 
 #. Template: AAABase
 msgid ""
@@ -1365,15 +1362,15 @@ msgid ""
 "problems<br>&nbsp;-Performance problems<br><br>Please note that issues that "
 "are caused by working with this package are not covered by OTRS service "
 "contracts!<br><br>"
-msgstr ""
+msgstr "<br>Pokud budete dále instalovat tento balíček, následující problémy se mohou vyskytnout!<br><br>&nbsp;-Bezpečnostní problémy<br>&nbsp;-Problémy se stabilitou<br>&nbsp;-Výkonnostní problémy<br><br>Prosím uvědomte si, že problémy způsobené prací s tímto balíčkem nebudou řešeny v rámci OTRS servisní smlouvy!<br><br>"
 
 #. Template: AAABase
 msgid "Mark"
-msgstr ""
+msgstr "Označit"
 
 #. Template: AAABase
 msgid "Unmark"
-msgstr ""
+msgstr "Zrušit označení"
 
 #. Template: AAABase
 msgid "Bold"
@@ -1465,55 +1462,111 @@ msgstr "Znovuobnovit"
 
 #. Template: AAABase
 msgid "Scheduler process is registered but might not be running."
-msgstr ""
+msgstr "Proces plánovače je registrován, ale zřejmě neběží."
 
 #. Template: AAABase
 msgid "Scheduler is not running."
+msgstr "Proces plánovače neběží."
+
+#. Template: AAABase
+msgid "All sessions have been killed, except for your own."
 msgstr ""
 
 #. Template: AAABase
 msgid "Can't contact registration server. Please try again later."
-msgstr ""
+msgstr "Nemohu kontaktovat registrační server. Prosím zkuste to později."
 
 #. Template: AAABase
 msgid "No content received from registration server. Please try again later."
-msgstr ""
+msgstr "Nebyla obdržena data z registračního serveru. Prosím zkuste to později."
 
 #. Template: AAABase
 msgid "Problems processing server result. Please try again later."
-msgstr ""
+msgstr "Objevily se problémy se zpracováním výsledků serveru. Prosím zkuste to později."
 
 #. Template: AAABase
 msgid "Username and password do not match. Please try again."
-msgstr ""
+msgstr "Uživatel a heslo nesouhlasí. Zkuste to prosím znovu."
 
 #. Template: AAABase
 msgid "The selected process is invalid!"
-msgstr ""
+msgstr "Vybraný proces je chybný."
+
+#. Template: AAABase
+msgid "Upgrade to %s now!"
+msgstr "Aktualizujte %s nyní !"
+
+#. Template: AAABase
+msgid "%s Go to the upgrade center %s"
+msgstr "%s Přejděte do aktualizačního centra %s"
+
+#. Template: AAABase
+msgid ""
+"The license for your %s is about to expire. Please make contact with %s to "
+"renew your contract!"
+msgstr "Vaše %s license právě vyprší. Prosím kontaktujte %s , aby jste mohli obnovit váš kontrakt."
+
+#. Template: AAABase
+msgid ""
+"An update for your %s is available, but there is a conflict with your "
+"framework version! Please update your framework first!"
+msgstr "Je dostupná aktualizace pro váš s%, ale je v konfliktu s vaší verzi frameworku! Prosím aktualizujte nejdříve framework!"
+
+#. Template: AAABase
+msgid "Your system was successfully upgraded to %s."
+msgstr "Váš systém byl úspěšně aktualizován na %s."
+
+#. Template: AAABase
+msgid "There was a problem during the upgrade to %s."
+msgstr "Objevil se problém během aktualizace na %s."
+
+#. Template: AAABase
+msgid "%s was correctly reinstalled."
+msgstr "%s byl korektně přeinstalován."
+
+#. Template: AAABase
+msgid "There was a problem reinstalling %s."
+msgstr "Objevil se problém během přeinstalace %s."
+
+#. Template: AAABase
+msgid "Your %s was successfully updated."
+msgstr "Vaše %s byla uspěšně aktualizována."
+
+#. Template: AAABase
+msgid "There was a problem during the upgrade of %s."
+msgstr "Objevil se problém během aktualizace na %s."
+
+#. Template: AAABase
+msgid "%s was correctly uninstalled."
+msgstr "%s byl korektně odinstalován."
+
+#. Template: AAABase
+msgid "There was a problem uninstalling %s."
+msgstr "Objevil se problém při odinstalaci %s."
 
 #. Template: AAACalendar
 msgid "New Year's Day"
-msgstr ""
+msgstr "Nový rok"
 
 #. Template: AAACalendar
 msgid "International Workers' Day"
-msgstr ""
+msgstr "Svátek práce"
 
 #. Template: AAACalendar
 msgid "Christmas Eve"
-msgstr ""
+msgstr "Štědrý den"
 
 #. Template: AAACalendar
 msgid "First Christmas Day"
-msgstr ""
+msgstr "1. svátek vánoční"
 
 #. Template: AAACalendar
 msgid "Second Christmas Day"
-msgstr ""
+msgstr "2. svátek vánoční"
 
 #. Template: AAACalendar
 msgid "New Year's Eve"
-msgstr ""
+msgstr "Silvestr"
 
 #. Template: AAAGenericInterface
 msgid "OTRS as requester"
@@ -1525,11 +1578,11 @@ msgstr ""
 
 #. Template: AAAGenericInterface
 msgid "Webservice \"%s\" created!"
-msgstr ""
+msgstr "Webová služba \"%s\"  vytvořena!"
 
 #. Template: AAAGenericInterface
 msgid "Webservice \"%s\" updated!"
-msgstr ""
+msgstr "Webová služba \"%s\" aktualizována!"
 
 #. Template: AAAMonth
 msgid "Jan"
@@ -1657,7 +1710,7 @@ msgstr "Nové Heslo"
 
 #. Template: AAAPreferences
 msgid "Verify password"
-msgstr ""
+msgstr "Kontrola hesla"
 
 #. Template: AAAPreferences
 msgid "Spelling Dictionary"
@@ -1665,7 +1718,7 @@ msgstr "Slovník pro kontrolu pravopisu"
 
 #. Template: AAAPreferences
 msgid "Default spelling dictionary"
-msgstr ""
+msgstr "Výchozí slovník pro kontrolu pravopisu"
 
 #. Template: AAAPreferences
 msgid "Max. shown Tickets a page in Overview."
@@ -1717,7 +1770,7 @@ msgstr ""
 
 #. Template: AAAPreferences
 msgid "CSV Separator"
-msgstr ""
+msgstr "CSV oddělovač"
 
 #. Template: AAAStats
 msgid "Stat"
@@ -1725,15 +1778,15 @@ msgstr "Statistika"
 
 #. Template: AAAStats
 msgid "Sum"
-msgstr ""
+msgstr "Součet"
 
 #. Template: AAAStats
 msgid "No (not supported)"
-msgstr ""
+msgstr "Ne ( nepodporováno )"
 
 #. Template: AAAStats
 msgid "Days"
-msgstr ""
+msgstr "Dnů"
 
 #. Template: AAAStats
 msgid "Please fill out the required fields!"
@@ -1783,7 +1836,7 @@ msgstr "Musí být zvolen jeden nebo více atributů z vybraného pole!"
 
 #. Template: AAAStats
 msgid "The selected Date isn't valid!"
-msgstr ""
+msgstr "Vybrané datum není platné"
 
 #. Template: AAAStats
 msgid "Please select only one or two elements via the checkbox!"
@@ -1908,7 +1961,7 @@ msgstr "Řadit dle"
 
 #. Template: AAAStats
 msgid "Limit"
-msgstr ""
+msgstr "Limit"
 
 #. Template: AAAStats
 msgid "Ticketlist"
@@ -1972,7 +2025,7 @@ msgstr "Řešitelem počítaný čas"
 
 #. Template: AAAStats
 msgid "Ticket/Article Accounted Time"
-msgstr ""
+msgstr "Vyúčtováný čas Ticketu/Článku"
 
 #. Template: AAAStats
 msgid "TicketAccountedTime"
@@ -1988,7 +2041,7 @@ msgstr "čas uzavření tiketu"
 
 #. Template: AAASupportDataCollector
 msgid "Unknown"
-msgstr ""
+msgstr "Neznámí"
 
 #. Template: AAASupportDataCollector
 msgid "Information"
@@ -1996,23 +2049,23 @@ msgstr "Informace"
 
 #. Template: AAASupportDataCollector
 msgid "OK"
-msgstr ""
+msgstr "Ano"
 
 #. Template: AAASupportDataCollector
 msgid "Problem"
-msgstr ""
+msgstr "Problém"
 
 #. Template: AAASupportDataCollector
 msgid "Webserver"
-msgstr ""
+msgstr "Webový server"
 
 #. Template: AAASupportDataCollector
 msgid "Operating System"
-msgstr ""
+msgstr "Operační systém"
 
 #. Template: AAASupportDataCollector
 msgid "OTRS"
-msgstr ""
+msgstr "OTRS"
 
 #. Template: AAASupportDataCollector
 msgid "Table Presence"
@@ -2020,15 +2073,15 @@ msgstr ""
 
 #. Template: AAASupportDataCollector
 msgid "Internal Error: Could not open file."
-msgstr ""
+msgstr "Chyba serveru: Soubor nelze otevřít."
 
 #. Template: AAASupportDataCollector
 msgid "Table Check"
-msgstr ""
+msgstr "Kontrola tabulek"
 
 #. Template: AAASupportDataCollector
 msgid "Internal Error: Could not read file."
-msgstr ""
+msgstr "Chyba serveru: Soubor nelze načíst."
 
 #. Template: AAASupportDataCollector
 msgid "Tables found which are not present in the database."
@@ -2036,19 +2089,19 @@ msgstr ""
 
 #. Template: AAASupportDataCollector
 msgid "Database Size"
-msgstr ""
+msgstr "Velikost databáze"
 
 #. Template: AAASupportDataCollector
 msgid "Could not determine database size."
-msgstr ""
+msgstr "Nebylo možno zjistit velikost databáze."
 
 #. Template: AAASupportDataCollector
 msgid "Database Version"
-msgstr ""
+msgstr "Verze databáze"
 
 #. Template: AAASupportDataCollector
 msgid "Could not determine database version."
-msgstr ""
+msgstr "Nebylo možno zjistit verzi databáze."
 
 #. Template: AAASupportDataCollector
 msgid "Client Connection Charset"
@@ -2060,11 +2113,11 @@ msgstr ""
 
 #. Template: AAASupportDataCollector
 msgid "Server Database Charset"
-msgstr ""
+msgstr "Kódová stránka databáze"
 
 #. Template: AAASupportDataCollector
 msgid "Setting character_set_database needs to be UNICODE or UTF8."
-msgstr ""
+msgstr "Nastavení character_set_database musi být UNICODE nebo UTF8."
 
 #. Template: AAASupportDataCollector
 msgid "Table Charset"
@@ -2072,19 +2125,27 @@ msgstr ""
 
 #. Template: AAASupportDataCollector
 msgid "There were tables found which do not have utf8 as charset."
+msgstr "Jsou zde tabulky, které nemají nastavenou kódovou stránku UTF8."
+
+#. Template: AAASupportDataCollector
+msgid "InnoDB Log File Size"
+msgstr ""
+
+#. Template: AAASupportDataCollector
+msgid "The setting innodb_log_file_size must be at least 256 MB."
 msgstr ""
 
 #. Template: AAASupportDataCollector
 msgid "Maximum Query Size"
-msgstr ""
+msgstr "Maximální velikost SQL dotazu"
 
 #. Template: AAASupportDataCollector
 msgid "The setting 'max_allowed_packet' must be higher than 20 MB."
-msgstr ""
+msgstr "Nastavení 'max_allowed_packet' musí být větší než 20 MB."
 
 #. Template: AAASupportDataCollector
 msgid "Query Cache Size"
-msgstr ""
+msgstr "Velikost Query Cache"
 
 #. Template: AAASupportDataCollector
 msgid ""
@@ -2094,28 +2155,28 @@ msgstr ""
 
 #. Template: AAASupportDataCollector
 msgid "Default Storage Engine"
-msgstr ""
+msgstr "Výchozí typ úložiště tabulek"
 
 #. Template: AAASupportDataCollector
 msgid ""
 "Tables with a different storage engine than the default engine were found."
-msgstr ""
+msgstr "Byly nalezeny tabulky z jiným než výchozím formátem úložiště tabulek."
 
 #. Template: AAASupportDataCollector
 msgid "MySQL 5.x or higher is required."
-msgstr ""
+msgstr "MySQL 5.x a vyšší je vyžadována."
 
 #. Template: AAASupportDataCollector
 msgid "NLS_LANG Setting"
-msgstr ""
+msgstr "NLS_LANG nastavení,"
 
 #. Template: AAASupportDataCollector
 msgid "NLS_LANG must be set to AL32UTF8 (e.g. GERMAN_GERMANY.AL32UTF8)."
-msgstr ""
+msgstr "NLS_LANG musí být nastaveno na AL32UTF8(kupříkladu CZECH_CZECH REPUBLIC.AL32UTF8)."
 
 #. Template: AAASupportDataCollector
 msgid "NLS_DATE_FORMAT Setting"
-msgstr ""
+msgstr "Nastavení NLS_DATE_FORMAT"
 
 #. Template: AAASupportDataCollector
 msgid "NLS_DATE_FORMAT must be set to 'YYYY-MM-DD HH24:MI:SS'."
@@ -2127,63 +2188,63 @@ msgstr ""
 
 #. Template: AAASupportDataCollector
 msgid "Setting client_encoding needs to be UNICODE or UTF8."
-msgstr ""
+msgstr "Nastavení client_encoding musi být UNICODE nebo UTF8."
 
 #. Template: AAASupportDataCollector
 msgid "Setting server_encoding needs to be UNICODE or UTF8."
-msgstr ""
+msgstr "Nastavení server_encoding musi být UNICODE nebo UTF8."
 
 #. Template: AAASupportDataCollector
 msgid "Date Format"
-msgstr ""
+msgstr "Formát datumu"
 
 #. Template: AAASupportDataCollector
 msgid "Setting DateStyle needs to be ISO."
-msgstr ""
+msgstr "Nastavení stylu data musí být ISO."
 
 #. Template: AAASupportDataCollector
 msgid "PostgreSQL 8.x or higher is required."
-msgstr ""
+msgstr "PostgreSQL 8.x a vyšší je vyžadováno."
 
 #. Template: AAASupportDataCollector
 msgid "OTRS Disk Partition"
-msgstr ""
+msgstr "OTRS diskový oddíl"
 
 #. Template: AAASupportDataCollector
 msgid "Disk Usage"
-msgstr ""
+msgstr "Využití disku"
 
 #. Template: AAASupportDataCollector
 msgid "The partition where OTRS is located is almost full."
-msgstr ""
+msgstr "Particie kde je umístněno OTRS je téměř plná."
 
 #. Template: AAASupportDataCollector
 msgid "The partition where OTRS is located has no disk space problems."
-msgstr ""
+msgstr "Na particii, kde je nainstalováno OTRS není problém s diskovým prostorem."
 
 #. Template: AAASupportDataCollector
 msgid "Disk Partitions Usage"
-msgstr ""
+msgstr "Využití diskového prostoru"
 
 #. Template: AAASupportDataCollector
 msgid "Distribution"
-msgstr ""
+msgstr "Linuxová distribuce "
 
 #. Template: AAASupportDataCollector
 msgid "Could not determine distribution."
-msgstr ""
+msgstr "Nemohu zjistit typ Linuxové distribuce."
 
 #. Template: AAASupportDataCollector
 msgid "Kernel Version"
-msgstr ""
+msgstr "Verze jádra"
 
 #. Template: AAASupportDataCollector
 msgid "Could not determine kernel version."
-msgstr ""
+msgstr "Nemohu zjistit verzi jádra."
 
 #. Template: AAASupportDataCollector
 msgid "System Load"
-msgstr ""
+msgstr "Zatížení systému"
 
 #. Template: AAASupportDataCollector
 msgid ""
@@ -2193,47 +2254,47 @@ msgstr ""
 
 #. Template: AAASupportDataCollector
 msgid "Perl Modules"
-msgstr ""
+msgstr "Moduly Perlu"
 
 #. Template: AAASupportDataCollector
 msgid "Not all required Perl modules are correctly installed."
-msgstr ""
+msgstr "Ne všechny vyžadované moduly Perlu jsou korektně nainstalovány"
 
 #. Template: AAASupportDataCollector
 msgid "Perl Version"
-msgstr ""
+msgstr "Verze Perlu"
 
 #. Template: AAASupportDataCollector
 msgid "Free Swap Space (%)"
-msgstr ""
+msgstr "Volný swap prostor (%)"
 
 #. Template: AAASupportDataCollector
 msgid "No Swap Enabled."
-msgstr ""
+msgstr "Není zapnut swap"
 
 #. Template: AAASupportDataCollector
 msgid "Used Swap Space (MB)"
-msgstr ""
+msgstr "Využitý prostor swap (MB)"
 
 #. Template: AAASupportDataCollector
 msgid "There should be more than 60% free swap space."
-msgstr ""
+msgstr "Mělo by být více jak 60 % volného prostoru swapu"
 
 #. Template: AAASupportDataCollector
 msgid "There should be no more than 200 MB swap space used."
-msgstr ""
+msgstr "Nemělo by být využito více jak 200 MB swapu"
 
 #. Template: AAASupportDataCollector
 msgid "Config Settings"
-msgstr ""
+msgstr "Nastavení"
 
 #. Template: AAASupportDataCollector
 msgid "Could not determine value."
-msgstr ""
+msgstr "Nelze zjistit hodnotu."
 
 #. Template: AAASupportDataCollector
 msgid "Database Records"
-msgstr ""
+msgstr "Záznamů v databázi"
 
 #. Template: AAASupportDataCollector
 msgid "Tickets"
@@ -2301,7 +2362,7 @@ msgstr ""
 
 #. Template: AAASupportDataCollector
 msgid "Tickets Per Month (avg)"
-msgstr ""
+msgstr "Tiketů za měsíc ( prům.)"
 
 #. Template: AAASupportDataCollector
 msgid "Default SOAP Username and Password"
@@ -2315,49 +2376,49 @@ msgstr ""
 
 #. Template: AAASupportDataCollector
 msgid "Default Admin Password"
-msgstr ""
+msgstr "Výchozí heslo admina"
 
 #. Template: AAASupportDataCollector
 msgid ""
 "Security risk: the agent account root@localhost still has the default "
 "password. Please change it or invalidate the account."
-msgstr ""
+msgstr "Bezpečnostní riziko: heslo účtu operátora root@localhost má stále výchozí heslo. Prosím změňte ho nebo deaktivujte tento účet."
 
 #. Template: AAASupportDataCollector
 msgid "Error Log"
-msgstr ""
+msgstr "Chybový log"
 
 #. Template: AAASupportDataCollector
 msgid "There are error reports in your system log."
-msgstr ""
+msgstr "V systémovém logu jsou chybová hlášení."
 
 #. Template: AAASupportDataCollector
 msgid "File System Writable"
-msgstr ""
+msgstr "Na souborový systém lze zapisovat"
 
 #. Template: AAASupportDataCollector
 msgid "The file system on your OTRS partition is not writable."
-msgstr ""
+msgstr "Na souborový systém na vaší OTRS particii není možné zapisovat."
 
 #. Template: AAASupportDataCollector
 msgid "Domain Name"
-msgstr ""
+msgstr "Doménové jméno"
 
 #. Template: AAASupportDataCollector
 msgid "Your FQDN setting is invalid."
-msgstr ""
+msgstr "Vaše nastavení FQDN je neplatné."
 
 #. Template: AAASupportDataCollector
 msgid "Package installation status"
-msgstr ""
+msgstr "Stav instalace balíčku"
 
 #. Template: AAASupportDataCollector
 msgid "Some packages are not correctly installed."
-msgstr ""
+msgstr "Některé balíčky nejsou korektně nainstalované."
 
 #. Template: AAASupportDataCollector
 msgid "Package List"
-msgstr ""
+msgstr "Seznam balíčků"
 
 #. Template: AAASupportDataCollector
 msgid "SystemID"
@@ -2365,11 +2426,11 @@ msgstr "Systémové ID"
 
 #. Template: AAASupportDataCollector
 msgid "Your SystemID setting is invalid, it should only contain digits."
-msgstr ""
+msgstr "Nastavení vašeho SystemID je neplatné, mělo by obsahovat jen čísla."
 
 #. Template: AAASupportDataCollector
 msgid "OTRS Version"
-msgstr ""
+msgstr "Verze OTRS "
 
 #. Template: AAASupportDataCollector
 msgid "Ticket Index Module"
@@ -2383,11 +2444,11 @@ msgstr ""
 
 #. Template: AAASupportDataCollector
 msgid "Open Tickets"
-msgstr ""
+msgstr "Otevřených tiketů"
 
 #. Template: AAASupportDataCollector
 msgid "You should not have more than 8,000 open tickets in your system."
-msgstr ""
+msgstr "Neměli by jste mít více jak 8000 otevřených tiketů ve vašem systému"
 
 #. Template: AAASupportDataCollector
 msgid "Ticket Search Index module"
@@ -2425,7 +2486,7 @@ msgstr ""
 
 #. Template: AAASupportDataCollector
 msgid "Webserver Version"
-msgstr ""
+msgstr "Verze webového serveru"
 
 #. Template: AAASupportDataCollector
 msgid "Could not determine webserver version."
@@ -2433,7 +2494,7 @@ msgstr ""
 
 #. Template: AAASupportDataCollector
 msgid "Loaded Apache Modules"
-msgstr ""
+msgstr "Aktivní Apache moduly"
 
 #. Template: AAASupportDataCollector
 msgid "CGI Accelerator Usage"
@@ -2441,7 +2502,7 @@ msgstr ""
 
 #. Template: AAASupportDataCollector
 msgid "You should use FastCGI or mod_perl to increase your performance."
-msgstr ""
+msgstr "Použijte FastCGI nebo mod_perl pro zvýšení výkonu"
 
 #. Template: AAASupportDataCollector
 msgid "mod_deflate Usage"
@@ -2449,6 +2510,14 @@ msgstr ""
 
 #. Template: AAASupportDataCollector
 msgid "Please install mod_deflate to improve GUI speed."
+msgstr ""
+
+#. Template: AAASupportDataCollector
+msgid "mod_filter Usage"
+msgstr ""
+
+#. Template: AAASupportDataCollector
+msgid "Please install mod_filter if mod_deflate is used."
 msgstr ""
 
 #. Template: AAASupportDataCollector
@@ -2486,11 +2555,15 @@ msgstr ""
 
 #. Template: AAATicket
 msgid "Status View"
-msgstr ""
+msgstr "Zobrazení stavu"
+
+#. Template: AAATicket
+msgid "Service View"
+msgstr "Zobrazit službu"
 
 #. Template: AAATicket
 msgid "Bulk"
-msgstr ""
+msgstr "Hromadný"
 
 #. Template: AAATicket
 msgid "Lock"
@@ -2534,7 +2607,7 @@ msgstr "Kopie"
 
 #. Template: AAATicket
 msgid "Bcc"
-msgstr "Slepá kopie"
+msgstr "Skrytá kopie"
 
 #. Template: AAATicket
 msgid "Subject"
@@ -2554,7 +2627,7 @@ msgstr "Priorita"
 
 #. Template: AAATicket
 msgid "Priorities"
-msgstr ""
+msgstr "Priority"
 
 #. Template: AAATicket
 msgid "Priority Update"
@@ -2562,31 +2635,31 @@ msgstr "Oprava Priority"
 
 #. Template: AAATicket
 msgid "Priority added!"
-msgstr ""
+msgstr "Priorita přídána!"
 
 #. Template: AAATicket
 msgid "Priority updated!"
-msgstr ""
+msgstr "Priorita aktualizována!"
 
 #. Template: AAATicket
 msgid "Signature added!"
-msgstr ""
+msgstr "Podpis přidán!"
 
 #. Template: AAATicket
 msgid "Signature updated!"
-msgstr ""
+msgstr "Podpis aktualizován!"
 
 #. Template: AAATicket
 msgid "SLA"
-msgstr ""
+msgstr "SLA"
 
 #. Template: AAATicket
 msgid "Service Level Agreement"
-msgstr ""
+msgstr "Servisní smlouva SLA"
 
 #. Template: AAATicket
 msgid "Service Level Agreements"
-msgstr ""
+msgstr "Servisní smlouvy SLA"
 
 #. Template: AAATicket
 msgid "Service"
@@ -2594,7 +2667,7 @@ msgstr "Služba"
 
 #. Template: AAATicket
 msgid "Services"
-msgstr ""
+msgstr "Služby"
 
 #. Template: AAATicket
 msgid "State"
@@ -2602,7 +2675,7 @@ msgstr "Stav"
 
 #. Template: AAATicket
 msgid "States"
-msgstr ""
+msgstr "Stavy"
 
 #. Template: AAATicket
 msgid "Status"
@@ -2610,15 +2683,15 @@ msgstr "Stav"
 
 #. Template: AAATicket
 msgid "Statuses"
-msgstr ""
+msgstr "Statusy"
 
 #. Template: AAATicket
 msgid "Ticket Type"
-msgstr ""
+msgstr "Typ ticketu"
 
 #. Template: AAATicket
 msgid "Ticket Types"
-msgstr ""
+msgstr "Typy ticketů"
 
 #. Template: AAATicket
 msgid "Compose"
@@ -2666,11 +2739,11 @@ msgstr "jednoduchý"
 
 #. Template: AAATicket
 msgid "Email"
-msgstr ""
+msgstr "Email"
 
 #. Template: AAATicket
 msgid "email"
-msgstr ""
+msgstr "email"
 
 #. Template: AAATicket
 msgid "Close"
@@ -2790,27 +2863,31 @@ msgstr "Zobrazit eskalaci tiketu"
 
 #. Template: AAATicket
 msgid "Message from"
-msgstr ""
+msgstr "Zpráva od"
 
 #. Template: AAATicket
 msgid "End message"
-msgstr ""
+msgstr "Zpráva ukončení"
 
 #. Template: AAATicket
 msgid "Forwarded message from"
-msgstr ""
+msgstr "Předaná zpráva od"
 
 #. Template: AAATicket
 msgid "End forwarded message"
-msgstr ""
+msgstr "Předaná zpráva ukončení"
 
 #. Template: AAATicket
 msgid "Bounce Article to a different mail address"
 msgstr "Odeslat na jinou adresu"
 
 #. Template: AAATicket
+msgid "Reply to note"
+msgstr "Odpověď na poznámku"
+
+#. Template: AAATicket
 msgid "new"
-msgstr "nová"
+msgstr "nový"
 
 #. Template: AAATicket
 msgid "open"
@@ -2882,7 +2959,7 @@ msgstr "telefon"
 
 #. Template: AAATicket
 msgid "sms"
-msgstr ""
+msgstr "SMS"
 
 #. Template: AAATicket
 msgid "webrequest"
@@ -2938,23 +3015,23 @@ msgstr "5 velmi vysoká"
 
 #. Template: AAATicket
 msgid "auto follow up"
-msgstr ""
+msgstr "automatické navázání"
 
 #. Template: AAATicket
 msgid "auto reject"
-msgstr ""
+msgstr "automatické odmítnutí"
 
 #. Template: AAATicket
 msgid "auto remove"
-msgstr ""
+msgstr "automatické smazání"
 
 #. Template: AAATicket
 msgid "auto reply"
-msgstr ""
+msgstr "automatická odpověď"
 
 #. Template: AAATicket
 msgid "auto reply/new ticket"
-msgstr ""
+msgstr "automatická odpověď/nový tiket"
 
 #. Template: AAATicket
 msgid "Create"
@@ -2998,15 +3075,15 @@ msgstr ""
 
 #. Template: AAATicket
 msgid "Ticket selected."
-msgstr ""
+msgstr "Tiket vybrán"
 
 #. Template: AAATicket
 msgid "Ticket is locked by another agent."
-msgstr ""
+msgstr "Tiket je zamčen jiným operátorem."
 
 #. Template: AAATicket
 msgid "Ticket locked."
-msgstr ""
+msgstr "Tiket zamčen."
 
 #. Template: AAATicket
 msgid "Don't show closed Tickets"
@@ -3047,6 +3124,14 @@ msgstr "Telefonní Tiket"
 #. Template: AAATicket
 msgid "Search Tickets"
 msgstr "Vyhledávání Tiketů"
+
+#. Template: AAATicket
+msgid "Customer Realname"
+msgstr ""
+
+#. Template: AAATicket
+msgid "Customer History"
+msgstr "Historie zákazníka"
 
 #. Template: AAATicket
 msgid "Edit Customer Users"
@@ -3114,11 +3199,11 @@ msgstr "Zobrazené"
 
 #. Template: AAATicket
 msgid "Watch"
-msgstr ""
+msgstr "Sledovat"
 
 #. Template: AAATicket
 msgid "Unwatch"
-msgstr ""
+msgstr "Nesledovat"
 
 #. Template: AAATicket
 msgid "Lock it to work on it"
@@ -3146,7 +3231,7 @@ msgstr "Rozdělit"
 
 #. Template: AAATicket
 msgid "Split this article"
-msgstr "Rozdelit tuto zprávu"
+msgstr "Rozdělit tuto zprávu"
 
 #. Template: AAATicket
 msgid "Forward article via mail"
@@ -3210,7 +3295,7 @@ msgstr "Zobrazit Tikety"
 
 #. Template: AAATicket
 msgid "Shown Columns"
-msgstr ""
+msgstr "Zobrazené sloupce"
 
 #. Template: AAATicket
 msgid ""
@@ -3844,7 +3929,7 @@ msgstr "Vybrat"
 
 #. Template: AdminCustomerCompany
 msgid "Please enter a search term to look for customers."
-msgstr ""
+msgstr "Prosím vložte hledaný výraz pro hledání zákazníků."
 
 #. Template: AdminCustomerCompany
 msgid "Add Customer"
@@ -3852,15 +3937,15 @@ msgstr "Přidat zákazníka"
 
 #. Template: AdminCustomerUser
 msgid "Customer User Management"
-msgstr ""
+msgstr "Správa uživatelů zákazníka"
 
 #. Template: AdminCustomerUser
 msgid "Back to search results"
-msgstr ""
+msgstr "Zpět na výsledek vyhledávání"
 
 #. Template: AdminCustomerUser
 msgid "Add customer user"
-msgstr ""
+msgstr "Přidat  uživatele zákazníka"
 
 #. Template: AdminCustomerUser
 msgid "Hint"
@@ -3882,19 +3967,19 @@ msgstr "Přihlásit jako"
 
 #. Template: AdminCustomerUser
 msgid "Switch to customer"
-msgstr ""
+msgstr "Přepnout na zákazníka"
 
 #. Template: AdminCustomerUser
 msgid "Add Customer User"
-msgstr ""
+msgstr "Přidat uživatele zákazníka"
 
 #. Template: AdminCustomerUser
 msgid "Edit Customer User"
-msgstr ""
+msgstr "Editovat uživatele zákazníka"
 
 #. Template: AdminCustomerUser
 msgid "This field is required and needs to be a valid email address."
-msgstr ""
+msgstr "Toto pole je vyžadováno a musí být funkční emailová adresa."
 
 #. Template: AdminCustomerUser
 msgid "This email address is not allowed due to the system configuration."
@@ -4505,6 +4590,10 @@ msgid "Delete this Event Trigger"
 msgstr ""
 
 #. Template: AdminGenericAgent
+msgid "Remove selection"
+msgstr ""
+
+#. Template: AdminGenericAgent
 msgid "Select Tickets"
 msgstr ""
 
@@ -4518,7 +4607,7 @@ msgstr "(např. 234321)"
 
 #. Template: AdminGenericAgent
 msgid "Customer login"
-msgstr ""
+msgstr "Uživatelské jméno"
 
 #. Template: AdminGenericAgent
 msgid "(e. g. U5150)"
@@ -5691,7 +5780,7 @@ msgstr "Přidat Skupinu"
 
 #. Template: AdminGroup
 msgid "Edit Group"
-msgstr ""
+msgstr "Upravit skupiny"
 
 #. Template: AdminLog
 msgid "System Log"
@@ -5703,11 +5792,11 @@ msgstr ""
 
 #. Template: AdminLog
 msgid "Hide this message"
-msgstr ""
+msgstr "Schovat tuto zprávu"
 
 #. Template: AdminLog
 msgid "Recent Log Entries"
-msgstr ""
+msgstr "Poslední záznamy v logu"
 
 #. Template: AdminMailAccount
 msgid "Mail Account Management"
@@ -5715,7 +5804,7 @@ msgstr "Správa Emailových Účtů"
 
 #. Template: AdminMailAccount
 msgid "Add mail account"
-msgstr ""
+msgstr "Přidat e-mailový účet"
 
 #. Template: AdminMailAccount
 msgid ""
@@ -5732,33 +5821,33 @@ msgstr ""
 
 #. Template: AdminMailAccount
 msgid "Delete account"
-msgstr ""
+msgstr "Smazat účet"
 
 #. Template: AdminMailAccount
 msgid "Fetch mail"
-msgstr ""
+msgstr "Přijmout zprávy"
 
 #. Template: AdminMailAccount
 msgid "Add Mail Account"
-msgstr ""
+msgstr "Přidat e-mailový účet"
 
 #. Template: AdminMailAccount
 msgid "Example: mail.example.com"
-msgstr ""
+msgstr "Příklad: mail.example.com"
 
 #. Template: AdminMailAccount
 msgid "IMAP Folder"
-msgstr ""
+msgstr "IMAP složka"
 
 #. Template: AdminMailAccount
 msgid ""
 "Only modify this if you need to fetch mail from a different folder than "
 "INBOX."
-msgstr ""
+msgstr "Tuto volbu upravte pouze tehdy, pokud potřebujete přijmout zprávy z jiné složky než INBOX."
 
 #. Template: AdminMailAccount
 msgid "Trusted"
-msgstr "Ověřeno"
+msgstr "Důvěryhodný"
 
 #. Template: AdminMailAccount
 msgid "Dispatching"
@@ -5766,7 +5855,7 @@ msgstr "Zařazení"
 
 #. Template: AdminMailAccount
 msgid "Edit Mail Account"
-msgstr ""
+msgstr "Upravit e-mailový účet"
 
 #. Template: AdminNavigationBar
 msgid "Admin"
@@ -5774,19 +5863,19 @@ msgstr ""
 
 #. Template: AdminNavigationBar
 msgid "Agent Management"
-msgstr ""
+msgstr "Správa řešitelů"
 
 #. Template: AdminNavigationBar
 msgid "Queue Settings"
-msgstr ""
+msgstr "Nastavení front"
 
 #. Template: AdminNavigationBar
 msgid "Ticket Settings"
-msgstr ""
+msgstr "Nastavení tiketů"
 
 #. Template: AdminNavigationBar
 msgid "System Administration"
-msgstr ""
+msgstr "Správa systému"
 
 #. Template: AdminNavigationBar
 msgid "Online Admin Manual"
@@ -5798,15 +5887,15 @@ msgstr "Správa oznámení"
 
 #. Template: AdminNotification
 msgid "Select a different language"
-msgstr ""
+msgstr "Vyberte jiný jazyk"
 
 #. Template: AdminNotification
 msgid "Filter for Notification"
-msgstr ""
+msgstr "Filtr pro oznámení"
 
 #. Template: AdminNotification
 msgid "Notifications are sent to an agent or a customer."
-msgstr "Oznámení jsou odeslána agentovi či klientovi"
+msgstr "Oznámení jsou odeslána agentovi nebo zákazníkovi"
 
 #. Template: AdminNotification
 msgid "Notification"
@@ -5814,11 +5903,11 @@ msgstr "Upozornění"
 
 #. Template: AdminNotification
 msgid "Edit Notification"
-msgstr ""
+msgstr "Upravit oznámení"
 
 #. Template: AdminNotification
 msgid "e. g."
-msgstr ""
+msgstr "např."
 
 #. Template: AdminNotification
 msgid "Options of the current customer data"
@@ -5826,11 +5915,11 @@ msgstr ""
 
 #. Template: AdminNotificationEvent
 msgid "Add notification"
-msgstr ""
+msgstr "Přidat oznámení"
 
 #. Template: AdminNotificationEvent
 msgid "Delete this notification"
-msgstr ""
+msgstr "Smazat toto oznámení"
 
 #. Template: AdminNotificationEvent
 msgid "Add Notification"
@@ -5921,6 +6010,189 @@ msgstr "pro získáni prvních 20ti znaků z předmětu (z nejnovějšího člá
 #. Template: AdminNotificationEvent
 msgid "To get the first 5 lines of the body (of the latest customer article)."
 msgstr "pro získáni prvních 5ti řádků z těla (z nejnovějšího článku Zákazníka)"
+
+#. Template: AdminOTRSBusinessInstalled
+msgid "Manage %s"
+msgstr ""
+
+#. Template: AdminOTRSBusinessInstalled
+msgid "Downgrade to OTRS Free"
+msgstr ""
+
+#. Template: AdminOTRSBusinessInstalled
+msgid ""
+"%s makes contact regularly with cloud.otrs.com to check on available updates"
+" and the validity of the underlying contract."
+msgstr ""
+
+#. Template: AdminOTRSBusinessInstalled
+msgid "Unauthorized Usage Detected"
+msgstr ""
+
+#. Template: AdminOTRSBusinessInstalled
+msgid ""
+"This system uses the %s without a proper license! Please make contact with "
+"%s to renew or activate your contract!"
+msgstr ""
+
+#. Template: AdminOTRSBusinessInstalled
+msgid "%s not Correctly Installed"
+msgstr ""
+
+#. Template: AdminOTRSBusinessInstalled
+msgid ""
+"Your %s is not correctly installed. Please reinstall it with the button "
+"below."
+msgstr ""
+
+#. Template: AdminOTRSBusinessInstalled
+msgid "Reinstall %s"
+msgstr ""
+
+#. Template: AdminOTRSBusinessInstalled
+msgid ""
+"Your %s is not correctly installed, and there is also an update available."
+msgstr ""
+
+#. Template: AdminOTRSBusinessInstalled
+msgid ""
+"You can either reinstall your current version or perform an update with the "
+"buttons below (update recommended)."
+msgstr ""
+
+#. Template: AdminOTRSBusinessInstalled
+msgid "Update %s"
+msgstr ""
+
+#. Template: AdminOTRSBusinessInstalled
+msgid "%s Not Yet Available"
+msgstr ""
+
+#. Template: AdminOTRSBusinessInstalled
+msgid "%s will be available soon."
+msgstr ""
+
+#. Template: AdminOTRSBusinessInstalled
+msgid "%s Update Available"
+msgstr ""
+
+#. Template: AdminOTRSBusinessInstalled
+msgid "An update for your %s is available! Please update at your earliest!"
+msgstr ""
+
+#. Template: AdminOTRSBusinessInstalled
+msgid "%s Correctly Deployed"
+msgstr ""
+
+#. Template: AdminOTRSBusinessInstalled
+msgid "Congratulations, your %s is correctly installed and up to date!"
+msgstr ""
+
+#. Template: AdminOTRSBusinessNotInstalled
+msgid "Upgrade to %s"
+msgstr ""
+
+#. Template: AdminOTRSBusinessNotInstalled
+msgid "%s will be available soon. Please check again in a few days."
+msgstr ""
+
+#. Template: AdminOTRSBusinessNotInstalled
+msgid "Please have a look at %s for more information."
+msgstr ""
+
+#. Template: AdminOTRSBusinessNotInstalled
+msgid ""
+"Your OTRS Free is the base for all future actions. Please register first "
+"before you continue with the upgrade process of %s!"
+msgstr ""
+
+#. Template: AdminOTRSBusinessNotInstalled
+msgid "Register this System"
+msgstr ""
+
+#. Template: AdminOTRSBusinessNotInstalled
+msgid ""
+"System Registration is disabled for your system. Please check your "
+"configuration."
+msgstr ""
+
+#. Template: AdminOTRSBusinessNotInstalled
+msgid ""
+"Before you can benefit from %s, please contact %s to get your %s contract."
+msgstr ""
+
+#. Template: AdminOTRSBusinessNotInstalled
+msgid ""
+"Connection to cloud.otrs.com via HTTPS couldn't be established. Please make "
+"sure that your OTRS can connect to cloud.otrs.com via port 443."
+msgstr ""
+
+#. Template: AdminOTRSBusinessNotInstalled
+msgid "With your existing contract you can only use a small part of the %s."
+msgstr ""
+
+#. Template: AdminOTRSBusinessNotInstalled
+msgid ""
+"If you would like to take full advantage of the %s get your contract "
+"upgraded now! Contact %s."
+msgstr ""
+
+#. Template: AdminOTRSBusinessUninstall
+msgid "Cancel downgrade and go back"
+msgstr ""
+
+#. Template: AdminOTRSBusinessUninstall
+msgid "Go to OTRS Package Manager"
+msgstr ""
+
+#. Template: AdminOTRSBusinessUninstall
+msgid ""
+"Sorry, but currently you can't downgrade due to the following packages which"
+" depend on %s:"
+msgstr ""
+
+#. Template: AdminOTRSBusinessUninstall
+msgid "Vendor"
+msgstr "Prodavač"
+
+#. Template: AdminOTRSBusinessUninstall
+msgid ""
+"Please uninstall the packages first using the package manager and try again."
+msgstr ""
+
+#. Template: AdminOTRSBusinessUninstall
+msgid ""
+"You are about to downgrade to OTRS Free and will lose the following features"
+" and all data related to these:"
+msgstr ""
+
+#. Template: AdminOTRSBusinessUninstall
+msgid "Chat"
+msgstr ""
+
+#. Template: AdminOTRSBusinessUninstall
+msgid "Timeline view in ticket zoom"
+msgstr ""
+
+#. Template: AdminOTRSBusinessUninstall
+msgid "DynamicField ContactWithData"
+msgstr ""
+
+#. Template: AdminOTRSBusinessUninstall
+msgid "DynamicField Database"
+msgstr ""
+
+#. Template: AdminOTRSBusinessUninstall
+msgid "SLA Selection Dialog"
+msgstr ""
+
+#. Template: AdminOTRSBusinessUninstall
+msgid "Ticket Attachment View"
+msgstr ""
+
+#. Template: AdminOTRSBusinessUninstall
+msgid "The %s skin"
+msgstr ""
 
 #. Template: AdminPGP
 msgid "PGP Management"
@@ -6020,18 +6292,8 @@ msgid "Update repository information"
 msgstr ""
 
 #. Template: AdminPackageManager
-msgid ""
-"Did not find a required feature? OTRS Group provides their service contract "
-"customers with exclusive Add-Ons:"
-msgstr ""
-
-#. Template: AdminPackageManager
 msgid "Online Repository"
 msgstr "Online Schránka"
-
-#. Template: AdminPackageManager
-msgid "Vendor"
-msgstr "Prodavač"
 
 #. Template: AdminPackageManager
 msgid "Module documentation"
@@ -6058,7 +6320,13 @@ msgid "Reinstall"
 msgstr "Reinstalovat"
 
 #. Template: AdminPackageManager
-msgid "Feature Add-Ons"
+msgid "Features for %s customers only"
+msgstr ""
+
+#. Template: AdminPackageManager
+msgid ""
+"With %s, you can benefit from the following optional features. Please make "
+"contact with %s if you need more information."
 msgstr ""
 
 #. Template: AdminPackageManager
@@ -6849,6 +7117,10 @@ msgid "Remove this Field"
 msgstr ""
 
 #. Template: AdminProcessManagementTransition
+msgid "And can't be repeated on the same condition."
+msgstr ""
+
+#. Template: AdminProcessManagementTransition
 msgid "Add a new Field"
 msgstr ""
 
@@ -6900,6 +7172,10 @@ msgstr ""
 
 #. Template: AdminQueue
 msgid "Edit Queue"
+msgstr ""
+
+#. Template: AdminQueue
+msgid "A queue with this name already exists!"
 msgstr ""
 
 #. Template: AdminQueue
@@ -7023,7 +7299,7 @@ msgstr ""
 
 #. Template: AdminQueueTemplates
 msgid "Templates"
-msgstr ""
+msgstr "Šablony"
 
 #. Template: AdminQueueTemplates
 msgid "Change Queue Relations for Template"
@@ -7039,6 +7315,10 @@ msgstr ""
 
 #. Template: AdminRegistration
 msgid "Edit details"
+msgstr ""
+
+#. Template: AdminRegistration
+msgid "Show transmitted data"
 msgstr ""
 
 #. Template: AdminRegistration
@@ -7071,6 +7351,30 @@ msgstr ""
 
 #. Template: AdminRegistration
 msgid "Send support data"
+msgstr ""
+
+#. Template: AdminRegistration
+msgid "System registration not possible"
+msgstr ""
+
+#. Template: AdminRegistration
+msgid ""
+"Please note that you can't register your system if your scheduler is not "
+"running correctly!"
+msgstr ""
+
+#. Template: AdminRegistration
+msgid "Instructions"
+msgstr ""
+
+#. Template: AdminRegistration
+msgid "System deregistration not possible"
+msgstr ""
+
+#. Template: AdminRegistration
+msgid ""
+"Please note that you can't deregister your system if you're using the %s or "
+"having a valid service contract."
 msgstr ""
 
 #. Template: AdminRegistration
@@ -7408,6 +7712,32 @@ msgstr ""
 msgid "You can modify registration settings here."
 msgstr ""
 
+#. Template: AdminRegistration
+msgid "Overview of transmitted data"
+msgstr ""
+
+#. Template: AdminRegistration
+msgid "There is no data regularly sent from your system to %s."
+msgstr ""
+
+#. Template: AdminRegistration
+msgid ""
+"The following data is sent at minimum every 3 days from your system to %s."
+msgstr ""
+
+#. Template: AdminRegistration
+msgid ""
+"The data will be transferred in JSON format via a secure https connection."
+msgstr ""
+
+#. Template: AdminRegistration
+msgid "System Registration Data"
+msgstr ""
+
+#. Template: AdminRegistration
+msgid "Support Data"
+msgstr ""
+
 #. Template: AdminRole
 msgid "Role Management"
 msgstr "Správa Rolí"
@@ -7479,6 +7809,22 @@ msgstr "vytvořit"
 #. Template: AdminRoleGroup
 msgid "Permissions to create tickets in this group/queue."
 msgstr "Práva vytvořit tikety v této skupině/frontě"
+
+#. Template: AdminRoleGroup
+msgid "note"
+msgstr "poznámka"
+
+#. Template: AdminRoleGroup
+msgid "Permissions to add notes to tickets in this group/queue."
+msgstr ""
+
+#. Template: AdminRoleGroup
+msgid "owner"
+msgstr "vlastník"
+
+#. Template: AdminRoleGroup
+msgid "Permissions to change the owner of tickets in this group/queue."
+msgstr ""
 
 #. Template: AdminRoleGroup
 msgid "priority"
@@ -7595,7 +7941,7 @@ msgstr "Přidat Privátní Klíč"
 
 #. Template: AdminSMIME
 msgid "Secret"
-msgstr "Tajný"
+msgstr "Heslo"
 
 #. Template: AdminSMIME
 msgid "Related Certificates for"
@@ -7616,6 +7962,10 @@ msgstr ""
 #. Template: AdminSMIMECertRead
 msgid "Close window"
 msgstr "Zavřít okno"
+
+#. Template: AdminSMIMECertRead
+msgid "Certificate details"
+msgstr ""
 
 #. Template: AdminSalutation
 msgid "Salutation Management"
@@ -7813,7 +8163,7 @@ msgstr ""
 
 #. Template: AdminServiceCenterSupportDataCollector
 msgid ""
-"The email address for this user is invalid, this ption has been disabled."
+"The email address for this user is invalid, this option has been disabled."
 msgstr ""
 
 #. Template: AdminServiceCenterSupportDataCollector
@@ -7833,10 +8183,6 @@ msgid ""
 "A file containing the support bundle will be downloaded to the local system."
 " Please save the file and send it to the OTRS Group, using an alternate "
 "method."
-msgstr ""
-
-#. Template: AdminServiceCenterSupportDataCollector
-msgid "Support Data"
 msgstr ""
 
 #. Template: AdminServiceCenterSupportDataCollector
@@ -8222,7 +8568,7 @@ msgid "Customer Sessions"
 msgstr ""
 
 #. Template: AdminSystemMaintenanceEdit
-msgid "Kill all Sessions, exept current"
+msgid "Kill all Sessions, except for your own"
 msgstr ""
 
 #. Template: AdminTemplate
@@ -8353,11 +8699,11 @@ msgstr "Upravit řešitele"
 
 #. Template: AdminUser
 msgid "Firstname"
-msgstr "Křestní Jméno"
+msgstr "Jméno"
 
 #. Template: AdminUser
 msgid "Lastname"
-msgstr "Příjmenní"
+msgstr "Příjmení"
 
 #. Template: AdminUser
 msgid "A user with this username already exists!"
@@ -8387,41 +8733,25 @@ msgstr ""
 msgid "Change Agent Relations for Group"
 msgstr ""
 
-#. Template: AdminUserGroup
-msgid "note"
-msgstr "poznámka"
-
-#. Template: AdminUserGroup
-msgid "Permissions to add notes to tickets in this group/queue."
-msgstr ""
-
-#. Template: AdminUserGroup
-msgid "owner"
-msgstr "vlastník"
-
-#. Template: AdminUserGroup
-msgid "Permissions to change the owner of tickets in this group/queue."
-msgstr ""
-
 #. Template: AgentBook
 msgid "Address Book"
 msgstr "Adresář"
 
 #. Template: AgentBook
 msgid "Search for a customer"
-msgstr ""
+msgstr "Vyhledat zákazníka"
 
 #. Template: AgentBook
 msgid "Add email address %s to the To field"
-msgstr ""
+msgstr "Přidat e-mailovou adresu %s do pole Komu"
 
 #. Template: AgentBook
 msgid "Add email address %s to the Cc field"
-msgstr ""
+msgstr "Přidat e-mailovou adresu %s do pole Kopie"
 
 #. Template: AgentBook
 msgid "Add email address %s to the Bcc field"
-msgstr ""
+msgstr "Přidat e-mailovou adresu %s do pole Skrytá kopie"
 
 #. Template: AgentBook
 msgid "Apply"
@@ -8429,11 +8759,11 @@ msgstr "Použít"
 
 #. Template: AgentCustomerInformationCenter
 msgid "Customer Information Center"
-msgstr ""
+msgstr "Informace o zákaznících"
 
 #. Template: AgentCustomerInformationCenterSearch
 msgid "Customer User"
-msgstr "Uživatelé Zákazníka"
+msgstr "Zákaznický uživatel"
 
 #. Template: AgentCustomerSearch
 msgid "Duplicated entry"
@@ -8441,7 +8771,7 @@ msgstr ""
 
 #. Template: AgentCustomerSearch
 msgid "This address already exists on the address list."
-msgstr ""
+msgstr "Tato adresa již v adresáři existuje."
 
 #. Template: AgentCustomerSearch
 msgid "It is going to be deleted from the field, please try again."
@@ -8449,7 +8779,7 @@ msgstr ""
 
 #. Template: AgentCustomerTableView
 msgid "Note: Customer is invalid!"
-msgstr ""
+msgstr "Poznámka: Zákazník je neplatný!"
 
 #. Template: AgentDashboard
 msgid "Dashboard"
@@ -8461,27 +8791,27 @@ msgstr "v"
 
 #. Template: AgentDashboardCommon
 msgid "Available Columns"
-msgstr ""
+msgstr "Dostupné sloupce"
 
 #. Template: AgentDashboardCommon
 msgid "Visible Columns (order by drag & drop)"
-msgstr ""
+msgstr "Viditelné sloupce (seřadťe přetažením)"
 
 #. Template: AgentDashboardCustomerIDStatus
 msgid "Escalated tickets"
-msgstr ""
+msgstr "Eskalované tikety"
 
 #. Template: AgentDashboardCustomerUserList
 msgid "Customer information"
-msgstr ""
+msgstr "Informace o zákazníkovi"
 
 #. Template: AgentDashboardCustomerUserList
 msgid "Phone ticket"
-msgstr ""
+msgstr "Telefonní tiket"
 
 #. Template: AgentDashboardCustomerUserList
 msgid "Email ticket"
-msgstr ""
+msgstr "E-mail tiket"
 
 #. Template: AgentDashboardCustomerUserList
 msgid "Start Chat"
@@ -8501,6 +8831,10 @@ msgstr ""
 
 #. Template: AgentDashboardCustomerUserList
 msgid "New email ticket to %s"
+msgstr ""
+
+#. Template: AgentDashboardCustomerUserList
+msgid "Start chat"
 msgstr ""
 
 #. Template: AgentDashboardProductNotify
@@ -8570,7 +8904,7 @@ msgstr "Tikety v mých frontách"
 
 #. Template: AgentDashboardTicketGeneric
 msgid "Tickets in My Services"
-msgstr ""
+msgstr "Tikety v mých službách"
 
 #. Template: AgentDashboardTicketGeneric
 msgid "Service Time"
@@ -8582,7 +8916,7 @@ msgstr ""
 
 #. Template: AgentDashboardTicketQueueOverview
 msgid "Totals"
-msgstr ""
+msgstr "Celkem"
 
 #. Template: AgentDashboardUserOnline
 msgid "out of office"
@@ -9010,11 +9344,11 @@ msgstr ""
 
 #. Template: AgentTicketActionCommon
 msgid "All fields marked with an asterisk (*) are mandatory."
-msgstr ""
+msgstr "Všechna pole označena hvězdičkou (*) jsou povinná."
 
 #. Template: AgentTicketActionCommon
 msgid "Service invalid."
-msgstr ""
+msgstr "Služba je neplatná."
 
 #. Template: AgentTicketActionCommon
 msgid "New Owner"
@@ -9033,6 +9367,10 @@ msgid "Next state"
 msgstr "Nasledující stav"
 
 #. Template: AgentTicketActionCommon
+msgid "For all pending* states."
+msgstr "Pro všechny stavy čekající na vyřízení*"
+
+#. Template: AgentTicketActionCommon
 msgid "Add Article"
 msgstr ""
 
@@ -9042,7 +9380,7 @@ msgstr ""
 
 #. Template: AgentTicketActionCommon
 msgid "Spell check"
-msgstr ""
+msgstr "Kontrola pravopisu"
 
 #. Template: AgentTicketActionCommon
 msgid "Text Template"
@@ -9066,7 +9404,7 @@ msgstr "Volitelné"
 
 #. Template: AgentTicketActionCommon
 msgid "Inform involved Agents"
-msgstr ""
+msgstr "Informovat zúčastněné řešitele"
 
 #. Template: AgentTicketActionCommon
 msgid ""
@@ -9074,9 +9412,13 @@ msgid ""
 "regarding the new article."
 msgstr ""
 
+#. Template: AgentTicketActionCommon
+msgid "Note will be (also) received by:"
+msgstr "Poznámka bude (také) doručena:"
+
 #. Template: AgentTicketBounce
 msgid "Bounce Ticket"
-msgstr ""
+msgstr "Vrátit tiker"
 
 #. Template: AgentTicketBounce
 msgid "Bounce to"
@@ -9108,7 +9450,7 @@ msgstr "Hromadná akce Tiketu"
 
 #. Template: AgentTicketBulk
 msgid "Send Email"
-msgstr ""
+msgstr "Odeslat e-mail"
 
 #. Template: AgentTicketBulk
 msgid "Merge to"
@@ -9116,7 +9458,7 @@ msgstr "Spojit s"
 
 #. Template: AgentTicketBulk
 msgid "Invalid ticket identifier!"
-msgstr ""
+msgstr "Neplatný identifikátor tiketu!"
 
 #. Template: AgentTicketBulk
 msgid "Merge to oldest"
@@ -9124,7 +9466,7 @@ msgstr "Spojit s nejstarším"
 
 #. Template: AgentTicketBulk
 msgid "Link together"
-msgstr "spárovat dohlromady"
+msgstr "spárovat dohromady"
 
 #. Template: AgentTicketBulk
 msgid "Link to parent"
@@ -9140,7 +9482,7 @@ msgstr "Sestavit odpověď pro tiket"
 
 #. Template: AgentTicketCompose
 msgid "Please include at least one recipient"
-msgstr ""
+msgstr "Prosíme, uveďte alespoň jednoho příjemce"
 
 #. Template: AgentTicketCompose
 msgid "Remove Ticket Customer"
@@ -9148,47 +9490,39 @@ msgstr ""
 
 #. Template: AgentTicketCompose
 msgid "Please remove this entry and enter a new one with the correct value."
-msgstr ""
+msgstr "Prosíme, odstraňte tento záznam a vytvořte nový se správnou hodnotou."
 
 #. Template: AgentTicketCompose
 msgid "Remove Cc"
-msgstr ""
+msgstr "Odstranit Cc"
 
 #. Template: AgentTicketCompose
 msgid "Remove Bcc"
-msgstr ""
+msgstr "Odstranit Bcc"
 
 #. Template: AgentTicketCompose
 msgid "Address book"
 msgstr "Adresář"
 
 #. Template: AgentTicketCompose
-msgid "Pending Date"
-msgstr "Očekávaný čas vyřízení"
-
-#. Template: AgentTicketCompose
-msgid "for pending* states"
-msgstr "pro stavy očekávání*"
-
-#. Template: AgentTicketCompose
 msgid "Date Invalid!"
-msgstr ""
+msgstr "Neplatné datum!"
 
 #. Template: AgentTicketCustomer
 msgid "Change customer of ticket"
-msgstr "Změnit klienta tiketu"
+msgstr "Změnit zákazníkaa tiketu"
 
 #. Template: AgentTicketCustomer
 msgid "Customer user"
-msgstr ""
+msgstr "Zákaznický uživatel"
 
 #. Template: AgentTicketEmail
 msgid "Create New Email Ticket"
-msgstr "Vytvořit Nový Email Tiket"
+msgstr "Vytvořit nový e-mailový tiket"
 
 #. Template: AgentTicketEmail
 msgid "Example Template"
-msgstr ""
+msgstr "Ukázková šablona"
 
 #. Template: AgentTicketEmail
 msgid "From queue"
@@ -9196,7 +9530,7 @@ msgstr "Z fronty"
 
 #. Template: AgentTicketEmail
 msgid "To customer user"
-msgstr ""
+msgstr "Zákaznickému uživateli"
 
 #. Template: AgentTicketEmail
 msgid "Please include at least one customer user for the ticket."
@@ -9216,7 +9550,7 @@ msgstr ""
 
 #. Template: AgentTicketEmailOutbound
 msgid "E-Mail Outbound"
-msgstr ""
+msgstr "Odchozí e-mail"
 
 #. Template: AgentTicketForward
 msgid "Forward ticket: %s - %s"
@@ -9334,6 +9668,10 @@ msgstr "Do fronty"
 msgid "Chat protocol"
 msgstr ""
 
+#. Template: AgentTicketPhone
+msgid "The chat will be appended as a separate article."
+msgstr ""
+
 #. Template: AgentTicketPlain
 msgid "Email Text Plain View"
 msgstr "Zobrazení zdroje tiketu"
@@ -9396,11 +9734,11 @@ msgstr "Uložit změny v šabloně"
 
 #. Template: AgentTicketSearch
 msgid "Filters in use"
-msgstr ""
+msgstr "Použité filtry"
 
 #. Template: AgentTicketSearch
 msgid "Additional filters"
-msgstr ""
+msgstr "Další filtry"
 
 #. Template: AgentTicketSearch
 msgid "Add another attribute"
@@ -9408,7 +9746,7 @@ msgstr "Přidat další atribut"
 
 #. Template: AgentTicketSearch
 msgid "Output"
-msgstr "Forma výsledku"
+msgstr "Formát výsledku"
 
 #. Template: AgentTicketSearch
 msgid "Fulltext"
@@ -9426,19 +9764,19 @@ msgstr ""
 
 #. Template: AgentTicketSearch
 msgid "Customer User Login"
-msgstr "Přihlášení klienta"
+msgstr "Přihlášení zákazníka"
 
 #. Template: AgentTicketSearch
 msgid "Attachment Name"
-msgstr ""
+msgstr "Název přílohy"
 
 #. Template: AgentTicketSearch
 msgid "(e. g. m*file or myfi*)"
-msgstr ""
+msgstr "(např. mu*soubor nebo mujsoub*)"
 
 #. Template: AgentTicketSearch
 msgid "Created in Queue"
-msgstr "Vytvořeno ve Frontě"
+msgstr "Vytvořeno ve frontě"
 
 #. Template: AgentTicketSearch
 msgid "Lock state"
@@ -9573,6 +9911,10 @@ msgid "Article(s)"
 msgstr "Zpráva(y)"
 
 #. Template: AgentTicketZoom
+msgid "Page"
+msgstr "Strana"
+
+#. Template: AgentTicketZoom
 msgid "Add Filter"
 msgstr ""
 
@@ -9630,7 +9972,7 @@ msgstr "Změnit velikost"
 
 #. Template: AgentTicketZoom
 msgid "Mark this article as read"
-msgstr ""
+msgstr "Označit tento text jako přečtený"
 
 #. Template: AgentTicketZoom
 msgid "Show Full Text"
@@ -9642,15 +9984,33 @@ msgstr ""
 
 #. Template: AgentTicketZoom
 msgid "No more events found. Please try changing the filter settings."
+msgstr "Nebyly nalezeny žádné další události. Prosíme, změnte nastavení filtrů."
+
+#. Template: AgentTicketZoom
+msgid ""
+"To open links in the following article, you might need to press Ctrl or Cmd "
+"or Shift key while clicking the link (depending on your browser and OS)."
+msgstr "Pro otevření odkazů z následujícího textu možná bude zapotřebí stisknout klávesu Ctrl, Cmd, nebo Shift současně s kliknutím na odkaz (závisí na vašem přohlížeči a operačním systému)"
+
+#. Template: AgentTicketZoom
+msgid "Close this message"
+msgstr "Zavřít tuto zprávu"
+
+#. Template: AgentTicketZoom
+msgid "Article could not be opened! Perhaps it is on another article page?"
 msgstr ""
 
 #. Template: AttachmentBlocker
 msgid "To protect your privacy, remote content was blocked."
-msgstr ""
+msgstr "Pro ochranu vašeho soukromí byl zablokován vzdálený obsah."
 
 #. Template: AttachmentBlocker
 msgid "Load blocked content."
-msgstr ""
+msgstr "Načíst blokovaný obsah."
+
+#. Template: ChatStartForm
+msgid "First message"
+msgstr "První zpráva"
 
 #. Template: CustomerError
 msgid "Traceback"
@@ -9662,7 +10022,7 @@ msgstr "Vytvořeno"
 
 #. Template: CustomerFooterJS
 msgid "One or more errors occurred!"
-msgstr ""
+msgstr "Nastala jedna, nebo více chyb!"
 
 #. Template: CustomerFooterJS
 msgid "Close this dialog"
@@ -9684,7 +10044,7 @@ msgstr ""
 
 #. Template: CustomerFooterJS
 msgid "The browser you are using is too old."
-msgstr ""
+msgstr "Váš prohlížeč je příliš starý."
 
 #. Template: CustomerFooterJS
 msgid ""
@@ -9698,13 +10058,13 @@ msgstr ""
 
 #. Template: CustomerLogin
 msgid "JavaScript Not Available"
-msgstr ""
+msgstr "JavaScript není povolen"
 
 #. Template: CustomerLogin
 msgid ""
 "In order to experience OTRS, you'll need to enable JavaScript in your "
 "browser."
-msgstr ""
+msgstr "Pro používání OTRS je nutné povolit JavaScript"
 
 #. Template: CustomerLogin
 msgid "Browser Warning"
@@ -9712,7 +10072,7 @@ msgstr ""
 
 #. Template: CustomerLogin
 msgid "One moment please, you are being redirected..."
-msgstr ""
+msgstr "Chvíli strpení, prosím, budete přesměrováni..."
 
 #. Template: CustomerLogin
 msgid "Login"
@@ -9720,27 +10080,27 @@ msgstr "Přihlášení"
 
 #. Template: CustomerLogin
 msgid "User name"
-msgstr ""
+msgstr "Uživatelské jméno"
 
 #. Template: CustomerLogin
 msgid "Your user name"
-msgstr ""
+msgstr "Vaše uživatelské jméno"
 
 #. Template: CustomerLogin
 msgid "Your password"
-msgstr ""
+msgstr "Vaše heslo"
 
 #. Template: CustomerLogin
 msgid "Forgot password?"
-msgstr ""
+msgstr "Zapomněli jste heslo?"
 
 #. Template: CustomerLogin
 msgid "Log In"
-msgstr ""
+msgstr "Přihlásit"
 
 #. Template: CustomerLogin
 msgid "Not yet registered?"
-msgstr ""
+msgstr "Ještě nejste zaregistrováni?"
 
 #. Template: CustomerLogin
 msgid "Request new password"
@@ -9748,11 +10108,11 @@ msgstr "Požádat o nové heslo"
 
 #. Template: CustomerLogin
 msgid "Your User Name"
-msgstr ""
+msgstr "Vaše uživatelské jméno"
 
 #. Template: CustomerLogin
 msgid "A new password will be sent to your email address."
-msgstr ""
+msgstr "Nové heslo bude zasláno na váš e-mail."
 
 #. Template: CustomerLogin
 msgid "Create Account"
@@ -9789,6 +10149,10 @@ msgstr ""
 #. Template: CustomerNavigationBar
 msgid "Edit personal preferences"
 msgstr "Nastavení účtu"
+
+#. Template: CustomerRichTextEditor
+msgid "Split Quote"
+msgstr ""
 
 #. Template: CustomerTicketMessage
 msgid "Service level agreement"
@@ -9889,10 +10253,6 @@ msgstr "Výstup na"
 #. Template: CustomerTicketSearchResultShort
 msgid "of"
 msgstr "z"
-
-#. Template: CustomerTicketSearchResultShort
-msgid "Page"
-msgstr "Strana"
 
 #. Template: CustomerTicketSearchResultShort
 msgid "Search Results for"
@@ -10052,6 +10412,10 @@ msgstr ""
 #. Template: Header
 msgid "You are logged in as"
 msgstr "Jste přihlášen jako"
+
+#. Template: Header
+msgid "There are new chat requests available. Please visit the chat manager."
+msgstr ""
 
 #. Template: Installer
 msgid "JavaScript not available"
@@ -10374,10 +10738,6 @@ msgstr ""
 msgid "Back to the previous page"
 msgstr ""
 
-#. Template: Notify
-msgid "Close this message"
-msgstr ""
-
 #. Template: Pagination
 msgid "Show first page"
 msgstr ""
@@ -10427,6 +10787,10 @@ msgid "Go back to the previous page"
 msgstr ""
 
 #. SysConfig
+msgid " (work units)"
+msgstr ""
+
+#. SysConfig
 msgid "\"%s\"-notification sent to \"%s\"."
 msgstr "\"%s\"- upozornění odesláno na \"%s\"."
 
@@ -10447,10 +10811,18 @@ msgid "(UserLogin) Lastname, Firstname"
 msgstr ""
 
 #. SysConfig
+msgid "A Website"
+msgstr ""
+
+#. SysConfig
 msgid ""
 "A list of dynamic fields that are merged into the main ticket during a merge"
 " operation. Only dynamic fields that are empty in the main ticket will be "
 "set."
+msgstr ""
+
+#. SysConfig
+msgid "A picture"
 msgstr ""
 
 #. SysConfig
@@ -10604,7 +10976,8 @@ msgid ""
 msgstr ""
 
 #. SysConfig
-msgid "Agent interface notification module to check the used charset."
+msgid ""
+"Agent interface notification module to see the number of locked tickets."
 msgstr ""
 
 #. SysConfig
@@ -10626,11 +10999,11 @@ msgstr ""
 
 #. SysConfig
 msgid "Agents <-> Groups"
-msgstr ""
+msgstr "Řešitelé <-> Skupiny"
 
 #. SysConfig
 msgid "Agents <-> Roles"
-msgstr ""
+msgstr "Řešitelé <-> Role"
 
 #. SysConfig
 msgid "All customer users of a CustomerID"
@@ -10802,11 +11175,11 @@ msgstr ""
 
 #. SysConfig
 msgid "Attachments <-> Templates"
-msgstr ""
+msgstr "Přílohy <-> Šablony"
 
 #. SysConfig
 msgid "Auto Responses <-> Queues"
-msgstr ""
+msgstr "Automatické odpovědi <-> Fronty"
 
 #. SysConfig
 msgid "AutoFollowUp sent to \"%s\"."
@@ -10927,7 +11300,7 @@ msgstr "Změna Zákazníka Tiketu"
 
 #. SysConfig
 msgid "Change the free fields for this ticket"
-msgstr ""
+msgstr "Upravit prázdná pole v tomto tiketu"
 
 #. SysConfig
 msgid "Change the priority for this ticket"
@@ -11038,6 +11411,10 @@ msgid "Comment for new history entries in the customer interface."
 msgstr ""
 
 #. SysConfig
+msgid "Comment2"
+msgstr ""
+
+#. SysConfig
 msgid "Company Status"
 msgstr ""
 
@@ -11115,23 +11492,23 @@ msgstr ""
 
 #. SysConfig
 msgid "Create and manage agents."
-msgstr ""
+msgstr "Vytořit a spravovat řešitele."
 
 #. SysConfig
 msgid "Create and manage attachments."
-msgstr ""
+msgstr "Vytvořit a spravovat přílohy."
 
 #. SysConfig
 msgid "Create and manage customer users."
-msgstr ""
+msgstr "Vytvořit a spravovat zákaznické uživatele."
 
 #. SysConfig
 msgid "Create and manage customers."
-msgstr ""
+msgstr "Vytvořit a spravovat zákazníky."
 
 #. SysConfig
 msgid "Create and manage dynamic fields."
-msgstr ""
+msgstr "Vytvořit a spravovat dynamická pole."
 
 #. SysConfig
 msgid "Create and manage event based notifications."
@@ -11139,15 +11516,15 @@ msgstr ""
 
 #. SysConfig
 msgid "Create and manage groups."
-msgstr ""
+msgstr "Vytvořit a spravovat skupiny."
 
 #. SysConfig
 msgid "Create and manage queues."
-msgstr ""
+msgstr "Vytvořit a spravovat fronty"
 
 #. SysConfig
 msgid "Create and manage responses that are automatically sent."
-msgstr ""
+msgstr "Vytvořit a spravovat automatické odpovědi."
 
 #. SysConfig
 msgid "Create and manage roles."
@@ -11155,27 +11532,27 @@ msgstr ""
 
 #. SysConfig
 msgid "Create and manage salutations."
-msgstr ""
+msgstr "Vytvořit a spravovat pozdravy."
 
 #. SysConfig
 msgid "Create and manage services."
-msgstr ""
+msgstr "Vytvořit a spravovat služby"
 
 #. SysConfig
 msgid "Create and manage signatures."
-msgstr ""
+msgstr "Vytvořit a spravovat podpisy."
 
 #. SysConfig
 msgid "Create and manage templates."
-msgstr ""
+msgstr "Vytvořit a spravovat šablony."
 
 #. SysConfig
 msgid "Create and manage ticket priorities."
-msgstr ""
+msgstr "Vytvořit a spravovat priority tiketů."
 
 #. SysConfig
 msgid "Create and manage ticket states."
-msgstr ""
+msgstr "Vytvořit a spravovat stavy tiketů."
 
 #. SysConfig
 msgid "Create and manage ticket types."
@@ -11187,7 +11564,7 @@ msgstr ""
 
 #. SysConfig
 msgid "Create new email ticket and send this out (outbound)"
-msgstr ""
+msgstr "Vytvořit a odelsat nový e-mailový tiket (odchozí)"
 
 #. SysConfig
 msgid "Create new phone ticket (inbound)"
@@ -11198,6 +11575,10 @@ msgid "Create new process ticket"
 msgstr ""
 
 #. SysConfig
+msgid "Custom RSS Feed"
+msgstr ""
+
+#. SysConfig
 msgid ""
 "Custom text for the page shown to customers that have no tickets yet (if you"
 " need those text translated add them to a custom translation module)."
@@ -11205,23 +11586,23 @@ msgstr ""
 
 #. SysConfig
 msgid "Customer Administration"
-msgstr ""
+msgstr "Správa zákazníků"
 
 #. SysConfig
 msgid "Customer User <-> Groups"
-msgstr ""
+msgstr "Zákaznický uživatel <-> Skupiny"
 
 #. SysConfig
 msgid "Customer User <-> Services"
-msgstr ""
+msgstr "Zákaznický uživatel <-> Služby"
 
 #. SysConfig
 msgid "Customer User Administration"
-msgstr ""
+msgstr "Správa uživatelů zákazníka"
 
 #. SysConfig
 msgid "Customer Users"
-msgstr "Uživatelé Zákazníka"
+msgstr "Uživatelé zákazníka"
 
 #. SysConfig
 msgid "Customer called us."
@@ -11246,12 +11627,20 @@ msgid "Customer request via web."
 msgstr "Webový požadavek Zákazníka."
 
 #. SysConfig
-msgid "CustomerName"
+msgid "Customer user search"
 msgstr ""
 
 #. SysConfig
-msgid "Customers <-> Groups"
+msgid "CustomerID search"
 msgstr ""
+
+#. SysConfig
+msgid "CustomerName"
+msgstr "Jméno zákazníka"
+
+#. SysConfig
+msgid "Customers <-> Groups"
+msgstr "Zákazníci <-> Skupiny"
 
 #. SysConfig
 msgid "Data used to export the search result in CSV format."
@@ -11359,6 +11748,18 @@ msgstr ""
 
 #. SysConfig
 msgid "Define the max depth of queues."
+msgstr ""
+
+#. SysConfig
+msgid "Define the queue comment 2."
+msgstr ""
+
+#. SysConfig
+msgid "Define the service comment 2."
+msgstr ""
+
+#. SysConfig
+msgid "Define the sla comment 2."
 msgstr ""
 
 #. SysConfig
@@ -12699,6 +13100,12 @@ msgstr ""
 
 #. SysConfig
 msgid ""
+"Defines the module to display a notification in different interfaces on "
+"different occasions for OTRS Business Solution™."
+msgstr ""
+
+#. SysConfig
+msgid ""
 "Defines the module to display a notification in the agent interface if the "
 "scheduler is not running."
 msgstr ""
@@ -13011,7 +13418,7 @@ msgstr ""
 #. SysConfig
 msgid ""
 "Defines the receipent target of the phone ticket and the sender of the email"
-" ticket (\"Queue\" shows all queues, \"SystemAddress\" displays all system "
+" ticket (\"Queue\" shows all queues, \"System address\" displays all system "
 "addresses) in the agent interface."
 msgstr ""
 
@@ -13267,6 +13674,10 @@ msgstr ""
 
 #. SysConfig
 msgid "Deletes requested sessions if they have timed out."
+msgstr ""
+
+#. SysConfig
+msgid "Deploy and manage OTRS Business Solution™."
 msgstr ""
 
 #. SysConfig
@@ -13769,7 +14180,11 @@ msgstr ""
 
 #. SysConfig
 msgid "Escalation view"
-msgstr "Zobrazit vyeskalované"
+msgstr "Zobrazit eskalované"
+
+#. SysConfig
+msgid "EscalationTime"
+msgstr ""
 
 #. SysConfig
 msgid ""
@@ -13874,6 +14289,10 @@ msgid "Filter incoming emails."
 msgstr ""
 
 #. SysConfig
+msgid "First Queue"
+msgstr ""
+
+#. SysConfig
 msgid "FirstLock"
 msgstr ""
 
@@ -13963,6 +14382,10 @@ msgstr "Motiv prostředí"
 
 #. SysConfig
 msgid "Fulltext index regex filters to remove parts of the text."
+msgstr ""
+
+#. SysConfig
+msgid "Fulltext search"
 msgstr ""
 
 #. SysConfig
@@ -14367,6 +14790,12 @@ msgstr ""
 
 #. SysConfig
 msgid ""
+"If enabled, the customer can search for tickets in all services (regardless "
+"what services are assigned to the customer)."
+msgstr ""
+
+#. SysConfig
+msgid ""
 "If enabled, the different overviews (Dashboard, LockedView, QueueView) will "
 "automatically refresh after the specified time."
 msgstr "Když zapnuto, různe přehledy (Nástěnka, Zamčené Tikety, Náhled Fronty) budou automaticky znovunačteny."
@@ -14499,6 +14928,10 @@ msgid "Lastname, Firstname (UserLogin)"
 msgstr ""
 
 #. SysConfig
+msgid "Left"
+msgstr ""
+
+#. SysConfig
 msgid "Link agents to groups."
 msgstr ""
 
@@ -14597,6 +15030,10 @@ msgstr ""
 msgid ""
 "List of default Standard Templates which are assigned automatically to new "
 "Queues upon creation."
+msgstr ""
+
+#. SysConfig
+msgid "List view"
 msgstr ""
 
 #. SysConfig
@@ -14837,15 +15274,15 @@ msgstr ""
 
 #. SysConfig
 msgid "My Queues and My Services"
-msgstr ""
+msgstr "Moje fronty a moje služby"
 
 #. SysConfig
 msgid "My Queues or My Services"
-msgstr ""
+msgstr "Moje fronty nebo moje služby"
 
 #. SysConfig
 msgid "My Services"
-msgstr ""
+msgstr "Moje služby"
 
 #. SysConfig
 msgid "My Tickets"
@@ -14870,6 +15307,10 @@ msgstr ""
 #. SysConfig
 msgid "New Ticket [%s] created (Q=%s;P=%s;S=%s)."
 msgstr "Nový Tiket [%s] vytvořen (Q=%s;P=%s;S=%s)."
+
+#. SysConfig
+msgid "New Window"
+msgstr ""
 
 #. SysConfig
 msgid "New email ticket"
@@ -14908,6 +15349,10 @@ msgid "No Notification"
 msgstr ""
 
 #. SysConfig
+msgid "None"
+msgstr ""
+
+#. SysConfig
 msgid "Notification sent to \"%s\"."
 msgstr "Upozornění odesláno na \"%s\"."
 
@@ -14942,16 +15387,20 @@ msgid "Old: \"%s\" New: \"%s\""
 msgstr "Starý: \"%s\" Nový: \"%s\""
 
 #. SysConfig
-msgid "Open tickets (customer user)"
+msgid "Online"
 msgstr ""
+
+#. SysConfig
+msgid "Open tickets (customer user)"
+msgstr "Otevřené tikety (uživatel)"
 
 #. SysConfig
 msgid "Open tickets (customer)"
-msgstr ""
+msgstr "Otevřené tikety (zákazník)"
 
 #. SysConfig
 msgid "Out Of Office"
-msgstr ""
+msgstr "Mimo kancelář"
 
 #. SysConfig
 msgid ""
@@ -14961,7 +15410,7 @@ msgstr ""
 
 #. SysConfig
 msgid "Overview Escalated Tickets"
-msgstr ""
+msgstr "Přehled eskalovaných tiketů"
 
 #. SysConfig
 msgid "Overview Refresh Time"
@@ -14969,7 +15418,7 @@ msgstr "Čas znovunačtení přehledu"
 
 #. SysConfig
 msgid "Overview of all open Tickets."
-msgstr ""
+msgstr "Přehled všech otevřených tiketů"
 
 #. SysConfig
 msgid "PGP Key Management"
@@ -15434,11 +15883,21 @@ msgid ""
 msgstr ""
 
 #. SysConfig
+msgid "Right"
+msgstr ""
+
+#. SysConfig
 msgid "Roles <-> Groups"
 msgstr "Role <-> Skupiny"
 
 #. SysConfig
 msgid "Running Process Tickets"
+msgstr ""
+
+#. SysConfig
+msgid ""
+"Runs an initial wildcard search of the existing customer company when "
+"accessing the AdminCustomerCompany module."
 msgstr ""
 
 #. SysConfig
@@ -15460,12 +15919,17 @@ msgid "S/MIME Certificate Upload"
 msgstr ""
 
 #. SysConfig
+msgid "Sample command output"
+msgstr ""
+
+#. SysConfig
 msgid ""
 "Saves the attachments of articles. \"DB\" stores all data in the database "
 "(not recommended for storing big attachments). \"FS\" stores the data on the"
 " filesystem; this is faster but the webserver should run under the OTRS "
 "user. You can switch between the modules even on a system that is already in"
-" production without any loss of data."
+" production without any loss of data. Note: Searching for attachment names "
+"is not supported when \"FS\" is used."
 msgstr ""
 
 #. SysConfig
@@ -15486,6 +15950,10 @@ msgstr ""
 
 #. SysConfig
 msgid "Search backend router."
+msgstr ""
+
+#. SysConfig
+msgid "Second Queue"
 msgstr ""
 
 #. SysConfig
@@ -15589,7 +16057,7 @@ msgstr ""
 
 #. SysConfig
 msgid "Service view"
-msgstr ""
+msgstr "Zobrazit službu"
 
 #. SysConfig
 msgid "Set sender email addresses for this system."
@@ -16728,6 +17196,14 @@ msgid "SolutionInMin"
 msgstr ""
 
 #. SysConfig
+msgid "Some description!"
+msgstr ""
+
+#. SysConfig
+msgid "Some picture description!"
+msgstr ""
+
+#. SysConfig
 msgid ""
 "Sorts the tickets (ascendingly or descendingly) when a single queue is "
 "selected in the queue view and after the tickets are sorted by priority. "
@@ -16923,6 +17399,14 @@ msgstr ""
 
 #. SysConfig
 msgid ""
+"Specify the channel to be used to fetch OTRS Business Solution™ updates. "
+"Warning: Development releases might not be complete, your system might "
+"experience unrecoverable errors and on extreme cases could become "
+"unresponsive!"
+msgstr ""
+
+#. SysConfig
+msgid ""
 "Standard available permissions for agents within the application. If more "
 "permissions are needed, they can be entered here. Permissions must be "
 "defined to be effective. Some other good permissions have also been provided"
@@ -16952,7 +17436,7 @@ msgstr "Statistiky"
 
 #. SysConfig
 msgid "Status view"
-msgstr "Zobrazit status"
+msgstr "Zobrazit stav"
 
 #. SysConfig
 msgid "Stop words for fulltext index. These words will be removed."
@@ -16972,7 +17456,7 @@ msgstr ""
 
 #. SysConfig
 msgid "System Maintenance"
-msgstr ""
+msgstr "Údržba systému"
 
 #. SysConfig
 msgid "System Request (%s)."
@@ -16980,11 +17464,11 @@ msgstr ""
 
 #. SysConfig
 msgid "Templates <-> Queues"
-msgstr ""
+msgstr "Šablony <-> Fronty"
 
 #. SysConfig
 msgid "Textarea"
-msgstr ""
+msgstr "Textové pole"
 
 #. SysConfig
 msgid ""
@@ -17155,7 +17639,7 @@ msgstr ""
 
 #. SysConfig
 msgid "Ticket Queue Overview"
-msgstr ""
+msgstr "Přehled tiketů ve frontách"
 
 #. SysConfig
 msgid "Ticket event module that triggers the escalation stop events."
@@ -17189,6 +17673,16 @@ msgstr ""
 
 #. SysConfig
 msgid "Toolbar Item for a shortcut."
+msgstr ""
+
+#. SysConfig
+msgid "Tree view"
+msgstr ""
+
+#. SysConfig
+msgid ""
+"Turns off SSL certificate validation, for example if you use a transparent "
+"HTTPS proxy. Use at your own risk!"
 msgstr ""
 
 #. SysConfig
@@ -17319,6 +17813,10 @@ msgstr ""
 
 #. SysConfig
 msgid "Write a new, outgoing mail"
+msgstr "Napsat nový, odchozí e-mail"
+
+#. SysConfig
+msgid "Yes, but hide archived tickets"
 msgstr ""
 
 #. SysConfig

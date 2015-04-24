@@ -1,6 +1,6 @@
 # --
 # WebRequest.t - WebRequest tests
-# Copyright (C) 2001-2014 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -16,9 +16,12 @@ use vars (qw($Self));
 use CGI;
 
 {
-    local $ENV{REQUEST_METHOD} = 'GET';
-    local $ENV{QUERY_STRING}   = 'a=4;b=5';
+    local %ENV = (
+        REQUEST_METHOD => 'GET',
+        QUERY_STRING   => 'a=4;b=5',
+    );
 
+    CGI->initialize_globals();
     my $Request = $Kernel::OM->Get('Kernel::System::Web::Request');
 
     my @ParamNames = $Request->GetParamNames();

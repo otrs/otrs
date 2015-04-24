@@ -1,6 +1,6 @@
 # --
 # Kernel/System/Ticket/Event/NotificationEvent.pm - a event module to send notifications
-# Copyright (C) 2001-2014 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -354,14 +354,18 @@ sub _SendNotificationToRecipients {
                         $Article{ResponsibleID};
                 }
                 elsif ( $Recipient eq 'AgentWritePermissions' ) {
+
                     my $GroupID = $QueueObject->GetQueueGroupID(
                         QueueID => $Article{QueueID},
                     );
-                    my @UserIDs = $GroupObject->GroupMemberList(
+
+                    my %UserList = $GroupObject->PermissionUserGet(
                         GroupID => $GroupID,
                         Type    => 'rw',
-                        Result  => 'ID',
                     );
+
+                    my @UserIDs = sort keys %UserList;
+
                     push @{ $Param{Notification}->{Data}->{RecipientAgents} }, @UserIDs;
                 }
             }
@@ -492,14 +496,13 @@ sub _SendNotificationToRecipients {
         RECIPIENT:
         for my $Group ( @{ $Param{Notification}->{Data}->{RecipientGroups} } ) {
 
-            my @GroupMemberList = $GroupObject->GroupMemberList(
-                Result  => 'ID',
-                Type    => 'ro',
+            my %GroupMemberList = $GroupObject->PermissionUserGet(
                 GroupID => $Group,
+                Type    => 'ro',
             );
 
             GROUPMEMBER:
-            for my $Recipient (@GroupMemberList) {
+            for my $Recipient ( sort keys %GroupMemberList ) {
 
                 next GROUPMEMBER if $Recipient == 1;
                 next GROUPMEMBER if $AgentUsed{$Recipient};
@@ -527,13 +530,12 @@ sub _SendNotificationToRecipients {
         RECIPIENT:
         for my $Role ( @{ $Param{Notification}->{Data}->{RecipientRoles} } ) {
 
-            my @RoleMemberList = $GroupObject->GroupUserRoleMemberList(
-                Result => 'ID',
+            my %RoleMemberList = $GroupObject->PermissionRoleUserGet(
                 RoleID => $Role,
             );
 
             ROLEMEMBER:
-            for my $Recipient (@RoleMemberList) {
+            for my $Recipient ( sort keys %RoleMemberList ) {
 
                 next ROLEMEMBER if $Recipient == 1;
                 next ROLEMEMBER if $AgentUsed{$Recipient};
@@ -636,20 +638,6 @@ sub _SendNotification {
     # get recipient data
     my %Recipient = %{ $Param{Recipient} };
 
-    # convert values to html to get correct line breaks etc.
-    if ( $Notification{Type} =~ m{text\/html} ) {
-
-        KEY:
-        for my $Key ( sort keys %Recipient ) {
-
-            next KEY if !$Recipient{$Key};
-
-            $Recipient{$Key} = $HTMLUtilsObject->ToHTML(
-                String => $Recipient{$Key},
-            );
-        }
-    }
-
     # get ticket object
     my $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
 
@@ -726,7 +714,7 @@ sub _SendNotification {
 
         my $RealName = $CustomerUserObject->CustomerName(
             UserLogin => $Ticket{CustomerUserID}
-        ) || $Recipient{Realname};
+        ) || $Recipient{Realname} || '';
 
         $Notification{Body} =~ s/${Start}OTRS_CUSTOMER_REALNAME${End}/$RealName/g;
     }

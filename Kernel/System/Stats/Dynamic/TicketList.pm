@@ -1,6 +1,6 @@
 # --
 # Kernel/System/Stats/Dynamic/TicketList.pm - reporting via ticket lists
-# Copyright (C) 2001-2014 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -40,8 +40,6 @@ sub new {
     # allocate new hash for object
     my $Self = {};
     bless( $Self, $Type );
-
-    $Self->{DBSlaveObject} = $Param{DBSlaveObject} || $Kernel::OM->Get('Kernel::System::DB');
 
     # get the dynamic fields for ticket object
     $Self->{DynamicField} = $Kernel::OM->Get('Kernel::System::DynamicField')->DynamicFieldListGet(
@@ -571,17 +569,19 @@ sub GetObjectAttributes {
         push @ObjectAttributes, @ObjectAttributeAdd;
     }
 
+    my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
+
     if ( $ConfigObject->Get('Stats::CustomerIDAsMultiSelect') ) {
 
         # Get CustomerID
         # (This way also can be the solution for the CustomerUserID)
-        $Self->{DBSlaveObject}->Prepare(
+        $DBObject->Prepare(
             SQL => "SELECT DISTINCT customer_id FROM ticket",
         );
 
         # fetch the result
         my %CustomerID;
-        while ( my @Row = $Self->{DBSlaveObject}->FetchrowArray() ) {
+        while ( my @Row = $DBObject->FetchrowArray() ) {
             if ( $Row[0] ) {
                 $CustomerID{ $Row[0] } = $Row[0];
             }
@@ -763,6 +763,8 @@ sub GetStatTable {
     my %TicketAttributes = map { $_ => 1 } @{ $Param{XValue}{SelectedValues} };
     my $SortedAttributesRef = $Self->_SortedAttributes();
 
+    my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
+
     # check if a enumeration is requested
     my $AddEnumeration = 0;
     if ( $TicketAttributes{Number} ) {
@@ -796,13 +798,13 @@ sub GetStatTable {
         if ( ref $Param{Restrictions}->{$Key} ) {
             if ( ref $Param{Restrictions}->{$Key} eq 'ARRAY' ) {
                 $Param{Restrictions}->{$Key} = [
-                    map { $Self->{DBSlaveObject}->QueryStringEscape( QueryString => $_ ) }
+                    map { $DBObject->QueryStringEscape( QueryString => $_ ) }
                         @{ $Param{Restrictions}->{$Key} }
                 ];
             }
         }
         else {
-            $Param{Restrictions}->{$Key} = $Self->{DBSlaveObject}->QueryStringEscape(
+            $Param{Restrictions}->{$Key} = $DBObject->QueryStringEscape(
                 QueryString => $Param{Restrictions}->{$Key}
             );
         }
@@ -1067,7 +1069,7 @@ sub GetStatTable {
 
         $SQL = 'SELECT ticket_id, state_id, create_time FROM ticket_history WHERE ' . $SQL;
 
-        $Self->{DBSlaveObject}->Prepare( SQL => $SQL );
+        $DBObject->Prepare( SQL => $SQL );
 
         # Structure:
         # Stores the last TicketState:
@@ -1075,7 +1077,7 @@ sub GetStatTable {
         my %FoundTickets;
 
         # fetch the result
-        while ( my @Row = $Self->{DBSlaveObject}->FetchrowArray() ) {
+        while ( my @Row = $DBObject->FetchrowArray() ) {
             if ( $Row[0] ) {
                 my $TicketID    = $Row[0];
                 my $StateID     = $Row[1];
@@ -1472,7 +1474,7 @@ sub _TicketAttributes {
 
         #LockID         => 'LockID',
         UnlockTimeout       => 'UnlockTimeout',
-        AccountedTime       => 'Accounted time',        # the same wording is in AgentTicketPrint.dtl
+        AccountedTime       => 'Accounted time',        # the same wording is in AgentTicketPrint.tt
         RealTillTimeNotUsed => 'RealTillTimeNotUsed',
 
         #GroupID        => 'GroupID',

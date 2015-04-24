@@ -1,6 +1,6 @@
 # --
 # Kernel/Output/HTML/NotificationGeneric.pm
-# Copyright (C) 2001-2014 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -35,9 +35,15 @@ sub Run {
         Priority => 'Warning',
     );
 
-    # switch to priotity error
+    # Check which class to add
     if ( $Param{Config}->{Priority} && $Param{Config}->{Priority} eq 'Error' ) {
         $Arguments{Priority} = 'Error';
+    }
+    elsif ( $Param{Config}->{Priority} && $Param{Config}->{Priority} eq 'Success' ) {
+        $Arguments{Priority} = 'Success';
+    }
+    elsif ( $Param{Config}->{Priority} && $Param{Config}->{Priority} eq 'Info' ) {
+        $Arguments{Priority} = 'Info';
     }
 
     if ( $Param{Config}->{Text} ) {

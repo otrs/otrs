@@ -1,6 +1,6 @@
 # --
 # Selenium.pm - run frontend tests
-# Copyright (C) 2001-2014 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -246,6 +246,15 @@ sub Login {
 
         # login
         $Element->submit();
+
+        # Wait until form has loaded, if neccessary
+        ACTIVESLEEP:
+        for my $Second ( 1 .. 20 ) {
+            if ( $Self->execute_script("return \$('a#LogoutButton').length") ) {
+                last ACTIVESLEEP;
+            }
+            sleep 1;
+        }
 
         # login succressful?
         $Element = $Self->find_element( 'a#LogoutButton', 'css' );

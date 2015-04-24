@@ -13,17 +13,23 @@ var Core = Core || {};
 Core.Agent = Core.Agent || {};
 
 /**
- * @namespace
- * @exports TargetNS as Core.Agent.Search
+ * @namespace Core.Agent.Search
+ * @memberof Core.Agent
+ * @author OTRS AG
  * @description
  *      This namespace contains the special module functions for the search.
  */
 Core.Agent.Search = (function (TargetNS) {
 
+    var AJAXStopWordCheckRunning = false;
+
     /**
+     * @name AdditionalAttributeSelectionRebuild
+     * @memberof Core.Agent.Search
      * @function
-     * @return nothing
-     *      This function rebuild attribute selection, only show available attributes.
+     * @returns {Boolean} Returns true.
+     * @description
+     *      This function rebuilds attribute selection, only show available attributes.
      */
     TargetNS.AdditionalAttributeSelectionRebuild = function () {
 
@@ -42,9 +48,12 @@ Core.Agent.Search = (function (TargetNS) {
     };
 
     /**
+     * @name SearchAttributeAdd
+     * @memberof Core.Agent.Search
      * @function
-     * @param {String} of attribute to add.
-     * @return nothing
+     * @returns {Boolean} Returns false.
+     * @param {String} Attribute - Name of attribute to add.
+     * @description
      *      This function adds one attributes for search.
      */
     TargetNS.SearchAttributeAdd = function (Attribute) {
@@ -77,13 +86,13 @@ Core.Agent.Search = (function (TargetNS) {
     };
 
     /**
+     * @name SearchAttributeRemove
+     * @memberof Core.Agent.Search
      * @function
-     * @param {jQueryObject} $Element The jQuery object of the form  or any element
-     *      within this form check.
-     * @return nothing
-     *      This function remove attributes from an element.
+     * @param {jQueryObject} $Element - The jQuery object of the form or any element within this form check.
+     * @description
+     *      This function removes attributes from an element.
      */
-
     TargetNS.SearchAttributeRemove = function ($Element) {
         $Element.prev().prev().remove();
         $Element.prev().remove();
@@ -91,8 +100,11 @@ Core.Agent.Search = (function (TargetNS) {
     };
 
     /**
+     * @name AdditionalAttributeSelectionRebuild
+     * @memberof Core.Agent.Search
      * @function
-     * @return nothing
+     * @returns {Boolean} Returns true.
+     * @description
      *      This function rebuild attribute selection, only show available attributes.
      */
     TargetNS.AdditionalAttributeSelectionRebuild = function () {
@@ -118,11 +130,13 @@ Core.Agent.Search = (function (TargetNS) {
     };
 
     /**
-     * @function
      * @private
-     * @param {String} Profile The profile name that will be delete.
-     * @return nothing
-     * @description Delete a profile via an ajax requests.
+     * @name SearchProfileDelete
+     * @memberof Core.Agent.Search
+     * @function
+     * @param {String} Profile - The profile name that will be delete.
+     * @description
+     *      Delete a profile via an ajax requests.
      */
     function SearchProfileDelete(Profile) {
         var Data = {
@@ -138,12 +152,15 @@ Core.Agent.Search = (function (TargetNS) {
     }
 
     /**
-     * @function
      * @private
-     * @return 0 if no values were found, 1 if values where there
-     * @description Checks if any values were entered in the search.
-     *              If nothing at all exists, it alerts with translated:
-     *              "Please enter at least one search value or * to find anything"
+     * @name CheckForSearchedValues
+     * @memberof Core.Agent.Search
+     * @function
+     * @returns {Boolean} False if no values were found, true if values where there.
+     * @description
+     *      Checks if any values were entered in the search.
+     *      If nothing at all exists, it alerts with translated:
+     *      "Please enter at least one search value or * to find anything"
      */
     function CheckForSearchedValues() {
         // loop through the SerachForm labels
@@ -193,23 +210,27 @@ Core.Agent.Search = (function (TargetNS) {
     }
 
     /**
-     * @function
      * @private
-     * @return nothing
-     * @description Shows waiting dialog until search screen is ready.
+     * @name ShowWaitingDialog
+     * @memberof Core.Agent.Search
+     * @function
+     * @description
+     *      Shows waiting dialog until search screen is ready.
      */
     function ShowWaitingDialog(){
         Core.UI.Dialog.ShowContentDialog('<div class="Spacing Center"><span class="AJAXLoader" title="' + Core.Config.Get('LoadingMsg') + '"></span></div>', Core.Config.Get('LoadingMsg'), '10px', 'Center', true);
     }
 
     /**
+     * @name OpenSearchDialog
+     * @memberof Core.Agent.Search
      * @function
-     * @param {String} Action which is used in framework right now.
-     * @param {String} Used profile name.
-     * @return nothing
+     * @param {String} Action - Action which is used in framework right now.
+     * @param {String} Profile - Used profile name.
+     * @param {Boolean} EmptySearch
+     * @description
      *      This function open the search dialog after clicking on "search" button in nav bar.
      */
-
     TargetNS.OpenSearchDialog = function (Action, Profile, EmptySearch) {
 
         var Referrer = Core.Config.Get('Action'),
@@ -310,8 +331,10 @@ Core.Agent.Search = (function (TargetNS) {
                             return false;
                         }
                         else {
-                           $('#SearchForm').submit();
-                           ShowWaitingDialog();
+                            CheckSearchStringsForStopWords( function () {
+                                $('#SearchForm').submit();
+                                ShowWaitingDialog();
+                           });
                         }
                     }
                     else { // Print and CSV should open in a new window, no waiting dialog
@@ -320,8 +343,10 @@ Core.Agent.Search = (function (TargetNS) {
                             return false;
                         }
                         else {
-                           $('#SearchForm').submit();
-                           $('#SearchForm').attr('target', '');
+                            CheckSearchStringsForStopWords( function () {
+                                $('#SearchForm').submit();
+                                $('#SearchForm').attr('target', '');
+                            });
                         }
                     }
                     return false;
@@ -433,6 +458,170 @@ Core.Agent.Search = (function (TargetNS) {
 
             }, 'html'
         );
+    };
+
+    /**
+     * @private
+     * @name CheckSearchStringsForStopWords
+     * @memberof Core.Agent.Search
+     * @function
+     * @param {Function} Callback - function to execute, if no stop words were found.
+     * @description Checks if specific values of the search form contain stop words.
+     *              If stop words are present, a warning will be displayed.
+     *              If stop words are not present, the given callback will be executed.
+     */
+    function CheckSearchStringsForStopWords(Callback) {
+        var SearchStrings = {},
+            SearchStringsFound = 0,
+            RelevantElementNames = {
+                'From': 1,
+                'To': 1,
+                'Cc': 1,
+                'Subject': 1,
+                'Body': 1,
+                'Fulltext': 1
+            },
+            StopWordCheckData;
+
+        if (!Core.Config.Get('CheckSearchStringsForStopWords')) {
+            Callback();
+            return;
+        }
+
+        $('#SearchForm label').each(function () {
+            var ElementName,
+                $Element,
+                $LabelElement = $(this),
+                $FieldElement = $LabelElement.next('.Field');
+
+            // those with ID's are used for searching
+            if ( $(this).attr('id') ) {
+
+                // substring "Label" (e.g. first five characters ) from the
+                // label id, use the remaining name as name string for accessing
+                // the form input's value
+                ElementName = $(this).attr('id').substring(5);
+                if ( !RelevantElementNames[ElementName] ) {
+                    return;
+                }
+
+                $Element = $('#SearchForm input[name='+ElementName+']');
+
+                if ($Element.length) {
+                    if ( $Element.val() && $Element.val() !== '' ) {
+                        SearchStrings[ElementName] = $Element.val();
+                        SearchStringsFound = 1;
+                    }
+                }
+            }
+        });
+
+        // Check if stop words are present.
+        if (!SearchStringsFound) {
+            Callback();
+            return;
+        }
+
+        AJAXStopWordCheck(
+            SearchStrings,
+            function (FoundStopWords) {
+                alert(Core.Config.Get('SearchStringsContainStopWordsMsg') + "\n" + FoundStopWords);
+            },
+            Callback
+        );
+    }
+
+    /**
+     * @function
+     * @private
+     * @param {Array} Search strings to check for stop words.
+     * @param {Function} Callback function to execute if stop words were found.
+     * @param {Function} Callback function to execute if no stop words were found.
+     * @return nothing
+     * @description Checks if the given search strings contain stop words.
+     */
+
+    function AJAXStopWordCheck(SearchStrings, CallbackStopWordsFound, CallbackNoStopWordsFound) {
+        var StopWordCheckData = {
+            Action:        'AgentTicketSearch',
+            Subaction:     'AJAXStopWordCheck',
+            SearchStrings: SearchStrings
+        };
+
+        // Prevent multiple stop word checks
+        if (AJAXStopWordCheckRunning) {
+            return;
+        }
+        AJAXStopWordCheckRunning = true;
+        Core.Form.DisableForm($('#SearchForm'));
+
+        Core.AJAX.FunctionCall(
+            Core.Config.Get('CGIHandle'),
+            StopWordCheckData,
+            function (Result) {
+                var FoundStopWords = '';
+
+                $.each( Result.FoundStopWords , function (Key, StopWords) {
+                    var TranslatedKey = Core.Config.Get('FieldTitle' + Key);
+
+                    if ( !StopWords.length ) {
+                        return;
+                    }
+
+                    if (!TranslatedKey) {
+                        TranslatedKey = Key;
+                    }
+
+                    FoundStopWords +=
+                        TranslatedKey
+                        + ': '
+                        + StopWords.join(', ')
+                        + "\n";
+                });
+
+                AJAXStopWordCheckRunning = false;
+                Core.Form.EnableForm($('#SearchForm'));
+
+                if (FoundStopWords.length) {
+                     CallbackStopWordsFound(FoundStopWords);
+                }
+                else {
+                    CallbackNoStopWordsFound();
+                }
+            }
+        );
+    }
+
+    /**
+     * @function
+     * @return nothing
+     * @description Inits toolbar fulltext search.
+     */
+
+    TargetNS.InitToolbarFulltextSearch = function () {
+
+        // register return key
+        $('#ToolBar li.Extended.SearchFulltext form[name="SearchFulltext"]').unbind('keypress.FilterInput').bind('keypress.FilterInput', function (Event) {
+            if ((Event.charCode || Event.keyCode) === 13) {
+                var SearchString = $('#Fulltext').val();
+
+                if (!SearchString.length || !Core.Config.Get('CheckSearchStringsForStopWords')) {
+                    return true;
+                }
+
+                AJAXStopWordCheck(
+                    { Fulltext: SearchString },
+                    function (FoundStopWords) {
+                        alert(Core.Config.Get('SearchStringsContainStopWordsMsg') + "\n" + FoundStopWords);
+                    },
+                    function () {
+                        $('#ToolBar li.Extended.SearchFulltext form[name="SearchFulltext"]').submit();
+                    }
+                );
+
+                return false;
+            }
+        });
     };
 
     return TargetNS;

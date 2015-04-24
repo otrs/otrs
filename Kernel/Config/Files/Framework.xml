@@ -61,7 +61,7 @@
         <Group>Framework</Group>
         <SubGroup>Core</SubGroup>
         <Setting>
-            <String Regex="">OTRS 4</String>
+            <String Regex="">OTRS 5</String>
         </Setting>
     </ConfigItem>
     <ConfigItem Name="SystemID" Required="1" Valid="1" ConfigLevel="200">
@@ -152,7 +152,7 @@
                 <Item Key="hr">Hrvatski</Item>
                 <Item Key="hu">Magyar</Item>
                 <Item Key="it">Italiano</Item>
-                <Item Key="ja">Japanese (&amp;#x65e5;&amp;#x672c;&amp;#x8a9e)</Item>
+                <Item Key="ja">Japanese (&amp;#x65e5;&amp;#x672c;&amp;#x8a9e;)</Item>
                 <Item Key="lt">Lietuvi&#371; kalba</Item>
                 <Item Key="lv">Latvijas</Item>
                 <Item Key="ms">Malay</Item>
@@ -611,6 +611,19 @@
             </Option>
         </Setting>
     </ConfigItem>
+    <ConfigItem Name="MinimumLogLevel" Required="1" Valid="1">
+        <Description Translatable="1">Set minimum loglevel. If you select 'error', just errors are logged. With 'debug' you get all logging messages.</Description>
+        <Group>Framework</Group>
+        <SubGroup>Core::Log</SubGroup>
+        <Setting>
+            <Option SelectedID="error">
+                <Item Key="error">error</Item>
+                <Item Key="notice">notice</Item>
+                <Item Key="info">info</Item>
+                <Item Key="debug">debug</Item>
+            </Option>
+        </Setting>
+    </ConfigItem>
     <ConfigItem Name="SendmailModule" Required="1" Valid="1" ConfigLevel="200">
         <Description Translatable="1">Defines the module to send emails. "Sendmail" directly uses the sendmail binary of your operating system. Any of the "SMTP" mechanisms use a specified (external) mailserver. "DoNotSendEmail" doesn't send emails and it is useful for test systems.</Description>
         <Group>Framework</Group>
@@ -724,7 +737,7 @@
         </Setting>
     </ConfigItem>
     <ConfigItem Name="InfoFile" Required="1" Valid="1" ConfigLevel="300">
-        <Description Translatable="1">File that is displayed in the Kernel::Modules::AgentInfo module, if located under Kernel/Output/HTML/Standard/AgentInfo.dtl.</Description>
+        <Description Translatable="1">File that is displayed in the Kernel::Modules::AgentInfo module, if located under Kernel/Output/HTML/Standard/AgentInfo.tt.</Description>
         <Group>Framework</Group>
         <SubGroup>Frontend::Agent</SubGroup>
         <Setting>
@@ -2908,6 +2921,17 @@
             <String Regex="">http://proxy.sn.no:8001/</String>
         </Setting>
     </ConfigItem>
+    <ConfigItem Name="WebUserAgent::DisableSSLVerification" Required="0" Valid="0" ConfigLevel="200">
+        <Description Translatable="1">Turns off SSL certificate validation, for example if you use a transparent HTTPS proxy. Use at your own risk!</Description>
+        <Group>Framework</Group>
+        <SubGroup>Core::WebUserAgent</SubGroup>
+        <Setting>
+            <Option SelectedID="0">
+                <Item Key="0">No</Item>
+                <Item Key="1">Yes</Item>
+            </Option>
+        </Setting>
+    </ConfigItem>
     <ConfigItem Name="Package::FileUpload" Required="1" Valid="1" ConfigLevel="200">
         <Description Translatable="1">Enables file upload in the package manager frontend.</Description>
         <Group>Framework</Group>
@@ -3835,7 +3859,7 @@ You can log in via the following URL:
         </Setting>
     </ConfigItem>
     <ConfigItem Name="CustomerPanel::InfoFile" Required="0" Valid="0">
-        <Description Translatable="1">Defines the path of the shown info file, that is located under Kernel/Output/HTML/Standard/CustomerAccept.dtl.</Description>
+        <Description Translatable="1">Defines the path of the shown info file, that is located under Kernel/Output/HTML/Standard/CustomerAccept.tt.</Description>
         <Group>Framework</Group>
         <SubGroup>Frontend::Customer</SubGroup>
         <Setting>
@@ -5804,7 +5828,7 @@ via the Preferences button after logging in.
         </Setting>
     </ConfigItem>
     <ConfigItem Name="Core::MirrorDB::DSN" Required="0" Valid="0" ConfigLevel="200">
-        <Description Translatable="1">If you want to use a mirror database for agent ticket fulltext search or to generate stats, specify the DSN to this database.</Description>
+        <Description Translatable="1">OTRS can use one or more readonly mirror databases for expensive operations like fulltext search or statistics generation. Here you can specify the DSN for the first mirror database.</Description>
         <Group>Framework</Group>
         <SubGroup>Core::MirrorDB</SubGroup>
         <Setting>
@@ -5812,7 +5836,7 @@ via the Preferences button after logging in.
         </Setting>
     </ConfigItem>
     <ConfigItem Name="Core::MirrorDB::User" Required="0" Valid="0" ConfigLevel="200">
-        <Description Translatable="1">If you want to use a mirror database for agent ticket fulltext search or to generate stats, the user to authenticate to this database can be specified.</Description>
+        <Description Translatable="1">Specify the username to authenticate for the first mirror database.</Description>
         <Group>Framework</Group>
         <SubGroup>Core::MirrorDB</SubGroup>
         <Setting>
@@ -5820,11 +5844,71 @@ via the Preferences button after logging in.
         </Setting>
     </ConfigItem>
     <ConfigItem Name="Core::MirrorDB::Password" Required="0" Valid="0" ConfigLevel="200">
-        <Description Translatable="1">If you want to use a mirror database for agent ticket fulltext search or to generate stats, the password to authenticate to this database can be specified.</Description>
+        <Description Translatable="1">Specify the password to authenticate for the first mirror database.</Description>
         <Group>Framework</Group>
         <SubGroup>Core::MirrorDB</SubGroup>
         <Setting>
             <String Regex="" Type="Password">some_password</String>
+        </Setting>
+    </ConfigItem>
+    <ConfigItem Name="Core::MirrorDB::AdditionalMirrors###1" Required="0" Valid="0" ConfigLevel="200">
+        <Description Translatable="1">Configure any additional readonly mirror databases that you want to use.</Description>
+        <Group>Framework</Group>
+        <SubGroup>Core::MirrorDB</SubGroup>
+        <Setting>
+            <Hash>
+                <Item Key="DSN">DBI:mysql:database=mirrordb;host=mirrordbhost</Item>
+                <Item Key="User">some_user</Item>
+                <Item Key="Password">some_password</Item>
+            </Hash>
+        </Setting>
+    </ConfigItem>
+    <ConfigItem Name="Core::MirrorDB::AdditionalMirrors###2" Required="0" Valid="0" ConfigLevel="200">
+        <Description Translatable="1">Configure any additional readonly mirror databases that you want to use.</Description>
+        <Group>Framework</Group>
+        <SubGroup>Core::MirrorDB</SubGroup>
+        <Setting>
+            <Hash>
+                <Item Key="DSN">DBI:mysql:database=mirrordb;host=mirrordbhost</Item>
+                <Item Key="User">some_user</Item>
+                <Item Key="Password">some_password</Item>
+            </Hash>
+        </Setting>
+    </ConfigItem>
+    <ConfigItem Name="Core::MirrorDB::AdditionalMirrors###3" Required="0" Valid="0" ConfigLevel="200">
+        <Description Translatable="1">Configure any additional readonly mirror databases that you want to use.</Description>
+        <Group>Framework</Group>
+        <SubGroup>Core::MirrorDB</SubGroup>
+        <Setting>
+            <Hash>
+                <Item Key="DSN">DBI:mysql:database=mirrordb;host=mirrordbhost</Item>
+                <Item Key="User">some_user</Item>
+                <Item Key="Password">some_password</Item>
+            </Hash>
+        </Setting>
+    </ConfigItem>
+    <ConfigItem Name="Core::MirrorDB::AdditionalMirrors###4" Required="0" Valid="0" ConfigLevel="200">
+        <Description Translatable="1">Configure any additional readonly mirror databases that you want to use.</Description>
+        <Group>Framework</Group>
+        <SubGroup>Core::MirrorDB</SubGroup>
+        <Setting>
+            <Hash>
+                <Item Key="DSN">DBI:mysql:database=mirrordb;host=mirrordbhost</Item>
+                <Item Key="User">some_user</Item>
+                <Item Key="Password">some_password</Item>
+            </Hash>
+        </Setting>
+    </ConfigItem>
+    <ConfigItem Name="Core::MirrorDB::AdditionalMirrors###5" Required="0" Valid="0" ConfigLevel="200">
+        <Description Translatable="1">Configure any additional readonly mirror databases that you want to use.</Description>
+        <Group>Framework</Group>
+        <SubGroup>Core::MirrorDB</SubGroup>
+        <Setting>
+            <Hash>
+                <Item Key="DSN">DBI:mysql:database=mirrordb;host=mirrordbhost</Item>
+                <Item Key="User">some_user</Item>
+                <Item Key="Password">some_password</Item>
+            </Hash>
         </Setting>
     </ConfigItem>
     <ConfigItem Name="LanguageDebug" Required="0" Valid="0">
@@ -5845,8 +5929,8 @@ via the Preferences button after logging in.
         <Setting>
             <Hash>
                 <Item Key="Module">Kernel::Output::HTML::DashboardProductNotify</Item>
-                <Item Key="Title">Product News</Item>
-                <Item Key="Description">News about OTRS releases!</Item>
+                <Item Key="Title" Translatable="1">Product News</Item>
+                <Item Key="Description" Translatable="1">News about OTRS releases!</Item>
                 <Item Key="Block">ContentLarge</Item>
                 <Item Key="Group">admin</Item>
                 <Item Key="Default">1</Item>
@@ -5880,7 +5964,7 @@ via the Preferences button after logging in.
         <Setting>
             <Hash>
                 <Item Key="Module">Kernel::Output::HTML::DashboardUserOnline</Item>
-                <Item Key="Title">Online</Item>
+                <Item Key="Title" Translatable="1">Online</Item>
                 <Item Key="Description"></Item>
                 <Item Key="ShowEmail">0</Item>
                 <Item Key="IdleMinutes">60</Item>
@@ -5894,15 +5978,38 @@ via the Preferences button after logging in.
             </Hash>
         </Setting>
     </ConfigItem>
-    <ConfigItem Name="DashboardBackend###0410-RSS" Required="0" Valid="1">
+    <ConfigItem Name="DashboardBackend###0405-News" Required="0" Valid="1">
+        <Description Translatable="1">Defines the parameters for the dashboard backend. "Limit" defines the number of entries displayed by default. "Group" is used to restrict access to the plugin (e. g. Group: admin;group1;group2;). "Default" indicates if the plugin is enabled by default or if the user needs to enable it manually. "CacheTTL" indicates the cache expiration period in minutes for the plugin.</Description>
+        <Group>Framework</Group>
+        <SubGroup>Frontend::Agent::Dashboard</SubGroup>
+        <Setting>
+            <Hash>
+                <Item Key="Module">Kernel::Output::HTML::DashboardNews</Item>
+                <Item Key="Title" Translatable="1">OTRS News</Item>
+                <Item Key="Description"></Item>
+                <Item Key="Block">ContentSmall</Item>
+                <Item Key="Limit">6</Item>
+                <Item Key="Group"></Item>
+                <Item Key="Default">1</Item>
+                <Item Key="CacheTTL">360</Item>
+            </Hash>
+        </Setting>
+    </ConfigItem>
+    <ConfigItem Name="DashboardBackend###0410-RSS" Required="0" Valid="0">
         <Description Translatable="1">Defines the parameters for the dashboard backend. "Limit" defines the number of entries displayed by default. "Group" is used to restrict access to the plugin (e. g. Group: admin;group1;group2;). "Default" indicates if the plugin is enabled by default or if the user needs to enable it manually. "CacheTTL" indicates the cache expiration period in minutes for the plugin.</Description>
         <Group>Framework</Group>
         <SubGroup>Frontend::Agent::Dashboard</SubGroup>
         <Setting>
             <Hash>
                 <Item Key="Module">Kernel::Output::HTML::DashboardRSS</Item>
-                <Item Key="Title">OTRS News</Item>
+                <Item Key="Title" Translatable="1">Custom RSS Feed</Item>
                 <Item Key="Description"></Item>
+                <Item Key="URL">http://www.otrs.com/en/rss.xml</Item>
+                <Item Key="URL_de">http://www.otrs.com/de/rss.xml</Item>
+                <Item Key="URL_es">http://www.otrs.com/es/rss.xml</Item>
+                <Item Key="URL_nl">http://www.otrs.com/nl/rss.xml</Item>
+                <Item Key="URL_ru">http://www.otrs.com/ru/rss.xml</Item>
+                <Item Key="URL_zh">http://www.otrs.com/cn/rss.xml</Item>
                 <Item Key="Block">ContentSmall</Item>
                 <Item Key="Limit">6</Item>
                 <Item Key="Group"></Item>
@@ -5918,7 +6025,7 @@ via the Preferences button after logging in.
         <Setting>
             <Hash>
                 <Item Key="Module">Kernel::Output::HTML::DashboardCmdOutput</Item>
-                <Item Key="Title">Sample command output</Item>
+                <Item Key="Title" Translatable="1">Sample command output</Item>
                 <Item Key="Description"></Item>
                 <Item Key="Block">ContentSmall</Item>
                 <Item Key="Group"></Item>
@@ -5935,8 +6042,8 @@ via the Preferences button after logging in.
         <Setting>
             <Hash>
                 <Item Key="Module">Kernel::Output::HTML::DashboardImage</Item>
-                <Item Key="Title">A picture</Item>
-                <Item Key="Description">Some picture description!</Item>
+                <Item Key="Title" Translatable="1">A picture</Item>
+                <Item Key="Description" Translatable="1">Some picture description!</Item>
                 <Item Key="Block">ContentLarge</Item>
                 <Item Key="URL">http://www.otrs.com/uploads/pics/jointhecommunity_02.jpg</Item>
                 <Item Key="Group"></Item>
@@ -5969,8 +6076,8 @@ via the Preferences button after logging in.
         <Setting>
             <Hash>
                 <Item Key="Module">Kernel::Output::HTML::DashboardIFrame</Item>
-                <Item Key="Title">A Website</Item>
-                <Item Key="Description">Some description!</Item>
+                <Item Key="Title" Translatable="1">A Website</Item>
+                <Item Key="Description" Translatable="1">Some description!</Item>
                 <Item Key="Block">ContentLarge</Item>
                 <Item Key="URL">http://www.otrs.org/</Item>
                 <Item Key="Group"></Item>
@@ -6571,6 +6678,17 @@ via the Preferences button after logging in.
         <Description Translatable="1">Runs an initial wildcard search of the existing customer users when accessing the AdminCustomerUser module.</Description>
         <Group>Framework</Group>
         <SubGroup>Frontend::Admin::AdminCustomerUser</SubGroup>
+        <Setting>
+            <Option SelectedID="1">
+                <Item Key="1">No</Item>
+                <Item Key="0">Yes</Item>
+            </Option>
+        </Setting>
+    </ConfigItem>
+     <ConfigItem Name="AdminCustomerCompany::RunInitialWildcardSearch" Required="1" Valid="1">
+        <Description Translatable="1">Runs an initial wildcard search of the existing customer company when accessing the AdminCustomerCompany module.</Description>
+        <Group>Framework</Group>
+        <SubGroup>Frontend::Admin::AdminCustomerCompany</SubGroup>
         <Setting>
             <Option SelectedID="1">
                 <Item Key="0">No</Item>
