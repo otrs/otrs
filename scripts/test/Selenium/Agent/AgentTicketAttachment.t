@@ -1,16 +1,14 @@
 # --
-# AgentTicketPhone.t - frontend tests for AgentTicketPhone
+# AgentTicketAttachment.t - frontend tests for AgentTicketAttachment
 # Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
 # did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
 # --
-
 use strict;
 use warnings;
 use utf8;
-
 use vars (qw($Self));
 
 # get selenium object
@@ -19,11 +17,15 @@ $Kernel::OM->ObjectParamAdd(
         Verbose => 1,
         }
 );
+
 my $Selenium = $Kernel::OM->Get('Kernel::System::UnitTest::Selenium');
+
+# get needed objects
+my $TicketObject    = $Kernel::OM->Get('Kernel::System::Ticket');
+my $SysConfigObject = $Kernel::OM->Get('Kernel::System::SysConfig');
 
 $Selenium->RunTest(
     sub {
-
         # get helper object
         $Kernel::OM->ObjectParamAdd(
             'Kernel::System::UnitTest::Helper' => {
@@ -54,6 +56,13 @@ $Selenium->RunTest(
             Value => 0
         );
 
+        # set download type to inline
+        $SysConfigObject->ConfigItemUpdate(
+            Valid => 1,
+            Key   => 'AttachmentDownloadType',
+            Value => 'inline'
+        );
+
         # create test user and login
         my $TestUserLogin = $Helper->TestUserCreate(
             Groups => [ 'admin', 'users' ],
@@ -67,30 +76,6 @@ $Selenium->RunTest(
 
         my $ScriptAlias = $Kernel::OM->Get('Kernel::Config')->Get('ScriptAlias');
         $Selenium->get("${ScriptAlias}index.pl?Action=AgentTicketPhone");
-
-        # check page
-        for my $ID (
-            qw(FromCustomer CustomerID Dest Subject RichText FileUpload
-            NextStateID PriorityID submitRichText)
-            )
-        {
-            my $Element = $Selenium->find_element( "#$ID", 'css' );
-            $Element->is_enabled();
-            $Element->is_displayed();
-        }
-
-        # check client side validation
-        my $Element = $Selenium->find_element( "#Subject", 'css' );
-        $Element->send_keys("");
-        $Element->submit();
-
-        $Self->Is(
-            $Selenium->execute_script(
-                "return \$('#Subject').hasClass('Error')"
-            ),
-            '1',
-            'Client side validation correctly detected missing input value',
-        );
 
         # get test user ID
         my $TestUserID = $Kernel::OM->Get('Kernel::System::User')->UserLookup(
@@ -110,20 +95,34 @@ $Selenium->RunTest(
             UserID         => $TestUserID,
         );
 
-        # create test phone ticket
+        # create test phone ticket with attachment
         my $AutoCompleteString = "\"$TestCustomer $TestCustomer\" <$TestCustomer\@localhost.com> ($TestCustomer)";
         my $TicketSubject      = "Selenium Ticket";
         my $TicketBody         = "Selenium body test";
+        my $AttachmentName     = "StdAttachment-Test1.txt";
+        my $Location           = $Kernel::OM->Get('Kernel::Config')->Get('Home')
+            . "/scripts/test/sample/StdAttachment/$AttachmentName";
         $Selenium->find_element( "#FromCustomer", 'css' )->send_keys($TestCustomer);
         sleep 1;
+
         $Selenium->find_element("//*[text()='$AutoCompleteString']")->click();
         sleep 1;
         $Selenium->find_element( "#Dest option[value='2||Raw']", 'css' )->click();
         $Selenium->find_element( "#Subject",                     'css' )->send_keys($TicketSubject);
         $Selenium->find_element( "#RichText",                    'css' )->send_keys($TicketBody);
-        $Selenium->find_element( "#Subject",                     'css' )->submit();
+        $Selenium->find_element( "#FileUpload",                  'css' )->send_keys($Location);
 
-        # Wait until form has loaded, if neccessary
+        # wait until attachment is upoading
+        ACTIVESLEEP:
+        for my $Second ( 1 .. 20 ) {
+            if ( index( $Selenium->get_page_source(), 'Subject' ) > -1, ) {
+                last ACTIVESLEEP;
+            }
+            sleep 1;
+        }
+        $Selenium->find_element( "#Subject", 'css' )->submit();
+
+        # wait until ticket is created
         ACTIVESLEEP:
         for my $Second ( 1 .. 20 ) {
             if ( $Selenium->execute_script("return \$('form').length") ) {
@@ -142,11 +141,6 @@ $Selenium->RunTest(
         my $TicketID     = (%TicketIDs)[0];
 
         $Self->True(
-            $TicketID,
-            "Ticket was created and found",
-        );
-
-        $Self->True(
             index( $Selenium->get_page_source(), $TicketNumber ) > -1,
             "Ticket with ticket id $TicketID is created"
         );
@@ -154,18 +148,25 @@ $Selenium->RunTest(
         # go to ticket zoom page of created test ticket
         $Selenium->find_element("//a[contains(\@href, \'Action=AgentTicketZoom' )]")->click();
 
-        # check if test ticket values are genuine
+        # check if attachment exists
         $Self->True(
-            index( $Selenium->get_page_source(), $TicketSubject ) > -1,
-            "$TicketSubject found on page",
+            $Selenium->find_element("//*[text()=\"$AttachmentName\"]"),
+            "$AttachmentName is found on page",
         );
-        $Self->True(
-            index( $Selenium->get_page_source(), $TicketBody ) > -1,
-            "$TicketBody found on page",
+
+        # get article id
+        my @ArticleIDs = $TicketObject->ArticleIndex(
+            TicketID => (%TicketIDs)[0],
         );
+
+        # check ticket attachment
+        $Selenium->get("${ScriptAlias}index.pl?Action=AgentTicketAttachment;ArticleID=$ArticleIDs[0];FileID=1");
+
+        # check if attachment is genuine
+        my $ExpectedAttachmentContent = "Some German Text with Umlaut: ÄÖÜß";
         $Self->True(
-            index( $Selenium->get_page_source(), $TestCustomer ) > -1,
-            "$TestCustomer found on page",
+            index( $Selenium->get_page_source(), $ExpectedAttachmentContent ) > -1,
+            "$AttachmentName opened successfully",
         );
 
         # delete created test ticket
@@ -194,7 +195,7 @@ $Selenium->RunTest(
         $Kernel::OM->Get('Kernel::System::Cache')->CleanUp( Type => 'Ticket' );
         $Kernel::OM->Get('Kernel::System::Cache')->CleanUp( Type => 'CustomerUser' );
 
-    }
+        }
 );
 
 1;

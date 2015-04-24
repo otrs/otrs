@@ -172,6 +172,7 @@ sub Run {
 
         # check CustomerID or CustomerUserID presence for all subactions that need it
         if ( $Self->{Subaction} ne 'UpdatePosition' ) {
+
             if ( !$Self->{CustomerID} || $Self->{CustomerID} =~ /[*|%]/i ) {
 
                 if ( !$Self->{CustomerUserID} || $Self->{CustomerUserID} =~ /[*|%]/i ) {
@@ -188,25 +189,6 @@ sub Run {
             }
         }
     }
-
-    # if ( $Self->{Action} eq 'AgentCustomerUserInformationCenter' ) {
-
-    #     $Self->{CustomerUserID} = $Self->{ParamObject}->GetParam( Param => 'CustomerUserID' );
-
-    #     # check CustomerUserID presence for all subactions that need it
-    #     if ( $Self->{Subaction} ne 'UpdatePosition' ) {
-    #         if ( !$Self->{CustomerUserID} || $Self->{CustomerUserID} =~ /[*|%]/i ) {
-    #             my $Output = $Self->{LayoutObject}->Header();
-    #             $Output .= $Self->{LayoutObject}->NavigationBar();
-    #             $Output .= $Self->{LayoutObject}->Output(
-    #                 TemplateFile => 'AgentCustomerUserInformationCenterBlank',
-    #                 Data         => \%Param,
-    #             );
-    #             $Output .= $Self->{LayoutObject}->Footer();
-    #             return $Output;
-    #         }
-    #     }
-    # }
 
     # update/close item
     if ( $Self->{Subaction} eq 'UpdateRemove' ) {
@@ -570,25 +552,6 @@ sub Run {
             }
         }
     }
-
-    # if ( $Self->{Action} eq 'AgentCustomerUserInformationCenter' ) {
-
-    #     $ContentBlockData{CustomerUserID} = $Self->{CustomerUserID};
-
-    #     # H1 title
-    #     $ContentBlockData{CustomerUserIDTitle} = $Self->{CustomerUserID};
-
-    #     my %CustomerUserData = $Self->{CustomerUserObject}->CustomerUserDataGet(
-    #         User => $Self->{CustomerUserID},
-    #     );
-
-    #     if ( $CustomerUserData{UserFirstname} ) {
-    #         my $CustomerUserName = $Self->{CustomerUserObject}->CustomerName(
-    #             UserLogin => $Self->{CustomerUserID},
-    #         );
-    #         $ContentBlockData{CustomerUserIDTitle} = "$CustomerUserName ($Self->{CustomerUserID})";
-    #     }
-    # }
 
     # show dashboard
     $Self->{LayoutObject}->Block(
