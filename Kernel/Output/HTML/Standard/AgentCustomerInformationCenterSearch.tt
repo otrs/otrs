@@ -17,11 +17,17 @@
             <label>[% Translate("Customer") | html %]:</label>
             <div class="Field">
                 <input type="text" id="AgentCustomerInformationCenterSearchCustomerID" class="W90pc" />
+                <div class="FieldExplanation">
+                    [% Translate("Search for customer details to find a customer.") %]
+                </div>
             </div>
             <div class="Clear"></div>
             <label>[% Translate("Customer User") | html %]:</label>
             <div class="Field">
                 <input type="text" id="AgentCustomerInformationCenterSearchCustomerUser" class="W90pc" />
+                <div class="FieldExplanation">
+                    [% Translate("Search for customer user details to find a customer.") %]
+                </div>
             </div>
             <div class="Clear"></div>
         </fieldset>
@@ -31,11 +37,17 @@
             <label>[% Translate("Customer") | html %]:</label>
             <div class="Field">
                 <input type="text" id="AgentCustomerUserInformationCenterSearchCustomerID" class="W90pc" />
+                <div class="FieldExplanation">
+                    [% Translate("Search for customer details to find a customer user.") %]
+                </div>
             </div>
             <div class="Clear"></div>
             <label>[% Translate("Customer User") | html %]:</label>
             <div class="Field">
                 <input type="text" id="AgentCustomerUserInformationCenterSearchCustomerUser" class="W90pc" />
+                <div class="FieldExplanation">
+                    [% Translate("Search for customer user details to find a customer user.") %]
+                </div>
             </div>
             <div class="Clear"></div>
         </fieldset>

@@ -560,7 +560,13 @@ sub Run {
                 my $CustomerUserName = $Self->{CustomerUserObject}->CustomerName(
                     UserLogin => $Self->{CustomerUserID},
                 );
-                $ContentBlockData{CustomerUserIDTitle} = "$CustomerUserName ($Self->{CustomerUserID})";
+                $ContentBlockData{CustomerUserIDTitle} = "$CustomerUserName ($Self->{CustomerUserID}";
+                if ( $CustomerUserData{UserEmail} ) {
+                    $ContentBlockData{CustomerUserIDTitle} = $ContentBlockData{CustomerUserIDTitle} . " / " . $CustomerUserData{UserEmail} . ")";
+                }
+                else {
+                    $ContentBlockData{CustomerUserIDTitle} = $ContentBlockData{CustomerUserIDTitle} . ")";
+                }
             }
         }
     }
