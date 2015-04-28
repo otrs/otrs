@@ -1,4 +1,5 @@
 #5.0.0.beta1 20??-??-??
+ - 2015-04-24 Added possibility to create a ticket without article in transition action "TicketCreate".
  - 2015-04-21 Improved performance of ticket merging in bulk action, thanks to Moritz Lenz.
  - 2015-04-21 Added support for multiple mirror databases (failsafe).
  - 2015-04-16 Added possibility to use list of TicketIDs (array reference) as a parameter for TicketSearch().
@@ -23,6 +24,9 @@
  - 2015-01-06 Added ACLs handling for Owner and Responsible on screen load for AgentTicketOwner and AgentTicketResponsible.
 
 #4.0.8 2015-??-??
+ - 2015-04-28 Added new console command to list all installed package files.
+ - 2015-04-28 Fixed bug#[11262](http://bugs.otrs.org/show_bug.cgi?id=11262) - AJAX calls keep session alive.
+ - 2015-04-27 Added new support data check for prefork MPM.
  - 2015-04-24 Fixed bug#[11246](http://bugs.otrs.org/show_bug.cgi?id=11246) - Information Disclosure on "Outbound E-Mail".
  - 2015-04-24 Fixed bug#[10534](http://bugs.otrs.org/show_bug.cgi?id=10534) - Wildcard hacking the customer information center.
  - 2015-04-24 Fixed bug#[10988](http://bugs.otrs.org/show_bug.cgi?id=10988) - Queues will not be visible in CustomerTicketMessage, if they are using a group which was newly created.
