@@ -935,6 +935,9 @@ sub _Edit {
                 Class      => $Param{RequiredClass} . ' ' . $Param{Errors}->{ $Entry->[0] . 'Invalid' },
             );
         }
+        elsif ( $Param{Action} eq 'Add' && $Entry->[0] =~ /^UserCustomerID$/i ) {
+            $Param{Value} = $Param{CustomerID};
+        }
         else {
             $Param{Value} = $Param{ $Entry->[0] } || '';
         }
