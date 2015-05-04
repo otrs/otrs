@@ -14,6 +14,7 @@ use strict;
 use warnings;
 
 our @ObjectDependencies = (
+    'Kernel::Config',
     'Kernel::System::CustomerUser',
     'Kernel::System::Log',
     'Kernel::System::Ticket',
@@ -48,6 +49,15 @@ sub Run {
         TicketID      => $Param{TicketID},
         DynamicFields => 0,
     );
+
+    # Deny access if ticket queue is in Ticket::Frontend::CustomerDenyQueuesTicketAccess
+    for my $Queue (
+        @{ $Kernel::OM->Get('Kernel::Config')->Get('Ticket::Frontend::CustomerDenyQueuesTicketAccess') }
+        )
+    {
+        # no access because ticket queue is in Ticket::Frontend::CustomerDenyQueuesTicketAccess
+        return if ( $Ticket{Queue} eq $Queue );
+    }
 
     # get user data
     my %CustomerData = $Kernel::OM->Get('Kernel::System::CustomerUser')->CustomerUserDataGet(

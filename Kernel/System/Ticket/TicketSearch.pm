@@ -339,6 +339,11 @@ sub TicketSearch {
         return;
     }
 
+    # if this is a customer search: delete $Param{QueueIDs} if it's empty
+    if ( $Param{CustomerUserID} && ref $Param{QueueIDs} eq 'ARRAY' && !@{ $Param{QueueIDs} } ) {
+        delete $Param{QueueIDs};
+    }
+
     # check types of given arguments
     ARGUMENT:
     for my $Key (
@@ -823,10 +828,21 @@ sub TicketSearch {
 
     # current queue ids
     if ( $Param{QueueIDs} ) {
-        $SQLExt .= $Self->_InConditionGet(
-            TableColumn => 'st.queue_id',
-            IDRef       => $Param{QueueIDs},
-        );
+
+        # this is a user search
+        if ( $Param{UserID} ) {
+            $SQLExt .= $Self->_InConditionGet(
+                TableColumn => 'st.queue_id',
+                IDRef       => $Param{QueueIDs},
+            );
+        }
+        else {
+            # this is a customer search
+            $SQLExt .= $Self->_InConditionGet(
+                TableColumn => 'st.queue_id NOT',
+                IDRef       => $Param{QueueIDs},
+            );
+        }
     }
 
     # created queue lookup

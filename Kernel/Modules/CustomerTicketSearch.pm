@@ -25,6 +25,10 @@ use Kernel::System::DynamicField;
 use Kernel::System::DynamicField::Backend;
 use Kernel::System::VariableCheck qw(:all);
 
+our @ObjectDependencies = (
+    'Kernel::System::Queue',
+);
+
 sub new {
     my ( $Type, %Param ) = @_;
 
@@ -146,6 +150,32 @@ sub Run {
 
     # disable output of customer company tickets
     $Self->{DisableCompanyTickets} = $Self->{ConfigObject}->Get('Ticket::Frontend::CustomerDisableCompanyTicketAccess');
+
+    # disable output of tickets in some queues
+    my @CustomerDenyQueuesTicketAccessQueueIDs = ();
+
+    if (
+        my @CustomerDenyQueuesTicketAccessQueues =
+        @{ $Self->{ConfigObject}->Get('Ticket::Frontend::CustomerDenyQueuesTicketAccess') }
+        )
+    {
+
+        # get queue object
+        my $QueueObject = $Kernel::OM->Get('Kernel::System::Queue');
+
+        QUEUE:
+        for my $Queue (@CustomerDenyQueuesTicketAccessQueues) {
+
+            # lookup queue id
+            my $QueueID = $QueueObject->QueueLookup(
+                Queue => $Queue,
+            );
+
+            next QUEUE if !$QueueID;
+
+            push @CustomerDenyQueuesTicketAccessQueueIDs, $QueueID;
+        }
+    }
 
     $Self->{Profile}        = $Self->{ParamObject}->GetParam( Param => 'Profile' )        || '';
     $Self->{SaveProfile}    = $Self->{ParamObject}->GetParam( Param => 'SaveProfile' )    || '';
@@ -526,6 +556,11 @@ sub Run {
         # disable output of company tickets if configured
         if ( $Self->{DisableCompanyTickets} ) {
             $GetParam{CustomerUserLogin} = $Self->{UserID};
+        }
+
+        # disable output of tickets in some queues
+        if (@CustomerDenyQueuesTicketAccessQueueIDs) {
+            $GetParam{QueueIDs} = [@CustomerDenyQueuesTicketAccessQueueIDs];
         }
 
         # perform ticket search

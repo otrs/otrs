@@ -13,11 +13,16 @@ package Kernel::Modules::CustomerTicketOverview;
 use strict;
 use warnings;
 
+use Kernel::System::Queue;
 use Kernel::System::State;
 use Kernel::System::DynamicField;
 use Kernel::System::DynamicField::Backend;
 use Kernel::System::User;
 use Kernel::System::VariableCheck qw(:all);
+
+our @ObjectDependencies = (
+    'Kernel::System::Queue',
+);
 
 sub new {
     my ( $Type, %Param ) = @_;
@@ -56,6 +61,33 @@ sub new {
 
     # disable output of customer company tickets
     $Self->{DisableCompanyTickets} = $Self->{ConfigObject}->Get('Ticket::Frontend::CustomerDisableCompanyTicketAccess');
+
+    # disable output of tickets in some queues
+    my @CustomerDenyQueuesTicketAccessQueueIDs = ();
+
+    if (
+        my @CustomerDenyQueuesTicketAccessQueues =
+        @{ $Self->{ConfigObject}->Get('Ticket::Frontend::CustomerDenyQueuesTicketAccess') }
+        )
+    {
+
+        # get queue object
+        my $QueueObject = $Kernel::OM->Get('Kernel::System::Queue');
+
+        QUEUE:
+        for my $Queue (@CustomerDenyQueuesTicketAccessQueues) {
+
+            # lookup queue id
+            my $QueueID = $QueueObject->QueueLookup(
+                Queue => $Queue,
+            );
+
+            next QUEUE if !$QueueID;
+
+            push @CustomerDenyQueuesTicketAccessQueueIDs, $QueueID;
+        }
+    }
+    $Self->{DenyQueuesTickets} = [@CustomerDenyQueuesTicketAccessQueueIDs];
 
     # get the dynamic fields for this screen
     $Self->{DynamicField} = $Self->{DynamicFieldObject}->DynamicFieldListGet(
@@ -129,6 +161,7 @@ sub Run {
                     SortBy               => $Self->{SortBy},
                     CustomerUserID       => $Self->{UserID},
                     Permission           => 'ro',
+                    QueueIDs             => $Self->{DenyQueuesTickets},
                 },
             },
             Open => {
@@ -141,6 +174,7 @@ sub Run {
                     SortBy               => $Self->{SortBy},
                     CustomerUserID       => $Self->{UserID},
                     Permission           => 'ro',
+                    QueueIDs             => $Self->{DenyQueuesTickets},
                 },
             },
             Closed => {
@@ -153,6 +187,7 @@ sub Run {
                     SortBy               => $Self->{SortBy},
                     CustomerUserID       => $Self->{UserID},
                     Permission           => 'ro',
+                    QueueIDs             => $Self->{DenyQueuesTickets},
                 },
             },
         },
@@ -171,6 +206,7 @@ sub Run {
                     SortBy         => $Self->{SortBy},
                     CustomerUserID => $Self->{UserID},
                     Permission     => 'ro',
+                    QueueIDs       => $Self->{DenyQueuesTickets},
                 },
             },
             Open => {
@@ -184,6 +220,7 @@ sub Run {
                     SortBy         => $Self->{SortBy},
                     CustomerUserID => $Self->{UserID},
                     Permission     => 'ro',
+                    QueueIDs       => $Self->{DenyQueuesTickets},
                 },
             },
             Closed => {
@@ -197,6 +234,7 @@ sub Run {
                     SortBy         => $Self->{SortBy},
                     CustomerUserID => $Self->{UserID},
                     Permission     => 'ro',
+                    QueueIDs       => $Self->{DenyQueuesTickets},
                 },
             },
         };
