@@ -101,6 +101,16 @@ $Selenium->RunTest(
         ADMINMODULE:
         for my $AdminModule (@AdminModules) {
 
+            if ( $AdminModule eq 'AdminSMIME' ) {
+                my $Success = $Kernel::OM->Get('Kernel::System::Crypt::SMIME');
+                if ( !$Success ) {
+                    $Self->False(
+                        $Success,
+                        "S/MIME environment is not working. Please check log for more info!",
+                    );
+                    next ADMINMODULE;
+                }
+            }
             $Selenium->get("${ScriptAlias}index.pl?Action=$AdminModule");
 
             # Guess if the page content is ok or an error message. Here we
@@ -112,7 +122,7 @@ $Selenium->RunTest(
             #   for error messages and has "Admin" highlighted
             $Selenium->find_element( "li#nav-Admin.Selected", 'css' );
         }
-    }
+        }
 );
 
 1;
