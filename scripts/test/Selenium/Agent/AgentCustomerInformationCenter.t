@@ -54,7 +54,7 @@ $Selenium->RunTest(
         $Selenium->find_element( "#AgentCustomerInformationCenterSearchCustomerID", 'css' )
             ->send_keys($TestCustomerUserLogin);
 
-        $Selenium->WaitFor( JavaScript => 'return $("li.ui-menu-item:visible").length' );
+        $Selenium->WaitFor( JavaScript => 'return $("li.ui-menu-item:visible")' );
         $Selenium->find_element("//*[text()='$TestCustomerUserLogin']")->click();
 
         # check customer information center page
@@ -83,7 +83,7 @@ $Selenium->RunTest(
             "Setting for toggle widgets found on page",
         );
 
-        }
+    }
 );
 
 1;

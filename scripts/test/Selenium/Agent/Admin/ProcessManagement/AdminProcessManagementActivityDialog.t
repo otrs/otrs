@@ -59,7 +59,7 @@ $Selenium->RunTest(
         # click on ActivityDialog dropdown, wait to load it and "Create New Activity Dialog"
         $Selenium->find_element( "Activity Dialogs", 'link_text' )->click();
 
-        $Selenium->WaitFor( JavaScript => 'return $("a.PopupType_ActivityDialog:visible").length' );
+        $Selenium->WaitFor( JavaScript => 'return $("a.PopupType_ActivityDialog:visible")' );
 
         $Selenium->find_element("//a[contains(\@href, \'Subaction=ActivityDialogNew' )]")->click();
 
@@ -228,7 +228,7 @@ $Selenium->RunTest(
             Type => 'ProcessManagement_ActivityDialog',
         );
 
-        }
+    }
 
 );
 

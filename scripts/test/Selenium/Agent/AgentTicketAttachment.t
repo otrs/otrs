@@ -101,7 +101,7 @@ $Selenium->RunTest(
         my $Location           = $Kernel::OM->Get('Kernel::Config')->Get('Home')
             . "/scripts/test/sample/StdAttachment/$AttachmentName";
         $Selenium->find_element( "#FromCustomer", 'css' )->send_keys($TestCustomer);
-        $Selenium->WaitFor( JavaScript => 'return $("li.ui-menu-item:visible").length' );
+        $Selenium->WaitFor( JavaScript => 'return $("li.ui-menu-item:visible")' );
 
         $Selenium->find_element("//*[text()='$AutoCompleteString']")->click();
         $Selenium->WaitFor( JavaScript => 'return $("p.Value").length' );
@@ -183,7 +183,7 @@ $Selenium->RunTest(
             $Kernel::OM->Get('Kernel::System::Cache')->CleanUp( Type => $Cache );
         }
 
-        }
+    }
 );
 
 1;
