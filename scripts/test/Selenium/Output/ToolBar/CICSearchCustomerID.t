@@ -137,7 +137,7 @@ $Selenium->RunTest(
             "Deleted CustomerUser - $CustomerID",
         );
 
-        }
+    }
 );
 
 1;
