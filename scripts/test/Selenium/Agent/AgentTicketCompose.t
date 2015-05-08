@@ -86,7 +86,7 @@ $Selenium->RunTest(
         my $TicketBody         = "Selenium body test";
         $Selenium->find_element( "#FromCustomer", 'css' )->send_keys($TestCustomer);
 
-        $Selenium->WaitFor( JavaScript => 'return $("li.ui-menu-item:visible").length' );
+        $Selenium->WaitFor( JavaScript => 'return $("li.ui-menu-item:visible")' );
 
         $Selenium->find_element("//*[text()='$AutoCompleteString']")->click();
         $Selenium->find_element( "#Dest option[value='2||Raw']", 'css' )->click();

@@ -51,7 +51,8 @@ $Selenium->RunTest(
 
         # click on Transition Actions dropdown and "Create New Transition Action"
         $Selenium->find_element( "Transition Actions", 'link_text' )->click();
-        sleep 1;
+        $Selenium->WaitFor( JavaScript => 'return $("a.PopupType_TransitionAction:visible")' );
+
         $Selenium->find_element("//a[contains(\@href, \'Subaction=TransitionActionNew' )]")->click();
 
         # switch to pop up window
@@ -59,13 +60,7 @@ $Selenium->RunTest(
         $Selenium->switch_to_window( $Handles->[1] );
 
         # Wait until form has loaded, if neccessary
-        ACTIVESLEEP:
-        for my $Second ( 1 .. 20 ) {
-            if ( $Selenium->execute_script("return \$('#Name').length") ) {
-                last ACTIVESLEEP;
-            }
-            sleep 1;
-        }
+        $Selenium->WaitFor( JavaScript => 'return $("#Name").length' );
 
         # check AdminProcessManagementTransitionAction screen
         for my $ID (
@@ -104,9 +99,9 @@ $Selenium->RunTest(
 
         # check for created test TransitionAction using filter on AdminProcessManagement screen
         $Selenium->find_element( "Transition Actions", 'link_text' )->click();
-        sleep 1;
+        $Selenium->WaitFor( JavaScript => 'return $("a.PopupType_TransitionAction:visible")' );
+
         $Selenium->find_element( "#TransitionActionFilter", 'css' )->send_keys($TransitionActionRandom);
-        sleep 1;
 
         $Self->True(
             $Selenium->find_element("//*[text()=\"$TransitionActionRandom\"]")->is_displayed(),
@@ -132,13 +127,7 @@ $Selenium->RunTest(
         $Selenium->switch_to_window( $Handles->[1] );
 
         # Wait until form has loaded, if neccessary
-        ACTIVESLEEP:
-        for my $Second ( 1 .. 20 ) {
-            if ( $Selenium->execute_script("return \$('#Name').length") ) {
-                last ACTIVESLEEP;
-            }
-            sleep 1;
-        }
+        $Selenium->WaitFor( JavaScript => 'return $("#Name").length' );
 
         # check stored value
         $Self->Is(
@@ -178,9 +167,9 @@ $Selenium->RunTest(
         # check for edited test TransitionAction using filter on AdminProcessManagement screen
         my $TransitionActionRandomEdit = $TransitionActionRandom . "edit";
         $Selenium->find_element( "Transition Actions", 'link_text' )->click();
-        sleep 1;
+        $Selenium->WaitFor( JavaScript => 'return $("a.PopupType_TransitionAction:visible")' );
+
         $Selenium->find_element( "#TransitionActionFilter", 'css' )->send_keys($TransitionActionRandomEdit);
-        sleep 1;
 
         $Self->True(
             $Selenium->find_element("//*[text()=\"$TransitionActionRandomEdit\"]")->is_displayed(),
@@ -194,13 +183,7 @@ $Selenium->RunTest(
         $Selenium->switch_to_window( $Handles->[1] );
 
         # Wait until form has loaded, if neccessary
-        ACTIVESLEEP:
-        for my $Second ( 1 .. 20 ) {
-            if ( $Selenium->execute_script("return \$('#Name').length") ) {
-                last ACTIVESLEEP;
-            }
-            sleep 1;
-        }
+        $Selenium->WaitFor( JavaScript => 'return $("#Name").length' );
 
         # check edited values
         $Self->Is(

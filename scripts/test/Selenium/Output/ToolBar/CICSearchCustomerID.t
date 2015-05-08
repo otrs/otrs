@@ -99,7 +99,8 @@ $Selenium->RunTest(
         # input test user in search CustomerID
         my $AutoCCSearch = "$TestCustomerID $TestCompanyName";
         $Selenium->find_element( "#ToolBarCICSearchCustomerID", 'css' )->send_keys($TestCustomerID);
-        sleep 1;
+        $Selenium->WaitFor( JavaScript => 'return $("li.ui-menu-item:visible")' );
+
         $Selenium->find_element("//*[text()='$AutoCCSearch']")->click();
 
         # verify search

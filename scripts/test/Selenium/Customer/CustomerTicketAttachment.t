@@ -84,7 +84,9 @@ $Selenium->RunTest(
         $Selenium->find_element( "#Subject",                     'css' )->send_keys($SubjectRandom);
         $Selenium->find_element( "#RichText",                    'css' )->send_keys($TextRandom);
         $Selenium->find_element( "#Attachment",                  'css' )->send_keys($Location);
-        sleep 1;
+
+        # wait for upload attachment and submit ticket
+        $Selenium->WaitFor( JavaScript => "return \$('#Subject').length" );
         $Selenium->find_element( "#submitRichText", 'css' )->click();
 
         # obtain ticket number

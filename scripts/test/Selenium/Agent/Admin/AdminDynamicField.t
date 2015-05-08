@@ -110,7 +110,8 @@ $Selenium->RunTest(
 
                 $Selenium->accept_alert();
 
-                sleep 1;    # allow some time for field deletion
+                # allow some time for field deletion
+                $Selenium->WaitFor( JavaScript => "return !\$('#DynamicFieldID_$DynamicFieldID').length" );
 
                 $Selenium->refresh();
                 my $Success;

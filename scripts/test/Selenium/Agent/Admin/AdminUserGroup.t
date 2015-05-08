@@ -64,7 +64,6 @@ $Selenium->RunTest(
 
         # test filter for Users
         $Selenium->find_element( "#FilterUsers", 'css' )->send_keys($FullTestUserLogin);
-        sleep 1;
         $Self->True(
             $Selenium->find_element( "$FullTestUserLogin", 'link_text' )->is_displayed(),
             "$FullTestUserLogin user found on page",
@@ -72,7 +71,6 @@ $Selenium->RunTest(
 
         # test filter for groups
         $Selenium->find_element( "#FilterGroups", 'css' )->send_keys($RandomID);
-        sleep 1;
         $Self->True(
             $Selenium->find_element( "$RandomID", 'link_text' )->is_displayed(),
             "$RandomID group found on page",
@@ -81,7 +79,6 @@ $Selenium->RunTest(
         # clear test filter for Users and Groups
         $Selenium->find_element( "#FilterUsers",  'css' )->clear();
         $Selenium->find_element( "#FilterGroups", 'css' )->clear();
-        sleep 1;
 
         # edit test group permission for test agent
         $Selenium->find_element( $RandomID, 'link_text' )->click();

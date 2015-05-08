@@ -47,13 +47,7 @@ $Selenium->RunTest(
             $Element->click();
             $Element->submit();
 
-            ACTIVESLEEP:
-            for my $Second ( 1 .. 20 ) {
-                if ( $Selenium->execute_script("return \$('.MainBox h1').length") ) {
-                    last ACTIVESLEEP;
-                }
-                sleep 1;
-            }
+            $Selenium->WaitFor( JavaScript => "return \$('.MainBox h1').length" );
 
             # now check if the language was correctly applied in the interface
             my $LanguageObject = Kernel::Language->new(

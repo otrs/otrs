@@ -38,12 +38,12 @@ $Selenium->RunTest(
 
         my $ScriptAlias = $Kernel::OM->Get('Kernel::Config')->Get('ScriptAlias');
         $Selenium->get("${ScriptAlias}index.pl?Action=AgentCustomerInformationCenter");
-        sleep 1;
 
         # input search parameters
         $Selenium->find_element( "#AgentCustomerInformationCenterSearchCustomerID", 'css' )
             ->send_keys($TestCustomerUserLogin);
-        sleep 1;
+
+        $Selenium->WaitFor( JavaScript => 'return $("li.ui-menu-item:visible")' );
         $Selenium->find_element("//*[text()='$TestCustomerUserLogin']")->click();
 
         # check customer information center page

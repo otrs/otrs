@@ -68,7 +68,6 @@ $Selenium->RunTest(
 
         # test filter for Roles
         $Selenium->find_element( "#FilterRoles", 'css' )->send_keys($RoleRandomID);
-        sleep 1;
         $Self->True(
             $Selenium->find_element( "$RoleRandomID", 'link_text' )->is_displayed(),
             "$RoleRandomID role found on page",
@@ -76,7 +75,6 @@ $Selenium->RunTest(
 
         # test filter for Groups
         $Selenium->find_element( "#FilterGroups", 'css' )->send_keys($GroupRandomID);
-        sleep 1;
         $Self->True(
             $Selenium->find_element( "$GroupRandomID", 'link_text' )->is_displayed(),
             "$GroupRandomID group found on page",
@@ -85,7 +83,6 @@ $Selenium->RunTest(
         # clear test filter for Roles and Groups
         $Selenium->find_element( "#FilterRoles",  'css' )->clear();
         $Selenium->find_element( "#FilterGroups", 'css' )->clear();
-        sleep 1;
 
         # edit group relations for test role
         $Selenium->find_element( $RoleRandomID, 'link_text' )->click();

@@ -43,7 +43,6 @@ $Selenium->RunTest(
 
         # test filter for Notification
         $Selenium->find_element( "#FilterNotification", 'css' )->send_keys("Agent::AddNote");
-        sleep 1;
 
         $Self->True(
             $Selenium->find_element( "Agent::AddNote", 'link_text' )->is_displayed(),
@@ -62,7 +61,6 @@ $Selenium->RunTest(
 
         # clear test filter for Notification
         $Selenium->find_element( "#FilterNotification", 'css' )->clear();
-        sleep 1;
 
         # check defoult notification
         for my $Notification (
