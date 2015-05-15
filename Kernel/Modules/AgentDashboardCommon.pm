@@ -490,7 +490,7 @@ sub Run {
             );
 
             if ( $CustomerUserData{UserFirstname} ) {
-                my $CustomerUserName = $Self->{CustomerUserObject}->CustomerName(
+                my $CustomerUserName = $Kernel::OM->Get('Kernel::System::CustomerUser')->CustomerName(
                     UserLogin => $Self->{CustomerUserID},
                 );
                 $ContentBlockData{CustomerUserIDTitle} = "$CustomerUserName ($Self->{CustomerUserID}";

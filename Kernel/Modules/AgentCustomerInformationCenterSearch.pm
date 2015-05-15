@@ -83,13 +83,13 @@ sub Run {
         }
         
         elsif ( $Scope eq 'CUIC') {
-            my %CustomerList = $Kernel::OM->Get('Kernel::System::CustomerCompany')->CustomerSearch(
+            my %CustomerList = $Kernel::OM->Get('Kernel::System::CustomerUser')->CustomerSearch(
                 CustomerID => $Self->{ParamObject}->GetParam( Param => 'Term' ) || '',
             );
 
             CUSTOMERLOGIN:
             for my $CustomerLogin ( sort keys %CustomerList ) {
-                my %CustomerData = $Self->{CustomerUserObject}->CustomerUserDataGet(
+                my %CustomerData = $Kernel::OM->Get('Kernel::System::CustomerUser')->CustomerUserDataGet(
                     User => $CustomerLogin,
                 );
                 push @Result,
