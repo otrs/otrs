@@ -12,24 +12,23 @@ use utf8;
 
 use vars (qw($Self));
 
-use Kernel::System::UnitTest::Helper;
-use Kernel::System::UnitTest::Selenium;
 use File::Path qw(mkpath rmtree);
 
 # get needed objects
 my $ConfigObject    = $Kernel::OM->Get('Kernel::Config');
 my $SysConfigObject = $Kernel::OM->Get('Kernel::System::SysConfig');
-
-my $Selenium = Kernel::System::UnitTest::Selenium->new(
-    Verbose => 1,
-);
+my $Selenium        = $Kernel::OM->Get('Kernel::System::UnitTest::Selenium');
 
 $Selenium->RunTest(
     sub {
 
-        my $Helper = Kernel::System::UnitTest::Helper->new(
-            RestoreSystemConfiguration => 1,
+        # get helper object
+        $Kernel::OM->ObjectParamAdd(
+            'Kernel::System::UnitTest::Helper' => {
+                RestoreSystemConfiguration => 1,
+            },
         );
+        my $Helper = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
 
         my $TestUserLogin = $Helper->TestUserCreate(
             Groups => ['admin'],
@@ -63,7 +62,7 @@ $Selenium->RunTest(
         $Selenium->get("${ScriptAlias}index.pl?Action=AdminPGP");
 
         # add first test PGP key
-        $Selenium->find_element("//a[contains(\@href, \'Subaction=Add' )]")->click();
+        $Selenium->find_element("//a[contains(\@href, \'Action=AdminPGP;Subaction=Add' )]")->click();
 
         my $Location1 = $ConfigObject->Get('Home')
             . "/scripts/test/sample/Crypt/PGPPrivateKey-1.asc";
@@ -71,14 +70,29 @@ $Selenium->RunTest(
         $Selenium->find_element( "#FileUpload", 'css' )->send_keys($Location1);
         $Selenium->find_element("//button[\@type='submit']")->click();
 
+        ACTIVESLEEP:
+        for my $Second ( 1 .. 20 ) {
+            if ( $Selenium->execute_script("return \$('tr.Last').length") ) {
+                last ACTIVESLEEP;
+            }
+            sleep 1;
+        }
+
         # add second test PGP key
-        $Selenium->find_element("//a[contains(\@href, \'Subaction=Add' )]")->click()
-            ;
+        $Selenium->find_element("//a[contains(\@href, \'Action=AdminPGP;Subaction=Add' )]")->click();
         my $Location2 = $ConfigObject->Get('Home')
             . "/scripts/test/sample/Crypt/PGPPrivateKey-2.asc";
 
         $Selenium->find_element( "#FileUpload", 'css' )->send_keys($Location2);
         $Selenium->find_element("//button[\@type='submit']")->click();
+
+        ACTIVESLEEP:
+        for my $Second ( 1 .. 20 ) {
+            if ( $Selenium->execute_script("return \$('tr.Last').length") ) {
+                last ACTIVESLEEP;
+            }
+            sleep 1;
+        }
 
         # check if test PGP keys show on AdminPGP screen
         my %PGPKey = (
