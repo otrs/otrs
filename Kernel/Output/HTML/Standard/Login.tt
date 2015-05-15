@@ -20,12 +20,6 @@ X-OTRS-Login: [% Env("Baselink") %]
     <link rel="stylesheet" type="text/css" href="[% Config("Frontend::WebPath") %]skins/Agent/[% Data.Skin | uri %]/[% Data.CSSDirectory %]/[% Data.Filename %]" />
 [% RenderBlockEnd("CommonCSS") %]
 
-[% RenderBlockStart("CommonCSS_IE8") %]
-<!--[if IE 8]>
-    <link rel="stylesheet" type="text/css" href="[% Config("Frontend::WebPath") %]skins/Agent/[% Data.Skin | uri %]/[% Data.CSSDirectory %]/[% Data.Filename %]" />
-    <![endif]-->
-[% RenderBlockEnd("CommonCSS_IE8") %]
-
     <link rel="stylesheet" href="[% Config("Frontend::WebPath") %]skins/Agent/default/css/thirdparty/ui-theme/jquery-ui.css" />
 
 [% RenderBlockStart("HeaderLogoCSS") %]
@@ -74,22 +68,6 @@ X-OTRS-Login: [% Env("Baselink") %]
             }
         }
     </style>
-
-<!--[if IE 8]>
-    <script type="text/javascript">
-        /* Fix initial font rendering on IE8 for FontAwesome */
-        (function() {
-            var head = document.getElementsByTagName('head')[0],
-                style = document.createElement('style');
-            style.type = 'text/css';
-            style.styleSheet.cssText = ':before,:after{content:none !important;}';
-            head.appendChild(style);
-            setTimeout(function(){
-                head.removeChild(style);
-            }, 0);
-        }());
-    </script>
-    <![endif]-->
 
     <title>[% Translate(Data.Title) | html %] - [% Config("ProductName") %]</title>
 
@@ -157,7 +135,7 @@ X-OTRS-Login: [% Env("Baselink") %]
                         <form action="[% Env("CGIHandle") %]" method="post" enctype="application/x-www-form-urlencoded" name="login">
                             <input type="hidden" name="Action" value="Login" />
                             <input type="hidden" name="RequestedURL" value="[% Data.RequestedURL | html %]"/>
-                            <input type="hidden" name="Lang" value="[% Env("UserLanguage") %]"/>
+                            <input type="hidden" name="Lang" value="[% Env("UserLanguage") | html %]"/>
                             <input type="hidden" name="TimeOffset" id="TimeOffset" value=""/>
                         </form>
                     </div>
@@ -180,7 +158,7 @@ X-OTRS-Login: [% Env("Baselink") %]
                         <form action="[% Env("CGIHandle") %]" method="post" enctype="application/x-www-form-urlencoded" name="login" class="Validate">
                             <input type="hidden" name="Action" value="Login" />
                             <input type="hidden" name="RequestedURL" value="[% Data.RequestedURL | html %]"/>
-                            <input type="hidden" name="Lang" value="[% Env("UserLanguage") %]"/>
+                            <input type="hidden" name="Lang" value="[% Env("UserLanguage") | html %]"/>
                             <input type="hidden" name="TimeOffset" id="TimeOffset" value=""/>
                             <fieldset class="TableLike">
                                 <label for="User" class="Mandatory">
@@ -238,7 +216,7 @@ X-OTRS-Login: [% Env("Baselink") %]
                         <p class="Error Center Spacing"></p>
                         <form action="[% Env("CGIHandle") %]" method="post" enctype="application/x-www-form-urlencoded" class="Validate">
                             <input type="hidden" name="Action" value="LostPassword"/>
-                            <input type="hidden" name="Lang" value="[% Env("UserLanguage") %]"/>
+                            <input type="hidden" name="Lang" value="[% Env("UserLanguage") | html %]"/>
 
                             <fieldset class="TableLike">
                                 <label for="PasswordUser" class="Mandatory">

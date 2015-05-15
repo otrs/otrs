@@ -12,23 +12,15 @@ use utf8;
 
 use vars (qw($Self));
 
-use Kernel::System::UnitTest::Helper;
-use Kernel::System::UnitTest::Selenium;
-
 # get needed objects
 my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
 my $DBObject     = $Kernel::OM->Get('Kernel::System::DB');
-
-my $Selenium = Kernel::System::UnitTest::Selenium->new(
-    Verbose => 1,
-);
+my $Selenium     = $Kernel::OM->Get('Kernel::System::UnitTest::Selenium');
 
 $Selenium->RunTest(
     sub {
 
-        my $Helper = Kernel::System::UnitTest::Helper->new(
-            RestoreSystemConfiguration => 0,
-        );
+        my $Helper = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
 
         my $TestUserLogin = $Helper->TestUserCreate(
             Groups => ['admin'],
@@ -100,6 +92,14 @@ $Selenium->RunTest(
         $Selenium->find_element( "#Comment",                          'css' )->send_keys($SysAddComment);
         $Selenium->find_element( "#Name",                             'css' )->submit();
 
+        ACTIVESLEEP:
+        for my $Second ( 1 .. 20 ) {
+            if ( $Selenium->execute_script("return \$('.MasterAction').length") ) {
+                last ACTIVESLEEP;
+            }
+            sleep 1;
+        }
+
         # check for created test SystemAddress
         $Self->True(
             index( $Selenium->get_page_source(), $SysAddRandom ) > -1,
@@ -139,6 +139,14 @@ $Selenium->RunTest(
         $Selenium->find_element( "#ValidID option[value='2']", 'css' )->click();
         $Selenium->find_element( "#Comment",                   'css' )->clear();
         $Selenium->find_element( "#Name",                      'css' )->submit();
+
+        ACTIVESLEEP:
+        for my $Second ( 1 .. 20 ) {
+            if ( $Selenium->execute_script("return \$('.MasterAction').length") ) {
+                last ACTIVESLEEP;
+            }
+            sleep 1;
+        }
 
         # check edited test SystemAddress values
         $Selenium->find_element( $SysAddRandom, 'link_text' )->click();

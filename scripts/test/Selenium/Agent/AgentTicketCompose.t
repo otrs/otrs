@@ -13,11 +13,6 @@ use utf8;
 use vars (qw($Self));
 
 # get selenium object
-$Kernel::OM->ObjectParamAdd(
-    'Kernel::System::UnitTest::Selenium' => {
-        Verbose => 1,
-        }
-);
 my $Selenium = $Kernel::OM->Get('Kernel::System::UnitTest::Selenium');
 
 $Selenium->RunTest(
@@ -27,7 +22,7 @@ $Selenium->RunTest(
         $Kernel::OM->ObjectParamAdd(
             'Kernel::System::UnitTest::Helper' => {
                 RestoreSystemConfiguration => 1,
-                }
+            },
         );
         my $Helper = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
 
@@ -90,12 +85,16 @@ $Selenium->RunTest(
         my $TicketSubject      = "Selenium Ticket";
         my $TicketBody         = "Selenium body test";
         $Selenium->find_element( "#FromCustomer", 'css' )->send_keys($TestCustomer);
-        sleep(2);
+
+        $Selenium->WaitFor( JavaScript => 'return $("li.ui-menu-item:visible").length' );
+
         $Selenium->find_element("//*[text()='$AutoCompleteString']")->click();
         $Selenium->find_element( "#Dest option[value='2||Raw']", 'css' )->click();
         $Selenium->find_element( "#Subject",                     'css' )->send_keys($TicketSubject);
         $Selenium->find_element( "#RichText",                    'css' )->send_keys($TicketBody);
         $Selenium->find_element( "#Subject",                     'css' )->submit();
+
+        $Selenium->WaitFor( JavaScript => 'return $("form").length' );
 
         # get ticket object
         my $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');

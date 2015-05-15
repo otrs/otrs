@@ -615,20 +615,20 @@ sub LoadDefaults {
     $Self->{'Frontend::NotifyModule'} = {
         '100-OTRSBusiness' => {
             'Group' => 'admin',
-            'Module' => 'Kernel::Output::HTML::NotificationAgentOTRSBusiness'
+            'Module' => 'Kernel::Output::HTML::Notification::AgentOTRSBusiness'
         },
         '200-UID-Check' => {
-          'Module' => 'Kernel::Output::HTML::NotificationUIDCheck',
+          'Module' => 'Kernel::Output::HTML::Notification::UIDCheck',
         },
         '500-OutofOffice-Check' => {
-          'Module' => 'Kernel::Output::HTML::NotificationOutofOfficeCheck',
+          'Module' => 'Kernel::Output::HTML::Notification::OutofOfficeCheck',
         },
         '600-SystemMaintenance-Check' => {
-            'Module' => 'Kernel::Output::HTML::NotificationSystemMaintenanceCheck',
+            'Module' => 'Kernel::Output::HTML::Notification::SystemMaintenanceCheck',
         },
 
         '800-Scheduler-Check' => {
-          'Module' => 'Kernel::Output::HTML::NotificationSchedulerCheck',
+          'Module' => 'Kernel::Output::HTML::Notification::SchedulerCheck',
         },
     };
 
@@ -838,9 +838,6 @@ sub LoadDefaults {
         'thirdparty/fontawesome/font-awesome.css'
     ];
 
-    # Customer Common CSS for IE8
-    $Self->{'Loader::Customer::CommonCSS::IE8'}->{'000-Framework'} =  [];
-
     # Agent Common CSS
     $Self->{'Loader::Agent::CommonCSS'}->{'000-Framework'} =  [
         'Core.Reset.css',
@@ -861,11 +858,6 @@ sub LoadDefaults {
         'Core.Dialog.css',
         'Core.Print.css',
         'thirdparty/fontawesome/font-awesome.css',
-    ];
-
-    # Agent Common CSS for IE8
-    $Self->{'Loader::Agent::CommonCSS::IE8'}->{'000-Framework'} =  [
-      'Core.OverviewSmall.IE8.css'
     ];
 
     # --------------------------------------------------- #
@@ -1029,7 +1021,7 @@ sub LoadDefaults {
         'Area' => 'Agent',
         'Column' => 'User Profile',
         'Label' => 'Change password',
-        'Module' => 'Kernel::Output::HTML::PreferencesPassword',
+        'Module' => 'Kernel::Output::HTML::Preferences::Password',
         'PasswordMaxLoginFailed' => '0',
         'PasswordMin2Characters' => '0',
         'PasswordMin2Lower2UpperCharacters' => '0',
@@ -1039,7 +1031,7 @@ sub LoadDefaults {
         'Prio' => '0500'
     };
     $Self->{PreferencesGroups}->{SpellDict} = {
-        Module => 'Kernel::Output::HTML::PreferencesGeneric',
+        Module => 'Kernel::Output::HTML::Preferences::Generic',
         Column => 'Other Options',
         Label  => 'Spelling Dictionary',
         Desc   => 'Select your default spelling dictionary.',
@@ -1065,7 +1057,7 @@ sub LoadDefaults {
         'Data' => '[% Env("UserComment") %]',
         'Key' => 'Comment',
         'Label' => 'Comment',
-        'Module' => 'Kernel::Output::HTML::PreferencesGeneric',
+        'Module' => 'Kernel::Output::HTML::Preferences::Generic',
         'PrefKey' => 'UserComment',
         'Prio' => '6000'
     };
@@ -1075,7 +1067,7 @@ sub LoadDefaults {
         'Column' => 'User Profile',
         'Key' => 'Frontend language',
         'Label' => 'Language',
-        'Module' => 'Kernel::Output::HTML::PreferencesLanguage',
+        'Module' => 'Kernel::Output::HTML::Preferences::Language',
         'PrefKey' => 'UserLanguage',
         'Prio' => '1000'
     };
@@ -1084,7 +1076,7 @@ sub LoadDefaults {
         'Column' => 'User Profile',
         'Key' => 'Frontend theme',
         'Label' => 'Theme',
-        'Module' => 'Kernel::Output::HTML::PreferencesTheme',
+        'Module' => 'Kernel::Output::HTML::Preferences::Theme',
         'PrefKey' => 'UserTheme',
         'Prio' => '3000'
     };
@@ -1143,7 +1135,7 @@ You can log in via the following URL:
 
     # show online agents
 #    $Self->{'CustomerFrontend::NotifyModule'}->{'1-ShowAgentOnline'} = {
-#        Module      => 'Kernel::Output::HTML::NotificationAgentOnline',
+#        Module      => 'Kernel::Output::HTML::Notification::AgentOnline',
 #        ShowEmail   => 1,
 #        IdleMinutes => 60,
 #    };

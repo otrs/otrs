@@ -12,22 +12,14 @@ use utf8;
 
 use vars (qw($Self));
 
-use Kernel::System::UnitTest::Helper;
-use Kernel::System::UnitTest::Selenium;
-
 # get needed objects
 my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
-
-my $Selenium = Kernel::System::UnitTest::Selenium->new(
-    Verbose => 1,
-);
+my $Selenium     = $Kernel::OM->Get('Kernel::System::UnitTest::Selenium');
 
 $Selenium->RunTest(
     sub {
 
-        my $Helper = Kernel::System::UnitTest::Helper->new(
-            RestoreSystemConfiguration => 0,
-        );
+        my $Helper = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
 
         my $TestUserLogin = $Helper->TestCustomerUserCreate(
             Groups => ['admin'],
@@ -72,10 +64,10 @@ $Selenium->RunTest(
 
         # edit checked stored values
         $Selenium->find_element( "#UserRefreshTime option[value='2']", 'css' )->click();
-        $Selenium->find_element(".//*/div/div[2]/form/fieldset/button")->click();
+        $Selenium->find_element( "#UserRefreshTime option[value='2']", 'css' )->submit();
 
         $Selenium->find_element( "#UserShowTickets option[value='20']", 'css' )->click();
-        $Selenium->find_element(".//*/div/div[3]/form/fieldset/button")->click();
+        $Selenium->find_element( "#UserShowTickets option[value='20']", 'css' )->submit();
 
         # check edited values
         $Self->Is(
@@ -96,7 +88,7 @@ $Selenium->RunTest(
         {
             # change CustomerPreference language
             $Selenium->find_element( "#UserLanguage option[value='$Language']", 'css' )->click();
-            $Selenium->find_element(".//*/div/div[1]/form/fieldset/button")->click();
+            $Selenium->find_element( "#UserLanguage option[value='$Language']", 'css' )->submit();
 
             # check edited language value
             $Self->Is(

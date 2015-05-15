@@ -13,11 +13,6 @@ use utf8;
 use vars (qw($Self));
 
 # get selenium object
-$Kernel::OM->ObjectParamAdd(
-    'Kernel::System::UnitTest::Selenium' => {
-        Verbose => 1,
-        }
-);
 my $Selenium = $Kernel::OM->Get('Kernel::System::UnitTest::Selenium');
 
 $Selenium->RunTest(
@@ -27,7 +22,7 @@ $Selenium->RunTest(
         $Kernel::OM->ObjectParamAdd(
             'Kernel::System::UnitTest::Helper' => {
                 RestoreSystemConfiguration => 1,
-                }
+            },
         );
         my $Helper = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
 
@@ -91,13 +86,15 @@ $Selenium->RunTest(
         my $TicketBody         = "Selenium body test";
         $Selenium->find_element( "#FromCustomer", 'css' )->send_keys($TestCustomer);
 
-        # wait a bit for the autocomplete to populate
-        sleep(2);
+        $Selenium->WaitFor( JavaScript => 'return $("li.ui-menu-item:visible").length' );
+
         $Selenium->find_element("//*[text()='$AutoCompleteString']")->click();
         $Selenium->find_element( "#Dest option[value='2||Raw']", 'css' )->click();
         $Selenium->find_element( "#Subject",                     'css' )->send_keys($TicketSubject);
         $Selenium->find_element( "#RichText",                    'css' )->send_keys($TicketBody);
         $Selenium->find_element( "#Subject",                     'css' )->submit();
+
+        $Selenium->WaitFor( JavaScript => 'return $("form").length' );
 
         # get ticket object
         my $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
@@ -133,7 +130,9 @@ $Selenium->RunTest(
 
         # input fields and send forward
         $Selenium->find_element( "#ToCustomer", 'css' )->send_keys($TestCustomer);
-        sleep(2);
+
+        $Selenium->WaitFor( JavaScript => 'return $("li.ui-menu-item:visible").length' );
+
         $Selenium->find_element("//*[text()='$AutoCompleteString']")->click();
         $Selenium->find_element( "#ComposeStateID option[value='4']", 'css' )->click();
 
@@ -163,10 +162,8 @@ $Selenium->RunTest(
             $Selenium->switch_to_window( $Handles->[1] );
 
             # verify for expected action
-            my $HistoryText = "Forwarded to \"\"$TestCustomer $TestCustomer\" &lt;$TestCustomer\@localhost.com&gt;\".";
-
             $Self->True(
-                index( $Selenium->get_page_source(), $HistoryText ) > -1,
+                index( $Selenium->get_page_source(), "Forwarded to " ) > -1,
                 "Action Forward executed correctly",
             );
 

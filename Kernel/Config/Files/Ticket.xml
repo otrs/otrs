@@ -1335,7 +1335,7 @@
         <SubGroup>Frontend::Agent::TicketOverview</SubGroup>
         <Setting>
             <Hash>
-                <Item Key="Module">Kernel::Output::HTML::TicketOverviewSmall</Item>
+                <Item Key="Module">Kernel::Output::HTML::Ticket::OverviewSmall</Item>
                 <Item Key="Name" Translatable="1">Small</Item>
                 <Item Key="NameShort">S</Item>
                 <Item Key="ModulePriority">100</Item>
@@ -1360,7 +1360,7 @@
         <SubGroup>Frontend::Agent::TicketOverview</SubGroup>
         <Setting>
             <Hash>
-                <Item Key="Module">Kernel::Output::HTML::TicketOverviewMedium</Item>
+                <Item Key="Module">Kernel::Output::HTML::Ticket::OverviewMedium</Item>
                 <Item Key="Name" Translatable="1">Medium</Item>
                 <Item Key="NameShort">M</Item>
                 <Item Key="ModulePriority">200</Item>
@@ -1376,7 +1376,7 @@
         <SubGroup>Frontend::Agent::TicketOverview</SubGroup>
         <Setting>
             <Hash>
-                <Item Key="Module">Kernel::Output::HTML::TicketOverviewPreview</Item>
+                <Item Key="Module">Kernel::Output::HTML::Ticket::OverviewPreview</Item>
                 <Item Key="Name" Translatable="1">Large</Item>
                 <Item Key="NameShort">L</Item>
                 <Item Key="ModulePriority">300</Item>
@@ -5798,7 +5798,7 @@
         <SubGroup>Frontend::Agent::ModuleMetaHead</SubGroup>
         <Setting>
             <Hash>
-                <Item Key="Module">Kernel::Output::HTML::HeaderMetaTicketSearch</Item>
+                <Item Key="Module">Kernel::Output::HTML::HeaderMeta::AgentTicketSearch</Item>
                 <Item Key="Action">AgentTicketSearch</Item>
             </Hash>
         </Setting>
@@ -5809,7 +5809,7 @@
         <SubGroup>Frontend::Agent::ModuleNotify</SubGroup>
         <Setting>
             <Hash>
-                <Item Key="Module">Kernel::Output::HTML::NotificationAgentTicketEscalation</Item>
+                <Item Key="Module">Kernel::Output::HTML::Notification::AgentTicketEscalation</Item>
                 <Item Key="ShownMax">25</Item>
                 <Item Key="EscalationInMinutes">120</Item>
                 <Item Key="CacheTime">40</Item>
@@ -5906,7 +5906,7 @@
         <SubGroup>Frontend::Agent::Ticket::ArticleViewModule</SubGroup>
         <Setting>
             <Hash>
-                <Item Key="Module">Kernel::Output::HTML::ArticleCheckPGP</Item>
+                <Item Key="Module">Kernel::Output::HTML::Article::CheckPGP</Item>
             </Hash>
         </Setting>
     </ConfigItem>
@@ -5916,7 +5916,7 @@
         <SubGroup>Frontend::Agent::Ticket::ArticleViewModule</SubGroup>
         <Setting>
             <Hash>
-                <Item Key="Module">Kernel::Output::HTML::ArticleCheckSMIME</Item>
+                <Item Key="Module">Kernel::Output::HTML::Article::CheckSMIME</Item>
             </Hash>
         </Setting>
     </ConfigItem>
@@ -5926,7 +5926,7 @@
         <SubGroup>Frontend::Agent::Ticket::ArticleViewModulePre</SubGroup>
         <Setting>
             <Hash>
-                <Item Key="Module">Kernel::Output::HTML::ArticleCheckPGP</Item>
+                <Item Key="Module">Kernel::Output::HTML::Article::CheckPGP</Item>
             </Hash>
         </Setting>
     </ConfigItem>
@@ -5936,7 +5936,7 @@
         <SubGroup>Frontend::Agent::Ticket::ArticleViewModulePre</SubGroup>
         <Setting>
             <Hash>
-                <Item Key="Module">Kernel::Output::HTML::ArticleCheckSMIME</Item>
+                <Item Key="Module">Kernel::Output::HTML::Article::CheckSMIME</Item>
             </Hash>
         </Setting>
     </ConfigItem>
@@ -5946,7 +5946,7 @@
         <SubGroup>Frontend::Agent::Ticket::ArticleComposeModule</SubGroup>
         <Setting>
             <Hash>
-                <Item Key="Module">Kernel::Output::HTML::ArticleComposeSign</Item>
+                <Item Key="Module">Kernel::Output::HTML::Article::ComposeSign</Item>
             </Hash>
         </Setting>
     </ConfigItem>
@@ -5956,7 +5956,7 @@
         <SubGroup>Frontend::Agent::Ticket::ArticleComposeModule</SubGroup>
         <Setting>
             <Hash>
-                <Item Key="Module">Kernel::Output::HTML::ArticleComposeCrypt</Item>
+                <Item Key="Module">Kernel::Output::HTML::Article::ComposeCrypt</Item>
             </Hash>
         </Setting>
     </ConfigItem>
@@ -5966,7 +5966,7 @@
         <SubGroup>Frontend::Agent::Ticket::ArticleAttachmentModule</SubGroup>
         <Setting>
             <Hash>
-                <Item Key="Module">Kernel::Output::HTML::ArticleAttachmentDownload</Item>
+                <Item Key="Module">Kernel::Output::HTML::Article::AttachmentDownload</Item>
             </Hash>
         </Setting>
     </ConfigItem>
@@ -5976,7 +5976,7 @@
         <SubGroup>Frontend::Agent::Ticket::ArticleAttachmentModule</SubGroup>
         <Setting>
             <Hash>
-                <Item Key="Module">Kernel::Output::HTML::ArticleAttachmentHTMLViewer</Item>
+                <Item Key="Module">Kernel::Output::HTML::Article::AttachmentHTMLViewer</Item>
             </Hash>
         </Setting>
     </ConfigItem>
@@ -5986,7 +5986,7 @@
         <SubGroup>Frontend::Agent::Ticket::MenuModule</SubGroup>
         <Setting>
             <Hash>
-                <Item Key="Module">Kernel::Output::HTML::TicketMenuGeneric</Item>
+                <Item Key="Module">Kernel::Output::HTML::Ticket::MenuGeneric</Item>
                 <Item Key="Name">Back</Item>
                 <Item Key="Description" Translatable="1">Back</Item>
                 <Item Key="Action"></Item>
@@ -6002,7 +6002,7 @@
         <SubGroup>Frontend::Agent::Ticket::MenuModule</SubGroup>
         <Setting>
             <Hash>
-                <Item Key="Module">Kernel::Output::HTML::TicketMenuLock</Item>
+                <Item Key="Module">Kernel::Output::HTML::Ticket::MenuLock</Item>
                 <Item Key="Name">Lock</Item>
                 <Item Key="Action">AgentTicketLock</Item>
                 <Item Key="Target"></Item>
@@ -6015,7 +6015,7 @@
         <SubGroup>Frontend::Agent::Ticket::MenuModule</SubGroup>
         <Setting>
             <Hash>
-                <Item Key="Module">Kernel::Output::HTML::TicketMenuGeneric</Item>
+                <Item Key="Module">Kernel::Output::HTML::Ticket::MenuGeneric</Item>
                 <Item Key="Name">History</Item>
                 <Item Key="Description" Translatable="1">Show the ticket history</Item>
                 <Item Key="Action">AgentTicketHistory</Item>
@@ -6031,7 +6031,7 @@
         <SubGroup>Frontend::Agent::Ticket::MenuModule</SubGroup>
         <Setting>
             <Hash>
-                <Item Key="Module">Kernel::Output::HTML::TicketMenuGeneric</Item>
+                <Item Key="Module">Kernel::Output::HTML::Ticket::MenuGeneric</Item>
                 <Item Key="Name">Print</Item>
                 <Item Key="Description" Translatable="1">Print this ticket</Item>
                 <Item Key="Action">AgentTicketPrint</Item>
@@ -6048,7 +6048,7 @@
         <SubGroup>Frontend::Agent::Ticket::MenuModule</SubGroup>
         <Setting>
             <Hash>
-                <Item Key="Module">Kernel::Output::HTML::TicketMenuGeneric</Item>
+                <Item Key="Module">Kernel::Output::HTML::Ticket::MenuGeneric</Item>
                 <Item Key="Name">Priority</Item>
                 <Item Key="Description" Translatable="1">Change the ticket priority</Item>
                 <Item Key="Action">AgentTicketPriority</Item>
@@ -6064,7 +6064,7 @@
         <SubGroup>Frontend::Agent::Ticket::MenuModule</SubGroup>
         <Setting>
             <Hash>
-                <Item Key="Module">Kernel::Output::HTML::TicketMenuGeneric</Item>
+                <Item Key="Module">Kernel::Output::HTML::Ticket::MenuGeneric</Item>
                 <Item Key="Name">Free Fields</Item>
                 <Item Key="Description" Translatable="1">Change the free fields for this ticket</Item>
                 <Item Key="Action">AgentTicketFreeText</Item>
@@ -6080,7 +6080,7 @@
         <SubGroup>Frontend::Agent::Ticket::MenuModule</SubGroup>
         <Setting>
             <Hash>
-                <Item Key="Module">Kernel::Output::HTML::TicketMenuGeneric</Item>
+                <Item Key="Module">Kernel::Output::HTML::Ticket::MenuGeneric</Item>
                 <Item Key="Name">Link</Item>
                 <Item Key="Description" Translatable="1">Link this ticket to other objects</Item>
                 <Item Key="Action">AgentLinkObject</Item>
@@ -6096,7 +6096,7 @@
         <SubGroup>Frontend::Agent::Ticket::MenuModule</SubGroup>
         <Setting>
             <Hash>
-                <Item Key="Module">Kernel::Output::HTML::TicketMenuGeneric</Item>
+                <Item Key="Module">Kernel::Output::HTML::Ticket::MenuGeneric</Item>
                 <Item Key="Name">Owner</Item>
                 <Item Key="Description" Translatable="1">Change the owner for this ticket</Item>
                 <Item Key="Action">AgentTicketOwner</Item>
@@ -6112,7 +6112,7 @@
         <SubGroup>Frontend::Agent::Ticket::MenuModule</SubGroup>
         <Setting>
             <Hash>
-                <Item Key="Module">Kernel::Output::HTML::TicketMenuResponsible</Item>
+                <Item Key="Module">Kernel::Output::HTML::Ticket::MenuResponsible</Item>
                 <Item Key="Name">Responsible</Item>
                 <Item Key="Description" Translatable="1">Change the responsible person for this ticket</Item>
                 <Item Key="Action">AgentTicketResponsible</Item>
@@ -6128,7 +6128,7 @@
         <SubGroup>Frontend::Agent::Ticket::MenuModule</SubGroup>
         <Setting>
             <Hash>
-                <Item Key="Module">Kernel::Output::HTML::TicketMenuGeneric</Item>
+                <Item Key="Module">Kernel::Output::HTML::Ticket::MenuGeneric</Item>
                 <Item Key="Name">Customer</Item>
                 <Item Key="Description" Translatable="1">Change the customer for this ticket</Item>
                 <Item Key="Action">AgentTicketCustomer</Item>
@@ -6144,7 +6144,7 @@
         <SubGroup>Frontend::Agent::Ticket::MenuModule</SubGroup>
         <Setting>
             <Hash>
-                <Item Key="Module">Kernel::Output::HTML::TicketMenuGeneric</Item>
+                <Item Key="Module">Kernel::Output::HTML::Ticket::MenuGeneric</Item>
                 <Item Key="Name">Note</Item>
                 <Item Key="Description" Translatable="1">Add a note to this ticket</Item>
                 <Item Key="Action">AgentTicketNote</Item>
@@ -6160,7 +6160,7 @@
         <SubGroup>Frontend::Agent::Ticket::MenuModule</SubGroup>
         <Setting>
             <Hash>
-                <Item Key="Module">Kernel::Output::HTML::TicketMenuGeneric</Item>
+                <Item Key="Module">Kernel::Output::HTML::Ticket::MenuGeneric</Item>
                 <Item Key="Name">Phone Call Outbound</Item>
                 <Item Key="Description" Translatable="1">Phone Call Outbound</Item>
                 <Item Key="Action">AgentTicketPhoneOutbound</Item>
@@ -6176,7 +6176,7 @@
         <SubGroup>Frontend::Agent::Ticket::MenuModule</SubGroup>
         <Setting>
             <Hash>
-                <Item Key="Module">Kernel::Output::HTML::TicketMenuGeneric</Item>
+                <Item Key="Module">Kernel::Output::HTML::Ticket::MenuGeneric</Item>
                 <Item Key="Name">Phone Call Inbound</Item>
                 <Item Key="Description" Translatable="1">Phone Call Inbound</Item>
                 <Item Key="Action">AgentTicketPhoneInbound</Item>
@@ -6192,7 +6192,7 @@
         <SubGroup>Frontend::Agent::Ticket::MenuModule</SubGroup>
         <Setting>
             <Hash>
-                <Item Key="Module">Kernel::Output::HTML::TicketMenuGeneric</Item>
+                <Item Key="Module">Kernel::Output::HTML::Ticket::MenuGeneric</Item>
                 <Item Key="Name">E-Mail Outbound</Item>
                 <Item Key="Description" Translatable="1">Write a new, outgoing mail</Item>
                 <Item Key="Action">AgentTicketEmailOutbound</Item>
@@ -6208,7 +6208,7 @@
         <SubGroup>Frontend::Agent::Ticket::MenuModule</SubGroup>
         <Setting>
             <Hash>
-                <Item Key="Module">Kernel::Output::HTML::TicketMenuGeneric</Item>
+                <Item Key="Module">Kernel::Output::HTML::Ticket::MenuGeneric</Item>
                 <Item Key="Name">Merge</Item>
                 <Item Key="Description" Translatable="1">Merge into a different ticket</Item>
                 <Item Key="Action">AgentTicketMerge</Item>
@@ -6224,7 +6224,7 @@
         <SubGroup>Frontend::Agent::Ticket::MenuModule</SubGroup>
         <Setting>
             <Hash>
-                <Item Key="Module">Kernel::Output::HTML::TicketMenuGeneric</Item>
+                <Item Key="Module">Kernel::Output::HTML::Ticket::MenuGeneric</Item>
                 <Item Key="Name">Pending</Item>
                 <Item Key="Description" Translatable="1">Set this ticket to pending</Item>
                 <Item Key="Action">AgentTicketPending</Item>
@@ -6240,7 +6240,7 @@
         <SubGroup>Frontend::Agent::Ticket::MenuModule</SubGroup>
         <Setting>
             <Hash>
-                <Item Key="Module">Kernel::Output::HTML::TicketMenuTicketWatcher</Item>
+                <Item Key="Module">Kernel::Output::HTML::Ticket::MenuTicketWatcher</Item>
                 <Item Key="Action">AgentTicketWatcher</Item>
                 <Item Key="Name">Watch</Item>
                 <Item Key="Target"></Item>
@@ -6253,7 +6253,7 @@
         <SubGroup>Frontend::Agent::Ticket::MenuModule</SubGroup>
         <Setting>
             <Hash>
-                <Item Key="Module">Kernel::Output::HTML::TicketMenuGeneric</Item>
+                <Item Key="Module">Kernel::Output::HTML::Ticket::MenuGeneric</Item>
                 <Item Key="Name">Close</Item>
                 <Item Key="Description" Translatable="1">Close this ticket</Item>
                 <Item Key="Action">AgentTicketClose</Item>
@@ -6269,7 +6269,7 @@
         <SubGroup>Frontend::Agent::Ticket::MenuModule</SubGroup>
         <Setting>
             <Hash>
-                <Item Key="Module">Kernel::Output::HTML::TicketMenuGeneric</Item>
+                <Item Key="Module">Kernel::Output::HTML::Ticket::MenuGeneric</Item>
                 <Item Key="Name">Delete</Item>
                 <Item Key="Action">AgentTicketMove</Item>
                 <Item Key="Description" Translatable="1">Delete this ticket</Item>
@@ -6285,7 +6285,7 @@
         <SubGroup>Frontend::Agent::Ticket::MenuModule</SubGroup>
         <Setting>
             <Hash>
-                <Item Key="Module">Kernel::Output::HTML::TicketMenuGeneric</Item>
+                <Item Key="Module">Kernel::Output::HTML::Ticket::MenuGeneric</Item>
                 <Item Key="Name">Spam</Item>
                 <Item Key="Action">AgentTicketMove</Item>
                 <Item Key="Description" Translatable="1">Mark as Spam!</Item>
@@ -6301,7 +6301,7 @@
         <SubGroup>Frontend::Agent::Ticket::OverviewMenuModule</SubGroup>
         <Setting>
             <Hash>
-                <Item Key="Module">Kernel::Output::HTML::TicketOverviewMenuSort</Item>
+                <Item Key="Module">Kernel::Output::HTML::Ticket::OverviewMenuSort</Item>
             </Hash>
         </Setting>
     </ConfigItem>
@@ -6322,7 +6322,7 @@
         <SubGroup>Frontend::Agent::Ticket::MenuModulePre</SubGroup>
         <Setting>
             <Hash>
-                <Item Key="Module">Kernel::Output::HTML::TicketMenuLock</Item>
+                <Item Key="Module">Kernel::Output::HTML::Ticket::MenuLock</Item>
                 <Item Key="Name">Lock</Item>
                 <Item Key="Action">AgentTicketLock</Item>
                 <Item Key="Target"></Item>
@@ -6336,7 +6336,7 @@
         <SubGroup>Frontend::Agent::Ticket::MenuModulePre</SubGroup>
         <Setting>
             <Hash>
-                <Item Key="Module">Kernel::Output::HTML::TicketMenuGeneric</Item>
+                <Item Key="Module">Kernel::Output::HTML::Ticket::MenuGeneric</Item>
                 <Item Key="Name">Zoom</Item>
                 <Item Key="Action">AgentTicketZoom</Item>
                 <Item Key="Description" Translatable="1">Look into a ticket!</Item>
@@ -6352,7 +6352,7 @@
         <SubGroup>Frontend::Agent::Ticket::MenuModulePre</SubGroup>
         <Setting>
             <Hash>
-                <Item Key="Module">Kernel::Output::HTML::TicketMenuGeneric</Item>
+                <Item Key="Module">Kernel::Output::HTML::Ticket::MenuGeneric</Item>
                 <Item Key="Name">History</Item>
                 <Item Key="Action">AgentTicketHistory</Item>
                 <Item Key="Description" Translatable="1">Show the ticket history</Item>
@@ -6368,7 +6368,7 @@
         <SubGroup>Frontend::Agent::Ticket::MenuModulePre</SubGroup>
         <Setting>
             <Hash>
-                <Item Key="Module">Kernel::Output::HTML::TicketMenuGeneric</Item>
+                <Item Key="Module">Kernel::Output::HTML::Ticket::MenuGeneric</Item>
                 <Item Key="Name">Priority</Item>
                 <Item Key="Action">AgentTicketPriority</Item>
                 <Item Key="Description" Translatable="1">Change the priority for this ticket</Item>
@@ -6384,7 +6384,7 @@
         <SubGroup>Frontend::Agent::Ticket::MenuModulePre</SubGroup>
         <Setting>
             <Hash>
-                <Item Key="Module">Kernel::Output::HTML::TicketMenuGeneric</Item>
+                <Item Key="Module">Kernel::Output::HTML::Ticket::MenuGeneric</Item>
                 <Item Key="Name">Note</Item>
                 <Item Key="Action">AgentTicketNote</Item>
                 <Item Key="Description" Translatable="1">Add a note to this ticket</Item>
@@ -6400,7 +6400,7 @@
         <SubGroup>Frontend::Agent::Ticket::MenuModulePre</SubGroup>
         <Setting>
             <Hash>
-                <Item Key="Module">Kernel::Output::HTML::TicketMenuGeneric</Item>
+                <Item Key="Module">Kernel::Output::HTML::Ticket::MenuGeneric</Item>
                 <Item Key="Name">Close</Item>
                 <Item Key="Action">AgentTicketClose</Item>
                 <Item Key="Description" Translatable="1">Close this ticket</Item>
@@ -6416,7 +6416,7 @@
         <SubGroup>Frontend::Agent::Ticket::MenuModulePre</SubGroup>
         <Setting>
             <Hash>
-                <Item Key="Module">Kernel::Output::HTML::TicketMenuMove</Item>
+                <Item Key="Module">Kernel::Output::HTML::Ticket::MenuMove</Item>
                 <Item Key="Name">Move</Item>
                 <Item Key="Action">AgentTicketMove</Item>
                 <Item Key="Description" Translatable="1">Change queue!</Item>
@@ -6429,7 +6429,7 @@
         <SubGroup>Frontend::Agent::Ticket::MenuModulePre</SubGroup>
         <Setting>
             <Hash>
-                <Item Key="Module">Kernel::Output::HTML::TicketMenuGeneric</Item>
+                <Item Key="Module">Kernel::Output::HTML::Ticket::MenuGeneric</Item>
                 <Item Key="Name">Delete</Item>
                 <Item Key="Action">AgentTicketMove</Item>
                 <Item Key="Description" Translatable="1">Delete this ticket</Item>
@@ -6445,7 +6445,7 @@
         <SubGroup>Frontend::Agent::Ticket::MenuModulePre</SubGroup>
         <Setting>
             <Hash>
-                <Item Key="Module">Kernel::Output::HTML::TicketMenuGeneric</Item>
+                <Item Key="Module">Kernel::Output::HTML::Ticket::MenuGeneric</Item>
                 <Item Key="Name">Spam</Item>
                 <Item Key="Action">AgentTicketMove</Item>
                 <Item Key="Description" Translatable="1">Mark as Spam!</Item>
@@ -7320,7 +7320,7 @@
         <SubGroup>Frontend::Agent::Preferences</SubGroup>
         <Setting>
             <Hash>
-                <Item Key="Module">Kernel::Output::HTML::PreferencesGeneric</Item>
+                <Item Key="Module">Kernel::Output::HTML::Preferences::Generic</Item>
                 <Item Key="Column">Email Settings</Item>
                 <Item Key="Label" Translatable="1">New ticket notification</Item>
                 <Item Key="Desc" Translatable="1">Send me a notification if there is a new ticket in my queues/services.</Item>
@@ -7347,7 +7347,7 @@
         <SubGroup>Frontend::Agent::Preferences</SubGroup>
         <Setting>
             <Hash>
-                <Item Key="Module">Kernel::Output::HTML::PreferencesGeneric</Item>
+                <Item Key="Module">Kernel::Output::HTML::Preferences::Generic</Item>
                 <Item Key="Column">Email Settings</Item>
                 <Item Key="Label" Translatable="1">Ticket follow up notification</Item>
                 <Item Key="Desc" Translatable="1">Send me a notification if a customer sends a follow up and I'm the owner of the ticket or the ticket is unlocked and is in one of my queues/services.</Item>
@@ -7374,7 +7374,7 @@
         <SubGroup>Frontend::Agent::Preferences</SubGroup>
         <Setting>
             <Hash>
-                <Item Key="Module">Kernel::Output::HTML::PreferencesGeneric</Item>
+                <Item Key="Module">Kernel::Output::HTML::Preferences::Generic</Item>
                 <Item Key="Column">Email Settings</Item>
                 <Item Key="Label" Translatable="1">Ticket lock timeout notification</Item>
                 <Item Key="Desc" Translatable="1">Send me a notification if a ticket is unlocked by the system.</Item>
@@ -7398,7 +7398,7 @@
         <SubGroup>Frontend::Agent::Preferences</SubGroup>
         <Setting>
             <Hash>
-                <Item Key="Module">Kernel::Output::HTML::PreferencesGeneric</Item>
+                <Item Key="Module">Kernel::Output::HTML::Preferences::Generic</Item>
                 <Item Key="Column">Email Settings</Item>
                 <Item Key="Label" Translatable="1">Ticket move notification</Item>
                 <Item Key="Desc" Translatable="1">Send me a notification if a ticket is moved into one of "My Queues".</Item>
@@ -7422,7 +7422,7 @@
         <SubGroup>Frontend::Agent::Preferences</SubGroup>
         <Setting>
             <Hash>
-                <Item Key="Module">Kernel::Output::HTML::PreferencesGeneric</Item>
+                <Item Key="Module">Kernel::Output::HTML::Preferences::Generic</Item>
                 <Item Key="Column">Email Settings</Item>
                 <Item Key="Label" Translatable="1">Service update notification</Item>
                 <Item Key="Desc" Translatable="1">Send me a notification if the service of a ticket is changed to a service in "My Services" and the ticket is in a queue where I have read permissions.</Item>
@@ -7446,7 +7446,7 @@
         <SubGroup>Frontend::Agent::Preferences</SubGroup>
         <Setting>
             <Hash>
-                <Item Key="Module">Kernel::Output::HTML::PreferencesTicketWatcher</Item>
+                <Item Key="Module">Kernel::Output::HTML::Preferences::TicketWatcher</Item>
                 <Item Key="Column">Email Settings</Item>
                 <Item Key="Label" Translatable="1">Ticket watch notification</Item>
                 <Item Key="Desc" Translatable="1">Send me the same notifications for my watched tickets that the ticket owners will get.</Item>
@@ -7470,7 +7470,7 @@
         <SubGroup>Frontend::Agent::Preferences</SubGroup>
         <Setting>
             <Hash>
-                <Item Key="Module">Kernel::Output::HTML::PreferencesCustomQueue</Item>
+                <Item Key="Module">Kernel::Output::HTML::Preferences::CustomQueue</Item>
                 <Item Key="Column">Other Settings</Item>
                 <Item Key="Label" Translatable="1">My Queues</Item>
                 <Item Key="Desc" Translatable="1">Your queue selection of your favorite queues. You also get notified about those queues via email if enabled.</Item>
@@ -7487,7 +7487,7 @@
         <SubGroup>Frontend::Agent::Preferences</SubGroup>
         <Setting>
             <Hash>
-                <Item Key="Module">Kernel::Output::HTML::PreferencesCustomService</Item>
+                <Item Key="Module">Kernel::Output::HTML::Preferences::CustomService</Item>
                 <Item Key="Column">Other Settings</Item>
                 <Item Key="Label" Translatable="1">My Services</Item>
                 <Item Key="Desc" Translatable="1">Your service selection of your favorite services. You also get notified about those services via email if enabled.</Item>
@@ -7503,7 +7503,7 @@
         <SubGroup>Frontend::Agent::Preferences</SubGroup>
         <Setting>
             <Hash>
-                <Item Key="Module">Kernel::Output::HTML::PreferencesGeneric</Item>
+                <Item Key="Module">Kernel::Output::HTML::Preferences::Generic</Item>
                 <Item Key="Column">Other Settings</Item>
                 <Item Key="Label" Translatable="1">Overview Refresh Time</Item>
                 <Item Key="Desc" Translatable="1">If enabled, the different overviews (Dashboard, LockedView, QueueView) will automatically refresh after the specified time.</Item>
@@ -7531,7 +7531,7 @@
         <SubGroup>Frontend::Agent::Preferences</SubGroup>
         <Setting>
             <Hash>
-                <Item Key="Module">Kernel::Output::HTML::PreferencesGeneric</Item>
+                <Item Key="Module">Kernel::Output::HTML::Preferences::Generic</Item>
                 <Item Key="Column">Other Settings</Item>
                 <Item Key="Label" Translatable="1">Ticket Overview "Small" Limit</Item>
                 <Item Key="Key" Translatable="1">Ticket limit per page for Ticket Overview "Small"</Item>
@@ -7558,7 +7558,7 @@
         <SubGroup>Frontend::Agent::Preferences</SubGroup>
         <Setting>
             <Hash>
-                <Item Key="Module">Kernel::Output::HTML::PreferencesColumnFilters</Item>
+                <Item Key="Module">Kernel::Output::HTML::Preferences::ColumnFilters</Item>
                 <Item Key="Column">Other Settings</Item>
                 <Item Key="Label" Translatable="1">Enabled filters.</Item>
                 <Item Key="Key" Translatable="1">Column ticket filters for Ticket Overviews type "Small".</Item>
@@ -7574,7 +7574,7 @@
         <SubGroup>Frontend::Agent::Preferences</SubGroup>
         <Setting>
             <Hash>
-                <Item Key="Module">Kernel::Output::HTML::PreferencesGeneric</Item>
+                <Item Key="Module">Kernel::Output::HTML::Preferences::Generic</Item>
                 <Item Key="Column">Other Settings</Item>
                 <Item Key="Label" Translatable="1">Ticket Overview "Medium" Limit</Item>
                 <Item Key="Key" Translatable="1">Ticket limit per page for Ticket Overview "Medium"</Item>
@@ -7601,7 +7601,7 @@
         <SubGroup>Frontend::Agent::Preferences</SubGroup>
         <Setting>
             <Hash>
-                <Item Key="Module">Kernel::Output::HTML::PreferencesGeneric</Item>
+                <Item Key="Module">Kernel::Output::HTML::Preferences::Generic</Item>
                 <Item Key="Column">Other Settings</Item>
                 <Item Key="Label" Translatable="1">Ticket Overview "Preview" Limit</Item>
                 <Item Key="Key" Translatable="1">Ticket limit per page for Ticket Overview "Preview"</Item>
@@ -7628,7 +7628,7 @@
         <SubGroup>Frontend::Agent::Preferences</SubGroup>
         <Setting>
             <Hash>
-                <Item Key="Module">Kernel::Output::HTML::PreferencesGeneric</Item>
+                <Item Key="Module">Kernel::Output::HTML::Preferences::Generic</Item>
                 <Item Key="Column">Other Settings</Item>
                 <Item Key="Label" Translatable="1">Screen after new ticket</Item>
                 <Item Key="Key" Translatable="1">Show this screen after I created a new ticket</Item>
@@ -8122,7 +8122,7 @@
         <SubGroup>Frontend::Customer::Preferences</SubGroup>
         <Setting>
             <Hash>
-                <Item Key="Module">Kernel::Output::HTML::PreferencesGeneric</Item>
+                <Item Key="Module">Kernel::Output::HTML::Preferences::Generic</Item>
                 <Item Key="Column">User Profile</Item>
                 <Item Key="Label" Translatable="1">Number of displayed tickets</Item>
                 <Item Key="Key" Translatable="1">Tickets per page</Item>
@@ -8147,7 +8147,7 @@
         <SubGroup>Frontend::Customer::Preferences</SubGroup>
         <Setting>
             <Hash>
-                <Item Key="Module">Kernel::Output::HTML::PreferencesGeneric</Item>
+                <Item Key="Module">Kernel::Output::HTML::Preferences::Generic</Item>
                 <Item Key="Column">User Profile</Item>
                 <Item Key="Label" Translatable="1">Ticket overview</Item>
                 <Item Key="Key" Translatable="1">Refresh interval</Item>
@@ -8246,7 +8246,7 @@
         <SubGroup>Frontend::Customer::ModuleMetaHead</SubGroup>
         <Setting>
             <Hash>
-                <Item Key="Module">Kernel::Output::HTML::CustomerHeaderMetaTicketSearch</Item>
+                <Item Key="Module">Kernel::Output::HTML::HeaderMeta::CustomerTicketSearch</Item>
                 <Item Key="Action">CustomerTicketSearch</Item>
             </Hash>
         </Setting>
@@ -10451,7 +10451,7 @@ Thanks for your help!
         <SubGroup>Frontend::Agent::Preferences</SubGroup>
         <Setting>
             <Hash>
-                <Item Key="Module">Kernel::Output::HTML::PreferencesGeneric</Item>
+                <Item Key="Module">Kernel::Output::HTML::Preferences::Generic</Item>
                 <Item Key="Column">Other Settings</Item>
                 <Item Key="Label" Translatable="1">Dynamic Fields Overview Limit</Item>
                 <Item Key="Key" Translatable="1">Dynamic fields limit per page for Dynamic Fields Overview</Item>
