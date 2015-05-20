@@ -1,0 +1,16 @@
+# --
+# redhat-systemd-otrs.dist - systemd script of otrs without database for RedHat Linux
+# --
+[Unit]
+Description=OTRS: Open-source Ticket Request System, Copyright (C) 2001-2012 OTRS AG
+Documentation=https://otrs.github.io/doc/manual/admin/stable/en/html/
+Requires=crond.service httpd.service
+After=crond.service httpd.service
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+EnvironmentFile=/etc/sysconfig/otrs
+ExecStart=/opt/otrs/bin/Cron.sh start otrs
+ExecStop=/opt/otrs/bin/Cron.sh stop otrs
+[Install]
+WantedBy=multi-user.target
