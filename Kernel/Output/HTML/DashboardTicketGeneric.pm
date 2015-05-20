@@ -259,13 +259,22 @@ sub new {
         'EscalationSolutionTime' => 1,
     };
 
-    # remove CustomerID if Customer Information Center
+    # remove CustomerID or CustomerUser if Customer Information Center
     if ( $Self->{Action} eq 'AgentCustomerInformationCenter' ) {
-        delete $Self->{ColumnFilter}->{CustomerID};
-        delete $Self->{GetColumnFilter}->{CustomerID};
-        delete $Self->{GetColumnFilterSelect}->{CustomerID};
-        delete $Self->{ValidFilterableColumns}->{CustomerID};
-        delete $Self->{ValidSortableColumns}->{CustomerID};
+        if ( $Param{CustomerID} ) {
+            delete $Self->{ColumnFilter}->{CustomerID};
+            delete $Self->{GetColumnFilter}->{CustomerID};
+            delete $Self->{GetColumnFilterSelect}->{CustomerID};
+            delete $Self->{ValidFilterableColumns}->{CustomerID};
+            delete $Self->{ValidSortableColumns}->{CustomerID};
+        }
+        if ( $Param{CustomerUserID} ) {
+            delete $Self->{ColumnFilter}->{CustomerUserID};
+            delete $Self->{GetColumnFilter}->{CustomerUserID};
+            delete $Self->{GetColumnFilterSelect}->{CustomerUserID};
+            delete $Self->{ValidFilterableColumns}->{CustomerUserID};
+            delete $Self->{ValidSortableColumns}->{CustomerUserID};            
+        }
     }
 
     $Self->{UseTicketService} = $ConfigObject->Get('Ticket::Service') || 0;
@@ -345,9 +354,16 @@ sub Preferences {
 
     # remove CustomerID if Customer Information Center
     if ( $Self->{Action} eq 'AgentCustomerInformationCenter' ) {
-        delete $Columns{Columns}->{CustomerID};
-        @ColumnsEnabled             = grep { $_ ne 'CustomerID' } @ColumnsEnabled;
-        @ColumnsAvailableNotEnabled = grep { $_ ne 'CustomerID' } @ColumnsAvailableNotEnabled;
+        if ( $Param{CustomerID} ) {
+            delete $Columns{Columns}->{CustomerID};
+            @ColumnsEnabled             = grep { $_ ne 'CustomerID' } @ColumnsEnabled;
+            @ColumnsAvailableNotEnabled = grep { $_ ne 'CustomerID' } @ColumnsAvailableNotEnabled;
+        }
+        if ( $Param{CustomerUserID} ) {
+            delete $Columns{Columns}->{CustomerUserID};
+            @ColumnsEnabled             = grep { $_ ne 'CustomerUserID' } @ColumnsEnabled;
+            @ColumnsAvailableNotEnabled = grep { $_ ne 'CustomerUserID' } @ColumnsAvailableNotEnabled;
+        }
     }
 
     my @Params = (
@@ -519,6 +535,11 @@ sub Run {
     # CustomerInformationCenter shows data per CustomerID
     if ( $Param{CustomerID} ) {
         $CacheKey .= '-' . $Param{CustomerID};
+    }
+
+    # CustomerUserInformationCenter shows data per CustomerUserID
+    if ( $Param{CustomerUserID} ) {
+        $CacheKey .= '-' . $Param{CustomerUserID};
     }
 
     # get cache object
@@ -753,6 +774,9 @@ sub Run {
     if ( $Param{CustomerID} ) {
         $LinkPage .= "CustomerID=$Param{CustomerID};";
     }
+    if ( $Param{CustomerUserID} ) {
+        $LinkPage .= "CustomerUserID=$Param{CustomerUserID};";
+    }
     my %PageNav = $LayoutObject->PageNavBar(
         StartHit       => $Self->{StartHit},
         PageShown      => $Self->{PageShown},
@@ -843,8 +867,19 @@ sub Run {
 
         # skip CustomerID if Customer Information Center
         if (
-            $Self->{Action} eq 'AgentCustomerInformationCenter'
+            $Self->{Action} eq 'AgentCustomerInformationCenter' 
+            && $Param{CustomerID}
             && $HeaderColumn eq 'CustomerID'
+            )
+        {
+            next HEADERCOLUMN;
+        }
+
+        # skip CustomerUserID if Customer User Information Center
+        if (
+            $Self->{Action} eq 'AgentCustomerInformationCenter'
+            && $Param{CustomerUserID}
+            && $HeaderColumn eq 'CustomerUserID'
             )
         {
             next HEADERCOLUMN;
@@ -945,6 +980,7 @@ sub Run {
                 my $Css;
                 if (
                     $HeaderColumn eq 'CustomerID'
+                    || $HeaderColumn eq 'CustomerUserID'
                     || $HeaderColumn eq 'Responsible'
                     || $HeaderColumn eq 'Owner'
                     )
@@ -978,6 +1014,17 @@ sub Run {
 
                     $LayoutObject->Block(
                         Name => 'ContentLargeTicketGenericHeaderColumnFilterLinkCustomerIDSearch',
+                        Data => {
+                            minQueryLength      => 2,
+                            queryDelay          => 100,
+                            maxResultsDisplayed => 20,
+                        },
+                    );
+                }
+                elsif ( $HeaderColumn eq 'CustomerUserID' ) {
+
+                    $LayoutObject->Block(
+                        Name => 'ContentLargeTicketGenericHeaderColumnFilterLinkCustomerUserIDSearch',
                         Data => {
                             minQueryLength      => 2,
                             queryDelay          => 100,
@@ -1344,7 +1391,18 @@ sub Run {
             # skip CustomerID if Customer Information Center
             if (
                 $Self->{Action} eq 'AgentCustomerInformationCenter'
+                && $Param{CustomerID}
                 && $Column eq 'CustomerID'
+                )
+            {
+                next COLUMN;
+            }
+
+            # skip CustomerUserID if Customer User Information Center
+            if (
+                $Self->{Action} eq 'AgentCustomerInformationCenter'
+                && $Param{CustomerUserID}
+                && $Column eq 'CustomerUserID'
                 )
             {
                 next COLUMN;
@@ -2053,6 +2111,11 @@ sub _SearchParamsGet {
     # CustomerInformationCenter shows data per CustomerID
     if ( $Param{CustomerID} ) {
         $TicketSearch{CustomerIDRaw} = $Param{CustomerID};
+    }
+
+    # CustomerUserInformationCenter shows data per CustomerUserID
+    if ( $Param{CustomerUserID} ) {
+        $TicketSearch{CustomerUserLogin} = $Param{CustomerUserID};
     }
 
     # define filter attributes

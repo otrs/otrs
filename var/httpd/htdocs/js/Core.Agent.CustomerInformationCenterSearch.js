@@ -37,12 +37,13 @@ Core.Agent.CustomerInformationCenterSearch = (function (TargetNS) {
      * @name Redirect
      * @memberof Core.Agent.CustomerInformationCenterSearch
      * @function
-     * @param {String} CustomerID
+     * @param {String} Value
      * @param {Object} Event
+     * @param {String} Scope - Scope to search, "CIC" or "CUIC".
      * @description
      *      Redirect to Customer ID screen.
      */
-    function Redirect(CustomerID, Event) {
+    function Redirect(Value, Event, Scope) {
         var Session = '';
 
         Event.preventDefault();
@@ -54,7 +55,13 @@ Core.Agent.CustomerInformationCenterSearch = (function (TargetNS) {
             Session = ';' + Core.Config.Get('SessionName') + '=' + Core.Config.Get('SessionID');
         }
 
-        window.location.href = Core.Config.Get('Baselink') + 'Action=AgentCustomerInformationCenter;CustomerID=' + encodeURIComponent(CustomerID) + Session;
+        if (Scope == 'CIC') {
+            window.location.href = Core.Config.Get('Baselink') + 'Action=AgentCustomerInformationCenter;CustomerID=' + encodeURIComponent(Value) + Session;
+        }
+        if (Scope == 'CUIC') {
+            window.location.href = Core.Config.Get('Baselink') + 'Action=AgentCustomerInformationCenter;CustomerUserID=' + encodeURIComponent(Value) + Session;
+        }
+
     }
 
     /**
@@ -63,14 +70,16 @@ Core.Agent.CustomerInformationCenterSearch = (function (TargetNS) {
      * @function
      * @param {jQueryObject} $Input - Input element to add auto complete to.
      * @param {String} Subaction - Subaction to execute, "SearchCustomerID" or "SearchCustomerUser".
+     * @param {String} Scope - Scope to search, "CIC" or "CUIC".
      * @description
      *      Initialize autocompletion.
      */
-    TargetNS.InitAutocomplete = function ($Input, Subaction) {
+    TargetNS.InitAutocomplete = function ($Input, Subaction, Scope) {
         Core.UI.Autocomplete.Init($Input, function (Request, Response) {
                 var URL = Core.Config.Get('Baselink'), Data = {
                     Action: 'AgentCustomerInformationCenterSearch',
                     Subaction: Subaction,
+                    Scope: Scope,
                     Term: Request.term,
                     MaxResults: Core.UI.Autocomplete.GetConfig('MaxResultsDisplayed')
                 };
@@ -87,7 +96,7 @@ Core.Agent.CustomerInformationCenterSearch = (function (TargetNS) {
                     Response(Data);
                 }));
         }, function (Event, UI) {
-            Redirect(UI.item.value, Event);
+            Redirect(UI.item.value, Event, Scope);
         }, 'CustomerSearch');
     };
 
@@ -129,8 +138,10 @@ Core.Agent.CustomerInformationCenterSearch = (function (TargetNS) {
      *      This function initializes the search dialog.
      */
     TargetNS.Init = function () {
-        TargetNS.InitAutocomplete( $("#AgentCustomerInformationCenterSearchCustomerID"), 'SearchCustomerID' );
-        TargetNS.InitAutocomplete( $("#AgentCustomerInformationCenterSearchCustomerUser"), 'SearchCustomerUser' );
+        TargetNS.InitAutocomplete( $("#AgentCustomerInformationCenterSearchCustomerID"), 'SearchCustomerID', 'CIC' );
+        TargetNS.InitAutocomplete( $("#AgentCustomerInformationCenterSearchCustomerUser"), 'SearchCustomerUser', 'CIC' );
+        TargetNS.InitAutocomplete( $("#AgentCustomerUserInformationCenterSearchCustomerID"), 'SearchCustomerID', 'CUIC' );
+        TargetNS.InitAutocomplete( $("#AgentCustomerUserInformationCenterSearchCustomerUser"), 'SearchCustomerUser', 'CUIC' );
     };
 
     return TargetNS;

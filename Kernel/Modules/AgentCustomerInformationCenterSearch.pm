@@ -38,41 +38,68 @@ sub Run {
     my $AutoCompleteConfig = $ConfigObject->Get('AutoComplete::Agent###CustomerSearch');
     my $MaxResults = $AutoCompleteConfig->{MaxResultsDisplayed} || 20;
 
+    my $Scope = $Self->{ParamObject}->GetParam( Param => 'Scope' ) || 'CIC';
+
     if ( $Self->{Subaction} eq 'SearchCustomerID' ) {
 
         my @CustomerIDs = $CustomerUserObject->CustomerIDList(
             SearchTerm => $ParamObject->GetParam( Param => 'Term' ) || '',
         );
 
-        my %CustomerCompanyList = $Kernel::OM->Get('Kernel::System::CustomerCompany')->CustomerCompanyList(
-            Search => $ParamObject->GetParam( Param => 'Term' ) || '',
-        );
+        my @Result;
 
-        # add CustomerIDs for which no CustomerCompany are registered
-        my %Seen;
-        for my $CustomerID (@CustomerIDs) {
+        if ( $Scope eq 'CIC') {
 
-            # skip duplicates
-            next CUSTOMERID if $Seen{$CustomerID};
-            $Seen{$CustomerID} = 1;
+            my %CustomerCompanyList = $Kernel::OM->Get('Kernel::System::CustomerCompany')->CustomerCompanyList(
+                Search => $ParamObject->GetParam( Param => 'Term' ) || '',
+            );
 
-            # identifies unknown companies
-            if ( !exists $CustomerCompanyList{$CustomerID} ) {
-                $CustomerCompanyList{$CustomerID} = $CustomerID;
+            # add CustomerIDs for which no CustomerCompany are registered
+            my %Seen;
+            for my $CustomerID (@CustomerIDs) {
+
+                # skip duplicates
+                next CUSTOMERID if $Seen{$CustomerID};
+                $Seen{$CustomerID} = 1;
+
+                # identifies unknown companies
+                if ( !exists $CustomerCompanyList{$CustomerID} ) {
+                    $CustomerCompanyList{$CustomerID} = $CustomerID;
+                }
+
             }
 
-        }
+            # build result list
+            CUSTOMERID:
+            for my $CustomerID ( sort keys %CustomerCompanyList ) {
 
-        # build result list
-        my @Result;
-        CUSTOMERID:
-        for my $CustomerID ( sort keys %CustomerCompanyList ) {
-            push @Result,
-                {
-                Label => $CustomerCompanyList{$CustomerID},
-                Value => $CustomerID
-                };
-            last CUSTOMERID if scalar @Result >= $MaxResults;
+                push @Result,
+                    {
+                    Label => $CustomerCompanyList{$CustomerID},
+                    Value => $CustomerID
+                    };
+                last CUSTOMERID if scalar @Result >= $MaxResults;
+            }
+        }
+        
+        elsif ( $Scope eq 'CUIC') {
+            my %CustomerList = $Kernel::OM->Get('Kernel::System::CustomerUser')->CustomerSearch(
+                CustomerID => $Self->{ParamObject}->GetParam( Param => 'Term' ) || '',
+            );
+
+            CUSTOMERLOGIN:
+            for my $CustomerLogin ( sort keys %CustomerList ) {
+                my %CustomerData = $Kernel::OM->Get('Kernel::System::CustomerUser')->CustomerUserDataGet(
+                    User => $CustomerLogin,
+                );
+                push @Result,
+                    {
+                    Label => $CustomerData{UserCustomerID} . " ($CustomerList{$CustomerLogin})",
+                    Value => $CustomerData{UserLogin}
+                    };
+
+                last CUSTOMERLOGIN if scalar @Result >= $MaxResults;
+            }
         }
 
         my $JSON = $LayoutObject->JSONEncode(
@@ -86,6 +113,7 @@ sub Run {
             NoCache     => 1,
         );
     }
+
     elsif ( $Self->{Subaction} eq 'SearchCustomerUser' ) {
 
         my %CustomerList = $CustomerUserObject->CustomerSearch(
@@ -94,20 +122,30 @@ sub Run {
 
         my @Result;
 
-        my $Count = 1;
-
         CUSTOMERLOGIN:
         for my $CustomerLogin ( sort keys %CustomerList ) {
             my %CustomerData = $CustomerUserObject->CustomerUserDataGet(
                 User => $CustomerLogin,
             );
-            push @Result,
-                {
-                Label => $CustomerList{$CustomerLogin},
-                Value => $CustomerData{UserCustomerID}
-                };
 
-            last CUSTOMERLOGIN if $Count++ >= $MaxResults;
+            if ( $Scope eq 'CIC') {
+
+                push @Result,
+                    {
+                    Label => $CustomerList{$CustomerLogin},
+                    Value => $CustomerData{UserCustomerID}
+                    };
+            }
+            elsif ( $Scope eq 'CUIC') {
+
+                push @Result,
+                    {
+                    Label => $CustomerList{$CustomerLogin},
+                    Value => $CustomerData{UserLogin}
+                    };
+            }
+
+            last CUSTOMERLOGIN if scalar @Result >= $MaxResults;
         }
 
         my $JSON = $LayoutObject->JSONEncode(

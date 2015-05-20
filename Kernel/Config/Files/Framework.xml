@@ -4465,7 +4465,7 @@ via the Preferences button after logging in.
     <ConfigItem Name="AgentCustomerInformationCenter::MainMenu###010-EditCustomerID" Required="0" Valid="0">
         <Description Translatable="1">Main menu registration.</Description>
         <Group>Framework</Group>
-        <SubGroup>CustomerInformationCenter</SubGroup>
+        <SubGroup>Frontend::Agent::Dashboard::CustomerInformationCenter</SubGroup>
         <Setting>
             <Hash>
                 <Item Key="Name" Translatable="1">Edit customer company</Item>
@@ -4476,7 +4476,7 @@ via the Preferences button after logging in.
     <ConfigItem Name="AgentCustomerInformationCenter::Backend###0600-CIC-CustomerCompanyInformation" Required="0" Valid="1">
         <Description Translatable="1">Parameters for the dashboard backend of the customer company information of the agent interface . "Group" is used to restrict the access to the plugin (e. g. Group: admin;group1;group2;). "Default" determines if the plugin is enabled by default or if the user needs to enable it manually. "CacheTTLLocal" is the cache time in minutes for the plugin.</Description>
         <Group>Framework</Group>
-        <SubGroup>Frontend::Agent::Dashboard</SubGroup>
+        <SubGroup>Frontend::Agent::Dashboard::CustomerInformationCenter</SubGroup>
         <Setting>
             <Hash>
                 <Item Key="Module">Kernel::Output::HTML::DashboardCustomerCompanyInformation</Item>
@@ -4486,6 +4486,71 @@ via the Preferences button after logging in.
                 <Item Key="Block">ContentSmall</Item>
                 <Item Key="Group"></Item>
                 <Item Key="Default">1</Item>
+            </Hash>
+        </Setting>
+    </ConfigItem>
+    <ConfigItem Name="AgentCustomerInformationCenter::Backend###0050-CIC-CustomerUserList" Required="0" Valid="1">
+        <Description Translatable="1">Parameters for the dashboard backend of the customer user list overview of the agent interface . "Limit" is the number of entries shown by default. "Group" is used to restrict the access to the plugin (e. g. Group: admin;group1;group2;). "Default" determines if the plugin is enabled by default or if the user needs to enable it manually. "CacheTTLLocal" is the cache time in minutes for the plugin.</Description>
+        <Group>Framework</Group>
+        <SubGroup>Frontend::Agent::Dashboard::CustomerInformationCenter</SubGroup>
+        <Setting>
+            <Hash>
+                <Item Key="Module">Kernel::Output::HTML::DashboardCustomerUserList</Item>
+                <Item Key="Title" Translatable="1">Customer Users</Item>
+                <Item Key="Description" Translatable="1">All customer users of a CustomerID</Item>
+                <Item Key="Attributes"></Item>
+                <Item Key="Limit">10</Item>
+                <Item Key="Permission">ro</Item>
+                <Item Key="Block">ContentLarge</Item>
+                <Item Key="Group"></Item>
+                <Item Key="Default">1</Item>
+                <Item Key="CacheTTLLocal">0.5</Item>
+            </Hash>
+        </Setting>
+    </ConfigItem>
+    <ConfigItem Name="AgentCustomerUserInformationCenter::MainMenu###010-EditCustomerUserID" Required="0" Valid="0">
+        <Description Translatable="1">Main menu registration.</Description>
+        <Group>Framework</Group>
+        <SubGroup>Frontend::Agent::Dashboard::CustomerUserInformationCenter</SubGroup>
+        <Setting>
+            <Hash>
+                <Item Key="Name" Translatable="1">Edit customer user</Item>
+                <Item Key="Link">[% Env("Baselink") %]Action=AdminCustomerUser;Subaction=Change;CustomerUserID=[% Data.CustomerUserID | uri %];Nav=0</Item>
+            </Hash>
+        </Setting>
+    </ConfigItem>
+    <ConfigItem Name="AgentCustomerUserInformationCenter::Backend###0600-CUIC-CustomerUserInformation" Required="0" Valid="1">
+        <Description Translatable="1">Parameters for the dashboard backend of the customer user information of the agent interface . "Group" is used to restrict the access to the plugin (e. g. Group: admin;group1;group2;). "Default" determines if the plugin is enabled by default or if the user needs to enable it manually. "CacheTTLLocal" is the cache time in minutes for the plugin.</Description>
+        <Group>Framework</Group>
+        <SubGroup>Frontend::Agent::Dashboard::CustomerUserInformationCenter</SubGroup>
+        <Setting>
+            <Hash>
+                <Item Key="Module">Kernel::Output::HTML::DashboardCustomerUserInformation</Item>
+                <Item Key="Title" Translatable="1">Customer User Information</Item>
+                <Item Key="Description" Translatable="1">Customer User Information</Item>
+                <Item Key="Attributes"></Item>
+                <Item Key="Block">ContentSmall</Item>
+                <Item Key="Group"></Item>
+                <Item Key="Default">1</Item>
+            </Hash>
+        </Setting>
+    </ConfigItem>
+    <ConfigItem Name="AgentCustomerUserInformationCenter::Backend###0050-CUIC-CustomerList" Required="0" Valid="1">
+        <Description Translatable="1">Parameters for the dashboard backend of the customer list overview of the agent interface . "Limit" is the number of entries shown by default. "Group" is used to restrict the access to the plugin (e. g. Group: admin;group1;group2;). "Default" determines if the plugin is enabled by default or if the user needs to enable it manually. "CacheTTLLocal" is the cache time in minutes for the plugin.</Description>
+        <Group>Framework</Group>
+        <SubGroup>Frontend::Agent::Dashboard::CustomerUserInformationCenter</SubGroup>
+        <Setting>
+            <Hash>
+                <Item Key="Module">Kernel::Output::HTML::DashboardCustomerList</Item>
+                <Item Key="Title" Translatable="1">Customers</Item>
+                <Item Key="Description" Translatable="1">All customers a CustomerUserID</Item>
+                <Item Key="Attributes"></Item>
+                <Item Key="Limit">10</Item>
+                <Item Key="Permission">ro</Item>
+                <Item Key="Block">ContentLarge</Item>
+                <Item Key="Group"></Item>
+                <Item Key="Default">1</Item>
+                <Item Key="CacheTTLLocal">0.5</Item>
             </Hash>
         </Setting>
     </ConfigItem>
@@ -6094,7 +6159,6 @@ via the Preferences button after logging in.
             </Hash>
         </Setting>
     </ConfigItem>
-
     <ConfigItem Name="Frontend::AgentLinkObject::WildcardSearch" Required="1" Valid="1">
         <Description Translatable="1">Starts a wildcard search of the active object after the link object mask is started.</Description>
         <Group>Framework</Group>
@@ -6106,7 +6170,6 @@ via the Preferences button after logging in.
             </Option>
         </Setting>
     </ConfigItem>
-
     <ConfigItem Name="Frontend::Output::FilterText###OutputFilterTextAutoLink" Required="0" Valid="0">
         <Description Translatable="1">Defines a filter to process the text in the articles, in order to highlight predefined keywords.</Description>
         <Group>Framework</Group>
