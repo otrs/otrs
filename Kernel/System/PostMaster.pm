@@ -458,6 +458,7 @@ sub CheckFollowUp {
 
             my $CheckObject = $Jobs->{$Job}->{Module}->new(
                 %{$Self},
+                Config => $Jobs->{$Job},
             );
 
             if ( !$CheckObject ) {

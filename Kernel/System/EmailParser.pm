@@ -975,6 +975,9 @@ sub _MailAddressParse {
     my ( $Self, %Param ) = @_;
 
     my $Email = $Param{Email};
+    if ( !defined $Email ) {
+        return;
+    }
     my $Cache = $Self->{EmailCache};
 
     if ( $Self->{EmailCache}->{$Email} ) {
