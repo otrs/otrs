@@ -49,7 +49,7 @@ sub Run {
         return;
     }
 
-    my $HeaderValue = $Param{ $Self->{Header} };
+    my $HeaderValue = $Param{GetParam}{ $Self->{Header} };
     if ( !IsStringWithData($HeaderValue) ) {
         return;
     }
@@ -67,6 +67,11 @@ sub Run {
     if ( $TicketID ) {
         return $TicketID;
     }
+    else {
+        # make sure the new ticket has the dynamic field set
+        $Param{GetParam}{"X-OTRS-DynamicField-$Self->{DynamicField}"} = $HeaderValue;
+    }
+    return;
 }
 
 1;

@@ -155,7 +155,7 @@ sub Run {
     my $GetParam = $Self->GetEmailParams();
 
     # check if follow up
-    my ( $Tn, $TicketID ) = $Self->CheckFollowUp( %{$GetParam} );
+    my ( $Tn, $TicketID ) = $Self->CheckFollowUp( GetParam => $GetParam );
 
     # get config objects
     my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
@@ -217,7 +217,7 @@ sub Run {
     # ----------------------
 
     # check if follow up (again, with new GetParam)
-    ( $Tn, $TicketID ) = $Self->CheckFollowUp( %{$GetParam} );
+    ( $Tn, $TicketID ) = $Self->CheckFollowUp( GetParam => $GetParam );
 
     # check if it's a follow up ...
     if ( $Tn && $TicketID ) {
@@ -431,7 +431,9 @@ sub Run {
 to detect the ticket number in processing email
 
     my ($TicketNumber, $TicketID) = $PostMasterObject->CheckFollowUp(
-        Subject => 'Re: [Ticket:#123456] Some Subject',
+        GetParam => {
+            Subject => 'Re: [Ticket:#123456] Some Subject',
+        },
     );
 
 =cut
