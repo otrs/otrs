@@ -10121,7 +10121,7 @@ Thanks for your help!
         </Setting>
     </ConfigItem>
     <ConfigItem Name="PostMaster::CheckFollowUpModule###0800-DynamicField" Required="1" Valid="1">
-        <Description Translatable="1">Executes follow up checks on a dynamic field  header. If a ticket with the same content of the dynamic field (and in configurable states) is found, it is considered a follow-up to that ticket. The dynamic field must be configured as a text field.</Description>
+        <Description Translatable="1">Executes follow up checks on a dynamic field  header. If a ticket with the same content of the dynamic field (and in one of the state types configred in &quot;StateType&quot; below) is found, it is considered a follow-up to that ticket. The dynamic field must be configured as a text field.</Description>
         <Group>Ticket</Group>
         <SubGroup>Core::PostMaster</SubGroup>
         <Setting>
