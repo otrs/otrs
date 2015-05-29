@@ -65,7 +65,7 @@ sub new {
         $Self->{StoredFilters} = $StoredFilters;
     }
 
-    # get the configured dyanmic fields from the Small Overview setting as a basis
+    # get the configured dynamic fields from the Small Overview setting as a basis
     my %DefaultDynamicFields = %{ $ConfigObject->Get("Ticket::Frontend::OverviewSmall")->{DynamicField} || {} };
 
     my %DefaultColumns = map { 'DynamicField_' . $_ => $DefaultDynamicFields{$_} } sort keys %DefaultDynamicFields;

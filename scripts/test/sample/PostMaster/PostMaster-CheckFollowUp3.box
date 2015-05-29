@@ -1,0 +1,7 @@
+To: support@example.com
+Subject: A Ticket with CheckFollowUp-Header (unrelated)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+X-OTRS-DynamicField-FollowUpDetection: OTRS rules
+
+This has a different CheckFollowUp-header than the other two mails.
