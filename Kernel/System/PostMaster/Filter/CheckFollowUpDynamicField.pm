@@ -28,9 +28,9 @@ sub new {
     bless( $Self, $Type );
 
     $Self->{ParserObject} = $Param{ParserObject} || die "Got no ParserObject";
-    $Self->{DynamicField} = $Param{Config}{DynamicField};
-    $Self->{Header}       = $Param{Config}{Header};
-    $Self->{StateTypes}   = $Param{Config}{StateTypes};
+    $Self->{DynamicField} = $Param{Config}->{DynamicField};
+    $Self->{Header}       = $Param{Config}->{Header};
+    $Self->{StateTypes}   = $Param{Config}->{StateTypes};
 
     return $Self;
 }
@@ -49,7 +49,7 @@ sub Run {
         return;
     }
 
-    my $HeaderValue = $Param{GetParam}{ $Self->{Header} };
+    my $HeaderValue = $Param{GetParam}->{ $Self->{Header} };
     if ( !IsStringWithData($HeaderValue) ) {
         return;
     }
@@ -69,7 +69,7 @@ sub Run {
     }
     else {
         # make sure the new ticket has the dynamic field set
-        $Param{GetParam}{"X-OTRS-DynamicField-$Self->{DynamicField}"} = $HeaderValue;
+        $Param{GetParam}->{"X-OTRS-DynamicField-$Self->{DynamicField}"} = $HeaderValue;
     }
     return;
 }
