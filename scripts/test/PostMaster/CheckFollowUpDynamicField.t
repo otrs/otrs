@@ -61,7 +61,7 @@ if ( !IsHashRefWithData( $DynamicField ) ) {
 
 
 my %TicketsToDelete;
-sub ProcessMailFile {
+my $ProcessMailFile = sub {
     my ( $Number ) = @_;
     my $Path = $ConfigObject->Get('Home') .
         "/scripts/test/sample/PostMaster/PostMaster-CheckFollowUp$Number.box";
@@ -79,9 +79,9 @@ sub ProcessMailFile {
         $TicketsToDelete{ $TicketID } = 1;
     }
     return ( $Code, $TicketID );
-}
+};
 
-my ( $Code, $FirstTicketID ) = ProcessMailFile( 1 );
+my ( $Code, $FirstTicketID ) = $ProcessMailFile->( 1 );
 
 $Self->Is( $Code, 1, 'New ticket from email' );
 
@@ -97,12 +97,12 @@ $Self->Is(
     'Dynamic field set correctly',
 );
 
-( $Code, my $FollowUpTicketID ) = ProcessMailFile( 2 );
+( $Code, my $FollowUpTicketID ) = $ProcessMailFile->( 2 );
 
 $Self->Is( $Code, 2, 'Detected a follow-up through a dynamic field'  );
 $Self->Is( $FirstTicketID, $FollowUpTicketID, 'Follow-up to the correct ticket' );
 
-( $Code, my $UnrelatedTicketID ) = ProcessMailFile( 3 );
+( $Code, my $UnrelatedTicketID ) = $ProcessMailFile->( 3 );
 
 $Self->Is( $Code, 1, 'Different FollowUpDetection-header led to new ticket'  );
 
@@ -114,7 +114,7 @@ my $Success = $TicketObject->StateSet(
 
 $Self->True($Success, 'Could close ticket');
 
-( $Code, my $RetryTicketID ) = ProcessMailFile( 1 );
+( $Code, my $RetryTicketID ) = $ProcessMailFile->( 1 );
 
 $Self->Is( $Code, 1, 'No follow-up if previous ticket is neither open nor new');
 
