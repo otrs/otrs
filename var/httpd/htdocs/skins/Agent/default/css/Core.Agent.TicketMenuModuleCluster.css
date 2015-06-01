@@ -1,0 +1,123 @@
+/**
+ * This file containts the CSS Styles for the ticket menu
+ * module cluster navigation
+ *
+ * @project     OTRS (http://www.otrs.org) - Agent Frontend
+ * @copyright   OTRS AG
+ * @license     AGPL (http://www.gnu.org/licenses/agpl.txt)
+ */
+
+/**
+ * @package     Skin "Default"
+ * @section     Header
+ */
+
+@media screen,projection,tv,handheld {
+
+/**
+ * @subsection      TicketMenu Level-0
+ */
+
+#TicketMenuWidgetContent {
+    height: 11px;
+}
+
+#TicketMenuContainer {
+    position: absolute;
+    top: 65px;
+    left: 10px;
+    z-index: 10;
+    width: 98%; 
+    height: 35px;
+    overflow: hidden;
+}
+
+#TicketMenuContainer #TicketMenu {
+    left: 0px;
+    position: absolute;
+}
+
+.RTL #TicketMenuContainer {
+    left: auto;
+    right: 10px;
+}
+
+#TicketMenuContainer > a {
+    z-index: 100;
+}
+
+#TicketMenuContainer > a.TicketMenuBarNavigateRight {
+    right: 0px;
+}
+
+#TicketMenuContainer > a.TicketMenuBarNavigateLeft {
+    left: 0px;
+}
+
+#TicketMenuContainer > a:hover {
+    padding-top: 1px;
+    padding-left: 1px;
+    width: 19px;
+    height: 33px;
+}
+
+/**
+ * @subsection      TicketMenu Second level
+ */
+
+#TicketMenu > li > ul {
+    display: none;
+}
+
+#TicketMenu > li:hover > ul {
+    position: absolute;
+    top: 28px;
+    display: block;
+    min-width: 240px;
+    z-index: 99;
+    background: #f2f2f2;
+}
+
+.RTL #TicketMenu > li:hover > ul {
+    left: auto;
+    right: -9px;
+}
+
+#TicketMenu > li:hover > ul > li {
+    font-size: 11px;
+    line-height: 11px;
+    margin-top: -1px;
+    position: relative;
+    float: none;
+    border-bottom: 1px solid #BBBBBB;
+}
+
+#TicketMenu > li:hover > ul > li:first-child {
+    padding-left: 0px;
+}
+
+#TicketMenu > li:hover > ul > li:hover {
+    background: #F92;
+}
+
+#TicketMenu > li:hover > ul > li::after {
+    content: "";
+}
+
+#TicketMenu > li:hover > ul > li:hover > a {
+    color: #000;
+    border: none;
+}
+
+#TicketMenu > li:hover > ul > li > a {
+    display: block;
+    position: relative;
+    padding: 6px;
+    float: none;
+}
+
+#TicketMenu > li:hover > ul > li:last-child {
+    border-bottom: none;
+}
+
+} /* end @media */
