@@ -814,6 +814,7 @@ sub _Edit {
     ENTRY:
     for my $Entry ( @{ $ConfigObject->Get( $Param{Source} )->{Map} } ) {
         next ENTRY if !$Entry->[0];
+	next ENTRY if $Entry->[5] =~ /^image\//;
 
         my $Block = 'Input';
 
