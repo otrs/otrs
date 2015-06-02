@@ -267,7 +267,8 @@ Core.UI.TreeSelection = (function (TargetNS) {
             plugins: [ 'search' ]
         })
         .bind('select_node.jstree', function (node, selected, event) {
-            if (selected.node.li_attr.class=='Disabled') {
+            var $Node = $('#'+selected.node.id);
+            if ($Node.hasClass('Disabled') || !$Node.is(':visible')) {
                 $TreeObj.jstree('deselect_node', selected.node);
             }
             $TreeObj.jstree('toggle_node', selected.node);
@@ -282,7 +283,7 @@ Core.UI.TreeSelection = (function (TargetNS) {
                 // Get selected nodes
                 $SelectedNodesObj = $TreeObj.jstree('get_selected');
                 $SelectedNodesObj.each(function() {
-                    SelectedNodes.push(selected.node.li_attr['data-id']);
+                    SelectedNodes.push($Node.attr('data-id'));
                 });
 
                 // Set selected nodes as selected in initial select box
@@ -298,6 +299,7 @@ Core.UI.TreeSelection = (function (TargetNS) {
 
         })
         .bind('deselect_node.jstree', function (node, selected, event) {
+            var $Node = $('#'+selected.node.id);
 
             // If we are already in a dialog, we don't use the submit
             // button for the tree selection, so we need to apply the changes 'live'
@@ -309,7 +311,7 @@ Core.UI.TreeSelection = (function (TargetNS) {
                 // Get selected nodes
                 $SelectedNodesObj = $TreeObj.jstree("get_selected");
                 $SelectedNodesObj.each(function() {
-                    SelectedNodes.push(selected.node.li_attr['data-id']);
+                    SelectedNodes.push($Node.attr('data-id'));
                 });
 
                 // Set selected nodes as selected in initial select box
@@ -366,20 +368,23 @@ Core.UI.TreeSelection = (function (TargetNS) {
                 if (SelectedObj.length > 1) {
 
                     $(SelectedObj).each(function() {
-                        SelectedNodes.push(this.li_attr['data-id']);
+                        var $Node = $('#'+this.id);
+                        SelectedNodes.push($Node.attr('data-id'));
                     });
                     $SelectObj
                         .val(SelectedNodes)
                         .trigger('change');
                 }
                 else {
-                    if (SelectedObj[0].li_attr['data-id'] !== $SelectObj.val()) {
+                    var $Node = $('#'+SelectedObj[0].id);
+                    if ($Node.attr('data-id') !== $SelectObj.val()) {
                         $SelectObj
-                            .val(SelectedObj[0].li_attr['data-id'])
+                            .val($Node.attr('data-id'))
                             .trigger('change');
                     }
                 }
-            } else {
+            }
+            else {
                 $SelectObj
                     .val('')
                     .trigger('change');
