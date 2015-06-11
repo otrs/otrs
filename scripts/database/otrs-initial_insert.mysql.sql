@@ -864,7 +864,7 @@ Thank you for installing OTRS.
 You will find updates and patches at http://www.otrs.com/open-source/.
 Online documentation is available at http://otrs.github.io/doc/.
 You can also use our mailing lists http://lists.otrs.org/
-or our forums at http://forums.otrs.org/
+or our forums at http://forums.otterhub.org/
 
 Regards,
 
