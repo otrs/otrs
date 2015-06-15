@@ -16,6 +16,7 @@ use Kernel::System::SysConfig;
 
 our @ObjectDependencies = (
     'Kernel::Config',
+    'Kernel::System::DB',
     'Kernel::System::CustomerUser',
     'Kernel::System::Group',
     'Kernel::System::Main',
@@ -238,6 +239,39 @@ sub TestCustomerUserCreate {
     return $TestUser;
 }
 
+=item BeginWork()
+
+    $Helper->BeginWork()
+
+Starts a database transaction (in order to isolate the test from the static database).
+
+=cut
+
+sub BeginWork {
+    my ( $Self, %Param ) = @_;
+    my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
+    $DBObject->Connect;
+    $DBObject->{dbh}->begin_work()
+}
+
+=item Rollback()
+
+    $Helper->Rollback()
+
+Rolls back the current database transaction.
+
+=cut
+
+sub Rollback {
+    my ( $Self, %Param ) = @_;
+    my $Dbh = $Kernel::OM->Get('Kernel::System::DB')->{dbh};
+    # if there is no database handle, there's nothing to rollback
+    if ( $Dbh ) {
+        $Dbh->rollback();
+    }
+}
+
+
 my $FixedTime;
 
 =item FixedTimeSet()
@@ -363,11 +397,19 @@ sub DESTROY {
 
     # invalidate test users
     if ( ref $Self->{TestUsers} eq 'ARRAY' && @{ $Self->{TestUsers} } ) {
+        TESTUSERS:
         for my $TestUser ( @{ $Self->{TestUsers} } ) {
 
             my %User = $Kernel::OM->Get('Kernel::System::User')->GetUserData(
                 UserID => $TestUser,
             );
+
+            if ( ! $User{UserID} ) {
+                # if no such user exists, there is no need to set it to invalid;
+                # happens when the test user is created inside a transaction
+                # that is later rolled back.
+                next TESTUSERS;
+            }
 
             # make test user invalid
             my $Success = $Kernel::OM->Get('Kernel::System::User')->UserUpdate(
