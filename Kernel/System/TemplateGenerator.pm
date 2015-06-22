@@ -582,12 +582,26 @@ sub AutoResponse {
     }
 
     # get recipient
-    my %User = $Kernel::OM->Get('Kernel::System::CustomerUser')->GetPreferences(
-        UserID => $Ticket{CustomerUserID},
+    my %CustomerUserList = $Kernel::OM->Get('Kernel::System::CustomerUser')->CustomerSearch(
+        UserLogin => $Ticket{CustomerUserID},
     );
 
+    # get customer preferences
+    my %CustomerPreferences;
+    for my $CustomerUserID ( sort keys %CustomerUserList ) {
+        %CustomerPreferences = $Kernel::OM->Get('Kernel::System::CustomerUser')->GetPreferences(
+            UserID => $CustomerUserID,
+        );
+    }
+
     # get user language
-    my $Language = $User{UserLanguage} || $Kernel::OM->Get('Kernel::Config')->Get('DefaultLanguage') || 'en';
+    my $Language;
+    if ( %CustomerPreferences && $CustomerPreferences{UserLanguage} ) {
+        $Language = $CustomerPreferences{UserLanguage};
+    }
+    else {
+        $Language = $Kernel::OM->Get('Kernel::Config')->Get('DefaultLanguage') || 'en';
+    }
 
     # do text/plain to text/html convert
     if ( $Self->{RichText} && $AutoResponse{ContentType} =~ /text\/plain/i ) {
