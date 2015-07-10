@@ -735,7 +735,7 @@ sub ValidatePendingTime {
 
     # if only the Diff attribute is present, check if it's a valid number and return.
     # Nothing else needs to be checked in that case.
-    if (keys %{ $Param{PendingTime} } == 1 && exists('Diff', $Param{PendingTime})) {
+    if ( keys %{ $Param{PendingTime} } == 1 && exists( $Param{PendingTime}->{Diff} ) ) {
         return if $Param{PendingTime}->{Diff} !~ /^[0-9]+$/;
         return 1;
     }
