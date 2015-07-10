@@ -715,6 +715,12 @@ checks if the given pending time is valid.
         },
     );
 
+    my $Success = $CommonObject->ValidatePendingTime(
+        PendingTime => {
+            Diff => 10080,
+        },
+    );
+
     returns
     $Success = 1            # or 0
 
@@ -726,6 +732,13 @@ sub ValidatePendingTime {
     # check needed stuff
     return if !$Param{PendingTime};
     return if !IsHashRefWithData( $Param{PendingTime} );
+
+    # if only the Diff attribute is present, check if it's a valid number and return.
+    # Nothing else needs to be checked in that case.
+    if (keys %{ $Param{PendingTime} } == 1 && exists('Diff', $Param{PendingTime})) {
+        return if $Param{PendingTime}->{Diff} !~ /^[0-9]+$/;
+        return 1;
+    }
 
     # check that no time attribute is empty or negative
     for my $TimeAttribute ( sort keys %{ $Param{PendingTime} } ) {
