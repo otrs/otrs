@@ -1090,7 +1090,7 @@ sub _Mask {
     $Param{UnlockYesNoOption} = $LayoutObject->BuildSelection(
         Data       => $ConfigObject->Get('YesNoOptions'),
         Name       => 'Unlock',
-        SelectedID => $Param{Unlock} || 1,
+        SelectedID => $Param{Unlock} // 1,
     );
 
     # show spell check
