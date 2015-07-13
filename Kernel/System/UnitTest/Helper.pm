@@ -17,6 +17,7 @@ use Kernel::System::SysConfig;
 our @ObjectDependencies = (
     'Kernel::Config',
     'Kernel::System::DB',
+    'Kernel::System::Cache',
     'Kernel::System::CustomerUser',
     'Kernel::System::Group',
     'Kernel::System::Main',
@@ -41,6 +42,8 @@ construct a helper object.
         'Kernel::System::UnitTest::Helper' => {
             RestoreSystemConfiguration => 1,        # optional, save ZZZAuto.pm
                                                     # and restore it in the destructor
+            RestoreDatabase            => 1,        # runs the test in a transaction,
+                                                    # and roll it back in the destructor
         },
     );
     my $Helper = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
@@ -78,6 +81,11 @@ sub new {
 
         $Self->{RestoreSSLVerify} = 1;
         $Self->{UnitTestObject}->True( 1, 'Skipping SSL certificates verification' );
+    }
+
+    if ( $Param{RestoreDatabase} ) {
+        $Self->{RestoreDatabase} = 1;
+        $Self->BeginWork();
     }
 
     return $Self;
@@ -389,6 +397,12 @@ sub DESTROY {
         $Self->{RestoreSSLVerify} = 0;
 
         $Self->{UnitTestObject}->True( 1, 'Restored SSL certificates verification' );
+    }
+
+    # Restore database, clean caches
+    if ( $Self->{RestoreDatabase} ) {
+        $Self->Rollback();
+        $Kernel::OM->Get('Kernel::System::Cache')->CleanUp()
     }
 
     # disable email checks to create new user
