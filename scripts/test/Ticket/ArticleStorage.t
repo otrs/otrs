@@ -14,7 +14,14 @@ use vars (qw($Self));
 
 use Unicode::Normalize;
 
+$Kernel::OM->ObjectParamAdd(
+    'Kernel::System::UnitTest::Helper' => {
+        RestoreDatabase => 1,
+    }
+);
+
 # get needed objects
+my $HelperObject = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
 my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
 my $MainObject   = $Kernel::OM->Get('Kernel::System::Main');
 my $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');

@@ -12,6 +12,12 @@ use utf8;
 
 use vars (qw($Self));
 
+$Kernel::OM->ObjectParamAdd(
+    'Kernel::System::UnitTest::Helper' => {
+        RestoreDatabase => 1,
+    }
+);
+
 # get needed objects
 my $HelperObject  = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
 my $QueueObject   = $Kernel::OM->Get('Kernel::System::Queue');
