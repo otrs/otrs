@@ -988,8 +988,9 @@ Core.UI.InputFields = (function (TargetNS) {
                             // Enter
                             case $.ui.keyCode.ENTER:
                                 Event.preventDefault();
-                                $TreeObj.blur();
-                                FocusNextElement($SearchObj);
+                                if (!Multiple) {
+                                    FocusNextElement($SearchObj);
+                                }
                                 break;
 
                             // Escape
