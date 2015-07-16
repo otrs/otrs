@@ -1161,6 +1161,7 @@ Core.UI.InputFields = (function (TargetNS) {
                             .text(Core.Config.Get('InputFieldsConfirm'))
                             .attr('aria-label', Core.Config.Get('InputFieldsConfirm'))
                             .appendTo($ToolbarObj)
+                            .prepend('<i class="fa fa-check-square-o" /> ')
                             .wrap('<li />');
                         RegisterActionEvent($TreeObj, $ConfirmObj, 'Confirm');
                     }
