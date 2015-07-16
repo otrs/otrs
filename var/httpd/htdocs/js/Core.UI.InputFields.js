@@ -1320,7 +1320,9 @@ Core.UI.InputFields = (function (TargetNS) {
 
                         // Tab
                         case $.ui.keyCode.TAB:
-                            TabFocus = true;
+                            if (!Event.shiftKey) {
+                                TabFocus = true;
+                            }
                             break;
 
                         // Escape
