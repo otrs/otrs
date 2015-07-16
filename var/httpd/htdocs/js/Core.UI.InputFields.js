@@ -40,23 +40,74 @@ Core.UI.InputFields = (function (TargetNS) {
     };
 
     /**
+     * @name Activate
+     * @memberof Core.UI.InputFields
+     * @param {String} Context - jQuery selector for context
+     * @description
+     *      Activate the feature on all applicable fields in supplied context.
+     */
+    TargetNS.Activate = function (Context) {
+
+        // Initialize select fields on all applicable fields
+        TargetNS.InitSelect(Context + ' select.Modernize');
+
+        // Initialize autocomplete fields on all applicable fields
+        TargetNS.InitAutocomplete(Context + ' input.Modernize');
+    };
+
+    /**
+     * @name Deactivate
+     * @memberof Core.UI.InputFields
+     * @param {String} Context - jQuery selector for context
+     * @description
+     *      Deactivate the feature on all applicable fields in supplied context
+     *      and restore original fields.
+     */
+    TargetNS.Deactivate = function (Context) {
+
+        // Restore select fields
+        $(Context + ' select.Modernize').each(function (Index, SelectObj) {
+            var $SelectObj = $(SelectObj),
+                $SearchObj = $('#' + $SelectObj.data('modernized')),
+                $ShowTreeObj = $SelectObj.next('.ShowTreeSelection');
+
+            if ($SelectObj.data('modernized')) {
+                $SearchObj.parents('.InputField_InputContainer')
+                    .blur()
+                    .remove();
+                $SelectObj.show();
+                $ShowTreeObj.show();
+            }
+        });
+
+        // Restore autocomplete fields
+        $(Context + ' input.Modernize').each(function (Index, AutocompleteObj) {
+            var $AutocompleteObj = $(AutocompleteObj);
+
+            $AutocompleteObj.blur()
+                .removeAttr('autocomplete')
+                .off('focus.InputField')
+                .off('keyup.InputField')
+                .off('blur.InputField')
+                .off('keydown');
+        });
+    };
+
+    /**
      * @private
      * @name InitCallback
      * @memberof Core.UI.InputFields
      * @function
      * @description
-     *      Initialization callback
+     *      Initialization callback function.
      */
     function InitCallback() {
 
         // Check SysConfig
         if (Core.Config.Get('InputFieldsActivated') === 1) {
 
-            // Initialize select fields on all applicable fields
-            TargetNS.InitSelect('select.Modernize');
-
-            // Initialize autocomplete fields on all applicable fields
-            TargetNS.InitAutocomplete('input.Modernize');
+            // Activate the feature
+            TargetNS.Activate('*');
         }
     }
 
@@ -163,7 +214,7 @@ Core.UI.InputFields = (function (TargetNS) {
             }
 
             // Iterate through all selected values
-            $.each(Selection, function(Index, Value) {
+            $.each(Selection, function (Index, Value) {
                 var $SelectionObj,
                     Text,
                     $TextObj,
@@ -582,7 +633,7 @@ Core.UI.InputFields = (function (TargetNS) {
         }
 
         // Iterate over all found fields
-        $SelectFields.each(function(Index, SelectObj) {
+        $SelectFields.each(function (Index, SelectObj) {
 
             // Global variables
             var $ToolbarContainerObj,
@@ -928,7 +979,7 @@ Core.UI.InputFields = (function (TargetNS) {
                     })
 
                     // Keydown handler for tree list
-                    .keydown(function(Event) {
+                    .keydown(function (Event) {
 
                         var $HoveredNode;
 
@@ -996,7 +1047,7 @@ Core.UI.InputFields = (function (TargetNS) {
                     .on('loaded.jstree', function () {
                         if (SelectedID) {
                             if (typeof SelectedID === 'object') {
-                                $.each(SelectedID, function(NodeIndex, Data) {
+                                $.each(SelectedID, function (NodeIndex, Data) {
                                     $TreeObj.jstree('select_node', $TreeObj.find('li[data-id="' + Data + '"]'));
                                 });
                             }
@@ -1068,7 +1119,7 @@ Core.UI.InputFields = (function (TargetNS) {
                             .attr('tabindex', '-1');
 
                         // Filters checkboxes
-                        $.each($SelectObj.data('filters').Filters, function(FilterIndex, Filter) {
+                        $.each($SelectObj.data('filters').Filters, function (FilterIndex, Filter) {
                             var $FilterObj = $('<input />').appendTo($FiltersListObj),
                                 $SpanObj = $('<span />').appendTo($FiltersListObj);
                             $FilterObj.attr('type', 'checkbox')
@@ -1249,7 +1300,7 @@ Core.UI.InputFields = (function (TargetNS) {
 
                 // Out of focus handler removes complete jsTree and action buttons
                 // Skip eslint check on next line for unused vars (it's actually event)
-                .off('blur.InputField').on('blur.InputField', function(Event) { //eslint-disable-line no-unused-vars
+                .off('blur.InputField').on('blur.InputField', function (Event) { //eslint-disable-line no-unused-vars
                     Focused = null;
                     setTimeout(function () {
                         if (!Focused) {
@@ -1260,7 +1311,7 @@ Core.UI.InputFields = (function (TargetNS) {
                 })
 
                 // Keydown handler provides keyboard shortcuts for navigating the tree
-                .keydown(function(Event) {
+                .keydown(function (Event) {
 
                     var $TreeObj = $TreeContainerObj.find('.jstree');
 
@@ -1420,7 +1471,7 @@ Core.UI.InputFields = (function (TargetNS) {
         }
 
         // Iterate over all found fields
-        $AutocompleteFields.each(function(Index, AutocompleteObj) {
+        $AutocompleteFields.each(function (Index, AutocompleteObj) {
 
             // Few global vars
             var $AutocompleteObj = $(AutocompleteObj),
@@ -1626,7 +1677,7 @@ Core.UI.InputFields = (function (TargetNS) {
                     })
 
                     // Keydown handler for tree list
-                    .keydown(function(Event) {
+                    .keydown(function (Event) {
 
                         var $HoveredNode;
 
@@ -1673,7 +1724,7 @@ Core.UI.InputFields = (function (TargetNS) {
 
             // Out of focus handler removes complete jsTree and action buttons
             // Skip eslint check on next line for unused vars (it's actually event)
-            .off('blur.InputField').on('blur.InputField', function(Event) { //eslint-disable-line no-unused-vars
+            .off('blur.InputField').on('blur.InputField', function (Event) { //eslint-disable-line no-unused-vars
                 Focused = null;
                 setTimeout(function () {
                     if (!Focused) {
@@ -1683,7 +1734,7 @@ Core.UI.InputFields = (function (TargetNS) {
             })
 
             // Keydown handler provides keyboard shortcuts for navigating the tree
-            .keydown(function(Event) {
+            .keydown(function (Event) {
 
                 switch (Event.which) {
 
