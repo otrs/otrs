@@ -27,6 +27,7 @@ our @ObjectDependencies = (
     'Kernel::System::JSON',
     'Kernel::System::Log',
     'Kernel::System::Main',
+    'Kernel::System::OTRSBusiness',
     'Kernel::System::SystemMaintenance',
     'Kernel::System::Time',
     'Kernel::System::User',
@@ -810,10 +811,43 @@ sub Login {
 
     # if not in PreLogin mode, show normal login form
     else {
+
         $Self->Block(
             Name => 'LoginBox',
             Data => \%Param,
         );
+
+        # show 2 factor password input if we have at least one backend enabled
+        COUNT:
+        for my $Count ( '', 1 .. 10 ) {
+            next COUNT if !$ConfigObject->Get("AuthTwoFactorModule$Count");
+
+            # if no empty shared secrets are allowed, input is mandatory
+            my %MandatoryOptions;
+            if ( !$ConfigObject->Get("AuthTwoFactorModule${Count}::AllowEmptySecret") ) {
+                %MandatoryOptions = (
+                    MandatoryClass   => 'Mandatory',
+                    ValidateRequired => 'Validate_Required',
+                );
+            }
+
+            $Self->Block(
+                Name => 'AuthTwoFactor',
+                Data => {
+                    %Param,
+                    %MandatoryOptions,
+                },
+            );
+
+            if (%MandatoryOptions) {
+                $Self->Block(
+                    Name => 'AuthTwoFactorMandatory',
+                    Data => \%Param,
+                );
+            }
+
+            last COUNT;
+        }
 
         # get lost password
         if (
@@ -1424,6 +1458,8 @@ sub Footer {
             Name => 'Banner',
         );
     }
+
+    $Param{OTRSBusinessIsInstalled} = $Kernel::OM->Get('Kernel::System::OTRSBusiness')->OTRSBusinessIsInstalled();
 
     # create & return output
     return $Self->Output(
@@ -3407,6 +3443,18 @@ sub CustomerLogin {
             Data => \%Param,
         );
 
+        # show 2 factor password input if we have at least one backend enabled
+        COUNT:
+        for my $Count ( '', 1 .. 10 ) {
+            next COUNT if !$ConfigObject->Get("Customer::AuthTwoFactorModule$Count");
+
+            $Self->Block(
+                Name => 'AuthTwoFactor',
+                Data => \%Param,
+            );
+            last COUNT;
+        }
+
         # get lost password output
         if (
             $ConfigObject->Get('CustomerPanelLostPassword')
@@ -4690,7 +4738,7 @@ sub _BuildSelectionDataRefCreate {
                     delete $List{$Key};
                 }
             }
-            push @SortKeys, sort { $a cmp $b } ( values %List );
+            push @SortKeys, sort { lc $a cmp lc $b } ( values %List );
         }
 
         # translate value
@@ -4717,7 +4765,7 @@ sub _BuildSelectionDataRefCreate {
             for ( sort keys %{$DataLocal} ) {
                 $SortHash{$_} = $DataLocal->{$_} . '::';
             }
-            @SortKeys = sort { $SortHash{$a} cmp $SortHash{$b} } ( keys %SortHash );
+            @SortKeys = sort { lc $SortHash{$a} cmp lc $SortHash{$b} } ( keys %SortHash );
         }
         elsif ( $OptionRef->{Sort} eq 'IndividualKey' && $OptionRef->{SortIndividual} ) {
             my %List = %{$DataLocal};
@@ -4727,14 +4775,14 @@ sub _BuildSelectionDataRefCreate {
                     delete $List{$Key};
                 }
             }
-            push @SortKeys, sort { $List{$a} cmp $List{$b} } ( keys %List );
+            push @SortKeys, sort { lc $List{$a} cmp lc $List{$b} } ( keys %List );
         }
         elsif ( $OptionRef->{Sort} eq 'IndividualValue' && $OptionRef->{SortIndividual} ) {
 
             # already done before the translation
         }
         else {
-            @SortKeys = sort { $DataLocal->{$a} cmp $DataLocal->{$b} } ( keys %{$DataLocal} );
+            @SortKeys = sort { lc $DataLocal->{$a} cmp lc $DataLocal->{$b} } ( keys %{$DataLocal} );
             $OptionRef->{Sort} = 'AlphanumericValue';
         }
 

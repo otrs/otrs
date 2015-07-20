@@ -42,31 +42,31 @@ Core.UI.InputFields = (function (TargetNS) {
     /**
      * @name Activate
      * @memberof Core.UI.InputFields
-     * @param {String} Context - jQuery selector for context
+     * @param {jQueryObject} [$Context] - jQuery object for context (optional)
      * @description
      *      Activate the feature on all applicable fields in supplied context.
      */
-    TargetNS.Activate = function (Context) {
+    TargetNS.Activate = function ($Context) {
 
         // Initialize select fields on all applicable fields
-        TargetNS.InitSelect(Context + ' select.Modernize');
+        TargetNS.InitSelect($('select.Modernize', $Context));
 
         // Initialize autocomplete fields on all applicable fields
-        TargetNS.InitAutocomplete(Context + ' input.Modernize');
+        TargetNS.InitAutocomplete($('input.Modernize', $Context));
     };
 
     /**
      * @name Deactivate
      * @memberof Core.UI.InputFields
-     * @param {String} Context - jQuery selector for context
+     * @param {jQueryObject} [$Context] - jQuery object for context (optional)
      * @description
      *      Deactivate the feature on all applicable fields in supplied context
      *      and restore original fields.
      */
-    TargetNS.Deactivate = function (Context) {
+    TargetNS.Deactivate = function ($Context) {
 
         // Restore select fields
-        $(Context + ' select.Modernize').each(function (Index, SelectObj) {
+        $('select.Modernize', $Context).each(function (Index, SelectObj) {
             var $SelectObj = $(SelectObj),
                 $SearchObj = $('#' + $SelectObj.data('modernized')),
                 $ShowTreeObj = $SelectObj.next('.ShowTreeSelection');
@@ -81,7 +81,7 @@ Core.UI.InputFields = (function (TargetNS) {
         });
 
         // Restore autocomplete fields
-        $(Context + ' input.Modernize').each(function (Index, AutocompleteObj) {
+        $('input.Modernize', $Context).each(function (Index, AutocompleteObj) {
             var $AutocompleteObj = $(AutocompleteObj);
 
             $AutocompleteObj.blur()
@@ -107,7 +107,7 @@ Core.UI.InputFields = (function (TargetNS) {
         if (Core.Config.Get('InputFieldsActivated') === 1) {
 
             // Activate the feature
-            TargetNS.Activate('*');
+            TargetNS.Activate();
         }
     }
 
@@ -618,17 +618,14 @@ Core.UI.InputFields = (function (TargetNS) {
      * @memberof Core.UI.InputFields
      * @function
      * @returns {Boolean} Returns true if successfull, false otherwise
-     * @param {String} FieldSelector - The selector for the select field to initialize
+     * @param {jQueryObject} $SelectFields - Fields to initialize.
      * @description
      *      This function initializes select input fields, based on supplied CSS selector.
      */
-    TargetNS.InitSelect = function (FieldSelector) {
-
-        // Select fields
-        var $SelectFields = $(FieldSelector);
+    TargetNS.InitSelect = function ($SelectFields) {
 
         // Give up if no select fields are found
-        if (!$SelectFields) {
+        if (!$SelectFields.length) {
             return false;
         }
 
@@ -1460,17 +1457,14 @@ Core.UI.InputFields = (function (TargetNS) {
      * @memberof Core.UI.InputFields
      * @function
      * @returns {Boolean} Returns true if successful, false otherwise
-     * @param {String} FieldSelector - The selector for the select field to initialize
+     * @param {jQueryObject} $AutocompleteFields - Fields to initialize.
      * @description
      *      This function initializes autocomplete input fields, based on supplied CSS selector.
      */
-    TargetNS.InitAutocomplete = function (FieldSelector) {
-
-        // Autocomplete fields
-        var $AutocompleteFields = $(FieldSelector);
+    TargetNS.InitAutocomplete = function ($AutocompleteFields) {
 
         // Give up if no select fields are found
-        if (!$AutocompleteFields) {
+        if (!$AutocompleteFields.length) {
             return false;
         }
 
