@@ -481,7 +481,7 @@ Core.UI.InputFields = (function (TargetNS) {
 
         $SelectObj.empty();
 
-        if ($SelectObj.data('filtered') !== '0') {
+        if ($SelectObj.data('filtered') && $SelectObj.data('filtered') !== '0') {
             FilterIndex = parseInt($SelectObj.data('filtered'), 10) - 1;
 
             // Insert filtered data
@@ -511,8 +511,6 @@ Core.UI.InputFields = (function (TargetNS) {
                 $ToolbarContainerObj.find('.InputField_Filters')
                     .removeClass('Active');
             }
-
-            $SelectObj.empty();
 
             // Restore original data
             $SelectObj.append($SelectObj.data('original'));
@@ -1394,7 +1392,8 @@ Core.UI.InputFields = (function (TargetNS) {
                 // to update values when changed via AJAX calls
                 $SelectObj.off('redraw.InputField').on('redraw.InputField', function () {
                     if (Filterable) {
-                        ApplyFilter($SelectObj, $ToolbarContainerObj);
+                        $SelectObj.data('original', $SelectObj.children());
+                        ApplyFilter($SelectObj, $ToolbarContainerObj, true);
                     }
                     CheckAvailability($SelectObj, $SearchObj);
                     $SearchObj.width($SelectObj.outerWidth())
