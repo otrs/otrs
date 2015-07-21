@@ -59,16 +59,28 @@
 }
 
 .PreferencesScreen .Content form label {
-    width: 40%;
+    width: 32%;
 }
 
 .PreferencesScreen .Content form .OutOfOffice label {
-    width: 30%;
+    width: 37%;
+}
+
+.PreferencesScreen .Content form label[for="CurPw"],
+.PreferencesScreen .Content form label[for="NewPw"],
+.PreferencesScreen .Content form label[for="NewPw1"] {
+    width: 40%;
 }
 
 .PreferencesScreen .Content form .Field {
-    margin-left: 40%;
+    margin-left: 32%;
     padding: 4px 0px 3px 5px;
+}
+
+.PreferencesScreen .Content form label[for="CurPw"] + .Field,
+.PreferencesScreen .Content form label[for="NewPw"] + .Field,
+.PreferencesScreen .Content form label[for="NewPw1"] + .Field {
+    margin-left: 40%;
 }
 
 .PreferencesScreen .Content form .Field.NoMargin select {
