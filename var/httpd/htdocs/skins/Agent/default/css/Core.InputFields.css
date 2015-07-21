@@ -28,7 +28,7 @@ div.InputField_InputContainer {
 
 .InputField_Search,
 .InputField_Autocomplete {
-    min-width: 200px;
+    min-width: 100px;
 }
 
 .InputField_Search[disabled="disabled"] {

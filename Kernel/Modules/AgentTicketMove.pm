@@ -1611,9 +1611,6 @@ sub _GetOldOwners {
             $Counter++;
         }
     }
-    if ( !%UserHash ) {
-        $UserHash{''} = '-';
-    }
 
     # workflow
     my $ACL = $TicketObject->TicketAcl(

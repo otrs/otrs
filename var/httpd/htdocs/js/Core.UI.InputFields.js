@@ -764,6 +764,11 @@ Core.UI.InputFields = (function (TargetNS) {
                         $SelectAllObj,
                         $ConfirmObj;
 
+                    if ($SearchObj.attr('readonly')) {
+                        $SearchObj.attr('disabled', 'disabled');
+                        return false;
+                    }
+
                     // Show error tooltip if needed
                     if ($SelectObj.attr('id')) {
                         if ($SelectObj.hasClass(Config.ErrorClass)) {
