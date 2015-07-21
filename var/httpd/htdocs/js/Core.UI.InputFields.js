@@ -283,8 +283,14 @@ Core.UI.InputFields = (function (TargetNS) {
                 if (OffsetLeft + $SelectionObj.outerWidth() < MaxWidth) {
 
                     // Offset the box and show it
-                    $SelectionObj.css('left', OffsetLeft + 'px')
-                        .show();
+                    if ($('body').hasClass('RTL')) {
+                        $SelectionObj.css('right', OffsetLeft + 'px')
+                            .show();
+                    }
+                    else {
+                        $SelectionObj.css('left', OffsetLeft + 'px')
+                            .show();
+                    }
 
                 } else {
 

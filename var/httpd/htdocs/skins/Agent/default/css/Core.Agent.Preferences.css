@@ -69,7 +69,7 @@
 .PreferencesScreen .Content form label[for="CurPw"],
 .PreferencesScreen .Content form label[for="NewPw"],
 .PreferencesScreen .Content form label[for="NewPw1"] {
-    width: 40%;
+    width: 38%;
 }
 
 .PreferencesScreen .Content form .Field {
@@ -80,7 +80,7 @@
 .PreferencesScreen .Content form label[for="CurPw"] + .Field,
 .PreferencesScreen .Content form label[for="NewPw"] + .Field,
 .PreferencesScreen .Content form label[for="NewPw1"] + .Field {
-    margin-left: 40%;
+    margin-left: 38%;
 }
 
 .PreferencesScreen .Content form .Field.NoMargin select {
