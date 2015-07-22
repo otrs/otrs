@@ -76,9 +76,14 @@ div.InputField_Selection div.Remove {
     cursor: pointer;
 }
 
-.AlreadyDisabled div.Remove {
-    display: none;
+.AlreadyDisabled div.InputField_Selection div.Text {
+    background: #f5f5f5;
+    cursor: default;
+}
+
+.AlreadyDisabled div.InputField_Selection div.Remove {
     visibility: hidden;
+    display: none;
 }
 
 div.InputField_Selection div.Remove a {
