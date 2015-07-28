@@ -6752,4 +6752,42 @@ via the Preferences button after logging in.
             </Option>
         </Setting>
     </ConfigItem>
+    <ConfigItem Name="PreferencesGroups###ProfilePicture" Required="0" Valid="1">
+        <Description Translatable="1">Defines the config parameters of this item, to be shown in the preferences view.</Description>
+        <Group>Framework</Group>
+        <SubGroup>Frontend::Agent::Preferences</SubGroup>
+        <Setting>
+            <Hash>
+                <Item Key="Module">Kernel::Output::HTML::Preferences::Image</Item>
+                <Item Key="Column">User Profile</Item>
+                <Item Key="Desc" Translatable="1">Upload new file to use as profile picture. Allowed formats are JPG/PNG/GIF, image will be resized to %dpx if needed.</Item>
+                <Item Key="Label" Translatable="1">Profile Picture</Item>
+                <Item Key="Key" Translatable="1">New profile picture</Item>
+                <Item Key="Block">Upload</Item>
+                <Item Key="PrefKey">UserProfilePicture</Item>
+                <Item Key="Prio">6000</Item>
+                <Item Key="Group">ProfilePicture</Item>
+                <Item Key="Active">1</Item>
+            </Hash>
+        </Setting>
+    </ConfigItem>
+    <ConfigItem Name="Image::Resize" Required="1" Valid="1">
+        <Description Translatable="1">Resize all uploaded images to specified geometry (below).</Description>
+        <Group>Framework</Group>
+        <SubGroup>Core::Image</SubGroup>
+        <Setting>
+            <Option SelectedID="1">
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
+            </Option>
+        </Setting>
+    </ConfigItem>
+    <ConfigItem Name="Image::ResizeGeometry" Required="1" Valid="1">
+        <Description Translatable="1">Resize larger dimension of all uploaded images to this value. Images will be resized proportionally, and only if their size exceeds resize geometry. Note: only values 1-300 are allowed.</Description>
+        <Group>Framework</Group>
+        <SubGroup>Core::Image</SubGroup>
+        <Setting>
+            <String Regex="^[1-2]?[\d]?[\d]$|^300$">128</String>
+        </Setting>
+    </ConfigItem>
 </otrs_config>

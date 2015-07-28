@@ -147,6 +147,48 @@ sub Run {
     }
 
     # ------------------------------------------------------------ #
+    # remove preferences
+    # ------------------------------------------------------------ #
+    elsif ( $Self->{Subaction} eq 'Remove' ) {
+
+        # challenge token check for write action
+        $LayoutObject->ChallengeTokenCheck();
+
+        my $Message  = '';
+        my $Priority = '';
+
+        # check group param
+        my $Group = $ParamObject->GetParam( Param => 'Group' );
+
+        # get user data
+        my %UserData = $UserObject->GetUserData( UserID => $Self->{UserID} );
+
+        # check preferences setting
+        my %Preferences = %{ $Kernel::OM->Get('Kernel::Config')->Get('PreferencesGroups') };
+        if ( !$Preferences{$Group} ) {
+            return $LayoutObject->ErrorScreen( Message => "No such config for $Group" );
+        }
+
+        my $Module = $Preferences{$Group}->{Module};
+        if ( !$Kernel::OM->Get('Kernel::System::Main')->Require($Module) ) {
+            return $LayoutObject->FatalError();
+        }
+
+        my $Object = $Module->new(
+            %{$Self},
+            UserObject => $UserObject,
+            ConfigItem => $Preferences{$Group},
+            Debug      => $Self->{Debug},
+        );
+        $Object->Remove( UserData => \%UserData );
+
+        # redirect
+        return $LayoutObject->Redirect(
+            OP => "Action=AgentPreferences;Priority=$Priority;Message=$Message",
+        );
+    }
+
+    # ------------------------------------------------------------ #
     # show preferences
     # ------------------------------------------------------------ #
 
@@ -302,7 +344,7 @@ sub AgentPreferencesForm {
                         %{$ParamItem},
                         OptionTitle => 1,
                     );
-                    $BuildSelectionParams{Class} = join(' ', $BuildSelectionParams{Class} // '', 'Modernize');
+                    $BuildSelectionParams{Class} = join( ' ', $BuildSelectionParams{Class} // '', 'Modernize' );
                     $ParamItem->{Option} = $LayoutObject->BuildSelection(
                         %BuildSelectionParams,
                     );
