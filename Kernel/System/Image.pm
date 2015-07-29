@@ -12,12 +12,13 @@ use strict;
 use warnings;
 
 use MIME::Base64;
-use Image::Magick;
 
 our @ObjectDependencies = (
     'Kernel::Config',
     'Kernel::System::Encode',
+    'Kernel::System::FileTemp',
     'Kernel::System::Log',
+    'Kernel::System::Main',
     'Kernel::System::VirtualFS',
 );
 
@@ -146,30 +147,43 @@ sub ImageAdd {
     # create needed objects
     my $ConfigObject    = $Kernel::OM->Get('Kernel::Config');
     my $VirtualFSObject = $Kernel::OM->Get('Kernel::System::VirtualFS');
-    my $IMObject        = Image::Magick->new();
 
     # check if image should be resized
-    if ( $ConfigObject->Get('Image::Resize') ) {
+    if ( $ConfigObject->Get('Image::Backend') && $ConfigObject->Get('Image::Resize') ) {
+
+        # determine file format
+        my ( $FileType, $FileFormat ) = split( '/', $Param{ContentType} );
+        $Param{FileFormat} = $FileFormat;
 
         # get resize geometry
-        my $ResizeGeometry = $ConfigObject->Get('Image::ResizeGeometry') || 200;
+        $Param{ResizeGeometry} = $ConfigObject->Get('Image::ResizeGeometry') || 200;
 
-        # load image
-        $IMObject->BlobToImage( $Param{Content} );
+        # load image backend
+        my $ImageBackend = $ConfigObject->Get('Image::Backend') || 'Kernel::System::Image::PerlMagick';
+        my $Loaded = $Kernel::OM->Get('Kernel::System::Main')->Require(
+            $ImageBackend,
+        );
 
-        # check if width or height exceeds resize geometry
-        # and scale down the image if it does
-        my ( $ImageWidth, $ImageHeight ) = $IMObject->Get( 'width', 'height' );
-        if ( $ImageWidth > $ResizeGeometry || $ImageHeight > $ResizeGeometry ) {
-            $IMObject->Resize( geometry => $ResizeGeometry . 'x' . $ResizeGeometry );
+        if ($Loaded) {
+            my $ImageObject = $ImageBackend->new();
+
+            # resize the image
+            my $ResizedImage = $ImageBackend->ImageResize(
+                %Param,
+            );
+
+            $Param{Content} = $ResizedImage if $ResizedImage;
         }
-
-        # output image
-        $Param{Content} = $IMObject->ImageToBlob();
+        else {
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
+                Priority => 'error',
+                Message  => 'Couldn\'t load image module backend!',
+            );
+        }
     }
 
     # write image to VirtualFS
-    my $Success = $VirtualFSObject->Write(
+    return $VirtualFSObject->Write(
         Content     => \$Param{Content},
         Filename    => "/$Param{Key}/$Param{ID}/$Param{Filename}",
         Mode        => 'binary',

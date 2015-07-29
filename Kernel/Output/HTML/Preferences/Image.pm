@@ -11,7 +11,6 @@ package Kernel::Output::HTML::Preferences::Image;
 use strict;
 use warnings;
 use MIME::Base64;
-use Image::Magick;
 
 our @ObjectDependencies = (
     'Kernel::Config',
