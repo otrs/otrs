@@ -72,6 +72,7 @@ sub Param {
             Name  => $Self->{ConfigItem}->{PrefKey},
             Block => 'Upload',
             Group => $Self->{ConfigItem}->{Group},
+            Type  => 'ImagePreferences',
             Raw   => 1,
         },
 
