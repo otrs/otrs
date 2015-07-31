@@ -607,10 +607,16 @@ sub Run {
         }
     }
 
-    return $LayoutObject->Output(
-        TemplateFile    => 'AgentTicketZoom/WidgetTicketInformation',
-        Data            =>  \%Param,
+    my $Output = $LayoutObject->Output(
+        TemplateFile => 'AgentTicketZoom/WidgetTicketInformation',
+        Data         =>  \%Param,
     );
+
+    return {
+        Location => 'Sidebar',
+        Output   => $Output,
+        Rank     => '0100',
+    };
 }
 
 1;

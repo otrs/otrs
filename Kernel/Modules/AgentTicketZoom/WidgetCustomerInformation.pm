@@ -24,31 +24,31 @@ sub Run {
     my %Ticket = %{ $Param{Ticket} };
 
     my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
-    # customer info string
-    if ( $ConfigObject->Get('Ticket::Frontend::CustomerInfoZoom') ) {
-        # customer info
-        my %CustomerData;
-        if ( $Ticket{CustomerUserID} ) {
-            %CustomerData = $Kernel::OM->Get('Kernel::System::CustomerUser')->CustomerUserDataGet(
-                User => $Ticket{CustomerUserID},
-            );
-        }
+    return if !$ConfigObject->Get('Ticket::Frontend::CustomerInfoZoom');
 
-        my $LayoutObject = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
-        $Param{CustomerTable} = $LayoutObject->AgentCustomerViewTable(
-            Data   => \%CustomerData,
-            Ticket => \%Ticket,
-            Max    => $ConfigObject->Get('Ticket::Frontend::CustomerInfoZoomMaxSize'),
-        );
-        return $LayoutObject->Output(
-            TemplateFile => 'AgentTicketZoom/WidgetCustomerInformation',
-            Data => \%Param,
+    # customer info
+    my %CustomerData;
+    if ( $Ticket{CustomerUserID} ) {
+        %CustomerData = $Kernel::OM->Get('Kernel::System::CustomerUser')->CustomerUserDataGet(
+            User => $Ticket{CustomerUserID},
         );
     }
-    else {
-        return '';
-    }
 
+    my $LayoutObject = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
+    $Param{CustomerTable} = $LayoutObject->AgentCustomerViewTable(
+        Data   => \%CustomerData,
+        Ticket => \%Ticket,
+        Max    => $ConfigObject->Get('Ticket::Frontend::CustomerInfoZoomMaxSize'),
+    );
+    my $Output = $LayoutObject->Output(
+        TemplateFile => 'AgentTicketZoom/WidgetCustomerInformation',
+        Data => \%Param,
+    );
+    return {
+        Location => 'Sidebar',
+        Output   => $Output,
+        Rank     => '0200',
+    }
 }
 
 1;

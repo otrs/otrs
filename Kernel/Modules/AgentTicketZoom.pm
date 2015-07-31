@@ -868,12 +868,13 @@ sub MaskAgentZoom {
         @ArticleBoxShown = @ArticleBox;
     }
 
-    my @Widgets;
+    my %Widgets;
     my $MainObject = $Kernel::OM->Get('Kernel::System::Main');
     WIDGET:
-    for my $Key ( sort keys %{ $Self->{DisplaySettings}->{SidebarWidgets} // {} } ) {
-        my $Config = $Self->{DisplaySettings}->{SidebarWidgets}->{$Key};
-        next WIDGET if !$MainObject->Require( $Config->{Module} );
+    for my $Key ( sort keys %{ $Self->{DisplaySettings}->{Widgets} // {} } ) {
+        my $Config = $Self->{DisplaySettings}->{Widgets}->{$Key};
+        my $Success = eval { $MainObject->Require( $Config->{Module} ) };
+        next WIDGET if !$Success;
         my $Module = eval { $Config->{Module}->new(%$Self) };
         if ( !$Module ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
@@ -888,11 +889,18 @@ sub MaskAgentZoom {
             AclAction => \%AclAction,
             Config    => $Config,
         );
+        $WidgetOutput->{Rank} //= $Key;
         if ($WidgetOutput) {
-            push @Widgets, $WidgetOutput;
+            my $Location = $Module->{Location} || $WidgetOutput->{Location};
+            push @{ $Widgets{ $Location } }, $WidgetOutput;;
         }
     }
-    $Param{SidebarWidgets} = \@Widgets;
+    for my $Location ( sort keys %Widgets ) {
+        $Param{$Location . 'Widgets'} = [
+            map  { $_->{Output} }
+            sort { $a->{Rank} cmp $b->{Rank} } @{ $Widgets{$Location} }
+        ];
+    }
 
     # only show article tree if articles are present,
     # or if a filter is set (so that the user has the option to
@@ -1096,48 +1104,6 @@ sub MaskAgentZoom {
     if ( !@ArticleBox && !$Self->{ZoomTimeline} ) {
         $LayoutObject->Block(
             Name => 'HintNoArticles',
-        );
-    }
-
-    # get linked objects
-    my $LinkListWithData = $Kernel::OM->Get('Kernel::System::LinkObject')->LinkListWithData(
-        Object           => 'Ticket',
-        Key              => $Self->{TicketID},
-        State            => 'Valid',
-        UserID           => $Self->{UserID},
-        ObjectParameters => {
-            Ticket => {
-                IgnoreLinkedTicketStateTypes => 1,
-            },
-        },
-    );
-
-    # get link table view mode
-    my $LinkTableViewMode = $ConfigObject->Get('LinkObject::ViewMode');
-
-    # create the link table
-    my $LinkTableStrg = $LayoutObject->LinkObjectTableCreate(
-        LinkListWithData => $LinkListWithData,
-        ViewMode         => $LinkTableViewMode,
-    );
-
-    # output the simple link table
-    if ( $LinkTableStrg && $LinkTableViewMode eq 'Simple' ) {
-        $LayoutObject->Block(
-            Name => 'LinkTableSimple',
-            Data => {
-                LinkTableStrg => $LinkTableStrg,
-            },
-        );
-    }
-
-    # output the complex link table
-    if ( $LinkTableStrg && $LinkTableViewMode eq 'Complex' ) {
-        $LayoutObject->Block(
-            Name => 'LinkTableComplex',
-            Data => {
-                LinkTableStrg => $LinkTableStrg,
-            },
         );
     }
 

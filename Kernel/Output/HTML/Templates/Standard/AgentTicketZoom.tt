@@ -147,19 +147,6 @@
             [% FOREACH widget IN Data.SidebarWidgets; %]
                 [% widget %]
             [% END; %]
-[% RenderBlockStart("LinkTableSimple") %]
-            <div class="WidgetSimple DontPrint">
-                <div class="Header">
-                    <div class="WidgetAction Toggle">
-                        <a href="#" title="[% Translate("Show or hide the content") | html %]"><i class="fa fa-caret-right"></i><i class="fa fa-caret-down"></i></a>
-                    </div>
-                    <h2>[% Translate("Linked Objects") | html %]</h2>
-                </div>
-                <div class="Content">
-                    [% Data.LinkTableStrg %]
-                </div>
-            </div>
-[% RenderBlockEnd("LinkTableSimple") %]
         </div>
         <div class="ContentColumn">
             <div class="WidgetSimple">
@@ -366,10 +353,9 @@ $('.ShowFieldInfoOverlay').bind('click', function() {
 [% Data.ArticleItems %]
             </div>
 
-[% RenderBlockStart("LinkTableComplex") %]
-            [% Data.LinkTableStrg %]
-[% RenderBlockEnd("LinkTableComplex") %]
-
+            [% FOREACH widget IN Data.MainWidgets; %]
+                [% widget %]
+            [% END; %]
         </div>
         <div class="Clear"></div>
     </div>
