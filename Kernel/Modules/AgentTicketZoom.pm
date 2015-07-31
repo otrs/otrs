@@ -1099,27 +1099,6 @@ sub MaskAgentZoom {
         );
     }
 
-    # customer info string
-    if ( $ConfigObject->Get('Ticket::Frontend::CustomerInfoZoom') ) {
-
-        # customer info
-        my %CustomerData;
-        if ( $Ticket{CustomerUserID} ) {
-            %CustomerData = $Kernel::OM->Get('Kernel::System::CustomerUser')->CustomerUserDataGet(
-                User => $Ticket{CustomerUserID},
-            );
-        }
-        $Param{CustomerTable} = $LayoutObject->AgentCustomerViewTable(
-            Data   => \%CustomerData,
-            Ticket => \%Ticket,
-            Max    => $ConfigObject->Get('Ticket::Frontend::CustomerInfoZoomMaxSize'),
-        );
-        $LayoutObject->Block(
-            Name => 'CustomerTable',
-            Data => \%Param,
-        );
-    }
-
     # get linked objects
     my $LinkListWithData = $Kernel::OM->Get('Kernel::System::LinkObject')->LinkListWithData(
         Object           => 'Ticket',

@@ -147,20 +147,6 @@
             [% FOREACH widget IN Data.SidebarWidgets; %]
                 [% widget %]
             [% END; %]
-# show customer info table
-[% RenderBlockStart("CustomerTable") %]
-            <div class="WidgetSimple">
-                <div class="Header">
-                    <div class="WidgetAction Toggle">
-                        <a href="#" title="[% Translate("Show or hide the content") | html %]"><i class="fa fa-caret-right"></i><i class="fa fa-caret-down"></i></a>
-                    </div>
-                    <h2>[% Translate("Customer Information") | html %]</h2>
-                </div>
-                <div class="Content">
-                    [% Data.CustomerTable %]
-                </div>
-            </div>
-[% RenderBlockEnd("CustomerTable") %]
 [% RenderBlockStart("LinkTableSimple") %]
             <div class="WidgetSimple DontPrint">
                 <div class="Header">
