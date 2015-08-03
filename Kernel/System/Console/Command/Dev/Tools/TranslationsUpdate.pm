@@ -13,6 +13,7 @@ use warnings;
 
 use base qw(Kernel::System::Console::BaseCommand);
 
+use File::Basename;
 use Lingua::Translit;
 use Pod::Strip;
 
@@ -736,7 +737,7 @@ sub WritePerlLanguageFile {
 
     my $Data;
 
-    my ($StringsTotal, $StringsTranslated);
+    my ( $StringsTotal, $StringsTranslated );
 
     my $PreviousLocation = '';
     for my $String ( @{ $Param{TranslationStrings} } ) {
@@ -747,7 +748,7 @@ sub WritePerlLanguageFile {
         }
 
         $StringsTotal++;
-        if ($String->{Translation}) {
+        if ( $String->{Translation} ) {
             $StringsTranslated++;
         }
 
@@ -788,7 +789,6 @@ sub WritePerlLanguageFile {
 
         $NewOut = <<"EOF";
 $Separator
-# Kernel/Language/$Param{Language}_$Param{Module}.pm - translation file
 # Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
 $Separator
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
