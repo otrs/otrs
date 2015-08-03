@@ -37,7 +37,8 @@ Core.UI.InputFields = (function (TargetNS) {
         ServerErrorClass: 'ServerError',
         FadeDuration: 150,
         SelectionNotAvailable: ' -',
-        ResizeEvent: 'onorientationchange' in window ? 'orientationchange' : 'resize'
+        ResizeEvent: 'onorientationchange' in window ? 'orientationchange' : 'resize',
+        ResizeTimeout: 0
     };
 
     /**
@@ -733,6 +734,16 @@ Core.UI.InputFields = (function (TargetNS) {
                 // Set width of search field to that of the select field
                 $SearchObj.width(SelectWidth);
 
+                // Subscribe on window resize event
+                Core.App.Subscribe('Event.UI.InputFields.Resize', function() {
+
+                    // Set width of search field to that of the select field
+                    $SearchObj.hide();
+                    SelectWidth = $SelectObj.show().outerWidth();
+                    $SelectObj.hide();
+                    $SearchObj.width(SelectWidth).show();
+                });
+
                 // Handle clicks on related label
                 if ($SelectObj.attr('id')) {
                     $LabelObj = $('label[for="' + $SelectObj.attr('id') + '"]');
@@ -1351,7 +1362,14 @@ Core.UI.InputFields = (function (TargetNS) {
 
                     });
 
-                    $ListContainerObj.fadeIn(Config.FadeDuration);
+                    // Show list container
+                    $ListContainerObj.fadeIn(Config.FadeDuration, function () {
+
+                        // Scroll into view if in dialog
+                        if ($ListContainerObj.parents('.Dialog').length > 0) {
+                            this.scrollIntoView(false);
+                        }
+                    });
                 })
 
                 // Out of focus handler removes complete jsTree and action buttons
@@ -1455,15 +1473,6 @@ Core.UI.InputFields = (function (TargetNS) {
                     }
                 });
 
-                // Handle window resize event
-                $(window).on(Config.ResizeEvent + '.InputField', function () {
-
-                    // Set width of search field to that of the select field
-                    $SelectObj.show();
-                    SelectWidth = $SelectObj.outerWidth();
-                    $SelectObj.hide();
-                    $SearchObj.width(SelectWidth);
-                });
             }
         });
 
@@ -1837,6 +1846,14 @@ Core.UI.InputFields = (function (TargetNS) {
             parent.activate_node.call(this, obj, e);
         };
     };
+
+    // Handle window resize event
+    $(window).on(Config.ResizeEvent + '.InputField', function () {
+        clearTimeout(Config.ResizeTimeout);
+        Config.ResizeTimeout = setTimeout(function () {
+            Core.App.Publish('Event.UI.InputFields.Resize');
+        }, 100);
+    });
 
     return TargetNS;
 }(Core.UI.InputFields || {}));
