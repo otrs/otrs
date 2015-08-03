@@ -455,6 +455,16 @@ my @NeededModules = (
             zypper => 'perl-YAML-LibYAML',
         },
     },
+    {
+        Module    => 'version',
+        Required  => 1,
+        Comment   => 'Perl extension for Version Objects. ',
+        InstTypes => {
+            aptget => 'libperl-version-perl',
+            zypper => 'perl-version',
+            yum    => 'version',
+        },
+    },
 );
 
 if ($PackageList) {
