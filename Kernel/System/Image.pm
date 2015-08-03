@@ -118,14 +118,15 @@ sub ImageGet {
 
 =item ImageAdd()
 
-Adds an image to Virtual FS.
+Adds an image to Virtual FS and resize if needed.
 
     my $Success = $ImageObject->ImageAdd(
-        Key         => 'ImagePreferences,    # used for first part of Virtual FS path
-        ID          => '2',                  # used for second part of Virtual FS path
-        Filename    => 'image.png'           # used for third part of Virtual FS path
-        Content     => $ImageFile{Content}, # image content in binary format
-        ContentType => 'image/jpeg',         # image MIME content type
+        Key            => 'ImagePreferences,    # used for first part of Virtual FS path
+        ID             => '2',                  # used for second part of Virtual FS path
+        Filename       => 'image.png'           # used for third part of Virtual FS path
+        Content        => $ImageFile{Content},  # image content in binary format
+        ContentType    => 'image/png',          # image MIME content type
+        ResizeGeometry => 128,                  # (optional) override resize geometry defined in SysConfig
     );
 
 =cut
@@ -156,7 +157,7 @@ sub ImageAdd {
         $Param{FileFormat} = $FileFormat;
 
         # get resize geometry
-        $Param{ResizeGeometry} = $ConfigObject->Get('Image::ResizeGeometry') || 200;
+        $Param{ResizeGeometry} = $Param{ResizeGeometry} || $ConfigObject->Get('Image::ResizeGeometry');
 
         # load image backend
         my $ImageBackend = $ConfigObject->Get('Image::Backend') || 'Kernel::System::Image::PerlMagick';

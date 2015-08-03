@@ -13,11 +13,8 @@ use warnings;
 use MIME::Base64;
 
 our @ObjectDependencies = (
-    'Kernel::Config',
     'Kernel::Language',
     'Kernel::System::Image',
-    'Kernel::System::Encode',
-    'Kernel::System::VirtualFS',
     'Kernel::System::Web::Request',
     'Kernel::System::Log',
 );
@@ -41,6 +38,8 @@ sub new {
         },
     );
 
+    $Self->{PreferenceType} = 'ImagePreferences';
+
     return $Self;
 }
 
@@ -58,7 +57,7 @@ sub Param {
 
         $Param{ImageFilename} = $Param{UserData}->{ $Self->{ConfigItem}->{PrefKey} };
         $Param{ImageContent}  = $Kernel::OM->Get('Kernel::System::Image')->ImageGet(
-            Key      => 'ImagePreferences',
+            Key      => $Self->{PreferenceType},
             ID       => $Param{UserData}->{UserID},
             Filename => $Param{ImageFilename},
             Inline   => 1,
@@ -72,7 +71,7 @@ sub Param {
             Name  => $Self->{ConfigItem}->{PrefKey},
             Block => 'Upload',
             Group => $Self->{ConfigItem}->{Group},
-            Type  => 'ImagePreferences',
+            Type  => $Self->{PreferenceType},
             Raw   => 1,
         },
 
@@ -96,8 +95,9 @@ sub Run {
         && $ImageFile{ContentType} ne 'image/gif'
         )
     {
-        $Self->{Message} = $Kernel::OM->Get('Kernel::Language')->Translate('JPEG, PNG and GIF images supported only!');
-        return 1;
+        $Self->{Error} = $Kernel::OM->Get('Kernel::Language')->Translate('JPEG, PNG and GIF images supported only!');
+
+        return;
     }
 
     # create needed object
@@ -106,7 +106,7 @@ sub Run {
     # remove image if it exists
     if ( $Param{UserData}->{ $Self->{ConfigItem}->{PrefKey} } ) {
         $ImageObject->ImageRemove(
-            Key      => 'ImagePreferences',
+            Key      => $Self->{PreferenceType},
             ID       => $Param{UserData}->{UserID},
             Filename => $Param{UserData}->{ $Self->{ConfigItem}->{PrefKey} },
         );
@@ -114,7 +114,7 @@ sub Run {
 
     # add image
     my $Success = $ImageObject->ImageAdd(
-        Key         => 'ImagePreferences',
+        Key         => $Self->{PreferenceType},
         ID          => $Param{UserData}->{UserID},
         Filename    => $ImageFile{Filename},
         Content     => $ImageFile{Content},
@@ -135,7 +135,7 @@ sub Run {
         return 1;
     }
     else {
-        $Self->{Message}
+        $Self->{Error}
             = $Kernel::OM->Get('Kernel::Language')->Translate('Couldn\'t upload the image, please try again...');
 
         return;
@@ -148,13 +148,13 @@ sub Remove {
     my $ImageObject = $Kernel::OM->Get('Kernel::System::Image');
 
     my $Success = $ImageObject->ImageRemove(
-        Key      => 'ImagePreferences',
+        Key      => $Self->{PreferenceType},
         ID       => $Param{UserData}->{UserID},
         Filename => $Param{UserData}->{ $Self->{ConfigItem}->{PrefKey} },
     );
 
     if ($Success) {
-        $Self->{Message} = $Kernel::OM->Get('Kernel::Language')->Translate('Image removed successfully');
+        $Self->{Message} = $Kernel::OM->Get('Kernel::Language')->Translate('Image removed successfully!');
         $Self->{UserObject}->SetPreferences(
             UserID => $Param{UserData}->{UserID},
             Key    => $Self->{ConfigItem}->{PrefKey},
@@ -162,7 +162,7 @@ sub Remove {
         );
     }
     else {
-        $Self->{Message}
+        $Self->{Error}
             = $Kernel::OM->Get('Kernel::Language')->Translate('Couldn\'t remove the image, please try again...');
     }
 }

@@ -180,7 +180,19 @@ sub Run {
             ConfigItem => $Preferences{$Group},
             Debug      => $Self->{Debug},
         );
-        $Object->Remove( UserData => \%UserData );
+
+        if (
+            $Object->Remove(
+                UserData => \%UserData,
+            )
+            )
+        {
+            $Message .= $Object->Message();
+        }
+        else {
+            $Priority .= 'Error';
+            $Message  .= $Object->Error();
+        }
 
         # redirect
         return $LayoutObject->Redirect(

@@ -6788,11 +6788,11 @@ via the Preferences button after logging in.
         </Setting>
     </ConfigItem>
     <ConfigItem Name="Image::ResizeGeometry" Required="1" Valid="1">
-        <Description Translatable="1">Resize larger dimension of all uploaded images to this value. Images will be resized proportionally, and only if their size exceeds resize geometry. Note: only values 1-300 are allowed.</Description>
+        <Description Translatable="1">Resize larger dimension of all uploaded images to this value. Images will be resized proportionally, and only if their size exceeds resize geometry. Note: only values 1-9999 are allowed.</Description>
         <Group>Framework</Group>
         <SubGroup>Core::Image</SubGroup>
         <Setting>
-            <String Regex="^[1-2]?[\d]?[\d]$|^300$">128</String>
+            <String Regex="^[0-9]{1,4}$">128</String>
         </Setting>
     </ConfigItem>
 </otrs_config>
