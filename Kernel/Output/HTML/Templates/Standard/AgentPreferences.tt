@@ -25,7 +25,7 @@
                 <div class="Content">
 
 [% RenderBlockStart("Item") %]
-                    <form action="[% Env("CGIHandle") %]" method="post" class="Validate">
+                    <form action="[% Env("CGIHandle") %]" method="post" class="Validate"[% IF Data.Block == "Upload" %] enctype="multipart/form-data"[% END %]>
                         <input type="hidden" name="Action" value="[% Env("Action") %]"/>
                         <input type="hidden" name="Subaction" value="Update"/>
                         <input type="hidden" name="Group" value="[% Data.Group | html %]"/>
@@ -35,7 +35,11 @@
                             <div class="Content">
                             [% IF Data.Desc %]
                                 <p class="FieldExplanation">
+                                [% IF Data.Module == "Kernel::Output::HTML::Preferences::Image" %]
+                                    [% Translate(Data.Desc, Config("Image::ResizeGeometry")) | html %]
+                                [% ELSE %]
                                     [% Translate(Data.Desc) | html %]
+                                [% END %]
                                 </p>
                             [% END %]
                                 <fieldset class="TableLike">
@@ -84,6 +88,16 @@
 [% RenderBlockEnd("OptionSingleBlock") %]
 [% RenderBlockEnd("Option") %]
 [% RenderBlockStart("Upload") %]
+                                [% IF Data.ImageContent %]
+                                    <div class="Center SpacingBottom">
+                                        <div class="ImageContainer">
+                                            <a class="ImageRemove" title="[% Translate("Remove") | html %]" href="[% Env("CGIHandle") %]?Action=[% Env("Action") %];Subaction=Remove;Group=[% Data.Group | uri %];[% Env("ChallengeTokenParam") | html %]">
+                                                <img src="[% Data.ImageContent | html %]" alt="[% Data.ImageFilename | uri %]" />
+                                                <span class="ImageOverlay"><i class="fa fa-trash fa-2x"></i></span>
+                                            </a>
+                                        </div>
+                                    </div>
+                                [% END %]
                                     <label for="[% Data.Name | html %]">[% Translate(Data.Key) | html %]:</label>
                                     <div class="Field">
                                         <input name="[% Data.Name | html %]" id="[% Data.Name | html %]" type="file" size="20" class="fixed"/>

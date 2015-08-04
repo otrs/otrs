@@ -6752,4 +6752,47 @@ via the Preferences button after logging in.
             </Option>
         </Setting>
     </ConfigItem>
+    <ConfigItem Name="Image::Backend" Required="1" Valid="1">
+        <Description Translatable="1">Specify which image backend should be used for all image functions. Please note that library on which backend relies must be installed beforehand on your system.</Description>
+        <Group>Framework</Group>
+        <SubGroup>Core::Image</SubGroup>
+        <Setting>
+            <Option Location="Kernel/System/Image/*.pm" SelectedID="Kernel::System::Image::PerlMagick"></Option>
+        </Setting>
+    </ConfigItem>
+    <ConfigItem Name="Image::ImageMagick###IdentifyPath" Required="1" Valid="1">
+        <Description Translatable="1">Specify path to identify utility from the ImageMagick package (needed for command line use).</Description>
+        <Group>Framework</Group>
+        <SubGroup>Core::Image</SubGroup>
+        <Setting>
+            <String Regex="" Check="File">/usr/bin/identify</String>
+        </Setting>
+    </ConfigItem>
+    <ConfigItem Name="Image::ImageMagick###ConvertPath" Required="1" Valid="1">
+        <Description Translatable="1">Specify path to convert utility from the ImageMagick package (needed for command line use).</Description>
+        <Group>Framework</Group>
+        <SubGroup>Core::Image</SubGroup>
+        <Setting>
+            <String Regex="" Check="File">/usr/bin/convert</String>
+        </Setting>
+    </ConfigItem>
+    <ConfigItem Name="Image::Resize" Required="1" Valid="1">
+        <Description Translatable="1">Resize all uploaded images to specified geometry (below).</Description>
+        <Group>Framework</Group>
+        <SubGroup>Core::Image</SubGroup>
+        <Setting>
+            <Option SelectedID="1">
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
+            </Option>
+        </Setting>
+    </ConfigItem>
+    <ConfigItem Name="Image::ResizeGeometry" Required="1" Valid="1">
+        <Description Translatable="1">Resize larger dimension of all uploaded images to this value. Images will be resized proportionally, and only if their size exceeds resize geometry. Note: only values 1-9999 are allowed.</Description>
+        <Group>Framework</Group>
+        <SubGroup>Core::Image</SubGroup>
+        <Setting>
+            <String Regex="^[0-9]{1,4}$">128</String>
+        </Setting>
+    </ConfigItem>
 </otrs_config>

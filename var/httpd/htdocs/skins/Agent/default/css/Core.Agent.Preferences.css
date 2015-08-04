@@ -110,4 +110,44 @@
     display: none;
 }
 
+.ImageContainer {
+    position: relative;
+    display: inline-block;
+}
+
+.ImageRemove {
+    position: relative;
+    display: block;
+}
+
+.ImageRemove i {
+    color: #fff;
+}
+
+.ImageRemove .ImageOverlay {
+    visibility: hidden;
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    background-color: rgba(0,0,0,0.5);
+}
+
+.ImageRemove .ImageOverlay:before {
+    content: ' ';
+    display: inline-block;
+    vertical-align: middle;
+    height: 100%;
+}
+
+.ImageRemove:hover .ImageOverlay img {
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.ImageRemove:hover .ImageOverlay {
+    visibility: visible;
+}
+
 } /* end @media*/
