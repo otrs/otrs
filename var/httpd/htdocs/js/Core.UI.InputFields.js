@@ -738,7 +738,7 @@ Core.UI.InputFields = (function (TargetNS) {
                 Core.App.Subscribe('Event.UI.InputFields.Resize', function() {
 
                     // Set width of search field to that of the select field
-                    $SearchObj.hide();
+                    $SearchObj.blur().hide();
                     SelectWidth = $SelectObj.show().outerWidth();
                     $SelectObj.hide();
                     $SearchObj.width(SelectWidth).show();
