@@ -769,9 +769,19 @@ Core.UI.InputFields = (function (TargetNS) {
                     $SearchObj.addClass(Config.ServerErrorClass);
                 }
 
-                // Preserve original data
                 if (Filterable) {
+
+                    // Preserve original data
                     $SelectObj.data('original', $SelectObj.children());
+
+                    // Apply active filter
+                    if (
+                        $SelectObj.data('filtered')
+                        && $SelectObj.data('filtered') !== '0'
+                        )
+                    {
+                        ApplyFilter($SelectObj, $ToolbarContainerObj);
+                    }
                 }
 
                 // Show selection boxes
@@ -1193,7 +1203,6 @@ Core.UI.InputFields = (function (TargetNS) {
                             var $FilterObj = $('<input />').appendTo($FiltersListObj),
                                 $SpanObj = $('<span />').appendTo($FiltersListObj);
                             $FilterObj.attr('type', 'checkbox')
-                                // .data('filter', Filter.Data)
                                 .attr('tabindex', '-1')
                                 .data('index', FilterIndex + 1);
                             if (
