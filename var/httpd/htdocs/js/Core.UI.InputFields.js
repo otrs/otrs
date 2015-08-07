@@ -874,7 +874,8 @@ Core.UI.InputFields = (function (TargetNS) {
                     SelectedNodes = [];
 
                     // Generate JSON structure based on select field options
-                    Elements = Core.UI.TreeSelection.BuildElementsArray($SelectObj);
+                    // Sort the list by default if tree view is active
+                    Elements = Core.UI.TreeSelection.BuildElementsArray($SelectObj, TreeView);
 
                     // Force no tree view if structure has only root level
                     if (Elements.HighestLevel === 0) {
