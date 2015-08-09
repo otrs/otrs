@@ -205,7 +205,7 @@ Core.UI.InputFields = (function (TargetNS) {
 
             // Check which kind of selection we are dealing with
             if ($.isArray($SelectObj.val())) {
-                Selection = $SelectObj.val();
+                Selection = $.unique($SelectObj.val());
                 SelectionLength = Selection.length;
             } else {
                 Selection = [ $SelectObj.val() ];
@@ -244,7 +244,7 @@ Core.UI.InputFields = (function (TargetNS) {
                     .data('value', Value);
 
                 // Textual representation of selected value
-                Text = $SelectObj.find('option[value="' + Value + '"]').text().trim();
+                Text = $SelectObj.find('option[value="' + Value + '"]').first().text().trim();
                 $TextObj = $('<div />').appendTo($SelectionObj);
                 $TextObj.addClass('Text')
                     .text(Text)
