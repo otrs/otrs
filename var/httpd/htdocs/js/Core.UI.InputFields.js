@@ -513,8 +513,15 @@ Core.UI.InputFields = (function (TargetNS) {
 
             // Add class
             if ($ToolbarContainerObj) {
-                $ToolbarContainerObj.find('.InputField_Filters')
-                    .addClass('Active');
+                if (
+                    !$ToolbarContainerObj.find('.InputField_Filters')
+                        .hasClass('Active')
+                    )
+                {
+                    $ToolbarContainerObj.find('.InputField_Filters')
+                        .addClass('Active')
+                        .prepend('<i class="fa fa-filter" /> ');
+                }
             }
         }
         else {
@@ -522,7 +529,9 @@ Core.UI.InputFields = (function (TargetNS) {
             // Remove class
             if ($ToolbarContainerObj) {
                 $ToolbarContainerObj.find('.InputField_Filters')
-                    .removeClass('Active');
+                    .removeClass('Active')
+                    .find('.fa.fa-filter')
+                    .remove();
             }
 
             // Restore original data
@@ -1190,7 +1199,8 @@ Core.UI.InputFields = (function (TargetNS) {
                         if (!$SelectObj.data('filtered')) {
                             $SelectObj.data('filtered', '0');
                         } else if ($SelectObj.data('filtered') !== '0') {
-                            $FiltersObj.addClass('Active');
+                            $FiltersObj.addClass('Active')
+                                .prepend('<i class="fa fa-filter" /> ');
                         }
 
                         // Filters list
