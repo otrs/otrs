@@ -1198,6 +1198,15 @@ Core.UI.InputFields = (function (TargetNS) {
                         $FiltersListObj.addClass('InputField_FiltersList')
                             .attr('tabindex', '-1');
 
+                        // Hide the filters list if no parameter is supplied
+                        if (
+                            !$SelectObj.data('expand-filters')
+                            && $SelectObj.data('expand-filters') !== '0'
+                            )
+                        {
+                            $FiltersListObj.hide();
+                        }
+
                         // Filters checkboxes
                         $.each($SelectObj.data('filters').Filters, function (FilterIndex, Filter) {
                             var $FilterObj = $('<input />').appendTo($FiltersListObj),
