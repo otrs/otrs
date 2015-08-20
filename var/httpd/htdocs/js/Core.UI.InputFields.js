@@ -1344,7 +1344,7 @@ Core.UI.InputFields = (function (TargetNS) {
                         $TreeObj.jstree('delete_node', $TreeObj.find('.jstree-no-match'));
 
                         // Start jsTree search
-                        $TreeObj.jstree('search', SearchValue);
+                        $TreeObj.jstree('search', Core.App.EscapeHTML(SearchValue));
                         Searching = true;
 
                         if (Multiple) {
