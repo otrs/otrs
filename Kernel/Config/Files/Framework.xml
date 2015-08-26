@@ -6728,7 +6728,7 @@ via the Preferences button after logging in.
         <Group>Framework</Group>
         <SubGroup>SystemMaintenance</SubGroup>
         <Setting>
-            <String Regex="">A maintenance period is running, get into the system is not possible for now.</String>
+            <String Regex="">A maintenance period is active. Login is temporarily not available.</String>
         </Setting>
     </ConfigItem>
     <ConfigItem Name="OTRSBusiness::ReleaseChannel" Required="1" Valid="1" ConfigLevel="100">
