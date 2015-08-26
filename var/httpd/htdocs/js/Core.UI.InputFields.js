@@ -33,7 +33,9 @@ Core.UI.InputFields = (function (TargetNS) {
         SelectionBoxOffsetLeft: 5,
         SelectionBoxOffsetRight: 5,
         ErrorClass: 'Error',
+        ErrorLabelClass: 'LabelError',
         ServerErrorClass: 'ServerError',
+        ServerLabelClass: 'ServerLabelError',
         FadeDuration: 150,
         SelectionNotAvailable: ' -',
         ResizeEvent: 'onorientationchange' in window ? 'orientationchange' : 'resize',
@@ -67,9 +69,13 @@ Core.UI.InputFields = (function (TargetNS) {
         $('select.Modernize', $Context).each(function (Index, SelectObj) {
             var $SelectObj = $(SelectObj),
                 $SearchObj = $('#' + $SelectObj.data('modernized')),
+                $LabelObj = $('label[for="' + $SearchObj.attr('id') + '"]'),
                 $ShowTreeObj = $SelectObj.next('.ShowTreeSelection');
 
             if ($SelectObj.data('modernized')) {
+                if ($LabelObj.length > 0 && $SelectObj.attr('id')) {
+                    $LabelObj.attr('for', $SelectObj.attr('id'));
+                }
                 $SearchObj.parents('.InputField_Container')
                     .blur()
                     .remove();
@@ -723,6 +729,7 @@ Core.UI.InputFields = (function (TargetNS) {
                 Searching,
                 Filterable,
                 SelectWidth,
+                SearchLabel,
                 $FiltersObj,
                 $ShowTreeObj,
                 $FiltersListObj;
@@ -797,20 +804,40 @@ Core.UI.InputFields = (function (TargetNS) {
                     $SearchObj.width(SelectWidth).show();
                 });
 
-                // Handle clicks on related label
+                // Redirect label to search field
                 if ($SelectObj.attr('id')) {
                     $LabelObj = $('label[for="' + $SelectObj.attr('id') + '"]');
-                    $LabelObj.on('click.InputField', function () {
-                        $SearchObj.focus();
-                    });
+                    if ($LabelObj.length > 0) {
+                        $LabelObj.attr('for', SearchID);
+                    }
+                }
+
+                // Set the earch field label attribute
+                if (!$LabelObj || $LabelObj.length === 0) {
+                    if ($SelectObj.attr('aria-label')) {
+                        SearchLabel = $SelectObj.attr('aria-label');
+                    }
+                    else if ($SelectObj.attr('title')) {
+                        SearchLabel = $SelectObj.attr('title');
+                    }
+                    else {
+                        SearchLabel = SearchID.replace(/_/g, ' ');
+                    }
+                    $SearchObj.attr('aria-label', SearchLabel);
                 }
 
                 // Check error classes
                 if ($SelectObj.hasClass(Config.ErrorClass)) {
-                    $SearchObj.addClass(Config.ErrorClass);
+                    $SearchObj.addClass(Config.ErrorClass)
+                        .parents('form')
+                        .find("label[for=" + Core.App.EscapeSelector(SearchID) + "]")
+                        .addClass(Config.ErrorLabelClass);
                 }
                 if ($SelectObj.hasClass(Config.ServerErrorClass)) {
-                    $SearchObj.addClass(Config.ServerErrorClass);
+                    $SearchObj.addClass(Config.ServerErrorClass)
+                        .parents('form')
+                        .find("label[for=" + Core.App.EscapeSelector(SearchID) + "]")
+                        .removeClass(Config.ServerLabelClass);
                 }
 
                 if (Filterable) {
@@ -1548,16 +1575,28 @@ Core.UI.InputFields = (function (TargetNS) {
                 // to add error classes to search field if needed
                 .off('error.InputField').on('error.InputField', function () {
                     if ($SelectObj.hasClass(Config.ErrorClass)) {
-                        $SearchObj.addClass(Config.ErrorClass);
+                        $SearchObj.addClass(Config.ErrorClass)
+                            .parents('form')
+                            .find("label[for=" + Core.App.EscapeSelector(SearchID) + "]")
+                            .addClass(Config.ErrorLabelClass);
                     }
                     else {
-                        $SearchObj.removeClass(Config.ErrorClass);
+                        $SearchObj.removeClass(Config.ErrorClass)
+                            .parents('form')
+                            .find("label[for=" + Core.App.EscapeSelector(SearchID) + "]")
+                            .removeClass(Config.ErrorLabelClass);
                     }
                     if ($SelectObj.hasClass(Config.ServerErrorClass)) {
-                        $SearchObj.addClass(Config.ServerErrorClass);
+                        $SearchObj.addClass(Config.ServerErrorClass)
+                            .parents('form')
+                            .find("label[for=" + Core.App.EscapeSelector(SearchID) + "]")
+                            .addClass(Config.ServerLabelClass);
                     }
                     else {
-                        $SearchObj.removeClass(Config.ServerErrorClass);
+                        $SearchObj.removeClass(Config.ServerErrorClass)
+                            .parents('form')
+                            .find("label[for=" + Core.App.EscapeSelector(SearchID) + "]")
+                            .removeClass(Config.ServerLabelClass);
                     }
                 });
 
