@@ -1157,10 +1157,8 @@ Core.UI.InputFields = (function (TargetNS) {
                             show_only_matches_children: true,
                             search_callback: function (Search, Node) {
                                 var SearchString = TargetNS.RemoveDiacritics(Search),
-                                    NodeString = TargetNS.RemoveDiacritics(Node.text),
-                                    RegexString = SearchString.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&'),
-                                    RegexObj = new RegExp(RegexString, 'i');
-                                return RegexObj.test(NodeString);
+                                    NodeString = TargetNS.RemoveDiacritics(Node.text);
+                                return (NodeString.toLowerCase().indexOf(SearchString.toLowerCase()) !== -1);
                             }
                         },
                         plugins: [ 'multiselect', 'search', 'wholerow' ]
