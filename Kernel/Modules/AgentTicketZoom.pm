@@ -1429,13 +1429,14 @@ sub MaskAgentZoom {
             };
         }
 
+        my $ValueMaxChars = $ConfigObject->Get('Ticket::Frontend::DynamicFieldsZoomMaxSizeSidebar')   || 18;
+        my $DisplayValue  = $Self->{DisplaySettings}->{DynamicField}->{ $DynamicFieldConfig->{Name} } || 0;
+
         my $ValueStrg = $DynamicFieldBeckendObject->DisplayValueRender(
             DynamicFieldConfig => $DynamicFieldConfig,
             Value              => $Ticket{ 'DynamicField_' . $DynamicFieldConfig->{Name} },
             LayoutObject       => $LayoutObject,
-            ValueMaxChars      => $ConfigObject->
-                Get('Ticket::Frontend::DynamicFieldsZoomMaxSizeSidebar')
-                || 18,    # limit for sidebar display
+            ValueMaxChars => ( $DisplayValue == 2 ? undef : $ValueMaxChars ),
         );
 
         if (
