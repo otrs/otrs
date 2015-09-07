@@ -134,7 +134,7 @@ Core.Form.Validate = (function (TargetNS) {
         // if the element is an Input Field, than manually trigger the focus event
         if (Core.UI.InputFields.IsEnabled($Element)) {
             window.setTimeout(function () {
-                $('#' + Core.UI.InputFields.IsEnabled($Element)).focus();
+                $('#' + $Element.data('modernized')).focus();
             }, 0);
         }
 

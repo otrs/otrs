@@ -1777,14 +1777,19 @@ Core.UI.InputFields = (function (TargetNS) {
      * @name IsEnabled
      * @memberof Core.UI.InputFields
      * @function
-     * @returns {String} ID of the Search field
+     * @returns {Boolean} True/false value depending whether the Input Field has been initialized.
      * @param {jQueryObject} $Element - The jQuery object of the element that is being tested.
      * @description
      *      This function check if Input Field is initialized for the supplied element,
-     *      and returns corresponding ID of the Search field.
+     *      and returns appropriate boolean value.
      */
     TargetNS.IsEnabled = function ($Element) {
-        return $Element.data('modernized');
+        if ($Element.data('modernized') && $Element.data('modernized') !== '') {
+            return true;
+        }
+        else {
+            return false;
+        }
     };
 
     // jsTree plugin for multi selection without modifier key
