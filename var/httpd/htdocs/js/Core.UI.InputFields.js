@@ -1787,9 +1787,7 @@ Core.UI.InputFields = (function (TargetNS) {
         if ($Element.data('modernized') && $Element.data('modernized') !== '') {
             return true;
         }
-        else {
-            return false;
-        }
+        return false;
     };
 
     // jsTree plugin for multi selection without modifier key
