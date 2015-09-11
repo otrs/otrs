@@ -225,7 +225,8 @@ Core.UI.InputFields = (function (TargetNS) {
                 $SearchObj.parents('.InputField_Container')
                     .blur()
                     .remove();
-                $SelectObj.show();
+                $SelectObj.show()
+                    .removeData('modernized');
                 $ShowTreeObj.show();
             }
         });
