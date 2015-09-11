@@ -169,7 +169,7 @@ div.InputField_ToolbarContainer ul li:after {
     color: #bbb;
     content: "|";
     display: inline-block;
-    float: right !important;
+    float: right;
     cursor: default;
     width: 0;
 }
