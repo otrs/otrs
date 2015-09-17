@@ -1427,11 +1427,6 @@ sub Run {
                     $Success = $ChatObject->ChatDelete(
                         ChatID => $GetParam{FromChatID},
                     );
-
-                    # remove possible chat invitations from this chat
-                    $Success = $ChatObject->ChatInviteRemove(
-                        InvitationChatID => $GetParam{FromChatID},
-                    );
                 }
 
                 # otherwise set chat status to closed and inform other agents
