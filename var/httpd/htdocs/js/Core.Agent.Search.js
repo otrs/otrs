@@ -430,7 +430,7 @@ Core.Agent.Search = (function (TargetNS) {
                             ShownAttributes = ShownAttributes + ';' + $(this).attr('id');
                         }
                     });
-                    $('#SearchForm #ShownAttributes').val(ShownAttributes);
+                    $('#SearchForm #ShownAttributes').val(ShownAttributes.substring(1));
 
                     // Normal results mode will return HTML in the same window
                     if ($('#SearchForm #ResultForm').val() === 'Normal') {
