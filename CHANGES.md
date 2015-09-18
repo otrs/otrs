@@ -1,4 +1,12 @@
 #5.0.0.beta5 2015-??-??
+ - 2015-09-18 Fixed bug#[11441](http://bugs.otrs.org/show_bug.cgi?id=11441) - It is not possible to sort by Owner.
+ - 2015-09-18 Added new console command to create customer companies, thanks to babafou.
+ - 2015-09-18 Fixed bug#[10878](http://bugs.otrs.org/show_bug.cgi?id=10878) - bulk action for owner change: tickets are not locked.
+ - 2015-09-18 Fixed bug#[11283](http://bugs.otrs.org/show_bug.cgi?id=11283) - Cropped upper part of the column filters.
+ - 2015-09-18 Fixed bug#[10984](http://bugs.otrs.org/show_bug.cgi?id=10984) - Issues when adding customer users using "Customer user" link.
+ - 2015-09-18 Fixed bug#[11112](http://bugs.otrs.org/show_bug.cgi?id=11112) - Number of affected tickets of GenericAgent job via web interface is limited hardcoded.
+ - 2015-09-18 Fixed bug#[11307](http://bugs.otrs.org/show_bug.cgi?id=11307) - Reference to uninitialized value at change of sort order of search result in AgentTicketSearch.
+ - 2015-09-18 Fixed bug#[11330](http://bugs.otrs.org/show_bug.cgi?id=11330) - LogModule::LogFile::Date creates log files ending in single digit.
  - 2015-09-17 Added the time zone support in the statistics for systems which use UTC as system time and with active TimeZoneUser feature.
  - 2015-09-17 Fixed bug#[11387](http://bugs.otrs.org/show_bug.cgi?id=11387) - TimeZoneUser setting not working within stats.
  - 2015-09-17 Fixed bug#[9744](http://bugs.otrs.org/show_bug.cgi?id=9744) - In 7 Day Stats, stats displayed in GMT.
