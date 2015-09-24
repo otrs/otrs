@@ -19,6 +19,7 @@ my $ConfigObject        = $Kernel::OM->Get('Kernel::Config');
 my $HelperObject        = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
 my $DBObject            = $Kernel::OM->Get('Kernel::System::DB');
 my $SearchProfileObject = $Kernel::OM->Get('Kernel::System::SearchProfile');
+my $CustomerUserObject = $Kernel::OM->Get('Kernel::System::CustomerUser');
 my $UserObject          = $Kernel::OM->Get('Kernel::System::User');
 
 # create test user
@@ -324,5 +325,116 @@ for my $SearchProfileName (@SearchProfileNames) {
         "SearchProfileList() - Deleted entry $SearchProfileName",
     );
 }
+
+my $TestCustomerUserLogin = $HelperObject->TestCustomerUserCreate();
+my $CustomerBase = 'CustomerTicketSearch';
+my %CustomerSearches = (
+  First => {
+      Search => {
+          PriorityIDs => [2,4],
+          StateIDs => [1,3,5],
+          Body => 'asdf',
+      }
+  },
+  Second => {
+      Search => {
+          CustomerID => 'asdf',
+          StateIDs => [1],
+      }
+  }
+
+);
+
+for my $SearchProfile ( sort keys %CustomerSearches ) {
+    for my $Key ( sort keys %{$CustomerSearches{$SearchProfile}->{Search}}) {
+        my $AddResult = $SearchProfileObject->SearchProfileAdd(
+            Base      => $CustomerBase,
+            Name      => $SearchProfile,
+            Key       => $Key,
+            Value     => $CustomerSearches{$SearchProfile}->{Search}->{$Key},
+            UserLogin => $TestCustomerUserLogin,
+        );
+        $Self->True(
+            $AddResult,
+            "Adding key '$Key' to searchprofile '$SearchProfile' for '$TestCustomerUserLogin'",
+        );
+    }
+}
+
+%SearchProfileList = $SearchProfileObject->SearchProfileList(
+    Base      => $CustomerBase,
+    UserLogin => $TestCustomerUserLogin,
+);
+$Self->Is(
+    scalar keys %SearchProfileList,
+    scalar keys %CustomerSearches,
+    'CustomerUser: SearchProfileList returns appropriate number of profiles',
+);
+
+# rename customer user
+my %Customer = $CustomerUserObject->CustomerUserDataGet(
+    User => $TestCustomerUserLogin,
+);
+my $NewCustomerUserLogin = $HelperObject->GetRandomID();
+my $Update = $CustomerUserObject->CustomerUserUpdate(
+    %Customer,
+    ID        => $Customer{UserLogin},
+    UserLogin => $NewCustomerUserLogin,
+    UserID    => 1,
+);
+$Self->True(
+    $Update,
+    "CustomerUserUpdate - $Customer{UserLogin} - $NewCustomerUserLogin",
+);
+
+%SearchProfileList = $SearchProfileObject->SearchProfileList(
+    Base      => $CustomerBase,
+    UserLogin => $TestCustomerUserLogin,
+);
+$Self->Is(
+    scalar keys %SearchProfileList,
+    0,
+    'CustomerUser: SearchProfileList returns no profiles for old user',
+);
+
+%SearchProfileList = $SearchProfileObject->SearchProfileList(
+    Base      => $CustomerBase,
+    UserLogin => $NewCustomerUserLogin,
+);
+$Self->Is(
+    scalar keys %SearchProfileList,
+    scalar keys %CustomerSearches,
+    'CustomerUser: SearchProfileList returns appropriate number of profiles for new username',
+);
+
+# change back customer user login so invalidation at test destruction is ok
+$Update = $CustomerUserObject->CustomerUserUpdate(
+    %Customer,
+    ID        => $NewCustomerUserLogin,
+    UserLogin => $TestCustomerUserLogin,
+    UserID    => 1,
+);
+
+for my $SearchProfile ( sort keys %CustomerSearches ) {
+    my $DeleteSuccess = $SearchProfileObject->SearchProfileDelete(
+        Base      => $CustomerBase,
+        Name      => $SearchProfile,
+        UserLogin => $TestCustomerUserLogin,
+    );
+    $Self->True(
+        $DeleteSuccess,
+        "Deleting searchprofile '$SearchProfile' for '$TestCustomerUserLogin'",
+    );
+}
+
+%SearchProfileList = $SearchProfileObject->SearchProfileList(
+    Base      => $CustomerBase,
+    UserLogin => $TestCustomerUserLogin,
+);
+$Self->Is(
+    scalar keys %SearchProfileList,
+    0,
+    'CustomerUser: SearchProfileList returns no profiles for user',
+);
 
 1;
