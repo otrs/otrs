@@ -369,7 +369,11 @@ Core.UI.InputFields = (function (TargetNS) {
             PossibleNone = false,
             MoreString = Core.Config.Get('InputFieldsMore'),
             MaxWidth,
+            $SearchObj = $InputContainerObj.find('.InputField_Search'),
             $TempMoreObj;
+
+        // Give up if field is expanded
+        if ($SearchObj.attr('aria-expanded')) return;
 
         // Remove any existing boxes in supplied container
         $InputContainerObj.find('.InputField_Selection').remove();
@@ -386,7 +390,7 @@ Core.UI.InputFields = (function (TargetNS) {
         if ($SelectObj.val()) {
 
             // Maximum available width for boxes
-            MaxWidth = $InputContainerObj.find('.InputField_Search').width();
+            MaxWidth = $SearchObj.width();
 
             // Check which kind of selection we are dealing with
             if ($.isArray($SelectObj.val())) {
@@ -434,8 +438,7 @@ Core.UI.InputFields = (function (TargetNS) {
                 $TextObj.addClass('Text')
                     .text(Text)
                     .off('click.InputField').on('click.InputField', function () {
-                        $InputContainerObj.find('.InputField_Search')
-                            .trigger('focus');
+                        $SearchObj.trigger('focus');
                     });
 
                 // Remove button
@@ -526,8 +529,7 @@ Core.UI.InputFields = (function (TargetNS) {
                                     MoreString.replace(/%s/, SelectionLength - i)
                                 )
                                 .on('click.InputField', function () {
-                                    $InputContainerObj.find('.InputField_Search')
-                                        .trigger('focus');
+                                    $SearchObj.trigger('focus');
                                 })
                             );
                             MoreBox = true;
@@ -1905,7 +1907,13 @@ Core.UI.InputFields = (function (TargetNS) {
                 $SelectObj.off('redraw.InputField').on('redraw.InputField', function () {
                     if (Filterable) {
                         $SelectObj.data('original', $SelectObj.children());
-                        ApplyFilter($SelectObj, $ToolbarContainerObj, true);
+                        if (
+                            $SelectObj.data('filtered')
+                            && $SelectObj.data('filtered') !== '0'
+                            )
+                        {
+                            ApplyFilter($SelectObj, $ToolbarContainerObj);
+                        }
                     }
                     CheckAvailability($SelectObj, $SearchObj, $InputContainerObj);
                     $SearchObj.width($SelectObj.outerWidth());
