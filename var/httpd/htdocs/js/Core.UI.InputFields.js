@@ -382,6 +382,10 @@ Core.UI.InputFields = (function (TargetNS) {
             }
         });
 
+        if ($SelectObj.attr('size') && parseInt($SelectObj.attr('size'), 10) > 1) {
+            PossibleNone = true;
+        }
+
         // Check if we have a selection at all
         if ($SelectObj.val()) {
 
