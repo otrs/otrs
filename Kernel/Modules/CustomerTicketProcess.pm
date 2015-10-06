@@ -343,7 +343,7 @@ sub Run {
         );
     }
     return $LayoutObject->CustomerErrorScreen(
-        Message => 'Subacion is invalid!',
+        Message => 'Subaction is invalid!',
         Comment => 'Please contact the admin.',
     );
 }
