@@ -194,6 +194,21 @@ Core.UI.InputFields = (function (TargetNS) {
     };
 
     /**
+     * @private
+     * @name escapeId
+     * @memberof Core.UI.InputFields
+     * @param {String} id - String to escape
+     * @returns {String} Escaped string
+     * @description
+     *      Escape string for use as a jQuery selector. Because jQuery uses CSS syntax for
+     *      selecting elements, some characters are interpreted as CSS notation. Therefore they
+     *      must be escaped with two backslashes.
+     */
+    function escapeId(id) {
+        return id.replace(/(:|\.|\[|\]|,)/g, "\\$1");
+    }
+
+    /**
      * @name Activate
      * @memberof Core.UI.InputFields
      * @param {jQueryObject} [$Context] - jQuery object for context (optional)
@@ -224,7 +239,7 @@ Core.UI.InputFields = (function (TargetNS) {
         // Restore select fields
         $('select.Modernize', $Context).each(function (Index, SelectObj) {
             var $SelectObj = $(SelectObj),
-                $SearchObj = $('#' + $SelectObj.data('modernized')),
+                $SearchObj = $('#' + escapeId($SelectObj.data('modernized'))),
                 $ShowTreeObj = $SelectObj.next('.ShowTreeSelection');
 
             if ($SelectObj.data('modernized')) {
@@ -344,7 +359,7 @@ Core.UI.InputFields = (function (TargetNS) {
         // If the dropdown of the field is opened, close it (by calling blur event)
         // TODO: nicer way to find opened select elements
         $('select.Modernize').each(function () {
-            $('#' + $(this).data('modernized')).filter('[aria-expanded=true]').trigger('blur');
+            $('#' + escapeId($(this).data('modernized'))).filter('[aria-expanded=true]').trigger('blur');
         });
     }
 
@@ -843,7 +858,7 @@ Core.UI.InputFields = (function (TargetNS) {
                     ApplyFilter($SelectObj, $ToolbarContainerObj);
 
                     // Refresh the field and get focus
-                    $SearchObj = $('#' + $SelectObj.data('modernized'));
+                    $SearchObj = $('#' + escapeId($SelectObj.data('modernized')));
                     $SearchObj.width($SelectObj.outerWidth())
                         .trigger('blur');
                     CheckAvailability($SelectObj, $SearchObj, $InputContainerObj);
@@ -1218,12 +1233,12 @@ Core.UI.InputFields = (function (TargetNS) {
                     if ($SelectObj.attr('id')) {
                         if ($SelectObj.hasClass(Config.ErrorClass)) {
                             Core.Form.ErrorTooltips.ShowTooltip(
-                                $SearchObj, $('#' + $SelectObj.attr('id') + Config.ErrorClass).html(), 'TongueTop'
+                                $SearchObj, $('#' + escapeId($SelectObj.attr('id')) + Config.ErrorClass).html(), 'TongueTop'
                             );
                         }
                         if ($SelectObj.hasClass(Config.ServerErrorClass)) {
                             Core.Form.ErrorTooltips.ShowTooltip(
-                                $SearchObj, $('#' + $SelectObj.attr('id') + Config.ServerErrorClass).html(), 'TongueTop'
+                                $SearchObj, $('#' + escapeId($SelectObj.attr('id')) + Config.ServerErrorClass).html(), 'TongueTop'
                             );
                         }
                     }
