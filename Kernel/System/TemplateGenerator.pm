@@ -859,10 +859,15 @@ sub NotificationEvent {
         # otherwise use default language
         $Language = $DefaultLanguage;
 
-        # if no message exists in default language, then take the first available language
+        # otherwise use English
         if ( !$Notification{Message}->{$Language} ) {
-            my @Languages = sort keys %{ $Notification{Message} };
-            $Language = $Languages[0];
+            $Language = 'en';
+
+            # if no message exists in default language, then take the first available language
+            if ( !$Notification{Message}->{$Language} ) {
+                my @Languages = sort keys %{ $Notification{Message} };
+                $Language = $Languages[0];
+            }
         }
     }
 
