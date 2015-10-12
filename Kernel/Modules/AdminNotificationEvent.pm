@@ -1033,6 +1033,7 @@ sub _Edit {
 
     my $HTMLUtilsObject = $Kernel::OM->Get('Kernel::System::HTMLUtils');
 
+    LANGUAGEID:
     for my $LanguageID (@LanguageIDs) {
 
         # format the content according to the content type
