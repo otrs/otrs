@@ -2203,8 +2203,21 @@ sub _RenderPendingTime {
             %{ $Param{Ticket} },
         );
     }
+    
+    my %PendingOpts;
+    my $Hour = $ConfigObject->Get('Ticket::Frontend::PendingTimeHour');
+    if ( defined $Hour ) {
+        $PendingOpts{Hour} = $Hour;
+    }
 
-    $Data{Content} = $LayoutObject->BuildDateSelection(
+    my $Minute = $ConfigObject->Get('Ticket::Frontend::PendingTimeMinute');
+    if ( defined $Minute ) {
+        $PendingOpts{Minute} = $Minute;
+    }
+
+    # pending data string
+    $Param{PendingDateString} = $LayoutObject->BuildDateSelection(
+        %PendingOpts,
         Prefix => 'PendingTime',
         PendingTimeRequired =>
             (
