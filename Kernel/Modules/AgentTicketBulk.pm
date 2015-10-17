@@ -953,7 +953,21 @@ sub _Mask {
             next STATE_ID if !$StateID;
             my %StateData = $StateObject->StateGet( ID => $StateID );
             next STATE_ID if $StateData{TypeName} !~ /pending/i;
-            $Param{DateString} = $LayoutObject->BuildDateSelection(
+            
+            my %PendingOpts;
+            my $Hour = $ConfigObject->Get('Ticket::Frontend::PendingTimeHour');
+            if ( defined $Hour ) {
+                $PendingOpts{Hour} = $Hour;
+            }
+
+            my $Minute = $ConfigObject->Get('Ticket::Frontend::PendingTimeMinute');
+            if ( defined $Minute ) {
+                $PendingOpts{Minute} = $Minute;
+            }
+
+            # pending data string
+            $Param{PendingDateString} = $LayoutObject->BuildDateSelection(
+                %PendingOpts,
                 %Param,
                 Format               => 'DateInputFormatLong',
                 DiffTime             => $ConfigObject->Get('Ticket::Frontend::PendingDiffTime') || 0,
