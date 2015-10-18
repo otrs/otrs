@@ -3903,21 +3903,25 @@ sub TicketLockSet {
     # send unlock notify
     if ( lc $Param{Lock} eq 'unlock' ) {
 
-        my @SkipRecipients;
-        if ( $Ticket{OwnerID} eq $Param{UserID} ) {
-            @SkipRecipients = [ $Param{UserID} ];
-        }
+        my $Notification = defined $Param{Notification} ? $Param{Notification} : 1;
+        if ( !$Param{SendNoNotification} && $Notification )
+        {
+            my @SkipRecipients;
+            if ( $Ticket{OwnerID} eq $Param{UserID} ) {
+                @SkipRecipients = [ $Param{UserID} ];
+            }
 
-        # trigger notification event
-        $Self->EventHandler(
-            Event          => 'NotificationLockTimeout',
-            SkipRecipients => \@SkipRecipients,
-            Data           => {
-                TicketID              => $Param{TicketID},
-                CustomerMessageParams => {},
-            },
-            UserID => $Param{UserID},
-        );
+            # trigger notification event
+            $Self->EventHandler(
+                Event          => 'NotificationLockTimeout',
+                SkipRecipients => \@SkipRecipients,
+                Data           => {
+                    TicketID              => $Param{TicketID},
+                    CustomerMessageParams => {},
+                },
+                UserID => $Param{UserID},
+            );
+        }
     }
 
     # trigger event
@@ -6041,6 +6045,9 @@ sub TicketMerge {
         MainTicketID  => $Param{MainTicketID},
         UserID        => $Param{UserID},
     );
+
+    $Self->_TicketCacheClear( TicketID => $Param{MergeTicketID} );
+    $Self->_TicketCacheClear( TicketID => $Param{MainTicketID} );
 
     # trigger event
     $Self->EventHandler(

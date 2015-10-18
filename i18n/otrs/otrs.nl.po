@@ -1,12 +1,13 @@
 # 
 # Translators:
 # David Van Uffelen <david.van.uffelen@bnl.yusen-logistics.com>, 2015
+# Peter van Beugen <peter@tda.nl>, 2015
 # Sander G. <transifex@sander.goudswaard.com>, 2015
 msgid ""
 msgstr ""
 "Project-Id-Version: OTRS\n"
 "POT-Creation-Date: 2014-08-08 19:10+0200\n"
-"PO-Revision-Date: 2015-10-07 17:42+0000\n"
+"PO-Revision-Date: 2015-10-13 23:13+0000\n"
 "Last-Translator: Carlos Rodríguez <carlos.rodriguez@otrs.com>\n"
 "Language-Team: Dutch (http://www.transifex.com/otrs/OTRS/language/nl/)\n"
 "MIME-Version: 1.0\n"
@@ -1703,6 +1704,10 @@ msgstr "E-mail voorkeuren"
 #. Template: AAAPreferences
 msgid "Other Settings"
 msgstr "Overige voorkeuren"
+
+#. Template: AAAPreferences
+msgid "Notification Settings"
+msgstr ""
 
 #. Template: AAAPreferences
 msgid "Change Password"
@@ -5487,6 +5492,12 @@ msgid "Notification Text"
 msgstr ""
 
 #. Template: AdminNotificationEvent
+msgid ""
+"This language is not present or enabled on the system. This notification "
+"text could be deleted if it is not needed anymore."
+msgstr ""
+
+#. Template: AdminNotificationEvent
 msgid "Remove Notification Language"
 msgstr ""
 
@@ -8712,8 +8723,8 @@ msgid "Note type"
 msgstr "Notitiesoort"
 
 #. Template: AgentTicketBounce
-msgid "Bounce Ticket"
-msgstr "Bounce ticket"
+msgid "Bounce %s%s"
+msgstr ""
 
 #. Template: AgentTicketBounce
 msgid "Bounce to"
@@ -8842,10 +8853,6 @@ msgstr "Verwijder klant van ticket"
 #. Template: AgentTicketEmail
 msgid "Get all"
 msgstr "Gebruik alle"
-
-#. Template: AgentTicketEmail
-msgid "Do you really want to continue?"
-msgstr ""
 
 #. Template: AgentTicketEmailOutbound
 msgid "Outbound Email for %s%s"
@@ -9317,7 +9324,7 @@ msgstr ""
 
 #. Template: AgentTicketZoom
 msgid "Close this message"
-msgstr ""
+msgstr "Sluit dit bericht"
 
 #. Template: AgentTicketZoom
 msgid "Article could not be opened! Perhaps it is on another article page?"
@@ -9333,7 +9340,7 @@ msgstr "Laad actieve inhoud."
 
 #. Template: ChatStartForm
 msgid "First message"
-msgstr ""
+msgstr "Eerste bericht"
 
 #. Template: CustomerError
 msgid "Traceback"
@@ -9374,7 +9381,7 @@ msgstr "Er zijn nu geen elementen beschikbaar om te kiezen."
 
 #. Template: CustomerFooterJS
 msgid "Please turn off Compatibility Mode in Internet Explorer!"
-msgstr ""
+msgstr "Zet a.u.b. Compatibility Mode in Internet Explorer uit!"
 
 #. Template: CustomerFooterJS
 msgid "The browser you are using is too old."
@@ -9828,6 +9835,10 @@ msgstr ""
 
 #. Template: FooterJS
 msgid "New activity on one of your monitored chats."
+msgstr ""
+
+#. Template: FooterJS
+msgid "Do you really want to continue?"
 msgstr ""
 
 #. Template: FooterJS
@@ -14578,19 +14589,19 @@ msgstr ""
 
 #. SysConfig
 msgid ""
-"Determines the strings that will be shown as receipent (To:) of the phone "
-"ticket and as sender (From:) of the email ticket in the agent interface. For"
-" Queue as NewQueueSelectionType \"<Queue>\" shows the names of the queues "
-"and for SystemAddress \"<Realname> <<Email>>\" shows the name and email of "
-"the receipent."
-msgstr ""
-
-#. SysConfig
-msgid ""
 "Determines the strings that will be shown as receipent (To:) of the ticket "
 "in the customer interface. For Queue as CustomerPanelSelectionType, "
 "\"<Queue>\" shows the names of the queues, and for SystemAddress, "
 "\"<Realname> <<Email>>\" shows the name and email of the receipent."
+msgstr ""
+
+#. SysConfig
+msgid ""
+"Determines the strings that will be shown as recipient (To:) of the phone "
+"ticket and as sender (From:) of the email ticket in the agent interface. For"
+" Queue as NewQueueSelectionType \"<Queue>\" shows the names of the queues "
+"and for SystemAddress \"<Realname> <<Email>>\" shows the name and email of "
+"the receipent."
 msgstr ""
 
 #. SysConfig
@@ -14599,7 +14610,7 @@ msgstr ""
 
 #. SysConfig
 msgid ""
-"Determines which options will be valid of the recepient (phone ticket) and "
+"Determines which options will be valid of the recipient (phone ticket) and "
 "the sender (email ticket) in the agent interface."
 msgstr ""
 
@@ -14881,6 +14892,10 @@ msgstr ""
 
 #. SysConfig
 msgid "DynamicField object registration."
+msgstr ""
+
+#. SysConfig
+msgid "E-Mail Outbound"
 msgstr ""
 
 #. SysConfig
@@ -18433,8 +18448,8 @@ msgstr ""
 #. SysConfig
 msgid ""
 "Specifies whether all storage backends should be checked when looking for "
-"attachements. This is only required for installations where some "
-"attachements are in the file system, and others in the database."
+"attachments. This is only required for installations where some attachments "
+"are in the file system, and others in the database."
 msgstr ""
 
 #. SysConfig
