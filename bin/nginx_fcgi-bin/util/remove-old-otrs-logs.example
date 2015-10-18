@@ -1,0 +1,3 @@
+#example cron configuration to remove old logs
+*/10 * * * *  root	/usr/bin/find /var/log/otrs -name 'err-index-*.*' -ctime +2 -exec rm -f {} \;
+*/10 * * * *  root	/usr/bin/find /var/log/otrs -name 'err-nph-*.*' -ctime +2 -exec rm -f {} \;
