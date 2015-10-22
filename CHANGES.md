@@ -1,4 +1,23 @@
-#5.0.1 2015-??-??
+#5.0.2 2015-??-??
+ - 2015-10-20 Fixed LogObject call in InterfaceInstaller.pm.
+
+#5.0.1 2015-10-20
+ - 2015-10-19 Fixed bug#[11566](http://bugs.otrs.org/show_bug.cgi?id=11566) - Once per day notification setting is not honored if sendmail backend is used under certain circumstances.
+ - 2015-10-16 Fixed bug#[11562](http://bugs.otrs.org/show_bug.cgi?id=11562) -  Tickets with status 'pending auto close -/+' will be closed as usually, but a 'Ticket locked out' notification is send to agents.
+ - 2015-10-15 Added new 'Unformatted' template for email notification method.
+ - 2015-10-15 Fixed bug#[11556](http://bugs.otrs.org/show_bug.cgi?id=11556) - Searching in inputfields does not hide non-matching entries.
+ - 2015-10-14 Updated CPAN module URI to version 1.69.
+ - 2015-10-14 Updated CPAN module Text::Diff to version 1.43.
+ - 2015-10-14 Updated CPAN module SOAP::Lite to version 1.19.
+ - 2015-10-14 Updated CPAN module REST::Client to version 273.
+ - 2015-10-14 Updated CPAN module PDF::API2 to version 2.025.
+ - 2015-10-13 Updated translations, thanks to all translators.
+ - 2015-10-13 Fix missing ticket cache clear after ticket merge, fixes Ticket#2015092442000716.
+ - 2015-10-13 Updated CKEditor to version 4.5.4.
+ - 2015-10-12 Fixed bug#[11535](http://bugs.otrs.org/show_bug.cgi?id=11535) -  Listed message for disabled languages in ticket notification management, thanks to S7.
+ - 2015-10-12 Fixed bug#[11519](http://bugs.otrs.org/show_bug.cgi?id=11519) - Old message in AgentTicketBounce, thanks to Norihiro Tanaka.
+ - 2015-10-12 Fixed bug#[11510](http://bugs.otrs.org/show_bug.cgi?id=11510) - AgentTicketMove empty by sysconfig changes.
+ - 2015-10-12 Fixed bug#[11255](http://bugs.otrs.org/show_bug.cgi?id=11255) - Forwarding Templates do not work with rich text disabled.
  - 2015-10-10 Fixed bug#[11260](http://bugs.otrs.org/show_bug.cgi?id=11260) - Missing translation escalation, thanks to S7.
  - 2015-10-09 Fixed bug#[11467](http://bugs.otrs.org/show_bug.cgi?id=11467) - ACL does not work with Dest Link in Customer::ModuleRegistration, thanks to S7.
  - 2015-10-09 Fixed bug#[11513](http://bugs.otrs.org/show_bug.cgi?id=11513) - Out of Office is missing in owner dropdown.
@@ -12,7 +31,6 @@
  - 2015-10-06 Updated qUnit to version 1.19.0.
  - 2015-10-06 Updated MomentJS to version 2.10.6.
  - 2015-10-06 Updated jQuery Validate to version 1.14.0.
- - 2015-10-06 Updated jQuery jsTree to version 3.2.1.
  - 2015-10-06 Updated FullCalendar to version 2.4.0.
  - 2015-10-06 Updated d3 to verion 3.5.6.
  - 2015-10-06 Updated CanVG to version 1.4.

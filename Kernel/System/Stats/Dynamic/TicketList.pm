@@ -1210,10 +1210,16 @@ sub GetStatTable {
         $Ticket{SolutionTime}                ||= '';
         $Ticket{SolutionDiffInMin}           ||= 0;
         $Ticket{SolutionInMin}               ||= 0;
+        $Ticket{SolutionTimeEscalation}      ||= 0;
         $Ticket{FirstResponse}               ||= '';
         $Ticket{FirstResponseDiffInMin}      ||= 0;
         $Ticket{FirstResponseInMin}          ||= 0;
+        $Ticket{FirstResponseTimeEscalation} ||= 0;
         $Ticket{FirstLock}                   ||= '';
+        $Ticket{UpdateTimeDestinationDate}   ||= '';
+        $Ticket{UpdateTimeDestinationTime}   ||= 0;
+        $Ticket{UpdateTimeWorkingTime}       ||= 0;
+        $Ticket{UpdateTimeEscalation}        ||= 0;
         $Ticket{SolutionTimeDestinationDate} ||= '';
         $Ticket{EscalationDestinationIn}     ||= '';
         $Ticket{EscalationDestinationDate}   ||= '';
@@ -1266,9 +1272,11 @@ sub GetStatTable {
             next ATTRIBUTE if !$TicketAttributes{$Attribute};
 
             # add the given TimeZone for time values
-            if (   $Param{TimeZone}
+            if (
+                $Param{TimeZone}
                 && $Ticket{$Attribute}
-                && $Ticket{$Attribute} =~ /(\d{4})-(\d{2})-(\d{2})\s(\d{2}):(\d{2}):(\d{2})/ )
+                && $Ticket{$Attribute} =~ /(\d{4})-(\d{2})-(\d{2})\s(\d{2}):(\d{2}):(\d{2})/
+                )
             {
                 $Ticket{$Attribute} = $Kernel::OM->Get('Kernel::System::Stats')->_AddTimeZone(
                     TimeStamp => $Ticket{$Attribute},

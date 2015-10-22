@@ -182,9 +182,11 @@ sub StatsParamsWidget {
     }
 
 # provide the time zone field only, if the system use UTC as system time, the TimeZoneUser is active and for dynamic statistics
-    if (  !$Kernel::OM->Get('Kernel::System::Time')->ServerLocalTimeOffsetSeconds()
+    if (
+        !$Kernel::OM->Get('Kernel::System::Time')->ServerLocalTimeOffsetSeconds()
         && $ConfigObject->Get('TimeZoneUser')
-        && $Stat->{StatType} eq 'dynamic' )
+        && $Stat->{StatType} eq 'dynamic'
+        )
     {
         my %TimeZoneBuildSelection = $Self->_TimeZoneBuildSelection();
 
@@ -650,6 +652,9 @@ sub GeneralSpecificationsWidget {
         Class      => 'Modernize',
     );
 
+    # get the default selected formats
+    my $DefaultSelectedFormat = $ConfigObject->Get('Stats::DefaultSelectedFormat') || [];
+
     # Create a new statistic
     if ( !$Stat->{StatType} ) {
         my $DynamicFiles = $Kernel::OM->Get('Kernel::System::Stats')->GetDynamicFiles();
@@ -691,6 +696,10 @@ sub GeneralSpecificationsWidget {
             );
         }
         elsif ( $Frontend{StatisticPreselection} eq 'DynamicList' ) {
+
+            # remove the default selected graph formats for the dynamic lists
+            @{$DefaultSelectedFormat} = grep { $_ !~ m{^D3} } @{$DefaultSelectedFormat};
+
             $Frontend{StatType}         = 'dynamic';
             $Frontend{SelectObjectType} = $LayoutObject->BuildSelection(
                 Data        => $ObjectModules{DynamicList},
@@ -715,6 +724,19 @@ sub GeneralSpecificationsWidget {
         }
     }
 
+    # get the avaible formats
+    my $AvailableFormats = $ConfigObject->Get('Stats::Format');
+
+    # create multiselectboxes 'format'
+    $Stat->{SelectFormat} = $LayoutObject->BuildSelection(
+        Data     => $AvailableFormats,
+        Name     => 'Format',
+        Class    => 'Modernize Validate_Required' . ( $Errors{FormatServerError} ? ' ServerError' : '' ),
+        Multiple => 1,
+        Size     => 5,
+        SelectedID => $GetParam{Format} // $Stat->{Format} || $DefaultSelectedFormat,
+    );
+
     # create multiselectboxes 'permission'
     my %Permission = (
         Data => { $Kernel::OM->Get('Kernel::System::Group')->GroupList( Valid => 1 ) },
@@ -732,24 +754,15 @@ sub GeneralSpecificationsWidget {
     }
     $Stat->{SelectPermission} = $LayoutObject->BuildSelection(%Permission);
 
-    # create multiselectboxes 'format'
-    my $AvailableFormats = $ConfigObject->Get('Stats::Format');
-
-    $Stat->{SelectFormat} = $LayoutObject->BuildSelection(
-        Data     => $AvailableFormats,
-        Name     => 'Format',
-        Class    => 'Modernize Validate_Required' . ( $Errors{FormatServerError} ? ' ServerError' : '' ),
-        Multiple => 1,
-        Size     => 5,
-        SelectedID => $GetParam{Format} // $Stat->{Format} || $ConfigObject->Get('Stats::DefaultSelectedFormat'),
-    );
-
-# provide the timezone field only if the system use UTC as system time, the TimeZoneUser is active and for dynamic statistics
+    # provide the timezone field only if the system use UTC as system time, the TimeZoneUser is active
+    # and for dynamic statistics
     if (
-          !$Kernel::OM->Get('Kernel::System::Time')->ServerLocalTimeOffsetSeconds()
+        !$Kernel::OM->Get('Kernel::System::Time')->ServerLocalTimeOffsetSeconds()
         && $ConfigObject->Get('TimeZoneUser')
-        && (   ( $Stat->{StatType} && $Stat->{StatType} eq 'dynamic' )
-            || ( $Frontend{StatType} && $Frontend{StatType} eq 'dynamic' ) )
+        && (
+            ( $Stat->{StatType} && $Stat->{StatType} eq 'dynamic' )
+            || ( $Frontend{StatType} && $Frontend{StatType} eq 'dynamic' )
+        )
         )
     {
 
@@ -1136,9 +1149,11 @@ sub StatsParamsGet {
     my ( %GetParam, @Errors );
 
     # get the time zone param
-    if (  !$TimeObject->ServerLocalTimeOffsetSeconds()
+    if (
+        !$TimeObject->ServerLocalTimeOffsetSeconds()
         && $ConfigObject->Get('TimeZoneUser')
-        && length $LocalGetParam->( Param => 'TimeZone' ) )
+        && length $LocalGetParam->( Param => 'TimeZone' )
+        )
     {
         $GetParam{TimeZone} = $LocalGetParam->( Param => 'TimeZone' ) // $Stat->{TimeZone};
     }
@@ -1204,11 +1219,22 @@ sub StatsParamsGet {
                     }
 
                     # set the first value for a single select field, if no selected value is given
-                    if ( $Element->{Block} eq 'SelectField' && ( !IsArrayRefWithData( $Element->{SelectedValues} ) || scalar @{ $Element->{SelectedValues} } > 1 ) ) {
+                    if (
+                        $Element->{Block} eq 'SelectField'
+                        && (
+                            !IsArrayRefWithData( $Element->{SelectedValues} )
+                            || scalar @{ $Element->{SelectedValues} } > 1
+                        )
+                        )
+                    {
 
                         my @Values = sort keys %{ $Element->{Values} };
 
-                        if ( IsArrayRefWithData( $Element->{SelectedValues} ) && scalar @{ $Element->{SelectedValues} } > 1 ) {
+                        if (
+                            IsArrayRefWithData( $Element->{SelectedValues} )
+                            && scalar @{ $Element->{SelectedValues} } > 1
+                            )
+                        {
                             @Values = @{ $Element->{SelectedValues} };
                         }
 
@@ -1623,13 +1649,13 @@ sub StatsConfigurationValidate {
                 elsif ( $Xvalue->{Block} eq 'SelectField' ) {
                     if ( $Xvalue->{Fixed} && $#{ $Xvalue->{SelectedValues} } > 0 ) {
                         $XAxisFieldErrors{ $Xvalue->{Element} } = Translatable(
-                            'Please select only one element or allow modification at stat generation time.');
+                            'Please select only one element or allow modification at stat generation time.'
+                        );
                     }
                     elsif ( $Xvalue->{Fixed} && !$Xvalue->{SelectedValues}[0] ) {
-                        $XAxisFieldErrors{ $Xvalue->{Element} }
-                            = Translatable(
+                        $XAxisFieldErrors{ $Xvalue->{Element} } = Translatable(
                             'Please select at least one value of this field or allow modification at stat generation time.'
-                            );
+                        );
                     }
                 }
 
@@ -1674,13 +1700,13 @@ sub StatsConfigurationValidate {
                 elsif ( $ValueSeries->{Block} eq 'SelectField' ) {
                     if ( $ValueSeries->{Fixed} && $#{ $ValueSeries->{SelectedValues} } > 0 ) {
                         $YAxisFieldErrors{ $ValueSeries->{Element} } = Translatable(
-                            'Please select only one element or allow modification at stat generation time.');
+                            'Please select only one element or allow modification at stat generation time.'
+                        );
                     }
                     elsif ( $ValueSeries->{Fixed} && !$ValueSeries->{SelectedValues}[0] ) {
-                        $YAxisFieldErrors{ $ValueSeries->{Element} }
-                            = Translatable(
+                        $YAxisFieldErrors{ $ValueSeries->{Element} } = Translatable(
                             'Please select at least one value of this field or allow modification at stat generation time.'
-                            );
+                        );
                     }
                 }
 

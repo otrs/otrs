@@ -331,11 +331,6 @@ sub LoadDefaults {
     $Self->{'LogModule::SysLog::Facility'} = 'user';
 
     # param for LogModule Kernel::System::Log::SysLog
-    # (Depends on you sys log system environment. 'unix' is default, on
-    # solaris you may need to use 'stream'.)
-    $Self->{'LogModule::SysLog::LogSock'} = 'unix';
-
-    # param for LogModule Kernel::System::Log::SysLog
     # (if syslog can't work with utf-8, force the log
     # charset with this option, on other chars will be
     # replaces with ?)
@@ -948,7 +943,7 @@ sub LoadDefaults {
         'thirdparty/jquery-ui-1.11.4/jquery-ui.js',
         'thirdparty/stacktrace-0.6.4/stacktrace.js',
         'thirdparty/jquery-pubsub/pubsub.js',
-        'thirdparty/jquery-jstree-3.2.1/jquery.jstree.js',
+        'thirdparty/jquery-jstree-3.1.1/jquery.jstree.js',
         'Core.Debug.js',
         'Core.Exception.js',
         'Core.Data.js',
@@ -983,7 +978,7 @@ sub LoadDefaults {
         'thirdparty/jquery-validate-1.14.0/jquery.validate.js',
         'thirdparty/stacktrace-0.6.4/stacktrace.js',
         'thirdparty/jquery-pubsub/pubsub.js',
-        'thirdparty/jquery-jstree-3.2.1/jquery.jstree.js',
+        'thirdparty/jquery-jstree-3.1.1/jquery.jstree.js',
         'Core.JavaScriptEnhancements.js',
         'Core.Debug.js',
         'Core.Exception.js',
