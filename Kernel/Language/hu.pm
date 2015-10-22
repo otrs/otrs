@@ -1,10 +1,11 @@
 # --
-# Copyright (C) 2006 Gabor Gancs /gg@magicnet.hu/
-# Copyright (C) 2006 Krisztian Gancs /krisz@gancs.hu/
-# Copyright (C) 2006 Flora Szabo /szaboflora@magicnet.hu/
-# Copyright (C) 2007 Aron Ujvari <ujvari@hungary.com>
-# Copyright (C) 2009 Arnold Matyasi <arn@webma.hu>
+# Copyright (C) 2006 Gábor Gáncs /gg@magicnet.hu/
+# Copyright (C) 2006 Krisztián Gáncs /krisz@gancs.hu/
+# Copyright (C) 2006 Flóra Szabó /szaboflora@magicnet.hu/
+# Copyright (C) 2007 Áron Ujvári <ujvari@hungary.com>
+# Copyright (C) 2009 Arnold Mátyási <arn@webma.hu>
 # Copyright (C) 2013 Csaba Németh <csaba@sopron.hu>
+# Copyright (C) 2014, 2015 Balázs Úr <ur.balazs@otrs-megoldasok.hu>
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -24,11 +25,11 @@ sub Data {
     # possible charsets
     $Self->{Charset} = ['utf-8', ];
     # date formats (%A=WeekDay;%B=LongMonth;%T=Time;%D=Day;%M=Month;%Y=Year;)
-    $Self->{DateFormat}          = '%Y.%M.%D %T';
-    $Self->{DateFormatLong}      = '%Y %B %D %A %T';
-    $Self->{DateFormatShort}     = '%Y.%M.%D';
-    $Self->{DateInputFormat}     = '%Y.%M.%D';
-    $Self->{DateInputFormatLong} = '%Y.%M.%D - %T';
+    $Self->{DateFormat}          = '%Y-%M-%D %T';
+    $Self->{DateFormatLong}      = '%Y. %B %D. %A %T';
+    $Self->{DateFormatShort}     = '%Y-%M-%D';
+    $Self->{DateInputFormat}     = '%Y-%M-%D';
+    $Self->{DateInputFormatLong} = '%Y-%M-%D - %T';
     $Self->{Completeness}        = 0.998531930511378;
 
     # csv separator

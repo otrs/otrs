@@ -6449,8 +6449,8 @@ via the Preferences button after logging in.
         <Setting>
             <Hash>
                 <Item Key="InternalName">default</Item>
-                <Item Key="VisibleName">Default</Item>
-                <Item Key="Description">This is the default orange - black skin.</Item>
+                <Item Key="VisibleName" Translatable="1">Default</Item>
+                <Item Key="Description" Translatable="1">This is the default orange - black skin.</Item>
                 <Item Key="HomePage">www.otrs.org</Item>
             </Hash>
         </Setting>
@@ -6462,8 +6462,8 @@ via the Preferences button after logging in.
         <Setting>
             <Hash>
                 <Item Key="InternalName">slim</Item>
-                <Item Key="VisibleName">Default (Slim)</Item>
-                <Item Key="Description">"Slim" skin which tries to save screen space for power users.</Item>
+                <Item Key="VisibleName" Translatable="1">Default (Slim)</Item>
+                <Item Key="Description" Translatable="1">"Slim" skin which tries to save screen space for power users.</Item>
                 <Item Key="HomePage">www.otrs.org</Item>
             </Hash>
         </Setting>
@@ -6476,7 +6476,7 @@ via the Preferences button after logging in.
             <Hash>
                 <Item Key="InternalName">ivory</Item>
                 <Item Key="VisibleName">Ivory</Item>
-                <Item Key="Description">Balanced white skin by Felix Niklas.</Item>
+                <Item Key="Description" Translatable="1">Balanced white skin by Felix Niklas.</Item>
                 <Item Key="HomePage">www.felixniklas.de</Item>
             </Hash>
         </Setting>
@@ -6488,8 +6488,8 @@ via the Preferences button after logging in.
         <Setting>
             <Hash>
                 <Item Key="InternalName">ivory-slim</Item>
-                <Item Key="VisibleName">Ivory (Slim)</Item>
-                <Item Key="Description">Balanced white skin by Felix Niklas (slim version).</Item>
+                <Item Key="VisibleName" Translatable="1">Ivory (Slim)</Item>
+                <Item Key="Description" Translatable="1">Balanced white skin by Felix Niklas (slim version).</Item>
                 <Item Key="HomePage">www.felixniklas.de</Item>
             </Hash>
         </Setting>

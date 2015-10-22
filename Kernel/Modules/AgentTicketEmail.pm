@@ -1759,7 +1759,7 @@ sub Run {
                     Data         => $Types,
                     SelectedID   => $GetParam{TypeID},
                     PossibleNone => 1,
-                    Translation  => 0,
+                    Translation  => 1,
                     Max          => 100,
                 },
                 @DynamicFieldAJAX,
