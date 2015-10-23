@@ -1045,6 +1045,7 @@ sub _ArticleToUpdate {
         }
     }
 
+    return 1;
 }
 
 1;
