@@ -2464,7 +2464,7 @@ msgstr "Напечатать эту заявку"
 
 #. Template: AAATicket
 msgid "Print this article"
-msgstr "Напечтаать это сообщение"
+msgstr "Напечатать это сообщение"
 
 #. Template: AAATicket
 msgid "Split"
