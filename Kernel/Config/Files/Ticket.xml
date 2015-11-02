@@ -11470,4 +11470,36 @@ Thanks for your help!
             </Option>
         </Setting>
     </ConfigItem>
+    <ConfigItem Name="Frontend::ToolBarModule###15-Ticket::TicketSearchFulltextCustomerID" Required="0" Valid="0">
+        <Description Translatable="1">Agent interface module to access fulltext search via nav bar plus customer number field.</Description>
+        <Group>Ticket</Group>
+        <SubGroup>Frontend::Agent::ToolBarModule</SubGroup>
+        <Setting>
+            <Hash>
+                <Item Key="Module">Kernel::Output::HTML::ToolBar::Generic</Item>
+                <Item Key="Description" Translatable="1">Fulltext search</Item>
+                <Item Key="Name" Translatable="1">Fulltext search with customer id</Item>
+                <Item Key="Block">ToolBarSearchFulltextCustomerID</Item>
+                <Item Key="Size">10</Item>
+                <Item Key="CSS">Core.Agent.Toolbar.FulltextSearch.css</Item>
+                <Item Key="Priority">1990025</Item>
+            </Hash>
+        </Setting>
+    </ConfigItem>
+    <ConfigItem Name="Frontend::ToolBarModule###16-Ticket::TicketSearchFulltextState" Required="0" Valid="0">
+        <Description Translatable="1">Agent interface module to access fulltext search via nav bar.</Description>
+        <Group>Ticket</Group>
+        <SubGroup>Frontend::Agent::ToolBarModule</SubGroup>
+        <Setting>
+            <Hash>
+                <Item Key="Module">Kernel::Output::HTML::ToolBar::Generic</Item>
+                <Item Key="Description" Translatable="1">Fulltext search</Item>
+                <Item Key="Name" Translatable="1">Fulltext search</Item>
+                <Item Key="Block">ToolBarSearchFulltextState</Item>
+                <Item Key="Size">10</Item>
+                <Item Key="CSS">Core.Agent.Toolbar.FulltextSearch.css</Item>
+                <Item Key="Priority">1990026</Item>
+            </Hash>
+        </Setting>
+    </ConfigItem>
 </otrs_config>
