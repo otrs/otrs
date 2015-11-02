@@ -891,7 +891,7 @@ sub Run {
                     Data         => $Types,
                     SelectedID   => $GetParam{TypeID},
                     PossibleNone => 1,
-                    Translation  => 0,
+                    Translation  => 1,
                     Max          => 100,
                 },
                 @DynamicFieldAJAX,
@@ -1157,7 +1157,7 @@ sub _MaskNew {
             SelectedID   => $Param{TypeID},
             PossibleNone => 1,
             Sort         => 'AlphanumericValue',
-            Translation  => 0,
+            Translation  => 1,
             Class        => "Validate_Required Modernize " . ( $Param{Errors}->{TypeIDInvalid} || '' ),
         );
         $LayoutObject->Block(

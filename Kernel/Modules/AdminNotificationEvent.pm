@@ -899,7 +899,7 @@ sub _Edit {
             Sort        => 'AlphanumericValue',
             Size        => 3,
             Multiple    => 1,
-            Translation => 0,
+            Translation => 1,
             Class       => 'Modernize W75pc',
         );
         $LayoutObject->Block(
