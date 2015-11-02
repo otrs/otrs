@@ -991,20 +991,24 @@ sub MaskAgentZoom {
             );
 
             # run module
-            my @Items = $Object->Run(
+            my @MenuItems = $Object->Run(
                 %Param,
                 Ticket => \%Ticket,
                 ACL    => \%AclAction,
                 Config => $Menus{$Menu},
             );
-            next MENU if !@Items;
 
-            for my $Item ( @Items ) {
+            next MENU if !@MenuItems;
+
+            my $ItemCount = '';
+
+            for my $Item ( @MenuItems ) {
                 if ( $Item->{PopupType} ) {
-                    $Item->{Class} = "AsPopup PopupType_$Menus{$Menu}->{PopupType}";
+                    $Item->{Class} = "AsPopup PopupType_$Item->{PopupType}";
                 }
 
                 if ( !$Item->{ClusterName} ) {
+
                     $ZoomMenuItems{$Menu} = $Item;
                 }
                 else {
@@ -1012,12 +1016,16 @@ sub MaskAgentZoom {
                     # check the configured priority for this item. The lowest ClusterPriority
                     # within the same cluster wins.
                     my $Priority = $MenuClusters{ $Item->{ClusterName} }->{Priority};
-                    if ( !$Priority || $Priority !~ /^\d{3}$/ || $Priority > $Item->{ClusterPriority} ) {
+
+                    if ( !$Priority || $Priority !~ /^\d{3}$/ || $Priority > $Menus{$Menu}->{ClusterPriority} ) {
                         $Priority = $Item->{ClusterPriority};
                     }
-                    $MenuClusters{ $Item->{ClusterName} }->{Priority} = $Priority;
-                    $MenuClusters{ $Item->{ClusterName} }->{Items}->{$Menu} = $Item;
+
+                    $MenuClusters{ $Item->{ClusterName} }->{Priority}                    = $Priority;
+                    $MenuClusters{ $Item->{ClusterName} }->{Items}->{$Menu . $ItemCount} = $Item;
                 }
+
+                $ItemCount++;
             }
         }
 
