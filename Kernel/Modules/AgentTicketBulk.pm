@@ -471,6 +471,20 @@ sub Run {
             # challenge token check for write action
             $LayoutObject->ChallengeTokenCheck();
 
+            # merge first, and do all the other actions only
+            # on the main ticket, to avoid a bunch of notifications
+            # for changes which, in the end, would be undone by the merge
+            # anyway
+            if ( $MainTicketID && $MainTicketID ne $TicketID ) {
+                $TicketObject->TicketMerge(
+                    MainTicketID  => $MainTicketID,
+                    MergeTicketID => $TicketID,
+                    UserID        => $Self->{UserID},
+                );
+                next TICKET_ID;
+            }
+
+
             # set owner
             if ( $Config->{Owner} && ( $GetParam{'OwnerID'} || $GetParam{'Owner'} ) ) {
                 $TicketObject->TicketOwnerSet(
@@ -743,15 +757,6 @@ sub Run {
                         UserID    => $Self->{UserID},
                     );
                 }
-            }
-
-            # merge
-            if ( $MainTicketID && $MainTicketID ne $TicketID ) {
-                $TicketObject->TicketMerge(
-                    MainTicketID  => $MainTicketID,
-                    MergeTicketID => $TicketID,
-                    UserID        => $Self->{UserID},
-                );
             }
 
             # get link object
