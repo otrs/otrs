@@ -58,7 +58,7 @@
                     <div class="Clear"></div>
 
                     <div class="Field Center">
-                        <p>[% Translate("((enjoy))") | html %]</p>
+                        <p>((enjoy))</p>
                         <p>[% Translate("Your OTRS Team") | html %]</p>
                     </div>
                     <div class="Clear"></div>
