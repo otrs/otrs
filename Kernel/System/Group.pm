@@ -2604,7 +2604,7 @@ sub _DBGroupRoleGet {
 
     # get all data from table group_role
     $DBObject->Prepare(
-        SQL => 'SELECT role_id, group_id, permission_key FROM group_role',
+        SQL => 'SELECT role_id, group_id, permission_key FROM group_role WHERE permission_value=1',
     );
 
     # fetch the result
