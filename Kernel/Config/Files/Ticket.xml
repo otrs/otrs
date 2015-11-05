@@ -843,8 +843,8 @@
             </Array>
         </Setting>
     </ConfigItem>
-    <ConfigItem Name="Ticket::SearchIndex::StopWords###es" Required="0" Valid="1" ConfigLevel="200">
-        <Description Translatable="1">Spanish stop words for fulltext index. These words will be removed from the search index.</Description>
+    <ConfigItem Name="Ticket::SearchIndex::StopWords###nl" Required="0" Valid="1" ConfigLevel="200">
+        <Description Translatable="1">Dutch stop words for fulltext index. These words will be removed from the search index.</Description>
         <Group>Ticket</Group>
         <SubGroup>Core::FulltextSearch</SubGroup>
         <Setting>
