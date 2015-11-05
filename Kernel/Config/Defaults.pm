@@ -331,11 +331,6 @@ sub LoadDefaults {
     $Self->{'LogModule::SysLog::Facility'} = 'user';
 
     # param for LogModule Kernel::System::Log::SysLog
-    # (Depends on you sys log system environment. 'unix' is default, on
-    # solaris you may need to use 'stream'.)
-    $Self->{'LogModule::SysLog::LogSock'} = 'unix';
-
-    # param for LogModule Kernel::System::Log::SysLog
     # (if syslog can't work with utf-8, force the log
     # charset with this option, on other chars will be
     # replaces with ?)
@@ -944,7 +939,7 @@ sub LoadDefaults {
     $Self->{'Loader::Customer::CommonJS'}->{'000-Framework'} =  [
         'thirdparty/jquery-2.1.4/jquery.js',
         'thirdparty/jquery-browser-detection/jquery-browser-detection.js',
-        'thirdparty/jquery-validate-1.13.1/jquery.validate.js',
+        'thirdparty/jquery-validate-1.14.0/jquery.validate.js',
         'thirdparty/jquery-ui-1.11.4/jquery-ui.js',
         'thirdparty/stacktrace-0.6.4/stacktrace.js',
         'thirdparty/jquery-pubsub/pubsub.js',
@@ -980,7 +975,7 @@ sub LoadDefaults {
         'thirdparty/jquery-browser-detection/jquery-browser-detection.js',
         'thirdparty/jquery-ui-1.11.4/jquery-ui.js',
         'thirdparty/jquery-ui-touch-punch-0.2.3/jquery.ui.touch-punch.js',
-        'thirdparty/jquery-validate-1.13.1/jquery.validate.js',
+        'thirdparty/jquery-validate-1.14.0/jquery.validate.js',
         'thirdparty/stacktrace-0.6.4/stacktrace.js',
         'thirdparty/jquery-pubsub/pubsub.js',
         'thirdparty/jquery-jstree-3.1.1/jquery.jstree.js',
@@ -1629,6 +1624,12 @@ via the Preferences button after logging in.
         # param => default value
 #        SomeParam => 'DefaultValue',
     };
+
+    # If the public interface is proteceted with .htaccess
+    # we can specify the htaccess login data here,
+    # this is neccessary for the support data collector
+    # $Self->{'PublicFrontend::AuthUser'} = '';
+    # $Self->{'PublicFrontend::AuthPassword'} = '';
 
     # --------------------------------------------------- #
     # Frontend Module Registry (Agent)

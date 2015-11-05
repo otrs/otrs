@@ -15,6 +15,14 @@ use Time::Local;
 
 use vars (qw($Self));
 
+$Kernel::OM->ObjectParamAdd(
+    'Kernel::System::UnitTest::Helper' => {
+        RestoreSystemConfiguration => 1,
+    },
+);
+my $HelperObject = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
+my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
+
 my @Tests = (
     {
         Name              => 'UTC',
@@ -93,7 +101,7 @@ my @Tests = (
         TimeStampUTCStart => '2015-09-21 12:00:00',
         TimeStampUTCStop  => '2015-09-22 04:00:00',
         ServerTZ          => 'UTC',
-        Result            => '57600',                                                                    # 16h
+        Result            => '57600',                                                            # 16h
         ResultTime        => '16h',
     },
     {
@@ -101,7 +109,7 @@ my @Tests = (
         TimeStampUTCStart => '2015-09-21 12:00:00',
         TimeStampUTCStop  => '2015-09-22 04:00:00',
         ServerTZ          => 'Asia/Tehran',
-        Result            => '54000',                                                                    # 15h
+        Result            => '54000',                                                            # 15h
         ResultTime        => '15h',
     },
     {
@@ -109,7 +117,7 @@ my @Tests = (
         TimeStampUTCStart => '2015-03-21 12:00:00',
         TimeStampUTCStop  => '2015-03-22 04:00:00',
         ServerTZ          => 'UTC',
-        Result            => '57600',                                                                    # 16h
+        Result            => '57600',                                                            # 16h
         ResultTime        => '16h',
     },
     {
@@ -117,7 +125,7 @@ my @Tests = (
         TimeStampUTCStart => '2015-03-21 12:00:00',
         TimeStampUTCStop  => '2015-03-22 04:00:00',
         ServerTZ          => 'Asia/Tehran',
-        Result            => '61200',                                                                    # 17h
+        Result            => '61200',                                                            # 17h
         ResultTime        => '17h',
     },
     {
@@ -125,7 +133,7 @@ my @Tests = (
         TimeStampUTCStart => '2015-01-21 12:00:00',
         TimeStampUTCStop  => '2015-04-22 04:00:00',
         ServerTZ          => 'UTC',
-        Result            => '7833600',               # 90 days and 16h
+        Result            => '7833600',                                                          # 90 days and 16h
         ResultTime        => '90 days and 16h',
     },
     {
@@ -137,10 +145,6 @@ my @Tests = (
         ResultTime        => '90 days and 17h',
     },
 );
-
-# get needed objects
-my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
-my $HelperObject = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
 
 # Use a calendar with the same business hours for every day so that the UT runs correctly
 #   on every day of the week and outside usual business hours.

@@ -247,13 +247,31 @@ sub Run {
 
                 my $UserPreference = "Notification-$Notification{ID}-$Transport";
 
+                # check if agent should get the notification
+                my $AgentSendNotification = 0;
+                if ( defined $Bundle->{RecipientNotificationTransport}->{$UserPreference} ) {
+                    $AgentSendNotification = $Bundle->{RecipientNotificationTransport}->{$UserPreference};
+                }
+                elsif ( grep { $_ eq $Transport } @{ $Notification{Data}->{AgentEnabledByDefault} } ) {
+                    $AgentSendNotification = 1;
+                }
+                elsif (
+                    !IsArrayRefWithData( $Notification{Data}->{VisibleForAgent} )
+                    || (
+                        defined $Notification{Data}->{VisibleForAgent}->[0]
+                        && !$Notification{Data}->{VisibleForAgent}->[0]
+                    )
+                    )
+                {
+                    $AgentSendNotification = 1;
+                }
+
                 # skip sending the notification if the agent has disable it in its preferences
                 if (
                     IsArrayRefWithData( $Notification{Data}->{VisibleForAgent} )
                     && $Notification{Data}->{VisibleForAgent}->[0]
                     && $Bundle->{Recipient}->{Type} eq 'Agent'
-                    && defined $Bundle->{RecipientNotificationTransport}->{$UserPreference}
-                    && $Bundle->{RecipientNotificationTransport}->{$UserPreference} eq '0'
+                    && !$AgentSendNotification
                     )
                 {
                     next BUNDLE;
@@ -370,6 +388,7 @@ sub _NotificationFilter {
         next KEY if $Key eq 'VisibleForAgentTooltip';
         next KEY if $Key eq 'LanguageID';
         next KEY if $Key eq 'SendOnOutOfOffice';
+        next KEY if $Key eq 'AgentEnabledByDefault';
 
         # check recipient fields from transport methods
         if ( $Key =~ m{\A Recipient}xms ) {
@@ -522,10 +541,13 @@ sub _RecipientsGet {
     my @RecipientUserIDs;
     my @RecipientUsers;
 
-    # add precalculated recipient
+    # add pre-calculated recipient
     if ( IsArrayRefWithData( $Param{Data}->{Recipients} ) ) {
         push @RecipientUserIDs, @{ $Param{Data}->{Recipients} };
     }
+
+    # remember pre-calculated user recipients for later comparisons
+    my %PrecalculatedUserIDs = map { $_ => 1 } @RecipientUserIDs;
 
     # get recipients by Recipients
     if ( $Notification{Data}->{Recipients} ) {
@@ -818,10 +840,12 @@ sub _RecipientsGet {
         );
         next RECIPIENT if !%User;
 
-        # skip user that triggers the event (it should not be notified)
+        # skip user that triggers the event (it should not be notified) but only if it is not
+        #   a pre-calculated recipient
         if (
             !$ConfigObject->Get('AgentSelfNotifyOnAction')
             && $User{UserID} == $Param{UserID}
+            && !$PrecalculatedUserIDs{ $Param{UserID} }
             )
         {
             next RECIPIENT;
@@ -935,9 +959,6 @@ sub _SendRecipientNotification {
 
     my $TransportObject = $Param{TransportObject};
 
-    # get attachments
-    my @Attachments = @{ $Param{Attachments} };
-
     # send notification to each recipient
     my $Success = $TransportObject->SendNotification(
         TicketID              => $Param{TicketID},
@@ -946,7 +967,7 @@ sub _SendRecipientNotification {
         CustomerMessageParams => $Param{CustomerMessageParams},
         Recipient             => $Param{Recipient},
         Event                 => $Param{Event},
-        Attachments           => \@Attachments,
+        Attachments           => $Param{Attachments},
     );
 
     return if !$Success;
@@ -1003,27 +1024,30 @@ sub _ArticleToUpdate {
     my $DBObject   = $Kernel::OM->Get('Kernel::System::DB');
     my $UserObject = $Kernel::OM->Get('Kernel::System::User');
 
-    if ( $Param{ArticleType} =~ /^note\-/ && $Param{UserID} ne 1 ) {
-        my $NewTo = $Param{To} || '';
-        for my $UserID ( sort keys %{ $Param{UserIDs} } ) {
-            my %UserData = $UserObject->GetUserData(
-                UserID => $UserID,
-                Valid  => 1,
-            );
-            if ($NewTo) {
-                $NewTo .= ', ';
-            }
-            $NewTo .= "$UserData{UserFirstname} $UserData{UserLastname} <$UserData{UserEmail}>";
-        }
+    # not update if its not a note article
+    return 1 if $Param{ArticleType} !~ /^note\-/;
 
+    my $NewTo = $Param{To} || '';
+    for my $UserID ( sort keys %{ $Param{UserIDs} } ) {
+        my %UserData = $UserObject->GetUserData(
+            UserID => $UserID,
+            Valid  => 1,
+        );
         if ($NewTo) {
-            $DBObject->Do(
-                SQL  => 'UPDATE article SET a_to = ? WHERE id = ?',
-                Bind => [ \$NewTo, \$Param{ArticleID} ],
-            );
+            $NewTo .= ', ';
         }
+        $NewTo .= "$UserData{UserFirstname} $UserData{UserLastname} <$UserData{UserEmail}>";
     }
 
+    # not update if To is the same
+    return 1 if !$NewTo;
+
+    return if !$DBObject->Do(
+        SQL  => 'UPDATE article SET a_to = ? WHERE id = ?',
+        Bind => [ \$NewTo, \$Param{ArticleID} ],
+    );
+
+    return 1;
 }
 
 1;

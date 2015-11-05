@@ -343,14 +343,14 @@ sub Run {
         );
     }
     return $LayoutObject->CustomerErrorScreen(
-        Message => 'Subacion is invalid!',
+        Message => 'Subaction is invalid!',
         Comment => 'Please contact the admin.',
     );
 }
 
 sub _RenderAjax {
 
-    # FatalError is safe because a JSON strcuture is expecting, then it will result into a
+    # FatalError is safe because a JSON structure is expecting, then it will result into a
     # communications error
 
     my ( $Self, %Param ) = @_;
@@ -1874,7 +1874,7 @@ sub _RenderDynamicField {
     );
 
     my %Data = (
-        Name    => $DynamicFieldHTML->{Name},
+        Name    => $DynamicFieldConfig->{Name},
         Label   => $DynamicFieldHTML->{Label},
         Content => $DynamicFieldHTML->{Field},
     );

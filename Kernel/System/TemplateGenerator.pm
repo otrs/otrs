@@ -716,6 +716,12 @@ sub NotificationEvent {
 
     my %Notification = %{ $Param{Notification} };
 
+    # exchanging original reference prevent it to grow up
+    if ( ref $Param{CustomerMessageParams} && ref $Param{CustomerMessageParams} eq 'HASH' ) {
+        my %LocalCustomerMessageParams = %{ $Param{CustomerMessageParams} };
+        $Param{CustomerMessageParams} = \%LocalCustomerMessageParams;
+    }
+
     # get ticket object
     my $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
 
@@ -753,6 +759,9 @@ sub NotificationEvent {
     # get ID for customer and agent articles
     my $CustomerArticleID = $Article{ArticleID}      || '';
     my $AgentArticleID    = $ArticleAgent{ArticleID} || '';
+
+    # flag to see if an HTMLBody for Customer is present
+    my $CustomerHTMLBodyPresent = 0;
 
     # get articles for later use
     my @ArticleBox = $TicketObject->ArticleContentIndex(
@@ -815,6 +824,9 @@ sub NotificationEvent {
             # set HTML body for customer article
             if ( $CustomerArticleID eq $ArticleItem->{ArticleID} ) {
                 $Param{CustomerMessageParams}->{HTMLBody} = $HTMLBody;
+
+                # set flag for customer HTML body
+                $CustomerHTMLBodyPresent = 1;
             }
 
             # set HTML body for agent article
@@ -866,7 +878,7 @@ sub NotificationEvent {
     }
 
     # convert values to HTML to get correct line breaks etc.
-    if ( $Notification{ContentType} =~ m{text\/html} ) {
+    if ( $Notification{ContentType} =~ m{text\/html} && $CustomerHTMLBodyPresent ) {
         KEY:
         for my $Key ( sort keys %{ $Param{CustomerMessageParams} || {} } ) {
             next KEY if !$Param{CustomerMessageParams}->{$Key};

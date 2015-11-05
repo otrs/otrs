@@ -3903,21 +3903,25 @@ sub TicketLockSet {
     # send unlock notify
     if ( lc $Param{Lock} eq 'unlock' ) {
 
-        my @SkipRecipients;
-        if ( $Ticket{OwnerID} eq $Param{UserID} ) {
-            @SkipRecipients = [ $Param{UserID} ];
-        }
+        my $Notification = defined $Param{Notification} ? $Param{Notification} : 1;
+        if ( !$Param{SendNoNotification} && $Notification )
+        {
+            my @SkipRecipients;
+            if ( $Ticket{OwnerID} eq $Param{UserID} ) {
+                @SkipRecipients = [ $Param{UserID} ];
+            }
 
-        # trigger notification event
-        $Self->EventHandler(
-            Event          => 'NotificationLockTimeout',
-            SkipRecipients => \@SkipRecipients,
-            Data           => {
-                TicketID              => $Param{TicketID},
-                CustomerMessageParams => {},
-            },
-            UserID => $Param{UserID},
-        );
+            # trigger notification event
+            $Self->EventHandler(
+                Event          => 'NotificationLockTimeout',
+                SkipRecipients => \@SkipRecipients,
+                Data           => {
+                    TicketID              => $Param{TicketID},
+                    CustomerMessageParams => {},
+                },
+                UserID => $Param{UserID},
+            );
+        }
     }
 
     # trigger event
@@ -6042,6 +6046,9 @@ sub TicketMerge {
         UserID        => $Param{UserID},
     );
 
+    $Self->_TicketCacheClear( TicketID => $Param{MergeTicketID} );
+    $Self->_TicketCacheClear( TicketID => $Param{MainTicketID} );
+
     # trigger event
     $Self->EventHandler(
         Event => 'TicketMerge',
@@ -6778,7 +6785,7 @@ sub TicketArticleStorageSwitch {
 
         my $TicketObjectSource = Kernel::System::Ticket->new();
         if ( !$TicketObjectSource || !$TicketObjectSource->isa( 'Kernel::System::Ticket::' . $Param{Source} ) ) {
-            $Self->{LogObject}->Log(
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => "error",
                 Message  => "Could not create Kernel::System::Ticket::" . $Param{Source},
             );
@@ -6838,7 +6845,7 @@ sub TicketArticleStorageSwitch {
             || !$TicketObjectDestination->isa( 'Kernel::System::Ticket::' . $Param{Destination} )
             )
         {
-            $Self->{LogObject}->Log(
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => "error",
                 Message  => "Could not create Kernel::System::Ticket::" . $Param{Destination},
             );
@@ -7006,7 +7013,7 @@ sub TicketArticleStorageSwitch {
 
         $TicketObjectSource = Kernel::System::Ticket->new();
         if ( !$TicketObjectSource || !$TicketObjectSource->isa( 'Kernel::System::Ticket::' . $Param{Source} ) ) {
-            $Self->{LogObject}->Log(
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => "error",
                 Message  => "Could not create Kernel::System::Ticket::" . $Param{Source},
             );

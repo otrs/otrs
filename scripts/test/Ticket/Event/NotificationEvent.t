@@ -409,7 +409,7 @@ my @Tests = (
             Config => {},
             UserID => 1,
         },
-        ExpectedResults => [],
+        ExpectedResults         => [],
         SetOutOfOffice          => 1,
         SetOutOfOfficeDiffStart => -1 * 60 * 60 * 24,
         SetOutOfOfficeDiffEnd   => 1 * 60 * 60 * 24,
@@ -443,9 +443,11 @@ my @Tests = (
     {
         Name => 'RecipientAgent Customizable / No preference',
         Data => {
-            Events          => [ 'TicketDynamicFieldUpdate_DFT1' . $RandomID . 'Update' ],
-            RecipientAgents => [$UserID],
-            VisibleForAgent => [1],
+            Events                => [ 'TicketDynamicFieldUpdate_DFT1' . $RandomID . 'Update' ],
+            RecipientAgents       => [$UserID],
+            VisibleForAgent       => [1],
+            Transports            => ['Email'],
+            AgentEnabledByDefault => ['Email'],
         },
         Config => {
             Event => 'TicketDynamicFieldUpdate_DFT1' . $RandomID . 'Update',

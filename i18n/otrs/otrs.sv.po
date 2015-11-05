@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OTRS\n"
 "POT-Creation-Date: 2014-08-08 19:10+0200\n"
-"PO-Revision-Date: 2015-09-24 15:05+0000\n"
+"PO-Revision-Date: 2015-10-28 18:26+0000\n"
 "Last-Translator: Carlos Rodríguez <carlos.rodriguez@otrs.com>\n"
 "Language-Team: Swedish (http://www.transifex.com/otrs/OTRS/language/sv/)\n"
 "MIME-Version: 1.0\n"
@@ -1707,6 +1707,10 @@ msgid "Other Settings"
 msgstr "Övriga inställningar"
 
 #. Template: AAAPreferences
+msgid "Notification Settings"
+msgstr ""
+
+#. Template: AAAPreferences
 msgid "Change Password"
 msgstr "Byt lösenord"
 
@@ -2789,11 +2793,11 @@ msgstr "Ärende-information"
 
 #. Template: AAATicket
 msgid "including subqueues"
-msgstr ""
+msgstr "underköer inkluderat"
 
 #. Template: AAATicket
 msgid "excluding subqueues"
-msgstr ""
+msgstr "underköer exkluderat"
 
 #. Template: AAAWeekDay
 msgid "Sun"
@@ -5451,15 +5455,25 @@ msgid ""
 msgstr ""
 
 #. Template: AdminNotificationEvent
-msgid "Transport"
-msgstr ""
-
-#. Template: AdminNotificationEvent
 msgid "Enable this notification method"
 msgstr ""
 
 #. Template: AdminNotificationEvent
+msgid "Transport"
+msgstr ""
+
+#. Template: AdminNotificationEvent
 msgid "At least one method is needed per notification."
+msgstr ""
+
+#. Template: AdminNotificationEvent
+msgid "Send by default"
+msgstr ""
+
+#. Template: AdminNotificationEvent
+msgid ""
+"Should the notification be sent to agents who have not yet made a choice in "
+"their preferences?"
 msgstr ""
 
 #. Template: AdminNotificationEvent
@@ -5476,6 +5490,12 @@ msgstr ""
 
 #. Template: AdminNotificationEvent
 msgid "Notification Text"
+msgstr ""
+
+#. Template: AdminNotificationEvent
+msgid ""
+"This language is not present or enabled on the system. This notification "
+"text could be deleted if it is not needed anymore."
 msgstr ""
 
 #. Template: AdminNotificationEvent
@@ -5560,8 +5580,8 @@ msgid "Example notification"
 msgstr ""
 
 #. Template: AdminNotificationEventTransportEmailSettings
-msgid "Recipient email addresses"
-msgstr "Mottagare (e-postadresser)"
+msgid "Additional recipient email addresses"
+msgstr ""
 
 #. Template: AdminNotificationEventTransportEmailSettings
 msgid "Notification article type"
@@ -5571,6 +5591,10 @@ msgstr ""
 msgid ""
 "An article will be created if the notification is sent to the customer or an"
 " additional email address."
+msgstr ""
+
+#. Template: AdminNotificationEventTransportEmailSettings
+msgid "Email template"
 msgstr ""
 
 #. Template: AdminNotificationEventTransportEmailSettings
@@ -8277,7 +8301,7 @@ msgstr "Epost-ärende"
 
 #. Template: AgentDashboardCustomerUserList
 msgid "Start Chat"
-msgstr ""
+msgstr "Starta chatt"
 
 #. Template: AgentDashboardCustomerUserList
 msgid "%s open ticket(s) of %s"
@@ -8297,7 +8321,7 @@ msgstr "Nytt e-postärende från %s"
 
 #. Template: AgentDashboardCustomerUserList
 msgid "Start chat"
-msgstr ""
+msgstr "Starta chatt"
 
 #. Template: AgentDashboardProductNotify
 msgid "%s %s is available!"
@@ -8416,7 +8440,7 @@ msgstr "frånvarande"
 
 #. Template: AgentDashboardUserOnline
 msgid "Selected agent is not available for chat"
-msgstr ""
+msgstr "Vald handläggare är inte tillgänglig för chat"
 
 #. Template: AgentDashboardUserOutOfOffice
 msgid "until"
@@ -8448,7 +8472,7 @@ msgstr ""
 
 #. Template: AgentLinkObject
 msgid "Select Target Object"
-msgstr ""
+msgstr "Välj målobjekt"
 
 #. Template: AgentLinkObject
 msgid "Link Object"
@@ -8472,7 +8496,7 @@ msgstr "Ändra dina inställningar"
 
 #. Template: AgentPreferences
 msgid "Did you know? You can help translating OTRS at %s."
-msgstr ""
+msgstr "Visste du att du kan hjälpa till att översätta OTRS at %s."
 
 #. Template: AgentSpelling
 msgid "Spell Checker"
@@ -8488,11 +8512,11 @@ msgstr "Verkställ ändringar"
 
 #. Template: AgentStatisticsAdd
 msgid "Statistics » Add"
-msgstr ""
+msgstr "Rapporter » Lägg till"
 
 #. Template: AgentStatisticsAdd
 msgid "Add New Statistic"
-msgstr ""
+msgstr "Lägg till ny rapport"
 
 #. Template: AgentStatisticsAdd
 msgid "Dynamic Matrix"
@@ -8530,7 +8554,7 @@ msgstr ""
 
 #. Template: AgentStatisticsAdd
 msgid "Create Statistic"
-msgstr ""
+msgstr "Skapa rapport"
 
 #. Template: AgentStatisticsEdit
 msgid "Statistics » Edit %s%s — %s"
@@ -8538,31 +8562,31 @@ msgstr ""
 
 #. Template: AgentStatisticsEdit
 msgid "Run now"
-msgstr ""
+msgstr "Kör nu"
 
 #. Template: AgentStatisticsEdit
 msgid "Statistics Preview"
-msgstr ""
+msgstr "Förhandsvisa rapport"
 
 #. Template: AgentStatisticsEdit
 msgid "Save statistic"
-msgstr ""
+msgstr "Spara rapport"
 
 #. Template: AgentStatisticsImport
 msgid "Statistics » Import"
-msgstr ""
+msgstr "Rapporter » Importera"
 
 #. Template: AgentStatisticsImport
 msgid "Import Statistic Configuration"
-msgstr ""
+msgstr "Importera rapportkonfiguration"
 
 #. Template: AgentStatisticsOverview
 msgid "Statistics » Overview"
-msgstr ""
+msgstr "Rapporter » Översikt"
 
 #. Template: AgentStatisticsOverview
 msgid "Statistics"
-msgstr "Statistik"
+msgstr "Rapporter"
 
 #. Template: AgentStatisticsOverview
 msgid "Run"
@@ -8594,6 +8618,26 @@ msgstr ""
 
 #. Template: AgentStatisticsView
 msgid "Statistics » View %s%s — %s"
+msgstr ""
+
+#. Template: AgentStatisticsView
+msgid "Statistic Information"
+msgstr ""
+
+#. Template: AgentStatisticsView
+msgid "Sum rows"
+msgstr ""
+
+#. Template: AgentStatisticsView
+msgid "Sum columns"
+msgstr ""
+
+#. Template: AgentStatisticsView
+msgid "Show as dashboard widget"
+msgstr ""
+
+#. Template: AgentStatisticsView
+msgid "Cache"
 msgstr ""
 
 #. Template: AgentStatisticsView
@@ -8666,6 +8710,24 @@ msgid "Create an Article"
 msgstr ""
 
 #. Template: AgentTicketActionCommon
+msgid "Inform agents"
+msgstr "Meddela handläggare"
+
+#. Template: AgentTicketActionCommon
+msgid "Inform involved agents"
+msgstr "Meddela inblandade handläggare"
+
+#. Template: AgentTicketActionCommon
+msgid ""
+"Here you can select additional agents which should receive a notification "
+"regarding the new article."
+msgstr ""
+
+#. Template: AgentTicketActionCommon
+msgid "Text will also be received by:"
+msgstr ""
+
+#. Template: AgentTicketActionCommon
 msgid "Spell check"
 msgstr "Stavningskontroll"
 
@@ -8681,31 +8743,9 @@ msgstr ""
 msgid "Note type"
 msgstr "Anteckningstyp"
 
-#. Template: AgentTicketActionCommon
-msgid "Inform Agent"
-msgstr "Meddela Agent"
-
-#. Template: AgentTicketActionCommon
-msgid "Optional"
-msgstr "Valfri"
-
-#. Template: AgentTicketActionCommon
-msgid "Inform involved Agents"
-msgstr "Meddela inblandade handläggare"
-
-#. Template: AgentTicketActionCommon
-msgid ""
-"Here you can select additional agents which should receive a notification "
-"regarding the new article."
-msgstr ""
-
-#. Template: AgentTicketActionCommon
-msgid "Note will be (also) received by:"
-msgstr ""
-
 #. Template: AgentTicketBounce
-msgid "Bounce Ticket"
-msgstr "Studsa ärende"
+msgid "Bounce %s%s"
+msgstr ""
 
 #. Template: AgentTicketBounce
 msgid "Bounce to"
@@ -8834,10 +8874,6 @@ msgstr ""
 #. Template: AgentTicketEmail
 msgid "Get all"
 msgstr "Hämta alla"
-
-#. Template: AgentTicketEmail
-msgid "Do you really want to continue?"
-msgstr ""
 
 #. Template: AgentTicketEmailOutbound
 msgid "Outbound Email for %s%s"
@@ -8969,7 +9005,7 @@ msgstr ""
 
 #. Template: AgentTicketPhone
 msgid "Save Chat Into New Phone Ticket"
-msgstr ""
+msgstr "Spara chat till ett nytt telefonärende"
 
 #. Template: AgentTicketPhone
 msgid "Create New Phone Ticket"
@@ -8985,7 +9021,7 @@ msgstr "Till kö"
 
 #. Template: AgentTicketPhone
 msgid "Chat protocol"
-msgstr ""
+msgstr "Chattprotokoll"
 
 #. Template: AgentTicketPhone
 msgid "The chat will be appended as a separate article."
@@ -9195,7 +9231,7 @@ msgstr "Redovisad tid"
 
 #. Template: AgentTicketZoom
 msgid "Linked Objects"
-msgstr ""
+msgstr "Länkade objekt"
 
 #. Template: AgentTicketZoom
 msgid "Change Queue"
@@ -9510,11 +9546,11 @@ msgstr "Din e-postadress (som blir ditt användarnamn)"
 
 #. Template: CustomerNavigationBar
 msgid "Incoming Chat Requests"
-msgstr ""
+msgstr "Inkommande chattförfrågningar"
 
 #. Template: CustomerNavigationBar
 msgid "You have unanswered chat requests"
-msgstr ""
+msgstr "Du har osvarade chattförfrågningar"
 
 #. Template: CustomerNavigationBar
 msgid "Edit personal preferences"
@@ -9634,7 +9670,7 @@ msgstr ""
 
 #. Template: CustomerTicketZoom
 msgid "Start a chat from this ticket"
-msgstr ""
+msgstr "Starta en chatt från detta ärendet"
 
 #. Template: CustomerTicketZoom
 msgid "Expand article"
@@ -9654,7 +9690,7 @@ msgstr "Svara"
 
 #. Template: CustomerTicketZoom
 msgid "Chat Protocol"
-msgstr ""
+msgstr "Chattprotokoll"
 
 #. Template: DashboardEventsTicketCalendar
 msgid "All-day"
@@ -9788,15 +9824,15 @@ msgstr ""
 
 #. Template: FooterJS
 msgid "Unavailable for chat"
-msgstr ""
+msgstr "Otillgänglig för chatt"
 
 #. Template: FooterJS
 msgid "Available for internal chats only"
-msgstr ""
+msgstr "Endast tillgänglig för intern chatt"
 
 #. Template: FooterJS
 msgid "Available for chats"
-msgstr ""
+msgstr "Tillgänglig för chatt"
 
 #. Template: FooterJS
 msgid "Please visit the chat manager"
@@ -9820,6 +9856,10 @@ msgstr ""
 
 #. Template: FooterJS
 msgid "New activity on one of your monitored chats."
+msgstr ""
+
+#. Template: FooterJS
+msgid "Do you really want to continue?"
 msgstr ""
 
 #. Template: FooterJS
@@ -10320,7 +10360,7 @@ msgstr ""
 
 #. Perl Module: Kernel/Modules/AgentDashboardCommon.pm
 msgid "Statistic"
-msgstr ""
+msgstr "Rapport"
 
 #. Perl Module: Kernel/Modules/AgentLinkObject.pm
 msgid "Can not delete link with %s!"
@@ -10414,7 +10454,7 @@ msgstr ""
 
 #. Perl Module: Kernel/Output/HTML/Dashboard/TicketGeneric.pm
 msgid "This ticket has no title or subject"
-msgstr ""
+msgstr "Detta ärende har ingen titel eller ämne"
 
 #. Perl Module: Kernel/Output/HTML/Dashboard/UserOnline.pm
 msgid "This user is currently offline"
@@ -10459,6 +10499,10 @@ msgstr ""
 msgid "(in process)"
 msgstr ""
 
+#. Perl Module: Kernel/Output/HTML/Preferences/OutOfOffice.pm
+msgid "Please specify an end date that is after the start date."
+msgstr ""
+
 #. Perl Module: Kernel/Output/HTML/Preferences/Password.pm
 msgid "Please supply your new password!"
 msgstr ""
@@ -10500,6 +10544,18 @@ msgid "There is something wrong with your time selection."
 msgstr ""
 
 #. Perl Module: Kernel/Output/HTML/Statistics/View.pm
+msgid ""
+"Please select only one element or allow modification at stat generation "
+"time."
+msgstr ""
+
+#. Perl Module: Kernel/Output/HTML/Statistics/View.pm
+msgid ""
+"Please select at least one value of this field or allow modification at stat"
+" generation time."
+msgstr ""
+
+#. Perl Module: Kernel/Output/HTML/Statistics/View.pm
 msgid "Please select one element for the X-axis."
 msgstr ""
 
@@ -10509,12 +10565,6 @@ msgstr ""
 
 #. Perl Module: Kernel/Output/HTML/Statistics/View.pm
 msgid "You can only use one or two elements for the Y axis."
-msgstr ""
-
-#. Perl Module: Kernel/Output/HTML/Statistics/View.pm
-msgid ""
-"Please select only one element or allow modification at stat generation "
-"time."
 msgstr ""
 
 #. Perl Module: Kernel/Output/HTML/Statistics/View.pm
@@ -11383,7 +11433,7 @@ msgstr ""
 
 #. Database XML Definition: scripts/database/otrs-initial_insert.xml
 msgid "All misc tickets."
-msgstr ""
+msgstr "Alla övriga ärenden."
 
 #. Database XML Definition: scripts/database/otrs-initial_insert.xml
 msgid ""
@@ -11854,6 +11904,10 @@ msgid ""
 msgstr ""
 
 #. SysConfig
+msgid "Arabic (Saudi Arabia)"
+msgstr ""
+
+#. SysConfig
 msgid "Archive state changed: \"%s\""
 msgstr ""
 
@@ -11938,6 +11992,10 @@ msgid "Builds an article index right after the article's creation."
 msgstr ""
 
 #. SysConfig
+msgid "Bulgarian"
+msgstr ""
+
+#. SysConfig
 msgid ""
 "CMD example setup. Ignores emails where external CMD returns some output on "
 "STDOUT (email will be piped into STDIN of some.bin)."
@@ -11973,6 +12031,10 @@ msgstr ""
 #. SysConfig
 msgid "Cache time in seconds for the web service config backend."
 msgstr "Cache minne i sekunder för webbtjänsten konfiguration."
+
+#. SysConfig
+msgid "Catalan"
+msgstr ""
 
 #. SysConfig
 msgid "Change password"
@@ -12030,6 +12092,14 @@ msgstr ""
 
 #. SysConfig
 msgid "Checks the entitlement status of OTRS Business Solution™."
+msgstr ""
+
+#. SysConfig
+msgid "Chinese (Simplified)"
+msgstr ""
+
+#. SysConfig
+msgid "Chinese (Traditional)"
 msgstr ""
 
 #. SysConfig
@@ -12143,7 +12213,7 @@ msgstr ""
 
 #. SysConfig
 msgid "Communication"
-msgstr ""
+msgstr "Kommunikation"
 
 #. SysConfig
 msgid "Company Status"
@@ -12177,7 +12247,7 @@ msgstr ""
 #. SysConfig
 msgid ""
 "Configure which screen should be shown after a new ticket has been created."
-msgstr ""
+msgstr "Ställ in vilken skärm som skall visas efter att ett nytt ärende har skapats."
 
 #. SysConfig
 msgid "Configure your own log text for PGP."
@@ -12320,6 +12390,10 @@ msgid "Create new process ticket"
 msgstr ""
 
 #. SysConfig
+msgid "Croatian"
+msgstr ""
+
+#. SysConfig
 msgid "Custom RSS Feed"
 msgstr ""
 
@@ -12391,6 +12465,14 @@ msgstr ""
 msgid ""
 "Customizable stop words for fulltext index. These words will be removed from"
 " the search index."
+msgstr ""
+
+#. SysConfig
+msgid "Czech"
+msgstr ""
+
+#. SysConfig
+msgid "Danish"
 msgstr ""
 
 #. SysConfig
@@ -12633,15 +12715,14 @@ msgstr ""
 
 #. SysConfig
 msgid ""
-"Defines all the languages that are available to the application. The "
-"Key/Content pair links the front-end display name to the appropriate "
-"language PM file. The \"Key\" value should be the base-name of the PM file "
-"(i.e. de.pm is the file, then de is the \"Key\" value). The \"Content\" "
-"value should be the display name for the front-end. Specify any own-defined "
-"language here (see the developer documentation http://otrs.github.io/doc/ "
-"for more infomation). Please remember to use the HTML equivalents for non-"
-"ASCII characters (i.e. for the German oe = o umlaut, it is necessary to use "
-"the &ouml; symbol)."
+"Defines all the languages that are available to the application. Specify "
+"only English names of languages here."
+msgstr ""
+
+#. SysConfig
+msgid ""
+"Defines all the languages that are available to the application. Specify "
+"only native names of languages here."
 msgstr ""
 
 #. SysConfig
@@ -14529,19 +14610,19 @@ msgstr ""
 
 #. SysConfig
 msgid ""
-"Determines the strings that will be shown as receipent (To:) of the phone "
-"ticket and as sender (From:) of the email ticket in the agent interface. For"
-" Queue as NewQueueSelectionType \"<Queue>\" shows the names of the queues "
-"and for SystemAddress \"<Realname> <<Email>>\" shows the name and email of "
-"the receipent."
-msgstr ""
-
-#. SysConfig
-msgid ""
 "Determines the strings that will be shown as receipent (To:) of the ticket "
 "in the customer interface. For Queue as CustomerPanelSelectionType, "
 "\"<Queue>\" shows the names of the queues, and for SystemAddress, "
 "\"<Realname> <<Email>>\" shows the name and email of the receipent."
+msgstr ""
+
+#. SysConfig
+msgid ""
+"Determines the strings that will be shown as recipient (To:) of the phone "
+"ticket and as sender (From:) of the email ticket in the agent interface. For"
+" Queue as NewQueueSelectionType \"<Queue>\" shows the names of the queues "
+"and for SystemAddress \"<Realname> <<Email>>\" shows the name and email of "
+"the receipent."
 msgstr ""
 
 #. SysConfig
@@ -14550,7 +14631,7 @@ msgstr ""
 
 #. SysConfig
 msgid ""
-"Determines which options will be valid of the recepient (phone ticket) and "
+"Determines which options will be valid of the recipient (phone ticket) and "
 "the sender (email ticket) in the agent interface."
 msgstr ""
 
@@ -14835,6 +14916,10 @@ msgid "DynamicField object registration."
 msgstr ""
 
 #. SysConfig
+msgid "E-Mail Outbound"
+msgstr "E-post utgående"
+
+#. SysConfig
 msgid "Edit customer company"
 msgstr ""
 
@@ -14932,6 +15017,18 @@ msgid "Enables ticket watcher feature only for the listed groups."
 msgstr ""
 
 #. SysConfig
+msgid "English (Canada)"
+msgstr ""
+
+#. SysConfig
+msgid "English (United Kingdom)"
+msgstr ""
+
+#. SysConfig
+msgid "English (United States)"
+msgstr ""
+
+#. SysConfig
 msgid "Enroll process for this ticket"
 msgstr ""
 
@@ -14984,6 +15081,10 @@ msgid "EscalationTime"
 msgstr ""
 
 #. SysConfig
+msgid "Estonian"
+msgstr ""
+
+#. SysConfig
 msgid ""
 "Event module registration. For more performance you can define a trigger "
 "event (e. g. Event => TicketCreate)."
@@ -15000,6 +15101,11 @@ msgstr ""
 msgid ""
 "Event module that performs an update statement on TicketIndex to rename the "
 "queue name there if needed and if StaticDB is actually used."
+msgstr ""
+
+#. SysConfig
+msgid ""
+"Event module that updates customer user search profiles if login changes."
 msgstr ""
 
 #. SysConfig
@@ -15104,6 +15210,10 @@ msgid "Filter incoming emails."
 msgstr ""
 
 #. SysConfig
+msgid "Finnish"
+msgstr ""
+
+#. SysConfig
 msgid "First Queue"
 msgstr ""
 
@@ -15154,6 +15264,14 @@ msgstr ""
 #. SysConfig
 msgid "Forwarded to \"%s\"."
 msgstr "Forwarded to \"%s\"."
+
+#. SysConfig
+msgid "French"
+msgstr ""
+
+#. SysConfig
+msgid "French (Canada)"
+msgstr ""
 
 #. SysConfig
 msgid ""
@@ -15207,6 +15325,10 @@ msgstr ""
 
 #. SysConfig
 msgid "Fulltext search"
+msgstr ""
+
+#. SysConfig
+msgid "Galician"
 msgstr ""
 
 #. SysConfig
@@ -15273,6 +15395,10 @@ msgid "GenericInterface module registration for the transport layer."
 msgstr ""
 
 #. SysConfig
+msgid "German"
+msgstr ""
+
+#. SysConfig
 msgid ""
 "German stop words for fulltext index. These words will be removed from the "
 "search index."
@@ -15300,6 +15426,14 @@ msgid ""
 msgstr ""
 
 #. SysConfig
+msgid "Greek"
+msgstr ""
+
+#. SysConfig
+msgid "Hebrew"
+msgstr ""
+
+#. SysConfig
 msgid ""
 "Helps to extend your articles full-text search (From, To, Cc, Subject and "
 "Body search). Runtime will do full-text searches on live data (it works fine"
@@ -15307,6 +15441,14 @@ msgid ""
 "an index after article creation, increasing fulltext searches about 50%. To "
 "create an initial index use \"bin/otrs.Console.pl "
 "Maint::Ticket::FulltextIndexRebuild\"."
+msgstr ""
+
+#. SysConfig
+msgid "Hindi"
+msgstr ""
+
+#. SysConfig
+msgid "Hungarian"
 msgstr ""
 
 #. SysConfig
@@ -15696,7 +15838,7 @@ msgstr ""
 
 #. SysConfig
 msgid "Include tickets of subqueues per default when selecting a queue."
-msgstr ""
+msgstr "Inkludera ärenden från underköer som standard när du väljer en kö"
 
 #. SysConfig
 msgid ""
@@ -15757,9 +15899,17 @@ msgid ""
 msgstr ""
 
 #. SysConfig
+msgid "Italian"
+msgstr ""
+
+#. SysConfig
 msgid ""
 "Italian stop words for fulltext index. These words will be removed from the "
 "search index."
+msgstr ""
+
+#. SysConfig
+msgid "Japanese"
 msgstr ""
 
 #. SysConfig
@@ -15773,6 +15923,10 @@ msgstr "Efternamn, förnamn"
 #. SysConfig
 msgid "Lastname, Firstname (UserLogin)"
 msgstr "Förnamn Efternamn (Användarnamn)"
+
+#. SysConfig
+msgid "Latvian"
+msgstr ""
 
 #. SysConfig
 msgid "Left"
@@ -15883,6 +16037,10 @@ msgid "List view"
 msgstr ""
 
 #. SysConfig
+msgid "Lithuanian"
+msgstr ""
+
+#. SysConfig
 msgid "Lock / unlock this ticket"
 msgstr ""
 
@@ -15921,6 +16079,10 @@ msgid ""
 "Makes the session management use html cookies. If html cookies are disabled "
 "or if the client browser disabled html cookies, then the system will work as"
 " usual and append the session id to the links."
+msgstr ""
+
+#. SysConfig
+msgid "Malay"
 msgstr ""
 
 #. SysConfig
@@ -16033,7 +16195,7 @@ msgstr ""
 
 #. SysConfig
 msgid "Miscellaneous"
-msgstr ""
+msgstr "Övrigt"
 
 #. SysConfig
 msgid ""
@@ -16136,7 +16298,7 @@ msgstr ""
 
 #. SysConfig
 msgid "My Services"
-msgstr ""
+msgstr "Mina tjänster"
 
 #. SysConfig
 msgid "My Tickets"
@@ -16156,6 +16318,10 @@ msgstr ""
 
 #. SysConfig
 msgid "NameX"
+msgstr ""
+
+#. SysConfig
+msgid "Nederlands"
 msgstr ""
 
 #. SysConfig
@@ -16192,6 +16358,10 @@ msgstr ""
 
 #. SysConfig
 msgid "None"
+msgstr ""
+
+#. SysConfig
+msgid "Norwegian"
 msgstr ""
 
 #. SysConfig
@@ -16259,7 +16429,7 @@ msgstr "Översikt av eskalerade ärenden"
 
 #. SysConfig
 msgid "Overview Refresh Time"
-msgstr ""
+msgstr "Automatisk uppdateringsintervall"
 
 #. SysConfig
 msgid "Overview of all open Tickets."
@@ -16469,7 +16639,7 @@ msgstr ""
 
 #. SysConfig
 msgid "People"
-msgstr ""
+msgstr "Personer"
 
 #. SysConfig
 msgid ""
@@ -16486,7 +16656,23 @@ msgid "Permitted width for compose note windows."
 msgstr ""
 
 #. SysConfig
+msgid "Persian"
+msgstr ""
+
+#. SysConfig
 msgid "Picture-Upload"
+msgstr ""
+
+#. SysConfig
+msgid "Polish"
+msgstr ""
+
+#. SysConfig
+msgid "Portuguese"
+msgstr ""
+
+#. SysConfig
+msgid "Portuguese (Brasil)"
 msgstr ""
 
 #. SysConfig
@@ -16573,11 +16759,11 @@ msgstr ""
 
 #. SysConfig
 msgid "Reports"
-msgstr ""
+msgstr "Rapporter"
 
 #. SysConfig
 msgid "Reports (OTRS Business Solution™)"
-msgstr ""
+msgstr "Rapporter (OTRS Business Solution™)"
 
 #. SysConfig
 msgid ""
@@ -16729,6 +16915,10 @@ msgid ""
 msgstr ""
 
 #. SysConfig
+msgid "Russian"
+msgstr ""
+
+#. SysConfig
 msgid "S/MIME Certificate Upload"
 msgstr ""
 
@@ -16854,8 +17044,16 @@ msgid ""
 msgstr ""
 
 #. SysConfig
-msgid "Service view"
+msgid "Serbian Cyrillic"
 msgstr ""
+
+#. SysConfig
+msgid "Serbian Latin"
+msgstr ""
+
+#. SysConfig
+msgid "Service view"
+msgstr "Tjänste-vy"
 
 #. SysConfig
 msgid ""
@@ -18079,6 +18277,14 @@ msgstr ""
 
 #. SysConfig
 msgid "Skin"
+msgstr "Tema"
+
+#. SysConfig
+msgid "Slovak"
+msgstr ""
+
+#. SysConfig
+msgid "Slovenian"
 msgstr ""
 
 #. SysConfig
@@ -18121,6 +18327,18 @@ msgstr ""
 
 #. SysConfig
 msgid "Spam Assassin example setup. Moves marked mails to spam queue."
+msgstr ""
+
+#. SysConfig
+msgid "Spanish"
+msgstr ""
+
+#. SysConfig
+msgid "Spanish (Colombia)"
+msgstr ""
+
+#. SysConfig
+msgid "Spanish (Mexico)"
 msgstr ""
 
 #. SysConfig
@@ -18251,8 +18469,8 @@ msgstr ""
 #. SysConfig
 msgid ""
 "Specifies whether all storage backends should be checked when looking for "
-"attachements. This is only required for installations where some "
-"attachements are in the file system, and others in the database."
+"attachments. This is only required for installations where some attachments "
+"are in the file system, and others in the database."
 msgstr ""
 
 #. SysConfig
@@ -18300,7 +18518,7 @@ msgstr ""
 
 #. SysConfig
 msgid "Stat#"
-msgstr "Stat#"
+msgstr "Rapport#"
 
 #. SysConfig
 msgid "Status view"
@@ -18316,6 +18534,14 @@ msgstr ""
 
 #. SysConfig
 msgid "Strips empty lines on the ticket preview in the service view."
+msgstr ""
+
+#. SysConfig
+msgid "Swahili"
+msgstr ""
+
+#. SysConfig
+msgid "Swedish"
 msgstr ""
 
 #. SysConfig
@@ -18527,7 +18753,7 @@ msgstr ""
 
 #. SysConfig
 msgid "Ticket Queue Overview"
-msgstr ""
+msgstr "Kö-översikt"
 
 #. SysConfig
 msgid "Ticket event module that triggers the escalation stop events."
@@ -18576,6 +18802,10 @@ msgid "Tree view"
 msgstr "Träd-vy"
 
 #. SysConfig
+msgid "Turkish"
+msgstr ""
+
+#. SysConfig
 msgid ""
 "Turns off SSL certificate validation, for example if you use a transparent "
 "HTTPS proxy. Use at your own risk!"
@@ -18596,6 +18826,10 @@ msgid ""
 "Turns on the remote ip address check. It should be set to \"No\" if the "
 "application is used, for example, via a proxy farm or a dialup connection, "
 "because the remote ip address is mostly different for the requests."
+msgstr ""
+
+#. SysConfig
+msgid "Ukrainian"
 msgstr ""
 
 #. SysConfig
@@ -18687,6 +18921,10 @@ msgid ""
 msgstr ""
 
 #. SysConfig
+msgid "Vietnam"
+msgstr ""
+
+#. SysConfig
 msgid "View performance benchmark results."
 msgstr ""
 
@@ -18739,4 +18977,4 @@ msgstr "Ditt urval av favoritköer. Du blir också meddelad om dessa köer via e
 msgid ""
 "Your service selection of your favorite services. You also get notified "
 "about those services via email if enabled."
-msgstr ""
+msgstr "Ditt urval av dina tjänster. Du blir också meddelad om dessa köer via e-post om det aktiverats."

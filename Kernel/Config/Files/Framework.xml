@@ -289,7 +289,7 @@
                 <Item Key="URL">skins/Agent/default/img/logo_bg.png</Item>
                 <Item Key="StyleTop">4px</Item>
                 <Item Key="StyleRight">38px</Item>
-                <Item Key="StyleHeight">67px</Item>
+                <Item Key="StyleHeight">85px</Item>
                 <Item Key="StyleWidth">270px</Item>
             </Hash>
         </Setting>
@@ -409,7 +409,7 @@
         <Group>Framework</Group>
         <SubGroup>Core::Web</SubGroup>
         <Setting>
-            <String Regex="">&lt;OTRS_CONFIG_Frontend::WebPath&gt;js/thirdparty/ckeditor-4.5.1/</String>
+            <String Regex="">&lt;OTRS_CONFIG_Frontend::WebPath&gt;js/thirdparty/ckeditor-4.5.4/</String>
         </Setting>
     </ConfigItem>
     <ConfigItem Name="Frontend::RichTextWidth" Required="1" Valid="1">
@@ -633,14 +633,6 @@
         <SubGroup>Core::Log</SubGroup>
         <Setting>
             <String Regex="">user</String>
-        </Setting>
-    </ConfigItem>
-    <ConfigItem Name="LogModule::SysLog::LogSock" Required="1" Valid="1">
-        <Description Translatable="1">If "SysLog" was selected for LogModule, a special log sock can be specified (on solaris you may need to use 'stream').</Description>
-        <Group>Framework</Group>
-        <SubGroup>Core::Log</SubGroup>
-        <Setting>
-            <String Regex="">unix</String>
         </Setting>
     </ConfigItem>
     <ConfigItem Name="LogModule::SysLog::Charset" Required="1" Valid="1">
@@ -4543,17 +4535,17 @@ via the Preferences button after logging in.
                 <Loader>
                     <CSS>Core.Agent.Dashboard.css</CSS>
                     <CSS>Core.AllocationList.css</CSS>
-                    <CSS>thirdparty/fullcalendar-2.3.1/fullcalendar.css</CSS>
+                    <CSS>thirdparty/fullcalendar-2.4.0/fullcalendar.min.css</CSS>
                     <CSS>thirdparty/nvd3-1.7.1/nv.d3.css</CSS>
-                    <JavaScript>thirdparty/momentjs-2.10.3/moment.min.js</JavaScript>
-                    <JavaScript>thirdparty/fullcalendar-2.3.1/fullcalendar.min.js</JavaScript>
-                    <JavaScript>thirdparty/d3-3.5.5/d3.min.js</JavaScript>
+                    <JavaScript>thirdparty/momentjs-2.10.6/moment.min.js</JavaScript>
+                    <JavaScript>thirdparty/fullcalendar-2.4.0/fullcalendar.min.js</JavaScript>
+                    <JavaScript>thirdparty/d3-3.5.6/d3.min.js</JavaScript>
                     <JavaScript>thirdparty/nvd3-1.7.1/nvd3.min.js</JavaScript>
                     <JavaScript>thirdparty/nvd3-1.7.1/models/OTRSMultiBarChart.js</JavaScript>
                     <JavaScript>thirdparty/nvd3-1.7.1/models/OTRSStackedAreaChart.js</JavaScript>
-                    <JavaScript>thirdparty/canvg-1.0/rgbcolor.js</JavaScript>
-                    <JavaScript>thirdparty/canvg-1.0/StackBlur.js</JavaScript>
-                    <JavaScript>thirdparty/canvg-1.0/canvg.js</JavaScript>
+                    <JavaScript>thirdparty/canvg-1.4/rgbcolor.js</JavaScript>
+                    <JavaScript>thirdparty/canvg-1.4/StackBlur.js</JavaScript>
+                    <JavaScript>thirdparty/canvg-1.4/canvg.js</JavaScript>
                     <JavaScript>thirdparty/StringView-8/stringview.js</JavaScript>
                     <JavaScript>Core.UI.AdvancedChart.js</JavaScript>
                     <JavaScript>Core.UI.AllocationList.js</JavaScript>
@@ -5560,13 +5552,13 @@ via the Preferences button after logging in.
                     <AccessKey></AccessKey>
                 </NavBar>
                 <Loader>
-                    <JavaScript>thirdparty/d3-3.5.5/d3.min.js</JavaScript>
+                    <JavaScript>thirdparty/d3-3.5.6/d3.min.js</JavaScript>
                     <JavaScript>thirdparty/nvd3-1.7.1/nvd3.min.js</JavaScript>
                     <JavaScript>thirdparty/nvd3-1.7.1/models/OTRSMultiBarChart.js</JavaScript>
                     <JavaScript>thirdparty/nvd3-1.7.1/models/OTRSStackedAreaChart.js</JavaScript>
-                    <JavaScript>thirdparty/canvg-1.0/rgbcolor.js</JavaScript>
-                    <JavaScript>thirdparty/canvg-1.0/StackBlur.js</JavaScript>
-                    <JavaScript>thirdparty/canvg-1.0/canvg.js</JavaScript>
+                    <JavaScript>thirdparty/canvg-1.4/rgbcolor.js</JavaScript>
+                    <JavaScript>thirdparty/canvg-1.4/StackBlur.js</JavaScript>
+                    <JavaScript>thirdparty/canvg-1.4/canvg.js</JavaScript>
                     <JavaScript>thirdparty/StringView-8/stringview.js</JavaScript>
                     <JavaScript>Core.Agent.Statistics.js</JavaScript>
                     <JavaScript>Core.UI.AdvancedChart.js</JavaScript>
@@ -6294,7 +6286,7 @@ via the Preferences button after logging in.
                 <Item>thirdparty/jquery-browser-detection/jquery-browser-detection.js</Item>
                 <Item>thirdparty/jquery-ui-1.11.4/jquery-ui.js</Item>
                 <Item>thirdparty/jquery-ui-touch-punch-0.2.3/jquery.ui.touch-punch.js</Item>
-                <Item>thirdparty/jquery-validate-1.13.1/jquery.validate.js</Item>
+                <Item>thirdparty/jquery-validate-1.14.0/jquery.validate.js</Item>
                 <Item>thirdparty/stacktrace-0.6.4/stacktrace.js</Item>
                 <Item>thirdparty/jquery-pubsub/pubsub.js</Item>
                 <Item>thirdparty/jquery-jstree-3.1.1/jquery.jstree.js</Item>
@@ -6381,7 +6373,7 @@ via the Preferences button after logging in.
             <Array>
                 <Item>thirdparty/jquery-2.1.4/jquery.js</Item>
                 <Item>thirdparty/jquery-browser-detection/jquery-browser-detection.js</Item>
-                <Item>thirdparty/jquery-validate-1.13.1/jquery.validate.js</Item>
+                <Item>thirdparty/jquery-validate-1.14.0/jquery.validate.js</Item>
                 <Item>thirdparty/jquery-ui-1.11.4/jquery-ui.js</Item>
                 <Item>thirdparty/stacktrace-0.6.4/stacktrace.js</Item>
                 <Item>thirdparty/jquery-pubsub/pubsub.js</Item>

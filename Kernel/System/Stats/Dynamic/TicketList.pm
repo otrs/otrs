@@ -476,7 +476,8 @@ sub GetObjectAttributes {
 
         # get service list
         my %Service = $Kernel::OM->Get('Kernel::System::Service')->ServiceList(
-            UserID => 1,
+            KeepChildren => $ConfigObject->Get('Ticket::Service::KeepChildren'),
+            UserID       => 1,
         );
 
         # get sla list
@@ -1210,10 +1211,16 @@ sub GetStatTable {
         $Ticket{SolutionTime}                ||= '';
         $Ticket{SolutionDiffInMin}           ||= 0;
         $Ticket{SolutionInMin}               ||= 0;
+        $Ticket{SolutionTimeEscalation}      ||= 0;
         $Ticket{FirstResponse}               ||= '';
         $Ticket{FirstResponseDiffInMin}      ||= 0;
         $Ticket{FirstResponseInMin}          ||= 0;
+        $Ticket{FirstResponseTimeEscalation} ||= 0;
         $Ticket{FirstLock}                   ||= '';
+        $Ticket{UpdateTimeDestinationDate}   ||= '';
+        $Ticket{UpdateTimeDestinationTime}   ||= 0;
+        $Ticket{UpdateTimeWorkingTime}       ||= 0;
+        $Ticket{UpdateTimeEscalation}        ||= 0;
         $Ticket{SolutionTimeDestinationDate} ||= '';
         $Ticket{EscalationDestinationIn}     ||= '';
         $Ticket{EscalationDestinationDate}   ||= '';
@@ -1266,12 +1273,17 @@ sub GetStatTable {
             next ATTRIBUTE if !$TicketAttributes{$Attribute};
 
             # add the given TimeZone for time values
-            if ( $Param{TimeZone} && $Ticket{$Attribute} && $Ticket{$Attribute} =~ /(\d{4})-(\d{2})-(\d{2})\s(\d{2}):(\d{2}):(\d{2})/ ) {
-                    $Ticket{$Attribute} = $Kernel::OM->Get('Kernel::System::Stats')->_AddTimeZone(
-                        TimeStamp => $Ticket{$Attribute},
-                        TimeZone  => $Param{TimeZone},
-                    );
-                    $Ticket{$Attribute} .= " ($Param{TimeZone})";
+            if (
+                $Param{TimeZone}
+                && $Ticket{$Attribute}
+                && $Ticket{$Attribute} =~ /(\d{4})-(\d{2})-(\d{2})\s(\d{2}):(\d{2}):(\d{2})/
+                )
+            {
+                $Ticket{$Attribute} = $Kernel::OM->Get('Kernel::System::Stats')->_AddTimeZone(
+                    TimeStamp => $Ticket{$Attribute},
+                    TimeZone  => $Param{TimeZone},
+                );
+                $Ticket{$Attribute} .= " ($Param{TimeZone})";
             }
             push @ResultRow, $Ticket{$Attribute};
         }
