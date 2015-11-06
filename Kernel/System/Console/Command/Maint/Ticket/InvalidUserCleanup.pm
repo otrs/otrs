@@ -25,7 +25,7 @@ sub Configure {
     my ( $Self, %Param ) = @_;
 
     $Self->Description(
-        'Deletes ticket/article seen flags and ticket watcher entries of users which have been invalid for more than a month.'
+        'Deletes ticket/article seen flags and ticket watcher entries of users which have been invalid for more than a month, and unlocks tickets by invalid agents immedately.'
     );
     $Self->AddOption(
         Name        => 'micro-sleep',
@@ -54,6 +54,7 @@ sub Run {
     # First, find all invalid users which are invalid for more than one month
     my %AllUsers = $UserObject->UserList( Valid => 0 );
     my @CleanupInvalidUsers;
+    my @CleanupInvalidUsersImmediately;
     USERID:
     for my $UserID ( sort keys %AllUsers ) {
 
@@ -69,16 +70,33 @@ sub Run {
             String => $User{ChangeTime},
         );
 
+        push @CleanupInvalidUsersImmediately, \%User;
+
         next USERID if ( $InvalidTime >= $InvalidBefore );
 
-        push @CleanupInvalidUsers, $UserID;
+        push @CleanupInvalidUsers, \%User;
     }
 
-    if ( !@CleanupInvalidUsers ) {
+    if ( !@CleanupInvalidUsersImmediately ) {
         $Self->Print("<green>No cleanup for invalid users is needed.</green>\n");
         return $Self->ExitCodeOk();
     }
 
+    if ( @CleanupInvalidUsers ) {
+        $Self->_CleanupFlags(
+            CleanupInvalidUsers => \@CleanupInvalidUsers,
+            MicroSleep          => $MicroSleep,
+        );
+    }
+
+    $Self->Print("<green>Done.</green>\n");
+    return $Self->ExitCodeOk();
+}
+
+sub _CleanupFlags {
+    my ( $Self, %Param ) = @_;
+
+    my @CleanupInvalidUsers = @{ $Param{CleanupInvalidUsers} };
     $Self->Print( "<green>Cleanup for " . ( scalar @CleanupInvalidUsers ) . " starting...</green>\n" );
 
     # get needed objects
@@ -86,20 +104,17 @@ sub Run {
     my $DBObject     = $Kernel::OM->Get('Kernel::System::DB');
     my $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
 
-    for my $UserID (@CleanupInvalidUsers) {
 
-        my %User = $UserObject->GetUserData(
-            UserID => $UserID,
-        );
+    for my $User (@CleanupInvalidUsers) {
 
-        $Self->Print("Checking for tickets with seen flags for user <yellow>$User{UserLogin}</yellow>...\n");
+        $Self->Print("Checking for tickets with seen flags for user <yellow>$User->{UserLogin}</yellow>...\n");
 
         return if !$DBObject->Prepare(
             SQL => "
                 SELECT DISTINCT(ticket.id)
                 FROM ticket
                     INNER JOIN ticket_flag ON ticket.id = ticket_flag.ticket_id
-                WHERE ticket_flag.create_by = $UserID
+                WHERE ticket_flag.create_by = $User->{UserID}
                     AND ticket_flag.ticket_key = 'Seen'",
             Limit => 1_000_000,
         );
@@ -116,17 +131,17 @@ sub Run {
             $TicketObject->TicketFlagDelete(
                 TicketID => $TicketID,
                 Key      => 'Seen',
-                UserID   => $UserID,
+                UserID   => $User->{UserID},
             );
             $Count++;
-            $Self->Print("    Removing seen flags of ticket $TicketID for user <yellow>$User{UserLogin}</yellow>\n");
-            Time::HiRes::usleep($MicroSleep) if $MicroSleep;
+            $Self->Print("    Removing seen flags of ticket $TicketID for user <yellow>$User->{UserLogin}</yellow>\n");
+            Time::HiRes::usleep($Param{MicroSleep}) if $Param{MicroSleep};
         }
 
         $Self->Print(
-            "<green>Done</green> (changed <yellow>$Count</yellow> tickets for user <yellow>$User{UserLogin}</yellow>).\n"
+            "<green>Done</green> (changed <yellow>$Count</yellow> tickets for user <yellow>$User->{UserLogin}</yellow>).\n"
         );
-        $Self->Print("Checking for articles with seen flags for user <yellow>$User{UserLogin}</yellow>...\n");
+        $Self->Print("Checking for articles with seen flags for user <yellow>$User->{UserLogin}</yellow>...\n");
 
         return if !$DBObject->Prepare(
             SQL => "
@@ -134,7 +149,7 @@ sub Run {
                 FROM article
                     INNER JOIN ticket ON ticket.id = article.ticket_id
                     INNER JOIN article_flag ON article.id = article_flag.article_id
-                WHERE article_flag.create_by = $UserID
+                WHERE article_flag.create_by = $User->{UserID}
                     AND article_flag.article_key = 'Seen'",
             Limit => 1_000_000,
         );
@@ -149,23 +164,23 @@ sub Run {
             $TicketObject->ArticleFlagDelete(
                 ArticleID => $ArticleID,
                 Key       => 'Seen',
-                UserID    => $UserID,
+                UserID    => $User->{UserID},
             );
             $Count++;
             $Self->Print(
-                "    Removing seen flags of article <yellow>$ArticleID</yellow> for user <yellow>$User{UserLogin}</yellow>\n"
+                "    Removing seen flags of article <yellow>$ArticleID</yellow> for user <yellow>$User->{UserLogin}</yellow>\n"
             );
-            Time::HiRes::usleep($MicroSleep) if $MicroSleep;
+            Time::HiRes::usleep($Param{MicroSleep}) if $Param{MicroSleep};
         }
 
         $Self->Print(
-            "<green>Done</green> (changed <yellow>$Count</yellow> articles for user <yellow>$User{UserLogin}</yellow>).\n"
+            "<green>Done</green> (changed <yellow>$Count</yellow> articles for user <yellow>$User->{UserLogin}</yellow>).\n"
         );
 
         if ( $ConfigObject->Get('Ticket::Watcher') ) {
 
             $Self->Print(
-                "Checking for tickets with ticket watcher entries for user <yellow>$User{UserLogin}</yellow>...\n"
+                "Checking for tickets with ticket watcher entries for user <yellow>$User->{UserLogin}</yellow>...\n"
             );
 
             return if !$DBObject->Prepare(
@@ -186,22 +201,21 @@ sub Run {
 
                 $TicketObject->TicketWatchUnsubscribe(
                     TicketID    => $TicketID,
-                    WatchUserID => $UserID,
+                    WatchUserID => $User->{UserID},
                     UserID      => 1,
                 );
                 $Count++;
                 print
-                    "    Removing ticket watcher entries of ticket <yellow>$TicketID</yellow> for user <yellow>$User{UserLogin}</yellow>\n";
-                Time::HiRes::usleep($MicroSleep) if $MicroSleep;
+                    "    Removing ticket watcher entries of ticket <yellow>$TicketID</yellow> for user <yellow>$User->{UserLogin}</yellow>\n";
+                Time::HiRes::usleep($Param{MicroSleep}) if $Param{MicroSleep};
             }
 
             $Self->Print(
-                "<green>Done</green> (changed <yellow>$Count</yellow> tickets for user <yellow>$User{UserLogin}</yellow>).\n"
+                "<green>Done</green> (changed <yellow>$Count</yellow> tickets for user <yellow>$User->{UserLogin}</yellow>).\n"
             );
         }
     }
-    $Self->Print("<green>Done.</green>\n");
-    return $Self->ExitCodeOk();
+
 }
 
 1;
