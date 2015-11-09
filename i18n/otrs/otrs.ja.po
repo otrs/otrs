@@ -1,4 +1,4 @@
-# 
+#
 # Translators:
 # Hisatoshi Onishi <hisatoshi.onishi@gmail.com>, 2015
 # Tomy1984, 2015
@@ -12841,7 +12841,7 @@ msgid ""
 "Defines if a ticket lock is required in the ticket merge screen of a zoomed "
 "ticket in the agent interface (if the ticket isn't locked yet, the ticket "
 "gets locked and the current agent will be set automatically as its owner)."
-msgstr ""
+msgstr "担当者インタフェースのチケット結合画面で、チケット・ロックが必要とされるかを定義します。（チケットがまだロックされていない場合、チケットはロックされ現在の担当者が自動的に所有者として設定されます）。"
 
 #. SysConfig
 msgid ""
@@ -18958,7 +18958,7 @@ msgid ""
 "When tickets are merged, the customer can be informed per email by setting "
 "the check box \"Inform Sender\". In this text area, you can define a pre-"
 "formatted text which can later be modified by the agents."
-msgstr "担当者インタフェースでズームされたチケットのチケット結合画面で、チケット・ロックが必要かどうかを定義します。（チケットがまだロックされていない場合、チケットはロックされ現在の担当者が自動的に所有者として設定されます）。"
+msgstr ""
 
 #. SysConfig
 msgid "Yes, but hide archived tickets"
