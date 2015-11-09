@@ -82,6 +82,11 @@ sub Run {
         return $Self->ExitCodeOk();
     }
 
+    $Self->_CleanupLocks(
+        InvalidUsers => \@CleanupInvalidUsersImmediately,
+        MicroSleep   => $MicroSleep,
+    );
+
     if ( @CleanupInvalidUsers ) {
         $Self->_CleanupFlags(
             CleanupInvalidUsers => \@CleanupInvalidUsers,
@@ -93,11 +98,56 @@ sub Run {
     return $Self->ExitCodeOk();
 }
 
+sub _CleanupLocks {
+    my ( $Self, %Param ) = @_;
+
+    my @Users = @{ $Param{InvalidUsers} };
+
+    $Self->Print( "<green>Lock Cleanup</green> for " . ( scalar @Users ) . " starting...\n" );
+
+    my $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
+
+    my $StateMap = $Kernel::OM->Get('Kernel::Config')->Get('Ticket::InvalidOwner::StateChange') // {};
+
+    my @TicketIDs = $TicketObject->TicketSearch(
+        Result   => 'ARRAY',
+        Limit    => 1_000_000,
+        OwnerIDs => [ map $_->{UserID}, @Users ],
+        Locks    => ['lock'],
+        UserID   => 1,
+    );
+
+    my $StateCount = 0;
+    for my $TicketID ( @TicketIDs ) {
+        my %Ticket = $TicketObject->TicketGet(
+            TicketID    => $TicketID,
+            UserID      => 1,
+        );
+        $TicketObject->TicketLockSet(
+            Lock                => 'unlock',
+            TicketID            => $TicketID,
+            UserID              => $Ticket{OwnerID},
+            SendNoNotification  => 1,
+        );
+        if ( my $NewState = $StateMap->{ $Ticket{ $Ticket{StateType} } } ) {
+            $TicketObject->TicketStateSet(
+                TicketID        => $TicketID,
+                State           => $NewState,
+                UserID          => 1,
+            );
+            $StateCount++;
+        }
+        Time::HiRes::usleep($Param{MicroSleep}) if $Param{MicroSleep};
+    }
+    $Self->Print( "<green>Lock Cleanup done</green>, ulocked <yellow>" . @TicketIDs . "</yellow> tickets.\n" );
+    $Self->Print( "<green>Lock Cleanup done</green>, set state of <yellow>$StateCount</yellow> tickets.\n" );
+}
+
 sub _CleanupFlags {
     my ( $Self, %Param ) = @_;
 
     my @CleanupInvalidUsers = @{ $Param{CleanupInvalidUsers} };
-    $Self->Print( "<green>Cleanup for " . ( scalar @CleanupInvalidUsers ) . " starting...</green>\n" );
+    $Self->Print( "<green>Flag Cleanup for " . ( scalar @CleanupInvalidUsers ) . " starting...</green>\n" );
 
     # get needed objects
     my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
@@ -211,11 +261,10 @@ sub _CleanupFlags {
             }
 
             $Self->Print(
-                "<green>Done</green> (changed <yellow>$Count</yellow> tickets for user <yellow>$User->{UserLogin}</yellow>).\n"
+                "<green>Done cleaning up flags</green> (changed <yellow>$Count</yellow> tickets for user <yellow>$User->{UserLogin}</yellow>).\n"
             );
         }
     }
-
 }
 
 1;
