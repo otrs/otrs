@@ -129,7 +129,7 @@ sub _CleanupLocks {
             UserID              => $Ticket{OwnerID},
             SendNoNotification  => 1,
         );
-        if ( my $NewState = $StateMap->{ $Ticket{ $Ticket{StateType} } } ) {
+        if ( my $NewState = $StateMap->{ $Ticket{StateType} } ) {
             $TicketObject->TicketStateSet(
                 TicketID        => $TicketID,
                 State           => $NewState,
