@@ -121,7 +121,8 @@ perform TicketSend Operation. This will return the created ticket number.
                 SenderTypeID                    => 123,                        # optional
                 SenderType                      => 'some sender type name',    # optional
                 AutoResponseType                => 'some auto response type',  # optional
-                From                            => 'some from string',         # optional
+                From                            => 'some from address',         # optional
+                To                              => 'some from to',
                 Subject                         => 'some subject',
                 Body                            => 'some body'
 
