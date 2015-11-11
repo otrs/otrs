@@ -982,7 +982,7 @@ sub _Mask {
             Name         => 'TypeID',
             SelectedID   => $Param{TypeID},
             Sort         => 'AlphanumericValue',
-            Translation  => 0,
+            Translation  => 1,
             Class        => 'Modernize',
         );
         $LayoutObject->Block(

@@ -3100,7 +3100,7 @@ sub _RenderType {
         SelectedValue => $SelectedValue,
         PossibleNone  => 1,
         Sort          => 'AlphanumericValue',
-        Translation   => 0,
+        Translation   => 1,
         Max           => 200,
     );
 

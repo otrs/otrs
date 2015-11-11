@@ -265,6 +265,7 @@ sub _Edit {
         Data       => { $AutoResponseObject->AutoResponseTypeList(), },
         Name       => 'TypeID',
         SelectedID => $Param{TypeID},
+        Translation => 1,
         Class      => 'Modernize Validate_Required ' . ( $Param{Errors}->{'TypeIDInvalid'} || '' ),
     );
 
