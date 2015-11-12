@@ -1421,7 +1421,7 @@ sub _Replace {
 
                 my $Line = $2 || 2500;
                 my $NewOldBody = '';
-                if ( $Data{HTMLBody} ) {
+                if ( $Param{RichText} && $Data{HTMLBody} ) {
 
                     # comment
                     my $CharactersPerLine = $ConfigObject->Get('Notification::CharactersPerLine') || 80;
