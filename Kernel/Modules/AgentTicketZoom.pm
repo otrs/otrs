@@ -37,12 +37,6 @@ sub new {
     $Self->{ZoomExpand}     = $ParamObject->GetParam( Param => 'ZoomExpand' );
     $Self->{ZoomExpandSort} = $ParamObject->GetParam( Param => 'ZoomExpandSort' );
 
-    # Please note: ZoomTimeline is an OTRSBusiness feature
-    $Self->{ZoomTimeline} = $ParamObject->GetParam( Param => 'ZoomTimeline' );
-    if ( !$ConfigObject->Get('TimelineViewEnabled') ) {
-        $Self->{ZoomTimeline} = 0;
-    }
-
     my %UserPreferences = $UserObject->GetPreferences(
         UserID => $Self->{UserID},
     );
@@ -82,6 +76,11 @@ sub new {
         );
     }
 
+    # Please note: ZoomTimeline is an OTRSBusiness feature
+    $Self->{ZoomTimeline} = $ParamObject->GetParam( Param => 'ZoomTimeline' );
+    if ( !$ConfigObject->Get('TimelineViewEnabled') ) {
+        $Self->{ZoomTimeline} = 0;
+    }
 
     if ( !defined $Self->{DoNotShowBrowserLinkMessage} ) {
         if ( $UserPreferences{UserAgentDoNotShowBrowserLinkMessage} ) {
