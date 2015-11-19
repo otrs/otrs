@@ -1282,15 +1282,15 @@ sub _TicketSend {
         $From = $Article->{From};
     }
 
-    # use data from customer user (if customer user is in database)
-    elsif ( IsHashRefWithData( \%CustomerUserData ) ) {
-        $From = '"' . $CustomerUserData{UserFirstname} . ' ' . $CustomerUserData{UserLastname} . '"'
-            . ' <' . $CustomerUserData{UserEmail} . '>';
-    }
-
-    # otherwise use customer user as sent from the request (it should be an email)
+    # otherwise use the Queue's SystemAddress
     else {
-        $From = $Ticket->{CustomerUser};
+        my $QueueID = $TicketObject->TicketQueueID(
+            TicketID => $TicketID,
+        );
+        my %Address = $Kernel::OM->Get("Kernel::System::Queue")->GetSystemAddress(
+            QueueID => $QueueID,
+        );
+        $From = $Address{RealName} . " <" . $Address{Email} . ">";
     }
 
     # Build a subject
