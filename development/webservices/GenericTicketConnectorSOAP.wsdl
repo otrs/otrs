@@ -1080,7 +1080,7 @@ WARNING: This WSDL file is for Development and Test purposes ONLY!
             <xsd:element
                 name="SolutionTime"
                 type="xsd:string"
-                minOccurs="1">
+                minOccurs="0">
             </xsd:element>
             <xsd:element
                 name="SolutionTimeEscalation"
@@ -1473,7 +1473,7 @@ WARNING: This WSDL file is for Development and Test purposes ONLY!
             <xsd:element
                 name="SolutionTime"
                 type="xsd:string"
-                minOccurs="1">
+                minOccurs="0">
             </xsd:element>
             <xsd:element
                 name="SolutionTimeDestinationDate"
