@@ -83,6 +83,10 @@ sub new {
             Description => 'Do not perform ANSI terminal output coloring.',
         },
         {
+            Name        => 'quiet',
+            Description => 'Suppress informative output, only retain error messages.',
+        },
+        {
             Name        => 'allow-root',
             Description => 'Allow root user to execute the command. This might damage your system; use at your own risk.',
             Invisible   => 1,   # hide from usage screen
@@ -410,6 +414,10 @@ sub Execute {
         return $Self->ExitCodeOk();
     }
 
+    if ( $ParsedGlobalOptions->{quiet} ) {
+        $Self->{Quiet} = 1;
+    }
+
     # Parse command line arguments and bail out in case of error,
     # of course with a helpful usage screen.
     $Self->{_ParsedARGV} = $Self->_ParseCommandlineArguments( \@CommandlineArguments );
@@ -598,7 +606,9 @@ if the terminal supports it (see L</ANSI()>).
 sub Print {
     my ( $Self, $Text ) = @_;
 
-    print $Self->_ReplaceColorTags($Text);
+    if ( !$Self->{Quiet} ) {
+        print $Self->_ReplaceColorTags($Text);
+    }
     return;
 }
 
