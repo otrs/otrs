@@ -1175,7 +1175,7 @@ WARNING: This WSDL file is for Development and Test purposes ONLY!
             </xsd:element>
             <xsd:element
                 name="UntilTime"
-                type="xsd:positiveInteger"
+                type="xsd:nonNegativeInteger"
                 minOccurs="1"
                 maxOccurs="1">
             </xsd:element>
@@ -1569,7 +1569,7 @@ WARNING: This WSDL file is for Development and Test purposes ONLY!
             </xsd:element>
             <xsd:element
                 name="UntilTime"
-                type="xsd:positiveInteger"
+                type="xsd:nonNegativeInteger"
                 minOccurs="1"
                 maxOccurs="1">
             </xsd:element>
