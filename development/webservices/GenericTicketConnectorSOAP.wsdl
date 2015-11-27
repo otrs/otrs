@@ -1035,7 +1035,7 @@
                     </xsd:element>
                     <xsd:element
                         name="UntilTime"
-                        type="xsd:positiveInteger"
+                        type="xsd:nonNegativeInteger"
                         minOccurs="1"
                         maxOccurs="1">
                     </xsd:element>
@@ -1384,7 +1384,7 @@
                     </xsd:element>
                     <xsd:element
                         name="UntilTime"
-                        type="xsd:positiveInteger"
+                        type="xsd:nonNegativeInteger"
                         minOccurs="1"
                         maxOccurs="1">
                     </xsd:element>
