@@ -965,7 +965,7 @@
                     <xsd:element
                         name="SolutionTime"
                         type="xsd:string"
-                        minOccurs="1">
+                        minOccurs="0">
                     </xsd:element>
                     <xsd:element
                         name="State"
@@ -1303,7 +1303,7 @@
                     <xsd:element
                         name="SolutionTime"
                         type="xsd:string"
-                        minOccurs="1">
+                        minOccurs="0">
                     </xsd:element>
                     <xsd:element
                         name="State"
