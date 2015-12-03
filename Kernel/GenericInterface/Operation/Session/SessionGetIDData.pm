@@ -109,6 +109,17 @@ sub Run {
         );
     }
 
+    # Honors SessionCheckRemoteIP, SessionMaxIdleTime, etc... settings
+    my $Valid = $Kernel::OM->Get('Kernel::System::AuthSession')->CheckSessionID(
+        SessionID        => $Param{Data}->{SessionID},
+    );
+    if ( !$Valid ) {
+        return $Self->ReturnError(
+            ErrorCode    => 'SessionGetIDData.SessionInvalid',
+            ErrorMessage => "SessionGetIDData: invalid SessionID!",
+        );
+    }
+
     my %SessionData = $Kernel::OM->Get('Kernel::System::AuthSession')->GetSessionIDData(
         SessionID        => $Param{Data}->{SessionID},
     );
