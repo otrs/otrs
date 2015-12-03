@@ -117,11 +117,22 @@ sub AgentCustomerViewTable {
     # build table
     for my $Field (@MapNew) {
         if ( $Field->[3] && $Field->[3] >= $ShownType && $Param{Data}->{ $Field->[0] } ) {
+
+            # If we have a Selection defined for the current map value
+            # use the mapped instead of displaying the stored value
+            my $DisplayValue = $Param{Data}->{ $Field->[0] };
+            if (
+                IsHashRefWithData( $Param{Data}->{Config}->{Selections} )
+                && IsHashRefWithData( $Param{Data}->{Config}->{Selections}->{$Field->[0]} )
+            ) {
+                $DisplayValue =  $Self->{LanguageObject}->Translate( $Param{Data}->{Config}->{Selections}->{$Field->[0]}->{$DisplayValue} ) || $DisplayValue;
+            }
             my %Record = (
                 %{ $Param{Data} },
                 Key   => $Field->[1],
-                Value => $Param{Data}->{ $Field->[0] },
+                Value => $DisplayValue,
             );
+
             if ( $Field->[6] ) {
                 $Record{LinkStart} = "<a href=\"$Field->[6]\"";
                 if ( $Field->[8] ) {
