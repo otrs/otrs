@@ -1083,7 +1083,7 @@ sub Safety {
 
                 # remove on action attributes
                 $Replaced += $Tag =~ s{
-                    (?:\s|/) on[^"']+=("[^"]+"|'[^']+'|.+?)($TagEnd|\s)
+                    (?:\s|/) on[a-z]+\s*=("[^"]+"|'[^']+'|.+?)($TagEnd|\s)
                 }
                 {$2}sgxim;
 
@@ -1293,7 +1293,16 @@ sub HTMLTruncate {
     );
 
     # truncate the HTML input string
-    my $Result = $HTMLTruncateObject->truncate( $Safe{String} );
+    my $Result;
+    if ( !eval { $Result = $HTMLTruncateObject->truncate( $Safe{String} ) } ) {
+
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
+            Priority => 'error',
+            Message  => 'Truncating string failed: ' . $@,
+        );
+
+        return;
+    }
 
     return $Result;
 }

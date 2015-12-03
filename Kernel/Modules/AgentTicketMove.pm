@@ -22,6 +22,14 @@ sub new {
     my $Self = {%Param};
     bless( $Self, $Type );
 
+    # get form id
+    $Self->{FormID} = $Kernel::OM->Get('Kernel::System::Web::Request')->GetParam( Param => 'FormID' );
+
+    # create form id
+    if ( !$Self->{FormID} ) {
+        $Self->{FormID} = $Kernel::OM->Get('Kernel::System::Web::UploadCache')->FormIDCreate();
+    }
+
     return $Self;
 }
 
@@ -236,18 +244,10 @@ sub Run {
         $Error{NoSubmit} = 1;
     }
 
-    # get form id
-    my $FormID = $ParamObject->GetParam( Param => 'FormID' );
-
     # get upload cache object
     my $UploadCacheObject = $Kernel::OM->Get('Kernel::System::Web::UploadCache');
 
-    # create form id
-    if ( !$FormID ) {
-        $FormID = $UploadCacheObject->FormIDCreate();
-    }
-
-    # ajax update
+    # Ajax update
     if ( $Self->{Subaction} eq 'AJAXUpdate' ) {
         my $ElementChanged = $ParamObject->GetParam( Param => 'ElementChanged' ) || '';
 
@@ -288,7 +288,7 @@ sub Run {
                 DynamicFieldConfig => $DynamicFieldConfig,
             );
 
-            # convert possible values key => value to key => key for ACLs usign a Hash slice
+            # convert possible values key => value to key => key for ACLs using a Hash slice
             my %AclData = %{$PossibleValues};
             @AclData{ keys %AclData } = keys %AclData;
 
@@ -338,14 +338,14 @@ sub Run {
 
         my @TemplateAJAX;
 
-        # update ticket body and attachements if needed.
+        # update ticket body and attachments if needed.
         if ( $ElementChanged eq 'StandardTemplateID' ) {
             my @TicketAttachments;
             my $TemplateText;
 
             # remove all attachments from the Upload cache
             my $RemoveSuccess = $UploadCacheObject->FormIDRemove(
-                FormID => $FormID,
+                FormID => $Self->{FormID},
             );
             if ( !$RemoveSuccess ) {
                 $Kernel::OM->Get('Kernel::System::Log')->Log(
@@ -375,7 +375,7 @@ sub Run {
                 for ( sort keys %AllStdAttachments ) {
                     my %AttachmentsData = $StdAttachmentObject->StdAttachmentGet( ID => $_ );
                     $UploadCacheObject->FormIDAddFile(
-                        FormID      => $FormID,
+                        FormID      => $Self->{FormID},
                         Disposition => 'attachment',
                         %AttachmentsData,
                     );
@@ -384,7 +384,7 @@ sub Run {
                 # send a list of attachments in the upload cache back to the clientside JavaScript
                 # which renders then the list of currently uploaded attachments
                 @TicketAttachments = $UploadCacheObject->FormIDGetAllFilesMeta(
-                    FormID => $FormID,
+                    FormID => $Self->{FormID},
                 );
             }
 
@@ -463,7 +463,7 @@ sub Run {
         next COUNT if !$Delete;
         $Error{AttachmentDelete} = 1;
         $UploadCacheObject->FormIDRemoveFile(
-            FormID => $FormID,
+            FormID => $Self->{FormID},
             FileID => $Count,
         );
         $IsUpload = 1;
@@ -478,13 +478,13 @@ sub Run {
             Param => 'FileUpload',
         );
         $UploadCacheObject->FormIDAddFile(
-            FormID      => $FormID,
+            FormID      => $Self->{FormID},
             Disposition => 'attachment',
             %UploadStuff,
         );
     }
 
-    # create html strings for all dynamic fields
+    # create HTML strings for all dynamic fields
     my %DynamicFieldHTML;
 
     # cycle trough the activated Dynamic Fields for this screen
@@ -509,7 +509,7 @@ sub Run {
             # check if field has PossibleValues property in its configuration
             if ( IsHashRefWithData($PossibleValues) ) {
 
-                # convert possible values key => value to key => key for ACLs usign a Hash slice
+                # convert possible values key => value to key => key for ACLs using a Hash slice
                 my %AclData = %{$PossibleValues};
                 @AclData{ keys %AclData } = keys %AclData;
 
@@ -657,7 +657,7 @@ sub Run {
                 # check if field has PossibleValues property in its configuration
                 if ( IsHashRefWithData($PossibleValues) ) {
 
-                    # convert possible values key => value to key => key for ACLs usign a Hash slice
+                    # convert possible values key => value to key => key for ACLs using a Hash slice
                     my %AclData = %{$PossibleValues};
                     @AclData{ keys %AclData } = keys %AclData;
 
@@ -847,7 +847,7 @@ sub Run {
 
         # get all attachments meta data
         my @Attachments = $UploadCacheObject->FormIDGetAllFilesMeta(
-            FormID => $FormID,
+            FormID => $Self->{FormID},
         );
 
         # print change form
@@ -860,7 +860,7 @@ sub Run {
             NextPriorities => $NextPriorities,
             TicketUnlock   => $TicketUnlock,
             TimeUnits      => $GetParam{TimeUnits},
-            FormID         => $FormID,
+            FormID         => $Self->{FormID},
             IsUpload       => $IsUpload,
             %Ticket,
             DynamicFieldHTML => \%DynamicFieldHTML,
@@ -925,7 +925,7 @@ sub Run {
             );
         }
 
-        # set pending time on pendig state
+        # set pending time on pending state
         elsif ( $StateData{TypeName} =~ /^pending/i ) {
 
             # set pending time
@@ -983,7 +983,7 @@ sub Run {
 
         # get pre-loaded attachments
         my @AttachmentData = $UploadCacheObject->FormIDGetAllFilesData(
-            FormID => $FormID,
+            FormID => $Self->{FormID},
         );
 
         # get submitted attachment
@@ -1021,7 +1021,7 @@ sub Run {
             }
             @AttachmentData = @NewAttachmentData;
 
-            # verify html document
+            # verify HTML document
             $GetParam{Body} = $LayoutObject->RichTextDocumentComplete(
                 String => $GetParam{Body},
             );
@@ -1055,7 +1055,7 @@ sub Run {
         }
 
         # remove pre-submitted attachments
-        $UploadCacheObject->FormIDRemove( FormID => $FormID );
+        $UploadCacheObject->FormIDRemove( FormID => $Self->{FormID} );
     }
 
     # only set the dynamic fields if the new window was displayed (link), otherwise if ticket was
@@ -1153,24 +1153,6 @@ sub AgentMove {
 
     # get layout object
     my $LayoutObject = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
-
-    # Widget Ticket Actions
-    if (
-        ( $ConfigObject->Get('Ticket::Type') && $Config->{TicketType} )
-        ||
-        ( $ConfigObject->Get('Ticket::Service')     && $Config->{Service} )     ||
-        ( $ConfigObject->Get('Ticket::Responsible') && $Config->{Responsible} ) ||
-        $Config->{Title} ||
-        $Config->{Queue} ||
-        $Config->{Owner} ||
-        $Config->{State} ||
-        $Config->{Priority}
-        )
-    {
-        $LayoutObject->Block(
-            Name => 'WidgetTicketActions',
-        );
-    }
 
     my %Data       = %{ $Param{MoveQueues} };
     my %MoveQueues = %Data;

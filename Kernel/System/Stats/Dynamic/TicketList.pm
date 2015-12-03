@@ -1201,17 +1201,30 @@ sub GetStatTable {
             $Ticket{AccountedTime} = $TicketObject->TicketAccountedTimeGet( TicketID => $TicketID );
         }
 
+        # add the number of articles if needed
+        if ( $TicketAttributes{NumberOfArticles} ) {
+            $Ticket{NumberOfArticles} = $TicketObject->ArticleCount( TicketID => $TicketID );
+        }
+
+        $Ticket{Closed}                      ||= '';
         $Ticket{SolutionTime}                ||= '';
         $Ticket{SolutionDiffInMin}           ||= 0;
         $Ticket{SolutionInMin}               ||= 0;
+        $Ticket{SolutionTimeEscalation}      ||= 0;
         $Ticket{FirstResponse}               ||= '';
         $Ticket{FirstResponseDiffInMin}      ||= 0;
         $Ticket{FirstResponseInMin}          ||= 0;
+        $Ticket{FirstResponseTimeEscalation} ||= 0;
         $Ticket{FirstLock}                   ||= '';
+        $Ticket{UpdateTimeDestinationDate}   ||= '';
+        $Ticket{UpdateTimeDestinationTime}   ||= 0;
+        $Ticket{UpdateTimeWorkingTime}       ||= 0;
+        $Ticket{UpdateTimeEscalation}        ||= 0;
         $Ticket{SolutionTimeDestinationDate} ||= '';
         $Ticket{EscalationDestinationIn}     ||= '';
         $Ticket{EscalationDestinationDate}   ||= '';
         $Ticket{EscalationTimeWorkingTime}   ||= 0;
+        $Ticket{NumberOfArticles}            ||= 0;
 
         for my $ParameterName ( sort keys %Ticket ) {
             if ( $ParameterName =~ m{\A DynamicField_ ( [a-zA-Z\d]+ ) \z}xms ) {
@@ -1259,12 +1272,17 @@ sub GetStatTable {
             next ATTRIBUTE if !$TicketAttributes{$Attribute};
 
             # add the given TimeZone for time values
-            if ( $Param{TimeZone} && $Ticket{$Attribute} && $Ticket{$Attribute} =~ /(\d{4})-(\d{2})-(\d{2})\s(\d{2}):(\d{2}):(\d{2})/ ) {
-                    $Ticket{$Attribute} = $Kernel::OM->Get('Kernel::System::Stats')->_AddTimeZone(
-                        TimeStamp => $Ticket{$Attribute},
-                        TimeZone  => $Param{TimeZone},
-                    );
-                    $Ticket{$Attribute} .= " ($Param{TimeZone})";
+            if (
+                $Param{TimeZone}
+                && $Ticket{$Attribute}
+                && $Ticket{$Attribute} =~ /(\d{4})-(\d{2})-(\d{2})\s(\d{2}):(\d{2}):(\d{2})/
+                )
+            {
+                $Ticket{$Attribute} = $Kernel::OM->Get('Kernel::System::Stats')->_AddTimeZone(
+                    TimeStamp => $Ticket{$Attribute},
+                    TimeZone  => $Param{TimeZone},
+                );
+                $Ticket{$Attribute} .= " ($Param{TimeZone})";
             }
             push @ResultRow, $Ticket{$Attribute};
         }
@@ -1509,6 +1527,7 @@ sub _TicketAttributes {
         UnlockTimeout       => 'UnlockTimeout',
         AccountedTime       => 'Accounted time',        # the same wording is in AgentTicketPrint.tt
         RealTillTimeNotUsed => 'RealTillTimeNotUsed',
+        NumberOfArticles    => 'Number of Articles',
 
         #GroupID        => 'GroupID',
         StateType => 'StateType',
@@ -1654,6 +1673,7 @@ sub _SortedAttributes {
         EscalationSolutionTime
         EscalationUpdateTime
         RealTillTimeNotUsed
+        NumberOfArticles
     );
 
     # cycle trought the Dynamic Fields
@@ -1816,12 +1836,10 @@ sub _IndividualResultOrder {
     elsif ( $Param{OrderBy} eq 'EscalationTimeWorkingTime' ) {
         @Sorted = sort { $a->[$Counter] <=> $b->[$Counter] } @Unsorted;
     }
+    elsif ( $Param{OrderBy} eq 'NumberOfArticles' ) {
+        @Sorted = sort { $a->[$Counter] <=> $b->[$Counter] } @Unsorted;
+    }
     else {
-        $Kernel::OM->Get('Kernel::System::Log')->Log(
-            Priority => 'error',
-            Message =>
-                "There is no possibility to order the stats by $Param{OrderBy}! Sort it alpha numerical",
-        );
         @Sorted = sort { $a->[$Counter] cmp $b->[$Counter] } @Unsorted;
     }
 

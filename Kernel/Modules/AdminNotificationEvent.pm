@@ -107,7 +107,7 @@ sub Run {
             CustomerID CustomerUserID
             ArticleTypeID ArticleSubjectMatch ArticleBodyMatch ArticleAttachmentInclude
             ArticleSenderTypeID Transports OncePerDay SendOnOutOfOffice
-            VisibleForAgent VisibleForAgentTooltip LanguageID)
+            VisibleForAgent VisibleForAgentTooltip LanguageID AgentEnabledByDefault)
             )
         {
             my @Data = $ParamObject->GetArray( Param => $Parameter );
@@ -316,7 +316,7 @@ sub Run {
             PriorityID LockID TypeID ServiceID SLAID CustomerID CustomerUserID
             ArticleTypeID ArticleSubjectMatch ArticleBodyMatch ArticleAttachmentInclude
             ArticleSenderTypeID Transports OncePerDay SendOnOutOfOffice
-            VisibleForAgent VisibleForAgentTooltip LanguageID)
+            VisibleForAgent VisibleForAgentTooltip LanguageID AgentEnabledByDefault)
             )
         {
             my @Data = $ParamObject->GetArray( Param => $Parameter );
@@ -1028,8 +1028,41 @@ sub _Edit {
         @LanguageIDs = ('en');
     }
 
-    my %DefaultUsedLanguages         = %{ $ConfigObject->Get('DefaultUsedLanguages') };
-    my %OriginalDefaultUsedLanguages = %DefaultUsedLanguages;
+    # get names of languages in English
+    my %DefaultUsedLanguages = %{ $ConfigObject->Get('DefaultUsedLanguages') || {} };
+
+    # get native names of languages
+    my %DefaultUsedLanguagesNative = %{ $ConfigObject->Get('DefaultUsedLanguagesNative') || {} };
+
+    my %Languages;
+    LANGUAGEID:
+    for my $LanguageID ( sort keys %DefaultUsedLanguages ) {
+
+        # next language if there is not set any name for current language
+        if ( !$DefaultUsedLanguages{$LanguageID} && !$DefaultUsedLanguagesNative{$LanguageID} ) {
+            next LANGUAGEID;
+        }
+
+        # get texts in native and default language
+        my $Text        = $DefaultUsedLanguagesNative{$LanguageID} || '';
+        my $TextEnglish = $DefaultUsedLanguages{$LanguageID}       || '';
+
+        # translate to current user's language
+        my $TextTranslated =
+            $Kernel::OM->Get('Kernel::Output::HTML::Layout')->{LanguageObject}->Translate($TextEnglish);
+
+        if ( $TextTranslated && $TextTranslated ne $Text ) {
+            $Text .= ' - ' . $TextTranslated;
+        }
+
+        # next language if there is not set English nor native name of language.
+        next LANGUAGEID if !$Text;
+
+        $Languages{$LanguageID} = $Text;
+    }
+
+    # copy original list of languages which will be used for rebuilding language selection
+    my %OriginalDefaultUsedLanguages = %Languages;
 
     my $HTMLUtilsObject = $Kernel::OM->Get('Kernel::System::HTMLUtils');
 
@@ -1072,7 +1105,7 @@ sub _Edit {
                 Subject => $Param{Message}->{$LanguageID}->{Subject} || '',
                 Body    => $Param{Message}->{$LanguageID}->{Body}    || '',
                 LanguageID         => $LanguageID,
-                Language           => $DefaultUsedLanguages{$LanguageID},
+                Language           => $Languages{$LanguageID},
                 SubjectServerError => $Param{ $LanguageID . '_SubjectServerError' } || '',
                 BodyServerError    => $Param{ $LanguageID . '_BodyServerError' } || '',
             },
@@ -1090,11 +1123,11 @@ sub _Edit {
         }
 
         # delete language from drop-down list because it is already shown
-        delete $DefaultUsedLanguages{$LanguageID};
+        delete $Languages{$LanguageID};
     }
 
     $Param{LanguageStrg} = $LayoutObject->BuildSelection(
-        Data         => \%DefaultUsedLanguages,
+        Data         => \%Languages,
         Name         => 'Language',
         Class        => 'Modernize W50pc LanguageAdd',
         Translation  => 1,
@@ -1247,17 +1280,30 @@ sub _Edit {
                     %Param,
                     );
 
+                # it should decide if the default value for the
+                # notification on AgentPreferences is enabled or not
+                my $AgentEnabledByDefault = 0;
+                if ( grep { $_ eq $Transport } @{ $Param{Data}->{AgentEnabledByDefault} } ) {
+                    $AgentEnabledByDefault = 1;
+                }
+                elsif ( !$Param{ID} && defined $RegisteredTransports{$Transport}->{AgentEnabledByDefault} ) {
+                    $AgentEnabledByDefault = $RegisteredTransports{$Transport}->{AgentEnabledByDefault};
+                }
+                my $AgentEnabledByDefaultChecked = ( $AgentEnabledByDefault ? 'checked="checked"' : '' );
+
                 # transport
                 $LayoutObject->Block(
                     Name => 'TransportRowEnabled',
                     Data => {
-                        Transport             => $Transport,
-                        TransportName         => $RegisteredTransports{$Transport}->{Name},
-                        TransportChecked      => $TransportChecked,
-                        SettingsString        => $TransportSettings,
-                        TransportsServerError => $Param{TransportsServerError},
+                        Transport                    => $Transport,
+                        TransportName                => $RegisteredTransports{$Transport}->{Name},
+                        TransportChecked             => $TransportChecked,
+                        SettingsString               => $TransportSettings,
+                        AgentEnabledByDefaultChecked => $AgentEnabledByDefaultChecked,
+                        TransportsServerError        => $Param{TransportsServerError},
                     },
                 );
+
             }
 
         }

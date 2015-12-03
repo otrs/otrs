@@ -131,7 +131,7 @@ Core.Agent = (function (TargetNS) {
                 var $Element = $(this);
                 // special treatment for the first menu level: by default this opens submenus only via click,
                 //  but the config setting "OpenMainMenuOnHover" also activates opening on hover for it.
-                if ($('body').hasClass('Visible-ScreenXL') && ($Element.parent().attr('id') !== 'Navigation' || Core.Config.Get('OpenMainMenuOnHover'))) {
+                if ($('body').hasClass('Visible-ScreenXL') && !Core.App.Responsive.IsTouchDevice() && ($Element.parent().attr('id') !== 'Navigation' || Core.Config.Get('OpenMainMenuOnHover'))) {
 
                     // Set Timeout for opening nav
                     CreateSubnavOpenTimeout($Element, function () {
@@ -179,7 +179,23 @@ Core.Agent = (function (TargetNS) {
 
                 // if OpenMainMenuOnHover is enabled, clicking the item
                 // should lead to the link as regular
-                if ($('body').hasClass('Visible-ScreenXL') && Core.Config.Get('OpenMainMenuOnHover')) {
+                if ($('body').hasClass('Visible-ScreenXL') && !Core.App.Responsive.IsTouchDevice() && Core.Config.Get('OpenMainMenuOnHover')) {
+                    return true;
+                }
+
+                if (!Core.Config.Get('OTRSBusinessIsInstalled') && $Target.hasClass('OTRSBusinessRequired')) {
+                    return true;
+                }
+
+                // Workaround for Windows Phone IE
+                // In Windows Phone IE the event does not bubble up like in other browsers
+                // That means that a subnavigation in mobile mode is still collapsed/expanded,
+                // although the link to the new page is clicked
+                // we force the redirect with this workaround
+                if ($Target.closest('ul').attr('id') !== 'Navigation') {
+                    window.location.href = $Target.closest('a').attr('href');
+                    Event.stopPropagation();
+                    Event.preventDefault();
                     return true;
                 }
 
@@ -203,9 +219,11 @@ Core.Agent = (function (TargetNS) {
                         ClearSubnavCloseTimeout($Element);
                     }
                 }
+
                 // If element has subnavigation, prevent the link
                 if ($Target.closest('li').find('ul').length) {
                     Event.preventDefault();
+                    Event.stopPropagation();
                     return false;
                 }
             })

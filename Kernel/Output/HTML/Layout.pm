@@ -416,12 +416,10 @@ EOF
 
     # Check if 'Standard' fallback exists
     if ( !-e $Self->{StandardTemplateDir} ) {
-        $Kernel::OM->Get('Kernel::System::Log')->Log(
-            Priority => 'error',
+        $Self->FatalDie(
             Message =>
-                "No existing template directory found ('$Self->{TemplateDir}')! Check your Home in Kernel/Config.pm",
+                "No existing template directory found ('$Self->{TemplateDir}')! Check your Home in Kernel/Config.pm."
         );
-        $Self->FatalDie();
     }
 
     if ( !-e $Self->{TemplateDir} ) {
@@ -455,7 +453,9 @@ EOF
                 $NewFile =~ s{\A.*\/(.+?).pm\z}{$1}xms;
                 my $NewClassName = "Kernel::Output::HTML::Layout::$NewFile";
                 if ( !$MainObject->RequireBaseClass($NewClassName) ) {
-                    $Self->FatalError();
+                    $Self->FatalDie(
+                        Message => "Could not load class Kernel::Output::HTML::Layout::$NewFile.",
+                    );
                 }
             }
         }
@@ -5113,6 +5113,11 @@ sub _BuildSelectionOutput {
             }
         }
 
+        # tree flag for Input Fields
+        if ( $Param{TreeView} ) {
+            $String .= ' data-tree="true"';
+        }
+
         $String .= ">\n";
 
         # generate <option> rows
@@ -5263,6 +5268,9 @@ sub WrapPlainText {
     }
 
     my $WorkString = $Param{PlainText};
+
+    # Normalize line endings to avoid problems with \r\n (bug#11078).
+    $WorkString =~ s/\r\n?/\n/g;
     $WorkString =~ s/(^>.+|.{4,$Param{MaxCharacters}})(?:\s|\z)/$1\n/gm;
     return $WorkString;
 }

@@ -225,11 +225,17 @@ Core.UI.Popup = (function (TargetNS) {
      * @function
      * @param {String} Type - The event type that will be launched.
      * @param {Object} Param  - The element that contain information about the new screen address.
+     * @param {Boolean} ExecuteInMobileMode - Do not execute this on mobile devices.
      * @description
      *      This function starts the pop-up event.
      */
-    TargetNS.FirePopupEvent = function (Type, Param) {
-        $(window).unbind('beforeunload.Popup').unbind('unload.Popup');
+    TargetNS.FirePopupEvent = function (Type, Param, ExecuteInMobileMode) {
+        if (ExecuteInMobileMode === false && !$('body').hasClass('Visible-ScreenXL') && (!localStorage.getItem("DesktopMode") || parseInt(localStorage.getItem("DesktopMode"), 10) <= 0)) {
+            return;
+        }
+
+        $(window).unbind('beforeunload.Popup');
+        Core.App.UnbindWindowUnloadEvent('Popup');
         $(window).trigger('Popup', [Type, Param]);
     };
 
@@ -650,9 +656,7 @@ Core.UI.Popup = (function (TargetNS) {
         $(window).bind('beforeunload.Popup', function () {
             return Core.UI.Popup.CheckPopupsOnUnload();
         });
-        $(window).bind('unload.Popup', function () {
-            Core.UI.Popup.ClosePopupsOnUnload();
-        });
+        Core.App.BindWindowUnloadEvent('Popup', Core.UI.Popup.ClosePopupsOnUnload);
         Core.UI.Popup.RegisterPopupEvent();
 
         // if this window is a popup itself, register another function

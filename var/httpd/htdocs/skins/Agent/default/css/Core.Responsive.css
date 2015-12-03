@@ -76,6 +76,26 @@
         color: #aaa;
     }
 
+    #ToolBar li.Extended {
+        background: none;
+        display: inline-block;
+        margin: -25px 0px 0px 5px;
+        padding: 0;
+        vertical-align: middle;
+    }
+
+    #ToolBar li.Extended input {
+        padding: 10px;
+    }
+
+    #ToolBar li.Extended .InputField_InputContainer input {
+        padding: 8px;
+    }
+
+    #ToolBar li.Extended form {
+        display: inline;
+    }
+
     #Header #Logo {
         width: 208px !important;
         background-size: 100%;
@@ -203,6 +223,10 @@
         border: 0px;
     }
 
+    #Navigation .Search {
+        width: auto !important;
+    }
+
     .WidgetSimple span.Pagination,
     .OverviewActions span.Pagination {
         text-align: center;
@@ -315,10 +339,6 @@
         margin: -10px 0px 10px 0px;
     }
 
-    fieldset.TableLike {
-        display: table-cell;
-    }
-
     fieldset.TableLike.Hidden {
         display: none;
     }
@@ -326,6 +346,11 @@
     fieldset.TableLike > .Field,
     fieldset.TableLike > .Row > .Field {
         padding: 0px;
+    }
+
+    fieldset.TableLike > .Field input[type=file],
+    fieldset.TableLike > .Row > .Field input[type=file] {
+        width: 95%;
     }
 
     fieldset.TableLike > .RichTextField,
@@ -354,6 +379,16 @@
     fieldset.TableLike > .Field > input[type=radio],
     fieldset.TableLike > .Row > .Field > input[type=checkbox] {
         width: auto;
+    }
+
+    form label.Mandatory span.Marker {
+        display: inline-block;
+        margin-right: 3px;
+        position: static;
+    }
+
+    form .FieldExplanation {
+        font-size: 0.8em;
     }
 
     .AJAXLoader {
@@ -404,7 +439,7 @@
         float: none;
         width: auto;
         text-align: left;
-        font-size: 1.2em;
+        font-size: 0.9em;
     }
 
     .RTL fieldset.TableLike > label,
@@ -440,7 +475,7 @@
         margin-right: 2px;
     }
 
-    .RichTextField > div.cke {
+    .RichTextField > .cke {
         width: auto !important;
         max-width: 100% !important;
     }

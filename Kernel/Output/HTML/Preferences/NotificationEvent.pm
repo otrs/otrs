@@ -119,7 +119,11 @@ sub Param {
         );
 
         NOTIFICATION:
-        for my $NotificationID ( sort keys %{ $Self->{NotificationList} } ) {
+        for my $NotificationID (
+            sort { $Self->{NotificationList}->{$a}->{Name} cmp $Self->{NotificationList}->{$b}->{Name} }
+            keys %{ $Self->{NotificationList} }
+            )
+        {
 
             next NOTIFICATION if !$Self->{NotificationList}->{$NotificationID};
 
@@ -145,9 +149,12 @@ sub Param {
 
                 my $TransportEnabled = grep { $_ eq $TransportName } @{ $Notification->{Data}->{Transports} };
 
+                my $AgentEnabledByDefault
+                    = grep { $_ eq $TransportName } @{ $Notification->{Data}->{AgentEnabledByDefault} };
+
                 # get user preference for this transport and notification or fall back to
                 #   notification default if there is no user preference
-                my $Use = $UserNotificationTransport->{$Identifier} // $TransportEnabled;
+                my $Use = $UserNotificationTransport->{$Identifier} // $AgentEnabledByDefault;
 
                 my $Checked     = 'checked="checked"';
                 my $HiddenValue = 1;

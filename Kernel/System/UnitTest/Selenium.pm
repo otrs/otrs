@@ -22,6 +22,7 @@ our @ObjectDependencies = (
     'Kernel::Config',
     'Kernel::System::Log',
     'Kernel::System::Main',
+    'Kernel::System::Time',
     'Kernel::System::UnitTest',
 );
 
@@ -55,6 +56,8 @@ Specify the connection details in Config.pm, like this:
         port                => '4444',
         browser_name        => 'phantomjs',
         platform            => 'ANY',
+        window_height       => 1200,    # optional, default 1000
+        window_width        => 1600,    # optional, default 1200
     };
 
 Then you can use the full API of Selenium::Remote::Driver on this object.
@@ -90,7 +93,11 @@ sub new {
     $Self->{SeleniumTestsActive} = 1;
 
     #$Self->debug_on();
-    $Self->set_window_size( 768, 1025 );
+
+    # set screen size from config or use defauls
+    my $Height = $SeleniumTestsConfig{window_height} || 1000;
+    my $Width  = $SeleniumTestsConfig{window_width}  || 1200;
+    $Self->set_window_size( $Height, $Width );
 
     # get remote host with some precautions for certain unit test systems
     my $FQDN = $Kernel::OM->Get('Kernel::Config')->Get('FQDN');
@@ -309,7 +316,7 @@ use this method to handle any Selenium exceptions.
     $SeleniumObject->HandleError($@);
 
 It will create a failing test result and store a screenshot of the page
-for analysis.
+for analysis (in folder /var/otrs-unittest if it exists, in /tmp otherwise).
 
 =cut
 
@@ -323,24 +330,29 @@ sub HandleError {
     return if !$Data;
     $Data = MIME::Base64::decode_base64($Data);
 
-    # This file should survive unit test scenario runs, so save it in a global directory.
-    my ( $FH, $Filename ) = File::Temp::tempfile(
-        DIR    => '/tmp/',
-        SUFFIX => '.png',
-        UNLINK => 0,
-    );
-    close $FH;
+    my $TmpDir = -d '/var/otrs-unittest/' ? '/var/otrs-unittest/' : '/tmp/';
+    $TmpDir .= 'SeleniumScreenshots/';
+    mkdir $TmpDir || return $Self->False( 1, "Could not create $TmpDir." );
+
+    my $Product = $Self->{UnitTestObject}->{Product};
+    $Product =~ s{[^a-z0-9_.\-]+}{_}smxig;
+    $TmpDir .= $Product;
+    mkdir $TmpDir || return $Self->False( 1, "Could not create $TmpDir." );
+
+    my $Filename = $Kernel::OM->Get('Kernel::System::Time')->CurrentTimestamp();
+    $Filename .= '-' . ( int rand 100_000_000 ) . '.png';
+    $Filename =~ s{[ :]}{-}smxg;
+
     $Kernel::OM->Get('Kernel::System::Main')->FileWrite(
-        Location => $Filename,
-        Content  => \$Data,
-    );
+        Directory => $TmpDir,
+        Filename  => $Filename,
+        Content   => \$Data,
+    ) || return $Self->False( 1, "Could not write file $TmpDir/$Filename" );
 
     $Self->{UnitTestObject}->False(
         1,
-        "Saved screenshot in file://$Filename",
+        "Saved screenshot in file://$TmpDir/$Filename",
     );
-
-    #}
 }
 
 =item DESTROY()
