@@ -64,7 +64,8 @@ sub new {
 
 =item Run()
 
-perform TicketSend Operation. This will return the created ticket number.
+perform TicketSend Operation. This is a combination of TicketCreate and ArticleSend
+in one shot. This will return the created ticket number.
 
     my $Result = $OperationObject->Run(
         Data => {
@@ -117,27 +118,50 @@ perform TicketSend Operation. This will return the created ticket number.
             },
             Article => {
                 ArticleTypeID                   => 123,                        # optional
-                ArticleType                     => 'some article type name',   # optional
+                ArticleType                     => 'some article type name',   # optional, default from module Config
                 SenderTypeID                    => 123,                        # optional
                 SenderType                      => 'some sender type name',    # optional
-                AutoResponseType                => 'some auto response type',  # optional
-                From                            => 'some from address',         # optional
+                AutoResponseType                => 'some auto response type',  # optional, default from module Config
+                From                            => 'some from address',        # optional, default from queue system address
                 To                              => 'some from to',
+                Cc          => 'Some Customer B <customer-b@example.com>',     # not required
+                ReplyTo     => 'Some Customer B <customer-b@example.com>',     # not required, is possible to use 'Reply-To' instead
+
                 Subject                         => 'some subject',
                 Body                            => 'some body'
+
+                InReplyTo   => '<asdasdasd.12@example.com>',                           # not required but useful
+                References  => '<asdasdasd.1@example.com> <asdasdasd.12@example.com>', # not required but useful
 
                 ContentType                     => 'some content type',        # ContentType or MimeType and Charset is requieed
                 MimeType                        => 'some mime type',
                 Charset                         => 'some charset',
 
-                HistoryType                     => 'some history type',        # optional
-                HistoryComment                  => 'Some  history comment',    # optional
+                Loop        => 0, # 1|0 used for bulk emails
+                
+                HistoryType                     => 'some history type',        # optional, default from module Config
+                HistoryComment                  => 'Some  history comment',    # optional, default from module Config
                 TimeUnit                        => 123,                        # optional
                 NoAgentNotify                   => 1,                          # optional
                 ForceNotificationToUserID       => [1, 2, 3]                   # optional
                 ExcludeNotificationToUserID     => [1, 2, 3]                   # optional
                 ExcludeMuteNotificationToUserID => [1, 2, 3]                   # optional
             },
+
+        Sign => {
+            Type    => 'PGP',
+            SubType => 'Inline|Detached',
+            Key     => '81877F5E',
+            Type    => 'SMIME',
+            Key     => '3b630c80',
+        },
+        Crypt => {
+            Type    => 'PGP',
+            SubType => 'Inline|Detached',
+            Key     => '81877F5E',
+            Type    => 'SMIME',
+            Key     => '3b630c80',
+        },
 
             DynamicField => [                                                  # optional
                 {
@@ -469,11 +493,16 @@ sub Run {
         }
     }
 
+    my $Sign = $Param{Data}->{Sign};
+    my $Crypt = $Param{Data}->{Crypt};
+
     return $Self->_TicketSend(
         Ticket           => $Ticket,
         Article          => $Article,
         DynamicFieldList => \@DynamicFieldList,
         AttachmentList   => \@AttachmentList,
+        Sign             => $Sign,
+        Crypt            => $Crypt,
         UserID           => $UserID,
     );
 }
@@ -830,6 +859,8 @@ sub _CheckArticle {
                 ErrorMessage => "TicketSend: Article->ContentType is invalid!",
             };
         }
+        # Overwrite Charset attribute required by ArticleSend()
+        $Article->{Charset} = $Charset;
 
         # check MimeType part
         my $MimeType = '';
@@ -844,6 +875,9 @@ sub _CheckArticle {
                 ErrorMessage => "TicketSend: Article->ContentType is invalid!",
             };
         }
+
+        # Overwrite MimeType attribute required by ArticleSend()
+        $Article->{MimeType} = $MimeType;
     }
 
     # check Article->HistoryType
@@ -1086,7 +1120,9 @@ creates a ticket with its article and sets dynamic fields and attachments if spe
         Ticket       => $Ticket,                  # all ticket parameters
         Article      => $Article,                 # all attachment parameters
         DynamicField => $DynamicField,            # all dynamic field parameters
-        Attachment   => $Attachment,             # all attachment parameters
+        Attachment   => $Attachment,              # all attachment parameters
+        Sign         => $Sign,
+        Crypt        => $Crypt,
         UserID       => 123,
     );
 
@@ -1115,6 +1151,8 @@ sub _TicketSend {
     my $Article          = $Param{Article};
     my $DynamicFieldList = $Param{DynamicFieldList};
     my $AttachmentList   = $Param{AttachmentList};
+    my $Sign             = $Param{Sign};
+    my $Crypt            = $Param{Crypt};
 
     # get customer information
     # with information will be used to create the ticket if customer is not defined in the
@@ -1293,6 +1331,23 @@ sub _TicketSend {
         $From = $Address{RealName} . " <" . $Address{Email} . ">";
     }
 
+    # set Article To
+    my $To;
+    if ( $Article->{To} ) {
+        $To = $Article->{To};
+    }
+
+    # use data from customer user (if customer user is in database)
+    elsif ( IsHashRefWithData( \%CustomerUserData ) ) {
+        $To = '"' . $CustomerUserData{UserFirstname} . ' ' . $CustomerUserData{UserLastname} . '"'
+            . ' <' . $CustomerUserData{UserEmail} . '>';
+    }
+
+    # otherwise use customer user as sent from the request (it should be an email)
+    else {
+        $To = $Ticket->{CustomerUser};
+    }
+
     # Build a subject
     my $NewSubject = $TicketObject->TicketSubjectBuild(
         TicketNumber => $TicketObject->TicketNumberLookup(
@@ -1320,19 +1375,25 @@ sub _TicketSend {
         SenderTypeID   => $Article->{SenderTypeID}   || '',
         SenderType     => $Article->{SenderType}     || '',
         From           => $From,
-        To             => $Article->{To},
+        To             => $To,
+        Cc             => $Article->{Cc}             || '',
+        ReplyTo        => $Article->{ReplyTo}        || '',
         Subject        => $NewSubject,
         Body           => $Article->{Body},
+        InReplyTo      => $Article->{InReplyTo}      || '',
+        References     => $Article->{References}     || '',
         MimeType       => $Article->{MimeType}       || '',
         Charset        => $Article->{Charset}        || '',
         ContentType    => $Article->{ContentType}    || '',
         UserID         => $Param{UserID},
+        Sign           => $Sign,
+        Crypt          => $Crypt,
         HistoryType    => $Article->{HistoryType},
         HistoryComment => $Article->{HistoryComment} || '%%',
         AutoResponseType => $Article->{AutoResponseType},
         OrigHeader       => {
             From    => $From,
-            To      => $Article->{To},
+            To      => $To,
             Subject => $NewSubject,
             Body    => $Article->{Body},
 
