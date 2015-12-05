@@ -8,7 +8,7 @@
         <Setting>
             <FrontendModuleReg>
                 <Group>admin</Group>
-                <Description>Admin</Description>
+                <Description Translatable="1">Admin</Description>
                 <Title Translatable="1">Shows information on how to start OTRS Daemon</Title>
             </FrontendModuleReg>
         </Setting>

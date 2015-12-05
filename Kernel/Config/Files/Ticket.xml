@@ -534,7 +534,7 @@
         </Setting>
     </ConfigItem>
     <ConfigItem Name="Ticket::SearchIndex::StopWords###en" Required="0" Valid="1" ConfigLevel="200">
-        <Description Translatable="1">German stop words for fulltext index. These words will be removed from the search index.</Description>
+        <Description Translatable="1">English stop words for fulltext index. These words will be removed from the search index.</Description>
         <Group>Ticket</Group>
         <SubGroup>Core::FulltextSearch</SubGroup>
         <Setting>
@@ -3161,7 +3161,7 @@
         </Setting>
     </ConfigItem>
     <ConfigItem Name="Ticket::Frontend::NewQueueSelectionType" Required="1" Valid="1">
-        <Description Translatable="1">Defines the receipent target of the phone ticket and the sender of the email ticket ("Queue" shows all queues, "System address" displays all system addresses) in the agent interface.</Description>
+        <Description Translatable="1">Defines the recipient target of the phone ticket and the sender of the email ticket ("Queue" shows all queues, "System address" displays all system addresses) in the agent interface.</Description>
         <Group>Ticket</Group>
         <SubGroup>Frontend::Agent</SubGroup>
         <Setting>
@@ -3172,7 +3172,7 @@
         </Setting>
     </ConfigItem>
     <ConfigItem Name="Ticket::Frontend::NewQueueSelectionString" Required="1" Valid="1">
-        <Description Translatable="1">Determines the strings that will be shown as recipient (To:) of the phone ticket and as sender (From:) of the email ticket in the agent interface. For Queue as NewQueueSelectionType "&lt;Queue&gt;" shows the names of the queues and for SystemAddress "&lt;Realname&gt; &lt;&lt;Email&gt;&gt;" shows the name and email of the receipent.</Description>
+        <Description Translatable="1">Determines the strings that will be shown as recipient (To:) of the phone ticket and as sender (From:) of the email ticket in the agent interface. For Queue as NewQueueSelectionType "&lt;Queue&gt;" shows the names of the queues and for SystemAddress "&lt;Realname&gt; &lt;&lt;Email&gt;&gt;" shows the name and email of the recipient.</Description>
         <Group>Ticket</Group>
         <SubGroup>Frontend::Agent</SubGroup>
         <Setting>
@@ -7832,7 +7832,7 @@
         </Setting>
     </ConfigItem>
     <ConfigItem Name="CustomerPanelSelectionType" Required="1" Valid="1">
-        <Description Translatable="1">Defines the receipent target of the tickets ("Queue" shows all queues, "SystemAddress" displays all system addresses) in the customer interface.</Description>
+        <Description Translatable="1">Defines the recipient target of the tickets ("Queue" shows all queues, "SystemAddress" displays all system addresses) in the customer interface.</Description>
         <Group>Ticket</Group>
         <SubGroup>Frontend::Customer::Ticket::ViewNew</SubGroup>
         <Setting>
@@ -7843,7 +7843,7 @@
         </Setting>
     </ConfigItem>
     <ConfigItem Name="CustomerPanelSelectionString" Required="0" Valid="1">
-        <Description Translatable="1">Determines the strings that will be shown as receipent (To:) of the ticket in the customer interface. For Queue as CustomerPanelSelectionType, "&lt;Queue&gt;" shows the names of the queues, and for SystemAddress, "&lt;Realname&gt; &lt;&lt;Email&gt;&gt;" shows the name and email of the receipent.</Description>
+        <Description Translatable="1">Determines the strings that will be shown as recipient (To:) of the ticket in the customer interface. For Queue as CustomerPanelSelectionType, "&lt;Queue&gt;" shows the names of the queues, and for SystemAddress, "&lt;Realname&gt; &lt;&lt;Email&gt;&gt;" shows the name and email of the recipient.</Description>
         <Group>Ticket</Group>
         <SubGroup>Frontend::Customer::Ticket::ViewNew</SubGroup>
         <Setting>
@@ -8498,7 +8498,7 @@
         <SubGroup>Frontend::Agent::ModuleRegistration</SubGroup>
         <Setting>
             <FrontendModuleReg>
-                <Description>compat module for AgentZoom to AgentTicketZoom</Description>
+                <Description Translatable="1">compat module for AgentZoom to AgentTicketZoom</Description>
                 <NavBarName>Ticket</NavBarName>
                 <Title></Title>
             </FrontendModuleReg>
@@ -8510,8 +8510,8 @@
         <SubGroup>Frontend::Agent::ModuleRegistration</SubGroup>
         <Setting>
             <FrontendModuleReg>
-                <Description>Ticket Zoom</Description>
-                <Title>Zoom</Title>
+                <Description Translatable="1">Ticket Zoom</Description>
+                <Title Translatable="1">Zoom</Title>
                 <NavBarName>Ticket</NavBarName>
                 <Loader>
                     <CSS>Core.Agent.TicketProcess.css</CSS>
@@ -8625,8 +8625,8 @@
         <SubGroup>Frontend::Agent::ModuleRegistration</SubGroup>
         <Setting>
             <FrontendModuleReg>
-                <Description>Ticket Lock</Description>
-                <Title>Lock</Title>
+                <Description Translatable="1">Ticket Lock</Description>
+                <Title Translatable="1">Lock</Title>
                 <NavBarName>Ticket</NavBarName>
             </FrontendModuleReg>
         </Setting>
@@ -8856,7 +8856,7 @@
         <Setting>
             <FrontendModuleReg>
                 <Description Translatable="1">Ticket bulk module.</Description>
-                <Title>Bulk-Action</Title>
+                <Title Translatable="1">Bulk-Action</Title>
                 <NavBarName>Ticket</NavBarName>
                 <Loader>
                     <JavaScript>Core.Agent.TicketAction.js</JavaScript>
@@ -8871,7 +8871,7 @@
         <Setting>
             <FrontendModuleReg>
                 <Group>admin</Group>
-                <Description>Admin</Description>
+                <Description Translatable="1">Admin</Description>
                 <Title Translatable="1">Access Control Lists (ACL)</Title>
                 <NavBarName>Admin</NavBarName>
                 <Loader>
@@ -8895,7 +8895,7 @@
         <Setting>
             <FrontendModuleReg>
                 <Group>admin</Group>
-                <Description>Admin</Description>
+                <Description Translatable="1">Admin</Description>
                 <Title Translatable="1">Queues</Title>
                 <NavBarName>Admin</NavBarName>
                 <NavBarModule>
@@ -8915,8 +8915,8 @@
         <Setting>
             <FrontendModuleReg>
                 <Group>admin</Group>
-                <Description>Admin</Description>
-                <Title>Templates</Title>
+                <Description Translatable="1">Admin</Description>
+                <Title Translatable="1">Templates</Title>
                 <NavBarName>Admin</NavBarName>
                 <NavBarModule>
                     <Module>Kernel::Output::HTML::NavBar::ModuleAdmin</Module>
@@ -8935,7 +8935,7 @@
         <Setting>
             <FrontendModuleReg>
                 <Group>admin</Group>
-                <Description>Admin</Description>
+                <Description Translatable="1">Admin</Description>
                 <Title Translatable="1">Templates &lt;-&gt; Queues</Title>
                 <NavBarName>Admin</NavBarName>
                 <NavBarModule>
@@ -8955,7 +8955,7 @@
         <Setting>
             <FrontendModuleReg>
                 <Group>admin</Group>
-                <Description>Admin</Description>
+                <Description Translatable="1">Admin</Description>
                 <Title Translatable="1">Auto Responses</Title>
                 <NavBarName>Admin</NavBarName>
                 <NavBarModule>
@@ -8975,8 +8975,8 @@
         <Setting>
             <FrontendModuleReg>
                 <Group>admin</Group>
-                <Description>Admin</Description>
-                <Title>Auto Responses &lt;-&gt; Queues</Title>
+                <Description Translatable="1">Admin</Description>
+                <Title Translatable="1">Auto Responses &lt;-&gt; Queues</Title>
                 <NavBarName>Admin</NavBarName>
                 <NavBarModule>
                     <Module>Kernel::Output::HTML::NavBar::ModuleAdmin</Module>
@@ -8995,7 +8995,7 @@
         <Setting>
             <FrontendModuleReg>
                 <Group>admin</Group>
-                <Description>Admin</Description>
+                <Description Translatable="1">Admin</Description>
                 <Title Translatable="1">Attachments</Title>
                 <NavBarName>Admin</NavBarName>
                 <NavBarModule>
@@ -9015,7 +9015,7 @@
         <Setting>
             <FrontendModuleReg>
                 <Group>admin</Group>
-                <Description>Admin</Description>
+                <Description Translatable="1">Admin</Description>
                 <Title Translatable="1">Attachments &lt;-&gt; Templates</Title>
                 <NavBarName>Admin</NavBarName>
                 <NavBarModule>
@@ -9035,7 +9035,7 @@
         <Setting>
             <FrontendModuleReg>
                 <Group>admin</Group>
-                <Description>Admin</Description>
+                <Description Translatable="1">Admin</Description>
                 <Title Translatable="1">Salutations</Title>
                 <NavBarName>Admin</NavBarName>
                 <NavBarModule>
@@ -9055,7 +9055,7 @@
         <Setting>
             <FrontendModuleReg>
                 <Group>admin</Group>
-                <Description>Admin</Description>
+                <Description Translatable="1">Admin</Description>
                 <Title Translatable="1">Signatures</Title>
                 <NavBarName>Admin</NavBarName>
                 <NavBarModule>
@@ -9075,7 +9075,7 @@
         <Setting>
             <FrontendModuleReg>
                 <Group>admin</Group>
-                <Description>Admin</Description>
+                <Description Translatable="1">Admin</Description>
                 <Title Translatable="1">Email Addresses</Title>
                 <NavBarName>Admin</NavBarName>
                 <NavBarModule>
@@ -9095,7 +9095,7 @@
         <Setting>
             <FrontendModuleReg>
                 <Group>admin</Group>
-                <Description>Admin</Description>
+                <Description Translatable="1">Admin</Description>
                 <Title Translatable="1">Ticket Notifications</Title>
                 <NavBarName>Admin</NavBarName>
                 <NavBarModule>
@@ -9119,7 +9119,7 @@
         <Setting>
             <FrontendModuleReg>
                 <Group>admin</Group>
-                <Description>Admin</Description>
+                <Description Translatable="1">Admin</Description>
                 <Title Translatable="1">Services</Title>
                 <NavBarName>Admin</NavBarName>
                 <NavBarModule>
@@ -9139,7 +9139,7 @@
         <Setting>
             <FrontendModuleReg>
                 <Group>admin</Group>
-                <Description>Admin</Description>
+                <Description Translatable="1">Admin</Description>
                 <Title Translatable="1">Service Level Agreements</Title>
                 <NavBarName>Admin</NavBarName>
                 <NavBarModule>
@@ -9159,7 +9159,7 @@
         <Setting>
             <FrontendModuleReg>
                 <Group>admin</Group>
-                <Description>Admin</Description>
+                <Description Translatable="1">Admin</Description>
                 <Title Translatable="1">Types</Title>
                 <NavBarName>Admin</NavBarName>
                 <NavBarModule>
@@ -9179,7 +9179,7 @@
         <Setting>
             <FrontendModuleReg>
                 <Group>admin</Group>
-                <Description>Admin</Description>
+                <Description Translatable="1">Admin</Description>
                 <Title Translatable="1">States</Title>
                 <NavBarName>Admin</NavBarName>
                 <NavBarModule>
@@ -9199,7 +9199,7 @@
         <Setting>
             <FrontendModuleReg>
                 <Group>admin</Group>
-                <Description>Admin</Description>
+                <Description Translatable="1">Admin</Description>
                 <Title Translatable="1">Priorities</Title>
                 <NavBarName>Admin</NavBarName>
                 <NavBarModule>
@@ -9219,7 +9219,7 @@
         <Setting>
             <FrontendModuleReg>
                 <Group>admin</Group>
-                <Description>Admin</Description>
+                <Description Translatable="1">Admin</Description>
                 <Title Translatable="1">GenericAgent</Title>
                 <NavBarName>Admin</NavBarName>
                 <NavBarModule>
@@ -9473,9 +9473,9 @@
         <SubGroup>Frontend::Customer::ModuleRegistration</SubGroup>
         <Setting>
             <FrontendModuleReg>
-                <Description>Overview of customer tickets</Description>
+                <Description Translatable="1">Overview of customer tickets</Description>
                 <NavBarName>Ticket</NavBarName>
-                <Title>Overview</Title>
+                <Title Translatable="1">Overview</Title>
                 <NavBar>
                     <Description Translatable="1">Tickets</Description>
                     <Name Translatable="1">Tickets</Name>
@@ -9518,9 +9518,9 @@
         <SubGroup>Frontend::Customer::ModuleRegistration</SubGroup>
         <Setting>
             <FrontendModuleReg>
-                <Description>Create tickets</Description>
+                <Description Translatable="1">Create tickets</Description>
                 <NavBarName>Ticket</NavBarName>
-                <Title>New Ticket</Title>
+                <Title Translatable="1">New Ticket</Title>
                 <NavBar>
                     <Description Translatable="1">Create new Ticket</Description>
                     <Name Translatable="1">New Ticket</Name>
@@ -9541,9 +9541,9 @@
         <SubGroup>Frontend::Customer::ModuleRegistration</SubGroup>
         <Setting>
             <FrontendModuleReg>
-                <Description>Ticket zoom view</Description>
+                <Description Translatable="1">Ticket zoom view</Description>
                 <NavBarName>Ticket</NavBarName>
-                <Title>Zoom</Title>
+                <Title Translatable="1">Zoom</Title>
                 <Loader>
                     <JavaScript>Core.Customer.TicketZoom.js</JavaScript>
                     <JavaScript>Core.UI.Popup.js</JavaScript>
@@ -9557,9 +9557,9 @@
         <SubGroup>Frontend::Customer::ModuleRegistration</SubGroup>
         <Setting>
             <FrontendModuleReg>
-                <Description>Customer Ticket Print Module</Description>
+                <Description Translatable="1">Customer Ticket Print Module</Description>
                 <NavBarName></NavBarName>
-                <Title>Print</Title>
+                <Title Translatable="1">Print</Title>
             </FrontendModuleReg>
         </Setting>
     </ConfigItem>
@@ -9569,7 +9569,7 @@
         <SubGroup>Frontend::Customer::ModuleRegistration</SubGroup>
         <Setting>
             <FrontendModuleReg>
-                <Description>To download attachments</Description>
+                <Description Translatable="1">To download attachments</Description>
                 <NavBarName></NavBarName>
                 <Title></Title>
             </FrontendModuleReg>
@@ -9581,9 +9581,9 @@
         <SubGroup>Frontend::Customer::ModuleRegistration</SubGroup>
         <Setting>
             <FrontendModuleReg>
-                <Description>Customer ticket search</Description>
+                <Description Translatable="1">Customer ticket search</Description>
                 <NavBarName>Ticket</NavBarName>
-                <Title>Search</Title>
+                <Title Translatable="1">Search</Title>
                 <NavBar>
                     <Description Translatable="1">Search</Description>
                     <Name Translatable="1">Search</Name>
@@ -9793,10 +9793,10 @@
         <SubGroup>Core::TicketACL</SubGroup>
         <Setting>
             <Option SelectedID="debug">
-                <Item Key="debug">Debug</Item>
-                <Item Key="info">Info</Item>
-                <Item Key="notice">Notice</Item>
-                <Item Key="error">Error</Item>
+                <Item Key="debug" Translatable="1">Debug</Item>
+                <Item Key="info" Translatable="1">Info</Item>
+                <Item Key="notice" Translatable="1">Notice</Item>
+                <Item Key="error" Translatable="1">Error</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -10430,8 +10430,8 @@ Thanks for your help!
         <SubGroup>Frontend::Agent::Ticket::ViewZoom</SubGroup>
         <Setting>
             <Option SelectedID="1">
-                <Item Key="0">Based on global RichText setting</Item>
-                <Item Key="1">Always show RichText if available</Item>
+                <Item Key="0" Translatable="1">Based on global RichText setting</Item>
+                <Item Key="1" Translatable="1">Always show RichText if available</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -10443,7 +10443,7 @@ Thanks for your help!
         <Setting>
             <FrontendModuleReg>
                 <Group>admin</Group>
-                <Description>Admin</Description>
+                <Description Translatable="1">Admin</Description>
                 <Title Translatable="1">Dynamic Fields GUI</Title>
                 <NavBarName>Admin</NavBarName>
                 <NavBarModule>
@@ -10494,7 +10494,7 @@ Thanks for your help!
         <Setting>
             <FrontendModuleReg>
                 <Group>admin</Group>
-                <Description>Admin</Description>
+                <Description Translatable="1">Admin</Description>
                 <Title Translatable="1">Dynamic Fields Text Backend GUI</Title>
                 <Loader>
                     <JavaScript>Core.Agent.Admin.DynamicField.js</JavaScript>
@@ -10510,7 +10510,7 @@ Thanks for your help!
         <Setting>
             <FrontendModuleReg>
                 <Group>admin</Group>
-                <Description>Admin</Description>
+                <Description Translatable="1">Admin</Description>
                 <Title Translatable="1">Dynamic Fields Checkbox Backend GUI</Title>
                 <Loader>
                     <JavaScript>Core.Agent.Admin.DynamicField.js</JavaScript>
@@ -10525,7 +10525,7 @@ Thanks for your help!
         <Setting>
             <FrontendModuleReg>
                 <Group>admin</Group>
-                <Description>Admin</Description>
+                <Description Translatable="1">Admin</Description>
                 <Title Translatable="1">Dynamic Fields Drop-down Backend GUI</Title>
                 <Loader>
                     <CSS>Core.Agent.Admin.DynamicField.css</CSS>
@@ -10542,7 +10542,7 @@ Thanks for your help!
         <Setting>
             <FrontendModuleReg>
                 <Group>admin</Group>
-                <Description>Admin</Description>
+                <Description Translatable="1">Admin</Description>
                 <Title Translatable="1">Dynamic Fields Date Time Backend GUI</Title>
                 <Loader>
                     <CSS>Core.Agent.Admin.DynamicField.css</CSS>
@@ -10560,7 +10560,7 @@ Thanks for your help!
         <Setting>
             <FrontendModuleReg>
                 <Group>admin</Group>
-                <Description>Admin</Description>
+                <Description Translatable="1">Admin</Description>
                 <Title Translatable="1">Dynamic Fields Multiselect Backend GUI</Title>
                 <Loader>
                     <CSS>Core.Agent.Admin.DynamicField.css</CSS>
