@@ -24,7 +24,7 @@
         <Setting>
             <FrontendModuleReg>
                 <Group>admin</Group>
-                <Description>Admin</Description>
+                <Description Translatable="1">Admin</Description>
                 <Title Translatable="1">Support data collector</Title>
                 <Loader>
                     <CSS>Core.Agent.Admin.CloudService.SupportDataCollector.css</CSS>

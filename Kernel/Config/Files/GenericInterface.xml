@@ -103,7 +103,7 @@
         <Setting>
             <FrontendModuleReg>
                 <Group>admin</Group>
-                <Description>Admin</Description>
+                <Description Translatable="1">Admin</Description>
                 <Title Translatable="1">GenericInterface Debugger GUI</Title>
                 <Loader>
                     <CSS>Core.Agent.Admin.GenericInterface.css</CSS>
@@ -119,7 +119,7 @@
         <Setting>
             <FrontendModuleReg>
                 <Group>admin</Group>
-                <Description>Admin</Description>
+                <Description Translatable="1">Admin</Description>
                 <Title Translatable="1">GenericInterface Web Service GUI</Title>
                 <NavBarName>Admin</NavBarName>
                 <NavBarModule>
@@ -143,7 +143,7 @@
         <Setting>
             <FrontendModuleReg>
                 <Group>admin</Group>
-                <Description>Admin</Description>
+                <Description Translatable="1">Admin</Description>
                 <Title Translatable="1">GenericInterface TransportHTTPSOAP GUI</Title>
                 <Loader>
                     <CSS>Core.Agent.Admin.GenericInterface.css</CSS>
@@ -160,7 +160,7 @@
         <Setting>
             <FrontendModuleReg>
                 <Group>admin</Group>
-                <Description>Admin</Description>
+                <Description Translatable="1">Admin</Description>
                 <Title Translatable="1">GenericInterface TransportHTTPREST GUI</Title>
                 <Loader>
                     <CSS>Core.Agent.Admin.GenericInterface.css</CSS>
@@ -175,7 +175,7 @@
         <Setting>
             <FrontendModuleReg>
                 <Group>admin</Group>
-                <Description>Admin</Description>
+                <Description Translatable="1">Admin</Description>
                 <Title Translatable="1">GenericInterface Webservice History GUI</Title>
                 <Loader>
                     <CSS>Core.Agent.Admin.GenericInterface.css</CSS>
@@ -192,7 +192,7 @@
         <Setting>
             <FrontendModuleReg>
                 <Group>admin</Group>
-                <Description>Admin</Description>
+                <Description Translatable="1">Admin</Description>
                 <Title Translatable="1">GenericInterface Operation GUI</Title>
                 <Loader>
                     <CSS>Core.Agent.Admin.GenericInterface.css</CSS>
@@ -209,7 +209,7 @@
         <Setting>
             <FrontendModuleReg>
                 <Group>admin</Group>
-                <Description>Admin</Description>
+                <Description Translatable="1">Admin</Description>
                 <Title Translatable="1">GenericInterface Invoker GUI</Title>
                 <Loader>
                     <CSS>Core.Agent.Admin.GenericInterface.css</CSS>
@@ -309,7 +309,7 @@
         <Setting>
             <FrontendModuleReg>
                 <Group>admin</Group>
-                <Description>Admin</Description>
+                <Description Translatable="1">Admin</Description>
                 <Title Translatable="1">GenericInterface Webservice Mapping GUI</Title>
                 <Loader>
                     <CSS>Core.Agent.Admin.GenericInterface.css</CSS>
@@ -337,7 +337,7 @@
         <Setting>
             <FrontendModuleReg>
                 <Group>admin</Group>
-                <Description>Admin</Description>
+                <Description Translatable="1">Admin</Description>
                 <Title Translatable="1">GenericInterface Webservice Mapping GUI</Title>
                 <Loader>
                     <CSS>Core.Agent.Admin.GenericInterface.css</CSS>
