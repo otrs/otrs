@@ -16,6 +16,7 @@ use URI::Escape qw();
 
 use Kernel::System::Time;
 use Kernel::System::VariableCheck qw(:all);
+use Kernel::Language qw(Translatable);
 
 our @ObjectDependencies = (
     'Kernel::Config',
@@ -389,7 +390,7 @@ EOF
     }
 
     # load theme
-    my $Theme = $Self->{UserTheme} || $ConfigObject->Get('DefaultTheme') || 'Standard';
+    my $Theme = $Self->{UserTheme} || $ConfigObject->Get('DefaultTheme') || Translatable('Standard');
 
     # force a theme based on host name
     my $DefaultThemeHostBased = $ConfigObject->Get('DefaultTheme::HostBased');
