@@ -51,9 +51,9 @@ sub new {
     # 0=off; 1=on;
     $Self->{Debug} = 0;
 
-    # check if the encodeobject is used from the command line
-    # if so, we need to decode @ARGV
     if ( !is_interactive() ) {
+        # decode args
+        @ARGV = map { decode_utf8($_, 1) } @ARGV;
 
         # encode STDOUT and STDERR
         $Self->SetIO( \*STDOUT, \*STDERR );
