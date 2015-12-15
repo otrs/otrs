@@ -1,4 +1,5 @@
 #6.0.0.beta1 2016-??-??
+ - 2015-12-15 Copyright added (IB#1047660).
  - 2015-12-09 Fixed problem with UTF-8 argument passed to otrs.Console.pl (IB#1047660).
  - 2015-17-27 Added possibility to restrict Zoom and Print screens in the customer interface by using ACLs. Thanks to Sanjin Vik @ s7design.
  - 2015-17-27 Improved Generic Agent performance at deleting old execution times. Thanks to Moritz Lenz @ noris networks.
