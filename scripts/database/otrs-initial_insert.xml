@@ -3169,7 +3169,7 @@ A(z) [<OTRS_CONFIG_Ticket::Hook><OTRS_TICKET_TicketNumber>] jegy felelős ügyin
         <Data Key="subject" Type="Quote"><![CDATA[Új jegyzet: <OTRS_AGENT_SUBJECT[24]>]]></Data>
         <Data Key="text" Type="Quote"><![CDATA[Kedves <OTRS_NOTIFICATION_RECIPIENT_UserFirstname>!
 
-<OTRS_CURRENT_UserLastname> <OTRS_CURRENT_UserFirstname>ezt írta:
+<OTRS_CURRENT_UserLastname> <OTRS_CURRENT_UserFirstname> ezt írta:
 <OTRS_AGENT_BODY[30]>
 
 <OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<OTRS_TICKET_TicketID>
