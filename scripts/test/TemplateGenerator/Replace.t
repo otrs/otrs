@@ -227,7 +227,18 @@ my @Tests = (
         Result   => 'Test otrs',
     },
     {
-        Name => 'OTRS customer subject 3 letters',    # <OTRS_CUSTOMER_SUBJECT[20]>
+        Name => 'OTRS customer subject - not replaced',    # <OTRS_CUSTOMER_SUBJECT>
+        Data => {
+            From    => 'test@home.com',
+            Subject => 'otrs',
+        },
+        RichText                    => 0,
+        ReplaceAgentAndCustomerTags => 0,
+        Template                    => 'Test <OTRS_CUSTOMER_SUBJECT>',
+        Result                      => 'Test <OTRS_CUSTOMER_SUBJECT>',
+    },
+    {
+        Name => 'OTRS customer subject 3 letters',         # <OTRS_CUSTOMER_SUBJECT[20]>
         Data => {
             From    => 'test@home.com',
             Subject => 'otrs',
@@ -404,6 +415,20 @@ mailto-Link <a href="mailto:skywalker@otrs.org?body=From%3A%20%3COTRS_CUSTOMER_F
         Result   => "Test Line1\nLine2\nLine3 - Line1\nLine2\nLine3",
     },
     {
+        Name =>
+            'OTRS AGENT + CUSTOMER BODY - not replaced',
+        Data => {
+            Body => "Line1\nLine2\nLine3",
+        },
+        DataAgent => {
+            Body => "Line1\nLine2\nLine3",
+        },
+        RichText                    => 0,
+        ReplaceAgentAndCustomerTags => 0,
+        Template                    => 'Test <OTRS_AGENT_BODY> - <OTRS_CUSTOMER_BODY>',
+        Result                      => 'Test <OTRS_AGENT_BODY> - <OTRS_CUSTOMER_BODY>',
+    },
+    {
         Name => 'OTRS AGENT + CUSTOMER BODY[2]',
         Data => {
             Body => "Line1\nLine2\nLine3",
@@ -486,13 +511,14 @@ mailto-Link <a href="mailto:skywalker@otrs.org?body=From%3A%20%3COTRS_CUSTOMER_F
 
 for my $Test (@Tests) {
     my $Result = $TemplateGeneratorObject->_Replace(
-        Text        => $Test->{Template},
-        Data        => $Test->{Data},
-        DataAgent   => $Test->{DataAgent},
-        RichText    => $Test->{RichText},
-        TicketID    => $TicketID,
-        UserID      => $TestUser3{UserID},
-        RecipientID => $TestUser4{UserID},
+        Text                        => $Test->{Template},
+        Data                        => $Test->{Data},
+        DataAgent                   => $Test->{DataAgent},
+        RichText                    => $Test->{RichText},
+        TicketID                    => $TicketID,
+        UserID                      => $TestUser3{UserID},
+        ReplaceAgentAndCustomerTags => $Test->{ReplaceAgentAndCustomerTags},
+        RecipientID                 => $TestUser4{UserID},
     );
     $Self->Is(
         $Result,

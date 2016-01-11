@@ -135,11 +135,12 @@ sub Salutation {
 
     # replace place holder stuff
     my $SalutationText = $Self->_Replace(
-        RichText => $Self->{RichText},
-        Text     => $Salutation{Text},
-        TicketID => $Param{TicketID},
-        Data     => $Param{Data},
-        UserID   => $Param{UserID},
+        RichText                    => $Self->{RichText},
+        Text                        => $Salutation{Text},
+        TicketID                    => $Param{TicketID},
+        Data                        => $Param{Data},
+        ReplaceAgentAndCustomerTags => 0,
+        UserID                      => $Param{UserID},
     );
 
     # add urls
@@ -246,12 +247,13 @@ sub Signature {
 
     # replace place holder stuff
     my $SignatureText = $Self->_Replace(
-        RichText => $Self->{RichText},
-        Text     => $Signature{Text},
-        TicketID => $Param{TicketID} || '',
-        Data     => $Param{Data},
-        QueueID  => $Param{QueueID},
-        UserID   => $Param{UserID},
+        RichText                    => $Self->{RichText},
+        Text                        => $Signature{Text},
+        TicketID                    => $Param{TicketID} || '',
+        Data                        => $Param{Data},
+        QueueID                     => $Param{QueueID},
+        ReplaceAgentAndCustomerTags => 0,
+        UserID                      => $Param{UserID},
     );
 
     # add urls
@@ -414,11 +416,12 @@ sub Template {
 
     # replace place holder stuff
     my $TemplateText = $Self->_Replace(
-        RichText => $Self->{RichText},
-        Text     => $Template{Template} || '',
-        TicketID => $Param{TicketID} || '',
-        Data     => $Param{Data} || {},
-        UserID   => $Param{UserID},
+        RichText                    => $Self->{RichText},
+        Text                        => $Template{Template} || '',
+        TicketID                    => $Param{TicketID} || '',
+        Data                        => $Param{Data} || {},
+        ReplaceAgentAndCustomerTags => 0,
+        UserID                      => $Param{UserID},
     );
 
     return $TemplateText;
@@ -1028,6 +1031,8 @@ sub _Replace {
         }
     }
 
+    $Param{ReplaceAgentAndCustomerTags} //= 1;
+
     # check for mailto links
     # since the subject and body of those mailto links are
     # uri escaped we have to uri unescape them, replace
@@ -1069,6 +1074,15 @@ sub _Replace {
         $Start = '&lt;';
         $End   = '&gt;';
         $Param{Text} =~ s/(\n|\r)//g;
+    }
+
+    if ( !$Param{ReplaceAgentAndCustomerTags} ) {
+
+        my @ListOfNonSupportedTag = qw/OTRS_AGENT_SUBJECT OTRS_AGENT_BODY OTRS_CUSTOMER_BODY OTRS_CUSTOMER_SUBJECT/;
+
+        # cleanup all not supported <OTRS_CUSTOMER_ and <OTRS_AGENT_ tags
+        my $NotSupportedTag = $Start . "(?:" . join( "|", @ListOfNonSupportedTag ) . ")" . $End;
+        $Param{Text} =~ s/$NotSupportedTag/-/gi;
     }
 
     my %Ticket;
