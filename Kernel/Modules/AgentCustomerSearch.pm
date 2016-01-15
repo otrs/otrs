@@ -45,8 +45,9 @@ sub Run {
     if ( !$Self->{Subaction} ) {
 
         # get needed params
-        my $Search = $ParamObject->GetParam( Param => 'Term' ) || '';
-        my $MaxResults = int( $ParamObject->GetParam( Param => 'MaxResults' ) || 20 );
+        my $Search     = $ParamObject->GetParam( Param => 'Term' ) || '';
+        my $ConfigMax  = $Self->{Config}->{MaxResults};
+        my $MaxResults = int( $ParamObject->GetParam( Param => 'MaxResults' ) || $ConfigMax );
 
         # get customer list
         my %CustomerUserList = $CustomerUserObject->CustomerSearch(
