@@ -136,6 +136,11 @@ sub SearchSQLGet {
         return $SQL;
     }
 
+    if ( $Param{Operator} eq 'Empty' ) {
+        my $SQL = " $Param{TableAlias}.value_text IS NULL ";
+        return $SQL;
+    }
+
     $Kernel::OM->Get('Kernel::System::Log')->Log(
         'Priority' => 'error',
         'Message'  => "Unsupported Operator $Param{Operator}",
