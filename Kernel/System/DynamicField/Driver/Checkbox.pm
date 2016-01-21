@@ -187,7 +187,7 @@ sub SearchSQLGet {
     );
 
     if ( $Param{Operator} eq 'Empty' ) {
-        my $SQL = " $Param{TableAlias}.value_int IS NULL ";
+        my $SQL = " ($Param{TableAlias}.value_int IS NULL OR $Param{TableAlias}.value_int = 0) ";
         return $SQL;
     }
     elsif ( !$Operators{ $Param{Operator} } ) {
