@@ -188,8 +188,7 @@ sub SearchSQLGet {
             .= $Kernel::OM->Get('Kernel::System::DB')->Quote( $Param{SearchTerm}, 'Integer' ) . ' ';
         return $SQL;
     }
-
-    if ( $Param{Operator} eq 'Empty' ) {
+    elsif ( $Param{Operator} eq 'Empty' ) {
         my $SQL = " $Param{TableAlias}.value_int IS NULL ";
         return $SQL;
     }

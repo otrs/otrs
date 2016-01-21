@@ -131,8 +131,7 @@ sub SearchSQLGet {
         $SQL .= $Kernel::OM->Get('Kernel::System::DB')->Quote( $Param{SearchTerm} ) . "' ";
         return $SQL;
     }
-
-    if ( $Param{Operator} eq 'Empty' ) {
+    elsif ( $Param{Operator} eq 'Empty' ) {
         my $SQL = " $Param{TableAlias}.value_date IS NULL ";
         return $SQL;
     }

@@ -135,8 +135,7 @@ sub SearchSQLGet {
 
         return $SQL;
     }
-
-    if ( $Param{Operator} eq 'Empty' ) {
+    elsif ( $Param{Operator} eq 'Empty' ) {
         my $SQL = " $Param{TableAlias}.value_text IS NULL ";
         return $SQL;
     }
