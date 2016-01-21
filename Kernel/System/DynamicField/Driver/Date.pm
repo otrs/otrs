@@ -202,6 +202,7 @@ sub SearchSQLGet {
         SmallerThanEquals => '<=',
     );
 
+
     if ( $Param{Operator} eq 'Empty' ) {
         my $SQL = " $Param{TableAlias}.value_date IS NULL ";
         return $SQL;
