@@ -392,7 +392,7 @@ sub _GetParams {
 
     # get array params
     for my $Item (
-        qw(TicketNumber Title
+        qw(TicketNumber TicketID Title
         StateIDs StateTypeIDs QueueIDs PriorityIDs OwnerIDs
         CreatedUserIDs WatchUserIDs ResponsibleIDs
         TypeIDs ServiceIDs SLAIDs LockIDs Queues Types States
