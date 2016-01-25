@@ -46,6 +46,7 @@ sub Run {
 
         my %CustomerCompanyList = $Kernel::OM->Get('Kernel::System::CustomerCompany')->CustomerCompanyList(
             Search => $ParamObject->GetParam( Param => 'Term' ) || '',
+            Limit => 0,
         );
 
         # add CustomerIDs for which no CustomerCompany are registered
