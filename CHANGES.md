@@ -1,4 +1,11 @@
 #5.0.7 2016-??-??
+ - 2016-01-22 Fixed bug#[11813](http://bugs.otrs.org/show_bug.cgi?id=11813) - Changing agent email address disables his notifications preferences.
+ - 2016-01-21 Fixed bug#[11818](http://bugs.otrs.org/show_bug.cgi?id=11818) - Missing required settings in default TicketConnecor SOAP yaml web service.
+ - 2016-01-21 Fixed bug#[11817](http://bugs.otrs.org/show_bug.cgi?id=11817) - SLAID from TicketGet response Article has wrong cardinality in WSDL.
+ - 2016-01-21 Fixed bug#[11803](http://bugs.otrs.org/show_bug.cgi?id=11803) - Got no ProcessEntityID or TicketID and ActivityDialogEntityID!.
+ - 2016-01-21 Fixed bug#[6350](http://bugs.otrs.org/show_bug.cgi?id=6350) - Sort order in "Auto Responses <-> Queues", thanks to S7.
+ - 2016-01-21 Fixed bug#[11802](http://bugs.otrs.org/show_bug.cgi?id=11802) - Customer user can get access to all ticket data.
+ - 2016-01-19 Fixed bug#[11717](http://bugs.otrs.org/show_bug.cgi?id=11717) - Views with iFrames not scrollable on iOS.
  - 2016-01-15 Improved DBUpdate-to-5.pl to migrate notification config entries as well (S7).
  - 2016-01-15 Follow-up fix for bug#[11696](http://bugs.otrs.org/show_bug.cgi?id=11696) - Queue overview displays Queues with no avaible tickets.
  - 2016-01-15 Do not let customers know if other tickets exist or not (thanks to Renée Bäcker).
