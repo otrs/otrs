@@ -93,8 +93,7 @@ sub Run {
 
             if ( !$Content ) {
                 return $Kernel::OM->Get('Kernel::Output::HTML::Layout')->FatalError(
-                    Message => $LayoutObject->{LanguageObject}->Translate('Could not read %s!',
-                        $ExampleProcessFilename),
+                    Message => $LayoutObject->{LanguageObject}->Translate('Could not read %s!', $ExampleProcessFilename),
                 );
             }
 
@@ -645,8 +644,7 @@ sub Run {
         );
         if ( !$ProcessData ) {
             return $LayoutObject->ErrorScreen(
-                Message => $LayoutObject->{LanguageObject}->Translate('Unknown Process %s!',
-                    $ProcessID),
+                Message => $LayoutObject->{LanguageObject}->Translate('Unknown Process %s!', $ProcessID),
             );
         }
 
@@ -711,8 +709,7 @@ sub Run {
         # show error if can't set
         if ( !$Success ) {
             return $LayoutObject->ErrorScreen(
-                Message => $LayoutObject->{LanguageObject}->Translate('There was an error setting '
-                    . 'the entity sync status for Process entity: %s', $EntityID),
+                Message => $LayoutObject->{LanguageObject}->Translate('There was an error setting the entity sync status for Process entity: %s', $EntityID),
             );
         }
 
@@ -827,8 +824,7 @@ sub Run {
         # show error if can't set
         if ( !$Success ) {
             return $LayoutObject->ErrorScreen(
-                Message => $LayoutObject->{LanguageObject}->Translate('There was an error setting '
-                    . 'the entity sync status for Process entity: %s', $EntityID),
+                Message => $LayoutObject->{LanguageObject}->Translate('There was an error setting the entity sync status for Process entity: %s', $EntityID),
             );
         }
 
@@ -983,8 +979,7 @@ sub Run {
         # show error if can't set
         if ( !$Success ) {
             return $LayoutObject->ErrorScreen(
-                Message => $LayoutObject->{LanguageObject}->Translate('There was an error setting '
-                    . 'the entity sync status for Process entity: %s', $ProcessData->{EntityID}),
+                Message => $LayoutObject->{LanguageObject}->Translate('There was an error setting the entity sync status for Process entity: %s', $ProcessData->{EntityID}),
             );
         }
 
@@ -1072,8 +1067,7 @@ sub Run {
                 if ( !$Success ) {
                     $DeleteResult{Success} = $Success;
                     $DeleteResult{Message} = $LayoutObject->{LanguageObject}
-                        ->Translate('There was an error setting the entity sync status for Process '
-                        . 'entity: %s', $CheckResult->{ProcessData}->{EntityID});
+                        ->Translate('There was an error setting the entity sync status for Process entity: %s', $CheckResult->{ProcessData}->{EntityID});
                 }
             }
 
@@ -1257,8 +1251,7 @@ sub Run {
                     if ( !$Success ) {
                         $Success = 0;
                         $Message = $LayoutObject->{LanguageObject}
-                            ->Translate('There was an error setting the entity sync status for %s '
-                            . 'entity: %s', $GetParam{EntityType}, $Entity->{EntityID});
+                            ->Translate('There was an error setting the entity sync status for %s entity: %s', $GetParam{EntityType}, $Entity->{EntityID});
                     }
                 }
 
