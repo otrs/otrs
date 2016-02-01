@@ -869,6 +869,42 @@ sub MaskAgentZoom {
         @ArticleBoxShown = @ArticleBox;
     }
 
+
+    my %Widgets;
+    my $MainObject = $Kernel::OM->Get('Kernel::System::Main');
+    WIDGET:
+    for my $Key ( sort keys %{ $Self->{DisplaySettings}->{Widgets} // {} } ) {
+        my $Config = $Self->{DisplaySettings}->{Widgets}->{$Key};
+        my $Success = eval { $MainObject->Require( $Config->{Module} ) };
+        next WIDGET if !$Success;
+        my $Module = eval { $Config->{Module}->new(%$Self) };
+        if ( !$Module ) {
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
+                Priority => 'error',
+                Message  => "new() of Widget module $Config->{Module} not successful!",
+
+            );
+            next WIDGET;
+        }
+        my $WidgetOutput = $Module->Run(
+            Ticket    => \%Ticket,
+            AclAction => \%AclAction,
+            Config    => $Config,
+        );
+        if ( !$WidgetOutput ) {
+            next WIDGET;
+        }
+        $WidgetOutput->{Rank} //= $Key;
+        my $Location = $WidgetOutput->{Location} || $Config->{Location};
+        push @{ $Widgets{ $Location } }, $WidgetOutput;
+    }
+    for my $Location ( sort keys %Widgets ) {
+        $Param{$Location . 'Widgets'} = [
+            map  { $_->{Output} }
+            sort { $a->{Rank} cmp $b->{Rank} } @{ $Widgets{$Location} }
+        ];
+    }
+
     # set display options
     $Param{WidgetTitle} = Translatable('Ticket Information');
     $Param{Hook} = $ConfigObject->Get('Ticket::Hook') || 'Ticket#';
@@ -1670,48 +1706,6 @@ sub MaskAgentZoom {
         $LayoutObject->Block(
             Name => 'CustomerTable',
             Data => \%Param,
-        );
-    }
-
-    # get linked objects
-    my $LinkListWithData = $Kernel::OM->Get('Kernel::System::LinkObject')->LinkListWithData(
-        Object           => 'Ticket',
-        Key              => $Self->{TicketID},
-        State            => 'Valid',
-        UserID           => $Self->{UserID},
-        ObjectParameters => {
-            Ticket => {
-                IgnoreLinkedTicketStateTypes => 1,
-            },
-        },
-    );
-
-    # get link table view mode
-    my $LinkTableViewMode = $ConfigObject->Get('LinkObject::ViewMode');
-
-    # create the link table
-    my $LinkTableStrg = $LayoutObject->LinkObjectTableCreate(
-        LinkListWithData => $LinkListWithData,
-        ViewMode         => $LinkTableViewMode,
-    );
-
-    # output the simple link table
-    if ( $LinkTableStrg && $LinkTableViewMode eq 'Simple' ) {
-        $LayoutObject->Block(
-            Name => 'LinkTableSimple',
-            Data => {
-                LinkTableStrg => $LinkTableStrg,
-            },
-        );
-    }
-
-    # output the complex link table
-    if ( $LinkTableStrg && $LinkTableViewMode eq 'Complex' ) {
-        $LayoutObject->Block(
-            Name => 'LinkTableComplex',
-            Data => {
-                LinkTableStrg => $LinkTableStrg,
-            },
         );
     }
 
