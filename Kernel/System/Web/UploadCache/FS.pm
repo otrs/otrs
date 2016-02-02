@@ -53,6 +53,10 @@ sub FormIDRemove {
 
     my $Directory = $Self->_GetCacheDirectory(%Param);
 
+    if ( !-d $Directory ) {
+        return 1;
+    }
+
     # get main object
     my $MainObject = $Kernel::OM->Get('Kernel::System::Main');
 
@@ -97,13 +101,13 @@ sub FormIDAddFile {
 
     # create cache subdirectory if not exist
     my $Directory = $Self->_GetCacheDirectory(%Param);
-    if ( !-e $Directory ) {
+    if ( !-d $Directory ) {
 
         # Create directory. This could fail if another process creates the
         #   same directory, so don't use the return value.
         File::Path::mkpath( $Directory, 0, 0770 );    ## no critic
 
-        if ( !-e $Directory ) {
+        if ( !-d $Directory ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
                 Message  => "Can't create directory '$Directory': $!",
@@ -165,6 +169,10 @@ sub FormIDRemoveFile {
     my %File  = %{ $Index[$ID] };
 
     my $Directory = $Self->_GetCacheDirectory(%Param);
+
+    if ( !-d $Directory ) {
+        return 1;
+    }
 
     # get main object
     my $MainObject = $Kernel::OM->Get('Kernel::System::Main');
