@@ -2235,7 +2235,7 @@ sub _NewAgentNotificationsLanguageGet {
 
 das Ticket [<OTRS_CONFIG_Ticket::Hook><OTRS_TICKET_TicketNumber>] wurde in der Queue <OTRS_TICKET_Queue> erstellt.
 
-<OTRS_CUSTOMER_REALNAME> schrieb:
+<OTRS_CUSTOMER_FROM> schrieb:
 <OTRS_CUSTOMER_BODY[30]>
 
 <OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<OTRS_TICKET_TicketID>
@@ -2249,7 +2249,7 @@ das Ticket [<OTRS_CONFIG_Ticket::Hook><OTRS_TICKET_TicketNumber>] wurde in der Q
 
 ticket [<OTRS_CONFIG_Ticket::Hook><OTRS_TICKET_TicketNumber>] has been created in queue <OTRS_TICKET_Queue>.
 
-<OTRS_CUSTOMER_REALNAME> wrote:
+<OTRS_CUSTOMER_FROM> wrote:
 <OTRS_CUSTOMER_BODY[30]>
 
 <OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<OTRS_TICKET_TicketID>
@@ -2263,7 +2263,7 @@ ticket [<OTRS_CONFIG_Ticket::Hook><OTRS_TICKET_TicketNumber>] has been created i
 
 el ticket [<OTRS_CONFIG_Ticket::Hook><OTRS_TICKET_TicketNumber>] se ha  creado en la fila <OTRS_TICKET_Queue>.
 
-<OTRS_CUSTOMER_REALNAME> escribió:
+<OTRS_CUSTOMER_FROM> escribió:
 <OTRS_CUSTOMER_BODY[30]>
 
 <OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<OTRS_TICKET_TicketID>
@@ -2277,7 +2277,7 @@ el ticket [<OTRS_CONFIG_Ticket::Hook><OTRS_TICKET_TicketNumber>] se ha  creado e
 
 o ticket [<OTRS_CONFIG_Ticket::Hook><OTRS_TICKET_TicketNumber>] foi criado na fila <OTRS_TICKET_Queue>.
 
-<OTRS_CUSTOMER_REALNAME> escreveu:
+<OTRS_CUSTOMER_FROM> escreveu:
 <OTRS_CUSTOMER_BODY[30]>
 
 <OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<OTRS_TICKET_TicketID>
@@ -2291,7 +2291,7 @@ o ticket [<OTRS_CONFIG_Ticket::Hook><OTRS_TICKET_TicketNumber>] foi criado na fi
 
 票据工单 [<OTRS_CONFIG_Ticket::Hook><OTRS_TICKET_TicketNumber>] 已在等待队列 已在队列<OTRS_TICKET_Queue> 中被编制完成。中被创建完成
 
-<OTRS_CUSTOMER_REALNAME> 写道：
+<OTRS_CUSTOMER_FROM> 写道：
 <OTRS_CUSTOMER_BODY[30]>
 
 <OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<OTRS_TICKET_TicketID>
@@ -2456,7 +2456,7 @@ Escalonamento em: <OTRS_TICKET_EscalationDestinationIn>
 
 zum gesperrten Ticket [<OTRS_CONFIG_Ticket::Hook><OTRS_TICKET_TicketNumber>] gibt es eine Nachfrage.
 
-<OTRS_CUSTOMER_REALNAME> schrieb:
+<OTRS_CUSTOMER_FROM> schrieb:
 <OTRS_CUSTOMER_BODY[30]>
 
 <OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<OTRS_TICKET_TicketID>
@@ -2470,7 +2470,7 @@ zum gesperrten Ticket [<OTRS_CONFIG_Ticket::Hook><OTRS_TICKET_TicketNumber>] gib
 
 the locked ticket [<OTRS_CONFIG_Ticket::Hook><OTRS_TICKET_TicketNumber>] received a follow-up.
 
-<OTRS_CUSTOMER_REALNAME> wrote:
+<OTRS_CUSTOMER_FROM> wrote:
 <OTRS_CUSTOMER_BODY[30]>
 
 <OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<OTRS_TICKET_TicketID>
@@ -2484,7 +2484,7 @@ the locked ticket [<OTRS_CONFIG_Ticket::Hook><OTRS_TICKET_TicketNumber>] receive
 
 el ticket bloqueado [<OTRS_CONFIG_Ticket::Hook><OTRS_TICKET_TicketNumber>] recibió un seguimiento.
 
-<OTRS_CUSTOMER_REALNAME> escribió:
+<OTRS_CUSTOMER_FROM> escribió:
 <OTRS_CUSTOMER_BODY[30]>
 
 <OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<OTRS_TICKET_TicketID>
@@ -2498,7 +2498,7 @@ el ticket bloqueado [<OTRS_CONFIG_Ticket::Hook><OTRS_TICKET_TicketNumber>] recib
 
 o ticket bloqueado [<OTRS_CONFIG_Ticket::Hook><OTRS_TICKET_TicketNumber>] recebeu uma resposta.
 
-<OTRS_CUSTOMER_REALNAME> escreveu:
+<OTRS_CUSTOMER_FROM> escreveu:
 <OTRS_CUSTOMER_BODY[30]>
 
 <OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<OTRS_TICKET_TicketID>
@@ -2512,7 +2512,7 @@ o ticket bloqueado [<OTRS_CONFIG_Ticket::Hook><OTRS_TICKET_TicketNumber>] recebe
 
 加锁票据锁定工单 [<OTRS_CONFIG_Ticket::Hook><OTRS_TICKET_TicketNumber>] 已获得一项后续作业。
 
-<OTRS_CUSTOMER_REALNAME> 写道：
+<OTRS_CUSTOMER_FROM> 写道：
 <OTRS_CUSTOMER_BODY[30]>
 
 <OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<OTRS_TICKET_TicketID>
@@ -2528,7 +2528,7 @@ o ticket bloqueado [<OTRS_CONFIG_Ticket::Hook><OTRS_TICKET_TicketNumber>] recebe
 
 zum freigegebenen Ticket [<OTRS_CONFIG_Ticket::Hook><OTRS_TICKET_TicketNumber>] gibt es eine Nachfrage.
 
-<OTRS_CUSTOMER_REALNAME> schrieb:
+<OTRS_CUSTOMER_FROM> schrieb:
 <OTRS_CUSTOMER_BODY[30]>
 
 <OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<OTRS_TICKET_TicketID>
@@ -2542,7 +2542,7 @@ zum freigegebenen Ticket [<OTRS_CONFIG_Ticket::Hook><OTRS_TICKET_TicketNumber>] 
 
 the unlocked ticket [<OTRS_CONFIG_Ticket::Hook><OTRS_TICKET_TicketNumber>] received a follow-up.
 
-<OTRS_CUSTOMER_REALNAME> wrote:
+<OTRS_CUSTOMER_FROM> wrote:
 <OTRS_CUSTOMER_BODY[30]>
 
 <OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<OTRS_TICKET_TicketID>
@@ -2556,7 +2556,7 @@ the unlocked ticket [<OTRS_CONFIG_Ticket::Hook><OTRS_TICKET_TicketNumber>] recei
 
 el ticket desbloqueado [<OTRS_CONFIG_Ticket::Hook><OTRS_TICKET_TicketNumber>] recibió un seguimiento.
 
-<OTRS_CUSTOMER_REALNAME> escribió:
+<OTRS_CUSTOMER_FROM> escribió:
 <OTRS_CUSTOMER_BODY[30]>
 
 <OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<OTRS_TICKET_TicketID>
@@ -2570,7 +2570,7 @@ el ticket desbloqueado [<OTRS_CONFIG_Ticket::Hook><OTRS_TICKET_TicketNumber>] re
 
 o ticket desbloqueado [<OTRS_CONFIG_Ticket::Hook><OTRS_TICKET_TicketNumber>] recebeu uma resposta.
 
-<OTRS_CUSTOMER_REALNAME> escreveu:
+<OTRS_CUSTOMER_FROM> escreveu:
 <OTRS_CUSTOMER_BODY[30]>
 
 <OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<OTRS_TICKET_TicketID>
@@ -2584,7 +2584,7 @@ o ticket desbloqueado [<OTRS_CONFIG_Ticket::Hook><OTRS_TICKET_TicketNumber>] rec
 
 解锁票据解锁工单[<OTRS_CONFIG_Ticket::Hook><OTRS_TICKET_TicketNumber>] 已获得一项后续作业。
 
-<OTRS_CUSTOMER_REALNAME> 写道:
+<OTRS_CUSTOMER_FROM> 写道:
 <OTRS_CUSTOMER_BODY[30]>
 
 <OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<OTRS_TICKET_TicketID>
