@@ -137,6 +137,9 @@ Core.Agent.Admin.Group = (function (TargetNS) {
                             <td>[% Data.CreateTime | Localize("TimeShort") %]</td>
                         </tr>
 [% RenderBlockEnd("OverviewResultRow") %]
+                        <tr class="FilterMessage Hidden">
+                            <td colspan="5">[% Translate("No matches found.") | html %]</td>
+                        </tr>
                     </tbody>
                 </table>
 [% WRAPPER JSOnDocumentComplete %]
