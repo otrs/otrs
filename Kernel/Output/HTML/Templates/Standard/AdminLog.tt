@@ -63,6 +63,9 @@ $('#HideHint').bind('click', function(){
                             <td>[% Data.Message | html %]</td>
                         </tr>
 [% RenderBlockEnd("Row") %]
+                        <tr class="FilterMessage Hidden">
+                            <td colspan="4">[% Translate("No matches found.") | html %]</td>
+                        </tr>
                     </tbody>
                 </table>
 [% WRAPPER JSOnDocumentComplete %]
