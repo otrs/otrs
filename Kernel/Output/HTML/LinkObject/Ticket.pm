@@ -310,7 +310,8 @@ sub TableCreateSimple {
     }
 
     my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
-    my $TicketHook   = $Kernel::OM->Get('Kernel::Config')->Get('Ticket::Hook');
+    my $TicketHook   = $ConfigObject->Get('Ticket::Hook');
+
     my %LinkOutputData;
     for my $LinkType ( sort keys %{ $Param{ObjectLinkListWithData} } ) {
 
@@ -330,7 +331,7 @@ sub TableCreateSimple {
 
                 # set css
                 my $CssClass;
-                my @StatesToStrike = @{ $Self->{ConfigObject}->Get('LinkTicket::StrikeThroughStates') || [] };
+                my @StatesToStrike = @{ $ConfigObject->Get('LinkTicket::StrikeThroughStates') || [] };
 
                 if ( first{ $Ticket->{StateType} eq $_ }@StatesToStrike ) {
                     $CssClass = 'StrikeThrough';
