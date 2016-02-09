@@ -778,8 +778,8 @@
         <SubGroup>Core::Sendmail</SubGroup>
         <Setting>
             <Hash>
-                <Item Key="Precedence">bulk</Item>
-                <Item Key="Auto-Submitted">auto-generated</Item>
+                <Item Key="Precedence:">bulk</Item>
+                <Item Key="Auto-Submitted:">auto-generated</Item>
             </Hash>
         </Setting>
     </ConfigItem>
