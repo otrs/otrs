@@ -10923,6 +10923,7 @@ Thanks for your help!
             <Hash>
                 <Item Key="Module">Kernel::Output::HTML::TicketZoom::CustomerInformation</Item>
                 <Item Key="Location">Sidebar</Item>
+                <Item Key="Async">1</Item>
             </Hash>
         </Setting>
     </ConfigItem>
