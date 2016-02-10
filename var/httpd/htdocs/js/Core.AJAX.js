@@ -511,10 +511,11 @@ Core.AJAX = (function (TargetNS) {
      * @param {jQueryObject} $ElementToUpdate - The jQuery object of the element(s) which should be updated
      * @param {String} URL - The URL which is called via Ajax
      * @param {Function} Callback - The additional callback function which is called after the request returned from the server
+     * @param {Bool} Replace - replace the DOM container with the response instead of updating the contents
      * @description
      *      Calls an URL via Ajax and updates a html element with the answer html of the server.
      */
-    TargetNS.ContentUpdate = function ($ElementToUpdate, URL, Callback) {
+    TargetNS.ContentUpdate = function ($ElementToUpdate, URL, Callback, Replace) {
         var QueryString, QueryIndex = URL.indexOf("?"), GlobalResponse;
 
         if (QueryIndex >= 0) {
@@ -539,7 +540,12 @@ Core.AJAX = (function (TargetNS) {
                 }
                 else if ($ElementToUpdate && isJQueryObject($ElementToUpdate) && $ElementToUpdate.length) {
                     GlobalResponse = Response;
-                    $ElementToUpdate.html(Response);
+                    if ( Replace ) {
+                        $ElementToUpdate.replaceWith(Response);
+                    }
+                    else {
+                        $ElementToUpdate.html(Response);
+                    }
                 }
                 else {
                     // We are out of the OTRS App scope, that's why an exception would not be caught. Therefore we handle the error manually.

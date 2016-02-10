@@ -73,8 +73,20 @@
 
     <div class="LayoutFixedSidebar SidebarLast">
         <div class="SidebarColumn">
-            [% FOREACH widget IN Data.SidebarWidgets; %]
-                [% widget %]
+            [% FOREACH Widget IN Data.SidebarWidgets; %]
+                [% IF Widget.Async; %]
+                    <div id="[% Widget.ElementID %]"></div>
+                    [% WRAPPER JSOnDocumentComplete %]
+                    <script type="text/javascript">//<![CDATA[
+                        Core.AJAX.ContentUpdate($('#[% Widget.ElementID %]'),
+                            '[% Env("Baselink") %]Action=[% Env("Action") %];Subaction=LoadWidget;'
+                             + 'TicketID=[% Widget.TicketID %];ElementID=[% Widget.ElementID %]',
+                             null, true);
+                    //]]></script>
+                    [% END %]
+                [% ELSE; %]
+                    [% Widget.Output %]
+                [% END; %]
             [% END; %]
         </div>
         <div class="ContentColumn">
@@ -210,8 +222,8 @@
 [% Data.ArticleItems %]
             </div>
 
-            [% FOREACH widget IN Data.MainWidgets; %]
-                [% widget %]
+            [% FOREACH Widget IN Data.MainWidgets; %]
+                [% Widget.Output %]
             [% END; %]
 
         </div>
