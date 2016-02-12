@@ -177,7 +177,7 @@ sub Run {
 
     # check if password is not matching PasswordRegExp
     if ( $Config->{PasswordRegExp} && $Pw !~ /$Config->{PasswordRegExp}/ ) {
-        $Self->{Error} = Translatable('Can\'t update password, it does not match the RegExp stated in PasswordRegExp! (See SysConfig: Framework -> Frontend::Agent::Preferences)');
+        $Self->{Error} = Translatable('Can\'t update password, it does not match the RegExp stated in PasswordRegExp! (See SysConfig: Framework -> Frontend::Agent::Preferences) and/or contact your administrator.');
         return;
     }
 
