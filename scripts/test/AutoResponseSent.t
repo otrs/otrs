@@ -60,7 +60,7 @@ my @Tests = (
         FollowUpID         => 2,                          # Queue follow up option 'rejected'
         AutoResponseTypeID => 2,
         AutoResponseType   => 'auto reject',
-        TicketState        => 'closed successful',
+        TicketState        => 'closed successfully',
         ArticleType        => 'webrequest',
     },
     {
@@ -68,7 +68,7 @@ my @Tests = (
         FollowUpID         => 3,                                 # Queue follow up option 'new ticket'
         AutoResponseTypeID => 4,
         AutoResponseType   => 'auto reply/new ticket',
-        TicketState        => 'closed successful',
+        TicketState        => 'closed successfully',
         ArticleType        => 'webrequest',
     },
     {

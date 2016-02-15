@@ -95,7 +95,7 @@ $Selenium->RunTest(
                 TicketLink    => 'StateType=Open',
             },
             'Closed' => {
-                TicketState   => 'closed successful',
+                TicketState   => 'closed successfully',
                 TicketCount   => '',
                 TicketNumbers => [],
                 TicketIDs     => [],

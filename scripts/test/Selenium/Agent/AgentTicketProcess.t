@@ -149,8 +149,8 @@ $Selenium->RunTest(
 
         # check for inputed values as final step in first scenario
         $Self->True(
-            index( $Selenium->get_page_source(), 'closed successful' ) > -1,
-            "Ticket closed successful state found on page",
+            index( $Selenium->get_page_source(), 'closed successfully' ) > -1,
+            "Ticket closed successfully state found on page",
         );
         $Self->True(
             index( $Selenium->get_page_source(), '5 very high' ) > -1,

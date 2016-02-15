@@ -6,7 +6,7 @@
     PossibleNot:
       Ticket:
         State:
-        - closed successful
+        - closed successfully
   ConfigMatch: ''
   CreateBy: root@localhost
   CreateTime: 2014-06-03 20:26:04

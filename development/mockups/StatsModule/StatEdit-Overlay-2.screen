@@ -54,10 +54,10 @@
   <widgets xsi:type="model:Label" id="55" x="311" y="146" text="Add new Y axis attribute" measuredWidth="140" measuredHeight="23">
     <font/>
   </widgets>
-  <widgets xsi:type="model:List" id="57" x="464" y="203" width="250" text="Closed successful&#xA;|Closed unsuccessful&#xA;|open&#xA;pending reminder" measuredWidth="250" measuredHeight="88">
+  <widgets xsi:type="model:List" id="57" x="464" y="203" width="250" text="Closed successfully&#xA;|Closed unsuccessfully&#xA;|open&#xA;pending reminder" measuredWidth="250" measuredHeight="88">
     <font/>
-    <items x="0" y="2" width="250" height="21" text="Closed successful"/>
-    <items x="0" y="23" width="250" height="21" text="|Closed unsuccessful"/>
+    <items x="0" y="2" width="250" height="21" text="Closed successfully"/>
+    <items x="0" y="23" width="250" height="21" text="|Closed unsuccessfully"/>
     <items x="0" y="44" width="250" height="21" text="|open"/>
     <items x="0" y="65" width="250" height="21" text="pending reminder"/>
   </widgets>

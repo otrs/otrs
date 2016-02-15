@@ -70,7 +70,7 @@ $Self->True(
 
 # close ticket 2
 $Success = $TicketObject->TicketStateSet(
-    State    => 'closed successful',
+    State    => 'closed successfully',
     TicketID => $TicketID2,
     UserID   => 1,
 );

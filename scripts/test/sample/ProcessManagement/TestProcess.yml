@@ -161,7 +161,7 @@ TransitionActions:
     ChangeTime: 2015-03-24 14:27:18
     Config:
       Config:
-        State: closed unsuccessful
+        State: closed unsuccessfully
       Module: Kernel::System::ProcessManagement::TransitionAction::TicketStateSet
     CreateTime: 2015-03-24 14:27:18
     EntityID: TransitionAction-9b0fa5403f24ad1e4de1f3c231053786
@@ -171,7 +171,7 @@ TransitionActions:
     ChangeTime: 2015-03-24 14:27:18
     Config:
       Config:
-        State: closed successful
+        State: closed successfully
       Module: Kernel::System::ProcessManagement::TransitionAction::TicketStateSet
     CreateTime: 2015-03-24 14:27:18
     EntityID: TransitionAction-9c130d0106d6318ec0323c61a5a198a1

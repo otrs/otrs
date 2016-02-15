@@ -18,7 +18,7 @@ use Kernel::System::VariableCheck qw(:all);
 # get needed objects
 my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
 
-my @BlackListedStates = ( 'closed successful', 'closed unsuccessful' );
+my @BlackListedStates = ( 'closed successfully', 'closed unsuccessfully' );
 
 # enable feature
 $ConfigObject->Set(
@@ -218,7 +218,7 @@ $CheckACLs->(
 
 # close child ticket
 my $Success = $TicketObject->TicketStateSet(
-    State    => 'closed successful',
+    State    => 'closed successfully',
     TicketID => $TicketID2,
     UserID   => 1,
 );

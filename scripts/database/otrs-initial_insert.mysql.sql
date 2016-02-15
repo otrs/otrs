@@ -138,13 +138,13 @@ INSERT INTO ticket_state (id, name, comments, type_id, valid_id, create_by, crea
 # ----------------------------------------------------------
 INSERT INTO ticket_state (id, name, comments, type_id, valid_id, create_by, create_time, change_by, change_time)
     VALUES
-    (2, 'closed successful', 'Ticket is closed successful.', 3, 1, 1, current_timestamp, 1, current_timestamp);
+    (2, 'closed successfully', 'Ticket is closed successful.', 3, 1, 1, current_timestamp, 1, current_timestamp);
 # ----------------------------------------------------------
 #  insert into table ticket_state
 # ----------------------------------------------------------
 INSERT INTO ticket_state (id, name, comments, type_id, valid_id, create_by, create_time, change_by, change_time)
     VALUES
-    (3, 'closed unsuccessful', 'Ticket is closed unsuccessful.', 3, 1, 1, current_timestamp, 1, current_timestamp);
+    (3, 'closed unsuccessfully', 'Ticket is closed unsuccessful.', 3, 1, 1, current_timestamp, 1, current_timestamp);
 # ----------------------------------------------------------
 #  insert into table ticket_state
 # ----------------------------------------------------------

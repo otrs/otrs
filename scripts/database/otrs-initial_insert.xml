@@ -215,7 +215,7 @@
     </Insert>
     <Insert Table="ticket_state">
         <Data Key="id" Type="AutoIncrement">2</Data>
-        <Data Key="name" Type="Quote" Translatable="1">closed successful</Data>
+        <Data Key="name" Type="Quote" Translatable="1">closed successfully</Data>
         <Data Key="comments" Type="Quote" Translatable="1">Ticket is closed successful.</Data>
         <Data Key="type_id">3</Data>
         <Data Key="valid_id">1</Data>
@@ -226,7 +226,7 @@
     </Insert>
     <Insert Table="ticket_state">
         <Data Key="id" Type="AutoIncrement">3</Data>
-        <Data Key="name" Type="Quote" Translatable="1">closed unsuccessful</Data>
+        <Data Key="name" Type="Quote" Translatable="1">closed unsuccessfully</Data>
         <Data Key="comments" Type="Quote" Translatable="1">Ticket is closed unsuccessful.</Data>
         <Data Key="type_id">3</Data>
         <Data Key="valid_id">1</Data>

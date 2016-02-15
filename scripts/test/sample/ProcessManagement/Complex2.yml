@@ -404,7 +404,7 @@ TransitionActions:
     ChangeTime: 2012-12-06 02:29:55
     Config:
       Config:
-        State: closed successful
+        State: closed successfully
       Module: Kernel::System::ProcessManagement::TransitionAction::TicketStateSet
     CreateTime: 2012-12-06 02:29:27
     EntityID: TA7
@@ -414,7 +414,7 @@ TransitionActions:
     ChangeTime: 2012-12-06 02:31:12
     Config:
       Config:
-        State: closed unsuccessful
+        State: closed unsuccessfully
       Module: Kernel::System::ProcessManagement::TransitionAction::TicketStateSet
     CreateTime: 2012-12-06 02:31:12
     EntityID: TA8

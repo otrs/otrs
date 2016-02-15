@@ -471,8 +471,8 @@ returns
 
     my %List = (
         1 => "new",
-        2 => "closed successful",
-        3 => "closed unsuccessful",
+        2 => "closed successfully",
+        3 => "closed unsuccessfully",
         4 => "open",
         5 => "removed",
         6 => "pending reminder",
@@ -542,7 +542,7 @@ sub StateList {
 returns the id or the name of a state
 
     my $StateID = $StateObject->StateLookup(
-        State => 'closed successful',
+        State => 'closed successfully',
     );
 
     my $State = $StateObject->StateLookup(
