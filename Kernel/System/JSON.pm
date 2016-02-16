@@ -69,6 +69,13 @@ Encode a perl data structure to a JSON string.
         Pretty => 1,            # (optional) (0|1) default 0, to pretty print
     );
 
+Pretty print for the JSON string
+
+    my $JSONString = $JSONObject->Encode(
+        Data   => $Data,
+        Pretty => 1,          # (optional) (0|1) default 0, to pretty print
+    );
+
 =cut
 
 sub Encode {
@@ -96,6 +103,11 @@ sub Encode {
     # pretty print - can be useful for debugging purposes
     if ( $Param{Pretty} ) {
         $JSONObject->pretty(1);
+    }
+
+    # pretty print - can be useful for debugging purposes
+    if ( $Param{Pretty} ) {
+        $JSONObject->pretty( [1] );
     }
 
     # get JSON-encoded presentation of perl structure
