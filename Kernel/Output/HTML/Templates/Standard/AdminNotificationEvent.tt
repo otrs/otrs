@@ -471,11 +471,11 @@ $('.NotificationDelete').bind('click', function (Event) {
                         <div class="Clear"></div>
 
                         <label for="AgentEnabledByDefault[% Data.Transport | html %]" class="AgentEnabledByDefault">
-                            [% Translate("Send by default") | html %]:
+                            [% Translate("Enable sending this notification method by default?") | html %]:
                         </label>
                         <div class="Field AgentEnabledByDefault">
                             <input type="checkbox" name="AgentEnabledByDefault" id="AgentEnabledByDefault[% Data.Transport | html %]" value="[% Data.Transport | html %]"  title="" [% Data.AgentEnabledByDefaultChecked %] />
-                            <p class="FieldExplanation">[% Translate('Should the notification be sent to agents who have not yet made a choice in their preferences?') | html %]</p>
+                            <p class="FieldExplanation">[% Translate('Activating this sends the notification to agents who have not yet made a choice in their preferences and also match the defined recipients above.') | html %]</p>
                         </div>
                         <div class="Clear"></div>
 
