@@ -1817,8 +1817,21 @@ sub _Mask {
             my $Calendar = $TicketObject->TicketCalendarGet(
                 %Ticket,
             );
+            
+            my %PendingOpts;
+            my $Hour = $ConfigObject->Get('Ticket::Frontend::PendingTimeHour');
+            if ( defined $Hour ) {
+                $PendingOpts{Hour} = $Hour;
+            }
 
-            $Param{DateString} = $LayoutObject->BuildDateSelection(
+            my $Minute = $ConfigObject->Get('Ticket::Frontend::PendingTimeMinute');
+            if ( defined $Minute ) {
+                $PendingOpts{Minute} = $Minute;
+            }
+
+            # pending data string
+            $Param{PendingDateString} = $LayoutObject->BuildDateSelection(
+                %PendingOpts,
                 %Param,
                 Format           => 'DateInputFormatLong',
                 YearPeriodPast   => 0,

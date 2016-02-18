@@ -11781,4 +11781,20 @@ Thanks for your help!
             </Option>
         </Setting>
     </ConfigItem>
+    <ConfigItem Name="Ticket::Frontend::PendingTimeHour" Required="0" Valid="0">
+        <Description Translatable="1">Exact hour for pending time.</Description>
+        <Group>Ticket</Group>
+        <SubGroup>Frontend::Agent</SubGroup>
+        <Setting>
+            <String Regex="^\d+$">8</String>
+        </Setting>
+    </ConfigItem>
+    <ConfigItem Name="Ticket::Frontend::PendingTimeMinute" Required="0" Valid="0">
+        <Description Translatable="1">Exact hour for pending time.</Description>
+        <Group>Ticket</Group>
+        <SubGroup>Frontend::Agent</SubGroup>
+        <Setting>
+            <String Regex="^\d+$">00</String>
+        </Setting>
+    </ConfigItem>
 </otrs_config>
