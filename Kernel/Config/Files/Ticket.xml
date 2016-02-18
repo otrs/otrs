@@ -11781,4 +11781,253 @@ Thanks for your help!
             </Option>
         </Setting>
     </ConfigItem>
+    <ConfigItem Name="Frontend::Module###AgentFlexibleTicketDialog" Required="0" Valid="1">
+        <Description Translatable="1">Frontend module for your own ticket dialogs.</Description>
+        <Group>Ticket</Group>
+        <SubGroup>Frontend::Agent::ModuleRegistration</SubGroup>
+        <Setting>
+            <FrontendModuleReg>
+                <Description>Your own ticket dialog.</Description>
+                <NavBarName>Ticket</NavBarName>
+                <Title>Your own ticket dialog.</Title>
+                <Loader>
+                    <JavaScript>Core.Agent.TicketAction.js</JavaScript>
+                </Loader>
+            </FrontendModuleReg>
+        </Setting>
+    </ConfigItem>
+    <ConfigItem Name="Ticket::Frontend::MenuModule###212-FlexibleTicketDialog" Required="0" Valid="1">
+        <Description Translatable="1">shows links to all your own ticket dialogs in the ticket menu.</Description>
+        <Group>Ticket</Group>
+        <SubGroup>Frontend::Agent::Ticket::MenuModule</SubGroup>
+        <Setting>
+            <Hash>
+                <Item Key="Module">Kernel::Output::HTML::TicketMenuFlexibleModule</Item>
+            </Hash>
+        </Setting>
+    </ConfigItem>
+    <ConfigItem Name="FlexibleTicketModule::Menu###001-Sample1" Required="0" Valid="1">
+        <Description Translatable="1">An example for a new menu.</Description>
+        <Group>Ticket</Group>
+        <SubGroup>Frontend::Agent::Ticket::MenuModule</SubGroup>
+        <Setting>
+            <Hash>
+                <Item Key="Name">Customer visited us</Item>
+                <Item Key="Config">Sample1</Item>
+                <Item Key="Description" Translatable="1">A description for Sample1</Item>
+                <Item Key="LinkParam"></Item>
+                <Item Key="Target"></Item>
+                <Item Key="PopupType">TicketAction</Item>
+            </Hash>
+        </Setting>
+    </ConfigItem>
+    <ConfigItem Name="FlexibleTicketModule::Menu###002-Sample2" Required="0" Valid="1">
+        <Description Translatable="1">An example for a new menu.</Description>
+        <Group>Ticket</Group>
+        <SubGroup>Frontend::Agent::Ticket::MenuModule</SubGroup>
+        <Setting>
+            <Hash>
+                <Item Key="Name">We visited Customer</Item>
+                <Item Key="Config">Sample2</Item>
+                <Item Key="Description" Translatable="1">A description for Sample2</Item>
+                <Item Key="LinkParam"></Item>
+                <Item Key="Target"></Item>
+                <Item Key="PopupType">TicketAction</Item>
+            </Hash>
+        </Setting>
+    </ConfigItem>
+    <ConfigItem Name="Ticket::Frontend::FlexibleTicketDialog::Sample1###DialogTitle" Required="1" Valid="1">
+        <Description Translatable="1">Prefix for the title.</Description>
+        <Group>Ticket</Group>
+        <SubGroup>Frontend::Agent::Ticket::ViewFlexible::Sample1</SubGroup>
+        <Setting>
+            <String Regex="">Customers' visit</String>
+        </Setting>
+    </ConfigItem>
+    <ConfigItem Name="Ticket::Frontend::FlexibleTicketDialog::Sample1###Permission" Required="1" Valid="1">
+        <Description Translatable="1">Required permissions to use the ticket phone inbound screen in the agent interface.</Description>
+        <Group>Ticket</Group>
+        <SubGroup>Frontend::Agent::Ticket::ViewFlexible::Sample1</SubGroup>
+        <Setting>
+            <String Regex="">phone</String>
+        </Setting>
+    </ConfigItem>
+    <ConfigItem Name="Ticket::Frontend::FlexibleTicketDialog::Sample1###RequiredLock" Required="0" Valid="1">
+        <Description Translatable="1">Defines if a ticket lock is required in the ticket phone inbound screen of the agent interface (if the ticket isn't locked yet, the ticket gets locked and the current agent will be set automatically as its owner).</Description>
+        <Group>Ticket</Group>
+        <SubGroup>Frontend::Agent::Ticket::ViewFlexible::Sample1</SubGroup>
+        <Setting>
+            <Option SelectedID="0">
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
+            </Option>
+        </Setting>
+    </ConfigItem>
+    <ConfigItem Name="Ticket::Frontend::FlexibleTicketDialog::Sample1###ArticleType" Required="1" Valid="1">
+        <Description Translatable="1">Defines the default type of the note in the ticket phone inbound screen of the agent interface.</Description>
+        <Group>Ticket</Group>
+        <SubGroup>Frontend::Agent::Ticket::ViewFlexible::Sample1</SubGroup>
+        <Setting>
+            <String Regex="">phone</String>
+        </Setting>
+    </ConfigItem>
+    <ConfigItem Name="Ticket::Frontend::FlexibleTicketDialog::Sample1###SenderType" Required="1" Valid="1">
+        <Description Translatable="1">Defines the default sender type for phone tickets in the ticket phone inbound screen of the agent interface.</Description>
+        <Group>Ticket</Group>
+        <SubGroup>Frontend::Agent::Ticket::ViewFlexible::Sample1</SubGroup>
+        <Setting>
+            <String Regex="">customer</String>
+        </Setting>
+    </ConfigItem>
+    <ConfigItem Name="Ticket::Frontend::FlexibleTicketDialog::Sample1###Subject" Required="1" Valid="1">
+        <Description Translatable="1">Defines the default subject for phone tickets in the ticket phone inbound screen of the agent interface.</Description>
+        <Group>Ticket</Group>
+        <SubGroup>Frontend::Agent::Ticket::ViewFlexible::Sample1</SubGroup>
+        <Setting>
+            <String Regex="">[% Translate("Phone call") | html %]!</String>
+        </Setting>
+    </ConfigItem>
+    <ConfigItem Name="Ticket::Frontend::FlexibleTicketDialog::Sample1###Body" Required="1" Valid="1">
+        <Description Translatable="1">Defines the default note body text for phone tickets in the ticket phone inbound screen of the agent interface.</Description>
+        <Group>Ticket</Group>
+        <SubGroup>Frontend::Agent::Ticket::ViewFlexible::Sample1</SubGroup>
+        <Setting>
+            <TextArea></TextArea>
+        </Setting>
+    </ConfigItem>
+    <ConfigItem Name="Ticket::Frontend::FlexibleTicketDialog::Sample1###State" Required="0" Valid="1">
+        <Description Translatable="1">Defines the default ticket next state after adding a phone note in the ticket phone inbound screen of the agent interface.</Description>
+        <Group>Ticket</Group>
+        <SubGroup>Frontend::Agent::Ticket::ViewFlexible::Sample1</SubGroup>
+        <ValidateModule>Kernel::System::SysConfig::StateValidate</ValidateModule>
+        <Setting>
+            <String Regex="">open</String>
+        </Setting>
+    </ConfigItem>
+    <ConfigItem Name="Ticket::Frontend::FlexibleTicketDialog::Sample1###StateType" Required="1" Valid="1">
+        <Description Translatable="1">Next possible ticket states after adding a phone note in the ticket phone inbound screen of the agent interface.</Description>
+        <Group>Ticket</Group>
+        <SubGroup>Frontend::Agent::Ticket::ViewFlexible::Sample1</SubGroup>
+        <Setting>
+            <Array>
+                <Item>open</Item>
+                <Item>pending auto</Item>
+                <Item>pending reminder</Item>
+                <Item>closed</Item>
+            </Array>
+        </Setting>
+    </ConfigItem>
+    <ConfigItem Name="Ticket::Frontend::FlexibleTicketDialog::Sample1###HistoryType" Required="1" Valid="1">
+        <Description Translatable="1">Defines the history type for the ticket phone inbound screen action, which gets used for ticket history in the agent interface.</Description>
+        <Group>Ticket</Group>
+        <SubGroup>Frontend::Agent::Ticket::ViewFlexible::Sample1</SubGroup>
+        <Setting>
+            <String Regex="">PhoneCallCustomer</String>
+        </Setting>
+    </ConfigItem>
+    <ConfigItem Name="Ticket::Frontend::FlexibleTicketDialog::Sample1###HistoryComment" Required="1" Valid="1">
+        <Description Translatable="1">Defines the history comment for the ticket phone inbound screen action, which gets used for ticket history in the agent interface.</Description>
+        <Group>Ticket</Group>
+        <SubGroup>Frontend::Agent::Ticket::ViewFlexible::Sample1</SubGroup>
+        <Setting>
+            <String Regex=""></String>
+        </Setting>
+    </ConfigItem>
+    <ConfigItem Name="Ticket::Frontend::FlexibleTicketDialog::Sample2###DialogTitle" Required="1" Valid="1">
+        <Description Translatable="1">Prefix for the title.</Description>
+        <Group>Ticket</Group>
+        <SubGroup>Frontend::Agent::Ticket::ViewFlexible::Sample2</SubGroup>
+        <Setting>
+            <String Regex="">Visit at customers' site</String>
+        </Setting>
+    </ConfigItem>
+    <ConfigItem Name="Ticket::Frontend::FlexibleTicketDialog::Sample2###Permission" Required="1" Valid="1">
+        <Description Translatable="1">Required permissions to use the ticket phone inbound screen in the agent interface.</Description>
+        <Group>Ticket</Group>
+        <SubGroup>Frontend::Agent::Ticket::ViewFlexible::Sample2</SubGroup>
+        <Setting>
+            <String Regex="">phone</String>
+        </Setting>
+    </ConfigItem>
+    <ConfigItem Name="Ticket::Frontend::FlexibleTicketDialog::Sample2###RequiredLock" Required="0" Valid="1">
+        <Description Translatable="1">Defines if a ticket lock is required in the ticket phone inbound screen of the agent interface (if the ticket isn't locked yet, the ticket gets locked and the current agent will be set automatically as its owner).</Description>
+        <Group>Ticket</Group>
+        <SubGroup>Frontend::Agent::Ticket::ViewFlexible::Sample2</SubGroup>
+        <Setting>
+            <Option SelectedID="0">
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
+            </Option>
+        </Setting>
+    </ConfigItem>
+    <ConfigItem Name="Ticket::Frontend::FlexibleTicketDialog::Sample2###ArticleType" Required="1" Valid="1">
+        <Description Translatable="1">Defines the default type of the note in the ticket phone inbound screen of the agent interface.</Description>
+        <Group>Ticket</Group>
+        <SubGroup>Frontend::Agent::Ticket::ViewFlexible::Sample2</SubGroup>
+        <Setting>
+            <String Regex="">phone</String>
+        </Setting>
+    </ConfigItem>
+    <ConfigItem Name="Ticket::Frontend::FlexibleTicketDialog::Sample2###SenderType" Required="1" Valid="1">
+        <Description Translatable="1">Defines the default sender type for phone tickets in the ticket phone inbound screen of the agent interface.</Description>
+        <Group>Ticket</Group>
+        <SubGroup>Frontend::Agent::Ticket::ViewFlexible::Sample2</SubGroup>
+        <Setting>
+            <String Regex="">customer</String>
+        </Setting>
+    </ConfigItem>
+    <ConfigItem Name="Ticket::Frontend::FlexibleTicketDialog::Sample2###Subject" Required="1" Valid="1">
+        <Description Translatable="1">Defines the default subject for phone tickets in the ticket phone inbound screen of the agent interface.</Description>
+        <Group>Ticket</Group>
+        <SubGroup>Frontend::Agent::Ticket::ViewFlexible::Sample2</SubGroup>
+        <Setting>
+            <String Regex="">[% Translate("Phone call") | html %]!</String>
+        </Setting>
+    </ConfigItem>
+    <ConfigItem Name="Ticket::Frontend::FlexibleTicketDialog::Sample2###Body" Required="1" Valid="1">
+        <Description Translatable="1">Defines the default note body text for phone tickets in the ticket phone inbound screen of the agent interface.</Description>
+        <Group>Ticket</Group>
+        <SubGroup>Frontend::Agent::Ticket::ViewFlexible::Sample2</SubGroup>
+        <Setting>
+            <TextArea></TextArea>
+        </Setting>
+    </ConfigItem>
+    <ConfigItem Name="Ticket::Frontend::FlexibleTicketDialog::Sample2###State" Required="0" Valid="1">
+        <Description Translatable="1">Defines the default ticket next state after adding a phone note in the ticket phone inbound screen of the agent interface.</Description>
+        <Group>Ticket</Group>
+        <SubGroup>Frontend::Agent::Ticket::ViewFlexible::Sample2</SubGroup>
+        <ValidateModule>Kernel::System::SysConfig::StateValidate</ValidateModule>
+        <Setting>
+            <String Regex="">open</String>
+        </Setting>
+    </ConfigItem>
+    <ConfigItem Name="Ticket::Frontend::FlexibleTicketDialog::Sample2###StateType" Required="1" Valid="1">
+        <Description Translatable="1">Next possible ticket states after adding a phone note in the ticket phone inbound screen of the agent interface.</Description>
+        <Group>Ticket</Group>
+        <SubGroup>Frontend::Agent::Ticket::ViewFlexible::Sample2</SubGroup>
+        <Setting>
+            <Array>
+                <Item>open</Item>
+                <Item>pending auto</Item>
+                <Item>pending reminder</Item>
+                <Item>closed</Item>
+            </Array>
+        </Setting>
+    </ConfigItem>
+    <ConfigItem Name="Ticket::Frontend::FlexibleTicketDialog::Sample2###HistoryType" Required="1" Valid="1">
+        <Description Translatable="1">Defines the history type for the ticket phone inbound screen action, which gets used for ticket history in the agent interface.</Description>
+        <Group>Ticket</Group>
+        <SubGroup>Frontend::Agent::Ticket::ViewFlexible::Sample2</SubGroup>
+        <Setting>
+            <String Regex="">PhoneCallCustomer</String>
+        </Setting>
+    </ConfigItem>
+    <ConfigItem Name="Ticket::Frontend::FlexibleTicketDialog::Sample2###HistoryComment" Required="1" Valid="1">
+        <Description Translatable="1">Defines the history comment for the ticket phone inbound screen action, which gets used for ticket history in the agent interface.</Description>
+        <Group>Ticket</Group>
+        <SubGroup>Frontend::Agent::Ticket::ViewFlexible::Sample2</SubGroup>
+        <Setting>
+            <String Regex=""></String>
+        </Setting>
+    </ConfigItem>
 </otrs_config>

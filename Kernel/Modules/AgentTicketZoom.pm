@@ -998,31 +998,41 @@ sub MaskAgentZoom {
             );
 
             # run module
-            my $Item = $Object->Run(
+            my @MenuItems = $Object->Run(
                 %Param,
                 Ticket => \%Ticket,
                 ACL    => \%AclAction,
                 Config => $Menus{$Menu},
             );
-            next MENU if !$Item;
-            if ( $Menus{$Menu}->{PopupType} ) {
-                $Item->{Class} = "AsPopup PopupType_$Menus{$Menu}->{PopupType}";
-            }
 
-            if ( !$Menus{$Menu}->{ClusterName} ) {
+            next MENU if !@MenuItems;
 
-                $ZoomMenuItems{$Menu} = $Item;
-            }
-            else {
+            my $ItemCount = '';
 
-                # check the configured priority for this item. The lowest ClusterPriority
-                # within the same cluster wins.
-                my $Priority = $MenuClusters{ $Menus{$Menu}->{ClusterName} }->{Priority};
-                if ( !$Priority || $Priority !~ /^\d{3}$/ || $Priority > $Menus{$Menu}->{ClusterPriority} ) {
-                    $Priority = $Menus{$Menu}->{ClusterPriority};
+            for my $Item ( @MenuItems ) {
+                if ( $Item->{PopupType} ) {
+                    $Item->{Class} = "AsPopup PopupType_$Item->{PopupType}";
                 }
-                $MenuClusters{ $Menus{$Menu}->{ClusterName} }->{Priority} = $Priority;
-                $MenuClusters{ $Menus{$Menu}->{ClusterName} }->{Items}->{$Menu} = $Item;
+
+                if ( !$Item->{ClusterName} ) {
+
+                    $ZoomMenuItems{$Menu} = $Item;
+                }
+                else {
+
+                    # check the configured priority for this item. The lowest ClusterPriority
+                    # within the same cluster wins.
+                    my $Priority = $MenuClusters{ $Item->{ClusterName} }->{Priority};
+
+                    if ( !$Priority || $Priority !~ /^\d{3}$/ || $Priority > $Menus{$Menu}->{ClusterPriority} ) {
+                        $Priority = $Item->{ClusterPriority};
+                    }
+
+                    $MenuClusters{ $Item->{ClusterName} }->{Priority}                    = $Priority;
+                    $MenuClusters{ $Item->{ClusterName} }->{Items}->{$Menu . $ItemCount} = $Item;
+                }
+
+                $ItemCount++;
             }
         }
 
