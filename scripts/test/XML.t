@@ -597,7 +597,7 @@ if ( open( my $DATA, "<", "$Path/$File" ) ) {    ## no critic
         Queue        => 'Raw',
         Lock         => 'unlock',
         Priority     => '3 normal',
-        State        => 'closed successful',
+        State        => 'closed successfully',
         CustomerNo   => '123465',
         CustomerUser => 'customer@example.com',
         OwnerID      => 1,

@@ -39,8 +39,8 @@ $Selenium->RunTest(
         $Selenium->VerifiedGet("${ScriptAlias}index.pl?Action=AdminState");
 
         $Self->True(
-            index( $Selenium->get_page_source(), 'closed successful' ) > -1,
-            'closed successful found on page',
+            index( $Selenium->get_page_source(), 'closed successfully' ) > -1,
+            'closed successfully found on page',
         );
         $Selenium->find_element( "table",             'css' );
         $Selenium->find_element( "table thead tr th", 'css' );
@@ -78,8 +78,8 @@ $Selenium->RunTest(
 
         # check overview page
         $Self->True(
-            index( $Selenium->get_page_source(), 'closed successful' ) > -1,
-            'closed successful found on page',
+            index( $Selenium->get_page_source(), 'closed successfully' ) > -1,
+            'closed successfully found on page',
         );
         $Self->True(
             index( $Selenium->get_page_source(), $RandomID ) > -1,
@@ -130,8 +130,8 @@ $Selenium->RunTest(
 
         # check overview page
         $Self->True(
-            index( $Selenium->get_page_source(), 'closed successful' ) > -1,
-            'closed successful found on page',
+            index( $Selenium->get_page_source(), 'closed successfully' ) > -1,
+            'closed successfully found on page',
         );
         $Self->True(
             index( $Selenium->get_page_source(), $RandomID ) > -1,

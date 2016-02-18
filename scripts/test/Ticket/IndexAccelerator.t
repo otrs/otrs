@@ -65,7 +65,7 @@ for my $Module ( 'RuntimeDB', 'StaticDB' ) {
         Queue        => 'Raw',
         Lock         => 'unlock',
         Priority     => '3 normal',
-        State        => 'closed successful',
+        State        => 'closed successfully',
         CustomerNo   => '123465',
         CustomerUser => 'customer@example.com',
         OwnerID      => 1,
@@ -74,14 +74,14 @@ for my $Module ( 'RuntimeDB', 'StaticDB' ) {
     push( @TicketIDs, $TicketID );
     $Self->True(
         $TicketID,
-        "$Module TicketCreate() - unlock - closed successful",
+        "$Module TicketCreate() - unlock - closed successfully",
     );
     $TicketID = $TicketObject->TicketCreate(
         Title        => 'Some Ticket_Title - ticket index accelerator tests',
         Queue        => 'Raw',
         Lock         => 'lock',
         Priority     => '3 normal',
-        State        => 'closed successful',
+        State        => 'closed successfully',
         CustomerNo   => '123465',
         CustomerUser => 'customer@example.com',
         OwnerID      => 1,
@@ -90,7 +90,7 @@ for my $Module ( 'RuntimeDB', 'StaticDB' ) {
     push( @TicketIDs, $TicketID );
     $Self->True(
         $TicketID,
-        "$Module TicketCreate() - lock - closed successful",
+        "$Module TicketCreate() - lock - closed successfully",
     );
     $TicketID = $TicketObject->TicketCreate(
         Title        => 'Some Ticket_Title - ticket index accelerator tests',

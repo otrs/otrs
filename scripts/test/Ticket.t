@@ -38,7 +38,7 @@ my $TicketID = $TicketObject->TicketCreate(
     Queue        => 'Raw',
     Lock         => 'unlock',
     Priority     => '3 normal',
-    State        => 'closed successful',
+    State        => 'closed successfully',
     CustomerNo   => '123465',
     CustomerUser => 'customer@example.com',
     OwnerID      => 1,
@@ -70,7 +70,7 @@ $Self->Is(
 );
 $Self->Is(
     $Ticket{State},
-    'closed successful',
+    'closed successfully',
     'TicketGet() (State)',
 );
 $Self->Is(
@@ -139,7 +139,7 @@ my $TicketIDCreatedBy = $TicketObject->TicketCreate(
     Queue        => 'Raw',
     Lock         => 'unlock',
     Priority     => '3 normal',
-    State        => 'closed successful',
+    State        => 'closed successfully',
     CustomerNo   => '123465',
     CustomerUser => 'customer@example.com',
     OwnerID      => 1,
@@ -1055,7 +1055,7 @@ $Self->True(
 %TicketIDs = $TicketObject->TicketSearch(
     Result        => 'HASH',
     Limit         => 100,
-    CreatedStates => ['closed successful'],
+    CreatedStates => ['closed successfully'],
     UserID        => 1,
     Permission    => 'rw',
 );
@@ -1489,7 +1489,7 @@ if ( $TicketStatus{$TicketID} ) {
     );
     $Self->Is(
         $TicketHistory{CreateState},
-        'closed successful',
+        'closed successfully',
         "HistoryTicketStatusGet() (CreateState)",
     );
     $Self->Is(

@@ -84,7 +84,12 @@ Please run it as the 'otrs' user or with the help of su:
             Message => 'Check framework version',
             Command => \&_CheckFrameworkVersion,
         },
-
+        
+        {
+            Message => 'Change state closed (un)successful -> closed (un)succesfully',
+            Command => \&RenameState,
+        },
+        
         # ...
 
         {
@@ -206,5 +211,41 @@ sub _CheckFrameworkVersion {
 
     return 1;
 }
+
+=item RenameState
+
+Rename states
+closed successful -> closed successfully
+closed unsuccessful -> closed unsuccessfully
+
+Only renames if the out of the box states can be found:
+id => 2
+name => closed successful
+
+id => 3
+name => closed unsuccessful
+
+=cut
+sub RenameState {
+    _RenameState(2,"closed successful","closed successfully");
+    _RenameState(3,"closed unsuccessful","closed unsuccessfully");
+}
+
+sub _RenameState {
+    my ($id, $oldName, $newName) = @_;
+
+    $Kernel::OM = Kernel::System::ObjectManager->new();
+    
+    my $StateObject = $Kernel::OM->Get('Kernel::System::State');
+    # closed successful
+    my %state = $StateObject->StateGet(ID => $id,);
+    if($state{'Name'} eq $oldName) {
+        $state{'UserID'} = 1;
+        $state{'Name'} = $newName;
+        $StateObject->StateUpdate(%state);
+    }
+    
+}
+
 
 1;

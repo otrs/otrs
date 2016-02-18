@@ -94,7 +94,7 @@ $Self->Is(
 
 $Self->Is(
     $Ticket{State},
-    'closed successful',
+    'closed successfully',
     "Ticket pending auto closed time reached",
 );
 

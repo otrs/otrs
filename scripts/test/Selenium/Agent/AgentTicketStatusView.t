@@ -133,7 +133,7 @@ $Selenium->RunTest(
                 # wait until page has loaded, if necessary
                 $Selenium->WaitFor( JavaScript => 'return typeof($) === "function" && $("#StateID").length' );
 
-                # change state to 'closed successful'
+                # change state to 'closed successfully'
                 $Selenium->execute_script("\$('#StateID').val('2').trigger('redraw.InputField').trigger('change');");
                 $Selenium->find_element( "#submitRichText", 'css' )->click();
 

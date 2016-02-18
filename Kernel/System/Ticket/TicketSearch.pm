@@ -704,7 +704,7 @@ sub TicketSearch {
     # current ticket state type
     # NOTE: Open and Closed are not valid state types. It's for compat.
     # Open   -> All states which are grouped as open (new, open, pending, ...)
-    # Closed -> All states which are grouped as closed (closed successful, closed unsuccessful)
+    # Closed -> All states which are grouped as closed (closed successfully, closed unsuccessfully)
     if ( $Param{StateType} && $Param{StateType} eq 'Open' ) {
         my @ViewableStateIDs = $Kernel::OM->Get('Kernel::System::State')->StateGetStatesByType(
             Type   => 'Viewable',

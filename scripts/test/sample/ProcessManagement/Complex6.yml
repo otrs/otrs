@@ -1017,7 +1017,7 @@ TransitionActions:
     CreateTime: 2014-02-13 13:20:48
     EntityID: TA7
     ID: '7'
-    Name: Ticket State closed unsuccessful
+    Name: Ticket State closed unsuccessfully
   TA8:
     ChangeTime: 2014-02-13 13:23:24
     Config:
@@ -1027,7 +1027,7 @@ TransitionActions:
     CreateTime: 2014-02-13 13:23:24
     EntityID: TA8
     ID: '8'
-    Name: Ticket State closed successful
+    Name: Ticket State closed successfully
   TA9:
     ChangeTime: 2014-02-13 14:36:38
     Config:

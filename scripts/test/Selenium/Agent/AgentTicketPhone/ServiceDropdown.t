@@ -76,7 +76,7 @@ $Selenium->RunTest(
             Queue        => 'Raw',
             Lock         => 'unlock',
             Priority     => '3 normal',
-            State        => 'closed successful',
+            State        => 'closed successfully',
             CustomerUser => $TestUserCustomer,
             OwnerID      => 1,
             UserID       => 1,
