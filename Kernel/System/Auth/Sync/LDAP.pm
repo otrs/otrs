@@ -528,14 +528,14 @@ sub Sync {
         for my $PermissionType ( @{ $ConfigObject->Get('System::Permission') } ) {
 
             # Update all available group permissions for system groups
-	    GROUPID:
+            GROUPID:
             for my $GroupID ( sort keys %SystemGroups ) {
 
-		# Update group permissions for user from ldap or default to empty permission
+                # Update group permissions for user from ldap or default to empty permission
                 $Kernel::OM->Get('Kernel::System::Log')->Log(
                     Priority => 'notice',
                     Message  => "User: '$Param{User}' sync ldap group '$SystemGroups{$GroupID}' "
-		                . "permission '$PermissionType'!",
+                        . "permission '$PermissionType'!",
                 );
                 $GroupObject->PermissionGroupUserAdd(
                     GID        => $GroupID,
