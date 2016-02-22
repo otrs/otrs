@@ -81,7 +81,7 @@
                         Core.AJAX.ContentUpdate($('#[% Widget.ElementID %]'),
                             '[% Env("Baselink") %]Action=[% Env("Action") %];Subaction=LoadWidget;'
                              + 'TicketID=[% Widget.TicketID %];ElementID=[% Widget.ElementID %]',
-                             null, true);
+                             Core.Agent.Init, true);
                     //]]></script>
                     [% END %]
                 [% ELSE; %]
