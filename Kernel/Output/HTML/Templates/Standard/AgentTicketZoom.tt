@@ -223,7 +223,19 @@
             </div>
 
             [% FOREACH Widget IN Data.MainWidgets; %]
-                [% Widget.Output %]
+                [% IF Widget.Async; %]
+                    <div id="[% Widget.ElementID %]"></div>
+                    [% WRAPPER JSOnDocumentComplete %]
+                    <script type="text/javascript">//<![CDATA[
+                        Core.AJAX.ContentUpdate($('#[% Widget.ElementID %]'),
+                            '[% Env("Baselink") %]Action=[% Env("Action") %];Subaction=LoadWidget;'
+                             + 'TicketID=[% Widget.TicketID %];ElementID=[% Widget.ElementID %]',
+                             Core.Agent.Init, true);
+                    //]]></script>
+                    [% END %]
+                [% ELSE; %]
+                    [% Widget.Output %]
+                [% END; %]
             [% END; %]
 
         </div>
