@@ -2122,7 +2122,7 @@ Core.UI.InputFields = (function (TargetNS) {
                     // redraw event is critical on hidden elements because
                     // e.g. chrome can't calculate the width of hidden elements correctly
                     // so we skip it for hidden elements
-                    if ( !$(this).is(':visible') ) return;
+                    if (!$SearchObj.is(':visible')) return;
 
                     CloseOpenSelections();
                     if (Filterable) {
