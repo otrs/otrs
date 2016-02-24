@@ -146,7 +146,7 @@ sub Run {
             if ( !$Param{Bcc} ) {
                 $Note = $LayoutObject->Notify(
                     Priority => 'Error',
-                    Info     => Translatable('Select at least one recipient.');
+                    Info     => Translatable('Select at least one recipient.'),
                 );
                 $Errors{BccInvalid} = 'ServerError';
             }
