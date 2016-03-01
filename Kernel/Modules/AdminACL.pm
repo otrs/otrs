@@ -88,8 +88,10 @@ sub Run {
 
         if ( $ACLImport->{AddedACLs} ) {
             push @{ $Param{NotifyData} }, {
-                Info => 'The following ACLs have been added successfully: '
-                    . $ACLImport->{AddedACLs},
+                Info => $LayoutObject->{LanguageObject}->Translate(
+                    'The following ACLs have been added successfully: %s',
+                    $ACLImport->{AddedACLs}
+                ),
             };
         }
         if ( $ACLImport->{UpdatedACLs} ) {
