@@ -5408,7 +5408,7 @@ sub _CheckField {
                 Message => $LayoutObject->{LanguageObject}->Translate(
                     'Wrong ActivityDialog Field config: %s can\'t be Display => 1 / Show field (Please change its configuration to be Display => 0 / Do not show field or Display => 2 / Show field as mandatory)!',
                     $Param{Field},
-                );
+                ),
             );
         }
 
