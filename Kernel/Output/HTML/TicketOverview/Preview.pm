@@ -8,8 +8,6 @@
 
 package Kernel::Output::HTML::TicketOverview::Preview;
 
-use base 'Kernel::Output::HTML::Base';
-
 use strict;
 use warnings;
 
@@ -29,6 +27,19 @@ our @ObjectDependencies = (
     'Kernel::System::Main',
     'Kernel::System::Queue',
 );
+
+sub new {
+    my ( $Type, %Param ) = @_;
+
+    # allocate new hash for object
+    my $Self = \%Param;
+    bless( $Self, $Type );
+
+    # get UserID param
+    $Self->{UserID} = $Param{UserID} || die "Got no UserID!";
+
+    return $Self;
+}
 
 sub ActionRow {
     my ( $Self, %Param ) = @_;
