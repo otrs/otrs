@@ -281,7 +281,7 @@ sub GetUserData {
             my $TillDate
                 = "$Preferences{OutOfOfficeEndYear}-$Preferences{OutOfOfficeEndMonth}-$Preferences{OutOfOfficeEndDay}";
             if ( $TimeStart < $Time && $TimeEnd > $Time ) {
-                $Preferences{OutOfOfficeMessage} = "*** out of office till $TillDate/$Till d ***";
+                $Preferences{OutOfOfficeMessage} = $Kernel::OM->Get('Kernel::Output::HTML::Layout')->{LanguageObject}->Translate('*** out of office till %s/%s day ***', $TillDate, $Till);
                 $Data{UserLastname} .= ' ' . $Preferences{OutOfOfficeMessage};
             }
 
