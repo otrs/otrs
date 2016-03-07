@@ -89,7 +89,6 @@ sub Run {
         } elsif ($SystemAddressObject->SystemAddressIsLocalAddress( Address => $GetParam{Name} )) {
             $Errors{NameInvalid} = 'ServerError';
             $Errors{ErrorType} = 'AlreadyUsed';
-            $Errors{Error} = 'Address already in use.';
         }
 
         # if no errors occurred
