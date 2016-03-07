@@ -16,6 +16,7 @@ use Digest::SHA;
 
 our @ObjectDependencies = (
     'Kernel::Config',
+    'Kernel::Language',
     'Kernel::System::Cache',
     'Kernel::System::CheckItem',
     'Kernel::System::DB',
@@ -281,7 +282,7 @@ sub GetUserData {
             my $TillDate
                 = "$Preferences{OutOfOfficeEndYear}-$Preferences{OutOfOfficeEndMonth}-$Preferences{OutOfOfficeEndDay}";
             if ( $TimeStart < $Time && $TimeEnd > $Time ) {
-                $Preferences{OutOfOfficeMessage} = $Kernel::OM->Get('Kernel::Output::HTML::Layout')->{LanguageObject}->Translate('*** out of office till %s/%s day ***', $TillDate, $Till);
+                $Preferences{OutOfOfficeMessage} = $Kernel::OM->Get('Kernel::Language')->Translate('*** out of office till %s/%s day ***', $TillDate, $Till);
                 $Data{UserLastname} .= ' ' . $Preferences{OutOfOfficeMessage};
             }
 
