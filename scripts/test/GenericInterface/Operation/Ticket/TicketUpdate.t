@@ -223,6 +223,9 @@ my $RequesterSessionResult = $RequesterSessionObject->Run(
     },
 );
 
+$Kernel::OM->Get('Kernel::System::Log')
+    ->Dumper( '********** $RequesterSessionResult ***********', $RequesterSessionResult );
+
 my $NewSessionID = $RequesterSessionResult->{Data}->{SessionID};
 
 my @Tests = (
