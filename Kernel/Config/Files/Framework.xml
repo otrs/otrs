@@ -5544,7 +5544,7 @@ via the Preferences button after logging in.
                 <Title>HTML Reference</Title>
                 <Group>users</Group>
                 <GroupRo>users</GroupRo>
-                <Description Translatable="1">HTML Reference</Description>
+                <Description Translatable="1">HTML Reference.</Description>
                 <NavBarName></NavBarName>
                 <Loader>
                     <CSS>Core.Agent.HTMLReference.css</CSS>

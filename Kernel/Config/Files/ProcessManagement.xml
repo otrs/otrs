@@ -135,11 +135,11 @@
         <SubGroup>Frontend::Agent::ModuleRegistration</SubGroup>
         <Setting>
             <FrontendModuleReg>
-                <Description Translatable="1">Create new process ticket</Description>
+                <Description Translatable="1">Create new process ticket.</Description>
                 <Title Translatable="1">New process ticket</Title>
                 <NavBarName>Ticket</NavBarName>
                 <NavBar>
-                    <Description Translatable="1">Create New process ticket</Description>
+                    <Description Translatable="1">Create New process ticket.</Description>
                     <Name Translatable="1">New process ticket</Name>
                     <Link>Action=AgentTicketProcess</Link>
                     <LinkOption></LinkOption>
@@ -273,11 +273,11 @@
         <SubGroup>Frontend::Customer::ModuleRegistration</SubGroup>
         <Setting>
             <FrontendModuleReg>
-                <Description Translatable="1">Process Ticket</Description>
+                <Description Translatable="1">Process Ticket.</Description>
                 <NavBarName>Ticket</NavBarName>
                 <Title Translatable="1">Process ticket</Title>
                 <NavBar>
-                    <Description Translatable="1">Create new process ticket</Description>
+                    <Description Translatable="1">Create new process ticket.</Description>
                     <Name Translatable="1">New process ticket</Name>
                     <Link>Action=CustomerTicketProcess</Link>
                     <LinkOption></LinkOption>

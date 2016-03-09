@@ -9526,7 +9526,7 @@
                 <NavBarName>Ticket</NavBarName>
                 <Title Translatable="1">Overview</Title>
                 <NavBar>
-                    <Description Translatable="1">Tickets</Description>
+                    <Description Translatable="1">Tickets.</Description>
                     <Name Translatable="1">Tickets</Name>
                     <Block></Block>
                     <Type>Menu</Type>
@@ -9634,7 +9634,7 @@
                 <NavBarName>Ticket</NavBarName>
                 <Title Translatable="1">Search</Title>
                 <NavBar>
-                    <Description Translatable="1">Search</Description>
+                    <Description Translatable="1">Search.</Description>
                     <Name Translatable="1">Search</Name>
                     <Block></Block>
                     <Type>Submenu</Type>
