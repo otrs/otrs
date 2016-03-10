@@ -12,8 +12,6 @@ use utf8;
 
 use vars (qw($Self));
 
-use Kernel::Language;
-
 # get selenium object
 my $Selenium = $Kernel::OM->Get('Kernel::System::UnitTest::Selenium');
 
@@ -60,6 +58,13 @@ $Selenium->RunTest(
             Valid => 1,
             Key   => 'Ticket::Frontend::AgentTicketCompose###RequiredLock',
             Value => 0
+        );
+
+        # use test email backend
+        $SysConfigObject->ConfigItemUpdate(
+            Valid => 1,
+            Key   => 'SendmailModule',
+            Value => 'Kernel::System::Email::Test',
         );
 
         # get standard template object
@@ -138,11 +143,11 @@ $Selenium->RunTest(
             Lock     => 'unlock',
         );
         my $TicketID = $TicketObject->TicketCreate(
-            Title    => 'Selenium ticket',
-            QueueID  => 1,
-            Lock     => $TicketData{Lock},
-            Priority => $TicketData{Priority},
-            State    => $TicketData{State},
+            Title        => 'Selenium ticket',
+            QueueID      => 1,
+            Lock         => $TicketData{Lock},
+            Priority     => $TicketData{Priority},
+            State        => $TicketData{State},
             CustomerID   => 'SeleniumCustomer',
             CustomerUser => $TestCustomer,
             OwnerID      => 1,
@@ -213,9 +218,13 @@ $Selenium->RunTest(
 
         # test bug #11810 - http://bugs.otrs.org/show_bug.cgi?id=11810
         # translate ticket data tags (e.g. <OTRS_TICKET_State> ) in standard template
-        my $LanguageObject = Kernel::Language->new(
-            UserLanguage => $Language,
+        $Kernel::OM->ObjectParamAdd(
+            'Kernel::Language' => {
+                UserLanguage => $Language,
+            },
         );
+        my $LanguageObject = $Kernel::OM->Get('Kernel::Language');
+
         for my $Item ( sort keys %TicketData ) {
             my $TransletedStateValue = $LanguageObject->Translate( $TicketData{$Item} );
 
