@@ -10,16 +10,11 @@ use strict;
 use warnings;
 use vars (qw($Self));
 
-use Scalar::Util qw/weaken/;
-use Kernel::System::Time;
-
 $Self->Is(
     $Kernel::OM->Get('Kernel::System::UnitTest'),
     $Self,
     "Global OM returns $Self as 'Kernel::System::UnitTest'",
 );
-
-use Kernel::System::ObjectManager;
 
 local $Kernel::OM = Kernel::System::ObjectManager->new();
 
@@ -27,7 +22,7 @@ $Self->True( $Kernel::OM, 'Could build object manager' );
 
 $Self->False(
     exists $Kernel::OM->{Objects}->{'Kernel::System::Time'},
-    'Kernel::System::Time was not yet loaded',
+    'Kernel::System::Time was not loaded yet',
 );
 
 my $TimeObject = Kernel::System::Time->new();
