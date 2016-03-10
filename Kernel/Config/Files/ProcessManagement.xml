@@ -311,11 +311,11 @@
         <SubGroup>Core</SubGroup>
         <Setting>
             <Hash>
-                <Item Key="Process" Translatable="1">P</Item>
-                <Item Key="Activity" Translatable="1">A</Item>
-                <Item Key="ActivityDialog" Translatable="1">AD</Item>
-                <Item Key="Transition" Translatable="1">T</Item>
-                <Item Key="TransitionAction" Translatable="1">TA</Item>
+                <Item Key="Process">P</Item>
+                <Item Key="Activity">A</Item>
+                <Item Key="ActivityDialog">AD</Item>
+                <Item Key="Transition">T</Item>
+                <Item Key="TransitionAction">TA</Item>
             </Hash>
         </Setting>
     </ConfigItem>

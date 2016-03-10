@@ -120,7 +120,7 @@
         <Group>Framework</Group>
         <SubGroup>Core</SubGroup>
         <Setting>
-            <String Regex="" Translatable="1">Example Company</String>
+            <String Regex="">Example Company</String>
         </Setting>
     </ConfigItem>
     <ConfigItem Name="DefaultLanguage" Required="1" Valid="1">
@@ -265,7 +265,7 @@
         <Group>Framework</Group>
         <SubGroup>Frontend::Customer</SubGroup>
         <Setting>
-            <String Regex="" Translatable="1">Example Company</String>
+            <String Regex="">Example Company</String>
         </Setting>
     </ConfigItem>
     <ConfigItem Name="CustomerLogo" Required="0" Valid="0">
@@ -1271,7 +1271,7 @@
         <Group>Framework</Group>
         <SubGroup>Core::Time::Calendar1</SubGroup>
         <Setting>
-            <String Regex="" Translatable="1">Calendar Name 1</String>
+            <String Regex="">Calendar Name 1</String>
         </Setting>
     </ConfigItem>
     <ConfigItem Name="TimeZone::Calendar1" Required="1" Valid="1">
@@ -1442,7 +1442,7 @@
         <Group>Framework</Group>
         <SubGroup>Core::Time::Calendar2</SubGroup>
         <Setting>
-            <String Regex="" Translatable="1">Calendar Name 2</String>
+            <String Regex="">Calendar Name 2</String>
         </Setting>
     </ConfigItem>
     <ConfigItem Name="TimeZone::Calendar2" Required="1" Valid="1">
@@ -1613,7 +1613,7 @@
         <Group>Framework</Group>
         <SubGroup>Core::Time::Calendar3</SubGroup>
         <Setting>
-            <String Regex="" Translatable="1">Calendar Name 3</String>
+            <String Regex="">Calendar Name 3</String>
         </Setting>
     </ConfigItem>
     <ConfigItem Name="TimeZone::Calendar3" Required="1" Valid="1">
@@ -1784,7 +1784,7 @@
         <Group>Framework</Group>
         <SubGroup>Core::Time::Calendar4</SubGroup>
         <Setting>
-            <String Regex="" Translatable="1">Calendar Name 4</String>
+            <String Regex="">Calendar Name 4</String>
         </Setting>
     </ConfigItem>
     <ConfigItem Name="TimeZone::Calendar4" Required="1" Valid="1">
@@ -1955,7 +1955,7 @@
         <Group>Framework</Group>
         <SubGroup>Core::Time::Calendar5</SubGroup>
         <Setting>
-            <String Regex="" Translatable="1">Calendar Name 5</String>
+            <String Regex="">Calendar Name 5</String>
         </Setting>
     </ConfigItem>
     <ConfigItem Name="TimeZone::Calendar5" Required="1" Valid="1">
@@ -2126,7 +2126,7 @@
         <Group>Framework</Group>
         <SubGroup>Core::Time::Calendar6</SubGroup>
         <Setting>
-            <String Regex="" Translatable="1">Calendar Name 6</String>
+            <String Regex="">Calendar Name 6</String>
         </Setting>
     </ConfigItem>
     <ConfigItem Name="TimeZone::Calendar6" Required="1" Valid="1">
@@ -2297,7 +2297,7 @@
         <Group>Framework</Group>
         <SubGroup>Core::Time::Calendar7</SubGroup>
         <Setting>
-            <String Regex="" Translatable="1">Calendar Name 7</String>
+            <String Regex="">Calendar Name 7</String>
         </Setting>
     </ConfigItem>
     <ConfigItem Name="TimeZone::Calendar7" Required="1" Valid="1">
@@ -2468,7 +2468,7 @@
         <Group>Framework</Group>
         <SubGroup>Core::Time::Calendar8</SubGroup>
         <Setting>
-            <String Regex="" Translatable="1">Calendar Name 8</String>
+            <String Regex="">Calendar Name 8</String>
         </Setting>
     </ConfigItem>
     <ConfigItem Name="TimeZone::Calendar8" Required="1" Valid="1">
@@ -2639,7 +2639,7 @@
         <Group>Framework</Group>
         <SubGroup>Core::Time::Calendar9</SubGroup>
         <Setting>
-            <String Regex="" Translatable="1">Calendar Name 9</String>
+            <String Regex="">Calendar Name 9</String>
         </Setting>
     </ConfigItem>
     <ConfigItem Name="TimeZone::Calendar9" Required="1" Valid="1">
@@ -3416,7 +3416,7 @@
         <Group>Framework</Group>
         <SubGroup>Core</SubGroup>
         <Setting>
-            <String Regex="" Translatable="1">OTRS Notifications</String>
+            <String Regex="">OTRS Notifications</String>
         </Setting>
     </ConfigItem>
     <ConfigItem Name="NotificationSenderEmail" Required="1" Valid="1">
@@ -3432,7 +3432,7 @@
         <Group>Framework</Group>
         <SubGroup>Frontend::Agent</SubGroup>
         <Setting>
-            <String Regex="" Translatable="1">New OTRS password request</String>
+            <String Regex="">New OTRS password request</String>
         </Setting>
     </ConfigItem>
     <ConfigItem Name="NotificationBodyLostPasswordToken" Required="1" Valid="1">
@@ -3458,7 +3458,7 @@ If you did not request a new password, please ignore this email.
         <Group>Framework</Group>
         <SubGroup>Frontend::Agent</SubGroup>
         <Setting>
-            <String Regex="" Translatable="1">New OTRS password</String>
+            <String Regex="">New OTRS password</String>
         </Setting>
     </ConfigItem>
     <ConfigItem Name="NotificationBodyLostPassword" Required="1" Valid="1">
@@ -3507,9 +3507,9 @@ You can log in via the following URL:
         <SubGroup>Core::ReferenceData</SubGroup>
         <Setting>
             <Hash>
-                <Item Key="AT" Translatable="1">Austria</Item>
-                <Item Key="DE" Translatable="1">Germany</Item>
-                <Item Key="CH" Translatable="1">Switzerland</Item>
+                <Item Key="AT">Austria</Item>
+                <Item Key="DE">Germany</Item>
+                <Item Key="CH">Switzerland</Item>
             </Hash>
         </Setting>
     </ConfigItem>
@@ -3674,8 +3674,8 @@ You can log in via the following URL:
                 <Item Key="Key" Translatable="1">Default spelling dictionary</Item>
                 <Item Key="Data">
                     <Hash>
-                        <Item Key="english" Translatable="1">English</Item>
-                        <Item Key="deutsch" Translatable="1">Deutsch</Item>
+                        <Item Key="english">English</Item>
+                        <Item Key="deutsch">Deutsch</Item>
                     </Hash>
                 </Item>
                 <Item Key="DataSelected">english</Item>
@@ -4060,7 +4060,7 @@ You can log in via the following URL:
         <Group>Framework</Group>
         <SubGroup>Frontend::Customer</SubGroup>
         <Setting>
-            <String Regex="" Translatable="1">New OTRS password request</String>
+            <String Regex="">New OTRS password request</String>
         </Setting>
     </ConfigItem>
     <ConfigItem Name="CustomerPanelBodyLostPasswordToken" Required="1" Valid="1">
@@ -4086,7 +4086,7 @@ If you did not request a new password, please ignore this email.
         <Group>Framework</Group>
         <SubGroup>Frontend::Customer</SubGroup>
         <Setting>
-            <String Regex="" Translatable="1">New OTRS password</String>
+            <String Regex="">New OTRS password</String>
         </Setting>
     </ConfigItem>
     <ConfigItem Name="CustomerPanelBodyLostPassword" Required="1" Valid="1">
@@ -4108,7 +4108,7 @@ New password: &lt;OTRS_NEWPW&gt;
         <Group>Framework</Group>
         <SubGroup>Frontend::Customer</SubGroup>
         <Setting>
-            <String Regex="" Translatable="1">New OTRS Account!</String>
+            <String Regex="">New OTRS Account!</String>
         </Setting>
     </ConfigItem>
     <ConfigItem Name="CustomerPanelBodyNewAccount" Required="1" Valid="1">
@@ -6105,7 +6105,7 @@ via the Preferences button after logging in.
                 </Item>
                 <Item Key="URL1">
                     <Hash>
-                        <Item Key="Description" Translatable="1">Security Focus</Item>
+                        <Item Key="Description">Security Focus</Item>
                         <Item Key="URL">http://www.securityfocus.com/bid/&lt;MATCH1&gt;/info</Item>
                         <Item Key="Image">http://www.securityfocus.com/favicon.ico</Item>
                         <Item Key="Target">_blank</Item>
@@ -6177,7 +6177,7 @@ via the Preferences button after logging in.
                 </Item>
                 <Item Key="URL1">
                     <Hash>
-                        <Item Key="Description" Translatable="1">Description</Item>
+                        <Item Key="Description">Description</Item>
                         <Item Key="URL">URL</Item>
                         <Item Key="Image">right-small.png</Item>
                         <Item Key="Target">_blank</Item>
@@ -6185,7 +6185,7 @@ via the Preferences button after logging in.
                 </Item>
                 <Item Key="URL2">
                     <Hash>
-                        <Item Key="Description" Translatable="1">Description</Item>
+                        <Item Key="Description">Description</Item>
                         <Item Key="URL">URL</Item>
                         <Item Key="Image">Image</Item>
                         <Item Key="Target">_blank</Item>
@@ -6212,7 +6212,7 @@ via the Preferences button after logging in.
                 </Item>
                 <Item Key="URL1">
                     <Hash>
-                        <Item Key="Description" Translatable="1">Description</Item>
+                        <Item Key="Description">Description</Item>
                         <Item Key="URL">URL</Item>
                         <Item Key="Image">right-small.png</Item>
                         <Item Key="Target">_blank</Item>
@@ -6220,7 +6220,7 @@ via the Preferences button after logging in.
                 </Item>
                 <Item Key="URL2">
                     <Hash>
-                        <Item Key="Description" Translatable="1">Description</Item>
+                        <Item Key="Description">Description</Item>
                         <Item Key="URL">URL</Item>
                         <Item Key="Image">Image</Item>
                         <Item Key="Target">_blank</Item>
@@ -6228,7 +6228,7 @@ via the Preferences button after logging in.
                 </Item>
                 <Item Key="URL3">
                     <Hash>
-                        <Item Key="Description" Translatable="1">Description</Item>
+                        <Item Key="Description">Description</Item>
                         <Item Key="URL">URL</Item>
                         <Item Key="Image">Image</Item>
                         <Item Key="Target">_blank</Item>
