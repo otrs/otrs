@@ -431,11 +431,27 @@
         </Setting>
     </ConfigItem>
     <ConfigItem Name="Frontend::RichText::DefaultCSS" Required="1" Valid="1">
-        <Description Translatable="1">Defines the default CSS used in rich text editors.</Description>
+        <Description Translatable="1">Defines the default CSS used in rich text editors and HTML mail body.</Description>
         <Group>Framework</Group>
         <SubGroup>Core::Web</SubGroup>
         <Setting>
             <String Regex="">font-family:Geneva,Helvetica,Arial,sans-serif; font-size: 12px;</String>
+        </Setting>
+    </ConfigItem>
+    <ConfigItem Name="Frontend::RichText::EditingAreaCSS" Required="0" Valid="1">
+        <Description Translatable="1">Defines the CSS style to embed in rich text editor. You may put here things like ".cke_editable { line-height: normal; margin: 10px; }" to customize rich text area style.</Description>
+        <Group>Framework</Group>
+        <SubGroup>Core::Web</SubGroup>
+        <Setting>
+            <String Regex=""></String>
+        </Setting>
+    </ConfigItem>
+    <ConfigItem Name="Frontend::RichText::MailCSS" Required="0" Valid="1">
+        <Description Translatable="1">Defines the CSS style to embed in HTML messages. CSS content defined here will be put in head/style node of HTML e-mails (this allows for example to define anchor colors in HTML e-mails or table header styles which is not possible using DefaultCSS parameter).</Description>
+        <Group>Framework</Group>
+        <SubGroup>Core::Web</SubGroup>
+        <Setting>
+            <TextArea></TextArea>
         </Setting>
     </ConfigItem>
     <ConfigItem Name="Frontend::RichText::EnhancedMode" Required="1" Valid="1">

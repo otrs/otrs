@@ -13,7 +13,7 @@
     Core.Config.Set('RichText.Height', '[% Config("Frontend::RichTextHeight") %]');
     Core.Config.Set('RichText.TextDir', '[% Env("TextDirection") %]');
     Core.Config.Set('RichText.SpellChecker', '[% Env("BrowserSpellCheckerInline") %]');
-    Core.Config.Set('RichText.EditingAreaCSS', 'body { [% Config("Frontend::RichText::DefaultCSS") %] }');
+    Core.Config.Set('RichText.EditingAreaCSS', "[% Config("Frontend::RichText::EditingAreaCSS") %] body { [% Config("Frontend::RichText::DefaultCSS") %] }");
     Core.Config.Set('RichText.Lang.SplitQuote', '[% Translate('Split Quote') | html %]');
     Core.Config.Set('RichText.Toolbar', [
         ['Bold', 'Italic', 'Underline', 'Strike', '-', 'NumberedList', 'BulletedList', '-', 'Outdent', 'Indent', '-', 'JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock', '-', 'Link', 'Unlink', '-', 'Image', 'HorizontalRule', '-', 'Undo', 'Redo', '-', 'Find', 'SpellCheck'],
