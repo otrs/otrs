@@ -123,7 +123,7 @@ if applicable the created ArticleID.
                 SenderType                      => 'some sender type name',    # optional
                 AutoResponseType                => 'some auto response type',  # optional
                 From                            => 'some from string',         # optional
-                To                              => 'some to string',           # optional
+                To                              => 'some to string',           # optional, required if ArticleSend => 1
                 Subject                         => 'some subject',
                 Body                            => 'some body'
 
@@ -833,15 +833,15 @@ sub _CheckArticle {
     if ( $Article->{ArticleSend} ) {
         if ( !$Article->{To} ) {
             return $Self->ReturnError(
-                ErrorCode    => 'TicketCreate.MissingParameter',
-                ErrorMessage => "TicketCreate: Article 'To' parameter is required when 'ArticleSend' parameter is set",
+                ErrorCode    => 'TicketUpdate.MissingParameter',
+                ErrorMessage => "TicketUpdate: Article 'To' parameter is required when 'ArticleSend' parameter is set",
             );
         }
         elsif ( !$Self->ValidateToIsEmail( %{$Article} ) ) {
             return {
-                ErrorCode => 'TicketCreate.InvalidParameter',
+                ErrorCode => 'TicketUpdate.InvalidParameter',
                 ErrorMessage =>
-                    "TicketCreate: Article->To parameter should be an email address when Article->ArticleSend is set!",
+                    "TicketUpdate: Article->To parameter must be an email address when Article->ArticleSend is set!",
             };
         }
     }
@@ -1921,7 +1921,7 @@ sub _TicketUpdate {
         my $From;
 
         # When we are sending the article as an email, set the from address to the ticket's system address
-        if ( $Article->{ArticleSend} ) {
+        if ( $Article->{ArticleSend} && !$Article->{From} ) {
             my $QueueID = $TicketObject->TicketQueueID(
                 TicketID => $TicketID,
             );
