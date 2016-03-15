@@ -277,11 +277,8 @@ sub Send {
 
     }
 
-    my $Product = $ConfigObject->Get('Product');
-    my $Version = $ConfigObject->Get('Version');
-
     if ( !$ConfigObject->Get('Secure::DisableBanner') ) {
-        $Header{'X-Mailer'}     = "$Product Mail Service ($Version)";
+        $Header{'X-Mailer'} = $ConfigObject->Get('Product') . ' Mail Service';
         $Header{'X-Powered-By'} = 'OTRS - Open Ticket Request System (http://otrs.org/)';
     }
     $Header{Type} = $Param{MimeType} || 'text/plain';
