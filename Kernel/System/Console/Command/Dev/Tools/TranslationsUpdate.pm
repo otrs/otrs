@@ -11,6 +11,7 @@ package Kernel::System::Console::Command::Dev::Tools::TranslationsUpdate;
 use strict;
 use warnings;
 
+use POSIX qw(strftime);
 use base qw(Kernel::System::Console::BaseCommand);
 
 use File::Basename;
@@ -596,13 +597,15 @@ sub WritePOTFile {
 
     $Kernel::OM->Get('Kernel::System::Main')->Require('Locale::PO') || die "Could not load Locale::PO";
 
-    my $Package = $Param{Module} // 'OTRS';
+    my $Package      = $Param{Module} // 'OTRS';
+    my $Version      = $Kernel::OM->Get('Kernel::Config')->Get('Version');
+    my $CreationDate = strftime( '%Y-%m-%d %H:%M+0200', localtime );
 
     push @POTEntries, Locale::PO->new(
         -msgid => '',
         -msgstr =>
-            "Project-Id-Version: $Package\n" .
-            "POT-Creation-Date: 2014-08-08 19:10+0200\n" .
+            "Project-Id-Version: $Package-$Version\n" .
+            "POT-Creation-Date: $CreationDate\n" .
             "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n" .
             "Last-Translator: FULL NAME <EMAIL\@ADDRESS>\n" .
             "Language-Team: LANGUAGE <LL\@li.org>\n" .
