@@ -41,7 +41,7 @@ Core.Agent.Responsive = (function (TargetNS) {
         // Add trigger icon for pagination
         $('span.Pagination a:first-child').parent().closest('.WidgetSimple').each(function() {
             if (!$(this).find('.ShowPagination').length) {
-                $(this).find('.WidgetAction.Close').after('<div class="WidgetAction ShowPagination"><a title="Close" href=""><i class="fa fa-angle-double-right"></i></a></div>');
+                $(this).find('.WidgetAction.Close').after('<div class="WidgetAction ShowPagination"><a title="[% Translate("Close") | JSON %]" href=""><i class="fa fa-angle-double-right"></i></a></div>');
             }
         });
 
