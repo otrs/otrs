@@ -157,9 +157,8 @@ sub Run {
                             Type => 'Small',
                         );
                         $Output .= $LayoutObject->Warning(
-                            Message =>
-                                'Sorry, you need to be the ticket owner to perform this action.',
-                            Comment => 'Please change the owner first.',
+                            Message => Translatable('Sorry, you need to be the ticket owner to perform this action.'),
+                            Comment => Translatable('Please change the owner first.'),
                         );
                         $Output .= $LayoutObject->Footer(
                             Type => 'Small',

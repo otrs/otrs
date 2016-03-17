@@ -179,9 +179,6 @@
  */
 
 #Signup #Title {
-    width: 55px;
-}
-
 #Signup input[type='text'],
 #Signup input[type='email'] {
     width: 250px;
