@@ -1164,7 +1164,8 @@ sub ConnectToDB {
     if ( !$Kernel::OM->Get('Kernel::System::Main')->Require( 'DBD::' . $Driver ) ) {
         return (
             Successful => 0,
-            Message    => "Can't connect to database, Perl module DBD::$Driver not installed!",
+            Message    => $Kernel::OM->Get('Kernel::Output::HTML::Layout')->{LanguageObject}
+                    ->Translate("Can't connect to database, Perl module DBD::%s not installed!", $Driver),
             Comment    => "",
             DB         => undef,
             DBH        => undef,
@@ -1178,7 +1179,8 @@ sub ConnectToDB {
     if ( !$DBH ) {
         return (
             Successful => 0,
-            Message    => "Can't connect to database, read comment!",
+            Message    => $Kernel::OM->Get('Kernel::Output::HTML::Layout')->{LanguageObject}
+                    ->Translate("Can't connect to database, read comment!"),
             Comment    => "$DBI::errstr",
             DB         => undef,
             DBH        => undef,

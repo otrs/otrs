@@ -13,6 +13,8 @@ use warnings;
 
 our $ObjectManagerDisabled = 1;
 
+use Kernel::Language qw(Translatable);
+
 sub new {
     my ( $Type, %Param ) = @_;
 
@@ -29,20 +31,22 @@ sub Run {
     my $LayoutObject = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
 
     # get test page header
-    my $Output = $LayoutObject->Header( Title => 'OTRS Test Page' );
+    my $Output = $LayoutObject->Header(
+        Title => Translatable('OTRS Test Page'),
+    );
 
     # example blocks
     $LayoutObject->Block(
         Name => 'Row',
         Data => {
-            Text    => 'Some Text for the first line',
+            Text    => Translatable('Some Text for the first line'),
             Counter => 1,
         },
     );
     $LayoutObject->Block(
         Name => 'Row',
         Data => {
-            Text    => 'Some Text for the next line',
+            Text    => Translatable('Some Text for the next line'),
             Counter => 2,
         },
     );
