@@ -48,7 +48,7 @@ sub Run {
     if ( !-f "$Self->{Path}/Kernel/Config.pm" ) {
         $LayoutObject->FatalError(
             Message => 
-                $LayoutObject->{LanguageObject}->Translate('File "%s/Kernel/Config.pm" not found!', $Self->{Path}),
+                $LayoutObject->{LanguageObject}->Translate( 'File "%s/Kernel/Config.pm" not found!', $Self->{Path} ),
             Comment => Translatable('Please contact the admin.'),
         );
     }
