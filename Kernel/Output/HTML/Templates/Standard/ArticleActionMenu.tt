@@ -63,6 +63,7 @@ $(document).on('change', '#[% Item.FormID | html %] select[name=ForwardTemplateI
     [% ELSIF Item.ItemType == 'Dropdown' && Item.DropdownType == 'Reply' %]
 
         <li>
+           <span>[% Translate("Reply") | html %]:</span>
             <form title="[% Translate(Item.Name) | html %]" action="[% Env("CGIHandle") %]" method="get" id="[% Item.FormID | html %]">
                 <input type="hidden" name="Action" value="[% Item.Action | html %]"/>
                 <input type="hidden" name="TicketID" value="[% Data.TicketID | html %]"/>
