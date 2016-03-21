@@ -689,13 +689,13 @@ Core.Agent.Admin.GenericAgent.Init({
                         </div>
                         <div class="Clear"></div>
 
-                        <label for="NewCustomerUserLogin">[% Translate("New customer") | html %]:</label>
+                        <label for="NewCustomerUserLogin">[% Translate("New customer user") | html %]:</label>
                         <div class="Field">
                             <input type="text" name="NewCustomerUserLogin" id="NewCustomerUserLogin" value="[% Data.NewCustomerUserLogin | html %]" class="W33pc"/>
                         </div>
                         <div class="Clear"></div>
 
-                        <label for="NewCustomerID">[% Translate("New customer ID") | html %]:</label>
+                        <label for="NewCustomerID">[% Translate("New customer") | html %]:</label>
                         <div class="Field">
                             <input type="text" name="NewCustomerID" id="NewCustomerID" value="[% Data.NewCustomerID | html %]" class="W33pc"/>
                         </div>
