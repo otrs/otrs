@@ -241,6 +241,14 @@
             </Hash>
         </Setting>
     </ConfigItem>
+    <ConfigItem Name="OutOfOfficeMessageTemplate" Required="0" Valid="1">
+        <Description Translatable="1">Defines out of office message template. Two string parameters (%s) available: end date and number of days left.</Description>
+        <Group>Framework</Group>
+        <SubGroup>Core</SubGroup>
+        <Setting>
+            <String Regex="">*** out of office to %s (%s d left) ***</String>
+        </Setting>
+    </ConfigItem>
     <ConfigItem Name="DefaultTheme" Required="1" Valid="1" ConfigLevel="200">
         <Description Translatable="1">Defines the default front-end (HTML) theme to be used by the agents and customers. If you like, you can add your own theme. Please refer the administrator manual located at http://otrs.github.io/doc/.</Description>
         <Group>Framework</Group>
