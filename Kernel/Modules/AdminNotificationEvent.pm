@@ -726,20 +726,25 @@ sub _Edit {
         $TreeView = 1;
     }
 
+    my %RecipientTypes = (
+        AgentOwner              => Translatable('Agent who owns the ticket'),
+        AgentResponsible        => Translatable('Agent who is responsible for the ticket'),
+        AgentWatcher            => Translatable('All agents watching the ticket'),
+        AgentWritePermissions   => Translatable('All agents with write permission for the ticket'),
+        AgentMyQueues           => Translatable('All agents subscribed to the ticket\'s queue'),
+        AgentMyServices         => Translatable('All agents subscribed to the ticket\'s service'),
+        AgentMyQueuesMyServices => Translatable('All agents subscribed to both the ticket\'s queue and service'),
+    );
+
+    if ( !$ConfigObject->Get('CustomerNotificationsDisabled') ) {
+        $RecipientTypes{'Customer'} = Translatable('Customer of the ticket');
+    }
+
     $Param{RecipientsStrg} = $LayoutObject->BuildSelection(
-        Data => {
-            AgentOwner              => Translatable('Agent who owns the ticket'),
-            AgentResponsible        => Translatable('Agent who is responsible for the ticket'),
-            AgentWatcher            => Translatable('All agents watching the ticket'),
-            AgentWritePermissions   => Translatable('All agents with write permission for the ticket'),
-            AgentMyQueues           => Translatable('All agents subscribed to the ticket\'s queue'),
-            AgentMyServices         => Translatable('All agents subscribed to the ticket\'s service'),
-            AgentMyQueuesMyServices => Translatable('All agents subscribed to both the ticket\'s queue and service'),
-            Customer                => Translatable('Customer of the ticket'),
-        },
+        Data       => \%RecipientTypes,
         Name       => 'Recipients',
         Multiple   => 1,
-        Size       => 8,
+        Size       => scalar(keys %RecipientTypes),
         SelectedID => $Param{Data}->{Recipients},
         Class      => 'Modernize W75pc',
     );
