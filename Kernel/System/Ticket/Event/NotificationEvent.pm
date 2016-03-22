@@ -682,6 +682,15 @@ sub _RecipientsGet {
             #   other modules then an elsif condition here is useful.
             elsif ( $Recipient eq 'Customer' ) {
 
+                # skip customer recipient if sending notifications to customers is disabled
+                if ( $ConfigObject->Get('CustomerNotificationsDisabled') ) {
+                    $Kernel::OM->Get('Kernel::System::Log')->Log(
+                        Priority => 'notice',
+                        Message  => 'Send no customer notification because sending notifications to customers is disabled (see CustomerNotificationsDisabled)!',
+                    );
+                    next RECIPIENT;
+                }
+
                 # get old article for quoting
                 my %Article = $TicketObject->ArticleLastCustomerArticle(
                     TicketID      => $Param{Data}->{TicketID},
