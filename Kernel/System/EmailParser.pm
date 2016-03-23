@@ -409,7 +409,7 @@ sub GetReturnContentType {
     my $Self = shift;
 
     my $ContentType = $Self->GetContentType();
-    $ContentType =~ s/(charset=)(.*)/$1utf-8/ig;
+    $ContentType =~ s/charset\s*=.*/charset=utf-8/ig;
 
     # debug
     if ( $Self->{Debug} > 0 ) {
