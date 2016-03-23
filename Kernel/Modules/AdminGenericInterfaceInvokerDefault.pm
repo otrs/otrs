@@ -188,7 +188,7 @@ sub _AddAction {
     }
     if ( !$Self->_InvokerTypeCheck( InvokerType => $GetParam{InvokerType} ) ) {
         return $LayoutObject->ErrorScreen(
-            Message => $LayoutObject->{LanguageObject}->Translate('InvokerType % is not registered', $GetParam{InvokerType}),
+            Message => $LayoutObject->{LanguageObject}->Translate('InvokerType %s is not registered', $GetParam{InvokerType}),
         );
     }
 
