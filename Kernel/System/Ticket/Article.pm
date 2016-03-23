@@ -162,9 +162,9 @@ sub ArticleCreate {
             }
         }
         $Param{Charset} = '';
-        if ( $Param{ContentType} =~ /charset=/i ) {
+        if ( $Param{ContentType} =~ /charset\s*=\s*/i ) {
             $Param{Charset} = $Param{ContentType};
-            $Param{Charset} =~ s/.+?charset=("|'|)(\w+)/$2/gi;
+            $Param{Charset} =~ s/.+?charset\s*=\s*("|'|)(\w+)/$2/gi;
             $Param{Charset} =~ s/"|'//g;
             $Param{Charset} =~ s/(.+?);.*/$1/g;
 
@@ -320,7 +320,7 @@ sub ArticleCreate {
     for my $Attachment (@AttachmentConvert) {
 
         if (
-            $Attachment->{ContentType} eq "text/html; charset=\"$Param{Charset}\""
+            $Attachment->{ContentType} =~ /^text\/html; charset\s*=\s*"$Param{Charset}"$/i
             && $Attachment->{Filename} eq 'file-2'
             )
         {
@@ -1539,9 +1539,9 @@ sub ArticleGet {
         $Ticket{EscalationTime}         = $Data{EscalationTime};
         $Ticket{Changed}                = $Row[36];
 
-        if ( $Data{ContentType} && $Data{ContentType} =~ /charset=/i ) {
+        if ( $Data{ContentType} && $Data{ContentType} =~ /charset\s*=\s*/i ) {
             $Data{Charset} = $Data{ContentType};
-            $Data{Charset} =~ s/.+?charset=("|'|)(\w+)/$2/gi;
+            $Data{Charset} =~ s/.+?charset\s*=\s*("|'|)(\w+)/$2/gi;
             $Data{Charset} =~ s/"|'//g;
             $Data{Charset} =~ s/(.+?);.*/$1/g;
 
