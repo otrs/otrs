@@ -613,15 +613,20 @@ sub DocumentComplete {
 
     return $Param{String} if $Param{String} =~ /<html>/i;
 
-    my $Css = $Kernel::OM->Get('Kernel::Config')->Get('Frontend::RichText::DefaultCSS')
+    my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
+
+    my $DefaultCSS = $ConfigObject->Get('Frontend::RichText::DefaultCSS')
         || 'font-size: 12px; font-family:Courier,monospace,fixed;';
+
+    my $MailCSS = $ConfigObject->Get('Frontend::RichText::MailCSS');
+    $MailCSS = ($MailCSS) ? "<style type='text/css'><!--\n" . $MailCSS . "\n--></style>" : '';
 
     # Use the HTML5 doctype because it is compatible with HTML4 and causes the browsers
     #   to render the content in standards mode, which is more safe than quirks mode.
     my $Body = '<!DOCTYPE html><html><head>';
     $Body
         .= '<meta http-equiv="Content-Type" content="text/html; charset=' . $Param{Charset} . '"/>';
-    $Body .= '</head><body style="' . $Css . '">' . $Param{String} . '</body></html>';
+    $Body .= $MailCSS . '</head><body style="' . $DefaultCSS . '">' . $Param{String} . '</body></html>';
     return $Body;
 }
 
