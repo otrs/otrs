@@ -455,6 +455,16 @@ my @NeededModules = (
             zypper => 'perl-YAML-LibYAML',
         },
     },
+    {
+        Module    => 'Devel::REPL',
+        Required  => 0,
+        Comment   => 'Required for using the Console command "Dev::Tools::Shell".',
+        InstTypes => {
+            aptget => 'libdevel-repl-perl',
+            emerge => 'dev-perl/Devel-REPL',
+            zypper => 'perl-Devel-REPL',
+        },
+    },
 );
 
 if ($PackageList) {
