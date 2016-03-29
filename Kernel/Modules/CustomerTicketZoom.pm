@@ -89,7 +89,7 @@ sub Run {
     # strip html and ascii attachments of content
     my $StripPlainBodyAsAttachment = 1;
 
-    # check if rich text is enabled, if not only stip ascii attachments
+    # check if rich text is enabled, if not only strip ASCII attachments
     if ( !$LayoutObject->{BrowserRichText} ) {
         $StripPlainBodyAsAttachment = 2;
     }

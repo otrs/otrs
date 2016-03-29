@@ -8467,8 +8467,8 @@
         <SubGroup>Frontend::Agent::ModuleRegistration</SubGroup>
         <Setting>
             <FrontendModuleReg>
-                <Description Translatable="1">AgentCustomerSearch.</Description>
-                <Title Translatable="1">AgentCustomerSearch</Title>
+                <Description Translatable="1">Agent Customer Search.</Description>
+                <Title Translatable="1">Agent Customer Search</Title>
                 <NavBarName>Ticket</NavBarName>
             </FrontendModuleReg>
         </Setting>
@@ -8479,8 +8479,8 @@
         <SubGroup>Frontend::Agent::ModuleRegistration</SubGroup>
         <Setting>
             <FrontendModuleReg>
-                <Description Translatable="1">AgentUserSearch.</Description>
-                <Title Translatable="1">AgentUserSearch</Title>
+                <Description Translatable="1">Agent User Search.</Description>
+                <Title Translatable="1">Agent User Search</Title>
                 <NavBarName>Ticket</NavBarName>
             </FrontendModuleReg>
         </Setting>
@@ -8549,7 +8549,7 @@
             <FrontendModuleReg>
                 <Description Translatable="1">Compat module for AgentZoom to AgentTicketZoom.</Description>
                 <NavBarName>Ticket</NavBarName>
-                <Title Translatable="1"></Title>
+                <Title></Title>
             </FrontendModuleReg>
         </Setting>
     </ConfigItem>
