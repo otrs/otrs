@@ -1250,7 +1250,7 @@ sub GetAllCustomServices {
     if ( !$Param{UserID} ) {
         $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'error',
-            Message  => 'Need UserID!'
+            Message  => 'Need UserID!',
         );
         return;
     }

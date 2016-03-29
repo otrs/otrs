@@ -89,7 +89,7 @@ sub GroupMemberAdd {
         if ( !$Param{$_} ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
-                Message  => "Need $_!"
+                Message  => "Need $_!",
             );
             return;
         }
@@ -172,7 +172,7 @@ sub GroupMemberList {
         if ( !$Param{$_} ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
-                Message  => "Need $_!"
+                Message  => "Need $_!",
             );
             return;
         }
@@ -297,6 +297,7 @@ sub GroupMemberList {
         Key   => $CacheKey,
         Value => \%Data,
     );
+
     return %Data;
 }
 
@@ -317,7 +318,7 @@ sub GroupLookup {
     if ( !$Param{Group} && !$Param{GroupID} ) {
         $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'error',
-            Message  => 'Got no Group or GroupID!'
+            Message  => 'Got no Group or GroupID!',
         );
         return;
     }
@@ -382,7 +383,6 @@ sub GroupLookup {
         Value => \$Result,
     );
 
-    # return result
     return $Result;
 }
 

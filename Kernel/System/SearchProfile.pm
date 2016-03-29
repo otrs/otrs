@@ -84,7 +84,7 @@ sub SearchProfileAdd {
         if ( !defined $Param{$_} ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
-                Message  => "Need $_!"
+                Message  => "Need $_!",
             );
             return;
         }
@@ -154,7 +154,7 @@ sub SearchProfileGet {
         if ( !defined( $Param{$_} ) ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
-                Message  => "Need $_!"
+                Message  => "Need $_!",
             );
             return;
         }
@@ -221,7 +221,7 @@ sub SearchProfileDelete {
         if ( !$Param{$_} ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
-                Message  => "Need $_!"
+                Message  => "Need $_!",
             );
             return;
         }
@@ -251,6 +251,7 @@ sub SearchProfileDelete {
         Type => $Self->{CacheType},
         Key  => $CacheKey,
     );
+
     return 1;
 }
 
@@ -273,7 +274,7 @@ sub SearchProfileList {
         if ( !defined( $Param{$_} ) ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
-                Message  => "Need $_!"
+                Message  => "Need $_!",
             );
             return;
         }
@@ -332,7 +333,7 @@ sub SearchProfileUpdateUserLogin {
         if ( !defined( $Param{$_} ) ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
-                Message  => "Need $_!"
+                Message  => "Need $_!",
             );
             return;
         }
@@ -370,6 +371,8 @@ sub SearchProfileUpdateUserLogin {
             UserLogin => $Param{UserLogin},
         );
     }
+
+    return 1;
 }
 
 1;
