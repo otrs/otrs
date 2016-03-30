@@ -481,6 +481,10 @@ sub ToAscii {
     }
     {
         my $Chr = chr( $2 );
+        # make sure we get valid UTF8 code points
+        Encode::_utf8_off( $Chr);
+        $Chr = Encode::decode('utf-8', $Chr, 0);
+
         if ( $Chr ) {
             $Chr;
         }
@@ -489,7 +493,7 @@ sub ToAscii {
         };
     }egx;
 
-    # encode html entities like "&#3d;"
+    # encode html entities like "&#x3d;"
     $Param{String} =~ s{
         (&\#[xX]([0-9a-fA-F]+);?)
     }
@@ -498,6 +502,9 @@ sub ToAscii {
         my $Hex = hex( $2 );
         if ( $Hex ) {
             my $Chr = chr( $Hex );
+            # make sure we get valid UTF8 code points
+            Encode::_utf8_off( $Chr);
+            $Chr = Encode::decode('utf-8', $Chr, 0);
             if ( $Chr ) {
                 $Chr;
             }
@@ -1176,7 +1183,7 @@ sub EmbeddedImagesExtract {
     if ( ref $Param{AttachmentsRef} ne 'ARRAY' ) {
         $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'error',
-            Message  => "Need DocumentRef!"
+            Message  => "Need AttachmentsRef!"
         );
         return;
     }

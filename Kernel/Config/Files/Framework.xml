@@ -761,6 +761,17 @@
             <String Regex="">base64</String>
         </Setting>
     </ConfigItem>
+    <ConfigItem Name="Sendmail::DefaultHeaders" Required="0" Valid="0">
+        <Description Translatable="1">Defines default headers for outgoing emails.</Description>
+        <Group>Framework</Group>
+        <SubGroup>Core::Sendmail</SubGroup>
+        <Setting>
+            <Hash>
+                <Item Key="Precedence:">bulk</Item>
+                <Item Key="Auto-Submitted:">auto-generated</Item>
+            </Hash>
+        </Setting>
+    </ConfigItem>
     <ConfigItem Name="LoginURL" Required="0" Valid="0" ConfigLevel="200">
         <Description Translatable="1">Defines an alternate URL, where the login link refers to.</Description>
         <Group>Framework</Group>
@@ -4571,10 +4582,10 @@ via the Preferences button after logging in.
                 <Loader>
                     <CSS>Core.Agent.Dashboard.css</CSS>
                     <CSS>Core.AllocationList.css</CSS>
-                    <CSS>thirdparty/fullcalendar-2.4.0/fullcalendar.min.css</CSS>
+                    <CSS>thirdparty/fullcalendar-2.6.1/fullcalendar.min.css</CSS>
                     <CSS>thirdparty/nvd3-1.7.1/nv.d3.css</CSS>
                     <JavaScript>thirdparty/momentjs-2.10.6/moment.min.js</JavaScript>
-                    <JavaScript>thirdparty/fullcalendar-2.4.0/fullcalendar.min.js</JavaScript>
+                    <JavaScript>thirdparty/fullcalendar-2.6.1/fullcalendar.min.js</JavaScript>
                     <JavaScript>thirdparty/d3-3.5.6/d3.min.js</JavaScript>
                     <JavaScript>thirdparty/nvd3-1.7.1/nvd3.min.js</JavaScript>
                     <JavaScript>thirdparty/nvd3-1.7.1/models/OTRSMultiBarChart.js</JavaScript>
@@ -5530,7 +5541,7 @@ via the Preferences button after logging in.
         <SubGroup>Frontend::Agent::ModuleRegistration</SubGroup>
         <Setting>
             <FrontendModuleReg>
-                <Title>HTML Reference</Title>
+                <Title Translatable="1">HTML Reference</Title>
                 <Group>users</Group>
                 <GroupRo>users</GroupRo>
                 <Description Translatable="1">HTML Reference.</Description>
@@ -6871,5 +6882,4 @@ via the Preferences button after logging in.
             <String Regex="[/|\w]+fetchmail$" Check="File">/usr/bin/fetchmail</String>
         </Setting>
     </ConfigItem>
-
 </otrs_config>
