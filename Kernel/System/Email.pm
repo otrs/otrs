@@ -294,6 +294,7 @@ sub Send {
         $Header{'X-Powered-By'} = 'OTRS - Open Ticket Request System (http://otrs.org/)';
     }
     else {
+        
         # set X-Mailer to undef explicitly to avoid MIME::Tools to set it to "MIME-tools"
         # as this is handled as spam by some mail servers
         $Header{'X-Mailer'} = undef;
