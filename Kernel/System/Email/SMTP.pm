@@ -144,7 +144,12 @@ sub Send {
     # get recipients
     my $ToString = '';
     for my $To ( @{ $Param{ToArray} } ) {
-        $ToString .= $To . ',';
+        if ( $ToString ) {
+            $ToString .= ', ' . $To;
+        }
+        else {
+            $ToString = $To;
+        }
         if ( !$SMTP->to($To) ) {
             my $Error = $SMTP->code() . $SMTP->message();
             $Kernel::OM->Get('Kernel::System::Log')->Log(
