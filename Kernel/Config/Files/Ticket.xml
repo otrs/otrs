@@ -8248,7 +8248,7 @@
                     <Prio>100</Prio>
                 </NavBar>
                 <NavBar>
-                    <Description Translatable="1"></Description>
+                    <Description></Description>
                     <Type>Menu</Type>
                     <Block>ItemArea</Block>
                     <Name Translatable="1">Tickets</Name>
@@ -8467,8 +8467,8 @@
         <SubGroup>Frontend::Agent::ModuleRegistration</SubGroup>
         <Setting>
             <FrontendModuleReg>
-                <Description Translatable="1">AgentCustomerSearch.</Description>
-                <Title Translatable="1">AgentCustomerSearch</Title>
+                <Description Translatable="1">Agent Customer Search.</Description>
+                <Title Translatable="1">Agent Customer Search</Title>
                 <NavBarName>Ticket</NavBarName>
             </FrontendModuleReg>
         </Setting>
@@ -8479,8 +8479,8 @@
         <SubGroup>Frontend::Agent::ModuleRegistration</SubGroup>
         <Setting>
             <FrontendModuleReg>
-                <Description Translatable="1">AgentUserSearch.</Description>
-                <Title Translatable="1">AgentUserSearch</Title>
+                <Description Translatable="1">Agent User Search.</Description>
+                <Title Translatable="1">Agent User Search</Title>
                 <NavBarName>Ticket</NavBarName>
             </FrontendModuleReg>
         </Setting>
@@ -8549,7 +8549,7 @@
             <FrontendModuleReg>
                 <Description Translatable="1">Compat module for AgentZoom to AgentTicketZoom.</Description>
                 <NavBarName>Ticket</NavBarName>
-                <Title Translatable="1"></Title>
+                <Title></Title>
             </FrontendModuleReg>
         </Setting>
     </ConfigItem>
@@ -8578,7 +8578,7 @@
         <SubGroup>Frontend::Agent::ModuleRegistration</SubGroup>
         <Setting>
             <FrontendModuleReg>
-                <Title Translatable="1"></Title>
+                <Title></Title>
                 <NavBarName>Ticket</NavBarName>
                 <Description Translatable="1">To download attachments.</Description>
             </FrontendModuleReg>
@@ -9631,7 +9631,7 @@
             <FrontendModuleReg>
                 <Description Translatable="1">To download attachments.</Description>
                 <NavBarName></NavBarName>
-                <Title Translatable="1"></Title>
+                <Title></Title>
             </FrontendModuleReg>
         </Setting>
     </ConfigItem>
