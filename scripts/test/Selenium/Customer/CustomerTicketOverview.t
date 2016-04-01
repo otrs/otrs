@@ -59,6 +59,13 @@ $Selenium->RunTest(
             Value => 'Sortable',
         );
 
+        # enable CustomerTicketOverviewSortable
+        $Kernel::OM->Get('Kernel::System::SysConfig')->ConfigItemUpdate(
+            Valid => 1,
+            Key   => 'Ticket::Frontend::CustomerTicketOverviewSortable',
+            Value => 'Sortable',
+        );
+
         # create test customer user and login
         my $TestUserLogin = $Helper->TestCustomerUserCreate(
             Groups => ['admin'],
