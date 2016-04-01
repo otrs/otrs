@@ -243,22 +243,25 @@ sub Map {
         }
 
         # check if we have a value mapping for the specific key
-        my $ValueMap = $Config->{ValueMap}->{$NewKey};
-        if ($ValueMap) {
+        if ( IsHashRefWithData( $Config->{ValueMap} ) ) {
 
-            # first check in exact (1:1) map
-            if ( $ValueMap->{ValueMapExact} && defined $ValueMap->{ValueMapExact}->{$OldValue} ) {
-                $ReturnData{$NewKey} = $ValueMap->{ValueMapExact}->{$OldValue};
-                next CONFIGKEY;
-            }
+            my $ValueMap = $Config->{ValueMap}->{$NewKey};
+            if ($ValueMap) {
 
-            # if we have no match from exact map, try regex map
-            if ( $ValueMap->{ValueMapRegEx} ) {
-                VALUEMAPREGEX:
-                for my $ConfigKey ( sort keys %{ $ValueMap->{ValueMapRegEx} } ) {
-                    next VALUEMAPREGEX if $OldValue !~ m{ \A $ConfigKey \z }xms;
-                    $ReturnData{$NewKey} = $ValueMap->{ValueMapRegEx}->{$ConfigKey};
+                # first check in exact (1:1) map
+                if ( $ValueMap->{ValueMapExact} && defined $ValueMap->{ValueMapExact}->{$OldValue} ) {
+                    $ReturnData{$NewKey} = $ValueMap->{ValueMapExact}->{$OldValue};
                     next CONFIGKEY;
+                }
+
+                # if we have no match from exact map, try regex map
+                if ( $ValueMap->{ValueMapRegEx} ) {
+                    VALUEMAPREGEX:
+                    for my $ConfigKey ( sort keys %{ $ValueMap->{ValueMapRegEx} } ) {
+                        next VALUEMAPREGEX if $OldValue !~ m{ \A $ConfigKey \z }xms;
+                        $ReturnData{$NewKey} = $ValueMap->{ValueMapRegEx}->{$ConfigKey};
+                        next CONFIGKEY;
+                    }
                 }
             }
         }
@@ -413,7 +416,7 @@ sub _ConfigCheck {
     }
 
     # check ValueMap
-    for my $KeyName ( sort keys %{ $Config->{ValueMap} } ) {
+    for my $KeyName ( sort keys %{ $Config->{ValueMap} || {} } ) {
 
         # require values to be hash ref
         if ( !IsHashRefWithData( $Config->{ValueMap}->{$KeyName} ) ) {
