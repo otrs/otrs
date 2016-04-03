@@ -55,7 +55,7 @@ Core.Agent.Preferences = (function (TargetNS) {
         var IssuerLabel = Core.Config.Get("ProductName");
         var AccountLabel = Core.Config.Get("UserFullname");
 
-        var OTPLink = "otpauth://totp/" + IssuerLabel + ":" + AccountLabel + "?secret=" + Secret;
+        var OTPLink = "otpauth://totp/" + AccountLabel + "?issuer=" + IssuerLabel + "&secret=" + Secret + "&algorithm=SHA1&digits=6&period=30";
         var QRCodeLink = Core.Config.Get('CGIHandle') + '?Action=GenerateQRCode;Text=' + encodeURIComponent(OTPLink);
         Core.UI.Popup.OpenPopup(QRCodeLink, 'QRCode');
     };
