@@ -197,7 +197,7 @@ sub Auth {
         }
 
         # retry getting a valid user after sync to proceed with 2factor auth
-        my $UserID = $UserObject->UserLookup(
+        $UserID = $UserObject->UserLookup(
             UserLogin => $Param{User},
         );
 
