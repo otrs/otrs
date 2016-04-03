@@ -140,7 +140,7 @@
 [% RenderBlockStart("GoogleAuthenticatorSecretKey") %]
                                     <label for="[% Data.Name | html %]">[% Translate("Shared Secret") | html %]:</label>
                                     <div class="Field">
-                                        <input type="text" name="[% Data.Name | html %]" id="[% Data.Name | html %]" value="[% Data.SelectedID | html %]" pattern="[A-Z2-7]*" />
+                                        <input type="text" name="[% Data.Name | html %]" id="[% Data.Name | html %]" value="[% Data.SelectedID | html %]" pattern="[A-Za-z2-7]*" />
                                         <button type="button" onclick="Core.Agent.Preferences.GenerateGoogleAuthenticatorSharedSecret('[% Data.Name | html %]');">[% Translate("Generate Secret") | html %]</button>
                                         <button type="button" onclick="Core.Agent.Preferences.ShowGoogleAuthenticatorQRCode('[% Data.Name | html %]');">[% Translate("Show QR-Code") | html %]</button>
                                     </div>
