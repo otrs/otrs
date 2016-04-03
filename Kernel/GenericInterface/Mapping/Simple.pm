@@ -418,7 +418,7 @@ sub _ConfigCheck {
     }
 
     # check ValueMap
-    for my $KeyName ( sort keys %{ $Config->{ValueMap} ) {
+    for my $KeyName ( sort keys %{ $Config->{ValueMap} } ) {
 
         # require values to be hash ref
         if ( !IsHashRefWithData( $Config->{ValueMap}->{$KeyName} ) ) {
