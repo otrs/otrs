@@ -34,8 +34,9 @@ Core.Agent.Preferences = (function (TargetNS) {
         var Chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
 
         var SharedSecret = '';
+        var CharIndex;
         for (var i = 0; i < KeyLength; i++) {
-            var CharIndex = Math.floor(Math.random() * Chars.length);
+            CharIndex = Math.floor(Math.random() * Chars.length);
             SharedSecret += Chars.substring(CharIndex, CharIndex + 1);
         }
 
