@@ -28,11 +28,20 @@ sub Configure {
 sub PreRun {
     my ( $Self, %Param ) = @_;
 
-    return if $Kernel::OM->Get('Kernel::System::Main')->Require(
-        'Devel::REPL',
-    );
+    my @Dependencies = ('Devel::REPL', 'Data::Printer');
 
-    die "Required Perl module 'Devel::REPL' not found. Please install and retry.";
+    DEPENDENCY:
+    for my $Dependency ( @Dependencies ) {
+
+        next DEPENDENCY if $Kernel::OM->Get('Kernel::System::Main')->Require(
+            $Dependency,
+            Silent => 1,
+        );
+
+        die "Required Perl module '$Dependency' not found. Please make sure the following dependencies are installed: ". join(' ', @Dependencies);
+    }
+
+    return 1;
 }
 
 sub Run {
