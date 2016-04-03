@@ -160,36 +160,6 @@ sub Auth {
         # next on no success
         next COUNT if !$User;
 
-        my $UserID = $UserObject->UserLookup(
-            UserLogin => $User,
-        );
-
-        # check 2factor auth backends
-        my $TwoFactorAuth;
-        TWOFACTORSOURCE:
-        for my $Count ( '', 1 .. 10 ) {
-
-            # return on no config setting
-            next TWOFACTORSOURCE if !$Self->{"AuthTwoFactorBackend$Count"};
-
-            # 2factor backend
-            my $AuthOk = $Self->{"AuthTwoFactorBackend$Count"}->Auth(
-                TwoFactorToken => $Param{TwoFactorToken},
-                User           => $User,
-                UserID         => $UserID,
-            );
-            $TwoFactorAuth = $AuthOk ? 'passed' : 'failed';
-
-            last TWOFACTORSOURCE if $AuthOk;
-        }
-
-        # if at least one 2factor auth backend was checked but none was successful,
-        # it counts as a failed login
-        if ( $TwoFactorAuth && $TwoFactorAuth ne 'passed' ) {
-            $User = undef;
-            last COUNT;
-        }
-
         # configured auth sync backend
         my $AuthSyncBackend = $ConfigObject->Get("AuthModule::UseSyncBackend$Count");
         if ( !defined $AuthSyncBackend ) {
@@ -220,6 +190,36 @@ sub Auth {
                 # sync backend
                 $Self->{"AuthSyncBackend$Count"}->Sync( %Param, User => $User );
             }
+        }
+
+        my $UserID = $UserObject->UserLookup(
+            UserLogin => $Param{User},
+        );
+
+        # check 2factor auth backends
+        my $TwoFactorAuth;
+        TWOFACTORSOURCE:
+        for my $Count ( '', 1 .. 10 ) {
+
+            # return on no config setting
+            next TWOFACTORSOURCE if !$Self->{"AuthTwoFactorBackend$Count"};
+
+            # 2factor backend
+            my $AuthOk = $Self->{"AuthTwoFactorBackend$Count"}->Auth(
+                TwoFactorToken => $Param{TwoFactorToken},
+                User           => $User,
+                UserID         => $UserID,
+            );
+            $TwoFactorAuth = $AuthOk ? 'passed' : 'failed';
+
+            last TWOFACTORSOURCE if $AuthOk;
+        }
+
+        # if at least one 2factor auth backend was checked but none was successful,
+        # it counts as a failed login
+        if ( $TwoFactorAuth && $TwoFactorAuth ne 'passed' ) {
+            $User = undef;
+            last COUNT;
         }
 
         # remember auth backend
