@@ -137,6 +137,18 @@
                                     </div>
 [% RenderBlockEnd("OutOfOfficeSingleBlock") %]
 [% RenderBlockEnd("OutOfOffice") %]
+[% RenderBlockStart("GoogleAuthenticatorSecretKey") %]
+                                    <label for="[% Data.Name | html %]">[% Translate("Shared Secret") | html %]:</label>
+                                    <div class="Field">
+                                        <input type="text" name="[% Data.Name | html %]" id="[% Data.Name | html %]" value="[% Data.SelectedID | html %]" pattern="[A-Z2-7]*" />
+                                    </div>
+                                    <div class="Clear"></div>
+[% RenderBlockStart("GoogleAuthenticatorSecretKeySingleBlock") %]
+                                    <div class="Field ButtonOnly">
+                                        <button type="submit" id="[% Data.Name | html %]Update" value="[% Translate("Update") | html %]" class="CallForAction"><span>[% Translate("Update") | html %]</span></button>
+                                    </div>
+[% RenderBlockEnd("GoogleAuthenticatorSecretKeySingleBlock") %]
+[% RenderBlockEnd("GoogleAuthenticatorSecretKey") %]
 [% RenderBlockStart("RawHTML") %]
                                     <div class="Field NoMargin">
                                         [% Data.HTML %]

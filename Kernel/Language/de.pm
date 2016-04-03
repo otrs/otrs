@@ -2566,6 +2566,7 @@ sub Data {
         # Template: AgentPreferences
         'Edit your preferences' => 'Persönliche Einstellungen bearbeiten',
         'Did you know? You can help translating OTRS at %s.' => 'Haben Sie gewusst, dass Sie bei der Übersetzung von OTRS unter %s helfen können?',
+        'Shared Secret' => 'Gemeinsames Geheimnis',
 
         # Template: AgentSpelling
         'Spell Checker' => 'Rechtschreibprüfung',
@@ -6287,7 +6288,6 @@ Ihr Helpdesk-Team
             '',
         'Sets the user time zone per user based on java script / browser time zone offset feature at login time.' =>
             '',
-        'Shared Secret' => 'Gemeinsames Geheimnis',
         'Should the cache data be held in memory?' => '',
         'Should the cache data be stored in the selected cache backend?' =>
             'Sollen Cache-Daten im ausgewählten Cache-Backend gespeichert werden?',
