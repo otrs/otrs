@@ -11,6 +11,8 @@ package Kernel::GenericInterface::Mapping::Simple;
 use strict;
 use warnings;
 
+use Storable;
+
 use Kernel::System::VariableCheck qw(IsHashRefWithData IsString IsStringWithData);
 
 our $ObjectManagerDisabled = 1;
@@ -69,6 +71,9 @@ sub new {
             Summary => 'Got MappingConfig with Data, but Data is no hash ref with content!',
         );
     }
+
+    # clone mapping config, see bug #11973
+    $Self->{MappingConfig} = Storable::dclone($Param{MappingConfig});
 
     # check configuration
     my $ConfigCheck = $Self->_ConfigCheck( Config => $Self->{MappingConfig}->{Config} );
@@ -243,25 +248,22 @@ sub Map {
         }
 
         # check if we have a value mapping for the specific key
-        if ( IsHashRefWithData( $Config->{ValueMap} ) ) {
+        my $ValueMap = $Config->{ValueMap}->{$NewKey};
+        if ($ValueMap) {
 
-            my $ValueMap = $Config->{ValueMap}->{$NewKey};
-            if ($ValueMap) {
+            # first check in exact (1:1) map
+            if ( $ValueMap->{ValueMapExact} && defined $ValueMap->{ValueMapExact}->{$OldValue} ) {
+                $ReturnData{$NewKey} = $ValueMap->{ValueMapExact}->{$OldValue};
+                next CONFIGKEY;
+            }
 
-                # first check in exact (1:1) map
-                if ( $ValueMap->{ValueMapExact} && defined $ValueMap->{ValueMapExact}->{$OldValue} ) {
-                    $ReturnData{$NewKey} = $ValueMap->{ValueMapExact}->{$OldValue};
+            # if we have no match from exact map, try regex map
+            if ( $ValueMap->{ValueMapRegEx} ) {
+                VALUEMAPREGEX:
+                for my $ConfigKey ( sort keys %{ $ValueMap->{ValueMapRegEx} } ) {
+                    next VALUEMAPREGEX if $OldValue !~ m{ \A $ConfigKey \z }xms;
+                    $ReturnData{$NewKey} = $ValueMap->{ValueMapRegEx}->{$ConfigKey};
                     next CONFIGKEY;
-                }
-
-                # if we have no match from exact map, try regex map
-                if ( $ValueMap->{ValueMapRegEx} ) {
-                    VALUEMAPREGEX:
-                    for my $ConfigKey ( sort keys %{ $ValueMap->{ValueMapRegEx} } ) {
-                        next VALUEMAPREGEX if $OldValue !~ m{ \A $ConfigKey \z }xms;
-                        $ReturnData{$NewKey} = $ValueMap->{ValueMapRegEx}->{$ConfigKey};
-                        next CONFIGKEY;
-                    }
                 }
             }
         }
@@ -416,7 +418,7 @@ sub _ConfigCheck {
     }
 
     # check ValueMap
-    for my $KeyName ( sort keys %{ $Config->{ValueMap} || {} } ) {
+    for my $KeyName ( sort keys %{ $Config->{ValueMap} ) {
 
         # require values to be hash ref
         if ( !IsHashRefWithData( $Config->{ValueMap}->{$KeyName} ) ) {
