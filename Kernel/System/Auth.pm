@@ -160,10 +160,6 @@ sub Auth {
         # next on no success
         next COUNT if !$User;
 
-        my $UserID = $UserObject->UserLookup(
-            UserLogin => $User,
-        );
-
         # configured auth sync backend
         my $AuthSyncBackend = $ConfigObject->Get("AuthModule::UseSyncBackend$Count");
         if ( !defined $AuthSyncBackend ) {
@@ -196,8 +192,7 @@ sub Auth {
             }
         }
 
-        # retry getting a valid user after sync to proceed with 2factor auth
-        $UserID = $UserObject->UserLookup(
+        my $UserID = $UserObject->UserLookup(
             UserLogin => $Param{User},
         );
 
