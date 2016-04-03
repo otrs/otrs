@@ -33,7 +33,7 @@ sub Run {
 
     # get params
     my $ParamObject     = $Kernel::OM->Get('Kernel::System::Web::Request');
-    my $Text  	        = $ParamObject->GetParam( Param => 'Text' );
+    my $Text            = $ParamObject->GetParam( Param => 'Text' );
 
     my $QRCode = Imager::QRCode->new(
         size          => 6,
