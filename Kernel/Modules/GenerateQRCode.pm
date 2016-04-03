@@ -36,7 +36,7 @@ sub Run {
     my $Text  	        = $ParamObject->GetParam( Param => 'Text' );
 
     my $QRCode = Imager::QRCode->new(
-        size          => 2,
+        size          => 6,
         margin        => 2,
         version       => 1,
         level         => 'M',
