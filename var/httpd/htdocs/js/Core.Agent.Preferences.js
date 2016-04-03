@@ -31,7 +31,7 @@ Core.Agent.Preferences = (function (TargetNS) {
         // Should be multiple of 8 to omit padding
         var KeyLength = 32,
             Chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567',
-            SharedSecrets = '',
+            SharedSecret = '',
             CharIndex, i;
 
         for (i = 0; i < KeyLength; i++) {
@@ -52,11 +52,11 @@ Core.Agent.Preferences = (function (TargetNS) {
      */
     TargetNS.ShowGoogleAuthenticatorQRCode = function (SecretFieldID) {
         var Secret = $('#' + SecretFieldID).val(),
-            IssuerLabel = Core.Config.Get("ProductName"),
-            AccountLabel = Core.Config.Get("UserFullname"),
+            IssuerLabel = Core.Config.Get('ProductName'),
+            AccountLabel = Core.Config.Get('UserFullname'),
             OTPLink, QRCodeLink;
 
-        OTPLink = "otpauth://totp/" + AccountLabel + "?issuer=" + IssuerLabel + "&secret=" + Secret + "&algorithm=SHA1&digits=6&period=30";
+        OTPLink = 'otpauth://totp/' + AccountLabel + '?issuer=' + IssuerLabel + '&secret=' + Secret + '&algorithm=SHA1&digits=6&period=30';
         QRCodeLink = Core.Config.Get('CGIHandle') + '?Action=GenerateQRCode;Text=' + encodeURIComponent(OTPLink);
         Core.UI.Popup.OpenPopup(QRCodeLink, 'QRCode');
     };
