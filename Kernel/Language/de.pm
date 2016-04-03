@@ -2567,6 +2567,8 @@ sub Data {
         'Edit your preferences' => 'Persönliche Einstellungen bearbeiten',
         'Did you know? You can help translating OTRS at %s.' => 'Haben Sie gewusst, dass Sie bei der Übersetzung von OTRS unter %s helfen können?',
         'Shared Secret' => 'Gemeinsames Geheimnis',
+        'Generate Secret' => 'Geheimnis erzeugen',
+        'Show QR-Code' => 'QR-Code anzeigen',
 
         # Template: AgentSpelling
         'Spell Checker' => 'Rechtschreibprüfung',
