@@ -11,6 +11,8 @@ package Kernel::GenericInterface::Mapping::Simple;
 use strict;
 use warnings;
 
+use Storable;
+
 use Kernel::System::VariableCheck qw(IsHashRefWithData IsString IsStringWithData);
 
 our $ObjectManagerDisabled = 1;
@@ -69,6 +71,9 @@ sub new {
             Summary => 'Got MappingConfig with Data, but Data is no hash ref with content!',
         );
     }
+
+    # clone mapping config, see bug #11973
+    $Self->{MappingConfig} = Storable::dclone($Param{MappingConfig});
 
     # check configuration
     my $ConfigCheck = $Self->_ConfigCheck( Config => $Self->{MappingConfig}->{Config} );
