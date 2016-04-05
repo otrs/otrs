@@ -273,6 +273,16 @@ my @NeededModules = (
         },
     },
     {
+        Module    => 'Imager::QRCode',
+        Required  => 0,
+        Comment   => 'Required to support easy setup of TwoFactor-Authentication.',
+        InstTypes => {
+            aptget => 'libimager-qrcode-perl',
+            emerge => undef,
+            zypper => undef,
+        },
+    },
+    {
         Module    => 'IO::Socket::SSL',
         Required  => 0,
         Comment   => 'Required for SSL connections to web and mail servers.',
