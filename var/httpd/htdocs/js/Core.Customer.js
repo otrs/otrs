@@ -119,5 +119,28 @@ Core.Customer = (function (TargetNS) {
         $('body').removeClass('NoJavaScript').addClass('JavaScriptAvailable');
     };
 
+    /**
+     * @name PreferencesUpdate
+     * @memberof Core.Customer
+     * @function
+     * @returns {Boolean} returns true.
+     * @param {jQueryObject} Key - The name of the setting.
+     * @param {jQueryObject} Value - The value of the setting.
+     * @description
+     *      This function sets session and preferences setting at runtime.
+     */
+    TargetNS.PreferencesUpdate = function (Key, Value) {
+        var URL = Core.Config.Get('Baselink'),
+            Data = {
+                Action: 'CustomerPreferences',
+                Subaction: 'UpdateAJAX',
+                Key: Key,
+                Value: Value
+            };
+        // We need no callback here, but the called function needs one, so we send an "empty" function
+        Core.AJAX.FunctionCall(URL, Data, $.noop);
+        return true;
+    };
+
     return TargetNS;
 }(Core.Customer || {}));
