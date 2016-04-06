@@ -317,7 +317,7 @@ sub Run {
             my $Output =
                 $LayoutObject->Header(
                 Title => "$Title - "
-                    . $LayoutObject->{LanguageObject}->Translate('Database') . ' MySQL'
+                    . $LayoutObject->{LanguageObject}->Translate( 'Database %s', 'MySQL' )
                 );
             $LayoutObject->Block(
                 Name => 'DatabaseMySQL',
@@ -360,8 +360,7 @@ sub Run {
             my $Output =
                 $LayoutObject->Header(
                 Title => "$Title - "
-                    . $LayoutObject->{LanguageObject}->Translate('Database')
-                    . ' Microsoft SQL Server'
+                    . $LayoutObject->{LanguageObject}->Translate( 'Database %s', 'Microsoft SQL Server' )
                 );
             $LayoutObject->Block(
                 Name => 'DatabaseMSSQL',
@@ -405,7 +404,7 @@ sub Run {
             my $Output =
                 $LayoutObject->Header(
                 Title => "$Title - "
-                    . $LayoutObject->{LanguageObject}->Translate('Database') . ' PostgreSQL'
+                    . $LayoutObject->{LanguageObject}->Translate('Database %s', 'PostgreSQL' )
                 );
             $LayoutObject->Block(
                 Name => 'DatabasePostgreSQL',
@@ -445,7 +444,7 @@ sub Run {
             my $Output =
                 $LayoutObject->Header(
                 Title => "$Title - "
-                    . $LayoutObject->{LanguageObject}->Translate('Database') . ' Oracle'
+                    . $LayoutObject->{LanguageObject}->Translate( 'Database %s', 'Oracle' )
                 );
             $LayoutObject->Block(
                 Name => 'DatabaseOracle',
