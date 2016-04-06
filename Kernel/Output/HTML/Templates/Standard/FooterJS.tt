@@ -22,6 +22,7 @@ Core.App.Ready(function () {
 
     Core.Config.AddConfig({
         // config
+        ProductName: '[% Config("ProductName") | html %]',
         Baselink: '[% Env("Baselink") %]',
         CGIHandle: '[% Env("CGIHandle") %]',
         WebPath: '[% Config("Frontend::WebPath") %]',
