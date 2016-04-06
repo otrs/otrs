@@ -3650,12 +3650,10 @@ You can log in via the following URL:
         <SubGroup>Frontend::Agent::Preferences</SubGroup>
         <Setting>
             <Hash>
-                <Item Key="Module">Kernel::Output::HTML::Preferences::Generic</Item>
+                <Item Key="Module">Kernel::Output::HTML::Preferences::GoogleAuthenticatorSecretKey</Item>
                 <Item Key="Column">User Profile</Item>
                 <Item Key="Label" Translatable="1">Google Authenticator</Item>
-                <Item Key="Desc" Translatable="1">Enter your shared secret to enable two factor authentication.</Item>
-                <Item Key="Key" Translatable="1">Shared Secret</Item>
-                <Item Key="Block">Input</Item>
+                <Item Key="Desc" Translatable="1">Use Two Factor Authentication to increase the security of your account.</Item>
                 <Item Key="PrefKey">UserGoogleAuthenticatorSecretKey</Item>
                 <Item Key="Prio">0600</Item>
                 <Item Key="Active">0</Item>
@@ -4456,11 +4454,9 @@ via the Preferences button after logging in.
         <SubGroup>Frontend::Customer::Preferences</SubGroup>
         <Setting>
             <Hash>
-                <Item Key="Module">Kernel::Output::HTML::Preferences::Generic</Item>
+                <Item Key="Module">Kernel::Output::HTML::Preferences::GoogleAuthenticatorSecretKey</Item>
                 <Item Key="Column">Other Settings</Item>
                 <Item Key="Label" Translatable="1">Google Authenticator</Item>
-                <Item Key="Key" Translatable="1">Shared Secret</Item>
-                <Item Key="Block">Input</Item>
                 <Item Key="PrefKey">UserGoogleAuthenticatorSecretKey</Item>
                 <Item Key="Prio">1100</Item>
                 <Item Key="Active">0</Item>
@@ -4711,6 +4707,8 @@ via the Preferences button after logging in.
                 <NavBarName>Preferences</NavBarName>
                 <Loader>
                     <CSS>Core.Agent.Preferences.css</CSS>
+                    <JavaScript>Core.UI.GoogleAuthenticator.js</JavaScript>
+                    <JavaScript>Core.Agent.Preferences.js</JavaScript>
                 </Loader>
             </FrontendModuleReg>
         </Setting>
@@ -5445,6 +5443,10 @@ via the Preferences button after logging in.
                 <Description Translatable="1">Customer preferences.</Description>
                 <Title Translatable="1">Preferences</Title>
                 <NavBarName></NavBarName>
+                <Loader>
+                    <JavaScript>Core.UI.GoogleAuthenticator.js</JavaScript>
+                    <JavaScript>Core.Customer.Preferences.js</JavaScript>
+                </Loader>
             </FrontendModuleReg>
         </Setting>
     </ConfigItem>

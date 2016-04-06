@@ -256,6 +256,22 @@
                         </div>
                         <div class="Clear"></div>
 [% RenderBlockEnd("Password") %]
+[% RenderBlockStart("GoogleAuthenticatorSecretKey") %]
+                        <label>[% Translate("Google Authenticator") | html %]:</label>
+                        <div class="Field">
+                            <p>
+                                <input id="[% Data.PrefKey | html %]Delete" name="[% Data.PrefKey | html %]Delete" value="1" type="checkbox" />
+                                <label for="[% Data.PrefKey | html %]Delete">[% Translate("Delete") | html %]</label>
+                            </p>
+                            <p class="SpacingTopSmall">
+                                <input id="[% Data.PrefKey | html %]Set" name="[% Data.PrefKey | html %]Set" value="1" type="checkbox" />
+                                <label for="[% Data.PrefKey | html %]Set">[% Translate("Set Shared Secret to") | html %]</label>
+                                <input id="[% Data.PrefKey | html %]Value" name="[% Data.PrefKey | html %]Value" type="password" autocomplete="off" />
+                            </p>
+                            <div class="ClearLeft"></div>
+                        </div>
+                        <div class="Clear"></div>
+[% RenderBlockEnd("GoogleAuthenticatorSecretKey") %]
 [% RenderBlockEnd("Item") %]
                         <div class="Field SpacingTop">
                             <button class="Primary CallForAction" type="submit" value="[% Translate("Save") | html %]"><span>[% Translate("Save") | html %]</span></button>

@@ -57,6 +57,14 @@
                         <div class="ClearLeft"></div>
                     </div>
 [% RenderBlockEnd("Password") %]
+[% RenderBlockStart("GoogleAuthenticatorSecretKey") %]
+                    <label>[% Translate("Google Authenticator") | html %]:</label>
+                    <div class="Field">
+                        <button type="button" id="[% Data.PrefKey %]Enable" onclick="Core.Customer.Preferences.EnableGoogleAuthenticatorAuth('[% Data.PrefKey | html %]', '[% Data.DisplayName | html %]');" [% Data.GoogleAuthenticatorEnable %]>[% Translate("Enable") | html %]</button>
+                        <button type="button" id="[% Data.PrefKey %]Disable" onclick="Core.Customer.Preferences.DisableGoogleAuthenticatorAuth('[% Data.PrefKey | html %]');" [% Data.GoogleAuthenticatorDisable %]>[% Translate("Disable") | html %]</button>
+                        <div class="ClearLeft"></div>
+                    </div>
+[% RenderBlockEnd("GoogleAuthenticatorSecretKey") %]
 [% RenderBlockEnd("Block") %]
                     <button type="submit" id="[% Data.PrefKey | html %]Update" value="[% Translate("Update") | html %]">[% Translate("Update") | html %]</button>
                 </fieldset>

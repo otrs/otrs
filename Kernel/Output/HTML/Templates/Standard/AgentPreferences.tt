@@ -137,6 +137,16 @@
                                     </div>
 [% RenderBlockEnd("OutOfOfficeSingleBlock") %]
 [% RenderBlockEnd("OutOfOffice") %]
+[% RenderBlockStart("GoogleAuthenticatorSecretKey") %]
+                                    <label>[% Translate("Google Authenticator") | html %]:</label>
+                                    <div class="Field">
+                                        <button type="button" id="[% Data.PrefKey | html %]Enable" onclick="Core.Agent.Preferences.EnableGoogleAuthenticatorAuth('[% Data.PrefKey | html %]', '[% Data.DisplayName | html %]');" [% Data.GoogleAuthenticatorEnable %]>[% Translate("Enable") | html %]</button>
+                                        <button type="button" id="[% Data.PrefKey | html %]Disable" onclick="Core.Agent.Preferences.DisableGoogleAuthenticatorAuth('[% Data.PrefKey | html %]');" [% Data.GoogleAuthenticatorDisable %]>[% Translate("Disable") | html %]</button>
+                                    </div>
+                                    <div class="Clear"></div>
+[% RenderBlockStart("GoogleAuthenticatorSecretKeySingleBlock") %]
+[% RenderBlockEnd("GoogleAuthenticatorSecretKeySingleBlock") %]
+[% RenderBlockEnd("GoogleAuthenticatorSecretKey") %]
 [% RenderBlockStart("RawHTML") %]
                                     <div class="Field NoMargin">
                                         [% Data.HTML %]
