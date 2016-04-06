@@ -73,7 +73,7 @@ sub _Add {
         $GetParam{$Needed} = $Kernel::OM->Get('Kernel::System::Web::Request')->GetParam( Param => $Needed );
         if ( !$Needed ) {
             return $LayoutObject->ErrorScreen(
-                Message => $LayoutObject->{LanguageObject}->Translate('Need %s', $Needed),
+                Message => $LayoutObject->{LanguageObject}->Translate( 'Need %s', $Needed ),
             );
         }
     }
@@ -233,7 +233,7 @@ sub _Change {
         $GetParam{$Needed} = $ParamObject->GetParam( Param => $Needed );
         if ( !$Needed ) {
             return $LayoutObject->ErrorScreen(
-                Message => $LayoutObject->{LanguageObject}->Translate('Need %s', $Needed),
+                Message => $LayoutObject->{LanguageObject}->Translate( 'Need %s', $Needed ),
             );
         }
     }
@@ -260,7 +260,8 @@ sub _Change {
     # check for valid dynamic field configuration
     if ( !IsHashRefWithData($DynamicFieldData) ) {
         return $LayoutObject->ErrorScreen(
-            Message => $LayoutObject->{LanguageObject}->Translate('Could not get data for dynamic field %s', $FieldID),
+            Message =>
+                $LayoutObject->{LanguageObject}->Translate( 'Could not get data for dynamic field %s', $FieldID ),
         );
     }
 
@@ -317,7 +318,8 @@ sub _ChangeAction {
     # check for valid dynamic field configuration
     if ( !IsHashRefWithData($DynamicFieldData) ) {
         return $LayoutObject->ErrorScreen(
-            Message => $LayoutObject->{LanguageObject}->Translate('Could not get data for dynamic field %s', $FieldID),
+            Message =>
+                $LayoutObject->{LanguageObject}->Translate( 'Could not get data for dynamic field %s', $FieldID ),
         );
     }
 
@@ -454,7 +456,7 @@ sub _ChangeAction {
 
     if ( !$UpdateSuccess ) {
         return $LayoutObject->ErrorScreen(
-            Message => $LayoutObject->{LanguageObject}->Translate('Could not update the field %s', $GetParam{Name}),
+            Message => $LayoutObject->{LanguageObject}->Translate( 'Could not update the field %s', $GetParam{Name} ),
         );
     }
 
@@ -556,8 +558,8 @@ sub _ShowScreen {
     # create the Default Value Type select
     my $YearsPeriodStrg = $LayoutObject->BuildSelection(
         Data => {
-            0 => 'No',
-            1 => 'Yes',
+            0 => Translatable('No'),
+            1 => Translatable('Yes'),
         },
         Name         => 'YearsPeriod',
         SelectedID   => $YearsPeriod,
@@ -571,15 +573,15 @@ sub _ShowScreen {
         Data => [
             {
                 Key   => '',
-                Value => 'No',
+                Value => Translatable('No'),
             },
             {
                 Key   => 'DisableFutureDates',
-                Value => 'Prevent entry of dates in the future',
+                Value => Translatable('Prevent entry of dates in the future'),
             },
             {
                 Key   => 'DisablePastDates',
-                Value => 'Prevent entry of dates in the past',
+                Value => Translatable('Prevent entry of dates in the past'),
             },
         ],
         Name         => 'DateRestriction',

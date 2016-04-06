@@ -146,7 +146,8 @@ sub Run {
             # warn if there is no (valid) default queue and the customer can't select one
             elsif ( !$Config->{'Queue'} ) {
                 $LayoutObject->CustomerFatalError(
-                    Message => $LayoutObject->{LanguageObject}->Translate('Check SysConfig setting for %s::QueueDefault.', $Self->{Action}),
+                    Message => $LayoutObject->{LanguageObject}
+                        ->Translate( 'Check SysConfig setting for %s::QueueDefault.', $Self->{Action} ),
                     Comment => Translatable('Please contact your administrator'),
                 );
                 return;
@@ -156,7 +157,13 @@ sub Run {
             my ( $QueueIDParam, $QueueParam ) = split( /\|\|/, $GetParam{Dest} );
             my $QueueIDLookup = $QueueObject->QueueLookup( Queue => $QueueParam );
             if ( $QueueIDLookup && $QueueIDLookup eq $QueueIDParam ) {
-                $Param{ToSelected}          = $GetParam{Dest};
+                my $CustomerPanelOwnSelection = $Kernel::OM->Get('Kernel::Config')->Get('CustomerPanelOwnSelection');
+                if ( %{ $CustomerPanelOwnSelection // {} } ) {
+                    $Param{ToSelected} = $QueueIDParam . '||' . $CustomerPanelOwnSelection->{$QueueParam};
+                }
+                else {
+                    $Param{ToSelected} = $GetParam{Dest};
+                }
                 $ACLCompatGetParam{QueueID} = $QueueIDLookup;
             }
         }
@@ -277,7 +284,8 @@ sub Run {
             if ( !$GetParam{TypeID} ) {
                 $LayoutObject->CustomerFatalError(
                     Message =>
-                        $LayoutObject->{LanguageObject}->Translate('Check SysConfig setting for %s::TicketTypeDefault.', $Self->{Action}),
+                        $LayoutObject->{LanguageObject}
+                        ->Translate( 'Check SysConfig setting for %s::TicketTypeDefault.', $Self->{Action} ),
                     Comment => Translatable('Please contact your administrator'),
                 );
                 return;
@@ -392,7 +400,8 @@ sub Run {
                     my $Output = $LayoutObject->CustomerHeader( Title => 'Error' );
                     $Output .= $LayoutObject->CustomerError(
                         Message =>
-                            $LayoutObject->{LanguageObject}->Translate('Could not perform validation on field %s!', $DynamicFieldConfig->{Label}),
+                            $LayoutObject->{LanguageObject}
+                            ->Translate( 'Could not perform validation on field %s!', $DynamicFieldConfig->{Label} ),
                         Comment => Translatable('Please contact your administrator'),
                     );
                     $Output .= $LayoutObject->CustomerFooter();

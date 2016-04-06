@@ -504,8 +504,8 @@
         <SubGroup>Core::Time</SubGroup>
         <Setting>
             <Option SelectedID="Option">
-                <Item Key="Option">Option</Item>
-                <Item Key="Input">Input</Item>
+                <Item Key="Option" Translatable="1">Option</Item>
+                <Item Key="Input" Translatable="1">Input</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -759,6 +759,17 @@
         <SubGroup>Core::Sendmail</SubGroup>
         <Setting>
             <String Regex="">base64</String>
+        </Setting>
+    </ConfigItem>
+    <ConfigItem Name="Sendmail::DefaultHeaders" Required="0" Valid="0">
+        <Description Translatable="1">Defines default headers for outgoing emails.</Description>
+        <Group>Framework</Group>
+        <SubGroup>Core::Sendmail</SubGroup>
+        <Setting>
+            <Hash>
+                <Item Key="Precedence:">bulk</Item>
+                <Item Key="Auto-Submitted:">auto-generated</Item>
+            </Hash>
         </Setting>
     </ConfigItem>
     <ConfigItem Name="LoginURL" Required="0" Valid="0" ConfigLevel="200">
@@ -5530,7 +5541,7 @@ via the Preferences button after logging in.
         <SubGroup>Frontend::Agent::ModuleRegistration</SubGroup>
         <Setting>
             <FrontendModuleReg>
-                <Title>HTML Reference</Title>
+                <Title Translatable="1">HTML Reference</Title>
                 <Group>users</Group>
                 <GroupRo>users</GroupRo>
                 <Description Translatable="1">HTML Reference.</Description>
@@ -6871,5 +6882,4 @@ via the Preferences button after logging in.
             <String Regex="[/|\w]+fetchmail$" Check="File">/usr/bin/fetchmail</String>
         </Setting>
     </ConfigItem>
-
 </otrs_config>

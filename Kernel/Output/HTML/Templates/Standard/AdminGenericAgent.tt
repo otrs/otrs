@@ -158,7 +158,7 @@
                             <p class="Error SpacingTop">
                                 [% Translate("Currently this generic agent job will not run automatically.") | html %]
                                 <br/>
-                                [% Translate("To enable automatic execution select at least one value from minutes, hours or days!") | html %]
+                                [% Translate("To enable automatic execution select at least one value from minutes, hours and days!") | html %]
                             </p>
 [% RenderBlockEnd("JobScheduleWarning") %]
                         </div>
@@ -306,7 +306,7 @@ Core.Agent.Admin.GenericAgent.Init({
                         </div>
                         <div class="Clear"></div>
 
-                        <label for="CustomerUserLogin">[% Translate("Customer login") | html %]:</label>
+                        <label for="CustomerUserLogin">[% Translate("Customer user") | html %]:</label>
                         <div class="Field">
                             <input type="text" name="CustomerUserLogin" id="CustomerUserLogin" class="W33pc" value="[% Data.CustomerUserLogin | html %]"/>
                             <p class="FieldExplanation">
@@ -689,7 +689,7 @@ Core.Agent.Admin.GenericAgent.Init({
                         </div>
                         <div class="Clear"></div>
 
-                        <label for="NewCustomerUserLogin">[% Translate("New customer") | html %]:</label>
+                        <label for="NewCustomerUserLogin">[% Translate("New customer user") | html %]:</label>
                         <div class="Field">
                             <input type="text" name="NewCustomerUserLogin" id="NewCustomerUserLogin" value="[% Data.NewCustomerUserLogin | html %]" class="W33pc"/>
                         </div>

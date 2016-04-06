@@ -49,6 +49,9 @@ $Selenium->RunTest(
             Value => 0,
         );
 
+        # let mod_perl / Apache2::Reload pick up the changed configuration
+        sleep 1;
+
         # get config object
         my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
 
@@ -79,29 +82,6 @@ $Selenium->RunTest(
             Value => 1,
         );
 
-        # set wrong PGP bin in config
-        $SysConfigObject->ConfigItemUpdate(
-            Valid => 1,
-            Key   => 'PGP::Bin',
-            Value => 'SomePGP/Bin',
-        );
-
-        # let mod_perl / Apache2::Reload pick up the changed configuration
-        sleep 3;
-
-        # refresh AdminPGP screen
-        $Selenium->VerifiedRefresh();
-
-        # check widget sidebar when PGP sysconfig does not work
-        $Self->True(
-            $Selenium->find_element( 'h3 span.Error', 'css' ),
-            "Widget sidebar with error message is displayed.",
-        );
-        $Self->True(
-            $Selenium->find_element("//button[\@value='Configure it here!']"),
-            "Button 'Configure it here!' to the PGP SysConfig is displayed.",
-        );
-
         # set PGP path in config
         $SysConfigObject->ConfigItemUpdate(
             Valid => 1,
@@ -109,13 +89,8 @@ $Selenium->RunTest(
             Value => "--homedir $PGPPath --batch --no-tty --yes",
         );
 
-        # reset PGP bin in config
-        $SysConfigObject->ConfigItemReset(
-            Name => 'PGP::Bin',
-        );
-
         # let mod_perl / Apache2::Reload pick up the changed configuration
-        sleep 3;
+        sleep 1;
 
         # refresh AdminSPGP screen
         $Selenium->VerifiedRefresh();

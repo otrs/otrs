@@ -81,7 +81,8 @@ sub Run {
         if ( !$ACLImport->{Success} ) {
             my $Message = $ACLImport->{Message}
                 || Translatable(
-                'ACLs could not be Imported due to a unknown error, please check OTRS logs for more information');
+                'ACLs could not be Imported due to a unknown error, please check OTRS logs for more information'
+                );
             return $LayoutObject->ErrorScreen(
                 Message => $Message,
             );
@@ -712,12 +713,12 @@ sub _ShowEdit {
 
     $Param{ACLKeysLevel4Prefixes} = $LayoutObject->BuildSelection(
         Data => {
-            ''            => 'Exact match',
-            '[Not]'       => 'Negated Exact match',
-            '[RegExp]'    => 'Regex',
-            '[regexp]'    => 'Regex (ignore case)',
-            '[NotRegExp]' => 'Negated Regex',
-            '[Notregexp]' => 'Negated Regex (ignore case)',
+            ''            => Translatable('Exact match'),
+            '[Not]'       => Translatable('Negated exact match'),
+            '[RegExp]'    => Translatable('Regular expression'),
+            '[regexp]'    => Translatable('Regular expression (ignore case)'),
+            '[NotRegExp]' => Translatable('Negated regular expression'),
+            '[Notregexp]' => Translatable('Negated regular expression (ignore case)'),
         },
         Name           => 'ItemPrefix',
         Class          => 'ItemPrefix',

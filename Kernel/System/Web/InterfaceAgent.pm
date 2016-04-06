@@ -528,8 +528,8 @@ sub Run {
             # show login screen
             $LayoutObject->Print(
                 Output => \$LayoutObject->Login(
-                    Title   => 'Logout',
-                    Message => Translatable('Session invalid. Please log in again.'),
+                    Title       => 'Logout',
+                    Message     => Translatable('Session invalid. Please log in again.'),
                     MessageType => 'Error',
                     %Param,
                 ),
@@ -582,10 +582,7 @@ sub Run {
         }
 
         # show logout screen
-        my $LogoutMessage = $LayoutObject->{LanguageObject}->Translate(
-            'Logout successful. Thank you for using %s!',
-            $ConfigObject->Get("ProductName"),
-        );
+        my $LogoutMessage = $LayoutObject->{LanguageObject}->Translate('Logout successful.');
 
         $LayoutObject->Print(
             Output => \$LayoutObject->Login(
@@ -609,8 +606,8 @@ sub Run {
             # show normal login
             $LayoutObject->Print(
                 Output => \$LayoutObject->Login(
-                    Title   => 'Login',
-                    Message => Translatable('Feature not active!'),
+                    Title       => 'Login',
+                    Message     => Translatable('Feature not active!'),
                     MessageType => 'Error',
                 ),
             );
@@ -656,8 +653,8 @@ sub Run {
             #   just trying and checking the result message.
             $LayoutObject->Print(
                 Output => \$LayoutObject->Login(
-                    Title   => 'Login',
-                    Message => Translatable('Sent password reset instructions. Please check your email.'),
+                    Title       => 'Login',
+                    Message     => Translatable('Sent password reset instructions. Please check your email.'),
                     MessageType => 'Success',
                     %Param,
                 ),
@@ -699,8 +696,8 @@ sub Run {
             }
             $LayoutObject->Print(
                 Output => \$LayoutObject->Login(
-                    Title   => 'Login',
-                    Message => Translatable('Sent password reset instructions. Please check your email.'),
+                    Title       => 'Login',
+                    Message     => Translatable('Sent password reset instructions. Please check your email.'),
                     MessageType => 'Success',
                     %Param,
                 ),
@@ -717,8 +714,8 @@ sub Run {
         if ( !$TokenValid ) {
             $LayoutObject->Print(
                 Output => \$LayoutObject->Login(
-                    Title   => 'Login',
-                    Message => Translatable('Invalid Token!'),
+                    Title       => 'Login',
+                    Message     => Translatable('Invalid Token!'),
                     MessageType => 'Error',
                     %Param,
                 ),
@@ -891,8 +888,8 @@ sub Run {
             # show login screen
             $LayoutObject->Print(
                 Output => \$LayoutObject->Login(
-                    Title   => 'Panic!',
-                    Message => Translatable('Panic! Invalid Session!!!'),
+                    Title       => 'Panic!',
+                    Message     => Translatable('Panic! Invalid Session!!!'),
                     MessageType => 'Error',
                     %Param,
                 ),

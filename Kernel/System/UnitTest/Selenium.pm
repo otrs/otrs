@@ -17,6 +17,7 @@ use File::Temp();
 
 use Kernel::Config;
 use Kernel::System::User;
+use Kernel::System::UnitTest::Helper;
 
 our @ObjectDependencies = (
     'Kernel::Config',
@@ -108,39 +109,23 @@ sub new {
             $Self->close();
         }
     }
+
     # make sure focus is correct
     $Self->switch_to_window($MainHandle);
-    eval {
-        # just in case there are pending modal dialogs
-        $Self->dismiss_alert();
-    };
-    $Self->delete_all_cookies();
+
+    # just in case there are pending modal dialogs
+    eval { $Self->accept_alert(); };
+    eval { $Self->delete_all_cookies(); };
     $Self->SUPER::get('about:blank');
+    eval { $Self->accept_alert(); };
 
     # set screen size from config or use defauls
     my $Height = $SeleniumTestsConfig{window_height} || 1000;
     my $Width  = $SeleniumTestsConfig{window_width}  || 1200;
     $Self->set_window_size( $Height, $Width );
 
-    # get remote host with some precautions for certain unit test systems
-    my $FQDN = $Kernel::OM->Get('Kernel::Config')->Get('FQDN');
-
-    # try to resolve fqdn host
-    if ( $FQDN ne 'yourhost.example.com' && gethostbyname($FQDN) ) {
-        $Self->{BaseURL} = $FQDN;
-    }
-
-    # try to resolve localhost instead
-    if ( !$Self->{BaseURL} && gethostbyname('localhost') ) {
-        $Self->{BaseURL} = 'localhost';
-    }
-
-    # use hardcoded localhost ip address
-    if ( !$Self->{BaseURL} ) {
-        $Self->{BaseURL} = '127.0.0.1';
-    }
-
-    $Self->{BaseURL} = $Kernel::OM->Get('Kernel::Config')->Get('HttpType') . '://' . $Self->{BaseURL};
+    $Self->{BaseURL} = $Kernel::OM->Get('Kernel::Config')->Get('HttpType') . '://';
+    $Self->{BaseURL} .= Kernel::System::UnitTest::Helper->GetTestHTTPHostname();
 
     return $Self;
 }
@@ -343,18 +328,9 @@ sub Login {
             $ScriptAlias .= 'customer.pl';
         }
 
-        # First load the page so we can delete any pre-existing cookies
         $Self->get("${ScriptAlias}");
         $Self->delete_all_cookies();
-
-        # Now load it again to login
-        $Self->VerifiedGet("${ScriptAlias}");
-
-        $Self->find_element( 'input#User',     'css' )->send_keys( $Param{User} );
-        $Self->find_element( 'input#Password', 'css' )->send_keys( $Param{Password} );
-
-        # login
-        $Self->find_element( 'input#User', 'css' )->VerifiedSubmit();
+        $Self->VerifiedGet("${ScriptAlias}?Action=Login;User=$Param{User};Password=$Param{Password}");
 
         # login successful?
         $Self->find_element( 'a#LogoutButton', 'css' );    # dies if not found
