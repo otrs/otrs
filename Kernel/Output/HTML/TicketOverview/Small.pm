@@ -1978,29 +1978,16 @@ sub _ColumnFilterJSON {
 
 sub _DefaultColumnSort {
 
-    my %DefaultColumns = (
-        TicketNumber           => 100,
-        Age                    => 110,
-        Changed                => 111,
-        PendingTime            => 112,
-        EscalationTime         => 113,
-        EscalationSolutionTime => 114,
-        EscalationResponseTime => 115,
-        EscalationUpdateTime   => 116,
-        Title                  => 120,
-        State                  => 130,
-        Lock                   => 140,
-        Queue                  => 150,
-        Owner                  => 160,
-        Responsible            => 161,
-        CustomerID             => 170,
-        CustomerName           => 171,
-        CustomerUserID         => 172,
-        Type                   => 180,
-        Service                => 191,
-        SLA                    => 192,
-        Priority               => 193,
-    );
+    my %DefaultColumns;
+    
+    # column order in config
+    my $ColumnOrder = $Kernel::OM->Get('Kernel::Config')->Get('Ticket::Frontend::OverviewSmall')->{ColumnOrder};
+    
+    my $BaseOrder = 100;
+    for my $Column ( @$ColumnOrder ){
+        $DefaultColumns{ $Column } = $BaseOrder;
+        $BaseOrder += 1;
+    }
 
     # dynamic fields can not be on the DefaultColumns sorting hash
     # when comparing 2 dynamic fields sorting must be alphabetical
