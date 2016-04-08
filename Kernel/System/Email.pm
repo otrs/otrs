@@ -298,6 +298,13 @@ sub Send {
         $Header{'X-Mailer'}     = "$Product Mail Service ($Version)";
         $Header{'X-Powered-By'} = 'OTRS - https://otrs.com/';
     }
+    else {
+        
+        # set X-Mailer to undef explicitly to avoid MIME::Tools to set it to "MIME-tools"
+        # as this is handled as spam by some mail servers
+        $Header{'X-Mailer'} = undef;
+    }
+    
     $Header{Type} = $Param{MimeType} || 'text/plain';
 
     # define email encoding
