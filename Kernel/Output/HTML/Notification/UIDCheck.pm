@@ -32,9 +32,8 @@ sub Run {
     return $LayoutObject->Notify(
         Priority => 'Error',
         Link     => $LayoutObject->{Baselink} . 'Action=AdminUser',
-        Data =>
-            $LayoutObject->{LanguageObject}->Translate(
-            "Don't use the Superuser account to work with OTRS! Create new Agents and work with these accounts instead."
+        Info     => Translatable(
+            'Don\'t use the Superuser account to work with OTRS! Create new Agents and work with these accounts instead.'
             ),
     );
 }
