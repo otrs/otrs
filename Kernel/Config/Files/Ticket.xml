@@ -11809,4 +11809,30 @@ Thanks for your help!
             </Option>
         </Setting>
     </ConfigItem>
+    <ConfigItem Name="DashboardBackend###0322-MyLastChangedTickets" Required="0" Valid="1">
+        <Description Translatable="1">MyLastChangedTickets dashboard widget.</Description>
+        <Group>Ticket</Group>
+        <SubGroup>Frontend::Agent::Dashboard</SubGroup>
+        <Setting>
+            <Hash>
+                <Item Key="Module">Kernel::Output::HTML::Dashboard::MyLastChangedTickets</Item>
+                <Item Key="Title" Translatable="1">My last changed tickets</Item>
+                <Item Key="Permission">rw</Item>
+                <Item Key="OwnerOnly"></Item>
+                <Item Key="Block">ContentSmall</Item>
+                <Item Key="Limit">6</Item>
+                <Item Key="Group"></Item>
+                <Item Key="Default">1</Item>
+                <Item Key="CacheTTL">2</Item>
+            </Hash>
+        </Setting>
+    </ConfigItem>
+    <ConfigItem Name="DashboardMyLastChangedTickets::Limit" Required="1" Valid="1">
+        <Description Translatable="1">Defines the number of tickets shown in the widget.</Description>
+        <Group>Ticket</Group>
+        <SubGroup>Frontend::Agent::Dashboard::MyLastChangedTickets</SubGroup>
+        <Setting>
+            <String Regex="^\d+$">10</String>
+        </Setting>
+    </ConfigItem>
 </otrs_config>
