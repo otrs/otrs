@@ -2233,10 +2233,12 @@ sub ArticleSend {
         AttachmentsRef => $Param{Attachment},
     );
 
+    my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
+
     # create article
     my $Time      = $Kernel::OM->Get('Kernel::System::Time')->SystemTime();
     my $Random    = rand 999999;
-    my $ExtFQDN   = $Kernel::OM->Get('Kernel::Config')->Get('ExtFQDN');
+    my $ExtFQDN   = $ConfigObject->Get('ExtFQDN') || $ConfigObject->Get('FQDN');
     my $MessageID = "<$Time.$Random\@$ExtFQDN>";
     my $ArticleID = $Self->ArticleCreate(
         %Param,
@@ -2318,10 +2320,12 @@ sub ArticleBounce {
         }
     }
 
+    my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
+
     # create message id
     my $Time         = $Kernel::OM->Get('Kernel::System::Time')->SystemTime();
     my $Random       = rand 999999;
-    my $ExtFQDN      = $Kernel::OM->Get('Kernel::Config')->Get('ExtFQDN');
+    my $ExtFQDN      = $ConfigObject->Get('ExtFQDN') || $ConfigObject->Get('FQDN');
     my $NewMessageID = "<$Time.$Random.0\@$ExtFQDN>";
     my $Email        = $Self->ArticlePlain( ArticleID => $Param{ArticleID} );
 

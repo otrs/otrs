@@ -80,8 +80,8 @@
             <String Regex="">yourhost.example.com</String>
         </Setting>
     </ConfigItem>
-    <ConfigItem Name="ExtFQDN" Required="1" Valid="1" ConfigLevel="200">
-        <Description Translatable="1">Defines the fully qualified domain name for external IDs generation (i.e. Message-ID).</Description>
+    <ConfigItem Name="ExtFQDN" Required="0" Valid="0" ConfigLevel="200">
+        <Description Translatable="1">Defines the fully qualified domain name for external IDs generation (i.e. Message-ID, ContentID).</Description>
         <Group>Framework</Group>
         <SubGroup>Core</SubGroup>
         <Setting>

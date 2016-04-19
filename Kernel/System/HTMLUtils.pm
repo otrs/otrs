@@ -1188,7 +1188,8 @@ sub EmbeddedImagesExtract {
         return;
     }
 
-    my $ExtFQDN = $Kernel::OM->Get('Kernel::Config')->Get('ExtFQDN');
+    my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
+    my $ExtFQDN = $ConfigObject->Get('ExtFQDN') || $ConfigObject->Get('FQDN');
     ${ $Param{DocumentRef} } =~ s{(src=")(data:image/)(png|gif|jpg|jpeg|bmp)(;base64,)(.+?)(")}{
 
         my $Base64String = $5;
