@@ -909,9 +909,9 @@ sub _EncodeMIMEWords {
 sub _MessageIDCreate {
     my ( $Self, %Param ) = @_;
 
-    my $FQDN = $Kernel::OM->Get('Kernel::Config')->Get('FQDN');
+    my $ExtFQDN = $Kernel::OM->Get('Kernel::Config')->Get('ExtFQDN');
 
-    return 'Message-ID: <' . time() . '.' . rand(999999) . '@' . $FQDN . '>';
+    return 'Message-ID: <' . time() . '.' . rand(999999) . '@' . $ExtFQDN . '>';
 }
 
 1;

@@ -1188,14 +1188,14 @@ sub EmbeddedImagesExtract {
         return;
     }
 
-    my $FQDN = $Kernel::OM->Get('Kernel::Config')->Get('FQDN');
+    my $ExtFQDN = $Kernel::OM->Get('Kernel::Config')->Get('ExtFQDN');
     ${ $Param{DocumentRef} } =~ s{(src=")(data:image/)(png|gif|jpg|jpeg|bmp)(;base64,)(.+?)(")}{
 
         my $Base64String = $5;
 
         my $FileName     = 'pasted-' . time() . '-' . int(rand(1000000)) . '.' . $3;
         my $ContentType  = "image/$3; name=\"$FileName\"";
-        my $ContentID    = 'pasted.' . time() . '.' . int(rand(1000000)) . '@' . $FQDN;
+        my $ContentID    = 'pasted.' . time() . '.' . int(rand(1000000)) . '@' . $ExtFQDN;
 
         my $AttachmentData = {
             Content     => decode_base64($Base64String),
