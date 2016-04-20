@@ -68,7 +68,8 @@ Core.UI.RichTextEditor = (function (TargetNS) {
         var EditorID = '',
             Editor,
             UserLanguage,
-            UploadURL = '';
+            UploadURL = '',
+            ExtraPlugins;
 
         if (isJQueryObject($EditorArea) && $EditorArea.hasClass('HasCKEInstance')) {
             return false;
@@ -127,6 +128,15 @@ Core.UI.RichTextEditor = (function (TargetNS) {
                     + '=' + Core.Config.Get('SessionID');
         }
 
+        // configure extra plugins
+        ExtraPlugins = 'splitquote';
+        if (Core.Config.Get('RichText.SpellChecker')) {
+            ExtraPlugins += ',aspell';
+        }
+        if (Core.Config.Get('RichText.PreventImagePaste') === '1') {
+            ExtraPlugins += ',preventimagepaste';
+        }
+
         /*eslint-disable camelcase */
         Editor = CKEDITOR.replace(EditorID,
         {
@@ -148,7 +158,7 @@ Core.UI.RichTextEditor = (function (TargetNS) {
             toolbar: CheckFormID().length ? Core.Config.Get('RichText.Toolbar') : Core.Config.Get('RichText.ToolbarWithoutImage'),
             filebrowserBrowseUrl: '',
             filebrowserUploadUrl: UploadURL,
-            extraPlugins: Core.Config.Get('RichText.SpellChecker') ? 'aspell,splitquote,preventimagepaste' : 'splitquote,preventimagepaste',
+            extraPlugins: ExtraPlugins,
             entities: false,
             skin: 'bootstrapck'
         });
