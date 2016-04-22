@@ -26,6 +26,7 @@
 
     Core.Config.Set('RichText.TextDir', '[% Env("TextDirection") %]');
     Core.Config.Set('RichText.SpellChecker', '[% Env("BrowserSpellCheckerInline") %]');
+    Core.Config.Set('RichText.PreventImagePaste', '[% Config("Frontend::RichText::PreventImagePaste") %]');
     Core.Config.Set('RichText.EditingAreaCSS', 'body.cke_editable { [% Config("Frontend::RichText::DefaultCSS") %] }');
     Core.Config.Set('RichText.Lang.SplitQuote', '[% Translate('Split Quote') | html %]');
     Core.Config.Set('RichText.Lang.RemoveQuote', '[% Translate('Remove Quote') | html %]');
