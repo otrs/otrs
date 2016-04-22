@@ -80,6 +80,14 @@
             <String Regex="">yourhost.example.com</String>
         </Setting>
     </ConfigItem>
+    <ConfigItem Name="ExtFQDN" Required="0" Valid="0" ConfigLevel="200">
+        <Description Translatable="1">Defines the fully qualified domain name for external IDs generation (i.e. Message-ID, ContentID).</Description>
+        <Group>Framework</Group>
+        <SubGroup>Core</SubGroup>
+        <Setting>
+            <String Regex="">yourexternal.address.com</String>
+        </Setting>
+    </ConfigItem>
     <ConfigItem Name="NodeID" Required="0" Valid="0" ConfigLevel="200">
         <Description Translatable="1">Defines the cluster node identifier. This is only used in cluster configurations where there is more than one OTRS frontend system. Note: only values from 1 to 99 are allowed.</Description>
         <Group>Framework</Group>
