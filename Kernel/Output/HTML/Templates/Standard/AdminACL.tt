@@ -12,14 +12,6 @@
     <div class="SidebarColumn">
         <div class="WidgetSimple">
             <div class="Header">
-                <h2><label for="Filter">[% Translate("Filter for ACLs") | html %]</label></h2>
-            </div>
-            <div class="Content">
-                <input type="text" id="Filter" class="W95pc" name="Filter" value="" title="[% Translate("Filter") | html %]" placeholder="[% Translate("ACL Name") | html %]" />
-            </div>
-        </div>
-        <div class="WidgetSimple">
-            <div class="Header">
                 <h2>[% Translate("Actions") | html %]</h2>
             </div>
             <div class="Content">
@@ -34,6 +26,14 @@
                         <a href="[% Env("Baselink") %]Action=[% Env("Action") %];Subaction=ACLExport" class="CallForAction Fullsize Center"><span><i class="fa fa-download"></i>[% Translate("Export ACLs") | html %]</span></a>
                     </li>
                 </ul>
+            </div>
+        </div>
+        <div class="WidgetSimple">
+            <div class="Header">
+                <h2><label for="Filter">[% Translate("Filter for ACLs") | html %]</label></h2>
+            </div>
+            <div class="Content">
+                <input type="text" id="Filter" class="W95pc" name="Filter" value="" title="[% Translate("Filter") | html %]" placeholder="[% Translate("ACL Name") | html %]" />
             </div>
         </div>
 
