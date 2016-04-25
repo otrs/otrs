@@ -251,20 +251,25 @@ sub CSV2Array {
     # do some dos/unix file conversions
     $Param{String} =~ s/(\n\r|\r\r\n|\r\n|\r)/\n/g;
 
-    # if you change the split options, remember that each value can include \n
     my @Array;
-    my @Lines = split /$Param{Quote}\n/, $Param{String};
-    for my $Line (@Lines) {
-        if ( $CSV->parse( $Line . $Param{Quote} ) ) {
-            my @Fields = $CSV->fields();
-            push @Array, \@Fields;
-        }
-        else {
-            $Kernel::OM->Get('Kernel::System::Log')->Log(
-                Priority => 'error',
-                Message  => 'Failed to parse line: ' . $CSV->error_input(),
-            );
-        }
+
+    # parse all CSV data line by line (allows newlines in data fields)
+    my $line = 1;
+    open my $fh, '<', \$Param{String};
+    while ( my $colref = $CSV->getline($fh) ) {
+        push @Array, $colref;
+        $line++;
+    }
+
+    # log error if occurred and exit
+    if( !$CSV->eof() ) {
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
+            Priority => 'error',
+            Message  => 'Failed to parse CSV line ' . $line
+                . ' (input: ' . $CSV->error_input
+                . ', error: ' . $CSV->error_diag . ')',
+        );
+        return;
     }
 
     return \@Array;
