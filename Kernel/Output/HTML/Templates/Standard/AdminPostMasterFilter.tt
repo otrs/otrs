@@ -75,7 +75,7 @@
                     <thead>
                         <tr>
                             <th>[% Translate("Name") | html %]</th>
-                            <th>[% Translate("Delete") | html %]</th>
+                            <th class="Center W10pc">[% Translate("Delete") | html %]</th>
                         </tr>
                     </thead>
                     <tbody>
