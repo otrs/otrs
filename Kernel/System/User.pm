@@ -341,6 +341,7 @@ to add new users
         UserMobile    => '1234567890', # not required
         ValidID       => 1,
         ChangeUserID  => 123,
+        Extended      => 0, # set extended properties also; disabled by default
     );
 
 =cut
@@ -456,6 +457,29 @@ sub UserAdd {
         Value  => $Param{UserMobile} || '',
     );
 
+    # set extended user preferences if enabled
+    if ( $Param{Extended} ) {
+        foreach my $key ( keys %Param ) {
+            # skip standard and tech (not prefixed with "User") properties
+            next if $key !~ '^User.+';
+            next if $key eq 'UserID';
+            next if $key eq 'UserType';
+            next if $key eq 'UserTitle';
+            next if $key eq 'UserFirstname';
+            next if $key eq 'UserLastname';
+            next if $key eq 'UserLogin';
+            next if $key eq 'UserPw';
+            next if $key eq 'UserEmail';
+            next if $key eq 'UserMobile';
+
+            $Self->SetPreferences(
+                UserID => $UserID,
+                Key => $key,
+                Value => $Param{$key}
+            );
+        }
+    }
+
     # delete cache
     $Kernel::OM->Get('Kernel::System::Cache')->CleanUp(
         Type => $Self->{CacheType},
@@ -478,6 +502,7 @@ to update users
         UserMobile    => '1234567890', # not required
         ValidID       => 1,
         ChangeUserID  => 123,
+        Extended      => 0, # update extended properties also; disabled by default
     );
 
 =cut
@@ -563,6 +588,29 @@ sub UserUpdate {
         Key    => 'UserMobile',
         Value  => $Param{UserMobile} || '',
     );
+
+    # update extended user preferences if enabled
+    if ( $Param{Extended} ) {
+        foreach my $key ( keys %Param ) {
+            # skip standard and tech (not prefixed with "User") properties
+            next if $key !~ '^User.+';
+            next if $key eq 'UserID';
+            next if $key eq 'UserType';
+            next if $key eq 'UserTitle';
+            next if $key eq 'UserFirstname';
+            next if $key eq 'UserLastname';
+            next if $key eq 'UserLogin';
+            next if $key eq 'UserPw';
+            next if $key eq 'UserEmail';
+            next if $key eq 'UserMobile';
+
+            $Self->SetPreferences(
+                UserID => $Param{UserID},
+                Key => $key,
+                Value => $Param{$key}
+            );
+        }
+    }
 
     # update search profiles if the UserLogin changed
     if ( lc $OldUserLogin ne lc $Param{UserLogin} ) {
@@ -1183,11 +1231,10 @@ sub SetPreferences {
         NoOutOfOffice => 1,
     );
 
-    # no updated needed
-    return 1
-        if defined $User{ $Param{Key} }
-        && defined $Param{Value}
-        && $User{ $Param{Key} } eq $Param{Value};
+    # no update needed (treat undef and empty string as equal)
+    my $UserValue = $User{ $Param{Key} } || '';
+    my $ParamValue = $Param{Value} || '';
+    return 1 if $UserValue eq $ParamValue;
 
     # get config object
     my $ConfigObject = $Kernel::OM->Get('Kernel::Config');

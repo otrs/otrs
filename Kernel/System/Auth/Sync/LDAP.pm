@@ -270,12 +270,12 @@ sub Sync {
         # add new user
         if ( %SyncUser && !$UserID ) {
             $UserID = $UserObject->UserAdd(
-                UserTitle => 'Mr/Mrs',
                 UserLogin => $Param{User},
                 %SyncUser,
                 UserType     => 'User',
                 ValidID      => 1,
                 ChangeUserID => 1,
+                Extended     => 1,
             );
             if ( !$UserID ) {
                 $Kernel::OM->Get('Kernel::System::Log')->Log(
@@ -336,7 +336,10 @@ sub Sync {
             my $AttributeChange;
             ATTRIBUTE:
             for my $Attribute ( sort keys %SyncUser ) {
-                next ATTRIBUTE if $SyncUser{$Attribute} eq $UserData{$Attribute};
+                # treat undef and empty string as equal
+                my $SyncUserAttribute = $SyncUser{$Attribute} || '';
+                my $UserDataAttribute = $UserData{$Attribute} || '';
+                next ATTRIBUTE if $SyncUserAttribute eq $UserDataAttribute;
                 $AttributeChange = 1;
                 last ATTRIBUTE;
             }
@@ -349,6 +352,7 @@ sub Sync {
                     %SyncUser,
                     UserType     => 'User',
                     ChangeUserID => 1,
+                    Extended     => 1,
                 );
             }
         }
