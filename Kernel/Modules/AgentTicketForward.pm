@@ -1370,8 +1370,21 @@ sub _Mask {
         }
 
         my %Selected;
-        if ( $Self->{GetParam}->{ArticleTypeID} ) {
-            $Selected{SelectedID} = $Self->{GetParam}->{ArticleTypeID};
+        if ( $Param{ArticleTypeID} ) {
+
+            # use email-internal article type if forwarding article with internal type; otherwise use email-internal
+            my $ArticleTypeSelected = $TicketObject->ArticleTypeLookup( ArticleTypeID => $Param{ArticleTypeID} );
+            if ( $ArticleTypeSelected ) {
+                if ( $ArticleTypeSelected =~ m{internal} ) {
+                    $Selected{SelectedID} = $TicketObject->ArticleTypeLookup( ArticleType => 'email-internal' );
+                }
+                else {
+                    $Selected{SelectedID} = $TicketObject->ArticleTypeLookup( ArticleType => 'email-external' );
+                }
+            }
+            else {
+                $Selected{SelectedValue} = $Config->{DefaultArticleType};
+            }
         }
         else {
             $Selected{SelectedValue} = $Config->{ArticleTypeDefault};
