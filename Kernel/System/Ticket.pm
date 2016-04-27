@@ -1307,17 +1307,23 @@ sub TicketGet {
         }
     }
 
-    # cache user result
-    $Kernel::OM->Get('Kernel::System::Cache')->Set(
-        Type => $Self->{CacheType},
-        TTL  => $Self->{CacheTTL},
-        Key  => $CacheKeyDynamicFields,
+    # use cache only when a ticket number is found otherwise a non-existant ticket
+    # is cached. That can cause errors when the cache isn't expired and postmaster
+    # creates that ticket
+    if ( $Ticket{TicketNumber} ) {
 
-        # make a local copy of the ticket data to avoid it being altered in-memory later
-        Value          => {%Ticket},
-        CacheInMemory  => 1,
-        CacheInBackend => 0,
-    );
+        # cache user result
+        $Kernel::OM->Get('Kernel::System::Cache')->Set(
+            Type => $Self->{CacheType},
+            TTL  => $Self->{CacheTTL},
+            Key  => $CacheKeyDynamicFields,
+
+            # make a local copy of the ticket data to avoid it being altered in-memory later
+            Value          => {%Ticket},
+            CacheInMemory  => 1,
+            CacheInBackend => 0,
+        );
+    }
 
     return %Ticket;
 }
