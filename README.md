@@ -2,6 +2,8 @@
 
 What is OTRS?
 =============
+
+[![Join the chat at https://gitter.im/OTRS/otrs](https://badges.gitter.im/OTRS/otrs.svg)](https://gitter.im/OTRS/otrs?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 OTRS is an Open source Ticket Request System with many features to manage
 customer telephone calls and e-mails. It is distributed under the GNU
 AFFERO General Public License (AGPL) and tested on Linux, Solaris, AIX,
