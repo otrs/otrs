@@ -1162,14 +1162,19 @@ sub TicketGet {
             $Ticket{ChangeBy} = $Row[25];
         }
 
-        $Kernel::OM->Get('Kernel::System::Cache')->Set(
-            Type => $Self->{CacheType},
-            TTL  => $Self->{CacheTTL},
-            Key  => $CacheKey,
+        # use cache only when a ticket number is found otherwise a non-existant ticket
+        # is cached. That can cause errors when the cache isn't expired and postmaster
+        # creates that ticket
+        if ( $Ticket{TicketID} ) {
+            $Kernel::OM->Get('Kernel::System::Cache')->Set(
+                Type => $Self->{CacheType},
+                TTL  => $Self->{CacheTTL},
+                Key  => $CacheKey,
 
-            # make a local copy of the ticket data to avoid it being altered in-memory later
-            Value => {%Ticket},
-        );
+                # make a local copy of the ticket data to avoid it being altered in-memory later
+                Value => {%Ticket},
+            );
+        }
     }
 
     # check ticket
@@ -1307,23 +1312,17 @@ sub TicketGet {
         }
     }
 
-    # use cache only when a ticket number is found otherwise a non-existant ticket
-    # is cached. That can cause errors when the cache isn't expired and postmaster
-    # creates that ticket
-    if ( $Ticket{TicketNumber} ) {
+    # cache user result
+    $Kernel::OM->Get('Kernel::System::Cache')->Set(
+        Type => $Self->{CacheType},
+        TTL  => $Self->{CacheTTL},
+        Key  => $CacheKeyDynamicFields,
 
-        # cache user result
-        $Kernel::OM->Get('Kernel::System::Cache')->Set(
-            Type => $Self->{CacheType},
-            TTL  => $Self->{CacheTTL},
-            Key  => $CacheKeyDynamicFields,
-
-            # make a local copy of the ticket data to avoid it being altered in-memory later
-            Value          => {%Ticket},
-            CacheInMemory  => 1,
-            CacheInBackend => 0,
-        );
-    }
+        # make a local copy of the ticket data to avoid it being altered in-memory later
+        Value          => {%Ticket},
+        CacheInMemory  => 1,
+        CacheInBackend => 0,
+    );
 
     return %Ticket;
 }
