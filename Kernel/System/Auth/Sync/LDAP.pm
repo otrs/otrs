@@ -522,54 +522,28 @@ sub Sync {
         }
     }
 
-    # compare group permissions from ldap with current user group permissions
-    my %GroupPermissionsChanged;
+    # Set group permissions from ldap for current user
     if (%GroupPermissionsFromLDAP) {
         PERMISSIONTYPE:
         for my $PermissionType ( @{ $ConfigObject->Get('System::Permission') } ) {
 
-            # get current permission for type
-            my %GroupPermissions = $GroupObject->PermissionUserGroupGet(
-                UserID => $UserID,
-                Type   => $PermissionType,
-            );
-
+            # Update all available group permissions for system groups
             GROUPID:
             for my $GroupID ( sort keys %SystemGroups ) {
 
-                my $OldPermission = $GroupPermissions{$GroupID};
-                my $NewPermission = $GroupPermissionsFromLDAP{$GroupID}->{$PermissionType};
-
-                # if old and new permission for group/type match, do nothing
-                if (
-                    ( $OldPermission && $NewPermission )
-                    ||
-                    ( !$OldPermission && !$NewPermission )
-                    )
-                {
-                    next GROUPID;
-                }
-
-                # permission for group/type differs - remember
-                $GroupPermissionsChanged{$GroupID}->{$PermissionType} = $NewPermission;
+                # Update group permissions for user from ldap or default to empty permission
+                $Kernel::OM->Get('Kernel::System::Log')->Log(
+                    Priority => 'notice',
+                    Message  => "User: '$Param{User}' sync ldap group '$SystemGroups{$GroupID}' "
+                        . "permission '$PermissionType'!",
+                );
+                $GroupObject->PermissionGroupUserAdd(
+                    GID        => $GroupID,
+                    UID        => $UserID,
+                    Permission => $GroupPermissionsFromLDAP{$GroupID} || \%PermissionsEmpty,
+                    UserID     => 1,
+                );
             }
-        }
-    }
-
-    # update changed group permissions
-    if (%GroupPermissionsChanged) {
-        for my $GroupID ( sort keys %GroupPermissionsChanged ) {
-
-            $Kernel::OM->Get('Kernel::System::Log')->Log(
-                Priority => 'notice',
-                Message  => "User: '$Param{User}' sync ldap group $SystemGroups{$GroupID}!",
-            );
-            $GroupObject->PermissionGroupUserAdd(
-                GID        => $GroupID,
-                UID        => $UserID,
-                Permission => $GroupPermissionsChanged{$GroupID} || \%PermissionsEmpty,
-                UserID     => 1,
-            );
         }
     }
 
