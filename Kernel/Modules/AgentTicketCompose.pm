@@ -1604,11 +1604,12 @@ sub Run {
             ReplyArticleID      => $GetParam{ArticleID},
             %Ticket,
             %Data,
-            InReplyTo        => $Data{MessageID},
-            References       => "$References",
-            TicketBackType   => $TicketBackType,
-            DynamicFieldHTML => \%DynamicFieldHTML,
-            ArticleTypeID    => $GetParam{ArticleTypeID},    # don't use the ArticleID from the previous article
+            InReplyTo           => $Data{MessageID},
+            References          => "$References",
+            TicketBackType      => $TicketBackType,
+            DynamicFieldHTML    => \%DynamicFieldHTML,
+            ArticleTypeID       => $GetParam{ArticleTypeID},
+            SourceArticleTypeID => $Data{ArticleTypeID},
         );
         $Output .= $LayoutObject->Footer(
             Type => 'Small',
@@ -1671,24 +1672,34 @@ sub _Mask {
     # get ticket object
     my $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
 
-    #  get article type
-    my %ArticleTypeList;
-
-    if ( $Config->{ArticleTypes} ) {
+    if ( IsArrayRefWithData( $Config->{ArticleTypes} ) ) {
+        my %ArticleTypeList;
+        my %Selected;
 
         my @ArticleTypesPossible = @{ $Config->{ArticleTypes} };
-        for my $ArticleTypeID (@ArticleTypesPossible) {
-            my $ArticleType = $TicketObject->ArticleTypeLookup(
-                ArticleType => $ArticleTypeID,
+        for my $ArticleType (@ArticleTypesPossible) {
+            my $ArticleTypeID = $TicketObject->ArticleTypeLookup(
+                ArticleType => $ArticleType,
             );
-            $ArticleTypeList{$ArticleType} = $ArticleTypeID;
+            $ArticleTypeList{$ArticleTypeID} = $ArticleType;
+
+            # requested article type must be present in article types list
+            # or default will be used
+            if ( $Param{ArticleTypeID} && $ArticleTypeID == $Param{ArticleTypeID} ) {
+                $Selected{SelectedValue} = $ArticleType;
+            }
         }
 
-        my %Selected;
-        if ( $Param{ArticleTypeID} ) {
-            $Selected{SelectedID} = $Param{ArticleTypeID};
+        # default selected article type for internal source articles
+        if ( !$Selected{SelectedValue} && $Config->{DefaultArticleTypeInternal} && $Param{SourceArticleTypeID} ) {
+            my $SourceArticleType = $TicketObject->ArticleTypeLookup( ArticleTypeID => $Param{SourceArticleTypeID} );
+            if ( $SourceArticleType && $SourceArticleType =~ m{internal} ) {
+                $Selected{SelectedValue} = $Config->{DefaultArticleTypeInternal};
+            }
         }
-        else {
+
+        # default selected article type
+        if ( !$Selected{SelectedValue} && $Config->{DefaultArticleType} ) {
             $Selected{SelectedValue} = $Config->{DefaultArticleType};
         }
 

@@ -5394,6 +5394,14 @@
             <String Regex="">email-external</String>
         </Setting>
     </ConfigItem>
+    <ConfigItem Name="Ticket::Frontend::AgentTicketCompose###DefaultArticleTypeInternal" Required="0" Valid="1">
+        <Description Translatable="1">Specifies the default article type for the ticket compose screen in the agent interface if the article type cannot be automatically detected and source article type name contains "internal". Has higher priority than Ticket::Frontend::AgentTicketCompose###DefaultArticleType.</Description>
+        <Group>Ticket</Group>
+        <SubGroup>Frontend::Agent::Ticket::ViewCompose</SubGroup>
+        <Setting>
+            <String Regex="">email-internal</String>
+        </Setting>
+    </ConfigItem>
     <ConfigItem Name="Ticket::Frontend::ResponseFormat" Required="1" Valid="1">
         <Description Translatable="1">Defines the format of responses in the ticket compose screen of the agent interface ([% Data.OrigFrom | html %] is From 1:1, [% Data.OrigFromName | html %] is only realname of From).</Description>
         <Group>Ticket</Group>
@@ -5493,6 +5501,14 @@
         <SubGroup>Frontend::Agent::Ticket::ViewForward</SubGroup>
         <Setting>
             <String Regex="">email-external</String>
+        </Setting>
+    </ConfigItem>
+    <ConfigItem Name="Ticket::Frontend::AgentTicketForward###ArticleTypeDefaultInternal" Required="0" Valid="1">
+        <Description Translatable="1">Defines the default type of forwarded message in the ticket forward screen of the agent interface if the article type cannot be automatically detected and source article type name contains "internal". Has higher priority than Ticket::Frontend::AgentTicketForward###ArticleTypeDefault.</Description>
+        <Group>Ticket</Group>
+        <SubGroup>Frontend::Agent::Ticket::ViewForward</SubGroup>
+        <Setting>
+            <String Regex="">email-internal</String>
         </Setting>
     </ConfigItem>
     <ConfigItem Name="Ticket::Frontend::AgentTicketForward###ArticleTypes" Required="0" Valid="1">

@@ -562,9 +562,11 @@ sub Form {
         Attachments         => \@Attachments,
         %Data,
         %GetParam,
-        InReplyTo        => $Data{MessageID},
-        References       => $References,
-        DynamicFieldHTML => \%DynamicFieldHTML,
+        InReplyTo           => $Data{MessageID},
+        References          => $References,
+        DynamicFieldHTML    => \%DynamicFieldHTML,
+        ArticleTypeID       => $GetParam{ArticleTypeID},
+        SourceArticleTypeID => $Data{ArticleTypeID},
     );
     $Output .= $LayoutObject->Footer(
         Type => 'Small',
@@ -1351,29 +1353,37 @@ sub _Mask {
         %State,
     );
 
-    #  get article type
-    my %ArticleTypeList;
-
     # get ticket object
     my $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
 
     if ( IsArrayRefWithData( $Config->{ArticleTypes} ) ) {
+        my %ArticleTypeList;
+        my %Selected;
 
         my @ArticleTypesPossible = @{ $Config->{ArticleTypes} };
         for my $ArticleType (@ArticleTypesPossible) {
-
             my $ArticleTypeID = $TicketObject->ArticleTypeLookup(
                 ArticleType => $ArticleType,
             );
-
             $ArticleTypeList{$ArticleTypeID} = $ArticleType;
+
+            # requested article type must be present in article types list
+            # or default will be used
+            if ( $Param{ArticleTypeID} && $ArticleTypeID == $Param{ArticleTypeID} ) {
+                $Selected{SelectedValue} = $ArticleType;
+            }
         }
 
-        my %Selected;
-        if ( $Self->{GetParam}->{ArticleTypeID} ) {
-            $Selected{SelectedID} = $Self->{GetParam}->{ArticleTypeID};
+        # default selected article type for internal source articles
+        if ( !$Selected{SelectedValue} && $Config->{ArticleTypeDefaultInternal} && $Param{SourceArticleTypeID} ) {
+            my $SourceArticleType = $TicketObject->ArticleTypeLookup( ArticleTypeID => $Param{SourceArticleTypeID} );
+            if ( $SourceArticleType && $SourceArticleType =~ m{internal} ) {
+                $Selected{SelectedValue} = $Config->{ArticleTypeDefaultInternal};
+            }
         }
-        else {
+
+        # default selected article type
+        if ( !$Selected{SelectedValue} && $Config->{ArticleTypeDefault} ) {
             $Selected{SelectedValue} = $Config->{ArticleTypeDefault};
         }
 
