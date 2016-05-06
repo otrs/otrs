@@ -1889,13 +1889,6 @@ sub _Mask {
         FieldFilter => $Config->{DynamicField} || {},
     );
 
-    # Widget Dynamic Fields
-    if ( IsArrayRefWithData($DynamicField) ) {
-        $LayoutObject->Block(
-            Name => 'WidgetDynamicFields',
-        );
-    }
-
     # Dynamic fields
     # cycle trough the activated Dynamic Fields for this screen
     DYNAMICFIELD:
