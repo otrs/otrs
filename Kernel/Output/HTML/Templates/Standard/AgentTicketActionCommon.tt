@@ -302,7 +302,6 @@ $('#TypeID').bind('change', function (Event) {
 #                    <div class="Clear"></div>
 #                </div>
 #[% RenderBlockEnd("DynamicField_Field2") %]
-
                     </div>
                 </div>
 [% RenderBlockEnd("WidgetTicketActions") %]
