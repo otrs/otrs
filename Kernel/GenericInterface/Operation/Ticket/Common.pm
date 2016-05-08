@@ -1064,7 +1064,7 @@ sub ValidateTimeUnit {
     return if !$Param{TimeUnit};
 
     # TimeUnit must be possitive
-    return if $Param{TimeUnit} !~ m{\A \d+? \z}xms;
+    return if $Param{TimeUnit} !~ m{\A \d+([.,]\d+)? \z}xms;
 
     return 1;
 }
