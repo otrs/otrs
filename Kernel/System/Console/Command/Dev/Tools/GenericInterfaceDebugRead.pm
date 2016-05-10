@@ -34,21 +34,21 @@ sub Configure {
         Description => "Restriction on the communication type.",
         Required    => 0,
         HasValue    => 1,
-        ValueRegex  => qr/.*/smx,
+        ValueRegex  => qr/^(?:Provider|Requester)$/smx,
     );
     $Self->AddOption(
         Name        => 'created_at_or_after',
         Description => "Restriction on entries created after given timestamp.",
         Required    => 0,
         HasValue    => 1,
-        ValueRegex  => qr/.*/smx,
+        ValueRegex  => qr/^\d{4}-\d{2}-\d{2}[ ]\d{2}:\d{2}:\d{2}$/smx,
     );
     $Self->AddOption(
         Name        => 'created_at_or_before',
         Description => "Restriction on entries created before given timestamp.",
         Required    => 0,
         HasValue    => 1,
-        ValueRegex  => qr/.*/smx,
+        ValueRegex  => qr/^\d{4}-\d{2}-\d{2}[ ]\d{2}:\d{2}:\d{2}$/smx,
     );
     $Self->AddOption(
         Name        => 'remote_ip',
@@ -62,14 +62,13 @@ sub Configure {
         Description => "Restriction on entries of a given webservice id.",
         Required    => 0,
         HasValue    => 1,
-        ValueRegex  => qr/.*/smx,
+        ValueRegex  => qr/^\d+$/smx,
     );
     $Self->AddOption(
         Name        => 'with_data',
         Description => "Restriction on entries of a given webservice id.",
         Required    => 0,
         HasValue    => 0,
-        ValueRegex  => qr/.*/smx,
     );
 
     return;
