@@ -109,49 +109,26 @@ sub Run {
         );
     }
 
-    # check if name already exists
-    my @AttachmentMeta = $UploadCacheObject->FormIDGetAllFilesMeta(
-        FormID => $FormID,
-    );
-    my $FilenameTmp    = $File{Filename};
-    my $SuffixTmp      = 0;
-    my $UniqueFilename = '';
-    while ( !$UniqueFilename ) {
-        $UniqueFilename = $FilenameTmp;
-        NEWNAME:
-        for my $Attachment ( reverse @AttachmentMeta ) {
-            next NEWNAME if $FilenameTmp ne $Attachment->{Filename};
-
-            # name exists -> change
-            ++$SuffixTmp;
-            if ( $File{Filename} =~ /^(.*)\.(.+?)$/ ) {
-                $FilenameTmp = "$1-$SuffixTmp.$2";
-            }
-            else {
-                $FilenameTmp = "$File{Filename}-$SuffixTmp";
-            }
-            $UniqueFilename = '';
-            last NEWNAME;
-        }
-    }
+    # protect against file name collisions
+    $File{Filename} = 'inline-' . time() . '-' . int(rand(1000000)) . '-' . $File{Filename};
 
     # add uploaded file to upload cache
     $UploadCacheObject->FormIDAddFile(
         FormID      => $FormID,
-        Filename    => $FilenameTmp,
+        Filename    => $File{Filename},
         Content     => $File{Content},
-        ContentType => $File{ContentType} . '; name="' . $FilenameTmp . '"',
+        ContentType => $File{ContentType} . '; name="' . $File{Filename} . '"',
         Disposition => 'inline',
     );
 
     # get new content id
     my $ContentIDNew = '';
-    @AttachmentMeta = $UploadCacheObject->FormIDGetAllFilesMeta(
+    my @AttachmentMeta = $UploadCacheObject->FormIDGetAllFilesMeta(
         FormID => $FormID
     );
     ATTACHMENT:
     for my $Attachment (@AttachmentMeta) {
-        next ATTACHMENT if $FilenameTmp ne $Attachment->{Filename};
+        next ATTACHMENT if $File{Filename} ne $Attachment->{Filename};
         $ContentIDNew = $Attachment->{ContentID};
         last ATTACHMENT;
     }
@@ -167,7 +144,7 @@ sub Run {
     # if ResponseType is JSON, do not return template content but a JSON structure
     if ( $ResponseType eq 'json' ) {
         my %Result = (
-            fileName => $FilenameTmp,
+            fileName => $File{Filename},
             uploaded => 1,
             url      => $URL,
         );
