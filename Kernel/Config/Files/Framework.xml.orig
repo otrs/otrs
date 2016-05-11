@@ -7556,25 +7556,6 @@
             </Option>
         </Setting>
     </ConfigItem>
-    <ConfigItem Name="TLS::VerifyPeer" Required="1" Valid="1">
-        <Description Translatable="1">If this option is enabled (default, recommended), then the remote peer TLS certificates are verified against configured CA (see below). When disabled (not recommended for security reasons) peer TLS certificates are not verified. Please note: this option is currently used for mail account IMAPS connections only.</Description>
-        <Group>Framework</Group>
-        <SubGroup>Crypt::TLS</SubGroup>
-        <Setting>
-            <Option SelectedID="1">
-                <Item Key="0" Translatable="1">No</Item>
-                <Item Key="1" Translatable="1">Yes</Item>
-            </Option>
-        </Setting>
-    </ConfigItem>
-    <ConfigItem Name="TLS::CAPath" Required="1" Valid="1">
-        <Description Translatable="1">Specifies the directory where TLS trusted CA certificates for TLS peer certificate verification are stored. This setting is used if TLS::VerifyPeer is enabled (see above). Please note: this option is currently used for mail account IMAPS connections only.</Description>
-        <Group>Framework</Group>
-        <SubGroup>Crypt::TLS</SubGroup>
-        <Setting>
-            <String Regex="" Check="Directory">/etc/ssl/certs</String>
-        </Setting>
-    </ConfigItem>
     <ConfigItem Name="NotificationSenderName" Required="1" Valid="1">
         <Description Translatable="1">Specifies the name that should be used by the application when sending notifications. The sender name is used to build the complete display name for the notification master (i.e. "OTRS Notifications" otrs@your.example.com).</Description>
         <Group>Framework</Group>
