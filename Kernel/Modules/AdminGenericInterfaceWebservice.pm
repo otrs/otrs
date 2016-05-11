@@ -12,6 +12,7 @@ use strict;
 use warnings;
 
 use Kernel::System::VariableCheck qw(:all);
+use Kernel::Language qw(Translatable);
 
 our $ObjectManagerDisabled = 1;
 
@@ -45,7 +46,7 @@ sub Run {
         # check for WebserviceID
         if ( !$WebserviceID ) {
             return $LayoutObject->ErrorScreen(
-                Message => "Need WebserviceID!",
+                Message => Translatable('Need WebserviceID!'),
             );
         }
 
@@ -57,7 +58,8 @@ sub Run {
         # check for valid web service configuration
         if ( !IsHashRefWithData($WebserviceData) ) {
             return $LayoutObject->ErrorScreen(
-                Message => "Could not get data for WebserviceID $WebserviceID",
+                Message => $LayoutObject->{LanguageObject}
+                    ->Translate( 'Could not get data for WebserviceID %s', $WebserviceID ),
             );
         }
 
@@ -82,7 +84,7 @@ sub Run {
         # check for WebserviceID
         if ( !$WebserviceID ) {
             return $LayoutObject->ErrorScreen(
-                Message => "Need WebserviceID!",
+                Message => Translatable('Need WebserviceID!'),
             );
         }
 
@@ -94,7 +96,8 @@ sub Run {
         # check for valid web service configuration
         if ( !IsHashRefWithData($WebserviceData) ) {
             return $LayoutObject->ErrorScreen(
-                Message => "Could not get data for WebserviceID $WebserviceID",
+                Message => $LayoutObject->{LanguageObject}
+                    ->Translate( 'Could not get data for WebserviceID %s', $WebserviceID ),
             );
         }
 
@@ -135,7 +138,7 @@ sub Run {
 
             # add server error error class
             $Error{NameServerError}        = 'ServerError';
-            $Error{NameServerErrorMessage} = 'This field is required';
+            $Error{NameServerErrorMessage} = Translatable('This field is required');
         }
 
         # check if name is duplicated
@@ -151,7 +154,7 @@ sub Run {
 
             # add server error error class
             $Error{NameServerError}        = 'ServerError';
-            $Error{NameServerErrorMessage} = 'There is another web service with the same name.';
+            $Error{NameServerErrorMessage} = Translatable('There is another web service with the same name.');
         }
 
         # if there is an error return to edit screen
@@ -177,7 +180,7 @@ sub Run {
         # show error if cant update
         if ( !$Success ) {
             return $LayoutObject->ErrorScreen(
-                Message => "There was an error updating the web service",
+                Message => Translatable('There was an error updating the web service.'),
             );
         }
 
@@ -251,7 +254,7 @@ sub Run {
 
             # add server error error class
             $Error{NameServerError}        = 'ServerError';
-            $Error{NameServerErrorMessage} = 'This field is required';
+            $Error{NameServerErrorMessage} = Translatable('This field is required');
         }
 
         # check if name is duplicated
@@ -267,7 +270,7 @@ sub Run {
 
             # add server error error class
             $Error{NameServerError}        = 'ServerError';
-            $Error{NameServerErrorMessage} = 'There is another web service with the same name.';
+            $Error{NameServerErrorMessage} = Translatable('There is another web service with the same name.');
         }
 
         # if there is an error return to edit screen
@@ -292,7 +295,7 @@ sub Run {
         # show error if cant create
         if ( !$ID ) {
             return $LayoutObject->ErrorScreen(
-                Message => "There was an error creating the web service",
+                Message => Translatable('There was an error creating the web service.'),
             );
         }
 
@@ -323,7 +326,7 @@ sub Run {
         # check for WebserviceID
         if ( !$WebserviceID ) {
             return $LayoutObject->ErrorScreen(
-                Message => "Need WebserviceID!",
+                Message => Translatable('Need WebserviceID!'),
             );
         }
 
@@ -338,7 +341,8 @@ sub Run {
         # check for valid web service configuration
         if ( !IsHashRefWithData($WebserviceData) ) {
             return $LayoutObject->ErrorScreen(
-                Message => "Could not get data for WebserviceID $WebserviceID",
+                Message => $LayoutObject->{LanguageObject}
+                    ->Translate( 'Could not get data for WebserviceID %s', $WebserviceID ),
             );
         }
 
@@ -400,7 +404,7 @@ sub Run {
         # check for WebserviceID
         if ( !$WebserviceID ) {
             return $LayoutObject->ErrorScreen(
-                Message => "Need WebserviceID!",
+                Message => Translatable('Need WebserviceID!'),
             );
         }
 
@@ -412,7 +416,8 @@ sub Run {
         # check for valid web service configuration
         if ( !IsHashRefWithData($WebserviceData) ) {
             return $LayoutObject->ErrorScreen(
-                Message => "Could not get data for WebserviceID $WebserviceID",
+                Message => $LayoutObject->{LanguageObject}
+                    ->Translate( 'Could not get data for WebserviceID %s', $WebserviceID ),
             );
         }
 
@@ -420,7 +425,7 @@ sub Run {
 
         if ( !$CloneName ) {
             return $LayoutObject->ErrorScreen(
-                Message => "Need Name!",
+                Message => Translatable('Need Name!'),
             );
         }
 
@@ -434,7 +439,7 @@ sub Run {
 
         if ( $WebserviceList{$CloneName} ) {
             return $LayoutObject->ErrorScreen(
-                Message => "There is another web service with the same name.",
+                Message => Translatable('There is another web service with the same name.'),
             );
         }
 
@@ -448,7 +453,7 @@ sub Run {
 
         if ( !$Success ) {
             return $LayoutObject->ErrorScreen(
-                Message => "There was an error creating the web service.",
+                Message => Translatable('There was an error creating the web service.'),
             );
         }
 
@@ -475,28 +480,63 @@ sub Run {
         # challenge token check for write action
         $LayoutObject->ChallengeTokenCheck();
 
-        # get the web service config file from the http request
-        my %ConfigFile = $ParamObject->GetUploadAll(
-            Param => 'ConfigFile',
-        );
-
-        # check for file
-        if ( !%ConfigFile ) {
-            return $LayoutObject->ErrorScreen(
-                Message => "Need a file to import!",
-            );
-        }
-
         my $ImportedConfig;
 
-        # read configuration from a YAML structure
-        $ImportedConfig = $YAMLObject->Load( Data => $ConfigFile{Content} );
+        # get web service name
+        my $WebserviceName;
+
+        my $ExampleWebServiceFilename = $ParamObject->GetParam( Param => 'ExampleWebService' ) || '';
+        if ($ExampleWebServiceFilename) {
+            $ExampleWebServiceFilename =~ s{/+|\.{2,}}{}smx;    # remove slashes and ..
+
+            if ( !$ExampleWebServiceFilename ) {
+                return $Kernel::OM->Get('Kernel::Output::HTML::Layout')->FatalError(
+                    Message => Translatable('Need ExampleWebService!'),
+                );
+            }
+
+            my $Home    = $Kernel::OM->Get('Kernel::Config')->Get('Home');
+            my $Content = $Kernel::OM->Get('Kernel::System::Main')->FileRead(
+                Location => "$Home/var/webservices/examples/$ExampleWebServiceFilename",
+                Mode     => 'utf8',
+            );
+
+            if ( !$Content ) {
+                return $Kernel::OM->Get('Kernel::Output::HTML::Layout')->FatalError(
+                    Message =>
+                        $LayoutObject->{LanguageObject}->Translate( 'Could not read %s!', $ExampleWebServiceFilename ),
+                );
+            }
+
+            $Content = ${ $Content || \'' };
+
+            # read configuration from a YAML structure
+            $ImportedConfig = $YAMLObject->Load( Data => $Content );
+            $WebserviceName = $ExampleWebServiceFilename;
+        }
+        else {
+            # get the web service config file from the http request
+            my %ConfigFile = $ParamObject->GetUploadAll(
+                Param => 'ConfigFile',
+            );
+
+            # check for file
+            if ( !%ConfigFile ) {
+                return $LayoutObject->ErrorScreen(
+                    Message => Translatable('Need a file to import!'),
+                );
+            }
+
+            # read configuration from a YAML structure
+            $ImportedConfig = $YAMLObject->Load( Data => $ConfigFile{Content} );
+            $WebserviceName = $ConfigFile{Filename};
+        }
 
         # display any YAML error message as a normal otrs error message
         if ( !IsHashRefWithData($ImportedConfig) ) {
             return $LayoutObject->ErrorScreen(
-                Message => 'The imported file has not valid YAML content!'
-                    . ' Please check OTRS log for details',
+                Message =>
+                    Translatable('The imported file has not valid YAML content! Please check OTRS log for details'),
             );
         }
 
@@ -512,9 +552,6 @@ sub Run {
         # remove framework information since is not needed anymore
         delete $ImportedConfig->{FrameworkVersion};
 
-        # get web service name
-        my $WebserviceName = $ConfigFile{Filename};
-
         # remove file extension
         $WebserviceName =~ s{\.[^.]+$}{}g;
 
@@ -524,7 +561,7 @@ sub Run {
 
             # add server error error class
             $Error{NameServerError}        = 'ServerError';
-            $Error{NameServerErrorMessage} = 'This field is required';
+            $Error{NameServerErrorMessage} = Translatable('This field is required');
         }
 
         my $WebserviceData;
@@ -547,7 +584,7 @@ sub Run {
 
             # add server error error class
             $Error{NameServerError}        = 'ServerError';
-            $Error{NameServerErrorMessage} = 'There is another web service with the same name.';
+            $Error{NameServerErrorMessage} = Translatable('There is another web service with the same name.');
         }
 
         # if there is an error return to edit screen
@@ -782,6 +819,42 @@ sub _ShowEdit {
         );
     }
     elsif ( $Param{Action} eq 'Add' ) {
+
+        my @ExampleWebServices = $Kernel::OM->Get('Kernel::System::Main')->DirectoryRead(
+            Directory => $Kernel::OM->Get('Kernel::Config')->Get('Home') . '/var/webservices/examples',
+            Filter    => '*.yml',
+            Silent    => 1,
+        );
+
+        my %ExampleWebServicesData;
+
+        for my $ExampleWebServiceFilename (@ExampleWebServices) {
+            my $Key = $ExampleWebServiceFilename;
+            $Key =~ s{^.*/([^/]+)$}{$1}smx;
+            my $Value = $Key;
+            $Value =~ s{^(.+).yml}{$1}smx;
+            $Value =~ s{_}{ }smxg;
+            $ExampleWebServicesData{$Key} = $Value;
+        }
+
+        my %Frontend;
+
+        if ( %ExampleWebServicesData && $Kernel::OM->Get('Kernel::System::OTRSBusiness')->OTRSBusinessIsInstalled() ) {
+            $Frontend{ExampleWebServiceList} = $Kernel::OM->Get('Kernel::Output::HTML::Layout')->BuildSelection(
+                Name         => 'ExampleWebService',
+                Data         => \%ExampleWebServicesData,
+                PossibleNone => 1,
+                Translation  => 0,
+                Class        => 'Modernize Validate_Required',
+            );
+        }
+        $LayoutObject->Block(
+            Name => 'ExampleWebServices',
+            Data => {
+                %Frontend,
+            },
+        );
+
         $LayoutObject->Block(
             Name => 'WebservicePathElementNoLink',
             Data => {

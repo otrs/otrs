@@ -377,7 +377,7 @@ sub LoadDefaults {
     # --------------------------------------------------- #
     # authentication settings                             #
     # (enable what you need, auth against otrs db,        #
-    # against LDAP directory, against HTTP basic auth      #
+    # against LDAP directory, against HTTP basic auth     #
     # or against Radius server)                           #
     # --------------------------------------------------- #
     # This is the auth. module against the otrs db
@@ -684,6 +684,10 @@ sub LoadDefaults {
     # agent interface notification module to check the admin user id
     # (don't work with user id 1 notification)
     $Self->{'Frontend::NotifyModule'} = {
+        '100-CloudServicesDisabled' => {
+          'Group' => 'admin',
+          'Module' => 'Kernel::Output::HTML::Notification::AgentCloudServicesDisabled'
+        },
         '100-OTRSBusiness' => {
             'Group' => 'admin',
             'Module' => 'Kernel::Output::HTML::Notification::AgentOTRSBusiness'
@@ -696,6 +700,9 @@ sub LoadDefaults {
         },
         '600-SystemMaintenance-Check' => {
             'Module' => 'Kernel::Output::HTML::Notification::SystemMaintenanceCheck',
+        },
+        '700-AgentTimeZone-Check' => {
+            'Module' => 'Kernel::Output::HTML::Notification::AgentTimeZoneCheck',
         },
 
         '800-Daemon-Check' => {
@@ -774,8 +781,8 @@ sub LoadDefaults {
     # Time Settings
     # --------------------------------------------------- #
     # TimeZone
-    # (set the system time zone, default is local time)
-#    $Self->{'TimeZone'} = 0;
+    # (set the OTRS time zone, default is UTC)
+#    $Self->{'OTRSTimeZone'} = 'UTC';
 
     # Time*
     # (Used for ticket age, escalation and system unlock calculation)
@@ -952,6 +959,7 @@ sub LoadDefaults {
         'Core.JSON.js',
         'Core.JavaScriptEnhancements.js',
         'Core.Config.js',
+        'Core.Language.js',
         'Core.App.js',
         'Core.App.Responsive.js',
         'Core.AJAX.js',
@@ -986,6 +994,7 @@ sub LoadDefaults {
         'Core.Exception.js',
         'Core.Data.js',
         'Core.Config.js',
+        'Core.Language.js',
         'Core.JSON.js',
         'Core.App.js',
         'Core.App.Responsive.js',
@@ -995,6 +1004,7 @@ sub LoadDefaults {
         'Core.UI.Accordion.js',
         'Core.UI.Datepicker.js',
         'Core.UI.DnD.js',
+        'Core.UI.Floater.js',
         'Core.UI.Resizable.js',
         'Core.UI.Table.js',
         'Core.UI.Accessibility.js',
@@ -1459,7 +1469,7 @@ via the Preferences button after logging in.
 
             # note: Login, Email and CustomerID needed!
             # var, frontend, storage, shown (1=always,2=lite), required, storage-type, http-link, readonly, http-link-target, link class(es)
-            [ 'UserTitle',      Translatable('Title'),      'title',      1, 0, 'var', '', 0 ],
+            [ 'UserTitle',      Translatable('Title or salutation'), 'title',  1, 0, 'var', '', 0 ],
             [ 'UserFirstname',  Translatable('Firstname'),  'first_name', 1, 1, 'var', '', 0 ],
             [ 'UserLastname',   Translatable('Lastname'),   'last_name',  1, 1, 'var', '', 0 ],
             [ 'UserLogin',      Translatable('Username'),   'login',      1, 1, 'var', '', 0 ],
@@ -1580,7 +1590,7 @@ via the Preferences button after logging in.
         CustomerCompanyValid           => 'valid_id',
         CustomerCompanyListFields      => [ 'customer_id', 'name' ],
         CustomerCompanySearchFields    => ['customer_id', 'name'],
-        CustomerCompanySearchPrefix    => '',
+        CustomerCompanySearchPrefix    => '*',
         CustomerCompanySearchSuffix    => '*',
         CustomerCompanySearchListLimit => 250,
         CacheTTL                       => 60 * 60 * 24, # use 0 to turn off cache
@@ -1640,7 +1650,7 @@ via the Preferences button after logging in.
 
     # admin interface
     $Self->{'Frontend::Module'}->{Admin} = {
-        'Description' => 'Admin-Area',
+        'Description' => 'Admin Area.',
         'Group' => [
             'admin'
         ],
@@ -1807,6 +1817,8 @@ sub Set {
     }
     return 1;
 }
+
+## nofilter(TidyAll::Plugin::OTRS::Perl::Translatable)
 
 =item Translatable()
 
@@ -1994,7 +2006,7 @@ sub new {
                 $File =~ s/^\///g;
                 $File =~ s/\/\//\//g;
                 $File =~ s/\//::/g;
-                $File =~ s/.pm//g;
+                $File =~ s/\.pm$//g;
                 $File->Load($Self);
             }
             else {

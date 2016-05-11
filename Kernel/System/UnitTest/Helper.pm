@@ -8,6 +8,7 @@
 
 package Kernel::System::UnitTest::Helper;
 ## nofilter(TidyAll::Plugin::OTRS::Perl::Time)
+## nofilter(TidyAll::Plugin::OTRS::Migrations::OTRS6::DateTime)
 
 use strict;
 use warnings;
@@ -44,6 +45,12 @@ construct a helper object.
                                                     # and restore it in the destructor
             RestoreDatabase            => 1,        # runs the test in a transaction,
                                                     # and roll it back in the destructor
+                                                    #
+                                                    # NOTE: Rollback does not work for
+                                                    # changes in the database layout. If you
+                                                    # want to do this in your tests, you cannot
+                                                    # use this option and must handle the rollback
+                                                    # yourself.
         },
     );
     my $Helper = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
@@ -67,7 +74,7 @@ sub new {
 
         $Self->{SysConfigBackup} = $Self->{SysConfigObject}->Download();
 
-        $Self->{UnitTestObject}->True( 1, 'Creating backup of the system configuration' );
+        $Self->{UnitTestObject}->True( 1, 'Creating backup of the system configuration.' );
     }
 
     # set environment variable to skip SSL certificate verification if needed
@@ -85,7 +92,9 @@ sub new {
 
     if ( $Param{RestoreDatabase} ) {
         $Self->{RestoreDatabase} = 1;
-        $Self->BeginWork();
+        my $StartedTransaction = $Self->BeginWork();
+        $Self->{UnitTestObject}->True( $StartedTransaction, 'Started database transaction.' );
+
     }
 
     return $Self;
@@ -95,24 +104,46 @@ sub new {
 
 creates a random ID that can be used in tests as a unique identifier.
 
-=cut
+It is guaranteed that within a test this function will never return a duplicate.
 
-# Make sure that every RandomID is only generated once in a process to
-#   ensure predictability for unit test runs.
-my %SeenRandomIDs;
+Please note that these numbers are not really random and should only be used
+to create test data.
+
+=cut
 
 sub GetRandomID {
     my ( $Self, %Param ) = @_;
 
-    LOOP:
-    for ( 1 .. 1_000 ) {
-        my $RandomID = 'test' . time() . int( rand(1_000_000_000) );
-        if ( !$SeenRandomIDs{$RandomID}++ ) {
-            return $RandomID;
-        }
+    return 'test' . $Self->GetRandomNumber();
+}
+
+=item GetRandomNumber()
+
+creates a random Number that can be used in tests as a unique identifier.
+
+It is guaranteed that within a test this function will never return a duplicate.
+
+Please note that these numbers are not really random and should only be used
+to create test data.
+
+=cut
+
+# Use package variables here (instead of attributes in $Self)
+# to make it work across several unit tests that run during the same second.
+my $GetRandomNumberPreviousEpoch = 0;
+my $GetRandomNumberCounter       = 0;
+
+sub GetRandomNumber {
+    my ( $Self, %Param ) = @_;
+
+    my $Epoch = time();
+    $GetRandomNumberPreviousEpoch //= 0;
+    if ( $GetRandomNumberPreviousEpoch != $Epoch ) {
+        $GetRandomNumberPreviousEpoch = $Epoch;
+        $GetRandomNumberCounter       = 0;
     }
 
-    die "Could not generate RandomID!\n";
+    return $Epoch . $GetRandomNumberCounter++;
 }
 
 =item TestUserCreate()
@@ -259,7 +290,7 @@ sub BeginWork {
     my ( $Self, %Param ) = @_;
     my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
     $DBObject->Connect();
-    $DBObject->{dbh}->begin_work()
+    return $DBObject->{dbh}->begin_work();
 }
 
 =item Rollback()
@@ -272,15 +303,48 @@ Rolls back the current database transaction.
 
 sub Rollback {
     my ( $Self, %Param ) = @_;
-    my $Dbh = $Kernel::OM->Get('Kernel::System::DB')->{dbh};
+    my $DatabaseHandle = $Kernel::OM->Get('Kernel::System::DB')->{dbh};
 
     # if there is no database handle, there's nothing to rollback
-    if ($Dbh) {
-        $Dbh->rollback();
+    if ($DatabaseHandle) {
+        return $DatabaseHandle->rollback();
     }
+    return 1;
 }
 
-my $FixedTime;
+=item GetTestHTTPHostname()
+
+returns a hostname for HTTP based tests, possibly including the port.
+
+=cut
+
+sub GetTestHTTPHostname {
+    my ( $Self, %Param ) = @_;
+
+    my $Host = $Kernel::OM->Get('Kernel::Config')->Get('TestHTTPHostname');
+    return $Host if $Host;
+
+    my $FQDN = $Kernel::OM->Get('Kernel::Config')->Get('FQDN');
+
+    # try to resolve fqdn host
+    if ( $FQDN ne 'yourhost.example.com' && gethostbyname($FQDN) ) {
+        $Host = $FQDN;
+    }
+
+    # try to resolve localhost instead
+    if ( !$Host && gethostbyname('localhost') ) {
+        $Host = 'localhost';
+    }
+
+    # use hardcoded localhost ip address
+    if ( !$Host ) {
+        $Host = '127.0.0.1';
+    }
+
+    return $Host;
+}
+
+my $FixedDateTimeObject;
 
 =item FixedTimeSet()
 
@@ -288,16 +352,37 @@ makes it possible to override the system time as long as this object lives.
 You can pass an optional time parameter that should be used, if not,
 the current system time will be used.
 
-All regular perl calls to time(), localtime() and gmtime() will use this
-fixed time afterwards. If this object goes out of scope, the 'normal' system
-time will be used again.
+All calls to methods of Kernel::System::Time and Kernel::System::DateTime will
+use the given time afterwards.
+
+    $HelperObject->FixedTimeSet(366475757); # with Timestamp
+    $HelperObject->FixedTimeSet($DateTimeObject); # with previously created DateTime object
+    $HelperObject->FixedTimeSet(); # set to current date and time
+
+Returns:
+    Timestamp
 
 =cut
 
 sub FixedTimeSet {
     my ( $Self, $TimeToSave ) = @_;
 
-    $FixedTime = $TimeToSave // CORE::time();
+    if ( defined $TimeToSave ) {
+        if ( ref $TimeToSave eq 'Kernel::System::DateTime' ) {
+            $FixedDateTimeObject = $TimeToSave;
+        }
+        else {
+            $FixedDateTimeObject = $Kernel::OM->Create(
+                'Kernel::System::DateTime',
+                ObjectParams => {
+                    Epoch => $TimeToSave,
+                },
+            );
+        }
+    }
+    else {
+        $FixedDateTimeObject = $Kernel::OM->Create('Kernel::System::DateTime');
+    }
 
     # This is needed to reload objects that directly use the time functions
     #   to get a hold of the overrides.
@@ -305,6 +390,8 @@ sub FixedTimeSet {
         'Kernel::System::Time',
         'Kernel::System::Cache::FileStorable',
         'Kernel::System::PID',
+        'DateTime',
+        'Kernel::System::DateTime',
     );
 
     for my $Object (@Objects) {
@@ -318,7 +405,7 @@ sub FixedTimeSet {
         }
     }
 
-    return $FixedTime;
+    return $FixedDateTimeObject->ToEpoch();
 }
 
 =item FixedTimeUnset()
@@ -330,7 +417,7 @@ restores the regular system time behaviour.
 sub FixedTimeUnset {
     my ($Self) = @_;
 
-    undef $FixedTime;
+    undef $FixedDateTimeObject;
 
     return;
 }
@@ -345,27 +432,47 @@ set by FixedTimeSet(). You can pass a negative value to go back in time.
 sub FixedTimeAddSeconds {
     my ( $Self, $SecondsToAdd ) = @_;
 
-    return if ( !defined $FixedTime );
-    $FixedTime += $SecondsToAdd;
+    my $FixedDateTimeObject = $Self->FixedDateTimeObjectGet();
+    return if !defined $FixedDateTimeObject;
+
+    if ( $SecondsToAdd > 0 ) {
+        $FixedDateTimeObject->Add( Seconds => $SecondsToAdd );
+    }
+    else {
+        $FixedDateTimeObject->Subtract( Seconds => abs $SecondsToAdd );
+    }
+
     return;
+}
+
+=item FixedDateTimeObjectGet()
+
+Returns the fixed DateTime object that is currently being used/set.
+
+=cut
+
+sub FixedDateTimeObjectGet {
+    my ($Self) = @_;
+
+    return $FixedDateTimeObject;
 }
 
 # See http://perldoc.perl.org/5.10.0/perlsub.html#Overriding-Built-in-Functions
 BEGIN {
     *CORE::GLOBAL::time = sub {
-        return defined $FixedTime ? $FixedTime : CORE::time();
+        return defined $FixedDateTimeObject ? $FixedDateTimeObject->ToEpoch() : CORE::time();
     };
     *CORE::GLOBAL::localtime = sub {
         my ($Time) = @_;
         if ( !defined $Time ) {
-            $Time = defined $FixedTime ? $FixedTime : CORE::time();
+            $Time = defined $FixedDateTimeObject ? $FixedDateTimeObject->ToEpoch() : CORE::time();
         }
         return CORE::localtime($Time);
     };
     *CORE::GLOBAL::gmtime = sub {
         my ($Time) = @_;
         if ( !defined $Time ) {
-            $Time = defined $FixedTime ? $FixedTime : CORE::time();
+            $Time = defined $FixedDateTimeObject ? $FixedDateTimeObject->ToEpoch() : CORE::time();
         }
         return CORE::gmtime($Time);
     };
@@ -376,6 +483,8 @@ sub DESTROY {
 
     # Reset time freeze
     FixedTimeUnset();
+
+    # FixedDateTimeObjectUnset();
 
     #
     # Restore system configuration if needed
@@ -399,9 +508,9 @@ sub DESTROY {
 
     # Restore database, clean caches
     if ( $Self->{RestoreDatabase} ) {
-        $Self->Rollback();
+        my $RollbackSuccess = $Self->Rollback();
         $Kernel::OM->Get('Kernel::System::Cache')->CleanUp();
-        $Self->{UnitTestObject}->True( 1, 'Rolled back all database changes and cleaned up the cache.' );
+        $Self->{UnitTestObject}->True( $RollbackSuccess, 'Rolled back all database changes and cleaned up the cache.' );
     }
 
     # disable email checks to create new user

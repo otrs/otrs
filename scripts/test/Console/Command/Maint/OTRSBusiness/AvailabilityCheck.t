@@ -6,6 +6,7 @@
 # did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
 # --
 
+## no critic (Modules::RequireExplicitPackage)
 use strict;
 use warnings;
 use utf8;
@@ -14,56 +15,37 @@ use vars (qw($Self));
 
 use Kernel::System::OTRSBusiness;
 
-## nofilter(TidyAll::Plugin::OTRS::Perl::TestSubs)
-# disable redefine warnings in this scope
-{
-    no warnings 'redefine';
+# override some OTRSBusiness functions, to prevent a real cloud service call
+local *Kernel::System::OTRSBusiness::OTRSBusinessIsInstalled = sub {
+    my ( $Self, %Param ) = @_;
 
-    sub Kernel::System::OTRSBusiness::OTRSBusinessIsAvailable {
-        my ( $Self, %Param ) = @_;
+    return 1;
+};
 
-        my $SystemDataObject = $Kernel::OM->Get('Kernel::System::SystemData');
+# to check, if the cloud service function was called (the value will be set in the overwritten local function)
+my $TestCloudServiceCall = 0;
 
-        my $TestCloudServiceCallKey = 'OTRSBusiness::AvailabilityCheck::TestCloudServiceCall';
+local *Kernel::System::OTRSBusiness::OTRSBusinessIsAvailable = sub {
+    my ( $Self, %Param ) = @_;
 
-        if ( defined $SystemDataObject->SystemDataGet( Key => $TestCloudServiceCallKey ) ) {
-            $SystemDataObject->SystemDataUpdate(
-                Key    => $TestCloudServiceCallKey,
-                Value  => 1,
-                UserID => 1,
-            );
-        }
-        else {
-            $SystemDataObject->SystemDataAdd(
-                Key    => $TestCloudServiceCallKey,
-                Value  => 1,
-                UserID => 1,
-            );
-        }
+    $TestCloudServiceCall = 1;
 
-        return 1;
-    }
+    return 1;
+};
 
-    # reset all warnings
-}
-
-my $CommandObject = $Kernel::OM->Get('Kernel::System::Console::Command::Maint::OTRSBusiness::AvailabilityCheck');
-
-my $HelperObject     = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
+# get needed objects
+my $CommandObject    = $Kernel::OM->Get('Kernel::System::Console::Command::Maint::OTRSBusiness::AvailabilityCheck');
 my $SystemDataObject = $Kernel::OM->Get('Kernel::System::SystemData');
 
-my $NextUpdateTimeKey       = 'OTRSBusiness::AvailabilityCheck::NextUpdateTime';
-my $TestCloudServiceCallKey = 'OTRSBusiness::AvailabilityCheck::TestCloudServiceCall';
+# get helper object
+$Kernel::OM->ObjectParamAdd(
+    'Kernel::System::UnitTest::Helper' => {
+        RestoreDatabase => 1,
+    },
+);
+my $Helper = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
 
-my $ResetTestCloudServiceCall = sub {
-    my %Param = @_;
-
-    $SystemDataObject->SystemDataUpdate(
-        Key    => $TestCloudServiceCallKey,
-        Value  => 0,
-        UserID => 1,
-    );
-};
+my $NextUpdateTimeKey = 'OTRSBusiness::AvailabilityCheck::NextUpdateTime';
 
 # delete the 'OTRSBusiness::AvailabilityCheck::NextUpdateTime' from the system data, if it already exists in the system
 if ( defined $SystemDataObject->SystemDataGet( Key => $NextUpdateTimeKey ) ) {
@@ -73,7 +55,7 @@ if ( defined $SystemDataObject->SystemDataGet( Key => $NextUpdateTimeKey ) ) {
     );
 }
 
-$HelperObject->FixedTimeSet();
+$Helper->FixedTimeSet();
 
 my $ExitCode = $CommandObject->Execute();
 
@@ -83,20 +65,19 @@ $Self->Is(
     "Maint::OTRSBusiness::AvailabilityCheck exit code",
 );
 
-my $TestCloudService = $SystemDataObject->SystemDataGet( Key => $TestCloudServiceCallKey );
-
 $Self->True(
-    $TestCloudService,
+    $TestCloudServiceCall,
     "The function 'OTRSBusinessIsAvailable' was called from the console command.",
 );
 
-$ResetTestCloudServiceCall->();
+# reset the test value
+$TestCloudServiceCall = 0;
 
 # add two hours in seconds to the fixed time
 my $FixedTimeAddSeconds = 60 * 60 * 2;
 
 # set the fixed time
-$HelperObject->FixedTimeAddSeconds($FixedTimeAddSeconds);
+$Helper->FixedTimeAddSeconds($FixedTimeAddSeconds);
 
 $ExitCode = $CommandObject->Execute();
 
@@ -106,14 +87,13 @@ $Self->Is(
     "Maint::OTRSBusiness::AvailabilityCheck exit code",
 );
 
-$TestCloudService = $SystemDataObject->SystemDataGet( Key => $TestCloudServiceCallKey );
-
 $Self->False(
-    $TestCloudService,
+    $TestCloudServiceCall,
     "The function 'OTRSBusinessIsAvailable' was not called from the console command.",
 );
 
-$ResetTestCloudServiceCall->();
+# reset the test value
+$TestCloudServiceCall = 0;
 
 $ExitCode = $CommandObject->Execute('--force');
 
@@ -123,20 +103,19 @@ $Self->Is(
     "Maint::OTRSBusiness::AvailabilityCheck exit code",
 );
 
-$TestCloudService = $SystemDataObject->SystemDataGet( Key => $TestCloudServiceCallKey );
-
 $Self->True(
-    $TestCloudService,
+    $TestCloudServiceCall,
     "The function 'OTRSBusinessIsAvailable' was called from the console command (with --force).",
 );
 
-$ResetTestCloudServiceCall->();
+# reset the test value
+$TestCloudServiceCall = 0;
 
 # add 28 hours in seconds to the fixed time
 $FixedTimeAddSeconds = 60 * 60 * 28;
 
 # set the fixed time
-$HelperObject->FixedTimeAddSeconds($FixedTimeAddSeconds);
+$Helper->FixedTimeAddSeconds($FixedTimeAddSeconds);
 
 $ExitCode = $CommandObject->Execute();
 
@@ -146,20 +125,19 @@ $Self->Is(
     "Maint::OTRSBusiness::AvailabilityCheck exit code",
 );
 
-$TestCloudService = $SystemDataObject->SystemDataGet( Key => $TestCloudServiceCallKey );
-
 $Self->True(
-    $TestCloudService,
+    $TestCloudServiceCall,
     "The function 'OTRSBusinessIsAvailable' was called from the console command (because next update time reached).",
 );
 
-$ResetTestCloudServiceCall->();
+# reset the test value
+$TestCloudServiceCall = 0;
 
 # add one hours in seconds to the fixed time
 $FixedTimeAddSeconds = 60 * 60 * 1;
 
 # set the fixed time
-$HelperObject->FixedTimeAddSeconds($FixedTimeAddSeconds);
+$Helper->FixedTimeAddSeconds($FixedTimeAddSeconds);
 
 $ExitCode = $CommandObject->Execute();
 
@@ -169,13 +147,13 @@ $Self->Is(
     "Maint::OTRSBusiness::AvailabilityCheck exit code",
 );
 
-$TestCloudService = $SystemDataObject->SystemDataGet( Key => $TestCloudServiceCallKey );
-
 $Self->False(
-    $TestCloudService,
+    $TestCloudServiceCall,
     "The function 'OTRSBusinessIsAvailable' was not called from the console command.",
 );
 
-$HelperObject->FixedTimeUnset();
+$Helper->FixedTimeUnset();
+
+# cleanup cache is done by RestoreDatabase
 
 1;

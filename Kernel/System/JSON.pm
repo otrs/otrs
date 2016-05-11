@@ -66,6 +66,7 @@ Encode a perl data structure to a JSON string.
     my $JSONString = $JSONObject->Encode(
         Data     => $Data,
         SortKeys => 1,          # (optional) (0|1) default 0, to sort the keys of the json data
+        Pretty => 1,            # (optional) (0|1) default 0, to pretty print
     );
 
 =cut
@@ -89,7 +90,12 @@ sub Encode {
 
     # sort the keys of the JSON data
     if ( $Param{SortKeys} ) {
-        $JSONObject->canonical( [1] );
+        $JSONObject->canonical(1);
+    }
+
+    # pretty print - can be useful for debugging purposes
+    if ( $Param{Pretty} ) {
+        $JSONObject->pretty(1);
     }
 
     # get JSON-encoded presentation of perl structure
@@ -144,6 +150,11 @@ sub Decode {
         return;
     }
 
+    # sanitize leftover boolean objects
+    $Scalar = $Self->_BooleansProcess(
+        JSON => $Scalar,
+    );
+
     return $Scalar;
 }
 
@@ -184,7 +195,54 @@ sub False {
     return \0;
 }
 
+=begin Internal:
+
+=cut
+
+=item _BooleansProcess()
+
+decode boolean values leftover from JSON decoder to simple scalar values
+
+    my $ProcessedJSON = $JSONObject->_BooleansProcess(
+        JSON => $JSONData,
+    );
+
+=cut
+
+sub _BooleansProcess {
+    my ( $Self, %Param ) = @_;
+
+    # convert scalars if needed
+    if ( JSON::is_bool( $Param{JSON} ) ) {
+        $Param{JSON} = ( $Param{JSON} ? 1 : 0 );
+    }
+
+    # recurse into arrays
+    elsif ( ref $Param{JSON} eq 'ARRAY' ) {
+
+        for my $Value ( @{ $Param{JSON} } ) {
+            $Value = $Self->_BooleansProcess(
+                JSON => $Value,
+            );
+        }
+    }
+
+    # recurse into hashes
+    elsif ( ref $Param{JSON} eq 'HASH' ) {
+
+        for my $Value ( values %{ $Param{JSON} } ) {
+            $Value = $Self->_BooleansProcess(
+                JSON => $Value,
+            );
+        }
+    }
+
+    return $Param{JSON};
+}
+
 1;
+
+=end Internal:
 
 =back
 

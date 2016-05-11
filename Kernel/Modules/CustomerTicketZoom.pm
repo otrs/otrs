@@ -12,6 +12,7 @@ use strict;
 use warnings;
 
 use Kernel::System::VariableCheck qw(:all);
+use Kernel::Language qw(Translatable);
 
 our $ObjectManagerDisabled = 1;
 
@@ -39,8 +40,10 @@ sub Run {
     my $ParamObject  = $Kernel::OM->Get('Kernel::System::Web::Request');
     my $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
 
+    my $TicketNumber = $ParamObject->GetParam( Param => 'TicketNumber' );
+
     # ticket id lookup
-    if ( !$Self->{TicketID} && $ParamObject->GetParam( Param => 'TicketNumber' ) ) {
+    if ( !$Self->{TicketID} && $TicketNumber ) {
         $Self->{TicketID} = $TicketObject->TicketIDLookup(
             TicketNumber => $ParamObject->GetParam( Param => 'TicketNumber' ),
             UserID       => $Self->{UserID},
@@ -49,10 +52,18 @@ sub Run {
 
     my $LayoutObject = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
 
+    # customers should not get to know that whether an ticket exists or not
+    # if a ticket does not exist, show a "no permission" screen
+    if ( $TicketNumber && !$Self->{TicketID} ) {
+        return $LayoutObject->CustomerNoPermission( WithHeader => 'yes' );
+    }
+
     # check needed stuff
     if ( !$Self->{TicketID} ) {
         my $Output = $LayoutObject->CustomerHeader( Title => 'Error' );
-        $Output .= $LayoutObject->CustomerError( Message => 'Need TicketID!' );
+        $Output .= $LayoutObject->CustomerError(
+            Message => Translatable('Need TicketID!'),
+        );
         $Output .= $LayoutObject->CustomerFooter();
         return $Output;
     }
@@ -148,7 +159,7 @@ sub Run {
     if ( $GetParam{FromChatID} ) {
         if ( !$ConfigObject->Get('ChatEngine::Active') ) {
             return $LayoutObject->FatalError(
-                Message => "Chat is not active.",
+                Message => Translatable('Chat is not active.'),
             );
         }
 
@@ -161,7 +172,7 @@ sub Run {
 
         if ( !%ChatParticipant ) {
             return $LayoutObject->FatalError(
-                Message => "No permission.",
+                Message => Translatable('No permission.'),
             );
         }
     }
@@ -180,7 +191,7 @@ sub Run {
     for my $DynamicFieldConfig ( @{$FollowUpDynamicField} ) {
         next DYNAMICFIELD if !IsHashRefWithData($DynamicFieldConfig);
 
-        # extract the dynamic field value form the web request
+        # extract the dynamic field value from the web request
         $DynamicFieldValues{ $DynamicFieldConfig->{Name} } =
             $BackendObject->EditFieldValueGet(
             DynamicFieldConfig => $DynamicFieldConfig,
@@ -354,8 +365,8 @@ sub Run {
         if ( $FollowUpPossible =~ /(new ticket|reject)/i && $State{TypeName} =~ /^close/i ) {
             my $Output = $LayoutObject->CustomerHeader( Title => 'Error' );
             $Output .= $LayoutObject->CustomerWarning(
-                Message => 'Can\'t reopen ticket, not possible in this queue!',
-                Comment => 'Create a new ticket!',
+                Message => Translatable('Can\'t reopen ticket, not possible in this queue!'),
+                Comment => Translatable('Create a new ticket!'),
             );
             $Output .= $LayoutObject->CustomerFooter();
             return $Output;
@@ -494,9 +505,9 @@ sub Run {
                 if ( !IsHashRefWithData($ValidationResult) ) {
                     my $Output = $LayoutObject->CustomerHeader( Title => 'Error' );
                     $Output .= $LayoutObject->CustomerError(
-                        Message =>
-                            "Could not perform validation on field $DynamicFieldConfig->{Label}!",
-                        Comment => 'Please contact your administrator',
+                        Message => $LayoutObject->{LanguageObject}
+                            ->Translate( 'Could not perform validation on field %s!', $DynamicFieldConfig->{Label} ),
+                        Comment => Translatable('Please contact your administrator'),
                     );
                     $Output .= $LayoutObject->CustomerFooter();
                     return $Output;
@@ -1599,14 +1610,6 @@ sub _Mask {
                 );
             }
 
-            # security="restricted" may break SSO - disable this feature if requested
-            if ( $ConfigObject->Get('DisableMSIFrameSecurityRestricted') ) {
-                $Param{MSSecurityRestricted} = '';
-            }
-            else {
-                $Param{MSSecurityRestricted} = 'security="restricted"';
-            }
-
             if ( !defined $Self->{DoNotShowBrowserLinkMessage} ) {
                 my %UserPreferences = $Kernel::OM->Get('Kernel::System::CustomerUser')->GetPreferences(
                     UserID => $Self->{UserID},
@@ -1787,7 +1790,7 @@ sub _Mask {
         )
         && (
             ( $FollowUpPossible !~ /(new ticket|reject)/i && $State{TypeName} =~ /^close/i )
-            || $State{TypeName} !~ /^close/i
+            || $State{TypeName} !~ /^close|merged/i
         )
         )
     {

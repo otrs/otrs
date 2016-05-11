@@ -14,6 +14,7 @@ use warnings;
 our $ObjectManagerDisabled = 1;
 
 use Kernel::System::VariableCheck qw(:all);
+use Kernel::Language qw(Translatable);
 
 sub new {
     my ( $Type, %Param ) = @_;
@@ -58,27 +59,29 @@ sub Run {
         );
     }
     return $LayoutObject->ErrorScreen(
-        Message => "Undefined subaction.",
+        Message => Translatable('Undefined subaction.'),
     );
 }
 
 sub _Add {
     my ( $Self, %Param ) = @_;
 
+    my $LayoutObject = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
+
     my %GetParam;
     for my $Needed (qw(ObjectType FieldType FieldOrder)) {
         $GetParam{$Needed} = $Kernel::OM->Get('Kernel::System::Web::Request')->GetParam( Param => $Needed );
         if ( !$Needed ) {
-            return $Kernel::OM->Get('Kernel::Output::HTML::Layout')->ErrorScreen(
-                Message => "Need $Needed",
+            return $LayoutObject->ErrorScreen(
+                Message => $LayoutObject->{LanguageObject}->Translate( 'Need %s', $Needed ),
             );
         }
     }
 
     # get the object type and field type display name
-    my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
-    my $ObjectTypeName
-        = $ConfigObject->Get('DynamicFields::ObjectType')->{ $GetParam{ObjectType} }->{DisplayName} || '';
+    my $ConfigObject   = $Kernel::OM->Get('Kernel::Config');
+    my $ObjectTypeName = $ConfigObject->Get('DynamicFields::ObjectType')->{ $GetParam{ObjectType} }->{DisplayName}
+        || '';
     my $FieldTypeName = $ConfigObject->Get('DynamicFields::Driver')->{ $GetParam{FieldType} }->{DisplayName} || '';
 
     return $Self->_ShowScreen(
@@ -101,9 +104,12 @@ sub _AddAction {
         $GetParam{$Needed} = $ParamObject->GetParam( Param => $Needed );
         if ( !$GetParam{$Needed} ) {
             $Errors{ $Needed . 'ServerError' }        = 'ServerError';
-            $Errors{ $Needed . 'ServerErrorMessage' } = 'This field is required.';
+            $Errors{ $Needed . 'ServerErrorMessage' } = Translatable('This field is required.');
         }
     }
+
+    # get the EnableLinkPreview option and set it to '0' if it is undefined
+    $GetParam{EnableLinkPreview} = $ParamObject->GetParam( Param => 'EnableLinkPreview' ) // 0;
 
     my $DynamicFieldObject = $Kernel::OM->Get('Kernel::System::DynamicField');
 
@@ -115,7 +121,7 @@ sub _AddAction {
             # add server error error class
             $Errors{NameServerError} = 'ServerError';
             $Errors{NameServerErrorMessage} =
-                'The field does not contain only ASCII letters and numbers.';
+                Translatable('The field does not contain only ASCII letters and numbers.');
         }
 
         # check if name is duplicated
@@ -132,7 +138,7 @@ sub _AddAction {
 
             # add server error error class
             $Errors{NameServerError}        = 'ServerError';
-            $Errors{NameServerErrorMessage} = 'There is another field with the same name.';
+            $Errors{NameServerErrorMessage} = Translatable('There is another field with the same name.');
         }
     }
 
@@ -143,7 +149,7 @@ sub _AddAction {
 
             # add server error error class
             $Errors{FieldOrderServerError}        = 'ServerError';
-            $Errors{FieldOrderServerErrorMessage} = 'The field must be numeric.';
+            $Errors{FieldOrderServerErrorMessage} = Translatable('The field must be numeric.');
         }
     }
 
@@ -172,7 +178,7 @@ sub _AddAction {
     # uncorrectable errors
     if ( !$GetParam{ValidID} ) {
         return $LayoutObject->ErrorScreen(
-            Message => "Need ValidID",
+            Message => Translatable('Need ValidID'),
         );
     }
 
@@ -188,12 +194,13 @@ sub _AddAction {
 
     # set specific config
     my $FieldConfig = {
-        DefaultValue    => $GetParam{DefaultValue},
-        YearsPeriod     => $GetParam{YearsPeriod},
-        DateRestriction => $GetParam{DateRestriction},
-        YearsInFuture   => $GetParam{YearsInFuture},
-        YearsInPast     => $GetParam{YearsInPast},
-        Link            => $GetParam{Link},
+        DefaultValue      => $GetParam{DefaultValue},
+        YearsPeriod       => $GetParam{YearsPeriod},
+        DateRestriction   => $GetParam{DateRestriction},
+        YearsInFuture     => $GetParam{YearsInFuture},
+        YearsInPast       => $GetParam{YearsInPast},
+        Link              => $GetParam{Link},
+        EnableLinkPreview => $GetParam{EnableLinkPreview},
     };
 
     # create a new field
@@ -210,7 +217,7 @@ sub _AddAction {
 
     if ( !$FieldID ) {
         return $LayoutObject->ErrorScreen(
-            Message => "Could not create the new field",
+            Message => Translatable('Could not create the new field'),
         );
     }
 
@@ -230,22 +237,22 @@ sub _Change {
         $GetParam{$Needed} = $ParamObject->GetParam( Param => $Needed );
         if ( !$Needed ) {
             return $LayoutObject->ErrorScreen(
-                Message => "Need $Needed",
+                Message => $LayoutObject->{LanguageObject}->Translate( 'Need %s', $Needed ),
             );
         }
     }
 
     # get the object type and field type display name
-    my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
-    my $ObjectTypeName
-        = $ConfigObject->Get('DynamicFields::ObjectType')->{ $GetParam{ObjectType} }->{DisplayName} || '';
+    my $ConfigObject   = $Kernel::OM->Get('Kernel::Config');
+    my $ObjectTypeName = $ConfigObject->Get('DynamicFields::ObjectType')->{ $GetParam{ObjectType} }->{DisplayName}
+        || '';
     my $FieldTypeName = $ConfigObject->Get('DynamicFields::Driver')->{ $GetParam{FieldType} }->{DisplayName} || '';
 
     my $FieldID = $ParamObject->GetParam( Param => 'ID' );
 
     if ( !$FieldID ) {
         return $LayoutObject->ErrorScreen(
-            Message => "Need ID",
+            Message => Translatable('Need ID'),
         );
     }
 
@@ -257,7 +264,8 @@ sub _Change {
     # check for valid dynamic field configuration
     if ( !IsHashRefWithData($DynamicFieldData) ) {
         return $LayoutObject->ErrorScreen(
-            Message => "Could not get data for dynamic field $FieldID",
+            Message =>
+                $LayoutObject->{LanguageObject}->Translate( 'Could not get data for dynamic field %s', $FieldID ),
         );
     }
 
@@ -291,16 +299,19 @@ sub _ChangeAction {
         $GetParam{$Needed} = $ParamObject->GetParam( Param => $Needed );
         if ( !$GetParam{$Needed} ) {
             $Errors{ $Needed . 'ServerError' }        = 'ServerError';
-            $Errors{ $Needed . 'ServerErrorMessage' } = 'This field is required.';
+            $Errors{ $Needed . 'ServerErrorMessage' } = Translatable('This field is required.');
         }
     }
+
+    # get the EnableLinkPreview option and set it to '0' if it is undefined
+    $GetParam{EnableLinkPreview} = $ParamObject->GetParam( Param => 'EnableLinkPreview' ) // 0;
 
     my $LayoutObject = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
 
     my $FieldID = $ParamObject->GetParam( Param => 'ID' );
     if ( !$FieldID ) {
         return $LayoutObject->ErrorScreen(
-            Message => "Need ID",
+            Message => Translatable('Need ID'),
         );
     }
 
@@ -314,7 +325,8 @@ sub _ChangeAction {
     # check for valid dynamic field configuration
     if ( !IsHashRefWithData($DynamicFieldData) ) {
         return $LayoutObject->ErrorScreen(
-            Message => "Could not get data for dynamic field $FieldID",
+            Message =>
+                $LayoutObject->{LanguageObject}->Translate( 'Could not get data for dynamic field %s', $FieldID ),
         );
     }
 
@@ -326,7 +338,7 @@ sub _ChangeAction {
             # add server error error class
             $Errors{NameServerError} = 'ServerError';
             $Errors{NameServerErrorMessage} =
-                'The field does not contain only ASCII letters and numbers.';
+                Translatable('The field does not contain only ASCII letters and numbers.');
         }
 
         # check if name is duplicated
@@ -347,7 +359,7 @@ sub _ChangeAction {
 
             # add server error class
             $Errors{NameServerError}        = 'ServerError';
-            $Errors{NameServerErrorMessage} = 'There is another field with the same name.';
+            $Errors{NameServerErrorMessage} = Translatable('There is another field with the same name.');
         }
 
         # if it's an internal field, it's name should not change
@@ -359,7 +371,7 @@ sub _ChangeAction {
 
             # add server error class
             $Errors{NameServerError}        = 'ServerError';
-            $Errors{NameServerErrorMessage} = 'The name for this field should not change.';
+            $Errors{NameServerErrorMessage} = Translatable('The name for this field should not change.');
             $Param{InternalField}           = $DynamicFieldData->{InternalField};
         }
     }
@@ -371,7 +383,7 @@ sub _ChangeAction {
 
             # add server error error class
             $Errors{FieldOrderServerError}        = 'ServerError';
-            $Errors{FieldOrderServerErrorMessage} = 'The field must be numeric.';
+            $Errors{FieldOrderServerErrorMessage} = Translatable('The field must be numeric.');
         }
     }
 
@@ -411,7 +423,7 @@ sub _ChangeAction {
     # uncorrectable errors
     if ( !$GetParam{ValidID} ) {
         return $LayoutObject->ErrorScreen(
-            Message => "Need ValidID",
+            Message => Translatable('Need ValidID'),
         );
     }
 
@@ -428,12 +440,13 @@ sub _ChangeAction {
 
     # set specific config
     my $FieldConfig = {
-        DefaultValue    => $GetParam{DefaultValue},
-        YearsPeriod     => $GetParam{YearsPeriod},
-        DateRestriction => $GetParam{DateRestriction},
-        YearsInFuture   => $GetParam{YearsInFuture},
-        YearsInPast     => $GetParam{YearsInPast},
-        Link            => $GetParam{Link},
+        DefaultValue      => $GetParam{DefaultValue},
+        YearsPeriod       => $GetParam{YearsPeriod},
+        DateRestriction   => $GetParam{DateRestriction},
+        YearsInFuture     => $GetParam{YearsInFuture},
+        YearsInPast       => $GetParam{YearsInPast},
+        Link              => $GetParam{Link},
+        EnableLinkPreview => $GetParam{EnableLinkPreview},
     };
 
     # update dynamic field (FieldType and ObjectType cannot be changed; use old values)
@@ -451,7 +464,7 @@ sub _ChangeAction {
 
     if ( !$UpdateSuccess ) {
         return $LayoutObject->ErrorScreen(
-            Message => "Could not update the field $GetParam{Name}",
+            Message => $LayoutObject->{LanguageObject}->Translate( 'Could not update the field %s', $GetParam{Name} ),
         );
     }
 
@@ -492,7 +505,7 @@ sub _ShowScreen {
     # when adding we need to create an extra order number for the new field
     if ( $Param{Mode} eq 'Add' ) {
 
-        # get the last element form the order list and add 1
+        # get the last element from the order list and add 1
         my $LastOrderNumber = $DynamicfieldOrderList[-1];
         $LastOrderNumber++;
 
@@ -540,6 +553,19 @@ sub _ShowScreen {
     my $DateRestriction = $Param{DateRestriction} || 0;
     my $Link            = $Param{Link}            || '';
 
+    my $EnableLinkPreview = $Param{EnableLinkPreview} || '0';
+
+    # create EnableLinkPreview option list
+    my $EnableLinkPreviewStrg = $LayoutObject->BuildSelection(
+        Data => {
+            0 => Translatable('No'),
+            1 => Translatable('Yes'),
+        },
+        Name       => 'EnableLinkPreview',
+        SelectedID => $EnableLinkPreview,
+        Class      => 'Modernize W50pc',
+    );
+
     my $YearsInFuture = 5;
     if ( defined $Param{YearsInFuture} ) {
         $YearsInFuture = $Param{YearsInFuture};
@@ -553,8 +579,8 @@ sub _ShowScreen {
     # create the Default Value Type select
     my $YearsPeriodStrg = $LayoutObject->BuildSelection(
         Data => {
-            0 => 'No',
-            1 => 'Yes',
+            0 => Translatable('No'),
+            1 => Translatable('Yes'),
         },
         Name         => 'YearsPeriod',
         SelectedID   => $YearsPeriod,
@@ -568,15 +594,15 @@ sub _ShowScreen {
         Data => [
             {
                 Key   => '',
-                Value => 'No',
+                Value => Translatable('No'),
             },
             {
                 Key   => 'DisableFutureDates',
-                Value => 'Prevent entry of dates in the future',
+                Value => Translatable('Prevent entry of dates in the future'),
             },
             {
                 Key   => 'DisablePastDates',
-                Value => 'Prevent entry of dates in the past',
+                Value => Translatable('Prevent entry of dates in the past'),
             },
         ],
         Name         => 'DateRestriction',
@@ -618,6 +644,7 @@ sub _ShowScreen {
             YearsInPast           => $YearsInPast,
             ReadonlyInternalField => $ReadonlyInternalField,
             Link                  => $Link,
+            EnableLinkPreviewStrg => $EnableLinkPreviewStrg,
             }
     );
 

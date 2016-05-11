@@ -32,7 +32,14 @@
             </div>
         </div>
 [% RenderBlockEnd("ActionList") %]
-
+        <div class="WidgetSimple">
+            <div class="Header">
+                <h2><label for="FilterPostMasterFilters">[% Translate("Filter for Postmaster Filters") | html %]</label></h2>
+            </div>
+            <div class="Content">
+                <input type="text" id="FilterPostMasterFilters" class="FilterBox" placeholder="[% Translate("Just start typing to filter...") | html %]" name="FilterPostMasterFilters" value="" title="[% Translate("Filter for postmaster filters") | html %]">
+            </div>
+        </div>
 
         <div class="WidgetSimple">
             <div class="Header">
@@ -48,6 +55,9 @@
                 <p class="FieldExplanation">
                     [% Translate("If you use Regular Expressions, you also can use the matched value in () as [***] in the 'Set' action.") | html %]
                 </p>
+                <p class="FieldExplanation">
+                    [% Translate("You can also use 'named captures' ((?<name>)) and use the names in the 'Set' action ([**\name**]). (e.g. Regexp: Server: (?<server>\w+), Set action [**\server**]). A matched EMAILADDRESS has the name 'email'.") | html %]
+                </p>
             </div>
         </div>
 
@@ -61,11 +71,11 @@
                 <h2>[% Translate("List") | html %]</h2>
             </div>
             <div class="Content">
-                <table class="DataTable VariableWidth">
+                <table class="DataTable" id="PostMasterFilters">
                     <thead>
                         <tr>
                             <th>[% Translate("Name") | html %]</th>
-                            <th>[% Translate("Delete") | html %]</th>
+                            <th class="Center W10pc">[% Translate("Delete") | html %]</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -86,8 +96,16 @@
                             </td>
                         </tr>
 [% RenderBlockEnd("OverviewResultRow") %]
+                        <tr class="FilterMessage Hidden">
+                            <td colspan="2">[% Translate("No matches found.") | html %]</td>
+                        </tr>
                     </tbody>
                 </table>
+[% WRAPPER JSOnDocumentComplete %]
+<script type="text/javascript">//<![CDATA[
+    Core.UI.Table.InitTableFilter($('#FilterPostMasterFilters'), $('#PostMasterFilters'));
+//]]></script>
+[% END %]
             </div>
         </div>
 [% RenderBlockEnd("OverviewResult") %]
@@ -193,7 +211,7 @@
                 <div class="Content">
                     <fieldset class="TableLike">
                         <div class="Field SpacingTop">
-                            <button class="CallForAction Primary" type="submit" value="[% Translate("Submit") | html %]"><span>[% Translate("Submit") | html %]</span></button>
+                            <button class="CallForAction Primary" type="submit" value="[% Translate("Save") | html %]"><span>[% Translate("Save") | html %]</span></button>
                             [% Translate("or") | html %]
                             <a href="[% Env("Baselink") %]Action=[% Env("Action") %]">[% Translate("Cancel") | html %]</a>
                         </div>

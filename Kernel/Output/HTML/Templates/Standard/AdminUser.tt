@@ -144,14 +144,14 @@
             </div>
 
             <div class="Content">
-                <form action="[% Env("CGIHandle") %]" method="post" class="Validate PreventMultipleSubmits">
+                <form action="[% Env("CGIHandle") %]" enctype="multipart/form-data" method="post" class="Validate PreventMultipleSubmits">
                     <input type="hidden" name="Action" value="[% Env("Action") %]"/>
                     <input type="hidden" name="Subaction" value="[% Data.Action | html %]Action"/>
                     <input type="hidden" name="UserID" value="[% Data.UserID | html %]"/>
                     <input type="hidden" name="Search" value="[% Data.Search | html %]"/>
                     <fieldset class="TableLike">
 
-                        <label for="UserTitle">[% Translate("Title") | html %]:</label>
+                        <label for="UserTitle">[% Translate("Title or salutation") | html %]:</label>
                         <div class="Field">
                             <input type="text" name="UserTitle" id="UserTitle" value="[% Data.UserTitle | html %]" class="W50pc" maxlength="50"/>
                         </div>
@@ -299,9 +299,16 @@
                         </div>
                         <div class="Clear"></div>
 [% RenderBlockEnd("OutOfOffice") %]
+[% RenderBlockStart("RawHTML") %]
+                        <label>[% Translate(Data.Label) | html %]:</label>
+                        <div class="Field">
+                            [% Data.HTML %]
+                        </div>
+                        <div class="Clear"></div>
+[% RenderBlockEnd("RawHTML") %]
 [% RenderBlockEnd("Item") %]
                         <div class="Field SpacingTop">
-                            <button class="Primary CallForAction" type="submit" value="[% Translate("Submit") | html %]"><span>[% Translate("Submit") | html %]</span></button>
+                            <button class="Primary CallForAction" type="submit" value="[% Translate("Save") | html %]"><span>[% Translate("Save") | html %]</span></button>
                             [% Translate("or") | html %]
                             <a href="[% Env("Baselink") %]Action=[% Env("Action") %]">[% Translate("Cancel") | html %]</a>
                         </div>

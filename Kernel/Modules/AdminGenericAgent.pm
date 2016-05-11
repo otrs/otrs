@@ -106,7 +106,7 @@ sub Run {
             NewCustomerID NewPendingTime NewPendingTimeType NewCustomerUserLogin
             NewStateID NewQueueID NewPriorityID NewOwnerID NewResponsibleID
             NewTypeID NewServiceID NewSLAID
-            NewNoteFrom NewNoteSubject NewNoteBody NewNoteTimeUnits NewModule
+            NewNoteFrom NewNoteSubject NewNoteBody NewArticleType NewNoteTimeUnits NewModule
             NewParamKey1 NewParamKey2 NewParamKey3 NewParamKey4
             NewParamValue1 NewParamValue2 NewParamValue3 NewParamValue4
             NewParamKey5 NewParamKey6 NewParamKey7 NewParamKey8
@@ -180,7 +180,7 @@ sub Run {
         for my $DynamicFieldConfig ( @{ $Self->{DynamicField} } ) {
             next DYNAMICFIELD if !IsHashRefWithData($DynamicFieldConfig);
 
-            # extract the dynamic field value form the web request
+            # extract the dynamic field value from the web request
             my $DynamicFieldValue = $DynamicFieldBackendObject->EditFieldValueGet(
                 DynamicFieldConfig      => $DynamicFieldConfig,
                 ParamObject             => $ParamObject,
@@ -943,8 +943,8 @@ sub _MaskUpdate {
 
         $JobData{'NewArchiveFlagStrg'} = $LayoutObject->BuildSelection(
             Data => {
-                y => 'archive tickets',
-                n => 'restore tickets from archive',
+                y => Translatable('archive tickets'),
+                n => Translatable('restore tickets from archive'),
             },
             Name         => 'NewArchiveFlag',
             PossibleNone => 1,
@@ -1162,6 +1162,27 @@ sub _MaskUpdate {
         push @EventTypeList, $Type;
     }
 
+    my %ArticleTypeData = (
+        'note-internal' => 'note-internal',
+        'note-external' => 'note-external',
+    );
+
+    my $NewArticleType = $LayoutObject->BuildSelection(
+        Data        => \%ArticleTypeData,
+        Name        => 'NewArticleType',
+        Multiple    => 0,
+        Size        => 2,
+        Translation => 1,
+        SelectedID  => $JobData{NewArticleType} || 'note-internal',
+        Class       => 'Modernize',
+    );
+    $LayoutObject->Block(
+        Name => 'NewArticleType',
+        Data => {
+            NewArticleType => $NewArticleType,
+        },
+    );
+
     # create event type selector
     my $EventTypeStrg = $LayoutObject->BuildSelection(
         Data          => \@EventTypeList,
@@ -1201,7 +1222,7 @@ sub _MaskRun {
     }
     else {
         $LayoutObject->FatalError(
-            Message => "Need Profile!",
+            Message => Translatable('Need Profile!'),
         );
     }
     $JobData{Profile} = $Self->{Profile};
@@ -1359,7 +1380,7 @@ sub _MaskRun {
 
     # HTML search mask output
     my $Output = $LayoutObject->Header(
-        Title => 'Affected Tickets',
+        Title => Translatable('Affected Tickets'),
     );
     $Output .= $LayoutObject->NavigationBar();
     $Output .= $LayoutObject->Output(
@@ -1377,7 +1398,7 @@ sub _StopWordsServerErrorsGet {
 
     if ( !%Param ) {
         $Kernel::OM->Get('Kernel::Output::HTML::Layout')->FatalError(
-            Message => "Got no values to check.",
+            Message => Translatable('Got no values to check.'),
         );
     }
 

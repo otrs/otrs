@@ -8,6 +8,8 @@
 
 package Kernel::Output::HTML::Notification::AgentOTRSBusiness;
 
+use base 'Kernel::Output::HTML::Base';
+
 use strict;
 use warnings;
 use utf8;
@@ -16,16 +18,6 @@ our @ObjectDependencies = (
     'Kernel::System::OTRSBusiness',
     'Kernel::Output::HTML::Layout',
 );
-
-sub new {
-    my ( $Type, %Param ) = @_;
-
-    # allocate new hash for object
-    my $Self = {};
-    bless( $Self, $Type );
-
-    return $Self;
-}
 
 sub Run {
     my ( $Self, %Param ) = @_;
@@ -44,14 +36,9 @@ sub Run {
     my $LayoutObject = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
 
     # ----------------------------------------
-    # check if OTRS Business Solution™ is available, but not installed
+    # check if OTRS Business Solution™ is not installed
     # ----------------------------------------
-    if (
-        $Param{Type} eq 'Admin'
-        && !$IsInstalled
-        && $OTRSBusinessObject->OTRSBusinessIsAvailableOffline()
-        )
-    {
+    if ( $Param{Type} eq 'Admin' && !$IsInstalled ) {
         my $Text = $LayoutObject->{LanguageObject}->Translate(
             '%s Upgrade to %s now! %s',
             '<a href="'
@@ -99,7 +86,7 @@ sub Run {
         );
     }
 
-    # all following notifications should only be visible for admins
+    # all following notifications should only be visible for administrators
     if (
         !defined $LayoutObject->{"UserIsGroup[$Group]"}
         || $LayoutObject->{"UserIsGroup[$Group]"} ne 'Yes'

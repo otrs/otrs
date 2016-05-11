@@ -579,8 +579,9 @@ sub Run {
                         DynamicFields => 0,
                     );
                     if ( $#Article == -1 ) {
-                        $Data{ArticleTree}
-                            .= 'This item has no articles yet.';
+                        $Data{ArticleTree} .= $LayoutObject->{LanguageObject}->Translate(
+                            'This item has no articles yet.'
+                        );
                     }
                     else
                     {
@@ -795,9 +796,13 @@ sub Run {
 
             my $Title = $LayoutObject->{LanguageObject}->Translate('Ticket') . ' '
                 . $LayoutObject->{LanguageObject}->Translate('Search');
-            my $PrintedBy = $LayoutObject->{LanguageObject}->Translate('printed by');
-            my $Page      = $LayoutObject->{LanguageObject}->Translate('Page');
-            my $Time      = $LayoutObject->{Time};
+            my $PrintedBy      = $LayoutObject->{LanguageObject}->Translate('printed by');
+            my $Page           = $LayoutObject->{LanguageObject}->Translate('Page');
+            my $DateTimeString = $Kernel::OM->Create('Kernel::System::DateTime')->ToString();
+            my $Time           = $LayoutObject->{LanguageObject}->FormatTimeString(
+                $DateTimeString,
+                'DateFormat',
+            );
 
             # get maximum number of pages
             my $MaxPages = $ConfigObject->Get('PDF::MaxPages');
@@ -1699,8 +1704,8 @@ sub MaskForm {
     );
     $Param{TicketCreateTimePointStart} = $LayoutObject->BuildSelection(
         Data => {
-            Last   => 'within the last ...',
-            Before => 'more than ... ago',
+            Last   => Translatable('within the last ...'),
+            Before => Translatable('more than ... ago'),
         },
         Translation => 1,
         Name        => 'TicketCreateTimePointStart',
@@ -1855,7 +1860,9 @@ sub _StopWordsServerErrorsGet {
     my $LayoutObject = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
 
     if ( !%Param ) {
-        $LayoutObject->FatalError( Message => "Got no values to check." );
+        $LayoutObject->FatalError(
+            Message => Translatable('Got no values to check.'),
+        );
     }
 
     my %StopWordsServerErrors;

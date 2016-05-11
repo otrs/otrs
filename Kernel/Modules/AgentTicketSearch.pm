@@ -306,8 +306,9 @@ sub Run {
         $GetParam{ResultForm} = '';
     }
 
-    # get user object
-    my $UserObject = $Kernel::OM->Get('Kernel::System::User');
+    # get needed objects
+    my $UserObject  = $Kernel::OM->Get('Kernel::System::User');
+    my $StateObject = $Kernel::OM->Get('Kernel::System::State');
 
     # show result site
     if ( $Self->{Subaction} eq 'Search' && !$Self->{EraseTemplate} ) {
@@ -340,28 +341,35 @@ sub Run {
                 my @StateIDs;
 
                 if ( $GetParam{StateType} eq 'Open' ) {
-                    @StateIDs = $Kernel::OM->Get('Kernel::System::State')->StateGetStatesByType(
+                    @StateIDs = $StateObject->StateGetStatesByType(
                         Type   => 'Viewable',
                         Result => 'ID',
                     );
                 }
-                elsif ( $Param{StateType} eq 'Closed' ) {
-                    @StateIDs = $Kernel::OM->Get('Kernel::System::State')->StateGetStatesByType(
+                elsif ( $GetParam{StateType} eq 'Closed' ) {
+                    my %ViewableStateOpenLookup = $StateObject->StateGetStatesByType(
                         Type   => 'Viewable',
-                        Result => 'ID',
+                        Result => 'HASH',
                     );
+
+                    my %StateList = $StateObject->StateList( UserID => $Self->{UserID} );
+                    for my $Item ( sort keys %StateList ) {
+                        if ( !$ViewableStateOpenLookup{$Item} ) {
+                            push @StateIDs, $Item;
+                        }
+                    }
                 }
 
                 # current ticket state type
                 else {
-                    @StateIDs = $Kernel::OM->Get('Kernel::System::State')->StateGetStatesByType(
+                    @StateIDs = $StateObject->StateGetStatesByType(
                         StateType => $GetParam{StateType},
                         Result    => 'ID',
                     );
                 }
 
                 # merge with StateIDs
-                if ( @StateIDs && $GetParam{StateIDs} ) {
+                if ( @StateIDs && IsArrayRefWithData( $GetParam{StateIDs} ) ) {
                     my %StateIDs = map { $_ => 1 } @StateIDs;
                     @StateIDs = grep { exists $StateIDs{$_} } @{ $GetParam{StateIDs} };
                 }
@@ -481,7 +489,7 @@ sub Run {
 
         my $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
 
-        # Special behaviour for the fulltext search toolbar module:
+        # Special behavior for the fulltext search toolbar module:
         # - Check full text string to see if contents is a ticket number.
         # - If exists and not in print or CSV mode, redirect to the ticket.
         # See http://bugs.otrs.org/show_bug.cgi?id=4238 for details.
@@ -531,7 +539,7 @@ sub Run {
 
         my %AttributeLookup;
 
-        # create attibute lookup table
+        # create attribute lookup table
         for my $Attribute ( @{ $GetParam{ShownAttributes} || [] } ) {
             $AttributeLookup{$Attribute} = 1;
         }
@@ -655,7 +663,7 @@ sub Run {
                     );
 
                     # set missing information
-                    $Data{Subject} = $Data{Title} || 'Untitled';
+                    $Data{Subject} = $Data{Title} || Translatable('Untitled');
                     $Data{Body} = $LayoutObject->{LanguageObject}->Translate(
                         'This item has no articles yet.'
                     );
@@ -679,8 +687,9 @@ sub Run {
                     );
 
                     if ( $#Article == -1 ) {
-                        $Data{ArticleTree}
-                            .= 'This item has no articles yet.';
+                        $Data{ArticleTree} .= $LayoutObject->{LanguageObject}->Translate(
+                            'This item has no articles yet.'
+                        );
                     }
                     else
                     {
@@ -841,7 +850,7 @@ sub Run {
                     );
 
                     # set missing information
-                    $Data{Subject} = $Data{Title} || 'Untitled';
+                    $Data{Subject} = $Data{Title} || Translatable('Untitled');
                     $Data{From} = '--';
                 }
 
@@ -897,9 +906,13 @@ sub Run {
 
             my $Title = $LayoutObject->{LanguageObject}->Translate('Ticket') . ' '
                 . $LayoutObject->{LanguageObject}->Translate('Search');
-            my $PrintedBy = $LayoutObject->{LanguageObject}->Translate('printed by');
-            my $Page      = $LayoutObject->{LanguageObject}->Translate('Page');
-            my $Time      = $LayoutObject->{Time};
+            my $PrintedBy      = $LayoutObject->{LanguageObject}->Translate('printed by');
+            my $Page           = $LayoutObject->{LanguageObject}->Translate('Page');
+            my $DateTimeString = $Kernel::OM->Create('Kernel::System::DateTime')->ToString();
+            my $Time           = $LayoutObject->{LanguageObject}->FormatTimeString(
+                $DateTimeString,
+                'DateFormat',
+            );
 
             # get maximum number of pages
             my $MaxPages = $ConfigObject->Get('PDF::MaxPages');
@@ -1069,7 +1082,7 @@ sub Run {
                 Value     => $URL,
             );
 
-            # start html page
+            # start HTML page
             my $Output = $LayoutObject->Header();
             $Output .= $LayoutObject->NavigationBar();
 
@@ -1120,7 +1133,7 @@ sub Run {
                 LinkBack   => $LinkBack,
                 Profile    => $Self->{Profile},
 
-                TitleName => 'Search Results',
+                TitleName => Translatable('Search Results'),
                 Bulk      => 1,
                 Limit     => $Self->{SearchLimit},
 
@@ -1319,7 +1332,7 @@ sub Run {
             },
             {
                 Key   => 'CreatedQueueIDs',
-                Value => ('Created in Queue'),
+                Value => Translatable('Created in Queue'),
             },
         );
 
@@ -1571,7 +1584,7 @@ sub Run {
             PREFERENCE:
             for my $Preference ( @{$SearchFieldPreferences} ) {
 
-                # get field html
+                # get field HTML
                 $DynamicFieldHTML{ $DynamicFieldConfig->{Name} . $Preference->{Type} }
                     = $BackendObject->SearchFieldRender(
                     DynamicFieldConfig   => $DynamicFieldConfig,
@@ -1738,10 +1751,10 @@ sub Run {
 
         $Param{ResultFormStrg} = $LayoutObject->BuildSelection(
             Data => {
-                Normal => 'Normal',
-                Print  => 'Print',
-                CSV    => 'CSV',
-                Excel  => 'Excel',
+                Normal => Translatable('Normal'),
+                Print  => Translatable('Print'),
+                CSV    => Translatable('CSV'),
+                Excel  => Translatable('Excel'),
             },
             Name       => 'ResultForm',
             SelectedID => $GetParam{ResultForm} || 'Normal',
@@ -1780,12 +1793,12 @@ sub Run {
             ID         => 'SearchProfile',
             SelectedID => $Profile,
 
-            # Do not modernize this field as this causes problems with the automatic focussing of the first element.
+            # Do not modernize this field as this causes problems with the automatic focusing of the first element.
         );
 
         $Param{StatesStrg} = $LayoutObject->BuildSelection(
             Data => {
-                $Kernel::OM->Get('Kernel::System::State')->StateList(
+                $StateObject->StateList(
                     UserID => $Self->{UserID},
                     Action => $Self->{Action},
                 ),
@@ -1890,8 +1903,8 @@ sub Run {
         );
         $Param{TicketCreateTimePointStart} = $LayoutObject->BuildSelection(
             Data => {
-                'Last'   => 'within the last ...',
-                'Before' => 'more than ... ago',
+                'Last'   => Translatable('within the last ...'),
+                'Before' => Translatable('more than ... ago'),
             },
             Name       => 'TicketCreateTimePointStart',
             SelectedID => $GetParam{TicketCreateTimePointStart} || 'Last',
@@ -1964,8 +1977,8 @@ sub Run {
         );
         $Param{TicketCloseTimePointStart} = $LayoutObject->BuildSelection(
             Data => {
-                'Last'   => 'within the last ...',
-                'Before' => 'more than ... ago',
+                'Last'   => Translatable('within the last ...'),
+                'Before' => Translatable('more than ... ago'),
             },
             Name       => 'TicketCloseTimePointStart',
             SelectedID => $GetParam{TicketCloseTimePointStart} || 'Last',
@@ -2001,8 +2014,8 @@ sub Run {
         );
         $Param{TicketLastChangeTimePointStart} = $LayoutObject->BuildSelection(
             Data => {
-                'Last'   => 'within the last ...',
-                'Before' => 'more than ... ago',
+                'Last'   => Translatable('within the last ...'),
+                'Before' => Translatable('more than ... ago'),
             },
             Name       => 'TicketLastChangeTimePointStart',
             SelectedID => $GetParam{TicketLastChangeTimePointStart} || 'Last',
@@ -2038,9 +2051,9 @@ sub Run {
         );
         $Param{TicketEscalationTimePointStart} = $LayoutObject->BuildSelection(
             Data => {
-                'Last'   => 'within the last ...',
-                'Next'   => 'within the next ...',
-                'Before' => 'more than ... ago',
+                'Last'   => Translatable('within the last ...'),
+                'Next'   => Translatable('within the next ...'),
+                'Before' => Translatable('more than ... ago'),
             },
             Name       => 'TicketEscalationTimePointStart',
             SelectedID => $GetParam{TicketEscalationTimePointStart} || 'Last',
@@ -2226,7 +2239,7 @@ sub Run {
             my @OrderedDefaults;
             if (%Defaults) {
 
-                # ordering atributes on the same order like in Atributes
+                # ordering attributes on the same order like in Attributes
                 for my $Item (@Attributes) {
                     my $KeyAtr = $Item->{Key};
                     for my $Key ( sort keys %Defaults ) {

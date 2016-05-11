@@ -85,6 +85,24 @@ $Selenium->RunTest(
             Password => $TestCustomerUserLogin,
         );
 
+        my $ScriptAlias = $Kernel::OM->Get('Kernel::Config')->Get('ScriptAlias');
+
+        $Selenium->VerifiedGet("${ScriptAlias}customer.pl?Action=CustomerTicketZoom;TicketNumber=123123123");
+
+        $Self->True(
+            index( $Selenium->get_page_source(), 'No Permission' ) > -1,
+            "No permission message for tickets the user may not see, even if they don't exist.",
+        );
+
+        $Selenium->VerifiedGet("${ScriptAlias}customer.pl?Action=CustomerTicketZoom;TicketNumber=");
+
+        $Self->True(
+            index( $Selenium->get_page_source(), 'Need TicketID' ) > -1,
+            "Error message for missing TicketID/TicketNumber.",
+        );
+
+        $Selenium->VerifiedGet("${ScriptAlias}customer.pl?Action=CustomerTicketOverview");
+
         # search for new created ticket on CustomerTicketOverview screen
         $Self->True(
             $Selenium->find_element("//a[contains(\@href, \'Action=CustomerTicketZoom;TicketNumber=$TicketNumber' )]"),
@@ -126,6 +144,31 @@ $Selenium->RunTest(
             "Queue is Raw",
         );
 
+        # check reply button
+        $Selenium->find_element("//a[contains(\@id, \'ReplyButton' )]")->click();
+        $Selenium->find_element("//button[contains(\@value, \'Submit' )]");
+
+        # change the ticket state to 'merged'
+        my $Merged = $TicketObject->TicketStateSet(
+            State    => 'merged',
+            TicketID => $TicketID,
+            UserID   => 1,
+        );
+        $Self->True(
+            $Merged,
+            "Ticket state changed to 'merged'",
+        );
+
+        # refresh the page
+        $Selenium->VerifiedRefresh();
+
+        # check if reply button is missing in merged ticket (bug#7301)
+        $Self->Is(
+            $Selenium->execute_script('return $("a#ReplyButton").length'),
+            0,
+            "Reply button not found",
+        );
+
         # check print button
         $Selenium->find_element("//a[contains(\@href, \'Action=CustomerTicketPrint;' )]")->VerifiedClick();
 
@@ -136,7 +179,7 @@ $Selenium->RunTest(
         );
         $Self->True(
             $Success,
-            "Ticket is deleted - $TicketID"
+            "Ticket is deleted - $TicketID",
         );
 
         # make sure the cache is correct
@@ -144,5 +187,3 @@ $Selenium->RunTest(
 
     }
 );
-
-1;

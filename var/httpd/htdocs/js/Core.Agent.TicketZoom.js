@@ -119,6 +119,10 @@ Core.Agent.TicketZoom = (function (TargetNS) {
         var NewHeight;
 
         if (isJQueryObject($Iframe)) {
+            // slightly change the width of the iframe to not be exactly 100% width anymore
+            // this prevents a double horizontal scrollbar (from iframe and surrounding div)
+            $Iframe.width($Iframe.width() - 2);
+
             NewHeight = $Iframe.contents().height();
             if (!NewHeight || isNaN(NewHeight)) {
                 NewHeight = Core.Config.Get('Ticket::Frontend::HTMLArticleHeightDefault');
@@ -128,6 +132,9 @@ Core.Agent.TicketZoom = (function (TargetNS) {
                     NewHeight = Core.Config.Get('Ticket::Frontend::HTMLArticleHeightMax');
                 }
             }
+
+            // add delta for scrollbar
+            NewHeight = parseInt(NewHeight, 10) + 25;
             $Iframe.height(NewHeight + 'px');
         }
     };
@@ -175,6 +182,9 @@ Core.Agent.TicketZoom = (function (TargetNS) {
                 Core.UI.Popup.OpenPopup($(this).attr('href'), PopupType);
                 return false;
             });
+
+            // Initialize modernized input fields in article action menu
+            Core.UI.InputFields.Activate($('#ArticleItems'));
 
             // Add event bindings to new widget
             Core.UI.InitWidgetActionToggle();

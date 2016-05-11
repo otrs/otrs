@@ -248,10 +248,22 @@ sub CustomerName {
     );
 
     if ( $Result->code() ) {
-        $Kernel::OM->Get('Kernel::System::Log')->Log(
-            Priority => 'error',
-            Message  => 'Search failed! ' . $Result->error(),
-        );
+        if ( $Result->code() == 4 ) {
+
+            # Result code 4 (LDAP_SIZELIMIT_EXCEEDED) is normal if there
+            # are more items in LDAP than search limit defined in OTRS or
+            # in LDAP server. Avoid spamming logs with such errors.
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
+                Priority => 'debug',
+                Message  => 'LDAP size limit exceeded (' . $Result->error() . ').',
+            );
+        }
+        else {
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
+                Priority => 'error',
+                Message  => 'Search failed! ' . $Result->error(),
+            );
+        }
         return;
     }
 
@@ -383,10 +395,22 @@ sub CustomerSearch {
 
     # log ldap errors
     if ( $Result->code() ) {
-        $Kernel::OM->Get('Kernel::System::Log')->Log(
-            Priority => 'error',
-            Message  => $Result->error(),
-        );
+        if ( $Result->code() == 4 ) {
+
+            # Result code 4 (LDAP_SIZELIMIT_EXCEEDED) is normal if there
+            # are more items in LDAP than search limit defined in OTRS or
+            # in LDAP server. Avoid spamming logs with such errors.
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
+                Priority => 'debug',
+                Message  => 'LDAP size limit exceeded (' . $Result->error() . ').',
+            );
+        }
+        else {
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
+                Priority => 'error',
+                Message  => 'Search failed! ' . $Result->error(),
+            );
+        }
     }
 
     my %Users;
@@ -437,104 +461,6 @@ sub CustomerSearch {
         $Self->{CacheObject}->Set(
             Type  => $Self->{CacheType},
             Key   => 'CustomerSearch::' . $Filter,
-            Value => \%Users,
-            TTL   => $Self->{CustomerUserMap}->{CacheTTL},
-        );
-    }
-
-    return %Users;
-}
-
-sub CustomerUserList {
-    my ( $Self, %Param ) = @_;
-
-    my $Valid = defined $Param{Valid} ? $Param{Valid} : 1;
-
-    # prepare filter
-    my $Filter = "($Self->{CustomerKey}=*)";
-    if ( $Self->{AlwaysFilter} ) {
-        $Filter = "(&$Filter$Self->{AlwaysFilter})";
-    }
-
-    # add valid filter
-    if ( $Self->{ValidFilter} && $Valid ) {
-        $Filter = "(&$Filter$Self->{ValidFilter})";
-    }
-
-    # check cache
-    if ( $Self->{CacheObject} ) {
-        my $Users = $Self->{CacheObject}->Get(
-            Type => $Self->{CacheType},
-            Key  => "CustomerUserList::$Filter",
-        );
-        return %{$Users} if ref $Users eq 'HASH';
-    }
-
-    # create ldap connect
-    return if !$Self->_Connect();
-
-    # combine needed attrs
-    my @Attributes = ( $Self->{CustomerKey}, $Self->{CustomerID} );
-
-    # perform user search
-    my $Result = $Self->{LDAP}->search(
-        base      => $Self->{BaseDN},
-        scope     => $Self->{SScope},
-        filter    => $Filter,
-        sizelimit => $Self->{UserSearchListLimit},
-        attrs     => \@Attributes,
-    );
-
-    # log ldap errors
-    if ( $Result->code() ) {
-        $Kernel::OM->Get('Kernel::System::Log')->Log(
-            Priority => 'error',
-            Message  => $Result->error(),
-        );
-    }
-
-    my %Users;
-    for my $Entry ( $Result->all_entries() ) {
-
-        my $CustomerString = '';
-        for my $Field (@Attributes) {
-
-            my $FieldValue = $Entry->get_value($Field);
-            $FieldValue = defined $FieldValue ? $FieldValue : '';
-
-            $CustomerString .= $Self->_ConvertFrom($FieldValue) . ' ';
-        }
-
-        my $KeyValue = $Entry->get_value( $Self->{CustomerKey} );
-        $KeyValue = defined $KeyValue ? $KeyValue : '';
-
-        $Users{ $Self->_ConvertFrom($KeyValue) } = $CustomerString;
-    }
-
-    # check if user need to be in a group!
-    if ( $Self->{GroupDN} ) {
-
-        for my $Filter2 ( sort keys %Users ) {
-
-            my $Result2 = $Self->{LDAP}->search(
-                base      => $Self->{GroupDN},
-                scope     => $Self->{SScope},
-                filter    => 'memberUid=' . $Filter2,
-                sizelimit => $Self->{UserSearchListLimit},
-                attrs     => ['1.1'],
-            );
-
-            if ( !$Result2->all_entries() ) {
-                delete $Users{$Filter2};
-            }
-        }
-    }
-
-    # cache request
-    if ( $Self->{CacheObject} ) {
-        $Self->{CacheObject}->Set(
-            Type  => $Self->{CacheType},
-            Key   => "CustomerUserList::$Filter",
             Value => \%Users,
             TTL   => $Self->{CustomerUserMap}->{CacheTTL},
         );

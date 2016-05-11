@@ -122,6 +122,22 @@ Core.Agent = (function (TargetNS) {
             }
         }
 
+        /**
+         * @private
+         * @name SetNavContainerHeight
+         * @memberof Core.Agent.InitNavigation
+         * @function
+         * @param {jQueryObject} $ParentElement
+         * @description
+         *      This function sets the nav container height according to the required height of the currently expanded sub menu
+         *      Due to the needed overflow: hidden property of the container, they would be hidden otherwise
+         */
+        function SetNavContainerHeight($ParentElement) {
+            if ($ParentElement.find('ul').length) {
+                $('#NavigationContainer').css('height', parseInt(InitialNavigationContainerHeight, 10) + parseInt($ParentElement.find('ul').outerHeight(), 10));
+            }
+        }
+
         $('#Navigation > li')
             .addClass('CanDrag')
             .filter(function () {
@@ -129,6 +145,12 @@ Core.Agent = (function (TargetNS) {
             })
             .bind('mouseenter', function () {
                 var $Element = $(this);
+
+                // clear close timeout on mouseenter, even if OpenMainMenuOnHover is not enabled
+                // this makes sure, that leaving the subnav for a short time and coming back
+                // will leave the subnav opened
+                ClearSubnavCloseTimeout($Element);
+
                 // special treatment for the first menu level: by default this opens submenus only via click,
                 //  but the config setting "OpenMainMenuOnHover" also activates opening on hover for it.
                 if ($('body').hasClass('Visible-ScreenXL') && !Core.App.Responsive.IsTouchDevice() && ($Element.parent().attr('id') !== 'Navigation' || Core.Config.Get('OpenMainMenuOnHover'))) {
@@ -138,10 +160,8 @@ Core.Agent = (function (TargetNS) {
                         $Element.addClass('Active').attr('aria-expanded', true)
                             .siblings().removeClass('Active');
 
-                        // Resize the container in order to display subitems
-                        // Due to the needed overflow: hidden property of the
-                        // container, they would be hidden otherwise
-                        $('#NavigationContainer').css('height', '500px');
+                        // resize the nav container
+                        SetNavContainerHeight($Element);
 
                         // If Timeout is set for this nav element, clear it
                         ClearSubnavCloseTimeout($Element);
@@ -176,6 +196,11 @@ Core.Agent = (function (TargetNS) {
 
                 var $Element = $(this),
                     $Target = $(Event.target);
+
+                // if an onclick attribute is present, the attribute should win
+                if ($Target.attr('onclick')) {
+                    return false;
+                }
 
                 // if OpenMainMenuOnHover is enabled, clicking the item
                 // should lead to the link as regular
@@ -213,7 +238,8 @@ Core.Agent = (function (TargetNS) {
 
                     if ($('body').hasClass('Visible-ScreenXL')) {
 
-                        $('#NavigationContainer').css('height', '300px');
+                        // resize the nav container
+                        SetNavContainerHeight($Element);
 
                         // If Timeout is set for this nav element, clear it
                         ClearSubnavCloseTimeout($Element);
@@ -330,7 +356,6 @@ Core.Agent = (function (TargetNS) {
             }, 400);
         });
     }
-
 
     /**
      * @private
@@ -600,6 +625,7 @@ Core.Agent = (function (TargetNS) {
         Core.UI.InitMessageBoxClose();
         Core.Form.Validate.Init();
         Core.UI.Popup.Init();
+        Core.UI.Floater.Init();
         Core.UI.InputFields.Init();
         Core.UI.TreeSelection.InitTreeSelection();
         Core.UI.TreeSelection.InitDynamicFieldTreeViewRestore();

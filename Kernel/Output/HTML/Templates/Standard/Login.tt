@@ -149,9 +149,11 @@ X-OTRS-Login: [% Env("Baselink") %]
 [% RenderBlockStart("PreLogin") %]
             <div id="LoginBox" class="PreLogin">
                 <div class="WidgetSimple">
+                [% IF Config("ProductName") %]
                     <div class="Header">
-                        <h2 class="Center">[% Translate("Welcome to %s", Config("ProductName")) | html %]</h2>
+                        <h2 class="Center">[% Config("ProductName") | html %]</h2>
                     </div>
+                [% END %]
                     <div class="Content">
                         <p class="Center">
                             [% Translate("One moment please, you are being redirected...") | html %]
@@ -160,7 +162,7 @@ X-OTRS-Login: [% Env("Baselink") %]
                             <input type="hidden" name="Action" value="Login" />
                             <input type="hidden" name="RequestedURL" value="[% Data.RequestedURL | html %]"/>
                             <input type="hidden" name="Lang" value="[% Env("UserLanguage") | html %]"/>
-                            <input type="hidden" name="TimeOffset" id="TimeOffset" value=""/>
+                            <input type="hidden" name="TimeZoneOffset" id="TimeZoneOffset" value=""/>
                         </form>
                     </div>
                 </div>
@@ -169,13 +171,15 @@ X-OTRS-Login: [% Env("Baselink") %]
 
 [% RenderBlockStart("LoginBox") %]
             <div id="LoginBox">
-                <p class="[% IF Data.MessageType != 'Logout' %]Error [% END %]Center Spacing">
-                    [% Translate(Data.Message) | html %]
-                </p>
+                <div class="Center Spacing [% IF Data.MessageType == 'Success' %]SuccessBox[% ELSIF Data.MessageType == 'Error' %]ErrorBox[% END %]">
+                    <span>[% Translate(Data.Message) | html %]</span>
+                </div>
                 <div class="WidgetSimple">
+                [% IF Config("ProductName") %]
                     <div class="Header">
-                        <h2 class="Center">[% Translate("Welcome to %s", Config("ProductName")) | html %]</h2>
+                        <h2 class="Center">[% Config("ProductName") | html %]</h2>
                     </div>
+                [% END %]
                     <div class="Content">
                         <p class="Error Center Spacing"></p>
 
@@ -183,7 +187,7 @@ X-OTRS-Login: [% Env("Baselink") %]
                             <input type="hidden" name="Action" value="Login" />
                             <input type="hidden" name="RequestedURL" value="[% Data.RequestedURL | html %]"/>
                             <input type="hidden" name="Lang" value="[% Env("UserLanguage") | html %]"/>
-                            <input type="hidden" name="TimeOffset" id="TimeOffset" value=""/>
+                            <input type="hidden" name="TimeZoneOffset" id="TimeZoneOffset" value=""/>
                             <fieldset class="TableLike">
                                 <label for="User" class="Mandatory">
                                     <span class="Marker">*</span>

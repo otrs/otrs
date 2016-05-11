@@ -33,6 +33,7 @@ our @ObjectDependencies = (
     'Kernel::System::Time',
     'Kernel::System::User',
     'Kernel::System::Web::Request',
+    'Kernel::System::Group',
 );
 
 =head1 NAME
@@ -100,7 +101,7 @@ sub new {
     # We'll keep one default TimeObject and one for the user's time zone (if needed)
     $Self->{TimeObject} = $Kernel::OM->Get('Kernel::System::Time');
 
-    if ( $ConfigObject->Get('TimeZoneUser') && $Self->{UserTimeZone} ) {
+    if ( $Self->{UserTimeZone} ) {
         $Self->{UserTimeObject} = Kernel::System::Time->new( %{$Self} );
     }
     else {
@@ -724,6 +725,7 @@ sub Login {
     # Generate the minified CSS and JavaScript files and the tags referencing them (see LayoutLoader)
     $Self->LoaderCreateAgentCSSCalls();
     $Self->LoaderCreateAgentJSCalls();
+    $Self->LoaderCreateJavaScriptTranslationData();
 
     # Add header logo, if configured
     if ( defined $ConfigObject->Get('AgentLogo') ) {
@@ -1331,6 +1333,9 @@ sub Header {
             my %Modules;
             my %Jobs = %{$ToolBarModule};
 
+            # get group object
+            my $GroupObject = $Kernel::OM->Get('Kernel::System::Group');
+
             MODULE:
             for my $Job ( sort keys %Jobs ) {
 
@@ -1340,6 +1345,56 @@ sub Header {
                     %{$Self},    # UserID etc.
                 );
                 next MODULE if !$Object;
+
+                my $ToolBarAccessOk;
+
+                # if group restriction for tool-bar is set, check user permission
+                if ( $Jobs{$Job}->{Group} ) {
+
+                    # remove white-spaces
+                    $Jobs{$Job}->{Group} =~ s{\s}{}xmsg;
+
+                    # get group configurations
+                    my @Items = split( ';', $Jobs{$Job}->{Group} );
+
+                    ITEM:
+                    for my $Item (@Items) {
+
+                        # split values into permission and group
+                        my ( $Permission, $GroupName ) = split( ':', $Item );
+
+                        # log an error if not valid setting
+                        if ( !$Permission || !$GroupName ) {
+                            $Kernel::OM->Get('Kernel::System::Log')->Log(
+                                Priority => 'error',
+                                Message  => "Invalid config for ToolBarModule $Job - Key Group: '$Item'! "
+                                    . "Need something like 'Permission:Group;'",
+                            );
+                        }
+
+                        # get groups for current user
+                        my %Groups = $GroupObject->PermissionUserGet(
+                            UserID => $Self->{UserID},
+                            Type   => $Permission,
+                        );
+
+                        # next job if user have not groups
+                        next ITEM if !%Groups;
+
+                        # check user belongs to the correct group
+                        my %GroupsReverse = reverse %Groups;
+                        next ITEM if !$GroupsReverse{$GroupName};
+
+                        $ToolBarAccessOk = 1;
+
+                        last ITEM;
+                    }
+
+                    # go to the next module if not permissions
+                    # for the current one
+                    next MODULE if !$ToolBarAccessOk;
+                }
+
                 %Modules = ( $Object->Run( %Param, Config => $Jobs{$Job} ), %Modules );
             }
 
@@ -1406,6 +1461,7 @@ sub Footer {
 
     # Generate the minified CSS and JavaScript files and the tags referencing them (see LayoutLoader)
     $Self->LoaderCreateAgentJSCalls();
+    $Self->LoaderCreateJavaScriptTranslationData();
 
     # get datepicker data, if needed in module
     if ($HasDatepicker) {
@@ -1986,16 +2042,16 @@ sub CustomerAge {
 build a HTML option element based on given data
 
     my $HTML = $LayoutObject->BuildSelection(
-        Data            => $ArrayRef,             # use $HashRef, $ArrayRef or $ArrayHashRef (see below)
-        Name            => 'TheName',             # name of element
-        ID              => 'HTMLID',              # (optional) the HTML ID for this element, if not provided, the name will be used as ID as well
-        Multiple        => 0,                     # (optional) default 0 (0|1)
-        Size            => 1,                     # (optional) default 1 element size
-        Class           => 'class',               # (optional) a css class, include 'Modernize' to activate InputFields
-        Disabled        => 0,                     # (optional) default 0 (0|1) disable the element
-        AutoComplete    => 'off',                 # (optional)
-        OnChange        => 'javascript',          # (optional)
-        OnClick         => 'javascript',          # (optional)
+        Data            => $ArrayRef,        # use $HashRef, $ArrayRef or $ArrayHashRef (see below)
+        Name            => 'TheName',        # name of element
+        ID              => 'HTMLID',         # (optional) the HTML ID for this element, if not provided, the name will be used as ID as well
+        Multiple        => 0,                # (optional) default 0 (0|1)
+        Size            => 1,                # (optional) default 1 element size
+        Class           => 'class',          # (optional) a css class, include 'Modernize' to activate InputFields
+        Disabled        => 0,                # (optional) default 0 (0|1) disable the element
+        AutoComplete    => 'off',            # (optional)
+        OnChange        => 'javascript',     # (optional)
+        OnClick         => 'javascript',     # (optional)
 
         SelectedID     => 1,                 # (optional) use integer or arrayref (unable to use with ArrayHashRef)
         SelectedID     => [1, 5, 3],         # (optional) use integer or arrayref (unable to use with ArrayHashRef)
@@ -2031,6 +2087,9 @@ build a HTML option element based on given data
             },
         },
         ExpandFilters  => 1,                 # (optional) default 0 (0|1) expand filters list by default
+
+        ValidateDateAfter  => '2016-01-01',  # (optional) validate that date is after supplied value
+        ValidateDateBefore => '2016-01-01',  # (optional) validate that date is before supplied value
     );
 
     my $HashRef = {
@@ -2167,13 +2226,15 @@ sub BuildSelection {
 
     # generate output
     my $String = $Self->_BuildSelectionOutput(
-        AttributeRef  => $AttributeRef,
-        DataRef       => $DataRef,
-        OptionTitle   => $Param{OptionTitle},
-        TreeView      => $Param{TreeView},
-        FiltersRef    => \@Filters,
-        FilterActive  => $FilterActive,
-        ExpandFilters => $Param{ExpandFilters},
+        AttributeRef       => $AttributeRef,
+        DataRef            => $DataRef,
+        OptionTitle        => $Param{OptionTitle},
+        TreeView           => $Param{TreeView},
+        FiltersRef         => \@Filters,
+        FilterActive       => $FilterActive,
+        ExpandFilters      => $Param{ExpandFilters},
+        ValidateDateAfter  => $Param{ValidateDateAfter},
+        ValidateDateBefore => $Param{ValidateDateBefore},
     );
     return $String;
 }
@@ -2183,13 +2244,11 @@ sub NoPermission {
 
     my $WithHeader = $Param{WithHeader} || 'yes';
 
-    my $TranslatableMessage = $Self->{LanguageObject}->Translate(
-        "We are sorry, you do not have permissions anymore to access this ticket in its current state."
-    );
-    $TranslatableMessage .= '<br/>';
-    $TranslatableMessage
-        .= $Self->{LanguageObject}->Translate(" You can take one of the next actions:");
-    $Param{Message} = $TranslatableMessage if ( !$Param{Message} );
+    if ( !$Param{Message} ) {
+        $Param{Message} = $Self->{LanguageObject}->Translate(
+            'We are sorry, you do not have permissions anymore to access this ticket in its current state. You can take one of the following actions:'
+        );
+    }
 
     # get config option for possible next actions
     my $PossibleNextActions = $Kernel::OM->Get('Kernel::Config')->Get('PossibleNextActions');
@@ -2206,8 +2265,8 @@ sub NoPermission {
             $Self->Block(
                 Name => 'PossibleNextActionRow',
                 Data => {
-                    Link        => $PossibleNextActions->{$Key},
-                    Description => $Key,
+                    Link        => $Key,
+                    Description => $PossibleNextActions->{$Key},
                 },
             );
         }
@@ -2903,24 +2962,32 @@ sub TransformDateSelection {
     my $Prefix = $Param{Prefix} || '';
 
     # time zone translation if needed
-    if ( $Kernel::OM->Get('Kernel::Config')->Get('TimeZoneUser') && $Self->{UserTimeZone} ) {
-        my $TimeStamp = $Self->{TimeObject}->TimeStamp2SystemTime(
-            String => $Param{ $Prefix . 'Year' } . '-'
-                . $Param{ $Prefix . 'Month' } . '-'
-                . $Param{ $Prefix . 'Day' } . ' '
-                . ( $Param{ $Prefix . 'Hour' }   || 0 ) . ':'
-                . ( $Param{ $Prefix . 'Minute' } || 0 )
-                . ':00',
+    # from user time zone to OTRS time zone
+    if ( $Self->{UserTimeZone} ) {
+        my $DateTimeObject = $Kernel::OM->Create(
+            'Kernel::System::DateTime',
+            ObjectParams => {
+                Year     => $Param{ $Prefix . 'Year' },
+                Month    => $Param{ $Prefix . 'Month' },
+                Day      => $Param{ $Prefix . 'Day' },
+                Hour     => $Param{ $Prefix . 'Hour' } || 0,
+                Minute   => $Param{ $Prefix . 'Minute' } || 0,
+                Second   => $Param{ $Prefix . 'Second' } || 0,
+                TimeZone => $Self->{UserTimeZone},
+            },
         );
-        $TimeStamp = $TimeStamp - ( $Self->{UserTimeZone} * 3600 );
-        (
-            $Param{ $Prefix . 'Second' },
-            $Param{ $Prefix . 'Minute' },
-            $Param{ $Prefix . 'Hour' },
-            $Param{ $Prefix . 'Day' },
-            $Param{ $Prefix . 'Month' },
-            $Param{ $Prefix . 'Year' }
-        ) = $Self->{UserTimeObject}->SystemTime2Date( SystemTime => $TimeStamp );
+
+        if ($DateTimeObject) {
+            $DateTimeObject->ToOTRSTimeZone();
+            my $DateTimeValues = $DateTimeObject->Get();
+
+            $Param{ $Prefix . 'Year' }   = $DateTimeValues->{Year};
+            $Param{ $Prefix . 'Month' }  = $DateTimeValues->{Month};
+            $Param{ $Prefix . 'Day' }    = $DateTimeValues->{Day};
+            $Param{ $Prefix . 'Hour' }   = $DateTimeValues->{Hour};
+            $Param{ $Prefix . 'Minute' } = $DateTimeValues->{Minute};
+            $Param{ $Prefix . 'Second' } = $DateTimeValues->{Second};
+        }
     }
 
     # reset prefix
@@ -2935,44 +3002,50 @@ build the HTML code to represent a date selection based on the given data.
 Depending on the SysConfig settings the controls to set the date could be multiple select or input fields
 
     my $HTML = $LayoutObject->BuildDateSelection(
-        Prefix           => 'some prefix',      # optional, (needed to specify other parameters)
-        <Prefix>Year     => 2015,               # optional, defaults to current year, used to set the initial value
-        <Prefix>Month    => 6,                  # optional, defaults to current month, used to set the initial value
-        <Prefix>Day      => 9,                  # optional, defaults to current day, used to set the initial value
-        <Prefix>Hour     => 12,                 # optional, defaults to current hour, used to set the initial value
-        <Prefix>Minute   => 26,                 # optional, defaults to current minute, used to set the initial value
-        <Prefix>Second   => 59,                 # optional, defaults to current second, used to set the initial value
-        <Prefix>Optional => 1,                  # optional, default 0, when active a checkbox is included to specify
-                                                #   if the values should be saved or not
-        <Prefix>Used     => 1,                  # optional, default 0, used to set the initial state of the checkbox
-                                                #   mentioned above
-        <Prefix>Required => 1,                  # optional, default 0 (Deprecated)
-        <prefix>Class => 'some class',          # optional, specify an additional class to the HTML elements
-
-        Area     => 'some area',                # optional, default 'Agent' (Deprecated)
-        DiffTime => 123,                        # optional, default 0, used to set the initial time influencing the
-                                                #   current time (in seconds)
-        OverrideTimeZone        => 1,           # optional (1 or 0), when active the time is not translated to the user
-                                                #   time zone
-        YearPeriodFuture        => 3,           # optional, used to define the number of years in future to be display
-                                                #   in the year select
-        YearPeriodPast          => 2,           # optional, used to define the number of years in past to be display
-                                                #   in the year select
-        YearDiff                => 0,           # optional. used to define the number of years to be displayed
-                                                #   in the year select (alternatively to YearPeriodFuture and YearPeriodPast)
-        ValidateDateInFuture    => 1,           # optional (1 or 0), when active sets an special class to validate
-                                                #   that the date set in the controls to be in the future
-        ValidateDateNotInFuture => 1,           # optional (1 or 0), when active sets an special class to validate
-                                                #   that the date set in the controls not to be in the future
-
-        Calendar => 2,                          # optional, used to define the SysConfig calendar on which the Datepicker
-                                                #   will be based on to show the vacation days and the start week day
-        Format => 'DateImputFormat',            # optional, or 'DateInputFormatLong', used to define if only date or
-                                                #   date/time components should be shown (DateInputFormatLong shows date/time)
-        Validate => 1,                          # optional (1 or 0), defines if the date selection should be validated on
-                                                #   client side with JS
-        Disabled => 1,                          # optional (1 or 0), when active select and checkbox controls gets the
-                                                #   disabled attribute and input fields gets the read only attribute
+        Prefix           => 'some prefix',        # optional, (needed to specify other parameters)
+        <Prefix>Year     => 2015,                 # optional, defaults to current year, used to set the initial value
+        <Prefix>Month    => 6,                    # optional, defaults to current month, used to set the initial value
+        <Prefix>Day      => 9,                    # optional, defaults to current day, used to set the initial value
+        <Prefix>Hour     => 12,                   # optional, defaults to current hour, used to set the initial value
+        <Prefix>Minute   => 26,                   # optional, defaults to current minute, used to set the initial value
+        <Prefix>Second   => 59,                   # optional, defaults to current second, used to set the initial value
+        <Prefix>Optional => 1,                    # optional, default 0, when active a checkbox is included to specify
+                                                  #   if the values should be saved or not
+        <Prefix>Used     => 1,                    # optional, default 0, used to set the initial state of the checkbox
+                                                  #   mentioned above
+        <Prefix>Required => 1,                    # optional, default 0 (Deprecated)
+        <prefix>Class    => 'some class',         # optional, specify an additional class to the HTML elements
+        Area     => 'some area',                  # optional, default 'Agent' (Deprecated)
+        DiffTime => 123,                          # optional, default 0, used to set the initial time influencing the
+                                                  #   current time (in seconds)
+        OverrideTimeZone => 1,                    # optional (1 or 0), when active the time is not translated to the user
+                                                  #   time zone
+        YearPeriodFuture => 3,                    # optional, used to define the number of years in future to be display
+                                                  #   in the year select
+        YearPeriodPast   => 2,                    # optional, used to define the number of years in past to be display
+                                                  #   in the year select
+        YearDiff         => 0,                    # optional. used to define the number of years to be displayed
+                                                  #   in the year select (alternatively to YearPeriodFuture and YearPeriodPast)
+        ValidateDateInFuture     => 1,            # optional (1 or 0), when active sets an special class to validate
+                                                  #   that the date set in the controls to be in the future
+        ValidateDateNotInFuture  => 1,            # optional (1 or 0), when active sets an special class to validate
+                                                  #   that the date set in the controls not to be in the future
+        ValidateDateAfterPrefix  => 'Start',      # optional (Prefix), when defined sets a special class to validate
+                                                  #   that the date set in the controls comes after the date with Prefix
+        ValidateDateAfterValue   => '2016-01-01', # optional (Date), when defined sets a special data parameter to validate
+                                                  #   that the date set in the controls comes after the supplied date
+        ValidateDateBeforePrefix => 'End',        # optional (Prefix), when defined sets a special class to validate
+                                                  #   that the date set in the controls comes before the date with Prefix
+        ValidateDateBeforeValue  => '2016-01-01', # optional (Date), when defined sets a special data parameter to validate
+                                                  #   that the date set in the controls comes before the supplied date
+        Calendar => 2,                            # optional, used to define the SysConfig calendar on which the Datepicker
+                                                  #   will be based on to show the vacation days and the start week day
+        Format   => 'DateInputFormat',            # optional, or 'DateInputFormatLong', used to define if only date or
+                                                  #   date/time components should be shown (DateInputFormatLong shows date/time)
+        Validate => 1,                            # optional (1 or 0), defines if the date selection should be validated on
+                                                  #   client side with JS
+        Disabled => 1,                            # optional (1 or 0), when active select and checkbox controls gets the
+                                                  #   disabled attribute and input fields gets the read only attribute
     );
 
 =cut
@@ -2999,6 +3072,12 @@ sub BuildDateSelection {
     my $ValidateDateInFuture    = $Param{ValidateDateInFuture}    || 0;
     my $ValidateDateNotInFuture = $Param{ValidateDateNotInFuture} || 0;
 
+    # Validate that the date is set after/before supplied date
+    my $ValidateDateAfterPrefix  = $Param{ValidateDateAfterPrefix}  || '';
+    my $ValidateDateAfterValue   = $Param{ValidateDateAfterValue}   || '';
+    my $ValidateDateBeforePrefix = $Param{ValidateDateBeforePrefix} || '';
+    my $ValidateDateBeforeValue  = $Param{ValidateDateBeforeValue}  || '';
+
     my ( $s, $m, $h, $D, $M, $Y ) = $Self->{UserTimeObject}->SystemTime2Date(
         SystemTime => $Self->{UserTimeObject}->SystemTime() + $DiffTime,
     );
@@ -3009,31 +3088,36 @@ sub BuildDateSelection {
 
     # time zone translation
     if (
-        $ConfigObject->Get('TimeZoneUser')
-        && $Self->{UserTimeZone}
+        $Self->{UserTimeZone}
         && $Param{ $Prefix . 'Year' }
         && $Param{ $Prefix . 'Month' }
         && $Param{ $Prefix . 'Day' }
         && !$Param{OverrideTimeZone}
         )
     {
-        my $TimeStamp = $Self->{TimeObject}->TimeStamp2SystemTime(
-            String => $Param{ $Prefix . 'Year' } . '-'
-                . $Param{ $Prefix . 'Month' } . '-'
-                . $Param{ $Prefix . 'Day' } . ' '
-                . ( $Param{ $Prefix . 'Hour' }   || 0 ) . ':'
-                . ( $Param{ $Prefix . 'Minute' } || 0 )
-                . ':00',
+        my $DateTimeObject = $Kernel::OM->Create(
+            'Kernel::System::DateTime',
+            ObjectParams => {
+                Year   => $Param{ $Prefix . 'Year' },
+                Month  => $Param{ $Prefix . 'Month' },
+                Day    => $Param{ $Prefix . 'Day' },
+                Hour   => $Param{ $Prefix . 'Hour' } || 0,
+                Minute => $Param{ $Prefix . 'Minute' } || 0,
+                Second => $Param{ $Prefix . 'Second' } || 0,
+            },
         );
-        $TimeStamp = $TimeStamp + ( $Self->{UserTimeZone} * 3600 );
-        (
-            $Param{ $Prefix . 'Second' },
-            $Param{ $Prefix . 'Minute' },
-            $Param{ $Prefix . 'Hour' },
-            $Param{ $Prefix . 'Day' },
-            $Param{ $Prefix . 'Month' },
-            $Param{ $Prefix . 'Year' }
-        ) = $Self->{UserTimeObject}->SystemTime2Date( SystemTime => $TimeStamp );
+
+        if ($DateTimeObject) {
+            $DateTimeObject->ToTimeZone( TimeZone => $Self->{UserTimeZone} );
+            my $DateTimeValues = $DateTimeObject->Get();
+
+            $Param{ $Prefix . 'Year' }   = $DateTimeValues->{Year};
+            $Param{ $Prefix . 'Month' }  = $DateTimeValues->{Month};
+            $Param{ $Prefix . 'Day' }    = $DateTimeValues->{Day};
+            $Param{ $Prefix . 'Hour' }   = $DateTimeValues->{Hour};
+            $Param{ $Prefix . 'Minute' } = $DateTimeValues->{Minute};
+            $Param{ $Prefix . 'Second' } = $DateTimeValues->{Second};
+        }
     }
 
     # year
@@ -3119,19 +3203,33 @@ sub BuildDateSelection {
         if ($ValidateDateNotInFuture) {
             $DateValidateClasses .= " Validate_DateNotInFuture";
         }
+        if ( $ValidateDateAfterPrefix || $ValidateDateAfterValue ) {
+            $DateValidateClasses .= ' Validate_DateAfter';
+        }
+        if ( $ValidateDateBeforePrefix || $ValidateDateBeforeValue ) {
+            $DateValidateClasses .= ' Validate_DateBefore';
+        }
+        if ($ValidateDateAfterPrefix) {
+            $DateValidateClasses .= " Validate_DateAfter_$ValidateDateAfterPrefix";
+        }
+        if ($ValidateDateBeforePrefix) {
+            $DateValidateClasses .= " Validate_DateBefore_$ValidateDateBeforePrefix";
+        }
     }
 
     # day
     if ( $DateInputStyle eq 'Option' ) {
         my %Day = map { $_ => sprintf( "%02d", $_ ); } ( 1 .. 31 );
         $Param{Day} = $Self->BuildSelection(
-            Name        => $Prefix . 'Day',
-            Data        => \%Day,
-            SelectedID  => int( $Param{ $Prefix . 'Day' } || $D ),
-            Translation => 0,
-            Class       => "$DateValidateClasses $Class",
-            Title       => $Self->{LanguageObject}->Translate('Day'),
-            Disabled    => $Param{Disabled},
+            Name               => $Prefix . 'Day',
+            Data               => \%Day,
+            SelectedID         => int( $Param{ $Prefix . 'Day' } || $D ),
+            Translation        => 0,
+            Class              => "$DateValidateClasses $Class",
+            Title              => $Self->{LanguageObject}->Translate('Day'),
+            Disabled           => $Param{Disabled},
+            ValidateDateAfter  => $ValidateDateAfterValue,
+            ValidateDateBefore => $ValidateDateBeforeValue,
         );
     }
     else {
@@ -3243,6 +3341,9 @@ sub BuildDateSelection {
             . "/>&nbsp;";
     }
 
+    # remove 'Second' because it is never used and bug #9441
+    delete $Param{ $Prefix . 'Second' };
+
     # date format
     $Output .= $Self->{LanguageObject}->Time(
         Action => 'Return',
@@ -3333,6 +3434,7 @@ sub CustomerLogin {
     # Generate the minified CSS and JavaScript files and the tags referencing them (see LayoutLoader)
     $Self->LoaderCreateCustomerCSSCalls();
     $Self->LoaderCreateCustomerJSCalls();
+    $Self->LoaderCreateJavaScriptTranslationData();
 
     # Add header logo, if configured
     if ( defined $ConfigObject->Get('CustomerLogo') ) {
@@ -3612,6 +3714,7 @@ sub CustomerFooter {
     # Generate the minified CSS and JavaScript files
     # and the tags referencing them (see LayoutLoader)
     $Self->LoaderCreateCustomerJSCalls();
+    $Self->LoaderCreateJavaScriptTranslationData();
 
     # get datepicker data, if needed in module
     if ($HasDatepicker) {
@@ -3866,8 +3969,7 @@ sub CustomerNavigationBar {
             # check if we must mark the parent element as selected
             if ( $ItemSub->{Link} ) {
                 if (
-                    !$SelectedFlag
-                    && $ItemSub->{Link} =~ /Action=$Self->{Action}/
+                    $ItemSub->{Link} =~ /Action=$Self->{Action}/
                     && $ItemSub->{Link} =~ /$Self->{Subaction}/    # Subaction can be empty
                     )
                 {
@@ -5053,12 +5155,14 @@ sub _BuildSelectionDataRefCreate {
 create the html string
 
     my $HTMLString = $LayoutObject->_BuildSelectionOutput(
-        AttributeRef  => $AttributeRef,
-        DataRef       => $DataRef,
-        TreeView      => 0,              # optional, see BuildSelection()
-        FiltersRef    => \@Filters,      # optional, see BuildSelection()
-        FilterActive  => $FilterActive,  # optional, see BuildSelection()
-        ExpandFilters => 1,              # optional, see BuildSelection()
+        AttributeRef       => $AttributeRef,
+        DataRef            => $DataRef,
+        TreeView           => 0,              # optional, see BuildSelection()
+        FiltersRef         => \@Filters,      # optional, see BuildSelection()
+        FilterActive       => $FilterActive,  # optional, see BuildSelection()
+        ExpandFilters      => 1,              # optional, see BuildSelection()
+        ValidateDateAfter  => '2016-01-01',   # optional, see BuildSelection()
+        ValidateDateBefore => '2016-01-01',   # optional, see BuildSelection()
     );
 
     my $AttributeRef = {
@@ -5108,7 +5212,10 @@ sub _BuildSelectionOutput {
                 },
                 NoQuotes => 1,
             );
-            $String .= " data-filters='$JSON'";
+            my $JSONEscaped = $Kernel::OM->Get('Kernel::System::HTMLUtils')->ToHTML(
+                String => $JSON,
+            );
+            $String .= " data-filters=\"$JSONEscaped\"";
             if ( $Param{FilterActive} ) {
                 $String .= ' data-filtered="' . int( $Param{FilterActive} ) . '"';
             }
@@ -5120,6 +5227,14 @@ sub _BuildSelectionOutput {
         # tree flag for Input Fields
         if ( $Param{TreeView} ) {
             $String .= ' data-tree="true"';
+        }
+
+        # date validation values
+        if ( $Param{ValidateDateAfter} ) {
+            $String .= ' data-validate-date-after="' . $Param{ValidateDateAfter} . '"';
+        }
+        if ( $Param{ValidateDateBefore} ) {
+            $String .= ' data-validate-date-before="' . $Param{ValidateDateBefore} . '"';
         }
 
         $String .= ">\n";

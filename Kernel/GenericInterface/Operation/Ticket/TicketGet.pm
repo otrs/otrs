@@ -175,7 +175,6 @@ one or more ticket entries in one call.
                     FirstResponseInMin              (minutes till first response)
                     FirstResponseDiffInMin          (minutes till or over first response)
 
-                    SolutionTime                    (timestamp of solution time, also close time)
                     SolutionInMin                   (minutes till solution time)
                     SolutionDiffInMin               (minutes till or over solution time)
 
@@ -305,17 +304,24 @@ sub Run {
         );
     }
 
-    my $DynamicFields     = $Param{Data}->{DynamicFields}     || 0;
-    my $Extended          = $Param{Data}->{Extended}          || 0;
-    my $AllArticles       = $Param{Data}->{AllArticles}       || 0;
-    my $ArticleSenderType = $Param{Data}->{ArticleSenderType} || '';
-    my $ArticleOrder      = $Param{Data}->{ArticleOrder}      || 'ASC';
-    my $ArticleLimit      = $Param{Data}->{ArticleLimit}      || 0;
-    my $Attachments       = $Param{Data}->{Attachments}       || 0;
-    my $ReturnData        = {
+    my $DynamicFields = $Param{Data}->{DynamicFields} || 0;
+    my $Extended      = $Param{Data}->{Extended}      || 0;
+    my $AllArticles   = $Param{Data}->{AllArticles}   || 0;
+    my $ArticleOrder  = $Param{Data}->{ArticleOrder}  || 'ASC';
+    my $ArticleLimit  = $Param{Data}->{ArticleLimit}  || 0;
+    my $Attachments   = $Param{Data}->{Attachments}   || 0;
+    my $ReturnData    = {
         Success => 1,
     };
     my @Item;
+
+    my $ArticleSenderType = '';
+    if ( IsArrayRefWithData( $Param{Data}->{ArticleSenderType} ) ) {
+        $ArticleSenderType = $Param{Data}->{ArticleSenderType};
+    }
+    elsif ( IsStringWithData( $Param{Data}->{ArticleSenderType} ) ) {
+        $ArticleSenderType = [ $Param{Data}->{ArticleSenderType} ]
+    }
 
     # start ticket loop
     TICKET:
@@ -376,9 +382,15 @@ sub Run {
             next TICKET;
         }
 
+        my $ArticleTypes;
+        if ( $UserType eq 'Customer' ) {
+            $ArticleTypes = [ $TicketObject->ArticleTypeList( Type => 'Customer' ) ];
+        }
+
         my @ArticleBoxRaw = $TicketObject->ArticleGet(
             TicketID          => $TicketID,
             ArticleSenderType => $ArticleSenderType,
+            ArticleType       => $ArticleTypes,
             DynamicFields     => $DynamicFields,
             Extended          => $Extended,
             Order             => $ArticleOrder,

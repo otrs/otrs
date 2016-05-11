@@ -12,6 +12,7 @@ use strict;
 use warnings;
 
 use Kernel::System::VariableCheck qw(:all);
+use Kernel::Language qw(Translatable);
 
 our $ObjectManagerDisabled = 1;
 
@@ -84,7 +85,7 @@ sub Run {
 
             # add server error error class
             $Error{NameServerError}        = 'ServerError';
-            $Error{NameServerErrorMessage} = 'This field is required';
+            $Error{NameServerErrorMessage} = Translatable('This field is required');
         }
 
         # if there is an error return to edit screen
@@ -106,7 +107,7 @@ sub Run {
         # show error if can't generate a new EntityID
         if ( !$EntityID ) {
             return $LayoutObject->ErrorScreen(
-                Message => "There was an error generating a new EntityID for this Transition",
+                Message => Translatable('There was an error generating a new EntityID for this Transition'),
             );
         }
 
@@ -121,7 +122,7 @@ sub Run {
         # show error if can't create
         if ( !$TransitionID ) {
             return $LayoutObject->ErrorScreen(
-                Message => "There was an error creating the Transition",
+                Message => Translatable('There was an error creating the Transition'),
             );
         }
 
@@ -136,8 +137,10 @@ sub Run {
         # show error if can't set
         if ( !$Success ) {
             return $LayoutObject->ErrorScreen(
-                Message => "There was an error setting the entity sync status for Transition "
-                    . "entity:$EntityID",
+                Message => $LayoutObject->{LanguageObject}->Translate(
+                    'There was an error setting the entity sync status for Transition entity: %s',
+                    $EntityID
+                ),
             );
         }
 
@@ -213,7 +216,7 @@ sub Run {
         # check for TransitionID
         if ( !$TransitionID ) {
             return $LayoutObject->ErrorScreen(
-                Message => "Need TransitionID!",
+                Message => Translatable('Need TransitionID!'),
             );
         }
 
@@ -229,7 +232,10 @@ sub Run {
         # check for valid Transition data
         if ( !IsHashRefWithData($TransitionData) ) {
             return $LayoutObject->ErrorScreen(
-                Message => "Could not get data for TransitionID $TransitionID",
+                Message => $LayoutObject->{LanguageObject}->Translate(
+                    'Could not get data for TransitionID %s',
+                    $TransitionID
+                ),
             );
         }
 
@@ -267,7 +273,7 @@ sub Run {
 
             # add server error error class
             $Error{NameServerError}        = 'ServerError';
-            $Error{NameServerErrorMessage} = 'This field is required';
+            $Error{NameServerErrorMessage} = Translatable('This field is required');
         }
 
         # if there is an error return to edit screen
@@ -292,7 +298,7 @@ sub Run {
         # show error if can't update
         if ( !$Success ) {
             return $LayoutObject->ErrorScreen(
-                Message => "There was an error updating the Transition",
+                Message => Translatable('There was an error updating the Transition'),
             );
         }
 
@@ -307,8 +313,10 @@ sub Run {
         # show error if can't set
         if ( !$Success ) {
             return $LayoutObject->ErrorScreen(
-                Message => "There was an error setting the entity sync status for Transition "
-                    . "entity:$TransitionData->{EntityID}",
+                Message => $LayoutObject->{LanguageObject}->Translate(
+                    'There was an error setting the entity sync status for Transition entity: %s',
+                    $TransitionData->{EntityID}
+                ),
             );
         }
 
@@ -393,7 +401,7 @@ sub Run {
     # ------------------------------------------------------------ #
     else {
         return $LayoutObject->ErrorScreen(
-            Message => "This subaction is not valid",
+            Message => Translatable('This subaction is not valid'),
         );
     }
 }
@@ -447,10 +455,13 @@ sub _ShowEdit {
     }
 
     if ( defined $Param{Action} && $Param{Action} eq 'Edit' ) {
-        $Param{Title} = "Edit Transition \"$TransitionData->{Name}\"";
+        $Param{Title} = $LayoutObject->{LanguageObject}->Translate(
+            'Edit Transition "%s"',
+            $TransitionData->{Name}
+        );
     }
     else {
-        $Param{Title} = 'Create New Transition';
+        $Param{Title} = Translatable('Create New Transition');
     }
 
     my $Output = $LayoutObject->Header(
@@ -459,7 +470,11 @@ sub _ShowEdit {
     );
 
     $Param{FreshConditionLinking} = $LayoutObject->BuildSelection(
-        Data        => [ 'and', 'or', 'xor' ],
+        Data => {
+            'and' => Translatable('and'),
+            'or'  => Translatable('or'),
+            'xor' => Translatable('xor')
+        },
         Name        => "ConditionLinking[_INDEX_]",
         Sort        => 'AlphanumericKey',
         Translation => 1,
@@ -468,14 +483,14 @@ sub _ShowEdit {
 
     $Param{FreshConditionFieldType} = $LayoutObject->BuildSelection(
         Data => {
-            'String' => 'String',
+            'String' => Translatable('String'),
 
           # disable hash and array selection here, because there is no practical way to enter the needed data in the GUI
           # TODO: implement a possibility to enter the data in a correct way in the GUI
           #'Hash'   => 'Hash',
           #'Array'  => 'Array',
-            'Regexp' => 'Regexp',
-            'Module' => 'Transition Validation Module'
+            'Regexp' => Translatable('Regular expression'),
+            'Module' => Translatable('Transition validation module')
         },
         SelectedID   => 'String',
         Name         => "ConditionFieldType[_INDEX_][_FIELDINDEX_]",
@@ -488,7 +503,11 @@ sub _ShowEdit {
     if ( defined $Param{Action} && $Param{Action} eq 'Edit' ) {
 
         $Param{OverallConditionLinking} = $LayoutObject->BuildSelection(
-            Data        => [ 'and', 'or', 'xor' ],
+            Data => {
+                'and' => Translatable('and'),
+                'or'  => Translatable('or'),
+                'xor' => Translatable('xor')
+            },
             Name        => 'OverallConditionLinking',
             ID          => 'OverallConditionLinking',
             Sort        => 'AlphanumericKey',
@@ -504,7 +523,11 @@ sub _ShowEdit {
             my %ConditionData = %{ $TransitionData->{Config}->{Condition}->{$Condition} };
 
             my $ConditionLinking = $LayoutObject->BuildSelection(
-                Data        => [ 'and', 'or', 'xor' ],
+                Data => {
+                    'and' => Translatable('and'),
+                    'or'  => Translatable('or'),
+                    'xor' => Translatable('xor')
+                },
                 Name        => "ConditionLinking[$Condition]",
                 Sort        => 'AlphanumericKey',
                 Translation => 1,
@@ -526,14 +549,14 @@ sub _ShowEdit {
                 my %FieldData          = %{ $ConditionData{Fields}->{$Field} };
                 my $ConditionFieldType = $LayoutObject->BuildSelection(
                     Data => {
-                        'String' => 'String',
+                        'String' => Translatable('String'),
 
           # disable hash and array selection here, because there is no practical way to enter the needed data in the GUI
           # TODO: implement a possibility to enter the data in a correct way in the GUI
           #'Hash'   => 'Hash',
           #'Array'  => 'Array',
-                        'Regexp' => 'Regexp',
-                        'Module' => 'Transition Validation Module'
+                        'Regexp' => Translatable('Regular expression'),
+                        'Module' => Translatable('Transition validation module')
                     },
                     Name         => "ConditionFieldType[$Condition][$Field]",
                     Sort         => 'AlphanumericKey',
@@ -574,7 +597,11 @@ sub _ShowEdit {
     else {
 
         $Param{OverallConditionLinking} = $LayoutObject->BuildSelection(
-            Data        => [ 'and', 'or', 'xor' ],
+            Data => {
+                'and' => Translatable('and'),
+                'or'  => Translatable('or'),
+                'xor' => Translatable('xor')
+            },
             Name        => 'OverallConditionLinking',
             ID          => 'OverallConditionLinking',
             Sort        => 'AlphanumericKey',
@@ -583,7 +610,11 @@ sub _ShowEdit {
         );
 
         $Param{ConditionLinking} = $LayoutObject->BuildSelection(
-            Data        => [ 'and', 'or', 'xor' ],
+            Data => {
+                'and' => Translatable('and'),
+                'or'  => Translatable('or'),
+                'xor' => Translatable('xor')
+            },
             Name        => 'ConditionLinking[_INDEX_]',
             Sort        => 'AlphanumericKey',
             Translation => 1,
@@ -592,14 +623,14 @@ sub _ShowEdit {
 
         $Param{ConditionFieldType} = $LayoutObject->BuildSelection(
             Data => {
-                'String' => 'String',
+                'String' => Translatable('String'),
 
           # disable hash and array selection here, because there is no practical way to enter the needed data in the GUI
           # TODO: implement a possibility to enter the data in a correct way in the GUI
           #'Hash'   => 'Hash',
           #'Array'  => 'Array',
-                'Regexp' => 'Regexp',
-                'Module' => 'Transition Validation Module'
+                'Regexp' => Translatable('Regular expression'),
+                'Module' => Translatable('Transition validation module')
             },
             Name        => 'ConditionFieldType[_INDEX_][_FIELDINDEX_]',
             Sort        => 'AlphanumericKey',

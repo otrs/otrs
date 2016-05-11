@@ -335,6 +335,58 @@ console.log(22);
         Result => '
 ',
     },
+
+    {
+        Name     => 'JSData 1',
+        Template => '
+[% PROCESS JSData
+    Key   = "Config.Test"
+    Value = 123
+%]
+[% PROCESS JSData
+    Key   = "Config.Test2"
+    Value = [1, 2, { test => "test"}]
+%]',
+        Result => '
+
+',
+    },
+    {
+        Name      => 'JSData 2 with AddJSData()',
+        Template  => '',
+        AddJSData => {
+            Key   => 'Perl.Code',
+            Value => { Perl => 'Data' }
+        },
+        Result => '',
+    },
+    {
+        Name     => 'JSDataInsert',
+        Template => '
+[% PROCESS "JSDataInsert" -%]',
+        Result => '
+Core.Config.AddConfig({
+   "Config.Test" : 123,
+   "Config.Test2" : [
+      1,
+      2,
+      {
+         "test" : "test"
+      }
+   ],
+   "Perl.Code" : {
+      "Perl" : "Data"
+   }
+}
+);
+',
+    },
+    {
+        Name     => 'JSDataInsert, no data',
+        Template => '[% PROCESS "JSDataInsert" -%]',
+        Result   => '',
+    },
+
     {
         Name     => 'Form without ChallengeToken',
         Template => '
@@ -422,7 +474,7 @@ EOF
 
 for my $Test (@Tests) {
 
-    # Make sure EnvRef is populated every time
+    # make sure EnvRef is populated every time
     delete $LayoutObject->{EnvRef};
     for my $Key ( sort keys %{ $Test->{Env} || {} } ) {
         $LayoutObject->{$Key} = $Test->{Env}->{$Key};
@@ -438,6 +490,12 @@ for my $Test (@Tests) {
         );
     }
 
+    if ( $Test->{AddJSData} ) {
+        $LayoutObject->AddJSData(
+            %{ $Test->{AddJSData} },
+        );
+    }
+
     my $Result = $LayoutObject->Output(
         Template => $Test->{Template},
         Data     => $Test->{Data} // {},
@@ -450,8 +508,8 @@ for my $Test (@Tests) {
     );
 }
 
-# Verify that the TemplateObject is correctly destroyed to make sure there
-#   are no ring references.
+# verify that the TemplateObject is correctly destroyed to make sure there
+# are no ring references.
 my $TemplateObject = $LayoutObject->{TemplateObject};
 
 Scalar::Util::weaken($TemplateObject);

@@ -40,8 +40,8 @@ sub Run {
     for my $Needed (qw(ArticleID TicketID QueueID)) {
         if ( !defined $Self->{$Needed} ) {
             return $LayoutObject->ErrorScreen(
-                Message => "$Needed is needed!",
-                Comment => 'Please contact your administrator',
+                Message => $LayoutObject->{LanguageObject}->Translate( '%s is needed!', $Needed ),
+                Comment => Translatable('Please contact your administrator'),
             );
         }
     }
@@ -162,7 +162,10 @@ sub Run {
         # check if plain article exists
         if ( !$TicketObject->ArticlePlain( ArticleID => $Self->{ArticleID} ) ) {
             return $LayoutObject->ErrorScreen(
-                Message => "Plain article not found for article $Self->{ArticleID}!",
+                Message => $LayoutObject->{LanguageObject}->Translate(
+                    'Plain article not found for article %s!',
+                    $Self->{ArticleID}
+                ),
             );
         }
 
@@ -175,7 +178,10 @@ sub Run {
         # Check if article is from the same TicketID as we checked permissions for.
         if ( $Article{TicketID} ne $Self->{TicketID} ) {
             return $LayoutObject->ErrorScreen(
-                Message => "Article does not belong to ticket $Self->{TicketID}!",
+                Message => $LayoutObject->{LanguageObject}->Translate(
+                    'Article does not belong to ticket %s!',
+                    $Self->{TicketID}
+                ),
             );
         }
 
@@ -309,8 +315,8 @@ $Param{Signature}";
 
         # get params
         for my $Parameter (qw(From BounceTo To Subject Body InformSender BounceStateID)) {
-            $Param{$Parameter}
-                = $Kernel::OM->Get('Kernel::System::Web::Request')->GetParam( Param => $Parameter ) || '';
+            $Param{$Parameter} = $Kernel::OM->Get('Kernel::System::Web::Request')->GetParam( Param => $Parameter )
+                || '';
         }
 
         my %Error;
@@ -447,8 +453,8 @@ $Param{Signature}";
         # error page
         if ( !$Bounce ) {
             return $LayoutObject->ErrorScreen(
-                Message => "Can't bounce email!",
-                Comment => 'Please contact the admin.',
+                Message => Translatable('Can\'t bounce email!'),
+                Comment => Translatable('Please contact the admin.'),
             );
         }
 
@@ -490,8 +496,8 @@ $Param{Signature}";
             # error page
             if ( !$ArticleID ) {
                 return $LayoutObject->ErrorScreen(
-                    Message => "Can't send email!",
-                    Comment => 'Please contact the admin.',
+                    Message => Translatable('Can\'t send email!'),
+                    Comment => Translatable('Please contact the admin.'),
                 );
             }
         }
@@ -531,8 +537,8 @@ $Param{Signature}";
         );
     }
     return $LayoutObject->ErrorScreen(
-        Message => 'Wrong Subaction!!',
-        Comment => 'Please contact your administrator',
+        Message => Translatable('Wrong Subaction!'),
+        Comment => Translatable('Please contact your administrator'),
     );
 }
 

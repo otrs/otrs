@@ -15,8 +15,7 @@ use vars (qw($Self));
 # get helper object
 $Kernel::OM->ObjectParamAdd(
     'Kernel::System::UnitTest::Helper' => {
-        RestoreSystemConfiguration => 1,
-        RestoreDatabase            => 1,
+        RestoreDatabase => 1,
     },
 );
 my $HelperObject = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
@@ -98,12 +97,9 @@ my %WorkingHours = (
 for my $Hours ( sort keys %WorkingHours ) {
 
     # An unique indentifier, so that data from different test runs won't be mixed up.
-    my $UniqueSignature = sprintf
-        'UnitTest-OTRSEscalationEvents-%010d-%06d',
-        time(),
-        int( rand 1_000_000 );
+    my $UniqueSignature    = $HelperObject->GetRandomID();
     my $StartingSystemTime = $TimeObject->SystemTime();
-    my $StartingTimeStamp = $TimeObject->SystemTime2TimeStamp( SystemTime => $StartingSystemTime );
+    my $StartingTimeStamp  = $TimeObject->SystemTime2TimeStamp( SystemTime => $StartingSystemTime );
 
     # get config object
     my $ConfigObject = $Kernel::OM->Get('Kernel::Config');

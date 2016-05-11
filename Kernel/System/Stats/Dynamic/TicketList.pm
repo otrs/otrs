@@ -18,6 +18,7 @@ use Kernel::Language qw(Translatable);
 
 our @ObjectDependencies = (
     'Kernel::Config',
+    'Kernel::Language',
     'Kernel::System::DB',
     'Kernel::System::DynamicField',
     'Kernel::System::DynamicField::Backend',
@@ -1272,16 +1273,17 @@ sub GetStatTable {
         for my $Attribute ( @{$SortedAttributesRef} ) {
             next ATTRIBUTE if !$TicketAttributes{$Attribute};
 
-            # add the given TimeZone for time values
+            # convert from OTRS time zone to given time zone
             if (
                 $Param{TimeZone}
                 && $Ticket{$Attribute}
                 && $Ticket{$Attribute} =~ /(\d{4})-(\d{2})-(\d{2})\s(\d{2}):(\d{2}):(\d{2})/
                 )
             {
-                $Ticket{$Attribute} = $Kernel::OM->Get('Kernel::System::Stats')->_AddTimeZone(
-                    TimeStamp => $Ticket{$Attribute},
-                    TimeZone  => $Param{TimeZone},
+
+                $Ticket{$Attribute} = $Kernel::OM->Get('Kernel::System::Stats')->_FromOTRSTimeZone(
+                    String   => $Ticket{$Attribute},
+                    TimeZone => $Param{TimeZone},
                 );
                 $Ticket{$Attribute} .= " ($Param{TimeZone})";
             }
@@ -1320,10 +1322,13 @@ sub GetHeaderLine {
     my $SortedAttributesRef = $Self->_SortedAttributes();
     my @HeaderLine;
 
+    # get language object
+    my $LanguageObject = $Kernel::OM->Get('Kernel::Language');
+
     ATTRIBUTE:
     for my $Attribute ( @{$SortedAttributesRef} ) {
         next ATTRIBUTE if !$SelectedAttributes{$Attribute};
-        push @HeaderLine, $TicketAttributes->{$Attribute};
+        push @HeaderLine, $LanguageObject->Translate( $TicketAttributes->{$Attribute} );
     }
     return \@HeaderLine;
 }

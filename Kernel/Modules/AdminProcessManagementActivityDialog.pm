@@ -179,14 +179,14 @@ sub Run {
 
             # add server error error class
             $Error{NameServerError}        = 'ServerError';
-            $Error{NameServerErrorMessage} = 'This field is required';
+            $Error{NameServerErrorMessage} = Translatable('This field is required');
         }
 
         if ( !$GetParam->{DescriptionShort} ) {
 
             # add server error error class
             $Error{DescriptionShortServerError} = 'ServerError';
-            $Error{DecriptionShortErrorMessage} = 'This field is required';
+            $Error{DecriptionShortErrorMessage} = Translatable('This field is required');
         }
 
         # check if permission exists
@@ -259,8 +259,10 @@ sub Run {
         # show error if can't set
         if ( !$Success ) {
             return $LayoutObject->ErrorScreen(
-                Message => Translatable("There was an error setting the entity sync status for ActivityDialog")
-                    . " entity:$EntityID",
+                Message => $LayoutObject->{LanguageObject}->Translate(
+                    'There was an error setting the entity sync status for ActivityDialog entity: %s',
+                    $EntityID
+                ),
             );
         }
 
@@ -348,7 +350,10 @@ sub Run {
         # check for valid Activity Dialog data
         if ( !IsHashRefWithData($ActivityDialogData) ) {
             return $LayoutObject->ErrorScreen(
-                Message => Translatable("Could not get data for ActivityDialogIDTranslatable") . " $ActivityDialogID",
+                Message => $LayoutObject->{LanguageObject}->Translate(
+                    'Could not get data for ActivityDialogID %s',
+                    $ActivityDialogID
+                ),
             );
         }
 
@@ -439,14 +444,14 @@ sub Run {
 
             # add server error error class
             $Error{NameServerError}        = 'ServerError';
-            $Error{NameServerErrorMessage} = 'This field is required';
+            $Error{NameServerErrorMessage} = Translatable('This field is required');
         }
 
         if ( !$GetParam->{DescriptionShort} ) {
 
             # add server error error class
             $Error{DescriptionShortServerError} = 'ServerError';
-            $Error{DecriptionShortErrorMessage} = 'This field is required';
+            $Error{DecriptionShortErrorMessage} = Translatable('This field is required');
         }
 
         # check if permission exists
@@ -508,8 +513,10 @@ sub Run {
         # show error if can't set
         if ( !$Success ) {
             return $LayoutObject->ErrorScreen(
-                Message => Translatable("There was an error setting the entity sync status for ActivityDialog")
-                    . " entity:$ActivityDialogData->{EntityID}",
+                Message => $LayoutObject->{LanguageObject}->Translate(
+                    'There was an error setting the entity sync status for ActivityDialog entity: %s',
+                    $ActivityDialogData->{EntityID}
+                ),
             );
         }
 
@@ -769,7 +776,10 @@ sub _ShowEdit {
             );
         }
 
-        $Param{Title} = "Edit Activity Dialog \"$ActivityDialogData->{Name}\"";
+        $Param{Title} = $LayoutObject->{LanguageObject}->Translate(
+            'Edit Activity Dialog "%s"',
+            $ActivityDialogData->{Name}
+        );
     }
     else {
 
@@ -795,7 +805,7 @@ sub _ShowEdit {
             );
         }
 
-        $Param{Title} = 'Create New Activity Dialog';
+        $Param{Title} = Translatable('Create New Activity Dialog');
     }
 
     # get interface infos
@@ -818,9 +828,9 @@ sub _ShowEdit {
     # create interface selection
     $Param{InterfaceSelection} = $LayoutObject->BuildSelection(
         Data => {
-            AgentInterface    => 'Agent Interface',
-            CustomerInterface => 'Customer Interface',
-            BothInterfaces    => 'Agent and Customer Interface',
+            AgentInterface    => Translatable('Agent Interface'),
+            CustomerInterface => Translatable('Customer Interface'),
+            BothInterfaces    => Translatable('Agent and Customer Interface'),
         },
         Name         => 'Interface',
         ID           => 'Interface',
@@ -846,8 +856,8 @@ sub _ShowEdit {
     # create "required lock" selection
     $Param{RequiredLockSelection} = $LayoutObject->BuildSelection(
         Data => {
-            0 => 'No',
-            1 => 'Yes',
+            0 => Translatable('No'),
+            1 => Translatable('Yes'),
         },
         Name        => 'RequiredLock',
         ID          => 'RequiredLock',
@@ -860,9 +870,9 @@ sub _ShowEdit {
     # create Display selection
     $Param{DisplaySelection} = $LayoutObject->BuildSelection(
         Data => {
-            0 => 'Do not show Field',
-            1 => 'Show Field',
-            2 => 'Show Field As Mandatory',
+            0 => Translatable('Do not show Field'),
+            1 => Translatable('Show Field'),
+            2 => Translatable('Show Field As Mandatory'),
         },
         Name        => 'Display',
         ID          => 'Display',
@@ -891,8 +901,8 @@ sub _ShowEdit {
     );
 
     my %TimeUnitsSelectionList = (
-        0 => 'Do not show Field',
-        2 => 'Show Field As Mandatory',
+        0 => Translatable('Do not show Field'),
+        2 => Translatable('Show Field As Mandatory'),
     );
 
     if ( !$ConfigObject->Get('Ticket::Frontend::NeedAccountedTime') ) {

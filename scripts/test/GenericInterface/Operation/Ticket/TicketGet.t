@@ -21,12 +21,8 @@ use Kernel::GenericInterface::Operation::Ticket::TicketGet;
 
 use Kernel::System::VariableCheck qw(:all);
 
-# get needed objects
+# get config object
 my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
-my $MainObject   = $Kernel::OM->Get('Kernel::System::Main');
-
-# get a random id
-my $RandomID = int rand 1_000_000_000;
 
 # disable SessionCheckRemoteIP setting
 $ConfigObject->Set(
@@ -34,7 +30,7 @@ $ConfigObject->Set(
     Value => 0,
 );
 
-# helper object
+# get helper object
 # skip SSL certificate verification
 $Kernel::OM->ObjectParamAdd(
     'Kernel::System::UnitTest::Helper' => {
@@ -42,11 +38,13 @@ $Kernel::OM->ObjectParamAdd(
         SkipSSLVerify              => 1,
     },
 );
+my $Helper = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
 
-my $HelperObject = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
+# get a random number
+my $RandomID = $Helper->GetRandomNumber();
 
 # create a new user for current test
-my $UserLogin = $HelperObject->TestUserCreate(
+my $UserLogin = $Helper->TestUserCreate(
     Groups => ['users'],
 );
 my $Password = $UserLogin;
@@ -56,15 +54,15 @@ my $UserID = $Kernel::OM->Get('Kernel::System::User')->UserLookup(
 );
 
 # create a new user without permissions for current test
-my $UserLogin2 = $HelperObject->TestUserCreate();
+my $UserLogin2 = $Helper->TestUserCreate();
 my $Password2  = $UserLogin2;
 
 # create a customer where a ticket will use and will have permissions
-my $CustomerUserLogin = $HelperObject->TestCustomerUserCreate();
+my $CustomerUserLogin = $Helper->TestCustomerUserCreate();
 my $CustomerPassword  = $CustomerUserLogin;
 
 # create a customer that will not have permissions
-my $CustomerUserLogin2 = $HelperObject->TestCustomerUserCreate();
+my $CustomerUserLogin2 = $Helper->TestCustomerUserCreate();
 my $CustomerPassword2  = $CustomerUserLogin2;
 
 my %SkipFields = (
@@ -80,128 +78,79 @@ my %SkipFields = (
     UpdateTimeWorkingTime     => 1,
 );
 
-# start DynamicFields
-my @TestDynamicFields;
+# create dynamic field properties
+my @DynamicFieldProperties = (
+    {
+        Name       => "DFT1$RandomID",
+        FieldOrder => 9991,
+        FieldType  => 'Text',
+        Config     => {
+            DefaultValue => 'Default',
+        },
+    },
+    {
+        Name       => "DFT2$RandomID",
+        FieldOrder => 9992,
+        FieldType  => 'Dropdown',
+        Config     => {
+            DefaultValue   => 'Default',
+            PossibleValues => {
+                ticket1_field2 => 'ticket1_field2',
+                ticket2_field2 => 'ticket2_field2',
+            },
+        },
+    },
+    {
+        Name       => "DFT3$RandomID",
+        FieldOrder => 9993,
+        FieldType  => 'DateTime',        # mandatory, selects the DF backend to use for this field
+        Config     => {
+            DefaultValue => 'Default',
+        },
+    },
+    {
+        Name       => "DFT4$RandomID",
+        FieldOrder => 9993,
+        FieldType  => 'Checkbox',        # mandatory, selects the DF backend to use for this field
+        Config     => {
+            DefaultValue => 'Default',
+        },
+    },
+    {
+        Name       => "DFT5$RandomID",
+        FieldOrder => 9995,
+        FieldType  => 'Multiselect',     # mandatory, selects the DF backend to use for this field
+        Config     => {
+            DefaultValue   => [ 'ticket2_field5', 'ticket4_field5' ],
+            PossibleValues => {
+                ticket1_field5 => 'ticket1_field51',
+                ticket2_field5 => 'ticket2_field52',
+                ticket3_field5 => 'ticket2_field53',
+                ticket4_field5 => 'ticket2_field54',
+                ticket5_field5 => 'ticket2_field55',
+            },
+        },
+    }
+);
 
+# create dynamic fields
 my $DynamicFieldObject = $Kernel::OM->Get('Kernel::System::DynamicField');
+my @TestFieldConfig;
 
-# create a dynamic field
-my $FieldID1 = $DynamicFieldObject->DynamicFieldAdd(
-    Name       => "DFT1$RandomID",
-    Label      => 'Description',
-    FieldOrder => 9991,
-    FieldType  => 'Text',
-    ObjectType => 'Ticket',
-    Config     => {
-        DefaultValue => 'Default',
-    },
-    ValidID => 1,
-    UserID  => 1,
-    Reorder => 0,
-);
+for my $DynamicFieldProperty (@DynamicFieldProperties) {
+    my $FieldID = $DynamicFieldObject->DynamicFieldAdd(
+        %{$DynamicFieldProperty},
+        Label      => 'Description',
+        ObjectType => 'Ticket',
+        ValidID    => 1,
+        UserID     => 1,
+        Reorder    => 0,
+    );
 
-push @TestDynamicFields, $FieldID1;
-
-my $Field1Config = $DynamicFieldObject->DynamicFieldGet(
-    ID => $FieldID1,
-);
-
-# create a dynamic field
-my $FieldID2 = $DynamicFieldObject->DynamicFieldAdd(
-    Name       => "DFT2$RandomID",
-    Label      => 'Description',
-    FieldOrder => 9992,
-    FieldType  => 'Dropdown',
-    ObjectType => 'Ticket',
-    Config     => {
-        DefaultValue   => 'Default',
-        PossibleValues => {
-            ticket1_field2 => 'ticket1_field2',
-            ticket2_field2 => 'ticket2_field2',
-        },
-    },
-    ValidID => 1,
-    UserID  => 1,
-    Reorder => 0,
-);
-
-my $Field2Config = $DynamicFieldObject->DynamicFieldGet(
-    ID => $FieldID2,
-);
-
-push @TestDynamicFields, $FieldID2;
-
-# create a dynamic field
-my $FieldID3 = $DynamicFieldObject->DynamicFieldAdd(
-    Name       => "DFT3$RandomID",
-    Label      => 'Description',
-    FieldOrder => 9993,
-    FieldType  => 'DateTime',        # mandatory, selects the DF backend to use for this field
-    ObjectType => 'Ticket',
-    Config     => {
-        DefaultValue => 'Default',
-    },
-    ValidID => 1,
-    UserID  => 1,
-    Reorder => 0,
-);
-
-my $Field3Config = $DynamicFieldObject->DynamicFieldGet(
-    ID => $FieldID3,
-);
-
-push @TestDynamicFields, $FieldID3;
-
-# create a dynamic field
-my $FieldID4 = $DynamicFieldObject->DynamicFieldAdd(
-    Name       => "DFT4$RandomID",
-    Label      => 'Description',
-    FieldOrder => 9993,
-    FieldType  => 'Checkbox',        # mandatory, selects the DF backend to use for this field
-    ObjectType => 'Ticket',
-    Config     => {
-        DefaultValue => 'Default',
-    },
-    ValidID => 1,
-    UserID  => 1,
-    Reorder => 0,
-);
-
-my $Field4Config = $DynamicFieldObject->DynamicFieldGet(
-    ID => $FieldID4,
-);
-
-push @TestDynamicFields, $FieldID4;
-
-# create a dynamic field
-my $FieldID5 = $DynamicFieldObject->DynamicFieldAdd(
-    Name       => "DFT5$RandomID",
-    Label      => 'Description',
-    FieldOrder => 9995,
-    FieldType  => 'Multiselect',     # mandatory, selects the DF backend to use for this field
-    ObjectType => 'Ticket',
-    Config     => {
-        DefaultValue   => [ 'ticket2_field5', 'ticket4_field5' ],
-        PossibleValues => {
-            ticket1_field5 => 'ticket1_field51',
-            ticket2_field5 => 'ticket2_field52',
-            ticket3_field5 => 'ticket2_field53',
-            ticket4_field5 => 'ticket2_field54',
-            ticket5_field5 => 'ticket2_field55',
-        },
-    },
-    ValidID => 1,
-    UserID  => 1,
-    Reorder => 0,
-);
-
-my $Field5Config = $DynamicFieldObject->DynamicFieldGet(
-    ID => $FieldID5,
-);
-
-push @TestDynamicFields, $FieldID5;
-
-# finish DynamicFields
+    push @TestFieldConfig, $DynamicFieldObject->DynamicFieldGet(
+        ID => $FieldID,
+    );
+}
 
 # create ticket object
 my $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
@@ -239,35 +188,35 @@ $Self->Is(
 );
 
 $BackendObject->ValueSet(
-    DynamicFieldConfig => $Field1Config,
+    DynamicFieldConfig => $TestFieldConfig[0],
     ObjectID           => $TicketID1,
     Value              => 'ticket1_field1',
     UserID             => 1,
 );
 
 $BackendObject->ValueSet(
-    DynamicFieldConfig => $Field2Config,
+    DynamicFieldConfig => $TestFieldConfig[1],
     ObjectID           => $TicketID1,
     Value              => 'ticket1_field2',
     UserID             => 1,
 );
 
 $BackendObject->ValueSet(
-    DynamicFieldConfig => $Field3Config,
+    DynamicFieldConfig => $TestFieldConfig[2],
     ObjectID           => $TicketID1,
     Value              => '2001-01-01 01:01:01',
     UserID             => 1,
 );
 
 $BackendObject->ValueSet(
-    DynamicFieldConfig => $Field4Config,
+    DynamicFieldConfig => $TestFieldConfig[3],
     ObjectID           => $TicketID1,
     Value              => '0',
     UserID             => 1,
 );
 
 $BackendObject->ValueSet(
-    DynamicFieldConfig => $Field5Config,
+    DynamicFieldConfig => $TestFieldConfig[4],
     ObjectID           => $TicketID1,
     Value              => [ 'ticket1_field51', 'ticket1_field52', 'ticket1_field53' ],
     UserID             => 1,
@@ -374,35 +323,35 @@ $Self->True(
 
 # set dynamic field values
 $BackendObject->ValueSet(
-    DynamicFieldConfig => $Field1Config,
+    DynamicFieldConfig => $TestFieldConfig[0],
     ObjectID           => $TicketID2,
     Value              => 'ticket2_field1',
     UserID             => 1,
 );
 
 $BackendObject->ValueSet(
-    DynamicFieldConfig => $Field2Config,
+    DynamicFieldConfig => $TestFieldConfig[1],
     ObjectID           => $TicketID2,
     Value              => 'ticket2_field2',
     UserID             => 1,
 );
 
 $BackendObject->ValueSet(
-    DynamicFieldConfig => $Field3Config,
+    DynamicFieldConfig => $TestFieldConfig[2],
     ObjectID           => $TicketID2,
     Value              => '2011-11-11 11:11:11',
     UserID             => 1,
 );
 
 $BackendObject->ValueSet(
-    DynamicFieldConfig => $Field4Config,
+    DynamicFieldConfig => $TestFieldConfig[3],
     ObjectID           => $TicketID2,
     Value              => '1',
     UserID             => 1,
 );
 
 $BackendObject->ValueSet(
-    DynamicFieldConfig => $Field5Config,
+    DynamicFieldConfig => $TestFieldConfig[4],
     ObjectID           => $TicketID2,
     Value              => [
         'ticket1_field5',
@@ -547,7 +496,27 @@ my $ArticleID41 = $TicketObject->ArticleCreate(
 my $ArticleID42 = $TicketObject->ArticleCreate(
     TicketID    => $TicketID4,
     ArticleType => 'phone',
-    SenderType  => 'agent',
+    SenderType  => 'customer',
+    From        => 'A not Real Agent <email@example.com>',
+    To          => 'Customer A <customer-a@example.com>',
+    Cc          => 'Customer B <customer-b@example.com>',
+    ReplyTo     => 'Customer B <customer-b@example.com>',
+    Subject     => 'second article',
+    Body        => 'A text for the body, not too long',
+    ContentType => 'text/plain; charset=ISO-8859-15',
+
+    #    Attachment     => \@Attachments,
+    HistoryType    => 'OwnerUpdate',
+    HistoryComment => 'second article',
+    UserID         => 1,
+    NoAgentNotify  => 1,
+);
+
+# third article
+my $ArticleID43 = $TicketObject->ArticleCreate(
+    TicketID    => $TicketID4,
+    ArticleType => 'note-internal',
+    SenderType  => 'customer',
     From        => 'A not Real Agent <email@example.com>',
     To          => 'Customer A <customer-a@example.com>',
     Cc          => 'Customer B <customer-b@example.com>',
@@ -586,7 +555,7 @@ for my $File (qw(xls txt doc png pdf)) {
     my $Location = $ConfigObject->Get('Home')
         . "/scripts/test/sample/StdAttachment/StdAttachment-Test1.$File";
 
-    my $ContentRef = $MainObject->FileRead(
+    my $ContentRef = $Kernel::OM->Get('Kernel::System::Main')->FileRead(
         Location => $Location,
         Mode     => 'binmode',
         Type     => 'Local',
@@ -607,9 +576,28 @@ my @ArticleBox = $TicketObject->ArticleGet(
     UserID   => 1,
 );
 
+my $CustomerArticleTypes = [ $TicketObject->ArticleTypeList( Type => 'Customer' ) ];
+my @ArticleBoxTypeCustomer = $TicketObject->ArticleGet(
+    TicketID    => $TicketID4,
+    UserID      => 1,
+    ArticleType => $CustomerArticleTypes,
+);
+
+my @ArticleBoxSenderAgent = $TicketObject->ArticleGet(
+    TicketID          => $TicketID4,
+    ArticleSenderType => ['agent'],
+    UserID            => 1,
+);
+
+my @ArticleBoxSenderCustomer = $TicketObject->ArticleGet(
+    TicketID          => $TicketID4,
+    ArticleSenderType => ['customer'],
+    UserID            => 1,
+);
+
 # start article loop
 ARTICLE:
-for my $Article (@ArticleBox) {
+for my $Article ( @ArticleBox, @ArticleBoxTypeCustomer, @ArticleBoxSenderAgent, @ArticleBoxSenderCustomer ) {
 
     for my $Key ( sort keys %{$Article} ) {
         if ( !$Article->{$Key} ) {
@@ -711,23 +699,7 @@ $Self->True(
 );
 
 # get remote host with some precautions for certain unit test systems
-my $Host;
-my $FQDN = $ConfigObject->Get('FQDN');
-
-# try to resolve FQDN host
-if ( $FQDN ne 'yourhost.example.com' && gethostbyname($FQDN) ) {
-    $Host = $FQDN;
-}
-
-# try to resolve local-host instead
-if ( !$Host && gethostbyname('localhost') ) {
-    $Host = 'localhost';
-}
-
-# use hard-coded local-host IP address
-if ( !$Host ) {
-    $Host = '127.0.0.1';
-}
+my $Host = $Helper->GetTestHTTPHostname();
 
 # prepare web-service config
 my $RemoteSystem =
@@ -1167,7 +1139,7 @@ my @Tests = (
             Data    => {
                 Ticket => {
                     %TicketEntryFour,
-                    Article => \@ArticleBox,
+                    Article => \@ArticleBoxTypeCustomer,
                 },
             },
         },
@@ -1175,11 +1147,11 @@ my @Tests = (
             Success => 1,
             Data    => {
                 Ticket => [
-                    {
+                    {    ## no critic
                         (
                             %TicketEntryFour,
-                            Article => \@ArticleBox,
-                            )
+                            Article => \@ArticleBoxTypeCustomer,
+                        ),
                     },
                 ],
             },
@@ -1217,6 +1189,103 @@ my @Tests = (
                     }
             },
             Success => 1
+        },
+        Operation => 'TicketGet',
+    },
+    {
+        Name           => 'Test Ticket 4 only agent sender articles',
+        SuccessRequest => '1',
+        RequestData    => {
+            TicketID          => $TicketID4,
+            AllArticles       => 1,
+            ArticleSenderType => ['agent'],
+        },
+        ExpectedReturnRemoteData => {
+            Success => 1,
+            Data    => {
+                Ticket => {
+                    %TicketEntryFour,
+                    Article => $ArticleBoxSenderAgent[0],
+                },
+            },
+        },
+        ExpectedReturnLocalData => {
+            Success => 1,
+            Data    => {
+                Ticket => [
+                    {    ## no critic
+                        (
+                            %TicketEntryFour,
+                            Article => \@ArticleBoxSenderAgent,
+                        ),
+                    },
+                ],
+            },
+        },
+        Operation => 'TicketGet',
+    },
+    {
+        Name           => 'Test Ticket 4 only agent sender articles (string)',
+        SuccessRequest => '1',
+        RequestData    => {
+            TicketID          => $TicketID4,
+            AllArticles       => 1,
+            ArticleSenderType => 'agent',
+        },
+        ExpectedReturnRemoteData => {
+            Success => 1,
+            Data    => {
+                Ticket => {
+                    %TicketEntryFour,
+                    Article => $ArticleBoxSenderAgent[0],
+                },
+            },
+        },
+        ExpectedReturnLocalData => {
+            Success => 1,
+            Data    => {
+                Ticket => [
+                    {    ## no critic
+                        (
+                            %TicketEntryFour,
+                            Article => \@ArticleBoxSenderAgent,
+                        ),
+                    },
+                ],
+            },
+        },
+        Operation => 'TicketGet',
+    },
+    {
+        Name           => 'Test Ticket 4 only customer sender articles',
+        SuccessRequest => '1',
+        RequestData    => {
+            TicketID          => $TicketID4,
+            AllArticles       => 1,
+            ArticleSenderType => ['customer'],
+            Attachments       => 1,
+        },
+        ExpectedReturnRemoteData => {
+            Success => 1,
+            Data    => {
+                Ticket => {
+                    %TicketEntryFour,
+                    Article => \@ArticleBoxSenderCustomer,
+                },
+            },
+        },
+        ExpectedReturnLocalData => {
+            Success => 1,
+            Data    => {
+                Ticket => [
+                    {    ## no critic
+                        (
+                            %TicketEntryFour,
+                            Article => \@ArticleBoxSenderCustomer,
+                        ),
+                    },
+                ],
+            },
         },
         Operation => 'TicketGet',
     },
@@ -1395,16 +1464,34 @@ for my $Test (@Tests) {
 
                 # Articles
                 if ( defined $RequesterResult->{Data}->{Ticket}->{Article} ) {
-                    for my $Article ( @{ $RequesterResult->{Data}->{Ticket}->{Article} } ) {
-                        for my $Key ( sort keys %{$Article} ) {
-                            if ( !$Article->{$Key} ) {
-                                $Article->{$Key} = '';
+                    if ( ref $RequesterResult->{Data}->{Ticket}->{Article} eq 'ARRAY' ) {
+                        for my $Article ( @{ $RequesterResult->{Data}->{Ticket}->{Article} } ) {
+                            for my $Key ( sort keys %{$Article} ) {
+                                if ( !$Article->{$Key} ) {
+                                    $Article->{$Key} = '';
+                                }
+                                if ( $SkipFields{$Key} ) {
+                                    delete $Article->{$Key};
+                                }
+                                if ( $Key eq 'Attachment' ) {
+                                    for my $Atm ( @{ $Article->{$Key} } ) {
+                                        $Atm->{ContentID}          = '';
+                                        $Atm->{ContentAlternative} = '';
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    elsif ( ref $RequesterResult->{Data}->{Ticket}->{Article} eq 'HASH' ) {
+                        for my $Key ( sort keys %{ $RequesterResult->{Data}->{Ticket}->{Article} } ) {
+                            if ( !$RequesterResult->{Data}->{Ticket}->{Article}->{$Key} ) {
+                                $RequesterResult->{Data}->{Ticket}->{Article}->{$Key} = '';
                             }
                             if ( $SkipFields{$Key} ) {
-                                delete $Article->{$Key};
+                                delete $RequesterResult->{Data}->{Ticket}->{Article}->{$Key};
                             }
                             if ( $Key eq 'Attachment' ) {
-                                for my $Atm ( @{ $Article->{$Key} } ) {
+                                for my $Atm ( @{ $RequesterResult->{Data}->{Ticket}->{Article}->{$Key} } ) {
                                     $Atm->{ContentID}          = '';
                                     $Atm->{ContentAlternative} = '';
                                 }
@@ -1445,9 +1532,9 @@ for my $Test (@Tests) {
 
 }    #end loop
 
-# clean up
+# cleanup
 
-# clean up web-service
+# delete web service
 my $WebserviceDelete = $WebserviceObject->WebserviceDelete(
     ID     => $WebserviceID,
     UserID => $UserID,
@@ -1457,9 +1544,8 @@ $Self->True(
     "Deleted Web Service $WebserviceID",
 );
 
+# delete tickets
 for my $TicketID (@TicketIDs) {
-
-    # delete the ticket Three
     my $TicketDelete = $TicketObject->TicketDelete(
         TicketID => $TicketID,
         UserID   => $UserID,
@@ -1472,11 +1558,12 @@ for my $TicketID (@TicketIDs) {
     );
 }
 
-for my $FieldID (@TestDynamicFields) {
+# delete the dynamic fields
+for my $TestFieldConfigItem (@TestFieldConfig) {
+    my $TestFieldConfigItemID = $TestFieldConfigItem->{ID};
 
-    # delete the dynamic field
     my $DFDelete = $DynamicFieldObject->DynamicFieldDelete(
-        ID      => $FieldID,
+        ID      => $TestFieldConfigItemID,
         UserID  => 1,
         Reorder => 0,
     );
@@ -1484,8 +1571,11 @@ for my $FieldID (@TestDynamicFields) {
     # sanity check
     $Self->True(
         $DFDelete,
-        "DynamicFieldDelete() successful for Field ID $FieldID",
+        "DynamicFieldDelete() successful for Field ID $TestFieldConfigItemID",
     );
 }
+
+# cleanup cache
+$Kernel::OM->Get('Kernel::System::Cache')->CleanUp();
 
 1;

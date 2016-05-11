@@ -12,14 +12,13 @@ use utf8;
 
 use vars (qw($Self));
 
-# get needed objects
-my $ConfigObject  = $Kernel::OM->Get('Kernel::Config');
+# get package object
 my $PackageObject = $Kernel::OM->Get('Kernel::System::Package');
 
 # get OTRS Version
-my $OTRSVersion = $ConfigObject->Get('Version');
+my $OTRSVersion = $Kernel::OM->Get('Kernel::Config')->Get('Version');
 
-# leave only mayor and minor level versions
+# leave only major and minor level versions
 $OTRSVersion =~ s{ (\d+ \. \d+) .+ }{$1}msx;
 
 # add x as patch level version
@@ -91,10 +90,19 @@ my $StringSecond = '<?xml version="1.0" encoding="utf-8" ?>
 </otrs_package>
 ';
 
-my $Verification = $PackageObject->PackageVerify(
-    Package => $String,
-    Name    => 'Test',
-);
+my $Verification;
+TRY:
+for my $Try ( 1 .. 5 ) {
+
+    $Verification = $PackageObject->PackageVerify(
+        Package => $String,
+        Name    => 'Test',
+    );
+
+    last TRY if $Verification ne 'unknown';
+
+    sleep 1;
+}
 
 $Self->Is(
     $Verification,
@@ -112,10 +120,18 @@ $Self->True(
     "PackageOnlineGet - get Support package from ftp.otrs.org",
 );
 
-$Verification = $PackageObject->PackageVerify(
-    Package => $Download,
-    Name    => 'Support',
-);
+TRY:
+for my $Try ( 1 .. 5 ) {
+
+    $Verification = $PackageObject->PackageVerify(
+        Package => $Download,
+        Name    => 'Support',
+    );
+
+    last TRY if $Verification ne 'unknown';
+
+    sleep 1;
+}
 
 $Self->Is(
     $Verification,
@@ -126,10 +142,18 @@ $Self->Is(
 # test again with changed line endings, see http://bugs.otrs.org/show_bug.cgi?id=9838
 $Download =~ s{\n}{\r\n}xmsg;
 
-$Verification = $PackageObject->PackageVerify(
-    Package => $Download,
-    Name    => 'Support',
-);
+TRY:
+for my $Try ( 1 .. 5 ) {
+
+    $Verification = $PackageObject->PackageVerify(
+        Package => $Download,
+        Name    => 'Support',
+    );
+
+    last TRY if $Verification ne 'unknown';
+
+    sleep 1;
+}
 
 $Self->Is(
     $Verification,
@@ -174,5 +198,8 @@ $Self->True(
     $PackageUninstall,
     'PackageUninstall() - Package TestSecond',
 );
+
+# cleanup cache
+$Kernel::OM->Get('Kernel::System::Cache')->CleanUp();
 
 1;

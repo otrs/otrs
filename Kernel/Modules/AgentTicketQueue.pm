@@ -124,10 +124,12 @@ sub Run {
 
         if ( $ColumnName eq 'CustomerID' ) {
             push @{ $ColumnFilter{$ColumnName} }, $FilterValue;
+            push @{ $ColumnFilter{ $ColumnName . 'Raw' } }, $FilterValue;
             $GetColumnFilter{$ColumnName} = $FilterValue;
         }
         elsif ( $ColumnName eq 'CustomerUserID' ) {
-            push @{ $ColumnFilter{CustomerUserLogin} }, $FilterValue;
+            push @{ $ColumnFilter{CustomerUserLogin} },    $FilterValue;
+            push @{ $ColumnFilter{CustomerUserLoginRaw} }, $FilterValue;
             $GetColumnFilter{$ColumnName} = $FilterValue;
         }
         else {
@@ -263,7 +265,9 @@ sub Run {
 
     # check if filter is valid
     if ( !$Filters{$Filter} ) {
-        $LayoutObject->FatalError( Message => "Invalid Filter: $Filter!" );
+        $LayoutObject->FatalError(
+            Message => $LayoutObject->{LanguageObject}->Translate( 'Invalid Filter: %s!', $Filter ),
+        );
     }
 
     my $View = $ParamObject->GetParam( Param => 'View' ) || '';
@@ -343,7 +347,8 @@ sub Run {
 
         if ( !$FilterContent ) {
             $LayoutObject->FatalError(
-                Message => "Can't get filter content data of $HeaderColumn!",
+                Message => $LayoutObject->{LanguageObject}
+                    ->Translate( 'Can\'t get filter content data of %s!', $HeaderColumn ),
             );
         }
 
@@ -625,9 +630,14 @@ sub _MaskQueueView {
 
         # skip empty Queues (or only locked tickets)
         if (
-            $Counter{ $Queue{Queue} } < 1
-            && $Queue{Queue} ne $LayoutObject->{LanguageObject}->Translate('My Queues')
-            && $Config->{HideEmptyQueues}
+            # only check when setting is set
+            $Config->{HideEmptyQueues}
+
+            # empty or locked only
+            && $Counter{ $Queue{Queue} } < 1
+
+            # always show 'my queues'
+            && $Queue{QueueID} != 0
             )
         {
             # TODO: check what 'Ticket::ViewableLocks' affects

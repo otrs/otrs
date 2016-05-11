@@ -162,7 +162,7 @@ sub EditFieldRender {
         $Value = $Param{Template}->{$FieldName};
     }
 
-    # extract the dynamic field value form the web request
+    # extract the dynamic field value from the web request
     my $FieldValue = $Self->EditFieldValueGet(
         %Param,
     );
@@ -389,7 +389,7 @@ sub EditFieldValueValidate {
 sub DisplayValueRender {
     my ( $Self, %Param ) = @_;
 
-    # set HTMLOuput as default if not specified
+    # set HTMLOutput as default if not specified
     if ( !defined $Param{HTMLOutput} ) {
         $Param{HTMLOutput} = 1;
     }
@@ -414,7 +414,7 @@ sub DisplayValueRender {
     # set title as value after update and before limit
     my $Title = $Value;
 
-    # HTMLOuput transformations
+    # HTMLOutput transformations
     if ( $Param{HTMLOutput} ) {
         $Value = $Param{LayoutObject}->Ascii2Html(
             Text => $Value,
@@ -437,11 +437,13 @@ sub DisplayValueRender {
 
     # set field link form config
     my $Link = $Param{DynamicFieldConfig}->{Config}->{Link} || '';
+    my $EnableLinkPreview = $Param{DynamicFieldConfig}->{Config}->{EnableLinkPreview} || 0;
 
     my $Data = {
-        Value => $Value,
-        Title => $Title,
-        Link  => $Link,
+        Value             => $Value,
+        Title             => $Title,
+        Link              => $Link,
+        EnableLinkPreview => $EnableLinkPreview,
     };
 
     return $Data;

@@ -8,6 +8,8 @@
 
 package Kernel::Output::HTML::TicketMenu::Generic;
 
+use base 'Kernel::Output::HTML::Base';
+
 use strict;
 use warnings;
 
@@ -17,19 +19,6 @@ our @ObjectDependencies = (
     'Kernel::System::Ticket',
     'Kernel::System::Group',
 );
-
-sub new {
-    my ( $Type, %Param ) = @_;
-
-    # allocate new hash for object
-    my $Self = {};
-    bless( $Self, $Type );
-
-    # get UserID param
-    $Self->{UserID} = $Param{UserID} || die "Got no UserID!";
-
-    return $Self;
-}
 
 sub Run {
     my ( $Self, %Param ) = @_;
@@ -53,14 +42,13 @@ sub Run {
     if ( $Param{Config}->{Action} ) {
         my $Module = $ConfigObject->Get('Frontend::Module')->{ $Param{Config}->{Action} };
         return if !$Module;
-    }
 
-    # get ticket object
-    my $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
+        # get ticket object
+        my $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
 
-    # check permission
-    my $Config = $ConfigObject->Get("Ticket::Frontend::$Param{Config}->{Action}");
-    if ($Config) {
+        # check permission
+        my $Config = $ConfigObject->Get("Ticket::Frontend::$Param{Config}->{Action}");
+
         if ( $Config->{Permission} ) {
             my $AccessOk = $TicketObject->TicketPermission(
                 Type     => $Config->{Permission},
@@ -93,7 +81,17 @@ sub Run {
         ITEM:
         for my $Item (@Items) {
 
-            my ( $Permission, $Name ) = split /:/, $Item;
+            # get index for first colon (:) into the item
+            my $IndexSeparator = index( $Item, ':' );
+
+            # take the part for the permission from string
+            my $Permission = substr( $Item, 0, $IndexSeparator );
+
+            # increase the index for skipping the seperator
+            $IndexSeparator++;
+
+            # get the Group name
+            my $Name = substr( $Item, $IndexSeparator );
 
             if ( !$Permission || !$Name ) {
                 $LogObject->Log(

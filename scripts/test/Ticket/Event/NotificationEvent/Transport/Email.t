@@ -16,6 +16,15 @@ use vars (qw($Self));
 # get config object
 my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
 
+# get helper object
+$Kernel::OM->ObjectParamAdd(
+    'Kernel::System::UnitTest::Helper' => {
+        RestoreDatabase            => 1,
+        RestoreSystemConfiguration => 1,
+    },
+);
+my $Helper = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
+
 # disable rich text editor
 my $Success = $ConfigObject->Set(
     Key   => 'Frontend::RichText',
@@ -85,7 +94,7 @@ my $TicketID = $TicketObject->TicketCreate(
     Priority     => '3 normal',
     State        => 'new',
     CustomerID   => 'example.com',
-    CustomerUser => 'customerOne@example.com',
+    CustomerUser => $UserData{UserLogin},
     OwnerID      => $UserID,
     UserID       => $UserID,
 );
@@ -100,7 +109,7 @@ my $ArticleID = $TicketObject->ArticleCreate(
     TicketID       => $TicketID,
     ArticleType    => 'webrequest',
     SenderType     => 'customer',
-    From           => 'customerOne@example.com',
+    From           => 'customerOne@example.com, customerTwo@example.com',
     To             => 'Some Agent A <agent-a@example.com>',
     Subject        => 'some short description',
     Body           => 'the message text',
@@ -118,7 +127,7 @@ $Self->True(
 );
 
 # get a random id
-my $RandomID = int rand 1_000_000_000;
+my $RandomID = $Helper->GetRandomNumber();
 
 # get dynamic field object
 my $DynamicFieldObject = $Kernel::OM->Get('Kernel::System::DynamicField');
@@ -171,6 +180,21 @@ my @Tests = (
         ],
     },
     {
+        Name => 'RecipientAgent + RecipientEmail + CustomerNotifyJustToRealCustomer',
+        Data => {
+            Events          => [ 'TicketDynamicFieldUpdate_DFT1' . $RandomID . 'Update' ],
+            RecipientAgents => [$UserID],
+            RecipientEmail  => ['test@otrsexample.com'],
+        },
+        ExpectedResults => [
+            {
+                ToArray => [ $UserData{UserEmail} ],
+                Body    => "JobName $TicketID Kernel::System::Email::Test $UserData{UserFirstname}=\n",
+            },
+        ],
+        JustToRealCustomer => 1,
+    },
+    {
         Name => 'Recipient Customer',
         Data => {
             Events     => [ 'TicketDynamicFieldUpdate_DFT1' . $RandomID . 'Update' ],
@@ -178,8 +202,8 @@ my @Tests = (
         },
         ExpectedResults => [
             {
-                ToArray => ['customerOne@example.com'],
-                Body    => "JobName $TicketID Kernel::System::Email::Test $UserData{UserFirstname}=\n",
+                ToArray => [ 'customerOne@example.com', 'customerTwo@example.com' ],
+                Body => "JobName $TicketID Kernel::System::Email::Test $UserData{UserFirstname}=\n",
             },
         ],
     },
@@ -193,6 +217,18 @@ for my $Test (@Tests) {
 
     # add transport setting
     $Test->{Data}->{Transports} = ['Email'];
+
+    # set just to real customer
+    my $JustToRealCustomer = $Test->{JustToRealCustomer} || 0;
+    $Success = $ConfigObject->Set(
+        Key   => 'CustomerNotifyJustToRealCustomer',
+        Value => $JustToRealCustomer,
+    );
+
+    $Self->True(
+        $Success,
+        "Set notifications just to real customer: $JustToRealCustomer.",
+    );
 
     my $NotificationID = $NotificationEventObject->NotificationAdd(
         Name    => "JobName$Count-$RandomID",
@@ -286,5 +322,7 @@ $Self->True(
     $TicketDelete,
     "TicketDelete() successful for Ticket ID $TicketID",
 );
+
+# cleanup is done by RestoreDatabase.
 
 1;

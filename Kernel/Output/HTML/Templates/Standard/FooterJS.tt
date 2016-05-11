@@ -42,6 +42,7 @@ Core.App.Ready(function () {
         MenuDragDropEnabled: parseInt('[% Config("Frontend::MenuDragDropEnabled") %]', 10),
         OpenMainMenuOnHover: parseInt('[% Config("OpenMainMenuOnHover") %]', 10),
         CustomerInfoSet: parseInt('[% Config("Ticket::Frontend::CustomerInfoCompose") %]', 10),
+        IncludeUnknownTicketCustomers: parseInt('[% Config("Ticket::IncludeUnknownTicketCustomers") %]', 10),
 [% RenderBlockStart("AutoCompleteConfig") %]
         Autocomplete: [% Data.AutocompleteConfig %],
 [% RenderBlockEnd("AutoCompleteConfig") %]
@@ -52,7 +53,6 @@ Core.App.Ready(function () {
         // translations
         ValidateServerErrorTitle: [% Translate("Error") | JSON %],
         ValidateServerErrorMsg: [% Translate("One or more errors occurred!") | JSON %],
-        PopupLeaveParentWindowMsg: [% Translate("If you now leave this page, all open popup windows will be closed, too!") | JSON %],
         DialogCloseMsg: [% Translate("Close this dialog") | JSON %],
         PopupBlockerMsg: [% Translate("Could not open popup window. Please disable any popup blockers for this application.") | JSON %],
         PopupAlreadyOpenMsg: [% Translate("A popup of this screen is already open. Do you want to close it and load this one instead?") | JSON %],
@@ -103,6 +103,8 @@ Core.App.Ready(function () {
         OTRSBusinessIsInstalled: parseInt([% Data.OTRSBusinessIsInstalled | JSON %], 10),
         OTRSDaemonDialogTitleMsg: [% Translate('Information about the OTRS Daemon') | JSON %]
     });
+
+    [% PROCESS JSDataInsert %]
 
     Core.Agent.Init();
 
@@ -175,4 +177,24 @@ Core.App.Ready(function () {
     <div class="Visible-ScreenM"></div>
     <div class="Visible-ScreenS"></div>
     <div class="Visible-ScreenXS"></div>
+</div>
+
+<div class="MetaFloater Hidden">
+    <a href="#" class="Scale" title="[% Translate('Scale preview content') | html %]" style="display: none;">
+        <i class="fa fa-search-plus"></i>
+    </a>
+    <a href="#" class="Open" target="_blank" title="[% Translate('Open URL in new tab') | html %]" style="display: none;">
+        <i class="fa fa-external-link"></i>
+    </a>
+    <a href="#" class="Close" title="[% Translate('Close preview') | html %]">
+        <i class="fa fa-times"></i>
+    </a>
+    <i class="fa fa-spinner fa-spin"></i>
+    <div class="NoPreview">
+        <i class="fa fa-warning"></i>
+        [% Translate("OTRS can't provide a preview of this website because it seems as if it didn't allow to be embedded.") | html %]
+    </div>
+    <div class="Content" style="display: none;">
+        <iframe sandbox="allow-scripts allow-forms"></iframe>
+    </div>
 </div>

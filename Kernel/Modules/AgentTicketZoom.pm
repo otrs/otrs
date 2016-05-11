@@ -61,7 +61,7 @@ sub new {
             }
         }
 
-        if ( defined $Self->{ZoomExpand} || defined $Self->{ZoomTimeline} ) {
+        elsif ( defined $Self->{ZoomExpand} || defined $Self->{ZoomTimeline} ) {
 
             my $LastUsedZoomViewType = '';
             if ( defined $Self->{ZoomExpand} && $Self->{ZoomExpand} == 1 ) {
@@ -386,7 +386,8 @@ sub Run {
         );
         if ( !$Content ) {
             $LayoutObject->FatalError(
-                Message => "Can't get for ArticleID $Self->{ArticleID}!",
+                Message =>
+                    $LayoutObject->{LanguageObject}->Translate( 'Can\'t get for ArticleID %s!', $Self->{ArticleID} ),
             );
         }
         return $LayoutObject->Attachment(
@@ -457,7 +458,7 @@ sub Run {
         if ($Update) {
             $JSON = $LayoutObject->JSONEncode(
                 Data => {
-                    Message => 'Article filter settings were saved.',
+                    Message => Translatable('Article filter settings were saved.'),
                 },
             );
         }
@@ -520,7 +521,7 @@ sub Run {
         if ($Update) {
             $JSON = $LayoutObject->JSONEncode(
                 Data => {
-                    Message => 'Event type filter settings were saved.',
+                    Message => Translatable('Event type filter settings were saved.'),
                 },
             );
         }
@@ -656,19 +657,6 @@ sub MaskAgentZoom {
     my %StandardTemplates = $Kernel::OM->Get('Kernel::System::Queue')->QueueStandardTemplateMemberList(
         QueueID       => $Ticket{QueueID},
         TemplateTypes => 1,
-    );
-
-    # get user object
-    my $UserObject = $Kernel::OM->Get('Kernel::System::User');
-
-    # owner info
-    my %OwnerInfo = $UserObject->GetUserData(
-        UserID => $Ticket{OwnerID},
-    );
-
-    # responsible info
-    my %ResponsibleInfo = $UserObject->GetUserData(
-        UserID => $Ticket{ResponsibleID} || 1,
     );
 
     # get cofig object
@@ -869,19 +857,52 @@ sub MaskAgentZoom {
         @ArticleBoxShown = @ArticleBox;
     }
 
-    # set display options
-    $Param{WidgetTitle} = Translatable('Ticket Information');
-    $Param{Hook} = $ConfigObject->Get('Ticket::Hook') || 'Ticket#';
+    # get layout object
+    my $LayoutObject = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
 
-    # check if ticket is normal or process ticket
-    my $IsProcessTicket = $TicketObject->TicketCheckForProcessType(
-        'TicketID' => $Self->{TicketID}
+    # age design
+    $Ticket{Age} = $LayoutObject->CustomerAge(
+        Age   => $Ticket{Age},
+        Space => ' '
     );
 
-    # overwrite display options for process ticket
-    if ($IsProcessTicket) {
-        $Param{WidgetTitle} = $Self->{DisplaySettings}->{ProcessDisplay}->{WidgetTitle};
+    my %Widgets;
+    my $MainObject = $Kernel::OM->Get('Kernel::System::Main');
+    WIDGET:
+    for my $Key ( sort keys %{ $Self->{DisplaySettings}->{Widgets} // {} } ) {
+        my $Config = $Self->{DisplaySettings}->{Widgets}->{$Key};
+        my $Success = eval { $MainObject->Require( $Config->{Module} ) };
+        next WIDGET if !$Success;
+        my $Module = eval { $Config->{Module}->new(%$Self) };
+        if ( !$Module ) {
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
+                Priority => 'error',
+                Message  => "new() of Widget module $Config->{Module} not successful!",
+
+            );
+            next WIDGET;
+        }
+        my $WidgetOutput = $Module->Run(
+            Ticket    => \%Ticket,
+            AclAction => \%AclAction,
+            Config    => $Config,
+        );
+        if ( !$WidgetOutput ) {
+            next WIDGET;
+        }
+        $WidgetOutput->{Rank} //= $Key;
+        my $Location = $WidgetOutput->{Location} || $Config->{Location};
+        push @{ $Widgets{$Location} }, $WidgetOutput;
     }
+    for my $Location ( sort keys %Widgets ) {
+        $Param{ $Location . 'Widgets' } = [
+            map      { $_->{Output} }
+                sort { $a->{Rank} cmp $b->{Rank} } @{ $Widgets{$Location} }
+        ];
+    }
+
+    # set display options
+    $Param{Hook} = $ConfigObject->Get('Ticket::Hook') || 'Ticket#';
 
     # only show article tree if articles are present,
     # or if a filter is set (so that the user has the option to
@@ -914,9 +935,6 @@ sub MaskAgentZoom {
         );
     }
 
-    # get layout object
-    my $LayoutObject = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
-
     # show articles items
     if ( !$Self->{ZoomTimeline} ) {
 
@@ -948,12 +966,6 @@ sub MaskAgentZoom {
             Data => { TicketID => $Ticket{TicketID} },
         );
     }
-
-    # age design
-    $Ticket{Age} = $LayoutObject->CustomerAge(
-        Age   => $Ticket{Age},
-        Space => ' '
-    );
 
     # number of articles
     $Param{ArticleCount} = scalar @ArticleBox;
@@ -1022,7 +1034,7 @@ sub MaskAgentZoom {
                 Link  => '#',
                 Class => 'ClusterLink',
                 Items => $MenuClusters{$Cluster}->{Items},
-                }
+                },
         }
 
         # display all items
@@ -1036,7 +1048,10 @@ sub MaskAgentZoom {
             if ( $ZoomMenuItems{$Item}->{Type} eq 'Cluster' ) {
 
                 $LayoutObject->Block(
-                    Name => 'TicketMenuSubContainer'
+                    Name => 'TicketMenuSubContainer',
+                    Data => {
+                        Name => $ZoomMenuItems{$Item}->{Name},
+                    },
                 );
 
                 for my $SubItem ( sort keys %{ $ZoomMenuItems{$Item}->{Items} } ) {
@@ -1055,6 +1070,7 @@ sub MaskAgentZoom {
         $Param{MoveQueuesStrg} = $LayoutObject->AgentQueueListOption(
             Name           => 'DestQueueID',
             Data           => \%MoveQueues,
+            Class          => 'Modernize Small',
             CurrentQueueID => $Ticket{QueueID},
         );
     }
@@ -1089,150 +1105,13 @@ sub MaskAgentZoom {
 
     # show created by if different then User ID 1
     if ( $Ticket{CreateBy} > 1 ) {
+
+        # get user object
+        my $UserObject = $Kernel::OM->Get('Kernel::System::User');
         $Ticket{CreatedByUser} = $UserObject->UserName( UserID => $Ticket{CreateBy} );
         $LayoutObject->Block(
             Name => 'CreatedBy',
             Data => {%Ticket},
-        );
-    }
-
-    if ( $Ticket{ArchiveFlag} eq 'y' ) {
-        $LayoutObject->Block(
-            Name => 'ArchiveFlag',
-            Data => { %Ticket, %AclAction },
-        );
-    }
-
-    # ticket type
-    if ( $ConfigObject->Get('Ticket::Type') ) {
-
-        my %Type = $Kernel::OM->Get('Kernel::System::Type')->TypeGet(
-            ID => $Ticket{TypeID},
-        );
-
-        $LayoutObject->Block(
-            Name => 'Type',
-            Data => {
-                Valid => $Type{ValidID},
-                %Ticket,
-                %AclAction
-            },
-        );
-    }
-
-    # ticket service
-    if ( $ConfigObject->Get('Ticket::Service') && $Ticket{Service} ) {
-        $LayoutObject->Block(
-            Name => 'Service',
-            Data => { %Ticket, %AclAction },
-        );
-        if ( $Ticket{SLA} ) {
-            $LayoutObject->Block(
-                Name => 'SLA',
-                Data => { %Ticket, %AclAction },
-            );
-        }
-    }
-
-    # show first response time if needed
-    if ( defined $Ticket{FirstResponseTime} ) {
-        $Ticket{FirstResponseTimeHuman} = $LayoutObject->CustomerAgeInHours(
-            Age   => $Ticket{FirstResponseTime},
-            Space => ' ',
-        );
-        $Ticket{FirstResponseTimeWorkingTime} = $LayoutObject->CustomerAgeInHours(
-            Age   => $Ticket{FirstResponseTimeWorkingTime},
-            Space => ' ',
-        );
-        if ( 60 * 60 * 1 > $Ticket{FirstResponseTime} ) {
-            $Ticket{FirstResponseTimeClass} = 'Warning';
-        }
-        $LayoutObject->Block(
-            Name => 'FirstResponseTime',
-            Data => { %Ticket, %AclAction },
-        );
-    }
-
-    # show update time if needed
-    if ( defined $Ticket{UpdateTime} ) {
-        $Ticket{UpdateTimeHuman} = $LayoutObject->CustomerAgeInHours(
-            Age   => $Ticket{UpdateTime},
-            Space => ' ',
-        );
-        $Ticket{UpdateTimeWorkingTime} = $LayoutObject->CustomerAgeInHours(
-            Age   => $Ticket{UpdateTimeWorkingTime},
-            Space => ' ',
-        );
-        if ( 60 * 60 * 1 > $Ticket{UpdateTime} ) {
-            $Ticket{UpdateTimeClass} = 'Warning';
-        }
-        $LayoutObject->Block(
-            Name => 'UpdateTime',
-            Data => { %Ticket, %AclAction },
-        );
-    }
-
-    # show solution time if needed
-    if ( defined $Ticket{SolutionTime} ) {
-        $Ticket{SolutionTimeHuman} = $LayoutObject->CustomerAgeInHours(
-            Age   => $Ticket{SolutionTime},
-            Space => ' ',
-        );
-        $Ticket{SolutionTimeWorkingTime} = $LayoutObject->CustomerAgeInHours(
-            Age   => $Ticket{SolutionTimeWorkingTime},
-            Space => ' ',
-        );
-        if ( 60 * 60 * 1 > $Ticket{SolutionTime} ) {
-            $Ticket{SolutionTimeClass} = 'Warning';
-        }
-        $LayoutObject->Block(
-            Name => 'SolutionTime',
-            Data => { %Ticket, %AclAction },
-        );
-    }
-
-    # show total accounted time if feature is active:
-    if ( $ConfigObject->Get('Ticket::Frontend::AccountTime') ) {
-        $Ticket{TicketTimeUnits} = $TicketObject->TicketAccountedTimeGet(%Ticket);
-        $LayoutObject->Block(
-            Name => 'TotalAccountedTime',
-            Data => \%Ticket,
-        );
-    }
-
-    # show pending until, if set:
-    if ( $Ticket{UntilTime} ) {
-        if ( $Ticket{UntilTime} < -1 ) {
-            $Ticket{PendingUntilClass} = 'Warning';
-        }
-
-        # get time object
-        my $TimeObject = $Kernel::OM->Get('Kernel::System::Time');
-
-        $Ticket{UntilTimeHuman} = $TimeObject->SystemTime2TimeStamp(
-            SystemTime => ( $Ticket{UntilTime} + $TimeObject->SystemTime() ),
-        );
-        $Ticket{PendingUntil} .= $LayoutObject->CustomerAge(
-            Age   => $Ticket{UntilTime},
-            Space => ' '
-        );
-        $LayoutObject->Block(
-            Name => 'PendingUntil',
-            Data => \%Ticket,
-        );
-    }
-
-    # show owner
-    $LayoutObject->Block(
-        Name => 'Owner',
-        Data => { %Ticket, %OwnerInfo, %AclAction },
-    );
-
-    # show responsible
-    if ( $ConfigObject->Get('Ticket::Responsible') ) {
-        $LayoutObject->Block(
-            Name => 'Responsible',
-            Data => { %Ticket, %ResponsibleInfo, %AclAction },
         );
     }
 
@@ -1243,8 +1122,15 @@ sub MaskAgentZoom {
         );
     }
 
+    # check if ticket is normal or process ticket
+    my $IsProcessTicket = $TicketObject->TicketCheckForProcessType(
+        'TicketID' => $Self->{TicketID}
+    );
+
     # show process widget  and activity dialogs on process tickets
     if ($IsProcessTicket) {
+
+        $Param{WidgetTitle} = $Self->{DisplaySettings}->{ProcessDisplay}->{WidgetTitle};
 
         # get the DF where the ProcessEntityID is stored
         my $ProcessEntityIDField = 'DynamicField_'
@@ -1260,15 +1146,6 @@ sub MaskAgentZoom {
         my $ActivityData = $Kernel::OM->Get('Kernel::System::ProcessManagement::Activity')->ActivityGet(
             Interface        => 'AgentInterface',
             ActivityEntityID => $Ticket{$ActivityEntityIDField},
-        );
-
-        # output process information in the sidebar
-        $LayoutObject->Block(
-            Name => 'ProcessData',
-            Data => {
-                Process  => $ProcessData->{Name}  || '',
-                Activity => $ActivityData->{Name} || '',
-            },
         );
 
         # output the process widget the the main screen
@@ -1398,7 +1275,7 @@ sub MaskAgentZoom {
     my $DynamicFieldBeckendObject = $Kernel::OM->Get('Kernel::System::DynamicField::Backend');
 
     # to store dynamic fields to be displayed in the process widget and in the sidebar
-    my ( @FieldsWidget, @FieldsSidebar );
+    my (@FieldsWidget);
 
     # cycle trough the activated Dynamic Fields for ticket object
     DYNAMICFIELD:
@@ -1434,45 +1311,6 @@ sub MaskAgentZoom {
                 $DynamicFieldConfig->{Name} => $ValueStrg->{Title},
             };
         }
-
-        my $ValueStrg = $DynamicFieldBeckendObject->DisplayValueRender(
-            DynamicFieldConfig => $DynamicFieldConfig,
-            Value              => $Ticket{ 'DynamicField_' . $DynamicFieldConfig->{Name} },
-            LayoutObject       => $LayoutObject,
-            ValueMaxChars      => $ConfigObject->
-                Get('Ticket::Frontend::DynamicFieldsZoomMaxSizeSidebar')
-                || 18,    # limit for sidebar display
-        );
-
-        if (
-            $Self->{DisplaySettings}->{DynamicField}->{ $DynamicFieldConfig->{Name} }
-            )
-        {
-            push @FieldsSidebar, {
-                Name                        => $DynamicFieldConfig->{Name},
-                Title                       => $ValueStrg->{Title},
-                Value                       => $ValueStrg->{Value},
-                Label                       => $Label,
-                Link                        => $ValueStrg->{Link},
-                $DynamicFieldConfig->{Name} => $ValueStrg->{Title},
-            };
-        }
-
-        # example of dynamic fields order customization
-        $LayoutObject->Block(
-            Name => 'TicketDynamicField_' . $DynamicFieldConfig->{Name},
-            Data => {
-                Label => $Label,
-            },
-        );
-
-        $LayoutObject->Block(
-            Name => 'TicketDynamicField_' . $DynamicFieldConfig->{Name} . '_Plain',
-            Data => {
-                Value => $ValueStrg->{Value},
-                Title => $ValueStrg->{Title},
-            },
-        );
     }
 
     if ($IsProcessTicket) {
@@ -1616,42 +1454,6 @@ sub MaskAgentZoom {
         }
     }
 
-    # output dynamic fields in the sidebar
-    for my $Field (@FieldsSidebar) {
-
-        $LayoutObject->Block(
-            Name => 'TicketDynamicField',
-            Data => {
-                Label => $Field->{Label},
-            },
-        );
-
-        if ( $Field->{Link} ) {
-            $LayoutObject->Block(
-                Name => 'TicketDynamicFieldLink',
-                Data => {
-                    %Ticket,
-
-                    # alias for ticket title, Title will be overwritten
-                    TicketTitle    => $Ticket{Title},
-                    Value          => $Field->{Value},
-                    Title          => $Field->{Title},
-                    Link           => $Field->{Link},
-                    $Field->{Name} => $Field->{Title},
-                },
-            );
-        }
-        else {
-            $LayoutObject->Block(
-                Name => 'TicketDynamicFieldPlain',
-                Data => {
-                    Value => $Field->{Value},
-                    Title => $Field->{Title},
-                },
-            );
-        }
-    }
-
     # customer info string
     if ( $ConfigObject->Get('Ticket::Frontend::CustomerInfoZoom') ) {
 
@@ -1670,48 +1472,6 @@ sub MaskAgentZoom {
         $LayoutObject->Block(
             Name => 'CustomerTable',
             Data => \%Param,
-        );
-    }
-
-    # get linked objects
-    my $LinkListWithData = $Kernel::OM->Get('Kernel::System::LinkObject')->LinkListWithData(
-        Object           => 'Ticket',
-        Key              => $Self->{TicketID},
-        State            => 'Valid',
-        UserID           => $Self->{UserID},
-        ObjectParameters => {
-            Ticket => {
-                IgnoreLinkedTicketStateTypes => 1,
-            },
-        },
-    );
-
-    # get link table view mode
-    my $LinkTableViewMode = $ConfigObject->Get('LinkObject::ViewMode');
-
-    # create the link table
-    my $LinkTableStrg = $LayoutObject->LinkObjectTableCreate(
-        LinkListWithData => $LinkListWithData,
-        ViewMode         => $LinkTableViewMode,
-    );
-
-    # output the simple link table
-    if ( $LinkTableStrg && $LinkTableViewMode eq 'Simple' ) {
-        $LayoutObject->Block(
-            Name => 'LinkTableSimple',
-            Data => {
-                LinkTableStrg => $LinkTableStrg,
-            },
-        );
-    }
-
-    # output the complex link table
-    if ( $LinkTableStrg && $LinkTableViewMode eq 'Complex' ) {
-        $LayoutObject->Block(
-            Name => 'LinkTableComplex',
-            Data => {
-                LinkTableStrg => $LinkTableStrg,
-            },
         );
     }
 
@@ -2381,14 +2141,6 @@ sub _ArticleTree {
             if ( $Item->{ArticleID} ) {
                 $Item->{ArticleData} = $ArticlesByArticleID->{ $Item->{ArticleID} };
 
-                # security="restricted" may break SSO - disable this feature if requested
-                if ( $ConfigObject->Get('DisableMSIFrameSecurityRestricted') ) {
-                    $Item->{ArticleData}->{MSSecurityRestricted} = '';
-                }
-                else {
-                    $Item->{ArticleData}->{MSSecurityRestricted} = 'security="restricted"';
-                }
-
                 my %ArticleFlagsAll = $TicketObject->ArticleFlagGet(
                     ArticleID => $Item->{ArticleID},
                     UserID    => 1,
@@ -2414,8 +2166,9 @@ sub _ArticleTree {
                         Data => $Item->{ArticleData}->{Body},
                     );
 
-                    for my $ChatMessage (@{ $ChatMessages // [] }) {
-                        $ChatMessage->{CreateTime} = $LayoutObject->{LanguageObject}->FormatTimeString( $ChatMessage->{CreateTime}, 'DateFormat' );
+                    for my $ChatMessage ( @{ $ChatMessages // [] } ) {
+                        $ChatMessage->{CreateTime} = $LayoutObject->{LanguageObject}
+                            ->FormatTimeString( $ChatMessage->{CreateTime}, 'DateFormat' );
                     }
                     $Item->{ArticleData}->{ChatMessages} = $ChatMessages;
 
@@ -2470,8 +2223,8 @@ sub _ArticleTree {
             }
 
             # make the history type more readable (if applicable)
-            $Item->{HistoryTypeReadable}
-                = $Self->{HistoryTypeMapping}->{ $Item->{HistoryType} } || $Item->{HistoryType};
+            $Item->{HistoryTypeReadable} = $Self->{HistoryTypeMapping}->{ $Item->{HistoryType} }
+                || $Item->{HistoryType};
 
             # group items which happened (nearly) coincidently together
             $Item->{CreateSystemTime} = $Kernel::OM->Get('Kernel::System::Time')->TimeStamp2SystemTime(
@@ -2641,9 +2394,18 @@ sub _ArticleItem {
     # get layout object
     my $LayoutObject = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
 
+    # collect article meta
+    my @ArticleMetaData = $Self->_ArticleCollectMeta(
+        Article => \%Article
+    );
+
     $LayoutObject->Block(
         Name => 'ArticleItem',
-        Data => { %Param, %Article, %AclAction, MenuItems => \@MenuItems },
+        Data => {
+            %Param, %Article, %AclAction,
+            MenuItems       => \@MenuItems,
+            ArticleMetaData => \@ArticleMetaData
+        },
     );
 
     # show created by if different from User ID 1
@@ -2997,14 +2759,6 @@ sub _ArticleItem {
         );
     }
 
-    # security="restricted" may break SSO - disable this feature if requested
-    if ( $ConfigObject->Get('DisableMSIFrameSecurityRestricted') ) {
-        $Article{MSSecurityRestricted} = '';
-    }
-    else {
-        $Article{MSSecurityRestricted} = 'security="restricted"';
-    }
-
     # show body
     # Create a reference to an anonymous copy of %Article and pass it to
     # the LayoutObject, because %Article may be modified afterwards.
@@ -3102,21 +2856,13 @@ sub _ArticleMenu {
                 # use this array twice (also for Reply All), so copy it first
                 my @StandardResponseArrayReplyAll = @StandardResponseArray;
 
-                unshift(
-                    @StandardResponseArray,
-                    {
-                        Key   => '0',
-                        Value => '- '
-                            . $LayoutObject->{LanguageObject}->Translate('Reply') . ' -',
-                        Selected => 1,
-                    }
-                );
-
                 # build HTML string
                 my $StandardResponsesStrg = $LayoutObject->BuildSelection(
-                    Name => 'ResponseID',
-                    ID   => 'ResponseID',
-                    Data => \@StandardResponseArray,
+                    Name         => 'ResponseID',
+                    ID           => 'ResponseID',
+                    Class        => 'Modernize Small',
+                    Data         => \@StandardResponseArray,
+                    PossibleNone => 1,
                 );
 
                 push @MenuItems, {
@@ -3160,20 +2906,13 @@ sub _ArticleMenu {
                     }
                 }
                 if ( $RecipientCount > 1 ) {
-                    unshift(
-                        @StandardResponseArrayReplyAll,
-                        {
-                            Key   => '0',
-                            Value => '- '
-                                . $LayoutObject->{LanguageObject}->Translate('Reply All') . ' -',
-                            Selected => 1,
-                        }
-                    );
 
                     $StandardResponsesStrg = $LayoutObject->BuildSelection(
-                        Name => 'ResponseID',
-                        ID   => 'ResponseIDAll' . $Article{ArticleID},
-                        Data => \@StandardResponseArrayReplyAll,
+                        Name         => 'ResponseID',
+                        ID           => 'ResponseIDAll' . $Article{ArticleID},
+                        Class        => 'Modernize Small',
+                        Data         => \@StandardResponseArrayReplyAll,
+                        PossibleNone => 1
                     );
 
                     push @MenuItems, {
@@ -3243,29 +2982,20 @@ sub _ArticleMenu {
                         }
                     } sort values %StandardForwardHash;
 
-                    unshift(
-                        @StandardForwardArray,
-                        {
-                            Key   => '0',
-                            Value => '- '
-                                . $LayoutObject->{LanguageObject}->Translate('Forward')
-                                . ' -',
-                            Selected => 1,
-                        }
-                    );
-
                     # build HTML string
                     my $StandardForwardsStrg = $LayoutObject->BuildSelection(
-                        Name => 'ForwardTemplateID',
-                        ID   => 'ForwardTemplateID',
-                        Data => \@StandardForwardArray,
+                        Name         => 'ForwardTemplateID',
+                        ID           => 'ForwardTemplateID',
+                        Class        => 'Modernize Small',
+                        Data         => \@StandardForwardArray,
+                        PossibleNone => 1
                     );
 
                     push @MenuItems, {
                         ItemType             => 'Dropdown',
                         DropdownType         => 'Forward',
                         StandardForwardsStrg => $StandardForwardsStrg,
-                        Name                 => 'Forward',
+                        Name                 => Translatable('Forward'),
                         Class                => 'AsPopup PopupType_TicketAction',
                         Action               => 'AgentTicketForward',
                         FormID               => 'Forward' . $Article{ArticleID},
@@ -3460,6 +3190,104 @@ sub _ArticleMenu {
     }
 
     return @MenuItems;
+}
+
+sub _ArticleCollectMeta {
+
+    my ( $Self, %Param ) = @_;
+
+    my %Article = %{ $Param{Article} };
+
+    # get config object
+    my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
+    my $LayoutObject = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
+
+    # check whether auto article links should be used
+    return if !$ConfigObject->Get('Ticket::Frontend::ZoomCollectMeta');
+    return if !$ConfigObject->Get('Ticket::Frontend::ZoomCollectMetaFilters');
+
+    my @Data;
+
+    # find words to replace
+    my %Config = %{ $ConfigObject->Get('Ticket::Frontend::ZoomCollectMetaFilters') };
+
+    FILTER:
+    for my $Filter ( values %Config ) {
+
+        my %FilterData;
+
+        # check for needed data
+        next FILTER if !$Filter->{RegExp};
+        next FILTER if !$Filter->{Meta};
+        next FILTER if !$Filter->{Meta}->{Name};
+        next FILTER if !$Filter->{Meta}->{URL};
+
+        # iterage through regular expressions and create a hash with found matches
+        my @Matches;
+        for my $RegExp ( @{ $Filter->{RegExp} } ) {
+
+            my @Count    = $RegExp =~ m{\(}gx;
+            my $Elements = scalar @Count;
+
+            if ( my @MatchData = $Article{Body} =~ m{([\s:]$RegExp)}gxi ) {
+                my $Counter = 0;
+
+                MATCH:
+                while ( $MatchData[$Counter] ) {
+
+                    my $WholeMatchString = $MatchData[$Counter];
+                    $WholeMatchString =~ s/^\s+|\s+$//g;
+                    if ( grep { $_->{Name} eq $WholeMatchString } @Matches ) {
+                        $Counter += $Elements + 1;
+                        next MATCH;
+                    }
+
+                    my %Parts;
+                    for ( 1 .. $Elements ) {
+                        $Parts{$_} = $MatchData[ $Counter + $_ ];
+                    }
+                    $Counter += $Elements + 1;
+
+                    push @Matches, {
+                        Name  => $WholeMatchString,
+                        Parts => \%Parts,
+                    };
+                }
+            }
+        }
+
+        if ( scalar @Matches ) {
+
+            $FilterData{Name} = $Filter->{Meta}->{Name};
+
+            # iterate trough matches and build URLs from configuration
+            for my $Match (@Matches) {
+
+                my $MatchQuote = $LayoutObject->Ascii2Html( Text => $Match->{Name} );
+                my $URL = $Filter->{Meta}->{URL};
+
+                # replace the whole keyword
+                my $MatchLinkEncode = $LayoutObject->LinkEncode( $Match->{Name} );
+                $URL =~ s/<MATCH>/$MatchLinkEncode/g;
+
+                # replace the keyword components
+                for my $Part ( sort keys %{ $Match->{Parts} || {} } ) {
+                    $MatchLinkEncode = $LayoutObject->LinkEncode( $Match->{Parts}->{$Part} );
+                    $URL =~ s/<MATCH$Part>/$MatchLinkEncode/g;
+                }
+
+                push @{ $FilterData{Matches} }, {
+                    Text              => $Match->{Name},
+                    URL               => $URL,
+                    Target            => $Filter->{Meta}->{Target} || '_blank',
+                    EnableLinkPreview => $Filter->{Meta}->{EnableLinkPreview} || 0,
+                };
+            }
+            push @Data, \%FilterData;
+        }
+    }
+
+    return @Data;
 }
 
 sub _CollectArticleAttachments {

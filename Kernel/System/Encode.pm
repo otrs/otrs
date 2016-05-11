@@ -15,6 +15,9 @@ use Encode;
 use Encode::Locale;
 use IO::Interactive qw(is_interactive);
 
+our %ObjectManagerFlags = (
+    IsSingleton => 1,
+);
 our @ObjectDependencies = ();
 
 =head1 NAME
@@ -51,6 +54,9 @@ sub new {
     # 0=off; 1=on;
     $Self->{Debug} = 0;
 
+    # use "locale" as an arg to encode/decode
+    @ARGV = map { decode( locale => $_, 1 ) } @ARGV;
+
     # check if the encodeobject is used from the command line
     # if so, we need to decode @ARGV
     if ( !is_interactive() ) {
@@ -60,10 +66,6 @@ sub new {
     }
     else {
 
-        # use "locale" as an arg to encode/decode
-        if ( is_interactive(*STDIN) ) {
-            @ARGV = map { decode( locale => $_, 1 ) } @ARGV;
-        }
         if ( is_interactive(*STDOUT) ) {
             binmode STDOUT, ":encoding(console_out)";
         }
@@ -131,7 +133,6 @@ sub Convert {
         # check if string is valid utf-8
         if ( $Param{Check} && !eval { Encode::is_utf8( $Param{Text}, 1 ) } ) {
             Encode::_utf8_off( $Param{Text} );
-            print STDERR "No valid '$Param{To}' string: '$Param{Text}'!\n";
 
             # strip invalid chars / 0 = will put a substitution character in
             # place of a malformed character

@@ -1056,66 +1056,6 @@ sub SQLProcessorPost {
     return ();
 }
 
-# GetTableData()
-#
-# !! DONT USE THIS FUNCTION !!
-#
-# Due to compatibility reason this function is still available and it will be removed
-# in upcoming releases.
-
-sub GetTableData {
-    my ( $Self, %Param ) = @_;
-
-    my $Table = $Param{Table};
-    my $What  = $Param{What};
-    my $Where = $Param{Where} || '';
-    my $Valid = $Param{Valid} || '';
-    my $Clamp = $Param{Clamp} || '';
-    my %Data;
-
-    my $SQL = "SELECT $What FROM $Table ";
-    if ($Where) {
-        $SQL .= ' WHERE ' . $Where;
-    }
-
-    if ( !$Where && $Valid ) {
-        my @ValidIDs;
-
-        return if !$Self->Prepare( SQL => 'SELECT id FROM valid WHERE name = \'valid\'' );
-        while ( my @Row = $Self->FetchrowArray() ) {
-            push @ValidIDs, $Row[0];
-        }
-
-        $SQL .= " WHERE valid_id IN ( ${\(join ', ', @ValidIDs)} )";
-    }
-
-    $Self->Prepare( SQL => $SQL );
-
-    while ( my @Row = $Self->FetchrowArray() ) {
-        if ( $Row[3] ) {
-            if ($Clamp) {
-                $Data{ $Row[0] } = "$Row[1] $Row[2] ($Row[3])";
-            }
-            else {
-                $Data{ $Row[0] } = "$Row[1] $Row[2] $Row[3]";
-            }
-        }
-        elsif ( $Row[2] ) {
-            if ($Clamp) {
-                $Data{ $Row[0] } = "$Row[1] ( $Row[2] )";
-            }
-            else {
-                $Data{ $Row[0] } = "$Row[1] $Row[2]";
-            }
-        }
-        else {
-            $Data{ $Row[0] } = $Row[1];
-        }
-    }
-
-    return %Data;
-}
-
 =item QueryCondition()
 
 generate SQL condition query based on a search expression
@@ -1376,12 +1316,14 @@ sub QueryCondition {
             $Word =~ s/%%/%/g;
             $Word =~ s/%%/%/g;
 
-            # perform quoting depending on query type
-            if ( $Word =~ m/%/ ) {
-                $Word = $Self->Quote( $Word, 'Like' );
-            }
-            else {
-                $Word = $Self->Quote($Word);
+            # perform quoting depending on query type (only if not in bind mode)
+            if ( !$BindMode ) {
+                if ( $Word =~ m/%/ ) {
+                    $Word = $Self->Quote( $Word, 'Like' );
+                }
+                else {
+                    $Word = $Self->Quote($Word);
+                }
             }
 
             # if it's a NOT LIKE condition
@@ -1563,6 +1505,12 @@ sub QueryCondition {
             Priority => 'notice',
             Message  => "Invalid condition '$Param{Value}', $Open open and $Close close!",
         );
+        if ($BindMode) {
+            return (
+                'SQL'    => "1=0",
+                'Values' => [],
+            );
+        }
         return "1=0";
     }
 

@@ -26,6 +26,7 @@ our @ObjectDependencies = (
     'Kernel::System::Encode',
     'Kernel::System::Main',
     'Kernel::System::SysConfig',
+    'Kernel::System::Time',
 );
 
 sub Configure {
@@ -136,7 +137,7 @@ sub HandleLanguage {
     my ( $Self, %Param ) = @_;
 
     my $Language = $Param{Language};
-    my $Module   = $Param{Module};
+    my $Module   = $Param{Module} || '';
 
     my $ModuleDirectory = $Module;
     my $LanguageFile;
@@ -146,6 +147,9 @@ sub HandleLanguage {
     my $IsSubTranslation;
 
     my $DefaultTheme = $Kernel::OM->Get('Kernel::Config')->Get('DefaultTheme');
+
+    # for every word, save the information that it is used in JS
+    my %UsedInJS;
 
     # We need to map internal codes to the official ones used by Transifex
     my %TransifexLanguagesMap = (
@@ -204,6 +208,16 @@ sub HandleLanguage {
             Recursive => 1,
         );
 
+        my $CustomTemplatesDir = "$ModuleDirectory/Custom/Kernel/Output/HTML/Templates/$DefaultTheme";
+        if ( $IsSubTranslation && -d $CustomTemplatesDir ) {
+            my @CustomTemplateList = $Kernel::OM->Get('Kernel::System::Main')->DirectoryRead(
+                Directory => $CustomTemplatesDir,
+                Filter    => '*.tt',
+                Recursive => 1,
+            );
+            push @TemplateList, @CustomTemplateList;
+        }
+
         for my $File (@TemplateList) {
 
             my $ContentRef = $Kernel::OM->Get('Kernel::System::Main')->FileRead(
@@ -251,6 +265,16 @@ sub HandleLanguage {
             Filter    => '*.pm',
             Recursive => 1,
         );
+
+        my $CustomKernelDir = "$ModuleDirectory/Custom/Kernel";
+        if ( $IsSubTranslation && -d $CustomKernelDir ) {
+            my @CustomPerlModuleList = $Kernel::OM->Get('Kernel::System::Main')->DirectoryRead(
+                Directory => $CustomKernelDir,
+                Filter    => '*.pm',
+                Recursive => 1,
+            );
+            push @PerlModuleList, @CustomPerlModuleList;
+        }
 
         FILE:
         for my $File (@PerlModuleList) {
@@ -353,6 +377,64 @@ sub HandleLanguage {
                     };
 
                 }
+                '';
+            }egx;
+        }
+
+        # add translatable strings from JavaScript code
+        my @JSFileList = $Kernel::OM->Get('Kernel::System::Main')->DirectoryRead(
+            Directory => $IsSubTranslation ? "$ModuleDirectory/var/httpd/htdocs/js" : "$Home/var/httpd/htdocs/js",
+            Filter => '*.js',
+            Recursive => 0,    # to prevent access to thirdparty files and js-cache
+        );
+
+        FILE:
+        for my $File (@JSFileList) {
+
+            my $ContentRef = $Kernel::OM->Get('Kernel::System::Main')->FileRead(
+                Location => $File,
+                Mode     => 'utf8',
+            );
+
+            if ( !ref $ContentRef ) {
+                die "Can't open $File: $!";
+            }
+
+            $File =~ s{^.*/(.+?)\.js}{$1}smx;
+
+            my $Content = ${$ContentRef};
+
+            # Purge all comments
+            $Content =~ s{^ \s* // .*? \n}{\n}xmsg;
+
+            # do translation
+            $Content =~ s{
+                (?:
+                    Core.Language.Translate
+                )
+                \(
+                    \s*
+                    (["'])(.*?)(?<!\\)\1
+            }
+            {
+                my $Word = $2 // '';
+
+                # unescape any \" or \' signs
+                $Word =~ s{\\"}{"}smxg;
+                $Word =~ s{\\'}{'}smxg;
+
+                if ( $Word && !$UsedWords{$Word}++ ) {
+
+                    push @OriginalTranslationStrings, {
+                        Location => "JS File: $File",
+                        Source => $Word,
+                    };
+
+                }
+
+                # also save that this string was used in JS (for later use in Loader)
+                $UsedInJS{$Word} = 1;
+
                 '';
             }egx;
         }
@@ -484,6 +566,7 @@ sub HandleLanguage {
         LanguageFile       => $LanguageFile,
         TargetFile         => $TargetFile,
         TranslationStrings => \@TranslationStrings,
+        UsedInJS           => \%UsedInJS,
     );
 
     return 1;
@@ -580,11 +663,19 @@ sub WritePOTFile {
 
     my $Package = $Param{Module} // 'OTRS';
 
+    my $TimeObject   = $Kernel::OM->Get('Kernel::System::Time');
+    my $CreationDate = $TimeObject->SystemTime2TimeStamp(
+        SystemTime => $TimeObject->SystemTime(),
+    );
+
+    # only YEAR-MO-DA HO:MI is needed without seconds
+    $CreationDate = substr( $CreationDate, 0, -3 ) . '+0000';
+
     push @POTEntries, Locale::PO->new(
         -msgid => '',
         -msgstr =>
             "Project-Id-Version: $Package\n" .
-            "POT-Creation-Date: 2014-08-08 19:10+0200\n" .
+            "POT-Creation-Date: $CreationDate\n" .
             "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n" .
             "Last-Translator: FULL NAME <EMAIL\@ADDRESS>\n" .
             "Language-Team: LANGUAGE <LL\@li.org>\n" .
@@ -665,6 +756,25 @@ sub WritePerlLanguageFile {
         }
     }
 
+    # add data structure for JS translations
+    my $JSData = "    \$Self->{JavaScriptStrings} = [\n";
+    if ( $Param{IsSubTranslation} ) {
+        $JSData = '    push @{ $Self->{JavaScriptStrings} // [] }, (' . "\n";
+    }
+
+    for my $String ( sort keys %{ $Param{UsedInJS} // {} } ) {
+        my $Key = $String;
+        $Key =~ s/'/\\'/g;
+        $JSData .= $Indent . "'" . $Key . "',\n";
+    }
+
+    if ( $Param{IsSubTranslation} ) {
+        $JSData .= "    );\n";
+    }
+    else {
+        $JSData .= "    ];\n";
+    }
+
     my %MetaData;
     my $NewOut = '';
 
@@ -692,6 +802,8 @@ use utf8;
 sub Data {
     my \$Self = shift;
 $Data
+
+$JSData
 }
 
 1;
@@ -746,10 +858,13 @@ EOF
                 $NewOut .= <<"EOF";
     \$Self->{Translation} = {
 $Data
+    };
+
 EOF
+                $NewOut .= $JSData . "\n";
             }
+
             if ( $_ =~ /\$\$STOP\$\$/ ) {
-                $NewOut .= "    };\n";
                 $NewOut .= $Line;
                 $MetaData{DataPrinted} = 0;
             }

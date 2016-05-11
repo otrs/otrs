@@ -13,6 +13,8 @@ use warnings;
 
 use Kernel::System::VariableCheck qw(:all);
 
+use Kernel::Language qw(Translatable);
+
 use base qw(Kernel::System::DynamicField::Driver::BaseDateTime);
 
 our @ObjectDependencies = (
@@ -258,7 +260,7 @@ sub EditFieldRender {
         );
     }
 
-    # extract the dynamic field value form the web request
+    # extract the dynamic field value from the web request
     my $FieldValues = $Self->EditFieldValueGet(
         ReturnValueStructure => 1,
         %Param,

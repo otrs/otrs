@@ -165,6 +165,7 @@ sub EditFieldRender {
     if ( defined $Param{Value} ) {
         $Value = $Param{Value};
     }
+
     if ($Value) {
         my ( $Year, $Month, $Day, $Hour, $Minute, $Second ) = $Value =~
             m{ \A ( \d{4} ) - ( \d{2} ) - ( \d{2} ) \s ( \d{2} ) : ( \d{2} ) : ( \d{2} ) \z }xms;
@@ -183,7 +184,7 @@ sub EditFieldRender {
         );
     }
 
-    # extract the dynamic field value form the web request
+    # extract the dynamic field value from the web request
     # TransformDates is always needed from EditFieldRender Bug#8452
     my $FieldValues = $Self->EditFieldValueGet(
         TransformDates       => 1,
@@ -481,11 +482,13 @@ sub DisplayValueRender {
 
     # set field link form config
     my $Link = $Param{DynamicFieldConfig}->{Config}->{Link} || '';
+    my $EnableLinkPreview = $Param{DynamicFieldConfig}->{Config}->{EnableLinkPreview} || 0;
 
     my $Data = {
-        Value => $Value,
-        Title => $Title,
-        Link  => $Link,
+        Value             => $Value,
+        Title             => $Title,
+        Link              => $Link,
+        EnableLinkPreview => $EnableLinkPreview,
     };
 
     return $Data;

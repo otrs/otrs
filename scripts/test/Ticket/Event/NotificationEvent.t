@@ -17,6 +17,14 @@ use vars (qw($Self));
 # get config object
 my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
 
+# get helper object
+$Kernel::OM->ObjectParamAdd(
+    'Kernel::System::UnitTest::Helper' => {
+        RestoreDatabase => 1,
+    },
+);
+my $Helper = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
+
 # disable rich text editor
 my $Success = $ConfigObject->Set(
     Key   => 'Frontend::RichText',
@@ -39,7 +47,7 @@ $Self->True(
     "Set Email Test backend with true",
 );
 
-# set default language to english
+# set default language to English
 $Success = $ConfigObject->Set(
     Key   => 'DefaultLanguage',
     Value => 'en',
@@ -47,7 +55,7 @@ $Success = $ConfigObject->Set(
 
 $Self->True(
     $Success,
-    "Set default language to english",
+    "Set default language to English",
 );
 
 # set not self notify
@@ -75,16 +83,6 @@ $Self->IsDeeply(
     'Test backend empty after initial cleanup',
 );
 
-# set restore configuration param
-$Kernel::OM->ObjectParamAdd(
-    'Kernel::System::UnitTest::Helper' => {
-        RestoreSystemConfiguration => 1,
-    },
-);
-
-# get helper object
-my $HelperObject = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
-
 # enable responsible
 $ConfigObject->Set(
     Key   => 'Ticket::Responsible',
@@ -98,7 +96,7 @@ $ConfigObject->Set(
 );
 
 # create a new user for current test
-my $UserLogin = $HelperObject->TestUserCreate(
+my $UserLogin = $Helper->TestUserCreate(
     Groups => ['users'],
 );
 
@@ -112,19 +110,26 @@ my %UserData = $UserObject->GetUserData(
 my $UserID = $UserData{UserID};
 
 # create a new user without permissions
-my $UserLogin2 = $HelperObject->TestUserCreate();
+my $UserLogin2 = $Helper->TestUserCreate();
 
 my %UserData2 = $UserObject->GetUserData(
     User => $UserLogin2,
 );
 
 # create a new user invalid
-my $UserLogin3 = $HelperObject->TestUserCreate(
+my $UserLogin3 = $Helper->TestUserCreate(
     Groups => ['users'],
 );
 
 my %UserData3 = $UserObject->GetUserData(
     User => $UserLogin3,
+);
+
+# create a new user with permissions via roles only
+my $UserLogin4 = $Helper->TestUserCreate();
+
+my %UserData4 = $UserObject->GetUserData(
+    User => $UserLogin4,
 );
 
 my $SetInvalid = $UserObject->UserUpdate(
@@ -134,10 +139,10 @@ my $SetInvalid = $UserObject->UserUpdate(
 );
 
 # create a new customer user for current test
-my $CustomerUserLogin = $HelperObject->TestCustomerUserCreate();
+my $CustomerUserLogin = $Helper->TestCustomerUserCreate();
 
 # get a random id
-my $RandomID = int rand 1_000_000_000;
+my $RandomID = $Helper->GetRandomID();
 
 # get group object
 my $GroupObject = $Kernel::OM->Get('Kernel::System::Group');
@@ -189,6 +194,26 @@ $Self->IsNot(
     "RoleAdd() should not be undef",
 );
 
+# add role to group
+$Success = $GroupObject->PermissionGroupRoleAdd(
+    GID        => $GID,
+    RID        => $RoleID,
+    Permission => {
+        ro        => 1,
+        move_into => 1,
+        create    => 1,
+        owner     => 1,
+        priority  => 1,
+        rw        => 1,
+    },
+    UserID => 1,
+);
+
+$Self->True(
+    $Success,
+    "Added Role ID $RoleID to Group ID $GID",
+);
+
 $Success = $GroupObject->PermissionRoleUserAdd(
     RID    => $RoleID,
     UID    => $UserID,
@@ -199,6 +224,18 @@ $Success = $GroupObject->PermissionRoleUserAdd(
 $Self->True(
     $Success,
     "Added User ID $UserID to Role ID $RoleID",
+);
+
+$Success = $GroupObject->PermissionRoleUserAdd(
+    RID    => $RoleID,
+    UID    => $UserData4{UserID},
+    Active => 1,
+    UserID => 1,
+);
+
+$Self->True(
+    $Success,
+    "Added User ID $UserData4{UserID} to Role ID $RoleID",
 );
 
 # get queue object
@@ -641,6 +678,10 @@ my @Tests = (
                 ToArray => [ $UserData{UserEmail} ],
                 Body    => "JobName $TicketID Kernel::System::Email::Test $UserData{UserFirstname}=\n",
             },
+            {
+                ToArray => [ $UserData4{UserEmail} ],
+                Body    => "JobName $TicketID Kernel::System::Email::Test $UserData{UserFirstname}=\n",
+            },
         ],
         Success => 1,
     },
@@ -774,6 +815,10 @@ my @Tests = (
                 ToArray => [ $UserData{UserEmail} ],
                 Body    => "JobName $TicketID Kernel::System::Email::Test $UserData{UserFirstname}=\n",
             },
+            {
+                ToArray => [ $UserData4{UserEmail} ],
+                Body    => "JobName $TicketID Kernel::System::Email::Test $UserData{UserFirstname}=\n",
+            },
         ],
         Success => 1,
     },
@@ -796,6 +841,10 @@ my @Tests = (
         ExpectedResults => [
             {
                 ToArray => [ $UserData{UserEmail} ],
+                Body    => "JobName $TicketID Kernel::System::Email::Test $UserData{UserFirstname}=\n",
+            },
+            {
+                ToArray => [ $UserData4{UserEmail} ],
                 Body    => "JobName $TicketID Kernel::System::Email::Test $UserData{UserFirstname}=\n",
             },
         ],
@@ -1112,107 +1161,6 @@ continue {
     undef $NotificationID;
 }
 
-# cleanup
-
-# revert queue to original group
-$QueueObject->QueueUpdate(
-    QueueID => 1,
-    %Queue,
-    UserID => 1,
-);
-
-$Self->True(
-    $Success,
-    "Set Queue ID 1 to Group ID $Queue{GroupID}",
-);
-
-# delete the dynamic field
-my $DFDelete = $DynamicFieldObject->DynamicFieldDelete(
-    ID      => $FieldID,
-    UserID  => 1,
-    Reorder => 0,
-);
-
-# sanity check
-$Self->True(
-    $DFDelete,
-    "DynamicFieldDelete() successful for Field ID $FieldID",
-);
-
-# delete the ticket
-my $TicketDelete = $TicketObject->TicketDelete(
-    TicketID => $TicketID,
-    UserID   => $UserID,
-);
-
-# sanity check
-$Self->True(
-    $TicketDelete,
-    "TicketDelete() successful for Ticket ID $TicketID",
-);
-
-# delete group
-$Success = $GroupObject->PermissionGroupUserAdd(
-    GID        => $GID,
-    UID        => $UserID,
-    Permission => {
-        ro        => 0,
-        move_into => 0,
-        create    => 0,
-        owner     => 0,
-        priority  => 0,
-        rw        => 0,
-    },
-    UserID => 1,
-);
-
-$Self->True(
-    $Success,
-    "Removed User ID $UserID from Group ID $GID",
-);
-
-# get db object
-my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
-
-# remove new group manually
-$Success = $DBObject->Do(
-    SQL => 'DELETE FROM groups
-        WHERE id = ?',
-    Bind => [
-        \$GID,
-    ],
-);
-
-$Self->True(
-    $Success,
-    "Deleted Group ID $GID",
-);
-
-# remove role
-$Success = $GroupObject->PermissionRoleUserAdd(
-    RID    => $RoleID,
-    UID    => $UserID,
-    Active => 0,
-    UserID => 1,
-);
-
-$Self->True(
-    $Success,
-    "Removed User ID $UserID from Role ID $RoleID",
-);
-
-# remove new role manually
-$Success = $DBObject->Do(
-    SQL => 'DELETE FROM roles
-        WHERE id = ?',
-    Bind => [
-        \$RoleID,
-    ],
-);
-
-$Self->True(
-    $Success,
-    "Deleted Role ID $RoleID",
-);
+# cleanup is done by RestoreDatabase.
 
 1;

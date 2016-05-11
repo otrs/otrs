@@ -22,6 +22,15 @@
         overflow: hidden;
     }
 
+    html.NoScroll body {
+        position: static;
+    }
+
+    html.NoScroll #AppWrapper {
+        overflow: hidden;
+        position: fixed;
+    }
+
     .MessageBox, .RTL .MessageBox {
         margin: 0px;
     }
@@ -776,6 +785,17 @@
 
     .TicketZoom .Actions li:after {
         display: inline-block;
+        float: none;
+    }
+
+    .ArticleMailContent.WithMeta .ArticleBody,
+    .ArticleMailContent.WithMeta .ArticleMailContentHTMLWrapper {
+        width: auto;
+        float: none;
+    }
+
+    .ArticleMailContent.WithMeta .ArticleMeta {
+        width: auto;
         float: none;
     }
 

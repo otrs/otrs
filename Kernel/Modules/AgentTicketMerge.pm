@@ -40,8 +40,8 @@ sub Run {
     # check needed stuff
     if ( !$Self->{TicketID} ) {
         return $LayoutObject->ErrorScreen(
-            Message => 'No TicketID is given!',
-            Comment => 'Please contact the admin.',
+            Message => Translatable('No TicketID is given!'),
+            Comment => Translatable('Please contact the admin.'),
         );
     }
 
@@ -162,8 +162,8 @@ sub Run {
 
         # get all parameters
         for my $Parameter (qw( From To Subject Body InformSender MainTicketNumber )) {
-            $GetParam{$Parameter}
-                = $Kernel::OM->Get('Kernel::System::Web::Request')->GetParam( Param => $Parameter ) || '';
+            $GetParam{$Parameter} = $Kernel::OM->Get('Kernel::System::Web::Request')->GetParam( Param => $Parameter )
+                || '';
         }
 
         # rewrap body if no rich text is used
@@ -191,7 +191,9 @@ sub Run {
 
         # check if source and target TicketID are the same (bug#8667)
         if ( $MainTicketID && $MainTicketID == $Self->{TicketID} ) {
-            $LayoutObject->FatalError( Message => "Can't merge ticket with itself!" );
+            $LayoutObject->FatalError(
+                Message => Translatable('Can\'t merge ticket with itself!'),
+            );
         }
 
         # check for errors
@@ -292,7 +294,7 @@ sub Run {
             )
             )
         {
-            my $Output .= $LayoutObject->Header(
+            my $Output = $LayoutObject->Header(
                 Type      => 'Small',
                 BodyClass => 'Popup',
             );

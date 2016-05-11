@@ -8,6 +8,9 @@
 
 package Kernel::Output::HTML::ToolBar::TicketService;
 
+use Kernel::Language qw(Translatable);
+use base 'Kernel::Output::HTML::Base';
+
 use strict;
 use warnings;
 
@@ -21,19 +24,6 @@ our @ObjectDependencies = (
     'Kernel::System::Ticket',
     'Kernel::Output::HTML::Layout',
 );
-
-sub new {
-    my ( $Type, %Param ) = @_;
-
-    # allocate new hash for object
-    my $Self = {};
-    bless( $Self, $Type );
-
-    # get UserID param
-    $Self->{UserID} = $Param{UserID} || die "Got no UserID!";
-
-    return $Self;
-}
 
 sub Run {
     my ( $Self, %Param ) = @_;
@@ -93,7 +83,7 @@ sub Run {
     if ($Count) {
         $Return{ $Priority++ } = {
             Block       => 'ToolBarItem',
-            Description => 'Tickets in MyServices',
+            Description => Translatable('Tickets in My Services'),
             Count       => $Count,
             Class       => $Class,
             Icon        => $Icon,

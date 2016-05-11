@@ -40,7 +40,7 @@
 
         <div class="WidgetSimple">
             <div class="Header">
-                <h2>[% Translate("Network transport") | html %]</h2>
+                <h2>[% Translate("Network Transport") | html %]</h2>
             </div>
             <div class="Content">
                 <h3>[% Translate("Properties") | html %]</h3>
@@ -420,7 +420,7 @@ $('#UseSSL').on('change', function(){
                                 </ul>
                                 <div class="AddElement">
                                     [% Translate("Add new first level element") | html %]:
-                                    <input type="text" name="Element" title="Element" />
+                                    <input type="text" name="Element" title="[% Translate("Element") | html %]" />
                                     <button class="CallForAction"><span>[% Translate("Add") | html %]</span></button>
                                 </div>
                                 <p class="FieldExplanation">

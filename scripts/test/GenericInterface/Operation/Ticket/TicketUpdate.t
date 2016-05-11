@@ -19,7 +19,7 @@ use Kernel::GenericInterface::Requester;
 
 use Kernel::System::VariableCheck qw(:all);
 
-# helper object
+# get helper object
 # skip SSL certificate verification
 $Kernel::OM->ObjectParamAdd(
     'Kernel::System::UnitTest::Helper' => {
@@ -27,10 +27,13 @@ $Kernel::OM->ObjectParamAdd(
         SkipSSLVerify              => 1,
     },
 );
-my $HelperObject = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
+my $Helper = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
+
+# get a random number
+my $RandomID = $Helper->GetRandomNumber();
 
 # create a new user for current test
-my $UserLogin = $HelperObject->TestUserCreate(
+my $UserLogin = $Helper->TestUserCreate(
     Groups => ['users'],
 );
 my $Password = $UserLogin;
@@ -43,16 +46,102 @@ $Self->{UserID} = $UserObject->UserLookup(
 );
 
 # create a new user without permissions for current test
-my $UserLogin2 = $HelperObject->TestUserCreate();
+my $UserLogin2 = $Helper->TestUserCreate();
 my $Password2  = $UserLogin2;
 
 # create a customer where a ticket will use and will have permissions
-my $CustomerUserLogin = $HelperObject->TestCustomerUserCreate();
+my $CustomerUserLogin = $Helper->TestCustomerUserCreate();
 my $CustomerPassword  = $CustomerUserLogin;
 
 # create a customer that will not have permissions
-my $CustomerUserLogin2 = $HelperObject->TestCustomerUserCreate();
+my $CustomerUserLogin2 = $Helper->TestCustomerUserCreate();
 my $CustomerPassword2  = $CustomerUserLogin2;
+
+# create dynamic field object
+my $DynamicFieldObject = $Kernel::OM->Get('Kernel::System::DynamicField');
+
+# add text dynamic field
+my %DynamicFieldTextConfig = (
+    Name       => "DFT1$RandomID",
+    FieldOrder => 9991,
+    FieldType  => 'Text',
+    ObjectType => 'Ticket',
+    Label      => 'Description',
+    ValidID    => 1,
+    Config     => {
+        DefaultValue => '',
+    },
+);
+my $FieldTextID = $DynamicFieldObject->DynamicFieldAdd(
+    %DynamicFieldTextConfig,
+    UserID  => 1,
+    Reorder => 0,
+);
+$Self->True(
+    $FieldTextID,
+    "Dynamic Field $FieldTextID",
+);
+
+# add ID
+$DynamicFieldTextConfig{ID} = $FieldTextID;
+
+# add dropdown dynamic field
+my %DynamicFieldDropdownConfig = (
+    Name       => "DFT2$RandomID",
+    FieldOrder => 9992,
+    FieldType  => 'Dropdown',
+    ObjectType => 'Ticket',
+    Label      => 'Description',
+    ValidID    => 1,
+    Config     => {
+        PossibleValues => [
+            1 => 'One',
+            2 => 'Two',
+            3 => 'Three',
+        ],
+    },
+);
+my $FieldDropdownID = $DynamicFieldObject->DynamicFieldAdd(
+    %DynamicFieldDropdownConfig,
+    UserID  => 1,
+    Reorder => 0,
+);
+$Self->True(
+    $FieldDropdownID,
+    "Dynamic Field $FieldDropdownID",
+);
+
+# add ID
+$DynamicFieldDropdownConfig{ID} = $FieldDropdownID;
+
+# add multiselect dynamic field
+my %DynamicFieldMultiselectConfig = (
+    Name       => "DFT3$RandomID",
+    FieldOrder => 9993,
+    FieldType  => 'Multiselect',
+    ObjectType => 'Ticket',
+    Label      => 'Multiselect label',
+    ValidID    => 1,
+    Config     => {
+        PossibleValues => [
+            1 => 'Value9ßüß',
+            2 => 'DifferentValue',
+            3 => '1234567',
+        ],
+    },
+);
+my $FieldMultiselectID = $DynamicFieldObject->DynamicFieldAdd(
+    %DynamicFieldMultiselectConfig,
+    UserID  => 1,
+    Reorder => 0,
+);
+$Self->True(
+    $FieldMultiselectID,
+    "Dynamic Field $FieldMultiselectID",
+);
+
+# add ID
+$DynamicFieldMultiselectConfig{ID} = $FieldMultiselectID;
 
 # create ticket object
 my $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
@@ -87,11 +176,58 @@ my %Ticket = $TicketObject->TicketGet(
 # remember ticket id
 push @TicketIDs, $TicketID1;
 
-#get a random id
-my $RandomID = int rand 1_000_000_000;
+# create backed object
+my $BackendObject = $Kernel::OM->Get('Kernel::System::DynamicField::Backend');
+$Self->Is(
+    ref $BackendObject,
+    'Kernel::System::DynamicField::Backend',
+    'Backend object was created successfully',
+);
 
-# set web-service name
-my $WebserviceName = '-Test-' . $RandomID;
+# set text field value
+my $Result = $BackendObject->ValueSet(
+    DynamicFieldConfig => \%DynamicFieldTextConfig,
+    ObjectID           => $TicketID1,
+    Value              => 'ticket1_field1',
+    UserID             => 1,
+);
+
+# sanity check
+$Self->True(
+    $Result,
+    "Text ValueSet() for Ticket $TicketID1",
+);
+
+# set dropdown field value
+$Result = $BackendObject->ValueSet(
+    DynamicFieldConfig => \%DynamicFieldDropdownConfig,
+    ObjectID           => $TicketID1,
+    Value              => 1,
+    UserID             => 1,
+);
+
+# sanity check
+$Self->True(
+    $Result,
+    "Multiselect ValueSet() for Ticket $TicketID1",
+);
+
+# set multiselect field value
+$Result = $BackendObject->ValueSet(
+    DynamicFieldConfig => \%DynamicFieldMultiselectConfig,
+    ObjectID           => $TicketID1,
+    Value              => [ 2, 3 ],
+    UserID             => 1,
+);
+
+# sanity check
+$Self->True(
+    $Result,
+    "Dropdown ValueSet() for Ticket $TicketID1",
+);
+
+# set webservice name
+my $WebserviceName = $Helper->GetRandomID();
 
 # create web-service object
 my $WebserviceObject = $Kernel::OM->Get('Kernel::System::GenericInterface::Webservice');
@@ -126,23 +262,7 @@ $Self->True(
 my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
 
 # get remote host with some precautions for certain unit test systems
-my $Host;
-my $FQDN = $ConfigObject->Get('FQDN');
-
-# try to resolve FQDN host
-if ( $FQDN ne 'yourhost.example.com' && gethostbyname($FQDN) ) {
-    $Host = $FQDN;
-}
-
-# try to resolve local-host instead
-if ( !$Host && gethostbyname('localhost') ) {
-    $Host = 'localhost';
-}
-
-# use hard-coded local-host IP address
-if ( !$Host ) {
-    $Host = '127.0.0.1';
-}
+my $Host = $Helper->GetTestHTTPHostname();
 
 # prepare web-service config
 my $RemoteSystem =
@@ -397,6 +517,127 @@ my @Tests = (
         },
         Operation => 'TicketUpdate',
     },
+
+    {
+        Name           => 'Update Text DynamicField (with empty value)',
+        SuccessRequest => '1',
+        RequestData    => {
+            TicketID     => $TicketID1,
+            DynamicField => [
+                {
+                    Name  => "DFT1$RandomID",
+                    Value => '',
+                },
+                {
+                    Name  => "DFT2$RandomID",
+                    Value => '',
+                },
+                {
+                    Name  => "DFT3$RandomID",
+                    Value => '',
+                },
+            ],
+        },
+        Auth => {
+            SessionID => $NewSessionID,
+        },
+        ExpectedReturnRemoteData => {
+            Success => 1,
+            Data    => {
+                TicketID     => $Ticket{TicketID},
+                TicketNumber => $Ticket{TicketNumber},
+            },
+        },
+        ExpectedReturnLocalData => {
+            Success => 1,
+            Data    => {
+                TicketID     => $Ticket{TicketID},
+                TicketNumber => $Ticket{TicketNumber},
+            },
+        },
+        Operation => 'TicketUpdate',
+    },
+
+    {
+        Name           => 'Update Text DynamicField (with not empty value)',
+        SuccessRequest => '1',
+        RequestData    => {
+            TicketID     => $TicketID1,
+            DynamicField => [
+                {
+                    Name  => "DFT1$RandomID",
+                    Value => 'Value9ßüß-カスタ1234',
+                },
+                {
+                    Name  => "DFT2$RandomID",
+                    Value => '2',
+                },
+                {
+                    Name  => "DFT3$RandomID",
+                    Value => [ 1, 2 ],
+                },
+            ],
+        },
+        Auth => {
+            SessionID => $NewSessionID,
+        },
+        ExpectedReturnRemoteData => {
+            Success => 1,
+            Data    => {
+                TicketID     => $Ticket{TicketID},
+                TicketNumber => $Ticket{TicketNumber},
+            },
+        },
+        ExpectedReturnLocalData => {
+            Success => 1,
+            Data    => {
+                TicketID     => $Ticket{TicketID},
+                TicketNumber => $Ticket{TicketNumber},
+            },
+        },
+        Operation => 'TicketUpdate',
+    },
+
+    {
+        Name           => 'Update Text DynamicField (with wrong value)',
+        SuccessRequest => '1',
+        RequestData    => {
+            TicketID     => $TicketID1,
+            DynamicField => [
+                {
+                    Name  => "DFT1$RandomID",
+                    Value => { Wrong => 'Value' },    # value type depends on the dynamic field
+                },
+                {
+                    Name  => "DFT2$RandomID",
+                    Value => { Wrong => 'Value' },    # value type depends on the dynamic field
+                },
+            ],
+        },
+        Auth => {
+            SessionID => $NewSessionID,
+        },
+        ExpectedReturnRemoteData => {
+            Success => 1,
+            Data    => {
+                Error => {
+                    ErrorCode    => 'TicketUpdate.MissingParameter',
+                    ErrorMessage => 'TicketUpdate: DynamicField->Value parameter is missing!'
+                },
+            },
+        },
+        ExpectedReturnLocalData => {
+            Success => 1,
+            Data    => {
+                Error => {
+                    ErrorCode    => 'TicketUpdate.MissingParameter',
+                    ErrorMessage => 'TicketUpdate: DynamicField->Value parameter is missing!'
+                },
+            },
+        },
+        Operation => 'TicketUpdate',
+    },
+
 );
 
 # debugger object
@@ -518,9 +759,9 @@ for my $Test (@Tests) {
     }
 }
 
-# clean up
+# cleanup
 
-# clean up web-service
+# delete web-service
 my $WebserviceDelete = $WebserviceObject->WebserviceDelete(
     ID     => $WebserviceID,
     UserID => $Self->{UserID},
@@ -530,10 +771,8 @@ $Self->True(
     "Deleted Webservice $WebserviceID",
 );
 
-# remove tickets
+# delete tickets
 for my $TicketID (@TicketIDs) {
-
-    # delete the ticket Three
     my $TicketDelete = $TicketObject->TicketDelete(
         TicketID => $TicketID,
         UserID   => $Self->{UserID},
@@ -545,5 +784,8 @@ for my $TicketID (@TicketIDs) {
         "TicketDelete() successful for Ticket ID $TicketID",
     );
 }
+
+# cleanup cache
+$Kernel::OM->Get('Kernel::System::Cache')->CleanUp();
 
 1;
