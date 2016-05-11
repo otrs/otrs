@@ -2659,7 +2659,7 @@ sub Data {
         'Text will also be received by:' => 'Tekst wordt ook ontvangen door:',
         'Spell check' => 'Spellingscontrole',
         'Text Template' => 'Tekstsjabloon',
-        'Setting a template will overwrite any text or attachment.' => 'Het instellen van een template overschrijft alle testen en bijlagen.',
+        'Setting a template will overwrite any text or attachment.' => 'Het instellen van een template overschrijft alle teksten en bijlagen.',
         'Note type' => 'Notitiesoort',
 
         # Template: AgentTicketBounce
