@@ -278,11 +278,15 @@ sub _ProcessFailed {
     # get main object
     my $MainObject = $Kernel::OM->Get('Kernel::System::Main');
 
-    my $Home = $Kernel::OM->Get('Kernel::Config')->Get('Home') . '/var/spool/';
+    # get config object
+    my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
+
+    my $MailReprocessSpoolDir = $ConfigObject->Get('MailReprocessSpoolDir')
+        || $ConfigObject->Get('Home') . '/var/spool/';
     my $MD5  = $MainObject->MD5sum(
         String => \$Content,
     );
-    my $Location = $Home . 'problem-email-' . $MD5;
+    my $Location = $MailReprocessSpoolDir . '/problem-email-' . $MD5;
 
     return $MainObject->FileWrite(
         Location   => $Location,
