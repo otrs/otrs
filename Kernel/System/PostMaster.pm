@@ -155,7 +155,10 @@ sub Run {
     my $GetParam = $Self->GetEmailParams();
 
     # check if follow up
-    my ( $Tn, $TicketID ) = $Self->CheckFollowUp( GetParam => $GetParam );
+    my ( $Tn, $TicketID ) = $Self->CheckFollowUp(
+        GetParam => $GetParam,
+        Quiet    => 1,
+    );
 
     # get config objects
     my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
@@ -431,7 +434,8 @@ sub Run {
 to detect the ticket number in processing email
 
     my ($TicketNumber, $TicketID) = $PostMasterObject->CheckFollowUp(
-        Subject => 'Re: [Ticket:#123456] Some Subject',
+        GetParam => $GetParam,
+        Quiet => 0,  # 1 = don't generate logs (i.e. in prerun)
     );
 
 =cut
@@ -448,12 +452,15 @@ sub CheckFollowUp {
     # Load CheckFollowUp Modules
     my $Jobs = $ConfigObject->Get('PostMaster::CheckFollowUpModule');
 
+    # be loud by default
+    if ( !defined $Param{Quiet} ) {
+        $Param{Quiet} = 0;
+    }
+
     if ( IsHashRefWithData($Jobs) ) {
         my $MainObject = $Kernel::OM->Get('Kernel::System::Main');
         JOB:
         for my $Job ( sort keys %$Jobs ) {
-            my $Module = $Jobs->{$Job};
-
             return if !$MainObject->Require( $Jobs->{$Job}->{Module} );
 
             my $CheckObject = $Jobs->{$Job}->{Module}->new(
@@ -467,7 +474,12 @@ sub CheckFollowUp {
                 );
                 next JOB;
             }
-            my $TicketID = $CheckObject->Run(%Param);
+
+            my $TicketID = $CheckObject->Run(
+                %Param,
+                JobConfig => $Jobs->{$Job},
+            );
+
             if ($TicketID) {
                 my %Ticket = $TicketObject->TicketGet(
                     TicketID      => $TicketID,

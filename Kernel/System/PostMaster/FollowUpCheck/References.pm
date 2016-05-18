@@ -41,6 +41,7 @@ sub Run {
         # get ticket id of message id
         my $TicketID = $TicketObject->ArticleGetTicketIDOfMessageID(
             MessageID => "<$Reference>",
+            Quiet => $Param{Quiet},
         );
 
         if ($TicketID) {
