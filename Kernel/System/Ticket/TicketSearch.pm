@@ -516,7 +516,17 @@ sub TicketSearch {
     ARGUMENT:
     for my $Key ( sort keys %Param ) {
         if ( $Param{$Key} && $Key =~ /^(Ticket(Close|Change)Time(Newer|Older)(Date|Minutes)|Created.+?)/ ) {
-            $SQLFrom .= 'INNER JOIN ticket_history th ON st.id = th.ticket_id ';
+
+            # suggest index to avoid ticket_history scans
+            my $IndexHint = '';
+            if (
+                ( $Param{TicketCloseTimeOlderDate} || $Param{TicketCloseTimeNewerDate} )
+                && ( $DBObject->GetDatabaseFunction('Type') eq 'mysql' )
+            ) {
+                $IndexHint = 'USE INDEX (ticket_history_create_time) ';
+            }
+
+            $SQLFrom .= 'INNER JOIN ticket_history th ' . $IndexHint . 'ON st.id = th.ticket_id ';
             last ARGUMENT;
         }
     }
