@@ -237,8 +237,11 @@ sub FilenameCleanUp {
     # replace invalid token for attachment file names
     elsif ( $Type eq 'attachment' ) {
 
-        # replace invalid token like < > ? " : ; | \ / or *
-        $Param{Filename} =~ s/[ <>\?":\\\*\|\/;\[\]]/_/g;
+        # only whitelisted characters allowed in filenames for security
+        $Param{Filename} =~ s/[^\w\-+.#_]/_/g;
+
+        # strip dots at the beginning of filenames
+        $Param{Filename} =~ s/^\.*//;
 
         # replace utf8 and iso
         $Param{Filename} =~ s/(\x{00C3}\x{00A4}|\x{00A4})/ae/g;
@@ -261,8 +264,12 @@ sub FilenameCleanUp {
     }
     else {
 
-        # replace invalid token like [ ] * : ? " < > ; | \ /
-        $Param{Filename} =~ s/[<>\?":\\\*\|\/;\[\]]/_/g;
+        # only whitelisted characters allowed in filenames for security
+        $Param{Filename} =~ s/[^\w\-+.#_]/_/g;
+
+        # strip dots at the beginning of filenames
+        $Param{Filename} =~ s/^\.*//;
+
     }
 
     return $Param{Filename};
