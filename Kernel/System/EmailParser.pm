@@ -718,15 +718,11 @@ sub PartsAttachments {
         my ($SubjectString) = $Part->as_string() =~ m/^Subject: ([^\n]*(\n[ \t][^\n]*)*)/m;
         my $Subject = $Self->_DecodeString( String => $SubjectString );
 
-        # only whitelisted characters allowed in filenames for security
-        $Subject =~ s/[^\w\-+.#_]/_/g;
-
-        # strip dots at the beginning of filenames
-        $Subject =~ s/^\.*//;
-
-        if ( length($Subject) > 246 ) {
-            $Subject = substr( $Subject, 0, 246 );
-        }
+        # cleanup filename
+        $Subject = $Kernel::OM->Get('Kernel::System::Main')->FilenameCleanUp(
+            Filename => $Subject,
+            Type     => 'Attachment',
+        );
 
         if ( $Subject eq '' ) {
             $Self->{NoFilenamePartCounter}++;
