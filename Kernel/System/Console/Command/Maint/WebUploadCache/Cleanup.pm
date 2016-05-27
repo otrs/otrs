@@ -6,7 +6,7 @@
 # did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
 # --
 
-package Kernel::System::Console::Command::Maint::Web::UploadCache::Cleanup;
+package Kernel::System::Console::Command::Maint::WebUploadCache::Cleanup;
 
 use strict;
 use warnings;

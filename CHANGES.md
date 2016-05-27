@@ -1,4 +1,5 @@
 #6.0.0.beta1 2016-??-??
+ - 2016-05-27 Upload cache cleanup command name changed, unit test added.
  - 2016-02-18 Upload cache performance fix.
  - 2016-02-01 Upload cache performance fix.
  - 2015-12-16 Fixed bug#[6333](http://bugs.otrs.org/show_bug.cgi?id=6333) - Ticket merging does not work with customized state name.
