@@ -25,7 +25,7 @@ my @Tests = (
     {
         Name         => 'FilenameCleanUp() - Local',
         FilenameOrig => 'me_t o/alal.xml',
-        FilenameNew  => 'me_t o_alal.xml',
+        FilenameNew  => 'me_t_o_alal.xml',
         Type         => 'Local',
     },
     {
@@ -61,8 +61,20 @@ my @Tests = (
     {
         Name         => 'FilenameCleanUp() - Local',
         FilenameOrig => 'me_to/a+lal Grüße 0.xml',
-        FilenameNew  => 'me_to_a+lal Grüße 0.xml',
+        FilenameNew  => 'me_to_a+lal_Grüße_0.xml',
         Type         => 'Local',
+    },
+    {
+        Name         => 'FilenameCleanUp() - leading dots - Local',
+        FilenameOrig => '....test.xml',
+        FilenameNew  => 'test.xml',
+        Type         => 'Local',
+    },
+    {
+        Name         => 'FilenameCleanUp() - leading dots - Attachment',
+        FilenameOrig => '....test.xml',
+        FilenameNew  => 'test.xml',
+        Type         => 'Attachment',
     },
     {
         Name => 'FilenameCleanUp() - Attachment',

@@ -233,36 +233,39 @@ sub FilenameCleanUp {
         $Kernel::OM->Get('Kernel::System::Encode')->EncodeOutput( \$Param{Filename} );
         $Param{Filename} = md5_hex( $Param{Filename} );
     }
-
-    # replace invalid token for attachment file names
-    elsif ( $Type eq 'attachment' ) {
-
-        # replace invalid token like < > ? " : ; | \ / or *
-        $Param{Filename} =~ s/[ <>\?":\\\*\|\/;\[\]]/_/g;
-
-        # replace utf8 and iso
-        $Param{Filename} =~ s/(\x{00C3}\x{00A4}|\x{00A4})/ae/g;
-        $Param{Filename} =~ s/(\x{00C3}\x{00B6}|\x{00B6})/oe/g;
-        $Param{Filename} =~ s/(\x{00C3}\x{00BC}|\x{00FC})/ue/g;
-        $Param{Filename} =~ s/(\x{00C3}\x{009F}|\x{00C4})/Ae/g;
-        $Param{Filename} =~ s/(\x{00C3}\x{0096}|\x{0096})/Oe/g;
-        $Param{Filename} =~ s/(\x{00C3}\x{009C}|\x{009C})/Ue/g;
-        $Param{Filename} =~ s/(\x{00C3}\x{009F}|\x{00DF})/ss/g;
-        $Param{Filename} =~ s/-+/-/g;
-
-        # cut the string if too long
-        if ( length( $Param{Filename} ) > 100 ) {
-            my $Ext = '';
-            if ( $Param{Filename} =~ /^.*(\.(...|....))$/ ) {
-                $Ext = $1;
-            }
-            $Param{Filename} = substr( $Param{Filename}, 0, 95 ) . $Ext;
-        }
-    }
     else {
 
-        # replace invalid token like [ ] * : ? " < > ; | \ /
-        $Param{Filename} =~ s/[<>\?":\\\*\|\/;\[\]]/_/g;
+        # trim whitespace
+        $Param{Filename} =~ s/^\s+|\n|\s+$//g;
+
+        # strip leading dots
+        $Param{Filename} =~ s/^\.+//;
+
+        # only whitelisted characters allowed in filename for security
+        $Param{Filename} =~ s/[^\w\-+.#_]/_/g;
+
+        # additional cleaup for attachment filename
+        if ( $Type eq 'attachment' ) {
+
+            # replace utf8 and iso
+            $Param{Filename} =~ s/(\x{00C3}\x{00A4}|\x{00A4})/ae/g;
+            $Param{Filename} =~ s/(\x{00C3}\x{00B6}|\x{00B6})/oe/g;
+            $Param{Filename} =~ s/(\x{00C3}\x{00BC}|\x{00FC})/ue/g;
+            $Param{Filename} =~ s/(\x{00C3}\x{009F}|\x{00C4})/Ae/g;
+            $Param{Filename} =~ s/(\x{00C3}\x{0096}|\x{0096})/Oe/g;
+            $Param{Filename} =~ s/(\x{00C3}\x{009C}|\x{009C})/Ue/g;
+            $Param{Filename} =~ s/(\x{00C3}\x{009F}|\x{00DF})/ss/g;
+            $Param{Filename} =~ s/-+/-/g;
+
+            # cut the string if too long
+            if ( length( $Param{Filename} ) > 100 ) {
+                my $Ext = '';
+                if ( $Param{Filename} =~ /^.*(\.(...|....))$/ ) {
+                    $Ext = $1;
+                }
+                $Param{Filename} = substr( $Param{Filename}, 0, 95 ) . $Ext;
+            }
+        }
     }
 
     return $Param{Filename};

@@ -718,15 +718,15 @@ sub PartsAttachments {
         my ($SubjectString) = $Part->as_string() =~ m/^Subject: ([^\n]*(\n[ \t][^\n]*)*)/m;
         my $Subject = $Self->_DecodeString( String => $SubjectString );
 
-        # trim whitespace
-        $Subject =~ s/^\s+|\n|\s+$//g;
-        if ( length($Subject) > 246 ) {
-            $Subject = substr( $Subject, 0, 246 );
-        }
+        # cleanup filename
+        $Subject = $Kernel::OM->Get('Kernel::System::Main')->FilenameCleanUp(
+            Filename => $Subject,
+            Type     => 'Attachment',
+        );
 
         if ( $Subject eq '' ) {
             $Self->{NoFilenamePartCounter}++;
-            $Subject = "Unbenannt-$Self->{NoFilenamePartCounter}";
+            $Subject = "file-$Self->{NoFilenamePartCounter}";
         }
         $PartData{Filename} = $Subject . '.eml';
     }
