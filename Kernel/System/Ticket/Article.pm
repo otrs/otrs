@@ -563,31 +563,34 @@ get ticket id of given message id
 
     my $TicketID = $TicketObject->ArticleGetTicketIDOfMessageID(
         MessageID => '<13231231.1231231.32131231@example.com>',
+        MaxAge => 0,          # search only articles not older than MaxAge
+                              # seconds; 0 disables this filter
+        MaxArticles => 0,     # search failure if more than MaxArticles have
+                              # same Message-ID; 0 disables this filter
+        Quiet => 0,           # 1 = don't generate logs for prerun
     );
+
+search will fail if there are two different tickets with article having given Message-ID
 
 =cut
 
 sub ArticleGetTicketIDOfMessageID {
     my ( $Self, %Param ) = @_;
 
-    # check needed stuff
-    if ( !$Param{MessageID} ) {
-        $Kernel::OM->Get('Kernel::System::Log')->Log(
-            Priority => 'error',
-            Message  => 'Need MessageID!'
-        );
-        return;
-    }
+    my $Quiet = $Param{Quiet} // 0;
+
     my $MD5 = $Kernel::OM->Get('Kernel::System::Main')->MD5sum( String => $Param{MessageID} );
 
     # get database object
     my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
 
+    # search for tickets with given Message-ID in its articles
+
     # sql query
     return if !$DBObject->Prepare(
-        SQL   => 'SELECT ticket_id FROM article WHERE a_message_id_md5 = ?',
+        SQL   => 'SELECT DISTINCT(ticket_id) FROM article WHERE a_message_id_md5 = ?',
         Bind  => [ \$MD5 ],
-        Limit => 10,
+        Limit => 2,
     );
 
     my $TicketID;
@@ -597,19 +600,91 @@ sub ArticleGetTicketIDOfMessageID {
         $TicketID = $Row[0];
     }
 
-    # no reference found
+    # no ticket found
     return if $Count == 0;
 
-    # one found
-    return $TicketID if $Count == 1;
+    # search failure if more than one ticket with article having given Message-ID exist
+    if ( $Count > 1 ) {
 
-    # more than one found! that should not be, a message_id should be unique!
-    $Kernel::OM->Get('Kernel::System::Log')->Log(
-        Priority => 'notice',
-        Message  => "The MessageID '$Param{MessageID}' is in your database "
-            . "more than one time! That should not be, a message_id should be unique!",
-    );
-    return;
+        # more then one found! that should not be, a message_id should be unique!
+        if ( !$Quiet ) {
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
+                Priority => 'notice',
+                Message  => "Articles with Message-ID '$Param{MessageID}' exist in more than one "
+                    . "ticket. Follow up mode disabled.",
+            );
+        }
+        return;
+    }
+
+    # search failure if number of articles with given Message-ID is greater than MaxArticles
+    # (disable check if MaxArticles is not integer or is not > 0)
+    if ( $Param{MaxArticles} && ( $Param{MaxArticles} =~ /^\d+$/ ) && ( $Param{MaxArticles} > 0 ) ) {
+
+        # sql query
+        return if !$DBObject->Prepare(
+            SQL  => 'SELECT COUNT(ticket_id) FROM article WHERE a_message_id_md5 = ?',
+            Bind => [ \$MD5 ],
+        );
+
+        $Count = 0;
+        while ( my @Row = $DBObject->FetchrowArray() ) {
+            $Count = $Row[0];
+        }
+
+        if ( $Count >= $Param{MaxArticles} ) {
+            if ( !$Quiet ) {
+                $Kernel::OM->Get('Kernel::System::Log')->Log(
+                    Priority => 'notice',
+                    Message  => "Number of articles with Message-ID '$Param{MessageID}' ($Count) "
+                        . "reached MaxArticles limit (" . $Param{MaxArticles} . "). Follow up mode disabled.",
+                );
+            }
+            return;
+        }
+    }
+
+    # search failure if oldest article with given Message-ID is older than MaxAge seconds
+    # (disable check if MaxAge is not integer or is not > 0)
+    if ( $Param{MaxAge} && ( $Param{MaxAge} =~ /^\d+$/ ) && ( $Param{MaxAge} > 0 ) ) {
+
+        # sql query
+        return if !$DBObject->Prepare(
+            SQL   => 'SELECT create_time FROM article WHERE a_message_id_md5 = ? ORDER BY create_time ASC',
+            Bind  => [ \$MD5 ],
+            Limit => 1,
+        );
+
+        my $OldestArticleCreate = 0;
+        while ( my @Row = $DBObject->FetchrowArray() ) {
+            $OldestArticleCreate = $Row[0];
+
+            # cleanup time stamps (some databases are using e. g. 2008-02-25 22:03:00.000000
+            # and 0000-00-00 00:00:00 time stamps)
+            $OldestArticleCreate =~ s/^(\d\d\d\d-\d\d-\d\d\s\d\d:\d\d:\d\d)\..+?$/$1/;
+        }
+
+        # get time object
+        my $TimeObject = $Kernel::OM->Get('Kernel::System::Time');
+
+        my $OldestArticleCreateTime = $TimeObject->TimeStamp2SystemTime(
+            String => $OldestArticleCreate,
+        );
+
+        if ( $TimeObject->SystemTime() - $Param{MaxAge} > $OldestArticleCreateTime ) {
+            if ( !$Quiet ) {
+                $Kernel::OM->Get('Kernel::System::Log')->Log(
+                    Priority => 'notice',
+                    Message  => "Oldest article with Message-ID '$Param{MessageID}' is "
+                        . "older (" . $OldestArticleCreate . ") than MaxAge limit ("
+                        . $Param{MaxAge} . " sec.). Follow up mode disabled.",
+                );
+            }
+            return;
+        }
+    }
+
+    return $TicketID;
 }
 
 =item ArticleGetContentPath()
