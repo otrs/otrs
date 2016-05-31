@@ -65,18 +65,33 @@ Core.Customer = (function (TargetNS) {
 
         if (TargetNS.IECompatibilityMode) {
             TargetNS.SupportedBrowser = false;
-            alert(Core.Language.Translate('Please turn off Compatibility Mode in Internet Explorer!'));
+            alert(Core.Config.Get('TurnOffCompatibilityModeMsg'));
         }
 
         if (!TargetNS.SupportedBrowser) {
             alert(
-                Core.Language.Translate('The browser you are using is too old.')
+                Core.Config.Get('BrowserTooOldMsg')
                 + ' '
-                + Core.Language.Translate('OTRS runs with a huge lists of browsers, please upgrade to one of these.')
+                + Core.Config.Get('BrowserListMsg')
                 + ' '
-                + Core.Language.Translate('Please see the documentation or ask your admin for further information.')
+                + Core.Config.Get('BrowserDocumentationMsg')
             );
         }
+
+        Core.Exception.Init();
+
+        Core.Form.Validate.Init();
+        Core.UI.Popup.Init();
+
+        // late execution of accessibility code
+        Core.UI.Accessibility.Init();
+
+        // Modernize input fields
+        Core.UI.InputFields.Init();
+
+        // Init tree selection/tree view for dynamic fields
+        Core.UI.TreeSelection.InitTreeSelection();
+        Core.UI.TreeSelection.InitDynamicFieldTreeViewRestore();
     };
 
     /**
@@ -103,8 +118,6 @@ Core.Customer = (function (TargetNS) {
     TargetNS.Enhance = function(){
         $('body').removeClass('NoJavaScript').addClass('JavaScriptAvailable');
     };
-
-    Core.Init.RegisterNamespace(TargetNS, 'APP_GLOBAL_EARLY');
 
     return TargetNS;
 }(Core.Customer || {}));

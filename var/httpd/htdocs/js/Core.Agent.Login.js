@@ -57,7 +57,7 @@ Core.Agent.Login = (function (TargetNS) {
 
         // shake login box on authentication failure
         if (LoginFailed) {
-            Core.UI.Animate($('#LoginBox'), 'Shake');
+            Core.UI.Shake($('#LoginBox'));
         }
 
         // if in PreLogin mode, automatically submit form

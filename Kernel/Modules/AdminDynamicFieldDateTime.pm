@@ -108,6 +108,9 @@ sub _AddAction {
         }
     }
 
+    # get the EnableLinkPreview option and set it to '0' if it is undefined
+    $GetParam{EnableLinkPreview} = $ParamObject->GetParam( Param => 'EnableLinkPreview' ) // 0;
+
     my $DynamicFieldObject = $Kernel::OM->Get('Kernel::System::DynamicField');
 
     if ( $GetParam{Name} ) {
@@ -164,7 +167,7 @@ sub _AddAction {
     }
 
     for my $ConfigParam (
-        qw(ObjectType ObjectTypeName FieldType FieldTypeName YearsPeriod DateRestriction ValidID Link LinkPreview)
+        qw(ObjectType ObjectTypeName FieldType FieldTypeName YearsPeriod DateRestriction ValidID Link)
         )
     {
         $GetParam{$ConfigParam} = $ParamObject->GetParam( Param => $ConfigParam );
@@ -191,13 +194,13 @@ sub _AddAction {
 
     # set specific config
     my $FieldConfig = {
-        DefaultValue    => $GetParam{DefaultValue},
-        YearsPeriod     => $GetParam{YearsPeriod},
-        DateRestriction => $GetParam{DateRestriction},
-        YearsInFuture   => $GetParam{YearsInFuture},
-        YearsInPast     => $GetParam{YearsInPast},
-        Link            => $GetParam{Link},
-        LinkPreview     => $GetParam{LinkPreview},
+        DefaultValue      => $GetParam{DefaultValue},
+        YearsPeriod       => $GetParam{YearsPeriod},
+        DateRestriction   => $GetParam{DateRestriction},
+        YearsInFuture     => $GetParam{YearsInFuture},
+        YearsInPast       => $GetParam{YearsInPast},
+        Link              => $GetParam{Link},
+        EnableLinkPreview => $GetParam{EnableLinkPreview},
     };
 
     # create a new field
@@ -299,6 +302,9 @@ sub _ChangeAction {
             $Errors{ $Needed . 'ServerErrorMessage' } = Translatable('This field is required.');
         }
     }
+
+    # get the EnableLinkPreview option and set it to '0' if it is undefined
+    $GetParam{EnableLinkPreview} = $ParamObject->GetParam( Param => 'EnableLinkPreview' ) // 0;
 
     my $LayoutObject = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
 
@@ -408,7 +414,7 @@ sub _ChangeAction {
     }
 
     for my $ConfigParam (
-        qw(ObjectType ObjectTypeName FieldType FieldTypeName YearsPeriod DateRestriction ValidID Link LinkPreview)
+        qw(ObjectType ObjectTypeName FieldType FieldTypeName YearsPeriod DateRestriction ValidID Link)
         )
     {
         $GetParam{$ConfigParam} = $ParamObject->GetParam( Param => $ConfigParam );
@@ -434,13 +440,13 @@ sub _ChangeAction {
 
     # set specific config
     my $FieldConfig = {
-        DefaultValue    => $GetParam{DefaultValue},
-        YearsPeriod     => $GetParam{YearsPeriod},
-        DateRestriction => $GetParam{DateRestriction},
-        YearsInFuture   => $GetParam{YearsInFuture},
-        YearsInPast     => $GetParam{YearsInPast},
-        Link            => $GetParam{Link},
-        LinkPreview     => $GetParam{LinkPreview},
+        DefaultValue      => $GetParam{DefaultValue},
+        YearsPeriod       => $GetParam{YearsPeriod},
+        DateRestriction   => $GetParam{DateRestriction},
+        YearsInFuture     => $GetParam{YearsInFuture},
+        YearsInPast       => $GetParam{YearsInPast},
+        Link              => $GetParam{Link},
+        EnableLinkPreview => $GetParam{EnableLinkPreview},
     };
 
     # update dynamic field (FieldType and ObjectType cannot be changed; use old values)
@@ -546,7 +552,19 @@ sub _ShowScreen {
     my $YearsPeriod     = $Param{YearsPeriod}     || 0;
     my $DateRestriction = $Param{DateRestriction} || 0;
     my $Link            = $Param{Link}            || '';
-    my $LinkPreview     = $Param{LinkPreview}     || '';
+
+    my $EnableLinkPreview = $Param{EnableLinkPreview} || '0';
+
+    # create EnableLinkPreview option list
+    my $EnableLinkPreviewStrg = $LayoutObject->BuildSelection(
+        Data => {
+            0 => Translatable('No'),
+            1 => Translatable('Yes'),
+        },
+        Name       => 'EnableLinkPreview',
+        SelectedID => $EnableLinkPreview,
+        Class      => 'Modernize W50pc',
+    );
 
     my $YearsInFuture = 5;
     if ( defined $Param{YearsInFuture} ) {
@@ -626,7 +644,7 @@ sub _ShowScreen {
             YearsInPast           => $YearsInPast,
             ReadonlyInternalField => $ReadonlyInternalField,
             Link                  => $Link,
-            LinkPreview           => $LinkPreview,
+            EnableLinkPreviewStrg => $EnableLinkPreviewStrg,
             }
     );
 

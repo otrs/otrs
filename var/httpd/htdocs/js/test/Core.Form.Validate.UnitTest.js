@@ -84,7 +84,7 @@ Core.Form.Validate = (function (Namespace) {
              * Run the tests
              */
 
-            Core.Config.Set('CheckEmailAddresses', 1);
+            Core.Config.Set('CheckEmailAddresses', true);
             Core.Form.Validate.Init();
 
             SingleFieldValidationMethods = [

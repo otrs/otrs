@@ -177,7 +177,6 @@
                                             <tbody>
                                                 <tr>
                                                     <td valign="top" class="footerContent">
-                                                    [% IF !Config("Secure::DisableBanner") %]
                                                         <table border="0" cellpadding="10" cellspacing="0" width="100%">
                                                             <tbody>
                                                                 <tr>
@@ -189,7 +188,6 @@
                                                                 </tr>
                                                             </tbody>
                                                         </table>
-                                                    [% END %]
                                                     </td>
                                                 </tr>
                                             </tbody>

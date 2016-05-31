@@ -723,7 +723,7 @@ Core.Form.Validate = (function (TargetNS) {
 
         // There is a configuration option in OTRS that controls if email addresses
         //  should be validated or not.
-        if (parseInt(Core.Config.Get('CheckEmailAddresses'), 10)) {
+        if (Core.Config.Get('CheckEmailAddresses')) {
             $.validator.addMethod("Validate_Email", $.validator.methods.email, "");
         }
 
@@ -764,7 +764,7 @@ Core.Form.Validate = (function (TargetNS) {
                 $ServerErrors.eq(0).focus();
             };
 
-            Core.UI.Dialog.ShowAlert(Core.Language.Translate('Error'), Core.Language.Translate('One or more errors occurred!'), ServerErrorDialogCloseFunction);
+            Core.UI.Dialog.ShowAlert(Core.Config.Get('ValidateServerErrorTitle'), Core.Config.Get('ValidateServerErrorMsg'), ServerErrorDialogCloseFunction);
         }
     };
 
@@ -889,8 +889,6 @@ Core.Form.Validate = (function (TargetNS) {
             .find("input:not([type='hidden']), textarea, select")
             .removeClass(Options.IgnoreClass);
     };
-
-    Core.Init.RegisterNamespace(TargetNS, 'APP_GLOBAL');
 
     return TargetNS;
 }(Core.Form.Validate || {}));

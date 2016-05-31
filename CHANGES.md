@@ -34,27 +34,6 @@
  - 2015-11-27 Improved command Maint::Ticket::InvalidUserCleanup. It can now now both unlock tickets of invalid users and also (optionally) change their state to make sure they will not be overlooked. Thanks to Moritz Lenz @ noris networks.
 
 #5.0.11 2016-??-??
- - 2016-05-27 Fixed bug#[12005](http://bugs.otrs.org/show_bug.cgi?id=12005) - Daemon / Scheduler will not run commands.
- - 2016-05-27 Fixed bug#[12074](http://bugs.otrs.org/show_bug.cgi?id=12074) - Redundant and confusing code in Kernel/System/TemplateGenerator.pm.
- - 2016-05-27 Fixed bug#[12018](http://bugs.otrs.org/show_bug.cgi?id=12018) - HTML body not retrieved on by GI operation TicketGet (Added HTMLBodyAsAttachment parameter to retrieve is as an attachment).
- - 2016-05-27 Fixed dynamic field backend POD, Thanks to Thorsten Eckel.
- - 2016-05-27 Fixed bug#[12090](http://bugs.otrs.org/show_bug.cgi?id=12090) - 2 second sleep between email fetching causes bad performance on systems with high email traffic.
- - 2016-05-25 Fixed bug#[12099](http://bugs.otrs.org/show_bug.cgi?id=12099) - Passing parameters to CustomerTicketMessage doesn't work correctly.
- - 2016-05-23 Added debugging switch for AJAX errors. Set Frontend::AjaxDebug to 1 in order to see more details in case of any "error during ajax communication" errors.
- - 2016-05-21 Fixed bug#[12012](http://bugs.otrs.org/show_bug.cgi?id=12012) - JSON Response contains all Dynamic Fields in Article response.
- - 2016-05-20 Fixed bug#[12069](http://bugs.otrs.org/show_bug.cgi?id=12069) - enabling/disabling Article Filter show wrong article.
- - 2016-05-19 7 Day Stats performance optimizations, thanks to Pawel Boguslawski.
- - 2016-05-20 Fixed bug#[12087](http://bugs.otrs.org/show_bug.cgi?id=12087) - AdminTemplate loses HTML tags.
- - 2016-05-20 Fixed bug#[8153](http://bugs.otrs.org/show_bug.cgi?id=8153) - When configuration area is not activated, it is still editable.
- - 2016-05-20 Fixed bug#[12084](http://bugs.otrs.org/show_bug.cgi?id=12084) - Missing day names from 7 Day Stat.
- - 2016-05-20 Fixed bug#[12066](http://bugs.otrs.org/show_bug.cgi?id=12066) - Hamburger icon shows up unwanted.
- - 2016-05-19 Fixed bug#[9950](http://bugs.otrs.org/show_bug.cgi?id=9950) - Ticket Split takes uses system address as the customer.
- - 2016-05-15 Added possibility to sign and/or encrypt ticket notifications.
- - 2016-05-13 Fixed bug#[12045](http://bugs.otrs.org/show_bug.cgi?id=12045) - Not possible to create a Ticket using TransitionAction::TicketCreate with Owner instead of OwnerID.
- - 2016-05-12 Fixed bug#[12062](http://bugs.otrs.org/show_bug.cgi?id=12062) - From field with dot is filled with spaces.
- - 2016-05-12 Fixed bug#[9345](http://bugs.otrs.org/show_bug.cgi?id=9345) - OTRS exceeds 998 character limit in References Line of E-Mail Header.
- - 2016-05-12 Fixed bug#[12061](http://bugs.otrs.org/show_bug.cgi?id=12061) - Secure::DisableBanner is ignored in Notification Mail.
- - 2016-05-12 Fixed bug#[12058](http://bugs.otrs.org/show_bug.cgi?id=12058) - Attribute CreatedQueues and CreatedQueueIDs in dashboard widget does not work.
 
 #5.0.10 2016-05-17
  - 2016-05-11 Updated translations, thanks to all translators.

@@ -502,6 +502,7 @@
             Length = $(this).text().length,
             ShortText,
             FullText,
+            LinkText = [% Translate("Show more") | JSON %],
             OverlayTitle = $(this)
                 .closest('fieldset')
                 .find('h3')
@@ -519,7 +520,7 @@
             FullText = FullText.replace(/</g, '&lt;').replace(/>/g, '&gt;');
 
             $(this)
-                .append('&nbsp;<a href="#" class="DescriptionOverlay">' + [% Translate("Show more") | JSON %] + '</a>')
+                .append('&nbsp;<a href="#" class="DescriptionOverlay">' + LinkText + '</a>')
                 .find('a.DescriptionOverlay')
                 .bind('click', function() {
 

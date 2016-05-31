@@ -387,6 +387,7 @@
                 <Item Key="TaskName">Custom1</Item>
                 <Item Key="Schedule">* * * * *</Item>
                 <Item Key="Module"></Item>
+                <Item Key="Command"></Item>
                 <Item Key="Function"></Item>
                 <Item Key="MaximumParallelInstances">1</Item>
                 <Item Key="Params">
@@ -405,6 +406,7 @@
                 <Item Key="TaskName">Custom2</Item>
                 <Item Key="Schedule">* * * * *</Item>
                 <Item Key="Module"></Item>
+                <Item Key="Command"></Item>
                 <Item Key="Function"></Item>
                 <Item Key="MaximumParallelInstances">1</Item>
                 <Item Key="Params">
@@ -423,6 +425,7 @@
                 <Item Key="TaskName">Custom3</Item>
                 <Item Key="Schedule">* * * * *</Item>
                 <Item Key="Module"></Item>
+                <Item Key="Command"></Item>
                 <Item Key="Function"></Item>
                 <Item Key="MaximumParallelInstances">1</Item>
                 <Item Key="Params">
@@ -441,6 +444,7 @@
                 <Item Key="TaskName">Custom4</Item>
                 <Item Key="Schedule">* * * * *</Item>
                 <Item Key="Module"></Item>
+                <Item Key="Command"></Item>
                 <Item Key="Function"></Item>
                 <Item Key="MaximumParallelInstances">1</Item>
                 <Item Key="Params">
@@ -459,6 +463,7 @@
                 <Item Key="TaskName">Custom5</Item>
                 <Item Key="Schedule">* * * * *</Item>
                 <Item Key="Module"></Item>
+                <Item Key="Command"></Item>
                 <Item Key="Function"></Item>
                 <Item Key="MaximumParallelInstances">1</Item>
                 <Item Key="Params">
@@ -477,6 +482,7 @@
                 <Item Key="TaskName">Custom6</Item>
                 <Item Key="Schedule">* * * * *</Item>
                 <Item Key="Module"></Item>
+                <Item Key="Command"></Item>
                 <Item Key="Function"></Item>
                 <Item Key="MaximumParallelInstances">1</Item>
                 <Item Key="Params">
@@ -495,6 +501,7 @@
                 <Item Key="TaskName">Custom7</Item>
                 <Item Key="Schedule">* * * * *</Item>
                 <Item Key="Module"></Item>
+                <Item Key="Command"></Item>
                 <Item Key="Function"></Item>
                 <Item Key="MaximumParallelInstances">1</Item>
                 <Item Key="Params">
@@ -513,6 +520,7 @@
                 <Item Key="TaskName">Custom8</Item>
                 <Item Key="Schedule">* * * * *</Item>
                 <Item Key="Module"></Item>
+                <Item Key="Command"></Item>
                 <Item Key="Function"></Item>
                 <Item Key="MaximumParallelInstances">1</Item>
                 <Item Key="Params">
@@ -531,6 +539,7 @@
                 <Item Key="TaskName">Custom9</Item>
                 <Item Key="Schedule">* * * * *</Item>
                 <Item Key="Module"></Item>
+                <Item Key="Command"></Item>
                 <Item Key="Function"></Item>
                 <Item Key="MaximumParallelInstances">1</Item>
                 <Item Key="Params">

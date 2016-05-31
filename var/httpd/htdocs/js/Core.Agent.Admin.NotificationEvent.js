@@ -25,10 +25,13 @@ Core.Agent.Admin.NotificationEvent = (function (TargetNS) {
      * @name Init
      * @memberof Core.Agent.Admin.NotificationEvent
      * @function
+     * @param {Object} Params - Initialization and internationalization parameters.
      * @description
      *      This function initialize correctly all other function according to the local language.
      */
-    TargetNS.Init = function () {
+    TargetNS.Init = function (Params) {
+
+        TargetNS.Localization = Params.Localization;
 
         // bind click function to add button
         $('.LanguageAdd').bind('change', function () {
@@ -39,7 +42,7 @@ Core.Agent.Admin.NotificationEvent = (function (TargetNS) {
         //bind click function to remove button
         $('.LanguageRemove').bind('click', function () {
 
-            if (window.confirm(Core.Language.Translate('Do you really want to delete this notification language?'))) {
+            if (window.confirm(TargetNS.Localization.DeleteNotificationLanguageMsg)) {
                 TargetNS.RemoveLanguage($(this));
             }
             return false;
@@ -132,7 +135,7 @@ Core.Agent.Admin.NotificationEvent = (function (TargetNS) {
         // bind click function to remove button
         $('.LanguageRemove').bind('click', function () {
 
-            if (window.confirm(Core.Language.Translate('Do you really want to delete this notification language?'))) {
+            if (window.confirm(TargetNS.Localization.DeleteNotificationLanguageMsg)) {
                 TargetNS.RemoveLanguage($(this));
             }
             return false;

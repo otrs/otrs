@@ -25,12 +25,13 @@ Core.Agent.Admin.GenericInterfaceWebserviceHistory = (function (TargetNS) {
      * @name Init
      * @memberof Core.Agent.Admin.GenericInterfaceWebserviceHistory
      * @function
-     * @param {Number} WebserviceID - ID of the webservice
+     * @param {Object} Params - Initialization and internationalization parameters.
      * @description
      *      This function initialize the module.
      */
-    TargetNS.Init = function (WebserviceID) {
-        TargetNS.WebserviceID = parseInt(WebserviceID, 10);
+    TargetNS.Init = function (Params) {
+        TargetNS.WebserviceID = parseInt(Params.WebserviceID, 10);
+        TargetNS.Localization = Params.Localization;
     };
 
     /**
@@ -57,14 +58,14 @@ Core.Agent.Admin.GenericInterfaceWebserviceHistory = (function (TargetNS) {
                 Counter;
 
             if (!Response || !Response.LogData) {
-                alert(Core.Language.Translate('An error occurred during communication.'));
+                alert(TargetNS.Localization.WebserviceHistoryErrorMsg);
                 return;
             }
 
             $('.WebserviceListWidget').removeClass('Loading');
 
             if (!Response.LogData.length) {
-                $('#WebserviceList tbody').empty().append('<tr><td colspan="3">' + Core.Language.Translate('No data found.') + '</td></tr>');
+                $('#WebserviceList tbody').empty().append('<tr><td colspan="3">' + TargetNS.Localization.NoDataFoundMsg + '</td></tr>');
             }
             else {
                 $('#WebserviceList tbody').empty();
@@ -121,7 +122,7 @@ Core.Agent.Admin.GenericInterfaceWebserviceHistory = (function (TargetNS) {
 
         Core.AJAX.FunctionCall(Core.Config.Get('CGIHandle'), Data, function (Response) {
             if (!Response || !Response.LogData) {
-                alert(Core.Language.Translate('An error occurred during communication.'));
+                alert(TargetNS.Localization.WebserviceHistoryErrorMsg);
                 return;
             }
             $('.WebserviceListWidget').removeClass('Loading');
@@ -133,7 +134,7 @@ Core.Agent.Admin.GenericInterfaceWebserviceHistory = (function (TargetNS) {
                 );
                 $('#WebserviceHistoryDetails .ConfigCode pre').empty();
                 $('#WebserviceHistoryDetails .ConfigCode pre').append(
-                    '<span class="ErrorMessage">' + Core.Language.Translate('No data found.') + '</span>'
+                    '<span class="ErrorMessage">' + TargetNS.Localization.NoDataFoundMsg + '</span>'
                 );
                 $('#WebserviceHistoryDetails').css('visibility', 'visible').show();
                 $('#WebserviceHistoryDetails .LightRow').hide();
@@ -171,20 +172,20 @@ Core.Agent.Admin.GenericInterfaceWebserviceHistory = (function (TargetNS) {
 
         Core.UI.Dialog.ShowContentDialog(
             $('#RollbackDialogContainer'),
-            Core.Language.Translate('Restore web service configuration'),
+            TargetNS.Localization.RollbackLogMsg,
             '240px',
             'Center',
             true,
             [
                 {
-                    Label: Core.Language.Translate('Cancel'),
+                    Label: TargetNS.Localization.CancelMsg,
                     Class: 'Primary',
                     Function: function () {
                         Core.UI.Dialog.CloseDialog($('#RollbackDialog'));
                     }
                 },
                 {
-                    Label: Core.Language.Translate('Restore web service configuration'),
+                    Label: TargetNS.Localization.RollbackLogMsg,
                     Function: function () {
                         $('#Subaction').attr('value', 'Rollback');
                         $('#ActionForm').submit();

@@ -287,20 +287,7 @@ $('#TypeID').bind('change', function (Event) {
 //]]></script>
 [% END %]
 [% RenderBlockEnd("Priority") %]
-                    </div>
-                </div>
-[% RenderBlockEnd("WidgetTicketActions") %]
 
-[% RenderBlockStart("WidgetDynamicFields") %]
-                <div class="WidgetSimple Expanded">
-                    <div class="Header">
-                        <div class="WidgetAction Toggle">
-                            <a href="#" title="[% Translate("Toggle this widget") | html %]"><i class="fa fa-caret-right"></i><i class="fa fa-caret-down"></i></a>
-                        </div>
-                        <h2>[% Translate("Dynamic Fields") | html %]</h2>
-                    </div>
-                    <div class="Content">
-                        <fieldset class="TableLike FixedLabel">
 [% RenderBlockStart("DynamicField") %]
                             <div class="Row Row_DynamicField_[% Data.Name | html %]">
                             [% Data.Label %]
@@ -332,10 +319,10 @@ $('#TypeID').bind('change', function (Event) {
 #                    <div class="Clear"></div>
 #                </div>
 #[% RenderBlockEnd("DynamicField_Field2") %]
-                        </fieldset>
                     </div>
                 </div>
-[% RenderBlockEnd("WidgetDynamicFields") %]
+[% RenderBlockEnd("WidgetTicketActions") %]
+
 
 [% RenderBlockStart("WidgetArticle") %]
                 <div class="WidgetSimple [% Data.WidgetStatus | html %]" id="WidgetArticle">
@@ -536,6 +523,7 @@ $('#TypeID').bind('change', function (Event) {
 #Layers
 [% WRAPPER JSOnDocumentComplete %]
 <script type="text/javascript">//<![CDATA[
+    Core.Config.Set('Localization.Delete', '[% Translate("Delete") | html %]');
     Core.Agent.TicketAction.Init();
 //]]></script>
 [% END %]

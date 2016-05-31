@@ -66,8 +66,8 @@ performs the selected Cron task.
         TaskID   => 123,
         TaskName => 'some name',                                        # optional
         Data     => {
-            Module   => 'Kernel::System:::Console:Command::Help',
-            Function => 'Execute',
+            Module   => 'Kernel::System:::Console:Command::Help',       # Module or Command is mandatory
+            Function => 'Execute',                                      # required if module is used
             Params   => [                                               # parameters array reference
              '--force',
              '--option',
