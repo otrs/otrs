@@ -351,7 +351,11 @@ sub Send {
     KEY:
     for my $Key ( 'In-Reply-To', 'References' ) {
         next KEY if !$Param{$Key};
-        $Header->replace( $Key, $Param{$Key} );
+        my $Value = $Param{$Key};
+
+        # Split up '<msgid><msgid>' to allow line folding (see bug#9345).
+        $Value =~ s{><}{> <}xmsg;
+        $Header->replace( $Key, $Value );
     }
 
     # add attachments to email
@@ -709,12 +713,6 @@ sub Send {
     $Param{Header} = '';
     for my $Line (@Headers) {
         $Line =~ s/^    (.*)$/ $1/;
-        # Perform own wrapping of long lines due to MIME::Tools problems (see bug#9345).
-        #  MIME::Tools fails to wrap long lines where the Message-IDs are too long or
-        #  directly concatenated without spaces in between.
-        if ($Line =~ m{^(References|In-Reply-To):}smx) {
-            $Line =~ s{(.{64,}?)>\s*<}{$1>\n <}sxmg;
-        }
         $Param{Header} .= $Line . "\n";
     }
 

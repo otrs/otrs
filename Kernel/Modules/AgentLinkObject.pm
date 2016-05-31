@@ -356,8 +356,11 @@ sub Run {
                         $Output .= $LayoutObject->Notify(
                             Priority => 'Error',
                             Data     => $LayoutObject->{LanguageObject}->Translate(
-                                'Can not create link with %s! Object already linked as %s.',
+                                "Can not create link with %s!",
                                 $TargetObjectDescription{Normal},
+                                )
+                                . $LayoutObject->{LanguageObject}->Translate(
+                                "Object already linked as %s.",
                                 $TypeName,
                                 ),
                         );
