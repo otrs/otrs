@@ -430,6 +430,24 @@ my @NeededModules = (
         },
     },
     {
+        Module    => 'REST::Client',
+        Required  => 0,
+        Comment   => 'Required for the REST interface.',
+        InstTypes => {
+            aptget => 'librt-client-rest-perl',
+            zypper => 'perl-YAML-LibYAML',
+        },
+    },
+    {
+        Module    => 'SOAP::Lite',
+        Required  => 0,
+        Comment   => 'Required for the SOAP interface.',
+        InstTypes => {
+            aptget => 'libsoap-lite-perl',
+            zypper => 'perl-SOAP-Lite',
+        },
+    },
+    {
         Module    => 'XML::LibXML',
         Required  => 0,
         Comment   => 'Required for Generic Interface XSLT mapping module.',
