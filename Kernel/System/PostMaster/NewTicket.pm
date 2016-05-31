@@ -469,11 +469,13 @@ sub Run {
             TicketID => $TicketID,
             UserID   => $Param{InmailUserID},
         );
+        my $MailReprocessSpoolDir = $ConfigObject->Get('MailReprocessSpoolDir')
+            || $ConfigObject->Get('Home') . '/var/spool';
         $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'error',
             Message  => "Can't process email with MessageID <$GetParam{'Message-ID'}>! "
                 . "Please create a bug report with this email (From: $GetParam{From}, Located "
-                . "under var/spool/problem-email*) on http://bugs.otrs.org/!",
+                . "under ${MailReprocessSpoolDir}/problem-email*) on http://bugs.otrs.org/!",
         );
         return;
     }

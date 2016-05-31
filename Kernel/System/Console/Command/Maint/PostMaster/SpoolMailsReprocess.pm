@@ -30,9 +30,13 @@ sub Configure {
 sub PreRun {
     my ( $Self, %Param ) = @_;
 
-    my $SpoolDir = $Kernel::OM->Get('Kernel::Config')->Get('Home') . '/var/spool';
-    if ( !-d $SpoolDir ) {
-        die "Spool directory $SpoolDir does not exist!\n";
+    # get config object
+    my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
+
+    my $MailReprocessSpoolDir = $ConfigObject->Get('MailReprocessSpoolDir')
+        || $ConfigObject->Get('Home') . '/var/spool';
+    if ( !-d $MailReprocessSpoolDir ) {
+        die "Spool directory ${MailReprocessSpoolDir} does not exist!\n";
     }
 
     return;
@@ -41,13 +45,16 @@ sub PreRun {
 sub Run {
     my ( $Self, %Param ) = @_;
 
-    my $Home     = $Kernel::OM->Get('Kernel::Config')->Get('Home');
-    my $SpoolDir = "$Home/var/spool";
+    # get config object
+    my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
 
-    $Self->Print("<yellow>Processing mails in $SpoolDir...</yellow>\n");
+    my $Home = $ConfigObject->Get('Home');
+    my $MailReprocessSpoolDir = $ConfigObject->Get('MailReprocessSpoolDir') || "$Home/var/spool";
+
+    $Self->Print("<yellow>Processing mails in ${MailReprocessSpoolDir}...</yellow>\n");
 
     my @Files = $Kernel::OM->Get('Kernel::System::Main')->DirectoryRead(
-        Directory => $SpoolDir,
+        Directory => $MailReprocessSpoolDir,
         Filter    => '*',
     );
 
