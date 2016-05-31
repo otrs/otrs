@@ -710,7 +710,7 @@ sub RequesterPerformRequest {
         $ResponseError = $ErrorMessage;
     }
 
-    if ( $ResponseCode !~ m{ \A 20 \d \z }xms ) {
+    if ( $ResponseCode ne '200' ) {
         $ResponseError = $ErrorMessage . " Response code '$ResponseCode'.";
     }
 
