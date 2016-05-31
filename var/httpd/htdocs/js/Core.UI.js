@@ -67,7 +67,7 @@ Core.UI = (function (TargetNS) {
                         Core.App.Publish('Event.UI.ToggleWidget', [$WidgetElement]);
                 }
 
-                if (Animate) {
+                if (Animate && Core.Config.Get('AnimationEnabled')) {
                     $WidgetElement.addClass('AnimationRunning').find('.Content').slideToggle("fast", function () {
                         ToggleWidget();
                         $WidgetElement.removeClass('AnimationRunning');
@@ -209,34 +209,49 @@ Core.UI = (function (TargetNS) {
     };
 
     /**
-     * @name Animate
+     * @private
+     * @name ShakeMe
      * @memberof Core.UI
      * @function
-     * @param {jQueryObject} $Element - The element to animate.
-     * @param {String} Type - The animation type as defined in Core.Animations.css, e.g. 'Shake'
+     * @param {jQueryObject} $id - The element to shake.
+     * @param {Array} Position - Array of positions where the bo should be moved to.
+     * @param {Number} PostionEnd - The end position.
      * @description
-     *      Animate an element on demand using a css-based animation of the given type
+     *      "Shakes" the element.
      */
-    TargetNS.Animate = function ($Element, Type) {
-        if (!$Element.length || !Type) {
-            return;
+    function ShakeMe($id, Position, PostionEnd) {
+        var PositionStart = Position.shift();
+        $id.css('left', PositionStart + 'px');
+        if (Position.length > 0) {
+            setTimeout(function () {
+                ShakeMe($id, Position, PostionEnd);
+            }, PostionEnd);
         }
-        $Element.addClass('Animation' + Type);
-    };
+        else {
+            try {
+                $id.css('position', 'static');
+            }
+            catch (Event) {
+                // no code here
+                $.noop(Event);
+            }
+        }
+    }
 
     /**
-     * @name Init
+     * @name Shake
      * @memberof Core.UI
      * @function
+     * @param {jQueryObject} $id - The element to shake.
      * @description
-     *      Initializes the namespace.
+     *      "Shakes" the element.
      */
-    TargetNS.Init = function() {
-        Core.UI.InitWidgetActionToggle();
-        Core.UI.InitMessageBoxClose();
+    TargetNS.Shake = function ($id) {
+        var Position = [15, 30, 15, 0, -15, -30, -15, 0];
+        Position = Position.concat(Position.concat(Position));
+        $id.css('position', 'relative');
+        ShakeMe($id, Position, 20);
     };
-
-    Core.Init.RegisterNamespace(TargetNS, 'APP_GLOBAL');
 
     return TargetNS;
 }(Core.UI || {}));

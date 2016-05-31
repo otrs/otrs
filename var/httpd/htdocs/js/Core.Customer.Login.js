@@ -182,7 +182,7 @@ Core.Customer.Login = (function (TargetNS) {
 
         // shake login box on authentication failure
         if (Options && Options.LastLoginFailed) {
-            Core.UI.Animate($('#Login'), 'Shake');
+            Core.UI.Shake($('#Login'));
         }
     };
 

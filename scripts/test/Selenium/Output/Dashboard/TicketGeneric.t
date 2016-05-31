@@ -168,18 +168,17 @@ $Selenium->RunTest(
             # submit
             $Selenium->execute_script( "\$('#Dashboard$DashboardName" . "_submit').trigger('click');" );
 
-            $Selenium->WaitFor(
-                JavaScript =>
-                    "return typeof(\$) === 'function' && \$('th.Priority #PriorityOverviewControl$DashboardName').length"
-            );
+            sleep 2;
 
             # sort by Priority
             $Selenium->execute_script("\$('th.Priority #PriorityOverviewControl$DashboardName').trigger('click');");
 
+            sleep .5;
+
             # wait for AJAX to finish
             $Selenium->WaitFor(
                 JavaScript =>
-                    'return typeof($) === "function" && $(".DashboardHeader.Priority.SortAscendingLarge").length'
+                    'return typeof($) === "function" && !$("#Dashboard' . $DashboardName . '-box.Loading").length'
             );
 
             # validate that Priority sort is working
@@ -190,7 +189,6 @@ $Selenium->RunTest(
 
             # set filter by MyQueue
             my $Filter = "#Dashboard$DashboardName" . "MyQueues";
-            $Selenium->WaitFor( JavaScript => "return \$('$Filter:visible').length" );
             $Selenium->find_element( $Filter, 'css' )->VerifiedClick();
 
             # check for test ticket on current dashboard plugin

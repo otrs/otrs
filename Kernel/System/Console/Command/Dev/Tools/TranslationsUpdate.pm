@@ -133,14 +133,11 @@ sub Run {
 
 my @OriginalTranslationStrings;
 
-# Remember which strings came from JavaScript
-my %UsedInJS;
-
 sub HandleLanguage {
     my ( $Self, %Param ) = @_;
 
     my $Language = $Param{Language};
-    my $Module = $Param{Module} || '';
+    my $Module   = $Param{Module} || '';
 
     my $ModuleDirectory = $Module;
     my $LanguageFile;
@@ -150,6 +147,9 @@ sub HandleLanguage {
     my $IsSubTranslation;
 
     my $DefaultTheme = $Kernel::OM->Get('Kernel::Config')->Get('DefaultTheme');
+
+    # for every word, save the information that it is used in JS
+    my %UsedInJS;
 
     # We need to map internal codes to the official ones used by Transifex
     my %TransifexLanguagesMap = (
@@ -758,7 +758,6 @@ sub WritePerlLanguageFile {
 
     # add data structure for JS translations
     my $JSData = "    \$Self->{JavaScriptStrings} = [\n";
-
     if ( $Param{IsSubTranslation} ) {
         $JSData = '    push @{ $Self->{JavaScriptStrings} // [] }, (' . "\n";
     }

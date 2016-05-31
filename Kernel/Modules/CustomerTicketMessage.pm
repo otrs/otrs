@@ -247,6 +247,9 @@ sub Run {
     }
     elsif ( $Self->{Subaction} eq 'StoreNew' ) {
 
+        # challenge token check for write action
+        $LayoutObject->ChallengeTokenCheck( Type => 'Customer' );
+
         my $NextScreen = $Config->{NextScreenAfterNewTicket};
         my %Error;
 
@@ -534,9 +537,6 @@ sub Run {
             $Output .= $LayoutObject->CustomerFooter();
             return $Output;
         }
-
-        # challenge token check for write action
-        $LayoutObject->ChallengeTokenCheck( Type => 'Customer' );
 
         # if customer is not allowed to set priority, set it to default
         if ( !$Config->{Priority} ) {

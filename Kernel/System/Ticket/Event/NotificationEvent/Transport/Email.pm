@@ -14,7 +14,6 @@ use strict;
 use warnings;
 
 use Kernel::System::VariableCheck qw(:all);
-use Kernel::Language qw(Translatable);
 
 use base qw(Kernel::System::Ticket::Event::NotificationEvent::Transport::Base);
 
@@ -30,8 +29,6 @@ our @ObjectDependencies = (
     'Kernel::System::Ticket',
     'Kernel::System::User',
     'Kernel::System::Web::Request',
-    'Kernel::System::Crypt::PGP',
-    'Kernel::System::Crypt::SMIME',
 );
 
 =head1 NAME
@@ -133,6 +130,10 @@ sub SendNotification {
     # get ticket object
     my $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
 
+    # send notification
+    my $From = $ConfigObject->Get('NotificationSenderName') . ' <'
+        . $ConfigObject->Get('NotificationSenderEmail') . '>';
+
     if ( $Param{Notification}->{ContentType} && $Param{Notification}->{ContentType} eq 'text/html' ) {
 
         # Get configured template with fallback to Default.
@@ -144,6 +145,13 @@ sub SendNotification {
 
         if ( !-r "$TemplateDir/$EmailTemplate.tt" && !-r "$CustomTemplateDir/$EmailTemplate.tt" ) {
             $EmailTemplate = 'Default';
+        }
+
+        # Banner
+        if ( !$ConfigObject->Get('Secure::DisableBanner') ) {
+            $LayoutObject->Block(
+                Name => 'VersionBanner',
+            );
         }
 
         # generate HTML
@@ -160,16 +168,6 @@ sub SendNotification {
     # send notification
     if ( $Recipient{Type} eq 'Agent' ) {
 
-        my $FromEmail = $ConfigObject->Get('NotificationSenderEmail');
-
-        # send notification
-        my $From = $ConfigObject->Get('NotificationSenderName') . ' <'
-            . $FromEmail . '>';
-
-        # security part
-        my $SecurityOptions = $Self->SecurityOptionsGet( %Param, FromEmail => $FromEmail );
-        return if !$SecurityOptions;
-
         # get needed objects
         my $EmailObject = $Kernel::OM->Get('Kernel::System::Email');
 
@@ -183,7 +181,6 @@ sub SendNotification {
             Body       => $Notification{Body},
             Loop       => 1,
             Attachment => $Param{Attachments},
-            %{$SecurityOptions},
         );
 
         if ( !$Sent ) {
@@ -215,7 +212,7 @@ sub SendNotification {
         # get queue object
         my $QueueObject = $Kernel::OM->Get('Kernel::System::Queue');
 
-        my $QueueID;
+        my %Address;
 
         # get article
         my %Article = $TicketObject->ArticleLastCustomerArticle(
@@ -225,7 +222,7 @@ sub SendNotification {
 
         # set "From" address from Article if exist, otherwise use ticket information, see bug# 9035
         if (%Article) {
-            $QueueID = $Article{QueueID};
+            %Address = $QueueObject->GetSystemAddress( QueueID => $Article{QueueID} );
         }
         else {
 
@@ -233,23 +230,9 @@ sub SendNotification {
             my %Ticket = $TicketObject->TicketGet(
                 TicketID => $Param{TicketID},
             );
-            $QueueID = $Ticket{QueueID};
+
+            %Address = $QueueObject->GetSystemAddress( QueueID => $Ticket{QueueID} );
         }
-
-        my %Address = $QueueObject->GetSystemAddress( QueueID => $QueueID );
-
-        # get queue
-        my %Queue = $QueueObject->QueueGet(
-            ID => $QueueID,
-        );
-
-        # security part
-        my $SecurityOptions = $Self->SecurityOptionsGet(
-            %Param,
-            FromEmail => $Address{Email},
-            Queue     => \%Queue
-        );
-        return if !$SecurityOptions;
 
         my $ArticleType = 'email-notification-ext';
 
@@ -277,7 +260,6 @@ sub SendNotification {
             UserID         => $Param{UserID},
             Loop           => 1,
             Attachment     => $Param{Attachments},
-            %{$SecurityOptions},
         );
 
         if ( !$ArticleID ) {
@@ -397,7 +379,7 @@ sub TransportSettingsDisplayGet {
         Name        => 'NotificationArticleTypeID',
         Translation => 1,
         SelectedID  => $Param{Data}->{NotificationArticleTypeID},
-        Class       => 'Modernize W50pc',
+        Class       => 'Modernize',
     );
 
     $Param{TransportEmailTemplateStrg} = $LayoutObject->BuildSelection(
@@ -405,91 +387,7 @@ sub TransportSettingsDisplayGet {
         Name        => 'TransportEmailTemplate',
         Translation => 0,
         SelectedID  => $Param{Data}->{TransportEmailTemplate},
-        Class       => 'Modernize W50pc',
-    );
-
-    # security fields
-
-    # get config object
-    my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
-
-    my %SecuritySignEncryptOptions;
-
-    if ( $ConfigObject->Get('PGP') ) {
-        $SecuritySignEncryptOptions{'PGPSign'}      = Translatable('PGP sign only');
-        $SecuritySignEncryptOptions{'PGPCrypt'}     = Translatable('PGP encrypt only');
-        $SecuritySignEncryptOptions{'PGPSignCrypt'} = Translatable('PGP sign and encrypt');
-    }
-
-    if ( $ConfigObject->Get('SMIME') ) {
-        $SecuritySignEncryptOptions{'SMIMESign'}      = Translatable('SMIME sign only');
-        $SecuritySignEncryptOptions{'SMIMECrypt'}     = Translatable('SMIME encrypt only');
-        $SecuritySignEncryptOptions{'SMIMESignCrypt'} = Translatable('SMIME sign and encrypt');
-    }
-
-    # set security settings enabled
-    $Param{EmailSecuritySettings} = ( $Param{Data}->{EmailSecuritySettings} ? 'checked="checked"' : '' );
-    $Param{SecurityDisabled} = 0;
-
-    if ( $Param{EmailSecuritySettings} eq '' ) {
-        $Param{SecurityDisabled} = 1;
-    }
-
-    if ( !IsHashRefWithData( \%SecuritySignEncryptOptions ) ) {
-        $Param{EmailSecuritySettings} = 'disabled="disabled"';
-        $Param{EmailSecurityInfo}     = Translatable('PGP and SMIME not enabled.');
-    }
-
-    # create security methods field
-    $Param{EmailSigningCrypting} = $LayoutObject->BuildSelection(
-        Data         => \%SecuritySignEncryptOptions,
-        Name         => 'EmailSigningCrypting',
-        SelectedID   => $Param{Data}->{EmailSigningCrypting},
-        Class        => 'Security Modernize W50pc',
-        Multiple     => 0,
-        Translation  => 1,
-        PossibleNone => 1,
-        Disabled     => $Param{SecurityDisabled},
-    );
-
-    # create missing signing actions field
-    $Param{EmailMissingSigningKeys} = $LayoutObject->BuildSelection(
-        Data => [
-            {
-                Key   => 'Skip',
-                Value => Translatable('Skip notification delivery'),
-            },
-            {
-                Key   => 'Send',
-                Value => Translatable('Send unsigned notification'),
-            },
-        ],
-        Name        => 'EmailMissingSigningKeys',
-        SelectedID  => $Param{Data}->{EmailMissingSigningKeys},
-        Class       => 'Security Modernize W50pc',
-        Multiple    => 0,
-        Translation => 1,
-        Disabled    => $Param{SecurityDisabled},
-    );
-
-    # create missing crypting actions field
-    $Param{EmailMissingCryptingKeys} = $LayoutObject->BuildSelection(
-        Data => [
-            {
-                Key   => 'Skip',
-                Value => Translatable('Skip notification delivery'),
-            },
-            {
-                Key   => 'Send',
-                Value => Translatable('Send unencrypted notification'),
-            },
-        ],
-        Name        => 'EmailMissingCryptingKeys',
-        SelectedID  => $Param{Data}->{EmailMissingCryptingKeys},
-        Class       => 'Security Modernize W50pc',
-        Multiple    => 0,
-        Translation => 1,
-        Disabled    => $Param{SecurityDisabled},
+        Class       => 'Modernize',
     );
 
     # generate HTML
@@ -517,12 +415,7 @@ sub TransportParamSettingsGet {
     my $ParamObject = $Kernel::OM->Get('Kernel::System::Web::Request');
 
     PARAMETER:
-    for my $Parameter (
-        qw(RecipientEmail NotificationArticleTypeID TransportEmailTemplate
-        EmailSigningCrypting EmailMissingSigningKeys EmailMissingCryptingKeys
-        EmailSecuritySettings)
-        )
-    {
+    for my $Parameter (qw(RecipientEmail NotificationArticleTypeID TransportEmailTemplate)) {
         my @Data = $ParamObject->GetArray( Param => $Parameter );
         next PARAMETER if !@Data;
         $Param{GetParam}->{Data}->{$Parameter} = \@Data;
@@ -542,172 +435,6 @@ sub IsUsable {
     # define if this transport is usable on
     # this specific moment
     return 1;
-}
-
-sub SecurityOptionsGet {
-    my ( $Self, %Param ) = @_;
-
-    # TODO: Check the new SecutiryOptionformat after MultipleRecipientEncryption feature is merged
-
-    # verify security options are enabled
-    my $EnableSecuritySettings = $Param{Notification}->{Data}->{EmailSecuritySettings}->[0] || '';
-
-    # sign notification
-    my $SignCryptNotification = $Param{Notification}->{Data}->{EmailSigningCrypting}->[0] || '';
-
-    if ( !$EnableSecuritySettings || !$SignCryptNotification ) {
-        return {};
-    }
-
-    my %Queue = %{ $Param{Queue} || {} };
-
-    # define who is going to be the sender
-    my $NotificationSenderEmail = $Param{FromEmail};
-
-    # define options container
-    my %SignCryptOptions;
-    my @SignKeys;
-    my @CryptKeys;
-    my $KeyField;
-    my $Method;
-
-    if ( $SignCryptNotification =~ /^PGP/i ) {
-        @SignKeys = $Kernel::OM->Get('Kernel::System::Crypt::PGP')->PrivateKeySearch(
-            Search => $NotificationSenderEmail,
-        );
-
-        # take just valid keys
-        @SignKeys = grep { $_->{Status} eq 'good' } @SignKeys;
-
-        # get public keys
-        @CryptKeys = $Kernel::OM->Get('Kernel::System::Crypt::PGP')->PublicKeySearch(
-            Search => $Param{Recipient}->{UserEmail},
-        );
-
-        $Method   = 'PGP';
-        $KeyField = 'Key';
-    }
-    elsif ( $SignCryptNotification =~ /^SMIME/i ) {
-        @SignKeys = $Kernel::OM->Get('Kernel::System::Crypt::SMIME')->PrivateSearch(
-            Search => $NotificationSenderEmail,
-        );
-
-        @CryptKeys = $Kernel::OM->Get('Kernel::System::Crypt::SMIME')->CertificateSearch(
-            Search => $Param{Recipient}->{UserEmail},
-        );
-
-        $Method   = 'SMIME';
-        $KeyField = 'Filename';
-    }
-
-    # initialize sign key container
-    my %SignKey;
-
-    # initialize crypt key container
-    my %CryptKey;
-
-    # TODO: Check the new DefultSignKey format after MultipleRecipientEncryption feature is merged
-    # get Default key
-    if ( $Queue{DefaultSignKey} ) {
-        my @DefaultKey = split '::', $Queue{DefaultSignKey};
-
-        if ( grep { $_->{$KeyField} eq $DefaultKey[2] } @SignKeys ) {
-            $SignKey{$KeyField} = $DefaultKey[2];
-        }
-    }
-
-    # take the first key available
-    else {
-        SIGNKEY:
-        for my $SignKey (@SignKeys) {
-            %SignKey = %{$SignKey};
-            last SIGNKEY;
-        }
-    }
-
-    CRYPTKEY:
-    for my $CryptKey (@CryptKeys) {
-
-        # get first key available
-        %CryptKey = %{$CryptKey};
-        last CRYPTKEY;
-    }
-
-    # what to do if not key found
-    my $MissingKeysCerts = $Param{Notification}->{Data}->{EmailMissingSigningKeys}->[0] || '';
-
-    if ( $SignCryptNotification =~ /Sign/i ) {
-
-        if ( !IsHashRefWithData( \%SignKey ) ) {
-
-            my $Message
-                = "Could not sign notification '$Param{Notification}->{Name}' due to missing $Method sign key for '$NotificationSenderEmail'";
-
-            if ( $MissingKeysCerts eq 'Skip' ) {
-
-                # log skipping notification
-                $Kernel::OM->Get('Kernel::System::Log')->Log(
-                    Priority => 'notice',
-                    Message  => $Message . ', skipping notification distribution!',
-                );
-                return;
-            }
-
-            # log sending unsigned notification
-            $Kernel::OM->Get('Kernel::System::Log')->Log(
-                Priority => 'notice',
-                Message  => $Message . ', sending unsigned!',
-            );
-        }
-
-        # sign the notification if a sign key is available
-        else {
-            $SignCryptOptions{Sign} = {
-                Type    => $Method,
-                SubType => 'Detached',
-                Key     => $SignKey{$KeyField},
-            };
-        }
-    }
-
-    # crypt notification
-    my $MissingEncryptKeysCerts = $Param{Notification}->{Data}->{EmailMissingCryptingKeys}->[0] || '';
-
-    if ( $SignCryptNotification =~ /Crypt/i ) {
-        if ( !IsHashRefWithData( \%CryptKey ) ) {
-
-            my $Message
-                = "Could not encrypt notification '$Param{Notification}->{Name}' due to missing $Method encryption key for '$Param{Recipient}->{UserEmail}'";
-
-            if ( $MissingEncryptKeysCerts eq 'Skip' ) {
-
-                # log skipping notification
-                $Kernel::OM->Get('Kernel::System::Log')->Log(
-                    Priority => 'notice',
-                    Message  => $Message . ', skipping notification distribution!',
-                );
-                return;
-            }
-
-            # log sending unencrypted notification
-            $Kernel::OM->Get('Kernel::System::Log')->Log(
-                Priority => 'notice',
-                Message  => $Message . ', sending unencrypted!',
-            );
-        }
-
-        # then crypt is possible
-        else {
-            $SignCryptOptions{Crypt} = {
-                Type    => $Method,
-                SubType => 'Detached',
-                Key     => $CryptKey{$KeyField},
-            };
-        }
-    }
-
-    return \%SignCryptOptions;
-
 }
 
 1;

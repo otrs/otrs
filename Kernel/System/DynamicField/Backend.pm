@@ -334,10 +334,10 @@ and will transform dates to the current user's timezone.
     Returns
 
     $ValueStrg = {
-        Title       => $Title,
-        Value       => $Value,
-        Link        => $Link,
-        LinkPreview => $LinkPreview,
+        Title => $Title,
+        Value => $Value,
+        Link  => $Link,
+        EnableLinkPreview => $EnableLinkPreview,
     }
 
 =cut
@@ -2526,7 +2526,6 @@ get the list distinct values for a dynamic field from a list of tickets
         ValueB => 'ValueB',
         ValueC => 'ValueC'
     };
-
 =cut
 
 sub ColumnFilterValuesGet {

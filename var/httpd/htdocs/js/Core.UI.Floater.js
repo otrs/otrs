@@ -169,10 +169,9 @@ Core.UI.Floater = (function (TargetNS) {
                     AvailableHeightTop,
                     FloaterWidth,
                     $FloaterObj,
-                    Margin = 25,
-                    iFrameURL = $TriggerObj.data('floater-url');
+                    Margin = 25;
 
-                if (!iFrameURL) {
+                if (!$TriggerObj.attr('href')) {
                     return false;
                 }
 
@@ -241,7 +240,7 @@ Core.UI.Floater = (function (TargetNS) {
                     });
                 }
 
-                $FloaterObj.find('iframe').attr('src', iFrameURL);
+                $FloaterObj.find('iframe').attr('src', $TriggerObj.attr('href'));
                 $FloaterObj.find('a.Open').attr('href', $TriggerObj.attr('href'));
                 $FloaterObj.fadeIn();
 
@@ -257,8 +256,6 @@ Core.UI.Floater = (function (TargetNS) {
             });
         });
     }
-
-    Core.Init.RegisterNamespace(TargetNS, 'APP_GLOBAL');
 
     return TargetNS;
 }(Core.UI.Floater || {}));

@@ -17,10 +17,10 @@
     <br /><br />
     [% Data.Body %]
     <br />
-[% IF !Config("Secure::DisableBanner") %]
+[% RenderBlockStart("VersionBanner") %]
     <hr>
     [% Translate("Powered by") | html %] [% Config("Product") %] [% Config("Version").remove('\.0\..*') %]
-[% END %]
+[% RenderBlockEnd("VersionBanner") %]
     <br /><br />
 </body>
 

@@ -25,7 +25,6 @@ our @ObjectDependencies = (
     'Kernel::System::State',
     'Kernel::System::Ticket',
     'Kernel::System::Time',
-    'Kernel::System::User',
 );
 
 =head1 NAME
@@ -82,7 +81,7 @@ sub new {
             State         => 'new',              # or StateID => 5,
             CustomerID    => '123465',
             CustomerUser  => 'customer@example.com',
-            Owner         => 'someuserlogin',    # or OwnerID => 123
+            OwnerID       => 123,
 
             # ticket optional:
             TN              => $TicketObject->TicketCreateNumber(), # optional
@@ -195,13 +194,6 @@ sub Run {
         if ( !$TicketParam{$Attribute} && !$TicketParam{ $Attribute . "ID" } ) {
             $TicketParam{$Attribute} = $Kernel::OM->Get('Kernel::Config')->Get("Process::Default$Attribute") || '';
         }
-    }
-
-    # Get OwnerID from Owner
-    if ( $TicketParam{Owner} && !$TicketParam{OwnerID} ) {
-        $TicketParam{OwnerID} = $Kernel::OM->Get('Kernel::System::User')->UserLookup(
-            UserLogin => $TicketParam{Owner},
-        );
     }
 
     # get ticket object

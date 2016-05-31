@@ -51,7 +51,7 @@
                 <div class="Content">
                     <fieldset class="TableLike">
                         <label for="TargetIdentifier">
-                            [% Translate("Link object %s with", Data.SourceObjectNormal) | html %]:
+                            [% Translate("Link Object") | html %] [% Data.SourceObjectNormal | html %] [% Translate("with") | html %]:
                         </label>
                         <div class="Field">
                             [% Data.TargetObjectStrg %]
@@ -87,7 +87,7 @@
         });
 
         if ( !SearchValueFlag ) {
-           alert([% Translate("Please enter at least one search value or * to find anything.") | JSON %]);
+           alert(Core.Config.Get('EmptySearchMsg'));
            return false;
         }
     });

@@ -54,6 +54,7 @@ Core.Agent.Admin.GenericInterfaceWebservice = (function (TargetNS) {
      */
     TargetNS.Init = function (Params) {
         TargetNS.WebserviceID = parseInt(Params.WebserviceID, 10);
+        TargetNS.Localization = Params.Localization;
         if (Params.Action === "Add") {
             TargetNS.HideElements();
         }
@@ -95,20 +96,20 @@ Core.Agent.Admin.GenericInterfaceWebservice = (function (TargetNS) {
     TargetNS.ShowDeleteDialog = function(Event){
         Core.UI.Dialog.ShowContentDialog(
             $('#DeleteDialogContainer'),
-            Core.Language.Translate('Delete webservice'),
+            TargetNS.Localization.DeleteWebserviceMsg,
             '240px',
             'Center',
             true,
             [
                 {
-                     Label: Core.Language.Translate('Cancel'),
+                     Label: TargetNS.Localization.CancelMsg,
                      Function: function () {
                          Core.UI.Dialog.CloseDialog($('#DeleteDialog'));
                      }
                 },
 
                 {
-                     Label: Core.Language.Translate('Delete'),
+                     Label: TargetNS.Localization.DeleteMsg,
                      Function: function () {
                          var Data = {
                              Action: 'AdminGenericInterfaceWebservice',
@@ -118,7 +119,7 @@ Core.Agent.Admin.GenericInterfaceWebservice = (function (TargetNS) {
 
                          Core.AJAX.FunctionCall(Core.Config.Get('CGIHandle'), Data, function (Response) {
                              if (!Response || !Response.Success) {
-                                 alert(Core.Language.Translate('An error occurred during communication.'));
+                                 alert(TargetNS.Localization.CommunicationErrorMsg);
                                  return;
                              }
 
@@ -150,7 +151,7 @@ Core.Agent.Admin.GenericInterfaceWebservice = (function (TargetNS) {
 
         Core.UI.Dialog.ShowContentDialog(
             $('#CloneDialogContainer'),
-            Core.Language.Translate('Clone webservice'),
+            TargetNS.Localization.CloneWebserviceMsg,
             '240px',
             'Center',
             true
@@ -191,7 +192,7 @@ Core.Agent.Admin.GenericInterfaceWebservice = (function (TargetNS) {
 
         Core.UI.Dialog.ShowContentDialog(
             $('#ImportDialogContainer'),
-            Core.Language.Translate('Import webservice'),
+            TargetNS.Localization.ImportWebserviceMsg,
             '240px',
             'Center',
             true
@@ -263,11 +264,11 @@ Core.Agent.Admin.GenericInterfaceWebservice = (function (TargetNS) {
         LocalDialogData = DialogData[$(Event.target).attr('id')];
         if ($(Event.target).hasClass('DeleteOperation')) {
             ActionType = 'Operation';
-            DialogTitle = Core.Language.Translate('Delete operation');
+            DialogTitle = TargetNS.Localization.DeleteOperationMsg;
         }
         else {
             ActionType = 'Invoker';
-            DialogTitle = Core.Language.Translate('Delete invoker');
+            DialogTitle = TargetNS.Localization.DeleteInvokerMsg;
         }
 
         Core.UI.Dialog.ShowContentDialog(
@@ -278,14 +279,14 @@ Core.Agent.Admin.GenericInterfaceWebservice = (function (TargetNS) {
             true,
             [
                {
-                   Label: Core.Language.Translate('Cancel'),
+                   Label: TargetNS.Localization.CancelMsg,
                    Class: 'Primary',
                    Function: function () {
                        Core.UI.Dialog.CloseDialog($('#Delete' + ActionType + 'Dialog'));
                    }
                },
                {
-                   Label: Core.Language.Translate('Delete'),
+                   Label: TargetNS.Localization.DeleteMsg,
                    Function: function () {
                        var Data = {
                             Action: 'AdminGenericInterfaceWebservice',
@@ -296,7 +297,7 @@ Core.Agent.Admin.GenericInterfaceWebservice = (function (TargetNS) {
                         };
                         Core.AJAX.FunctionCall(Core.Config.Get('CGIHandle'), Data, function (Response) {
                             if (!Response || !Response.Success) {
-                                alert(Core.Language.Translate('An error occurred during communication.'));
+                                alert(TargetNS.Localization.CommunicationErrorMsg);
                                 return;
                             }
 

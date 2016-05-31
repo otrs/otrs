@@ -38,20 +38,6 @@ Core.Agent.Admin.ACL = (function (TargetNS) {
     var KeysWithoutSubkeys = [ 'ActivityDialog', 'Action', 'Process' ];
 
     /**
-     * @name Init
-     * @memberof Core.Agent.Admin.ACL
-     * @function
-     * @description
-     *      This function initialize the module.
-     */
-    TargetNS.Init = function() {
-        Core.UI.Table.InitTableFilter($('#FilterACLs'), $('#ACLs'), 0);
-        if (Core.Config.Get('Subaction') === 'ACLEdit') {
-            TargetNS.InitACLEdit();
-        }
-    };
-
-    /**
      * @private
      * @name ShowDeleteACLConfirmationDialog
      * @memberof Core.Agent.Admin.ACL
@@ -73,14 +59,14 @@ Core.Agent.Admin.ACL = (function (TargetNS) {
             true,
             [
                {
-                   Label: Core.Language.Translate('Cancel'),
+                   Label: TargetNS.Localization.CancelMsg,
                    Class: 'Primary',
                    Function: function () {
                        Core.UI.Dialog.CloseDialog($('.Dialog'));
                    }
                },
                {
-                   Label: Core.Language.Translate('Delete'),
+                   Label: TargetNS.Localization.DeleteMsg,
                    Function: function () {
                        var Data = {
                                Action: 'AdminACL',
@@ -179,7 +165,7 @@ Core.Agent.Admin.ACL = (function (TargetNS) {
 
                             if (Level2Key === 'DynamicField') {
                                 SelectHTML = $('#' + Level2Key).parent().html();
-                                SelectHTML += '<span class="AddAll">' + Core.Language.Translate('Add all') + '</span>';
+                                SelectHTML += '<span class="AddAll">' + Core.Agent.Admin.ACL.Localization.AddAll + '</span>';
 
                                 $ItemObjLevel2
                                     .find('input')
@@ -337,7 +323,7 @@ Core.Agent.Admin.ACL = (function (TargetNS) {
                 $Target.append($LevelObj);
             }
             else {
-                alert(Core.Language.Translate('An item with this name is already present.'));
+                alert(Core.Agent.Admin.ACL.Localization.AlreadyAdded);
             }
             $Object.blur().val('');
         }
@@ -372,7 +358,7 @@ Core.Agent.Admin.ACL = (function (TargetNS) {
 
                 if (Value === 'DynamicField') {
                     SelectHTML = $('#' + Value).parent().html();
-                    SelectHTML += '<span class="AddAll">' + Core.Language.Translate('Add all') + '</span>';
+                    SelectHTML += '<span class="AddAll">' + Core.Agent.Admin.ACL.Localization.AddAll + '</span>';
 
                     $LevelObj
                         .find('input')
@@ -392,7 +378,7 @@ Core.Agent.Admin.ACL = (function (TargetNS) {
                 }
             }
             else {
-                alert(Core.Language.Translate('An item with this name is already present.'));
+                alert(Core.Agent.Admin.ACL.Localization.AlreadyAdded);
             }
             $Object.blur().val('');
         }
@@ -803,7 +789,7 @@ Core.Agent.Admin.ACL = (function (TargetNS) {
         $('.ACLStructure').on('click', '.Icon.RemoveButton', function() {
             var Remove = false;
             if ($(this).nextAll('ul').find('li').length > 1) {
-                if (confirm(Core.Language.Translate('This item still contains sub items. Are you sure you want to remove this item including its sub items?'))) {
+                if (confirm(Core.Agent.Admin.ACL.Localization.ConfirmRemoval)) {
                     Remove = true;
                 }
             }
@@ -854,23 +840,17 @@ Core.Agent.Admin.ACL = (function (TargetNS) {
                 // only do it for the 'Action' item (can be extended in the future)
                 if ($(this).closest('ul').closest('li').data('content') === 'Action') {
 
-                    // if the element doesn't have an ID, generate one.
-                    // this is needed for the autocomplete for work properly, e.g.
-                    // to hide the loader icon after the results have been fetched
-                    Core.UI.GetID($(this));
-
                     Core.UI.Autocomplete.Init(
                         $(this),
                         function(Request, Response) {
                             var Data = [],
-                                ItemLC = '',
-                                PossibleActionsList = Core.Config.Get('PossibleActionsList');
+                                ItemLC = '';
 
                             if (Request.term === '**') {
-                                Data = PossibleActionsList;
+                                Data = Core.Agent.Admin.ACL.Autocomplete.Action;
                             }
                             else {
-                                $.each(PossibleActionsList, function(Index, Item) {
+                                $.each(Core.Agent.Admin.ACL.Autocomplete.Action, function(Index, Item) {
                                     ItemLC = Item.value.toLowerCase();
                                     if (ItemLC.indexOf(Request.term.toLowerCase()) !== -1) {
                                         Data.push(Item);
@@ -890,8 +870,6 @@ Core.Agent.Admin.ACL = (function (TargetNS) {
 
         });
     };
-
-    Core.Init.RegisterNamespace(TargetNS, 'APP_MODULE');
 
     return TargetNS;
 }(Core.Agent.Admin.ACL || {}));

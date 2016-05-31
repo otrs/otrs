@@ -22,17 +22,6 @@
             </Option>
         </Setting>
     </ConfigItem>
-    <ConfigItem Name="Frontend::AjaxDebug" Required="1" Valid="1">
-        <Description Translatable="1">Delivers extended debugging information in the frontend in case any ajax errors occur, if enabled.</Description>
-        <Group>Framework</Group>
-        <SubGroup>Core</SubGroup>
-        <Setting>
-            <Option SelectedID="0">
-                <Item Key="0" Translatable="1">No</Item>
-                <Item Key="1" Translatable="1">Yes</Item>
-            </Option>
-        </Setting>
-    </ConfigItem>
     <ConfigItem Name="Frontend::TemplateCache" Required="1" Valid="1" ConfigLevel="200">
         <Description Translatable="1">Enables or disables the caching for templates. WARNING: Do NOT disable template caching for production environments for it will cause a massive performance drop! This setting should only be disabled for debugging reasons!</Description>
         <Group>Framework</Group>
@@ -485,6 +474,17 @@
         <SubGroup>Core::Web</SubGroup>
         <Setting>
             <String Regex="^[0-9]{1,5}$">6000</String>
+        </Setting>
+    </ConfigItem>
+    <ConfigItem Name="Frontend::AnimationEnabled" Required="1" Valid="1">
+        <Description Translatable="1">Turns on the animations used in the GUI. If you have problems with these animations (e.g. performance issues), you can turn them off here.</Description>
+        <Group>Framework</Group>
+        <SubGroup>Core::Web</SubGroup>
+        <Setting>
+            <Option SelectedID="1">
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
+            </Option>
         </Setting>
     </ConfigItem>
     <ConfigItem Name="Frontend::MenuDragDropEnabled" Required="1" Valid="1">
@@ -10465,7 +10465,6 @@ via the Preferences button after logging in.
                 <Item>Core.Dialog.css</Item>
                 <Item>Core.InputFields.css</Item>
                 <Item>Core.Print.css</Item>
-                <Item>Core.Animations.css</Item>
                 <Item>thirdparty/fontawesome/font-awesome.css</Item>
             </Array>
         </Setting>
@@ -10494,7 +10493,6 @@ via the Preferences button after logging in.
                 <Item>thirdparty/stacktrace-0.6.4/stacktrace.js</Item>
                 <Item>thirdparty/jquery-pubsub/pubsub.js</Item>
                 <Item>thirdparty/jquery-jstree-3.1.1/jquery.jstree.js</Item>
-                <Item>Core.Init.js</Item>
                 <Item>Core.JavaScriptEnhancements.js</Item>
                 <Item>Core.Debug.js</Item>
                 <Item>Core.Exception.js</Item>
@@ -10558,7 +10556,6 @@ via the Preferences button after logging in.
                 <Item>Core.TicketZoom.css</Item>
                 <Item>Core.InputFields.css</Item>
                 <Item>Core.Print.css</Item>
-                <Item>Core.Animations.css</Item>
                 <Item>thirdparty/fontawesome/font-awesome.css</Item>
             </Array>
         </Setting>
@@ -10586,7 +10583,6 @@ via the Preferences button after logging in.
                 <Item>thirdparty/stacktrace-0.6.4/stacktrace.js</Item>
                 <Item>thirdparty/jquery-pubsub/pubsub.js</Item>
                 <Item>thirdparty/jquery-jstree-3.1.1/jquery.jstree.js</Item>
-                <Item>Core.Init.js</Item>
                 <Item>Core.Debug.js</Item>
                 <Item>Core.Exception.js</Item>
                 <Item>Core.Data.js</Item>

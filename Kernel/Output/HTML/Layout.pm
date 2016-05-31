@@ -727,12 +727,6 @@ sub Login {
     $Self->LoaderCreateAgentJSCalls();
     $Self->LoaderCreateJavaScriptTranslationData();
 
-    # we need the baselink for VerfifiedGet() of selenium tests
-    $Self->AddJSData(
-        Key   => 'Baselink',
-        Value => $Self->{Baselink},
-    );
-
     # Add header logo, if configured
     if ( defined $ConfigObject->Get('AgentLogo') ) {
         my %AgentLogo = %{ $ConfigObject->Get('AgentLogo') };
@@ -1465,7 +1459,7 @@ sub Footer {
     my $Type          = $Param{Type}           || '';
     my $HasDatepicker = $Self->{HasDatepicker} || 0;
 
-    # generate the minified CSS and JavaScript files and the tags referencing them (see LayoutLoader)
+    # Generate the minified CSS and JavaScript files and the tags referencing them (see LayoutLoader)
     $Self->LoaderCreateAgentJSCalls();
     $Self->LoaderCreateJavaScriptTranslationData();
 
@@ -1487,7 +1481,6 @@ sub Footer {
         );
     }
 
-    # get config object
     my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
 
     # NewTicketInNewWindow
@@ -1509,6 +1502,13 @@ sub Footer {
         Data => $AutocompleteConfig,
     );
 
+    $Self->Block(
+        Name => 'AutoCompleteConfig',
+        Data => {
+            AutocompleteConfig => $AutocompleteConfigJSON,
+        },
+    );
+
     # Search frontend (JavaScript)
     my $SearchFrontendConfig = $ConfigObject->Get('Frontend::Search::JavaScript');
 
@@ -1527,8 +1527,12 @@ sub Footer {
         }
     }
 
-    # get OTRS business object
-    my $OTRSBusinessObject = $Kernel::OM->Get('Kernel::System::OTRSBusiness');
+    $Self->Block(
+        Name => 'SearchFrontendConfig',
+        Data => {
+            SearchFrontendConfig => $JSCall,
+        },
+    );
 
     # Banner
     if ( !$ConfigObject->Get('Secure::DisableBanner') ) {
@@ -1537,51 +1541,9 @@ sub Footer {
         );
     }
 
-    # don't check for business package if the database was not yet configured (in the installer)
-    if ( $ConfigObject->Get('SecureMode') ) {
-        $Param{OTRSBusinessIsInstalled} = $OTRSBusinessObject->OTRSBusinessIsInstalled();
-    }
-
-    # add JS data
-    my %JSConfig = (
-        Baselink                       => $Self->{Baselink},
-        CGIHandle                      => $Self->{CGIHandle},
-        WebPath                        => $ConfigObject->Get('Frontend::WebPath'),
-        Action                         => $Self->{Action},
-        Subaction                      => $Self->{Subaction},
-        SessionIDCookie                => $Self->{SessionIDCookie},
-        SessionName                    => $Self->{SessionName},
-        SessionID                      => $Self->{SessionID},
-        ChallengeToken                 => $Self->{UserChallengeToken},
-        CustomerPanelSessionName       => $ConfigObject->Get('CustomerPanelSessionName'),
-        UserLanguage                   => $Self->{UserLanguage},
-        SpellChecker                   => $ConfigObject->Get('SpellChecker'),
-        NeedSpellCheck                 => $ConfigObject->Get('Ticket::Frontend::NeedSpellCheck'),
-        RichTextSet                    => $ConfigObject->Get('Frontend::RichText'),
-        CheckEmailAddresses            => $ConfigObject->Get('CheckEmailAddresses'),
-        MenuDragDropEnabled            => $ConfigObject->Get('Frontend::MenuDragDropEnabled'),
-        OpenMainMenuOnHover            => $ConfigObject->Get('Frontend::OpenMainMenuOnHover'),
-        CustomerInfoSet                => $ConfigObject->Get('Ticket::Frontend::CustomerInfoCompose'),
-        IncludeUnknownTicketCustomers  => $ConfigObject->Get('Ticket::IncludeUnknownTicketCustomers'),
-        InputFieldsActivated           => $ConfigObject->Get('ModernizeFormFields'),
-        OTRSBusinessIsInstalled        => $Param{OTRSBusinessIsInstalled},
-        CheckSearchStringsForStopWords => (
-            $ConfigObject->Get('Ticket::SearchIndex::WarnOnStopWordUsage')
-                &&
-                (
-                $ConfigObject->Get('Ticket::SearchIndexModule')
-                eq 'Kernel::System::Ticket::ArticleSearchIndex::StaticDB'
-                )
-            ) ? 1 : 0,
-        SearchFrontend => $JSCall,
-        Autocomplete   => $AutocompleteConfigJSON,
-    );
-
-    for my $Config ( sort keys %JSConfig ) {
-        $Self->AddJSData(
-            Key   => $Config,
-            Value => $JSConfig{$Config},
-        );
+    # Don't check for business package if the database was not yet configured (in the installer)
+    if ( $Kernel::OM->Get('Kernel::Config')->Get('SecureMode') ) {
+        $Param{OTRSBusinessIsInstalled} = $Kernel::OM->Get('Kernel::System::OTRSBusiness')->OTRSBusinessIsInstalled();
     }
 
     # create & return output
@@ -2479,9 +2441,6 @@ sub Attachment {
         }
     }
 
-    # get config object
-    my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
-
     # return attachment
     my $Output = 'Content-Disposition: ';
     if ( $Param{Type} ) {
@@ -2489,7 +2448,7 @@ sub Attachment {
         $Output .= '; ';
     }
     else {
-        $Output .= $ConfigObject->Get('AttachmentDownloadType') || 'attachment';
+        $Output .= $Kernel::OM->Get('Kernel::Config')->Get('AttachmentDownloadType') || 'attachment';
         $Output .= '; ';
     }
 
@@ -2513,7 +2472,7 @@ sub Attachment {
     $Output .= "Content-Length: $Param{Size}\n";
     $Output .= "X-UA-Compatible: IE=edge,chrome=1\n";
 
-    if ( !$ConfigObject->Get('DisableIFrameOriginRestricted') ) {
+    if ( !$Kernel::OM->Get('Kernel::Config')->Get('DisableIFrameOriginRestricted') ) {
         $Output .= "X-Frame-Options: SAMEORIGIN\n";
     }
 
@@ -3477,11 +3436,6 @@ sub CustomerLogin {
     $Self->LoaderCreateCustomerJSCalls();
     $Self->LoaderCreateJavaScriptTranslationData();
 
-    $Self->AddJSData(
-        Key   => 'Baselink',
-        Value => $Self->{Baselink},
-    );
-
     # Add header logo, if configured
     if ( defined $ConfigObject->Get('CustomerLogo') ) {
         my %CustomerLogo = %{ $ConfigObject->Get('CustomerLogo') };
@@ -3801,30 +3755,12 @@ sub CustomerFooter {
         Data => $AutocompleteConfig,
     );
 
-    # add JS data
-    my %JSConfig = (
-        Baselink                 => $Self->{Baselink},
-        CGIHandle                => $Self->{CGIHandle},
-        WebPath                  => $ConfigObject->Get('Frontend::WebPath'),
-        Action                   => $Self->{Action},
-        Subaction                => $Self->{Subaction},
-        SessionIDCookie          => $Self->{SessionIDCookie},
-        SessionName              => $Self->{SessionName},
-        SessionID                => $Self->{SessionID},
-        ChallengeToken           => $Self->{UserChallengeToken},
-        CustomerPanelSessionName => $ConfigObject->Get('CustomerPanelSessionName'),
-        UserLanguage             => $Self->{UserLanguage},
-        CheckEmailAddresses      => $ConfigObject->Get('CheckEmailAddresses'),
-        InputFieldsActivated     => $ConfigObject->Get('ModernizeCustomerFormFields'),
-        Autocomplete             => $AutocompleteConfigJSON,
+    $Self->Block(
+        Name => 'AutoCompleteConfig',
+        Data => {
+            AutocompleteConfig => $AutocompleteConfigJSON,
+        },
     );
-
-    for my $Config ( sort keys %JSConfig ) {
-        $Self->AddJSData(
-            Key   => $Config,
-            Value => $JSConfig{$Config},
-        );
-    }
 
     # create & return output
     return $Self->Output(

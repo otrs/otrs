@@ -108,6 +108,9 @@ sub _AddAction {
         }
     }
 
+    # get the EnableLinkPreview option and set it to '0' if it is undefined
+    $GetParam{EnableLinkPreview} = $ParamObject->GetParam( Param => 'EnableLinkPreview' ) // 0;
+
     my $DynamicFieldObject = $Kernel::OM->Get('Kernel::System::DynamicField');
 
     if ( $GetParam{Name} ) {
@@ -151,7 +154,7 @@ sub _AddAction {
     }
 
     for my $ConfigParam (
-        qw(ObjectType ObjectTypeName FieldType FieldTypeName DefaultValue ValidID Rows Cols Link LinkPreview)
+        qw(ObjectType ObjectTypeName FieldType FieldTypeName DefaultValue ValidID Rows Cols Link)
         )
     {
         $GetParam{$ConfigParam} = $ParamObject->GetParam( Param => $ConfigParam );
@@ -185,13 +188,13 @@ sub _AddAction {
 
     # set specific config
     my $FieldConfig = {
-        DefaultValue => $GetParam{DefaultValue},
-        RegExList    => \@RegExList,
+        DefaultValue      => $GetParam{DefaultValue},
+        EnableLinkPreview => $GetParam{EnableLinkPreview},
+        RegExList         => \@RegExList,
     };
 
     if ( $GetParam{FieldType} eq 'Text' ) {
-        $FieldConfig->{Link}        = $GetParam{Link};
-        $FieldConfig->{LinkPreview} = $GetParam{LinkPreview};
+        $FieldConfig->{Link} = $GetParam{Link},
     }
 
     if ( $GetParam{FieldType} eq 'TextArea' ) {
@@ -299,6 +302,9 @@ sub _ChangeAction {
         }
     }
 
+    # get the EnableLinkPreview option and set it to '0' if it is undefined
+    $GetParam{EnableLinkPreview} = $ParamObject->GetParam( Param => 'EnableLinkPreview' ) // 0;
+
     my $LayoutObject = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
     my $FieldID = $ParamObject->GetParam( Param => 'ID' );
     if ( !$FieldID ) {
@@ -380,7 +386,7 @@ sub _ChangeAction {
     }
 
     for my $ConfigParam (
-        qw(ObjectType ObjectTypeName FieldType FieldTypeName DefaultValue ValidID Rows Cols Link LinkPreview)
+        qw(ObjectType ObjectTypeName FieldType FieldTypeName DefaultValue ValidID Rows Cols Link)
         )
     {
         $GetParam{$ConfigParam} = $ParamObject->GetParam( Param => $ConfigParam );
@@ -437,13 +443,13 @@ sub _ChangeAction {
 
     # set specific config
     my $FieldConfig = {
-        DefaultValue => $GetParam{DefaultValue},
-        RegExList    => \@RegExList,
+        DefaultValue      => $GetParam{DefaultValue},
+        RegExList         => \@RegExList,
+        EnableLinkPreview => $GetParam{EnableLinkPreview},
     };
 
     if ( $GetParam{FieldType} eq 'Text' ) {
-        $FieldConfig->{Link}        = $GetParam{Link};
-        $FieldConfig->{LinkPreview} = $GetParam{LinkPreview};
+        $FieldConfig->{Link} = $GetParam{Link};
     }
 
     if ( $GetParam{FieldType} eq 'TextArea' ) {
@@ -564,18 +570,30 @@ sub _ShowScreen {
     );
 
     # define config field specific settings
-    my $Link        = $Param{Link}        || '';
-    my $LinkPreview = $Param{LinkPreview} || '';
+    my $Link = $Param{Link} || '';
 
     if ( $Param{FieldType} eq 'Text' ) {
+
+        my $EnableLinkPreview = $Param{EnableLinkPreview} || '0';
+
+        # create EnableLinkPreview option list
+        my $EnableLinkPreviewStrg = $LayoutObject->BuildSelection(
+            Data => {
+                0 => Translatable('No'),
+                1 => Translatable('Yes'),
+            },
+            Name       => 'EnableLinkPreview',
+            SelectedID => $EnableLinkPreview,
+            Class      => 'Modernize W50pc',
+        );
 
         # create the default link element
         $LayoutObject->Block(
             Name => 'Link',
             Data => {
                 %Param,
-                Link        => $Link,
-                LinkPreview => $LinkPreview,
+                Link                  => $Link,
+                EnableLinkPreviewStrg => $EnableLinkPreviewStrg,
             },
         );
     }
@@ -681,7 +699,6 @@ sub _ShowScreen {
             DefaultValue          => $DefaultValue,
             ReadonlyInternalField => $ReadonlyInternalField,
             Link                  => $Link,
-            LinkPreview           => $LinkPreview,
             }
     );
 
