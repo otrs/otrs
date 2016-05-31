@@ -914,6 +914,7 @@ sub LoadDefaults {
         'Core.TicketZoom.css',
         'Core.InputFields.css',
         'Core.Print.css',
+        'Core.Animations.css',
         'thirdparty/fontawesome/font-awesome.css'
     ];
 
@@ -937,6 +938,7 @@ sub LoadDefaults {
         'Core.Dialog.css',
         'Core.InputFields.css',
         'Core.Print.css',
+        'Core.Animations.css',
         'thirdparty/fontawesome/font-awesome.css',
     ];
 
@@ -953,6 +955,7 @@ sub LoadDefaults {
         'thirdparty/stacktrace-0.6.4/stacktrace.js',
         'thirdparty/jquery-pubsub/pubsub.js',
         'thirdparty/jquery-jstree-3.1.1/jquery.jstree.js',
+        'Core.Init.js',
         'Core.Debug.js',
         'Core.Exception.js',
         'Core.Data.js',
@@ -989,6 +992,7 @@ sub LoadDefaults {
         'thirdparty/stacktrace-0.6.4/stacktrace.js',
         'thirdparty/jquery-pubsub/pubsub.js',
         'thirdparty/jquery-jstree-3.1.1/jquery.jstree.js',
+        'Core.Init.js',
         'Core.JavaScriptEnhancements.js',
         'Core.Debug.js',
         'Core.Exception.js',

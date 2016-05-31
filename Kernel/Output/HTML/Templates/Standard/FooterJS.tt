@@ -18,95 +18,19 @@
 
 <script type="text/javascript">//<![CDATA[
 "use strict";
+
+Core.Init.ExecuteInit('JS_LOADED');
+
 Core.App.Ready(function () {
 
-    Core.Config.AddConfig({
-        // config
-        Baselink: '[% Env("Baselink") %]',
-        CGIHandle: '[% Env("CGIHandle") %]',
-        WebPath: '[% Config("Frontend::WebPath") %]',
-        Action: '[% Env("Action") | html %]',
-        SessionIDCookie: '[% Env("SessionIDCookie") | html %]',
-        SessionName: '[% Config("SessionName") %]',
-        SessionID: '[% Env("SessionID") | html %]',
-        ChallengeToken: '[% Env("UserChallengeToken") | html %]',
-        CustomerPanelSessionName: '[% Config("CustomerPanelSessionName") %]',
-        Images: '[% Config("Frontend::ImagePath") %]',
-        UserLanguage: '[% Env("UserLanguage") | html %]',
-        UserID: '[% Env("UserID") | html %]',
-        SpellChecker: '[% Config("SpellChecker") | html %]',
-        NeedSpellCheck: '[% Config("Ticket::Frontend::NeedSpellCheck") | html %]',
-        RichTextSet: '[% Config("Frontend::RichText") | html %]',
-        CheckEmailAddresses: parseInt('[% Config("CheckEmailAddresses") %]', 10),
-        AnimationEnabled: parseInt('[% Config("Frontend::AnimationEnabled") %]', 10),
-        MenuDragDropEnabled: parseInt('[% Config("Frontend::MenuDragDropEnabled") %]', 10),
-        OpenMainMenuOnHover: parseInt('[% Config("OpenMainMenuOnHover") %]', 10),
-        CustomerInfoSet: parseInt('[% Config("Ticket::Frontend::CustomerInfoCompose") %]', 10),
-        IncludeUnknownTicketCustomers: parseInt('[% Config("Ticket::IncludeUnknownTicketCustomers") %]', 10),
-[% RenderBlockStart("AutoCompleteConfig") %]
-        Autocomplete: [% Data.AutocompleteConfig %],
-[% RenderBlockEnd("AutoCompleteConfig") %]
-[% RenderBlockStart("SearchFrontendConfig") %]
-        SearchFrontend: [% Data.SearchFrontendConfig | JSON %],
-[% RenderBlockEnd("SearchFrontendConfig") %]
-        CheckSearchStringsForStopWords: [% Config("Ticket::SearchIndex::WarnOnStopWordUsage") and Config("Ticket::SearchIndexModule") == 'Kernel::System::Ticket::ArticleSearchIndex::StaticDB' ? 1 : 0 %],
-        // translations
-        ValidateServerErrorTitle: [% Translate("Error") | JSON %],
-        ValidateServerErrorMsg: [% Translate("One or more errors occurred!") | JSON %],
-        DialogCloseMsg: [% Translate("Close this dialog") | JSON %],
-        PopupBlockerMsg: [% Translate("Could not open popup window. Please disable any popup blockers for this application.") | JSON %],
-        PopupAlreadyOpenMsg: [% Translate("A popup of this screen is already open. Do you want to close it and load this one instead?") | JSON %],
-        LoadingMsg: [% Translate("Loading...") | JSON %],
-        EmptySearchMsg: [% Translate("Please enter at least one search value or * to find anything.") | JSON %],
-        SearchMsg: [% Translate("Search") | JSON %],
-        SearchStringsContainStopWordsMsg: [% Translate("Please remove the following words from your search as they cannot be searched for:") |JSON %],
-        FieldTitleFulltext: [% Translate("Fulltext") | JSON %],
-        FieldTitleFrom: [% Translate("From") | JSON %],
-        FieldTitleTo: [% Translate("To") | JSON %],
-        FieldTitleCc: [% Translate("Cc") | JSON %],
-        FieldTitleSubject: [% Translate("Subject") | JSON %],
-        FieldTitleBody: [% Translate("Body") | JSON %],
-        ValidationErrorMsg: [% Translate("Please check the fields marked as red for valid inputs.") | JSON %],
-        SpellCheckNeededMsg: [% Translate("Please perform a spell check on the the text first.") | JSON %],
-        DeleteMsg: [% Translate("Delete") | JSON %],
-        ApplyButtonText: [% Translate("Apply") | JSON %],
-        SlideNavigationText: [% Translate("Slide the navigation bar") | JSON %],
-        NoElementsToSelectFromMsg: [% Translate("There are currently no elements available to select from.") | JSON %],
-        TurnOffCompatibilityModeMsg: [% Translate("Please turn off Compatibility Mode in Internet Explorer!") | JSON %],
-        BrowserTooOldMsg: [% Translate("The browser you are using is too old.") | JSON %],
-        BrowserListMsg: [% Translate("OTRS runs with a huge lists of browsers, please upgrade to one of these.") | JSON %],
-        BrowserDocumentationMsg: [% Translate("Please see the documentation or ask your admin for further information.") | JSON %],
-        ViewModeSwitchMobile:  [% Translate("Switch to mobile mode") | JSON %],
-        ViewModeSwitchDesktop: [% Translate("Switch to desktop mode") | JSON %],
-        InputFieldsActivated: parseInt('[% Config("ModernizeFormFields") %]', 10),
-        InputFieldsNotAvailable: [% Translate("Not available") | JSON %],
-        InputFieldsNoMatchMsg: [% Translate("No matches found.") | JSON %],
-        InputFieldsSelectAll: [% Translate("Select all") | JSON %],
-        InputFieldsClearAll: [% Translate("Clear all") | JSON %],
-        InputFieldsClearSearch: [% Translate("Clear search") | JSON %],
-        InputFieldsRemoveSelection: [% Translate("Remove selection") | JSON %],
-        InputFieldsMore: [% Translate("and %s more...") | JSON %],
-        InputFieldsFilters: [% Translate("Filters") | JSON %],
-        InputFieldsConfirm: [% Translate("Confirm") | JSON %],
-        UnavailableForChat: [% Translate("Unavailable for chat") | JSON %],
-        AvailableForInternalChat: [% Translate("Available for internal chats only") | JSON %],
-        AvailableForChat: [% Translate("Available for chats") | JSON %],
-        VisitChatManager: [% Translate("Please visit the chat manager") | JSON %],
-        NewPersonalChat: [% Translate("New personal chat request") | JSON %],
-        NewCustomerChat: [% Translate("New customer chat request") | JSON %],
-        NewPublicChat: [% Translate("New public chat request") | JSON %],
-        NewChatActivity: [% Translate("New activity") | JSON %],
-        NewChatActivityMonitored: [% Translate("New activity on one of your monitored chats.") | JSON %],
-        TicketActionTemplateOverwrite: [% Translate("Setting a template will overwrite any text or attachment.") | JSON %],
-        TicketActionTemplateOverwriteConfirm: [% Translate("Do you really want to continue?") | JSON %],
-        AgentLogoURL: '[% Config("AgentLogo").URL %]',
-        OTRSBusinessIsInstalled: parseInt([% Data.OTRSBusinessIsInstalled | JSON %], 10),
-        OTRSDaemonDialogTitleMsg: [% Translate('Information about the OTRS Daemon') | JSON %]
-    });
+    Core.Init.ExecuteInit('DOCUMENT_READY');
 
     [% PROCESS JSDataInsert %]
 
-    Core.Agent.Init();
+    Core.Init.ExecuteInit('CONFIG_LOADED');
+    Core.Init.ExecuteInit('APP_GLOBAL_EARLY');
+    Core.Init.ExecuteInit('APP_GLOBAL');
+    Core.Init.ExecuteInit('APP_GLOBAL_LATE');
 
 [% InsertTemplate("Datepicker.tt") %]
 
@@ -153,12 +77,12 @@ Core.App.Ready(function () {
 <script type="text/javascript">//<![CDATA[
 "use strict";
 Core.App.Ready(function () {
+    Core.Init.ExecuteInit('APP_MODULE_EARLY');
 
 [% PROCESS JSOnDocumentCompleteInsert %]
 
-    // responsive initialization must run as late as possible to include all event subscriptions
-    // at the initialization process
-    Core.App.Responsive.Init();
+    Core.Init.ExecuteInit('APP_MODULE');
+    Core.Init.ExecuteInit('APP_MODULE_LATE');
 });
 //]]></script>
 
@@ -167,6 +91,7 @@ Core.App.Ready(function () {
 <script type="text/javascript">//<![CDATA[
 "use strict";
 Core.App.Ready(function () {
+    Core.Init.ExecuteInit('FINISH');
     Core.App.UnblockEvents();
 });
 //]]></script>
@@ -192,7 +117,7 @@ Core.App.Ready(function () {
     <i class="fa fa-spinner fa-spin"></i>
     <div class="NoPreview">
         <i class="fa fa-warning"></i>
-        [% Translate("OTRS can't provide a preview of this website because it seems as if it didn't allow to be embedded.") | html %]
+        [% Translate("A preview of this website can't be provided because it didn't allow to be embedded.") | html %]
     </div>
     <div class="Content" style="display: none;">
         <iframe sandbox="allow-scripts allow-forms"></iframe>
