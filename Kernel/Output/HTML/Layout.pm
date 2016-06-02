@@ -4435,6 +4435,7 @@ sub RichTextDocumentServe {
             Text => $Param{Data}->{Content},
             From => $Charset,
             To   => 'utf-8',
+            Check => 1,
         );
 
         # replace charset in content

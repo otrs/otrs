@@ -555,6 +555,7 @@ sub ArticleQuote {
                 Text => $AttachmentHTML{Content},
                 From => $Charset,
                 To   => $Self->{UserCharset},
+                Check => 1,
             );
 
             # get HTML utils object
