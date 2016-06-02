@@ -503,10 +503,27 @@ sub Run {
         }
 
         # redirect with new session id
-        print $Kernel::OM->Get('Kernel::Output::HTML::Layout')->Redirect(
+        my $Result = $Kernel::OM->Get('Kernel::Output::HTML::Layout')->Redirect(
             OP    => $Param{RequestedURL},
             Login => 1,
         );
+
+        # "Premature end of script headers" bug occurs when STDOUT uses :encoding(utf8)
+        # and length (headers + \n\n) exceeds 1024 bytes; problem may be connected with
+        # 1024 buffer in Encode::PerlIO and its flushes and mod_perl ParseHeaders; no
+        # such problem with less safe :utf8 - will be used as workaround here;
+        # see also:
+        #    http://bugs.otrs.org/show_bug.cgi?id=12100
+        #    http://search.cpan.org/dist/Encode/lib/Encode/PerlIO.pod
+        #    https://github.com/OTRS/otrs/commit/28996cf88f8a57e70d52fed7ab8963b7f1b4771b
+        my @SplitResult = split("\n\n", $Result);
+        if ( length($SplitResult[0]) > 1022 ) {
+            # replaces :encoding(utf8) with :utf8
+            binmode(*STDOUT, ':pop(encoding):utf8');
+        }
+
+        print $Result;
+
         return 1;
     }
 
