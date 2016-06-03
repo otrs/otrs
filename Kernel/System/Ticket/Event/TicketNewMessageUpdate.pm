@@ -94,17 +94,19 @@ sub Run {
             );
         }
 
+
         # check if ticket needs to be marked as seen
         my $ArticleAllSeen = 1;
-        ARTICLE:
-        for my $ArticleID (@ArticleList) {
-            my %ArticleFlag = $TicketObject->ArticleFlagGet(
-                ArticleID => $ArticleID,
-                UserID    => $Param{Data}->{UserID},
+
+        my %Flags = $TicketObject->ArticleFlagsOfTicketGet(
+            TicketID => $Param{Data}->{TicketID},
+            UserID   => $Param{Data}->{UserID},
             );
 
+        ARTICLE:
+        for my $ArticleID (@ArticleList) {
             # last ARTICLE if article was not shown
-            if ( !$ArticleFlag{Seen} ) {
+            if ( !$Flags{$ArticleID}->{Seen} ) {
                 $ArticleAllSeen = 0;
                 last ARTICLE;
             }
