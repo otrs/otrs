@@ -665,7 +665,7 @@ get a md5 sum of a file or a string
 sub MD5sum {
     my ( $Self, %Param ) = @_;
 
-    if ( !$Param{Filename} && !$Param{String} ) {
+    if ( !$Param{Filename} && !defined( $Param{String} ) ) {
         $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'error',
             Message  => 'Need Filename or String!',

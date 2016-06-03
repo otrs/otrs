@@ -336,7 +336,7 @@ sub ArticleWriteAttachment {
     my ( $Self, %Param ) = @_;
 
     # check needed stuff
-    for (qw(Content Filename ContentType ArticleID UserID)) {
+    for (qw(Filename ContentType ArticleID UserID)) {
         if ( !$Param{$_} ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
@@ -652,15 +652,15 @@ sub ArticleAttachmentIndexRaw {
         next FILENAME if $Filename =~ /\/plain.txt$/;
 
         # human readable file size
-        if ($FileSize) {
+        if (defined $FileSize) {
             if ( $FileSize > ( 1024 * 1024 ) ) {
-                $FileSize = sprintf "%.1f MBytes", ( $FileSize / ( 1024 * 1024 ) );
+                $FileSize = sprintf "%.1f MB", ( $FileSize / ( 1024 * 1024 ) );
             }
             elsif ( $FileSize > 1024 ) {
-                $FileSize = sprintf "%.1f KBytes", ( ( $FileSize / 1024 ) );
+                $FileSize = sprintf "%.1f KB", ( ( $FileSize / 1024 ) );
             }
             else {
-                $FileSize = $FileSize . ' Bytes';
+                $FileSize = $FileSize . ' B';
             }
         }
 
