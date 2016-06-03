@@ -207,21 +207,16 @@ sub FormIDGetAllFilesData {
         my $FileSize = -s $File;
 
         # human readable file size
-        if (defined $FileSize) {
+        if ( defined $FileSize ) {
 
             # remove meta data in files
             if ( $FileSize > 30 ) {
                 $FileSize = $FileSize - 30
             }
-            if ( $FileSize > 1048576 ) {    # 1024 * 1024
-                $FileSize = sprintf "%.1f MB", ( $FileSize / 1048576 );    # 1024 * 1024
-            }
-            elsif ( $FileSize > 1024 ) {
-                $FileSize = sprintf "%.1f KB", ( ( $FileSize / 1024 ) );
-            }
-            else {
-                $FileSize = $FileSize . ' B';
-            }
+
+            $FileSize = $MainObject->HumanReadableDataSize(
+                Size => $FileSize,
+            );
         }
         my $Content = $MainObject->FileRead(
             Location => $File,
@@ -304,21 +299,16 @@ sub FormIDGetAllFilesMeta {
         my $FileSize = -s $File;
 
         # human readable file size
-        if (defined $FileSize) {
+        if ( defined $FileSize ) {
 
             # remove meta data in files
             if ( $FileSize > 30 ) {
                 $FileSize = $FileSize - 30
             }
-            if ( $FileSize > 1048576 ) {    # 1024 * 1024
-                $FileSize = sprintf "%.1f MB", ( $FileSize / 1048576 );    # 1024 * 1024
-            }
-            elsif ( $FileSize > 1024 ) {
-                $FileSize = sprintf "%.1f KB", ( ( $FileSize / 1024 ) );
-            }
-            else {
-                $FileSize = $FileSize . ' B';
-            }
+
+            $FileSize = $MainObject->HumanReadableDataSize(
+                Size => $FileSize,
+            );
         }
 
         my $ContentType = $MainObject->FileRead(

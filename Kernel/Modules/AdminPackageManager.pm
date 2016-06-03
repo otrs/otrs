@@ -408,19 +408,11 @@ sub Run {
 
                         # add human readable file size
                         if ( defined $Hash->{Size} ) {
-
-                            # remove meta data in files
-                            if ( $Hash->{Size} > ( 1024 * 1024 ) ) {
-                                $Hash->{Size} = sprintf "%.1f MB",
-                                    ( $Hash->{Size} / ( 1024 * 1024 ) );
-                            }
-                            elsif ( $Hash->{Size} > 1024 ) {
-                                $Hash->{Size} = sprintf "%.1f KB", ( ( $Hash->{Size} / 1024 ) );
-                            }
-                            else {
-                                $Hash->{Size} = $Hash->{Size} . ' B';
-                            }
+                            $Hash->{Size} = $MainObject->HumanReadableDataSize(
+                                Size => $Hash->{Size},
+                            );
                         }
+
                         $LayoutObject->Block(
                             Name => "PackageItemFilelistFile",
                             Data => {
@@ -711,19 +703,11 @@ sub Run {
 
                         # add human readable file size
                         if ( defined $Hash->{Size} ) {
-
-                            # remove meta data in files
-                            if ( $Hash->{Size} > ( 1024 * 1024 ) ) {
-                                $Hash->{Size} = sprintf "%.1f MB",
-                                    ( $Hash->{Size} / ( 1024 * 1024 ) );
-                            }
-                            elsif ( $Hash->{Size} > 1024 ) {
-                                $Hash->{Size} = sprintf "%.1f KB", ( ( $Hash->{Size} / 1024 ) );
-                            }
-                            else {
-                                $Hash->{Size} = $Hash->{Size} . ' B';
-                            }
+                            $Hash->{Size} = $MainObject->HumanReadableDataSize(
+                                Size => $Hash->{Size},
+                            );
                         }
+
                         $LayoutObject->Block(
                             Name => 'PackageItemFilelistFile',
                             Data => {

@@ -453,15 +453,9 @@ sub ArticleAttachmentIndexRaw {
         # human readable file size
         my $FileSizeRaw = $Row[2];
         if ( defined $Row[2] ) {
-            if ( $Row[2] > ( 1024 * 1024 ) ) {
-                $Row[2] = sprintf "%.1f MB", ( $Row[2] / ( 1024 * 1024 ) );
-            }
-            elsif ( $Row[2] > 1024 ) {
-                $Row[2] = sprintf "%.1f KB", ( ( $Row[2] / 1024 ) );
-            }
-            else {
-                $Row[2] = $Row[2] . ' B';
-            }
+            $Row[2] = $Kernel::OM->Get('Kernel::System::Main')->HumanReadableDataSize(
+                Size => $Row[2],
+            );
         }
 
         my $Disposition = $Row[5];
@@ -534,16 +528,10 @@ sub ArticleAttachmentIndexRaw {
         next FILENAME if $Filename =~ /\/plain.txt$/;
 
         # human readable file size
-        if (defined $FileSize) {
-            if ( $FileSize > ( 1024 * 1024 ) ) {
-                $FileSize = sprintf "%.1f MB", ( $FileSize / ( 1024 * 1024 ) );
-            }
-            elsif ( $FileSize > 1024 ) {
-                $FileSize = sprintf "%.1f KB", ( ( $FileSize / 1024 ) );
-            }
-            else {
-                $FileSize = $FileSize . ' B';
-            }
+        if ( defined $FileSize ) {
+            $FileSize = $MainObject->HumanReadableDataSize(
+                Size => $FileSize,
+            );
         }
 
         # read content type
