@@ -1752,7 +1752,7 @@ sub Data {
         'Your email address is' => '你的邮件地址是',
 
         # Template: AdminTemplateAttachment
-        'Manage Templates <-> Attachments Relations' => '管理模板与附件的关系',
+        'Manage Templates ↔ Attachments Relations' => '管理模板与附件的关系',
         'Change Template Relations for Attachment' => '为附件指定模板',
         'Change Attachment Relations for Template' => '为模板指定附件',
         'Toggle active for all' => '全部激活/不激活',
@@ -4356,8 +4356,8 @@ Thanks for your help!
             '',
         'AgentTicketZoom widget that displays ticket data in the side bar.' =>
             '',
-        'Agents <-> Groups' => '服务人员 <-> 组',
-        'Agents <-> Roles' => '服务人员 <-> 角色',
+        'Agents ↔ Groups' => '服务人员 ↔ 组',
+        'Agents ↔ Roles' => '服务人员 ↔ 角色',
         'All customer users of a CustomerID' => '一个客户ID的所有客户联系人',
         'All escalated tickets' => '所有升级的工单',
         'All new tickets, these tickets have not been worked on yet' => '所有新建工单，这些工单目前还没有被处理',
@@ -4424,8 +4424,8 @@ Thanks for your help!
         'Arabic (Saudi Arabia)' => '阿拉伯语（沙特阿拉伯）',
         'Archive state changed: "%s"' => '归档状态变更：“%s”',
         'ArticleTree' => '信件树',
-        'Attachments <-> Templates' => '附件 <-> 模板',
-        'Auto Responses <-> Queues' => '自动响应 <-> 队列',
+        'Attachments ↔ Templates' => '附件 ↔ 模板',
+        'Auto Responses ↔ Queues' => '自动响应 ↔ 队列',
         'AutoFollowUp sent to "%s".' => '自动跟进已发送给“%s”。',
         'AutoReject sent to "%s".' => '自动拒绝已发送给“%s”。',
         'AutoReply sent to "%s".' => '自动回复已发送给“%s”。',
@@ -4587,8 +4587,8 @@ Thanks for your help!
         'Customer Information Center Search.' => '客户信息中心搜索。',
         'Customer Information Center.' => '客户信息中心。',
         'Customer Ticket Print Module.' => '客户工单打印模块。',
-        'Customer User <-> Groups' => '客户联系人 <-> 组',
-        'Customer User <-> Services' => '客户联系人 <-> 服务',
+        'Customer User ↔ Groups' => '客户联系人 ↔ 组',
+        'Customer User ↔ Services' => '客户联系人 ↔ 服务',
         'Customer User Administration' => '客户联系人管理',
         'Customer Users' => '客户联系人',
         'Customer called us.' => '客户给我们打过电话。',
@@ -4605,7 +4605,7 @@ Thanks for your help!
         'CustomerID search' => '客户ID搜索',
         'CustomerName' => '客户名称',
         'CustomerUser' => '客户联系人',
-        'Customers <-> Groups' => '客户 <-> 组',
+        'Customers ↔ Groups' => '客户 ↔ 组',
         'Customizable stop words for fulltext index. These words will be removed from the search index.' =>
             '全文索引可定制的停用词，这些词将从搜索索引中移除。',
         'Czech' => '捷克语',
@@ -6068,7 +6068,7 @@ Thanks for your help!
         'Retains all services in listings even if they are children of invalid elements.' =>
             '在列表中保留所有的服务，即使他们是无效的子元素。',
         'Right' => '右',
-        'Roles <-> Groups' => '角色 <-> 组',
+        'Roles ↔ Groups' => '角色 ↔ 组',
         'Run file based generic agent jobs (Note: module name need needs to be specified in -configuration-module param e.g. "Kernel::System::GenericAgent").' =>
             '运行基于文件的自动任务（注意：需要在配置模块参数中指定模块名，如"Kernel::System::GenericAgent"）。',
         'Running Process Tickets' => '运行中的流程工单',
@@ -6601,7 +6601,7 @@ Thanks for your help!
         'System Maintenance' => '系统维护',
         'System Request (%s).' => '系统请求 (%s)。',
         'Target' => '目标',
-        'Templates <-> Queues' => '模板 <-> 队列',
+        'Templates ↔ Queues' => '模板 ↔ 队列',
         'Textarea' => '多行文本',
         'Thai' => '泰国语',
         'The agent skin\'s InternalName which should be used in the agent interface. Please check the available skins in Frontend::Agent::Skins.' =>

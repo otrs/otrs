@@ -1334,7 +1334,7 @@ sub Data {
         'Change Auto Response Relations for Queue' => '',
 
         # Template: AdminQueueTemplates
-        'Manage Template-Queue Relations' => 'Halda mallide <-> järjekordade seoseid',
+        'Manage Template-Queue Relations' => 'Halda mallide ↔ järjekordade seoseid',
         'Filter for Templates' => 'Mallide filter',
         'Templates' => 'Mallid',
         'Queues' => 'Järjekorrad',
@@ -1746,7 +1746,7 @@ sub Data {
         'Your email address is' => 'Teie e-posti aadress on',
 
         # Template: AdminTemplateAttachment
-        'Manage Templates <-> Attachments Relations' => 'Halda mallide <-> manuste seoseid',
+        'Manage Templates ↔ Attachments Relations' => 'Halda mallide ↔ manuste seoseid',
         'Change Template Relations for Attachment' => '',
         'Change Attachment Relations for Template' => '',
         'Toggle active for all' => '',
@@ -4341,8 +4341,8 @@ Thanks for your help!
             '',
         'AgentTicketZoom widget that displays ticket data in the side bar.' =>
             '',
-        'Agents <-> Groups' => 'Töötajad <-> Rühmad',
-        'Agents <-> Roles' => 'Töötajad <-> Rollid',
+        'Agents ↔ Groups' => 'Töötajad ↔ Rühmad',
+        'Agents ↔ Roles' => 'Töötajad ↔ Rollid',
         'All customer users of a CustomerID' => '',
         'All escalated tickets' => '',
         'All new tickets, these tickets have not been worked on yet' => 'Kõik uued intsidendid, millega ei ole veel tegeletud',
@@ -4409,8 +4409,8 @@ Thanks for your help!
         'Arabic (Saudi Arabia)' => 'Araabia (Saudi Araabia)',
         'Archive state changed: "%s"' => '',
         'ArticleTree' => '',
-        'Attachments <-> Templates' => 'Manused <-> Mallid',
-        'Auto Responses <-> Queues' => 'Automaatvastused <-> Järjekorrad',
+        'Attachments ↔ Templates' => 'Manused ↔ Mallid',
+        'Auto Responses ↔ Queues' => 'Automaatvastused ↔ Järjekorrad',
         'AutoFollowUp sent to "%s".' => 'Automaatedastus "%s".',
         'AutoReject sent to "%s".' => 'Automaatne tagasilükkamine "%s".',
         'AutoReply sent to "%s".' => 'Automaatvastus "%s".',
@@ -4572,8 +4572,8 @@ Thanks for your help!
         'Customer Information Center Search.' => '',
         'Customer Information Center.' => '',
         'Customer Ticket Print Module.' => '',
-        'Customer User <-> Groups' => 'Klientkasutaja <-> Rühmad',
-        'Customer User <-> Services' => 'Klientkasutaja <-> Teenused',
+        'Customer User ↔ Groups' => 'Klientkasutaja ↔ Rühmad',
+        'Customer User ↔ Services' => 'Klientkasutaja ↔ Teenused',
         'Customer User Administration' => 'Klientkasutajate haldus',
         'Customer Users' => 'Klientkasutajad',
         'Customer called us.' => 'Klient helistas.',
@@ -4590,7 +4590,7 @@ Thanks for your help!
         'CustomerID search' => '',
         'CustomerName' => '',
         'CustomerUser' => '',
-        'Customers <-> Groups' => 'Kliendid <-> Rühmad',
+        'Customers ↔ Groups' => 'Kliendid ↔ Rühmad',
         'Customizable stop words for fulltext index. These words will be removed from the search index.' =>
             '',
         'Czech' => 'Tšehhi',
@@ -6053,7 +6053,7 @@ Thanks for your help!
         'Retains all services in listings even if they are children of invalid elements.' =>
             '',
         'Right' => '',
-        'Roles <-> Groups' => 'Rollid <-> Rühmad',
+        'Roles ↔ Groups' => 'Rollid ↔ Rühmad',
         'Run file based generic agent jobs (Note: module name need needs to be specified in -configuration-module param e.g. "Kernel::System::GenericAgent").' =>
             '',
         'Running Process Tickets' => '',
@@ -6586,7 +6586,7 @@ Thanks for your help!
         'System Maintenance' => '',
         'System Request (%s).' => '',
         'Target' => '',
-        'Templates <-> Queues' => 'Mallid <-> Järjekorrad',
+        'Templates ↔ Queues' => 'Mallid ↔ Järjekorrad',
         'Textarea' => 'Tekstiala',
         'Thai' => 'Tai',
         'The agent skin\'s InternalName which should be used in the agent interface. Please check the available skins in Frontend::Agent::Skins.' =>

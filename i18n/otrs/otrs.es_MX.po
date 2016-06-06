@@ -8242,8 +8242,8 @@ msgid "Your email address is"
 msgstr "Su dirección de correo electrónico es"
 
 #. Template: AdminTemplateAttachment
-msgid "Manage Templates <-> Attachments Relations"
-msgstr "Gestión de Plantillas <-> Relaciones de Adjuntos"
+msgid "Manage Templates ↔ Attachments Relations"
+msgstr "Gestión de Plantillas ↔ Relaciones de Adjuntos"
 
 #. Template: AdminTemplateAttachment
 msgid "Filter for Attachments"
@@ -13986,12 +13986,12 @@ msgid "AgentUserSearch."
 msgstr ""
 
 #. SysConfig
-msgid "Agents <-> Groups"
-msgstr "Agentes <-> Grupos"
+msgid "Agents ↔ Groups"
+msgstr "Agentes ↔ Grupos"
 
 #. SysConfig
-msgid "Agents <-> Roles"
-msgstr "Agentes <-> Roles"
+msgid "Agents ↔ Roles"
+msgstr "Agentes ↔ Roles"
 
 #. SysConfig
 msgid "All customer users of a CustomerID"
@@ -14170,12 +14170,12 @@ msgid "ArticleTree"
 msgstr "ArticleTree"
 
 #. SysConfig
-msgid "Attachments <-> Templates"
-msgstr "Archivos Adjuntos <-> Plantilla"
+msgid "Attachments ↔ Templates"
+msgstr "Archivos Adjuntos ↔ Plantilla"
 
 #. SysConfig
-msgid "Auto Responses <-> Queues"
-msgstr "Respuestas Automáticas <-> Filas"
+msgid "Auto Responses ↔ Queues"
+msgstr "Respuestas Automáticas ↔ Filas"
 
 #. SysConfig
 msgid "AutoFollowUp sent to \"%s\"."
@@ -14712,11 +14712,11 @@ msgid "Customer Ticket Print Module."
 msgstr ""
 
 #. SysConfig
-msgid "Customer User <-> Groups"
+msgid "Customer User ↔ Groups"
 msgstr ""
 
 #. SysConfig
-msgid "Customer User <-> Services"
+msgid "Customer User ↔ Services"
 msgstr ""
 
 #. SysConfig
@@ -14782,8 +14782,8 @@ msgid "CustomerUser"
 msgstr ""
 
 #. SysConfig
-msgid "Customers <-> Groups"
-msgstr "Clientes <-> Grupos"
+msgid "Customers ↔ Groups"
+msgstr "Clientes ↔ Grupos"
 
 #. SysConfig
 msgid ""
@@ -19470,8 +19470,8 @@ msgid "Right"
 msgstr ""
 
 #. SysConfig
-msgid "Roles <-> Groups"
-msgstr "Roles <-> Grupos"
+msgid "Roles ↔ Groups"
+msgstr "Roles ↔ Grupos"
 
 #. SysConfig
 msgid ""
@@ -21191,8 +21191,8 @@ msgid "Target"
 msgstr ""
 
 #. SysConfig
-msgid "Templates <-> Queues"
-msgstr "Plantillas <-> Filas de Espera"
+msgid "Templates ↔ Queues"
+msgstr "Plantillas ↔ Filas de Espera"
 
 #. SysConfig
 msgid "Textarea"

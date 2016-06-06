@@ -1753,7 +1753,7 @@ sub Data {
         'Your email address is' => '',
 
         # Template: AdminTemplateAttachment
-        'Manage Templates <-> Attachments Relations' => '',
+        'Manage Templates ↔ Attachments Relations' => '',
         'Change Template Relations for Attachment' => '',
         'Change Attachment Relations for Template' => '',
         'Toggle active for all' => '',
@@ -4348,8 +4348,8 @@ Thanks for your help!
             '',
         'AgentTicketZoom widget that displays ticket data in the side bar.' =>
             '',
-        'Agents <-> Groups' => '',
-        'Agents <-> Roles' => '',
+        'Agents ↔ Groups' => '',
+        'Agents ↔ Roles' => '',
         'All customer users of a CustomerID' => '',
         'All escalated tickets' => 'Όλα τα σημαντικότερα δελτία',
         'All new tickets, these tickets have not been worked on yet' => 'Όλα τα νέα δελτία, όσα δεν έχουν ακόμη επεξεργαστεί',
@@ -4416,8 +4416,8 @@ Thanks for your help!
         'Arabic (Saudi Arabia)' => 'Αραβικά (Σαουδική Αραβία)',
         'Archive state changed: "%s"' => '',
         'ArticleTree' => '',
-        'Attachments <-> Templates' => '',
-        'Auto Responses <-> Queues' => '',
+        'Attachments ↔ Templates' => '',
+        'Auto Responses ↔ Queues' => '',
         'AutoFollowUp sent to "%s".' => 'Αυτόματη συνέχεια στάληθηκε στο "%s".',
         'AutoReject sent to "%s".' => 'Αυτόματη Αρνηση σταλθηκε στο "%s".',
         'AutoReply sent to "%s".' => 'Αυτόματη απ΄ντηση στάλθηκε στο "%s".',
@@ -4579,8 +4579,8 @@ Thanks for your help!
         'Customer Information Center Search.' => '',
         'Customer Information Center.' => '',
         'Customer Ticket Print Module.' => '',
-        'Customer User <-> Groups' => '',
-        'Customer User <-> Services' => '',
+        'Customer User ↔ Groups' => '',
+        'Customer User ↔ Services' => '',
         'Customer User Administration' => '',
         'Customer Users' => 'Χρήστες-Πελάτες',
         'Customer called us.' => 'Κλήση πελάτη προς εμάς.',
@@ -4597,7 +4597,7 @@ Thanks for your help!
         'CustomerID search' => '',
         'CustomerName' => '',
         'CustomerUser' => '',
-        'Customers <-> Groups' => '',
+        'Customers ↔ Groups' => '',
         'Customizable stop words for fulltext index. These words will be removed from the search index.' =>
             '',
         'Czech' => '',
@@ -6060,7 +6060,7 @@ Thanks for your help!
         'Retains all services in listings even if they are children of invalid elements.' =>
             '',
         'Right' => '',
-        'Roles <-> Groups' => 'Ρόλοι <-> Ομάδες',
+        'Roles ↔ Groups' => 'Ρόλοι ↔ Ομάδες',
         'Run file based generic agent jobs (Note: module name need needs to be specified in -configuration-module param e.g. "Kernel::System::GenericAgent").' =>
             '',
         'Running Process Tickets' => '',
@@ -6593,7 +6593,7 @@ Thanks for your help!
         'System Maintenance' => '',
         'System Request (%s).' => 'System Request (%s).',
         'Target' => '',
-        'Templates <-> Queues' => '',
+        'Templates ↔ Queues' => '',
         'Textarea' => '',
         'Thai' => '',
         'The agent skin\'s InternalName which should be used in the agent interface. Please check the available skins in Frontend::Agent::Skins.' =>

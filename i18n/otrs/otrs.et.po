@@ -7007,7 +7007,7 @@ msgstr ""
 
 #. Template: AdminQueueTemplates
 msgid "Manage Template-Queue Relations"
-msgstr "Halda mallide <-> järjekordade seoseid"
+msgstr "Halda mallide ↔ järjekordade seoseid"
 
 #. Template: AdminQueueTemplates
 msgid "Filter for Templates"
@@ -8233,8 +8233,8 @@ msgid "Your email address is"
 msgstr "Teie e-posti aadress on"
 
 #. Template: AdminTemplateAttachment
-msgid "Manage Templates <-> Attachments Relations"
-msgstr "Halda mallide <-> manuste seoseid"
+msgid "Manage Templates ↔ Attachments Relations"
+msgstr "Halda mallide ↔ manuste seoseid"
 
 #. Template: AdminTemplateAttachment
 msgid "Filter for Attachments"
@@ -13977,12 +13977,12 @@ msgid "AgentUserSearch."
 msgstr ""
 
 #. SysConfig
-msgid "Agents <-> Groups"
-msgstr "Töötajad <-> Rühmad"
+msgid "Agents ↔ Groups"
+msgstr "Töötajad ↔ Rühmad"
 
 #. SysConfig
-msgid "Agents <-> Roles"
-msgstr "Töötajad <-> Rollid"
+msgid "Agents ↔ Roles"
+msgstr "Töötajad ↔ Rollid"
 
 #. SysConfig
 msgid "All customer users of a CustomerID"
@@ -14161,12 +14161,12 @@ msgid "ArticleTree"
 msgstr ""
 
 #. SysConfig
-msgid "Attachments <-> Templates"
-msgstr "Manused <-> Mallid"
+msgid "Attachments ↔ Templates"
+msgstr "Manused ↔ Mallid"
 
 #. SysConfig
-msgid "Auto Responses <-> Queues"
-msgstr "Automaatvastused <-> Järjekorrad"
+msgid "Auto Responses ↔ Queues"
+msgstr "Automaatvastused ↔ Järjekorrad"
 
 #. SysConfig
 msgid "AutoFollowUp sent to \"%s\"."
@@ -14703,12 +14703,12 @@ msgid "Customer Ticket Print Module."
 msgstr ""
 
 #. SysConfig
-msgid "Customer User <-> Groups"
-msgstr "Klientkasutaja <-> Rühmad"
+msgid "Customer User ↔ Groups"
+msgstr "Klientkasutaja ↔ Rühmad"
 
 #. SysConfig
-msgid "Customer User <-> Services"
-msgstr "Klientkasutaja <-> Teenused"
+msgid "Customer User ↔ Services"
+msgstr "Klientkasutaja ↔ Teenused"
 
 #. SysConfig
 msgid "Customer User Administration"
@@ -14773,8 +14773,8 @@ msgid "CustomerUser"
 msgstr ""
 
 #. SysConfig
-msgid "Customers <-> Groups"
-msgstr "Kliendid <-> Rühmad"
+msgid "Customers ↔ Groups"
+msgstr "Kliendid ↔ Rühmad"
 
 #. SysConfig
 msgid ""
@@ -19461,8 +19461,8 @@ msgid "Right"
 msgstr ""
 
 #. SysConfig
-msgid "Roles <-> Groups"
-msgstr "Rollid <-> Rühmad"
+msgid "Roles ↔ Groups"
+msgstr "Rollid ↔ Rühmad"
 
 #. SysConfig
 msgid ""
@@ -21182,8 +21182,8 @@ msgid "Target"
 msgstr ""
 
 #. SysConfig
-msgid "Templates <-> Queues"
-msgstr "Mallid <-> Järjekorrad"
+msgid "Templates ↔ Queues"
+msgstr "Mallid ↔ Järjekorrad"
 
 #. SysConfig
 msgid "Textarea"

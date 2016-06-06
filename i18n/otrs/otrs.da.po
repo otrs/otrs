@@ -8235,7 +8235,7 @@ msgid "Your email address is"
 msgstr "Din mail-adresse er"
 
 #. Template: AdminTemplateAttachment
-msgid "Manage Templates <-> Attachments Relations"
+msgid "Manage Templates ↔ Attachments Relations"
 msgstr "Administrer relationer mellem skabeloner og vedhæftede filer"
 
 #. Template: AdminTemplateAttachment
@@ -13979,12 +13979,12 @@ msgid "AgentUserSearch."
 msgstr ""
 
 #. SysConfig
-msgid "Agents <-> Groups"
-msgstr "Agenter <-> Grupper"
+msgid "Agents ↔ Groups"
+msgstr "Agenter ↔ Grupper"
 
 #. SysConfig
-msgid "Agents <-> Roles"
-msgstr "Agenter <-> Roller"
+msgid "Agents ↔ Roles"
+msgstr "Agenter ↔ Roller"
 
 #. SysConfig
 msgid "All customer users of a CustomerID"
@@ -14163,12 +14163,12 @@ msgid "ArticleTree"
 msgstr "Indlægstræ"
 
 #. SysConfig
-msgid "Attachments <-> Templates"
-msgstr "Vedhæftede filer <-> Skabeloner"
+msgid "Attachments ↔ Templates"
+msgstr "Vedhæftede filer ↔ Skabeloner"
 
 #. SysConfig
-msgid "Auto Responses <-> Queues"
-msgstr "Autosvar <-> Køer"
+msgid "Auto Responses ↔ Queues"
+msgstr "Autosvar ↔ Køer"
 
 #. SysConfig
 msgid "AutoFollowUp sent to \"%s\"."
@@ -14705,12 +14705,12 @@ msgid "Customer Ticket Print Module."
 msgstr ""
 
 #. SysConfig
-msgid "Customer User <-> Groups"
-msgstr "Kundebruger <-> Grupper"
+msgid "Customer User ↔ Groups"
+msgstr "Kundebruger ↔ Grupper"
 
 #. SysConfig
-msgid "Customer User <-> Services"
-msgstr "Kundebruger <-> Services"
+msgid "Customer User ↔ Services"
+msgstr "Kundebruger ↔ Services"
 
 #. SysConfig
 msgid "Customer User Administration"
@@ -14775,8 +14775,8 @@ msgid "CustomerUser"
 msgstr ""
 
 #. SysConfig
-msgid "Customers <-> Groups"
-msgstr "Kunder <-> Grupper"
+msgid "Customers ↔ Groups"
+msgstr "Kunder ↔ Grupper"
 
 #. SysConfig
 msgid ""
@@ -19463,8 +19463,8 @@ msgid "Right"
 msgstr "Højre"
 
 #. SysConfig
-msgid "Roles <-> Groups"
-msgstr "Roller <-> Grupper"
+msgid "Roles ↔ Groups"
+msgstr "Roller ↔ Grupper"
 
 #. SysConfig
 msgid ""
@@ -21184,8 +21184,8 @@ msgid "Target"
 msgstr ""
 
 #. SysConfig
-msgid "Templates <-> Queues"
-msgstr "Skabeloner <-> Køer"
+msgid "Templates ↔ Queues"
+msgstr "Skabeloner ↔ Køer"
 
 #. SysConfig
 msgid "Textarea"

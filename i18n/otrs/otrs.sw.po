@@ -8236,8 +8236,8 @@ msgid "Your email address is"
 msgstr "Anuani yako ya barua pepe ni"
 
 #. Template: AdminTemplateAttachment
-msgid "Manage Templates <-> Attachments Relations"
-msgstr "Simamia Vielezo <-> mahusiano ya viambatanishi"
+msgid "Manage Templates ↔ Attachments Relations"
+msgstr "Simamia Vielezo ↔ mahusiano ya viambatanishi"
 
 #. Template: AdminTemplateAttachment
 msgid "Filter for Attachments"
@@ -13980,12 +13980,12 @@ msgid "AgentUserSearch."
 msgstr ""
 
 #. SysConfig
-msgid "Agents <-> Groups"
-msgstr "Mawakala <-> Makundi"
+msgid "Agents ↔ Groups"
+msgstr "Mawakala ↔ Makundi"
 
 #. SysConfig
-msgid "Agents <-> Roles"
-msgstr "Mawakala <-> Majukumu"
+msgid "Agents ↔ Roles"
+msgstr "Mawakala ↔ Majukumu"
 
 #. SysConfig
 msgid "All customer users of a CustomerID"
@@ -14164,12 +14164,12 @@ msgid "ArticleTree"
 msgstr "Mti wa makala"
 
 #. SysConfig
-msgid "Attachments <-> Templates"
-msgstr "Viambatisho <-> Vielezo"
+msgid "Attachments ↔ Templates"
+msgstr "Viambatisho ↔ Vielezo"
 
 #. SysConfig
-msgid "Auto Responses <-> Queues"
-msgstr "Majibu otomatiki<-> Foleni"
+msgid "Auto Responses ↔ Queues"
+msgstr "Majibu otomatiki↔ Foleni"
 
 #. SysConfig
 msgid "AutoFollowUp sent to \"%s\"."
@@ -14706,12 +14706,12 @@ msgid "Customer Ticket Print Module."
 msgstr ""
 
 #. SysConfig
-msgid "Customer User <-> Groups"
-msgstr "Mteja mtumiaji <-> Vikundi"
+msgid "Customer User ↔ Groups"
+msgstr "Mteja mtumiaji ↔ Vikundi"
 
 #. SysConfig
-msgid "Customer User <-> Services"
-msgstr "Mteja mtumiaji <-> Huduma"
+msgid "Customer User ↔ Services"
+msgstr "Mteja mtumiaji ↔ Huduma"
 
 #. SysConfig
 msgid "Customer User Administration"
@@ -14776,8 +14776,8 @@ msgid "CustomerUser"
 msgstr "MtejaMtumiaji"
 
 #. SysConfig
-msgid "Customers <-> Groups"
-msgstr "Makundi ya <->  Wateja"
+msgid "Customers ↔ Groups"
+msgstr "Makundi ya ↔  Wateja"
 
 #. SysConfig
 msgid ""
@@ -19464,8 +19464,8 @@ msgid "Right"
 msgstr "Haki"
 
 #. SysConfig
-msgid "Roles <-> Groups"
-msgstr "Majukumu <-> Makundi"
+msgid "Roles ↔ Groups"
+msgstr "Majukumu ↔ Makundi"
 
 #. SysConfig
 msgid ""
@@ -21185,8 +21185,8 @@ msgid "Target"
 msgstr ""
 
 #. SysConfig
-msgid "Templates <-> Queues"
-msgstr "Vielezo <-> Foleni"
+msgid "Templates ↔ Queues"
+msgstr "Vielezo ↔ Foleni"
 
 #. SysConfig
 msgid "Textarea"

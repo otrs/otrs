@@ -1754,7 +1754,7 @@ sub Data {
         'Your email address is' => 'Il tuo indirizzo email è',
 
         # Template: AdminTemplateAttachment
-        'Manage Templates <-> Attachments Relations' => 'Gestione modelli <-> Relazioni allegati',
+        'Manage Templates ↔ Attachments Relations' => 'Gestione modelli ↔ Relazioni allegati',
         'Change Template Relations for Attachment' => '',
         'Change Attachment Relations for Template' => '',
         'Toggle active for all' => 'Imposta attivo per tutti',
@@ -4349,8 +4349,8 @@ Thanks for your help!
             '',
         'AgentTicketZoom widget that displays ticket data in the side bar.' =>
             '',
-        'Agents <-> Groups' => 'Operatori <-> Gruppi',
-        'Agents <-> Roles' => 'Operatori <-> Ruoli',
+        'Agents ↔ Groups' => 'Operatori ↔ Gruppi',
+        'Agents ↔ Roles' => 'Operatori ↔ Ruoli',
         'All customer users of a CustomerID' => '',
         'All escalated tickets' => 'Tutti i ticket scalati',
         'All new tickets, these tickets have not been worked on yet' => 'Tutti i nuovi ticket, questi ticket devono ancora essere elaborati',
@@ -4417,8 +4417,8 @@ Thanks for your help!
         'Arabic (Saudi Arabia)' => 'Arabo (Arabia Saudita)',
         'Archive state changed: "%s"' => 'Aggiornamento Flag Archivio',
         'ArticleTree' => '',
-        'Attachments <-> Templates' => 'Allegati <-> Modelli',
-        'Auto Responses <-> Queues' => 'Risposte automatiche <-> Code',
+        'Attachments ↔ Templates' => 'Allegati ↔ Modelli',
+        'Auto Responses ↔ Queues' => 'Risposte automatiche ↔ Code',
         'AutoFollowUp sent to "%s".' => 'Prosecuzione automatica inviata a "%s".',
         'AutoReject sent to "%s".' => 'Rifiuto automatico inviato a "%s".',
         'AutoReply sent to "%s".' => 'Risposta automatica inviata a "%s".',
@@ -4580,8 +4580,8 @@ Thanks for your help!
         'Customer Information Center Search.' => '',
         'Customer Information Center.' => '',
         'Customer Ticket Print Module.' => '',
-        'Customer User <-> Groups' => 'Utente cliente <-> Gruppi',
-        'Customer User <-> Services' => 'Utente cliente <-> Servizi',
+        'Customer User ↔ Groups' => 'Utente cliente ↔ Gruppi',
+        'Customer User ↔ Services' => 'Utente cliente ↔ Servizi',
         'Customer User Administration' => 'Amministrazione utenti cliente',
         'Customer Users' => 'Utenti Cliente',
         'Customer called us.' => 'Il cliente ha chiamato noi.',
@@ -4598,7 +4598,7 @@ Thanks for your help!
         'CustomerID search' => '',
         'CustomerName' => '',
         'CustomerUser' => '',
-        'Customers <-> Groups' => 'Clienti <-> Gruppi',
+        'Customers ↔ Groups' => 'Clienti ↔ Gruppi',
         'Customizable stop words for fulltext index. These words will be removed from the search index.' =>
             '',
         'Czech' => 'Ceco',
@@ -6061,7 +6061,7 @@ Thanks for your help!
         'Retains all services in listings even if they are children of invalid elements.' =>
             '',
         'Right' => 'Destra',
-        'Roles <-> Groups' => 'Ruoli <-> Gruppi',
+        'Roles ↔ Groups' => 'Ruoli ↔ Gruppi',
         'Run file based generic agent jobs (Note: module name need needs to be specified in -configuration-module param e.g. "Kernel::System::GenericAgent").' =>
             '',
         'Running Process Tickets' => '',
@@ -6594,7 +6594,7 @@ Thanks for your help!
         'System Maintenance' => 'Manutenzione di sistema',
         'System Request (%s).' => 'Richiesta di sistema (%s).',
         'Target' => '',
-        'Templates <-> Queues' => 'Modelli <-> Code',
+        'Templates ↔ Queues' => 'Modelli ↔ Code',
         'Textarea' => 'Area di testo',
         'Thai' => 'Thai',
         'The agent skin\'s InternalName which should be used in the agent interface. Please check the available skins in Frontend::Agent::Skins.' =>

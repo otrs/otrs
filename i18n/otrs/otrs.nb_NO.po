@@ -8236,7 +8236,7 @@ msgid "Your email address is"
 msgstr "Din e-postadresse er"
 
 #. Template: AdminTemplateAttachment
-msgid "Manage Templates <-> Attachments Relations"
+msgid "Manage Templates ↔ Attachments Relations"
 msgstr "Koplinger mellom Mal og Vedlegg"
 
 #. Template: AdminTemplateAttachment
@@ -13980,12 +13980,12 @@ msgid "AgentUserSearch."
 msgstr ""
 
 #. SysConfig
-msgid "Agents <-> Groups"
-msgstr "Saksbehandlere <-> Grupper"
+msgid "Agents ↔ Groups"
+msgstr "Saksbehandlere ↔ Grupper"
 
 #. SysConfig
-msgid "Agents <-> Roles"
-msgstr "Saksbehandlere <-> Roller"
+msgid "Agents ↔ Roles"
+msgstr "Saksbehandlere ↔ Roller"
 
 #. SysConfig
 msgid "All customer users of a CustomerID"
@@ -14164,12 +14164,12 @@ msgid "ArticleTree"
 msgstr ""
 
 #. SysConfig
-msgid "Attachments <-> Templates"
-msgstr "Vedlegg  <-> Maler"
+msgid "Attachments ↔ Templates"
+msgstr "Vedlegg  ↔ Maler"
 
 #. SysConfig
-msgid "Auto Responses <-> Queues"
-msgstr "Autosvar <-> Køer"
+msgid "Auto Responses ↔ Queues"
+msgstr "Autosvar ↔ Køer"
 
 #. SysConfig
 msgid "AutoFollowUp sent to \"%s\"."
@@ -14706,11 +14706,11 @@ msgid "Customer Ticket Print Module."
 msgstr ""
 
 #. SysConfig
-msgid "Customer User <-> Groups"
+msgid "Customer User ↔ Groups"
 msgstr ""
 
 #. SysConfig
-msgid "Customer User <-> Services"
+msgid "Customer User ↔ Services"
 msgstr ""
 
 #. SysConfig
@@ -14776,8 +14776,8 @@ msgid "CustomerUser"
 msgstr ""
 
 #. SysConfig
-msgid "Customers <-> Groups"
-msgstr "Kunder <-> Grupper"
+msgid "Customers ↔ Groups"
+msgstr "Kunder ↔ Grupper"
 
 #. SysConfig
 msgid ""
@@ -19464,8 +19464,8 @@ msgid "Right"
 msgstr "Høyre"
 
 #. SysConfig
-msgid "Roles <-> Groups"
-msgstr "Roller <-> Grupper"
+msgid "Roles ↔ Groups"
+msgstr "Roller ↔ Grupper"
 
 #. SysConfig
 msgid ""
@@ -21185,8 +21185,8 @@ msgid "Target"
 msgstr ""
 
 #. SysConfig
-msgid "Templates <-> Queues"
-msgstr "Maler <-> Køer"
+msgid "Templates ↔ Queues"
+msgstr "Maler ↔ Køer"
 
 #. SysConfig
 msgid "Textarea"

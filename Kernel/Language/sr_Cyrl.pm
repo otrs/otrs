@@ -1746,7 +1746,7 @@ sub Data {
         'Your email address is' => 'Ваша имејл адреса је',
 
         # Template: AdminTemplateAttachment
-        'Manage Templates <-> Attachments Relations' => 'Управљање везама Шаблони <-> Прилози',
+        'Manage Templates ↔ Attachments Relations' => 'Управљање везама Шаблони ↔ Прилози',
         'Change Template Relations for Attachment' => 'Промени везе шаблона за прилог',
         'Change Attachment Relations for Template' => 'Промени везе прилога за шаблон',
         'Toggle active for all' => 'Промени стање у активан за све',
@@ -4352,8 +4352,8 @@ Thanks for your help!
             '',
         'AgentTicketZoom widget that displays ticket data in the side bar.' =>
             '',
-        'Agents <-> Groups' => 'Оператери <-> Групе',
-        'Agents <-> Roles' => 'Оператери <-> Улоге',
+        'Agents ↔ Groups' => 'Оператери ↔ Групе',
+        'Agents ↔ Roles' => 'Оператери ↔ Улоге',
         'All customer users of a CustomerID' => 'Сви клијенти корисници за CustomerID',
         'All escalated tickets' => 'Сви ескалирани тикети',
         'All new tickets, these tickets have not been worked on yet' => 'Сви нови тикети, на њима још није ништа рађено',
@@ -4420,8 +4420,8 @@ Thanks for your help!
         'Arabic (Saudi Arabia)' => 'Арапски (Саудијска арабија)',
         'Archive state changed: "%s"' => 'Промењено стање архивирања: "%s"',
         'ArticleTree' => 'Чланак у облику дрвета',
-        'Attachments <-> Templates' => 'Прилози <-> Шеме',
-        'Auto Responses <-> Queues' => 'Аутоматски одговори <-> Редови',
+        'Attachments ↔ Templates' => 'Прилози ↔ Шеме',
+        'Auto Responses ↔ Queues' => 'Аутоматски одговори ↔ Редови',
         'AutoFollowUp sent to "%s".' => 'Аутоматски наставак за "%s".',
         'AutoReject sent to "%s".' => 'Аутоматски одбијено "%s".',
         'AutoReply sent to "%s".' => 'Послат аутоматски одговор за "%s".',
@@ -4583,8 +4583,8 @@ Thanks for your help!
         'Customer Information Center Search.' => '',
         'Customer Information Center.' => '',
         'Customer Ticket Print Module.' => '',
-        'Customer User <-> Groups' => 'Клијент корисник <-> Групе',
-        'Customer User <-> Services' => 'Клијент корисник <-> Услуге',
+        'Customer User ↔ Groups' => 'Клијент корисник ↔ Групе',
+        'Customer User ↔ Services' => 'Клијент корисник ↔ Услуге',
         'Customer User Administration' => 'Администрација клијента корисника',
         'Customer Users' => 'Клијенти корисници',
         'Customer called us.' => 'Клијент нас је позвао.',
@@ -4601,7 +4601,7 @@ Thanks for your help!
         'CustomerID search' => 'Претрага ИД клијената',
         'CustomerName' => 'Назив клијента',
         'CustomerUser' => 'Клијент корисник',
-        'Customers <-> Groups' => 'Клијенти <-> Групе',
+        'Customers ↔ Groups' => 'Клијенти ↔ Групе',
         'Customizable stop words for fulltext index. These words will be removed from the search index.' =>
             'Подесиве зауставне речи за индекс комплетног текста. Ове речи ће бити уклоњене из индекса претраге.',
         'Czech' => 'Чешки',
@@ -6064,7 +6064,7 @@ Thanks for your help!
         'Retains all services in listings even if they are children of invalid elements.' =>
             'Задржи све сервисе у листи чак иако су деца неважећих елемената.',
         'Right' => 'Десно',
-        'Roles <-> Groups' => 'Улоге <-> Групе',
+        'Roles ↔ Groups' => 'Улоге ↔ Групе',
         'Run file based generic agent jobs (Note: module name need needs to be specified in -configuration-module param e.g. "Kernel::System::GenericAgent").' =>
             '',
         'Running Process Tickets' => '',
@@ -6597,7 +6597,7 @@ Thanks for your help!
         'System Maintenance' => 'Одржавање система',
         'System Request (%s).' => 'Системски захтев (%s).',
         'Target' => 'Циљ',
-        'Templates <-> Queues' => 'Шаблони <-> Редови',
+        'Templates ↔ Queues' => 'Шаблони ↔ Редови',
         'Textarea' => 'Област текста',
         'Thai' => '',
         'The agent skin\'s InternalName which should be used in the agent interface. Please check the available skins in Frontend::Agent::Skins.' =>

@@ -1747,7 +1747,7 @@ sub Data {
         'Your email address is' => 'Din mail-adresse er',
 
         # Template: AdminTemplateAttachment
-        'Manage Templates <-> Attachments Relations' => 'Administrer relationer mellem skabeloner og vedhæftede filer',
+        'Manage Templates ↔ Attachments Relations' => 'Administrer relationer mellem skabeloner og vedhæftede filer',
         'Change Template Relations for Attachment' => 'Ændr Skabelonens relation til vedhæftede filer',
         'Change Attachment Relations for Template' => 'Ændr den vedhæftede fils relation til skabeloner',
         'Toggle active for all' => 'Skift aktiv for alle',
@@ -4343,8 +4343,8 @@ Thanks for your help!
             '',
         'AgentTicketZoom widget that displays ticket data in the side bar.' =>
             '',
-        'Agents <-> Groups' => 'Agenter <-> Grupper',
-        'Agents <-> Roles' => 'Agenter <-> Roller',
+        'Agents ↔ Groups' => 'Agenter ↔ Grupper',
+        'Agents ↔ Roles' => 'Agenter ↔ Roller',
         'All customer users of a CustomerID' => 'Alle kundebrugere af et CustomerID',
         'All escalated tickets' => 'Alle eskalerede sager',
         'All new tickets, these tickets have not been worked on yet' => 'Alle nye sager, der ikke er blevet arbejdet på endnu',
@@ -4411,8 +4411,8 @@ Thanks for your help!
         'Arabic (Saudi Arabia)' => 'Arabisk (Saudi Arabien)',
         'Archive state changed: "%s"' => 'Arkivflag opdateret',
         'ArticleTree' => 'Indlægstræ',
-        'Attachments <-> Templates' => 'Vedhæftede filer <-> Skabeloner',
-        'Auto Responses <-> Queues' => 'Autosvar <-> Køer',
+        'Attachments ↔ Templates' => 'Vedhæftede filer ↔ Skabeloner',
+        'Auto Responses ↔ Queues' => 'Autosvar ↔ Køer',
         'AutoFollowUp sent to "%s".' => 'Automatisk opfølgning send til "%s".',
         'AutoReject sent to "%s".' => 'Automatisk afvisning sendt til "%s".',
         'AutoReply sent to "%s".' => 'Automatisk svar sendt til "%s".',
@@ -4574,8 +4574,8 @@ Thanks for your help!
         'Customer Information Center Search.' => '',
         'Customer Information Center.' => '',
         'Customer Ticket Print Module.' => '',
-        'Customer User <-> Groups' => 'Kundebruger <-> Grupper',
-        'Customer User <-> Services' => 'Kundebruger <-> Services',
+        'Customer User ↔ Groups' => 'Kundebruger ↔ Grupper',
+        'Customer User ↔ Services' => 'Kundebruger ↔ Services',
         'Customer User Administration' => 'Kundebruger-administration',
         'Customer Users' => 'Kundebrugere',
         'Customer called us.' => 'Kundende ringede os op.',
@@ -4592,7 +4592,7 @@ Thanks for your help!
         'CustomerID search' => 'KundeID søgning',
         'CustomerName' => 'KundeNavn',
         'CustomerUser' => '',
-        'Customers <-> Groups' => 'Kunder <-> Grupper',
+        'Customers ↔ Groups' => 'Kunder ↔ Grupper',
         'Customizable stop words for fulltext index. These words will be removed from the search index.' =>
             '',
         'Czech' => '',
@@ -6055,7 +6055,7 @@ Thanks for your help!
         'Retains all services in listings even if they are children of invalid elements.' =>
             '',
         'Right' => 'Højre',
-        'Roles <-> Groups' => 'Roller <-> Grupper',
+        'Roles ↔ Groups' => 'Roller ↔ Grupper',
         'Run file based generic agent jobs (Note: module name need needs to be specified in -configuration-module param e.g. "Kernel::System::GenericAgent").' =>
             '',
         'Running Process Tickets' => '',
@@ -6588,7 +6588,7 @@ Thanks for your help!
         'System Maintenance' => 'System vedligeholdelse',
         'System Request (%s).' => 'System Request (%s)',
         'Target' => '',
-        'Templates <-> Queues' => 'Skabeloner <-> Køer',
+        'Templates ↔ Queues' => 'Skabeloner ↔ Køer',
         'Textarea' => '',
         'Thai' => '',
         'The agent skin\'s InternalName which should be used in the agent interface. Please check the available skins in Frontend::Agent::Skins.' =>

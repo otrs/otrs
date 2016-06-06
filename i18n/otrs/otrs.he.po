@@ -8231,8 +8231,8 @@ msgid "Your email address is"
 msgstr "כתובת הדוא\"ל שלך היא"
 
 #. Template: AdminTemplateAttachment
-msgid "Manage Templates <-> Attachments Relations"
-msgstr "נהל יחסי תבניות <-> קבצים מצורפים"
+msgid "Manage Templates ↔ Attachments Relations"
+msgstr "נהל יחסי תבניות ↔ קבצים מצורפים"
 
 #. Template: AdminTemplateAttachment
 msgid "Filter for Attachments"
@@ -13975,12 +13975,12 @@ msgid "AgentUserSearch."
 msgstr ""
 
 #. SysConfig
-msgid "Agents <-> Groups"
-msgstr "סוכנים <-> קבוצות"
+msgid "Agents ↔ Groups"
+msgstr "סוכנים ↔ קבוצות"
 
 #. SysConfig
-msgid "Agents <-> Roles"
-msgstr "סוכן <-> תפקיד"
+msgid "Agents ↔ Roles"
+msgstr "סוכן ↔ תפקיד"
 
 #. SysConfig
 msgid "All customer users of a CustomerID"
@@ -14159,12 +14159,12 @@ msgid "ArticleTree"
 msgstr "Artikelbaum"
 
 #. SysConfig
-msgid "Attachments <-> Templates"
-msgstr "קבצים מצרופים <-> תבניות"
+msgid "Attachments ↔ Templates"
+msgstr "קבצים מצרופים ↔ תבניות"
 
 #. SysConfig
-msgid "Auto Responses <-> Queues"
-msgstr "מענים אוטומטיים <-> תורים"
+msgid "Auto Responses ↔ Queues"
+msgstr "מענים אוטומטיים ↔ תורים"
 
 #. SysConfig
 msgid "AutoFollowUp sent to \"%s\"."
@@ -14701,12 +14701,12 @@ msgid "Customer Ticket Print Module."
 msgstr ""
 
 #. SysConfig
-msgid "Customer User <-> Groups"
-msgstr "משתמש לקוח <-> קבוצות"
+msgid "Customer User ↔ Groups"
+msgstr "משתמש לקוח ↔ קבוצות"
 
 #. SysConfig
-msgid "Customer User <-> Services"
-msgstr "משתמש לקוח <-> שירותים"
+msgid "Customer User ↔ Services"
+msgstr "משתמש לקוח ↔ שירותים"
 
 #. SysConfig
 msgid "Customer User Administration"
@@ -14771,8 +14771,8 @@ msgid "CustomerUser"
 msgstr ""
 
 #. SysConfig
-msgid "Customers <-> Groups"
-msgstr "לקוחות <-> קבוצות"
+msgid "Customers ↔ Groups"
+msgstr "לקוחות ↔ קבוצות"
 
 #. SysConfig
 msgid ""
@@ -19459,8 +19459,8 @@ msgid "Right"
 msgstr ""
 
 #. SysConfig
-msgid "Roles <-> Groups"
-msgstr "תפקידים <-> קבוצות"
+msgid "Roles ↔ Groups"
+msgstr "תפקידים ↔ קבוצות"
 
 #. SysConfig
 msgid ""
@@ -21180,8 +21180,8 @@ msgid "Target"
 msgstr ""
 
 #. SysConfig
-msgid "Templates <-> Queues"
-msgstr "תבניות <-> תורים"
+msgid "Templates ↔ Queues"
+msgstr "תבניות ↔ תורים"
 
 #. SysConfig
 msgid "Textarea"

@@ -1751,7 +1751,7 @@ sub Data {
         'Your email address is' => 'آدرس ایمیل شما:',
 
         # Template: AdminTemplateAttachment
-        'Manage Templates <-> Attachments Relations' => '',
+        'Manage Templates ↔ Attachments Relations' => '',
         'Change Template Relations for Attachment' => '',
         'Change Attachment Relations for Template' => '',
         'Toggle active for all' => 'اعمال فعال برای همه',
@@ -4346,8 +4346,8 @@ Thanks for your help!
             '',
         'AgentTicketZoom widget that displays ticket data in the side bar.' =>
             '',
-        'Agents <-> Groups' => 'کارشناسان <-> گروه‌ها',
-        'Agents <-> Roles' => 'کارشناسان <-> نقش‌ها',
+        'Agents ↔ Groups' => 'کارشناسان ↔ گروه‌ها',
+        'Agents ↔ Roles' => 'کارشناسان ↔ نقش‌ها',
         'All customer users of a CustomerID' => '',
         'All escalated tickets' => 'تمام درخواست‌هایی که زمان پاسخگویی آن‌ها رو به پایان است',
         'All new tickets, these tickets have not been worked on yet' => 'تمام درخواست‌های جدید، روی این درخواست‌ها هنوز کاری انجام شده',
@@ -4414,8 +4414,8 @@ Thanks for your help!
         'Arabic (Saudi Arabia)' => '',
         'Archive state changed: "%s"' => '',
         'ArticleTree' => '',
-        'Attachments <-> Templates' => '',
-        'Auto Responses <-> Queues' => 'پاسخ خودکار <-> لیست درخواست',
+        'Attachments ↔ Templates' => '',
+        'Auto Responses ↔ Queues' => 'پاسخ خودکار ↔ لیست درخواست',
         'AutoFollowUp sent to "%s".' => 'سابقه:: ارسال پیگیری خودکار',
         'AutoReject sent to "%s".' => 'سابقه::ارسال رد کردن خودکار ',
         'AutoReply sent to "%s".' => 'سابقه::ارسال پاسخ خودکار',
@@ -4577,8 +4577,8 @@ Thanks for your help!
         'Customer Information Center Search.' => '',
         'Customer Information Center.' => '',
         'Customer Ticket Print Module.' => '',
-        'Customer User <-> Groups' => '',
-        'Customer User <-> Services' => '',
+        'Customer User ↔ Groups' => '',
+        'Customer User ↔ Services' => '',
         'Customer User Administration' => '',
         'Customer Users' => 'مشترکین',
         'Customer called us.' => 'سابقه:: تماسهای تلفنی مشترک',
@@ -4595,7 +4595,7 @@ Thanks for your help!
         'CustomerID search' => '',
         'CustomerName' => '',
         'CustomerUser' => '',
-        'Customers <-> Groups' => 'مشترکین <-> گروه‌ها',
+        'Customers ↔ Groups' => 'مشترکین ↔ گروه‌ها',
         'Customizable stop words for fulltext index. These words will be removed from the search index.' =>
             '',
         'Czech' => '',
@@ -6058,7 +6058,7 @@ Thanks for your help!
         'Retains all services in listings even if they are children of invalid elements.' =>
             '',
         'Right' => '',
-        'Roles <-> Groups' => 'نقش <-> گروه',
+        'Roles ↔ Groups' => 'نقش ↔ گروه',
         'Run file based generic agent jobs (Note: module name need needs to be specified in -configuration-module param e.g. "Kernel::System::GenericAgent").' =>
             '',
         'Running Process Tickets' => '',
@@ -6591,7 +6591,7 @@ Thanks for your help!
         'System Maintenance' => '',
         'System Request (%s).' => 'سابقه::درخواست سیستم',
         'Target' => '',
-        'Templates <-> Queues' => '',
+        'Templates ↔ Queues' => '',
         'Textarea' => '',
         'Thai' => '',
         'The agent skin\'s InternalName which should be used in the agent interface. Please check the available skins in Frontend::Agent::Skins.' =>

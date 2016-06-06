@@ -1757,7 +1757,7 @@ sub Data {
         'Your email address is' => 'Ваш email адрес ',
 
         # Template: AdminTemplateAttachment
-        'Manage Templates <-> Attachments Relations' => 'Управление связью Шаблоны - Вложения',
+        'Manage Templates ↔ Attachments Relations' => 'Управление связью Шаблоны - Вложения',
         'Change Template Relations for Attachment' => 'Изменить связь Шаблона с Вложением',
         'Change Attachment Relations for Template' => 'Изменить связь Вложения с Шаблоном',
         'Toggle active for all' => 'Включить для всех',
@@ -4363,8 +4363,8 @@ Thanks for your help!
             '',
         'AgentTicketZoom widget that displays ticket data in the side bar.' =>
             '',
-        'Agents <-> Groups' => 'Агенты <-> Группы',
-        'Agents <-> Roles' => 'Агенты <-> Роли',
+        'Agents ↔ Groups' => 'Агенты ↔ Группы',
+        'Agents ↔ Roles' => 'Агенты ↔ Роли',
         'All customer users of a CustomerID' => 'Все клиенты Компании (по CustomerID)',
         'All escalated tickets' => 'Все эскалированные заявки',
         'All new tickets, these tickets have not been worked on yet' => 'Все новые заявки; с этими заявками еще никто не работал',
@@ -4431,8 +4431,8 @@ Thanks for your help!
         'Arabic (Saudi Arabia)' => 'Арабский (Саудовская Аравия)',
         'Archive state changed: "%s"' => 'Архивный статус изменен: «%s»',
         'ArticleTree' => 'Дерево сообщений',
-        'Attachments <-> Templates' => 'Вложения <-> Шаблоны',
-        'Auto Responses <-> Queues' => 'Автоответы <-> Очередь',
+        'Attachments ↔ Templates' => 'Вложения ↔ Шаблоны',
+        'Auto Responses ↔ Queues' => 'Автоответы ↔ Очередь',
         'AutoFollowUp sent to "%s".' => 'Автоотклик отправлен «%s».',
         'AutoReject sent to "%s".' => 'Автоотказ отправлен «%s».',
         'AutoReply sent to "%s".' => 'Автоответ отправлен «%s».',
@@ -4594,8 +4594,8 @@ Thanks for your help!
         'Customer Information Center Search.' => '',
         'Customer Information Center.' => '',
         'Customer Ticket Print Module.' => '',
-        'Customer User <-> Groups' => 'Клиенты <-> Группы',
-        'Customer User <-> Services' => 'Клиенты <-> Сервисы',
+        'Customer User ↔ Groups' => 'Клиенты ↔ Группы',
+        'Customer User ↔ Services' => 'Клиенты ↔ Сервисы',
         'Customer User Administration' => 'Управление пользователями клиентов',
         'Customer Users' => 'Клиенты',
         'Customer called us.' => 'Клиент позвонил нам.',
@@ -4612,7 +4612,7 @@ Thanks for your help!
         'CustomerID search' => 'Поиск по CustomerID',
         'CustomerName' => 'Имя Клиента',
         'CustomerUser' => 'CustomerUser',
-        'Customers <-> Groups' => 'Клиенты <-> Группы',
+        'Customers ↔ Groups' => 'Клиенты ↔ Группы',
         'Customizable stop words for fulltext index. These words will be removed from the search index.' =>
             'Настраиваемые стоп-слова для полнотекстовой индексации. Эти слова будут удалены и поискового индекса.',
         'Czech' => 'Чешский',
@@ -6075,7 +6075,7 @@ Thanks for your help!
         'Retains all services in listings even if they are children of invalid elements.' =>
             'Оставляет все сервисы в списке, даже если они являются потомками от недействительных элементов.',
         'Right' => 'Правый',
-        'Roles <-> Groups' => 'Роли <-> Группы',
+        'Roles ↔ Groups' => 'Роли ↔ Группы',
         'Run file based generic agent jobs (Note: module name need needs to be specified in -configuration-module param e.g. "Kernel::System::GenericAgent").' =>
             'Выполняет сохраненные агентом в БД задания планировщика (Помните: Имя модуля должно быть задано в -configuration-module param, например, "Kernel::System::GenericAgent").',
         'Running Process Tickets' => 'Запущенные Процессные заявки',
@@ -6608,7 +6608,7 @@ Thanks for your help!
         'System Maintenance' => 'Обслуживание системы',
         'System Request (%s).' => 'Системный запрос (%s)',
         'Target' => '',
-        'Templates <-> Queues' => 'Шаблоны <-> Очереди',
+        'Templates ↔ Queues' => 'Шаблоны ↔ Очереди',
         'Textarea' => 'Поле ввода текста',
         'Thai' => 'Тайский',
         'The agent skin\'s InternalName which should be used in the agent interface. Please check the available skins in Frontend::Agent::Skins.' =>

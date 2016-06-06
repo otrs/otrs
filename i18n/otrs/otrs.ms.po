@@ -8232,8 +8232,8 @@ msgid "Your email address is"
 msgstr "Alamat e-mel anda adalah"
 
 #. Template: AdminTemplateAttachment
-msgid "Manage Templates <-> Attachments Relations"
-msgstr "Mengurus Templat <-> Perkaitan Lampiran"
+msgid "Manage Templates ↔ Attachments Relations"
+msgstr "Mengurus Templat ↔ Perkaitan Lampiran"
 
 #. Template: AdminTemplateAttachment
 msgid "Filter for Attachments"
@@ -13976,12 +13976,12 @@ msgid "AgentUserSearch."
 msgstr ""
 
 #. SysConfig
-msgid "Agents <-> Groups"
-msgstr "Ejen <-> Kumpulan"
+msgid "Agents ↔ Groups"
+msgstr "Ejen ↔ Kumpulan"
 
 #. SysConfig
-msgid "Agents <-> Roles"
-msgstr "Ejen <-> Peranan"
+msgid "Agents ↔ Roles"
+msgstr "Ejen ↔ Peranan"
 
 #. SysConfig
 msgid "All customer users of a CustomerID"
@@ -14160,12 +14160,12 @@ msgid "ArticleTree"
 msgstr "PokokArtikel"
 
 #. SysConfig
-msgid "Attachments <-> Templates"
-msgstr "Lampiran <-> Templat"
+msgid "Attachments ↔ Templates"
+msgstr "Lampiran ↔ Templat"
 
 #. SysConfig
-msgid "Auto Responses <-> Queues"
-msgstr "Tindak Balas Auto <-> Barisan"
+msgid "Auto Responses ↔ Queues"
+msgstr "Tindak Balas Auto ↔ Barisan"
 
 #. SysConfig
 msgid "AutoFollowUp sent to \"%s\"."
@@ -14702,12 +14702,12 @@ msgid "Customer Ticket Print Module."
 msgstr ""
 
 #. SysConfig
-msgid "Customer User <-> Groups"
-msgstr "Pengguna Pelanggan <-> Kumpulan"
+msgid "Customer User ↔ Groups"
+msgstr "Pengguna Pelanggan ↔ Kumpulan"
 
 #. SysConfig
-msgid "Customer User <-> Services"
-msgstr "Pengguna Pelanggan <-> Perkhidmatan"
+msgid "Customer User ↔ Services"
+msgstr "Pengguna Pelanggan ↔ Perkhidmatan"
 
 #. SysConfig
 msgid "Customer User Administration"
@@ -14772,8 +14772,8 @@ msgid "CustomerUser"
 msgstr ""
 
 #. SysConfig
-msgid "Customers <-> Groups"
-msgstr "Pelanggan <-> Kumpulan"
+msgid "Customers ↔ Groups"
+msgstr "Pelanggan ↔ Kumpulan"
 
 #. SysConfig
 msgid ""
@@ -19460,8 +19460,8 @@ msgid "Right"
 msgstr "Kanan"
 
 #. SysConfig
-msgid "Roles <-> Groups"
-msgstr "Peranan <-> Kumpulan"
+msgid "Roles ↔ Groups"
+msgstr "Peranan ↔ Kumpulan"
 
 #. SysConfig
 msgid ""
@@ -21181,8 +21181,8 @@ msgid "Target"
 msgstr ""
 
 #. SysConfig
-msgid "Templates <-> Queues"
-msgstr "Templat <-> Barisan"
+msgid "Templates ↔ Queues"
+msgstr "Templat ↔ Barisan"
 
 #. SysConfig
 msgid "Textarea"

@@ -1746,7 +1746,7 @@ sub Data {
         'Your email address is' => 'La vostra adreça de correu electrònic és',
 
         # Template: AdminTemplateAttachment
-        'Manage Templates <-> Attachments Relations' => '',
+        'Manage Templates ↔ Attachments Relations' => '',
         'Change Template Relations for Attachment' => '',
         'Change Attachment Relations for Template' => '',
         'Toggle active for all' => 'Canviar actiu per a tots',
@@ -4341,8 +4341,8 @@ Thanks for your help!
             '',
         'AgentTicketZoom widget that displays ticket data in the side bar.' =>
             '',
-        'Agents <-> Groups' => 'Agents <-> Grups',
-        'Agents <-> Roles' => 'Agents <-> Rols',
+        'Agents ↔ Groups' => 'Agents ↔ Grups',
+        'Agents ↔ Roles' => 'Agents ↔ Rols',
         'All customer users of a CustomerID' => '',
         'All escalated tickets' => 'Tots els tiquets escalats',
         'All new tickets, these tickets have not been worked on yet' => 'Totes els tiquets nous, en aquests tiquets encara no s\'ha treballat',
@@ -4409,8 +4409,8 @@ Thanks for your help!
         'Arabic (Saudi Arabia)' => '',
         'Archive state changed: "%s"' => 'Actualització de l\'opció d\'arxiu',
         'ArticleTree' => '',
-        'Attachments <-> Templates' => '',
-        'Auto Responses <-> Queues' => 'Auto Respostes <-> Cues',
+        'Attachments ↔ Templates' => '',
+        'Auto Responses ↔ Queues' => 'Auto Respostes ↔ Cues',
         'AutoFollowUp sent to "%s".' => 'Seguiment automàtic enviat a "%s".',
         'AutoReject sent to "%s".' => 'Rebuig automàtic enviat a "%s".',
         'AutoReply sent to "%s".' => 'Resposta automàtica enviada a "%s".',
@@ -4572,8 +4572,8 @@ Thanks for your help!
         'Customer Information Center Search.' => '',
         'Customer Information Center.' => '',
         'Customer Ticket Print Module.' => '',
-        'Customer User <-> Groups' => '',
-        'Customer User <-> Services' => '',
+        'Customer User ↔ Groups' => '',
+        'Customer User ↔ Services' => '',
         'Customer User Administration' => '',
         'Customer Users' => 'Clients',
         'Customer called us.' => 'El client va cridar.',
@@ -4590,7 +4590,7 @@ Thanks for your help!
         'CustomerID search' => '',
         'CustomerName' => '',
         'CustomerUser' => '',
-        'Customers <-> Groups' => '',
+        'Customers ↔ Groups' => '',
         'Customizable stop words for fulltext index. These words will be removed from the search index.' =>
             '',
         'Czech' => '',
@@ -6053,7 +6053,7 @@ Thanks for your help!
         'Retains all services in listings even if they are children of invalid elements.' =>
             '',
         'Right' => '',
-        'Roles <-> Groups' => 'Rols <-> Grups',
+        'Roles ↔ Groups' => 'Rols ↔ Grups',
         'Run file based generic agent jobs (Note: module name need needs to be specified in -configuration-module param e.g. "Kernel::System::GenericAgent").' =>
             '',
         'Running Process Tickets' => '',
@@ -6586,7 +6586,7 @@ Thanks for your help!
         'System Maintenance' => '',
         'System Request (%s).' => 'Petició de sistema',
         'Target' => '',
-        'Templates <-> Queues' => '',
+        'Templates ↔ Queues' => '',
         'Textarea' => '',
         'Thai' => '',
         'The agent skin\'s InternalName which should be used in the agent interface. Please check the available skins in Frontend::Agent::Skins.' =>

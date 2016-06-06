@@ -1751,7 +1751,7 @@ sub Data {
         'Your email address is' => 'ที่อยู่อีเมลของคุณคือ',
 
         # Template: AdminTemplateAttachment
-        'Manage Templates <-> Attachments Relations' => 'จัดการแม่แบบ <-> ความสัมพันธ์ของสิ่งที่แนบมา',
+        'Manage Templates ↔ Attachments Relations' => 'จัดการแม่แบบ ↔ ความสัมพันธ์ของสิ่งที่แนบมา',
         'Change Template Relations for Attachment' => 'เปลี่ยนความสัมพันธ์ของแม่แบบสำหรับสิ่งที่แนบมา',
         'Change Attachment Relations for Template' => 'เปลี่ยนความสัมพันธ์ของสิ่งที่แนบมาสำหรับแม่แบบ',
         'Toggle active for all' => 'สลับการใช้งานสำหรับทั้งหมด',
@@ -4357,8 +4357,8 @@ Thanks for your help!
             '',
         'AgentTicketZoom widget that displays ticket data in the side bar.' =>
             '',
-        'Agents <-> Groups' => 'เอเย่นต์ <-> กลุ่ม',
-        'Agents <-> Roles' => 'เอเย่นต์ <-> บทบาท',
+        'Agents ↔ Groups' => 'เอเย่นต์ ↔ กลุ่ม',
+        'Agents ↔ Roles' => 'เอเย่นต์ ↔ บทบาท',
         'All customer users of a CustomerID' => 'ลูกค้าผู้ใช้ทั้งหมดของ CustomerID',
         'All escalated tickets' => 'ตั๋วการขยายทั้งหมด',
         'All new tickets, these tickets have not been worked on yet' => 'ตั๋วใหม่ทั้งหมดเหล่านี้ยังไม่ได้ถูกทำงาน',
@@ -4425,8 +4425,8 @@ Thanks for your help!
         'Arabic (Saudi Arabia)' => 'ภาษาอาหรับ (ซาอุดีอาระเบีย)',
         'Archive state changed: "%s"' => 'สถานะของหน่วยเก็บถาวรได้เปลี่ยนแปลง: "%s"',
         'ArticleTree' => 'ArticleTree',
-        'Attachments <-> Templates' => 'เอกสารที่แนบมา <-> แม่แบบ',
-        'Auto Responses <-> Queues' => 'การตอบสนองอัตโนมัติ <-> คิว',
+        'Attachments ↔ Templates' => 'เอกสารที่แนบมา ↔ แม่แบบ',
+        'Auto Responses ↔ Queues' => 'การตอบสนองอัตโนมัติ ↔ คิว',
         'AutoFollowUp sent to "%s".' => 'ส่ง AutoFollowUp ไปยัง "%s".',
         'AutoReject sent to "%s".' => 'ส่ง AutoReject ไปยัง "%s".',
         'AutoReply sent to "%s".' => 'ส่ง AutoReply ไปยัง "%s".',
@@ -4588,8 +4588,8 @@ Thanks for your help!
         'Customer Information Center Search.' => 'การค้นหาศูนย์ข้อมูลลูกค้า',
         'Customer Information Center.' => 'ศูนย์ข้อมูลลูกค้า',
         'Customer Ticket Print Module.' => 'โมดูลพิมพ์ตั๋วลูกค้า',
-        'Customer User <-> Groups' => 'ลูกค้าผู้ใช้ <-> กลุ่ม',
-        'Customer User <-> Services' => 'ลูกค้าผู้ใช้ <-> การบริการ',
+        'Customer User ↔ Groups' => 'ลูกค้าผู้ใช้ ↔ กลุ่ม',
+        'Customer User ↔ Services' => 'ลูกค้าผู้ใช้ ↔ การบริการ',
         'Customer User Administration' => 'การบริหารลูกค้าผู้ใช้',
         'Customer Users' => 'ลูกค้าผู้ใช้',
         'Customer called us.' => 'ลูกค้าติดต่อเรา',
@@ -4606,7 +4606,7 @@ Thanks for your help!
         'CustomerID search' => 'การค้นหาไอดีลูกค้า',
         'CustomerName' => 'CustomerName',
         'CustomerUser' => 'CustomerUser',
-        'Customers <-> Groups' => 'ลูกค้า <-> กลุ่ม',
+        'Customers ↔ Groups' => 'ลูกค้า ↔ กลุ่ม',
         'Customizable stop words for fulltext index. These words will be removed from the search index.' =>
             'ปรับแต่งคำหยุดสำหรับดัชนี Fulltext คำเหล่านี้จะถูกลบออกจากดัชนีการค้นหา',
         'Czech' => 'ภาษาเช็ก',
@@ -6073,7 +6073,7 @@ Thanks for your help!
         'Retains all services in listings even if they are children of invalid elements.' =>
             '',
         'Right' => 'ขวา',
-        'Roles <-> Groups' => '',
+        'Roles ↔ Groups' => '',
         'Run file based generic agent jobs (Note: module name need needs to be specified in -configuration-module param e.g. "Kernel::System::GenericAgent").' =>
             '',
         'Running Process Tickets' => '',
@@ -6606,7 +6606,7 @@ Thanks for your help!
         'System Maintenance' => '',
         'System Request (%s).' => '',
         'Target' => 'เป้าหมาย',
-        'Templates <-> Queues' => '',
+        'Templates ↔ Queues' => '',
         'Textarea' => 'Textarea',
         'Thai' => 'ภาษาไทย',
         'The agent skin\'s InternalName which should be used in the agent interface. Please check the available skins in Frontend::Agent::Skins.' =>

@@ -8241,8 +8241,8 @@ msgid "Your email address is"
 msgstr "Twój adres e-mail to"
 
 #. Template: AdminTemplateAttachment
-msgid "Manage Templates <-> Attachments Relations"
-msgstr "Zarządzaj szablonami <-> Relacje z załącznikami"
+msgid "Manage Templates ↔ Attachments Relations"
+msgstr "Zarządzaj szablonami ↔ Relacje z załącznikami"
 
 #. Template: AdminTemplateAttachment
 msgid "Filter for Attachments"
@@ -13985,12 +13985,12 @@ msgid "AgentUserSearch."
 msgstr ""
 
 #. SysConfig
-msgid "Agents <-> Groups"
-msgstr "Agenci <-> Grupy"
+msgid "Agents ↔ Groups"
+msgstr "Agenci ↔ Grupy"
 
 #. SysConfig
-msgid "Agents <-> Roles"
-msgstr "Agenci <-> Role"
+msgid "Agents ↔ Roles"
+msgstr "Agenci ↔ Role"
 
 #. SysConfig
 msgid "All customer users of a CustomerID"
@@ -14169,12 +14169,12 @@ msgid "ArticleTree"
 msgstr "Drzewo z artykułami"
 
 #. SysConfig
-msgid "Attachments <-> Templates"
-msgstr "Załączniki <-> Szablony"
+msgid "Attachments ↔ Templates"
+msgstr "Załączniki ↔ Szablony"
 
 #. SysConfig
-msgid "Auto Responses <-> Queues"
-msgstr "Autoodpowiedzi <-> Kolejki"
+msgid "Auto Responses ↔ Queues"
+msgstr "Autoodpowiedzi ↔ Kolejki"
 
 #. SysConfig
 msgid "AutoFollowUp sent to \"%s\"."
@@ -14711,12 +14711,12 @@ msgid "Customer Ticket Print Module."
 msgstr ""
 
 #. SysConfig
-msgid "Customer User <-> Groups"
-msgstr "Użytkownik <-> Grupy"
+msgid "Customer User ↔ Groups"
+msgstr "Użytkownik ↔ Grupy"
 
 #. SysConfig
-msgid "Customer User <-> Services"
-msgstr "Użytkownicy <-> Serwisy"
+msgid "Customer User ↔ Services"
+msgstr "Użytkownicy ↔ Serwisy"
 
 #. SysConfig
 msgid "Customer User Administration"
@@ -14781,8 +14781,8 @@ msgid "CustomerUser"
 msgstr "Imię i nazwisko użytkownika"
 
 #. SysConfig
-msgid "Customers <-> Groups"
-msgstr "Klienci <-> Grupy"
+msgid "Customers ↔ Groups"
+msgstr "Klienci ↔ Grupy"
 
 #. SysConfig
 msgid ""
@@ -18414,11 +18414,11 @@ msgstr ""
 
 #. SysConfig
 msgid "Link agents to groups."
-msgstr "Zarządzanie relacjami Agenci <-> Grupy"
+msgstr "Zarządzanie relacjami Agenci ↔ Grupy"
 
 #. SysConfig
 msgid "Link agents to roles."
-msgstr "Zarządzanie relacjami Agenci <-> Role"
+msgstr "Zarządzanie relacjami Agenci ↔ Role"
 
 #. SysConfig
 msgid "Link attachments to templates."
@@ -19469,8 +19469,8 @@ msgid "Right"
 msgstr ""
 
 #. SysConfig
-msgid "Roles <-> Groups"
-msgstr "Role <-> Grupy"
+msgid "Roles ↔ Groups"
+msgstr "Role ↔ Grupy"
 
 #. SysConfig
 msgid ""
@@ -21190,8 +21190,8 @@ msgid "Target"
 msgstr ""
 
 #. SysConfig
-msgid "Templates <-> Queues"
-msgstr "Szablony <-> Kolejki"
+msgid "Templates ↔ Queues"
+msgstr "Szablony ↔ Kolejki"
 
 #. SysConfig
 msgid "Textarea"

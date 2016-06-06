@@ -1751,7 +1751,7 @@ sub Data {
         'Your email address is' => 'Su dirección de correo electrónico es',
 
         # Template: AdminTemplateAttachment
-        'Manage Templates <-> Attachments Relations' => 'Gestionar Relación Plantillas <-> Adjuntos',
+        'Manage Templates ↔ Attachments Relations' => 'Gestionar Relación Plantillas ↔ Adjuntos',
         'Change Template Relations for Attachment' => 'Cambiar las relaciones de Plantillas del Adunto',
         'Change Attachment Relations for Template' => 'Cambiar las relaciones de Adjuntos de la Plantilla',
         'Toggle active for all' => 'Alternar a activo para todos',
@@ -4357,8 +4357,8 @@ Tu Equipo de Soporte
             '',
         'AgentTicketZoom widget that displays ticket data in the side bar.' =>
             '',
-        'Agents <-> Groups' => 'Agentes <-> Grupos',
-        'Agents <-> Roles' => 'Agentes <-> Roles',
+        'Agents ↔ Groups' => 'Agentes ↔ Grupos',
+        'Agents ↔ Roles' => 'Agentes ↔ Roles',
         'All customer users of a CustomerID' => 'Todos los clientes de un IDCliente',
         'All escalated tickets' => 'Todos los Tickets escalados',
         'All new tickets, these tickets have not been worked on yet' => 'Todos los Tickets nuevos, todavía no se ha trabajado en estos tickets',
@@ -4425,8 +4425,8 @@ Tu Equipo de Soporte
         'Arabic (Saudi Arabia)' => 'Árabe (Arabia Saudita)',
         'Archive state changed: "%s"' => 'Cambiado el estado del archivo: «%s»',
         'ArticleTree' => 'Árbol de Artículos',
-        'Attachments <-> Templates' => 'Adjuntos <-> Plantillas',
-        'Auto Responses <-> Queues' => 'Respuestas Automáticas <-> Colas',
+        'Attachments ↔ Templates' => 'Adjuntos ↔ Plantillas',
+        'Auto Responses ↔ Queues' => 'Respuestas Automáticas ↔ Colas',
         'AutoFollowUp sent to "%s".' => 'Seguimiento automático enviado a «%s».',
         'AutoReject sent to "%s".' => 'Rechazo automático enviado a «%s».',
         'AutoReply sent to "%s".' => 'Respuesta automática enviada a «%s».',
@@ -4588,8 +4588,8 @@ Tu Equipo de Soporte
         'Customer Information Center Search.' => '',
         'Customer Information Center.' => '',
         'Customer Ticket Print Module.' => '',
-        'Customer User <-> Groups' => 'Usuario Cliente <-> Grupos',
-        'Customer User <-> Services' => 'Usuario Cliente <-> Servicios',
+        'Customer User ↔ Groups' => 'Usuario Cliente ↔ Grupos',
+        'Customer User ↔ Services' => 'Usuario Cliente ↔ Servicios',
         'Customer User Administration' => 'Administración de los usuarios cliente',
         'Customer Users' => 'Clientes',
         'Customer called us.' => 'El cliente nos llamó.',
@@ -4606,7 +4606,7 @@ Tu Equipo de Soporte
         'CustomerID search' => 'Búsqueda de ClienteID',
         'CustomerName' => 'NombreCliente',
         'CustomerUser' => '',
-        'Customers <-> Groups' => 'Clintes <-> Grupos',
+        'Customers ↔ Groups' => 'Clintes ↔ Grupos',
         'Customizable stop words for fulltext index. These words will be removed from the search index.' =>
             'Palabras de parada personalizables para índice de texto completo. Estas palabras serán eliminadas del índice de búsqueda.',
         'Czech' => 'Checo',
@@ -6069,7 +6069,7 @@ Tu Equipo de Soporte
         'Retains all services in listings even if they are children of invalid elements.' =>
             '',
         'Right' => 'Derecha',
-        'Roles <-> Groups' => 'Roles <-> Grupos',
+        'Roles ↔ Groups' => 'Roles ↔ Grupos',
         'Run file based generic agent jobs (Note: module name need needs to be specified in -configuration-module param e.g. "Kernel::System::GenericAgent").' =>
             '',
         'Running Process Tickets' => 'Corriendo Tickets de Proceso',
@@ -6602,7 +6602,7 @@ Tu Equipo de Soporte
         'System Maintenance' => 'Mantenimiento de Sistema',
         'System Request (%s).' => 'Petición del sistema (%s).',
         'Target' => '',
-        'Templates <-> Queues' => 'Plantillas <-> Colas',
+        'Templates ↔ Queues' => 'Plantillas ↔ Colas',
         'Textarea' => '',
         'Thai' => '',
         'The agent skin\'s InternalName which should be used in the agent interface. Please check the available skins in Frontend::Agent::Skins.' =>

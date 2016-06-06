@@ -1746,7 +1746,7 @@ sub Data {
         'Your email address is' => 'Ihre E-Mail-Adresse ist',
 
         # Template: AdminTemplateAttachment
-        'Manage Templates <-> Attachments Relations' => 'Vorlagen-Anhang-Zuordnungen verwalten',
+        'Manage Templates ↔ Attachments Relations' => 'Vorlagen-Anhang-Zuordnungen verwalten',
         'Change Template Relations for Attachment' => 'Vorlagen-Zuordnungen für Anhang verändern',
         'Change Attachment Relations for Template' => 'Anhangs-Zuordnungen für Vorlage verändern',
         'Toggle active for all' => 'Aktiv umschalten für alle',
@@ -4351,8 +4351,8 @@ Ihr Helpdesk-Team
             '',
         'AgentTicketZoom widget that displays ticket data in the side bar.' =>
             '',
-        'Agents <-> Groups' => 'Agent <-> Gruppen',
-        'Agents <-> Roles' => 'Agent <-> Rollen',
+        'Agents ↔ Groups' => 'Agent ↔ Gruppen',
+        'Agents ↔ Roles' => 'Agent ↔ Rollen',
         'All customer users of a CustomerID' => 'Alle Kundenbenutzer einer Kundennummer',
         'All escalated tickets' => 'Alle eskalierten Tickets',
         'All new tickets, these tickets have not been worked on yet' => 'Alle neuen Tickets; an diesen Tickets wurde noch nicht gearbeitet',
@@ -4419,8 +4419,8 @@ Ihr Helpdesk-Team
         'Arabic (Saudi Arabia)' => 'Arabisch (Saudi-Arabien)',
         'Archive state changed: "%s"' => 'Archivstatus geändert: "%s"',
         'ArticleTree' => 'Artikelbaum',
-        'Attachments <-> Templates' => 'Anhänge <-> Vorlagen',
-        'Auto Responses <-> Queues' => 'Auto-Antworten <-> Queues',
+        'Attachments ↔ Templates' => 'Anhänge ↔ Vorlagen',
+        'Auto Responses ↔ Queues' => 'Auto-Antworten ↔ Queues',
         'AutoFollowUp sent to "%s".' => 'AutoFollowUp an "%s" versandt.',
         'AutoReject sent to "%s".' => 'AutoReject an "%s" versandt.',
         'AutoReply sent to "%s".' => 'AutoReply an "%s" versandt.',
@@ -4582,8 +4582,8 @@ Ihr Helpdesk-Team
         'Customer Information Center Search.' => 'Kunden-Informationszentrum-Suche.',
         'Customer Information Center.' => 'Kunden-Informationszentrum.',
         'Customer Ticket Print Module.' => 'Kunden-Ticketdruck-Modul.',
-        'Customer User <-> Groups' => 'Kundenbenutzer <-> Gruppen',
-        'Customer User <-> Services' => 'Kundenbenutzer <-> Services',
+        'Customer User ↔ Groups' => 'Kundenbenutzer ↔ Gruppen',
+        'Customer User ↔ Services' => 'Kundenbenutzer ↔ Services',
         'Customer User Administration' => 'Kundenbenutzerverwaltung',
         'Customer Users' => 'Kundenbenutzer',
         'Customer called us.' => 'Kunde hat angerufen.',
@@ -4600,7 +4600,7 @@ Ihr Helpdesk-Team
         'CustomerID search' => 'Kundennummernsuche',
         'CustomerName' => 'Kundenname',
         'CustomerUser' => 'CustomerUser',
-        'Customers <-> Groups' => 'Kunden <-> Gruppen',
+        'Customers ↔ Groups' => 'Kunden ↔ Gruppen',
         'Customizable stop words for fulltext index. These words will be removed from the search index.' =>
             'Anpassbare Stopworte für den Volltext-Index. Diese Worte werden aus dem Suchindex entfernt.',
         'Czech' => 'Tschechisch',
@@ -6063,7 +6063,7 @@ Ihr Helpdesk-Team
         'Retains all services in listings even if they are children of invalid elements.' =>
             '',
         'Right' => 'Rechts',
-        'Roles <-> Groups' => 'Rollen <-> Gruppen',
+        'Roles ↔ Groups' => 'Rollen ↔ Gruppen',
         'Run file based generic agent jobs (Note: module name need needs to be specified in -configuration-module param e.g. "Kernel::System::GenericAgent").' =>
             '',
         'Running Process Tickets' => 'Aktive Prozesstickets',
@@ -6596,7 +6596,7 @@ Ihr Helpdesk-Team
         'System Maintenance' => 'Systemwartung',
         'System Request (%s).' => 'Systemanfrage (%s).',
         'Target' => 'Ziel',
-        'Templates <-> Queues' => 'Vorlagen <-> Queues',
+        'Templates ↔ Queues' => 'Vorlagen ↔ Queues',
         'Textarea' => 'Textfeld',
         'Thai' => 'Thai',
         'The agent skin\'s InternalName which should be used in the agent interface. Please check the available skins in Frontend::Agent::Skins.' =>

@@ -1747,7 +1747,7 @@ sub Data {
         'Your email address is' => 'O seu email é',
 
         # Template: AdminTemplateAttachment
-        'Manage Templates <-> Attachments Relations' => '',
+        'Manage Templates ↔ Attachments Relations' => '',
         'Change Template Relations for Attachment' => '',
         'Change Attachment Relations for Template' => '',
         'Toggle active for all' => 'Ativar para todos',
@@ -4342,8 +4342,8 @@ Thanks for your help!
             '',
         'AgentTicketZoom widget that displays ticket data in the side bar.' =>
             '',
-        'Agents <-> Groups' => 'Agentes<->Grupos',
-        'Agents <-> Roles' => 'Agentes<->Papéis',
+        'Agents ↔ Groups' => 'Agentes↔Grupos',
+        'Agents ↔ Roles' => 'Agentes↔Papéis',
         'All customer users of a CustomerID' => '',
         'All escalated tickets' => 'Todos os tickets eecalados',
         'All new tickets, these tickets have not been worked on yet' => 'Todos os tickets, ainda sem qualquer tratamento',
@@ -4410,8 +4410,8 @@ Thanks for your help!
         'Arabic (Saudi Arabia)' => '',
         'Archive state changed: "%s"' => '',
         'ArticleTree' => '',
-        'Attachments <-> Templates' => '',
-        'Auto Responses <-> Queues' => '',
+        'Attachments ↔ Templates' => '',
+        'Auto Responses ↔ Queues' => '',
         'AutoFollowUp sent to "%s".' => 'Auto Acompanhamento enviado para "%s".',
         'AutoReject sent to "%s".' => 'Rejeição automática enviada para "%s".',
         'AutoReply sent to "%s".' => 'Auto resposta enviada para "%s".',
@@ -4573,8 +4573,8 @@ Thanks for your help!
         'Customer Information Center Search.' => '',
         'Customer Information Center.' => '',
         'Customer Ticket Print Module.' => '',
-        'Customer User <-> Groups' => '',
-        'Customer User <-> Services' => '',
+        'Customer User ↔ Groups' => '',
+        'Customer User ↔ Services' => '',
         'Customer User Administration' => '',
         'Customer Users' => '',
         'Customer called us.' => 'Cliente contatou-nos.',
@@ -4591,7 +4591,7 @@ Thanks for your help!
         'CustomerID search' => '',
         'CustomerName' => '',
         'CustomerUser' => '',
-        'Customers <-> Groups' => '',
+        'Customers ↔ Groups' => '',
         'Customizable stop words for fulltext index. These words will be removed from the search index.' =>
             '',
         'Czech' => '',
@@ -6054,7 +6054,7 @@ Thanks for your help!
         'Retains all services in listings even if they are children of invalid elements.' =>
             '',
         'Right' => '',
-        'Roles <-> Groups' => '',
+        'Roles ↔ Groups' => '',
         'Run file based generic agent jobs (Note: module name need needs to be specified in -configuration-module param e.g. "Kernel::System::GenericAgent").' =>
             '',
         'Running Process Tickets' => '',
@@ -6587,7 +6587,7 @@ Thanks for your help!
         'System Maintenance' => '',
         'System Request (%s).' => 'Pedido de sistema',
         'Target' => '',
-        'Templates <-> Queues' => '',
+        'Templates ↔ Queues' => '',
         'Textarea' => 'AreadeTexto',
         'Thai' => '',
         'The agent skin\'s InternalName which should be used in the agent interface. Please check the available skins in Frontend::Agent::Skins.' =>

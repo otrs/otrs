@@ -8232,7 +8232,7 @@ msgid "Your email address is"
 msgstr ""
 
 #. Template: AdminTemplateAttachment
-msgid "Manage Templates <-> Attachments Relations"
+msgid "Manage Templates ↔ Attachments Relations"
 msgstr ""
 
 #. Template: AdminTemplateAttachment
@@ -13976,12 +13976,12 @@ msgid "AgentUserSearch."
 msgstr ""
 
 #. SysConfig
-msgid "Agents <-> Groups"
-msgstr "Agentit <-> Ryhmät"
+msgid "Agents ↔ Groups"
+msgstr "Agentit ↔ Ryhmät"
 
 #. SysConfig
-msgid "Agents <-> Roles"
-msgstr "Agentit <-> Roolit"
+msgid "Agents ↔ Roles"
+msgstr "Agentit ↔ Roolit"
 
 #. SysConfig
 msgid "All customer users of a CustomerID"
@@ -14160,12 +14160,12 @@ msgid "ArticleTree"
 msgstr ""
 
 #. SysConfig
-msgid "Attachments <-> Templates"
-msgstr "Liitteet <-> Pohjat"
+msgid "Attachments ↔ Templates"
+msgstr "Liitteet ↔ Pohjat"
 
 #. SysConfig
-msgid "Auto Responses <-> Queues"
-msgstr "Autom. vastaukset <-> Jonot"
+msgid "Auto Responses ↔ Queues"
+msgstr "Autom. vastaukset ↔ Jonot"
 
 #. SysConfig
 msgid "AutoFollowUp sent to \"%s\"."
@@ -14702,12 +14702,12 @@ msgid "Customer Ticket Print Module."
 msgstr ""
 
 #. SysConfig
-msgid "Customer User <-> Groups"
-msgstr "Asiakas <-> Ryhmät"
+msgid "Customer User ↔ Groups"
+msgstr "Asiakas ↔ Ryhmät"
 
 #. SysConfig
-msgid "Customer User <-> Services"
-msgstr "Asiakas <-> Palvelut"
+msgid "Customer User ↔ Services"
+msgstr "Asiakas ↔ Palvelut"
 
 #. SysConfig
 msgid "Customer User Administration"
@@ -14772,8 +14772,8 @@ msgid "CustomerUser"
 msgstr ""
 
 #. SysConfig
-msgid "Customers <-> Groups"
-msgstr "Asiakkaat <-> Ryhmät"
+msgid "Customers ↔ Groups"
+msgstr "Asiakkaat ↔ Ryhmät"
 
 #. SysConfig
 msgid ""
@@ -19460,8 +19460,8 @@ msgid "Right"
 msgstr ""
 
 #. SysConfig
-msgid "Roles <-> Groups"
-msgstr "Roolit <-> Ryhmät"
+msgid "Roles ↔ Groups"
+msgstr "Roolit ↔ Ryhmät"
 
 #. SysConfig
 msgid ""
@@ -21181,8 +21181,8 @@ msgid "Target"
 msgstr ""
 
 #. SysConfig
-msgid "Templates <-> Queues"
-msgstr "Pohjat <-> Jonot"
+msgid "Templates ↔ Queues"
+msgstr "Pohjat ↔ Jonot"
 
 #. SysConfig
 msgid "Textarea"
