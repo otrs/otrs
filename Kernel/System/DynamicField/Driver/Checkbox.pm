@@ -766,13 +766,17 @@ sub RandomValueSet {
 sub ObjectMatch {
     my ( $Self, %Param ) = @_;
 
-    my $FieldName = 'DynamicField_' . $Param{DynamicFieldConfig}->{Name};
+    my $FieldName       = 'DynamicField_' . $Param{DynamicFieldConfig}->{Name};
+    my $ObjectAttribute = $Param{ObjectAttributes}->{$FieldName};
 
-    # return false if field is not defined
-    return 0 if ( !defined $Param{ObjectAttributes}->{$FieldName} );
+    # an undefined value is like an unchecked checkbox
+    # and search filters save '-1' for unchecked checkboxes
+    if ( !defined $ObjectAttribute || $ObjectAttribute == 0 ) {
+        $ObjectAttribute = '-1';
+    }
 
     # return false if not match
-    if ( $Param{ObjectAttributes}->{$FieldName} ne $Param{Value} ) {
+    if ( $ObjectAttribute ne $Param{Value} ) {
         return 0;
     }
 
