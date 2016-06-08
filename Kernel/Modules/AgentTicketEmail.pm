@@ -1272,7 +1272,8 @@ sub Run {
         my $MimeType = 'text/plain';
         if ( $LayoutObject->{BrowserRichText} ) {
             $MimeType = 'text/html';
-            $GetParam{Body} .= '<br/><br/>' . $Signature;
+            my $Separator = ( $ConfigObject->Get('Frontend::RichText::EnterMode') == 2 ) ? '<br/><br/>' : '';
+            $GetParam{Body} .= $Separator . $Signature;
 
             # remove unused inline images
             my @NewAttachmentData;

@@ -461,14 +461,13 @@
         </Setting>
     </ConfigItem>
     <ConfigItem Name="Frontend::RichText::EnterMode" Required="1" Valid="1">
-        <Description Translatable="1"><![CDATA[Sets the behavior of the Enter key in rich text editor (enterMode CKEditor parameter). It also determines other behavior rules of the editor, like whether the <br> element is to be used as a paragraph separator when indenting text. The allowed values are the following constants: P (new <p> paragraphs are created), BR (lines are broken with <br> elements), DIV (new <div> blocks are created).]]></Description>
+        <Description Translatable="1"><![CDATA[Sets the behavior of the Enter key in rich text editor (enterMode CKEditor parameter). It also determines other behavior rules of the editor, like whether the <br> element is to be used as a paragraph separator when indenting text. The allowed values are the following constants: P (new <p> paragraphs are created), BR (lines are broken with <br> elements). After changing this setting adjust accordingly signatures, salutations, message templates, autoresponses and other templates like Ticket::Frontend::ResponseFormat.]]></Description>
         <Group>Framework</Group>
         <SubGroup>Core::Web</SubGroup>
         <Setting>
-            <Option SelectedID="1">
+            <Option SelectedID="2">
                 <Item Key="1">P</Item>
                 <Item Key="2">BR</Item>
-                <Item Key="3">DIV</Item>
             </Option>
         </Setting>
     </ConfigItem>

@@ -131,14 +131,8 @@ Core.UI.RichTextEditor = (function (TargetNS) {
         // Get EnterMode from config
         switch ( Core.Config.Get('RichText.EnterMode') )
         {
-            case '1':
-                EnterMode = CKEDITOR.ENTER_P;
-                break;
             case '2':
                 EnterMode = CKEDITOR.ENTER_BR;
-                break;
-            case '3':
-                EnterMode = CKEDITOR.ENTER_DIV;
                 break;
             default:
                 EnterMode = CKEDITOR.ENTER_P;

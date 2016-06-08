@@ -328,12 +328,27 @@ sub Form {
         my $ForwardedMessageFrom = $LayoutObject->{LanguageObject}->Translate('Forwarded message from');
         my $EndForwardedMessage  = $LayoutObject->{LanguageObject}->Translate('End forwarded message');
 
-        $Data{Body} = "<br/>---- $ForwardedMessageFrom $From ---<br/><br/>" . $Data{Body};
-        $Data{Body} .= "<br/>---- $EndForwardedMessage ---<br/>";
+        my $RichTextEnterMode = $ConfigObject->Get('Frontend::RichText::EnterMode');
+
+        if ( $RichTextEnterMode == 2 ) {
+            $Data{Body} = "<br/>---- $ForwardedMessageFrom $From ---<br/><br/>" . $Data{Body};
+            $Data{Body} .= "<br/>---- $EndForwardedMessage ---<br/>";
+        }
+        else {
+            $Data{Body} = "<p>&nbsp;</p><p>---- $ForwardedMessageFrom $From ---</p>" . $Data{Body};
+            $Data{Body} .= "<p>---- $EndForwardedMessage ---</p><p>&nbsp;</p>";
+        }
+
         $Data{Body} = $Data{Signature} . $Data{Body};
 
         if ( $GetParam{ForwardTemplateID} ) {
-            $Data{Body} = $Data{StdTemplate} . '<br/>' . $Data{Body};
+            my $Separator = ( $RichTextEnterMode == 2 ) ? '<br/>' : '';
+            $Data{Body} = $Data{StdTemplate} . $Separator . $Data{Body};
+        }
+        else {
+            # add leading empty row to speed up message composition
+            my $Separator = ( $RichTextEnterMode == 2 ) ? '<br/><br/>' : '<p>&nbsp;</p>';
+            $Data{Body} = $Separator . $Data{Body}
         }
 
         $Data{ContentType} = 'text/html';
@@ -371,6 +386,11 @@ sub Form {
         if ( $GetParam{ForwardTemplateID} ) {
             $Data{Body} = $Data{StdTemplate} . "\n" . $Data{Body};
         }
+        else {
+            # add leading empty row to speed up message composition
+            $Data{Body} = "\n\n" . $Data{Body};
+        }
+
     }
 
     # get std. attachment object

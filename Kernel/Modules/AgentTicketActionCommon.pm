@@ -2646,8 +2646,10 @@ sub _GetQuotedReplyBody {
                 $ResponseFormat
                     .= $LayoutObject->{LanguageObject}->Translate('wrote') . ':';
 
-                $Param{Body} = $ResponseFormat . $Param{Body};
+                my $Separator = ( $ConfigObject->Get('Frontend::RichText::EnterMode') == 2 )
+                    ? '<br/><br/>' : '<p>&nbsp;</p>';
 
+                $Param{Body} = $ResponseFormat . $Param{Body} . $Separator;
             }
             else {
                 $Param{Body} = "<br/>" . $Param{Body};
@@ -2671,8 +2673,14 @@ sub _GetQuotedReplyBody {
                 my $MessageFrom = $LayoutObject->{LanguageObject}->Translate('Message from');
                 my $EndMessage  = $LayoutObject->{LanguageObject}->Translate('End message');
 
-                $Param{Body} = "<br/>---- $MessageFrom $From ---<br/><br/>" . $Param{Body};
-                $Param{Body} .= "<br/>---- $EndMessage ---<br/>";
+                if ( $ConfigObject->Get('Frontend::RichText::EnterMode') == 2 ) {
+                    $Param{Body} = "<br/>---- $MessageFrom $From ---<br/><br/>" . $Param{Body};
+                    $Param{Body} .= "<br/>---- $EndMessage ---<br/><br/>";
+                }
+                else {
+                    $Param{Body} = "<p>---- $MessageFrom $From ---</p>" . $Param{Body};
+                    $Param{Body} .= "<p>---- $EndMessage ---</p><p>&nbsp;</p>";
+                }
             }
         }
     }
@@ -2693,7 +2701,7 @@ sub _GetQuotedReplyBody {
                 $ResponseFormat
                     .= $LayoutObject->{LanguageObject}->Translate('wrote') . ":\n";
 
-                $Param{Body} = $ResponseFormat . $Param{Body};
+                $Param{Body} = $ResponseFormat . $Param{Body} . "\n\n";
             }
             else {
                 $Param{Body} = "\n" . $Param{Body};
@@ -2713,7 +2721,7 @@ sub _GetQuotedReplyBody {
                 my $EndMessage  = $LayoutObject->{LanguageObject}->Translate('End message');
 
                 $Param{Body} = "\n---- $MessageFrom $Param{From} ---\n\n" . $Param{Body};
-                $Param{Body} .= "\n---- $EndMessage ---\n";
+                $Param{Body} .= "\n---- $EndMessage ---\n\n";
             }
         }
     }

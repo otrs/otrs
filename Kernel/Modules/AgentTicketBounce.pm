@@ -232,11 +232,8 @@ sub Run {
 
         # build InformationFormat
         if ( $LayoutObject->{BrowserRichText} ) {
-            $Param{InformationFormat} = "$Param{Salutation}<br/>
-<br/>
-$Param{BounceText}<br/>
-<br/>
-$Param{Signature}";
+            my $Separator = ( $ConfigObject->Get('Frontend::RichText::EnterMode') == 2 ) ? '<br/><br/>' : '';
+            $Param{InformationFormat} = "$Param{Salutation}$Separator$Param{BounceText}$Separator$Param{Signature}";
         }
         else {
             $Param{InformationFormat} = "$Param{Salutation}

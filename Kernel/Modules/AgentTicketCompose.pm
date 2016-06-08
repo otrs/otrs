@@ -1196,8 +1196,11 @@ sub Run {
                 );
                 if ($Quote) {
 
+                    my $Separator = ( $ConfigObject->Get('Frontend::RichText::EnterMode') == 2 )
+                        ? '<br/><br/>' : '<p>&nbsp;</p>';
+
                     # quote text
-                    $Data{Body} = "<blockquote type=\"cite\">$Data{Body}</blockquote>\n";
+                    $Data{Body} = "<blockquote type=\"cite\">$Data{Body}</blockquote>" . $Separator;
 
                     # cleanup not compat. tags
                     $Data{Body} = $LayoutObject->RichTextDocumentCleanup(
@@ -1227,8 +1230,14 @@ sub Run {
                     my $MessageFrom = $LayoutObject->{LanguageObject}->Translate('Message from');
                     my $EndMessage  = $LayoutObject->{LanguageObject}->Translate('End message');
 
-                    $Data{Body} = "<br/>---- $MessageFrom $From ---<br/><br/>" . $Data{Body};
-                    $Data{Body} .= "<br/>---- $EndMessage ---<br/>";
+                    if ( $ConfigObject->Get('Frontend::RichText::EnterMode') == 2 ) {
+                        $Data{Body} = "<br/>---- $MessageFrom $From ---<br/><br/>" . $Data{Body};
+                        $Data{Body} .= "<br/>---- $EndMessage ---<br/>";
+                    }
+                    else {
+                        $Data{Body} = "<p>---- $MessageFrom $From ---</p>" . $Data{Body};
+                        $Data{Body} .= "<p>---- $EndMessage ---</p><p>&nbsp;</p>";
+                    }
                 }
             }
         }
