@@ -59,6 +59,8 @@
     }
     Core.Config.Set('RichText.PictureUploadAction', "[% Data.RichTextPictureUploadAction | html %]");
 
+    Core.Config.Set('RichText.EnterMode', '[% Config("Frontend::RichText::EnterMode") %]');
+
     Core.UI.RichTextEditor.InitAll();
 //]]></script>
 [% END %]

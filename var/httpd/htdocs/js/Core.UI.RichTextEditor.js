@@ -68,7 +68,8 @@ Core.UI.RichTextEditor = (function (TargetNS) {
         var EditorID = '',
             Editor,
             UserLanguage,
-            UploadURL = '';
+            UploadURL = '',
+            EnterMode;
 
         if (isJQueryObject($EditorArea) && $EditorArea.hasClass('HasCKEInstance')) {
             return false;
@@ -127,6 +128,22 @@ Core.UI.RichTextEditor = (function (TargetNS) {
                     + '=' + Core.Config.Get('SessionID');
         }
 
+        // Get EnterMode from config
+        switch ( Core.Config.Get('RichText.EnterMode') )
+        {
+            case '1':
+                EnterMode = CKEDITOR.ENTER_P;
+                break;
+            case '2':
+                EnterMode = CKEDITOR.ENTER_BR;
+                break;
+            case '3':
+                EnterMode = CKEDITOR.ENTER_DIV;
+                break;
+            default:
+                EnterMode = CKEDITOR.ENTER_P;
+        }
+
         /*eslint-disable camelcase */
         Editor = CKEDITOR.replace(EditorID,
         {
@@ -141,7 +158,7 @@ Core.UI.RichTextEditor = (function (TargetNS) {
             format_tags: 'p;h1;h2;h3;h4;h5;h6;pre',
             fontSize_sizes: '8px;10px;12px;16px;18px;20px;22px;24px;26px;28px;30px;',
             extraAllowedContent: 'div[type]{*}; img[*]; col[width]; style[*]{*}; *[id](*)',
-            enterMode: CKEDITOR.ENTER_BR,
+            enterMode: EnterMode,
             shiftEnterMode: CKEDITOR.ENTER_BR,
             contentsLangDirection: Core.Config.Get('RichText.TextDir', 'ltr'),
             disableNativeSpellChecker: false,
