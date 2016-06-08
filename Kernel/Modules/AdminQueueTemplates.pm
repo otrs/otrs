@@ -220,6 +220,12 @@ sub _Change {
         },
     );
 
+    # set relation items
+    $LayoutObject->AddJSData(
+        Key   => 'RelationItems',
+        Value => ['ItemsSelected'],
+    );
+
     $LayoutObject->Block( Name => "ChangeHeader$VisibleType{$NeType}" );
 
     # check if there are queue/template
