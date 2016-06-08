@@ -232,6 +232,12 @@ sub _Change {
         },
     );
 
+    # set permissions
+    $LayoutObject->AddJSData(
+        Key   => 'RelationItems',
+        Value => ['ItemsSelected'],
+    );
+
     for my $ID ( sort { uc( $Data{$a} ) cmp uc( $Data{$b} ) } keys %Data ) {
 
         my $Selected = $Param{Selected}->{$ID} ? ' checked="checked"' : '';
