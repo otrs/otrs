@@ -1,0 +1,29 @@
+Date: Wed, 16 Apr 2016 12:00:00 +0200
+From: test <test@host.test>
+To: test <test@host.test>
+Subject: test
+Message-ID: <testmsg1@host.test>
+MIME-Version: 1.0
+Content-Type: multipart/related; boundary="testpart1"
+
+--testpart1
+Content-Type: text/html; charset="iso-8859-2"
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+test pic: <img id=3D"testcid1" src=3D"http://www.h=
+ost.test/test.png" alt=3D"" width=3D"10" height=3D"10" />
+
+--testpart1
+Content-Type: image/png;
+ name="test.png"
+Content-Transfer-Encoding: base64
+Content-ID: <testcid1>
+Content-Disposition: inline;
+ filename="test.png"
+
+iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKAQMAAAC3/F3+AAAABlBMVEX///8AAABVwtN+AAAA
+CXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH3gQYFBgEGpRZowAAAB1pVFh0Q29tbWVudAAA
+AAAAQ3JlYXRlZCB3aXRoIEdJTVBkLmUHAAAAEklEQVQI12NggAEWBgY+MIkEAAGUABckedJ2
+AAAAAElFTkSuQmCC
+--testpart1--

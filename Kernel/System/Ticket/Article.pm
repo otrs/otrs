@@ -3183,17 +3183,17 @@ sub ArticleAttachmentIndex {
                     UserID    => $Param{UserID},
                 );
 
-                ATTACHMENT:
+                ATTACHMENTID:
                 for my $AttachmentID ( sort keys %Attachments ) {
                     my %File = %{ $Attachments{$AttachmentID} };
-                    next ATTACHMENT if !$File{ContentID};
+                    next ATTACHMENTID if !$File{ContentID};
 
                     # content id cleanup
                     $File{ContentID} =~ s/^<//;
                     $File{ContentID} =~ s/>$//;
                     if (
                         $File{ContentID}
-                        && $Attachment{Content} =~ /\Q$File{ContentID}\E/i
+                        && $Attachment{Content} =~ /(\ssrc\s*=\s*)(["']{0,1})(cid:){0,1}(\Q$File{ContentID}\E)("|'|>|\/>|\s)/i
                         && $File{Disposition} eq 'inline'
                         )
                     {

@@ -24,6 +24,15 @@ my $Helper = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
 # get needed objects
 my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
 my $MainObject   = $Kernel::OM->Get('Kernel::System::Main');
+my $QueueObject  = $Kernel::OM->Get('Kernel::System::Queue');
+
+# get first queue name for testing (may be different than "Misc" in customized setups)
+my %QueueGet      = $QueueObject->QueueGet( ID => 1 );
+my $TestQueueName1 = $QueueGet{Name},
+
+# get second queue name for testing (may be different than "Junk" in customized setups)
+%QueueGet          = $QueueObject->QueueGet( ID => 2 );
+my $TestQueueName2 = $QueueGet{Name},
 
 my @DynamicfieldIDs;
 my @DynamicFieldUpdate;
@@ -196,7 +205,7 @@ for my $TicketSubjectConfig ( 'Right', 'Left' ) {
                     To      => 'EMAILADDRESS:darthvader@otrs.org',
                 },
                 Set => {
-                    'X-OTRS-Queue'        => 'Misc',
+                    'X-OTRS-Queue'        => $TestQueueName1,
                     'X-OTRS-TicketKey1'   => 'Key1',
                     'X-OTRS-TicketValue1' => 'Text1',
                 },
@@ -244,7 +253,7 @@ for my $TicketSubjectConfig ( 'Right', 'Left' ) {
             my $UserRand1 = 'example-user' . $Helper->GetRandomID() . '@example.com';
 
             FILE:
-            for my $File (qw(1 2 3 5 6 11 17 18 21 22 23)) {
+            for my $File (qw(1 2 3 5 6 11 17 18 21 22 23 24)) {
 
                 my $NamePrefix = "#$NumberModule $StorageModule $TicketSubjectConfig $File ";
 
@@ -325,7 +334,7 @@ for my $TicketSubjectConfig ( 'Right', 'Left' ) {
                     my @Tests = (
                         {
                             Key    => 'Queue',
-                            Result => 'Misc',
+                            Result => $TestQueueName1,
                         },
                         {
                             Key    => 'DynamicField_TicketFreeKey1',
@@ -497,6 +506,48 @@ for my $TicketSubjectConfig ( 'Right', 'Left' ) {
                         $MD5,
                         '52f20c90a1f0d8cf3bd415e278992001',
                         $NamePrefix . ' md5 body check',
+                    );
+                }
+
+                if ( $File == 24 ) {
+
+                    # check body
+                    my %Article = $TicketObject->ArticleGet(
+                        ArticleID     => $ArticleIDs[0],
+                        DynamicFields => 1,
+                    );
+
+                    # check attachments
+                    my %Index = $TicketObject->ArticleAttachmentIndex(
+                        ArticleID => $ArticleIDs[0],
+                        Article => \%Article,
+                        UserID => 1,
+                        StripPlainBodyAsAttachment => 1,
+                    );
+
+                    $Self->Is(
+                        $Index{2}->{Filename},
+                        'test.png',
+                        $NamePrefix . ' filename attachment check ArticleAttachmentIndex()',
+                    );
+
+                    my %Attachment = $TicketObject->ArticleAttachment(
+                        ArticleID => $ArticleIDs[0],
+                        FileID    => 2,
+                        UserID    => 1,
+                    );
+
+                    my $MD5 = $MainObject->MD5sum( String => $Attachment{Content} ) || '';
+                    $Self->Is(
+                        $MD5,
+                        '8cd0692c32a207912dbd0dde742c128a',
+                        $NamePrefix . ' md5 attachment check',
+                    );
+
+                    $Self->Is(
+                        $Attachment{Filename},
+                        'test.png',
+                        $NamePrefix . ' filename attachment check ArticleAttachment()',
                     );
                 }
 
@@ -760,14 +811,14 @@ my @Tests = (
             From => 'sender@example.com',
         },
         Set => {
-            'X-OTRS-Queue'        => 'Misc',
+            'X-OTRS-Queue'        => $TestQueueName1,
             'X-OTRS-TicketKey1'   => 'Key1',
             'X-OTRS-TicketValue1' => 'Text1',
             'X-OTRS-TicketKey3'   => 'Key3',
             'X-OTRS-TicketValue3' => 'Text3',
         },
         Check => {
-            Queue                        => 'Misc',
+            Queue                        => $TestQueueName1,
             DynamicField_TicketFreeKey3  => 'Key3',
             DynamicField_TicketFreeText3 => 'Text3',
         },
@@ -778,14 +829,14 @@ my @Tests = (
             From => 'EMAILADDRESS:sender@example.com',
         },
         Set => {
-            'X-OTRS-Queue'        => 'Misc',
+            'X-OTRS-Queue'        => $TestQueueName1,
             'X-OTRS-TicketKey1'   => 'Key1#2',
             'X-OTRS-TicketValue1' => 'Text1#2',
             'X-OTRS-TicketKey4'   => 'Key4#2',
             'X-OTRS-TicketValue4' => 'Text4#2',
         },
         Check => {
-            Queue                        => 'Misc',
+            Queue                        => $TestQueueName1,
             DynamicField_TicketFreeKey1  => 'Key1#2',
             DynamicField_TicketFreeText1 => 'Text1#2',
         },
@@ -796,7 +847,7 @@ my @Tests = (
             From => 'EMAILADDRESS:not_this_sender@example.com',
         },
         Set => {
-            'X-OTRS-Queue'        => 'Misc',
+            'X-OTRS-Queue'        => $TestQueueName1,
             'X-OTRS-TicketKey1'   => 'Key1#3',
             'X-OTRS-TicketValue1' => 'Text1#3',
             'X-OTRS-TicketKey3'   => 'Key3#3',
@@ -937,12 +988,12 @@ Some Content in Body
             'Envelope-To' => 'envelopeto@example.com',
         },
         Set => {
-            'X-OTRS-Queue'        => 'Junk',
+            'X-OTRS-Queue'        => $TestQueueName2,
             'X-OTRS-TicketKey5'   => 'Key5#1',
             'X-OTRS-TicketValue5' => 'Text5#1',
         },
         Check => {
-            Queue                        => 'Junk',
+            Queue                        => $TestQueueName2,
             DynamicField_TicketFreeKey5  => 'Key5#1',
             DynamicField_TicketFreeText5 => 'Text5#1',
         },
@@ -960,12 +1011,12 @@ Some Content in Body
             'X-Envelope-To' => 'xenvelopeto@example.com',
         },
         Set => {
-            'X-OTRS-Queue'        => 'Misc',
+            'X-OTRS-Queue'        => $TestQueueName1,
             'X-OTRS-TicketKey6'   => 'Key6#1',
             'X-OTRS-TicketValue6' => 'Text6#1',
         },
         Check => {
-            Queue                        => 'Misc',
+            Queue                        => $TestQueueName1,
             DynamicField_TicketFreeKey6  => 'Key6#1',
             DynamicField_TicketFreeText6 => 'Text6#1',
         },
