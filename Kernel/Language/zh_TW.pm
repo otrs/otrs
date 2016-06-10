@@ -1748,7 +1748,7 @@ sub Data {
         'Your email address is' => '您的郵件地址是',
 
         # Template: AdminTemplateAttachment
-        'Manage Templates ↔ Attachments Relations' => '管理模板與附件之間的關係',
+        'Manage Templates <-> Attachments Relations' => '管理模板與附件之間的關係',
         'Change Template Relations for Attachment' => '為附件指定模板',
         'Change Attachment Relations for Template' => '為模板指定附件',
         'Toggle active for all' => '切換激活全部',
@@ -4343,8 +4343,8 @@ Thanks for your help!
             '',
         'AgentTicketZoom widget that displays ticket data in the side bar.' =>
             '',
-        'Agents ↔ Groups' => '服務人員 ↔ 組',
-        'Agents ↔ Roles' => '服務人員 ↔ 角色',
+        'Agents <-> Groups' => '服務人員 <-> 組',
+        'Agents <-> Roles' => '服務人員 <-> 角色',
         'All customer users of a CustomerID' => '',
         'All escalated tickets' => '所有升級的工單',
         'All new tickets, these tickets have not been worked on yet' => '所有新建工單，這些工單目前還沒有被處理',
@@ -4411,8 +4411,8 @@ Thanks for your help!
         'Arabic (Saudi Arabia)' => '',
         'Archive state changed: "%s"' => '',
         'ArticleTree' => '',
-        'Attachments ↔ Templates' => '附件 ↔ 模板',
-        'Auto Responses ↔ Queues' => '自動回復 ↔ 隊列',
+        'Attachments <-> Templates' => '附件 <-> 模板',
+        'Auto Responses <-> Queues' => '自動回復 <-> 隊列',
         'AutoFollowUp sent to "%s".' => 'AutoFollowUp sent to "%s".',
         'AutoReject sent to "%s".' => 'AutoReject sent to "%s".',
         'AutoReply sent to "%s".' => 'AutoReply sent to "%s".',
@@ -4574,8 +4574,8 @@ Thanks for your help!
         'Customer Information Center Search.' => '',
         'Customer Information Center.' => '',
         'Customer Ticket Print Module.' => '',
-        'Customer User ↔ Groups' => '用戶 ↔ 組',
-        'Customer User ↔ Services' => '用戶 ↔ 服務',
+        'Customer User <-> Groups' => '用戶 <-> 組',
+        'Customer User <-> Services' => '用戶 <-> 服務',
         'Customer User Administration' => '用戶管理',
         'Customer Users' => '用戶',
         'Customer called us.' => 'Customer called us.',
@@ -4592,7 +4592,7 @@ Thanks for your help!
         'CustomerID search' => '',
         'CustomerName' => '用戶名',
         'CustomerUser' => '',
-        'Customers ↔ Groups' => '用戶 ↔ 組',
+        'Customers <-> Groups' => '用戶 <-> 組',
         'Customizable stop words for fulltext index. These words will be removed from the search index.' =>
             '',
         'Czech' => '',
@@ -6055,7 +6055,7 @@ Thanks for your help!
         'Retains all services in listings even if they are children of invalid elements.' =>
             '',
         'Right' => '',
-        'Roles ↔ Groups' => '角色 ↔ 組',
+        'Roles <-> Groups' => '角色 <-> 組',
         'Run file based generic agent jobs (Note: module name need needs to be specified in -configuration-module param e.g. "Kernel::System::GenericAgent").' =>
             '',
         'Running Process Tickets' => '',
@@ -6588,7 +6588,7 @@ Thanks for your help!
         'System Maintenance' => '',
         'System Request (%s).' => 'System Request (%s).',
         'Target' => '',
-        'Templates ↔ Queues' => '模板 ↔ 隊列',
+        'Templates <-> Queues' => '模板 <-> 隊列',
         'Textarea' => '文本塊',
         'Thai' => '',
         'The agent skin\'s InternalName which should be used in the agent interface. Please check the available skins in Frontend::Agent::Skins.' =>

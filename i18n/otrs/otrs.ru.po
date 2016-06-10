@@ -8249,7 +8249,7 @@ msgid "Your email address is"
 msgstr "Ваш email адрес "
 
 #. Template: AdminTemplateAttachment
-msgid "Manage Templates ↔ Attachments Relations"
+msgid "Manage Templates <-> Attachments Relations"
 msgstr "Управление связью Шаблоны - Вложения"
 
 #. Template: AdminTemplateAttachment
@@ -13993,12 +13993,12 @@ msgid "AgentUserSearch."
 msgstr "AgentUserSearch."
 
 #. SysConfig
-msgid "Agents ↔ Groups"
-msgstr "Агенты ↔ Группы"
+msgid "Agents <-> Groups"
+msgstr "Агенты <-> Группы"
 
 #. SysConfig
-msgid "Agents ↔ Roles"
-msgstr "Агенты ↔ Роли"
+msgid "Agents <-> Roles"
+msgstr "Агенты <-> Роли"
 
 #. SysConfig
 msgid "All customer users of a CustomerID"
@@ -14177,12 +14177,12 @@ msgid "ArticleTree"
 msgstr "Дерево сообщений"
 
 #. SysConfig
-msgid "Attachments ↔ Templates"
-msgstr "Вложения ↔ Шаблоны"
+msgid "Attachments <-> Templates"
+msgstr "Вложения <-> Шаблоны"
 
 #. SysConfig
-msgid "Auto Responses ↔ Queues"
-msgstr "Автоответы ↔ Очередь"
+msgid "Auto Responses <-> Queues"
+msgstr "Автоответы <-> Очередь"
 
 #. SysConfig
 msgid "AutoFollowUp sent to \"%s\"."
@@ -14719,12 +14719,12 @@ msgid "Customer Ticket Print Module."
 msgstr ""
 
 #. SysConfig
-msgid "Customer User ↔ Groups"
-msgstr "Клиенты ↔ Группы"
+msgid "Customer User <-> Groups"
+msgstr "Клиенты <-> Группы"
 
 #. SysConfig
-msgid "Customer User ↔ Services"
-msgstr "Клиенты ↔ Сервисы"
+msgid "Customer User <-> Services"
+msgstr "Клиенты <-> Сервисы"
 
 #. SysConfig
 msgid "Customer User Administration"
@@ -14789,8 +14789,8 @@ msgid "CustomerUser"
 msgstr "CustomerUser"
 
 #. SysConfig
-msgid "Customers ↔ Groups"
-msgstr "Клиенты ↔ Группы"
+msgid "Customers <-> Groups"
+msgstr "Клиенты <-> Группы"
 
 #. SysConfig
 msgid ""
@@ -19477,8 +19477,8 @@ msgid "Right"
 msgstr "Правый"
 
 #. SysConfig
-msgid "Roles ↔ Groups"
-msgstr "Роли ↔ Группы"
+msgid "Roles <-> Groups"
+msgstr "Роли <-> Группы"
 
 #. SysConfig
 msgid ""
@@ -21198,8 +21198,8 @@ msgid "Target"
 msgstr ""
 
 #. SysConfig
-msgid "Templates ↔ Queues"
-msgstr "Шаблоны ↔ Очереди"
+msgid "Templates <-> Queues"
+msgstr "Шаблоны <-> Очереди"
 
 #. SysConfig
 msgid "Textarea"

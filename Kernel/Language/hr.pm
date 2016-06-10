@@ -1329,7 +1329,7 @@ sub Data {
         'Calendar' => 'Kalendar',
 
         # Template: AdminQueueAutoResponse
-        'Manage Queue-Auto Response Relations' => 'Upravljanje vezama rep ↔ automatski odgovor',
+        'Manage Queue-Auto Response Relations' => 'Upravljanje vezama rep <-> automatski odgovor',
         'This filter allow you to show queues without auto responses' => '',
         'Queues without auto responses' => '',
         'This filter allow you to show all queues' => '',
@@ -1445,7 +1445,7 @@ sub Data {
         'Edit Role' => 'Uredi ulogu',
 
         # Template: AdminRoleGroup
-        'Manage Role-Group Relations' => 'Upravljanje vezama uloga ↔ grupa',
+        'Manage Role-Group Relations' => 'Upravljanje vezama uloga <-> grupa',
         'Roles' => 'Uloge',
         'Select the role:group permissions.' => 'Izaberi dozvole za ulogu:grupu',
         'If nothing is selected, then there are no permissions in this group (tickets will not be available for the role).' =>
@@ -1467,11 +1467,11 @@ sub Data {
             'Pravo da se mijenja prioritet kartice u ovoj grupi/redu.',
 
         # Template: AdminRoleUser
-        'Manage Agent-Role Relations' => 'Upravljanje vezama Operater ↔ Uloga',
+        'Manage Agent-Role Relations' => 'Upravljanje vezama Operater <-> Uloga',
         'Add agent' => 'Dodaj zaposlenika',
         'Filter for Agents' => 'Filtar operatera',
         'Agents' => 'Operateri',
-        'Manage Role-Agent Relations' => 'Upravljanje vezama Uloga ↔ Operater',
+        'Manage Role-Agent Relations' => 'Upravljanje vezama Uloga <-> Operater',
         'Change Role Relations for Agent' => 'Promijeni veze sa Ulogama za Operatera',
         'Change Agent Relations for Role' => 'Promijeni veze sa Operaterima za Ulogu',
 
@@ -1750,7 +1750,7 @@ sub Data {
         'Your email address is' => 'Vaša adresa E-pošte je',
 
         # Template: AdminTemplateAttachment
-        'Manage Templates ↔ Attachments Relations' => '',
+        'Manage Templates <-> Attachments Relations' => '',
         'Change Template Relations for Attachment' => '',
         'Change Attachment Relations for Template' => '',
         'Toggle active for all' => 'Promijeni stanje aktivnosti za sve',
@@ -1785,7 +1785,7 @@ sub Data {
         'End' => 'Kraj',
 
         # Template: AdminUserGroup
-        'Manage Agent-Group Relations' => 'Upravljanje vezama Operater ↔ Grupa',
+        'Manage Agent-Group Relations' => 'Upravljanje vezama Operater <-> Grupa',
         'Change Group Relations for Agent' => 'Promijeni veze s Grupama za Operatera',
         'Change Agent Relations for Group' => 'Promijeni veze s operaterima za grupu',
 
@@ -4345,8 +4345,8 @@ Thanks for your help!
             '',
         'AgentTicketZoom widget that displays ticket data in the side bar.' =>
             '',
-        'Agents ↔ Groups' => 'Operateri ↔ Grupe',
-        'Agents ↔ Roles' => 'Operateri ↔ Uloge',
+        'Agents <-> Groups' => 'Operateri <-> Grupe',
+        'Agents <-> Roles' => 'Operateri <-> Uloge',
         'All customer users of a CustomerID' => '',
         'All escalated tickets' => 'Sve eskalirani kartice',
         'All new tickets, these tickets have not been worked on yet' => 'Sve nove kartice, na njima još nije ništa rađeno',
@@ -4413,8 +4413,8 @@ Thanks for your help!
         'Arabic (Saudi Arabia)' => '',
         'Archive state changed: "%s"' => '',
         'ArticleTree' => '',
-        'Attachments ↔ Templates' => '',
-        'Auto Responses ↔ Queues' => 'Automatski odgovori ↔ Redovi',
+        'Attachments <-> Templates' => '',
+        'Auto Responses <-> Queues' => 'Automatski odgovori <-> Redovi',
         'AutoFollowUp sent to "%s".' => 'Automatski nastavak poslan za "%s".',
         'AutoReject sent to "%s".' => 'Automatski odbačeno poslano "%s".',
         'AutoReply sent to "%s".' => 'Poslat automatski odgovor za "%s".',
@@ -4576,8 +4576,8 @@ Thanks for your help!
         'Customer Information Center Search.' => '',
         'Customer Information Center.' => '',
         'Customer Ticket Print Module.' => '',
-        'Customer User ↔ Groups' => '',
-        'Customer User ↔ Services' => '',
+        'Customer User <-> Groups' => '',
+        'Customer User <-> Services' => '',
         'Customer User Administration' => '',
         'Customer Users' => 'Korisnici',
         'Customer called us.' => 'Korisnički telefonski poziv.',
@@ -4594,7 +4594,7 @@ Thanks for your help!
         'CustomerID search' => '',
         'CustomerName' => '',
         'CustomerUser' => '',
-        'Customers ↔ Groups' => 'Korisici ↔ Grupe',
+        'Customers <-> Groups' => 'Korisici <-> Grupe',
         'Customizable stop words for fulltext index. These words will be removed from the search index.' =>
             '',
         'Czech' => '',
@@ -6057,7 +6057,7 @@ Thanks for your help!
         'Retains all services in listings even if they are children of invalid elements.' =>
             '',
         'Right' => '',
-        'Roles ↔ Groups' => 'Uloge ↔ Grupe',
+        'Roles <-> Groups' => 'Uloge <-> Grupe',
         'Run file based generic agent jobs (Note: module name need needs to be specified in -configuration-module param e.g. "Kernel::System::GenericAgent").' =>
             '',
         'Running Process Tickets' => '',
@@ -6590,7 +6590,7 @@ Thanks for your help!
         'System Maintenance' => '',
         'System Request (%s).' => 'Zahtjev sustava',
         'Target' => '',
-        'Templates ↔ Queues' => '',
+        'Templates <-> Queues' => '',
         'Textarea' => '',
         'Thai' => '',
         'The agent skin\'s InternalName which should be used in the agent interface. Please check the available skins in Frontend::Agent::Skins.' =>

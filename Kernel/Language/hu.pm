@@ -1751,7 +1751,7 @@ sub Data {
         'Your email address is' => 'Az e-mail címe',
 
         # Template: AdminTemplateAttachment
-        'Manage Templates ↔ Attachments Relations' => 'Sablonok ↔ Mellékletek kapcsolatainak kezelése',
+        'Manage Templates <-> Attachments Relations' => 'Sablonok <-> Mellékletek kapcsolatainak kezelése',
         'Change Template Relations for Attachment' => 'Sablonkapcsolatok megváltoztatása egy mellékletnél',
         'Change Attachment Relations for Template' => 'Mellékletkapcsolatok megváltoztatása egy sablonnál',
         'Toggle active for all' => 'Aktiválás ki- és bekapcsolása mindenkinek',
@@ -4357,8 +4357,8 @@ Az Ön segélyszolgálat csapata
             '',
         'AgentTicketZoom widget that displays ticket data in the side bar.' =>
             '',
-        'Agents ↔ Groups' => 'Ügyintézők ↔ Csoportok',
-        'Agents ↔ Roles' => 'Ügyintézők ↔ Szerepek',
+        'Agents <-> Groups' => 'Ügyintézők <-> Csoportok',
+        'Agents <-> Roles' => 'Ügyintézők <-> Szerepek',
         'All customer users of a CustomerID' => 'Egy ügyfél-azonosító minden ügyfél-felhasználója',
         'All escalated tickets' => 'Minden eszkalált jegy',
         'All new tickets, these tickets have not been worked on yet' => 'Minden új jegy, ezeken a jegyeken még nem dolgoztak',
@@ -4425,8 +4425,8 @@ Az Ön segélyszolgálat csapata
         'Arabic (Saudi Arabia)' => 'Arab (Szaúd-Arábia)',
         'Archive state changed: "%s"' => 'Az archívumállapot megváltozott: „%s”',
         'ArticleTree' => 'Bejegyzés fa',
-        'Attachments ↔ Templates' => 'Mellékletek ↔ Sablonok',
-        'Auto Responses ↔ Queues' => 'Automatikus válaszok ↔ Várólisták',
+        'Attachments <-> Templates' => 'Mellékletek <-> Sablonok',
+        'Auto Responses <-> Queues' => 'Automatikus válaszok <-> Várólisták',
         'AutoFollowUp sent to "%s".' => 'Automatikus követés elküldve ide: „%s”.',
         'AutoReject sent to "%s".' => 'Automatikus elutasítás elküldve ide: „%s”.',
         'AutoReply sent to "%s".' => 'Automatikus válasz elküldve ide: „%s”.',
@@ -4588,8 +4588,8 @@ Az Ön segélyszolgálat csapata
         'Customer Information Center Search.' => 'Ügyfélinformációs-központ keresés.',
         'Customer Information Center.' => 'Ügyfélinformációs-központ.',
         'Customer Ticket Print Module.' => 'Ügyféljegy nyomtátás modul.',
-        'Customer User ↔ Groups' => 'Ügyfél-felhasználó ↔ Csoportok',
-        'Customer User ↔ Services' => 'Ügyfél-felhasználó ↔ Szolgáltatások',
+        'Customer User <-> Groups' => 'Ügyfél-felhasználó <-> Csoportok',
+        'Customer User <-> Services' => 'Ügyfél-felhasználó <-> Szolgáltatások',
         'Customer User Administration' => 'Ügyfél-felhasználó adminisztráció',
         'Customer Users' => 'Ügyfél-felhasználók',
         'Customer called us.' => 'Ügyfél hívott minket.',
@@ -4606,7 +4606,7 @@ Az Ön segélyszolgálat csapata
         'CustomerID search' => 'Ügyfél-azonosító keresés',
         'CustomerName' => 'Ügyfélnév',
         'CustomerUser' => 'Ügyfél-felhasználó',
-        'Customers ↔ Groups' => 'Ügyfelek ↔ Csoportok',
+        'Customers <-> Groups' => 'Ügyfelek <-> Csoportok',
         'Customizable stop words for fulltext index. These words will be removed from the search index.' =>
             'Személyre szabható kiszűrendő szavak a szabad-szavas indexnél. Ezek a szavak el lesznek távolítva a keresési indexből.',
         'Czech' => 'Cseh',
@@ -6069,7 +6069,7 @@ Az Ön segélyszolgálat csapata
         'Retains all services in listings even if they are children of invalid elements.' =>
             'Megtartja a listázásokban lévő összes szolgáltatást akkor is, ha azok érvénytelen elemek gyermekei.',
         'Right' => 'Jobb',
-        'Roles ↔ Groups' => 'Szerepek ↔ Csoportok',
+        'Roles <-> Groups' => 'Szerepek <-> Csoportok',
         'Run file based generic agent jobs (Note: module name need needs to be specified in -configuration-module param e.g. "Kernel::System::GenericAgent").' =>
             'Fájlalapú általános ügyintéző feladatok futtatása (Megjegyzés: a modul nevét meg kell adni a -configuration-module paraméterben, például „Kernel::System::GenericAgent”).',
         'Running Process Tickets' => 'Futó folyamat jegyek',
@@ -6602,7 +6602,7 @@ Az Ön segélyszolgálat csapata
         'System Maintenance' => 'Rendszerkarbantartás',
         'System Request (%s).' => 'Rendszer kérés (%s).',
         'Target' => 'Cél',
-        'Templates ↔ Queues' => 'Sablonok ↔ Várólisták',
+        'Templates <-> Queues' => 'Sablonok <-> Várólisták',
         'Textarea' => 'Szövegdoboz',
         'Thai' => 'Thai',
         'The agent skin\'s InternalName which should be used in the agent interface. Please check the available skins in Frontend::Agent::Skins.' =>

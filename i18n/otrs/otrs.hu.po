@@ -8241,8 +8241,8 @@ msgid "Your email address is"
 msgstr "Az e-mail címe"
 
 #. Template: AdminTemplateAttachment
-msgid "Manage Templates ↔ Attachments Relations"
-msgstr "Sablonok ↔ Mellékletek kapcsolatainak kezelése"
+msgid "Manage Templates <-> Attachments Relations"
+msgstr "Sablonok <-> Mellékletek kapcsolatainak kezelése"
 
 #. Template: AdminTemplateAttachment
 msgid "Filter for Attachments"
@@ -13985,12 +13985,12 @@ msgid "AgentUserSearch."
 msgstr "Ügyintézői felhasználókeresés."
 
 #. SysConfig
-msgid "Agents ↔ Groups"
-msgstr "Ügyintézők ↔ Csoportok"
+msgid "Agents <-> Groups"
+msgstr "Ügyintézők <-> Csoportok"
 
 #. SysConfig
-msgid "Agents ↔ Roles"
-msgstr "Ügyintézők ↔ Szerepek"
+msgid "Agents <-> Roles"
+msgstr "Ügyintézők <-> Szerepek"
 
 #. SysConfig
 msgid "All customer users of a CustomerID"
@@ -14169,12 +14169,12 @@ msgid "ArticleTree"
 msgstr "Bejegyzés fa"
 
 #. SysConfig
-msgid "Attachments ↔ Templates"
-msgstr "Mellékletek ↔ Sablonok"
+msgid "Attachments <-> Templates"
+msgstr "Mellékletek <-> Sablonok"
 
 #. SysConfig
-msgid "Auto Responses ↔ Queues"
-msgstr "Automatikus válaszok ↔ Várólisták"
+msgid "Auto Responses <-> Queues"
+msgstr "Automatikus válaszok <-> Várólisták"
 
 #. SysConfig
 msgid "AutoFollowUp sent to \"%s\"."
@@ -14711,12 +14711,12 @@ msgid "Customer Ticket Print Module."
 msgstr "Ügyféljegy nyomtátás modul."
 
 #. SysConfig
-msgid "Customer User ↔ Groups"
-msgstr "Ügyfél-felhasználó ↔ Csoportok"
+msgid "Customer User <-> Groups"
+msgstr "Ügyfél-felhasználó <-> Csoportok"
 
 #. SysConfig
-msgid "Customer User ↔ Services"
-msgstr "Ügyfél-felhasználó ↔ Szolgáltatások"
+msgid "Customer User <-> Services"
+msgstr "Ügyfél-felhasználó <-> Szolgáltatások"
 
 #. SysConfig
 msgid "Customer User Administration"
@@ -14781,8 +14781,8 @@ msgid "CustomerUser"
 msgstr "Ügyfél-felhasználó"
 
 #. SysConfig
-msgid "Customers ↔ Groups"
-msgstr "Ügyfelek ↔ Csoportok"
+msgid "Customers <-> Groups"
+msgstr "Ügyfelek <-> Csoportok"
 
 #. SysConfig
 msgid ""
@@ -19469,8 +19469,8 @@ msgid "Right"
 msgstr "Jobb"
 
 #. SysConfig
-msgid "Roles ↔ Groups"
-msgstr "Szerepek ↔ Csoportok"
+msgid "Roles <-> Groups"
+msgstr "Szerepek <-> Csoportok"
 
 #. SysConfig
 msgid ""
@@ -21190,8 +21190,8 @@ msgid "Target"
 msgstr "Cél"
 
 #. SysConfig
-msgid "Templates ↔ Queues"
-msgstr "Sablonok ↔ Várólisták"
+msgid "Templates <-> Queues"
+msgstr "Sablonok <-> Várólisták"
 
 #. SysConfig
 msgid "Textarea"

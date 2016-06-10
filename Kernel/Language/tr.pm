@@ -1746,7 +1746,7 @@ sub Data {
         'Your email address is' => 'E-posta adresiniz',
 
         # Template: AdminTemplateAttachment
-        'Manage Templates ↔ Attachments Relations' => '',
+        'Manage Templates <-> Attachments Relations' => '',
         'Change Template Relations for Attachment' => '',
         'Change Attachment Relations for Template' => '',
         'Toggle active for all' => '',
@@ -4341,8 +4341,8 @@ Thanks for your help!
             '',
         'AgentTicketZoom widget that displays ticket data in the side bar.' =>
             '',
-        'Agents ↔ Groups' => 'Aracılar ↔ Gruplar',
-        'Agents ↔ Roles' => 'Aracılar ↔ Roller',
+        'Agents <-> Groups' => 'Aracılar <-> Gruplar',
+        'Agents <-> Roles' => 'Aracılar <-> Roller',
         'All customer users of a CustomerID' => '',
         'All escalated tickets' => 'Tüm yükseltilmiş biletler',
         'All new tickets, these tickets have not been worked on yet' => '',
@@ -4409,8 +4409,8 @@ Thanks for your help!
         'Arabic (Saudi Arabia)' => '',
         'Archive state changed: "%s"' => '',
         'ArticleTree' => '',
-        'Attachments ↔ Templates' => '',
-        'Auto Responses ↔ Queues' => 'Otomatik Cevaplar ↔ Kuyruklar',
+        'Attachments <-> Templates' => '',
+        'Auto Responses <-> Queues' => 'Otomatik Cevaplar <-> Kuyruklar',
         'AutoFollowUp sent to "%s".' => '"%s" için Otomatik Takip gönderildi.',
         'AutoReject sent to "%s".' => '"%s" için Otomatik Red gönderildi.',
         'AutoReply sent to "%s".' => '"%s" için Otomatik Cevap gönderildi.',
@@ -4572,8 +4572,8 @@ Thanks for your help!
         'Customer Information Center Search.' => '',
         'Customer Information Center.' => '',
         'Customer Ticket Print Module.' => '',
-        'Customer User ↔ Groups' => '',
-        'Customer User ↔ Services' => '',
+        'Customer User <-> Groups' => '',
+        'Customer User <-> Services' => '',
         'Customer User Administration' => 'Müşteri Kullanıcı Yönetimi',
         'Customer Users' => 'Müşteri Kullanıcılar',
         'Customer called us.' => 'Müşteri telefonla arandı.',
@@ -4590,7 +4590,7 @@ Thanks for your help!
         'CustomerID search' => '',
         'CustomerName' => 'MüşteriAdı',
         'CustomerUser' => '',
-        'Customers ↔ Groups' => 'Müşteriler ↔ Gruplar',
+        'Customers <-> Groups' => 'Müşteriler <-> Gruplar',
         'Customizable stop words for fulltext index. These words will be removed from the search index.' =>
             '',
         'Czech' => '',
@@ -6053,7 +6053,7 @@ Thanks for your help!
         'Retains all services in listings even if they are children of invalid elements.' =>
             '',
         'Right' => '',
-        'Roles ↔ Groups' => 'Roller ↔ Gruplar',
+        'Roles <-> Groups' => 'Roller <-> Gruplar',
         'Run file based generic agent jobs (Note: module name need needs to be specified in -configuration-module param e.g. "Kernel::System::GenericAgent").' =>
             '',
         'Running Process Tickets' => '',
@@ -6586,7 +6586,7 @@ Thanks for your help!
         'System Maintenance' => '',
         'System Request (%s).' => '',
         'Target' => '',
-        'Templates ↔ Queues' => '',
+        'Templates <-> Queues' => '',
         'Textarea' => '',
         'Thai' => '',
         'The agent skin\'s InternalName which should be used in the agent interface. Please check the available skins in Frontend::Agent::Skins.' =>

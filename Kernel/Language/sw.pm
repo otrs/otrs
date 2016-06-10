@@ -1749,7 +1749,7 @@ sub Data {
         'Your email address is' => 'Anuani yako ya barua pepe ni',
 
         # Template: AdminTemplateAttachment
-        'Manage Templates ↔ Attachments Relations' => 'Simamia Vielezo ↔ mahusiano ya viambatanishi',
+        'Manage Templates <-> Attachments Relations' => 'Simamia Vielezo <-> mahusiano ya viambatanishi',
         'Change Template Relations for Attachment' => 'Badili mahusiano ya kielezo kwa kielezo',
         'Change Attachment Relations for Template' => 'Badili mahusiano ya kiambatanisho kwa kielezo',
         'Toggle active for all' => 'Geuza kuwa amilifi kwa wote',
@@ -4345,8 +4345,8 @@ Thanks for your help!
             '',
         'AgentTicketZoom widget that displays ticket data in the side bar.' =>
             '',
-        'Agents ↔ Groups' => 'Mawakala ↔ Makundi',
-        'Agents ↔ Roles' => 'Mawakala ↔ Majukumu',
+        'Agents <-> Groups' => 'Mawakala <-> Makundi',
+        'Agents <-> Roles' => 'Mawakala <-> Majukumu',
         'All customer users of a CustomerID' => 'Watumiaji wote wa mteja wa kitambulisho cha mteja',
         'All escalated tickets' => 'Tiketi zote zilizopanda',
         'All new tickets, these tickets have not been worked on yet' => 'Tiketi zote mpya, hizi tiketi hazijafanyiwa kazi bado',
@@ -4413,8 +4413,8 @@ Thanks for your help!
         'Arabic (Saudi Arabia)' => '',
         'Archive state changed: "%s"' => 'Hali ya nyaraka imebadilishwa: "%s"',
         'ArticleTree' => 'Mti wa makala',
-        'Attachments ↔ Templates' => 'Viambatisho ↔ Vielezo',
-        'Auto Responses ↔ Queues' => 'Majibu otomatiki↔ Foleni',
+        'Attachments <-> Templates' => 'Viambatisho <-> Vielezo',
+        'Auto Responses <-> Queues' => 'Majibu otomatiki<-> Foleni',
         'AutoFollowUp sent to "%s".' => 'Ufuatiliaji otomatiki umetumwa kwenda: "%s".',
         'AutoReject sent to "%s".' => 'Kukataa otomatiki kumetumwa kwenda "%s".',
         'AutoReply sent to "%s".' => 'Majibu otomatiki yametumwa kwenda "%s".',
@@ -4576,8 +4576,8 @@ Thanks for your help!
         'Customer Information Center Search.' => '',
         'Customer Information Center.' => '',
         'Customer Ticket Print Module.' => '',
-        'Customer User ↔ Groups' => 'Mteja mtumiaji ↔ Vikundi',
-        'Customer User ↔ Services' => 'Mteja mtumiaji ↔ Huduma',
+        'Customer User <-> Groups' => 'Mteja mtumiaji <-> Vikundi',
+        'Customer User <-> Services' => 'Mteja mtumiaji <-> Huduma',
         'Customer User Administration' => 'Usimamizi wa mteja mtumiaji',
         'Customer Users' => 'Wateja watumiaji',
         'Customer called us.' => 'Mteja ametupigia',
@@ -4594,7 +4594,7 @@ Thanks for your help!
         'CustomerID search' => '',
         'CustomerName' => 'Jina la mteja',
         'CustomerUser' => 'MtejaMtumiaji',
-        'Customers ↔ Groups' => 'Makundi ya ↔  Wateja',
+        'Customers <-> Groups' => 'Makundi ya <->  Wateja',
         'Customizable stop words for fulltext index. These words will be removed from the search index.' =>
             '',
         'Czech' => '',
@@ -6060,7 +6060,7 @@ Mfano:
         'Retains all services in listings even if they are children of invalid elements.' =>
             'Inaacha huduma zote katika orodha hata kama ni vipengele vidogo vya vipengele batili. ',
         'Right' => 'Haki',
-        'Roles ↔ Groups' => 'Majukumu ↔ Makundi',
+        'Roles <-> Groups' => 'Majukumu <-> Makundi',
         'Run file based generic agent jobs (Note: module name need needs to be specified in -configuration-module param e.g. "Kernel::System::GenericAgent").' =>
             '',
         'Running Process Tickets' => 'Endeshaji wa tiketi za mchakato.',
@@ -6594,7 +6594,7 @@ Mfano:
         'System Maintenance' => 'Matengenezo ya mfumo',
         'System Request (%s).' => 'Maombi ya mfumo (%s).',
         'Target' => '',
-        'Templates ↔ Queues' => 'Vielezo ↔ Foleni',
+        'Templates <-> Queues' => 'Vielezo <-> Foleni',
         'Textarea' => 'Sehemu ya nakala',
         'Thai' => '',
         'The agent skin\'s InternalName which should be used in the agent interface. Please check the available skins in Frontend::Agent::Skins.' =>

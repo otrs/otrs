@@ -8233,8 +8233,8 @@ msgid "Your email address is"
 msgstr "O seu enderezo de correo electrónico é"
 
 #. Template: AdminTemplateAttachment
-msgid "Manage Templates ↔ Attachments Relations"
-msgstr "Xestionar as relacións Modelos ↔ Anexos"
+msgid "Manage Templates <-> Attachments Relations"
+msgstr "Xestionar as relacións Modelos <-> Anexos"
 
 #. Template: AdminTemplateAttachment
 msgid "Filter for Attachments"
@@ -13977,12 +13977,12 @@ msgid "AgentUserSearch."
 msgstr ""
 
 #. SysConfig
-msgid "Agents ↔ Groups"
-msgstr "Axentes ↔ Grupos"
+msgid "Agents <-> Groups"
+msgstr "Axentes <-> Grupos"
 
 #. SysConfig
-msgid "Agents ↔ Roles"
-msgstr "Axentes ↔ Papeis"
+msgid "Agents <-> Roles"
+msgstr "Axentes <-> Papeis"
 
 #. SysConfig
 msgid "All customer users of a CustomerID"
@@ -14161,12 +14161,12 @@ msgid "ArticleTree"
 msgstr "ÁrboreArtigos"
 
 #. SysConfig
-msgid "Attachments ↔ Templates"
-msgstr "Anexos ↔ Modelos"
+msgid "Attachments <-> Templates"
+msgstr "Anexos <-> Modelos"
 
 #. SysConfig
-msgid "Auto Responses ↔ Queues"
-msgstr "Respostas automáticas ↔ Filas"
+msgid "Auto Responses <-> Queues"
+msgstr "Respostas automáticas <-> Filas"
 
 #. SysConfig
 msgid "AutoFollowUp sent to \"%s\"."
@@ -14703,12 +14703,12 @@ msgid "Customer Ticket Print Module."
 msgstr ""
 
 #. SysConfig
-msgid "Customer User ↔ Groups"
-msgstr "Usuario cliente ↔ Grupos"
+msgid "Customer User <-> Groups"
+msgstr "Usuario cliente <-> Grupos"
 
 #. SysConfig
-msgid "Customer User ↔ Services"
-msgstr "Usuario cliente ↔ Servizos"
+msgid "Customer User <-> Services"
+msgstr "Usuario cliente <-> Servizos"
 
 #. SysConfig
 msgid "Customer User Administration"
@@ -14773,8 +14773,8 @@ msgid "CustomerUser"
 msgstr ""
 
 #. SysConfig
-msgid "Customers ↔ Groups"
-msgstr "Clientes ↔ Grupos"
+msgid "Customers <-> Groups"
+msgstr "Clientes <-> Grupos"
 
 #. SysConfig
 msgid ""
@@ -19461,8 +19461,8 @@ msgid "Right"
 msgstr "Dereita"
 
 #. SysConfig
-msgid "Roles ↔ Groups"
-msgstr "Papeis ↔ Grupos"
+msgid "Roles <-> Groups"
+msgstr "Papeis <-> Grupos"
 
 #. SysConfig
 msgid ""
@@ -21182,8 +21182,8 @@ msgid "Target"
 msgstr ""
 
 #. SysConfig
-msgid "Templates ↔ Queues"
-msgstr "Modelos ↔ Filas"
+msgid "Templates <-> Queues"
+msgstr "Modelos <-> Filas"
 
 #. SysConfig
 msgid "Textarea"

@@ -6974,7 +6974,7 @@ msgstr "Podpis za odgovore na e-pošto."
 
 #. Template: AdminQueueAutoResponse
 msgid "Manage Queue-Auto Response Relations"
-msgstr "Upravljanje z vrstami ↔ avtomatski odgovor"
+msgstr "Upravljanje z vrstami <-> avtomatski odgovor"
 
 #. Template: AdminQueueAutoResponse
 msgid "This filter allow you to show queues without auto responses"
@@ -7343,7 +7343,7 @@ msgstr "Uredi vlogo"
 
 #. Template: AdminRoleGroup
 msgid "Manage Role-Group Relations"
-msgstr "Upravljanje z vlogami ↔ skupina"
+msgstr "Upravljanje z vlogami <-> skupina"
 
 #. Template: AdminRoleGroup
 msgid "Filter for Roles"
@@ -7417,7 +7417,7 @@ msgstr "Dovoljenje, da se spremeni prioriteta zahtevka v tej skupini/vrsti."
 
 #. Template: AdminRoleUser
 msgid "Manage Agent-Role Relations"
-msgstr "Upravljanje s povezavo zaposlen ↔ vloga"
+msgstr "Upravljanje s povezavo zaposlen <-> vloga"
 
 #. Template: AdminRoleUser
 msgid "Add agent"
@@ -7433,7 +7433,7 @@ msgstr "Operaterji"
 
 #. Template: AdminRoleUser
 msgid "Manage Role-Agent Relations"
-msgstr "Upravljanje s povezavo zaposlen ↔ vloga"
+msgstr "Upravljanje s povezavo zaposlen <-> vloga"
 
 #. Template: AdminRoleUser
 msgid "Change Role Relations for Agent"
@@ -8236,7 +8236,7 @@ msgid "Your email address is"
 msgstr "Vaš naslov E-pošte je"
 
 #. Template: AdminTemplateAttachment
-msgid "Manage Templates ↔ Attachments Relations"
+msgid "Manage Templates <-> Attachments Relations"
 msgstr ""
 
 #. Template: AdminTemplateAttachment
@@ -8337,7 +8337,7 @@ msgstr "Konec"
 
 #. Template: AdminUserGroup
 msgid "Manage Agent-Group Relations"
-msgstr "Upravljanje s povezavami operater ↔ skupina"
+msgstr "Upravljanje s povezavami operater <-> skupina"
 
 #. Template: AdminUserGroup
 msgid "Change Group Relations for Agent"
@@ -13980,12 +13980,12 @@ msgid "AgentUserSearch."
 msgstr ""
 
 #. SysConfig
-msgid "Agents ↔ Groups"
-msgstr "Operaterji ↔ Skupine"
+msgid "Agents <-> Groups"
+msgstr "Operaterji <-> Skupine"
 
 #. SysConfig
-msgid "Agents ↔ Roles"
-msgstr "Operaterji ↔ Vloge"
+msgid "Agents <-> Roles"
+msgstr "Operaterji <-> Vloge"
 
 #. SysConfig
 msgid "All customer users of a CustomerID"
@@ -14164,12 +14164,12 @@ msgid "ArticleTree"
 msgstr ""
 
 #. SysConfig
-msgid "Attachments ↔ Templates"
+msgid "Attachments <-> Templates"
 msgstr ""
 
 #. SysConfig
-msgid "Auto Responses ↔ Queues"
-msgstr "Avtomatski odgovor ↔ Vrste"
+msgid "Auto Responses <-> Queues"
+msgstr "Avtomatski odgovor <-> Vrste"
 
 #. SysConfig
 msgid "AutoFollowUp sent to \"%s\"."
@@ -14706,11 +14706,11 @@ msgid "Customer Ticket Print Module."
 msgstr ""
 
 #. SysConfig
-msgid "Customer User ↔ Groups"
+msgid "Customer User <-> Groups"
 msgstr ""
 
 #. SysConfig
-msgid "Customer User ↔ Services"
+msgid "Customer User <-> Services"
 msgstr ""
 
 #. SysConfig
@@ -14776,8 +14776,8 @@ msgid "CustomerUser"
 msgstr ""
 
 #. SysConfig
-msgid "Customers ↔ Groups"
-msgstr "Stranke ↔ Skupine"
+msgid "Customers <-> Groups"
+msgstr "Stranke <-> Skupine"
 
 #. SysConfig
 msgid ""
@@ -19464,8 +19464,8 @@ msgid "Right"
 msgstr ""
 
 #. SysConfig
-msgid "Roles ↔ Groups"
-msgstr "Vloge ↔ Skupine"
+msgid "Roles <-> Groups"
+msgstr "Vloge <-> Skupine"
 
 #. SysConfig
 msgid ""
@@ -21185,7 +21185,7 @@ msgid "Target"
 msgstr ""
 
 #. SysConfig
-msgid "Templates ↔ Queues"
+msgid "Templates <-> Queues"
 msgstr ""
 
 #. SysConfig

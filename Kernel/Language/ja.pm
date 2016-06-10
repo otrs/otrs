@@ -1750,7 +1750,7 @@ OTRSが443ポートを用いてcloud.otrs.comに接続できることを確認�
         'Your email address is' => 'あなたのメールアドレスは',
 
         # Template: AdminTemplateAttachment
-        'Manage Templates ↔ Attachments Relations' => 'テンプレート ↔ 添付ファイルの関連性管理',
+        'Manage Templates <-> Attachments Relations' => 'テンプレート <-> 添付ファイルの関連性管理',
         'Change Template Relations for Attachment' => '添付ファイルに対するテンプレートの関連性を変更',
         'Change Attachment Relations for Template' => 'テンプレートに対する添付ファイルの関連性を変更',
         'Toggle active for all' => '全てを有効に切り替え',
@@ -4355,8 +4355,8 @@ Thanks for your help!
             '',
         'AgentTicketZoom widget that displays ticket data in the side bar.' =>
             '',
-        'Agents ↔ Groups' => '担当者 ↔ グループ',
-        'Agents ↔ Roles' => '担当者 ↔ ロール',
+        'Agents <-> Groups' => '担当者 <-> グループ',
+        'Agents <-> Roles' => '担当者 <-> ロール',
         'All customer users of a CustomerID' => '',
         'All escalated tickets' => '全エスカレーションチケット',
         'All new tickets, these tickets have not been worked on yet' => '全新規チケット。まだ着手されていません',
@@ -4423,8 +4423,8 @@ Thanks for your help!
         'Arabic (Saudi Arabia)' => '',
         'Archive state changed: "%s"' => '',
         'ArticleTree' => '',
-        'Attachments ↔ Templates' => '添付ファイル ↔ テンプレート',
-        'Auto Responses ↔ Queues' => '自動応答 ↔ キュー',
+        'Attachments <-> Templates' => '添付ファイル <-> テンプレート',
+        'Auto Responses <-> Queues' => '自動応答 <-> キュー',
         'AutoFollowUp sent to "%s".' => 'AutoFollowUp sent to "%s".',
         'AutoReject sent to "%s".' => 'AutoReject sent to "%s".',
         'AutoReply sent to "%s".' => 'AutoReply sent to "%s".',
@@ -4586,8 +4586,8 @@ Thanks for your help!
         'Customer Information Center Search.' => '',
         'Customer Information Center.' => '',
         'Customer Ticket Print Module.' => '',
-        'Customer User ↔ Groups' => '顧客ユーザー ↔ グループ',
-        'Customer User ↔ Services' => '顧客ユーザー ↔ サービス',
+        'Customer User <-> Groups' => '顧客ユーザー <-> グループ',
+        'Customer User <-> Services' => '顧客ユーザー <-> サービス',
         'Customer User Administration' => '顧客ユーザー管理',
         'Customer Users' => '顧客ユーザー',
         'Customer called us.' => 'Customer called us.',
@@ -4604,7 +4604,7 @@ Thanks for your help!
         'CustomerID search' => '',
         'CustomerName' => '顧客名',
         'CustomerUser' => 'CustomerUser（顧客ユーザ）',
-        'Customers ↔ Groups' => '顧客 ↔ グループ',
+        'Customers <-> Groups' => '顧客 <-> グループ',
         'Customizable stop words for fulltext index. These words will be removed from the search index.' =>
             '',
         'Czech' => '',
@@ -6071,7 +6071,7 @@ Thanks for your help!
         'Retains all services in listings even if they are children of invalid elements.' =>
             '',
         'Right' => '権限',
-        'Roles ↔ Groups' => 'ロール ↔ グループ',
+        'Roles <-> Groups' => 'ロール <-> グループ',
         'Run file based generic agent jobs (Note: module name need needs to be specified in -configuration-module param e.g. "Kernel::System::GenericAgent").' =>
             '',
         'Running Process Tickets' => '',
@@ -6604,7 +6604,7 @@ Thanks for your help!
         'System Maintenance' => 'システムメンテナンス',
         'System Request (%s).' => 'System Request (%s).',
         'Target' => '',
-        'Templates ↔ Queues' => 'テンプレート ↔ キュー',
+        'Templates <-> Queues' => 'テンプレート <-> キュー',
         'Textarea' => 'Textarea',
         'Thai' => '',
         'The agent skin\'s InternalName which should be used in the agent interface. Please check the available skins in Frontend::Agent::Skins.' =>

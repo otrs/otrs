@@ -1754,7 +1754,7 @@ sub Data {
         'Your email address is' => 'Din e-postadresse er',
 
         # Template: AdminTemplateAttachment
-        'Manage Templates ↔ Attachments Relations' => 'Koplinger mellom Mal og Vedlegg',
+        'Manage Templates <-> Attachments Relations' => 'Koplinger mellom Mal og Vedlegg',
         'Change Template Relations for Attachment' => '',
         'Change Attachment Relations for Template' => '',
         'Toggle active for all' => 'Aktiver/Deaktiver alle',
@@ -4350,8 +4350,8 @@ Thanks for your help!
             '',
         'AgentTicketZoom widget that displays ticket data in the side bar.' =>
             '',
-        'Agents ↔ Groups' => 'Saksbehandlere ↔ Grupper',
-        'Agents ↔ Roles' => 'Saksbehandlere ↔ Roller',
+        'Agents <-> Groups' => 'Saksbehandlere <-> Grupper',
+        'Agents <-> Roles' => 'Saksbehandlere <-> Roller',
         'All customer users of a CustomerID' => 'Alle kunder-brukere av et KundeID',
         'All escalated tickets' => 'Alle eskalerte saker',
         'All new tickets, these tickets have not been worked on yet' => 'Alle nye saker som ikke har blitt sett på enda.',
@@ -4418,8 +4418,8 @@ Thanks for your help!
         'Arabic (Saudi Arabia)' => 'Arabisk (Saudi Arabia)',
         'Archive state changed: "%s"' => 'Ny arkiv statuser: «%s»',
         'ArticleTree' => '',
-        'Attachments ↔ Templates' => 'Vedlegg  ↔ Maler',
-        'Auto Responses ↔ Queues' => 'Autosvar ↔ Køer',
+        'Attachments <-> Templates' => 'Vedlegg  <-> Maler',
+        'Auto Responses <-> Queues' => 'Autosvar <-> Køer',
         'AutoFollowUp sent to "%s".' => 'AutoOppfølging sendt til «%s».',
         'AutoReject sent to "%s".' => 'AutoReject sent to «%s».',
         'AutoReply sent to "%s".' => 'AutoSvar sendt til «%s».',
@@ -4581,8 +4581,8 @@ Thanks for your help!
         'Customer Information Center Search.' => '',
         'Customer Information Center.' => '',
         'Customer Ticket Print Module.' => '',
-        'Customer User ↔ Groups' => '',
-        'Customer User ↔ Services' => '',
+        'Customer User <-> Groups' => '',
+        'Customer User <-> Services' => '',
         'Customer User Administration' => '',
         'Customer Users' => 'Kunder',
         'Customer called us.' => 'Kunden ringte oss.',
@@ -4599,7 +4599,7 @@ Thanks for your help!
         'CustomerID search' => '',
         'CustomerName' => 'Kundenavn',
         'CustomerUser' => '',
-        'Customers ↔ Groups' => 'Kunder ↔ Grupper',
+        'Customers <-> Groups' => 'Kunder <-> Grupper',
         'Customizable stop words for fulltext index. These words will be removed from the search index.' =>
             '',
         'Czech' => 'Tjekkisk',
@@ -6062,7 +6062,7 @@ Thanks for your help!
         'Retains all services in listings even if they are children of invalid elements.' =>
             '',
         'Right' => 'Høyre',
-        'Roles ↔ Groups' => 'Roller ↔ Grupper',
+        'Roles <-> Groups' => 'Roller <-> Grupper',
         'Run file based generic agent jobs (Note: module name need needs to be specified in -configuration-module param e.g. "Kernel::System::GenericAgent").' =>
             '',
         'Running Process Tickets' => '',
@@ -6595,7 +6595,7 @@ Thanks for your help!
         'System Maintenance' => 'Vedlikehold av systemet',
         'System Request (%s).' => 'Systemspørring (%s).',
         'Target' => '',
-        'Templates ↔ Queues' => 'Maler ↔ Køer',
+        'Templates <-> Queues' => 'Maler <-> Køer',
         'Textarea' => 'Tekstareale',
         'Thai' => 'Tailandsk',
         'The agent skin\'s InternalName which should be used in the agent interface. Please check the available skins in Frontend::Agent::Skins.' =>

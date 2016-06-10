@@ -8239,8 +8239,8 @@ msgid "Your email address is"
 msgstr "あなたのメールアドレスは"
 
 #. Template: AdminTemplateAttachment
-msgid "Manage Templates ↔ Attachments Relations"
-msgstr "テンプレート ↔ 添付ファイルの関連性管理"
+msgid "Manage Templates <-> Attachments Relations"
+msgstr "テンプレート <-> 添付ファイルの関連性管理"
 
 #. Template: AdminTemplateAttachment
 msgid "Filter for Attachments"
@@ -13983,12 +13983,12 @@ msgid "AgentUserSearch."
 msgstr ""
 
 #. SysConfig
-msgid "Agents ↔ Groups"
-msgstr "担当者 ↔ グループ"
+msgid "Agents <-> Groups"
+msgstr "担当者 <-> グループ"
 
 #. SysConfig
-msgid "Agents ↔ Roles"
-msgstr "担当者 ↔ ロール"
+msgid "Agents <-> Roles"
+msgstr "担当者 <-> ロール"
 
 #. SysConfig
 msgid "All customer users of a CustomerID"
@@ -14167,12 +14167,12 @@ msgid "ArticleTree"
 msgstr ""
 
 #. SysConfig
-msgid "Attachments ↔ Templates"
-msgstr "添付ファイル ↔ テンプレート"
+msgid "Attachments <-> Templates"
+msgstr "添付ファイル <-> テンプレート"
 
 #. SysConfig
-msgid "Auto Responses ↔ Queues"
-msgstr "自動応答 ↔ キュー"
+msgid "Auto Responses <-> Queues"
+msgstr "自動応答 <-> キュー"
 
 #. SysConfig
 msgid "AutoFollowUp sent to \"%s\"."
@@ -14709,12 +14709,12 @@ msgid "Customer Ticket Print Module."
 msgstr ""
 
 #. SysConfig
-msgid "Customer User ↔ Groups"
-msgstr "顧客ユーザー ↔ グループ"
+msgid "Customer User <-> Groups"
+msgstr "顧客ユーザー <-> グループ"
 
 #. SysConfig
-msgid "Customer User ↔ Services"
-msgstr "顧客ユーザー ↔ サービス"
+msgid "Customer User <-> Services"
+msgstr "顧客ユーザー <-> サービス"
 
 #. SysConfig
 msgid "Customer User Administration"
@@ -14779,8 +14779,8 @@ msgid "CustomerUser"
 msgstr "CustomerUser（顧客ユーザ）"
 
 #. SysConfig
-msgid "Customers ↔ Groups"
-msgstr "顧客 ↔ グループ"
+msgid "Customers <-> Groups"
+msgstr "顧客 <-> グループ"
 
 #. SysConfig
 msgid ""
@@ -19467,8 +19467,8 @@ msgid "Right"
 msgstr "権限"
 
 #. SysConfig
-msgid "Roles ↔ Groups"
-msgstr "ロール ↔ グループ"
+msgid "Roles <-> Groups"
+msgstr "ロール <-> グループ"
 
 #. SysConfig
 msgid ""
@@ -21188,8 +21188,8 @@ msgid "Target"
 msgstr ""
 
 #. SysConfig
-msgid "Templates ↔ Queues"
-msgstr "テンプレート ↔ キュー"
+msgid "Templates <-> Queues"
+msgstr "テンプレート <-> キュー"
 
 #. SysConfig
 msgid "Textarea"

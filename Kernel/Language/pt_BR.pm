@@ -1751,7 +1751,7 @@ sub Data {
         'Your email address is' => 'Seu endereço de e-mail é',
 
         # Template: AdminTemplateAttachment
-        'Manage Templates ↔ Attachments Relations' => 'Gerenciar Relações Modelos ↔ Anexos',
+        'Manage Templates <-> Attachments Relations' => 'Gerenciar Relações Modelos <-> Anexos',
         'Change Template Relations for Attachment' => 'Alterar Relações Modelo para Anexo',
         'Change Attachment Relations for Template' => 'Alterar Relações Anexo para Modelo',
         'Toggle active for all' => 'Chavear ativado para todos',
@@ -4346,8 +4346,8 @@ Thanks for your help!
             '',
         'AgentTicketZoom widget that displays ticket data in the side bar.' =>
             '',
-        'Agents ↔ Groups' => 'Atendentes ↔ Grupos',
-        'Agents ↔ Roles' => 'Atendentes ↔ Papéis',
+        'Agents <-> Groups' => 'Atendentes <-> Grupos',
+        'Agents <-> Roles' => 'Atendentes <-> Papéis',
         'All customer users of a CustomerID' => 'Todos os usuários clientes de uma CustomerID.',
         'All escalated tickets' => 'Todos os chamados escalados',
         'All new tickets, these tickets have not been worked on yet' => 'Todos os chamados novos, estes chamados não foram trabalhados ainda',
@@ -4414,8 +4414,8 @@ Thanks for your help!
         'Arabic (Saudi Arabia)' => '',
         'Archive state changed: "%s"' => 'Estado de arquivamento alterado: "%s".',
         'ArticleTree' => 'Árvore de Artigo',
-        'Attachments ↔ Templates' => 'Anexos ↔ Modelos',
-        'Auto Responses ↔ Queues' => 'Autorrespostas ↔ Filas',
+        'Attachments <-> Templates' => 'Anexos <-> Modelos',
+        'Auto Responses <-> Queues' => 'Autorrespostas <-> Filas',
         'AutoFollowUp sent to "%s".' => 'Revisão automática enviada para "%s".',
         'AutoReject sent to "%s".' => 'Rejeição automática enviada para "%s".',
         'AutoReply sent to "%s".' => 'Autorresposta enviada para "%s".',
@@ -4577,8 +4577,8 @@ Thanks for your help!
         'Customer Information Center Search.' => '',
         'Customer Information Center.' => '',
         'Customer Ticket Print Module.' => '',
-        'Customer User ↔ Groups' => 'Usuário Cliente ↔ Grupos',
-        'Customer User ↔ Services' => 'Usuário Cliente ↔ Serviços',
+        'Customer User <-> Groups' => 'Usuário Cliente <-> Grupos',
+        'Customer User <-> Services' => 'Usuário Cliente <-> Serviços',
         'Customer User Administration' => 'Administração de Usuário Cliente',
         'Customer Users' => 'Usuários Clientes',
         'Customer called us.' => 'Cliente telefonou para atendente.',
@@ -4595,7 +4595,7 @@ Thanks for your help!
         'CustomerID search' => '',
         'CustomerName' => 'Nome do Cliente',
         'CustomerUser' => '',
-        'Customers ↔ Groups' => 'Clientes ↔ Grupos',
+        'Customers <-> Groups' => 'Clientes <-> Grupos',
         'Customizable stop words for fulltext index. These words will be removed from the search index.' =>
             '',
         'Czech' => '',
@@ -6058,7 +6058,7 @@ Thanks for your help!
         'Retains all services in listings even if they are children of invalid elements.' =>
             '',
         'Right' => 'Direita',
-        'Roles ↔ Groups' => 'Papéis ↔ Grupos',
+        'Roles <-> Groups' => 'Papéis <-> Grupos',
         'Run file based generic agent jobs (Note: module name need needs to be specified in -configuration-module param e.g. "Kernel::System::GenericAgent").' =>
             '',
         'Running Process Tickets' => 'Chamados de Processo Executando',
@@ -6591,7 +6591,7 @@ Thanks for your help!
         'System Maintenance' => 'Manutenção do Sistema',
         'System Request (%s).' => 'Requisição de sistema (%s).',
         'Target' => '',
-        'Templates ↔ Queues' => 'Modelos ↔ Filas',
+        'Templates <-> Queues' => 'Modelos <-> Filas',
         'Textarea' => 'Área de texto',
         'Thai' => '',
         'The agent skin\'s InternalName which should be used in the agent interface. Please check the available skins in Frontend::Agent::Skins.' =>

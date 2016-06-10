@@ -8235,7 +8235,7 @@ msgid "Your email address is"
 msgstr ""
 
 #. Template: AdminTemplateAttachment
-msgid "Manage Templates ↔ Attachments Relations"
+msgid "Manage Templates <-> Attachments Relations"
 msgstr ""
 
 #. Template: AdminTemplateAttachment
@@ -13979,12 +13979,12 @@ msgid "AgentUserSearch."
 msgstr ""
 
 #. SysConfig
-msgid "Agents ↔ Groups"
-msgstr "Řešitelé ↔ Skupiny"
+msgid "Agents <-> Groups"
+msgstr "Řešitelé <-> Skupiny"
 
 #. SysConfig
-msgid "Agents ↔ Roles"
-msgstr "Řešitelé ↔ Role"
+msgid "Agents <-> Roles"
+msgstr "Řešitelé <-> Role"
 
 #. SysConfig
 msgid "All customer users of a CustomerID"
@@ -14163,12 +14163,12 @@ msgid "ArticleTree"
 msgstr ""
 
 #. SysConfig
-msgid "Attachments ↔ Templates"
-msgstr "Přílohy ↔ Šablony"
+msgid "Attachments <-> Templates"
+msgstr "Přílohy <-> Šablony"
 
 #. SysConfig
-msgid "Auto Responses ↔ Queues"
-msgstr "Automatické odpovědi ↔ Fronty"
+msgid "Auto Responses <-> Queues"
+msgstr "Automatické odpovědi <-> Fronty"
 
 #. SysConfig
 msgid "AutoFollowUp sent to \"%s\"."
@@ -14705,12 +14705,12 @@ msgid "Customer Ticket Print Module."
 msgstr ""
 
 #. SysConfig
-msgid "Customer User ↔ Groups"
-msgstr "Zákaznický uživatel ↔ Skupiny"
+msgid "Customer User <-> Groups"
+msgstr "Zákaznický uživatel <-> Skupiny"
 
 #. SysConfig
-msgid "Customer User ↔ Services"
-msgstr "Zákaznický uživatel ↔ Služby"
+msgid "Customer User <-> Services"
+msgstr "Zákaznický uživatel <-> Služby"
 
 #. SysConfig
 msgid "Customer User Administration"
@@ -14775,8 +14775,8 @@ msgid "CustomerUser"
 msgstr ""
 
 #. SysConfig
-msgid "Customers ↔ Groups"
-msgstr "Zákazníci ↔ Skupiny"
+msgid "Customers <-> Groups"
+msgstr "Zákazníci <-> Skupiny"
 
 #. SysConfig
 msgid ""
@@ -19463,8 +19463,8 @@ msgid "Right"
 msgstr ""
 
 #. SysConfig
-msgid "Roles ↔ Groups"
-msgstr "Role ↔ Skupiny"
+msgid "Roles <-> Groups"
+msgstr "Role <-> Skupiny"
 
 #. SysConfig
 msgid ""
@@ -21184,8 +21184,8 @@ msgid "Target"
 msgstr ""
 
 #. SysConfig
-msgid "Templates ↔ Queues"
-msgstr "Šablony ↔ Fronty"
+msgid "Templates <-> Queues"
+msgstr "Šablony <-> Fronty"
 
 #. SysConfig
 msgid "Textarea"

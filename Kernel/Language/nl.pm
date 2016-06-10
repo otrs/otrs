@@ -1752,7 +1752,7 @@ sub Data {
         'Your email address is' => 'Uw e-mailadres is',
 
         # Template: AdminTemplateAttachment
-        'Manage Templates ↔ Attachments Relations' => 'Beheer Sjabloon ↔ Bijlage koppelingen',
+        'Manage Templates <-> Attachments Relations' => 'Beheer Sjabloon <-> Bijlage koppelingen',
         'Change Template Relations for Attachment' => 'Verander gekoppelde sjablonen voor bijlage',
         'Change Attachment Relations for Template' => 'Verander gekoppelde bijlagen voor sjabloon',
         'Toggle active for all' => 'Actief aan/uit voor alles',
@@ -4358,8 +4358,8 @@ Het Helpdesk Team
             '',
         'AgentTicketZoom widget that displays ticket data in the side bar.' =>
             '',
-        'Agents ↔ Groups' => 'Behandelaars ↔ Groepen',
-        'Agents ↔ Roles' => 'Behandelaars ↔ Rollen',
+        'Agents <-> Groups' => 'Behandelaars <-> Groepen',
+        'Agents <-> Roles' => 'Behandelaars <-> Rollen',
         'All customer users of a CustomerID' => 'Alle klanten accounts van een CustomerID',
         'All escalated tickets' => 'Alle geëscaleerde tickets',
         'All new tickets, these tickets have not been worked on yet' => 'Alle nieuwe tickets. Aan deze tickets is nog niet gewerkt',
@@ -4426,8 +4426,8 @@ Het Helpdesk Team
         'Arabic (Saudi Arabia)' => 'Arabisch (Saudi Arabië)',
         'Archive state changed: "%s"' => 'Archiefstatus veranderd: "%s"',
         'ArticleTree' => 'Interactie-boom',
-        'Attachments ↔ Templates' => 'Bijlagen ↔ Sjablonen',
-        'Auto Responses ↔ Queues' => 'Wachtrijen ↔ Automatische antwoorden',
+        'Attachments <-> Templates' => 'Bijlagen <-> Sjablonen',
+        'Auto Responses <-> Queues' => 'Wachtrijen <-> Automatische antwoorden',
         'AutoFollowUp sent to "%s".' => 'Automatische melding verstuurd aan "%s".',
         'AutoReject sent to "%s".' => 'Automatische afwijzing verstuurd aan "%s".',
         'AutoReply sent to "%s".' => 'Automatische beantwoording verstuurd aan "%s".',
@@ -4589,8 +4589,8 @@ Het Helpdesk Team
         'Customer Information Center Search.' => '',
         'Customer Information Center.' => '',
         'Customer Ticket Print Module.' => '',
-        'Customer User ↔ Groups' => 'Klanten ↔ Groepen',
-        'Customer User ↔ Services' => 'Klanten ↔ Services',
+        'Customer User <-> Groups' => 'Klanten <-> Groepen',
+        'Customer User <-> Services' => 'Klanten <-> Services',
         'Customer User Administration' => 'Beheren van klanten',
         'Customer Users' => 'Klanten',
         'Customer called us.' => 'Klant heeft gebeld.',
@@ -4607,7 +4607,7 @@ Het Helpdesk Team
         'CustomerID search' => '',
         'CustomerName' => '',
         'CustomerUser' => '',
-        'Customers ↔ Groups' => 'Klanten ↔ Groepen',
+        'Customers <-> Groups' => 'Klanten <-> Groepen',
         'Customizable stop words for fulltext index. These words will be removed from the search index.' =>
             '',
         'Czech' => '',
@@ -6070,7 +6070,7 @@ Het Helpdesk Team
         'Retains all services in listings even if they are children of invalid elements.' =>
             '',
         'Right' => '',
-        'Roles ↔ Groups' => 'Rollen ↔ Groepen',
+        'Roles <-> Groups' => 'Rollen <-> Groepen',
         'Run file based generic agent jobs (Note: module name need needs to be specified in -configuration-module param e.g. "Kernel::System::GenericAgent").' =>
             '',
         'Running Process Tickets' => '',
@@ -6603,7 +6603,7 @@ Het Helpdesk Team
         'System Maintenance' => 'Systeemonderhoud',
         'System Request (%s).' => 'SystemRequest: "%s"',
         'Target' => '',
-        'Templates ↔ Queues' => 'Sjablonen ↔ Wachtrijen',
+        'Templates <-> Queues' => 'Sjablonen <-> Wachtrijen',
         'Textarea' => 'Tekstvak',
         'Thai' => '',
         'The agent skin\'s InternalName which should be used in the agent interface. Please check the available skins in Frontend::Agent::Skins.' =>

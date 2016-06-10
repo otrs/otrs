@@ -1746,7 +1746,7 @@ sub Data {
         'Your email address is' => 'O seu enderezo de correo electrónico é',
 
         # Template: AdminTemplateAttachment
-        'Manage Templates ↔ Attachments Relations' => 'Xestionar as relacións Modelos ↔ Anexos',
+        'Manage Templates <-> Attachments Relations' => 'Xestionar as relacións Modelos <-> Anexos',
         'Change Template Relations for Attachment' => 'Cambie as Relacións do Modelo para Anexos',
         'Change Attachment Relations for Template' => 'Cambie Relacións Anexos para Modelo',
         'Toggle active for all' => 'Alternar activo para todos',
@@ -4341,8 +4341,8 @@ Thanks for your help!
             '',
         'AgentTicketZoom widget that displays ticket data in the side bar.' =>
             '',
-        'Agents ↔ Groups' => 'Axentes ↔ Grupos',
-        'Agents ↔ Roles' => 'Axentes ↔ Papeis',
+        'Agents <-> Groups' => 'Axentes <-> Grupos',
+        'Agents <-> Roles' => 'Axentes <-> Papeis',
         'All customer users of a CustomerID' => 'Todos os usuarios clientes dun identificador de cliente',
         'All escalated tickets' => 'Tódolos tickets escalados',
         'All new tickets, these tickets have not been worked on yet' => 'Tódolos novos tickets, nestes tickets aínda non se a estado traballando',
@@ -4409,8 +4409,8 @@ Thanks for your help!
         'Arabic (Saudi Arabia)' => '',
         'Archive state changed: "%s"' => 'Cambiou o estado do artigo: «%s»',
         'ArticleTree' => 'ÁrboreArtigos',
-        'Attachments ↔ Templates' => 'Anexos ↔ Modelos',
-        'Auto Responses ↔ Queues' => 'Respostas automáticas ↔ Filas',
+        'Attachments <-> Templates' => 'Anexos <-> Modelos',
+        'Auto Responses <-> Queues' => 'Respostas automáticas <-> Filas',
         'AutoFollowUp sent to "%s".' => 'AutoSeguemento enviado a "%s".',
         'AutoReject sent to "%s".' => 'AutoRexeitar enviado a "%s".',
         'AutoReply sent to "%s".' => 'AutoRespota enviada a "%s".',
@@ -4572,8 +4572,8 @@ Thanks for your help!
         'Customer Information Center Search.' => '',
         'Customer Information Center.' => '',
         'Customer Ticket Print Module.' => '',
-        'Customer User ↔ Groups' => 'Usuario cliente ↔ Grupos',
-        'Customer User ↔ Services' => 'Usuario cliente ↔ Servizos',
+        'Customer User <-> Groups' => 'Usuario cliente <-> Grupos',
+        'Customer User <-> Services' => 'Usuario cliente <-> Servizos',
         'Customer User Administration' => 'Administración de usuarios clientes',
         'Customer Users' => 'Usuarios clientes',
         'Customer called us.' => 'O cliente chamounos a nós.',
@@ -4590,7 +4590,7 @@ Thanks for your help!
         'CustomerID search' => 'Busca por identificador de cliente',
         'CustomerName' => 'NomeCliente',
         'CustomerUser' => '',
-        'Customers ↔ Groups' => 'Clientes ↔ Grupos',
+        'Customers <-> Groups' => 'Clientes <-> Grupos',
         'Customizable stop words for fulltext index. These words will be removed from the search index.' =>
             '',
         'Czech' => '',
@@ -6053,7 +6053,7 @@ Thanks for your help!
         'Retains all services in listings even if they are children of invalid elements.' =>
             'Retén tódolos servizos en listas incluso se son fillos de elementos invalidos.',
         'Right' => 'Dereita',
-        'Roles ↔ Groups' => 'Papeis ↔ Grupos',
+        'Roles <-> Groups' => 'Papeis <-> Grupos',
         'Run file based generic agent jobs (Note: module name need needs to be specified in -configuration-module param e.g. "Kernel::System::GenericAgent").' =>
             '',
         'Running Process Tickets' => 'Tickets Proceso Executándose',
@@ -6586,7 +6586,7 @@ Thanks for your help!
         'System Maintenance' => 'Mantemento do sistema',
         'System Request (%s).' => 'Petición do sistema (%s).',
         'Target' => '',
-        'Templates ↔ Queues' => 'Modelos ↔ Filas',
+        'Templates <-> Queues' => 'Modelos <-> Filas',
         'Textarea' => 'Área de texto',
         'Thai' => '',
         'The agent skin\'s InternalName which should be used in the agent interface. Please check the available skins in Frontend::Agent::Skins.' =>

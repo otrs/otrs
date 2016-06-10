@@ -8235,8 +8235,8 @@ msgid "Your email address is"
 msgstr "Ваша имејл адреса је"
 
 #. Template: AdminTemplateAttachment
-msgid "Manage Templates ↔ Attachments Relations"
-msgstr "Управљање везама Шаблони ↔ Прилози"
+msgid "Manage Templates <-> Attachments Relations"
+msgstr "Управљање везама Шаблони <-> Прилози"
 
 #. Template: AdminTemplateAttachment
 msgid "Filter for Attachments"
@@ -13979,12 +13979,12 @@ msgid "AgentUserSearch."
 msgstr ""
 
 #. SysConfig
-msgid "Agents ↔ Groups"
-msgstr "Оператери ↔ Групе"
+msgid "Agents <-> Groups"
+msgstr "Оператери <-> Групе"
 
 #. SysConfig
-msgid "Agents ↔ Roles"
-msgstr "Оператери ↔ Улоге"
+msgid "Agents <-> Roles"
+msgstr "Оператери <-> Улоге"
 
 #. SysConfig
 msgid "All customer users of a CustomerID"
@@ -14163,12 +14163,12 @@ msgid "ArticleTree"
 msgstr "Чланак у облику дрвета"
 
 #. SysConfig
-msgid "Attachments ↔ Templates"
-msgstr "Прилози ↔ Шеме"
+msgid "Attachments <-> Templates"
+msgstr "Прилози <-> Шеме"
 
 #. SysConfig
-msgid "Auto Responses ↔ Queues"
-msgstr "Аутоматски одговори ↔ Редови"
+msgid "Auto Responses <-> Queues"
+msgstr "Аутоматски одговори <-> Редови"
 
 #. SysConfig
 msgid "AutoFollowUp sent to \"%s\"."
@@ -14705,12 +14705,12 @@ msgid "Customer Ticket Print Module."
 msgstr ""
 
 #. SysConfig
-msgid "Customer User ↔ Groups"
-msgstr "Клијент корисник ↔ Групе"
+msgid "Customer User <-> Groups"
+msgstr "Клијент корисник <-> Групе"
 
 #. SysConfig
-msgid "Customer User ↔ Services"
-msgstr "Клијент корисник ↔ Услуге"
+msgid "Customer User <-> Services"
+msgstr "Клијент корисник <-> Услуге"
 
 #. SysConfig
 msgid "Customer User Administration"
@@ -14775,8 +14775,8 @@ msgid "CustomerUser"
 msgstr "Клијент корисник"
 
 #. SysConfig
-msgid "Customers ↔ Groups"
-msgstr "Клијенти ↔ Групе"
+msgid "Customers <-> Groups"
+msgstr "Клијенти <-> Групе"
 
 #. SysConfig
 msgid ""
@@ -19463,8 +19463,8 @@ msgid "Right"
 msgstr "Десно"
 
 #. SysConfig
-msgid "Roles ↔ Groups"
-msgstr "Улоге ↔ Групе"
+msgid "Roles <-> Groups"
+msgstr "Улоге <-> Групе"
 
 #. SysConfig
 msgid ""
@@ -21184,8 +21184,8 @@ msgid "Target"
 msgstr "Циљ"
 
 #. SysConfig
-msgid "Templates ↔ Queues"
-msgstr "Шаблони ↔ Редови"
+msgid "Templates <-> Queues"
+msgstr "Шаблони <-> Редови"
 
 #. SysConfig
 msgid "Textarea"

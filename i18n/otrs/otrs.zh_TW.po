@@ -8231,7 +8231,7 @@ msgid "Your email address is"
 msgstr "您的郵件地址是"
 
 #. Template: AdminTemplateAttachment
-msgid "Manage Templates ↔ Attachments Relations"
+msgid "Manage Templates <-> Attachments Relations"
 msgstr "管理模板與附件之間的關係"
 
 #. Template: AdminTemplateAttachment
@@ -13975,12 +13975,12 @@ msgid "AgentUserSearch."
 msgstr ""
 
 #. SysConfig
-msgid "Agents ↔ Groups"
-msgstr "服務人員 ↔ 組"
+msgid "Agents <-> Groups"
+msgstr "服務人員 <-> 組"
 
 #. SysConfig
-msgid "Agents ↔ Roles"
-msgstr "服務人員 ↔ 角色"
+msgid "Agents <-> Roles"
+msgstr "服務人員 <-> 角色"
 
 #. SysConfig
 msgid "All customer users of a CustomerID"
@@ -14159,12 +14159,12 @@ msgid "ArticleTree"
 msgstr ""
 
 #. SysConfig
-msgid "Attachments ↔ Templates"
-msgstr "附件 ↔ 模板"
+msgid "Attachments <-> Templates"
+msgstr "附件 <-> 模板"
 
 #. SysConfig
-msgid "Auto Responses ↔ Queues"
-msgstr "自動回復 ↔ 隊列"
+msgid "Auto Responses <-> Queues"
+msgstr "自動回復 <-> 隊列"
 
 #. SysConfig
 msgid "AutoFollowUp sent to \"%s\"."
@@ -14701,12 +14701,12 @@ msgid "Customer Ticket Print Module."
 msgstr ""
 
 #. SysConfig
-msgid "Customer User ↔ Groups"
-msgstr "用戶 ↔ 組"
+msgid "Customer User <-> Groups"
+msgstr "用戶 <-> 組"
 
 #. SysConfig
-msgid "Customer User ↔ Services"
-msgstr "用戶 ↔ 服務"
+msgid "Customer User <-> Services"
+msgstr "用戶 <-> 服務"
 
 #. SysConfig
 msgid "Customer User Administration"
@@ -14771,8 +14771,8 @@ msgid "CustomerUser"
 msgstr ""
 
 #. SysConfig
-msgid "Customers ↔ Groups"
-msgstr "用戶 ↔ 組"
+msgid "Customers <-> Groups"
+msgstr "用戶 <-> 組"
 
 #. SysConfig
 msgid ""
@@ -19459,8 +19459,8 @@ msgid "Right"
 msgstr ""
 
 #. SysConfig
-msgid "Roles ↔ Groups"
-msgstr "角色 ↔ 組"
+msgid "Roles <-> Groups"
+msgstr "角色 <-> 組"
 
 #. SysConfig
 msgid ""
@@ -21180,8 +21180,8 @@ msgid "Target"
 msgstr ""
 
 #. SysConfig
-msgid "Templates ↔ Queues"
-msgstr "模板 ↔ 隊列"
+msgid "Templates <-> Queues"
+msgstr "模板 <-> 隊列"
 
 #. SysConfig
 msgid "Textarea"

@@ -8237,8 +8237,8 @@ msgid "Your email address is"
 msgstr "Uw e-mailadres is"
 
 #. Template: AdminTemplateAttachment
-msgid "Manage Templates ↔ Attachments Relations"
-msgstr "Beheer Sjabloon ↔ Bijlage koppelingen"
+msgid "Manage Templates <-> Attachments Relations"
+msgstr "Beheer Sjabloon <-> Bijlage koppelingen"
 
 #. Template: AdminTemplateAttachment
 msgid "Filter for Attachments"
@@ -13981,12 +13981,12 @@ msgid "AgentUserSearch."
 msgstr ""
 
 #. SysConfig
-msgid "Agents ↔ Groups"
-msgstr "Behandelaars ↔ Groepen"
+msgid "Agents <-> Groups"
+msgstr "Behandelaars <-> Groepen"
 
 #. SysConfig
-msgid "Agents ↔ Roles"
-msgstr "Behandelaars ↔ Rollen"
+msgid "Agents <-> Roles"
+msgstr "Behandelaars <-> Rollen"
 
 #. SysConfig
 msgid "All customer users of a CustomerID"
@@ -14165,12 +14165,12 @@ msgid "ArticleTree"
 msgstr "Interactie-boom"
 
 #. SysConfig
-msgid "Attachments ↔ Templates"
-msgstr "Bijlagen ↔ Sjablonen"
+msgid "Attachments <-> Templates"
+msgstr "Bijlagen <-> Sjablonen"
 
 #. SysConfig
-msgid "Auto Responses ↔ Queues"
-msgstr "Wachtrijen ↔ Automatische antwoorden"
+msgid "Auto Responses <-> Queues"
+msgstr "Wachtrijen <-> Automatische antwoorden"
 
 #. SysConfig
 msgid "AutoFollowUp sent to \"%s\"."
@@ -14707,12 +14707,12 @@ msgid "Customer Ticket Print Module."
 msgstr ""
 
 #. SysConfig
-msgid "Customer User ↔ Groups"
-msgstr "Klanten ↔ Groepen"
+msgid "Customer User <-> Groups"
+msgstr "Klanten <-> Groepen"
 
 #. SysConfig
-msgid "Customer User ↔ Services"
-msgstr "Klanten ↔ Services"
+msgid "Customer User <-> Services"
+msgstr "Klanten <-> Services"
 
 #. SysConfig
 msgid "Customer User Administration"
@@ -14777,8 +14777,8 @@ msgid "CustomerUser"
 msgstr ""
 
 #. SysConfig
-msgid "Customers ↔ Groups"
-msgstr "Klanten ↔ Groepen"
+msgid "Customers <-> Groups"
+msgstr "Klanten <-> Groepen"
 
 #. SysConfig
 msgid ""
@@ -19465,8 +19465,8 @@ msgid "Right"
 msgstr ""
 
 #. SysConfig
-msgid "Roles ↔ Groups"
-msgstr "Rollen ↔ Groepen"
+msgid "Roles <-> Groups"
+msgstr "Rollen <-> Groepen"
 
 #. SysConfig
 msgid ""
@@ -21186,8 +21186,8 @@ msgid "Target"
 msgstr ""
 
 #. SysConfig
-msgid "Templates ↔ Queues"
-msgstr "Sjablonen ↔ Wachtrijen"
+msgid "Templates <-> Queues"
+msgstr "Sjablonen <-> Wachtrijen"
 
 #. SysConfig
 msgid "Textarea"

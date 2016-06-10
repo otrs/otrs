@@ -5387,7 +5387,7 @@ msgid "Your email address is"
 msgstr ""
 
 #. Template: AdminTemplateAttachment
-msgid "Manage Templates ↔ Attachments Relations"
+msgid "Manage Templates <-> Attachments Relations"
 msgstr ""
 
 #. Template: AdminTemplateAttachment
@@ -12330,11 +12330,11 @@ msgid "AgentTicketZoom widget that displays ticket data in the side bar."
 msgstr ""
 
 #. SysConfig
-msgid "Agents ↔ Groups"
+msgid "Agents <-> Groups"
 msgstr ""
 
 #. SysConfig
-msgid "Agents ↔ Roles"
+msgid "Agents <-> Roles"
 msgstr ""
 
 #. SysConfig
@@ -12490,11 +12490,11 @@ msgid "ArticleTree"
 msgstr ""
 
 #. SysConfig
-msgid "Attachments ↔ Templates"
+msgid "Attachments <-> Templates"
 msgstr ""
 
 #. SysConfig
-msgid "Auto Responses ↔ Queues"
+msgid "Auto Responses <-> Queues"
 msgstr ""
 
 #. SysConfig
@@ -12986,11 +12986,11 @@ msgid "Customer Ticket Print Module."
 msgstr ""
 
 #. SysConfig
-msgid "Customer User ↔ Groups"
+msgid "Customer User <-> Groups"
 msgstr ""
 
 #. SysConfig
-msgid "Customer User ↔ Services"
+msgid "Customer User <-> Services"
 msgstr ""
 
 #. SysConfig
@@ -13050,7 +13050,7 @@ msgid "CustomerUser"
 msgstr ""
 
 #. SysConfig
-msgid "Customers ↔ Groups"
+msgid "Customers <-> Groups"
 msgstr ""
 
 #. SysConfig
@@ -16650,7 +16650,7 @@ msgid "Right"
 msgstr ""
 
 #. SysConfig
-msgid "Roles ↔ Groups"
+msgid "Roles <-> Groups"
 msgstr ""
 
 #. SysConfig
@@ -17894,7 +17894,7 @@ msgid "Target"
 msgstr ""
 
 #. SysConfig
-msgid "Templates ↔ Queues"
+msgid "Templates <-> Queues"
 msgstr ""
 
 #. SysConfig

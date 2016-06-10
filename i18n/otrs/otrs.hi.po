@@ -8231,7 +8231,7 @@ msgid "Your email address is"
 msgstr "आपका ईमेल पता है"
 
 #. Template: AdminTemplateAttachment
-msgid "Manage Templates ↔ Attachments Relations"
+msgid "Manage Templates <-> Attachments Relations"
 msgstr ""
 
 #. Template: AdminTemplateAttachment
@@ -13975,12 +13975,12 @@ msgid "AgentUserSearch."
 msgstr ""
 
 #. SysConfig
-msgid "Agents ↔ Groups"
-msgstr "प्रतिनिधि↔समूहों"
+msgid "Agents <-> Groups"
+msgstr "प्रतिनिधि<->समूहों"
 
 #. SysConfig
-msgid "Agents ↔ Roles"
-msgstr "प्रतिनिधि↔भूमिकाएँ"
+msgid "Agents <-> Roles"
+msgstr "प्रतिनिधि<->भूमिकाएँ"
 
 #. SysConfig
 msgid "All customer users of a CustomerID"
@@ -14159,12 +14159,12 @@ msgid "ArticleTree"
 msgstr ""
 
 #. SysConfig
-msgid "Attachments ↔ Templates"
+msgid "Attachments <-> Templates"
 msgstr ""
 
 #. SysConfig
-msgid "Auto Responses ↔ Queues"
-msgstr "प्रतिक्रिया↔श्रेणी"
+msgid "Auto Responses <-> Queues"
+msgstr "प्रतिक्रिया<->श्रेणी"
 
 #. SysConfig
 msgid "AutoFollowUp sent to \"%s\"."
@@ -14701,11 +14701,11 @@ msgid "Customer Ticket Print Module."
 msgstr ""
 
 #. SysConfig
-msgid "Customer User ↔ Groups"
+msgid "Customer User <-> Groups"
 msgstr ""
 
 #. SysConfig
-msgid "Customer User ↔ Services"
+msgid "Customer User <-> Services"
 msgstr ""
 
 #. SysConfig
@@ -14771,8 +14771,8 @@ msgid "CustomerUser"
 msgstr ""
 
 #. SysConfig
-msgid "Customers ↔ Groups"
-msgstr "ग्राहकों↔समूहों"
+msgid "Customers <-> Groups"
+msgstr "ग्राहकों<->समूहों"
 
 #. SysConfig
 msgid ""
@@ -19459,8 +19459,8 @@ msgid "Right"
 msgstr ""
 
 #. SysConfig
-msgid "Roles ↔ Groups"
-msgstr "भूमिकाएं ↔ समूहों"
+msgid "Roles <-> Groups"
+msgstr "भूमिकाएं <-> समूहों"
 
 #. SysConfig
 msgid ""
@@ -21180,7 +21180,7 @@ msgid "Target"
 msgstr ""
 
 #. SysConfig
-msgid "Templates ↔ Queues"
+msgid "Templates <-> Queues"
 msgstr ""
 
 #. SysConfig

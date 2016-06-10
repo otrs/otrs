@@ -1748,7 +1748,7 @@ sub Data {
         'Your email address is' => '',
 
         # Template: AdminTemplateAttachment
-        'Manage Templates ↔ Attachments Relations' => '',
+        'Manage Templates <-> Attachments Relations' => '',
         'Change Template Relations for Attachment' => '',
         'Change Attachment Relations for Template' => '',
         'Toggle active for all' => '',
@@ -4343,8 +4343,8 @@ Thanks for your help!
             '',
         'AgentTicketZoom widget that displays ticket data in the side bar.' =>
             '',
-        'Agents ↔ Groups' => 'Agentit ↔ Ryhmät',
-        'Agents ↔ Roles' => 'Agentit ↔ Roolit',
+        'Agents <-> Groups' => 'Agentit <-> Ryhmät',
+        'Agents <-> Roles' => 'Agentit <-> Roolit',
         'All customer users of a CustomerID' => '',
         'All escalated tickets' => 'Kaikki eskaloituneet tiketit',
         'All new tickets, these tickets have not been worked on yet' => 'Kaikki uudet tiketit, nämä tiketit ovat koskemattomia',
@@ -4411,8 +4411,8 @@ Thanks for your help!
         'Arabic (Saudi Arabia)' => '',
         'Archive state changed: "%s"' => '',
         'ArticleTree' => '',
-        'Attachments ↔ Templates' => 'Liitteet ↔ Pohjat',
-        'Auto Responses ↔ Queues' => 'Autom. vastaukset ↔ Jonot',
+        'Attachments <-> Templates' => 'Liitteet <-> Pohjat',
+        'Auto Responses <-> Queues' => 'Autom. vastaukset <-> Jonot',
         'AutoFollowUp sent to "%s".' => 'AutoFollowUp lähetetty osoitteeseen "%s".',
         'AutoReject sent to "%s".' => 'AutoReject sent to "%s".',
         'AutoReply sent to "%s".' => 'AutomVastaus lähetetty "%s".',
@@ -4574,8 +4574,8 @@ Thanks for your help!
         'Customer Information Center Search.' => '',
         'Customer Information Center.' => '',
         'Customer Ticket Print Module.' => '',
-        'Customer User ↔ Groups' => 'Asiakas ↔ Ryhmät',
-        'Customer User ↔ Services' => 'Asiakas ↔ Palvelut',
+        'Customer User <-> Groups' => 'Asiakas <-> Ryhmät',
+        'Customer User <-> Services' => 'Asiakas <-> Palvelut',
         'Customer User Administration' => '',
         'Customer Users' => 'Asiakaskäyttäjät',
         'Customer called us.' => 'Asiakas otti meihin yhteyttä.',
@@ -4592,7 +4592,7 @@ Thanks for your help!
         'CustomerID search' => '',
         'CustomerName' => '',
         'CustomerUser' => '',
-        'Customers ↔ Groups' => 'Asiakkaat ↔ Ryhmät',
+        'Customers <-> Groups' => 'Asiakkaat <-> Ryhmät',
         'Customizable stop words for fulltext index. These words will be removed from the search index.' =>
             '',
         'Czech' => '',
@@ -6055,7 +6055,7 @@ Thanks for your help!
         'Retains all services in listings even if they are children of invalid elements.' =>
             '',
         'Right' => '',
-        'Roles ↔ Groups' => 'Roolit ↔ Ryhmät',
+        'Roles <-> Groups' => 'Roolit <-> Ryhmät',
         'Run file based generic agent jobs (Note: module name need needs to be specified in -configuration-module param e.g. "Kernel::System::GenericAgent").' =>
             '',
         'Running Process Tickets' => '',
@@ -6588,7 +6588,7 @@ Thanks for your help!
         'System Maintenance' => '',
         'System Request (%s).' => '',
         'Target' => '',
-        'Templates ↔ Queues' => 'Pohjat ↔ Jonot',
+        'Templates <-> Queues' => 'Pohjat <-> Jonot',
         'Textarea' => '',
         'Thai' => '',
         'The agent skin\'s InternalName which should be used in the agent interface. Please check the available skins in Frontend::Agent::Skins.' =>

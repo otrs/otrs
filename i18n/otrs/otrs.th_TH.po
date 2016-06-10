@@ -8233,8 +8233,8 @@ msgid "Your email address is"
 msgstr "ที่อยู่อีเมลของคุณคือ"
 
 #. Template: AdminTemplateAttachment
-msgid "Manage Templates ↔ Attachments Relations"
-msgstr "จัดการแม่แบบ ↔ ความสัมพันธ์ของสิ่งที่แนบมา"
+msgid "Manage Templates <-> Attachments Relations"
+msgstr "จัดการแม่แบบ <-> ความสัมพันธ์ของสิ่งที่แนบมา"
 
 #. Template: AdminTemplateAttachment
 msgid "Filter for Attachments"
@@ -13977,12 +13977,12 @@ msgid "AgentUserSearch."
 msgstr "AgentUserSearch."
 
 #. SysConfig
-msgid "Agents ↔ Groups"
-msgstr "เอเย่นต์ ↔ กลุ่ม"
+msgid "Agents <-> Groups"
+msgstr "เอเย่นต์ <-> กลุ่ม"
 
 #. SysConfig
-msgid "Agents ↔ Roles"
-msgstr "เอเย่นต์ ↔ บทบาท"
+msgid "Agents <-> Roles"
+msgstr "เอเย่นต์ <-> บทบาท"
 
 #. SysConfig
 msgid "All customer users of a CustomerID"
@@ -14161,12 +14161,12 @@ msgid "ArticleTree"
 msgstr "ArticleTree"
 
 #. SysConfig
-msgid "Attachments ↔ Templates"
-msgstr "เอกสารที่แนบมา ↔ แม่แบบ"
+msgid "Attachments <-> Templates"
+msgstr "เอกสารที่แนบมา <-> แม่แบบ"
 
 #. SysConfig
-msgid "Auto Responses ↔ Queues"
-msgstr "การตอบสนองอัตโนมัติ ↔ คิว"
+msgid "Auto Responses <-> Queues"
+msgstr "การตอบสนองอัตโนมัติ <-> คิว"
 
 #. SysConfig
 msgid "AutoFollowUp sent to \"%s\"."
@@ -14703,12 +14703,12 @@ msgid "Customer Ticket Print Module."
 msgstr "โมดูลพิมพ์ตั๋วลูกค้า"
 
 #. SysConfig
-msgid "Customer User ↔ Groups"
-msgstr "ลูกค้าผู้ใช้ ↔ กลุ่ม"
+msgid "Customer User <-> Groups"
+msgstr "ลูกค้าผู้ใช้ <-> กลุ่ม"
 
 #. SysConfig
-msgid "Customer User ↔ Services"
-msgstr "ลูกค้าผู้ใช้ ↔ การบริการ"
+msgid "Customer User <-> Services"
+msgstr "ลูกค้าผู้ใช้ <-> การบริการ"
 
 #. SysConfig
 msgid "Customer User Administration"
@@ -14773,8 +14773,8 @@ msgid "CustomerUser"
 msgstr "CustomerUser"
 
 #. SysConfig
-msgid "Customers ↔ Groups"
-msgstr "ลูกค้า ↔ กลุ่ม"
+msgid "Customers <-> Groups"
+msgstr "ลูกค้า <-> กลุ่ม"
 
 #. SysConfig
 msgid ""
@@ -19461,7 +19461,7 @@ msgid "Right"
 msgstr "ขวา"
 
 #. SysConfig
-msgid "Roles ↔ Groups"
+msgid "Roles <-> Groups"
 msgstr ""
 
 #. SysConfig
@@ -21182,7 +21182,7 @@ msgid "Target"
 msgstr "เป้าหมาย"
 
 #. SysConfig
-msgid "Templates ↔ Queues"
+msgid "Templates <-> Queues"
 msgstr ""
 
 #. SysConfig

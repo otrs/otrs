@@ -1751,7 +1751,7 @@ sub Data {
         'Your email address is' => 'כתובת הדוא"ל שלך היא',
 
         # Template: AdminTemplateAttachment
-        'Manage Templates ↔ Attachments Relations' => 'נהל יחסי תבניות ↔ קבצים מצורפים',
+        'Manage Templates <-> Attachments Relations' => 'נהל יחסי תבניות <-> קבצים מצורפים',
         'Change Template Relations for Attachment' => 'שנה יחסי תבנית לקובץ מצורף',
         'Change Attachment Relations for Template' => 'שנה יחסי קובץ מצורף לתבנית',
         'Toggle active for all' => 'הפוך לפעיל עבור כולם',
@@ -4346,8 +4346,8 @@ Thanks for your help!
             '',
         'AgentTicketZoom widget that displays ticket data in the side bar.' =>
             '',
-        'Agents ↔ Groups' => 'סוכנים ↔ קבוצות',
-        'Agents ↔ Roles' => 'סוכן ↔ תפקיד',
+        'Agents <-> Groups' => 'סוכנים <-> קבוצות',
+        'Agents <-> Roles' => 'סוכן <-> תפקיד',
         'All customer users of a CustomerID' => 'Alle Kundenbenutzer einer Kundennummer',
         'All escalated tickets' => 'כל הפניות שעברו אסקלציה',
         'All new tickets, these tickets have not been worked on yet' => 'כל הפניות החדשות, כאלו שטרם עבדו עליהן',
@@ -4414,8 +4414,8 @@ Thanks for your help!
         'Arabic (Saudi Arabia)' => '',
         'Archive state changed: "%s"' => 'עודכן סטטוס ארכיון: "%s"',
         'ArticleTree' => 'Artikelbaum',
-        'Attachments ↔ Templates' => 'קבצים מצרופים ↔ תבניות',
-        'Auto Responses ↔ Queues' => 'מענים אוטומטיים ↔ תורים',
+        'Attachments <-> Templates' => 'קבצים מצרופים <-> תבניות',
+        'Auto Responses <-> Queues' => 'מענים אוטומטיים <-> תורים',
         'AutoFollowUp sent to "%s".' => 'מעקב אוטומטי ל-"%s" נשלח.',
         'AutoReject sent to "%s".' => 'דחייה אוטומטית של "%s" נשלחה.',
         'AutoReply sent to "%s".' => 'מענה אוטומטי ל-"%s" נשלח.',
@@ -4577,8 +4577,8 @@ Thanks for your help!
         'Customer Information Center Search.' => '',
         'Customer Information Center.' => '',
         'Customer Ticket Print Module.' => '',
-        'Customer User ↔ Groups' => 'משתמש לקוח ↔ קבוצות',
-        'Customer User ↔ Services' => 'משתמש לקוח ↔ שירותים',
+        'Customer User <-> Groups' => 'משתמש לקוח <-> קבוצות',
+        'Customer User <-> Services' => 'משתמש לקוח <-> שירותים',
         'Customer User Administration' => 'ניהול משתמשי לקוח',
         'Customer Users' => 'משתמשי לקוח',
         'Customer called us.' => 'לקוח התקשר.',
@@ -4595,7 +4595,7 @@ Thanks for your help!
         'CustomerID search' => '',
         'CustomerName' => 'שם לקוח',
         'CustomerUser' => '',
-        'Customers ↔ Groups' => 'לקוחות ↔ קבוצות',
+        'Customers <-> Groups' => 'לקוחות <-> קבוצות',
         'Customizable stop words for fulltext index. These words will be removed from the search index.' =>
             '',
         'Czech' => '',
@@ -6058,7 +6058,7 @@ Thanks for your help!
         'Retains all services in listings even if they are children of invalid elements.' =>
             '',
         'Right' => '',
-        'Roles ↔ Groups' => 'תפקידים ↔ קבוצות',
+        'Roles <-> Groups' => 'תפקידים <-> קבוצות',
         'Run file based generic agent jobs (Note: module name need needs to be specified in -configuration-module param e.g. "Kernel::System::GenericAgent").' =>
             '',
         'Running Process Tickets' => '',
@@ -6591,7 +6591,7 @@ Thanks for your help!
         'System Maintenance' => '',
         'System Request (%s).' => 'בקשת מערכת (%s).',
         'Target' => '',
-        'Templates ↔ Queues' => 'תבניות ↔ תורים',
+        'Templates <-> Queues' => 'תבניות <-> תורים',
         'Textarea' => '',
         'Thai' => '',
         'The agent skin\'s InternalName which should be used in the agent interface. Please check the available skins in Frontend::Agent::Skins.' =>
