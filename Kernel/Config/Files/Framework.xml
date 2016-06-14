@@ -23,7 +23,7 @@
         </Setting>
     </ConfigItem>
     <ConfigItem Name="Frontend::AjaxDebug" Required="1" Valid="1">
-        <Description Translatable="1">Delivers extended debugging information in the frontend in case any ajax errors occur, if enabled.</Description>
+        <Description Translatable="1">Delivers extended debugging information in the frontend in case any AJAX errors occur, if enabled.</Description>
         <Group>Framework</Group>
         <SubGroup>Core</SubGroup>
         <Setting>
@@ -7267,6 +7267,32 @@
             </Array>
         </Setting>
     </ConfigItem>
+    <ConfigItem Name="DynamicFields::ObjectType###CustomerCompany" Required="0" Valid="1">
+        <Description Translatable="1">DynamicField object registration.</Description>
+        <Group>DynamicFields</Group>
+        <SubGroup>DynamicFields::ObjectType::Registration</SubGroup>
+        <Setting>
+            <Hash>
+                <Item Key="DisplayName" Translatable="1">Customer Company</Item>
+                <Item Key="Module">Kernel::System::DynamicField::ObjectType::CustomerCompany</Item>
+                <Item Key="Prio">120</Item>
+                <Item Key="UseObjectName">1</Item>
+            </Hash>
+        </Setting>
+    </ConfigItem>
+    <ConfigItem Name="DynamicFields::ObjectType###CustomerUser" Required="0" Valid="1">
+        <Description Translatable="1">DynamicField object registration.</Description>
+        <Group>DynamicFields</Group>
+        <SubGroup>DynamicFields::ObjectType::Registration</SubGroup>
+        <Setting>
+            <Hash>
+                <Item Key="DisplayName" Translatable="1">Customer User</Item>
+                <Item Key="Module">Kernel::System::DynamicField::ObjectType::CustomerUser</Item>
+                <Item Key="Prio">130</Item>
+                <Item Key="UseObjectName">1</Item>
+            </Hash>
+        </Setting>
+    </ConfigItem>
     <ConfigItem Name="SOAP::User" Required="0" Valid="0" ConfigLevel="200">
         <Description Translatable="1">Defines the username to access the SOAP handle (bin/cgi-bin/rpc.pl).</Description>
         <Group>Framework</Group>
@@ -7768,7 +7794,7 @@ You can log in via the following URL:
         </Setting>
     </ConfigItem>
     <ConfigItem Name="PreferencesGroups###Password" Required="0" Valid="1">
-        <Description Translatable="1">Defines the config parameters of this item, to be shown in the preferences view.</Description>
+        <Description Translatable="1">Defines the config parameters of this item, to be shown in the preferences view. 'PasswordRegExp' allows to match passwords against a regular expression. Define the minimum number of characters using 'PasswordMinSize'. Define if at least 2 lowercase and 2 uppercase letter characters are needed by setting the appropriate option to '1'. 'PasswordMin2Characters' defines if the password needs to contain at least 2 letter characters (set to 0 or 1). 'PasswordNeedDigit' controls the need of at least 1 digit (set to 0 or 1 to control). 'PasswordMaxLoginFailed' allows to set an agent to invalid-temporarily if max failed logins reached.</Description>
         <Group>Framework</Group>
         <SubGroup>Frontend::Agent::Preferences</SubGroup>
         <Setting>
@@ -8585,7 +8611,7 @@ via the Preferences button after logging in.
         </Setting>
     </ConfigItem>
     <ConfigItem Name="CustomerPreferencesGroups###Password" Required="0" Valid="1">
-        <Description Translatable="1">Defines all the parameters for this item in the customer preferences.</Description>
+        <Description Translatable="1">Defines all the parameters for this item in the customer preferences. 'PasswordRegExp' allows to match passwords against a regular expression. Define the minimum number of characters using 'PasswordMinSize'. Define if at least 2 lowercase and 2 uppercase letter characters are needed by setting the appropriate option to '1'. 'PasswordMin2Characters' defines if the password needs to contain at least 2 letter characters (set to 0 or 1). 'PasswordNeedDigit' controls the need of at least 1 digit (set to 0 or 1 to control).</Description>
         <Group>Framework</Group>
         <SubGroup>Frontend::Customer::Preferences</SubGroup>
         <Setting>
@@ -9050,6 +9076,9 @@ via the Preferences button after logging in.
                     <Description Translatable="1">Create and manage groups.</Description>
                     <Prio>150</Prio>
                 </NavBarModule>
+                <Loader>
+                    <JavaScript>Core.Agent.Admin.Group.js</JavaScript>
+                </Loader>
             </FrontendModuleReg>
         </Setting>
     </ConfigItem>
@@ -9070,6 +9099,9 @@ via the Preferences button after logging in.
                     <Description Translatable="1">Link agents to groups.</Description>
                     <Prio>200</Prio>
                 </NavBarModule>
+                <Loader>
+                    <JavaScript>Core.Agent.Admin.UserGroup.js</JavaScript>
+                </Loader>
             </FrontendModuleReg>
         </Setting>
     </ConfigItem>
@@ -9105,6 +9137,7 @@ via the Preferences button after logging in.
                 </NavBarModule>
                 <Loader>
                     <JavaScript>Core.Agent.TicketAction.js</JavaScript>
+                    <JavaScript>Core.Agent.Admin.CustomerUser.js</JavaScript>
                 </Loader>
             </FrontendModuleReg>
         </Setting>
@@ -9139,6 +9172,9 @@ via the Preferences button after logging in.
                     <Block>Customer</Block>
                     <Prio>310</Prio>
                 </NavBarModule>
+                <Loader>
+                    <JavaScript>Core.Agent.Admin.CustomerCompany.js</JavaScript>
+                </Loader>
             </FrontendModuleReg>
         </Setting>
     </ConfigItem>
@@ -9169,6 +9205,9 @@ via the Preferences button after logging in.
                     <Block>Customer</Block>
                     <Prio>400</Prio>
                 </NavBarModule>
+                <Loader>
+                    <JavaScript>Core.Agent.Admin.CustomerUserGroup.js</JavaScript>
+                </Loader>
             </FrontendModuleReg>
         </Setting>
     </ConfigItem>
@@ -9189,6 +9228,9 @@ via the Preferences button after logging in.
                     <Block>Customer</Block>
                     <Prio>500</Prio>
                 </NavBarModule>
+                <Loader>
+                    <JavaScript>Core.Agent.Admin.CustomerUserService.js</JavaScript>
+                </Loader>
             </FrontendModuleReg>
         </Setting>
     </ConfigItem>
@@ -9229,6 +9271,9 @@ via the Preferences button after logging in.
                     <Block>Agent</Block>
                     <Prio>700</Prio>
                 </NavBarModule>
+                <Loader>
+                    <JavaScript>Core.Agent.Admin.RoleUser.js</JavaScript>
+                </Loader>
             </FrontendModuleReg>
         </Setting>
     </ConfigItem>
@@ -9249,6 +9294,9 @@ via the Preferences button after logging in.
                     <Block>Agent</Block>
                     <Prio>800</Prio>
                 </NavBarModule>
+                <Loader>
+                    <JavaScript>Core.Agent.Admin.RoleGroup.js</JavaScript>
+                </Loader>
             </FrontendModuleReg>
         </Setting>
     </ConfigItem>
@@ -9309,6 +9357,9 @@ via the Preferences button after logging in.
                     <Block>Email</Block>
                     <Prio>100</Prio>
                 </NavBarModule>
+                <Loader>
+                    <JavaScript>Core.Agent.Admin.MailAccount.js</JavaScript>
+                </Loader>
             </FrontendModuleReg>
         </Setting>
     </ConfigItem>
@@ -9504,6 +9555,9 @@ via the Preferences button after logging in.
                     <Block>System</Block>
                     <Prio>600</Prio>
                 </NavBarModule>
+                <Loader>
+                    <JavaScript>Core.Agent.Admin.Log.js</JavaScript>
+                </Loader>
             </FrontendModuleReg>
         </Setting>
     </ConfigItem>
@@ -10838,6 +10892,18 @@ via the Preferences button after logging in.
             </Hash>
         </Setting>
     </ConfigItem>
+    <ConfigItem Name="CustomerCompany::EventModulePost###100-UpdateDynamicFieldObjectName" Required="0" Valid="1">
+        <Description Translatable="1">Event module that updates customer company object name for dynamic fields.</Description>
+        <Group>Framework</Group>
+        <SubGroup>Core::CustomerCompany</SubGroup>
+        <Setting>
+            <Hash>
+                <Item Key="Module">Kernel::System::CustomerCompany::Event::DynamicFieldObjectNameUpdate</Item>
+                <Item Key="Event">CustomerCompanyUpdate</Item>
+                <Item Key="Transaction">0</Item>
+            </Hash>
+        </Setting>
+    </ConfigItem>
     <ConfigItem Name="CustomerUser::EventModulePost###100-UpdateSearchProfiles" Required="0" Valid="1">
         <Description Translatable="1">Event module that updates customer user search profiles if login changes.</Description>
         <Group>Framework</Group>
@@ -10857,6 +10923,18 @@ via the Preferences button after logging in.
         <Setting>
             <Hash>
                 <Item Key="Module">Kernel::System::CustomerUser::Event::ServiceMemberUpdate</Item>
+                <Item Key="Event">CustomerUserUpdate</Item>
+                <Item Key="Transaction">0</Item>
+            </Hash>
+        </Setting>
+    </ConfigItem>
+    <ConfigItem Name="CustomerUser::EventModulePost###100-UpdateDynamicFieldObjectName" Required="0" Valid="1">
+        <Description Translatable="1">Event module that updates customer user object name for dynamic fields.</Description>
+        <Group>Framework</Group>
+        <SubGroup>Core::CustomerUser</SubGroup>
+        <Setting>
+            <Hash>
+                <Item Key="Module">Kernel::System::CustomerUser::Event::DynamicFieldObjectNameUpdate</Item>
                 <Item Key="Event">CustomerUserUpdate</Item>
                 <Item Key="Transaction">0</Item>
             </Hash>

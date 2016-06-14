@@ -7005,6 +7005,7 @@
                         <Item Key="Age">2</Item>
                         <Item Key="Changed">1</Item>
                         <Item Key="Created">1</Item>
+                        <Item Key="CustomerCompanyName">1</Item>
                         <Item Key="CustomerID">1</Item>
                         <Item Key="CustomerName">1</Item>
                         <Item Key="CustomerUserID">1</Item>
@@ -7052,6 +7053,7 @@
                         <Item Key="Age">2</Item>
                         <Item Key="Changed">1</Item>
                         <Item Key="Created">1</Item>
+                        <Item Key="CustomerCompanyName">1</Item>
                         <Item Key="CustomerID">1</Item>
                         <Item Key="CustomerName">1</Item>
                         <Item Key="CustomerUserID">1</Item>
@@ -7099,6 +7101,7 @@
                         <Item Key="Age">2</Item>
                         <Item Key="Changed">1</Item>
                         <Item Key="Created">1</Item>
+                        <Item Key="CustomerCompanyName">1</Item>
                         <Item Key="CustomerID">1</Item>
                         <Item Key="CustomerName">1</Item>
                         <Item Key="CustomerUserID">1</Item>
@@ -7146,6 +7149,7 @@
                         <Item Key="Age">2</Item>
                         <Item Key="Changed">1</Item>
                         <Item Key="Created">1</Item>
+                        <Item Key="CustomerCompanyName">1</Item>
                         <Item Key="CustomerID">1</Item>
                         <Item Key="CustomerName">1</Item>
                         <Item Key="CustomerUserID">1</Item>
@@ -7365,6 +7369,7 @@
                         <Item Key="Age">2</Item>
                         <Item Key="Changed">1</Item>
                         <Item Key="Created">1</Item>
+                        <Item Key="CustomerCompanyName">1</Item>
                         <Item Key="CustomerID">1</Item>
                         <Item Key="CustomerName">1</Item>
                         <Item Key="CustomerUserID">1</Item>
@@ -7412,6 +7417,7 @@
                         <Item Key="Age">2</Item>
                         <Item Key="Changed">1</Item>
                         <Item Key="Created">1</Item>
+                        <Item Key="CustomerCompanyName">1</Item>
                         <Item Key="CustomerID">1</Item>
                         <Item Key="CustomerName">1</Item>
                         <Item Key="CustomerUserID">1</Item>
@@ -7459,6 +7465,7 @@
                         <Item Key="Age">2</Item>
                         <Item Key="Changed">1</Item>
                         <Item Key="Created">1</Item>
+                        <Item Key="CustomerCompanyName">1</Item>
                         <Item Key="CustomerID">1</Item>
                         <Item Key="CustomerName">1</Item>
                         <Item Key="CustomerUserID">1</Item>
@@ -7506,6 +7513,7 @@
                         <Item Key="Age">2</Item>
                         <Item Key="Changed">1</Item>
                         <Item Key="Created">1</Item>
+                        <Item Key="CustomerCompanyName">1</Item>
                         <Item Key="CustomerID">1</Item>
                         <Item Key="CustomerName">1</Item>
                         <Item Key="CustomerUserID">1</Item>
@@ -9075,6 +9083,9 @@
                     <Block>Queue</Block>
                     <Prio>300</Prio>
                 </NavBarModule>
+                <Loader>
+                    <JavaScript>Core.Agent.Admin.QueueTemplates.js</JavaScript>
+                </Loader>
             </FrontendModuleReg>
         </Setting>
     </ConfigItem>
@@ -9095,6 +9106,9 @@
                     <Block>Queue</Block>
                     <Prio>400</Prio>
                 </NavBarModule>
+                <Loader>
+                    <JavaScript>Core.Agent.Admin.AutoResponse.js</JavaScript>
+                </Loader>
             </FrontendModuleReg>
         </Setting>
     </ConfigItem>
@@ -9135,6 +9149,9 @@
                     <Block>Queue</Block>
                     <Prio>600</Prio>
                 </NavBarModule>
+                <Loader>
+                    <JavaScript>Core.Agent.Admin.Attachment.js</JavaScript>
+                </Loader>
             </FrontendModuleReg>
         </Setting>
     </ConfigItem>
@@ -9155,6 +9172,9 @@
                     <Block>Queue</Block>
                     <Prio>700</Prio>
                 </NavBarModule>
+                <Loader>
+                    <JavaScript>Core.Agent.Admin.TemplateAttachment.js</JavaScript>
+                </Loader>
             </FrontendModuleReg>
         </Setting>
     </ConfigItem>
@@ -9175,6 +9195,9 @@
                     <Block>Queue</Block>
                     <Prio>800</Prio>
                 </NavBarModule>
+                <Loader>
+                    <JavaScript>Core.Agent.Admin.Salutation.js</JavaScript>
+                </Loader>
             </FrontendModuleReg>
         </Setting>
     </ConfigItem>
@@ -9375,6 +9398,17 @@
                 <Item Key="Transaction">1</Item>
                 <Item Key="Event"></Item>
             </Hash>
+        </Setting>
+    </ConfigItem>
+    <ConfigItem Name="Ticket::GenericAgentTicketSearch###ExtendedSearchCondition" Required="1" Valid="1">
+        <Description Translatable="1">Allows extended search conditions in ticket search of the generic agent interface. With this feature you can search e. g. ticket title with this kind of conditions like "(*key1*&amp;&amp;*key2*)" or "(*key1*||*key2*)".</Description>
+        <Group>Ticket</Group>
+        <SubGroup>Core::Ticket</SubGroup>
+        <Setting>
+            <Option SelectedID="1">
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
+            </Option>
         </Setting>
     </ConfigItem>
     <ConfigItem Name="Ticket::GenericAgentRunLimit" Required="0" Valid="1">
@@ -10495,6 +10529,16 @@ Thanks for your help!
             </Array>
         </Setting>
     </ConfigItem>
+    <ConfigItem Name="LinkObject::StrikeThroughLinkedTicketStateTypes" Required="0" Valid="1">
+        <Description Translatable="1">For these state types the ticket numbers are striked through in the link table.</Description>
+        <Group>Ticket</Group>
+        <SubGroup>Core::LinkObject</SubGroup>
+        <Setting>
+            <Array>
+                <Item>merged</Item>
+            </Array>
+        </Setting>
+    </ConfigItem>
     <ConfigItem Name="Stats::DynamicObjectRegistration###Ticket" Required="0" Valid="1">
         <Description Translatable="1">Module to generate ticket statistics.</Description>
         <Group>Ticket</Group>
@@ -10659,6 +10703,7 @@ Thanks for your help!
                 <Title Translatable="1">Dynamic Fields Checkbox Backend GUI</Title>
                 <Loader>
                     <JavaScript>Core.Agent.Admin.DynamicField.js</JavaScript>
+                    <JavaScript>Core.Agent.Admin.DynamicFieldCheckbox.js</JavaScript>
                 </Loader>
             </FrontendModuleReg>
         </Setting>
@@ -11894,10 +11939,7 @@ Thanks for your help!
     </ConfigItem>
 
     <ConfigItem Name="LinkObject::ComplexTable::SettingsVisibility###Ticket" Required="0" Valid="1">
-        <Description Translatable="1">Define Actions where Settings button is available in the Linked objects widget (LinkObject::ViewMode = "complex").
-            Please note that this Actions must have registered following JS and CSS files: Core.AllocationList.css, Core.UI.AllocationList.js, Core.UI.Table.Sort.js,
-            Core.Agent.TableFilters.js.
-        </Description>
+        <Description Translatable="1">Define Actions where a settings button is available in the linked objects widget (LinkObject::ViewMode = "complex"). Please note that these Actions must have registered the following JS and CSS files: Core.AllocationList.css, Core.UI.AllocationList.js, Core.UI.Table.Sort.js, Core.Agent.TableFilters.js.</Description>
         <Group>Ticket</Group>
         <SubGroup>Frontend::Agent::LinkObject</SubGroup>
         <Setting>
@@ -11907,9 +11949,7 @@ Thanks for your help!
         </Setting>
     </ConfigItem>
     <ConfigItem Name="LinkObject::ComplexTable###Ticket" Required="0" Valid="1">
-        <Description Translatable="1">Define which columns are shown in the Linked tickets widget (LinkObject::ViewMode = "complex").
-            Note: Only Ticket attributes and Dynamic Fields (DynamicField_NameX) are allowed for DefaultColumns.
-            Possible settings: 0 = Disabled, 1 = Available, 2 = Enabled by default.</Description>
+        <Description Translatable="1">Define which columns are shown in the linked tickets widget (LinkObject::ViewMode = "complex"). Note: Only Ticket attributes and Dynamic Fields (DynamicField_NameX) are allowed for DefaultColumns. Possible settings: 0 = Disabled, 1 = Available, 2 = Enabled by default.</Description>
         <Group>Ticket</Group>
         <SubGroup>Frontend::Agent::LinkObject</SubGroup>
         <Setting>

@@ -11,6 +11,8 @@ package Kernel::Output::HTML::LinkObject::Ticket;
 use strict;
 use warnings;
 
+use List::Util qw(first);
+
 use Kernel::Output::HTML::Layout;
 use Kernel::System::VariableCheck qw(:all);
 use Kernel::Language qw(Translatable);
@@ -305,7 +307,7 @@ sub TableCreateComplex {
     # Sort
     COLUMN:
     for my $Column ( sort { $SortOrder{$a} <=> $SortOrder{$b} } keys %UserColumns ) {
-        next COLUMN if $Column eq 'TicketNumber';      # Always present, already added.
+        next COLUMN if $Column eq 'TicketNumber';    # Always present, already added.
 
         # if enabled by default
         if ( $UserColumns{$Column} == 2 ) {
@@ -353,7 +355,8 @@ sub TableCreateComplex {
 
         # set css
         my $CssClass;
-        if ( $Ticket->{StateType} eq 'merged' ) {
+        my @StatesToStrike = @{ $ConfigObject->Get('LinkObject::StrikeThroughLinkedTicketStateTypes') || [] };
+        if ( first { $Ticket->{StateType} eq $_ } @StatesToStrike ) {
             $CssClass = 'StrikeThrough';
         }
 
@@ -570,7 +573,9 @@ sub TableCreateSimple {
         return;
     }
 
-    my $TicketHook = $Kernel::OM->Get('Kernel::Config')->Get('Ticket::Hook');
+    my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
+    my $TicketHook   = $ConfigObject->Get('Ticket::Hook');
+
     my %LinkOutputData;
     for my $LinkType ( sort keys %{ $Param{ObjectLinkListWithData} } ) {
 
@@ -590,7 +595,9 @@ sub TableCreateSimple {
 
                 # set css
                 my $CssClass;
-                if ( $Ticket->{StateType} eq 'merged' ) {
+                my @StatesToStrike = @{ $ConfigObject->Get('LinkObject::StrikeThroughLinkedTicketStateTypes') || [] };
+
+                if ( first { $Ticket->{StateType} eq $_ } @StatesToStrike ) {
                     $CssClass = 'StrikeThrough';
                 }
 
@@ -720,7 +727,7 @@ sub SearchOptionList {
             Type => 'Text',
         },
         {
-            Key  => 'Title',
+            Key  => 'TicketTitle',
             Name => 'Title',
             Type => 'Text',
         },

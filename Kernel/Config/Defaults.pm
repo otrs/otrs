@@ -1429,10 +1429,18 @@ via the Preferences button after logging in.
             Table => 'customer_user',
 #            ForeignDB => 0,    # set this to 1 if your table does not have create_time, create_by, change_time and change_by fields
 
-            # CaseSensitive will control if the SQL statements need LOWER()
-            #   function calls to work case insensitively. Setting this to
-            #   1 will improve performance dramatically on large databases.
-            CaseSensitive => 0,
+            # CaseSensitive defines if the data storage of your DBMS is case sensitive and will be
+            # preconfigured within the database driver by default.
+            # If the collation of your data storage differs from the default settings,
+            # you can set the current behavior ( either 1 = CaseSensitive or 0 = CaseINSensitive )
+            # to fit your environment.
+            #
+#            CaseSensitive => 0,
+
+            # SearchCaseSensitive will control if the searches within the data storage are performed
+            # case sensitively (if possible) or not. Change this option to 1, if you want to search case sensitive.
+            # This can improve the performance dramatically on large databases.
+            SearchCaseSensitive => 0,
         },
 
         # customer unique id
@@ -1471,6 +1479,14 @@ via the Preferences button after logging in.
 #        ReadOnly => 1,
         Map => [
 
+            # Info about dynamic fields:
+            #
+            # Dynamic Fields of type CustomerUser can be used within the mapping (see example below).
+            # The given storage (third column) then can also be used within the following configurations (see above):
+            # CustomerUserSearchFields, CustomerUserPostMasterSearchFields, CustomerUserListFields, CustomerUserNameFields
+            #
+            # Note that the columns 'frontend' and 'readonly' will be ignored for dynamic fields.
+
             # note: Login, Email and CustomerID needed!
             # var, frontend, storage, shown (1=always,2=lite), required, storage-type, http-link, readonly, http-link-target, link class(es)
             [ 'UserTitle',      Translatable('Title or salutation'), 'title',  1, 0, 'var', '', 0 ],
@@ -1491,6 +1507,10 @@ via the Preferences button after logging in.
             [ 'UserCountry',      Translatable('Country'),     'country',      1, 0, 'var', '', 0 ],
             [ 'UserComment',      Translatable('Comment'),     'comments',     1, 0, 'var', '', 0 ],
             [ 'ValidID',          Translatable('Valid'),       'valid_id',     0, 1, 'int', '', 0 ],
+
+            # Dynamic field example
+#            [ 'DynamicField_Name_X', undef, 'Name_X', 0, 0, 'dynamic_field', undef, 0, undef, undef, ],
+
         ],
 
         # default selections
@@ -1583,10 +1603,18 @@ via the Preferences button after logging in.
             Table => 'customer_company',
 #            ForeignDB => 0,    # set this to 1 if your table does not have create_time, create_by, change_time and change_by fields
 
-            # CaseSensitive will control if the SQL statements need LOWER()
-            #   function calls to work case insensitively. Setting this to
-            #   1 will improve performance dramatically on large databases.
-            CaseSensitive => 0,
+            # CaseSensitive defines if the data storage of your DBMS is case sensitive and will be
+            # preconfigured within the database driver by default.
+            # If the collation of your data storage differs from the default settings,
+            # you can set the current behavior ( either 1 = CaseSensitive or 0 = CaseINSensitive )
+            # to fit your environment.
+            #
+#            CaseSensitive => 0,
+
+            # SearchCaseSensitive will control if the searches within the data storage are performed
+            # case sensitively (if possible) or not. Change this option to 1, if you want to search case sensitive.
+            # This can improve the performance dramatically on large databases.
+            SearchCaseSensitive => 0,
         },
 
         # company unique id
@@ -1600,6 +1628,14 @@ via the Preferences button after logging in.
         CacheTTL                       => 60 * 60 * 24, # use 0 to turn off cache
 
         Map => [
+            # Info about dynamic fields:
+            #
+            # Dynamic Fields of type CustomerCompany can be used within the mapping (see example below).
+            # The given storage (third column) then can also be used within the following configurations (see above):
+            # CustomerCompanySearchFields, CustomerCompanyListFields
+            #
+            # Note that the columns 'frontend' and 'readonly' will be ignored for dynamic fields.
+
             # var, frontend, storage, shown (1=always,2=lite), required, storage-type, http-link, readonly
             [ 'CustomerID',             'CustomerID', 'customer_id', 0, 1, 'var', '', 0 ],
             [ 'CustomerCompanyName',    'Customer',   'name',        1, 1, 'var', '', 0 ],
@@ -1610,6 +1646,10 @@ via the Preferences button after logging in.
             [ 'CustomerCompanyURL',     'URL',        'url',         1, 0, 'var', '[% Data.CustomerCompanyURL | html %]', 0 ],
             [ 'CustomerCompanyComment', 'Comment',    'comments',    1, 0, 'var', '', 0 ],
             [ 'ValidID',                'Valid',      'valid_id',    0, 1, 'int', '', 0 ],
+
+            # Dynamic field example
+#            [ 'DynamicField_Name_Y', undef, 'Name_Y', 0, 0, 'dynamic_field', undef, 0,],
+
         ],
     };
 
@@ -1698,6 +1738,11 @@ via the Preferences button after logging in.
         'Group' => [
             'admin'
         ],
+        'Loader' => {
+            'JavaScript' => [
+              'Core.Agent.Admin.Log.js'
+            ]
+        },
         'NavBarModule' => {
             'Block' => 'System',
             'Description' => Translatable('View system log messages.'),
