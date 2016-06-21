@@ -35,10 +35,10 @@
             </div>
         </fieldset>
         <fieldset class="TableLike" id="SearchInsert">
-            <legend><span>[% Translate("Filters in use") | html %]</span></legend>
+            <legend><span>[% Translate("Filters") | html %]</span></legend>
         </fieldset>
         <fieldset class="TableLike">
-            <legend><span>[% Translate("Additional filters") | html %]</span></legend>
+            <legend><span>[% Translate("Settings") | html %]</span></legend>
             <label>[% Translate("Add another attribute") | html %]:</label>
             <div class="Field">
                 [% Data.AttributesStrg %]
