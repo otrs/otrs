@@ -2624,6 +2624,22 @@
             <String></String>
         </Setting>
     </ConfigItem>
+    <ConfigItem Name="Ticket::Frontend::AgentTicketSearch###Defaults###ServiceIDs" Required="0" Valid="0">
+        <Description Translatable="1">Defines the default shown ticket search attribute for ticket search screen.</Description>
+        <Group>Ticket</Group>
+        <SubGroup>Frontend::Agent::Ticket::ViewSearch</SubGroup>
+        <Setting>
+            <Array></Array>
+        </Setting>
+    </ConfigItem>
+    <ConfigItem Name="Ticket::Frontend::AgentTicketSearch###Defaults###SLAIDs" Required="0" Valid="0">
+        <Description Translatable="1">Defines the default shown ticket search attribute for ticket search screen.</Description>
+        <Group>Ticket</Group>
+        <SubGroup>Frontend::Agent::Ticket::ViewSearch</SubGroup>
+        <Setting>
+            <Array></Array>
+        </Setting>
+    </ConfigItem>
     <ConfigItem Name="Frontend::Search###Ticket" Required="0" Valid="1">
         <Description Translatable="1">Search backend router.</Description>
         <Group>Ticket</Group>
