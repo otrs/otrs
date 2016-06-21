@@ -1291,7 +1291,7 @@ sub TicketSearch {
 
     DYNAMIC_FIELD:
     for my $DynamicField ( @{$TicketDynamicFields}, @{$ArticleDynamicFields} ) {
-        my $SearchParam = $Param{ "DynamicField_" . $DynamicField->{Name} };
+        my $SearchParam = delete $Param{ "DynamicField_" . $DynamicField->{Name} };
 
         next DYNAMIC_FIELD if ( !$SearchParam );
         next DYNAMIC_FIELD if ( ref $SearchParam ne 'HASH' );
@@ -1379,6 +1379,19 @@ sub TicketSearch {
             $DynamicFieldJoinTables{ $DynamicField->{Name} } = "dfv$DynamicFieldJoinCounter";
 
             $DynamicFieldJoinCounter++;
+        }
+    }
+
+    # catch searches for non-existing dynamic fields
+    for my $Key ( sort %Param ) {
+        if ( $Key =~ /^DynamicField_(.*)$/ && $Param{$Key} ) {
+            my $DynamicFieldName = $1;
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
+                Priority => 'Error',
+                Message  => qq[No such dynamic field "$DynamicFieldName" (or it is inactive)],
+            );
+
+            return;
         }
     }
 
