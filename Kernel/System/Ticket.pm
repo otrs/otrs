@@ -6102,13 +6102,14 @@ sub TicketMerge {
 
     # link tickets
     $Kernel::OM->Get('Kernel::System::LinkObject')->LinkAdd(
-        SourceObject => 'Ticket',
-        SourceKey    => $Param{MainTicketID},
-        TargetObject => 'Ticket',
-        TargetKey    => $Param{MergeTicketID},
-        Type         => 'ParentChild',
-        State        => 'Valid',
-        UserID       => $Param{UserID},
+        SourceObject   => 'Ticket',
+        SourceKey      => $Param{MainTicketID},
+        TargetObject   => 'Ticket',
+        TargetKey      => $Param{MergeTicketID},
+        Type           => 'ParentChild',
+        State          => 'Valid',
+        UserID         => $Param{UserID},
+        NoticeIfExists => 1,
     );
 
     # get the list of all merged states
