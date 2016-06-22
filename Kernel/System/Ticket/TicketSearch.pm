@@ -1383,7 +1383,7 @@ sub TicketSearch {
     }
 
     # catch searches for non-existing dynamic fields
-    for my $Key ( sort %Param ) {
+    for my $Key ( sort keys %Param ) {
         if ( $Key =~ /^DynamicField_(.*)$/ && $Param{$Key} ) {
             my $DynamicFieldName = $1;
             $Kernel::OM->Get('Kernel::System::Log')->Log(
