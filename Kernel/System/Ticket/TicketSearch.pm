@@ -1383,16 +1383,18 @@ sub TicketSearch {
     }
 
     # catch searches for non-existing dynamic fields
+    PARAMS:
     for my $Key ( sort keys %Param ) {
-        if ( $Key =~ /^DynamicField_(.*)$/ && $Param{$Key} ) {
-            my $DynamicFieldName = $1;
-            $Kernel::OM->Get('Kernel::System::Log')->Log(
-                Priority => 'Error',
-                Message  => qq[No such dynamic field "$DynamicFieldName" (or it is inactive)],
-            );
+        next PARAMS if !$Param{$Key};
+        next PARAMS if $Key !~ /^DynamicField_(.*)$/;
 
-            return;
-        }
+        my $DynamicFieldName = $1;
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
+            Priority => 'Error',
+            Message  => qq[No such dynamic field "$DynamicFieldName" (or it is inactive)],
+        );
+
+        return;
     }
 
     # get time object
