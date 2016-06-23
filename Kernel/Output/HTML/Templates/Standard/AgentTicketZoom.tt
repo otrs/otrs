@@ -766,10 +766,13 @@ Core.Agent.TicketZoom.TimelineView.Init(TicketID, ListObjects, ArticleID);
                     <p class="Value">
 [% RenderBlockStart("ArticleAttachmentRow") %]
 [% RenderBlockStart("ArticleAttachmentRowLink") %]
-                        <a class="[% Data.Class | html %]" href="[% Data.Link %]" [% Data.Target %] title="[% Translate(Data.Action) | html %]">[% Data.Filename | html %]</a> [% Data.DataFileSize | html %]
+                        <a class="[% Data.Class | html %]" href="[% Data.Link %]" [% Data.Target %] title="[% Translate(Data.Action) | html %]">[% Data.Filename | html %]</a>
 [% RenderBlockEnd("ArticleAttachmentRowLink") %]
+[% RenderBlockStart("ArticleAttachmentRowFilesize") %]
+                        ([% Data.Filesize | html %])
+[% RenderBlockEnd("ArticleAttachmentRowFilesize") %]
 [% RenderBlockStart("ArticleAttachmentRowNoLink") %]
-                        [% Data.Filename | html %], [% Data.Filesize | html %]
+                        [% Data.Filename | html %] ([% Data.Filesize | html %])
 [% RenderBlockEnd("ArticleAttachmentRowNoLink") %]
                         <br />
 [% RenderBlockEnd("ArticleAttachmentRow") %]
