@@ -1151,6 +1151,9 @@ sub SetPassword {
     my $Login = $Param{UserLogin};
     my $Pw = $Param{PW} || '';
 
+    # get config object
+    my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
+
     # check ro/rw
     if ( $Self->{ReadOnly} ) {
         $Kernel::OM->Get('Kernel::System::Log')->Log(
@@ -1171,7 +1174,7 @@ sub SetPassword {
     my $CryptedPw = '';
 
     # get crypt type
-    my $CryptType = $Kernel::OM->Get('Kernel::Config')->Get('Customer::AuthModule::DB::CryptType') || 'sha2';
+    my $CryptType = $ConfigObject->Get('Customer::AuthModule::DB::CryptType') || 'sha2';
 
     # get encode object
     my $EncodeObject = $Kernel::OM->Get('Kernel::System::Encode');
@@ -1241,7 +1244,12 @@ sub SetPassword {
             return;
         }
 
-        my $Cost = 9;
+        # get cost from config; use 12 if not configured; don't allow values smaller than 9 for security;
+        # current Crypt::Eksblowfish::Bcrypt limit is 31
+        my $Cost = $ConfigObject->Get('Customer::AuthModule::DB::bcryptCost') // 12;
+        $Cost = 9 if $Cost < 9;
+        $Cost = 31 if $Cost > 31;
+
         my $Salt = $MainObject->GenerateRandomString( Length => 16 );
 
         # remove UTF8 flag, required by Crypt::Eksblowfish::Bcrypt
@@ -1251,7 +1259,7 @@ sub SetPassword {
         my $Octets = Crypt::Eksblowfish::Bcrypt::bcrypt_hash(
             {
                 key_nul => 1,
-                cost    => 9,
+                cost    => $Cost,
                 salt    => $Salt,
             },
             $Pw
