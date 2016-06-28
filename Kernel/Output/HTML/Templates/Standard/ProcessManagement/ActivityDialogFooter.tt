@@ -25,5 +25,6 @@
 <script type="text/javascript">
 [% PROCESS JSDataInsert %]
 [% PROCESS JSOnDocumentCompleteInsert %]
+Core.Init.ExecuteInit('APP_MODULE');
 </script>
 [% RenderBlockEnd("FooterJS") %]
