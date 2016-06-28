@@ -218,6 +218,11 @@ $('#[% Data.FormID | html %] select[name=[% Data.PhoneElementID | html %]]').bin
                                 <a href="[% Env("Baselink") %]Action=AgentTicketMove;TicketID=[% Data.TicketID | uri %];" class="AsPopup PopupType_TicketAction" title="[% Translate("Change Queue") | html %]">[% Translate("Queue") | html %]</a>
                             </li>
 [% RenderBlockEnd("MoveForm") %]
+[% RenderBlockStart("TicketMenuExternalLink") %]
+                            <li>
+                                <a href="[% Data.Link | Interpolate %]" class="[% Data.Class | html %]" [% Data.LinkParam %] title="[% Translate(Data.Description) | html %]" target="[% Data.Target %]">[% Translate(Data.Name) | html %]</a>
+                            </li>
+[% RenderBlockEnd("TicketMenuExternalLink") %]
                         </ul>
                         <div class="Clear"></div>
                     </div>
