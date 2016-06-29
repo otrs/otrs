@@ -513,6 +513,48 @@ sub Run {
             );
         }
 
+        # ticket number lookup
+        my $Tn = $TicketObject->TicketNumberLookup( TicketID => $Self->{TicketID} );
+
+        # attachment add ticket printout if enabled
+        if ( $Config->{AttachTicketPrintout} ) {
+            if ( $ParamObject->GetParam( Param => 'AttachmentAddTicketPrintout' ) ) {
+                %Error = ();
+                $Error{AttachmentAddTicketPrintout} = 1;
+
+                # assemble file name
+                my $DateTimeObject = $Kernel::OM->Create('Kernel::System::DateTime');
+                if ( $Self->{UserTimeZone} ) {
+                    $DateTimeObject->ToTimeZone( TimeZone => $Self->{UserTimeZone} );
+                }
+                my $Filename = 'Ticket_' . $Tn . '_';
+                $Filename .= $DateTimeObject->Format( Format => '%Y-%m-%d_%H:%M' );
+                $Filename .= '.pdf';
+
+                # generate pdf printout
+                my $PDFString = $Kernel::OM->Get('Kernel::Output::PDF::Ticket')->GenerateAgentPDF(
+                    TicketID => $Self->{TicketID},
+                    UserID   => $Self->{UserID},
+                );
+
+                if ( $PDFString ) {
+                    $UploadCacheObject->FormIDAddFile(
+                        FormID => $GetParam{FormID},
+                        Disposition => 'attachment',
+                        Filename    => $Filename,
+                        Content     => $PDFString,
+                        ContentType => 'application/pdf',
+                    );
+                 }
+                 else {
+                    $Kernel::OM->Get('Kernel::System::Log')->Log(
+                        Priority => 'error',
+                        Message  => 'Error attaching ticket printout on compose (ticketid=' . $Self->{TicketID} . ')',
+                    );
+                 }
+             }
+         }
+
         # get all attachments meta data
         my @Attachments = $UploadCacheObject->FormIDGetAllFilesMeta(
             FormID => $Self->{FormID},
@@ -582,7 +624,6 @@ sub Run {
         }
 
         # prepare subject
-        my $Tn = $TicketObject->TicketNumberLookup( TicketID => $Self->{TicketID} );
         $GetParam{Subject} = $TicketObject->TicketSubjectBuild(
             TicketNumber => $Tn,
             Subject      => $GetParam{Subject} || '',
@@ -2032,6 +2073,14 @@ sub _Mask {
         $LayoutObject->Block(
             Name => 'Attachment',
             Data => $Attachment,
+        );
+    }
+
+    # show add printout attachment button if enabled
+    if ( $Config->{AttachTicketPrintout} ) {
+        $LayoutObject->Block(
+            Name => 'AttachmentAddTicketPrintoutButton',
+            Data => \%Param,
         );
     }
 
