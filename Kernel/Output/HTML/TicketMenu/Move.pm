@@ -106,28 +106,40 @@ sub Run {
 
     $Param{Link} = 'Action=AgentTicketMove;TicketID=[% Data.TicketID | uri %];';
 
-    if ( $ConfigObject->Get('Ticket::Frontend::MoveType') =~ /^form$/i ) {
-        $Param{Target} = '';
-        $Param{Block}  = 'DocumentMenuItemMoveForm';
+    if ( $Param{Config}->{MoveType} && $Param{Config}->{MoveType} =~ /form/i ) {
 
-        # get layout object
-        my $LayoutObject = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
+        if ( $ConfigObject->Get('Ticket::Frontend::MoveType') =~ /form/i ) {
+            $Param{Target} = '';
+            $Param{Block}  = 'DocumentMenuItemMoveForm';
 
-        # get move queues
-        my %MoveQueues = $TicketObject->MoveList(
-            TicketID => $Param{Ticket}->{TicketID},
-            UserID   => $Self->{UserID},
-            Action   => $LayoutObject->{Action},
-            Type     => 'move_into',
-        );
-        $MoveQueues{0} = '- ' . $LayoutObject->{LanguageObject}->Translate('Move') . ' -';
-        $Param{MoveQueuesStrg} = $LayoutObject->AgentQueueListOption(
-            Name => 'DestQueueID',
-            Data => \%MoveQueues,
-        );
+            # get layout object
+            my $LayoutObject = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
+
+            # get move queues
+            my %MoveQueues = $TicketObject->MoveList(
+                TicketID => $Param{Ticket}->{TicketID},
+                UserID   => $Self->{UserID},
+                Action   => $LayoutObject->{Action},
+                Type     => 'move_into',
+            );
+            $MoveQueues{0} = '- ' . $LayoutObject->{LanguageObject}->Translate('Move') . ' -';
+            $Param{MoveQueuesStrg} = $LayoutObject->AgentQueueListOption(
+                Name => 'DestQueueID',
+                Data => \%MoveQueues,
+            );
+        }
+        else {
+            return;
+        }
     }
-    else {
-        $Param{PopupType} = 'TicketAction';
+
+    if ( $Param{Config}->{MoveType} && $Param{Config}->{MoveType} =~ /link/i ) {
+        if ( $ConfigObject->Get('Ticket::Frontend::MoveType' ) =~ /link/i ) {
+            $Param{PopupType} = 'TicketAction';
+        }
+        else {
+             return;
+        }
     }
 
     # return item
