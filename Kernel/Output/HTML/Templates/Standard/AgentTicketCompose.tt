@@ -361,6 +361,23 @@
                                 <input id="FileUpload" name="FileUpload" type="file" size="40" />
                                 <input type="hidden" id="AttachmentUpload" name="AttachmentUpload" value="0" />
                             </li>
+[% RenderBlockStart("AttachmentAddTicketPrintoutButton") %]
+                            <li>
+                                [% Translate("Warning: printout will include internal information also!") | html %]
+                                <button type="button" id="AttachmentAddTicketPrintoutButton" name="AttachmentAddTicketPrintoutButton" value="AddTicketPrintout" class="SpacingLeft">[% Translate("Attach ticket printout") | html %]</button>
+                                <input type="hidden" id="AttachmentAddTicketPrintout" name="AttachmentAddTicketPrintout" />
+[% WRAPPER JSOnDocumentComplete %]
+<script type="text/javascript">//<![CDATA[
+     $('#AttachmentAddTicketPrintoutButton').bind('click', function () {
+         var $Form = $('#AttachmentAddTicketPrintoutButton').closest('form');
+         $('#AttachmentAddTicketPrintout').val(1);
+         Core.Form.Validate.DisableValidation($Form);
+         $Form.trigger('submit');
+     });
+//]]></script>
+[% END %]
+                            </li>
+[% RenderBlockEnd("AttachmentAddTicketPrintoutButton") %]
                         </ul>
 [% WRAPPER JSOnDocumentComplete %]
 <script type="text/javascript">//<![CDATA[
