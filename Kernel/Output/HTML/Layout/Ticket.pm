@@ -632,7 +632,7 @@ sub ArticleQuote {
                 next ATTACHMENTID if !$Attachments{$AttachmentID}->{ContentID};
 
                 # get whole attachment
-                my %AttachmentPicture = $Self->{TicketObject}->ArticleAttachment(
+                my %AttachmentPicture = $TicketObject->ArticleAttachment(
                     ArticleID => $Param{ArticleID},
                     FileID    => $AttachmentID,
                     UserID    => $Self->{UserID},
