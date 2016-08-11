@@ -1,4 +1,5 @@
 #6.0.0.beta1 2016-??-??
+ - 2016-08-11 Extended searching for customers and customer users.
  - 2015-08-01 Updated CPAN module CGI to version 4.32.
  - 2016-07-26 Added a new postmaster filter to decrypt and handle encrypted mails.
  - 2016-07-18 Fixed bug#[7860](http://bugs.otrs.org/show_bug.cgi?id=7860) - AgentTicketSearch and Statistics are missing TicketPending option.
