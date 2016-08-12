@@ -1469,6 +1469,7 @@ via the Preferences button after logging in.
         CustomerUserSearchFields           => [ 'login', 'first_name', 'last_name', 'customer_id' ],
         CustomerUserSearchPrefix           => '*',
         CustomerUserSearchSuffix           => '*',
+        CustomerUserSearchExtended         => 0,   # 0 - normal search (space is part of search phrase), 1 - extended search (space works like +)
         CustomerUserSearchListLimit        => 250,
         CustomerUserPostMasterSearchFields => ['email'],
         CustomerUserNameFields             => [ 'title', 'first_name', 'last_name' ],
@@ -1573,6 +1574,7 @@ via the Preferences button after logging in.
 #        CustomerUserSearchFields => ['uid', 'cn', 'mail'],
 #        CustomerUserSearchPrefix => '',
 #        CustomerUserSearchSuffix => '*',
+#        CustomerUserSearchExtended => 0,   # 0 - normal search (space is part of search phrase), 1 - extended search (space works like +)
 #        CustomerUserSearchListLimit => 250,
 #        CustomerUserPostMasterSearchFields => ['mail'],
 #        CustomerUserNameFields => ['givenname', 'sn'],
@@ -1635,6 +1637,7 @@ via the Preferences button after logging in.
         CustomerCompanySearchFields    => ['customer_id', 'name'],
         CustomerCompanySearchPrefix    => '*',
         CustomerCompanySearchSuffix    => '*',
+        CustomerCompanySearchExtended  => 0,   # 0 - normal search (space is part of search phrase), 1 - extended search (space works like +)
         CustomerCompanySearchListLimit => 250,
         CacheTTL                       => 60 * 60 * 24, # use 0 to turn off cache
 

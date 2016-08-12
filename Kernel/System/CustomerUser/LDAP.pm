@@ -141,6 +141,10 @@ sub new {
     if ( !defined $Self->{SearchSuffix} ) {
         $Self->{SearchSuffix} = '*';
     }
+    $Self->{SearchExtended} = $Self->{CustomerUserMap}->{CustomerUserSearchExtended};
+    if ( !defined $Self->{SearchExtended} ) {
+        $Self->{SearchExtended} = 0;
+    }
 
     # charset settings
     $Self->{SourceCharset} = $Self->{CustomerUserMap}->{Params}->{SourceCharset} || '';
@@ -378,7 +382,13 @@ sub CustomerSearch {
     if ( $Param{Search} ) {
 
         my $Count = 0;
-        my @Parts = split( /\+/, $Param{Search}, 6 );
+        my @Parts;
+        if ( $Self->{SearchExtended} ) {
+            @Parts = split( /\+|\s/, $Param{Search}, 6 );
+        }
+        else {
+            @Parts = split( /\+/, $Param{Search}, 6 );
+        }
         for my $Part (@Parts) {
 
             $Part = $Self->{SearchPrefix} . $Part . $Self->{SearchSuffix};

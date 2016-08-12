@@ -47,6 +47,10 @@ sub new {
     if ( !defined( $Self->{SearchSuffix} ) ) {
         $Self->{SearchSuffix} = '*';
     }
+    $Self->{SearchExtended} = $Self->{CustomerCompanyMap}->{'CustomerCompanySearchExtended'};
+    if ( !defined( $Self->{SearchExtended} ) ) {
+        $Self->{SearchExtended} = 0;
+    }
 
     # create cache object, but only if CacheTTL is set in customer config
     if ( $Self->{CustomerCompanyMap}->{CacheTTL} ) {
@@ -155,6 +159,7 @@ sub CustomerCompanyList {
             Value         => $Param{Search},
             SearchPrefix  => $Self->{SearchPrefix},
             SearchSuffix  => $Self->{SearchSuffix},
+            Extended      => $Self->{SearchExtended},
             CaseSensitive => $Self->{CaseSensitive},
             BindMode      => 1,
         );
