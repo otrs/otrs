@@ -380,6 +380,14 @@ sub Run {
 
             $TicketEntry{$Attribute} = $TicketEntryRaw{$Attribute};
         }
+        
+        # get accounted time
+        	
+    	my $TimeUnit = $TicketObject->TicketAccountedTimeGet(
+    		TicketID => $TicketID,
+    	);
+    
+    	$TicketEntry{'TimeUnit'} = $TimeUnit;
 
         # add dynamic fields array into 'DynamicField' hash key if any
         if (@DynamicFields) {
