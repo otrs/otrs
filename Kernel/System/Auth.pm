@@ -67,31 +67,32 @@ sub new {
 
         next COUNT if !$GenericModule;
 
-        my $EnableBackend = 1; # Enable backend by default
-        
+        my $EnableBackend = 1;    # Enable backend by default
+
         # Get configuration of backend
         my $EnableBackendByHost = $ConfigObject->Get("AuthModule::EnableByHost$Count");
-        
+
         # Defined?
-        if ( $EnableBackendByHost && $ENV{HTTP_HOST}) {
-            
+        if ( $EnableBackendByHost && $ENV{HTTP_HOST} ) {
+
             if ( ref $EnableBackendByHost ne 'ARRAY' ) {
+
                 # Only one host specified, so create a reference to single element list
-                $EnableBackendByHost = [ $EnableBackendByHost ];
+                $EnableBackendByHost = [$EnableBackendByHost];
             }
-            
-            $EnableBackend = 0; # Filtering regexp defined - disable backend
-            
+
+            $EnableBackend = 0;    # Filtering regexp defined - disable backend
+
             REGEXP:
             for my $RegExp ( @{$EnableBackendByHost} ) {
-    
+
                 # skip if empty regexp
                 next REGEXP if !$RegExp;
-    
+
                 # check if regexp is matching
                 if ( $ENV{HTTP_HOST} =~ /$RegExp/i ) {
                     $EnableBackend = 1;
-                    last REGEXP; # Host matched, no need to check others
+                    last REGEXP;    # Host matched, no need to check others
                 }
             }
         }
@@ -100,7 +101,7 @@ sub new {
         }
 
         $Self->{"AuthBackend$Count"} = $GenericModule->new( Count => $Count );
-        
+
         # Mark enabled or not for PreAuth filtering
         $Self->{"AuthBackend$Count"}->{Enabled} = $EnableBackend;
     }
@@ -155,7 +156,7 @@ sub GetOption {
     my ( $Self, %Param ) = @_;
 
     # Find first enabled backend
-    for my $Count ( '', 1..10 ) {
+    for my $Count ( '', 1 .. 10 ) {
         return $Self->{"AuthBackend$Count"}->GetOption(%Param) if $Self->{"AuthBackend$Count"}->{Enabled};
     }
 }

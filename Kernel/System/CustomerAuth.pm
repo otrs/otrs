@@ -63,35 +63,36 @@ sub new {
         my $GenericModule = $ConfigObject->Get("Customer::AuthModule$Count");
         next SOURCE if !$GenericModule;
 
-        my $EnableBackend = 1; # Enable backend by default
-        
+        my $EnableBackend = 1;    # Enable backend by default
+
         # Get configuration of backend
         my $EnableBackendByHost = $ConfigObject->Get("Customer::AuthModule::EnableByHost$Count");
-        
+
         # Defined?
-        if ( $EnableBackendByHost && $ENV{HTTP_HOST}) {
-            
+        if ( $EnableBackendByHost && $ENV{HTTP_HOST} ) {
+
             if ( ref $EnableBackendByHost ne 'ARRAY' ) {
+
                 # Only one host specified, so create a reference to single element list
-                $EnableBackendByHost = [ $EnableBackendByHost ];
+                $EnableBackendByHost = [$EnableBackendByHost];
             }
-            
-            $EnableBackend = 0; # Filtering regexp defined - disable backend
-            
+
+            $EnableBackend = 0;    # Filtering regexp defined - disable backend
+
             REGEXP:
             for my $RegExp ( @{$EnableBackendByHost} ) {
-    
+
                 # skip if empty regexp
                 next REGEXP if !$RegExp;
-    
+
                 # check if regexp is matching
                 if ( $ENV{HTTP_HOST} =~ /$RegExp/i ) {
                     $EnableBackend = 1;
-                    last REGEXP; # Host matched, no need to check others
+                    last REGEXP;    # Host matched, no need to check others
                 }
             }
         }
-        
+
         if ( !$MainObject->Require($GenericModule) ) {
             $MainObject->Die("Can't load backend module $GenericModule! $@");
         }
@@ -133,7 +134,7 @@ sub GetOption {
     my ( $Self, %Param ) = @_;
 
     # Find first enabled backend
-    for my $Count ( '', 1..10 ) {
+    for my $Count ( '', 1 .. 10 ) {
         return $Self->{"Backend$Count"}->GetOption(%Param) if $Self->{"Backend$Count"}->{Enabled};
     }
 }
