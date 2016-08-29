@@ -304,7 +304,7 @@
         </Setting>
     </ConfigItem>
     <ConfigItem Name="AgentShortcutIcon" Required="0" Valid="0">
-        <Description Translatable="1">The shortcut icon for the agent interface. The URL to the icon must be a relative URL to the skin image directory.</Description>
+        <Description Translatable="1">The shortcut icon for the agent interface.</Description>
         <Group>Framework</Group>
         <SubGroup>Frontend::Agent</SubGroup>
         <Setting>
