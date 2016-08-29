@@ -281,6 +281,14 @@
             <String Regex="">Example Company</String>
         </Setting>
     </ConfigItem>
+    <ConfigItem Name="CustomerShortcutIcon" Required="0" Valid="0">
+        <Description Translatable="1">The shortcut icon for the customer interface.</Description>
+        <Group>Framework</Group>
+        <SubGroup>Frontend::Customer</SubGroup>
+        <Setting>
+            <String Regex="">/otrs-web/skins/Agent/default/img/icons/product.ico</String>
+        </Setting>
+    </ConfigItem>
     <ConfigItem Name="CustomerLogo" Required="0" Valid="0">
         <Description Translatable="1">The logo shown in the header of the customer interface. The URL to the image can be a relative URL to the skin image directory, or a full URL to a remote web server.</Description>
         <Group>Framework</Group>
@@ -293,6 +301,14 @@
                 <Item Key="StyleHeight">50px</Item>
                 <Item Key="StyleWidth">135px</Item>
             </Hash>
+        </Setting>
+    </ConfigItem>
+    <ConfigItem Name="AgentShortcutIcon" Required="0" Valid="0">
+        <Description Translatable="1">The shortcut icon for the agent interface. The URL to the icon must be a relative URL to the skin image directory.</Description>
+        <Group>Framework</Group>
+        <SubGroup>Frontend::Agent</SubGroup>
+        <Setting>
+            <String Regex="">/otrs-web/skins/Agent/default/img/icons/product.ico</String>
         </Setting>
     </ConfigItem>
     <ConfigItem Name="AgentLogo" Required="0" Valid="1">
