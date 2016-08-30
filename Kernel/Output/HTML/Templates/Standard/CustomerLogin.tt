@@ -16,7 +16,7 @@
     <div id="NoJavaScript">
         <h2>[% Translate("JavaScript Not Available") | html %]</h2>
         <p>
-            [% Translate("In order to experience OTRS, you'll need to enable JavaScript in your browser.") | html %]
+            [% Translate("In order to experience this software, you'll need to enable JavaScript in your browser.") | html %]
         </p>
     </div>
     </noscript>
