@@ -131,7 +131,7 @@ X-OTRS-Login: [% Env("Baselink") %]
                 <div class="Content">
                     <p class="SpacingTop Center">
                         [% Translate("The browser you are using is too old.") | html %]
-                        [% Translate("OTRS runs with a huge lists of browsers, please upgrade to one of these.") | html %]
+                        [% Translate("This software runs with a huge lists of browsers, please upgrade to one of these.") | html %]
                         [% Translate("Please see the documentation or ask your admin for further information.") | html %]
                     </p>
                 </div>
