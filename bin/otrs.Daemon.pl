@@ -556,8 +556,7 @@ sub _LogFilesSet {
     my $SystemTime = $Kernel::OM->Get('Kernel::System::Time')->SystemTime();
 
     # get log rotation type and backup old logs if logs should be rotated by OTRS
-    my $RotationType = $ConfigObject->Get('Daemon::Log::RotationType') || 'otrs';
-    $RotationType = lc $RotationType;
+    my $RotationType = lc $ConfigObject->Get('Daemon::Log::RotationType') || 'otrs';
     if ( $RotationType eq 'otrs' ) {
         use File::Copy qw(move);
         if ( -e "$FileStdOut.log" ) {
@@ -614,8 +613,7 @@ sub _LogFilesCleanup {
     my %Param = @_;
 
     # skip cleanup if OTRS log rotation is not enabled
-    my $RotationType = $Kernel::OM->Get('Kernel::Config')->Get('Daemon::Log::RotationType') || 'otrs';
-    $RotationType = lc $RotationType;
+    my $RotationType = lc $Kernel::OM->Get('Kernel::Config')->Get('Daemon::Log::RotationType') || 'otrs';
     return 1 if $RotationType ne 'otrs';
 
     my @LogFiles = glob "$LogDir/*.log";
