@@ -492,7 +492,16 @@ sub Run {
                     $Article{DynamicField} = \@ArticleDynamicFields;
                 }
 
-                push @ArticleBox, \%Article;
+
+		#get article accounted time
+
+		my $ArticleTime = $TicketObject->ArticleAccountedTimeGet(
+                    ArticleID => $ArticleRaw->{ArticleID}
+                );
+                
+		$Article{'TimeUnit'} = $ArticleTime;
+
+		push @ArticleBox, \%Article;
             }
             $TicketBundle->{Article} = \@ArticleBox;
         }
