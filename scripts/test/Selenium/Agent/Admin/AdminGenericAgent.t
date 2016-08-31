@@ -81,6 +81,26 @@ $Selenium->RunTest(
             "Dynamic field $DynamicFieldName - ID $DynamicFieldID - created",
         );
 
+        # create also a dynamic field of type checkbox
+        my $CheckboxDynamicFieldName = 'TestCheckbox' . $RandomID;
+        my $CheckboxDynamicFieldID   = $DynamicFieldObject->DynamicFieldAdd(
+            Name       => $CheckboxDynamicFieldName,
+            Label      => $CheckboxDynamicFieldName,
+            FieldOrder => 9992,
+            FieldType  => 'Checkbox',
+            ObjectType => 'Ticket',
+            Config     => {
+                DefaultValue => 0,
+            },
+            ValidID => 1,
+            UserID  => $UserID,
+        );
+
+        $Self->True(
+            $DynamicFieldID,
+            "Dynamic field $CheckboxDynamicFieldName - ID $CheckboxDynamicFieldID - created",
+        );
+
         # get ticket object
         my $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
 
@@ -126,8 +146,45 @@ $Selenium->RunTest(
         $Selenium->find_element( "table thead tr th", 'css' );
         $Selenium->find_element( "table tbody tr td", 'css' );
 
+        # check breadcrumb on Overview screen
+        $Self->True(
+            $Selenium->find_element( '.BreadCrumb', 'css' ),
+            "Breadcrumb is found on Overview screen.",
+        );
+
         # check add job page
         $Selenium->find_element("//a[contains(\@href, \'Subaction=Update' )]")->VerifiedClick();
+
+        # check breadcrumb on Add job screen
+        my $Count = 0;
+        my $IsLinkedBreadcrumbText;
+        for my $BreadcrumbText ( 'You are here:', 'Generic Agent', 'Add job' ) {
+            $Self->Is(
+                $Selenium->execute_script("return \$(\$('.BreadCrumb li')[$Count]).text().trim()"),
+                $BreadcrumbText,
+                "Breadcrumb text '$BreadcrumbText' is found on screen"
+            );
+
+            $IsLinkedBreadcrumbText =
+                $Selenium->execute_script("return \$(\$('.BreadCrumb li')[$Count]).children('a').length");
+
+            if ( $BreadcrumbText eq 'Generic Agent' ) {
+                $Self->Is(
+                    $IsLinkedBreadcrumbText,
+                    1,
+                    "Breadcrumb text '$BreadcrumbText' is linked"
+                );
+            }
+            else {
+                $Self->Is(
+                    $IsLinkedBreadcrumbText,
+                    0,
+                    "Breadcrumb text '$BreadcrumbText' is not linked"
+                );
+            }
+
+            $Count++;
+        }
 
         my $Element = $Selenium->find_element( "#Profile", 'css' );
         $Element->is_displayed();
@@ -142,8 +199,12 @@ $Selenium->RunTest(
         $Selenium->find_element( "#Profile", 'css' )->send_keys($GenericAgentJob);
         $Selenium->find_element( "#Title",   'css' )->send_keys($GenericTicketSearch);
 
-        # set test dynamic field to past date (bug#12210)
+        # set test dynamic field to date in the past, but do not activate it
+        # validation used to kick in even if checkbox in front wasn't activated
+        # see bug#12210 for more information
         $Selenium->find_element( "#DynamicField_${DynamicFieldName}Year", 'css' )->send_keys('2015');
+
+        $Selenium->find_element( "#DynamicField_${CheckboxDynamicFieldName}Used1", 'css' )->VerifiedClick();
 
         # save job
         $Selenium->find_element( "#Profile", 'css' )->VerifiedSubmit();
@@ -187,8 +248,46 @@ $Selenium->RunTest(
         # edit test job to delete test ticket
         $Selenium->find_element( $GenericAgentJob, 'link_text' )->VerifiedClick();
 
+        # check breadcrumb on Edit job screen
+        $Count = 0;
+        for my $BreadcrumbText ( 'You are here:', 'Generic Agent', 'Edit job: ' . $GenericAgentJob ) {
+            $Self->Is(
+                $Selenium->execute_script("return \$(\$('.BreadCrumb li')[$Count]).text().trim()"),
+                $BreadcrumbText,
+                "Breadcrumb text '$BreadcrumbText' is found on screen"
+            );
+
+            $IsLinkedBreadcrumbText =
+                $Selenium->execute_script("return \$(\$('.BreadCrumb li')[$Count]).children('a').length");
+
+            if ( $BreadcrumbText eq 'Generic Agent' ) {
+                $Self->Is(
+                    $IsLinkedBreadcrumbText,
+                    1,
+                    "Breadcrumb text '$BreadcrumbText' is linked"
+                );
+            }
+            else {
+                $Self->Is(
+                    $IsLinkedBreadcrumbText,
+                    0,
+                    "Breadcrumb text '$BreadcrumbText' is not linked"
+                );
+            }
+
+            $Count++;
+        }
+
         # toggle Execute Ticket Commands widget
         $Selenium->execute_script('$(".WidgetSimple.Collapsed .WidgetAction.Toggle a").click();');
+
+        # check if the checkbox from dynamicfield is selected
+        $Self->Is(
+            $Selenium->find_element( "#DynamicField_${CheckboxDynamicFieldName}Used1", 'css' )->is_selected(),
+            1,
+            "$CheckboxDynamicFieldName Used1 is selected",
+        );
+
         $Selenium->execute_script("\$('#NewDelete').val('1').trigger('redraw.InputField').trigger('change');");
         $Selenium->find_element( "#Profile", 'css' )->VerifiedSubmit();
 
@@ -213,6 +312,36 @@ $Selenium->RunTest(
 
         # run test job
         $Selenium->find_element("//a[contains(\@href, \'Subaction=Run;Profile=$GenericAgentJob' )]")->VerifiedClick();
+
+        # check breadcrumb on Run job screen
+        $Count = 0;
+        for my $BreadcrumbText ( 'You are here:', 'Generic Agent', 'Run job: ' . $GenericAgentJob ) {
+            $Self->Is(
+                $Selenium->execute_script("return \$(\$('.BreadCrumb li')[$Count]).text().trim()"),
+                $BreadcrumbText,
+                "Breadcrumb text '$BreadcrumbText' is found on screen"
+            );
+
+            $IsLinkedBreadcrumbText =
+                $Selenium->execute_script("return \$(\$('.BreadCrumb li')[$Count]).children('a').length");
+
+            if ( $BreadcrumbText eq 'Generic Agent' ) {
+                $Self->Is(
+                    $IsLinkedBreadcrumbText,
+                    1,
+                    "Breadcrumb text '$BreadcrumbText' is linked"
+                );
+            }
+            else {
+                $Self->Is(
+                    $IsLinkedBreadcrumbText,
+                    0,
+                    "Breadcrumb text '$BreadcrumbText' is not linked"
+                );
+            }
+
+            $Count++;
+        }
 
         # check if test job show expected result
         for my $TicketNumber (@TicketNumbers) {
