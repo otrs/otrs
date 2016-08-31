@@ -3166,6 +3166,7 @@ sub BuildDateSelection {
     my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
 
     my $DateInputStyle = $ConfigObject->Get('TimeInputFormat');
+    my $MinuteStep     = $ConfigObject->Get('TimeInputMinutesStep');
     my $Prefix         = $Param{Prefix} || '';
     my $DiffTime       = $Param{DiffTime} || 0;
     my $Format         = defined( $Param{Format} ) ? $Param{Format} : 'DateInputFormatLong';
@@ -3388,7 +3389,7 @@ sub BuildDateSelection {
 
         # minute
         if ( $DateInputStyle eq 'Option' ) {
-            my %Minute = map { $_ => sprintf( "%02d", $_ ); } ( 0 .. 59 );
+            my %Minute = map { $_ => sprintf( "%02d", $_ ); } map { $_ * $MinuteStep } ( 0 .. ( 60 / $Step - 1 ) );
             $Param{Minute} = $Self->BuildSelection(
                 Name       => $Prefix . 'Minute',
                 Data       => \%Minute,
