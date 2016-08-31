@@ -59,12 +59,12 @@ $Selenium->RunTest(
                 TicketIDs     => [],
                 TicketLink    => 'Open',
             },
-            'Closed' => {
+            'closed' => {
                 TicketState   => 'closed successful',
                 TicketCount   => '',
                 TicketNumbers => [],
                 TicketIDs     => [],
-                TicketLink    => 'Closed',
+                TicketLink    => 'closed',
             },
         );
 
@@ -142,13 +142,19 @@ $Selenium->RunTest(
             "Setting for toggle widgets found on page",
         );
 
+        # check if there is link to CIC search modal dialog from heading (name of the company)
+        $Self->True(
+            $Selenium->find_element( "#CustomerInformationCenterHeading", 'css' ),
+            'There is link to customer information center search modal dialog.',
+        );
+
         # test links in Company Status widget
         for my $TestLinks ( sort keys %TicketData ) {
 
             # click on link
             $Selenium->find_element(
                 "//a[contains(\@href, \'Subaction=Search;StateType=$TicketData{$TestLinks}->{TicketLink};CustomerID=$TestCustomerUserLogin' )]"
-            )->click();
+            )->VerifiedClick();
 
             # wait until page has loaded, if necessary
             $Selenium->WaitFor( JavaScript => 'return typeof($) === "function" && $("body").length' );
@@ -164,7 +170,7 @@ $Selenium->RunTest(
             # click on 'Change search option'
             $Selenium->find_element(
                 "//a[contains(\@href, \'AgentTicketSearch;Subaction=LoadProfile' )]"
-            )->click();
+            )->VerifiedClick();
 
             # wait until search dialog has been loaded
             $Selenium->WaitFor( JavaScript => 'return typeof($) === "function" && $("#SearchFormSubmit").length' );
@@ -173,7 +179,7 @@ $Selenium->RunTest(
             $Selenium->find_element( "#StateIDs", 'css' );
 
             # open CIC again for the next test case
-            $Selenium->get(
+            $Selenium->VerifiedGet(
                 "${ScriptAlias}index.pl?Action=AgentCustomerInformationCenter;CustomerID=$TestCustomerUserLogin"
             );
 

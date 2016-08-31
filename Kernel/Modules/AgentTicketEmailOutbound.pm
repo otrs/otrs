@@ -588,8 +588,15 @@ sub Form {
             );
 
             # get params
-            for my $Param ( $Object->Option( %Data, %GetParam, Config => $Jobs{$Job} ) ) {
-                $GetParam{$Param} = $ParamObject->GetParam( Param => $Param );
+            PARAMETER:
+            for my $Parameter ( $Object->Option( %GetParam, Config => $Jobs{$Job} ) ) {
+
+                if ( $Jobs{$Job}->{ParamType} && $Jobs{$Job}->{ParamType} ne 'Single' ) {
+                    @{ $GetParam{$Parameter} } = $ParamObject->GetArray( Param => $Parameter );
+                    next PARAMETER;
+                }
+
+                $GetParam{$Parameter} = $ParamObject->GetParam( Param => $Parameter );
             }
 
             # run module
@@ -912,7 +919,7 @@ sub SendEmail {
                 Message =>
                     $LayoutObject->{LanguageObject}
                     ->Translate( 'Could not perform validation on field %s!', $DynamicFieldConfig->{Label} ),
-                Comment => Translatable('Please contact the admin.'),
+                Comment => Translatable('Please contact the administrator.'),
             );
         }
 
@@ -988,18 +995,50 @@ sub SendEmail {
                 Debug => $Self->{Debug},
             );
 
+            my $Multiple;
+
             # get params
-            for my $Param ( $Object->Option( %GetParam, Config => $Jobs{$Job} ) ) {
-                $GetParam{$Param} = $ParamObject->GetParam( Param => $Param );
+            PARAMETER:
+            for my $Parameter ( $Object->Option( %GetParam, Config => $Jobs{$Job} ) ) {
+                if ( $Jobs{$Job}->{ParamType} && $Jobs{$Job}->{ParamType} ne 'Single' ) {
+                    @{ $GetParam{$Parameter} } = $ParamObject->GetArray( Param => $Parameter );
+                    $Multiple = 1;
+                    next PARAMETER;
+                }
+
+                $GetParam{$Parameter} = $ParamObject->GetParam( Param => $Parameter );
             }
 
             # run module
-            $Object->Run( %GetParam, Config => $Jobs{$Job} );
+            $Object->Run(
+                %GetParam,
+                StoreNew => 1,
+                Config   => $Jobs{$Job}
+            );
+
+            # get options that have been removed from the selection
+            # and add them back to the selection so that the submit
+            # will contain options that were hidden from the agent
+            my $Key = $Object->Option( %GetParam, Config => $Jobs{$Job} );
+
+            if ( $Object->can('GetOptionsToRemoveAJAX') ) {
+                my @RemovedOptions = $Object->GetOptionsToRemoveAJAX(%GetParam);
+                if (@RemovedOptions) {
+                    if ($Multiple) {
+                        for my $RemovedOption (@RemovedOptions) {
+                            push @{ $GetParam{$Key} }, $RemovedOption;
+                        }
+                    }
+                    else {
+                        $GetParam{$Key} = shift @RemovedOptions;
+                    }
+                }
+            }
 
             # ticket params
             %ArticleParam = (
                 %ArticleParam,
-                $Object->ArticleOption( %GetParam, Config => $Jobs{$Job} ),
+                $Object->ArticleOption( %GetParam, %ArticleParam, Config => $Jobs{$Job} ),
             );
 
             # get errors
@@ -1175,7 +1214,7 @@ sub SendEmail {
     if ( !$ArticleID ) {
 
         return $LayoutObject->ErrorScreen(
-            Comment => Translatable('Please contact the admin.'),
+            Comment => Translatable('Please contact the administrator.'),
         );
     }
 
@@ -1290,24 +1329,50 @@ sub AjaxUpdate {
                 Debug => $Self->{Debug},
             );
 
+            my $Multiple;
+
             # get params
+            PARAMETER:
             for my $Parameter ( $Object->Option( %GetParam, Config => $Jobs{$Job} ) ) {
+                if ( $Jobs{$Job}->{ParamType} && $Jobs{$Job}->{ParamType} ne 'Single' ) {
+                    @{ $GetParam{$Parameter} } = $ParamObject->GetArray( Param => $Parameter );
+                    $Multiple = 1;
+                    next PARAMETER;
+                }
+
                 $GetParam{$Parameter} = $ParamObject->GetParam( Param => $Parameter );
             }
 
             # run module
             my %Data = $Object->Data( %GetParam, Config => $Jobs{$Job} );
 
+            # get AJAX param values
+            if ( $Object->can('GetParamAJAX') ) {
+                %GetParam = ( %GetParam, $Object->GetParamAJAX(%GetParam) )
+            }
+
+            # get options that have to be removed from the selection visible
+            # to the agent. These options will be added again on submit.
+            if ( $Object->can('GetOptionsToRemoveAJAX') ) {
+                my @OptionsToRemove = $Object->GetOptionsToRemoveAJAX(%GetParam);
+
+                for my $OptionToRemove (@OptionsToRemove) {
+                    delete $Data{$OptionToRemove};
+                }
+            }
+
             my $Key = $Object->Option( %GetParam, Config => $Jobs{$Job} );
             if ($Key) {
                 push(
                     @ExtendedData,
                     {
-                        Name        => $Key,
-                        Data        => \%Data,
-                        SelectedID  => $GetParam{$Key},
-                        Translation => 1,
-                        Max         => 100,
+                        Name         => $Key,
+                        Data         => \%Data,
+                        SelectedID   => $GetParam{$Key},
+                        Translation  => 1,
+                        PossibleNone => 1,
+                        Multiple     => $Multiple,
+                        Max          => 100,
                     }
                 );
             }
@@ -1467,13 +1532,6 @@ sub _Mask {
         OnlyDynamicFields => 1
     );
 
-    # create a string with the quoted dynamic field names separated by commas
-    if ( IsArrayRefWithData($DynamicFieldNames) ) {
-        for my $Field ( @{$DynamicFieldNames} ) {
-            $Param{DynamicFieldNamesStrg} .= ", '" . $Field . "'";
-        }
-    }
-
     # get config object
     my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
 
@@ -1525,11 +1583,6 @@ sub _Mask {
             Class         => 'Modernize',
         );
     }
-
-    # build customer search autocomplete field
-    $LayoutObject->Block(
-        Name => 'CustomerSearchAutoComplete',
-    );
 
     # prepare errors!
     if ( $Param{Errors} ) {
@@ -1851,11 +1904,16 @@ sub _Mask {
         $Param{RichTextHeight} = $Config->{RichTextHeight} || 0;
         $Param{RichTextWidth}  = $Config->{RichTextWidth}  || 0;
 
-        $LayoutObject->Block(
-            Name => 'RichText',
+        # set up rich text editor
+        $LayoutObject->SetRichTextParameters(
             Data => \%Param,
         );
     }
+
+    $LayoutObject->AddJSData(
+        Key   => 'DynamicFieldNames',
+        Value => $DynamicFieldNames,
+    );
 
     # create & return output
     return $LayoutObject->Output(

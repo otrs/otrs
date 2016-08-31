@@ -66,10 +66,12 @@ which holds the minified and concatenated content of the files.
 Uses caching internally.
 
     my $TargetFilename = $LoaderObject->MinifyFiles(
-        List  => [
+        List  => [                          # optional,  minify list of files
             $Filename,
             $Filename2,
         ],
+        Checksum             => '...'       # optional, pass a checksum for the minified file
+        Content              => '...'       # optional, pass direct (already minified) content instead of a file list
         Type                 => 'CSS',      # CSS | JavaScript
         TargetDirectory      => $TargetDirectory,
         TargetFilenamePrefix => 'CommonCSS',    # optional, prefix for the target filename
@@ -81,11 +83,13 @@ sub MinifyFiles {
     my ( $Self, %Param ) = @_;
 
     # check needed params
-    my $List = $Param{List};
-    if ( ref $List ne 'ARRAY' || !@{$List} ) {
+    my $List    = $Param{List};
+    my $Content = $Param{Content};
+
+    if ( !$Content && ( ref $List ne 'ARRAY' || !@{$List} ) ) {
         $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'error',
-            Message  => 'Need List!',
+            Message  => 'Need List or Content!',
         );
         return;
     }
@@ -126,24 +130,33 @@ sub MinifyFiles {
 
     my $MainObject = $Kernel::OM->Get('Kernel::System::Main');
 
-    my $FileString;
-    LOCATION:
-    for my $Location ( @{$List} ) {
-        if ( !-e $Location ) {
-            next LOCATION;
-        }
-        my $FileMTime = $MainObject->FileGetMTime(
-            Location => $Location
-        );
-
-        # For the caching, use both filename and mtime to make sure that
-        #   caches are correctly regenerated on changes.
-        $FileString .= "$Location:$FileMTime:";
+    my $Filename;
+    if ( $Param{Checksum} ) {
+        $Filename = $TargetFilenamePrefix . $Param{Checksum};
     }
+    else {
+        my $FileString;
 
-    my $Filename = $TargetFilenamePrefix . $MainObject->MD5sum(
-        String => \$FileString,
-    );
+        if ( $Param{List} ) {
+            LOCATION:
+            for my $Location ( @{$List} ) {
+                if ( !-e $Location ) {
+                    next LOCATION;
+                }
+                my $FileMTime = $MainObject->FileGetMTime(
+                    Location => $Location
+                );
+
+                # For the caching, use both filename and mtime to make sure that
+                #   caches are correctly regenerated on changes.
+                $FileString .= "$Location:$FileMTime:";
+            }
+        }
+
+        $Filename = $TargetFilenamePrefix . $MainObject->MD5sum(
+            String => \$FileString,
+        );
+    }
 
     if ( $Param{Type} eq 'CSS' ) {
         $Filename .= '.css';
@@ -154,8 +167,6 @@ sub MinifyFiles {
     }
 
     if ( !-r "$TargetDirectory/$Filename" ) {
-
-        my $Content;
 
         # no cache available, so loop through all files, get minified version and concatenate
         LOCATION: for my $Location ( @{$List} ) {
@@ -422,6 +433,18 @@ sub CacheGenerate {
         $LayoutObject->LoaderCreateCustomerJSCalls();
         push @Result, $FrontendModule;
     }
+
+    # Now generate JavaScript translation content
+    for my $UserLanguage ( sort keys %{ $ConfigObject->Get('DefaultUsedLanguages') // {} } ) {
+        $Kernel::OM->ObjectsDiscard( Objects => ['Kernel::Language'] );
+        my $LocalLayoutObject = Kernel::Output::HTML::Layout->new(
+            Lang => $UserLanguage,
+        );
+        $LocalLayoutObject->LoaderCreateJavaScriptTranslationData();
+    }
+
+    # generate JS template cache
+    $LayoutObject->LoaderCreateJavaScriptTemplateData();
 
     return @Result;
 }

@@ -8,9 +8,12 @@
 
 package Kernel::System::UnitTest::Helper;
 ## nofilter(TidyAll::Plugin::OTRS::Perl::Time)
+## nofilter(TidyAll::Plugin::OTRS::Migrations::OTRS6::DateTime)
 
 use strict;
 use warnings;
+
+use File::Path qw(rmtree);
 
 use Kernel::System::SysConfig;
 
@@ -40,10 +43,14 @@ construct a helper object.
     use Kernel::System::ObjectManager;
     local $Kernel::OM = Kernel::System::ObjectManager->new(
         'Kernel::System::UnitTest::Helper' => {
-            RestoreSystemConfiguration => 1,        # optional, save ZZZAuto.pm
-                                                    # and restore it in the destructor
             RestoreDatabase            => 1,        # runs the test in a transaction,
                                                     # and roll it back in the destructor
+                                                    #
+                                                    # NOTE: Rollback does not work for
+                                                    # changes in the database layout. If you
+                                                    # want to do this in your tests, you cannot
+                                                    # use this option and must handle the rollback
+                                                    # yourself.
         },
     );
     my $Helper = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
@@ -61,14 +68,8 @@ sub new {
 
     $Self->{UnitTestObject} = $Kernel::OM->Get('Kernel::System::UnitTest');
 
-    # make backup of system configuration if needed
-    if ( $Param{RestoreSystemConfiguration} ) {
-        $Self->{SysConfigObject} = Kernel::System::SysConfig->new();
-
-        $Self->{SysConfigBackup} = $Self->{SysConfigObject}->Download();
-
-        $Self->{UnitTestObject}->True( 1, 'Creating backup of the system configuration.' );
-    }
+    # remove any leftover configuration changes from aborted previous runs
+    $Self->ConfigSettingCleanup();
 
     # set environment variable to skip SSL certificate verification if needed
     if ( $Param{SkipSSLVerify} ) {
@@ -81,6 +82,11 @@ sub new {
 
         $Self->{RestoreSSLVerify} = 1;
         $Self->{UnitTestObject}->True( 1, 'Skipping SSL certificates verification' );
+    }
+
+    # switch article dir to a temporary one to avoid collisions
+    if ( $Param{UseTmpArticleDir} ) {
+        $Self->UseTmpArticleDir();
     }
 
     if ( $Param{RestoreDatabase} ) {
@@ -123,20 +129,16 @@ to create test data.
 
 # Use package variables here (instead of attributes in $Self)
 # to make it work across several unit tests that run during the same second.
-my $GetRandomNumberPreviousEpoch = 0;
-my $GetRandomNumberCounter       = 0;
+my %GetRandomNumberPrevious;
 
 sub GetRandomNumber {
-    my ( $Self, %Param ) = @_;
 
-    my $Epoch = time();
-    $GetRandomNumberPreviousEpoch //= 0;
-    if ( $GetRandomNumberPreviousEpoch != $Epoch ) {
-        $GetRandomNumberPreviousEpoch = $Epoch;
-        $GetRandomNumberCounter       = 0;
-    }
+    my $PIDReversed = reverse $$;
+    my $PID = reverse sprintf '%.6d', $PIDReversed;
 
-    return $Epoch . $GetRandomNumberCounter++;
+    my $Prefix = $PID . substr time(), -5, 5;
+
+    return $Prefix . $GetRandomNumberPrevious{$Prefix}++ || 0;
 }
 
 =item TestUserCreate()
@@ -337,7 +339,7 @@ sub GetTestHTTPHostname {
     return $Host;
 }
 
-my $FixedTime;
+my $FixedDateTimeObject;
 
 =item FixedTimeSet()
 
@@ -345,16 +347,37 @@ makes it possible to override the system time as long as this object lives.
 You can pass an optional time parameter that should be used, if not,
 the current system time will be used.
 
-All regular perl calls to time(), localtime() and gmtime() will use this
-fixed time afterwards. If this object goes out of scope, the 'normal' system
-time will be used again.
+All calls to methods of Kernel::System::Time and Kernel::System::DateTime will
+use the given time afterwards.
+
+    $HelperObject->FixedTimeSet(366475757); # with Timestamp
+    $HelperObject->FixedTimeSet($DateTimeObject); # with previously created DateTime object
+    $HelperObject->FixedTimeSet(); # set to current date and time
+
+Returns:
+    Timestamp
 
 =cut
 
 sub FixedTimeSet {
     my ( $Self, $TimeToSave ) = @_;
 
-    $FixedTime = $TimeToSave // CORE::time();
+    if ( defined $TimeToSave ) {
+        if ( ref $TimeToSave eq 'Kernel::System::DateTime' ) {
+            $FixedDateTimeObject = $TimeToSave;
+        }
+        else {
+            $FixedDateTimeObject = $Kernel::OM->Create(
+                'Kernel::System::DateTime',
+                ObjectParams => {
+                    Epoch => $TimeToSave,
+                },
+            );
+        }
+    }
+    else {
+        $FixedDateTimeObject = $Kernel::OM->Create('Kernel::System::DateTime');
+    }
 
     # This is needed to reload objects that directly use the time functions
     #   to get a hold of the overrides.
@@ -362,6 +385,8 @@ sub FixedTimeSet {
         'Kernel::System::Time',
         'Kernel::System::Cache::FileStorable',
         'Kernel::System::PID',
+        'DateTime',
+        'Kernel::System::DateTime',
     );
 
     for my $Object (@Objects) {
@@ -375,7 +400,7 @@ sub FixedTimeSet {
         }
     }
 
-    return $FixedTime;
+    return $FixedDateTimeObject->ToEpoch();
 }
 
 =item FixedTimeUnset()
@@ -387,7 +412,7 @@ restores the regular system time behaviour.
 sub FixedTimeUnset {
     my ($Self) = @_;
 
-    undef $FixedTime;
+    undef $FixedDateTimeObject;
 
     return;
 }
@@ -402,27 +427,47 @@ set by FixedTimeSet(). You can pass a negative value to go back in time.
 sub FixedTimeAddSeconds {
     my ( $Self, $SecondsToAdd ) = @_;
 
-    return if ( !defined $FixedTime );
-    $FixedTime += $SecondsToAdd;
+    my $FixedDateTimeObject = $Self->FixedDateTimeObjectGet();
+    return if !defined $FixedDateTimeObject;
+
+    if ( $SecondsToAdd > 0 ) {
+        $FixedDateTimeObject->Add( Seconds => $SecondsToAdd );
+    }
+    else {
+        $FixedDateTimeObject->Subtract( Seconds => abs $SecondsToAdd );
+    }
+
     return;
+}
+
+=item FixedDateTimeObjectGet()
+
+Returns the fixed DateTime object that is currently being used/set.
+
+=cut
+
+sub FixedDateTimeObjectGet {
+    my ($Self) = @_;
+
+    return $FixedDateTimeObject;
 }
 
 # See http://perldoc.perl.org/5.10.0/perlsub.html#Overriding-Built-in-Functions
 BEGIN {
     *CORE::GLOBAL::time = sub {
-        return defined $FixedTime ? $FixedTime : CORE::time();
+        return defined $FixedDateTimeObject ? $FixedDateTimeObject->ToEpoch() : CORE::time();
     };
     *CORE::GLOBAL::localtime = sub {
         my ($Time) = @_;
         if ( !defined $Time ) {
-            $Time = defined $FixedTime ? $FixedTime : CORE::time();
+            $Time = defined $FixedDateTimeObject ? $FixedDateTimeObject->ToEpoch() : CORE::time();
         }
         return CORE::localtime($Time);
     };
     *CORE::GLOBAL::gmtime = sub {
         my ($Time) = @_;
         if ( !defined $Time ) {
-            $Time = defined $FixedTime ? $FixedTime : CORE::time();
+            $Time = defined $FixedDateTimeObject ? $FixedDateTimeObject->ToEpoch() : CORE::time();
         }
         return CORE::gmtime($Time);
     };
@@ -431,20 +476,15 @@ BEGIN {
 sub DESTROY {
     my $Self = shift;
 
-    # Reset time freeze
+    # reset time freeze
     FixedTimeUnset();
 
-    #
-    # Restore system configuration if needed
-    #
-    if ( $Self->{SysConfigBackup} ) {
-        $Self->{SysConfigObject}->Upload( Content => $Self->{SysConfigBackup} );
-        $Self->{UnitTestObject}->True( 1, 'Restored the system configuration' );
-    }
+    # FixedDateTimeObjectUnset();
 
-    #
-    # Restore environment variable to skip SSL certificate verification if needed
-    #
+    # remove any configuration changes.
+    $Self->ConfigSettingCleanup();
+
+    # restore environment variable to skip SSL certificate verification if needed
     if ( $Self->{RestoreSSLVerify} ) {
 
         $ENV{PERL_LWP_SSL_VERIFY_HOSTNAME} = $Self->{PERL_LWP_SSL_VERIFY_HOSTNAME};
@@ -454,7 +494,7 @@ sub DESTROY {
         $Self->{UnitTestObject}->True( 1, 'Restored SSL certificates verification' );
     }
 
-    # Restore database, clean caches
+    # restore database, clean caches
     if ( $Self->{RestoreDatabase} ) {
         my $RollbackSuccess = $Self->Rollback();
         $Kernel::OM->Get('Kernel::System::Cache')->CleanUp();
@@ -464,6 +504,11 @@ sub DESTROY {
     # disable email checks to create new user
     my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
     local $ConfigObject->{CheckEmailAddresses} = 0;
+
+    # cleanup temporary article directory
+    if ( $Self->{TmpArticleDir} && -d $Self->{TmpArticleDir} ) {
+        File::Path::rmtree( $Self->{TmpArticleDir} );
+    }
 
     # invalidate test users
     if ( ref $Self->{TestUsers} eq 'ARRAY' && @{ $Self->{TestUsers} } ) {
@@ -522,6 +567,135 @@ sub DESTROY {
             );
         }
     }
+}
+
+=item ConfigSettingChange()
+
+temporarily change a configuration setting system wide to another value,
+both in the current ConfigObject and also in the system configuration on disk.
+
+This will be reset when the Helper object is destroyed.
+
+Please note that this will not work correctly in clustered environments.
+
+    $Helper->ConfigSettingChange(
+        Valid => 1,            # (optional) enable or disable setting
+        Key   => 'MySetting',  # setting name
+        Value => { ... } ,     # setting value
+    );
+
+=cut
+
+sub ConfigSettingChange {
+    my ( $Self, %Param ) = @_;
+
+    my $Valid = $Param{Valid} // 1;
+    my $Key   = $Param{Key};
+    my $Value = $Param{Value};
+
+    die "Need 'Key'" if !defined $Key;
+
+    my $RandomNumber = $Self->GetRandomNumber();
+
+    my $KeyDump = $Key;
+    $KeyDump =~ s|'|\\'|smxg;
+    $KeyDump = "\$Self->{'$KeyDump'}";
+    $KeyDump =~ s|\#{3}|'}->{'|smxg;
+
+    # Also set at runtime in the ConfigObject. This will be destroyed at the end of the unit test.
+    $Kernel::OM->Get('Kernel::Config')->Set(
+        Key   => $Key,
+        Value => $Valid ? $Value : undef,
+    );
+
+    my $ValueDump;
+    if ($Valid) {
+        $ValueDump = $Kernel::OM->Get('Kernel::System::Main')->Dump($Value);
+        $ValueDump =~ s/\$VAR1/$KeyDump/;
+    }
+    else {
+        $ValueDump = "delete $KeyDump;"
+    }
+
+    my $PackageName = "ZZZZUnitTest$RandomNumber";
+
+    my $Content = <<"EOF";
+# OTRS config file (automatically generated)
+# VERSION:1.1
+package Kernel::Config::Files::$PackageName;
+use strict;
+use warnings;
+no warnings 'redefine';
+use utf8;
+sub Load {
+    my (\$File, \$Self) = \@_;
+    $ValueDump
+}
+1;
+EOF
+    my $Home     = $Kernel::OM->Get('Kernel::Config')->Get('Home');
+    my $FileName = "$Home/Kernel/Config/Files/$PackageName.pm";
+    $Kernel::OM->Get('Kernel::System::Main')->FileWrite(
+        Location => $FileName,
+        Mode     => 'utf8',
+        Content  => \$Content,
+    ) || die "Could not write $FileName";
+
+    return 1;
+}
+
+=item ConfigSettingCleanup()
+
+remove all config setting changes from ConfigSettingChange();
+
+=cut
+
+sub ConfigSettingCleanup {
+    my ( $Self, %Param ) = @_;
+
+    my $Home  = $Kernel::OM->Get('Kernel::Config')->Get('Home');
+    my @Files = $Kernel::OM->Get('Kernel::System::Main')->DirectoryRead(
+        Directory => "$Home/Kernel/Config/Files",
+        Filter    => "ZZZZUnitTest*.pm",
+    );
+    for my $File (@Files) {
+        $Kernel::OM->Get('Kernel::System::Main')->FileDelete(
+            Location => $File,
+        ) || die "Could not delete $File";
+    }
+    return 1;
+}
+
+=item UseTmpArticleDir()
+
+switch the article storage directory to a temporary one to prevent collisions;
+
+=cut
+
+sub UseTmpArticleDir {
+    my ( $Self, %Param ) = @_;
+
+    my $Home = $Kernel::OM->Get('Kernel::Config')->Get('Home');
+
+    my $TmpArticleDir;
+    TRY:
+    for my $Try ( 1 .. 100 ) {
+
+        $TmpArticleDir = $Home . '/var/tmp/unittest-article-' . $Self->GetRandomNumber();
+
+        next TRY if -e $TmpArticleDir;
+        last TRY;
+    }
+
+    $Self->ConfigSettingChange(
+        Valid => 1,
+        Key   => 'ArticleDir',
+        Value => $TmpArticleDir,
+    );
+
+    $Self->{TmpArticleDir} = $TmpArticleDir;
+
+    return 1;
 }
 
 1;

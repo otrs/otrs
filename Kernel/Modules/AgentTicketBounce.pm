@@ -41,7 +41,7 @@ sub Run {
         if ( !defined $Self->{$Needed} ) {
             return $LayoutObject->ErrorScreen(
                 Message => $LayoutObject->{LanguageObject}->Translate( '%s is needed!', $Needed ),
-                Comment => Translatable('Please contact your administrator'),
+                Comment => Translatable('Please contact the administrator.'),
             );
         }
     }
@@ -277,8 +277,8 @@ $Param{Signature}";
             $Param{RichTextHeight} = $Config->{RichTextHeight} || 0;
             $Param{RichTextWidth}  = $Config->{RichTextWidth}  || 0;
 
-            $LayoutObject->Block(
-                Name => 'RichText',
+            # set up rich text editor
+            $LayoutObject->SetRichTextParameters(
                 Data => \%Param,
             );
         }
@@ -315,8 +315,8 @@ $Param{Signature}";
 
         # get params
         for my $Parameter (qw(From BounceTo To Subject Body InformSender BounceStateID)) {
-            $Param{$Parameter}
-                = $Kernel::OM->Get('Kernel::System::Web::Request')->GetParam( Param => $Parameter ) || '';
+            $Param{$Parameter} = $Kernel::OM->Get('Kernel::System::Web::Request')->GetParam( Param => $Parameter )
+                || '';
         }
 
         my %Error;
@@ -405,8 +405,9 @@ $Param{Signature}";
                 $Param{RichTextHeight} = $Config->{RichTextHeight} || 0;
                 $Param{RichTextWidth}  = $Config->{RichTextWidth}  || 0;
 
-                $LayoutObject->Block(
-                    Name => 'RichText',
+                # set up rich text editor
+                $LayoutObject->SetRichTextParameters(
+                    Data => \%Param,
                 );
             }
 
@@ -454,7 +455,7 @@ $Param{Signature}";
         if ( !$Bounce ) {
             return $LayoutObject->ErrorScreen(
                 Message => Translatable('Can\'t bounce email!'),
-                Comment => Translatable('Please contact the admin.'),
+                Comment => Translatable('Please contact the administrator.'),
             );
         }
 
@@ -497,7 +498,7 @@ $Param{Signature}";
             if ( !$ArticleID ) {
                 return $LayoutObject->ErrorScreen(
                     Message => Translatable('Can\'t send email!'),
-                    Comment => Translatable('Please contact the admin.'),
+                    Comment => Translatable('Please contact the administrator.'),
                 );
             }
         }
@@ -538,7 +539,7 @@ $Param{Signature}";
     }
     return $LayoutObject->ErrorScreen(
         Message => Translatable('Wrong Subaction!'),
-        Comment => Translatable('Please contact your administrator'),
+        Comment => Translatable('Please contact the administrator.'),
     );
 }
 

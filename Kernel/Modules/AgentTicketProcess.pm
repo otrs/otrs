@@ -88,7 +88,7 @@ sub Run {
                         'Couldn\'t get ActivityDialogEntityID "%s"!',
                         $ActivityDialogEntityID,
                     ),
-                    Comment => Translatable('Please contact the admin.'),
+                    Comment => Translatable('Please contact the administrator.'),
                 );
             }
 
@@ -142,11 +142,6 @@ sub Run {
             # check if it's already locked by somebody else
             if ( $ActivityDialogHashRef->{RequiredLock} ) {
 
-                my $TicketNumber = $TicketObject->TicketNumberLookup(
-                    TicketID => $TicketID,
-                    UserID   => $Self->{UserID},
-                );
-
                 if ( $TicketObject->TicketLockGet( TicketID => $TicketID ) ) {
                     my $AccessOk = $TicketObject->OwnerCheck(
                         TicketID => $TicketID,
@@ -168,30 +163,35 @@ sub Run {
                 }
                 else {
 
+                    # set lock
+                    $TicketObject->TicketLockSet(
+                        TicketID => $TicketID,
+                        Lock     => 'lock',
+                        UserID   => $Self->{UserID},
+                    );
+
+                    # set user id
+                    $TicketObject->TicketOwnerSet(
+                        TicketID  => $TicketID,
+                        UserID    => $Self->{UserID},
+                        NewUserID => $Self->{UserID},
+                    );
+
+                    # reload the parent window to show the updated lock state
+                    $Param{ParentReload} = 1;
+
                     # show lock state link
                     $Param{RenderLocked} = 1;
+
+                    my $TicketNumber = $TicketObject->TicketNumberLookup(
+                        TicketID => $TicketID,
+                        UserID   => $Self->{UserID},
+                    );
 
                     # notify the agent that the ticket was locked
                     push @{ $Param{Notify} }, "$TicketNumber: "
                         . $LayoutObject->{LanguageObject}->Translate("Ticket locked.");
                 }
-
-                # set lock
-                $TicketObject->TicketLockSet(
-                    TicketID => $TicketID,
-                    Lock     => 'lock',
-                    UserID   => $Self->{UserID},
-                );
-
-                # set user id
-                $TicketObject->TicketOwnerSet(
-                    TicketID  => $TicketID,
-                    UserID    => $Self->{UserID},
-                    NewUserID => $Self->{UserID},
-                );
-
-                # reload the parent window to show the updated lock state
-                $Param{ParentReload} = 1;
             }
 
             my $PossibleActivityDialogs = { 1 => $ActivityDialogEntityID };
@@ -262,7 +262,7 @@ sub Run {
     if ( !IsHashRefWithData($ProcessList) && !IsHashRefWithData($FollowupProcessList) ) {
         return $LayoutObject->ErrorScreen(
             Message => Translatable('No Process configured!'),
-            Comment => Translatable('Please contact the admin.'),
+            Comment => Translatable('Please contact the administrator.'),
         );
     }
 
@@ -305,7 +305,7 @@ sub Run {
         if ( !IsHashRefWithData($ProcessList) ) {
             return $LayoutObject->ErrorScreen(
                 Message => Translatable('No Process configured!'),
-                Comment => Translatable('Please contact the admin.'),
+                Comment => Translatable('Please contact the administrator.'),
             );
         }
 
@@ -354,7 +354,7 @@ sub Run {
     {
         $LayoutObject->FatalError(
             Message => $LayoutObject->{LanguageObject}->Translate( 'Process %s is invalid!', $ProcessEntityID ),
-            Comment => Translatable('Please contact the admin.'),
+            Comment => Translatable('Please contact the administrator.'),
         );
     }
 
@@ -412,7 +412,7 @@ sub Run {
     }
     return $LayoutObject->ErrorScreen(
         Message => Translatable('Subaction is invalid!'),
-        Comment => Translatable('Please contact the admin.'),
+        Comment => Translatable('Please contact the administrator.'),
     );
 }
 
@@ -880,7 +880,7 @@ sub _GetParam {
                 'Couldn\'t get ActivityDialogEntityID "%s"!',
                 $ActivityDialogEntityID,
             ),
-            Comment => Translatable('Please contact the admin.'),
+            Comment => Translatable('Please contact the administrator.'),
         );
     }
 
@@ -946,10 +946,8 @@ sub _GetParam {
             my $DynamicFieldConfig = ( grep { $_->{Name} eq $DynamicFieldName } @{$DynamicField} )[0];
 
             if ( !IsHashRefWithData($DynamicFieldConfig) ) {
-                my $Message = $LayoutObject->{LanguageObject}->Translate(
-                    'DynamicFieldConfig missing for field: %s, or is not a Ticket Dynamic Field!',
-                    $DynamicFieldName,
-                );
+                my $Message =
+                    "DynamicFieldConfig missing for field: $DynamicFieldName, or is not a Ticket Dynamic Field!";
 
                 # log error but does not stop the execution as it could be an old Article
                 # DynamicField, see bug#11666
@@ -1204,6 +1202,7 @@ sub _GetParam {
     # and finally we'll have the special parameters:
     $GetParam{ResponsibleAll} = $ParamObject->GetParam( Param => 'ResponsibleAll' );
     $GetParam{OwnerAll}       = $ParamObject->GetParam( Param => 'OwnerAll' );
+    $GetParam{ElementChanged} = $ParamObject->GetParam( Param => 'ElementChanged' );
 
     return \%GetParam;
 }
@@ -1431,8 +1430,8 @@ sub _OutputActivityDialog {
             $Param{RichTextHeight} = $Self->{Config}->{RichTextHeight} || 0;
             $Param{RichTextWidth}  = $Self->{Config}->{RichTextWidth}  || 0;
 
-            $LayoutObject->Block(
-                Name => 'RichText',
+            # set up rich text editor
+            $LayoutObject->SetRichTextParameters(
                 Data => \%Param,
             );
         }
@@ -1741,8 +1740,7 @@ sub _OutputActivityDialog {
         }
 
         # render Lock
-        elsif ( $Self->{NameToID}->{$CurrentField} eq 'LockID' )
-        {
+        elsif ( $Self->{NameToID}->{$CurrentField} eq 'LockID' ) {
             next DIALOGFIELD if $RenderedFields{ $Self->{NameToID}->{$CurrentField} };
 
             my $Response = $Self->_RenderLock(
@@ -1777,8 +1775,7 @@ sub _OutputActivityDialog {
         }
 
         # render Service
-        elsif ( $Self->{NameToID}->{$CurrentField} eq 'ServiceID' )
-        {
+        elsif ( $Self->{NameToID}->{$CurrentField} eq 'ServiceID' ) {
             next DIALOGFIELD if $RenderedFields{ $Self->{NameToID}->{$CurrentField} };
 
             my $Response = $Self->_RenderService(
@@ -1813,8 +1810,7 @@ sub _OutputActivityDialog {
         }
 
         # render SLA
-        elsif ( $Self->{NameToID}->{$CurrentField} eq 'SLAID' )
-        {
+        elsif ( $Self->{NameToID}->{$CurrentField} eq 'SLAID' ) {
             next DIALOGFIELD if $RenderedFields{ $Self->{NameToID}->{$CurrentField} };
 
             my $Response = $Self->_RenderSLA(
@@ -1849,8 +1845,7 @@ sub _OutputActivityDialog {
         }
 
         # render Owner
-        elsif ( $Self->{NameToID}->{$CurrentField} eq 'OwnerID' )
-        {
+        elsif ( $Self->{NameToID}->{$CurrentField} eq 'OwnerID' ) {
             next DIALOGFIELD if $RenderedFields{ $Self->{NameToID}->{$CurrentField} };
 
             my $Response = $Self->_RenderOwner(
@@ -1885,8 +1880,7 @@ sub _OutputActivityDialog {
         }
 
         # render responsible
-        elsif ( $Self->{NameToID}->{$CurrentField} eq 'ResponsibleID' )
-        {
+        elsif ( $Self->{NameToID}->{$CurrentField} eq 'ResponsibleID' ) {
             next DIALOGFIELD if $RenderedFields{ $Self->{NameToID}->{$CurrentField} };
 
             my $Response = $Self->_RenderResponsible(
@@ -1921,8 +1915,7 @@ sub _OutputActivityDialog {
         }
 
         # render CustomerID
-        elsif ( $Self->{NameToID}->{$CurrentField} eq 'CustomerID' )
-        {
+        elsif ( $Self->{NameToID}->{$CurrentField} eq 'CustomerID' ) {
             next DIALOGFIELD if $RenderedFields{ $Self->{NameToID}->{$CurrentField} };
 
             my $Response = $Self->_RenderCustomer(
@@ -1956,8 +1949,7 @@ sub _OutputActivityDialog {
             $RenderedFields{ $Self->{NameToID}->{$CurrentField} } = 1;
         }
 
-        elsif ( $CurrentField eq 'PendingTime' )
-        {
+        elsif ( $CurrentField eq 'PendingTime' ) {
 
             # PendingTime is just useful if we have State or StateID
             if ( !grep {m{^(StateID|State)$}xms} @{ $ActivityDialog->{FieldOrder} } ) {
@@ -2045,10 +2037,7 @@ sub _OutputActivityDialog {
         }
 
         # render Article
-        elsif (
-            $Self->{NameToID}->{$CurrentField} eq 'Article'
-            )
-        {
+        elsif ( $Self->{NameToID}->{$CurrentField} eq 'Article' ) {
             next DIALOGFIELD if $RenderedFields{ $Self->{NameToID}->{$CurrentField} };
 
             my $Response = $Self->_RenderArticle(
@@ -2083,8 +2072,7 @@ sub _OutputActivityDialog {
         }
 
         # render Type
-        elsif ( $Self->{NameToID}->{$CurrentField} eq 'TypeID' )
-        {
+        elsif ( $Self->{NameToID}->{$CurrentField} eq 'TypeID' ) {
 
             # We don't render Fields twice,
             # if there was already a Config without ID, skip this field
@@ -2171,8 +2159,9 @@ sub _OutputActivityDialog {
 
     # reload parent window
     if ( $Param{ParentReload} ) {
-        $LayoutObject->Block(
-            Name => 'ParentReload',
+        $LayoutObject->AddJSData(
+            Key   => 'ParentReload',
+            Value => 1,
         );
     }
 
@@ -2610,8 +2599,8 @@ sub _RenderArticle {
         $Param{RichTextHeight} = $Self->{Config}->{RichTextHeight} || 0;
         $Param{RichTextWidth}  = $Self->{Config}->{RichTextWidth}  || 0;
 
-        $LayoutObject->Block(
-            Name => 'RichText',
+        # set up rich text editor
+        $LayoutObject->SetRichTextParameters(
             Data => \%Param,
         );
     }
@@ -2787,11 +2776,6 @@ sub _RenderCustomer {
         $Data{CustomerIDServerError} = 'ServerError';
     }
 
-    # set some customer search autocomplete properties
-    $LayoutObject->Block(
-        Name => 'CustomerSearchAutoComplete',
-    );
-
     if (
         ( IsHashRefWithData( $Param{Ticket} ) && $Param{Ticket}->{CustomerUserID} )
         || $SubmittedCustomerUserID
@@ -2811,12 +2795,11 @@ sub _RenderCustomer {
         $Data{SelectedCustomerUser} = $CustomerUserData{UserID}         || '';
     }
 
-    # set fields that will get an AJAX loader icon when this field changes
-    my $JSON = $LayoutObject->JSONEncode(
-        Data     => $Param{AJAXUpdatableFields},
-        NoQuotes => 0,
+    # send data to JS
+    $LayoutObject->AddJSData(
+        Key   => 'CustomerFieldsToUpdate',
+        Value => $Param{AJAXUpdatableFields},
     );
-    $Data{FieldsToUpdate} = $JSON;
 
     $LayoutObject->Block(
         Name => $Param{ActivityDialogField}->{LayoutBlock} || 'rw:Customer',
@@ -2984,10 +2967,10 @@ sub _RenderResponsible {
         PossibleNone => $PossibleNone,
     );
 
-    # set fields that will get an AJAX loader icon when this field changes
-    $Data{FieldsToUpdate} = $Self->_GetFieldsToUpdateStrg(
-        TriggerField        => 'ResponsibleID',
-        AJAXUpdatableFields => $Param{AJAXUpdatableFields},
+    # send data to JS
+    $LayoutObject->AddJSData(
+        Key   => 'ResponsibleFieldsToUpdate',
+        Value => $Param{AJAXUpdatableFields}
     );
 
     $LayoutObject->Block(
@@ -3161,10 +3144,10 @@ sub _RenderOwner {
         PossibleNone => $PossibleNone,
     );
 
-    # set fields that will get an AJAX loader icon when this field changes
-    $Data{FieldsToUpdate} = $Self->_GetFieldsToUpdateStrg(
-        TriggerField        => 'OwnerID',
-        AJAXUpdatableFields => $Param{AJAXUpdatableFields},
+    # send data to JS
+    $LayoutObject->AddJSData(
+        Key   => 'OwnerFieldsToUpdate',
+        Value => $Param{AJAXUpdatableFields}
     );
 
     $LayoutObject->Block(
@@ -3327,10 +3310,10 @@ sub _RenderSLA {
         Max           => 200,
     );
 
-    # set fields that will get an AJAX loader icon when this field changes
-    $Data{FieldsToUpdate} = $Self->_GetFieldsToUpdateStrg(
-        TriggerField        => 'SLAID',
-        AJAXUpdatableFields => $Param{AJAXUpdatableFields},
+    # send data to JS
+    $LayoutObject->AddJSData(
+        Key   => 'SLAFieldsToUpdate',
+        Value => $Param{AJAXUpdatableFields}
     );
 
     $LayoutObject->Block(
@@ -3496,10 +3479,10 @@ sub _RenderService {
         Max           => 200,
     );
 
-    # set fields that will get an AJAX loader icon when this field changes
-    $Data{FieldsToUpdate} = $Self->_GetFieldsToUpdateStrg(
-        TriggerField        => 'ServiceID',
-        AJAXUpdatableFields => $Param{AJAXUpdatableFields},
+    # send data to JS
+    $LayoutObject->AddJSData(
+        Key   => 'ServiceFieldsToUpdate',
+        Value => $Param{AJAXUpdatableFields}
     );
 
     $LayoutObject->Block(
@@ -3634,10 +3617,10 @@ sub _RenderLock {
         Class         => "Modernize $ServerError",
     );
 
-    # set fields that will get an AJAX loader icon when this field changes
-    $Data{FieldsToUpdate} = $Self->_GetFieldsToUpdateStrg(
-        TriggerField        => 'LockID',
-        AJAXUpdatableFields => $Param{AJAXUpdatableFields},
+    # send data to JS
+    $LayoutObject->AddJSData(
+        Key   => 'LockFieldsToUpdate',
+        Value => $Param{AJAXUpdatableFields}
     );
 
     $LayoutObject->Block(
@@ -3772,10 +3755,10 @@ sub _RenderPriority {
         Class         => "Modernize $ServerError",
     );
 
-    # set fields that will get an AJAX loader icon when this field changes
-    $Data{FieldsToUpdate} = $Self->_GetFieldsToUpdateStrg(
-        TriggerField        => 'PriorityID',
-        AJAXUpdatableFields => $Param{AJAXUpdatableFields},
+    # send data to JS
+    $LayoutObject->AddJSData(
+        Key   => 'PriorityFieldsToUpdate',
+        Value => $Param{AJAXUpdatableFields}
     );
 
     $LayoutObject->Block(
@@ -3919,9 +3902,10 @@ sub _RenderQueue {
         PossibleNone  => 1,
     );
 
-    $Data{FieldsToUpdate} = $Self->_GetFieldsToUpdateStrg(
-        TriggerField        => 'QueueID',
-        AJAXUpdatableFields => $Param{AJAXUpdatableFields},
+    # send data to JS
+    $LayoutObject->AddJSData(
+        Key   => 'QueueFieldsToUpdate',
+        Value => $Param{AJAXUpdatableFields}
     );
 
     $LayoutObject->Block(
@@ -4051,10 +4035,10 @@ sub _RenderState {
         Class         => "Modernize $ServerError",
     );
 
-    # set fields that will get an AJAX loader icon when this field changes
-    $Data{FieldsToUpdate} = $Self->_GetFieldsToUpdateStrg(
-        TriggerField        => 'StateID',
-        AJAXUpdatableFields => $Param{AJAXUpdatableFields},
+    # send data to JS
+    $LayoutObject->AddJSData(
+        Key   => 'StateFieldsToUpdate',
+        Value => $Param{AJAXUpdatableFields}
     );
 
     $LayoutObject->Block(
@@ -4204,10 +4188,10 @@ sub _RenderType {
         Max           => 200,
     );
 
-    # set fields that will get an AJAX loader icon when this field changes
-    $Data{FieldsToUpdate} = $Self->_GetFieldsToUpdateStrg(
-        TriggerField        => 'TypeID',
-        AJAXUpdatableFields => $Param{AJAXUpdatableFields},
+    # send data to JS
+    $LayoutObject->AddJSData(
+        Key   => 'TypeFieldsToUpdate',
+        Value => $Param{AJAXUpdatableFields}
     );
 
     $LayoutObject->Block(
@@ -4418,12 +4402,9 @@ sub _StoreActivityDialog {
                 # is not possible to a have an invisible field for this particular value
                 # on agent interface
                 if ( $ActivityDialog->{Fields}{$CurrentField}{Display} == 0 ) {
-
-                    my $InvisibleFieldMessage = Translatable(
-                        'Couldn\'t use CustomerID as an invisible field. Please contact your system administrator!'
-                    );
                     $LayoutObject->FatalError(
-                        Message => $InvisibleFieldMessage,
+                        Message => Translatable('Couldn\'t use CustomerID as an invisible field.'),
+                        Comment => Translatable('Please contact the administrator.'),
                     );
                 }
 
@@ -4667,7 +4648,7 @@ sub _StoreActivityDialog {
                         $Param{ProcessEntityID},
                         $TicketID,
                     ),
-                    Comment => Translatable('Please contact the admin.'),
+                    Comment => Translatable('Please contact the administrator.'),
                 );
             }
 
@@ -4683,7 +4664,7 @@ sub _StoreActivityDialog {
                         'Could not store ActivityDialog, invalid TicketID: %s!',
                         $TicketID,
                     ),
-                    Comment => Translatable('Please contact the admin.'),
+                    Comment => Translatable('Please contact the administrator.'),
                 );
             }
             for my $DynamicFieldConfig (
@@ -4782,7 +4763,7 @@ sub _StoreActivityDialog {
                     $Param{ProcessEntityID},
                     $TicketID,
                 ),
-                Comment => Translatable('Please contact the admin.'),
+                Comment => Translatable('Please contact the administrator.'),
             );
         }
 
@@ -4826,7 +4807,7 @@ sub _StoreActivityDialog {
                     'Missing ActivityEntityID in Ticket %s!',
                     $Ticket{TicketID},
                 ),
-                Comment => Translatable('Please contact the admin.'),
+                Comment => Translatable('Please contact the administrator.'),
             );
         }
 
@@ -5274,18 +5255,18 @@ sub _DisplayProcessList {
         $Param{RichTextHeight} = $Self->{Config}->{RichTextHeight} || 0;
         $Param{RichTextWidth}  = $Self->{Config}->{RichTextWidth}  || 0;
 
-        $LayoutObject->Block(
-            Name => 'RichText',
+        # set up rich text editor
+        $LayoutObject->SetRichTextParameters(
             Data => \%Param,
         );
     }
 
     if ( $Param{PreSelectProcess} && $Param{ProcessID} ) {
-        $LayoutObject->Block(
-            Name => 'PreSelectProcess',
-            Data => {
-                ProcessID => $Param{ProcessID},
-            },
+
+        # send data to JS
+        $LayoutObject->AddJSData(
+            Key   => 'ProcessID',
+            Value => $Param{ProcessID},
         );
     }
 

@@ -104,14 +104,14 @@ sub Run {
         . $LayoutObject->LinkEncode( $Param{CustomerID} ) . ';';
 
     my %PageNav = $LayoutObject->PageNavBar(
-        StartHit       => $Self->{StartHit},
-        PageShown      => $Self->{PageShown},
-        AllHits        => $Total || 1,
-        Action         => 'Action=' . $LayoutObject->{Action},
-        Link           => $LinkPage,
-        AJAXReplace    => 'Dashboard' . $Self->{Name},
-        IDPrefix       => 'Dashboard' . $Self->{Name},
-        KeepScriptTags => $Param{AJAX},
+        StartHit    => $Self->{StartHit},
+        PageShown   => $Self->{PageShown},
+        AllHits     => $Total || 1,
+        Action      => 'Action=' . $LayoutObject->{Action},
+        Link        => $LinkPage,
+        AJAXReplace => 'Dashboard' . $Self->{Name},
+        IDPrefix    => 'Dashboard' . $Self->{Name},
+        AJAX        => $Param{AJAX},
     );
 
     $LayoutObject->Block(
@@ -300,32 +300,36 @@ sub Run {
             Permission           => $Self->{Config}->{Permission},
             UserID               => $Self->{UserID},
             CacheTTL             => $Self->{Config}->{CacheTTLLocal} * 60,
-        );
+        ) || 0;
+
+        my $CustomerKeySQL = $Kernel::OM->Get('Kernel::System::DB')->QueryStringEscape( QueryString => $CustomerKey );
 
         $LayoutObject->Block(
             Name => 'ContentLargeCustomerUserListRowCustomerUserTicketsOpen',
             Data => {
                 %Param,
-                Count       => $TicketCountOpen,
-                CustomerKey => $CustomerKey,
+                Count          => $TicketCountOpen,
+                CustomerKey    => $CustomerKey,
+                CustomerKeySQL => $CustomerKeySQL,
             },
         );
 
         my $TicketCountClosed = $TicketObject->TicketSearch(
-            StateType            => 'Closed',
+            StateType            => 'closed',
             CustomerUserLoginRaw => $CustomerKey,
             Result               => 'COUNT',
             Permission           => $Self->{Config}->{Permission},
             UserID               => $Self->{UserID},
             CacheTTL             => $Self->{Config}->{CacheTTLLocal} * 60,
-        );
+        ) || 0;
 
         $LayoutObject->Block(
             Name => 'ContentLargeCustomerUserListRowCustomerUserTicketsClosed',
             Data => {
                 %Param,
-                Count       => $TicketCountClosed,
-                CustomerKey => $CustomerKey,
+                Count          => $TicketCountClosed,
+                CustomerKey    => $CustomerKey,
+                CustomerKeySQL => $CustomerKeySQL,
             },
         );
 
@@ -380,15 +384,17 @@ sub Run {
         $Refresh = 60 * $Self->{UserRefreshTime};
         my $NameHTML = $Self->{Name};
         $NameHTML =~ s{-}{_}xmsg;
-        $LayoutObject->Block(
-            Name => 'ContentLargeTicketGenericRefresh',
-            Data => {
+
+        # send data to JS
+        $LayoutObject->AddJSData(
+            Key   => 'CustomerUserListRefresh',
+            Value => {
                 %{ $Self->{Config} },
                 Name        => $Self->{Name},
                 NameHTML    => $NameHTML,
                 RefreshTime => $Refresh,
                 CustomerID  => $Param{CustomerID},
-            },
+                }
         );
     }
 
@@ -398,7 +404,7 @@ sub Run {
             %{ $Self->{Config} },
             Name => $Self->{Name},
         },
-        KeepScriptTags => $Param{AJAX},
+        AJAX => $Param{AJAX},
     );
 
     return $Content;

@@ -23,7 +23,7 @@ our @ObjectDependencies = (
 
 =head1 NAME
 
-Kernel::System::DynamicField::Backend::Article
+Kernel::System::DynamicField::ObjectType::Article
 
 =head1 SYNOPSIS
 
@@ -36,7 +36,7 @@ Article object handler for DynamicFields
 =item new()
 
 usually, you want to create an instance of this
-by using Kernel::System::DynamicField::Backend->new();
+by using Kernel::System::DynamicField::ObjectType::Article->new();
 
 =cut
 
@@ -124,8 +124,12 @@ sub PostValueSet {
     $TicketObject->EventHandler(
         Event => 'ArticleDynamicFieldUpdate',
         Data  => {
+            FieldName => $Param{DynamicFieldConfig}->{Name},
+            Value     => $Param{Value},
+            OldValue  => $Param{OldValue},
             TicketID  => $Article{TicketID},
             ArticleID => $Param{ObjectID},
+            UserID    => $Param{UserID},
         },
         UserID => $Param{UserID},
     );

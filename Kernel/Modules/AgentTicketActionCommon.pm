@@ -81,7 +81,7 @@ sub Run {
     if ( !$Self->{TicketID} ) {
         return $LayoutObject->ErrorScreen(
             Message => Translatable('No TicketID is given!'),
-            Comment => Translatable('Please contact the admin.'),
+            Comment => Translatable('Please contact the administrator.'),
         );
     }
 
@@ -228,6 +228,15 @@ sub Run {
     {
         $GetParam{$Key} = $ParamObject->GetParam( Param => $Key );
     }
+
+    # ACL compatibility translation
+    my %ACLCompatGetParam = (
+        StateID       => $GetParam{StateID},
+        PriorityID    => $GetParam{NewPriorityID},
+        QueueID       => $GetParam{NewQueueID},
+        OwnerID       => $GetParam{NewOwnerID},
+        ResponsibleID => $GetParam{NewResponsibleID},
+    );
 
     # get dynamic field values form http request
     my %DynamicFieldValues;
@@ -409,6 +418,13 @@ sub Run {
                 }
             }
 
+            # check responsible
+            if ( $Config->{Responsible} && $Config->{ResponsibleMandatory} ) {
+                if ( !$GetParam{NewResponsibleID} ) {
+                    $Error{'NewResponsibleInvalid'} = 'ServerError';
+                }
+            }
+
             # check title
             if ( $Config->{Title} && !$GetParam{Title} ) {
                 $Error{'TitleInvalid'} = 'ServerError';
@@ -543,7 +559,7 @@ sub Run {
                         Message =>
                             $LayoutObject->{LanguageObject}
                             ->Translate( 'Could not perform validation on field %s!', $DynamicFieldConfig->{Label} ),
-                        Comment => Translatable('Please contact the admin.'),
+                        Comment => Translatable('Please contact the administrator.'),
                     );
                 }
 
@@ -622,6 +638,8 @@ sub Run {
         if ( $ConfigObject->Get('Ticket::Service') && $Config->{Service} ) {
             if ( defined $GetParam{ServiceID} ) {
                 $TicketObject->TicketServiceSet(
+                    %GetParam,
+                    %ACLCompatGetParam,
                     ServiceID      => $GetParam{ServiceID},
                     TicketID       => $Self->{TicketID},
                     CustomerUserID => $Ticket{CustomerUserID},
@@ -791,9 +809,51 @@ sub Run {
                 $GetParam{ArticleType} = $Config->{ArticleTypeDefault};
             }
 
+            # get pre loaded attachment
+            my @Attachments = $UploadCacheObject->FormIDGetAllFilesData(
+                FormID => $Self->{FormID},
+            );
+
+            # get submit attachment
+            my %UploadStuff = $ParamObject->GetUploadAll(
+                Param => 'FileUpload',
+            );
+            if (%UploadStuff) {
+                push @Attachments, \%UploadStuff;
+            }
+
             my $MimeType = 'text/plain';
             if ( $LayoutObject->{BrowserRichText} ) {
                 $MimeType = 'text/html';
+
+                # remove unused inline images
+                my @NewAttachmentData;
+                ATTACHMENT:
+                for my $Attachment (@Attachments) {
+                    my $ContentID = $Attachment->{ContentID};
+                    if (
+                        $ContentID
+                        && ( $Attachment->{ContentType} =~ /image/i )
+                        && ( $Attachment->{Disposition} eq 'inline' )
+                        )
+                    {
+                        my $ContentIDHTMLQuote = $LayoutObject->Ascii2Html(
+                            Text => $ContentID,
+                        );
+
+                        # workaround for link encode of rich text editor, see bug#5053
+                        my $ContentIDLinkEncode = $LayoutObject->LinkEncode($ContentID);
+                        $GetParam{Body} =~ s/(ContentID=)$ContentIDLinkEncode/$1$ContentID/g;
+
+                        # ignore attachment if not linked in body
+                        next ATTACHMENT
+                            if $GetParam{Body} !~ /(\Q$ContentIDHTMLQuote\E|\Q$ContentID\E)/i;
+                    }
+
+                    # remember inline images and normal attachments
+                    push @NewAttachmentData, \%{$Attachment};
+                }
+                @Attachments = @NewAttachmentData;
 
                 # verify html document
                 $GetParam{Body} = $LayoutObject->RichTextDocumentComplete(
@@ -838,6 +898,7 @@ sub Run {
                 ForceNotificationToUserID       => \@NotifyUserIDs,
                 ExcludeMuteNotificationToUserID => \@NotifyDone,
                 UnlockOnAway                    => $UnlockOnAway,
+                Attachment                      => \@Attachments,
                 %GetParam,
             );
             if ( !$ArticleID ) {
@@ -850,53 +911,6 @@ sub Run {
                     TicketID  => $Self->{TicketID},
                     ArticleID => $ArticleID,
                     TimeUnit  => $GetParam{TimeUnits},
-                    UserID    => $Self->{UserID},
-                );
-            }
-
-            # get pre loaded attachment
-            my @Attachments = $UploadCacheObject->FormIDGetAllFilesData(
-                FormID => $Self->{FormID},
-            );
-
-            # get submit attachment
-            my %UploadStuff = $ParamObject->GetUploadAll(
-                Param => 'FileUpload',
-            );
-            if (%UploadStuff) {
-                push @Attachments, \%UploadStuff;
-            }
-
-            # write attachments
-            ATTACHMENT:
-            for my $Attachment (@Attachments) {
-
-                # skip, deleted not used inline images
-                my $ContentID = $Attachment->{ContentID};
-                if (
-                    $ContentID
-                    && $LayoutObject->{BrowserRichText}
-                    && ( $Attachment->{ContentType} =~ /image/i )
-                    && ( $Attachment->{Disposition} eq 'inline' )
-                    )
-                {
-                    my $ContentIDHTMLQuote = $LayoutObject->Ascii2Html(
-                        Text => $ContentID,
-                    );
-
-                    # workaround for link encode of rich text editor, see bug#5053
-                    my $ContentIDLinkEncode = $LayoutObject->LinkEncode($ContentID);
-                    $GetParam{Body} =~ s/(ContentID=)$ContentIDLinkEncode/$1$ContentID/g;
-
-                    # ignore attachment if not linked in body
-                    next ATTACHMENT
-                        if $GetParam{Body} !~ /(\Q$ContentIDHTMLQuote\E|\Q$ContentID\E)/i;
-                }
-
-                # write existing file to backend
-                $TicketObject->ArticleWriteAttachment(
-                    %{$Attachment},
-                    ArticleID => $ArticleID,
                     UserID    => $Self->{UserID},
                 );
             }
@@ -1470,12 +1484,11 @@ sub _Mask {
         OnlyDynamicFields => 1,
     );
 
-    # create a string with the quoted dynamic field names separated by commas
-    if ( IsArrayRefWithData($DynamicFieldNames) ) {
-        for my $Field ( @{$DynamicFieldNames} ) {
-            $Param{DynamicFieldNamesStrg} .= ", '" . $Field . "'";
-        }
-    }
+    # send data to JS
+    $LayoutObject->AddJSData(
+        Key   => 'DynamicFieldNames',
+        Value => $DynamicFieldNames,
+    );
 
     # types
     if ( $ConfigObject->Get('Ticket::Type') && $Config->{TicketType} ) {
@@ -1771,15 +1784,17 @@ sub _Mask {
 
         # get responsible
         $Param{ResponsibleStrg} = $LayoutObject->BuildSelection(
-            Data         => \%ShownUsers,
-            SelectedID   => $Param{NewResponsibleID},
-            Name         => 'NewResponsibleID',
-            Class        => 'Modernize',
+            Data       => \%ShownUsers,
+            SelectedID => $Param{NewResponsibleID},
+            Name       => 'NewResponsibleID',
+            Class      => 'Modernize '
+                . ( $Config->{ResponsibleMandatory} ? 'Validate_Required ' : '' )
+                . ( $Param{NewResponsibleInvalid} || '' ),
             PossibleNone => 1,
             Size         => 1,
         );
         $LayoutObject->Block(
-            Name => 'Responsible',
+            Name => $Config->{ResponsibleMandatory} ? 'ResponsibleMandatory' : 'Responsible',
             Data => \%Param,
         );
     }
@@ -2188,8 +2203,8 @@ sub _Mask {
             $Param{RichTextHeight} = $Config->{RichTextHeight} || 0;
             $Param{RichTextWidth}  = $Config->{RichTextWidth}  || 0;
 
-            $LayoutObject->Block(
-                Name => 'RichText',
+            # set up rich text editor
+            $LayoutObject->SetRichTextParameters(
                 Data => \%Param,
             );
         }

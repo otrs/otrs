@@ -242,15 +242,15 @@ sub Run {
     my $Total    = $Online->{UserCount}->{ $Self->{Filter} } || 0;
     my $LinkPage = 'Subaction=Element;Name=' . $Self->{Name} . ';Filter=' . $Self->{Filter} . ';';
     my %PageNav  = $LayoutObject->PageNavBar(
-        StartHit       => $Self->{StartHit},
-        PageShown      => $Self->{PageShown},
-        AllHits        => $Total || 1,
-        Action         => 'Action=' . $LayoutObject->{Action},
-        Link           => $LinkPage,
-        WindowSize     => 5,
-        AJAXReplace    => 'Dashboard' . $Self->{Name},
-        IDPrefix       => 'Dashboard' . $Self->{Name},
-        KeepScriptTags => $Param{AJAX},
+        StartHit    => $Self->{StartHit},
+        PageShown   => $Self->{PageShown},
+        AllHits     => $Total || 1,
+        Action      => 'Action=' . $LayoutObject->{Action},
+        Link        => $LinkPage,
+        WindowSize  => 5,
+        AJAXReplace => 'Dashboard' . $Self->{Name},
+        IDPrefix    => 'Dashboard' . $Self->{Name},
+        AJAX        => $Param{AJAX},
     );
 
     $LayoutObject->Block(
@@ -418,7 +418,17 @@ sub Run {
             NameHTML    => $NameHTML,
             RefreshTime => $Refresh,
         },
-        KeepScriptTags => $Param{AJAX},
+        AJAX => $Param{AJAX},
+    );
+
+    # send data to JS
+    $LayoutObject->AddJSData(
+        Key   => 'UserOnline',
+        Value => {
+            Name        => $Self->{Name},
+            NameHTML    => $NameHTML,
+            RefreshTime => $Refresh,
+        },
     );
 
     return $Content;

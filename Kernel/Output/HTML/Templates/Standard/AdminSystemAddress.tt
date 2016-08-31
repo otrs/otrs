@@ -33,7 +33,16 @@
             </div>
         </div>
 [% RenderBlockEnd("ActionList") %]
-
+[% RenderBlockStart("Filter") %]
+        <div class="WidgetSimple">
+            <div class="Header">
+                <h2><label for="FilterSystemAddresses">[% Translate("Filter for System Addresses") | html %]</label></h2>
+            </div>
+            <div class="Content">
+                <input type="text" id="FilterSystemAddresses" class="FilterBox" placeholder="[% Translate("Just start typing to filter...") | html %]" name="FilterSystemAddresses" value="" title="[% Translate("Filter for system addresses") | html %]">
+            </div>
+        </div>
+[% RenderBlockEnd("Filter") %]
         <div class="WidgetSimple">
             <div class="Header">
                 <h2>[% Translate("Hint") | html %]</h2>
@@ -54,7 +63,7 @@
                 <h2>[% Translate("List") | html %]</h2>
             </div>
             <div class="Content">
-                <table class="DataTable">
+                <table class="DataTable" id="SystemAddresses">
                     <thead>
                         <tr>
                             <th>[% Translate("Email address") | html %]</th>
@@ -83,21 +92,12 @@
                             <td>[% Data.CreateTime | Localize("TimeShort") %]</td>
                         </tr>
 [% RenderBlockEnd("OverviewResultRow") %]
+                        <tr class="FilterMessage Hidden">
+                            <td colspan="6">[% Translate("No matches found.") | html %]</td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
-[% WRAPPER JSOnDocumentComplete %]
-<script type="text/javascript">//<![CDATA[
-$('.MasterAction').bind('click', function (Event) {
-    var $MasterActionLink = $(this).find('.MasterActionLink');
-    // only act if the link was not clicked directly
-    if (Event.target !== $MasterActionLink.get(0)) {
-        window.location = $MasterActionLink.attr('href');
-        return false;
-    }
-});
-//]]></script>
-[% END %]
 [% RenderBlockEnd("OverviewResult") %]
 
 [% RenderBlockStart("OverviewUpdate") %]

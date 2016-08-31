@@ -151,7 +151,7 @@ Core.Agent.Search = (function (TargetNS) {
                 // label id, use the remaining name as name string for accessing
                 // the form input's value
                 ElementName = $(this).attr('id').substring(5);
-                $Element = $('#SearchForm input[name=' + ElementName + ']');
+                $Element = $('#SearchForm input[name=' + Core.App.EscapeSelector(ElementName) + ']');
 
                 // If there's no input element with the selected name
                 // find the next "select" element and use that one for checking
@@ -177,7 +177,7 @@ Core.Agent.Search = (function (TargetNS) {
             }
         });
         if (!SearchValueFlag) {
-           alert(Core.Config.Get('EmptySearchMsg'));
+           alert(Core.Language.Translate('Please enter at least one search value or * to find anything.'));
         }
         return SearchValueFlag;
     }
@@ -191,7 +191,7 @@ Core.Agent.Search = (function (TargetNS) {
      *      Shows waiting dialog until search screen is ready.
      */
     function ShowWaitingDialog(){
-        Core.UI.Dialog.ShowContentDialog('<div class="Spacing Center"><span class="AJAXLoader" title="' + Core.Config.Get('LoadingMsg') + '"></span></div>', Core.Config.Get('LoadingMsg'), '10px', 'Center', true);
+        Core.UI.Dialog.ShowContentDialog('<div class="Spacing Center"><span class="AJAXLoader" title="' + Core.Language.Translate('Loading...') + '"></span></div>', Core.Language.Translate('Loading...'), '10px', 'Center', true);
     }
 
     /**
@@ -313,7 +313,7 @@ Core.Agent.Search = (function (TargetNS) {
         AJAXStopWordCheck(
             SearchStrings,
             function (FoundStopWords) {
-                alert(Core.Config.Get('SearchStringsContainStopWordsMsg') + "\n" + FoundStopWords);
+                alert(Core.Language.Translate('Please remove the following words from your search as they cannot be searched for:') + "\n" + FoundStopWords);
             },
             Callback
         );
@@ -358,7 +358,7 @@ Core.Agent.Search = (function (TargetNS) {
                     return;
                 }
 
-                Core.UI.Dialog.ShowContentDialog(HTML, Core.Config.Get('SearchMsg'), '10px', 'Center', true, undefined, true);
+                Core.UI.Dialog.ShowContentDialog(HTML, Core.Language.Translate('Search'), '10px', 'Center', true, undefined, true);
 
                 // hide add template block
                 $('#SearchProfileAddBlock').hide();
@@ -562,6 +562,11 @@ Core.Agent.Search = (function (TargetNS) {
                     return false;
                 });
 
+                window.setTimeout(function (){
+                    TargetNS.AddSearchAttributes();
+                    TargetNS.AdditionalAttributeSelectionRebuild();
+                }, 0);
+
             }, 'html'
         );
     };
@@ -588,7 +593,7 @@ Core.Agent.Search = (function (TargetNS) {
                 AJAXStopWordCheck(
                     { Fulltext: SearchString },
                     function (FoundStopWords) {
-                        alert(Core.Config.Get('SearchStringsContainStopWordsMsg') + "\n" + FoundStopWords);
+                        alert(Core.Language.Translate('Please remove the following words from your search as they cannot be searched for:') + "\n" + FoundStopWords);
                     },
                     function () {
                         $('#ToolBar li.Extended.SearchFulltext form[name="SearchFulltext"]').submit();
@@ -599,6 +604,42 @@ Core.Agent.Search = (function (TargetNS) {
             }
         });
     };
+
+    /**
+     * @name AddSearchAttributes
+     * @memberof Core.Agent.Search
+     * @function
+     * @description
+     *      This function determines and adds attributes for using in filter.
+     */
+    TargetNS.AddSearchAttributes = function () {
+        var i,
+            SearchAttributes = Core.Config.Get('SearchAttributes');
+
+        if (typeof SearchAttributes !== 'undefined' && SearchAttributes.length > 0) {
+            for (i = 0; i < SearchAttributes.length; i++) {
+                Core.Agent.Search.SearchAttributeAdd(SearchAttributes[i]);
+            }
+        }
+    };
+
+    /**
+     * @name Init
+     * @memberof Core.Agent.Search
+     * @function
+     * @description
+     *      This function opens search dialog only on empty page
+     *      (when it opens via '...Action=AgentTicketSearch' from location bar).
+     */
+    TargetNS.Init = function () {
+        var NonAJAXSearch = Core.Config.Get('NonAJAXSearch');
+
+        if (typeof NonAJAXSearch !== 'undefined' && parseInt(NonAJAXSearch, 10) === 1) {
+            Core.Agent.Search.OpenSearchDialog(Core.Config.Get('Action'), Core.Config.Get('Profile'));
+        }
+    };
+
+    Core.Init.RegisterNamespace(TargetNS, 'APP_MODULE');
 
     return TargetNS;
 }(Core.Agent.Search || {}));

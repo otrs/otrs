@@ -71,7 +71,7 @@ sub _Add {
     my %GetParam;
     for my $Needed (qw(ObjectType FieldType FieldOrder)) {
         $GetParam{$Needed} = $Kernel::OM->Get('Kernel::System::Web::Request')->GetParam( Param => $Needed );
-        if ( !$Needed ) {
+        if ( !$GetParam{$Needed} ) {
             return $LayoutObject->ErrorScreen(
                 Message => $LayoutObject->{LanguageObject}->Translate( 'Need %s', $Needed ),
             );
@@ -79,9 +79,9 @@ sub _Add {
     }
 
     # get the object type and field type display name
-    my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
-    my $ObjectTypeName
-        = $ConfigObject->Get('DynamicFields::ObjectType')->{ $GetParam{ObjectType} }->{DisplayName} || '';
+    my $ConfigObject   = $Kernel::OM->Get('Kernel::Config');
+    my $ObjectTypeName = $ConfigObject->Get('DynamicFields::ObjectType')->{ $GetParam{ObjectType} }->{DisplayName}
+        || '';
     my $FieldTypeName = $ConfigObject->Get('DynamicFields::Driver')->{ $GetParam{FieldType} }->{DisplayName} || '';
 
     return $Self->_ShowScreen(
@@ -164,7 +164,7 @@ sub _AddAction {
     }
 
     for my $ConfigParam (
-        qw(ObjectType ObjectTypeName FieldType FieldTypeName YearsPeriod DateRestriction ValidID Link)
+        qw(ObjectType ObjectTypeName FieldType FieldTypeName YearsPeriod DateRestriction ValidID Link LinkPreview)
         )
     {
         $GetParam{$ConfigParam} = $ParamObject->GetParam( Param => $ConfigParam );
@@ -197,6 +197,7 @@ sub _AddAction {
         YearsInFuture   => $GetParam{YearsInFuture},
         YearsInPast     => $GetParam{YearsInPast},
         Link            => $GetParam{Link},
+        LinkPreview     => $GetParam{LinkPreview},
     };
 
     # create a new field
@@ -231,7 +232,7 @@ sub _Change {
     my %GetParam;
     for my $Needed (qw(ObjectType FieldType)) {
         $GetParam{$Needed} = $ParamObject->GetParam( Param => $Needed );
-        if ( !$Needed ) {
+        if ( !$GetParam{$Needed} ) {
             return $LayoutObject->ErrorScreen(
                 Message => $LayoutObject->{LanguageObject}->Translate( 'Need %s', $Needed ),
             );
@@ -239,9 +240,9 @@ sub _Change {
     }
 
     # get the object type and field type display name
-    my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
-    my $ObjectTypeName
-        = $ConfigObject->Get('DynamicFields::ObjectType')->{ $GetParam{ObjectType} }->{DisplayName} || '';
+    my $ConfigObject   = $Kernel::OM->Get('Kernel::Config');
+    my $ObjectTypeName = $ConfigObject->Get('DynamicFields::ObjectType')->{ $GetParam{ObjectType} }->{DisplayName}
+        || '';
     my $FieldTypeName = $ConfigObject->Get('DynamicFields::Driver')->{ $GetParam{FieldType} }->{DisplayName} || '';
 
     my $FieldID = $ParamObject->GetParam( Param => 'ID' );
@@ -407,7 +408,7 @@ sub _ChangeAction {
     }
 
     for my $ConfigParam (
-        qw(ObjectType ObjectTypeName FieldType FieldTypeName YearsPeriod DateRestriction ValidID Link)
+        qw(ObjectType ObjectTypeName FieldType FieldTypeName YearsPeriod DateRestriction ValidID Link LinkPreview)
         )
     {
         $GetParam{$ConfigParam} = $ParamObject->GetParam( Param => $ConfigParam );
@@ -439,6 +440,7 @@ sub _ChangeAction {
         YearsInFuture   => $GetParam{YearsInFuture},
         YearsInPast     => $GetParam{YearsInPast},
         Link            => $GetParam{Link},
+        LinkPreview     => $GetParam{LinkPreview},
     };
 
     # update dynamic field (FieldType and ObjectType cannot be changed; use old values)
@@ -544,6 +546,7 @@ sub _ShowScreen {
     my $YearsPeriod     = $Param{YearsPeriod}     || 0;
     my $DateRestriction = $Param{DateRestriction} || 0;
     my $Link            = $Param{Link}            || '';
+    my $LinkPreview     = $Param{LinkPreview}     || '';
 
     my $YearsInFuture = 5;
     if ( defined $Param{YearsInFuture} ) {
@@ -623,6 +626,7 @@ sub _ShowScreen {
             YearsInPast           => $YearsInPast,
             ReadonlyInternalField => $ReadonlyInternalField,
             Link                  => $Link,
+            LinkPreview           => $LinkPreview,
             }
     );
 

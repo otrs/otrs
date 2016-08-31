@@ -61,7 +61,7 @@ sub new {
             }
         }
 
-        if ( defined $Self->{ZoomExpand} || defined $Self->{ZoomTimeline} ) {
+        elsif ( defined $Self->{ZoomExpand} || defined $Self->{ZoomTimeline} ) {
 
             my $LastUsedZoomViewType = '';
             if ( defined $Self->{ZoomExpand} && $Self->{ZoomExpand} == 1 ) {
@@ -197,7 +197,7 @@ sub Run {
     if ( !$Self->{TicketID} ) {
         return $LayoutObject->ErrorScreen(
             Message => Translatable('No TicketID is given!'),
-            Comment => Translatable('Please contact the admin.'),
+            Comment => Translatable('Please contact the administrator.'),
         );
     }
 
@@ -264,6 +264,12 @@ sub Run {
     if ( !$AclActionLookup{ $Self->{Action} } ) {
         return $LayoutObject->NoPermission( WithHeader => 'yes' );
     }
+
+    # send parameter TicketID to JS
+    $LayoutObject->AddJSData(
+        Key   => 'TicketID',
+        Value => $Self->{TicketID},
+    );
 
     # mark shown ticket as seen
     if ( $Self->{Subaction} eq 'TicketMarkAsSeen' ) {
@@ -380,9 +386,21 @@ sub Run {
             StandardForwards  => $StandardTemplates{Forward},
             Type              => 'OnLoad',
         );
+
+        # send data to JS
+        $LayoutObject->AddJSData(
+            Key   => 'ArticleIDs',
+            Value => [ $Self->{ArticleID} ],
+        );
+        $LayoutObject->AddJSData(
+            Key   => 'MenuItems',
+            Value => $Self->{MenuItems},
+        );
+
         my $Content = $LayoutObject->Output(
             TemplateFile => 'AgentTicketZoom',
             Data         => { %Ticket, %Article, %AclAction },
+            AJAX         => 1,
         );
         if ( !$Content ) {
             $LayoutObject->FatalError(
@@ -625,7 +643,10 @@ sub Run {
     }
 
     # generate output
-    my $Output = $LayoutObject->Header( Value => $Ticket{TicketNumber} );
+    my $Output = $LayoutObject->Header(
+        Value    => $Ticket{TicketNumber},
+        TicketID => $Ticket{TicketID},
+    );
     $Output .= $LayoutObject->NavigationBar();
     $Output .= $Self->MaskAgentZoom(
         Ticket    => \%Ticket,
@@ -938,6 +959,7 @@ sub MaskAgentZoom {
     # show articles items
     if ( !$Self->{ZoomTimeline} ) {
 
+        my @ArticleIDs;
         $Param{ArticleItems} = '';
         ARTICLE:
         for my $ArticleTmp (@ArticleBoxShown) {
@@ -952,7 +974,19 @@ sub MaskAgentZoom {
                 ActualArticleID   => $ArticleID,
                 Type              => 'Static',
             );
+            push @ArticleIDs, $ArticleTmp->{ArticleID};
         }
+
+        # send data to JS
+        $LayoutObject->AddJSData(
+            Key   => 'ArticleIDs',
+            Value => \@ArticleIDs,
+        );
+        $LayoutObject->AddJSData(
+            Key   => 'MenuItems',
+            Value => $Self->{MenuItems},
+        );
+
         $Param{ArticleItems} .= $LayoutObject->Output(
             TemplateFile => 'AgentTicketZoom',
             Data         => { %Ticket, %AclAction },
@@ -961,9 +995,11 @@ sub MaskAgentZoom {
 
     # always show archived tickets as seen
     if ( $Self->{ZoomExpand} && $Ticket{ArchiveFlag} ne 'y' ) {
-        $LayoutObject->Block(
-            Name => 'TicketItemMarkAsSeen',
-            Data => { TicketID => $Ticket{TicketID} },
+
+        # send data to JS
+        $LayoutObject->AddJSData(
+            Key   => 'TicketItemMarkAsSeen',
+            Value => 1,
         );
     }
 
@@ -1148,7 +1184,13 @@ sub MaskAgentZoom {
             ActivityEntityID => $Ticket{$ActivityEntityIDField},
         );
 
-        # output the process widget the the main screen
+        # send data to JS
+        $LayoutObject->AddJSData(
+            Key   => 'ProcessWidget',
+            Value => 1,
+        );
+
+        # output the process widget in the main screen
         $LayoutObject->Block(
             Name => 'ProcessWidget',
             Data => {
@@ -1272,7 +1314,7 @@ sub MaskAgentZoom {
         ObjectType  => ['Ticket'],
         FieldFilter => $DynamicFieldFilter || {},
     );
-    my $DynamicFieldBeckendObject = $Kernel::OM->Get('Kernel::System::DynamicField::Backend');
+    my $DynamicFieldBackendObject = $Kernel::OM->Get('Kernel::System::DynamicField::Backend');
 
     # to store dynamic fields to be displayed in the process widget and in the sidebar
     my (@FieldsWidget);
@@ -1292,7 +1334,7 @@ sub MaskAgentZoom {
             $Self->{DisplaySettings}->{ProcessWidgetDynamicField}->{ $DynamicFieldConfig->{Name} }
             )
         {
-            my $ValueStrg = $DynamicFieldBeckendObject->DisplayValueRender(
+            my $ValueStrg = $DynamicFieldBackendObject->DisplayValueRender(
                 DynamicFieldConfig => $DynamicFieldConfig,
                 Value              => $Ticket{ 'DynamicField_' . $DynamicFieldConfig->{Name} },
                 LayoutObject       => $LayoutObject,
@@ -1308,6 +1350,7 @@ sub MaskAgentZoom {
                     => $Ticket{ 'DynamicField_' . $DynamicFieldConfig->{Name} },
                 Label                       => $Label,
                 Link                        => $ValueStrg->{Link},
+                LinkPreview                 => $ValueStrg->{LinkPreview},
                 $DynamicFieldConfig->{Name} => $ValueStrg->{Title},
             };
         }
@@ -1362,6 +1405,7 @@ sub MaskAgentZoom {
                                     Value          => $Field->{Value},
                                     Title          => $Field->{Title},
                                     Link           => $Field->{Link},
+                                    LinkPreview    => $Field->{LinkPreview},
                                     $Field->{Name} => $Field->{Title},
                                 },
                             );
@@ -1491,6 +1535,12 @@ sub MaskAgentZoom {
                 Class       => 'Modernize',
             );
 
+            # send data to JS
+            $LayoutObject->AddJSData(
+                Key   => 'ArticleFilterDialog',
+                Value => 0,
+            );
+
             $LayoutObject->Block(
                 Name => 'EventTypeFilterDialog',
                 Data => {%Param},
@@ -1533,6 +1583,12 @@ sub MaskAgentZoom {
             # Ticket ID
             $Param{TicketID} = $Self->{TicketID};
 
+            # send data to JS
+            $LayoutObject->AddJSData(
+                Key   => 'ArticleFilterDialog',
+                Value => 1,
+            );
+
             $LayoutObject->Block(
                 Name => 'ArticleFilterDialog',
                 Data => {%Param},
@@ -1568,10 +1624,31 @@ sub MaskAgentZoom {
         );
     }
 
+    # send data to JS
+    $LayoutObject->AddJSData(
+        Key   => 'ArticleTableHeight',
+        Value => $LayoutObject->{UserTicketZoomArticleTableHeight},
+    );
+    $LayoutObject->AddJSData(
+        Key   => 'Ticket::Frontend::HTMLArticleHeightDefault',
+        Value => $ConfigObject->Get('Ticket::Frontend::HTMLArticleHeightDefault'),
+    );
+    $LayoutObject->AddJSData(
+        Key   => 'Ticket::Frontend::HTMLArticleHeightMax',
+        Value => $ConfigObject->Get('Ticket::Frontend::HTMLArticleHeightMax'),
+    );
+    $LayoutObject->AddJSData(
+        Key   => 'Language',
+        Value => {
+            AttachmentViewMessage => Translatable(
+                'Article could not be opened! Perhaps it is on another article page?'
+            ),
+        },
+    );
+
     # init js
     $LayoutObject->Block(
         Name => 'TicketZoomInit',
-        Data => {%Param},
     );
 
     # return output
@@ -2223,8 +2300,8 @@ sub _ArticleTree {
             }
 
             # make the history type more readable (if applicable)
-            $Item->{HistoryTypeReadable}
-                = $Self->{HistoryTypeMapping}->{ $Item->{HistoryType} } || $Item->{HistoryType};
+            $Item->{HistoryTypeReadable} = $Self->{HistoryTypeMapping}->{ $Item->{HistoryType} }
+                || $Item->{HistoryType};
 
             # group items which happened (nearly) coincidently together
             $Item->{CreateSystemTime} = $Kernel::OM->Get('Kernel::System::Time')->TimeStamp2SystemTime(
@@ -2277,6 +2354,21 @@ sub _ArticleTree {
 
         # set TicketID for usage in JS
         $Param{TicketID} = $Self->{TicketID};
+
+        # set key 'TimeLong' for JS
+        for my $Item ( @{ $Param{Items} } ) {
+            $Item->{TimeLong}
+                = $LayoutObject->{LanguageObject}->FormatTimeString( $Item->{CreateTime}, 'DateFormatLong' );
+        }
+
+        # send data to JS
+        $LayoutObject->AddJSData(
+            Key   => 'TimelineView',
+            Value => {
+                Enabled => $ConfigObject->Get('TimelineViewEnabled'),
+                Data    => \%Param,
+            },
+        );
 
         $LayoutObject->Block(
             Name => 'TimelineView',
@@ -2394,10 +2486,21 @@ sub _ArticleItem {
     # get layout object
     my $LayoutObject = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
 
+    # collect article meta
+    my @ArticleMetaData = $Self->_ArticleCollectMeta(
+        Article => \%Article
+    );
+
     $LayoutObject->Block(
         Name => 'ArticleItem',
-        Data => { %Param, %Article, %AclAction, MenuItems => \@MenuItems },
+        Data => {
+            %Param, %Article, %AclAction,
+            MenuItems       => \@MenuItems,
+            ArticleMetaData => \@ArticleMetaData
+        },
     );
+
+    push @{ $Self->{MenuItems} }, \@MenuItems;
 
     # show created by if different from User ID 1
     if ( $Article{CreatedBy} > 1 ) {
@@ -2490,14 +2593,14 @@ sub _ArticleItem {
         ObjectType  => ['Article'],
         FieldFilter => $DynamicFieldFilter || {},
     );
-    my $DynamicFieldBeckendObject = $Kernel::OM->Get('Kernel::System::DynamicField::Backend');
+    my $DynamicFieldBackendObject = $Kernel::OM->Get('Kernel::System::DynamicField::Backend');
 
     # cycle trough the activated Dynamic Fields
     DYNAMICFIELD:
     for my $DynamicFieldConfig ( @{$DynamicField} ) {
         next DYNAMICFIELD if !IsHashRefWithData($DynamicFieldConfig);
 
-        my $Value = $DynamicFieldBeckendObject->ValueGet(
+        my $Value = $DynamicFieldBackendObject->ValueGet(
             DynamicFieldConfig => $DynamicFieldConfig,
             ObjectID           => $Article{ArticleID},
         );
@@ -2506,7 +2609,7 @@ sub _ArticleItem {
         next DYNAMICFIELD if $Value eq '';
 
         # get print string for this dynamic field
-        my $ValueStrg = $DynamicFieldBeckendObject->DisplayValueRender(
+        my $ValueStrg = $DynamicFieldBackendObject->DisplayValueRender(
             DynamicFieldConfig => $DynamicFieldConfig,
             Value              => $Value,
             ValueMaxChars      => $ConfigObject->
@@ -2899,10 +3002,10 @@ sub _ArticleMenu {
                 if ( $RecipientCount > 1 ) {
 
                     $StandardResponsesStrg = $LayoutObject->BuildSelection(
-                        Name  => 'ResponseID',
-                        ID    => 'ResponseIDAll' . $Article{ArticleID},
-                        Class => 'Modernize Small',
-                        Data  => \@StandardResponseArrayReplyAll,
+                        Name         => 'ResponseID',
+                        ID           => 'ResponseIDAll' . $Article{ArticleID},
+                        Class        => 'Modernize Small',
+                        Data         => \@StandardResponseArrayReplyAll,
                         PossibleNone => 1
                     );
 
@@ -3181,6 +3284,107 @@ sub _ArticleMenu {
     }
 
     return @MenuItems;
+}
+
+sub _ArticleCollectMeta {
+
+    my ( $Self, %Param ) = @_;
+
+    my %Article = %{ $Param{Article} };
+
+    # get config object
+    my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
+    my $LayoutObject = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
+
+    # check whether auto article links should be used
+    return if !$ConfigObject->Get('Ticket::Frontend::ZoomCollectMeta');
+    return if !$ConfigObject->Get('Ticket::Frontend::ZoomCollectMetaFilters');
+
+    my @Data;
+
+    # find words to replace
+    my %Config = %{ $ConfigObject->Get('Ticket::Frontend::ZoomCollectMetaFilters') };
+
+    FILTER:
+    for my $Filter ( values %Config ) {
+
+        my %FilterData;
+
+        # check for needed data
+        next FILTER if !$Filter->{RegExp};
+        next FILTER if !$Filter->{Meta};
+        next FILTER if !$Filter->{Meta}->{Name};
+        next FILTER if !$Filter->{Meta}->{URL};
+
+        # iterage through regular expressions and create a hash with found matches
+        my @Matches;
+        for my $RegExp ( @{ $Filter->{RegExp} } ) {
+
+            my @Count    = $RegExp =~ m{\(}gx;
+            my $Elements = scalar @Count;
+
+            if ( my @MatchData = $Article{Body} =~ m{([\s:]$RegExp)}gxi ) {
+                my $Counter = 0;
+
+                MATCH:
+                while ( $MatchData[$Counter] ) {
+
+                    my $WholeMatchString = $MatchData[$Counter];
+                    $WholeMatchString =~ s/^\s+|\s+$//g;
+                    if ( grep { $_->{Name} eq $WholeMatchString } @Matches ) {
+                        $Counter += $Elements + 1;
+                        next MATCH;
+                    }
+
+                    my %Parts;
+                    for ( 1 .. $Elements ) {
+                        $Parts{$_} = $MatchData[ $Counter + $_ ];
+                    }
+                    $Counter += $Elements + 1;
+
+                    push @Matches, {
+                        Name  => $WholeMatchString,
+                        Parts => \%Parts,
+                    };
+                }
+            }
+        }
+
+        if ( scalar @Matches ) {
+
+            $FilterData{Name} = $Filter->{Meta}->{Name};
+
+            # iterate trough matches and build URLs from configuration
+            for my $Match (@Matches) {
+
+                my $MatchQuote = $LayoutObject->Ascii2Html( Text => $Match->{Name} );
+                my $URL        = $Filter->{Meta}->{URL};
+                my $URLPreview = $Filter->{Meta}->{URLPreview};
+
+                # replace the whole keyword
+                my $MatchLinkEncode = $LayoutObject->LinkEncode( $Match->{Name} );
+                $URL =~ s/<MATCH>/$MatchLinkEncode/g;
+                $URLPreview =~ s/<MATCH>/$MatchLinkEncode/g;
+
+                # replace the keyword components
+                for my $Part ( sort keys %{ $Match->{Parts} || {} } ) {
+                    $MatchLinkEncode = $LayoutObject->LinkEncode( $Match->{Parts}->{$Part} );
+                    $URL =~ s/<MATCH$Part>/$MatchLinkEncode/g;
+                    $URLPreview =~ s/<MATCH$Part>/$MatchLinkEncode/g;
+                }
+
+                push @{ $FilterData{Matches} }, {
+                    Text       => $Match->{Name},
+                    URL        => $URL,
+                    URLPreview => $URLPreview,
+                    Target     => $Filter->{Meta}->{Target} || '_blank',
+                };
+            }
+            push @Data, \%FilterData;
+        }
+    }
+
+    return @Data;
 }
 
 sub _CollectArticleAttachments {

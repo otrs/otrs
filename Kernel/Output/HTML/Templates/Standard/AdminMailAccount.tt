@@ -32,6 +32,16 @@
             </div>
         </div>
 [% RenderBlockEnd("ActionList") %]
+[% RenderBlockStart("Filter") %]
+        <div class="WidgetSimple">
+            <div class="Header">
+                <h2><label for="FilterMailAccounts">[% Translate("Filter for Mail Accounts") | html %]</label></h2>
+            </div>
+            <div class="Content">
+                <input type="text" id="FilterMailAccounts" class="FilterBox" placeholder="[% Translate("Just start typing to filter...") | html %]" name="FilterMailAccounts" value="" title="[% Translate("Filter for mail accounts") | html %]">
+            </div>
+        </div>
+[% RenderBlockEnd("Filter") %]
         <div class="WidgetSimple">
             <div class="Header">
                 <h2>[% Translate("Hint") | html %]</h2>
@@ -54,7 +64,7 @@
                 <h2>[% Translate("List") | html %]</h2>
             </div>
             <div class="Content">
-                <table class="DataTable">
+                <table class="DataTable" id="MailAccounts">
                     <thead>
                         <tr>
                             <th>[% Translate("Host") | html %]/[% Translate("Username") | html %]</th>
@@ -93,6 +103,9 @@
                             </td>
                         </tr>
 [% RenderBlockEnd("OverviewResultRow") %]
+                        <tr class="FilterMessage Hidden">
+                            <td colspan="8">[% Translate("No matches found.") | html %]</td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
@@ -250,7 +263,7 @@
 
                         <label class="Mandatory" for="PasswordEdit"><span class="Marker">*</span> [% Translate("Password") | html %]:</label>
                         <div class="Field">
-                            <input type="password" class="W50pc Validate_Required [% Data.PasswordEditInvalid | html %]" name="Password" id="PasswordEdit" value="[% Data.Password | html %]" maxlength="200" autocomplete="off" />
+                            <input type="password" class="W50pc Validate_Required [% Data.PasswordEditInvalid | html %]" name="Password" id="PasswordEdit" value="[% IF Data.Password %]otrs-dummy-password-placeholder[% END %]" maxlength="200" autocomplete="off" />
                             <div id="PasswordEditError" class="TooltipErrorMessage">
                                 <p>[% Translate("This field is required.") | html %]</p>
                             </div>
@@ -354,28 +367,3 @@
     <div class="Clear"></div>
 </div>
 [% RenderBlockEnd("Overview") %]
-
-[% WRAPPER JSOnDocumentComplete %]
-<script type="text/javascript">//<![CDATA[
-// Show IMAPFolder selection only for IMAP backends
-$('select#TypeAdd, select#Type').bind('change', function(){
-    if (/IMAP/.test($(this).val())) {
-        $('.Row_IMAPFolder').show();
-    }
-    else {
-        $('.Row_IMAPFolder').hide();
-    }
-}).trigger('change');
-// Show only Queue field if Dispatch By Queue is selected
-$('select#DispatchingBy').bind('change', function(){
-    if (/Queue/.test($(this).val())) {
-        $('.Row_Queue').show();
-        Core.UI.InputFields.Activate();
-    }
-    else {
-        $('.Row_Queue').hide();
-    }
-}).trigger('change');
-//]]></script>
-
-[% END %]

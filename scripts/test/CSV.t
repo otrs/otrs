@@ -16,20 +16,22 @@ use vars (qw($Self));
 my $CSVObject = $Kernel::OM->Get('Kernel::System::CSV');
 
 my $CSV = $CSVObject->Array2CSV(
-    Head => [ 'RowA', 'RowB', ],
+    WithHeader => [ 'Title', 'Example' ],
+    Head       => [ 'RowA',  'RowB', 'RowC', ],
     Data => [
-        [ 1,  4 ],
-        [ 7,  3 ],
-        [ 1,  9 ],
-        [ 34, 4 ],
+        [ 1,  4, 1 ],
+        [ 7,  3, 2 ],
+        [ 1,  9, 3 ],
+        [ 34, 4, 4 ],
     ],
 );
 
-my $CSVReference = qq{"RowA";"RowB"\n}
-    . qq{"1";"4"\n}
-    . qq{"7";"3"\n}
-    . qq{"1";"9"\n}
-    . qq{"34";"4"\n};
+my $CSVReference = qq{"Title";"Example"\n}
+    . qq{"RowA";"RowB";"RowC"\n}
+    . qq{"1";"4";"1"\n}
+    . qq{"7";"3";"2"\n}
+    . qq{"1";"9";"3"\n}
+    . qq{"34";"4";"4"\n};
 
 $Self->Is(
     $CSV || '',
@@ -171,6 +173,106 @@ $Self->Is(
     $#{ $Array->[1] } || '',
     2,
     '#4 CSV2Array() - with dos file',
+);
+
+# values with \n quoted; other not quoted
+$String = 'c1;c2;c3' . "\n"
+    . 'v1;"v2 line1' . "\n" . 'v2 line 2";v3' . "\n";
+$Array = $CSVObject->CSV2Array(
+    String    => $String,
+    Separator => ';',
+    Quote     => '"',
+);
+
+$Self->Is(
+    $Array->[0]->[0] || '',
+    'c1',
+    '#5 CSV2Array() - values with \n quoted; other not quoted',
+);
+$Self->Is(
+    $Array->[0]->[1] || '',
+    'c2',
+    '#5 CSV2Array() - values with \n quoted; other not quoted',
+);
+$Self->Is(
+    $Array->[0]->[2] || '',
+    'c3',
+    '#5 CSV2Array() - values with \n quoted; other not quoted',
+);
+$Self->Is(
+    $Array->[1]->[0] || '',
+    'v1',
+    '#5 CSV2Array() - values with \n quoted; other not quoted',
+);
+$Self->Is(
+    $Array->[1]->[1] || '',
+    "v2 line1\nv2 line 2",
+    '#5 CSV2Array() - values with \n quoted; other not quoted',
+);
+$Self->Is(
+    $Array->[1]->[2] || '',
+    'v3',
+    '#5 CSV2Array() - values with \n quoted; other not quoted',
+);
+$Self->Is(
+    $#{$Array} || '',
+    1,
+    '#5 CSV2Array() - values with \n quoted; other not quoted',
+);
+$Self->Is(
+    $#{ $Array->[1] } || '',
+    2,
+    '#5 CSV2Array() - values with \n quoted; other not quoted',
+);
+
+# values with \r quoted; other not quoted
+$String = 'c1ø;c2;c3' . "\r"
+    . 'v1;"v2 line1' . "\r" . 'v2 line 2";v3' . "\r";
+$Array = $CSVObject->CSV2Array(
+    String    => $String,
+    Separator => ';',
+    Quote     => '"',
+);
+
+$Self->Is(
+    $Array->[0]->[0] || '',
+    'c1ø',
+    '#6 CSV2Array() - values with \r quoted; other not quoted',
+);
+$Self->Is(
+    $Array->[0]->[1] || '',
+    'c2',
+    '#6 CSV2Array() - values with \r quoted; other not quoted',
+);
+$Self->Is(
+    $Array->[0]->[2] || '',
+    'c3',
+    '#6 CSV2Array() - values with \r quoted; other not quoted',
+);
+$Self->Is(
+    $Array->[1]->[0] || '',
+    'v1',
+    '#6 CSV2Array() - values with \r quoted; other not quoted',
+);
+$Self->Is(
+    $Array->[1]->[1] || '',
+    "v2 line1\nv2 line 2",
+    '#6 CSV2Array() - values with \r quoted; other not quoted',
+);
+$Self->Is(
+    $Array->[1]->[2] || '',
+    'v3',
+    '#6 CSV2Array() - values with \r quoted; other not quoted',
+);
+$Self->Is(
+    $#{$Array} || '',
+    1,
+    '#6 CSV2Array() - values with \r quoted; other not quoted',
+);
+$Self->Is(
+    $#{ $Array->[1] } || '',
+    2,
+    '#6 CSV2Array() - values with \r quoted; other not quoted',
 );
 
 # -------------------------------------------------

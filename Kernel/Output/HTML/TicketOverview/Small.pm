@@ -16,6 +16,7 @@ use Kernel::Language qw(Translatable);
 
 our @ObjectDependencies = (
     'Kernel::Config',
+    'Kernel::Language',
     'Kernel::System::Log',
     'Kernel::Output::HTML::Layout',
     'Kernel::System::CustomerUser',
@@ -279,6 +280,9 @@ sub ActionRow {
         );
     }
 
+    my %ColumnTranslations;
+    my $LanguageObject = $Kernel::OM->Get('Kernel::Language');
+
     # add translations for the allocation lists for regular columns
     my $Columns = $Self->{Config}->{DefaultColumns} || $ConfigObject->Get('DefaultOverviewColumns') || {};
     if ( $Columns && IsHashRefWithData($Columns) ) {
@@ -306,15 +310,10 @@ sub ActionRow {
                 $TranslatedWord = 'Pending till';
             }
 
-            $LayoutObject->Block(
-                Name => 'ColumnTranslation',
-                Data => {
-                    ColumnName      => $Column,
-                    TranslateString => $TranslatedWord,
-                },
-            );
-            $LayoutObject->Block(
-                Name => 'ColumnTranslationSeparator',
+            # send data to JS
+            $LayoutObject->AddJSData(
+                Key   => 'Column' . $Column,
+                Value => $LanguageObject->Translate($TranslatedWord),
             );
         }
     }
@@ -336,19 +335,11 @@ sub ActionRow {
 
             $Counter++;
 
-            $LayoutObject->Block(
-                Name => 'ColumnTranslation',
-                Data => {
-                    ColumnName      => 'DynamicField_' . $DynamicField->{Name},
-                    TranslateString => $DynamicField->{Label},
-                },
+            # send data to JS
+            $LayoutObject->AddJSData(
+                Key   => 'ColumnDynamicField_' . $DynamicField->{Name},
+                Value => $LanguageObject->Translate( $DynamicField->{Label} ),
             );
-
-            if ( $Counter < scalar @{$ColumnsDynamicField} ) {
-                $LayoutObject->Block(
-                    Name => 'ColumnTranslationSeparator',
-                );
-            }
         }
     }
 
@@ -596,6 +587,12 @@ sub Run {
         OriginalTicketIDs => $Param{OriginalTicketIDs},
     );
 
+    # send data to JS
+    $LayoutObject->AddJSData(
+        Key   => 'LinkPage',
+        Value => $Param{LinkPage},
+    );
+
     $LayoutObject->Block(
         Name => 'DocumentContent',
         Data => \%Param,
@@ -655,7 +652,8 @@ sub Run {
                 }
 
                 # set title description
-                my $TitleDesc = $OrderBy eq 'Down' ? 'sorted descending' : 'sorted ascending';
+                my $TitleDesc
+                    = $OrderBy eq 'Down' ? Translatable('sorted descending') : Translatable('sorted ascending');
                 $TitleDesc = $LayoutObject->{LanguageObject}->Translate($TitleDesc);
                 $Title .= ', ' . $TitleDesc;
             }
@@ -702,7 +700,7 @@ sub Run {
             );
 
             $CSS = $Column;
-            my $Title = $Column;
+            my $Title = $LayoutObject->{LanguageObject}->Translate($Column);
 
             # output overall block so TicketNumber as well as other columns can be ordered
             $LayoutObject->Block(
@@ -723,7 +721,8 @@ sub Run {
                     }
 
                     # add title description
-                    my $TitleDesc = $OrderBy eq 'Down' ? 'sorted ascending' : 'sorted descending';
+                    my $TitleDesc
+                        = $OrderBy eq 'Down' ? Translatable('sorted ascending') : Translatable('sorted descending');
                     $TitleDesc = $LayoutObject->{LanguageObject}->Translate($TitleDesc);
                     $Title .= ', ' . $TitleDesc;
                 }
@@ -748,7 +747,7 @@ sub Run {
                     $TranslatedWord = $LayoutObject->{LanguageObject}->Translate($Column);
                 }
 
-                my $FilterTitle     = $Column;
+                my $FilterTitle     = $TranslatedWord;
                 my $FilterTitleDesc = Translatable('filter not active');
                 if (
                     $Self->{StoredFilters} &&
@@ -818,10 +817,16 @@ sub Run {
                         $LayoutObject->Block(
                             Name =>
                                 'ContentLargeTicketGenericHeaderColumnFilterLinkCustomerIDSearch',
-                            Data => {
-                                minQueryLength      => 2,
-                                queryDelay          => 100,
-                                maxResultsDisplayed => 20,
+                            Data => {},
+                        );
+
+                        # send data to JS
+                        $LayoutObject->AddJSData(
+                            Key   => 'CustomerIDAutocomplete',
+                            Value => {
+                                'QueryDelay'          => 100,
+                                'MaxResultsDisplayed' => 20,
+                                'MinQueryLength'      => 2,
                             },
                         );
                     }
@@ -829,10 +834,16 @@ sub Run {
 
                         $LayoutObject->Block(
                             Name => 'ContentLargeTicketGenericHeaderColumnFilterLinkUserSearch',
-                            Data => {
-                                minQueryLength      => 2,
-                                queryDelay          => 100,
-                                maxResultsDisplayed => 20,
+                            Data => {},
+                        );
+
+                        # send data to JS
+                        $LayoutObject->AddJSData(
+                            Key   => 'UserAutocomplete',
+                            Value => {
+                                'QueryDelay'          => 100,
+                                'MaxResultsDisplayed' => 20,
+                                'MinQueryLength'      => 2,
                             },
                         );
                     }
@@ -906,7 +917,8 @@ sub Run {
                     }
 
                     # add title description
-                    my $TitleDesc = $OrderBy eq 'Down' ? 'sorted ascending' : 'sorted descending';
+                    my $TitleDesc
+                        = $OrderBy eq 'Down' ? Translatable('sorted ascending') : Translatable('sorted descending');
                     $TitleDesc = $LayoutObject->{LanguageObject}->Translate($TitleDesc);
                     $Title .= ', ' . $TitleDesc;
                 }
@@ -932,11 +944,11 @@ sub Run {
                     $TranslatedWord = $LayoutObject->{LanguageObject}->Translate($Column);
                 }
 
-                my $FilterTitle     = $Column;
-                my $FilterTitleDesc = 'filter not active';
+                my $FilterTitle     = $TranslatedWord;
+                my $FilterTitleDesc = Translatable('filter not active');
                 if ( $Self->{StoredFilters} && $Self->{StoredFilters}->{ $Column . 'IDs' } ) {
                     $CSS .= ' FilterActive';
-                    $FilterTitleDesc = 'filter active';
+                    $FilterTitleDesc = Translatable('filter active');
                 }
                 $FilterTitleDesc = $LayoutObject->{LanguageObject}->Translate($FilterTitleDesc);
                 $FilterTitle .= ', ' . $FilterTitleDesc;
@@ -989,10 +1001,16 @@ sub Run {
 
                         $LayoutObject->Block(
                             Name => 'ContentLargeTicketGenericHeaderColumnFilterLinkUserSearch',
-                            Data => {
-                                minQueryLength      => 2,
-                                queryDelay          => 100,
-                                maxResultsDisplayed => 20,
+                            Data => {}
+                        );
+
+                        # send data to JS
+                        $LayoutObject->AddJSData(
+                            Key   => 'CustomerIDAutocomplete',
+                            Value => {
+                                'QueryDelay'          => 100,
+                                'MaxResultsDisplayed' => 20,
+                                'MinQueryLength'      => 2,
                             },
                         );
                     }
@@ -1033,10 +1051,16 @@ sub Run {
                         $LayoutObject->Block(
                             Name =>
                                 'ContentLargeTicketGenericHeaderColumnFilterLinkCustomerUserSearch',
-                            Data => {
-                                minQueryLength      => 2,
-                                queryDelay          => 100,
-                                maxResultsDisplayed => 20,
+                            Data => {},
+                        );
+
+                        # send data to JS
+                        $LayoutObject->AddJSData(
+                            Key   => 'CustomerUserAutocomplete',
+                            Value => {
+                                'QueryDelay'          => 100,
+                                'MaxResultsDisplayed' => 20,
+                                'MinQueryLength'      => 2,
                             },
                         );
                     }
@@ -1114,7 +1138,8 @@ sub Run {
                         }
 
                         # add title description
-                        my $TitleDesc = $OrderBy eq 'Down' ? 'sorted ascending' : 'sorted descending';
+                        my $TitleDesc
+                            = $OrderBy eq 'Down' ? Translatable('sorted ascending') : Translatable('sorted descending');
                         $TitleDesc = $LayoutObject->{LanguageObject}->Translate($TitleDesc);
                         $Title .= ', ' . $TitleDesc;
                     }
@@ -1325,6 +1350,8 @@ sub Run {
     else {
         $LayoutObject->Block( Name => 'NoTicketFound' );
     }
+
+    my %ActionRowTickets;
 
     for my $ArticleRef (@ArticleBox) {
 
@@ -1659,20 +1686,24 @@ sub Run {
         # add action items as js
         if ( $Article{ActionItems} ) {
 
-            $LayoutObject->Block(
-                Name => 'DocumentReadyActionRowAdd',
-                Data => {
-                    TicketID => $Article{TicketID},
-                    Data     => $Article{ActionItems},
-                },
-            );
+            # replace TT directives from string with values
+            for my $ActionItem ( @{ $Article{ActionItems} } ) {
+                $ActionItem->{Link} = $LayoutObject->Output(
+                    Template => $ActionItem->{Link},
+                    Data     => {
+                        TicketID => $Article{TicketID},
+                    },
+                );
+            }
+
+            $ActionRowTickets{ $Article{TicketID} } = $LayoutObject->JSONEncode( Data => $Article{ActionItems} );
         }
     }
 
-    # init for table control
-    $LayoutObject->Block(
-        Name => 'DocumentReadyStart',
-        Data => \%Param,
+    # send data to JS
+    $LayoutObject->AddJSData(
+        Key   => 'ActionRowTickets',
+        Value => \%ActionRowTickets,
     );
 
     # set column filter form, to correctly fill the column filters is necessary to pass each

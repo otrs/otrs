@@ -404,10 +404,15 @@ sub Run {
                 # include time stamps on the correct key
                 for my $Key (qw(StartDate StopDate)) {
 
-                    # try to convert SystemTime to TimeStamp
-                    $SystemMaintenance->{ $Key . 'TimeStamp' } = $TimeObject->SystemTime2TimeStamp(
-                        SystemTime => $SystemMaintenance->{$Key},
+                    my $DateTimeObject = $Kernel::OM->Create(
+                        'Kernel::System::DateTime',
+                        ObjectParams => {
+                            Epoch => $SystemMaintenance->{$Key},
+                        },
                     );
+                    $DateTimeObject->ToTimeZone( TimeZone => $Self->{UserTimeZone} );
+
+                    $SystemMaintenance->{ $Key . 'TimeStamp' } = $DateTimeObject->ToString();
                 }
 
                 # create blocks
@@ -530,13 +535,15 @@ sub _ShowEdit {
         for my $SessionID (@List) {
             my $List = '';
             my %Data = $SessionObject->GetSessionIDData( SessionID => $SessionID );
-            $MetaData{"$Data{UserType}Session"}++;
-            if ( !$MetaData{"$Data{UserLogin}"} ) {
-                $MetaData{"$Data{UserType}SessionUniq"}++;
-                $MetaData{"$Data{UserLogin}"} = 1;
+            if ( $Data{UserType} && $Data{UserLogin} ) {
+                $MetaData{"$Data{UserType}Session"}++;
+                if ( !$MetaData{"$Data{UserLogin}"} ) {
+                    $MetaData{"$Data{UserType}SessionUniq"}++;
+                    $MetaData{"$Data{UserLogin}"} = 1;
+                }
             }
 
-            $Data{UserType} = 'Agent' if ( $Data{UserType} ne 'Customer' );
+            $Data{UserType} = 'Agent' if ( !$Data{UserType} || $Data{UserType} ne 'Customer' );
 
             # store data to be used later for showing a users session table
             push @UserSessions, {
@@ -595,8 +602,6 @@ sub _ShowEdit {
 sub _GetParams {
     my ( $Self, %Param ) = @_;
 
-    my $TimeObject = $Kernel::OM->Get('Kernel::System::Time');
-
     my $GetParam;
 
     # get parameters from web browser
@@ -628,22 +633,20 @@ sub _GetParams {
             $DateStructure{$Period} = $GetParam->{ $Item . $Period };
         }
 
-        # check date
-        if ( !$TimeObject->Date2SystemTime( %DateStructure, Second => 0 ) ) {
+        my $DateTimeObject = $Kernel::OM->Create(
+            'Kernel::System::DateTime',
+            ObjectParams => {
+                %DateStructure,
+                TimeZone => $Self->{UserTimeZone},
+            },
+        );
+        if ( !$DateTimeObject ) {
             $Param{Error}->{ $Item . 'Invalid' } = 'ServerError';
             next ITEM;
         }
 
-        # try to convert date to a SystemTime
-        $GetParam->{$Item} = $TimeObject->Date2SystemTime(
-            %DateStructure,
-            Second => 0,
-        );
-
-        # try to convert SystemTime to TimeStamp
-        $GetParam->{ $Item . 'TimeStamp' } = $TimeObject->SystemTime2TimeStamp(
-            SystemTime => $GetParam->{$Item},
-        );
+        $GetParam->{$Item} = $DateTimeObject->ToEpoch();
+        $GetParam->{ $Item . 'TimeStamp' } = $DateTimeObject->ToString();
     }
 
     return $GetParam;

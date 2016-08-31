@@ -1804,7 +1804,6 @@
     <Column Name="id" Required="true" PrimaryKey="true" AutoIncrement="true" Type="INTEGER"/>
     <Column Name="name" Required="true" Size="200" Type="VARCHAR"/>
     <Column Name="config" Required="true" Type="LONGBLOB"/>
-    <Column Name="config_md5" Required="true" Size="32" Type="VARCHAR"/>
     <Column Name="valid_id" Required="true" Type="SMALLINT"/>
     <Column Name="create_time" Required="true" Type="DATE"/>
     <Column Name="create_by" Required="true" Type="INTEGER"/>
@@ -1812,9 +1811,6 @@
     <Column Name="change_by" Required="true" Type="INTEGER"/>
     <Unique Name="gi_webservice_config_name">
         <UniqueColumn Name="name"/>
-    </Unique>
-    <Unique Name="gi_webservice_config_config_md5">
-        <UniqueColumn Name="config_md5"/>
     </Unique>
     <ForeignKey ForeignTable="valid">
         <Reference Local="valid_id" Foreign="id"/>
@@ -1913,6 +1909,10 @@
     <Column Name="value_int" Required="false" Type="BIGINT" />
 
     <!-- search objects with certain field content -->
+    <Index Name="dynamic_field_value_search_text">
+        <IndexColumn Name="field_id"/>
+        <IndexColumn Name="value_text" Size="150"/>
+    </Index>
     <Index Name="dynamic_field_value_search_date">
         <IndexColumn Name="field_id"/>
         <IndexColumn Name="value_date"/>
@@ -1962,6 +1962,17 @@
         <Reference Local="create_by" Foreign="id"/>
         <Reference Local="change_by" Foreign="id"/>
     </ForeignKey>
+</Table>
+
+<!-- object names for dynamic field values -->
+<Table Name="dynamic_field_obj_id_name">
+    <Column Name="object_id" Required="true" PrimaryKey="true" AutoIncrement="true" Type="INTEGER"/>
+    <Column Name="object_name" Required="true" Size="200" Type="VARCHAR"/>
+    <Column Name="object_type" Required="true" Size="200" Type="VARCHAR"/>
+    <Unique Name="dynamic_field_object_name">
+        <UniqueColumn Name="object_name"/>
+        <UniqueColumn Name="object_type"/>
+    </Unique>
 </Table>
 
 <Table Name="pm_process">
@@ -2159,7 +2170,6 @@
     <Column Name="id" Required="true" PrimaryKey="true" AutoIncrement="true" Type="INTEGER"/>
     <Column Name="name" Required="true" Size="200" Type="VARCHAR"/>
     <Column Name="config" Required="true" Type="LONGBLOB"/>
-    <Column Name="config_md5" Required="true" Size="32" Type="VARCHAR"/>
     <Column Name="valid_id" Required="true" Type="SMALLINT"/>
     <Column Name="create_time" Required="true" Type="DATE"/>
     <Column Name="create_by" Required="true" Type="INTEGER"/>
@@ -2167,9 +2177,6 @@
     <Column Name="change_by" Required="true" Type="INTEGER"/>
     <Unique Name="cloud_service_config_name">
         <UniqueColumn Name="name"/>
-    </Unique>
-    <Unique Name="cloud_service_config_config_md5">
-        <UniqueColumn Name="config_md5"/>
     </Unique>
     <ForeignKey ForeignTable="valid">
         <Reference Local="valid_id" Foreign="id"/>

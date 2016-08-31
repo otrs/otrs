@@ -80,7 +80,7 @@
 [% RenderBlockStart("SMIMEFilter") %]
         <div class="WidgetSimple">
             <div class="Header">
-                <h2><label for="FilterSMIME">[% Translate("Filter for certificates") | html %]</label></h2>
+                <h2><label for="FilterSMIME">[% Translate("Filter for Certificates") | html %]</label></h2>
             </div>
             <div class="Content">
                 <ul>
@@ -94,13 +94,6 @@
                 </ul>
             </div>
         </div>
-
-[% WRAPPER JSOnDocumentComplete %]
-<script type="text/javascript">//<![CDATA[
-    Core.UI.Table.InitTableFilter($('#FilterSMIME'), $('#SMIME'));
-//]]></script>
-[% END %]
-
 [% RenderBlockEnd("SMIMEFilter") %]
 
 [% RenderBlockStart("OverviewHint") %]
@@ -192,14 +185,6 @@
                                 <a class="CertificateRead" href="[% Env("Baselink") %]Action=[% Env("Action") %];Subaction=Read;Type=[% Data.Type | uri %];Filename=[% Data.Filename | uri %]" title="[% Translate("Read certificate") | html %]">
                                     [% Translate("Read certificate") | html %]
                                 </a>
-[% WRAPPER JSOnDocumentComplete %]
-<script type="text/javascript">//<![CDATA[
-    $('a.CertificateRead').unbind('click').bind('click', function (Event) {
-        Core.UI.Popup.OpenPopup($(this).attr('href'), 'CertificateRead');
-        return false;
-    });
-//]]></script>
-[% END %]
 [% RenderBlockEnd("CertificateRead") %]
 
                             </td>
@@ -394,12 +379,6 @@
             </table>
         </div>
     </div>
-[% WRAPPER JSOnDocumentComplete %]
-<script type="text/javascript">//<![CDATA[
-    Core.UI.Table.InitTableFilter($('#FilterSMIMECerts'), $('#AvailableCerts'));
-//]]></script>
-[% END %]
-
 [% RenderBlockEnd("SignerCertificates") %]
 </div>
 <div class="Clear"></div>

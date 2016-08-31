@@ -175,12 +175,18 @@ sub ProviderProcessRequest {
             );
         }
 
+        # Remove trailing "/" form configuration and request for comparison
+        $NameSpaceFromHeader =~ s{\A ( .+? ) / \z}{$1}msx;
+
+        my $NameSpace = $Config->{NameSpace};
+        $NameSpace =~ s{\A ( .+? ) / \z}{$1}msx;
+
         # check name-space for match to configuration
-        if ( $NameSpaceFromHeader ne $Config->{NameSpace} ) {
+        if ( $NameSpaceFromHeader ne $NameSpace ) {
             return $Self->_Error(
                 Summary =>
                     "Namespace from SOAPAction '$NameSpaceFromHeader' does not match namespace"
-                    . " from configuration '$Config->{NameSpace}'",
+                    . " from configuration '$NameSpace'",
             );
         }
     }
@@ -614,11 +620,18 @@ sub RequesterPerformRequest {
             $SOAPHandle->on_action( sub {'""'} );
         }
 
-        elsif ( $Config->{SOAPActionSeparator} eq '/' ) {
-
-            # change separator (like for .net web services)
+        # SOAPAction defaults to '"<NameSpace (uri)>#<Operation>"'
+        # if a different separator was selected (e.g. '/' for .NET)
+        #     we need to set it manually in order to insert separator
+        # if original operation name was modified
+        #     we need to set it manually to retain original operation name
+        elsif (
+            $Config->{SOAPActionSeparator} ne '#'
+            || $OperationRequest ne $Param{Operation}
+            )
+        {
             $SOAPHandle->on_action(
-                sub { '"' . $Config->{NameSpace} . '/' . $OperationRequest . '"' }
+                sub { '"' . $Config->{NameSpace} . $Config->{SOAPActionSeparator} . $Param{Operation} . '"' }
             );
         }
     }

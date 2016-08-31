@@ -128,27 +128,3 @@
     </div>
     <div class="Clear"></div>
 </div>
-
-[% WRAPPER JSOnDocumentComplete %]
-<script type="text/javascript">//<![CDATA[
-
-Core.Agent.Admin.GenericInterfaceDebugger.Init({
-    WebserviceID: [% Data.WebserviceID | html %],
-    Localization: {
-        CommunicationErrorMsg: [% Translate("An error occurred during communication.") | JSON %],
-        NoDataFoundMsg: [% Translate("No data found.") | JSON %],
-        ToggleContentMsg: [% Translate("Show or hide the content.") | JSON %],
-        ClearDebugLogMsg: [% Translate("Clear debug log") | JSON %],
-        ClearMsg: [% Translate("Clear") | JSON %],
-        CancelMsg: [% Translate("Cancel") | JSON %]
-    }
-});
-
-$('#FilterRefresh').bind('click', Core.Agent.Admin.GenericInterfaceDebugger.GetRequestList);
-$('#DeleteButton').bind('click', Core.Agent.Admin.GenericInterfaceDebugger.ShowDeleteDialog);
-
-//Load Request list on startup without active filter
-Core.Agent.Admin.GenericInterfaceDebugger.GetRequestList();
-
-//]]></script>
-[% END %]

@@ -34,13 +34,32 @@ $ConfigObject->Set(
     Value => 0,
 );
 
-my $DatabaseCaseSensitive                = $DBObject->{Backend}->{'DB::CaseSensitive'};
-my $CustomerDatabaseCaseSensitiveDefault = $ConfigObject->{CustomerUser}->{Params}->{CaseSensitive};
+my $DatabaseCaseSensitive      = $DBObject->{Backend}->{'DB::CaseSensitive'};
+my $SearchCaseSensitiveDefault = $ConfigObject->{CustomerUser}->{Params}->{SearchCaseSensitive};
 
 my $UserID = '';
 for my $Key ( 1 .. 3, 'ä', 'カス', '_', '&' ) {
 
-    my $UserRand = 'Example-Customer-User' . $Key . $Helper->GetRandomID();
+    # create non existing customer user login
+    my $UserRand;
+    TRY:
+    for my $Try ( 1 .. 20 ) {
+
+        $UserRand = 'unittest-' . $Key . $Helper->GetRandomID();
+
+        my %UserData = $CustomerUserObject->CustomerUserDataGet(
+            User => $UserRand,
+        );
+
+        last TRY if !%UserData;
+
+        next TRY if $Try ne 20;
+
+        $Self->True(
+            0,
+            'Find non existing customer user login.',
+        );
+    }
 
     $UserID = $UserRand;
     my $UserID = $CustomerUserObject->CustomerUserAdd(
@@ -231,7 +250,7 @@ for my $Key ( 1 .. 3, 'ä', 'カス', '_', '&' ) {
     );
     $Self->True(
         $List{$UserID},
-        "CustomerSearch() - CustomerID=\'%\' - $UserID is  found",
+        "CustomerSearch() - CustomerID=\'%\' - $UserID is found",
     );
 
     # search by CustomerIDRaw with %
@@ -265,7 +284,7 @@ for my $Key ( 1 .. 3, 'ä', 'カス', '_', '&' ) {
     );
 
     # START CaseSensitive
-    $ConfigObject->{CustomerUser}->{Params}->{CaseSensitive} = 1;
+    $ConfigObject->{CustomerUser}->{Params}->{SearchCaseSensitive} = 1;
 
     $Kernel::OM->ObjectsDiscard( Objects => ['Kernel::System::CustomerUser'] );
     $CustomerUserObject = $Kernel::OM->Get('Kernel::System::CustomerUser');
@@ -282,13 +301,13 @@ for my $Key ( 1 .. 3, 'ä', 'カス', '_', '&' ) {
 
         $Self->False(
             $List{$UserID},
-            "CustomerSearch() - CustomerID - $UserID (CaseSensitive = 1)",
+            "CustomerSearch() - CustomerID - $UserID (SearchCaseSensitive = 1)",
         );
     }
     else {
         $Self->True(
             $List{$UserID},
-            "CustomerSearch() - CustomerID - $UserID (CaseSensitive = 1)",
+            "CustomerSearch() - CustomerID - $UserID (SearchCaseSensitive = 1)",
         );
     }
 
@@ -303,18 +322,18 @@ for my $Key ( 1 .. 3, 'ä', 'カス', '_', '&' ) {
         $Self->IsNotDeeply(
             \@List,
             [ $UserRand . '-Customer-Update-Id' ],
-            "CustomerIDList() - no SearchTerm - $UserID (CaseSensitive = 1)",
+            "CustomerIDList() - no SearchTerm - $UserID (SearchCaseSensitive = 1)",
         );
     }
     else {
         $Self->IsDeeply(
             \@List,
             [ $UserRand . '-Customer-Update-Id' ],
-            "CustomerIDList() - no SearchTerm - $UserID (CaseSensitive = 1)",
+            "CustomerIDList() - no SearchTerm - $UserID (SearchCaseSensitive = 1)",
         );
     }
 
-    $ConfigObject->{CustomerUser}->{Params}->{CaseSensitive} = 0;
+    $ConfigObject->{CustomerUser}->{Params}->{SearchCaseSensitive} = 0;
 
     $Kernel::OM->ObjectsDiscard( Objects => ['Kernel::System::CustomerUser'] );
     $CustomerUserObject = $Kernel::OM->Get('Kernel::System::CustomerUser');
@@ -328,7 +347,7 @@ for my $Key ( 1 .. 3, 'ä', 'カス', '_', '&' ) {
     );
     $Self->True(
         $List{$UserID},
-        "CustomerSearch() - CustomerID - $UserID (CaseSensitive = 0)",
+        "CustomerSearch() - CustomerID - $UserID (SearchCaseSensitive = 0)",
     );
 
     # CustomerIDList
@@ -340,10 +359,10 @@ for my $Key ( 1 .. 3, 'ä', 'カス', '_', '&' ) {
     $Self->IsDeeply(
         \@List,
         [ $UserRand . '-Customer-Update-Id' ],
-        "CustomerIDList() - no SearchTerm - $UserID (CaseSensitive = 0)",
+        "CustomerIDList() - no SearchTerm - $UserID (SearchCaseSensitive = 0)",
     );
 
-    $ConfigObject->{CustomerUser}->{Params}->{CaseSensitive} = $CustomerDatabaseCaseSensitiveDefault;
+    $ConfigObject->{CustomerUser}->{Params}->{SearchCaseSensitive} = $SearchCaseSensitiveDefault;
 
     # END CaseSensitive
 

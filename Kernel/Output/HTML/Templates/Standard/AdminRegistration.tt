@@ -101,7 +101,7 @@
 [% RenderBlockEnd("OverviewRegistered") %]
 [% RenderBlockStart("DaemonNotRunning") %]
             <div class="Header">
-                <h2>[% Translate("System registration not possible") | html %]</h2>
+                <h2>[% Translate("System Registration not Possible") | html %]</h2>
             </div>
             <div class="Content">
                 <p>
@@ -113,7 +113,7 @@
 [% RenderBlockEnd("DaemonNotRunning") %]
 [% RenderBlockStart("OTRSIDDeregistrationNotPossible") %]
             <div class="Header">
-                <h2>[% Translate("System deregistration not possible") | html %]</h2>
+                <h2>[% Translate("System Deregistration not Possible") | html %]</h2>
             </div>
             <div class="Content">
                 <p>
@@ -144,34 +144,6 @@
                             <a href="#" id="RegistrationDataProtection">[% Translate("Data Protection") | html %]</a>
                         </p>
                     </div>
-[% WRAPPER JSOnDocumentComplete %]
-<script type="text/javascript">//<![CDATA[
-    $('#RegistrationMoreInfo').bind('click', function() {
-        Core.UI.Dialog.ShowDialog({
-            Modal: true,
-            Title: [% Translate("System Registration") | JSON %],
-            HTML: $('#QADialog').html(),
-            PositionTop: '70px',
-            PositionLeft: 'Center',
-            CloseOnEscape: true,
-            CloseOnClickOutside: true
-        });
-        return false;
-    });
-    $('#RegistrationDataProtection').bind('click', function() {
-        Core.UI.Dialog.ShowDialog({
-            Modal: true,
-            Title: [% Translate("Data Protection") | JSON %],
-            HTML: $('#DPDialog').html(),
-            PositionTop: '10px',
-            PositionLeft: 'Center',
-            CloseOnEscape: true,
-            CloseOnClickOutside: true
-        });
-        return false;
-    })
-//]]></script>
-[% END %]
                     <div id="QADialog" class="Hidden">
                         <div class="TextDialog">
                             <h1>[% Translate("What are the advantages of system registration?") | html %]</h1>
@@ -573,7 +545,7 @@
 [% RenderBlockEnd("Edit") %]
 [% RenderBlockStart("SentDataOverview") %]
             <div class="Header">
-                <h2>[% Translate("Overview of transmitted data") | html %]</h2>
+                <h2>[% Translate("Overview of Transmitted Data") | html %]</h2>
             </div>
             <div class="Content">
 [% RenderBlockStart("SentDataOverviewNoData") %]
@@ -592,13 +564,7 @@
                 <h3 class="SpacingTop SpacingBottom">[% Translate('Support Data') | html %]</h3>
                 <textarea class="SupportData AsBlock W95pc" rows="10">[% Data.SupportData | replace('\$VAR1 = ', '') | html %]</textarea>
                 [% END %]
-[% WRAPPER JSOnDocumentComplete %]
-<script type="text/javascript">//<![CDATA[
-$('textarea.SupportData').bind('focus', function() {
-    $(this).select();
-});
-//]]></script>
-[% END %]
+
 [% RenderBlockEnd("SentDataOverviewData") %]
             </div>
             <div class="Clear"></div>

@@ -485,7 +485,13 @@ sub Run {
 
                     # get params
                     my %GetParam;
+                    PARAMETER:
                     for my $Parameter ( $Object->Option( %GetParam, Config => $Jobs{$Job} ) ) {
+                        if ( $Jobs{$Job}->{ParamType} && $Jobs{$Job}->{ParamType} ne 'Single' ) {
+                            @{ $GetParam{$Parameter} } = $ParamObject->GetArray( Param => $Parameter );
+                            next PARAMETER;
+                        }
+
                         $GetParam{$Parameter} = $ParamObject->GetParam( Param => $Parameter );
                     }
 
@@ -795,7 +801,7 @@ sub Run {
                         Message =>
                             $LayoutObject->{LanguageObject}
                             ->Translate( 'Could not perform validation on field %s!', $DynamicFieldConfig->{Label} ),
-                        Comment => Translatable('Please contact the admin.'),
+                        Comment => Translatable('Please contact the administrator.'),
                     );
                 }
 
@@ -1043,17 +1049,49 @@ sub Run {
                 );
 
                 # get params
+                my $Multiple;
+                PARAMETER:
                 for my $Parameter ( $Object->Option( %GetParam, Config => $Jobs{$Job} ) ) {
+
+                    if ( $Jobs{$Job}->{ParamType} && $Jobs{$Job}->{ParamType} ne 'Single' ) {
+                        @{ $GetParam{$Parameter} } = $ParamObject->GetArray( Param => $Parameter );
+                        $Multiple = 1;
+                        next PARAMETER;
+                    }
+
                     $GetParam{$Parameter} = $ParamObject->GetParam( Param => $Parameter );
                 }
 
                 # run module
-                $Object->Run( %GetParam, Config => $Jobs{$Job} );
+                $Object->Run(
+                    %GetParam,
+                    StoreNew => 1,
+                    Config   => $Jobs{$Job}
+                );
+
+                # get options that have been removed from the selection
+                # and add them back to the selection so that the submit
+                # will contain options that were hidden from the agent
+                my $Key = $Object->Option( %GetParam, Config => $Jobs{$Job} );
+
+                if ( $Object->can('GetOptionsToRemoveAJAX') ) {
+                    my @RemovedOptions = $Object->GetOptionsToRemoveAJAX(%GetParam);
+                    if (@RemovedOptions) {
+                        if ($Multiple) {
+                            for my $RemovedOption (@RemovedOptions) {
+                                push @{ $GetParam{$Key} }, $RemovedOption;
+                            }
+                        }
+                        else {
+                            $GetParam{$Key} = shift @RemovedOptions;
+                        }
+                    }
+                }
 
                 # ticket params
                 %ArticleParam = (
                     %ArticleParam,
-                    $Object->ArticleOption( %GetParam, Config => $Jobs{$Job} ),
+                    $Object->ArticleOption( %GetParam, %ArticleParam, Config => $Jobs{$Job} ),
                 );
 
                 # get errors
@@ -1675,8 +1713,18 @@ sub Run {
                     Debug => $Debug,
                 );
 
+                my $Multiple;
+
                 # get params
+                PARAMETER:
                 for my $Parameter ( $Object->Option( %GetParam, Config => $Jobs{$Job} ) ) {
+
+                    if ( $Jobs{$Job}->{ParamType} && $Jobs{$Job}->{ParamType} ne 'Single' ) {
+                        @{ $GetParam{$Parameter} } = $ParamObject->GetArray( Param => $Parameter );
+                        $Multiple = 1;
+                        next PARAMETER;
+                    }
+
                     $GetParam{$Parameter} = $ParamObject->GetParam( Param => $Parameter );
                 }
 
@@ -1688,16 +1736,29 @@ sub Run {
                     %GetParam = ( %GetParam, $Object->GetParamAJAX(%GetParam) )
                 }
 
+                # get options that have to be removed from the selection visible
+                # to the agent. These options will be added again on submit.
+                if ( $Object->can('GetOptionsToRemoveAJAX') ) {
+                    my @OptionsToRemove = $Object->GetOptionsToRemoveAJAX(%GetParam);
+
+                    for my $OptionToRemove (@OptionsToRemove) {
+                        delete $Data{$OptionToRemove};
+                    }
+                }
+
                 my $Key = $Object->Option( %GetParam, Config => $Jobs{$Job} );
+
                 if ($Key) {
                     push(
                         @ExtendedData,
                         {
-                            Name        => $Key,
-                            Data        => \%Data,
-                            SelectedID  => $GetParam{$Key},
-                            Translation => 1,
-                            Max         => 100,
+                            Name         => $Key,
+                            Data         => \%Data,
+                            SelectedID   => $GetParam{$Key},
+                            Translation  => 1,
+                            PossibleNone => 1,
+                            Multiple     => $Multiple,
+                            Max          => 100,
                         }
                     );
                 }
@@ -1806,7 +1867,7 @@ sub Run {
     else {
         return $LayoutObject->ErrorScreen(
             Message => Translatable('No Subaction!'),
-            Comment => Translatable('Please contact your administrator'),
+            Comment => Translatable('Please contact the administrator.'),
         );
     }
 }
@@ -2156,9 +2217,12 @@ sub _MaskEmailNew {
     # get layout object
     my $LayoutObject = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
 
-    # build customer search autocomplete field
-    $LayoutObject->Block(
-        Name => 'CustomerSearchAutoComplete',
+    # set JS data
+    $LayoutObject->AddJSData(
+        Key   => 'CustomerSearch',
+        Value => {
+            ShowCustomerTickets => $ConfigObject->Get('Ticket::Frontend::ShowCustomerTickets'),
+        },
     );
 
     # build string
@@ -2243,6 +2307,15 @@ sub _MaskEmailNew {
         $LayoutObject->Block(
             Name => 'FromExternalCustomer',
             Data => $Param{FromExternalCustomer},
+        );
+
+        $LayoutObject->AddJSData(
+            Key   => 'DataEmail',
+            Value => $Param{FromExternalCustomer}->{Email},
+        );
+        $LayoutObject->AddJSData(
+            Key   => 'DataCustomer',
+            Value => $Param{FromExternalCustomer}->{Customer},
         );
     }
 
@@ -2397,12 +2470,10 @@ sub _MaskEmailNew {
         OnlyDynamicFields => 1
     );
 
-    # create a string with the quoted dynamic field names separated by commas
-    if ( IsArrayRefWithData($DynamicFieldNames) ) {
-        for my $Field ( @{$DynamicFieldNames} ) {
-            $Param{DynamicFieldNamesStrg} .= ", '" . $Field . "'";
-        }
-    }
+    $LayoutObject->AddJSData(
+        Key   => 'DynamicFieldNames',
+        Value => $DynamicFieldNames,
+    );
 
     # build type string
     if ( $ConfigObject->Get('Ticket::Type') ) {
@@ -2424,73 +2495,46 @@ sub _MaskEmailNew {
     # build service string
     if ( $ConfigObject->Get('Ticket::Service') ) {
 
-        if ( $Config->{ServiceMandatory} ) {
-            $Param{ServiceStrg} = $LayoutObject->BuildSelection(
-                Data         => $Param{Services},
-                Name         => 'ServiceID',
-                Class        => 'Validate_Required Modernize ' . ( $Param{Errors}->{ServiceInvalid} || ' ' ),
-                SelectedID   => $Param{ServiceID},
-                PossibleNone => 1,
-                TreeView     => $TreeView,
-                Sort         => 'TreeView',
-                Translation  => 0,
-                Max          => 200,
-            );
-            $LayoutObject->Block(
-                Name => 'TicketServiceMandatory',
-                Data => {%Param},
-            );
-        }
-        else {
-            $Param{ServiceStrg} = $LayoutObject->BuildSelection(
-                Data         => $Param{Services},
-                Name         => 'ServiceID',
-                Class        => 'Modernize ' . ( $Param{Errors}->{ServiceInvalid} || ' ' ),
-                SelectedID   => $Param{ServiceID},
-                PossibleNone => 1,
-                TreeView     => $TreeView,
-                Sort         => 'TreeView',
-                Translation  => 0,
-                Max          => 200,
-            );
-            $LayoutObject->Block(
-                Name => 'TicketService',
-                Data => {%Param},
-            );
-        }
+        $Param{ServiceStrg} = $LayoutObject->BuildSelection(
+            Data  => $Param{Services},
+            Name  => 'ServiceID',
+            Class => 'Modernize '
+                . ( $Config->{ServiceMandatory} ? 'Validate_Required ' : '' )
+                . ( $Param{Errors}->{ServiceInvalid} || '' ),
+            SelectedID   => $Param{ServiceID},
+            PossibleNone => 1,
+            TreeView     => $TreeView,
+            Sort         => 'TreeView',
+            Translation  => 0,
+            Max          => 200,
+        );
+        $LayoutObject->Block(
+            Name => 'TicketService',
+            Data => {
+                ServiceMandatory => $Config->{ServiceMandatory} || 0,
+                %Param,
+            },
+        );
 
-        if ( $Config->{SLAMandatory} ) {
-            $Param{SLAStrg} = $LayoutObject->BuildSelection(
-                Data         => $Param{SLAs},
-                Name         => 'SLAID',
-                SelectedID   => $Param{SLAID},
-                Class        => 'Validate_Required Modernize ' . ( $Param{Errors}->{SLAInvalid} || ' ' ),
-                PossibleNone => 1,
-                Sort         => 'AlphanumericValue',
-                Translation  => 0,
-                Max          => 200,
-            );
-            $LayoutObject->Block(
-                Name => 'TicketSLAMandatory',
-                Data => {%Param},
-            );
-        }
-        else {
-            $Param{SLAStrg} = $LayoutObject->BuildSelection(
-                Data         => $Param{SLAs},
-                Name         => 'SLAID',
-                SelectedID   => $Param{SLAID},
-                Class        => 'Modernize',
-                PossibleNone => 1,
-                Sort         => 'AlphanumericValue',
-                Translation  => 0,
-                Max          => 200,
-            );
-            $LayoutObject->Block(
-                Name => 'TicketSLA',
-                Data => {%Param},
-            );
-        }
+        $Param{SLAStrg} = $LayoutObject->BuildSelection(
+            Data       => $Param{SLAs},
+            Name       => 'SLAID',
+            SelectedID => $Param{SLAID},
+            Class      => 'Modernize '
+                . ( $Config->{SLAMandatory} ? 'Validate_Required ' : '' )
+                . ( $Param{Errors}->{SLAInvalid} || '' ),
+            PossibleNone => 1,
+            Sort         => 'AlphanumericValue',
+            Translation  => 0,
+            Max          => 200,
+        );
+        $LayoutObject->Block(
+            Name => 'TicketSLA',
+            Data => {
+                SLAMandatory => $Config->{SLAMandatory} || 0,
+                %Param,
+            },
+        );
     }
 
     # check if exists create templates regardless the queue
@@ -2730,8 +2774,8 @@ sub _MaskEmailNew {
         $Param{RichTextHeight} = $Config->{RichTextHeight} || 0;
         $Param{RichTextWidth}  = $Config->{RichTextWidth}  || 0;
 
-        $LayoutObject->Block(
-            Name => 'RichText',
+        # set up rich text editor
+        $LayoutObject->SetRichTextParameters(
             Data => \%Param,
         );
     }

@@ -2463,13 +2463,11 @@ CREATE TABLE gi_webservice_config (
     id NUMBER (12, 0) NOT NULL,
     name VARCHAR2 (200) NOT NULL,
     config CLOB NOT NULL,
-    config_md5 VARCHAR2 (32) NOT NULL,
     valid_id NUMBER (5, 0) NOT NULL,
     create_time DATE NOT NULL,
     create_by NUMBER (12, 0) NOT NULL,
     change_time DATE NOT NULL,
     change_by NUMBER (12, 0) NOT NULL,
-    CONSTRAINT gi_webservice_config_config_89 UNIQUE (config_md5),
     CONSTRAINT gi_webservice_config_name UNIQUE (name)
 );
 ALTER TABLE gi_webservice_config ADD CONSTRAINT PK_gi_webservice_config PRIMARY KEY (id);
@@ -2713,6 +2711,7 @@ CREATE INDEX FK_dynamic_field_value_field90 ON dynamic_field_value (field_id);
 CREATE INDEX dynamic_field_value_field_va6e ON dynamic_field_value (object_id, field_id);
 CREATE INDEX dynamic_field_value_search_db3 ON dynamic_field_value (field_id, value_date);
 CREATE INDEX dynamic_field_value_search_int ON dynamic_field_value (field_id, value_int);
+CREATE INDEX dynamic_field_value_search_tbc ON dynamic_field_value (field_id, value_text);
 -- ----------------------------------------------------------
 --  create table dynamic_field
 -- ----------------------------------------------------------
@@ -2762,6 +2761,42 @@ END;
 CREATE INDEX FK_dynamic_field_change_by ON dynamic_field (change_by);
 CREATE INDEX FK_dynamic_field_create_by ON dynamic_field (create_by);
 CREATE INDEX FK_dynamic_field_valid_id ON dynamic_field (valid_id);
+-- ----------------------------------------------------------
+--  create table dynamic_field_obj_id_name
+-- ----------------------------------------------------------
+CREATE TABLE dynamic_field_obj_id_name (
+    object_id NUMBER (12, 0) NOT NULL,
+    object_name VARCHAR2 (200) NOT NULL,
+    object_type VARCHAR2 (200) NOT NULL,
+    CONSTRAINT dynamic_field_object_name UNIQUE (object_name, object_type)
+);
+ALTER TABLE dynamic_field_obj_id_name ADD CONSTRAINT PK_dynamic_field_obj_id_name PRIMARY KEY (object_id);
+BEGIN
+  EXECUTE IMMEDIATE 'DROP SEQUENCE SE_dynamic_field_obj_id_name';
+EXCEPTION
+  WHEN OTHERS THEN NULL;
+END;
+/
+--;
+CREATE SEQUENCE SE_dynamic_field_obj_id_name
+INCREMENT BY 1
+START WITH 1
+NOMAXVALUE
+NOCYCLE
+CACHE 20
+ORDER;
+CREATE OR REPLACE TRIGGER SE_dynamic_field_obj_id_name_t
+BEFORE INSERT ON dynamic_field_obj_id_name
+FOR EACH ROW
+BEGIN
+  IF :new.object_id IS NULL THEN
+    SELECT SE_dynamic_field_obj_id_name.nextval
+    INTO :new.object_id
+    FROM DUAL;
+  END IF;
+END;
+/
+--;
 -- ----------------------------------------------------------
 --  create table pm_process
 -- ----------------------------------------------------------
@@ -3133,13 +3168,11 @@ CREATE TABLE cloud_service_config (
     id NUMBER (12, 0) NOT NULL,
     name VARCHAR2 (200) NOT NULL,
     config CLOB NOT NULL,
-    config_md5 VARCHAR2 (32) NOT NULL,
     valid_id NUMBER (5, 0) NOT NULL,
     create_time DATE NOT NULL,
     create_by NUMBER (12, 0) NOT NULL,
     change_time DATE NOT NULL,
     change_by NUMBER (12, 0) NOT NULL,
-    CONSTRAINT cloud_service_config_config_39 UNIQUE (config_md5),
     CONSTRAINT cloud_service_config_name UNIQUE (name)
 );
 ALTER TABLE cloud_service_config ADD CONSTRAINT PK_cloud_service_config PRIMARY KEY (id);

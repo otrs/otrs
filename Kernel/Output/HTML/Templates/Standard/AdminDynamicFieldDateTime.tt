@@ -161,6 +161,15 @@
                         </div>
                         <div class="Clear"></div>
 
+                        <label for="Link">[% Translate("Link for preview") | html %]:</label>
+                        <div class="Field">
+                            <input id="LinkPreview" class="W50pc" type="text" maxlength="500" value="[% Data.LinkPreview | html %]" name="LinkPreview"/>
+                            <p class="FieldExplanation">
+                                [% Translate("If filled in, this URL will be used for a preview which is shown when this link is hovered in ticket zoom. Please note that for this to work, the regular URL field above needs to be filled in, too.") | html %]
+                            </p>
+                        </div>
+                        <div class="Clear"></div>
+
                         <label for="DateRestriction">[% Translate("Restrict entering of dates") | html %]:</label>
                         <div class="Field">
                             [% Data.DateRestrictionStrg %]
@@ -183,16 +192,3 @@
         </form>
     </div>
 </div>
-[% WRAPPER JSOnDocumentComplete %]
-<script type="text/javascript">//<![CDATA[
-$('.ShowWarning').bind('change keyup', function (Event) {
-    $('p.Warning').removeClass('Hidden');
-});
-
-$('#YearsPeriod').bind('change', function (Event) {
-    Core.Agent.Admin.DynamicFieldDateTime.ToogleYearsPeriod($(this).val());
-});
-
-Core.Agent.Admin.DynamicField.ValidationInit();
-//]]></script>
-[% END %]

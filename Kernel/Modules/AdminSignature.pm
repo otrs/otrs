@@ -240,8 +240,9 @@ sub _Edit {
 
     # add rich text editor
     if ( $LayoutObject->{BrowserRichText} ) {
-        $LayoutObject->Block(
-            Name => 'RichText',
+
+        # set up rich text editor
+        $LayoutObject->SetRichTextParameters(
             Data => \%Param,
         );
 
@@ -325,6 +326,10 @@ sub _Overview {
     $LayoutObject->Block(
         Name => 'OverviewResult',
         Data => \%Param,
+    );
+
+    $LayoutObject->Block(
+        Name => 'Filter'
     );
 
     my $SignatureObject = $Kernel::OM->Get('Kernel::System::Signature');

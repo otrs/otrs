@@ -71,7 +71,7 @@ sub _Add {
     my %GetParam;
     for my $Needed (qw(ObjectType FieldType FieldOrder)) {
         $GetParam{$Needed} = $Kernel::OM->Get('Kernel::System::Web::Request')->GetParam( Param => $Needed );
-        if ( !$Needed ) {
+        if ( !$GetParam{$Needed} ) {
             return $LayoutObject->ErrorScreen(
                 Message => $LayoutObject->{LanguageObject}->Translate( 'Need %s', $Needed ),
             );
@@ -79,9 +79,9 @@ sub _Add {
     }
 
     # get the object type and field type display name
-    my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
-    my $ObjectTypeName
-        = $ConfigObject->Get('DynamicFields::ObjectType')->{ $GetParam{ObjectType} }->{DisplayName} || '';
+    my $ConfigObject   = $Kernel::OM->Get('Kernel::Config');
+    my $ObjectTypeName = $ConfigObject->Get('DynamicFields::ObjectType')->{ $GetParam{ObjectType} }->{DisplayName}
+        || '';
     my $FieldTypeName = $ConfigObject->Get('DynamicFields::Driver')->{ $GetParam{FieldType} }->{DisplayName} || '';
 
     return $Self->_ShowScreen(
@@ -151,7 +151,7 @@ sub _AddAction {
     }
 
     for my $ConfigParam (
-        qw(ObjectType ObjectTypeName FieldType FieldTypeName DefaultValue ValidID Rows Cols Link)
+        qw(ObjectType ObjectTypeName FieldType FieldTypeName DefaultValue ValidID Rows Cols Link LinkPreview)
         )
     {
         $GetParam{$ConfigParam} = $ParamObject->GetParam( Param => $ConfigParam );
@@ -190,7 +190,8 @@ sub _AddAction {
     };
 
     if ( $GetParam{FieldType} eq 'Text' ) {
-        $FieldConfig->{Link} = $GetParam{Link},
+        $FieldConfig->{Link}        = $GetParam{Link};
+        $FieldConfig->{LinkPreview} = $GetParam{LinkPreview};
     }
 
     if ( $GetParam{FieldType} eq 'TextArea' ) {
@@ -230,7 +231,7 @@ sub _Change {
 
     for my $Needed (qw(ObjectType FieldType)) {
         $GetParam{$Needed} = $ParamObject->GetParam( Param => $Needed );
-        if ( !$Needed ) {
+        if ( !$GetParam{$Needed} ) {
             return $LayoutObject->ErrorScreen(
                 Message => $LayoutObject->{LanguageObject}->Translate( 'Need %s', $Needed ),
             );
@@ -238,9 +239,9 @@ sub _Change {
     }
 
     # get the object type and field type display name
-    my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
-    my $ObjectTypeName
-        = $ConfigObject->Get('DynamicFields::ObjectType')->{ $GetParam{ObjectType} }->{DisplayName} || '';
+    my $ConfigObject   = $Kernel::OM->Get('Kernel::Config');
+    my $ObjectTypeName = $ConfigObject->Get('DynamicFields::ObjectType')->{ $GetParam{ObjectType} }->{DisplayName}
+        || '';
     my $FieldTypeName = $ConfigObject->Get('DynamicFields::Driver')->{ $GetParam{FieldType} }->{DisplayName} || '';
 
     my $FieldID = $ParamObject->GetParam( Param => 'ID' );
@@ -379,7 +380,7 @@ sub _ChangeAction {
     }
 
     for my $ConfigParam (
-        qw(ObjectType ObjectTypeName FieldType FieldTypeName DefaultValue ValidID Rows Cols Link)
+        qw(ObjectType ObjectTypeName FieldType FieldTypeName DefaultValue ValidID Rows Cols Link LinkPreview)
         )
     {
         $GetParam{$ConfigParam} = $ParamObject->GetParam( Param => $ConfigParam );
@@ -441,7 +442,8 @@ sub _ChangeAction {
     };
 
     if ( $GetParam{FieldType} eq 'Text' ) {
-        $FieldConfig->{Link} = $GetParam{Link};
+        $FieldConfig->{Link}        = $GetParam{Link};
+        $FieldConfig->{LinkPreview} = $GetParam{LinkPreview};
     }
 
     if ( $GetParam{FieldType} eq 'TextArea' ) {
@@ -562,7 +564,8 @@ sub _ShowScreen {
     );
 
     # define config field specific settings
-    my $Link = $Param{Link} || '';
+    my $Link        = $Param{Link}        || '';
+    my $LinkPreview = $Param{LinkPreview} || '';
 
     if ( $Param{FieldType} eq 'Text' ) {
 
@@ -571,7 +574,8 @@ sub _ShowScreen {
             Name => 'Link',
             Data => {
                 %Param,
-                Link => $Link,
+                Link        => $Link,
+                LinkPreview => $LinkPreview,
             },
         );
     }
@@ -677,6 +681,7 @@ sub _ShowScreen {
             DefaultValue          => $DefaultValue,
             ReadonlyInternalField => $ReadonlyInternalField,
             Link                  => $Link,
+            LinkPreview           => $LinkPreview,
             }
     );
 

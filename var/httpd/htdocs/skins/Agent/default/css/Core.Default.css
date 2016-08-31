@@ -240,13 +240,25 @@ dd {
 }
 
 .ErrorBox {
-    color: #FFF;
-    background: #D41111;
+    color: rgba(255, 255, 255, 0.9);
+    background: #B83850;
 }
 
 .SuccessBox {
     color: #FFF;
-    background: #08A503;
+    background: #8FB738;
+}
+
+.ErrorBox span a,
+.SuccessBox span a {
+    color: #fff;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.5);
+    transition: all ease 0.2s;
+}
+
+.ErrorBox span a:hover,
+.SuccessBox span a:hover {
+    border-color: #fff;
 }
 
 /**
@@ -558,21 +570,11 @@ dd {
 }
 
 /**
- * @subsection  Customizable logos
- */
-#LoginLogo {
-    background: transparent url(../img/loginlogo_default.png) center no-repeat;
-    background-size: contain;
-    height: 100px;
-}
-
-
-/**
  * @subsection  MessageBox
  */
 
 .MessageBox {
-    margin: 5px 18px 0 10px;
+    margin: 5px;
     background: #F7AE40;
     position: relative;
     z-index: 1;
@@ -610,12 +612,12 @@ dd {
 }
 
 .MessageBox.Error {
-    background: #F25C5C;
+    background: #b8384e;
 }
 
 .MessageBox.Error p,
 .MessageBox.Error a {
-    color: #000;
+    color: rgba(255, 255, 255, 0.8);
 }
 
 .MessageBox.Confirmation {
@@ -1114,6 +1116,151 @@ iframe.PopupIframe {
 .OTRSBusinessRequiredDialog {
     padding: 70px 20px 10px 20px;
     background: url(../img/logo-business.png) no-repeat top center;
+}
+
+/**
+ * @subsection  Floaters
+ */
+
+body > div.MetaFloater {
+    width: 600px;
+    height: 400px;
+    background: #fff;
+    box-shadow: 2px 1px 3px #aaa;
+    position: absolute;
+    box-sizing: border-box;
+    z-index: 999;
+    margin-top: -5px;
+    border: 1px solid #eee;
+    border-top: 30px solid #eee;
+}
+
+body > div.MetaFloater:after, 
+body > div.MetaFloater:before {
+    bottom: 399px;
+    left: 50%;
+    border: solid transparent;
+    content: " ";
+    height: 0;
+    width: 0;
+    position: absolute;
+    pointer-events: none;
+}
+
+body > div.MetaFloater.Left:after, 
+body > div.MetaFloater.Left:before {
+    left: 15px;
+    margin-top: -1px;
+}
+
+body > div.MetaFloater.Right:after, 
+body > div.MetaFloater.Right:before {
+    left: auto;
+    right: 15px;
+}
+
+body > div.MetaFloater.Bottom:after, 
+body > div.MetaFloater.Bottom:before {
+    bottom: auto;
+    top: 100%;
+}
+
+body > div.MetaFloater:after {
+    border-bottom-color: #eee;
+    border-width: 15px;
+    margin-left: -15px;
+}
+
+body > div.MetaFloater.Bottom:after {
+    border-color: rgba(255, 255, 255, 0);
+    border-top-color: #fff;
+}
+
+body > div.MetaFloater:before {
+    border-color: rgba(170, 170, 170, 0);
+    border-bottom-color: #aaa;
+    border-width: 16px;
+    margin-left: -16px;
+}
+
+body > div.MetaFloater.Bottom:before {
+    border-color: rgba(170, 170, 170, 0);
+    border-top-color: #aaa;
+}
+
+body > div.MetaFloater > i.fa-spin {
+    position: absolute;
+    left: 50%;
+    font-size: 20px;
+    top: 50%;
+    margin-left: -10px;
+    margin-top: -10px;
+}
+
+body > div.MetaFloater > div.Content > iframe {
+    height: 200%;
+    left: -50%;
+    position: absolute;
+    top: -50%;
+    transform: scale(0.5);
+    width: 200%;
+}
+
+body > div.MetaFloater > div.Content > iframe.NoScale {
+    height: 100%;
+    left: 0px;
+    top: 0px;
+    transform: scale(1.0);
+    width: 100%;
+}
+
+body > div.MetaFloater > a {
+    font-size: 15px;
+    padding: 8px 10px;
+    display: block;
+    position: absolute;
+    top: -30px;
+    text-align: right;
+    box-sizing: border-box;
+    height: 30px;
+    color: #555;
+}
+
+body > div.MetaFloater > div.Content {
+    height: 100%;
+    width: 100%;
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    overflow: hidden;
+}
+
+body > div.MetaFloater > div.NoPreview {
+    display: none;
+    text-align: center;
+    width: 50%;
+    margin: 23% auto;
+    line-height: 150%;
+    color: #777;
+}
+
+body > div.MetaFloater > div.NoPreview i {
+    display: block;
+    font-size: 20px;
+    margin-bottom: 10px;
+    color: #777;
+}
+
+body > div.MetaFloater > a.Scale {
+    left: 0px;
+}
+
+body > div.MetaFloater > a.Open {
+    left: 25px;
+}
+
+body > div.MetaFloater > a.Close {
+    right: 0px;
 }
 
 }

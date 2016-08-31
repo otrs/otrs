@@ -15,6 +15,7 @@ use warnings;
 
 use List::Util qw( first );
 
+use Kernel::System::DateTime qw(:all);
 use Kernel::System::VariableCheck qw(:all);
 
 our @ObjectDependencies = (
@@ -181,13 +182,12 @@ sub StatsParamsWidget {
         return;    # no possible output format
     }
 
-# provide the time zone field only, if the system use UTC as system time, the TimeZoneUser is active and for dynamic statistics
-    if (
-        !$Kernel::OM->Get('Kernel::System::Time')->ServerLocalTimeOffsetSeconds()
-        && $ConfigObject->Get('TimeZoneUser')
-        && $Stat->{StatType} eq 'dynamic'
-        )
-    {
+    # provide the time zone field only for dynamic statistics
+    if ( $Stat->{StatType} eq 'dynamic' ) {
+        my $SelectedTimeZone = $LocalGetParam->( Param => 'TimeZone' )
+            // $Stat->{TimeZone}
+            // OTRSTimeZoneGet();
+
         my %TimeZoneBuildSelection = $Self->_TimeZoneBuildSelection();
 
         my %Frontend;
@@ -195,8 +195,7 @@ sub StatsParamsWidget {
             %TimeZoneBuildSelection,
             Name       => 'TimeZone',
             Class      => 'Modernize',
-            SelectedID => $LocalGetParam->( Param => 'TimeZone' ) // $Stat->{TimeZone}
-                // $ConfigObject->Get('TimeZone') || 0,
+            SelectedID => $SelectedTimeZone,
         );
 
         $LayoutObject->Block(
@@ -208,8 +207,8 @@ sub StatsParamsWidget {
     if ( $ConfigObject->Get('Stats::ExchangeAxis') ) {
         my $ExchangeAxis = $LayoutObject->BuildSelection(
             Data => {
-                1 => 'Yes',
-                0 => 'No'
+                1 => Translatable('Yes'),
+                0 => Translatable('No')
             },
             Name       => 'ExchangeAxis',
             SelectedID => $LocalGetParam->( Param => 'ExchangeAxis' ) // 0,
@@ -563,12 +562,12 @@ sub StatsParamsWidget {
         }
     }
     my %YesNo = (
-        0 => 'No',
-        1 => 'Yes'
+        0 => Translatable('No'),
+        1 => Translatable('Yes')
     );
     my %ValidInvalid = (
-        0 => 'invalid',
-        1 => 'valid'
+        0 => Translatable('invalid'),
+        1 => Translatable('valid')
     );
     $Stat->{SumRowValue}                = $YesNo{ $Stat->{SumRow} };
     $Stat->{SumColValue}                = $YesNo{ $Stat->{SumCol} };
@@ -586,7 +585,7 @@ sub StatsParamsWidget {
             %{$Stat},
             AJAX => $Param{AJAX},
         },
-        KeepScriptTags => $Param{AJAX},
+        AJAX => $Param{AJAX},
     );
     return $Output;
 }
@@ -621,8 +620,8 @@ sub GeneralSpecificationsWidget {
     for my $Key (qw(Cache ShowAsDashboardWidget SumRow SumCol)) {
         $Frontend{ 'Select' . $Key } = $LayoutObject->BuildSelection(
             Data => {
-                0 => 'No',
-                1 => 'Yes'
+                0 => Translatable('No'),
+                1 => Translatable('Yes')
             },
             SelectedID => $GetParam{$Key} // $Stat->{$Key} || 0,
             Name       => $Key,
@@ -634,7 +633,7 @@ sub GeneralSpecificationsWidget {
     if ( !$Stat->{ObjectBehaviours}->{ProvidesDashboardWidget} ) {
         $Frontend{'SelectShowAsDashboardWidget'} = $LayoutObject->BuildSelection(
             Data => {
-                0 => 'No (not supported)',
+                0 => Translatable('No (not supported)'),
             },
             SelectedID => 0,
             Name       => 'ShowAsDashboardWidget',
@@ -644,8 +643,8 @@ sub GeneralSpecificationsWidget {
 
     $Frontend{SelectValid} = $LayoutObject->BuildSelection(
         Data => {
-            0 => 'invalid',
-            1 => 'valid',
+            0 => Translatable('invalid'),
+            1 => Translatable('valid'),
         },
         SelectedID => $GetParam{Valid} // $Stat->{Valid},
         Name       => 'Valid',
@@ -754,17 +753,21 @@ sub GeneralSpecificationsWidget {
     }
     $Stat->{SelectPermission} = $LayoutObject->BuildSelection(%Permission);
 
-    # provide the timezone field only if the system use UTC as system time, the TimeZoneUser is active
-    # and for dynamic statistics
+    # provide the timezone field only for dynamic statistics
     if (
-        !$Kernel::OM->Get('Kernel::System::Time')->ServerLocalTimeOffsetSeconds()
-        && $ConfigObject->Get('TimeZoneUser')
-        && (
-            ( $Stat->{StatType} && $Stat->{StatType} eq 'dynamic' )
-            || ( $Frontend{StatType} && $Frontend{StatType} eq 'dynamic' )
-        )
+        ( $Stat->{StatType} && $Stat->{StatType} eq 'dynamic' )
+        || ( $Frontend{StatType} && $Frontend{StatType} eq 'dynamic' )
         )
     {
+
+        my $SelectedTimeZone = $GetParam{TimeZone} // $Stat->{TimeZone};
+        if ( !defined $SelectedTimeZone ) {
+            my %UserPreferences = $Kernel::OM->Get('Kernel::System::User')->GetPreferences(
+                UserID => $Param{UserID}
+            );
+            $SelectedTimeZone = $UserPreferences{UserTimeZone}
+                // OTRSTimeZoneGet();
+        }
 
         my %TimeZoneBuildSelection = $Self->_TimeZoneBuildSelection();
 
@@ -772,7 +775,7 @@ sub GeneralSpecificationsWidget {
             %TimeZoneBuildSelection,
             Name       => 'TimeZone',
             Class      => 'Modernize ' . ( $Errors{TimeZoneServerError} ? ' ServerError' : '' ),
-            SelectedID => $GetParam{TimeZone} // $Stat->{TimeZone} // $ConfigObject->Get('TimeZone') || 0,
+            SelectedID => $SelectedTimeZone,
         );
     }
 
@@ -793,9 +796,8 @@ sub XAxisWidget {
 
     my $Stat = $Param{Stat};
 
+    # get needed objects
     my $LayoutObject = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
-
-    #my $ParamObject  = $Kernel::OM->Get('Kernel::System::Web::Request');
     my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
 
     # if only one value is available select this value
@@ -803,6 +805,8 @@ sub XAxisWidget {
         $Stat->{UseAsXvalue}[0]{Selected} = 1;
         $Stat->{UseAsXvalue}[0]{Fixed}    = 1;
     }
+
+    my @XAxisElements;
 
     for my $ObjectAttribute ( @{ $Stat->{UseAsXvalue} } ) {
         my %BlockData;
@@ -870,12 +874,21 @@ sub XAxisWidget {
             $Block = 'MultiSelectField';
         }
 
+        # store data, which will be sent to JS
+        push @XAxisElements, $BlockData{Element} if $BlockData{Checked};
+
         # show the input element
         $LayoutObject->Block(
             Name => $Block,
             Data => \%BlockData,
         );
     }
+
+    # send data to JS
+    $LayoutObject->AddJSData(
+        Key   => 'XAxisElements',
+        Value => \@XAxisElements,
+    );
 
     my $Output .= $LayoutObject->Output(
         TemplateFile => 'Statistics/XAxisWidget',
@@ -891,10 +904,11 @@ sub YAxisWidget {
 
     my $Stat = $Param{Stat};
 
+    # get needed objects
     my $LayoutObject = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
-
-    #my $ParamObject  = $Kernel::OM->Get('Kernel::System::Web::Request');
     my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
+
+    my @YAxisElements;
 
     OBJECTATTRIBUTE:
     for my $ObjectAttribute ( @{ $Stat->{UseAsValueSeries} } ) {
@@ -966,12 +980,21 @@ sub YAxisWidget {
             $Block = 'MultiSelectField';
         }
 
+        # store data, which will be sent to JS
+        push @YAxisElements, $BlockData{Element} if $BlockData{Checked};
+
         # show the input element
         $LayoutObject->Block(
             Name => $Block,
             Data => \%BlockData,
         );
     }
+
+    # send data to JS
+    $LayoutObject->AddJSData(
+        Key   => 'YAxisElements',
+        Value => \@YAxisElements,
+    );
 
     my $Output .= $LayoutObject->Output(
         TemplateFile => 'Statistics/YAxisWidget',
@@ -987,10 +1010,11 @@ sub RestrictionsWidget {
 
     my $Stat = $Param{Stat};
 
+    # get needed objects
     my $LayoutObject = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
-
-    #my $ParamObject  = $Kernel::OM->Get('Kernel::System::Web::Request');
     my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
+
+    my @RestrictionElements;
 
     for my $ObjectAttribute ( @{ $Stat->{UseAsRestriction} } ) {
         my %BlockData;
@@ -1063,12 +1087,21 @@ sub RestrictionsWidget {
             %BlockData = ( %BlockData, %TimeData );
         }
 
+        # store data, which will be sent to JS
+        push @RestrictionElements, $BlockData{Element} if $BlockData{Checked};
+
         # show the input element
         $LayoutObject->Block(
             Name => $ObjectAttribute->{Block},
             Data => \%BlockData,
         );
     }
+
+    # send data to JS
+    $LayoutObject->AddJSData(
+        Key   => 'RestrictionElements',
+        Value => \@RestrictionElements,
+    );
 
     my $Output .= $LayoutObject->Output(
         TemplateFile => 'Statistics/RestrictionsWidget',
@@ -1103,6 +1136,12 @@ sub PreviewWidget {
             UserID   => $Param{UserID},
         );
     }
+
+    # send data to JS
+    $LayoutObject->AddJSData(
+        Key   => 'PreviewResult',
+        Value => $Frontend{PreviewResult},
+    );
 
     my $Output .= $LayoutObject->Output(
         TemplateFile => 'Statistics/PreviewWidget',
@@ -1149,13 +1188,13 @@ sub StatsParamsGet {
     my ( %GetParam, @Errors );
 
     # get the time zone param
-    if (
-        !$TimeObject->ServerLocalTimeOffsetSeconds()
-        && $ConfigObject->Get('TimeZoneUser')
-        && length $LocalGetParam->( Param => 'TimeZone' )
-        )
-    {
+    if ( length $LocalGetParam->( Param => 'TimeZone' ) ) {
         $GetParam{TimeZone} = $LocalGetParam->( Param => 'TimeZone' ) // $Stat->{TimeZone};
+    }
+
+    # get ExchangeAxis param
+    if ( length $LocalGetParam->( Param => 'ExchangeAxis' ) ) {
+        $GetParam{ExchangeAxis} = $LocalGetParam->( Param => 'ExchangeAxis' ) // $Stat->{ExchangeAxis};
     }
 
     #
@@ -1443,11 +1482,6 @@ sub StatsResultRender {
     my $Title         = $TitleArrayRef->[0];
     my $HeadArrayRef  = shift @StatArray;
 
-    # if array = empty
-    if ( !@StatArray ) {
-        push @StatArray, [ ' ', 0 ];
-    }
-
     # Generate Filename
     my $Filename = $Kernel::OM->Get('Kernel::System::Stats')->StringAndTimestamp2Filename(
         String   => $Stat->{Title} . ' Created',
@@ -1467,19 +1501,33 @@ sub StatsResultRender {
 
     # generate D3 output
     if ( $Param{Format} =~ m{^D3} ) {
+
+        # if array = empty
+        if ( !@StatArray ) {
+            push @StatArray, [ ' ', 0 ];
+        }
+
         my $Output = $LayoutObject->Header(
             Value => $Title,
             Type  => 'Small',
         );
-        $Output .= $LayoutObject->Output(
-            Data => {
-                %{$Stat},
+
+        # send data to JS
+        $LayoutObject->AddJSData(
+            Key   => 'D3Data',
+            Value => {
                 RawData => [
                     [$Title],
                     $HeadArrayRef,
                     @StatArray,
                 ],
-                %Param,
+                Format => $Param{Format},
+                }
+        );
+
+        $Output .= $LayoutObject->Output(
+            Data => {
+                %{$Stat},
             },
             TemplateFile => 'Statistics/StatsResultRender/D3',
         );
@@ -1496,7 +1544,7 @@ sub StatsResultRender {
         my $UserCSVSeparator = $LayoutObject->{LanguageObject}->{Separator};
 
         if ( $ConfigObject->Get('PreferencesGroups')->{CSVSeparator}->{Active} ) {
-            my %UserData = $$Kernel::OM->Get('Kernel::System::User')->GetUserData(
+            my %UserData = $Kernel::OM->Get('Kernel::System::User')->GetUserData(
                 UserID => $Param{UserID}
             );
             $UserCSVSeparator = $UserData{UserCSVSeparator} if $UserData{UserCSVSeparator};
@@ -2209,34 +2257,10 @@ sub _TimeScaleYAxis {
 sub _TimeZoneBuildSelection {
     my ( $Self, %Param ) = @_;
 
+    my $TimeZones = TimeZoneList();
+
     my %TimeZoneBuildSelection = (
-        Data => {
-            '0'   => '+ 0',
-            '+1'  => '+ 1',
-            '+2'  => '+ 2',
-            '+3'  => '+ 3',
-            '+4'  => '+ 4',
-            '+5'  => '+ 5',
-            '+6'  => '+ 6',
-            '+7'  => '+ 7',
-            '+8'  => '+ 8',
-            '+9'  => '+ 9',
-            '+10' => '+10',
-            '+11' => '+11',
-            '+12' => '+12',
-            '-1'  => '- 1',
-            '-2'  => '- 2',
-            '-3'  => '- 3',
-            '-4'  => '- 4',
-            '-5'  => '- 5',
-            '-6'  => '- 6',
-            '-7'  => '- 7',
-            '-8'  => '- 8',
-            '-9'  => '- 9',
-            '-10' => '-10',
-            '-11' => '-11',
-            '-12' => '-12',
-        },
+        Data => { map { $_ => $_ } @{$TimeZones} },
     );
 
     return %TimeZoneBuildSelection;
@@ -2268,15 +2292,7 @@ sub _ColumnAndRowTranslation {
         }
     }
 
-    # get config object
-    my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
-
-    # create language object
-    $Kernel::OM->ObjectParamAdd(
-        'Kernel::Language' => {
-            UserLanguage => $Param{UserLanguage} || $ConfigObject->Get('DefaultLanguage') || 'en',
-            }
-    );
+    # get language object
     my $LanguageObject = $Kernel::OM->Get('Kernel::Language');
 
     # find out, if the column or row names should be translated
@@ -2474,7 +2490,9 @@ sub _StopWordErrorCheck {
     my $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
 
     if ( !%Param ) {
-        $LayoutObject->FatalError( Message => "Got no values to check." );
+        $LayoutObject->FatalError(
+            Message => Translatable('Got no values to check.'),
+        );
     }
 
     my %StopWordsServerErrors;

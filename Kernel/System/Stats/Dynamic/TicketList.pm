@@ -124,7 +124,7 @@ sub GetObjectAttributes {
         20        => 20,
         50        => 50,
         100       => 100,
-        unlimited => 'unlimited',
+        unlimited => Translatable('unlimited'),
     );
 
     my %TicketAttributes = %{ $Self->_TicketAttributes() };
@@ -152,8 +152,8 @@ sub GetObjectAttributes {
     }
 
     my %SortSequence = (
-        Up   => 'ascending',
-        Down => 'descending',
+        Up   => Translatable('ascending'),
+        Down => Translatable('descending'),
     );
 
     my @ObjectAttributes = (
@@ -307,11 +307,19 @@ sub GetObjectAttributes {
             Block            => 'InputField',
         },
         {
-            Name             => Translatable('CustomerUserLogin'),
+            Name             => Translatable('CustomerUserLogin (complex search)'),
             UseAsXvalue      => 0,
             UseAsValueSeries => 0,
             UseAsRestriction => 1,
             Element          => 'CustomerUserLogin',
+            Block            => 'InputField',
+        },
+        {
+            Name             => Translatable('CustomerUserLogin (exact match)'),
+            UseAsXvalue      => 0,
+            UseAsValueSeries => 0,
+            UseAsRestriction => 1,
+            Element          => 'CustomerUserLoginRaw',
             Block            => 'InputField',
         },
         {
@@ -391,6 +399,19 @@ sub GetObjectAttributes {
             Values           => {
                 TimeStart => 'TicketChangeTimeNewerDate',
                 TimeStop  => 'TicketChangeTimeOlderDate',
+            },
+        },
+        {
+            Name             => Translatable('Pending until time'),
+            UseAsXvalue      => 0,
+            UseAsValueSeries => 0,
+            UseAsRestriction => 1,
+            Element          => 'PendingUntilTime',
+            TimePeriodFormat => 'DateInputFormat',                    # 'DateInputFormatLong',
+            Block            => 'Time',
+            Values           => {
+                TimeStart => 'TicketPendingTimeNewerDate',
+                TimeStop  => 'TicketPendingTimeOlderDate',
             },
         },
         {
@@ -604,16 +625,26 @@ sub GetObjectAttributes {
     }
     else {
 
-        my %ObjectAttribute = (
-            Name             => Translatable('CustomerID'),
-            UseAsXvalue      => 0,
-            UseAsValueSeries => 0,
-            UseAsRestriction => 1,
-            Element          => 'CustomerID',
-            Block            => 'InputField',
+        my @CustomerIDAttributes = (
+            {
+                Name             => Translatable('CustomerID (complex search)'),
+                UseAsXvalue      => 0,
+                UseAsValueSeries => 0,
+                UseAsRestriction => 1,
+                Element          => 'CustomerID',
+                Block            => 'InputField',
+            },
+            {
+                Name             => Translatable('CustomerID (exact match)'),
+                UseAsXvalue      => 0,
+                UseAsValueSeries => 0,
+                UseAsRestriction => 1,
+                Element          => 'CustomerIDRaw',
+                Block            => 'InputField',
+            },
         );
 
-        push @ObjectAttributes, \%ObjectAttribute;
+        push @ObjectAttributes, @CustomerIDAttributes;
     }
 
     if ( $ConfigObject->Get('Ticket::ArchiveSystem') ) {
@@ -627,9 +658,9 @@ sub GetObjectAttributes {
             Block            => 'SelectField',
             Translation      => 1,
             Values           => {
-                ArchivedTickets    => 'Archived tickets',
-                NotArchivedTickets => 'Unarchived tickets',
-                AllTickets         => 'All tickets',
+                ArchivedTickets    => Translatable('Archived tickets'),
+                NotArchivedTickets => Translatable('Unarchived tickets'),
+                AllTickets         => Translatable('All tickets'),
             },
         );
 
@@ -1273,16 +1304,17 @@ sub GetStatTable {
         for my $Attribute ( @{$SortedAttributesRef} ) {
             next ATTRIBUTE if !$TicketAttributes{$Attribute};
 
-            # add the given TimeZone for time values
+            # convert from OTRS time zone to given time zone
             if (
                 $Param{TimeZone}
                 && $Ticket{$Attribute}
                 && $Ticket{$Attribute} =~ /(\d{4})-(\d{2})-(\d{2})\s(\d{2}):(\d{2}):(\d{2})/
                 )
             {
-                $Ticket{$Attribute} = $Kernel::OM->Get('Kernel::System::Stats')->_AddTimeZone(
-                    TimeStamp => $Ticket{$Attribute},
-                    TimeZone  => $Param{TimeZone},
+
+                $Ticket{$Attribute} = $Kernel::OM->Get('Kernel::System::Stats')->_FromOTRSTimeZone(
+                    String   => $Ticket{$Attribute},
+                    TimeZone => $Param{TimeZone},
                 );
                 $Ticket{$Attribute} .= " ($Param{TimeZone})";
             }

@@ -183,7 +183,7 @@ to add a template to a queue
     my $Success = $QueueObject->QueueStandardTemplateMemberAdd(
         QueueID            => 123,
         StandardTemplateID => 123,
-        Active             => 1,        # optional
+        Active             => 1,        # to set/confirm (1) or remove (0) the relation
         UserID             => 123,
     );
 
@@ -752,7 +752,7 @@ sub GetQueueGroupID {
 
 add queue with attributes
 
-    $QueueObject->QueueAdd(
+    my $QueueID = $QueueObject->QueueAdd(
         Name                => 'Some::Queue',
         ValidID             => 1,
         GroupID             => 1,
@@ -1070,7 +1070,7 @@ sub QueueGet {
 
 update queue attributes
 
-    $QueueObject->QueueUpdate(
+    my $Success = $QueueObject->QueueUpdate(
         QueueID             => 123,
         Name                => 'Some::Queue',
         ValidID             => 1,

@@ -101,7 +101,7 @@ sub new {
     # We'll keep one default TimeObject and one for the user's time zone (if needed)
     $Self->{TimeObject} = $Kernel::OM->Get('Kernel::System::Time');
 
-    if ( $ConfigObject->Get('TimeZoneUser') && $Self->{UserTimeZone} ) {
+    if ( $Self->{UserTimeZone} ) {
         $Self->{UserTimeObject} = Kernel::System::Time->new( %{$Self} );
     }
     else {
@@ -725,6 +725,14 @@ sub Login {
     # Generate the minified CSS and JavaScript files and the tags referencing them (see LayoutLoader)
     $Self->LoaderCreateAgentCSSCalls();
     $Self->LoaderCreateAgentJSCalls();
+    $Self->LoaderCreateJavaScriptTranslationData();
+    $Self->LoaderCreateJavaScriptTemplateData();
+
+    # we need the baselink for VerfifiedGet() of selenium tests
+    $Self->AddJSData(
+        Key   => 'Baselink',
+        Value => $Self->{Baselink},
+    );
 
     # Add header logo, if configured
     if ( defined $ConfigObject->Get('AgentLogo') ) {
@@ -868,6 +876,12 @@ sub Login {
             );
         }
     }
+
+    # send data to JS
+    $Self->AddJSData(
+        Key   => 'LoginFailed',
+        Value => $Param{LoginFailed},
+    );
 
     # create & return output
     $Output .= $Self->Output(
@@ -1026,13 +1040,17 @@ sub Error {
     if ( !$Param{Message} ) {
         $Param{Message} = $Param{BackendMessage};
     }
-    $Param{Message} =~ s/^(.{200}).*$/${1}[...]/gs;
 
     if ( $Param{BackendTraceback} ) {
         $Self->Block(
             Name => 'ShowBackendTraceback',
             Data => \%Param,
         );
+    }
+
+    # Don't check for business package if the database was not yet configured (in the installer)
+    if ( $Kernel::OM->Get('Kernel::Config')->Get('SecureMode') ) {
+        $Param{OTRSBusinessIsInstalled} = $Kernel::OM->Get('Kernel::System::OTRSBusiness')->OTRSBusinessIsInstalled();
     }
 
     # create & return output
@@ -1413,6 +1431,13 @@ sub Header {
             }
         }
 
+        if ( $ConfigObject->Get('ChatEngine::Active') ) {
+            $Self->AddJSData(
+                Key   => 'ChatActive',
+                Value => $ConfigObject->Get('ChatEngine::Active')
+            );
+        }
+
         # show logged in notice
         if ( $Param{ShowPrefLink} ) {
             $Self->Block(
@@ -1458,27 +1483,27 @@ sub Footer {
     my $Type          = $Param{Type}           || '';
     my $HasDatepicker = $Self->{HasDatepicker} || 0;
 
-    # Generate the minified CSS and JavaScript files and the tags referencing them (see LayoutLoader)
+    # generate the minified CSS and JavaScript files and the tags referencing them (see LayoutLoader)
     $Self->LoaderCreateAgentJSCalls();
+    $Self->LoaderCreateJavaScriptTranslationData();
+    $Self->LoaderCreateJavaScriptTemplateData();
 
     # get datepicker data, if needed in module
     if ($HasDatepicker) {
-        my $VacationDays     = $Self->DatepickerGetVacationDays();
-        my $VacationDaysJSON = $Self->JSONEncode(
-            Data => $VacationDays,
-        );
-
+        my $VacationDays = $Self->DatepickerGetVacationDays();
         my $TextDirection = $Self->{LanguageObject}->{TextDirection} || '';
 
-        $Self->Block(
-            Name => 'DatepickerData',
-            Data => {
-                VacationDays  => $VacationDaysJSON,
-                IsRTLLanguage => ( $TextDirection eq 'rtl' ) ? 1 : 0,
+        # send data to JS
+        $Self->AddJSData(
+            Key   => 'Datepicker',
+            Value => {
+                VacationDays => $VacationDays,
+                IsRTL        => ( $TextDirection eq 'rtl' ) ? 1 : 0,
             },
         );
     }
 
+    # get config object
     my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
 
     # NewTicketInNewWindow
@@ -1500,13 +1525,6 @@ sub Footer {
         Data => $AutocompleteConfig,
     );
 
-    $Self->Block(
-        Name => 'AutoCompleteConfig',
-        Data => {
-            AutocompleteConfig => $AutocompleteConfigJSON,
-        },
-    );
-
     # Search frontend (JavaScript)
     my $SearchFrontendConfig = $ConfigObject->Get('Frontend::Search::JavaScript');
 
@@ -1525,12 +1543,8 @@ sub Footer {
         }
     }
 
-    $Self->Block(
-        Name => 'SearchFrontendConfig',
-        Data => {
-            SearchFrontendConfig => $JSCall,
-        },
-    );
+    # get OTRS business object
+    my $OTRSBusinessObject = $Kernel::OM->Get('Kernel::System::OTRSBusiness');
 
     # Banner
     if ( !$ConfigObject->Get('Secure::DisableBanner') ) {
@@ -1539,9 +1553,51 @@ sub Footer {
         );
     }
 
-    # Don't check for business package if the database was not yet configured (in the installer)
-    if ( $Kernel::OM->Get('Kernel::Config')->Get('SecureMode') ) {
-        $Param{OTRSBusinessIsInstalled} = $Kernel::OM->Get('Kernel::System::OTRSBusiness')->OTRSBusinessIsInstalled();
+    # don't check for business package if the database was not yet configured (in the installer)
+    if ( $ConfigObject->Get('SecureMode') ) {
+        $Param{OTRSBusinessIsInstalled} = $OTRSBusinessObject->OTRSBusinessIsInstalled();
+    }
+
+    # add JS data
+    my %JSConfig = (
+        Baselink                       => $Self->{Baselink},
+        CGIHandle                      => $Self->{CGIHandle},
+        WebPath                        => $ConfigObject->Get('Frontend::WebPath'),
+        Action                         => $Self->{Action},
+        Subaction                      => $Self->{Subaction},
+        SessionIDCookie                => $Self->{SessionIDCookie},
+        SessionName                    => $Self->{SessionName},
+        SessionID                      => $Self->{SessionID},
+        ChallengeToken                 => $Self->{UserChallengeToken},
+        CustomerPanelSessionName       => $ConfigObject->Get('CustomerPanelSessionName'),
+        UserLanguage                   => $Self->{UserLanguage},
+        SpellChecker                   => $ConfigObject->Get('SpellChecker'),
+        NeedSpellCheck                 => $ConfigObject->Get('Ticket::Frontend::NeedSpellCheck'),
+        RichTextSet                    => $ConfigObject->Get('Frontend::RichText'),
+        CheckEmailAddresses            => $ConfigObject->Get('CheckEmailAddresses'),
+        MenuDragDropEnabled            => $ConfigObject->Get('Frontend::MenuDragDropEnabled'),
+        OpenMainMenuOnHover            => $ConfigObject->Get('OpenMainMenuOnHover'),
+        CustomerInfoSet                => $ConfigObject->Get('Ticket::Frontend::CustomerInfoCompose'),
+        IncludeUnknownTicketCustomers  => $ConfigObject->Get('Ticket::IncludeUnknownTicketCustomers'),
+        InputFieldsActivated           => $ConfigObject->Get('ModernizeFormFields'),
+        OTRSBusinessIsInstalled        => $Param{OTRSBusinessIsInstalled},
+        CheckSearchStringsForStopWords => (
+            $ConfigObject->Get('Ticket::SearchIndex::WarnOnStopWordUsage')
+                &&
+                (
+                $ConfigObject->Get('Ticket::SearchIndexModule')
+                eq 'Kernel::System::Ticket::ArticleSearchIndex::StaticDB'
+                )
+            ) ? 1 : 0,
+        SearchFrontend => $JSCall,
+        Autocomplete   => $AutocompleteConfigJSON,
+    );
+
+    for my $Config ( sort keys %JSConfig ) {
+        $Self->AddJSData(
+            Key   => $Config,
+            Value => $JSConfig{$Config},
+        );
     }
 
     # create & return output
@@ -1969,8 +2025,8 @@ sub CustomerAgeInHours {
     my $HourDsc   = Translatable('h');
     my $MinuteDsc = Translatable('m');
     if ( $Kernel::OM->Get('Kernel::Config')->Get('TimeShowCompleteDescription') ) {
-        $HourDsc   = Translatable('hour');
-        $MinuteDsc = Translatable('minute');
+        $HourDsc   = Translatable('hour(s)');
+        $MinuteDsc = Translatable('minute(s)');
     }
     if ( $Age =~ /^-(.*)/ ) {
         $Age     = $1;
@@ -2004,9 +2060,9 @@ sub CustomerAge {
     my $HourDsc   = Translatable('h');
     my $MinuteDsc = Translatable('m');
     if ( $ConfigObject->Get('TimeShowCompleteDescription') ) {
-        $DayDsc    = Translatable('day');
-        $HourDsc   = Translatable('hour');
-        $MinuteDsc = Translatable('minute');
+        $DayDsc    = Translatable('day(s)');
+        $HourDsc   = Translatable('hour(s)');
+        $MinuteDsc = Translatable('minute(s)');
     }
     if ( $Age =~ /^-(.*)/ ) {
         $Age     = $1;
@@ -2040,16 +2096,16 @@ sub CustomerAge {
 build a HTML option element based on given data
 
     my $HTML = $LayoutObject->BuildSelection(
-        Data            => $ArrayRef,             # use $HashRef, $ArrayRef or $ArrayHashRef (see below)
-        Name            => 'TheName',             # name of element
-        ID              => 'HTMLID',              # (optional) the HTML ID for this element, if not provided, the name will be used as ID as well
-        Multiple        => 0,                     # (optional) default 0 (0|1)
-        Size            => 1,                     # (optional) default 1 element size
-        Class           => 'class',               # (optional) a css class, include 'Modernize' to activate InputFields
-        Disabled        => 0,                     # (optional) default 0 (0|1) disable the element
-        AutoComplete    => 'off',                 # (optional)
-        OnChange        => 'javascript',          # (optional)
-        OnClick         => 'javascript',          # (optional)
+        Data            => $ArrayRef,        # use $HashRef, $ArrayRef or $ArrayHashRef (see below)
+        Name            => 'TheName',        # name of element
+        ID              => 'HTMLID',         # (optional) the HTML ID for this element, if not provided, the name will be used as ID as well
+        Multiple        => 0,                # (optional) default 0 (0|1)
+        Size            => 1,                # (optional) default 1 element size
+        Class           => 'class',          # (optional) a css class, include 'Modernize' to activate InputFields
+        Disabled        => 0,                # (optional) default 0 (0|1) disable the element
+        AutoComplete    => 'off',            # (optional)
+        OnChange        => 'javascript',     # (optional)
+        OnClick         => 'javascript',     # (optional)
 
         SelectedID     => 1,                 # (optional) use integer or arrayref (unable to use with ArrayHashRef)
         SelectedID     => [1, 5, 3],         # (optional) use integer or arrayref (unable to use with ArrayHashRef)
@@ -2085,6 +2141,9 @@ build a HTML option element based on given data
             },
         },
         ExpandFilters  => 1,                 # (optional) default 0 (0|1) expand filters list by default
+
+        ValidateDateAfter  => '2016-01-01',  # (optional) validate that date is after supplied value
+        ValidateDateBefore => '2016-01-01',  # (optional) validate that date is before supplied value
     );
 
     my $HashRef = {
@@ -2221,13 +2280,15 @@ sub BuildSelection {
 
     # generate output
     my $String = $Self->_BuildSelectionOutput(
-        AttributeRef  => $AttributeRef,
-        DataRef       => $DataRef,
-        OptionTitle   => $Param{OptionTitle},
-        TreeView      => $Param{TreeView},
-        FiltersRef    => \@Filters,
-        FilterActive  => $FilterActive,
-        ExpandFilters => $Param{ExpandFilters},
+        AttributeRef       => $AttributeRef,
+        DataRef            => $DataRef,
+        OptionTitle        => $Param{OptionTitle},
+        TreeView           => $Param{TreeView},
+        FiltersRef         => \@Filters,
+        FilterActive       => $FilterActive,
+        ExpandFilters      => $Param{ExpandFilters},
+        ValidateDateAfter  => $Param{ValidateDateAfter},
+        ValidateDateBefore => $Param{ValidateDateBefore},
     );
     return $String;
 }
@@ -2237,13 +2298,11 @@ sub NoPermission {
 
     my $WithHeader = $Param{WithHeader} || 'yes';
 
-    my $TranslatableMessage = $Self->{LanguageObject}->Translate(
-        "We are sorry, you do not have permissions anymore to access this ticket in its current state."
-    );
-    $TranslatableMessage .= '<br/>';
-    $TranslatableMessage
-        .= $Self->{LanguageObject}->Translate(" You can take one of the next actions:");
-    $Param{Message} = $TranslatableMessage if ( !$Param{Message} );
+    if ( !$Param{Message} ) {
+        $Param{Message} = $Self->{LanguageObject}->Translate(
+            'We are sorry, you do not have permissions anymore to access this ticket in its current state. You can take one of the following actions:'
+        );
+    }
 
     # get config option for possible next actions
     my $PossibleNextActions = $Kernel::OM->Get('Kernel::Config')->Get('PossibleNextActions');
@@ -2436,6 +2495,9 @@ sub Attachment {
         }
     }
 
+    # get config object
+    my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
+
     # return attachment
     my $Output = 'Content-Disposition: ';
     if ( $Param{Type} ) {
@@ -2443,7 +2505,7 @@ sub Attachment {
         $Output .= '; ';
     }
     else {
-        $Output .= $Kernel::OM->Get('Kernel::Config')->Get('AttachmentDownloadType') || 'attachment';
+        $Output .= $ConfigObject->Get('AttachmentDownloadType') || 'attachment';
         $Output .= '; ';
     }
 
@@ -2467,7 +2529,7 @@ sub Attachment {
     $Output .= "Content-Length: $Param{Size}\n";
     $Output .= "X-UA-Compatible: IE=edge,chrome=1\n";
 
-    if ( !$Kernel::OM->Get('Kernel::Config')->Get('DisableIFrameOriginRestricted') ) {
+    if ( !$ConfigObject->Get('DisableIFrameOriginRestricted') ) {
         $Output .= "X-Frame-Options: SAMEORIGIN\n";
     }
 
@@ -2661,8 +2723,8 @@ sub PageNavBar {
     }
 
     $Param{SearchNavBar} = $Self->Output(
-        TemplateFile   => 'Pagination',
-        KeepScriptTags => $Param{KeepScriptTags},
+        TemplateFile => 'Pagination',
+        AJAX         => $Param{KeepScriptTags},
     );
 
     # only show total amount of pages if there is more than one
@@ -2833,8 +2895,10 @@ sub NavigationBar {
             },
         );
 
-        # show sub menu
+        # show sub menu (only if sub elements available)
         next ITEM if !$Sub;
+        next ITEM if !keys %{$Sub};
+
         $Self->Block(
             Name => 'ItemAreaSub',
             Data => $Item,
@@ -2862,11 +2926,9 @@ sub NavigationBar {
     );
 
     my $NavbarOrderItems = $UserPreferences{'UserNavBarItemsOrder'} || '';
-    $Self->Block(
-        Name => 'NavbarOrderItems',
-        Data => {
-            'NavbarOrderItems' => $NavbarOrderItems,
-        },
+    $Self->AddJSData(
+        Key   => 'NavbarOrderItems',
+        Value => $NavbarOrderItems,
     );
 
     # show search icon if any search router is configured
@@ -2957,24 +3019,32 @@ sub TransformDateSelection {
     my $Prefix = $Param{Prefix} || '';
 
     # time zone translation if needed
-    if ( $Kernel::OM->Get('Kernel::Config')->Get('TimeZoneUser') && $Self->{UserTimeZone} ) {
-        my $TimeStamp = $Self->{TimeObject}->TimeStamp2SystemTime(
-            String => $Param{ $Prefix . 'Year' } . '-'
-                . $Param{ $Prefix . 'Month' } . '-'
-                . $Param{ $Prefix . 'Day' } . ' '
-                . ( $Param{ $Prefix . 'Hour' }   || 0 ) . ':'
-                . ( $Param{ $Prefix . 'Minute' } || 0 )
-                . ':00',
+    # from user time zone to OTRS time zone
+    if ( $Self->{UserTimeZone} ) {
+        my $DateTimeObject = $Kernel::OM->Create(
+            'Kernel::System::DateTime',
+            ObjectParams => {
+                Year     => $Param{ $Prefix . 'Year' },
+                Month    => $Param{ $Prefix . 'Month' },
+                Day      => $Param{ $Prefix . 'Day' },
+                Hour     => $Param{ $Prefix . 'Hour' } || 0,
+                Minute   => $Param{ $Prefix . 'Minute' } || 0,
+                Second   => $Param{ $Prefix . 'Second' } || 0,
+                TimeZone => $Self->{UserTimeZone},
+            },
         );
-        $TimeStamp = $TimeStamp - ( $Self->{UserTimeZone} * 3600 );
-        (
-            $Param{ $Prefix . 'Second' },
-            $Param{ $Prefix . 'Minute' },
-            $Param{ $Prefix . 'Hour' },
-            $Param{ $Prefix . 'Day' },
-            $Param{ $Prefix . 'Month' },
-            $Param{ $Prefix . 'Year' }
-        ) = $Self->{UserTimeObject}->SystemTime2Date( SystemTime => $TimeStamp );
+
+        if ($DateTimeObject) {
+            $DateTimeObject->ToOTRSTimeZone();
+            my $DateTimeValues = $DateTimeObject->Get();
+
+            $Param{ $Prefix . 'Year' }   = $DateTimeValues->{Year};
+            $Param{ $Prefix . 'Month' }  = $DateTimeValues->{Month};
+            $Param{ $Prefix . 'Day' }    = $DateTimeValues->{Day};
+            $Param{ $Prefix . 'Hour' }   = $DateTimeValues->{Hour};
+            $Param{ $Prefix . 'Minute' } = $DateTimeValues->{Minute};
+            $Param{ $Prefix . 'Second' } = $DateTimeValues->{Second};
+        }
     }
 
     # reset prefix
@@ -2989,44 +3059,50 @@ build the HTML code to represent a date selection based on the given data.
 Depending on the SysConfig settings the controls to set the date could be multiple select or input fields
 
     my $HTML = $LayoutObject->BuildDateSelection(
-        Prefix           => 'some prefix',      # optional, (needed to specify other parameters)
-        <Prefix>Year     => 2015,               # optional, defaults to current year, used to set the initial value
-        <Prefix>Month    => 6,                  # optional, defaults to current month, used to set the initial value
-        <Prefix>Day      => 9,                  # optional, defaults to current day, used to set the initial value
-        <Prefix>Hour     => 12,                 # optional, defaults to current hour, used to set the initial value
-        <Prefix>Minute   => 26,                 # optional, defaults to current minute, used to set the initial value
-        <Prefix>Second   => 59,                 # optional, defaults to current second, used to set the initial value
-        <Prefix>Optional => 1,                  # optional, default 0, when active a checkbox is included to specify
-                                                #   if the values should be saved or not
-        <Prefix>Used     => 1,                  # optional, default 0, used to set the initial state of the checkbox
-                                                #   mentioned above
-        <Prefix>Required => 1,                  # optional, default 0 (Deprecated)
-        <prefix>Class => 'some class',          # optional, specify an additional class to the HTML elements
-
-        Area     => 'some area',                # optional, default 'Agent' (Deprecated)
-        DiffTime => 123,                        # optional, default 0, used to set the initial time influencing the
-                                                #   current time (in seconds)
-        OverrideTimeZone        => 1,           # optional (1 or 0), when active the time is not translated to the user
-                                                #   time zone
-        YearPeriodFuture        => 3,           # optional, used to define the number of years in future to be display
-                                                #   in the year select
-        YearPeriodPast          => 2,           # optional, used to define the number of years in past to be display
-                                                #   in the year select
-        YearDiff                => 0,           # optional. used to define the number of years to be displayed
-                                                #   in the year select (alternatively to YearPeriodFuture and YearPeriodPast)
-        ValidateDateInFuture    => 1,           # optional (1 or 0), when active sets an special class to validate
-                                                #   that the date set in the controls to be in the future
-        ValidateDateNotInFuture => 1,           # optional (1 or 0), when active sets an special class to validate
-                                                #   that the date set in the controls not to be in the future
-
-        Calendar => 2,                          # optional, used to define the SysConfig calendar on which the Datepicker
-                                                #   will be based on to show the vacation days and the start week day
-        Format => 'DateImputFormat',            # optional, or 'DateInputFormatLong', used to define if only date or
-                                                #   date/time components should be shown (DateInputFormatLong shows date/time)
-        Validate => 1,                          # optional (1 or 0), defines if the date selection should be validated on
-                                                #   client side with JS
-        Disabled => 1,                          # optional (1 or 0), when active select and checkbox controls gets the
-                                                #   disabled attribute and input fields gets the read only attribute
+        Prefix           => 'some prefix',        # optional, (needed to specify other parameters)
+        <Prefix>Year     => 2015,                 # optional, defaults to current year, used to set the initial value
+        <Prefix>Month    => 6,                    # optional, defaults to current month, used to set the initial value
+        <Prefix>Day      => 9,                    # optional, defaults to current day, used to set the initial value
+        <Prefix>Hour     => 12,                   # optional, defaults to current hour, used to set the initial value
+        <Prefix>Minute   => 26,                   # optional, defaults to current minute, used to set the initial value
+        <Prefix>Second   => 59,                   # optional, defaults to current second, used to set the initial value
+        <Prefix>Optional => 1,                    # optional, default 0, when active a checkbox is included to specify
+                                                  #   if the values should be saved or not
+        <Prefix>Used     => 1,                    # optional, default 0, used to set the initial state of the checkbox
+                                                  #   mentioned above
+        <Prefix>Required => 1,                    # optional, default 0 (Deprecated)
+        <prefix>Class    => 'some class',         # optional, specify an additional class to the HTML elements
+        Area     => 'some area',                  # optional, default 'Agent' (Deprecated)
+        DiffTime => 123,                          # optional, default 0, used to set the initial time influencing the
+                                                  #   current time (in seconds)
+        OverrideTimeZone => 1,                    # optional (1 or 0), when active the time is not translated to the user
+                                                  #   time zone
+        YearPeriodFuture => 3,                    # optional, used to define the number of years in future to be display
+                                                  #   in the year select
+        YearPeriodPast   => 2,                    # optional, used to define the number of years in past to be display
+                                                  #   in the year select
+        YearDiff         => 0,                    # optional. used to define the number of years to be displayed
+                                                  #   in the year select (alternatively to YearPeriodFuture and YearPeriodPast)
+        ValidateDateInFuture     => 1,            # optional (1 or 0), when active sets an special class to validate
+                                                  #   that the date set in the controls to be in the future
+        ValidateDateNotInFuture  => 1,            # optional (1 or 0), when active sets an special class to validate
+                                                  #   that the date set in the controls not to be in the future
+        ValidateDateAfterPrefix  => 'Start',      # optional (Prefix), when defined sets a special class to validate
+                                                  #   that the date set in the controls comes after the date with Prefix
+        ValidateDateAfterValue   => '2016-01-01', # optional (Date), when defined sets a special data parameter to validate
+                                                  #   that the date set in the controls comes after the supplied date
+        ValidateDateBeforePrefix => 'End',        # optional (Prefix), when defined sets a special class to validate
+                                                  #   that the date set in the controls comes before the date with Prefix
+        ValidateDateBeforeValue  => '2016-01-01', # optional (Date), when defined sets a special data parameter to validate
+                                                  #   that the date set in the controls comes before the supplied date
+        Calendar => 2,                            # optional, used to define the SysConfig calendar on which the Datepicker
+                                                  #   will be based on to show the vacation days and the start week day
+        Format   => 'DateInputFormat',            # optional, or 'DateInputFormatLong', used to define if only date or
+                                                  #   date/time components should be shown (DateInputFormatLong shows date/time)
+        Validate => 1,                            # optional (1 or 0), defines if the date selection should be validated on
+                                                  #   client side with JS
+        Disabled => 1,                            # optional (1 or 0), when active select and checkbox controls gets the
+                                                  #   disabled attribute and input fields gets the read only attribute
     );
 
 =cut
@@ -3053,6 +3129,12 @@ sub BuildDateSelection {
     my $ValidateDateInFuture    = $Param{ValidateDateInFuture}    || 0;
     my $ValidateDateNotInFuture = $Param{ValidateDateNotInFuture} || 0;
 
+    # Validate that the date is set after/before supplied date
+    my $ValidateDateAfterPrefix  = $Param{ValidateDateAfterPrefix}  || '';
+    my $ValidateDateAfterValue   = $Param{ValidateDateAfterValue}   || '';
+    my $ValidateDateBeforePrefix = $Param{ValidateDateBeforePrefix} || '';
+    my $ValidateDateBeforeValue  = $Param{ValidateDateBeforeValue}  || '';
+
     my ( $s, $m, $h, $D, $M, $Y ) = $Self->{UserTimeObject}->SystemTime2Date(
         SystemTime => $Self->{UserTimeObject}->SystemTime() + $DiffTime,
     );
@@ -3063,31 +3145,36 @@ sub BuildDateSelection {
 
     # time zone translation
     if (
-        $ConfigObject->Get('TimeZoneUser')
-        && $Self->{UserTimeZone}
+        $Self->{UserTimeZone}
         && $Param{ $Prefix . 'Year' }
         && $Param{ $Prefix . 'Month' }
         && $Param{ $Prefix . 'Day' }
         && !$Param{OverrideTimeZone}
         )
     {
-        my $TimeStamp = $Self->{TimeObject}->TimeStamp2SystemTime(
-            String => $Param{ $Prefix . 'Year' } . '-'
-                . $Param{ $Prefix . 'Month' } . '-'
-                . $Param{ $Prefix . 'Day' } . ' '
-                . ( $Param{ $Prefix . 'Hour' }   || 0 ) . ':'
-                . ( $Param{ $Prefix . 'Minute' } || 0 )
-                . ':00',
+        my $DateTimeObject = $Kernel::OM->Create(
+            'Kernel::System::DateTime',
+            ObjectParams => {
+                Year   => $Param{ $Prefix . 'Year' },
+                Month  => $Param{ $Prefix . 'Month' },
+                Day    => $Param{ $Prefix . 'Day' },
+                Hour   => $Param{ $Prefix . 'Hour' } || 0,
+                Minute => $Param{ $Prefix . 'Minute' } || 0,
+                Second => $Param{ $Prefix . 'Second' } || 0,
+            },
         );
-        $TimeStamp = $TimeStamp + ( $Self->{UserTimeZone} * 3600 );
-        (
-            $Param{ $Prefix . 'Second' },
-            $Param{ $Prefix . 'Minute' },
-            $Param{ $Prefix . 'Hour' },
-            $Param{ $Prefix . 'Day' },
-            $Param{ $Prefix . 'Month' },
-            $Param{ $Prefix . 'Year' }
-        ) = $Self->{UserTimeObject}->SystemTime2Date( SystemTime => $TimeStamp );
+
+        if ($DateTimeObject) {
+            $DateTimeObject->ToTimeZone( TimeZone => $Self->{UserTimeZone} );
+            my $DateTimeValues = $DateTimeObject->Get();
+
+            $Param{ $Prefix . 'Year' }   = $DateTimeValues->{Year};
+            $Param{ $Prefix . 'Month' }  = $DateTimeValues->{Month};
+            $Param{ $Prefix . 'Day' }    = $DateTimeValues->{Day};
+            $Param{ $Prefix . 'Hour' }   = $DateTimeValues->{Hour};
+            $Param{ $Prefix . 'Minute' } = $DateTimeValues->{Minute};
+            $Param{ $Prefix . 'Second' } = $DateTimeValues->{Second};
+        }
     }
 
     # year
@@ -3099,7 +3186,7 @@ sub BuildDateSelection {
             }
         }
         else {
-            for ( $Y - 10 .. $Y + 1 + ( $Param{YearDiff} || 0 ) ) {
+            for ( 2001 .. $Y + 1 + ( $Param{YearDiff} || 0 ) ) {
                 $Year{$_} = $_;
             }
         }
@@ -3173,19 +3260,33 @@ sub BuildDateSelection {
         if ($ValidateDateNotInFuture) {
             $DateValidateClasses .= " Validate_DateNotInFuture";
         }
+        if ( $ValidateDateAfterPrefix || $ValidateDateAfterValue ) {
+            $DateValidateClasses .= ' Validate_DateAfter';
+        }
+        if ( $ValidateDateBeforePrefix || $ValidateDateBeforeValue ) {
+            $DateValidateClasses .= ' Validate_DateBefore';
+        }
+        if ($ValidateDateAfterPrefix) {
+            $DateValidateClasses .= " Validate_DateAfter_$ValidateDateAfterPrefix";
+        }
+        if ($ValidateDateBeforePrefix) {
+            $DateValidateClasses .= " Validate_DateBefore_$ValidateDateBeforePrefix";
+        }
     }
 
     # day
     if ( $DateInputStyle eq 'Option' ) {
         my %Day = map { $_ => sprintf( "%02d", $_ ); } ( 1 .. 31 );
         $Param{Day} = $Self->BuildSelection(
-            Name        => $Prefix . 'Day',
-            Data        => \%Day,
-            SelectedID  => int( $Param{ $Prefix . 'Day' } || $D ),
-            Translation => 0,
-            Class       => "$DateValidateClasses $Class",
-            Title       => $Self->{LanguageObject}->Translate('Day'),
-            Disabled    => $Param{Disabled},
+            Name               => $Prefix . 'Day',
+            Data               => \%Day,
+            SelectedID         => int( $Param{ $Prefix . 'Day' } || $D ),
+            Translation        => 0,
+            Class              => "$DateValidateClasses $Class",
+            Title              => $Self->{LanguageObject}->Translate('Day'),
+            Disabled           => $Param{Disabled},
+            ValidateDateAfter  => $ValidateDateAfterValue,
+            ValidateDateBefore => $ValidateDateBeforeValue,
         );
     }
     else {
@@ -3390,6 +3491,12 @@ sub CustomerLogin {
     # Generate the minified CSS and JavaScript files and the tags referencing them (see LayoutLoader)
     $Self->LoaderCreateCustomerCSSCalls();
     $Self->LoaderCreateCustomerJSCalls();
+    $Self->LoaderCreateJavaScriptTranslationData();
+
+    $Self->AddJSData(
+        Key   => 'Baselink',
+        Value => $Self->{Baselink},
+    );
 
     # Add header logo, if configured
     if ( defined $ConfigObject->Get('CustomerLogo') ) {
@@ -3508,6 +3615,12 @@ sub CustomerLogin {
             );
         }
     }
+
+    # send data to JS
+    $Self->AddJSData(
+        Key   => 'LoginFailed',
+        Value => $Param{LoginFailed},
+    );
 
     # create & return output
     $Output .= $Self->Output(
@@ -3669,21 +3782,19 @@ sub CustomerFooter {
     # Generate the minified CSS and JavaScript files
     # and the tags referencing them (see LayoutLoader)
     $Self->LoaderCreateCustomerJSCalls();
+    $Self->LoaderCreateJavaScriptTranslationData();
 
     # get datepicker data, if needed in module
     if ($HasDatepicker) {
-        my $VacationDays     = $Self->DatepickerGetVacationDays();
-        my $VacationDaysJSON = $Self->JSONEncode(
-            Data => $VacationDays,
-        );
-
+        my $VacationDays = $Self->DatepickerGetVacationDays();
         my $TextDirection = $Self->{LanguageObject}->{TextDirection} || '';
 
-        $Self->Block(
-            Name => 'DatepickerData',
-            Data => {
-                VacationDays  => $VacationDaysJSON,
-                IsRTLLanguage => ( $TextDirection eq 'rtl' ) ? 1 : 0,
+        # send data to JS
+        $Self->AddJSData(
+            Key   => 'Datepicker',
+            Value => {
+                VacationDays => $VacationDays,
+                IsRTL        => ( $TextDirection eq 'rtl' ) ? 1 : 0,
             },
         );
     }
@@ -3709,12 +3820,30 @@ sub CustomerFooter {
         Data => $AutocompleteConfig,
     );
 
-    $Self->Block(
-        Name => 'AutoCompleteConfig',
-        Data => {
-            AutocompleteConfig => $AutocompleteConfigJSON,
-        },
+    # add JS data
+    my %JSConfig = (
+        Baselink                 => $Self->{Baselink},
+        CGIHandle                => $Self->{CGIHandle},
+        WebPath                  => $ConfigObject->Get('Frontend::WebPath'),
+        Action                   => $Self->{Action},
+        Subaction                => $Self->{Subaction},
+        SessionIDCookie          => $Self->{SessionIDCookie},
+        SessionName              => $Self->{SessionName},
+        SessionID                => $Self->{SessionID},
+        ChallengeToken           => $Self->{UserChallengeToken},
+        CustomerPanelSessionName => $ConfigObject->Get('CustomerPanelSessionName'),
+        UserLanguage             => $Self->{UserLanguage},
+        CheckEmailAddresses      => $ConfigObject->Get('CheckEmailAddresses'),
+        InputFieldsActivated     => $ConfigObject->Get('ModernizeCustomerFormFields'),
+        Autocomplete             => $AutocompleteConfigJSON,
     );
+
+    for my $Config ( sort keys %JSConfig ) {
+        $Self->AddJSData(
+            Key   => $Config,
+            Value => $JSConfig{$Config},
+        );
+    }
 
     # create & return output
     return $Self->Output(
@@ -3740,7 +3869,7 @@ sub CustomerFatalError {
         Area  => 'Frontend',
         Title => 'Fatal Error'
     );
-    $Output .= $Self->Error(%Param);
+    $Output .= $Self->CustomerError(%Param);
     $Output .= $Self->CustomerFooter();
     $Self->Print( Output => \$Output );
     exit;
@@ -3923,8 +4052,7 @@ sub CustomerNavigationBar {
             # check if we must mark the parent element as selected
             if ( $ItemSub->{Link} ) {
                 if (
-                    !$SelectedFlag
-                    && $ItemSub->{Link} =~ /Action=$Self->{Action}/
+                    $ItemSub->{Link} =~ /Action=$Self->{Action}/
                     && $ItemSub->{Link} =~ /$Self->{Subaction}/    # Subaction can be empty
                     )
                 {
@@ -4021,6 +4149,12 @@ sub CustomerNavigationBar {
             );
         }
     }
+
+    # send data to JS
+    $Self->AddJSData(
+        Key   => 'ChatEngine::Active',
+        Value => $ConfigObject->Get('ChatEngine::Active'),
+    );
 
     # create & return output
     return $Self->Output(
@@ -4256,7 +4390,7 @@ sub _RichTextReplaceLinkOfInlineContent {
 
     # replace image link with content id for uploaded images
     ${ $Param{String} } =~ s{
-        (<img.+?src=("|'))[^>]+ContentID=(.+?)("|')([^>]+>)
+        (<img.+?src=("|'))[^"'>]+?ContentID=(.+?)("|')([^>]*>)
     }
     {
         my ($Start, $CID, $Close, $End) = ($1, $3, $4, $5);
@@ -5062,7 +5196,10 @@ sub _BuildSelectionDataRefCreate {
                 }
             }
 
-            my $Space = '&nbsp;&nbsp;' x scalar @Fragment;
+            # Use unicode 'NO-BREAK SPACE' since unicode characters doesn't need to be escaped.
+            # Previously, we used '&nbsp;' and we had issue that Option needs to be html encoded
+            # in AJAX, and it was causing issues.
+            my $Space = "\xA0\xA0" x scalar @Fragment;
             $Space ||= '';
 
             $Row->{Value} = $Space . $Row->{Value};
@@ -5110,12 +5247,14 @@ sub _BuildSelectionDataRefCreate {
 create the html string
 
     my $HTMLString = $LayoutObject->_BuildSelectionOutput(
-        AttributeRef  => $AttributeRef,
-        DataRef       => $DataRef,
-        TreeView      => 0,              # optional, see BuildSelection()
-        FiltersRef    => \@Filters,      # optional, see BuildSelection()
-        FilterActive  => $FilterActive,  # optional, see BuildSelection()
-        ExpandFilters => 1,              # optional, see BuildSelection()
+        AttributeRef       => $AttributeRef,
+        DataRef            => $DataRef,
+        TreeView           => 0,              # optional, see BuildSelection()
+        FiltersRef         => \@Filters,      # optional, see BuildSelection()
+        FilterActive       => $FilterActive,  # optional, see BuildSelection()
+        ExpandFilters      => 1,              # optional, see BuildSelection()
+        ValidateDateAfter  => '2016-01-01',   # optional, see BuildSelection()
+        ValidateDateBefore => '2016-01-01',   # optional, see BuildSelection()
     );
 
     my $AttributeRef = {
@@ -5180,6 +5319,14 @@ sub _BuildSelectionOutput {
         # tree flag for Input Fields
         if ( $Param{TreeView} ) {
             $String .= ' data-tree="true"';
+        }
+
+        # date validation values
+        if ( $Param{ValidateDateAfter} ) {
+            $String .= ' data-validate-date-after="' . $Param{ValidateDateAfter} . '"';
+        }
+        if ( $Param{ValidateDateBefore} ) {
+            $String .= ' data-validate-date-before="' . $Param{ValidateDateBefore} . '"';
         }
 
         $String .= ">\n";
@@ -5344,6 +5491,280 @@ sub TransfromDateSelection {
     my $Self = shift;
 
     return $Self->TransformDateSelection(@_);
+}
+
+=item SetRichTextParameters()
+
+set properties for rich text editor and send them to JS via AddJSData()
+
+$LayoutObject->SetRichTextParameters(
+    Data => \%Param,
+);
+
+=cut
+
+sub SetRichTextParameters {
+    my ( $Self, %Param ) = @_;
+
+    $Param{Data} ||= {};
+
+    # get and check param Data
+    if ( ref $Param{Data} ne 'HASH' ) {
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
+            Priority => 'error',
+            Message  => "Need HashRef in Param Data! Got: '" . ref $Param{Data} . "'!",
+        );
+        $Self->FatalError();
+    }
+
+    # get needed objects
+    my $LanguageObject = $Kernel::OM->Get('Kernel::Language');
+    my $ConfigObject   = $Kernel::OM->Get('Kernel::Config');
+
+    # get needed variables
+    my $ScreenRichTextHeight;
+    my $ScreenRichTextWidth;
+
+    # set variable for 'RichText.Height' property
+    if ( $Param{Data}->{RichTextHeight} > 0 ) {
+        $ScreenRichTextHeight = $Param{Data}->{RichTextHeight};
+    }
+    else {
+        $ScreenRichTextHeight = $ConfigObject->Get("Frontend::RichTextHeight");
+    }
+
+    # set variable for 'RichText.Width' property
+    if ( $Param{Data}->{RichTextWidth} > 0 ) {
+        $ScreenRichTextWidth = $Param{Data}->{RichTextWidth};
+    }
+    else {
+        $ScreenRichTextWidth = $ConfigObject->Get("Frontend::RichTextWidth");
+    }
+
+    my $PictureUploadAction = $Param{Data}->{RichTextPictureUploadAction} || '';
+    my $TextDir             = $Self->{TextDirection}                      || '';
+    my $SpellChecker        = $Self->{BrowserSpellCheckerInline}          || '';
+    my $EditingAreaCSS = 'body.cke_editable { ' . $ConfigObject->Get("Frontend::RichText::DefaultCSS") . ' }';
+
+    # decide if we need to use the enhanced mode (with tables)
+    my @Toolbar;
+    my @ToolbarWithoutImage;
+
+    if ( $ConfigObject->Get("Frontend::RichText::EnhancedMode") == '1' ) {
+        @Toolbar = [
+            [
+                'Bold',   'Italic',       'Underline',    'Strike',        'Subscript',    'Superscript',
+                '-',      'NumberedList', 'BulletedList', 'Table',         '-',            'Outdent',
+                'Indent', '-',            'JustifyLeft',  'JustifyCenter', 'JustifyRight', 'JustifyBlock',
+                '-',      'Link',         'Unlink',       'Undo',          'Redo',         'SelectAll'
+            ],
+            '/',
+            [
+                'Image',   'HorizontalRule', 'PasteText', 'PasteFromWord', 'SplitQuote', 'RemoveQuote',
+                '-',       '-',              'Find',      'Replace',       'SpellCheck', 'TextColor',
+                'BGColor', 'RemoveFormat',   '-',         'ShowBlocks',    'Source',     'SpecialChar',
+                '-',       'Maximize'
+            ],
+            [ 'Format', 'Font', 'FontSize' ]
+        ];
+        @ToolbarWithoutImage = [
+            [
+                'Bold',   'Italic',       'Underline',    'Strike',        'Subscript',    'Superscript',
+                '-',      'NumberedList', 'BulletedList', 'Table',         '-',            'Outdent',
+                'Indent', '-',            'JustifyLeft',  'JustifyCenter', 'JustifyRight', 'JustifyBlock',
+                '-',      'Link',         'Unlink',       'Undo',          'Redo',         'SelectAll'
+            ],
+            '/',
+            [
+                'HorizontalRule', 'PasteText', 'PasteFromWord', 'SplitQuote', 'RemoveQuote', '-',
+                '-',              'Find',      'Replace',       'SpellCheck', 'TextColor',   'BGColor',
+                'RemoveFormat',   '-',         'ShowBlocks',    'Source',     'SpecialChar', '-',
+                'Maximize'
+            ],
+            [ 'Format', 'Font', 'FontSize' ]
+        ];
+    }
+    else {
+        @Toolbar = [
+            [
+                'Bold',          'Italic',       'Underline',      'Strike', '-',    'NumberedList',
+                'BulletedList',  '-',            'Outdent',        'Indent', '-',    'JustifyLeft',
+                'JustifyCenter', 'JustifyRight', 'JustifyBlock',   '-',      'Link', 'Unlink',
+                '-',             'Image',        'HorizontalRule', '-',      'Undo', 'Redo',
+                '-',             'Find',         'SpellCheck'
+            ],
+            '/',
+            [
+                'Format',       'Font', 'FontSize', '-',           'TextColor',  'BGColor',
+                'RemoveFormat', '-',    'Source',   'SpecialChar', 'SplitQuote', 'RemoveQuote',
+                '-',            'Maximize'
+            ]
+        ];
+        @ToolbarWithoutImage = [
+            [
+                'Bold',          'Italic',       'Underline',    'Strike',
+                '-',             'NumberedList', 'BulletedList', '-',
+                'Outdent',       'Indent',       '-',            'JustifyLeft',
+                'JustifyCenter', 'JustifyRight', 'JustifyBlock', '-',
+                'Link',          'Unlink',       '-',            'HorizontalRule',
+                '-',             'Undo',         'Redo',         '-',
+                'Find',          'SpellCheck'
+            ],
+            '/',
+            [
+                'Format',       'Font', 'FontSize', '-',           'TextColor',  'BGColor',
+                'RemoveFormat', '-',    'Source',   'SpecialChar', 'SplitQuote', 'RemoveQuote',
+                '-',            'Maximize'
+            ]
+        ];
+    }
+
+    # set data with AddJSData()
+    $Self->AddJSData(
+        Key   => 'RichText',
+        Value => {
+            Height         => $ScreenRichTextHeight,
+            Width          => $ScreenRichTextWidth,
+            TextDir        => $TextDir,
+            SpellChecker   => $SpellChecker,
+            EditingAreaCSS => $EditingAreaCSS,
+            Lang           => {
+                SplitQuote  => $LanguageObject->Translate('Split Quote'),
+                RemoveQuote => $LanguageObject->Translate('Remove Quote'),
+            },
+            Toolbar             => $Toolbar[0],
+            ToolbarWithoutImage => $ToolbarWithoutImage[0],
+            PictureUploadAction => $PictureUploadAction,
+            }
+    );
+}
+
+=item CustomerSetRichTextParameters()
+
+set properties for customer rich text editor and send them to JS via AddJSData()
+
+$LayoutObject->CustomerSetRichTextParameters(
+    Data => \%Param,
+);
+
+=cut
+
+sub CustomerSetRichTextParameters {
+    my ( $Self, %Param ) = @_;
+
+    $Param{Data} ||= {};
+
+    # get and check param Data
+    if ( ref $Param{Data} ne 'HASH' ) {
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
+            Priority => 'error',
+            Message  => "Need HashRef in Param Data! Got: '" . ref $Param{Data} . "'!",
+        );
+        $Self->FatalError();
+    }
+
+    # get needed objects
+    my $LanguageObject = $Kernel::OM->Get('Kernel::Language');
+    my $ConfigObject   = $Kernel::OM->Get('Kernel::Config');
+
+    my $ScreenRichTextHeight = $ConfigObject->Get("Frontend::RichTextHeight");
+    my $ScreenRichTextWidth  = $ConfigObject->Get("Frontend::RichTextWidth");
+    my $TextDir              = $Self->{TextDirection} || '';
+    my $SpellChecker         = $Self->{BrowserSpellCheckerInline} || '';
+    my $PictureUploadAction  = $Param{Data}->{RichTextPictureUploadAction} || '';
+    my $EditingAreaCSS       = 'body { ' . $ConfigObject->Get("Frontend::RichText::DefaultCSS") . ' }';
+
+    # decide if we need to use the enhanced mode (with tables)
+    my @Toolbar;
+    my @ToolbarWithoutImage;
+
+    if ( $ConfigObject->Get("Frontend::RichText::EnhancedMode::Customer") == '1' ) {
+        @Toolbar = [
+            [
+                'Bold',   'Italic',       'Underline',    'Strike',        'Subscript',    'Superscript',
+                '-',      'NumberedList', 'BulletedList', 'Table',         '-',            'Outdent',
+                'Indent', '-',            'JustifyLeft',  'JustifyCenter', 'JustifyRight', 'JustifyBlock',
+                '-',      'Link',         'Unlink',       'Undo',          'Redo',         'SelectAll'
+            ],
+            '/',
+            [
+                'Image',   'HorizontalRule', 'PasteText', 'PasteFromWord', 'SplitQuote', 'RemoveQuote',
+                '-',       '-',              'Find',      'Replace',       'SpellCheck', 'TextColor',
+                'BGColor', 'RemoveFormat',   '-',         'ShowBlocks',    'Source',     'SpecialChar',
+                '-',       'Maximize'
+            ],
+            [ 'Format', 'Font', 'FontSize' ]
+        ];
+        @ToolbarWithoutImage = [
+            [
+                'Bold',   'Italic',       'Underline',    'Strike',        'Subscript',    'Superscript',
+                '-',      'NumberedList', 'BulletedList', 'Table',         '-',            'Outdent',
+                'Indent', '-',            'JustifyLeft',  'JustifyCenter', 'JustifyRight', 'JustifyBlock',
+                '-',      'Link',         'Unlink',       'Undo',          'Redo',         'SelectAll'
+            ],
+            '/',
+            [
+                'HorizontalRule', 'PasteText', 'PasteFromWord', 'SplitQuote', 'RemoveQuote', '-',
+                '-',              'Find',      'Replace',       'SpellCheck', 'TextColor',   'BGColor',
+                'RemoveFormat',   '-',         'ShowBlocks',    'Source',     'SpecialChar', '-',
+                'Maximize'
+            ],
+            [ 'Format', 'Font', 'FontSize' ]
+        ];
+    }
+    else {
+        @Toolbar = [
+            [
+                'Bold',          'Italic',       'Underline',      'Strike', '-',    'NumberedList',
+                'BulletedList',  '-',            'Outdent',        'Indent', '-',    'JustifyLeft',
+                'JustifyCenter', 'JustifyRight', 'JustifyBlock',   '-',      'Link', 'Unlink',
+                '-',             'Image',        'HorizontalRule', '-',      'Undo', 'Redo',
+                '-',             'Find',         'SpellCheck'
+            ],
+            '/',
+            [
+                'Format',       'Font', 'FontSize', '-',           'TextColor',  'BGColor',
+                'RemoveFormat', '-',    'Source',   'SpecialChar', 'SplitQuote', 'RemoveQuote',
+                '-',            'Maximize'
+            ]
+        ];
+        @ToolbarWithoutImage = [
+            [
+                'Bold',          'Italic',       'Underline',    'Strike',
+                '-',             'NumberedList', 'BulletedList', '-',
+                'Outdent',       'Indent',       '-',            'JustifyLeft',
+                'JustifyCenter', 'JustifyRight', 'JustifyBlock', '-',
+                'Link',          'Unlink',       '-',            'HorizontalRule',
+                '-',             'Undo',         'Redo',         '-',
+                'Find',          'SpellCheck'
+            ],
+            '/',
+            [
+                'Format',       'Font', 'FontSize', '-',           'TextColor',  'BGColor',
+                'RemoveFormat', '-',    'Source',   'SpecialChar', 'SplitQuote', 'RemoveQuote',
+                '-',            'Maximize'
+            ]
+        ];
+    }
+
+    # set data with AddJSData()
+    $Self->AddJSData(
+        Key   => 'RichText',
+        Value => {
+            Height         => $ScreenRichTextHeight,
+            Width          => $ScreenRichTextWidth,
+            TextDir        => $TextDir,
+            SpellChecker   => $SpellChecker,
+            EditingAreaCSS => $EditingAreaCSS,
+            Lang           => {
+                SplitQuote => $LanguageObject->Translate('Split Quote'),
+            },
+            Toolbar             => $Toolbar[0],
+            ToolbarWithoutImage => $ToolbarWithoutImage[0],
+            PictureUploadAction => $PictureUploadAction,
+            }
+    );
+
 }
 
 1;

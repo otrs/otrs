@@ -105,22 +105,6 @@
                             </div>
                         </fieldset>
 
-                        [% WRAPPER JSOnDocumentComplete %]
-                        <script type="text/javascript">//<![CDATA[
-                        $('#StartStatistic').bind('click', function (Event) {
-                            var Format = $('#Format').val(),
-                                URL;
-
-                            // Open both HTML and PDF output in a popup because PDF is shown inline
-                            if (Format === 'Print' || Format.match(/D3/)) {
-                                URL = '[% Env("Baselink") %]' + Core.AJAX.SerializeForm($('#Format').parents('form'));
-                                Core.UI.Popup.OpenPopup(URL, 'Statistic', 'Default');
-                                return false;
-                            }
-                        });
-                        //]]></script>
-                        [% END %]
-
                     [% ELSE %]
 
                         <div class="MessageBox Warning">

@@ -30,6 +30,9 @@ use lib dirname($Bin) . '/Custom';
 use File::stat;
 use Digest::MD5;
 
+use Exporter qw(import);
+our @EXPORT = qw(Translatable);
+
 our @ObjectDependencies = ();
 
 sub LoadDefaults {
@@ -175,6 +178,7 @@ sub LoadDefaults {
         'hi' => 'Hindi',
         'hr' => 'Croatian',
         'hu' => 'Hungarian',
+        'id' => 'Indonesian',
         'it' => 'Italian',
         'ja' => 'Japanese',
         'lt' => 'Lithuanian',
@@ -224,6 +228,7 @@ sub LoadDefaults {
         'hi' => 'हिन्दी',
         'hr' => 'Hrvatski',
         'hu' => 'Magyar',
+        'id' => 'Bahasa Indonesia',
         'it' => 'Italiano',
         'ja' => '日本語',
         'lt' => 'Lietuvių kalba',
@@ -701,6 +706,9 @@ sub LoadDefaults {
         '600-SystemMaintenance-Check' => {
             'Module' => 'Kernel::Output::HTML::Notification::SystemMaintenanceCheck',
         },
+        '700-AgentTimeZone-Check' => {
+            'Module' => 'Kernel::Output::HTML::Notification::AgentTimeZoneCheck',
+        },
 
         '800-Daemon-Check' => {
           'Module' => 'Kernel::Output::HTML::Notification::DaemonCheck',
@@ -778,8 +786,8 @@ sub LoadDefaults {
     # Time Settings
     # --------------------------------------------------- #
     # TimeZone
-    # (set the system time zone, default is local time)
-#    $Self->{'TimeZone'} = 0;
+    # (set the OTRS time zone, default is UTC)
+#    $Self->{'OTRSTimeZone'} = 'UTC';
 
     # Time*
     # (Used for ticket age, escalation and system unlock calculation)
@@ -911,6 +919,7 @@ sub LoadDefaults {
         'Core.TicketZoom.css',
         'Core.InputFields.css',
         'Core.Print.css',
+        'Core.Animations.css',
         'thirdparty/fontawesome/font-awesome.css'
     ];
 
@@ -927,6 +936,7 @@ sub LoadDefaults {
         'Core.PageLayout.css',
         'Core.Form.css',
         'Core.Table.css',
+        'Core.Login.css',
         'Core.Widget.css',
         'Core.WidgetMenu.css',
         'Core.TicketDetail.css',
@@ -934,6 +944,7 @@ sub LoadDefaults {
         'Core.Dialog.css',
         'Core.InputFields.css',
         'Core.Print.css',
+        'Core.Animations.css',
         'thirdparty/fontawesome/font-awesome.css',
     ];
 
@@ -950,12 +961,16 @@ sub LoadDefaults {
         'thirdparty/stacktrace-0.6.4/stacktrace.js',
         'thirdparty/jquery-pubsub/pubsub.js',
         'thirdparty/jquery-jstree-3.1.1/jquery.jstree.js',
+        'thirdparty/nunjucks-2.4.2/nunjucks.js',
+        'Core.Init.js',
         'Core.Debug.js',
         'Core.Exception.js',
         'Core.Data.js',
         'Core.JSON.js',
         'Core.JavaScriptEnhancements.js',
         'Core.Config.js',
+        'Core.Language.js',
+        'Core.Template.js',
         'Core.App.js',
         'Core.App.Responsive.js',
         'Core.AJAX.js',
@@ -985,11 +1000,15 @@ sub LoadDefaults {
         'thirdparty/stacktrace-0.6.4/stacktrace.js',
         'thirdparty/jquery-pubsub/pubsub.js',
         'thirdparty/jquery-jstree-3.1.1/jquery.jstree.js',
+        'thirdparty/nunjucks-2.4.2/nunjucks.js',
+        'Core.Init.js',
         'Core.JavaScriptEnhancements.js',
         'Core.Debug.js',
         'Core.Exception.js',
         'Core.Data.js',
         'Core.Config.js',
+        'Core.Language.js',
+        'Core.Template.js',
         'Core.JSON.js',
         'Core.App.js',
         'Core.App.Responsive.js',
@@ -999,6 +1018,7 @@ sub LoadDefaults {
         'Core.UI.Accordion.js',
         'Core.UI.Datepicker.js',
         'Core.UI.DnD.js',
+        'Core.UI.Floater.js',
         'Core.UI.Resizable.js',
         'Core.UI.Table.js',
         'Core.UI.Accessibility.js',
@@ -1014,6 +1034,7 @@ sub LoadDefaults {
         'Core.Agent.js',
         'Core.Agent.Search.js',
         'Core.Agent.CustomerInformationCenterSearch.js',
+        'Core.Agent.Header.js',
         'Core.UI.Notification.js',
         'Core.Agent.Responsive.js',
     ];
@@ -1419,10 +1440,18 @@ via the Preferences button after logging in.
             Table => 'customer_user',
 #            ForeignDB => 0,    # set this to 1 if your table does not have create_time, create_by, change_time and change_by fields
 
-            # CaseSensitive will control if the SQL statements need LOWER()
-            #   function calls to work case insensitively. Setting this to
-            #   1 will improve performance dramatically on large databases.
-            CaseSensitive => 0,
+            # CaseSensitive defines if the data storage of your DBMS is case sensitive and will be
+            # preconfigured within the database driver by default.
+            # If the collation of your data storage differs from the default settings,
+            # you can set the current behavior ( either 1 = CaseSensitive or 0 = CaseINSensitive )
+            # to fit your environment.
+            #
+#            CaseSensitive => 0,
+
+            # SearchCaseSensitive will control if the searches within the data storage are performed
+            # case sensitively (if possible) or not. Change this option to 1, if you want to search case sensitive.
+            # This can improve the performance dramatically on large databases.
+            SearchCaseSensitive => 0,
         },
 
         # customer unique id
@@ -1461,6 +1490,14 @@ via the Preferences button after logging in.
 #        ReadOnly => 1,
         Map => [
 
+            # Info about dynamic fields:
+            #
+            # Dynamic Fields of type CustomerUser can be used within the mapping (see example below).
+            # The given storage (third column) then can also be used within the following configurations (see above):
+            # CustomerUserSearchFields, CustomerUserPostMasterSearchFields, CustomerUserListFields, CustomerUserNameFields
+            #
+            # Note that the columns 'frontend' and 'readonly' will be ignored for dynamic fields.
+
             # note: Login, Email and CustomerID needed!
             # var, frontend, storage, shown (1=always,2=lite), required, storage-type, http-link, readonly, http-link-target, link class(es)
             [ 'UserTitle',      Translatable('Title or salutation'), 'title',  1, 0, 'var', '', 0 ],
@@ -1481,6 +1518,10 @@ via the Preferences button after logging in.
             [ 'UserCountry',      Translatable('Country'),     'country',      1, 0, 'var', '', 0 ],
             [ 'UserComment',      Translatable('Comment'),     'comments',     1, 0, 'var', '', 0 ],
             [ 'ValidID',          Translatable('Valid'),       'valid_id',     0, 1, 'int', '', 0 ],
+
+            # Dynamic field example
+#            [ 'DynamicField_Name_X', undef, 'Name_X', 0, 0, 'dynamic_field', undef, 0, undef, undef, ],
+
         ],
 
         # default selections
@@ -1573,10 +1614,18 @@ via the Preferences button after logging in.
             Table => 'customer_company',
 #            ForeignDB => 0,    # set this to 1 if your table does not have create_time, create_by, change_time and change_by fields
 
-            # CaseSensitive will control if the SQL statements need LOWER()
-            #   function calls to work case insensitively. Setting this to
-            #   1 will improve performance dramatically on large databases.
-            CaseSensitive => 0,
+            # CaseSensitive defines if the data storage of your DBMS is case sensitive and will be
+            # preconfigured within the database driver by default.
+            # If the collation of your data storage differs from the default settings,
+            # you can set the current behavior ( either 1 = CaseSensitive or 0 = CaseINSensitive )
+            # to fit your environment.
+            #
+#            CaseSensitive => 0,
+
+            # SearchCaseSensitive will control if the searches within the data storage are performed
+            # case sensitively (if possible) or not. Change this option to 1, if you want to search case sensitive.
+            # This can improve the performance dramatically on large databases.
+            SearchCaseSensitive => 0,
         },
 
         # company unique id
@@ -1590,6 +1639,14 @@ via the Preferences button after logging in.
         CacheTTL                       => 60 * 60 * 24, # use 0 to turn off cache
 
         Map => [
+            # Info about dynamic fields:
+            #
+            # Dynamic Fields of type CustomerCompany can be used within the mapping (see example below).
+            # The given storage (third column) then can also be used within the following configurations (see above):
+            # CustomerCompanySearchFields, CustomerCompanyListFields
+            #
+            # Note that the columns 'frontend' and 'readonly' will be ignored for dynamic fields.
+
             # var, frontend, storage, shown (1=always,2=lite), required, storage-type, http-link, readonly
             [ 'CustomerID',             'CustomerID', 'customer_id', 0, 1, 'var', '', 0 ],
             [ 'CustomerCompanyName',    'Customer',   'name',        1, 1, 'var', '', 0 ],
@@ -1600,6 +1657,10 @@ via the Preferences button after logging in.
             [ 'CustomerCompanyURL',     'URL',        'url',         1, 0, 'var', '[% Data.CustomerCompanyURL | html %]', 0 ],
             [ 'CustomerCompanyComment', 'Comment',    'comments',    1, 0, 'var', '', 0 ],
             [ 'ValidID',                'Valid',      'valid_id',    0, 1, 'int', '', 0 ],
+
+            # Dynamic field example
+#            [ 'DynamicField_Name_Y', undef, 'Name_Y', 0, 0, 'dynamic_field', undef, 0,],
+
         ],
     };
 
@@ -1688,6 +1749,11 @@ via the Preferences button after logging in.
         'Group' => [
             'admin'
         ],
+        'Loader' => {
+            'JavaScript' => [
+              'Core.Agent.Admin.Log.js'
+            ]
+        },
         'NavBarModule' => {
             'Block' => 'System',
             'Description' => Translatable('View system log messages.'),

@@ -39,6 +39,12 @@ sub Run {
         );
     }
 
+    # send data to JS
+    $LayoutObject->AddJSData(
+        Key   => 'WebserviceID',
+        Value => $WebserviceID
+    );
+
     my $WebserviceData = $Kernel::OM->Get('Kernel::System::GenericInterface::Webservice')->WebserviceGet(
         ID => $WebserviceID,
     );
@@ -499,6 +505,12 @@ sub _ShowScreen {
         Data => \%Param
     );
 
+    # send data to JS
+    $LayoutObject->AddJSData(
+        Key   => 'Invoker',
+        Value => $Param{Invoker}
+    );
+
     my %TemplateData;
 
     if ( $Param{Mode} eq 'Add' ) {
@@ -596,6 +608,7 @@ sub _ShowScreen {
     my %InvokerEventLookup;
 
     # create the event triggers table
+    my @Events;
     for my $Event ( @{$InvokerEvents} ) {
 
         # to store the events that are already assigned to this invoker
@@ -619,6 +632,8 @@ sub _ShowScreen {
             }
         }
 
+        push @Events, $Event->{Event};
+
         # paint each event row in event triggers table
         $LayoutObject->Block(
             Name => 'EventRow',
@@ -630,10 +645,16 @@ sub _ShowScreen {
         );
     }
 
+    # send data to JS
+    $LayoutObject->AddJSData(
+        Key   => 'Events',
+        Value => \@Events
+    );
+
     my @EventTypeList;
 
-    my $SelectedEventType
-        = $Kernel::OM->Get('Kernel::System::Web::Request')->GetParam( Param => 'EventType' ) || 'Ticket';
+    my $SelectedEventType = $Kernel::OM->Get('Kernel::System::Web::Request')->GetParam( Param => 'EventType' )
+        || 'Ticket';
 
     # create event trigger selectors (one for each type)
     TYPE:

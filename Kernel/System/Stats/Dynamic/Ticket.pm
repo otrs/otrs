@@ -206,11 +206,19 @@ sub GetObjectAttributes {
             Block            => 'InputField',
         },
         {
-            Name             => Translatable('CustomerUserLogin'),
+            Name             => Translatable('CustomerUserLogin (complex search)'),
             UseAsXvalue      => 0,
             UseAsValueSeries => 0,
             UseAsRestriction => 1,
             Element          => 'CustomerUserLogin',
+            Block            => 'InputField',
+        },
+        {
+            Name             => Translatable('CustomerUserLogin (exact match)'),
+            UseAsXvalue      => 0,
+            UseAsValueSeries => 0,
+            UseAsRestriction => 1,
+            Element          => 'CustomerUserLoginRaw',
             Block            => 'InputField',
         },
         {
@@ -293,6 +301,20 @@ sub GetObjectAttributes {
             Values           => {
                 TimeStart => 'TicketChangeTimeNewerDate',
                 TimeStop  => 'TicketChangeTimeOlderDate',
+            },
+        },
+        {
+            Name             => Translatable('Pending until time'),
+            UseAsXvalue      => 1,
+            UseAsValueSeries => 1,
+            UseAsRestriction => 1,
+            Element          => 'PendingUntilTime',
+            TimePeriodFormat => 'DateInputFormat',                    # 'DateInputFormatLong',
+            Block            => 'Time',
+            TimeStop         => $Today,
+            Values           => {
+                TimeStart => 'TicketPendingTimeNewerDate',
+                TimeStop  => 'TicketPendingTimeOlderDate',
             },
         },
         {
@@ -496,16 +518,26 @@ sub GetObjectAttributes {
     }
     else {
 
-        my %ObjectAttribute = (
-            Name             => Translatable('CustomerID'),
-            UseAsXvalue      => 0,
-            UseAsValueSeries => 0,
-            UseAsRestriction => 1,
-            Element          => 'CustomerID',
-            Block            => 'InputField',
+        my @CustomerIDAttributes = (
+            {
+                Name             => Translatable('CustomerID (complex search)'),
+                UseAsXvalue      => 0,
+                UseAsValueSeries => 0,
+                UseAsRestriction => 1,
+                Element          => 'CustomerID',
+                Block            => 'InputField',
+            },
+            {
+                Name             => Translatable('CustomerID (exact match)'),
+                UseAsXvalue      => 0,
+                UseAsValueSeries => 0,
+                UseAsRestriction => 1,
+                Element          => 'CustomerIDRaw',
+                Block            => 'InputField',
+            },
         );
 
-        push @ObjectAttributes, \%ObjectAttribute;
+        push @ObjectAttributes, @CustomerIDAttributes;
     }
 
     if ( $ConfigObject->Get('Ticket::ArchiveSystem') ) {
@@ -519,9 +551,9 @@ sub GetObjectAttributes {
             Block            => 'SelectField',
             Translation      => 1,
             Values           => {
-                ArchivedTickets    => 'Archived tickets',
-                NotArchivedTickets => 'Unarchived tickets',
-                AllTickets         => 'All tickets',
+                ArchivedTickets    => Translatable('Archived tickets'),
+                NotArchivedTickets => Translatable('Unarchived tickets'),
+                AllTickets         => Translatable('All tickets'),
             },
         );
 
@@ -758,7 +790,7 @@ sub GetStatElement {
         Permission => 'ro',
         Limit      => 100_000_000,
         %Param,
-    );
+    ) || 0;
 }
 
 sub ExportWrapper {

@@ -119,7 +119,7 @@ Core.Agent.TicketAction = (function (TargetNS) {
         $Element[0].setSelectionRange(Length, Length);
 
         // set customer data for customer user information (AgentTicketEmail) in the compose screen
-        if ($Link.attr('rel') === 'ToCustomer' && Core.Config.Get('CustomerInfoSet')){
+        if ($Link.attr('rel') === 'ToCustomer' && parseInt(Core.Config.Get('CustomerInfoSet'), 10)){
 
             NewData = $('#CustomerData').val();
             NewDataItem = Core.Data.Get($Link.closest('a'), 'customerdatajson');
@@ -169,6 +169,9 @@ Core.Agent.TicketAction = (function (TargetNS) {
      */
     TargetNS.Init = function () {
 
+        // Initialize spell check functionality
+        TargetNS.InitSpellCheck();
+
         // Register event for spell checker dialog
         $('#OptionSpellCheck').bind('click', function () {
             OpenSpellChecker();
@@ -207,9 +210,9 @@ Core.Agent.TicketAction = (function (TargetNS) {
             Core.Form.Validate.SetSubmitFunction($('form[name=compose]'), function() {
                 if ($('#RichText').val() && !$('#RichText').hasClass('ValidationIgnore') && !Core.Config.Get('TextIsSpellChecked')) {
                     Core.App.Publish('Event.Agent.TicketAction.NeedSpellCheck', [$('#RichText')]);
-                    Core.UI.Dialog.ShowContentDialog('<p>' + Core.Config.Get('SpellCheckNeededMsg') + '</p>', '', '150px', 'Center', true, [
+                    Core.UI.Dialog.ShowContentDialog('<p>' + Core.Language.Translate('Please perform a spell check on the the text first.') + '</p>', '', '150px', 'Center', true, [
                         {
-                            Label: '<span>' + Core.Config.Get('DialogCloseMsg') + '</span>',
+                            Label: '<span>' + Core.Language.Translate('Close this dialog') + '</span>',
                             Function: function () {
                                 Core.UI.Dialog.CloseDialog($('.Dialog:visible'));
                                 Core.Form.EnableForm($('#RichText').closest('form'));
@@ -356,10 +359,16 @@ Core.Agent.TicketAction = (function (TargetNS) {
      * @name InitSpellCheck
      * @memberof Core.Agent.TicketAction
      * @function
+     * @returns {Boolean} Returns false, if the current action is not the spellchecker iframe
      * @description
      *      This function initializes the necessary stuff for spell check link  in TicketAction screens.
      */
     TargetNS.InitSpellCheck = function () {
+
+        if (Core.Config.Get('Action') !== 'AgentSpelling') {
+            return false;
+        }
+
         // Register onchange event for dropdown and input field to change the radiobutton
         $('#SpellCheck select, #SpellCheck input[type="text"]').bind('change', function () {
             var $Row = $(this).closest('tr'),
@@ -451,7 +460,7 @@ Core.Agent.TicketAction = (function (TargetNS) {
         // if content already exists let user confirm to really overwrite that content with a template
         if (
             Content.length &&
-            !window.confirm(Core.Config.Get('TicketActionTemplateOverwrite') + ' ' + Core.Config.Get('TicketActionTemplateOverwriteConfirm')))
+            !window.confirm(Core.Language.Translate('Setting a template will overwrite any text or attachment.') + ' ' + Core.Language.Translate('Do you really want to continue?')))
             {
                 // if user cancels confirmation, reset template selection
                 $TemplateSelect.val(LastValue).trigger('redraw');
@@ -462,6 +471,8 @@ Core.Agent.TicketAction = (function (TargetNS) {
             $TemplateSelect.data('LastValue', $TemplateSelect.val());
         }
     }
+
+    Core.Init.RegisterNamespace(TargetNS, 'APP_MODULE');
 
     return TargetNS;
 }(Core.Agent.TicketAction || {}));

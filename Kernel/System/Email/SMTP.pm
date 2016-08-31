@@ -141,20 +141,22 @@ sub Send {
         return;
     }
 
-    # get recipients
-    my $ToString = '';
+    TO:
     for my $To ( @{ $Param{ToArray} } ) {
-        $ToString .= $To . ',';
-        if ( !$SMTP->to($To) ) {
-            my $Error = $SMTP->code() . $SMTP->message();
-            $Kernel::OM->Get('Kernel::System::Log')->Log(
-                Priority => 'error',
-                Message  => "Can't send to '$To': $Error! Enable Net::SMTP debug for more info!",
-            );
-            $SMTP->quit();
-            return;
-        }
+
+        # Check if the recipient is valid
+        next TO if $SMTP->to($To);
+
+        my $Error = $SMTP->code() . $SMTP->message();
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
+            Priority => 'error',
+            Message  => "Can't send to '$To': $Error! Enable Net::SMTP debug for more info!",
+        );
+        $SMTP->quit();
+        return;
     }
+
+    my $ToString = join ',', @{ $Param{ToArray} };
 
     # get encode object
     my $EncodeObject = $Kernel::OM->Get('Kernel::System::Encode');
@@ -201,10 +203,14 @@ sub _Connect {
         }
     }
 
+    # Remove a possible port from the FQDN value
+    my $FQDN = $Param{FQDN};
+    $FQDN =~ s{:\d+}{}smx;
+
     # set up connection connection
     my $SMTP = Net::SMTP->new(
         $Param{MailHost},
-        Hello   => $Param{FQDN},
+        Hello   => $FQDN,
         Port    => $Param{SMTPPort} || 25,
         Timeout => 30,
         Debug   => $Param{SMTPDebug},

@@ -221,6 +221,28 @@ sub Run {
         }
     }
 
+    my $StatsResultDataJSON = $LayoutObject->JSONEncode(
+        Data     => $CachedData,
+        NoQuotes => 1,
+    );
+
+    my $StatsFormatJSON = $LayoutObject->JSONEncode(
+        Data     => $Format,
+        NoQuotes => 1,
+    );
+
+    # send data to JS
+    $LayoutObject->AddJSData(
+        Key   => 'StatsData' . $StatID,
+        Value => {
+            Name           => $Self->{Name},
+            Format         => $StatsFormatJSON,
+            StatResultData => $StatsResultDataJSON,
+            Preferences => $Preferences{ 'GraphWidget' . $Self->{Name} } || '{}',
+            MaxXaxisAttributes => $Kernel::OM->Get('Kernel::Config')->Get('Stats::MaxXaxisAttributes'),
+        },
+    );
+
     my $Content = $LayoutObject->Output(
         TemplateFile => 'AgentDashboardStats',
         Data         => {
@@ -233,7 +255,7 @@ sub Run {
             AgentStatisticsFrontendPermission => $AgentStatisticsFrontendPermission,
             Preferences => $Preferences{ 'GraphWidget' . $Self->{Name} } || '{}',
         },
-        KeepScriptTags => $Param{AJAX},
+        AJAX => $Param{AJAX},
     );
 
     return $Content;

@@ -159,12 +159,6 @@ sub ActionRow {
         }
     }
 
-    # init for table control
-    $LayoutObject->Block(
-        Name => 'DocumentReadyStart',
-        Data => \%Param,
-    );
-
     my $Output = $LayoutObject->Output(
         TemplateFile => 'AgentTicketOverviewMedium',
         Data         => \%Param,
@@ -266,6 +260,12 @@ sub Run {
                 }
             }
         }
+
+        # send data to JS
+        $LayoutObject->AddJSData(
+            Key   => 'ActionRowTickets',
+            Value => $Self->{ActionRowTickets},
+        );
     }
     else {
         $LayoutObject->Block( Name => 'NoTicketFound' );
@@ -315,14 +315,6 @@ sub _Show {
     # get needed objects
     my $LayoutObject = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
     my $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
-
-    # get move queues
-    my %MoveQueues = $TicketObject->MoveList(
-        TicketID => $Param{TicketID},
-        UserID   => $Self->{UserID},
-        Action   => $LayoutObject->{Action},
-        Type     => 'move_into',
-    );
 
     # get last customer article
     my %Article = $TicketObject->ArticleLastCustomerArticle(
@@ -939,42 +931,22 @@ sub _Show {
         Data => { %Param, %Article },
     );
 
-    # get MoveQueuesStrg
-    if ( $ConfigObject->Get('Ticket::Frontend::MoveType') =~ /^form$/i ) {
-        $Param{MoveQueuesStrg} = $LayoutObject->AgentQueueListOption(
-            Name       => 'DestQueueID',
-            Data       => \%MoveQueues,
-            SelectedID => $Article{QueueID},
-        );
-    }
-    if (
-        $ConfigObject->Get('Frontend::Module')->{AgentTicketMove}
-        && ( !defined $AclAction{AgentTicketMove} || $AclAction{AgentTicketMove} )
-        )
-    {
-        my $Access = $TicketObject->TicketPermission(
-            Type     => 'move',
-            TicketID => $Param{TicketID},
-            UserID   => $Self->{UserID},
-            LogNo    => 1,
-        );
-        if ($Access) {
-            $LayoutObject->Block(
-                Name => 'Move',
-                Data => { %Param, %AclAction },
-            );
-        }
-    }
+    my %ActionRowTickets;
 
     # add action items as js
     if ( @ActionItems && !$Param{Config}->{TicketActionsPerTicket} ) {
-        $LayoutObject->Block(
-            Name => 'DocumentReadyActionRowAdd',
-            Data => {
-                TicketID => $Param{TicketID},
-                Data     => \@ActionItems,
-            },
-        );
+
+        # replace TT directives from string with values
+        for my $ActionItem (@ActionItems) {
+            $ActionItem->{Link} = $LayoutObject->Output(
+                Template => $ActionItem->{Link},
+                Data     => {
+                    TicketID => $Article{TicketID},
+                },
+            );
+        }
+
+        $Self->{ActionRowTickets}->{ $Param{TicketID} } = $LayoutObject->JSONEncode( Data => \@ActionItems );
     }
 
     # create & return output

@@ -19,11 +19,6 @@ $Selenium->RunTest(
     sub {
 
         # get helper object
-        $Kernel::OM->ObjectParamAdd(
-            'Kernel::System::UnitTest::Helper' => {
-                RestoreSystemConfiguration => 1,
-                }
-        );
         my $Helper = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
 
         # create test user and login
@@ -51,6 +46,12 @@ $Selenium->RunTest(
         $Selenium->find_element( "table thead tr th", 'css' );
         $Selenium->find_element( "table tbody tr td", 'css' );
 
+        # check breadcrumb on Overview screen
+        $Self->True(
+            $Selenium->find_element( '.BreadCrumb', 'css' ),
+            "Breadcrumb is found on Overview screen.",
+        );
+
         # click 'add new type' link
         $Selenium->find_element("//a[contains(\@href, \'Action=AdminType;Subaction=Add' )]")->VerifiedClick();
 
@@ -71,6 +72,43 @@ $Selenium->RunTest(
             'Client side validation correctly detected missing input value',
         );
 
+        # check breadcrumb on Add screen
+        my $Count = 0;
+        my $IsLinkedBreadcrumbText;
+        for my $BreadcrumbText ( 'You are here:', 'Type Management', 'Add Type' ) {
+            $Self->Is(
+                $Selenium->execute_script("return \$(\$('.BreadCrumb li')[$Count]).text().trim()"),
+                $BreadcrumbText,
+                "Breadcrumb text '$BreadcrumbText' is found on screen"
+            );
+
+            $IsLinkedBreadcrumbText =
+                $Selenium->execute_script("return \$(\$('.BreadCrumb li')[$Count]).children('a').length");
+
+            if ( $BreadcrumbText eq 'Type Management' ) {
+                $Self->Is(
+                    $IsLinkedBreadcrumbText,
+                    1,
+                    "Breadcrumb text '$BreadcrumbText' is linked"
+                );
+            }
+            else {
+                $Self->Is(
+                    $IsLinkedBreadcrumbText,
+                    0,
+                    "Breadcrumb text '$BreadcrumbText' is not linked"
+                );
+            }
+
+            $Count++;
+        }
+
+        # check form action
+        $Self->True(
+            $Selenium->find_element( '#Submit', 'css' ),
+            "Submit is found on Add screen.",
+        );
+
         # create a real test type
         my $TypeRandomID = "Type" . $Helper->GetRandomID();
 
@@ -89,6 +127,44 @@ $Selenium->RunTest(
         # go to new type again
         $Selenium->find_element( $TypeRandomID, 'link_text' )->VerifiedClick();
 
+        # check breadcrumb on Edit screen
+        $Count = 0;
+        for my $BreadcrumbText ( 'You are here:', 'Type Management', 'Edit Type: ' . $TypeRandomID ) {
+            $Self->Is(
+                $Selenium->execute_script("return \$(\$('.BreadCrumb li')[$Count]).text().trim()"),
+                $BreadcrumbText,
+                "Breadcrumb text '$BreadcrumbText' is found on screen"
+            );
+
+            $IsLinkedBreadcrumbText =
+                $Selenium->execute_script("return \$(\$('.BreadCrumb li')[$Count]).children('a').length");
+
+            if ( $BreadcrumbText eq 'Type Management' ) {
+                $Self->Is(
+                    $IsLinkedBreadcrumbText,
+                    1,
+                    "Breadcrumb text '$BreadcrumbText' is linked"
+                );
+            }
+            else {
+                $Self->Is(
+                    $IsLinkedBreadcrumbText,
+                    0,
+                    "Breadcrumb text '$BreadcrumbText' is not linked"
+                );
+            }
+
+            $Count++;
+        }
+
+        # check form actions
+        for my $Action (qw(Submit SubmitAndContinue)) {
+            $Self->True(
+                $Selenium->find_element( "#$Action", 'css' ),
+                "$Action is found on Edit screen.",
+            );
+        }
+
         # check new type values
         $Self->Is(
             $Selenium->find_element( '#Name', 'css' )->get_value(),
@@ -104,11 +180,8 @@ $Selenium->RunTest(
         # get current value of Ticket::Type::Default
         my $DefaultTicketType = $ConfigObject->Get('Ticket::Type::Default');
 
-        # get sysconfig object
-        my $SysConfigObject = $Kernel::OM->Get('Kernel::System::SysConfig');
-
         # set test Type as a default ticket type
-        $SysConfigObject->ConfigItemUpdate(
+        $Helper->ConfigSettingChange(
             Valid => 1,
             Key   => 'Ticket::Type::Default',
             Value => $TypeRandomID
@@ -131,7 +204,7 @@ $Selenium->RunTest(
         );
 
         # reset default ticket type
-        $SysConfigObject->ConfigItemUpdate(
+        $Helper->ConfigSettingChange(
             Valid => 1,
             Key   => 'Ticket::Type::Default',
             Value => $DefaultTicketType

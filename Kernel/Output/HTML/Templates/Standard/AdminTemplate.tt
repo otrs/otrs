@@ -112,17 +112,8 @@
                 </table>
             </div>
         </div>
-[% WRAPPER JSOnDocumentComplete %]
-<script type="text/javascript">//<![CDATA[
-    Core.UI.Table.InitTableFilter($('#Filter'), $('#Templates'));
-//]]></script>
-[% END %]
 [% RenderBlockEnd("OverviewResult") %]
 [% RenderBlockStart("OverviewUpdate") %]
-
-[% RenderBlockStart("RichText") %]
-[% InsertTemplate("RichTextEditor.tt") %]
-[% RenderBlockEnd("RichText") %]
 
         <div class="WidgetSimple">
             <div class="Header">
@@ -199,7 +190,7 @@
                         <div class="Field">
                             <button class="Primary CallForAction" type="submit" value="[% Translate("Save") | html %]"><span>[% Translate("Save") | html %]</span></button>
                             [% Translate("or") | html %]
-                            <a href="[% Env("Baselink") %]Action=AdminTemplate">[% Translate("Cancel") | html %]</a>
+                            <a href="[% Env("Baselink") %]Action=[% Env("Action") %]">[% Translate("Cancel") | html %]</a>
                         </div>
                         <div class="Clear"></div>
                     </fieldset>

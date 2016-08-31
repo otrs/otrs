@@ -45,7 +45,7 @@ sub Run {
         if ( !@TicketIDs ) {
             return $LayoutObject->ErrorScreen(
                 Message => Translatable('Can\'t lock Tickets, no TicketIDs are given!'),
-                Comment => Translatable('Please contact the admin.'),
+                Comment => Translatable('Please contact the administrator.'),
             );
         }
 
@@ -1069,14 +1069,12 @@ sub _Mask {
             }
         }
         $Param{ResponsibleStrg} = $LayoutObject->BuildSelection(
-            Data => {
-                '' => '-',
-                %AllGroupsMembers
-            },
-            Name        => 'ResponsibleID',
-            Translation => 0,
-            SelectedID  => $Param{ResponsibleID},
-            Class       => 'Modernize',
+            Data         => \%AllGroupsMembers,
+            PossibleNone => 1,
+            Name         => 'ResponsibleID',
+            Translation  => 0,
+            SelectedID   => $Param{ResponsibleID},
+            Class        => 'Modernize',
         );
         $LayoutObject->Block(
             Name => 'Responsible',
@@ -1202,8 +1200,8 @@ sub _Mask {
         $Param{RichTextHeight} = $Config->{RichTextHeight} || 0;
         $Param{RichTextWidth}  = $Config->{RichTextWidth}  || 0;
 
-        $LayoutObject->Block(
-            Name => 'RichText',
+        # set up rich text editor
+        $LayoutObject->SetRichTextParameters(
             Data => \%Param,
         );
     }
@@ -1218,11 +1216,9 @@ sub _Mask {
             $URL .= ';' . $Self->{SessionName} . '=' . $Self->{SessionID};
         }
 
-        $LayoutObject->Block(
-            Name => 'ParentReload',
-            Data => {
-                URL => $URL,
-            },
+        $LayoutObject->AddJSData(
+            Key   => 'TicketBulkURL',
+            Value => $LayoutObject->{Baselink} . $URL,
         );
 
         # show undo&close link

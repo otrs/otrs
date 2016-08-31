@@ -130,7 +130,7 @@ Core.App = (function (TargetNS) {
             });
             return AppropriateBrowser;
         }
-        alert('Error: Browser Check failed!');
+        alert(Core.Language.Translate('Error: Browser Check failed!'));
     };
 
     /**
@@ -290,6 +290,67 @@ Core.App = (function (TargetNS) {
     TargetNS.Unsubscribe = function (Handle) {
         $.unsubscribe(Handle);
     };
+
+    /**
+     * @name Init
+     * @memberof Core.App
+     * @function
+     * @description
+     *      This function initializes the special functions.
+     */
+    TargetNS.Init = function () {
+        var RefreshSeconds = parseInt(Core.Config.Get('Refresh'), 10) || 0;
+
+        if (RefreshSeconds !== 0) {
+            window.setInterval(function() {
+
+                // If there are any open overlay dialogs, don't refresh
+                if ($('.Dialog:visible').length) {
+                    return;
+                }
+
+                // If there are open child popup windows, don't refresh
+                if (Core && Core.UI && Core.UI.Popup && Core.UI.Popup.HasOpenPopups()) {
+                    return;
+                }
+                // Now we can reload
+                window.location.reload();
+            }, RefreshSeconds * 1000);
+        }
+
+        // Initialize return to previous page function.
+        TargetNS.ReturnToPreviousPage();
+    };
+
+    /**
+     * @name ReturnToPreviousPage
+     * @memberof Core.App
+     * @function
+     * @description
+     *      This function bind on click event to return on previous page.
+     */
+    TargetNS.ReturnToPreviousPage = function () {
+
+        $('.ReturnToPreviousPage').on('click', function () {
+
+            // Check if an older history entry is available
+            if (history.length > 1) {
+            history.back();
+            return false;
+            }
+
+            // If we're in a popup window, close it
+            if (Core.UI.Popup.CurrentIsPopupWindow()) {
+                Core.UI.Popup.ClosePopup();
+                return false;
+            }
+
+            // Normal window, no history: no action possible
+            return false;
+        });
+    };
+
+    Core.Init.RegisterNamespace(TargetNS, 'APP_MODULE');
 
     return TargetNS;
 }(Core.App || {}));

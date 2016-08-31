@@ -53,7 +53,7 @@ sub Run {
         if ( !$Param{$Needed} ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
-                Message  => "Need $Needed!"
+                Message  => "Need $Needed!",
             );
             return;
         }
@@ -399,6 +399,11 @@ sub _NotificationFilter {
         next KEY if $Key eq 'LanguageID';
         next KEY if $Key eq 'SendOnOutOfOffice';
         next KEY if $Key eq 'AgentEnabledByDefault';
+        next KEY if $Key eq 'EmailSecuritySettings';
+        next KEY if $Key eq 'EmailSigningCrypting';
+        next KEY if $Key eq 'EmailMissingCryptingKeys';
+        next KEY if $Key eq 'EmailMissingSigningKeys';
+        next KEY if $Key eq 'EmailDefaultSigningKeys';
 
         # check recipient fields from transport methods
         if ( $Key =~ m{\A Recipient}xms ) {

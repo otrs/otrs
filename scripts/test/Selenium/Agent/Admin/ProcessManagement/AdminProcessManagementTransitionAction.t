@@ -54,13 +54,13 @@ $Selenium->RunTest(
         $Selenium->find_element( "#Name",        'css' )->VerifiedSubmit();
 
         # click on Transition Actions dropdown
-        $Selenium->find_element( "Transition Actions", 'link_text' )->click();
+        $Selenium->find_element( "Transition Actions", 'link_text' )->VerifiedClick();
 
         # wait to toggle element
         sleep 1;
 
         # click "Create New Transition Action"
-        $Selenium->find_element("//a[contains(\@href, \'Subaction=TransitionActionNew' )]")->click();
+        $Selenium->find_element("//a[contains(\@href, \'Subaction=TransitionActionNew' )]")->VerifiedClick();
 
         # switch to pop up window
         $Selenium->WaitFor( WindowCount => 2 );
@@ -97,6 +97,8 @@ $Selenium->RunTest(
         $Selenium->WaitFor( WindowCount => 1 );
         $Selenium->switch_to_window( $Handles->[0] );
 
+        sleep 2;
+
         # check for created test TransitionAction using filter on AdminProcessManagement screen
         $Selenium->WaitFor(
             JavaScript =>
@@ -124,7 +126,7 @@ $Selenium->RunTest(
 
         # go to edit test TransitionAction screen
         $Selenium->find_element("//a[contains(\@href, \'Subaction=TransitionActionEdit;ID=$TransitionActionID' )]")
-            ->click();
+            ->VerifiedClick();
 
         $Selenium->WaitFor( WindowCount => 2 );
         $Handles = $Selenium->get_window_handles();
@@ -155,6 +157,34 @@ $Selenium->RunTest(
             "ConfigValue stored value",
         );
 
+        # try to remove only possible Config Parameters
+        $Selenium->find_element( ".RemoveButton", 'css' )->click();
+        $Self->True(
+            $Selenium->accept_alert(),
+            "Unable to remove only field - JS is success"
+        );
+
+        # add new Config key and value
+        $Selenium->find_element( "#ConfigAdd", 'css' )->click();
+
+        # verify newly added fields
+        $Self->True(
+            $Selenium->find_element(".//*[\@id='ConfigKey[2]']"),
+            "New Config key field is added - JS is success"
+        );
+        $Self->True(
+            $Selenium->find_element(".//*[\@id='ConfigValue[2]']"),
+            "New Config value field is added - JS is success"
+        );
+
+        # remove new Config key and value fields
+        $Self->True(
+            $Selenium->execute_script(
+                "return \$(\$('#ConfigParams').find('fieldset')[1]).find('.RemoveButton').click()"
+            ),
+            "New Config key and value fields are removed - JS is success"
+        );
+
         # edit test TransactionAction values
         my $TransitionActionKeyEdit   = $TransitionActionKey . "edit";
         my $TransitionActionValueEdit = $TransitionActionValue . "edit";
@@ -169,10 +199,12 @@ $Selenium->RunTest(
         $Selenium->WaitFor( WindowCount => 1 );
         $Selenium->switch_to_window( $Handles->[0] );
 
+        sleep 2;
+
         # check for edited test TransitionAction using filter on AdminProcessManagement screen
         my $TransitionActionRandomEdit = $TransitionActionRandom . "edit";
         $Selenium->WaitFor( JavaScript => "return typeof(\$) === 'function' && \$('#TransitionActionFilter').length" );
-        $Selenium->find_element( "Transition Actions", 'link_text' )->click();
+        $Selenium->find_element( "Transition Actions", 'link_text' )->VerifiedClick();
 
         $Selenium->find_element( "#TransitionActionFilter", 'css' )->send_keys($TransitionActionRandomEdit);
 
@@ -183,7 +215,7 @@ $Selenium->RunTest(
 
         # go to edit test TransitionAction screen again
         $Selenium->find_element("//a[contains(\@href, \'Subaction=TransitionActionEdit;ID=$TransitionActionID' )]")
-            ->click();
+            ->VerifiedClick();
 
         $Selenium->WaitFor( WindowCount => 2 );
         $Handles = $Selenium->get_window_handles();

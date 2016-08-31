@@ -1103,12 +1103,15 @@ for my $Test (@Tests) {
         }
 
         # de-reference body
-        $Email->{Body} = ${ $Email->{Body} }
+        $Email->{Body} = ${ $Email->{Body} };
     }
 
+    my @EmailSorted           = sort { $a->{ToArray}->[0] cmp $b->{ToArray}->[0] } @{$Emails};
+    my @ExpectedResultsSorted = sort { $a->{ToArray}->[0] cmp $b->{ToArray}->[0] } @{ $Test->{ExpectedResults} };
+
     $Self->IsDeeply(
-        $Emails,
-        $Test->{ExpectedResults},
+        \@EmailSorted,
+        \@ExpectedResultsSorted,
         "$Test->{Name} - Recipients",
     );
 
@@ -1161,6 +1164,19 @@ continue {
     undef $NotificationID;
 }
 
-# cleanup is done by RestoreDatabase.
+# cleanup is done by RestoreDatabase but we need to run cleanup
+# code too to remove data if the FS backend is used
+
+# delete the ticket
+my $TicketDelete = $TicketObject->TicketDelete(
+    TicketID => $TicketID,
+    UserID   => $UserID,
+);
+
+# sanity check
+$Self->True(
+    $TicketDelete,
+    "TicketDelete() successful for Ticket ID $TicketID",
+);
 
 1;

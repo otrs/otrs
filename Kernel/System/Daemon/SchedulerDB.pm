@@ -1409,20 +1409,11 @@ sub CronTaskToExecute {
 
         next CRONJOBKEY if !IsHashRefWithData($JobConfig);
 
-        if ( !$JobConfig->{Module} && !$JobConfig->{Command} ) {
+        if ( !$JobConfig->{Module} ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
                 Message  => "Config option Daemon::SchedulerCronTaskManager::Task###$CronjobKey is invalid."
-                    . " Need 'Module' or 'Command' parameter!",
-            );
-            next CRONJOBKEY;
-        }
-
-        if ( $JobConfig->{Module} && $JobConfig->{Command} ) {
-            $Kernel::OM->Get('Kernel::System::Log')->Log(
-                Priority => 'error',
-                Message  => "Config option Daemon::SchedulerCronTaskManager::Task###$CronjobKey is invalid."
-                    . " Need 'Module' or 'Command' parameter but not both!",
+                    . " Need 'Module' parameter!",
             );
             next CRONJOBKEY;
         }
@@ -1452,7 +1443,6 @@ sub CronTaskToExecute {
             PreviousEventTimestamp   => $PreviousEventTimestamp,
             MaximumParallelInstances => $JobConfig->{MaximumParallelInstances},
             Data                     => {
-                Command  => $JobConfig->{Command}  || '',
                 Module   => $JobConfig->{Module}   || '',
                 Function => $JobConfig->{Function} || '',
                 Params   => $JobConfig->{Params}   || '',
@@ -1496,9 +1486,7 @@ sub CronTaskCleanup {
 
         next CRONJOBKEY if !IsHashRefWithData($JobConfig);
 
-        next CRONJOBKEY if ( !$JobConfig->{Module} && !$JobConfig->{Command} );
-
-        next CRONJOBKEY if ( $JobConfig->{Module} && $JobConfig->{Command} );
+        next CRONJOBKEY if ( !$JobConfig->{Module} );
 
         next CRONJOBKEY if ( $JobConfig->{Module} && !$JobConfig->{Function} );
 
@@ -1638,11 +1626,11 @@ sub GenericAgentTaskToExecute {
         next JOBNAME if !$Schedule;
 
         # get the last time the GenericAgent job should be executed, this returns even THIS minute
-        my $EventSystemTime = $CronEventObject->PreviousEventGet(
+        my $PreviousEventTimestamp = $CronEventObject->PreviousEventGet(
             Schedule => $Schedule,
         );
 
-        next JOBNAME if !$EventSystemTime;
+        next JOBNAME if !$PreviousEventTimestamp;
 
         # execute recurrent tasks
         $Self->RecurrentTaskExecute(
@@ -1650,7 +1638,7 @@ sub GenericAgentTaskToExecute {
             PID                      => $Param{PID},
             TaskName                 => $JobName,
             TaskType                 => 'GenericAgent',
-            PreviousEventTimestamp   => $EventSystemTime,
+            PreviousEventTimestamp   => $PreviousEventTimestamp,
             MaximumParallelInstances => 1,
             Data                     => \%Job,
         );
@@ -2047,14 +2035,10 @@ sub RecurrentTaskExecute {
     my $DBObject   = $Kernel::OM->Get('Kernel::System::DB');
     my $TimeObject = $Kernel::OM->Get('Kernel::System::Time');
 
-    # convert last previous event time-stamp
-    my $PreviousEventTime = $TimeObject->SystemTime2TimeStamp(
-        SystemTime => $Param{PreviousEventTimestamp},
-    );
+    my $LastExecutionTimeStamp;
 
     # get entry id and last execution time from database
     my $EntryID;
-    my $LastExecutionTimeStamp = '';
     TRY:
     for my $Try ( 1 .. 10 ) {
 
@@ -2070,7 +2054,7 @@ sub RecurrentTaskExecute {
                 Bind => [
                     \$Param{TaskName},
                     \$Param{TaskType},
-                    \$PreviousEventTime,
+                    \$Param{PreviousEventTimestamp},
                 ],
             );
         }
@@ -2088,19 +2072,9 @@ sub RecurrentTaskExecute {
         );
 
         # fetch the entry id
-        my $LastExecutionTime;
         while ( my @Row = $DBObject->FetchrowArray() ) {
-            $EntryID           = $Row[0];
-            $LastExecutionTime = $Row[1];
-        }
-
-        next TRY if !$EntryID;
-
-        # convert last execution time to a time-stamp
-        if ($LastExecutionTime) {
-            $LastExecutionTimeStamp = $TimeObject->TimeStamp2SystemTime(
-                String => $LastExecutionTime,
-            ) || '';
+            $EntryID                = $Row[0];
+            $LastExecutionTimeStamp = $Row[1];
         }
 
         last TRY if $EntryID;
@@ -2182,7 +2156,7 @@ sub RecurrentTaskExecute {
                     change_time = current_timestamp
                 WHERE lock_key = ? AND id = ?',
             Bind => [
-                \$PreviousEventTime,
+                \$Param{PreviousEventTimestamp},
                 \$TaskID,
                 \$LockKey,
                 \$EntryID,
@@ -2280,12 +2254,8 @@ sub RecurrentTaskSummary {
         next ROW if !$Schedule;
 
         # calculate next cron event time
-        my $NextEvent = $CronEventObject->NextEventGet(
+        my $NextExecutionTime = $CronEventObject->NextEventGet(
             Schedule => $Schedule,
-        );
-
-        my $NextExecutionTime = $TimeObject->SystemTime2TimeStamp(
-            SystemTime => $NextEvent,
         );
 
         my $LastWorkerStatus;

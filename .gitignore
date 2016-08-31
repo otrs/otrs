@@ -103,6 +103,7 @@ Kernel/Output/HTML/Preferences/CustomChatChannel.pm
 Kernel/Output/HTML/QueuePreferences/ChatChannel.pm
 Kernel/Output/HTML/ToolBar/NotificationView.pm
 Kernel/Output/HTML/TicketMenu/AttachmentView.pm
+Kernel/Output/HTML/FilterElementPost/AddDynamicFieldNames.pm
 Kernel/Output/HTML/FilterElementPost/ContactWithData.pm
 Kernel/Output/HTML/FilterElementPost/SLASelectionDialog.pm
 Kernel/Output/HTML/Layout/NotificationView.pm
@@ -153,9 +154,10 @@ scripts/test/NotificationView*
 scripts/test/Selenium/Agent/Admin/AdminContactWithData.t
 scripts/test/Selenium/Agent/Admin/AdminDynamicFieldContactWithData.t
 scripts/test/Selenium/Agent/Admin/AdminDynamicFieldDatabase.t
-scripts/test/Selenium/Agent/AgentDynamicFieldDatabase.t
 scripts/test/Selenium/Agent/AgentContactWithDataSearch.t
+scripts/test/Selenium/Agent/AgentDynamicFieldDatabase.t
 scripts/test/Selenium/Agent/AgentNotificationView.t
+scripts/test/Selenium/Agent/AgentStatisticsReports.t
 scripts/test/Selenium/Agent/AgentTicketAttachmentView.t
 scripts/test/Selenium/Agent/Chat.t
 scripts/test/Selenium/Customer/Chat.t

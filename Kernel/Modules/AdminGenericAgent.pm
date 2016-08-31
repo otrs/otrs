@@ -281,9 +281,18 @@ sub Run {
             );
 
             if ($JobAddResult) {
-                return $LayoutObject->Redirect(
-                    OP => "Action=$Self->{Action}",
-                );
+
+                # if the user would like to continue editing the generic agent job, just redirect to the edit screen
+                if ( $ParamObject->GetParam( Param => 'ContinueAfterSave' ) eq '1' ) {
+                    my $Profile = $Self->{Profile} || '';
+                    return $LayoutObject->Redirect( OP => "Action=$Self->{Action};Subaction=Update;Profile=$Profile" );
+                }
+                else {
+
+                    # otherwise return to overview
+                    return $LayoutObject->Redirect( OP => "Action=$Self->{Action}" );
+                }
+
             }
             else {
                 $Errors{ProfileInvalid}    = 'ServerError';
@@ -357,8 +366,12 @@ sub Run {
         Name => 'ActionAdd',
     );
     $LayoutObject->Block(
+        Name => 'Filter',
+    );
+    $LayoutObject->Block(
         Name => 'Overview',
     );
+
     my %Jobs = $GenericAgentObject->JobList();
 
     # if there are any data, it is shown
@@ -409,7 +422,8 @@ sub _MaskUpdate {
             Name => $Self->{Profile},
         );
     }
-    $JobData{Profile} = $Self->{Profile};
+    $JobData{Profile}   = $Self->{Profile};
+    $JobData{Subaction} = $Self->{Subaction};
 
     # get config object
     my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
@@ -831,7 +845,7 @@ sub _MaskUpdate {
         # get list type
         my %Service = $Kernel::OM->Get('Kernel::System::Service')->ServiceList(
             Valid        => 1,
-            KeepChildren => 1,
+            KeepChildren => $ConfigObject->Get('Ticket::Service::KeepChildren') // 0,
             UserID       => $Self->{UserID},
         );
         my %NewService = %Service;
@@ -1226,6 +1240,8 @@ sub _MaskRun {
         );
     }
     $JobData{Profile} = $Self->{Profile};
+    $Param{Subaction} = $Self->{Subaction};
+    $Param{Profile}   = $Self->{Profile};
 
     # dynamic fields search parameters for ticket search
     my %DynamicFieldSearchParameters;
@@ -1275,17 +1291,27 @@ sub _MaskRun {
         }
     }
 
-    # get ticket object
+    # remove residual dynamic field data from job definition
+    # they are passed through dedicated variable anyway
+    PARAM_NAME:
+    for my $ParamName ( sort keys %JobData ) {
+        next PARAM_NAME if !( $ParamName =~ /^DynamicField_/ );
+        delete $JobData{$ParamName};
+    }
+
+    # get needed objects
     my $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
+    my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
 
     # perform ticket search
+    my $GenericAgentTicketSearch = $ConfigObject->Get("Ticket::GenericAgentTicketSearch") || {};
     my $Counter = $TicketObject->TicketSearch(
         Result          => 'COUNT',
         SortBy          => 'Age',
         OrderBy         => 'Down',
         UserID          => 1,
         Limit           => 60_000,
-        ConditionInline => 1,
+        ConditionInline => $GenericAgentTicketSearch->{ExtendedSearchCondition},
         %JobData,
         %DynamicFieldSearchParameters,
     ) || 0;
@@ -1296,7 +1322,7 @@ sub _MaskRun {
         OrderBy         => 'Down',
         UserID          => 1,
         Limit           => 30,
-        ConditionInline => 1,
+        ConditionInline => $GenericAgentTicketSearch->{ExtendedSearchCondition},
         %JobData,
         %DynamicFieldSearchParameters,
     );
@@ -1316,7 +1342,7 @@ sub _MaskRun {
         },
     );
 
-    my $RunLimit = $Kernel::OM->Get('Kernel::Config')->Get('Ticket::GenericAgentRunLimit');
+    my $RunLimit = $ConfigObject->Get('Ticket::GenericAgentRunLimit');
     if ( $Counter > $RunLimit ) {
         $LayoutObject->Block(
             Name => 'RunLimit',

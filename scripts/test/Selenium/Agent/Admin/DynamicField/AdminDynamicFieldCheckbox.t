@@ -19,17 +19,9 @@ $Selenium->RunTest(
     sub {
 
         # get helper object
-        $Kernel::OM->ObjectParamAdd(
-            'Kernel::System::UnitTest::Helper' => {
-                RestoreSystemConfiguration => 1,
-            },
-        );
         my $Helper = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
 
-        # get sysconfig object
-        my $SysConfigObject = $Kernel::OM->Get('Kernel::System::SysConfig');
-
-        my %DynamicFieldsOverviewPageShownSysConfig = $SysConfigObject->ConfigItemGet(
+        my %DynamicFieldsOverviewPageShownSysConfig = $Kernel::OM->Get('Kernel::System::SysConfig')->ConfigItemGet(
             Name => 'PreferencesGroups###DynamicFieldsOverviewPageShown',
         );
 
@@ -37,7 +29,7 @@ $Selenium->RunTest(
             grep { defined $_->{Key} } @{ $DynamicFieldsOverviewPageShownSysConfig{Setting}->[1]->{Hash}->[1]->{Item} };
 
         # show more dynamic fields per page as the default value
-        $SysConfigObject->ConfigItemUpdate(
+        $Helper->ConfigSettingChange(
             Valid => 1,
             Key   => 'PreferencesGroups###DynamicFieldsOverviewPageShown',
             Value => {
@@ -114,14 +106,27 @@ $Selenium->RunTest(
 
             $Selenium->execute_script("\$('#DefaultValue').val('1').trigger('redraw.InputField').trigger('change');");
             $Selenium->execute_script("\$('#ValidID').val('2').trigger('redraw.InputField').trigger('change');");
+
+            # edit name to trigger JS and verify warning is visible
+            my $EditName = $RandomID . 'edit';
+            $Selenium->find_element( "#Name", 'css' )->clear();
+            $Selenium->find_element( "#Name", 'css' )->send_keys($EditName);
+
+            $Self->Is(
+                $Selenium->execute_script("return \$('.Warning').hasClass('Hidden')"),
+                0,
+                "Warning text is shown - JS is successful",
+            );
+
+            # submit form
             $Selenium->find_element( "#Name", 'css' )->VerifiedSubmit();
 
             # check new and edited DynamicFieldCheckbox values
-            $Selenium->find_element( $RandomID, 'link_text' )->VerifiedClick();
+            $Selenium->find_element( $EditName, 'link_text' )->VerifiedClick();
 
             $Self->Is(
                 $Selenium->find_element( '#Name', 'css' )->get_value(),
-                $RandomID,
+                $EditName,
                 "#Name updated value",
             );
             $Self->Is(
@@ -151,7 +156,7 @@ $Selenium->RunTest(
             # delete DynamicFields
             my $DynamicFieldObject = $Kernel::OM->Get('Kernel::System::DynamicField');
             my $DynamicField       = $DynamicFieldObject->DynamicFieldGet(
-                Name => $RandomID,
+                Name => $EditName,
             );
             my $Success = $DynamicFieldObject->DynamicFieldDelete(
                 ID     => $DynamicField->{ID},

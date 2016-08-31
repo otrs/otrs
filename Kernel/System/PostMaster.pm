@@ -19,6 +19,10 @@ use Kernel::System::PostMaster::Reject;
 
 use Kernel::System::VariableCheck qw(IsHashRefWithData);
 
+our %ObjectManagerFlags = (
+    NonSingleton => 1,
+);
+
 our @ObjectDependencies = (
     'Kernel::Config',
     'Kernel::System::DynamicField',
@@ -48,13 +52,14 @@ All postmaster functions. E. g. to process emails.
 create an object. Do not use it directly, instead use:
 
     use Kernel::System::ObjectManager;
-    local $Kernel::OM = Kernel::System::ObjectManager->new(
-        'Kernel::System::PostMaster' => {
+    local $Kernel::OM = Kernel::System::ObjectManager->new();
+    my $PostMasterObject = $Kernel::OM->Create(
+        'Kernel::System::PostMaster',
+        ObjectParams => {
             Email        => \@ArrayOfEmailContent,
             Trusted      => 1, # 1|0 ignore X-OTRS header if false
         },
     );
-    my $PostMasterObject = $Kernel::OM->Get('Kernel::System::PostMaster');
 
 =cut
 
@@ -115,7 +120,7 @@ sub new {
                 )
             {
 
-                # only add the header if is not alreday in the conifg
+                # only add the header if is not alreday in the config
                 if ( !$HeaderLookup{$Header} ) {
                     push @{ $Self->{'PostmasterX-Header'} }, $Header;
                 }
@@ -308,7 +313,7 @@ sub Run {
                 Message  => "Follow up for [$Tn] but follow up not possible. Follow up rejected."
             );
 
-            # send reject mail && and add article to ticket
+            # send reject mail and add article to ticket
             my $Run = $Self->{RejectObject}->Run(
                 TicketID         => $TicketID,
                 InmailUserID     => $Self->{PostmasterUserID},
@@ -357,7 +362,7 @@ sub Run {
             );
         }
 
-        # get queue if of From: and To:
+        # get queue from From: or To:
         if ( !$Param{QueueID} ) {
             $Param{QueueID} = $Self->{DestQueueObject}->GetQueueID( Params => $GetParam );
         }
@@ -411,6 +416,7 @@ sub Run {
                 TicketID  => $TicketID,
                 GetParam  => $GetParam,
                 JobConfig => $Jobs{$Job},
+                Return    => $Return[0],
             );
 
             if ( !$Run ) {

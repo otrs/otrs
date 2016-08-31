@@ -36,6 +36,7 @@ Core.Exception = (function (TargetNS) {
             // Use a public member so that we can also set it from a test case.
             TargetNS.AboutToLeave = true;
         });
+
     };
 
     /**
@@ -96,7 +97,7 @@ Core.Exception = (function (TargetNS) {
     };
 
     /**
-     * @name Throw
+     * @name IsErrorOfType
      * @memberof Core.Exception
      * @function
      * @returns {Boolean} True, if ErrorObject is of given type, false otherwise.
@@ -110,8 +111,8 @@ Core.Exception = (function (TargetNS) {
     };
 
     /**
-     * @name Throw
-     * @memberof Core.HandleFinalError
+     * @name HandleFinalError
+     * @memberof Core.Exception
      * @function
      * @returns {Boolean} If the error could be handled, returns if it was shown to the user or not.
      * @param {Object} ErrorObject - The error object
@@ -121,6 +122,9 @@ Core.Exception = (function (TargetNS) {
      */
     TargetNS.HandleFinalError = function (ErrorObject, Trace) {
         var UserErrorMessage = 'An error occurred! Do you want to see the complete error message?';
+        if (typeof Core.Language !== 'undefined') {
+            UserErrorMessage = Core.Language.Translate('An error occurred! Do you want to see the complete error message?')
+        }
 
         if (ErrorObject instanceof TargetNS.ApplicationError) {
             // Suppress AJAX errors which were raised by leaving the page while the AJAX call was still running.
@@ -151,7 +155,7 @@ Core.Exception = (function (TargetNS) {
 
     /**
      * @name ShowError
-     * @memberof Core.HandleFinalError
+     * @memberof Core.Exception
      * @function
      * @param {String} ErrorMessage - The error message.
      * @param {String} ErrorType - The error type.
@@ -165,6 +169,8 @@ Core.Exception = (function (TargetNS) {
             Core.Debug.Log('[STACKTRACE] ' + Trace);
         }
     };
+
+    Core.Init.RegisterNamespace(TargetNS, 'DOCUMENT_READY');
 
     return TargetNS;
 }(Core.Exception || {}));

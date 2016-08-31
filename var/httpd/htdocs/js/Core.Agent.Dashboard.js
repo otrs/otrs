@@ -30,8 +30,8 @@ Core.Agent.Dashboard = (function (TargetNS) {
      */
     TargetNS.InitCustomerIDAutocomplete = function ($Input) {
         $Input.autocomplete({
-            minLength: Core.Config.Get('CustomerIDAutocomplete.MinQueryLength'),
-            delay: Core.Config.Get('CustomerIDAutocomplete.QueryDelay'),
+            minLength: Core.Config.Get('CustomerIDAutocomplete').MinQueryLength,
+            delay: Core.Config.Get('CustomerIDAutocomplete').QueryDelay,
             open: function() {
                 // force a higher z-index than the overlay/dialog
                 $(this).autocomplete('widget').addClass('ui-overlay-autocomplete');
@@ -41,9 +41,9 @@ Core.Agent.Dashboard = (function (TargetNS) {
                 var URL = Core.Config.Get('Baselink'), Data = {
                     Action: 'AgentCustomerInformationCenterSearch',
                     Subaction: 'SearchCustomerID',
-                    IncludeUnknownTicketCustomers: Core.Config.Get('IncludeUnknownTicketCustomers'),
+                    IncludeUnknownTicketCustomers: parseInt(Core.Config.Get('IncludeUnknownTicketCustomers'), 10),
                     Term: Request.term,
-                    MaxResults: Core.Config.Get('CustomerIDAutocomplete.MaxResultsDisplayed')
+                    MaxResults: Core.Config.Get('CustomerIDAutocomplete').MaxResultsDisplayed
                 };
 
                 // if an old ajax request is already running, stop the old request and start the new one
@@ -87,8 +87,8 @@ Core.Agent.Dashboard = (function (TargetNS) {
      */
     TargetNS.InitCustomerUserAutocomplete = function ($Input) {
         $Input.autocomplete({
-            minLength: Core.Config.Get('CustomerUserAutocomplete.MinQueryLength'),
-            delay: Core.Config.Get('CustomerUserAutocomplete.QueryDelay'),
+            minLength: Core.Config.Get('CustomerUserAutocomplete').MinQueryLength,
+            delay: Core.Config.Get('CustomerUserAutocomplete').QueryDelay,
             open: function() {
                 // force a higher z-index than the overlay/dialog
                 $(this).autocomplete('widget').addClass('ui-overlay-autocomplete');
@@ -97,9 +97,9 @@ Core.Agent.Dashboard = (function (TargetNS) {
             source: function (Request, Response) {
                 var URL = Core.Config.Get('Baselink'), Data = {
                     Action: 'AgentCustomerSearch',
-                    IncludeUnknownTicketCustomers: Core.Config.Get('IncludeUnknownTicketCustomers'),
+                    IncludeUnknownTicketCustomers: parseInt(Core.Config.Get('IncludeUnknownTicketCustomers'), 10),
                     Term: Request.term,
-                    MaxResults: Core.Config.Get('CustomerUserAutocomplete.MaxResultsDisplayed')
+                    MaxResults: Core.Config.Get('CustomerUserAutocomplete').MaxResultsDisplayed
                 };
 
                 // if an old ajax request is already running, stop the old request and start the new one
@@ -145,8 +145,8 @@ Core.Agent.Dashboard = (function (TargetNS) {
      */
     TargetNS.InitUserAutocomplete = function ($Input, Subaction) {
         $Input.autocomplete({
-            minLength: Core.Config.Get('UserAutocomplete.MinQueryLength'),
-            delay: Core.Config.Get('UserAutocomplete.QueryDelay'),
+            minLength: Core.Config.Get('UserAutocomplete').MinQueryLength,
+            delay: Core.Config.Get('UserAutocomplete').QueryDelay,
             open: function() {
                 // force a higher z-index than the overlay/dialog
                 $(this).autocomplete('widget').addClass('ui-overlay-autocomplete');
@@ -157,7 +157,7 @@ Core.Agent.Dashboard = (function (TargetNS) {
                     Action: 'AgentUserSearch',
                     Subaction: Subaction,
                     Term: Request.term,
-                    MaxResults: Core.Config.Get('UserAutocomplete.MaxResultsDisplayed')
+                    MaxResults: Core.Config.Get('UserAutocomplete').MaxResultsDisplayed
                 };
 
                 // if an old ajax request is already running, stop the old request and start the new one
@@ -193,13 +193,100 @@ Core.Agent.Dashboard = (function (TargetNS) {
     };
 
     /**
+     * @private
+     * @name EventsTicketCalendarInitialization
+     * @memberof Core.Agent.Dashboard
+     * @function
+     * @description
+     *      This function gets data and initializes events ticket calendar.
+     */
+    function EventsTicketCalendarInitialization () {
+        var Index,
+            EventsTicketCalendar = Core.Config.Get('EventsTicketCalendar'),
+            EventsParam,
+            EventsParams = [],
+            FirstDay = Core.Config.Get('FirstDay');
+
+        for (Index in EventsTicketCalendar) {
+            EventsParam = {};
+            EventsParam.id = EventsTicketCalendar[Index].ID;
+            EventsParam.title = EventsTicketCalendar[Index].Title;
+            EventsParam.start = new Date (
+                EventsTicketCalendar[Index].SYear,
+                EventsTicketCalendar[Index].SMonth,
+                EventsTicketCalendar[Index].SDay,
+                EventsTicketCalendar[Index].SHour,
+                EventsTicketCalendar[Index].SMinute,
+                EventsTicketCalendar[Index].SSecond
+            );
+            EventsParam.end = new Date (
+                EventsTicketCalendar[Index].EYear,
+                EventsTicketCalendar[Index].EMonth,
+                EventsTicketCalendar[Index].EDay,
+                EventsTicketCalendar[Index].EHour,
+                EventsTicketCalendar[Index].EMinute,
+                EventsTicketCalendar[Index].ESecond
+            );
+            EventsParam.color = EventsTicketCalendar[Index].Color;
+            EventsParam.url = EventsTicketCalendar[Index].Url;
+            EventsParam.description =
+                EventsTicketCalendar[Index].Title +
+                "<br />" +
+                EventsTicketCalendar[Index].QueueName +
+                "<br />" +
+                EventsTicketCalendar[Index].Description;
+            EventsParam.allDay = false;
+
+            EventsParams.push(EventsParam);
+        }
+
+        if (typeof EventsTicketCalendar !== 'undefined') {
+            TargetNS.EventsTicketCalendarInit({
+                FirstDay: FirstDay,
+                Events: EventsParams
+            });
+        }
+    }
+
+    /**
      * @name Init
      * @memberof Core.Agent.Dashboard
      * @function
      * @description
-     *      Initialize the dashboard module.
+     *      Initializes the dashboard module.
      */
     TargetNS.Init = function () {
+        var WidgetContainers = Core.Config.Get('ContainerNames');
+
+        // initializes dashboards stats widget functionality
+        TargetNS.InitStatsWidget();
+
+        // initializes events ticket calendar
+        EventsTicketCalendarInitialization();
+
+        // Initializes events customer user list
+        InitCustomerUserList();
+
+        // Initializes preferences for widget containers
+        // (if widgets are available)
+        if (typeof WidgetContainers !== 'undefined') {
+            $.each(WidgetContainers, function (Index, Value) {
+                InitWidgetContainerPref(Value);
+            });
+        }
+
+        // Initializes refresh event for User Online widget
+        InitUserOnlineRefresh();
+
+        // Initializes events ticket queue overview
+        InitTicketQueueOverview();
+
+        // Initialize dashboard ticket stats
+        InitDashboardTicketStats();
+
+        // Initializes UserOnline widget functionality
+        TargetNS.InitUserOnline();
+
         // Disable drag and drop of dashboard widgets on mobile / touch devices
         // to prevent accidentally moved widgets while tabbing/swiping
         if (!Core.App.Responsive.IsTouchDevice()) {
@@ -308,7 +395,7 @@ Core.Agent.Dashboard = (function (TargetNS) {
                 });
 
                 if (ValidationErrors) {
-                    window.alert(Core.Config.Get('ValidationErrorMsg'));
+                    window.alert(Core.Language.Translate('Please check the fields marked as red for valid inputs.'));
                     return false;
                 }
 
@@ -325,15 +412,6 @@ Core.Agent.Dashboard = (function (TargetNS) {
      * @memberof Core.Agent.Dashboard
      * @function
      * @param {Object} Params - Hash with different config options.
-     * @param {Array} Params.MonthNames - Array containing the localized strings for each month.
-     * @param {Array} Params.MonthNamesShort - Array containing the localized strings for each month on shorth format.
-     * @param {Array} Params.DayNames - Array containing the localized strings for each week day.
-     * @param {Array} Params.DayNamesShort - Array containing the localized strings for each week day on short format.
-     * @param {Array} Params.ButtonText - Array containing the localized strings for each week day on short format.
-     * @param {String} Params.ButtonText.today - Localized string for the word "Today".
-     * @param {String} Params.ButtonText.month - Localized string for the word "month".
-     * @param {String} Params.ButtonText.week - Localized string for the word "week".
-     * @param {String} Params.ButtonText.day - Localized string for the word "day".
      * @param {Array} Params.Events - Array of hashes including the data for each event.
      * @description
      *      Initializes the event ticket calendar.
@@ -345,15 +423,62 @@ Core.Agent.Dashboard = (function (TargetNS) {
                 center: 'title',
                 right: 'prev,next today'
             },
-            allDayText: Params.AllDayText,
+            allDayText: Core.Language.Translate('All-day'),
             axisFormat: 'H(:mm)', // uppercase H for 24-hour clock
             editable: false,
             firstDay: Params.FirstDay,
-            monthNames: Params.MonthNames,
-            monthNamesShort: Params.MonthNamesShort,
-            dayNames: Params.DayNames,
-            dayNamesShort: Params.DayNamesShort,
-            buttonText: Params.ButtonText,
+            monthNames: [
+                Core.Language.Translate('Jan'),
+                Core.Language.Translate('Feb'),
+                Core.Language.Translate('Mar'),
+                Core.Language.Translate('Apr'),
+                Core.Language.Translate('May'),
+                Core.Language.Translate('Jun'),
+                Core.Language.Translate('Jul'),
+                Core.Language.Translate('Aug'),
+                Core.Language.Translate('Sep'),
+                Core.Language.Translate('Oct'),
+                Core.Language.Translate('Nov'),
+                Core.Language.Translate('Dec')
+            ],
+            monthNamesShort: [
+                Core.Language.Translate('January'),
+                Core.Language.Translate('February'),
+                Core.Language.Translate('March'),
+                Core.Language.Translate('April'),
+                Core.Language.Translate('May_long'),
+                Core.Language.Translate('June'),
+                Core.Language.Translate('July'),
+                Core.Language.Translate('August'),
+                Core.Language.Translate('September'),
+                Core.Language.Translate('October'),
+                Core.Language.Translate('November'),
+                Core.Language.Translate('December')
+            ],
+            dayNames: [
+                Core.Language.Translate('Sunday'),
+                Core.Language.Translate('Monday'),
+                Core.Language.Translate('Tuesday'),
+                Core.Language.Translate('Wednesday'),
+                Core.Language.Translate('Thursday'),
+                Core.Language.Translate('Friday'),
+                Core.Language.Translate('Saturday')
+            ],
+            dayNamesShort: [
+                Core.Language.Translate('Su'),
+                Core.Language.Translate('Mo'),
+                Core.Language.Translate('Tu'),
+                Core.Language.Translate('We'),
+                Core.Language.Translate('Th'),
+                Core.Language.Translate('Fr'),
+                Core.Language.Translate('Sa')
+            ],
+            buttonText: {
+                today: Core.Language.Translate('Today'),
+                month: Core.Language.Translate('month'),
+                week: Core.Language.Translate('week'),
+                day: Core.Language.Translate('day')
+            },
             eventMouseover: function(calEvent, jsEvent) {
                 var Layer, PosX, PosY, DocumentVisible, ContainerHeight,
                     LastYPosition, VisibleScrollPosition, WindowHeight;
@@ -420,7 +545,6 @@ Core.Agent.Dashboard = (function (TargetNS) {
      *      Initializes the configuration page for a stats dashboard widget.
      */
     TargetNS.InitStatsConfiguration = function($Container) {
-
         // Initialize the time multiplicators for the time validation.
         $('.TimeRelativeUnitView, .TimeScaleView', $Container).find('option').each(function() {
             var SecondsMapping = {
@@ -527,6 +651,363 @@ Core.Agent.Dashboard = (function (TargetNS) {
 
         ValidateTimeSettings();
     };
+
+    /**
+     * @private
+     * @name InitCustomerUserList
+     * @memberof Core.Agent.Dashboard
+     * @function
+     * @description
+     *      This function initialize customer user list functionality in AgentCustomerInformationCenter screen.
+     */
+    function InitCustomerUserList () {
+        var CustomerUserRefresh;
+
+        // Bind event on create chat request button
+        $('a.CreateChatRequest').bind('click', function() {
+            var $Dialog = $('#DashboardUserOnlineChatStartDialog').clone();
+
+            $Dialog.find('input[name=ChatStartUserID]').val($(this).data('user-id'));
+            $Dialog.find('input[name=ChatStartUserType]').val($(this).data('user-type'));
+            $Dialog.find('input[name=ChatStartUserFullname]').val($(this).data('user-fullname'));
+
+            Core.UI.Dialog.ShowContentDialog($Dialog.html(), Core.Language.Translate('Start chat'), '100px', 'Center', true);
+
+            // Only enable button if there is a message
+            $('.Dialog textarea[name="ChatStartFirstMessage"]').on('keyup', function(){
+                $('.Dialog button').prop('disabled', $(this).val().length ? false : true);
+            });
+
+            $('.Dialog form').on('submit', function(){
+                if (!$('.Dialog textarea[name=ChatStartFirstMessage]').val().length) {
+                    return false;
+                }
+                // Close after submit
+                window.setTimeout(function(){
+                    Core.UI.Dialog.CloseDialog($('.Dialog'));
+                }, 1);
+            });
+
+            return false;
+        });
+
+        if (typeof Core.Config.Get('CustomerUserListRefresh') !== 'undefined') {
+            CustomerUserRefresh = Core.Config.Get('CustomerUserListRefresh');
+
+            Core.Config.Set('RefreshSeconds_' + CustomerUserRefresh.NameHTML, parseInt(CustomerUserRefresh.RefreshTime, 10) || 0);
+            if (Core.Config.Get('RefreshSeconds_' + CustomerUserRefresh.NameHTML)) {
+                Core.Config.Set('Timer_' + CustomerUserRefresh.NameHTML, window.setTimeout(function() {
+
+                    // get active filter
+                    var Filter = $('#Dashboard' + Core.App.EscapeSelector(CustomerUserRefresh.Name) + '-box').find('.Tab.Actions li.Selected a').attr('data-filter');
+                    $('#Dashboard' + Core.App.EscapeSelector(CustomerUserRefresh.Name) + '-box').addClass('Loading');
+                    Core.AJAX.ContentUpdate($('#Dashboard' + Core.App.EscapeSelector(CustomerUserRefresh.Name)), Core.Config.Get('Baselink') + 'Action=' + Core.Config.Get('Action') + ';Subaction=Element;Name=' + CustomerUserRefresh.Name + ';Filter=' + Filter + ';CustomerID=' + CustomerUserRefresh.CustomerID, function () {
+                        $('#Dashboard' + Core.App.EscapeSelector(CustomerUserRefresh.Name) + '-box').removeClass('Loading');
+                    });
+                    clearTimeout(Core.Config.Get('Timer_' + CustomerUserRefresh.NameHTML));
+                }, Core.Config.Get('RefreshSeconds_' + CustomerUserRefresh.NameHTML) * 1000));
+            }
+        }
+    }
+
+    /**
+     * @private
+     * @name InitUserOnlineRefresh
+     * @memberof Core.Agent.Dashboard
+     * @function
+     * @description
+     *      Initializes the event to refresh user online widget
+     */
+    function InitUserOnlineRefresh () {
+        var UserOnlineRefresh = Core.Config.Get('CanRefresh');
+
+        if (typeof UserOnlineRefresh !== 'undefined') {
+            $('#Dashboard' + Core.App.EscapeSelector(UserOnlineRefresh.Name) + '_toggle').on('click', function() {
+                $('#Dashboard' + Core.App.EscapeSelector(UserOnlineRefresh.Name) + '-box').addClass('Loading');
+                Core.AJAX.ContentUpdate($('#Dashboard' + Core.App.EscapeSelector(UserOnlineRefresh.Name)), Core.Config.Get('Baselink') + 'Action=' + Core.Config.Get('Action') +';Subaction=Element;Name=' + UserOnlineRefresh.Name, function () {
+                    $('#Dashboard' + Core.App.EscapeSelector(UserOnlineRefresh.Name) + '-box').removeClass('Loading');
+                });
+                clearTimeout(Core.Config.Get('Timer_' + UserOnlineRefresh.NameHTML));
+                return false;
+            });
+        }
+    }
+
+    /**
+     * @name InitUserOnline
+     * @memberof Core.Agent.Dashboard
+     * @function
+     * @description
+     *      Initializes User Online dashboard widget.
+     */
+    TargetNS.InitUserOnline = function() {
+        var UserOnline = Core.Config.Get('UserOnline');
+
+        // Initializes User Online event functionality
+        if (typeof UserOnline !== 'undefined') {
+            UserOnlineEvent(UserOnline);
+
+            // Subscribe to ContentUpdate event to initiate events on User Online widget update
+            Core.App.Subscribe('Event.AJAX.ContentUpdate.Callback', function(WidgetHTML) {
+                if (typeof WidgetHTML !== 'undefined' && WidgetHTML.search('DashboardUserOnline') !== parseInt('-1', 10)) {
+                    UserOnlineEvent(UserOnline);
+                }
+            });
+        }
+    };
+
+    /**
+     * @private
+     * @name UserOnlineEvent
+     * @memberof Core.Agent.Dashboard
+     * @function
+     * @param {Object} UserOnline - Hash with container name, HTML name and refresh time
+     * @description
+     *      Initializes dashboard widget User Online events
+     */
+    function UserOnlineEvent (UserOnline) {
+        var UserID, $Dialog, Data;
+
+        // Bind event on Agent filter
+        $('#Dashboard' + Core.App.EscapeSelector(UserOnline.Name) + 'Agent').off('click').on('click', function(){
+            Core.AJAX.ContentUpdate($('#Dashboard' + Core.App.EscapeSelector(UserOnline.Name)), Core.Config.Get('Baselink') + 'Action=' + Core.Config.Get('Action') + ';Subaction=Element;Name=' + UserOnline.Name + ';Filter=Agent', function () {
+            });
+            return false;
+        });
+
+        // Bind event on Customer filter
+        $('#Dashboard' + Core.App.EscapeSelector(UserOnline.Name) + 'Customer').off('click').on('click', function(){
+            Core.AJAX.ContentUpdate($('#Dashboard' + Core.App.EscapeSelector(UserOnline.Name)), Core.Config.Get('Baselink') + 'Action=' + Core.Config.Get('Action') + ';Subaction=Element;Name=' + UserOnline.Name + ';Filter=Customer', function () {
+            });
+            return false;
+        });
+
+        // Bind event on chat start
+        $('a.DashboardUserOnlineChatStart').off('click').on('click', function() {
+            UserID = $(this).data('user-id'),
+            $Dialog = $('#DashboardUserOnlineChatStartDialog').clone();
+
+            $Dialog.find('input[name=ChatStartUserID]').val($(this).data('user-id'));
+            $Dialog.find('input[name=ChatStartUserType]').val($(this).data('user-type'));
+            $Dialog.find('input[name=ChatStartUserFullname]').val($(this).data('user-fullname'));
+
+            // Get Availability
+            Data = {
+                Action: 'AgentChat',
+                Subaction: 'GetAvailability',
+                UserID: UserID
+            };
+
+            Core.AJAX.FunctionCall(
+                Core.Config.Get('Baselink'),
+                Data,
+                function(Response) {
+                    if (Response < 1) {
+                        window.alert(Core.Language.Translate("Selected agent is not available for chat"));
+
+                        // Reload page
+                        document.location.reload(true);
+                        return false;
+                    }
+
+                    Core.UI.Dialog.ShowContentDialog($Dialog.html(), Core.Language.Translate('Start chat'), '100px', 'Center', true);
+
+                    // Only enable button if there is a message
+                    $('.Dialog textarea[name="ChatStartFirstMessage"]').on('keyup', function(){
+                        $('.Dialog button').prop('disabled', $(this).val().length ? false : true);
+                    });
+
+                    $('.Dialog form').on('submit', function(){
+                        if (!$('.Dialog textarea[name=ChatStartFirstMessage]').val().length) {
+                            return false;
+                        }
+                        // Close after submit
+                        window.setTimeout(function(){
+                            Core.UI.Dialog.CloseDialog($('.Dialog'));
+                        }, 1);
+                    });
+                });
+
+            return false;
+        });
+
+        // Initiate refresh event
+        Core.Config.Set('RefreshSeconds_' + UserOnline.NameHTML, parseInt(UserOnline.RefreshTime, 10) || 0);
+        if (Core.Config.Get('RefreshSeconds_' + UserOnline.NameHTML)) {
+            Core.Config.Set('Timer_' + UserOnline.NameHTML, window.setTimeout(
+                function() {
+                    $('#Dashboard' + Core.App.EscapeSelector(UserOnline.Name) + '-box').addClass('Loading');
+                    Core.AJAX.ContentUpdate($('#Dashboard' + Core.App.EscapeSelector(UserOnline.Name)), Core.Config.Get('Baselink') + 'Action=' + Core.Config.Get('Action') + ';Subaction=Element;Name=' + UserOnline.Name, function () {
+                        $('#Dashboard' + Core.App.EscapeSelector(UserOnline.Name) + '-box').removeClass('Loading');
+                    });
+                    clearTimeout(Core.Config.Get('Timer_' + UserOnline.NameHTML));
+                },
+                Core.Config.Get('RefreshSeconds_' + UserOnline.NameHTML) * 1000)
+            );
+        }
+    }
+
+    /**
+     * @name InitStatsWidget
+     * @memberof Core.Agent.Dashboard
+     * @function
+     * @description
+     *      Initializes the stats dashboard widgets.
+     */
+    TargetNS.InitStatsWidget = function () {
+        var StatsData,
+            DashboardStats = Core.Config.Get('DashboardStatsIDs');
+
+        // initializes dashboards stats widget functionality
+        if (typeof DashboardStats !== 'undefined') {
+            $.each(DashboardStats, function (Index, Value) {
+                StatsWidget(Value);
+
+                // Subscribe to ContentUpdate event to initiate stats widget event on updated widget
+                Core.App.Subscribe('Event.AJAX.ContentUpdate.Callback', function($WidgetElement) {
+                    StatsData = Core.Config.Get('StatsData' + Value);
+                    if (typeof $WidgetElement !== 'undefined' && $WidgetElement.search('GraphWidget' + StatsData.Name) !== parseInt('-1', 10)) {
+                        StatsWidget(Value);
+                    }
+                });
+            });
+        }
+    };
+
+    /**
+     * @private
+     * @name StatsWidget
+     * @memberof Core.Agent.Dashboard
+     * @param {Object} ID - StatID.
+     * @function
+     * @description
+     *      Initializes each available stats dashboard widget functionality.
+     */
+    function StatsWidget (ID) {
+        var StatsData = Core.Config.Get('StatsData' + ID);
+
+        if (typeof StatsData === 'undefined') {
+            return;
+        }
+
+        (function(){
+            var Timeout = 500;
+            // check if the container is already expanded, otherwise the graph
+            // would have the wrong size after the widget settings have been saved
+            // and the content is being reloaded using ajax.
+            if ($('#GraphWidget' + Core.App.EscapeSelector(StatsData.Name)).parent().is(':visible')) {
+                Timeout = 0;
+            }
+
+            window.setTimeout(function () {
+                Core.UI.AdvancedChart.Init(
+                    StatsData.Format,
+                    Core.JSON.Parse(StatsData.StatResultData),
+                    'svg.GraphWidget' + StatsData.Name,
+                    {
+                        PreferencesKey: 'GraphWidget' + StatsData.Name,
+                        PreferencesData: StatsData.Preferences,
+                        Duration: 250
+                    }
+                );
+            }, Timeout);
+
+        }());
+
+        $('#DownloadSVG' + Core.App.EscapeSelector(StatsData.Name)).off('click').on('click', function() {
+            this.href = Core.UI.AdvancedChart.ConvertSVGtoBase64($('#GraphWidgetContainer' + Core.App.EscapeSelector(StatsData.Name)));
+        });
+        $('#DownloadPNG' + Core.App.EscapeSelector(StatsData.Name)).off('click').on('click', function() {
+            this.href = Core.UI.AdvancedChart.ConvertSVGtoPNG($('#GraphWidgetContainer' + Core.App.EscapeSelector(StatsData.Name)));
+        });
+
+        $('#GraphWidgetLink' + Core.App.EscapeSelector(StatsData.Name)).prependTo($('#GraphWidget' + Core.App.EscapeSelector(StatsData.Name)).closest('.WidgetSimple').find('.ActionMenu'));
+        $('#GraphWidgetLink' + Core.App.EscapeSelector(StatsData.Name)).find('a.TriggerTooltip').off('click').on('click', function(){
+            $(this).next('.WidgetTooltip').toggleClass('Hidden');
+            return false;
+        });
+        $('#GraphWidgetLink' + Core.App.EscapeSelector(StatsData.Name)).find('.WidgetTooltip').find('a').off('click').on('click', function(){
+            $(this).closest('.WidgetTooltip').addClass('Hidden');
+        });
+        $('#GraphWidgetLink' + Core.App.EscapeSelector(StatsData.Name)).closest('.Header').on('mouseleave.WidgetTooltip', function(){
+            $('#GraphWidgetLink' + Core.App.EscapeSelector(StatsData.Name)).find('.WidgetTooltip').addClass('Hidden');
+        });
+
+        Core.Config.Set('StatsMaxXaxisAttributes', parseInt(StatsData.MaxXaxisAttributes, 10));
+        TargetNS.InitStatsConfiguration($('#StatsSettingsBox' + Core.App.EscapeSelector(StatsData.Name) + ''));
+    }
+
+    /**
+     * @private
+     * @name InitWidgetContainerPref
+     * @memberof Core.Agent.Dashboard
+     * @function
+     * @param {Object} Params - Hash with container name, with and without ('-') to support IE
+     * @description
+     *      Initializes preferences for widget containers
+     */
+    function InitWidgetContainerPref (Params) {
+        TargetNS.RegisterUpdatePreferences($('#Dashboard' + Core.App.EscapeSelector(Params.Name) + '_submit'), 'Dashboard' + Core.App.EscapeSelector(Params.Name),$('#Dashboard' + Core.App.EscapeSelector(Params.NameForm) + '_setting_form'));
+        Core.UI.RegisterToggleTwoContainer($('#Dashboard' + Core.App.EscapeSelector(Params.Name) + '-toggle'), $('#Dashboard' + Core.App.EscapeSelector(Params.Name) + '-setting'), $('#Dashboard' + Core.App.EscapeSelector(Params.Name)));
+        Core.UI.RegisterToggleTwoContainer($('#Dashboard' + Core.App.EscapeSelector(Params.Name) + '_cancel'), $('#Dashboard' + Core.App.EscapeSelector(Params.Name) + '-setting'), $('#Dashboard' + Core.App.EscapeSelector(Params.Name)));
+    }
+
+    /**
+     * @private
+     * @name InitTicketQueueOverview
+     * @memberof Core.Agent.Dashboard
+     * @function
+     * @description
+     *      This function initialize ticket queue overview in Dashboard screen.
+     */
+    function InitTicketQueueOverview () {
+        var QueueOverview = Core.Config.Get('QueueOverview');
+
+        if (typeof QueueOverview !== 'undefined') {
+            Core.Config.Set('RefreshSeconds_' + QueueOverview.NameHTML, parseInt(QueueOverview.RefreshTime, 10) || 0);
+            if (Core.Config.Get('RefreshSeconds_' + QueueOverview.NameHTML)) {
+                Core.Config.Set('Timer_' + QueueOverview.NameHTML, window.setTimeout(function() {
+
+                    $('#Dashboard' + Core.App.EscapeSelector(QueueOverview.Name) + '-box').addClass('Loading');
+                    Core.AJAX.ContentUpdate($('#Dashboard' + Core.App.EscapeSelector(QueueOverview.Name)), Core.Config.Get('Baselink') + 'Action=' + Core.Config.Get('Action') + ';Subaction=Element;Name=' + QueueOverview.Name, function () {
+                        $('#Dashboard' + Core.App.EscapeSelector(QueueOverview.Name) + '-box').removeClass('Loading');
+                        InitTicketQueueOverview();
+                    });
+                    clearTimeout(Core.Config.Get('Timer_' + QueueOverview.NameHTML));
+                }, Core.Config.Get('RefreshSeconds_' + QueueOverview.NameHTML) * 1000));
+            }
+        }
+    }
+
+    /**
+     * @private
+     * @name InitDashboardTicketStats
+     * @memberof Core.Agent.Dashboard
+     * @function
+     * @description
+     *      This function initialize dashboard ticket stats widget.
+     */
+    function InitDashboardTicketStats () {
+        var Timeout = 500,
+            DashboardTicketStats = Core.Config.Get('DashboardTicketStats');
+
+        if (typeof DashboardTicketStats !== 'undefined') {
+
+            window.setTimeout(function () {
+                Core.UI.AdvancedChart.Init(
+                    "D3::SimpleLineChart",
+                    Core.JSON.Parse(DashboardTicketStats.ChartData),
+                    'svg.GraphWidget' + DashboardTicketStats.Key,
+                    {
+                        Duration: 250,
+                        ReduceXTicks: false
+                    }
+                );
+            }, Timeout);
+        }
+    }
+
+    Core.Init.RegisterNamespace(TargetNS, 'APP_MODULE');
 
     return TargetNS;
 }(Core.Agent.Dashboard || {}));

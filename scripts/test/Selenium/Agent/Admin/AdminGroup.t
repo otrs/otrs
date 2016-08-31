@@ -86,7 +86,7 @@ $Selenium->RunTest(
             UserLogin => $TestUserLogin,
         );
 
-        $Selenium->find_element("//input[\@value='$UserID'][\@name='rw']")->click();
+        $Selenium->find_element("//input[\@value='$UserID'][\@name='rw']")->VerifiedClick();
         $Selenium->find_element("//button[\@value='Save'][\@type='submit']")->VerifiedClick();
 
         # check if test group is present in AdminUserGroup
@@ -101,10 +101,10 @@ $Selenium->RunTest(
 
         # edit test group permissions
         $Selenium->find_element( $RandomID, 'link_text' )->VerifiedClick();
-        $Selenium->find_element("//input[\@value='$UserID'][\@name='rw']")->click();
-        $Selenium->find_element("//input[\@value='$UserID'][\@name='ro']")->click();
-        $Selenium->find_element("//input[\@value='$UserID'][\@name='note']")->click();
-        $Selenium->find_element("//input[\@value='$UserID'][\@name='owner']")->click();
+        $Selenium->find_element("//input[\@value='$UserID'][\@name='rw']")->VerifiedClick();
+        $Selenium->find_element("//input[\@value='$UserID'][\@name='ro']")->VerifiedClick();
+        $Selenium->find_element("//input[\@value='$UserID'][\@name='note']")->VerifiedClick();
+        $Selenium->find_element("//input[\@value='$UserID'][\@name='owner']")->VerifiedClick();
         $Selenium->find_element("//button[\@value='Save'][\@type='submit']")->VerifiedClick();
 
         # check edited test group permissions
@@ -125,6 +125,23 @@ $Selenium->RunTest(
             0,
             "rw permission for group $RandomID is disabled",
         );
+
+        # go back to overview
+        $Selenium->VerifiedGet("${ScriptAlias}index.pl?Action=AdminGroup");
+
+        # try to change the name of the admin group and see if validation kicks in
+        $Selenium->find_element( 'admin',      'link_text' )->VerifiedClick();
+        $Selenium->find_element( "#GroupName", 'css' )->send_keys('some_other_name');
+        $Selenium->find_element( "#GroupName", 'css' )->VerifiedSubmit();
+
+        # we should now see a dialog telling us changing the admin group name has some implications
+        $Selenium->WaitFor(
+            JavaScript => 'return typeof($) === "function" && $(".Dialog:visible").length === 1;'
+        );
+
+        # cancel the action & go back to the overview
+        $Selenium->find_element( "#DialogButton1", 'css' )->VerifiedClick();
+        $Selenium->VerifiedGet("${ScriptAlias}index.pl?Action=AdminGroup");
 
         # check link to AdminGroup from AdminUserGroup
         $Selenium->find_element( $RandomID, 'link_text' )->VerifiedClick();

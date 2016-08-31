@@ -132,8 +132,12 @@ sub Run {
 
     my $PDFObject = $Kernel::OM->Get('Kernel::System::PDF');
 
-    my $PrintedBy = $LayoutObject->{LanguageObject}->Translate('printed by');
-    my $Time      = $LayoutObject->{Time};
+    my $PrintedBy      = $LayoutObject->{LanguageObject}->Translate('printed by');
+    my $DateTimeString = $Kernel::OM->Create('Kernel::System::DateTime')->ToString();
+    my $Time           = $LayoutObject->{LanguageObject}->FormatTimeString(
+        $DateTimeString,
+        'DateFormat',
+    );
     my %Page;
     my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
 
@@ -142,7 +146,8 @@ sub Run {
     if ( !$Page{MaxPages} || $Page{MaxPages} < 1 || $Page{MaxPages} > 1000 ) {
         $Page{MaxPages} = 100;
     }
-    my $HeaderRight  = $ConfigObject->Get('Ticket::Hook') . $Ticket{TicketNumber};
+    my $HeaderRight
+        = $ConfigObject->Get('Ticket::Hook') . $ConfigObject->Get('Ticket::HookDivider') . $Ticket{TicketNumber};
     my $HeadlineLeft = $HeaderRight;
     my $Title        = $HeaderRight;
     if ( $Ticket{Title} ) {

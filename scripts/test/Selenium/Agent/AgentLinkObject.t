@@ -19,25 +19,17 @@ $Selenium->RunTest(
     sub {
 
         # get helper object
-        $Kernel::OM->ObjectParamAdd(
-            'Kernel::System::UnitTest::Helper' => {
-                RestoreSystemConfiguration => 1,
-            },
-        );
         my $Helper = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
 
-        # get sysconfig object
-        my $SysConfigObject = $Kernel::OM->Get('Kernel::System::SysConfig');
-
         # set link object view mode to simple
-        $SysConfigObject->ConfigItemUpdate(
+        $Helper->ConfigSettingChange(
             Valid => 1,
             Key   => 'LinkObject::ViewMode',
             Value => 'Simple',
         );
 
         # set Ticket::SubjectSize
-        $SysConfigObject->ConfigItemUpdate(
+        $Helper->ConfigSettingChange(
             Valid => 1,
             Key   => 'Ticket::SubjectSize',
             Value => '60',
@@ -100,7 +92,8 @@ $Selenium->RunTest(
         );
 
         # click on 'Link'
-        $Selenium->find_element("//a[contains(\@href, \'Action=AgentLinkObject;SourceObject=Ticket;' )]")->click();
+        $Selenium->find_element("//a[contains(\@href, \'Action=AgentLinkObject;SourceObject=Ticket;' )]")
+            ->VerifiedClick();
 
         # switch to link object window
         $Selenium->WaitFor( WindowCount => 2 );
@@ -108,16 +101,22 @@ $Selenium->RunTest(
         $Selenium->switch_to_window( $Handles->[1] );
         $Selenium->WaitFor( JavaScript => 'return typeof($) === "function" && $("body").length' );
 
+        $Selenium->find_element( "#SubmitSearch", 'css' )->click();
+        $Selenium->WaitFor(
+            AlertPresent => 1,
+        );
+        $Selenium->accept_alert();
+
         # search for second created test ticket
         $Selenium->find_element(".//*[\@id='SEARCH::TicketNumber']")->send_keys( $TicketNumbers[1] );
         $Selenium->find_element(".//*[\@id='SEARCH::TicketNumber']")->VerifiedSubmit();
 
         # link created test tickets
-        $Selenium->find_element("//input[\@value='$TicketIDs[1]'][\@type='checkbox']")->click();
+        $Selenium->find_element("//input[\@value='$TicketIDs[1]'][\@type='checkbox']")->VerifiedClick();
         $Selenium->execute_script(
             "\$('#TypeIdentifier').val('ParentChild::Target').trigger('redraw.InputField').trigger('change');"
         );
-        $Selenium->find_element("//button[\@type='submit'][\@name='AddLinks']")->VerifiedClick();
+        $Selenium->find_element("//button[\@type='submit'][\@name='AddLinks']")->click();
 
         # close link object window and switch back to agent ticket zoom
         $Selenium->close();
@@ -152,7 +151,7 @@ $Selenium->RunTest(
 
         # test ticket title length in complex view for linked tickets, see bug #11511
         # set link object view mode to complex
-        $SysConfigObject->ConfigItemUpdate(
+        $Helper->ConfigSettingChange(
             Valid => 1,
             Key   => 'LinkObject::ViewMode',
             Value => 'Complex',
@@ -182,6 +181,141 @@ $Selenium->RunTest(
             "$LongTicketTitle - found in AgentTicketZoom complex view mode",
         );
 
+        # check for "default" visible columns in the Linked Ticket widget
+        $Self->Is(
+            $Selenium->execute_script(
+                "return \$('#WidgetTicket .DataTable thead tr th:nth-child(1)').text();"
+            ),
+            ' Ticket# ',
+            'Default 1st column name',
+        );
+        $Self->Is(
+            $Selenium->execute_script(
+                "return \$('#WidgetTicket .DataTable thead tr th:nth-child(2)').text();"
+            ),
+            ' Title ',
+            'Default 2nd column name',
+        );
+        $Self->Is(
+            $Selenium->execute_script(
+                "return \$('#WidgetTicket .DataTable thead tr th:nth-child(3)').text();"
+            ),
+            ' State ',
+            'Default 3th column name',
+        );
+        $Self->Is(
+            $Selenium->execute_script(
+                "return \$('#WidgetTicket .DataTable thead tr th:nth-child(4)').text();"
+            ),
+            ' Queue ',
+            'Default 4th column name',
+        );
+        $Self->Is(
+            $Selenium->execute_script(
+                "return \$('#WidgetTicket .DataTable thead tr th:nth-child(5)').text();"
+            ),
+            ' Created ',
+            'Default 5th column name',
+        );
+
+        $Self->Is(
+            $Selenium->execute_script(
+                "return \$('#WidgetTicket .DataTable thead tr th:nth-child(6)').text();"
+            ),
+            ' Linked as ',
+            'Default 6th column name',
+        );
+
+        # show ActionMenu - usually this is done when user hovers, however it's not possible to simulate this behaviour
+        $Selenium->execute_script(
+            "\$('#WidgetTicket .ActionMenu').show();"
+        );
+
+        # check if column settings button is available in the Linked Ticket widget
+        $Selenium->find_element( 'a#linkobject-Ticket-toggle', 'css' )->VerifiedClick();
+
+        # Wait for the complete widget to be fully slided in all the way down to the submit button.
+        $Selenium->WaitFor(
+            JavaScript =>
+                'return typeof($) === "function" && $("#linkobject-Ticket_submit:visible").length;'
+        );
+
+        sleep 1;
+
+        # Remove Age from left side, and put it to the right side
+        $Selenium->DragAndDrop(
+            Element      => '#WidgetTicket #AvailableField-linkobject-Ticket li[data-fieldname="Age"]',
+            Target       => '#AssignedFields-linkobject-Ticket',
+            TargetOffset => {
+                X => 185,
+                Y => 10,
+            },
+        );
+
+        # Remove State from right side, and put it to the left side
+        $Selenium->DragAndDrop(
+            Element      => '#WidgetTicket #AssignedFields-linkobject-Ticket li[data-fieldname="State"]',
+            Target       => '#AvailableField-linkobject-Ticket',
+            TargetOffset => {
+                X => 185,
+                Y => 10,
+            },
+        );
+
+        # save
+        $Selenium->find_element( '#linkobject-Ticket_submit', 'css' )->VerifiedClick();
+
+        # wait for AJAX
+        $Selenium->WaitFor(
+            JavaScript =>
+                'return typeof($) === "function" && $("#WidgetTicket .DataTable:visible").length;'
+        );
+
+        # check for "updated" visible columns in the Linked Ticket widget
+        $Self->Is(
+            $Selenium->execute_script(
+                "return \$('#WidgetTicket .DataTable thead tr th:nth-child(1)').text();"
+            ),
+            ' Ticket# ',
+            'Updated 1st column name',
+        );
+        $Self->Is(
+            $Selenium->execute_script(
+                "return \$('#WidgetTicket .DataTable thead tr th:nth-child(2)').text();"
+            ),
+            ' Age ',
+            'Updated 2nd column name',
+        );
+        $Self->Is(
+            $Selenium->execute_script(
+                "return \$('#WidgetTicket .DataTable thead tr th:nth-child(3)').text();"
+            ),
+            ' Title ',
+            'Updated 3th column name',
+        );
+        $Self->Is(
+            $Selenium->execute_script(
+                "return \$('#WidgetTicket .DataTable thead tr th:nth-child(4)').text();"
+            ),
+            ' Queue ',
+            'Updated 4th column name',
+        );
+        $Self->Is(
+            $Selenium->execute_script(
+                "return \$('#WidgetTicket .DataTable thead tr th:nth-child(5)').text();"
+            ),
+            ' Created ',
+            'Updated 5th column name',
+        );
+
+        $Self->Is(
+            $Selenium->execute_script(
+                "return \$('#WidgetTicket .DataTable thead tr th:nth-child(6)').text();"
+            ),
+            ' Linked as ',
+            'Updated 6th column name',
+        );
+
         # hover on menu bar on the misc cluster
         $Selenium->WaitFor(
             JavaScript =>
@@ -189,7 +323,8 @@ $Selenium->RunTest(
         );
 
         # click on 'Link'
-        $Selenium->find_element("//a[contains(\@href, \'Action=AgentLinkObject;SourceObject=Ticket;' )]")->click();
+        $Selenium->find_element("//a[contains(\@href, \'Action=AgentLinkObject;SourceObject=Ticket;' )]")
+            ->VerifiedClick();
 
         # switch to link object window
         $Selenium->WaitFor( WindowCount => 2 );

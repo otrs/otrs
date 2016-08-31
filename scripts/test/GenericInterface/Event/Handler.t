@@ -40,14 +40,7 @@ $Self->Is(
     "Event handler added to config",
 );
 
-my $SysConfigObject = $Kernel::OM->Get('Kernel::System::SysConfig');
-
 # helper object
-$Kernel::OM->ObjectParamAdd(
-    'Kernel::System::UnitTest::Helper' => {
-        RestoreSystemConfiguration => 1,
-    },
-);
 
 my $HelperObject = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
 
@@ -56,7 +49,7 @@ my $Home = $ConfigObject->Get('Home');
 my $Daemon = $Home . '/bin/otrs.Daemon.pl';
 
 # get daemon status (stop if necessary to reload configuration with planner daemon disabled)
-my $PreviousDaemonStatus = `$Daemon status`;
+my $PreviousDaemonStatus = `perl $Daemon status`;
 
 if ( !$PreviousDaemonStatus ) {
     $Self->False(
@@ -68,7 +61,7 @@ if ( !$PreviousDaemonStatus ) {
 
 if ( $PreviousDaemonStatus =~ m{Daemon running}i ) {
 
-    my $ResultMessage = system("$Daemon stop");
+    my $ResultMessage = system("perl $Daemon stop");
 }
 else {
     $Self->True(
@@ -82,7 +75,7 @@ my $SleepTime = 120;
 print "Waiting at most $SleepTime s until daemon stops\n";
 ACTIVESLEEP:
 for my $Seconds ( 1 .. $SleepTime ) {
-    my $DaemonStatus = `$Daemon status`;
+    my $DaemonStatus = `perl $Daemon status`;
     if ( $DaemonStatus =~ m{Daemon not running}i ) {
         last ACTIVESLEEP;
     }
@@ -90,7 +83,7 @@ for my $Seconds ( 1 .. $SleepTime ) {
     sleep 1;
 }
 
-my $CurrentDaemonStatus = `$Daemon status`;
+my $CurrentDaemonStatus = `perl $Daemon status`;
 
 $Self->True(
     int $CurrentDaemonStatus =~ m{Daemon not running}i,
@@ -330,8 +323,8 @@ for my $Test (@Tests) {
             Lock         => 'unlock',
             Priority     => '3 normal',
             State        => 'closed successful',
-            CustomerNo   => '123465',
-            CustomerUser => 'customer@example.com',
+            CustomerID   => '123465',
+            CustomerUser => 'unittest@otrs.com',
             OwnerID      => 1,
             UserID       => 1,
         );
@@ -451,9 +444,24 @@ for my $Test (@Tests) {
     );
 }
 
+my $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
+
+# cleanup ticket database
+my @DeleteTicketList = $TicketObject->TicketSearch(
+    Result            => 'ARRAY',
+    CustomerUserLogin => 'unittest@otrs.com',
+    UserID            => 1,
+);
+for my $TicketID (@DeleteTicketList) {
+    $TicketObject->TicketDelete(
+        TicketID => $TicketID,
+        UserID   => 1,
+    );
+}
+
 # start daemon if it was already running before this test
 if ( $PreviousDaemonStatus =~ m{Daemon running}i ) {
-    my $Result = system("$Daemon start");
+    my $Result = system("perl $Daemon start");
     $Self->Is(
         $Result,
         0,
@@ -465,7 +473,7 @@ if ( $PreviousDaemonStatus =~ m{Daemon running}i ) {
     print "Waiting at most $SleepTime s until daemon start\n";
     ACTIVESLEEP:
     for my $Seconds ( 1 .. $SleepTime ) {
-        my $DaemonStatus = `$Daemon status`;
+        my $DaemonStatus = `perl $Daemon status`;
         if ( $DaemonStatus =~ m{Daemon running}i ) {
             last ACTIVESLEEP;
         }
@@ -474,7 +482,7 @@ if ( $PreviousDaemonStatus =~ m{Daemon running}i ) {
     }
 }
 
-$CurrentDaemonStatus = `$Daemon status`;
+$CurrentDaemonStatus = `perl $Daemon status`;
 
 $Self->Is(
     $CurrentDaemonStatus,

@@ -54,19 +54,19 @@ sub new {
     # 0=off; 1=on;
     $Self->{Debug} = 0;
 
+    # use "locale" as an arg to encode/decode
+    @ARGV = map { decode( locale => $_, 1 ) } @ARGV;
+
     # check if the encodeobject is used from the command line
     # if so, we need to decode @ARGV
     if ( !is_interactive() ) {
 
         # encode STDOUT and STDERR
-        $Self->SetIO( \*STDOUT, \*STDERR );
+        $Self->ConfigureOutputFileHandle( FileHandle => \*STDOUT );
+        $Self->ConfigureOutputFileHandle( FileHandle => \*STDERR );
     }
     else {
 
-        # use "locale" as an arg to encode/decode
-        if ( is_interactive(*STDIN) ) {
-            @ARGV = map { decode( locale => $_, 1 ) } @ARGV;
-        }
         if ( is_interactive(*STDOUT) ) {
             binmode STDOUT, ":encoding(console_out)";
         }
@@ -134,7 +134,6 @@ sub Convert {
         # check if string is valid utf-8
         if ( $Param{Check} && !eval { Encode::is_utf8( $Param{Text}, 1 ) } ) {
             Encode::_utf8_off( $Param{Text} );
-            print STDERR "No valid '$Param{To}' string: '$Param{Text}'!\n";
 
             # strip invalid chars / 0 = will put a substitution character in
             # place of a malformed character
@@ -329,29 +328,25 @@ sub EncodeOutput {
     return $What;
 }
 
-=item SetIO()
+=item ConfigureOutputFileHandle()
 
-Set array of file handles to utf-8 output.
+switch output file handle to utf-8 output.
 
-    $EncodeObject->SetIO( \*STDOUT, \*STDERR );
+    $EncodeObject->ConfigureOutputFileHandle( FileHandle => \*STDOUT );
 
 =cut
 
-sub SetIO {
-    my ( $Self, @Array ) = @_;
+sub ConfigureOutputFileHandle {
+    my ( $Self, %Param ) = @_;
 
-    ROW:
-    for my $Row (@Array) {
-        next ROW if !defined $Row;
-        next ROW if ref $Row ne 'GLOB';
+    return if !defined $Param{FileHandle};
+    return if ref $Param{FileHandle} ne 'GLOB';
 
-        # set binmode
-        # http://www.perlmonks.org/?node_id=644786
-        # http://bugs.otrs.org/show_bug.cgi?id=5158
-        binmode( $Row, ':encoding(utf8)' );
-    }
+    # http://www.perlmonks.org/?node_id=644786
+    # http://bugs.otrs.org/show_bug.cgi?id=12100
+    binmode( $Param{FileHandle}, ':utf8' );    ## no critic
 
-    return;
+    return 1;
 }
 
 =item EncodingIsAsciiSuperset()

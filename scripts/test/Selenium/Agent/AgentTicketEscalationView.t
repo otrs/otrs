@@ -19,18 +19,9 @@ $Selenium->RunTest(
     sub {
 
         # get helper object
-        $Kernel::OM->ObjectParamAdd(
-            'Kernel::System::UnitTest::Helper' => {
-                RestoreSystemConfiguration => 1,
-            },
-        );
         my $Helper = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
 
-        # get needed object
-        my $ConfigObject    = $Kernel::OM->Get('Kernel::Config');
-        my $SysConfigObject = $Kernel::OM->Get('Kernel::System::SysConfig');
-
-        $ConfigObject->Set(
+        $Helper->ConfigSettingChange(
             Key   => 'CheckEmailAddresses',
             Value => 0,
         );
@@ -42,22 +33,22 @@ $Selenium->RunTest(
         for my $Day (@Days) {
             $Week{$Day} = [ 0 .. 23 ];
         }
-        $ConfigObject->Set(
+        $Helper->ConfigSettingChange(
             Key   => 'TimeWorkingHours',
             Value => \%Week,
         );
-        $SysConfigObject->ConfigItemUpdate(
+        $Helper->ConfigSettingChange(
             Valid => 1,
             Key   => 'TimeWorkingHours',
             Value => \%Week,
         );
 
         # disable default Vacation days
-        $ConfigObject->Set(
+        $Helper->ConfigSettingChange(
             Key   => 'TimeVacationDays',
             Value => {},
         );
-        $SysConfigObject->ConfigItemUpdate(
+        $Helper->ConfigSettingChange(
             Valid => 1,
             Key   => 'TimeVacationDays',
             Value => {},
@@ -239,7 +230,7 @@ $Selenium->RunTest(
                             $Self->True(
                                 index( $Selenium->get_page_source(), $TicketNumbers->{$TicketID} ) > -1,
                                 "$Test->{Name}/$View: Ticket is found on page - $TicketNumbers->{$TicketID}",
-                            );
+                            ) || die "$Test->{Name}/$View: Ticket not found on page - $TicketNumbers->{$TicketID}";
                         }
                         else {
 
@@ -248,7 +239,7 @@ $Selenium->RunTest(
                             $Self->True(
                                 index( $Selenium->get_page_source(), $TicketNumbers->{$TicketID} ) == -1,
                                 "$Test->{Name}/$View: Ticket is not found on page - $TicketNumbers->{$TicketID}",
-                            );
+                            ) || die "$Test->{Name}/$View: Ticket found on page - $TicketNumbers->{$TicketID}";
                         }
                     }
                 }

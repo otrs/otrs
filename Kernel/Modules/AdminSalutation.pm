@@ -242,8 +242,9 @@ sub _Edit {
 
     # add rich text editor
     if ( $LayoutObject->{BrowserRichText} ) {
-        $LayoutObject->Block(
-            Name => 'RichText',
+
+        # set up rich text editor
+        $LayoutObject->SetRichTextParameters(
             Data => \%Param,
         );
 
@@ -323,6 +324,11 @@ sub _Overview {
     $LayoutObject->Block(
         Name => 'ActionAdd',
     );
+
+    $LayoutObject->Block(
+        Name => 'Filter',
+    );
+
     $LayoutObject->Block(
         Name => 'OverviewResult',
         Data => \%Param,

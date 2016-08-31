@@ -117,31 +117,3 @@
     </div>
     <div class="Clear"></div>
 </div>
-
-[% WRAPPER JSOnDocumentComplete %]
-<script type="text/javascript">//<![CDATA[
-
-Core.Agent.Admin.GenericInterfaceWebserviceHistory.Init({
-    WebserviceID: [% Data.WebserviceID | html %],
-    Localization: {
-        WebserviceHistoryErrorMsg: [% Translate("An error occurred during communication.") | JSON %],
-        NoDataFoundMsg: [% Translate("No data found.") | JSON %],
-        ToggleContentMsg: [% Translate("Show or hide the content.") | JSON %],
-        RollbackLogMsg: [% Translate("Restore web service configuration") | JSON %],
-        RollbackMsg: [% Translate("Restore") | JSON %],
-        CancelMsg: [% Translate("Cancel") | JSON %]
-    }
-});
-
-//Load Webservice list on startup without active filter
-Core.Agent.Admin.GenericInterfaceWebserviceHistory.GetWebserviceList();
-
-$('#ExportButton').bind('click', function(){
-    $('#Subaction').attr('value','Export');
-    $('#ActionForm').submit();
-});
-
-$('#RollbackButton').bind('click', Core.Agent.Admin.GenericInterfaceWebserviceHistory.ShowRollbackDialog);
-
-//]]></script>
-[% END %]

@@ -18,18 +18,12 @@ my $Selenium = $Kernel::OM->Get('Kernel::System::UnitTest::Selenium');
 $Selenium->RunTest(
     sub {
 
-        # get needed objects
-        $Kernel::OM->ObjectParamAdd(
-            'Kernel::System::UnitTest::Helper' => {
-                RestoreSystemConfiguration => 1,
-            },
-        );
-        my $Helper          = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
-        my $SysConfigObject = $Kernel::OM->Get('Kernel::System::SysConfig');
+        # get helper object
+        my $Helper = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
 
         # disable 'Customer Information' and 'Linked Objects' widgets in AgentTicketZoom screen
         for my $WidgetDisable (qw(0200-CustomerInformation 0300-LinkTable)) {
-            $SysConfigObject->ConfigItemUpdate(
+            $Helper->ConfigSettingChange(
                 Valid => 0,
                 Key   => "Ticket::Frontend::AgentTicketZoom###Widgets###$WidgetDisable",
                 Value => '',
@@ -37,17 +31,17 @@ $Selenium->RunTest(
         }
 
         # do not check RichText, service and type
-        $SysConfigObject->ConfigItemUpdate(
+        $Helper->ConfigSettingChange(
             Valid => 1,
             Key   => 'Frontend::RichText',
             Value => 0
         );
-        $SysConfigObject->ConfigItemUpdate(
+        $Helper->ConfigSettingChange(
             Valid => 1,
             Key   => 'Ticket::Service',
             Value => 0
         );
-        $SysConfigObject->ConfigItemUpdate(
+        $Helper->ConfigSettingChange(
             Valid => 1,
             Key   => 'Ticket::Type',
             Value => 0
@@ -85,16 +79,10 @@ $Selenium->RunTest(
         $Selenium->find_element( "#OverwriteExistingEntitiesImport", 'css' )->click();
         $Selenium->find_element("//button[\@value='Upload process configuration'][\@type='submit']")->VerifiedClick();
 
-        # wait until process is created
-        $Selenium->WaitFor( JavaScript => 'return typeof($) === "function" && $(".Notice").length' );
-
         $Selenium->find_element("//a[contains(\@href, \'Subaction=ProcessSync' )]")->VerifiedClick();
 
-        # let mod_perl / Apache2::Reload pick up the changed configuration
-        sleep 3;
-
-        # wait until process is synchronized
-        $Selenium->WaitFor( JavaScript => 'return typeof($) === "function" && !$(".Notice").length' );
+        # we have to allow a 1 second delay for Apache2::Reload to pick up the changed process cache
+        sleep 1;
 
         # get process object
         my $ProcessObject = $Kernel::OM->Get('Kernel::System::ProcessManagement::DB::Process');
@@ -139,9 +127,6 @@ $Selenium->RunTest(
 
         # submit process
         $Selenium->find_element( "#Subject", 'css' )->VerifiedSubmit();
-
-        # let mod_perl / Apache2::Reload pick up the changed configuration
-        sleep 3;
 
         # get ticket object
         my $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');

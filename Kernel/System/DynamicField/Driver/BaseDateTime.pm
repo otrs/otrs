@@ -126,18 +126,17 @@ sub SearchSQLGet {
         SmallerThanEquals => '<=',
     );
 
-    if ( $Operators{ $Param{Operator} } ) {
-        my $SQL = " $Param{TableAlias}.value_date $Operators{$Param{Operator}} '";
-        $SQL .= $Kernel::OM->Get('Kernel::System::DB')->Quote( $Param{SearchTerm} ) . "' ";
-        return $SQL;
+    if ( !$Operators{ $Param{Operator} } ) {
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
+            'Priority' => 'error',
+            'Message'  => "Unsupported Operator $Param{Operator}",
+        );
+        return;
     }
 
-    $Kernel::OM->Get('Kernel::System::Log')->Log(
-        'Priority' => 'error',
-        'Message'  => "Unsupported Operator $Param{Operator}",
-    );
-
-    return;
+    my $SQL = " $Param{TableAlias}.value_date $Operators{ $Param{Operator} } '";
+    $SQL .= $Kernel::OM->Get('Kernel::System::DB')->Quote( $Param{SearchTerm} ) . "' ";
+    return $SQL;
 }
 
 sub SearchSQLOrderFieldGet {
@@ -165,6 +164,7 @@ sub EditFieldRender {
     if ( defined $Param{Value} ) {
         $Value = $Param{Value};
     }
+
     if ($Value) {
         my ( $Year, $Month, $Day, $Hour, $Minute, $Second ) = $Value =~
             m{ \A ( \d{4} ) - ( \d{2} ) - ( \d{2} ) \s ( \d{2} ) : ( \d{2} ) : ( \d{2} ) \z }xms;
@@ -480,12 +480,14 @@ sub DisplayValueRender {
     my $Title = $Value;
 
     # set field link form config
-    my $Link = $Param{DynamicFieldConfig}->{Config}->{Link} || '';
+    my $Link        = $Param{DynamicFieldConfig}->{Config}->{Link}        || '';
+    my $LinkPreview = $Param{DynamicFieldConfig}->{Config}->{LinkPreview} || '';
 
     my $Data = {
-        Value => $Value,
-        Title => $Title,
-        Link  => $Link,
+        Value       => $Value,
+        Title       => $Title,
+        Link        => $Link,
+        LinkPreview => $LinkPreview,
     };
 
     return $Data;

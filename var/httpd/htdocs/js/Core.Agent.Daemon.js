@@ -42,7 +42,7 @@ Core.Agent.Daemon = (function (TargetNS) {
      *      Shows waiting dialog until daemon start screen is ready.
      */
     function ShowWaitingDialog(){
-        Core.UI.Dialog.ShowContentDialog('<div class="Spacing Center"><span class="AJAXLoader" title="' + Core.Config.Get('LoadingMsg') + '"></span></div>', Core.Config.Get('LoadingMsg'), '240px', 'Center', true);
+        Core.UI.Dialog.ShowContentDialog('<div class="Spacing Center"><span class="AJAXLoader" title="' + Core.Language.Translate('Loading...') + '"></span></div>', Core.Language.Translate('Loading...'), '240px', 'Center', true);
     }
 
     /**
@@ -74,7 +74,7 @@ Core.Agent.Daemon = (function (TargetNS) {
                 }
 
                 // show main dialog
-                Core.UI.Dialog.ShowContentDialog(HTML, Core.Config.Get('OTRSDaemonDialogTitleMsg'), '240px', 'Center', true);
+                Core.UI.Dialog.ShowContentDialog(HTML, Core.Language.Translate('Information about the OTRS Daemon'), '240px', 'Center', true);
 
                 // set cancel button action
                 $('#DaemonFormCancel').bind('click', function() {

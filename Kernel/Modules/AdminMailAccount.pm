@@ -206,6 +206,11 @@ sub Run {
         # if no errors occurred
         if ( !%Errors ) {
 
+            if ( $GetParam{Password} eq 'otrs-dummy-password-placeholder' ) {
+                my %OriginalData = $MailAccount->MailAccountGet(%GetParam);
+                $GetParam{Password} = $OriginalData{Password};
+            }
+
             # update mail account
             my $Update = $MailAccount->MailAccountUpdate(
                 %GetParam,
@@ -278,6 +283,7 @@ sub _Overview {
 
     $LayoutObject->Block( Name => 'ActionList' );
     $LayoutObject->Block( Name => 'ActionAdd' );
+    $LayoutObject->Block( Name => 'Filter' );
 
     $LayoutObject->Block(
         Name => 'OverviewResult',

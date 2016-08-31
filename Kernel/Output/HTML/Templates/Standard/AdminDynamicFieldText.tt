@@ -157,7 +157,18 @@
                             </p>
                         </div>
                         <div class="Clear"></div>
+
+                        <label for="Link">[% Translate("Link for preview") | html %]:</label>
+                        <div class="Field">
+                            <input id="LinkPreview" class="W50pc" type="text" maxlength="500" value="[% Data.LinkPreview | html %]" name="LinkPreview"/>
+                            <p class="FieldExplanation">
+                                [% Translate("If filled in, this URL will be used for a preview which is shown when this link is hovered in ticket zoom. Please note that for this to work, the regular URL field above needs to be filled in, too.") | html %]
+                            </p>
+                        </div>
+                        <div class="Clear"></div>
+
 [% RenderBlockEnd("Link") %]
+
                         <label for="RegEx">[% Translate("Check RegEx") | html %]:</label>
                         <div class="Field RegExInsert">
                             <p class="FieldExplanation">
@@ -234,25 +245,3 @@
         </form>
     </div>
 </div>
-[% WRAPPER JSOnDocumentComplete %]
-<script type="text/javascript">//<![CDATA[
-$('.ShowWarning').bind('change keyup', function (Event) {
-    $('p.Warning').removeClass('Hidden');
-});
-
-// click handler to remove regex
-$('.RemoveRegEx').bind('click', function () {
-    Core.Agent.Admin.DynamicFieldText.RemoveRegEx( $(this).attr('id') );
-    return false;
-});
-// click handler to add regex
-$('#AddRegEx').bind('click', function () {
-    Core.Agent.Admin.DynamicFieldText.AddRegEx(
-        $(this).closest('fieldset').find('.RegExInsert')
-    );
-    return false;
-});
-
-Core.Agent.Admin.DynamicField.ValidationInit();
-//]]></script>
-[% END %]

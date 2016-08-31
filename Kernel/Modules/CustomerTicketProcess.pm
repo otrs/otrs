@@ -89,7 +89,7 @@ sub Run {
                 return $LayoutObject->CustomerErrorScreen(
                     Message => $LayoutObject->{LanguageObject}
                         ->Translate( 'Couldn\'t get ActivityDialogEntityID "%s"!', $ActivityDialogEntityID ),
-                    Comment => Translatable('Please contact the admin.'),
+                    Comment => Translatable('Please contact the administrator.'),
                 );
             }
 
@@ -198,7 +198,7 @@ sub Run {
     if ( !IsHashRefWithData($ProcessList) && !IsHashRefWithData($FollowupProcessList) ) {
         return $LayoutObject->CustomerErrorScreen(
             Message => Translatable('No Process configured!'),
-            Comment => Translatable('Please contact the admin.'),
+            Comment => Translatable('Please contact the administrator.'),
         );
     }
 
@@ -233,7 +233,7 @@ sub Run {
         if ( !IsHashRefWithData($ProcessList) ) {
             return $LayoutObject->CustomerErrorScreen(
                 Message => Translatable('No Process configured!'),
-                Comment => Translatable('Please contact the admin.'),
+                Comment => Translatable('Please contact the administrator.'),
             );
         }
 
@@ -281,7 +281,7 @@ sub Run {
     {
         $LayoutObject->CustomerFatalError(
             Message => $LayoutObject->{LanguageObject}->Translate( 'Process %s is invalid!', $ProcessEntityID ),
-            Comment => Translatable('Please contact the admin.'),
+            Comment => Translatable('Please contact the administrator.'),
         );
     }
 
@@ -347,7 +347,7 @@ sub Run {
     }
     return $LayoutObject->CustomerErrorScreen(
         Message => Translatable('Subaction is invalid!'),
-        Comment => Translatable('Please contact the admin.'),
+        Comment => Translatable('Please contact the administrator.'),
     );
 }
 
@@ -765,7 +765,7 @@ sub _GetParam {
         return $LayoutObject->CustomerErrorScreen(
             Message => $LayoutObject->{LanguageObject}
                 ->Translate( 'Couldn\'t get ActivityDialogEntityID "%s"!', $ActivityDialogEntityID ),
-            Comment => Translatable('Please contact the admin.'),
+            Comment => Translatable('Please contact the administrator.'),
         );
     }
 
@@ -1224,8 +1224,8 @@ sub _OutputActivityDialog {
             $Param{RichTextHeight} = $Self->{Config}->{RichTextHeight} || 0;
             $Param{RichTextWidth}  = $Self->{Config}->{RichTextWidth}  || 0;
 
-            $LayoutObject->Block(
-                Name => 'RichText',
+            # set up customer rich text editor
+            $LayoutObject->CustomerSetRichTextParameters(
                 Data => \%Param,
             );
         }
@@ -1758,13 +1758,6 @@ sub _OutputActivityDialog {
         );
     }
 
-    # reload parent window
-    if ( $Param{ParentReload} ) {
-        $LayoutObject->Block(
-            Name => 'ParentReload',
-        );
-    }
-
     # Add the FormFooter
     $Output .= $LayoutObject->Output(
         TemplateFile => 'ProcessManagement/CustomerActivityDialogFooter',
@@ -2107,8 +2100,8 @@ sub _RenderArticle {
         $Param{RichTextHeight} = $Self->{Config}->{RichTextHeight} || 0;
         $Param{RichTextWidth}  = $Self->{Config}->{RichTextWidth}  || 0;
 
-        $LayoutObject->Block(
-            Name => 'RichText',
+        # set up customer rich text editor
+        $LayoutObject->CustomerSetRichTextParameters(
             Data => \%Param,
         );
     }
@@ -2434,10 +2427,10 @@ sub _RenderSLA {
         Max           => 200,
     );
 
-    # set fields that will get an AJAX loader icon when this field changes
-    $Data{FieldsToUpdate} = $Self->_GetFieldsToUpdateStrg(
-        TriggerField        => 'SLAID',
-        AJAXUpdatableFields => $Param{AJAXUpdatableFields},
+    # send data to JS
+    $LayoutObject->AddJSData(
+        Key   => 'SLAFieldsToUpdate',
+        Value => $Param{AJAXUpdatableFields}
     );
 
     $LayoutObject->Block(
@@ -2594,10 +2587,10 @@ sub _RenderService {
         Max           => 200,
     );
 
-    # set fields that will get an AJAX loader icon when this field changes
-    $Data{FieldsToUpdate} = $Self->_GetFieldsToUpdateStrg(
-        TriggerField        => 'ServiceID',
-        AJAXUpdatableFields => $Param{AJAXUpdatableFields},
+    # send data to JS
+    $LayoutObject->AddJSData(
+        Key   => 'ServiceFieldsToUpdate',
+        Value => $Param{AJAXUpdatableFields}
     );
 
     $LayoutObject->Block(
@@ -2733,10 +2726,10 @@ sub _RenderPriority {
         Class         => "Modernize $ServerError",
     );
 
-    # set fields that will get an AJAX loader icon when this field changes
-    $Data{FieldsToUpdate} = $Self->_GetFieldsToUpdateStrg(
-        TriggerField        => 'PriorityID',
-        AJAXUpdatableFields => $Param{AJAXUpdatableFields},
+    # send data to JS
+    $LayoutObject->AddJSData(
+        Key   => 'PriorityFieldsToUpdate',
+        Value => $Param{AJAXUpdatableFields}
     );
 
     $LayoutObject->Block(
@@ -2880,9 +2873,10 @@ sub _RenderQueue {
         PossibleNone  => 1,
     );
 
-    $Data{FieldsToUpdate} = $Self->_GetFieldsToUpdateStrg(
-        TriggerField        => 'QueueID',
-        AJAXUpdatableFields => $Param{AJAXUpdatableFields},
+    # send data to JS
+    $LayoutObject->AddJSData(
+        Key   => 'QueueFieldsToUpdate',
+        Value => $Param{AJAXUpdatableFields}
     );
 
     $LayoutObject->Block(
@@ -3012,10 +3006,10 @@ sub _RenderState {
         Class         => "Modernize $ServerError",
     );
 
-    # set fields that will get an AJAX loader icon when this field changes
-    $Data{FieldsToUpdate} = $Self->_GetFieldsToUpdateStrg(
-        TriggerField        => 'StateID',
-        AJAXUpdatableFields => $Param{AJAXUpdatableFields},
+    # send data to JS
+    $LayoutObject->AddJSData(
+        Key   => 'StateFieldsToUpdate',
+        Value => $Param{AJAXUpdatableFields}
     );
 
     $LayoutObject->Block(
@@ -3165,10 +3159,10 @@ sub _RenderType {
         Max           => 200,
     );
 
-    # set fields that will get an AJAX loader icon when this field changes
-    $Data{FieldsToUpdate} = $Self->_GetFieldsToUpdateStrg(
-        TriggerField        => 'TypeID',
-        AJAXUpdatableFields => $Param{AJAXUpdatableFields},
+    # send data to JS
+    $LayoutObject->AddJSData(
+        Key   => 'TypeFieldsToUpdate',
+        Value => $Param{AJAXUpdatableFields}
     );
 
     $LayoutObject->Block(
@@ -3583,7 +3577,7 @@ sub _StoreActivityDialog {
                         'Couldn\'t set ActivityEntityID "%s" on TicketID "%s"!',
                         $Param{ProcessEntityID}, $TicketID
                     ),
-                    Comment => Translatable('Please contact the admin.'),
+                    Comment => Translatable('Please contact the administrator.'),
                 );
             }
 
@@ -3597,7 +3591,7 @@ sub _StoreActivityDialog {
                 $LayoutObject->CustomerFatalError(
                     Message => $LayoutObject->{LanguageObject}
                         ->Translate( 'Could not store ActivityDialog, invalid TicketID: %s!', $TicketID ),
-                    Comment => Translatable('Please contact the admin.'),
+                    Comment => Translatable('Please contact the administrator.'),
                 );
             }
             for my $DynamicFieldConfig (
@@ -3657,7 +3651,7 @@ sub _StoreActivityDialog {
             return $LayoutObject->CustomerErrorScreen(
                 Message => $LayoutObject->{LanguageObject}
                     ->Translate( 'Missing ActivityEntityID in Ticket %s!', $Ticket{TicketID} ),
-                Comment => Translatable('Please contact the admin.'),
+                Comment => Translatable('Please contact the administrator.'),
             );
         }
 
@@ -4022,18 +4016,18 @@ sub _DisplayProcessList {
         $Param{RichTextHeight} = $Self->{Config}->{RichTextHeight} || 0;
         $Param{RichTextWidth}  = $Self->{Config}->{RichTextWidth}  || 0;
 
-        $LayoutObject->Block(
-            Name => 'RichText',
+        # set up customer rich text editor
+        $LayoutObject->CustomerSetRichTextParameters(
             Data => \%Param,
         );
     }
 
     if ( $Param{PreSelectProcess} && $Param{ProcessID} ) {
-        $LayoutObject->Block(
-            Name => 'PreSelectProcess',
-            Data => {
-                ProcessID => $Param{ProcessID},
-            },
+
+        # send data to JS
+        $LayoutObject->AddJSData(
+            Key   => 'PreSelectedProcessID',
+            Value => $Param{ProcessID},
         );
     }
 
@@ -4422,10 +4416,10 @@ sub _GetQueues {
         if ( $ConfigObject->Get('Ticket::Frontend::NewQueueSelectionType') eq 'Queue' ) {
             %Queues = $Kernel::OM->Get('Kernel::System::Ticket')->MoveList(
                 %Param,
-                Type    => 'create',
-                Action  => $Self->{Action},
-                QueueID => $Self->{QueueID},
-                UserID  => $ConfigObject->Get('CustomerPanelUserID'),
+                Type           => 'create',
+                Action         => $Self->{Action},
+                QueueID        => $Self->{QueueID},
+                CustomerUserID => $Self->{UserID},
             );
         }
         else {

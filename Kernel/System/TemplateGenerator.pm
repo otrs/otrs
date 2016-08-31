@@ -7,7 +7,6 @@
 # --
 
 package Kernel::System::TemplateGenerator;
-## nofilter(TidyAll::Plugin::OTRS::Perl::Time)
 
 use strict;
 use warnings;
@@ -342,7 +341,7 @@ sub Sender {
     }
 
     # prepare realname quote
-    if ( $Address{RealName} =~ /(,|@|\(|\)|:)/ && $Address{RealName} !~ /^("|')/ ) {
+    if ( $Address{RealName} =~ /([.]|,|@|\(|\)|:)/ && $Address{RealName} !~ /^("|')/ ) {
         $Address{RealName} =~ s/"//g;    # remove any quotes that are already present
         $Address{RealName} = '"' . $Address{RealName} . '"';
     }
@@ -1537,8 +1536,9 @@ sub _Replace {
 
                 if ( $Param{Text} =~ /$Tag\[(.+?)\]$End/g ) {
 
-                    my $TimeZone = $1;
-                    my $EmailDate = strftime( '%A, %B %e, %Y at %T ', localtime );    ## no critic
+                    my $TimeZone       = $1;
+                    my $DateTimeObject = $Kernel::OM->Create('Kernel::System::DateTime');
+                    my $EmailDate      = $DateTimeObject->Format( Format => '%A, %B %e, %Y at %T ' );
                     $EmailDate .= "($TimeZone)";
                     $Param{Text} =~ s/$Tag\[.+?\]$End/$EmailDate/g;
                 }
@@ -1551,7 +1551,7 @@ sub _Replace {
             $Tag = $Start . 'OTRS_CUSTOMER_REALNAME';
             if ( $Param{Text} =~ /$Tag$End/i ) {
 
-                my $From = '';
+                my $From;
 
                 if ( $Ticket{CustomerUserID} ) {
 

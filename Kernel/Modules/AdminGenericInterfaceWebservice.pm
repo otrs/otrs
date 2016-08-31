@@ -480,22 +480,57 @@ sub Run {
         # challenge token check for write action
         $LayoutObject->ChallengeTokenCheck();
 
-        # get the web service config file from the http request
-        my %ConfigFile = $ParamObject->GetUploadAll(
-            Param => 'ConfigFile',
-        );
-
-        # check for file
-        if ( !%ConfigFile ) {
-            return $LayoutObject->ErrorScreen(
-                Message => Translatable('Need a file to import!'),
-            );
-        }
-
         my $ImportedConfig;
 
-        # read configuration from a YAML structure
-        $ImportedConfig = $YAMLObject->Load( Data => $ConfigFile{Content} );
+        # get web service name
+        my $WebserviceName;
+
+        my $ExampleWebServiceFilename = $ParamObject->GetParam( Param => 'ExampleWebService' ) || '';
+        if ($ExampleWebServiceFilename) {
+            $ExampleWebServiceFilename =~ s{/+|\.{2,}}{}smx;    # remove slashes and ..
+
+            if ( !$ExampleWebServiceFilename ) {
+                return $Kernel::OM->Get('Kernel::Output::HTML::Layout')->FatalError(
+                    Message => Translatable('Need ExampleWebService!'),
+                );
+            }
+
+            my $Home    = $Kernel::OM->Get('Kernel::Config')->Get('Home');
+            my $Content = $Kernel::OM->Get('Kernel::System::Main')->FileRead(
+                Location => "$Home/var/webservices/examples/$ExampleWebServiceFilename",
+                Mode     => 'utf8',
+            );
+
+            if ( !$Content ) {
+                return $Kernel::OM->Get('Kernel::Output::HTML::Layout')->FatalError(
+                    Message =>
+                        $LayoutObject->{LanguageObject}->Translate( 'Could not read %s!', $ExampleWebServiceFilename ),
+                );
+            }
+
+            $Content = ${ $Content || \'' };
+
+            # read configuration from a YAML structure
+            $ImportedConfig = $YAMLObject->Load( Data => $Content );
+            $WebserviceName = $ExampleWebServiceFilename;
+        }
+        else {
+            # get the web service config file from the http request
+            my %ConfigFile = $ParamObject->GetUploadAll(
+                Param => 'ConfigFile',
+            );
+
+            # check for file
+            if ( !%ConfigFile ) {
+                return $LayoutObject->ErrorScreen(
+                    Message => Translatable('Need a file to import!'),
+                );
+            }
+
+            # read configuration from a YAML structure
+            $ImportedConfig = $YAMLObject->Load( Data => $ConfigFile{Content} );
+            $WebserviceName = $ConfigFile{Filename};
+        }
 
         # display any YAML error message as a normal otrs error message
         if ( !IsHashRefWithData($ImportedConfig) ) {
@@ -516,9 +551,6 @@ sub Run {
 
         # remove framework information since is not needed anymore
         delete $ImportedConfig->{FrameworkVersion};
-
-        # get web service name
-        my $WebserviceName = $ConfigFile{Filename};
 
         # remove file extension
         $WebserviceName =~ s{\.[^.]+$}{}g;
@@ -787,6 +819,42 @@ sub _ShowEdit {
         );
     }
     elsif ( $Param{Action} eq 'Add' ) {
+
+        my @ExampleWebServices = $Kernel::OM->Get('Kernel::System::Main')->DirectoryRead(
+            Directory => $Kernel::OM->Get('Kernel::Config')->Get('Home') . '/var/webservices/examples',
+            Filter    => '*.yml',
+            Silent    => 1,
+        );
+
+        my %ExampleWebServicesData;
+
+        for my $ExampleWebServiceFilename (@ExampleWebServices) {
+            my $Key = $ExampleWebServiceFilename;
+            $Key =~ s{^.*/([^/]+)$}{$1}smx;
+            my $Value = $Key;
+            $Value =~ s{^(.+).yml}{$1}smx;
+            $Value =~ s{_}{ }smxg;
+            $ExampleWebServicesData{$Key} = $Value;
+        }
+
+        my %Frontend;
+
+        if ( %ExampleWebServicesData && $Kernel::OM->Get('Kernel::System::OTRSBusiness')->OTRSBusinessIsInstalled() ) {
+            $Frontend{ExampleWebServiceList} = $Kernel::OM->Get('Kernel::Output::HTML::Layout')->BuildSelection(
+                Name         => 'ExampleWebService',
+                Data         => \%ExampleWebServicesData,
+                PossibleNone => 1,
+                Translation  => 0,
+                Class        => 'Modernize Validate_Required',
+            );
+        }
+        $LayoutObject->Block(
+            Name => 'ExampleWebServices',
+            Data => {
+                %Frontend,
+            },
+        );
+
         $LayoutObject->Block(
             Name => 'WebservicePathElementNoLink',
             Data => {
@@ -1035,6 +1103,7 @@ sub _ShowEdit {
         else {
 
             # output operation and invoker tables
+            my %JSData;
             for my $ActionName (
                 sort keys %{ $CommTypeConfig{$CommunicationType}->{ActionsConfig} }
                 )
@@ -1059,6 +1128,8 @@ sub _ShowEdit {
                     $NoControllerFound = 1;
                     $ControllerClass   = 'Error';
                 }
+
+                $JSData{ $ActionData{Name} } = $ActionData{ActionType};
 
                 $LayoutObject->Block(
                     Name => 'DetailsActionsRow',
@@ -1088,6 +1159,12 @@ sub _ShowEdit {
                     );
                 }
             }
+
+            # send data to JS
+            $LayoutObject->AddJSData(
+                Key   => 'JSData',
+                Value => \%JSData
+            );
         }
 
         if ($NoControllerFound) {
@@ -1118,27 +1195,14 @@ sub _OutputGIConfig {
 
     my $LayoutObject = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
 
-    # parse the transport config as JSON structure
-    my $TransportConfig = $LayoutObject->JSONEncode(
-        Data => $Param{GITransports},
-    );
+    # send data to JS
+    $LayoutObject->AddJSData(
+        Key   => 'Webservice',
+        Value => {
+            Transport => $Param{GITransports},
+            Operation => $Param{GIOperations},
+            Invoker   => $Param{GIInvokers},
 
-    # parse the operation config as JSON structure
-    my $OpertaionConfig = $LayoutObject->JSONEncode(
-        Data => $Param{GIOperations},
-    );
-
-    # parse the operation config as JSON structure
-    my $InvokerConfig = $LayoutObject->JSONEncode(
-        Data => $Param{GIInvokers},
-    );
-
-    $LayoutObject->Block(
-        Name => 'ConfigSet',
-        Data => {
-            TransportConfig => $TransportConfig,
-            OperationConfig => $OpertaionConfig,
-            InvokerConfig   => $InvokerConfig,
         },
     );
 

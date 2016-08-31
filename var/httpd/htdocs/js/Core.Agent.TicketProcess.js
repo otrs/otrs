@@ -29,7 +29,21 @@ Core.Agent.TicketProcess = (function (TargetNS) {
      */
     TargetNS.Init = function () {
 
-        $('#ProcessEntityID').bind('change', function () {
+        var ProcessID = Core.Config.Get('ProcessID');
+
+        if (typeof ProcessID !== 'undefined') {
+            $('#ProcessEntityID').val(ProcessID).trigger('change');
+        }
+
+        if (typeof Core.Config.Get('ParentReload') !== 'undefined' && parseInt(Core.Config.Get('ParentReload'), 10) === 1){
+            Core.UI.Popup.ExecuteInParentWindow(function(WindowObject) {
+                if (WindowObject.Core.UI.Popup.GetWindowMode() !== 'Iframe') {
+                    WindowObject.Core.UI.Popup.FirePopupEvent('Reload');
+                }
+            });
+        }
+
+        $('#ProcessEntityID').on('change', function () {
             var Data = {
                 Action: 'AgentTicketProcess',
                 Subaction: 'DisplayActivityDialogAJAX',
@@ -139,6 +153,8 @@ Core.Agent.TicketProcess = (function (TargetNS) {
                         $('#AJAXLoader').addClass('Hidden');
                         $('#AJAXDialog').val('1');
 
+                        Core.TicketProcess.Init();
+
                     }
                     else {
 
@@ -156,6 +172,8 @@ Core.Agent.TicketProcess = (function (TargetNS) {
             return false;
         });
     };
+
+    Core.Init.RegisterNamespace(TargetNS, 'APP_MODULE');
 
     return TargetNS;
 }(Core.Agent.TicketProcess || {}));

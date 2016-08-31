@@ -35,15 +35,69 @@ Core.Agent.Admin.GenericInterfaceInvoker = (function (TargetNS) {
      * @name Init
      * @memberof Core.Agent.Admin.GenericInterfaceInvoker
      * @function
-     * @param {Object} Params
      * @description
      *      Initializes the module functions.
      */
-    TargetNS.Init = function (Params) {
-        TargetNS.WebserviceID = parseInt(Params.WebserviceID, 10);
-        TargetNS.Invoker = Params.Invoker;
-        TargetNS.Action = Params.Action;
-        TargetNS.Localization = Params.Localization;
+    TargetNS.Init = function () {
+        var Events = Core.Config.Get('Events'),
+            ElementID, EventName, ElementSelector;
+
+        TargetNS.WebserviceID = parseInt(Core.Config.Get('WebserviceID'), 10);
+        TargetNS.Invoker = Core.Config.Get('Invoker');
+        TargetNS.Action = 'AdminGenericInterfaceInvokerDefault';
+
+        // Bind events on buttons
+        $('#MappingOutboundConfigureButton').on('click', function(){
+            var URL;
+
+            if ($('#MappingOutboundConfigDialog').val()) {
+                URL = Core.Config.Get('Baselink') + 'Action=' + $('#MappingOutboundConfigDialog').val();
+                URL += ';Subaction=Change;Invoker=' + $('#OldInvoker').val() + ';Direction=MappingOutbound' + ';WebserviceID=' + $('#WebserviceID').val();
+                window.location.href = URL;
+            }
+        });
+
+        $('#MappingInboundConfigureButton').on('click', function(){
+            var URL;
+
+            if ($('#MappingInboundConfigDialog').val()) {
+                URL = Core.Config.Get('Baselink') + 'Action=' + $('#MappingInboundConfigDialog').val();
+                URL += ';Subaction=Change;Invoker=' + $('#OldInvoker').val() + ';Direction=MappingInbound' + ';WebserviceID=' + $('#WebserviceID').val();
+                window.location.href = URL;
+            }
+        });
+
+        $('#SaveAndFinishButton').on('click', function(){
+            $('#ReturnToWebservice').val(1);
+        });
+
+        $('.RegisterChange').on('change.RegisterChange keyup.RegisterChange', function () {
+            $('.HideOnChange').hide();
+            $('.ShowOnChange').show();
+        });
+
+        $('#DeleteButton').on('click', TargetNS.ShowDeleteDialog);
+
+        $('#EventType').on('change', function (){
+            TargetNS.ToogleEventSelect($(this).val());
+        });
+
+        $('#AddEvent').on('click', function (){
+            TargetNS.AddEvent($('#EventType').val());
+        });
+
+        // Initialize delete action dialog event
+        $.each(Events, function(){
+            ElementID = 'DeleteEvent' + this;
+            EventName = this;
+            ElementSelector = '#DeleteEvent' + this;
+
+            TargetNS.BindDeleteEventDialog({
+                ElementID: ElementID,
+                EventName: EventName,
+                ElementSelector: ElementSelector
+            });
+        });
     };
 
     /**
@@ -98,20 +152,20 @@ Core.Agent.Admin.GenericInterfaceInvoker = (function (TargetNS) {
     TargetNS.ShowDeleteDialog = function(Event){
         Core.UI.Dialog.ShowContentDialog(
             $('#DeleteDialogContainer'),
-            TargetNS.Localization.DeleteInvokerMsg,
+            Core.Language.Translate('Delete this Invoker'),
             '240px',
             'Center',
             true,
             [
                {
-                   Label: TargetNS.Localization.CancelMsg,
+                   Label: Core.Language.Translate('Cancel'),
                    Class: 'Primary',
                    Function: function () {
                        Core.UI.Dialog.CloseDialog($('#DeleteDialog'));
                    }
                },
                {
-                   Label: TargetNS.Localization.DeleteMsg,
+                   Label: Core.Language.Translate('Delete'),
                    Function: function () {
                        var Data = {
                             Action: TargetNS.Action,
@@ -122,7 +176,7 @@ Core.Agent.Admin.GenericInterfaceInvoker = (function (TargetNS) {
 
                         Core.AJAX.FunctionCall(Core.Config.Get('CGIHandle'), Data, function (Response) {
                             if (!Response || !Response.Success) {
-                                alert(TargetNS.Localization.CommunicationErrorMsg);
+                                alert(Core.Language.Translate('An error occurred during communication.'));
                                 return;
                             }
 
@@ -158,20 +212,20 @@ Core.Agent.Admin.GenericInterfaceInvoker = (function (TargetNS) {
         LocalDialogData = DialogData[$(this).attr('id')];
         Core.UI.Dialog.ShowContentDialog(
             $('#DeleteEventDialogContainer'),
-            TargetNS.Localization.DeleteEventMsg,
+            Core.Language.Translate('Delete this Event Trigger'),
             '240px',
             'Center',
             true,
             [
                {
-                   Label: TargetNS.Localization.CancelMsg,
+                   Label: Core.Language.Translate('Cancel'),
                    Class: 'Primary',
                    Function: function () {
                        Core.UI.Dialog.CloseDialog($('#DeleteEventDialog'));
                    }
                },
                {
-                   Label: TargetNS.Localization.DeleteMsg,
+                   Label: Core.Language.Translate('Delete'),
                    Function: function () {
                        var Data = {
                             Action: TargetNS.Action,
@@ -182,7 +236,7 @@ Core.Agent.Admin.GenericInterfaceInvoker = (function (TargetNS) {
                         };
                         Core.AJAX.FunctionCall(Core.Config.Get('CGIHandle'), Data, function (Response) {
                             if (!Response || !Response.Success) {
-                                alert(TargetNS.Localization.CommunicationErrorMsg);
+                                alert(Core.Language.Translate('An error occurred during communication.'));
                                 return;
                             }
 
@@ -219,8 +273,10 @@ Core.Agent.Admin.GenericInterfaceInvoker = (function (TargetNS) {
         DialogData[Data.ElementID] = Data;
 
         // binding a click event to the defined element
-        $(DialogData[Data.ElementID].ElementSelector).bind('click', TargetNS.ShowDeleteEventDialog);
+        $(DialogData[Data.ElementID].ElementSelector).on('click', TargetNS.ShowDeleteEventDialog);
     };
+
+    Core.Init.RegisterNamespace(TargetNS, 'APP_MODULE');
 
     return TargetNS;
 }(Core.Agent.Admin.GenericInterfaceInvoker || {}));

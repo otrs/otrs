@@ -41,7 +41,7 @@ sub Run {
     if ( !$Self->{TicketID} ) {
         return $LayoutObject->ErrorScreen(
             Message => Translatable('No TicketID is given!'),
-            Comment => Translatable('Please contact the admin.'),
+            Comment => Translatable('Please contact the administrator.'),
         );
     }
 
@@ -162,8 +162,8 @@ sub Run {
 
         # get all parameters
         for my $Parameter (qw( From To Subject Body InformSender MainTicketNumber )) {
-            $GetParam{$Parameter}
-                = $Kernel::OM->Get('Kernel::System::Web::Request')->GetParam( Param => $Parameter ) || '';
+            $GetParam{$Parameter} = $Kernel::OM->Get('Kernel::System::Web::Request')->GetParam( Param => $Parameter )
+                || '';
         }
 
         # rewrap body if no rich text is used
@@ -250,8 +250,8 @@ sub Run {
                 $Param{RichTextHeight} = $Config->{RichTextHeight} || 0;
                 $Param{RichTextWidth}  = $Config->{RichTextWidth}  || 0;
 
-                $LayoutObject->Block(
-                    Name => 'RichText',
+                # set up rich text editor
+                $LayoutObject->SetRichTextParameters(
                     Data => \%Param,
                 );
 
@@ -294,7 +294,7 @@ sub Run {
             )
             )
         {
-            my $Output .= $LayoutObject->Header(
+            my $Output = $LayoutObject->Header(
                 Type      => 'Small',
                 BodyClass => 'Popup',
             );
@@ -306,11 +306,10 @@ sub Run {
                 $Param{RichTextHeight} = $Config->{RichTextHeight} || 0;
                 $Param{RichTextWidth}  = $Config->{RichTextWidth}  || 0;
 
-                $LayoutObject->Block(
-                    Name => 'RichText',
+                # set up rich text editor
+                $LayoutObject->SetRichTextParameters(
                     Data => \%Param,
                 );
-
             }
 
             $Output .= $LayoutObject->Output(
@@ -436,8 +435,8 @@ sub Run {
             $Param{RichTextHeight} = $Config->{RichTextHeight} || 0;
             $Param{RichTextWidth}  = $Config->{RichTextWidth}  || 0;
 
-            $LayoutObject->Block(
-                Name => 'RichText',
+            # set up rich text editor
+            $LayoutObject->SetRichTextParameters(
                 Data => \%Param,
             );
         }
