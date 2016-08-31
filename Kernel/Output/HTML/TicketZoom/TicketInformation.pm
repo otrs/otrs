@@ -122,6 +122,23 @@ sub Run {
         );
     }
 
+    # show number of tickets with the same customer id if feature is active:
+    if ( $ConfigObject->Get('Ticket::Frontend::ZoomCustomerTickets') ) {
+        $Ticket{CustomerIDTickets} = 1;
+        if ( $Ticket{CustomerID} ) {
+            $Ticket{CustomerIDTickets} = $Kernel::OM->Get('Kernel::System::Ticket')->TicketSearch(
+                CustomerID => $Ticket{CustomerID},
+                Result     => 'COUNT',
+                Permission => 'ro',
+                UserID     => $Self->{UserID},
+            );
+            $LayoutObject->Block(
+                Name => 'CustomerIDTickets',
+                Data => \%Ticket,
+            );
+        }
+    }
+
     # show total accounted time if feature is active:
     if ( $ConfigObject->Get('Ticket::Frontend::AccountTime') ) {
         $Ticket{TicketTimeUnits} = $Kernel::OM->Get('Kernel::System::Ticket')->TicketAccountedTimeGet(%Ticket);

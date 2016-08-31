@@ -107,11 +107,6 @@
                     </fieldset>
 
                     <fieldset class="TableLike FixedLabelSmall Narrow">
-                        <label>[% Translate("CustomerID") | html %]:</label>
-                        <p class="Value">
-                            <a href="[% Config("CustomerDBLink") | Interpolate %]" class="[% Config("CustomerDBLinkClass") %]" [% Config("CustomerDBLinkTarget") %]>[% Data.CustomerID | html %]</a>
-                        </p>
-                        <div class="Clear"></div>
 [% RenderBlockStart("TotalAccountedTime") %]
                         <label>[% Translate("Accounted time") | html %]:</label>
                         <p class="Value">[% Data.TicketTimeUnits %]</p>
@@ -139,6 +134,18 @@
                         <div class="Clear"></div>
 
 [% RenderBlockEnd("Responsible") %]
+                        <label>[% Translate("Customer") | html %]:</label>
+                        <p class="Value">
+                            <a href="[% Config("CustomerDBLink") | Interpolate %]" class="[% Config("CustomerDBLinkClass") %]" [% Config("CustomerDBLinkTarget") %]>[% Data.CustomerID | html %]</a>
+                        </p>
+                        <div class="Clear"></div>
+[% RenderBlockStart("CustomerIDTickets") %]
+                        <label>[% Translate("Customer tickets") | html %]:</label>
+                        <p class="Value">
+                            <a href="[% Env("Baselink") %]Action=AgentTicketSearch;Subaction=Search;CustomerID=[% Data.CustomerID | uri %]">[% Data.CustomerIDTickets %]</a>
+                        </p>
+                        <div class="Clear"></div>
+[% RenderBlockEnd("CustomerIDTickets") %]
                     </fieldset>
 
 [% RenderBlockStart("ProcessData") %]
