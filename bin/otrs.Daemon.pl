@@ -546,23 +546,26 @@ sub _PIDUnlock {
 sub _LogFilesSet {
     my %Param = @_;
 
+    # get config object
+    my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
+
     # define log file names
     my $FileStdOut = "$LogDir/$Param{Module}OUT";
     my $FileStdErr = "$LogDir/$Param{Module}ERR";
 
     my $SystemTime = $Kernel::OM->Get('Kernel::System::Time')->SystemTime();
 
-    # backup old log files
-    use File::Copy qw(move);
-    if ( -e "$FileStdOut.log" ) {
-        move( "$FileStdOut.log", "$FileStdOut-$SystemTime.log" );
+    # get log rotation type and backup old logs if logs should be rotated by OTRS
+    my $RotationType = lc $ConfigObject->Get('Daemon::Log::RotationType') || 'otrs';
+    if ( $RotationType eq 'otrs' ) {
+        use File::Copy qw(move);
+        if ( -e "$FileStdOut.log" ) {
+            move( "$FileStdOut.log", "$FileStdOut-$SystemTime.log" );
+        }
+        if ( -e "$FileStdErr.log" ) {
+            move( "$FileStdErr.log", "$FileStdErr-$SystemTime.log" );
+        }
     }
-    if ( -e "$FileStdErr.log" ) {
-        move( "$FileStdErr.log", "$FileStdErr-$SystemTime.log" );
-    }
-
-    # get config object
-    my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
 
     my $RedirectSTDOUT = $ConfigObject->Get('Daemon::Log::STDOUT') || 0;
     my $RedirectSTDERR = $ConfigObject->Get('Daemon::Log::STDERR') || 0;
@@ -575,29 +578,31 @@ sub _LogFilesSet {
         open STDERR, '>>', "$FileStdErr.log";
     }
 
-    # remove not needed log files
-    my $DaysToKeep = $ConfigObject->Get('Daemon::Log::DaysToKeep') || 1;
-    my $DaysToKeepTime = $SystemTime - $DaysToKeep * 24 * 60 * 60;
+    # remove not needed log files if OTRS rotation is enabled
+    if ( $RotationType eq 'otrs' ) {
+        my $DaysToKeep = $ConfigObject->Get('Daemon::Log::DaysToKeep') || 1;
+        my $DaysToKeepTime = $SystemTime - $DaysToKeep * 24 * 60 * 60;
 
-    my @LogFiles = glob "$LogDir/*.log";
+        my @LogFiles = glob "$LogDir/*.log";
 
-    LOGFILE:
-    for my $LogFile (@LogFiles) {
+        LOGFILE:
+        for my $LogFile (@LogFiles) {
 
-        # skip if is not a backup file
-        next LOGFILE if ( $LogFile !~ m{(?: .* /)* $Param{Module} (?: OUT|ERR ) - (\d+) \.log}igmx );
+            # skip if is not a backup file
+            next LOGFILE if ( $LogFile !~ m{(?: .* /)* $Param{Module} (?: OUT|ERR ) - (\d+) \.log}igmx );
 
-        # do not delete files during keep period if they have content
-        next LOGFILE if ( ( $1 > $DaysToKeepTime ) && -s $LogFile );
+            # do not delete files during keep period if they have content
+            next LOGFILE if ( ( $1 > $DaysToKeepTime ) && -s $LogFile );
 
-        # delete file
-        if ( !unlink $LogFile ) {
+            # delete file
+            if ( !unlink $LogFile ) {
 
-            # log old backup file cannot be deleted
-            $Kernel::OM->Get('Kernel::System::Log')->Log(
-                Priority => 'error',
-                Message  => "Daemon: $Param{Module} could not delete old log file $LogFile! $!",
-            );
+                # log old backup file cannot be deleted
+                $Kernel::OM->Get('Kernel::System::Log')->Log(
+                    Priority => 'error',
+                    Message  => "Daemon: $Param{Module} could not delete old log file $LogFile! $!",
+                );
+            }
         }
     }
 
@@ -606,6 +611,10 @@ sub _LogFilesSet {
 
 sub _LogFilesCleanup {
     my %Param = @_;
+
+    # skip cleanup if OTRS log rotation is not enabled
+    my $RotationType = lc $Kernel::OM->Get('Kernel::Config')->Get('Daemon::Log::RotationType') || 'otrs';
+    return 1 if $RotationType ne 'otrs';
 
     my @LogFiles = glob "$LogDir/*.log";
 
