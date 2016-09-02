@@ -527,7 +527,7 @@
         <Group>Framework</Group>
         <SubGroup>Core::Time</SubGroup>
         <Setting>
-            <Option SelectedID="5">
+            <Option SelectedID="1">
                 <Item Key="1" Translatable="1">Every single minute</Item>
                 <Item Key="2" Translatable="1">Every second minute</Item>
                 <Item Key="5" Translatable="1">Every 5 minutes</Item>
