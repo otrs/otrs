@@ -140,6 +140,44 @@ for ( 1 .. 2 ) {
         }
 }
 
+# Run initial tests for IsSet before assigning values
+for my $DynamicField ( @FieldConfig[0, 2] ) {
+    my %TicketIDsSearch = $TicketObject->TicketSearch(
+        Result                       => 'HASH',
+        Limit                        => 100,
+        TicketID                     => $TicketData[0]{TicketID},
+        "DynamicField_$DynamicField->{Name}" => {
+            IsSet => 1,
+        },
+        UserID     => 1,
+        Permission => 'r0',
+    );
+
+    $Self->IsDeeply(
+        \%TicketIDsSearch,
+        { },
+        "Search with IsSet => 1, dynamic field absent, type $DynamicField->{FieldType}",
+    );
+
+    %TicketIDsSearch = $TicketObject->TicketSearch(
+        Result                       => 'HASH',
+        Limit                        => 100,
+        TicketID                     => $TicketData[0]{TicketID},
+        "DynamicField_$DynamicField->{Name}" => {
+            IsSet => 0,
+        },
+        UserID     => 1,
+        Permission => 'r0',
+    );
+
+    $Self->IsDeeply(
+        \%TicketIDsSearch,
+        { $TicketData[0]{TicketID} => $TicketData[0]{TicketNumber} },
+        "Search with IsSet => 0, dynamic field absent, type $DynamicField->{FieldType}",
+    );
+}
+
+
 my @Values = (
     {
         DynamicFieldConfig => $FieldConfig[0],
@@ -206,6 +244,43 @@ for my $Value (@Values) {
         ObjectID           => $Value->{ObjectID},
         Value              => $Value->{Value},
         UserID             => 1,
+    );
+}
+
+# More tests for IsSet
+for my $DynamicField ( @FieldConfig[0, 2] ) {
+    my %TicketIDsSearch = $TicketObject->TicketSearch(
+        Result                       => 'HASH',
+        Limit                        => 100,
+        TicketID                     => $TicketData[0]{TicketID},
+        "DynamicField_$DynamicField->{Name}" => {
+            IsSet => 0,
+        },
+        UserID     => 1,
+        Permission => 'r0',
+    );
+
+    $Self->IsDeeply(
+        \%TicketIDsSearch,
+        { },
+        "Search with IsSet => 0, dynamic field present, type $DynamicField->{FieldType}",
+    );
+
+    %TicketIDsSearch = $TicketObject->TicketSearch(
+        Result                       => 'HASH',
+        Limit                        => 100,
+        TicketID                     => $TicketData[0]{TicketID},
+        "DynamicField_$DynamicField->{Name}" => {
+            IsSet => 1,
+        },
+        UserID     => 1,
+        Permission => 'r0',
+    );
+
+    $Self->IsDeeply(
+        \%TicketIDsSearch,
+        { $TicketData[0]{TicketID} => $TicketData[0]{TicketNumber} },
+        "Search with IsSet => 1, dynamic field present, type $DynamicField->{FieldType}",
     );
 }
 

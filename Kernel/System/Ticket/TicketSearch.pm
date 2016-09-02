@@ -124,6 +124,8 @@ To find tickets in your system.
         #   At least one operator must be specified. Operators will be connected with AND,
         #       values in an operator with OR.
         #   You can also pass more than one argument to an operator: ['value1', 'value2']
+        #   The Operator IsSet can only be used on its own, not in combination
+        #   with the other operators. It is currently only supported for text and datetime fields.
         DynamicField_FieldNameX => {
             Equals            => 123,
             Like              => 'value*',                # "equals" operator with wildcard support
@@ -131,6 +133,7 @@ To find tickets in your system.
             GreaterThanEquals => '2001-01-01 01:01:01',
             SmallerThan       => '2002-02-02 02:02:02',
             SmallerThanEquals => '2002-02-02 02:02:02',
+            IsSet             => 1,
         }
 
         # User ID for searching tickets by ticket flags (defaults to UserID)
@@ -1316,7 +1319,8 @@ sub TicketSearch {
                 next TEXT if $Text =~ /^\%{1,3}$/;
 
                 # validate data type
-                my $ValidateSuccess = $DynamicFieldBackendObject->ValueValidate(
+                # IsSet values are always interpreted as boolean, so no need to validate them
+                my $ValidateSuccess = $Operator eq 'IsSet' || $DynamicFieldBackendObject->ValueValidate(
                     DynamicFieldConfig => $DynamicField,
                     Value              => $Text,
                     UserID             => $Param{UserID} || 1,
@@ -1354,11 +1358,14 @@ sub TicketSearch {
         }
 
         if ($NeedJoin) {
+            my $JoinType = join('|', sort keys %$SearchParam) eq 'IsSet'
+                           ? 'LEFT OUTER'
+                           : 'INNER';
 
             if ( $DynamicField->{ObjectType} eq 'Ticket' ) {
 
                 # Join the table for this dynamic field
-                $SQLFrom .= "INNER JOIN dynamic_field_value dfv$DynamicFieldJoinCounter
+                $SQLFrom .= "$JoinType JOIN dynamic_field_value dfv$DynamicFieldJoinCounter
                     ON (st.id = dfv$DynamicFieldJoinCounter.object_id
                         AND dfv$DynamicFieldJoinCounter.field_id = " .
                     $DBObject->Quote( $DynamicField->{ID}, 'Integer' ) . ") ";
@@ -1369,7 +1376,7 @@ sub TicketSearch {
                     $SQLFrom .= $ArticleJoinSQL;
                 }
 
-                $SQLFrom .= "INNER JOIN dynamic_field_value dfv$DynamicFieldJoinCounter
+                $SQLFrom .= "$JoinType JOIN dynamic_field_value dfv$DynamicFieldJoinCounter
                     ON (art.id = dfv$DynamicFieldJoinCounter.object_id
                         AND dfv$DynamicFieldJoinCounter.field_id = " .
                     $DBObject->Quote( $DynamicField->{ID}, 'Integer' ) . ") ";
