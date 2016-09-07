@@ -1,4 +1,5 @@
 #6.0.0.beta1 2016-??-??
+ - 2016-09-07 Fixed errors on entering AdminCustomerUser with RunInitialWildcardSearch disabled.
  - 2016-08-25 Added possibility to send encrypted emails to multiple recipients.
  - 2016-06-07 Added index for searching dynamic field text values.
  - 2016-08-18 Added per-address email loop protection setting (PostmasterMaxEmailsPerAddress), thanks to Moritz Lenz.
