@@ -3396,7 +3396,7 @@ sub BuildDateSelection {
                 Data       => \%Minute,
                 SelectedID => defined( $Param{ $Prefix . 'Minute' } )
                 ? int( $Param{ $Prefix . 'Minute' } )
-                : int($m),
+                : int( $m - $m % $MinuteStep ),
                 Translation => 0,
                 Class       => $Validate ? ( 'Validate_DateMinute ' . $Class ) : $Class,
                 Title       => $Self->{LanguageObject}->Translate('Minutes'),
