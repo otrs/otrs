@@ -95,7 +95,12 @@ sub CustomerCompanyList {
         $Valid = 0;
     }
 
+    # use limit specified in function call if specified but do not
+    # go beyond source limit
     my $Limit = $Param{Limit} // $Self->{SearchListLimit};
+    if ( defined $Self->{SearchListLimit} && ( $Limit > $Self->{SearchListLimit} ) ) {
+        $Limit = $Self->{SearchListLimit};
+    }
 
     my $CacheType;
     my $CacheKey;
