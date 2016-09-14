@@ -73,7 +73,7 @@ sub Run {
         }
 
         # match 'Match => ???' stuff
-        my $Matched       = '';
+        my $Matched       = 0;
         my $MatchedNot    = 0;
         my $MatchedResult = '';
         for ( sort keys %Match ) {
