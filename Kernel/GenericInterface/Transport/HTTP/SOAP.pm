@@ -562,7 +562,7 @@ sub RequesterPerformRequest {
             # force Net::SSL instead of IO::Socket::SSL, otherwise GI can't connect to certificate
             # authentication restricted servers, see https://metacpan.org/pod/Net::HTTPS#ENVIRONMENT
             # Fix for bug #12306
-            $ENV{PERL_NET_HTTPS_SSL_SOCKET_CLASS} = 'Net::SSL';
+            $ENV{PERL_NET_HTTPS_SSL_SOCKET_CLASS} = 'Net::SSL';                   ## no critic
 
             $ENV{HTTPS_PKCS12_FILE}     = $Config->{SSL}->{SSLP12Certificate};    ## no critic
             $ENV{HTTPS_PKCS12_PASSWORD} = $Config->{SSL}->{SSLP12Password};       ## no critic
