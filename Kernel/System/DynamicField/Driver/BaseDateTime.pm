@@ -126,6 +126,15 @@ sub SearchSQLGet {
         SmallerThanEquals => '<=',
     );
 
+    if ( $Param{Operator} eq 'IsSet' ) {
+        if ($Param{SearchTerm}) {
+            return " $Param{TableAlias}.value_date IS NOT NULL";
+        }
+        else {
+            return " $Param{TableAlias}.value_date IS NULL";
+        }
+    }
+
     if ( !$Operators{ $Param{Operator} } ) {
         $Kernel::OM->Get('Kernel::System::Log')->Log(
             'Priority' => 'error',
