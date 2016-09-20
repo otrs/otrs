@@ -38,7 +38,7 @@ sub new {
     }
 
     # AccessRw controls the adding/editing of statistics.
-    for my $Param (qw( AccessRw RequestedURL LastStatsOverview)) {
+    for my $Param (qw( AccessRw RequestedURL )) {
         if ( $Param{$Param} ) {
             $Self->{$Param} = $Param{$Param};
         }
@@ -51,6 +51,15 @@ sub Run {
     my ( $Self, %Param ) = @_;
 
     my $LayoutObject = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
+
+    # set breadcrumbpath for overview screen and it will be used as base for other screens
+    @{ $Self->{BreadcrumbPath} } = (
+        {
+            Name =>
+                $LayoutObject->{LanguageObject}->Translate('Statistics Overview'),
+            Link => 'AgentStatistics;Subaction=Overview',
+        }
+    );
 
     my $Subaction = $Self->{Subaction};
 
@@ -102,27 +111,12 @@ sub OverviewScreen {
     my $ParamObject  = $Kernel::OM->Get('Kernel::System::Web::Request');
     my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
 
-    $Kernel::OM->Get('Kernel::System::AuthSession')->UpdateSessionID(
-        SessionID => $Self->{SessionID},
-        Key       => 'LastStatsOverview',
-        Value     => $Self->{RequestedURL},
-        StoreData => 1,
-    );
-
     # Get Params
     $Param{SearchPageShown} = $ConfigObject->Get('Stats::SearchPageShown') || 50;
     $Param{SearchLimit}     = $ConfigObject->Get('Stats::SearchLimit')     || 1000;
     $Param{OrderBy}   = $ParamObject->GetParam( Param => 'OrderBy' )   || 'ID';
     $Param{Direction} = $ParamObject->GetParam( Param => 'Direction' ) || 'ASC';
     $Param{StartHit} = int( $ParamObject->GetParam( Param => 'StartHit' ) || 1 );
-
-    # store last screen
-    $Kernel::OM->Get('Kernel::System::AuthSession')->UpdateSessionID(
-        SessionID => $Self->{SessionID},
-        Key       => 'LastStatsOverview',
-        Value     => $Self->{RequestedURL},
-        StoreData => 1,
-    );
 
     # get all Stats from the db
     my $Result = $Kernel::OM->Get('Kernel::System::Stats')->GetStatsList(
@@ -190,14 +184,28 @@ sub OverviewScreen {
         );
     }
 
+    my $Notification = $ParamObject->GetParam( Param => 'Notification' ) || '';
+
     # build output
     my $Output = $LayoutObject->Header( Title => 'Overview' );
     $Output .= $LayoutObject->NavigationBar();
+
+    if ( $Notification && $Notification eq 'Add' ) {
+        $Output .= $LayoutObject->Notify( Info => Translatable('Statistics added sucessfully!') );
+    }
+    elsif ( $Notification && $Notification eq 'Update' ) {
+        $Output .= $LayoutObject->Notify( Info => Translatable('Statistics updated sucessfully!') );
+    }
+    elsif ( $Notification && $Notification eq 'Delete' ) {
+        $Output .= $LayoutObject->Notify( Info => Translatable('Statistics deleted sucessfully!') );
+    }
+
     $Output .= $LayoutObject->Output(
         Data => {
             %Pagination,
             %Param,
-            AccessRw => $Self->{AccessRw},
+            AccessRw       => $Self->{AccessRw},
+            BreadcrumbPath => $Self->{BreadcrumbPath},
         },
         TemplateFile => 'AgentStatisticsOverview',
     );
@@ -218,6 +226,7 @@ sub ImportScreen {
         TemplateFile => 'AgentStatisticsImport',
         Data         => {
             %Errors,
+            BreadcrumbPath => $Self->{BreadcrumbPath},
         },
     );
     $Output .= $LayoutObject->Footer();
@@ -254,7 +263,7 @@ sub ImportAction {
 
             # redirect to configure
             return $LayoutObject->Redirect(
-                OP => "Action=AgentStatistics;Subaction=Edit;StatID=$StatID"
+                OP => "Action=AgentStatistics;Subaction=Edit;StatID=$StatID;Notification=Import"
             );
         }
         else {
@@ -315,7 +324,7 @@ sub DeleteAction {
         StatID => $StatID,
         UserID => $Self->{UserID},
     );
-    return $LayoutObject->Redirect( OP => $Self->{LastStatsOverview} );
+    return $LayoutObject->Redirect( OP => "Action=AgentStatistics;Subaction=Overview;Notification=Delete" );
 }
 
 sub EditScreen {
@@ -363,13 +372,27 @@ sub EditScreen {
         );
     }
 
+    my $Notification = $ParamObject->GetParam( Param => 'Notification' ) || '';
+
     my $Output = $LayoutObject->Header( Title => 'Edit' );
     $Output .= $LayoutObject->NavigationBar();
+
+    if ( $Notification && $Notification eq 'Add' ) {
+        $Output .= $LayoutObject->Notify( Info => Translatable('Statistics added sucessfully!') );
+    }
+    elsif ( $Notification && $Notification eq 'Update' ) {
+        $Output .= $LayoutObject->Notify( Info => Translatable('Statistics updated sucessfully!') );
+    }
+    elsif ( $Notification && $Notification eq 'Import' ) {
+        $Output .= $LayoutObject->Notify( Info => Translatable('Statistics imported sucessfully!') );
+    }
+
     $Output .= $LayoutObject->Output(
         TemplateFile => 'AgentStatisticsEdit',
         Data         => {
             %Frontend,
             %{$Stat},
+            BreadcrumbPath => $Self->{BreadcrumbPath},
         },
     );
     $Output .= $LayoutObject->Footer();
@@ -682,12 +705,11 @@ sub EditAction {
     );
 
     if ( $ParamObject->GetParam( Param => 'SaveAndFinish' ) ) {
-        return $LayoutObject->Redirect( OP => $Self->{LastStatsOverview} );
+        return $LayoutObject->Redirect( OP => "Action=AgentStatistics;Subaction=Overview;Notification=Update" );
     }
 
-    return $Self->EditScreen(
-        Errors   => \%Errors,
-        GetParam => \%Data,
+    return $LayoutObject->Redirect(
+        OP => "Action=AgentStatistics;Subaction=Edit;StatID=$Stat->{StatID};Notification=Update"
     );
 }
 
@@ -743,8 +765,15 @@ sub ViewScreen {
         UserID => $Self->{UserID},
     );
 
+    my $Notification = $ParamObject->GetParam( Param => 'Notification' ) || '';
+
     my $Output = $LayoutObject->Header( Title => 'View' );
     $Output .= $LayoutObject->NavigationBar();
+
+    if ( $Notification && $Notification eq 'Add' ) {
+        $Output .= $LayoutObject->Notify( Info => Translatable('Statistics added sucessfully!') );
+    }
+
     $Output .= $LayoutObject->Output(
         TemplateFile => 'AgentStatisticsView',
         Data         => {
@@ -752,6 +781,7 @@ sub ViewScreen {
             Errors   => \@Errors,
             %Frontend,
             %{$Stat},
+            BreadcrumbPath => $Self->{BreadcrumbPath},
         },
     );
     $Output .= $LayoutObject->Footer();
@@ -816,6 +846,7 @@ sub AddScreen {
         Data         => {
             %Frontend,
             %Errors,
+            BreadcrumbPath => $Self->{BreadcrumbPath},
         },
     );
     $Output .= $LayoutObject->Footer();
@@ -895,13 +926,13 @@ sub AddAction {
     # For static stats, the configuration is finished
     if ( $Data{StatType} eq 'static' ) {
         return $LayoutObject->Redirect(
-            OP => "Action=AgentStatistics;Subaction=View;StatID=$Param{StatID}",
+            OP => "Action=AgentStatistics;Subaction=View;StatID=$Param{StatID};Notification=Add",
         );
     }
 
     # Continue configuration for dynamic stats
     return $LayoutObject->Redirect(
-        OP => "Action=AgentStatistics;Subaction=Edit;StatID=$Param{StatID}",
+        OP => "Action=AgentStatistics;Subaction=Edit;StatID=$Param{StatID};Notification=Add",
     );
 }
 

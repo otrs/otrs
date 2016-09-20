@@ -7,8 +7,11 @@
 # --
 
 <div class="MainBox AriaRoleMain LayoutFixedSidebar SidebarFirst">
-    <h1>[% Translate("Statistics » Overview") | html %]</h1>
+    <h1>[% Translate("Statistics Overview") | html %]</h1>
 
+    [% INCLUDE "Breadcrumb.tt" Path = Data.BreadcrumbPath %]
+
+    <div class="Clear"></div>
     <div class="SidebarColumn">
         <div class="WidgetSimple">
             <div class="Header">
