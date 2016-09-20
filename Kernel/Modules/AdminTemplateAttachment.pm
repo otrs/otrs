@@ -32,6 +32,7 @@ sub Run {
     my $LayoutObject           = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
     my $StandardTemplateObject = $Kernel::OM->Get('Kernel::System::StandardTemplate');
     my $StdAttachmentObject    = $Kernel::OM->Get('Kernel::System::StdAttachment');
+    my $Notification           = $ParamObject->GetParam( Param => 'Notification' ) || '';
 
     # ------------------------------------------------------------ #
     # template <-> attachment 1:n
@@ -53,6 +54,9 @@ sub Run {
 
         my $Output = $LayoutObject->Header();
         $Output .= $LayoutObject->NavigationBar();
+        $Output .= $LayoutObject->Notify( Info => Translatable('Template-Attachment relations updated!') )
+            if ( $Notification && $Notification eq 'Update' );
+
         $Output .= $Self->_Change(
             Selected => \%Member,
             Data     => \%StdAttachmentData,
@@ -96,6 +100,9 @@ sub Run {
 
         my $Output = $LayoutObject->Header();
         $Output .= $LayoutObject->NavigationBar();
+        $Output .= $LayoutObject->Notify( Info => Translatable('Template-Attachment relations updated!') )
+            if ( $Notification && $Notification eq 'Update' );
+
         $Output .= $Self->_Change(
             Selected => \%Member,
             Data     => \%StandardTemplateData,
@@ -196,6 +203,9 @@ sub Run {
     # ------------------------------------------------------------ #
     my $Output = $LayoutObject->Header();
     $Output .= $LayoutObject->NavigationBar();
+    $Output .= $LayoutObject->Notify( Info => Translatable('Template-Attachment relations updated!') )
+        if ( $Notification && $Notification eq 'Update' );
+
     $Output .= $Self->_Overview();
     $Output .= $LayoutObject->Footer();
     return $Output;

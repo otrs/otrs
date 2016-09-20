@@ -175,6 +175,13 @@ $Selenium->RunTest(
         $Selenium->find_element("//input[\@value='$AttachmentID'][\@type='checkbox']")->VerifiedClick();
         $Selenium->find_element("//button[\@value='Save'][\@type='submit']")->VerifiedClick();
 
+        # check if notification exists after updating
+        my $Notification = 'Template-Attachment relations updated!';
+        $Self->True(
+            $Selenium->execute_script("return \$('.MessageBox.Notice p:contains($Notification)').length"),
+            "$Notification - notification is found."
+        );
+
         # check test Template relation for test Attachment
         $Selenium->find_element("//a[contains(\@href, \'Subaction=Attachment;ID=$AttachmentID' )]")->VerifiedClick();
 
