@@ -892,6 +892,38 @@ sub ValidateFrom {
     return 1;
 }
 
+=item ValidateToIsEmail()
+
+checks if the given from is valid.
+
+    my $Success = $CommonObject->ValidateToIsEmail(
+        To => 'user@domain.com',
+    );
+
+    returns
+    $Success = 1            # or 0
+
+=cut
+
+sub ValidateToIsEmail {
+    my ( $Self, %Param ) = @_;
+
+    # check needed stuff
+    return if !$Param{To};
+
+    # check email address
+    for my $Email ( Mail::Address->parse( $Param{To} ) ) {
+        if (
+            !$Kernel::OM->Get('Kernel::System::CheckItem')->CheckEmail( Address => $Email->address() )
+            )
+        {
+            return;
+        }
+    }
+
+    return 1;
+}
+
 =item ValidateSenderType()
 
 checks if the given SenderType or SenderType ID is valid.

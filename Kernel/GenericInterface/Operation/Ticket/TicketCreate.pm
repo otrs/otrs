@@ -116,12 +116,14 @@ perform TicketCreate Operation. This will return the created ticket number.
                 #},
             },
             Article => {
+                ArticleSend                     => 1,                          # optional
                 ArticleTypeID                   => 123,                        # optional
                 ArticleType                     => 'some article type name',   # optional
                 SenderTypeID                    => 123,                        # optional
                 SenderType                      => 'some sender type name',    # optional
                 AutoResponseType                => 'some auto response type',  # optional
                 From                            => 'some from string',         # optional
+                To                              => 'some to address',          # optional, required if ArticleSend => 1
                 Subject                         => 'some subject',
                 Body                            => 'some body'
 
@@ -760,6 +762,23 @@ sub _CheckArticle {
         }
     }
 
+    # check that Article->To is set when Article->ArticleSend is set.
+    if ( $Article->{ArticleSend} ) {
+        if ( !$Article->{To} ) {
+            return $Self->ReturnError(
+                ErrorCode    => 'TicketCreate.MissingParameter',
+                ErrorMessage => "TicketCreate: Article 'To' parameter is required when 'ArticleSend' parameter is set",
+            );
+        }
+        elsif ( !$Self->ValidateToIsEmail( %{$Article} ) ) {
+            return {
+                ErrorCode => 'TicketCreate.InvalidParameter',
+                ErrorMessage =>
+                    "TicketCreate: Article->To parameter must be an email address when Article->ArticleSend is set!",
+            };
+        }
+    }
+
     # check Article->ContentType vs Article->MimeType and Article->Charset
     if ( !$Article->{ContentType} && !$Article->{MimeType} && !$Article->{Charset} ) {
         return {
@@ -1281,34 +1300,84 @@ sub _TicketCreate {
 
     # set Article From
     my $From;
-    if ( $Article->{From} ) {
-        $From = $Article->{From};
+
+    # When we are sending the article as an email, set the from address to the ticket's system address
+    if ( $Article->{ArticleSend} && !$Article->{From} ) {
+        my $QueueID = $TicketObject->TicketQueueID(
+            TicketID => $TicketID,
+        );
+        my %Address = $Kernel::OM->Get("Kernel::System::Queue")->GetSystemAddress(
+            QueueID => $QueueID,
+        );
+        $From = $Address{RealName} . " <" . $Address{Email} . ">";
     }
 
-    # use data from customer user (if customer user is in database)
-    elsif ( IsHashRefWithData( \%CustomerUserData ) ) {
-        $From = '"' . $CustomerUserData{UserFirstname} . ' ' . $CustomerUserData{UserLastname} . '"'
-            . ' <' . $CustomerUserData{UserEmail} . '>';
-    }
-
-    # otherwise use customer user as sent from the request (it should be an email)
+    # else keep old behaviour
     else {
-        $From = $Ticket->{CustomerUser};
+        if ( $Article->{From} ) {
+            $From = $Article->{From};
+        }
+
+        # use data from customer user (if customer user is in database)
+        elsif ( IsHashRefWithData( \%CustomerUserData ) ) {
+            $From = '"' . $CustomerUserData{UserFirstname} . ' ' . $CustomerUserData{UserLastname} . '"'
+                . ' <' . $CustomerUserData{UserEmail} . '>';
+        }
+
+        # otherwise use customer user as sent from the request (it should be an email)
+        else {
+            $From = $Ticket->{CustomerUser};
+        }
     }
 
     # set Article To
     my $To;
-    if ( $Ticket->{Queue} ) {
-        $To = $Ticket->{Queue};
-    }
-    else {
-        $To = $Kernel::OM->Get('Kernel::System::Queue')->QueueLookup(
-            QueueID => $Ticket->{QueueID},
-        );
+
+    # If we are sending the article as an email, set the to address to the provided address.
+    if ( $Article->{ArticleSend} ) {
+        $To = $Article->{To};
     }
 
-    # create article
-    my $ArticleID = $TicketObject->ArticleCreate(
+    # otherwise use the queue
+    else {
+        if ( $Ticket->{Queue} ) {
+            $To = $Ticket->{Queue};
+        }
+        else {
+            $To = $Kernel::OM->Get('Kernel::System::Queue')->QueueLookup(
+                QueueID => $Ticket->{QueueID},
+            );
+        }
+    }
+
+    my $Subject;
+    if ( $Article->{ArticleSend} ) {
+
+        # Build a subject
+        $Subject = $TicketObject->TicketSubjectBuild(
+            TicketNumber => $TicketObject->TicketNumberLookup(
+                TicketID => $TicketID,
+                UserID   => $Param{UserID},
+            ),
+            Subject => $Article->{Subject},
+            Type    => 'New',
+            Action  => 'Reply',
+        );
+
+        if ( !$Subject ) {
+            return {
+                Success => 0,
+                ErrorMessage =>
+                    'The subject for the e-mail could not be generated. Please contact the system administrator'
+            };
+        }
+    }
+
+    else {
+        $Subject = $Article->{Subject};
+    }
+
+    my (%ArticleParams) = (
         NoAgentNotify  => $Article->{NoAgentNotify}  || 0,
         TicketID       => $TicketID,
         ArticleTypeID  => $Article->{ArticleTypeID}  || '',
@@ -1317,7 +1386,7 @@ sub _TicketCreate {
         SenderType     => $Article->{SenderType}     || '',
         From           => $From,
         To             => $To,
-        Subject        => $Article->{Subject},
+        Subject        => $Subject,
         Body           => $Article->{Body},
         MimeType       => $Article->{MimeType}       || '',
         Charset        => $Article->{Charset}        || '',
@@ -1329,11 +1398,20 @@ sub _TicketCreate {
         OrigHeader       => {
             From    => $From,
             To      => $To,
-            Subject => $Article->{Subject},
+            Subject => $Subject,
             Body    => $Article->{Body},
 
         },
     );
+
+    # create article
+    my $ArticleID;
+    if ( $Article->{ArticleSend} ) {
+        $ArticleID = $TicketObject->ArticleSend(%ArticleParams);
+    }
+    else {
+        $ArticleID = $TicketObject->ArticleCreate(%ArticleParams);
+    }
 
     if ( !$ArticleID ) {
         return {

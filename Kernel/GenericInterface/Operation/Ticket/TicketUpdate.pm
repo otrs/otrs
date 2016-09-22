@@ -116,12 +116,14 @@ if applicable the created ArticleID.
                 #},
             },
             Article {                                                          # optional
+                ArticleSend                     => 1,                          # optional
                 ArticleTypeID                   => 123,                        # optional
                 ArticleType                     => 'some article type name',   # optional
                 SenderTypeID                    => 123,                        # optional
                 SenderType                      => 'some sender type name',    # optional
                 AutoResponseType                => 'some auto response type',  # optional
                 From                            => 'some from string',         # optional
+                To                              => 'some to string',           # optional, required if ArticleSend => 1
                 Subject                         => 'some subject',
                 Body                            => 'some body'
 
@@ -823,6 +825,23 @@ sub _CheckArticle {
             return {
                 ErrorCode    => 'TicketUpdate.InvalidParameter',
                 ErrorMessage => "TicketUpdate: Article->From parameter is invalid!",
+            };
+        }
+    }
+
+    # check that Article->To is set when Article->ArticleSend is set.
+    if ( $Article->{ArticleSend} ) {
+        if ( !$Article->{To} ) {
+            return $Self->ReturnError(
+                ErrorCode    => 'TicketUpdate.MissingParameter',
+                ErrorMessage => "TicketUpdate: Article 'To' parameter is required when 'ArticleSend' parameter is set",
+            );
+        }
+        elsif ( !$Self->ValidateToIsEmail( %{$Article} ) ) {
+            return {
+                ErrorCode => 'TicketUpdate.InvalidParameter',
+                ErrorMessage =>
+                    "TicketUpdate: Article->To parameter must be an email address when Article->ArticleSend is set!",
             };
         }
     }
@@ -1904,36 +1923,85 @@ sub _TicketUpdate {
 
         # set Article From
         my $From;
-        if ( $Article->{From} ) {
-            $From = $Article->{From};
-        }
-        elsif ( $Param{UserType} eq 'Customer' ) {
 
-            # use data from customer user (if customer user is in database)
-            if ( IsHashRefWithData( \%CustomerUserData ) ) {
-                $From = '"'
-                    . $CustomerUserData{UserFirstname} . ' '
-                    . $CustomerUserData{UserLastname} . '"'
-                    . ' <' . $CustomerUserData{UserEmail} . '>';
-            }
-
-            # otherwise use customer user as sent from the request (it should be an email)
-            else {
-                $From = $Ticket->{CustomerUser};
-            }
+        # When we are sending the article as an email, set the from address to the ticket's system address
+        if ( $Article->{ArticleSend} && !$Article->{From} ) {
+            my $QueueID = $TicketObject->TicketQueueID(
+                TicketID => $TicketID,
+            );
+            my %Address = $Kernel::OM->Get("Kernel::System::Queue")->GetSystemAddress(
+                QueueID => $QueueID,
+            );
+            $From = $Address{RealName} . " <" . $Address{Email} . ">";
         }
         else {
-            my %UserData = $Kernel::OM->Get('Kernel::System::User')->GetUserData(
-                UserID => $Param{UserID},
-            );
-            $From = $UserData{UserFirstname} . ' ' . $UserData{UserLastname};
+            # otherwise keep old behaviour
+            if ( $Article->{From} ) {
+                $From = $Article->{From};
+            }
+            elsif ( $Param{UserType} eq 'Customer' ) {
+
+                # use data from customer user (if customer user is in database)
+                if ( IsHashRefWithData( \%CustomerUserData ) ) {
+                    $From = '"'
+                        . $CustomerUserData{UserFirstname} . ' '
+                        . $CustomerUserData{UserLastname} . '"'
+                        . ' <' . $CustomerUserData{UserEmail} . '>';
+                }
+
+                # otherwise use customer user as sent from the request (it should be an email)
+                else {
+                    $From = $Ticket->{CustomerUser};
+                }
+            }
+            else {
+                my %UserData = $Kernel::OM->Get('Kernel::System::User')->GetUserData(
+                    UserID => $Param{UserID},
+                );
+                $From = $UserData{UserFirstname} . ' ' . $UserData{UserLastname};
+            }
         }
 
         # set Article To
-        my $To = '';
+        my $To;
+
+        # If we are sending the article as an email, set the to address to the provided address.
+        if ( $Article->{ArticleSend} ) {
+            $To = $Article->{To};
+        }
+        else {
+            $To = '';
+        }
+
+        my $Subject;
+        if ( $Article->{ArticleSend} ) {
+
+            # Build a subject
+            $Subject = $TicketObject->TicketSubjectBuild(
+                TicketNumber => $TicketObject->TicketNumberLookup(
+                    TicketID => $TicketID,
+                    UserID   => $Param{UserID},
+                ),
+                Subject => $Article->{Subject},
+                Type    => 'New',
+                Action  => 'Reply',
+            );
+
+            if ( !$Subject ) {
+                return {
+                    Success => 0,
+                    ErrorMessage =>
+                        'The subject for the e-mail could not be generated. Please contact the system administrator'
+                };
+            }
+        }
+
+        else {
+            $Subject = $Article->{Subject};
+        }
 
         # create article
-        $ArticleID = $TicketObject->ArticleCreate(
+        my (%ArticleParams) = (
             NoAgentNotify  => $Article->{NoAgentNotify}  || 0,
             TicketID       => $TicketID,
             ArticleTypeID  => $Article->{ArticleTypeID}  || '',
@@ -1942,7 +2010,7 @@ sub _TicketUpdate {
             SenderType     => $Article->{SenderType}     || '',
             From           => $From,
             To             => $To,
-            Subject        => $Article->{Subject},
+            Subject        => $Subject,
             Body           => $Article->{Body},
             MimeType       => $Article->{MimeType}       || '',
             Charset        => $Article->{Charset}        || '',
@@ -1954,11 +2022,18 @@ sub _TicketUpdate {
             OrigHeader       => {
                 From    => $From,
                 To      => $To,
-                Subject => $Article->{Subject},
+                Subject => $Subject,
                 Body    => $Article->{Body},
 
             },
         );
+
+        if ( $Article->{ArticleSend} ) {
+            $ArticleID = $TicketObject->ArticleSend(%ArticleParams);
+        }
+        else {
+            $ArticleID = $TicketObject->ArticleCreate(%ArticleParams);
+        }
 
         if ( !$ArticleID ) {
             return {
