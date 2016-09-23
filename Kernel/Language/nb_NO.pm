@@ -1877,7 +1877,7 @@ sub Data {
             '',
 
         # Template: AgentDashboardTicketGeneric
-        'My locked tickets' => 'Mine lukkede saker',
+        'My locked tickets' => 'Mine låste saker',
         'My watched tickets' => 'Mine overvåkede saker',
         'My responsibilities' => 'Mine ansvar',
         'Tickets in My Queues' => 'Saker i Min Kø',
