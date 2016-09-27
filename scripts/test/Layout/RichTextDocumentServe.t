@@ -217,7 +217,7 @@ my @Tests = (
 <div style="margin: 5px 0; padding: 0px; border: 1px solid #999; border-radius: 2px; -moz-border-radius: 2px; -webkit-border-radius: 2px;">
     <div style="padding: 5px; background-color: #DDD; font-family:Geneva,Helvetica,Arial,sans-serif; font-size: 11px; text-align: center;">
         Zum Schutz Ihrer Privatsphäre wurden entfernte Inhalte blockiert.
-        <a href="index.pl?;LoadExternalImages=1;SessionID=123">Blockierte Inhalte laden.</a>
+        <a href="index.pl?;LoadExternalContent=1;SessionID=123">Blockierte Inhalte laden.</a>
     </div>
 </div>
 1',
@@ -236,7 +236,7 @@ my @Tests = (
                 ContentID => '<Untitled%20Attachment>',
             },
         },
-        LoadExternalImages => 1,
+        LoadExternalContent => 1,
         Result             => {
             Content     => '1<img src="http://google.com"/>',
             ContentType => 'text/html; charset="utf-8"',
@@ -266,7 +266,7 @@ EOF
                 ContentID => '<Untitled%20Attachment>',
             },
         },
-        LoadExternalImages => 1,
+        LoadExternalContent => 1,
         Result             => {
             Content => <<EOF,
 <!DOCTYPE html SYSTEM "about:legacy-compat">
@@ -322,7 +322,7 @@ EOF
                 ContentID => '<>',
             },
         },
-        LoadExternalImages => 1,
+        LoadExternalContent => 1,
         Result             => {
             Content     => 'Link <a href="http://test.example" target="_blank">http://test.example</a>',
             ContentType => 'text/html; charset="utf-8"',
