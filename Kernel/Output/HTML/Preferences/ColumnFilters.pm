@@ -60,10 +60,23 @@ sub Run {
 
         # pref update db
         if ( !$Kernel::OM->Get('Kernel::Config')->Get('DemoSystem') ) {
+
+            my %Seen;
+            my @ColumnsUnique;
+            COLUMN:
+            for my $Column ( @{ $Param{GetParam}->{$Key} } ) {
+
+                # skip duplicates
+                next COLUMN if $Seen{$Column};
+                $Seen{$Column} = 1;
+
+                push @ColumnsUnique, $Column;
+            }
+
             $Kernel::OM->Get('Kernel::System::User')->SetPreferences(
                 UserID => $Param{UserData}->{UserID},
                 Key    => $Key . '-' . $FilterAction,
-                Value  => $Kernel::OM->Get('Kernel::System::JSON')->Encode( Data => $Param{GetParam}->{$Key} ),
+                Value  => $Kernel::OM->Get('Kernel::System::JSON')->Encode( Data => \@ColumnsUnique ),
             );
         }
     }
