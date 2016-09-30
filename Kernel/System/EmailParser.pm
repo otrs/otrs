@@ -689,6 +689,13 @@ sub PartsAttachments {
             String => $Part->head()->recommended_filename(),
             Encode => 'utf-8',
         );
+
+        # cleanup filename
+        $PartData{Filename} = $Kernel::OM->Get('Kernel::System::Main')->FilenameCleanUp(
+            Filename => $PartData{Filename},
+            Type     => 'Attachment',
+        );
+
         $PartData{ContentDisposition} = $Part->head()->get('Content-Disposition');
         if ( $PartData{ContentDisposition} ) {
             my %Data = $Self->GetContentTypeParams(

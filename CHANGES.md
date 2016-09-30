@@ -1,4 +1,5 @@
-#6.0.0.beta1 2016-??-??
+#6.0.0.beta1 2016-??-??  
+ - 2016-09-30 Attachment name validation added.
  - 2016-05-24 Whitelisted characters allowed in filenames for security.
  - 2016-05-04 Added the possiblity to configure the responsible field as mandatory (enabled by default for AgentTicketResponsible, if responsible feature is enabled), thanks to S7.
  - 2016-04-29 Reduced error log noise by reducing the log level of less important messages, thanks to Pawel Boguslawski.
