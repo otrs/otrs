@@ -121,7 +121,7 @@ sub Run {
     if ( $UpdatesAvailable{OTRSBusinessUpdateAvailable} ) {
 
         my $Text = $LayoutObject->{LanguageObject}->Translate(
-            'An update for your %s is available! Please update at your earliest!',
+            'An update for your %s is available! Please update at your earliest convenience!',
             $OTRSBusinessLabel
         );
         $Output .= $LayoutObject->Notify(
