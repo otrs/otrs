@@ -830,6 +830,15 @@ You can pass several additional filters at once:
         Filter    => \@MyFilters,
     );
 
+To list all files (even hidden prefixed with dots) but without
+current (.) and parent (..) directories:
+    my @FilesInDirectory = $MainObject->DirectoryRead(
+        Directory     => $Path,
+        Filter        => '*',
+        IncludeHidden => 1,
+    );
+
+
 The result strings are absolute paths, and they are converted to utf8.
 
 Use the 'Silent' parameter to suppress log messages when a directory
@@ -890,10 +899,19 @@ sub DirectoryRead {
     for my $Filter ( @{ $Param{Filter} } ) {
         my @Glob = glob "$Param{Directory}/$Filter";
 
-        # look for repeated values
+        # include files and dirs prefixed with dot (hidden) if enabled
+        if ( $Param{IncludeHidden} ) {
+            my @GlobHidden = glob "$Param{Directory}/.$Filter";
+            push(@Glob, @GlobHidden);
+        }
+
+        # remove duplicates and . and .. in IncludeHidden mode
         NAME:
         for my $GlobName (@Glob) {
-
+            if ( $Param{IncludeHidden} ) {
+                next NAME if $GlobName eq "$Param{Directory}/.";
+                next NAME if $GlobName eq "$Param{Directory}/..";
+            }
             next NAME if !-e $GlobName;
             if ( !$Seen{$GlobName} ) {
                 push @GlobResults, $GlobName;

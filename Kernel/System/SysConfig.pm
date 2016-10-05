@@ -1627,7 +1627,7 @@ sub _Init {
     # load xml config files
     my @Files = $MainObject->DirectoryRead(
         Directory => $Directory,
-        Filter    => "*.xml",
+        Filter    => '*.xml',
     );
 
     # get the md5 representing the current configuration state

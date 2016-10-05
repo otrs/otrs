@@ -29,7 +29,7 @@ and cause wrong test failures.
 my $Directory   = $Kernel::OM->Get('Kernel::Config')->Get('Home') . "/Kernel/Config/Files/";
 my @ConfigFiles = $Kernel::OM->Get('Kernel::System::Main')->DirectoryRead(
     Directory => $Directory,
-    Filter    => "*.xml",
+    Filter    => '*.xml',
 );
 
 my %AllowedConfigFiles = (

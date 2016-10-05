@@ -62,7 +62,7 @@ sub FormIDRemove {
 
     my @List = $MainObject->DirectoryRead(
         Directory => $Directory,
-        Filter    => "*",
+        Filter    => '*',
     );
 
     my @Data;
@@ -232,7 +232,7 @@ sub FormIDGetAllFilesData {
 
     my @List = $MainObject->DirectoryRead(
         Directory => $Directory,
-        Filter    => "*",
+        Filter    => '*',
     );
 
     my $Counter = 0;
@@ -337,7 +337,7 @@ sub FormIDGetAllFilesMeta {
 
     my @List = $MainObject->DirectoryRead(
         Directory => $Directory,
-        Filter    => "*",
+        Filter    => '*',
     );
 
     my $Counter = 0;
@@ -442,7 +442,7 @@ sub FormIDCleanUp {
         if ( $RetentionTime > $SubdirTime ) {
             my @Sublist = $MainObject->DirectoryRead(
                 Directory => $Subdir,
-                Filter    => "*",
+                Filter    => '*',
             );
 
             for my $File (@Sublist) {

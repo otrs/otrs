@@ -658,7 +658,7 @@ sub ConfigSettingCleanup {
     my $Home  = $Kernel::OM->Get('Kernel::Config')->Get('Home');
     my @Files = $Kernel::OM->Get('Kernel::System::Main')->DirectoryRead(
         Directory => "$Home/Kernel/Config/Files",
-        Filter    => "ZZZZUnitTest*.pm",
+        Filter    => 'ZZZZUnitTest*.pm',
     );
     for my $File (@Files) {
         $Kernel::OM->Get('Kernel::System::Main')->FileDelete(
