@@ -119,11 +119,11 @@ sub Run {
         $Data{Filename} = "Ticket-$Article{TicketNumber}-ArticleID-$Article{ArticleID}.html";
 
         # safety check only on customer article
-        my $LoadExternalImages = $ParamObject->GetParam(
-            Param => 'LoadExternalImages'
+        my $LoadExternalContent = $ParamObject->GetParam(
+            Param => 'LoadExternalContent'
         ) || 0;
-        if ( !$LoadExternalImages && $Article{SenderType} ne 'customer' ) {
-            $LoadExternalImages = 1;
+        if ( !$LoadExternalContent && $Article{SenderType} ne 'customer' ) {
+            $LoadExternalContent = 1;
         }
 
         # generate base url
@@ -139,14 +139,18 @@ sub Run {
         # reformat rich text document to have correct charset and links to
         # inline documents
         %Data = $LayoutObject->RichTextDocumentServe(
-            Data               => \%Data,
-            URL                => $URL,
-            Attachments        => \%AtmBox,
-            LoadExternalImages => $LoadExternalImages,
+            Data                => \%Data,
+            URL                 => $URL,
+            Attachments         => \%AtmBox,
+            LoadExternalContent => $LoadExternalContent,
         );
 
         # return html attachment
-        return $LayoutObject->Attachment(%Data);
+        return $LayoutObject->Attachment(
+            %Data,
+            LoadExternalContent => $LoadExternalContent,  # for blocking external content with CSP also
+        );
+
     }
 
     # download it AttachmentDownloadType is configured
