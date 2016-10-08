@@ -1280,6 +1280,7 @@ sub _SOAPOutputProcessString {
     # escape characters that are invalid in XML
     $Param{Data} =~ s{ & }{&amp;}xmsg;
     $Param{Data} =~ s{ < }{&lt;}xmsg;
+    $Param{Data} =~ s{ > }{&gt;}xmsg;
 
     return $Param{Data};
 }
