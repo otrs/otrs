@@ -258,6 +258,19 @@ my @Tests = (
         },
     },
     {
+        Name   => 'TextArea Not Empty',
+        Config => {
+            DynamicFieldConfig => $DynamicFieldConfigs{TextArea},
+            TableAlias         => 'dfv',
+            TestOperators      => {
+                Empty             => 0,
+            },
+        },
+        ExpectedResult => {
+            Empty             => " dfv.value_text <> '' ",
+        },
+    },
+    {
         Name   => 'Checkbox Wrong Data',
         Config => {
             DynamicFieldConfig => $DynamicFieldConfigs{Checkbox},
@@ -306,6 +319,19 @@ my @Tests = (
         },
     },
     {
+        Name   => 'Checkbox Not Empty',
+        Config => {
+            DynamicFieldConfig => $DynamicFieldConfigs{Checkbox},
+            TableAlias         => 'dfv',
+            TestOperators      => {
+                Empty             => 0,
+            },
+        },
+        ExpectedResult => {
+            Empty             => " dfv.value_int IS NOT NULL ",
+        },
+    },
+    {
         Name   => 'Dropdown',
         Config => {
             DynamicFieldConfig => $DynamicFieldConfigs{Dropdown},
@@ -330,6 +356,19 @@ my @Tests = (
             },
             SmallerThan       => " dfv.value_text < 'Foo' ",
             SmallerThanEquals => " dfv.value_text <= 'Foo' ",
+        },
+    },
+    {
+        Name   => 'Dropdown Not Empty',
+        Config => {
+            DynamicFieldConfig => $DynamicFieldConfigs{Dropdown},
+            TableAlias         => 'dfv',
+            TestOperators      => {
+                Empty             => 0,
+            },
+        },
+        ExpectedResult => {
+            Empty            => " dfv.value_text <> '' ",
         },
     },
     {
@@ -360,6 +399,19 @@ my @Tests = (
         },
     },
     {
+        Name   => 'Multiselect Not Empty',
+        Config => {
+            DynamicFieldConfig => $DynamicFieldConfigs{Multiselect},
+            TableAlias         => 'dfv',
+            TestOperators      => {
+                Empty             => 0,
+            },
+        },
+        ExpectedResult => {
+            Empty             => " dfv.value_text <> '' ",
+        },
+    },
+    {
         Name   => 'DateTime',
         Config => {
             DynamicFieldConfig => $DynamicFieldConfigs{DateTime},
@@ -382,6 +434,19 @@ my @Tests = (
             Like              => undef,
             SmallerThan       => " dfv.value_date < 'Foo' ",
             SmallerThanEquals => " dfv.value_date <= 'Foo' ",
+        },
+    },
+    {
+        Name   => 'DateTime Not Empty',
+        Config => {
+            DynamicFieldConfig => $DynamicFieldConfigs{DateTime},
+            TableAlias         => 'dfv',
+            TestOperators      => {
+                Empty             => 0,
+            },
+        },
+        ExpectedResult => {
+            Empty            => " dfv.value_date IS NOT NULL ",
         },
     },
     {
@@ -408,6 +473,19 @@ my @Tests = (
             SmallerThan       => " dfv.value_date < 'Foo' ",
             SmallerThanEquals => " dfv.value_date <= 'Foo' ",
         },
+    },
+    {
+        Name   => 'Date',
+        Config => {
+            DynamicFieldConfig => $DynamicFieldConfigs{Date},
+            TableAlias         => 'dfv',
+            TestOperators      => {
+                Empty             => 0,
+            },
+        },
+        ExpectedResult => {
+            Empty             => " dfv.value_date IS NOT NULL ",
+        }
     },
 );
 

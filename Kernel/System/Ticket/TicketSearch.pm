@@ -125,7 +125,8 @@ To find tickets in your system.
         #       values in an operator with OR.
         #   You can also pass more than one argument to an operator: ['value1', 'value2']
         DynamicField_FieldNameX => {
-            Empty             => 1,                       # will return dynamic fields without a value (default: 0)
+            Empty             => 1,                       # will return dynamic fields without a value
+                                                          # set to 0 to invert the condition
             Equals            => 123,
             Like              => 'value*',                # "equals" operator with wildcard support
             GreaterThan       => '2001-01-01 01:01:01',

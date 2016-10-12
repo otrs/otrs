@@ -113,8 +113,12 @@ sub SearchSQLGet {
     );
 
     if ( $Param{Operator} eq 'Empty' ) {
-        my $SQL = " $Param{TableAlias}.value_text IS NULL OR $Param{TableAlias}.value_text = '' ";
-        return $SQL;
+        if ( $Param{SearchTerm} ) {
+            return " $Param{TableAlias}.value_text IS NULL OR $Param{TableAlias}.value_text = '' ";
+        }
+        else {
+            return " $Param{TableAlias}.value_text <> '' ";
+        }
     }
     elsif ( !$Operators{ $Param{Operator} } ) {
         $Kernel::OM->Get('Kernel::System::Log')->Log(
