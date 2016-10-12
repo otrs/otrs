@@ -337,8 +337,8 @@ sub Sync {
             ATTRIBUTE:
             for my $Attribute ( sort keys %SyncUser ) {
                 # treat undef and empty string as equal
-                my $SyncUserAttribute = $SyncUser{$Attribute} || '';
-                my $UserDataAttribute = $UserData{$Attribute} || '';
+                my $SyncUserAttribute = $SyncUser{$Attribute} // '';
+                my $UserDataAttribute = $UserData{$Attribute} // '';
                 next ATTRIBUTE if $SyncUserAttribute eq $UserDataAttribute;
                 $AttributeChange = 1;
                 last ATTRIBUTE;
