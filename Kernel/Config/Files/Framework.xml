@@ -591,6 +591,14 @@
             <String Regex="">ns.example.com</String>
         </Setting>
     </ConfigItem>
+    <ConfigItem Name="ResolverTimeout" Required="0" Valid="0">
+        <Description Translatable="1">Sets the timeout (in seconds) for resolver DNS queries (i.e. during checking MX record if CheckMXRecord is enabled to protect against long agent UI responses in case of very slow DNS queries).</Description>
+        <Group>Framework</Group>
+        <SubGroup>Core</SubGroup>
+        <Setting>
+            <String Regex="">3</String>
+        </Setting>
+    </ConfigItem>
     <ConfigItem Name="CheckEmailAddresses" Required="1" Valid="1">
         <Description Translatable="1">Makes the application check the syntax of email addresses.</Description>
         <Group>Framework</Group>
