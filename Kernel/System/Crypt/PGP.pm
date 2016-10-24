@@ -1176,20 +1176,12 @@ sub _CryptedWithKey {
         return;
     }
 
-    # This is a bit tricky: all we actually want is the list of keys that this message has been
-    # encrypted for, but gpg does not seem to offer a way to just get these.
-    # So we simply try to decrypt with an incorrect passphrase, which of course fails, but still
-    # gives us the listing of the keys that we want ...
-    # N.B.: if anyone knows how to get that info without resorting to such tricks - please tell!
-    my ( $FHPhrase, $FilePhrase ) = $Kernel::OM->Get('Kernel::System::FileTemp')->TempFile();
-    print $FHPhrase '_no_this_is_not_the_@correct@_passphrase_';
-    close $FHPhrase;
-    my $GPGOptions     = qq{--batch --passphrase-fd 0 --always-trust --yes --decrypt $Param{File}};
-    my @GPGOutputLines = qx{$Self->{GPGBin} $GPGOptions <$FilePhrase 2>&1};
+    my $GPGOptions     = qq{--no-default-keyring --secret-keyring /dev/null -a --list-only $Param{File}};
+    my @GPGOutputLines = qx{$Self->{GPGBin} $GPGOptions 2>&1};
 
     my @Keys;
     for my $Line (@GPGOutputLines) {
-        if ( $Line =~ m{\sID\s((0x)?([0-9A-F]{8}){1,2})}i ) {
+        if ( $Line =~ m{\s((0x)?([0-9A-F]{8}){1,2})}i ) {
             my $KeyID = $1;
             my @Result = $Self->PrivateKeySearch( Search => $KeyID );
             if (@Result) {
