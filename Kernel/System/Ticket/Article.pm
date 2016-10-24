@@ -2219,6 +2219,7 @@ sub ArticleSend {
     my ( $Self, %Param ) = @_;
 
     my $ToOrig      = $Param{To}          || '';
+    my $CcOrig      = $Param{Cc}          || '';
     my $Loop        = $Param{Loop}        || 0;
     my $HistoryType = $Param{HistoryType} || 'SendAnswer';
 
@@ -2269,16 +2270,10 @@ sub ArticleSend {
         AttachmentsRef => $Param{Attachment},
     );
 
-    # create article
     my $Time      = $Kernel::OM->Get('Kernel::System::Time')->SystemTime();
     my $Random    = rand 999999;
     my $FQDN      = $Kernel::OM->Get('Kernel::Config')->Get('FQDN');
     my $MessageID = "<$Time.$Random\@$FQDN>";
-    my $ArticleID = $Self->ArticleCreate(
-        %Param,
-        MessageID => $MessageID,
-    );
-    return if !$ArticleID;
 
     # send mail
     my ( $HeadRef, $BodyRef ) = $Kernel::OM->Get('Kernel::System::Email')->Send(
@@ -2289,7 +2284,22 @@ sub ArticleSend {
     # return if no mail was able to send
     if ( !$HeadRef || !$BodyRef ) {
         $Kernel::OM->Get('Kernel::System::Log')->Log(
-            Message  => "Impossible to send message to: $Param{'To'} .",
+            Message  => "Error sending message to $Param{'To'} (Message-ID: $MessageID).",
+            Priority => 'error',
+        );
+        return;
+    }
+
+    # create article
+    my $ArticleID = $Self->ArticleCreate(
+        %Param,
+        MessageID => $MessageID,
+    );
+
+    # return if article was not created
+    if ( !$ArticleID ) {
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
+            Message  => "Impossible to create article for e-mail sent (Message-ID: $MessageID).",
             Priority => 'error',
         );
         return;
@@ -2301,12 +2311,22 @@ sub ArticleSend {
         Email     => ${$HeadRef} . "\n" . ${$BodyRef},
         UserID    => $Param{UserID}
     );
-    return if !$Plain;
+
+    # return if plain article was not written
+    if ( !$Plain ) {
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
+            Message  => "Impossible to write plain article for e-mail sent (Message-ID: $MessageID).",
+            Priority => 'error',
+        );
+        return;
+    }
 
     # log
     $Kernel::OM->Get('Kernel::System::Log')->Log(
         Priority => 'info',
-        Message  => "Sent email to '$ToOrig' from '$Param{From}'. "
+        Message  => "Sent email to '$ToOrig' "
+            . ( $CcOrig ? "(cc '$CcOrig') " : '' )
+            . "from '$Param{From} (Message-ID: $MessageID)'. "
             . "HistoryType => $HistoryType, Subject => $Param{Subject};",
     );
 
@@ -2518,20 +2538,39 @@ sub SendAutoResponse {
     ADDRESS:
     for my $Address (@Addresses) {
         my $Email = $EmailParser->GetEmailAddress( Email => $Address );
-        if ( !$Email ) {
+
+        my $EmailValid = 0;
+        my $EmailErrType = '';
+        if ( $Email ) {
+
+            # get check item object
+            my $CheckItemObject = $Kernel::OM->Get('Kernel::System::CheckItem');
+
+            $EmailValid = $CheckItemObject->CheckEmail(
+                Address => $Email,
+                SkipDNSChecks => 1,  # don't skip autoresponding in case of temporary DNS problems
+            );
+
+            if ( !$EmailValid ) {
+                $EmailErrType = ' (' . $CheckItemObject->CheckErrorType() . ')';
+            }
+        }
+
+        # check email address
+        if ( !$EmailValid ) {
 
             # add it to ticket history
             $Self->HistoryAdd(
                 TicketID     => $Param{TicketID},
                 CreateUserID => $Param{UserID},
                 HistoryType  => 'Misc',
-                Name         => "Sent no auto response to '$Address' - no valid email address.",
+                Name         => "Sent no auto response to invalid address '$Address'$EmailErrType",
             );
 
             # log
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'notice',
-                Message  => "Sent no auto response to '$Address' because of invalid address.",
+                Message  => "Sent no auto response to invalid address '$Address'$EmailErrType",
             );
             next ADDRESS;
 
@@ -2632,7 +2671,7 @@ sub SendAutoResponse {
         SenderType     => 'system',
         TicketID       => $Param{TicketID},
         HistoryType    => $HistoryType,
-        HistoryComment => "\%\%$AutoReplyAddresses",
+        HistoryComment => "\%\%$AutoReplyAddresses" . ( $Cc ? ( $AutoReplyAddresses ? ', ' : '' ) . "cc '$Cc'" : '' ),
         From           => "$AutoResponse{SenderRealname} <$AutoResponse{SenderAddress}>",
         To             => $AutoReplyAddresses,
         Cc             => $Cc,
@@ -2645,21 +2684,44 @@ sub SendAutoResponse {
         UserID         => $Param{UserID},
     );
 
-    # log
-    $Kernel::OM->Get('Kernel::System::Log')->Log(
-        Priority => 'info',
-        Message  => "Sent auto response ($HistoryType) for Ticket [$Ticket{TicketNumber}]"
-            . " (TicketID=$Param{TicketID}, ArticleID=$ArticleID) to '$AutoReplyAddresses'."
-    );
+    if ( $ArticleID ) {
 
-    # event
-    $Self->EventHandler(
-        Event => 'ArticleAutoResponse',
-        Data  => {
-            TicketID => $Param{TicketID},
-        },
-        UserID => $Param{UserID},
-    );
+        # log
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
+            Priority => 'info',
+            Message  => "Sent auto response ($HistoryType) for Ticket [$Ticket{TicketNumber}]"
+                . " (TicketID=$Param{TicketID}, ArticleID=$ArticleID) to '$AutoReplyAddresses'"
+                . ( $Cc ? " and cc '$Cc'." : '.' )
+        );
+
+        # event
+        $Self->EventHandler(
+            Event => 'ArticleAutoResponse',
+            Data  => {
+                TicketID => $Param{TicketID},
+            },
+            UserID => $Param{UserID},
+        );
+    }
+    else {
+        my $ErrorMessage = "Error sending auto response ($HistoryType) for Ticket [$Ticket{TicketNumber}]"
+                . " (TicketID=$Param{TicketID}) to '$AutoReplyAddresses'"
+                . ( $Cc ? " and cc '$Cc'." : '.' );
+
+        # add it to ticket history
+        $Self->HistoryAdd(
+            TicketID     => $Param{TicketID},
+            CreateUserID => $Param{UserID},
+            HistoryType  => 'Misc',
+            Name         => $ErrorMessage,
+        );
+
+        # log
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
+            Priority => 'error',
+            Message  => $ErrorMessage,
+        );
+    }
 
     return 1;
 }
