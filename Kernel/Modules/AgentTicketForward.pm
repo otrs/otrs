@@ -89,6 +89,13 @@ sub Run {
 
     my $Output;
 
+    # get ticket data
+    my %Ticket = $Self->{TicketObject}->TicketGet(
+        TicketID      => $Self->{TicketID},
+    );
+
+    $Self->{GetParam}->{Title} = $Ticket{Title};
+
     # get ACL restrictions
     $Self->{TicketObject}->TicketAcl(
         Data          => '-',
