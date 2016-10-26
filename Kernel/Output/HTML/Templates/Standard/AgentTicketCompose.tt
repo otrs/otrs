@@ -47,7 +47,7 @@
 
                     <label for="ToCustomer" class="Mandatory"><span class="Marker">*</span>[% Translate("To") | html %]:</label>
                     <div class="Field">
-                        <input id="ToCustomer" type="text" name="ToCustomer" value="" class="CustomerAutoComplete W75pc [% Data.ToIsLocalAddress | html %] [% Data.ToInvalid | html %]" autocomplete="off" />
+                        <input id="ToCustomer" type="text" name="ToCustomer" value="" class="CustomerAutoComplete W75pc [% Data.ToIsLocalAddress | html %] [% Data.ToInvalid | html %] [% Data.MessageIsTooBig | html %]" autocomplete="off" />
 
                         <div id="ToCustomerServerError" class="TooltipErrorMessage">
 [% RenderBlockStart("ToIsLocalAddressServerErrorMsg") %]
@@ -57,6 +57,10 @@
 [% RenderBlockStart("ToServerErrorMsg") %]
                             <p>[% Translate("Please include at least one recipient") | html %]</p>
 [% RenderBlockEnd("ToServerErrorMsg") %]
+
+[% RenderBlockStart("MessageIsTooBigServerErrorMsg") %]
+                            <p>[% Translate("Message size (%s) exceeds allowable limit (%s).", Data.MessageSize, Data.MessageSizeLimit) | html %]</p>
+[% RenderBlockEnd("MessageIsTooBigServerErrorMsg") %]
                         </div>
                     </div>
                     <div class="Clear"></div>

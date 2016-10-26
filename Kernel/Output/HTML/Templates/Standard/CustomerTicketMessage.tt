@@ -79,9 +79,16 @@
                         <span class="Marker">*</span>
                         [% Translate("Subject") | html %]:
                     </label>
-                    <input title="[% Translate("Subject") | html %]" type="text" id="Subject" name="Subject" value="[% Data.Subject | html %]" class="Validate_Required [% Data.SubjectInvalid | html %]" />
+                    <input title="[% Translate("Subject") | html %]" type="text" id="Subject" name="Subject" value="[% Data.Subject | html %]" class="Validate_Required [% Data.SubjectInvalid | html %] [% Data.MessageIsTooBig | html %]" />
                     <div id="SubjectError" class="TooltipErrorMessage" ><p>[% Translate("This field is required.") | html %]</p></div>
-                    <div id="SubjectServerError" class="TooltipErrorMessage NoJavaScriptMessage[% Data.SubjectInvalid | html %]" ><p>[% Translate("This field is required.") | html %]</p></div>
+                    <div id="SubjectServerError" class="TooltipErrorMessage NoJavaScriptMessage[% Data.SubjectInvalid | html %] NoJavaScriptMessage[% Data.MessageIsTooBig | html %]" >
+[% IF Data.SubjectInvalid %]
+                        <p>[% Translate("This field is required.") | html %]</p>
+[% END %]
+[% IF Data.MessageIsTooBig %]
+                        <p>[% Translate("Message size (%s) exceeds allowable limit (%s).", Data.MessageSize, Data.MessageSizeLimit) | html %]</p>
+[% END %]
+                    </div>
                     <div class="Clear"></div>
                 </div>
                 <div class="RichTextHolder">

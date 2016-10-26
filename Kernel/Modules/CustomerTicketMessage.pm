@@ -107,6 +107,7 @@ sub Run {
     my $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
     my $QueueObject  = $Kernel::OM->Get('Kernel::System::Queue');
     my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
+    my $MainObject   = $Kernel::OM->Get('Kernel::System::Main');
 
     if ( $GetParam{FromChatID} ) {
         if ( !$ConfigObject->Get('ChatEngine::Active') ) {
@@ -516,6 +517,33 @@ sub Run {
             )
         {
             $Error{TypeIDInvalid} = 'ServerError';
+        }
+
+        # check message size (sum of subject, body and attachment sizes)
+        # throw error if message size limit is exceeded
+        if ( !$IsUpload ) {
+
+            my $MessageSizeLimit = $ConfigObject->Get('CustomerMessageSizeLimit') || 26214400;
+            my $MessageSize = 0;
+
+            if ( $GetParam{Subject} ) {
+                $MessageSize += bytes::length( $GetParam{Subject} );
+            }
+
+            if ( $GetParam{Body} ) {
+                $MessageSize += bytes::length( $GetParam{Body} );
+            }
+
+            ATTACHMENT:
+            for my $Attachment ( @Attachments ) {
+                $MessageSize += $Attachment->{FilesizeRaw};
+            }
+
+            if ( $MessageSize > $MessageSizeLimit ) {
+                $Error{'MessageIsTooBig'} = 'ServerError';
+                $GetParam{MessageSize} = $MainObject->HumanReadableDataSize(Size => $MessageSize);
+                $GetParam{MessageSizeLimit} = $MainObject->HumanReadableDataSize(Size => $MessageSizeLimit);
+            }
         }
 
         if (%Error) {
@@ -1105,6 +1133,7 @@ sub _MaskNew {
             Data => {
                 %Param,
                 QueueInvalid => $Param{Errors}->{QueueInvalid},
+                MessageIsTooBig => $Param{Errors}->{MessageIsTooBig},
             },
         );
 

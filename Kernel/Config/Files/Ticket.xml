@@ -1606,6 +1606,14 @@
             <String>5</String>
         </Setting>
     </ConfigItem>
+    <ConfigItem Name="AgentMessageSizeLimit" Required="1" Valid="1" ConfigLevel="200">
+        <Description Translatable="1">Defines the size limit (in bytes) for e-mail message created via the browser in agent panel (sum of subject, body and attachment sizes).</Description>
+        <Group>Ticket</Group>
+        <SubGroup>Frontend::Agent</SubGroup>
+        <Setting>
+            <String Regex="^[0-9]{1,11}$">26214400</String>
+        </Setting>
+    </ConfigItem>
     <ConfigItem Name="Ticket::Frontend::ListType" Required="1" Valid="1">
         <Description Translatable="1">Shows existing parent/child queue lists in the system in the form of a tree or a list.</Description>
         <Group>Ticket</Group>
@@ -1941,6 +1949,14 @@
                 <Item Key="0" Translatable="1">No</Item>
                 <Item Key="Sortable" Translatable="1">Yes</Item>
             </Option>
+        </Setting>
+    </ConfigItem>
+    <ConfigItem Name="CustomerMessageSizeLimit" Required="1" Valid="1" ConfigLevel="200">
+        <Description Translatable="1">Defines the size limit (in bytes) for message created via the browser in customer panel (sum of subject, body and attachment sizes).</Description>
+        <Group>Ticket</Group>
+        <SubGroup>Frontend::Customer</SubGroup>
+        <Setting>
+            <String Regex="^[0-9]{1,11}$">26214400</String>
         </Setting>
     </ConfigItem>
     <ConfigItem Name="Ticket::Frontend::CustomerDisableCompanyTicketAccess" Required="1" Valid="1">

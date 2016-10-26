@@ -273,7 +273,12 @@
                             <label for="Subject">
                                 [% Translate("Subject") | html %]:
                             </label>
-                            <input class="DontPrint" type="text" name="Subject" id="Subject" title="[% Translate("Subject") | html %]" value="[% Data.Subject | html %]" />
+                            <input class="DontPrint Validate_Required [% Data.MessageIsTooBig | html %]" type="text" name="Subject" id="Subject" title="[% Translate("Subject") | html %]" value="[% Data.Subject | html %]" />
+                            <div id="SubjectServerError" class="TooltipErrorMessage NoJavaScriptMessage[% Data.MessageIsTooBig | html %]" >
+[% IF Data.MessageIsTooBig %]
+                                <p>[% Translate("Message size (%s) exceeds allowable limit (%s).", Data.MessageSize, Data.MessageSizeLimit) | html %]</p>
+[% END %]
+                            </div>
                             <div class="Clear"></div>
                         </div>
                         <div>

@@ -18,6 +18,7 @@ our @ObjectDependencies = (
     'Kernel::System::DB',
     'Kernel::System::Encode',
     'Kernel::System::Log',
+    'Kernel::System::Main',
 );
 
 sub new {
@@ -162,6 +163,9 @@ sub FormIDGetAllFilesData {
         }
     }
 
+    # get main object
+    my $MainObject = $Kernel::OM->Get('Kernel::System::Main');
+
     # get database object
     my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
 
@@ -179,15 +183,16 @@ sub FormIDGetAllFilesData {
         $Counter++;
 
         # human readable file size
+        my $Filesize;
         if ( $Row[2] ) {
             if ( $Row[2] > ( 1024 * 1024 ) ) {
-                $Row[2] = sprintf "%.1f MBytes", ( $Row[2] / ( 1024 * 1024 ) );
+                $Filesize = sprintf "%.1f MBytes", ( $Row[2] / ( 1024 * 1024 ) );
             }
             elsif ( $Row[2] > 1024 ) {
-                $Row[2] = sprintf "%.1f KBytes", ( ( $Row[2] / 1024 ) );
+                $Filesize = sprintf "%.1f KBytes", ( ( $Row[2] / 1024 ) );
             }
             else {
-                $Row[2] = $Row[2] . ' Bytes';
+                $Filesize = $Row[2] . ' Bytes';
             }
         }
 
@@ -204,7 +209,8 @@ sub FormIDGetAllFilesData {
                 ContentID   => $Row[4],
                 ContentType => $Row[1],
                 Filename    => $Row[0],
-                Filesize    => $Row[2],
+                FilesizeRaw => $Row[2],
+                Filesize    => $Filesize,
                 Disposition => $Row[5],
                 FileID      => $Counter,
             }
@@ -229,6 +235,9 @@ sub FormIDGetAllFilesMeta {
         }
     }
 
+    # get main object
+    my $MainObject = $Kernel::OM->Get('Kernel::System::Main');
+
     # get database object
     my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
 
@@ -245,15 +254,16 @@ sub FormIDGetAllFilesMeta {
         $Counter++;
 
         # human readable file size
+        my $Filesize;
         if ( $Row[2] ) {
             if ( $Row[2] > ( 1024 * 1024 ) ) {
-                $Row[2] = sprintf "%.1f MBytes", ( $Row[2] / ( 1024 * 1024 ) );
+                $Filesize = sprintf "%.1f MBytes", ( $Row[2] / ( 1024 * 1024 ) );
             }
             elsif ( $Row[2] > 1024 ) {
-                $Row[2] = sprintf "%.1f KBytes", ( ( $Row[2] / 1024 ) );
+                $Filesize = sprintf "%.1f KBytes", ( ( $Row[2] / 1024 ) );
             }
             else {
-                $Row[2] = $Row[2] . ' Bytes';
+                $Filesize = $Row[2] . ' Bytes';
             }
         }
 
@@ -264,7 +274,8 @@ sub FormIDGetAllFilesMeta {
                 ContentID   => $Row[3],
                 ContentType => $Row[1],
                 Filename    => $Row[0],
-                Filesize    => $Row[2],
+                FilesizeRaw => $Row[2],
+                Filesize    => $Filesize,
                 Disposition => $Row[4],
                 FileID      => $Counter,
             }

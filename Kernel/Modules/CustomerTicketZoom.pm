@@ -39,6 +39,7 @@ sub Run {
 
     my $ParamObject  = $Kernel::OM->Get('Kernel::System::Web::Request');
     my $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
+    my $MainObject   = $Kernel::OM->Get('Kernel::System::Main');
 
     my $TicketNumber = $ParamObject->GetParam( Param => 'TicketNumber' );
 
@@ -439,6 +440,11 @@ sub Run {
             }
         }
 
+        # get all attachments meta data
+        my @Attachments = $UploadCacheObject->FormIDGetAllFilesMeta(
+            FormID => $Self->{FormID},
+        );
+
         # create html strings for all dynamic fields
         my %DynamicFieldHTML;
 
@@ -536,6 +542,34 @@ sub Run {
                 AJAXUpdate   => 1,
                 UpdatableFields => $Self->_GetFieldsToUpdate(),
                 );
+        }
+
+        # check message size (sum of subject, body and attachment sizes)
+        # throw error if message size limit is exceeded
+        if ( !$IsUpload ) {
+
+            my $MessageSizeLimit = $ConfigObject->Get('CustomerMessageSizeLimit') || 26214400;
+            my $MessageSize = 0;
+
+            if ( $GetParam{Subject} ) {
+                $MessageSize += bytes::length( $GetParam{Subject} );
+            }
+
+            if ( $GetParam{Body} ) {
+                $MessageSize += bytes::length( $GetParam{Body} );
+            }
+
+            ATTACHMENT:
+            for my $Attachment ( @Attachments ) {
+                $MessageSize += $Attachment->{FilesizeRaw};
+            }
+
+            if ( $MessageSize > $MessageSizeLimit ) {
+                $Error{'MessageIsTooBig'} = 'ServerError';
+                $GetParam{MessageSize} = $MainObject->HumanReadableDataSize(Size => $MessageSize);
+                $GetParam{MessageSizeLimit} = $MainObject->HumanReadableDataSize(Size => $MessageSizeLimit);
+                $GetParam{FollowUpVisible} = 'Visible';
+            }
         }
 
         # show edit again

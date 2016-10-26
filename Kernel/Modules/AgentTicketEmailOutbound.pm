@@ -768,6 +768,7 @@ sub SendEmail {
     # get needed objects
     my $DynamicFieldBackendObject = $Kernel::OM->Get('Kernel::System::DynamicField::Backend');
     my $LayoutObject              = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
+    my $MainObject                = $Kernel::OM->Get('Kernel::System::Main');
 
     # cycle through the activated Dynamic Fields for this screen
     DYNAMICFIELD:
@@ -1087,6 +1088,39 @@ sub SendEmail {
     my @Attachments = $UploadCacheObject->FormIDGetAllFilesMeta(
         FormID => $GetParam{FormID},
     );
+
+    # check message size (sum of subject, body and attachment sizes)
+    # throw error if message size limit is exceeded
+    if ( !$ParamObject->GetParam( Param => 'AttachmentUpload' ) ) {
+        my $MessageSizeLimit = $ConfigObject->Get('AgentMessageSizeLimit') || 26214400;
+        my $MessageSize = 0;
+
+        if ( $GetParam{Subject} ) {
+            $MessageSize += bytes::length( $GetParam{Subject} );
+        }
+
+        if ( $GetParam{Body} ) {
+            $MessageSize += bytes::length( $GetParam{Body} );
+        }
+
+        ATTACHMENT:
+        for my $Attachment ( @Attachments ) {
+            $MessageSize += $Attachment->{FilesizeRaw};
+        }
+
+        if ( $MessageSize > $MessageSizeLimit ) {
+            $Error{'MessageIsTooBig'} = 'ServerError';
+            $GetParam{MessageSize} = $MainObject->HumanReadableDataSize(Size => $MessageSize);
+            $GetParam{MessageSizeLimit} = $MainObject->HumanReadableDataSize(Size => $MessageSizeLimit);
+        }
+
+        if ( $Error{MessageIsTooBig} ) {
+            $LayoutObject->Block(
+                Name => 'MessageIsTooBigServerErrorMsg',
+                Data => \%GetParam,
+            );
+        }
+    }
 
     # check if there is an error
     if (%Error) {

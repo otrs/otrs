@@ -569,6 +569,39 @@ sub Run {
             $Error{BodyInvalid} = ' ServerError';
         }
 
+        # check message size (sum of subject, body and attachment sizes)
+        # throw error if message size limit is exceeded
+        if ( !$IsUpload ) {
+            my $MessageSizeLimit = $ConfigObject->Get('AgentMessageSizeLimit') || 26214400;
+            my $MessageSize = 0;
+
+            if ( $GetParam{Subject} ) {
+                $MessageSize += bytes::length( $GetParam{Subject} );
+            }
+
+            if ( $GetParam{Body} ) {
+                $MessageSize += bytes::length( $GetParam{Body} );
+            }
+
+            ATTACHMENT:
+            for my $Attachment ( @Attachments ) {
+                $MessageSize += $Attachment->{FilesizeRaw};
+            }
+
+            if ( $MessageSize > $MessageSizeLimit ) {
+                $Error{'MessageIsTooBig'} = 'ServerError';
+                $GetParam{MessageSize} = $MainObject->HumanReadableDataSize(Size => $MessageSize);
+                $GetParam{MessageSizeLimit} = $MainObject->HumanReadableDataSize(Size => $MessageSizeLimit);
+            }
+
+            if ( $Error{MessageIsTooBig} ) {
+                $LayoutObject->Block(
+                    Name => 'MessageIsTooBigServerErrorMsg',
+                    Data => \%GetParam,
+                );
+            }
+        }
+
         # check time units
         if (
             $ConfigObject->Get('Ticket::Frontend::AccountTime')
