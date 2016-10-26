@@ -342,6 +342,18 @@ for my $Test (@Tests) {
         $Return[1] || 0,
         "#Filter  Run() - NewTicket/TicketID",
     );
+
+    # make sure no error log entries appeared
+    my $ErrorMessage = $Self->{LogObject}->GetLogEntry(
+        Type => 'error',
+        What => 'Message',
+    );
+    $Self->Is(
+        $ErrorMessage,
+        '',
+        "#Filter - no error log messages",
+    );
+
     my %Ticket = $TicketObject->TicketGet(
         TicketID      => $Return[1],
         DynamicFields => 1,
