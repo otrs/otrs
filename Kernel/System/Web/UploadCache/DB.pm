@@ -184,16 +184,10 @@ sub FormIDGetAllFilesData {
 
         # human readable file size
         my $Filesize;
-        if ( $Row[2] ) {
-            if ( $Row[2] > ( 1024 * 1024 ) ) {
-                $Filesize = sprintf "%.1f MBytes", ( $Row[2] / ( 1024 * 1024 ) );
-            }
-            elsif ( $Row[2] > 1024 ) {
-                $Filesize = sprintf "%.1f KBytes", ( ( $Row[2] / 1024 ) );
-            }
-            else {
-                $Filesize = $Row[2] . ' Bytes';
-            }
+        if ( defined $Row[2] ) {
+            $Filesize = $MainObject->HumanReadableDataSize(
+                Size => $Row[2],
+            );
         }
 
         # encode attachment if it's a postgresql backend!!!
@@ -255,16 +249,10 @@ sub FormIDGetAllFilesMeta {
 
         # human readable file size
         my $Filesize;
-        if ( $Row[2] ) {
-            if ( $Row[2] > ( 1024 * 1024 ) ) {
-                $Filesize = sprintf "%.1f MBytes", ( $Row[2] / ( 1024 * 1024 ) );
-            }
-            elsif ( $Row[2] > 1024 ) {
-                $Filesize = sprintf "%.1f KBytes", ( ( $Row[2] / 1024 ) );
-            }
-            else {
-                $Filesize = $Row[2] . ' Bytes';
-            }
+        if ( defined $Row[2] ) {
+            $Filesize = $MainObject->HumanReadableDataSize(
+                Size => $Row[2],
+            );
         }
 
         # add the info

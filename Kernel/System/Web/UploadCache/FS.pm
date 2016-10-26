@@ -251,17 +251,11 @@ sub FormIDGetAllFilesData {
 
         # human readable file size
         if ( defined $FilesizeRaw ) {
-
-            if ( $FilesizeRaw > 1048576 ) {    # 1024 * 1024
-                $Filesize = sprintf "%.1f MBytes", ( $FilesizeRaw / 1048576 );    # 1024 * 1024
-            }
-            elsif ( $FilesizeRaw > 1024 ) {
-                $Filesize = sprintf "%.1f KBytes", ( ( $FilesizeRaw / 1024 ) );
-            }
-            else {
-                $Filesize = $FilesizeRaw . ' Bytes';
-            }
+            $Filesize = $MainObject->HumanReadableDataSize(
+                Size => $FilesizeRaw,
+            );
         }
+
         my $Content = $MainObject->FileRead(
             Location => $File,
             Mode     => 'binmode',                                             # optional - binmode|utf8
@@ -354,16 +348,9 @@ sub FormIDGetAllFilesMeta {
 
         # human readable file size
         if ( defined $FilesizeRaw ) {
-
-            if ( $FilesizeRaw > 1048576 ) {    # 1024 * 1024
-                $Filesize = sprintf "%.1f MBytes", ( $FilesizeRaw / 1048576 );    # 1024 * 1024
-            }
-            elsif ( $FilesizeRaw > 1024 ) {
-                $Filesize = sprintf "%.1f KBytes", ( ( $FilesizeRaw / 1024 ) );
-            }
-            else {
-                $Filesize = $FilesizeRaw . ' Bytes';
-            }
+            $Filesize = $MainObject->HumanReadableDataSize(
+                Size => $FilesizeRaw,
+            );
         }
 
         my $ContentType = $MainObject->FileRead(
