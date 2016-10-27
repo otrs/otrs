@@ -11,6 +11,8 @@ package Kernel::GenericInterface::Operation::Ticket::TicketCreate;
 use strict;
 use warnings;
 
+use MIME::Base64();
+
 use Kernel::System::VariableCheck qw(IsArrayRefWithData IsHashRefWithData IsString IsStringWithData);
 
 use base qw(
@@ -121,7 +123,9 @@ perform TicketCreate Operation. This will return the created ticket number.
                 SenderTypeID                    => 123,                        # optional
                 SenderType                      => 'some sender type name',    # optional
                 AutoResponseType                => 'some auto response type',  # optional
+                ArticleSend                     => 1,                          # optional
                 From                            => 'some from string',         # optional
+                To                              => 'some to address',          # optional, required if ArticleSend => 1
                 Subject                         => 'some subject',
                 Body                            => 'some body'
 
@@ -760,6 +764,19 @@ sub _CheckArticle {
         }
     }
 
+    # check that Article->To is set when Article->ArticleSend is set.
+    if (
+        $Article->{ArticleSend}
+        && !$Self->ValidateToIsEmail( %{$Article} )
+        )
+    {
+        return {
+            ErrorCode => 'TicketCreate.InvalidParameter',
+            ErrorMessage =>
+                "TicketCreate: Article->To parameter must be a valid email address when Article->ArticleSend is set!",
+        };
+    }
+
     # check Article->ContentType vs Article->MimeType and Article->Charset
     if ( !$Article->{ContentType} && !$Article->{MimeType} && !$Article->{Charset} ) {
         return {
@@ -1281,24 +1298,47 @@ sub _TicketCreate {
 
     # set Article From
     my $From;
-    if ( $Article->{From} ) {
-        $From = $Article->{From};
-    }
 
-    # use data from customer user (if customer user is in database)
-    elsif ( IsHashRefWithData( \%CustomerUserData ) ) {
-        $From = '"' . $CustomerUserData{UserFirstname} . ' ' . $CustomerUserData{UserLastname} . '"'
-            . ' <' . $CustomerUserData{UserEmail} . '>';
-    }
+    # When we are sending the article as an email, set the from address to the ticket's system address
+    if (
+        $Article->{ArticleSend}
+        && !$Article->{From}
+        )
+    {
+        my $QueueObject = $Kernel::OM->Get('Kernel::System::Queue');
 
-    # otherwise use customer user as sent from the request (it should be an email)
+        my $QueueID = $TicketObject->TicketQueueID(
+            TicketID => $TicketID,
+        );
+        my %Address = $QueueObject->GetSystemAddress(
+            QueueID => $QueueID,
+        );
+        $From = $Address{RealName} . " <" . $Address{Email} . ">";
+    }
     else {
-        $From = $Ticket->{CustomerUser};
+        if ( $Article->{From} ) {
+            $From = $Article->{From};
+        }
+
+        # use data from customer user (if customer user is in database)
+        elsif ( IsHashRefWithData( \%CustomerUserData ) ) {
+            $From = '"' . $CustomerUserData{UserFirstname} . ' ' . $CustomerUserData{UserLastname} . '"'
+                . ' <' . $CustomerUserData{UserEmail} . '>';
+        }
+
+        # otherwise use customer user as sent from the request (it should be an email)
+        else {
+            $From = $Ticket->{CustomerUser};
+        }
     }
 
     # set Article To
     my $To;
-    if ( $Ticket->{Queue} ) {
+
+    if ( $Article->{ArticleSend} ) {
+        $To = $Article->{To};
+    }
+    elsif ( $Ticket->{Queue} ) {
         $To = $Ticket->{Queue};
     }
     else {
@@ -1307,8 +1347,32 @@ sub _TicketCreate {
         );
     }
 
-    # create article
-    my $ArticleID = $TicketObject->ArticleCreate(
+    my $Subject = $Article->{Subject};
+    if ( $Article->{ArticleSend} ) {
+
+        my $TicketNumber = $TicketObject->TicketNumberLookup(
+            TicketID => $TicketID,
+            UserID   => $Param{UserID},
+        );
+
+        # Build a subject
+        $Subject = $TicketObject->TicketSubjectBuild(
+            TicketNumber => $TicketNumber,
+            Subject      => $Article->{Subject},
+            Type         => 'New',
+            Action       => 'Reply',
+        );
+
+        if ( !$Subject ) {
+            return {
+                Success => 0,
+                ErrorMessage =>
+                    'The subject for the e-mail could not be generated. Please contact the system administrator'
+            };
+        }
+    }
+
+    my %ArticleParams = (
         NoAgentNotify  => $Article->{NoAgentNotify}  || 0,
         TicketID       => $TicketID,
         ArticleTypeID  => $Article->{ArticleTypeID}  || '',
@@ -1317,7 +1381,7 @@ sub _TicketCreate {
         SenderType     => $Article->{SenderType}     || '',
         From           => $From,
         To             => $To,
-        Subject        => $Article->{Subject},
+        Subject        => $Subject,
         Body           => $Article->{Body},
         MimeType       => $Article->{MimeType}       || '',
         Charset        => $Article->{Charset}        || '',
@@ -1329,11 +1393,58 @@ sub _TicketCreate {
         OrigHeader       => {
             From    => $From,
             To      => $To,
-            Subject => $Article->{Subject},
+            Subject => $Subject,
             Body    => $Article->{Body},
-
         },
     );
+
+    # create article
+    my $ArticleID;
+    if ( $Article->{ArticleSend} ) {
+
+        # decode and set attachments
+        if ( IsArrayRefWithData($AttachmentList) ) {
+
+            my @NewAttachments;
+            for my $Attachment ( @{$AttachmentList} ) {
+
+                push @NewAttachments, {
+                    %{$Attachment},
+                    Content => MIME::Base64::decode_base64( $Attachment->{Content} ),
+                };
+            }
+
+            $ArticleParams{Attachment} = \@NewAttachments;
+        }
+
+        $ArticleID = $TicketObject->ArticleSend(%ArticleParams);
+    }
+    else {
+        $ArticleID = $TicketObject->ArticleCreate(%ArticleParams);
+
+        # set attachments
+        if ( IsArrayRefWithData($AttachmentList) ) {
+
+            for my $Attachment ( @{$AttachmentList} ) {
+                my $Result = $Self->CreateAttachment(
+                    Attachment => $Attachment,
+                    ArticleID  => $ArticleID,
+                    UserID     => $Param{UserID}
+                );
+
+                if ( !$Result->{Success} ) {
+                    my $ErrorMessage =
+                        $Result->{ErrorMessage} || "Attachment could not be created, please contact"
+                        . " the system administrator";
+
+                    return {
+                        Success      => 0,
+                        ErrorMessage => $ErrorMessage,
+                    };
+                }
+            }
+        }
+    }
 
     if ( !$ArticleID ) {
         return {
@@ -1412,29 +1523,6 @@ sub _TicketCreate {
                 my $ErrorMessage =
                     $Result->{ErrorMessage} || "Dynamic Field $DynamicField->{Name} could not be"
                     . " set, please contact the system administrator";
-
-                return {
-                    Success      => 0,
-                    ErrorMessage => $ErrorMessage,
-                };
-            }
-        }
-    }
-
-    # set attachments
-    if ( IsArrayRefWithData($AttachmentList) ) {
-
-        for my $Attachment ( @{$AttachmentList} ) {
-            my $Result = $Self->CreateAttachment(
-                Attachment => $Attachment,
-                ArticleID  => $ArticleID,
-                UserID     => $Param{UserID}
-            );
-
-            if ( !$Result->{Success} ) {
-                my $ErrorMessage =
-                    $Result->{ErrorMessage} || "Attachment could not be created, please contact"
-                    . " the system administrator";
 
                 return {
                     Success      => 0,
