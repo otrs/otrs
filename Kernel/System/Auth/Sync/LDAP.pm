@@ -271,7 +271,7 @@ sub Sync {
         if ( %SyncUser && !$UserID ) {
             $UserID = $UserObject->UserAdd(
                 UserLogin => $Param{User},
-                %SyncUser,
+                %SyncUser,   # must contain other parameters required by UserAdd()
                 UserType     => 'User',
                 ValidID      => 1,
                 ChangeUserID => 1,
@@ -346,10 +346,10 @@ sub Sync {
 
             if ($AttributeChange) {
                 $UserObject->UserUpdate(
-                    %UserData,
+                    ValidID   => $UserData{ValidID}, # may be not present in %SyncUser and is required by UserUpdate
                     UserID    => $UserID,
                     UserLogin => $Param{User},
-                    %SyncUser,
+                    %SyncUser,   # must contain other parameters required by UserUpdate()
                     UserType     => 'User',
                     ChangeUserID => 1,
                     Extended     => 1,

@@ -1,4 +1,5 @@
 #6.0.0.beta1 2016-??-??
+ - 2016-10-28 Fixed agent UserFullname update issues on lastname change in LDAP.
  - 2016-10-10 Fixed undef-empty string comparison in user preferences management.
  - 2016-04-27 Added extended agent properties synchronization from LDAP backend.
  - 2016-04-22 Added possibility to set the ticket title in Postmaster filters, thanks to Renée Bäcker.
