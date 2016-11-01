@@ -650,10 +650,10 @@ sub RequesterPerformRequest {
 	if ( defined $Config->{SOAPHeader} ) {
 		for my $SOAPHeaderEntry ( @{ $Config->{SOAPHeader} } ) {
 
-			foreach my $key (keys %{ $SOAPHeaderEntry }) {
-				my $value = $SOAPHeaderEntry->{$key};
+			foreach my $Key (keys %{ $SOAPHeaderEntry }) {
+				my $Value = $SOAPHeaderEntry->{$Key};
 				
-				push @CallData, SOAP::Header->name($key => $value);
+				push @CallData, SOAP::Header->name($Key => $Value);
 			}
 		}
 	}
