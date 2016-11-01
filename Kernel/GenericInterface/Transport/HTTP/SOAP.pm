@@ -26,11 +26,7 @@ Kernel::GenericInterface::Transport::SOAP - GenericInterface network transport i
 
 =head1 PUBLIC INTERFACE
 
-=over 4
-
-=cut
-
-=item new()
+=head2 new()
 
 usually, you want to create an instance of this
 by using Kernel::GenericInterface::Transport->new();
