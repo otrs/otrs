@@ -214,8 +214,8 @@ sub Run {
 
         # add SOAP header
         if ( $GetParam->{SOAPHeader} ) {
-	    my $SOAPHeaderStructure = $Kernel::OM->Get('Kernel::System::JSON')->Decode( Data => $GetParam->{SOAPHeader} );
-	    $TransportConfig->{SOAPHeader} = $SOAPHeaderStructure;
+            my $SOAPHeaderStructure = $Kernel::OM->Get('Kernel::System::JSON')->Decode( Data => $GetParam->{SOAPHeader} );
+            $TransportConfig->{SOAPHeader} = $SOAPHeaderStructure;
         }
 
         # set new configuration
