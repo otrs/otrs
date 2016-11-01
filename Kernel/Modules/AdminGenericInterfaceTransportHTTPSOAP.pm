@@ -211,12 +211,12 @@ sub Run {
             my $SortStructure = $Kernel::OM->Get('Kernel::System::JSON')->Decode( Data => $GetParam->{Sort} );
             $TransportConfig->{Sort} = $Self->_PackStructure( Structure => $SortStructure );
         }
-		
+
         # add SOAP header
-	if ( $GetParam->{SOAPHeader} ) {
+        if ( $GetParam->{SOAPHeader} ) {
 	    my $SOAPHeaderStructure = $Kernel::OM->Get('Kernel::System::JSON')->Decode( Data => $GetParam->{SOAPHeader} );
 	    $TransportConfig->{SOAPHeader} = $SOAPHeaderStructure;
-	}
+        }
 
         # set new configuration
         $WebserviceData->{Config}->{$CommunicationType}->{Transport}->{Config} = $TransportConfig;
@@ -309,11 +309,11 @@ sub _ShowEdit {
             Value => $Param{Sort},
         );
      }
-	
-	# get SOAPHeader
-	if ( $TransportConfig->{SOAPHeader} ) {
-		$Param{SOAPHeader} = $Kernel::OM->Get('Kernel::System::JSON')->Encode( Data => $TransportConfig->{SOAPHeader} );
-	}
+
+        # get SOAPHeader
+        if ( $TransportConfig->{SOAPHeader} ) {
+                $Param{SOAPHeader} = $Kernel::OM->Get('Kernel::System::JSON')->Encode( Data => $TransportConfig->{SOAPHeader} );
+        }
 
     # call bread crumbs blocks
     $LayoutObject->Block(
