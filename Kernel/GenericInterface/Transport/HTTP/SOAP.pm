@@ -24,9 +24,15 @@ our $ObjectManagerDisabled = 1;
 
 Kernel::GenericInterface::Transport::SOAP - GenericInterface network transport interface for HTTP::SOAP
 
+=head1 SYNOPSIS
+
 =head1 PUBLIC INTERFACE
 
-=head2 new()
+=over 4
+
+=cut
+
+=item new()
 
 usually, you want to create an instance of this
 by using Kernel::GenericInterface::Transport->new();
@@ -52,7 +58,7 @@ sub new {
     return $Self;
 }
 
-=head2 ProviderProcessRequest()
+=item ProviderProcessRequest()
 
 Process an incoming web service request. This function has to read the request data
 from from the web server process.
@@ -284,7 +290,7 @@ sub ProviderProcessRequest {
     };
 }
 
-=head2 ProviderGenerateResponse()
+=item ProviderGenerateResponse()
 
 Generates response for an incoming web service request.
 
@@ -420,7 +426,7 @@ sub ProviderGenerateResponse {
     );
 }
 
-=head2 RequesterPerformRequest()
+=item RequesterPerformRequest()
 
 Prepare data payload as XML structure, generate an outgoing web service request,
 receive the response and return its data.
@@ -583,7 +589,7 @@ sub RequesterPerformRequest {
     if ( IsStringWithData( $Config->{SSL}->{SSLProxyPassword} ) ) {
         $ENV{HTTPS_PROXY_PASSWORD} = $Config->{SSL}->{SSLProxyPassword};          ## no critic
     }
-
+	
     # prepare connect
     my $SOAPHandle = eval {
         SOAP::Lite->autotype(0)->default_ns( $Config->{NameSpace} )->proxy(
@@ -645,6 +651,19 @@ sub RequesterPerformRequest {
             push @CallData, $SOAPData->{Data};
         }
     }
+	
+	# add soap header
+	if ( defined $Config->{SOAPHeader} ) {
+		for my $SOAPHeaderEntry ( @{ $Config->{SOAPHeader} } ) {
+
+			foreach my $key (keys %{ $SOAPHeaderEntry }) {
+				my $value = $SOAPHeaderEntry->{$key};
+				
+				push @CallData, SOAP::Header->name($key => $value);
+			}
+		}
+	}
+	
     my $SOAPResult = eval {
         $SOAPHandle->call(@CallData);
     };
@@ -777,7 +796,7 @@ sub RequesterPerformRequest {
 
 =begin Internal:
 
-=head2 _Error()
+=item _Error()
 
 Take error parameters from request processing.
 Error message is written to debugger, written to environment for response.
@@ -824,7 +843,7 @@ sub _Error {
     };
 }
 
-=head2 _Output()
+=item _Output()
 
 Generate http response for provider and send it back to remote system.
 Environment variables are checked for potential error messages.
@@ -932,7 +951,7 @@ sub _Output {
     };
 }
 
-=head2 _SOAPOutputRecursion()
+=item _SOAPOutputRecursion()
 
 Turn Perl data structure to a structure usable for SOAP::Lite.
 The structure may contain multiple levels with scalars, array refs and hash refs.
@@ -1187,7 +1206,7 @@ sub _SOAPOutputRecursion {
     };
 }
 
-=head2 _SOAPOutputHashRecursion()
+=item _SOAPOutputHashRecursion()
 
 This is a part of _SOAPOutputRecursion.
 It contains the functions to process a hash key/value pair.
@@ -1247,7 +1266,7 @@ sub _SOAPOutputHashRecursion {
     };
 }
 
-=head2 _SOAPOutputProcessString()
+=item _SOAPOutputProcessString()
 
 This is a part of _SOAPOutputRecursion.
 It contains functions to quote invalid XML characters and encode the string
@@ -1275,6 +1294,8 @@ sub _SOAPOutputProcessString {
 1;
 
 =end Internal:
+
+=back
 
 =head1 TERMS AND CONDITIONS
 
