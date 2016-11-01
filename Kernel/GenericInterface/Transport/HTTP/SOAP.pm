@@ -24,8 +24,6 @@ our $ObjectManagerDisabled = 1;
 
 Kernel::GenericInterface::Transport::SOAP - GenericInterface network transport interface for HTTP::SOAP
 
-=head1 SYNOPSIS
-
 =head1 PUBLIC INTERFACE
 
 =over 4
