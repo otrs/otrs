@@ -283,6 +283,7 @@ sub _ShowEdit {
     $Param{RequestNameFreeText}  = $TransportConfig->{RequestNameFreeText};
     $Param{ResponseNameFreeText} = $TransportConfig->{ResponseNameFreeText};
     $Param{MaxLength}            = $TransportConfig->{MaxLength};
+    $Param{SOAPHeader}           = $TransportConfig->{SOAPHeader};
     $Param{SOAPAction}           = $TransportConfig->{SOAPAction};
     $Param{SOAPActionSeparator}  = $TransportConfig->{SOAPActionSeparator};
     $Param{Authentication}       = $TransportConfig->{Authentication}->{Type};
