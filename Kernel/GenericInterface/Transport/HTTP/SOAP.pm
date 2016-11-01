@@ -646,9 +646,9 @@ sub RequesterPerformRequest {
         }
     }
 
-    # add soap header
-    if ( defined $Config->{SOAPHeader} ) {
-        for my $SOAPHeaderEntry ( @{ $Config->{SOAPHeader} } ) {
+        # add soap header
+        if ( defined $Config->{SOAPHeader} ) {
+            for my $SOAPHeaderEntry ( @{ $Config->{SOAPHeader} } ) {
 
                         foreach my $Key (keys %{ $SOAPHeaderEntry }) {
                                 my $Value = $SOAPHeaderEntry->{$Key};
