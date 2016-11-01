@@ -205,9 +205,9 @@
 
                                 </fieldset>
                             </div>
-							<div class="Clear"></div>
+                            <div class="Clear"></div>
 							
-							<label for="">SOAP Header:</label>
+                            <label for="">SOAP Header:</label>
                             <div class="Field">
                                 <div class="AddElement">
                                     New Key-Value-Pair:&nbsp;
@@ -219,10 +219,10 @@
                                     Define custom SOAP header here (Key-Value Pair).
                                 </p>
 								<input type="hidden" name="SOAPHeader" id="SOAPHeader" value="[% Data.SOAPHeader | html %]" />
-								<input type="hidden" name="SOAPHeaderDataCount" id="SOAPHeaderDataCount" value="0" />
-								<ul id="SOAPHeaderKeyValueData"></ul>
-                            </div>
-							<div class="Clear"></div>
+                                                                <input type="hidden" name="SOAPHeaderDataCount" id="SOAPHeaderDataCount" value="0" />
+                                                                <ul id="SOAPHeaderKeyValueData"></ul>
+                                                                </div>
+                            <div class="Clear"></div>
 
                             <label for="Authentication">[% Translate("Authentication") | html %]:</label>
                             <div class="Field">
