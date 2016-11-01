@@ -303,7 +303,7 @@ sub _ShowEdit {
         $Param{Sort} = $Kernel::OM->Get('Kernel::System::JSON')->Encode( Data => $SortStructure );
     }
 
-    # send data to JS
+        # send data to JS
         $LayoutObject->AddJSData(
             Key   => 'SortData',
             Value => $Param{Sort},
