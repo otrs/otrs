@@ -253,7 +253,7 @@ $('#SOAPAction').on('change', function(){
                                     <button class="CallForAction" id="SOAPHeaderAdd"><span>[% Translate("Add") | html %]</span></button>
                                 </div>
                                 <p class="FieldExplanation">
-                                    Define custom SOAP header here (key value pairs).
+                                    Define custom SOAP header here (Key-Value Pair).
                                 </p>
 								<input type="hidden" name="SOAPHeader" id="SOAPHeader" value="[% Data.SOAPHeader | html %]" />
 								<input type="hidden" name="SOAPHeaderDataCount" id="SOAPHeaderDataCount" value="0" />
