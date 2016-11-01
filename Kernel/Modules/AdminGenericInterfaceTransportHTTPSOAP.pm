@@ -302,7 +302,7 @@ sub _ShowEdit {
     if ( $TransportConfig->{Sort} ) {
         my $SortStructure = $Self->_UnpackStructure( Structure => $TransportConfig->{Sort} );
         $Param{Sort} = $Kernel::OM->Get('Kernel::System::JSON')->Encode( Data => $SortStructure );
-    }
+  
 
         # send data to JS
         $LayoutObject->AddJSData(
