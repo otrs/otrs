@@ -247,13 +247,13 @@ $('#SOAPAction').on('change', function(){
 							<label for="">SOAP Header:</label>
                             <div class="Field">
                                 <div class="AddElement">
-                                    Neues Schlüssel-Wert-Paar:&nbsp;
-                                    <input type="text" name="Key" title="Schlüssel" value="Schlüssel" id="SOAPHeaderKey" />
-									<input type="text" name="Value" title="Wert" value="Wert" id="SOAPHeaderValue" />
+                                    New Key-Value-Pair:&nbsp;
+                                    <input type="text" name="Key" title="Key" value="Key" id="SOAPHeaderKey" />
+									<input type="text" name="Value" title="Value" value="Value" id="SOAPHeaderValue" />
                                     <button class="CallForAction" id="SOAPHeaderAdd"><span>[% Translate("Add") | html %]</span></button>
                                 </div>
                                 <p class="FieldExplanation">
-                                    Define the custom SOAP header here (key value pairs).
+                                    Define custom SOAP header here (key value pairs).
                                 </p>
 								<input type="hidden" name="SOAPHeader" id="SOAPHeader" value="[% Data.SOAPHeader | html %]" />
 								<input type="hidden" name="SOAPHeaderDataCount" id="SOAPHeaderDataCount" value="0" />
