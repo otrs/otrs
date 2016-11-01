@@ -58,7 +58,7 @@ sub new {
     return $Self;
 }
 
-=item ProviderProcessRequest()
+=head2 ProviderProcessRequest()
 
 Process an incoming web service request. This function has to read the request data
 from from the web server process.
@@ -290,7 +290,7 @@ sub ProviderProcessRequest {
     };
 }
 
-=item ProviderGenerateResponse()
+=head2 ProviderGenerateResponse()
 
 Generates response for an incoming web service request.
 
@@ -426,7 +426,7 @@ sub ProviderGenerateResponse {
     );
 }
 
-=item RequesterPerformRequest()
+=head2 RequesterPerformRequest()
 
 Prepare data payload as XML structure, generate an outgoing web service request,
 receive the response and return its data.
@@ -796,7 +796,7 @@ sub RequesterPerformRequest {
 
 =begin Internal:
 
-=item _Error()
+=head2 _Error()
 
 Take error parameters from request processing.
 Error message is written to debugger, written to environment for response.
@@ -843,7 +843,7 @@ sub _Error {
     };
 }
 
-=item _Output()
+=head2 _Output()
 
 Generate http response for provider and send it back to remote system.
 Environment variables are checked for potential error messages.
@@ -951,7 +951,7 @@ sub _Output {
     };
 }
 
-=item _SOAPOutputRecursion()
+=head2 _SOAPOutputRecursion()
 
 Turn Perl data structure to a structure usable for SOAP::Lite.
 The structure may contain multiple levels with scalars, array refs and hash refs.
@@ -1206,7 +1206,7 @@ sub _SOAPOutputRecursion {
     };
 }
 
-=item _SOAPOutputHashRecursion()
+=head2 _SOAPOutputHashRecursion()
 
 This is a part of _SOAPOutputRecursion.
 It contains the functions to process a hash key/value pair.
@@ -1266,7 +1266,7 @@ sub _SOAPOutputHashRecursion {
     };
 }
 
-=item _SOAPOutputProcessString()
+=head2 _SOAPOutputProcessString()
 
 This is a part of _SOAPOutputRecursion.
 It contains functions to quote invalid XML characters and encode the string
