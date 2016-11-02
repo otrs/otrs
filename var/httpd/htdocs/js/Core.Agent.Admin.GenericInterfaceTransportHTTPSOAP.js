@@ -34,6 +34,7 @@ Core.Agent.Admin.GenericInterfaceTransportHTTPSOAP = (function (TargetNS) {
         var separator, inputkey, inputvalue, deletespan, newli, li_count, i;
         var data, Value, Result;
         var header, headerdata;
+        var propt;
 
         // bind change function to Request Name Scheme field
         $('#RequestNameScheme').on('change', function(){
@@ -145,7 +146,7 @@ Core.Agent.Admin.GenericInterfaceTransportHTTPSOAP = (function (TargetNS) {
             deletespan = '<span class="SOAPHeaderKeyValuePairDelete" style="cursor: pointer;"><i class="fa fa-minus-square-o" aria-hidden="true"></i></span>';
 
             i = 1;
-            for(var propt in header) {
+            for(propt in header) {
                 header_key = Object.keys(header[propt])[0];
                 inputkey = '<input type="text" value="' + header_key + '" />';
                 header_value = header[propt][header_key];

@@ -302,14 +302,12 @@ sub _ShowEdit {
     if ( $TransportConfig->{Sort} ) {
         my $SortStructure = $Self->_UnpackStructure( Structure => $TransportConfig->{Sort} );
         $Param{Sort} = $Kernel::OM->Get('Kernel::System::JSON')->Encode( Data => $SortStructure );
-<<<<<<< HEAD
     }
 
     # get SOAPHeader
     if ( $TransportConfig->{SOAPHeader} ) {
         $Param{SOAPHeader} = $Kernel::OM->Get('Kernel::System::JSON')->Encode( Data => $TransportConfig->{SOAPHeader} );
     }
-=======
         
         # send data to JS
         $LayoutObject->AddJSData(
@@ -322,10 +320,6 @@ sub _ShowEdit {
         if ( $TransportConfig->{SOAPHeader} ) {
                 $Param{SOAPHeader} = $Kernel::OM->Get('Kernel::System::JSON')->Encode( Data => $TransportConfig->{SOAPHeader} );
         }
-<<<<<<< Updated upstream
-=======
->>>>>>> origin/master
->>>>>>> Stashed changes
 
     # call bread crumbs blocks
     $LayoutObject->Block(
