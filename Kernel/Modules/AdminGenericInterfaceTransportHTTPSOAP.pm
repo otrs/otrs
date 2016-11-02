@@ -214,7 +214,8 @@ sub Run {
 
         # add SOAP header
         if ( $GetParam->{SOAPHeader} ) {
-            my $SOAPHeaderStructure = $Kernel::OM->Get('Kernel::System::JSON')->Decode( Data => $GetParam->{SOAPHeader} );
+            my $SOAPHeaderStructure
+                = $Kernel::OM->Get('Kernel::System::JSON')->Decode( Data => $GetParam->{SOAPHeader} );
             $TransportConfig->{SOAPHeader} = $SOAPHeaderStructure;
         }
 
@@ -308,17 +309,17 @@ sub _ShowEdit {
     if ( $TransportConfig->{SOAPHeader} ) {
         $Param{SOAPHeader} = $Kernel::OM->Get('Kernel::System::JSON')->Encode( Data => $TransportConfig->{SOAPHeader} );
     }
-        
-        # send data to JS
-        $LayoutObject->AddJSData(
-            Key   => 'SortData',
-            Value => $Param{Sort},
-        );
 
-        # get SOAPHeader
-        if ( $TransportConfig->{SOAPHeader} ) {
-                $Param{SOAPHeader} = $Kernel::OM->Get('Kernel::System::JSON')->Encode( Data => $TransportConfig->{SOAPHeader} );
-        }
+    # send data to JS
+    $LayoutObject->AddJSData(
+        Key   => 'SortData',
+        Value => $Param{Sort},
+    );
+
+    # get SOAPHeader
+    if ( $TransportConfig->{SOAPHeader} ) {
+        $Param{SOAPHeader} = $Kernel::OM->Get('Kernel::System::JSON')->Encode( Data => $TransportConfig->{SOAPHeader} );
+    }
 
     # call bread crumbs blocks
     $LayoutObject->Block(
