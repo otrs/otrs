@@ -314,7 +314,6 @@ sub _ShowEdit {
             Key   => 'SortData',
             Value => $Param{Sort},
         );
-     }
 
         # get SOAPHeader
         if ( $TransportConfig->{SOAPHeader} ) {
