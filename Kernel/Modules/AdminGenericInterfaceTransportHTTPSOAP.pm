@@ -283,8 +283,8 @@ sub _ShowEdit {
     $Param{RequestNameFreeText}  = $TransportConfig->{RequestNameFreeText};
     $Param{ResponseNameFreeText} = $TransportConfig->{ResponseNameFreeText};
     $Param{MaxLength}            = $TransportConfig->{MaxLength};
-    $Param{SOAPHeader}           = $TransportConfig->{SOAPHeader};
     $Param{SOAPAction}           = $TransportConfig->{SOAPAction};
+    $Param{SOAPHeader}           = $TransportConfig->{SOAPHeader};
     $Param{SOAPActionSeparator}  = $TransportConfig->{SOAPActionSeparator};
     $Param{Authentication}       = $TransportConfig->{Authentication}->{Type};
     $Param{User}                 = $TransportConfig->{Authentication}->{User};
@@ -302,6 +302,14 @@ sub _ShowEdit {
     if ( $TransportConfig->{Sort} ) {
         my $SortStructure = $Self->_UnpackStructure( Structure => $TransportConfig->{Sort} );
         $Param{Sort} = $Kernel::OM->Get('Kernel::System::JSON')->Encode( Data => $SortStructure );
+<<<<<<< HEAD
+    }
+
+    # get SOAPHeader
+    if ( $TransportConfig->{SOAPHeader} ) {
+        $Param{SOAPHeader} = $Kernel::OM->Get('Kernel::System::JSON')->Encode( Data => $TransportConfig->{SOAPHeader} );
+    }
+=======
         
         # send data to JS
         $LayoutObject->AddJSData(
@@ -314,6 +322,10 @@ sub _ShowEdit {
         if ( $TransportConfig->{SOAPHeader} ) {
                 $Param{SOAPHeader} = $Kernel::OM->Get('Kernel::System::JSON')->Encode( Data => $TransportConfig->{SOAPHeader} );
         }
+<<<<<<< Updated upstream
+=======
+>>>>>>> origin/master
+>>>>>>> Stashed changes
 
     # call bread crumbs blocks
     $LayoutObject->Block(
