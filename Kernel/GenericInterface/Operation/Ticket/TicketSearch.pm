@@ -134,6 +134,7 @@ perform TicketSearch Operation. This will return a Ticket ID list.
         #       values in an operator with OR.
         #   You can also pass more than one argument to an operator: ['value1', 'value2']
         DynamicField_FieldNameX => {
+            Empty             => 1,                       # will return dynamic fields without a value (default: 0)
             Equals            => 123,
             Like              => 'value*',                # "equals" operator with wildcard support
             GreaterThan       => '2001-01-01 01:01:01',
@@ -388,7 +389,7 @@ sub _GetParams {
 
     # get array params
     for my $Item (
-        qw(TicketNumber Title
+        qw(TicketNumber TicketID Title
         StateIDs StateTypeIDs QueueIDs PriorityIDs OwnerIDs
         CreatedUserIDs WatchUserIDs ResponsibleIDs
         TypeIDs ServiceIDs SLAIDs LockIDs Queues Types States
