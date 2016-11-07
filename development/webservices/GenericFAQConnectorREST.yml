@@ -34,19 +34,19 @@ Provider:
         LanguageList:
           RequestMethod:
           - GET
-          Route: LanguageList
+          Route: /LanguageList
         PublicCategoryList:
           RequestMethod:
           - GET
-          Route: PublicCategoryList
+          Route: /PublicCategoryList
         PublicFAQGet:
           RequestMethod:
           - GET
-          Route: PublicFAQGet
+          Route: /PublicFAQGet
         PublicFAQSearch:
           RequestMethod:
           - POST
-          Route: PublicFAQSearch
+          Route: /PublicFAQSearch
     Type: HTTP::REST
 RemoteSystem: ''
 Requester:
