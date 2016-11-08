@@ -2326,7 +2326,7 @@ sub ArticleSend {
         Priority => 'info',
         Message  => "Sent email to '$ToOrig' "
             . ( $CcOrig ? "(cc '$CcOrig') " : '' )
-            . "from '$Param{From} (Message-ID: $MessageID)'. "
+            . "from '$Param{From}' (Message-ID: $MessageID). "
             . "HistoryType => $HistoryType, Subject => $Param{Subject};",
     );
 
