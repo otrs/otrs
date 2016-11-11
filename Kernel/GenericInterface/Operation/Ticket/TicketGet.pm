@@ -212,6 +212,7 @@ one or more ticket entries in one call.
                                     ContentAlternative => "",
                                     ContentID          => "",
                                     ContentType        => "application/pdf",
+                                    FileID             => 34,                       
                                     Filename           => "StdAttachment-Test1.pdf",
                                     Filesize           => "4.6 KBytes",
                                     FilesizeRaw        => 4722,
@@ -443,6 +444,7 @@ sub Run {
 
                 next ATTACHMENT if !IsHashRefWithData( \%Attachment );
                 
+                $Attachment{FileID} = $FileID;
                 if($GetAttachmentContents)
                 {
                     # convert content to base64
