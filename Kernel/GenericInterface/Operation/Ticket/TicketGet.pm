@@ -79,7 +79,7 @@ one or more ticket entries in one call.
             ArticleSenderType    => [ $ArticleSenderType1, $ArticleSenderType2 ],  # Optional, only requested article sender types
             ArticleOrder         => 'DESC',                                        # Optional, DESC,ASC - default is ASC
             ArticleLimit         => 5,                                             # Optional
-            Attachments          => 1,                                             # Optional, 1 as default. If it's set with the value 1,
+            Attachments          => 1,                                             # Optional, 0 as default. If it's set with the value 1,
                                                                                    # attachments for articles will be included on ticket data
             GetAttachmentContents = 1		                                       # 0|1, defaults to 1
             HTMLBodyAsAttachment => 1                                              # Optional, If enabled the HTML body version of each article
