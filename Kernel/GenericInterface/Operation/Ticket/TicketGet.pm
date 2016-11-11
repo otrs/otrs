@@ -316,7 +316,11 @@ sub Run {
     my $ArticleOrder  = $Param{Data}->{ArticleOrder}  || 'ASC';
     my $ArticleLimit  = $Param{Data}->{ArticleLimit}  || 0;
     my $Attachments   = $Param{Data}->{Attachments}   || 0;
-    my $GetAttachmentContents = $Param{Data}->{GetAttachmentContents} || 1;
+    my $GetAttachmentContents = 1;
+    if(defined($Param{Data}->{GetAttachmentContents}))
+ 	{
+ 		$GetAttachmentContents = $Param{Data}->{GetAttachmentContents};
+ 	}
     
     
     my $ReturnData    = {
