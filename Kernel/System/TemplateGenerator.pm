@@ -1577,7 +1577,7 @@ sub _Replace {
 
                 # generate real name based on sender line
                 if ( !$From ) {
-                    $From = $Data{From} || '';
+                    $From = $Data{To} || '';
 
                     # remove email addresses
                     $From =~ s/&lt;.*&gt;|<.*>|\(.*\)|\"|&quot;|;|,//g;
