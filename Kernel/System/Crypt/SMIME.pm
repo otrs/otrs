@@ -234,7 +234,7 @@ sub Crypt {
     my ( $FHCrypted, $CryptedFile ) = $FileTempObject->TempFile();
     close $FHCrypted;
 
-    my $Options    = "smime -encrypt -binary -des3 -in $PlainFile -out $CryptedFile $CertFileStrg";
+    my $Options    = "smime -encrypt -binary -aes256 -in $PlainFile -out $CryptedFile $CertFileStrg";
     my $LogMessage = $Self->_CleanOutput(qx{$Self->{Cmd} $Options 2>&1});
     if ($LogMessage) {
         $Kernel::OM->Get('Kernel::System::Log')->Log(
@@ -445,7 +445,7 @@ sub Sign {
     print $FHSecret $Secret;
     close $FHSecret;
 
-    my $Options = "smime -sign -in $PlainFile -out $SignFile -signer $CertFile -inkey $PrivateKeyFile"
+    my $Options = "smime -sign -md sha512 -in $PlainFile -out $SignFile -signer $CertFile -inkey $PrivateKeyFile"
         . " -text -binary -passin file:$SecretFile";
 
     # add the certfile parameter
