@@ -324,7 +324,9 @@ sub LinkObjectTableCreateComplex {
 
         # check if registered in SysConfig
         if (
-            IsHashRefWithData($Config)
+            # AgentLinkObject not allowed because it would result in nested forms
+            $OriginalAction ne 'AgentLinkObject'
+            && IsHashRefWithData($Config)
             && $Config->{ $Block->{Blockname} }
             && grep { $OriginalAction eq $_ } @SettingsVisible
             )
@@ -344,6 +346,10 @@ sub LinkObjectTableCreateComplex {
             my %Preferences = $Self->ComplexTablePreferencesGet(
                 Config  => $Config->{ $Block->{Blockname} },
                 PrefKey => "LinkObject::ComplexTable-" . $Block->{Blockname},
+            );
+
+            $LayoutObject->Block(
+                Name => 'ContentLargePreferencesForm',
             );
 
             $LayoutObject->Block(

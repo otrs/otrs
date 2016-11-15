@@ -110,6 +110,7 @@ Core.UI.RegisterToggleTwoContainer($('#linkobject-' + Core.App.EscapeSelector('[
     </div>
 [% RenderBlockEnd("TableComplexBlockActionRow") %]
     <div class="Content AutoHeight ">
+[% RenderBlockStart("ContentLargePreferencesForm") %]
         <div id="linkobject-[% Data.Name | html %]-setting" class="Hidden">
             <form action="[% Env("CGIHandle") %]" method="post" enctype="multipart/form-data" name="linkobject-[% Data.NameForm | html %]_setting_form"
                 id="linkobject-[% Data.NameForm | html %]_setting_form" class="WidgetSettingsForm">
@@ -176,6 +177,7 @@ Core.UI.RegisterToggleTwoContainer($('#linkobject-' + Core.App.EscapeSelector('[
                 </fieldset>
             </form>
         </div>
+[% RenderBlockEnd("ContentLargePreferencesForm") %]
         <div id="[% Data.Name | html %]">
             <table class="DataTable">
                 <thead>
