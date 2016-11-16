@@ -260,6 +260,9 @@ sub ArticleCreate {
         $Param{MD5} = $Kernel::OM->Get('Kernel::System::Main')->MD5sum( String => $Param{MessageID} );
     }
 
+    # generate unique fingerprint for searching created article in database
+    my $ArticleFingerprint =  rand(999999) . '|' . $Param{MessageID};
+
     # get database object
     my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
 
@@ -286,7 +289,8 @@ sub ArticleCreate {
         Bind => [
             \$Param{TicketID}, \$Param{ArticleTypeID}, \$Param{SenderTypeID},
             \$Param{From},     \$Param{ReplyTo},       \$Param{To},
-            \$Param{Cc},       \$Param{Subject},       \$Param{MessageID},
+            \$Param{Cc},       \$Param{Subject},
+            \$ArticleFingerprint,  # just for next search; will be updated with correct MessageID
             \$Param{MD5},
             \$Param{InReplyTo}, \$Param{References}, \$Param{Body},
             \$Param{ContentType}, \$Self->{ArticleContentPath}, \$ValidID,
@@ -297,7 +301,7 @@ sub ArticleCreate {
     # get article id
     my $ArticleID = $Self->_ArticleGetId(
         TicketID     => $Param{TicketID},
-        MessageID    => $Param{MessageID},
+        MessageID    => $ArticleFingerprint,
         From         => $Param{From},
         Subject      => $Param{Subject},
         IncomingTime => $IncomingTime
@@ -307,10 +311,16 @@ sub ArticleCreate {
     if ( !$ArticleID ) {
         $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'error',
-            Message  => 'Can\'t get ArticleID from INSERT!',
+            Message  => "Can't get ArticleID from insert (TicketID=$Param{TicketID}, MessageID=$Param{MessageID})!",
         );
         return;
     }
+
+    # save correct Message-ID; not critical
+    return if !$DBObject->Do(
+        SQL => 'UPDATE article SET a_message_id = ? WHERE id = ?',
+        Bind => [ \$Param{MessageID}, \$ArticleID ],
+    );
 
     # check for base64 encoded images in html body and upload them
     for my $Attachment (@AttachmentConvert) {

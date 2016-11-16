@@ -1,4 +1,5 @@
 #6.0.0.beta1 2016-??-??
+ - 2016-11-16 Fixed race condition in ArticleCreate.
  - 2016-11-04 Make it possible to search for emtpy dynamic fields via the TicketSearch API, thanks to Rolf Schmidt and Moritz Lenz.
  - 2016-11-02 Added sort criteria to TicketSearch call in PendingCheck console command. Thanks to Torsten Thau.
  - 2016-10-31 Removed default queue group restriction from TicketQueueOverview dashlet.
