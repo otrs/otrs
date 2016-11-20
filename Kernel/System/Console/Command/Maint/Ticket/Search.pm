@@ -27,7 +27,7 @@ sub Configure {
         HasValue    => 0,
     );
     $Self->AddOption(
-        Name        => 'userid',
+        Name        => 'user-id',
         Description => "Search for UserID (Default: 1).",
         Required    => 0,
         HasValue    => 1,
@@ -48,7 +48,7 @@ sub Configure {
         ValueRegex  => qr/^.*$/smx,
     );
     $Self->AddOption(
-        Name        => 'ticketnum',
+        Name        => 'ticket-number',
         Description => "Ticket number.",
         Required    => 0,
         HasValue    => 1,
@@ -62,7 +62,7 @@ sub Configure {
         ValueRegex  => qr/^.*$/smx,
     );
     $Self->AddOption(
-        Name        => 'queueids',
+        Name        => 'queue-ids',
         Description => "Queue-IDs to search in.",
         Required    => 0,
         HasValue    => 1,
@@ -82,28 +82,28 @@ sub Configure {
         ValueRegex  => qr/^.*$/smx,
     );
     $Self->AddOption(
-        Name        => 'stateids',
+        Name        => 'state-ids',
         Description => "StateIDs to search for.",
         Required    => 0,
         HasValue    => 1,
         ValueRegex  => qr/^\d+(,\d+)*$/smx,
     );
     $Self->AddOption(
-        Name        => 'statetypes',
+        Name        => 'state-types',
         Description => "Statetypes to search for.",
         Required    => 0,
         HasValue    => 1,
         ValueRegex  => qr/^.*$/smx,
     );
     $Self->AddOption(
-        Name        => 'statetypeids',
+        Name        => 'state-type-ids',
         Description => "StateTypeIDs to search for.",
         Required    => 0,
         HasValue    => 1,
         ValueRegex  => qr/^\d+(,\d+)*$/smx,
     );
     $Self->AddOption(
-        Name        => 'priorityids',
+        Name        => 'priority-ids',
         Description => "Priority-IDs to search for.",
         Required    => 0,
         HasValue    => 1,
@@ -117,7 +117,7 @@ sub Configure {
         ValueRegex  => qr/^.*$/smx,
     );
     $Self->AddOption(
-        Name        => 'lockids',
+        Name        => 'lock-ids',
         Description => "Lock-IDs to search for.",
         Required    => 0,
         HasValue    => 1,
@@ -134,15 +134,15 @@ sub PreRun {
     if ( defined $Self->GetOption('count') ) {
         $Self->{ResultType} = 'COUNT';
     }
-    if ( defined $Self->GetOption('userid') ) {
-        $Self->{UserID} = $Self->GetOption('userid');
+    if ( defined $Self->GetOption('user-id') ) {
+        $Self->{UserID} = $Self->GetOption('user-id');
     }
     else {
         $Self->{UserID} = 1;
     }
     $Self->{Limit} = $Self->GetOption('limit');
-    if ( defined $Self->GetOption('ticketnum') ) {
-        my @ticketnum = split(',', $Self->GetOption('ticketnum'));
+    if ( defined $Self->GetOption('ticket-number') ) {
+        my @ticketnum = split(',', $Self->GetOption('ticket-number'));
         $Self->{TicketNumber} = \@ticketnum;
     }
     $Self->{Title} = $Self->GetOption('title');
@@ -150,8 +150,8 @@ sub PreRun {
         my @queues = split(',', $Self->GetOption('queues'));
         $Self->{Queues} = \@queues;
     }
-    if ( defined $Self->GetOption('queueids') ) {
-        my @queueids = split(',', $Self->GetOption('queueids'));
+    if ( defined $Self->GetOption('queue-ids') ) {
+        my @queueids = split(',', $Self->GetOption('queue-ids'));
         $Self->{QueueIDs} = \@queueids;
     }
     $Self->{UseSubQueues} = $Self->GetOption('subqueues');
@@ -159,28 +159,28 @@ sub PreRun {
         my @states = split(',', $Self->GetOption('states'));
         $Self->{States} = \@states;
     }
-    if ( defined $Self->GetOption('stateids') ) {
-        my @stateids = split(',', $Self->GetOption('stateids'));
+    if ( defined $Self->GetOption('state-ids') ) {
+        my @stateids = split(',', $Self->GetOption('state-ids'));
         $Self->{StateIDs} = \@stateids;
     }
-    if ( defined $Self->GetOption('statetypes') ) {
-        my @statetype = split(',', $Self->GetOption('statetypes'));
+    if ( defined $Self->GetOption('state-types') ) {
+        my @statetype = split(',', $Self->GetOption('state-types'));
         $Self->{StateType} = \@statetype;
     }
-    if ( defined $Self->GetOption('statetypeids') ) {
-        my @statetypeids = split(',', $Self->GetOption('statetypeids'));
+    if ( defined $Self->GetOption('state-type-ids') ) {
+        my @statetypeids = split(',', $Self->GetOption('state-type-ids'));
         $Self->{StateTypeIDs} = \@statetypeids;
     }
-    if ( defined $Self->GetOption('priorityids') ) {
-        my @priorityids = split(',', $Self->GetOption('priorityids'));
+    if ( defined $Self->GetOption('priority-ids') ) {
+        my @priorityids = split(',', $Self->GetOption('priority-ids'));
         $Self->{PriorityIDs} = \@priorityids;
     }
     if ( defined $Self->GetOption('locks') ) {
         my @locks = split(',', $Self->GetOption('locks'));
         $Self->{Locks} = \@locks;
     }
-    if ( defined $Self->GetOption('lockids') ) {
-        my @lockids = split(',', $Self->GetOption('lockids'));
+    if ( defined $Self->GetOption('lock-ids') ) {
+        my @lockids = split(',', $Self->GetOption('lock-ids'));
         $Self->{LockIDs} = \@lockids;
     }
 
