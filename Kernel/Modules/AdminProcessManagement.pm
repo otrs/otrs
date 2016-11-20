@@ -1067,7 +1067,11 @@ sub Run {
             );
         }
 
-        if ( $ParamObject->GetParam( Param => 'ContinueAfterSave' ) eq '1' ) {
+        if (
+            defined $ParamObject->GetParam( Param => 'ContinueAfterSave' )
+            && ( $ParamObject->GetParam( Param => 'ContinueAfterSave' ) eq '1' )
+            )
+        {
 
             # if the user would like to continue editing the process, just redirect to the edit screen
             return $LayoutObject->Redirect(
@@ -1640,8 +1644,11 @@ sub _ShowOverview {
 
     if ( IsHashRefWithData($ProcessList) ) {
 
+        # Sort process list by name instead of ID (bug#12311).
+        my @ProcessIDs = sort { lc $ProcessList->{$a} cmp lc $ProcessList->{$b} } keys %{$ProcessList};
+
         # get each process data
-        for my $ProcessID ( sort keys %{$ProcessList} ) {
+        for my $ProcessID (@ProcessIDs) {
             my $ProcessData = $ProcessObject->ProcessGet(
                 ID     => $ProcessID,
                 UserID => $Self->{UserID},

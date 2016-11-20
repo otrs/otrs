@@ -203,7 +203,11 @@ sub Run {
         }
 
      # if the user would like to continue editing the customer user relations for group just redirect to the edit screen
-        if ( $ParamObject->GetParam( Param => 'ContinueAfterSave' ) eq '1' ) {
+        if (
+            defined $ParamObject->GetParam( Param => 'ContinueAfterSave' )
+            && ( $ParamObject->GetParam( Param => 'ContinueAfterSave' ) eq '1' )
+            )
+        {
             return $LayoutObject->Redirect(
                 OP =>
                     "Action=$Self->{Action};Subaction=Group;ID=$ID;CustomerUserSearch=$Param{CustomerUserSearch}"
@@ -260,7 +264,11 @@ sub Run {
         }
 
      # if the user would like to continue editing the customer user relations for group just redirect to the edit screen
-        if ( $ParamObject->GetParam( Param => 'ContinueAfterSave' ) eq '1' ) {
+        if (
+            defined $ParamObject->GetParam( Param => 'ContinueAfterSave' )
+            && ( $ParamObject->GetParam( Param => 'ContinueAfterSave' ) eq '1' )
+            )
+        {
             return $LayoutObject->Redirect(
                 OP =>
                     "Action=$Self->{Action};Subaction=CustomerUser;ID=$ID;CustomerUserSearch=$Param{CustomerUserSearch}"
@@ -358,10 +366,10 @@ sub _Change {
     my @ItemList = ();
 
     if ( $VisibleType{$NeType} eq 'Customer' ) {
-        $Param{BreadcrumbTitle} = "Change Customer Relations for Group";
+        $Param{BreadcrumbTitle} = "Change Customer User Relations for Group";
     }
     else {
-        $Param{BreadcrumbTitle} = "Change Group Relations for Customer";
+        $Param{BreadcrumbTitle} = "Change Group Relations for Customer User";
     }
 
     # overview

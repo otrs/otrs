@@ -31,11 +31,63 @@ Core.Agent.Admin = Core.Agent.Admin || {};
     TargetNS.Init = function () {
         Core.UI.Table.InitTableFilter($("#FilterAttachments"), $("#Attachments"));
 
-        // bind click function to remove button
-        $('#Attachments a.TrashCan').on('click', function () {
-            if (window.confirm(Core.Language.Translate('Do you really want to delete this attachment?'))) {
-                return true;
-            }
+        // delete attachment
+        TargetNS.InitAttachmentDelete();
+    };
+
+    /**
+     * @name AttachmentDelete
+     * @memberof Core.Agent.Admin.Attachment
+     * @function
+     * @description
+     *      This function deletes attachment on buton click.
+     */
+    TargetNS.InitAttachmentDelete = function () {
+        $('.AttachmentDelete').on('click', function () {
+            var $AttachmentDeleteElement = $(this);
+
+            Core.UI.Dialog.ShowContentDialog(
+                $('#DeleteAttachmentDialogContainer'),
+                Core.Language.Translate('Delete this Attachment'),
+                '240px',
+                'Center',
+                true,
+                [
+                    {
+                        Class: 'CallForAction Primary',
+                        Label: Core.Language.Translate("Confirm"),
+                        Function: function() {
+                            $('.Dialog .InnerContent .Center').text(Core.Language.Translate("Deleting attachment..."));
+                            $('.Dialog .Content .ContentFooter').remove();
+
+                            Core.AJAX.FunctionCall(
+                                Core.Config.Get('Baselink') + 'Action=AdminAttachment;Subaction=Delete',
+                                { ID: $AttachmentDeleteElement.data('id') },
+                                function(Reponse) {
+                                    var DialogText = Core.Language.Translate("There was an error deleting the attachment. Please check the logs for more information.");
+                                    if (parseInt(Reponse, 10) > 0) {
+                                        $('#AttachmentID_' + parseInt(Reponse, 10)).fadeOut(function() {
+                                            $(this).remove();
+                                        });
+                                        DialogText = Core.Language.Translate("Attachment was deleted successfully.");
+                                    }
+                                    $('.Dialog .InnerContent .Center').text(DialogText);
+                                    window.setTimeout(function() {
+                                        Core.UI.Dialog.CloseDialog($('.Dialog:visible'));
+                                    }, 1000);
+                                }
+                            );
+                        }
+                    },
+                    {
+                        Class: 'CallForAction',
+                        Label: Core.Language.Translate("Cancel"),
+                        Function: function () {
+                            Core.UI.Dialog.CloseDialog($('#DeleteAttachmentDialog'));
+                        }
+                    }
+                ]
+            );
             return false;
         });
     };

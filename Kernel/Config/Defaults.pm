@@ -133,13 +133,6 @@ sub LoadDefaults {
     # The database DSN for PostgreSQL ==> more: "perldoc DBD::Pg"
 #    $Self->{DatabaseDSN} = "DBI:Pg:dbname=<OTRS_CONFIG_Database>;host=<OTRS_CONFIG_DatabaseHost>;";
 
-    # The database DSN for Microsoft SQL Server - only supported if OTRS is
-    # installed on Windows as well
-    #    $Self->{DatabaseDSN} = "DBI:ODBC:$Self->{Database}";
-    # If you use ODBC, no database auto detection is possible,
-    # so set the database type here. Possible: mysq,postgresql,mssql,oracle
-    #    $Self->{'Database::Type'} = 'mssql';
-
     # The database DSN for Oracle ==> more: "perldoc DBD::oracle"
 #    $Self->{DatabaseDSN} = "DBI:Oracle://$Self->{DatabaseHost}:1521/$Self->{Database}";
 #
@@ -719,6 +712,9 @@ sub LoadDefaults {
         '2000-UID-Check' => {
             Module => 'Kernel::Output::HTML::Notification::UIDCheck',
         },
+        '2500-AgentSessionLimit' => {
+          'Module' => 'Kernel::Output::HTML::Notification::AgentSessionLimit',
+        },
         '5500-OutofOffice-Check' => {
             Module => 'Kernel::Output::HTML::Notification::OutofOfficeCheck',
         },
@@ -943,7 +939,6 @@ sub LoadDefaults {
         'Core.InputFields.css',
         'Core.Print.css',
         'Core.Animations.css',
-        'thirdparty/fontawesome/font-awesome.css',
     ];
 
     # Agent Common CSS
@@ -968,7 +963,6 @@ sub LoadDefaults {
         'Core.InputFields.css',
         'Core.Print.css',
         'Core.Animations.css',
-        'thirdparty/fontawesome/font-awesome.css',
     ];
 
     # --------------------------------------------------- #
@@ -1297,7 +1291,7 @@ You can log in via the following URL:
 #    $Self->{'CustomerPanel::InfoFile'} = 'CustomerAccept';
 
     # CustomerPanelLostPassword
-    # (use lost passowrd feature)
+    # (use lost password feature)
     $Self->{CustomerPanelLostPassword} = 1;
 
     # CustomerPanelCreateAccount

@@ -149,7 +149,9 @@ sub Run {
             for my $Permission ( sort keys %Permissions ) {
                 $NewPermission{$Permission} = 0;
                 my @Array = @{ $Permissions{$Permission} };
+                ID:
                 for my $ID (@Array) {
+                    next ID if !$ID;
                     if ( $UserID == $ID ) {
                         $NewPermission{$Permission} = 1;
                     }
@@ -165,7 +167,11 @@ sub Run {
 
         # if the user would like to continue editing the group-user relation just redirect to the edit screen
         # otherwise return to relations overview
-        if ( $ParamObject->GetParam( Param => 'ContinueAfterSave' ) eq '1' ) {
+        if (
+            defined $ParamObject->GetParam( Param => 'ContinueAfterSave' )
+            && ( $ParamObject->GetParam( Param => 'ContinueAfterSave' ) eq '1' )
+            )
+        {
             return $LayoutObject->Redirect( OP => "Action=$Self->{Action};Subaction=Group;ID=$ID" );
         }
         else {
@@ -199,7 +205,9 @@ sub Run {
             for my $Permission ( sort keys %Permissions ) {
                 $NewPermission{$Permission} = 0;
                 my @Array = @{ $Permissions{$Permission} };
+                ID:
                 for my $ID (@Array) {
+                    next ID if !$ID;
                     if ( $GroupID eq $ID ) {
                         $NewPermission{$Permission} = 1;
                     }
@@ -215,7 +223,11 @@ sub Run {
 
         # if the user would like to continue editing the group-user relation just redirect to the edit screen
         # otherwise return to relations overview
-        if ( $ParamObject->GetParam( Param => 'ContinueAfterSave' ) eq '1' ) {
+        if (
+            defined $ParamObject->GetParam( Param => 'ContinueAfterSave' )
+            && ( $ParamObject->GetParam( Param => 'ContinueAfterSave' ) eq '1' )
+            )
+        {
             return $LayoutObject->Redirect( OP => "Action=$Self->{Action};Subaction=User;ID=$ID" );
         }
         else {

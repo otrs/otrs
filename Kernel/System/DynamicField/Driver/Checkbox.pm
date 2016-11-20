@@ -184,7 +184,15 @@ sub SearchSQLGet {
         Equals => '=',
     );
 
-    if ( !$Operators{ $Param{Operator} } ) {
+    if ( $Param{Operator} eq 'Empty' ) {
+        if ( $Param{SearchTerm} ) {
+            return " $Param{TableAlias}.value_int IS NULL ";
+        }
+        else {
+            return " $Param{TableAlias}.value_int IS NOT NULL ";
+        }
+    }
+    elsif ( !$Operators{ $Param{Operator} } ) {
         $Kernel::OM->Get('Kernel::System::Log')->Log(
             'Priority' => 'error',
             'Message'  => "Unsupported Operator $Param{Operator}",
@@ -526,7 +534,7 @@ sub SearchFieldRender {
     }
 
     # check and set class if necessary
-    my $FieldClass = 'DynamicFieldDropdown';
+    my $FieldClass = 'DynamicFieldDropdown Modernize';
 
     my $HTMLString = $Param{LayoutObject}->BuildSelection(
         Data => {

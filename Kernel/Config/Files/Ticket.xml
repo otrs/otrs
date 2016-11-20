@@ -321,7 +321,7 @@
         </Setting>
     </ConfigItem>
     <ConfigItem Name="Ticket::EventModulePost###2300-ArchiveRestore" Required="0" Valid="1">
-        <Description Translatable="1">Restores a ticket from the archive (only if the event is a state change, from closed to any open available state).</Description>
+        <Description Translatable="1">Restores a ticket from the archive (only if the event is a state change to any open available state).</Description>
         <Group>Ticket</Group>
         <SubGroup>Core::Ticket</SubGroup>
         <Setting>
@@ -3003,7 +3003,7 @@
         </Setting>
     </ConfigItem>
     <ConfigItem Name="Ticket::Frontend::AgentTicketFreeText###Title" Required="0" Valid="1">
-        <Description Translatable="1">Shows the title fields in the ticket free text screen of the agent interface.</Description>
+        <Description Translatable="1">Shows the title field in the ticket free text screen of the agent interface.</Description>
         <Group>Ticket</Group>
         <SubGroup>Frontend::Agent::Ticket::ViewFreeText</SubGroup>
         <Setting>
@@ -7415,7 +7415,7 @@
                 <Item Key="Title" Translatable="1">Ticket Queue Overview</Item>
                 <Item Key="Description" Translatable="1">Provides a matrix overview of the tickets per state per queue</Item>
                 <Item Key="Permission">rw</Item>
-                <Item Key="QueuePermissionGroup">users</Item>
+                <Item Key="QueuePermissionGroup"></Item>
                 <Item Key="Block">ContentLarge</Item>
                 <Item Key="Group"></Item>
                 <Item Key="Default">1</Item>
@@ -8692,6 +8692,7 @@
                 <Loader>
                     <JavaScript>Core.UI.AllocationList.js</JavaScript>
                     <JavaScript>Core.Agent.TableFilters.js</JavaScript>
+                    <JavaScript>Core.Agent.Overview.js</JavaScript>
                 </Loader>
             </FrontendModuleReg>
         </Setting>
@@ -10198,6 +10199,7 @@
                 <Item>AgentTicketPriority</Item>
                 <Item>AgentTicketProcess</Item>
                 <Item>AgentTicketResponsible</Item>
+                <Item>AgentTicketSearch</Item>
                 <Item>AgentTicketWatcher</Item>
                 <Item>AgentTicketZoom</Item>
                 <Item>AgentLinkObject</Item>

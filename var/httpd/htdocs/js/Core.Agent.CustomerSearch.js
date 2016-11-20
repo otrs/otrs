@@ -105,7 +105,7 @@ Core.Agent.CustomerSearch = (function (TargetNS) {
         };
 
         // check if customer tickets should be shown
-        if (!parseInt(Core.Config.Get('CustomerSearch').ShowCustomerTickets, 10)) {
+        if (typeof Core.Config.Get('CustomerSearch') !== 'undefined' && !parseInt(Core.Config.Get('CustomerSearch').ShowCustomerTickets, 10)) {
             return;
         }
 
@@ -529,7 +529,7 @@ Core.Agent.CustomerSearch = (function (TargetNS) {
             $('#ShowCustomerID').html('');
 
             // reset customer info table
-            $('#CustomerInfo .Content').html('none');
+            $('#CustomerInfo .Content').html(Core.Language.Translate('none'));
     };
 
     /**

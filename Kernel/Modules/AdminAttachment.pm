@@ -93,7 +93,11 @@ sub Run {
             if ($Update) {
 
                 # if the user would like to continue editing the attachment, just redirect to the edit screen
-                if ( $ParamObject->GetParam( Param => 'ContinueAfterSave' ) eq '1' ) {
+                if (
+                    defined $ParamObject->GetParam( Param => 'ContinueAfterSave' )
+                    && ( $ParamObject->GetParam( Param => 'ContinueAfterSave' ) eq '1' )
+                    )
+                {
                     my $ID = $ParamObject->GetParam( Param => 'ID' ) || '';
                     return $LayoutObject->Redirect( OP => "Action=$Self->{Action};Subaction=Change;ID=$ID" );
                 }
@@ -220,15 +224,16 @@ sub Run {
         $LayoutObject->ChallengeTokenCheck();
 
         my $ID = $ParamObject->GetParam( Param => 'ID' );
-
         my $Delete = $StdAttachmentObject->StdAttachmentDelete(
             ID => $ID,
         );
-        if ( !$Delete ) {
-            return $LayoutObject->ErrorScreen();
-        }
 
-        return $LayoutObject->Redirect( OP => "Action=$Self->{Action}" );
+        return $LayoutObject->Attachment(
+            ContentType => 'text/html',
+            Content     => ($Delete) ? $ID : 0,
+            Type        => 'inline',
+            NoCache     => 1,
+        );
     }
 
     # ------------------------------------------------------------ #

@@ -52,10 +52,20 @@ sub Run {
         # challenge token check for write action
         $LayoutObject->ChallengeTokenCheck();
 
-        if ( !$PostMasterFilter->FilterDelete( Name => $Name ) ) {
+        my $Delete = $PostMasterFilter->FilterDelete(
+            Name => $Name,
+        );
+
+        if ( !$Delete ) {
             return $LayoutObject->ErrorScreen();
         }
-        return $LayoutObject->Redirect( OP => "Action=$Self->{Action}" );
+
+        return $LayoutObject->Attachment(
+            ContentType => 'text/html',
+            Content     => $Delete,
+            Type        => 'inline',
+            NoCache     => 1,
+        );
     }
 
     # ------------------------------------------------------------ #
@@ -163,7 +173,11 @@ sub Run {
         );
 
         # if the user would like to continue editing the postmaster filter, just redirect to the update screen
-        if ( $ParamObject->GetParam( Param => 'ContinueAfterSave' ) eq '1' ) {
+        if (
+            defined $ParamObject->GetParam( Param => 'ContinueAfterSave' )
+            && ( $ParamObject->GetParam( Param => 'ContinueAfterSave' ) eq '1' )
+            )
+        {
             return $LayoutObject->Redirect( OP => "Action=$Self->{Action};Subaction=Update;Name=$Name" );
         }
         else {
