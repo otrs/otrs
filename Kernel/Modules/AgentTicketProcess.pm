@@ -3114,7 +3114,6 @@ sub _RenderOwner {
     #    set it to none (as it doesn't need to be changed afterall)
     elsif (
         $SelectedValue
-        && $PossibleNone
         && IsHashRefWithData( $Param{Ticket} )
         && $SelectedValue eq $Param{Ticket}->{Owner}
         )
