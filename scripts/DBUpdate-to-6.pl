@@ -104,6 +104,10 @@ Please run it as the 'otrs' user or with the help of su:
             Message => 'Migrating time zone configuration',
             Command => \&_MigrateTimeZoneConfiguration,
         },
+        {
+            Message => 'Initializing counters',
+            Command => \&_InitializeCounters,
+        },
 
         # ...
 
@@ -496,6 +500,22 @@ sub _AskForTimeZone {
     }
 
     return $TimeZone;
+}
+
+=item _InitializeCounters()
+
+OTRS 6 introduces counters in DB.
+
+=cut
+
+sub _InitializeCounters {
+
+    # Initialize TicketNumber counter
+    my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
+    return if !$DBObject->Do(
+        SQL  => "INSERT INTO counter (id, name, value, create_by, create_time, change_by, change_time) "
+            . " VALUES (1, 'TicketNumber', 0, 1, current_timestamp, 1, current_timestamp)"
+    );
 }
 
 1;

@@ -224,3 +224,5 @@ ALTER TABLE pm_transition_action ADD CONSTRAINT FK_pm_transition_action_change_b
 ALTER TABLE cloud_service_config ADD CONSTRAINT FK_cloud_service_config_create_by_id FOREIGN KEY (create_by) REFERENCES users (id);
 ALTER TABLE cloud_service_config ADD CONSTRAINT FK_cloud_service_config_change_by_id FOREIGN KEY (change_by) REFERENCES users (id);
 ALTER TABLE cloud_service_config ADD CONSTRAINT FK_cloud_service_config_valid_id_id FOREIGN KEY (valid_id) REFERENCES valid (id);
+ALTER TABLE counter ADD CONSTRAINT FK_counter_create_by_id FOREIGN KEY (create_by) REFERENCES users (id);
+ALTER TABLE counter ADD CONSTRAINT FK_counter_change_by_id FOREIGN KEY (change_by) REFERENCES users (id);

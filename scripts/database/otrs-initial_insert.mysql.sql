@@ -2592,3 +2592,9 @@ INSERT INTO dynamic_field (id, internal_field, name, label, field_order, field_t
     (2, 1, 'ProcessManagementActivityID', 'Activity', 1, 'ActivityID', 'Ticket', '---
 DefaultValue: \'\'
 ', 1, 1, current_timestamp, 1, current_timestamp);
+# ----------------------------------------------------------
+#  insert into table counter
+# ----------------------------------------------------------
+INSERT INTO counter (id, name, value, create_by, create_time, change_by, change_time)
+    VALUES
+    (1, 'TicketNumber', 0, 1, current_timestamp, 1, current_timestamp);

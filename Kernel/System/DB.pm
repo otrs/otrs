@@ -367,7 +367,7 @@ to retrieve database errors
 sub Error {
     my $Self = shift;
 
-    return $DBI::errstr;
+    return $DBI::err ? $DBI::errstr : '';
 }
 
 =head2 Do()
@@ -1609,6 +1609,94 @@ sub Ping {
     }
 
     return $Self->{dbh}->ping();
+}
+
+=item BeginWork()
+
+    my $Success = $DBObject->BeginWork()
+
+Starts a database transaction.
+
+=cut
+
+sub BeginWork {
+    my ( $Self, %Param ) = @_;
+
+    return if !$Self->Connect();
+
+    # start transaction
+    return $Self->{dbh}->begin_work();
+}
+
+=item Commit()
+
+    my $Success = $DBObject->Commit()
+
+Commits a database transaction.
+
+=cut
+
+sub Commit {
+    my ( $Self, %Param ) = @_;
+
+    # commit transaction
+    return $Self->{dbh}->commit();
+}
+
+=item Rollback()
+
+    my $Success = $DBObject->Rollback()
+
+Rolls back a database transaction.
+
+=cut
+
+sub Rollback {
+    my ( $Self, %Param ) = @_;
+
+    # rollback transaction
+    return $Self->{dbh}->rollback();
+}
+
+=item GetRaiseError()
+
+    my $RaiseError = $DBObject->GetRaiseError()
+
+Gets current RaiseError value.
+
+=cut
+
+sub GetRaiseError {
+    my ( $Self, %Param ) = @_;
+
+    return $Self->{dbh}->{RaiseError};
+}
+
+=item SetRaiseError()
+
+    my $Success = $DBObject->SetRaiseError(
+        Enabled => 0;  # 0 - disable raising errors; 1 - to enable
+    );
+
+Enabled or disables raising errors.
+
+=cut
+
+sub SetRaiseError {
+    my ( $Self, %Param ) = @_;
+
+    # check needed stuff
+    if ( ! defined $Param{Enabled} ) {
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
+            Priority => 'error',
+            Message  => "Need Enabled!"
+        );
+        return;
+    }
+
+    $Self->{dbh}->{RaiseError} = $Param{Enabled};
+
+    return 1;
 }
 
 =begin Internal:

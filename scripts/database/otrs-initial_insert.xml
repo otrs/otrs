@@ -3305,4 +3305,15 @@ DefaultValue: ''
         <Data Key="change_time">current_timestamp</Data>
     </Insert>
 
+<!-- counters -->
+    <Insert Table="counter">
+        <Data Key="id" Type="AutoIncrement">1</Data>
+        <Data Key="name" Type="Quote" Translatable="1">TicketNumber</Data>
+        <Data Key="value">0</Data>
+        <Data Key="create_by">1</Data>
+        <Data Key="create_time">current_timestamp</Data>
+        <Data Key="change_by">1</Data>
+        <Data Key="change_time">current_timestamp</Data>
+    </Insert>
+
 </database>

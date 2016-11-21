@@ -3205,3 +3205,45 @@ END;
 CREATE INDEX FK_cloud_service_config_chane1 ON cloud_service_config (change_by);
 CREATE INDEX FK_cloud_service_config_crea30 ON cloud_service_config (create_by);
 CREATE INDEX FK_cloud_service_config_valib2 ON cloud_service_config (valid_id);
+-- ----------------------------------------------------------
+--  create table counter
+-- ----------------------------------------------------------
+CREATE TABLE counter (
+    id NUMBER (12, 0) NOT NULL,
+    name VARCHAR2 (64) NOT NULL,
+    value NUMBER (20, 0) NOT NULL,
+    create_time DATE NOT NULL,
+    create_by NUMBER (12, 0) NOT NULL,
+    change_time DATE NOT NULL,
+    change_by NUMBER (12, 0) NOT NULL,
+    CONSTRAINT counter_name UNIQUE (name)
+);
+ALTER TABLE counter ADD CONSTRAINT PK_counter PRIMARY KEY (id);
+BEGIN
+  EXECUTE IMMEDIATE 'DROP SEQUENCE SE_counter';
+EXCEPTION
+  WHEN OTHERS THEN NULL;
+END;
+/
+--;
+CREATE SEQUENCE SE_counter
+INCREMENT BY 1
+START WITH 1
+NOMAXVALUE
+NOCYCLE
+CACHE 20
+ORDER;
+CREATE OR REPLACE TRIGGER SE_counter_t
+BEFORE INSERT ON counter
+FOR EACH ROW
+BEGIN
+  IF :new.id IS NULL THEN
+    SELECT SE_counter.nextval
+    INTO :new.id
+    FROM DUAL;
+  END IF;
+END;
+/
+--;
+CREATE INDEX FK_counter_change_by ON counter (change_by);
+CREATE INDEX FK_counter_create_by ON counter (create_by);

@@ -47,4 +47,22 @@
         </IndexCreate>
     </TableAlter>
 
+    <!-- counters -->
+    <TableCreate Name="counter">
+        <Column Name="id" Required="true" PrimaryKey="true" AutoIncrement="true" Type="INTEGER"/>
+        <Column Name="name" Required="true" Size="64" Type="VARCHAR"/>
+        <Column Name="value" Required="true" Type="BIGINT"/>
+        <Column Name="create_time" Required="true" Type="DATE"/>
+        <Column Name="create_by" Required="true" Type="INTEGER"/>
+        <Column Name="change_time" Required="true" Type="DATE"/>
+        <Column Name="change_by" Required="true" Type="INTEGER"/>
+        <Unique Name="counter_name">
+            <UniqueColumn Name="name"/>
+        </Unique>
+        <ForeignKey ForeignTable="users">
+            <Reference Local="create_by" Foreign="id"/>
+            <Reference Local="change_by" Foreign="id"/>
+        </ForeignKey>
+    </TableCreate>
+
 </database>

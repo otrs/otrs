@@ -47,3 +47,19 @@ ALTER TABLE article CHANGE a_references a_references MEDIUMTEXT NULL;
 # ----------------------------------------------------------
 ALTER TABLE article CHANGE a_in_reply_to a_in_reply_to MEDIUMTEXT NULL;
 CREATE INDEX ticket_history_article_id ON ticket_history (article_id);
+# ----------------------------------------------------------
+#  create table counter
+# ----------------------------------------------------------
+CREATE TABLE counter (
+    id INTEGER NOT NULL AUTO_INCREMENT,
+    name VARCHAR (64) NOT NULL,
+    value BIGINT NOT NULL,
+    create_time DATETIME NOT NULL,
+    create_by INTEGER NOT NULL,
+    change_time DATETIME NOT NULL,
+    change_by INTEGER NOT NULL,
+    PRIMARY KEY(id),
+    UNIQUE INDEX counter_name (name)
+);
+ALTER TABLE counter ADD CONSTRAINT FK_counter_create_by_id FOREIGN KEY (create_by) REFERENCES users (id);
+ALTER TABLE counter ADD CONSTRAINT FK_counter_change_by_id FOREIGN KEY (change_by) REFERENCES users (id);
