@@ -3051,15 +3051,12 @@ sub _RenderOwner {
         ValidateRequired => '',
     );
 
-    my $PossibleNone = 1;
-
     # if field is required put in the necessary variables for
     #    ValidateRequired class input field, Mandatory class for the label
     #    do not allow empty selection
     if ( $Param{ActivityDialogField}->{Display} && $Param{ActivityDialogField}->{Display} == 2 ) {
         $Data{ValidateRequired} = 'Validate_Required';
         $Data{MandatoryClass}   = 'Mandatory';
-        $PossibleNone           = 0;
     }
 
     my $SelectedValue;
@@ -3147,7 +3144,7 @@ sub _RenderOwner {
         Translation  => 1,
         SelectedID   => $SelectedID || '',
         Class        => "Modernize $ServerError",
-        PossibleNone => $PossibleNone,
+        PossibleNone => 1, # even if mandatory an explcit selection should be done
     );
 
     # set fields that will get an AJAX loader icon when this field changes
