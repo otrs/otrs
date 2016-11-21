@@ -147,7 +147,6 @@
 
 .QueueOverview .Oldest {
     color: red;
-    font-weight: bold;
     animation: blinking 1s steps(5, start) infinite;
     -webkit-animation: blinking 1s steps(5, start) infinite;
 }
