@@ -3099,7 +3099,6 @@ sub _RenderOwner {
     #    (if any)
     if (
         !$SelectedValue
-        && !$PossibleNone
         && IsHashRefWithData( $Param{Ticket} )
         )
     {
