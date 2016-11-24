@@ -996,6 +996,7 @@ sub MaskAgentZoom {
     my $MainObject = $Kernel::OM->Get('Kernel::System::Main');
 
     my %Widgets;
+    my %AsyncWidgetActions;
     WIDGET:
     for my $Key ( sort keys %{ $Self->{DisplaySettings}->{Widgets} // {} } ) {
         my $Config = $Self->{DisplaySettings}->{Widgets}->{$Key};
@@ -1008,12 +1009,15 @@ sub MaskAgentZoom {
                 );
                 next WIDGET;
             }
+            my $ElementID = 'Async_' . $LayoutObject->LinkEncode( $Key );
             push @{ $Widgets{ $Config->{Location} } }, {
                 Async => 1,
                 Rank  => $Config->{Rank} || $Key,
                 %Ticket,
-                ElementID => 'Async_' . $LayoutObject->LinkEncode( $Key ),
+                ElementID => $ElementID,
             };
+            $AsyncWidgetActions{$ElementID} = "Action=$Self->{Action};Subaction=LoadWidget;"
+                                            . "TicketID=$Self->{TicketID};ElementID=$ElementID";
             next WIDGET;
         }
         my $Success = eval { $MainObject->Require( $Config->{Module} ) };
@@ -1044,6 +1048,10 @@ sub MaskAgentZoom {
             sort { $a->{Rank} cmp $b->{Rank} } @{ $Widgets{$Location} }
         ];
     }
+    $LayoutObject->AddJSData(
+        Key   => 'AsyncWidgetActions',
+        Value => \%AsyncWidgetActions,
+    );
 
     # set display options
     $Param{Hook} = $ConfigObject->Get('Ticket::Hook') || 'Ticket#';
