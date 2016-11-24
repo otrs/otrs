@@ -14,7 +14,6 @@ use warnings;
 our $ObjectManagerDisabled = 1;
 
 use POSIX qw/ceil/;
-use Digest::SHA1 ();
 use Kernel::System::EmailParser;
 use Kernel::System::VariableCheck qw(:all);
 use Kernel::Language qw(Translatable);
@@ -352,7 +351,7 @@ sub Run {
         my $Config;
         WIDGET:
         for my $Key ( sort keys %{ $Self->{DisplaySettings}->{Widgets} // {} } ) {
-            if ( $ElementID eq 'Async_' . Digest::SHA1::sha1_hex( $Key ) ) {
+            if ( $ElementID eq 'Async_' . $LayoutObject->LinkEncode( $Key ) ) {
                 $Config = $Self->{DisplaySettings}->{Widgets}->{$Key};
                 last WIDGET;
             }
@@ -1013,7 +1012,7 @@ sub MaskAgentZoom {
                 Async => 1,
                 Rank  => $Config->{Rank} || $Key,
                 %Ticket,
-                ElementID => 'Async_' . Digest::SHA1::sha1_hex( $Key ),
+                ElementID => 'Async_' . $LayoutObject->LinkEncode( $Key ),
             };
             next WIDGET;
         }
