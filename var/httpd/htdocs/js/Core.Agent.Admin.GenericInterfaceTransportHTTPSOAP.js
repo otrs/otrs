@@ -29,6 +29,12 @@ Core.Agent.Admin.GenericInterfaceTransportHTTPSOAP = (function (TargetNS) {
      *      This function binds events to certain actions
      */
     TargetNS.Init = function () {
+        var $this;
+        var header_key, header_value, header_count;
+        var separator, inputkey, inputvalue, deletespan, newli, li_count, i;
+        var data, Value, Result;
+        var header, headerdata;
+        var propt;
 
         // bind change function to Request Name Scheme field
         $('#RequestNameScheme').on('change', function(){
@@ -63,6 +69,96 @@ Core.Agent.Admin.GenericInterfaceTransportHTTPSOAP = (function (TargetNS) {
                 $('.SOAPActionField').addClass('Hidden');
             }
         });
+
+        // bind change function to SOAP Header field
+        $('#SOAPHeaderAdd').on('click', function () {
+            header_key = $('#SOAPHeaderKey').val();
+            header_value = $('#SOAPHeaderValue').val();
+            header_count = parseInt($('#SOAPHeaderDataCount').val(), 10);
+            header_count = header_count + 1;
+
+            if (header_key === '' || header_value === '') return false;
+
+            separator = ' ';
+            inputkey = '<input type="text" value="' + header_key + '" />';
+            inputvalue = '<input type="text" value="' + header_value + '" />';
+            deletespan = '<span class="SOAPHeaderKeyValuePairDelete" style="cursor: pointer;"><i class="fa fa-minus-square-o" aria-hidden="true"></i></span>';
+            newli = '<li id="SOAPHeaderKeyValuePair_' + header_count + '" style="margin-bottom: 2px;">' + inputkey + separator + inputvalue + separator + deletespan + '</li>';
+
+            $('#SOAPHeaderKeyValueData').append(newli);
+
+            $('#SOAPHeaderDataCount').val(header_count);
+
+            return false;
+        });
+
+        $(document).on('click', '.SOAPHeaderKeyValuePairDelete', function(){
+            $this = $(this);
+
+            // delete element
+            $this.parent().remove();
+
+            // set the correct amount of children to parent ul
+            li_count = $('#SOAPHeaderKeyValueData').children('li').length;
+            $('#SOAPHeaderDataCount').val(li_count);
+
+            // set correct index for each children
+            i = 1;
+            $('#SOAPHeaderKeyValueData').children('li').each(function() {
+                $this = $(this);
+
+                $this.prop('id', 'SOAPHeaderKeyValuePair_' + i);
+
+                i = i + 1;
+            });
+
+            return false;
+        });
+
+        $('#TransportConfigForm').on('submit.GenerateJSON', function() {
+            Value = '';
+            Result = [];
+
+            // get key value pairs for SOAP header
+            $('#SOAPHeaderKeyValueData').children('li').each(function() {
+                $this = $(this);
+                header_key = $this.children('input').eq(0).val();
+                header_value = $this.children('input').eq(1).val();
+
+                data = {};
+                data[header_key] = header_value;
+
+                Result.push(data);
+            });
+
+            if (Result.length) {
+                Value = Core.JSON.Stringify(Result);
+            }
+
+            $('#SOAPHeader').val(Value);
+        });
+
+        headerdata = $('#SOAPHeader').val();
+        if (headerdata !== '') {
+            header = Core.JSON.Parse(headerdata);
+
+            separator = ' ';
+            deletespan = '<span class="SOAPHeaderKeyValuePairDelete" style="cursor: pointer;"><i class="fa fa-minus-square-o" aria-hidden="true"></i></span>';
+
+            i = 1;
+            for(propt in header) {
+                header_key = Object.keys(header[propt])[0];
+                inputkey = '<input type="text" value="' + header_key + '" />';
+                header_value = header[propt][header_key];
+                inputvalue = '<input type="text" value="' + header_value + '" />';
+
+                newli = '<li id="SOAPHeaderKeyValuePair_' + i + '" style="margin-bottom: 2px;">' + inputkey + separator + inputvalue + separator + deletespan + '</li>';
+
+                $('#SOAPHeaderKeyValueData').append(newli);
+
+                i = i + 1;
+            }
+        }
 
         // bind change function to Authentication field
         $('#Authentication').on('change', function(){

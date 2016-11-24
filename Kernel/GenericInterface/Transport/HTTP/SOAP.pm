@@ -645,6 +645,19 @@ sub RequesterPerformRequest {
             push @CallData, $SOAPData->{Data};
         }
     }
+
+    # add soap header
+    if ( defined $Config->{SOAPHeader} ) {
+        for my $SOAPHeaderEntry ( @{ $Config->{SOAPHeader} } ) {
+
+            for my $Key ( sort keys %{$SOAPHeaderEntry} ) {
+                my $Value = $SOAPHeaderEntry->{$Key};
+
+                push @CallData, SOAP::Header->name( $Key => $Value );
+            }
+        }
+    }
+
     my $SOAPResult = eval {
         $SOAPHandle->call(@CallData);
     };

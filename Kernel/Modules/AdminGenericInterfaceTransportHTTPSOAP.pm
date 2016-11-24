@@ -212,6 +212,13 @@ sub Run {
             $TransportConfig->{Sort} = $Self->_PackStructure( Structure => $SortStructure );
         }
 
+        # add SOAP header
+        if ( $GetParam->{SOAPHeader} ) {
+            my $SOAPHeaderStructure
+                = $Kernel::OM->Get('Kernel::System::JSON')->Decode( Data => $GetParam->{SOAPHeader} );
+            $TransportConfig->{SOAPHeader} = $SOAPHeaderStructure;
+        }
+
         # set new configuration
         $WebserviceData->{Config}->{$CommunicationType}->{Transport}->{Config} = $TransportConfig;
 
@@ -278,6 +285,7 @@ sub _ShowEdit {
     $Param{ResponseNameFreeText} = $TransportConfig->{ResponseNameFreeText};
     $Param{MaxLength}            = $TransportConfig->{MaxLength};
     $Param{SOAPAction}           = $TransportConfig->{SOAPAction};
+    $Param{SOAPHeader}           = $TransportConfig->{SOAPHeader};
     $Param{SOAPActionSeparator}  = $TransportConfig->{SOAPActionSeparator};
     $Param{Authentication}       = $TransportConfig->{Authentication}->{Type};
     $Param{User}                 = $TransportConfig->{Authentication}->{User};
@@ -295,12 +303,22 @@ sub _ShowEdit {
     if ( $TransportConfig->{Sort} ) {
         my $SortStructure = $Self->_UnpackStructure( Structure => $TransportConfig->{Sort} );
         $Param{Sort} = $Kernel::OM->Get('Kernel::System::JSON')->Encode( Data => $SortStructure );
+    }
 
-        # send data to JS
-        $LayoutObject->AddJSData(
-            Key   => 'SortData',
-            Value => $Param{Sort},
-        );
+    # get SOAPHeader
+    if ( $TransportConfig->{SOAPHeader} ) {
+        $Param{SOAPHeader} = $Kernel::OM->Get('Kernel::System::JSON')->Encode( Data => $TransportConfig->{SOAPHeader} );
+    }
+
+    # send data to JS
+    $LayoutObject->AddJSData(
+        Key   => 'SortData',
+        Value => $Param{Sort},
+    );
+
+    # get SOAPHeader
+    if ( $TransportConfig->{SOAPHeader} ) {
+        $Param{SOAPHeader} = $Kernel::OM->Get('Kernel::System::JSON')->Encode( Data => $TransportConfig->{SOAPHeader} );
     }
 
     # create options for request and response name schemes
@@ -445,7 +463,7 @@ sub _GetParams {
         qw(
         Endpoint NameSpace Encoding  SOAPAction MaxLength Authentication User Password
         SOAPAction SOAPActionSeparator UseSSL SSLP12Certificate SSLP12Password SSLCAFile SSLCADir
-        SSLProxy SSLProxyUser SSLProxyPassword Sort
+        SSLProxy SSLProxyUser SSLProxyPassword Sort SOAPHeader
         RequestNameFreeText ResponseNameFreeText RequestNameScheme ResponseNameScheme
         )
         )
