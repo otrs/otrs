@@ -629,6 +629,7 @@ Core.Agent.TicketZoom = (function (TargetNS) {
             TicketID = Core.Config.Get('TicketID'),
             Count, ArticleIDs = Core.Config.Get('ArticleIDs'),
             ArticleFilterDialog = parseInt(Core.Config.Get('ArticleFilterDialog'), 10),
+            AsyncWidgetActions = Core.Config.Get('AsyncWidgetActions') || {},
             TimelineView = Core.Config.Get('TimelineView'),
             ProcessWidget = Core.Config.Get('ProcessWidget');
 
@@ -702,6 +703,13 @@ Core.Agent.TicketZoom = (function (TargetNS) {
         $('a.Timeline').on('click', function() {
             $(this).attr('href', $(this).attr('href') + ';ArticleID=' + URLHash);
         });
+
+        // Start asynchronous loading of widgets
+        for (var ElementID in AsyncWidgetActions) {
+            if (AsyncWidgetActions.hasOwnProperty(ElementID)) {
+                Core.AJAX.ContentUpdate($('#' + ElementID), Core.Config.Get('Baselink') + AsyncWidgetActions[ElementID], Core.Agent.Init);
+            }
+        }
 
         // loading new articles
         $('#ArticleTable tbody tr').on('click', function () {
