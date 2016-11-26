@@ -133,7 +133,7 @@
                     <legend><span>[% Translate("Download File") | html %]</span></legend>
                     <div class="Field">
                         <button class="CallForAction" value="DownLoad" id="DownloadSupportBundle">
-                            <send>[% Translate("Download") | html %]</send>
+                            <span>[% Translate("Download") | html %]</span>
                         </button>
                         <div class="FieldExplanation">
                             [% Translate("A file containing the support bundle will be downloaded to the local system. Please save the file and send it to the OTRS Group, using an alternate method.") | html %]
