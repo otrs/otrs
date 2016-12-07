@@ -351,7 +351,8 @@ sub LinkObjectTableCreateComplex {
             $LayoutObject->Block(
                 Name => 'ContentLargePreferencesForm',
                 Data => {
-                    Name => $Block->{Blockname},
+                    Name     => $Block->{Blockname},
+                    NameForm => $Block->{Blockname},
                 },
             );
 
