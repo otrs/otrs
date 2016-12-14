@@ -157,7 +157,17 @@ sub Run {
 
     # get ticket object
     my $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
-
+    
+	if( !$Param{Config}->{From} ) {	
+		# Get current user data
+		my %User = $Kernel::OM->Get('Kernel::System::User')->GetUserData(
+			UserID => $Param{UserID},
+		);
+		
+		# Set "From" field according to his account - UserFirstname, UserLastname, UserEmail
+		$Param{Config}->{From} = $User{UserFirstname} . ' ' . $User{UserLastname} . ' <' . $User{UserEmail} . '>';
+	}
+	
     my $ArticleID = $TicketObject->ArticleCreate(
         %{ $Param{Config} },
         TicketID => $Param{Ticket}->{TicketID},
