@@ -1401,6 +1401,10 @@ sub Run {
                     $BlockType = 'Time';
                     $DataValue = $Ticket{$Column};
                 }
+                elsif ( $Column eq 'Changed' ) {
+                    $BlockType = 'Time';
+                    $DataValue = $Ticket{$Column};
+                }
                 elsif ( $Column eq 'CustomerName' ) {
 
                     # get customer name
