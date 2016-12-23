@@ -1208,6 +1208,7 @@ sub _MaskUpdate {
         Sort          => 'AlphanumericValue',
         SelectedValue => $SelectedEventType,
         PossibleNone  => 0,
+        Class         => '',
         Title         => $LayoutObject->{LanguageObject}->Translate('Type'),
     );
     $LayoutObject->Block(
