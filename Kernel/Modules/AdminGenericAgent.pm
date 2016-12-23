@@ -552,10 +552,6 @@ sub _MaskUpdate {
                 Value => Translatable('day(s)'),
             },
             {
-                Key   => 604800,
-                Value => Translatable('week(s)'),
-            },
-            {
                 Key   => 2592000,
                 Value => Translatable('month(s)'),
             },
@@ -672,7 +668,6 @@ sub _MaskUpdate {
             Name        => $Type . 'TimePoint',
             SelectedID  => $JobData{ $Type . 'TimePoint' },
             Translation => 0,
-            Class       => 'Modernize',
         );
         $JobData{ $Type . 'TimePointStart' } = $LayoutObject->BuildSelection(
             Data => {
@@ -682,7 +677,6 @@ sub _MaskUpdate {
             },
             Name       => $Type . 'TimePointStart',
             SelectedID => $JobData{ $Type . 'TimePointStart' } || 'Last',
-            Class      => 'Modernize',
         );
         $JobData{ $Type . 'TimePointFormat' } = $LayoutObject->BuildSelection(
             Data => {
@@ -695,7 +689,6 @@ sub _MaskUpdate {
             },
             Name       => $Type . 'TimePointFormat',
             SelectedID => $JobData{ $Type . 'TimePointFormat' },
-            Class      => 'Modernize',
         );
         $JobData{ $Type . 'TimeStart' } = $LayoutObject->BuildDateSelection(
             %JobData,
@@ -703,14 +696,12 @@ sub _MaskUpdate {
             Format   => 'DateInputFormat',
             DiffTime => -( 60 * 60 * 24 ) * 30,
             Validate => 1,
-            Class    => 'Modernize',
         );
         $JobData{ $Type . 'TimeStop' } = $LayoutObject->BuildDateSelection(
             %JobData,
             Prefix   => $Type . 'TimeStop',
             Format   => 'DateInputFormat',
             Validate => 1,
-            Class    => 'Modernize',
         );
     }
 
@@ -1175,7 +1166,7 @@ sub _MaskUpdate {
             Name => $Type . 'Event',
             Sort => 'AlphanumericValue',
             PossibleNone => 0,
-            Class        => 'Modernize EventList GenericInterfaceSpacing ' . $EventListHidden,
+            Class        => 'EventList GenericInterfaceSpacing ' . $EventListHidden,
             Title        => $LayoutObject->{LanguageObject}->Translate('Event'),
         );
 
@@ -1217,7 +1208,6 @@ sub _MaskUpdate {
         Sort          => 'AlphanumericValue',
         SelectedValue => $SelectedEventType,
         PossibleNone  => 0,
-        Class         => 'Modernize',
         Title         => $LayoutObject->{LanguageObject}->Translate('Type'),
     );
     $LayoutObject->Block(
