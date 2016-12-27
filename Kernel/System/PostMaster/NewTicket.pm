@@ -184,7 +184,7 @@ sub Run {
         }
 
         # take CustomerID from customer backend lookup or from from field
-        if ( $CustomerData{UserLogin} && !$GetParam{'X-OTRS-CustomerUser'} ) {
+        if ( $CustomerData{UserLogin} ) {
             $GetParam{'X-OTRS-CustomerUser'} = $CustomerData{UserLogin};
 
             # notice that UserLogin is from customer source backend
