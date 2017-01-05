@@ -242,6 +242,22 @@ table tr.MasterAction {
 }
 
 /**
+ * @subsection  OwnerOverviewTotals DataTable
+ */
+
+.DataTable thead th.OwnerOverviewTotals,
+.Row td.OwnerOverviewTotals,
+.Row a.OwnerOverviewTotals {
+    font-weight: bold;
+}
+
+.DataTable .Row td.OwnerOverviewTotals {
+    text-transform: uppercase;
+    color: #4B4B4B;
+    border-top: 1px dotted #CCCCCC;
+}
+
+/**
  * @subsection  Sortable DataTable
  */
 

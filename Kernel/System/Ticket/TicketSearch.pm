@@ -791,6 +791,23 @@ sub TicketSearch {
         }
     }
 
+    # custom queue ids
+    QUEUE:
+    for my $QueueID ( @{ $Param{QueueIDs} } ) {
+        next QUEUE if $QueueID ne '0';
+
+        # get queue object
+        my $QueueObject = $Kernel::OM->Get('Kernel::System::Queue');
+
+        # add custom queue ids
+        my @ViewableQueueIDs = $QueueObject->GetAllCustomQueues(
+            UserID => $Param{UserID},
+        );
+        push @{ $Param{QueueIDs} }, @ViewableQueueIDs;
+
+        last;
+    }
+
     # current sub queue ids
     if ( $Param{UseSubQueues} && $Param{QueueIDs} ) {
 
