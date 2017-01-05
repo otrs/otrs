@@ -289,6 +289,20 @@ sub Sync {
                     Message  => "Initial data for '$Param{User}' ($UserDN) created in RDBMS.",
                 );
 
+                # copy attributes
+                NEWATTRIBUTE:
+                for my $Attribute ( sort keys %SyncUser ) {
+                    next NEWATTRIBUTE if $Attribute =~ /^(User)?((First|Last)name|Email)$/;
+
+                    # update custom prefs
+                    $UserObject->SetPreferences(
+                        UserID => $UserID,
+                        Key    => $Attribute,
+                        Value  => $SyncUser{$Attribute},
+                    );
+
+                }
+
                 # sync initial groups
                 my $UserSyncInitialGroups = $ConfigObject->Get(
                     'AuthSyncModule::LDAP::UserSyncInitialGroups' . $Self->{Count}
@@ -334,7 +348,19 @@ sub Sync {
             for my $Attribute ( sort keys %SyncUser ) {
                 next ATTRIBUTE if $SyncUser{$Attribute} eq $UserData{$Attribute};
                 $AttributeChange = 1;
-                last ATTRIBUTE;
+                next ATTRIBUTE if $Attribute =~ /^(User)?((First|Last)name|Email)$/;
+
+                $Kernel::OM->Get('Kernel::System::Log')->Log(
+                    Priority => 'notice',
+                    Message =>
+                        "Updating $Attribute to ".$SyncUser{$Attribute}." from ".$UserData{$Attribute},
+                );
+                # update custom prefs
+                $UserObject->SetPreferences(
+                    UserID => $UserID,
+                    Key    => $Attribute,
+                    Value  => $SyncUser{$Attribute},
+                );
             }
 
             if ($AttributeChange) {
