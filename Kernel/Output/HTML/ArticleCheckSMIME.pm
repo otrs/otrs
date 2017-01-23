@@ -100,17 +100,6 @@ sub Check {
             UserID    => $Self->{UserID},
         );
 
-        my @Email = ();
-        my @Lines = split( /\n/, $Message );
-        for my $Line (@Lines) {
-            push( @Email, $Line . "\n" );
-        }
-
-        my $ParserObject = Kernel::System::EmailParser->new(
-            %{$Self},
-            Email => \@Email,
-        );
-
         use MIME::Parser;
         my $Parser = MIME::Parser->new();
         $Parser->decode_headers(0);
@@ -153,6 +142,12 @@ sub Check {
                     }
                 );
             }
+
+            my @Email = split( /(?<=\n)/, $Message );
+            my $ParserObject = Kernel::System::EmailParser->new(
+                %{$Self},
+                Email => \@Email,
+            );
 
             # get all email addresses on article
             my %EmailsToSearch;
