@@ -112,6 +112,16 @@
                                 <label>[% Translate("Lock") | html %]</label><div title="[% Translate(Data.Lock) | html %]">[% Translate(Data.Lock) | html %]</div>
                             </td>
                         </tr>
+[% IF Config('Ticket::Responsible') %]
+                        <tr>
+                            <td>
+                                <label>[% Translate("Responsible") | html %]</label><div title="[% Data.UserFirstname | html %] [% Data.UserLastname | html %] ([% Data.Responsible | html %])">[% Data.UserFirstname | truncate(15) | html %] [% Data.UserLastname | truncate(15) | html %]</div>
+                            </td>
+                            <td>
+                               &nbsp;
+                            </td>
+                        </tr>
+[% END %]
                         <tr class="Middle">
                             <td>
 [% RenderBlockStart("CustomerID") %]
