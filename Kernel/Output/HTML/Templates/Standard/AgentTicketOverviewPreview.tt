@@ -115,7 +115,7 @@
 [% IF Config('Ticket::Responsible') %]
                         <tr>
                             <td>
-                                <label>[% Translate("Responsible") | html %]</label><div title="[% Data.Responsible | html %]">[% Data.Responsible | html %]</div>
+                                <label>[% Translate("Responsible") | html %]</label><div title="[% Data.ResponsibleFirstname | html %] [% Data.ResponsibleLastname | html %] ([% Data.Responsible | html %])">[% Data.ResponsibleFirstname | truncate(15) | html %] [% Data.ResponsibleLastname | truncate(15) | html %]</div>
                             </td>
                             <td>
                                &nbsp;
