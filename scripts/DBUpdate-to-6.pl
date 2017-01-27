@@ -516,6 +516,8 @@ sub _InitializeCounters {
         SQL  => "INSERT INTO counter (id, name, value, create_by, create_time, change_by, change_time) "
             . " VALUES (1, 'TicketNumber', 0, 1, current_timestamp, 1, current_timestamp)"
     );
+
+    return 1;
 }
 
 1;
