@@ -496,6 +496,16 @@ sub _Show {
         Data => { %Param, %Article },
     );
 
+    $LayoutObject->Block(
+        Name => 'OwnerResponsible',
+        Data => {
+            Owner               => $UserInfo{'UserLogin'},
+            OwnerFullname       => $UserInfo{'UserFullname'},
+            Responsible         => $TicketResponsible{'UserLogin'},
+            ResponsibleFullname => $TicketResponsible{'UserFullname'},
+        },
+    );
+
     # if "Actions per Ticket" (Inline Action Row) is active
     if ( $Param{Config}->{TicketActionsPerTicket} ) {
         $LayoutObject->Block(
