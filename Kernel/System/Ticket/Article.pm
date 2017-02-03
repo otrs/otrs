@@ -2556,7 +2556,7 @@ sub SendAutoResponse {
     my $Cc;
 
     # also send CC to customer user if customer user id is used and addresses do not match
-    if ( $Ticket{CustomerUserID} ) {
+    if ( $Ticket{CustomerUserID} && !$Kernel::OM->Get('Kernel::Config')->Get('AutoResponseNoCustomerCc') ) {
 
         my %CustomerUser = $Kernel::OM->Get('Kernel::System::CustomerUser')->CustomerUserDataGet(
             User => $Ticket{CustomerUserID},
