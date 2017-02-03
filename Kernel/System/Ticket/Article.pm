@@ -607,6 +607,13 @@ sub ArticleCreate {
             # check if already sent
             next USER if $AlreadySent{$UserID};
 
+            # check personal settings
+            my %UserData = $UserObject->GetUserData(
+                UserID => $UserID,
+                Valid  => 1,
+            );
+            next USER if !$UserData{UserSendAddNoteNotification};
+
             # remember already sent info
             $AlreadySent{$UserID} = 1;
 

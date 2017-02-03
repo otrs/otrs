@@ -7426,6 +7426,30 @@
             </Hash>
         </Setting>
     </ConfigItem>
+    <ConfigItem Name="PreferencesGroups###AddedNoteNotify" Required="0" Valid="1">
+        <Description Translatable="1">Parameters for the AddedNoteNotify object in the preferences view of the agent interface.</Description>
+        <Group>Ticket</Group>
+        <SubGroup>Frontend::Agent::Preferences</SubGroup>
+        <Setting>
+            <Hash>
+                <Item Key="Module">Kernel::Output::HTML::PreferencesGeneric</Item>
+                <Item Key="Column">Email Settings</Item>
+                <Item Key="Label" Translatable="1">Added note notification</Item>
+                <Item Key="Desc" Translatable="1">Send me a notification if there is an added note to my owned or responsible ticket.</Item>
+                <Item Key="Key" Translatable="1">Send added note notifications if my owned or responsible to</Item>
+                <Item Key="Data">
+                    <Hash>
+                        <Item Key="0">No</Item>
+                        <Item Key="1">Yes</Item>
+                    </Hash>
+                </Item>
+                <Item Key="DataSelected">0</Item>
+                <Item Key="PrefKey">UserAddedNoteNotification</Item>
+                <Item Key="Prio">6000</Item>
+                <Item Key="Active">1</Item>
+            </Hash>
+        </Setting>
+    </ConfigItem>
     <ConfigItem Name="PreferencesGroups###CustomQueue" Required="0" Valid="1">
         <Description Translatable="1">Parameters for the CustomQueue object in the preference view of the agent interface.</Description>
         <Group>Ticket</Group>
