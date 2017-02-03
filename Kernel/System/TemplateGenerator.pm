@@ -1499,8 +1499,15 @@ sub _Replace {
         }
 
         # generate real name based on sender line
+        # (try to get real name from "Reply-To" header
+        # if no "Reply-To" present then look at "From" header)
         if ( !$From ) {
-            $From = $Data{To} || '';
+            if ( $Data{"Reply-To"} ) {
+                $From = $Data{"Reply-To"} || '';
+            }
+            else {
+                $From = $Data{To} || '';
+            }
 
             # remove email addresses
             $From =~ s/&lt;.*&gt;|<.*>|\(.*\)|\"|&quot;|;|,//g;
