@@ -1547,7 +1547,7 @@ INSERT INTO notification_event_message (id, notification_id, content_type, langu
 
 ticket [<OTRS_CONFIG_Ticket::Hook><OTRS_CONFIG_Ticket::HookDivider><OTRS_TICKET_TicketNumber>] has been created in queue <OTRS_TICKET_Queue>.
 
-<OTRS_CUSTOMER_REALNAME> wrote:
+<OTRS_CUSTOMER_FROM> wrote:
 <OTRS_CUSTOMER_BODY[30]>
 
 <OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom\;TicketID=<OTRS_TICKET_TicketID>
@@ -1562,7 +1562,7 @@ INSERT INTO notification_event_message (id, notification_id, content_type, langu
 
 the unlocked ticket [<OTRS_CONFIG_Ticket::Hook><OTRS_CONFIG_Ticket::HookDivider><OTRS_TICKET_TicketNumber>] received a follow-up.
 
-<OTRS_CUSTOMER_REALNAME> wrote:
+<OTRS_CUSTOMER_FROM> wrote:
 <OTRS_CUSTOMER_BODY[30]>
 
 <OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom\;TicketID=<OTRS_TICKET_TicketID>
@@ -1577,7 +1577,7 @@ INSERT INTO notification_event_message (id, notification_id, content_type, langu
 
 the locked ticket [<OTRS_CONFIG_Ticket::Hook><OTRS_CONFIG_Ticket::HookDivider><OTRS_TICKET_TicketNumber>] received a follow-up.
 
-<OTRS_CUSTOMER_REALNAME> wrote:
+<OTRS_CUSTOMER_FROM> wrote:
 <OTRS_CUSTOMER_BODY[30]>
 
 <OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom\;TicketID=<OTRS_TICKET_TicketID>
@@ -1720,7 +1720,7 @@ INSERT INTO notification_event_message (id, notification_id, content_type, langu
 
 das Ticket [<OTRS_CONFIG_Ticket::Hook><OTRS_CONFIG_Ticket::HookDivider><OTRS_TICKET_TicketNumber>] wurde in der Queue <OTRS_TICKET_Queue> erstellt.
 
-<OTRS_CUSTOMER_REALNAME> schrieb:
+<OTRS_CUSTOMER_FROM> schrieb:
 <OTRS_CUSTOMER_BODY[30]>
 
 <OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom\;TicketID=<OTRS_TICKET_TicketID>
@@ -1735,7 +1735,7 @@ INSERT INTO notification_event_message (id, notification_id, content_type, langu
 
 zum freigegebenen Ticket [<OTRS_CONFIG_Ticket::Hook><OTRS_CONFIG_Ticket::HookDivider><OTRS_TICKET_TicketNumber>] gibt es eine Nachfrage.
 
-<OTRS_CUSTOMER_REALNAME> schrieb:
+<OTRS_CUSTOMER_FROM> schrieb:
 <OTRS_CUSTOMER_BODY[30]>
 
 <OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom\;TicketID=<OTRS_TICKET_TicketID>
@@ -1750,7 +1750,7 @@ INSERT INTO notification_event_message (id, notification_id, content_type, langu
 
 zum gesperrten Ticket [<OTRS_CONFIG_Ticket::Hook><OTRS_CONFIG_Ticket::HookDivider><OTRS_TICKET_TicketNumber>] gibt es eine Nachfrage.
 
-<OTRS_CUSTOMER_REALNAME> schrieb:
+<OTRS_CUSTOMER_FROM> schrieb:
 <OTRS_CUSTOMER_BODY[30]>
 
 <OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom\;TicketID=<OTRS_TICKET_TicketID>
@@ -1893,7 +1893,7 @@ INSERT INTO notification_event_message (id, notification_id, content_type, langu
 
 el ticket [<OTRS_CONFIG_Ticket::Hook><OTRS_CONFIG_Ticket::HookDivider><OTRS_TICKET_TicketNumber>] se ha creado en la fila <OTRS_TICKET_Queue>.
 
-<OTRS_CUSTOMER_REALNAME> escribió:
+<OTRS_CUSTOMER_FROM> escribió:
 <OTRS_CUSTOMER_BODY[30]>
 
 <OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom\;TicketID=<OTRS_TICKET_TicketID>
@@ -1908,7 +1908,7 @@ INSERT INTO notification_event_message (id, notification_id, content_type, langu
 
 el ticket desbloqueado [<OTRS_CONFIG_Ticket::Hook><OTRS_CONFIG_Ticket::HookDivider><OTRS_TICKET_TicketNumber>] recibió un seguimiento.
 
-<OTRS_CUSTOMER_REALNAME> escribió:
+<OTRS_CUSTOMER_FROM> escribió:
 <OTRS_CUSTOMER_BODY[30]>
 
 <OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom\;TicketID=<OTRS_TICKET_TicketID>
@@ -1923,7 +1923,7 @@ INSERT INTO notification_event_message (id, notification_id, content_type, langu
 
 el ticket bloqueado [<OTRS_CONFIG_Ticket::Hook><OTRS_CONFIG_Ticket::HookDivider><OTRS_TICKET_TicketNumber>] recibió un seguimiento.
 
-<OTRS_CUSTOMER_REALNAME> escribió:
+<OTRS_CUSTOMER_FROM> escribió:
 <OTRS_CUSTOMER_BODY[30]>
 
 <OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom\;TicketID=<OTRS_TICKET_TicketID>
@@ -2066,7 +2066,7 @@ INSERT INTO notification_event_message (id, notification_id, content_type, langu
 
 票据工单 [<OTRS_CONFIG_Ticket::Hook><OTRS_CONFIG_Ticket::HookDivider><OTRS_TICKET_TicketNumber>] 已在等待队列 已在队列<OTRS_TICKET_Queue> 中被编制完成。中被创建完成
 
-<OTRS_CUSTOMER_REALNAME> 写道：
+<OTRS_CUSTOMER_FROM> 写道：
 <OTRS_CUSTOMER_BODY[30]>
 
 <OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom\;TicketID=<OTRS_TICKET_TicketID>
@@ -2081,7 +2081,7 @@ INSERT INTO notification_event_message (id, notification_id, content_type, langu
 
 解锁票据解锁工单[<OTRS_CONFIG_Ticket::Hook><OTRS_CONFIG_Ticket::HookDivider><OTRS_TICKET_TicketNumber>] 已获得一项后续作业。
 
-<OTRS_CUSTOMER_REALNAME> 写道:
+<OTRS_CUSTOMER_FROM> 写道:
 <OTRS_CUSTOMER_BODY[30]>
 
 <OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom\;TicketID=<OTRS_TICKET_TicketID>
@@ -2096,7 +2096,7 @@ INSERT INTO notification_event_message (id, notification_id, content_type, langu
 
 加锁票据锁定工单 [<OTRS_CONFIG_Ticket::Hook><OTRS_CONFIG_Ticket::HookDivider><OTRS_TICKET_TicketNumber>] 已获得一项后续作业。
 
-<OTRS_CUSTOMER_REALNAME> 写道：
+<OTRS_CUSTOMER_FROM> 写道：
 <OTRS_CUSTOMER_BODY[30]>
 
 <OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom\;TicketID=<OTRS_TICKET_TicketID>
@@ -2239,7 +2239,7 @@ INSERT INTO notification_event_message (id, notification_id, content_type, langu
 
 o ticket [<OTRS_CONFIG_Ticket::Hook><OTRS_CONFIG_Ticket::HookDivider><OTRS_TICKET_TicketNumber>] foi criado na fila <OTRS_TICKET_Queue>.
 
-<OTRS_CUSTOMER_REALNAME> escreveu:
+<OTRS_CUSTOMER_FROM> escreveu:
 <OTRS_CUSTOMER_BODY[30]>
 
 <OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom\;TicketID=<OTRS_TICKET_TicketID>
@@ -2254,7 +2254,7 @@ INSERT INTO notification_event_message (id, notification_id, content_type, langu
 
 o ticket desbloqueado [<OTRS_CONFIG_Ticket::Hook><OTRS_CONFIG_Ticket::HookDivider><OTRS_TICKET_TicketNumber>] recebeu uma resposta.
 
-<OTRS_CUSTOMER_REALNAME> escreveu:
+<OTRS_CUSTOMER_FROM> escreveu:
 <OTRS_CUSTOMER_BODY[30]>
 
 <OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom\;TicketID=<OTRS_TICKET_TicketID>
@@ -2269,7 +2269,7 @@ INSERT INTO notification_event_message (id, notification_id, content_type, langu
 
 o ticket bloqueado [<OTRS_CONFIG_Ticket::Hook><OTRS_CONFIG_Ticket::HookDivider><OTRS_TICKET_TicketNumber>] recebeu uma resposta.
 
-<OTRS_CUSTOMER_REALNAME> escreveu:
+<OTRS_CUSTOMER_FROM> escreveu:
 <OTRS_CUSTOMER_BODY[30]>
 
 <OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom\;TicketID=<OTRS_TICKET_TicketID>
@@ -2412,7 +2412,7 @@ INSERT INTO notification_event_message (id, notification_id, content_type, langu
 
 A(z) [<OTRS_CONFIG_Ticket::Hook><OTRS_CONFIG_Ticket::HookDivider><OTRS_TICKET_TicketNumber>] jegy létrejött a következő várólistában: <OTRS_TICKET_Queue>.
 
-<OTRS_CUSTOMER_REALNAME> ezt írta:
+<OTRS_CUSTOMER_FROM> ezt írta:
 <OTRS_CUSTOMER_BODY[30]>
 
 <OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom\;TicketID=<OTRS_TICKET_TicketID>
@@ -2427,7 +2427,7 @@ INSERT INTO notification_event_message (id, notification_id, content_type, langu
 
 A feloldott [<OTRS_CONFIG_Ticket::Hook><OTRS_CONFIG_Ticket::HookDivider><OTRS_TICKET_TicketNumber>] jegy egy követő üzenetet kapott.
 
-<OTRS_CUSTOMER_REALNAME> ezt írta:
+<OTRS_CUSTOMER_FROM> ezt írta:
 <OTRS_CUSTOMER_BODY[30]>
 
 <OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom\;TicketID=<OTRS_TICKET_TicketID>
@@ -2442,7 +2442,7 @@ INSERT INTO notification_event_message (id, notification_id, content_type, langu
 
 A zárolt [<OTRS_CONFIG_Ticket::Hook><OTRS_CONFIG_Ticket::HookDivider><OTRS_TICKET_TicketNumber>] jegy egy követő üzenetet kapott.
 
-<OTRS_CUSTOMER_REALNAME> ezt írta:
+<OTRS_CUSTOMER_FROM> ezt írta:
 <OTRS_CUSTOMER_BODY[30]>
 
 <OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom\;TicketID=<OTRS_TICKET_TicketID>
