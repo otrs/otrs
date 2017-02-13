@@ -3250,7 +3250,6 @@ Eszkalációig fennmaradó idő: <OTRS_TICKET_EscalationDestinationIn>
 
 <OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<OTRS_TICKET_TicketID>
 
-
 -- <OTRS_CONFIG_NotificationSenderName>]]></Data>
     </Insert>
     <Insert Table="notification_event_message">
