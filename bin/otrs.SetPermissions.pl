@@ -21,6 +21,7 @@
 use strict;
 use warnings;
 
+use Cwd qw(abs_path);
 use File::Basename;
 use FindBin qw($RealBin);
 use lib dirname($RealBin);
@@ -31,7 +32,7 @@ use File::Find();
 use File::stat();
 use Getopt::Long();
 
-my $OTRSDirectory       = dirname($RealBin);
+my $OTRSDirectory       = abs_path(dirname($RealBin));
 my $OTRSDirectoryLength = length($OTRSDirectory);
 
 my $OtrsUser   = 'otrs';    # default otrs
