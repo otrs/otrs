@@ -93,15 +93,6 @@ sub GetOption {
 sub Auth {
     my ( $Self, %Param ) = @_;
 
-    # check needed stuff
-    if ( !$Param{User} ) {
-        $Kernel::OM->Get('Kernel::System::Log')->Log(
-            Priority => 'error',
-            Message  => "Need User!"
-        );
-        return;
-    }
-
     # get params
     my $User       = $Param{User}      || '';
     my $Pw         = $Param{Pw}        || '';
@@ -109,18 +100,21 @@ sub Auth {
     my $UserID     = '';
     my $GetPw      = '';
 
-    # sql query
-    $Self->{DBObject}->Prepare(
-        SQL => "
-            SELECT $Self->{Pw}, $Self->{Key} FROM $Self->{Table} WHERE
-            $Self->{Key} = ?
-            ",
-        Bind => [ \$Param{User} ],
-    );
+    if ( $User ) {
 
-    while ( my @Row = $Self->{DBObject}->FetchrowArray() ) {
-        $GetPw = $Row[0] || '';
-        $UserID = $Row[1];
+        # sql query
+        $Self->{DBObject}->Prepare(
+            SQL => "
+                SELECT $Self->{Pw}, $Self->{Key} FROM $Self->{Table} WHERE
+                $Self->{Key} = ?
+                ",
+            Bind => [ \$User ],
+        );
+
+        while ( my @Row = $Self->{DBObject}->FetchrowArray() ) {
+            $GetPw  = $Row[0] || '';
+            $UserID = $Row[1];
+        }
     }
 
     # check if user exists in auth table
