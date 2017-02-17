@@ -1412,6 +1412,8 @@ sub Run {
         }
     }
 
+    my $CustomerColumnsUsed = grep{ $_ =~ m{\ACustomer}xms }@Columns;
+
     # show tickets
     my $Count = 0;
     TICKETID:
@@ -1426,6 +1428,31 @@ sub Run {
         );
 
         next TICKETID if !%Ticket;
+
+        # customer info
+        my %CustomerInfo;
+        if ( $CustomerColumnsUsed ) {
+            if ( $Ticket{CustomerUserID} ) {
+
+                # get customer user object
+                my $CustomerUserObject = $Kernel::OM->Get('Kernel::System::CustomerUser');
+
+                $Ticket{CustomerName} = $CustomerUserObject->CustomerName(
+                    UserLogin => $Ticket{CustomerUserID},
+                );
+
+                %CustomerInfo = $CustomerUserObject->CustomerUserDataGet(
+                    User => $Ticket{CustomerUserID},
+                );
+
+                INFOKEY:
+                for my $InfoKey ( sort keys %CustomerInfo ) {
+                    next INFOKEY if $InfoKey =~ m{\ACustomer}xms;
+
+                    $CustomerInfo{ 'Customer' . $InfoKey } = $CustomerInfo{$InfoKey};
+                }
+            }
+        }
 
         # set a default title if ticket has no title
         if ( !$Ticket{Title} ) {
@@ -1632,28 +1659,9 @@ sub Run {
                     $BlockType = 'Time';
                     $DataValue = $Ticket{$Column};
                 }
-                elsif ( $Column eq 'CustomerName' ) {
-
-                    # get customer name
-                    my $CustomerName;
-                    if ( $Ticket{CustomerUserID} ) {
-                        $CustomerName = $Kernel::OM->Get('Kernel::System::CustomerUser')->CustomerName(
-                            UserLogin => $Ticket{CustomerUserID},
-                        );
-                    }
-                    $DataValue = $CustomerName;
-                }
-                elsif ( $Column eq 'CustomerCompanyName' ) {
-                    my %CustomerCompanyData;
-                    if ( $Ticket{CustomerID} ) {
-                        %CustomerCompanyData = $Kernel::OM->Get('Kernel::System::CustomerCompany')->CustomerCompanyGet(
-                            CustomerID => $Ticket{CustomerID},
-                        );
-                    }
-                    $DataValue = $CustomerCompanyData{CustomerCompanyName};
-                }
                 else {
-                    $DataValue = $Ticket{$Column};
+                    $DataValue = $Ticket{$Column}
+                        || $CustomerInfo{$Column};
                 }
 
                 if ( $Column eq 'Title' ) {
