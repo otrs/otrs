@@ -1034,6 +1034,11 @@ sub Run {
             QueueID        => $QueueID,
             StateID        => $StateID,
         );
+        my $Types = $Self->_GetTypes(
+            %GetParam,
+            CustomerUserID => $CustomerUser,
+            QueueID        => $QueueID,
+        );
 
         # reset previous ServiceID to reset SLA-List if no service is selected
         if ( !defined $ServiceID || !$Services->{$ServiceID} ) {
