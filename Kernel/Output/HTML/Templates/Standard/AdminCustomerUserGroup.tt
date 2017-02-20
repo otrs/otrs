@@ -9,12 +9,12 @@
 [% RenderBlockStart("Overview") %]
 <div class="MainBox ARIARoleMain LayoutFixedSidebar SidebarFirst">
     <div class="Header">
-        <h1>[% Translate("Manage Customer-Group Relations") | html %]</h1>
+        <h1>[% Translate("Manage Customer User-Group Relations") | html %]</h1>
     </div>
 
     [% BreadcrumbPath = [
             {
-                Name => Translate('Manage Customer-Group Relations'),
+                Name => Translate('Manage Customer User-Group Relations'),
                 Link => Data.OverviewLink,
             },
         ]
@@ -45,7 +45,7 @@
                         <h3>[% Translate("This feature is disabled!") | html %]</h3>
                         <fieldset>
                             <p class="FieldExplanation">
-                                [% Translate("Just use this feature if you want to define group permissions for customers.") | html %]
+                                [% Translate("Just use this feature if you want to define group permissions for customer users.") | html %]
                             </p>
                             <div class="Field SpacingTop">
                                 <button class="CallForAction Fullsize Center" type="submit" value="[% Translate("Enable it here!") | html %]">
@@ -93,9 +93,9 @@
 [% RenderBlockEnd("Search") %]
 [% RenderBlockStart("AlwaysGroupsConfig") %]
                     <li>
-                        <a href="[% Env("Baselink") %]Action=AdminSysConfig;Subaction=Edit;SysConfigGroup=Framework;SysConfigSubGroup=Frontend::Customer" class="CallForAction Fullsize Center"><span><i class="fa fa-edit"></i>[% Translate("Edit Customer Default Groups") | html %]</span></a>
+                        <a href="[% Env("Baselink") %]Action=AdminSysConfig;Subaction=Edit;SysConfigGroup=Framework;SysConfigSubGroup=Frontend::Customer" class="CallForAction Fullsize Center"><span><i class="fa fa-edit"></i>[% Translate("Edit Customer User Default Groups") | html %]</span></a>
                         <p class="FieldExplanation">
-                            [% Translate("These groups are automatically assigned to all customers.") | html %]
+                            [% Translate("These groups are automatically assigned to all customer users.") | html %]
                             [% Translate("You can manage these groups via the configuration setting \"CustomerGroupAlwaysGroups\".") | html %]
                         </p>
                     </li>
@@ -130,10 +130,10 @@
             </div>
             <div class="Content">
                 <p class="FieldExplanation">
-                    [% Translate("Select the customer:group permissions.") | html %]
+                    [% Translate("Select the customer user - group permissions.") | html %]
                 </p>
                 <p class="FieldExplanation">
-                    [% Translate("If nothing is selected, then there are no permissions in this group (tickets will not be available for the customer).") | html %]
+                    [% Translate("If nothing is selected, then there are no permissions in this group (tickets will not be available for the customer user).") | html %]
                 </p>
 
             </div>
@@ -149,7 +149,7 @@
             <div class="Content LayoutGrid ColumnsWithSpacing">
                 <div class="Size1of2">
                     <ul class="Tablelike" id="Customers">
-                        <li class="Header">[% Translate("Customers") | html %]
+                        <li class="Header">[% Translate("Customer Users") | html %]
 [% RenderBlockStart("ResultCustomerUserCount") %]
                             ([% Data.CustomerUserCount | html %])
 [% RenderBlockEnd("ResultCustomerUserCount") %]
@@ -260,7 +260,7 @@
 [% RenderBlockStart("AlwaysGroups") %]
         <div class="WidgetSimple SpacingTop">
             <div class="Header">
-                <h2>[% Translate("Customer Default Groups:") | html %]</h2>
+                <h2>[% Translate("Customer User Default Groups:") | html %]</h2>
             </div>
             <div class="Content LayoutGrid ColumnsWithSpacing">
                 <div class="Size1of2">
