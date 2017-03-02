@@ -3285,7 +3285,7 @@ sub Data {
             '',
         'Allows to set a new ticket state in the move ticket screen of the agent interface.' =>
             '',
-        'ArticleTree' => '',
+        'ArticleTree' => 'Članak u obliku drveta',
         'Attachments <-> Templates' => '',
         'Auto Responses <-> Queues' => 'Automatski odgovori <-> Repovi',
         'Automated line break in text messages after x number of chars.' =>
@@ -5198,6 +5198,7 @@ sub Data {
         'default \'hot\'' => 'podrazumijevano \'hot\'',
         'for pending* states' => 'za stanja čekanja',
         'settings' => 'postavke',
+        'Customer Realname' => 'Pravo Ime Korisnika',
 
     };
     # $$STOP$$

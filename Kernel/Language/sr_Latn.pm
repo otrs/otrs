@@ -5232,6 +5232,7 @@ sub Data {
         'default \'hot\'' => 'podrazumevano \'hot\'',
         'for pending* states' => 'za stanja čekanja',
         'settings' => 'podešavanja',
+        'Customer Realname' => 'Pravo Ime Korisnika',
 
     };
     # $$STOP$$

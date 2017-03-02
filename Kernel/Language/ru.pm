@@ -5796,7 +5796,7 @@ sub Data {
         'Your own Ticket' => 'Ваша собственная заявка',
         'auto responses set!' => 'Установленных автоответов',
         'before' => 'кроме последних',
-        'customer realname' => 'Имя клиента',
+        'Customer Realname' => 'Имя Kлиента',
         'default \'hot\'' => 'По умолчанию: «hot»',
         'delete' => 'удалить',
         'down' => 'вниз',

@@ -2193,7 +2193,7 @@ sub Data {
         'Certificate details' => '',
 
         # Template: AdminSalutation
-        'Salutation Management' => 'customer realname',
+        'Salutation Management' => '',
         'Add salutation' => '',
         'Add Salutation' => '',
         'Edit Salutation' => '',
