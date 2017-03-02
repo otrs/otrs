@@ -2203,14 +2203,86 @@ sub Run {
         }
 
         # exchange axis if selected
+        # SolutionTime is timestamp of solution time, also close time
+        # format SolutionTime - hours minutes
         if ( $Param{ExchangeAxis} ) {
             my @NewStatArray;
             my $Title = $StatArray[0][0];
+            my $SolutionTimeIndex;
 
             shift(@StatArray);
+            for my $Index ( 0 .. $#{ $StatArray[0] } ) {
+                if ( $StatArray[0][$Index] eq 'SolutionTime' ) {
+                    $SolutionTimeIndex = $Index;
+                }
+            }
+
             for my $Key1 ( 0 .. $#StatArray ) {
                 for my $Key2 ( 0 .. $#{ $StatArray[0] } ) {
-                    $NewStatArray[$Key2][$Key1] = $StatArray[$Key1][$Key2];
+                    if (
+                        defined $SolutionTimeIndex
+                        && ( $SolutionTimeIndex == $Key2 )
+                        && ( $Key1 != 0 )
+                        )
+                    {
+                        # check if SolutionTime empty or close time
+                        # if not, SolutinTime is shown in format - hours minutes
+                        my @CheckSolutionTime = split /[:,\s\/]+/, $StatArray[$Key1][$Key2];
+                        if ( $#CheckSolutionTime == 0 ) {
+                            $NewStatArray[$Key2][$Key1] = $Self->{LayoutObject}->CustomerAgeInHours(
+                                Age   => $StatArray[$Key1][$Key2],
+                                Space => ' ',
+                            );
+                        }
+                        else {
+                            $NewStatArray[$Key2][$Key1] = $StatArray[$Key1][$Key2];
+                        }
+                    }
+                    else {
+                        $NewStatArray[$Key2][$Key1] = $StatArray[$Key1][$Key2];
+                    }
+                }
+            }
+            $NewStatArray[0][0] = '';
+            unshift( @NewStatArray, [$Title] );
+            @StatArray = @NewStatArray;
+        }
+        else {
+            my @NewStatArray;
+            my $Title = $StatArray[0][0];
+            my $SolutionTimeIndex;
+
+            shift(@StatArray);
+            for my $Index ( 0 .. $#{ $StatArray[0] } ) {
+                if ( $StatArray[0][$Index] eq 'SolutionTime' ) {
+                    $SolutionTimeIndex = $Index;
+                }
+            }
+
+            for my $Key1 ( 0 .. $#StatArray ) {
+                for my $Key2 ( 0 .. $#{ $StatArray[0] } ) {
+                    if (
+                        defined $SolutionTimeIndex
+                        && ( $SolutionTimeIndex == $Key2 )
+                        && ( $Key1 != 0 )
+                        )
+                    {
+                        # check if SolutionTime empty or close time
+                        # if not, SolutinTime is shown in format - hours minutes
+                        my @CheckSolutionTime = split /[:,\s\/]+/, $StatArray[$Key1][$Key2];
+                        if ( $#CheckSolutionTime == 0 ) {
+                            $NewStatArray[$Key1][$Key2] = $Self->{LayoutObject}->CustomerAgeInHours(
+                                Age   => $StatArray[$Key1][$Key2],
+                                Space => ' ',
+                            );
+                        }
+                        else {
+                            $NewStatArray[$Key1][$Key2] = $StatArray[$Key1][$Key2];
+                        }
+                    }
+                    else {
+                        $NewStatArray[$Key1][$Key2] = $StatArray[$Key1][$Key2];
+                    }
                 }
             }
             $NewStatArray[0][0] = '';
