@@ -335,6 +335,9 @@ sub Run {
                 }
 
             }
+            elsif ( IsStringWithData( $Article{Cc} ) ) {
+                $ArticleFrom = $Article{Cc};
+            }
 
             # body preparation for plain text processing
             $Article{Body} = $LayoutObject->ArticleQuote(
