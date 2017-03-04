@@ -1556,7 +1556,7 @@ sub _Mask {
                 Data => {
                     ArticleTimeUnits => $TicketObject->ArticleAccountedTimeGet(
                         ArticleID => $Article{ArticleID},
-                    );
+                    ),
                 },
             );
         }
