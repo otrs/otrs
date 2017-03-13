@@ -441,6 +441,16 @@ my @NeededModules = (
         },
     },
     {
+        Module    => 'URI',
+        Required  => 1,
+        Comment   => 'Required for directory authentication (nested group search).',
+        InstTypes => {
+            aptget => 'liburi-perl',
+            emerge => 'dev-perl/URI',
+            zypper => 'perl-URI',
+        },
+    },
+    {
         Module    => 'XML::LibXML',
         Required  => 0,
         Comment   => 'Required for Generic Interface XSLT mapping module.',
