@@ -939,7 +939,7 @@ sub Run {
             elsif ( $HeaderColumn eq 'EscalationUpdateTime' ) {
                 $TranslatedWord = $LayoutObject->{LanguageObject}->Translate('Update Time');
             }
-            elsif ( $HeaderColumn eq 'PendingTime' ) {
+            elsif ( $HeaderColumn eq 'PendingTime' || $HeaderColumn eq 'RealTillTimeNotUsed' ) {
                 $TranslatedWord = $LayoutObject->{LanguageObject}->Translate('Pending till');
             }
             elsif ( $HeaderColumn eq 'CustomerCompanyName' ) {
@@ -1591,6 +1591,18 @@ sub Run {
                         Space => ' ',
                     );
                     if ( defined $Ticket{UpdateTime} && $Ticket{UpdateTime} < 60 * 60 * 1 ) {
+                        $CSSClass = 'Warning';
+                    }
+                }
+                elsif ( $Column eq 'RealTillTimeNotUsed' ) {
+                    my $TimeObject = $Kernel::OM->Get('Kernel::System::Time');
+
+                    $BlockType = 'Time';
+                    $DataValue = $TimeObject->SystemTime2TimeStamp(
+                        SystemTime => $Ticket{RealTillTimeNotUsed},
+                    );
+
+                    if ( defined $Ticket{UntilTime} && $Ticket{UntilTime} < -1 ) {
                         $CSSClass = 'Warning';
                     }
                 }
