@@ -70,14 +70,6 @@ sub Pre {
         }
         else {
             $Counter++;
-            if ( $Link !~ m{^ ( http | https | ftp ) : \/ \/ }xi ) {
-                if ($Link =~ m{^ ftp }smx ) {
-                    $Link = 'ftp://' . $Link;
-                }
-                else {
-                    $Link = 'http://' . $Link;
-                }
-            }
             my $Length = length $Link ;
             $Length = $Length < 75 ? $Length : 75;
             my $String = '#' x $Length;
@@ -106,9 +98,18 @@ sub Post {
         for my $Key ( sort keys %{ $Self->{LinkHash} } ) {
             my $LinkSmall = $Self->{LinkHash}->{$Key};
             $LinkSmall =~ s/^(.{75}).*$/$1\[\.\.\]/gs;
-            $Self->{LinkHash}->{$Key} =~ s/ //g;
+            my $Link = $Self->{LinkHash}->{$Key};
+            if ( $Link !~ m{^ ( http | https | ftp ) : \/ \/ }xi ) {
+                if ($Link =~ m{^ ftp }smx ) {
+                    $Link = 'ftp://' . $Link;
+                }
+                else {
+                    $Link = 'http://' . $Link;
+                }
+            }
+            $Link =~ s/ //g;
             ${ $Param{Data} }
-                =~ s/\Q$Key\E/<a href=\"$Self->{LinkHash}->{$Key}\" target=\"_blank\" title=\"$Self->{LinkHash}->{$Key}\">$LinkSmall<\/a>/g;
+                =~ s/\Q$Key\E/<a href=\"$Link\" target=\"_blank\" title=\"$Link\">$LinkSmall<\/a>/g;
         }
     }
 
