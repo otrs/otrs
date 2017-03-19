@@ -660,7 +660,7 @@ get an C<MD5> sum of a file or a string
 sub MD5sum {
     my ( $Self, %Param ) = @_;
 
-    if ( !$Param{Filename} && !$Param{String} ) {
+    if ( !$Param{Filename} && !defined( $Param{String} ) ) {
         $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'error',
             Message  => 'Need Filename or String!',
@@ -1020,6 +1020,57 @@ sub GenerateRandomString {
     }
 
     return $String;
+}
+
+=item HumanReadableDataSize()
+
+Produces human readable data size.
+
+    my $SizeStr = $MainObject->HumanReadableDataSize(
+        Size => 123,  # size in bytes
+    );
+
+=cut
+
+sub HumanReadableDataSize {
+    my ( $Self, %Param ) = @_;
+
+    if ( !defined( $Param{Size} ) ) {
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
+            Priority => 'error',
+            Message  => 'Need Size!',
+        );
+        return;
+    }
+
+    if ( $Param{Size} !~ /^\d+$/ )  {
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
+            Priority => 'error',
+            Message  => 'Size must be integer!',
+        );
+        return;
+    }
+
+    my $SizeStr = '';
+
+    # Use convention descibed on https://en.wikipedia.org/wiki/File_size
+    if ( $Param{Size} > ( 1024 * 1024 * 1024 * 1024 ) ) {
+        $SizeStr = sprintf "%.1f TB", ( $Param{Size} / ( 1024 * 1024 * 1024 * 1024 ) );
+    }
+    elsif ( $Param{Size} > ( 1024 * 1024 * 1024 ) ) {
+        $SizeStr = sprintf "%.1f GB", ( $Param{Size} / ( 1024 * 1024 * 1024 ) );
+    }
+    elsif ( $Param{Size} > ( 1024 * 1024 ) ) {
+        $SizeStr = sprintf "%.1f MB", ( $Param{Size} / ( 1024 * 1024 ) );
+    }
+    elsif ( $Param{Size} > 1024 ) {
+        $SizeStr = sprintf "%.1f KB", ( $Param{Size} / 1024 );
+    }
+    else {
+        $SizeStr = $Param{Size} . ' B';
+    }
+
+    return $SizeStr;
 }
 
 =begin Internal:
