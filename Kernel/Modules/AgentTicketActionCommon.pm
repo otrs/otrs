@@ -1352,6 +1352,7 @@ sub Run {
 
         # create html strings for all dynamic fields
         my %DynamicFieldHTML;
+        my $DynamicFieldACL;
 
         # cycle trough the activated Dynamic Fields for this screen
         DYNAMICFIELD:
@@ -1408,6 +1409,9 @@ sub Run {
 
                 # get value stored on the database from Ticket
                 $Value = $Ticket{ 'DynamicField_' . $DynamicFieldConfig->{Name} };
+
+                # convert dynamic field value into a structure for ACLs
+                $DynamicFieldACL->{ 'DynamicField_' . $DynamicFieldConfig->{Name} } = $Value if $Value;
             }
 
             # get field html
@@ -1440,6 +1444,7 @@ sub Run {
             %GetParam,
             %Ticket,
             DynamicFieldHTML => \%DynamicFieldHTML,
+            DynamicFieldACL  => $DynamicFieldACL,
         );
         $Output .= $LayoutObject->Footer(
             Type => 'Small',
@@ -1800,9 +1805,10 @@ sub _Mask {
 
         my %State;
         my %StateList = $TicketObject->TicketStateList(
-            Action   => $Self->{Action},
-            TicketID => $Self->{TicketID},
-            UserID   => $Self->{UserID},
+            DynamicField => $Param{DynamicFieldACL},
+            Action       => $Self->{Action},
+            TicketID     => $Self->{TicketID},
+            UserID       => $Self->{UserID},
         );
         if ( !$Param{NewStateID} ) {
             if ( $Config->{StateDefault} ) {
