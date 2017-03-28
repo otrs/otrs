@@ -1022,6 +1022,14 @@ sub _Mask {
 
     my $Config = $ConfigObject->Get("Ticket::Frontend::$Self->{Action}");
 
+    # ticket accounted time
+    if ( $Config->{ZoomTimeDisplay} ) {
+        $LayoutObject->Block(
+            Name => 'TicketTimeUnits',
+            Data => \%Param,
+        );
+    }
+
     # ticket priority flag
     if ( $Config->{AttributesView}->{Priority} ) {
         $LayoutObject->Block(
@@ -1539,6 +1547,18 @@ sub _Mask {
                     Realname             => $Article{ $Key . 'Realname' },
                     ArticleID            => $Article{ArticleID},
                     $HiddenType . Hidden => 'Hidden',
+                },
+            );
+        }
+
+        # ticket accounted time
+        if ( $Config->{ZoomTimeDisplay} ) {
+            $LayoutObject->Block(
+                Name => 'ArticleTimeUnits',
+                Data => {
+                    ArticleTimeUnits => $TicketObject->ArticleAccountedTimeGet(
+                        ArticleID => $Article{ArticleID},
+                    ),
                 },
             );
         }
