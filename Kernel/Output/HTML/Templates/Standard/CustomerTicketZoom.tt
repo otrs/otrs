@@ -201,10 +201,6 @@
                     </li>
                     <li><span class="Key">[% Data.Hook | html %]:</span> <span>[% Data.TicketNumber | html %]</span></li>
 
-[% RenderBlockStart("TicketTimeUnits") %]
-                    <li><span class="Key">[% Translate("Accounted time") | html %]:</span>
-                    <span title="[% Data.TicketTimeUnits | html %]">[% Data.TicketTimeUnits %]</span></li>
-[% RenderBlockEnd("TicketTimeUnits") %]
 [% RenderBlockStart("Type") %]
                     <li><span class="Key">[% Translate("Type") | html %]:</span> <span title="[% Data.Type | html %]">[% Data.Type | html %]</span></li>
 [% RenderBlockEnd("Type") %]
