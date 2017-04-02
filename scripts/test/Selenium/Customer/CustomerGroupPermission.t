@@ -72,19 +72,19 @@ $Selenium->RunTest(
 
         # disable frontend service module
         my $FrontendCustomerTicketOverview
-            = $Kernel::OM->Get('Kernel::Config')->Get('CustomerFrontend::Module')->{CustomerTicketOverview};
+            = $Kernel::OM->Get('Kernel::Config')->Get('CustomerFrontend::Navigation')->{CustomerTicketOverview};
 
         # change the group for the CompanyTickets
-        for my $NavBarItem ( @{ $FrontendCustomerTicketOverview->{NavBar} } ) {
+        for my $Key ( %{$FrontendCustomerTicketOverview} ) {
 
-            if ( $NavBarItem->{Name} eq 'Company Tickets' ) {
-                push @{ $NavBarItem->{Group} }, $GroupName;
+            if ( $FrontendCustomerTicketOverview->{$Key}->{Name} eq 'Company Tickets' ) {
+                push @{ $FrontendCustomerTicketOverview->{$Key}->{Group} }, $GroupName;
             }
         }
 
         $Helper->ConfigSettingChange(
             Valid => 1,
-            Key   => 'CustomerFrontend::Module###CustomerTicketOverview',
+            Key   => 'CustomerFrontend::Navigation###CustomerTicketOverview',
             Value => $FrontendCustomerTicketOverview,
         );
 
@@ -121,13 +121,6 @@ $Selenium->RunTest(
         $Self->True(
             $Success,
             "CustomerUser $TestCustomerUserLogin added to test group $GroupName with ro and rw rights"
-        );
-
-        # login test customer user again
-        $Selenium->Login(
-            Type     => 'Customer',
-            User     => $TestCustomerUserLogin,
-            Password => $TestCustomerUserLogin,
         );
 
         # navigate to CompanyTickets subaction screen again

@@ -31,6 +31,7 @@ our @ObjectDependencies = (
     'Kernel::System::State',
     'Kernel::System::Stats',
     'Kernel::System::Ticket',
+    'Kernel::System::Ticket::Article',
     'Kernel::System::Time',
     'Kernel::System::Type',
     'Kernel::System::User',
@@ -1261,6 +1262,8 @@ sub GetStatTable {
         }
     }
 
+    my $StatsObject = $Kernel::OM->Get('Kernel::System::Stats');
+
     # generate the ticket list
     my @StatArray;
     for my $TicketID (@TicketIDs) {
@@ -1272,6 +1275,12 @@ sub GetStatTable {
             DynamicFields => $NeedDynamicFields,
         );
 
+        # Format Ticket 'Age' param into human readable format.
+        $Ticket{Age} = $StatsObject->_HumanReadableAgeGet(
+            Age   => $Ticket{Age},
+            Space => ' ',
+        );
+
         # add the accounted time if needed
         if ( $TicketAttributes{AccountedTime} ) {
             $Ticket{AccountedTime} = $TicketObject->TicketAccountedTimeGet( TicketID => $TicketID );
@@ -1279,7 +1288,8 @@ sub GetStatTable {
 
         # add the number of articles if needed
         if ( $TicketAttributes{NumberOfArticles} ) {
-            $Ticket{NumberOfArticles} = $TicketObject->ArticleCount( TicketID => $TicketID );
+            $Ticket{NumberOfArticles}
+                = $Kernel::OM->Get('Kernel::System::Ticket::Article')->ArticleCount( TicketID => $TicketID );
         }
 
         $Ticket{Closed}                      ||= '';
@@ -1351,22 +1361,29 @@ sub GetStatTable {
             if (
                 $Param{TimeZone}
                 && $Ticket{$Attribute}
-                && $Ticket{$Attribute} =~ /(\d{4})-(\d{2})-(\d{2})\s(\d{2}):(\d{2}):(\d{2})/
+                && $Ticket{$Attribute} =~ /\A(\d{4})-(\d{2})-(\d{2})\s(\d{2}):(\d{2}):(\d{2})\z/
                 )
             {
 
-                $Ticket{$Attribute} = $Kernel::OM->Get('Kernel::System::Stats')->_FromOTRSTimeZone(
+                $Ticket{$Attribute} = $StatsObject->_FromOTRSTimeZone(
                     String   => $Ticket{$Attribute},
                     TimeZone => $Param{TimeZone},
                 );
                 $Ticket{$Attribute} .= " ($Param{TimeZone})";
             }
+
+            if ( $Attribute =~ /Owner|Responsible/ ) {
+                $Ticket{$Attribute} = $Kernel::OM->Get('Kernel::System::User')->UserName(
+                    User => $Ticket{$Attribute},
+                );
+            }
+
             push @ResultRow, $Ticket{$Attribute};
         }
         push @StatArray, \@ResultRow;
     }
 
-    # use a individual sort if the sort mechanismn of the TicketSearch is not useable
+    # use a individual sort if the sort mechanism of the TicketSearch is not usable
     if ( !$OrderByIsValueOfTicketSearchSort ) {
         @StatArray = $Self->_IndividualResultOrder(
             StatArray          => \@StatArray,
@@ -1596,12 +1613,12 @@ sub _TicketAttributes {
 
         #PriorityID     => 'PriorityID',
         CustomerID => 'CustomerID',
-        Changed    => 'Changed',
+        Changed    => Translatable('Last Changed'),
         Created    => 'Created',
 
         #CreateTimeUnix => 'CreateTimeUnix',
         CustomerUserID => 'Customer User',
-        Lock           => 'lock',
+        Lock           => 'Lock',
 
         #LockID         => 'LockID',
         UnlockTimeout       => 'UnlockTimeout',
@@ -1615,43 +1632,43 @@ sub _TicketAttributes {
         Closed    => 'Close Time',
         FirstLock => 'First Lock',
 
-        EscalationResponseTime => 'EscalationResponseTime',
-        EscalationUpdateTime   => 'EscalationUpdateTime',
-        EscalationSolutionTime => 'EscalationSolutionTime',
+        EscalationResponseTime => Translatable('EscalationResponseTime'),
+        EscalationUpdateTime   => Translatable('EscalationUpdateTime'),
+        EscalationSolutionTime => Translatable('EscalationSolutionTime'),
 
-        EscalationDestinationIn => 'EscalationDestinationIn',
+        EscalationDestinationIn => Translatable('EscalationDestinationIn'),
 
-        # EscalationDestinationTime => 'EscalationDestinationTime',
-        EscalationDestinationDate => 'EscalationDestinationDate',
-        EscalationTimeWorkingTime => 'EscalationTimeWorkingTime',
-        EscalationTime            => 'EscalationTime',
+        # EscalationDestinationTime => 'EscalationDestinationTime'),
+        EscalationDestinationDate => Translatable('EscalationDestinationDate'),
+        EscalationTimeWorkingTime => Translatable('EscalationTimeWorkingTime'),
+        EscalationTime            => Translatable('EscalationTime'),
 
-        FirstResponse                    => 'FirstResponse',
-        FirstResponseInMin               => 'FirstResponseInMin',
-        FirstResponseDiffInMin           => 'FirstResponseDiffInMin',
-        FirstResponseTimeWorkingTime     => 'FirstResponseTimeWorkingTime',
-        FirstResponseTimeEscalation      => 'FirstResponseTimeEscalation',
-        FirstResponseTimeNotification    => 'FirstResponseTimeNotification',
-        FirstResponseTimeDestinationTime => 'FirstResponseTimeDestinationTime',
-        FirstResponseTimeDestinationDate => 'FirstResponseTimeDestinationDate',
-        FirstResponseTime                => 'FirstResponseTime',
+        FirstResponse                    => Translatable('FirstResponse'),
+        FirstResponseInMin               => Translatable('FirstResponseInMin'),
+        FirstResponseDiffInMin           => Translatable('FirstResponseDiffInMin'),
+        FirstResponseTimeWorkingTime     => Translatable('FirstResponseTimeWorkingTime'),
+        FirstResponseTimeEscalation      => Translatable('FirstResponseTimeEscalation'),
+        FirstResponseTimeNotification    => Translatable('FirstResponseTimeNotification'),
+        FirstResponseTimeDestinationTime => Translatable('FirstResponseTimeDestinationTime'),
+        FirstResponseTimeDestinationDate => Translatable('FirstResponseTimeDestinationDate'),
+        FirstResponseTime                => Translatable('FirstResponseTime'),
 
-        UpdateTimeEscalation      => 'UpdateTimeEscalation',
-        UpdateTimeNotification    => 'UpdateTimeNotification',
-        UpdateTimeDestinationTime => 'UpdateTimeDestinationTime',
-        UpdateTimeDestinationDate => 'UpdateTimeDestinationDate',
-        UpdateTimeWorkingTime     => 'UpdateTimeWorkingTime',
-        UpdateTime                => 'UpdateTime',
+        UpdateTimeEscalation      => Translatable('UpdateTimeEscalation'),
+        UpdateTimeNotification    => Translatable('UpdateTimeNotification'),
+        UpdateTimeDestinationTime => Translatable('UpdateTimeDestinationTime'),
+        UpdateTimeDestinationDate => Translatable('UpdateTimeDestinationDate'),
+        UpdateTimeWorkingTime     => Translatable('UpdateTimeWorkingTime'),
+        UpdateTime                => Translatable('UpdateTime'),
 
-        SolutionTime                => 'SolutionTime',
-        SolutionInMin               => 'SolutionInMin',
-        SolutionDiffInMin           => 'SolutionDiffInMin',
-        SolutionTimeWorkingTime     => 'SolutionTimeWorkingTime',
-        SolutionTimeEscalation      => 'SolutionTimeEscalation',
-        SolutionTimeNotification    => 'SolutionTimeNotification',
-        SolutionTimeDestinationTime => 'SolutionTimeDestinationTime',
-        SolutionTimeDestinationDate => 'SolutionTimeDestinationDate',
-        SolutionTimeWorkingTime     => 'SolutionTimeWorkingTime',
+        SolutionTime                => Translatable('SolutionTime'),
+        SolutionInMin               => Translatable('SolutionInMin'),
+        SolutionDiffInMin           => Translatable('SolutionDiffInMin'),
+        SolutionTimeWorkingTime     => Translatable('SolutionTimeWorkingTime'),
+        SolutionTimeEscalation      => Translatable('SolutionTimeEscalation'),
+        SolutionTimeNotification    => Translatable('SolutionTimeNotification'),
+        SolutionTimeDestinationTime => Translatable('SolutionTimeDestinationTime'),
+        SolutionTimeDestinationDate => Translatable('SolutionTimeDestinationDate'),
+        SolutionTimeWorkingTime     => Translatable('SolutionTimeWorkingTime'),
     );
 
     if ( $ConfigObject->Get('Ticket::Service') ) {

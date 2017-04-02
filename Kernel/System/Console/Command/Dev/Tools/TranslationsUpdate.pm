@@ -391,8 +391,8 @@ sub HandleLanguage {
         # add translatable strings from JavaScript code
         my @JSFileList = $Kernel::OM->Get('Kernel::System::Main')->DirectoryRead(
             Directory => $IsSubTranslation ? "$ModuleDirectory/var/httpd/htdocs/js" : "$Home/var/httpd/htdocs/js",
-            Filter => '*.js',
-            Recursive => 0,    # to prevent access to thirdparty files and js-cache
+            Filter    => '*.js',
+            Recursive => 1,
         );
 
         FILE:
@@ -407,9 +407,17 @@ sub HandleLanguage {
                 die "Can't open $File: $!";
             }
 
-            $File =~ s{^.*/(.+?)\.js}{$1}smx;
+            # skip js cache files
+            next FILE if ( $File =~ m{\/js\/js-cache\/}xmsg );
 
             my $Content = ${$ContentRef};
+
+            # skip thirdparty files without custom markers
+            if ( $File =~ m{\/js\/thirdparty\/}xmsg ) {
+                next FILE if ( $Content !~ m{\/\/\s*OTRS}xmsg );
+            }
+
+            $File =~ s{^.*/(.+?)\.js}{$1}smx;
 
             # Purge all comments
             $Content =~ s{^ \s* // .*? \n}{\n}xmsg;
@@ -447,7 +455,7 @@ sub HandleLanguage {
         }
 
         # add translatable strings from SysConfig
-        my @Strings = $Kernel::OM->Get('Kernel::System::SysConfig')->ConfigItemTranslatableStrings();
+        my @Strings = $Kernel::OM->Get('Kernel::System::SysConfig')->ConfigurationTranslatableStrings();
 
         STRING:
         for my $String ( sort @Strings ) {

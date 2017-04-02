@@ -12,7 +12,6 @@ use utf8;
 
 use vars (qw($Self));
 
-# get selenium object
 my $Selenium = $Kernel::OM->Get('Kernel::System::UnitTest::Selenium');
 
 $Selenium->RunTest(
@@ -31,19 +30,15 @@ $Selenium->RunTest(
         );
 
         # Get dashboard ProductNotify plugin default sysconfig.
-        my %ProductNotifyConfig = $Kernel::OM->Get('Kernel::System::SysConfig')->ConfigItemGet(
+        my %ProductNotifyConfig = $Kernel::OM->Get('Kernel::System::SysConfig')->SettingGet(
             Name    => 'DashboardBackend###0000-ProductNotify',
             Default => 1,
         );
 
-        # Set dashboard ProductNotify plugin to valid.
-        %ProductNotifyConfig = map { $_->{Key} => $_->{Content} }
-            grep { defined $_->{Key} } @{ $ProductNotifyConfig{Setting}->[1]->{Hash}->[1]->{Item} };
-
         $Helper->ConfigSettingChange(
             Valid => 1,
             Key   => 'DashboardBackend###0000-ProductNotify',
-            Value => \%ProductNotifyConfig,
+            Value => $ProductNotifyConfig{EffectiveValue},
         );
 
         # Get current properties and set next version.
@@ -53,10 +48,10 @@ $Selenium->RunTest(
         my $NextVersionFirstNumber = $Parts[0] + 1;
 
         my @ProductFeeds;
-        for ( 0 .. 1 ) {
+        for my $Count ( 1 .. 2 ) {
             my $Number = $Helper->GetRandomNumber();
             push @ProductFeeds, {
-                Version => "$NextVersionFirstNumber.0.$Number",
+                Version => "$NextVersionFirstNumber.0.$Count",
                 Link    => "https://www.otrs.com/release-notes-$Number",
             };
         }

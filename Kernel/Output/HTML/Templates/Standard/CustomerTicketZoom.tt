@@ -223,6 +223,9 @@
 [% RenderBlockStart("Queue") %]
                     <li><span class="Key">[% Translate("Queue") | html %]:</span> <span title="[% Data.Queue | html %]">[% Data.Queue | html | replace('::', '<wbr>::<wbr>') %]</span></li>
 [% RenderBlockEnd("Queue") %]
+[% RenderBlockStart("TicketTimeUnits") %]
+                    <li><span class="Key">[% Translate("Accounted time") | html %]:</span> <span title="[% Data.TicketTimeUnits | html %]">[% Data.TicketTimeUnits %]</span></li>
+[% RenderBlockEnd("TicketTimeUnits") %]
 [% RenderBlockStart("Owner") %]
                     <li><span class="Key">[% Translate("Owner") | html %]:</span> [% Data.OwnerName | html %]</li>
 [% RenderBlockEnd("Owner") %]

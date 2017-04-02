@@ -207,14 +207,19 @@ sub Run {
         $AgentStatisticsFrontendPermission = 1;
     }
     else {
+        my $GroupObject = $Kernel::OM->Get('Kernel::System::Group');
         TYPE:
         for my $Type (qw(GroupRo Group)) {
             my $StatsGroups = ref $StatsReg->{$Type} eq 'ARRAY' ? $StatsReg->{$Type} : [ $StatsReg->{$Type} ];
             GROUP:
             for my $StatsGroup ( @{$StatsGroups} ) {
                 next GROUP if !$StatsGroup;
-                next GROUP if !$LayoutObject->{"UserIsGroupRo[$StatsGroup]"};
-                next GROUP if $LayoutObject->{"UserIsGroupRo[$StatsGroup]"} ne 'Yes';
+                next GROUP if !$GroupObject->PermissionCheck(
+                    UserID    => $Self->{UserID},
+                    GroupName => $StatsGroup,
+                    Type      => 'ro',
+                );
+
                 $AgentStatisticsFrontendPermission = 1;
                 last TYPE;
             }
@@ -242,6 +247,19 @@ sub Run {
             MaxXaxisAttributes => $Kernel::OM->Get('Kernel::Config')->Get('Stats::MaxXaxisAttributes'),
         },
     );
+
+    if ( $Self->{UserRefreshTime} ) {
+        my $Refresh = 60 * $Self->{UserRefreshTime};
+
+        $LayoutObject->AddJSData(
+            Key   => 'WidgetRefreshStat' . $StatID,
+            Value => {
+                Name        => $Self->{Name},
+                NameHTML    => $Self->{Name},
+                RefreshTime => $Refresh,
+            },
+        );
+    }
 
     my $Content = $LayoutObject->Output(
         TemplateFile => 'AgentDashboardStats',

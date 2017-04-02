@@ -18,6 +18,7 @@ use Kernel::System::VariableCheck qw(:all);
 our @ObjectDependencies = (
     'Kernel::Config',
     'Kernel::System::CustomerUser',
+    'Kernel::System::CheckItem',
     'Kernel::System::DB',
     'Kernel::System::DynamicField',
     'Kernel::System::DynamicField::Backend',
@@ -31,6 +32,7 @@ our @ObjectDependencies = (
     'Kernel::System::SystemAddress',
     'Kernel::System::TemplateGenerator',
     'Kernel::System::Ticket',
+    'Kernel::System::Ticket::Article',
     'Kernel::System::Time',
     'Kernel::System::User',
 );
@@ -114,6 +116,8 @@ sub Run {
         $DynamicFieldConfigLookup{ $DynamicFieldConfig->{Name} } = $DynamicFieldConfig;
     }
 
+    my $ArticleObject = $Kernel::OM->Get('Kernel::System::Ticket::Article');
+
     NOTIFICATION:
     for my $ID (@IDs) {
 
@@ -143,13 +147,13 @@ sub Run {
 
                 # get article, it is needed for the correct behavior of the
                 # StripPlainBodyAsAttachment flag into the ArticleAttachmentIndex function
-                my %Article = $Kernel::OM->Get('Kernel::System::Ticket')->ArticleGet(
+                my %Article = $ArticleObject->ArticleGet(
                     ArticleID     => $Param{Data}->{ArticleID},
                     UserID        => $Param{UserID},
                     DynamicFields => 0,
                 );
 
-                my %Index = $TicketObject->ArticleAttachmentIndex(
+                my %Index = $ArticleObject->ArticleAttachmentIndex(
                     ArticleID                  => $Param{Data}->{ArticleID},
                     Article                    => \%Article,
                     UserID                     => $Param{UserID},
@@ -158,7 +162,7 @@ sub Run {
                 if (%Index) {
                     FILE_ID:
                     for my $FileID ( sort keys %Index ) {
-                        my %Attachment = $TicketObject->ArticleAttachment(
+                        my %Attachment = $ArticleObject->ArticleAttachment(
                             ArticleID => $Param{Data}->{ArticleID},
                             FileID    => $FileID,
                             UserID    => $Param{UserID},
@@ -417,6 +421,7 @@ sub _NotificationFilter {
         next KEY if $Key eq 'EmailMissingCryptingKeys';
         next KEY if $Key eq 'EmailMissingSigningKeys';
         next KEY if $Key eq 'EmailDefaultSigningKeys';
+        next KEY if $Key eq 'NotificationType';
 
         # check recipient fields from transport methods
         if ( $Key =~ m{\A Recipient}xms ) {
@@ -496,7 +501,7 @@ sub _NotificationFilter {
         )
     {
 
-        my %Article = $Kernel::OM->Get('Kernel::System::Ticket')->ArticleGet(
+        my %Article = $Kernel::OM->Get('Kernel::System::Ticket::Article')->ArticleGet(
             ArticleID     => $Param{Data}->{ArticleID},
             UserID        => $Param{UserID},
             DynamicFields => 0,
@@ -591,6 +596,8 @@ sub _RecipientsGet {
 
     # remember pre-calculated user recipients for later comparisons
     my %PrecalculatedUserIDs = map { $_ => 1 } @RecipientUserIDs;
+
+    my $ArticleObject = $Kernel::OM->Get('Kernel::System::Ticket::Article');
 
     # get recipients by Recipients
     if ( $Notification{Data}->{Recipients} ) {
@@ -716,7 +723,7 @@ sub _RecipientsGet {
             elsif ( $Recipient eq 'Customer' ) {
 
                 # get old article for quoting
-                my %Article = $TicketObject->ArticleLastCustomerArticle(
+                my %Article = $ArticleObject->ArticleLastCustomerArticle(
                     TicketID      => $Param{Data}->{TicketID},
                     DynamicFields => 0,
                 );
@@ -769,8 +776,21 @@ sub _RecipientsGet {
 
                     );
 
-                    # join Recipient data with CustomerUser data
-                    %Recipient = ( %Recipient, %CustomerUser );
+                    # Check if customer user is email address, in case it is not stored in system
+                    if (
+                        !IsHashRefWithData( \%CustomerUser )
+                        && !$ConfigObject->Get('CustomerNotifyJustToRealCustomer')
+                        && $Kernel::OM->Get('Kernel::System::CheckItem')
+                        ->CheckEmail( Address => $Article{CustomerUserID} )
+                        )
+                    {
+                        $Recipient{UserEmail} = $Article{CustomerUserID};
+                    }
+                    else {
+
+                        # join Recipient data with CustomerUser data
+                        %Recipient = ( %Recipient, %CustomerUser );
+                    }
 
                     # get user language
                     if ( $CustomerUser{UserLanguage} ) {

@@ -1358,7 +1358,7 @@ sub Run {
         );
 
         # send email
-        my $ArticleID = $TicketObject->ArticleSend(
+        my $ArticleID = $Kernel::OM->Get('Kernel::System::Ticket::Article')->ArticleSend(
             NoAgentNotify  => $NoAgentNotify,
             Attachment     => \@Attachments,
             TicketID       => $TicketID,
@@ -2693,32 +2693,13 @@ sub _MaskEmailNew {
         );
     }
 
-    # show address book if the module is registered and java script support is available
+    # Show the customer user address book if the module is registered and java script support is available.
     if (
-        $ConfigObject->Get('Frontend::Module')->{AgentBook}
+        $ConfigObject->Get('Frontend::Module')->{AgentCustomerUserAddressBook}
         && $LayoutObject->{BrowserJavaScriptSupport}
         )
     {
-
-        # check if need to call Options block
-        if ( !$ShownOptionsBlock ) {
-            $LayoutObject->Block(
-                Name => 'TicketOptions',
-                Data => {
-                    %Param,
-                },
-            );
-
-            # set flag to "true" in order to prevent calling the Options block again
-            $ShownOptionsBlock = 1;
-        }
-
-        $LayoutObject->Block(
-            Name => 'AddressBook',
-            Data => {
-                %Param,
-            },
-        );
+        $Param{OptionCustomerUserAddressBook} = 1;
     }
 
     # show customer edit link

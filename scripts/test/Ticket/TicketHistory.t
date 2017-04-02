@@ -12,11 +12,11 @@ use utf8;
 
 use vars (qw($Self));
 
-# get needed objects
-my $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
-my $QueueObject  = $Kernel::OM->Get('Kernel::System::Queue');
-my $TypeObject   = $Kernel::OM->Get('Kernel::System::Type');
-my $StateObject  = $Kernel::OM->Get('Kernel::System::State');
+my $TicketObject  = $Kernel::OM->Get('Kernel::System::Ticket');
+my $ArticleObject = $Kernel::OM->Get('Kernel::System::Ticket::Article');
+my $QueueObject   = $Kernel::OM->Get('Kernel::System::Queue');
+my $TypeObject    = $Kernel::OM->Get('Kernel::System::Type');
+my $StateObject   = $Kernel::OM->Get('Kernel::System::State');
 
 # get helper object
 $Kernel::OM->ObjectParamAdd(
@@ -26,6 +26,12 @@ $Kernel::OM->ObjectParamAdd(
     },
 );
 my $Helper = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
+
+# Turn on the ticket type feature.
+$Kernel::OM->Get('Kernel::Config')->Set(
+    Key   => 'Ticket::Type',
+    Value => 1,
+);
 
 $Kernel::OM->Get('Kernel::System::Cache')->CleanUp();
 
@@ -92,6 +98,19 @@ my @Tests = (
                         HistoryType => 'NewTicket',
                         Type        => 'Unclassified',
                     },
+
+                    # Bug 12702 - TicketHistoryGet() initial ticket type update
+                    {
+                        CreateBy    => 1,
+                        HistoryType => 'TypeUpdate',
+                        Queue       => 'Raw',
+                        OwnerID     => 1,
+                        PriorityID  => 3,
+                        State       => 'new',
+                        Type        => 'Unclassified',
+                        TypeID      => '1',
+                    },
+
                     {
                         CreateBy    => 1,
                         HistoryType => 'CustomerUpdate',
@@ -210,7 +229,7 @@ for my $Test (@Tests) {
             }
 
             if ( $CreateData->{ArticleCreate} ) {
-                my $HistoryCreateArticleID = $TicketObject->ArticleCreate(
+                my $HistoryCreateArticleID = $ArticleObject->ArticleCreate(
                     TicketID => $HistoryCreateTicketID,
                     %{ $CreateData->{ArticleCreate} },
                 );
@@ -311,6 +330,7 @@ for my $Test (@Tests) {
 
             my %LookForHistoryTypes = (
                 NewTicket      => 1,
+                TypeUpdate     => 1,
                 OwnerUpdate    => 1,
                 CustomerUpdate => 1,
             );

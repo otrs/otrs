@@ -349,6 +349,10 @@
         display: none;
     }
 
+    .AdditionlFieldIcon span {
+        display: none;
+    }
+
     .MainBox.FormScreen > .AsteriskExplanation {
         margin: -10px 0px 10px 0px;
     }
@@ -389,6 +393,8 @@
         width: 90%;
     }
 
+    fieldset.TableLike > .Field > input[type=radio],
+    fieldset.TableLike > .Row > .Field > input[type=radio],
     fieldset.TableLike > .Field > input[type=radio],
     fieldset.TableLike > .Row > .Field > input[type=checkbox] {
         width: auto;
@@ -1189,14 +1195,12 @@
     /* Breadcrumb */
 
     .BreadCrumb {
-        overflow-x: scroll;
-        padding: 7px 0px;
+        overflow-x: auto;
     }
 
     .BreadCrumb li,
     .BreadCrumb a {
         font-size: 12px;
-        line-height: 20px;
         max-width: none;
         white-space: nowrap;
     }

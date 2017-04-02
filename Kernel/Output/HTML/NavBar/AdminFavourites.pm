@@ -29,13 +29,15 @@ sub Run {
     my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
 
     # get process management configuration
-    my $FrontendModuleConfig = $ConfigObject->Get('Frontend::Module')->{Admin};
+    my $FrontendModuleConfig     = $ConfigObject->Get('Frontend::Module')->{Admin};
+    my $FrontendNavigationConfig = $ConfigObject->Get('Frontend::Navigation')->{Admin};
 
     # check if the registration config is valid
     return if !IsHashRefWithData($FrontendModuleConfig);
-    return if !IsHashRefWithData( $FrontendModuleConfig->{NavBar}->[0] );
+    return if !IsHashRefWithData($FrontendNavigationConfig);
+    return if !IsHashRefWithData( $FrontendNavigationConfig->{1} );
 
-    my $NameForID = $FrontendModuleConfig->{NavBar}->[0]->{Name};
+    my $NameForID = $FrontendNavigationConfig->{1}->{Name};
     $NameForID =~ s/[ &;]//ig;
 
     # check if the module name is valid
@@ -54,11 +56,10 @@ sub Run {
     my @Favourites;
     MODULE:
     for my $Module ( sort @{$PrefFavourites} ) {
-        my $ModuleConfig = $ConfigObject->Get('Frontend::Module')->{$Module};
+        my $ModuleConfig = $ConfigObject->Get('Frontend::NavigationModule')->{$Module};
         next MODULE if !$ModuleConfig;
-        next MODULE if !$ModuleConfig->{NavBarModule};
-        $ModuleConfig->{NavBarModule}->{Link} //= "Action=$Module";
-        push @Favourites, $ModuleConfig->{NavBarModule};
+        $ModuleConfig->{Link} //= "Action=$Module";
+        push @Favourites, $ModuleConfig;
     }
 
     my $LayoutObject = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
@@ -68,10 +69,10 @@ sub Run {
     } @Favourites;
 
     if (@Favourites) {
-        my $AdminModuleConfig = $ConfigObject->Get('Frontend::Module')->{Admin};
-        $AdminModuleConfig->{NavBarModule}->{Name} = $LayoutObject->{LanguageObject}->Translate('Overview');
-        $AdminModuleConfig->{NavBarModule}->{Link} //= "Action=Admin";
-        unshift @Favourites, $AdminModuleConfig->{NavBarModule};
+        my $AdminModuleConfig = $ConfigObject->Get('Frontend::NavigationModule')->{Admin};
+        $AdminModuleConfig->{Name} = $LayoutObject->{LanguageObject}->Translate('Overview');
+        $AdminModuleConfig->{Link} //= "Action=Admin";
+        unshift @Favourites, $AdminModuleConfig;
     }
 
     my $Counter = 0;

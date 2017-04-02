@@ -19,10 +19,12 @@ our @ObjectDependencies = (
     'Kernel::System::DynamicField',
     'Kernel::System::DynamicField::Backend',
     'Kernel::Config',
+    'Kernel::System::Group',
     'Kernel::System::Log',
     'Kernel::Output::HTML::Layout',
     'Kernel::System::User',
     'Kernel::System::Ticket',
+    'Kernel::System::Ticket::Article',
     'Kernel::System::Main',
     'Kernel::System::Queue'
 );
@@ -58,10 +60,15 @@ sub ActionRow {
             $BulkFeature = 1;
         }
         else {
+            my $GroupObject = $Kernel::OM->Get('Kernel::System::Group');
             GROUP:
             for my $Group (@Groups) {
-                next GROUP if !$LayoutObject->{"UserIsGroup[$Group]"};
-                if ( $LayoutObject->{"UserIsGroup[$Group]"} eq 'Yes' ) {
+                my $HasPermission = $GroupObject->PermissionCheck(
+                    UserID    => $Self->{UserID},
+                    GroupName => $Group,
+                    Type      => 'rw',
+                );
+                if ($HasPermission) {
                     $BulkFeature = 1;
                     last GROUP;
                 }
@@ -202,10 +209,15 @@ sub Run {
             $BulkFeature = 1;
         }
         else {
+            my $GroupObject = $Kernel::OM->Get('Kernel::System::Group');
             GROUP:
             for my $Group (@Groups) {
-                next GROUP if !$LayoutObject->{"UserIsGroup[$Group]"};
-                if ( $LayoutObject->{"UserIsGroup[$Group]"} eq 'Yes' ) {
+                my $HasPermission = $GroupObject->PermissionCheck(
+                    UserID    => $Self->{UserID},
+                    GroupName => $Group,
+                    Type      => 'rw',
+                );
+                if ($HasPermission) {
                     $BulkFeature = 1;
                     last GROUP;
                 }
@@ -317,7 +329,7 @@ sub _Show {
     my $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
 
     # get last customer article
-    my %Article = $TicketObject->ArticleLastCustomerArticle(
+    my %Article = $Kernel::OM->Get('Kernel::System::Ticket::Article')->ArticleLastCustomerArticle(
         TicketID      => $Param{TicketID},
         DynamicFields => 0,
     );

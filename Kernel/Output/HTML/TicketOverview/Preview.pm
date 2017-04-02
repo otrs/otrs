@@ -20,10 +20,12 @@ our @ObjectDependencies = (
     'Kernel::System::SystemAddress',
     'Kernel::System::DynamicField',
     'Kernel::System::DynamicField::Backend',
+    'Kernel::System::Group',
     'Kernel::System::Log',
     'Kernel::Output::HTML::Layout',
     'Kernel::System::User',
     'Kernel::System::Ticket',
+    'Kernel::System::Ticket::Article',
     'Kernel::System::Main',
     'Kernel::System::Queue',
 );
@@ -59,10 +61,15 @@ sub ActionRow {
             $BulkFeature = 1;
         }
         else {
+            my $GroupObject = $Kernel::OM->Get('Kernel::System::Group');
             GROUP:
             for my $Group (@Groups) {
-                next GROUP if !$LayoutObject->{"UserIsGroup[$Group]"};
-                if ( $LayoutObject->{"UserIsGroup[$Group]"} eq 'Yes' ) {
+                my $HasPermission = $GroupObject->PermissionCheck(
+                    UserID    => $Self->{UserID},
+                    GroupName => $Group,
+                    Type      => 'rw',
+                );
+                if ($HasPermission) {
                     $BulkFeature = 1;
                     last GROUP;
                 }
@@ -202,10 +209,15 @@ sub Run {
             $BulkFeature = 1;
         }
         else {
+            my $GroupObject = $Kernel::OM->Get('Kernel::System::Group');
             GROUP:
             for my $Group (@Groups) {
-                next GROUP if !$LayoutObject->{"UserIsGroup[$Group]"};
-                if ( $LayoutObject->{"UserIsGroup[$Group]"} eq 'Yes' ) {
+                my $HasPermission = $GroupObject->PermissionCheck(
+                    UserID    => $Self->{UserID},
+                    GroupName => $Group,
+                    Type      => 'rw',
+                );
+                if ($HasPermission) {
                     $BulkFeature = 1;
                     last GROUP;
                 }
@@ -352,7 +364,7 @@ sub _Show {
     my $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
 
     # get last 5 articles
-    my @ArticleBody = $TicketObject->ArticleGet(
+    my @ArticleBody = $Kernel::OM->Get('Kernel::System::Ticket::Article')->ArticleGet(
         %ArticleGetParams,
     );
     my %Article = %{ $ArticleBody[0] || {} };
@@ -396,8 +408,9 @@ sub _Show {
     );
 
     $Param{StandardResponsesStrg} = $LayoutObject->BuildSelection(
-        Name => 'ResponseID',
-        Data => $StandardTemplates{Answer} || {},
+        Name  => 'ResponseID',
+        Class => 'Modernize',
+        Data  => $StandardTemplates{Answer} || {},
     );
 
     # customer info
@@ -1166,9 +1179,10 @@ sub _Show {
 
                     # build html string
                     my $StandardResponsesStrg = $LayoutObject->BuildSelection(
-                        Name => 'ResponseID',
-                        ID   => 'ResponseID' . $ArticleItem->{ArticleID},
-                        Data => \@StandardResponseArray,
+                        Name  => 'ResponseID',
+                        Class => 'Modernize',
+                        ID    => 'ResponseID' . $ArticleItem->{ArticleID},
+                        Data  => \@StandardResponseArray,
                     );
 
                     $LayoutObject->Block(

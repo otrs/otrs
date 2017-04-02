@@ -161,9 +161,16 @@ sub AgentCustomerViewTable {
                 $Record{Key} = $DynamicFieldConfig->{Label};
             }
 
-            if ( $Field->[6] ) {
+            if (
+                $Field->[6]
+                && ( $Param{Data}->{TicketID} || $Param{Ticket} )
+                )
+            {
                 $Record{LinkStart} = "<a href=\"$Field->[6]\"";
-                if ( $Field->[8] ) {
+                if ( !$Param{Ticket} ) {
+                    $Record{LinkStart} .= " target=\"_blank\"";
+                }
+                elsif ( $Field->[8] ) {
                     $Record{LinkStart} .= " target=\"$Field->[8]\"";
                 }
                 if ( $Field->[9] ) {
@@ -211,12 +218,13 @@ sub AgentCustomerViewTable {
                 my $EnableChat = 1;
                 my $ChatStartingAgentsGroup
                     = $ConfigObject->Get('ChatEngine::PermissionGroup::ChatStartingAgents') || 'users';
+                my $ChatStartingAgentsGroupPermission = $Kernel::OM->Get('Kernel::System::Group')->PermissionCheck(
+                    UserID    => $Self->{UserID},
+                    GroupName => $ChatStartingAgentsGroup,
+                    Type      => 'rw',
+                );
 
-                if (
-                    !defined $Self->{"UserIsGroup[$ChatStartingAgentsGroup]"}
-                    || $Self->{"UserIsGroup[$ChatStartingAgentsGroup]"} ne 'Yes'
-                    )
-                {
+                if ( !$ChatStartingAgentsGroupPermission ) {
                     $EnableChat = 0;
                 }
                 if (
@@ -231,13 +239,14 @@ sub AgentCustomerViewTable {
                     my $VideoChatEnabled = 0;
                     my $VideoChatAgentsGroup
                         = $ConfigObject->Get('ChatEngine::PermissionGroup::VideoChatAgents') || 'users';
+                    my $VideoChatAgentsGroupPermission = $Kernel::OM->Get('Kernel::System::Group')->PermissionCheck(
+                        UserID    => $Self->{UserID},
+                        GroupName => $VideoChatAgentsGroup,
+                        Type      => 'rw',
+                    );
 
                     # Enable the video chat feature if system is entitled and agent is a member of configured group.
-                    if (
-                        defined $Self->{"UserIsGroup[$VideoChatAgentsGroup]"}
-                        && $Self->{"UserIsGroup[$VideoChatAgentsGroup]"} eq 'Yes'
-                        )
-                    {
+                    if ($VideoChatAgentsGroupPermission) {
                         if ( $Kernel::OM->Get('Kernel::System::Main')
                             ->Require( 'Kernel::System::VideoChat', Silent => 1 ) )
                         {
@@ -654,8 +663,8 @@ sub ArticleQuote {
     }
 
     # get needed objects
-    my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
-    my $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
+    my $ConfigObject  = $Kernel::OM->Get('Kernel::Config');
+    my $ArticleObject = $Kernel::OM->Get('Kernel::System::Ticket::Article');
 
     # body preparation for plain text processing
     if ( $ConfigObject->Get('Frontend::RichText') ) {
@@ -663,7 +672,7 @@ sub ArticleQuote {
         my $Body = '';
 
         # check for html body
-        my @ArticleBox = $TicketObject->ArticleContentIndex(
+        my @ArticleBox = $ArticleObject->ArticleContentIndex(
             TicketID                   => $Param{TicketID},
             StripPlainBodyAsAttachment => 3,
             UserID                     => $Self->{UserID},
@@ -680,7 +689,7 @@ sub ArticleQuote {
             # check if no html body exists
             last ARTICLE if !$ArticleTmp->{AttachmentIDOfHTMLBody};
 
-            my %AttachmentHTML = $TicketObject->ArticleAttachment(
+            my %AttachmentHTML = $ArticleObject->ArticleAttachment(
                 ArticleID => $ArticleTmp->{ArticleID},
                 FileID    => $ArticleTmp->{AttachmentIDOfHTMLBody},
                 UserID    => $Self->{UserID},
@@ -751,7 +760,7 @@ sub ArticleQuote {
                     }
 
                     # get whole attachment
-                    my %AttachmentPicture = $TicketObject->ArticleAttachment(
+                    my %AttachmentPicture = $ArticleObject->ArticleAttachment(
                         ArticleID => $Param{ArticleID},
                         FileID    => $AttachmentID,
                         UserID    => $Self->{UserID},
@@ -791,7 +800,7 @@ sub ArticleQuote {
                 next ATTACHMENT if !$Attachments{$AttachmentID}->{ContentID};
 
                 # get whole attachment
-                my %AttachmentPicture = $TicketObject->ArticleAttachment(
+                my %AttachmentPicture = $ArticleObject->ArticleAttachment(
                     ArticleID => $Param{ArticleID},
                     FileID    => $AttachmentID,
                     UserID    => $Self->{UserID},
@@ -846,7 +855,7 @@ sub ArticleQuote {
         # attach also other attachments on article forward
         if ( $Body && $Param{AttachmentsInclude} ) {
             for my $AttachmentID ( sort keys %NotInlineAttachments ) {
-                my %Attachment = $TicketObject->ArticleAttachment(
+                my %Attachment = $ArticleObject->ArticleAttachment(
                     ArticleID => $Param{ArticleID},
                     FileID    => $AttachmentID,
                     UserID    => $Self->{UserID},
@@ -864,7 +873,7 @@ sub ArticleQuote {
     }
 
     # as fallback use text body for quote
-    my %Article = $TicketObject->ArticleGet(
+    my %Article = $ArticleObject->ArticleGet(
         ArticleID     => $Param{ArticleID},
         DynamicFields => 0,
     );
@@ -887,14 +896,14 @@ sub ArticleQuote {
 
     # attach attachments
     if ( $Param{AttachmentsInclude} ) {
-        my %ArticleIndex = $TicketObject->ArticleAttachmentIndex(
+        my %ArticleIndex = $ArticleObject->ArticleAttachmentIndex(
             ArticleID                  => $Param{ArticleID},
             UserID                     => $Self->{UserID},
             StripPlainBodyAsAttachment => 3,
             Article                    => \%Article,
         );
         for my $Index ( sort keys %ArticleIndex ) {
-            my %Attachment = $TicketObject->ArticleAttachment(
+            my %Attachment = $ArticleObject->ArticleAttachment(
                 ArticleID => $Param{ArticleID},
                 FileID    => $Index,
                 UserID    => $Self->{UserID},

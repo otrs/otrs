@@ -1446,3 +1446,191 @@ CREATE TABLE cloud_service_config (
     PRIMARY KEY(id),
     UNIQUE INDEX cloud_service_config_name (name)
 );
+# ----------------------------------------------------------
+#  create table sysconfig_default
+# ----------------------------------------------------------
+CREATE TABLE sysconfig_default (
+    id INTEGER NOT NULL AUTO_INCREMENT,
+    name VARCHAR (250) NOT NULL,
+    description LONGBLOB NOT NULL,
+    navigation VARCHAR (200) NOT NULL,
+    is_invisible SMALLINT NOT NULL,
+    is_readonly SMALLINT NOT NULL,
+    is_required SMALLINT NOT NULL,
+    is_valid SMALLINT NOT NULL,
+    has_configlevel SMALLINT NOT NULL,
+    user_modification_possible SMALLINT NOT NULL,
+    user_modification_active SMALLINT NOT NULL,
+    user_preferences_group VARCHAR (250) NULL,
+    xml_content_raw LONGBLOB NOT NULL,
+    xml_content_parsed LONGBLOB NOT NULL,
+    xml_filename VARCHAR (250) NOT NULL,
+    effective_value LONGBLOB NOT NULL,
+    is_dirty SMALLINT NOT NULL,
+    exclusive_lock_guid VARCHAR (32) NOT NULL,
+    exclusive_lock_user_id INTEGER NULL,
+    exclusive_lock_expiry_time DATETIME NULL,
+    create_time DATETIME NOT NULL,
+    create_by INTEGER NOT NULL,
+    change_time DATETIME NOT NULL,
+    change_by INTEGER NOT NULL,
+    PRIMARY KEY(id),
+    UNIQUE INDEX sysconfig_default_name (name)
+);
+# ----------------------------------------------------------
+#  create table sysconfig_default_version
+# ----------------------------------------------------------
+CREATE TABLE sysconfig_default_version (
+    id INTEGER NOT NULL AUTO_INCREMENT,
+    sysconfig_default_id INTEGER NULL,
+    name VARCHAR (250) NOT NULL,
+    description LONGBLOB NOT NULL,
+    navigation VARCHAR (200) NOT NULL,
+    is_invisible SMALLINT NOT NULL,
+    is_readonly SMALLINT NOT NULL,
+    is_required SMALLINT NOT NULL,
+    is_valid SMALLINT NOT NULL,
+    has_configlevel SMALLINT NOT NULL,
+    user_modification_possible SMALLINT NOT NULL,
+    user_modification_active SMALLINT NOT NULL,
+    user_preferences_group VARCHAR (250) NULL,
+    xml_content_raw LONGBLOB NOT NULL,
+    xml_content_parsed LONGBLOB NOT NULL,
+    xml_filename VARCHAR (250) NOT NULL,
+    effective_value LONGBLOB NOT NULL,
+    create_time DATETIME NOT NULL,
+    create_by INTEGER NOT NULL,
+    change_time DATETIME NOT NULL,
+    change_by INTEGER NOT NULL,
+    PRIMARY KEY(id)
+);
+# ----------------------------------------------------------
+#  create table sysconfig_modified
+# ----------------------------------------------------------
+CREATE TABLE sysconfig_modified (
+    id INTEGER NOT NULL AUTO_INCREMENT,
+    sysconfig_default_id INTEGER NOT NULL,
+    name VARCHAR (250) NOT NULL,
+    user_id INTEGER NULL,
+    is_valid SMALLINT NOT NULL,
+    user_modification_active SMALLINT NOT NULL,
+    effective_value LONGBLOB NOT NULL,
+    is_dirty SMALLINT NOT NULL,
+    reset_to_default SMALLINT NOT NULL,
+    create_time DATETIME NOT NULL,
+    create_by INTEGER NOT NULL,
+    change_time DATETIME NOT NULL,
+    change_by INTEGER NOT NULL,
+    PRIMARY KEY(id),
+    UNIQUE INDEX sysconfig_modified_per_user (sysconfig_default_id, user_id)
+);
+# ----------------------------------------------------------
+#  create table sysconfig_modified_version
+# ----------------------------------------------------------
+CREATE TABLE sysconfig_modified_version (
+    id INTEGER NOT NULL AUTO_INCREMENT,
+    sysconfig_default_version_id INTEGER NOT NULL,
+    name VARCHAR (250) NOT NULL,
+    user_id INTEGER NULL,
+    is_valid SMALLINT NOT NULL,
+    user_modification_active SMALLINT NOT NULL,
+    effective_value LONGBLOB NOT NULL,
+    reset_to_default SMALLINT NOT NULL,
+    create_time DATETIME NOT NULL,
+    create_by INTEGER NOT NULL,
+    change_time DATETIME NOT NULL,
+    change_by INTEGER NOT NULL,
+    PRIMARY KEY(id)
+);
+# ----------------------------------------------------------
+#  create table sysconfig_deployment_lock
+# ----------------------------------------------------------
+CREATE TABLE sysconfig_deployment_lock (
+    id INTEGER NOT NULL AUTO_INCREMENT,
+    exclusive_lock_guid VARCHAR (32) NULL,
+    exclusive_lock_user_id INTEGER NULL,
+    exclusive_lock_expiry_time DATETIME NULL,
+    PRIMARY KEY(id)
+);
+# ----------------------------------------------------------
+#  create table sysconfig_deployment
+# ----------------------------------------------------------
+CREATE TABLE sysconfig_deployment (
+    id INTEGER NOT NULL AUTO_INCREMENT,
+    comments VARCHAR (250) NULL,
+    user_id INTEGER NULL,
+    effective_value LONGBLOB NOT NULL,
+    create_time DATETIME NOT NULL,
+    create_by INTEGER NOT NULL,
+    PRIMARY KEY(id)
+);
+# ----------------------------------------------------------
+#  create table calendar
+# ----------------------------------------------------------
+CREATE TABLE calendar (
+    id BIGINT NOT NULL AUTO_INCREMENT,
+    group_id INTEGER NOT NULL,
+    name VARCHAR (200) NOT NULL,
+    salt_string VARCHAR (64) NOT NULL,
+    color VARCHAR (7) NOT NULL,
+    ticket_appointments LONGBLOB NULL,
+    valid_id SMALLINT NOT NULL,
+    create_time DATETIME NOT NULL,
+    create_by INTEGER NOT NULL,
+    change_time DATETIME NOT NULL,
+    change_by INTEGER NOT NULL,
+    PRIMARY KEY(id),
+    UNIQUE INDEX calendar_name (name)
+);
+# ----------------------------------------------------------
+#  create table calendar_appointment
+# ----------------------------------------------------------
+CREATE TABLE calendar_appointment (
+    id BIGINT NOT NULL AUTO_INCREMENT,
+    parent_id BIGINT NULL,
+    calendar_id BIGINT NOT NULL,
+    unique_id VARCHAR (255) NOT NULL,
+    title VARCHAR (255) NOT NULL,
+    description TEXT NULL,
+    location VARCHAR (255) NULL,
+    start_time DATETIME NOT NULL,
+    end_time DATETIME NOT NULL,
+    all_day SMALLINT NULL,
+    notify_time DATETIME NULL,
+    notify_template VARCHAR (255) NULL,
+    notify_custom VARCHAR (255) NULL,
+    notify_custom_unit_count BIGINT NULL,
+    notify_custom_unit VARCHAR (255) NULL,
+    notify_custom_unit_point VARCHAR (255) NULL,
+    notify_custom_date DATETIME NULL,
+    team_id TEXT NULL,
+    resource_id TEXT NULL,
+    recurring SMALLINT NULL,
+    recur_type VARCHAR (20) NULL,
+    recur_freq VARCHAR (255) NULL,
+    recur_count INTEGER NULL,
+    recur_interval INTEGER NULL,
+    recur_until DATETIME NULL,
+    recur_id DATETIME NULL,
+    recur_exclude TEXT NULL,
+    ticket_appointment_rule_id VARCHAR (32) NULL,
+    create_time DATETIME NULL,
+    create_by INTEGER NULL,
+    change_time DATETIME NULL,
+    change_by INTEGER NULL,
+    PRIMARY KEY(id)
+);
+# ----------------------------------------------------------
+#  create table calendar_appointment_ticket
+# ----------------------------------------------------------
+CREATE TABLE calendar_appointment_ticket (
+    calendar_id BIGINT NOT NULL,
+    ticket_id BIGINT NOT NULL,
+    rule_id VARCHAR (32) NOT NULL,
+    appointment_id BIGINT NOT NULL,
+    UNIQUE INDEX calendar_appointment_ticket_calendar_id_ticket_id_rule_id (calendar_id, ticket_id, rule_id),
+    INDEX calendar_appointment_ticket_appointment_id (appointment_id),
+    INDEX calendar_appointment_ticket_calendar_id (calendar_id),
+    INDEX calendar_appointment_ticket_rule_id (rule_id),
+    INDEX calendar_appointment_ticket_ticket_id (ticket_id)
+);

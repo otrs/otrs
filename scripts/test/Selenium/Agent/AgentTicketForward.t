@@ -68,7 +68,7 @@ $Selenium->RunTest(
         );
 
         # create test email article
-        my $ArticleID = $TicketObject->ArticleCreate(
+        my $ArticleID = $Kernel::OM->Get('Kernel::System::Ticket::Article')->ArticleCreate(
             TicketID       => $TicketID,
             ArticleType    => 'email-external',
             SenderType     => 'customer',
@@ -148,12 +148,11 @@ $Selenium->RunTest(
         }
 
         # input fields and send forward
-        my $AutoCompleteString = "\"$TestCustomer $TestCustomer\" <$TestCustomer\@localhost.com> ($TestCustomer)";
         $Selenium->find_element( "#ToCustomer", 'css' )->send_keys($TestCustomer);
 
         $Selenium->WaitFor( JavaScript => 'return typeof($) === "function" && $("li.ui-menu-item:visible").length' );
 
-        $Selenium->find_element("//*[text()='$AutoCompleteString']")->VerifiedClick();
+        $Selenium->find_element("//*[text()='$TestCustomer']")->VerifiedClick();
         $Selenium->execute_script("\$('#ComposeStateID').val('4').trigger('redraw.InputField').trigger('change');");
 
         $Selenium->find_element( "#ToCustomer", 'css' )->submit();

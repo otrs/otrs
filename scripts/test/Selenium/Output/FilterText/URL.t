@@ -59,7 +59,7 @@ $Selenium->RunTest(
 
         # create test article with subject that is link
         my $BodyText  = 'www.seleniumtest.com';
-        my $ArticleID = $TicketObject->ArticleCreate(
+        my $ArticleID = $Kernel::OM->Get('Kernel::System::Ticket::Article')->ArticleCreate(
             TicketID    => $TicketID,
             ArticleType => 'phone',
             SenderType  => 'agent',
@@ -104,14 +104,14 @@ sub-domain.www.seleniumtest.com
         }
 
         # turn off OutputFilter TextURL in sysconfig
-        my %TextURL = $Kernel::OM->Get('Kernel::System::SysConfig')->ConfigItemGet(
+        my %TextURL = $Kernel::OM->Get('Kernel::System::SysConfig')->SettingGet(
             Name    => 'Frontend::Output::FilterText###AAAURL',
             Default => 1,
         );
         $Helper->ConfigSettingChange(
             Valid => 0,
             Key   => 'Frontend::Output::FilterText###AAAURL',
-            Value => \%TextURL,
+            Value => $TextURL{EffectiveValue},
         );
 
         # refresh screen

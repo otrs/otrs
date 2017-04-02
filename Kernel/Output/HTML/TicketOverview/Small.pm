@@ -20,12 +20,14 @@ our @ObjectDependencies = (
     'Kernel::System::Log',
     'Kernel::Output::HTML::Layout',
     'Kernel::System::CustomerUser',
+    'Kernel::System::Group',
     'Kernel::System::User',
     'Kernel::System::JSON',
     'Kernel::System::DynamicField',
     'Kernel::System::Ticket::ColumnFilter',
     'Kernel::System::DynamicField::Backend',
     'Kernel::System::Ticket',
+    'Kernel::System::Ticket::Article',
     'Kernel::System::Main',
 );
 
@@ -244,10 +246,15 @@ sub ActionRow {
             $BulkFeature = 1;
         }
         else {
+            my $GroupObject = $Kernel::OM->Get('Kernel::System::Group');
             GROUP:
             for my $Group (@Groups) {
-                next GROUP if !$LayoutObject->{"UserIsGroup[$Group]"};
-                if ( $LayoutObject->{"UserIsGroup[$Group]"} eq 'Yes' ) {
+                my $HasPermission = $GroupObject->PermissionCheck(
+                    UserID    => $Self->{UserID},
+                    GroupName => $Group,
+                    Type      => 'rw',
+                );
+                if ($HasPermission) {
                     $BulkFeature = 1;
                     last GROUP;
                 }
@@ -400,10 +407,15 @@ sub Run {
             $BulkFeature = 1;
         }
         else {
+            my $GroupObject = $Kernel::OM->Get('Kernel::System::Group');
             GROUP:
             for my $Group (@Groups) {
-                next GROUP if !$LayoutObject->{"UserIsGroup[$Group]"};
-                if ( $LayoutObject->{"UserIsGroup[$Group]"} eq 'Yes' ) {
+                my $HasPermission = $GroupObject->PermissionCheck(
+                    UserID    => $Self->{UserID},
+                    GroupName => $Group,
+                    Type      => 'rw',
+                );
+                if ($HasPermission) {
                     $BulkFeature = 1;
                     last GROUP;
                 }
@@ -413,15 +425,17 @@ sub Run {
 
     my $Counter = 0;
     my @ArticleBox;
+
+    # get needed objects
+    my $TicketObject  = $Kernel::OM->Get('Kernel::System::Ticket');
+    my $ArticleObject = $Kernel::OM->Get('Kernel::System::Ticket::Article');
+
     for my $TicketID ( @{ $Param{TicketIDs} } ) {
         $Counter++;
         if ( $Counter >= $Param{StartHit} && $Counter < ( $Param{PageShown} + $Param{StartHit} ) ) {
 
-            # get ticket object
-            my $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
-
             # get last customer article
-            my %Article = $TicketObject->ArticleLastCustomerArticle(
+            my %Article = $ArticleObject->ArticleLastCustomerArticle(
                 TicketID      => $TicketID,
                 DynamicFields => 0,
             );
@@ -434,20 +448,17 @@ sub Run {
 
             # Fallback for tickets without articles: get at least basic ticket data
             if ( !%Article ) {
-                %Article = $TicketObject->TicketGet(
-                    TicketID      => $TicketID,
-                    DynamicFields => 0,
-                );
+                %Article = %Ticket;
                 if ( !$Article{Title} ) {
                     $Article{Title} = $LayoutObject->{LanguageObject}->Translate(
                         'This ticket has no title or subject'
                     );
                 }
                 $Article{Subject} = $Article{Title};
-
-                # show ticket create time in small view
-                $Article{Created} = $Ticket{Created};
             }
+
+            # show ticket create time in small view
+            $Article{Created} = $Ticket{Created};
 
             # prepare a "long" version of the subject to show in the title attribute. We don't take
             # the whole string (which could be VERY long) to avoid polluting the DOM and having too
@@ -668,7 +679,8 @@ sub Run {
             $LayoutObject->Block(
                 Name => 'OverviewNavBarPageFlag',
                 Data => {
-                    CSS => $CSS,
+                    CSS   => $CSS,
+                    Title => $Title,
                 },
             );
 

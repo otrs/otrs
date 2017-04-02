@@ -94,7 +94,8 @@ sub Run {
         DYNAMICFIELD:
         for my $DynamicFieldItem ( sort keys %DynamicFieldValues ) {
             next DYNAMICFIELD if !$DynamicFieldItem;
-            next DYNAMICFIELD if !$DynamicFieldValues{$DynamicFieldItem};
+            next DYNAMICFIELD if !defined $DynamicFieldValues{$DynamicFieldItem};
+            next DYNAMICFIELD if !length $DynamicFieldValues{$DynamicFieldItem};
 
             $DynamicFieldACLParameters{ 'DynamicField_' . $DynamicFieldItem } = $DynamicFieldValues{$DynamicFieldItem};
         }
@@ -248,7 +249,7 @@ sub Run {
             }
 
             # get first article of the ticket
-            my %Article = $TicketObject->ArticleFirstArticle(
+            my %Article = $Kernel::OM->Get('Kernel::System::Ticket::Article')->ArticleFirstArticle(
                 TicketID      => $Self->{TicketID},
                 DynamicFields => 0,
             );
@@ -350,8 +351,9 @@ sub Form {
         );
     }
 
-    # get ticket object
-    my $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
+    # get needed objects
+    my $TicketObject  = $Kernel::OM->Get('Kernel::System::Ticket');
+    my $ArticleObject = $Kernel::OM->Get('Kernel::System::Ticket::Article');
 
     # get ticket data
     my %Ticket = $TicketObject->TicketGet(
@@ -456,7 +458,7 @@ sub Form {
     # get last customer article or selected article
     my %Data;
     if ( $GetParam{ArticleID} ) {
-        %Data = $TicketObject->ArticleGet(
+        %Data = $ArticleObject->ArticleGet(
             ArticleID     => $GetParam{ArticleID},
             DynamicFields => 1,
         );
@@ -471,7 +473,7 @@ sub Form {
         }
     }
     else {
-        %Data = $TicketObject->ArticleLastCustomerArticle(
+        %Data = $ArticleObject->ArticleLastCustomerArticle(
             TicketID      => $Self->{TicketID},
             DynamicFields => 1,
         );
@@ -788,7 +790,8 @@ sub SendEmail {
     DYNAMICFIELD:
     for my $DynamicFieldItem ( sort keys %DynamicFieldValues ) {
         next DYNAMICFIELD if !$DynamicFieldItem;
-        next DYNAMICFIELD if !$DynamicFieldValues{$DynamicFieldItem};
+        next DYNAMICFIELD if !defined $DynamicFieldValues{$DynamicFieldItem};
+        next DYNAMICFIELD if !length $DynamicFieldValues{$DynamicFieldItem};
 
         $DynamicFieldACLParameters{ 'DynamicField_' . $DynamicFieldItem } = $DynamicFieldValues{$DynamicFieldItem};
     }
@@ -1197,7 +1200,7 @@ sub SendEmail {
     # get article type ID param
     my $ArticleTypeID = $ParamObject->GetParam( Param => 'ArticleTypeID' );
 
-    my $ArticleID = $TicketObject->ArticleSend(
+    my $ArticleID = $Kernel::OM->Get('Kernel::System::Ticket::Article')->ArticleSend(
         ArticleTypeID  => $ArticleTypeID,
         SenderType     => 'agent',
         TicketID       => $Self->{TicketID},
@@ -1425,7 +1428,8 @@ sub AjaxUpdate {
     DYNAMICFIELD:
     for my $DynamicFieldItem ( sort keys %DynamicFieldValues ) {
         next DYNAMICFIELD if !$DynamicFieldItem;
-        next DYNAMICFIELD if !$DynamicFieldValues{$DynamicFieldItem};
+        next DYNAMICFIELD if !defined $DynamicFieldValues{$DynamicFieldItem};
+        next DYNAMICFIELD if !length $DynamicFieldValues{$DynamicFieldItem};
 
         $DynamicFieldACLParameters{ 'DynamicField_' . $DynamicFieldItem } = $DynamicFieldValues{$DynamicFieldItem};
     }
@@ -1571,8 +1575,11 @@ sub _Mask {
     my %ArticleTypes;
     my @ArticleTypesPossible = @{ $Config->{ArticleTypes} };
     for my $ArticleType (@ArticleTypesPossible) {
-        $ArticleTypes{ $Kernel::OM->Get('Kernel::System::Ticket')->ArticleTypeLookup( ArticleType => $ArticleType ) }
-            = $ArticleType;
+        $ArticleTypes{
+            $Kernel::OM->Get('Kernel::System::Ticket::Article')->ArticleTypeLookup(
+                ArticleType => $ArticleType,
+                )
+        } = $ArticleType;
     }
 
     # get article type ID param
@@ -1836,24 +1843,13 @@ sub _Mask {
         );
     }
 
-    # show address book
-    if ( $LayoutObject->{BrowserJavaScriptSupport} ) {
-
-        # check if need to call Options block
-        if ( !$ShownOptionsBlock ) {
-            $LayoutObject->Block(
-                Name => 'TicketOptions',
-                Data => {},
-            );
-
-            # set flag to "true" in order to prevent calling the Options block again
-            $ShownOptionsBlock = 1;
-        }
-
-        $LayoutObject->Block(
-            Name => 'AddressBook',
-            Data => {},
-        );
+    # Show the customer user address book if the module is registered and java script support is available.
+    if (
+        $ConfigObject->Get('Frontend::Module')->{AgentCustomerUserAddressBook}
+        && $LayoutObject->{BrowserJavaScriptSupport}
+        )
+    {
+        $Param{OptionCustomerUserAddressBook} = 1;
     }
 
     # build text template string
