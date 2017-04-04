@@ -52,8 +52,8 @@
                     [% END %]
                     <li>
                         <p class="FieldExplanation">[% Translate("You can manually trigger the Support Data sending by pressing this button:") | html %]</p>
-                        <a class="CallForAction Fullsize LittleSpacingTop" id="SendUpdate" name="SendUpdate" >
-                            <span>[% Translate("Send Update") | html %]</span>
+                        <a class="CallForAction Fullsize Center LittleSpacingTop" id="SendUpdate" name="SendUpdate" >
+                            <span><i class="fa fa-cloud-upload"></i> [% Translate("Send Update") | html %]</span>
                         </a>
                     </li>
 
