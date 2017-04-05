@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -25,7 +25,9 @@ our @ObjectDependencies = (
     'Kernel::System::Group',
     'Kernel::System::Queue',
     'Kernel::System::Ticket',
+    'Kernel::System::Ticket::Article',
     'Kernel::System::User',
+    'Kernel::System::Priority',
 );
 
 sub Configure {
@@ -168,7 +170,7 @@ sub Run {
             Title        => RandomSubject(),
             QueueID      => $QueueIDs[ int( rand($#QueueIDs) ) ],
             Lock         => 'unlock',
-            Priority     => '3 normal',
+            Priority     => PriorityGet(),
             State        => 'new',
             CustomerNo   => int( rand(1000) ),
             CustomerUser => RandomAddress(),
@@ -194,7 +196,7 @@ sub Run {
             print "Ticket with ID '$TicketID' created.\n";
 
             for ( 1 .. $Self->GetOption('articles-per-ticket') // 10 ) {
-                my $ArticleID = $Kernel::OM->Get('Kernel::System::Ticket')->ArticleCreate(
+                my $ArticleID = $Kernel::OM->Get('Kernel::System::Ticket::Article')->ArticleCreate(
                     TicketID       => $TicketID,
                     ArticleType    => 'note-external',
                     SenderType     => 'customer',
@@ -376,6 +378,18 @@ sub RandomBody {
         $Body .= $Text[ int( rand( $#Text + 1 ) ) ] . "\n";
     }
     return $Body;
+}
+
+sub PriorityGet {
+    my %PriorityList = $Kernel::OM->Get('Kernel::System::Priority')->PriorityList(
+        Valid => 1,
+    );
+
+    my @Priorities;
+    for my $PriorityID ( sort keys %PriorityList ) {
+        push @Priorities, $PriorityList{$PriorityID};
+    }
+    return $Priorities[ int( rand( $#Priorities + 1 ) ) ];
 }
 
 sub QueueGet {
@@ -574,15 +588,3 @@ sub CompanyCreate {
 }
 
 1;
-
-=back
-
-=head1 TERMS AND CONDITIONS
-
-This software is part of the OTRS project (L<http://otrs.org/>).
-
-This software comes with ABSOLUTELY NO WARRANTY. For details, see
-the enclosed file COPYING for license information (AGPL). If you
-did not receive this file, see L<http://www.gnu.org/licenses/agpl.txt>.
-
-=cut

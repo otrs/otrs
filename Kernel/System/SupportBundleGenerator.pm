@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -22,6 +22,7 @@ our @ObjectDependencies = (
     'Kernel::System::Package',
     'Kernel::System::Registration',
     'Kernel::System::SupportDataCollector',
+    'Kernel::System::SysConfig',
     'Kernel::System::Time',
 );
 
@@ -29,20 +30,16 @@ our @ObjectDependencies = (
 
 Kernel::System::SupportBundleGenerator - support bundle generator
 
-=head1 SYNOPSIS
+=head1 DESCRIPTION
 
 All support bundle generator functions.
 
 =head1 PUBLIC INTERFACE
 
-=over 4
+=head2 new()
 
-=item new()
+Don't use the constructor directly, use the ObjectManager instead:
 
-create an object. Do not use it directly, instead use:
-
-    use Kernel::System::ObjectManager;
-    local $Kernel::OM = Kernel::System::ObjectManager->new();
     my $SupportBundleGeneratorObject = $Kernel::OM->Get('Kernel::System::SupportBundleGenerator');
 
 =cut
@@ -66,10 +63,10 @@ sub new {
     return $Self;
 }
 
-=item Generate()
+=head2 Generate()
 
-Generates a support bundle tar or tar.gz with the following contents: Registration Information,
-Support Data, Installed Packages, and another tar or tar.gz with all changed or new files in the
+Generates a support bundle C<.tar> or C<.tar.gz> with the following contents: Registration Information,
+Support Data, Installed Packages, and another C<.tar> or C<.tar.gz> with all changed or new files in the
 OTRS installation directory.
 
     my $Result = $SupportBundleGeneratorObject->Generate();
@@ -161,6 +158,21 @@ sub Generate {
         };
     }
 
+    # get the configuration dump
+    ( $SupportFiles{ConfigurationDumpContent}, $SupportFiles{ConfigurationDumpFilename} )
+        = $Self->GenerateConfigurationDump();
+    if ( !$SupportFiles{ConfigurationDumpFilename} ) {
+        my $Message = 'Can not get the configuration dump!';
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
+            Priority => 'error',
+            Message  => $Message,
+        );
+        return {
+            Success => 0,
+            Message => $Message,
+        };
+    }
+
     # get config object
     my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
 
@@ -187,7 +199,7 @@ sub Generate {
     my $MainObject = $Kernel::OM->Get('Kernel::System::Main');
 
     my @List;
-    for my $Key (qw(PackageList RegistrationInfo SupportData CustomFilesArchive)) {
+    for my $Key (qw(PackageList RegistrationInfo SupportData CustomFilesArchive ConfigurationDump)) {
 
         if ( $SupportFiles{ $Key . 'Filename' } && $SupportFiles{ $Key . 'Content' } ) {
 
@@ -272,14 +284,14 @@ sub Generate {
     };
 }
 
-=item GenerateCustomFilesArchive()
+=head2 GenerateCustomFilesArchive()
 
-Generates a .tar or tar.gz file with all eligible changed or added files taking the ARCHIVE file as
-a reference
+Generates a C<.tar> or C<.tar.gz> file with all eligible changed or added files taking the ARCHIVE file as a reference
 
     my ( $Content, $Filename ) = $SupportBundleGeneratorObject->GenerateCustomFilesArchive();
 
 Returns:
+
     $Content  = $FileContentsRef;
     $Filename = 'application.tar';      # or 'application.tar.gz'
 
@@ -329,37 +341,25 @@ sub GenerateCustomFilesArchive {
     my $HomeWithoutSlash = $Self->{Home};
     $HomeWithoutSlash =~ s{\A\/}{};
 
-    # Mask Passwords in Config.pm
-    my $Config = $TarObject->get_content( $HomeWithoutSlash . '/Kernel/Config.pm' );
+    # Mask Passwords in files
+    CONFIGFILE:
+    for my $FilePath (qw(/Kernel/Config.pm /Kernel/Config/Files/ZZZAAuto.pm /Kernel/Config/Files/ZZZAuto.pm)) {
 
-    if ( !$Config ) {
-        $Kernel::OM->Get('Kernel::System::Log')->Log(
-            Priority => 'error',
-            Message  => "Kernel/Config.pm was not found in the modified files!",
-        );
-        return;
+        my $FullFilePath = $HomeWithoutSlash . $FilePath;
+        my $FileString   = $TarObject->get_content($FullFilePath);
+
+        if ( !$FileString ) {
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
+                Priority => 'error',
+                Message  => "$FilePath was not found in the modified files!",
+            );
+            next CONFIGFILE;
+        }
+
+        $FileString = $Self->_MaskPasswords( StringToMask => $FileString );
+
+        $TarObject->replace_content( $FullFilePath, $FileString );
     }
-
-    my @TrimAction = qw(
-        DatabasePw
-        SearchUserPw
-        UserPw
-        SendmailModule::AuthPassword
-        AuthModule::Radius::Password
-        PGP::Key::Password
-        Customer::AuthModule::DB::CustomerPassword
-        Customer::AuthModule::Radius::Password
-        PublicFrontend::AuthPassword
-    );
-
-    STRING:
-    for my $String (@TrimAction) {
-        next STRING if !$String;
-        $Config =~ s/(^\s+\$Self.*?$String.*?=.*?)\'.*?\';/$1\'xxx\';/mg;
-    }
-    $Config =~ s/(^\s+Password.*?=>.*?)\'.*?\',/$1\'xxx\',/mg;
-
-    $TarObject->replace_content( $HomeWithoutSlash . '/Kernel/Config.pm', $Config );
 
     my $Write = $TarObject->write( $CustomFilesArchive, 0 );
     if ( !$Write ) {
@@ -409,7 +409,7 @@ sub GenerateCustomFilesArchive {
     return ( \$TmpTar, 'application.tar' );
 }
 
-=item GeneratePackageList()
+=head2 GeneratePackageList()
 
 Generates a .csv file with all installed packages
 
@@ -450,13 +450,14 @@ sub GeneratePackageList {
     return ( \$CSVContent, 'InstalledPackages.csv' );
 }
 
-=item GenerateRegistrationInfo()
+=head2 GenerateRegistrationInfo()
 
-Generates a .json file with the otrs system registration information
+Generates a C<.json> file with the otrs system registration information
 
     my ( $Content, $Filename ) = $SupportBundleGeneratorObject->GenerateRegistrationInfo();
 
 Returns:
+
     $Content  = $FileContentsRef;
     $Filename = 'RegistrationInfo.json';
 
@@ -499,13 +500,41 @@ sub GenerateRegistrationInfo {
     return ( \$JSONContent, 'RegistrationInfo.json' );
 }
 
-=item GenerateSupportData()
+=head2 GenerateConfigurationDump()
 
-Generates a .json file with the support data
+Generates a <.yml> file with the otrs system registration information
+
+    my ( $Content, $Filename ) = $SupportBundleGeneratorObject->GenerateConfigurationDump();
+
+Returns:
+    $Content  = $FileContentsRef;
+    $Filename = <'ModifiedSettings.yml'>;
+
+=cut
+
+sub GenerateConfigurationDump {
+    my ( $Self, %Param ) = @_;
+
+    my $Export = $Kernel::OM->Get('Kernel::System::SysConfig')->ConfigurationDump(
+        SkipDefaultSettings => 1,
+    );
+
+    $Export = $Self->_MaskPasswords(
+        StringToMask => $Export,
+        YAML         => 1
+    );
+
+    return ( \$Export, 'ModifiedSettings.yml' );
+}
+
+=head2 GenerateSupportData()
+
+Generates a C<.json> file with the support data
 
     my ( $Content, $Filename ) = $SupportBundleGeneratorObject->GenerateSupportData();
 
 Returns:
+
     $Content  = $FileContentsRef;
     $Filename = 'GenerateSupportData.json';
 
@@ -556,7 +585,7 @@ sub _GetMD5SumLookup {
         %PackageMD5SumLookup = ( %PackageMD5SumLookup, %{$PartialMD5Sum} );
     }
 
-    # add MD5Sums from all packages to the list from framwork ARCHIVE
+    # add MD5Sums from all packages to the list from framework ARCHIVE
     # overwritten files by packages will also overwrite the MD5 Sum
     %MD5SumLookup = ( %MD5SumLookup, %PackageMD5SumLookup );
 
@@ -657,7 +686,50 @@ sub _GetCustomFileList {
     return @Files;
 }
 
-=back
+sub _MaskPasswords {
+    my ( $Self, %Param ) = @_;
+
+    # check needed stuff
+    for my $Needed (qw(StringToMask)) {
+        if ( !$Param{$Needed} ) {
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
+                Priority => 'error',
+                Message  => "Need $Needed!"
+            );
+            return;
+        }
+    }
+
+    my $StringToMask = $Param{StringToMask};
+
+    my @TrimAction = qw(
+        DatabasePw
+        SearchUserPw
+        UserPw
+        SendmailModule::AuthPassword
+        AuthModule::Radius::Password
+        PGP::Key::Password
+        Customer::AuthModule::DB::CustomerPassword
+        Customer::AuthModule::Radius::Password
+        PublicFrontend::AuthPassword
+    );
+
+    STRING:
+    for my $String (@TrimAction) {
+        next STRING if !$String;
+        if ( !$Param{YAML} ) {
+            $StringToMask =~ s/(^\s*\$Self.*?$String.*?=.*?)\'.*?\';/$1\'xxx\';/mg;
+        }
+        else {
+            $StringToMask =~ s/($String:.*?EffectiveValue:).*?\n/$1 xxx \n/sxg;
+        }
+    }
+
+    $StringToMask =~ s/(^\s+Password.*?=>.*?)\'.*?\',/$1\'xxx\',/mg;
+
+    return $StringToMask;
+
+}
 
 =head1 TERMS AND CONDITIONS
 

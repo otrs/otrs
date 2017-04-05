@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -70,7 +70,7 @@ $Selenium->RunTest(
         );
         my $Content = ${$ContentRef};
 
-        my $ArticleID = $TicketObject->ArticleCreate(
+        my $ArticleID = $Kernel::OM->Get('Kernel::System::Ticket::Article')->ArticleCreate(
             TicketID       => $TicketID,
             ArticleType    => 'note-internal',
             SenderType     => 'agent',
@@ -96,11 +96,11 @@ $Selenium->RunTest(
         # check are there Download and Viewer links for test attachment
         $Self->True(
             $Selenium->find_element("//a[contains(\@title, \'Download' )]"),
-            "Download link for attachment is founded"
+            "Download link for attachment is found"
         );
         $Self->True(
             $Selenium->find_element("//a[contains(\@title, \'Viewer' )]"),
-            "Viewer link for attachment is founded"
+            "Viewer link for attachment is found"
         );
 
         # check test attachment in MIME-Viwer, WaitFor will be done after switch to window
@@ -112,16 +112,17 @@ $Selenium->RunTest(
         my $Handles = $Selenium->get_window_handles();
         $Selenium->switch_to_window( $Handles->[1] );
 
+        # Wait for page to load if necessary.
+        $Selenium->WaitFor( JavaScript => 'return document.readyState === "complete";' );
+
         # check expected values in PDF test attachment
-        for my $ExpextedValue (qw(OTRS.org TEST)) {
+        for my $ExpectedValue (qw(OTRS.org TEST)) {
             $Self->True(
-                index( $Selenium->get_page_source(), $ExpextedValue ) > -1,
-                "Value is founded on screen - $ExpextedValue"
+                index( $Selenium->get_page_source(), $ExpectedValue ) > -1,
+                "Value is found on screen - $ExpectedValue"
             );
         }
         $Selenium->close();
-
-        #$Selenium->switch_to_window( $Handles->[0] );
 
         # delete created test ticket
         my $Success = $TicketObject->TicketDelete(

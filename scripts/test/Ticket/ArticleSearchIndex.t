@@ -1,11 +1,12 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
 # did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
 # --
 
+## no critic (Modules::RequireExplicitPackage)
 use strict;
 use warnings;
 use utf8;
@@ -18,27 +19,32 @@ my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
 # get helper object
 $Kernel::OM->ObjectParamAdd(
     'Kernel::System::UnitTest::Helper' => {
-        RestoreDatabase => 1,
+        RestoreDatabase  => 1,
+        UseTmpArticleDir => 1,
     },
 );
-my $Helper = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
+
+my $Helper        = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
+my $ArticleObject = $Kernel::OM->Get('Kernel::System::Ticket::Article');
 
 # tests for article search index modules
 for my $Module (qw(StaticDB RuntimeDB)) {
 
     # make sure that the TicketObject gets recreated for each loop.
-    $Kernel::OM->ObjectsDiscard( Objects => ['Kernel::System::Ticket'] );
+    $Kernel::OM->ObjectsDiscard( Objects => [ 'Kernel::System::Ticket', 'Kernel::System::Article' ] );
 
     $ConfigObject->Set(
         Key   => 'Ticket::SearchIndexModule',
         Value => 'Kernel::System::Ticket::ArticleSearchIndex::' . $Module,
     );
 
-    my $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
+    my $TicketObject  = $Kernel::OM->Get('Kernel::System::Ticket');
+    my $ArticleObject = $Kernel::OM->Get('Kernel::System::Ticket::Article');
 
-    $Self->True(
-        $TicketObject->isa( 'Kernel::System::Ticket::ArticleSearchIndex::' . $Module ),
-        "TicketObject loaded the correct backend",
+    $Self->Is(
+        $ArticleObject->{ArticleSearchIndexModule},
+        'Kernel::System::Ticket::ArticleSearchIndex::' . $Module,
+        "ArticleObject loaded the correct backend",
     );
 
     # create some content
@@ -58,7 +64,7 @@ for my $Module (qw(StaticDB RuntimeDB)) {
         'TicketCreate()',
     );
 
-    my $ArticleID = $TicketObject->ArticleCreate(
+    my $ArticleID = $ArticleObject->ArticleCreate(
         TicketID    => $TicketID,
         ArticleType => 'note-internal',
         SenderType  => 'agent',
@@ -91,7 +97,7 @@ Perl modules provide a range of features to help you avoid reinventing the wheel
         'TicketSearch() (HASH:Subject)',
     );
 
-    $ArticleID = $TicketObject->ArticleCreate(
+    $ArticleID = $ArticleObject->ArticleCreate(
         TicketID    => $TicketID,
         ArticleType => 'note-internal',
         SenderType  => 'agent',
@@ -152,7 +158,7 @@ Perl modules provide a range of features to help you avoid reinventing the wheel
 
     # use full text search on ticket with Cyrillic characters
     # see bug #11791 ( http://bugs.otrs.org/show_bug.cgi?id=11791 )
-    $ArticleID = $TicketObject->ArticleCreate(
+    $ArticleID = $ArticleObject->ArticleCreate(
         TicketID       => $TicketID,
         ArticleType    => 'note-internal',
         SenderType     => 'agent',
@@ -346,17 +352,9 @@ my @Tests = (
 for my $Module (qw(StaticDB)) {
     for my $Test (@Tests) {
 
-        # Make sure that the TicketObject gets recreated for each loop.
-        $Kernel::OM->ObjectsDiscard( Objects => ['Kernel::System::Ticket'] );
+        my $IndexObject = $Kernel::OM->Get('Kernel::System::Ticket::ArticleSearchIndex::StaticDB');
 
-        $ConfigObject->Set(
-            Key   => 'Ticket::SearchIndexModule',
-            Value => 'Kernel::System::Ticket::ArticleSearchIndex::' . $Module,
-        );
-
-        my $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
-
-        my $ListOfWords = $TicketObject->_ArticleIndexStringToWord(
+        my $ListOfWords = $IndexObject->_ArticleIndexStringToWord(
             String => \$Test->{String}
         );
 

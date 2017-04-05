@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -24,20 +24,15 @@ our @ObjectDependencies = (
 
 Kernel::System::CronEvent - Cron Events wrapper functions
 
-=head1 SYNOPSIS
+=head1 DESCRIPTION
 
 Functions to calculate cron events time.
 
-=over 4
 
-=cut
-
-=item new()
+=head2 new()
 
 create a CronEvent object. Do not use it directly, instead use:
 
-    use Kernel::System::ObjectManager;
-    local $Kernel::OM = Kernel::System::ObjectManager->new();
     my $CronEventObject = $Kernel::OM->Get('Kernel::System::CronEvent');
 
 =cut
@@ -52,7 +47,7 @@ sub new {
     return $Self;
 }
 
-=item NextEventGet()
+=head2 NextEventGet()
 
 gets the time when the next cron event should occur, from a given time.
 
@@ -107,7 +102,7 @@ sub NextEventGet {
     return $EventDateTime->ToString();
 }
 
-=item NextEventList()
+=head2 NextEventList()
 
 gets the time when the next cron events should occur, from a given time on a defined range.
 
@@ -187,7 +182,7 @@ sub NextEventList {
     return @Result;
 }
 
-=item PreviousEventGet()
+=head2 PreviousEventGet()
 
 gets the time when the last Cron event had occurred, from a given time.
 
@@ -243,7 +238,7 @@ sub PreviousEventGet {
     return $EventDateTime->ToString();
 }
 
-=item GenericAgentSchedule2CronTab()
+=head2 GenericAgentSchedule2CronTab()
 
 converts a GenericAgent schedule to a CRON tab format string
 
@@ -345,7 +340,7 @@ sub GenericAgentSchedule2CronTab {
 
 =cut
 
-=item _Init()
+=head2 _Init()
 
 creates a Schedule::Cron::Events object.
 
@@ -432,8 +427,6 @@ sub _Init {
 1;
 
 =end Internal:
-
-=back
 
 =head1 TERMS AND CONDITIONS
 

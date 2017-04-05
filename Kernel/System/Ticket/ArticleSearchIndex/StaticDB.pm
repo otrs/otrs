@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -15,7 +15,17 @@ our @ObjectDependencies = (
     'Kernel::Config',
     'Kernel::System::DB',
     'Kernel::System::Log',
+    'Kernel::System::Ticket::Article',
 );
+
+sub new {
+    my ( $Type, %Param ) = @_;
+
+    my $Self = {};
+    bless( $Self, $Type );
+
+    return $Self;
+}
 
 sub ArticleIndexBuild {
     my ( $Self, %Param ) = @_;
@@ -32,7 +42,9 @@ sub ArticleIndexBuild {
     }
 
     # get article data
-    my %Article = $Self->ArticleGet(
+    # TODO: if this module is loaded by Article object in future it can call the function with $Self
+    # my %Article = $Self->ArticleGet(
+    my %Article = $Kernel::OM->Get('Kernel::System::Ticket::Article')->ArticleGet(
         ArticleID     => $Param{ArticleID},
         UserID        => $Param{UserID},
         DynamicFields => 0,

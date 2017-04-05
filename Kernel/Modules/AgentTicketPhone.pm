@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -289,7 +289,7 @@ sub Run {
                 );
             }
 
-            %Article = $TicketObject->ArticleGet(
+            %Article = $Kernel::OM->Get('Kernel::System::Ticket::Article')->ArticleGet(
                 ArticleID     => $GetParam{ArticleID},
                 DynamicFields => 0,
             );
@@ -733,6 +733,8 @@ sub Run {
 
     # create new ticket and article
     elsif ( $Self->{Subaction} eq 'StoreNew' ) {
+
+        my $ArticleObject = $Kernel::OM->Get('Kernel::System::Ticket::Article');
 
         my %Error;
         my %StateData;
@@ -1344,7 +1346,7 @@ sub Run {
         if ( $GetParam{NewUserID} ) {
             $NoAgentNotify = 1;
         }
-        my $ArticleID = $TicketObject->ArticleCreate(
+        my $ArticleID = $ArticleObject->ArticleCreate(
             NoAgentNotify    => $NoAgentNotify,
             TicketID         => $TicketID,
             ArticleType      => $Config->{ArticleType},
@@ -1402,6 +1404,13 @@ sub Run {
             my $ChatArticleID;
 
             if (@ChatMessageList) {
+                for my $Message (@ChatMessageList) {
+                    $Message->{MessageText} = $LayoutObject->Ascii2Html(
+                        Text        => $Message->{MessageText},
+                        LinkFeature => 1,
+                    );
+                }
+
                 my $JSONBody = $Kernel::OM->Get('Kernel::System::JSON')->Encode(
                     Data => \@ChatMessageList,
                 );
@@ -1415,7 +1424,7 @@ sub Run {
                     $ChatArticleType = 'chat-external';
                 }
 
-                $ChatArticleID = $TicketObject->ArticleCreate(
+                $ChatArticleID = $ArticleObject->ArticleCreate(
                     NoAgentNotify  => $NoAgentNotify,
                     TicketID       => $TicketID,
                     ArticleType    => $ChatArticleType,
@@ -1564,7 +1573,7 @@ sub Run {
 
         # write attachments
         for my $Attachment (@AttachmentData) {
-            $TicketObject->ArticleWriteAttachment(
+            $ArticleObject->ArticleWriteAttachment(
                 %{$Attachment},
                 ArticleID => $ArticleID,
                 UserID    => $Self->{UserID},
@@ -2715,6 +2724,14 @@ sub _MaskPhoneNew {
         my @ChatMessages = $Kernel::OM->Get('Kernel::System::Chat')->ChatMessageList(
             ChatID => $Param{FromChatID},
         );
+
+        for my $Message (@ChatMessages) {
+            $Message->{MessageText} = $LayoutObject->Ascii2Html(
+                Text        => $Message->{MessageText},
+                LinkFeature => 1,
+            );
+        }
+
         $LayoutObject->Block(
             Name => 'ChatArticlePreview',
             Data => {

@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -12,15 +12,16 @@ use utf8;
 
 use vars (qw($Self));
 
-# get needed objects
-my $UserObject   = $Kernel::OM->Get('Kernel::System::User');
-my $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
-my $TimeObject   = $Kernel::OM->Get('Kernel::System::Time');
+my $UserObject    = $Kernel::OM->Get('Kernel::System::User');
+my $TicketObject  = $Kernel::OM->Get('Kernel::System::Ticket');
+my $ArticleObject = $Kernel::OM->Get('Kernel::System::Ticket::Article');
+my $TimeObject    = $Kernel::OM->Get('Kernel::System::Time');
 
 # get helper object
 $Kernel::OM->ObjectParamAdd(
     'Kernel::System::UnitTest::Helper' => {
-        RestoreDatabase => 1,
+        RestoreDatabase  => 1,
+        UseTmpArticleDir => 1,
     },
 );
 my $Helper = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
@@ -52,7 +53,7 @@ my $TicketID = $TicketObject->TicketCreate(
 
 $Self->True( $TicketID, 'Could create ticket' );
 
-$TicketObject->ArticleCreate(
+$ArticleObject->ArticleCreate(
     TicketID       => $TicketID,
     ArticleType    => 'note-internal',
     SenderType     => 'agent',
@@ -121,7 +122,7 @@ $UserObject->SetPreferences(
     Value  => $Day,
 );
 
-$TicketObject->ArticleCreate(
+$ArticleObject->ArticleCreate(
     TicketID       => $TicketID,
     ArticleType    => 'note-internal',
     SenderType     => 'agent',

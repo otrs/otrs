@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -26,6 +26,7 @@ our @ObjectDependencies = (
     'Kernel::System::Queue',
     'Kernel::System::State',
     'Kernel::System::Ticket',
+    'Kernel::System::Ticket::Article',
     'Kernel::System::Time',
     'Kernel::System::TemplateGenerator',
     'Kernel::System::CustomerUser',
@@ -35,22 +36,16 @@ our @ObjectDependencies = (
 
 Kernel::System::GenericAgent - to manage the generic agent jobs
 
-=head1 SYNOPSIS
+=head1 DESCRIPTION
 
 All functions to manage the generic agent and the generic agent jobs.
 
 =head1 PUBLIC INTERFACE
 
-=over 4
+=head2 new()
 
-=cut
+Don't use the constructor directly, use the ObjectManager instead:
 
-=item new()
-
-create an object. Do not use it directly, instead use:
-
-    use Kernel::System::ObjectManager;
-    local $Kernel::OM = Kernel::System::ObjectManager->new();
     my $GenericAgentObject = $Kernel::OM->Get('Kernel::System::GenericAgent');
 
 =cut
@@ -166,7 +161,7 @@ sub new {
     return $Self;
 }
 
-=item JobRun()
+=head2 JobRun()
 
 run a generic agent job
 
@@ -293,10 +288,7 @@ sub JobRun {
                     . $Preference->{Type}
             };
 
-            if ( !defined($DynamicFieldTemp) )
-            {
-                next PREFERENCE;
-            }
+            next PREFERENCE if !defined $DynamicFieldTemp;
 
             # extract the dynamic field value from the profile
             my $SearchParameter = $DynamicFieldBackendObject->SearchFieldParameterBuild(
@@ -512,7 +504,7 @@ sub JobRun {
     return 1;
 }
 
-=item JobList()
+=head2 JobList()
 
 returns a hash of jobs
 
@@ -556,7 +548,7 @@ sub JobList {
     return %Data;
 }
 
-=item JobGet()
+=head2 JobGet()
 
 returns a hash of the job data
 
@@ -744,7 +736,7 @@ sub JobGet {
     return %Data;
 }
 
-=item JobAdd()
+=head2 JobAdd()
 
 adds a new job to the database
 
@@ -823,7 +815,7 @@ sub JobAdd {
     return 1;
 }
 
-=item JobDelete()
+=head2 JobDelete()
 
 deletes a job from the database
 
@@ -870,7 +862,7 @@ sub JobDelete {
     return 1;
 }
 
-=item JobEventList()
+=head2 JobEventList()
 
 returns a hash of events for each job
 
@@ -915,7 +907,7 @@ sub JobEventList {
 
 =cut
 
-=item _JobRunTicket()
+=head2 _JobRunTicket()
 
 run a generic agent job on a ticket
 
@@ -950,9 +942,7 @@ sub _JobRunTicket {
     my $Ticket = "($Param{TicketNumber}/$Param{TicketID})";
 
     # disable sending emails
-    if ( $Param{Config}->{New}->{SendNoNotification} ) {
-        $TicketObject->{SendNoNotification} = 1;
-    }
+    $TicketObject->{SendNoNotification} = $Param{Config}->{New}->{SendNoNotification} ? 1 : 0;
 
     # move ticket
     if ( $Param{Config}->{New}->{Queue} ) {
@@ -1024,7 +1014,7 @@ sub _JobRunTicket {
             }
         }
 
-        my $ArticleID = $TicketObject->ArticleCreate(
+        my $ArticleID = $Kernel::OM->Get('Kernel::System::Ticket::Article')->ArticleCreate(
             TicketID    => $Param{TicketID},
             ArticleType => $Param{Config}->{New}->{Note}->{ArticleType}
                 || $Param{Config}->{New}->{ArticleType}
@@ -1530,8 +1520,6 @@ sub _JobUpdateRunTime {
 1;
 
 =end Internal:
-
-=back
 
 =head1 TERMS AND CONDITIONS
 

@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -302,36 +302,6 @@ sub _ShowEdit {
             Value => $Param{Sort},
         );
     }
-
-    # call bread crumbs blocks
-    $LayoutObject->Block(
-        Name => 'WebservicePathElement',
-        Data => {
-            Name => 'Web Services',
-            Link => 'Action=AdminGenericInterfaceWebservice',
-            Nav  => '',
-        },
-    );
-    $LayoutObject->Block(
-        Name => 'WebservicePathElement',
-        Data => {
-            Name => $Param{WebserviceName},
-            Link => 'Action=AdminGenericInterfaceWebservice;Subaction=' . $Param{Action}
-                . ';WebserviceID=' . $Param{WebserviceID},
-            Nav => '',
-        },
-    );
-
-    $LayoutObject->Block(
-        Name => 'WebservicePathElement',
-        Data => {
-            Name => $Param{CommunicationType} . ' Transport ' . $Param{Type},
-            Link => 'Action=AdminGenericInterfaceTransportHTTPSOAP;Subaction=' . $Param{Action}
-                . ';CommunicationType=' . $Param{CommunicationType}
-                . ';WebserviceID=' . $Param{WebserviceID},
-            Nav => '',
-        },
-    );
 
     # create options for request and response name schemes
     for my $Type (qw(Request Response)) {

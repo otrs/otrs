@@ -1,11 +1,12 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
 # did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
 # --
 
+## no critic (Modules::RequireExplicitPackage)
 use strict;
 use warnings;
 use utf8;
@@ -18,8 +19,14 @@ my $Selenium = $Kernel::OM->Get('Kernel::System::UnitTest::Selenium');
 $Selenium->RunTest(
     sub {
 
-        # get helper object
         my $Helper = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
+
+        # Set OTRSTimeZone to UTC.
+        $Helper->ConfigSettingChange(
+            Valid => 1,
+            Key   => 'OTRSTimeZone',
+            Value => 'UTC',
+        );
 
         # create and login test user
         my $TestUserLogin = $Helper->TestUserCreate(
@@ -36,48 +43,101 @@ $Selenium->RunTest(
         my $ScriptAlias = $Kernel::OM->Get('Kernel::Config')->Get('ScriptAlias');
 
         # go to agent preferences
-        $Selenium->VerifiedGet("${ScriptAlias}index.pl?Action=AgentPreferences");
+        $Selenium->VerifiedGet("${ScriptAlias}index.pl?Action=AgentPreferences;Subaction=Group;Group=UserProfile");
 
-        # wait until form has loaded, if neccessary
-        $Selenium->WaitFor( JavaScript => 'return typeof($) === "function" && $("body").length' );
-
-        # get current time stamp
-        my $TimeStamp = $Kernel::OM->Get('Kernel::System::Time')->CurrentTimestamp();
-        my $CurrentYear = substr( $TimeStamp, 0, 4 );
-
-        # change test user out of office preference
-        my $EndYear = $CurrentYear + 1;
-        $Selenium->find_element( "#OutOfOfficeOn", 'css' )->VerifiedClick();
+        # Change test user time zone preference to -5 hours. Displayed out of office date values
+        #   should not be converted to local time zone, see bug#12471.
         $Selenium->execute_script(
-            "\$('#OutOfOfficeEndYear').val('$EndYear').trigger('redraw.InputField').trigger('change');"
+            "\$('#UserTimeZone').val('Pacific/Easter').trigger('redraw.InputField').trigger('change');"
         );
-        $Selenium->find_element( "#Update", 'css' )->VerifiedClick();
-
-        # wait until form has loaded, if neccessary
-        $Selenium->WaitFor( JavaScript => 'return typeof($) === "function" && $("body").length' );
-
-        # check for update preference message on screen
-        my $UpdateMessage = "Preferences updated successfully!";
-        $Self->True(
-            index( $Selenium->get_page_source(), $UpdateMessage ) > -1,
-            'Agent preference out of office time - updated'
+        $Selenium->execute_script(
+            "\$('#UserTimeZone').closest('.WidgetSimple').find('.SettingUpdateBox').find('button').trigger('click');"
         );
+        $Selenium->WaitFor(
+            JavaScript =>
+                "return \$('#UserTimeZone').closest('.WidgetSimple').hasClass('HasOverlay')"
+        );
+        $Selenium->WaitFor(
+            JavaScript =>
+                "return \$('#UserTimeZone').closest('.WidgetSimple').find('.fa-check').length"
+        );
+        $Selenium->WaitFor(
+            JavaScript =>
+                "return !\$('#UserTimeZone').closest('.WidgetSimple').hasClass('HasOverlay')"
+        );
+
+        # reload the screen
+        $Selenium->VerifiedGet("${ScriptAlias}index.pl?Action=AgentPreferences;Subaction=Group;Group=UserProfile");
+
+        # Get current date and time components.
+        my $DateTimeObject = $Kernel::OM->Create(
+            'Kernel::System::DateTime'
+        );
+        my $Date = $DateTimeObject->Get();
+
+        # Change test user out of office preference to current date.
+        $Selenium->find_element( "#OutOfOfficeOn", 'css' )->VerifiedClick();
+        for my $FieldGroup (qw(Start End)) {
+            for my $FieldType (qw(Year Month Day)) {
+                $Selenium->execute_script(
+                    "\$('#OutOfOffice$FieldGroup$FieldType').val($Date->{$FieldType}).trigger('change');"
+                );
+            }
+        }
+        $Selenium->execute_script(
+            "\$('#OutOfOfficeOn').closest('.WidgetSimple').find('.SettingUpdateBox').find('button').trigger('click');"
+        );
+        $Selenium->WaitFor(
+            JavaScript =>
+                "return \$('#OutOfOfficeOn').closest('.WidgetSimple').hasClass('HasOverlay')"
+        );
+        $Selenium->WaitFor(
+            JavaScript =>
+                "return \$('#OutOfOfficeOn').closest('.WidgetSimple').find('.fa-check').length"
+        );
+        $Selenium->WaitFor(
+            JavaScript =>
+                "return !\$('#OutOfOfficeOn').closest('.WidgetSimple').hasClass('HasOverlay')"
+        );
+
+        # reload the screen
+        $Selenium->VerifiedGet("${ScriptAlias}index.pl?Action=AgentPreferences;Subaction=Group;Group=UserProfile");
+
+        # Check displayed date and time values.
+        for my $FieldGroup (qw(Start End)) {
+            for my $FieldType (qw(Year Month Day)) {
+                $Self->Is(
+                    int $Selenium->find_element( "#OutOfOffice$FieldGroup$FieldType", 'css' )->get_value(),
+                    int $Date->{$FieldType},
+                    "Shown OutOfOffice$FieldGroup$FieldType field value"
+                );
+            }
+        }
 
         # set start time after end time, see bug #8220
-        my $StartYear = $CurrentYear + 2;
+        my $StartYear = $Date->{Year} + 2;
         $Selenium->execute_script(
-            "\$('#OutOfOfficeStartYear').val('$StartYear').trigger('redraw.InputField').trigger('change');"
+            "\$('#OutOfOfficeStartYear').val('$StartYear').trigger('change');"
         );
-        $Selenium->find_element( "#Update", 'css' )->VerifiedClick();
 
-        # wait until form has loaded, if neccessary
-        $Selenium->WaitFor( JavaScript => 'return typeof($) === "function" && $("body").length' );
+        $Selenium->execute_script(
+            "\$('#OutOfOfficeOn').closest('.WidgetSimple').find('.SettingUpdateBox').find('button').trigger('click');"
+        );
+        $Selenium->WaitFor(
+            JavaScript =>
+                "return \$('#OutOfOfficeOn').closest('.WidgetSimple').hasClass('HasOverlay')"
+        );
+        $Selenium->WaitFor(
+            JavaScript =>
+                "return \$('#OutOfOfficeOn').closest('.WidgetSimple').find('.WidgetMessage.Error:visible').length"
+        );
 
-        # check for error message on screen
-        my $ErrorMessage = "Please specify an end date that is after the start date.";
-        $Self->True(
-            index( $Selenium->get_page_source(), $ErrorMessage ) > -1,
-            'Agent preference out of office time - not updated'
+        $Self->Is(
+            $Selenium->execute_script(
+                "return \$('#OutOfOfficeOn').closest('.WidgetSimple').find('.WidgetMessage.Error').text()"
+            ),
+            "Please specify an end date that is after the start date.",
+            'Error message shows up correctly',
         );
     }
 );

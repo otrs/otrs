@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -21,15 +21,13 @@ our $ObjectManagerDisabled = 1;
 
 Kernel::Output::HTML::Layout::LinkObject - all LinkObject-related HTML functions
 
-=head1 SYNOPSIS
+=head1 DESCRIPTION
 
 All LinkObject-related HTML functions
 
 =head1 PUBLIC INTERFACE
 
-=over 4
-
-=item LinkObjectTableCreate()
+=head2 LinkObjectTableCreate()
 
 create a output table
 
@@ -73,7 +71,7 @@ sub LinkObjectTableCreate {
     }
 }
 
-=item LinkObjectTableCreateComplex()
+=head2 LinkObjectTableCreateComplex()
 
 create a complex output table
 
@@ -162,20 +160,20 @@ sub LinkObjectTableCreateComplex {
 
         ITEM:
         for my $Item ( @{ $Block->{ItemList} } ) {
+            if ( !grep { $_->{Key} } @{$Item} ) {
+                $Item->[0] = {
+                    Type => 'Text',
+                    Content =>
+                        'ERROR: Key attribute not found in any column of the item list.',
+                };
+            }
 
-            next ITEM if $Item->[0]->{Key} && $Block->{Object};
+            next ITEM if $Block->{Object};
 
             if ( !$Block->{Object} ) {
                 $Item->[0] = {
                     Type    => 'Text',
                     Content => 'ERROR: Object attribute not found in the block data.',
-                };
-            }
-            else {
-                $Item->[0] = {
-                    Type => 'Text',
-                    Content =>
-                        'ERROR: Key attribute not found in the first column of the item list.',
                 };
             }
         }
@@ -194,11 +192,14 @@ sub LinkObjectTableCreateComplex {
 
         for my $Item ( @{ $Block->{ItemList} } ) {
 
+            # search for key
+            my ($ItemWithKey) = grep { $_->{Key} } @{$Item};
+
             # define check-box cell
             my $CheckboxCell = {
                 Type         => 'LinkTypeList',
                 Content      => '',
-                LinkTypeList => $LinkList{ $Block->{Object} }->{ $Item->[0]->{Key} },
+                LinkTypeList => $LinkList{ $Block->{Object} }->{ $ItemWithKey->{Key} },
                 Translate    => 1,
             };
 
@@ -223,11 +224,14 @@ sub LinkObjectTableCreateComplex {
 
             for my $Item ( @{ $Block->{ItemList} } ) {
 
+                # search for key
+                my ($ItemWithKey) = grep { $_->{Key} } @{$Item};
+
                 # define check-box cell
                 my $CheckboxCell = {
                     Type    => 'Checkbox',
                     Name    => 'LinkTargetKeys',
-                    Content => $Item->[0]->{Key},
+                    Content => $ItemWithKey->{Key},
                 };
 
                 # add check-box cell to item
@@ -250,13 +254,16 @@ sub LinkObjectTableCreateComplex {
 
             for my $Item ( @{ $Block->{ItemList} } ) {
 
+                # search for key
+                my ($ItemWithKey) = grep { $_->{Key} } @{$Item};
+
                 # define check-box delete cell
                 my $CheckboxCell = {
                     Type         => 'CheckboxDelete',
                     Object       => $Block->{Object},
                     Content      => '',
-                    Key          => $Item->[0]->{Key},
-                    LinkTypeList => $LinkList{ $Block->{Object} }->{ $Item->[0]->{Key} },
+                    Key          => $ItemWithKey->{Key},
+                    LinkTypeList => $LinkList{ $Block->{Object} }->{ $ItemWithKey->{Key} },
                     Translate    => 1,
                 };
 
@@ -324,7 +331,9 @@ sub LinkObjectTableCreateComplex {
 
         # check if registered in SysConfig
         if (
-            IsHashRefWithData($Config)
+            # AgentLinkObject not allowed because it would result in nested forms
+            $OriginalAction ne 'AgentLinkObject'
+            && IsHashRefWithData($Config)
             && $Config->{ $Block->{Blockname} }
             && grep { $OriginalAction eq $_ } @SettingsVisible
             )
@@ -356,6 +365,14 @@ sub LinkObjectTableCreateComplex {
             $LayoutObject->AddJSData(
                 Key   => 'LinkObjectPreferences',
                 Value => \%Preferences,
+            );
+
+            $LayoutObject->Block(
+                Name => 'ContentLargePreferencesForm',
+                Data => {
+                    Name     => $Block->{Blockname},
+                    NameForm => $Block->{Blockname},
+                },
             );
 
             $LayoutObject->Block(
@@ -473,7 +490,7 @@ sub LinkObjectTableCreateComplex {
     );
 }
 
-=item LinkObjectTableCreateSimple()
+=head2 LinkObjectTableCreateSimple()
 
 create a simple output table
 
@@ -595,9 +612,9 @@ sub LinkObjectTableCreateSimple {
     );
 }
 
-=item LinkObjectSelectableObjectList()
+=head2 LinkObjectSelectableObjectList()
 
-return a selection list of linkable objects
+return a selection list of link-able objects
 
     my $String = $LayoutObject->LinkObjectSelectableObjectList(
         Object   => 'Ticket',
@@ -700,7 +717,7 @@ sub LinkObjectSelectableObjectList {
     return $TargetObjectStrg;
 }
 
-=item LinkObjectSearchOptionList()
+=head2 LinkObjectSearchOptionList()
 
 return a list of search options
 
@@ -738,7 +755,7 @@ sub LinkObjectSearchOptionList {
     return @SearchOptionList;
 }
 
-=item ComplexTablePreferencesGet()
+=head2 ComplexTablePreferencesGet()
 
 get items needed for AllocationList initialization.
 
@@ -801,6 +818,42 @@ sub ComplexTablePreferencesGet {
         }
     }
 
+    # Translate all columns and send it to JS.
+    my $LayoutObject   = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
+    my $LanguageObject = $Kernel::OM->Get('Kernel::Language');
+
+    my @AllColumns = ( @ColumnsAvailable, @ColumnsEnabled );
+    for my $Column (@AllColumns) {
+        my $TranslatedWord = $Column;
+        if ( $Column eq 'EscalationTime' ) {
+            $TranslatedWord = Translatable('Service Time');
+        }
+        elsif ( $Column eq 'EscalationResponseTime' ) {
+            $TranslatedWord = Translatable('First Response Time');
+        }
+        elsif ( $Column eq 'EscalationSolutionTime' ) {
+            $TranslatedWord = Translatable('Solution Time');
+        }
+        elsif ( $Column eq 'EscalationUpdateTime' ) {
+            $TranslatedWord = Translatable('Update Time');
+        }
+        elsif ( $Column eq 'PendingTime' ) {
+            $TranslatedWord = Translatable('Pending till');
+        }
+        elsif ( $Column eq 'CustomerCompanyName' ) {
+            $TranslatedWord = Translatable('Customer Company Name');
+        }
+        elsif ( $Column eq 'CustomerUserID' ) {
+            $TranslatedWord = Translatable('Customer User ID');
+        }
+
+        # Send data to JS.
+        $LayoutObject->AddJSData(
+            Key   => 'Column' . $Column,
+            Value => $LanguageObject->Translate($TranslatedWord),
+        );
+    }
+
     # check if the user has filter preferences for this widget
     my %Preferences = $Kernel::OM->Get('Kernel::System::User')->GetPreferences(
         UserID => $Self->{UserID},
@@ -860,7 +913,7 @@ sub ComplexTablePreferencesGet {
     return %Params;
 }
 
-=item ComplexTablePreferencesSet()
+=head2 ComplexTablePreferencesSet()
 
 set user preferences.
 
@@ -917,6 +970,14 @@ sub ComplexTablePreferencesSet {
     # remove Columns (not needed)
     delete $Preference->{Columns};
 
+    if ( $Param{DestinationObject} eq 'Ticket' ) {
+
+        # Make sure that ticket number is always present, otherwise there will be problems.
+        if ( !grep { $_ eq 'TicketNumber' } @{ $Preference->{Order} } ) {
+            unshift @{ $Preference->{Order} }, 'TicketNumber';
+        }
+    }
+
     if ( IsHashRefWithData($Preference) ) {
 
         $Value = $JSONObject->Encode(
@@ -950,7 +1011,7 @@ sub ComplexTablePreferencesSet {
 
 =begin Internal:
 
-=item _LinkObjectContentStringCreate()
+=head2 _LinkObjectContentStringCreate()
 
 return a output string
 
@@ -1119,7 +1180,7 @@ sub _LinkObjectContentStringCreate {
     );
 }
 
-=item _LoadLinkObjectLayoutBackend()
+=head2 _LoadLinkObjectLayoutBackend()
 
 load a linkobject layout backend module
 
@@ -1184,8 +1245,6 @@ sub _LoadLinkObjectLayoutBackend {
 =cut
 
 1;
-
-=back
 
 =head1 TERMS AND CONDITIONS
 

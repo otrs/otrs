@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -41,11 +41,11 @@ sub Run {
         );
     }
 
-    # get ticket object
-    my $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
+    # get article object
+    my $ArticleObject = $Kernel::OM->Get('Kernel::System::Ticket::Article');
 
     # check permissions
-    my $Access = $TicketObject->TicketPermission(
+    my $Access = $Kernel::OM->Get('Kernel::System::Ticket')->TicketPermission(
         Type     => 'ro',
         TicketID => $Self->{TicketID},
         UserID   => $Self->{UserID}
@@ -56,11 +56,11 @@ sub Run {
         return $LayoutObject->NoPermission();
     }
 
-    my %Article = $TicketObject->ArticleGet(
+    my %Article = $ArticleObject->ArticleGet(
         ArticleID     => $ArticleID,
         DynamicFields => 0,
     );
-    my $Plain = $TicketObject->ArticlePlain( ArticleID => $ArticleID );
+    my $Plain = $ArticleObject->ArticlePlain( ArticleID => $ArticleID );
     if ( !$Plain ) {
         return $LayoutObject->ErrorScreen(
             Message => Translatable(

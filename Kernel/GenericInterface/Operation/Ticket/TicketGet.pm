@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -26,15 +26,9 @@ our $ObjectManagerDisabled = 1;
 
 Kernel::GenericInterface::Operation::Ticket::TicketGet - GenericInterface Ticket Get Operation backend
 
-=head1 SYNOPSIS
-
 =head1 PUBLIC INTERFACE
 
-=over 4
-
-=cut
-
-=item new()
+=head2 new()
 
 usually, you want to create an instance of this
 by using Kernel::GenericInterface::Operation->new();
@@ -62,7 +56,7 @@ sub new {
     return $Self;
 }
 
-=item Run()
+=head2 Run()
 
 perform TicketGet Operation. This function is able to return
 one or more ticket entries in one call.
@@ -85,8 +79,9 @@ one or more ticket entries in one call.
             ArticleSenderType    => [ $ArticleSenderType1, $ArticleSenderType2 ],  # Optional, only requested article sender types
             ArticleOrder         => 'DESC',                                        # Optional, DESC,ASC - default is ASC
             ArticleLimit         => 5,                                             # Optional
-            Attachments          => 1,                                             # Optional, 1 as default. If it's set with the value 1,
+            Attachments          => 1,                                             # Optional, 0 as default. If it's set with the value 1,
                                                                                    # attachments for articles will be included on ticket data
+            GetAttachmentContents = 1                                              # Optional, 1 as default. 0|1,
             HTMLBodyAsAttachment => 1                                              # Optional, If enabled the HTML body version of each article
                                                                                    #    is added to the attachments list
         },
@@ -217,6 +212,7 @@ one or more ticket entries in one call.
                                     ContentAlternative => "",
                                     ContentID          => "",
                                     ContentType        => "application/pdf",
+                                    FileID             => 34,
                                     Filename           => "StdAttachment-Test1.pdf",
                                     Filesize           => "4.6 KBytes",
                                     FilesizeRaw        => 4722,
@@ -321,7 +317,9 @@ sub Run {
     my $ArticleOrder  = $Param{Data}->{ArticleOrder}  || 'ASC';
     my $ArticleLimit  = $Param{Data}->{ArticleLimit}  || 0;
     my $Attachments   = $Param{Data}->{Attachments}   || 0;
-    my $ReturnData    = {
+    my $GetAttachmentContents = $Param{Data}->{GetAttachmentContents} // 1;
+
+    my $ReturnData = {
         Success => 1,
     };
     my @Item;
@@ -341,7 +339,6 @@ sub Run {
     TICKET:
     for my $TicketID (@TicketIDs) {
 
-        # get ticket object
         my $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
 
         # get the Ticket entry
@@ -396,12 +393,14 @@ sub Run {
             next TICKET;
         }
 
+        my $ArticleObject = $Kernel::OM->Get('Kernel::System::Ticket::Article');
+
         my $ArticleTypes;
         if ( $UserType eq 'Customer' ) {
-            $ArticleTypes = [ $TicketObject->ArticleTypeList( Type => 'Customer' ) ];
+            $ArticleTypes = [ $ArticleObject->ArticleTypeList( Type => 'Customer' ) ];
         }
 
-        my @ArticleBoxRaw = $TicketObject->ArticleGet(
+        my @ArticleBoxRaw = $ArticleObject->ArticleGet(
             TicketID          => $TicketID,
             ArticleSenderType => $ArticleSenderType,
             ArticleType       => $ArticleTypes,
@@ -419,7 +418,7 @@ sub Run {
             next ARTICLE if !$Attachments;
 
             # get attachment index (without attachments)
-            my %AtmIndex = $TicketObject->ArticleAttachmentIndex(
+            my %AtmIndex = $ArticleObject->ArticleAttachmentIndex(
                 ContentPath                => $Article->{ContentPath},
                 ArticleID                  => $Article->{ArticleID},
                 StripPlainBodyAsAttachment => $StripPlainBodyAsAttachment,
@@ -433,7 +432,7 @@ sub Run {
             ATTACHMENT:
             for my $FileID ( sort keys %AtmIndex ) {
                 next ATTACHMENT if !$FileID;
-                my %Attachment = $TicketObject->ArticleAttachment(
+                my %Attachment = $ArticleObject->ArticleAttachment(
                     ArticleID => $Article->{ArticleID},
                     FileID    => $FileID,                 # as returned by ArticleAttachmentIndex
                     UserID    => $UserID,
@@ -441,8 +440,17 @@ sub Run {
 
                 next ATTACHMENT if !IsHashRefWithData( \%Attachment );
 
-                # convert content to base64
-                $Attachment{Content} = encode_base64( $Attachment{Content} );
+                $Attachment{FileID} = $FileID;
+                if ($GetAttachmentContents)
+                {
+                    # convert content to base64
+                    $Attachment{Content} = encode_base64( $Attachment{Content} );
+                }
+                else {
+                    # unset content
+                    $Attachment{Content}            = '';
+                    $Attachment{ContentAlternative} = '';
+                }
                 push @Attachments, {%Attachment};
             }
 
@@ -512,8 +520,6 @@ sub Run {
 }
 
 1;
-
-=back
 
 =head1 TERMS AND CONDITIONS
 

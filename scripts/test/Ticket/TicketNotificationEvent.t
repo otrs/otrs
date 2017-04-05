@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -19,7 +19,8 @@ my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
 # get helper object
 $Kernel::OM->ObjectParamAdd(
     'Kernel::System::UnitTest::Helper' => {
-        RestoreDatabase => 1,
+        RestoreDatabase  => 1,
+        UseTmpArticleDir => 1,
 
     },
 );
@@ -63,8 +64,8 @@ my %CustomerUserData = $Kernel::OM->Get('Kernel::System::CustomerUser')->Custome
     User => $CustomerUserLogin,
 );
 
-# get ticket object
-my $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
+my $TicketObject  = $Kernel::OM->Get('Kernel::System::Ticket');
+my $ArticleObject = $Kernel::OM->Get('Kernel::System::Ticket::Article');
 
 # create ticket
 my $TicketID = $TicketObject->TicketCreate(
@@ -96,7 +97,7 @@ $Self->True(
     "TicketNumberLookup() successful for Ticket# $TicketNumber",
 );
 
-my $ArticleID = $TicketObject->ArticleCreate(
+my $ArticleID = $ArticleObject->ArticleCreate(
     TicketID       => $TicketID,
     ArticleType    => 'webrequest',
     SenderType     => 'customer',
@@ -165,7 +166,7 @@ $Self->True(
 );
 
 # get ticket article IDs
-my @ArticleIDs = $TicketObject->ArticleIndex(
+my @ArticleIDs = $ArticleObject->ArticleIndex(
     TicketID => $TicketID,
 );
 
@@ -176,7 +177,7 @@ $Self->Is(
 );
 
 # get last article
-my %Article = $TicketObject->ArticleGet(
+my %Article = $ArticleObject->ArticleGet(
     ArticleID => $ArticleIDs[-1],    # last
     UserID    => $UserID,
 );

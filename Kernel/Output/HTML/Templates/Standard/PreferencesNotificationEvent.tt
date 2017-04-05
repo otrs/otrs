@@ -1,15 +1,15 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
 # did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
 # --
 
-<table class="DataTable NotificationList" style="clear: none">
+<table class="DataTable NotificationList">
     <thead>
         <tr>
-            <th class="Center">[% Translate("Notification") | html %]</th>
+            <th>[% Translate("Notification") | html %]</th>
 [% RenderBlockStart("HeaderRow") %]
             <th class="Center"><i class="[% Data.TransportIcon %]" title="[% Data.TransportName | Translate | html%]"></i></th>
 [% RenderBlockEnd("HeaderRow") %]
@@ -24,7 +24,7 @@
         </tr>
 [% RenderBlockEnd("NoDataFoundMsg") %]
 [% RenderBlockStart("BodyRow") %]
-        <tr title="[% Data.NotificationTitle | html %]"[% IF Data.VisibleForAgent == 2 %] class="Mandatory"[% END %]>
+        <tr title="[% Data.NotificationTitle | Translate | html %]"[% IF Data.VisibleForAgent == 2 %] class="Mandatory"[% END %]>
             <td>[% IF Data.VisibleForAgent == 2 %]<span class="Mandatory">* [% END %][% Translate(Data.NotificationName) | html %][% IF Data.VisibleForAgent == 2 %]</span>[% END %]</td>
 [% RenderBlockStart("BodyTransportColumn") %]
             <td class="Center">
@@ -38,7 +38,3 @@
 [% RenderBlockEnd("BodyRow") %]
     </tbody>
 </table>
-<p class="FieldExplanation">
-    [% Translate("Please note that you can't completely disable notifications marked as mandatory.") | html %]
-</p>
-<div class="Clear SpacingTop"></div>

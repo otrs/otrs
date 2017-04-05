@@ -1,5 +1,5 @@
 // --
-// Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+// Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 // --
 // This software comes with ABSOLUTELY NO WARRANTY. For details, see
 // the enclosed file COPYING for license information (AGPL). If you
@@ -81,7 +81,7 @@ Core.Agent.Admin.DynamicFieldText = (function (TargetNS) {
             if($(this).hasClass('RemoveRegEx')) {
 
                 // bind click function to remove button
-                $(this).bind('click', function () {
+                $(this).on('click', function () {
                     TargetNS.RemoveRegEx($(this).attr('id'));
                     return false;
                 });
@@ -111,12 +111,12 @@ Core.Agent.Admin.DynamicFieldText = (function (TargetNS) {
     */
     TargetNS.Init = function () {
 
-        $('.ShowWarning').bind('change keyup', function () {
+        $('.ShowWarning').on('change keyup', function () {
             $('p.Warning').removeClass('Hidden');
         });
 
         // click handler to add regex
-        $('#AddRegEx').bind('click', function () {
+        $('#AddRegEx').on('click', function () {
             TargetNS.AddRegEx(
                 $(this).closest('fieldset').find('.RegExInsert')
             );

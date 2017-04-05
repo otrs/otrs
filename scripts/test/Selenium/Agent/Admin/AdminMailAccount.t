@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -62,32 +62,14 @@ $Selenium->RunTest(
         }
 
         # check breadcrumb on Add screen
-        my $Count = 0;
+        my $Count = 1;
         my $IsLinkedBreadcrumbText;
-        for my $BreadcrumbText ( 'You are here:', 'Mail Account Management', 'Add Mail Account' ) {
+        for my $BreadcrumbText ( 'Mail Account Management', 'Add Mail Account' ) {
             $Self->Is(
-                $Selenium->execute_script("return \$(\$('.BreadCrumb li')[$Count]).text().trim()"),
+                $Selenium->execute_script("return \$('.BreadCrumb li:eq($Count)').text().trim()"),
                 $BreadcrumbText,
                 "Breadcrumb text '$BreadcrumbText' is found on screen"
             );
-
-            $IsLinkedBreadcrumbText =
-                $Selenium->execute_script("return \$(\$('.BreadCrumb li')[$Count]).children('a').length");
-
-            if ( $BreadcrumbText eq 'Mail Account Management' ) {
-                $Self->Is(
-                    $IsLinkedBreadcrumbText,
-                    1,
-                    "Breadcrumb text '$BreadcrumbText' is linked"
-                );
-            }
-            else {
-                $Self->Is(
-                    $IsLinkedBreadcrumbText,
-                    0,
-                    "Breadcrumb text '$BreadcrumbText' is not linked"
-                );
-            }
 
             $Count++;
         }
@@ -114,35 +96,17 @@ $Selenium->RunTest(
         $Selenium->find_element( $TestMailHost, 'link_text' )->VerifiedClick();
 
         # check breadcrumb on Edit screen
-        $Count = 0;
+        $Count = 1;
         for my $BreadcrumbText (
-            'You are here:', 'Mail Account Management',
+            'Mail Account Management',
             'Edit Mail Account for host "pop3.example.com" and user account "' . $RandomID . '"'
             )
         {
             $Self->Is(
-                $Selenium->execute_script("return \$(\$('.BreadCrumb li')[$Count]).text().trim()"),
+                $Selenium->execute_script("return \$('.BreadCrumb li:eq($Count)').text().trim()"),
                 $BreadcrumbText,
                 "Breadcrumb text '$BreadcrumbText' is found on screen"
             );
-
-            $IsLinkedBreadcrumbText =
-                $Selenium->execute_script("return \$(\$('.BreadCrumb li')[$Count]).children('a').length");
-
-            if ( $BreadcrumbText eq 'Mail Account Management' ) {
-                $Self->Is(
-                    $IsLinkedBreadcrumbText,
-                    1,
-                    "Breadcrumb text '$BreadcrumbText' is linked"
-                );
-            }
-            else {
-                $Self->Is(
-                    $IsLinkedBreadcrumbText,
-                    0,
-                    "Breadcrumb text '$BreadcrumbText' is not linked"
-                );
-            }
 
             $Count++;
         }
@@ -294,18 +258,24 @@ $Selenium->RunTest(
         $Selenium->VerifiedGet("${ScriptAlias}index.pl?Action=AdminMailAccount");
 
         # test mail account delete button
-        my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
-        my $Success  = $DBObject->Prepare(
-            SQL => "SELECT id FROM mail_account WHERE login='$RandomID'",
+        $Selenium->find_element("//a[contains(\@data-query-string, \'Subaction=Delete;ID=$MailAccountID' )]")->click();
+        $Selenium->WaitFor( JavaScript => 'return typeof($) === "function" && $(".Dialog:visible").length === 1;' );
+
+        # verify delete dialog message
+        my $DeleteMessage = 'Do you really want to delete this mail account?';
+        $Self->True(
+            index( $Selenium->get_page_source(), $DeleteMessage ) > -1,
+            "Delete message is found",
         );
 
-        if ($Success) {
-            my $MailAccountID;
-            while ( my @Row = $DBObject->FetchrowArray() ) {
-                $MailAccountID = $Row[0];
-            }
-            $Selenium->find_element("//a[contains(\@href, \'Subaction=Delete;ID=$MailAccountID' )]")->VerifiedClick();
-        }
+        # confirm delete action
+        $Selenium->find_element( "#DialogButton1", 'css' )->VerifiedClick();
+
+        # check if mail account is deleted
+        $Self->True(
+            index( $Selenium->get_page_source(), $TestMailHost ) == -1,
+            "$TestMailHost is not found on page after deleting",
+        );
 
     }
 

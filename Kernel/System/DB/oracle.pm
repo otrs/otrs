@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -32,15 +32,16 @@ sub LoadPreferences {
     my ( $Self, %Param ) = @_;
 
     # db settings
-    $Self->{'DB::Limit'}                = 0;
-    $Self->{'DB::DirectBlob'}           = 0;
-    $Self->{'DB::QuoteSingle'}          = '\'';
-    $Self->{'DB::QuoteBack'}            = 0;
-    $Self->{'DB::QuoteSemicolon'}       = '';
-    $Self->{'DB::QuoteUnderscoreStart'} = '\\';
-    $Self->{'DB::QuoteUnderscoreEnd'}   = '';
-    $Self->{'DB::CaseSensitive'}        = 1;
-    $Self->{'DB::LikeEscapeString'}     = q{ESCAPE '\\'};
+    $Self->{'DB::Limit'}                       = 0;
+    $Self->{'DB::DirectBlob'}                  = 0;
+    $Self->{'DB::QuoteSingle'}                 = '\'';
+    $Self->{'DB::QuoteBack'}                   = 0;
+    $Self->{'DB::QuoteSemicolon'}              = '';
+    $Self->{'DB::QuoteUnderscoreStart'}        = '\\';
+    $Self->{'DB::QuoteUnderscoreEnd'}          = '';
+    $Self->{'DB::CaseSensitive'}               = 1;
+    $Self->{'DB::LikeEscapeString'}            = q{ESCAPE '\\'};
+    $Self->{'DB::MaxParamCountForInCondition'} = 1000;
 
     # how to determine server version
     $Self->{'DB::Version'}

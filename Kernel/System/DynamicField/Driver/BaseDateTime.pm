@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -29,13 +29,11 @@ Kernel::System::DynamicField::Driver::BaseDateTime - sub module of
 Kernel::System::DynamicField::Driver::Date and
 Kernel::System::DynamicField::Driver::DateTime
 
-=head1 SYNOPSIS
+=head1 DESCRIPTION
 
 Date common functions.
 
 =head1 PUBLIC INTERFACE
-
-=over 4
 
 =cut
 
@@ -126,7 +124,15 @@ sub SearchSQLGet {
         SmallerThanEquals => '<=',
     );
 
-    if ( !$Operators{ $Param{Operator} } ) {
+    if ( $Param{Operator} eq 'Empty' ) {
+        if ( $Param{SearchTerm} ) {
+            return " $Param{TableAlias}.value_date IS NULL ";
+        }
+        else {
+            return " $Param{TableAlias}.value_date IS NOT NULL ";
+        }
+    }
+    elsif ( !$Operators{ $Param{Operator} } ) {
         $Kernel::OM->Get('Kernel::System::Log')->Log(
             'Priority' => 'error',
             'Message'  => "Unsupported Operator $Param{Operator}",
@@ -659,6 +665,15 @@ EOF
         return $Data;
     }
 
+    # to set the years range
+    my %YearsPeriodRange;
+    if ( defined $FieldConfig->{YearsPeriod} && $FieldConfig->{YearsPeriod} eq '1' ) {
+        %YearsPeriodRange = (
+            YearPeriodPast   => $FieldConfig->{YearsInPast}   || 0,
+            YearPeriodFuture => $FieldConfig->{YearsInFuture} || 0,
+        );
+    }
+
     # build HTML for start value set
     $HTMLString .= $Param{LayoutObject}->BuildDateSelection(
         %Param,
@@ -668,6 +683,8 @@ EOF
         DiffTime             => -( ( 60 * 60 * 24 ) * 30 ),
         Validate             => 1,
         %{ $Value->{ValueStart} },
+        %YearsPeriodRange,
+        OverrideTimeZone => 1,
     );
 
     # to put a line break between the two search dates
@@ -690,6 +707,8 @@ EOF
         DiffTime             => +( ( 60 * 60 * 24 ) * 30 ),
         Validate             => 1,
         %{ $Value->{ValueStop} },
+        %YearsPeriodRange,
+        OverrideTimeZone => 1,
     );
 
     my $AdditionalText;
@@ -1180,12 +1199,21 @@ sub ValueLookup {
 
     my $Value = defined $Param{Key} ? $Param{Key} : '';
 
+    # check if a translation is possible
+    if ( defined $Param{LanguageObject} ) {
+
+        # translate value
+        $Value = $Param{LanguageObject}->FormatTimeString(
+            $Value,
+            'DateFormat',
+            'NoSeconds',
+        );
+    }
+
     return $Value;
 }
 
 1;
-
-=back
 
 =head1 TERMS AND CONDITIONS
 

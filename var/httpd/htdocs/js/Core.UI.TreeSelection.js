@@ -1,5 +1,5 @@
 // --
-// Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+// Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 // --
 // This software comes with ABSOLUTELY NO WARRANTY. For details, see
 // the enclosed file COPYING for license information (AGPL). If you
@@ -108,6 +108,7 @@ Core.UI.TreeSelection = (function (TargetNS) {
                 ElementDisabled = $(this).is(':disabled'),
                 ElementName = Core.App.EscapeHTML($(this).text()),
                 ElementSelected = $(this).is(':selected'),
+                ElementTitle = $(this).attr('title'),
                 ElementNameTrim = ElementName.replace(/(^[\xA0]+)/g, ''),
                 CurrentLevel = (ElementName.length - ElementNameTrim.length) / 2,
                 ChildOf = 0,
@@ -151,8 +152,12 @@ Core.UI.TreeSelection = (function (TargetNS) {
             }
 
             // In case of disabled elements, the ID is always "-", which causes duplications.
-            // Therefore, we assign a random ID to avoid conflicts.
-            ElementID = (ElementID === '-') ? Math.floor((Math.random() * 100000) + 1) : ElementID;
+            //   Therefore, we assign an auto-generated ID to avoid conflicts. But make sure to
+            //   check if element is indeed disabled, because the dash value might be allowed.
+            //   See bug#10055 and bug#12528 for more information.
+            if (ElementDisabled && ElementID === '-') {
+                ElementID = Core.UI.GetID();
+            }
 
             // Collect data of current service and add it to elements array
             /*eslint-disable camelcase */
@@ -171,6 +176,12 @@ Core.UI.TreeSelection = (function (TargetNS) {
                     'class': (ElementDisabled) ? 'Disabled' : ''
                 }
             };
+
+            // Add option title.
+            if (ElementTitle !== undefined) {
+                CurrentElement["li_attr"]["title"] = ElementTitle;
+            }
+
             /*eslint-enable camelcase */
             Elements.push(CurrentElement);
 
@@ -284,7 +295,7 @@ Core.UI.TreeSelection = (function (TargetNS) {
             plugins: [ 'search' ]
         })
         /*eslint-enable camelcase */
-        .bind('select_node.jstree', function (node, selected, event) {
+        .on('select_node.jstree', function (node, selected, event) {
             var $Node = $('#' + selected.node.id);
             if ($Node.hasClass('Disabled') || !$Node.is(':visible')) {
                 $TreeObj.jstree('deselect_node', selected.node);
@@ -316,7 +327,7 @@ Core.UI.TreeSelection = (function (TargetNS) {
             }
 
         })
-        .bind('deselect_node.jstree', function () {
+        .on('deselect_node.jstree', function () {
             // If we are already in a dialog, we don't use the submit
             // button for the tree selection, so we need to apply the changes 'live'
             if (InDialog) {
@@ -360,7 +371,7 @@ Core.UI.TreeSelection = (function (TargetNS) {
         $CurrentFocusedObj = document.activeElement;
         $('#TreeSearch').find('input').focus();
 
-        $('#TreeSearch').find('input').bind('keyup', function() {
+        $('#TreeSearch').find('input').on('keyup', function() {
             $TreeObj.jstree('search', $(this).val());
 
             // Make sure sub-trees of matched nodes are expanded
@@ -373,12 +384,12 @@ Core.UI.TreeSelection = (function (TargetNS) {
                 });
         });
 
-        $('#TreeSearch').find('span').bind('click', function() {
+        $('#TreeSearch').find('span').on('click', function() {
             $(this).prev('input').val('');
             $TreeObj.jstree('clear_search');
         });
 
-        $('#TreeContainer').find('input#SubmitTree').bind('click', function() {
+        $('#TreeContainer').find('input#SubmitTree').on('click', function() {
             var SelectedObj = $TreeObj.jstree('get_selected', true),
                 $Node;
             if (typeof SelectedObj === 'object' && SelectedObj[0]) {

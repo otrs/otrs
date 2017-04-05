@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -20,6 +20,7 @@ my $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
 $Kernel::OM->ObjectParamAdd(
     'Kernel::System::UnitTest::Helper' => {
         RestoreDatabase  => 1,
+        UseTmpArticleDir => 1,
         UseTmpArticleDir => 1,
     },
 );
@@ -420,22 +421,23 @@ for my $Backend (qw(DB FS)) {
     for my $Test (@Tests) {
 
         # Make sure that the TicketObject gets recreated for each loop.
-        $Kernel::OM->ObjectsDiscard( Objects => ['Kernel::System::Ticket'] );
+        $Kernel::OM->ObjectsDiscard( Objects => ['Kernel::System::Ticket::Article'] );
 
         $ConfigObject->Set(
             Key   => 'Ticket::StorageModule',
             Value => 'Kernel::System::Ticket::ArticleStorage' . $Backend,
         );
 
-        my $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
+        my $ArticleObject = $Kernel::OM->Get('Kernel::System::Ticket::Article');
 
-        $Self->True(
-            $TicketObject->isa( 'Kernel::System::Ticket::ArticleStorage' . $Backend ),
+        $Self->Is(
+            $ArticleObject->{ArticleStorageModule},
+            'Kernel::System::Ticket::ArticleStorage' . $Backend,
             "TicketObject loaded the correct backend",
         );
 
         # create an article
-        my $ArticleID = $TicketObject->ArticleCreate(
+        my $ArticleID = $ArticleObject->ArticleCreate(
             TicketID       => $TicketID,
             ArticleType    => 'note-internal',
             SenderType     => 'agent',
@@ -455,7 +457,7 @@ for my $Backend (qw(DB FS)) {
         );
 
         # create attachment
-        my $Success = $TicketObject->ArticleWriteAttachment(
+        my $Success = $ArticleObject->ArticleWriteAttachment(
             %{ $Test->{Config} },
             ArticleID => $ArticleID,
         );
@@ -465,7 +467,7 @@ for my $Backend (qw(DB FS)) {
         );
 
         # get the list of all attachments (should be only 1)
-        my %AttachmentIndex = $TicketObject->ArticleAttachmentIndex(
+        my %AttachmentIndex = $ArticleObject->ArticleAttachmentIndex(
             ArticleID => $ArticleID,
             UserID    => $UserID,
         );
@@ -478,7 +480,7 @@ for my $Backend (qw(DB FS)) {
         );
 
         # get the attachment individually
-        my %Attachment = $TicketObject->ArticleAttachment(
+        my %Attachment = $ArticleObject->ArticleAttachment(
             ArticleID => $ArticleID,
             FileID    => $AttachmentID,
             UserID    => $UserID,

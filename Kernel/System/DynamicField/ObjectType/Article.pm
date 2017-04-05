@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -19,21 +19,20 @@ our @ObjectDependencies = (
     'Kernel::System::DB',
     'Kernel::System::Log',
     'Kernel::System::Ticket',
+    'Kernel::System::Ticket::Article',
 );
 
 =head1 NAME
 
 Kernel::System::DynamicField::ObjectType::Article
 
-=head1 SYNOPSIS
+=head1 DESCRIPTION
 
 Article object handler for DynamicFields
 
 =head1 PUBLIC INTERFACE
 
-=over 4
-
-=item new()
+=head2 new()
 
 usually, you want to create an instance of this
 by using Kernel::System::DynamicField::ObjectType::Article->new();
@@ -49,7 +48,7 @@ sub new {
     return $Self;
 }
 
-=item PostValueSet()
+=head2 PostValueSet()
 
 perform specific functions after the Value set for this object type.
 
@@ -100,9 +99,8 @@ sub PostValueSet {
     # Don't hold a permanent reference to the TicketObject.
     #   This is because the TicketObject has a Kernel::DynamicField::Backend object, which has this
     #   object, which has a TicketObject again. Without weaken() we'd have a cyclic reference.
-    my $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
 
-    my %Article = $TicketObject->ArticleGet(
+    my %Article = $Kernel::OM->Get('Kernel::System::Ticket::Article')->ArticleGet(
         ArticleID     => $Param{ObjectID},
         DynamicFields => 0,
     );
@@ -116,6 +114,8 @@ sub PostValueSet {
             . ' change_by = ? WHERE id = ?',
         Bind => [ \$Param{UserID}, \$Article{TicketID} ],
     );
+
+    my $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
 
     # clear ticket cache
     $TicketObject->_TicketCacheClear( TicketID => $Article{TicketID} );
@@ -138,8 +138,6 @@ sub PostValueSet {
 }
 
 1;
-
-=back
 
 =head1 TERMS AND CONDITIONS
 

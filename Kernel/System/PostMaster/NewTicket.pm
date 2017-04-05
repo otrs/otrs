@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -22,6 +22,7 @@ our @ObjectDependencies = (
     'Kernel::System::Queue',
     'Kernel::System::State',
     'Kernel::System::Ticket',
+    'Kernel::System::Ticket::Article',
     'Kernel::System::Time',
     'Kernel::System::Type',
     'Kernel::System::User',
@@ -166,17 +167,20 @@ sub Run {
                 );
             }
 
-            # get customer user object
-            my $CustomerUserObject = $Kernel::OM->Get('Kernel::System::CustomerUser');
+            if ( $GetParam{EmailFrom} ) {
 
-            my %List = $CustomerUserObject->CustomerSearch(
-                PostMasterSearch => lc( $GetParam{EmailFrom} ),
-            );
+                # get customer user object
+                my $CustomerUserObject = $Kernel::OM->Get('Kernel::System::CustomerUser');
 
-            for my $UserLogin ( sort keys %List ) {
-                %CustomerData = $CustomerUserObject->CustomerUserDataGet(
-                    User => $UserLogin,
+                my %List = $CustomerUserObject->CustomerSearch(
+                    PostMasterSearch => lc( $GetParam{EmailFrom} ),
                 );
+
+                for my $UserLogin ( sort keys %List ) {
+                    %CustomerData = $CustomerUserObject->CustomerUserDataGet(
+                        User => $UserLogin,
+                    );
+                }
             }
         }
 
@@ -204,7 +208,11 @@ sub Run {
     }
 
     # if there is no customer id found!
-    if ( !$GetParam{'X-OTRS-CustomerNo'} ) {
+    if (
+        !$GetParam{'X-OTRS-CustomerNo'}
+        && $ConfigObject->Get('PostMaster::NewTicket::AutoAssignCustomerIDForUnknownCustomers')
+        )
+    {
         $GetParam{'X-OTRS-CustomerNo'} = $GetParam{SenderEmailAddress};
     }
 
@@ -444,8 +452,10 @@ sub Run {
         }
     }
 
+    my $ArticleObject = $Kernel::OM->Get('Kernel::System::Ticket::Article');
+
     # do article db insert
-    my $ArticleID = $TicketObject->ArticleCreate(
+    my $ArticleID = $ArticleObject->ArticleCreate(
         TicketID         => $TicketID,
         ArticleType      => $GetParam{'X-OTRS-ArticleType'},
         SenderType       => $GetParam{'X-OTRS-SenderType'},
@@ -581,7 +591,7 @@ sub Run {
     }
 
     # write plain email to the storage
-    $TicketObject->ArticleWritePlain(
+    $ArticleObject->ArticleWritePlain(
         ArticleID => $ArticleID,
         Email     => $Self->{ParserObject}->GetPlainEmail(),
         UserID    => $Param{InmailUserID},
@@ -589,7 +599,7 @@ sub Run {
 
     # write attachments to the storage
     for my $Attachment ( $Self->{ParserObject}->GetAttachments() ) {
-        $TicketObject->ArticleWriteAttachment(
+        $ArticleObject->ArticleWriteAttachment(
             Filename           => $Attachment->{Filename},
             Content            => $Attachment->{Content},
             ContentType        => $Attachment->{ContentType},

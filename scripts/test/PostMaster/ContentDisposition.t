@@ -1,11 +1,12 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
 # did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
 # --
 
+## no critic (Modules::RequireExplicitPackage)
 use strict;
 use warnings;
 use utf8;
@@ -36,7 +37,7 @@ my @Tests = (
                 Filename           => 'ceeibejd.png',
                 ContentType        => 'image/png; name="ceeibejd.png"',
                 ContentID          => '<part1.02040705.00020608@otrs.com>',
-                ContentAlternative => '',
+                ContentAlternative => '1',
                 Disposition        => 'inline',
             },
             'ui-toolbar.png' => {
@@ -62,7 +63,7 @@ my @Tests = (
                 Filename           => 'ceeibejd.png',
                 ContentType        => 'image/png; name="ceeibejd.png"',
                 ContentID          => '<part1.02040705.00020608@otrs.com>',
-                ContentAlternative => '',
+                ContentAlternative => '1',
                 Disposition        => 'inline',
             },
             'ui-toolbar.png' => {
@@ -88,7 +89,7 @@ my @Tests = (
                 Filename           => 'ceeibejd.png',
                 ContentType        => 'image/png; name="ceeibejd.png"',
                 ContentID          => '<part1.02040705.00020608@otrs.com>',
-                ContentAlternative => '',
+                ContentAlternative => '1',
                 Disposition        => 'inline',
             },
             'ui-toolbar.png' => {
@@ -114,7 +115,7 @@ my @Tests = (
                 Filename           => 'ceeibejd.png',
                 ContentType        => 'image/png; name="ceeibejd.png"',
                 ContentID          => '<part1.02040705.00020608@otrs.com>',
-                ContentAlternative => '',
+                ContentAlternative => '1',
                 Disposition        => 'attachment',
             },
             'ui-toolbar.png' => {
@@ -136,6 +137,8 @@ my @Tests = (
 );
 
 my @AddedTicketIDs;
+
+my $ArticleObject = $Kernel::OM->Get('Kernel::System::Ticket::Article');
 
 for my $Test (@Tests) {
 
@@ -174,13 +177,13 @@ for my $Test (@Tests) {
         # remember added tickets
         push @AddedTicketIDs, $TicketID;
 
-        my @ArticleIDs = $TicketObject->ArticleIndex( TicketID => $TicketID );
+        my @ArticleIDs = $ArticleObject->ArticleIndex( TicketID => $TicketID );
         $Self->True(
             $ArticleIDs[0],
             "$Test->{Name} | $Backend - Article created",
         );
 
-        my %AttachmentIndex = $TicketObject->ArticleAttachmentIndex(
+        my %AttachmentIndex = $ArticleObject->ArticleAttachmentIndex(
             ArticleID => $ArticleIDs[0],
             UserID    => 1,
         );
@@ -191,7 +194,7 @@ for my $Test (@Tests) {
 
             my $AttachmentID = $AttachmentsLookup{$AttachmentFilename};
 
-            # delete zise attributes for easy compare
+            # delete size attributes for easy compare
             delete $AttachmentIndex{$AttachmentID}->{Filesize};
             delete $AttachmentIndex{$AttachmentID}->{FilesizeRaw};
 

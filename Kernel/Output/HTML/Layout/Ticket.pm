@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -20,15 +20,13 @@ our $ObjectManagerDisabled = 1;
 
 Kernel::Output::HTML::Layout::Ticket - all Ticket-related HTML functions
 
-=head1 SYNOPSIS
+=head1 DESCRIPTION
 
 All Ticket-related HTML functions
 
 =head1 PUBLIC INTERFACE
 
-=over 4
-
-=item AgentCustomerViewTable()
+=head2 AgentCustomerViewTable()
 
 =cut
 
@@ -163,9 +161,16 @@ sub AgentCustomerViewTable {
                 $Record{Key} = $DynamicFieldConfig->{Label};
             }
 
-            if ( $Field->[6] ) {
+            if (
+                $Field->[6]
+                && ( $Param{Data}->{TicketID} || $Param{Ticket} )
+                )
+            {
                 $Record{LinkStart} = "<a href=\"$Field->[6]\"";
-                if ( $Field->[8] ) {
+                if ( !$Param{Ticket} ) {
+                    $Record{LinkStart} .= " target=\"_blank\"";
+                }
+                elsif ( $Field->[8] ) {
                     $Record{LinkStart} .= " target=\"$Field->[8]\"";
                 }
                 if ( $Field->[9] ) {
@@ -199,6 +204,110 @@ sub AgentCustomerViewTable {
                     if ( !$CompanyIsValid ) {
                         $Self->Block(
                             Name => 'CustomerRowCustomerCompanyInvalid',
+                        );
+                    }
+                }
+            }
+
+            if (
+                $ConfigObject->Get('ChatEngine::Active')
+                && $Field->[0] eq 'UserLogin'
+                )
+            {
+                # Check if agent has permission to start chats with the customer users.
+                my $EnableChat = 1;
+                my $ChatStartingAgentsGroup
+                    = $ConfigObject->Get('ChatEngine::PermissionGroup::ChatStartingAgents') || 'users';
+                my $ChatStartingAgentsGroupPermission = $Kernel::OM->Get('Kernel::System::Group')->PermissionCheck(
+                    UserID    => $Self->{UserID},
+                    GroupName => $ChatStartingAgentsGroup,
+                    Type      => 'rw',
+                );
+
+                if ( !$ChatStartingAgentsGroupPermission ) {
+                    $EnableChat = 0;
+                }
+                if (
+                    $EnableChat
+                    && !$ConfigObject->Get('ChatEngine::ChatDirection::AgentToCustomer')
+                    )
+                {
+                    $EnableChat = 0;
+                }
+
+                if ($EnableChat) {
+                    my $VideoChatEnabled = 0;
+                    my $VideoChatAgentsGroup
+                        = $ConfigObject->Get('ChatEngine::PermissionGroup::VideoChatAgents') || 'users';
+                    my $VideoChatAgentsGroupPermission = $Kernel::OM->Get('Kernel::System::Group')->PermissionCheck(
+                        UserID    => $Self->{UserID},
+                        GroupName => $VideoChatAgentsGroup,
+                        Type      => 'rw',
+                    );
+
+                    # Enable the video chat feature if system is entitled and agent is a member of configured group.
+                    if ($VideoChatAgentsGroupPermission) {
+                        if ( $Kernel::OM->Get('Kernel::System::Main')
+                            ->Require( 'Kernel::System::VideoChat', Silent => 1 ) )
+                        {
+                            $VideoChatEnabled = $Kernel::OM->Get('Kernel::System::VideoChat')->IsEnabled();
+                        }
+                    }
+
+                    my $CustomerEnableChat = 0;
+                    my $ChatAccess         = 0;
+                    my $VideoChatAvailable = 0;
+                    my $VideoChatSupport   = 0;
+
+                    # Default status is offline.
+                    my $UserState            = Translatable('Offline');
+                    my $UserStateDescription = $Self->{LanguageObject}->Translate('User is currently offline.');
+
+                    my $CustomerChatAvailability = $Kernel::OM->Get('Kernel::System::Chat')->CustomerAvailabilityGet(
+                        UserID => $Param{Data}->{UserID},
+                    );
+
+                    my $CustomerUserObject = $Kernel::OM->Get('Kernel::System::CustomerUser');
+
+                    my %CustomerUser = $CustomerUserObject->CustomerUserDataGet(
+                        User => $Param{Data}->{UserID},
+                    );
+                    $CustomerUser{UserFullname} = $CustomerUserObject->CustomerName(
+                        UserLogin => $Param{Data}->{UserID},
+                    );
+                    $VideoChatSupport = 1 if $CustomerUser{VideoChatHasWebRTC};
+
+                    if ( $CustomerChatAvailability == 3 ) {
+                        $UserState            = Translatable('Active');
+                        $CustomerEnableChat   = 1;
+                        $UserStateDescription = $Self->{LanguageObject}->Translate('User is currently active.');
+                        $VideoChatAvailable   = 1;
+                    }
+                    elsif ( $CustomerChatAvailability == 2 ) {
+                        $UserState            = Translatable('Away');
+                        $CustomerEnableChat   = 1;
+                        $UserStateDescription = $Self->{LanguageObject}->Translate('User was inactive for a while.');
+                    }
+
+                    $Self->Block(
+                        Name => 'CustomerRowUserStatus',
+                        Data => {
+                            %CustomerUser,
+                            UserState            => $UserState,
+                            UserStateDescription => $UserStateDescription,
+                        },
+                    );
+
+                    if ($CustomerEnableChat) {
+                        $Self->Block(
+                            Name => 'CustomerRowChatIcons',
+                            Data => {
+                                %{ $Param{Data} },
+                                %CustomerUser,
+                                VideoChatEnabled   => $VideoChatEnabled,
+                                VideoChatAvailable => $VideoChatAvailable,
+                                VideoChatSupport   => $VideoChatSupport,
+                            },
                         );
                     }
                 }
@@ -513,7 +622,7 @@ sub AgentQueueListOption {
     return $Param{MoveQueuesStrg};
 }
 
-=item ArticleQuote()
+=head2 ArticleQuote()
 
 get body and attach e. g. inline documents and/or attach all attachments to
 upload cache
@@ -554,8 +663,8 @@ sub ArticleQuote {
     }
 
     # get needed objects
-    my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
-    my $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
+    my $ConfigObject  = $Kernel::OM->Get('Kernel::Config');
+    my $ArticleObject = $Kernel::OM->Get('Kernel::System::Ticket::Article');
 
     # body preparation for plain text processing
     if ( $ConfigObject->Get('Frontend::RichText') ) {
@@ -563,7 +672,7 @@ sub ArticleQuote {
         my $Body = '';
 
         # check for html body
-        my @ArticleBox = $TicketObject->ArticleContentIndex(
+        my @ArticleBox = $ArticleObject->ArticleContentIndex(
             TicketID                   => $Param{TicketID},
             StripPlainBodyAsAttachment => 3,
             UserID                     => $Self->{UserID},
@@ -580,7 +689,7 @@ sub ArticleQuote {
             # check if no html body exists
             last ARTICLE if !$ArticleTmp->{AttachmentIDOfHTMLBody};
 
-            my %AttachmentHTML = $TicketObject->ArticleAttachment(
+            my %AttachmentHTML = $ArticleObject->ArticleAttachment(
                 ArticleID => $ArticleTmp->{ArticleID},
                 FileID    => $ArticleTmp->{AttachmentIDOfHTMLBody},
                 UserID    => $Self->{UserID},
@@ -592,9 +701,10 @@ sub ArticleQuote {
 
             # convert html body to correct charset
             $Body = $Kernel::OM->Get('Kernel::System::Encode')->Convert(
-                Text => $AttachmentHTML{Content},
-                From => $Charset,
-                To   => $Self->{UserCharset},
+                Text  => $AttachmentHTML{Content},
+                From  => $Charset,
+                To    => $Self->{UserCharset},
+                Check => 1,
             );
 
             # get HTML utils object
@@ -650,7 +760,7 @@ sub ArticleQuote {
                     }
 
                     # get whole attachment
-                    my %AttachmentPicture = $TicketObject->ArticleAttachment(
+                    my %AttachmentPicture = $ArticleObject->ArticleAttachment(
                         ArticleID => $Param{ArticleID},
                         FileID    => $AttachmentID,
                         UserID    => $Self->{UserID},
@@ -690,7 +800,7 @@ sub ArticleQuote {
                 next ATTACHMENT if !$Attachments{$AttachmentID}->{ContentID};
 
                 # get whole attachment
-                my %AttachmentPicture = $TicketObject->ArticleAttachment(
+                my %AttachmentPicture = $ArticleObject->ArticleAttachment(
                     ArticleID => $Param{ArticleID},
                     FileID    => $AttachmentID,
                     UserID    => $Self->{UserID},
@@ -745,7 +855,7 @@ sub ArticleQuote {
         # attach also other attachments on article forward
         if ( $Body && $Param{AttachmentsInclude} ) {
             for my $AttachmentID ( sort keys %NotInlineAttachments ) {
-                my %Attachment = $TicketObject->ArticleAttachment(
+                my %Attachment = $ArticleObject->ArticleAttachment(
                     ArticleID => $Param{ArticleID},
                     FileID    => $AttachmentID,
                     UserID    => $Self->{UserID},
@@ -763,7 +873,7 @@ sub ArticleQuote {
     }
 
     # as fallback use text body for quote
-    my %Article = $TicketObject->ArticleGet(
+    my %Article = $ArticleObject->ArticleGet(
         ArticleID     => $Param{ArticleID},
         DynamicFields => 0,
     );
@@ -786,14 +896,14 @@ sub ArticleQuote {
 
     # attach attachments
     if ( $Param{AttachmentsInclude} ) {
-        my %ArticleIndex = $TicketObject->ArticleAttachmentIndex(
+        my %ArticleIndex = $ArticleObject->ArticleAttachmentIndex(
             ArticleID                  => $Param{ArticleID},
             UserID                     => $Self->{UserID},
             StripPlainBodyAsAttachment => 3,
             Article                    => \%Article,
         );
         for my $Index ( sort keys %ArticleIndex ) {
-            my %Attachment = $TicketObject->ArticleAttachment(
+            my %Attachment = $ArticleObject->ArticleAttachment(
                 ArticleID => $Param{ArticleID},
                 FileID    => $Index,
                 UserID    => $Self->{UserID},
@@ -1296,8 +1406,6 @@ sub TicketMetaItems {
 }
 
 1;
-
-=back
 
 =head1 TERMS AND CONDITIONS
 

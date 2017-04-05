@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -40,27 +40,17 @@ my $RandomID = $Helper->GetRandomID();
 $Helper->ConfigSettingChange(
     Valid => 1,
     Key   => 'Ticket::Type',
-    Value => '1',
-);
-$ConfigObject->Set(
-    Key   => 'Ticket::Type',
     Value => 1,
 );
+
 $Helper->ConfigSettingChange(
     Valid => 1,
     Key   => 'Ticket::Frontend::AccountTime',
-    Value => '1',
-);
-$ConfigObject->Set(
-    Key   => 'Ticket::Frontend::AccountTime',
     Value => 1,
 );
+
 $Helper->ConfigSettingChange(
     Valid => 1,
-    Key   => 'Ticket::Frontend::NeedAccountedTime',
-    Value => '1',
-);
-$ConfigObject->Set(
     Key   => 'Ticket::Frontend::NeedAccountedTime',
     Value => 1,
 );
@@ -69,30 +59,25 @@ $ConfigObject->Set(
 $Helper->ConfigSettingChange(
     Valid => 1,
     Key   => 'CheckMXRecord',
-    Value => '0',
-);
-$ConfigObject->Set(
-    Key   => 'CheckMXRecord',
     Value => 0,
 );
+
 $Helper->ConfigSettingChange(
     Valid => 1,
-    Key   => 'CheckEmailAddresses',
-    Value => '1',
-);
-$ConfigObject->Set(
     Key   => 'CheckEmailAddresses',
     Value => 1,
 );
 
 # disable SessionCheckRemoteIP setting
-$ConfigObject->Set(
+$Helper->ConfigSettingChange(
+    Valid => 1,
     Key   => 'SessionCheckRemoteIP',
     Value => 0,
 );
 
 # enable customer groups support
-$ConfigObject->Set(
+$Helper->ConfigSettingChange(
+    Valid => 1,
     Key   => 'CustomerGroupSupport',
     Value => 1,
 );
@@ -4095,15 +4080,17 @@ for my $Test (@Tests) {
             }
         }
 
+        my $ArticleObject = $Kernel::OM->Get('Kernel::System::Ticket::Article');
+
         # get local article information
-        my %LocalArticleData = $TicketObject->ArticleGet(
+        my %LocalArticleData = $ArticleObject->ArticleGet(
             ArticleID     => $LocalResult->{Data}->{ArticleID},
             DynamicFields => 1,
             UserID        => 1,
         );
 
         # get requester article information
-        my %RequesterArticleData = $TicketObject->ArticleGet(
+        my %RequesterArticleData = $ArticleObject->ArticleGet(
             ArticleID     => $RequesterResult->{Data}->{ArticleID},
             DynamicFields => 1,
             UserID        => 1,
@@ -4155,7 +4142,7 @@ for my $Test (@Tests) {
         }
 
         # check attachments
-        my %AttachmentIndex = $TicketObject->ArticleAttachmentIndex(
+        my %AttachmentIndex = $ArticleObject->ArticleAttachmentIndex(
             ArticleID                  => $LocalResult->{Data}->{ArticleID},
             StripPlainBodyAsAttachment => 3,
             Article                    => \%LocalArticleData,
@@ -4166,7 +4153,7 @@ for my $Test (@Tests) {
         ATTACHMENT:
         for my $FileID ( sort keys %AttachmentIndex ) {
             next ATTACHMENT if !$FileID;
-            my %Attachment = $TicketObject->ArticleAttachment(
+            my %Attachment = $ArticleObject->ArticleAttachment(
                 ArticleID => $LocalResult->{Data}->{ArticleID},
                 FileID    => $FileID,
                 UserID    => 1,
@@ -4413,6 +4400,8 @@ my $DeleteFieldList = $DynamicFieldObject->DynamicFieldList(
     ObjectType => 'Ticket',
 );
 
+my $BackendObject = $Kernel::OM->Get('Kernel::System::DynamicField::Backend');
+
 DYNAMICFIELD:
 for my $DynamicFieldID ( sort keys %{$DeleteFieldList} ) {
 
@@ -4420,6 +4409,14 @@ for my $DynamicFieldID ( sort keys %{$DeleteFieldList} ) {
     next DYNAMICFIELD if !$DeleteFieldList->{$DynamicFieldID};
 
     next DYNAMICFIELD if $DeleteFieldList->{$DynamicFieldID} !~ m{ ^Unittest }xms;
+
+    my $DynamicFieldConfig = $DynamicFieldObject->DynamicFieldGet(
+        ID => $DynamicFieldID,
+    );
+    my $ValuesDeleteSuccess = $BackendObject->AllValuesDelete(
+        DynamicFieldConfig => $DynamicFieldConfig,
+        UserID             => $Self->{UserID},
+    );
 
     my $Success = $DynamicFieldObject->DynamicFieldDelete(
         ID     => $DynamicFieldID,

@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -195,7 +195,8 @@ sub Run {
     DYNAMICFIELD:
     for my $DynamicFieldItem ( sort keys %DynamicFieldValues ) {
         next DYNAMICFIELD if !$DynamicFieldItem;
-        next DYNAMICFIELD if !$DynamicFieldValues{$DynamicFieldItem};
+        next DYNAMICFIELD if !defined $DynamicFieldValues{$DynamicFieldItem};
+        next DYNAMICFIELD if !length $DynamicFieldValues{$DynamicFieldItem};
 
         $DynamicFieldACLParameters{ 'DynamicField_' . $DynamicFieldItem } = $DynamicFieldValues{$DynamicFieldItem};
     }
@@ -639,6 +640,13 @@ sub Run {
                     $Error{'BodyInvalid'} = 'ServerError';
                 }
             }
+
+            # check mandatory state
+            if ( $Config->{State} && $Config->{StateMandatory} ) {
+                if ( !$GetParam{NewStateID} ) {
+                    $Error{'NewStateInvalid'} = 'ServerError';
+                }
+            }
         }
 
         # clear DynamicFieldHTML
@@ -982,6 +990,8 @@ sub Run {
     # add note (send no notification)
     my $ArticleID;
 
+    my $ArticleObject = $Kernel::OM->Get('Kernel::System::Ticket::Article');
+
     if (
         $GetParam{CreateArticle}
         && $Config->{Note}
@@ -1035,7 +1045,7 @@ sub Run {
             );
         }
 
-        $ArticleID = $TicketObject->ArticleCreate(
+        $ArticleID = $ArticleObject->ArticleCreate(
             TicketID       => $Self->{TicketID},
             ArticleType    => 'note-internal',
             SenderType     => 'agent',
@@ -1055,7 +1065,7 @@ sub Run {
 
         # write attachments
         for my $Attachment (@AttachmentData) {
-            $TicketObject->ArticleWriteAttachment(
+            $ArticleObject->ArticleWriteAttachment(
                 %{$Attachment},
                 ArticleID => $ArticleID,
                 UserID    => $Self->{UserID},
@@ -1183,7 +1193,9 @@ sub AgentMove {
         SelectedID   => $Param{NewStateID},
         Translation  => 1,
         PossibleNone => 1,
-        Class        => 'Modernize',
+        Class        => 'Modernize '
+            . ( $Config->{StateMandatory} ? 'Validate_Required ' : '' )
+            . ( $Param{NewStateInvalid} || '' ),
     );
 
     # build next priority string
@@ -1227,7 +1239,10 @@ sub AgentMove {
     if ( $Config->{State} ) {
         $LayoutObject->Block(
             Name => 'State',
-            Data => {%Param},
+            Data => {
+                StateMandatory => $Config->{StateMandatory} || 0,
+                %Param
+            },
         );
     }
 

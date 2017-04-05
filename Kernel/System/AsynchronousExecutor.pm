@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -22,18 +22,14 @@ our @ObjectDependencies = (
 
 Kernel::System::AsynchronousExecutor - base class to delegate tasks to the OTRS Scheduler Daemon
 
-=head1 SYNOPSIS
+=head1 DESCRIPTION
 
 ObjectManager controlled modules can add this base class to execute some time consuming tasks in the
 background using the separate process OTRS Scheduler Daemon.
 
 =head1 PUBLIC INTERFACE
 
-=over 4
-
-=cut
-
-=item AsyncCall()
+=head2 AsyncCall()
 
 creates a scheduler daemon task to execute a function asynchronously.
 
@@ -140,8 +136,6 @@ sub AsyncCall {
 }
 
 1;
-
-=back
 
 =head1 TERMS AND CONDITIONS
 

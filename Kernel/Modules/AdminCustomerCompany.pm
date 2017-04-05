@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -51,8 +51,9 @@ sub Run {
     # change
     # ------------------------------------------------------------ #
     if ( $Self->{Subaction} eq 'Change' ) {
-        my $CustomerID = $ParamObject->GetParam( Param => 'CustomerID' ) || '';
-        my %Data = $CustomerCompanyObject->CustomerCompanyGet(
+        my $CustomerID   = $ParamObject->GetParam( Param => 'CustomerID' )   || '';
+        my $Notification = $ParamObject->GetParam( Param => 'Notification' ) || '';
+        my %Data         = $CustomerCompanyObject->CustomerCompanyGet(
             CustomerID => $CustomerID,
         );
         $Data{CustomerCompanyID} = $CustomerID;
@@ -60,6 +61,8 @@ sub Run {
         $Output .= $LayoutObject->NavigationBar(
             Type => $NavigationBarType,
         );
+        $Output .= $LayoutObject->Notify( Info => Translatable('Customer company updated!') )
+            if ( $Notification && $Notification eq 'Update' );
         $Self->_Edit(
             Action => 'Change',
             Nav    => $Nav,
@@ -158,21 +161,11 @@ sub Run {
         if ( !%Errors ) {
 
             # update group
-            if (
-                $CustomerCompanyObject->CustomerCompanyUpdate(
-                    %GetParam,
-                    UserID => $Self->{UserID},
-                )
-                )
-            {
-                $Self->_Overview(
-                    Nav    => $Nav,
-                    Search => $Search,
-                );
-                my $Output = $LayoutObject->Header();
-                $Output .= $LayoutObject->NavigationBar(
-                    Type => $NavigationBarType,
-                );
+            my $Update = $CustomerCompanyObject->CustomerCompanyUpdate( %GetParam, UserID => $Self->{UserID} );
+
+            if ($Update) {
+
+                my $SetDFError;
 
                 # set dynamic field values
                 my $DynamicFieldObject = $Kernel::OM->Get('Kernel::System::DynamicField');
@@ -184,7 +177,7 @@ sub Run {
                     my $DynamicFieldConfig = $Self->{DynamicFieldLookup}->{ $Entry->[2] };
 
                     if ( !IsHashRefWithData($DynamicFieldConfig) ) {
-                        $Output .= $LayoutObject->Notify( Info => "DynamicField $Entry->[2] not found!" );
+                        $SetDFError .= $LayoutObject->Notify( Info => "DynamicField $Entry->[2] not found!" );
                         next ENTRY;
                     }
 
@@ -196,19 +189,59 @@ sub Run {
                     );
 
                     if ( !$ValueSet ) {
-                        $Output
+                        $SetDFError
                             .= $LayoutObject->Notify( Info => "Unable to set value for dynamic field $Entry->[2]!" );
                         next ENTRY;
                     }
                 }
 
-                $Output .= $LayoutObject->Notify( Info => Translatable('Customer company updated!') );
-                $Output .= $LayoutObject->Output(
-                    TemplateFile => 'AdminCustomerCompany',
-                    Data         => \%Param,
-                );
-                $Output .= $LayoutObject->Footer();
-                return $Output;
+                my $ContinueAfterSave = $ParamObject->GetParam( Param => 'ContinueAfterSave' ) || 0;
+
+                # if set DF error exists, create notification
+                if ($SetDFError) {
+
+                    # if the user would like to continue editing the customer company, just redirect to the edit screen
+                    if ( $ContinueAfterSave eq '1' ) {
+                        $Self->_Edit(
+                            Action => 'Change',
+                            Nav    => $Nav,
+                            Errors => \%Errors,
+                            %GetParam,
+                        );
+                    }
+                    else {
+                        $Self->_Overview(
+                            Nav    => $Nav,
+                            Search => $Search,
+                        );
+                    }
+                    my $Output = $LayoutObject->Header();
+                    $Output .= $LayoutObject->NavigationBar(
+                        Type => $NavigationBarType,
+                    );
+                    $Output .= $LayoutObject->Notify( Info => Translatable('Customer company updated!') );
+                    $Output .= $SetDFError;
+                    $Output .= $LayoutObject->Output(
+                        TemplateFile => 'AdminCustomerCompany',
+                        Data         => \%Param,
+                    );
+                    $Output .= $LayoutObject->Footer();
+                    return $Output;
+                }
+
+                # if the user would like to continue editing the customer company, just redirect to the edit screen
+                if ( $ContinueAfterSave eq '1' ) {
+                    my $CustomerID = $ParamObject->GetParam( Param => 'CustomerID' ) || '';
+                    return $LayoutObject->Redirect(
+                        OP =>
+                            "Action=$Self->{Action};Subaction=Change;CustomerID=$CustomerID;Nav=$Nav;Notification=Update"
+                    );
+                }
+                else {
+
+                    # otherwise return to overview
+                    return $LayoutObject->Redirect( OP => "Action=$Self->{Action};Notification=Update" );
+                }
             }
         }
 
@@ -451,9 +484,12 @@ sub Run {
             Search => $Search,
         );
         my $Output = $LayoutObject->Header();
+        my $Notification = $ParamObject->GetParam( Param => 'Notification' ) || '';
         $Output .= $LayoutObject->NavigationBar(
             Type => $NavigationBarType,
         );
+        $Output .= $LayoutObject->Notify( Info => Translatable('Customer company updated!') )
+            if ( $Notification && $Notification eq 'Update' );
 
         $Output .= $LayoutObject->Output(
             TemplateFile => 'AdminCustomerCompany',
@@ -494,14 +530,6 @@ sub _Edit {
         Key   => 'ReadOnly',
         Value => $ConfigObject->{ $Param{Source} }->{ReadOnly},
     );
-
-    # shows header
-    if ( $Param{Action} eq 'Change' ) {
-        $LayoutObject->Block( Name => 'HeaderEdit' );
-    }
-    else {
-        $LayoutObject->Block( Name => 'HeaderAdd' );
-    }
 
     # Get valid object.
     my $ValidObject = $Kernel::OM->Get('Kernel::System::Valid');
@@ -718,41 +746,42 @@ sub _Overview {
         );
     }
 
-    # get config object
-    my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
-
-    # same Limit as $Self->{CustomerCompanyMap}->{'CustomerCompanySearchListLimit'}
-    # smallest Limit from all sources
-    my $Limit = 400;
-    SOURCE:
-    for my $Count ( '', 1 .. 10 ) {
-        next SOURCE if !$ConfigObject->Get("CustomerCompany$Count");
-        my $CustomerUserMap = $ConfigObject->Get("CustomerCompany$Count");
-        next SOURCE if !$CustomerUserMap->{CustomerCompanySearchListLimit};
-        if ( $CustomerUserMap->{CustomerCompanySearchListLimit} < $Limit ) {
-            $Limit = $CustomerUserMap->{CustomerCompanySearchListLimit};
-        }
-    }
-
-    my %ListAllItems = $CustomerCompanyObject->CustomerCompanyList(
-        Search => $Param{Search},
-        Limit  => $Limit + 1,
-        Valid  => 0,
-    );
-
-    if ( keys %ListAllItems <= $Limit ) {
-        my $ListAllItems = keys %ListAllItems;
-        $LayoutObject->Block(
-            Name => 'OverviewHeader',
-            Data => {
-                ListAll => $ListAllItems,
-                Limit   => $Limit,
-            },
-        );
-    }
-
     # if there are any registries to search, the table is filled and shown
     if ( $Param{Search} ) {
+
+        # get config object
+        my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
+
+        # same Limit as $Self->{CustomerCompanyMap}->{'CustomerCompanySearchListLimit'}
+        # smallest Limit from all sources
+        my $Limit = 400;
+        SOURCE:
+        for my $Count ( '', 1 .. 10 ) {
+            next SOURCE if !$ConfigObject->Get("CustomerCompany$Count");
+            my $CustomerUserMap = $ConfigObject->Get("CustomerCompany$Count");
+            next SOURCE if !$CustomerUserMap->{CustomerCompanySearchListLimit};
+            if ( $CustomerUserMap->{CustomerCompanySearchListLimit} < $Limit ) {
+                $Limit = $CustomerUserMap->{CustomerCompanySearchListLimit};
+            }
+        }
+
+        my %ListAllItems = $CustomerCompanyObject->CustomerCompanyList(
+            Search => $Param{Search},
+            Limit  => $Limit + 1,
+            Valid  => 0,
+        );
+
+        if ( keys %ListAllItems <= $Limit ) {
+            my $ListAllItems = keys %ListAllItems;
+            $LayoutObject->Block(
+                Name => 'OverviewHeader',
+                Data => {
+                    ListAll => $ListAllItems,
+                    Limit   => $Limit,
+                },
+            );
+        }
+
         my %List = $CustomerCompanyObject->CustomerCompanyList(
             Search => $Param{Search},
             Valid  => 0,

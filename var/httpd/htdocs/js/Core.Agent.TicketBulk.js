@@ -1,5 +1,5 @@
 // --
-// Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+// Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 // --
 // This software comes with ABSOLUTELY NO WARRANTY. For details, see
 // the enclosed file COPYING for license information (AGPL). If you
@@ -32,14 +32,16 @@ Core.Agent.TicketBulk = (function (TargetNS) {
         var TicketBulkURL = Core.Config.Get('TicketBulkURL');
 
         // bind radio and text input fields
-        $('#MergeTo').bind('blur', function() {
+        $('#MergeTo').on('blur', function() {
             if ($(this).val()) {
                 $('#OptionMergeTo').prop('checked', true);
             }
         });
 
-        // initialize the ticket action popups
-        Core.Agent.TicketAction.Init();
+        // Update owner and responsible fields on queue change.
+        $('#QueueID').on('change', function () {
+            Core.AJAX.FormUpdate($('.Validate'), 'AJAXUpdate', 'QueueID', ['OwnerID', 'ResponsibleID']);
+        });
 
         // execute function in the parent window
         Core.UI.Popup.ExecuteInParentWindow(function(WindowObject) {

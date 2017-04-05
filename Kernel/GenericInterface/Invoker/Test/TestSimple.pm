@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -19,15 +19,9 @@ our $ObjectManagerDisabled = 1;
 
 Kernel::GenericInterface::Invoker::Test::Test - GenericInterface test Invoker backend
 
-=head1 SYNOPSIS
-
 =head1 PUBLIC INTERFACE
 
-=over 4
-
-=cut
-
-=item new()
+=head2 new()
 
 usually, you want to create an instance of this
 by using Kernel::GenericInterface::Invoker->new();
@@ -54,9 +48,9 @@ sub new {
     return $Self;
 }
 
-=item PrepareRequest()
+=head2 PrepareRequest()
 
-prepare the invocation of the configured remote webservice.
+prepare the invocation of the configured remote web service.
 This will just return the data that was passed to the function.
 
     my $Result = $InvokerObject->PrepareRequest(
@@ -84,9 +78,9 @@ sub PrepareRequest {
     };
 }
 
-=item HandleResponse()
+=head2 HandleResponse()
 
-handle response data of the configured remote webservice.
+handle response data of the configured remote web service.
 This will just return the data that was passed to the function.
 
     my $Result = $InvokerObject->HandleResponse(
@@ -147,8 +141,6 @@ sub HandleResponse {
 }
 
 1;
-
-=back
 
 =head1 TERMS AND CONDITIONS
 

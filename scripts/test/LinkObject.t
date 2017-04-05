@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -2940,6 +2940,61 @@ for my $Test (@Tests) {
         $Test->{Result},
         "ObjectPermission - " . $Test->{Name},
     );
+}
+
+#
+# EventTypeConfigUpdate tests
+#
+my @EventTypeConfigUpdate = (
+    {
+        Name    => 'Dummy link type',
+        Object  => 'Ticket',
+        Backend => 'Kernel::System::LinkObject::Ticket',
+        Config  => {
+            Dummy => {
+                SourceName => 'Dummy',
+                TargetName => 'Dummy',
+            },
+        },
+        Result => [
+            'TicketSourceLinkAddDummy',
+            'TicketSourceLinkDeleteDummy',
+            'TicketTargetLinkAddDummy',
+            'TicketTargetLinkDeleteDummy',
+        ],
+    },
+);
+
+for my $Test (@EventTypeConfigUpdate) {
+    my $Success = $ConfigObject->Set(
+        Key   => 'LinkObject::Type',
+        Value => $Test->{Config},
+    );
+    $Self->True(
+        $Success,
+        "EventTypeConfigUpdate - $Test->{Name} - Registered link type",
+    );
+
+    my $LinkObject = $Kernel::OM->Get( $Test->{Backend} );
+    $Success = $LinkObject->EventTypeConfigUpdate(
+        Helper => $Helper,
+    );
+    $Self->True(
+        $Success,
+        "EventTypeConfigUpdate - $Test->{Name} - Event config updated",
+    );
+
+    my $EventConfig = $ConfigObject->Get('Events')->{ $Test->{Object} };
+
+    if ( @{ $Test->{Result} } ) {
+        for my $Event ( @{ $Test->{Result} } ) {
+            $Self->IsDeeply(
+                [ grep { $_ eq $Event } @{$EventConfig} ],
+                [$Event],
+                "EventTypeConfigUpdate - $Test->{Name} - Result event config",
+            );
+        }
+    }
 }
 
 # ------------------------------------------------------------ #

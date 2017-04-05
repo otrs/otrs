@@ -1,5 +1,5 @@
 // --
-// Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+// Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 // --
 // This software comes with ABSOLUTELY NO WARRANTY. For details, see
 // the enclosed file COPYING for license information (AGPL). If you
@@ -29,15 +29,11 @@ Core.Agent.Admin = Core.Agent.Admin || {};
     *      This function initializes table filter.
     */
     TargetNS.Init = function () {
+
         Core.UI.Table.InitTableFilter($('#FilterPostMasterFilters'), $('#PostMasterFilters'));
 
-        // bind click on delete button
-        $('#PostMasterFilters a.DeleteAction').on('click', function () {
-            if (window.confirm(Core.Language.Translate('Do you really want to delete this filter?'))) {
-                return true;
-            }
-            return false;
-        });
+        // delete postmaster filter
+        TargetNS.InitPostMasterFilterDelete();
 
         // check all negate labels and add a marker color if negate is enabled
         $('.FilterFields label.Negate input').each(function() {
@@ -57,7 +53,102 @@ Core.Agent.Admin = Core.Agent.Admin || {};
                 $(this).closest('label').removeClass('Checked');
             }
         });
+
+        InitSelectableOptions("MatchHeader");
+        InitSelectableOptions("SetHeader");
     };
+
+    /**
+     * @name PostMasterFilterDelete
+     * @memberof Core.Agent.Admin.PostMasterFilter
+     * @function
+     * @description
+     *      This function deletes postmaster filter on buton click.
+     */
+    TargetNS.InitPostMasterFilterDelete = function () {
+        $('.PostMasterFilterDelete').on('click', function () {
+            var $PostMasterFilterDelete = $(this);
+
+            Core.UI.Dialog.ShowContentDialog(
+                $('#DeletePostMasterFilterDialogContainer'),
+                Core.Language.Translate('Delete this PostMasterFilter'),
+                '240px',
+                'Center',
+                true,
+                [
+                    {
+                        Class: 'Primary',
+                        Label: Core.Language.Translate("Confirm"),
+                        Function: function() {
+                            $('.Dialog .InnerContent .Center').text(Core.Language.Translate("Deleting the postmaster filter and its data. This may take a while..."));
+                            $('.Dialog .Content .ContentFooter').remove();
+
+                            Core.AJAX.FunctionCall(
+                                Core.Config.Get('Baselink'),
+                                $PostMasterFilterDelete.data('query-string'),
+                                function() {
+                                   Core.App.InternalRedirect({
+                                       Action: 'AdminPostMasterFilter'
+                                   });
+                                }
+                            );
+                        }
+                    },
+                    {
+                        Label: Core.Language.Translate("Cancel"),
+                        Function: function () {
+                            Core.UI.Dialog.CloseDialog($('#DeletePostMasterFilterDialog'));
+                        }
+                    }
+                ]
+            );
+            return false;
+        });
+    };
+
+    /**
+     * @private
+     * @name PostMasterFilterDelete
+     * @memberof Core.Agent.Admin.PostMasterFilter
+     * @function
+     * @param {String} IDPrefix - IDPrefix of the select items.
+     * @description
+     *      This function handles disabling of options that are already selected in other selects.
+     */
+    function InitSelectableOptions(IDPrefix) {
+        // set data-old attribute
+        $(".FilterFields select[id^='" + IDPrefix + "']").each(function() {
+            var SelectedValue = $(this).val();
+
+            $(this).attr("data-old", SelectedValue);
+
+            // disable option on other selects
+            $(".FilterFields select[id^='" + IDPrefix + "']:not([id='" + $(this).attr("id") + "'])").each(function() {
+                $(this).find("option[value='" + SelectedValue + "']").attr('disabled','disabled');
+            });
+        });
+
+        $(".FilterFields select[id^='" + IDPrefix + "']").on("change", function() {
+            var SelectedValue = $(this).val(),
+                OldValue = $(this).attr("data-old");
+
+            // disable option on other selects
+            $(".FilterFields select[id^='" + IDPrefix + "']:not([id='" + $(this).attr("id") + "'])").each(function() {
+                $(this).find("option[value='" + SelectedValue + "']").attr('disabled','disabled');
+            });
+
+            // enable old value for all selects
+            if (OldValue != "") {
+                $(".FilterFields select[id^='" + IDPrefix + "'] option[value='" + OldValue + "']").removeAttr("disabled");
+            }
+
+            // Update old value
+            $(this).attr("data-old", $(this).val());
+
+            // initialize all modern input fields
+            $(".FilterFields select.Modernize[id^='" + IDPrefix + "']").trigger('redraw.InputField');
+        });
+    }
 
     Core.Init.RegisterNamespace(TargetNS, 'APP_MODULE');
 

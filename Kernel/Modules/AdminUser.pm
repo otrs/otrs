@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -37,7 +37,8 @@ sub Run {
     my $MainObject      = $Kernel::OM->Get('Kernel::System::Main');
     my $CheckItemObject = $Kernel::OM->Get('Kernel::System::CheckItem');
 
-    my $Search = $ParamObject->GetParam( Param => 'Search' ) || '';
+    my $Search       = $ParamObject->GetParam( Param => 'Search' )       || '';
+    my $Notification = $ParamObject->GetParam( Param => 'Notification' ) || '';
 
     # ------------------------------------------------------------ #
     #  switch to user
@@ -57,26 +58,6 @@ sub Run {
             NoOutOfOffice => 1,
         );
 
-        # get group object
-        my $GroupObject = $Kernel::OM->Get('Kernel::System::Group');
-
-        # get groups rw
-        my %GroupData = $GroupObject->PermissionUserGet(
-            UserID => $UserData{UserID},
-            Type   => 'rw',
-        );
-        for my $GroupKey ( sort keys %GroupData ) {
-            $UserData{"UserIsGroup[$GroupData{$GroupKey}]"} = 'Yes';
-        }
-
-        # get groups ro
-        %GroupData = $GroupObject->PermissionUserGet(
-            UserID => $UserData{UserID},
-            Type   => 'ro',
-        );
-        for my $GroupKey ( sort keys %GroupData ) {
-            $UserData{"UserIsGroupRo[$GroupData{$GroupKey}]"} = 'Yes';
-        }
         my $NewSessionID = $Kernel::OM->Get('Kernel::System::AuthSession')->CreateSessionID(
             %UserData,
             UserLastRequest => $Kernel::OM->Get('Kernel::System::Time')->SystemTime(),
@@ -140,6 +121,9 @@ sub Run {
         );
         my $Output = $LayoutObject->Header();
         $Output .= $LayoutObject->NavigationBar();
+        $Output .= $LayoutObject->Notify( Info => Translatable('Agent updated!') )
+            if ( $Notification && $Notification eq 'Update' );
+
         $Self->_Edit(
             Action => 'Change',
             Search => $Search,
@@ -258,16 +242,22 @@ sub Run {
                 }
 
                 if ( !$Note ) {
-                    $Self->_Overview( Search => $Search );
-                    my $Output = $LayoutObject->Header();
-                    $Output .= $LayoutObject->NavigationBar();
-                    $Output .= $LayoutObject->Notify( Info => Translatable('Agent updated!') );
-                    $Output .= $LayoutObject->Output(
-                        TemplateFile => 'AdminUser',
-                        Data         => \%Param,
-                    );
-                    $Output .= $LayoutObject->Footer();
-                    return $Output;
+
+                    # if the user would like to continue editing the agent, just redirect to the edit screen
+                    # otherwise return to overview
+                    if (
+                        defined $ParamObject->GetParam( Param => 'ContinueAfterSave' )
+                        && ( $ParamObject->GetParam( Param => 'ContinueAfterSave' ) eq '1' )
+                        )
+                    {
+                        my $ID = $ParamObject->GetParam( Param => 'ID' ) || '';
+                        return $LayoutObject->Redirect(
+                            OP => "Action=$Self->{Action};Subaction=Change;UserID=$GetParam{UserID};Notification=Update"
+                        );
+                    }
+                    else {
+                        return $LayoutObject->Redirect( OP => "Action=$Self->{Action};Notification=Update" );
+                    }
                 }
             }
             else {
@@ -478,6 +468,9 @@ sub Run {
         $Self->_Overview( Search => $Search );
         my $Output = $LayoutObject->Header();
         $Output .= $LayoutObject->NavigationBar();
+        $Output .= $LayoutObject->Notify( Info => Translatable('Agent updated!') )
+            if ( $Notification && $Notification eq 'Update' );
+
         $Output .= $LayoutObject->Output(
             TemplateFile => 'AdminUser',
             Data         => \%Param,
@@ -499,6 +492,31 @@ sub _Edit {
     );
     $LayoutObject->Block( Name => 'ActionList' );
     $LayoutObject->Block( Name => 'ActionOverview' );
+
+    # check if the current user has the permissions to edit another users preferences
+    if ( $Param{Action} eq 'Change' ) {
+
+        my $GroupObject                      = $Kernel::OM->Get('Kernel::System::Group');
+        my $EditAnotherUsersPreferencesGroup = $GroupObject->GroupLookup(
+            Group => $Kernel::OM->Get('Kernel::Config')->Get('EditAnotherUsersPreferencesGroup'),
+        );
+
+        # get user groups, where the user has the rw privilege
+        my %Groups = $GroupObject->PermissionUserGet(
+            UserID => $Self->{UserID},
+            Type   => 'rw',
+        );
+
+        # if the user is a member in this group he can access the feature
+        if ( $Groups{$EditAnotherUsersPreferencesGroup} ) {
+            $LayoutObject->Block(
+                Name => 'ActionEditPreferences',
+                Data => {
+                    UserID => $Param{UserID},
+                },
+            );
+        }
+    }
 
     # get valid list
     my %ValidList        = $Kernel::OM->Get('Kernel::System::Valid')->ValidList();
@@ -522,7 +540,6 @@ sub _Edit {
     }
     else {
         $LayoutObject->Block( Name => 'HeaderAdd' );
-        $LayoutObject->Block( Name => 'MarkerMandatory' );
         $LayoutObject->Block(
             Name => 'ShowPasswordHint',
         );
@@ -552,98 +569,6 @@ sub _Edit {
         $LayoutObject->Block( Name => 'UserLoginServerError' );
     }
 
-    # get config object
-    my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
-
-    my @Groups = @{ $ConfigObject->Get('PreferencesView') };
-    for my $Column (@Groups) {
-        my %Data        = ();
-        my %Preferences = %{ $ConfigObject->Get('PreferencesGroups') };
-
-        GROUP:
-        for my $Group ( sort keys %Preferences ) {
-            next GROUP if $Preferences{$Group}->{Column} ne $Column;
-
-            if ( $Data{ $Preferences{$Group}->{Prio} } ) {
-                COUNT:
-                for ( 1 .. 151 ) {
-                    $Preferences{$Group}->{Prio}++;
-                    if ( !$Data{ $Preferences{$Group}->{Prio} } ) {
-                        $Data{ $Preferences{$Group}->{Prio} } = $Group;
-                        last COUNT;
-                    }
-                }
-            }
-            $Data{ $Preferences{$Group}->{Prio} } = $Group;
-        }
-
-        # sort
-        for my $Key ( sort keys %Data ) {
-            $Data{ sprintf( "%07d", $Key ) } = $Data{$Key};
-            delete $Data{$Key};
-        }
-
-        # show each preferences setting
-        PRIO:
-        for my $Prio ( sort keys %Data ) {
-            my $Group = $Data{$Prio};
-            if ( !$ConfigObject->{PreferencesGroups}->{$Group} ) {
-                next PRIO;
-            }
-            my %Preference = %{ $ConfigObject->{PreferencesGroups}->{$Group} };
-            if ( $Group eq 'Password' ) {
-                next PRIO;
-            }
-            my $Module = $Preference{Module} || 'Kernel::Output::HTML::Preferences::Generic';
-
-            # load module
-            if ( $Kernel::OM->Get('Kernel::System::Main')->Require($Module) ) {
-
-                # TODO: This needs to be changed to Object Manager
-                my $Object = $Module->new(
-                    %{$Self},
-                    UserObject => $Kernel::OM->Get('Kernel::System::User'),
-                    ConfigItem => \%Preference,
-                    Debug      => $Self->{Debug},
-                );
-                my @Params = $Object->Param( UserData => \%Param );
-                if (@Params) {
-                    for my $ParamItem (@Params) {
-                        $LayoutObject->Block(
-                            Name => 'Item',
-                            Data => { %Param, },
-                        );
-                        if (
-                            ref( $ParamItem->{Data} ) eq 'HASH'
-                            || ref( $Preference{Data} ) eq 'HASH'
-                            )
-                        {
-                            my %BuildSelectionParams = (
-                                %Preference,
-                                %{$ParamItem},
-                            );
-                            $BuildSelectionParams{Class} = join( ' ', $BuildSelectionParams{Class} // '', 'Modernize' );
-
-                            $ParamItem->{'Option'} = $LayoutObject->BuildSelection(
-                                %BuildSelectionParams,
-                            );
-                        }
-                        $LayoutObject->Block(
-                            Name => $ParamItem->{Block} || $Preference{Block} || 'Option',
-                            Data => {
-                                Group => $Group,
-                                %Preference,
-                                %{$ParamItem},
-                            },
-                        );
-                    }
-                }
-            }
-            else {
-                return $LayoutObject->FatalError();
-            }
-        }
-    }
     return 1;
 }
 

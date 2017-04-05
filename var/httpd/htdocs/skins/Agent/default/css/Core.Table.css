@@ -74,6 +74,10 @@ table tr.MasterAction {
     border-collapse: separate;
 }
 
+.DataTable.FixedLayout {
+    table-layout: fixed;
+}
+
 .DataTable.VariableWidth {
     width: auto;
 }
@@ -157,6 +161,12 @@ table tr.MasterAction {
 .DataTable tbody td {
     padding: 0 10px;
     border-right: 1px dotted #CCC;
+}
+
+.DataTable.FixedLayout tbody td a.AsBlock {
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
 }
 
 .DataTable tbody td.UnreadArticles {
@@ -552,8 +562,8 @@ thead .headerSortDown a {
     line-height: 18px;
 }
 
-.TicketList .From div,
-.TicketList .Subject div,
+.TicketList td.From div,
+.TicketList td.Subject div,
 .TicketList td.Created a {
     height: 20px;
     overflow: hidden;
@@ -653,13 +663,15 @@ select.ColumnFilter {
     z-index: 1;
 }
 
-thead .headerSortUp > a:before {
+thead .headerSortUp > a:before,
+thead .tablesorter-headerDesc > div.tablesorter-header-inner > a:before {
     content: "\25BC";
     display: inline-block;
     margin-right: 2px;
 }
 
-thead .headerSortDown > a:before {
+thead .headerSortDown > a:before,
+thead .tablesorter-headerAsc > div.tablesorter-header-inner > a:before {
     content: "\25B2";
     display: inline-block;
     margin-right: 2px;

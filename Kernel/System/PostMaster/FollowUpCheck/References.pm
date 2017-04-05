@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -11,9 +11,11 @@ package Kernel::System::PostMaster::FollowUpCheck::References;
 use strict;
 use warnings;
 
+use Kernel::System::ObjectManager;    # prevent used once warning
+
 our @ObjectDependencies = (
     'Kernel::Config',
-    'Kernel::System::Ticket',
+    'Kernel::System::Ticket::Article',
 );
 
 sub new {
@@ -34,12 +36,12 @@ sub Run {
     my @References = $Self->{ParserObject}->GetReferences();
     return if !@References;
 
-    my $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
+    my $ArticleObject = $Kernel::OM->Get('Kernel::System::Ticket::Article');
 
     for my $Reference (@References) {
 
         # get ticket id of message id
-        my $TicketID = $TicketObject->ArticleGetTicketIDOfMessageID(
+        my $TicketID = $ArticleObject->ArticleGetTicketIDOfMessageID(
             MessageID => "<$Reference>",
         );
 

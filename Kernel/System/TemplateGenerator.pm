@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -30,6 +30,7 @@ our @ObjectDependencies = (
     'Kernel::System::StandardTemplate',
     'Kernel::System::SystemAddress',
     'Kernel::System::Ticket',
+    'Kernel::System::Ticket::Article',
     'Kernel::System::User',
     'Kernel::Output::HTML::Layout',
     'Kernel::System::JSON',
@@ -40,22 +41,16 @@ our @ObjectDependencies = (
 
 Kernel::System::TemplateGenerator - signature lib
 
-=head1 SYNOPSIS
+=head1 DESCRIPTION
 
 All signature functions.
 
 =head1 PUBLIC INTERFACE
 
-=over 4
+=head2 new()
 
-=cut
+Don't use the constructor directly, use the ObjectManager instead:
 
-=item new()
-
-create an object. Do not use it directly, instead use:
-
-    use Kernel::System::ObjectManager;
-    local $Kernel::OM = Kernel::System::ObjectManager->new();
     my $TemplateGeneratorObject = $Kernel::OM->Get('Kernel::System::TemplateGenerator');
 
 =cut
@@ -72,7 +67,7 @@ sub new {
     return $Self;
 }
 
-=item Salutation()
+=head2 Salutation()
 
 generate salutation
 
@@ -132,10 +127,18 @@ sub Salutation {
         );
     }
 
+    # get list unsupported tags for standard template
+    my @ListOfUnSupportedTag = qw(OTRS_AGENT_SUBJECT OTRS_AGENT_BODY OTRS_CUSTOMER_BODY OTRS_CUSTOMER_SUBJECT);
+
+    my $SalutationText = $Self->_RemoveUnSupportedTag(
+        Text => $Salutation{Text} || '',
+        ListOfUnSupportedTag => \@ListOfUnSupportedTag,
+    );
+
     # replace place holder stuff
-    my $SalutationText = $Self->_Replace(
+    $SalutationText = $Self->_Replace(
         RichText => $Self->{RichText},
-        Text     => $Salutation{Text},
+        Text     => $SalutationText,
         TicketID => $Param{TicketID},
         Data     => $Param{Data},
         UserID   => $Param{UserID},
@@ -151,7 +154,7 @@ sub Salutation {
     return $SalutationText;
 }
 
-=item Signature()
+=head2 Signature()
 
 generate salutation
 
@@ -243,10 +246,18 @@ sub Signature {
         );
     }
 
+    # get list unsupported tags for standard template
+    my @ListOfUnSupportedTag = qw(OTRS_AGENT_SUBJECT OTRS_AGENT_BODY OTRS_CUSTOMER_BODY OTRS_CUSTOMER_SUBJECT);
+
+    my $SignatureText = $Self->_RemoveUnSupportedTag(
+        Text => $Signature{Text} || '',
+        ListOfUnSupportedTag => \@ListOfUnSupportedTag,
+    );
+
     # replace place holder stuff
-    my $SignatureText = $Self->_Replace(
+    $SignatureText = $Self->_Replace(
         RichText => $Self->{RichText},
-        Text     => $Signature{Text},
+        Text     => $SignatureText,
         TicketID => $Param{TicketID} || '',
         Data     => $Param{Data},
         QueueID  => $Param{QueueID},
@@ -263,7 +274,7 @@ sub Signature {
     return $SignatureText;
 }
 
-=item Sender()
+=head2 Sender()
 
 generate sender address (FROM string) for emails
 
@@ -350,7 +361,7 @@ sub Sender {
     return $Sender;
 }
 
-=item Template()
+=head2 Template()
 
 generate template
 
@@ -430,10 +441,18 @@ sub Template {
     # if customer language is not defined, set default language
     $Language //= $Kernel::OM->Get('Kernel::Config')->Get('DefaultLanguage') || 'en';
 
+    # get list unsupported tags for standard template
+    my @ListOfUnSupportedTag = qw(OTRS_AGENT_SUBJECT OTRS_AGENT_BODY OTRS_CUSTOMER_BODY OTRS_CUSTOMER_SUBJECT);
+
+    my $TemplateText = $Self->_RemoveUnSupportedTag(
+        Text => $Template{Template} || '',
+        ListOfUnSupportedTag => \@ListOfUnSupportedTag,
+    );
+
     # replace place holder stuff
-    my $TemplateText = $Self->_Replace(
+    $TemplateText = $Self->_Replace(
         RichText => $Self->{RichText},
-        Text     => $Template{Template} || '',
+        Text     => $TemplateText || '',
         TicketID => $Param{TicketID} || '',
         Data     => $Param{Data} || {},
         UserID   => $Param{UserID},
@@ -443,7 +462,7 @@ sub Template {
     return $TemplateText;
 }
 
-=item GenericAgentArticle()
+=head2 GenericAgentArticle()
 
 generate internal or external notes
 
@@ -542,7 +561,7 @@ sub GenericAgentArticle {
     return %Template;
 }
 
-=item Attributes()
+=head2 Attributes()
 
 generate attributes
 
@@ -600,7 +619,7 @@ sub Attributes {
     return %{ $Param{Data} };
 }
 
-=item AutoResponse()
+=head2 AutoResponse()
 
 generate response
 
@@ -662,7 +681,7 @@ sub AutoResponse {
     return if !%AutoResponse;
 
     # get old article for quoting
-    my %Article = $TicketObject->ArticleLastCustomerArticle(
+    my %Article = $Kernel::OM->Get('Kernel::System::Ticket::Article')->ArticleLastCustomerArticle(
         TicketID      => $Param{TicketID},
         DynamicFields => 0,
     );
@@ -796,7 +815,7 @@ sub AutoResponse {
     return %AutoResponse;
 }
 
-=item NotificationEvent()
+=head2 NotificationEvent()
 
 replace all OTRS smart tags in the notification body and subject
 
@@ -840,7 +859,6 @@ sub NotificationEvent {
         $Param{CustomerMessageParams} = \%LocalCustomerMessageParams;
     }
 
-    # get ticket object
     my $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
 
     # get ticket
@@ -849,14 +867,16 @@ sub NotificationEvent {
         DynamicFields => 0,
     );
 
+    my $ArticleObject = $Kernel::OM->Get('Kernel::System::Ticket::Article');
+
     # get last article from customer
-    my %Article = $TicketObject->ArticleLastCustomerArticle(
+    my %Article = $ArticleObject->ArticleLastCustomerArticle(
         TicketID      => $Param{TicketID},
         DynamicFields => 0,
     );
 
     # get last article from agent
-    my @ArticleBoxAgent = $TicketObject->ArticleGet(
+    my @ArticleBoxAgent = $ArticleObject->ArticleGet(
         TicketID      => $Param{TicketID},
         UserID        => $Param{UserID},
         DynamicFields => 0,
@@ -884,7 +904,7 @@ sub NotificationEvent {
         next ARTICLE if !$ArticleData->{ArticleID};
 
         # get accounted time
-        my $AccountedTime = $TicketObject->ArticleAccountedTimeGet(
+        my $AccountedTime = $ArticleObject->ArticleAccountedTimeGet(
             ArticleID => $ArticleData->{ArticleID},
         );
 
@@ -1118,32 +1138,21 @@ sub _Replace {
         );
     }
 
-    # get config object
     my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
 
-    # special replace from secret config options
-    my @SecretConfigOptions = qw(
-        DatabasePw
-        SearchUserPw
-        UserPw
-        SendmailModule::AuthPassword
-        AuthModule::Radius::Password
-        PGP::Key::Password
-        Customer::AuthModule::DB::CustomerPassword
-        Customer::AuthModule::Radius::Password
-        PublicFrontend::AuthPassword
-    );
-
-    # replace the secret config options before the normal config options
-    for my $SecretConfigOption (@SecretConfigOptions) {
-
-        my $Tag = $Start . 'OTRS_CONFIG_' . $SecretConfigOption . $End;
-        $Param{Text} =~ s{$Tag}{xxx}gx;
-    }
-
-    # replace config options
+    # Replace config options.
     my $Tag = $Start . 'OTRS_CONFIG_';
-    $Param{Text} =~ s{$Tag(.+?)$End}{$ConfigObject->Get($1) // ''}egx;
+    $Param{Text} =~ s{$Tag(.+?)$End}{
+        my $Replace = '';
+        # Mask secret config options.
+        if ($1 =~ m{(Password|Pw)\d*$}smxi) {
+            $Replace = 'xxx';
+        }
+        else {
+            $Replace = $ConfigObject->Get($1) // '';
+        }
+        $Replace;
+    }egx;
 
     # cleanup
     $Param{Text} =~ s/$Tag.+?$End/-/gi;
@@ -1561,16 +1570,23 @@ sub _Replace {
                 }
 
                 # try to get the real name directly from the data
-                $From //= $Recipient{RealName};
+                $From //= $Recipient{Realname};
 
                 # get real name based on reply-to
                 if ( $Data{ReplyTo} ) {
-                    $From = $Data{ReplyTo} || '';
+                    $From = $Data{ReplyTo};
+
+                    # remove email addresses
+                    $From =~ s/&lt;.*&gt;|<.*>|\(.*\)|\"|&quot;|;|,//g;
+
+                    # remove leading/trailing spaces
+                    $From =~ s/^\s+//g;
+                    $From =~ s/\s+$//g;
                 }
 
                 # generate real name based on sender line
                 if ( !$From ) {
-                    $From = $Data{From} || '';
+                    $From = $Data{To} || '';
 
                     # remove email addresses
                     $From =~ s/&lt;.*&gt;|<.*>|\(.*\)|\"|&quot;|;|,//g;
@@ -1624,11 +1640,51 @@ sub _Replace {
     return $Param{Text};
 }
 
+=head2 _RemoveUnSupportedTag()
+
+cleanup all not supported tags
+
+    my $Text = $TemplateGeneratorObject->_RemoveUnSupportedTag(
+        Text => $SomeTextWithTags,
+        ListOfUnSupportedTag => \@ListOfUnSupportedTag,
+    );
+
+=cut
+
+sub _RemoveUnSupportedTag {
+
+    my ( $Self, %Param ) = @_;
+
+    # check needed stuff
+    for my $Item (qw(Text ListOfUnSupportedTag)) {
+        if ( !defined $Param{$Item} ) {
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
+                Priority => 'error',
+                Message  => "Need $Item!"
+            );
+            return;
+        }
+    }
+
+    my $Start = '<';
+    my $End   = '>';
+    if ( $Self->{RichText} ) {
+        $Start = '&lt;';
+        $End   = '&gt;';
+        $Param{Text} =~ s/(\n|\r)//g;
+    }
+
+    # cleanup all not supported tags
+    my $NotSupportedTag = $Start . "(?:" . join( "|", @{ $Param{ListOfUnSupportedTag} } ) . ")" . $End;
+    $Param{Text} =~ s/$NotSupportedTag/-/gi;
+
+    return $Param{Text};
+
+}
+
 1;
 
 =end Internal:
-
-=back
 
 =head1 TERMS AND CONDITIONS
 

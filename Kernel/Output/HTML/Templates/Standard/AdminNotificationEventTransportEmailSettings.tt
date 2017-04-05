@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -9,6 +9,7 @@
 <label for="RecipientEmail">[% Translate("Additional recipient email addresses") | html %]: </label>
 <div class="Field">
     <input type="text" name="RecipientEmail" id="RecipientEmail" class="W50pc" value="[% Data.RecipientEmail | html %]"/>
+    <p class="FieldExplanation">[% Translate("You can use OTRS-tags like <OTRS_TICKET_DynamicField_...> to insert values from the current ticket.") | html %]</p>
 </div>
 <div class="Clear"></div>
 

@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -47,6 +47,13 @@ $Selenium->RunTest(
 
         # navigate to AdminRegistration screen
         $Selenium->VerifiedGet("${ScriptAlias}index.pl?Action=AdminRegistration");
+
+        # check breadcrumb on Overview screen
+        $Self->Is(
+            $Selenium->execute_script("return \$('.BreadCrumb li:eq(1)').text().trim()"),
+            'System Registration Management',
+            "Breadcrumb text 'System Registration Management' is found on screen"
+        );
 
         # create test cases with different field values
         my @Tests = (

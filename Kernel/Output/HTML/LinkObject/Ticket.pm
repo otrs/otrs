@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -19,6 +19,7 @@ use Kernel::Language qw(Translatable);
 
 our @ObjectDependencies = (
     'Kernel::Config',
+    'Kernel::Language',
     'Kernel::Output::HTML::Layout',
     'Kernel::System::CustomerUser',
     'Kernel::System::DynamicField',
@@ -36,15 +37,12 @@ our @ObjectDependencies = (
 
 Kernel::Output::HTML::LinkObject::Ticket - layout backend module
 
-=head1 SYNOPSIS
+=head1 DESCRIPTION
 
 All layout functions of link object (ticket).
 
-=over 4
 
-=cut
-
-=item new()
+=head2 new()
 
 create an object
 
@@ -75,7 +73,7 @@ sub new {
     $Self->{ObjectData} = {
         Object     => 'Ticket',
         Realname   => 'Ticket',
-        ObjectName => 'TicketID',
+        ObjectName => 'SourceObjectID',
     };
 
     # get the dynamic fields for this screen
@@ -87,7 +85,7 @@ sub new {
     return $Self;
 }
 
-=item TableCreateComplex()
+=head2 TableCreateComplex()
 
 return an array with the block data
 
@@ -216,15 +214,12 @@ sub TableCreateComplex {
     my $TicketHook        = $ConfigObject->Get('Ticket::Hook');
     my $TicketHookDivider = $ConfigObject->Get('Ticket::HookDivider');
 
-    my @Headline = (
-        {
-            Content => $TicketHook,
-        },
-    );
+    my @Headline;
 
     # Get needed objects.
-    my $UserObject = $Kernel::OM->Get('Kernel::System::User');
-    my $JSONObject = $Kernel::OM->Get('Kernel::System::JSON');
+    my $UserObject     = $Kernel::OM->Get('Kernel::System::User');
+    my $JSONObject     = $Kernel::OM->Get('Kernel::System::JSON');
+    my $LanguageObject = $Kernel::OM->Get('Kernel::Language');
 
     # load user preferences
     my %Preferences = $UserObject->GetPreferences(
@@ -253,7 +248,6 @@ sub TableCreateComplex {
     my %UserColumns = %{$DefaultColumns};
 
     if ( $Preferences{'LinkObject::ComplexTable-Ticket'} ) {
-        my $JSONObject = $Kernel::OM->Get('Kernel::System::JSON');
 
         my $ColumnsEnabled = $JSONObject->Decode(
             Data => $Preferences{'LinkObject::ComplexTable-Ticket'},
@@ -308,7 +302,6 @@ sub TableCreateComplex {
     # Sort
     COLUMN:
     for my $Column ( sort { $SortOrder{$a} <=> $SortOrder{$b} } keys %UserColumns ) {
-        next COLUMN if $Column eq 'TicketNumber';    # Always present, already added.
 
         # if enabled by default
         if ( $UserColumns{$Column} == 2 ) {
@@ -316,7 +309,7 @@ sub TableCreateComplex {
 
             # Ticket fields
             if ( $Column !~ m{\A DynamicField_}xms ) {
-                $ColumnName = $Column;
+                $ColumnName = $Column eq 'TicketNumber' ? $TicketHook : $Column;
             }
 
             # Dynamic fields
@@ -361,24 +354,11 @@ sub TableCreateComplex {
             $CssClass = 'StrikeThrough';
         }
 
-        # Ticket Number must be present (since it contains master link to the ticket)
-        my @ItemColumns = (
-            {
-                Type    => 'Link',
-                Key     => $TicketID,
-                Content => $Ticket->{TicketNumber},
-                Link    => $Self->{LayoutObject}->{Baselink}
-                    . 'Action=AgentTicketZoom;TicketID='
-                    . $TicketID,
-                Title    => "$TicketHook$TicketHookDivider$Ticket->{TicketNumber}",
-                CssClass => $CssClass,
-            },
-        );
+        my @ItemColumns;
 
         # Sort
         COLUMN:
         for my $Column ( sort { $SortOrder{$a} <=> $SortOrder{$b} } keys %UserColumns ) {
-            next COLUMN if $Column eq 'TicketNumber';    # Always present, already added.
 
             # if enabled by default
             if ( $UserColumns{$Column} == 2 ) {
@@ -398,7 +378,20 @@ sub TableCreateComplex {
                 # Ticket fields
                 if ( $Column !~ m{\A DynamicField_}xms ) {
 
-                    if ( $Column eq 'EscalationTime' ) {
+                    if ( $Column eq 'TicketNumber' ) {
+
+                        %Hash = (
+                            Type    => 'Link',
+                            Key     => $TicketID,
+                            Content => $Ticket->{TicketNumber},
+                            Link    => $Self->{LayoutObject}->{Baselink}
+                                . 'Action=AgentTicketZoom;TicketID='
+                                . $TicketID,
+                            Title    => "$TicketHook$TicketHookDivider$Ticket->{TicketNumber}",
+                            CssClass => $CssClass,
+                        );
+                    }
+                    elsif ( $Column eq 'EscalationTime' ) {
 
                         $Hash{'Content'} = $Self->{LayoutObject}->CustomerAge(
                             Age   => $Ticket->{'EscalationTime'},
@@ -465,6 +458,9 @@ sub TableCreateComplex {
                         }
                         $Hash{'Content'} = $CustomerName;
                     }
+                    elsif ( $Column eq 'State' || $Column eq 'Priority' || $Column eq 'Lock' ) {
+                        $Hash{'Content'} = $LanguageObject->Translate( $Ticket->{$Column} );
+                    }
                     else {
                         $Hash{'Content'} = $Ticket->{$Column};
                     }
@@ -523,7 +519,7 @@ sub TableCreateComplex {
     return ( \%Block );
 }
 
-=item TableCreateSimple()
+=head2 TableCreateSimple()
 
 return a hash with the link output data
 
@@ -625,7 +621,7 @@ sub TableCreateSimple {
     return %LinkOutputData;
 }
 
-=item ContentStringCreate()
+=head2 ContentStringCreate()
 
 return a output string
 
@@ -650,9 +646,9 @@ sub ContentStringCreate {
     return;
 }
 
-=item SelectableObjectList()
+=head2 SelectableObjectList()
 
-return an array hash with selectable objects
+return an array hash with select-able objects
 
 Return
 
@@ -689,7 +685,7 @@ sub SelectableObjectList {
     return @ObjectSelectList;
 }
 
-=item SearchOptionList()
+=head2 SearchOptionList()
 
 return an array hash with search options
 
@@ -730,22 +726,22 @@ sub SearchOptionList {
         },
         {
             Key  => 'TicketTitle',
-            Name => 'Title',
+            Name => Translatable('Title'),
             Type => 'Text',
         },
         {
             Key  => 'TicketFulltext',
-            Name => 'Fulltext',
+            Name => Translatable('Fulltext'),
             Type => 'Text',
         },
         {
             Key  => 'StateIDs',
-            Name => 'State',
+            Name => Translatable('State'),
             Type => 'List',
         },
         {
             Key  => 'PriorityIDs',
-            Name => 'Priority',
+            Name => Translatable('Priority'),
             Type => 'List',
         },
     );
@@ -754,7 +750,7 @@ sub SearchOptionList {
         push @SearchOptionList,
             {
             Key  => 'TypeIDs',
-            Name => 'Type',
+            Name => Translatable('Type'),
             Type => 'List',
             };
     }
@@ -763,7 +759,7 @@ sub SearchOptionList {
         push @SearchOptionList,
             {
             Key  => 'ArchiveID',
-            Name => 'Archive search',
+            Name => Translatable('Archive search'),
             Type => 'List',
             };
     }
@@ -880,11 +876,9 @@ sub SearchOptionList {
 
 1;
 
-=back
-
 =head1 TERMS AND CONDITIONS
 
-This software is part of the OTRS project (http://otrs.org/).
+This software is part of the OTRS project (L<http://otrs.org/>).
 
 This software comes with ABSOLUTELY NO WARRANTY. For details, see
 the enclosed file COPYING for license information (AGPL). If you

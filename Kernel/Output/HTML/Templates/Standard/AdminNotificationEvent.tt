@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -12,6 +12,25 @@
 <div class="MainBox ARIARoleMain LayoutFixedSidebar SidebarFirst">
     <h1>[% Translate("Ticket Notification Management") | html %]</h1>
 
+    [% BreadcrumbPath = [
+            {
+                Name => Translate('Ticket Notification Management'),
+                Link => Env("Action"),
+            },
+        ]
+    %]
+
+    [% SWITCH Data.Action %]
+        [% CASE 'Add' %]
+            [% BreadcrumbPath.push({ Name => Translate("Add Notification"),}) %]
+        [% CASE 'Change' %]
+            [% USE EditTitle = String(Translate("Edit Notification")) %]
+            [% BreadcrumbPath.push({ Name => EditTitle.append( ': ', Data.Name ) }) %]
+    [% END %]
+
+    [% INCLUDE "Breadcrumb.tt" Path = BreadcrumbPath %]
+
+    <div class="Clear"></div>
     <div class="SidebarColumn">
 [% RenderBlockStart("ActionList") %]
         <div class="WidgetSimple">
@@ -143,18 +162,20 @@
         <form action="[% Env("CGIHandle") %]" method="post" class="Validate" name="compose" id="NotificationEvent">
             <div class="WidgetSimple">
                 <div class="Header">
-[% RenderBlockStart("HeaderAdd") %]
+                [% IF Data.Action == 'Add' %]
                     <h2>[% Translate("Add Notification") | html %]</h2>
-[% RenderBlockEnd("HeaderAdd") %]
-[% RenderBlockStart("HeaderEdit") %]
+                [% ELSE %]
                     <h2>[% Translate("Edit Notification") | html %]</h2>
-[% RenderBlockEnd("HeaderEdit") %]
+                [% END %]
                 </div>
                 <div class="Content">
 
                     <input type="hidden" name="Action" value="[% Env("Action") %]"/>
                     <input type="hidden" name="Subaction" value="[% Data.Action | uri %]Action"/>
                     <input type="hidden" name="ID" value="[% Data.ID | html %]"/>
+                    [% IF Data.Action == 'Change' %]
+                        <input type="hidden" name="ContinueAfterSave" id="ContinueAfterSave" value=""/>
+                    [% END %]
                     <fieldset class="TableLike">
 
                         <label for="Name" class="Mandatory">
@@ -287,7 +308,7 @@
                         <div class="Clear"></div>
 [% RenderBlockEnd("OverviewUpdateService") %]
 
-                        <label for="CustomerID">[% Translate("CustomerID") | html %]: </label>
+                        <label for="CustomerID">[% Translate("Customer ID") | html %]: </label>
                         <div class="Field">
                             <input type="text" name="CustomerID" id="CustomerID" class="W75pc" value="[% Data.CustomerID | html %]"/>
                         </div>
@@ -644,7 +665,13 @@
                     <fieldset class="TableLike">
 
                         <div class="Field SpacingTop">
-                            <button class="Primary CallForAction" type="submit" value="[% Translate("Save") | html %]"><span>[% Translate("Save") | html %]</span></button>
+                            [% IF Data.Action == 'Change' %]
+                                <button class="CallForAction Primary" id="SubmitAndContinue" type="button" value="[% Translate("Save") | html %]"><span>[% Translate("Save") | html %]</span></button>
+                                [% Translate("or") | html %]
+                                <button class="CallForAction Primary" id="Submit" type="submit" value="[% Translate("Save") | html %]"><span>[% Translate("Save and finish") | html %]</span></button>
+                            [% ELSE %]
+                                <button class="CallForAction Primary" id="Submit" type="submit" value="[% Translate("Save") | html %]"><span>[% Translate("Save") | html %]</span></button>
+                            [% END %]
                             [% Translate("or") | html %]
                             <a href="[% Env("Baselink") %]Action=[% Env("Action") %]">[% Translate("Cancel") | html %]</a>
                         </div>
@@ -699,7 +726,7 @@
 
                     <dt><code>&lt;OTRS_CUSTOMER_REALNAME&gt;</code></dt>
                     <dd>
-                        [% Translate("To get the realname of the ticket's customer user (if given).") | html %]
+                        [% Translate("To get the name of the ticket's customer user (if given).") | html %]
                     </dd>
 
                     <dt><code>&lt;OTRS_CUSTOMER_*&gt;</code></dt>

@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -22,11 +22,13 @@ my $ConfigObject    = $Kernel::OM->Get('Kernel::Config');
 my $HTMLUtilsObject = $Kernel::OM->Get('Kernel::System::HTMLUtils');
 my $MainObject      = $Kernel::OM->Get('Kernel::System::Main');
 my $TicketObject    = $Kernel::OM->Get('Kernel::System::Ticket');
+my $ArticleObject   = $Kernel::OM->Get('Kernel::System::Ticket::Article');
 
 # get helper object
 $Kernel::OM->ObjectParamAdd(
     'Kernel::System::UnitTest::Helper' => {
-        RestoreDatabase => 1,
+        RestoreDatabase  => 1,
+        UseTmpArticleDir => 1,
     },
 );
 my $Helper = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
@@ -250,12 +252,12 @@ for my $Test (@Tests) {
         push @AddedTickets, $TicketID;
 
         # get ticket articles
-        my @ArticleIDs = $TicketObject->ArticleIndex(
+        my @ArticleIDs = $ArticleObject->ArticleIndex(
             TicketID => $TicketID,
         );
 
         # use the first result (it should be only 1)
-        my %RawArticle = $TicketObject->ArticleGet(
+        my %RawArticle = $ArticleObject->ArticleGet(
             ArticleID     => $ArticleIDs[0],
             DynamicFields => 0,
             UserID        => 1,
@@ -295,7 +297,7 @@ for my $Test (@Tests) {
         }
 
         # check actual contents (subject and body)
-        my %Article = $TicketObject->ArticleGet(
+        my %Article = $ArticleObject->ArticleGet(
             ArticleID     => $ArticleIDs[0],
             DynamicFields => 0,
             UserID        => 1,
@@ -314,7 +316,7 @@ for my $Test (@Tests) {
         );
 
         # get the list of attachments
-        my %AtmIndex = $TicketObject->ArticleAttachmentIndex(
+        my %AtmIndex = $ArticleObject->ArticleAttachmentIndex(
             ArticleID                  => $ArticleIDs[0],
             Article                    => \%Article,
             StripPlainBodyAsAttachment => 1,
@@ -328,7 +330,7 @@ for my $Test (@Tests) {
             next FILEID if $AtmIndex{$FileID}->{Filename} =~ m{\A file-\d+ \z}msx;
 
             # get the attachment from the article (it should be already decrypted)
-            my %Attachment = $TicketObject->ArticleAttachment(
+            my %Attachment = $ArticleObject->ArticleAttachment(
                 ArticleID => $ArticleIDs[0],
                 FileID    => $FileID,
                 UserID    => 1,
@@ -651,7 +653,7 @@ push @AddedTickets, $TicketID;
 
 for my $Test (@TestVariations) {
 
-    my $ArticleID = $TicketObject->ArticleSend(
+    my $ArticleID = $ArticleObject->ArticleSend(
         %{ $Test->{ArticleData} },
         TicketID       => $TicketID,
         ArticleType    => 'email-external',
@@ -668,7 +670,7 @@ for my $Test (@TestVariations) {
         "$Test->{Name} - ArticleSend()",
     );
 
-    my %Article = $TicketObject->ArticleGet(
+    my %Article = $ArticleObject->ArticleGet(
         TicketID  => $TicketID,
         ArticleID => $ArticleID,
     );
@@ -702,7 +704,7 @@ for my $Test (@TestVariations) {
         );
     }
 
-    my %FinalArticleData = $TicketObject->ArticleGet(
+    my %FinalArticleData = $ArticleObject->ArticleGet(
         TicketID  => $TicketID,
         ArticleID => $ArticleID,
     );
@@ -724,7 +726,7 @@ for my $Test (@TestVariations) {
 
     if ( defined $Test->{ArticleData}->{Attachment} ) {
         my $Found;
-        my %Index = $TicketObject->ArticleAttachmentIndex(
+        my %Index = $ArticleObject->ArticleAttachmentIndex(
             ArticleID                  => $ArticleID,
             UserID                     => 1,
             Article                    => \%FinalArticleData,

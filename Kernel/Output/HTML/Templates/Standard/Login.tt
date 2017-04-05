@@ -1,10 +1,11 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
 # did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
 # --
+## nofilter(TidyAll::Plugin::OTRS::TT::ScriptUsage)
 [%- INCLUDE "HTTPHeaders.tt" -%]
 # With this X-Header, Core.AJAX can recognize that the AJAX request returned the login page (session timeout) and perform a redirect.
 X-OTRS-Login: [% Env("Baselink") %]
@@ -45,31 +46,7 @@ X-OTRS-Login: [% Env("Baselink") %]
     </style>
 [% RenderBlockEnd("LoginLogoCSS") %]
 
-    <style type="text/css">
-        @font-face {
-          font-family: 'FontAwesome';
-          src: url('[% Config("Frontend::WebPath") %]skins/Agent/default/css/thirdparty/fontawesome/fontawesome-webfont.eot?v=4.3.0');
-          src: url('[% Config("Frontend::WebPath") %]skins/Agent/default/css/thirdparty/fontawesome/fontawesome-webfont.eot?#iefix&v=4.3.0') format('embedded-opentype'),
-               url('[% Config("Frontend::WebPath") %]skins/Agent/default/css/thirdparty/fontawesome/fontawesome-webfont.woff?v=4.3.0') format('woff'),
-               url('[% Config("Frontend::WebPath") %]skins/Agent/default/css/thirdparty/fontawesome/fontawesome-webfont.ttf?v=4.3.0') format('truetype'),
-               url('[% Config("Frontend::WebPath") %]skins/Agent/default/css/thirdparty/fontawesome/fontawesome-webfont.svg#fontawesomeregular?v=4.3.0') format('svg');
-          font-weight: normal;
-          font-style: normal;
-        }
-
-        /* Fix poor font rendering on chrome based browsers on windows */
-        @media all and (-webkit-min-device-pixel-ratio:0) {
-            @font-face {
-                font-family: 'FontAwesome';
-                src: url('[% Config("Frontend::WebPath") %]skins/Agent/default/css/thirdparty/fontawesome/fontawesome-webfont.svg#fontawesomeregular') format('svg'),
-                     url('[% Config("Frontend::WebPath") %]skins/Agent/default/css/thirdparty/fontawesome/fontawesome-webfont.eot?#iefix&v=4.3.0') format('embedded-opentype'),
-                     url('[% Config("Frontend::WebPath") %]skins/Agent/default/css/thirdparty/fontawesome/fontawesome-webfont.woff?v=4.3.0') format('woff'),
-                     url('[% Config("Frontend::WebPath") %]skins/Agent/default/css/thirdparty/fontawesome/fontawesome-webfont.ttf?v=4.3.0') format('truetype');
-                font-weight: normal;
-                font-style: normal;
-            }
-        }
-    </style>
+    <link rel="stylesheet" type="text/css" href="[% Config("Frontend::WebPath") %]common/css/font-awesome.min.css" />
 
 # decide, if responsive CSS must be loaded
 # resposive CSS will not be loaded in "desktop mode" or if the document is within an iframe (customer overview in ticket phone overlay)
@@ -100,7 +77,7 @@ X-OTRS-Login: [% Env("Baselink") %]
 </head>
 <!-- end header -->
 <body class="[% Data.BodyClass | html %] LoginScreen">
-
+    <div id="AppWrapper">
     <div id="Header" class="ARIARoleBanner">
         <div id="Logo"></div>
     </div>
@@ -111,29 +88,19 @@ X-OTRS-Login: [% Env("Baselink") %]
 [% RenderBlockEnd("LoginLogo") %]
 
         <div>
-            <noscript>
-            <div class="WidgetSimple">
-                <div class="Header">
-                    <h2 class="Center">[% Translate("JavaScript Not Available") | html %]</h2>
+            <div class="LoginBox">
+                <noscript>
+                <div class="ErrorBox">
+                    <strong>[% Translate("JavaScript Not Available") | html %]</strong>
+                    <span>[% Translate("In order to experience this software, you'll need to enable JavaScript in your browser.") | html %]</span>
                 </div>
-                <div class="Content">
-                    <p class="SpacingTop Center">
-                            [% Translate("In order to experience OTRS, you'll need to enable JavaScript in your browser.") | html %]
-                    </p>
-                </div>
-            </div>
-            </noscript>
-
-            <div class="WidgetSimple Hidden" id="OldBrowser">
-                <div class="Header">
-                    <h2 class="Center">[% Translate("Browser Warning") | html %]</h2>
-                </div>
-                <div class="Content">
-                    <p class="SpacingTop Center">
+                </noscript>
+                <div class="ErrorBox Hidden" id="OldBrowser">
+                    <span>
                         [% Translate("The browser you are using is too old.") | html %]
-                        [% Translate("OTRS runs with a huge lists of browsers, please upgrade to one of these.") | html %]
+                        [% Translate("This software runs with a huge lists of browsers, please upgrade to one of these.") | html %]
                         [% Translate("Please see the documentation or ask your admin for further information.") | html %]
-                    </p>
+                    </span>
                 </div>
             </div>
 
@@ -147,7 +114,7 @@ X-OTRS-Login: [% Env("Baselink") %]
 [% RenderBlockEnd("SystemMaintenance") %]
 
 [% RenderBlockStart("PreLogin") %]
-            <div id="LoginBox" class="PreLogin">
+            <div id="LoginBox" class="LoginBox PreLogin">
                 <div class="WidgetSimple">
                     <div class="Content">
                         <p class="Center">
@@ -165,7 +132,7 @@ X-OTRS-Login: [% Env("Baselink") %]
 [% RenderBlockEnd("PreLogin") %]
 
 [% RenderBlockStart("LoginBox") %]
-            <div id="LoginBox">
+            <div id="LoginBox" class="LoginBox">
                 <div class="[% IF Data.MessageType == 'Success' %]SuccessBox[% ELSIF Data.MessageType == 'Error' %]ErrorBox[% END %]">
                     <span>[% Translate(Data.Message) | html %]</span>
                 </div>
@@ -268,9 +235,7 @@ X-OTRS-Login: [% Env("Baselink") %]
             </div>
 [% RenderBlockEnd("LostPassword") %]
 
-# --
 # Message of the day data!
-# --
 [% Data.Motd %]
 
         </div>
@@ -278,10 +243,4 @@ X-OTRS-Login: [% Env("Baselink") %]
 # loading a file called ads.js would be blocked by ad blockers (e.g. AdBlock or AdBlockPlus) and thus allows for a basic adblocker detection
     <script type="text/javascript" src="[% Config("Frontend::JavaScriptPath") %]ads.js"></script>
 
-<div id="Footer" class="ARIARoleContentinfo">
-    <a href="https://www.otrs.com/otrs-business-solution-managed/" title="[% Config("Product") %]" target="_blank">
-        <span></span> [% Translate("Powered by") | html %] [% Config("Product") %]
-    </a>
-</div>
-
-[% InsertTemplate("FooterJS.tt") %]
+[% InsertTemplate("Footer.tt") %]

@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -25,17 +25,13 @@ our @ObjectDependencies = (
 
 Kernel::System::Web::Request - global CGI interface
 
-=head1 SYNOPSIS
+=head1 DESCRIPTION
 
 All cgi param functions.
 
 =head1 PUBLIC INTERFACE
 
-=over 4
-
-=cut
-
-=item new()
+=head2 new()
 
 create param object. Do not use it directly, instead use:
 
@@ -78,7 +74,7 @@ sub new {
     return $Self;
 }
 
-=item Error()
+=head2 Error()
 
 to get the error back
 
@@ -103,7 +99,7 @@ sub Error {
     ## use critic
 }
 
-=item GetParam()
+=head2 GetParam()
 
 to get single request parameters. By default, trimming is performed on the data.
 
@@ -144,7 +140,7 @@ sub GetParam {
     return $Value;
 }
 
-=item GetParamNames()
+=head2 GetParamNames()
 
 to get names of all parameters passed to the script.
 
@@ -152,7 +148,7 @@ to get names of all parameters passed to the script.
 
 Example:
 
-Called URL: index.pl?Action=AdminSysConfig;Subaction=Save;Name=Config::Option::Valid
+Called URL: index.pl?Action=AdminSystemConfiguration;Subaction=Save;Name=Config::Option::Valid
 
     my @ParamNames = $ParamObject->GetParamNames();
     print join " :: ", @ParamNames;
@@ -186,7 +182,7 @@ sub GetParamNames {
     return @ParamNames;
 }
 
-=item GetArray()
+=head2 GetArray()
 
 to get array request parameters.
 By default, trimming is performed on the data.
@@ -235,7 +231,7 @@ sub GetArray {
     return @Values;
 }
 
-=item GetUploadAll()
+=head2 GetUploadAll()
 
 gets file upload data.
 
@@ -259,7 +255,7 @@ sub GetUploadAll {
     return if !$Upload;
 
     # get real file name
-    my $UploadFilenameOrig = $Self->GetParam( Param => $Param{Param} ) || 'unkown';
+    my $UploadFilenameOrig = $Self->GetParam( Param => $Param{Param} ) || 'unknown';
 
     my $NewFileName = "$UploadFilenameOrig";    # use "" to get filename of anony. object
     $Kernel::OM->Get('Kernel::System::Encode')->EncodeInput( \$NewFileName );
@@ -306,7 +302,7 @@ sub _GetUploadInfo {
     return $FileInfo->{ $Param{Header} };
 }
 
-=item SetCookie()
+=head2 SetCookie()
 
 set a cookie
 
@@ -336,7 +332,7 @@ sub SetCookie {
     );
 }
 
-=item GetCookie()
+=head2 GetCookie()
 
 get a cookie
 
@@ -352,7 +348,7 @@ sub GetCookie {
     return $Self->{Query}->cookie( $Param{Key} );
 }
 
-=item IsAJAXRequest()
+=head2 IsAJAXRequest()
 
 checks if the current request was sent by AJAX
 
@@ -367,8 +363,6 @@ sub IsAJAXRequest {
 }
 
 1;
-
-=back
 
 =head1 TERMS AND CONDITIONS
 

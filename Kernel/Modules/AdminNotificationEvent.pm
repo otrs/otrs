@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -51,6 +51,7 @@ sub Run {
     my $NotificationEventObject = $Kernel::OM->Get('Kernel::System::NotificationEvent');
     my $BackendObject           = $Kernel::OM->Get('Kernel::System::DynamicField::Backend');
     my $MainObject              = $Kernel::OM->Get('Kernel::System::Main');
+    my $Notification            = $ParamObject->GetParam( Param => 'Notification' );
 
     # get registered transport layers
     my %RegisteredTransports = %{ $Kernel::OM->Get('Kernel::Config')->Get('Notification::Transport') || {} };
@@ -70,6 +71,8 @@ sub Run {
 
         my $Output = $LayoutObject->Header();
         $Output .= $LayoutObject->NavigationBar();
+        $Output .= $LayoutObject->Notify( Info => Translatable('Notification updated!') )
+            if ( $Notification && $Notification eq 'Update' );
         $Self->_Edit(
             %Data,
             Action             => 'Change',
@@ -223,17 +226,23 @@ sub Run {
         }
 
         if ($Ok) {
-            $Self->_Overview();
-            my $Output = $LayoutObject->Header();
-            $Output .= $LayoutObject->NavigationBar();
-            $Output .= $LayoutObject->Notify( Info => Translatable('Notification updated!') );
-            $Output .= $LayoutObject->Output(
-                TemplateFile => 'AdminNotificationEvent',
-                Data         => \%Param,
-            );
-            $Output .= $LayoutObject->Footer();
 
-            return $Output;
+            # if the user would like to continue editing the notification event, just redirect to the edit screen
+            if (
+                defined $ParamObject->GetParam( Param => 'ContinueAfterSave' )
+                && ( $ParamObject->GetParam( Param => 'ContinueAfterSave' ) eq '1' )
+                )
+            {
+                my $ID = $ParamObject->GetParam( Param => 'ID' ) || '';
+                return $LayoutObject->Redirect(
+                    OP => "Action=$Self->{Action};Subaction=Change;ID=$ID;Notification=Update"
+                );
+            }
+            else {
+
+                # otherwise return to overview
+                return $LayoutObject->Redirect( OP => "Action=$Self->{Action};Notification=Update" );
+            }
         }
         else {
             for my $Needed (qw(Name Events Transports)) {
@@ -699,6 +708,8 @@ sub Run {
         $Self->_Overview();
         my $Output = $LayoutObject->Header();
         $Output .= $LayoutObject->NavigationBar();
+        $Output .= $LayoutObject->Notify( Info => Translatable('Notification updated!') )
+            if ( $Notification && $Notification eq 'Update' );
         $Output .= $LayoutObject->Output(
             TemplateFile => 'AdminNotificationEvent',
             Data         => \%Param,
@@ -893,14 +904,6 @@ sub _Edit {
         Name => 'OverviewUpdate',
         Data => \%Param,
     );
-
-    # shows header
-    if ( $Param{Action} eq 'Change' ) {
-        $LayoutObject->Block( Name => 'HeaderEdit' );
-    }
-    else {
-        $LayoutObject->Block( Name => 'HeaderAdd' );
-    }
 
     # build type string
     if ( $ConfigObject->Get('Ticket::Type') ) {
@@ -1157,10 +1160,10 @@ sub _Edit {
         HTMLQuote    => 0,
     );
 
-    my $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
+    my $ArticleObject = $Kernel::OM->Get('Kernel::System::Ticket::Article');
 
     $Param{ArticleTypesStrg} = $LayoutObject->BuildSelection(
-        Data        => { $TicketObject->ArticleTypeList( Result => 'HASH' ), },
+        Data        => { $ArticleObject->ArticleTypeList( Result => 'HASH' ), },
         Name        => 'ArticleTypeID',
         SelectedID  => $Param{Data}->{ArticleTypeID},
         Class       => $ArticleTypeIDClass . ' Modernize W75pc',
@@ -1171,7 +1174,7 @@ sub _Edit {
     );
 
     $Param{ArticleSenderTypesStrg} = $LayoutObject->BuildSelection(
-        Data        => { $TicketObject->ArticleSenderTypeList( Result => 'HASH' ), },
+        Data        => { $ArticleObject->ArticleSenderTypeList( Result => 'HASH' ), },
         Name        => 'ArticleSenderTypeID',
         SelectedID  => $Param{Data}->{ArticleSenderTypeID},
         Class       => $ArticleSenderTypeIDClass . ' Modernize W75pc',

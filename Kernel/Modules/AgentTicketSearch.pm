@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -507,7 +507,8 @@ sub Run {
             }
         }
 
-        my $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
+        my $TicketObject  = $Kernel::OM->Get('Kernel::System::Ticket');
+        my $ArticleObject = $Kernel::OM->Get('Kernel::System::Ticket::Article');
 
         # Special behavior for the fulltext search toolbar module:
         # - Check full text string to see if contents is a ticket number.
@@ -668,7 +669,7 @@ sub Run {
             for my $TicketID (@ViewableTicketIDs) {
 
                 # get first article data
-                my %Data = $TicketObject->ArticleFirstArticle(
+                my %Data = $ArticleObject->ArticleFirstArticle(
                     TicketID      => $TicketID,
                     Extended      => 1,
                     DynamicFields => 1,
@@ -701,7 +702,7 @@ sub Run {
 
                 # get whole article (if configured!)
                 if ( $Config->{SearchArticleCSVTree} ) {
-                    my @Article = $TicketObject->ArticleGet(
+                    my @Article = $ArticleObject->ArticleGet(
                         TicketID      => $TicketID,
                         DynamicFields => 0,
                     );
@@ -794,7 +795,7 @@ sub Run {
 
             my %HeaderMap = (
                 TicketNumber => Translatable('Ticket Number'),
-                CustomerName => Translatable('Customer Realname'),
+                CustomerName => Translatable('Customer Name'),
             );
 
             my @CSVHeadTranslated = map { $LayoutObject->{LanguageObject}->Translate( $HeaderMap{$_} || $_ ); }
@@ -856,7 +857,7 @@ sub Run {
             for my $TicketID (@ViewableTicketIDs) {
 
                 # get first article data
-                my %Data = $TicketObject->ArticleFirstArticle(
+                my %Data = $ArticleObject->ArticleFirstArticle(
                     TicketID      => $TicketID,
                     DynamicFields => 1,
                 );

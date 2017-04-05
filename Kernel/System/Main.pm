@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -8,6 +8,7 @@
 
 package Kernel::System::Main;
 ## nofilter(TidyAll::Plugin::OTRS::Perl::Dumper)
+## nofilter(TidyAll::Plugin::OTRS::Perl::Require)
 
 use strict;
 use warnings;
@@ -29,22 +30,16 @@ our @ObjectDependencies = (
 
 Kernel::System::Main - main object
 
-=head1 SYNOPSIS
+=head1 DESCRIPTION
 
 All main functions to load modules, die, and handle files.
 
 =head1 PUBLIC INTERFACE
 
-=over 4
-
-=cut
-
-=item new()
+=head2 new()
 
 create new object. Do not use it directly, instead use:
 
-    use Kernel::System::ObjectManager;
-    local $Kernel::OM = Kernel::System::ObjectManager->new();
     my $MainObject = $Kernel::OM->Get('Kernel::System::Main');
 
 =cut
@@ -59,7 +54,7 @@ sub new {
     return $Self;
 }
 
-=item Require()
+=head2 Require()
 
 require/load a module
 
@@ -81,54 +76,16 @@ sub Require {
         return;
     }
 
-    # prepare module
-    $Module =~ s/::/\//g;
-    $Module .= '.pm';
+    eval {
+        my $FileName = $Module =~ s{::}{/}smxgr;
+        require $FileName . '.pm';
+    };
 
-    # just return if it's already loaded
-    return 1 if $INC{$Module};
-
-    my $Result;
-    my $File;
-
-    # find full path of module
-    PREFIX:
-    for my $Prefix (@INC) {
-        $File = $Prefix . '/' . $Module;
-
-        next PREFIX if !-f $File;
-
-        $Result = do $File;
-
-        last PREFIX;
-    }
-
-    # if there was an error
+    # Handle errors.
     if ($@) {
 
         if ( !$Param{Silent} ) {
-            $Kernel::OM->Get('Kernel::System::Log')->Log(
-                Caller   => 1,
-                Priority => 'error',
-                Message  => "$@",
-            );
-        }
-
-        return;
-    }
-
-    # check result value, should be true
-    if ( !$Result ) {
-
-        if ( !$Param{Silent} ) {
-            my $Message = "Module $Module not found/could not be loaded";
-            if ( !-f $File ) {
-                $Message = "Module $Module not in \@INC (@INC)";
-            }
-            elsif ( !-r $File ) {
-                $Message = "Module could not be loaded (no read permissions on $File)";
-            }
-
+            my $Message = $@;
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Caller   => 1,
                 Priority => 'error',
@@ -139,13 +96,10 @@ sub Require {
         return;
     }
 
-    # add module
-    $INC{$Module} = $File;
-
     return 1;
 }
 
-=item RequireBaseClass()
+=head2 RequireBaseClass()
 
 require/load a module and add it as a base class to the
 calling package, if not already present (this check is needed
@@ -177,7 +131,7 @@ sub RequireBaseClass {
     return 1;
 }
 
-=item Die()
+=head2 Die()
 
 to die
 
@@ -200,7 +154,7 @@ sub Die {
     exit;
 }
 
-=item FilenameCleanUp()
+=head2 FilenameCleanUp()
 
 to clean up filenames which can be used in any case (also quoting is done)
 
@@ -268,7 +222,7 @@ sub FilenameCleanUp {
     return $Param{Filename};
 }
 
-=item FileRead()
+=head2 FileRead()
 
 to read files from file system
 
@@ -388,7 +342,7 @@ sub FileRead {
     return \$String;
 }
 
-=item FileWrite()
+=head2 FileWrite()
 
 to write data to file system
 
@@ -413,8 +367,8 @@ to write data to file system
         Permission => '644',     # optional - unix file permissions
     );
 
-Platform note: MacOS (HFS+) stores filenames as Unicode NFD internally,
-and DirectoryRead() will also report them as NFD.
+Platform note: MacOS (HFS+) stores filenames as Unicode C<NFD> internally,
+and DirectoryRead() will also report them as C<NFD>.
 
 =cut
 
@@ -514,7 +468,7 @@ sub FileWrite {
     return $Param{Location};
 }
 
-=item FileDelete()
+=head2 FileDelete()
 
 to delete a file from file system
 
@@ -579,7 +533,7 @@ sub FileDelete {
     return 1;
 }
 
-=item FileGetMTime()
+=head2 FileGetMTime()
 
 get timestamp of file change time
 
@@ -643,9 +597,9 @@ sub FileGetMTime {
     return $Stat->mtime();
 }
 
-=item MD5sum()
+=head2 MD5sum()
 
-get a md5 sum of a file or a string
+get an C<MD5> sum of a file or a string
 
     my $MD5Sum = $MainObject->MD5sum(
         Filename => '/path/to/me_to_alal.xml',
@@ -725,7 +679,7 @@ sub MD5sum {
     return;
 }
 
-=item Dump()
+=head2 Dump()
 
 dump variable to an string
 
@@ -807,7 +761,7 @@ sub Dump {
 
 }
 
-=item DirectoryRead()
+=head2 DirectoryRead()
 
 reads a directory and returns an array with results.
 
@@ -847,8 +801,8 @@ does not have to exist:
         Silent    => 1,     # will not log errors if the directory does not exist
     );
 
-Platform note: MacOS (HFS+) stores filenames as Unicode NFD internally,
-and DirectoryRead() will also report them as NFD.
+Platform note: MacOS (HFS+) stores filenames as Unicode C<NFD> internally,
+and DirectoryRead() will also report them as C<NFD>.
 
 =cut
 
@@ -964,7 +918,7 @@ sub DirectoryRead {
     return @Results;
 }
 
-=item GenerateRandomString()
+=head2 GenerateRandomString()
 
 generate a random string of defined length, and of a defined alphabet.
 defaults to a length of 16 and alphanumerics ( 0..9, A-Z and a-z).
@@ -1095,6 +1049,15 @@ sub _Dump {
         return;
     }
 
+    # data is a JSON::PP::Boolean
+    if ( ref ${$Data} eq 'JSON::PP::Boolean' ) {
+
+        # start recursion
+        $Self->_Dump( ${$Data} );
+
+        return;
+    }
+
     $Kernel::OM->Get('Kernel::System::Log')->Log(
         Priority => 'error',
         Message  => "Unknown ref '" . ref( ${$Data} ) . "'!",
@@ -1106,8 +1069,6 @@ sub _Dump {
 1;
 
 =end Internal:
-
-=back
 
 =head1 TERMS AND CONDITIONS
 

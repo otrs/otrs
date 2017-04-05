@@ -1,5 +1,5 @@
 // --
-// Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+// Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 // --
 // This software comes with ABSOLUTELY NO WARRANTY. For details, see
 // the enclosed file COPYING for license information (AGPL). If you
@@ -98,6 +98,22 @@ Core.UI.Autocomplete = (function (TargetNS) {
 
         return Config;
     }
+
+    // Override the autocomplete render function to highlight the part of the match
+    // which matches the search term.
+    $.ui.autocomplete.prototype._renderItem = function(ul, item) {
+
+        var Regex = new RegExp("(" + this.term.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&") + ")", "i"),
+            Label = Core.App.EscapeHTML(item.label);
+
+        // Mark matches with strong tag.
+        Label = Label.replace(Regex, "<strong>$1</strong>");
+
+        return $('<li></li>')
+            .data('item.autocomplete', item)
+            .append('<a href="#">' + Label + '</a>')
+            .appendTo(ul);
+     };
 
     /**
      * @name GetConfig

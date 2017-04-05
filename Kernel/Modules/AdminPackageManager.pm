@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -482,7 +482,7 @@ sub Run {
                                     Name    => $Name,
                                     Version => $Version,
                                     %{$Hash},
-                                    Message => 'ok',
+                                    Message => Translatable('File is OK'),
                                     Icon    => 'IconReady',
                                 },
                             );
@@ -563,6 +563,9 @@ sub Run {
             return $LayoutObject->ErrorScreen( Message => $Package );
         }
         my %Structure = $PackageObject->PackageParse( String => $Package );
+
+        $Frontend{Name} = $Structure{Name}->{Content};
+
         $LayoutObject->Block(
             Name => 'Package',
             Data => { %Param, %Frontend, },

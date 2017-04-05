@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -12,6 +12,7 @@ package Kernel::Modules::AdminQueue;
 use strict;
 use warnings;
 
+use Kernel::System::VariableCheck qw(:all);
 use Kernel::Language qw(Translatable);
 
 our $ObjectManagerDisabled = 1;
@@ -28,6 +29,13 @@ sub new {
 
 sub Run {
     my ( $Self, %Param ) = @_;
+
+    # Store last entity screen.
+    $Kernel::OM->Get('Kernel::System::AuthSession')->UpdateSessionID(
+        SessionID => $Self->{SessionID},
+        Key       => 'LastScreenEntity',
+        Value     => $Self->{RequestedURL},
+    );
 
     my $ParamObject = $Kernel::OM->Get('Kernel::System::Web::Request');
     my $QueueID = $ParamObject->GetParam( Param => 'QueueID' ) || '';
@@ -81,6 +89,7 @@ sub Run {
     my $LayoutObject = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
     my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
     my $MainObject   = $Kernel::OM->Get('Kernel::System::Main');
+    my $Notification = $ParamObject->GetParam( Param => 'Notification' ) || '';
 
     # ------------------------------------------------------------ #
     # change
@@ -89,6 +98,8 @@ sub Run {
 
         my $Output = $LayoutObject->Header();
         $Output .= $LayoutObject->NavigationBar();
+        $Output .= $LayoutObject->Notify( Info => Translatable('Queue updated!') )
+            if ( $Notification && $Notification eq 'Update' );
 
         $Self->_Edit(
             Action => 'Change',
@@ -107,7 +118,7 @@ sub Run {
     }
 
     # ------------------------------------------------------------ #
-    # update action
+    # change action
     # ------------------------------------------------------------ #
     elsif ( $Self->{Subaction} eq 'ChangeAction' ) {
 
@@ -159,6 +170,34 @@ sub Run {
         if ($NameExists) {
             $Errors{NameExists} = 1;
             $Errors{'NameInvalid'} = 'ServerError';
+        }
+
+        # Check if queue is present in SysConfig setting
+        my $UpdateEntity    = $ParamObject->GetParam( Param => 'UpdateEntity' ) || '';
+        my $SysConfigObject = $Kernel::OM->Get('Kernel::System::SysConfig');
+        my %QueueOldData    = %QueueData;
+        my @IsQueueInSysConfig;
+        @IsQueueInSysConfig = $SysConfigObject->ConfigurationEntityCheck(
+            EntityType => 'Queue',
+            EntityName => $QueueData{Name},
+        );
+        if (@IsQueueInSysConfig) {
+
+            # An entity present in SysConfig couldn't be invalidated.
+            if (
+                $Kernel::OM->Get('Kernel::System::Valid')->ValidLookup( ValidID => $GetParam{ValidID} )
+                ne 'valid'
+                )
+            {
+                $Errors{ValidIDInvalid}         = 'ServerError';
+                $Errors{ValidOptionServerError} = 'InSetting';
+            }
+
+            # In case changing name an authorization (UpdateEntity) should be send
+            elsif ( $QueueData{Name} ne $GetParam{Name} && !$UpdateEntity ) {
+                $Errors{NameInvalid}              = 'ServerError';
+                $Errors{InSettingNameServerError} = 1;
+            }
         }
 
         # if no errors occurred
@@ -220,18 +259,76 @@ sub Run {
                     }
                 }
 
-                $Self->_Overview();
+                if (
+                    @IsQueueInSysConfig
+                    && $QueueOldData{Name} ne $GetParam{Name}
+                    && $UpdateEntity
+                    )
+                {
+                    SETTING:
+                    for my $SettingName (@IsQueueInSysConfig) {
 
-                my $Output = $LayoutObject->Header();
-                $Output .= $LayoutObject->NavigationBar();
-                $Output .= $LayoutObject->Notify( Info => Translatable('Queue updated!') );
-                $Output .= $LayoutObject->Output(
-                    TemplateFile => 'AdminQueue',
-                    Data         => \%Param,
-                );
-                $Output .= $LayoutObject->Footer();
+                        my %Setting = $SysConfigObject->SettingGet(
+                            Name => $SettingName,
+                        );
 
-                return $Output;
+                        next SETTING if !IsHashRefWithData( \%Setting );
+
+                        $Setting{EffectiveValue} =~ s/$QueueOldData{Name}/$GetParam{Name}/g;
+
+                        my $ExclusiveLockGUID = $SysConfigObject->SettingLock(
+                            Name   => $Setting{Name},
+                            Force  => 1,
+                            UserID => $Self->{UserID}
+                        );
+                        $Setting{ExclusiveLockGUID} = $ExclusiveLockGUID;
+
+                        my %UpdateSuccess = $SysConfigObject->SettingUpdate(
+                            %Setting,
+                            UserID => $Self->{UserID},
+                        );
+                    }
+
+                    $SysConfigObject->ConfigurationDeploy(
+                        Comments      => "Queue name change",
+                        DirtySettings => \@IsQueueInSysConfig,
+                        UserID        => $Self->{UserID},
+                        Force         => 1,
+                    );
+                }
+
+                # if $Note has some notify, create output with $Note
+                # otherwise redirect depending on what button ('Save' or 'Save and Finish') is clicked
+                if ( $Note ne '' ) {
+                    $Self->_Overview();
+                    my $Output = $LayoutObject->Header();
+                    $Output .= $LayoutObject->NavigationBar();
+                    $Output .= $Note;
+                    $Output .= $LayoutObject->Output(
+                        TemplateFile => 'AdminQueue',
+                        Data         => \%Param,
+                    );
+                    $Output .= $LayoutObject->Footer();
+
+                    return $Output;
+                }
+
+                # if the user would like to continue editing the queue, just redirect to the edit screen
+                if (
+                    defined $ParamObject->GetParam( Param => 'ContinueAfterSave' )
+                    && ( $ParamObject->GetParam( Param => 'ContinueAfterSave' ) eq '1' )
+                    )
+                {
+                    return $LayoutObject->Redirect(
+                        OP => "Action=$Self->{Action};Subaction=Change;QueueID=$QueueID;Notification=Update"
+                    );
+                }
+                else {
+
+                    # otherwise return to overview
+                    return $LayoutObject->Redirect( OP => "Action=$Self->{Action};Notification=Update" );
+                }
+
             }
         }
 
@@ -442,6 +539,9 @@ sub Run {
 
         my $Output = $LayoutObject->Header();
         $Output .= $LayoutObject->NavigationBar();
+        $Output .= $LayoutObject->Notify( Info => Translatable('Queue updated!') )
+            if ( $Notification && $Notification eq 'Update' );
+
         $Output .= $LayoutObject->Output(
             TemplateFile => 'AdminQueue',
             Data         => \%Param,
@@ -688,14 +788,6 @@ sub _Edit {
         },
     );
 
-    # shows header
-    if ( $Param{Action} eq 'Change' ) {
-        $LayoutObject->Block( Name => 'HeaderEdit' );
-    }
-    else {
-        $LayoutObject->Block( Name => 'HeaderAdd' );
-    }
-
     if ( $Param{DefaultSignKeyOption} ) {
         $LayoutObject->Block(
             Name => 'OptionalField',
@@ -706,6 +798,9 @@ sub _Edit {
     # show appropriate messages for ServerError
     if ( defined $Param{Errors}->{NameExists} && $Param{Errors}->{NameExists} == 1 ) {
         $LayoutObject->Block( Name => 'ExistNameServerError' );
+    }
+    elsif ( defined $Param{Errors}->{InSettingNameServerError} && $Param{Errors}->{InSettingNameServerError} == 1 ) {
+        $LayoutObject->Block( Name => 'InSettingNameServerError' );
     }
     else {
         $LayoutObject->Block( Name => 'NameServerError' );
@@ -773,6 +868,55 @@ sub _Edit {
     if ( $Param{ContentType} && $Param{ContentType} =~ /text\/html/i ) {
         $Param{Response} = $Kernel::OM->Get('Kernel::System::HTMLUtils')->ToAscii(
             String => $Param{Response},
+        );
+    }
+
+    # Several error messages can be used for Valid option.
+    $Param{Errors}->{ValidOptionServerError} //= 'Required';
+    $LayoutObject->Block(
+        Name => $Param{Errors}->{ValidOptionServerError} . 'ValidOptionServerError',
+    );
+
+    # Add warning in case the Queue belongs a SysConfig setting.
+    my $SysConfigObject = $Kernel::OM->Get('Kernel::System::SysConfig');
+
+    # In case dirty setting disable form
+    my $IsDirtyConfig = 0;
+    my @IsDirtyResult = $SysConfigObject->ConfigurationDirtySettingsList();
+    my %IsDirtyList   = map { $_ => 1 } @IsDirtyResult;
+
+    my @IsQueueInSysConfig = $SysConfigObject->ConfigurationEntityCheck(
+        EntityType => 'Queue',
+        EntityName => $QueueName,
+    );
+
+    if (@IsQueueInSysConfig) {
+        $LayoutObject->Block(
+            Name => 'QueueInSysConfig',
+            Data => {
+                OldName => $QueueName,
+            },
+        );
+        for my $SettingName (@IsQueueInSysConfig) {
+            $LayoutObject->Block(
+                Name => 'QueueInSysConfigRow',
+                Data => {
+                    SettingName => $SettingName,
+                },
+            );
+
+            # Verify if dirty setting
+            if ( $IsDirtyList{$SettingName} ) {
+                $IsDirtyConfig = 1;
+            }
+
+        }
+    }
+
+    if ($IsDirtyConfig) {
+        $LayoutObject->Block(
+            Name => 'QueueInSysConfigDirty',
+            ,
         );
     }
 

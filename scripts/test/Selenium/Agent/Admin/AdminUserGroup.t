@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -63,8 +63,30 @@ $Selenium->RunTest(
         $Selenium->find_element( "#Users",  'css' );
         $Selenium->find_element( "#Groups", 'css' );
 
+        # check breadcrumb on Overview screen
+        $Self->True(
+            $Selenium->find_element( '.BreadCrumb', 'css' ),
+            "Breadcrumb is found on Overview screen.",
+        );
+
         # click on created test group
         $Selenium->find_element( $GroupName, 'link_text' )->VerifiedClick();
+
+        # check breadcrumb on change screen
+        my $Count = 1;
+        for my $BreadcrumbText (
+            'Manage Agent-Group Relations',
+            'Change Agent Relations for Group \'' . $GroupName . '\''
+            )
+        {
+            $Self->Is(
+                $Selenium->execute_script("return \$('.BreadCrumb li:eq($Count)').text().trim()"),
+                $BreadcrumbText,
+                "Breadcrumb text '$BreadcrumbText' is found on screen"
+            );
+
+            $Count++;
+        }
 
         # give full read and write access to the tickets in test group for test user
         $Selenium->find_element("//input[\@value='$UserID'][\@name='rw']")->VerifiedClick();

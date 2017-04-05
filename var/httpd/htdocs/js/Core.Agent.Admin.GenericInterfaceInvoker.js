@@ -1,5 +1,5 @@
 // --
-// Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+// Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 // --
 // This software comes with ABSOLUTELY NO WARRANTY. For details, see
 // the enclosed file COPYING for license information (AGPL). If you
@@ -46,25 +46,12 @@ Core.Agent.Admin.GenericInterfaceInvoker = (function (TargetNS) {
         TargetNS.Invoker = Core.Config.Get('Invoker');
         TargetNS.Action = 'AdminGenericInterfaceInvokerDefault';
 
-        // Bind events on buttons
-        $('#MappingOutboundConfigureButton').on('click', function(){
-            var URL;
-
-            if ($('#MappingOutboundConfigDialog').val()) {
-                URL = Core.Config.Get('Baselink') + 'Action=' + $('#MappingOutboundConfigDialog').val();
-                URL += ';Subaction=Change;Invoker=' + $('#OldInvoker').val() + ';Direction=MappingOutbound' + ';WebserviceID=' + $('#WebserviceID').val();
-                window.location.href = URL;
-            }
+        $('#MappingOutboundConfigureButton').on('click', function() {
+            TargetNS.Redirect('MappingOutbound');
         });
 
-        $('#MappingInboundConfigureButton').on('click', function(){
-            var URL;
-
-            if ($('#MappingInboundConfigDialog').val()) {
-                URL = Core.Config.Get('Baselink') + 'Action=' + $('#MappingInboundConfigDialog').val();
-                URL += ';Subaction=Change;Invoker=' + $('#OldInvoker').val() + ';Direction=MappingInbound' + ';WebserviceID=' + $('#WebserviceID').val();
-                window.location.href = URL;
-            }
+        $('#MappingInboundConfigureButton').on('click', function() {
+            TargetNS.Redirect('MappingInbound');
         });
 
         $('#SaveAndFinishButton').on('click', function(){
@@ -274,6 +261,34 @@ Core.Agent.Admin.GenericInterfaceInvoker = (function (TargetNS) {
 
         // binding a click event to the defined element
         $(DialogData[Data.ElementID].ElementSelector).on('click', TargetNS.ShowDeleteEventDialog);
+    };
+
+    /**
+     * @name Redirect
+     * @memberof Core.Agent.Admin.GenericInterfaceInvoker
+     * @function
+     * @param {String} ConfigKey
+     * @description
+     *      Redirects.
+     */
+    TargetNS.Redirect = function(ConfigKey) {
+        var ConfigElement;
+
+        // get the Config Element name, if none it will have "null" value
+        ConfigElement = $('#' + ConfigKey + 'ConfigDialog').val();
+
+        // check is config element is a valid scring
+        if (ConfigElement !== null) {
+
+            // redirect to correct url
+            Core.App.InternalRedirect({
+                Action: ConfigElement,
+                Subaction: 'Change',
+                WebserviceID: TargetNS.WebserviceID,
+                Invoker: TargetNS.Invoker,
+                Direction: ConfigKey
+            });
+        }
     };
 
     Core.Init.RegisterNamespace(TargetNS, 'APP_MODULE');

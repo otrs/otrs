@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -20,7 +20,8 @@ my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
 # get helper object
 $Kernel::OM->ObjectParamAdd(
     'Kernel::System::UnitTest::Helper' => {
-        RestoreDatabase => 1,
+        RestoreDatabase  => 1,
+        UseTmpArticleDir => 1,
     },
 );
 my $Helper = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
@@ -43,21 +44,21 @@ for my $Module ( 'RuntimeDB', 'StaticDB' ) {
     # get a random id
     my $RandomID = $Helper->GetRandomID();
 
-    # Make sure that the TicketObject gets recreated for each loop.
-    $Kernel::OM->ObjectsDiscard( Objects => ['Kernel::System::Ticket'] );
+    # Make sure that the ticket and article objects get recreated for each loop.
+    $Kernel::OM->ObjectsDiscard(
+        Objects => [
+            'Kernel::System::Ticket',
+            'Kernel::System::Ticket::Article',
+        ],
+    );
 
     $ConfigObject->Set(
         Key   => 'Ticket::IndexModule',
         Value => "Kernel::System::Ticket::IndexAccelerator::$Module",
     );
 
-    # create test ticket object
-    my $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
-
-    $Self->True(
-        $TicketObject->isa("Kernel::System::Ticket::IndexAccelerator::$Module"),
-        "TicketObject loaded the correct backend",
-    );
+    my $TicketObject  = $Kernel::OM->Get('Kernel::System::Ticket');
+    my $ArticleObject = $Kernel::OM->Get('Kernel::System::Ticket::Article');
 
     my @TicketIDs;
 
@@ -99,7 +100,7 @@ for my $Module ( 'RuntimeDB', 'StaticDB' ) {
     # create articles (ArticleType is 'note-internal' only for first article of first ticket)
     for my $Item ( 0 .. 1 ) {
         for my $SubjectDataItem (qw( Kumbala Acua )) {
-            my $ArticleID = $TicketObject->ArticleCreate(
+            my $ArticleID = $ArticleObject->ArticleCreate(
                 TicketID       => $TicketIDs[$Item],
                 ArticleType    => ( $Item == 0 && $SubjectDataItem eq 'Kumbala' ) ? 'note-internal' : 'note-external',
                 SenderType     => 'agent',

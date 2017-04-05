@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -13,13 +13,14 @@ use utf8;
 use vars (qw($Self));
 
 # get needed objects
-my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
-my $MainObject   = $Kernel::OM->Get('Kernel::System::Main');
-my $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
+my $ConfigObject  = $Kernel::OM->Get('Kernel::Config');
+my $MainObject    = $Kernel::OM->Get('Kernel::System::Main');
+my $ArticleObject = $Kernel::OM->Get('Kernel::System::Ticket::Article');
 
 $Kernel::OM->ObjectParamAdd(
     'Kernel::System::UnitTest::Helper' => {
-        RestoreDatabase => 1,
+        RestoreDatabase  => 1,
+        UseTmpArticleDir => 1,
     },
 );
 my $HelperObject = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
@@ -38,7 +39,7 @@ my $TestEmailObject = $Kernel::OM->Get('Kernel::System::Email::Test');
 
 # testing ArticleSend, especially for bug#8828 (attachments)
 # create a ticket first
-my $TicketID = $TicketObject->TicketCreate(
+my $TicketID = $Kernel::OM->Get('Kernel::System::Ticket')->TicketCreate(
     Title        => 'Some Ticket_Title',
     Queue        => 'Raw',
     Lock         => 'unlock',
@@ -161,7 +162,7 @@ for my $Test (@ArticleTests) {
     );
 
     # create article
-    $ArticleID = $TicketObject->ArticleSend(
+    $ArticleID = $ArticleObject->ArticleSend(
         TicketID => $TicketID,
         %{ $Test->{ArticleData} },
     );
@@ -193,13 +194,13 @@ for my $Test (@ArticleTests) {
     # check article count
     $ArticleCount++;
     $Self->Is(
-        $TicketObject->ArticleCount( TicketID => $TicketID ),
+        $ArticleObject->ArticleCount( TicketID => $TicketID ),
         $ArticleCount,
         $Test->{Name} . ' - ArticleCount',
     );
 
     # check article content
-    %Article = $TicketObject->ArticleGet( ArticleID => $ArticleID );
+    %Article = $ArticleObject->ArticleGet( ArticleID => $ArticleID );
 
     $Self->True(
         $Article{From} eq $Test->{ArticleData}->{From},
@@ -207,7 +208,7 @@ for my $Test (@ArticleTests) {
     );
 
     # check article attachments
-    %AttachmentIndex = $TicketObject->ArticleAttachmentIndex(
+    %AttachmentIndex = $ArticleObject->ArticleAttachmentIndex(
         ArticleID                  => $ArticleID,
         UserID                     => 1,
         Article                    => \%Article,

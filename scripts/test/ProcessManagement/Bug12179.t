@@ -1,6 +1,6 @@
 
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -22,7 +22,8 @@ my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
 # Get helper object.
 $Kernel::OM->ObjectParamAdd(
     'Kernel::System::UnitTest::Helper' => {
-        RestoreDatabase => 1,
+        RestoreDatabase  => 1,
+        UseTmpArticleDir => 1,
     },
 );
 my $Helper = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
@@ -168,8 +169,8 @@ $Self->IsNot(
 
 my $RandomID = $Helper->GetRandomID();
 
-# Get ticket object.
-my $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
+my $TicketObject  = $Kernel::OM->Get('Kernel::System::Ticket');
+my $ArticleObject = $Kernel::OM->Get('Kernel::System::Ticket::Article');
 
 # Create tickets.
 my %TicketTemplate = (
@@ -212,7 +213,7 @@ my %ArticleTemplate = (
     HistoryType    => 'AddNote',
     UserID         => 1,
 );
-my $ArticleID1 = $TicketObject->ArticleCreate(
+my $ArticleID1 = $ArticleObject->ArticleCreate(
     %ArticleTemplate,
     TicketID => $TicketID1,
 );
@@ -221,7 +222,7 @@ $Self->IsNot(
     undef,
     "ArticleCrete() for Ticket 1",
 );
-my $ArticleID2 = $TicketObject->ArticleCreate(
+my $ArticleID2 = $ArticleObject->ArticleCreate(
     %ArticleTemplate,
     TicketID => $TicketID1,
 );

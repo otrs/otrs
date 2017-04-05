@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -45,6 +45,12 @@ $Selenium->RunTest(
         $Selenium->find_element( "#Source",           'css' );
         $Selenium->find_element( "#Search",           'css' );
 
+        # check breadcrumb on Overview screen
+        $Self->True(
+            $Selenium->find_element( '.BreadCrumb', 'css' ),
+            "Breadcrumb is found on Overview screen.",
+        );
+
         # click 'Add customer' link
         $Selenium->find_element( "button.CallForAction", 'css' )->VerifiedClick();
 
@@ -56,6 +62,19 @@ $Selenium->RunTest(
             my $Element = $Selenium->find_element( "#$ID", 'css' );
             $Element->is_enabled();
             $Element->is_displayed();
+        }
+
+        # check breadcrumb on Add screen
+        my $Count = 1;
+        my $IsLinkedBreadcrumbText;
+        for my $BreadcrumbText ( 'Customer Management', 'Add Customer' ) {
+            $Self->Is(
+                $Selenium->execute_script("return \$('.BreadCrumb li:eq($Count)').text().trim()"),
+                $BreadcrumbText,
+                "Breadcrumb text '$BreadcrumbText' is found on screen"
+            );
+
+            $Count++;
         }
 
         # check client side validation
@@ -82,6 +101,13 @@ $Selenium->RunTest(
         $Self->True(
             index( $Selenium->get_page_source(), $RandomID ) > -1,
             "$RandomID found on page",
+        );
+
+        #check is there notification 'Customer company added!' after customer is added
+        my $Notification = 'Customer company added!';
+        $Self->True(
+            $Selenium->execute_script("return \$('.MessageBox.Notice p:contains($Notification)').length"),
+            "$Notification - notification is found."
         );
 
         # create another test customer company for filter search test
@@ -148,10 +174,29 @@ $Selenium->RunTest(
             "#CustomerCompanyComment updated value",
         );
 
+        # check breadcrumb on Edit screen
+        $Count = 1;
+        for my $BreadcrumbText ( 'Customer Management', 'Edit Customer: ' . $RandomID ) {
+            $Self->Is(
+                $Selenium->execute_script("return \$('.BreadCrumb li:eq($Count)').text().trim()"),
+                $BreadcrumbText,
+                "Breadcrumb text '$BreadcrumbText' is found on screen"
+            );
+
+            $Count++;
+        }
+
         # set test customer company to invalid and clear comment
         $Selenium->execute_script("\$('#ValidID').val('2').trigger('redraw.InputField').trigger('change');");
         $Selenium->find_element( "#CustomerCompanyComment", 'css' )->clear();
         $Selenium->find_element( "#CustomerID",             'css' )->VerifiedSubmit();
+
+        #check is there notification 'Customer company updated!' after customer is updated
+        $Notification = 'Customer company updated!';
+        $Self->True(
+            $Selenium->execute_script("return \$('.MessageBox.Notice p:contains($Notification)').length"),
+            "$Notification - notification is found."
+        );
 
         # test search filter
         $Selenium->find_element( "#Search", 'css' )->clear();

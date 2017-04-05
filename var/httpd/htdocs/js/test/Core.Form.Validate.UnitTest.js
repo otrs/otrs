@@ -1,5 +1,5 @@
 // --
-// Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+// Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 // --
 // This software comes with ABSOLUTELY NO WARRANTY. For details, see
 // the enclosed file COPYING for license information (AGPL). If you
@@ -110,6 +110,20 @@ Core.Form.Validate = (function (Namespace) {
                     Desc2: 'mail address'
                 },
                 {
+                    Method: 'Validate_Email_Optional',
+                    Content1: 'abcde',
+                    Content2: 'abc@defg.xy',
+                    Desc1: 'no mails',
+                    Desc2: 'mail address'
+                },
+                {
+                    Method: 'Validate_Email_Optional',
+                    Content1: 'abcde',
+                    Content2: '',
+                    Desc1: 'no mails',
+                    Desc2: 'empty field is also allowed instead of mail address'
+                },
+                {
                     Method: 'Validate_DateYear',
                     Content1: '19988',
                     Content2: '2011',
@@ -189,7 +203,7 @@ Core.Form.Validate = (function (Namespace) {
 
             Core.Form.Validate.Init();
 
-            Assert.expect(30);
+            Assert.expect(48);
 
             // Test: Validate_DateDay
             $('#ObjectOne').addClass('Validate_DateDay Validate_DateYear_ObjectTwo Validate_DateMonth_ObjectThree');
@@ -241,8 +255,88 @@ Core.Form.Validate = (function (Namespace) {
 
             Assert.equal($('#ObjectOne').hasClass('Error'), false, 'Validate_DateInFuture: today + 2 days');
 
-            $('#ObjectOne').removeClass('Validate_DateDay Validate_DateYear_ObjectTwo Validate_DateMonth_ObjectThree Validate_DateInFuture');
 
+            // Test: Validate_DateInFuture - with checkbox
+            $TestForm.append('<input type="checkbox" class="DateSelection" value="" id="Checkbox" />');
+
+            NewDate = new Date();
+            NewDate.setDate(NewDate.getDate() - 2);
+
+            $('#ObjectOne').val(NewDate.getDate());
+            $('#ObjectTwo').val(NewDate.getFullYear());
+            $('#ObjectThree').val(NewDate.getMonth() + 1);
+
+            $('#Checkbox').prop('checked', false);
+            Core.Form.Validate.ValidateElement($('#ObjectOne'));
+
+            Assert.equal($('#ObjectOne').hasClass('Error'), false, 'Validate_DateInFuture with unchecked checkbox: today - 2 days');
+
+            $('#Checkbox').prop('checked', true);
+            Core.Form.Validate.ValidateElement($('#ObjectOne'));
+
+            Assert.equal($('#ObjectOne').hasClass('Error'), true, 'Validate_DateInFuture with checked checkbox: today - 2 days');
+
+            NewDate = new Date();
+            NewDate.setDate(NewDate.getDate() + 2);
+
+            $('#ObjectOne').val(NewDate.getDate());
+            $('#ObjectTwo').val(NewDate.getFullYear());
+            $('#ObjectThree').val(NewDate.getMonth() + 1);
+
+            $('#Checkbox').prop('checked', false);
+            Core.Form.Validate.ValidateElement($('#ObjectOne'));
+
+            Assert.equal($('#ObjectOne').hasClass('Error'), false, 'Validate_DateInFuture with unchecked checkbox: today + 2 days');
+
+            $('#Checkbox').prop('checked', true);
+            Core.Form.Validate.ValidateElement($('#ObjectOne'));
+
+            Assert.equal($('#ObjectOne').hasClass('Error'), false, 'Validate_DateInFuture with checked checkbox: today + 2 days');
+
+            $('#Checkbox').remove();
+
+
+            // Test: Validate_DateInFuture - with radio button
+            $TestForm.append('<input type="radio" name="Radio" value="0" id="Radio0" />');
+            $TestForm.append('<input type="radio" class="DateSelection" name="Radio" value="1" id="Radio1" />');
+
+            NewDate = new Date();
+            NewDate.setDate(NewDate.getDate() - 2);
+
+            $('#ObjectOne').val(NewDate.getDate());
+            $('#ObjectTwo').val(NewDate.getFullYear());
+            $('#ObjectThree').val(NewDate.getMonth() + 1);
+
+            $('#Radio0').prop('checked', true);
+            Core.Form.Validate.ValidateElement($('#ObjectOne'));
+
+            Assert.equal($('#ObjectOne').hasClass('Error'), false, 'Validate_DateInFuture with unchecked radio button: today - 2 days');
+
+            $('#Radio1').prop('checked', true);
+            Core.Form.Validate.ValidateElement($('#ObjectOne'));
+
+            Assert.equal($('#ObjectOne').hasClass('Error'), true, 'Validate_DateInFuture with checked radio button: today - 2 days');
+
+            NewDate = new Date();
+            NewDate.setDate(NewDate.getDate() + 2);
+
+            $('#ObjectOne').val(NewDate.getDate());
+            $('#ObjectTwo').val(NewDate.getFullYear());
+            $('#ObjectThree').val(NewDate.getMonth() + 1);
+
+            $('#Radio0').prop('checked', true);
+            Core.Form.Validate.ValidateElement($('#ObjectOne'));
+
+            Assert.equal($('#ObjectOne').hasClass('Error'), false, 'Validate_DateInFuture with unchecked radio button: today + 2 days');
+
+            $('#Radio1').prop('checked', true);
+            Core.Form.Validate.ValidateElement($('#ObjectOne'));
+
+            Assert.equal($('#ObjectOne').hasClass('Error'), false, 'Validate_DateInFuture with checked radio button: today + 2 days');
+
+            $('input[type="radio"][name="Radio"]').remove();
+
+            $('#ObjectOne').removeClass('Validate_DateDay Validate_DateYear_ObjectTwo Validate_DateMonth_ObjectThree Validate_DateInFuture');
 
             // Test: Validate_DateAfter (against field)
             $('#ObjectOne').addClass('Validate_DateDay Validate_DateMonth_ObjectTwo Validate_DateYear_ObjectThree Validate_DateAfter Validate_DateAfter_Test');
@@ -293,6 +387,113 @@ Core.Form.Validate = (function (Namespace) {
             $('#ObjectOne').removeData('validate-date-before');
             $('#ObjectOne').removeClass('Validate_DateDay Validate_DateMonth_ObjectTwo Validate_DateYear_ObjectThree Validate_DateAfter Validate_DateAfter_Test Validate_DateBefore');
 
+            // Test: Validate_DateNotInFuture
+            $('#ObjectOne').addClass('Validate_DateDay Validate_DateYear_ObjectTwo Validate_DateMonth_ObjectThree Validate_DateNotInFuture');
+
+            NewDate = new Date();
+            NewDate.setDate(NewDate.getDate() + 2);
+
+            $('#ObjectOne').val(NewDate.getDate());
+            $('#ObjectTwo').val(NewDate.getFullYear());
+            $('#ObjectThree').val(NewDate.getMonth() + 1);
+
+            Core.Form.Validate.ValidateElement($('#ObjectOne'));
+
+            Assert.equal($('#ObjectOne').hasClass('Error'), true, 'Validate_DateNotInFuture: today + 2 days');
+
+            NewDate = new Date();
+            NewDate.setDate(NewDate.getDate() - 2);
+
+            $('#ObjectOne').val(NewDate.getDate());
+            $('#ObjectTwo').val(NewDate.getFullYear());
+            $('#ObjectThree').val(NewDate.getMonth() + 1);
+
+            Core.Form.Validate.ValidateElement($('#ObjectOne'));
+
+            Assert.equal($('#ObjectOne').hasClass('Error'), false, 'Validate_DateNotInFuture: today - 2 days');
+
+
+            // Test: Validate_DateNotInFuture - with checkbox
+            $TestForm.append('<input type="checkbox" class="DateSelection" value="" id="Checkbox" />');
+
+            NewDate = new Date();
+            NewDate.setDate(NewDate.getDate() + 2);
+
+            $('#ObjectOne').val(NewDate.getDate());
+            $('#ObjectTwo').val(NewDate.getFullYear());
+            $('#ObjectThree').val(NewDate.getMonth() + 1);
+
+            $('#Checkbox').prop('checked', false);
+            Core.Form.Validate.ValidateElement($('#ObjectOne'));
+
+            Assert.equal($('#ObjectOne').hasClass('Error'), false, 'Validate_DateNotInFuture with unchecked checkbox: today + 2 days');
+
+            $('#Checkbox').prop('checked', true);
+            Core.Form.Validate.ValidateElement($('#ObjectOne'));
+
+            Assert.equal($('#ObjectOne').hasClass('Error'), true, 'Validate_DateNotInFuture with checked checkbox: today + 2 days');
+
+            NewDate = new Date();
+            NewDate.setDate(NewDate.getDate() - 2);
+
+            $('#ObjectOne').val(NewDate.getDate());
+            $('#ObjectTwo').val(NewDate.getFullYear());
+            $('#ObjectThree').val(NewDate.getMonth() + 1);
+
+            $('#Checkbox').prop('checked', false);
+            Core.Form.Validate.ValidateElement($('#ObjectOne'));
+
+            Assert.equal($('#ObjectOne').hasClass('Error'), false, 'Validate_DateNotInFuture with unchecked checkbox: today - 2 days');
+
+            $('#Checkbox').prop('checked', true);
+            Core.Form.Validate.ValidateElement($('#ObjectOne'));
+
+            Assert.equal($('#ObjectOne').hasClass('Error'), false, 'Validate_DateNotInFuture with checked checkbox: today - 2 days');
+
+            $('#Checkbox').remove();
+
+
+            // Test: Validate_DateNotInFuture - with radio button
+            $TestForm.append('<input type="radio" name="Radio" value="0" id="Radio0" />');
+            $TestForm.append('<input type="radio" class="DateSelection" name="Radio" value="1" id="Radio1" />');
+
+            NewDate = new Date();
+            NewDate.setDate(NewDate.getDate() + 2);
+
+            $('#ObjectOne').val(NewDate.getDate());
+            $('#ObjectTwo').val(NewDate.getFullYear());
+            $('#ObjectThree').val(NewDate.getMonth() + 1);
+
+            $('#Radio0').prop('checked', true);
+            Core.Form.Validate.ValidateElement($('#ObjectOne'));
+
+            Assert.equal($('#ObjectOne').hasClass('Error'), false, 'Validate_DateNotInFuture with unchecked radio button: today + 2 days');
+
+            $('#Radio1').prop('checked', true);
+            Core.Form.Validate.ValidateElement($('#ObjectOne'));
+
+            Assert.equal($('#ObjectOne').hasClass('Error'), true, 'Validate_DateNotInFuture with checked radio button: today + 2 days');
+
+            NewDate = new Date();
+            NewDate.setDate(NewDate.getDate() - 2);
+
+            $('#ObjectOne').val(NewDate.getDate());
+            $('#ObjectTwo').val(NewDate.getFullYear());
+            $('#ObjectThree').val(NewDate.getMonth() + 1);
+
+            $('#Radio0').prop('checked', true);
+            Core.Form.Validate.ValidateElement($('#ObjectOne'));
+
+            Assert.equal($('#ObjectOne').hasClass('Error'), false, 'Validate_DateNotInFuture with unchecked radio button: today - 2 days');
+
+            $('#Radio1').prop('checked', true);
+            Core.Form.Validate.ValidateElement($('#ObjectOne'));
+
+            Assert.equal($('#ObjectOne').hasClass('Error'), false, 'Validate_DateNotInFuture with checked radio button: today - 2 days');
+
+            $('input[type="radio"][name="Radio"]').remove();
+
+            $('#ObjectOne').removeClass('Validate_DateDay Validate_DateYear_ObjectTwo Validate_DateMonth_ObjectThree Validate_DateNotInFuture');
 
             // Test: Validate_Equal
             $('#ObjectOne').addClass('Validate_Equal Validate_Equal_ObjectTwo');

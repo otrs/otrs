@@ -1,11 +1,12 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
 # did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
 # --
 
+## no critic (Modules::RequireExplicitPackage)
 use strict;
 use warnings;
 use utf8;
@@ -17,7 +18,8 @@ use Kernel::System::VariableCheck qw(:all);
 # get helper object
 $Kernel::OM->ObjectParamAdd(
     'Kernel::System::UnitTest::Helper' => {
-        RestoreDatabase => 1,
+        RestoreDatabase  => 1,
+        UseTmpArticleDir => 1,
     },
 );
 my $Helper = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
@@ -35,9 +37,9 @@ my $TestUserID    = $Kernel::OM->Get('Kernel::System::User')->UserLookup(
 # get ticket object
 my $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
 
-# ----------------------------------------
+#
 # Create a test ticket
-# ----------------------------------------
+#
 my $TicketID = $TicketObject->TicketCreate(
     Title         => 'test',
     QueueID       => 1,
@@ -92,9 +94,9 @@ my $MultiSelectFieldID   = $DynamicFieldObject->DynamicFieldAdd(
     Config     => {
         DefaultValue   => 'a value',
         PossibleValues => {
-            a => 'a',
-            b => 'b',
-            c => 'c',
+            a => 'a1',
+            b => 'b1',
+            c => 'c1',
         },
     },
     ValidID => 1,
@@ -105,6 +107,32 @@ my $MultiSelectFieldID   = $DynamicFieldObject->DynamicFieldAdd(
 $Self->True(
     $MultiSelectFieldID,
     "DynamicFieldAdd() successful for Field ID $MultiSelectFieldID",
+);
+
+# create a dynamic field
+my $DropDownFieldName = "dropdowntest$RandomID";
+my $DropDownFieldID   = $DynamicFieldObject->DynamicFieldAdd(
+    Name       => $DropDownFieldName,
+    Label      => 'a description',
+    FieldOrder => 9991,
+    FieldType  => 'Dropdown',
+    ObjectType => 'Ticket',
+    Config     => {
+        DefaultValue   => 'a value',
+        PossibleValues => {
+            a => 'a1',
+            b => 'b1',
+            c => 'c1',
+        },
+    },
+    ValidID => 1,
+    UserID  => 1,
+);
+
+# sanity check
+$Self->True(
+    $DropDownFieldID,
+    "DynamicFieldAdd() successful for Field ID $DropDownFieldID",
 );
 
 # set dynamic field values
@@ -141,7 +169,24 @@ $Success = $DynamicFieldBackendObject->ValueSet(
 # sanity check
 $Self->True(
     $Success,
-    "DynamicField ValueSet() successful for Field ID $TextFieldID",
+    "DynamicField ValueSet() successful for Field ID $MultiSelectFieldID",
+);
+
+$DynamicFieldConfig = $DynamicFieldObject->DynamicFieldGet(
+    Name => $DropDownFieldName,
+);
+
+$Success = $DynamicFieldBackendObject->ValueSet(
+    DynamicFieldConfig => $DynamicFieldConfig,
+    ObjectID           => $TicketID,
+    Value              => 'a',
+    UserID             => $UserID,
+);
+
+# sanity check
+$Self->True(
+    $Success,
+    "DynamicField ValueSet() successful for Field ID $DropDownFieldID",
 );
 
 my %Ticket = $TicketObject->TicketGet(
@@ -153,8 +198,6 @@ $Self->True(
     IsHashRefWithData( \%Ticket ),
     "TicketGet() - Get Ticket with ID $TicketID.",
 );
-
-# ----------------------------------------
 
 # Run() tests
 my @Tests = (
@@ -364,7 +407,7 @@ my @Tests = (
                 SenderType  => 'agent',
                 ContentType => 'text/plain; charset=ISO-8859-15',
                 Subject =>
-                    '<OTRS_TICKET_NotExisting>',
+                    '<OTRS_TICKET_NotExisting> - tag not found',
                 Body =>
                     'äöüßÄÖÜ€исáéíúóúÁÉÍÓÚñÑ-カスタ-用迎使用-Язык',
                 HistoryType    => 'OwnerUpdate',
@@ -395,7 +438,7 @@ my @Tests = (
                 SenderType  => 'agent',
                 ContentType => 'text/plain; charset=ISO-8859-15',
                 Subject =>
-                    '<OTRS_TICKET_NotExisting>',
+                    '<OTRS_TICKET_NotExisting> - tag not found',
                 Body =>
                     'äöüßÄÖÜ€исáéíúóúÁÉÍÓÚñÑ-カスタ-用迎使用-Язык',
                 HistoryType    => 'OwnerUpdate',
@@ -448,7 +491,38 @@ my @Tests = (
         Success => 1,
     },
     {
-        Name   => 'Correct Ticket->DynamicFieldMultiselect',
+        Name   => 'Correct Ticket->DynamicFieldDropDown Keys',
+        Config => {
+            UserID => $UserID,
+            Ticket => \%Ticket,
+            Config => {
+                ArticleType => 'note-internal',
+                SenderType  => 'agent',
+                ContentType => 'text/plain; charset=ISO-8859-15',
+                Subject =>
+                    '<OTRS_TICKET_DynamicField_' . $DropDownFieldName . '>',
+                Body =>
+                    'äöüßÄÖÜ€исáéíúóúÁÉÍÓÚñÑ-カスタ-用迎使用-Язык',
+                HistoryType    => 'OwnerUpdate',
+                HistoryComment => 'Some free text!',
+                From           => 'Some Agent <email@example.com>',
+                To             => 'Some Customer A <customer-a@example.com>',
+                Cc             => 'Some Customer B <customer-b@example.com>',
+                ReplyTo        => 'Some Customer B <customer-b@example.com>',
+                MessageID      => '<asdasdasd.123@example.com>',
+                InReplyTo      => '<asdasdasd.12@example.com>',
+                References =>
+                    '<asdasdasd.1@example.com> <asdasdasd.12@example.com>',
+                NoAgentNotify             => 0,
+                ForceNotificationToUserID => [ 1, 43, 56, ],
+                ExcludeNotificationToUserID     => [ 43, 56, ],
+                ExcludeMuteNotificationToUserID => [ 43, 56, ],
+            },
+        },
+        Success => 1,
+    },
+    {
+        Name   => 'Correct Ticket->DynamicFieldMultiselect Values',
         Config => {
             UserID => $UserID,
             Ticket => \%Ticket,
@@ -491,6 +565,8 @@ my %ExcludedArtributes = (
     AutoResponseType                => 1,
 );
 
+my $ArticleObject = $Kernel::OM->Get('Kernel::System::Ticket::Article');
+
 for my $Test (@Tests) {
 
     # make a deep copy to avoid changing the definition
@@ -512,10 +588,10 @@ for my $Test (@Tests) {
         );
 
         # get last article
-        my @ArticleIDs = $TicketObject->ArticleIndex(
+        my @ArticleIDs = $ArticleObject->ArticleIndex(
             TicketID => $TicketID,
         );
-        my %Article = $TicketObject->ArticleGet(
+        my %Article = $ArticleObject->ArticleGet(
             ArticleID => $ArticleIDs[-1],
             UserID    => 1,
         );
@@ -564,9 +640,14 @@ for my $Test (@Tests) {
                         Name => $1,
                     );
 
+                    my $DisplayValue = $DynamicFieldBackendObject->ValueLookup(
+                        DynamicFieldConfig => $DynamicFieldConfig,
+                        Key                => $Ticket{"DynamicField_$1"},
+                    );
+
                     my $ValueStrg = $DynamicFieldBackendObject->ReadableValueRender(
                         DynamicFieldConfig => $DynamicFieldConfig,
-                        Value              => $Ticket{"DynamicField_$1"},
+                        Value              => $DisplayValue,
                     );
 
                     $ExpectedValue = $ValueStrg->{Value};

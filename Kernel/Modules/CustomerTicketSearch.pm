@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -223,8 +223,9 @@ sub Run {
         );
     }
 
-    # get ticket object
-    my $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
+    # get needed objects
+    my $TicketObject  = $Kernel::OM->Get('Kernel::System::Ticket');
+    my $ArticleObject = $Kernel::OM->Get('Kernel::System::Ticket::Article');
 
     # get profil search and template data
     my $SaveProfile    = $ParamObject->GetParam( Param => 'SaveProfile' )    || '';
@@ -470,7 +471,7 @@ sub Run {
         my $DisableCompanyTickets = $ConfigObject->Get('Ticket::Frontend::CustomerDisableCompanyTicketAccess');
 
         if ($DisableCompanyTickets) {
-            $GetParam{CustomerUserLogin} = $Self->{UserID};
+            $GetParam{CustomerUserLoginRaw} = $Self->{UserID};
         }
 
         # perform ticket search
@@ -542,7 +543,7 @@ sub Run {
             for my $TicketID (@ViewableTicketIDs) {
 
                 # get first article data
-                my %Data = $TicketObject->ArticleFirstArticle(
+                my %Data = $ArticleObject->ArticleFirstArticle(
                     TicketID      => $TicketID,
                     Extended      => 1,
                     DynamicFields => 1,
@@ -574,7 +575,7 @@ sub Run {
 
                 # get whole article (if configured!)
                 if ( $Config->{SearchArticleCSVTree} && $GetParam{ResultForm} eq 'CSV' ) {
-                    my @Article = $TicketObject->ArticleGet(
+                    my @Article = $ArticleObject->ArticleGet(
                         TicketID      => $TicketID,
                         DynamicFields => 0,
                     );
@@ -725,7 +726,7 @@ sub Run {
             for my $TicketID (@ViewableTicketIDs) {
 
                 # get first article data
-                my %Data = $TicketObject->ArticleLastCustomerArticle(
+                my %Data = $ArticleObject->ArticleLastCustomerArticle(
                     TicketID      => $TicketID,
                     Extended      => 1,
                     DynamicFields => 0,
@@ -1060,7 +1061,7 @@ sub Run {
                 {
 
                     # get first article data
-                    my %Article = $TicketObject->ArticleLastCustomerArticle(
+                    my %Article = $ArticleObject->ArticleLastCustomerArticle(
                         TicketID      => $TicketID,
                         Extended      => 1,
                         DynamicFields => 1,

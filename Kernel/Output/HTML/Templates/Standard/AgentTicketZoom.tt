@@ -1,10 +1,11 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
 # did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
 # --
+## nofilter(TidyAll::Plugin::OTRS::TT::ScriptUsage)
 
 [% RenderBlockStart("ArticleFilterDialog") %]
 <div id="ArticleFilterDialog" class="Hidden">
@@ -72,8 +73,16 @@
 
     <div class="LayoutFixedSidebar SidebarLast">
         <div class="SidebarColumn">
-            [% FOREACH widget IN Data.SidebarWidgets; %]
-                [% widget %]
+            [% FOREACH Widget IN Data.SidebarWidgets; %]
+                [% IF Widget.Async; %]
+                    <div id="[% Widget.ElementID %]">
+                        <div class="WidgetIsLoading">
+                            <i class="fa fa-spinner fa-spin"></i>
+                        </div>
+                    </div>
+                [% ELSE; %]
+                    [% Widget.Output %]
+                [% END; %]
             [% END; %]
         </div>
         <div class="ContentColumn">
@@ -209,8 +218,12 @@
 [% Data.ArticleItems %]
             </div>
 
-            [% FOREACH widget IN Data.MainWidgets; %]
-                [% widget %]
+            [% FOREACH Widget IN Data.MainWidgets; %]
+                [% IF Widget.Async; %]
+                    <div id="[% Widget.ElementID %]"></div>
+                [% ELSE; %]
+                    [% Widget.Output %]
+                [% END; %]
             [% END; %]
 
         </div>
@@ -509,6 +522,25 @@
                     <div class="Clear"></div>
 [% RenderBlockEnd("RowData") %]
 
+# show article options like signed, crypted, ...
+[% RenderBlockStart("ArticleOption") %]
+                    <label>[% Translate(Data.Key) | html %]:</label>
+                    <div title="[% Data.Value | html %]" class="[% Data.Result | html %] Value">[% Translate(Data.Value) | html %]</div>
+                    <div class="Clear"></div>
+[% RenderBlockEnd("ArticleOption") %]
+
+#                    <!-- Include the full subject so that it can be copied. The one in the title bar is shortened. -->
+                    <label>[% Translate("Subject") | html %]:</label>
+                    <p class="Value">[% Data.Subject | html %]</p>
+                    <div class="Clear"></div>
+
+# show article accounted time
+[% RenderBlockStart("ArticleAccountedTime") %]
+                    <label>[% Translate(Data.Key) | html %]:</label>
+                    <p class="Value">[% Data.Value | html %]</p>
+                    <div class="Clear"></div>
+[% RenderBlockEnd("ArticleAccountedTime") %]
+
 # show article dynamic fields
 [% RenderBlockStart("ArticleDynamicField") %]
                     <label>[% Translate(Data.Label) | html %]:</label>
@@ -545,36 +577,20 @@
 #                        <div class="Clear"></div>
 #[% RenderBlockEnd("ArticleDynamicFieldField2") %]
 
-# show article options like signed, crypted, ...
-[% RenderBlockStart("ArticleOption") %]
-                    <label>[% Translate(Data.Key) | html %]:</label>
-                    <div title="[% Data.Value | html %]" class="[% Data.Result | html %] Value">[% Translate(Data.Value) | html %]</div>
-                    <div class="Clear"></div>
-[% RenderBlockEnd("ArticleOption") %]
-
-#                    <!-- Include the full subject so that it can be copied. The one in the title bar is shortened. -->
-                    <label>[% Translate("Subject") | html %]:</label>
-                    <p class="Value">[% Data.Subject | html %]</p>
-                    <div class="Clear"></div>
-
-# show article accounted time
-[% RenderBlockStart("ArticleAccountedTime") %]
-                    <label>[% Translate(Data.Key) | html %]:</label>
-                    <p class="Value">[% Data.Value | html %]</p>
-                    <div class="Clear"></div>
-[% RenderBlockEnd("ArticleAccountedTime") %]
-
 # show attachments
 [% RenderBlockStart("ArticleAttachment") %]
                     <label>[% Translate("Attachment") | html %]:</label>
                     <p class="Value">
 [% RenderBlockStart("ArticleAttachmentRow") %]
 [% RenderBlockStart("ArticleAttachmentRowLink") %]
-                        <a class="[% Data.Class | html %]" href="[% Data.Link %]" [% Data.Target %] title="[% Translate(Data.Action) | html %]">[% Data.Filename | html %]</a> [% Data.DataFileSize | html %]
+                        <a class="[% Data.Class | html %]" href="[% Data.Link %]" [% Data.Target %] title="[% Translate(Data.Action) | html %]">[% Data.Filename | html %]</a>
 [% RenderBlockEnd("ArticleAttachmentRowLink") %]
 [% RenderBlockStart("ArticleAttachmentRowNoLink") %]
-                        [% Data.Filename | html %], [% Data.Filesize | html %]
+                        [% Data.Filename | html %]
 [% RenderBlockEnd("ArticleAttachmentRowNoLink") %]
+                        [% IF Data.Filesize %]
+                            ([% Data.Filesize | html %])
+                        [% END %]
                         <br />
 [% RenderBlockEnd("ArticleAttachmentRow") %]
                     </p>
@@ -651,5 +667,5 @@ function CheckIFrameHeight(IFrameID) {
 [% RenderBlockEnd("ArticleItem") %]
 
 [% RenderBlockStart("TicketZoomInit") %]
-[% INCLUDE "ChatStartForm.tt" %]
+
 [% RenderBlockEnd("TicketZoomInit") %]

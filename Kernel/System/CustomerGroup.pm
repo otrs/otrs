@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -14,6 +14,7 @@ use warnings;
 our @ObjectDependencies = (
     'Kernel::Config',
     'Kernel::System::Cache',
+    'Kernel::System::CustomerUser',
     'Kernel::System::DB',
     'Kernel::System::Group',
     'Kernel::System::Log',
@@ -24,22 +25,16 @@ our @ObjectDependencies = (
 
 Kernel::System::CustomerGroup - customer group lib
 
-=head1 SYNOPSIS
+=head1 DESCRIPTION
 
 All customer group functions. E. g. to add groups or to get a member list of a group.
 
 =head1 PUBLIC INTERFACE
 
-=over 4
+=head2 new()
 
-=cut
+Don't use the constructor directly, use the ObjectManager instead:
 
-=item new()
-
-create an object. Do not use it directly, instead use:
-
-    use Kernel::System::ObjectManager;
-    local $Kernel::OM = Kernel::System::ObjectManager->new();
     my $CustomerGroupObject = $Kernel::OM->Get('Kernel::System::CustomerGroup');
 
 =cut
@@ -57,7 +52,7 @@ sub new {
     return $Self;
 }
 
-=item GroupMemberAdd()
+=head2 GroupMemberAdd()
 
 to add a member to a group
 
@@ -144,13 +139,13 @@ sub GroupMemberAdd {
     return 1;
 }
 
-=item GroupMemberList()
+=head2 GroupMemberList()
 
 if GroupID is passed:
 returns a list of users of a group with ro/move_into/create/owner/priority/rw permissions
 
 if UserID is passed:
-returns a list of groups for userID with ro/move_into/create/owner/priority/rw permissions
+returns a list of groups for C<UserID> with ro/move_into/create/owner/priority/rw permissions
     UserID: user id
     GroupID: group id
     Type: ro|move_into|priority|create|rw
@@ -201,6 +196,7 @@ sub GroupMemberList {
         Type => $Self->{CacheType},
         Key  => $CacheKey,
     );
+
     if ($Cache) {
         return @{$Cache} if ref $Cache eq 'ARRAY';
         return %{$Cache} if ref $Cache eq 'HASH';
@@ -239,22 +235,47 @@ sub GroupMemberList {
             $SQL .= " gu.group_id = " . $DBObject->Quote( $Param{GroupID}, 'Integer', ) . "";
         }
         $DBObject->Prepare( SQL => $SQL );
+
+        my @Values;
+
         while ( my @Row = $DBObject->FetchrowArray() ) {
-            my $Key   = '';
-            my $Value = '';
             if ( $Param{UserID} ) {
-                $Key   = $Row[0];
-                $Value = $Row[1];
+                push @Values, {
+                    Users => {
+                        $Row[0] => $Row[1],
+                    },
+                };
             }
             else {
-                $Key   = $Row[4];
-                $Value = $Row[1];
+                push @Values, {
+                    CustomerUser => {
+                        $Row[4] => $Row[1],
+                    },
+                };
+            }
+        }
+
+        my $CustomerUserObject = $Kernel::OM->Get('Kernel::System::CustomerUser');
+
+        KEY:
+        for my $Value (@Values) {
+
+            my ($UserType) = keys %{$Value};
+            my ($Login)    = keys %{ $Value->{$UserType} };
+
+            # Bugfix #12285 - Check if customer user is valid.
+            if ( $Param{GroupID} && $UserType eq 'CustomerUser' ) {
+
+                my %User = $CustomerUserObject->CustomerUserDataGet(
+                    User => $Login,
+                );
+
+                next KEY if defined $User{ValidID} && $User{ValidID} != 1;
             }
 
-            # get permissions
-            $Data{$Key} = $Value;
-            push @Name, $Value;
-            push @ID,   $Key;
+            $Data{$Login} = $Value->{$UserType}->{$Login};
+            push @Name, $Value->{$UserType}->{$Login};
+            push @ID,   $Login;
         }
     }
 
@@ -308,7 +329,7 @@ sub GroupMemberList {
     return %Data;
 }
 
-=item GroupLookup()
+=head2 GroupLookup()
 
 get id or name for group
 
@@ -396,9 +417,42 @@ sub GroupLookup {
     return $Result;
 }
 
-1;
+=head2 PermissionCheck()
 
-=back
+Check if a customer user has a certain permission for a certain group.
+
+    my $HasPermission = $GroupObject->PermissionCheck(
+        UserID    => $UserID,
+        GroupName => $GroupName,
+        Type      => 'move_into',
+    );
+
+=cut
+
+sub PermissionCheck {
+    my ( $Self, %Param ) = @_;
+
+    # check needed stuff
+    for (qw(UserID GroupName Type)) {
+        if ( !$Param{$_} ) {
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
+                Priority => 'error',
+                Message  => "Need $_!",
+            );
+            return;
+        }
+    }
+
+    my %GroupMemberList = reverse $Self->GroupMemberList(
+        UserID => $Param{UserID},
+        Type   => $Param{Type},
+        Result => 'HASH',
+    );
+
+    return $GroupMemberList{ $Param{GroupName} } ? 1 : 0;
+}
+
+1;
 
 =head1 TERMS AND CONDITIONS
 

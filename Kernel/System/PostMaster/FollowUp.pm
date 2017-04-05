@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -17,6 +17,7 @@ our @ObjectDependencies = (
     'Kernel::System::DynamicField::Backend',
     'Kernel::System::Log',
     'Kernel::System::Ticket',
+    'Kernel::System::Ticket::Article',
     'Kernel::System::Time',
     'Kernel::System::User',
 );
@@ -53,6 +54,42 @@ sub Run {
 
     # get ticket object
     my $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
+
+    my $OwnerID = $GetParam{'X-OTRS-FollowUp-OwnerID'};
+    if ( $GetParam{'X-OTRS-FollowUp-Owner'} ) {
+
+        my $TmpOwnerID = $Kernel::OM->Get('Kernel::System::User')->UserLookup(
+            UserLogin => $GetParam{'X-OTRS-FollowUp-Owner'},
+        );
+
+        $OwnerID = $TmpOwnerID || $OwnerID;
+    }
+
+    if ($OwnerID) {
+        my $Success = $TicketObject->TicketOwnerSet(
+            TicketID  => $Param{TicketID},
+            NewUserID => $OwnerID,
+            UserID    => $Param{InmailUserID},
+        );
+    }
+
+    my $ResponsibleID = $GetParam{'X-OTRS-FollowUp-ResponsibleID'};
+    if ( $GetParam{'X-OTRS-FollowUp-Responsible'} ) {
+
+        my $TmpResponsibleID = $Kernel::OM->Get('Kernel::System::User')->UserLookup(
+            UserLogin => $GetParam{'X-OTRS-FollowUp-Responsible'},
+        );
+
+        $ResponsibleID = $TmpResponsibleID || $ResponsibleID;
+    }
+
+    if ($ResponsibleID) {
+        my $Success = $TicketObject->TicketResponsibleSet(
+            TicketID  => $Param{TicketID},
+            NewUserID => $ResponsibleID,
+            UserID    => $Param{InmailUserID},
+        );
+    }
 
     # get ticket data
     my %Ticket = $TicketObject->TicketGet(
@@ -376,8 +413,10 @@ sub Run {
         }
     }
 
+    my $ArticleObject = $Kernel::OM->Get('Kernel::System::Ticket::Article');
+
     # do db insert
-    my $ArticleID = $TicketObject->ArticleCreate(
+    my $ArticleID = $ArticleObject->ArticleCreate(
         TicketID         => $Param{TicketID},
         ArticleType      => $GetParam{'X-OTRS-FollowUp-ArticleType'},
         SenderType       => $GetParam{'X-OTRS-FollowUp-SenderType'},
@@ -410,7 +449,7 @@ sub Run {
     }
 
     # write plain email to the storage
-    $TicketObject->ArticleWritePlain(
+    $ArticleObject->ArticleWritePlain(
         ArticleID => $ArticleID,
         Email     => $Self->{ParserObject}->GetPlainEmail(),
         UserID    => $Param{InmailUserID},
@@ -418,7 +457,7 @@ sub Run {
 
     # write attachments to the storage
     for my $Attachment ( $Self->{ParserObject}->GetAttachments() ) {
-        $TicketObject->ArticleWriteAttachment(
+        $ArticleObject->ArticleWriteAttachment(
             Filename           => $Attachment->{Filename},
             Content            => $Attachment->{Content},
             ContentType        => $Attachment->{ContentType},

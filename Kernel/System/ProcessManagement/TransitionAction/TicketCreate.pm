@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -24,6 +24,7 @@ our @ObjectDependencies = (
     'Kernel::System::Log',
     'Kernel::System::State',
     'Kernel::System::Ticket',
+    'Kernel::System::Ticket::Article',
     'Kernel::System::Time',
     'Kernel::System::User',
 );
@@ -32,22 +33,16 @@ our @ObjectDependencies = (
 
 Kernel::System::ProcessManagement::TransitionAction::TicketCreate - A module to create a ticket
 
-=head1 SYNOPSIS
+=head1 DESCRIPTION
 
 All TicketArticleCreate functions.
 
 =head1 PUBLIC INTERFACE
 
-=over 4
+=head2 new()
 
-=cut
+Don't use the constructor directly, use the ObjectManager instead:
 
-=item new()
-
-create an object. Do not use it directly, instead use:
-
-    use Kernel::System::ObjectManager;
-    local $Kernel::OM = Kernel::System::ObjectManager->new();
     my $TicketCreateObject = $Kernel::OM->Get('Kernel::System::ProcessManagement::TransitionAction::TicketCreate');
 
 =cut
@@ -62,7 +57,7 @@ sub new {
     return $Self;
 }
 
-=item Run()
+=head2 Run()
 
     Run Data
 
@@ -324,7 +319,7 @@ sub Run {
         if ($ValidArticleType) {
 
             # create article for the new ticket
-            $ArticleID = $TicketObject->ArticleCreate(
+            $ArticleID = $Kernel::OM->Get('Kernel::System::Ticket::Article')->ArticleCreate(
                 %ArticleParam,
                 TicketID => $TicketID,
                 UserID   => $Param{UserID},
@@ -479,8 +474,6 @@ sub Run {
 }
 
 1;
-
-=back
 
 =head1 TERMS AND CONDITIONS
 

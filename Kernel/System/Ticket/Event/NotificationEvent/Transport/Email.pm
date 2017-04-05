@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -22,38 +22,33 @@ our @ObjectDependencies = (
     'Kernel::Config',
     'Kernel::Output::HTML::Layout',
     'Kernel::System::CustomerUser',
+    'Kernel::System::Crypt::PGP',
+    'Kernel::System::Crypt::SMIME',
     'Kernel::System::Email',
     'Kernel::System::Log',
     'Kernel::System::Main',
     'Kernel::System::Queue',
     'Kernel::System::SystemAddress',
     'Kernel::System::Ticket',
+    'Kernel::System::Ticket::Article',
     'Kernel::System::User',
     'Kernel::System::Web::Request',
-    'Kernel::System::Crypt::PGP',
-    'Kernel::System::Crypt::SMIME',
 );
 
 =head1 NAME
 
 Kernel::System::Ticket::Event::NotificationEvent::Transport::Email - email transport layer
 
-=head1 SYNOPSIS
+=head1 DESCRIPTION
 
 Notification event transport layer.
 
 =head1 PUBLIC INTERFACE
 
-=over 4
-
-=cut
-
-=item new()
+=head2 new()
 
 create a notification transport object. Do not use it directly, instead use:
 
-    use Kernel::System::ObjectManager;
-    local $Kernel::OM = Kernel::System::ObjectManager->new('');
     my $TransportObject = $Kernel::OM->Get('Kernel::System::Ticket::Event::NotificationEvent::Transport::Email');
 
 =cut
@@ -76,7 +71,7 @@ sub SendNotification {
         if ( !$Param{$Needed} ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
-                Message  => 'Need $Needed!',
+                Message  => "Need $Needed!",
             );
             return;
         }
@@ -93,16 +88,11 @@ sub SendNotification {
     # get recipient data
     my %Recipient = %{ $Param{Recipient} };
 
-    if (
-        $Recipient{Type} eq 'Customer'
-        && $ConfigObject->Get('CustomerNotifyJustToRealCustomer')
-        )
-    {
-        # return if not customer user ID
-        return if !$Recipient{CustomerUserID};
+    # Verify a customer have an email
+    if ( $Recipient{Type} eq 'Customer' && $Recipient{UserID} && !$Recipient{UserEmail} ) {
 
         my %CustomerUser = $Kernel::OM->Get('Kernel::System::CustomerUser')->CustomerUserDataGet(
-            User => $Recipient{CustomerUserID},
+            User => $Recipient{UserID},
         );
 
         if ( !$CustomerUser{UserEmail} ) {
@@ -113,6 +103,9 @@ sub SendNotification {
             );
             return;
         }
+
+        # Set calculated email.
+        $Recipient{UserEmail} = $CustomerUser{UserEmail};
     }
 
     return if !$Recipient{UserEmail};
@@ -212,13 +205,13 @@ sub SendNotification {
     }
     else {
 
-        # get queue object
-        my $QueueObject = $Kernel::OM->Get('Kernel::System::Queue');
+        my $QueueObject   = $Kernel::OM->Get('Kernel::System::Queue');
+        my $ArticleObject = $Kernel::OM->Get('Kernel::System::Ticket::Article');
 
         my $QueueID;
 
         # get article
-        my %Article = $TicketObject->ArticleLastCustomerArticle(
+        my %Article = $ArticleObject->ArticleLastCustomerArticle(
             TicketID      => $Param{TicketID},
             DynamicFields => 0,
         );
@@ -256,12 +249,12 @@ sub SendNotification {
         if ( IsArrayRefWithData( $Param{Notification}->{Data}->{NotificationArticleTypeID} ) ) {
 
             # get notification article type
-            $ArticleType = $TicketObject->ArticleTypeLookup(
+            $ArticleType = $ArticleObject->ArticleTypeLookup(
                 ArticleTypeID => $Param{Notification}->{Data}->{NotificationArticleTypeID}->[0],
             );
         }
 
-        my $ArticleID = $TicketObject->ArticleSend(
+        my $ArticleID = $ArticleObject->ArticleSend(
             ArticleType    => $ArticleType,
             SenderType     => 'system',
             TicketID       => $Param{TicketID},
@@ -326,16 +319,25 @@ sub GetTransportRecipients {
     # get recipients by RecipientEmail
     if ( $Param{Notification}->{Data}->{RecipientEmail} ) {
         if ( $Param{Notification}->{Data}->{RecipientEmail}->[0] ) {
+            my $RecipientEmail = $Param{Notification}->{Data}->{RecipientEmail}->[0];
+
+            # replace OTRSish attributes in recipient email
+            $RecipientEmail = $Self->_ReplaceTicketAttributes(
+                Ticket => $Param{Ticket},
+                Field  => $RecipientEmail,
+            );
+
             my %Recipient;
             $Recipient{Realname}  = '';
             $Recipient{Type}      = 'Customer';
-            $Recipient{UserEmail} = $Param{Notification}->{Data}->{RecipientEmail}->[0];
+            $Recipient{UserEmail} = $RecipientEmail;
 
             # check if we have a specified article type
             if ( $Param{Notification}->{Data}->{NotificationArticleTypeID} ) {
-                $Recipient{NotificationArticleType} = $Kernel::OM->Get('Kernel::System::Ticket')->ArticleTypeLookup(
+                $Recipient{NotificationArticleType}
+                    = $Kernel::OM->Get('Kernel::System::Ticket::Article')->ArticleTypeLookup(
                     ArticleTypeID => $Param{Notification}->{Data}->{NotificationArticleTypeID}->[0]
-                ) || 'email-notification-ext';
+                    ) || 'email-notification-ext';
             }
 
             # check recipients
@@ -386,7 +388,8 @@ sub TransportSettingsDisplayGet {
 
     # Display article types for article creation if notification is sent
     # only use 'email-notification-*'-type articles
-    my %NotificationArticleTypes = $Kernel::OM->Get('Kernel::System::Ticket')->ArticleTypeList( Result => 'HASH' );
+    my %NotificationArticleTypes
+        = $Kernel::OM->Get('Kernel::System::Ticket::Article')->ArticleTypeList( Result => 'HASH' );
     for my $NotifArticleTypeID ( sort keys %NotificationArticleTypes ) {
         if ( $NotificationArticleTypes{$NotifArticleTypeID} !~ /^email-notification-/ ) {
             delete $NotificationArticleTypes{$NotifArticleTypeID};
@@ -575,7 +578,18 @@ sub SecurityOptionsGet {
 
     # Get private and public keys for the given backend (PGP or SMIME)
     if ( $SignEncryptNotification =~ /^PGP/i ) {
-        @SignKeys = $Kernel::OM->Get('Kernel::System::Crypt::PGP')->PrivateKeySearch(
+
+        my $PGPObject = $Kernel::OM->Get('Kernel::System::Crypt::PGP');
+
+        if ( !$PGPObject ) {
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
+                Priority => 'error',
+                Message  => "No PGP support!",
+            );
+            return;
+        }
+
+        @SignKeys = $PGPObject->PrivateKeySearch(
             Search => $NotificationSenderEmail,
         );
 
@@ -583,7 +597,7 @@ sub SecurityOptionsGet {
         @SignKeys = grep { $_->{Status} eq 'good' } @SignKeys;
 
         # get public keys
-        @EncryptKeys = $Kernel::OM->Get('Kernel::System::Crypt::PGP')->PublicKeySearch(
+        @EncryptKeys = $PGPObject->PublicKeySearch(
             Search => $Param{Recipient}->{UserEmail},
         );
 
@@ -596,6 +610,17 @@ sub SecurityOptionsGet {
         $KeyField = 'Key';
     }
     elsif ( $SignEncryptNotification =~ /^SMIME/i ) {
+
+        my $SMIMEObject = $Kernel::OM->Get('Kernel::System::Crypt::SMIME');
+
+        if ( !$SMIMEObject ) {
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
+                Priority => 'error',
+                Message  => "No SMIME support!",
+            );
+            return;
+        }
+
         @SignKeys = $Kernel::OM->Get('Kernel::System::Crypt::SMIME')->PrivateSearch(
             Search => $NotificationSenderEmail,
         );
@@ -725,8 +750,6 @@ sub SecurityOptionsGet {
 }
 
 1;
-
-=back
 
 =head1 TERMS AND CONDITIONS
 

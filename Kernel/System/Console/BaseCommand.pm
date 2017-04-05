@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -14,6 +14,7 @@ use warnings;
 use Getopt::Long();
 use Term::ANSIColor();
 use IO::Interactive();
+use Encode::Locale();
 
 our @ObjectDependencies = (
     'Kernel::Config',
@@ -28,17 +29,13 @@ our $SuppressANSI = 0;
 
 Kernel::System::Console::BaseCommand - command base class
 
-=head1 SYNOPSIS
+=head1 DESCRIPTION
 
 Base class for console commands.
 
 =head1 PUBLIC INTERFACE
 
-=over 4
-
-=cut
-
-=item new()
+=head2 new()
 
 constructor for new objects. You should not need to reimplement this in your command,
 override L</Configure()> instead if you need to.
@@ -97,7 +94,7 @@ sub new {
     return $Self;
 }
 
-=item Configure()
+=head2 Configure()
 
 initializes this object. Override this method in your commands.
 
@@ -109,7 +106,7 @@ sub Configure {
     return;
 }
 
-=item Name()
+=head2 Name()
 
 get the Name of the current Command, e. g. 'Admin::User::SetPassword'.
 
@@ -121,7 +118,7 @@ sub Name {
     return $Self->{Name};
 }
 
-=item Description()
+=head2 Description()
 
 get/set description for the current command. Call this in your Configure() method.
 
@@ -135,7 +132,7 @@ sub Description {
     return $Self->{Description};
 }
 
-=item AdditionalHelp()
+=head2 AdditionalHelp()
 
 get/set additional help text for the current command. Call this in your Configure() method.
 
@@ -151,7 +148,7 @@ sub AdditionalHelp {
     return $Self->{AdditionalHelp};
 }
 
-=item AddArgument()
+=head2 AddArgument()
 
 adds an argument that can/must be specified on the command line.
 This function must be called during Configure() by the command to
@@ -167,7 +164,7 @@ indicate which arguments it can process.
 Please note that required arguments have to be specified before any optional ones.
 
 The information about known arguments and options (see below) will be used to generate
-usage help and also to automatically verify the data provided by the user on the commandline.
+usage help and also to automatically verify the data provided by the user on the command line.
 
 =cut
 
@@ -202,9 +199,9 @@ sub AddArgument {
     push @{ $Self->{_Arguments} }, \%Param;
 }
 
-=item GetArgument()
+=head2 GetArgument()
 
-fetch an argument value as provided by the user on the commandline.
+fetch an argument value as provided by the user on the command line.
 
     my $Filename = $CommandObject->GetArgument('filename');
 
@@ -221,7 +218,7 @@ sub GetArgument {
     return $Self->{_ParsedARGV}->{Arguments}->{$Argument};
 }
 
-=item AddOption()
+=head2 AddOption()
 
 adds an option that can/must be specified on the command line.
 This function must be called during L</Configure()> by the command to
@@ -236,7 +233,7 @@ indicate which arguments it can process.
         Multiple     => 0,  # optional, allow more than one occurrence (only possible if HasValue is true)
     );
 
-=head4 Option Naming Conventions
+B<Option Naming Conventions>
 
 If there is a source and a target involved in the command, the related options should start
 with C<--source> and C<--target>, for example C<--source-path>.
@@ -293,9 +290,9 @@ sub AddOption {
 
 }
 
-=item GetOption()
+=head2 GetOption()
 
-fetch an option as provided by the user on the commandline.
+fetch an option as provided by the user on the command line.
 
     my $Iterations = $CommandObject->GetOption('iterations');
 
@@ -319,7 +316,7 @@ sub GetOption {
 
 }
 
-=item PreRun()
+=head2 PreRun()
 
 perform additional validations/preparations before Run(). Override this method in your commands.
 
@@ -331,7 +328,7 @@ sub PreRun {
     return 1;
 }
 
-=item Run()
+=head2 Run()
 
 runs the command. Override this method in your commands.
 
@@ -348,7 +345,7 @@ sub Run {
     return $Self->ExitCodeOk();
 }
 
-=item PostRun()
+=head2 PostRun()
 
 perform additional cleanups after Run(). Override this method in your commands.
 
@@ -364,9 +361,9 @@ sub PostRun {
     return;
 }
 
-=item Execute()
+=head2 Execute()
 
-this method will parse/validate the commandline arguments supplied by the user.
+this method will parse/validate the command line arguments supplied by the user.
 If that was ok, the Run() method of the command will be called.
 
 =cut
@@ -427,6 +424,21 @@ sub Execute {
         return $Self->ExitCodeError();
     }
 
+    # If we have an interactive console, make sure that the output can handle UTF-8.
+    if (
+        IO::Interactive::is_interactive()
+        && !$Kernel::OM->Get('Kernel::Config')->Get('SuppressConsoleEncodingCheck')
+        )
+    {
+        my $ConsoleEncoding = lc $Encode::Locale::ENCODING_CONSOLE_OUT;    ## no critic
+
+        if ( $ConsoleEncoding ne 'utf-8' ) {
+            $Self->PrintError(
+                "The terminal encoding should be set to 'utf-8', but is '$ConsoleEncoding'. Some characters might not be displayed correctly."
+            );
+        }
+    }
+
     eval { $Self->PreRun(); };
     if ($@) {
         $Self->PrintError($@);
@@ -462,10 +474,10 @@ sub Execute {
     return $ExitCode;
 }
 
-=item ExitCodeError()
+=head2 ExitCodeError()
 
 returns an exit code to signal something went wrong (mostly for better
-code readabiliby).
+code readability).
 
     return $CommandObject->ExitCodeError();
 
@@ -481,7 +493,7 @@ sub ExitCodeError {
     return $CustomExitCode // 1;
 }
 
-=item ExitCodeOk()
+=head2 ExitCodeOk()
 
 returns 0 as exit code to indicate everything went fine in the command
 (mostly for better code readability).
@@ -492,7 +504,7 @@ sub ExitCodeOk {
     return 0;
 }
 
-=item GetUsageHelp()
+=head2 GetUsageHelp()
 
 generates usage / help screen for this command.
 
@@ -564,7 +576,7 @@ sub GetUsageHelp {
     return $Self->_ReplaceColorTags($UsageText);
 }
 
-=item ANSI()
+=head2 ANSI()
 
 get/set support for colored text.
 
@@ -577,7 +589,7 @@ sub ANSI {
     return $Self->{ANSI};
 }
 
-=item PrintError()
+=head2 PrintError()
 
 shorthand method to print an error message to STDERR.
 
@@ -594,7 +606,7 @@ sub PrintError {
     return;
 }
 
-=item Print()
+=head2 Print()
 
 this method will print the given text to STDOUT.
 
@@ -613,7 +625,9 @@ sub Print {
     return;
 }
 
-=item _ParseGlobalOptions()
+=begin Internal:
+
+=head2 _ParseGlobalOptions()
 
 parses any global options possibly provided by the user.
 
@@ -645,9 +659,9 @@ sub _ParseGlobalOptions {
     return \%OptionValues;
 }
 
-=item _ParseCommandlineArguments()
+=head2 _ParseCommandlineArguments()
 
-parses and validates the commandline arguments provided by the user according to
+parses and validates the command line arguments provided by the user according to
 the configured arguments and options of the command.
 
 Returns a hash with argument and option values if all needed values were supplied
@@ -768,7 +782,7 @@ sub _ParseCommandlineArguments {
     };
 }
 
-=item _Color()
+=head2 _Color()
 
 this will color the given text (see Term::ANSIColor::color()) if
 ANSI output is available and active, otherwise the text stays unchanged.
@@ -793,7 +807,7 @@ sub _ReplaceColorTags {
 
 1;
 
-=back
+=end Internal:
 
 =head1 TERMS AND CONDITIONS
 

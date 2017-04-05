@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -43,12 +43,14 @@ sub Run {
 
     $Self->Print("<yellow>Checking the $OTRSBusinessStr entitlement status...</yellow>\n");
 
+    my $Force = $Self->GetOption('force') || 0;
+
     # get OTRS Business object
     my $OTRSBusinessObject = $Kernel::OM->Get('Kernel::System::OTRSBusiness');
 
     my $OTRSBusinessInstalled = $OTRSBusinessObject->OTRSBusinessIsInstalled();
 
-    if ( !$OTRSBusinessInstalled ) {
+    if ( !$Force && !$OTRSBusinessInstalled ) {
 
         $Self->Print("$OTRSBusinessStr is not installed in this system, skipping...\n");
         $Self->Print("<green>Done.</green>\n");
@@ -74,8 +76,6 @@ sub Run {
     }
 
     my $SystemTime = $TimeObject->SystemTime();
-
-    my $Force = $Self->GetOption('force') || 0;
 
     # do not update registration info before the next update (unless is forced)
     if ( !$Force && $SystemTime < $NextUpdateSystemTime ) {
@@ -105,15 +105,3 @@ sub Run {
 }
 
 1;
-
-=back
-
-=head1 TERMS AND CONDITIONS
-
-This software is part of the OTRS project (L<http://otrs.org/>).
-
-This software comes with ABSOLUTELY NO WARRANTY. For details, see
-the enclosed file COPYING for license information (AGPL). If you
-did not receive this file, see L<http://www.gnu.org/licenses/agpl.txt>.
-
-=cut

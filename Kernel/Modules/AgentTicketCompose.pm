@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -52,9 +52,10 @@ sub Run {
     }
 
     # get needed objects
-    my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
-    my $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
-    my $TimeObject   = $Kernel::OM->Get('Kernel::System::Time');
+    my $ConfigObject  = $Kernel::OM->Get('Kernel::Config');
+    my $TicketObject  = $Kernel::OM->Get('Kernel::System::Ticket');
+    my $ArticleObject = $Kernel::OM->Get('Kernel::System::Ticket::Article');
+    my $TimeObject    = $Kernel::OM->Get('Kernel::System::Time');
 
     # get config for frontend module
     my $Config = $ConfigObject->Get("Ticket::Frontend::$Self->{Action}");
@@ -392,7 +393,8 @@ sub Run {
     DYNAMICFIELD:
     for my $DynamicFieldItem ( sort keys %DynamicFieldValues ) {
         next DYNAMICFIELD if !$DynamicFieldItem;
-        next DYNAMICFIELD if !$DynamicFieldValues{$DynamicFieldItem};
+        next DYNAMICFIELD if !defined $DynamicFieldValues{$DynamicFieldItem};
+        next DYNAMICFIELD if !length $DynamicFieldValues{$DynamicFieldItem};
 
         $DynamicFieldACLParameters{ 'DynamicField_' . $DynamicFieldItem } = $DynamicFieldValues{$DynamicFieldItem};
     }
@@ -857,7 +859,7 @@ sub Run {
         }
 
         # if there is no ArticleTypeID, use the default value
-        my $ArticleTypeID = $GetParam{ArticleTypeID} // $TicketObject->ArticleTypeLookup(
+        my $ArticleTypeID = $GetParam{ArticleTypeID} // $ArticleObject->ArticleTypeLookup(
             ArticleType => $Config->{DefaultArticleType},
         );
 
@@ -870,7 +872,7 @@ sub Run {
         }
 
         # send email
-        my $ArticleID = $TicketObject->ArticleSend(
+        my $ArticleID = $ArticleObject->ArticleSend(
             ArticleTypeID  => $ArticleTypeID,
             SenderType     => 'agent',
             TicketID       => $Self->{TicketID},
@@ -1169,13 +1171,13 @@ sub Run {
         # get last customer article or selected article ...
         my %Data;
         if ( $GetParam{ArticleID} ) {
-            %Data = $TicketObject->ArticleGet(
+            %Data = $ArticleObject->ArticleGet(
                 ArticleID     => $GetParam{ArticleID},
                 DynamicFields => 1,
             );
         }
         else {
-            %Data = $TicketObject->ArticleLastCustomerArticle(
+            %Data = $ArticleObject->ArticleLastCustomerArticle(
                 TicketID      => $Self->{TicketID},
                 DynamicFields => 1,
             );
@@ -1199,6 +1201,11 @@ sub Run {
         $Data{OrigFromName} = $Data{OrigFrom};
         $Data{OrigFromName} =~ s/<.*>|\(.*\)|\"|;|,//g;
         $Data{OrigFromName} =~ s/( $)|(  $)//g;
+
+        # Fallback to OrigFrom if realname part is empty.
+        if ( !$Data{OrigFromName} ) {
+            $Data{OrigFromName} = $Data{OrigFrom};
+        }
 
         # get customer data
         my %Customer;
@@ -1359,7 +1366,7 @@ sub Run {
 
         # use customer database email
         # do not add customer email to cc, if article type is email-internal
-        my $DataArticleType = $TicketObject->ArticleTypeLookup( ArticleTypeID => $Data{ArticleTypeID} );
+        my $DataArticleType = $ArticleObject->ArticleTypeLookup( ArticleTypeID => $Data{ArticleTypeID} );
         if (
             $ConfigObject->Get('Ticket::Frontend::ComposeAddCustomerAddress')
             && $DataArticleType !~ m{internal}
@@ -1718,8 +1725,8 @@ sub _Mask {
         Class => 'Modernize',
     );
 
-    # get ticket object
-    my $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
+    # get article object
+    my $ArticleObject = $Kernel::OM->Get('Kernel::System::Ticket::Article');
 
     #  get article type
     my %ArticleTypeList;
@@ -1728,7 +1735,7 @@ sub _Mask {
 
         my @ArticleTypesPossible = @{ $Config->{ArticleTypes} };
         for my $ArticleTypeID (@ArticleTypesPossible) {
-            my $ArticleType = $TicketObject->ArticleTypeLookup(
+            my $ArticleType = $ArticleObject->ArticleTypeLookup(
                 ArticleType => $ArticleTypeID,
             );
             $ArticleTypeList{$ArticleType} = $ArticleTypeID;
@@ -1765,7 +1772,7 @@ sub _Mask {
     }
 
     # get used calendar
-    my $Calendar = $TicketObject->TicketCalendarGet(
+    my $Calendar = $Kernel::OM->Get('Kernel::System::Ticket')->TicketCalendarGet(
         QueueID => $Param{QueueID},
         SLAID   => $Param{SLAID},
     );
@@ -1916,7 +1923,7 @@ sub _Mask {
     }
 
     # set preselected values for To field
-    if ( $Param{To} ne '' && !$CustomerCounter ) {
+    if ( defined $Param{To} && $Param{To} ne '' && !$CustomerCounter ) {
 
         # split To values
         my @EmailAddressesTo = map { $_->address() } ( Mail::Address->parse( $Param{To} ) );
@@ -2023,24 +2030,13 @@ sub _Mask {
         );
     }
 
-    # show address book
-    if ( $LayoutObject->{BrowserJavaScriptSupport} ) {
-
-        # check if need to call Options block
-        if ( !$ShownOptionsBlock ) {
-            $LayoutObject->Block(
-                Name => 'TicketOptions',
-                Data => {},
-            );
-
-            # set flag to "true" in order to prevent calling the Options block again
-            $ShownOptionsBlock = 1;
-        }
-
-        $LayoutObject->Block(
-            Name => 'AddressBook',
-            Data => {},
-        );
+    # Show the customer user address book if the module is registered and java script support is available.
+    if (
+        $ConfigObject->Get('Frontend::Module')->{AgentCustomerUserAddressBook}
+        && $LayoutObject->{BrowserJavaScriptSupport}
+        )
+    {
+        $Param{OptionCustomerUserAddressBook} = 1;
     }
 
     # add rich text editor

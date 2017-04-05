@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -27,9 +27,7 @@ Kernel::Output::HTML::LayoutTemplate - template rendering engine based on Templa
 
 =head1 PUBLIC INTERFACE
 
-=over 4
-
-=item Output()
+=head2 Output()
 
 generates HTML output based on a template file.
 
@@ -72,7 +70,7 @@ sub Output {
     if ( ref $Param{Data} ne 'HASH' ) {
         $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'error',
-            Message  => "Need HashRef in Param Data! Got: '" . ref $Param{Data} . "'!",
+            Message  => "Need HashRef in Param Data! Got: '" . ref( $Param{Data} ) . "'!",
         );
         $Self->FatalError();
     }
@@ -311,7 +309,7 @@ sub Output {
     return $Output;
 }
 
-=item AddJSOnDocumentComplete()
+=head2 AddJSOnDocumentComplete()
 
 dynamically add JavaScript code that should be executed in Core.App.Ready().
 Call this for any dynamically generated code that is not in a template.
@@ -331,7 +329,7 @@ sub AddJSOnDocumentComplete {
     return;
 }
 
-=item AddJSData()
+=head2 AddJSData()
 
 dynamically add JavaScript data that should be handed over to
 JavaScript via Core.Config.
@@ -355,8 +353,6 @@ sub AddJSData {
 }
 
 1;
-
-=back
 
 =head1 TERMS AND CONDITIONS
 

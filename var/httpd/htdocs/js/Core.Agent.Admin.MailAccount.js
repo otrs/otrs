@@ -1,5 +1,5 @@
 // --
-// Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+// Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 // --
 // This software comes with ABSOLUTELY NO WARRANTY. For details, see
 // the enclosed file COPYING for license information (AGPL). If you
@@ -21,6 +21,54 @@ Core.Agent.Admin = Core.Agent.Admin || {};
  */
  Core.Agent.Admin.MailAccount = (function (TargetNS) {
 
+    /**
+     * @name MailAccountDelete
+     * @memberof Core.Agent.Admin.MailAccount
+     * @function
+     * @description
+     *      Bind event on mail account delete button.
+     */
+    TargetNS.MailAccountDelete = function() {
+        $('.MailAccountDelete').on('click', function () {
+            var MailAccountDelete = $(this);
+
+            Core.UI.Dialog.ShowContentDialog(
+                $('#DeleteMailAccountDialogContainer'),
+                Core.Language.Translate('Delete this Mail Account'),
+                '240px',
+                'Center',
+                true,
+                [
+                    {
+                        Class: 'Primary',
+                        Label: Core.Language.Translate("Confirm"),
+                        Function: function() {
+                            $('.Dialog .InnerContent .Center').text(Core.Language.Translate("Deleting the mail account and its data. This may take a while..."));
+                            $('.Dialog .Content .ContentFooter').remove();
+
+                            Core.AJAX.FunctionCall(
+                                Core.Config.Get('Baselink'),
+                                MailAccountDelete.data('query-string'),
+                                function() {
+                                   Core.App.InternalRedirect({
+                                       Action: 'AdminMailAccount'
+                                   });
+                                }
+                            );
+                        }
+                    },
+                    {
+                        Label: Core.Language.Translate("Cancel"),
+                        Function: function () {
+                            Core.UI.Dialog.CloseDialog($('#DeleteMailAccountDialog'));
+                        }
+                    }
+                ]
+            );
+            return false;
+        });
+    };
+
     /*
     * @name Init
     * @memberof Core.Agent.Admin.MailAccount
@@ -31,7 +79,7 @@ Core.Agent.Admin = Core.Agent.Admin || {};
     TargetNS.Init = function () {
 
         // Show IMAP Folder selection only for IMAP backends
-        $('select#TypeAdd, select#Type').bind('change', function(){
+        $('select#TypeAdd, select#Type').on('change', function(){
             if (/IMAP/.test($(this).val())) {
                 $('.Row_IMAPFolder').show();
             }
@@ -41,7 +89,7 @@ Core.Agent.Admin = Core.Agent.Admin || {};
         }).trigger('change');
 
         // Show Queue field only if Dispatch By Queue is selected
-        $('select#DispatchingBy').bind('change', function(){
+        $('select#DispatchingBy').on('change', function(){
             if (/Queue/.test($(this).val())) {
                 $('.Row_Queue').show();
                 Core.UI.InputFields.Activate();
@@ -52,6 +100,8 @@ Core.Agent.Admin = Core.Agent.Admin || {};
         }).trigger('change');
 
         Core.UI.Table.InitTableFilter($("#FilterMailAccounts"), $("#MailAccounts"));
+
+        TargetNS.MailAccountDelete();
     };
 
     Core.Init.RegisterNamespace(TargetNS, 'APP_MODULE');

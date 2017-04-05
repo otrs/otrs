@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -31,19 +31,15 @@ $Selenium->RunTest(
 
             # get default sysconfig
             my $SysConfigName = 'Frontend::CustomerUser::Item###' . $SysConfigChange;
-            my %Config        = $Kernel::OM->Get('Kernel::System::SysConfig')->ConfigItemGet(
+            my %Config        = $Kernel::OM->Get('Kernel::System::SysConfig')->SettingGet(
                 Name    => $SysConfigName,
                 Default => 1,
             );
 
-            # set CustomerUserGenericTicket modules to valid
-            %Config = map { $_->{Key} => $_->{Content} }
-                grep { defined $_->{Key} } @{ $Config{Setting}->[1]->{Hash}->[1]->{Item} };
-
             $Helper->ConfigSettingChange(
                 Valid => 1,
                 Key   => $SysConfigName,
-                Value => \%Config,
+                Value => $Config{EffectiveValue},
             );
         }
 
@@ -135,6 +131,9 @@ $Selenium->RunTest(
         # wait until page has loaded, if necessary
         $Selenium->WaitFor( JavaScript => 'return typeof($) === "function" && $("body").length' );
 
+        # Wait until customer info widget has loaded, if necessary.
+        $Selenium->WaitFor( JavaScript => 'return typeof($) === "function" && $(".WidgetIsLoading").length === 0;' );
+
         # test CustomerUserGenericTicket module
         for my $TestLinks ( sort keys %TicketData ) {
 
@@ -147,7 +146,7 @@ $Selenium->RunTest(
 
             # click on link
             $Selenium->find_element(
-                "//a[contains(\@href, \'$TicketData{$TestLinks}->{TicketLink};CustomerUserLogin=$TestCustomerUserLogin' )]"
+                "//a[contains(\@href, \'$TicketData{$TestLinks}->{TicketLink};CustomerUserLoginRaw=$TestCustomerUserLogin' )]"
             )->VerifiedClick();
 
             $Selenium->WaitFor( WindowCount => 2 );

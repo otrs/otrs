@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -22,20 +22,16 @@ our @ObjectDependencies = (
 
 Kernel::System::CSV - CSV lib
 
-=head1 SYNOPSIS
+=head1 DESCRIPTION
 
 All csv functions.
 
 =head1 PUBLIC INTERFACE
 
-=over 4
+=head2 new()
 
-=item new()
+Don't use the constructor directly, use the ObjectManager instead:
 
-create an object. Do not use it directly, instead use:
-
-    use Kernel::System::ObjectManager;
-    local $Kernel::OM = Kernel::System::ObjectManager->new();
     my $CSVObject = $Kernel::OM->Get('Kernel::System::CSV');
 
 =cut
@@ -50,7 +46,7 @@ sub new {
     return $Self;
 }
 
-=item Array2CSV()
+=head2 Array2CSV()
 
 Returns a csv formatted string based on a array with head data.
 
@@ -122,7 +118,17 @@ sub Array2CSV {
         # We will try to determine the appropriate length for each column.
         my @ColumnLengths;
         my $Row = 0;
-        for my $DataRaw ( \@WithHeader, \@Head, @Data ) {
+
+        my @Rows = ( \@Head, @Data );
+
+        if ( scalar @WithHeader ) {
+
+            # Adds \@WithHeader to the beggining of @Rows, if not empty.
+            #    Otherwise it adds empty first row - see bug#12467.
+            unshift @Rows, \@WithHeader;
+        }
+
+        for my $DataRaw (@Rows) {
             COL:
             for my $Col ( 0 .. ( scalar @{ $DataRaw // [] } ) - 1 ) {
                 next COL if !defined( $DataRaw->[$Col] );
@@ -216,7 +222,7 @@ sub Array2CSV {
     return $Output;
 }
 
-=item CSV2Array()
+=head2 CSV2Array()
 
 Returns an array with parsed csv data.
 
@@ -277,8 +283,6 @@ sub CSV2Array {
 }
 
 1;
-
-=back
 
 =head1 TERMS AND CONDITIONS
 

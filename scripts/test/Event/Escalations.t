@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -15,7 +15,8 @@ use vars (qw($Self));
 # get helper object
 $Kernel::OM->ObjectParamAdd(
     'Kernel::System::UnitTest::Helper' => {
-        RestoreDatabase => 1,
+        RestoreDatabase  => 1,
+        UseTmpArticleDir => 1,
     },
 );
 my $HelperObject = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
@@ -25,11 +26,12 @@ my $ConfigObject       = $Kernel::OM->Get('Kernel::Config');
 my $GenericAgentObject = $Kernel::OM->Get('Kernel::System::GenericAgent');
 my $QueueObject        = $Kernel::OM->Get('Kernel::System::Queue');
 my $TicketObject       = $Kernel::OM->Get('Kernel::System::Ticket');
+my $ArticleObject      = $Kernel::OM->Get('Kernel::System::Ticket::Article');
 my $TimeObject         = $Kernel::OM->Get('Kernel::System::Time');
 
 # make use to disable EstalationStopEvents modules
 $ConfigObject->Set(
-    Key   => 'Ticket::EventModulePost###900-EscalationStopEvents',
+    Key   => 'Ticket::EventModulePost###4300-EscalationStopEvents',
     Value => undef,
 );
 
@@ -181,6 +183,16 @@ for my $Hours ( sort keys %WorkingHours ) {
 
         # wait 1 second to have escalations
         $HelperObject->FixedTimeAddSeconds(1);
+
+        # Renew objects because of transaction.
+        $Kernel::OM->ObjectsDiscard(
+            Objects => [
+                'Kernel::System::Ticket',
+                'Kernel::System::Ticket::Article',
+            ],
+        );
+        $TicketObject  = $Kernel::OM->Get('Kernel::System::Ticket');
+        $ArticleObject = $Kernel::OM->Get('Kernel::System::Ticket::Article');
 
         my %Ticket = $TicketObject->TicketGet( TicketID => $TicketID );
 
@@ -336,7 +348,6 @@ for my $Hours ( sort keys %WorkingHours ) {
             $NumEvents{EscalationSolutionTimeStart}++;
             $NumEvents{EscalationResponseTimeStart}++;
         }
-
         $CheckNumEvents->(
             GenericAgentObject => $GenericAgentObject,
             TicketObject       => $TicketObject,
@@ -355,7 +366,7 @@ for my $Hours ( sort keys %WorkingHours ) {
         );
 
         # first response
-        my $ArticleID = $TicketObject->ArticleCreate(
+        my $ArticleID = $ArticleObject->ArticleCreate(
             TicketID       => $TicketID,
             ArticleType    => 'phone',
             SenderType     => 'agent',
@@ -379,6 +390,17 @@ for my $Hours ( sort keys %WorkingHours ) {
             $NumEvents{EscalationSolutionTimeStart}++;
             $NumEvents{EscalationUpdateTimeStart}++;
         }
+
+        # Renew objects because of transaction.
+        $Kernel::OM->ObjectsDiscard(
+            Objects => [
+                'Kernel::System::Ticket',
+                'Kernel::System::Ticket::Article',
+            ],
+        );
+        $TicketObject  = $Kernel::OM->Get('Kernel::System::Ticket');
+        $ArticleObject = $Kernel::OM->Get('Kernel::System::Ticket::Article');
+
         $CheckNumEvents->(
             GenericAgentObject => $GenericAgentObject,
             TicketObject       => $TicketObject,
@@ -417,7 +439,7 @@ for my $Hours ( sort keys %WorkingHours ) {
 
         # trigger an update
         # a note internal does not make the update time escalation go away
-        my $ArticleID = $TicketObject->ArticleCreate(
+        my $ArticleID = $ArticleObject->ArticleCreate(
             TicketID       => $TicketID,
             ArticleType    => 'note-internal',
             SenderType     => 'agent',
@@ -433,6 +455,16 @@ for my $Hours ( sort keys %WorkingHours ) {
             UserID         => 1,
             NoAgentNotify => 1,    # if you don't want to send agent notifications
         );
+
+        # Renew objects because of transaction.
+        $Kernel::OM->ObjectsDiscard(
+            Objects => [
+                'Kernel::System::Ticket',
+                'Kernel::System::Ticket::Article',
+            ],
+        );
+        $TicketObject  = $Kernel::OM->Get('Kernel::System::Ticket');
+        $ArticleObject = $Kernel::OM->Get('Kernel::System::Ticket::Article');
 
         $CheckNumEvents->(
             GenericAgentObject => $GenericAgentObject,

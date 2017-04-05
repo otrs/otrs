@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -121,7 +121,7 @@ sub Run {
     my $Action    = $Param{Config}->{Action};
     my $Subaction = $Param{Config}->{Subaction};
     my $URL       = $LayoutObject->{Baselink} . "Action=$Action;Subaction=$Subaction";
-    $URL .= ';CustomerID=' . $LayoutObject->LinkEncode($CustomerIDRaw);
+    $URL .= ';CustomerIDRaw=' . $LayoutObject->LinkEncode($CustomerIDRaw);
     for my $Key ( sort keys %TicketSearch ) {
         if ( ref $TicketSearch{$Key} eq 'ARRAY' ) {
             for my $Value ( @{ $TicketSearch{$Key} } ) {
@@ -139,7 +139,7 @@ sub Run {
         );
 
         $TicketSearch{CustomerUserLogin} = $CustomerUserLoginEscaped;
-        $URL .= ';CustomerUserLogin='
+        $URL .= ';CustomerUserLoginRaw='
             . $LayoutObject->LinkEncode($CustomerUserLoginEscaped);
     }
 

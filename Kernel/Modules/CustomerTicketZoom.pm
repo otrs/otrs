@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -134,9 +134,11 @@ sub Run {
         $StripPlainBodyAsAttachment = 2;
     }
 
+    my $ArticleObject = $Kernel::OM->Get('Kernel::System::Ticket::Article');
+
     # get all articles of this ticket
-    my @CustomerArticleTypes = $TicketObject->ArticleTypeList( Type => 'Customer' );
-    my @ArticleBox = $TicketObject->ArticleContentIndex(
+    my @CustomerArticleTypes = $ArticleObject->ArticleTypeList( Type => 'Customer' );
+    my @ArticleBox = $ArticleObject->ArticleContentIndex(
         TicketID                   => $Self->{TicketID},
         ArticleType                => \@CustomerArticleTypes,
         StripPlainBodyAsAttachment => $StripPlainBodyAsAttachment,
@@ -399,6 +401,12 @@ sub Run {
                     ChatID => $GetParam{FromChatID},
                 );
                 if (@ChatMessages) {
+                    for my $Message (@ChatMessages) {
+                        $Message->{MessageText} = $LayoutObject->Ascii2Html(
+                            Text        => $Message->{MessageText},
+                            LinkFeature => 1,
+                        );
+                    }
                     $GetParam{ChatMessages} = \@ChatMessages;
                 }
             }
@@ -636,7 +644,7 @@ sub Run {
             );
         }
 
-        my $ArticleID = $TicketObject->ArticleCreate(
+        my $ArticleID = $ArticleObject->ArticleCreate(
             TicketID    => $Self->{TicketID},
             ArticleType => $Config->{ArticleType},
             SenderType  => $Config->{SenderType},
@@ -702,7 +710,7 @@ sub Run {
             }
 
             # write existing file to backend
-            $TicketObject->ArticleWriteAttachment(
+            $ArticleObject->ArticleWriteAttachment(
                 %{$Attachment},
                 ArticleID => $ArticleID,
                 UserID    => $ConfigObject->Get('CustomerPanelUserID'),
@@ -754,13 +762,20 @@ sub Run {
             my $ChatArticleID;
 
             if (@ChatMessageList) {
+                for my $Message (@ChatMessageList) {
+                    $Message->{MessageText} = $LayoutObject->Ascii2Html(
+                        Text        => $Message->{MessageText},
+                        LinkFeature => 1,
+                    );
+                }
+
                 my $JSONBody = $Kernel::OM->Get('Kernel::System::JSON')->Encode(
                     Data => \@ChatMessageList,
                 );
 
                 my $ChatArticleType = 'chat-external';
 
-                $ChatArticleID = $TicketObject->ArticleCreate(
+                $ChatArticleID = $ArticleObject->ArticleCreate(
                     TicketID       => $Self->{TicketID},
                     ArticleType    => $ChatArticleType,
                     SenderType     => $Config->{SenderType},
@@ -1006,6 +1021,14 @@ sub _Mask {
     $Param{Hook} = $ConfigObject->Get('Ticket::Hook') || 'Ticket#';
 
     my $Config = $ConfigObject->Get("Ticket::Frontend::$Self->{Action}");
+
+    # ticket accounted time
+    if ( $Config->{ZoomTimeDisplay} ) {
+        $LayoutObject->Block(
+            Name => 'TicketTimeUnits',
+            Data => \%Param,
+        );
+    }
 
     # ticket priority flag
     if ( $Config->{AttributesView}->{Priority} ) {
@@ -1355,7 +1378,9 @@ sub _Mask {
         )
     {
         # get all queues to tickets relations
-        my %QueueChatChannelRelations = $Kernel::OM->Get('Kernel::System::ChatChannel')->ChatChannelQueuesGet();
+        my %QueueChatChannelRelations = $Kernel::OM->Get('Kernel::System::ChatChannel')->ChatChannelQueuesGet(
+            CustomerInterface => 1,
+        );
 
         # if a support chat channel is set for this queue
         if ( $QueueChatChannelRelations{ $Param{QueueID} } ) {
@@ -1524,6 +1549,23 @@ sub _Mask {
                     $HiddenType . Hidden => 'Hidden',
                 },
             );
+        }
+
+        # ticket accounted time
+        if ( $Config->{ZoomTimeDisplay} ) {
+
+            my $ArticleAccountedTime = $Kernel::OM->Get('Kernel::System::Ticket::Article')->ArticleAccountedTimeGet(
+                ArticleID => $Article{ArticleID},
+            );
+
+            if ($ArticleAccountedTime) {
+                $LayoutObject->Block(
+                    Name => 'ArticleTimeUnits',
+                    Data => {
+                        ArticleTimeUnits => $ArticleAccountedTime,
+                    },
+                );
+            }
         }
 
         # get the dynamic fields for article object

@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -20,7 +20,8 @@ my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
 # get helper object
 $Kernel::OM->ObjectParamAdd(
     'Kernel::System::UnitTest::Helper' => {
-        RestoreDatabase => 1,
+        RestoreDatabase  => 1,
+        UseTmpArticleDir => 1,
     },
 );
 my $Helper = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
@@ -282,22 +283,112 @@ $Self->True(
     "TicketCreate() successful for Ticket ID $TicketID",
 );
 
-# get dynamic field object
-my $DynamicFieldObject = $Kernel::OM->Get('Kernel::System::DynamicField');
+my $DynamicFieldObject      = $Kernel::OM->Get('Kernel::System::DynamicField');
+my $DynamicFieldValueObject = $Kernel::OM->Get('Kernel::System::DynamicFieldValue');
 
-# create a dynamic field
+# Create test ticket dynamic field of type checkbox.
 my $FieldID = $DynamicFieldObject->DynamicFieldAdd(
     Name       => "DFT1$RandomID",
     Label      => 'Description',
     FieldOrder => 9991,
-    FieldType  => 'Text',
+    FieldType  => 'Checkbox',
     ObjectType => 'Ticket',
     Config     => {
-        DefaultValue => 'Default',
+        DefaultValue => 1,
     },
     ValidID => 1,
     UserID  => 1,
     Reorder => 0,
+);
+$Self->True(
+    $FieldID,
+    "DynamicFieldAdd - Added checkbox field ($FieldID)",
+);
+
+# Set ticket dynamic field checkbox value to unchecked.
+$Success = $DynamicFieldValueObject->ValueSet(
+    FieldID  => $FieldID,
+    ObjectID => $TicketID,
+    Value    => [
+        {
+            ValueInt => 0,
+        },
+    ],
+    UserID => 1,
+);
+$Self->True(
+    $Success,
+    'ValueSet - Checkbox value set to unchecked',
+);
+
+# Create test ticket dynamic field of type text.
+$FieldID = $DynamicFieldObject->DynamicFieldAdd(
+    Name       => "DFT2$RandomID",
+    Label      => 'Additional Email',
+    FieldOrder => 9992,
+    FieldType  => 'Text',
+    ObjectType => 'Ticket',
+    Config     => {
+        DefaultValue => '',
+    },
+    ValidID => 1,
+    UserID  => 1,
+    Reorder => 0,
+);
+$Self->True(
+    $FieldID,
+    "DynamicFieldAdd - Added text field ($FieldID)",
+);
+
+# Set ticket dynamic field checkbox value to unchecked.
+$Success = $DynamicFieldValueObject->ValueSet(
+    FieldID  => $FieldID,
+    ObjectID => $TicketID,
+    Value    => [
+        {
+            ValueText => 'foo@bar.com',
+        },
+    ],
+    UserID => 1,
+);
+$Self->True(
+    $Success,
+    'ValueSet - Text value set to foo@bar.com',
+);
+
+# Create test ticket dynamic field of type text.
+$FieldID = $DynamicFieldObject->DynamicFieldAdd(
+    Name       => "DFT3$RandomID",
+    Label      => 'Additional Email #2',
+    FieldOrder => 9993,
+    FieldType  => 'Text',
+    ObjectType => 'Ticket',
+    Config     => {
+        DefaultValue => '',
+    },
+    ValidID => 1,
+    UserID  => 1,
+    Reorder => 0,
+);
+$Self->True(
+    $FieldID,
+    "DynamicFieldAdd - Added text field ($FieldID)",
+);
+
+# Set ticket dynamic field checkbox value to unchecked.
+$Success = $DynamicFieldValueObject->ValueSet(
+    FieldID  => $FieldID,
+    ObjectID => $TicketID,
+    Value    => [
+        {
+            ValueText => 'bar@foo.com',
+        },
+    ],
+    UserID => 1,
+);
+$Self->True(
+    $Success,
+    'ValueSet - Text value set to bar@foo.com',
 );
 
 my $SuccessWatcher = $TicketObject->TicketWatchSubscribe(
@@ -312,8 +403,10 @@ $Self->True(
     "TicketWatchSubscribe() successful for Ticket ID $TicketID",
 );
 
+my $ArticleObject = $Kernel::OM->Get('Kernel::System::Ticket::Article');
+
 # get article types email-notification-int ID
-my $ArticleTypeIntID = $TicketObject->ArticleTypeLookup(
+my $ArticleTypeIntID = $ArticleObject->ArticleTypeLookup(
     ArticleType => 'email-notification-int',
 );
 
@@ -873,7 +966,122 @@ my @Tests = (
         ],
         Success => 1,
     },
+    {
+        Name => 'RecipientEmail filter by unchecked dynamic field',
+        Data => {
+            Events         => [ 'TicketDynamicFieldUpdate_DFT1' . $RandomID . 'Update' ],
+            RecipientEmail => ['test@otrsexample.com'],
 
+            # Filter by unchecked checbox dynamic field value. Note that the search value (-1) is
+            #   different than the match value (0). See bug#12257 for more information.
+            'Search_DynamicField_DFT1' . $RandomID => [-1],
+        },
+        Config => {
+            Event => 'TicketDynamicFieldUpdate_DFT1' . $RandomID . 'Update',
+            Data  => {
+                TicketID => $TicketID,
+            },
+            Config => {},
+            UserID => 1,
+        },
+        ExpectedResults => [
+            {
+                ToArray => ['test@otrsexample.com'],
+                Body    => "JobName $TicketID Kernel::System::Email::Test $UserData{UserFirstname}=\n",
+            },
+        ],
+        Success => 1,
+    },
+    {
+        Name => 'RecipientEmail additional recipient by dynamic field',
+        Data => {
+            Events         => [ 'TicketDynamicFieldUpdate_DFT2' . $RandomID . 'Update' ],
+            RecipientEmail => ["<OTRS_TICKET_DynamicField_DFT2${RandomID}>"],
+        },
+        Config => {
+            Event => 'TicketDynamicFieldUpdate_DFT2' . $RandomID . 'Update',
+            Data  => {
+                TicketID => $TicketID,
+            },
+            Config => {},
+            UserID => 1,
+        },
+        ExpectedResults => [
+            {
+                ToArray => ['foo@bar.com'],
+                Body    => "JobName $TicketID Kernel::System::Email::Test $UserData{UserFirstname}=\n",
+            },
+        ],
+        Success => 1,
+    },
+    {
+        Name => 'RecipientEmail additional recipient by dynamic field (first position)',
+        Data => {
+            Events         => [ 'TicketDynamicFieldUpdate_DFT2' . $RandomID . 'Update' ],
+            RecipientEmail => ["<OTRS_TICKET_DynamicField_DFT2${RandomID}>, test\@otrsexample.com"],
+        },
+        Config => {
+            Event => 'TicketDynamicFieldUpdate_DFT2' . $RandomID . 'Update',
+            Data  => {
+                TicketID => $TicketID,
+            },
+            Config => {},
+            UserID => 1,
+        },
+        ExpectedResults => [
+            {
+                ToArray => [ 'foo@bar.com', 'test@otrsexample.com' ],
+                Body => "JobName $TicketID Kernel::System::Email::Test $UserData{UserFirstname}=\n",
+            },
+        ],
+        Success => 1,
+    },
+    {
+        Name => 'RecipientEmail additional recipient by dynamic field (last position)',
+        Data => {
+            Events         => [ 'TicketDynamicFieldUpdate_DFT2' . $RandomID . 'Update' ],
+            RecipientEmail => ["test\@otrsexample.com, <OTRS_TICKET_DynamicField_DFT2${RandomID}>"],
+        },
+        Config => {
+            Event => 'TicketDynamicFieldUpdate_DFT2' . $RandomID . 'Update',
+            Data  => {
+                TicketID => $TicketID,
+            },
+            Config => {},
+            UserID => 1,
+        },
+        ExpectedResults => [
+            {
+                ToArray => [ 'test@otrsexample.com', 'foo@bar.com' ],
+                Body    => "JobName $TicketID Kernel::System::Email::Test $UserData{UserFirstname}=\n",
+            },
+        ],
+        Success => 1,
+    },
+    {
+        Name => 'RecipientEmail additional recipient by dynamic field (two fields)',
+        Data => {
+            Events         => [ 'TicketDynamicFieldUpdate_DFT3' . $RandomID . 'Update' ],
+            RecipientEmail => [
+                "<OTRS_TICKET_DynamicField_DFT3${RandomID}>, <OTRS_TICKET_DynamicField_DFT2${RandomID}>"
+            ],
+        },
+        Config => {
+            Event => 'TicketDynamicFieldUpdate_DFT3' . $RandomID . 'Update',
+            Data  => {
+                TicketID => $TicketID,
+            },
+            Config => {},
+            UserID => 1,
+        },
+        ExpectedResults => [
+            {
+                ToArray => [ 'bar@foo.com', 'foo@bar.com' ],
+                Body    => "JobName $TicketID Kernel::System::Email::Test $UserData{UserFirstname}=\n",
+            },
+        ],
+        Success => 1,
+    },
 );
 
 my $SetPostMasterUserID = sub {
@@ -1118,7 +1326,7 @@ for my $Test (@Tests) {
     # check if there is email-notification-int article type when sending notification
     # to customer see bug#11592
     if ( $Test->{Name} =~ /RecipientCustomer/i ) {
-        my @ArticleBox = $TicketObject->ArticleContentIndex(
+        my @ArticleBox = $ArticleObject->ArticleContentIndex(
             TicketID      => $TicketID,
             UserID        => 1,
             ArticleTypeID => [$ArticleTypeIntID],

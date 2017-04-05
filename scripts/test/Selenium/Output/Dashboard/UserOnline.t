@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -25,20 +25,17 @@ $Selenium->RunTest(
         my $Helper = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
 
         # get UserOnline config
-        my %UserOnlineSysConfig = $Kernel::OM->Get('Kernel::System::SysConfig')->ConfigItemGet(
+        my %UserOnlineSysConfig = $Kernel::OM->Get('Kernel::System::SysConfig')->SettingGet(
             Name    => 'DashboardBackend###0400-UserOnline',
             Default => 1,
         );
-
-        %UserOnlineSysConfig = map { $_->{Key} => $_->{Content} }
-            grep { defined $_->{Key} } @{ $UserOnlineSysConfig{Setting}->[1]->{Hash}->[1]->{Item} };
 
         # enable UserOnline and set it to load as default plugin
         $Helper->ConfigSettingChange(
             Valid => 1,
             Key   => 'DashboardBackend###0400-UserOnline',
             Value => {
-                %UserOnlineSysConfig,
+                %{ $UserOnlineSysConfig{EffectiveValue} },
                 Default => 1,
                 }
         );

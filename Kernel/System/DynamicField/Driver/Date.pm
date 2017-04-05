@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -30,7 +30,7 @@ our @ObjectDependencies = (
 
 Kernel::System::DynamicField::Driver::Date
 
-=head1 SYNOPSIS
+=head1 DESCRIPTION
 
 DynamicFields Date Driver delegate
 
@@ -39,9 +39,7 @@ DynamicFields Date Driver delegate
 This module implements the public interface of L<Kernel::System::DynamicField::Backend>.
 Please look there for a detailed reference of the functions.
 
-=over 4
-
-=item new()
+=head2 new()
 
 usually, you want to create an instance of this
 by using Kernel::System::DynamicField::Backend->new();
@@ -221,7 +219,15 @@ sub SearchSQLGet {
         SmallerThanEquals => '<=',
     );
 
-    if ( !$Operators{ $Param{Operator} } ) {
+    if ( $Param{Operator} eq 'Empty' ) {
+        if ( $Param{SearchTerm} ) {
+            return " $Param{TableAlias}.value_date IS NULL ";
+        }
+        else {
+            return " $Param{TableAlias}.value_date IS NOT NULL ";
+        }
+    }
+    elsif ( !$Operators{ $Param{Operator} } ) {
         $Kernel::OM->Get('Kernel::System::Log')->Log(
             'Priority' => 'error',
             'Message'  => "Unsupported Operator $Param{Operator}",
@@ -777,6 +783,15 @@ EOF
         return $Data;
     }
 
+    # to set the years range
+    my %YearsPeriodRange;
+    if ( defined $FieldConfig->{YearsPeriod} && $FieldConfig->{YearsPeriod} eq '1' ) {
+        %YearsPeriodRange = (
+            YearPeriodPast   => $FieldConfig->{YearsInPast}   || 0,
+            YearPeriodFuture => $FieldConfig->{YearsInFuture} || 0,
+        );
+    }
+
     # build HTML for start value set
     $HTMLString .= $Param{LayoutObject}->BuildDateSelection(
         %Param,
@@ -786,6 +801,8 @@ EOF
         DiffTime             => -( ( 60 * 60 * 24 ) * 30 ),
         Validate             => 1,
         %{ $Value->{ValueStart} },
+        %YearsPeriodRange,
+        OverrideTimeZone => 1,
     );
 
     # build HTML for "and" separator
@@ -800,6 +817,8 @@ EOF
         DiffTime             => +( ( 60 * 60 * 24 ) * 30 ),
         Validate             => 1,
         %{ $Value->{ValueStop} },
+        %YearsPeriodRange,
+        OverrideTimeZone => 1,
     );
 
     my $AdditionalText;
@@ -1339,9 +1358,25 @@ sub RandomValueSet {
     };
 }
 
-1;
+sub ValueLookup {
+    my ( $Self, %Param ) = @_;
 
-=back
+    my $Value = defined $Param{Key} ? $Param{Key} : '';
+
+    # check if a translation is possible
+    if ( defined $Param{LanguageObject} ) {
+
+        # translate value
+        $Value = $Param{LanguageObject}->FormatTimeString(
+            $Value,
+            'DateFormatShort',
+        );
+    }
+
+    return $Value;
+}
+
+1;
 
 =head1 TERMS AND CONDITIONS
 

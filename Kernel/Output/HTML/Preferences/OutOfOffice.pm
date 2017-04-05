@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -49,6 +49,10 @@ sub Param {
         YearPeriodPast         => 1,
         YearPeriodFuture       => 5,
         Validate               => 1,
+
+        # Do not convert to local time zone, show stored date as-is
+        #   (please see bug#12471 for more information).
+        OverrideTimeZone => 1,
     );
     $Param{OptionEnd} = $LayoutObject->BuildDateSelection(
         Format               => 'DateInputFormat',
@@ -63,6 +67,10 @@ sub Param {
         YearPeriodPast       => 1,
         YearPeriodFuture     => 5,
         Validate             => 1,
+
+        # Do not convert to local time zone, show stored date as-is
+        #   (please see bug#12471 for more information).
+        OverrideTimeZone => 1,
     );
 
     push(
@@ -88,7 +96,7 @@ sub Run {
         qw(OutOfOffice OutOfOfficeStartYear OutOfOfficeStartMonth OutOfOfficeStartDay OutOfOfficeEndYear OutOfOfficeEndMonth OutOfOfficeEndDay)
         )
     {
-        $Param{$Key} = $ParamObject->GetParam( Param => $Key );
+        $Param{$Key} = $ParamObject->GetParam( Param => $Key ) || '';
     }
 
     my $OutOfOfficeStartTime = $TimeObject->TimeStamp2SystemTime(

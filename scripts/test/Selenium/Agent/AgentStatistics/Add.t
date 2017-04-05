@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -111,6 +111,19 @@ $Selenium->RunTest(
         # check add statistics screen
         $Selenium->VerifiedGet("${ScriptAlias}index.pl?Action=AgentStatistics;Subaction=Add");
 
+        # check breadcrumb on Add screen
+        my $Count = 1;
+        for my $BreadcrumbText ( 'Statistics Overview', 'Add Statistics' )
+        {
+            $Self->Is(
+                $Selenium->execute_script("return \$('.BreadCrumb li:eq($Count)').text().trim()"),
+                $BreadcrumbText,
+                "Breadcrumb text '$BreadcrumbText' is found on screen"
+            );
+
+            $Count++;
+        }
+
         # check link 'DynamicMatrix'
         $Self->True(
             $Selenium->find_element("//a[contains(\@data-statistic-preselection, \'DynamicMatrix\' )]"),
@@ -133,6 +146,12 @@ $Selenium->RunTest(
         $Selenium->find_element("//a[contains(\@href, \'Action=AgentStatistics;Subaction=Overview\' )]")
             ->VerifiedClick();
 
+        # check breadcrumb on Overview screen
+        $Self->True(
+            $Selenium->find_element( '.BreadCrumb', 'css' ),
+            "Breadcrumb is found on Overview screen.",
+        );
+
         my @Tests = (
             {
                 Title            => 'Statistic DynamicMatrix' . $Helper->GetRandomID(),
@@ -144,22 +163,32 @@ $Selenium->RunTest(
                 Restrictionvalue => 3,
             },
             {
+                Title             => 'Statistic DynamicMatrix' . $Helper->GetRandomID(),
+                Object            => 'Kernel::System::Stats::Dynamic::Ticket',
+                Type              => 'DynamicMatrix',
+                XAxis             => 'XAxisCreateTime',
+                YAxis             => 'YAxisSLAIDs',
+                RestrictionID     => 'RestrictionsQueueIDs',
+                Restrictionvalue  => 3,
+                SelectedTimeField => 1,
+            },
+            {
                 Title            => 'Statistic - TicketAccountedTime' . $Helper->GetRandomID(),
                 Object           => 'Kernel::System::Stats::Dynamic::TicketAccountedTime',
-                Type             => 'DynamicList',
-                XAxis            => 'XAxisServiceIDs',
+                Type             => 'DynamicMatrix',
+                XAxis            => 'XAxisKindsOfReporting',
                 YAxis            => 'YAxisSLAIDs',
-                RestrictionID    => 'RestrictionsKindsOfReporting',
-                Restrictionvalue => 'TotalTime',
+                RestrictionID    => 'RestrictionsServiceIDs',
+                Restrictionvalue => $ServiceIDs[0],
             },
             {
                 Title            => 'Statistic - TicketSolutionResponseTime' . $Helper->GetRandomID(),
                 Object           => 'Kernel::System::Stats::Dynamic::TicketSolutionResponseTime',
-                Type             => 'DynamicList',
-                XAxis            => 'XAxisServiceIDs',
+                Type             => 'DynamicMatrix',
+                XAxis            => 'XAxisKindsOfReporting',
                 YAxis            => 'YAxisSLAIDs',
-                RestrictionID    => 'RestrictionsKindsOfReporting',
-                Restrictionvalue => 'SolutionAverageAllOver',
+                RestrictionID    => 'RestrictionsServiceIDs',
+                Restrictionvalue => $ServiceIDs[0],
             },
             {
                 Title            => 'Statistic - TicketList' . $Helper->GetRandomID(),
@@ -170,7 +199,6 @@ $Selenium->RunTest(
                 RestrictionID    => 'RestrictionsServiceIDs',
                 Restrictionvalue => $ServiceIDs[0],
             },
-
         );
 
         my @StatsFormatDynamicMatrix = (
@@ -291,6 +319,24 @@ $Selenium->RunTest(
                 );
             }
 
+            # Check the options for the cache field in the general section.
+            if ( $StatsData->{SelectedTimeField} ) {
+
+                $Self->True(
+                    $Selenium->execute_script(
+                        "return \$('#Cache option[value=\"1\"]').val() == 1 && \$('#Cache option[value=\"1\"]')[0].innerHTML == 'Yes'"
+                    ),
+                    'Found element "Yes" in Cache the select field.',
+                );
+            }
+            else {
+
+                $Self->False(
+                    $Selenium->execute_script("return \$('#Cache option[value=\"1\"]').val() == 1"),
+                    'Found no element "Yes" in the Cache select field.',
+                );
+            }
+
             # save and finish test statistics
             $Selenium->find_element("//button[\@name='SaveAndFinish'][\@type='submit']")->VerifiedClick();
 
@@ -337,7 +383,6 @@ JAVASCRIPT
                     == -1,
                 "StatsData statistic is deleted - $StatsData->{Title} "
             );
-
         }
 
         # get DB object

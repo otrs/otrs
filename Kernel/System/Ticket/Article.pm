@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -13,31 +13,86 @@ use warnings;
 
 use POSIX qw(ceil);
 
-use Kernel::System::EmailParser;
+use base qw(Kernel::System::EventHandler);
 
+use Kernel::System::EmailParser;
 use Kernel::System::VariableCheck qw(:all);
 
-our $ObjectManagerDisabled = 1;
+our @ObjectDependencies = (
+    'Kernel::Config',
+    'Kernel::System::Cache',
+    'Kernel::System::CustomerUser',
+    'Kernel::System::DB',
+    'Kernel::System::DynamicField',
+    'Kernel::System::DynamicField::Backend',
+    'Kernel::System::Email',
+    'Kernel::System::HTMLUtils',
+    'Kernel::System::Lock',
+    'Kernel::System::Log',
+    'Kernel::System::Main',
+    'Kernel::System::PostMaster::LoopProtection',
+    'Kernel::System::Priority',
+    'Kernel::System::Queue',
+    'Kernel::System::SLA',
+    'Kernel::System::Service',
+    'Kernel::System::State',
+    'Kernel::System::TemplateGenerator',
+    'Kernel::System::Ticket',
+    'Kernel::System::Time',
+    'Kernel::System::Type',
+    'Kernel::System::User',
+    'Kernel::System::Valid',
+);
 
 =head1 NAME
 
-Kernel::System::Ticket::Article - sub module of Kernel::System::Ticket
-
-=head1 SYNOPSIS
-
-All article functions.
+Kernel::System::Ticket::Article - functions to manage ticket articles
 
 =head1 PUBLIC INTERFACE
 
-=over 4
+=head2 new()
+
+Don't use the constructor directly, use the ObjectManager instead:
+
+    my $ArticleObject = $Kernel::OM->Get('Kernel::System::Article');
 
 =cut
 
-=item ArticleCreate()
+sub new {
+    my ( $Type, %Param ) = @_;
+
+    # allocate new hash for object
+    my $Self = {};
+    bless( $Self, $Type );
+
+    # 0=off; 1=on;
+    $Self->{Debug} = $Param{Debug} || 0;
+
+    $Self->{CacheType} = 'Article';
+    $Self->{CacheTTL}  = 60 * 60 * 24 * 20;
+
+    # init of event handler
+    $Self->EventHandlerInit(
+        Config => 'Ticket::EventModulePost',
+    );
+
+    # Persistent for this object's lifetime so that we can have article objects with different storage modules.
+    $Self->{ArticleStorageModule} = $Param{ArticleStorageModule}
+        || $Kernel::OM->Get('Kernel::Config')->Get('Ticket::StorageModule')
+        || 'Kernel::System::Ticket::ArticleStorageDB';
+
+    $Self->{ArticleSearchIndexModule} = $Param{ArticleSearchIndexModule}
+        || $Kernel::OM->Get('Kernel::Config')->Get('Ticket::SearchIndexModule')
+        || 'Kernel::System::Ticket::ArticleSearchIndex::RuntimeDB';
+
+    return $Self;
+}
+
+=head2 ArticleCreate()
 
 create an article
 
-    my $ArticleID = $TicketObject->ArticleCreate(
+    my $ArticleID = $ArticleObject->ArticleCreate(
         TicketID         => 123,
         ArticleType      => 'note-internal',                        # email-external|email-internal|phone|fax|...
         SenderType       => 'agent',                                # agent|system|customer
@@ -80,7 +135,7 @@ create an article
 
 example with "Charset & MimeType" and no "ContentType"
 
-    my $ArticleID = $TicketObject->ArticleCreate(
+    my $ArticleID = $ArticleObject->ArticleCreate(
         TicketID         => 123,
         ArticleType      => 'note-internal',                        # email-external|email-internal|phone|fax|...
         SenderType       => 'agent',                                # agent|system|customer
@@ -110,8 +165,10 @@ sub ArticleCreate {
     my $ValidID = $Param{ValidID} || 1;
     my $IncomingTime = $TimeObject->SystemTime();
 
+    my $ArticleContentPath = $Kernel::OM->Get( $Self->{ArticleStorageModule} )->BuildArticleContentPath();
+
     # create ArticleContentPath
-    if ( !$Self->{ArticleContentPath} ) {
+    if ( !$ArticleContentPath ) {
         $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'error',
             Message  => 'Need ArticleContentPath!'
@@ -177,7 +234,7 @@ sub ArticleCreate {
     }
 
     # for the event handler, before any actions have taken place
-    my %OldTicketData = $Self->TicketGet(
+    my %OldTicketData = $Kernel::OM->Get('Kernel::System::Ticket')->TicketGet(
         TicketID      => $Param{TicketID},
         DynamicFields => 1,
     );
@@ -202,7 +259,7 @@ sub ArticleCreate {
         };
         push @AttachmentConvert, $Attach;
 
-        # get ascii body
+        # get ASCII body
         $Param{MimeType} = 'text/plain';
         $Param{ContentType} =~ s/html/plain/i;
         $Param{Body} = $HTMLUtilsObject->ToAscii(
@@ -229,7 +286,7 @@ sub ArticleCreate {
         };
         push @{ $Param{Attachment} }, $Attach;
 
-        # set ascii body
+        # set ASCII body
         $Param{MimeType}    = 'text/plain';
         $Param{ContentType} = 'text/plain';
         $Param{Body}        = '- no text message => see attachment -';
@@ -250,7 +307,7 @@ sub ArticleCreate {
         }
     }
     ATTRIBUTE:
-    for my $Attribute (qw(InReplyTo References)) {
+    for my $Attribute (qw(MessageID)) {
         next ATTRIBUTE if !$Param{$Attribute};
         $Param{$Attribute} = substr( $Param{$Attribute}, 0, 3800 );
     }
@@ -263,6 +320,13 @@ sub ArticleCreate {
     if ( $Param{MessageID} ) {
         $Param{MD5} = $Kernel::OM->Get('Kernel::System::Main')->MD5sum( String => $Param{MessageID} );
     }
+
+    # Generate unique fingerprint for searching created article in database to prevent race conditions
+    #   (see https://bugs.otrs.org/show_bug.cgi?id=12438).
+    my $RandomString = $Kernel::OM->Get('Kernel::System::Main')->GenerateRandomString(
+        Length => 32,
+    );
+    my $ArticleInsertFingerprint = $$ . '-' . $RandomString . '-' . ( $Param{MessageID} // '' );
 
     # get database object
     my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
@@ -290,31 +354,46 @@ sub ArticleCreate {
         Bind => [
             \$Param{TicketID}, \$Param{ArticleTypeID}, \$Param{SenderTypeID},
             \$Param{From},     \$Param{ReplyTo},       \$Param{To},
-            \$Param{Cc},       \$Param{Subject},       \$Param{MessageID},
+            \$Param{Cc},       \$Param{Subject},
+            \$ArticleInsertFingerprint,    # just for next search; will be updated with correct MessageID
             \$Param{MD5},
             \$Param{InReplyTo}, \$Param{References}, \$Param{Body},
-            \$Param{ContentType}, \$Self->{ArticleContentPath}, \$ValidID,
+            \$Param{ContentType}, \$ArticleContentPath, \$ValidID,
             \$IncomingTime, \$Param{UserID}, \$Param{UserID},
         ],
     );
 
     # get article id
-    my $ArticleID = $Self->_ArticleGetId(
-        TicketID     => $Param{TicketID},
-        MessageID    => $Param{MessageID},
-        From         => $Param{From},
-        Subject      => $Param{Subject},
-        IncomingTime => $IncomingTime
+    return if !$DBObject->Prepare(
+        SQL => 'SELECT id FROM article
+            WHERE ticket_id = ?
+                AND a_message_id = ?
+                AND a_subject = ?
+                AND incoming_time = ?
+            ORDER BY id DESC',
+        Bind  => [ \$Param{TicketID}, \$ArticleInsertFingerprint, \$Param{Subject}, \$IncomingTime ],
+        Limit => 1,
     );
+
+    my $ArticleID;
+    while ( my @Row = $DBObject->FetchrowArray() ) {
+        $ArticleID = $Row[0];
+    }
 
     # return if there is not article created
     if ( !$ArticleID ) {
         $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'error',
-            Message  => 'Can\'t get ArticleID from INSERT!',
+            Message  => "Can't get ArticleID from insert (TicketID=$Param{TicketID}, MessageID=$Param{MessageID})!",
         );
         return;
     }
+
+    # Save correct Message-ID now.
+    return if !$DBObject->Do(
+        SQL  => 'UPDATE article SET a_message_id = ? WHERE id = ?',
+        Bind => [ \$Param{MessageID}, \$ArticleID ],
+    );
 
     # check for base64 encoded images in html body and upload them
     for my $Attachment (@AttachmentConvert) {
@@ -351,10 +430,10 @@ sub ArticleCreate {
         }
     }
 
-    $Self->_TicketCacheClear( TicketID => $Param{TicketID} );
+    $Self->_ArticleCacheClear( TicketID => $Param{TicketID} );
 
     # add history row
-    $Self->HistoryAdd(
+    $Kernel::OM->Get('Kernel::System::Ticket')->HistoryAdd(
         ArticleID    => $ArticleID,
         TicketID     => $Param{TicketID},
         CreateUserID => $Param{UserID},
@@ -378,7 +457,7 @@ sub ArticleCreate {
         );
 
         if ( $OwnerInfo{OutOfOfficeMessage} ) {
-            $Self->TicketLockSet(
+            $Kernel::OM->Get('Kernel::System::Ticket')->TicketLockSet(
                 TicketID => $Param{TicketID},
                 Lock     => 'unlock',
                 UserID   => $Param{UserID},
@@ -427,7 +506,7 @@ sub ArticleCreate {
             }
         }
         if ( $LastSender eq 'agent' ) {
-            $Self->TicketUnlockTimeoutUpdate(
+            $Kernel::OM->Get('Kernel::System::Ticket')->TicketUnlockTimeoutUpdate(
                 UnlockTimeout => $TimeObject->SystemTime(),
                 TicketID      => $Param{TicketID},
                 UserID        => $Param{UserID},
@@ -441,7 +520,7 @@ sub ArticleCreate {
         && $Param{ArticleType} =~ /email-ext|phone|fax|sms|note-ext/
         )
     {
-        $Self->TicketUnlockTimeoutUpdate(
+        $Kernel::OM->Get('Kernel::System::Ticket')->TicketUnlockTimeoutUpdate(
             UnlockTimeout => $TimeObject->SystemTime(),
             TicketID      => $Param{TicketID},
             UserID        => $Param{UserID},
@@ -455,13 +534,14 @@ sub ArticleCreate {
             TicketID         => $Param{TicketID},
             UserID           => $Param{UserID},
             AutoResponseType => $Param{AutoResponseType},
+            ArticleType      => $Param{ArticleType}
         );
     }
 
     # send no agent notification!?
     return $ArticleID if $Param{NoAgentNotify};
 
-    my %Ticket = $Self->TicketGet(
+    my %Ticket = $Kernel::OM->Get('Kernel::System::Ticket')->TicketGet(
         TicketID      => $Param{TicketID},
         DynamicFields => 0,
     );
@@ -557,11 +637,11 @@ sub ArticleCreate {
     return $ArticleID;
 }
 
-=item ArticleGetTicketIDOfMessageID()
+=head2 ArticleGetTicketIDOfMessageID()
 
 get ticket id of given message id
 
-    my $TicketID = $TicketObject->ArticleGetTicketIDOfMessageID(
+    my $TicketID = $ArticleObject->ArticleGetTicketIDOfMessageID(
         MessageID => '<13231231.1231231.32131231@example.com>',
     );
 
@@ -612,11 +692,11 @@ sub ArticleGetTicketIDOfMessageID {
     return;
 }
 
-=item ArticleGetContentPath()
+=head2 ArticleGetContentPath()
 
 get article content path
 
-    my $Path = $TicketObject->ArticleGetContentPath(
+    my $Path = $ArticleObject->ArticleGetContentPath(
         ArticleID => 123,
     );
 
@@ -670,11 +750,11 @@ sub ArticleGetContentPath {
     return $Result;
 }
 
-=item ArticleSenderTypeList()
+=head2 ArticleSenderTypeList()
 
 get a article sender type list
 
-    my @ArticleSenderTypeList = $TicketObject->ArticleSenderTypeList(
+    my @ArticleSenderTypeList = $ArticleObject->ArticleSenderTypeList(
         Result => 'ARRAY', # optional, ARRAY|HASH
     );
 
@@ -707,15 +787,15 @@ sub ArticleSenderTypeList {
 
 }
 
-=item ArticleSenderTypeLookup()
+=head2 ArticleSenderTypeLookup()
 
 article sender lookup
 
-    my $SenderTypeID = $TicketObject->ArticleSenderTypeLookup(
+    my $SenderTypeID = $ArticleObject->ArticleSenderTypeLookup(
         SenderType => 'customer', # customer|system|agent
     );
 
-    my $SenderType = $TicketObject->ArticleSenderTypeLookup(
+    my $SenderType = $ArticleObject->ArticleSenderTypeLookup(
         SenderTypeID => 1,
     );
 
@@ -795,15 +875,15 @@ sub ArticleSenderTypeLookup {
     return $Result;
 }
 
-=item ArticleTypeLookup()
+=head2 ArticleTypeLookup()
 
 article type lookup
 
-    my $ArticleTypeID = $TicketObject->ArticleTypeLookup(
+    my $ArticleTypeID = $ArticleObject->ArticleTypeLookup(
         ArticleType => 'webrequest-customer', # note-internal|...
     );
 
-    my $ArticleType = $TicketObject->ArticleTypeLookup(
+    my $ArticleType = $ArticleObject->ArticleTypeLookup(
         ArticleTypeID => 1,
     );
 
@@ -884,16 +964,16 @@ sub ArticleTypeLookup {
     return $Result;
 }
 
-=item ArticleTypeList()
+=head2 ArticleTypeList()
 
 get a article type list
 
-    my @ArticleTypeList = $TicketObject->ArticleTypeList(
+    my @ArticleTypeList = $ArticleObject->ArticleTypeList(
         Result => 'ARRAY', # optional, ARRAY|HASH
     );
 
     # to get only article types visible for customers
-    my @ArticleTypeList = $TicketObject->ArticleTypeList(
+    my @ArticleTypeList = $ArticleObject->ArticleTypeList(
         Result => 'ARRAY',    # optional, ARRAY|HASH
         Type   => 'Customer', # optional to get only customer viewable article types
     );
@@ -936,11 +1016,11 @@ sub ArticleTypeList {
     return @Array;
 }
 
-=item ArticleLastCustomerArticle()
+=head2 ArticleLastCustomerArticle()
 
 get last customer article
 
-    my %Article = $TicketObject->ArticleLastCustomerArticle(
+    my %Article = $ArticleObject->ArticleLastCustomerArticle(
         TicketID      => 123,
         Extended      => 1,      # 0 or 1, see ArticleGet(),
         DynamicFields => 1,      # 0 or 1, see ArticleGet(),
@@ -999,11 +1079,11 @@ sub ArticleLastCustomerArticle {
     );
 }
 
-=item ArticleFirstArticle()
+=head2 ArticleFirstArticle()
 
 get first article
 
-    my %Article = $TicketObject->ArticleFirstArticle(
+    my %Article = $ArticleObject->ArticleFirstArticle(
         TicketID      => 123,
         DynamicFields => 1,     # 0 or 1, see ArticleGet()
     );
@@ -1035,15 +1115,15 @@ sub ArticleFirstArticle {
     );
 }
 
-=item ArticleIndex()
+=head2 ArticleIndex()
 
 returns an array with article IDs
 
-    my @ArticleIDs = $TicketObject->ArticleIndex(
+    my @ArticleIDs = $ArticleObject->ArticleIndex(
         TicketID => 123,
     );
 
-    my @ArticleIDs = $TicketObject->ArticleIndex(
+    my @ArticleIDs = $ArticleObject->ArticleIndex(
         SenderType => 'customer',                   # optional, to limit to a certain sender type
         TicketID   => 123,
     );
@@ -1063,7 +1143,7 @@ sub ArticleIndex {
     }
 
     # Only cache known sender types, because the cache keys of
-    #   unknown ones cannot be invalidated in _TicketCacheClear().
+    #   unknown ones cannot be invalidated in _ArticleCacheClear().
     my %CacheableSenderTypes = (
         'agent'    => 1,
         'customer' => 1,
@@ -1130,11 +1210,11 @@ sub ArticleIndex {
     return @Index;
 }
 
-=item ArticleContentIndex()
+=head2 ArticleContentIndex()
 
 returns an array with hash ref (hash contains result of ArticleGet())
 
-    my @ArticleBox = $TicketObject->ArticleContentIndex(
+    my @ArticleBox = $ArticleObject->ArticleContentIndex(
         TicketID      => 123,
         DynamicFields => 1,         # 0 or 1, default 1. To include or not the dynamic field values on the return structure.
         UserID        => 1,
@@ -1144,7 +1224,7 @@ returns an array with hash ref (hash contains result of ArticleGet())
 or with "StripPlainBodyAsAttachment => 1" feature to not include first
 attachment / body and html body as attachment
 
-    my @ArticleBox = $TicketObject->ArticleContentIndex(
+    my @ArticleBox = $ArticleObject->ArticleContentIndex(
         TicketID                   => 123,
         UserID                     => 1,
         StripPlainBodyAsAttachment => 1,
@@ -1153,7 +1233,7 @@ attachment / body and html body as attachment
 or with "StripPlainBodyAsAttachment => 2" feature to not include first
 attachment / body as attachment (html body will be shown as attachment)
 
-    my @ArticleBox = $TicketObject->ArticleContentIndex(
+    my @ArticleBox = $ArticleObject->ArticleContentIndex(
         TicketID                   => 123,
         UserID                     => 1,
         StripPlainBodyAsAttachment => 2,
@@ -1162,7 +1242,7 @@ attachment / body as attachment (html body will be shown as attachment)
 returns an array with hash ref (hash contains result of ArticleGet())
 only with given article types
 
-    my @ArticleBox = $TicketObject->ArticleContentIndex(
+    my @ArticleBox = $ArticleObject->ArticleContentIndex(
         TicketID    => 123,
         UserID      => 1,
         ArticleType => [ $ArticleType1, $ArticleType2 ],
@@ -1185,7 +1265,7 @@ is returned as 'AttachmentIDOfHTMLBody' in hash ref.
 You can limit the list of returned elements with the C<Page> and C<Limit>
 parameters:
 
-    my @ArticleBox = $TicketObject->ArticleContentIndex(
+    my @ArticleBox = $ArticleObject->ArticleContentIndex(
         TicketID    => 123,
         UserID      => 1,
         Limit       => 5,
@@ -1236,11 +1316,11 @@ sub ArticleContentIndex {
     return @ArticleBox;
 }
 
-=item ArticleGet()
+=head2 ArticleGet()
 
 returns article data
 
-    my %Article = $TicketObject->ArticleGet(
+    my %Article = $ArticleObject->ArticleGet(
         ArticleID     => 123,
         DynamicFields => 1,      # Optional. To include the dynamic field values for this article on the return structure.
         UserID        => 123,
@@ -1274,7 +1354,7 @@ Ticket:
 
 returns articles in array / hash by given ticket id
 
-    my @ArticleIndex = $TicketObject->ArticleGet(
+    my @ArticleIndex = $ArticleObject->ArticleGet(
         TicketID => 123,
         UserID   => 123,
     );
@@ -1282,7 +1362,7 @@ returns articles in array / hash by given ticket id
 returns articles in array / hash by given ticket id but
 only requested article types
 
-    my @ArticleIndex = $TicketObject->ArticleGet(
+    my @ArticleIndex = $ArticleObject->ArticleGet(
         TicketID      => 123,
         ArticleType   => [ $ArticleType1, $ArticleType2 ],
         # or
@@ -1292,10 +1372,10 @@ only requested article types
 
 returns articles in array / hash by given ticket id but
 only requested article sender types (could be useful when
-trying to exclude autoreplies sent by system sender from
+trying to exclude auto replies sent by system sender from
 certain views)
 
-    my @ArticleIndex = $TicketObject->ArticleGet(
+    my @ArticleIndex = $ArticleObject->ArticleGet(
         TicketID            => 123,
         ArticleSenderType   => [ $ArticleSenderType1, $ArticleSenderType2 ],
         # or
@@ -1305,7 +1385,7 @@ certain views)
 
 to get extended ticket attributes, use param Extended - see TicketGet() for extended attributes -
 
-    my @ArticleIndex = $TicketObject->ArticleGet(
+    my @ArticleIndex = $ArticleObject->ArticleGet(
         TicketID => 123,
         UserID   => 123,
         Extended => 1,
@@ -1313,7 +1393,7 @@ to get extended ticket attributes, use param Extended - see TicketGet() for exte
 
 to get only a dedicated count you can use Limit and Order attributes
 
-    my @ArticleIndex = $TicketObject->ArticleGet(
+    my @ArticleIndex = $ArticleObject->ArticleGet(
         TicketID => 123,
         UserID   => 123,
         Order    => 'DESC', # DESC,ASC - default is ASC
@@ -1323,7 +1403,7 @@ to get only a dedicated count you can use Limit and Order attributes
 You can also provide an offset by passing the C<Page> argument. To get the
 6th to 10th article, you can say
 
-    my @ArticleIndex = $TicketObject->ArticleGet(
+    my @ArticleIndex = $ArticleObject->ArticleGet(
         TicketID => 123,
         UserID   => 123,
         Limit    => 5,
@@ -1550,7 +1630,7 @@ sub ArticleGet {
             $Data{Charset} = '';
         }
 
-        # compat.
+        # compatibility
         $Data{ContentCharset} = $Data{Charset};
 
         if ( $Data{ContentType} && $Data{ContentType} =~ /^(\w+\/\w+)/i ) {
@@ -1742,7 +1822,7 @@ sub ArticleGet {
     $Ticket{State}     = $StateData{Name};
 
     # get escalation attributes
-    my %Escalation = $Self->TicketEscalationDateCalculation(
+    my %Escalation = $Kernel::OM->Get('Kernel::System::Ticket')->TicketEscalationDateCalculation(
         Ticket => \%Ticket,
         UserID => $Param{UserID} || 1,
     );
@@ -1754,7 +1834,7 @@ sub ArticleGet {
 
     # do extended lookups
     if ( $Param{Extended} ) {
-        my %TicketExtended = $Self->_TicketGetExtended(
+        my %TicketExtended = $Kernel::OM->Get('Kernel::System::Ticket')->_TicketGetExtended(
             TicketID => $Ticket{TicketID},
             Ticket   => \%Ticket,
         );
@@ -1847,7 +1927,7 @@ sub ArticleGet {
     return @Content;
 }
 
-=item ArticleCount()
+=head2 ArticleCount()
 
 Returns the number of articles for a ticket, possibly filtered by
 ArticleSenderTypeID and ArticleTypeID
@@ -1928,11 +2008,11 @@ sub ArticleCount {
     return $Count;
 }
 
-=item ArticlePage()
+=head2 ArticlePage()
 
 Get the page number of a given article when pagination is active
 
-    my $Page = $TicketObject->ArticlePage(
+    my $Page = $ArticleObject->ArticlePage(
         TicketID            => 123,
         ArticleID           => 4242,
         RowsPerPage         => 20,
@@ -1967,69 +2047,13 @@ sub ArticlePage {
     return ceil( $Count / $Param{RowsPerPage} );
 }
 
-=begin Internal:
-
-=cut
-
-sub _ArticleGetId {
-    my ( $Self, %Param ) = @_;
-
-    # check needed stuff
-    for (qw(TicketID MessageID From Subject IncomingTime)) {
-        if ( !defined $Param{$_} ) {
-            $Kernel::OM->Get('Kernel::System::Log')->Log(
-                Priority => 'error',
-                Message  => "Need $_!"
-            );
-            return;
-        }
-    }
-
-    # sql query
-    my @Bind = ( \$Param{TicketID} );
-    my $SQL  = 'SELECT id FROM article WHERE ticket_id = ? AND ';
-    if ( $Param{MessageID} ) {
-        $SQL .= 'a_message_id = ? AND ';
-        push @Bind, \$Param{MessageID};
-    }
-    if ( $Param{From} ) {
-        $SQL .= 'a_from = ? AND ';
-        push @Bind, \$Param{From};
-    }
-    if ( $Param{Subject} ) {
-        $SQL .= 'a_subject = ? AND ';
-        push @Bind, \$Param{Subject};
-    }
-    $SQL .= ' incoming_time = ? ORDER BY id DESC';
-    push @Bind, \$Param{IncomingTime};
-
-    # get database object
-    my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
-
-    # start query
-    return if !$DBObject->Prepare(
-        SQL   => $SQL,
-        Bind  => \@Bind,
-        Limit => 1,
-    );
-
-    my $ID;
-    while ( my @Row = $DBObject->FetchrowArray() ) {
-        $ID = $Row[0];
-    }
-
-    return $ID;
-}
-
-=end Internal:
-
-=item ArticleUpdate()
+=head2 ArticleUpdate()
 
 update an article
 
 Note: Keys "Body", "Subject", "From", "To", "Cc", "ReplyTo", "ArticleType" and "SenderType" are implemented.
 
-    my $Success = $TicketObject->ArticleUpdate(
+    my $Success = $ArticleObject->ArticleUpdate(
         ArticleID => 123,
         Key       => 'Body',
         Value     => 'New Body',
@@ -2037,7 +2061,7 @@ Note: Keys "Body", "Subject", "From", "To", "Cc", "ReplyTo", "ArticleType" and "
         TicketID  => 123,
     );
 
-    my $Success = $TicketObject->ArticleUpdate(
+    my $Success = $ArticleObject->ArticleUpdate(
         ArticleID => 123,
         Key       => 'ArticleType',
         Value     => 'email-internal',
@@ -2108,7 +2132,7 @@ sub ArticleUpdate {
         Bind => [ \$Param{Value}, \$Param{UserID}, \$Param{ArticleID} ],
     );
 
-    $Self->_TicketCacheClear( TicketID => $Param{TicketID} );
+    $Self->_ArticleCacheClear( TicketID => $Param{TicketID} );
 
     # event
     $Self->EventHandler(
@@ -2123,11 +2147,11 @@ sub ArticleUpdate {
     return 1;
 }
 
-=item ArticleSend()
+=head2 ArticleSend()
 
 send article via email and create article with attachments
 
-    my $ArticleID = $TicketObject->ArticleSend(
+    my $ArticleID = $ArticleObject->ArticleSend(
         TicketID    => 123,
         ArticleType => 'note-internal',                                        # email-external|email-internal|phone|fax|...
         SenderType  => 'agent',                                                # agent|system|customer
@@ -2167,7 +2191,7 @@ send article via email and create article with attachments
     );
 
 
-    my $ArticleID = $TicketObject->ArticleSend(                (Backwards compatibility)
+    my $ArticleID = $ArticleObject->ArticleSend(                (Backwards compatibility)
         TicketID    => 123,
         ArticleType => 'note-internal',                                        # email-external|email-internal|phone|fax|...
         SenderType  => 'agent',                                                # agent|system|customer
@@ -2299,7 +2323,7 @@ sub ArticleSend {
         return;
     }
 
-    # write article to fs
+    # write article to file system
     my $Plain = $Self->ArticleWritePlain(
         ArticleID => $ArticleID,
         Email     => ${$HeadRef} . "\n" . ${$BodyRef},
@@ -2327,11 +2351,11 @@ sub ArticleSend {
     return $ArticleID;
 }
 
-=item ArticleBounce()
+=head2 ArticleBounce()
 
 bounce an article
 
-    my $Success = $TicketObject->ArticleBounce(
+    my $Success = $ArticleObject->ArticleBounce(
         From      => 'some@example.com',
         To        => 'webmaster@example.com',
         TicketID  => 123,
@@ -2384,7 +2408,7 @@ sub ArticleBounce {
 
     # write history
     my $HistoryType = $Param{HistoryType} || 'Bounce';
-    $Self->HistoryAdd(
+    $Kernel::OM->Get('Kernel::System::Ticket')->HistoryAdd(
         TicketID     => $Param{TicketID},
         ArticleID    => $Param{ArticleID},
         HistoryType  => $HistoryType,
@@ -2405,11 +2429,11 @@ sub ArticleBounce {
     return 1;
 }
 
-=item SendAutoResponse()
+=head2 SendAutoResponse()
 
 send an auto response to a customer via email
 
-    my $ArticleID = $TicketObject->SendAutoResponse(
+    my $ArticleID = $ArticleObject->SendAutoResponse(
         TicketID         => 123,
         AutoResponseType => 'auto reply',
         OrigHeader       => {
@@ -2417,6 +2441,7 @@ send an auto response to a customer via email
             Subject => 'For the message!',
         },
         UserID          => 123,
+        ArticleType     => 'email-internal'  # optional
     );
 
 Events:
@@ -2445,7 +2470,7 @@ sub SendAutoResponse {
     my %OrigHeader = %{ $Param{OrigHeader} };
 
     # get ticket
-    my %Ticket = $Self->TicketGet(
+    my %Ticket = $Kernel::OM->Get('Kernel::System::Ticket')->TicketGet(
         TicketID      => $Param{TicketID},
         DynamicFields => 0,                  # not needed here, TemplateGenerator will fetch the ticket on its own
     );
@@ -2472,7 +2497,7 @@ sub SendAutoResponse {
     {
 
         # add history row
-        $Self->HistoryAdd(
+        $Kernel::OM->Get('Kernel::System::Ticket')->HistoryAdd(
             TicketID    => $Param{TicketID},
             HistoryType => 'Misc',
             Name        => "Sent no auto response or agent notification because ticket is "
@@ -2488,7 +2513,7 @@ sub SendAutoResponse {
     if ( $OrigHeader{'X-OTRS-Loop'} && $OrigHeader{'X-OTRS-Loop'} !~ /^(false|no)$/i ) {
 
         # add history row
-        $Self->HistoryAdd(
+        $Kernel::OM->Get('Kernel::System::Ticket')->HistoryAdd(
             TicketID    => $Param{TicketID},
             HistoryType => 'Misc',
             Name        => "Sent no auto-response because the sender doesn't want "
@@ -2525,7 +2550,7 @@ sub SendAutoResponse {
         if ( !$Email ) {
 
             # add it to ticket history
-            $Self->HistoryAdd(
+            $Kernel::OM->Get('Kernel::System::Ticket')->HistoryAdd(
                 TicketID     => $Param{TicketID},
                 CreateUserID => $Param{UserID},
                 HistoryType  => 'Misc',
@@ -2543,7 +2568,7 @@ sub SendAutoResponse {
         if ( !$LoopProtectionObject->Check( To => $Email ) ) {
 
             # add history row
-            $Self->HistoryAdd(
+            $Kernel::OM->Get('Kernel::System::Ticket')->HistoryAdd(
                 TicketID     => $Param{TicketID},
                 HistoryType  => 'LoopProtection',
                 Name         => "\%\%$Email",
@@ -2569,7 +2594,7 @@ sub SendAutoResponse {
         if ( $Email =~ /$NoAutoRegExp/i ) {
 
             # add it to ticket history
-            $Self->HistoryAdd(
+            $Kernel::OM->Get('Kernel::System::Ticket')->HistoryAdd(
                 TicketID     => $Param{TicketID},
                 CreateUserID => $Param{UserID},
                 HistoryType  => 'Misc',
@@ -2598,7 +2623,13 @@ sub SendAutoResponse {
             User => $Ticket{CustomerUserID},
         );
 
-        if ( $CustomerUser{UserEmail} && $OrigHeader{From} !~ /\Q$CustomerUser{UserEmail}\E/i ) {
+        $Param{ArticleType} //= '';
+        if (
+            $CustomerUser{UserEmail}
+            && $OrigHeader{From} !~ /\Q$CustomerUser{UserEmail}\E/i
+            && $Param{ArticleType} ne 'email-internal'
+            )
+        {
             $Cc = $CustomerUser{UserEmail};
         }
     }
@@ -2668,11 +2699,11 @@ sub SendAutoResponse {
     return 1;
 }
 
-=item ArticleFlagSet()
+=head2 ArticleFlagSet()
 
 set article flags
 
-    my $Success = $TicketObject->ArticleFlagSet(
+    my $Success = $ArticleObject->ArticleFlagSet(
         ArticleID => 123,
         Key       => 'Seen',
         Value     => 1,
@@ -2743,17 +2774,17 @@ sub ArticleFlagSet {
     return 1;
 }
 
-=item ArticleFlagDelete()
+=head2 ArticleFlagDelete()
 
 delete article flag
 
-    my $Success = $TicketObject->ArticleFlagDelete(
+    my $Success = $ArticleObject->ArticleFlagDelete(
         ArticleID => 123,
         Key       => 'seen',
         UserID    => 123,
     );
 
-    my $Success = $TicketObject->ArticleFlagDelete(
+    my $Success = $ArticleObject->ArticleFlagDelete(
         ArticleID => 123,
         Key       => 'seen',
         AllUsers  => 1,         # delete for all users
@@ -2832,11 +2863,11 @@ sub ArticleFlagDelete {
     return 1;
 }
 
-=item ArticleFlagGet()
+=head2 ArticleFlagGet()
 
 get article flags
 
-    my %Flags = $TicketObject->ArticleFlagGet(
+    my %Flags = $ArticleObject->ArticleFlagGet(
         ArticleID => 123,
         UserID    => 123,
     );
@@ -2879,11 +2910,11 @@ sub ArticleFlagGet {
     return %Flag;
 }
 
-=item ArticleFlagsOfTicketGet()
+=head2 ArticleFlagsOfTicketGet()
 
 get all article flags of a ticket
 
-    my %Flags = $TicketObject->ArticleFlagsOfTicketGet(
+    my %Flags = $ArticleObject->ArticleFlagsOfTicketGet(
         TicketID  => 123,
         UserID    => 123,
     );
@@ -2934,11 +2965,11 @@ sub ArticleFlagsOfTicketGet {
     return %Flag;
 }
 
-=item ArticleAccountedTimeGet()
+=head2 ArticleAccountedTimeGet()
 
 returns the accounted time of a article.
 
-    my $AccountedTime = $TicketObject->ArticleAccountedTimeGet(
+    my $AccountedTime = $ArticleObject->ArticleAccountedTimeGet(
         ArticleID => $ArticleID,
     );
 
@@ -2974,11 +3005,11 @@ sub ArticleAccountedTimeGet {
     return $AccountedTime;
 }
 
-=item ArticleAccountedTimeDelete()
+=head2 ArticleAccountedTimeDelete()
 
 delete accounted time of article
 
-    my $Success = $TicketObject->ArticleAccountedTimeDelete(
+    my $Success = $ArticleObject->ArticleAccountedTimeDelete(
         ArticleID => $ArticleID,
     );
 
@@ -3005,61 +3036,126 @@ sub ArticleAccountedTimeDelete {
     return 1;
 }
 
-1;
+# article search index methods
+
+sub ArticleIndexBuild {
+    my ( $Self, %Param ) = @_;
+
+    return $Kernel::OM->Get( $Self->{ArticleSearchIndexModule} )->ArticleIndexBuild(%Param);
+}
+
+sub ArticleIndexDelete {
+    my ( $Self, %Param ) = @_;
+
+    return $Kernel::OM->Get( $Self->{ArticleSearchIndexModule} )->ArticleIndexDelete(%Param);
+}
+
+sub ArticleIndexDeleteTicket {
+    my ( $Self, %Param ) = @_;
+
+    return $Kernel::OM->Get( $Self->{ArticleSearchIndexModule} )->ArticleIndexDeleteTicket(%Param);
+}
+
+sub _ArticleIndexQuerySQL {
+    my ( $Self, %Param ) = @_;
+
+    return $Kernel::OM->Get( $Self->{ArticleSearchIndexModule} )->_ArticleIndexQuerySQL(%Param);
+}
+
+sub _ArticleIndexQuerySQLExt {
+    my ( $Self, %Param ) = @_;
+
+    return $Kernel::OM->Get( $Self->{ArticleSearchIndexModule} )->_ArticleIndexQuerySQLExt(%Param);
+}
 
 # the following is the pod for Kernel/System/Ticket/ArticleStorage*.pm
 
-=item ArticleDelete()
+=head2 ArticleDelete()
 
 delete an article, its plain message, and all attachments
 
-    my $Success = $TicketObject->ArticleDelete(
+    my $Success = $ArticleObject->ArticleDelete(
         ArticleID => 123,
         UserID    => 123,
     );
 
-=item ArticleDeletePlain()
+=cut
+
+sub ArticleDelete {    ## no critic;
+    my $Self = shift;
+    return $Kernel::OM->Get( $Self->{ArticleStorageModule} )->ArticleDelete(@_);
+}
+
+=head2 ArticleDeletePlain()
 
 delete a plain article
 
-    my $Success = $TicketObject->ArticleDeletePlain(
+    my $Success = $ArticleObject->ArticleDeletePlain(
         ArticleID => 123,
         UserID    => 123,
     );
 
-=item ArticleDeleteAttachment()
+=cut
+
+sub ArticleDeletePlain {    ## no critic;
+    my $Self = shift;
+    return $Kernel::OM->Get( $Self->{ArticleStorageModule} )->ArticleDeletePlain(@_);
+}
+
+=head2 ArticleDeleteAttachment()
 
 delete all attachments of an article
 
-    my $Success = $TicketObject->ArticleDeleteAttachment(
+    my $Success = $ArticleObject->ArticleDeleteAttachment(
         ArticleID => 123,
         UserID    => 123,
     );
 
-=item ArticleWritePlain()
+=cut
+
+sub ArticleDeleteAttachment {    ## no critic;
+    my $Self = shift;
+    return $Kernel::OM->Get( $Self->{ArticleStorageModule} )->ArticleDeleteAttachment(@_);
+}
+
+=head2 ArticleWritePlain()
 
 write a plain email to storage
 
-    my $Success = $TicketObject->ArticleWritePlain(
+    my $Success = $ArticleObject->ArticleWritePlain(
         ArticleID => 123,
         Email     => $EmailAsString,
         UserID    => 123,
     );
 
-=item ArticlePlain()
+=cut
+
+sub ArticleWritePlain {    ## no critic;
+    my $Self = shift;
+    return $Kernel::OM->Get( $Self->{ArticleStorageModule} )->ArticleWritePlain(@_);
+}
+
+=head2 ArticlePlain()
 
 get plain article/email
 
-    my $PlainMessage = $TicketObject->ArticlePlain(
+    my $PlainMessage = $ArticleObject->ArticlePlain(
         ArticleID => 123,
         UserID    => 123,
     );
 
-=item ArticleWriteAttachment()
+=cut
+
+sub ArticlePlain {    ## no critic;
+    my $Self = shift;
+    return $Kernel::OM->Get( $Self->{ArticleStorageModule} )->ArticlePlain(@_);
+}
+
+=head2 ArticleWriteAttachment()
 
 write an article attachment to storage
 
-    my $Success = $TicketObject->ArticleWriteAttachment(
+    my $Success = $ArticleObject->ArticleWriteAttachment(
         Content            => $ContentAsString,
         ContentType        => 'text/html; charset="iso-8859-15"',
         Filename           => 'lala.html',
@@ -3070,11 +3166,18 @@ write an article attachment to storage
         UserID             => 123,
     );
 
-=item ArticleAttachment()
+=cut
+
+sub ArticleWriteAttachment {    ## no critic;
+    my $Self = shift;
+    return $Kernel::OM->Get( $Self->{ArticleStorageModule} )->ArticleWriteAttachment(@_);
+}
+
+=head2 ArticleAttachment()
 
 get article attachment (Content, ContentType, Filename and optional ContentID, ContentAlternative)
 
-    my %Attachment = $TicketObject->ArticleAttachment(
+    my %Attachment = $ArticleObject->ArticleAttachment(
         ArticleID => 123,
         FileID    => 1,   # as returned by ArticleAttachmentIndex
         UserID    => 123,
@@ -3093,211 +3196,74 @@ returns:
         Disposition        => 'attachment',
     );
 
-=item ArticleAttachmentIndex()
+=cut
 
-get article attachment index as hash
+sub ArticleAttachment {    ## no critic;
+    my $Self = shift;
+    return $Kernel::OM->Get( $Self->{ArticleStorageModule} )->ArticleAttachment(@_);
+}
 
- (ID => hashref (Filename, Filesize, ContentID (if exists), ContentAlternative(if exists) ))
+=head2 ArticleAttachmentIndex()
 
-    my %Index = $TicketObject->ArticleAttachmentIndex(
-        ArticleID => 123,
-        UserID    => 123,
-    );
-
-or with "StripPlainBodyAsAttachment => 1" feature to not include first
-attachment (not include text body, html body as attachment and inline attachments)
-
-    my %Index = $TicketObject->ArticleAttachmentIndex(
-        ArticleID                  => 123,
-        UserID                     => 123,
-        Article                    => \%Article,
-        StripPlainBodyAsAttachment => 1,
-    );
-
-or with "StripPlainBodyAsAttachment => 2" feature to not include first
-attachment (not include text body as attachment)
-
-    my %Index = $TicketObject->ArticleAttachmentIndex(
-        ArticleID                  => 123,
-        UserID                     => 123,
-        Article                    => \%Article,
-        StripPlainBodyAsAttachment => 2,
-    );
-
-or with "StripPlainBodyAsAttachment => 3" feature to not include first
-attachment (not include text body and html body as attachment)
-
-    my %Index = $TicketObject->ArticleAttachmentIndex(
-        ArticleID                  => 123,
-        UserID                     => 123,
-        Article                    => \%Article,
-        StripPlainBodyAsAttachment => 3,
-    );
-
-returns:
-
-    my %Index = {
-        '1' => {
-            ContentAlternative => '',
-            ContentID          => '',
-            Filesize           => '4.6 KBytes',
-            ContentType        => 'application/pdf',
-            Filename           => 'StdAttachment-Test1.pdf',
-            FilesizeRaw        => 4722,
-            Disposition        => attachment,
-        },
-        '2' => {
-            ContentAlternative => '',
-            ContentID          => '',
-            Filesize           => '183 Bytes',
-            ContentType        => 'text/html; charset="utf-8"',
-            Filename           => 'file-2',
-            FilesizeRaw        => 183,
-            Disposition        => attachment,
-        },
-    };
+see L<Kernel::System::ArticleStorage::Base/ArticleAttachmentIndex()>.
 
 =cut
 
-sub ArticleAttachmentIndex {
+sub ArticleAttachmentIndex {    ## no critic;
+    my $Self = shift;
+    return $Kernel::OM->Get( $Self->{ArticleStorageModule} )->ArticleAttachmentIndex(@_);
+}
+
+=head1 PRIVATE FUNCTIONS
+
+=head2 _ArticleCacheClear()
+
+Remove all article caches related to specified ticket.
+
+    my $Success = $TicketObject->_ArticleCacheClear(
+        TicketID => 123,
+    );
+
+=cut
+
+sub _ArticleCacheClear {
     my ( $Self, %Param ) = @_;
 
-    # check needed stuff
-    for (qw(ArticleID UserID)) {
-        if ( !$Param{$_} ) {
+    for my $Needed (qw(TicketID)) {
+        if ( !defined $Param{$Needed} ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
-                Message  => "Need $_!"
+                Message  => "Need $Needed!"
             );
             return;
         }
     }
 
-    # get attachment index from backend
-    my %Attachments = $Self->ArticleAttachmentIndexRaw(%Param);
+    # get cache object
+    my $CacheObject = $Kernel::OM->Get('Kernel::System::Cache');
 
-    # stript plain attachments and e. g. html attachments
-    if ( $Param{StripPlainBodyAsAttachment} && $Param{Article} ) {
+    # ArticleIndex()
+    $CacheObject->Delete(
+        Type => $Self->{CacheType},
+        Key  => 'ArticleIndex::' . $Param{TicketID} . '::agent'
+    );
+    $CacheObject->Delete(
+        Type => $Self->{CacheType},
+        Key  => 'ArticleIndex::' . $Param{TicketID} . '::customer'
+    );
+    $CacheObject->Delete(
+        Type => $Self->{CacheType},
+        Key  => 'ArticleIndex::' . $Param{TicketID} . '::system'
+    );
+    $CacheObject->Delete(
+        Type => $Self->{CacheType},
+        Key  => 'ArticleIndex::' . $Param{TicketID} . '::ALL'
+    );
 
-        # plain attachment mime type vs. html attachment mime type check
-        # remove plain body, rename html attachment
-        my $AttachmentIDPlain = 0;
-        my $AttachmentIDHTML  = 0;
-        for my $AttachmentID ( sort keys %Attachments ) {
-            my %File = %{ $Attachments{$AttachmentID} };
-
-            # find plain attachment
-            if (
-                !$AttachmentIDPlain
-                &&
-                $File{Filename} eq 'file-1'
-                && $File{ContentType} =~ /text\/plain/i
-                )
-            {
-                $AttachmentIDPlain = $AttachmentID;
-            }
-
-            # find html attachment
-            #  o file-[12], is plain+html attachment
-            #  o file-1.html, is only html attachment
-            if (
-                !$AttachmentIDHTML
-                &&
-                ( $File{Filename} =~ /^file-[12]$/ || $File{Filename} eq 'file-1.html' )
-                && $File{ContentType} =~ /text\/html/i
-                )
-            {
-                $AttachmentIDHTML = $AttachmentID;
-            }
-        }
-        if ($AttachmentIDHTML) {
-            delete $Attachments{$AttachmentIDPlain};
-
-            # remove any files with content-id from attachment list and listed in html body
-            if ( $Param{StripPlainBodyAsAttachment} eq 1 ) {
-
-                # get html body
-                my %Attachment = $Self->ArticleAttachment(
-                    ArticleID => $Param{ArticleID},
-                    FileID    => $AttachmentIDHTML,
-                    UserID    => $Param{UserID},
-                );
-
-                ATTACHMENT:
-                for my $AttachmentID ( sort keys %Attachments ) {
-                    my %File = %{ $Attachments{$AttachmentID} };
-                    next ATTACHMENT if !$File{ContentID};
-
-                    # content id cleanup
-                    $File{ContentID} =~ s/^<//;
-                    $File{ContentID} =~ s/>$//;
-                    if (
-                        $File{ContentID}
-                        && $Attachment{Content} =~ /\Q$File{ContentID}\E/i
-                        && $File{Disposition} eq 'inline'
-                        )
-                    {
-                        delete $Attachments{$AttachmentID};
-                    }
-                }
-            }
-
-            # only strip html body attachment by "1" or "3"
-            if (
-                $Param{StripPlainBodyAsAttachment} eq 1
-                || $Param{StripPlainBodyAsAttachment} eq 3
-                )
-            {
-                delete $Attachments{$AttachmentIDHTML};
-            }
-            $Param{Article}->{AttachmentIDOfHTMLBody} = $AttachmentIDHTML;
-        }
-
-        # plain body size vs. attched body size check
-        # and remove attachment if it's email body
-        if ( !$AttachmentIDHTML ) {
-            my $AttachmentIDPlain = 0;
-            my %AttachmentFilePlain;
-            ATTACHMENT_ID:
-            for my $AttachmentID ( sort keys %Attachments ) {
-                my %File = %{ $Attachments{$AttachmentID} };
-
-                # remember, file-1 got defined by parsing if no filename was given
-                if (
-                    $File{Filename} eq 'file-1'
-                    && $File{ContentType} =~ /text\/plain/i
-                    )
-                {
-                    $AttachmentIDPlain   = $AttachmentID;
-                    %AttachmentFilePlain = %File;
-                    last ATTACHMENT_ID;
-                }
-            }
-
-            # plain attachment detected and remove it from attachment index
-            if (%AttachmentFilePlain) {
-
-                # check body size vs. attachment size to be sure
-                my $BodySize = bytes::length( $Param{Article}->{Body} );
-
-                # check size by tolerance of 1.1 factor (because of charset difs)
-                if (
-                    $BodySize / 1.1 < $AttachmentFilePlain{FilesizeRaw}
-                    && $BodySize * 1.1 > $AttachmentFilePlain{FilesizeRaw}
-                    )
-                {
-                    delete $Attachments{$AttachmentIDPlain};
-                }
-            }
-        }
-    }
-
-    return %Attachments;
+    return 1;
 }
 
 1;
-
-=back
 
 =head1 TERMS AND CONDITIONS
 

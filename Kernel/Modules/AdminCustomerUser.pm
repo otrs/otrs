@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -104,23 +104,6 @@ sub Run {
             User  => $UserID,
             Valid => 1,
         );
-
-        # get groups rw/ro
-        for my $Type (qw(rw ro)) {
-            my %GroupData = $Kernel::OM->Get('Kernel::System::CustomerGroup')->GroupMemberList(
-                Result => 'HASH',
-                Type   => $Type,
-                UserID => $UserData{UserID},
-            );
-            for my $GroupKey ( sort keys %GroupData ) {
-                if ( $Type eq 'rw' ) {
-                    $UserData{"UserIsGroup[$GroupData{$GroupKey}]"} = 'Yes';
-                }
-                else {
-                    $UserData{"UserIsGroupRo[$GroupData{$GroupKey}]"} = 'Yes';
-                }
-            }
-        }
 
         # create new session id
         my $NewSessionID = $Kernel::OM->Get('Kernel::System::AuthSession')->CreateSessionID(
@@ -237,12 +220,15 @@ sub Run {
     # change
     # ------------------------------------------------------------ #
     elsif ( $Self->{Subaction} eq 'Change' ) {
-        my $User = $ParamObject->GetParam( Param => 'ID' ) || '';
+        my $User         = $ParamObject->GetParam( Param => 'ID' )           || '';
+        my $Notification = $ParamObject->GetParam( Param => 'Notification' ) || '';
 
         # get user data
         my %UserData = $CustomerUserObject->CustomerUserDataGet( User => $User );
 
         my $Output = $NavBar;
+        $Output .= $LayoutObject->Notify( Info => Translatable('Customer updated!') )
+            if ( $Notification && $Notification eq 'Update' );
         $Output .= $Self->_Edit(
             Nav    => $Nav,
             Action => 'Change',
@@ -431,25 +417,24 @@ sub Run {
 
                 # get user data and show screen again
                 if ( !$Note ) {
-                    $Self->_Overview(
-                        Nav    => $Nav,
-                        Search => $Search,
-                    );
-                    my $Output = $NavBar . $Note;
-                    $Output .= $LayoutObject->Notify( Info => Translatable('Customer updated!') );
-                    $Output .= $LayoutObject->Output(
-                        TemplateFile => 'AdminCustomerUser',
-                        Data         => \%Param,
-                    );
 
-                    if ( $Nav eq 'None' ) {
-                        $Output .= $LayoutObject->Footer( Type => 'Small' );
+                    # if the user would like to continue editing the priority, just redirect to the edit screen
+                    if (
+                        defined $ParamObject->GetParam( Param => 'ContinueAfterSave' )
+                        && ( $ParamObject->GetParam( Param => 'ContinueAfterSave' ) eq '1' )
+                        )
+                    {
+                        my $ID = $ParamObject->GetParam( Param => 'ID' ) || '';
+                        return $LayoutObject->Redirect(
+                            OP =>
+                                "Action=$Self->{Action};Subaction=Change;ID=$ID;Search=$Search;Nav=$Nav;Notification=Update"
+                        );
                     }
                     else {
-                        $Output .= $LayoutObject->Footer();
-                    }
 
-                    return $Output;
+                        # otherwise return to overview
+                        return $LayoutObject->Redirect( OP => "Action=$Self->{Action};Notification=Update" );
+                    }
                 }
             }
             else {
@@ -775,7 +760,12 @@ sub Run {
             Nav    => $Nav,
             Search => $Search,
         );
+
+        my $Notification = $ParamObject->GetParam( Param => 'Notification' ) || '';
         my $Output = $NavBar;
+        $Output .= $LayoutObject->Notify( Info => Translatable('Customer user updated!') )
+            if ( $Notification && $Notification eq 'Update' );
+
         $Output .= $LayoutObject->Output(
             TemplateFile => 'AdminCustomerUser',
             Data         => \%Param,
@@ -830,43 +820,43 @@ sub _Overview {
         );
     }
 
-    # get config object
-    my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
-
-    # same Limit as $Self->{CustomerUserMap}->{CustomerUserSearchListLimit}
-    # smallest Limit from all sources
-    my $Limit = 400;
-    SOURCE:
-    for my $Count ( '', 1 .. 10 ) {
-        next SOURCE if !$ConfigObject->Get("CustomerUser$Count");
-        my $CustomerUserMap = $ConfigObject->Get("CustomerUser$Count");
-        next SOURCE if !$CustomerUserMap->{CustomerUserSearchListLimit};
-        if ( $CustomerUserMap->{CustomerUserSearchListLimit} < $Limit ) {
-            $Limit = $CustomerUserMap->{CustomerUserSearchListLimit};
-        }
-    }
-
-    my %ListAllItems = $CustomerUserObject->CustomerSearch(
-        Search => $Param{Search},
-        Limit  => $Limit + 1,
-        Valid  => 0,
-    );
-
-    if ( keys %ListAllItems <= $Limit ) {
-        my $ListAllItems = keys %ListAllItems;
-        $LayoutObject->Block(
-            Name => 'OverviewHeader',
-            Data => {
-                ListAll => $ListAllItems,
-                Limit   => $Limit,
-            },
-        );
-    }
-
-    # when there is no data to show, a message is displayed on the table with this colspan
-    my $ColSpan = 6;
-
     if ( $Param{Search} ) {
+
+        # get config object
+        my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
+
+        # when there is no data to show, a message is displayed on the table with this colspan
+        my $ColSpan = 6;
+
+        # same Limit as $Self->{CustomerUserMap}->{CustomerUserSearchListLimit}
+        # smallest Limit from all sources
+        my $Limit = 400;
+        SOURCE:
+        for my $Count ( '', 1 .. 10 ) {
+            next SOURCE if !$ConfigObject->Get("CustomerUser$Count");
+            my $CustomerUserMap = $ConfigObject->Get("CustomerUser$Count");
+            next SOURCE if !$CustomerUserMap->{CustomerUserSearchListLimit};
+            if ( $CustomerUserMap->{CustomerUserSearchListLimit} < $Limit ) {
+                $Limit = $CustomerUserMap->{CustomerUserSearchListLimit};
+            }
+        }
+
+        my %ListAllItems = $CustomerUserObject->CustomerSearch(
+            Search => $Param{Search},
+            Limit  => $Limit + 1,
+            Valid  => 0,
+        );
+
+        if ( keys %ListAllItems <= $Limit ) {
+            my $ListAllItems = keys %ListAllItems;
+            $LayoutObject->Block(
+                Name => 'OverviewHeader',
+                Data => {
+                    ListAll => $ListAllItems,
+                    Limit   => $Limit,
+                },
+            );
+        }
 
         my %List = $CustomerUserObject->CustomerSearch(
             Search => $Param{Search},
@@ -892,7 +882,7 @@ sub _Overview {
             Data => \%Param,
         );
 
-        if ( $ConfigObject->Get('SwitchToCustomer') && $Self->{SwitchToCustomerPermission} )
+        if ( $ConfigObject->Get('SwitchToCustomer') && $Self->{SwitchToCustomerPermission} && $Param{Nav} ne 'None' )
         {
             $ColSpan = 7;
             $LayoutObject->Block(
@@ -1253,116 +1243,6 @@ sub _Edit {
                     Name => "PreferencesGenericServerErrorMsg",
                     Data => { Name => $Entry->[0] },
                 );
-            }
-        }
-    }
-    my $PreferencesUsed = $ConfigObject->Get( $Param{Source} )->{AdminSetPreferences};
-    if ( ( defined $PreferencesUsed && $PreferencesUsed != 0 ) || !defined $PreferencesUsed ) {
-
-        # extract groups
-        my @Groups = @{ $ConfigObject->Get('CustomerPreferencesView') };
-
-        for my $Column (@Groups) {
-
-            my %Data;
-            my %Preferences = %{ $ConfigObject->Get('CustomerPreferencesGroups') };
-
-            GROUP:
-            for my $Group ( sort keys %Preferences ) {
-
-                next GROUP if !$Group;
-                next GROUP if !$Preferences{$Group}->{Column};
-                next GROUP if $Preferences{$Group}->{Column} ne $Column;
-
-                if ( $Data{ $Preferences{$Group}->{Prio} } ) {
-
-                    COUNT:
-                    for my $Count ( 1 .. 151 ) {
-
-                        $Preferences{$Group}->{Prio}++;
-
-                        next COUNT if $Data{ $Preferences{$Group}->{Prio} };
-
-                        $Data{ $Preferences{$Group}->{Prio} } = $Group;
-
-                        last COUNT;
-                    }
-                }
-
-                $Data{ $Preferences{$Group}->{Prio} } = $Group;
-            }
-
-            # sort
-            for my $Key ( sort keys %Data ) {
-                $Data{ sprintf "%07d", $Key } = $Data{$Key};
-                delete $Data{$Key};
-            }
-
-            # show each preferences setting
-            PRIO:
-            for my $Prio ( sort keys %Data ) {
-
-                my $Group = $Data{$Prio};
-                if ( !$ConfigObject->{CustomerPreferencesGroups}->{$Group} ) {
-                    next PRIO;
-                }
-
-                my %Preference = %{ $ConfigObject->{CustomerPreferencesGroups}->{$Group} };
-                if ( $Group eq 'Password' ) {
-                    next PRIO;
-                }
-
-                my $Module = $Preference{Module}
-                    || 'Kernel::Output::HTML::CustomerPreferencesGeneric';
-
-                # load module
-                if ( $Kernel::OM->Get('Kernel::System::Main')->Require($Module) ) {
-                    my $Object = $Module->new(
-                        %{$Self},
-                        ConfigItem => \%Preference,
-                        UserObject => $Kernel::OM->Get('Kernel::System::CustomerUser'),
-                        Debug      => $Self->{Debug},
-                    );
-                    my @Params = $Object->Param( UserData => \%Param );
-                    if (@Params) {
-                        for my $ParamItem (@Params) {
-                            $LayoutObject->Block(
-                                Name => 'Item',
-                                Data => {%Param},
-                            );
-                            if (
-                                ref $ParamItem->{Data} eq 'HASH'
-                                || ref $Preference{Data} eq 'HASH'
-                                )
-                            {
-                                my %BuildSelectionParams = (
-                                    %Preference,
-                                    %{$ParamItem},
-                                );
-                                $BuildSelectionParams{Class}
-                                    = join( ' ', $BuildSelectionParams{Class} // '', 'Modernize' );
-
-                                $ParamItem->{Option} = $LayoutObject->BuildSelection(
-                                    %BuildSelectionParams,
-                                );
-                            }
-
-                            $LayoutObject->Block(
-                                Name => $ParamItem->{Block} || $Preference{Block} || 'Option',
-                                Data => {
-                                    Group => $Group,
-                                    %Param,
-                                    %Data,
-                                    %Preference,
-                                    %{$ParamItem},
-                                },
-                            );
-                        }
-                    }
-                }
-                else {
-                    return $LayoutObject->FatalError();
-                }
             }
         }
     }

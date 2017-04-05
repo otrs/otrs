@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -108,7 +108,7 @@ $ConfigObject->Set(
 
 # disable not needed event module
 $ConfigObject->Set(
-    Key => 'Ticket::EventModulePost###TicketDynamicFieldDefault',
+    Key => 'Ticket::EventModulePost###9600-TicketDynamicFieldDefault',
 );
 
 # filter test

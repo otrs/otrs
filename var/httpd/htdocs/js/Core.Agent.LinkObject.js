@@ -1,5 +1,5 @@
 // --
-// Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+// Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 // --
 // This software comes with ABSOLUTELY NO WARRANTY. For details, see
 // the enclosed file COPYING for license information (AGPL). If you
@@ -36,12 +36,16 @@ Core.Agent.LinkObject = (function (TargetNS) {
                 var URL = Core.Config.Get('Baselink') + Core.AJAX.SerializeForm($Form);
 
                 Core.AJAX.ContentUpdate($('#' + ElementID), URL, function () {
-                    Core.UI.ToggleTwoContainer($('#linkobject' + ElementID + '-setting'), $('#' + ElementID));
-                    Core.UI.InitWidgetActionToggle();
+                    var Regex = new RegExp('^Widget(.*?)$'),
+                        Name = ElementID.match(Regex)[1];
+
                     Core.Agent.TableFilters.SetAllocationList();
+                    RegisterActions(Name);
                 });
             });
         }
+
+        Core.UI.InitWidgetActionToggle();
     };
 
     /**
@@ -64,28 +68,41 @@ Core.Agent.LinkObject = (function (TargetNS) {
                 Core.Agent.TableFilters.SetAllocationList();
             }
 
-            // Update preferences and load linked table via AJAX
-            TargetNS.RegisterUpdatePreferences(
-                $('#linkobject-' + Core.App.EscapeSelector(Name) + '_submit'),
-                'Widget' + Core.App.EscapeSelector(Name),
-                $('#linkobject-' + Core.App.EscapeSelector(Name) + '_setting_form')
-            );
-
-            // register click on settings button
-            Core.UI.RegisterToggleTwoContainer(
-                $('#linkobject-' + Core.App.EscapeSelector(Name) + '-toggle'),
-                $('#linkobject-' + Core.App.EscapeSelector(Name) + '-setting'),
-                $('#' + Core.App.EscapeSelector(Name))
-            );
-
-            // toggle two containers when user press Cancel
-            Core.UI.RegisterToggleTwoContainer(
-                $('#linkobject-' + Core.App.EscapeSelector(Name) + '_cancel'),
-                $('#linkobject-' + Core.App.EscapeSelector(Name) + '-setting'),
-                $('#' + Core.App.EscapeSelector(Name))
-            );
+            RegisterActions(Core.App.EscapeSelector(Name));
         }
     };
+
+    /**
+     * @private
+     * @name RegisterActions
+     * @memberof Core.Agent.LinkObject
+     * @function
+     * @param {string} Name - Widget name (like Ticket, FAQ,...)
+     * @description
+     *      This function registers necesary events and initializes LinkedObject widget.
+     */
+    function RegisterActions(Name) {
+        // Update preferences and load linked table via AJAX
+        TargetNS.RegisterUpdatePreferences(
+            $('#linkobject-' + Name + '_submit'),
+            'Widget' + Name,
+            $('#linkobject-' + Name + '_setting_form')
+        );
+
+        // register click on settings button
+        Core.UI.RegisterToggleTwoContainer(
+            $('#linkobject-' + Name + '-toggle'),
+            $('#linkobject-' + Name + '-setting'),
+            $('#' + Name)
+        );
+
+        // toggle two containers when user press Cancel
+        Core.UI.RegisterToggleTwoContainer(
+            $('#linkobject-' + Name + '_cancel'),
+            $('#linkobject-' + Name + '-setting'),
+            $('#' + Name)
+        );
+    }
 
     Core.Init.RegisterNamespace(TargetNS, 'APP_MODULE');
 

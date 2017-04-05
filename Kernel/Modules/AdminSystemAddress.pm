@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -99,19 +99,20 @@ sub Run {
                 )
                 )
             {
-                $Self->_Overview();
-                my $Output = $LayoutObject->Header();
-                $Output .= $LayoutObject->NavigationBar();
-                $Output
-                    .= $LayoutObject->Notify(
-                    Info => Translatable('System e-mail address updated!'),
+                # if the user would like to continue editing system e-mail address, just redirect to the edit screen
+                # otherwise return to overview
+                if (
+                    defined $ParamObject->GetParam( Param => 'ContinueAfterSave' )
+                    && ( $ParamObject->GetParam( Param => 'ContinueAfterSave' ) eq '1' )
+                    )
+                {
+                    return $LayoutObject->Redirect(
+                        OP => "Action=$Self->{Action};Subaction=Change;ID=$GetParam{ID}"
                     );
-                $Output .= $LayoutObject->Output(
-                    TemplateFile => 'AdminSystemAddress',
-                    Data         => \%Param,
-                );
-                $Output .= $LayoutObject->Footer();
-                return $Output;
+                }
+                else {
+                    return $LayoutObject->Redirect( OP => "Action=$Self->{Action}" );
+                }
             }
         }
 
@@ -230,6 +231,7 @@ sub Run {
     # ------------------------------------------------------------
     else {
         $Self->_Overview();
+
         my $Output = $LayoutObject->Header();
         $Output .= $LayoutObject->NavigationBar();
         $Output .= $LayoutObject->Output(
@@ -280,14 +282,6 @@ sub _Edit {
             %{ $Param{Errors} },
         },
     );
-
-    # shows header
-    if ( $Param{Action} eq 'Change' ) {
-        $LayoutObject->Block( Name => 'HeaderEdit' );
-    }
-    else {
-        $LayoutObject->Block( Name => 'HeaderAdd' );
-    }
 
     # add the correct server error msg for the system email address
     if ( $Param{Name} && $Param{Errors}->{ErrorType} ) {

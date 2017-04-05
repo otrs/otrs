@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -17,15 +17,12 @@ our $ObjectManagerDisabled = 1;
 
 Kernel::System::Ticket::TicketSearch - ticket search lib
 
-=head1 SYNOPSIS
+=head1 DESCRIPTION
 
 All ticket search functions.
 
-=over 4
 
-=cut
-
-=item TicketSearch()
+=head2 TicketSearch()
 
 To find tickets in your system.
 
@@ -125,6 +122,8 @@ To find tickets in your system.
         #       values in an operator with OR.
         #   You can also pass more than one argument to an operator: ['value1', 'value2']
         DynamicField_FieldNameX => {
+            Empty             => 1,                       # will return dynamic fields without a value
+                                                          # set to 0 to search fields with a value present
             Equals            => 123,
             Like              => 'value*',                # "equals" operator with wildcard support
             GreaterThan       => '2001-01-01 01:01:01',
@@ -445,16 +444,10 @@ sub TicketSearch {
     }
 
     # check sort/order by options
-    my @SortByArray;
-    my @OrderByArray;
-    if ( ref $SortBy eq 'ARRAY' ) {
-        @SortByArray  = @{$SortBy};
-        @OrderByArray = @{$OrderBy};
-    }
-    else {
-        @SortByArray  = ($SortBy);
-        @OrderByArray = ($OrderBy);
-    }
+    my @SortByArray = ( ref $SortBy eq 'ARRAY' ? @{$SortBy} : ($SortBy) );
+    my %LookupSortByArray = map { $_ => 1 } @SortByArray;
+    my @OrderByArray = ( ref $OrderBy eq 'ARRAY' ? @{$OrderBy} : ($OrderBy) );
+
     for my $Count ( 0 .. $#SortByArray ) {
         if (
             !$SortOptions{ $SortByArray[$Count] }
@@ -485,9 +478,10 @@ sub TicketSearch {
         $SQLSelect = 'SELECT DISTINCT st.id, st.tn';
     }
 
-    my $SQLFrom = ' FROM ticket st INNER JOIN queue sq ON sq.id = st.queue_id ';
+    my $SQLFrom = ' FROM ticket st ';
 
-    my $ArticleJoinSQL = $Self->_ArticleIndexQuerySQL( Data => \%Param ) || '';
+    my $ArticleJoinSQL
+        = $Kernel::OM->Get('Kernel::System::Ticket::Article')->_ArticleIndexQuerySQL( Data => \%Param ) || '';
 
     # sql, use also article table if needed
     $SQLFrom .= $ArticleJoinSQL;
@@ -531,12 +525,14 @@ sub TicketSearch {
     # Limit the search to just one (or a list) TicketID (used by the GenericAgent
     #   to filter for events on single tickets with the job's ticket filter).
     if ( $Param{TicketID} ) {
-        $SQLExt .= $Self->_InConditionGet(
-            TableColumn => 'st.id',
-            IDRef       => ref( $Param{TicketID} ) && ref( $Param{TicketID} ) eq 'ARRAY'
-            ? $Param{TicketID}
-            : [ $DBObject->Quote( $Param{TicketID}, 'Integer' ) ],
+
+        my $SQLQueryInCondition = $Kernel::OM->Get('Kernel::System::DB')->QueryInCondition(
+            Key       => 'st.id',
+            Values    => ref $Param{TicketID} eq 'ARRAY' ? $Param{TicketID} : [ $Param{TicketID} ],
+            QuoteType => 'Integer',
+            BindMode  => 0,
         );
+        $SQLExt .=  ' AND ( ' . $SQLQueryInCondition . ' ) ';
     }
 
     # add ticket flag table
@@ -593,10 +589,13 @@ sub TicketSearch {
 
     # type ids
     if ( $Param{TypeIDs} ) {
-        $SQLExt .= $Self->_InConditionGet(
-            TableColumn => 'st.type_id',
-            IDRef       => $Param{TypeIDs},
+        my $SQLQueryInCondition = $Kernel::OM->Get('Kernel::System::DB')->QueryInCondition(
+            Key       => 'st.type_id',
+            Values    => $Param{TypeIDs},
+            QuoteType => 'Integer',
+            BindMode  => 0,
         );
+        $SQLExt .=  ' AND ( ' . $SQLQueryInCondition . ' ) ';
     }
 
     # created types lookup
@@ -628,11 +627,14 @@ sub TicketSearch {
 
         if ($HistoryTypeID) {
 
-            # create sql part
-            $SQLExt .= $Self->_InConditionGet(
-                TableColumn => 'th.type_id',
-                IDRef       => $Param{CreatedTypeIDs},
+            my $SQLQueryInCondition = $Kernel::OM->Get('Kernel::System::DB')->QueryInCondition(
+                Key       => 'th.type_id',
+                Values    => $Param{CreatedTypeIDs},
+                QuoteType => 'Integer',
+                BindMode  => 0,
             );
+            $SQLExt .=  ' AND ( ' . $SQLQueryInCondition . ' ) ';
+
             $SQLExt .= " AND th.history_type_id = $HistoryTypeID ";
         }
     }
@@ -658,10 +660,13 @@ sub TicketSearch {
 
     # state ids
     if ( $Param{StateIDs} ) {
-        $SQLExt .= $Self->_InConditionGet(
-            TableColumn => 'st.ticket_state_id',
-            IDRef       => $Param{StateIDs},
+        my $SQLQueryInCondition = $Kernel::OM->Get('Kernel::System::DB')->QueryInCondition(
+            Key       => 'st.ticket_state_id',
+            Values    => $Param{StateIDs},
+            QuoteType => 'Integer',
+            BindMode  => 0,
         );
+        $SQLExt .=  ' AND ( ' . $SQLQueryInCondition . ' ) ';
     }
 
     # created states lookup
@@ -693,11 +698,14 @@ sub TicketSearch {
 
         if ($HistoryTypeID) {
 
-            # create sql part
-            $SQLExt .= $Self->_InConditionGet(
-                TableColumn => 'th.state_id',
-                IDRef       => $Param{CreatedStateIDs},
+            my $SQLQueryInCondition = $Kernel::OM->Get('Kernel::System::DB')->QueryInCondition(
+                Key       => 'th.state_id',
+                Values    => $Param{CreatedStateIDs},
+                QuoteType => 'Integer',
+                BindMode  => 0,
             );
+            $SQLExt .=  ' AND ( ' . $SQLQueryInCondition . ' ) ';
+
             $SQLExt .= " AND th.history_type_id = $HistoryTypeID ";
         }
     }
@@ -768,26 +776,35 @@ sub TicketSearch {
 
     # lock ids
     if ( $Param{LockIDs} ) {
-        $SQLExt .= $Self->_InConditionGet(
-            TableColumn => 'st.ticket_lock_id',
-            IDRef       => $Param{LockIDs},
+        my $SQLQueryInCondition = $Kernel::OM->Get('Kernel::System::DB')->QueryInCondition(
+            Key       => 'st.ticket_lock_id',
+            Values    => $Param{LockIDs},
+            QuoteType => 'Integer',
+            BindMode  => 0,
         );
+        $SQLExt .=  ' AND ( ' . $SQLQueryInCondition . ' ) ';
     }
 
     # current owner user ids
     if ( $Param{OwnerIDs} ) {
-        $SQLExt .= $Self->_InConditionGet(
-            TableColumn => 'st.user_id',
-            IDRef       => $Param{OwnerIDs},
+        my $SQLQueryInCondition = $Kernel::OM->Get('Kernel::System::DB')->QueryInCondition(
+            Key       => 'st.user_id',
+            Values    => $Param{OwnerIDs},
+            QuoteType => 'Integer',
+            BindMode  => 0,
         );
+        $SQLExt .=  ' AND ( ' . $SQLQueryInCondition . ' ) ';
     }
 
     # current responsible user ids
     if ( $Param{ResponsibleIDs} ) {
-        $SQLExt .= $Self->_InConditionGet(
-            TableColumn => 'st.responsible_user_id',
-            IDRef       => $Param{ResponsibleIDs},
+        my $SQLQueryInCondition = $Kernel::OM->Get('Kernel::System::DB')->QueryInCondition(
+            Key       => 'st.responsible_user_id',
+            Values    => $Param{ResponsibleIDs},
+            QuoteType => 'Integer',
+            BindMode  => 0,
         );
+        $SQLExt .=  ' AND ( ' . $SQLQueryInCondition . ' ) ';
     }
 
     # created user ids
@@ -800,11 +817,14 @@ sub TicketSearch {
 
         if ($HistoryTypeID) {
 
-            # create sql part
-            $SQLExt .= $Self->_InConditionGet(
-                TableColumn => 'th.create_by',
-                IDRef       => $Param{CreatedUserIDs},
+            my $SQLQueryInCondition = $Kernel::OM->Get('Kernel::System::DB')->QueryInCondition(
+                Key       => 'th.create_by',
+                Values    => $Param{CreatedUserIDs},
+                QuoteType => 'Integer',
+                BindMode  => 0,
             );
+            $SQLExt .=  ' AND ( ' . $SQLQueryInCondition . ' ) ';
+
             $SQLExt .= " AND th.history_type_id = $HistoryTypeID ";
         }
     }
@@ -853,10 +873,14 @@ sub TicketSearch {
 
     # current queue ids
     if ( $Param{QueueIDs} ) {
-        $SQLExt .= $Self->_InConditionGet(
-            TableColumn => 'st.queue_id',
-            IDRef       => $Param{QueueIDs},
+
+        my $SQLQueryInCondition = $Kernel::OM->Get('Kernel::System::DB')->QueryInCondition(
+            Key       => 'st.queue_id',
+            Values    => $Param{QueueIDs},
+            QuoteType => 'Integer',
+            BindMode  => 0,
         );
+        $SQLExt .=  ' AND ( ' . $SQLQueryInCondition . ' ) ';
     }
 
     # created queue lookup
@@ -888,11 +912,14 @@ sub TicketSearch {
 
         if ($HistoryTypeID) {
 
-            # create sql part
-            $SQLExt .= $Self->_InConditionGet(
-                TableColumn => 'th.queue_id',
-                IDRef       => $Param{CreatedQueueIDs},
+            my $SQLQueryInCondition = $Kernel::OM->Get('Kernel::System::DB')->QueryInCondition(
+                Key       => 'th.queue_id',
+                Values    => $Param{CreatedQueueIDs},
+                QuoteType => 'Integer',
+                BindMode  => 0,
             );
+            $SQLExt .=  ' AND ( ' . $SQLQueryInCondition . ' ) ';
+
             $SQLExt .= " AND th.history_type_id = $HistoryTypeID ";
         }
     }
@@ -987,10 +1014,14 @@ sub TicketSearch {
 
     # priority ids
     if ( $Param{PriorityIDs} ) {
-        $SQLExt .= $Self->_InConditionGet(
-            TableColumn => 'st.ticket_priority_id',
-            IDRef       => $Param{PriorityIDs},
+
+        my $SQLQueryInCondition = $Kernel::OM->Get('Kernel::System::DB')->QueryInCondition(
+            Key       => 'st.ticket_priority_id',
+            Values    => $Param{PriorityIDs},
+            QuoteType => 'Integer',
+            BindMode  => 0,
         );
+        $SQLExt .=  ' AND ( ' . $SQLQueryInCondition . ' ) ';
     }
 
     # created priority lookup
@@ -1022,11 +1053,14 @@ sub TicketSearch {
 
         if ($HistoryTypeID) {
 
-            # create sql part
-            $SQLExt .= $Self->_InConditionGet(
-                TableColumn => 'th.priority_id',
-                IDRef       => $Param{CreatedPriorityIDs},
+            my $SQLQueryInCondition = $Kernel::OM->Get('Kernel::System::DB')->QueryInCondition(
+                Key       => 'th.priority_id',
+                Values    => $Param{CreatedPriorityIDs},
+                QuoteType => 'Integer',
+                BindMode  => 0,
             );
+            $SQLExt .=  ' AND ( ' . $SQLQueryInCondition . ' ) ';
+
             $SQLExt .= " AND th.history_type_id = $HistoryTypeID ";
         }
     }
@@ -1052,10 +1086,13 @@ sub TicketSearch {
 
     # service ids
     if ( $Param{ServiceIDs} ) {
-        $SQLExt .= $Self->_InConditionGet(
-            TableColumn => 'st.service_id',
-            IDRef       => $Param{ServiceIDs},
+        my $SQLQueryInCondition = $Kernel::OM->Get('Kernel::System::DB')->QueryInCondition(
+            Key       => 'st.service_id',
+            Values    => $Param{ServiceIDs},
+            QuoteType => 'Integer',
+            BindMode  => 0,
         );
+        $SQLExt .=  ' AND ( ' . $SQLQueryInCondition . ' ) ';
     }
 
     # current sla lookup
@@ -1079,18 +1116,24 @@ sub TicketSearch {
 
     # sla ids
     if ( $Param{SLAIDs} ) {
-        $SQLExt .= $Self->_InConditionGet(
-            TableColumn => 'st.sla_id',
-            IDRef       => $Param{SLAIDs},
+        my $SQLQueryInCondition = $Kernel::OM->Get('Kernel::System::DB')->QueryInCondition(
+            Key       => 'st.sla_id',
+            Values    => $Param{SLAIDs},
+            QuoteType => 'Integer',
+            BindMode  => 0,
         );
+        $SQLExt .=  ' AND ( ' . $SQLQueryInCondition . ' ) ';
     }
 
     # watch user ids
     if ( $Param{WatchUserIDs} ) {
-        $SQLExt .= $Self->_InConditionGet(
-            TableColumn => 'tw.user_id',
-            IDRef       => $Param{WatchUserIDs},
+        my $SQLQueryInCondition = $Kernel::OM->Get('Kernel::System::DB')->QueryInCondition(
+            Key       => 'tw.user_id',
+            Values    => $Param{WatchUserIDs},
+            QuoteType => 'Integer',
+            BindMode  => 0,
         );
+        $SQLExt .=  ' AND ( ' . $SQLQueryInCondition . ' ) ';
     }
 
     # add ticket flag extension
@@ -1227,14 +1270,16 @@ sub TicketSearch {
         }
     }
 
+    my $ArticleObject = $Kernel::OM->Get('Kernel::System::Ticket::Article');
+
     # search article attributes
-    my $ArticleIndexSQLExt = $Self->_ArticleIndexQuerySQLExt( Data => \%Param );
+    my $ArticleIndexSQLExt = $ArticleObject->_ArticleIndexQuerySQLExt( Data => \%Param );
     $SQLExt .= $ArticleIndexSQLExt;
 
     my %CustomerArticleTypes;
     my @CustomerArticleTypeIDs;
     if ( $Param{CustomerUserID} ) {
-        %CustomerArticleTypes = $Self->ArticleTypeList(
+        %CustomerArticleTypes = $ArticleObject->ArticleTypeList(
             Result => 'HASH',
             Type   => 'Customer',
         );
@@ -1243,10 +1288,13 @@ sub TicketSearch {
 
     # restrict search from customers to only customer articles
     if ( $Param{CustomerUserID} && $ArticleIndexSQLExt ) {
-        $SQLExt .= $Self->_InConditionGet(
-            TableColumn => 'art.article_type_id',
-            IDRef       => \@CustomerArticleTypeIDs,
+        my $SQLQueryInCondition = $Kernel::OM->Get('Kernel::System::DB')->QueryInCondition(
+            Key       => 'art.article_type_id',
+            Values    => \@CustomerArticleTypeIDs,
+            QuoteType => 'Integer',
+            BindMode  => 0,
         );
+        $SQLExt .=  ' AND ( ' . $SQLQueryInCondition . ' ) ';
     }
 
     # only search for attachment name if Article Storage is set to DB
@@ -1275,10 +1323,13 @@ sub TicketSearch {
 
         # restrict search from customers to only customer articles
         if ( $Param{CustomerUserID} ) {
-            $SQLExt .= $Self->_InConditionGet(
-                TableColumn => 'art_for_att.article_type_id',
-                IDRef       => \@CustomerArticleTypeIDs,
+            my $SQLQueryInCondition = $Kernel::OM->Get('Kernel::System::DB')->QueryInCondition(
+                Key       => 'art_for_att.article_type_id',
+                Values    => \@CustomerArticleTypeIDs,
+                QuoteType => 'Integer',
+                BindMode  => 0,
             );
+            $SQLExt .=  ' AND ( ' . $SQLQueryInCondition . ' ) ';
         }
     }
 
@@ -1297,6 +1348,7 @@ sub TicketSearch {
         next DYNAMIC_FIELD if ( ref $SearchParam ne 'HASH' );
 
         my $NeedJoin;
+        my $QueryForEmptyValues = 0;
 
         for my $Operator ( sort keys %{$SearchParam} ) {
 
@@ -1315,34 +1367,51 @@ sub TicketSearch {
                 # check search attribute, we do not need to search for *
                 next TEXT if $Text =~ /^\%{1,3}$/;
 
-                # validate data type
-                my $ValidateSuccess = $DynamicFieldBackendObject->ValueValidate(
-                    DynamicFieldConfig => $DynamicField,
-                    Value              => $Text,
-                    UserID             => $Param{UserID} || 1,
-                );
-                if ( !$ValidateSuccess ) {
-                    $Kernel::OM->Get('Kernel::System::Log')->Log(
-                        Priority => 'error',
-                        Message =>
-                            "Search not executed due to invalid value '"
-                            . $Text
-                            . "' on field '"
-                            . $DynamicField->{Name}
-                            . "'!",
+                # skip validation for empty values
+                if ( $Operator ne 'Empty' ) {
+
+                    # validate data type
+                    my $ValidateSuccess = $DynamicFieldBackendObject->ValueValidate(
+                        DynamicFieldConfig => $DynamicField,
+                        Value              => $Text,
+                        UserID             => $Param{UserID} || 1,
                     );
-                    return;
+                    if ( !$ValidateSuccess ) {
+                        $Kernel::OM->Get('Kernel::System::Log')->Log(
+                            Priority => 'error',
+                            Message =>
+                                "Search not executed due to invalid value '"
+                                . $Text
+                                . "' on field '"
+                                . $DynamicField->{Name}
+                                . "'!",
+                        );
+                        return;
+                    }
                 }
 
                 if ($Counter) {
                     $SQLExtSub .= ' OR ';
                 }
-                $SQLExtSub .= $DynamicFieldBackendObject->SearchSQLGet(
-                    DynamicFieldConfig => $DynamicField,
-                    TableAlias         => "dfv$DynamicFieldJoinCounter",
-                    Operator           => $Operator,
-                    SearchTerm         => $Text,
-                );
+
+                # Empty => 1 requires a LEFT JOIN.
+                if ( $Operator eq 'Empty' && $Text ) {
+                    $SQLExtSub .= $DynamicFieldBackendObject->SearchSQLGet(
+                        DynamicFieldConfig => $DynamicField,
+                        TableAlias         => "dfvEmpty$DynamicFieldJoinCounter",
+                        Operator           => $Operator,
+                        SearchTerm         => $Text,
+                    );
+                    $QueryForEmptyValues = 1;
+                }
+                else {
+                    $SQLExtSub .= $DynamicFieldBackendObject->SearchSQLGet(
+                        DynamicFieldConfig => $DynamicField,
+                        TableAlias         => "dfv$DynamicFieldJoinCounter",
+                        Operator           => $Operator,
+                        SearchTerm         => $Text,
+                    );
+                }
 
                 $Counter++;
             }
@@ -1355,13 +1424,23 @@ sub TicketSearch {
 
         if ($NeedJoin) {
 
+            # Join the table for this dynamic field
             if ( $DynamicField->{ObjectType} eq 'Ticket' ) {
 
-                # Join the table for this dynamic field
-                $SQLFrom .= "INNER JOIN dynamic_field_value dfv$DynamicFieldJoinCounter
-                    ON (st.id = dfv$DynamicFieldJoinCounter.object_id
-                        AND dfv$DynamicFieldJoinCounter.field_id = " .
-                    $DBObject->Quote( $DynamicField->{ID}, 'Integer' ) . ") ";
+                if ($QueryForEmptyValues) {
+
+                    # Use LEFT JOIN to allow for null values.
+                    $SQLFrom .= "LEFT JOIN dynamic_field_value dfvEmpty$DynamicFieldJoinCounter
+                        ON (st.id = dfvEmpty$DynamicFieldJoinCounter.object_id
+                            AND dfvEmpty$DynamicFieldJoinCounter.field_id = " .
+                        $DBObject->Quote( $DynamicField->{ID}, 'Integer' ) . ") ";
+                }
+                else {
+                    $SQLFrom .= "INNER JOIN dynamic_field_value dfv$DynamicFieldJoinCounter
+                        ON (st.id = dfv$DynamicFieldJoinCounter.object_id
+                            AND dfv$DynamicFieldJoinCounter.field_id = " .
+                        $DBObject->Quote( $DynamicField->{ID}, 'Integer' ) . ") ";
+                }
             }
             elsif ( $DynamicField->{ObjectType} eq 'Article' ) {
                 if ( !$ArticleJoinSQL ) {
@@ -1369,10 +1448,20 @@ sub TicketSearch {
                     $SQLFrom .= $ArticleJoinSQL;
                 }
 
-                $SQLFrom .= "INNER JOIN dynamic_field_value dfv$DynamicFieldJoinCounter
-                    ON (art.id = dfv$DynamicFieldJoinCounter.object_id
-                        AND dfv$DynamicFieldJoinCounter.field_id = " .
-                    $DBObject->Quote( $DynamicField->{ID}, 'Integer' ) . ") ";
+                if ($QueryForEmptyValues) {
+
+                    # Use LEFT JOIN to allow for null values.
+                    $SQLFrom .= "LEFT JOIN dynamic_field_value dfvEmpty$DynamicFieldJoinCounter
+                        ON (art.id = dfvEmpty$DynamicFieldJoinCounter.object_id
+                            AND dfvEmpty$DynamicFieldJoinCounter.field_id = " .
+                        $DBObject->Quote( $DynamicField->{ID}, 'Integer' ) . ") ";
+                }
+                else {
+                    $SQLFrom .= "INNER JOIN dynamic_field_value dfv$DynamicFieldJoinCounter
+                        ON (art.id = dfv$DynamicFieldJoinCounter.object_id
+                            AND dfv$DynamicFieldJoinCounter.field_id = " .
+                        $DBObject->Quote( $DynamicField->{ID}, 'Integer' ) . ") ";
+                }
 
             }
 
@@ -2053,9 +2142,6 @@ sub TicketSearch {
             return;
         }
 
-        # don't execute queries if newer date is after current date
-        return if $TimeStamp > $CurrentSystemTime;
-
         # don't execute queries if older/newer date restriction show now valid timeframe
         return
             if $ComparePendingTimeOlderNewerDate && $TimeStamp > $ComparePendingTimeOlderNewerDate;
@@ -2157,19 +2243,38 @@ sub TicketSearch {
                 || $SortByArray[$Count] eq 'Responsible'
                 )
             {
-                # include first and last name in select
+                # Include first name, last name and login in select.
                 $SQLSelect
                     .= ', ' . $SortOptions{ $SortByArray[$Count] }
-                    . ", u.first_name, u.last_name ";
+                    . ', u.first_name, u.last_name, u.login ';
 
-                # join the users table on user's id
+                # Join the users table on user's ID.
                 $SQLFrom
                     .= ' JOIN users u '
                     . ' ON ' . $SortOptions{ $SortByArray[$Count] } . ' = u.id ';
 
-                # sort by first and last name
+                my $FirstnameLastNameOrder = $Kernel::OM->Get('Kernel::Config')->Get('FirstnameLastnameOrder') || 0;
                 my $OrderBySuffix = $OrderByArray[$Count] eq 'Up' ? 'ASC' : 'DESC';
-                $SQLExt .= " u.first_name $OrderBySuffix, u.last_name ";
+
+                # Sort by configured first and last name order.
+                if ( $FirstnameLastNameOrder eq '1' || $FirstnameLastNameOrder eq '6' ) {
+                    $SQLExt .= " u.last_name $OrderBySuffix, u.first_name ";
+                }
+                elsif ( $FirstnameLastNameOrder eq '2' ) {
+                    $SQLExt .= " u.first_name $OrderBySuffix, u.last_name $OrderBySuffix, u.login ";
+                }
+                elsif ( $FirstnameLastNameOrder eq '3' || $FirstnameLastNameOrder eq '7' ) {
+                    $SQLExt .= " u.last_name $OrderBySuffix, u.first_name $OrderBySuffix, u.login ";
+                }
+                elsif ( $FirstnameLastNameOrder eq '4' ) {
+                    $SQLExt .= " u.login $OrderBySuffix, u.first_name $OrderBySuffix, u.last_name ";
+                }
+                elsif ( $FirstnameLastNameOrder eq '5' || $FirstnameLastNameOrder eq '8' ) {
+                    $SQLExt .= " u.login $OrderBySuffix, u.last_name $OrderBySuffix, u.first_name ";
+                }
+                else {
+                    $SQLExt .= " u.first_name $OrderBySuffix, u.last_name ";
+                }
             }
             else {
 
@@ -2185,6 +2290,11 @@ sub TicketSearch {
                 $SQLExt .= ' DESC';
             }
         }
+    }
+
+    # Add only the sql join for the queue table, if columns from the queue table exists in the sql statement.
+    if ( %GroupList || $LookupSortByArray{Queue} ) {
+        $SQLFrom .= ' INNER JOIN queue sq ON sq.id = st.queue_id ';
     }
 
     # check cache
@@ -2269,7 +2379,7 @@ sub TicketSearch {
     }
 }
 
-=item SearchStringStopWordsFind()
+=head2 SearchStringStopWordsFind()
 
 Find stop words within given search string.
 
@@ -2367,7 +2477,7 @@ sub SearchStringStopWordsFind {
     return \%StopWordsFound;
 }
 
-=item SearchStringStopWordsUsageWarningActive()
+=head2 SearchStringStopWordsUsageWarningActive()
 
 Checks if warnings for stop words in search strings are active or not.
 
@@ -2381,94 +2491,15 @@ sub SearchStringStopWordsUsageWarningActive {
     my $ConfigObject        = $Kernel::OM->Get('Kernel::Config');
     my $SearchIndexModule   = $ConfigObject->Get('Ticket::SearchIndexModule');
     my $WarnOnStopWordUsage = $ConfigObject->Get('Ticket::SearchIndex::WarnOnStopWordUsage') || 0;
-    if (
-        $SearchIndexModule eq 'Kernel::System::Ticket::ArticleSearchIndex::StaticDB'
-        && $WarnOnStopWordUsage
-        )
-    {
+
+    if ( $SearchIndexModule eq 'Kernel::System::Ticket::ArticleSearchIndex::StaticDB' && $WarnOnStopWordUsage ) {
         return 1;
     }
 
     return 0;
 }
 
-=begin Internal:
-
-=cut
-
-=item _InConditionGet()
-
-internal function to create an
-
-    AND table.column IN (values)
-
-condition string from an array.
-
-    my $SQLPart = $TicketObject->_InConditionGet(
-        TableColumn => 'table.column',
-        IDRef       => $ArrayRef,
-    );
-
-=cut
-
-sub _InConditionGet {
-    my ( $Self, %Param ) = @_;
-
-    if ( !$Param{TableColumn} ) {
-        $Kernel::OM->Get('Kernel::System::Log')->Log(
-            Priority => 'error',
-            Message  => "Need TableColumn!",
-        );
-        return;
-    }
-
-    if ( !$Param{IDRef} || ref $Param{IDRef} ne 'ARRAY' || !@{ $Param{IDRef} } ) {
-        $Kernel::OM->Get('Kernel::System::Log')->Log(
-            Priority => 'error',
-            Message  => "Need IDRef!",
-        );
-        return;
-    }
-
-    # sort ids to cache the SQL query
-    my @SortedIDs = sort { $a <=> $b } @{ $Param{IDRef} };
-
-    # Error out if some values were not integers.
-    @SortedIDs = map { $Kernel::OM->Get('Kernel::System::DB')->Quote( $_, 'Integer' ) } @SortedIDs;
-    return if scalar @SortedIDs != scalar @{ $Param{IDRef} };
-
-    # split IN statement with more than 900 elements in more statements combined with OR
-    # because Oracle doesn't support more than 1000 elements for one IN statement.
-    my @SQLStrings;
-    while ( scalar @SortedIDs ) {
-
-        # remove section in the array
-        my @SortedIDsPart = splice @SortedIDs, 0, 900;
-
-        # link together IDs
-        my $IDString = join ', ', @SortedIDsPart;
-
-        # add new statement
-        push @SQLStrings, " $Param{TableColumn} IN ($IDString) ";
-    }
-
-    my $SQL = '';
-    if (@SQLStrings) {
-
-        # combine statements
-        $SQL = join ' OR ', @SQLStrings;
-
-        # encapsulate conditions
-        $SQL = ' AND ( ' . $SQL . ' ) ';
-    }
-    return $SQL;
-}
-
 1;
-
-=end Internal:
-
-=back
 
 =head1 TERMS AND CONDITIONS
 

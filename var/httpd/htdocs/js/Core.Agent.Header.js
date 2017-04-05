@@ -1,5 +1,5 @@
 // --
-// Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+// Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 // --
 // This software comes with ABSOLUTELY NO WARRANTY. For details, see
 // the enclosed file COPYING for license information (AGPL). If you
@@ -40,12 +40,6 @@ Core.Agent.Header = (function (TargetNS) {
         // Initialize auto complete searches
         Core.Agent.CustomerInformationCenterSearch.InitAutocomplete($('#ToolBarCICSearchCustomerID'), "SearchCustomerID");
         Core.Agent.CustomerInformationCenterSearch.InitAutocomplete($('#ToolBarCICSearchCustomerUser'), "SearchCustomerUser");
-
-        // Initialize Chat availability if config is activated
-        if (typeof Core.Config.Get('ChatActive') !== 'undefined' &&
-            parseInt(Core.Config.Get('ChatActive'), 10) === 1) {
-            Core.Agent.Chat.Toolbar.Init();
-        }
 
         // Initialize full text search
         Core.Agent.Search.InitToolbarFulltextSearch();

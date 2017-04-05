@@ -1,5 +1,5 @@
 // --
-// Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+// Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 // --
 // This software comes with ABSOLUTELY NO WARRANTY. For details, see
 // the enclosed file COPYING for license information (AGPL). If you
@@ -145,7 +145,7 @@ Core.Agent = (function (TargetNS) {
             .filter(function () {
                 return $('ul', this).length;
             })
-            .bind('mouseenter', function () {
+            .on('mouseenter', function () {
                 var $Element = $(this);
 
                 // clear close timeout on mouseenter, even if OpenMainMenuOnHover is not enabled
@@ -170,7 +170,7 @@ Core.Agent = (function (TargetNS) {
                     });
                 }
             })
-            .bind('mouseleave', function () {
+            .on('mouseleave', function () {
 
                 var $Element = $(this);
 
@@ -194,7 +194,7 @@ Core.Agent = (function (TargetNS) {
                     });
                 }
             })
-            .bind('click', function (Event) {
+            .on('click', function (Event) {
 
                 var $Element = $(this),
                     $Target = $(Event.target);
@@ -329,7 +329,7 @@ Core.Agent = (function (TargetNS) {
          * Register event for global search
          *
          */
-        $('#GlobalSearchNav, #GlobalSearchNavResponsive').bind('click', function () {
+        $('#GlobalSearchNav, #GlobalSearchNavResponsive').on('click', function () {
             var SearchFrontend = Core.Config.Get('SearchFrontend');
             if (SearchFrontend) {
                 try {
@@ -383,7 +383,7 @@ Core.Agent = (function (TargetNS) {
                 .find('.NavigationBarNavigate' + Direction)
                 .delay(Delay)
                 .fadeIn()
-                .bind('click', function() {
+                .on('click', function() {
                     if (Direction === 'Right') {
 
                         // calculate new scroll position
@@ -570,10 +570,16 @@ Core.Agent = (function (TargetNS) {
                 .addClass('IsResized');
         }
 
+        // we have to do an exact calculation here (with floating point numbers),
+        // otherwise the results will be different across browsers.
         $('#Navigation > li').each(function() {
-            NavigationBarWidth += parseInt($(this).outerWidth(true), 10);
+            NavigationBarWidth += $(this)[0].getBoundingClientRect().width
+                + parseInt($(this).css('margin-left'), 10)
+                + parseInt($(this).css('margin-right'), 10)
+                + parseInt($(this).css('border-left-width'), 10)
+                + parseInt($(this).css('border-right-width'), 10);
         });
-        $('#Navigation').css('width', (NavigationBarWidth + 3) + 'px');
+        $('#Navigation').css('width', NavigationBarWidth);
 
         if (NavigationBarWidth > $('#NavigationContainer').outerWidth()) {
             NavigationBarShowSlideButton('Right', parseInt($('#NavigationContainer').outerWidth(true) - NavigationBarWidth, 10));
@@ -633,7 +639,7 @@ Core.Agent = (function (TargetNS) {
         if (!TargetNS.SupportedBrowser) {
             alert(Core.Language.Translate('The browser you are using is too old.')
                 + ' '
-                + Core.Language.Translate('OTRS runs with a huge lists of browsers, please upgrade to one of these.')
+                + Core.Language.Translate('This software runs with a huge lists of browsers, please upgrade to one of these.')
                 + ' '
                 + Core.Language.Translate('Please see the documentation or ask your admin for further information.'));
         }
@@ -646,6 +652,16 @@ Core.Agent = (function (TargetNS) {
 
         // Initialize pagination
         TargetNS.InitPagination();
+
+        // Initialize OTRSBusinessRequired dialog
+        if (!parseInt(Core.Config.Get('OTRSBusinessIsInstalled'), 10)) {
+            InitOTRSBusinessRequiredDialog();
+        }
+
+        // Initialize ticket in new window
+        if (parseInt(Core.Config.Get('NewTicketInNewWindow'), 10)) {
+            InitTicketInNewWindow();
+        }
     };
 
     /**
@@ -741,6 +757,62 @@ Core.Agent = (function (TargetNS) {
                 return false;
             });
         }
+    }
+
+    /**
+     * @private
+     * @name InitOTRSBusinessRequiredDialog
+     * @memberof Core.Agent
+     * @function
+     * @description
+     *      Initialize OTRSBusinessRequired dialog on click
+     */
+    function InitOTRSBusinessRequiredDialog () {
+        var OTRSBusinessLabel = '<strong>OTRS Business Solution</strong>™';
+
+        $('body').on('click', 'a.OTRSBusinessRequired', function() {
+            Core.UI.Dialog.ShowContentDialog(
+                '<div class="OTRSBusinessRequiredDialog">' + Core.Language.Translate('This feature is part of the %s.  Please contact us at %s for an upgrade.', OTRSBusinessLabel, 'sales@otrs.com') + '<a class="Hidden" href="http://www.otrs.com/solutions/" target="_blank"><span></span></a></div>',
+                '',
+                '240px',
+                'Center',
+                true,
+                [
+                   {
+                       Label: Core.Language.Translate('Close dialog'),
+                       Class: 'Primary',
+                       Function: function () {
+                           Core.UI.Dialog.CloseDialog($('.OTRSBusinessRequiredDialog'));
+                       }
+                   },
+                   {
+                       Label: Core.Language.Translate('Find out more about the %s', 'OTRS Business Solution™'),
+                       Class: 'Primary',
+                       Function: function () {
+                           $('.OTRSBusinessRequiredDialog').find('a span').trigger('click');
+                       }
+                   }
+                ]
+            );
+            return false;
+        });
+    }
+
+    /**
+     * @private
+     * @name InitTicketInNewWindow
+     * @memberof Core.Agent
+     * @function
+     * @description
+     *      Initializes ticket in new window
+     */
+    function InitTicketInNewWindow () {
+        $('#nav-Tickets-Newphoneticket a').attr('target', '_blank');
+        $('#nav-Tickets-Newemailticket a').attr('target', '_blank');
+        $('#nav-Tickets-Newprocessticket a').attr('target', '_blank');
+        $('.PhoneTicket a').attr('target', '_blank');
+        $('.EmailTicket a').attr('target', '_blank');
+        $('.ProcessTicket a').attr('target', '_blank');
     }
 
     Core.Init.RegisterNamespace(TargetNS, 'APP_GLOBAL_EARLY');

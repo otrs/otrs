@@ -1,5 +1,5 @@
 // --
-// Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+// Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 // --
 // This software comes with ABSOLUTELY NO WARRANTY. For details, see
 // the enclosed file COPYING for license information (AGPL). If you
@@ -225,11 +225,10 @@ Core.UI.InputFields = (function (TargetNS) {
         // Restore select fields
         $('select.Modernize', $Context).each(function (Index, SelectObj) {
             var $SelectObj = $(SelectObj),
-                $SearchObj = $('#' + Core.App.EscapeSelector($SelectObj.data('modernized'))),
                 $ShowTreeObj = $SelectObj.next('.ShowTreeSelection');
 
             if ($SelectObj.data('modernized')) {
-                $SearchObj.parents('.InputField_Container')
+                 $('#' + Core.App.EscapeSelector($SelectObj.data('modernized'))).parents('.InputField_Container')
                     .blur()
                     .remove();
                 $SelectObj.show()
@@ -288,7 +287,7 @@ Core.UI.InputFields = (function (TargetNS) {
             return;
         }
 
-        $SearchObj.removeAttr('readonly', 'readonly');
+        $SearchObj.prop('readonly', false);
         $InputContainerObj.removeClass('AlreadyDisabled');
 
         // Check if there are only empty and disabled options
@@ -314,7 +313,8 @@ Core.UI.InputFields = (function (TargetNS) {
 
             // Enable the field, remove the tooltip and dash string
             $SearchObj
-                .removeAttr('readonly title')
+                .removeAttr('title')
+                .prop('readonly', false)
                 .val('');
         }
     }
@@ -350,7 +350,11 @@ Core.UI.InputFields = (function (TargetNS) {
         // If the dropdown of the field is opened, close it (by calling blur event)
         // TODO: nicer way to find opened select elements
         $('select.Modernize').each(function () {
-            $('#' + Core.App.EscapeSelector($(this).data('modernized'))).filter('[aria-expanded=true]').trigger('blur');
+            var Selector = Core.App.EscapeSelector($(this).data('modernized'));
+            if (!Selector) {
+                return;
+            }
+            $('#' + Selector).filter('[aria-expanded=true]').trigger('blur');
         });
     }
 
@@ -1424,7 +1428,10 @@ Core.UI.InputFields = (function (TargetNS) {
                             search_callback: function (Search, Node) {
                                 var SearchString = TargetNS.RemoveDiacritics(Search),
                                     NodeString = TargetNS.RemoveDiacritics(Node.text);
-                                return (NodeString.toLowerCase().indexOf(SearchString.toLowerCase()) !== -1);
+                                return (
+                                    // we're doing toLowerCase() AND toUpperCase() because of bug#11548
+                                    (NodeString.toLowerCase().indexOf(SearchString.toLowerCase()) !== -1 || NodeString.toUpperCase().indexOf(SearchString.toUpperCase()) !== -1)
+                                );
                             }
                         },
                         plugins: [ 'multiselect', 'search', 'wholerow' ]

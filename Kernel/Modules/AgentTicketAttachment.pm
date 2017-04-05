@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -47,11 +47,11 @@ sub Run {
         return $LayoutObject->ErrorScreen();
     }
 
-    # get ticket object
-    my $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
+    # get needed objects
+    my $ArticleObject = $Kernel::OM->Get('Kernel::System::Ticket::Article');
 
     # check permissions
-    my %Article = $TicketObject->ArticleGet(
+    my %Article = $ArticleObject->ArticleGet(
         ArticleID     => $ArticleID,
         DynamicFields => 0,
         UserID        => $Self->{UserID},
@@ -65,7 +65,7 @@ sub Run {
     }
 
     # check permissions
-    my $Access = $TicketObject->TicketPermission(
+    my $Access = $Kernel::OM->Get('Kernel::System::Ticket')->TicketPermission(
         Type     => 'ro',
         TicketID => $Article{TicketID},
         UserID   => $Self->{UserID}
@@ -75,7 +75,7 @@ sub Run {
     }
 
     # get a attachment
-    my %Data = $TicketObject->ArticleAttachment(
+    my %Data = $ArticleObject->ArticleAttachment(
         ArticleID => $ArticleID,
         FileID    => $FileID,
         UserID    => $Self->{UserID},
@@ -143,7 +143,8 @@ sub Run {
             %Data,
             ContentType => 'text/html',
             Content     => $Content,
-            Type        => 'inline'
+            Type        => 'inline',
+            Sandbox     => 1,
         );
     }
 
@@ -158,7 +159,10 @@ sub Run {
 
         # just return for non-html attachment (e. g. images)
         if ( $Data{ContentType} !~ /text\/html/i ) {
-            return $LayoutObject->Attachment(%Data);
+            return $LayoutObject->Attachment(
+                %Data,
+                Sandbox => 1,
+            );
         }
 
         # set filename for inline viewing
@@ -178,7 +182,7 @@ sub Run {
             . ";ArticleID=$ArticleID;FileID=";
 
         # replace links to inline images in html content
-        my %AtmBox = $TicketObject->ArticleAttachmentIndex(
+        my %AtmBox = $ArticleObject->ArticleAttachmentIndex(
             ArticleID => $ArticleID,
             UserID    => $Self->{UserID},
         );
@@ -218,11 +222,17 @@ sub Run {
         }
 
         # return html attachment
-        return $LayoutObject->Attachment(%Data);
+        return $LayoutObject->Attachment(
+            %Data,
+            Sandbox => 1,
+        );
     }
 
     # download it AttachmentDownloadType is configured
-    return $LayoutObject->Attachment(%Data);
+    return $LayoutObject->Attachment(
+        %Data,
+        Sandbox => 1,
+    );
 }
 
 1;

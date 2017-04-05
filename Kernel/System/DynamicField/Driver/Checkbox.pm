@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -28,7 +28,7 @@ our @ObjectDependencies = (
 
 Kernel::System::DynamicField::Driver::Checkbox
 
-=head1 SYNOPSIS
+=head1 DESCRIPTION
 
 DynamicFields Checkbox Driver delegate
 
@@ -37,9 +37,7 @@ DynamicFields Checkbox Driver delegate
 This module implements the public interface of L<Kernel::System::DynamicField::Backend>.
 Please look there for a detailed reference of the functions.
 
-=over 4
-
-=item new()
+=head2 new()
 
 usually, you want to create an instance of this
 by using Kernel::System::DynamicField::Backend->new();
@@ -186,7 +184,15 @@ sub SearchSQLGet {
         Equals => '=',
     );
 
-    if ( !$Operators{ $Param{Operator} } ) {
+    if ( $Param{Operator} eq 'Empty' ) {
+        if ( $Param{SearchTerm} ) {
+            return " $Param{TableAlias}.value_int IS NULL ";
+        }
+        else {
+            return " $Param{TableAlias}.value_int IS NOT NULL ";
+        }
+    }
+    elsif ( !$Operators{ $Param{Operator} } ) {
         $Kernel::OM->Get('Kernel::System::Log')->Log(
             'Priority' => 'error',
             'Message'  => "Unsupported Operator $Param{Operator}",
@@ -288,9 +294,12 @@ EOF
 
         my $FieldNameUsed0 = $FieldNameUsed . '0';
         my $FieldNameUsed1 = $FieldNameUsed . '1';
+        my $TranslatedDesc = $Param{LayoutObject}->{LanguageObject}->Translate(
+            'Ignore this field.',
+        );
         $HTMLString = <<"EOF";
 <input type="radio" id="$FieldNameUsed0" name="$FieldNameUsed" value="" $FieldUsedChecked0 />
-Ignore this field.
+$TranslatedDesc
 <div class="clear"></div>
 <input type="radio" id="$FieldNameUsed1" name="$FieldNameUsed" value="1" $FieldUsedChecked1 />
 EOF
@@ -528,7 +537,7 @@ sub SearchFieldRender {
     }
 
     # check and set class if necessary
-    my $FieldClass = 'DynamicFieldDropdown';
+    my $FieldClass = 'DynamicFieldDropdown Modernize';
 
     my $HTMLString = $Param{LayoutObject}->BuildSelection(
         Data => {
@@ -850,8 +859,6 @@ sub ColumnFilterValuesGet {
 }
 
 1;
-
-=back
 
 =head1 TERMS AND CONDITIONS
 

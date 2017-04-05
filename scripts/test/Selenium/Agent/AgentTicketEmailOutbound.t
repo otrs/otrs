@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -189,12 +189,11 @@ $Selenium->RunTest(
         );
 
         # fill in customer
-        my $AutoCompleteString = "\"$TestCustomer $TestCustomer\" <$TestCustomer\@localhost.com> ($TestCustomer)";
         $Selenium->find_element( "#ToCustomer", 'css' )->send_keys($TestCustomer);
 
         $Selenium->WaitFor( JavaScript => 'return typeof($) === "function" && $("li.ui-menu-item:visible").length' );
 
-        $Selenium->find_element("//*[text()='$AutoCompleteString']")->VerifiedClick();
+        $Selenium->find_element("//*[text()='$TestCustomer']")->VerifiedClick();
         $Selenium->find_element( "#Subject",    'css' )->send_keys("TestSubject");
         $Selenium->find_element( "#ToCustomer", 'css' )->VerifiedSubmit();
 

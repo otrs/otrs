@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -23,7 +23,8 @@ my $HTMLUtilsObject = $Kernel::OM->Get('Kernel::System::HTMLUtils');
 # get helper object
 $Kernel::OM->ObjectParamAdd(
     'Kernel::System::UnitTest::Helper' => {
-        RestoreDatabase => 1,
+        RestoreDatabase  => 1,
+        UseTmpArticleDir => 1,
 
     },
 );
@@ -337,8 +338,8 @@ my $QueueUpdate = $QueueObject->QueueUpdate(
 );
 $Self->True( $QueueUpdate, "QueueUpdate() $Queue{Name}" );
 
-# get ticket object
-my $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
+my $TicketObject  = $Kernel::OM->Get('Kernel::System::Ticket');
+my $ArticleObject = $Kernel::OM->Get('Kernel::System::Ticket::Article');
 
 # create ticket
 my $TicketID = $TicketObject->TicketCreate(
@@ -359,7 +360,7 @@ $Self->True(
     "TicketCreate() successful for Ticket ID $TicketID",
 );
 
-my $ArticleID = $TicketObject->ArticleCreate(
+my $ArticleID = $ArticleObject->ArticleCreate(
     TicketID       => $TicketID,
     ArticleType    => 'webrequest',
     SenderType     => 'customer',
@@ -403,7 +404,7 @@ my $NotificationEventObject      = $Kernel::OM->Get('Kernel::System::Notificatio
 my $EventNotificationEventObject = $Kernel::OM->Get('Kernel::System::Ticket::Event::NotificationEvent');
 
 # get article types email-notification-int ID
-my $ArticleTypeIntID = $TicketObject->ArticleTypeLookup(
+my $ArticleTypeIntID = $ArticleObject->ArticleTypeLookup(
     ArticleType => 'email-notification-int',
 );
 
@@ -570,13 +571,13 @@ for my $Test (@Tests) {
     }
 
     # get ticket articles
-    my @ArticleIDs = $TicketObject->ArticleIndex(
+    my @ArticleIDs = $ArticleObject->ArticleIndex(
         TicketID => $TicketID,
     );
 
     my $LastArticleID = pop @ArticleIDs;
 
-    my %Article = $TicketObject->ArticleGet(
+    my %Article = $ArticleObject->ArticleGet(
         TicketID  => $TicketID,
         ArticleID => $LastArticleID,
     );

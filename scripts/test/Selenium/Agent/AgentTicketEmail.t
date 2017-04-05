@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -113,15 +113,17 @@ $Selenium->RunTest(
         );
 
         # create test email ticket
-        my $AutoCompleteString = "\"$TestCustomer $TestCustomer\" <$TestCustomer\@localhost.com> ($TestCustomer)";
-        my $TicketSubject      = "Selenium Ticket";
-        my $TicketBody         = "Selenium body test";
-        $Selenium->execute_script("\$('#Dest').val('2||Raw').trigger('redraw.InputField').trigger('change');");
-        $Selenium->find_element( "#ToCustomer", 'css' )->send_keys($TestCustomer);
+        my $TicketSubject = "Selenium Ticket";
+        my $TicketBody    = "Selenium body test";
+        $Selenium->execute_script(
+            "\$('#Dest').val(\$('#Dest option').filter(function () { return \$(this).html() == 'Raw'; } ).val() ).trigger('redraw.InputField').trigger('change');"
+        );
+        $Selenium->WaitFor( JavaScript => 'return typeof($) === "function" && !$(".AJAXLoader:visible").length' );
 
+        $Selenium->find_element( "#ToCustomer", 'css' )->send_keys($TestCustomer);
         $Selenium->WaitFor( JavaScript => 'return typeof($) === "function" && $("li.ui-menu-item:visible").length' );
 
-        $Selenium->find_element("//*[text()='$AutoCompleteString']")->VerifiedClick();
+        $Selenium->find_element("//*[text()='$TestCustomer']")->VerifiedClick();
         $Selenium->find_element( "#Subject",  'css' )->send_keys($TicketSubject);
         $Selenium->find_element( "#RichText", 'css' )->send_keys($TicketBody);
         $Selenium->find_element( "#Subject",  'css' )->VerifiedSubmit();

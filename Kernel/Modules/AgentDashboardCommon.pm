@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -471,6 +471,8 @@ sub Run {
         Data => \%ContentBlockData,
     );
 
+    my $GroupObject = $Kernel::OM->Get('Kernel::System::Group');
+
     # get shown backends
     my %Backends;
     BACKEND:
@@ -482,8 +484,12 @@ sub Run {
             my @Groups = split /;/, $Config->{$Name}->{Group};
             GROUP:
             for my $Group (@Groups) {
-                my $Permission = 'UserIsGroupRo[' . $Group . ']';
-                if ( defined $Self->{$Permission} && $Self->{$Permission} eq 'Yes' ) {
+                my $HasPermission = $GroupObject->PermissionCheck(
+                    UserID    => $Self->{UserID},
+                    GroupName => $Group,
+                    Type      => 'ro',
+                );
+                if ($HasPermission) {
                     $PermissionOK = 1;
                     last GROUP;
                 }
@@ -577,7 +583,7 @@ sub Run {
 
             # send data to JS
             $LayoutObject->AddJSData(
-                Key   => 'CanRefresh',
+                Key   => 'CanRefresh-' . $Name,
                 Value => {
                     Name     => $Name,
                     NameHTML => $NameHTML,
@@ -709,6 +715,12 @@ sub Run {
             elsif ( $Column eq 'PendingTime' ) {
                 $TranslatedWord = Translatable('Pending till');
             }
+            elsif ( $Column eq 'CustomerCompanyName' ) {
+                $TranslatedWord = Translatable('Customer Company Name');
+            }
+            elsif ( $Column eq 'CustomerUserID' ) {
+                $TranslatedWord = Translatable('Customer User ID');
+            }
 
             # send data to JS
             $LayoutObject->AddJSData(
@@ -766,14 +778,20 @@ sub _Element {
     my $GetColumnFilter       = $Param{GetColumnFilter};
     my $GetColumnFilterSelect = $Param{GetColumnFilterSelect};
 
+    my $GroupObject = $Kernel::OM->Get('Kernel::System::Group');
+
     # check permissions
     if ( $Configs->{$Name}->{Group} ) {
         my $PermissionOK = 0;
         my @Groups = split /;/, $Configs->{$Name}->{Group};
         GROUP:
         for my $Group (@Groups) {
-            my $Permission = 'UserIsGroupRo[' . $Group . ']';
-            if ( defined $Self->{$Permission} && $Self->{$Permission} eq 'Yes' ) {
+            my $HasPermission = $GroupObject->PermissionCheck(
+                UserID    => $Self->{UserID},
+                GroupName => $Group,
+                Type      => 'ro',
+            );
+            if ($HasPermission) {
                 $PermissionOK = 1;
                 last GROUP;
             }

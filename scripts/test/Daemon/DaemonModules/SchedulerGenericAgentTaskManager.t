@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -32,28 +32,34 @@ if ( $PreviousDaemonStatus =~ m{Daemon running}i ) {
     sleep $SleepTime;
 }
 
-# get needed objects
-my $TaskWorkerObject  = $Kernel::OM->Get('Kernel::System::Daemon::DaemonModules::SchedulerTaskWorker');
-my $SchedulerDBObject = $Kernel::OM->Get('Kernel::System::Daemon::SchedulerDB');
-
-# wait until task is executed
-ACTIVESLEEP:
-for my $Sec ( 1 .. 120 ) {
-
-    # run the worker
-    $TaskWorkerObject->Run();
-
-    my @List = $SchedulerDBObject->TaskList();
-
-    last ACTIVESLEEP if !scalar @List;
-
-    sleep 1;
-
-    print "Waiting $Sec secs for scheduler tasks to be executed\n";
-}
-
-# get helper object
 my $Helper = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
+
+my $SchedulerDBObject = $Kernel::OM->Get('Kernel::System::Daemon::SchedulerDB');
+my $TaskWorkerObject  = $Kernel::OM->Get('Kernel::System::Daemon::DaemonModules::SchedulerTaskWorker');
+
+my $RunTasks = sub {
+
+    local $SIG{CHLD} = "IGNORE";
+
+    # wait until task is executed
+    ACTIVESLEEP:
+    for my $Sec ( 1 .. 120 ) {
+
+        # run the worker
+        $TaskWorkerObject->Run();
+        $TaskWorkerObject->_WorkerPIDsCheck();
+
+        my @List = $SchedulerDBObject->TaskList();
+
+        last ACTIVESLEEP if !scalar @List;
+
+        sleep 1;
+
+        print "Waiting $Sec secs for scheduler tasks to be executed\n";
+    }
+};
+
+$RunTasks->();
 
 # freeze time
 $Helper->FixedTimeSet();
@@ -302,8 +308,11 @@ for my $Test (@Tests) {
         ACTIVESLEEP:
         for my $Sec ( 1 .. 120 ) {
 
+            local $SIG{CHLD} = "IGNORE";
+
             # run the worker
             $TaskWorkerObject->Run();
+            $TaskWorkerObject->_WorkerPIDsCheck();
 
             @List = $SchedulerDBObject->TaskList(
                 Type => 'GenericAgent',

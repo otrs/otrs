@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -40,7 +40,8 @@ sub Run {
         );
     }
 
-    my $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
+    my $TicketObject  = $Kernel::OM->Get('Kernel::System::Ticket');
+    my $ArticleObject = $Kernel::OM->Get('Kernel::System::Ticket::Article');
 
     $QueueID = $TicketObject->TicketQueueID( TicketID => $Self->{TicketID} );
     if ( !$QueueID ) {
@@ -92,8 +93,8 @@ sub Run {
         TicketID      => $Self->{TicketID},
         DynamicFields => 0,
     );
-    my @CustomerArticleTypes = $TicketObject->ArticleTypeList( Type => 'Customer' );
-    my @ArticleBox = $TicketObject->ArticleContentIndex(
+    my @CustomerArticleTypes = $ArticleObject->ArticleTypeList( Type => 'Customer' );
+    my @ArticleBox = $ArticleObject->ArticleContentIndex(
         TicketID                   => $Self->{TicketID},
         ArticleType                => \@CustomerArticleTypes,
         StripPlainBodyAsAttachment => 1,

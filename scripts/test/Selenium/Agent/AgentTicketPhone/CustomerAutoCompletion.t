@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -178,8 +178,7 @@ $Selenium->RunTest(
             if ( $AutoCompleteExpected{$AutocompleteInput}{Expected} ) {
 
                 # select customer user
-                $Selenium->find_element("//*[text()='$AutoCompleteExpected{$AutocompleteInput}{AutocompleteInput}']")
-                    ->VerifiedClick();
+                $Selenium->find_element("//*[text()='$AutocompleteInput']")->VerifiedClick();
 
                 # check if customer is selected
                 $Self->Is(

@@ -1,5 +1,5 @@
 // --
-// Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+// Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 // --
 // This software comes with ABSOLUTELY NO WARRANTY. For details, see
 // the enclosed file COPYING for license information (AGPL). If you
@@ -57,6 +57,12 @@ Core.Agent.Admin.ProcessManagement = (function (TargetNS) {
         }
         else if (Core.Config.Get('Subaction') === 'ProcessEdit') {
             TargetNS.InitProcessEdit();
+        }
+        else if (Core.Config.Get('Subaction') === 'ProcessPrint') {
+            $('.ProcessPrint').on('click', function() {
+                window.print();
+                return false;
+            });
         }
 
         // Depending on Action initialize specific functions
@@ -176,7 +182,7 @@ Core.Agent.Admin.ProcessManagement = (function (TargetNS) {
                 WindowObject.opener.Core.Agent.Admin.ProcessManagement.HideOverlay();
 
                 // remove onbeforeunload event (which is only needed if you close the popup via the window "X")
-                $(WindowObject).unbind("beforeunload.PMPopup");
+                $(WindowObject).off("beforeunload.PMPopup");
 
                 // close popup
                 WindowObject.close();
@@ -207,13 +213,13 @@ Core.Agent.Admin.ProcessManagement = (function (TargetNS) {
             [
                {
                    Label: Core.Language.Translate('Cancel'),
-                   Class: 'Primary',
                    Function: function () {
                        Core.UI.Dialog.CloseDialog($('.Dialog'));
                    }
                },
                {
                    Label: Core.Language.Translate('Delete'),
+                   Class: 'Primary',
                    Function: function () {
                        var Data = {
                                Action: 'AdminProcessManagement',
@@ -273,13 +279,13 @@ Core.Agent.Admin.ProcessManagement = (function (TargetNS) {
             [
                {
                    Label: Core.Language.Translate('Cancel'),
-                   Class: 'Primary',
                    Function: function () {
                        Core.UI.Dialog.CloseDialog($('.Dialog'));
                    }
                },
                {
                    Label: Core.Language.Translate('Delete'),
+                   Class: 'Primary',
                    Function: function () {
                        var Data = {
                                Action: 'AdminProcessManagement',
@@ -712,7 +718,7 @@ Core.Agent.Admin.ProcessManagement = (function (TargetNS) {
             }
         }
 
-        $('#Activities li, #ActivityDialogs li, #Transitions li, #TransitionActions li').draggable({
+        $('#Activities li.OneRow, #ActivityDialogs li.OneRow, #Transitions li.OneRow, #TransitionActions li.OneRow').draggable({
             revert: 'invalid',
             helper: function () {
                 var $Clone = $(this).clone();
@@ -763,7 +769,7 @@ Core.Agent.Admin.ProcessManagement = (function (TargetNS) {
         });
 
         $('#Canvas').droppable({
-            accept: '#Activities li, #ActivityDialogs li, #Transitions li, #TransitionActions li',
+            accept: '#Activities li.OneRow, #ActivityDialogs li.OneRow, #Transitions li.OneRow, #TransitionActions li.OneRow',
             drop: function (Event, UI) {
                 var $Source = $(UI.draggable),
                     SourceID = $Source.closest('ul').attr('id');
@@ -961,11 +967,6 @@ Core.Agent.Admin.ProcessManagement = (function (TargetNS) {
             ShowDeleteProcessConfirmationDialog($(Event.target).closest('a'));
             Event.stopPropagation();
             return false;
-        });
-
-        $('#SubmitAndContinue').on('click', function() {
-            $('#ContinueAfterSave').val(1);
-            $('#Submit').click();
         });
 
         // Init submit function
@@ -1214,7 +1215,6 @@ Core.Agent.Admin.ProcessManagement = (function (TargetNS) {
                      },
                      {
                          Label: Core.Language.Translate('Cancel'),
-                         Class: 'CallForAction',
                          Function: function () {
                              Core.UI.Dialog.CloseDialog($('.Dialog'));
                          }

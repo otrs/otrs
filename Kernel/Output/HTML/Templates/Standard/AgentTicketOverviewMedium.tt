@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -87,10 +87,10 @@
                         </td>
                         <td>
 [% RenderBlockStart("CustomerIDRW") %]
-                            <label>[% Translate("CustomerID") | html %]</label>[% IF Data.CustomerID %]<a href="[% Config("CustomerDBLink") | Interpolate %]" class="AsPopup PopupType_TicketAction" [% Config("CustomerDBLinkTarget") %]>[% Data.CustomerID | html %]</a>[% END %]
+                            <label>[% Translate("Customer ID") | html %]</label>[% IF Data.CustomerID %]<a href="[% Config("CustomerDBLink") | Interpolate %]" class="AsPopup PopupType_TicketAction" [% Config("CustomerDBLinkTarget") %]>[% Data.CustomerID | html %]</a>[% END %]
 [% RenderBlockEnd("CustomerIDRW") %]
 [% RenderBlockStart("CustomerIDRO") %]
-                            <label>[% Translate("CustomerID") | html %]</label>[% Data.CustomerID | html %]
+                            <label>[% Translate("Customer ID") | html %]</label>[% Data.CustomerID | html %]
 [% RenderBlockEnd("CustomerIDRO") %]
                             <br /><div title="[% Data.CustomerName | html %]">[% Data.CustomerName | html %]</div>
                         </td>
@@ -156,7 +156,7 @@
                             <label>[% Translate("Subject") | html %]</label><div title="[% Data.Subject | html %]">[% Data.Subject | html %]</div>
                         </td>
                         <td>
-                            <label>[% Translate("Owner") | html %]</label><div title="[% Data.UserFirstname | html %] [% Data.UserLastname | html %] ([% Data.Owner | html %])">[% Data.UserFirstname | html %] [% Data.UserLastname | html %]</div>
+                            <label>[% Translate("Owner") | html %]</label><div title="[% Data.UserFirstname | html %] [% Data.UserLastname | html %] ([% Data.Owner | html %])">[% Data.UserFullname | html %]</div>
                         </td>
                         <td>
                             <label>[% Translate("Lock") | html %]</label><div title="[% Translate(Data.Lock) | html %]">[% Translate(Data.Lock) | html %]</div>

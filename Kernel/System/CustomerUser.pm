@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -11,40 +11,39 @@ package Kernel::System::CustomerUser;
 use strict;
 use warnings;
 
+use Kernel::System::VariableCheck qw(:all);
+
 use base qw(Kernel::System::EventHandler);
 
 use Kernel::System::VariableCheck qw(:all);
 
 our @ObjectDependencies = (
     'Kernel::Config',
+    'Kernel::Language',
     'Kernel::System::CustomerCompany',
     'Kernel::System::DB',
     'Kernel::System::DynamicField',
     'Kernel::System::DynamicField::Backend',
+    'Kernel::System::Encode',
     'Kernel::System::Log',
     'Kernel::System::Main',
+    'Kernel::System::Valid',
 );
 
 =head1 NAME
 
 Kernel::System::CustomerUser - customer user lib
 
-=head1 SYNOPSIS
+=head1 DESCRIPTION
 
 All customer user functions. E. g. to add and update customer users.
 
 =head1 PUBLIC INTERFACE
 
-=over 4
+=head2 new()
 
-=cut
+Don't use the constructor directly, use the ObjectManager instead:
 
-=item new()
-
-create an object. Do not use it directly, instead use:
-
-    use Kernel::System::ObjectManager;
-    local $Kernel::OM = Kernel::System::ObjectManager->new();
     my $CustomerUserObject = $Kernel::OM->Get('Kernel::System::CustomerUser');
 
 =cut
@@ -96,7 +95,7 @@ sub new {
     return $Self;
 }
 
-=item CustomerSourceList()
+=head2 CustomerSourceList()
 
 return customer source list
 
@@ -132,7 +131,7 @@ sub CustomerSourceList {
     return %Data;
 }
 
-=item CustomerSearch()
+=head2 CustomerSearch()
 
 to search users
 
@@ -290,7 +289,397 @@ sub CustomerSearch {
     return %Data;
 }
 
-=item CustomerIDList()
+=head2 CustomerSearchDetail()
+
+To find customer user in the system.
+
+The search criteria are logically AND connected.
+When a list is passed as criteria, the individual members are OR connected.
+When an undef or a reference to an empty array is passed, then the search criteria
+is ignored.
+
+Returns either a list, as an arrayref, or a count of found customer user ids.
+The count of results is returned when the parameter C<Result = 'COUNT'> is passed.
+
+    my $CustomerUserIDsRef = $CustomerUserObject->CustomerSearchDetail(
+
+        # all search fields possible which are defined in CustomerUser::EnhancedSearchFields
+        UserLogin     => 'example*',                                    # (optional)
+        UserFirstname => 'Firstn*',                                     # (optional)
+
+        # special parameters
+        CustomerCompanySearchCustomerIDs => [ 'example.com' ],          # (optional)
+        ExcludeUserLogins                => [ 'example', 'doejohn' ],   # (optional)
+
+        # array parameters are used with logical OR operator (all values are possible which
+        are defined in the config selection hash for the field)
+        UserCountry              => [ 'Austria', 'Germany', ],          # (optional)
+
+        # DynamicFields
+        #   At least one operator must be specified. Operators will be connected with AND,
+        #       values in an operator with OR.
+        #   You can also pass more than one argument to an operator: ['value1', 'value2']
+        DynamicField_FieldNameX => {
+            Equals            => 123,
+            Like              => 'value*',                # "equals" operator with wildcard support
+            GreaterThan       => '2001-01-01 01:01:01',
+            GreaterThanEquals => '2001-01-01 01:01:01',
+            SmallerThan       => '2002-02-02 02:02:02',
+            SmallerThanEquals => '2002-02-02 02:02:02',
+        }
+
+        OrderBy => [ 'UserLogin', 'UserCustomerID' ],                   # (optional)
+        # ignored if the result type is 'COUNT'
+        # default: [ 'UserLogin' ]
+        # (all search fields possible which are defined in
+        CustomerUser::EnhancedSearchFields)
+
+        # Additional information for OrderBy:
+        # The OrderByDirection can be specified for each OrderBy attribute.
+        # The pairing is made by the array indices.
+
+        OrderByDirection => [ 'Down', 'Up' ],                          # (optional)
+        # ignored if the result type is 'COUNT'
+        # (Down | Up) Default: [ 'Down' ]
+
+        Result => 'ARRAY' || 'COUNT',                                  # (optional)
+        # default: ARRAY, returns an array of change ids
+        # COUNT returns a scalar with the number of found changes
+
+        Limit => 100,                                                  # (optional)
+        # ignored if the result type is 'COUNT'
+    );
+
+Returns:
+
+Result: 'ARRAY'
+
+    @CustomerUserIDs = ( 1, 2, 3 );
+
+Result: 'COUNT'
+
+    $CustomerUserIDs = 10;
+
+=cut
+
+sub CustomerSearchDetail {
+    my ( $Self, %Param ) = @_;
+
+    # get all general search fields (without a restriction to a source)
+    my @AllSearchFields = $Self->CustomerUserSearchFields();
+
+    # generate a hash with the customer user sources which must be searched
+    my %SearchCustomerUserSources;
+
+    SOURCE:
+    for my $Count ( '', 1 .. 10 ) {
+        next SOURCE if !$Self->{"CustomerUser$Count"};
+
+        # get the search fields for the current source
+        my @SourceSearchFields = $Self->CustomerUserSearchFields(
+            Source => "CustomerUser$Count",
+        );
+        my %LookupSourceSearchFields = map { $_->{Name} => 1 } @SourceSearchFields;
+
+        # check if all search param exists in the search fields from the current source
+        SEARCHFIELD:
+        for my $SearchField (@AllSearchFields) {
+
+            next SEARCHFIELD if !$Param{ $SearchField->{Name} };
+
+            next SOURCE if !$LookupSourceSearchFields{ $SearchField->{Name} };
+        }
+        $SearchCustomerUserSources{"CustomerUser$Count"} = \@SourceSearchFields;
+    }
+
+    # set the default behaviour for the return type
+    $Param{Result} ||= 'ARRAY';
+
+    if ( $Param{Result} eq 'COUNT' ) {
+
+        my $IDsCount = 0;
+
+        SOURCE:
+        for my $Source ( sort keys %SearchCustomerUserSources ) {
+            next SOURCE if !$Self->{$Source};
+
+            my $SubIDsCount = $Self->{$Source}->CustomerSearchDetail(
+                %Param,
+                SearchFields => $SearchCustomerUserSources{$Source},
+            );
+
+            return if !defined $SubIDsCount;
+
+            $IDsCount += $SubIDsCount || 0;
+        }
+        return $IDsCount;
+    }
+    else {
+
+        my @IDs;
+
+        my $ResultCount = 0;
+
+        SOURCE:
+        for my $Source ( sort keys %SearchCustomerUserSources ) {
+            next SOURCE if !$Self->{$Source};
+
+            my $SubIDs = $Self->{$Source}->CustomerSearchDetail(
+                %Param,
+                SearchFields => $SearchCustomerUserSources{$Source},
+            );
+
+            return if !defined $SubIDs;
+
+            next SOURCE if !IsArrayRefWithData($SubIDs);
+
+            push @IDs, @{$SubIDs};
+
+            $ResultCount++;
+        }
+
+        # if we have more then one search results from diffrent sources, we need a resorting
+        # because of the merged single results
+        if ( $ResultCount > 1 ) {
+
+            my @UserDataList;
+
+            for my $ID (@IDs) {
+
+                my %UserData = $Self->CustomerUserDataGet(
+                    User => $ID,
+                );
+                push @UserDataList, \%UserData;
+            }
+
+            my $OrderBy = 'UserLogin';
+            if ( IsArrayRefWithData( $Param{OrderBy} ) ) {
+                $OrderBy = $Param{OrderBy}->[0];
+            }
+
+            if ( IsArrayRefWithData( $Param{OrderByDirection} ) && $Param{OrderByDirection}->[0] eq 'Up' ) {
+                @UserDataList = sort { lc( $a->{$OrderBy} ) cmp lc( $b->{$OrderBy} ) } @UserDataList;
+            }
+            else {
+                @UserDataList = sort { lc( $b->{$OrderBy} ) cmp lc( $a->{$OrderBy} ) } @UserDataList;
+            }
+
+            if ( $Param{Limit} && scalar @UserDataList > $Param{Limit} ) {
+                splice @UserDataList, $Param{Limit};
+            }
+
+            @IDs = map { $_->{UserLogin} } @UserDataList;
+        }
+
+        return \@IDs;
+    }
+}
+
+=head2 CustomerUserSearchFields()
+
+Get a list of the defined search fields (optional only the relevant fields for the given source).
+
+    my @SeachFields = $CustomerUserObject->CustomerUserSearchFields(
+        Source => 'CustomerUser', # optional, but important in the CustomerSearchDetail to get the right database fields
+    );
+
+Returns an array of hash references.
+
+    @SeachFields = (
+        {
+            Name          => 'UserEmail',
+            Label         => 'Email',
+            Type          => 'Input',
+            DatabaseField => 'mail',
+        },
+        {
+            Name           => 'UserCountry',
+            Label          => 'Country',
+            Type           => 'Selection',
+            SelectionsData => {
+                'Germany'        => 'Germany',
+                'United Kingdom' => 'United Kingdom',
+                'United States'  => 'United States',
+                ...
+            },
+            DatabaseField => 'country',
+        },
+        {
+            Name          => 'DynamicField_SkypeAccountName',
+            Label         => '',
+            Type          => 'DynamicField',
+            DatabaseField => 'SkypeAccountName',
+        },
+    );
+
+=cut
+
+sub CustomerUserSearchFields {
+    my ( $Self, %Param ) = @_;
+
+    # Get the search fields from all customer user maps (merge from all maps together).
+    my @SearchFields;
+
+    my %SearchFieldsExists;
+
+    SOURCE:
+    for my $Count ( '', 1 .. 10 ) {
+        next SOURCE if !$Self->{"CustomerUser$Count"};
+        next SOURCE if $Param{Source} && $Param{Source} ne "CustomerUser$Count";
+
+        ENTRY:
+        for my $Entry ( @{ $Self->{"CustomerUser$Count"}->{CustomerUserMap}->{Map} } ) {
+
+            my $SearchFieldName = $Entry->[0];
+
+            next ENTRY if $SearchFieldsExists{$SearchFieldName};
+            next ENTRY if $SearchFieldName =~ m{(Password|Pw)\d*$}smxi;
+
+            # Remeber the already collected search field name.
+            $SearchFieldsExists{$SearchFieldName} = 1;
+
+            my %FieldConfig = $Self->GetFieldConfig(
+                FieldName => $SearchFieldName,
+                Source    => $Param{Source},     # to get the right database field for the given source
+            );
+
+            next SEARCHFIELDNAME if !%FieldConfig;
+
+            my %SearchFieldData = (
+                %FieldConfig,
+                Name => $SearchFieldName,
+            );
+
+            my %SelectionsData = $Self->GetFieldSelections(
+                FieldName => $SearchFieldName,
+            );
+
+            if ( $SearchFieldData{StorageType} eq 'dynamic_field' ) {
+                $SearchFieldData{Type} = 'DynamicField';
+            }
+            elsif (%SelectionsData) {
+                $SearchFieldData{Type}           = 'Selection';
+                $SearchFieldData{SelectionsData} = \%SelectionsData;
+            }
+            else {
+                $SearchFieldData{Type} = 'Input';
+            }
+
+            push @SearchFields, \%SearchFieldData;
+        }
+    }
+
+    return @SearchFields;
+}
+
+=head2 GetFieldConfig()
+
+This function collect some field config information from the customer user map.
+
+    my %FieldConfig = $CustomerUserObject->GetFieldConfig(
+        FieldName => 'UserEmail',
+        Source    => 'CustomerUser', # optional
+    );
+
+Returns some field config information:
+
+    my %FieldConfig = (
+        Label         => 'Email',
+        DatabaseField => 'email',
+        StorageType   => 'var',
+    );
+
+=cut
+
+sub GetFieldConfig {
+    my ( $Self, %Param ) = @_;
+
+    if ( !$Param{FieldName} ) {
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
+            Priority => 'error',
+            Message  => "Need FieldName!"
+        );
+        return;
+    }
+
+    SOURCE:
+    for my $Count ( '', 1 .. 10 ) {
+        next SOURCE if !$Self->{"CustomerUser$Count"};
+        next SOURCE if $Param{Source} && $Param{Source} ne "CustomerUser$Count";
+
+        # Search the right field and return some config information from the field.
+        ENTRY:
+        for my $Entry ( @{ $Self->{"CustomerUser$Count"}->{CustomerUserMap}->{Map} } ) {
+            next ENTRY if $Param{FieldName} ne $Entry->[0];
+
+            my %FieldConfig = (
+                Label         => $Entry->[1],
+                DatabaseField => $Entry->[2],
+                StorageType   => $Entry->[5],
+            );
+
+            return %FieldConfig;
+        }
+    }
+
+    return;
+}
+
+=head2 GetFieldSelections()
+
+This function collect the selections for the given field name, if the field has some selections.
+
+    my %SelectionsData = $CustomerUserObject->GetFieldSelections(
+        FieldName => 'UserTitle',
+    );
+
+Returns the selections for the given field name (merged from all sources) or a empty hash:
+
+    my %SelectionData = (
+        'Mr.'  => 'Mr.',
+        'Mrs.' => 'Mrs.',
+    );
+
+=cut
+
+sub GetFieldSelections {
+    my ( $Self, %Param ) = @_;
+
+    # check needed stuff
+    if ( !$Param{FieldName} ) {
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
+            Priority => 'error',
+            Message  => "Need FieldName!"
+        );
+        return;
+    }
+
+    my %SelectionsData;
+
+    SOURCE:
+    for my $Count ( '', 1 .. 10 ) {
+        next SOURCE if !$Self->{"CustomerUser$Count"};
+        next SOURCE if !$Self->{"CustomerUser$Count"}->{CustomerUserMap}->{Selections}->{ $Param{FieldName} };
+
+        %SelectionsData = (
+            %SelectionsData, %{ $Self->{"CustomerUser$Count"}->{CustomerUserMap}->{Selections}->{ $Param{FieldName} } }
+        );
+    }
+
+    # Make sure the encoding stamp is set.
+    for my $Key ( sort keys %SelectionsData ) {
+        $SelectionsData{$Key} = $Kernel::OM->Get('Kernel::System::Encode')->EncodeInput( $SelectionsData{$Key} );
+    }
+
+    # Default handling for field 'ValidID'.
+    if ( !%SelectionsData && $Param{FieldName} =~ /^ValidID/i ) {
+        %SelectionsData = $Kernel::OM->Get('Kernel::System::Valid')->ValidList();
+    }
+
+    return %SelectionsData;
+}
+
+=head2 CustomerIDList()
 
 return a list of with all known unique CustomerIDs of the registered customers users (no SearchTerm),
 or a filtered list where the CustomerIDs must contain a search term.
@@ -323,7 +712,7 @@ sub CustomerIDList {
     return @Data;
 }
 
-=item CustomerName()
+=head2 CustomerName()
 
 get customer user name
 
@@ -350,7 +739,7 @@ sub CustomerName {
     return;
 }
 
-=item CustomerIDs()
+=head2 CustomerIDs()
 
 get customer user customer ids
 
@@ -377,7 +766,7 @@ sub CustomerIDs {
     return;
 }
 
-=item CustomerUserDataGet()
+=head2 CustomerUserDataGet()
 
 get user data (UserLogin, UserFirstname, UserLastname, UserEmail, ...)
 
@@ -470,7 +859,7 @@ sub CustomerUserDataGet {
     return;
 }
 
-=item CustomerUserAdd()
+=head2 CustomerUserAdd()
 
 to add new customer users
 
@@ -502,7 +891,8 @@ sub CustomerUserAdd {
         if (%User) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
-                Message  => "User already exists '$Param{UserLogin}'!",
+                Message  => $Kernel::OM->Get('Kernel::Language')
+                    ->Translate( 'Customer user "%s" already exists.', $Param{UserLogin} ),
             );
             return;
         }
@@ -526,7 +916,7 @@ sub CustomerUserAdd {
 
 }
 
-=item CustomerUserUpdate()
+=head2 CustomerUserUpdate()
 
 to update customer users
 
@@ -562,7 +952,8 @@ sub CustomerUserUpdate {
         if (%User) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
-                Message  => "User already exists '$Param{UserLogin}'!",
+                Message  => $Kernel::OM->Get('Kernel::Language')
+                    ->Translate( 'Customer user "%s" already exists.', $Param{UserLogin} ),
             );
             return;
         }
@@ -595,7 +986,7 @@ sub CustomerUserUpdate {
     return $Result;
 }
 
-=item SetPassword()
+=head2 SetPassword()
 
 to set customer users passwords
 
@@ -630,7 +1021,7 @@ sub SetPassword {
     return $Self->{ $User{Source} }->SetPassword(%Param);
 }
 
-=item GenerateRandomPassword()
+=head2 GenerateRandomPassword()
 
 generate a random password
 
@@ -650,7 +1041,7 @@ sub GenerateRandomPassword {
     return $Self->{CustomerUser}->GenerateRandomPassword(%Param);
 }
 
-=item SetPreferences()
+=head2 SetPreferences()
 
 set customer user preferences
 
@@ -693,7 +1084,7 @@ sub SetPreferences {
     return $Self->{PreferencesObject}->SetPreferences(%Param);
 }
 
-=item GetPreferences()
+=head2 GetPreferences()
 
 get customer user preferences
 
@@ -734,7 +1125,7 @@ sub GetPreferences {
     return $Self->{PreferencesObject}->GetPreferences(%Param);
 }
 
-=item SearchPreferences()
+=head2 SearchPreferences()
 
 search in user preferences
 
@@ -771,7 +1162,7 @@ sub SearchPreferences {
     return %Data;
 }
 
-=item TokenGenerate()
+=head2 TokenGenerate()
 
 generate a random token
 
@@ -807,7 +1198,7 @@ sub TokenGenerate {
     return $Token;
 }
 
-=item TokenCheck()
+=head2 TokenCheck()
 
 check password token
 
@@ -849,7 +1240,7 @@ sub TokenCheck {
     return 1;
 }
 
-=item CustomerUserCacheClear()
+=head2 CustomerUserCacheClear()
 
 clear cache of customer user data
 
@@ -884,8 +1275,6 @@ sub DESTROY {
 }
 
 1;
-
-=back
 
 =head1 TERMS AND CONDITIONS
 

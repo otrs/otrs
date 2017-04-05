@@ -1,5 +1,5 @@
 // --
-// Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+// Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 // --
 // This software comes with ABSOLUTELY NO WARRANTY. For details, see
 // the enclosed file COPYING for license information (AGPL). If you
@@ -288,7 +288,7 @@ Core.UI.Datepicker = (function (TargetNS) {
             }
         }
 
-        $('#' + Core.App.EscapeSelector(Element.Day.attr('id')) + 'DatepickerIcon').unbind('click.Datepicker').bind('click.Datepicker', function () {
+        $('#' + Core.App.EscapeSelector(Element.Day.attr('id')) + 'DatepickerIcon').off('click.Datepicker').on('click.Datepicker', function () {
             $DatepickerElement.datepicker('show');
             return false;
         });

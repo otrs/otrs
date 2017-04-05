@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -149,7 +149,9 @@ sub Run {
             for my $Permission ( sort keys %Permissions ) {
                 $NewPermission{$Permission} = 0;
                 my @Array = @{ $Permissions{$Permission} };
+                ID:
                 for my $ID (@Array) {
+                    next ID if !$ID;
                     if ( $UserID == $ID ) {
                         $NewPermission{$Permission} = 1;
                     }
@@ -162,9 +164,19 @@ sub Run {
                 UserID     => $Self->{UserID},
             );
         }
-        return $LayoutObject->Redirect(
-            OP => "Action=$Self->{Action}",
-        );
+
+        # if the user would like to continue editing the group-user relation just redirect to the edit screen
+        # otherwise return to relations overview
+        if (
+            defined $ParamObject->GetParam( Param => 'ContinueAfterSave' )
+            && ( $ParamObject->GetParam( Param => 'ContinueAfterSave' ) eq '1' )
+            )
+        {
+            return $LayoutObject->Redirect( OP => "Action=$Self->{Action};Subaction=Group;ID=$ID" );
+        }
+        else {
+            return $LayoutObject->Redirect( OP => "Action=$Self->{Action}" );
+        }
     }
 
     # ------------------------------------------------------------ #
@@ -193,7 +205,9 @@ sub Run {
             for my $Permission ( sort keys %Permissions ) {
                 $NewPermission{$Permission} = 0;
                 my @Array = @{ $Permissions{$Permission} };
+                ID:
                 for my $ID (@Array) {
+                    next ID if !$ID;
                     if ( $GroupID eq $ID ) {
                         $NewPermission{$Permission} = 1;
                     }
@@ -206,9 +220,19 @@ sub Run {
                 UserID     => $Self->{UserID},
             );
         }
-        return $LayoutObject->Redirect(
-            OP => "Action=$Self->{Action}",
-        );
+
+        # if the user would like to continue editing the group-user relation just redirect to the edit screen
+        # otherwise return to relations overview
+        if (
+            defined $ParamObject->GetParam( Param => 'ContinueAfterSave' )
+            && ( $ParamObject->GetParam( Param => 'ContinueAfterSave' ) eq '1' )
+            )
+        {
+            return $LayoutObject->Redirect( OP => "Action=$Self->{Action};Subaction=User;ID=$ID" );
+        }
+        else {
+            return $LayoutObject->Redirect( OP => "Action=$Self->{Action}" );
+        }
     }
 
     # ------------------------------------------------------------ #
@@ -236,6 +260,12 @@ sub _Change {
     # get layout object
     my $LayoutObject = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
 
+    $Param{BreadcrumbTitle} = $LayoutObject->{LanguageObject}->Translate("Change Group Relations for Agent");
+
+    if ( $VisibleType{$Type} eq 'Group' ) {
+        $Param{BreadcrumbTitle} = $LayoutObject->{LanguageObject}->Translate("Change Agent Relations for Group");
+    }
+
     $LayoutObject->Block(
         Name => 'ActionList',
     );
@@ -254,10 +284,6 @@ sub _Change {
             VisibleType   => $VisibleType{$Type},
             VisibleNeType => $VisibleType{$NeType},
         },
-    );
-
-    $LayoutObject->Block(
-        Name => "ChangeHeader$VisibleType{$NeType}",
     );
 
     # check if there are groups

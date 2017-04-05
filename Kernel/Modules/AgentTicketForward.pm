@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -122,8 +122,9 @@ sub Form {
         );
     }
 
-    # get ticket object
-    my $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
+    # get needed objects
+    my $TicketObject  = $Kernel::OM->Get('Kernel::System::Ticket');
+    my $ArticleObject = $Kernel::OM->Get('Kernel::System::Ticket::Article');
 
     # get ticket data
     my %Ticket = $TicketObject->TicketGet(
@@ -226,7 +227,7 @@ sub Form {
     # get last customer article or selected article
     my %Data;
     if ( $GetParam{ArticleID} ) {
-        %Data = $TicketObject->ArticleGet(
+        %Data = $ArticleObject->ArticleGet(
             ArticleID     => $GetParam{ArticleID},
             DynamicFields => 1,
         );
@@ -240,7 +241,7 @@ sub Form {
         }
     }
     else {
-        %Data = $TicketObject->ArticleLastCustomerArticle(
+        %Data = $ArticleObject->ArticleLastCustomerArticle(
             TicketID      => $Self->{TicketID},
             DynamicFields => 1,
         );
@@ -631,7 +632,8 @@ sub SendEmail {
     DYNAMICFIELD:
     for my $DynamicFieldItem ( sort keys %DynamicFieldValues ) {
         next DYNAMICFIELD if !$DynamicFieldItem;
-        next DYNAMICFIELD if !$DynamicFieldValues{$DynamicFieldItem};
+        next DYNAMICFIELD if !defined $DynamicFieldValues{$DynamicFieldItem};
+        next DYNAMICFIELD if !length $DynamicFieldValues{$DynamicFieldItem};
 
         $DynamicFieldACLParameters{ 'DynamicField_' . $DynamicFieldItem } = $DynamicFieldValues{$DynamicFieldItem};
     }
@@ -1037,9 +1039,10 @@ sub SendEmail {
     }
 
     # if there is no ArticleTypeID, use the default value
-    my $ArticleTypeID = $GetParam{ArticleTypeID} // $TicketObject->ArticleTypeLookup(
+    my $ArticleTypeID = $GetParam{ArticleTypeID} //
+        $Kernel::OM->Get('Kernel::System::Ticket::Article')->ArticleTypeLookup(
         ArticleType => $Config->{ArticleTypeDefault},
-    );
+        );
 
     # error page
     if ( !$ArticleTypeID ) {
@@ -1049,7 +1052,7 @@ sub SendEmail {
         );
     }
 
-    my $ArticleID = $TicketObject->ArticleSend(
+    my $ArticleID = $Kernel::OM->Get('Kernel::System::Ticket::Article')->ArticleSend(
         ArticleTypeID  => $ArticleTypeID,
         SenderType     => 'agent',
         TicketID       => $Self->{TicketID},
@@ -1267,7 +1270,8 @@ sub AjaxUpdate {
     DYNAMICFIELD:
     for my $DynamicFieldItem ( sort keys %DynamicFieldValues ) {
         next DYNAMICFIELD if !$DynamicFieldItem;
-        next DYNAMICFIELD if !$DynamicFieldValues{$DynamicFieldItem};
+        next DYNAMICFIELD if !defined $DynamicFieldValues{$DynamicFieldItem};
+        next DYNAMICFIELD if !length $DynamicFieldValues{$DynamicFieldItem};
 
         $DynamicFieldACLParameters{ 'DynamicField_' . $DynamicFieldItem } = $DynamicFieldValues{$DynamicFieldItem};
     }
@@ -1419,15 +1423,15 @@ sub _Mask {
     #  get article type
     my %ArticleTypeList;
 
-    # get ticket object
-    my $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
+    # get article object
+    my $ArticleObject = $Kernel::OM->Get('Kernel::System::Ticket::Article');
 
     if ( IsArrayRefWithData( $Config->{ArticleTypes} ) ) {
 
         my @ArticleTypesPossible = @{ $Config->{ArticleTypes} };
         for my $ArticleType (@ArticleTypesPossible) {
 
-            my $ArticleTypeID = $TicketObject->ArticleTypeLookup(
+            my $ArticleTypeID = $ArticleObject->ArticleTypeLookup(
                 ArticleType => $ArticleType,
             );
 
@@ -1465,7 +1469,7 @@ sub _Mask {
     }
 
     # get used calendar
-    my $Calendar = $TicketObject->TicketCalendarGet(
+    my $Calendar = $Kernel::OM->Get('Kernel::System::Ticket')->TicketCalendarGet(
         QueueID => $Param{QueueID},
         SLAID   => $Param{SLAID},
     );
@@ -1705,24 +1709,13 @@ sub _Mask {
         );
     }
 
-    # show address book
-    if ( $LayoutObject->{BrowserJavaScriptSupport} ) {
-
-        # check if need to call Options block
-        if ( !$ShownOptionsBlock ) {
-            $LayoutObject->Block(
-                Name => 'TicketOptions',
-                Data => {},
-            );
-
-            # set flag to "true" in order to prevent calling the Options block again
-            $ShownOptionsBlock = 1;
-        }
-
-        $LayoutObject->Block(
-            Name => 'AddressBook',
-            Data => {},
-        );
+    # Show the customer user address book if the module is registered and java script support is available.
+    if (
+        $ConfigObject->Get('Frontend::Module')->{AgentCustomerUserAddressBook}
+        && $LayoutObject->{BrowserJavaScriptSupport}
+        )
+    {
+        $Param{OptionCustomerUserAddressBook} = 1;
     }
 
     # show attachments

@@ -1,5 +1,5 @@
 // --
-// Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+// Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 // --
 // This software comes with ABSOLUTELY NO WARRANTY. For details, see
 // the enclosed file COPYING for license information (AGPL). If you
@@ -31,13 +31,13 @@ Core.Agent.Admin.NotificationEvent = (function (TargetNS) {
     TargetNS.Init = function () {
 
         // bind click function to add button
-        $('.LanguageAdd').bind('change', function () {
+        $('.LanguageAdd').on('change', function () {
             TargetNS.AddLanguage($(this).val(), $('.LanguageAdd option:selected').text());
             return false;
         });
 
         // bind click function to remove button
-        $('.LanguageRemove').bind('click', function () {
+        $('.LanguageRemove').on('click', function () {
 
             if (window.confirm(Core.Language.Translate('Do you really want to delete this notification language?'))) {
                 TargetNS.RemoveLanguage($(this));
@@ -62,7 +62,7 @@ Core.Agent.Admin.NotificationEvent = (function (TargetNS) {
             }
         }
 
-        $('#VisibleForAgent').bind('change', VisibleForAgentHandler);
+        $('#VisibleForAgent').on('change', VisibleForAgentHandler);
 
         // Run on first view.
         VisibleForAgentHandler();
@@ -191,7 +191,7 @@ Core.Agent.Admin.NotificationEvent = (function (TargetNS) {
         }
 
         // bind click function to remove button
-        $('.LanguageRemove').bind('click', function () {
+        $('.LanguageRemove').on('click', function () {
 
             if (window.confirm(Core.Language.Translate('Do you really want to delete this notification language?'))) {
                 TargetNS.RemoveLanguage($(this));
@@ -242,7 +242,7 @@ Core.Agent.Admin.NotificationEvent = (function (TargetNS) {
         });
 
         // bind click function to add button
-        $('.LanguageAdd').bind('change', function () {
+        $('.LanguageAdd').on('change', function () {
             TargetNS.AddLanguage($(this).val(), $('.LanguageAdd option:selected').text());
             return false;
         });

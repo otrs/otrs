@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -16,6 +16,7 @@ use MIME::Base64;
 use POSIX qw(ceil);
 use Storable qw();
 
+use Kernel::Language qw(Translatable);
 use Kernel::System::VariableCheck qw(:all);
 use Kernel::Output::HTML::Statistics::View;
 
@@ -38,7 +39,7 @@ our @ObjectDependencies = (
 
 Kernel::System::Stats - stats lib
 
-=head1 SYNOPSIS
+=head1 DESCRIPTION
 
 All stats functions.
 
@@ -63,14 +64,10 @@ Start date: 2015-09-10 16:00:00 - 10 days -> 2015-08-31 16:00:00 -> extended to 
 
 =head1 PUBLIC INTERFACE
 
-=over 4
+=head2 new()
 
-=item new()
+Don't use the constructor directly, use the ObjectManager instead:
 
-create an object. Do not use it directly, instead use:
-
-    use Kernel::System::ObjectManager;
-    local $Kernel::OM = Kernel::System::ObjectManager->new();
     my $StatsObject = $Kernel::OM->Get('Kernel::System::Stats');
 
 =cut
@@ -88,7 +85,7 @@ sub new {
     return $Self;
 }
 
-=item StatsAdd()
+=head2 StatsAdd()
 
 add new empty stats
 
@@ -178,7 +175,7 @@ sub StatsAdd {
     return $StatID;
 }
 
-=item StatsGet()
+=head2 StatsGet()
 
 get a hash ref of the stats you need
 
@@ -405,7 +402,7 @@ sub StatsGet {
     return \%Stat;
 }
 
-=item StatsUpdate()
+=head2 StatsUpdate()
 
 update a stat
 
@@ -571,7 +568,7 @@ sub StatsUpdate {
     return 1;
 }
 
-=item StatsDelete()
+=head2 StatsDelete()
 
 delete a stats
 
@@ -651,7 +648,7 @@ sub StatsDelete {
     return 1;
 }
 
-=item StatsListGet()
+=head2 StatsListGet()
 
 fetches all statistics that the current user may see
 
@@ -773,7 +770,7 @@ sub StatsListGet {
     return \%Result;
 }
 
-=item GetStatsList()
+=head2 GetStatsList()
 
 lists all stats id's
 
@@ -820,7 +817,7 @@ sub GetStatsList {
     return \@SortArray;
 }
 
-=item SumBuild()
+=head2 SumBuild()
 
 build sum in x or/and y axis
 
@@ -840,7 +837,7 @@ sub SumBuild {
     # add sum y
     if ( $Param{SumCol} ) {
 
-        push @{ $Data[1] }, 'Sum';
+        push @{ $Data[1] }, Translatable('Sum');
 
         for my $Index1 ( 2 .. $#Data ) {
 
@@ -901,10 +898,10 @@ sub SumBuild {
 
         push @Data, \@SumRow;
     }
-    return \@Data;
+    return @Data;
 }
 
-=item GetStatsObjectAttributes()
+=head2 GetStatsObjectAttributes()
 
 Get all attributes from the object in dependence of the use
 
@@ -953,7 +950,7 @@ sub GetStatsObjectAttributes {
     return @ObjectAttributes;
 }
 
-=item GetStaticFiles()
+=head2 GetStaticFiles()
 
 Get all static files
 
@@ -1033,7 +1030,7 @@ sub GetStaticFiles {
     return \%Filelist;
 }
 
-=item GetDynamicFiles()
+=head2 GetDynamicFiles()
 
 Get all static objects
 
@@ -1063,7 +1060,7 @@ sub GetDynamicFiles {
     return \%Filelist;
 }
 
-=item GetObjectName()
+=head2 GetObjectName()
 
 Get the name of a dynamic object
 
@@ -1095,7 +1092,7 @@ sub GetObjectName {
     return $Name;
 }
 
-=item GetObjectBehaviours()
+=head2 GetObjectBehaviours()
 
 get behaviours that a statistic supports
 
@@ -1137,7 +1134,7 @@ sub GetObjectBehaviours {
     return \%ObjectBehaviours;
 }
 
-=item ObjectFileCheck()
+=head2 ObjectFileCheck()
 
 check readable object file
 
@@ -1166,7 +1163,7 @@ sub ObjectFileCheck {
     return;
 }
 
-=item Export()
+=head2 Export()
 
 get content from stats for export
 
@@ -1280,7 +1277,7 @@ sub Export {
     return \%File;
 }
 
-=item Import()
+=head2 Import()
 
 import a stats from xml file
 
@@ -1515,7 +1512,7 @@ sub Import {
     return $StatID;
 }
 
-=item GetParams()
+=head2 GetParams()
 
     get all edit params from stats for view
 
@@ -1554,7 +1551,7 @@ sub GetParams {
     return \@Params;
 }
 
-=item StatsRun()
+=head2 StatsRun()
 
 run a statistic.
 
@@ -1620,19 +1617,42 @@ sub StatsRun {
         );
     }
 
-    # build sum in row or col
+    # Build sum in row or col.
     if ( @Result && ( $Stat->{SumRow} || $Stat->{SumCol} ) && $Stat->{Format} !~ m{^GD::Graph\.*}x ) {
-        return $Self->SumBuild(
+        @Result = $Self->SumBuild(
             Array  => \@Result,
             SumRow => $Stat->{SumRow},
             SumCol => $Stat->{SumCol},
         );
     }
 
+    # Exchange axis if selected.
+    if ( $GetParam{ExchangeAxis} ) {
+        my @NewStatArray;
+        my $Title = $Result[0]->[0];
+
+        shift(@Result);
+        for my $Key1 ( 0 .. $#Result ) {
+            for my $Key2 ( 0 .. $#{ $Result[0] } ) {
+                $NewStatArray[$Key2]->[$Key1] = $Result[$Key1]->[$Key2];
+            }
+        }
+        $NewStatArray[0]->[0] = '';
+        unshift( @NewStatArray, [$Title] );
+        @Result = @NewStatArray;
+    }
+
+    # Translate the column and row description.
+    $Self->_ColumnAndRowTranslation(
+        StatArrayRef => \@Result,
+        StatRef      => $Stat,
+        ExchangeAxis => $GetParam{ExchangeAxis},
+    );
+
     return \@Result;
 }
 
-=item StatsResultCacheCompute()
+=head2 StatsResultCacheCompute()
 
 computes stats results and adds them to the cache.
 This can be used to precompute stats data e. g. for dashboard widgets in a cron job.
@@ -1723,7 +1743,7 @@ sub StatsResultCacheCompute {
     );
 }
 
-=item StatsResultCacheGet()
+=head2 StatsResultCacheGet()
 
 gets cached statistic results. Will never run the statistic.
 This can be used to fetch cached stats data e. g. for stats widgets in the dashboard.
@@ -1805,7 +1825,7 @@ sub StatsResultCacheGet {
     );
 }
 
-=item StringAndTimestamp2Filename()
+=head2 StringAndTimestamp2Filename()
 
 builds a filename with a string and a timestamp.
 (space will be replaced with _ and - e.g. Title-of-File_2006-12-31_11-59)
@@ -1853,7 +1873,7 @@ sub StringAndTimestamp2Filename {
     return $Filename;
 }
 
-=item StatNumber2StatID()
+=head2 StatNumber2StatID()
 
 insert the stat number get the stat id
 
@@ -1889,7 +1909,7 @@ sub StatNumber2StatID {
     return;
 }
 
-=item StatsInstall()
+=head2 StatsInstall()
 
 installs stats
 
@@ -1966,7 +1986,7 @@ sub StatsInstall {
     return 1;
 }
 
-=item StatsUninstall()
+=head2 StatsUninstall()
 
 uninstalls stats
 
@@ -2025,7 +2045,7 @@ sub StatsUninstall {
     return 1;
 }
 
-=item StatsCleanUp()
+=head2 StatsCleanUp()
 
 removed stats with not existing backend file
 
@@ -2083,7 +2103,7 @@ sub StatsCleanUp {
 
 =begin Internal:
 
-=item _GenerateStaticStats()
+=head2 _GenerateStaticStats()
 
     take the stat configuration and get the stat table
 
@@ -2165,7 +2185,7 @@ sub _GenerateStaticStats {
     return @Result;
 }
 
-=item _GenerateDynamicStats()
+=head2 _GenerateDynamicStats()
 
     take the stat configuration and get the stat table
 
@@ -2755,7 +2775,9 @@ sub _GenerateDynamicStats {
         # build the headerline
 
         for my $Valuename ( @{ $Xvalue->{SelectedValues} } ) {
-            push @HeaderLine, $LanguageObject->Translate( $Xvalue->{Values}{$Valuename} );
+
+            # Do not translate the values, please see bug#12384 for more information.
+            push @HeaderLine, $Xvalue->{Values}{$Valuename};
         }
     }
 
@@ -2773,7 +2795,9 @@ sub _GenerateDynamicStats {
         if ( $Ref1->{Block} ne 'Time' ) {
             my %SelectedValues;
             for my $Ref2 ( @{ $Ref1->{SelectedValues} } ) {
-                $SelectedValues{$Ref2} = $LanguageObject->Translate( $Ref1->{Values}{$Ref2} );
+
+                # Do not translate the values, please see bug#12384 for more information.
+                $SelectedValues{$Ref2} = $Ref1->{Values}{$Ref2};
             }
             push(
                 @ArraySelected,
@@ -3313,7 +3337,8 @@ sub _GenerateDynamicStats {
     # so you don't need this function
     if ( $StatObject->can('GetHeaderLine') ) {
         my $HeaderRef = $StatObject->GetHeaderLine(
-            XValue => $Xvalue,
+            XValue       => $Xvalue,
+            Restrictions => \%RestrictionAttribute,
         );
 
         if ($HeaderRef) {
@@ -3330,9 +3355,8 @@ sub _GenerateDynamicStats {
     # check if we should cache this result
     if ( !$TitleTimeStart || !$TitleTimeStop ) {
         $Kernel::OM->Get('Kernel::System::Log')->Log(
-            Priority => 'error',
-            Message =>
-                "Can't cache: StatID $Param{StatID} has no time period, so you can't cache the stat!",
+            Priority => 'notice',
+            Message  => "Can't cache: StatID $Param{StatID} has no time period, so you can't cache the stat!",
         );
         return @StatArray;
     }
@@ -3345,9 +3369,8 @@ sub _GenerateDynamicStats {
 
     if ( $TimeObject->TimeStamp2SystemTime( String => $CheckTimeStop ) > $TimeObject->SystemTime() ) {
         $Kernel::OM->Get('Kernel::System::Log')->Log(
-            Priority => 'error',
-            Message =>
-                "Can't cache StatID $Param{StatID}: The selected end time is in the future!",
+            Priority => 'notice',
+            Message  => "Can't cache StatID $Param{StatID}: The selected end time is in the future!",
         );
         return @StatArray;
     }
@@ -3358,6 +3381,178 @@ sub _GenerateDynamicStats {
         Result   => \@StatArray,
     );
     return @StatArray;
+}
+
+=head2 _ColumnAndRowTranslation()
+
+Translate the column and row name if needed.
+
+    $StatsObject->_ColumnAndRowTranslation(
+        StatArrayRef => $StatArrayRef,
+        StatRef      => $StatRef,
+        ExchangeAxis => 1 | 0,
+    );
+
+=cut
+
+sub _ColumnAndRowTranslation {
+    my ( $Self, %Param ) = @_;
+
+    # check if need params are available
+    for my $NeededParam (qw(StatArrayRef StatRef)) {
+        if ( !$Param{$NeededParam} ) {
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
+                Priority => "error",
+                Message  => "_ColumnAndRowTranslation: Need $NeededParam!"
+            );
+        }
+    }
+
+    # Cut the statistic array in the three pieces, to handle the diffrent values for the translation.
+    my $TitleArrayRef = shift @{ $Param{StatArrayRef} };
+    my $HeadArrayRef  = shift @{ $Param{StatArrayRef} };
+    my $StatArrayRef  = $Param{StatArrayRef};
+
+    my $LanguageObject = $Kernel::OM->Get('Kernel::Language');
+
+    # Find out, if the column or row names should be translated.
+    my %Translation;
+    my %Sort;
+
+    for my $Use (qw( UseAsXvalue UseAsValueSeries )) {
+        if (
+            $Param{StatRef}->{StatType} eq 'dynamic'
+            && $Param{StatRef}->{$Use}
+            && ref( $Param{StatRef}->{$Use} ) eq 'ARRAY'
+            )
+        {
+
+            my @Array = @{ $Param{StatRef}->{$Use} };
+
+            ELEMENT:
+            for my $Element (@Array) {
+                next ELEMENT if !$Element->{Selected};
+
+                if ( $Element->{Translation} && $Element->{Block} eq 'Time' ) {
+                    $Translation{$Use} = 'Time';
+                }
+                elsif ( $Element->{Translation} ) {
+                    $Translation{$Use} = 'Common';
+                }
+                else {
+                    $Translation{$Use} = '';
+                }
+
+                if ( $Element->{Translation} && $Element->{Block} ne 'Time' && !$Element->{SortIndividual} ) {
+                    $Sort{$Use} = 1;
+                }
+
+                last ELEMENT;
+            }
+        }
+    }
+
+    # Check if the axis are changed.
+    if ( $Param{ExchangeAxis} ) {
+        my $UseAsXvalueOld = $Translation{UseAsXvalue};
+        $Translation{UseAsXvalue}      = $Translation{UseAsValueSeries};
+        $Translation{UseAsValueSeries} = $UseAsXvalueOld;
+
+        my $SortUseAsXvalueOld = $Sort{UseAsXvalue};
+        $Sort{UseAsXvalue}      = $Sort{UseAsValueSeries};
+        $Sort{UseAsValueSeries} = $SortUseAsXvalueOld;
+    }
+
+    # Translate the headline array, if all values must be translated and
+    #   otherwise translate only the first value of the header.
+    if ( $Translation{UseAsXvalue} && $Translation{UseAsXvalue} ne 'Time' ) {
+        for my $Word ( @{$HeadArrayRef} ) {
+            $Word = $LanguageObject->Translate($Word);
+        }
+    }
+    else {
+        $HeadArrayRef->[0] = $LanguageObject->Translate( $HeadArrayRef->[0] );
+    }
+
+    # Sort the headline array after translation.
+    if ( $Sort{UseAsXvalue} ) {
+        my @HeadOld = @{$HeadArrayRef};
+
+        # Because the first value is no sortable column name
+        shift @HeadOld;
+
+        # Special handling if the sumfunction is used.
+        my $SumColRef;
+        if ( $Param{StatRef}->{SumRow} ) {
+            $SumColRef = pop @HeadOld;
+        }
+
+        my @SortedHead = sort { $a cmp $b } @HeadOld;
+
+        # Special handling if the sumfunction is used.
+        if ( $Param{StatRef}->{SumCol} ) {
+            push @SortedHead, $SumColRef;
+            push @HeadOld,    $SumColRef;
+        }
+
+        # Add the row names to the new StatArray.
+        my @StatArrayNew;
+        for my $Row ( @{$StatArrayRef} ) {
+            push @StatArrayNew, [ $Row->[0] ];
+        }
+
+        for my $ColumnName (@SortedHead) {
+            my $Counter = 0;
+            COLUMNNAMEOLD:
+            for my $ColumnNameOld (@HeadOld) {
+                $Counter++;
+                next COLUMNNAMEOLD if $ColumnNameOld ne $ColumnName;
+
+                for my $RowLine ( 0 .. $#StatArrayNew ) {
+                    push @{ $StatArrayNew[$RowLine] }, $StatArrayRef->[$RowLine]->[$Counter];
+                }
+                last COLUMNNAMEOLD;
+            }
+        }
+
+        # Bring the data back to the diffrent references.
+        unshift @SortedHead, $HeadArrayRef->[0];
+        @{$HeadArrayRef} = @SortedHead;
+        @{$StatArrayRef} = @StatArrayNew;
+    }
+
+    # Translate the row description.
+    if ( $Translation{UseAsValueSeries} && $Translation{UseAsValueSeries} ne 'Time' ) {
+        for my $Word ( @{$StatArrayRef} ) {
+            $Word->[0] = $LanguageObject->Translate( $Word->[0] );
+        }
+    }
+
+    # Sort the row description.
+    if ( $Sort{UseAsValueSeries} ) {
+
+        # Special handling if the sumfunction is used.
+        my $SumRowArrayRef;
+        if ( $Param{StatRef}->{SumRow} ) {
+            $SumRowArrayRef = pop @{$StatArrayRef};
+        }
+
+        my $DisableDefaultResultSort = grep { $_->{DisableDefaultResultSort} && $_->{DisableDefaultResultSort} == 1 }
+            @{ $Param{StatRef}->{UseAsXvalue} };
+
+        if ( !$DisableDefaultResultSort ) {
+            @{$StatArrayRef} = sort { $a->[0] cmp $b->[0] } @{$StatArrayRef};
+        }
+
+        # Special handling if the sumfunction is used.
+        if ( $Param{StatRef}->{SumRow} ) {
+            push @{$StatArrayRef}, $SumRowArrayRef;
+        }
+    }
+
+    unshift( @{$StatArrayRef}, $TitleArrayRef, $HeadArrayRef );
+
+    return 1;
 }
 
 sub _WriteResultCache {
@@ -3399,7 +3594,7 @@ sub _WriteResultCache {
     return 1;
 }
 
-=item _CreateStaticResultCacheFilename()
+=head2 _CreateStaticResultCacheFilename()
 
 create a filename out of the GetParam information and the stat id
 
@@ -3461,7 +3656,7 @@ sub _CreateStaticResultCacheFilename {
         . '.cache';
 }
 
-=item _SetResultCache()
+=head2 _SetResultCache()
 
 cache the stats result with a given cache key (Filename).
 
@@ -3499,7 +3694,7 @@ sub _SetResultCache {
     return 1;
 }
 
-=item _GetResultCache()
+=head2 _GetResultCache()
 
 get stats result from cache, if any
 
@@ -3536,7 +3731,7 @@ sub _GetResultCache {
     return;
 }
 
-=item _DeleteCache()
+=head2 _DeleteCache()
 
 clean up stats result cache.
 
@@ -3625,7 +3820,7 @@ sub _AutomaticSampleImport {
     return 1;
 }
 
-=item _FromOTRSTimeZone()
+=head2 _FromOTRSTimeZone()
 
 Converts the given date/time string from OTRS time zone to the given time zone.
 
@@ -3665,7 +3860,7 @@ sub _FromOTRSTimeZone {
     return $DateTimeObject->ToString();
 }
 
-=item _ToOTRSTimeZone()
+=head2 _ToOTRSTimeZone()
 
 Converts the given date/time string from the given time zone to OTRS time zone.
 
@@ -3703,7 +3898,7 @@ sub _ToOTRSTimeZone {
     return $DateTimeObject->ToString();
 }
 
-=item _GetCacheString()
+=head2 _GetCacheString()
 
 returns a string that can be used for caching this particular statistic
 with the given parameters.
@@ -3755,7 +3950,7 @@ sub _GetCacheString {
     return $Result;
 }
 
-=item _AddDeltaYMD()
+=head2 _AddDeltaYMD()
 
 Substitute for Date::Pcalc::Add_Delta_YMD() which uses Kernel::System::DateTime.
 
@@ -3797,7 +3992,7 @@ sub _AddDeltaYMD {
     );
 }
 
-=item _AddDeltaDHMS()
+=head2 _AddDeltaDHMS()
 
 Substitute for Date::Pcalc::Add_Delta_DHMS() which uses Kernel::System::DateTime.
 
@@ -3847,7 +4042,7 @@ sub _AddDeltaDHMS {
     );
 }
 
-=item _AddDeltaDays()
+=head2 _AddDeltaDays()
 
 Substitute for Date::Pcalc::Add_Delta_Days() which uses Kernel::System::DateTime.
 
@@ -3887,7 +4082,7 @@ sub _AddDeltaDays {
     );
 }
 
-=item _DaysInMonth()
+=head2 _DaysInMonth()
 
 Substitute for Date::Pcalc::Days_in_Month() which uses Kernel::System::DateTime.
 
@@ -3920,7 +4115,7 @@ sub _DaysInMonth {
     return $LastDayOfMonth->{Day};
 }
 
-=item _DayOfWeek()
+=head2 _DayOfWeek()
 
 Substitute for Date::Pcalc::Day_of_Week() which uses Kernel::System::DateTime.
 
@@ -3953,7 +4148,7 @@ sub _DayOfWeek {
     return $DateTimeValues->{DayOfWeek};
 }
 
-=item _DayOfWeekAbbreviation()
+=head2 _DayOfWeekAbbreviation()
 
 Substitute for Date::Pcalc::Day_of_Week_Abbreviation()
 
@@ -3977,7 +4172,7 @@ sub _DayOfWeekAbbreviation {
     return $DayOfWeekAbbrs{$DayOfWeek};
 }
 
-=item _DayOfWeekToText()
+=head2 _DayOfWeekToText()
 
 Substitute for Date::Pcalc::Day_of_Week_to_Text()
 
@@ -4001,7 +4196,7 @@ sub _DayOfWeekToText {
     return $DayOfWeekTexts{$DayOfWeek};
 }
 
-=item _MondayOfWeek()
+=head2 _MondayOfWeek()
 
 Substitute for Date::Pcalc::Monday_of_Week(), using Kernel::System::DateTime, note different parameters
 
@@ -4038,7 +4233,7 @@ sub _MondayOfWeek {
     return $DateTimeValues->{Day};
 }
 
-=item _WeekOfYear()
+=head2 _WeekOfYear()
 
 Substitute for Date::Pcalc::Week_of_Year(), using Kernel::System::DateTime
 
@@ -4072,11 +4267,71 @@ sub _WeekOfYear {
     );
 }
 
+=head2 _HumanReadableAgeGet()
+
+Re-implementation of L<CustomerAge()|Kernel::Output::HTML::Layout/CustomerAge()> since this object is inaccessible from
+the backend.
+
+TODO: Currently, there is no support for translation of statistic values, it's planned to be implemented later on. For
+the time being, this method will return a string in English only.
+
+    my $HumanReadableAge = $StatsObject->_HumanReadableAgeGet(
+        Age   => 360,
+        Space => ' ',
+    );
+
+Returns (converted seconds in human readable format, i.e. '1 d 2 h'):
+
+    $HumanReadableAge = '6 h',
+
+=cut
+
+sub _HumanReadableAgeGet {
+    my ( $Self, %Param ) = @_;
+
+    my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
+
+    my $Age = defined( $Param{Age} ) ? $Param{Age} : return;
+    my $Space     = $Param{Space} || '<br/>';
+    my $AgeStrg   = '';
+    my $DayDsc    = 'd';
+    my $HourDsc   = 'h';
+    my $MinuteDsc = 'm';
+    if ( $ConfigObject->Get('TimeShowCompleteDescription') ) {
+        $DayDsc    = 'day(s)';
+        $HourDsc   = 'hour(s)';
+        $MinuteDsc = 'minute(s)';
+    }
+    if ( $Age =~ /^-(.*)/ ) {
+        $Age     = $1;
+        $AgeStrg = '-';
+    }
+
+    # get days
+    if ( $Age >= 86400 ) {
+        $AgeStrg .= int( ( $Age / 3600 ) / 24 ) . ' ';
+        $AgeStrg .= $DayDsc;
+        $AgeStrg .= $Space;
+    }
+
+    # get hours
+    if ( $Age >= 3600 ) {
+        $AgeStrg .= int( ( $Age / 3600 ) % 24 ) . ' ';
+        $AgeStrg .= $HourDsc;
+        $AgeStrg .= $Space;
+    }
+
+    # get minutes (just if age < 1 day)
+    if ( $ConfigObject->Get('TimeShowAlwaysLong') || $Age < 86400 ) {
+        $AgeStrg .= int( ( $Age / 60 ) % 60 ) . ' ';
+        $AgeStrg .= $MinuteDsc;
+    }
+    return $AgeStrg;
+}
+
 1;
 
 =end Internal:
-
-=back
 
 =head1 TERMS AND CONDITIONS
 

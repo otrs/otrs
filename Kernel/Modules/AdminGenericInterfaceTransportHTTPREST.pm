@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -338,36 +338,6 @@ sub _ShowEdit {
     $Param{X509CAFile}     = $TransportConfig->{X509}->{X509CAFile};
     $Param{KeepAlive}      = $TransportConfig->{KeepAlive};
     $Param{MaxLength}      = $TransportConfig->{MaxLength};
-
-    # call bread crumbs blocks
-    $LayoutObject->Block(
-        Name => 'WebservicePathElement',
-        Data => {
-            Name => 'Web Services',
-            Link => 'Action=AdminGenericInterfaceWebservice',
-            Nav  => '',
-        },
-    );
-    $LayoutObject->Block(
-        Name => 'WebservicePathElement',
-        Data => {
-            Name => $Param{WebserviceName},
-            Link => 'Action=AdminGenericInterfaceWebservice;Subaction=' . $Param{Action}
-                . ';WebserviceID=' . $Param{WebserviceID},
-            Nav => '',
-        },
-    );
-
-    $LayoutObject->Block(
-        Name => 'WebservicePathElement',
-        Data => {
-            Name => $Param{CommunicationType} . ' Transport ' . $Param{Type},
-            Link => 'Action=AdminGenericInterfaceTransportHTTPREST;Subaction=' . $Param{Action}
-                . ';CommunicationType=' . $Param{CommunicationType}
-                . ';WebserviceID=' . $Param{WebserviceID},
-            Nav => '',
-        },
-    );
 
     my @PossibleRequestMethods = qw(GET POST PUT PATCH DELETE HEAD OPTIONS CONNECT TRACE);
 

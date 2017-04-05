@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -10,6 +10,25 @@
 <div class="MainBox ARIARoleMain LayoutFixedSidebar SidebarFirst">
     <h1>[% Translate("Signature Management") | html %]</h1>
 
+    [% BreadcrumbPath = [
+            {
+                Name => Translate('Signature Management'),
+                Link => Env("Action"),
+            },
+        ]
+    %]
+
+    [% SWITCH Data.Action %]
+        [% CASE 'Add' %]
+            [% BreadcrumbPath.push({ Name => Translate("Add Signature"),}) %]
+        [% CASE 'Change' %]
+            [% USE EditTitle = String(Translate("Edit Signature")) %]
+            [% BreadcrumbPath.push({ Name => EditTitle.append( ': ', Data.Name ) }) %]
+    [% END %]
+
+    [% INCLUDE "Breadcrumb.tt" Path = BreadcrumbPath %]
+
+    <div class="Clear"></div>
     <div class="SidebarColumn">
 [% RenderBlockStart("ActionList") %]
         <div class="WidgetSimple">
@@ -92,12 +111,11 @@
 [% RenderBlockStart("OverviewUpdate") %]
         <div class="WidgetSimple">
             <div class="Header">
-[% RenderBlockStart("HeaderAdd") %]
+            [% IF Data.Action == 'Add' %]
                 <h2>[% Translate("Add Signature") | html %]</h2>
-[% RenderBlockEnd("HeaderAdd") %]
-[% RenderBlockStart("HeaderEdit") %]
+            [% ELSE %]
                 <h2>[% Translate("Edit Signature") | html %]</h2>
-[% RenderBlockEnd("HeaderEdit") %]
+            [% END %]
             </div>
             <div class="Content">
 
@@ -105,6 +123,9 @@
                     <input type="hidden" name="Action" value="[% Env("Action") %]"/>
                     <input type="hidden" name="Subaction" value="[% Data.Action | uri %]Action"/>
                     <input type="hidden" name="ID" value="[% Data.ID | html %]"/>
+                    [% IF Data.Action == 'Change' %]
+                        <input type="hidden" name="ContinueAfterSave" id="ContinueAfterSave" value=""/>
+                    [% END %]
                     <fieldset class="TableLike">
                         <label class="Mandatory" for="Name"><span class="Marker">*</span> [% Translate("Name") | html %]:</label>
                         <div class="Field">
@@ -120,7 +141,8 @@
 
                         <label for="RichText">[% Translate("Signature") | html %]:</label>
                         <div class="RichTextField">
-                            <textarea id="RichText" class="RichText" rows="10" cols="60" name="Text">[% Data.Text | html %]</textarea>
+                            [%# Textareas always swallow the first newline from their data, therefore we must prepend one since we want to preserve white space. %]
+                            <textarea id="RichText" class="RichText" rows="10" cols="60" name="Text">[% "\n" _ Data.Text | html %]</textarea>
                         </div>
                         <div class="Clear"></div>
 
@@ -143,7 +165,13 @@
                         <div class="Clear"></div>
 
                         <div class="Field">
-                            <button class="Primary CallForAction" type="submit" value="[% Translate("Save") | html %]"><span>[% Translate("Save") | html %]</span></button>
+                            [% IF Data.Action == 'Change' %]
+                                <button class="CallForAction Primary" id="SubmitAndContinue" type="button" value="[% Translate("Save") | html %]"><span>[% Translate("Save") | html %]</span></button>
+                                [% Translate("or") | html %]
+                                <button class="CallForAction Primary" id="Submit" type="submit" value="[% Translate("Save") | html %]"><span>[% Translate("Save and finish") | html %]</span></button>
+                            [% ELSE %]
+                                <button class="CallForAction Primary" id="Submit" type="submit" value="[% Translate("Save") | html %]"><span>[% Translate("Save") | html %]</span></button>
+                            [% END %]
                             [% Translate("or") | html %]
                             <a href="[% Env("Baselink") %]Action=[% Env("Action") %]">[% Translate("Cancel") | html %]</a>
                         </div>

@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -12,15 +12,16 @@ use utf8;
 
 use vars (qw($Self));
 
-# get needed objects
-my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
-my $XMLObject    = $Kernel::OM->Get('Kernel::System::XML');
-my $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
+my $ConfigObject  = $Kernel::OM->Get('Kernel::Config');
+my $XMLObject     = $Kernel::OM->Get('Kernel::System::XML');
+my $TicketObject  = $Kernel::OM->Get('Kernel::System::Ticket');
+my $ArticleObject = $Kernel::OM->Get('Kernel::System::Ticket::Article');
 
 # get helper object
 $Kernel::OM->ObjectParamAdd(
     'Kernel::System::UnitTest::Helper' => {
-        RestoreDatabase => 1,
+        RestoreDatabase  => 1,
+        UseTmpArticleDir => 1,
     },
 );
 my $Helper = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
@@ -608,7 +609,7 @@ if ( open( my $DATA, "<", "$Path/$File" ) ) {    ## no critic
         'XMLParse2XMLHash() - charset test - create ticket',
     );
 
-    my $ArticleID = $TicketObject->ArticleCreate(
+    my $ArticleID = $ArticleObject->ArticleCreate(
         TicketID    => $TicketID,
         ArticleType => 'note-internal',
         SenderType  => 'agent',
@@ -631,7 +632,7 @@ if ( open( my $DATA, "<", "$Path/$File" ) ) {    ## no critic
         'XMLParse2XMLHash() - charset test - create article',
     );
 
-    my $Feedback = $TicketObject->ArticleWriteAttachment(
+    my $Feedback = $ArticleObject->ArticleWriteAttachment(
         Content     => $String,
         ContentType => 'text/html; charset="iso-8859-15"',
         Filename    => $File,
@@ -643,7 +644,7 @@ if ( open( my $DATA, "<", "$Path/$File" ) ) {    ## no critic
         'XMLParse2XMLHash() - charset test - write an article attachment to storage',
     );
 
-    my %Attachment = $TicketObject->ArticleAttachment(
+    my %Attachment = $ArticleObject->ArticleAttachment(
         ArticleID => $ArticleID,
         FileID    => 1,
         UserID    => 1,
