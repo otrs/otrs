@@ -373,6 +373,19 @@
         </Setting>
     </ConfigItem>
 
+    <ConfigItem Name="GenericInterface::Operation::Module###Session::SessionGetIDData" Required="0" Valid="1">
+        <Description Translatable="1">GenericInterface module registration for the operation layer.</Description>
+        <Group>GenericInterface</Group>
+        <SubGroup>GenericInterface::Operation::ModuleRegistration</SubGroup>
+        <Setting>
+            <Hash>
+                <Item Key="Name">SessionGetIDData</Item>
+                <Item Key="Controller">Session</Item>
+                <Item Key="ConfigDialog">AdminGenericInterfaceOperationDefault</Item>
+            </Hash>
+        </Setting>
+    </ConfigItem>
+
     <ConfigItem Name="GenericInterface::Operation::Module###Ticket::TicketCreate" Required="0" Valid="1">
         <Description Translatable="1">GenericInterface module registration for the operation layer.</Description>
         <Group>GenericInterface</Group>
@@ -380,6 +393,18 @@
         <Setting>
             <Hash>
                 <Item Key="Name">TicketCreate</Item>
+                <Item Key="Controller">Ticket</Item>
+                <Item Key="ConfigDialog">AdminGenericInterfaceOperationDefault</Item>
+            </Hash>
+        </Setting>
+    </ConfigItem>
+    <ConfigItem Name="GenericInterface::Operation::Module###Ticket::TicketSend" Required="0" Valid="1">
+        <Description Translatable="1">GenericInterface module registration for the operation layer.</Description>
+        <Group>GenericInterface</Group>
+        <SubGroup>GenericInterface::Operation::ModuleRegistration</SubGroup>
+        <Setting>
+            <Hash>
+                <Item Key="Name">TicketSend</Item>
                 <Item Key="Controller">Ticket</Item>
                 <Item Key="ConfigDialog">AdminGenericInterfaceOperationDefault</Item>
             </Hash>
@@ -452,6 +477,39 @@
         <SubGroup>GenericInterface::Operation::TicketCreate</SubGroup>
         <Setting>
             <String Regex="">auto reply</String>
+        </Setting>
+    </ConfigItem>
+
+    <ConfigItem Name="GenericInterface::Operation::TicketSend###ArticleType" Required="1" Valid="1">
+        <Description Translatable="1">Defines the default type of the article for this operation.</Description>
+        <Group>GenericInterface</Group>
+        <SubGroup>GenericInterface::Operation::TicketSend</SubGroup>
+        <Setting>
+            <String Regex="">email-external</String>
+        </Setting>
+    </ConfigItem>
+    <ConfigItem Name="GenericInterface::Operation::TicketSend###HistoryType" Required="1" Valid="1">
+        <Description Translatable="1">Defines the history type for this operation, which gets used for ticket history in the agent interface.</Description>
+        <Group>GenericInterface</Group>
+        <SubGroup>GenericInterface::Operation::TicketSend</SubGroup>
+        <Setting>
+            <String Regex="">NewTicket</String>
+        </Setting>
+    </ConfigItem>
+    <ConfigItem Name="GenericInterface::Operation::TicketSend###HistoryComment" Required="1" Valid="1">
+        <Description Translatable="1">Defines the history comment for this operation, which gets used for ticket history in the agent interface.</Description>
+        <Group>GenericInterface</Group>
+        <SubGroup>GenericInterface::Operation::TicketSend</SubGroup>
+        <Setting>
+            <String Regex="">%%GenericInterface Send</String>
+        </Setting>
+    </ConfigItem>
+    <ConfigItem Name="GenericInterface::Operation::TicketSend###AutoResponseType" Required="1" Valid="1">
+        <Description Translatable="1">Defines the default auto response type of the article for this operation.</Description>
+        <Group>GenericInterface</Group>
+        <SubGroup>GenericInterface::Operation::TicketSend</SubGroup>
+        <Setting>
+           <String Regex="">auto follow up</String>
         </Setting>
     </ConfigItem>
 
