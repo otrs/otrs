@@ -88,10 +88,17 @@ Core.UI.Dialog = (function (TargetNS) {
      *      Focuses the first element within the dialog.
      */
     function FocusFirstElement() {
-        $('div.Dialog:visible .Content')
-            .find('a:visible, input:visible, textarea:visible, select:visible, button:visible')
-            .filter(':first')
-            .focus();
+        var FirstElement = $('div.Dialog:visible .Content').find('a:visible, input:visible, textarea:visible, select:visible, button:visible').filter(':first'),
+            FocusField;
+
+        // Check if found first element is modernize input field, prepend input field which is behind modernize field and set focus on it allowing navigation.
+        if (FirstElement.closest('.Field').find('.Modernize').length) {
+            FocusField = FirstElement.parent();
+            $('<input>').attr('class','FocusField').prependTo(FocusField);
+            FirstElement = $('div.Dialog:visible .Content').find('a:visible, input:visible, textarea:visible, select:visible, button:visible').filter(':first');
+        }
+
+        FirstElement.focus();
     }
 
     /**
