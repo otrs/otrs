@@ -20,6 +20,7 @@ use Kernel::System::VariableCheck qw(:all);
 
 our @ObjectDependencies = (
     'Kernel::Config',
+    'Kernel::Language',
     'Kernel::System::Cache',
     'Kernel::System::CustomerUser',
     'Kernel::System::DB',
@@ -2317,7 +2318,7 @@ sub ArticleSend {
     # return if no mail was able to send
     if ( !$HeadRef || !$BodyRef ) {
         $Kernel::OM->Get('Kernel::System::Log')->Log(
-            Message  => "Impossible to send message to: $Param{'To'} .",
+            Message  => $Kernel::OM->Get('Kernel::Language')->Translate('Impossible to send message to: %s', $Param{'To'}),
             Priority => 'error',
         );
         return;
