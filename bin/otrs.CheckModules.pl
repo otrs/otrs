@@ -113,6 +113,11 @@ my @NeededModules = (
         Comment  => 'Required to handle mails with several Chinese character sets.',
     },
     {
+        Module   => 'FCGI',
+        Required => 0,
+        Comment  => 'Required for nginx and fastcgi',
+    },
+    {
         Module   => 'GD',
         Required => 0,
         Comment  => 'Required for stats.',
