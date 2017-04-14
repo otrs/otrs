@@ -215,6 +215,9 @@ sub Sync {
     my $UserSyncMap = $ConfigObject->Get( 'AuthSyncModule::LDAP::UserSyncMap' . $Self->{Count} );
     if ($UserSyncMap) {
 
+        # if defined, sync all user ldap attributes to user preferences
+        my $SetPreferences = $ConfigObject->Get( 'AuthSyncModule::LDAP::SetPreferences' . $Self->{Count} );
+
         # get whole user dn
         my %SyncUser;
         for my $Entry ( $Result->all_entries() ) {
@@ -283,41 +286,45 @@ sub Sync {
                 $LDAP->unbind();
                 return;
             }
-            else {
-                $Kernel::OM->Get('Kernel::System::Log')->Log(
-                    Priority => 'notice',
-                    Message  => "Initial data for '$Param{User}' ($UserDN) created in RDBMS.",
-                );
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
+                Priority => 'notice',
+                Message  => "Initial data for '$Param{User}' ($UserDN) created in RDBMS.",
+            );
 
-                # sync initial groups
-                my $UserSyncInitialGroups = $ConfigObject->Get(
-                    'AuthSyncModule::LDAP::UserSyncInitialGroups' . $Self->{Count}
-                );
-                if ($UserSyncInitialGroups) {
-                    GROUP:
-                    for my $Group ( @{$UserSyncInitialGroups} ) {
+            # sync initial groups
+            my $UserSyncInitialGroups = $ConfigObject->Get(
+                'AuthSyncModule::LDAP::UserSyncInitialGroups' . $Self->{Count}
+            );
+            if ($UserSyncInitialGroups) {
+                GROUP:
+                for my $Group ( @{$UserSyncInitialGroups} ) {
 
-                        # only for valid groups
-                        if ( !$SystemGroupsByName{$Group} ) {
-                            $Kernel::OM->Get('Kernel::System::Log')->Log(
-                                Priority => 'notice',
-                                Message =>
-                                    "Invalid group '$Group' in "
-                                    . "'AuthSyncModule::LDAP::UserSyncInitialGroups"
-                                    . "$Self->{Count}'!",
-                            );
-                            next GROUP;
-                        }
-
-                        $GroupObject->PermissionGroupUserAdd(
-                            GID        => $SystemGroupsByName{$Group},
-                            UID        => $UserID,
-                            Permission => {
-                                rw => 1,
-                            },
-                            UserID => 1,
+                    # only for valid groups
+                    if ( !$SystemGroupsByName{$Group} ) {
+                        $Kernel::OM->Get('Kernel::System::Log')->Log(
+                            Priority => 'notice',
+                            Message =>
+                                "Invalid group '$Group' in "
+                                . "'AuthSyncModule::LDAP::UserSyncInitialGroups"
+                                . "$Self->{Count}'!",
                         );
+                        next GROUP;
                     }
+
+                    $GroupObject->PermissionGroupUserAdd(
+                        GID        => $SystemGroupsByName{$Group},
+                        UID        => $UserID,
+                        Permission => {
+                            rw => 1,
+                        },
+                        UserID => 1,
+                    );
+                }
+            }
+
+            if ($SetPreferences) {
+                while (my ($k, $v) = each %SyncUser) {
+                    $UserObject->SetPreferences(Key=>$k, Value=>$v, UserID=>$UserID);
                 }
             }
         }
@@ -332,9 +339,10 @@ sub Sync {
             my $AttributeChange;
             ATTRIBUTE:
             for my $Attribute ( sort keys %SyncUser ) {
-                next ATTRIBUTE if $SyncUser{$Attribute} eq $UserData{$Attribute};
-                $AttributeChange = 1;
-                last ATTRIBUTE;
+                if (!defined $UserData{$Attribute} || ($SyncUser{$Attribute} ne $UserData{$Attribute})) {
+                    $AttributeChange = 1;
+                    last ATTRIBUTE;
+                }
             }
 
             if ($AttributeChange) {
@@ -346,6 +354,12 @@ sub Sync {
                     UserType     => 'User',
                     ChangeUserID => 1,
                 );
+
+                if ($SetPreferences) {
+                    while (my ($k, $v) = each %SyncUser) {
+                        $UserObject->SetPreferences(Key=>$k, Value=>$v, UserID=>$UserID);
+                    }
+                }
             }
         }
     }
