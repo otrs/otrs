@@ -218,6 +218,9 @@ sub Sync {
         # if defined, sync all user ldap attributes to user preferences
         my $SetPreferences = $ConfigObject->Get( 'AuthSyncModule::LDAP::SetPreferences' . $Self->{Count} );
 
+        # if defined, sync all user ldap attributes to user preferences
+        my $SetPreferences = $ConfigObject->Get( 'AuthSyncModule::LDAP::SetPreferences' . $Self->{Count} );
+
         # get whole user dn
         my %SyncUser;
         for my $Entry ( $Result->all_entries() ) {
