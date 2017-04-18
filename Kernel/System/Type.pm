@@ -82,7 +82,7 @@ sub TypeAdd {
         $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'error',
             Message  => $Kernel::OM->Get('Kernel::Language')
-                ->Translate( 'A type with name "%s" already exists!', $Param{Name} ),
+                ->Translate( 'A type with name "%s" already exists.', $Param{Name} ),
         );
         return;
     }
@@ -269,7 +269,7 @@ sub TypeUpdate {
         $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'error',
             Message  => $Kernel::OM->Get('Kernel::Language')
-                ->Translate( 'A type with name "%s" already exists!', $Param{Name} ), 
+                ->Translate( 'A type with name "%s" already exists.', $Param{Name} ), 
         );
         return;
     }
