@@ -74,7 +74,7 @@ our %InstTypeToCMD = (
         CMD       => 'cd /usr/ports %s',
         SubCMD    => ' && make -C %s install clean',
         UseModule => 0,
-    }
+    },
     default => {
         CMD => 'cpan %s',
     },
@@ -106,7 +106,8 @@ our %DistToInstType = (
 
 our $OSDist;
 eval {
-    use Linux::Distribution;
+    require Linux::Distribution;
+    import  Linux::Distribution;
     $OSDist = Linux::Distribution::distribution_name() || '';
 };
 if (!defined $OSDist) {
@@ -251,7 +252,7 @@ my @NeededModules = (
         InstTypes => {
             aptget => 'libdbi-perl',
             emerge => 'dev-perl/DBI',
-            zypper => 'perl-DBI'
+            zypper => 'perl-DBI',
             ports  => 'databases/p5-DBI',
         },
     },
@@ -262,7 +263,7 @@ my @NeededModules = (
         InstTypes => {
             aptget => 'libdbd-mysql-perl',
             emerge => 'dev-perl/DBD-mysql',
-            zypper => 'perl-DBD-mysql'
+            zypper => 'perl-DBD-mysql',
             ports  => 'databases/p5-DBD-mysql',
         },
     },
@@ -314,7 +315,7 @@ my @NeededModules = (
         InstTypes => {
             aptget => 'libdigest-sha-perl',
             emerge => 'dev-perl/Digest-SHA',
-            zypper => 'perl-Digest-SHA'
+            zypper => 'perl-Digest-SHA',
             ports  => 'security/p5-Digest-SHA'
         },
     },
