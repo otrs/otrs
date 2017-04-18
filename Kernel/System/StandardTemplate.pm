@@ -79,7 +79,8 @@ sub StandardTemplateAdd {
     if ( $Self->NameExistsCheck( Name => $Param{Name} ) ) {
         $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'error',
-            Message  => "A standard template with name '$Param{Name}' already exists!"
+            Message  => $Kernel::OM->Get('Kernel::Language')
+                ->Translate( 'A standard template with name "%s" already exists!', $Param{Name} ), 
         );
         return;
     }
@@ -279,7 +280,8 @@ sub StandardTemplateUpdate {
     {
         $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'error',
-            Message  => "A standard template with name '$Param{Name}' already exists!"
+            Message  => $Kernel::OM->Get('Kernel::Language')
+                ->Translate( 'A standard template with name "%s" already exists!', $Param{Name} ), 
         );
         return;
     }
