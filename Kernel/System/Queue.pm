@@ -816,7 +816,8 @@ sub QueueAdd {
     if ( $Self->NameExistsCheck( Name => $Param{Name} ) ) {
         $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'error',
-            Message  => "A queue with name '$Param{Name}' already exists!"
+            Message  => $Kernel::OM->Get('Kernel::Language')
+                ->Translate( 'A queue with the name "%s" already exists.', $Param{Name} ),
         );
         return;
     }
@@ -1171,7 +1172,8 @@ sub QueueUpdate {
     {
         $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'error',
-            Message  => "A queue with name '$Param{Name}' already exists!"
+            Message  => $Kernel::OM->Get('Kernel::Language')
+                ->Translate( 'A queue with the name "%s" already exists.', $Param{Name} ),
         );
         return;
     }
