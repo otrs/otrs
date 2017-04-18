@@ -1396,7 +1396,7 @@ sub QueryCondition {
         # and the parameter $CaseSensitive defines, if the customer database should do case sensitive statements or not.
         # so if the database dont support case sensitivity or the configuration of the customer database want to do this
         # then we prevent the LOWER() statements.
-                    if ( !$Self->GetDatabaseFunction('CaseSensitive') || $CaseSensitive ) {
+                    if ( $Self->GetDatabaseFunction('CaseSensitive') || $CaseSensitive ) {
                         $SQLA .= "$Key $Type $WordSQL";
                     }
                     elsif ( $Self->GetDatabaseFunction('LcaseLikeInLargeText') ) {
@@ -1445,7 +1445,7 @@ sub QueryCondition {
         # and the parameter $CaseSensitive defines, if the customer database should do case sensitive statements or not.
         # so if the database dont support case sensitivity or the configuration of the customer database want to do this
         # then we prevent the LOWER() statements.
-                    if ( !$Self->GetDatabaseFunction('CaseSensitive') || $CaseSensitive ) {
+                    if ( $Self->GetDatabaseFunction('CaseSensitive') || $CaseSensitive ) {
                         $SQLA .= "$Key $Type $WordSQL";
                     }
                     elsif ( $Self->GetDatabaseFunction('LcaseLikeInLargeText') ) {
