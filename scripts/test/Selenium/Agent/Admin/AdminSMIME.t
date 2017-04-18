@@ -54,6 +54,9 @@ $Selenium->RunTest(
             Value => 0
         );
 
+        # let mod_perl / Apache2::Reload pick up the changed configuration
+        sleep 3;
+
         # navigate to AdminSMIME screen
         $Selenium->VerifiedGet("${ScriptAlias}index.pl?Action=AdminSMIME");
 
