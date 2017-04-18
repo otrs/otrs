@@ -44,6 +44,7 @@
 #PreLogin {
     width: 500px;
     height: 260px;
+    padding-top: 5px;
     padding-left: 142px;
     position: relative;
 }
