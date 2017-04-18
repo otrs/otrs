@@ -86,6 +86,9 @@ sub Run {
         {
             $Errors{NameInvalid} = 'ServerError';
             $Errors{ErrorType}   = $CheckItemObject->CheckErrorType();
+        } elsif ($SystemAddressObject->SystemAddressIsLocalAddress( Address => $GetParam{Name} )) {
+            $Errors{NameInvalid} = 'ServerError';
+            $Errors{ErrorType} = 'AlreadyUsed';
         }
 
         # if no errors occurred
