@@ -245,8 +245,9 @@ sub CustomerSearch {
         );
 
         $SQL .= $QueryCondition{SQL};
-        push @Bind, @{ $QueryCondition{Values} };
-
++       if( $QueryCondition{Values} ){
++           push @Bind, @{ $QueryCondition{Values} };
++       }
         $SQL .= ' ';
     }
     elsif ( $Param{PostMasterSearch} ) {
