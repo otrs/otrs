@@ -286,7 +286,7 @@ Core.Agent.TicketAction = (function (TargetNS) {
             }
 
             if ($WidgetElement.hasClass('Expanded')) {
-                // if widget is being opened, add checbkox to create article
+                // if widget is being opened, add checkbox to create article
                 $('#CreateArticle').prop('checked', true);
             }
         });
