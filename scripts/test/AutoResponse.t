@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -13,6 +13,7 @@ use utf8;
 use vars (qw($Self));
 
 # get needed objects
+my $ConfigObject        = $Kernel::OM->Get('Kernel::Config');
 my $AutoResponseObject  = $Kernel::OM->Get('Kernel::System::AutoResponse');
 my $SystemAddressObject = $Kernel::OM->Get('Kernel::System::SystemAddress');
 my $QueueObject         = $Kernel::OM->Get('Kernel::System::Queue');
@@ -20,7 +21,8 @@ my $QueueObject         = $Kernel::OM->Get('Kernel::System::Queue');
 # get helper object
 $Kernel::OM->ObjectParamAdd(
     'Kernel::System::UnitTest::Helper' => {
-        RestoreDatabase => 1,
+        RestoreDatabase  => 1,
+        UseTmpArticleDir => 1,
     },
 );
 my $HelperObject = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
@@ -36,12 +38,12 @@ my $QueueID = $QueueObject->QueueAdd(
     Name                => $QueueName,
     ValidID             => 1,
     GroupID             => 1,
-    FirstResponseTime   => 30,
-    FirstResponseNotify => 70,
-    UpdateTime          => 240,
-    UpdateNotify        => 80,
-    SolutionTime        => 2440,
-    SolutionNotify      => 90,
+    FirstResponseTime   => 0,
+    FirstResponseNotify => 0,
+    UpdateTime          => 0,
+    UpdateNotify        => 0,
+    SolutionTime        => 0,
+    SolutionNotify      => 0,
     SystemAddressID     => 1,
     SalutationID        => 1,
     SignatureID         => 1,
@@ -52,6 +54,32 @@ my $QueueID = $QueueObject->QueueAdd(
 $Self->True(
     $QueueID,
     "QueueAdd() - $QueueName, $QueueID",
+);
+
+# use Test email backend
+$ConfigObject->Set(
+    Key   => 'SendmailModule',
+    Value => 'Kernel::System::Email::Test',
+);
+$ConfigObject->Set(
+    Key   => 'CheckEmailAddresses',
+    Value => '0',
+);
+
+my $CustomerUserID = $Kernel::OM->Get('Kernel::System::CustomerUser')->CustomerUserAdd(
+    Source         => 'CustomerUser',
+    UserFirstname  => 'John',
+    UserLastname   => 'Doe',
+    UserCustomerID => "Customer#$RandomID",
+    UserLogin      => "CustomerLogin#$RandomID",
+    UserEmail      => "customer$RandomID\@example.com",
+    UserPassword   => 'some_pass',
+    ValidID        => 1,
+    UserID         => 1,
+);
+$Self->True(
+    $CustomerUserID,
+    "Customer created."
 );
 
 # add system address
@@ -188,6 +216,97 @@ for my $TypeID ( sort keys %AutoResponseType ) {
             $AutoResponseData{$Item} || '',
             $Tests{ExpextedData}{$Item},
             "AutoResponseGetByTypeQueueID() - $Item",
+        );
+    }
+
+    if ( $TypeID == 1 ) {
+
+        # auto-reply
+
+        my $TicketObject         = $Kernel::OM->Get('Kernel::System::Ticket');
+        my $ArticleBackendObject = $Kernel::OM->Get('Kernel::System::Ticket::Article')->BackendForChannel(
+            ChannelName => 'Email',
+        );
+
+        # create a new ticket
+        my $TicketID = $TicketObject->TicketCreate(
+            Title        => 'Some Ticket Title',
+            QueueID      => $QueueID,
+            Lock         => 'unlock',
+            Priority     => '3 normal',
+            State        => 'new',
+            CustomerID   => "Customer#$RandomID",
+            CustomerUser => "CustomerLogin#$RandomID",
+            OwnerID      => 1,
+            UserID       => 1,
+        );
+        $Self->IsNot(
+            $TicketID,
+            undef,
+            'TicketCreate() - TicketID should not be undef',
+        );
+
+        my $ArticleID1 = $ArticleBackendObject->ArticleCreate(
+            TicketID             => $TicketID,
+            IsVisibleForCustomer => 0,
+            SenderType           => 'agent',
+            From                 => 'Some Agent <otrs@example.com>',
+            To                   => 'Suplier<suplier@example.com>',
+            Subject              => 'Email for suplier',
+            Body                 => 'the message text',
+            Charset              => 'utf8',
+            MimeType             => 'text/plain',
+            HistoryType          => 'OwnerUpdate',
+            HistoryComment       => 'Some free text!',
+            UserID               => 1,
+        );
+        $Self->True(
+            $ArticleID1,
+            "First article created."
+        );
+
+        my $TestEmailObject = $Kernel::OM->Get('Kernel::System::Email::Test');
+        my $CleanUpSuccess  = $TestEmailObject->CleanUp();
+        $Self->True(
+            $CleanUpSuccess,
+            'Cleanup Email backend',
+        );
+
+        my $ArticleID2 = $ArticleBackendObject->ArticleCreate(
+            TicketID             => $TicketID,
+            IsVisibleForCustomer => 0,
+            SenderType           => 'customer',
+            From                 => 'Suplier<suplier@example.com>',
+            To                   => 'Some Agent <otrs@example.com>',
+            Subject              => 'some short description',
+            Body                 => 'the message text',
+            Charset              => 'utf8',
+            MimeType             => 'text/plain',
+            HistoryType          => 'OwnerUpdate',
+            HistoryComment       => 'Some free text!',
+            UserID               => 1,
+            AutoResponseType     => 'auto reply',
+            OrigHeader           => {
+                From    => 'Some Agent <otrs@example.com>',
+                Subject => 'some short description',
+            },
+        );
+
+        $Self->True(
+            $ArticleID2,
+            "Second article created."
+        );
+
+        # check that email was sent
+        my $Emails = $TestEmailObject->EmailsGet();
+
+        # Make sure that auto-response is not sent to the customer (in CC) - See bug#12293
+        $Self->IsDeeply(
+            $Emails->[0]->{ToArray},
+            [
+                'otrs@example.com'
+            ],
+            'Check AutoResponse recipients.'
         );
     }
 

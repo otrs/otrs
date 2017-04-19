@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -45,6 +45,15 @@
                         <label>[% Translate("State") | html %]:</label>
                         <p class="Value" title="[% Translate(Data.State) | html %]">[% Translate(Data.State) | html %]</p>
                         <div class="Clear"></div>
+[% RenderBlockStart("PendingUntil") %]
+                        <label>[% Translate("Pending till") | html %]:</label>
+                        <p class="Value [% Data.PendingUntilClass | html %]">
+                            [% Data.PendingUntil %]
+                            <br/>
+                            [% Data.UntilTimeHuman | Localize("TimeShort") %]
+                        </p>
+                        <div class="Clear"></div>
+[% RenderBlockEnd("PendingUntil") %]
 
                         <label>[% Translate("Locked") | html %]:</label>
                         <p class="Value" title="[% Translate(Data.Lock) | html %]">[% Translate(Data.Lock) | html %]</p>
@@ -107,37 +116,72 @@
                     </fieldset>
 
                     <fieldset class="TableLike FixedLabelSmall Narrow">
-                        <label>[% Translate("CustomerID") | html %]:</label>
+                        <label>[% Translate("Customer ID") | html %]:</label>
                         <p class="Value">
-                            <a href="[% Config("CustomerDBLink") | Interpolate %]" class="[% Config("CustomerDBLinkClass") %]" [% Config("CustomerDBLinkTarget") %]>[% Data.CustomerID | html %]</a>
+                            <a href="[% Config("CustomerDBLink") | Interpolate %]" class="[% Config("CustomerDBLinkClass") %]" [% Config("CustomerDBLinkTarget") %]>[% Data.CustomerID | html %]</a>[% RenderBlockStart("CustomerIDTickets") %] - <a href="[% Env("Baselink") %]Action=AgentTicketSearch;Subaction=Search;CustomerID=[% Data.CustomerID | uri %]">[% Translate("%s Ticket(s)", Data.CustomerIDTickets) | html %]</a>[% RenderBlockEnd("CustomerIDTickets") %]
                         </p>
                         <div class="Clear"></div>
+
 [% RenderBlockStart("TotalAccountedTime") %]
                         <label>[% Translate("Accounted time") | html %]:</label>
                         <p class="Value">[% Data.TicketTimeUnits %]</p>
                         <div class="Clear"></div>
 
 [% RenderBlockEnd("TotalAccountedTime") %]
-[% RenderBlockStart("PendingUntil") %]
-                        <label>[% Translate("Pending till") | html %]:</label>
-                        <p class="Value [% Data.PendingUntilClass | html %]">
-                            [% Data.PendingUntil %]
-                            <br/>
-                            [% Data.UntilTimeHuman | Localize("TimeShort") %]
-                        </p>
-                        <div class="Clear"></div>
-[% RenderBlockEnd("PendingUntil") %]
 [% RenderBlockStart("Owner") %]
                         <label>[% Translate("Owner") | html %]:</label>
-                        <p class="Value" title="[% Data.UserFullname | html %] [% Data.OutOfOfficeMessage | html %] ([% Data.UserLogin | html %])">[% Data.UserFullname | html %] [% Data.OutOfOfficeMessage | html %]</p>
+                        <p class="Value" title="[% Data.UserFullname | html %] [% Data.OutOfOfficeMessage | html %] ([% Data.UserLogin | html %])">
+                            [% IF Data.EnableChat %]
+                            <span class="UserStatusIcon [% Data.UserState | html %]">
+                                <i class="fa fa-circle" title="[% Data.UserStateDescription | html %]"></i>
+                            </span>
+                            [% END %]
+                            [% Data.UserFullname | html %] [% Data.OutOfOfficeMessage | html %]
+                            [% IF Data.AgentEnableChat && Data.UserID != Env('UserID') %]
+                            <span class="UserChatIcons Block Hidden">
+                                <a href="#" title="[% Translate("Start chat") | html %]" type="button" class="UserChatStart" data-user-id="[% Data.UserID | html %]" data-user-type="User" data-user-fullname="[% Data.UserFullname | html %]" data-ticket-id="[% Data.TicketID | html %]">
+                                    <i class="fa fa-comments"></i>
+                                </a>
+                                [% IF Data.VideoChatEnabled %]
+                                <a href="#" title="[% Translate("Video call") | html %]" type="button" class="UserVideoCallStart[% IF !Data.VideoChatAvailable %] Unavailable[% ELSIF !Data.VideoChatSupport %] Unsupported[% END %]" data-user-id="[% Data.UserID | html %]" data-user-type="User" data-user-fullname="[% Data.UserFullname | html %]" data-ticket-id="[% Data.TicketID | html %]">
+                                    <i class="fa fa-video-camera"></i>
+                                </a>
+                                <a href="#" title="[% Translate("Audio call") | html %]" type="button" class="UserAudioCallStart[% IF !Data.VideoChatAvailable %] Unavailable[% ELSIF !Data.VideoChatSupport %] Unsupported[% END %]" data-user-id="[% Data.UserID | html %]" data-user-type="User"  data-user-fullname="[% Data.UserFullname | html %]" data-ticket-id="[% Data.TicketID | html %]">
+                                    <i class="fa fa-microphone"></i>
+                                </a>
+                                [% END %]
+                            </span>
+                            [% END %]
+                        </p>
                         <div class="Clear"></div>
 
 [% RenderBlockEnd("Owner") %]
 [% RenderBlockStart("Responsible") %]
                         <label>[% Translate("Responsible") | html %]:</label>
-                        <p class="Value" title="[% Data.UserFullname | html %] [% Data.OutOfOfficeMessage | html %] ([% Data.UserLogin | html %])">[% Data.UserFullname | html %] [% Data.OutOfOfficeMessage | html %]</p>
+                        <p class="Value" title="[% Data.UserFullname | html %] [% Data.OutOfOfficeMessage | html %] ([% Data.UserLogin | html %])">
+                            [% IF Data.EnableChat %]
+                            <span class="UserStatusIcon [% Data.UserState | html %]">
+                                <i class="fa fa-circle" title="[% Data.UserStateDescription | html %]"></i>
+                            </span>
+                            [% END %]
+                            [% Data.UserFullname | html %] [% Data.OutOfOfficeMessage | html %]
+                            [% IF Data.AgentEnableChat && Data.UserID != Env('UserID') %]
+                            <span class="UserChatIcons Block Hidden">
+                                <a href="#" title="[% Translate("Start chat") | html %]" type="button" class="UserChatStart" data-user-id="[% Data.UserID | html %]" data-user-type="User" data-user-fullname="[% Data.UserFullname | html %]" data-ticket-id="[% Data.TicketID | html %]">
+                                    <i class="fa fa-comments"></i>
+                                </a>
+                                [% IF Data.VideoChatEnabled %]
+                                <a href="#" title="[% Translate("Video call") | html %]" type="button" class="UserVideoCallStart[% IF !Data.VideoChatAvailable %] Unavailable[% ELSIF !Data.VideoChatSupport %] Unsupported[% END %]" data-user-id="[% Data.UserID | html %]" data-user-type="User" data-user-fullname="[% Data.UserFullname | html %]" data-ticket-id="[% Data.TicketID | html %]">
+                                    <i class="fa fa-video-camera"></i>
+                                </a>
+                                <a href="#" title="[% Translate("Audio call") | html %]" type="button" class="UserAudioCallStart[% IF !Data.VideoChatAvailable %] Unavailable[% ELSIF !Data.VideoChatSupport %] Unsupported[% END %]" data-user-id="[% Data.UserID | html %]" data-user-type="User"  data-user-fullname="[% Data.UserFullname | html %]" data-ticket-id="[% Data.TicketID | html %]">
+                                    <i class="fa fa-microphone"></i>
+                                </a>
+                                [% END %]
+                            </span>
+                            [% END %]
+                        </p>
                         <div class="Clear"></div>
-
 [% RenderBlockEnd("Responsible") %]
                     </fieldset>
 

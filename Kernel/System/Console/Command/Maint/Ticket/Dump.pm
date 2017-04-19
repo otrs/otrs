@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -15,6 +15,7 @@ use base qw(Kernel::System::Console::BaseCommand);
 
 our @ObjectDependencies = (
     'Kernel::System::Ticket',
+    'Kernel::System::Ticket::Article',
 );
 
 sub Configure {
@@ -65,26 +66,28 @@ sub Run {
 
     $Self->Print( "<green>" . ( '-' x 69 ) . "</green>\n" );
 
+    my $ArticleObject = $Kernel::OM->Get('Kernel::System::Ticket::Article');
+
     # get article index
-    my @Index = $Kernel::OM->Get('Kernel::System::Ticket')->ArticleIndex(
+    my @MetaArticles = $ArticleObject->ArticleList(
         TicketID => $Self->GetArgument('ticket-id'),
     );
 
     my $Counter      = 1;
     my $ArticleLimit = $Self->GetOption('article-limit');
-    ARTICLEID:
-    for my $ArticleID (@Index) {
+    META_ARTICLE:
+    for my $MetaArticle (@MetaArticles) {
 
-        last ARTICLEID if defined $ArticleLimit && $ArticleLimit < $Counter;
-        next ARTICLEID if !$ArticleID;
+        last META_ARTICLE if defined $ArticleLimit && $ArticleLimit < $Counter;
 
         # get article data
-        my %Article = $Kernel::OM->Get('Kernel::System::Ticket')->ArticleGet(
-            ArticleID     => $ArticleID,
+        my %Article = $ArticleObject->BackendForArticle( %{$MetaArticle} )->ArticleGet(
+            %{$MetaArticle},
             DynamicFields => 0,
+            UserID        => 1,
         );
 
-        next ARTICLEID if !%Article;
+        next META_ARTICLE if !%Article;
 
         KEY:
         for my $Key (qw(ArticleID From To Cc Subject ReplyTo InReplyTo Created SenderType)) {
@@ -109,15 +112,3 @@ sub Run {
 }
 
 1;
-
-=back
-
-=head1 TERMS AND CONDITIONS
-
-This software is part of the OTRS project (L<http://otrs.org/>).
-
-This software comes with ABSOLUTELY NO WARRANTY. For details, see
-the enclosed file COPYING for license information (AGPL). If you
-did not receive this file, see L<http://www.gnu.org/licenses/agpl.txt>.
-
-=cut

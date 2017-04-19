@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -28,13 +28,11 @@ Kernel::System::DynamicField::Driver::BaseSelect - sub module of
 Kernel::System::DynamicField::Driver::Dropdown and
 Kernel::System::DynamicField::Driver::Multiselect
 
-=head1 SYNOPSIS
+=head1 DESCRIPTION
 
 Date common functions.
 
 =head1 PUBLIC INTERFACE
-
-=over 4
 
 =cut
 
@@ -112,7 +110,21 @@ sub SearchSQLGet {
         SmallerThanEquals => '<=',
     );
 
-    if ( !$Operators{ $Param{Operator} } ) {
+    if ( $Param{Operator} eq 'Empty' ) {
+        if ( $Param{SearchTerm} ) {
+            return " $Param{TableAlias}.value_text IS NULL OR $Param{TableAlias}.value_text = '' ";
+        }
+        else {
+            my $DatabaseType = $Kernel::OM->Get('Kernel::System::DB')->{'DB::Type'};
+            if ( $DatabaseType eq 'oracle' ) {
+                return " $Param{TableAlias}.value_text IS NOT NULL ";
+            }
+            else {
+                return " $Param{TableAlias}.value_text <> '' ";
+            }
+        }
+    }
+    elsif ( !$Operators{ $Param{Operator} } ) {
         $Kernel::OM->Get('Kernel::System::Log')->Log(
             'Priority' => 'error',
             'Message'  => "Unsupported Operator $Param{Operator}",
@@ -672,7 +684,7 @@ sub StatsFieldParameterBuild {
         Values             => $Values,
         Name               => $Param{DynamicFieldConfig}->{Label},
         Element            => 'DynamicField_' . $Param{DynamicFieldConfig}->{Name},
-        TranslatableValues => $Param{DynamicFieldconfig}->{Config}->{TranslatableValues},
+        TranslatableValues => $Param{DynamicFieldConfig}->{Config}->{TranslatableValues},
         Block              => 'MultiSelectField',
     };
 }
@@ -993,8 +1005,6 @@ sub ColumnFilterValuesGet {
 }
 
 1;
-
-=back
 
 =head1 TERMS AND CONDITIONS
 

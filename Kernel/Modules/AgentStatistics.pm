@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -38,7 +38,7 @@ sub new {
     }
 
     # AccessRw controls the adding/editing of statistics.
-    for my $Param (qw( AccessRw RequestedURL LastStatsOverview)) {
+    for my $Param (qw( AccessRw RequestedURL )) {
         if ( $Param{$Param} ) {
             $Self->{$Param} = $Param{$Param};
         }
@@ -51,6 +51,15 @@ sub Run {
     my ( $Self, %Param ) = @_;
 
     my $LayoutObject = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
+
+    # set breadcrumbpath for overview screen and it will be used as base for other screens
+    @{ $Self->{BreadcrumbPath} } = (
+        {
+            Name =>
+                $LayoutObject->{LanguageObject}->Translate('Statistics Overview'),
+            Link => 'AgentStatistics;Subaction=Overview',
+        }
+    );
 
     my $Subaction = $Self->{Subaction};
 
@@ -102,27 +111,12 @@ sub OverviewScreen {
     my $ParamObject  = $Kernel::OM->Get('Kernel::System::Web::Request');
     my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
 
-    $Kernel::OM->Get('Kernel::System::AuthSession')->UpdateSessionID(
-        SessionID => $Self->{SessionID},
-        Key       => 'LastStatsOverview',
-        Value     => $Self->{RequestedURL},
-        StoreData => 1,
-    );
-
     # Get Params
     $Param{SearchPageShown} = $ConfigObject->Get('Stats::SearchPageShown') || 50;
     $Param{SearchLimit}     = $ConfigObject->Get('Stats::SearchLimit')     || 1000;
     $Param{OrderBy}   = $ParamObject->GetParam( Param => 'OrderBy' )   || 'ID';
     $Param{Direction} = $ParamObject->GetParam( Param => 'Direction' ) || 'ASC';
     $Param{StartHit} = int( $ParamObject->GetParam( Param => 'StartHit' ) || 1 );
-
-    # store last screen
-    $Kernel::OM->Get('Kernel::System::AuthSession')->UpdateSessionID(
-        SessionID => $Self->{SessionID},
-        Key       => 'LastStatsOverview',
-        Value     => $Self->{RequestedURL},
-        StoreData => 1,
-    );
 
     # get all Stats from the db
     my $Result = $Kernel::OM->Get('Kernel::System::Stats')->GetStatsList(
@@ -193,11 +187,13 @@ sub OverviewScreen {
     # build output
     my $Output = $LayoutObject->Header( Title => 'Overview' );
     $Output .= $LayoutObject->NavigationBar();
+
     $Output .= $LayoutObject->Output(
         Data => {
             %Pagination,
             %Param,
-            AccessRw => $Self->{AccessRw},
+            AccessRw       => $Self->{AccessRw},
+            BreadcrumbPath => $Self->{BreadcrumbPath},
         },
         TemplateFile => 'AgentStatisticsOverview',
     );
@@ -218,6 +214,7 @@ sub ImportScreen {
         TemplateFile => 'AgentStatisticsImport',
         Data         => {
             %Errors,
+            BreadcrumbPath => $Self->{BreadcrumbPath},
         },
     );
     $Output .= $LayoutObject->Footer();
@@ -315,7 +312,7 @@ sub DeleteAction {
         StatID => $StatID,
         UserID => $Self->{UserID},
     );
-    return $LayoutObject->Redirect( OP => $Self->{LastStatsOverview} );
+    return $LayoutObject->Redirect( OP => "Action=AgentStatistics;Subaction=Overview" );
 }
 
 sub EditScreen {
@@ -365,11 +362,13 @@ sub EditScreen {
 
     my $Output = $LayoutObject->Header( Title => 'Edit' );
     $Output .= $LayoutObject->NavigationBar();
+
     $Output .= $LayoutObject->Output(
         TemplateFile => 'AgentStatisticsEdit',
         Data         => {
             %Frontend,
             %{$Stat},
+            BreadcrumbPath => $Self->{BreadcrumbPath},
         },
     );
     $Output .= $LayoutObject->Footer();
@@ -681,13 +680,12 @@ sub EditAction {
         UserID => $Self->{UserID},
     );
 
-    if ( $ParamObject->GetParam( Param => 'SaveAndFinish' ) ) {
-        return $LayoutObject->Redirect( OP => $Self->{LastStatsOverview} );
+    if ( $ParamObject->GetParam( Param => 'ReturnToStatisticOverview' ) ) {
+        return $LayoutObject->Redirect( OP => "Action=AgentStatistics;Subaction=Overview" );
     }
 
-    return $Self->EditScreen(
-        Errors   => \%Errors,
-        GetParam => \%Data,
+    return $LayoutObject->Redirect(
+        OP => "Action=AgentStatistics;Subaction=Edit;StatID=$Stat->{StatID}"
     );
 }
 
@@ -745,6 +743,7 @@ sub ViewScreen {
 
     my $Output = $LayoutObject->Header( Title => 'View' );
     $Output .= $LayoutObject->NavigationBar();
+
     $Output .= $LayoutObject->Output(
         TemplateFile => 'AgentStatisticsView',
         Data         => {
@@ -752,6 +751,7 @@ sub ViewScreen {
             Errors   => \@Errors,
             %Frontend,
             %{$Stat},
+            BreadcrumbPath => $Self->{BreadcrumbPath},
         },
     );
     $Output .= $LayoutObject->Footer();
@@ -816,6 +816,7 @@ sub AddScreen {
         Data         => {
             %Frontend,
             %Errors,
+            BreadcrumbPath => $Self->{BreadcrumbPath},
         },
     );
     $Output .= $LayoutObject->Footer();
@@ -912,9 +913,8 @@ sub RunAction {
     my $ParamObject  = $Kernel::OM->Get('Kernel::System::Web::Request');
     my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
 
-    # get params
-    for (qw(Format StatID ExchangeAxis Name Cached)) {
-        $Param{$_} = $ParamObject->GetParam( Param => $_ );
+    for my $Name (qw(Format StatID Name Cached)) {
+        $Param{$Name} = $ParamObject->GetParam( Param => $Name );
     }
     my @RequiredParams = (qw(Format StatID));
     if ( $Param{Cached} ) {
@@ -994,7 +994,7 @@ sub RunAction {
                 UserGetParam => $StatsSettings,
                 UserID       => $Self->{UserID},
             );
-            }
+        };
     }
 
     # called normally within the stats area - generate stats now and use provided configuraton
@@ -1006,22 +1006,6 @@ sub RunAction {
                 UserID   => $Self->{UserID},
             );
         };
-    }
-
-    # exchange axis if selected
-    if ( $Param{ExchangeAxis} ) {
-        my @NewStatArray;
-        my $Title = $StatArray[0][0];
-
-        shift(@StatArray);
-        for my $Key1 ( 0 .. $#StatArray ) {
-            for my $Key2 ( 0 .. $#{ $StatArray[0] } ) {
-                $NewStatArray[$Key2][$Key1] = $StatArray[$Key1][$Key2];
-            }
-        }
-        $NewStatArray[0][0] = '';
-        unshift( @NewStatArray, [$Title] );
-        @StatArray = @NewStatArray;
     }
 
     return $Kernel::OM->Get('Kernel::Output::HTML::Statistics::View')->StatsResultRender(

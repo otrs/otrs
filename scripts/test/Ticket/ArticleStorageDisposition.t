@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -12,11 +12,11 @@ use utf8;
 
 use vars (qw($Self));
 
-# get needed objects
-my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
-my $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
+my $ConfigObject         = $Kernel::OM->Get('Kernel::Config');
+my $TicketObject         = $Kernel::OM->Get('Kernel::System::Ticket');
+my $ArticleObject        = $Kernel::OM->Get('Kernel::System::Ticket::Article');
+my $ArticleBackendObject = $ArticleObject->BackendForChannel( ChannelName => 'Internal' );
 
-# get helper object
 $Kernel::OM->ObjectParamAdd(
     'Kernel::System::UnitTest::Helper' => {
         RestoreDatabase  => 1,
@@ -414,48 +414,49 @@ for my $Backend (qw(DB FS)) {
     );
     $Self->True(
         $TicketID,
-        "TicketCreate() - TicketID:'$TicketID'",
+        "TicketCreate() - TicketID: '$TicketID'"
     );
 
     for my $Test (@Tests) {
 
-        # Make sure that the TicketObject gets recreated for each loop.
-        $Kernel::OM->ObjectsDiscard( Objects => ['Kernel::System::Ticket'] );
+        # Make sure that the article backend object gets recreated for each loop.
+        $Kernel::OM->ObjectsDiscard( Objects => [ ref $ArticleBackendObject ] );
 
         $ConfigObject->Set(
-            Key   => 'Ticket::StorageModule',
-            Value => 'Kernel::System::Ticket::ArticleStorage' . $Backend,
+            Key   => 'Ticket::Article::Backend::MIMEBase###ArticleStorage',
+            Value => 'Kernel::System::Ticket::Article::Backend::MIMEBase::ArticleStorage' . $Backend,
         );
 
-        my $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
+        $ArticleBackendObject = $ArticleObject->BackendForChannel( ChannelName => 'Internal' );
 
-        $Self->True(
-            $TicketObject->isa( 'Kernel::System::Ticket::ArticleStorage' . $Backend ),
-            "TicketObject loaded the correct backend",
+        $Self->Is(
+            $ArticleBackendObject->{ArticleStorageModule},
+            'Kernel::System::Ticket::Article::Backend::MIMEBase::ArticleStorage' . $Backend,
+            'Article backend loaded the correct storage module'
         );
 
         # create an article
-        my $ArticleID = $TicketObject->ArticleCreate(
-            TicketID       => $TicketID,
-            ArticleType    => 'note-internal',
-            SenderType     => 'agent',
-            From           => 'Some Agent <email@example.com>',
-            To             => 'Some Customer <customer-a@example.com>',
-            Subject        => 'some short description',
-            Body           => 'the message text',
-            ContentType    => 'text/plain; charset=ISO-8859-15',
-            HistoryType    => 'OwnerUpdate',
-            HistoryComment => 'Some free text!',
-            UserID         => 1,
-            NoAgentNotify  => 1,                                         # if you don't want to send agent notifications
+        my $ArticleID = $ArticleBackendObject->ArticleCreate(
+            TicketID             => $TicketID,
+            SenderType           => 'agent',
+            IsVisibleForCustomer => 0,
+            From                 => 'Some Agent <email@example.com>',
+            To                   => 'Some Customer <customer-a@example.com>',
+            Subject              => 'some short description',
+            Body                 => 'the message text',
+            ContentType          => 'text/plain; charset=ISO-8859-15',
+            HistoryType          => 'OwnerUpdate',
+            HistoryComment       => 'Some free text!',
+            UserID               => 1,
+            NoAgentNotify        => 1,
         );
         $Self->True(
             $ArticleID,
-            "ArticleCreate() - ArticleID:'$ArticleID'",
+            "ArticleCreate() - ArticleID: '$ArticleID'"
         );
 
         # create attachment
-        my $Success = $TicketObject->ArticleWriteAttachment(
+        my $Success = $ArticleBackendObject->ArticleWriteAttachment(
             %{ $Test->{Config} },
             ArticleID => $ArticleID,
         );
@@ -465,7 +466,7 @@ for my $Backend (qw(DB FS)) {
         );
 
         # get the list of all attachments (should be only 1)
-        my %AttachmentIndex = $TicketObject->ArticleAttachmentIndex(
+        my %AttachmentIndex = $ArticleBackendObject->ArticleAttachmentIndex(
             ArticleID => $ArticleID,
             UserID    => $UserID,
         );
@@ -478,7 +479,7 @@ for my $Backend (qw(DB FS)) {
         );
 
         # get the attachment individually
-        my %Attachment = $TicketObject->ArticleAttachment(
+        my %Attachment = $ArticleBackendObject->ArticleAttachment(
             ArticleID => $ArticleID,
             FileID    => $AttachmentID,
             UserID    => $UserID,
@@ -497,7 +498,7 @@ for my $Backend (qw(DB FS)) {
 
     }
 
-    # cleanup is done by RestoreDatabase, but we need to additionaly
+    # cleanup is done by RestoreDatabase, but we need to additionally
     # run TicketDelete() to cleanup the FS backend too
     my $Success = $TicketObject->TicketDelete(
         TicketID => $TicketID,
@@ -505,7 +506,7 @@ for my $Backend (qw(DB FS)) {
     );
     $Self->True(
         $Success,
-        "TicketDelete() - TicketID:'$TicketID'",
+        "TicketDelete() - TicketID: '$TicketID'",
     );
 }
 

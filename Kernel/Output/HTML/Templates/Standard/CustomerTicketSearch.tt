@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -38,7 +38,7 @@
                 </div>
                 <div>
                     <label for="CustomerID">[% Translate("CustomerID") | html %]</label>
-                    <input title="[% Translate("Customer ID") | html %]" type="text" id="CustomerID" name="CustomerID" value="[% Data.CustomerID | html %]" size="20" />
+                    [% Data.CustomerIDStrg %]
                 </div>
             </fieldset>
             <fieldset>

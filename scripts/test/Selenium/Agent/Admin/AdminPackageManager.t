@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -14,6 +14,24 @@ use vars (qw($Self));
 
 # get selenium object
 my $Selenium = $Kernel::OM->Get('Kernel::System::UnitTest::Selenium');
+
+my $CheckBredcrumb = sub {
+
+    my %Param = @_;
+
+    my $BreadcrumbText = $Param{BreadcrumbText} || '';
+    my $Count = 1;
+
+    for my $BreadcrumbText ( 'Package Manager', "$BreadcrumbText Test" ) {
+        $Self->Is(
+            $Selenium->execute_script("return \$('.BreadCrumb li:eq($Count)').text().trim()"),
+            $BreadcrumbText,
+            "Breadcrumb text '$BreadcrumbText' is found on screen"
+        );
+
+        $Count++;
+    }
+};
 
 $Selenium->RunTest(
     sub {
@@ -99,6 +117,12 @@ $Selenium->RunTest(
         # navigate to AdminPackageManager screen
         $Selenium->VerifiedGet("${ScriptAlias}index.pl?Action=AdminPackageManager");
 
+        # check breadcrumb on Overview screen
+        $Self->True(
+            $Selenium->find_element( '.BreadCrumb', 'css' ),
+            "Breadcrumb is found on Overview screen.",
+        );
+
         # check overview AdminPackageManager
         my $Element = $Selenium->find_element( "#FileUpload", 'css' );
         $Element->is_enabled();
@@ -110,6 +134,12 @@ $Selenium->RunTest(
         $Selenium->find_element( "#FileUpload", 'css' )->send_keys($Location);
 
         $Selenium->find_element("//button[\@value='Install'][\@type='submit']")->VerifiedClick();
+
+        # check breadcrumb on Install screen
+        $CheckBredcrumb->(
+            BreadcrumbText => 'Install Package:',
+        );
+
         $Selenium->find_element("//button[\@value='Continue'][\@type='submit']")->VerifiedClick();
 
         $Self->True(
@@ -124,6 +154,11 @@ $Selenium->RunTest(
             "//a[contains(\@href, \'Subaction=View;Name=Test' )]"
         )->VerifiedClick();
 
+        # check breadcrumb on Package metadata screen
+        $CheckBredcrumb->(
+            BreadcrumbText => 'Package Information:',
+        );
+
         $Selenium->find_element("//a[contains(\@href, \'Subaction=Download' )]");
         $Selenium->find_element("//a[contains(\@href, \'Subaction=RebuildPackage' )]");
         $Selenium->find_element("//a[contains(\@href, \'Subaction=Reinstall' )]");
@@ -135,6 +170,11 @@ $Selenium->RunTest(
         $Selenium->find_element(
             "//a[contains(\@href, \'Subaction=Uninstall;Name=Test' )]"
         )->VerifiedClick();
+
+        # check breadcrumb on uninstall screen
+        $CheckBredcrumb->(
+            BreadcrumbText => 'Uninstall Package:',
+        );
 
         $Selenium->find_element("//button[\@value='Uninstall package'][\@type='submit']")->VerifiedClick();
 

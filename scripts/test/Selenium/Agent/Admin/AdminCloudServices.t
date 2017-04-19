@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -58,10 +58,10 @@ $Selenium->RunTest(
         );
 
         # check breadcrumb on screen
-        my $Count = 0;
-        for my $BreadcrumbText ( 'You are here:', 'Cloud Service Management' ) {
+        my $Count = 1;
+        for my $BreadcrumbText ('Cloud Service Management') {
             $Self->Is(
-                $Selenium->execute_script("return \$(\$('.BreadCrumb li')[$Count]).text().trim()"),
+                $Selenium->execute_script("return \$('.BreadCrumb li:eq($Count)').text().trim()"),
                 $BreadcrumbText,
                 "Breadcrumb text '$BreadcrumbText' is found on screen.",
             );

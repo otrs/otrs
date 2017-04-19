@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -276,9 +276,9 @@ my @Tests = (
             CGIParam           => {}
         },
         ExpectedResults => {
-            Display   => '',
+            Display   => undef,
             Parameter => {
-                Like => '',
+                Equals => undef,
             },
         },
         Success => 1,
@@ -297,7 +297,7 @@ my @Tests = (
         ExpectedResults => {
             Display   => '',
             Parameter => {
-                Like => '',
+                Equals => '',
             },
         },
         Success => 1,
@@ -318,7 +318,7 @@ my @Tests = (
         ExpectedResults => {
             Display   => 'äëïöüÄËÏÖÜáéíóúÁÉÍÓÚñÑ€исß',
             Parameter => {
-                Like => '*äëïöüÄËÏÖÜáéíóúÁÉÍÓÚñÑ€исß*',
+                Equals => 'äëïöüÄËÏÖÜáéíóúÁÉÍÓÚñÑ€исß',
             },
         },
         Success => 1,
@@ -339,7 +339,7 @@ my @Tests = (
         ExpectedResults => {
             Display   => 'äëïöüÄËÏÖÜáéíóúÁÉÍÓÚñÑ€исß*',
             Parameter => {
-                Like => '*äëïöüÄËÏÖÜáéíóúÁÉÍÓÚñÑ€исß**',
+                Like => 'äëïöüÄËÏÖÜáéíóúÁÉÍÓÚñÑ€исß*',
             },
         },
         Success => 1,

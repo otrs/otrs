@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -28,6 +28,12 @@ $Selenium->RunTest(
             Valid => 0,
             Key   => 'DashboardBackend',
             Value => \%$Config,
+        );
+
+        $Helper->ConfigSettingChange(
+            Valid => 1,
+            Key   => 'Stats::ExchangeAxis',
+            Value => 1,
         );
 
         # add at least one dashboard setting dashboard sysconfig so dashboard can be loaded
@@ -120,6 +126,39 @@ $Selenium->RunTest(
             $Selenium->execute_script('return $(".nv-legend-text:contains(Misc)").length'),
             1,
             "Legend entry for Misc queue found.",
+        );
+
+        # Exchange axis and check if it works.
+        my $StatsWidgetID = "10$TestStatID-Stats";
+        $Selenium->execute_script("\$('#Dashboard$StatsWidgetID-toggle').trigger('click');");
+        $Selenium->execute_script("\$('#ExchangeAxis').val('1').trigger('redraw.InputField').trigger('change');");
+        $Selenium->execute_script( "\$('#Dashboard$StatsWidgetID" . "_submit').trigger('click');" );
+
+        sleep 1;
+
+        $ExitCode = $CommandObject->Execute();
+        $Selenium->VerifiedRefresh();
+
+        $Self->Is(
+            $Selenium->execute_script('return $(".nv-legend-text:contains(open)").length'),
+            1,
+            "Legend entry for open state found.",
+        );
+
+        # Change the language from the user to test the translations.
+        $Kernel::OM->Get('Kernel::System::User')->SetPreferences(
+            UserID => $TestUserID,
+            Key    => 'UserLanguage',
+            Value  => 'de',
+        );
+
+        $ExitCode = $CommandObject->Execute();
+        $Selenium->VerifiedRefresh();
+
+        $Self->Is(
+            $Selenium->execute_script('return $(".nv-legend-text:contains(offen)").length'),
+            1,
+            "Legend entry for open state found.",
         );
 
         # delete test stat

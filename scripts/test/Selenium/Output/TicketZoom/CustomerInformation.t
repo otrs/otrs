@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -164,7 +164,7 @@ $Selenium->RunTest(
 
         # verify there is link to CustomerCompany ticket search
         $Self->True(
-            $Selenium->find_element("//a[contains(\@href, \'CustomerID=$CompanyNameID;StateType=Open\')]"),
+            $Selenium->find_element("//a[contains(\@href, \'CustomerIDRaw=$CompanyNameID;StateType=Open\')]"),
             "Found Ticket search link in Customer Information"
         );
 

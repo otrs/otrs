@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -15,24 +15,42 @@ our @ObjectDependencies = (
     'Kernel::Config',
     'Kernel::System::DB',
     'Kernel::System::Log',
+    'Kernel::System::Ticket::Article',
 );
+
+sub new {
+    my ( $Type, %Param ) = @_;
+
+    my $Self = {};
+    bless( $Self, $Type );
+
+    return $Self;
+}
 
 sub ArticleIndexBuild {
     my ( $Self, %Param ) = @_;
 
     # check needed stuff
-    for my $Needed (qw(ArticleID UserID)) {
+    for my $Needed (qw(TicketID ArticleID UserID)) {
         if ( !$Param{$Needed} ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
-                Message  => "Need $Needed!",
+                Message  => "Need $Needed!"
             );
             return;
         }
     }
 
+    my $ArticleBackendObject = $Kernel::OM->Get('Kernel::System::Ticket::Article')->BackendForArticle(
+        TicketID  => $Param{TicketID},
+        ArticleID => $Param{ArticleID},
+    );
+
     # get article data
-    my %Article = $Self->ArticleGet(
+    # TODO: if this module is loaded by Article object in future it can call the function with $Self
+    # my %Article = $Self->ArticleGet(
+    my %Article = $ArticleBackendObject->ArticleGet(
+        TicketID      => $Param{TicketID},
         ArticleID     => $Param{ArticleID},
         UserID        => $Param{UserID},
         DynamicFields => 0,
@@ -70,16 +88,12 @@ sub ArticleIndexBuild {
     # insert search index
     $DBObject->Do(
         SQL => '
-            INSERT INTO article_search (id, ticket_id, article_type_id,
-                article_sender_type_id, a_from, a_to,
-                a_cc, a_subject, a_body,
+            INSERT INTO article_search (id, ticket_id, article_sender_type_id, a_from, a_to, a_cc, a_subject, a_body,
                 incoming_time)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
         Bind => [
-            \$Article{ArticleID},    \$Article{TicketID}, \$Article{ArticleTypeID},
-            \$Article{SenderTypeID}, \$Article{From},     \$Article{To},
-            \$Article{Cc},           \$Article{Subject},  \$Article{Body},
-            \$Article{IncomingTime},
+            \$Article{ArticleID}, \$Article{TicketID}, \$Article{SenderTypeID}, \$Article{From}, \$Article{To},
+            \$Article{Cc}, \$Article{Subject}, \$Article{Body}, \$Article{IncomingTime},
         ],
     );
 

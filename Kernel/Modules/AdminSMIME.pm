@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -103,6 +103,8 @@ sub Run {
         Key       => 'SMIMESearch',
         Value     => $Param{Search},
     );
+
+    $Param{Action} = $Self->{Subaction};
 
     # ------------------------------------------------------------ #
     # delete cert
@@ -581,7 +583,12 @@ sub _MaskAdd {
     # get layout object
     my $LayoutObject = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
 
-    $LayoutObject->Block( Name => 'Overview' );
+    $LayoutObject->Block(
+        Name => 'Overview',
+        Data => {
+            Action => $Param{Action}
+        },
+    );
     $LayoutObject->Block( Name => 'ActionList' );
     $LayoutObject->Block( Name => 'ActionOverview' );
 

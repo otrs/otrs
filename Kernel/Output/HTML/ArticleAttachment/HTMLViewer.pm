@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -44,7 +44,7 @@ sub Run {
                     %{ $Param{File} },
                     Action => 'Viewer',
                     Link   => $Kernel::OM->Get('Kernel::Output::HTML::Layout')->{Baselink} .
-                        "Action=AgentTicketAttachment;ArticleID=$Param{Article}->{ArticleID};FileID=$Param{File}->{FileID};Viewer=1",
+                        "Action=AgentTicketAttachment;TicketID=$Param{Article}->{TicketID};ArticleID=$Param{Article}->{ArticleID};FileID=$Param{File}->{FileID};Viewer=1",
                     Target => 'target="attachment"',
                     Class  => 'ViewAttachment',
                 );

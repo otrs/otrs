@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -25,7 +25,7 @@ our @ObjectDependencies = (
 
 Kernel::System::DynamicField::Driver::TextArea
 
-=head1 SYNOPSIS
+=head1 DESCRIPTION
 
 DynamicFields TextArea Driver delegate
 
@@ -34,9 +34,7 @@ DynamicFields TextArea Driver delegate
 This module implements the public interface of L<Kernel::System::DynamicField::Backend>.
 Please look there for a detailed reference of the functions.
 
-=over 4
-
-=item new()
+=head2 new()
 
 usually, you want to create an instance of this
 by using Kernel::System::DynamicField::Backend->new();
@@ -385,49 +383,7 @@ EOF
     return $Data;
 }
 
-sub SearchFieldParameterBuild {
-    my ( $Self, %Param ) = @_;
-
-    # get field value
-    my $Value = $Self->SearchFieldValueGet(%Param);
-
-    if ( !$Value ) {
-        return {
-            Parameter => {
-                'Like' => '',
-            },
-            Display => '',
-            }
-    }
-
-    # return search parameter structure
-    return {
-        Parameter => {
-            'Like' => '*' . $Value . '*',
-        },
-        Display => $Value,
-    };
-}
-
-sub StatsSearchFieldParameterBuild {
-    my ( $Self, %Param ) = @_;
-
-    my $Value = $Param{Value};
-
-    if ( !$Value ) {
-        return {
-            'Like' => '',
-        };
-    }
-
-    return {
-        'Like' => '*' . $Value . '*',
-    };
-}
-
 1;
-
-=back
 
 =head1 TERMS AND CONDITIONS
 

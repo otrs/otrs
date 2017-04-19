@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -247,6 +247,9 @@ sub Run {
     }
     elsif ( $Self->{Subaction} eq 'StoreNew' ) {
 
+        my $ArticleObject = $Kernel::OM->Get('Kernel::System::Ticket::Article');
+        my $ArticleBackendObject = $ArticleObject->BackendForChannel( ChannelName => 'Phone' );
+
         my $NextScreen = $Config->{NextScreenAfterNewTicket};
         my %Error;
 
@@ -440,6 +443,13 @@ sub Run {
             my @ChatMessages = $Kernel::OM->Get('Kernel::System::Chat')->ChatMessageList(
                 ChatID => $GetParam{FromChatID},
             );
+
+            for my $Message (@ChatMessages) {
+                $Message->{MessageText} = $LayoutObject->Ascii2Html(
+                    Text        => $Message->{MessageText},
+                    LinkFeature => 1,
+                );
+            }
         }
 
         # check queue
@@ -598,20 +608,20 @@ sub Run {
             UserLogin => $Self->{UserLogin},
         );
         my $From      = "\"$FullName\" <$Self->{UserEmail}>";
-        my $ArticleID = $TicketObject->ArticleCreate(
-            TicketID         => $TicketID,
-            ArticleType      => $Config->{ArticleType},
-            SenderType       => $Config->{SenderType},
-            From             => $From,
-            To               => $To,
-            Subject          => $GetParam{Subject},
-            Body             => $GetParam{Body},
-            MimeType         => $MimeType,
-            Charset          => $LayoutObject->{UserCharset},
-            UserID           => $ConfigObject->Get('CustomerPanelUserID'),
-            HistoryType      => $Config->{HistoryType},
-            HistoryComment   => $Config->{HistoryComment} || '%%',
-            AutoResponseType => ( $ConfigObject->Get('AutoResponseForWebTickets') )
+        my $ArticleID = $ArticleBackendObject->ArticleCreate(
+            TicketID             => $TicketID,
+            IsVisibleForCustomer => 1,
+            SenderType           => $Config->{SenderType},
+            From                 => $From,
+            To                   => $To,
+            Subject              => $GetParam{Subject},
+            Body                 => $GetParam{Body},
+            MimeType             => $MimeType,
+            Charset              => $LayoutObject->{UserCharset},
+            UserID               => $ConfigObject->Get('CustomerPanelUserID'),
+            HistoryType          => $Config->{HistoryType},
+            HistoryComment       => $Config->{HistoryComment} || '%%',
+            AutoResponseType     => ( $ConfigObject->Get('AutoResponseForWebTickets') )
             ? 'auto reply'
             : '',
             OrigHeader => {
@@ -664,25 +674,25 @@ sub Run {
 
                 my $ChatArticleType = 'chat-external';
 
-                $ChatArticleID = $TicketObject->ArticleCreate(
-
-                    #NoAgentNotify => $NoAgentNotify,
-                    TicketID    => $TicketID,
-                    ArticleType => $ChatArticleType,
-                    SenderType  => $Config->{SenderType},
-
-                    From => $From,
-
-                    # To               => $To,
-                    Subject        => $Kernel::OM->Get('Kernel::Language')->Translate('Chat'),
-                    Body           => $JSONBody,
-                    MimeType       => 'application/json',
-                    Charset        => $LayoutObject->{UserCharset},
-                    UserID         => $ConfigObject->Get('CustomerPanelUserID'),
-                    HistoryType    => $Config->{HistoryType},
-                    HistoryComment => $Config->{HistoryComment} || '%%',
-                    Queue          => $QueueObject->QueueLookup( QueueID => $NewQueueID ),
-                );
+                # TODO: Fix chat article creation
+                # $ChatArticleID = $ArticleBackendObject->ArticleCreate(
+                #
+                #     #NoAgentNotify => $NoAgentNotify,
+                #     TicketID             => $TicketID,
+                #     IsVisibleForCustomer => 1,
+                #     SenderType           => $Config->{SenderType},
+                #     From                 => $From,
+                #
+                #     # To                   => $To,
+                #     Subject        => $Kernel::OM->Get('Kernel::Language')->Translate('Chat'),
+                #     Body           => $JSONBody,
+                #     MimeType       => 'application/json',
+                #     Charset        => $LayoutObject->{UserCharset},
+                #     UserID         => $ConfigObject->Get('CustomerPanelUserID'),
+                #     HistoryType    => $Config->{HistoryType},
+                #     HistoryComment => $Config->{HistoryComment} || '%%',
+                #     Queue          => $QueueObject->QueueLookup( QueueID => $NewQueueID ),
+                # );
             }
             if ($ChatArticleID) {
                 $ChatObject->ChatDelete(
@@ -729,7 +739,7 @@ sub Run {
             }
 
             # write existing file to backend
-            $TicketObject->ArticleWriteAttachment(
+            $ArticleBackendObject->ArticleWriteAttachment(
                 %{$Attachment},
                 ArticleID => $ArticleID,
                 UserID    => $ConfigObject->Get('CustomerPanelUserID'),
@@ -1339,6 +1349,14 @@ sub _MaskNew {
         my @ChatMessages = $Kernel::OM->Get('Kernel::System::Chat')->ChatMessageList(
             ChatID => $Param{FromChatID},
         );
+
+        for my $Message (@ChatMessages) {
+            $Message->{MessageText} = $LayoutObject->Ascii2Html(
+                Text        => $Message->{MessageText},
+                LinkFeature => 1,
+            );
+        }
+
         $LayoutObject->Block(
             Name => 'ChatArticlePreview',
             Data => {

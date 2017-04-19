@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -32,22 +32,16 @@ our @ObjectDependencies = (
 
 Kernel::System::Email - to send email
 
-=head1 SYNOPSIS
+=head1 DESCRIPTION
 
 Global module to send email via sendmail or SMTP.
 
 =head1 PUBLIC INTERFACE
 
-=over 4
+=head2 new()
 
-=cut
+Don't use the constructor directly, use the ObjectManager instead:
 
-=item new()
-
-create an object. Do not use it directly, instead use:
-
-    use Kernel::System::ObjectManager;
-    local $Kernel::OM = Kernel::System::ObjectManager->new();
     my $EmailObject = $Kernel::OM->Get('Kernel::System::Email');
 
 =cut
@@ -72,7 +66,7 @@ sub new {
     return $Self;
 }
 
-=item Send()
+=head2 Send()
 
 To send an email without already created header:
 
@@ -555,7 +549,11 @@ sub Send {
 
     # set envelope sender for auto-responses and notifications
     if ( $Param{Loop} ) {
-        $RealFrom = $ConfigObject->Get('SendmailNotificationEnvelopeFrom') || '';
+        my $NotificationEnvelopeFrom = $ConfigObject->Get('SendmailNotificationEnvelopeFrom') || '';
+        my $NotificationFallback = $ConfigObject->Get('SendmailNotificationEnvelopeFrom::FallbackToEmailFrom');
+        if ( $NotificationEnvelopeFrom || !$NotificationFallback ) {
+            $RealFrom = $NotificationEnvelopeFrom;
+        }
     }
 
     # debug
@@ -585,7 +583,7 @@ sub Send {
     return ( \$Param{Header}, \$Param{Body} );
 }
 
-=item Check()
+=head2 Check()
 
 Check mail configuration
 
@@ -609,7 +607,7 @@ sub Check {
     }
 }
 
-=item Bounce()
+=head2 Bounce()
 
 Bounce an email
 
@@ -1002,8 +1000,6 @@ sub _CreateMimeEntity {
 1;
 
 =end Internal:
-
-=back
 
 =head1 TERMS AND CONDITIONS
 

@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -19,7 +19,8 @@ my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
 # get helper object
 $Kernel::OM->ObjectParamAdd(
     'Kernel::System::UnitTest::Helper' => {
-        RestoreDatabase => 1,
+        RestoreDatabase  => 1,
+        UseTmpArticleDir => 1,
 
     },
 );
@@ -83,7 +84,6 @@ my %UserData = $Kernel::OM->Get('Kernel::System::User')->GetUserData(
 
 my $UserID = $UserData{UserID};
 
-# get ticket object
 my $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
 
 # create ticket
@@ -105,19 +105,19 @@ $Self->True(
     "TicketCreate() successful for Ticket ID $TicketID",
 );
 
-my $ArticleID = $TicketObject->ArticleCreate(
-    TicketID       => $TicketID,
-    ArticleType    => 'webrequest',
-    SenderType     => 'customer',
-    From           => 'customerOne@example.com, customerTwo@example.com',
-    To             => 'Some Agent A <agent-a@example.com>',
-    Subject        => 'some short description',
-    Body           => 'the message text',
-    Charset        => 'utf8',
-    MimeType       => 'text/plain',
-    HistoryType    => 'OwnerUpdate',
-    HistoryComment => 'Some free text!',
-    UserID         => 1,
+my $ArticleID = $Kernel::OM->Get('Kernel::System::Ticket::Article::Backend::Internal')->ArticleCreate(
+    TicketID             => $TicketID,
+    IsVisibleForCustomer => 1,
+    SenderType           => 'customer',
+    From                 => 'customerOne@example.com, customerTwo@example.com',
+    To                   => 'Some Agent A <agent-a@example.com>',
+    Subject              => 'some short description',
+    Body                 => 'the message text',
+    Charset              => 'utf8',
+    MimeType             => 'text/plain',
+    HistoryType          => 'OwnerUpdate',
+    HistoryComment       => 'Some free text!',
+    UserID               => 1,
 );
 
 # sanity check
@@ -180,22 +180,16 @@ my @Tests = (
         ],
     },
     {
-        Name => 'RecipientAgent + RecipientEmail + CustomerNotifyJustToRealCustomer',
+        Name => 'Recipient Customer - JustToRealCustomer enabled',
         Data => {
-            Events          => [ 'TicketDynamicFieldUpdate_DFT1' . $RandomID . 'Update' ],
-            RecipientAgents => [$UserID],
-            RecipientEmail  => ['test@otrsexample.com'],
+            Events     => [ 'TicketDynamicFieldUpdate_DFT1' . $RandomID . 'Update' ],
+            Recipients => ['Customer'],
         },
-        ExpectedResults => [
-            {
-                ToArray => [ $UserData{UserEmail} ],
-                Body    => "JobName $TicketID Kernel::System::Email::Test $UserData{UserFirstname}=\n",
-            },
-        ],
+        ExpectedResults    => [],
         JustToRealCustomer => 1,
     },
     {
-        Name => 'Recipient Customer',
+        Name => 'Recipient Customer - JustToRealCustomer disabled',
         Data => {
             Events     => [ 'TicketDynamicFieldUpdate_DFT1' . $RandomID . 'Update' ],
             Recipients => ['Customer'],
@@ -206,6 +200,7 @@ my @Tests = (
                 Body => "JobName $TicketID Kernel::System::Email::Test $UserData{UserFirstname}=\n",
             },
         ],
+        JustToRealCustomer => 0,
     },
 );
 

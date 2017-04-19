@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -132,7 +132,7 @@ sub Run {
     else {
         for my $Key (
             qw(TicketNumber Title From To Cc Subject Body CustomerID CustomerIDRaw
-            CustomerUserLogin CustomerUserLoginRaw StateType Agent ResultForm
+            CustomerUserLogin CustomerUserLoginRaw CustomerUserID StateType Agent ResultForm
             TimeSearchType ChangeTimeSearchType CloseTimeSearchType LastChangeTimeSearchType
             EscalationTimeSearchType PendingTimeSearchType
             UseSubQueues AttachmentName
@@ -497,6 +497,11 @@ sub Run {
                         $GetParam{ $TimeType . 'TimeNewerMinutes' } = 0;
                         $GetParam{ $TimeType . 'TimeOlderMinutes' } = -$Time;
                     }
+                    elsif ( $GetParam{ $TimeType . 'TimePointStart' } eq 'After' ) {
+
+                        # in more then ...
+                        $GetParam{ $TimeType . 'TimeNewerMinutes' } = -$Time;
+                    }
                     else {
 
                         # within last ...
@@ -507,7 +512,8 @@ sub Run {
             }
         }
 
-        my $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
+        my $TicketObject  = $Kernel::OM->Get('Kernel::System::Ticket');
+        my $ArticleObject = $Kernel::OM->Get('Kernel::System::Ticket::Article');
 
         # Special behavior for the fulltext search toolbar module:
         # - Check full text string to see if contents is a ticket number.
@@ -667,27 +673,39 @@ sub Run {
             my @CSVData;
             for my $TicketID (@ViewableTicketIDs) {
 
-                # get first article data
-                my %Data = $TicketObject->ArticleFirstArticle(
+                # Get ticket data.
+                my %Ticket = $TicketObject->TicketGet(
                     TicketID      => $TicketID,
-                    Extended      => 1,
                     DynamicFields => 1,
+                    Extended      => 1,
+                    UserID        => $Self->{UserID},
                 );
 
-                if ( !%Data ) {
+                # Get the first article of the ticket.
+                my @Articles = $ArticleObject->ArticleList(
+                    TicketID  => $TicketID,
+                    OnlyFirst => 1,
+                );
 
-                    # get ticket data instead
-                    %Data = $TicketObject->TicketGet(
-                        TicketID      => $TicketID,
-                        DynamicFields => 1,
-                    );
+                my %Article = $ArticleObject->BackendForArticle( %{ $Articles[0] } )->ArticleGet(
+                    %{ $Articles[0] },
+                    DynamicFields => 1,
+                    UserID        => $Self->{UserID},
+                );
 
-                    # set missing information
-                    $Data{Subject} = $Data{Title} || Translatable('Untitled');
-                    $Data{Body} = $LayoutObject->{LanguageObject}->Translate(
-                        'This item has no articles yet.'
-                    );
-                    $Data{From} = '--';
+                my %Data;
+
+                if ( !%Article ) {
+
+                    %Data = %Ticket;
+
+                    # Set missing information.
+                    $Data{Subject} = $Ticket{Title} || $LayoutObject->{LanguageObject}->Translate('Untitled');
+                    $Data{Body}    = $LayoutObject->{LanguageObject}->Translate('This item has no articles yet.');
+                    $Data{From}    = '--';
+                }
+                else {
+                    %Data = ( %Ticket, %Article );
                 }
 
                 for my $Key (qw(State Lock)) {
@@ -696,32 +714,38 @@ sub Run {
 
                 $Data{Age} = $LayoutObject->CustomerAge(
                     Age   => $Data{Age},
-                    Space => ' '
+                    Space => ' ',
                 );
 
                 # get whole article (if configured!)
                 if ( $Config->{SearchArticleCSVTree} ) {
-                    my @Article = $TicketObject->ArticleGet(
-                        TicketID      => $TicketID,
-                        DynamicFields => 0,
+                    my @Articles = $ArticleObject->ArticleList(
+                        TicketID => $TicketID,
                     );
 
-                    if ( $#Article == -1 ) {
+                    if (@Articles) {
+                        for my $Article (@Articles) {
+                            my %ArticleData = $ArticleObject->BackendForArticle( %{$Article} )->ArticleGet(
+                                TicketID      => $TicketID,
+                                ArticleID     => $Article->{ArticleID},
+                                DynamicFields => 0,
+                                UserID        => $Self->{UserID},
+                            );
+                            if ( $ArticleData{Body} ) {
+                                $Data{ArticleTree}
+                                    .= "\n-->"
+                                    . "||$ArticleData{SenderType}"
+                                    . "||$ArticleData{From}"
+                                    . "||$ArticleData{CreateTime}"
+                                    . "||<--------------\n"
+                                    . $Article{Body};
+                            }
+                        }
+                    }
+                    else {
                         $Data{ArticleTree} .= $LayoutObject->{LanguageObject}->Translate(
                             'This item has no articles yet.'
                         );
-                    }
-                    else
-                    {
-                        for my $Articles (@Article) {
-                            if ( $Articles->{Body} ) {
-                                $Data{ArticleTree}
-                                    .= "\n-->||$Articles->{ArticleType}||$Articles->{From}||"
-                                    . $Articles->{Created}
-                                    . "||<--------------\n"
-                                    . $Articles->{Body};
-                            }
-                        }
                     }
                 }
 
@@ -794,7 +818,7 @@ sub Run {
 
             my %HeaderMap = (
                 TicketNumber => Translatable('Ticket Number'),
-                CustomerName => Translatable('Customer Realname'),
+                CustomerName => Translatable('Customer Name'),
             );
 
             my @CSVHeadTranslated = map { $LayoutObject->{LanguageObject}->Translate( $HeaderMap{$_} || $_ ); }
@@ -855,23 +879,39 @@ sub Run {
             my @PDFData;
             for my $TicketID (@ViewableTicketIDs) {
 
-                # get first article data
-                my %Data = $TicketObject->ArticleFirstArticle(
+                # Get ticket data.
+                my %Ticket = $TicketObject->TicketGet(
                     TicketID      => $TicketID,
                     DynamicFields => 1,
+                    UserID        => $Self->{UserID},
                 );
 
-                if ( !%Data ) {
+                # Get the first article of the ticket.
+                my @Articles = $ArticleObject->ArticleList(
+                    TicketID  => $TicketID,
+                    UserID    => $Self->{UserID},
+                    OnlyFirst => 1,
+                );
 
-                    # get ticket data instead
-                    %Data = $TicketObject->TicketGet(
-                        TicketID      => $TicketID,
-                        DynamicFields => 1,
-                    );
+                my %Article = $ArticleObject->BackendForArticle( %{ $Articles[0] } )->ArticleGet(
+                    %{ $Articles[0] },
+                    DynamicFields => 1,
+                    UserID        => $Self->{UserID},
+                );
 
-                    # set missing information
+                # get first article data
+                my %Data;
+
+                if ( !%Article ) {
+
+                    %Data = %Ticket;
+
+                    # Set missing information.
                     $Data{Subject} = $Data{Title} || Translatable('Untitled');
                     $Data{From} = '--';
+                }
+                else {
+                    %Data = ( %Ticket, %Article );
                 }
 
                 # customer info
@@ -1307,8 +1347,8 @@ sub Run {
         );
 
         if (
-            $ConfigObject->Get('Ticket::StorageModule') eq
-            'Kernel::System::Ticket::ArticleStorageDB'
+            $ConfigObject->Get('Ticket::Article::Backend::MIMEBase')->{ArticleStorage} eq
+            'Kernel::System::Ticket::Article::Backend::MIMEBase::ArticleStorageDB'
             )
         {
             push @Attributes, (
@@ -1336,11 +1376,15 @@ sub Run {
             },
             {
                 Key   => 'CustomerUserLogin',
-                Value => Translatable('Customer User Login (complex search)'),
+                Value => Translatable('Assigned to Customer User Login (complex search)'),
             },
             {
                 Key   => 'CustomerUserLoginRaw',
-                Value => Translatable('Customer User Login (exact match)'),
+                Value => Translatable('Assigned to Customer User Login (exact match)'),
+            },
+            {
+                Key   => 'CustomerUserID',
+                Value => Translatable('Accessible to Customer User Login (exact match)'),
             },
             {
                 Key   => 'StateIDs',
@@ -1815,21 +1859,13 @@ sub Run {
             Base      => 'TicketSearch',
             UserLogin => $Self->{UserLogin},
         );
-        delete $Profiles{''};
-        delete $Profiles{'last-search'};
-        if ($EmptySearch) {
-            $Profiles{''} = '-';
-        }
-        else {
-            $Profiles{'last-search'} = '-';
-        }
         $Param{ProfilesStrg} = $LayoutObject->BuildSelection(
-            Data       => \%Profiles,
-            Name       => 'Profile',
-            ID         => 'SearchProfile',
-            SelectedID => $Profile,
-
-            # Do not modernize this field as this causes problems with the automatic focusing of the first element.
+            Data         => \%Profiles,
+            Name         => 'Profile',
+            ID           => 'SearchProfile',
+            SelectedID   => $Profile,
+            Class        => 'Modernize',
+            PossibleNone => 1,
         );
 
         $Param{StatesStrg} = $LayoutObject->BuildSelection(
@@ -1979,9 +2015,10 @@ sub Run {
                 'Last'   => Translatable('within the last ...'),
                 'Next'   => Translatable('within the next ...'),
                 'Before' => Translatable('more than ... ago'),
+                'After'  => Translatable('in more than ...'),
             },
             Name       => 'TicketPendingTimePointStart',
-            SelectedID => $GetParam{TicketPendingTimePointStart} || 'Last',
+            SelectedID => $GetParam{TicketPendingTimePointStart} || 'Next',
         );
         $Param{TicketPendingTimePointFormat} = $LayoutObject->BuildSelection(
             Data => {

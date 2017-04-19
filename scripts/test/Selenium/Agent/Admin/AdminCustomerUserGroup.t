@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -89,6 +89,12 @@ $Selenium->RunTest(
         $Selenium->find_element( "#FilterGroups",       'css' );
         $Selenium->find_element( "#AlwaysGroups",       'css' );
 
+        # check breadcrumb on Overview screen
+        $Self->True(
+            $Selenium->find_element( '.BreadCrumb', 'css' ),
+            "Breadcrumb is found on Overview screen.",
+        );
+
         #check for Customer default Groups
         my @CustomerAlwaysGroups = @{ $ConfigObject->Get('CustomerGroupAlwaysGroups') };
         if (@CustomerAlwaysGroups) {
@@ -135,6 +141,23 @@ $Selenium->RunTest(
 
         # change test CustomerUser relations for test Group
         $Selenium->find_element( $GroupRandomID, 'link_text' )->VerifiedClick();
+
+        # check breadcrumb on change screen
+        my $Count = 1;
+        my $IsLinkedBreadcrumbText;
+        for my $BreadcrumbText (
+            'Manage Customer User-Group Relations',
+            'Change Customer User Relations for Group \'' . $GroupRandomID . '\''
+            )
+        {
+            $Self->Is(
+                $Selenium->execute_script("return \$(\$('.BreadCrumb li')[$Count]).text().trim()"),
+                $BreadcrumbText,
+                "Breadcrumb text '$BreadcrumbText' is found on screen"
+            );
+
+            $Count++;
+        }
 
         $Selenium->find_element("//input[\@value='$UserRandomID'][\@name='rw']")->VerifiedClick();
         $Selenium->find_element("//button[\@value='Save'][\@type='submit']")->VerifiedClick();

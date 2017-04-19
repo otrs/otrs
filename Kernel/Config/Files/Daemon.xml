@@ -13,7 +13,7 @@
             </FrontendModuleReg>
         </Setting>
     </ConfigItem>
-    <ConfigItem Name="Frontend::NotifyModule###800-Daemon-Check" Required="0" Valid="1">
+    <ConfigItem Name="Frontend::NotifyModule###8000-Daemon-Check" Required="0" Valid="1">
         <Description Translatable="1">Defines the module to display a notification in the agent interface if the OTRS Daemon is not running.</Description>
         <Group>Daemon</Group>
         <SubGroup>Frontend::Agent::ModuleNotify</SubGroup>
@@ -43,7 +43,17 @@
             </Array>
         </Setting>
     </ConfigItem>
-
+    <ConfigItem Name="Daemon::Log::RotationType" Required="1" Valid="1">
+        <Description Translatable="1">Type of daemon log rotation to use: Choose 'OTRS' to let OTRS system to handle the file rotation, or choose 'External' to use a 3rd party rotation mechanism (i.e. logrotate). Note: External rotation mechanism requires its own and independent configuration.</Description>
+        <Group>Daemon</Group>
+        <SubGroup>Core::Log</SubGroup>
+        <Setting>
+            <Option SelectedID="otrs"><!-- default OTRS -->
+                <Item Key="otrs" Translatable="1">OTRS</Item>
+                <Item Key="external" Translatable="1">External</Item>
+            </Option>
+        </Setting>
+    </ConfigItem>
     <ConfigItem Name="Daemon::Log::DaysToKeep" Required="0" Valid="0">
         <Description Translatable="1">Defines the number of days to keep the daemon log files.</Description>
         <Group>Daemon</Group>
@@ -385,6 +395,24 @@
                 <Item Key="TaskName">TicketUnlockTimeout</Item>
                 <Item Key="Schedule">35 * * * *</Item> <!-- default: every hour in minute 35 -->
                 <Item Key="Module">Kernel::System::Console::Command::Maint::Ticket::UnlockTimeout</Item>
+                <Item Key="Function">Execute</Item>
+                <Item Key="MaximumParallelInstances">1</Item>
+                <Item Key="Params">
+                    <Array>
+                    </Array>
+                </Item>
+            </Hash>
+        </Setting>
+    </ConfigItem>
+    <ConfigItem Name="Daemon::SchedulerCronTaskManager::Task###RenewCustomerSMIMECertificates" Required="0" Valid="1">
+        <Description Translatable="1">Renew existing SMIME certificates from customer backend. Note: SMIME and SMIME::FetchFromCustomer needs to be active in SysConfig and customer backend needs to be configured to fetch UserSMIMECertificate attribute.</Description>
+        <Group>Daemon</Group>
+        <SubGroup>Daemon::SchedulerCronTaskManager::Task</SubGroup>
+        <Setting>
+            <Hash>
+                <Item Key="TaskName">RenewCustomerSMIMECertificates</Item>
+                <Item Key="Schedule">02 02 * * *</Item> <!-- default each day at 02:02 AM -->
+                <Item Key="Module">Kernel::System::Console::Command::Maint::SMIME::CustomerCertificate::Renew</Item>
                 <Item Key="Function">Execute</Item>
                 <Item Key="MaximumParallelInstances">1</Item>
                 <Item Key="Params">
@@ -748,4 +776,24 @@
             <String Regex="\d+">300</String> <!-- default 60 * 5 (5 mins)-->
         </Setting>
     </ConfigItem>
+
+    <ConfigItem Name="Daemon::SchedulerCronTaskManager::Task###ConfigurationDeploymentCleanup" Required="1" Valid="1" ConfigLevel="100">
+        <Description Translatable="1">Removes old system configuration deployments (Sunday mornings).</Description>
+        <Group>Daemon</Group>
+        <SubGroup>Daemon::SchedulerCronTaskManager::Task</SubGroup>
+        <Setting>
+            <Hash>
+                <Item Key="TaskName">ConfigurationDeploymentCleanup</Item>
+                <Item Key="Schedule">40 0 * * 0</Item> <!-- default every Sunday at 12:40 AM -->
+                <Item Key="Module">Kernel::System::SysConfig</Item>
+                <Item Key="Function">ConfigurationDeployCleanup</Item>
+                <Item Key="MaximumParallelInstances">1</Item>
+                <Item Key="Params">
+                    <Array>
+                    </Array>
+                </Item>
+            </Hash>
+        </Setting>
+    </ConfigItem>
+
 </otrs_config>

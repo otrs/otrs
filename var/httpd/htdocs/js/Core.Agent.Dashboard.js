@@ -1,5 +1,5 @@
 // --
-// Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+// Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 // --
 // This software comes with ABSOLUTELY NO WARRANTY. For details, see
 // the enclosed file COPYING for license information (AGPL). If you
@@ -19,178 +19,6 @@ Core.Agent = Core.Agent || {};
  *      This namespace contains the special module functions for the Dashboard.
  */
 Core.Agent.Dashboard = (function (TargetNS) {
-
-    /**
-     * @name InitCustomerIDAutocomplete
-     * @memberof Core.Agent.Dashboard
-     * @function
-     * @param {jQueryObject} $Input - Input element to add auto complete to.
-     * @description
-     *      Initialize autocompletion for CustomerID.
-     */
-    TargetNS.InitCustomerIDAutocomplete = function ($Input) {
-        $Input.autocomplete({
-            minLength: Core.Config.Get('CustomerIDAutocomplete').MinQueryLength,
-            delay: Core.Config.Get('CustomerIDAutocomplete').QueryDelay,
-            open: function() {
-                // force a higher z-index than the overlay/dialog
-                $(this).autocomplete('widget').addClass('ui-overlay-autocomplete');
-                return false;
-            },
-            source: function (Request, Response) {
-                var URL = Core.Config.Get('Baselink'), Data = {
-                    Action: 'AgentCustomerInformationCenterSearch',
-                    Subaction: 'SearchCustomerID',
-                    IncludeUnknownTicketCustomers: parseInt(Core.Config.Get('IncludeUnknownTicketCustomers'), 10),
-                    Term: Request.term,
-                    MaxResults: Core.Config.Get('CustomerIDAutocomplete').MaxResultsDisplayed
-                };
-
-                // if an old ajax request is already running, stop the old request and start the new one
-                if ($Input.data('AutoCompleteXHR')) {
-                    $Input.data('AutoCompleteXHR').abort();
-                    $Input.removeData('AutoCompleteXHR');
-                    // run the response function to hide the request animation
-                    Response({});
-                }
-
-                $Input.data('AutoCompleteXHR', Core.AJAX.FunctionCall(URL, Data, function (Result) {
-                    var ValueData = [];
-                    $Input.removeData('AutoCompleteXHR');
-                    $.each(Result, function () {
-                        ValueData.push({
-                            label: this.Label + ' (' + this.Value + ')',
-                            value: this.Value
-                        });
-                    });
-                    Response(ValueData);
-                }));
-            },
-            select: function (Event, UI) {
-                $(Event.target)
-                    .parent()
-                    .find('select')
-                    .append('<option value="' + UI.item.value + '">SelectedItem</option>')
-                    .val(UI.item.value)
-                    .trigger('change');
-            }
-        });
-    };
-
-    /**
-     * @name InitCustomerUserAutocomplete
-     * @memberof Core.Agent.Dashboard
-     * @function
-     * @param {jQueryObject} $Input - Input element to add auto complete to.
-     * @description
-     *      Initialize autocompletion for CustomerUser.
-     */
-    TargetNS.InitCustomerUserAutocomplete = function ($Input) {
-        $Input.autocomplete({
-            minLength: Core.Config.Get('CustomerUserAutocomplete').MinQueryLength,
-            delay: Core.Config.Get('CustomerUserAutocomplete').QueryDelay,
-            open: function() {
-                // force a higher z-index than the overlay/dialog
-                $(this).autocomplete('widget').addClass('ui-overlay-autocomplete');
-                return false;
-            },
-            source: function (Request, Response) {
-                var URL = Core.Config.Get('Baselink'), Data = {
-                    Action: 'AgentCustomerSearch',
-                    IncludeUnknownTicketCustomers: parseInt(Core.Config.Get('IncludeUnknownTicketCustomers'), 10),
-                    Term: Request.term,
-                    MaxResults: Core.Config.Get('CustomerUserAutocomplete').MaxResultsDisplayed
-                };
-
-                // if an old ajax request is already running, stop the old request and start the new one
-                if ($Input.data('AutoCompleteXHR')) {
-                    $Input.data('AutoCompleteXHR').abort();
-                    $Input.removeData('AutoCompleteXHR');
-                    // run the response function to hide the request animation
-                    Response({});
-                }
-
-                $Input.data('AutoCompleteXHR', Core.AJAX.FunctionCall(URL, Data, function (Result) {
-                    var ValueData = [];
-                    $Input.removeData('AutoCompleteXHR');
-                    $.each(Result, function () {
-                        ValueData.push({
-                            label: this.CustomerValue + " (" + this.CustomerKey + ")",
-                            value: this.CustomerValue,
-                            key: this.CustomerKey
-                        });
-                    });
-                    Response(ValueData);
-                }));
-            },
-            select: function (Event, UI) {
-                $(Event.target)
-                    .parent()
-                    .find('select')
-                    .append('<option value="' + UI.item.key + '">SelectedItem</option>')
-                    .val(UI.item.key)
-                    .trigger('change');
-            }
-        });
-    };
-
-    /**
-     * @name InitUserAutocomplete
-     * @memberof Core.Agent.Dashboard
-     * @function
-     * @param {jQueryObject} $Input - Input element to add auto complete to.
-     * @param {String} Subaction - Subaction to execute, "SearchCustomerID" or "SearchCustomerUser".
-     * @description
-     *      Initialize autocompletion for User.
-     */
-    TargetNS.InitUserAutocomplete = function ($Input, Subaction) {
-        $Input.autocomplete({
-            minLength: Core.Config.Get('UserAutocomplete').MinQueryLength,
-            delay: Core.Config.Get('UserAutocomplete').QueryDelay,
-            open: function() {
-                // force a higher z-index than the overlay/dialog
-                $(this).autocomplete('widget').addClass('ui-overlay-autocomplete');
-                return false;
-            },
-            source: function (Request, Response) {
-                var URL = Core.Config.Get('Baselink'), Data = {
-                    Action: 'AgentUserSearch',
-                    Subaction: Subaction,
-                    Term: Request.term,
-                    MaxResults: Core.Config.Get('UserAutocomplete').MaxResultsDisplayed
-                };
-
-                // if an old ajax request is already running, stop the old request and start the new one
-                if ($Input.data('AutoCompleteXHR')) {
-                    $Input.data('AutoCompleteXHR').abort();
-                    $Input.removeData('AutoCompleteXHR');
-                    // run the response function to hide the request animation
-                    Response({});
-                }
-
-                $Input.data('AutoCompleteXHR', Core.AJAX.FunctionCall(URL, Data, function (Result) {
-                    var ValueData = [];
-                    $Input.removeData('AutoCompleteXHR');
-                    $.each(Result, function () {
-                        ValueData.push({
-                            label: this.UserValue + " (" + this.UserKey + ")",
-                            value: this.UserValue,
-                            key: this.UserKey
-                        });
-                    });
-                    Response(ValueData);
-                }));
-            },
-            select: function (Event, UI) {
-                $(Event.target)
-                    .parent()
-                    .find('select')
-                    .append('<option value="' + UI.item.key + '">SelectedItem</option>')
-                    .val(UI.item.key)
-                    .trigger('change');
-            }
-        });
-    };
 
     /**
      * @private
@@ -267,16 +95,17 @@ Core.Agent.Dashboard = (function (TargetNS) {
         // Initializes events customer user list
         InitCustomerUserList();
 
-        // Initializes preferences for widget containers
+        // Initializes preferences and refresh events for widget containers
         // (if widgets are available)
         if (typeof WidgetContainers !== 'undefined') {
             $.each(WidgetContainers, function (Index, Value) {
                 InitWidgetContainerPref(Value);
+                InitWidgetContainerRefresh(Value.Name);
             });
         }
 
-        // Initializes refresh event for user online widget
-        InitUserOnlineRefresh();
+        // Initializes AppointmentCalendar widget functionality
+        TargetNS.InitAppointmentCalendar();
 
         // Initializes events ticket queue overview
         InitTicketQueueOverview();
@@ -286,6 +115,9 @@ Core.Agent.Dashboard = (function (TargetNS) {
 
         // Initializes UserOnline widget functionality
         TargetNS.InitUserOnline();
+
+        // Initializes dashboard ticket generic widgets functionality
+        TargetNS.InitTicketGeneric();
 
         // Disable drag and drop of dashboard widgets on mobile / touch devices
         // to prevent accidentally moved widgets while tabbing/swiping
@@ -345,7 +177,7 @@ Core.Agent.Dashboard = (function (TargetNS) {
             if ($(this).find('input').prop('checked')) {
                 $(this).addClass('Checked');
             }
-            $(this).bind('click', function() {
+            $(this).on('click', function() {
                 $(this).toggleClass('Checked', $(this).find('input').prop('checked'));
             });
         });
@@ -644,7 +476,7 @@ Core.Agent.Dashboard = (function (TargetNS) {
             $Container.prev('.StatsSettingsJSON').val(Core.JSON.Stringify(Data));
         }
 
-        $Container.find('select, input').bind('change', function() {
+        $Container.find('select, input').on('change', function() {
             CollectStatsData();
             ValidateTimeSettings();
         });
@@ -663,34 +495,6 @@ Core.Agent.Dashboard = (function (TargetNS) {
     function InitCustomerUserList () {
         var CustomerUserRefresh;
 
-        // Bind event on create chat request button
-        $('a.CreateChatRequest').bind('click', function() {
-            var $Dialog = $('#DashboardUserOnlineChatStartDialog').clone();
-
-            $Dialog.find('input[name=ChatStartUserID]').val($(this).data('user-id'));
-            $Dialog.find('input[name=ChatStartUserType]').val($(this).data('user-type'));
-            $Dialog.find('input[name=ChatStartUserFullname]').val($(this).data('user-fullname'));
-
-            Core.UI.Dialog.ShowContentDialog($Dialog.html(), Core.Language.Translate('Start chat'), '100px', 'Center', true);
-
-            // Only enable button if there is a message
-            $('.Dialog textarea[name="ChatStartFirstMessage"]').on('keyup', function(){
-                $('.Dialog button').prop('disabled', $(this).val().length ? false : true);
-            });
-
-            $('.Dialog form').on('submit', function(){
-                if (!$('.Dialog textarea[name=ChatStartFirstMessage]').val().length) {
-                    return false;
-                }
-                // Close after submit
-                window.setTimeout(function(){
-                    Core.UI.Dialog.CloseDialog($('.Dialog'));
-                }, 1);
-            });
-
-            return false;
-        });
-
         if (typeof Core.Config.Get('CustomerUserListRefresh') !== 'undefined') {
             CustomerUserRefresh = Core.Config.Get('CustomerUserListRefresh');
 
@@ -699,9 +503,10 @@ Core.Agent.Dashboard = (function (TargetNS) {
                 Core.Config.Set('Timer_' + CustomerUserRefresh.NameHTML, window.setTimeout(function() {
 
                     // get active filter
-                    var Filter = $('#Dashboard' + Core.App.EscapeSelector(CustomerUserRefresh.Name) + '-box').find('.Tab.Actions li.Selected a').attr('data-filter');
+                    var Filter = $('#Dashboard' + Core.App.EscapeSelector(CustomerUserRefresh.Name) + '-box').find('.Tab.Actions li.Selected a').attr('data-filter'),
+                    AdditionalFilter = $('#Dashboard' + Core.App.EscapeSelector(CustomerUserRefresh.Name) + '-box').find('.Tab.Actions li.AdditionalFilter.Selected a').attr('data-filter');
                     $('#Dashboard' + Core.App.EscapeSelector(CustomerUserRefresh.Name) + '-box').addClass('Loading');
-                    Core.AJAX.ContentUpdate($('#Dashboard' + Core.App.EscapeSelector(CustomerUserRefresh.Name)), Core.Config.Get('Baselink') + 'Action=' + Core.Config.Get('Action') + ';Subaction=Element;Name=' + CustomerUserRefresh.Name + ';Filter=' + Filter + ';CustomerID=' + CustomerUserRefresh.CustomerID, function () {
+                    Core.AJAX.ContentUpdate($('#Dashboard' + Core.App.EscapeSelector(CustomerUserRefresh.Name)), Core.Config.Get('Baselink') + 'Action=' + Core.Config.Get('Action') + ';Subaction=Element;Name=' + CustomerUserRefresh.Name + ';AdditionalFilter=' + AdditionalFilter + ';Filter=' + Filter + ';CustomerID=' + CustomerUserRefresh.CustomerID, function () {
                         $('#Dashboard' + Core.App.EscapeSelector(CustomerUserRefresh.Name) + '-box').removeClass('Loading');
                     });
                     clearTimeout(Core.Config.Get('Timer_' + CustomerUserRefresh.NameHTML));
@@ -712,24 +517,95 @@ Core.Agent.Dashboard = (function (TargetNS) {
 
     /**
      * @private
-     * @name InitUserOnlineRefresh
+     * @name InitWidgetContainerRefresh
+     * @memberof Core.Agent.Dashboard
+     * @param {String} WidgetName - Name of the widget
+     * @function
+     * @description
+     *      Initializes the event to refresh widget container.
+     */
+    function InitWidgetContainerRefresh (WidgetName) {
+        var WidgetRefresh = Core.Config.Get('CanRefresh-' + WidgetName);
+        if (typeof WidgetRefresh !== 'undefined') {
+            $('#Dashboard' + Core.App.EscapeSelector(WidgetRefresh.Name) + '_toggle').on('click', function() {
+                $('#Dashboard' + Core.App.EscapeSelector(WidgetRefresh.Name) + '-box').addClass('Loading');
+                Core.AJAX.ContentUpdate($('#Dashboard' + Core.App.EscapeSelector(WidgetRefresh.Name)), Core.Config.Get('Baselink') + 'Action=' + Core.Config.Get('Action') +';Subaction=Element;Name=' + WidgetRefresh.Name, function () {
+                    $('#Dashboard' + Core.App.EscapeSelector(WidgetRefresh.Name) + '-box').removeClass('Loading');
+                });
+                clearTimeout(Core.Config.Get('Timer_' + WidgetRefresh.NameHTML));
+                return false;
+            });
+        }
+    }
+
+    /**
+     * @name InitAppointmentCalendar
      * @memberof Core.Agent.Dashboard
      * @function
      * @description
-     *      Initializes the event to refresh user online widget
+     *      Initializes dashboard widget Appointment Calendar.
      */
-    function InitUserOnlineRefresh () {
-        var UserOnlineRefresh = Core.Config.Get('CanRefresh');
+    TargetNS.InitAppointmentCalendar = function() {
+        var AppointmentCalendar = Core.Config.Get('AppointmentCalendar');
 
-        if (typeof UserOnlineRefresh !== 'undefined') {
-            $('#Dashboard' + Core.App.EscapeSelector(UserOnlineRefresh.Name) + '_toggle').on('click', function() {
-                $('#Dashboard' + Core.App.EscapeSelector(UserOnlineRefresh.Name) + '-box').addClass('Loading');
-                Core.AJAX.ContentUpdate($('#Dashboard' + Core.App.EscapeSelector(UserOnlineRefresh.Name)), Core.Config.Get('Baselink') + 'Action=' + Core.Config.Get('Action') +';Subaction=Element;Name=' + UserOnlineRefresh.Name, function () {
-                    $('#Dashboard' + Core.App.EscapeSelector(UserOnlineRefresh.Name) + '-box').removeClass('Loading');
-                });
-                clearTimeout(Core.Config.Get('Timer_' + UserOnlineRefresh.NameHTML));
-                return false;
+        // Initializes Appointment Calendar event functionality
+        if (typeof AppointmentCalendar !== 'undefined') {
+            AppointmentCalendarEvent(AppointmentCalendar);
+
+            // Subscribe to ContentUpdate event to initiate events on Appointment Calendar widget update
+            Core.App.Subscribe('Event.AJAX.ContentUpdate.Callback', function(WidgetHTML) {
+                if (typeof WidgetHTML !== 'undefined' && WidgetHTML.search('DashboardAppointmentCalendar') !== parseInt('-1', 10)) {
+                    AppointmentCalendarEvent(AppointmentCalendar);
+                }
             });
+        }
+    };
+
+    /**
+     * @private
+     * @name AppointmentCalendarEvent
+     * @memberof Core.Agent.Dashboard
+     * @function
+     * @param {Object} AppointmentCalendar - Hash with container name, HTML name and refresh time
+     * @description
+     *      Initializes dashboard widget Appointment Calendar events.
+     */
+    function AppointmentCalendarEvent (AppointmentCalendar) {
+
+        // Load filter for today.
+        $('#Dashboard' + Core.App.EscapeSelector(AppointmentCalendar.Name) + 'Today').unbind('click').bind('click', function(){
+            Core.AJAX.ContentUpdate($('#Dashboard' + Core.App.EscapeSelector(AppointmentCalendar.Name)), Core.Config.Get('Baselink') + 'Action=' + Core.Config.Get('Action') + ';Subaction=Element;Name=' + AppointmentCalendar.Name + ';Filter=Today', function () {
+            });
+            return false;
+        });
+
+        // Load filter for tomorrow.
+        $('#Dashboard' + Core.App.EscapeSelector(AppointmentCalendar.Name) + 'Tomorrow').unbind('click').bind('click', function(){
+            Core.AJAX.ContentUpdate($('#Dashboard' + Core.App.EscapeSelector(AppointmentCalendar.Name)), Core.Config.Get('Baselink') + 'Action=' + Core.Config.Get('Action') + ';Subaction=Element;Name=' + AppointmentCalendar.Name + ';Filter=Tomorrow', function () {
+            });
+            return false;
+        });
+
+        // Load filter for soon.
+        $('#Dashboard' + Core.App.EscapeSelector(AppointmentCalendar.Name) + 'Soon').unbind('click').bind('click', function(){
+            Core.AJAX.ContentUpdate($('#Dashboard' + Core.App.EscapeSelector(AppointmentCalendar.Name)), Core.Config.Get('Baselink') + 'Action=' + Core.Config.Get('Action') + ';Subaction=Element;Name=' + AppointmentCalendar.Name + ';Filter=Soon', function () {
+            });
+            return false;
+        });
+
+        // Initiate refresh event.
+        Core.Config.Set('RefreshSeconds_' + AppointmentCalendar.NameHTML, parseInt(AppointmentCalendar.RefreshTime, 10) || 0);
+        if (Core.Config.Get('RefreshSeconds_' + AppointmentCalendar.NameHTML)) {
+            Core.Config.Set('Timer_' + AppointmentCalendar.NameHTML, window.setTimeout(
+                function() {
+                    $('#Dashboard' + Core.App.EscapeSelector(AppointmentCalendar.Name) + '-box').addClass('Loading');
+                    Core.AJAX.ContentUpdate($('#Dashboard' + Core.App.EscapeSelector(AppointmentCalendar.Name)), Core.Config.Get('Baselink') + 'Action=' + Core.Config.Get('Action') + ';Subaction=Element;Name=' + AppointmentCalendar.Name, function () {
+                        $('#Dashboard' + Core.App.EscapeSelector(AppointmentCalendar.Name) + '-box').removeClass('Loading');
+                    });
+                    clearTimeout(Core.Config.Get('Timer_' + AppointmentCalendar.NameHTML));
+                },
+                Core.Config.Get('RefreshSeconds_' + AppointmentCalendar.NameHTML) * 1000)
+            );
         }
     }
 
@@ -766,7 +642,6 @@ Core.Agent.Dashboard = (function (TargetNS) {
      *      Initializes dashboard widget User Online events
      */
     function UserOnlineEvent (UserOnline) {
-        var UserID, $Dialog, Data;
 
         // Bind event on Agent filter
         $('#Dashboard' + Core.App.EscapeSelector(UserOnline.Name) + 'Agent').off('click').on('click', function(){
@@ -779,55 +654,6 @@ Core.Agent.Dashboard = (function (TargetNS) {
         $('#Dashboard' + Core.App.EscapeSelector(UserOnline.Name) + 'Customer').off('click').on('click', function(){
             Core.AJAX.ContentUpdate($('#Dashboard' + Core.App.EscapeSelector(UserOnline.Name)), Core.Config.Get('Baselink') + 'Action=' + Core.Config.Get('Action') + ';Subaction=Element;Name=' + UserOnline.Name + ';Filter=Customer', function () {
             });
-            return false;
-        });
-
-        // Bind event on chat start
-        $('a.DashboardUserOnlineChatStart').off('click').on('click', function() {
-            UserID = $(this).data('user-id'),
-            $Dialog = $('#DashboardUserOnlineChatStartDialog').clone();
-
-            $Dialog.find('input[name=ChatStartUserID]').val($(this).data('user-id'));
-            $Dialog.find('input[name=ChatStartUserType]').val($(this).data('user-type'));
-            $Dialog.find('input[name=ChatStartUserFullname]').val($(this).data('user-fullname'));
-
-            // Get Availability
-            Data = {
-                Action: 'AgentChat',
-                Subaction: 'GetAvailability',
-                UserID: UserID
-            };
-
-            Core.AJAX.FunctionCall(
-                Core.Config.Get('Baselink'),
-                Data,
-                function(Response) {
-                    if (Response < 1) {
-                        window.alert(Core.Language.Translate("Selected agent is not available for chat"));
-
-                        // Reload page
-                        document.location.reload(true);
-                        return false;
-                    }
-
-                    Core.UI.Dialog.ShowContentDialog($Dialog.html(), Core.Language.Translate('Start chat'), '100px', 'Center', true);
-
-                    // Only enable button if there is a message
-                    $('.Dialog textarea[name="ChatStartFirstMessage"]').on('keyup', function(){
-                        $('.Dialog button').prop('disabled', $(this).val().length ? false : true);
-                    });
-
-                    $('.Dialog form').on('submit', function(){
-                        if (!$('.Dialog textarea[name=ChatStartFirstMessage]').val().length) {
-                            return false;
-                        }
-                        // Close after submit
-                        window.setTimeout(function(){
-                            Core.UI.Dialog.CloseDialog($('.Dialog'));
-                        }, 1);
-                    });
-                });
-
             return false;
         });
 
@@ -866,7 +692,7 @@ Core.Agent.Dashboard = (function (TargetNS) {
                 // Subscribe to ContentUpdate event to initiate stats widget event on updated widget
                 Core.App.Subscribe('Event.AJAX.ContentUpdate.Callback', function($WidgetElement) {
                     StatsData = Core.Config.Get('StatsData' + Value);
-                    if (typeof $WidgetElement !== 'undefined' && $WidgetElement.search('GraphWidget' + StatsData.Name) !== parseInt('-1', 10)) {
+                    if (typeof StatsData !== 'undefined' && typeof $WidgetElement !== 'undefined' && $WidgetElement.search(StatsData.Name) !== parseInt('-1', 10)) {
                         StatsWidget(Value);
                     }
                 });
@@ -884,7 +710,8 @@ Core.Agent.Dashboard = (function (TargetNS) {
      *      Initializes each available stats dashboard widget functionality.
      */
     function StatsWidget (ID) {
-        var StatsData = Core.Config.Get('StatsData' + ID);
+        var StatsData = Core.Config.Get('StatsData' + ID),
+            WidgetRefreshStat = Core.Config.Get('WidgetRefreshStat' + ID);
 
         if (typeof StatsData === 'undefined') {
             return;
@@ -892,6 +719,11 @@ Core.Agent.Dashboard = (function (TargetNS) {
 
         (function(){
             var Timeout = 500;
+
+            if (StatsData.StatResultData === null) {
+                return;
+            }
+
             // check if the container is already expanded, otherwise the graph
             // would have the wrong size after the widget settings have been saved
             // and the content is being reloaded using ajax.
@@ -935,6 +767,26 @@ Core.Agent.Dashboard = (function (TargetNS) {
 
         Core.Config.Set('StatsMaxXaxisAttributes', parseInt(StatsData.MaxXaxisAttributes, 10));
         TargetNS.InitStatsConfiguration($('#StatsSettingsBox' + Core.App.EscapeSelector(StatsData.Name) + ''));
+
+        if (typeof WidgetRefreshStat === 'undefined') {
+            return;
+        }
+
+        // Initiate dashboard stat refresh event.
+        Core.Config.Set('RefreshSeconds_' + WidgetRefreshStat.NameHTML, parseInt(WidgetRefreshStat.RefreshTime, 10) || 0);
+        if (Core.Config.Get('RefreshSeconds_' + WidgetRefreshStat.NameHTML)) {
+            Core.Config.Set('Timer_' + WidgetRefreshStat.NameHTML, window.setTimeout(
+                function() {
+                    $('#Dashboard' + Core.App.EscapeSelector(WidgetRefreshStat.Name) + '-box').addClass('Loading');
+                    Core.AJAX.ContentUpdate($('#Dashboard' + Core.App.EscapeSelector(WidgetRefreshStat.Name)), Core.Config.Get('Baselink') + 'Action=' + Core.Config.Get('Action') + ';Subaction=Element;Name=' + WidgetRefreshStat.Name, function () {
+                        $('#Dashboard' + Core.App.EscapeSelector(WidgetRefreshStat.Name) + '-box').removeClass('Loading');
+                    });
+
+                    clearTimeout(Core.Config.Get('Timer_' + WidgetRefreshStat.NameHTML));
+                },
+                Core.Config.Get('RefreshSeconds_' + WidgetRefreshStat.NameHTML) * 1000)
+            );
+        }
     }
 
     /**
@@ -1005,6 +857,594 @@ Core.Agent.Dashboard = (function (TargetNS) {
                 );
             }, Timeout);
         }
+    }
+
+    /**
+     * @name InitTicketGeneric
+     * @memberof Core.Agent.Dashboard
+     * @function
+     * @description
+     *      Initializes the dashboard ticket generic widget functionality.
+     */
+    TargetNS.InitTicketGeneric = function () {
+        var Data = Core.Config.Get('ContainerNames');
+
+        // initializes dashboards ticket generic events
+        if (typeof Data !== 'undefined') {
+            $.each(Data, function (Index, Value) {
+
+                if (typeof Value !== 'undefined') {
+                    TicketGenericEvent(Value);
+
+                    // Subscribe to ContentUpdate event to initiate ticket generic events on widget update
+                    Core.App.Subscribe('Event.AJAX.ContentUpdate.Callback', function($WidgetElement) {
+                        if (typeof $WidgetElement !== 'undefined' && $WidgetElement.search(Value.Name) !== parseInt('-1', 10)) {
+                            TicketGenericEvent(Value);
+                        }
+                    });
+                }
+            });
+        }
+    };
+
+    /**
+     * @private
+     * @name TicketGenericEvent
+     * @memberof Core.Agent.Dashboard
+     * @param {Object} Value - Hash with different config options.
+     * @function
+     * @description
+     *      Initializes dashboard ticket generic events.
+     */
+    function TicketGenericEvent (Value) {
+        var HeaderMeta, TicketNumberColumn, HeaderColumn, HeaderColumnSortableData, HeaderColumnFilterSortData,
+            HeaderColumnFilterData, WidgetRefreshData, WidgetContainer;
+
+        HeaderMeta = Core.Config.Get('HeaderMeta' + Value.NameForm);
+        if (typeof HeaderMeta !== 'undefined') {
+            GenericHeaderMeta(HeaderMeta);
+        }
+
+        TicketNumberColumn = Core.Config.Get('TicketNumberColumn' + Value.NameForm);
+        if (typeof TicketNumberColumn !== 'undefined') {
+            GenericHeaderTicketNumberColumn(TicketNumberColumn);
+        }
+
+        HeaderColumn = Core.Config.Get('HeaderColumn' + Value.NameForm);
+        if (typeof HeaderColumn !== 'undefined') {
+            $.each(HeaderColumn, function (ColumnIndex, ColumnValue) {
+                HeaderColumnFilterSortData = Core.Config.Get('ColumnFilterSort' + ColumnValue + Value.NameForm);
+                if (typeof HeaderColumnFilterSortData !== 'undefined') {
+                    GenericHeaderColumnFilterSort(HeaderColumnFilterSortData);
+                }
+
+                HeaderColumnSortableData = Core.Config.Get('ColumnSortable' + ColumnValue + Value.NameForm);
+                if (typeof HeaderColumnSortableData !== 'undefined') {
+                    GenericHeaderColumnSortable(HeaderColumnSortableData);
+                }
+
+                HeaderColumnFilterData = Core.Config.Get('ColumnFilter' + ColumnValue + Value.NameForm);
+                if (typeof HeaderColumnFilterData !== 'undefined') {
+                    GenericHeaderColumnFilter(HeaderColumnFilterData);
+                }
+
+                // initializes autocompletion for customer ID
+                if (ColumnValue === 'CustomerID') {
+                    Core.Agent.TableFilters.InitCustomerIDAutocomplete($(".CustomerIDAutoComplete"));
+                }
+
+                // initializes autocompletion for customer user
+                if (ColumnValue === 'CustomerUserID') {
+                    Core.Agent.TableFilters.InitCustomerUserAutocomplete($(".CustomerUserAutoComplete"));
+                }
+
+                // initializes autocompletion for user
+                if (ColumnValue === 'Responsible' || ColumnValue === 'Owner') {
+                    Core.Agent.TableFilters.InitUserAutocomplete($(".UserAutoComplete"));
+                }
+            });
+        }
+
+        ColumnSettings();
+
+        $('.AutoColspan').each(function() {
+            var ColspanCount = $(this).closest('table').find('th').length;
+            $(this).attr('colspan', ColspanCount);
+        });
+
+        // Initialize refresh event for dashboard ticket widgets
+        WidgetRefreshData = Core.Config.Get('WidgetRefresh' + Value.NameForm);
+        if (typeof WidgetRefreshData !== 'undefined') {
+            DashboardTicketWidgetRefresh(WidgetRefreshData);
+        }
+
+        // Initialize remove filter event
+        WidgetContainer = Core.Config.Get('WidgetContainer' + Value.NameForm);
+        if (typeof WidgetContainer !== 'undefined') {
+            if (WidgetContainer.FilterActive) {
+                DashboardTicketWidgetRemoveFilter(WidgetContainer);
+            }
+            else {
+                $('#Dashboard' + Core.App.EscapeSelector(WidgetContainer.Name) + '-box').find('.RemoveFilters').remove();
+            }
+            DashboardTicketWidgetFilter(WidgetContainer);
+        }
+
+        Core.UI.InitMasterAction();
+    }
+
+    /**
+     * @private
+     * @name GenericHeaderMeta
+     * @memberof Core.Agent.Dashboard
+     * @param {Object} HeaderMeta - Hash with different config options.
+     * @function
+     * @description
+     *      Initializes the header meta event.
+     */
+    function GenericHeaderMeta (HeaderMeta) {
+
+        $('#' + Core.App.EscapeSelector(HeaderMeta.HeaderColumnName) + 'FlagOverviewControl' + Core.App.EscapeSelector(HeaderMeta.Name)).off('click').on('click', function (Event) {
+            var Filter, AdditionalFilter, LinkPage, ColumnFilterName, CustomerID, CustomerUserID;
+
+            Filter           = $('#Filter' + Core.App.EscapeSelector(HeaderMeta.Name)).val() || 'All';
+            AdditionalFilter = $('#AdditionalFilter' + Core.App.EscapeSelector(HeaderMeta.Name)).val() || '';
+            LinkPage         = '';
+            CustomerID       = $('input[name=CustomerID]').val() || '';
+            CustomerUserID   = $('input[name=CustomerUserID]').val() || '';
+
+            // get all column filters
+            $('.ColumnFilter').each(function(){
+                ColumnFilterName  = $(this).attr('name');
+
+                // get all options of current column filter
+                $(this).children().each(function() {
+                    if ($(this).attr('value') && $(this).attr('selected')) {
+                        LinkPage = LinkPage + ColumnFilterName + '=' + $(this).attr('value') + ';';
+                    }
+                });
+            });
+
+            $('#Dashboard' + Core.App.EscapeSelector(HeaderMeta.Name) + '-box').addClass('Loading');
+            Core.AJAX.ContentUpdate($('#Dashboard' + Core.App.EscapeSelector(HeaderMeta.Name)), Core.Config.Get('Baselink') + 'Action=' + Core.Config.Get('Action') + ';Subaction=Element;Name=' + HeaderMeta.Name + ';AdditionalFilter=' + AdditionalFilter + ';Filter=' + Filter + ';' + LinkPage + ';CustomerID=' + CustomerID + ';CustomerUserID=' + CustomerUserID + ';SortBy=' + HeaderMeta.HeaderColumnName + ';OrderBy=' + HeaderMeta.OrderBy, function () {
+                $('#Dashboard' + Core.App.EscapeSelector(HeaderMeta.Name) + '-box').removeClass('Loading');
+            });
+            Event.preventDefault();
+            return false;
+        });
+    }
+
+    /**
+     * @private
+     * @name GenericHeaderTicketNumberColumn
+     * @memberof Core.Agent.Dashboard
+     * @param {Object} TicketNumberColumn - Hash with different config options.
+     * @function
+     * @description
+     *      Initializes the ticket number column event.
+     */
+    function GenericHeaderTicketNumberColumn (TicketNumberColumn) {
+
+        $('#TicketNumberOverviewControl' + Core.App.EscapeSelector(TicketNumberColumn.Name)).off('click').on('click', function (Event) {
+            var Filter, AdditionalFilter, LinkPage, ColumnFilterName, CustomerID, CustomerUserID;
+
+            Filter           = $('#Filter' + Core.App.EscapeSelector(TicketNumberColumn.Name)).val() || 'All';
+            AdditionalFilter = $('#AdditionalFilter' + Core.App.EscapeSelector(TicketNumberColumn.Name)).val() || '';
+            LinkPage         = '';
+            CustomerID       = $('input[name=CustomerID]').val() || '';
+            CustomerUserID   = $('input[name=CustomerUserID]').val() || '';
+
+            // get all column filters
+            $('.ColumnFilter').each(function(){
+                ColumnFilterName  = $(this).attr('name');
+
+                // get all options of current column filter
+                $(this).children().each(function() {
+                    if ($(this).attr('value') && $(this).attr('selected')) {
+                        LinkPage = LinkPage + ColumnFilterName + '=' + $(this).attr('value') + ';';
+                    }
+                });
+            });
+
+            $('#Dashboard' + Core.App.EscapeSelector(TicketNumberColumn.Name) + '-box').addClass('Loading');
+            Core.AJAX.ContentUpdate($('#Dashboard' + Core.App.EscapeSelector(TicketNumberColumn.Name) + ''), Core.Config.Get('Baselink') + 'Action=' + Core.Config.Get('Action') + ';Subaction=Element;Name=' + TicketNumberColumn.Name + ';AdditionalFilter=' + AdditionalFilter + ';Filter=' + Filter + ';' + LinkPage + ';CustomerID=' + CustomerID + ';CustomerUserID=' + CustomerUserID + ';SortBy=TicketNumber;OrderBy=' + TicketNumberColumn.OrderBy, function () {
+                $('#Dashboard' + Core.App.EscapeSelector(TicketNumberColumn.Name) + '-box').removeClass('Loading');
+            });
+            Event.preventDefault();
+            return false;
+        });
+    }
+
+    /**
+     * @private
+     * @name GenericHeaderColumnFilterSort
+     * @memberof Core.Agent.Dashboard
+     * @param {Object} ColumnFilterSort - Hash with different config options.
+     * @function
+     * @description
+     *      Initializes the filterable and sortable column event.
+     */
+    function GenericHeaderColumnFilterSort (ColumnFilterSort) {
+        var LinkPage, ColumnFilterName, Filter, AdditionalFilter, ColumnFilterID, CustomerID, CustomerUserID;
+
+        $('#ColumnFilter' + Core.App.EscapeSelector(ColumnFilterSort.HeaderColumnName) + Core.App.EscapeSelector(ColumnFilterSort.Name)).off('change').on('change', function(){
+
+            LinkPage         = '';
+            Filter           = $('#Filter' + Core.App.EscapeSelector(ColumnFilterSort.Name)).val() || 'All';
+            AdditionalFilter = $('#AdditionalFilter' + Core.App.EscapeSelector(ColumnFilterSort.Name)).val() || '';
+            CustomerID       = $('input[name=CustomerID]').val() || '';
+            CustomerUserID   = $('input[name=CustomerUserID]').val() || '';
+
+            // set ColumnFilter value for current ColumnFilter
+            ColumnFilterName = $(this).attr('name');
+            LinkPage = LinkPage + ColumnFilterName + '=' + $(this).val() + ';';
+
+            // remember the current ColumnFilter ID
+            ColumnFilterID = $(this).attr('ID');
+
+            // get all column filters
+            $('.ColumnFilter').each(function(){
+                ColumnFilterName  = $(this).attr('name');
+
+                // exclude current column filter, apparently the selected option is not set to
+                // selected at this point and uses the old value
+                if ($(this).attr('ID') !== ColumnFilterID) {
+
+                    // get all options of current column filter
+                    $(this).children().each(function() {
+                        if ($(this).attr('value') && $(this).attr('selected')) {
+                            LinkPage = LinkPage + ColumnFilterName + '=' + $(this).attr('value') + ';';
+                        }
+                    });
+                }
+            });
+
+            $('#Dashboard' + Core.App.EscapeSelector(ColumnFilterSort.Name) + '-box').addClass('Loading');
+            Core.AJAX.ContentUpdate($('#Dashboard' + Core.App.EscapeSelector(ColumnFilterSort.Name)), Core.Config.Get('Baselink') + 'Action=' + Core.Config.Get('Action') + ';Subaction=Element;Name=' + ColumnFilterSort.Name + ';AdditionalFilter=' + AdditionalFilter + ';Filter=' + Filter + ';CustomerID=' + CustomerID + ';CustomerUserID=' + CustomerUserID + ';SortBy=' + ColumnFilterSort.SortBy + ';OrderBy=' + ColumnFilterSort.OrderBy + ';' + LinkPage, function () {
+                $('#Dashboard' + Core.App.EscapeSelector(ColumnFilterSort.Name) + '-box').removeClass('Loading');
+            });
+            return false;
+        });
+
+        $('#' + Core.App.EscapeSelector(ColumnFilterSort.HeaderColumnName) + 'OverviewControl' + Core.App.EscapeSelector(ColumnFilterSort.Name)).off('click').on('click', function (Event) {
+
+            LinkPage         = '';
+            Filter           = $('#Filter' + Core.App.EscapeSelector(ColumnFilterSort.Name)).val() || 'All';
+            AdditionalFilter = $('#AdditionalFilter' + Core.App.EscapeSelector(ColumnFilterSort.Name)).val() || '';
+            CustomerID       = $('input[name=CustomerID]').val() || '';
+            CustomerUserID   = $('input[name=CustomerUserID]').val() || '';
+
+            // set ColumnFilter value for current ColumnFilter
+            ColumnFilterName = $(this).attr('name');
+            LinkPage = LinkPage + ColumnFilterName + '=' + $(this).val() + ';';
+
+            // remember the current ColumnFilter ID
+            ColumnFilterID = $(this).attr('ID');
+
+            // get all column filters
+            $('.ColumnFilter').each(function(){
+                ColumnFilterName  = $(this).attr('name');
+
+                // exclude current column filter, apparently the selected option is not set to
+                // selected at this point and uses the old value
+                if ($(this).attr('ID') !== ColumnFilterID) {
+
+                    // get all options of current column filter
+                    $(this).children().each(function() {
+                        if ($(this).attr('value') && $(this).attr('selected')) {
+                            LinkPage = LinkPage + ColumnFilterName + '=' + $(this).attr('value') + ';';
+                        }
+                    });
+                }
+            });
+
+            $('#Dashboard' + Core.App.EscapeSelector(ColumnFilterSort.Name) + '-box').addClass('Loading');
+            Core.AJAX.ContentUpdate($('#Dashboard' + Core.App.EscapeSelector(ColumnFilterSort.Name)), Core.Config.Get('Baselink') + 'Action=' + Core.Config.Get('Action') + ';Subaction=Element;Name=' + ColumnFilterSort.Name + ';AdditionalFilter=' + AdditionalFilter + ';Filter=' + Filter + ';CustomerID=' + CustomerID + ';CustomerUserID=' + CustomerUserID + ';SortBy=' + ColumnFilterSort.HeaderColumnName + ';OrderBy=' + ColumnFilterSort.OrderBy + ';' + LinkPage, function () {
+                $('#Dashboard' + Core.App.EscapeSelector(ColumnFilterSort.Name) + '-box').removeClass('Loading');
+            });
+            Event.preventDefault();
+            return false;
+        });
+    }
+
+    /**
+     * @private
+     * @name GenericHeaderColumnSortable
+     * @memberof Core.Agent.Dashboard
+     * @param {Object} ColumnSortable - Hash with different config options.
+     * @function
+     * @description
+     *      Initializes the sortable column event.
+     */
+    function GenericHeaderColumnSortable (ColumnSortable) {
+        var LinkPage, ColumnFilterName, Filter, AdditionalFilter, ColumnFilterID, CustomerID, CustomerUserID;
+
+        $('#' + Core.App.EscapeSelector(ColumnSortable.HeaderColumnName) + 'OverviewControl' + Core.App.EscapeSelector(ColumnSortable.Name)).off('click').on('click', function (Event) {
+
+            LinkPage         = '';
+            Filter           = $('#Filter' + Core.App.EscapeSelector(ColumnSortable.Name)).val() || 'All';
+            AdditionalFilter = $('#AdditionalFilter' + Core.App.EscapeSelector(ColumnSortable.Name)).val() || '';
+            CustomerID       = $('input[name=CustomerID]').val() || '';
+            CustomerUserID   = $('input[name=CustomerUserID]').val() || '';
+
+            // set ColumnFilter value for current ColumnFilter
+            ColumnFilterName = $(this).attr('name');
+            LinkPage = LinkPage + ColumnFilterName + '=' + $(this).val() + ';';
+
+            // remember the current ColumnFilter ID
+            ColumnFilterID = $(this).attr('ID');
+
+            // get all column filters
+            $('.ColumnFilter').each(function(){
+                ColumnFilterName  = $(this).attr('name');
+
+                // exclude current column filter, apparently the selected option is not set to
+                // selected at this point and uses the old value
+                if ($(this).attr('ID') !== ColumnFilterID) {
+
+                    // get all options of current column filter
+                    $(this).children().each(function() {
+                        if ($(this).attr('value') && $(this).attr('selected')) {
+                            LinkPage = LinkPage + ColumnFilterName + '=' + $(this).attr('value') + ';';
+                        }
+                    });
+                }
+            });
+
+            $('#Dashboard' + Core.App.EscapeSelector(ColumnSortable.Name) + '-box').addClass('Loading');
+            Core.AJAX.ContentUpdate($('#Dashboard' + Core.App.EscapeSelector(ColumnSortable.Name)), Core.Config.Get('Baselink') + 'Action=' + Core.Config.Get('Action') + ';Subaction=Element;Name=' + ColumnSortable.Name + ';AdditionalFilter=' + AdditionalFilter +  ';Filter=' + Filter + ';CustomerID=' + CustomerID + ';CustomerUserID=' + CustomerUserID + ';SortBy=' + ColumnSortable.HeaderColumnName + ';OrderBy=' + ColumnSortable.OrderBy + ';' + LinkPage, function () {
+                $('#Dashboard' + Core.App.EscapeSelector(ColumnSortable.Name) + '-box').removeClass('Loading');
+            });
+            Event.preventDefault();
+            return false;
+        });
+    }
+
+    /**
+     * @private
+     * @name GenericHeaderColumnFilter
+     * @memberof Core.Agent.Dashboard
+     * @param {Object} ColumnFilter - Hash with different config options.
+     * @function
+     * @description
+     *      Initializes the filterable column event.
+     */
+    function GenericHeaderColumnFilter (ColumnFilter) {
+        $('#ColumnFilter' + Core.App.EscapeSelector(ColumnFilter.HeaderColumnName) + Core.App.EscapeSelector(ColumnFilter.Name)).off('change').on('change', function(){
+            var LinkPage, ColumnFilterName, Filter, AdditionalFilter, ColumnFilterID, CustomerID, CustomerUserID;
+
+            LinkPage         = '';
+            Filter           = $('#Filter' + Core.App.EscapeSelector(ColumnFilter.Name)).val() || 'All';
+            AdditionalFilter = $('#AdditionalFilter' + Core.App.EscapeSelector(ColumnFilter.Name)).val() || '';
+            CustomerID       = $('input[name=CustomerID]').val() || '';
+            CustomerUserID   = $('input[name=CustomerUserID]').val() || '';
+
+            // set ColumnFilter value for current ColumnFilter
+            ColumnFilterName = $(this).attr('name');
+            LinkPage = LinkPage + ColumnFilterName + '=' + $(this).val() + ';';
+
+            // remember the current ColumnFilter ID
+            ColumnFilterID = $(this).attr('ID');
+
+            // get all column filters
+            $('.ColumnFilter').each(function(){
+                ColumnFilterName  = $(this).attr('name');
+
+                // exclude current column filter, apparently the selected option is not set to
+                // selected at this point and uses the old value
+                if ($(this).attr('ID') !== ColumnFilterID) {
+
+                    // get all options of current column filter
+                    $(this).children().each(function() {
+                        if ($(this).attr('value') && $(this).attr('selected')) {
+                            LinkPage = LinkPage + ColumnFilterName + '=' + $(this).attr('value') + ';';
+                        }
+                    });
+                }
+            });
+
+            $('#Dashboard' + Core.App.EscapeSelector(ColumnFilter.Name) + '-box').addClass('Loading');
+            Core.AJAX.ContentUpdate($('#Dashboard' + Core.App.EscapeSelector(ColumnFilter.Name)), Core.Config.Get('Baselink') + 'Action=' + Core.Config.Get('Action') + ';Subaction=Element;Name=' + ColumnFilter.Name + ';AdditionalFilter=' + AdditionalFilter + ';Filter=' + Filter + ';CustomerID=' + CustomerID + ';CustomerUserID=' + CustomerUserID + ';SortBy=' + ColumnFilter.SortBy + ';OrderBy=' + ColumnFilter.OrderBy + ';' + LinkPage, function () {
+                $('#Dashboard' + Core.App.EscapeSelector(ColumnFilter.Name) + '-box').removeClass('Loading');
+            });
+            return false;
+        });
+    }
+
+    /**
+     * @private
+     * @name ColumnSettings
+     * @memberof Core.Agent.Dashboard
+     * @function
+     * @description
+     *      Initializes the column settings event.
+     */
+    function ColumnSettings () {
+        $('.DashboardHeader').off('click').on('click', '.ColumnSettingsTrigger', function() {
+
+            var $TriggerObj = $(this),
+                $ColumnSettingsContainer = $TriggerObj.next('.ColumnSettingsContainer'),
+                FilterName;
+
+            if ($TriggerObj.hasClass('Active')) {
+
+                $TriggerObj
+                    .next('.ColumnSettingsContainer')
+                    .find('.ColumnSettingsBox')
+                    .fadeOut('fast', function() {
+                        $TriggerObj.removeClass('Active');
+                    });
+            }
+            else {
+
+                // slide up all open settings widgets
+                $('.ColumnSettingsTrigger')
+                    .next('.ColumnSettingsContainer')
+                    .find('.ColumnSettingsBox')
+                    .fadeOut('fast', function() {
+                        $(this).parent().prev('.ColumnSettingsTrigger').removeClass('Active');
+                    });
+
+                // show THIS settings widget
+                $ColumnSettingsContainer
+                    .find('.ColumnSettingsBox')
+                    .fadeIn('fast', function() {
+
+                        $TriggerObj.addClass('Active');
+
+                        // only show and use the delete filter icon in case of autocomplete fields
+                        // because in regular dropdowns we have a different way to delete the filter
+                        if ($TriggerObj.closest('th').hasClass('FilterActive') && $ColumnSettingsContainer.find('select.ColumnFilter').hasClass('Hidden')) {
+                            $ColumnSettingsContainer
+                                .find('.DeleteFilter')
+                                .removeClass('Hidden')
+                                .off()
+                                .on('click', function() {
+                                    $(this)
+                                        .closest('.ColumnSettingsContainer')
+                                        .find('select')
+                                        .val('DeleteFilter')
+                                        .trigger('change');
+
+                                    return false;
+                                });
+                        }
+
+                        // refresh filter dropdown
+                        FilterName = $ColumnSettingsContainer
+                            .find('select')
+                            .attr('name');
+
+                        if ($TriggerObj.closest('th').hasClass('CustomerID') || $TriggerObj.closest('th').hasClass('CustomerUserID') || $TriggerObj.closest('th').hasClass('Responsible') || $TriggerObj.closest('th').hasClass('Owner')) {
+
+                            if (!$TriggerObj.parent().find('.SelectedValue').length) {
+                                Core.AJAX.FormUpdate($TriggerObj.parents('form'), 'AJAXFilterUpdate', FilterName, [ FilterName ], function() {
+
+                                    var AutoCompleteValue = $ColumnSettingsContainer
+                                            .find('select')
+                                            .val(),
+                                        AutoCompleteText  = $ColumnSettingsContainer
+                                            .find('select')
+                                            .find('option:selected')
+                                            .text();
+
+                                    if (AutoCompleteValue !== 'DeleteFilter') {
+
+                                        $ColumnSettingsContainer
+                                            .find('select')
+                                            .after('<span class="SelectedValue Hidden"><span title="' + AutoCompleteText + ' (' + AutoCompleteValue + ')">' + AutoCompleteText + ' (' + AutoCompleteValue + ')</span></span>');
+                                    }
+                                });
+                            }
+                        }
+                        else {
+                            Core.AJAX.FormUpdate($TriggerObj.parents('form'), 'AJAXFilterUpdate', FilterName, [ FilterName ]);
+                        }
+                });
+            }
+            return false;
+        });
+    }
+
+    /**
+     * @private
+     * @name DashboardTicketWidgetRefresh
+     * @memberof Core.Agent.Dashboard
+     * @param {Object} WidgetRefreshData - Hash with different config options.
+     * @function
+     * @description
+     *      Initializes the dashboard widget refresh event.
+     */
+    function DashboardTicketWidgetRefresh (WidgetRefreshData) {
+        Core.Config.Set('RefreshSeconds_' + WidgetRefreshData.NameHTML, parseInt(WidgetRefreshData.RefreshTime, 10) || 0);
+        if (Core.Config.Get('RefreshSeconds_' + WidgetRefreshData.NameHTML)) {
+            Core.Config.Set('Timer_' + WidgetRefreshData.NameHTML, window.setTimeout(function() {
+
+                // get active filter
+                var Filter           = $('#Dashboard' + Core.App.EscapeSelector(WidgetRefreshData.Name) + '-box').find('.Tab.Actions li.Selected a').attr('data-filter'),
+                    AdditionalFilter = $('#Dashboard' + Core.App.EscapeSelector(WidgetRefreshData.Name) + '-box').find('.Tab.Actions li.AdditionalFilter.Selected a').attr('data-filter') || '',
+                    $OrderByObj      = $('#Dashboard' + Core.App.EscapeSelector(WidgetRefreshData.Name) + '-box').find('th.SortDescendingLarge, th.SortAscendingLarge'),
+                    SortBy           = $OrderByObj.attr('data-column') || '',
+                    OrderBy          = '';
+
+                if ($OrderByObj && $OrderByObj.hasClass('SortDescendingLarge')) {
+                    OrderBy = 'Down';
+                }
+                else if ($OrderByObj && $OrderByObj.hasClass('SortAscendingLarge')) {
+                    OrderBy = 'Up';
+                }
+
+                $('#Dashboard' + Core.App.EscapeSelector(WidgetRefreshData.Name) + '-box').addClass('Loading');
+                Core.AJAX.ContentUpdate($('#Dashboard' + Core.App.EscapeSelector(WidgetRefreshData.Name)), Core.Config.Get('Baselink') + 'Action=' + Core.Config.Get('Action') + ';Subaction=Element;Name=' + WidgetRefreshData.Name + ';AdditionalFilter=' + AdditionalFilter + ';Filter=' + Filter + ';CustomerID=' + WidgetRefreshData.CustomerID + ';SortBy=' + SortBy + ';OrderBy=' + OrderBy, function () {
+                    $('#Dashboard' + Core.App.EscapeSelector(WidgetRefreshData.Name) + '-box').removeClass('Loading');
+                });
+                clearTimeout(Core.Config.Get('Timer_' + WidgetRefreshData.NameHTML));
+            }, Core.Config.Get('RefreshSeconds_' + WidgetRefreshData.NameHTML) * 1000));
+        }
+    }
+
+    /**
+     * @private
+     * @name DashboardTicketWidgetRemoveFilter
+     * @memberof Core.Agent.Dashboard
+     * @param {Object} WidgetRemoveFilter - Hash with different config options.
+     * @function
+     * @description
+     *      Initializes the dashboard widget remove filter event.
+     */
+    function DashboardTicketWidgetRemoveFilter (WidgetRemoveFilter) {
+        if (!$('#Dashboard' + Core.App.EscapeSelector(WidgetRemoveFilter.Name) + '-box').find('.ActionMenu').find('.RemoveFilters').length) {
+            $('#Dashboard' + Core.App.EscapeSelector(WidgetRemoveFilter.Name) + '-box')
+                .find('.ActionMenu')
+                .prepend('<div class="WidgetAction RemoveFilters"><a href="#" id="Dashboard' + WidgetRemoveFilter.Name + '-remove-filters" title=' + Core.Language.Translate("Remove active filters for this widget.") + '"><i class="fa fa-trash-o"></i></a></div>')
+                .find('.RemoveFilters')
+                .on('click', function() {
+
+                    // get active filter
+                    var Filter = $('#Dashboard' + Core.App.EscapeSelector(WidgetRemoveFilter.Name) + '-box').find('.Tab.Actions li.Selected a').attr('data-filter'),
+                    AdditionalFilter = $('#Dashboard' + Core.App.EscapeSelector(WidgetRemoveFilter.Name) + '-box').find('.Tab.Actions li.AdditionalFilter.Selected a').attr('data-filter') || '';
+                    $('#Dashboard' + Core.App.EscapeSelector(WidgetRemoveFilter.Name) + '-box').addClass('Loading');
+                    Core.AJAX.ContentUpdate($('#Dashboard' + Core.App.EscapeSelector(WidgetRemoveFilter.Name)), Core.Config.Get('Baselink') + 'Action=' + Core.Config.Get('Action') + ';Subaction=Element;Name=' + WidgetRemoveFilter.Name + ';AdditionalFilter=' + AdditionalFilter + ';Filter=' + Filter + ';CustomerID=' + WidgetRemoveFilter.CustomerID + ';CustomerUserID=' + WidgetRemoveFilter.CustomerUserID + ';RemoveFilters=1', function () {
+                        $('#Dashboard' + Core.App.EscapeSelector(WidgetRemoveFilter.Name) + '-box').removeClass('Loading');
+                        $('#Dashboard' + Core.App.EscapeSelector(WidgetRemoveFilter.Name) + '-box').find('.RemoveFilters').remove();
+                    });
+                    return false;
+                });
+        }
+    }
+
+    /**
+     * @private
+     * @name DashboardTicketWidgetFilter
+     * @memberof Core.Agent.Dashboard
+     * @param {Object} WidgetFilterData - Hash with different config options.
+     * @function
+     * @description
+     *      Initializes the dashboard widget filter event.
+     */
+    function DashboardTicketWidgetFilter (WidgetFilterData) {
+        $('#Dashboard' + Core.App.EscapeSelector(WidgetFilterData.Name) + '-box').find('.Tab.Actions li a').off('click').on('click', function() {
+                var Filter, AdditionalFilter = '',
+                CustomerID, CustomerUserID;
+
+                if ($(this).parent().hasClass('AdditionalFilter')) {
+                     Filter           = $(this).parent().siblings('li.Selected:not(.AdditionalFilter)').find('a').attr('data-filter');
+                     AdditionalFilter = $(this).attr('data-filter');
+                }
+                else {
+                     Filter           = $(this).attr('data-filter');
+                     AdditionalFilter = $(this).parent().siblings('li.AdditionalFilter.Selected').find('a').attr('data-filter') || '';
+                }
+
+                CustomerID = $('input[name=CustomerID]').val() || '';
+                CustomerUserID = $('input[name=CustomerUserID]').val() || '';
+
+                $('#Dashboard' + Core.App.EscapeSelector(WidgetFilterData.Name) + '-box').addClass('Loading');
+                Core.AJAX.ContentUpdate($('#Dashboard' + Core.App.EscapeSelector(WidgetFilterData.Name)), Core.Config.Get('Baselink') + 'Action=' + Core.Config.Get('Action') + ';Subaction=Element;Name=' + WidgetFilterData.Name + ';AdditionalFilter=' + AdditionalFilter + ';Filter=' + Filter + ';CustomerID=' + encodeURIComponent(CustomerID) + ';CustomerUserID=' + encodeURIComponent(CustomerUserID), function () {
+                    $('#Dashboard' + Core.App.EscapeSelector(WidgetFilterData.Name) + '-box').removeClass('Loading');
+                });
+                return false;
+            });
     }
 
     Core.Init.RegisterNamespace(TargetNS, 'APP_MODULE');

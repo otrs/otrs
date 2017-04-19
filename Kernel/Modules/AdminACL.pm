@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -328,7 +328,11 @@ sub Run {
             );
         }
 
-        if ( $ParamObject->GetParam( Param => 'ContinueAfterSave' ) eq '1' ) {
+        if (
+            defined $ParamObject->GetParam( Param => 'ContinueAfterSave' )
+            && ( $ParamObject->GetParam( Param => 'ContinueAfterSave' ) eq '1' )
+            )
+        {
 
             # if the user would like to continue editing the ACL, just redirect to the edit screen
             return $LayoutObject->Redirect(

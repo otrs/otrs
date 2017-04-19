@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -15,15 +15,15 @@ use vars (qw($Self));
 
 use Kernel::System::VariableCheck qw(:all);
 
-# get needed objects
 my $DynamicFieldObject = $Kernel::OM->Get('Kernel::System::DynamicField');
 my $TicketObject       = $Kernel::OM->Get('Kernel::System::Ticket');
+my $ArticleObject      = $Kernel::OM->Get('Kernel::System::Ticket::Article');
 my $LinkObject         = $Kernel::OM->Get('Kernel::System::LinkObject');
 
-# get helper object
 $Kernel::OM->ObjectParamAdd(
     'Kernel::System::UnitTest::Helper' => {
-        RestoreDatabase => 1,
+        RestoreDatabase  => 1,
+        UseTmpArticleDir => 1,
     },
 );
 my $Helper = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
@@ -47,12 +47,12 @@ my $Success = $Kernel::OM->Get('Kernel::Config')->Set(
 
 $Self->True(
     $Success,
-    "Set Email Test backend with true",
+    'Set Email Test backend with true'
 );
 
-# ----------------------------------------
+#
 # Create a test ticket
-# ----------------------------------------
+#
 my $TicketID = $TicketObject->TicketCreate(
     Title         => 'test',
     QueueID       => 1,
@@ -68,7 +68,7 @@ my $TicketID = $TicketObject->TicketCreate(
 # sanity checks
 $Self->True(
     $TicketID,
-    "TicketCreate() - $TicketID",
+    "TicketCreate() - $TicketID"
 );
 
 my %Ticket = $TicketObject->TicketGet(
@@ -77,7 +77,7 @@ my %Ticket = $TicketObject->TicketGet(
 );
 $Self->True(
     IsHashRefWithData( \%Ticket ),
-    "TicketGet() - Get Ticket with ID $TicketID.",
+    "TicketGet() - Get Ticket with ID $TicketID."
 );
 
 my @AddedTickets = ($TicketID);
@@ -85,8 +85,6 @@ my @AddedTickets = ($TicketID);
 my $UserLogin = $Kernel::OM->Get('Kernel::System::User')->UserLookup(
     UserID => 1,
 );
-
-# ----------------------------------------
 
 # create dynamic fields
 my $DynamicFieldID1 = $DynamicFieldObject->DynamicFieldAdd(
@@ -148,7 +146,7 @@ my $DynamicFieldID3 = $DynamicFieldObject->DynamicFieldAdd(
 for my $DynamicFieldID ( $DynamicFieldID1, $DynamicFieldID2, $DynamicFieldID3 ) {
     $Self->True(
         $DynamicFieldID,
-        "DynamicFieldADD() - $DynamicFieldID",
+        "DynamicFieldADD() - $DynamicFieldID"
     );
 
     my $DynamicField = $DynamicFieldObject->DynamicFieldGet(
@@ -157,11 +155,11 @@ for my $DynamicFieldID ( $DynamicFieldID1, $DynamicFieldID2, $DynamicFieldID3 ) 
     );
     $Self->True(
         IsHashRefWithData($DynamicField),
-        "DynamicFieldGet() - Get DynamicField with ID $DynamicFieldID.",
+        "DynamicFieldGet() - Get DynamicField with ID $DynamicFieldID."
     );
 }
 
-# ----------------------------------------
+#
 my $DynamicFieldBackendObject = $Kernel::OM->Get('Kernel::System::DynamicField::Backend');
 
 # set a value for multiselect dynamic field
@@ -185,7 +183,7 @@ my $DFSetSuccess = $DynamicFieldBackendObject->ValueSet(
 
 $Self->True(
     $DFSetSuccess,
-    "DynamicField ValueSet() for DynamicFieldID $DynamicFieldID3 - with true",
+    "DynamicField ValueSet() for DynamicFieldID $DynamicFieldID3 - with true"
 );
 
 # get ticket again now with dynamic fields
@@ -225,19 +223,19 @@ my @Tests = (
                 ResponsibleID => 1,
                 PendingTime   => '2014-12-23 23:05:00',
 
-                ArticleType    => 'note-internal',
-                SenderType     => 'agent',
-                ContentType    => 'text/plain; charset=ISO-8859-15',
-                Subject        => 'some short description',
-                Body           => 'the message text',
-                HistoryType    => 'OwnerUpdate',
-                HistoryComment => 'Some free text!',
-                From           => 'Some Agent <email@example.com>',
-                To             => 'Some Customer A <customer-a@example.com>',
-                Cc             => 'Some Customer B <customer-b@example.com>',
-                ReplyTo        => 'Some Customer B <customer-b@example.com>',
-                MessageID      => '<asdasdasd.123@example.com>',
-                InReplyTo      => '<asdasdasd.12@example.com>',
+                SenderType           => 'agent',
+                IsVisibleForCustomer => 0,
+                ContentType          => 'text/plain; charset=ISO-8859-15',
+                Subject              => 'some short description',
+                Body                 => 'the message text',
+                HistoryType          => 'OwnerUpdate',
+                HistoryComment       => 'Some free text!',
+                From                 => 'Some Agent <email@example.com>',
+                To                   => 'Some Customer A <customer-a@example.com>',
+                Cc                   => 'Some Customer B <customer-b@example.com>',
+                ReplyTo              => 'Some Customer B <customer-b@example.com>',
+                MessageID            => '<asdasdasd.123@example.com>',
+                InReplyTo            => '<asdasdasd.12@example.com>',
                 References =>
                     '<asdasdasd.1@example.com> <asdasdasd.12@example.com>',
                 NoAgentNotify             => 0,
@@ -271,19 +269,19 @@ my @Tests = (
                 ResponsibleID => 1,
                 PendingTime   => '2014-12-23 23:05:00',
 
-                ArticleType    => 'note-internal',
-                SenderType     => 'agent',
-                ContentType    => 'text/plain; charset=ISO-8859-15',
-                Subject        => 'some short description',
-                Body           => 'the message text',
-                HistoryType    => 'OwnerUpdate',
-                HistoryComment => 'Some free text!',
-                From           => 'Some Agent <email@example.com>',
-                To             => 'Some Customer A <customer-a@example.com>',
-                Cc             => 'Some Customer B <customer-b@example.com>',
-                ReplyTo        => 'Some Customer B <customer-b@example.com>',
-                MessageID      => '<asdasdasd.123@example.com>',
-                InReplyTo      => '<asdasdasd.12@example.com>',
+                SenderType           => 'agent',
+                IsVisibleForCustomer => 0,
+                ContentType          => 'text/plain; charset=ISO-8859-15',
+                Subject              => 'some short description',
+                Body                 => 'the message text',
+                HistoryType          => 'OwnerUpdate',
+                HistoryComment       => 'Some free text!',
+                From                 => 'Some Agent <email@example.com>',
+                To                   => 'Some Customer A <customer-a@example.com>',
+                Cc                   => 'Some Customer B <customer-b@example.com>',
+                ReplyTo              => 'Some Customer B <customer-b@example.com>',
+                MessageID            => '<asdasdasd.123@example.com>',
+                InReplyTo            => '<asdasdasd.12@example.com>',
                 References =>
                     '<asdasdasd.1@example.com> <asdasdasd.12@example.com>',
                 NoAgentNotify             => 0,
@@ -357,19 +355,19 @@ my @Tests = (
                 ResponsibleID => 1,
                 PendingTime   => '2014-12-23 23:05:00',
 
-                ArticleType    => 'note-internal',
-                SenderType     => 'agent',
-                ContentType    => 'text/plain; charset=ISO-8859-15',
-                Subject        => 'some short description',
-                Body           => 'the message text',
-                HistoryType    => 'OwnerUpdate',
-                HistoryComment => 'Some free text!',
-                From           => 'Some Agent <email@example.com>',
-                To             => 'Some Customer A <customer-a@example.com>',
-                Cc             => 'Some Customer B <customer-b@example.com>',
-                ReplyTo        => 'Some Customer B <customer-b@example.com>',
-                MessageID      => '<asdasdasd.123@example.com>',
-                InReplyTo      => '<asdasdasd.12@example.com>',
+                SenderType           => 'agent',
+                IsVisibleForCustomer => 0,
+                ContentType          => 'text/plain; charset=ISO-8859-15',
+                Subject              => 'some short description',
+                Body                 => 'the message text',
+                HistoryType          => 'OwnerUpdate',
+                HistoryComment       => 'Some free text!',
+                From                 => 'Some Agent <email@example.com>',
+                To                   => 'Some Customer A <customer-a@example.com>',
+                Cc                   => 'Some Customer B <customer-b@example.com>',
+                ReplyTo              => 'Some Customer B <customer-b@example.com>',
+                MessageID            => '<asdasdasd.123@example.com>',
+                InReplyTo            => '<asdasdasd.12@example.com>',
                 References =>
                     '<asdasdasd.1@example.com> <asdasdasd.12@example.com>',
                 NoAgentNotify             => 0,
@@ -404,19 +402,19 @@ my @Tests = (
                 ResponsibleID => 1,
                 PendingTime   => '2014-12-23 23:05:00',
 
-                ArticleType    => 'note-internal',
-                SenderType     => 'agent',
-                ContentType    => 'text/plain; charset=ISO-8859-15',
-                Subject        => 'some short description',
-                Body           => 'the message text',
-                HistoryType    => 'OwnerUpdate',
-                HistoryComment => 'Some free text!',
-                From           => 'Some Agent <email@example.com>',
-                To             => 'Some Customer A <customer-a@example.com>',
-                Cc             => 'Some Customer B <customer-b@example.com>',
-                ReplyTo        => 'Some Customer B <customer-b@example.com>',
-                MessageID      => '<asdasdasd.123@example.com>',
-                InReplyTo      => '<asdasdasd.12@example.com>',
+                SenderType           => 'agent',
+                IsVisibleForCustomer => 0,
+                ContentType          => 'text/plain; charset=ISO-8859-15',
+                Subject              => 'some short description',
+                Body                 => 'the message text',
+                HistoryType          => 'OwnerUpdate',
+                HistoryComment       => 'Some free text!',
+                From                 => 'Some Agent <email@example.com>',
+                To                   => 'Some Customer A <customer-a@example.com>',
+                Cc                   => 'Some Customer B <customer-b@example.com>',
+                ReplyTo              => 'Some Customer B <customer-b@example.com>',
+                MessageID            => '<asdasdasd.123@example.com>',
+                InReplyTo            => '<asdasdasd.12@example.com>',
                 References =>
                     '<asdasdasd.1@example.com> <asdasdasd.12@example.com>',
                 NoAgentNotify             => 0,
@@ -451,19 +449,19 @@ my @Tests = (
                 ResponsibleID => 1,
                 PendingTime   => '2014-12-23 23:05:00',
 
-                ArticleType    => 'note-internal',
-                SenderType     => 'agent',
-                ContentType    => 'text/plain; charset=ISO-8859-15',
-                Subject        => 'some short description',
-                Body           => 'the message text',
-                HistoryType    => 'OwnerUpdate',
-                HistoryComment => 'Some free text!',
-                From           => 'Some Agent <email@example.com>',
-                To             => 'Some Customer A <customer-a@example.com>',
-                Cc             => 'Some Customer B <customer-b@example.com>',
-                ReplyTo        => 'Some Customer B <customer-b@example.com>',
-                MessageID      => '<asdasdasd.123@example.com>',
-                InReplyTo      => '<asdasdasd.12@example.com>',
+                SenderType           => 'agent',
+                IsVisibleForCustomer => 0,
+                ContentType          => 'text/plain; charset=ISO-8859-15',
+                Subject              => 'some short description',
+                Body                 => 'the message text',
+                HistoryType          => 'OwnerUpdate',
+                HistoryComment       => 'Some free text!',
+                From                 => 'Some Agent <email@example.com>',
+                To                   => 'Some Customer A <customer-a@example.com>',
+                Cc                   => 'Some Customer B <customer-b@example.com>',
+                ReplyTo              => 'Some Customer B <customer-b@example.com>',
+                MessageID            => '<asdasdasd.123@example.com>',
+                InReplyTo            => '<asdasdasd.12@example.com>',
                 References =>
                     '<asdasdasd.1@example.com> <asdasdasd.12@example.com>',
                 NoAgentNotify             => 0,
@@ -498,10 +496,10 @@ my @Tests = (
                 ResponsibleID => 1,
                 PendingTime   => '2014-12-23 23:05:00',
 
-                ArticleType => 'note-internal',
-                SenderType  => 'agent',
-                ContentType => 'text/plain; charset=ISO-8859-15',
-                Subject     => 'some short description',
+                SenderType           => 'agent',
+                IsVisibleForCustomer => 0,
+                ContentType          => 'text/plain; charset=ISO-8859-15',
+                Subject              => 'some short description',
                 Body =>
                     'äöüßÄÖÜ€исáéíúóúÁÉÍÓÚñÑ-カスタ-用迎使用-Язык',
                 HistoryType    => 'OwnerUpdate',
@@ -541,19 +539,19 @@ my @Tests = (
                 ResponsibleID => 1,
                 PendingTime   => '2014-12-23 23:05:00',
 
-                ArticleType    => 'note-internal',
-                SenderType     => 'agent',
-                ContentType    => 'text/plain; charset=ISO-8859-15',
-                Subject        => 'some short description',
-                Body           => 'the message text',
-                HistoryType    => 'OwnerUpdate',
-                HistoryComment => 'Some free text!',
-                From           => 'Some Agent <email@example.com>',
-                To             => 'Some Customer A <customer-a@example.com>',
-                Cc             => 'Some Customer B <customer-b@example.com>',
-                ReplyTo        => 'Some Customer B <customer-b@example.com>',
-                MessageID      => '<asdasdasd.123@example.com>',
-                InReplyTo      => '<asdasdasd.12@example.com>',
+                SenderType           => 'agent',
+                IsVisibleForCustomer => 0,
+                ContentType          => 'text/plain; charset=ISO-8859-15',
+                Subject              => 'some short description',
+                Body                 => 'the message text',
+                HistoryType          => 'OwnerUpdate',
+                HistoryComment       => 'Some free text!',
+                From                 => 'Some Agent <email@example.com>',
+                To                   => 'Some Customer A <customer-a@example.com>',
+                Cc                   => 'Some Customer B <customer-b@example.com>',
+                ReplyTo              => 'Some Customer B <customer-b@example.com>',
+                MessageID            => '<asdasdasd.123@example.com>',
+                InReplyTo            => '<asdasdasd.12@example.com>',
                 References =>
                     '<asdasdasd.1@example.com> <asdasdasd.12@example.com>',
                 NoAgentNotify             => 0,
@@ -584,19 +582,19 @@ my @Tests = (
                 ResponsibleID => 1,
                 PendingTime   => '2014-12-23 23:05:00',
 
-                ArticleType    => 'note-internal',
-                SenderType     => 'agent',
-                ContentType    => 'text/plain; charset=ISO-8859-15',
-                Subject        => 'some short description',
-                Body           => 'the message text',
-                HistoryType    => 'OwnerUpdate',
-                HistoryComment => 'Some free text!',
-                From           => 'Some Agent <email@example.com>',
-                To             => 'Some Customer A <customer-a@example.com>',
-                Cc             => 'Some Customer B <customer-b@example.com>',
-                ReplyTo        => 'Some Customer B <customer-b@example.com>',
-                MessageID      => '<asdasdasd.123@example.com>',
-                InReplyTo      => '<asdasdasd.12@example.com>',
+                SenderType           => 'agent',
+                IsVisibleForCustomer => 0,
+                ContentType          => 'text/plain; charset=ISO-8859-15',
+                Subject              => 'some short description',
+                Body                 => 'the message text',
+                HistoryType          => 'OwnerUpdate',
+                HistoryComment       => 'Some free text!',
+                From                 => 'Some Agent <email@example.com>',
+                To                   => 'Some Customer A <customer-a@example.com>',
+                Cc                   => 'Some Customer B <customer-b@example.com>',
+                ReplyTo              => 'Some Customer B <customer-b@example.com>',
+                MessageID            => '<asdasdasd.123@example.com>',
+                InReplyTo            => '<asdasdasd.12@example.com>',
                 References =>
                     '<asdasdasd.1@example.com> <asdasdasd.12@example.com>',
                 NoAgentNotify             => 0,
@@ -626,19 +624,19 @@ my @Tests = (
                 ResponsibleID => 1,
                 PendingTime   => '2014-12-23 23:05:00',
 
-                ArticleType    => 'note-internal',
-                SenderType     => 'agent',
-                ContentType    => 'text/plain; charset=ISO-8859-15',
-                Subject        => 'some short description',
-                Body           => 'the message text',
-                HistoryType    => 'OwnerUpdate',
-                HistoryComment => 'Some free text!',
-                From           => 'Some Agent <email@example.com>',
-                To             => 'Some Customer A <customer-a@example.com>',
-                Cc             => 'Some Customer B <customer-b@example.com>',
-                ReplyTo        => 'Some Customer B <customer-b@example.com>',
-                MessageID      => '<asdasdasd.123@example.com>',
-                InReplyTo      => '<asdasdasd.12@example.com>',
+                SenderType           => 'agent',
+                IsVisibleForCustomer => 0,
+                ContentType          => 'text/plain; charset=ISO-8859-15',
+                Subject              => 'some short description',
+                Body                 => 'the message text',
+                HistoryType          => 'OwnerUpdate',
+                HistoryComment       => 'Some free text!',
+                From                 => 'Some Agent <email@example.com>',
+                To                   => 'Some Customer A <customer-a@example.com>',
+                Cc                   => 'Some Customer B <customer-b@example.com>',
+                ReplyTo              => 'Some Customer B <customer-b@example.com>',
+                MessageID            => '<asdasdasd.123@example.com>',
+                InReplyTo            => '<asdasdasd.12@example.com>',
                 References =>
                     '<asdasdasd.1@example.com> <asdasdasd.12@example.com>',
                 NoAgentNotify             => 0,
@@ -756,19 +754,19 @@ my @Tests = (
                 ResponsibleID => 1,
                 PendingTime   => '2014-12-23 23:05:00',
 
-                ArticleType    => 'note-internal',
-                SenderType     => 'agent',
-                ContentType    => 'text/plain; charset=ISO-8859-15',
-                Subject        => 'some short description',
-                Body           => '<OTRS_Tiket_NotExisting>',
-                HistoryType    => 'OwnerUpdate',
-                HistoryComment => 'Some free text!',
-                From           => 'Some Agent <email@example.com>',
-                To             => 'Some Customer A <customer-a@example.com>',
-                Cc             => 'Some Customer B <customer-b@example.com>',
-                ReplyTo        => 'Some Customer B <customer-b@example.com>',
-                MessageID      => '<asdasdasd.123@example.com>',
-                InReplyTo      => '<asdasdasd.12@example.com>',
+                SenderType           => 'agent',
+                IsVisibleForCustomer => 0,
+                ContentType          => 'text/plain; charset=ISO-8859-15',
+                Subject              => 'some short description',
+                Body                 => '<OTRS_Tiket_NotExisting>',
+                HistoryType          => 'OwnerUpdate',
+                HistoryComment       => 'Some free text!',
+                From                 => 'Some Agent <email@example.com>',
+                To                   => 'Some Customer A <customer-a@example.com>',
+                Cc                   => 'Some Customer B <customer-b@example.com>',
+                ReplyTo              => 'Some Customer B <customer-b@example.com>',
+                MessageID            => '<asdasdasd.123@example.com>',
+                InReplyTo            => '<asdasdasd.12@example.com>',
                 References =>
                     '<asdasdasd.1@example.com> <asdasdasd.12@example.com>',
                 NoAgentNotify             => 0,
@@ -801,19 +799,19 @@ my @Tests = (
                 TypeID        => 1,
                 ResponsibleID => 1,
 
-                ArticleType    => 'note-internal',
-                SenderType     => 'agent',
-                ContentType    => 'text/plain; charset=ISO-8859-15',
-                Subject        => 'some short description',
-                Body           => 'the message text',
-                HistoryType    => 'OwnerUpdate',
-                HistoryComment => 'Some free text!',
-                From           => 'Some Agent <email@example.com>',
-                To             => 'Some Customer A <customer-a@example.com>',
-                Cc             => 'Some Customer B <customer-b@example.com>',
-                ReplyTo        => 'Some Customer B <customer-b@example.com>',
-                MessageID      => '<asdasdasd.123@example.com>',
-                InReplyTo      => '<asdasdasd.12@example.com>',
+                SenderType           => 'agent',
+                IsVisibleForCustomer => 0,
+                ContentType          => 'text/plain; charset=ISO-8859-15',
+                Subject              => 'some short description',
+                Body                 => 'the message text',
+                HistoryType          => 'OwnerUpdate',
+                HistoryComment       => 'Some free text!',
+                From                 => 'Some Agent <email@example.com>',
+                To                   => 'Some Customer A <customer-a@example.com>',
+                Cc                   => 'Some Customer B <customer-b@example.com>',
+                ReplyTo              => 'Some Customer B <customer-b@example.com>',
+                MessageID            => '<asdasdasd.123@example.com>',
+                InReplyTo            => '<asdasdasd.12@example.com>',
                 References =>
                     '<asdasdasd.1@example.com> <asdasdasd.12@example.com>',
                 NoAgentNotify                   => 0,
@@ -828,6 +826,19 @@ my @Tests = (
 );
 
 my %ExcludedArtributes = (
+    CustomerID                      => 1,
+    CustomerUser                    => 1,
+    "DynamicField_Field1$RandomID"  => 1,
+    Lock                            => 1,
+    Owner                           => 1,
+    OwnerID                         => 1,
+    PendingTime                     => 1,
+    Priority                        => 1,
+    QueueID                         => 1,
+    ResponsibleID                   => 1,
+    StateID                         => 1,
+    Title                           => 1,
+    TypeID                          => 1,
     HistoryType                     => 1,
     HistoryComment                  => 1,
     ExcludeNotificationToUserID     => 1,
@@ -879,13 +890,21 @@ for my $Test (@Tests) {
             # add NewTicketID to AddedTickets
             push @AddedTickets, $NewTicketID;
 
-            # get last article
-            my @ArticleIDs = $TicketObject->ArticleIndex(
-                TicketID => $NewTicketID,
-            );
+            # Get last article.
             if ( $Test->{Article} ) {
-                %Article = $TicketObject->ArticleGet(
-                    ArticleID     => $ArticleIDs[-1],
+                my @Articles = $ArticleObject->ArticleList(
+                    TicketID => $NewTicketID,
+                    OnlyLast => 1,
+                );
+
+                my $ArticleBackendObject = $ArticleObject->BackendForArticle(
+                    TicketID  => $NewTicketID,
+                    ArticleID => $Articles[0]->{ArticleID},
+                );
+
+                %Article = $ArticleBackendObject->ArticleGet(
+                    TicketID      => $NewTicketID,
+                    ArticleID     => $Articles[0]->{ArticleID},
                     DynamicFields => 1,
                     UserID        => 1,
                 );
@@ -898,18 +917,12 @@ for my $Test (@Tests) {
             next ATTRIBUTE if $ExcludedArtributes{$Attribute};
 
             my $ArticleAttribute = $Attribute;
-            if ( $Attribute eq 'PendingTime' ) {
-                $ArticleAttribute = 'RealTillTimeNotUsed';
-            }
-            elsif ( $Attribute eq 'CustomerUser' ) {
-                $ArticleAttribute = 'CustomerUserID';
-            }
 
             if ( $Test->{Article} ) {
                 $Self->True(
                     defined $Article{$ArticleAttribute},
                     "$ModuleName - Test:'$Test->{Name}' | Attribute: $Attribute for ArticleID:"
-                        . " $Article{ArticleID} exists with True",
+                        . " $Article{ArticleID} exists with True"
                 );
             }
 
@@ -925,12 +938,12 @@ for my $Test (@Tests) {
                     $Self->IsNot(
                         $Test->{Config}->{Config}->{$Attribute},
                         $OrigTest->{Config}->{Config}->{$Attribute},
-                        "$ModuleName - Test:'$Test->{Name}' | Attribute: $Attribute value: $OrigTest->{Config}->{Config}->{$Attribute} should been replaced",
+                        "$ModuleName - Test:'$Test->{Name}' | Attribute: $Attribute value: $OrigTest->{Config}->{Config}->{$Attribute} should been replaced"
                     );
                     $Self->Is(
                         $Test->{Config}->{Config}->{$Attribute},
                         $Ticket{$Attribute},
-                        "$ModuleName - Test:'$Test->{Name}' | Attribute: $Attribute value:",
+                        "$ModuleName - Test:'$Test->{Name}' | Attribute: $Attribute value:"
                     );
 
                 }
@@ -938,34 +951,40 @@ for my $Test (@Tests) {
                     $Self->IsNot(
                         $Test->{Config}->{Config}->{$Attribute},
                         $OrigTest->{Config}->{Config}->{$Attribute},
-                        "$ModuleName - Test:'$Test->{Name}' | Attribute: $Attribute value: $OrigTest->{Config}->{Config}->{$Attribute} should been replaced",
+                        "$ModuleName - Test:'$Test->{Name}' | Attribute: $Attribute value: $OrigTest->{Config}->{Config}->{$Attribute} should been replaced"
                     );
                     my $DynamicFieldName = $1;
 
                     my $DynamicFieldConfig = $DynamicFieldObject->DynamicFieldGet(
                         Name => $DynamicFieldName,
                     );
+
+                    my $DisplayValue = $DynamicFieldBackendObject->ValueLookup(
+                        DynamicFieldConfig => $DynamicFieldConfig,
+                        Key                => $Ticket{"DynamicField_$DynamicFieldName"},
+                    );
+
                     my $DisplayValueStrg = $DynamicFieldBackendObject->ReadableValueRender(
                         DynamicFieldConfig => $DynamicFieldConfig,
-                        Value              => $Ticket{"DynamicField_$DynamicFieldName"},
+                        Value              => $DisplayValue,
                     );
 
                     $Self->Is(
                         $Test->{Config}->{Config}->{$Attribute},
                         $DisplayValueStrg->{Value},
-                        "$ModuleName - Test:'$Test->{Name}' | Attribute: $Attribute value:",
+                        "$ModuleName - Test:'$Test->{Name}' | Attribute: $Attribute value:"
                     );
                 }
                 else {
                     $Self->IsNotDeeply(
                         $Test->{Config}->{Config}->{$Attribute},
                         $OrigTest->{Config}->{Config}->{$Attribute},
-                        "$ModuleName - Test:'$Test->{Name}' | Attribute: $Attribute value: $OrigTest->{Config}->{Config}->{$Attribute} should been replaced",
+                        "$ModuleName - Test:'$Test->{Name}' | Attribute: $Attribute value: $OrigTest->{Config}->{Config}->{$Attribute} should been replaced"
                     );
                     $Self->IsDeeply(
                         $Test->{Config}->{Config}->{$Attribute},
                         $Ticket{$Attribute},
-                        "$ModuleName - Test:'$Test->{Name}' | Attribute: $Attribute value:",
+                        "$ModuleName - Test:'$Test->{Name}' | Attribute: $Attribute value:"
                     );
                 }
             }
@@ -990,7 +1009,7 @@ for my $Test (@Tests) {
                         $Article{$ArticleAttribute},
                         $ExpectedValue,
                         "$ModuleName - Test:'$Test->{Name}' | Attribute: $Attribute for ArticleID:"
-                            . " $Article{ArticleID} match expected value",
+                            . " $Article{ArticleID} match expected value"
                     );
                 }
                 elsif ( $OrigTest->{Config}->{Config}->{$Attribute} =~ m{OTRS_TICKET_DynamicField_(\S+?)_Value} ) {
@@ -1000,16 +1019,22 @@ for my $Test (@Tests) {
                     my $DynamicFieldConfig = $DynamicFieldObject->DynamicFieldGet(
                         Name => $DynamicFieldName,
                     );
+
+                    my $DisplayValue = $DynamicFieldBackendObject->ValueLookup(
+                        DynamicFieldConfig => $DynamicFieldConfig,
+                        Key                => $Ticket{"DynamicField_$DynamicFieldName"},
+                    );
+
                     my $DisplayValueStrg = $DynamicFieldBackendObject->ReadableValueRender(
                         DynamicFieldConfig => $DynamicFieldConfig,
-                        Value              => $Ticket{"DynamicField_$DynamicFieldName"},
+                        Value              => $DisplayValue,
                     );
 
                     $Self->Is(
                         $Article{$ArticleAttribute},
                         $DisplayValueStrg->{Value},
                         "$ModuleName - Test:'$Test->{Name}' | Attribute: $Attribute for ArticleID:"
-                            . " $Article{ArticleID} match expected value",
+                            . " $Article{ArticleID} match expected value"
                     );
                 }
                 else {
@@ -1017,7 +1042,7 @@ for my $Test (@Tests) {
                         $Article{$ArticleAttribute},
                         $ExpectedValue,
                         "$ModuleName - Test:'$Test->{Name}' | Attribute: $Attribute for ArticleID:"
-                            . " $Article{ArticleID} match expected value",
+                            . " $Article{ArticleID} match expected value"
                     );
                 }
             }
@@ -1028,7 +1053,7 @@ for my $Test (@Tests) {
                 $Test->{Config}->{Config}->{UserID},
                 undef,
                 "$ModuleName - Test:'$Test->{Name}' | Attribute: UserID for TicketID:"
-                    . " $TicketID should be removed (as it was used)",
+                    . " $TicketID should be removed (as it was used)"
             );
         }
         if ( $Test->{Config}->{Config}->{LinkAs} ) {
@@ -1066,23 +1091,23 @@ for my $Test (@Tests) {
             $Self->IsNot(
                 $LinkLookup{$NewTicketID},
                 undef,
-                "$ModuleName - Test:'$Test->{Name}' | Link with original ticket is not undef",
+                "$ModuleName - Test:'$Test->{Name}' | Link with original ticket is not undef"
             );
 
             $Self->Is(
                 $LinkLookup{$NewTicketID},
                 $Test->{Config}->{Config}->{LinkAs},
-                "$ModuleName - Test:'$Test->{Name}' | Link with original ticket should be $Test->{Config}->{Config}->{LinkAs}",
+                "$ModuleName - Test:'$Test->{Name}' | Link with original ticket should be $Test->{Config}->{Config}->{LinkAs}"
             );
         }
         if ( $Test->{Config}->{Config}->{TimeUnit} && $Test->{Article} ) {
-            my $AccountedTime = $TicketObject->ArticleAccountedTimeGet(
+            my $AccountedTime = $ArticleObject->ArticleAccountedTimeGet(
                 ArticleID => $Article{ArticleID},
             );
             $Self->Is(
                 $AccountedTime,
                 $Test->{Config}->{Config}->{TimeUnit},
-                "$ModuleName - Test:'$Test->{Name}' | TimeUnit",
+                "$ModuleName - Test:'$Test->{Name}' | TimeUnit"
             );
 
         }

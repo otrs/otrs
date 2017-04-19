@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -35,17 +35,13 @@ our @ObjectDependencies = (
 
 Kernel::System::Web::InterfaceAgent - the agent web interface
 
-=head1 SYNOPSIS
+=head1 DESCRIPTION
 
-the global agent web interface (incl. auth, session, ...)
+the global agent web interface (authentication, session handling, ...)
 
 =head1 PUBLIC INTERFACE
 
-=over 4
-
-=cut
-
-=item new()
+=head2 new()
 
 create agent web interface object. Do not use it directly, instead use:
 
@@ -93,7 +89,7 @@ sub new {
     return $Self;
 }
 
-=item Run()
+=head2 Run()
 
 execute the object
 
@@ -328,25 +324,6 @@ sub Run {
             return;
         }
 
-        # get groups rw/ro
-        for my $Type (qw(rw ro)) {
-
-            my %GroupData = $Kernel::OM->Get('Kernel::System::Group')->PermissionUserGet(
-                UserID => $UserData{UserID},
-                Type   => $Type,
-            );
-
-            for ( sort keys %GroupData ) {
-
-                if ( $Type eq 'rw' ) {
-                    $UserData{"UserIsGroup[$GroupData{$_}]"} = 'Yes';
-                }
-                else {
-                    $UserData{"UserIsGroupRo[$GroupData{$_}]"} = 'Yes';
-                }
-            }
-        }
-
         # create new session id
         my $NewSessionID = $SessionObject->CreateSessionID(
             %UserData,
@@ -465,10 +442,17 @@ sub Run {
         if ( $Kernel::OM->Get('Kernel::Config')->Get('ChatEngine::Active') ) {
             my $ChatReceivingAgentsGroup
                 = $Kernel::OM->Get('Kernel::Config')->Get('ChatEngine::PermissionGroup::ChatReceivingAgents');
+
+            my $ChatReceivingAgentsGroupPermission = $Kernel::OM->Get('Kernel::System::Group')->PermissionCheck(
+                UserID    => $UserData{UserID},
+                GroupName => $ChatReceivingAgentsGroup,
+                Type      => 'rw',
+            );
+
             if (
                 $UserData{UserID} != -1
                 && $ChatReceivingAgentsGroup
-                && $UserData{"UserIsGroup[$ChatReceivingAgentsGroup]"}
+                && $ChatReceivingAgentsGroupPermission
                 && $Kernel::OM->Get('Kernel::Config')->Get('Ticket::Agent::UnavailableForExternalChatsOnLogin')
                 )
             {
@@ -916,30 +900,46 @@ sub Run {
         }
 
         # module permisson check
-        if ( !$ModuleReg->{GroupRo} && !$ModuleReg->{Group} ) {
+        if (
+            ref $ModuleReg->{GroupRo} eq 'ARRAY'
+            && !scalar @{ $ModuleReg->{GroupRo} }
+            && ref $ModuleReg->{Group} eq 'ARRAY'
+            && !scalar @{ $ModuleReg->{Group} }
+            )
+        {
             $Param{AccessRo} = 1;
             $Param{AccessRw} = 1;
         }
         else {
+            my $GroupObject = $Kernel::OM->Get('Kernel::System::Group');
+
             PERMISSION:
             for my $Permission (qw(GroupRo Group)) {
                 my $AccessOk = 0;
                 my $Group    = $ModuleReg->{$Permission};
-                my $Key      = "UserIs$Permission";
                 next PERMISSION if !$Group;
                 if ( ref $Group eq 'ARRAY' ) {
                     INNER:
-                    for ( @{$Group} ) {
-                        next INNER if !$_;
-                        next INNER if !$UserData{ $Key . "[$_]" };
-                        next INNER if $UserData{ $Key . "[$_]" } ne 'Yes';
+                    for my $GroupName ( @{$Group} ) {
+                        next INNER if !$GroupName;
+                        next INNER if !$GroupObject->PermissionCheck(
+                            UserID    => $UserData{UserID},
+                            GroupName => $GroupName,
+                            Type      => $Permission eq 'GroupRo' ? 'ro' : 'rw',
+
+                        );
                         $AccessOk = 1;
                         last INNER;
                     }
                 }
                 else {
-                    if ( $UserData{ $Key . "[$Group]" } && $UserData{ $Key . "[$Group]" } eq 'Yes' )
-                    {
+                    my $HasPermission = $GroupObject->PermissionCheck(
+                        UserID    => $UserData{UserID},
+                        GroupName => $Group,
+                        Type      => $Permission eq 'GroupRo' ? 'ro' : 'rw',
+
+                    );
+                    if ($HasPermission) {
                         $AccessOk = 1;
                     }
                 }
@@ -973,6 +973,7 @@ sub Run {
         # update last request time
         if (
             !$ParamObject->IsAJAXRequest()
+            || $Param{Action} eq 'AgentVideoChat'
             ||
             (
                 $Param{Action} eq 'AgentChat'
@@ -987,6 +988,23 @@ sub Run {
                 Key       => 'UserLastRequest',
                 Value     => $Kernel::OM->Get('Kernel::System::Time')->SystemTime(),
             );
+        }
+
+        # Override user settings.
+        my $Home = $ConfigObject->Get('Home');
+        my $File = "$Home/Kernel/Config/Files/User/$UserData{UserID}.pm";
+        if ( -e $File ) {
+            if ( !require $File ) {
+                die "ERROR: $!\n";
+            }
+
+            # prepare file
+            $File =~ s/\Q$Home\E//g;
+            $File =~ s/^\///g;
+            $File =~ s/\/\//\//g;
+            $File =~ s/\//::/g;
+            $File =~ s/\.pm$//g;
+            $File->Load($ConfigObject);
         }
 
         # pre application module
@@ -1072,7 +1090,7 @@ sub Run {
                 close $Out;
 
                 $Kernel::OM->Get('Kernel::System::Log')->Log(
-                    Priority => 'notice',
+                    Priority => 'debug',
                     Message  => "Response::Agent: "
                         . ( time() - $Self->{PerformanceLogStart} )
                         . "s taken (URL:$QueryString:$UserData{UserLogin})",
@@ -1119,8 +1137,6 @@ sub DESTROY {
 }
 
 1;
-
-=back
 
 =head1 TERMS AND CONDITIONS
 

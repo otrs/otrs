@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -79,6 +79,12 @@ $Selenium->RunTest(
         $Selenium->find_element( "#Customers",          'css' );
         $Selenium->find_element( "#Service",            'css' );
 
+        # check breadcrumb on Overview screen
+        $Self->True(
+            $Selenium->find_element( '.BreadCrumb', 'css' ),
+            "Breadcrumb is found on Overview screen.",
+        );
+
         # test search filter for CustomerUser
         $Selenium->find_element( "#CustomerUserSearch", 'css' )->clear();
         $Selenium->find_element( "#CustomerUserSearch", 'css' )->send_keys($CustomerUserName);
@@ -100,6 +106,27 @@ $Selenium->RunTest(
 
         # allocate test service to test customer user
         $Selenium->find_element("//a[contains(\@href, \'CustomerUserLogin=$CustomerUserName' )]")->VerifiedClick();
+
+        # check breadcrumb on allocate screen
+        my $Count = 1;
+        my $IsLinkedBreadcrumbText;
+        for my $BreadcrumbText (
+            'Manage Customer-Services Relations',
+            'Allocate Services to Customer \''
+            . $CustomerUserName . ' '
+            . $CustomerUserName . ' ('
+            . $CustomerUserName . ')\''
+            )
+        {
+            $Self->Is(
+                $Selenium->execute_script("return \$('.BreadCrumb li:eq($Count)').text().trim()"),
+                $BreadcrumbText,
+                "Breadcrumb text '$BreadcrumbText' is found on screen"
+            );
+
+            $Count++;
+        }
+
         $Selenium->find_element("//input[\@value='$ServiceID']")->VerifiedClick();
         $Selenium->find_element("//button[\@value='Save'][\@type='submit']")->VerifiedClick();
 

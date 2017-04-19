@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -125,7 +125,7 @@ $EmailParserObject = Kernel::System::EmailParser->new(
 );
 $Self->Is(
     $EmailParserObject->GetCharset(),
-    'UTF-8',
+    'utf-8',                                                                       # automatically converted
     "#3 GetCharset()",
 );
 @Attachments = $EmailParserObject->GetAttachments();
@@ -223,7 +223,7 @@ $EmailParserObject = Kernel::System::EmailParser->new(
 );
 $Self->Is(
     $EmailParserObject->GetCharset(),
-    'iso-8859-1',
+    'utf-8',                                                                       # automatically converted
     "#5 GetCharset()",
 );
 @Attachments = $EmailParserObject->GetAttachments();
@@ -332,7 +332,7 @@ $EmailParserObject = Kernel::System::EmailParser->new(
 );
 $Self->Is(
     $EmailParserObject->GetCharset(),
-    'iso-8859-1',
+    'utf-8',                                                                       # automatically converted
     "#7 GetCharset()",
 );
 @Attachments = $EmailParserObject->GetAttachments();
@@ -533,7 +533,7 @@ $EmailParserObject = Kernel::System::EmailParser->new(
 );
 $Self->Is(
     $EmailParserObject->GetCharset(),
-    'ISO-8859-1',
+    'utf-8',                                                                        # automatically converted
     "#12 GetCharset() - iso-8859-1 charset should be found",
 );
 $Self->Is(

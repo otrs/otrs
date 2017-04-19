@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -25,20 +25,14 @@ our @ObjectDependencies = (
 
 Kernel::System::Daemon::DaemonModules::SchedulerTaskWorker::GenericAgent - Scheduler daemon task handler module for GenericAgent
 
-=head1 SYNOPSIS
+=head1 DESCRIPTION
 
 This task handler executes generic agent jobs
 
 =head1 PUBLIC INTERFACE
 
-=over 4
+=head2 new()
 
-=cut
-
-=item new()
-
-    use Kernel::System::ObjectManager;
-    local $Kernel::OM = Kernel::System::ObjectManager->new();
     my $TaskHandlerObject = $Kernel::OM-Get('Kernel::System::Daemon::DaemonModules::SchedulerTaskWorker::GenericAgent');
 
 =cut
@@ -55,9 +49,9 @@ sub new {
     return $Self;
 }
 
-=item Run()
+=head2 Run()
 
-performs the selected task.
+Performs the selected task.
 
     my $Result = $TaskHandlerObject->Run(
         TaskID   => 123,
@@ -84,17 +78,17 @@ sub Run {
         NeededDataAttributes => [ 'Name', 'Valid' ],
     );
 
-    # stop execution if an error in params is detected
+    # Stop execution if an error in params is detected.
     return if !$CheckResult;
 
-    # skip if job is not valid
+    # Skip if job is not valid.
     return if !$Param{Data}->{Valid};
 
     my %Job = %{ $Param{Data} };
 
     my $StartSystemTime = $Kernel::OM->Get('Kernel::System::Time')->SystemTime();
 
-    # check if last run was less than 1 minute ago
+    # Check if last run was less than 1 minute ago.
     if (
         $Job{ScheduleLastRunUnixTime}
         && $StartSystemTime - $Job{ScheduleLastRunUnixTime} < 60
@@ -107,7 +101,6 @@ sub Run {
         return;
     }
 
-    # get config object
     my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
 
     my $TicketLimit = $ConfigObject->Get('Daemon::SchedulerGenericAgentTaskManager::TicketLimit') || 0;
@@ -122,10 +115,15 @@ sub Run {
 
     do {
 
-        # localize the standard error, everything will be restored after the eval block
+        # Restore child signal to default, main daemon set it to 'IGNORE' to be able to create
+        #   multiple process at the same time, but in workers this causes problems if function does
+        #   system calls (on linux), since system calls returns -1. See bug#12126.
+        local $SIG{CHLD} = 'DEFAULT';
+
+        # Localize the standard error, everything will be restored after the eval block.
         local *STDERR;
 
-        # redirect the standard error to a variable
+        # Redirect the standard error to a variable.
         open STDERR, ">>", \$ErrorMessage;
 
         $Success = $Kernel::OM->Get('Kernel::System::GenericAgent')->JobRun(
@@ -136,7 +134,7 @@ sub Run {
         );
     };
 
-    # get current system time (as soon as the job finish to run)
+    # Get current system time (as soon as the job finish to run).
     my $EndSystemTime = $Kernel::OM->Get('Kernel::System::Time')->SystemTime();
 
     if ( !$Success ) {
@@ -151,7 +149,7 @@ sub Run {
         );
     }
 
-    # update worker task
+    # Update worker task.
     $Kernel::OM->Get('Kernel::System::Daemon::SchedulerDB')->RecurrentTaskWorkerInfoSet(
         LastWorkerTaskID      => $Param{TaskID},
         LastWorkerStatus      => $Success,
@@ -162,8 +160,6 @@ sub Run {
 }
 
 1;
-
-=back
 
 =head1 TERMS AND CONDITIONS
 

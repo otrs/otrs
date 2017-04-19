@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -30,22 +30,16 @@ our @ObjectDependencies = (
 
 Kernel::System::Webservice
 
-=head1 SYNOPSIS
+=head1 DESCRIPTION
 
-Webservice configuration backend.
+Web service configuration backend.
 
 =head1 PUBLIC INTERFACE
 
-=over 4
+=head2 new()
 
-=cut
+Don't use the constructor directly, use the ObjectManager instead:
 
-=item new()
-
-create an object. Do not use it directly, instead use:
-
-    use Kernel::System::ObjectManager;
-    local $Kernel::OM = Kernel::System::ObjectManager->new();
     my $WebserviceObject = $Kernel::OM->Get('Kernel::System::GenericInterface::Webservice');
 
 =cut
@@ -60,11 +54,11 @@ sub new {
     return $Self;
 }
 
-=item WebserviceAdd()
+=head2 WebserviceAdd()
 
 add new Webservices
 
-returns id of new webservice if successful or undef otherwise
+returns id of new web service if successful or undef otherwise
 
     my $ID = $WebserviceObject->WebserviceAdd(
         Name    => 'some name',
@@ -174,7 +168,7 @@ sub WebserviceAdd {
         Type => 'Webservice',
     );
 
-    # get webservice history object
+    # get web service history object
     my $WebserviceHistoryObject = $Kernel::OM->Get('Kernel::System::GenericInterface::WebserviceHistory');
 
     # add history
@@ -187,7 +181,7 @@ sub WebserviceAdd {
     return $ID;
 }
 
-=item WebserviceGet()
+=head2 WebserviceGet()
 
 get Webservices attributes
 
@@ -295,9 +289,9 @@ sub WebserviceGet {
     return \%Data;
 }
 
-=item WebserviceUpdate()
+=head2 WebserviceUpdate()
 
-update Webservice attributes
+update web service attributes
 
 returns 1 if successful or undef otherwise
 
@@ -419,7 +413,7 @@ sub WebserviceUpdate {
         Type => 'Webservice',
     );
 
-    # get webservice history object
+    # get web service history object
     my $WebserviceHistoryObject = $Kernel::OM->Get('Kernel::System::GenericInterface::WebserviceHistory');
 
     # add history
@@ -432,7 +426,7 @@ sub WebserviceUpdate {
     return 1;
 }
 
-=item WebserviceDelete()
+=head2 WebserviceDelete()
 
 delete a Webservice
 
@@ -465,7 +459,7 @@ sub WebserviceDelete {
     );
     return if !IsHashRefWithData($Webservice);
 
-    # get webservice history object
+    # get web service history object
     my $WebserviceHistoryObject = $Kernel::OM->Get('Kernel::System::GenericInterface::WebserviceHistory');
 
     # delete history
@@ -477,7 +471,7 @@ sub WebserviceDelete {
     # get debug log object
     my $DebugLogObject = $Kernel::OM->Get('Kernel::System::GenericInterface::DebugLog');
 
-    # delete debugging data for webservice
+    # delete debugging data for web service
     return if !$DebugLogObject->LogDelete(
         WebserviceID   => $Param{ID},
         NoErrorIfEmpty => 1,
@@ -497,9 +491,9 @@ sub WebserviceDelete {
     return 1;
 }
 
-=item WebserviceList()
+=head2 WebserviceList()
 
-get Webservice list
+get web service list
 
     my $List = $WebserviceObject->WebserviceList();
 
@@ -567,8 +561,6 @@ sub WebserviceList {
 }
 
 1;
-
-=back
 
 =head1 TERMS AND CONDITIONS
 

@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -159,8 +159,15 @@ sub Run {
     # ------------------------------------------------------------ #
     if ( !$Self->{Subaction} ) {
 
+        my $ArticleObject = $Kernel::OM->Get('Kernel::System::Ticket::Article');
+
+        my $ArticleBackendObject = $ArticleObject->BackendForArticle(
+            TicketID  => $Self->{TicketID},
+            ArticleID => $Self->{ArticleID},
+        );
+
         # check if plain article exists
-        if ( !$TicketObject->ArticlePlain( ArticleID => $Self->{ArticleID} ) ) {
+        if ( !$ArticleBackendObject->ArticlePlain( ArticleID => $Self->{ArticleID} ) ) {
             return $LayoutObject->ErrorScreen(
                 Message => $LayoutObject->{LanguageObject}->Translate(
                     'Plain article not found for article %s!',
@@ -170,9 +177,11 @@ sub Run {
         }
 
         # get article data
-        my %Article = $TicketObject->ArticleGet(
+        my %Article = $ArticleBackendObject->ArticleGet(
+            TicketID      => $Self->{TicketID},
             ArticleID     => $Self->{ArticleID},
             DynamicFields => 0,
+            UserID        => $Self->{UserID},
         );
 
         # Check if article is from the same TicketID as we checked permissions for.
@@ -248,7 +257,7 @@ $Param{Signature}";
 
         # prepare sender of bounce email
         my %Address = $Kernel::OM->Get('Kernel::System::Queue')->GetSystemAddress(
-            QueueID => $Article{QueueID},
+            QueueID => $Ticket{QueueID},
         );
         $Article{From} = "$Address{RealName} <$Address{Email}>";
 
@@ -442,7 +451,14 @@ $Param{Signature}";
             return $Output;
         }
 
-        my $Bounce = $TicketObject->ArticleBounce(
+        my $ArticleObject = $Kernel::OM->Get('Kernel::System::Ticket::Article');
+
+        my $ArticleBackendObject = $ArticleObject->BackendForArticle(
+            TicketID  => $Self->{TicketID},
+            ArticleID => $Self->{ArticleID},
+        );
+
+        my $Bounce = $ArticleBackendObject->ArticleBounce(
             TicketID    => $Self->{TicketID},
             ArticleID   => $Self->{ArticleID},
             UserID      => $Self->{UserID},
@@ -478,20 +494,20 @@ $Param{Signature}";
             $Param{Body} =~ s/(&lt;|<)OTRS_BOUNCE_TO(&gt;|>)/$Param{BounceTo}/g;
 
             # send
-            my $ArticleID = $TicketObject->ArticleSend(
-                ArticleType    => 'email-external',
-                SenderType     => 'agent',
-                TicketID       => $Self->{TicketID},
-                HistoryType    => 'Bounce',
-                HistoryComment => "Bounced info to '$Param{To}'.",
-                From           => $Param{From},
-                Email          => $Param{Email},
-                To             => $Param{To},
-                Subject        => $Param{Subject},
-                UserID         => $Self->{UserID},
-                Body           => $Param{Body},
-                Charset        => $LayoutObject->{UserCharset},
-                MimeType       => $MimeType,
+            my $ArticleID = $ArticleBackendObject->ArticleSend(
+                TicketID             => $Self->{TicketID},
+                SenderType           => 'agent',
+                IsVisibleForCustomer => 1,
+                HistoryType          => 'Bounce',
+                HistoryComment       => "Bounced info to '$Param{To}'.",
+                From                 => $Param{From},
+                Email                => $Param{Email},
+                To                   => $Param{To},
+                Subject              => $Param{Subject},
+                UserID               => $Self->{UserID},
+                Body                 => $Param{Body},
+                Charset              => $LayoutObject->{UserCharset},
+                MimeType             => $MimeType,
             );
 
             # error page

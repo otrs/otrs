@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -36,12 +36,25 @@ use Kernel::System::User;
 
 =head1 NAME
 
-Kernel::System::ObjectManager - object and dependency manager
+Kernel::System::ObjectManager - Central singleton manager and object instance generator
 
 =head1 SYNOPSIS
 
-The ObjectManager is the central place to create and access singleton OTRS objects (via L</Get()>)
-as well as create regular (unmanaged) object instances (via L</Create()>).
+    # In top level scripts only!
+    local $Kernel::OM = Kernel::System::ObjectManager->new();
+
+    # Everywhere: get a singleton instance (and create it, if needed).
+    my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
+
+    # Remove singleton objects and all their dependencies.
+    $Kernel::OM->ObjectsDiscard(
+        Objects            => ['Kernel::System::Ticket', 'Kernel::System::Queue'],
+    );
+
+=head1 DESCRIPTION
+
+The ObjectManager is the central place to create and access singleton OTRS objects (via C<L</Get()>>)
+as well as create regular (unmanaged) object instances (via C<L</Create()>>).
 
 =head2 How does singleton management work?
 
@@ -50,11 +63,11 @@ are destroyed in the correct order, based on their dependencies (see below).
 
 =head2 How to use it?
 
-The ObjectManager must always be provided to OTRS by the toplevel script like this:
+The ObjectManager must always be provided to OTRS by the top level script like this:
 
     use Kernel::System::ObjectManager;
     local $Kernel::OM = Kernel::System::ObjectManager->new(
-        # options for module constructors here
+        # possible options for module constructors here
         LogObject {
             LogPrefix => 'OTRS-MyTestScript',
         },
@@ -64,7 +77,6 @@ Then in the code any singleton object can be retrieved that the ObjectManager ca
 like Kernel::System::DB:
 
     return if !$Kernel::OM->Get('Kernel::System::DB')->Prepare('SELECT 1');
-
 
 =head2 Which objects can be loaded?
 
@@ -96,11 +108,12 @@ C<$ObjectManagerDisabled> flag:
 
 There are a few flags available to convey meta data about the packages to the object manager.
 
-To indicate that a certain package can ONLY be loaded as a singleton, you can use the
-C<IsSingleton> flag. Similarly, you can indicate that a certain package can ONLY be created as unmanaged instance,
-and NOT as a singleton via the C<NonSingleton> flag.
-By default, the ObjectManager will die if a constructor does not return an object. To suppress this in the L</Create()> method, you can use the C<AllowConstructorFailure> flag (this will not work with L<Get()>).
-
+To indicate that a certain package can B<only> be loaded as a singleton, you can use the
+C<IsSingleton> flag. Similarly, you can indicate that a certain package can B<only> be
+created as unmanaged instance, and B<not> as a singleton via the C<NonSingleton> flag.
+By default, the ObjectManager will die if a constructor does not return an object.
+To suppress this in the C<L</Create()>> method, you can use the C<AllowConstructorFailure>
+flag (this will not work with C<L</Get()>>).
 
     package Kernel::System::MyPackage;
 
@@ -115,14 +128,12 @@ By default, the ObjectManager will die if a constructor does not return an objec
 
 =head1 PUBLIC INTERFACE
 
-=over 4
-
-=item new()
+=head2 new()
 
 Creates a new instance of Kernel::System::ObjectManager.
 
-    use Kernel::System::ObjectManager;
-    local $Kernel::OM = Kernel::System::ObjectManager->new();
+This is typically B<only> needed in top level (C<bin/>) scripts! All parts of the OTRS API assume
+the ObjectManager to be present in C<$Kernel::OM> and use it.
 
 Sometimes objects need parameters to be sent to their constructors,
 these can also be passed to the ObjectManager's constructor like in the following example.
@@ -134,7 +145,7 @@ The hash reference will be flattened and passed to the constructor of the object
         },
     );
 
-Alternatively, L</ObjectParamAdd()> can be used to set these parameters at runtime (but this
+Alternatively, C<L</ObjectParamAdd()>> can be used to set these parameters at runtime (but this
 must happen before the object was created).
 
 If the C<< Debug => 1 >> option is present, destruction of objects
@@ -161,13 +172,14 @@ sub new {
     return $Self;
 }
 
-=item Get()
+=head2 Get()
 
 Retrieves a singleton object, and if it not yet exists, implicitly creates one for you.
 
     my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
 
-    my $ConfigObject2 = $Kernel::OM->Get('Kernel::Config'); # returns the same ConfigObject as above
+    # On the second call, this returns the same ConfigObject as above.
+    my $ConfigObject2 = $Kernel::OM->Get('Kernel::Config');
 
 =cut
 
@@ -187,13 +199,14 @@ sub Get {
     return $_[0]->_ObjectBuild( Package => $_[1] );
 }
 
-=item Create()
+=head2 Create()
 
 Creates a new object instance. This instance will not be managed by the object manager later on.
 
     my $DateTimeObject = $Kernel::OM->Create('Kernel::System::DateTime');
 
-    my $DateTimeObject2 = $Kernel::OM->Create('Kernel::System::DateTime'); # this is a new independent instance
+    # On the second call, this creates a new independent instance.
+    my $DateTimeObject2 = $Kernel::OM->Create('Kernel::System::DateTime');
 
 It is also possible to pass in constructor parameters:
 
@@ -234,12 +247,10 @@ sub Create {
 sub _ObjectBuild {
     my ( $Self, %Param ) = @_;
 
-    my $Package  = $Param{Package};
-    my $FileName = $Package;
-    $FileName =~ s{::}{/}g;
-    $FileName .= '.pm';
+    my $Package = $Param{Package};
     eval {
-        require $FileName;
+        my $FileName = $Param{Package} =~ s{::}{/}smxgr;
+        require $FileName . '.pm';
     };
     if ($@) {
         if ( $Param{Silent} ) {
@@ -310,11 +321,11 @@ sub _ObjectBuild {
     return $NewObject;
 }
 
-=item ObjectInstanceRegister()
+=head2 ObjectInstanceRegister()
 
 Adds an existing object instance to the ObjectManager so that it can be accessed by other objects.
 
-This should only be used on special circumstances, e. g. in the unit tests to pass $Self to the
+This should B<only> be used on special circumstances, e. g. in the unit tests to pass C<$Self> to the
 ObjectManager so that it is also available from there as 'Kernel::System::UnitTest'.
 
     $Kernel::OM->ObjectInstanceRegister(
@@ -342,10 +353,10 @@ sub ObjectInstanceRegister {
     return 1;
 }
 
-=item ObjectParamAdd()
+=head2 ObjectParamAdd()
 
 Adds arguments that will be passed to constructors of classes
-when they are created, in the same format as the C<new()> method
+when they are created, in the same format as the C<L<new()>> method
 receives them.
 
     $Kernel::OM->ObjectParamAdd(
@@ -385,11 +396,13 @@ sub ObjectParamAdd {
     return;
 }
 
-=item ObjectEventsHandle()
+=head2 ObjectEventsHandle()
 
-Execute all events for registered objects.
+Execute all queued (C<< Transaction => 1 >>) events for all singleton objects
+that the ObjectManager created before. This can be used to flush the event queue
+before destruction, for example.
 
- $Kernel::OM->ObjectEventsHandle();
+    $Kernel::OM->ObjectEventsHandle();
 
 =cut
 
@@ -423,7 +436,7 @@ sub ObjectEventsHandle {
     return;
 }
 
-=item ObjectsDiscard()
+=head2 ObjectsDiscard()
 
 Discards internally stored objects, so that the next access to objects
 creates them newly. If a list of object names is passed, only
@@ -583,7 +596,7 @@ sub ObjectsDiscard {
     return 1;
 }
 
-=item ObjectRegisterEventHandler()
+=head2 ObjectRegisterEventHandler()
 
 Registers an object that can handle asynchronous events.
 
@@ -629,8 +642,6 @@ sub DESTROY {
     local $Kernel::OM = $Self;
     $Self->ObjectsDiscard();
 }
-
-=back
 
 =head1 TERMS AND CONDITIONS
 

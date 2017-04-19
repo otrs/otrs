@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -29,22 +29,16 @@ our @ObjectDependencies = (
 
 Kernel::System::JSON - the JSON wrapper lib
 
-=head1 SYNOPSIS
+=head1 DESCRIPTION
 
 Functions for encoding perl data structures to JSON.
 
 =head1 PUBLIC INTERFACE
 
-=over 4
-
-=cut
-
-=item new()
+=head2 new()
 
 create a JSON object. Do not use it directly, instead use:
 
-    use Kernel::System::ObjectManager;
-    local $Kernel::OM = Kernel::System::ObjectManager->new();
     my $JSONObject = $Kernel::OM->Get('Kernel::System::JSON');
 
 =cut
@@ -59,7 +53,7 @@ sub new {
     return $Self;
 }
 
-=item Encode()
+=head2 Encode()
 
 Encode a perl data structure to a JSON string.
 
@@ -115,7 +109,7 @@ sub Encode {
     return $JSONEncoded;
 }
 
-=item Decode()
+=head2 Decode()
 
 Decode a JSON string to a perl data structure.
 
@@ -158,7 +152,7 @@ sub Decode {
     return $Scalar;
 }
 
-=item True()
+=head2 True()
 
 returns a constant that can be mapped to a boolean true value
 in JSON rather than a string with "true".
@@ -182,7 +176,7 @@ sub True {
     return \1;
 }
 
-=item False()
+=head2 False()
 
 like C<True()>, but for a false boolean value.
 
@@ -199,7 +193,7 @@ sub False {
 
 =cut
 
-=item _BooleansProcess()
+=head2 _BooleansProcess()
 
 decode boolean values leftover from JSON decoder to simple scalar values
 
@@ -243,8 +237,6 @@ sub _BooleansProcess {
 1;
 
 =end Internal:
-
-=back
 
 =head1 TERMS AND CONDITIONS
 

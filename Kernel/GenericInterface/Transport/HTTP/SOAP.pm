@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -24,15 +24,9 @@ our $ObjectManagerDisabled = 1;
 
 Kernel::GenericInterface::Transport::SOAP - GenericInterface network transport interface for HTTP::SOAP
 
-=head1 SYNOPSIS
-
 =head1 PUBLIC INTERFACE
 
-=over 4
-
-=cut
-
-=item new()
+=head2 new()
 
 usually, you want to create an instance of this
 by using Kernel::GenericInterface::Transport->new();
@@ -58,14 +52,14 @@ sub new {
     return $Self;
 }
 
-=item ProviderProcessRequest()
+=head2 ProviderProcessRequest()
 
 Process an incoming web service request. This function has to read the request data
 from from the web server process.
 
 Based on the request the Operation to be used is determined.
 
-No outbound communication is done here, except from continue requests.
+No out-bound communication is done here, except from continue requests.
 
 In case of an error, the resulting http error code and message are remembered for the response.
 
@@ -206,7 +200,7 @@ sub ProviderProcessRequest {
 
     # convert charset if necessary
     my $ContentCharset;
-    if ( $ENV{'CONTENT_TYPE'} =~ m{ \A ( .+ ) ;charset= ["']{0,1} ( .+? ) ["']{0,1} \z }xmsi ) {
+    if ( $ENV{'CONTENT_TYPE'} =~ m{ \A ( .+ ) ;\s*charset= ["']{0,1} ( .+? ) ["']{0,1} (;|\z) }xmsi ) {
 
         # remember content type for the response
         $Self->{ContentType} = $1;
@@ -290,7 +284,7 @@ sub ProviderProcessRequest {
     };
 }
 
-=item ProviderGenerateResponse()
+=head2 ProviderGenerateResponse()
 
 Generates response for an incoming web service request.
 
@@ -298,9 +292,9 @@ In case of an error, error code and message are taken from environment
 (previously set on request processing).
 
 The HTTP code is set accordingly
-- 200 for (syntactically) correct messages
-- 4xx for http errors
-- 500 for content syntax errors
+- C<200> for (syntactically) correct messages
+- C<4xx> for http errors
+- C<500> for content syntax errors
 
     my $Result = $TransportObject->ProviderGenerateResponse(
         Success => 1
@@ -426,7 +420,7 @@ sub ProviderGenerateResponse {
     );
 }
 
-=item RequesterPerformRequest()
+=head2 RequesterPerformRequest()
 
 Prepare data payload as XML structure, generate an outgoing web service request,
 receive the response and return its data.
@@ -559,41 +553,35 @@ sub RequesterPerformRequest {
             )
         {
 
-            # force Net::SSL instead of IO::Socket::SSL, otherwise GI can't connect to certificate
-            # authentication restricted servers
-            my $SSLModule = 'Net::SSL';
-            if ( !$Kernel::OM->Get('Kernel::System::Main')->Require($SSLModule) ) {
-                return {
-                    Success      => 0,
-                    ErrorMessage => "The Perl module \"$SSLModule\" needed to manage SSL"
-                        . " connections with certificates is missing!",
-                };
-            }
+            # Force Net::SSL instead of IO::Socket::SSL, otherwise GI can't connect to certificate
+            #   authentication restricted servers, see https://metacpan.org/pod/Net::HTTPS#ENVIRONMENT,
+            #   see bug #12306.
+            $ENV{PERL_NET_HTTPS_SSL_SOCKET_CLASS} = 'Net::SSL';    ## no critic
 
-            $ENV{HTTPS_PKCS12_FILE}     = $Config->{SSL}->{SSLP12Certificate};
-            $ENV{HTTPS_PKCS12_PASSWORD} = $Config->{SSL}->{SSLP12Password};
+            $ENV{HTTPS_PKCS12_FILE}     = $Config->{SSL}->{SSLP12Certificate};    ## no critic
+            $ENV{HTTPS_PKCS12_PASSWORD} = $Config->{SSL}->{SSLP12Password};       ## no critic
 
             # add certificate authority
             if ( IsStringWithData( $Config->{SSL}->{SSLCAFile} ) ) {
-                $ENV{HTTPS_CA_FILE} = $Config->{SSL}->{SSLCAFile};
+                $ENV{HTTPS_CA_FILE} = $Config->{SSL}->{SSLCAFile};                ## no critic
             }
             if ( IsStringWithData( $Config->{SSL}->{SSLCADir} ) ) {
-                $ENV{HTTPS_CA_DIR} = $Config->{SSL}->{SSLCADir};
+                $ENV{HTTPS_CA_DIR} = $Config->{SSL}->{SSLCADir};                  ## no critic
             }
         }
     }
 
     # add proxy
     if ( IsStringWithData( $Config->{SSL}->{SSLProxy} ) ) {
-        $ENV{HTTPS_PROXY} = $Config->{SSL}->{SSLProxy};
+        $ENV{HTTPS_PROXY} = $Config->{SSL}->{SSLProxy};                           ## no critic
     }
 
     # add proxy basic authentication
     if ( IsStringWithData( $Config->{SSL}->{SSLProxyUser} ) ) {
-        $ENV{HTTPS_PROXY_USERNAME} = $Config->{SSL}->{SSLProxyUser};
+        $ENV{HTTPS_PROXY_USERNAME} = $Config->{SSL}->{SSLProxyUser};              ## no critic
     }
     if ( IsStringWithData( $Config->{SSL}->{SSLProxyPassword} ) ) {
-        $ENV{HTTPS_PROXY_PASSWORD} = $Config->{SSL}->{SSLProxyPassword};
+        $ENV{HTTPS_PROXY_PASSWORD} = $Config->{SSL}->{SSLProxyPassword};          ## no critic
     }
 
     # prepare connect
@@ -789,7 +777,7 @@ sub RequesterPerformRequest {
 
 =begin Internal:
 
-=item _Error()
+=head2 _Error()
 
 Take error parameters from request processing.
 Error message is written to debugger, written to environment for response.
@@ -836,7 +824,7 @@ sub _Error {
     };
 }
 
-=item _Output()
+=head2 _Output()
 
 Generate http response for provider and send it back to remote system.
 Environment variables are checked for potential error messages.
@@ -887,7 +875,7 @@ sub _Output {
     $Param{HTTPCode} ||= 500;
     my $ContentType;
     if ( $Param{HTTPCode} eq 200 ) {
-        $ContentType = 'application/soap+xml';
+        $ContentType = 'text/xml';
         if ( $Self->{ContentType} ) {
             $ContentType = $Self->{ContentType};
         }
@@ -944,7 +932,7 @@ sub _Output {
     };
 }
 
-=item _SOAPOutputRecursion()
+=head2 _SOAPOutputRecursion()
 
 Turn Perl data structure to a structure usable for SOAP::Lite.
 The structure may contain multiple levels with scalars, array refs and hash refs.
@@ -1199,7 +1187,7 @@ sub _SOAPOutputRecursion {
     };
 }
 
-=item _SOAPOutputHashRecursion()
+=head2 _SOAPOutputHashRecursion()
 
 This is a part of _SOAPOutputRecursion.
 It contains the functions to process a hash key/value pair.
@@ -1259,7 +1247,7 @@ sub _SOAPOutputHashRecursion {
     };
 }
 
-=item _SOAPOutputProcessString()
+=head2 _SOAPOutputProcessString()
 
 This is a part of _SOAPOutputRecursion.
 It contains functions to quote invalid XML characters and encode the string
@@ -1287,8 +1275,6 @@ sub _SOAPOutputProcessString {
 1;
 
 =end Internal:
-
-=back
 
 =head1 TERMS AND CONDITIONS
 

@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -496,15 +496,6 @@ sub _ShowScreen {
     my $Output = $LayoutObject->Header();
     $Output .= $LayoutObject->NavigationBar();
 
-    $LayoutObject->Block(
-        Name => 'Title' . $Param{Mode},
-        Data => \%Param
-    );
-    $LayoutObject->Block(
-        Name => 'Navigation' . $Param{Mode},
-        Data => \%Param
-    );
-
     # send data to JS
     $LayoutObject->AddJSData(
         Key   => 'Invoker',
@@ -884,11 +875,11 @@ sub _DeleteEvent {
     );
 }
 
-=item _InvokerTypeCheck()
-
-checks if a given InvokerType is registered in the system.
-
-=cut
+# =item _InvokerTypeCheck()
+#
+# checks if a given InvokerType is registered in the system.
+#
+# =cut
 
 sub _InvokerTypeCheck {
     my ( $Self, %Param ) = @_;
@@ -901,11 +892,11 @@ sub _InvokerTypeCheck {
     return ref $Invokers->{ $Param{InvokerType} } eq 'HASH' ? 1 : 0;
 }
 
-=item _MappingTypeCheck()
-
-checks if a given MappingType is registered in the system.
-
-=cut
+# =item _MappingTypeCheck()
+#
+# checks if a given MappingType is registered in the system.
+#
+# =cut
 
 sub _MappingTypeCheck {
     my ( $Self, %Param ) = @_;

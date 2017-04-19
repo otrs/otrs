@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -31,22 +31,16 @@ our @ObjectDependencies = (
 
 Kernel::System::Daemon::SchedulerDB - Scheduler database lib
 
-=head1 SYNOPSIS
+=head1 DESCRIPTION
 
 Includes all scheduler related database functions.
 
 =head1 PUBLIC INTERFACE
 
-=over 4
-
-=cut
-
-=item new()
+=head2 new()
 
 create a scheduler database object. Do not use it directly, instead use:
 
-    use Kernel::System::ObjectManager;
-    local $Kernel::OM = Kernel::System::ObjectManager->new();
     my $SchedulerDBObject = $Kernel::OM->Get('Kernel::System::Daemon::SchedulerDB');
 
 =cut
@@ -61,7 +55,7 @@ sub new {
     return $Self;
 }
 
-=item TaskAdd()
+=head2 TaskAdd()
 
 add a new task to scheduler task list
 
@@ -191,7 +185,7 @@ sub TaskAdd {
     return $TaskID;
 }
 
-=item TaskGet()
+=head2 TaskGet()
 
 get scheduler task
 
@@ -284,7 +278,7 @@ sub TaskGet {
     return %Task;
 }
 
-=item TaskDelete()
+=head2 TaskDelete()
 
 delete a task from scheduler task list
 
@@ -321,7 +315,7 @@ sub TaskDelete {
     return 1;
 }
 
-=item TaskList()
+=head2 TaskList()
 
 get the list of scheduler tasks
 
@@ -384,7 +378,7 @@ sub TaskList {
     return @List;
 }
 
-=item TaskListUnlocked()
+=head2 TaskListUnlocked()
 
 get a list of unlocked tasks
 
@@ -438,7 +432,7 @@ sub TaskListUnlocked {
     return @List;
 }
 
-=item TaskLock()
+=head2 TaskLock()
 
 locks task to a specific PID
 
@@ -550,7 +544,7 @@ sub TaskLock {
     return 1;
 }
 
-=item TaskCleanup()
+=head2 TaskCleanup()
 
 deletes obsolete worker tasks
 
@@ -607,7 +601,7 @@ sub TaskCleanup {
     return 1;
 }
 
-=item TaskSummary()
+=head2 TaskSummary()
 
 get a summary of the tasks from the worker task table divided into handled and unhandled
 
@@ -744,7 +738,7 @@ sub TaskSummary {
     );
 }
 
-=item TaskLockUpdate()
+=head2 TaskLockUpdate()
 
 sets the task lock update time as current time for the specified tasks
 
@@ -785,7 +779,7 @@ sub TaskLockUpdate {
     return 1;
 }
 
-=item TaskUnlockExpired()
+=head2 TaskUnlockExpired()
 
 remove lock status for working tasks that has not been updated its lock update time for more than 5 minutes
 
@@ -861,7 +855,7 @@ sub TaskUnlockExpired {
     return 1;
 }
 
-=item FutureTaskAdd()
+=head2 FutureTaskAdd()
 
 add a new task to scheduler future task list
 
@@ -922,11 +916,10 @@ sub FutureTaskAdd {
         );
 
         my @FilteredList = @List;
-
-        if ( $Param{Name} ) {
+        if ( $Param{Name} && @List ) {
 
             # remove all tasks that does not match specified task name
-            @FilteredList = grep { $_->{Name} eq $Param{Name} } @List;
+            @FilteredList = grep { ( $_->{Name} || '' ) eq $Param{Name} } @List;
         }
 
         # compare the number of task with the maximum parallel limit
@@ -1007,7 +1000,7 @@ sub FutureTaskAdd {
     return $TaskID;
 }
 
-=item FutureTaskGet()
+=head2 FutureTaskGet()
 
 get scheduler future task
 
@@ -1099,7 +1092,7 @@ sub FutureTaskGet {
     return %Task;
 }
 
-=item FutureTaskDelete()
+=head2 FutureTaskDelete()
 
 delete a task from scheduler future task list
 
@@ -1136,7 +1129,7 @@ sub FutureTaskDelete {
     return 1;
 }
 
-=item FutureTaskList()
+=head2 FutureTaskList()
 
 get the list of scheduler future tasks
 
@@ -1202,7 +1195,7 @@ sub FutureTaskList {
     return @List;
 }
 
-=item FutureTaskToExecute()
+=head2 FutureTaskToExecute()
 
 moves all future tasks with reached execution time to the task table to execute
 
@@ -1321,7 +1314,7 @@ sub FutureTaskToExecute {
     return 1;
 }
 
-=item FutureTaskSummary()
+=head2 FutureTaskSummary()
 
 get a summary of the tasks from the future task table
 
@@ -1360,7 +1353,7 @@ sub FutureTaskSummary {
     );
 }
 
-=item CronTaskToExecute()
+=head2 CronTaskToExecute()
 
 creates cron tasks that needs to be run in the current time into the task table to execute
 
@@ -1453,7 +1446,7 @@ sub CronTaskToExecute {
     return 1;
 }
 
-=item CronTaskCleanup()
+=head2 CronTaskCleanup()
 
 removes recurrent tasks that does not have a matching a cron tasks definition in SysConfig
 
@@ -1526,7 +1519,7 @@ sub CronTaskCleanup {
     return 1;
 }
 
-=item CronTaskSummary()
+=head2 CronTaskSummary()
 
 get a summary of the cron tasks from the recurrent task table
 
@@ -1560,7 +1553,7 @@ sub CronTaskSummary {
     );
 }
 
-=item GenericAgentTaskToExecute()
+=head2 GenericAgentTaskToExecute()
 
 creates generic agent tasks that needs to be run in the current time into the task table to execute
 
@@ -1647,7 +1640,7 @@ sub GenericAgentTaskToExecute {
     return 1;
 }
 
-=item GenericAgentTaskCleanup()
+=head2 GenericAgentTaskCleanup()
 
 removes recurrent tasks that does not have a matching generic agent job
 
@@ -1728,7 +1721,7 @@ sub GenericAgentTaskCleanup {
     return 1;
 }
 
-=item GenericAgentTaskSummary()
+=head2 GenericAgentTaskSummary()
 
 get a summary of the generic agent tasks from the recurrent task table
 
@@ -1787,7 +1780,7 @@ sub GenericAgentTaskSummary {
     );
 }
 
-=item RecurrentTaskGet()
+=head2 RecurrentTaskGet()
 
 get scheduler recurrent task
 
@@ -1851,7 +1844,7 @@ sub RecurrentTaskGet {
     return %Task;
 }
 
-=item RecurrentTaskList()
+=head2 RecurrentTaskList()
 
 get the list of scheduler recurrent tasks
 
@@ -1932,7 +1925,7 @@ sub RecurrentTaskList {
     return @List;
 }
 
-=item RecurrentTaskDelete()
+=head2 RecurrentTaskDelete()
 
 delete a task from scheduler recurrent task list
 
@@ -1979,7 +1972,7 @@ sub RecurrentTaskDelete {
     return 1;
 }
 
-=item RecurrentTaskExecute()
+=head2 RecurrentTaskExecute()
 
 executes recurrent tasks like cron or generic agent tasks
 
@@ -2187,7 +2180,7 @@ sub RecurrentTaskExecute {
     return;
 }
 
-=item RecurrentTaskSummary()
+=head2 RecurrentTaskSummary()
 
 get a summary of the recurring tasks for the specified task type
 
@@ -2314,7 +2307,7 @@ sub RecurrentTaskSummary {
     );
 }
 
-=item RecurrentTaskWorkerInfoSet()
+=head2 RecurrentTaskWorkerInfoSet()
 
 sets last worker information (success status and running time) to a recurrent task
 
@@ -2359,7 +2352,7 @@ sub RecurrentTaskWorkerInfoSet {
     return 1;
 }
 
-=item RecurrentTaskUnlockExpired()
+=head2 RecurrentTaskUnlockExpired()
 
 remove lock status for recurring tasks that has been locked for more than 1 minutes
 
@@ -2456,8 +2449,6 @@ sub _Seconds2String {
 }
 
 1;
-
-=back
 
 =head1 TERMS AND CONDITIONS
 

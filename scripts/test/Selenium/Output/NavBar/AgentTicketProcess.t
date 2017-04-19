@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -212,13 +212,13 @@ $Selenium->RunTest(
 
         # check if NavBarAgentTicketProcess button is available
         # when NavBarAgentTicketProcess module is disabled and no process is available
-        my %NavBarAgentTicketProcess = $Kernel::OM->Get('Kernel::System::SysConfig')->ConfigItemGet(
+        my %NavBarAgentTicketProcess = $Kernel::OM->Get('Kernel::System::SysConfig')->SettingGet(
             Name => 'Frontend::NavBarModule###1-TicketProcesses',
         );
         $Helper->ConfigSettingChange(
             Valid => 0,
             Key   => 'Frontend::NavBarModule###1-TicketProcesses',
-            Value => \%NavBarAgentTicketProcess,
+            Value => $NavBarAgentTicketProcess{EffectiveValue},
         );
 
         $Selenium->VerifiedRefresh();

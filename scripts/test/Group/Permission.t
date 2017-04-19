@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -335,6 +335,42 @@ for my $PermissionTest (@UserGroupPermissionTests) {
                 $UsersCorrect,
                 "PermissionUserInvolvedGet() - involved users must be correct for permission $Permission and user ID $UserID"
             );
+        }
+    }
+
+    # check if users are assigned to the groups (PermissionCheck)
+    for my $GroupName ( sort keys %GroupIDByGroupName ) {
+        for my $Permission ( sort keys %{ $PermissionTest->{Permissions} } ) {
+
+            my $GroupID = $GroupIDByGroupName{$GroupName};
+
+            for my $UserLogin ( sort keys %UserIDByUserLogin ) {
+
+                my $UserID = $UserIDByUserLogin{$UserLogin};
+
+                my $PermissionResult = $GroupObject->PermissionCheck(
+                    UserID    => $UserID,
+                    GroupName => $GroupName,
+                    Type      => $Permission,
+                ) // 0;
+
+                my $PermissionSet = $PermissionTest->{Permissions}->{$Permission};
+
+                # If user or group is not part of test, permission is expected to be not set
+                if (
+                    !( grep /^$GroupID$/, @{ $PermissionTest->{GroupIDs} } )
+                    || !( grep /^$UserID$/, @{ $PermissionTest->{UserIDs} } )
+                    )
+                {
+                    $PermissionSet = 0;
+                }
+
+                $Self->Is(
+                    $PermissionResult,
+                    $PermissionSet,
+                    "PermissionCheck() - permission $Permission must be set to $PermissionSet for user ID $UserID and group ID $GroupID"
+                );
+            }
         }
     }
 

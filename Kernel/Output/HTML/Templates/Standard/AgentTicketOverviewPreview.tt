@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -106,7 +106,7 @@
 [% RenderBlockEnd("Service") %]
                         <tr>
                             <td>
-                                <label>[% Translate("Owner") | html %]</label><div title="[% Data.UserFirstname | html %] [% Data.UserLastname | html %] ([% Data.Owner | html %])">[% Data.UserFirstname | truncate(15) | html %] [% Data.UserLastname | truncate(15) | html %]</div>
+                                <label>[% Translate("Owner") | html %]</label><div title="[% Data.UserFirstname | html %] [% Data.UserLastname | html %] ([% Data.Owner | html %])">[% Data.UserFullname | truncate(30) | html %]</div>
                             </td>
                             <td>
                                 <label>[% Translate("Lock") | html %]</label><div title="[% Translate(Data.Lock) | html %]">[% Translate(Data.Lock) | html %]</div>
@@ -115,7 +115,7 @@
                         <tr class="Middle">
                             <td>
 [% RenderBlockStart("CustomerID") %]
-                                <label>[% Translate("CustomerID") | html %]</label>
+                                <label>[% Translate("Customer ID") | html %]</label>
 [% RenderBlockStart("CustomerIDRW") %]
                                 <div title="[% Data.CustomerID | html %]"><a href="[% Config("CustomerDBLink") | Interpolate %]" class="AsPopup PopupType_TicketAction" [% Config("CustomerDBLinkTarget") %]>[% Data.CustomerID | html %]</a></div>
 [% RenderBlockEnd("CustomerIDRW") %]

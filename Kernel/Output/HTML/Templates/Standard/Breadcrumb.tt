@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -7,15 +7,17 @@
 # --
 
 <ul class="BreadCrumb">
-    <li>[% Translate("You are here") | html %]:</li>
+[% IF Type == 'Agent' %]
+    <li><a href="[% Env('Baselink') %]Action=AgentDashboard" title="[% Translate("Back to Dashboard") %]"><i class="fa fa-home"></i></a></li>
+[% ELSE %]
+    <li><a href="[% Env('Baselink') %]Action=Admin" title="[% Translate("Back to admin overview") %]"><i class="fa fa-home"></i></a></li>
+[% END %]
     [% FOREACH Item IN Path %]
         <li>
-
-            <!-- link is not needed if there is only one or for the last item in breadcrumb -->
-            [% IF Item.Link && Path.size() > 1 %]
-                <a href="[% Env('Baselink') %]Action=[% Item.Link %]">[% Item.Name | html %]</a>
+            [% IF Item.Link && Path.size() > 0 %]
+                <a href="[% Env('Baselink') %]Action=[% Item.Link %]" title="[% Item.Name | html %]">[% Item.Name | html %]</a>
             [% ELSE %]
-                [% Item.Name | html %]
+                <span title="[% Item.Name | html %]">[% Item.Name | html %]</span>
             [% END %]
         </li>
     [% END %]

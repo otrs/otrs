@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -28,8 +28,8 @@ $Selenium->RunTest(
             Value => 0,
         );
 
-        # get ticket object
-        my $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
+        my $TicketObject  = $Kernel::OM->Get('Kernel::System::Ticket');
+        my $ArticleObject = $Kernel::OM->Get('Kernel::System::Ticket::Article');
 
         # create test ticket
         my $TicketID = $TicketObject->TicketCreate(
@@ -48,20 +48,23 @@ $Selenium->RunTest(
             "TicketCreate - ID $TicketID",
         );
 
+        my $ArticleBackendObject
+            = $Kernel::OM->Get('Kernel::System::Ticket::Article')->BackendForChannel( ChannelName => 'Phone' );
+
         # create two test email articles
         my @ArticleIDs;
         for my $ArticleCreate ( 1 .. 2 ) {
-            my $ArticleID = $TicketObject->ArticleCreate(
-                TicketID       => $TicketID,
-                ArticleType    => 'email-external',
-                SenderType     => 'customer',
-                Subject        => 'some short description',
-                Body           => 'the message text',
-                Charset        => 'ISO-8859-15',
-                MimeType       => 'text/plain',
-                HistoryType    => 'EmailCustomer',
-                HistoryComment => 'Some free text!',
-                UserID         => 1,
+            my $ArticleID = $ArticleBackendObject->ArticleCreate(
+                TicketID             => $TicketID,
+                IsVisibleForCustomer => 1,
+                SenderType           => 'customer',
+                Subject              => 'some short description',
+                Body                 => 'the message text',
+                Charset              => 'ISO-8859-15',
+                MimeType             => 'text/plain',
+                HistoryType          => 'EmailCustomer',
+                HistoryComment       => 'Some free text!',
+                UserID               => 1,
             );
             $Self->True(
                 $ArticleID,

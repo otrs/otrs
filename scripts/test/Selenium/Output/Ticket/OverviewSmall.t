@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -30,6 +30,14 @@ $Selenium->RunTest(
                 Value => 0,
             );
         }
+
+        # Override FirstnameLastnameOrder setting to check if it is taken into account
+        #   (see bug#12554 for more information).
+        $Helper->ConfigSettingChange(
+            Valid => 1,
+            Key   => 'FirstnameLastnameOrder',
+            Value => 1,
+        );
 
         # create test user and login
         my $TestUserLogin = $Helper->TestUserCreate(
@@ -75,10 +83,11 @@ $Selenium->RunTest(
         for my $User ( 1 .. 15 ) {
             my $UserFirstname = 'Firstname' . $User;
             my $UserLastname  = 'Lastname' . $User;
+            my $UserLogin     = 'test' . $RandomID . $User;
             my $UserID        = $UserObject->UserAdd(
                 UserFirstname => $UserFirstname,
                 UserLastname  => $UserLastname,
-                UserLogin     => 'test' . $RandomID . $User,
+                UserLogin     => $UserLogin,
                 UserEmail     => "test$RandomID$User\@example.com",
                 ValidID       => 1,
                 ChangeUserID  => $TestUserID,
@@ -89,7 +98,12 @@ $Selenium->RunTest(
             );
 
             push @UserIDs, $UserID;
-            $Users{$UserID} = "$UserFirstname $UserLastname";
+
+            # Store user full name for later comparison.
+            my %UserData = $UserObject->GetUserData(
+                UserID => $UserID,
+            );
+            $Users{$UserID} = $UserData{UserFullname};
         }
 
         # get ticket object
@@ -195,7 +209,8 @@ $Selenium->RunTest(
             "$SortTicketNumbers[14] - found on screen"
         );
 
-        # check if owner and responsible columns are sorted by names (bug#4439)
+        # Check if owner and responsible columns are sorted by full names instead of IDs
+        #   (see bug#4439 for more information).
         for my $Column (qw(Responsible Owner)) {
 
             # sort by column, order up

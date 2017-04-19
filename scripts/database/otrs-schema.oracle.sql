@@ -253,6 +253,24 @@ CREATE INDEX FK_group_customer_user_creata6 ON group_customer_user (create_by);
 CREATE INDEX group_customer_user_group_id ON group_customer_user (group_id);
 CREATE INDEX group_customer_user_user_id ON group_customer_user (user_id);
 -- ----------------------------------------------------------
+--  create table group_customer
+-- ----------------------------------------------------------
+CREATE TABLE group_customer (
+    customer_id VARCHAR2 (150) NOT NULL,
+    group_id NUMBER (12, 0) NOT NULL,
+    permission_key VARCHAR2 (20) NOT NULL,
+    permission_value NUMBER (5, 0) NOT NULL,
+    permission_context VARCHAR2 (100) NOT NULL,
+    create_time DATE NOT NULL,
+    create_by NUMBER (12, 0) NOT NULL,
+    change_time DATE NOT NULL,
+    change_by NUMBER (12, 0) NOT NULL
+);
+CREATE INDEX FK_group_customer_change_by ON group_customer (change_by);
+CREATE INDEX FK_group_customer_create_by ON group_customer (create_by);
+CREATE INDEX group_customer_customer_id ON group_customer (customer_id);
+CREATE INDEX group_customer_group_id ON group_customer (group_id);
+-- ----------------------------------------------------------
 --  create table roles
 -- ----------------------------------------------------------
 CREATE TABLE roles (
@@ -992,9 +1010,9 @@ BEGIN
 END;
 /
 --;
-CREATE INDEX FK_ticket_history_article_id ON ticket_history (article_id);
 CREATE INDEX FK_ticket_history_change_by ON ticket_history (change_by);
 CREATE INDEX FK_ticket_history_create_by ON ticket_history (create_by);
+CREATE INDEX ticket_history_article_id ON ticket_history (article_id);
 CREATE INDEX ticket_history_create_time ON ticket_history (create_time);
 CREATE INDEX ticket_history_history_type_id ON ticket_history (history_type_id);
 CREATE INDEX ticket_history_owner_id ON ticket_history (owner_id);
@@ -1094,50 +1112,6 @@ CREATE TABLE ticket_loop_protection (
 CREATE INDEX ticket_loop_protection_sent_37 ON ticket_loop_protection (sent_date);
 CREATE INDEX ticket_loop_protection_sent_to ON ticket_loop_protection (sent_to);
 -- ----------------------------------------------------------
---  create table article_type
--- ----------------------------------------------------------
-CREATE TABLE article_type (
-    id NUMBER (5, 0) NOT NULL,
-    name VARCHAR2 (200) NOT NULL,
-    comments VARCHAR2 (250) NULL,
-    valid_id NUMBER (5, 0) NOT NULL,
-    create_time DATE NOT NULL,
-    create_by NUMBER (12, 0) NOT NULL,
-    change_time DATE NOT NULL,
-    change_by NUMBER (12, 0) NOT NULL,
-    CONSTRAINT article_type_name UNIQUE (name)
-);
-ALTER TABLE article_type ADD CONSTRAINT PK_article_type PRIMARY KEY (id);
-BEGIN
-  EXECUTE IMMEDIATE 'DROP SEQUENCE SE_article_type';
-EXCEPTION
-  WHEN OTHERS THEN NULL;
-END;
-/
---;
-CREATE SEQUENCE SE_article_type
-INCREMENT BY 1
-START WITH 1
-NOMAXVALUE
-NOCYCLE
-CACHE 20
-ORDER;
-CREATE OR REPLACE TRIGGER SE_article_type_t
-BEFORE INSERT ON article_type
-FOR EACH ROW
-BEGIN
-  IF :new.id IS NULL THEN
-    SELECT SE_article_type.nextval
-    INTO :new.id
-    FROM DUAL;
-  END IF;
-END;
-/
---;
-CREATE INDEX FK_article_type_change_by ON article_type (change_by);
-CREATE INDEX FK_article_type_create_by ON article_type (create_by);
-CREATE INDEX FK_article_type_valid_id ON article_type (valid_id);
--- ----------------------------------------------------------
 --  create table article_sender_type
 -- ----------------------------------------------------------
 CREATE TABLE article_sender_type (
@@ -1195,27 +1169,61 @@ CREATE INDEX FK_article_flag_create_by ON article_flag (create_by);
 CREATE INDEX article_flag_article_id ON article_flag (article_id);
 CREATE INDEX article_flag_article_id_crea15 ON article_flag (article_id, create_by);
 -- ----------------------------------------------------------
+--  create table communication_channel
+-- ----------------------------------------------------------
+CREATE TABLE communication_channel (
+    id NUMBER (20, 0) NOT NULL,
+    name VARCHAR2 (200) NOT NULL,
+    module VARCHAR2 (200) NOT NULL,
+    package_name VARCHAR2 (200) NOT NULL,
+    channel_data CLOB NOT NULL,
+    valid_id NUMBER (5, 0) NOT NULL,
+    create_time DATE NOT NULL,
+    create_by NUMBER (12, 0) NOT NULL,
+    change_time DATE NOT NULL,
+    change_by NUMBER (12, 0) NOT NULL,
+    CONSTRAINT communication_channel_name UNIQUE (name)
+);
+ALTER TABLE communication_channel ADD CONSTRAINT PK_communication_channel PRIMARY KEY (id);
+BEGIN
+  EXECUTE IMMEDIATE 'DROP SEQUENCE SE_communication_channel';
+EXCEPTION
+  WHEN OTHERS THEN NULL;
+END;
+/
+--;
+CREATE SEQUENCE SE_communication_channel
+INCREMENT BY 1
+START WITH 1
+NOMAXVALUE
+NOCYCLE
+CACHE 20
+ORDER;
+CREATE OR REPLACE TRIGGER SE_communication_channel_t
+BEFORE INSERT ON communication_channel
+FOR EACH ROW
+BEGIN
+  IF :new.id IS NULL THEN
+    SELECT SE_communication_channel.nextval
+    INTO :new.id
+    FROM DUAL;
+  END IF;
+END;
+/
+--;
+CREATE INDEX FK_communication_channel_cha34 ON communication_channel (change_by);
+CREATE INDEX FK_communication_channel_cre1a ON communication_channel (create_by);
+CREATE INDEX FK_communication_channel_val71 ON communication_channel (valid_id);
+-- ----------------------------------------------------------
 --  create table article
 -- ----------------------------------------------------------
 CREATE TABLE article (
     id NUMBER (20, 0) NOT NULL,
     ticket_id NUMBER (20, 0) NOT NULL,
-    article_type_id NUMBER (5, 0) NOT NULL,
     article_sender_type_id NUMBER (5, 0) NOT NULL,
-    a_from VARCHAR2 (3800) NULL,
-    a_reply_to VARCHAR2 (500) NULL,
-    a_to VARCHAR2 (3800) NULL,
-    a_cc VARCHAR2 (3800) NULL,
-    a_subject VARCHAR2 (3800) NULL,
-    a_message_id VARCHAR2 (3800) NULL,
-    a_message_id_md5 VARCHAR2 (32) NULL,
-    a_in_reply_to VARCHAR2 (3800) NULL,
-    a_references VARCHAR2 (3800) NULL,
-    a_content_type VARCHAR2 (250) NULL,
-    a_body CLOB NOT NULL,
-    incoming_time NUMBER (12, 0) NOT NULL,
-    content_path VARCHAR2 (250) NULL,
-    valid_id NUMBER (5, 0) NOT NULL,
+    communication_channel_id NUMBER (20, 0) NOT NULL,
+    is_visible_for_customer NUMBER (5, 0) NOT NULL,
+    insert_fingerprint VARCHAR2 (64) NULL,
     create_time DATE NOT NULL,
     create_by NUMBER (12, 0) NOT NULL,
     change_time DATE NOT NULL,
@@ -1250,18 +1258,70 @@ END;
 --;
 CREATE INDEX FK_article_change_by ON article (change_by);
 CREATE INDEX FK_article_create_by ON article (create_by);
-CREATE INDEX FK_article_valid_id ON article (valid_id);
 CREATE INDEX article_article_sender_type_id ON article (article_sender_type_id);
-CREATE INDEX article_article_type_id ON article (article_type_id);
-CREATE INDEX article_message_id_md5 ON article (a_message_id_md5);
+CREATE INDEX article_communication_channe74 ON article (communication_channel_id);
 CREATE INDEX article_ticket_id ON article (ticket_id);
+-- ----------------------------------------------------------
+--  create table article_data_mime
+-- ----------------------------------------------------------
+CREATE TABLE article_data_mime (
+    id NUMBER (20, 0) NOT NULL,
+    article_id NUMBER (20, 0) NOT NULL,
+    a_from CLOB NULL,
+    a_reply_to CLOB NULL,
+    a_to CLOB NULL,
+    a_cc CLOB NULL,
+    a_subject VARCHAR2 (3800) NULL,
+    a_message_id VARCHAR2 (3800) NULL,
+    a_message_id_md5 VARCHAR2 (32) NULL,
+    a_in_reply_to CLOB NULL,
+    a_references CLOB NULL,
+    a_content_type VARCHAR2 (250) NULL,
+    a_body CLOB NOT NULL,
+    incoming_time NUMBER (12, 0) NOT NULL,
+    content_path VARCHAR2 (250) NULL,
+    create_time DATE NOT NULL,
+    create_by NUMBER (12, 0) NOT NULL,
+    change_time DATE NOT NULL,
+    change_by NUMBER (12, 0) NOT NULL
+);
+ALTER TABLE article_data_mime ADD CONSTRAINT PK_article_data_mime PRIMARY KEY (id);
+BEGIN
+  EXECUTE IMMEDIATE 'DROP SEQUENCE SE_article_data_mime';
+EXCEPTION
+  WHEN OTHERS THEN NULL;
+END;
+/
+--;
+CREATE SEQUENCE SE_article_data_mime
+INCREMENT BY 1
+START WITH 1
+NOMAXVALUE
+NOCYCLE
+CACHE 20
+ORDER;
+CREATE OR REPLACE TRIGGER SE_article_data_mime_t
+BEFORE INSERT ON article_data_mime
+FOR EACH ROW
+BEGIN
+  IF :new.id IS NULL THEN
+    SELECT SE_article_data_mime.nextval
+    INTO :new.id
+    FROM DUAL;
+  END IF;
+END;
+/
+--;
+CREATE INDEX FK_article_data_mime_change_by ON article_data_mime (change_by);
+CREATE INDEX FK_article_data_mime_create_by ON article_data_mime (create_by);
+CREATE INDEX article_data_mime_article_id ON article_data_mime (article_id);
+CREATE INDEX article_data_mime_message_idf3 ON article_data_mime (a_message_id_md5);
 -- ----------------------------------------------------------
 --  create table article_search
 -- ----------------------------------------------------------
 CREATE TABLE article_search (
     id NUMBER (20, 0) NOT NULL,
     ticket_id NUMBER (20, 0) NOT NULL,
-    article_type_id NUMBER (5, 0) NOT NULL,
     article_sender_type_id NUMBER (5, 0) NOT NULL,
     a_from VARCHAR2 (3800) NULL,
     a_to VARCHAR2 (3800) NULL,
@@ -1272,12 +1332,11 @@ CREATE TABLE article_search (
 );
 ALTER TABLE article_search ADD CONSTRAINT PK_article_search PRIMARY KEY (id);
 CREATE INDEX article_search_article_sendec7 ON article_search (article_sender_type_id);
-CREATE INDEX article_search_article_type_id ON article_search (article_type_id);
 CREATE INDEX article_search_ticket_id ON article_search (ticket_id);
 -- ----------------------------------------------------------
---  create table article_plain
+--  create table article_data_mime_plain
 -- ----------------------------------------------------------
-CREATE TABLE article_plain (
+CREATE TABLE article_data_mime_plain (
     id NUMBER (20, 0) NOT NULL,
     article_id NUMBER (20, 0) NOT NULL,
     body CLOB NOT NULL,
@@ -1286,40 +1345,40 @@ CREATE TABLE article_plain (
     change_time DATE NOT NULL,
     change_by NUMBER (12, 0) NOT NULL
 );
-ALTER TABLE article_plain ADD CONSTRAINT PK_article_plain PRIMARY KEY (id);
+ALTER TABLE article_data_mime_plain ADD CONSTRAINT PK_article_data_mime_plain PRIMARY KEY (id);
 BEGIN
-  EXECUTE IMMEDIATE 'DROP SEQUENCE SE_article_plain';
+  EXECUTE IMMEDIATE 'DROP SEQUENCE SE_article_data_mime_plain';
 EXCEPTION
   WHEN OTHERS THEN NULL;
 END;
 /
 --;
-CREATE SEQUENCE SE_article_plain
+CREATE SEQUENCE SE_article_data_mime_plain
 INCREMENT BY 1
 START WITH 1
 NOMAXVALUE
 NOCYCLE
 CACHE 20
 ORDER;
-CREATE OR REPLACE TRIGGER SE_article_plain_t
-BEFORE INSERT ON article_plain
+CREATE OR REPLACE TRIGGER SE_article_data_mime_plain_t
+BEFORE INSERT ON article_data_mime_plain
 FOR EACH ROW
 BEGIN
   IF :new.id IS NULL THEN
-    SELECT SE_article_plain.nextval
+    SELECT SE_article_data_mime_plain.nextval
     INTO :new.id
     FROM DUAL;
   END IF;
 END;
 /
 --;
-CREATE INDEX FK_article_plain_change_by ON article_plain (change_by);
-CREATE INDEX FK_article_plain_create_by ON article_plain (create_by);
-CREATE INDEX article_plain_article_id ON article_plain (article_id);
+CREATE INDEX FK_article_data_mime_plain_ccf ON article_data_mime_plain (change_by);
+CREATE INDEX FK_article_data_mime_plain_c92 ON article_data_mime_plain (create_by);
+CREATE INDEX article_data_mime_plain_artid4 ON article_data_mime_plain (article_id);
 -- ----------------------------------------------------------
---  create table article_attachment
+--  create table article_data_mime_attachment
 -- ----------------------------------------------------------
-CREATE TABLE article_attachment (
+CREATE TABLE article_data_mime_attachment (
     id NUMBER (20, 0) NOT NULL,
     article_id NUMBER (20, 0) NOT NULL,
     filename VARCHAR2 (250) NULL,
@@ -1334,36 +1393,36 @@ CREATE TABLE article_attachment (
     change_time DATE NOT NULL,
     change_by NUMBER (12, 0) NOT NULL
 );
-ALTER TABLE article_attachment ADD CONSTRAINT PK_article_attachment PRIMARY KEY (id);
+ALTER TABLE article_data_mime_attachment ADD CONSTRAINT PK_article_data_mime_attachmbb PRIMARY KEY (id);
 BEGIN
-  EXECUTE IMMEDIATE 'DROP SEQUENCE SE_article_attachment';
+  EXECUTE IMMEDIATE 'DROP SEQUENCE SE_article_data_mime_attac4b';
 EXCEPTION
   WHEN OTHERS THEN NULL;
 END;
 /
 --;
-CREATE SEQUENCE SE_article_attachment
+CREATE SEQUENCE SE_article_data_mime_attac4b
 INCREMENT BY 1
 START WITH 1
 NOMAXVALUE
 NOCYCLE
 CACHE 20
 ORDER;
-CREATE OR REPLACE TRIGGER SE_article_attachment_t
-BEFORE INSERT ON article_attachment
+CREATE OR REPLACE TRIGGER SE_article_data_mime_attac4b_t
+BEFORE INSERT ON article_data_mime_attachment
 FOR EACH ROW
 BEGIN
   IF :new.id IS NULL THEN
-    SELECT SE_article_attachment.nextval
+    SELECT SE_article_data_mime_attac4b.nextval
     INTO :new.id
     FROM DUAL;
   END IF;
 END;
 /
 --;
-CREATE INDEX FK_article_attachment_change1e ON article_attachment (change_by);
-CREATE INDEX FK_article_attachment_create01 ON article_attachment (create_by);
-CREATE INDEX article_attachment_article_id ON article_attachment (article_id);
+CREATE INDEX FK_article_data_mime_attachm82 ON article_data_mime_attachment (change_by);
+CREATE INDEX FK_article_data_mime_attachmb3 ON article_data_mime_attachment (create_by);
+CREATE INDEX article_data_mime_attachmentcb ON article_data_mime_attachment (article_id);
 -- ----------------------------------------------------------
 --  create table time_accounting
 -- ----------------------------------------------------------
@@ -1956,6 +2015,21 @@ CREATE TABLE customer_company (
     CONSTRAINT customer_company_name UNIQUE (name)
 );
 ALTER TABLE customer_company ADD CONSTRAINT PK_customer_company PRIMARY KEY (customer_id);
+-- ----------------------------------------------------------
+--  create table customer_user_customer
+-- ----------------------------------------------------------
+CREATE TABLE customer_user_customer (
+    user_id VARCHAR2 (100) NOT NULL,
+    customer_id VARCHAR2 (150) NOT NULL,
+    create_time DATE NOT NULL,
+    create_by NUMBER (12, 0) NOT NULL,
+    change_time DATE NOT NULL,
+    change_by NUMBER (12, 0) NOT NULL
+);
+CREATE INDEX FK_customer_user_customer_ch28 ON customer_user_customer (change_by);
+CREATE INDEX FK_customer_user_customer_cr61 ON customer_user_customer (create_by);
+CREATE INDEX customer_user_customer_custo95 ON customer_user_customer (customer_id);
+CREATE INDEX customer_user_customer_user_id ON customer_user_customer (user_id);
 -- ----------------------------------------------------------
 --  create table mail_account
 -- ----------------------------------------------------------
@@ -3205,3 +3279,424 @@ END;
 CREATE INDEX FK_cloud_service_config_chane1 ON cloud_service_config (change_by);
 CREATE INDEX FK_cloud_service_config_crea30 ON cloud_service_config (create_by);
 CREATE INDEX FK_cloud_service_config_valib2 ON cloud_service_config (valid_id);
+-- ----------------------------------------------------------
+--  create table sysconfig_default
+-- ----------------------------------------------------------
+CREATE TABLE sysconfig_default (
+    id NUMBER (12, 0) NOT NULL,
+    name VARCHAR2 (250) NOT NULL,
+    description CLOB NOT NULL,
+    navigation VARCHAR2 (200) NOT NULL,
+    is_invisible NUMBER (5, 0) NOT NULL,
+    is_readonly NUMBER (5, 0) NOT NULL,
+    is_required NUMBER (5, 0) NOT NULL,
+    is_valid NUMBER (5, 0) NOT NULL,
+    has_configlevel NUMBER (5, 0) NOT NULL,
+    user_modification_possible NUMBER (5, 0) NOT NULL,
+    user_modification_active NUMBER (5, 0) NOT NULL,
+    user_preferences_group VARCHAR2 (250) NULL,
+    xml_content_raw CLOB NOT NULL,
+    xml_content_parsed CLOB NOT NULL,
+    xml_filename VARCHAR2 (250) NOT NULL,
+    effective_value CLOB NOT NULL,
+    is_dirty NUMBER (5, 0) NOT NULL,
+    exclusive_lock_guid VARCHAR2 (32) NOT NULL,
+    exclusive_lock_user_id NUMBER (12, 0) NULL,
+    exclusive_lock_expiry_time DATE NULL,
+    create_time DATE NOT NULL,
+    create_by NUMBER (12, 0) NOT NULL,
+    change_time DATE NOT NULL,
+    change_by NUMBER (12, 0) NOT NULL,
+    CONSTRAINT sysconfig_default_name UNIQUE (name)
+);
+ALTER TABLE sysconfig_default ADD CONSTRAINT PK_sysconfig_default PRIMARY KEY (id);
+BEGIN
+  EXECUTE IMMEDIATE 'DROP SEQUENCE SE_sysconfig_default';
+EXCEPTION
+  WHEN OTHERS THEN NULL;
+END;
+/
+--;
+CREATE SEQUENCE SE_sysconfig_default
+INCREMENT BY 1
+START WITH 1
+NOMAXVALUE
+NOCYCLE
+CACHE 20
+ORDER;
+CREATE OR REPLACE TRIGGER SE_sysconfig_default_t
+BEFORE INSERT ON sysconfig_default
+FOR EACH ROW
+BEGIN
+  IF :new.id IS NULL THEN
+    SELECT SE_sysconfig_default.nextval
+    INTO :new.id
+    FROM DUAL;
+  END IF;
+END;
+/
+--;
+CREATE INDEX FK_sysconfig_default_change_by ON sysconfig_default (change_by);
+CREATE INDEX FK_sysconfig_default_create_by ON sysconfig_default (create_by);
+CREATE INDEX FK_sysconfig_default_exclusi26 ON sysconfig_default (exclusive_lock_user_id);
+-- ----------------------------------------------------------
+--  create table sysconfig_default_version
+-- ----------------------------------------------------------
+CREATE TABLE sysconfig_default_version (
+    id NUMBER (12, 0) NOT NULL,
+    sysconfig_default_id NUMBER (12, 0) NULL,
+    name VARCHAR2 (250) NOT NULL,
+    description CLOB NOT NULL,
+    navigation VARCHAR2 (200) NOT NULL,
+    is_invisible NUMBER (5, 0) NOT NULL,
+    is_readonly NUMBER (5, 0) NOT NULL,
+    is_required NUMBER (5, 0) NOT NULL,
+    is_valid NUMBER (5, 0) NOT NULL,
+    has_configlevel NUMBER (5, 0) NOT NULL,
+    user_modification_possible NUMBER (5, 0) NOT NULL,
+    user_modification_active NUMBER (5, 0) NOT NULL,
+    user_preferences_group VARCHAR2 (250) NULL,
+    xml_content_raw CLOB NOT NULL,
+    xml_content_parsed CLOB NOT NULL,
+    xml_filename VARCHAR2 (250) NOT NULL,
+    effective_value CLOB NOT NULL,
+    create_time DATE NOT NULL,
+    create_by NUMBER (12, 0) NOT NULL,
+    change_time DATE NOT NULL,
+    change_by NUMBER (12, 0) NOT NULL
+);
+ALTER TABLE sysconfig_default_version ADD CONSTRAINT PK_sysconfig_default_version PRIMARY KEY (id);
+BEGIN
+  EXECUTE IMMEDIATE 'DROP SEQUENCE SE_sysconfig_default_version';
+EXCEPTION
+  WHEN OTHERS THEN NULL;
+END;
+/
+--;
+CREATE SEQUENCE SE_sysconfig_default_version
+INCREMENT BY 1
+START WITH 1
+NOMAXVALUE
+NOCYCLE
+CACHE 20
+ORDER;
+CREATE OR REPLACE TRIGGER SE_sysconfig_default_version_t
+BEFORE INSERT ON sysconfig_default_version
+FOR EACH ROW
+BEGIN
+  IF :new.id IS NULL THEN
+    SELECT SE_sysconfig_default_version.nextval
+    INTO :new.id
+    FROM DUAL;
+  END IF;
+END;
+/
+--;
+CREATE INDEX FK_sysconfig_default_version39 ON sysconfig_default_version (change_by);
+CREATE INDEX FK_sysconfig_default_versionfa ON sysconfig_default_version (create_by);
+CREATE INDEX FK_sysconfig_default_version51 ON sysconfig_default_version (sysconfig_default_id);
+-- ----------------------------------------------------------
+--  create table sysconfig_modified
+-- ----------------------------------------------------------
+CREATE TABLE sysconfig_modified (
+    id NUMBER (12, 0) NOT NULL,
+    sysconfig_default_id NUMBER (12, 0) NOT NULL,
+    name VARCHAR2 (250) NOT NULL,
+    user_id NUMBER (12, 0) NULL,
+    is_valid NUMBER (5, 0) NOT NULL,
+    user_modification_active NUMBER (5, 0) NOT NULL,
+    effective_value CLOB NOT NULL,
+    is_dirty NUMBER (5, 0) NOT NULL,
+    reset_to_default NUMBER (5, 0) NOT NULL,
+    create_time DATE NOT NULL,
+    create_by NUMBER (12, 0) NOT NULL,
+    change_time DATE NOT NULL,
+    change_by NUMBER (12, 0) NOT NULL,
+    CONSTRAINT sysconfig_modified_per_user UNIQUE (sysconfig_default_id, user_id)
+);
+ALTER TABLE sysconfig_modified ADD CONSTRAINT PK_sysconfig_modified PRIMARY KEY (id);
+BEGIN
+  EXECUTE IMMEDIATE 'DROP SEQUENCE SE_sysconfig_modified';
+EXCEPTION
+  WHEN OTHERS THEN NULL;
+END;
+/
+--;
+CREATE SEQUENCE SE_sysconfig_modified
+INCREMENT BY 1
+START WITH 1
+NOMAXVALUE
+NOCYCLE
+CACHE 20
+ORDER;
+CREATE OR REPLACE TRIGGER SE_sysconfig_modified_t
+BEFORE INSERT ON sysconfig_modified
+FOR EACH ROW
+BEGIN
+  IF :new.id IS NULL THEN
+    SELECT SE_sysconfig_modified.nextval
+    INTO :new.id
+    FROM DUAL;
+  END IF;
+END;
+/
+--;
+CREATE INDEX FK_sysconfig_modified_change22 ON sysconfig_modified (change_by);
+CREATE INDEX FK_sysconfig_modified_createcf ON sysconfig_modified (create_by);
+CREATE INDEX FK_sysconfig_modified_syscon68 ON sysconfig_modified (sysconfig_default_id);
+CREATE INDEX FK_sysconfig_modified_user_id ON sysconfig_modified (user_id);
+-- ----------------------------------------------------------
+--  create table sysconfig_modified_version
+-- ----------------------------------------------------------
+CREATE TABLE sysconfig_modified_version (
+    id NUMBER (12, 0) NOT NULL,
+    sysconfig_default_version_id NUMBER (12, 0) NOT NULL,
+    name VARCHAR2 (250) NOT NULL,
+    user_id NUMBER (12, 0) NULL,
+    is_valid NUMBER (5, 0) NOT NULL,
+    user_modification_active NUMBER (5, 0) NOT NULL,
+    effective_value CLOB NOT NULL,
+    reset_to_default NUMBER (5, 0) NOT NULL,
+    create_time DATE NOT NULL,
+    create_by NUMBER (12, 0) NOT NULL,
+    change_time DATE NOT NULL,
+    change_by NUMBER (12, 0) NOT NULL
+);
+ALTER TABLE sysconfig_modified_version ADD CONSTRAINT PK_sysconfig_modified_version PRIMARY KEY (id);
+BEGIN
+  EXECUTE IMMEDIATE 'DROP SEQUENCE SE_sysconfig_modified_versf7';
+EXCEPTION
+  WHEN OTHERS THEN NULL;
+END;
+/
+--;
+CREATE SEQUENCE SE_sysconfig_modified_versf7
+INCREMENT BY 1
+START WITH 1
+NOMAXVALUE
+NOCYCLE
+CACHE 20
+ORDER;
+CREATE OR REPLACE TRIGGER SE_sysconfig_modified_versf7_t
+BEFORE INSERT ON sysconfig_modified_version
+FOR EACH ROW
+BEGIN
+  IF :new.id IS NULL THEN
+    SELECT SE_sysconfig_modified_versf7.nextval
+    INTO :new.id
+    FROM DUAL;
+  END IF;
+END;
+/
+--;
+CREATE INDEX FK_sysconfig_modified_versio75 ON sysconfig_modified_version (change_by);
+CREATE INDEX FK_sysconfig_modified_versiofe ON sysconfig_modified_version (create_by);
+CREATE INDEX FK_sysconfig_modified_versioe7 ON sysconfig_modified_version (sysconfig_default_version_id);
+CREATE INDEX FK_sysconfig_modified_versio08 ON sysconfig_modified_version (user_id);
+-- ----------------------------------------------------------
+--  create table sysconfig_deployment_lock
+-- ----------------------------------------------------------
+CREATE TABLE sysconfig_deployment_lock (
+    id NUMBER (12, 0) NOT NULL,
+    exclusive_lock_guid VARCHAR2 (32) NULL,
+    exclusive_lock_user_id NUMBER (12, 0) NULL,
+    exclusive_lock_expiry_time DATE NULL
+);
+ALTER TABLE sysconfig_deployment_lock ADD CONSTRAINT PK_sysconfig_deployment_lock PRIMARY KEY (id);
+BEGIN
+  EXECUTE IMMEDIATE 'DROP SEQUENCE SE_sysconfig_deployment_lock';
+EXCEPTION
+  WHEN OTHERS THEN NULL;
+END;
+/
+--;
+CREATE SEQUENCE SE_sysconfig_deployment_lock
+INCREMENT BY 1
+START WITH 1
+NOMAXVALUE
+NOCYCLE
+CACHE 20
+ORDER;
+CREATE OR REPLACE TRIGGER SE_sysconfig_deployment_lock_t
+BEFORE INSERT ON sysconfig_deployment_lock
+FOR EACH ROW
+BEGIN
+  IF :new.id IS NULL THEN
+    SELECT SE_sysconfig_deployment_lock.nextval
+    INTO :new.id
+    FROM DUAL;
+  END IF;
+END;
+/
+--;
+CREATE INDEX FK_sysconfig_deployment_lock70 ON sysconfig_deployment_lock (exclusive_lock_user_id);
+-- ----------------------------------------------------------
+--  create table sysconfig_deployment
+-- ----------------------------------------------------------
+CREATE TABLE sysconfig_deployment (
+    id NUMBER (12, 0) NOT NULL,
+    comments VARCHAR2 (250) NULL,
+    user_id NUMBER (12, 0) NULL,
+    effective_value CLOB NOT NULL,
+    create_time DATE NOT NULL,
+    create_by NUMBER (12, 0) NOT NULL
+);
+ALTER TABLE sysconfig_deployment ADD CONSTRAINT PK_sysconfig_deployment PRIMARY KEY (id);
+BEGIN
+  EXECUTE IMMEDIATE 'DROP SEQUENCE SE_sysconfig_deployment';
+EXCEPTION
+  WHEN OTHERS THEN NULL;
+END;
+/
+--;
+CREATE SEQUENCE SE_sysconfig_deployment
+INCREMENT BY 1
+START WITH 1
+NOMAXVALUE
+NOCYCLE
+CACHE 20
+ORDER;
+CREATE OR REPLACE TRIGGER SE_sysconfig_deployment_t
+BEFORE INSERT ON sysconfig_deployment
+FOR EACH ROW
+BEGIN
+  IF :new.id IS NULL THEN
+    SELECT SE_sysconfig_deployment.nextval
+    INTO :new.id
+    FROM DUAL;
+  END IF;
+END;
+/
+--;
+CREATE INDEX FK_sysconfig_deployment_creae5 ON sysconfig_deployment (create_by);
+CREATE INDEX FK_sysconfig_deployment_user4a ON sysconfig_deployment (user_id);
+-- ----------------------------------------------------------
+--  create table calendar
+-- ----------------------------------------------------------
+CREATE TABLE calendar (
+    id NUMBER (20, 0) NOT NULL,
+    group_id NUMBER (12, 0) NOT NULL,
+    name VARCHAR2 (200) NOT NULL,
+    salt_string VARCHAR2 (64) NOT NULL,
+    color VARCHAR2 (7) NOT NULL,
+    ticket_appointments CLOB NULL,
+    valid_id NUMBER (5, 0) NOT NULL,
+    create_time DATE NOT NULL,
+    create_by NUMBER (12, 0) NOT NULL,
+    change_time DATE NOT NULL,
+    change_by NUMBER (12, 0) NOT NULL,
+    CONSTRAINT calendar_name UNIQUE (name)
+);
+ALTER TABLE calendar ADD CONSTRAINT PK_calendar PRIMARY KEY (id);
+BEGIN
+  EXECUTE IMMEDIATE 'DROP SEQUENCE SE_calendar';
+EXCEPTION
+  WHEN OTHERS THEN NULL;
+END;
+/
+--;
+CREATE SEQUENCE SE_calendar
+INCREMENT BY 1
+START WITH 1
+NOMAXVALUE
+NOCYCLE
+CACHE 20
+ORDER;
+CREATE OR REPLACE TRIGGER SE_calendar_t
+BEFORE INSERT ON calendar
+FOR EACH ROW
+BEGIN
+  IF :new.id IS NULL THEN
+    SELECT SE_calendar.nextval
+    INTO :new.id
+    FROM DUAL;
+  END IF;
+END;
+/
+--;
+CREATE INDEX FK_calendar_change_by ON calendar (change_by);
+CREATE INDEX FK_calendar_create_by ON calendar (create_by);
+CREATE INDEX FK_calendar_group_id ON calendar (group_id);
+CREATE INDEX FK_calendar_valid_id ON calendar (valid_id);
+-- ----------------------------------------------------------
+--  create table calendar_appointment
+-- ----------------------------------------------------------
+CREATE TABLE calendar_appointment (
+    id NUMBER (20, 0) NOT NULL,
+    parent_id NUMBER (20, 0) NULL,
+    calendar_id NUMBER (20, 0) NOT NULL,
+    unique_id VARCHAR2 (255) NOT NULL,
+    title VARCHAR2 (255) NOT NULL,
+    description VARCHAR2 (3800) NULL,
+    location VARCHAR2 (255) NULL,
+    start_time DATE NOT NULL,
+    end_time DATE NOT NULL,
+    all_day NUMBER (5, 0) NULL,
+    notify_time DATE NULL,
+    notify_template VARCHAR2 (255) NULL,
+    notify_custom VARCHAR2 (255) NULL,
+    notify_custom_unit_count NUMBER (20, 0) NULL,
+    notify_custom_unit VARCHAR2 (255) NULL,
+    notify_custom_unit_point VARCHAR2 (255) NULL,
+    notify_custom_date DATE NULL,
+    team_id VARCHAR2 (3800) NULL,
+    resource_id VARCHAR2 (3800) NULL,
+    recurring NUMBER (5, 0) NULL,
+    recur_type VARCHAR2 (20) NULL,
+    recur_freq VARCHAR2 (255) NULL,
+    recur_count NUMBER (12, 0) NULL,
+    recur_interval NUMBER (12, 0) NULL,
+    recur_until DATE NULL,
+    recur_id DATE NULL,
+    recur_exclude VARCHAR2 (3800) NULL,
+    ticket_appointment_rule_id VARCHAR2 (32) NULL,
+    create_time DATE NULL,
+    create_by NUMBER (12, 0) NULL,
+    change_time DATE NULL,
+    change_by NUMBER (12, 0) NULL
+);
+ALTER TABLE calendar_appointment ADD CONSTRAINT PK_calendar_appointment PRIMARY KEY (id);
+BEGIN
+  EXECUTE IMMEDIATE 'DROP SEQUENCE SE_calendar_appointment';
+EXCEPTION
+  WHEN OTHERS THEN NULL;
+END;
+/
+--;
+CREATE SEQUENCE SE_calendar_appointment
+INCREMENT BY 1
+START WITH 1
+NOMAXVALUE
+NOCYCLE
+CACHE 20
+ORDER;
+CREATE OR REPLACE TRIGGER SE_calendar_appointment_t
+BEFORE INSERT ON calendar_appointment
+FOR EACH ROW
+BEGIN
+  IF :new.id IS NULL THEN
+    SELECT SE_calendar_appointment.nextval
+    INTO :new.id
+    FROM DUAL;
+  END IF;
+END;
+/
+--;
+CREATE INDEX FK_calendar_appointment_cale00 ON calendar_appointment (calendar_id);
+CREATE INDEX FK_calendar_appointment_chanf7 ON calendar_appointment (change_by);
+CREATE INDEX FK_calendar_appointment_creae2 ON calendar_appointment (create_by);
+CREATE INDEX FK_calendar_appointment_pare1b ON calendar_appointment (parent_id);
+-- ----------------------------------------------------------
+--  create table calendar_appointment_ticket
+-- ----------------------------------------------------------
+CREATE TABLE calendar_appointment_ticket (
+    calendar_id NUMBER (20, 0) NOT NULL,
+    ticket_id NUMBER (20, 0) NOT NULL,
+    rule_id VARCHAR2 (32) NOT NULL,
+    appointment_id NUMBER (20, 0) NOT NULL,
+    CONSTRAINT calendar_appointment_ticket_d2 UNIQUE (calendar_id, ticket_id, rule_id)
+);
+CREATE INDEX calendar_appointment_ticket_8c ON calendar_appointment_ticket (appointment_id);
+CREATE INDEX calendar_appointment_ticket_19 ON calendar_appointment_ticket (calendar_id);
+CREATE INDEX calendar_appointment_ticket_50 ON calendar_appointment_ticket (rule_id);
+CREATE INDEX calendar_appointment_ticket_e9 ON calendar_appointment_ticket (ticket_id);

@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -32,6 +32,9 @@ my $NoConnectWarningPeriod = 60 * 60 * 24 * 5;    # 5 days
 # If we cannot connect to cloud.otrs.com for more than the second period, show an error.
 my $NoConnectErrorPeriod = 60 * 60 * 24 * 15;     # 15 days
 
+# If we cannot connect to cloud.otrs.com for more than the second period, block the system.
+my $NoConnectBlockPeriod = 60 * 60 * 24 * 25;     # 25 days
+
 # If the contract is about to expire in less than this time, show a hint
 my $ContractExpiryWarningPeriod = 60 * 60 * 24 * 28;    # 28 days
 
@@ -39,15 +42,9 @@ my $ContractExpiryWarningPeriod = 60 * 60 * 24 * 28;    # 28 days
 
 Kernel::System::OTRSBusiness - OTRSBusiness deployment backend
 
-=head1 SYNOPSIS
-
 =head1 PUBLIC INTERFACE
 
-=over 4
-
-=cut
-
-=item new()
+=head2 new()
 
 create an object. Do not use it directly, instead use:
 
@@ -83,7 +80,7 @@ sub new {
     return $Self;
 }
 
-=item OTRSBusinessIsInstalled()
+=head2 OTRSBusinessIsInstalled()
 
 checks if OTRSBusiness is installed in the current system.
 That does not necessarily mean that it is also active, for
@@ -120,9 +117,9 @@ sub OTRSBusinessIsInstalled {
     return $IsInstalled;
 }
 
-=item OTRSBusinessIsAvailable()
+=head2 OTRSBusinessIsAvailable()
 
-checks with cloud.otrs.com if OTRSBusiness is available for the current framework.
+checks with C<cloud.otrs.com> if OTRSBusiness is available for the current framework.
 
 =cut
 
@@ -166,7 +163,7 @@ sub OTRSBusinessIsAvailable {
     return;
 }
 
-=item OTRSBusinessIsAvailableOffline()
+=head2 OTRSBusinessIsAvailableOffline()
 
 retrieves the latest result of the BusinessVersionCheck cloud service
 that was stored in the system_data table.
@@ -185,7 +182,7 @@ sub OTRSBusinessIsAvailableOffline {
     return $BusinessVersionCheck{LatestVersionForCurrentFramework} ? 1 : 0;
 }
 
-=item OTRSBusinessIsCorrectlyDeployed()
+=head2 OTRSBusinessIsCorrectlyDeployed()
 
 checks if the OTRSBusiness package is correctly
 deployed or if it needs to be reinstalled.
@@ -227,7 +224,7 @@ sub OTRSBusinessIsCorrectlyDeployed {
     return 1;
 }
 
-=item OTRSBusinessIsReinstallable()
+=head2 OTRSBusinessIsReinstallable()
 
 checks if the OTRSBusiness package can be reinstalled
 (if it supports the current framework version). If not,
@@ -248,9 +245,9 @@ sub OTRSBusinessIsReinstallable {
     );
 }
 
-=item OTRSBusinessIsUpdateable()
+=head2 OTRSBusinessIsUpdateable()
 
-checks with cloud.otrs.com if the OTRSBusiness package is available in a newer version
+checks with C<cloud.otrs.com> if the OTRSBusiness package is available in a newer version
 than the one currently installed. The result of this check will be stored in the
 system_data table for offline usage.
 
@@ -303,7 +300,7 @@ sub OTRSBusinessIsUpdateable {
     return 0;
 }
 
-=item OTRSBusinessVersionCheckOffline()
+=head2 OTRSBusinessVersionCheckOffline()
 
 retrieves the latest result of the BusinessVersionCheck cloud service
 that was stored in the system_data table.
@@ -344,7 +341,7 @@ sub OTRSBusinessVersionCheckOffline {
     return %Result;
 }
 
-=item OTRSBusinessGetDependencies()
+=head2 OTRSBusinessGetDependencies()
 
 checks if there are any active dependencies on OTRSBusiness.
 
@@ -383,9 +380,9 @@ sub OTRSBusinessGetDependencies {
     return \@DependentPackages;
 }
 
-=item OTRSBusinessEntitlementCheck()
+=head2 OTRSBusinessEntitlementCheck()
 
-determines the OTRSBusiness entitlement status of this system as reported by cloud.otrs.com
+determines the OTRSBusiness entitlement status of this system as reported by C<cloud.otrs.com>
 and stores it in the system_data cache.
 
 Returns 1 if the cloud call was successful.
@@ -451,17 +448,18 @@ sub OTRSBusinessEntitlementCheck {
     return 0;
 }
 
-=item OTRSBusinessEntitlementStatus()
+=head2 OTRSBusinessEntitlementStatus()
 
 Returns the current entitlement status.
 
     my $Status = $OTRSBusinessObject->OTRSBusinessEntitlementStatus(
-        CallCloudService => 1,  # 0 or 1, call the cloud service before looking at the cache
+        CallCloudService => 1,              # 0 or 1, call the cloud service before looking at the cache
     );
 
-    $Status = 'entitled';   # everything is OK
-    $Status = 'warning';    # last check was OK, and we are in the waiting period
-    $Status = 'forbidden';  # not entitled (either because the server said so or because the last check was too long ago)
+    $Status = 'entitled';      # everything is OK
+    $Status = 'warning';       # last check was OK, and we are in the waiting period - show warning
+    $Status = 'warning-error'; # last check was OK, and we are past waiting period - show error message
+    $Status = 'forbidden';     # not entitled (either because the server said so or because the last check was too long ago)
 
 =cut
 
@@ -499,8 +497,11 @@ sub OTRSBusinessEntitlementStatus {
 
     my $SecondsSinceLastUpdate = $Kernel::OM->Get('Kernel::System::Time')->SystemTime() - $LastUpdateSystemTime;
 
-    if ( $SecondsSinceLastUpdate > $NoConnectErrorPeriod ) {
+    if ( $SecondsSinceLastUpdate > $NoConnectBlockPeriod ) {
         return 'forbidden';
+    }
+    if ( $SecondsSinceLastUpdate > $NoConnectErrorPeriod ) {
+        return 'warning-error';
     }
     if ( $SecondsSinceLastUpdate > $NoConnectWarningPeriod ) {
         return 'warning';
@@ -509,7 +510,7 @@ sub OTRSBusinessEntitlementStatus {
     return 'entitled';
 }
 
-=item OTRSBusinessContractExpiryDateCheck()
+=head2 OTRSBusinessContractExpiryDateCheck()
 
 checks for the warning period before the contract expires
 
@@ -568,11 +569,16 @@ sub HandleBusinessPermissionCloudServiceResult {
         LastUpdateTime     => $Kernel::OM->Get('Kernel::System::Time')->SystemTime2TimeStamp(
             SystemTime => $Kernel::OM->Get('Kernel::System::Time')->SystemTime()
         ),
+        AgentSessionLimit             => $OperationResult->{Data}->{AgentSessionLimit}             // 0,
+        AgentSessionLimitPriorWarning => $OperationResult->{Data}->{AgentSessionLimitPriorWarning} // 0,
     );
 
     my $SystemDataObject = $Kernel::OM->Get('Kernel::System::SystemData');
 
+    KEY:
     for my $Key ( sort keys %StoreData ) {
+        next KEY if !defined $StoreData{$Key};
+
         my $FullKey = 'OTRSBusiness::' . $Key;
 
         if ( defined $SystemDataObject->SystemDataGet( Key => $FullKey ) ) {
@@ -665,7 +671,7 @@ sub _OTRSBusinessFileGet {
     return;
 }
 
-=item OTRSBusinessInstall()
+=head2 OTRSBusinessInstall()
 
 downloads and installs OTRSBusiness.
 
@@ -696,9 +702,9 @@ sub OTRSBusinessInstall {
     return $Install;
 }
 
-=item OTRSBusinessReinstall()
+=head2 OTRSBusinessReinstall()
 
-reinstalls OTRSBusiness from local repository.
+re-installs OTRSBusiness from local repository.
 
 =cut
 
@@ -720,7 +726,7 @@ sub OTRSBusinessReinstall {
     );
 }
 
-=item OTRSBusinessUpdate()
+=head2 OTRSBusinessUpdate()
 
 downloads and updates OTRSBusiness.
 
@@ -738,7 +744,7 @@ sub OTRSBusinessUpdate {
     );
 }
 
-=item OTRSBusinessUninstall()
+=head2 OTRSBusinessUninstall()
 
 removes OTRSBusiness from the system.
 
@@ -825,7 +831,7 @@ sub OTRSBusinessUninstall {
     return $Uninstall;
 }
 
-=item OTRSBusinessCommandNextUpdateTimeSet()
+=head2 OTRSBusinessCommandNextUpdateTimeSet()
 
 Set the next update time for the given command in the system data table storage.
 
@@ -904,8 +910,6 @@ sub _GetOTRSBusinessPackageFromRepository {
 }
 
 1;
-
-=back
 
 =head1 TERMS AND CONDITIONS
 

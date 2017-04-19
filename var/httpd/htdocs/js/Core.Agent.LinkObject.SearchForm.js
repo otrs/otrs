@@ -1,5 +1,5 @@
 // --
-// Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+// Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 // --
 // This software comes with ABSOLUTELY NO WARRANTY. For details, see
 // the enclosed file COPYING for license information (AGPL). If you
@@ -65,7 +65,7 @@ Core.Agent.LinkObject.SearchForm = (function (TargetNS) {
             SearchValueFlag = false;
             $('#LinkSearchForm input, #LinkSearchForm select').each(function () {
                 if ($(this).attr('name') && $(this).attr('name').match(/^SEARCH\:\:/)) {
-                    if ($(this).val() && $(this).val() !== '') {
+                    if ($(this).val() && $(this).val().length) {
                         SearchValueFlag = true;
                     }
                 }
@@ -74,6 +74,9 @@ Core.Agent.LinkObject.SearchForm = (function (TargetNS) {
             if (!SearchValueFlag) {
                alert(Core.Language.Translate("Please enter at least one search value or * to find anything."));
                return false;
+            }
+            else {
+                Core.UI.Dialog.ShowWaitingDialog(undefined, Core.Language.Translate("Searching for linkable objects. This may take a while..."));
             }
         });
 

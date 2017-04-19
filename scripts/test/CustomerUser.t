@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -181,6 +181,16 @@ for my $Key ( 1 .. 3, 'ä', 'カス', '_', '&' ) {
     $Self->True(
         $User{UserLogin},
         "CustomerUserGet() - uc() - $UserID",
+    );
+
+    # check customer ids
+    my @CustomerIDs = $CustomerUserObject->CustomerIDs(
+        User => $UserID,
+    );
+    $Self->IsDeeply(
+        \@CustomerIDs,
+        [ $UserRand . '-Customer-Update-Id' ],
+        'CustomerIDs() - User',
     );
 
     # search by CustomerID

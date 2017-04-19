@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -507,7 +507,7 @@ for my $Test (@Tests) {
         $TimeObject->TimeStamp2SystemTime( String => $Test->{FixedTimeSet} ),
     );
 
-    my $IsComming = $Kernel::OM->Get('Kernel::System::SystemMaintenance')->SystemMaintenanceIsComming();
+    my $IsComming = $Kernel::OM->Get('Kernel::System::SystemMaintenance')->SystemMaintenanceIsComing();
 
     if ( $Test->{IsComming} ) {
 

@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -20,7 +20,8 @@ my $TicketObject       = $Kernel::OM->Get('Kernel::System::Ticket');
 # get helper object
 $Kernel::OM->ObjectParamAdd(
     'Kernel::System::UnitTest::Helper' => {
-        RestoreDatabase => 1,
+        RestoreDatabase  => 1,
+        UseTmpArticleDir => 1,
     },
 );
 my $Helper = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
@@ -140,6 +141,43 @@ for ( 1 .. 2 ) {
         }
 }
 
+# Run initial tests for Empty before assigning values
+for my $DynamicField ( @FieldConfig[ 0, 2 ] ) {
+    my %TicketIDsSearch = $TicketObject->TicketSearch(
+        Result                               => 'HASH',
+        Limit                                => 100,
+        TicketID                             => $TicketData[0]{TicketID},
+        "DynamicField_$DynamicField->{Name}" => {
+            Empty => 0,
+        },
+        UserID     => 1,
+        Permission => 'r0',
+    );
+
+    $Self->IsDeeply(
+        \%TicketIDsSearch,
+        {},
+        "Search with Empty => 0, dynamic field absent, type $DynamicField->{FieldType}",
+    );
+
+    %TicketIDsSearch = $TicketObject->TicketSearch(
+        Result                               => 'HASH',
+        Limit                                => 100,
+        TicketID                             => $TicketData[0]{TicketID},
+        "DynamicField_$DynamicField->{Name}" => {
+            Empty => 1,
+        },
+        UserID     => 1,
+        Permission => 'r0',
+    );
+
+    $Self->IsDeeply(
+        \%TicketIDsSearch,
+        { $TicketData[0]{TicketID} => $TicketData[0]{TicketNumber} },
+        "Search with Empty => 1, dynamic field absent, type $DynamicField->{FieldType}",
+    );
+}
+
 my @Values = (
     {
         DynamicFieldConfig => $FieldConfig[0],
@@ -206,6 +244,43 @@ for my $Value (@Values) {
         ObjectID           => $Value->{ObjectID},
         Value              => $Value->{Value},
         UserID             => 1,
+    );
+}
+
+# More tests for Empty
+for my $DynamicField ( @FieldConfig[ 0, 2 ] ) {
+    my %TicketIDsSearch = $TicketObject->TicketSearch(
+        Result                               => 'HASH',
+        Limit                                => 100,
+        TicketID                             => $TicketData[0]{TicketID},
+        "DynamicField_$DynamicField->{Name}" => {
+            Empty => 1,
+        },
+        UserID     => 1,
+        Permission => 'r0',
+    );
+
+    $Self->IsDeeply(
+        \%TicketIDsSearch,
+        {},
+        "Search with Empty => 1, dynamic field present, type $DynamicField->{FieldType}",
+    );
+
+    %TicketIDsSearch = $TicketObject->TicketSearch(
+        Result                               => 'HASH',
+        Limit                                => 100,
+        TicketID                             => $TicketData[0]{TicketID},
+        "DynamicField_$DynamicField->{Name}" => {
+            Empty => 0,
+        },
+        UserID     => 1,
+        Permission => 'r0',
+    );
+
+    $Self->IsDeeply(
+        \%TicketIDsSearch,
+        { $TicketData[0]{TicketID} => $TicketData[0]{TicketNumber} },
+        "Search with Empty => 0, dynamic field present, type $DynamicField->{FieldType}",
     );
 }
 

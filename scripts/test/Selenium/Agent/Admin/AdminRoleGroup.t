@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -66,6 +66,12 @@ $Selenium->RunTest(
         $Selenium->find_element( "#Roles",  'css' );
         $Selenium->find_element( "#Groups", 'css' );
 
+        # check breadcrumb on Overview screen
+        $Self->True(
+            $Selenium->find_element( '.BreadCrumb', 'css' ),
+            "Breadcrumb is found on Overview screen.",
+        );
+
         $Self->True(
             index( $Selenium->get_page_source(), $RoleName ) > -1,
             "$RoleName role found on page",
@@ -99,6 +105,22 @@ $Selenium->RunTest(
 
         # edit group relations for test role
         $Selenium->find_element( $RoleName, 'link_text' )->VerifiedClick();
+
+        # check breadcrumb on change screen
+        my $Count = 1;
+        for my $BreadcrumbText (
+            'Manage Role-Group Relations',
+            'Change Group Relations for Role \'' . $RoleName . '\''
+            )
+        {
+            $Self->Is(
+                $Selenium->execute_script("return \$('.BreadCrumb li:eq($Count)').text().trim()"),
+                $BreadcrumbText,
+                "Breadcrumb text '$BreadcrumbText' is found on screen"
+            );
+
+            $Count++;
+        }
 
         # set permissions
         for my $Permission (qw(ro note owner)) {

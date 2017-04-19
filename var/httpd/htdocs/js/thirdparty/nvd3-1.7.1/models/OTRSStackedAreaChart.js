@@ -44,13 +44,18 @@ nv.models.OTRSstackedAreaChart = function() {
         , yAxisTickFormat = d3.format(',.2f')
         , state = nv.utils.state()
         , defaultState = null
-        , noData = 'No Data Available.'
+// ---
+// OTRS
+// ---
+//        , noData = 'No Data Available.'
+        , noData = Core.Language.Translate('No Data Available.')
+// ---
         , dispatch = d3.dispatch('tooltipShow', 'tooltipHide', 'stateChange', 'changeState','renderEnd')
         , controlWidth = 250
 // ---
 // OTRS
 // ---
-//    , cData = ['Stacked','Stream','Expanded']
+//        , cData = ['Stacked','Stream','Expanded']
         , cData = [ Core.Language.Translate('Stacked'), Core.Language.Translate('Stream'), Core.Language.Translate('Expanded') ]
 // ---
         , controlLabels = {}
@@ -206,9 +211,10 @@ nv.models.OTRSstackedAreaChart = function() {
 // OTRS
 // ---
 //                        key: controlLabels.stacked || 'Stacked',
+//                        metaKey: 'Stacked',
                         key: controlLabels.stacked || Core.Language.Translate('Stacked'),
-// ---
                         metaKey: Core.Language.Translate('Stacked'),
+// ---
                         disabled: stacked.style() != 'stack',
                         style: 'stack'
                     },
@@ -217,9 +223,10 @@ nv.models.OTRSstackedAreaChart = function() {
 // OTRS
 // ---
 //                        key: controlLabels.stream || 'Stream',
+//                        metaKey: 'Stream',
                         key: controlLabels.stream || Core.Language.Translate('Stream'),
-// ---
                         metaKey: Core.Language.Translate('Stream'),
+// ---
                         disabled: stacked.style() != 'stream',
                         style: 'stream'
                     },
@@ -228,9 +235,10 @@ nv.models.OTRSstackedAreaChart = function() {
 // OTRS
 // ---
 //                        key: controlLabels.expanded || 'Expanded',
+//                        metaKey: 'Expanded',
                         key: controlLabels.expanded || Core.Language.Translate('Expanded'),
-// ---
                         metaKey: Core.Language.Translate('Expanded'),
+// ---
                         disabled: stacked.style() != 'expand',
                         style: 'expand'
                     },

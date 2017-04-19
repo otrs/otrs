@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -106,7 +106,7 @@ sub Run {
             NewCustomerID NewPendingTime NewPendingTimeType NewCustomerUserLogin
             NewStateID NewQueueID NewPriorityID NewOwnerID NewResponsibleID
             NewTypeID NewServiceID NewSLAID
-            NewNoteFrom NewNoteSubject NewNoteBody NewArticleType NewNoteTimeUnits NewModule
+            NewNoteFrom NewNoteSubject NewNoteBody NewNoteIsVisibleForCustomer NewNoteTimeUnits NewModule
             NewParamKey1 NewParamKey2 NewParamKey3 NewParamKey4
             NewParamValue1 NewParamValue2 NewParamValue3 NewParamValue4
             NewParamKey5 NewParamKey6 NewParamKey7 NewParamKey8
@@ -283,7 +283,11 @@ sub Run {
             if ($JobAddResult) {
 
                 # if the user would like to continue editing the generic agent job, just redirect to the edit screen
-                if ( $ParamObject->GetParam( Param => 'ContinueAfterSave' ) eq '1' ) {
+                if (
+                    defined $ParamObject->GetParam( Param => 'ContinueAfterSave' )
+                    && ( $ParamObject->GetParam( Param => 'ContinueAfterSave' ) eq '1' )
+                    )
+                {
                     my $Profile = $Self->{Profile} || '';
                     return $LayoutObject->Redirect( OP => "Action=$Self->{Action};Subaction=Update;Profile=$Profile" );
                 }
@@ -488,13 +492,13 @@ sub _MaskUpdate {
     );
     $JobData{ScheduleDaysList} = $LayoutObject->BuildSelection(
         Data => {
-            1 => 'Mon',
-            2 => 'Tue',
-            3 => 'Wed',
-            4 => 'Thu',
-            5 => 'Fri',
-            6 => 'Sat',
-            0 => 'Sun',
+            1 => Translatable('Mon'),
+            2 => Translatable('Tue'),
+            3 => Translatable('Wed'),
+            4 => Translatable('Thu'),
+            5 => Translatable('Fri'),
+            6 => Translatable('Sat'),
+            0 => Translatable('Sun'),
         },
         Sort       => 'NumericKey',
         Name       => 'ScheduleDays',
@@ -537,23 +541,23 @@ sub _MaskUpdate {
         Data => [
             {
                 Key   => 60,
-                Value => 'minute(s)',
+                Value => Translatable('minute(s)'),
             },
             {
                 Key   => 3600,
-                Value => 'hour(s)',
+                Value => Translatable('hour(s)'),
             },
             {
                 Key   => 86400,
-                Value => 'day(s)',
+                Value => Translatable('day(s)'),
             },
             {
                 Key   => 2592000,
-                Value => 'month(s)',
+                Value => Translatable('month(s)'),
             },
             {
                 Key   => 31536000,
-                Value => 'year(s)',
+                Value => Translatable('year(s)'),
             },
 
         ],
@@ -762,8 +766,8 @@ sub _MaskUpdate {
     # Because of this case we changed 1=>'Yes' to 1=>'No'
     $JobData{SendNoNotificationOption} = $LayoutObject->BuildSelection(
         Data => {
-            '1' => 'No',
-            '0' => 'Yes'
+            '1' => Translatable('No'),
+            '0' => Translatable('Yes'),
         },
         Name       => 'NewSendNoNotification',
         SelectedID => $JobData{NewSendNoNotification} || 0,
@@ -957,8 +961,8 @@ sub _MaskUpdate {
 
         $JobData{'NewArchiveFlagStrg'} = $LayoutObject->BuildSelection(
             Data => {
-                y => Translatable('archive tickets'),
-                n => Translatable('restore tickets from archive'),
+                'y' => Translatable('archive tickets'),
+                'n' => Translatable('restore tickets from archive'),
             },
             Name         => 'NewArchiveFlag',
             PossibleNone => 1,
@@ -1176,27 +1180,6 @@ sub _MaskUpdate {
         push @EventTypeList, $Type;
     }
 
-    my %ArticleTypeData = (
-        'note-internal' => 'note-internal',
-        'note-external' => 'note-external',
-    );
-
-    my $NewArticleType = $LayoutObject->BuildSelection(
-        Data        => \%ArticleTypeData,
-        Name        => 'NewArticleType',
-        Multiple    => 0,
-        Size        => 2,
-        Translation => 1,
-        SelectedID  => $JobData{NewArticleType} || 'note-internal',
-        Class       => 'Modernize',
-    );
-    $LayoutObject->Block(
-        Name => 'NewArticleType',
-        Data => {
-            NewArticleType => $NewArticleType,
-        },
-    );
-
     # create event type selector
     my $EventTypeStrg = $LayoutObject->BuildSelection(
         Data          => \@EventTypeList,
@@ -1300,29 +1283,34 @@ sub _MaskRun {
     }
 
     # get needed objects
-    my $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
-    my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
+    my $TicketObject  = $Kernel::OM->Get('Kernel::System::Ticket');
+    my $ArticleObject = $Kernel::OM->Get('Kernel::System::Ticket::Article');
+    my $ConfigObject  = $Kernel::OM->Get('Kernel::Config');
 
     # perform ticket search
     my $GenericAgentTicketSearch = $ConfigObject->Get("Ticket::GenericAgentTicketSearch") || {};
     my $Counter = $TicketObject->TicketSearch(
-        Result          => 'COUNT',
-        SortBy          => 'Age',
-        OrderBy         => 'Down',
-        UserID          => 1,
-        Limit           => 60_000,
-        ConditionInline => $GenericAgentTicketSearch->{ExtendedSearchCondition},
+        Result              => 'COUNT',
+        SortBy              => 'Age',
+        OrderBy             => 'Down',
+        UserID              => 1,
+        Limit               => 60_000,
+        ContentSearchPrefix => '*',
+        ContentSearchSuffix => '*',
+        ConditionInline     => $GenericAgentTicketSearch->{ExtendedSearchCondition},
         %JobData,
         %DynamicFieldSearchParameters,
     ) || 0;
 
     my @TicketIDs = $TicketObject->TicketSearch(
-        Result          => 'ARRAY',
-        SortBy          => 'Age',
-        OrderBy         => 'Down',
-        UserID          => 1,
-        Limit           => 30,
-        ConditionInline => $GenericAgentTicketSearch->{ExtendedSearchCondition},
+        Result              => 'ARRAY',
+        SortBy              => 'Age',
+        OrderBy             => 'Down',
+        UserID              => 1,
+        Limit               => 30,
+        ContentSearchPrefix => '*',
+        ContentSearchSuffix => '*',
+        ConditionInline     => $GenericAgentTicketSearch->{ExtendedSearchCondition},
         %JobData,
         %DynamicFieldSearchParameters,
     );
@@ -1349,7 +1337,7 @@ sub _MaskRun {
             Data => {
                 Counter  => $Counter,
                 RunLimit => $RunLimit,
-                }
+            },
         );
     }
 
@@ -1359,22 +1347,29 @@ sub _MaskRun {
         );
         for my $TicketID (@TicketIDs) {
 
-            # get first article data
-            my %Data = $TicketObject->ArticleFirstArticle(
+            # Get ticket data.
+            my %Ticket = $TicketObject->TicketGet(
                 TicketID      => $TicketID,
                 DynamicFields => 0,
             );
 
-            # Fall-back for tickets without articles
-            if ( !%Data ) {
-
-                # get ticket data instead
-                %Data = $TicketObject->TicketGet(
-                    TicketID      => $TicketID,
-                    DynamicFields => 0,
+            # Get article data.
+            my @Articles = $ArticleObject->ArticleList(
+                TicketID  => $TicketID,
+                OnlyFirst => 1,
+            );
+            my %Article;
+            for my $Article (@Articles) {
+                %Article = $ArticleObject->BackendForArticle( %{$Article} )->ArticleGet(
+                    %{$Article},
+                    UserID => $Self->{UserID},
                 );
+            }
 
-                # set missing information
+            my %Data = ( %Ticket, %Article );
+
+            # Set missing information for tickets without articles.
+            if ( !%Article ) {
                 $Data{Subject} = $Data{Title};
             }
 

@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -22,7 +22,8 @@ my $ModuleObject  = $Kernel::OM->Get('Kernel::System::ProcessManagement::Transit
 # get helper object
 $Kernel::OM->ObjectParamAdd(
     'Kernel::System::UnitTest::Helper' => {
-        RestoreDatabase => 1,
+        RestoreDatabase  => 1,
+        UseTmpArticleDir => 1,
     },
 );
 my $Helper = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
@@ -41,9 +42,9 @@ my $TestUserID    = $Kernel::OM->Get('Kernel::System::User')->UserLookup(
     UserLogin => $TestUserLogin,
 );
 
-# ----------------------------------------
+#
 # Create new services
-# ----------------------------------------
+#
 my @Services = (
     {
         Name    => 'Service0' . $RandomID,
@@ -76,11 +77,9 @@ for my $ServiceData (@Services) {
     $ServiceData->{ServiceID} = $ServiceID;
 }
 
-# ----------------------------------------
-
-# ----------------------------------------
+#
 # Assign services to customer (0 and 1)
-# ----------------------------------------
+#
 my $Success = $ServiceObject->CustomerUserServiceMemberAdd(
     CustomerUserLogin => $TestCustomerUserLogin,
     ServiceID         => $Services[0]->{ServiceID},
@@ -109,11 +108,9 @@ $Self->True(
         . " with true",
 );
 
-# ----------------------------------------
-
-# ----------------------------------------
+#
 # Create a test tickets
-# ----------------------------------------
+#
 my @TicketData;
 for my $Item ( 0 .. 1 ) {
     my $TicketID = $TicketObject->TicketCreate(

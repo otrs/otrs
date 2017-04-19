@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -11,6 +11,19 @@
 [% RenderBlockStart("Uninstall") %]
 <div class="MainBox ARIARoleMain LayoutFixedSidebar SidebarFirst">
     <h1>[% Translate("Package Manager") | html %]</h1>
+
+    [% BreadcrumbPath = [
+            {
+                Name => Translate('Package Manager'),
+                Link => Env("Action"),
+            },
+        ]
+    %]
+
+    [% USE UninstallBreadcrumb = String(Translate("Uninstall Package")) %]
+    [% BreadcrumbPath.push({ Name => UninstallBreadcrumb.append( ': ', Data.Name ) }) %]
+
+    [% INCLUDE "Breadcrumb.tt" Path = BreadcrumbPath %]
 
     <div class="SidebarColumn">
 
@@ -74,6 +87,19 @@
 <div class="MainBox ARIARoleMain LayoutFixedSidebar SidebarFirst">
     <h1>[% Translate("Package Manager") | html %]</h1>
 
+    [% BreadcrumbPath = [
+            {
+                Name => Translate('Package Manager'),
+                Link => Env("Action"),
+            },
+        ]
+    %]
+
+    [% USE ReinstallBreadcrumb = String(Translate("Reinstall package")) %]
+    [% BreadcrumbPath.push({ Name => ReinstallBreadcrumb.append( ': ', Data.Name ) }) %]
+
+    [% INCLUDE "Breadcrumb.tt" Path = BreadcrumbPath %]
+
     <div class="SidebarColumn">
 
         <div class="WidgetSimple">
@@ -136,6 +162,31 @@
 <div class="MainBox ARIARoleMain LayoutFixedSidebar SidebarFirst">
     <h1>[% Translate("Package Manager") | html %]</h1>
 
+    [% BreadcrumbPath = [
+            {
+                Name => Translate('Package Manager'),
+                Link => Env("Action"),
+            },
+        ]
+    %]
+
+    [% SWITCH Env("Subaction") %]
+        [% CASE 'InstallRemote' %]
+            [% USE InstallRemoteTitle = String(Translate("Install Package")) %]
+            [% BreadcrumbPath.push({ Name => InstallRemoteTitle.append( ': ', Data.Name ) }) %]
+        [% CASE 'Uninstall' %]
+            [% USE UninstallTitle = String(Translate("Uninstall Package")) %]
+            [% BreadcrumbPath.push({ Name => UninstallTitle.append( ': ', Data.Name ) }) %]
+        [% CASE 'UpgradeRemote' %]
+            [% USE UpgradeRemoteTitle = String(Translate("Upgrade Package")) %]
+            [% BreadcrumbPath.push({ Name => UpgradeRemoteTitle.append( ': ', Data.Name ) }) %]
+        [% CASE 'InstallUpload' %]
+            [% USE InstallUploadTitle = String(Translate("Install Package")) %]
+            [% BreadcrumbPath.push({ Name => InstallUploadTitle.append( ': ', Data.Name ) }) %]
+    [% END %]
+
+    [% INCLUDE "Breadcrumb.tt" Path = BreadcrumbPath %]
+
     <div class="SidebarColumn">
         <div class="WidgetSimple">
             <div class="Header">
@@ -191,6 +242,16 @@
     <div class="MainBox ARIARoleMain LayoutFixedSidebar SidebarFirst">
         <h1>[% Translate("Package Manager") | html %]</h1>
 
+    [% BreadcrumbPath = [
+            {
+                Name => Translate('Package Manager'),
+                Link => Env("Action"),
+            },
+        ]
+    %]
+
+    [% INCLUDE "Breadcrumb.tt" Path = BreadcrumbPath %]
+
         <div class="SidebarColumn">
             <div class="WidgetSimple">
                 <div class="Header">
@@ -236,7 +297,7 @@
                                 [% Translate("OTRS Verify™ can not continue!") | html %]
                             </p>
                             <form action="[% Env("CGIHandle") %]" method="post">
-                                <input type="hidden" name="Action" value="AdminSysConfig"/>
+                                <input type="hidden" name="Action" value="AdminSystemConfiguration"/>
                                 <input type="hidden" name="Subaction" value="Edit"/>
                                 <input type="hidden" name="SysConfigGroup" value="CloudService"/>
                                 <input type="hidden" name="SysConfigSubGroup" value="Core"/>
@@ -418,6 +479,19 @@
     <div class="MainBox ARIARoleMain LayoutFixedSidebar SidebarFirst">
         <h1>[% Translate("Package Manager") | html %]</h1>
 
+    [% BreadcrumbPath = [
+            {
+                Name => Translate('Package Manager'),
+                Link => Env("Action"),
+            },
+        ]
+    %]
+
+    [% USE PackageBreadcrumb = String(Translate("Package Information")) %]
+    [% BreadcrumbPath.push({ Name => PackageBreadcrumb.append( ': ', Data.Name ) }) %]
+
+    [% INCLUDE "Breadcrumb.tt" Path = BreadcrumbPath %]
+
         <div class="SidebarColumn">
             <div class="WidgetSimple">
                 <div class="Header">
@@ -534,10 +608,10 @@
                                 </td>
                                 <td>
 [% RenderBlockStart("PackageItemFilelistFileNoteDiff") %]
-                                    <a href="[% Env("Baselink") %]Action=[% Env("Action") %];Subaction=ViewDiff;Name=[% Data.Name | uri %];Version=[% Data.Version | uri %];File=[% Data.File | uri %];Location=[% Data.Location | uri %]" title="[% Data.Message | html %]" class="AsBlock [% Data.Icon | html %]"></a>
+                                    <a href="[% Env("Baselink") %]Action=[% Env("Action") %];Subaction=ViewDiff;Name=[% Data.Name | uri %];Version=[% Data.Version | uri %];File=[% Data.File | uri %];Location=[% Data.Location | uri %]" title="[% Translate(Data.Message) | html %]" class="AsBlock [% Data.Icon | html %]"></a>
 [% RenderBlockEnd("PackageItemFilelistFileNoteDiff") %]
 [% RenderBlockStart("PackageItemFilelistFileNote") %]
-                                    <span title="[% Data.Message | html %]" class="AsBlock [% Data.Icon | html %]"></span>
+                                    <span title="[% Translate(Data.Message) | html %]" class="AsBlock [% Data.Icon | html %]"></span>
 [% RenderBlockEnd("PackageItemFilelistFileNote") %]
                                 </td>
                                 <td>
@@ -563,12 +637,12 @@
                     <table class="DataTable W100pc">
                         <thead>
                             <tr>
-                                <th>[% Translate("Type") | html %]: </th>
-                                <th>[% Translate("Name") | html %]: </th>
-                                <th>[% Translate("Required") | html %]: </th>
-                                <th>[% Translate("Size") | html %]: </th>
-                                <th>[% Translate("PrimaryKey") | html %]: </th>
-                                <th>[% Translate("AutoIncrement") | html %]: </th>
+                                <th>[% Translate("Type") | html %]</th>
+                                <th>[% Translate("Name") | html %]</th>
+                                <th>[% Translate("Required") | html %]</th>
+                                <th>[% Translate("Size") | html %]</th>
+                                <th>[% Translate("Primary Key") | html %]</th>
+                                <th>[% Translate("Auto Increment") | html %]</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -622,6 +696,19 @@
 [% RenderBlockStart("FileDiff") %]
     <div class="MainBox ARIARoleMain LayoutFixedSidebar SidebarFirst">
         <h1>[% Translate("Package Manager") | html %]</h1>
+
+    [% BreadcrumbPath = [
+            {
+                Name => Translate('Package Manager'),
+                Link => Env("Action"),
+            },
+        ]
+    %]
+
+    [% USE FileDiffBreadcrumb = String(Translate("File Differences for File %s", Data.Location)) %]
+    [% BreadcrumbPath.push({ Name => FileDiffBreadcrumb.append( ': ', Data.Name ) }) %]
+
+    [% INCLUDE "Breadcrumb.tt" Path = BreadcrumbPath %]
 
         <div class="SidebarColumn">
 

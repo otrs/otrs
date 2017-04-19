@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -41,13 +41,11 @@ use Kernel::Language qw(Translatable);
 
 Kernel::Output::HTML::Statistics::View - View object for statistics
 
-=head1 SYNOPSIS
+=head1 DESCRIPTION
 
 Provides several functions to generate statistics GUI elements.
 
 =head1 PUBLIC INTERFACE
-
-=over 4
 
 =cut
 
@@ -61,7 +59,7 @@ sub new {
     return $Self;
 }
 
-=item StatsParamsWidget()
+=head2 StatsParamsWidget()
 
 generate HTML for statistics run widget.
 
@@ -421,6 +419,8 @@ sub StatsParamsWidget {
                                 Key   => $ElementName,
                                 Value => $LocalGetParam->( Param => $ElementName )
                                     // $ObjectAttribute->{SelectedValues}[0],
+                                CSSClass           => $ObjectAttribute->{CSSClass},
+                                HTMLDataAttributes => $ObjectAttribute->{HTMLDataAttributes},
                             },
                         );
                     }
@@ -543,7 +543,14 @@ sub StatsParamsWidget {
                                 Name => 'TimeScale',
                                 Data => {
                                     %BlockData,
-                                    Use => $Use,
+                                },
+                            );
+
+                            # send data to JS
+                            $LayoutObject->AddJSData(
+                                Key   => 'StatsParamData',
+                                Value => {
+                                    %BlockData
                                 },
                             );
                         }
@@ -577,6 +584,15 @@ sub StatsParamsWidget {
 
     for my $Field (qw(CreatedBy ChangedBy)) {
         $Stat->{$Field} = $Kernel::OM->Get('Kernel::System::User')->UserName( UserID => $Stat->{$Field} );
+    }
+
+    if ( $Param{AJAX} ) {
+
+        # send data to JS
+        $LayoutObject->AddJSData(
+            Key   => 'StatsWidgetAJAX',
+            Value => $Param{AJAX}
+        );
     }
 
     $Output .= $LayoutObject->Output(
@@ -614,15 +630,40 @@ sub GeneralSpecificationsWidget {
         $Stat->{Valid}      = 1;
     }
 
+    # Check if a time field is selected in the current statistic configuration, because
+    #   only in this case the caching can be activated in the general statistic settings.
+    my $TimeFieldSelected;
+
+    USE:
+    for my $Use (qw(UseAsXvalue UseAsValueSeries UseAsRestriction)) {
+
+        for my $ObjectAttribute ( @{ $Stat->{$Use} } ) {
+
+            if ( $ObjectAttribute->{Selected} && $ObjectAttribute->{Block} eq 'Time' ) {
+                $TimeFieldSelected = 1;
+                last USE;
+            }
+        }
+    }
+
     my %Frontend;
 
-    # create selectboxes 'Cache', 'SumRow', 'SumCol', and 'Valid'
+    my %YesNo = (
+        0 => Translatable('No'),
+        1 => Translatable('Yes')
+    );
+
+    # Create selectboxes for 'Cache', 'SumRow', 'SumCol', and 'Valid'.
     for my $Key (qw(Cache ShowAsDashboardWidget SumRow SumCol)) {
+
+        my %SelectionData = %YesNo;
+
+        if ( $Key eq 'Cache' && !$TimeFieldSelected ) {
+            delete $SelectionData{1};
+        }
+
         $Frontend{ 'Select' . $Key } = $LayoutObject->BuildSelection(
-            Data => {
-                0 => Translatable('No'),
-                1 => Translatable('Yes')
-            },
+            Data       => \%SelectionData,
             SelectedID => $GetParam{$Key} // $Stat->{$Key} || 0,
             Name       => $Key,
             Class      => 'Modernize',
@@ -1018,9 +1059,11 @@ sub RestrictionsWidget {
 
     for my $ObjectAttribute ( @{ $Stat->{UseAsRestriction} } ) {
         my %BlockData;
-        $BlockData{Fixed}   = 'checked="checked"';
-        $BlockData{Checked} = '';
-        $BlockData{Block}   = $ObjectAttribute->{Block};
+        $BlockData{Fixed}              = 'checked="checked"';
+        $BlockData{Checked}            = '';
+        $BlockData{Block}              = $ObjectAttribute->{Block};
+        $BlockData{CSSClass}           = $ObjectAttribute->{CSSClass};
+        $BlockData{HTMLDataAttributes} = $ObjectAttribute->{HTMLDataAttributes};
 
         if ( $ObjectAttribute->{Selected} ) {
             $BlockData{Checked} = 'checked="checked"';
@@ -1421,13 +1464,10 @@ sub StatsParamsGet {
 
         # check if the timeperiod is too big or the time scale too small
         if (
-            $GetParam{UseAsXvalue}[0]{Block} eq 'Time'
+            ( $GetParam{UseAsXvalue}[0]{Block} && $GetParam{UseAsXvalue}[0]{Block} eq 'Time' )
             && (
                 !$GetParam{UseAsValueSeries}[0]
-                || (
-                    $GetParam{UseAsValueSeries}[0]
-                    && $GetParam{UseAsValueSeries}[0]{Block} ne 'Time'
-                )
+                || ( $GetParam{UseAsValueSeries}[0] && $GetParam{UseAsValueSeries}[0]{Block} ne 'Time' )
             )
             )
         {
@@ -1486,14 +1526,6 @@ sub StatsResultRender {
     my $Filename = $Kernel::OM->Get('Kernel::System::Stats')->StringAndTimestamp2Filename(
         String   => $Stat->{Title} . ' Created',
         TimeZone => $Param{TimeZone},
-    );
-
-    # Translate the column and row description
-    $Self->_ColumnAndRowTranslation(
-        StatArrayRef => \@StatArray,
-        HeadArrayRef => $HeadArrayRef,
-        StatRef      => $Stat,
-        ExchangeAxis => $Param{ExchangeAxis},
     );
 
     # get CSV object
@@ -1597,7 +1629,7 @@ sub StatsResultRender {
     }
 }
 
-=item StatsConfigurationValidate()
+=head2 StatsConfigurationValidate()
 
     my $StatCorrectlyConfigured = $StatsViewObject->StatsConfigurationValidate(
         StatData => \%StatData,
@@ -2266,179 +2298,6 @@ sub _TimeZoneBuildSelection {
     return %TimeZoneBuildSelection;
 }
 
-=item _ColumnAndRowTranslation()
-
-translate the column and row name if needed
-
-    $StatsViewObject->_ColumnAndRowTranslation(
-        StatArrayRef => $StatArrayRef,
-        HeadArrayRef => $HeadArrayRef,
-        StatRef      => $StatRef,
-        ExchangeAxis => 1 | 0,
-    );
-
-=cut
-
-sub _ColumnAndRowTranslation {
-    my ( $Self, %Param ) = @_;
-
-    # check if need params are available
-    for my $NeededParam (qw(StatArrayRef HeadArrayRef StatRef)) {
-        if ( !$Param{$NeededParam} ) {
-            $Kernel::OM->Get('Kernel::System::Log')->Log(
-                Priority => "error",
-                Message  => "_ColumnAndRowTranslation: Need $NeededParam!"
-            );
-        }
-    }
-
-    # get language object
-    my $LanguageObject = $Kernel::OM->Get('Kernel::Language');
-
-    # find out, if the column or row names should be translated
-    my %Translation;
-    my %Sort;
-
-    for my $Use (qw( UseAsXvalue UseAsValueSeries )) {
-        if (
-            $Param{StatRef}->{StatType} eq 'dynamic'
-            && $Param{StatRef}->{$Use}
-            && ref( $Param{StatRef}->{$Use} ) eq 'ARRAY'
-            )
-        {
-            my @Array = @{ $Param{StatRef}->{$Use} };
-
-            ELEMENT:
-            for my $Element (@Array) {
-                next ELEMENT if !$Element->{SelectedValues};
-
-                if ( $Element->{Translation} && $Element->{Block} eq 'Time' ) {
-                    $Translation{$Use} = 'Time';
-                }
-                elsif ( $Element->{Translation} ) {
-                    $Translation{$Use} = 'Common';
-                }
-                else {
-                    $Translation{$Use} = '';
-                }
-
-                if (
-                    $Element->{Translation}
-                    && $Element->{Block} ne 'Time'
-                    && !$Element->{SortIndividual}
-                    )
-                {
-                    $Sort{$Use} = 1;
-                }
-                last ELEMENT;
-            }
-        }
-    }
-
-    # check if the axis are changed
-    if ( $Param{ExchangeAxis} ) {
-        my $UseAsXvalueOld = $Translation{UseAsXvalue};
-        $Translation{UseAsXvalue}      = $Translation{UseAsValueSeries};
-        $Translation{UseAsValueSeries} = $UseAsXvalueOld;
-
-        my $SortUseAsXvalueOld = $Sort{UseAsXvalue};
-        $Sort{UseAsXvalue}      = $Sort{UseAsValueSeries};
-        $Sort{UseAsValueSeries} = $SortUseAsXvalueOld;
-    }
-
-    # translate the headline
-    $Param{HeadArrayRef}->[0] = $LanguageObject->Translate( $Param{HeadArrayRef}->[0] );
-
-    if ( $Translation{UseAsXvalue} && $Translation{UseAsXvalue} ne 'Time' ) {
-        for my $Word ( @{ $Param{HeadArrayRef} } ) {
-            $Word = $LanguageObject->Translate($Word);
-        }
-    }
-
-    # sort the headline
-    if ( $Sort{UseAsXvalue} ) {
-        my @HeadOld = @{ $Param{HeadArrayRef} };
-        shift @HeadOld;    # because the first value is no sortable column name
-
-        # special handling if the sumfunction is used
-        my $SumColRef;
-        if ( $Param{StatRef}->{SumRow} ) {
-            $SumColRef = pop @HeadOld;
-        }
-
-        # sort
-        my @SortedHead = sort { $a cmp $b } @HeadOld;
-
-        # special handling if the sumfunction is used
-        if ( $Param{StatRef}->{SumCol} ) {
-            push @SortedHead, $SumColRef;
-            push @HeadOld,    $SumColRef;
-        }
-
-        # add the row names to the new StatArray
-        my @StatArrayNew;
-        for my $Row ( @{ $Param{StatArrayRef} } ) {
-            push @StatArrayNew, [ $Row->[0] ];
-        }
-
-        # sort the values
-        for my $ColumnName (@SortedHead) {
-            my $Counter = 0;
-            COLUMNNAMEOLD:
-            for my $ColumnNameOld (@HeadOld) {
-                $Counter++;
-                next COLUMNNAMEOLD if $ColumnNameOld ne $ColumnName;
-
-                for my $RowLine ( 0 .. $#StatArrayNew ) {
-                    push @{ $StatArrayNew[$RowLine] }, $Param{StatArrayRef}->[$RowLine]->[$Counter];
-                }
-                last COLUMNNAMEOLD;
-            }
-        }
-
-        # bring the data back to the references
-        unshift @SortedHead, $Param{HeadArrayRef}->[0];
-        @{ $Param{HeadArrayRef} } = @SortedHead;
-        @{ $Param{StatArrayRef} } = @StatArrayNew;
-    }
-
-    # translate the row description
-    if ( $Translation{UseAsValueSeries} && $Translation{UseAsValueSeries} ne 'Time' ) {
-
-        # translate
-        for my $Word ( @{ $Param{StatArrayRef} } ) {
-            $Word->[0] = $LanguageObject->Translate( $Word->[0] );
-        }
-    }
-
-    # sort the row description
-    if ( $Sort{UseAsValueSeries} ) {
-
-        # special handling if the sumfunction is used
-        my $SumRowArrayRef;
-        if ( $Param{StatRef}->{SumRow} ) {
-            $SumRowArrayRef = pop @{ $Param{StatArrayRef} };
-        }
-
-        # sort
-        my $DisableDefaultResultSort = grep {
-            $_->{DisableDefaultResultSort}
-                && $_->{DisableDefaultResultSort} == 1
-        } @{ $Param{StatRef}->{UseAsXvalue} };
-
-        if ( !$DisableDefaultResultSort ) {
-            @{ $Param{StatArrayRef} } = sort { $a->[0] cmp $b->[0] } @{ $Param{StatArrayRef} };
-        }
-
-        # special handling if the sumfunction is used
-        if ( $Param{StatRef}->{SumRow} ) {
-            push @{ $Param{StatArrayRef} }, $SumRowArrayRef;
-        }
-    }
-
-    return 1;
-}
-
 # ATTENTION: this function delivers only approximations!!!
 sub _TimeInSeconds {
     my ( $Self, %Param ) = @_;
@@ -2553,8 +2412,6 @@ sub _StopWordFieldsGet {
 }
 
 1;
-
-=back
 
 =head1 TERMS AND CONDITIONS
 

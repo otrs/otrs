@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -61,7 +61,7 @@ sub Run {
         From Subject Body NextStateID TimeUnits
         Year Month Day Hour Minute
         NewResponsibleID ResponsibleAll OwnerAll TypeID ServiceID SLAID
-        StandardTemplateID FromChatID
+        StandardTemplateID FromChatID Dest
         )
         )
     {
@@ -289,9 +289,23 @@ sub Run {
                 );
             }
 
-            %Article = $TicketObject->ArticleGet(
+            # Get information from original ticket (SplitTicket).
+            my %SplitTicketData = $TicketObject->TicketGet(
+                TicketID      => $Self->{TicketID},
+                DynamicFields => 1,
+                UserID        => $Self->{UserID},
+            );
+
+            my $ArticleBackendObject = $Kernel::OM->Get('Kernel::System::Ticket::Article')->BackendForArticle(
+                TicketID  => $Self->{TicketID},
+                ArticleID => $GetParam{ArticleID},
+            );
+
+            %Article = $ArticleBackendObject->ArticleGet(
+                TicketID      => $Self->{TicketID},
                 ArticleID     => $GetParam{ArticleID},
                 DynamicFields => 0,
+                UserID        => $Self->{UserID},
             );
 
             # check if article is from the same TicketID as we checked permissions for.
@@ -358,20 +372,20 @@ sub Run {
 
             # show customer info
             if ( $ConfigObject->Get('Ticket::Frontend::CustomerInfoCompose') ) {
-                if ( $Article{CustomerUserID} ) {
+                if ( $SplitTicketData{CustomerUserID} ) {
                     %CustomerData = $CustomerUserObject->CustomerUserDataGet(
-                        User => $Article{CustomerUserID},
+                        User => $SplitTicketData{CustomerUserID},
                     );
                 }
-                elsif ( $Article{CustomerID} ) {
+                elsif ( $SplitTicketData{CustomerID} ) {
                     %CustomerData = $CustomerUserObject->CustomerUserDataGet(
-                        CustomerID => $Article{CustomerID},
+                        CustomerID => $SplitTicketData{CustomerID},
                     );
                 }
             }
-            if ( $Article{CustomerUserID} ) {
+            if ( $SplitTicketData{CustomerUserID} ) {
                 my %CustomerUserList = $CustomerUserObject->CustomerSearch(
-                    UserLogin => $Article{CustomerUserID},
+                    UserLogin => $SplitTicketData{CustomerUserID},
                 );
                 for my $KeyCustomerUserList ( sort keys %CustomerUserList ) {
                     $Article{From} = $CustomerUserList{$KeyCustomerUserList};
@@ -484,7 +498,7 @@ sub Run {
         # this information will be available in the SplitTicketParam hash
         if ( $SplitTicketParam{TicketID} ) {
 
-            # get information from original ticket (SplitTicket)
+            # Get information from original ticket (SplitTicket).
             my %SplitTicketData = $TicketObject->TicketGet(
                 TicketID      => $SplitTicketParam{TicketID},
                 DynamicFields => 1,
@@ -644,6 +658,14 @@ sub Run {
             )
         {
             $Self->{QueueID} = $SplitTicketParam{QueueID};
+        }
+
+        # Get predefined QueueID (if no queue from split ticket is set).
+        if ( !$Self->{QueueID} && $GetParam{Dest} ) {
+
+            my @QueueParts = split( /\|\|/, $GetParam{Dest} );
+            $Self->{QueueID} = $QueueParts[0];
+            $SplitTicketParam{ToSelected} = $GetParam{Dest};
         }
 
         # html output
@@ -1344,21 +1366,23 @@ sub Run {
         if ( $GetParam{NewUserID} ) {
             $NoAgentNotify = 1;
         }
-        my $ArticleID = $TicketObject->ArticleCreate(
-            NoAgentNotify    => $NoAgentNotify,
-            TicketID         => $TicketID,
-            ArticleType      => $Config->{ArticleType},
-            SenderType       => $Config->{SenderType},
-            From             => $GetParam{From},
-            To               => $To,
-            Subject          => $GetParam{Subject},
-            Body             => $GetParam{Body},
-            MimeType         => $MimeType,
-            Charset          => $LayoutObject->{UserCharset},
-            UserID           => $Self->{UserID},
-            HistoryType      => $Config->{HistoryType},
-            HistoryComment   => $Config->{HistoryComment} || '%%',
-            AutoResponseType => ( $ConfigObject->Get('AutoResponseForWebTickets') )
+        my $ArticleObject        = $Kernel::OM->Get('Kernel::System::Ticket::Article');
+        my $ArticleBackendObject = $ArticleObject->BackendForChannel( ChannelName => 'Phone' );
+        my $ArticleID            = $ArticleBackendObject->ArticleCreate(
+            NoAgentNotify        => $NoAgentNotify,
+            TicketID             => $TicketID,
+            SenderType           => $Config->{SenderType},
+            IsVisibleForCustomer => $Config->{IsVisibleForCustomer},
+            From                 => $GetParam{From},
+            To                   => $To,
+            Subject              => $GetParam{Subject},
+            Body                 => $GetParam{Body},
+            MimeType             => $MimeType,
+            Charset              => $LayoutObject->{UserCharset},
+            UserID               => $Self->{UserID},
+            HistoryType          => $Config->{HistoryType},
+            HistoryComment       => $Config->{HistoryComment} || '%%',
+            AutoResponseType     => ( $ConfigObject->Get('AutoResponseForWebTickets') )
             ? 'auto reply'
             : '',
             OrigHeader => {
@@ -1402,6 +1426,13 @@ sub Run {
             my $ChatArticleID;
 
             if (@ChatMessageList) {
+                for my $Message (@ChatMessageList) {
+                    $Message->{MessageText} = $LayoutObject->Ascii2Html(
+                        Text        => $Message->{MessageText},
+                        LinkFeature => 1,
+                    );
+                }
+
                 my $JSONBody = $Kernel::OM->Get('Kernel::System::JSON')->Encode(
                     Data => \@ChatMessageList,
                 );
@@ -1415,22 +1446,23 @@ sub Run {
                     $ChatArticleType = 'chat-external';
                 }
 
-                $ChatArticleID = $TicketObject->ArticleCreate(
-                    NoAgentNotify  => $NoAgentNotify,
-                    TicketID       => $TicketID,
-                    ArticleType    => $ChatArticleType,
-                    SenderType     => $Config->{SenderType},
-                    From           => $GetParam{From},
-                    To             => $GetParam{To},
-                    Subject        => $Kernel::OM->Get('Kernel::Language')->Translate('Chat'),
-                    Body           => $JSONBody,
-                    MimeType       => 'application/json',
-                    Charset        => $LayoutObject->{UserCharset},
-                    UserID         => $Self->{UserID},
-                    HistoryType    => $Config->{HistoryType},
-                    HistoryComment => $Config->{HistoryComment} || '%%',
-                    Queue          => $QueueObject->QueueLookup( QueueID => $NewQueueID ),
-                );
+                # TODO: Fix chat article creation
+                # $ChatArticleID = $ArticleObject->ArticleCreate(
+                #     NoAgentNotify  => $NoAgentNotify,
+                #     TicketID       => $TicketID,
+                #     ArticleType    => $ChatArticleType,
+                #     SenderType     => $Config->{SenderType},
+                #     From           => $GetParam{From},
+                #     To             => $GetParam{To},
+                #     Subject        => $Kernel::OM->Get('Kernel::Language')->Translate('Chat'),
+                #     Body           => $JSONBody,
+                #     MimeType       => 'application/json',
+                #     Charset        => $LayoutObject->{UserCharset},
+                #     UserID         => $Self->{UserID},
+                #     HistoryType    => $Config->{HistoryType},
+                #     HistoryComment => $Config->{HistoryComment} || '%%',
+                #     Queue          => $QueueObject->QueueLookup( QueueID => $NewQueueID ),
+                # );
             }
             if ($ChatArticleID) {
 
@@ -1564,8 +1596,9 @@ sub Run {
 
         # write attachments
         for my $Attachment (@AttachmentData) {
-            $TicketObject->ArticleWriteAttachment(
+            $ArticleBackendObject->ArticleWriteAttachment(
                 %{$Attachment},
+                TicketID  => $TicketID,
                 ArticleID => $ArticleID,
                 UserID    => $Self->{UserID},
             );
@@ -2715,6 +2748,14 @@ sub _MaskPhoneNew {
         my @ChatMessages = $Kernel::OM->Get('Kernel::System::Chat')->ChatMessageList(
             ChatID => $Param{FromChatID},
         );
+
+        for my $Message (@ChatMessages) {
+            $Message->{MessageText} = $LayoutObject->Ascii2Html(
+                Text        => $Message->{MessageText},
+                LinkFeature => 1,
+            );
+        }
+
         $LayoutObject->Block(
             Name => 'ChatArticlePreview',
             Data => {

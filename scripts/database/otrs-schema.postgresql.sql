@@ -131,6 +131,22 @@ CREATE TABLE group_customer_user (
 CREATE INDEX group_customer_user_group_id ON group_customer_user (group_id);
 CREATE INDEX group_customer_user_user_id ON group_customer_user (user_id);
 -- ----------------------------------------------------------
+--  create table group_customer
+-- ----------------------------------------------------------
+CREATE TABLE group_customer (
+    customer_id VARCHAR (150) NOT NULL,
+    group_id INTEGER NOT NULL,
+    permission_key VARCHAR (20) NOT NULL,
+    permission_value SMALLINT NOT NULL,
+    permission_context VARCHAR (100) NOT NULL,
+    create_time timestamp(0) NOT NULL,
+    create_by INTEGER NOT NULL,
+    change_time timestamp(0) NOT NULL,
+    change_by INTEGER NOT NULL
+);
+CREATE INDEX group_customer_customer_id ON group_customer (customer_id);
+CREATE INDEX group_customer_group_id ON group_customer (group_id);
+-- ----------------------------------------------------------
 --  create table roles
 -- ----------------------------------------------------------
 CREATE TABLE roles (
@@ -460,6 +476,7 @@ CREATE TABLE ticket_history (
     change_by INTEGER NOT NULL,
     PRIMARY KEY(id)
 );
+CREATE INDEX ticket_history_article_id ON ticket_history (article_id);
 CREATE INDEX ticket_history_create_time ON ticket_history (create_time);
 CREATE INDEX ticket_history_history_type_id ON ticket_history (history_type_id);
 CREATE INDEX ticket_history_owner_id ON ticket_history (owner_id);
@@ -528,21 +545,6 @@ CREATE TABLE ticket_loop_protection (
 CREATE INDEX ticket_loop_protection_sent_date ON ticket_loop_protection (sent_date);
 CREATE INDEX ticket_loop_protection_sent_to ON ticket_loop_protection (sent_to);
 -- ----------------------------------------------------------
---  create table article_type
--- ----------------------------------------------------------
-CREATE TABLE article_type (
-    id serial NOT NULL,
-    name VARCHAR (200) NOT NULL,
-    comments VARCHAR (250) NULL,
-    valid_id SMALLINT NOT NULL,
-    create_time timestamp(0) NOT NULL,
-    create_by INTEGER NOT NULL,
-    change_time timestamp(0) NOT NULL,
-    change_by INTEGER NOT NULL,
-    PRIMARY KEY(id),
-    CONSTRAINT article_type_name UNIQUE (name)
-);
--- ----------------------------------------------------------
 --  create table article_sender_type
 -- ----------------------------------------------------------
 CREATE TABLE article_sender_type (
@@ -570,27 +572,32 @@ CREATE TABLE article_flag (
 CREATE INDEX article_flag_article_id ON article_flag (article_id);
 CREATE INDEX article_flag_article_id_create_by ON article_flag (article_id, create_by);
 -- ----------------------------------------------------------
+--  create table communication_channel
+-- ----------------------------------------------------------
+CREATE TABLE communication_channel (
+    id bigserial NOT NULL,
+    name VARCHAR (200) NOT NULL,
+    module VARCHAR (200) NOT NULL,
+    package_name VARCHAR (200) NOT NULL,
+    channel_data TEXT NOT NULL,
+    valid_id SMALLINT NOT NULL,
+    create_time timestamp(0) NOT NULL,
+    create_by INTEGER NOT NULL,
+    change_time timestamp(0) NOT NULL,
+    change_by INTEGER NOT NULL,
+    PRIMARY KEY(id),
+    CONSTRAINT communication_channel_name UNIQUE (name)
+);
+-- ----------------------------------------------------------
 --  create table article
 -- ----------------------------------------------------------
 CREATE TABLE article (
     id bigserial NOT NULL,
     ticket_id BIGINT NOT NULL,
-    article_type_id SMALLINT NOT NULL,
     article_sender_type_id SMALLINT NOT NULL,
-    a_from VARCHAR (3800) NULL,
-    a_reply_to VARCHAR (500) NULL,
-    a_to VARCHAR (3800) NULL,
-    a_cc VARCHAR (3800) NULL,
-    a_subject VARCHAR (3800) NULL,
-    a_message_id VARCHAR (3800) NULL,
-    a_message_id_md5 VARCHAR (32) NULL,
-    a_in_reply_to VARCHAR (3800) NULL,
-    a_references VARCHAR (3800) NULL,
-    a_content_type VARCHAR (250) NULL,
-    a_body VARCHAR NOT NULL,
-    incoming_time INTEGER NOT NULL,
-    content_path VARCHAR (250) NULL,
-    valid_id SMALLINT NOT NULL,
+    communication_channel_id BIGINT NOT NULL,
+    is_visible_for_customer SMALLINT NOT NULL,
+    insert_fingerprint VARCHAR (64) NULL,
     create_time timestamp(0) NOT NULL,
     create_by INTEGER NOT NULL,
     change_time timestamp(0) NOT NULL,
@@ -598,16 +605,41 @@ CREATE TABLE article (
     PRIMARY KEY(id)
 );
 CREATE INDEX article_article_sender_type_id ON article (article_sender_type_id);
-CREATE INDEX article_article_type_id ON article (article_type_id);
-CREATE INDEX article_message_id_md5 ON article (a_message_id_md5);
+CREATE INDEX article_communication_channel_id ON article (communication_channel_id);
 CREATE INDEX article_ticket_id ON article (ticket_id);
+-- ----------------------------------------------------------
+--  create table article_data_mime
+-- ----------------------------------------------------------
+CREATE TABLE article_data_mime (
+    id bigserial NOT NULL,
+    article_id BIGINT NOT NULL,
+    a_from VARCHAR NULL,
+    a_reply_to VARCHAR NULL,
+    a_to VARCHAR NULL,
+    a_cc VARCHAR NULL,
+    a_subject VARCHAR (3800) NULL,
+    a_message_id VARCHAR (3800) NULL,
+    a_message_id_md5 VARCHAR (32) NULL,
+    a_in_reply_to VARCHAR NULL,
+    a_references VARCHAR NULL,
+    a_content_type VARCHAR (250) NULL,
+    a_body VARCHAR NOT NULL,
+    incoming_time INTEGER NOT NULL,
+    content_path VARCHAR (250) NULL,
+    create_time timestamp(0) NOT NULL,
+    create_by INTEGER NOT NULL,
+    change_time timestamp(0) NOT NULL,
+    change_by INTEGER NOT NULL,
+    PRIMARY KEY(id)
+);
+CREATE INDEX article_data_mime_article_id ON article_data_mime (article_id);
+CREATE INDEX article_data_mime_message_id_md5 ON article_data_mime (a_message_id_md5);
 -- ----------------------------------------------------------
 --  create table article_search
 -- ----------------------------------------------------------
 CREATE TABLE article_search (
     id BIGINT NOT NULL,
     ticket_id BIGINT NOT NULL,
-    article_type_id SMALLINT NOT NULL,
     article_sender_type_id SMALLINT NOT NULL,
     a_from VARCHAR (3800) NULL,
     a_to VARCHAR (3800) NULL,
@@ -618,12 +650,11 @@ CREATE TABLE article_search (
     PRIMARY KEY(id)
 );
 CREATE INDEX article_search_article_sender_type_id ON article_search (article_sender_type_id);
-CREATE INDEX article_search_article_type_id ON article_search (article_type_id);
 CREATE INDEX article_search_ticket_id ON article_search (ticket_id);
 -- ----------------------------------------------------------
---  create table article_plain
+--  create table article_data_mime_plain
 -- ----------------------------------------------------------
-CREATE TABLE article_plain (
+CREATE TABLE article_data_mime_plain (
     id bigserial NOT NULL,
     article_id BIGINT NOT NULL,
     body TEXT NOT NULL,
@@ -633,11 +664,11 @@ CREATE TABLE article_plain (
     change_by INTEGER NOT NULL,
     PRIMARY KEY(id)
 );
-CREATE INDEX article_plain_article_id ON article_plain (article_id);
+CREATE INDEX article_data_mime_plain_article_id ON article_data_mime_plain (article_id);
 -- ----------------------------------------------------------
---  create table article_attachment
+--  create table article_data_mime_attachment
 -- ----------------------------------------------------------
-CREATE TABLE article_attachment (
+CREATE TABLE article_data_mime_attachment (
     id bigserial NOT NULL,
     article_id BIGINT NOT NULL,
     filename VARCHAR (250) NULL,
@@ -653,7 +684,7 @@ CREATE TABLE article_attachment (
     change_by INTEGER NOT NULL,
     PRIMARY KEY(id)
 );
-CREATE INDEX article_attachment_article_id ON article_attachment (article_id);
+CREATE INDEX article_data_mime_attachment_article_id ON article_data_mime_attachment (article_id);
 -- ----------------------------------------------------------
 --  create table time_accounting
 -- ----------------------------------------------------------
@@ -921,6 +952,19 @@ CREATE TABLE customer_company (
     PRIMARY KEY(customer_id),
     CONSTRAINT customer_company_name UNIQUE (name)
 );
+-- ----------------------------------------------------------
+--  create table customer_user_customer
+-- ----------------------------------------------------------
+CREATE TABLE customer_user_customer (
+    user_id VARCHAR (100) NOT NULL,
+    customer_id VARCHAR (150) NOT NULL,
+    create_time timestamp(0) NOT NULL,
+    create_by INTEGER NOT NULL,
+    change_time timestamp(0) NOT NULL,
+    change_by INTEGER NOT NULL
+);
+CREATE INDEX customer_user_customer_customer_id ON customer_user_customer (customer_id);
+CREATE INDEX customer_user_customer_user_id ON customer_user_customer (user_id);
 -- ----------------------------------------------------------
 --  create table mail_account
 -- ----------------------------------------------------------
@@ -1446,3 +1490,191 @@ CREATE TABLE cloud_service_config (
     PRIMARY KEY(id),
     CONSTRAINT cloud_service_config_name UNIQUE (name)
 );
+-- ----------------------------------------------------------
+--  create table sysconfig_default
+-- ----------------------------------------------------------
+CREATE TABLE sysconfig_default (
+    id serial NOT NULL,
+    name VARCHAR (250) NOT NULL,
+    description TEXT NOT NULL,
+    navigation VARCHAR (200) NOT NULL,
+    is_invisible SMALLINT NOT NULL,
+    is_readonly SMALLINT NOT NULL,
+    is_required SMALLINT NOT NULL,
+    is_valid SMALLINT NOT NULL,
+    has_configlevel SMALLINT NOT NULL,
+    user_modification_possible SMALLINT NOT NULL,
+    user_modification_active SMALLINT NOT NULL,
+    user_preferences_group VARCHAR (250) NULL,
+    xml_content_raw TEXT NOT NULL,
+    xml_content_parsed TEXT NOT NULL,
+    xml_filename VARCHAR (250) NOT NULL,
+    effective_value TEXT NOT NULL,
+    is_dirty SMALLINT NOT NULL,
+    exclusive_lock_guid VARCHAR (32) NOT NULL,
+    exclusive_lock_user_id INTEGER NULL,
+    exclusive_lock_expiry_time timestamp(0) NULL,
+    create_time timestamp(0) NOT NULL,
+    create_by INTEGER NOT NULL,
+    change_time timestamp(0) NOT NULL,
+    change_by INTEGER NOT NULL,
+    PRIMARY KEY(id),
+    CONSTRAINT sysconfig_default_name UNIQUE (name)
+);
+-- ----------------------------------------------------------
+--  create table sysconfig_default_version
+-- ----------------------------------------------------------
+CREATE TABLE sysconfig_default_version (
+    id serial NOT NULL,
+    sysconfig_default_id INTEGER NULL,
+    name VARCHAR (250) NOT NULL,
+    description TEXT NOT NULL,
+    navigation VARCHAR (200) NOT NULL,
+    is_invisible SMALLINT NOT NULL,
+    is_readonly SMALLINT NOT NULL,
+    is_required SMALLINT NOT NULL,
+    is_valid SMALLINT NOT NULL,
+    has_configlevel SMALLINT NOT NULL,
+    user_modification_possible SMALLINT NOT NULL,
+    user_modification_active SMALLINT NOT NULL,
+    user_preferences_group VARCHAR (250) NULL,
+    xml_content_raw TEXT NOT NULL,
+    xml_content_parsed TEXT NOT NULL,
+    xml_filename VARCHAR (250) NOT NULL,
+    effective_value TEXT NOT NULL,
+    create_time timestamp(0) NOT NULL,
+    create_by INTEGER NOT NULL,
+    change_time timestamp(0) NOT NULL,
+    change_by INTEGER NOT NULL,
+    PRIMARY KEY(id)
+);
+-- ----------------------------------------------------------
+--  create table sysconfig_modified
+-- ----------------------------------------------------------
+CREATE TABLE sysconfig_modified (
+    id serial NOT NULL,
+    sysconfig_default_id INTEGER NOT NULL,
+    name VARCHAR (250) NOT NULL,
+    user_id INTEGER NULL,
+    is_valid SMALLINT NOT NULL,
+    user_modification_active SMALLINT NOT NULL,
+    effective_value TEXT NOT NULL,
+    is_dirty SMALLINT NOT NULL,
+    reset_to_default SMALLINT NOT NULL,
+    create_time timestamp(0) NOT NULL,
+    create_by INTEGER NOT NULL,
+    change_time timestamp(0) NOT NULL,
+    change_by INTEGER NOT NULL,
+    PRIMARY KEY(id),
+    CONSTRAINT sysconfig_modified_per_user UNIQUE (sysconfig_default_id, user_id)
+);
+-- ----------------------------------------------------------
+--  create table sysconfig_modified_version
+-- ----------------------------------------------------------
+CREATE TABLE sysconfig_modified_version (
+    id serial NOT NULL,
+    sysconfig_default_version_id INTEGER NOT NULL,
+    name VARCHAR (250) NOT NULL,
+    user_id INTEGER NULL,
+    is_valid SMALLINT NOT NULL,
+    user_modification_active SMALLINT NOT NULL,
+    effective_value TEXT NOT NULL,
+    reset_to_default SMALLINT NOT NULL,
+    create_time timestamp(0) NOT NULL,
+    create_by INTEGER NOT NULL,
+    change_time timestamp(0) NOT NULL,
+    change_by INTEGER NOT NULL,
+    PRIMARY KEY(id)
+);
+-- ----------------------------------------------------------
+--  create table sysconfig_deployment_lock
+-- ----------------------------------------------------------
+CREATE TABLE sysconfig_deployment_lock (
+    id serial NOT NULL,
+    exclusive_lock_guid VARCHAR (32) NULL,
+    exclusive_lock_user_id INTEGER NULL,
+    exclusive_lock_expiry_time timestamp(0) NULL,
+    PRIMARY KEY(id)
+);
+-- ----------------------------------------------------------
+--  create table sysconfig_deployment
+-- ----------------------------------------------------------
+CREATE TABLE sysconfig_deployment (
+    id serial NOT NULL,
+    comments VARCHAR (250) NULL,
+    user_id INTEGER NULL,
+    effective_value TEXT NOT NULL,
+    create_time timestamp(0) NOT NULL,
+    create_by INTEGER NOT NULL,
+    PRIMARY KEY(id)
+);
+-- ----------------------------------------------------------
+--  create table calendar
+-- ----------------------------------------------------------
+CREATE TABLE calendar (
+    id bigserial NOT NULL,
+    group_id INTEGER NOT NULL,
+    name VARCHAR (200) NOT NULL,
+    salt_string VARCHAR (64) NOT NULL,
+    color VARCHAR (7) NOT NULL,
+    ticket_appointments TEXT NULL,
+    valid_id SMALLINT NOT NULL,
+    create_time timestamp(0) NOT NULL,
+    create_by INTEGER NOT NULL,
+    change_time timestamp(0) NOT NULL,
+    change_by INTEGER NOT NULL,
+    PRIMARY KEY(id),
+    CONSTRAINT calendar_name UNIQUE (name)
+);
+-- ----------------------------------------------------------
+--  create table calendar_appointment
+-- ----------------------------------------------------------
+CREATE TABLE calendar_appointment (
+    id bigserial NOT NULL,
+    parent_id BIGINT NULL,
+    calendar_id BIGINT NOT NULL,
+    unique_id VARCHAR (255) NOT NULL,
+    title VARCHAR (255) NOT NULL,
+    description VARCHAR (3800) NULL,
+    location VARCHAR (255) NULL,
+    start_time timestamp(0) NOT NULL,
+    end_time timestamp(0) NOT NULL,
+    all_day SMALLINT NULL,
+    notify_time timestamp(0) NULL,
+    notify_template VARCHAR (255) NULL,
+    notify_custom VARCHAR (255) NULL,
+    notify_custom_unit_count BIGINT NULL,
+    notify_custom_unit VARCHAR (255) NULL,
+    notify_custom_unit_point VARCHAR (255) NULL,
+    notify_custom_date timestamp(0) NULL,
+    team_id VARCHAR (3800) NULL,
+    resource_id VARCHAR (3800) NULL,
+    recurring SMALLINT NULL,
+    recur_type VARCHAR (20) NULL,
+    recur_freq VARCHAR (255) NULL,
+    recur_count INTEGER NULL,
+    recur_interval INTEGER NULL,
+    recur_until timestamp(0) NULL,
+    recur_id timestamp(0) NULL,
+    recur_exclude VARCHAR (3800) NULL,
+    ticket_appointment_rule_id VARCHAR (32) NULL,
+    create_time timestamp(0) NULL,
+    create_by INTEGER NULL,
+    change_time timestamp(0) NULL,
+    change_by INTEGER NULL,
+    PRIMARY KEY(id)
+);
+-- ----------------------------------------------------------
+--  create table calendar_appointment_ticket
+-- ----------------------------------------------------------
+CREATE TABLE calendar_appointment_ticket (
+    calendar_id BIGINT NOT NULL,
+    ticket_id BIGINT NOT NULL,
+    rule_id VARCHAR (32) NOT NULL,
+    appointment_id BIGINT NOT NULL,
+    CONSTRAINT calendar_appointment_ticket_calendar_id_ticket_id_rule_id UNIQUE (calendar_id, ticket_id, rule_id)
+);
+CREATE INDEX calendar_appointment_ticket_appointment_id ON calendar_appointment_ticket (appointment_id);
+CREATE INDEX calendar_appointment_ticket_calendar_id ON calendar_appointment_ticket (calendar_id);
+CREATE INDEX calendar_appointment_ticket_rule_id ON calendar_appointment_ticket (rule_id);
+CREATE INDEX calendar_appointment_ticket_ticket_id ON calendar_appointment_ticket (ticket_id);

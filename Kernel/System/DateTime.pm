@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -52,22 +52,16 @@ use overload
 
 Kernel::System::DateTime - Handles date and time calculations.
 
-=head1 SYNOPSIS
+=head1 DESCRIPTION
 
 Handles date and time calculations.
 
 =head1 PUBLIC INTERFACE
 
-=over 4
-
-=cut
-
-=item new()
+=head2 new()
 
 Creates a DateTime object. Do not use new() directly, instead use the object manager:
 
-    use Kernel::System::ObjectManager;
-    local $Kernel::OM = Kernel::System::ObjectManager->new();
 
     # Create an object with current date and time
     # within time zone set in SysConfig OTRSTimeZone:
@@ -150,7 +144,7 @@ sub new {
     return $Self;
 }
 
-=item Get()
+=head2 Get()
 
 Returns hash ref with the date, time and time zone values of this object.
 
@@ -190,7 +184,7 @@ sub Get {
     return $Values;
 }
 
-=item Set()
+=head2 Set()
 
 Sets date and time values of this object.
 You have to give at least one parameter.
@@ -273,7 +267,7 @@ sub Set {
     return $Result;
 }
 
-=item Add()
+=head2 Add()
 
 Adds duration or working time to date and time of this object.
 You have to give at least one of the valid parameters.
@@ -584,7 +578,7 @@ sub Add {
     return 1;
 }
 
-=item Subtract()
+=head2 Subtract()
 
 Subtracts duration from date and time of this object.
 You have to give at least one of the valid parameters.
@@ -683,7 +677,7 @@ sub Subtract {
     return 1;
 }
 
-=item Delta()
+=head2 Delta()
 
 Calculates delta between this and another DateTime object. Optionally calculates the working
 time between the two.
@@ -964,7 +958,7 @@ sub Delta {
     return $Delta;
 }
 
-=item Compare()
+=head2 Compare()
 
 Compares dates and returns a value suitable for using Perl's sort function (-1, 0, 1).
 
@@ -1009,7 +1003,7 @@ sub Compare {
     return $Result;
 }
 
-=item ToTimeZone()
+=head2 ToTimeZone()
 
 Converts the date and time of this object to the given time zone.
 
@@ -1046,7 +1040,7 @@ sub ToTimeZone {
     return 1;
 }
 
-=item ToOTRSTimeZone()
+=head2 ToOTRSTimeZone()
 
 Converts the date and time of this object to the data storage time zone.
 
@@ -1064,7 +1058,7 @@ sub ToOTRSTimeZone {
     return $Self->ToTimeZone( TimeZone => $Self->OTRSTimeZoneGet() );
 }
 
-=item Validate()
+=head2 Validate()
 
 Checks if given date, time and time zone would result in a valid date.
 
@@ -1105,7 +1099,7 @@ sub Validate {
     return 1;
 }
 
-=item Format()
+=head2 Format()
 
 Returns the date/time as string formatted according to format given.
 See http://search.cpan.org/~drolsky/DateTime-1.21/lib/DateTime.pm#strftime_Patterns for formatting
@@ -1163,7 +1157,7 @@ sub Format {
     return $Self->{CPANDateTimeObject}->strftime( $Param{Format} );
 }
 
-=item ToEpoch()
+=head2 ToEpoch()
 
 Returns date/time as seconds since the epoch.
 
@@ -1181,7 +1175,7 @@ sub ToEpoch {
     return $Self->{CPANDateTimeObject}->epoch();
 }
 
-=item ToString()
+=head2 ToString()
 
 Returns date/time as string.
 
@@ -1199,7 +1193,7 @@ sub ToString {
     return $Self->Format( Format => '%Y-%m-%d %H:%M:%S' );
 }
 
-=item ToEmailTimeStamp()
+=head2 ToEmailTimeStamp()
 
 Returns the date/time of this object as time stamp in RFC 2822 format to be used in email headers.
 
@@ -1226,9 +1220,8 @@ sub ToEmailTimeStamp {
 
     # According to RFC 2822, section 3.3
 
-    # ---
     # The date and time-of-day SHOULD express local time.
-
+    #
     # The zone specifies the offset from Coordinated Universal Time (UTC,
     # formerly referred to as "Greenwich Mean Time") that the date and
     # time-of-day represent.  The "+" or "-" indicates whether the
@@ -1243,7 +1236,6 @@ sub ToEmailTimeStamp {
     # in a local time zone other than Universal Time and therefore
     # indicates that the date-time contains no information about the local
     # time zone.
-    # ---
 
     my $EmailTimeStamp = $Self->Format(
         Format => '%a, %{day} %b %Y %H:%M:%S %z',
@@ -1252,7 +1244,7 @@ sub ToEmailTimeStamp {
     return $EmailTimeStamp;
 }
 
-=item ToCTimeString()
+=head2 ToCTimeString()
 
 Returns date and time as ctime string, as for example returned by Perl's localtime and gmtime in scalar context.
 
@@ -1274,7 +1266,7 @@ sub ToCTimeString {
     return $LocalTimeString;
 }
 
-=item IsVacationDay()
+=head2 IsVacationDay()
 
 Checks if date/time of this object is a vacation day.
 
@@ -1329,7 +1321,7 @@ sub IsVacationDay {
     return 0;
 }
 
-=item LastDayOfMonthGet()
+=head2 LastDayOfMonthGet()
 
 Returns the last day of the month.
 
@@ -1369,7 +1361,7 @@ sub LastDayOfMonthGet {
     return $Result;
 }
 
-=item Clone()
+=head2 Clone()
 
 Clones the DateTime object.
 
@@ -1388,7 +1380,7 @@ sub Clone {
     return $ClonedDateTimeObject;
 }
 
-=item TimeZoneList()
+=head2 TimeZoneList()
 
 Returns an array ref of available time zones.
 
@@ -1421,7 +1413,7 @@ sub TimeZoneList {
     return \@TimeZones;
 }
 
-=item TimeZoneByOffsetList()
+=head2 TimeZoneByOffsetList()
 
 Returns a list of time zones by offset in hours.
 Of course the resulting list depends on the date/time set within this DateTime object.
@@ -1469,7 +1461,7 @@ sub TimeZoneByOffsetList {
     return \%TimeZoneByOffset;
 }
 
-=item IsTimeZoneValid()
+=head2 IsTimeZoneValid()
 
 Checks if the given time zone is valid.
 
@@ -1506,7 +1498,7 @@ sub IsTimeZoneValid {
     return $ValidTimeZones{ $Param{TimeZone} } ? 1 : 0;
 }
 
-=item OTRSTimeZoneGet()
+=head2 OTRSTimeZoneGet()
 
 Returns the time zone set for OTRS.
 
@@ -1525,7 +1517,7 @@ sub OTRSTimeZoneGet {
     return $Kernel::OM->Get('Kernel::Config')->Get('OTRSTimeZone') || 'UTC';
 }
 
-=item UserDefaultTimeZoneGet()
+=head2 UserDefaultTimeZoneGet()
 
 Returns the time zone set as default in SysConfig UserDefaultTimeZone for
 newly created users or existing users without time zone setting.
@@ -1545,7 +1537,7 @@ sub UserDefaultTimeZoneGet {
     return $Kernel::OM->Get('Kernel::Config')->Get('UserDefaultTimeZone') || 'UTC';
 }
 
-=item SystemTimeZoneGet()
+=head2 SystemTimeZoneGet()
 
 Returns the time zone of the system.
 
@@ -1564,7 +1556,9 @@ sub SystemTimeZoneGet {
     return DateTime::TimeZone->new( name => 'local' )->name();
 }
 
-=item _ToCPANDateTimeParamNames()
+=begin Internal:
+
+=head2 _ToCPANDateTimeParamNames()
 
 Maps date/time parameter names expected by the methods of this package to the ones
 expected by CPAN/Perl DateTime package.
@@ -1626,7 +1620,7 @@ sub _ToCPANDateTimeParamNames {
     return $DateTimeParams;
 }
 
-=item _StringToHash()
+=head2 _StringToHash()
 
 Parses a date/time string and returns a hash ref.
 
@@ -1687,7 +1681,7 @@ sub _StringToHash {
     return;
 }
 
-=item _CPANDateTimeObjectCreate()
+=head2 _CPANDateTimeObjectCreate()
 
 Creates a CPAN DateTime object which will be stored within this object and used for date/time calculations.
 
@@ -1826,7 +1820,7 @@ sub _CPANDateTimeObjectCreate {
     return $CPANDateTimeObject;
 }
 
-=item _OpIsNewerThan()
+=head2 _OpIsNewerThan()
 
 Operator overloading for >
 
@@ -1843,7 +1837,7 @@ sub _OpIsNewerThan {
     return $Result;
 }
 
-=item _OpIsOlderThan()
+=head2 _OpIsOlderThan()
 
 Operator overloading for <
 
@@ -1860,7 +1854,7 @@ sub _OpIsOlderThan {
     return $Result;
 }
 
-=item _OpIsNewerThanOrEquals()
+=head2 _OpIsNewerThanOrEquals()
 
 Operator overloading for >=
 
@@ -1877,7 +1871,7 @@ sub _OpIsNewerThanOrEquals {
     return $Result;
 }
 
-=item _OpIsOlderThanOrEquals()
+=head2 _OpIsOlderThanOrEquals()
 
 Operator overloading for <=
 
@@ -1894,7 +1888,7 @@ sub _OpIsOlderThanOrEquals {
     return $Result;
 }
 
-=item _OpEquals()
+=head2 _OpEquals()
 
 Operator overloading for ==
 
@@ -1911,7 +1905,7 @@ sub _OpEquals {
     return $Result;
 }
 
-=item _OpNotEquals()
+=head2 _OpNotEquals()
 
 Operator overloading for !=
 
@@ -1930,7 +1924,7 @@ sub _OpNotEquals {
 
 1;
 
-=back
+=end Internal:
 
 =head1 TERMS AND CONDITIONS
 

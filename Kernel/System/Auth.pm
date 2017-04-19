@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -28,22 +28,16 @@ our @ObjectDependencies = (
 
 Kernel::System::Auth - agent authentication module.
 
-=head1 SYNOPSIS
+=head1 DESCRIPTION
 
 The authentication module for the agent interface.
 
 =head1 PUBLIC INTERFACE
 
-=over 4
+=head2 new()
 
-=cut
+Don't use the constructor directly, use the ObjectManager instead:
 
-=item new()
-
-create an object. Do not use it directly, instead use:
-
-    use Kernel::System::ObjectManager;
-    local $Kernel::OM = Kernel::System::ObjectManager->new();
     my $AuthObject = $Kernel::OM->Get('Kernel::System::Auth');
 
 =cut
@@ -110,7 +104,7 @@ sub new {
     return $Self;
 }
 
-=item GetOption()
+=head2 GetOption()
 
 Get module options. Currently there is just one option, "PreAuth".
 
@@ -126,7 +120,7 @@ sub GetOption {
     return $Self->{AuthBackend}->GetOption(%Param);
 }
 
-=item Auth()
+=head2 Auth()
 
 The authentication function.
 
@@ -354,7 +348,7 @@ sub Auth {
     return $User;
 }
 
-=item GetLastErrorMessage()
+=head2 GetLastErrorMessage()
 
 Retrieve $Self->{LastErrorMessage} content.
 
@@ -373,8 +367,6 @@ sub GetLastErrorMessage {
 }
 
 1;
-
-=back
 
 =head1 TERMS AND CONDITIONS
 

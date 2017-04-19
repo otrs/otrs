@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -31,6 +31,7 @@ our @ObjectDependencies = (
     'Kernel::System::State',
     'Kernel::System::Stats',
     'Kernel::System::Ticket',
+    'Kernel::System::Ticket::Article',
     'Kernel::System::Time',
     'Kernel::System::Type',
     'Kernel::System::User',
@@ -89,10 +90,12 @@ sub GetObjectAttributes {
         $ValidAgent = 1;
     }
 
-    # get user list
+    # Get user list without the out of office message, because of the caching in the statistics
+    #   and not meaningful with a date selection.
     my %UserList = $UserObject->UserList(
-        Type  => 'Long',
-        Valid => $ValidAgent,
+        Type          => 'Long',
+        Valid         => $ValidAgent,
+        NoOutOfOffice => 1,
     );
 
     # get state list
@@ -168,7 +171,6 @@ sub GetObjectAttributes {
             Values           => \%TicketAttributes,
             Sort             => 'IndividualKey',
             SortIndividual   => $Self->_SortedAttributes(),
-
         },
         {
             Name             => Translatable('Order by'),
@@ -304,22 +306,6 @@ sub GetObjectAttributes {
             UseAsValueSeries => 0,
             UseAsRestriction => 1,
             Element          => 'Title',
-            Block            => 'InputField',
-        },
-        {
-            Name             => Translatable('CustomerUserLogin (complex search)'),
-            UseAsXvalue      => 0,
-            UseAsValueSeries => 0,
-            UseAsRestriction => 1,
-            Element          => 'CustomerUserLogin',
-            Block            => 'InputField',
-        },
-        {
-            Name             => Translatable('CustomerUserLogin (exact match)'),
-            UseAsXvalue      => 0,
-            UseAsValueSeries => 0,
-            UseAsRestriction => 1,
-            Element          => 'CustomerUserLoginRaw',
             Block            => 'InputField',
         },
         {
@@ -647,6 +633,76 @@ sub GetObjectAttributes {
         push @ObjectAttributes, @CustomerIDAttributes;
     }
 
+    if ( $ConfigObject->Get('Stats::CustomerUserLoginsAsMultiSelect') ) {
+
+        # Get all CustomerUserLogins which are related to a tiket.
+        $DBObject->Prepare(
+            SQL => "SELECT DISTINCT customer_user_id FROM ticket",
+        );
+
+        # fetch the result
+        my %CustomerUserIDs;
+        while ( my @Row = $DBObject->FetchrowArray() ) {
+            if ( $Row[0] ) {
+                $CustomerUserIDs{ $Row[0] } = $Row[0];
+            }
+        }
+
+        my %ObjectAttribute = (
+            Name             => Translatable('Assigned to Customer User Login'),
+            UseAsXvalue      => 0,
+            UseAsValueSeries => 0,
+            UseAsRestriction => 1,
+            Element          => 'CustomerUserLoginRaw',
+            Block            => 'MultiSelectField',
+            Values           => \%CustomerUserIDs,
+        );
+
+        push @ObjectAttributes, \%ObjectAttribute;
+    }
+    else {
+
+        my @CustomerUserAttributes = (
+            {
+                Name             => Translatable('Assigned to Customer User Login (complex search)'),
+                UseAsXvalue      => 0,
+                UseAsValueSeries => 0,
+                UseAsRestriction => 1,
+                Element          => 'CustomerUserLogin',
+                Block            => 'InputField',
+            },
+            {
+                Name               => Translatable('Assigned to Customer User Login (exact match)'),
+                UseAsXvalue        => 0,
+                UseAsValueSeries   => 0,
+                UseAsRestriction   => 1,
+                Element            => 'CustomerUserLoginRaw',
+                Block              => 'InputField',
+                CSSClass           => 'CustomerAutoCompleteSimple',
+                HTMLDataAttributes => {
+                    'customer-search-type' => 'CustomerUser',
+                },
+            },
+        );
+
+        push @ObjectAttributes, @CustomerUserAttributes;
+    }
+
+    # Add always the field for the customer user login accessible tickets as auto complete field.
+    my %ObjectAttribute = (
+        Name               => Translatable('Accessible to Customer User Login (exact match)'),
+        UseAsXvalue        => 0,
+        UseAsValueSeries   => 0,
+        UseAsRestriction   => 1,
+        Element            => 'CustomerUserID',
+        Block              => 'InputField',
+        CSSClass           => 'CustomerAutoCompleteSimple',
+        HTMLDataAttributes => {
+            'customer-search-type' => 'CustomerUser',
+        },
+    );
+    push @ObjectAttributes, \%ObjectAttribute;
+
     if ( $ConfigObject->Get('Ticket::ArchiveSystem') ) {
 
         my %ObjectAttribute = (
@@ -767,7 +823,7 @@ sub GetObjectAttributes {
                     Element          => $DynamicFieldStatsParameter->{Element},
                     Block            => $DynamicFieldStatsParameter->{Block},
                     Values           => $DynamicFieldStatsParameter->{Values},
-                    Translation      => 0,
+                    Translation      => $DynamicFieldStatsParameter->{TranslatableValues} || 0,
                     IsDynamicField   => 1,
                     ShowAsTree       => $DynamicFieldConfig->{Config}->{TreeView} || 0,
                 );
@@ -833,6 +889,12 @@ sub GetStatTable {
         'CustomerID' => 1,
         'Title'      => 1,
     );
+
+    # Map the CustomerID search parameter to CustomerIDRaw search parameter for the
+    #   exact search match, if the 'Stats::CustomerIDAsMultiSelect' is active.
+    if ( $Kernel::OM->Get('Kernel::Config')->Get('Stats::CustomerIDAsMultiSelect') ) {
+        $Param{Restrictions}->{CustomerIDRaw} = $Param{Restrictions}->{CustomerID};
+    }
 
     ATTRIBUTE:
     for my $Key ( sort keys %{ $Param{Restrictions} } ) {
@@ -1049,14 +1111,18 @@ sub GetStatTable {
         )
     {
 
+        my $SQLTicketIDInCondition = $DBObject->QueryInCondition(
+            Key       => 'ticket_id',
+            Values    => \@TicketIDs,
+            QuoteType => 'Integer',
+            BindMode  => 0,
+        );
+
         # start building the SQL query from back to front
         # what's fixed is the history_type_id we have to search for
         # 1 is ticketcreate
         # 27 is state update
-        my $SQL = 'history_type_id IN (1,27) ORDER BY ticket_id ASC';
-
-        $SQL = 'ticket_id IN ('
-            . ( join ', ', @TicketIDs ) . ') AND ' . $SQL;
+        my $SQL = $SQLTicketIDInCondition . ' AND history_type_id IN (1,27) ORDER BY ticket_id ASC';
 
         my %StateIDs;
 
@@ -1218,6 +1284,8 @@ sub GetStatTable {
         }
     }
 
+    my $StatsObject = $Kernel::OM->Get('Kernel::System::Stats');
+
     # generate the ticket list
     my @StatArray;
     for my $TicketID (@TicketIDs) {
@@ -1229,6 +1297,11 @@ sub GetStatTable {
             DynamicFields => $NeedDynamicFields,
         );
 
+        # Format Ticket 'Age' param into human readable format.
+        $Ticket{Age} = $StatsObject->_HumanReadableAgeGet(
+            Age => $Ticket{Age},
+        );
+
         # add the accounted time if needed
         if ( $TicketAttributes{AccountedTime} ) {
             $Ticket{AccountedTime} = $TicketObject->TicketAccountedTimeGet( TicketID => $TicketID );
@@ -1236,7 +1309,10 @@ sub GetStatTable {
 
         # add the number of articles if needed
         if ( $TicketAttributes{NumberOfArticles} ) {
-            $Ticket{NumberOfArticles} = $TicketObject->ArticleCount( TicketID => $TicketID );
+            $Ticket{NumberOfArticles} = $Kernel::OM->Get('Kernel::System::Ticket::Article')->ArticleList(
+                TicketID => $TicketID,
+                UserID   => 1
+            );
         }
 
         $Ticket{Closed}                      ||= '';
@@ -1308,22 +1384,29 @@ sub GetStatTable {
             if (
                 $Param{TimeZone}
                 && $Ticket{$Attribute}
-                && $Ticket{$Attribute} =~ /(\d{4})-(\d{2})-(\d{2})\s(\d{2}):(\d{2}):(\d{2})/
+                && $Ticket{$Attribute} =~ /\A(\d{4})-(\d{2})-(\d{2})\s(\d{2}):(\d{2}):(\d{2})\z/
                 )
             {
 
-                $Ticket{$Attribute} = $Kernel::OM->Get('Kernel::System::Stats')->_FromOTRSTimeZone(
+                $Ticket{$Attribute} = $StatsObject->_FromOTRSTimeZone(
                     String   => $Ticket{$Attribute},
                     TimeZone => $Param{TimeZone},
                 );
                 $Ticket{$Attribute} .= " ($Param{TimeZone})";
             }
+
+            if ( $Attribute =~ /Owner|Responsible/ ) {
+                $Ticket{$Attribute} = $Kernel::OM->Get('Kernel::System::User')->UserName(
+                    User => $Ticket{$Attribute},
+                );
+            }
+
             push @ResultRow, $Ticket{$Attribute};
         }
         push @StatArray, \@ResultRow;
     }
 
-    # use a individual sort if the sort mechanismn of the TicketSearch is not useable
+    # use a individual sort if the sort mechanism of the TicketSearch is not usable
     if ( !$OrderByIsValueOfTicketSearchSort ) {
         @StatArray = $Self->_IndividualResultOrder(
             StatArray          => \@StatArray,
@@ -1553,12 +1636,12 @@ sub _TicketAttributes {
 
         #PriorityID     => 'PriorityID',
         CustomerID => 'CustomerID',
-        Changed    => 'Changed',
+        Changed    => 'Last Changed',
         Created    => 'Created',
 
         #CreateTimeUnix => 'CreateTimeUnix',
         CustomerUserID => 'Customer User',
-        Lock           => 'lock',
+        Lock           => 'Lock',
 
         #LockID         => 'LockID',
         UnlockTimeout       => 'UnlockTimeout',

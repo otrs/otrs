@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -12,6 +12,7 @@ use strict;
 use warnings;
 
 use Kernel::System::VariableCheck qw(:all);
+use Kernel::Language qw(Translatable);
 
 use base qw(Kernel::System::DynamicField::Driver::Base);
 
@@ -27,13 +28,11 @@ Kernel::System::DynamicField::Driver::BaseText - sub module of
 Kernel::System::DynamicField::Driver::Text and
 Kernel::System::DynamicField::Driver::TextArea
 
-=head1 SYNOPSIS
+=head1 DESCRIPTION
 
 Text common functions.
 
 =head1 PUBLIC INTERFACE
-
-=over 4
 
 =cut
 
@@ -126,7 +125,21 @@ sub SearchSQLGet {
         SmallerThanEquals => '<=',
     );
 
-    if ( !$Operators{ $Param{Operator} } ) {
+    if ( $Param{Operator} eq 'Empty' ) {
+        if ( $Param{SearchTerm} ) {
+            return " $Param{TableAlias}.value_text IS NULL ";
+        }
+        else {
+            my $DatabaseType = $Kernel::OM->Get('Kernel::System::DB')->{'DB::Type'};
+            if ( $DatabaseType eq 'oracle' ) {
+                return " $Param{TableAlias}.value_text IS NOT NULL ";
+            }
+            else {
+                return " $Param{TableAlias}.value_text <> '' ";
+            }
+        }
+    }
+    elsif ( !$Operators{ $Param{Operator} } ) {
         $Kernel::OM->Get('Kernel::System::Log')->Log(
             'Priority' => 'error',
             'Message'  => "Unsupported Operator $Param{Operator}",
@@ -134,8 +147,15 @@ sub SearchSQLGet {
         return;
     }
 
-    my $SQL = " $Param{TableAlias}.value_text $Operators{ $Param{Operator} } '";
-    $SQL .= $Kernel::OM->Get('Kernel::System::DB')->Quote( $Param{SearchTerm} ) . "' ";
+    my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
+    my $Lower    = '';
+    if ( $DBObject->GetDatabaseFunction('CaseSensitive') ) {
+        $Lower = 'LOWER';
+    }
+
+    my $SQL = " $Lower($Param{TableAlias}.value_text) $Operators{ $Param{Operator} } ";
+    $SQL .= "$Lower('" . $DBObject->Quote( $Param{SearchTerm} ) . "') ";
+
     return $SQL;
 }
 
@@ -413,7 +433,7 @@ EOF
 
     my $AdditionalText;
     if ( $Param{UseLabelHints} ) {
-        $AdditionalText = 'e.g. Text or Te*t';
+        $AdditionalText = Translatable('e.g. Text or Te*t');
     }
 
     # call EditLabelRender on the common Driver
@@ -625,8 +645,6 @@ sub ValueLookup {
 }
 
 1;
-
-=back
 
 =head1 TERMS AND CONDITIONS
 

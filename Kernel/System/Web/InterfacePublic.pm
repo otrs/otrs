@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -26,17 +26,13 @@ our @ObjectDependencies = (
 
 Kernel::System::Web::InterfacePublic - the public web interface
 
-=head1 SYNOPSIS
+=head1 DESCRIPTION
 
 the global public web interface
 
 =head1 PUBLIC INTERFACE
 
-=over 4
-
-=cut
-
-=item new()
+=head2 new()
 
 create public web interface object
 
@@ -83,7 +79,7 @@ sub new {
     return $Self;
 }
 
-=item Run()
+=head2 Run()
 
 execute the object
 
@@ -234,7 +230,7 @@ sub Run {
                 . "::-::$QueryString\n";
             close $Out;
             $Kernel::OM->Get('Kernel::System::Log')->Log(
-                Priority => 'notice',
+                Priority => 'debug',
                 Message  => 'Response::Public: '
                     . ( time() - $Self->{PerformanceLogStart} )
                     . "s taken (URL:$QueryString)",
@@ -266,8 +262,6 @@ sub DESTROY {
 }
 
 1;
-
-=back
 
 =head1 TERMS AND CONDITIONS
 

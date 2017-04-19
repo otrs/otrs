@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -17,25 +17,41 @@ use Kernel::Language;
 # get selenium object
 my $Selenium = $Kernel::OM->Get('Kernel::System::UnitTest::Selenium');
 
+my $CheckBredcrumb = sub {
+
+    my %Param = @_;
+
+    my $OverviewTitle  = $Param{OverviewTitle};
+    my $BreadcrumbText = $Param{BreadcrumbText} || '';
+    my $Count          = 1;
+
+    for my $BreadcrumbText ( $OverviewTitle, $BreadcrumbText ) {
+        $Self->Is(
+            $Selenium->execute_script("return \$('.BreadCrumb li:eq($Count)').text().trim()"),
+            $BreadcrumbText,
+            "Breadcrumb text '$BreadcrumbText' is found on screen"
+        );
+
+        $Count++;
+    }
+};
+
 $Selenium->RunTest(
     sub {
 
         # get helper object
         my $Helper = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
 
-        my %DynamicFieldsOverviewPageShownSysConfig = $Kernel::OM->Get('Kernel::System::SysConfig')->ConfigItemGet(
+        my %DynamicFieldsOverviewPageShownSysConfig = $Kernel::OM->Get('Kernel::System::SysConfig')->SettingGet(
             Name => 'PreferencesGroups###DynamicFieldsOverviewPageShown',
         );
-
-        %DynamicFieldsOverviewPageShownSysConfig = map { $_->{Key} => $_->{Content} }
-            grep { defined $_->{Key} } @{ $DynamicFieldsOverviewPageShownSysConfig{Setting}->[1]->{Hash}->[1]->{Item} };
 
         # show more dynamic fields per page as the default value
         $Helper->ConfigSettingChange(
             Valid => 1,
             Key   => 'PreferencesGroups###DynamicFieldsOverviewPageShown',
             Value => {
-                %DynamicFieldsOverviewPageShownSysConfig,
+                %{ $DynamicFieldsOverviewPageShownSysConfig{EffectiveValue} },
                 DataSelected => 999,
             },
         );
@@ -59,10 +75,25 @@ $Selenium->RunTest(
         # navigate to AdminDynamiFied screen
         $Selenium->VerifiedGet("${ScriptAlias}index.pl?Action=AdminDynamicField");
 
+        # get language object
+        my $LanguageObject = Kernel::Language->new(
+            UserLanguage => $Language,
+        );
+
         # check overview AdminDynamicField
         $Selenium->find_element( "table",             'css' );
         $Selenium->find_element( "table thead tr th", 'css' );
         $Selenium->find_element( "table tbody tr td", 'css' );
+
+        # check breadcrumb on Overview screen
+        $Self->True(
+            $Selenium->find_element( '.BreadCrumb', 'css' ),
+            "Breadcrumb is found on Overview screen.",
+        );
+
+        # define variables for breadcrumb
+        my $OverviewTitleBreadcrumb = $LanguageObject->Translate('Dynamic Fields Management');
+        my $IDText;
 
         # check page
         for my $Type (
@@ -86,6 +117,24 @@ $Selenium->RunTest(
                 # wait until page has finished loading
                 $Selenium->WaitFor( JavaScript => 'return typeof($) === "function" && $("#Name").length' );
 
+                # modify names in two cases
+                if ( $ID eq 'DateTime' ) {
+                    $IDText = 'Date / Time';
+                }
+                elsif ( $ID eq 'TextArea' ) {
+                    $IDText = 'Textarea';
+                }
+                else {
+                    $IDText = $ID;
+                }
+
+                # check breadcrumb on Add screen
+                $CheckBredcrumb->(
+                    OverviewTitle  => $OverviewTitleBreadcrumb,
+                    BreadcrumbText => $LanguageObject->Translate($Type) . ': '
+                        . $LanguageObject->Translate( 'Add ' . $IDText . ' Field' )
+                );
+
                 $Selenium->find_element( "#Name",  'css' )->send_keys($RandomID);
                 $Selenium->find_element( "#Label", 'css' )->send_keys($RandomID);
                 $Selenium->execute_script("\$('#ValidID').val('1').trigger('redraw.InputField').trigger('change');");
@@ -99,8 +148,19 @@ $Selenium->RunTest(
 
                 # go to new DynamicField again
                 $Selenium->find_element( $RandomID, 'link_text' )->VerifiedClick();
-                $Selenium->find_element( "#Label",  'css' )->clear();
-                $Selenium->find_element( "#Label",  'css' )->send_keys( $RandomID . "-update" );
+
+                # check breadcrumb on Edit screen
+                $CheckBredcrumb->(
+                    OverviewTitle => $OverviewTitleBreadcrumb,
+                    BreadcrumbText =>
+                        $LanguageObject->Translate($Type)
+                        . ': '
+                        . $LanguageObject->Translate( 'Change ' . $IDText . ' Field' ) . ' - '
+                        . $RandomID
+                );
+
+                $Selenium->find_element( "#Label", 'css' )->clear();
+                $Selenium->find_element( "#Label", 'css' )->send_keys( $RandomID . "-update" );
                 $Selenium->execute_script("\$('#ValidID').val('2').trigger('redraw.InputField').trigger('change');");
                 $Selenium->find_element( "#Name", 'css' )->VerifiedSubmit();
 
@@ -159,10 +219,6 @@ JAVASCRIPT
                 $Selenium->find_element(
                     "//a[contains(\@data-query-string, \'Subaction=DynamicFieldDelete;ID=$DynamicFieldID' )]"
                 )->VerifiedClick();
-
-                my $LanguageObject = Kernel::Language->new(
-                    UserLanguage => $Language,
-                );
 
                 $Self->Is(
                     $Selenium->execute_script("return window.getLastConfirm()"),

@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -221,7 +221,7 @@ $Selenium->RunTest(
             Key   => 'Ticket::Frontend::AgentTicketZoom###DynamicField',
             Value => {
                 $DynamicFieldName => 1,
-                }
+            },
         );
 
         # get ticket object
@@ -264,7 +264,7 @@ $Selenium->RunTest(
         );
         $Self->True(
             $Success,
-            "DynamicField value added to the test ticket"
+            "DynamicField value added to the test ticket",
         );
 
         # login test user
@@ -298,7 +298,7 @@ $Selenium->RunTest(
             Key   => 'Ticket::Frontend::AgentTicketZoom###Widgets###0100-TicketInformation',
             Value => {
                 'Location' => 'Sidebar',
-                'Module'   => 'Kernel::Output::HTML::TicketZoom::TicketInformation'
+                'Module'   => 'Kernel::Output::HTML::TicketZoom::TicketInformation',
             },
         );
 
@@ -314,7 +314,7 @@ $Selenium->RunTest(
         # verify there is no collapsed elements on the screen
         $Self->True(
             $Selenium->find_element("//div[contains(\@class, \'WidgetSimple Expanded')]"),
-            "Ticket Information Widget is expanded"
+            "Ticket Information Widget is expanded",
         );
 
         # toggle to collapse 'Ticket Information' widget
@@ -323,21 +323,21 @@ $Selenium->RunTest(
         # verify there is collapsed element on the screen
         $Self->True(
             $Selenium->find_element("//div[contains(\@class, \'WidgetSimple Collapsed')]"),
-            "Ticket Information Widget is collapsed"
+            "Ticket Information Widget is collapsed",
         );
 
         # add article to ticket
-        my $ArticleID = $TicketObject->ArticleCreate(
-            TicketID       => $TicketID,
-            ArticleType    => 'email-external',
-            SenderType     => 'customer',
-            Subject        => 'some short description',
-            Body           => 'the message text',
-            Charset        => 'ISO-8859-15',
-            MimeType       => 'text/plain',
-            HistoryType    => 'EmailCustomer',
-            HistoryComment => 'Some free text!',
-            UserID         => 1,
+        my $ArticleID = $Kernel::OM->Get('Kernel::System::Ticket::Article::Backend::Email')->ArticleCreate(
+            TicketID             => $TicketID,
+            IsVisibleForCustomer => 1,
+            SenderType           => 'customer',
+            Subject              => 'some short description',
+            Body                 => 'the message text',
+            Charset              => 'ISO-8859-15',
+            MimeType             => 'text/plain',
+            HistoryType          => 'EmailCustomer',
+            HistoryComment       => 'Some free text!',
+            UserID               => 1,
         );
         $Self->True(
             $ArticleID,
@@ -371,7 +371,7 @@ $Selenium->RunTest(
         # verify customer link to 'Customer Information Center'
         $Self->True(
             $Selenium->find_element("//a[contains(\@href, \'AgentCustomerInformationCenter;CustomerID=$Customer' )]"),
-            "Customer link to 'Customer Information Center' found"
+            "Customer link to 'Customer Information Center' found",
         );
 
         # verify accounted time value
@@ -385,6 +385,14 @@ $Selenium->RunTest(
             $Selenium->find_element("//span[contains(\@title, \'$DFValue' )]"),
             "DynamicField value - $DFValue found in Ticket Information widget",
         );
+
+        # Recreate TicketObject to let event handlers run also for transaction mode.
+        $Kernel::OM->ObjectsDiscard(
+            Objects => [
+                'Kernel::System::Ticket',
+            ],
+        );
+        $Kernel::OM->Get('Kernel::System::Ticket');
 
         # refresh screen to be sure escalation time will get latest times
         $Selenium->VerifiedRefresh();
@@ -421,7 +429,7 @@ $Selenium->RunTest(
         );
         $Self->True(
             $Success,
-            "DynamicField value removed from the test ticket"
+            "DynamicField value removed from the test ticket",
         );
 
         # delete dynamic field
@@ -431,7 +439,7 @@ $Selenium->RunTest(
         );
         $Self->True(
             $Success,
-            "DynamicFieldID $DynamicFieldID is deleted"
+            "DynamicFieldID $DynamicFieldID is deleted",
         );
 
         # delete test ticket
@@ -441,7 +449,7 @@ $Selenium->RunTest(
         );
         $Self->True(
             $Success,
-            "TicketID $TicketID is deleted"
+            "TicketID $TicketID is deleted",
         );
 
         # get DB object

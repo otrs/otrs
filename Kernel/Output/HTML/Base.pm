@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -30,7 +30,7 @@ sub new {
 
 Kernel::Output::HTML::Base - Base class for Output classes
 
-=head1 SYNOPSIS
+=head1 DESCRIPTION
 
     package Kernel::Output::HTML::ToolBar::MyToolBar;
     use base 'Kernel::Output::HTML::Base';
@@ -39,7 +39,7 @@ Kernel::Output::HTML::Base - Base class for Output classes
 
 =head1 PUBLIC INTERFACE
 
-=item new()
+=head2 new()
 
 Creates an object. Call it not on this class, but on a subclass.
 
@@ -47,8 +47,6 @@ Creates an object. Call it not on this class, but on a subclass.
     my $Object = Kernel::Output::HTML::ToolBar::MyToolBar->new(
         UserID  => 123,
     );
-
-=back
 
 =head1 TERMS AND CONDITIONS
 

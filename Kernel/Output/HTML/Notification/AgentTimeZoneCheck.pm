@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -45,8 +45,9 @@ sub Run {
     my $LayoutObject = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
     return $LayoutObject->Notify(
         Priority => 'Notice',
-        Link     => $LayoutObject->{Baselink} . 'Action=AgentPreferences',
-        Data     => Translatable('Please select a time zone in your preferences and confirm it by clicking "Update".'),
+        Link     => $LayoutObject->{Baselink} . 'Action=AgentPreferences;Subaction=Group;Group=UserProfile',
+        Info =>
+            Translatable('Please select a time zone in your preferences and confirm it by clicking the save button.'),
     );
 }
 

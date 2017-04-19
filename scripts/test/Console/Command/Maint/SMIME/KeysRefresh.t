@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -12,6 +12,7 @@ use utf8;
 
 use Kernel::System::Crypt::SMIME;
 use File::Copy;
+use File::Path();
 
 use vars (qw($Self));
 
@@ -25,6 +26,26 @@ my $Helper = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
 
 # get config object
 my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
+
+# get configuration
+my $HomeDir = $ConfigObject->Get('Home');
+
+my $CertPath    = $ConfigObject->Get('Home') . "/var/tmp/certs";
+my $PrivatePath = $ConfigObject->Get('Home') . "/var/tmp/private";
+$CertPath =~ s{/{2,}}{/}smxg;
+$PrivatePath =~ s{/{2,}}{/}smxg;
+File::Path::rmtree($CertPath);
+File::Path::rmtree($PrivatePath);
+File::Path::make_path( $CertPath,    { chmod => 0770 } );    ## no critic
+File::Path::make_path( $PrivatePath, { chmod => 0770 } );    ## no critic
+$ConfigObject->Set(
+    Key   => 'SMIME::CertPath',
+    Value => $CertPath
+);
+$ConfigObject->Set(
+    Key   => 'SMIME::PrivatePath',
+    Value => $PrivatePath
+);
 
 # set config
 $ConfigObject->Set(
@@ -65,8 +86,8 @@ if ( !$CryptObject ) {
 
 # get current configuration settings
 my $OpenSSLBin = $ConfigObject->Get('SMIME::Bin');
-my $CertDir    = $ConfigObject->Get('SMIME::CertPath');
-my $PrivateDir = $ConfigObject->Get('SMIME::PrivatePath');
+my $CertDir    = $ConfigObject->Get('SMIME::CertPath') || '/etc/ssl/certs';
+my $PrivateDir = $ConfigObject->Get('SMIME::PrivatePath') || '/etc/ssl/private';
 
 # helper function to create a directory
 my $CreateDir = sub {
@@ -420,6 +441,9 @@ $Self->True(
     $Success,
     'Removed temporary Certificates and Private Keys root directory with true',
 );
+
+File::Path::rmtree($CertPath);
+File::Path::rmtree($PrivatePath);
 
 # cleanup cache is done by RestoreDatabase
 

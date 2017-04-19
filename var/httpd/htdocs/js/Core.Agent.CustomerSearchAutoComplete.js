@@ -1,5 +1,5 @@
 // --
-// Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+// Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 // --
 // This software comes with ABSOLUTELY NO WARRANTY. For details, see
 // the enclosed file COPYING for license information (AGPL). If you
@@ -28,7 +28,9 @@ Core.Agent = Core.Agent || {};
      *      This function initializes autocomplete in customer search fields.
      */
     TargetNS.Init = function () {
-        Core.Agent.CustomerSearch.Init($("#CustomerAutoComplete, .CustomerAutoComplete"));
+        $("#CustomerAutoComplete, .CustomerAutoComplete").each(function () {
+            Core.Agent.CustomerSearch.Init($(this));
+        });
     };
 
     Core.Init.RegisterNamespace(TargetNS, 'APP_MODULE');

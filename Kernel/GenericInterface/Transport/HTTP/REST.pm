@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -25,15 +25,9 @@ our $ObjectManagerDisabled = 1;
 
 Kernel::GenericInterface::Transport::REST - GenericInterface network transport interface for HTTP::REST
 
-=head1 SYNOPSIS
-
 =head1 PUBLIC INTERFACE
 
-=over 4
-
-=cut
-
-=item new()
+=head2 new()
 
 usually, you want to create an instance of this
 by using Kernel::GenericInterface::Transport->new();
@@ -55,14 +49,14 @@ sub new {
     return $Self;
 }
 
-=item ProviderProcessRequest()
+=head2 ProviderProcessRequest()
 
 Process an incoming web service request. This function has to read the request data
 from from the web server process.
 
 Based on the request the Operation to be used is determined.
 
-No outbound communication is done here, except from continue requests.
+No out-bound communication is done here, except from continue requests.
 
 In case of an error, the resulting http error code and message are remembered for the response.
 
@@ -322,7 +316,7 @@ sub ProviderProcessRequest {
     };
 }
 
-=item ProviderGenerateResponse()
+=head2 ProviderGenerateResponse()
 
 Generates response for an incoming web service request.
 
@@ -330,9 +324,9 @@ In case of an error, error code and message are taken from environment
 (previously set on request processing).
 
 The HTTP code is set accordingly
-- 200 for (syntactically) correct messages
-- 4xx for http errors
-- 500 for content syntax errors
+- C<200> for (syntactically) correct messages
+- C<4xx> for http errors
+- C<500> for content syntax errors
 
     my $Result = $TransportObject->ProviderGenerateResponse(
         Success => 1
@@ -401,7 +395,7 @@ sub ProviderGenerateResponse {
     );
 }
 
-=item RequesterPerformRequest()
+=head2 RequesterPerformRequest()
 
 Prepare data payload as XML structure, generate an outgoing web service request,
 receive the response and return its data.
@@ -710,7 +704,7 @@ sub RequesterPerformRequest {
         $ResponseError = $ErrorMessage;
     }
 
-    if ( $ResponseCode ne '200' ) {
+    if ( $ResponseCode !~ m{ \A 20 \d \z }xms ) {
         $ResponseError = $ErrorMessage . " Response code '$ResponseCode'.";
     }
 
@@ -805,7 +799,7 @@ sub RequesterPerformRequest {
 
 =begin Internal:
 
-=item _Output()
+=head2 _Output()
 
 Generate http response for provider and send it back to remote system.
 Environment variables are checked for potential error messages.
@@ -909,7 +903,7 @@ sub _Output {
     };
 }
 
-=item _Error()
+=head2 _Error()
 
 Take error parameters from request processing.
 Error message is written to debugger, written to environment for response.
@@ -959,8 +953,6 @@ sub _Error {
 1;
 
 =end Internal:
-
-=back
 
 =head1 TERMS AND CONDITIONS
 

@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -11,6 +11,7 @@ package Kernel::Modules::CustomerTicketAttachment;
 use strict;
 use warnings;
 
+use Kernel::System::VariableCheck qw(:all);
 use Kernel::Language qw(Translatable);
 
 our $ObjectManagerDisabled = 1;
@@ -29,10 +30,12 @@ sub Run {
     my ( $Self, %Param ) = @_;
 
     my $ParamObject  = $Kernel::OM->Get('Kernel::System::Web::Request');
-    my $ArticleID    = $ParamObject->GetParam( Param => 'ArticleID' );
-    my $FileID       = $ParamObject->GetParam( Param => 'FileID' );
     my $LayoutObject = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
     my $LogObject    = $Kernel::OM->Get('Kernel::System::Log');
+
+    my $TicketID  = $ParamObject->GetParam( Param => 'TicketID' );
+    my $ArticleID = $ParamObject->GetParam( Param => 'ArticleID' );
+    my $FileID    = $ParamObject->GetParam( Param => 'FileID' );
 
     # check params
     if ( !$FileID || !$ArticleID ) {
@@ -49,15 +52,7 @@ sub Run {
         return $Output;
     }
 
-    my $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
-
-    # check permissions
-    my %Article = $TicketObject->ArticleGet(
-        ArticleID     => $ArticleID,
-        DynamicFields => 0,
-    );
-
-    if ( !$Article{TicketID} ) {
+    if ( !$TicketID ) {
         my $Output = $LayoutObject->CustomerHeader( Title => 'Error' );
         $Output .= $LayoutObject->CustomerError(
             Message => $LayoutObject->{LanguageObject}->Translate( 'No TicketID for ArticleID (%s)!', $ArticleID ),
@@ -71,10 +66,37 @@ sub Run {
         return $Output;
     }
 
+    my $ArticleObject = $Kernel::OM->Get('Kernel::System::Ticket::Article');
+
+    my @ArticleList = $ArticleObject->ArticleList(
+        TicketID             => $TicketID,
+        ArticleID            => $ArticleID,
+        IsVisibleForCustomer => 1,
+    );
+
+    my $ArticleBackendObject;
+    my %Article;
+
+    ARTICLEMETADATA:
+    for my $ArticleMetaData (@ArticleList) {
+
+        next ARTICLEMETADATA if !$ArticleMetaData;
+        next ARTICLEMETADATA if !IsHashRefWithData($ArticleMetaData);
+
+        $ArticleBackendObject = $ArticleObject->BackendForArticle( %{$ArticleMetaData} );
+
+        %Article = $ArticleBackendObject->ArticleGet(
+            TicketID      => $TicketID,
+            ArticleID     => $ArticleMetaData->{ArticleID},
+            UserID        => $Self->{UserID},
+            DynamicFields => 0,
+        );
+    }
+
     # check permission
-    my $Access = $TicketObject->TicketCustomerPermission(
+    my $Access = $Kernel::OM->Get('Kernel::System::Ticket')->TicketCustomerPermission(
         Type     => 'ro',
-        TicketID => $Article{TicketID},
+        TicketID => $TicketID,
         UserID   => $Self->{UserID}
     );
     if ( !$Access ) {
@@ -82,11 +104,12 @@ sub Run {
     }
 
     # get attachment
-    my %Data = $TicketObject->ArticleAttachment(
+    my %Data = $ArticleBackendObject->ArticleAttachment(
         ArticleID => $ArticleID,
         FileID    => $FileID,
         UserID    => $Self->{UserID},
     );
+
     if ( !%Data ) {
         my $Output = $LayoutObject->CustomerHeader( Title => 'Error' );
         $Output .= $LayoutObject->CustomerError(
@@ -112,11 +135,18 @@ sub Run {
 
         # just return for non-html attachment (e. g. images)
         if ( $Data{ContentType} !~ /text\/html/i ) {
-            return $LayoutObject->Attachment(%Data);
+            return $LayoutObject->Attachment(
+                %Data,
+                Sandbox => 1,
+            );
         }
 
+        my $TicketNumber = $Kernel::OM->Get('Kernel::System::Ticket')->TicketNumberLookup(
+            TicketID => $TicketID,
+        );
+
         # unset filename for inline viewing
-        $Data{Filename} = "Ticket-$Article{TicketNumber}-ArticleID-$Article{ArticleID}.html";
+        $Data{Filename} = "Ticket-$TicketNumber-ArticleID-$Article{ArticleID}.html";
 
         # safety check only on customer article
         my $LoadExternalImages = $ParamObject->GetParam(
@@ -131,7 +161,7 @@ sub Run {
             . ";ArticleID=$ArticleID;FileID=";
 
         # replace links to inline images in html content
-        my %AtmBox = $TicketObject->ArticleAttachmentIndex(
+        my %AtmBox = $ArticleBackendObject->ArticleAttachmentIndex(
             ArticleID => $ArticleID,
             UserID    => $Self->{UserID},
         );
@@ -146,11 +176,17 @@ sub Run {
         );
 
         # return html attachment
-        return $LayoutObject->Attachment(%Data);
+        return $LayoutObject->Attachment(
+            %Data,
+            Sandbox => 1,
+        );
     }
 
     # download it AttachmentDownloadType is configured
-    return $LayoutObject->Attachment(%Data);
+    return $LayoutObject->Attachment(
+        %Data,
+        Sandbox => 1,
+    );
 }
 
 1;

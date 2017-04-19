@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -80,7 +80,7 @@ sub Run {
     for my $Key (
         qw(Year Month Day Hour Minute To Cc Bcc TimeUnits PriorityID Subject Body
         TypeID ServiceID SLAID OwnerAll ResponsibleAll NewResponsibleID NewUserID
-        NextStateID StandardTemplateID
+        NextStateID StandardTemplateID Dest
         )
         )
     {
@@ -516,6 +516,14 @@ sub Run {
                 );
             }
 
+            my $Dest = '';
+            if ( !$Self->{QueueID} && $GetParam{Dest} ) {
+
+                my @QueueParts = split( /\|\|/, $GetParam{Dest} );
+                $Self->{QueueID} = $QueueParts[0];
+                $Dest = $GetParam{Dest};
+            }
+
             # html output
             my $Services = $Self->_GetServices(
                 QueueID => $Self->{QueueID} || 1,
@@ -565,6 +573,7 @@ sub Run {
                     %ACLCompatGetParam,
                     QueueID => $Self->{QueueID}
                 ),
+                FromSelected      => $Dest,
                 To                => '',
                 Subject           => $Subject,
                 Body              => $Body,
@@ -1357,24 +1366,27 @@ sub Run {
             UserID  => $Self->{UserID},
         );
 
+        my $ArticleObject = $Kernel::OM->Get('Kernel::System::Ticket::Article');
+        my $ArticleBackendObject = $ArticleObject->BackendForChannel( ChannelName => 'Email' );
+
         # send email
-        my $ArticleID = $TicketObject->ArticleSend(
-            NoAgentNotify  => $NoAgentNotify,
-            Attachment     => \@Attachments,
-            TicketID       => $TicketID,
-            ArticleType    => $Config->{ArticleType},
-            SenderType     => $Config->{SenderType},
-            From           => $Sender,
-            To             => $GetParam{To},
-            Cc             => $GetParam{Cc},
-            Bcc            => $GetParam{Bcc},
-            Subject        => $GetParam{Subject},
-            Body           => $GetParam{Body},
-            Charset        => $LayoutObject->{UserCharset},
-            MimeType       => $MimeType,
-            UserID         => $Self->{UserID},
-            HistoryType    => $Config->{HistoryType},
-            HistoryComment => $Config->{HistoryComment}
+        my $ArticleID = $ArticleBackendObject->ArticleSend(
+            NoAgentNotify        => $NoAgentNotify,
+            Attachment           => \@Attachments,
+            TicketID             => $TicketID,
+            SenderType           => $Config->{SenderType},
+            IsVisibleForCustomer => $Config->{IsVisibleForCustomer},
+            From                 => $Sender,
+            To                   => $GetParam{To},
+            Cc                   => $GetParam{Cc},
+            Bcc                  => $GetParam{Bcc},
+            Subject              => $GetParam{Subject},
+            Body                 => $GetParam{Body},
+            Charset              => $LayoutObject->{UserCharset},
+            MimeType             => $MimeType,
+            UserID               => $Self->{UserID},
+            HistoryType          => $Config->{HistoryType},
+            HistoryComment       => $Config->{HistoryComment}
                 || "\%\%$GetParam{To}, $GetParam{Cc}, $GetParam{Bcc}",
             %ArticleParam,
         );
@@ -2693,32 +2705,13 @@ sub _MaskEmailNew {
         );
     }
 
-    # show address book if the module is registered and java script support is available
+    # Show the customer user address book if the module is registered and java script support is available.
     if (
-        $ConfigObject->Get('Frontend::Module')->{AgentBook}
+        $ConfigObject->Get('Frontend::Module')->{AgentCustomerUserAddressBook}
         && $LayoutObject->{BrowserJavaScriptSupport}
         )
     {
-
-        # check if need to call Options block
-        if ( !$ShownOptionsBlock ) {
-            $LayoutObject->Block(
-                Name => 'TicketOptions',
-                Data => {
-                    %Param,
-                },
-            );
-
-            # set flag to "true" in order to prevent calling the Options block again
-            $ShownOptionsBlock = 1;
-        }
-
-        $LayoutObject->Block(
-            Name => 'AddressBook',
-            Data => {
-                %Param,
-            },
-        );
+        $Param{OptionCustomerUserAddressBook} = 1;
     }
 
     # show customer edit link

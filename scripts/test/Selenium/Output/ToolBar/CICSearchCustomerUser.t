@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -105,10 +105,9 @@ $Selenium->RunTest(
         );
 
         # input test user in search Customer user
-        my $AutoCCSearch = "\"$TestCustomerLogin $TestCustomerLogin\" <$TestCustomerEmail>";
         $Selenium->find_element( "#ToolBarCICSearchCustomerUser", 'css' )->send_keys($TestCustomerLogin);
         $Selenium->WaitFor( JavaScript => 'return typeof($) === "function" && $("li.ui-menu-item:visible").length' );
-        $Selenium->find_element("//*[text()='$AutoCCSearch']")->VerifiedClick();
+        $Selenium->find_element("//*[text()='$TestCustomerLogin']")->VerifiedClick();
 
         # verify search
         $Self->True(

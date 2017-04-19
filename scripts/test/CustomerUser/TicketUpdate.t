@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -20,7 +20,8 @@ my $TicketObject       = $Kernel::OM->Get('Kernel::System::Ticket');
 # get helper object
 $Kernel::OM->ObjectParamAdd(
     'Kernel::System::UnitTest::Helper' => {
-        RestoreDatabase => 1,
+        RestoreDatabase  => 1,
+        UseTmpArticleDir => 1,
     },
 );
 my $Helper = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
@@ -47,13 +48,13 @@ my @Tests = (
         CustomerUserLogin       => "max$RandomID",
         CustomerID              => "max$RandomID",
         CustomerEmail           => "max$RandomID\@email.com",
-        CustomerUserLoginUpdate => "max + & # () $RandomID",
-        CustomerIDUpdate        => "max + & # () $RandomID",
+        CustomerUserLoginUpdate => "max + & # () * $RandomID",
+        CustomerIDUpdate        => "max + & # () * $RandomID",
     },
     {
         Name                    => 'Update from special characters',
-        CustomerUserLogin       => "moritz + & # () $RandomID",
-        CustomerID              => "moritz + & # () $RandomID",
+        CustomerUserLogin       => "moritz + & # () * $RandomID",
+        CustomerID              => "moritz + & # () * $RandomID",
         CustomerEmail           => "moritz$RandomID\@email.com",
         CustomerUserLoginUpdate => "moritz$RandomID",
         CustomerIDUpdate        => "moritz$RandomID",
@@ -123,7 +124,7 @@ for my $Test (@Tests) {
             SortBy        => ['TicketNumber'],
         ),
         1,
-        "$Test->{Name} - found tickets was updated with new CustomerID $Test->{CustomerIDUpdate}"
+        "$Test->{Name} - ticket was updated with new CustomerID $Test->{CustomerIDUpdate}"
     );
 
     $Self->Is(
@@ -135,7 +136,7 @@ for my $Test (@Tests) {
             SortBy               => ['TicketNumber'],
         ),
         1,
-        "$Test->{Name} - found tickets was updated with new CustomerID $Test->{CustomerUserLoginUpdate}"
+        "$Test->{Name} - ticket was updated with new CustomerID $Test->{CustomerUserLoginUpdate}"
     );
 
 }

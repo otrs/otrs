@@ -1,5 +1,5 @@
 // --
-// Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+// Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 // --
 // This software comes with ABSOLUTELY NO WARRANTY. For details, see
 // the enclosed file COPYING for license information (AGPL). If you
@@ -31,9 +31,6 @@ Core.Agent.Overview = (function (TargetNS) {
         var Profile = Core.Config.Get('Profile'),
             View = Core.Config.Get('View'),
             TicketID, ActionRowTickets = Core.Config.Get('ActionRowTickets') || {};
-
-        // initializes ActionRow functionality
-        Core.UI.ActionRow.Init();
 
         // open ticket search modal dialog
         $('#TicketSearch').on('click', function () {
@@ -264,6 +261,33 @@ Core.Agent.Overview = (function (TargetNS) {
     };
 
     /**
+     * @name InitInlineActions
+     * @memberof Core.Agent.Overview
+     * @function
+     * @description
+     *      This function initializes the inline actions mini overlay in medium/preview views.
+     */
+    TargetNS.InitInlineActions = function () {
+        $('.OverviewMedium li, .OverviewLarge li').on('mouseenter', function() {
+            $(this).find('ul.InlineActions').css('top', '0px');
+        });
+        $('.OverviewMedium li, .OverviewLarge li').on('mouseleave', function(Event) {
+
+            // Workaround for bug#12403: The inlineActions would hide if hovering
+            // over the queue selection due to a bug in IE. As this is working fine
+            // in MS Edge with the former pure css solution, this whole function
+            // TargetNS.InitInlineActions could be dropped as soon as IE11 support is
+            // ceased for OTRS. Remember to re-add the needed css in this case:
+            //      .OverviewLarge > li:hover ul.InlineActions { top: 0px; }    (Core.OverviewLarge.css)
+            //      .OverviewPreview > li:hover ul.InlineActions { top: 0px; }  (Core.OverviewMedium.css)
+            if (Event.target.tagName.toLowerCase() === 'select') {
+                return false;
+            }
+            $(this).find('ul.InlineActions').css('top', '-30px');
+        });
+    };
+
+    /**
      * @name InitViewMedium
      * @memberof Core.Agent.Overview
      * @function
@@ -277,6 +301,9 @@ Core.Agent.Overview = (function (TargetNS) {
 
         // initializes a click event for div with checkboxes
         Core.UI.InitCheckboxSelection($('div.Checkbox'));
+
+        // initialize inline actions overlay
+        TargetNS.InitInlineActions();
 
         // Stop propagation on click on a part of the InlienActionRow without a link
         // Otherwise that would trigger the li-wide link to the ticketzoom
@@ -382,6 +409,9 @@ Core.Agent.Overview = (function (TargetNS) {
         // initializes a click event for div with checkboxes
         Core.UI.InitCheckboxSelection($('div.Checkbox'));
 
+        // initialize inline actions overlay
+        TargetNS.InitInlineActions();
+
         // initializes the accordion effect on the specified list
         Core.UI.Accordion.Init($('.Preview > ul'), 'li h3 a', '.HiddenBlock');
 
@@ -416,6 +446,11 @@ Core.Agent.Overview = (function (TargetNS) {
 
             // prevent MasterAction on Dynamic Fields links
             if ($(Event.target).hasClass('DynamicFieldLink')) {
+                return true;
+            }
+
+            // Prevent MasterAction on Modernize input fields.
+            if ($(Event.target).hasClass('InputField_Search')) {
                 return true;
             }
 

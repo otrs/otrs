@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -64,6 +64,33 @@ $HTMLCode = $LayoutObject->BuildSelection(
 $Self->False(
     $HTMLCode,
     q{Layout.t - 'Ajax' and 'OnChange' exclude each other in BuildSelection().},
+);
+
+# translate a tree entry
+my $LanguageObject = $Kernel::OM->Get('Kernel::Language');
+$LanguageObject->{Translation}->{'TestOneABC'} = 'TestOneXYZ';
+
+# test for translation of tree elements
+$HTMLCode = $LayoutObject->BuildSelection(
+    Data => {
+        0 => 'Test::TestZeroABC',
+        1 => 'Test::TestOneABC',
+        2 => 'Test::TestTwoABC',
+    },
+    SelectedID  => 1,
+    Name        => 'test',
+    Translation => 1,
+    TreeView    => 1,
+);
+
+my $TranslationTest = 0;
+if ( $HTMLCode =~ m{ TestOneXYZ }xms ) {
+    $TranslationTest = 1;
+}
+
+$Self->True(
+    $TranslationTest,
+    'Test translation of tree elements in BuildSelection().',
 );
 
 # set tests

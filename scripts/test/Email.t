@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -29,6 +29,16 @@ my $Helper = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
 $ConfigObject->Set(
     Key   => 'SendmailModule',
     Value => 'Kernel::System::Email::DoNotSendEmail',
+);
+
+# disable dns lookups
+$ConfigObject->Set(
+    Key   => 'CheckMXRecord',
+    Value => 1,
+);
+$ConfigObject->Set(
+    Key   => 'CheckEmailAddresses',
+    Value => 1,
 );
 
 # test scenarios

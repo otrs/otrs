@@ -1,5 +1,5 @@
 // --
-// Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+// Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 // --
 // This software comes with ABSOLUTELY NO WARRANTY. For details, see
 // the enclosed file COPYING for license information (AGPL). If you
@@ -31,22 +31,33 @@ Core.Agent.Admin.GenericAgent = (function (TargetNS) {
      *      Only select fields with size > 1 are selected (no dropdowns).
      */
     function AddSelectClearButton() {
-        var $SelectFields = $('select');
+        var $SelectFields = $('select'),
+            ModernizeActive = parseInt(Core.Config.Get('InputFieldsActivated'), 10);
 
         // Loop over all select fields available on the page
         $SelectFields.each(function () {
             var Size = parseInt($(this).attr('size'), 10),
+                ModernizeField = $(this).hasClass('Modernize'),
                 $SelectField = $(this),
                 SelectID = this.id,
+                Multiple = $(this).attr('multiple'),
                 ButtonHTML = '<a href="#" title="' + Core.Language.Translate('Remove selection') + '" class="GenericAgentClearSelect" data-select="' + SelectID + '"><span>' + Core.Language.Translate('Remove selection') + '</span><i class="fa fa-undo"></i></a>';
 
-            // Only handle select fields with a size > 1, leave all single-dropdown fields untouched
-            if (isNaN(Size) || Size <= 1) {
-                return false;
+
+            // Only handle fields without class Modernize when modernized is disabled
+            if (ModernizeActive && ModernizeField) {
+                return;
+            }
+
+            // Only handle select fields with a size > 1
+            // DynamicFields return a Size of NaN,
+            // they only need a clear button if they have the attribute multiple
+            if ((isNaN(Size) && !Multiple) || Size <= 1) {
+                return;
             }
 
             // If select field has a tree selection icon already,
-            // // we want to insert the new code after that element
+            // we want to insert the new code after that element
             if ($SelectField.next('a.ShowTreeSelection').length) {
                 $SelectField = $SelectField.next('a.ShowTreeSelection');
             }
@@ -66,7 +77,8 @@ Core.Agent.Admin.GenericAgent = (function (TargetNS) {
             }
 
             // Clear field value
-            $SelectField.val('');
+            // setting val('') is not enough since we have selects with an empty value that would be selected
+            $SelectField[0].selectedIndex = -1;
             $(this).blur();
 
             return false;
@@ -82,24 +94,25 @@ Core.Agent.Admin.GenericAgent = (function (TargetNS) {
      */
     TargetNS.Init = function () {
 
-        $('.DeleteEvent').bind('click', function (Event) {
+        $('.DeleteEvent').on('click', function (Event) {
             TargetNS.ShowDeleteEventDialog(Event, $(this));
             return false;
         });
 
-        $('#AddEvent').bind('click', function (){
+        $('#AddEvent').on('click', function (){
             if ($('#EventType').val() !== null) {
                 TargetNS.AddEvent($('#EventType').val());
                 return;
             }
         });
 
-        $('#EventType').bind('change', function (){
+        $('#EventType').on('change', function (){
             TargetNS.ToggleEventSelect($(this).val());
         });
 
         Core.UI.Table.InitTableFilter($("#FilterGenericAgentJobs"), $("#GenericAgentJobs"));
 
+        // Add select clear button
         AddSelectClearButton();
     };
 
@@ -152,7 +165,7 @@ Core.Agent.Admin.GenericAgent = (function (TargetNS) {
         $Clone.find('.EventValue').attr('name', 'EventValues').val(EventName);
 
         // bind delete function
-        $Clone.find('#DeleteEvent').bind('click', function (Event) {
+        $Clone.find('#DeleteEvent').on('click', function (Event) {
             // remove row
             TargetNS.ShowDeleteEventDialog(Event, $(this));
             return false;

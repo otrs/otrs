@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -18,7 +18,8 @@ my $Module       = 'StaticDB';
 # get helper object
 $Kernel::OM->ObjectParamAdd(
     'Kernel::System::UnitTest::Helper' => {
-        RestoreDatabase => 1,
+        RestoreDatabase  => 1,
+        UseTmpArticleDir => 1,
     },
 );
 my $Helper = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
@@ -34,13 +35,8 @@ $ConfigObject->Set(
 );
 
 my $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
-$Self->True(
-    $TicketObject->isa("Kernel::System::Ticket::IndexAccelerator::$Module"),
-    "TicketObject loaded the correct backend",
-);
-
-my $QueueObject = $Kernel::OM->Get('Kernel::System::Queue');
-my $DBObject    = $Kernel::OM->Get('Kernel::System::DB');
+my $QueueObject  = $Kernel::OM->Get('Kernel::System::Queue');
+my $DBObject     = $Kernel::OM->Get('Kernel::System::DB');
 
 # test scenarios for Tickets
 my @Tests = (

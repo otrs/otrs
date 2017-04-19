@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -23,24 +23,18 @@ our @ObjectDependencies = (
 
 =head1 NAME
 
-Kernel::System::StdAttachment - std. attachment lib
+Kernel::System::StdAttachment - standard attachment lib
 
-=head1 SYNOPSIS
+=head1 DESCRIPTION
 
-All std. attachment functions.
+All standard attachment functions.
 
 =head1 PUBLIC INTERFACE
 
-=over 4
+=head2 new()
 
-=cut
+Don't use the constructor directly, use the ObjectManager instead:
 
-=item new()
-
-create an object. Do not use it directly, instead use:
-
-    use Kernel::System::ObjectManager;
-    local $Kernel::OM = Kernel::System::ObjectManager->new();
     my $StdAttachmentObject = $Kernel::OM->Get('Kernel::System::StdAttachment');
 
 =cut
@@ -58,9 +52,9 @@ sub new {
     return $Self;
 }
 
-=item StdAttachmentAdd()
+=head2 StdAttachmentAdd()
 
-create a new std. attachment
+create a new standard attachment
 
     my $ID = $StdAttachmentObject->StdAttachmentAdd(
         Name        => 'Some Name',
@@ -123,9 +117,9 @@ sub StdAttachmentAdd {
     return $ID;
 }
 
-=item StdAttachmentGet()
+=head2 StdAttachmentGet()
 
-get a std. attachment
+get a standard attachment
 
     my %Data = $StdAttachmentObject->StdAttachmentGet(
         ID => $ID,
@@ -182,9 +176,9 @@ sub StdAttachmentGet {
     return %Data;
 }
 
-=item StdAttachmentUpdate()
+=head2 StdAttachmentUpdate()
 
-update a new std. attachment
+update a new standard attachment
 
     my $ID = $StdAttachmentObject->StdAttachmentUpdate(
         ID          => $ID,
@@ -267,9 +261,9 @@ sub StdAttachmentUpdate {
     return 1;
 }
 
-=item StdAttachmentDelete()
+=head2 StdAttachmentDelete()
 
-delete a std. attachment
+delete a standard attachment
 
     $StdAttachmentObject->StdAttachmentDelete(
         ID => $ID,
@@ -323,9 +317,9 @@ sub StdAttachmentDelete {
     return 1;
 }
 
-=item StdAttachmentLookup()
+=head2 StdAttachmentLookup()
 
-lookup for a std. attachment
+lookup for a standard attachment
 
     my $ID = $StdAttachmentObject->StdAttachmentLookup(
         StdAttachment => 'Some Name',
@@ -420,9 +414,9 @@ sub StdAttachmentLookup {
     return $DBValue;
 }
 
-=item StdAttachmentList()
+=head2 StdAttachmentList()
 
-get list of std. attachment - return a hash (ID => Name (Filname))
+get list of standard attachments - return a hash (ID => Name (Filename))
 
     my %List = $StdAttachmentObject->StdAttachmentList(
         Valid => 0,  # optional, defaults to 1
@@ -472,7 +466,7 @@ sub StdAttachmentList {
     return %StdAttachmentList;
 }
 
-=item StdAttachmentStandardTemplateMemberAdd()
+=head2 StdAttachmentStandardTemplateMemberAdd()
 
 to add an attachment to a template
 
@@ -537,7 +531,7 @@ sub StdAttachmentStandardTemplateMemberAdd {
     return $Success;
 }
 
-=item StdAttachmentStandardTemplateMemberList()
+=head2 StdAttachmentStandardTemplateMemberList()
 
 returns a list of Standard Attachment / Standard Template members
 
@@ -653,8 +647,6 @@ sub StdAttachmentStandardTemplateMemberList {
 }
 
 1;
-
-=back
 
 =head1 TERMS AND CONDITIONS
 

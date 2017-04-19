@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -138,7 +138,19 @@ sub Run {
                 UserID     => $Self->{UserID},
             );
         }
-        return $LayoutObject->Redirect( OP => "Action=$Self->{Action}" );
+
+        # if the user would like to continue editing the role-group relation just redirect to the edit screen
+        # otherwise return to relations overview
+        if (
+            defined $ParamObject->GetParam( Param => 'ContinueAfterSave' )
+            && ( $ParamObject->GetParam( Param => 'ContinueAfterSave' ) eq '1' )
+            )
+        {
+            return $LayoutObject->Redirect( OP => "Action=$Self->{Action};Subaction=Group;ID=$ID" );
+        }
+        else {
+            return $LayoutObject->Redirect( OP => "Action=$Self->{Action}" );
+        }
     }
 
     # ------------------------------------------------------------ #
@@ -165,7 +177,9 @@ sub Run {
             for my $Permission ( sort keys %Permissions ) {
                 $NewPermission{$Permission} = 0;
                 my @Array = @{ $Permissions{$Permission} };
+                ID:
                 for my $ID (@Array) {
+                    next ID if !$ID;
                     if ( $GroupID == $ID ) {
                         $NewPermission{$Permission} = 1;
                     }
@@ -178,7 +192,19 @@ sub Run {
                 UserID     => $Self->{UserID},
             );
         }
-        return $LayoutObject->Redirect( OP => "Action=$Self->{Action}" );
+
+        # if the user would like to continue editing the group-role relation just redirect to the edit screen
+        # otherwise return to relations overview
+        if (
+            defined $ParamObject->GetParam( Param => 'ContinueAfterSave' )
+            && ( $ParamObject->GetParam( Param => 'ContinueAfterSave' ) eq '1' )
+            )
+        {
+            return $LayoutObject->Redirect( OP => "Action=$Self->{Action};Subaction=Role;ID=$ID" );
+        }
+        else {
+            return $LayoutObject->Redirect( OP => "Action=$Self->{Action}" );
+        }
     }
 
     # ------------------------------------------------------------ #
@@ -201,6 +227,17 @@ sub _Change {
     my $Type   = $Param{Type} || 'Role';
     my $NeType = $Type eq 'Group' ? 'Role' : 'Group';
 
+    $Param{BreadcrumbTitle} = $LayoutObject->{LanguageObject}->Translate("Change Group Relations for Role");
+
+    if ( $Type eq 'Group' ) {
+        $Param{BreadcrumbTitle} = $LayoutObject->{LanguageObject}->Translate("Change Role Relations for Group");
+    }
+
+    $LayoutObject->Block(
+        Name => 'Overview',
+        Data => \%Param,
+    );
+
     $LayoutObject->Block(
         Name => 'Change',
         Data => {
@@ -212,8 +249,6 @@ sub _Change {
 
     $LayoutObject->Block( Name => 'ActionList' );
     $LayoutObject->Block( Name => 'ActionOverview' );
-
-    $LayoutObject->Block( Name => "ChangeHeader$NeType" );
 
     # check if there are groups/roles
     if ( !%Data ) {
@@ -295,6 +330,11 @@ sub _Overview {
 
     $LayoutObject->Block(
         Name => 'Overview',
+        Data => {},
+    );
+
+    $LayoutObject->Block(
+        Name => 'OverviewAction',
         Data => {},
     );
 

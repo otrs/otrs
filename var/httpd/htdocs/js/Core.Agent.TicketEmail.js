@@ -1,5 +1,5 @@
 // --
-// Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+// Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 // --
 // This software comes with ABSOLUTELY NO WARRANTY. For details, see
 // the enclosed file COPYING for license information (AGPL). If you
@@ -112,7 +112,7 @@ Core.Agent.TicketEmail = (function (TargetNS) {
         // change article compose options
         if (typeof ArticleComposeOptions !== 'undefined') {
             $.each(ArticleComposeOptions, function (Key, Value) {
-                $('#'+Value.Name).bind('change', function () {
+                $('#'+Value.Name).on('change', function () {
                     Core.AJAX.FormUpdate($('#NewEmailTicket'), 'AJAXUpdate', Value.Name, Value.Fields);
                 });
             });
@@ -134,12 +134,13 @@ Core.Agent.TicketEmail = (function (TargetNS) {
      *      Create on change event handler
      */
     function FieldUpdate (Value, ModifiedFields) {
-        var SignatureURL;
+        var SignatureURL, FieldValue;
         $('#' + Value).on('change', function () {
             Core.AJAX.FormUpdate($('#NewEmailTicket'), 'AJAXUpdate', Value, ModifiedFields);
 
             if (Value === 'Dest') {
-                SignatureURL = Core.Config.Get('Baselink') + 'Action=' + Core.Config.Get('Action') + ';Subaction=Signature;Dest=' + $(this).val();
+                FieldValue = $(this).val() || '';
+                SignatureURL = Core.Config.Get('Baselink') + 'Action=' + Core.Config.Get('Action') + ';Subaction=Signature;Dest=' + FieldValue;
                 if (!Core.Config.Get('SessionIDCookie')) {
                     SignatureURL += ';' + Core.Config.Get('SessionName') + '=' + Core.Config.Get('SessionID');
                 }

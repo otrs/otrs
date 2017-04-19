@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -69,40 +69,19 @@ $Selenium->RunTest(
         }
 
         # check breadcrumb on Create New screen
-        my $Count = 0;
+        my $Count = 1;
         my $IsLinkedBreadcrumbText;
-        my $FirstBreadcrumbText  = $LanguageObject->Translate('You are here') . ':';
         my $SecondBreadcrumbText = $LanguageObject->Translate('ACL Management');
         my $ThirdBreadcrumbText  = $LanguageObject->Translate('Create New ACL');
-        for my $BreadcrumbText ( $FirstBreadcrumbText, $SecondBreadcrumbText, $ThirdBreadcrumbText ) {
+        for my $BreadcrumbText ( $SecondBreadcrumbText, $ThirdBreadcrumbText ) {
             $Self->Is(
-                $Selenium->execute_script("return \$(\$('.BreadCrumb li')[$Count]).text().trim()"),
+                $Selenium->execute_script("return \$('.BreadCrumb li:eq($Count)').text().trim()"),
                 $BreadcrumbText,
                 "Breadcrumb text '$BreadcrumbText' is found on screen"
             );
 
-            $IsLinkedBreadcrumbText =
-                $Selenium->execute_script("return \$(\$('.BreadCrumb li')[$Count]).children('a').length");
-
-            if ( $BreadcrumbText eq $SecondBreadcrumbText ) {
-                $Self->Is(
-                    $IsLinkedBreadcrumbText,
-                    1,
-                    "Breadcrumb text '$BreadcrumbText' is linked"
-                );
-            }
-            else {
-                $Self->Is(
-                    $IsLinkedBreadcrumbText,
-                    0,
-                    "Breadcrumb text '$BreadcrumbText' is not linked"
-                );
-            }
-
             $Count++;
         }
-
-        sleep 10;
 
         # check client side validation
         my $Element = $Selenium->find_element( "#Name", 'css' );
@@ -134,31 +113,13 @@ $Selenium->RunTest(
         $Selenium->find_element( "#Name", 'css' )->VerifiedSubmit();
 
         # check breadcrumb on Edit screen
-        $Count = 0;
-        for my $BreadcrumbText ( $FirstBreadcrumbText, $SecondBreadcrumbText, 'Edit ACL: ' . $TestACLNames[0] ) {
+        $Count = 1;
+        for my $BreadcrumbText ( $SecondBreadcrumbText, 'Edit ACL: ' . $TestACLNames[0] ) {
             $Self->Is(
-                $Selenium->execute_script("return \$(\$('.BreadCrumb li')[$Count]).text().trim()"),
+                $Selenium->execute_script("return \$('.BreadCrumb li:eq($Count)').text().trim()"),
                 $BreadcrumbText,
                 "Breadcrumb text '$BreadcrumbText' is found on screen"
             );
-
-            $IsLinkedBreadcrumbText =
-                $Selenium->execute_script("return \$(\$('.BreadCrumb li')[$Count]).children('a').length");
-
-            if ( $BreadcrumbText eq $SecondBreadcrumbText ) {
-                $Self->Is(
-                    $IsLinkedBreadcrumbText,
-                    1,
-                    "Breadcrumb text '$BreadcrumbText' is linked"
-                );
-            }
-            else {
-                $Self->Is(
-                    $IsLinkedBreadcrumbText,
-                    0,
-                    "Breadcrumb text '$BreadcrumbText' is not linked"
-                );
-            }
 
             $Count++;
         }
@@ -248,7 +209,19 @@ JAVASCRIPT
         );
 
         # type in some text & confirm by pressing 'enter', which should produce a new field
-        $Selenium->find_element( '#ACLMatch .DataItem .NewDataKey', 'css' )->send_keys( 'Test', "\N{U+E007}" );
+        $Selenium->find_element( '#ACLMatch .DataItem .NewDataKey', 'css' )->send_keys( '<Test>', "\N{U+E007}" );
+
+        # check if the text was escaped correctly
+        $Self->Is(
+            $Selenium->execute_script("return \$('.DataItem .DataItem.Editable').data('content');"),
+            '<Test>',
+            'Check for correctly unescaped item content',
+        );
+        $Self->Is(
+            $Selenium->execute_script("return \$('.DataItem .DataItem.Editable').find('span:not(.Icon)').html();"),
+            '&lt;Test&gt;',
+            'Check for correctly escaped item text',
+        );
 
         # now there should be a two new elements: .ItemPrefix and .NewDataItem
         $Self->Is(

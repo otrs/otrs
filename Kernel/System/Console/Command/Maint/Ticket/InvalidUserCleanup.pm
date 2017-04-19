@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -19,6 +19,7 @@ our @ObjectDependencies = (
     'Kernel::System::Ticket',
     'Kernel::System::Time',
     'Kernel::System::User',
+    'Kernel::System::Ticket::Article',
 );
 
 sub Configure {
@@ -155,9 +156,10 @@ sub _CleanupFlags {
     $Self->Print( "  Flag Cleanup for " . ( scalar @CleanupInvalidUsers ) . " users starting...\n" );
 
     # get needed objects
-    my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
-    my $DBObject     = $Kernel::OM->Get('Kernel::System::DB');
-    my $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
+    my $ConfigObject  = $Kernel::OM->Get('Kernel::Config');
+    my $DBObject      = $Kernel::OM->Get('Kernel::System::DB');
+    my $TicketObject  = $Kernel::OM->Get('Kernel::System::Ticket');
+    my $ArticleObject = $Kernel::OM->Get('Kernel::System::Ticket::Article');
 
     for my $User (@CleanupInvalidUsers) {
 
@@ -214,7 +216,7 @@ sub _CleanupFlags {
 
         $Count = 0;
         for my $ArticleID (@ArticleIDs) {
-            $TicketObject->ArticleFlagDelete(
+            $ArticleObject->ArticleFlagDelete(
                 ArticleID => $ArticleID,
                 Key       => 'Seen',
                 UserID    => $User->{UserID},
@@ -267,15 +269,3 @@ sub _CleanupFlags {
 }
 
 1;
-
-=back
-
-=head1 TERMS AND CONDITIONS
-
-This software is part of the OTRS project (L<http://otrs.org/>).
-
-This software comes with ABSOLUTELY NO WARRANTY. For details, see
-the enclosed file COPYING for license information (AGPL). If you
-did not receive this file, see L<http://www.gnu.org/licenses/agpl.txt>.
-
-=cut

@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -23,23 +23,17 @@ our @ObjectDependencies = (
 
 Kernel::System::WebserviceHistory
 
-=head1 SYNOPSIS
+=head1 DESCRIPTION
 
 WebserviceHistory configuration history backend.
 It holds older versions of web service configuration data.
 
 =head1 PUBLIC INTERFACE
 
-=over 4
-
-=cut
-
-=item new()
+=head2 new()
 
 create a debug log object. Do not use it directly, instead use:
 
-    use Kernel::System::ObjectManager;
-    local $Kernel::OM = Kernel::System::ObjectManager->new();
     my $WebserviceHistoryObject = $Kernel::OM->Get('Kernel::System::GenericInterface::WebserviceHistory');
 
 =cut
@@ -54,7 +48,7 @@ sub new {
     return $Self;
 }
 
-=item WebserviceHistoryAdd()
+=head2 WebserviceHistoryAdd()
 
 add new WebserviceHistory entry
 
@@ -120,7 +114,7 @@ sub WebserviceHistoryAdd {
     return $ID;
 }
 
-=item WebserviceHistoryGet()
+=head2 WebserviceHistoryGet()
 
 get WebserviceHistory attributes
 
@@ -183,7 +177,7 @@ sub WebserviceHistoryGet {
     return \%Data;
 }
 
-=item WebserviceHistoryUpdate()
+=head2 WebserviceHistoryUpdate()
 
 update WebserviceHistory attributes
 
@@ -229,7 +223,7 @@ sub WebserviceHistoryUpdate {
     return 1;
 }
 
-=item WebserviceHistoryDelete()
+=head2 WebserviceHistoryDelete()
 
 delete WebserviceHistory
 
@@ -264,7 +258,7 @@ sub WebserviceHistoryDelete {
     return 1;
 }
 
-=item WebserviceHistoryList()
+=head2 WebserviceHistoryList()
 
 get WebserviceHistory list for a GenericInterface web service
 
@@ -307,8 +301,6 @@ sub WebserviceHistoryList {
 }
 
 1;
-
-=back
 
 =head1 TERMS AND CONDITIONS
 

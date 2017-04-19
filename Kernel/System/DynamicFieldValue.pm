@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -25,22 +25,16 @@ our @ObjectDependencies = (
 
 Kernel::System::DynamicFieldValue
 
-=head1 SYNOPSIS
+=head1 DESCRIPTION
 
 DynamicField values backend
 
 =head1 PUBLIC INTERFACE
 
-=over 4
-
-=cut
-
-=item new()
+=head2 new()
 
 create a DynamicFieldValue object. Do not use it directly, instead use:
 
-    use Kernel::System::ObjectManager;
-    local $Kernel::OM = Kernel::System::ObjectManager->new();
     my $DynamicFieldValueObject = $Kernel::OM->Get('Kernel::System::DynamicFieldValue');
 
 =cut
@@ -55,7 +49,7 @@ sub new {
     return $Self;
 }
 
-=item ValueSet()
+=head2 ValueSet()
 
 sets a dynamic field value. This is represented by one or more rows in the dynamic_field_value
 table, each storing one text, date and int field. Please see how they will be returned by
@@ -180,7 +174,7 @@ sub ValueSet {
     return 1;
 }
 
-=item ValueGet()
+=head2 ValueGet()
 
 get a dynamic field value. For each table row there will be one entry in the
 result list.
@@ -294,7 +288,7 @@ sub ValueGet {
     return [];
 }
 
-=item ValueDelete()
+=head2 ValueDelete()
 
 delete a Dynamic field value entry. All associated rows will be deleted.
 
@@ -335,7 +329,7 @@ sub ValueDelete {
     return 1;
 }
 
-=item AllValuesDelete()
+=head2 AllValuesDelete()
 
 delete all entries of a dynamic field .
 
@@ -376,7 +370,59 @@ sub AllValuesDelete {
     return 1;
 }
 
-=item ValueValidate()
+=head2 ObjectValuesDelete()
+
+Delete all entries of a dynamic field values for object ID.
+
+    my $Success = $DynamicFieldValueObject->ObjectValuesDelete(
+        ObjectType => 'Ticket',    # Dynamic Field object type ( e. g. Ticket, Article, FAQ)
+        ObjectID   => $ObjectID,   # ID of the current object that the field
+                                   #   is linked to, e. g. TicketID
+        UserID     => 123,
+    );
+
+    Returns 1.
+
+=cut
+
+sub ObjectValuesDelete {
+    my ( $Self, %Param ) = @_;
+
+    # Check needed stuff.
+    for my $Needed (qw(ObjectID ObjectType UserID)) {
+        if ( !$Param{$Needed} ) {
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
+                Priority => 'error',
+                Message  => "Need $Needed!"
+            );
+            return;
+        }
+    }
+
+    # Delete dynamic field value.
+    return if !$Kernel::OM->Get('Kernel::System::DB')->Do(
+        SQL => '
+            DELETE FROM dynamic_field_value
+                WHERE
+                    field_id IN (
+                        SELECT id FROM dynamic_field
+                        WHERE object_type = ?
+                    )
+                    AND object_id = ?
+        ',
+        Bind => [ \$Param{ObjectType}, \$Param{ObjectID} ],
+    );
+
+    # Clear ValueGet cache.
+    $Kernel::OM->Get('Kernel::System::Cache')->Delete(
+        Type => 'DynamicFieldValue',
+        Key  => 'ValueGet::ObjectID::' . $Param{ObjectID},
+    );
+
+    return 1;
+}
+
+=head2 ValueValidate()
 
 checks if the given value is valid for the value type.
 
@@ -438,7 +484,7 @@ sub ValueValidate {
     return 1;
 }
 
-=item HistoricalValueGet()
+=head2 HistoricalValueGet()
 
 get all distinct values from a field stored on the database
 
@@ -538,7 +584,7 @@ sub HistoricalValueGet {
     return \%Data;
 }
 
-=item ValueSearch()
+=head2 ValueSearch()
 
 Searches/fetches dynamic field value.
 
@@ -722,8 +768,6 @@ sub _DeleteFromCache {
 }
 
 1;
-
-=back
 
 =head1 TERMS AND CONDITIONS
 

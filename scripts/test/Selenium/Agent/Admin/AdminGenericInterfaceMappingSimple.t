@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -83,6 +83,12 @@ $Selenium->RunTest(
         # navigate to AdminGenericInterfaceWebservice screen
         $Selenium->VerifiedGet("${ScriptAlias}index.pl?Action=AdminGenericInterfaceWebservice");
 
+        # check breadcrumb on Overview screen
+        $Self->True(
+            $Selenium->find_element( '.BreadCrumb', 'css' ),
+            "Breadcrumb is found on Overview screen.",
+        );
+
         # click on created webservice
         $Selenium->find_element("//a[contains(\@href, 'WebserviceID=$WebserviceID')]")->VerifiedClick();
 
@@ -116,6 +122,33 @@ $Selenium->RunTest(
             my $Element = $Selenium->find_element( "#$ID", 'css' );
             $Element->is_enabled();
             $Element->is_displayed();
+        }
+
+        # check for breadcrumb on screen
+        my @Breadcrumbs = (
+            {
+                Text => 'Web Service Management',
+            },
+            {
+                Text => "Selenium $RandomID webservice",
+            },
+            {
+                Text => 'Operation: SeleniumOperation',
+            },
+            {
+                Text => 'Simple Mapping for Incoming Data',
+            }
+        );
+
+        my $Count = 1;
+        for my $Breadcrumb (@Breadcrumbs) {
+            $Self->Is(
+                $Selenium->execute_script("return \$('.BreadCrumb li:eq($Count)').text().trim()"),
+                $Breadcrumb->{Text},
+                "Breadcrumb text '$Breadcrumb->{Text}' is found on screen"
+            );
+
+            $Count++;
         }
 
         # verify DefaultKeyMapTo and DefaultValueMapTo are hidden with 'Keep (leave unchanged)' DefaultMapTo

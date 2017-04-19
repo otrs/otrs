@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -28,22 +28,16 @@ our @ObjectDependencies = (
 
 Kernel::System::CloudService::Backend::Configuration
 
-=head1 SYNOPSIS
+=head1 DESCRIPTION
 
 CloudService configuration backend.
 
 =head1 PUBLIC INTERFACE
 
-=over 4
+=head2 new()
 
-=cut
+Don't use the constructor directly, use the ObjectManager instead:
 
-=item new()
-
-create an object. Do not use it directly, instead use:
-
-    use Kernel::System::ObjectManager;
-    local $Kernel::OM = Kernel::System::ObjectManager->new();
     my $CloudServiceObject = $Kernel::OM->Get('Kernel::System::GenericInterface::CloudService');
 
 =cut
@@ -58,7 +52,7 @@ sub new {
     return $Self;
 }
 
-=item CloudServiceAdd()
+=head2 CloudServiceAdd()
 
 add new CloudServices
 
@@ -141,7 +135,7 @@ sub CloudServiceAdd {
     return $ID;
 }
 
-=item CloudServiceGet()
+=head2 CloudServiceGet()
 
 get CloudServices attributes
 
@@ -249,7 +243,7 @@ sub CloudServiceGet {
     return \%Data;
 }
 
-=item CloudServiceUpdate()
+=head2 CloudServiceUpdate()
 
 update CloudService attributes
 
@@ -342,7 +336,7 @@ sub CloudServiceUpdate {
     return 1;
 }
 
-=item CloudServiceDelete()
+=head2 CloudServiceDelete()
 
 delete a CloudService
 
@@ -389,7 +383,7 @@ sub CloudServiceDelete {
     return 1;
 }
 
-=item CloudServiceList()
+=head2 CloudServiceList()
 
 get CloudService list
 
@@ -459,8 +453,6 @@ sub CloudServiceList {
 }
 
 1;
-
-=back
 
 =head1 TERMS AND CONDITIONS
 

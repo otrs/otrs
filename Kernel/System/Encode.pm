@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -24,22 +24,16 @@ our @ObjectDependencies = ();
 
 Kernel::System::Encode - character encodings
 
-=head1 SYNOPSIS
+=head1 DESCRIPTION
 
 This module will use Perl's Encode module (Perl 5.8.0 or higher is required).
 
 =head1 PUBLIC INTERFACE
 
-=over 4
+=head2 new()
 
-=cut
+Don't use the constructor directly, use the ObjectManager instead:
 
-=item new()
-
-create an object. Do not use it directly, instead use:
-
-    use Kernel::System::ObjectManager;
-    local $Kernel::OM = Kernel::System::ObjectManager->new();
     my $EncodeObject = $Kernel::OM->Get('Kernel::System::Encode');
 
 =cut
@@ -78,7 +72,7 @@ sub new {
     return $Self;
 }
 
-=item Convert()
+=head2 Convert()
 
 Convert a string from one charset to another charset.
 
@@ -197,7 +191,14 @@ sub Convert {
 
     # convert string
     if ( !eval { Encode::from_to( $Param{Text}, $Param{From}, $Param{To}, $Check ) } ) {
-        print STDERR "Charset encode '$Param{From}' -=> '$Param{To}' ($Param{Text})"
+
+        # truncate text for error messages
+        my $TruncatedText = $Param{Text};
+        if ( length($TruncatedText) > 65 ) {
+            $TruncatedText = substr( $TruncatedText, 0, 65 ) . '[...]';
+        }
+
+        print STDERR "Charset encode '$Param{From}' -=> '$Param{To}' ($TruncatedText)"
             . " not supported!\n";
 
         # strip invalid chars / 0 = will put a substitution character in place of
@@ -225,7 +226,7 @@ sub Convert {
     return $Param{Text};
 }
 
-=item Convert2CharsetInternal()
+=head2 Convert2CharsetInternal()
 
 Convert given charset into the internal used charset (utf-8).
 Should be used on all I/O interfaces.
@@ -251,7 +252,7 @@ sub Convert2CharsetInternal {
     return $Self->Convert( %Param, To => 'utf-8' );
 }
 
-=item EncodeInput()
+=head2 EncodeInput()
 
 Convert internal used charset (e. g. utf-8) into given charset (utf-8).
 
@@ -289,9 +290,9 @@ sub EncodeInput {
     return $What;
 }
 
-=item EncodeOutput()
+=head2 EncodeOutput()
 
-Convert utf-8 to a sequence of octets. All possible characters have
+Convert utf-8 to a sequence of bytes. All possible characters have
 a UTF-8 representation so this function cannot fail.
 
 This should be used in for output of utf-8 chars.
@@ -328,7 +329,7 @@ sub EncodeOutput {
     return $What;
 }
 
-=item ConfigureOutputFileHandle()
+=head2 ConfigureOutputFileHandle()
 
 switch output file handle to utf-8 output.
 
@@ -349,9 +350,9 @@ sub ConfigureOutputFileHandle {
     return 1;
 }
 
-=item EncodingIsAsciiSuperset()
+=head2 EncodingIsAsciiSuperset()
 
-Checks if an encoding is a superset of ASCII, that is, encodes the
+Checks if an encoding is a super-set of ASCII, that is, encodes the
 codepoints from 0 to 127 the same way as ASCII.
 
     my $IsSuperset = $EncodeObject->EncodingIsAsciiSuperset(
@@ -375,10 +376,10 @@ sub EncodingIsAsciiSuperset {
         eq Encode::encode( 'ASCII',          $Test );
 }
 
-=item FindAsciiSupersetEncoding()
+=head2 FindAsciiSupersetEncoding()
 
 From a list of character encodings, returns the first that
-is a superset of ASCII. If none matches, C<ASCII> is returned.
+is a super-set of ASCII. If none matches, C<ASCII> is returned.
 
     my $Encoding = $EncodeObject->FindAsciiSupersetEncoding(
         Encodings   => [ 'UTF-16LE', 'UTF-8' ],
@@ -403,8 +404,6 @@ sub FindAsciiSupersetEncoding {
 }
 
 1;
-
-=back
 
 =head1 TERMS AND CONDITIONS
 

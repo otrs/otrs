@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -17,28 +17,23 @@ our @ObjectDependencies = (
     'Kernel::Config',
     'Kernel::System::Log',
     'Kernel::System::Ticket',
+    'Kernel::System::SysConfig',
 );
 
 =head1 NAME
 
 Kernel::System::LinkObject::Ticket
 
-=head1 SYNOPSIS
+=head1 DESCRIPTION
 
 Ticket backend for the ticket link object.
 
 =head1 PUBLIC INTERFACE
 
-=over 4
+=head2 new()
 
-=cut
+Don't use the constructor directly, use the ObjectManager instead:
 
-=item new()
-
-create an object. Do not use it directly, instead use:
-
-    use Kernel::System::ObjectManager;
-    local $Kernel::OM = Kernel::System::ObjectManager->new();
     my $LinkObjectTicketObject = $Kernel::OM->Get('Kernel::System::LinkObject::Ticket');
 
 =cut
@@ -53,7 +48,7 @@ sub new {
     return $Self;
 }
 
-=item LinkListWithData()
+=head2 LinkListWithData()
 
 fill up the link list with data
 
@@ -139,7 +134,7 @@ sub LinkListWithData {
     return 1;
 }
 
-=item ObjectPermission()
+=head2 ObjectPermission()
 
 checks read permission for a given object and UserID.
 
@@ -172,7 +167,7 @@ sub ObjectPermission {
     );
 }
 
-=item ObjectDescriptionGet()
+=head2 ObjectDescriptionGet()
 
 return a hash of object descriptions
 
@@ -233,11 +228,12 @@ sub ObjectDescriptionGet {
     return %Description;
 }
 
-=item ObjectSearch()
+=head2 ObjectSearch()
 
 return a hash list of the search results
 
-Return
+Returns:
+
     $SearchList = {
         NOTLINKED => {
             Source => {
@@ -337,7 +333,7 @@ sub ObjectSearch {
     return \%SearchList;
 }
 
-=item LinkAddPre()
+=head2 LinkAddPre()
 
 link add pre event module
 
@@ -382,7 +378,7 @@ sub LinkAddPre {
     return 1;
 }
 
-=item LinkAddPost()
+=head2 LinkAddPost()
 
 link add pre event module
 
@@ -445,7 +441,7 @@ sub LinkAddPost {
 
         # ticket event
         $TicketObject->EventHandler(
-            Event => 'TicketSlaveLinkAdd' . $Param{Type},
+            Event => 'TicketSourceLinkAdd' . $Param{Type},
             Data  => {
                 TicketID => $Param{Key},
             },
@@ -473,7 +469,7 @@ sub LinkAddPost {
 
         # ticket event
         $TicketObject->EventHandler(
-            Event  => 'TicketMasterLinkAdd' . $Param{Type},
+            Event  => 'TicketTargetLinkAdd' . $Param{Type},
             UserID => $Param{UserID},
             Data   => {
                 TicketID => $Param{Key},
@@ -486,7 +482,7 @@ sub LinkAddPost {
     return 1;
 }
 
-=item LinkDeletePre()
+=head2 LinkDeletePre()
 
 link delete pre event module
 
@@ -531,7 +527,7 @@ sub LinkDeletePre {
     return 1;
 }
 
-=item LinkDeletePost()
+=head2 LinkDeletePost()
 
 link delete post event module
 
@@ -594,7 +590,7 @@ sub LinkDeletePost {
 
         # ticket event
         $TicketObject->EventHandler(
-            Event => 'TicketSlaveLinkDelete' . $Param{Type},
+            Event => 'TicketSourceLinkDelete' . $Param{Type},
             Data  => {
                 TicketID => $Param{Key},
             },
@@ -622,7 +618,7 @@ sub LinkDeletePost {
 
         # ticket event
         $TicketObject->EventHandler(
-            Event => 'TicketMasterLinkDelete' . $Param{Type},
+            Event => 'TicketTargetLinkDelete' . $Param{Type},
             Data  => {
                 TicketID => $Param{Key},
             },
@@ -635,9 +631,90 @@ sub LinkDeletePost {
     return 1;
 }
 
-1;
+=head2 EventTypeConfigUpdate()
 
-=back
+Updates the ticket event configuration based on configured link types.
+
+    my $Success = $LinkObjectTicketObject->EventTypeConfigUpdate();
+
+Returns true if successful.
+
+=cut
+
+sub EventTypeConfigUpdate {
+    my ( $Self, %Param ) = @_;
+
+    my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
+
+    my $LinkTypes    = $ConfigObject->Get('LinkObject::Type') || {};
+    my $TicketEvents = $ConfigObject->Get('Events')->{Ticket} || [];
+
+    # Add missing ticket events for all configured link object types.
+    my $TicketEventsAdded;
+    for my $LinkType ( sort keys %{$LinkTypes} ) {
+        for my $ObjectType (qw(Source Target)) {
+            for my $EventType (qw(Add Delete)) {
+                my $Event = "Ticket${ObjectType}Link${EventType}$LinkType";
+                if ( !grep { $_ eq $Event } @{$TicketEvents} ) {
+                    push @{$TicketEvents}, $Event;
+                    $TicketEventsAdded = 1;
+                }
+            }
+        }
+    }
+    return if !$TicketEventsAdded;
+
+    my $SettingName = 'Events###Ticket';
+
+    my $SysConfigObject = $Kernel::OM->Get('Kernel::System::SysConfig');
+
+    # Retrieve the effective setting value from SysConfig.
+    my %Setting = $SysConfigObject->SettingGet(
+        Name     => $SettingName,
+        Deployed => 1,
+    );
+    return if !IsHashRefWithData( \%Setting );
+
+    $Setting{EffectiveValue} = $TicketEvents;
+
+    # Lock the setting to admin user.
+    my $ExclusiveLockGUID = $SysConfigObject->SettingLock(
+        Name   => $SettingName,
+        Force  => 1,
+        UserID => 1,
+    );
+    $Setting{ExclusiveLockGUID} = $ExclusiveLockGUID;
+
+    # Update the setting.
+    my %UpdateSuccess = $SysConfigObject->SettingUpdate(
+        %Setting,
+        UserID => 1,
+    );
+
+    if ( !$UpdateSuccess{Success} ) {
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
+            Priority => 'error',
+            Message  => $UpdateSuccess{Error} // "Error while updating $SettingName!",
+        );
+
+        # Unlock the setting.
+        $SysConfigObject->SettingUnlock(
+            Name => $SettingName,
+        );
+
+        return;
+    }
+
+    # Deploy the configuration.
+    return $SysConfigObject->ConfigurationDeploy(
+        Comments      => "$SettingName Configuration Updated",
+        DirtySettings => [$SettingName],
+        UserID        => 1,
+        Force         => 1,
+    );
+}
+
+1;
 
 =head1 TERMS AND CONDITIONS
 

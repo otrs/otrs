@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -186,8 +186,15 @@ sub HandleLanguage {
     my $WritePOT = $Param{WritePO} || -e $TargetPOTFile;
 
     if ( !-w $TargetFile ) {
-        $Self->PrintError("Ignoring nonexisting file $TargetFile!");
-        return;
+        if ( -w $TargetPOFile ) {
+            $Self->Print(
+                "Creating missing file <yellow>$TargetFile</yellow>\n"
+            );
+        }
+        else {
+            $Self->PrintError("Ignoring missing file $TargetFile!");
+            return;
+        }
     }
 
     if ( !@OriginalTranslationStrings ) {
@@ -384,8 +391,8 @@ sub HandleLanguage {
         # add translatable strings from JavaScript code
         my @JSFileList = $Kernel::OM->Get('Kernel::System::Main')->DirectoryRead(
             Directory => $IsSubTranslation ? "$ModuleDirectory/var/httpd/htdocs/js" : "$Home/var/httpd/htdocs/js",
-            Filter => '*.js',
-            Recursive => 0,    # to prevent access to thirdparty files and js-cache
+            Filter    => '*.js',
+            Recursive => 1,
         );
 
         FILE:
@@ -400,9 +407,17 @@ sub HandleLanguage {
                 die "Can't open $File: $!";
             }
 
-            $File =~ s{^.*/(.+?)\.js}{$1}smx;
+            # skip js cache files
+            next FILE if ( $File =~ m{\/js\/js-cache\/}xmsg );
 
             my $Content = ${$ContentRef};
+
+            # skip thirdparty files without custom markers
+            if ( $File =~ m{\/js\/thirdparty\/}xmsg ) {
+                next FILE if ( $Content !~ m{\/\/\s*OTRS}xmsg );
+            }
+
+            $File =~ s{^.*/(.+?)\.js}{$1}smx;
 
             # Purge all comments
             $Content =~ s{^ \s* // .*? \n}{\n}xmsg;
@@ -440,7 +455,7 @@ sub HandleLanguage {
         }
 
         # add translatable strings from SysConfig
-        my @Strings = $Kernel::OM->Get('Kernel::System::SysConfig')->ConfigItemTranslatableStrings();
+        my @Strings = $Kernel::OM->Get('Kernel::System::SysConfig')->ConfigurationTranslatableStrings();
 
         STRING:
         for my $String ( sort @Strings ) {
@@ -787,7 +802,7 @@ sub WritePerlLanguageFile {
 
         $NewOut = <<"EOF";
 $Separator
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 $Separator
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -889,15 +904,3 @@ EOF
 }
 
 1;
-
-=back
-
-=head1 TERMS AND CONDITIONS
-
-This software is part of the OTRS project (L<http://otrs.org/>).
-
-This software comes with ABSOLUTELY NO WARRANTY. For details, see
-the enclosed file COPYING for license information (AGPL). If you
-did not receive this file, see L<http://www.gnu.org/licenses/agpl.txt>.
-
-=cut

@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -15,6 +15,7 @@ use utf8;
 our @ObjectDependencies = (
     'Kernel::Config',
     'Kernel::Output::HTML::Layout',
+    'Kernel::System::Group',
 );
 
 sub new {
@@ -43,18 +44,20 @@ sub Run {
     # get layout object
     my $LayoutObject = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
 
+    my $HasPermission = $Kernel::OM->Get('Kernel::System::Group')->PermissionCheck(
+        UserID    => $Self->{UserID},
+        GroupName => $Group,
+        Type      => 'rw',
+    );
+
     # notification should only be visible for administrators
-    if (
-        !defined $LayoutObject->{"UserIsGroup[$Group]"}
-        || $LayoutObject->{"UserIsGroup[$Group]"} ne 'Yes'
-        )
-    {
+    if ( !$HasPermission ) {
         return '';
     }
 
     my $Text = '<a href="'
         . $LayoutObject->{Baselink}
-        . 'Action=AdminSysConfig;Subaction=Edit;SysConfigSubGroup=Core;SysConfigGroup=CloudService'
+        . 'Action=AdminSystemConfiguration;Subaction=Edit;SysConfigSubGroup=Core;SysConfigGroup=CloudService'
         . '" class="Button"><i class="fa fa-cloud"></i> ';
     $Text .= $LayoutObject->{LanguageObject}->Translate('Enable cloud services to unleash all OTRS features!');
     $Text .= '</a>';

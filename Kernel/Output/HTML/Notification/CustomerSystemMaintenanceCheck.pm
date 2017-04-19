@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -51,12 +51,12 @@ sub Run {
         );
     }
 
-    my $SystemMaintenanceIsComming = $SystemMaintenanceObject->SystemMaintenanceIsComming();
+    my $SystemMaintenanceIsComing = $SystemMaintenanceObject->SystemMaintenanceIsComing();
 
-    if ($SystemMaintenanceIsComming) {
+    if ($SystemMaintenanceIsComing) {
 
         my $MaintenanceTime = $Kernel::OM->Get('Kernel::System::Time')->SystemTime2TimeStamp(
-            SystemTime => $SystemMaintenanceIsComming,
+            SystemTime => $SystemMaintenanceIsComing,
         );
         return $LayoutObject->Notify(
             Priority => 'Notice',

@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -66,22 +66,6 @@ sub Run {
             Message => $LayoutObject->{LanguageObject}->Translate( 'You need %s permissions!', $Config->{Permission} ),
             WithHeader => 'yes',
         );
-    }
-
-    # check permissions
-    if ( $Self->{TicketID} ) {
-        if (
-            !$TicketObject->TicketPermission(
-                Type     => 'customer',
-                TicketID => $Self->{TicketID},
-                UserID   => $Self->{UserID}
-            )
-            )
-        {
-
-            # no permission screen, don't show ticket
-            return $LayoutObject->NoPermission( WithHeader => 'yes' );
-        }
     }
 
     # get ACL restrictions
@@ -272,8 +256,11 @@ sub Form {
         $Param{SelectedCustomerUser} = $TicketData{CustomerUserID};
 
         $Param{Table} = $LayoutObject->AgentCustomerViewTable(
-            Data => \%CustomerUserData,
-            Max  => $Kernel::OM->Get('Kernel::Config')->Get('Ticket::Frontend::CustomerInfoComposeMaxSize'),
+            Data => {
+                %CustomerUserData,
+                TicketID => $Self->{TicketID},
+            },
+            Max => $Kernel::OM->Get('Kernel::Config')->Get('Ticket::Frontend::CustomerInfoComposeMaxSize'),
         );
 
         # show customer field as "FirstName Lastname" <MailAddress>

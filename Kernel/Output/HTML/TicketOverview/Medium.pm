@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -19,10 +19,12 @@ our @ObjectDependencies = (
     'Kernel::System::DynamicField',
     'Kernel::System::DynamicField::Backend',
     'Kernel::Config',
+    'Kernel::System::Group',
     'Kernel::System::Log',
     'Kernel::Output::HTML::Layout',
     'Kernel::System::User',
     'Kernel::System::Ticket',
+    'Kernel::System::Ticket::Article',
     'Kernel::System::Main',
     'Kernel::System::Queue'
 );
@@ -58,10 +60,15 @@ sub ActionRow {
             $BulkFeature = 1;
         }
         else {
+            my $GroupObject = $Kernel::OM->Get('Kernel::System::Group');
             GROUP:
             for my $Group (@Groups) {
-                next GROUP if !$LayoutObject->{"UserIsGroup[$Group]"};
-                if ( $LayoutObject->{"UserIsGroup[$Group]"} eq 'Yes' ) {
+                my $HasPermission = $GroupObject->PermissionCheck(
+                    UserID    => $Self->{UserID},
+                    GroupName => $Group,
+                    Type      => 'rw',
+                );
+                if ($HasPermission) {
                     $BulkFeature = 1;
                     last GROUP;
                 }
@@ -202,10 +209,15 @@ sub Run {
             $BulkFeature = 1;
         }
         else {
+            my $GroupObject = $Kernel::OM->Get('Kernel::System::Group');
             GROUP:
             for my $Group (@Groups) {
-                next GROUP if !$LayoutObject->{"UserIsGroup[$Group]"};
-                if ( $LayoutObject->{"UserIsGroup[$Group]"} eq 'Yes' ) {
+                my $HasPermission = $GroupObject->PermissionCheck(
+                    UserID    => $Self->{UserID},
+                    GroupName => $Group,
+                    Type      => 'rw',
+                );
+                if ($HasPermission) {
                     $BulkFeature = 1;
                     last GROUP;
                 }
@@ -312,23 +324,52 @@ sub _Show {
         return;
     }
 
-    # get needed objects
-    my $LayoutObject = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
-    my $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
+    my $LayoutObject  = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
+    my $TicketObject  = $Kernel::OM->Get('Kernel::System::Ticket');
+    my $ArticleObject = $Kernel::OM->Get('Kernel::System::Ticket::Article');
 
-    # get last customer article
-    my %Article = $TicketObject->ArticleLastCustomerArticle(
-        TicketID      => $Param{TicketID},
-        DynamicFields => 0,
+    # Get last customer article.
+    my @Articles = $ArticleObject->ArticleList(
+        TicketID   => $Param{TicketID},
+        SenderType => 'customer',
+        OnlyLast   => 1,
     );
 
-    # get ticket data
+    # If the ticket has no customer article, get the last agent article.
+    if ( !@Articles ) {
+        @Articles = $ArticleObject->ArticleList(
+            TicketID   => $Param{TicketID},
+            SenderType => 'agent',
+            OnlyLast   => 1,
+        );
+    }
+
+    # Finally, if everything failed, get latest article.
+    if ( !@Articles ) {
+        @Articles = $ArticleObject->ArticleList(
+            TicketID => $Param{TicketID},
+            OnlyLast => 1,
+        );
+    }
+
+    my %Article;
+    for my $Article (@Articles) {
+        %Article = $ArticleObject->BackendForArticle( %{$Article} )->ArticleGet(
+            %{$Article},
+            DynamicFields => 0,
+            UserID        => $Self->{UserID},
+        );
+    }
+
+    # Get ticket data.
     my %Ticket = $TicketObject->TicketGet(
         TicketID      => $Param{TicketID},
         DynamicFields => 0,
     );
 
-    # Fallback for tickets without articles: get at least basic ticket data
+    %Article = ( %Article, %Ticket );
+
+    # Fallback for tickets without articles: get at least basic ticket data.
     if ( !%Article ) {
         %Article = %Ticket;
         if ( !$Article{Title} ) {

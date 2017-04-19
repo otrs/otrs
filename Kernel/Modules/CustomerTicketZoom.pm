@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -126,25 +126,49 @@ sub Run {
         return $LayoutObject->NoPermission( WithHeader => 'yes' );
     }
 
-    # strip html and ASCII attachments of content
-    my $StripPlainBodyAsAttachment = 1;
+    my $ArticleObject = $Kernel::OM->Get('Kernel::System::Ticket::Article');
 
-    # check if rich text is enabled, if not only strip ASCII attachments
-    if ( !$LayoutObject->{BrowserRichText} ) {
-        $StripPlainBodyAsAttachment = 2;
-    }
-
-    # get all articles of this ticket
-    my @CustomerArticleTypes = $TicketObject->ArticleTypeList( Type => 'Customer' );
-    my @ArticleBox = $TicketObject->ArticleContentIndex(
-        TicketID                   => $Self->{TicketID},
-        ArticleType                => \@CustomerArticleTypes,
-        StripPlainBodyAsAttachment => $StripPlainBodyAsAttachment,
-        UserID                     => $Self->{UserID},
-        DynamicFields              => 0,
+    # get all articles of this ticket, that are visible for the customer
+    my @ArticleList = $ArticleObject->ArticleList(
+        TicketID             => $Self->{TicketID},
+        IsVisibleForCustomer => 1,
+        DynamicFields        => 0,
     );
 
-    # get params
+    my @ArticleBox;
+    my $ArticleBackendObject;
+
+    ARTICLEMETADATA:
+    for my $ArticleMetaData (@ArticleList) {
+
+        next ARTICLEMETADATA if !$ArticleMetaData;
+        next ARTICLEMETADATA if !IsHashRefWithData($ArticleMetaData);
+
+        $ArticleBackendObject = $ArticleObject->BackendForArticle( %{$ArticleMetaData} );
+
+        my %ArticleData = $ArticleBackendObject->ArticleGet(
+            TicketID  => $Self->{TicketID},
+            ArticleID => $ArticleMetaData->{ArticleID},
+            UserID    => $Self->{UserID},
+            RealNames => 1,
+        );
+
+        # Get attachment index.
+        my %AtmIndex = $ArticleBackendObject->ArticleAttachmentIndex(
+            ArticleID        => $ArticleMetaData->{ArticleID},
+            UserID           => 1,
+            ExcludePlainText => 1,
+            ExcludeHTMLBody  => 1,
+            ExcludeInline    => 1,
+        );
+
+        if ( IsHashRefWithData( \%AtmIndex ) ) {
+            $ArticleData{Attachment} = \%AtmIndex
+        }
+
+        push @ArticleBox, \%ArticleData;
+    }
+
     my %GetParam;
     for my $Key (qw(Subject Body StateID PriorityID FromChatID FromChat)) {
         $GetParam{$Key} = $ParamObject->GetParam( Param => $Key );
@@ -399,6 +423,12 @@ sub Run {
                     ChatID => $GetParam{FromChatID},
                 );
                 if (@ChatMessages) {
+                    for my $Message (@ChatMessages) {
+                        $Message->{MessageText} = $LayoutObject->Ascii2Html(
+                            Text        => $Message->{MessageText},
+                            LinkFeature => 1,
+                        );
+                    }
                     $GetParam{ChatMessages} = \@ChatMessages;
                 }
             }
@@ -636,17 +666,17 @@ sub Run {
             );
         }
 
-        my $ArticleID = $TicketObject->ArticleCreate(
-            TicketID    => $Self->{TicketID},
-            ArticleType => $Config->{ArticleType},
-            SenderType  => $Config->{SenderType},
-            From        => $From,
-            Subject     => $GetParam{Subject},
-            Body        => $GetParam{Body},
-            MimeType    => $MimeType,
-            Charset     => $LayoutObject->{UserCharset},
-            UserID      => $ConfigObject->Get('CustomerPanelUserID'),
-            OrigHeader  => {
+        my $ArticleID = $ArticleBackendObject->ArticleCreate(
+            TicketID             => $Self->{TicketID},
+            IsVisibleForCustomer => 1,
+            SenderType           => $Config->{SenderType},
+            From                 => $From,
+            Subject              => $GetParam{Subject},
+            Body                 => $GetParam{Body},
+            MimeType             => $MimeType,
+            Charset              => $LayoutObject->{UserCharset},
+            UserID               => $ConfigObject->Get('CustomerPanelUserID'),
+            OrigHeader           => {
                 From    => $From,
                 To      => 'System',
                 Subject => $GetParam{Subject},
@@ -702,7 +732,7 @@ sub Run {
             }
 
             # write existing file to backend
-            $TicketObject->ArticleWriteAttachment(
+            $ArticleBackendObject->ArticleWriteAttachment(
                 %{$Attachment},
                 ArticleID => $ArticleID,
                 UserID    => $ConfigObject->Get('CustomerPanelUserID'),
@@ -754,25 +784,33 @@ sub Run {
             my $ChatArticleID;
 
             if (@ChatMessageList) {
+                for my $Message (@ChatMessageList) {
+                    $Message->{MessageText} = $LayoutObject->Ascii2Html(
+                        Text        => $Message->{MessageText},
+                        LinkFeature => 1,
+                    );
+                }
+
                 my $JSONBody = $Kernel::OM->Get('Kernel::System::JSON')->Encode(
                     Data => \@ChatMessageList,
                 );
 
                 my $ChatArticleType = 'chat-external';
 
-                $ChatArticleID = $TicketObject->ArticleCreate(
-                    TicketID       => $Self->{TicketID},
-                    ArticleType    => $ChatArticleType,
-                    SenderType     => $Config->{SenderType},
-                    From           => $From,
-                    Subject        => $Kernel::OM->Get('Kernel::Language')->Translate('Chat'),
-                    Body           => $JSONBody,
-                    MimeType       => 'application/json',
-                    Charset        => $LayoutObject->{UserCharset},
-                    UserID         => $ConfigObject->Get('CustomerPanelUserID'),
-                    HistoryType    => $Config->{HistoryType},
-                    HistoryComment => $Config->{HistoryComment} || '%%',
-                );
+                # TODO: Handle articles coming from chat channel.
+                # $ChatArticleID = $ArticleBackendObject->ArticleCreate(
+                #     TicketID             => $Self->{TicketID},
+                #     IsVisibleForCustomer => 1,
+                #     SenderType           => $Config->{SenderType},
+                #     From                 => $From,
+                #     Subject              => $Kernel::OM->Get('Kernel::Language')->Translate('Chat'),
+                #     Body                 => $JSONBody,
+                #     MimeType             => 'application/json',
+                #     Charset              => $LayoutObject->{UserCharset},
+                #     UserID               => $ConfigObject->Get('CustomerPanelUserID'),
+                #     HistoryType          => $Config->{HistoryType},
+                #     HistoryComment       => $Config->{HistoryComment} || '%%',
+                # );
             }
             if ($ChatArticleID) {
                 $ChatObject->ChatDelete(
@@ -1006,6 +1044,14 @@ sub _Mask {
     $Param{Hook} = $ConfigObject->Get('Ticket::Hook') || 'Ticket#';
 
     my $Config = $ConfigObject->Get("Ticket::Frontend::$Self->{Action}");
+
+    # ticket accounted time
+    if ( $Config->{ZoomTimeDisplay} ) {
+        $LayoutObject->Block(
+            Name => 'TicketTimeUnits',
+            Data => \%Param,
+        );
+    }
 
     # ticket priority flag
     if ( $Config->{AttributesView}->{Priority} ) {
@@ -1355,7 +1401,9 @@ sub _Mask {
         )
     {
         # get all queues to tickets relations
-        my %QueueChatChannelRelations = $Kernel::OM->Get('Kernel::System::ChatChannel')->ChatChannelQueuesGet();
+        my %QueueChatChannelRelations = $Kernel::OM->Get('Kernel::System::ChatChannel')->ChatChannelQueuesGet(
+            CustomerInterface => 1,
+        );
 
         # if a support chat channel is set for this queue
         if ( $QueueChatChannelRelations{ $Param{QueueID} } ) {
@@ -1462,6 +1510,13 @@ sub _Mask {
         },
     );
 
+    my %Ticket = $TicketObject->TicketGet(
+        TicketID => $Self->{TicketID},
+        UserID   => $Self->{UserID},
+    );
+
+    my $CommunicationChannelObject = $Kernel::OM->Get('Kernel::System::CommunicationChannel');
+
     my $ShownArticles;
     my $LastSenderType = '';
     for my $ArticleTmp (@ArticleBox) {
@@ -1480,7 +1535,7 @@ sub _Mask {
         );
 
         $Article{Subject} = $TicketObject->TicketSubjectClean(
-            TicketNumber => $Article{TicketNumber},
+            TicketNumber => $Ticket{TicketNumber},
             Subject      => $Article{Subject} || '',
             Size         => 150,
         );
@@ -1509,11 +1564,14 @@ sub _Mask {
         # do some strips && quoting
         my $RecipientDisplayType = $ConfigObject->Get('Ticket::Frontend::DefaultRecipientDisplayType') || 'Realname';
         my $SenderDisplayType    = $ConfigObject->Get('Ticket::Frontend::DefaultSenderDisplayType')    || 'Realname';
-        RECIPIENT:
+        KEY:
         for my $Key (qw(From To Cc)) {
-            next RECIPIENT if !$Article{$Key};
+
+            next KEY if !$Article{$Key};
+
             my $DisplayType = $Key eq 'From'             ? $SenderDisplayType : $RecipientDisplayType;
             my $HiddenType  = $DisplayType eq 'Realname' ? 'Value'            : 'Realname';
+
             $LayoutObject->Block(
                 Name => 'ArticleRow',
                 Data => {
@@ -1524,6 +1582,23 @@ sub _Mask {
                     $HiddenType . Hidden => 'Hidden',
                 },
             );
+        }
+
+        # ticket accounted time
+        if ( $Config->{ZoomTimeDisplay} ) {
+
+            my $ArticleAccountedTime = $Kernel::OM->Get('Kernel::System::Ticket::Article')->ArticleAccountedTimeGet(
+                ArticleID => $Article{ArticleID},
+            );
+
+            if ($ArticleAccountedTime) {
+                $LayoutObject->Block(
+                    Name => 'ArticleTimeUnits',
+                    Data => {
+                        ArticleTimeUnits => $ArticleAccountedTime,
+                    },
+                );
+            }
         }
 
         # get the dynamic fields for article object
@@ -1583,7 +1658,16 @@ sub _Mask {
             );
         }
 
-        if ( $Article{ArticleType} eq 'chat-external' || $Article{ArticleType} eq 'chat-internal' ) {
+        my %CommunicationChannelData = $CommunicationChannelObject->ChannelGet(
+            ChannelID => $Article{CommunicationChannelID},
+        );
+
+        # TODO: chat backend not yet created, maybe this condition needs an update afterwards!
+        if (
+            $CommunicationChannelData{ChannelName} eq 'ChatExternal'
+            || $CommunicationChannelData{ChannelName} eq 'ChatInternal'
+            )
+        {
             $LayoutObject->Block(
                 Name => 'BodyChat',
                 Data => {
@@ -1625,16 +1709,30 @@ sub _Mask {
                 }
             }
 
+            my $ArticleBackendObject = $Kernel::OM->Get('Kernel::System::Ticket::Article')->BackendForArticle(
+                TicketID  => $Param{TicketID},
+                ArticleID => $Article{ArticleID},
+            );
+
+            # Check if there is HTML body attachment.
+            my %AttachmentIndexHTMLBody = $ArticleBackendObject->ArticleAttachmentIndex(
+                ArticleID    => $Article{ArticleID},
+                UserID       => $Self->{UserID},
+                OnlyHTMLBody => 1,
+            );
+            my ($HTMLBodyAttachmentID) = sort keys %AttachmentIndexHTMLBody;
+
             # in case show plain article body (if no html body as attachment exists of if rich
             # text is not enabled)
             my $RichText = $LayoutObject->{BrowserRichText};
-            if ( $RichText && $Article{AttachmentIDOfHTMLBody} ) {
+            if ( $RichText && $HTMLBodyAttachmentID ) {
                 if ( $SelectedArticleID eq $Article{ArticleID} || $ZoomExpand ) {
                     $LayoutObject->Block(
                         Name => 'BodyHTMLLoad',
                         Data => {
                             %Param,
                             %Article,
+                            HTMLBodyAttachmentID => $HTMLBodyAttachmentID,
                         },
                     );
 
@@ -1659,7 +1757,8 @@ sub _Mask {
                         Data => {
                             %Param,
                             %Article,
-                            SessionInformation => $SessionInformation,
+                            HTMLBodyAttachmentID => $HTMLBodyAttachmentID,
+                            SessionInformation   => $SessionInformation,
                         },
                     );
 
@@ -1683,7 +1782,7 @@ sub _Mask {
         }
 
         # add attachment icon
-        if ( $Article{Atms} && %{ $Article{Atms} } ) {
+        if ( $Article{Attachment} && %{ $Article{Attachment} } ) {
 
             # download type
             my $Type = $ConfigObject->Get('AttachmentDownloadType') || 'attachment';
@@ -1693,7 +1792,7 @@ sub _Mask {
             if ( $Type =~ /inline/i ) {
                 $Target = 'target="attachment" ';
             }
-            my %AtmIndex = %{ $Article{Atms} };
+            my %AtmIndex = %{ $Article{Attachment} };
             $LayoutObject->Block(
                 Name => 'ArticleAttachment',
                 Data => {
@@ -1701,7 +1800,9 @@ sub _Mask {
                 },
             );
             for my $FileID ( sort keys %AtmIndex ) {
+
                 my %File = %{ $AtmIndex{$FileID} };
+
                 $LayoutObject->Block(
                     Name => 'ArticleAttachmentRow',
                     Data => \%File,
@@ -1713,7 +1814,7 @@ sub _Mask {
                         %File,
                         Action => 'Download',
                         Link   => $LayoutObject->{Baselink} .
-                            "Action=CustomerTicketAttachment;ArticleID=$Article{ArticleID};FileID=$FileID",
+                            "Action=CustomerTicketAttachment;TicketID=$Self->{TicketID};ArticleID=$Article{ArticleID};FileID=$FileID",
                         Image  => 'disk-s.png',
                         Target => $Target,
                     },
@@ -1761,7 +1862,7 @@ sub _Mask {
             # generate output
             return $LayoutObject->Attachment(
                 Filename => $ConfigObject->Get('Ticket::Hook')
-                    . "-$Article{TicketNumber}-$Article{TicketID}-$Article{ArticleID}",
+                    . "-$Ticket{TicketNumber}-$Self->{TicketID}-$Article{ArticleID}",
                 Type        => 'inline',
                 ContentType => "$Article{MimeType}; charset=$Article{Charset}",
                 Content     => $Article{Body},
@@ -1779,10 +1880,10 @@ sub _Mask {
 
     # check follow up permissions
     my $FollowUpPossible = $Kernel::OM->Get('Kernel::System::Queue')->GetFollowUpOption(
-        QueueID => $Article{QueueID},
+        QueueID => $Ticket{QueueID},
     );
     my %State = $Kernel::OM->Get('Kernel::System::State')->StateGet(
-        ID => $Article{StateID},
+        ID => $Ticket{StateID},
     );
     if (
         $TicketObject->TicketCustomerPermission(

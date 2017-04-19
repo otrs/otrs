@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -29,7 +29,7 @@ our @ObjectDependencies = (
 
 Kernel::System::Registration - Registration lib
 
-=head1 SYNOPSIS
+=head1 DESCRIPTION
 
 All Registration functions.
 
@@ -54,16 +54,10 @@ UpdateID the Portal refuses the update and an updated registration is required.
 
 =head1 PUBLIC INTERFACE
 
-=over 4
+=head2 new()
 
-=cut
+Don't use the constructor directly, use the ObjectManager instead:
 
-=item new()
-
-create an object. Do not use it directly, instead use:
-
-    use Kernel::System::ObjectManager;
-    local $Kernel::OM = Kernel::System::ObjectManager->new();
     my $RegistrationObject = $Kernel::OM->Get('Kernel::System::Registration');
 
 
@@ -87,7 +81,7 @@ sub new {
     return $Self;
 }
 
-=item TokenGet()
+=head2 TokenGet()
 
 Get a token needed for system registration.
 To obtain this token, you need to pass a valid OTRS ID and password.
@@ -232,7 +226,7 @@ sub TokenGet {
     return %Result;
 }
 
-=item Register()
+=head2 Register()
 
 Register the system;
 
@@ -511,7 +505,7 @@ sub Register {
     return 1;
 }
 
-=item RegistrationDataGet()
+=head2 RegistrationDataGet()
 
 Get the registration data from the system.
 
@@ -556,7 +550,7 @@ sub RegistrationDataGet {
     return %RegistrationData;
 }
 
-=item RegistrationUpdateSend()
+=head2 RegistrationUpdateSend()
 
 Register the system as Active.
 This also updates any information on Database, OTRS Version and Perl version that
@@ -859,7 +853,7 @@ sub RegistrationUpdateSend {
     );
 }
 
-=item Deregister()
+=head2 Deregister()
 
 Deregister the system. Deregistering also stops any update jobs.
 
@@ -987,8 +981,6 @@ sub Deregister {
 }
 
 1;
-
-=back
 
 =head1 TERMS AND CONDITIONS
 

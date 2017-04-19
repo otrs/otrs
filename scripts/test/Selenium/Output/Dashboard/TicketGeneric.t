@@ -1,11 +1,12 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
 # did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
 # --
 
+## no critic (Modules::RequireExplicitPackage)
 use strict;
 use warnings;
 use utf8;
@@ -67,11 +68,29 @@ $Selenium->RunTest(
         my $ScriptAlias = $ConfigObject->Get('ScriptAlias');
 
         # navigate to AgentPreferences screen
-        $Selenium->VerifiedGet("${ScriptAlias}index.pl?Action=AgentPreferences");
+        $Selenium->VerifiedGet(
+            "${ScriptAlias}index.pl?Action=AgentPreferences;Subaction=Group;Group=NotificationSettings"
+        );
 
         # set MyQueue preferences
         $Selenium->execute_script("\$('#QueueID').val('$QueueID').trigger('redraw.InputField').trigger('change');");
-        $Selenium->find_element( "#QueueIDUpdate", 'css' )->VerifiedClick();
+
+        # save the setting, wait for the ajax call to finish and check if success sign is shown
+        $Selenium->execute_script(
+            "\$('#QueueID').closest('.WidgetSimple').find('.SettingUpdateBox').find('button').trigger('click');"
+        );
+        $Selenium->WaitFor(
+            JavaScript =>
+                "return \$('#QueueID').closest('.WidgetSimple').hasClass('HasOverlay')"
+        );
+        $Selenium->WaitFor(
+            JavaScript =>
+                "return \$('#QueueID').closest('.WidgetSimple').find('.fa-check').length"
+        );
+        $Selenium->WaitFor(
+            JavaScript =>
+                "return !\$('#QueueID').closest('.WidgetSimple').hasClass('HasOverlay')"
+        );
 
         # navigate to AgentDashboard screen
         $Selenium->VerifiedGet("${ScriptAlias}index.pl?Action=AgentDashboard");
@@ -94,6 +113,11 @@ $Selenium->RunTest(
         $Self->True(
             $TicketID,
             "Ticket is created - ID $TicketID",
+        );
+
+        # Discard TicketObject to let event handlers run also for transaction mode 1.
+        $Kernel::OM->ObjectsDiscard(
+            Objects => ['Kernel::System::Ticket']
         );
 
         # wait 5 minutes to have escalation trigger
@@ -266,6 +290,8 @@ $Selenium->RunTest(
         # test if ticket is shown in each dashboard ticket generic plugin
         for my $DashboardName (@Test) {
 
+            $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
+
             # set ticket state depending on the stage in test
             if ( $DashboardName eq '0120-TicketNew' ) {
                 my $Success = $TicketObject->TicketStateSet(
@@ -289,6 +315,11 @@ $Selenium->RunTest(
                     "Changed ticket state to - Open"
                 );
             }
+
+            # Discard TicketObject to let event handlers run also for transaction mode 1.
+            $Kernel::OM->ObjectsDiscard(
+                Objects => ['Kernel::System::Ticket']
+            );
 
             # disable all dashboard plugins
             my $Config = $ConfigObject->Get('DashboardBackend');
@@ -376,8 +407,10 @@ $Selenium->RunTest(
             $Self->True(
                 $TicketFound,
                 "$DashboardName dashboard plugin test ticket link - found",
-            );
+            ) || die "$DashboardName test link NOT found";
         }
+
+        $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
 
         # delete test tickets
         my $Success = $TicketObject->TicketDelete(

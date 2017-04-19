@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -15,13 +15,13 @@ use vars (qw($Self));
 # ticket index accelerator tests
 for my $Module ( 'RuntimeDB', 'StaticDB' ) {
 
-    # make sure that the TicketObject gets recreated for each loop.
+    # Make sure that the ticket object gets recreated for each loop.
     $Kernel::OM->ObjectsDiscard( Objects => ['Kernel::System::Ticket'] );
 
-    # get helper object
     $Kernel::OM->ObjectParamAdd(
         'Kernel::System::UnitTest::Helper' => {
-            RestoreDatabase => 1,
+            RestoreDatabase  => 1,
+            UseTmpArticleDir => 1,
         },
     );
     my $Helper = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
@@ -33,12 +33,9 @@ for my $Module ( 'RuntimeDB', 'StaticDB' ) {
         Value => "Kernel::System::Ticket::IndexAccelerator::$Module",
     );
 
-    # create test ticket object
-    my $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
-
-    $Self->True(
-        $TicketObject->isa("Kernel::System::Ticket::IndexAccelerator::$Module"),
-        "TicketObject loaded the correct backend",
+    my $TicketObject         = $Kernel::OM->Get('Kernel::System::Ticket');
+    my $ArticleBackendObject = $Kernel::OM->Get('Kernel::System::Ticket::Article')->BackendForChannel(
+        ChannelName => 'Internal',
     );
 
     my @TicketIDs;
@@ -303,19 +300,19 @@ for my $Module ( 'RuntimeDB', 'StaticDB' ) {
 
         for my $Index ( 1 .. 3 ) {
 
-            my $ArticleID = $TicketObject->ArticleCreate(
-                TicketID       => $TicketID,
-                ArticleType    => 'note-internal',
-                SenderType     => 'agent',
-                From           => 'Some Agent <email@example.com>',
-                To             => 'Some Customer A <customer-a@example.com>',
-                Subject        => 'some short description',
-                Body           => 'the message text',
-                Charset        => 'ISO-8859-15',
-                MimeType       => 'text/plain',
-                HistoryType    => 'OwnerUpdate',
-                HistoryComment => 'Some free text!',
-                UserID         => 1,
+            my $ArticleID = $ArticleBackendObject->ArticleCreate(
+                TicketID             => $TicketID,
+                SenderType           => 'agent',
+                IsVisibleForCustomer => 0,
+                From                 => 'Some Agent <email@example.com>',
+                To                   => 'Some Customer A <customer-a@example.com>',
+                Subject              => 'some short description',
+                Body                 => 'the message text',
+                Charset              => 'ISO-8859-15',
+                MimeType             => 'text/plain',
+                HistoryType          => 'OwnerUpdate',
+                HistoryComment       => 'Some free text!',
+                UserID               => 1,
             );
 
             # add accounted time

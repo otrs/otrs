@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -32,6 +32,7 @@ sub Run {
     my $ParamObject  = $Kernel::OM->Get('Kernel::System::Web::Request');
     my $LayoutObject = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
     my $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
+    my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
 
     if ( $Self->{Subaction} eq 'CancelAndUnlockTickets' ) {
 
@@ -88,8 +89,81 @@ sub Run {
 
     }
 
-    # get config object
-    my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
+    elsif ( $Self->{Subaction} eq 'AJAXUpdate' ) {
+        my $QueueID = $ParamObject->GetParam( Param => 'QueueID' ) || '';
+
+        # Get all users.
+        my %AllGroupsMembers = $Kernel::OM->Get('Kernel::System::User')->UserList(
+            Type  => 'Long',
+            Valid => 1
+        );
+
+        # Put only possible rw agents to owner list.
+        if ( !$ConfigObject->Get('Ticket::ChangeOwnerToEveryone') ) {
+            my %AllGroupsMembersNew;
+            my @QueueIDs;
+
+            if ($QueueID) {
+                push @QueueIDs, $QueueID;
+            }
+            else {
+                my @TicketIDs = grep {$_} $ParamObject->GetArray( Param => 'TicketID' );
+                for my $TicketID (@TicketIDs) {
+                    my %Ticket = $TicketObject->TicketGet(
+                        TicketID      => $TicketID,
+                        DynamicFields => 0,
+                    );
+                    push @QueueIDs, $Ticket{QueueID};
+                }
+            }
+
+            my $QueueObject = $Kernel::OM->Get('Kernel::System::Queue');
+            my $GroupObject = $Kernel::OM->Get('Kernel::System::Group');
+
+            for my $QueueID (@QueueIDs) {
+                my $GroupID = $QueueObject->GetQueueGroupID( QueueID => $QueueID );
+                my %GroupMember = $GroupObject->PermissionGroupGet(
+                    GroupID => $GroupID,
+                    Type    => 'rw',
+                );
+                USER_ID:
+                for my $UserID ( sort keys %GroupMember ) {
+                    next USER_ID if !$AllGroupsMembers{$UserID};
+                    $AllGroupsMembersNew{$UserID} = $AllGroupsMembers{$UserID};
+                }
+                %AllGroupsMembers = %AllGroupsMembersNew;
+            }
+        }
+
+        my @JSONData = (
+            {
+                Name         => 'OwnerID',
+                Data         => \%AllGroupsMembers,
+                PossibleNone => 1,
+            }
+        );
+
+        if (
+            $ConfigObject->Get('Ticket::Responsible')
+            && $ConfigObject->Get("Ticket::Frontend::$Self->{Action}")->{Responsible}
+            )
+        {
+            push @JSONData, {
+                Name         => 'ResponsibleID',
+                Data         => \%AllGroupsMembers,
+                PossibleNone => 1,
+            };
+        }
+
+        my $JSON = $LayoutObject->BuildSelectionJSON( [@JSONData] );
+
+        return $LayoutObject->Attachment(
+            ContentType => 'application/json; charset=' . $LayoutObject->{Charset},
+            Content     => $JSON,
+            Type        => 'inline',
+            NoCache     => 1,
+        );
+    }
 
     # check if bulk feature is enabled
     if ( !$ConfigObject->Get('Ticket::Frontend::BulkFeature') ) {
@@ -101,7 +175,7 @@ sub Run {
     # get involved tickets, filtering empty TicketIDs
     my @ValidTicketIDs;
     my @IgnoreLockedTicketIDs;
-    my @TicketIDs = grep {$_}
+    my @TicketIDs = sort grep {$_}
         $ParamObject->GetArray( Param => 'TicketID' );
 
     my $Config = $ConfigObject->Get("Ticket::Frontend::$Self->{Action}");
@@ -136,13 +210,13 @@ sub Run {
             return $LayoutObject->ErrorScreen(
                 Message => Translatable('No selectable TicketID is given!'),
                 Comment =>
-                    Translatable('You either selected no ticket or only tickets which are locked by other agents'),
+                    Translatable('You either selected no ticket or only tickets which are locked by other agents.'),
             );
         }
         else {
             return $LayoutObject->ErrorScreen(
                 Message => Translatable('No TicketID is given!'),
-                Comment => Translatable('You need to select at least one ticket'),
+                Comment => Translatable('You need to select at least one ticket.'),
             );
         }
     }
@@ -207,7 +281,7 @@ sub Run {
         # get all parameters
         for my $Key (
             qw(OwnerID Owner ResponsibleID Responsible PriorityID Priority QueueID Queue Subject
-            Body ArticleTypeID ArticleType TypeID StateID State MergeToSelection MergeTo LinkTogether
+            Body IsVisibleForCustomer TypeID StateID State MergeToSelection MergeTo LinkTogether
             EmailSubject EmailBody EmailTimeUnits
             LinkTogetherParent Unlock MergeToChecked MergeToOldestChecked)
             )
@@ -238,8 +312,7 @@ sub Run {
         # check some stuff
         if (
             $GetParam{Subject}
-            &&
-            $ConfigObject->Get('Ticket::Frontend::AccountTime')
+            && $ConfigObject->Get('Ticket::Frontend::AccountTime')
             && $ConfigObject->Get('Ticket::Frontend::NeedAccountedTime')
             && $GetParam{TimeUnits} eq ''
             )
@@ -249,8 +322,7 @@ sub Run {
 
         if (
             $GetParam{EmailSubject}
-            &&
-            $ConfigObject->Get('Ticket::Frontend::AccountTime')
+            && $ConfigObject->Get('Ticket::Frontend::AccountTime')
             && $ConfigObject->Get('Ticket::Frontend::NeedAccountedTime')
             && $GetParam{EmailTimeUnits} eq ''
             )
@@ -399,6 +471,11 @@ sub Run {
         }
     }
 
+    my @TicketsWithError;
+    my @TicketsWithLockNotice;
+
+    my $ArticleObject = $Kernel::OM->Get('Kernel::System::Ticket::Article');
+
     TICKET_ID:
     for my $TicketID (@TicketIDs) {
         my %Ticket = $TicketObject->TicketGet(
@@ -415,53 +492,36 @@ sub Run {
         if ( !$Access ) {
 
             # error screen, don't show ticket
-            $Output .= $LayoutObject->Notify(
-                Data => "$Ticket{TicketNumber}: "
-                    . $LayoutObject->{LanguageObject}->Translate("You don't have write access to this ticket."),
-            );
+            push @TicketsWithError, $Ticket{TicketNumber};
             next TICKET_ID;
         }
 
         # check if it's already locked by somebody else
-        if ( !$Config->{RequiredLock} ) {
-            $Output .= $LayoutObject->Notify(
-                Data => "$Ticket{TicketNumber}: "
-                    . $LayoutObject->{LanguageObject}->Translate("Ticket selected."),
-            );
-        }
-        else {
+        if ( $Config->{RequiredLock} ) {
             if ( grep ( { $_ eq $TicketID } @IgnoreLockedTicketIDs ) ) {
-                $Output .= $LayoutObject->Notify(
-                    Priority => 'Error',
-                    Data     => "$Ticket{TicketNumber}: "
-                        . $LayoutObject->{LanguageObject}->Translate(
-                        "Ticket is locked by another agent and will be ignored!"
-                        ),
-                );
+                push @TicketsWithError, $Ticket{TicketNumber};
                 next TICKET_ID;
             }
-            else {
+            elsif ( $Ticket{Lock} eq 'unlock' ) {
                 $LockedTickets .= "LockedTicketID=" . $TicketID . ';';
                 $Param{TicketsWereLocked} = 1;
+
+                # set lock
+                $TicketObject->TicketLockSet(
+                    TicketID => $TicketID,
+                    Lock     => 'lock',
+                    UserID   => $Self->{UserID},
+                );
+
+                # set user id
+                $TicketObject->TicketOwnerSet(
+                    TicketID  => $TicketID,
+                    UserID    => $Self->{UserID},
+                    NewUserID => $Self->{UserID},
+                );
+
+                push @TicketsWithLockNotice, $Ticket{TicketNumber};
             }
-
-            # set lock
-            $TicketObject->TicketLockSet(
-                TicketID => $TicketID,
-                Lock     => 'lock',
-                UserID   => $Self->{UserID},
-            );
-
-            # set user id
-            $TicketObject->TicketOwnerSet(
-                TicketID  => $TicketID,
-                UserID    => $Self->{UserID},
-                NewUserID => $Self->{UserID},
-            );
-            $Output .= $LayoutObject->Notify(
-                Data => "$Ticket{TicketNumber}: "
-                    . $LayoutObject->{LanguageObject}->Translate("Ticket locked."),
-            );
         }
 
         # remember selected ticket ids
@@ -571,30 +631,56 @@ sub Run {
                     }
                 }
 
-                # check if we have an address, otherwise deduct it from the articles
+                # Check if we have an address, otherwise deduce it from the article.
                 if ( !$Customer ) {
-                    my %Data = $TicketObject->ArticleLastCustomerArticle(
-                        TicketID      => $TicketID,
-                        DynamicFields => 0,
+
+                    # Get last customer article.
+                    my @Articles = $ArticleObject->ArticleList(
+                        TicketID   => $TicketID,
+                        SenderType => 'customer',
+                        OnlyLast   => 1,
                     );
 
-                    # use ReplyTo if set, otherwise use From
-                    $Customer = $Data{ReplyTo} ? $Data{ReplyTo} : $Data{From};
-
-                    # check article type and replace To with From (in case)
-                    if ( $Data{SenderType} !~ /customer/ ) {
-
-                        # replace From/To, To/From because sender is agent
-                        $Customer = $Data{To};
+                    # If the ticket has no customer article, get the last agent article.
+                    if ( !@Articles ) {
+                        @Articles = $ArticleObject->ArticleList(
+                            TicketID   => $TicketID,
+                            SenderType => 'agent',
+                            OnlyLast   => 1,
+                        );
                     }
 
+                    # Finally, if everything failed, get latest article.
+                    if ( !@Articles ) {
+                        @Articles = $ArticleObject->ArticleList(
+                            TicketID => $TicketID,
+                            OnlyLast => 1,
+                        );
+                    }
+
+                    my %Article;
+                    for my $Article (@Articles) {
+                        %Article = $ArticleObject->BackendForArticle( %{$Article} )->ArticleGet(
+                            %{$Article},
+                            DynamicFields => 0,
+                            UserID        => $Self->{UserID},
+                        );
+                    }
+
+                    # Use ReplyTo if set, otherwise use From.
+                    $Customer = $Article{ReplyTo} ? $Article{ReplyTo} : $Article{From};
+
+                    # Check article sender type and replace From with To (in case sender is not customer).
+                    if ( $Article{SenderType} !~ /customer/ ) {
+                        $Customer = $Article{To};
+                    }
                 }
 
                 # get template generator object
                 my $TemplateGeneratorObject = $Kernel::OM->ObjectParamAdd(
                     'Kernel::System::TemplateGenerator' => {
                         CustomerUserObject => $CustomerUserObject,
-                        }
+                    },
                 );
 
                 $TemplateGeneratorObject = $Kernel::OM->Get('Kernel::System::TemplateGenerator');
@@ -613,19 +699,21 @@ sub Run {
                     Subject      => $GetParam{EmailSubject} || '',
                 );
 
-                $EmailArticleID = $TicketObject->ArticleSend(
-                    TicketID       => $TicketID,
-                    ArticleType    => 'email-external',
-                    SenderType     => 'agent',
-                    From           => $From,
-                    To             => $Customer,
-                    Subject        => $EmailSubject,
-                    Body           => $GetParam{EmailBody},
-                    MimeType       => $MimeType,
-                    Charset        => $LayoutObject->{UserCharset},
-                    UserID         => $Self->{UserID},
-                    HistoryType    => 'SendAnswer',
-                    HistoryComment => '%%' . $Customer,
+                my $EmailArticleBackendObject = $ArticleObject->BackendForChannel( ChannelName => 'Email' );
+
+                $EmailArticleID = $EmailArticleBackendObject->ArticleSend(
+                    TicketID             => $TicketID,
+                    SenderType           => 'agent',
+                    IsVisibleForCustomer => 1,
+                    From                 => $From,
+                    To                   => $Customer,
+                    Subject              => $EmailSubject,
+                    Body                 => $GetParam{EmailBody},
+                    MimeType             => $MimeType,
+                    Charset              => $LayoutObject->{UserCharset},
+                    UserID               => $Self->{UserID},
+                    HistoryType          => 'SendAnswer',
+                    HistoryComment       => '%%' . $Customer,
                 );
             }
 
@@ -634,7 +722,6 @@ sub Run {
             if (
                 $GetParam{'Subject'}
                 && $GetParam{'Body'}
-                && ( $GetParam{'ArticleTypeID'} || $GetParam{'ArticleType'} )
                 )
             {
                 my $MimeType = 'text/plain';
@@ -646,19 +733,20 @@ sub Run {
                         String => $GetParam{'Body'},
                     );
                 }
-                $ArticleID = $TicketObject->ArticleCreate(
-                    TicketID       => $TicketID,
-                    ArticleTypeID  => $GetParam{'ArticleTypeID'},
-                    ArticleType    => $GetParam{'ArticleType'},
-                    SenderType     => 'agent',
-                    From           => "$Self->{UserFirstname} $Self->{UserLastname} <$Self->{UserEmail}>",
-                    Subject        => $GetParam{'Subject'},
-                    Body           => $GetParam{'Body'},
-                    MimeType       => $MimeType,
-                    Charset        => $LayoutObject->{UserCharset},
-                    UserID         => $Self->{UserID},
-                    HistoryType    => 'AddNote',
-                    HistoryComment => '%%Bulk',
+                my $InternalArticleBackendObject = $ArticleObject->BackendForChannel( ChannelName => 'Internal' );
+
+                $ArticleID = $InternalArticleBackendObject->ArticleCreate(
+                    TicketID             => $TicketID,
+                    SenderType           => 'agent',
+                    IsVisibleForCustomer => $GetParam{IsVisibleForCustomer},
+                    From                 => "$Self->{UserFirstname} $Self->{UserLastname} <$Self->{UserEmail}>",
+                    Subject              => $GetParam{'Subject'},
+                    Body                 => $GetParam{'Body'},
+                    MimeType             => $MimeType,
+                    Charset              => $LayoutObject->{UserCharset},
+                    UserID               => $Self->{UserID},
+                    HistoryType          => 'AddNote',
+                    HistoryComment       => '%%Bulk',
                 );
             }
 
@@ -825,6 +913,32 @@ sub Run {
         $Counter++;
     }
 
+    # notify user about actions (errors)
+    if (@TicketsWithError) {
+        my $NotificationError = $LayoutObject->{LanguageObject}->Translate(
+            "The following tickets were ignored because they are locked by another agent or you don't have write access to these tickets: %s.",
+            join( ", ", @TicketsWithError ),
+        );
+
+        $Output .= $LayoutObject->Notify(
+            Priority => 'Error',
+            Data     => $NotificationError,
+        );
+    }
+
+    # notify user about actions (notices)
+    if (@TicketsWithLockNotice) {
+        my $NotificationNotice = $LayoutObject->{LanguageObject}->Translate(
+            "The following tickets were locked: %s.",
+            join( ", ", @TicketsWithLockNotice ),
+        );
+
+        $Output .= $LayoutObject->Notify(
+            Priority => 'Notice',
+            Data     => $NotificationNotice,
+        );
+    }
+
     # redirect
     if ($ActionFlag) {
         my $DestURL = defined $MainTicketID
@@ -881,38 +995,12 @@ sub _Mask {
         }
     }
 
-    # get config object
     my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
-    my $Config       = $ConfigObject->Get("Ticket::Frontend::$Self->{Action}");
-
-    # get ticket object
     my $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
 
-    # build ArticleTypeID string
-    my %DefaultNoteTypes = %{ $Config->{ArticleTypes} };
-    my %NoteTypes = $TicketObject->ArticleTypeList( Result => 'HASH' );
-    for my $KeyNoteType ( sort keys %NoteTypes ) {
-        if ( !$DefaultNoteTypes{ $NoteTypes{$KeyNoteType} } ) {
-            delete $NoteTypes{$KeyNoteType};
-        }
-    }
+    my $Config = $ConfigObject->Get("Ticket::Frontend::$Self->{Action}");
 
-    if ( $Param{ArticleTypeID} ) {
-        $Param{NoteStrg} = $LayoutObject->BuildSelection(
-            Data       => \%NoteTypes,
-            Name       => 'ArticleTypeID',
-            SelectedID => $Param{ArticleTypeID},
-            Class      => 'Modernize',
-        );
-    }
-    else {
-        $Param{NoteStrg} = $LayoutObject->BuildSelection(
-            Data          => \%NoteTypes,
-            Name          => 'ArticleTypeID',
-            SelectedValue => $Config->{ArticleTypeDefault},
-            Class         => 'Modernize',
-        );
-    }
+    $Param{IsVisibleForCustomer} //= $Config->{IsVisibleForCustomerDefault} // 0;
 
     # build next states string
     if ( $Config->{State} ) {
@@ -1261,7 +1349,7 @@ sub _Mask {
     # get output back
     return $LayoutObject->Output(
         TemplateFile => 'AgentTicketBulk',
-        Data         => \%Param
+        Data         => \%Param,
     );
 }
 

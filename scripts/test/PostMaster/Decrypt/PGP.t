@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -53,6 +53,13 @@ if ( !-e $ConfigObject->Get('PGP::Bin') ) {
         $ConfigObject->Set(
             Key   => 'PGP::Bin',
             Value => '/usr/bin/gpg'
+        );
+    }
+
+    elsif ( -e '/usr/local/bin/gpg' ) {
+        $ConfigObject->Set(
+            Key   => 'PGP::Bin',
+            Value => '/usr/local/bin/gpg'
         );
     }
 
@@ -231,7 +238,10 @@ my %Ticket = $TicketObject->TicketGet(
     TicketID => $Return[1],
 );
 
-my @ArticleIndex = $TicketObject->ArticleGet(
+my $ArticleObject = $Kernel::OM->Get('Kernel::System::Ticket::Article');
+my $ArticleBackendObject = $ArticleObject->BackendForChannel( ChannelName => 'Email' );
+
+my @ArticleIndex = $ArticleObject->ArticleList(
     TicketID => $Return[1],
     UserID   => 1,
 );
@@ -242,13 +252,24 @@ $Self->Is(
     "Ticket created in $Ticket{Queue}",
 );
 
-my $GetBody = $ArticleIndex[0]{Body};
+my %FirstArticle = $ArticleBackendObject->ArticleGet(
+    %{ $ArticleIndex[0] },
+    UserID => 1,
+);
+
+my $GetBody = $FirstArticle{Body};
 chomp($GetBody);
 
 $Self->Is(
     $GetBody,
     'This is only a test.',
-    "Body decrypted $ArticleIndex[0]{Body}",
+    "Body decrypted $FirstArticle{Body}",
+);
+
+# Read email again to make sure that everything is there in the array.
+$Email = $MainObject->FileRead(
+    Location => $ConfigObject->Get('Home') . '/scripts/test/sample/PGP/PGP_Test_2013-07-02-1977-2.eml',
+    Result   => 'ARRAY',
 );
 
 # Part where StoreDecryptedBody is disabled
@@ -294,7 +315,7 @@ my %TicketEncrypted = $TicketObject->TicketGet(
     TicketID => $ReturnEncrypted[1],
 );
 
-my @ArticleIndexEncrypted = $TicketObject->ArticleGet(
+my @ArticleIndexEncrypted = $ArticleObject->ArticleList(
     TicketID => $ReturnEncrypted[1],
     UserID   => 1,
 );
@@ -305,11 +326,16 @@ $Self->Is(
     "Ticket created in $TicketEncrypted{Queue}",
 );
 
-my $GetBodyEncrypted = $ArticleIndexEncrypted[0]{Body};
+my %FirstArticleEncrypted = $ArticleBackendObject->ArticleGet(
+    %{ $ArticleIndexEncrypted[0] },
+    UserID => 1,
+);
+
+my $GetBodyEncrypted = $FirstArticleEncrypted{Body};
 
 $Self->True(
-    $GetBodyEncrypted =~ m{This is an OpenPGP/MIME},
-    "Found PGP",
+    scalar $GetBodyEncrypted =~ m{no text message => see attachment},
+    "Body was not decrypted",
 );
 
 # Delete PGP keys.

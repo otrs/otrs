@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -66,32 +66,13 @@ $Selenium->RunTest(
         }
 
         # check breadcrumb on Add screen
-        my $Count = 0;
-        my $IsLinkedBreadcrumbText;
-        for my $BreadcrumbText ( 'You are here:', 'Salutation Management', 'Add Salutation' ) {
+        my $Count = 1;
+        for my $BreadcrumbText ( 'Salutation Management', 'Add Salutation' ) {
             $Self->Is(
-                $Selenium->execute_script("return \$(\$('.BreadCrumb li')[$Count]).text().trim()"),
+                $Selenium->execute_script("return \$('.BreadCrumb li:eq($Count)').text().trim()"),
                 $BreadcrumbText,
                 "Breadcrumb text '$BreadcrumbText' is found on screen"
             );
-
-            $IsLinkedBreadcrumbText =
-                $Selenium->execute_script("return \$(\$('.BreadCrumb li')[$Count]).children('a').length");
-
-            if ( $BreadcrumbText eq 'Salutation Management' ) {
-                $Self->Is(
-                    $IsLinkedBreadcrumbText,
-                    1,
-                    "Breadcrumb text '$BreadcrumbText' is linked"
-                );
-            }
-            else {
-                $Self->Is(
-                    $IsLinkedBreadcrumbText,
-                    0,
-                    "Breadcrumb text '$BreadcrumbText' is not linked"
-                );
-            }
 
             $Count++;
         }
@@ -150,31 +131,13 @@ $Selenium->RunTest(
         );
 
         # check breadcrumb on Edit screen
-        $Count = 0;
-        for my $BreadcrumbText ( 'You are here:', 'Salutation Management', 'Edit Salutation: ' . $SalutationRandomID ) {
+        $Count = 1;
+        for my $BreadcrumbText ( 'Salutation Management', 'Edit Salutation: ' . $SalutationRandomID ) {
             $Self->Is(
-                $Selenium->execute_script("return \$(\$('.BreadCrumb li')[$Count]).text().trim()"),
+                $Selenium->execute_script("return \$('.BreadCrumb li:eq($Count)').text().trim()"),
                 $BreadcrumbText,
                 "Breadcrumb text '$BreadcrumbText' is found on screen"
             );
-
-            $IsLinkedBreadcrumbText =
-                $Selenium->execute_script("return \$(\$('.BreadCrumb li')[$Count]).children('a').length");
-
-            if ( $BreadcrumbText eq 'Salutation Management' ) {
-                $Self->Is(
-                    $IsLinkedBreadcrumbText,
-                    1,
-                    "Breadcrumb text '$BreadcrumbText' is linked"
-                );
-            }
-            else {
-                $Self->Is(
-                    $IsLinkedBreadcrumbText,
-                    0,
-                    "Breadcrumb text '$BreadcrumbText' is not linked"
-                );
-            }
 
             $Count++;
         }

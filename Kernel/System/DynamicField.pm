@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -28,22 +28,16 @@ our @ObjectDependencies = (
 
 Kernel::System::DynamicField
 
-=head1 SYNOPSIS
+=head1 DESCRIPTION
 
 DynamicFields backend
 
 =head1 PUBLIC INTERFACE
 
-=over 4
-
-=cut
-
-=item new()
+=head2 new()
 
 create a DynamicField object. Do not use it directly, instead use:
 
-    use Kernel::System::ObjectManager;
-    local $Kernel::OM = Kernel::System::ObjectManager->new();
     my $DynamicFieldObject = $Kernel::OM->Get('Kernel::System::DynamicField');
 
 =cut
@@ -72,7 +66,7 @@ sub new {
     return $Self;
 }
 
-=item DynamicFieldAdd()
+=head2 DynamicFieldAdd()
 
 add new Dynamic Field config
 
@@ -214,7 +208,7 @@ sub DynamicFieldAdd {
     return $DynamicField->{ID};
 }
 
-=item DynamicFieldGet()
+=head2 DynamicFieldGet()
 
 get Dynamic Field attributes
 
@@ -302,7 +296,7 @@ sub DynamicFieldGet {
     my %Data;
     while ( my @Data = $DBObject->FetchrowArray() ) {
 
-        my $Config = $YAMLObject->Load( Data => $Data[7] ) || {};
+        my $Config = $YAMLObject->Load( Data => $Data[7] );
 
         %Data = (
             ID            => $Data[0],
@@ -319,18 +313,26 @@ sub DynamicFieldGet {
         );
     }
 
-    # set cache
-    $CacheObject->Set(
-        Type  => 'DynamicField',
-        Key   => $CacheKey,
-        Value => \%Data,
-        TTL   => $Self->{CacheTTL},
-    );
+    if (%Data) {
+
+        # Set the cache only, if the YAML->Load was successful (see bug#12483).
+        if ( $Data{Config} ) {
+
+            $CacheObject->Set(
+                Type  => 'DynamicField',
+                Key   => $CacheKey,
+                Value => \%Data,
+                TTL   => $Self->{CacheTTL},
+            );
+        }
+
+        $Data{Config} ||= {};
+    }
 
     return \%Data;
 }
 
-=item DynamicFieldUpdate()
+=head2 DynamicFieldUpdate()
 
 update Dynamic Field content into database
 
@@ -372,14 +374,18 @@ sub DynamicFieldUpdate {
         $Reorder = 1;
     }
 
+    my $YAMLObject = $Kernel::OM->Get('Kernel::System::YAML');
+
     # dump config as string
-    my $Config = $Kernel::OM->Get('Kernel::System::YAML')->Dump(
+    my $Config = $YAMLObject->Dump(
         Data => $Param{Config},
     );
 
     # Make sure the resulting string has the UTF-8 flag. YAML only sets it if
     #    part of the data already had it.
     utf8::upgrade($Config);
+
+    return if !$YAMLObject->Load( Data => $Config );
 
     # check needed structure for some fields
     if ( $Param{Name} !~ m{ \A [a-zA-Z\d]+ \z }xms ) {
@@ -484,7 +490,7 @@ sub DynamicFieldUpdate {
     return 1;
 }
 
-=item DynamicFieldDelete()
+=head2 DynamicFieldDelete()
 
 delete a Dynamic field entry. You need to make sure that all values are
 deleted before calling this function, otherwise it will fail on DBMS which check
@@ -558,7 +564,7 @@ sub DynamicFieldDelete {
     return 1;
 }
 
-=item DynamicFieldList()
+=head2 DynamicFieldList()
 
 get DynamicField list ordered by the the "Field Order" field in the DB
 
@@ -608,12 +614,12 @@ Returns:
 sub DynamicFieldList {
     my ( $Self, %Param ) = @_;
 
-    # to store fieldIDs whitelist
+    # to store fieldIDs white-list
     my %AllowedFieldIDs;
 
     if ( defined $Param{FieldFilter} && ref $Param{FieldFilter} eq 'HASH' ) {
 
-        # fill the fieldIDs whitelist
+        # fill the fieldIDs white-list
         FIELDNAME:
         for my $FieldName ( sort keys %{ $Param{FieldFilter} } ) {
             next FIELDNAME if !$Param{FieldFilter}->{$FieldName};
@@ -622,7 +628,7 @@ sub DynamicFieldList {
             next FIELDNAME if !IsHashRefWithData($FieldConfig);
             next FIELDNAME if !$FieldConfig->{ID};
 
-            $AllowedFieldIDs{ $FieldConfig->{ID} } = 1,
+            $AllowedFieldIDs{ $FieldConfig->{ID} } = 1;
         }
     }
 
@@ -728,8 +734,7 @@ sub DynamicFieldList {
                 elsif ( IsArrayRefWithData( $Param{ObjectType} ) ) {
                     my $ObjectTypeString =
                         join ',',
-                        map "'" . $DBObject->Quote($_) . "'",
-                        @{ $Param{ObjectType} };
+                        map { "'" . $DBObject->Quote($_) . "'" } @{ $Param{ObjectType} };
                     $SQL .= " AND object_type IN ($ObjectTypeString)";
 
                 }
@@ -745,8 +750,7 @@ sub DynamicFieldList {
                 elsif ( IsArrayRefWithData( $Param{ObjectType} ) ) {
                     my $ObjectTypeString =
                         join ',',
-                        map "'" . $DBObject->Quote($_) . "'",
-                        @{ $Param{ObjectType} };
+                        map { "'" . $DBObject->Quote($_) . "'" } @{ $Param{ObjectType} };
                     $SQL .= " WHERE object_type IN ($ObjectTypeString)";
                 }
             }
@@ -842,7 +846,7 @@ sub DynamicFieldList {
     return;
 }
 
-=item DynamicFieldListGet()
+=head2 DynamicFieldListGet()
 
 get DynamicField list with complete data ordered by the "Field Order" field in the DB
 
@@ -977,8 +981,7 @@ sub DynamicFieldListGet {
             elsif ( IsArrayRefWithData( $Param{ObjectType} ) ) {
                 my $ObjectTypeString =
                     join ',',
-                    map "'" . $DBObject->Quote($_) . "'",
-                    @{ $Param{ObjectType} };
+                    map { "'" . $DBObject->Quote($_) . "'" } @{ $Param{ObjectType} };
                 $SQL .= " AND object_type IN ($ObjectTypeString)";
 
             }
@@ -993,8 +996,7 @@ sub DynamicFieldListGet {
             elsif ( IsArrayRefWithData( $Param{ObjectType} ) ) {
                 my $ObjectTypeString =
                     join ',',
-                    map "'" . $DBObject->Quote($_) . "'",
-                    @{ $Param{ObjectType} };
+                    map { "'" . $DBObject->Quote($_) . "'" } @{ $Param{ObjectType} };
                 $SQL .= " WHERE object_type IN ($ObjectTypeString)";
             }
         }
@@ -1054,7 +1056,7 @@ sub DynamicFieldListGet {
     return $FilteredData;
 }
 
-=item DynamicFieldOrderReset()
+=head2 DynamicFieldOrderReset()
 
 sets the order of all dynamic fields based on a consecutive number list starting with number 1.
 This function will remove duplicate order numbers and gaps in the numbering.
@@ -1114,7 +1116,7 @@ sub DynamicFieldOrderReset {
     return 1;
 }
 
-=item DynamicFieldOrderCheck()
+=head2 DynamicFieldOrderCheck()
 
 checks for duplicate order numbers and gaps in the numbering.
 
@@ -1162,7 +1164,7 @@ sub DynamicFieldOrderCheck {
     return 1;
 }
 
-=item ObjectMappingGet()
+=head2 ObjectMappingGet()
 
 (a) Fetches object ID(s) for given object name(s).
 (b) Fetches object name(s) for given object ID(s).
@@ -1314,7 +1316,7 @@ sub ObjectMappingGet {
     return \%ObjectMapping;
 }
 
-=item ObjectMappingCreate()
+=head2 ObjectMappingCreate()
 
 Creates an object mapping for the given given object name.
 
@@ -1396,7 +1398,7 @@ sub ObjectMappingCreate {
     return $ObjectID;
 }
 
-=item ObjectMappingNameChange()
+=head2 ObjectMappingNameChange()
 
 Changes name of given object mapping.
 
@@ -1488,7 +1490,7 @@ sub DESTROY {
 
 =cut
 
-=item _DynamicFieldReorder()
+=head2 _DynamicFieldReorder()
 
 re-order the list of fields.
 
@@ -1686,8 +1688,6 @@ sub _DynamicFieldReorder {
 }
 
 =end Internal:
-
-=back
 
 =head1 TERMS AND CONDITIONS
 

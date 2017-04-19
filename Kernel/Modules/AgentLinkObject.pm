@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -43,6 +43,7 @@ sub Run {
         $LayoutObject->ChallengeTokenCheck();
 
         my $SourceObject      = $ParamObject->GetParam( Param => 'SourceObject' )      || '';
+        my $SourceObjectID    = $ParamObject->GetParam( Param => 'SourceObjectID' )    || '';
         my $DestinationObject = $ParamObject->GetParam( Param => 'DestinationObject' ) || '';
 
         my $Success = $LayoutObject->ComplexTablePreferencesSet(
@@ -61,7 +62,7 @@ sub Run {
         my $LinkListWithData = $Kernel::OM->Get('Kernel::System::LinkObject')->LinkListWithData(
             Object           => $SourceObject,
             Object2          => $DestinationObject,
-            Key              => $Self->{TicketID},
+            Key              => $SourceObjectID,
             State            => 'Valid',
             UserID           => $Self->{UserID},
             ObjectParameters => {
@@ -76,7 +77,7 @@ sub Run {
             LinkListWithData => $LinkListWithData,
             ViewMode         => 'Complex',           # only make sense for complex
             Object           => $SourceObject,
-            Key              => $Self->{TicketID},
+            Key              => $SourceObjectID,
             AJAX             => 1,
         );
 
