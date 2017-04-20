@@ -148,7 +148,7 @@
                     <i class="fa fa-refresh"></i>
                 </div>
                 <p class="Center">
-                    [% Translate('An update for your %s is available! Please update at your earliest!', OTRSBusinessLabel) %]
+                    [% Translate('An update for your %s is available! Please update at your earliest convenience!', OTRSBusinessLabel) %]
                 </p>
                 <div class="Center SpacingTop">
                     <a href="[% Env("Baselink") %]Action=[% Env("Action") %];Subaction=UpdateAction" class="CallForAction Primary"><span><i class="fa fa-refresh"></i> [% Translate('Update %s', OTRSBusinessLabel) %]</span></a>

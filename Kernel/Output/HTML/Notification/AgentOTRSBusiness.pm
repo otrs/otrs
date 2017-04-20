@@ -135,7 +135,7 @@ if (!window.location.search.match(/^[?]Action=(AgentOTRSBusiness|Admin.*)/)) {
     if ( $UpdatesAvailable{OTRSBusinessUpdateAvailable} ) {
 
         my $Text = $LayoutObject->{LanguageObject}->Translate(
-            'An update for your %s is available! Please update at your earliest!',
+            'An update for your %s is available! Please update at your earliest convenience!',
             $OTRSBusinessLabel
         );
         $Output .= $LayoutObject->Notify(
