@@ -51,6 +51,12 @@ sub Run {
     }
 
     my $LayoutObject = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
+    
+    # customers should not get to know that whether an ticket exists or not
+    # if a ticket does not exist, show a "no permission" screen
+    if ( $TicketNumber && !$Self->{TicketID} ) {
+        return $LayoutObject->CustomerNoPermission( WithHeader => 'yes' );
+    }
 
     # customers should not get to know that whether an ticket exists or not
     # if a ticket does not exist, show a "no permission" screen
