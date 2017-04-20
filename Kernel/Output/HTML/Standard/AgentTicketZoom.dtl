@@ -116,7 +116,7 @@
                         <div class="Clear"></div>
 
                         <label>$Text{"Queue"}:</label>
-                        <p class="Value" title="$QData{"Queue"}">$QData{"Queue"}</p>
+                        <p class="Value" title="$QData{"Queue"}"><a href="$Env{"Baselink"}Action=AgentTicketQueue;QueueID=$QData{"QueueID"}">$QData{"Queue"}</a></p> 
                         <div class="Clear"></div>
 
 <!-- dtl:block:Service -->
