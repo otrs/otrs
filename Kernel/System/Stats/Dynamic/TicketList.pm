@@ -1069,7 +1069,9 @@ sub GetStatTable {
             UserID     => 1,
             Result     => 'ARRAY',
             Permission => 'ro',
-            Limit      => 10,
+            %{ $Param{Restrictions} },
+            %DynamicFieldRestrictions,
+            Limit => 10,
         );
     }
     else {
