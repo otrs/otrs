@@ -22,8 +22,6 @@ use Kernel::GenericInterface::Operation::Session::SessionCreate;
 
 use Kernel::System::VariableCheck qw(IsArrayRefWithData IsHashRefWithData IsStringWithData);
 
-my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
-
 # Skip SSL certificate verification.
 $Kernel::OM->ObjectParamAdd(
     'Kernel::System::UnitTest::Helper' => {
@@ -80,6 +78,8 @@ $Helper->ConfigSettingChange(
     Key   => 'CustomerGroupSupport',
     Value => 1,
 );
+
+my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
 
 # check if SSL Certificate verification is disabled
 $Self->Is(

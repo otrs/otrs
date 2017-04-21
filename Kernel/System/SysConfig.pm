@@ -14,8 +14,9 @@ use warnings;
 use Storable qw();
 use Kernel::System::VariableCheck qw(:all);
 use Kernel::Language qw(Translatable);
-
 use Kernel::Config;
+
+use parent qw(Kernel::System::AsynchronousExecutor);
 
 our @ObjectDependencies = (
     'Kernel::Config',
@@ -2762,7 +2763,11 @@ sub ConfigurationList {
 
 Returns list of enabled settings that have invalid effective value.
 
-    my @List = $SysConfigObject->ConfigurationInvalidList();
+    my @List = $SysConfigObject->ConfigurationInvalidList(
+        CachedOnly => 0,    # (optional) Default 0. If enabled, system will return cached value.
+                            #                 If there is no cache yet, system will return empty list, but
+                            #                 it will also trigger async call to generate cache.
+    );
 
 Returns:
 
@@ -2785,6 +2790,19 @@ sub ConfigurationInvalidList {
     );
 
     return @{$Cache} if ref $Cache eq 'ARRAY';
+
+    if ( $Param{CachedOnly} ) {
+
+        # There is no cache but caller expects quick answer. Return empty array, but create cache in async call.
+        $Self->AsyncCall(
+            ObjectName               => 'Kernel::System::SysConfig',
+            FunctionName             => 'ConfigurationInvalidList',
+            FunctionParams           => {},
+            MaximumParallelInstances => 1,
+        );
+
+        return ();
+    }
 
     my @SettingsEnabled = $Self->ConfigurationListGet(
         IsValid   => 1,
