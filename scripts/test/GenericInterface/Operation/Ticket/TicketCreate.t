@@ -79,6 +79,11 @@ $Helper->ConfigSettingChange(
     Value => 1,
 );
 
+$Kernel::OM->ObjectsDiscard(
+    Objects            => ['Kernel::Config'],
+    ForcePackageReload => 1,
+);
+
 my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
 
 # check if SSL Certificate verification is disabled
