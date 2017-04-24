@@ -13,7 +13,7 @@ use warnings;
 
 use Kernel::System::VariableCheck qw(:all);
 
-use base qw(Kernel::System::DynamicField::Driver::BaseText);
+use parent qw(Kernel::System::DynamicField::Driver::BaseText);
 
 our @ObjectDependencies = (
     'Kernel::Config',
@@ -381,46 +381,6 @@ EOF
     };
 
     return $Data;
-}
-
-sub SearchFieldParameterBuild {
-    my ( $Self, %Param ) = @_;
-
-    # get field value
-    my $Value = $Self->SearchFieldValueGet(%Param);
-
-    if ( !$Value ) {
-        return {
-            Parameter => {
-                'Like' => '',
-            },
-            Display => '',
-            }
-    }
-
-    # return search parameter structure
-    return {
-        Parameter => {
-            'Like' => '*' . $Value . '*',
-        },
-        Display => $Value,
-    };
-}
-
-sub StatsSearchFieldParameterBuild {
-    my ( $Self, %Param ) = @_;
-
-    my $Value = $Param{Value};
-
-    if ( !$Value ) {
-        return {
-            'Like' => '',
-        };
-    }
-
-    return {
-        'Like' => '*' . $Value . '*',
-    };
 }
 
 1;

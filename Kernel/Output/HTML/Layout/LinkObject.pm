@@ -361,6 +361,14 @@ sub LinkObjectTableCreateComplex {
                 PrefKey => "LinkObject::ComplexTable-" . $Block->{Blockname},
             );
 
+            # Add translations for the allocation lists for regular columns.
+            for my $Column ( @{ $Block->{AllColumns} } ) {
+                $LayoutObject->AddJSData(
+                    Key   => 'Column' . $Column->{ColumnName},
+                    Value => $LayoutObject->{LanguageObject}->Translate( $Column->{ColumnTranslate} ),
+                );
+            }
+
             # send data to JS
             $LayoutObject->AddJSData(
                 Key   => 'LinkObjectPreferences',
@@ -614,7 +622,7 @@ sub LinkObjectTableCreateSimple {
 
 =head2 LinkObjectSelectableObjectList()
 
-return a selection list of linkable objects
+return a selection list of link-able objects
 
     my $String = $LayoutObject->LinkObjectSelectableObjectList(
         Object   => 'Ticket',

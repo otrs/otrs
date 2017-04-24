@@ -351,47 +351,6 @@ Core.Agent.TicketZoom = (function (TargetNS) {
 
     /**
      * @private
-     * @name CreateChatRequest
-     * @memberof Core.Agent.TicketZoom
-     * @function
-     * @description
-     *      This function has click event for chat request creating.
-     */
-    function CreateChatRequest() {
-        var $Dialog;
-
-        $('a.CreateChatRequest').on('click', function() {
-            $Dialog = $('#DashboardUserOnlineChatStartDialog').clone();
-
-            $Dialog.find('input[name=ChatStartUserID]').val($(this).data('customer-user-id'));
-            $Dialog.find('input[name=ChatStartUserType]').val($(this).data('user-type'));
-            $Dialog.find('input[name=ChatStartUserFullname]').val($(this).data('user-fullname'));
-            $Dialog.find('input[name=TicketID]').val($(this).data('ticket-id'));
-            $Dialog.find('input[name=ChannelID]').val($(this).data('channel-id'));
-
-            Core.UI.Dialog.ShowContentDialog($Dialog.html(), Core.Language.Translate('Start chat'), '100px', 'Center', true);
-
-            // Only enable button if there is a message
-            $('.Dialog textarea[name="ChatStartFirstMessage"]').on('keyup', function(){
-                $('.Dialog button').prop('disabled', $(this).val().length ? false : true);
-            });
-
-            $('.Dialog form').on('submit', function(){
-                if (!$('.Dialog textarea[name=ChatStartFirstMessage]').val().length) {
-                    return false;
-                }
-                // Close after submit
-                window.setTimeout(function(){
-                    Core.UI.Dialog.CloseDialog($('.Dialog'));
-                }, 1);
-            });
-
-            return false;
-        });
-    }
-
-    /**
-     * @private
      * @name ArticleFilterEvents
      * @memberof Core.Agent.TicketZoom
      * @function
@@ -417,7 +376,7 @@ Core.Agent.TicketZoom = (function (TargetNS) {
                     {
                         Label: Core.Language.Translate("Reset"),
                         Function: function () {
-                            $('#ArticleTypeFilter').val('').trigger('redraw.InputField');
+                            $('#CommunicationChannelFilter').val('').trigger('redraw.InputField');
                             $('#ArticleSenderTypeFilter').val('').trigger('redraw.InputField');
                         }
                     }
@@ -493,7 +452,7 @@ Core.Agent.TicketZoom = (function (TargetNS) {
             ListObject = {
                 orientation   : TimelineView.Data.Items[Index].Orientation,
                 order         : TimelineView.Data.Items[Index].Counter,
-                id            : (typeof ArticleID !== 'undefined') ? ('ArticleID_' + ArticleID) : '',
+                id            : (typeof ArticleID !== 'undefined' && ArticleID !== '') ? ('ArticleID_' + ArticleID) : '',
                 class         : TimelineView.Data.Items[Index].Class,
                 time          : TimelineView.Data.Items[Index].CreateTime,
                 time_long     : TimelineView.Data.Items[Index].TimeLong,
@@ -505,21 +464,21 @@ Core.Agent.TicketZoom = (function (TargetNS) {
                 article_data  : {}
             };
 
-            if (typeof ArticleID !== 'undefined') {
+            if (typeof ArticleID !== 'undefined' && ArticleID !== '') {
                 ListObject.article_data = {
                     sender_type   : TimelineView.Data.Items[Index].ArticleData.SenderType,
-                    article_type  : TimelineView.Data.Items[Index].ArticleData.ArticleType,
+                    is_visible_for_customer  : TimelineView.Data.Items[Index].ArticleData.IsVisibleForCustomer,
                     subject       : TimelineView.Data.Items[Index].ArticleData.Subject,
                     from          : TimelineView.Data.Items[Index].ArticleData.From,
                     to            : TimelineView.Data.Items[Index].ArticleData.To,
                     cc            : TimelineView.Data.Items[Index].ArticleData.Cc,
                     is_important  : TimelineView.Data.Items[Index].ArticleData.ArticleIsImportant,
                     is_seen       : TimelineView.Data.Items[Index].ArticleData.ArticleIsSeen,
-                    attachment_id : TimelineView.Data.Items[Index].ArticleData.AttachmentIDOfHTMLBody,
+                    attachment_id : TimelineView.Data.Items[Index].ArticleData.HTMLBodyAttachmentID,
                     iframe_html   : '<iframe sandbox="allow-same-origin allow-popups ms-allow-popups allow-popups-to-escape-sandbox"' +
                                     ' data-url="' + Core.Config.Get("Baselink") +
-                                    'Action=AgentTicketAttachment;Subaction=HTMLView;ArticleID=' + ArticleID +
-                                    ';FileID=' + TimelineView.Data.Items[Index].ArticleData.AttachmentIDOfHTMLBody + ';' +
+                                    'Action=AgentTicketAttachment;Subaction=HTMLView;TicketID=' + TimelineView.Data.TicketID + ';ArticleID=' + ArticleID +
+                                    ';FileID=' + TimelineView.Data.Items[Index].ArticleData.HTMLBodyAttachmentID + ';' +
                                     Core.Config.Get("SessionName") + '=' + Core.Config.Get("SessionID") +
                                     '" width="100%" frameborder="0" id="Iframe' + ArticleID +
                                     '" class="TimelineArticleiFrame" src=""></iframe>'
@@ -533,7 +492,7 @@ Core.Agent.TicketZoom = (function (TargetNS) {
                     ListObject.article_data.text      = TimelineView.Data.Items[Index].ArticleData.Body.substring(0, 650);
                     ListObject.article_data.text_long = "";
 
-                    if (typeof TimelineView.Data.Items[Index].ArticleData.AttachmentIDOfHTMLBody === 'undefined') {
+                    if (typeof TimelineView.Data.Items[Index].ArticleData.HTMLBodyAttachmentID === 'undefined') {
                         ListObject.article_data.text_long = TimelineView.Data.Items[Index].ArticleData.Body;
                     }
                 }
@@ -709,6 +668,19 @@ Core.Agent.TicketZoom = (function (TargetNS) {
         for (ElementID in AsyncWidgetActions) {
             if (AsyncWidgetActions.hasOwnProperty(ElementID)) {
                 Core.AJAX.ContentUpdate($('#' + ElementID), Core.Config.Get('Baselink') + AsyncWidgetActions[ElementID], function() {
+                    $('#' + ElementID).find("a.AsPopup").on('click', function () {
+                        var Matches,
+                            PopupType = 'TicketAction';
+
+                        Matches = $(this).attr('class').match(/PopupType_(\w+)/);
+                        if (Matches) {
+                            PopupType = Matches[1];
+                        }
+
+                        Core.UI.Popup.OpenPopup($(this).attr('href'), PopupType);
+                        return false;
+                    });
+
                     $('#' + ElementID).find('.WidgetSimple').hide().fadeIn();
                     Core.UI.InitWidgetActionToggle();
                 });
@@ -790,12 +762,11 @@ Core.Agent.TicketZoom = (function (TargetNS) {
             TargetNS.MarkAsSeen(TicketID, ArticleIDs[Count]);
         }
 
-        // initialize chat request creating
-        CreateChatRequest();
-
         // event on change queue
         $('#DestQueueID').on('change', function () {
-            $(this).closest('form').submit();
+            if ($('#DestQueueID option:selected').val()) {
+                $(this).closest('form').submit();
+            }
         });
 
         // initialize article filter events

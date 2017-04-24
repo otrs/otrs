@@ -13,7 +13,7 @@ use warnings;
 
 use Kernel::System::VariableCheck qw(:all);
 
-use base qw(Kernel::System::DynamicField::Driver::BaseSelect);
+use parent qw(Kernel::System::DynamicField::Driver::BaseSelect);
 
 our @ObjectDependencies = (
     'Kernel::Config',
@@ -717,7 +717,7 @@ sub StatsFieldParameterBuild {
         Values             => $Values,
         Name               => $Param{DynamicFieldConfig}->{Label},
         Element            => 'DynamicField_' . $Param{DynamicFieldConfig}->{Name},
-        TranslatableValues => $Param{DynamicFieldconfig}->{Config}->{TranslatableValues},
+        TranslatableValues => $Param{DynamicFieldConfig}->{Config}->{TranslatableValues},
         Block              => 'MultiSelectField',
     };
 }

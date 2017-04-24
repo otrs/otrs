@@ -45,8 +45,8 @@ $Selenium->RunTest(
             UserLogin => $TestUserLogin,
         );
 
-        # get ticket object
-        my $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
+        my $TicketObject         = $Kernel::OM->Get('Kernel::System::Ticket');
+        my $ArticleBackendObject = $Kernel::OM->Get('Kernel::System::Ticket::Article::Backend::Internal');
 
         # create test ticket
         my $TicketID = $TicketObject->TicketCreate(
@@ -103,7 +103,7 @@ $Selenium->RunTest(
 
         # check page
         for my $ID (
-            qw(Subject RichText FileUpload ArticleTypeID submitRichText)
+            qw(Subject RichText FileUpload IsVisibleForCustomer submitRichText)
             )
         {
             my $Element = $Selenium->find_element( "#$ID", 'css' );
@@ -214,17 +214,17 @@ $Selenium->RunTest(
         my $ContentID = 'inline173020.131906379.1472199795.695365.264540139@localhost';
 
         # create test note with inline attachment
-        my $ArticleID = $TicketObject->ArticleCreate(
-            TicketID       => $TicketID,
-            ArticleType    => 'note-internal',
-            SenderType     => 'agent',
-            Subject        => 'Selenium subject test',
-            Body           => '<!DOCTYPE html><html><body><img src="cid:' . $ContentID . '" /></body></html>',
-            ContentType    => 'text/html; charset="utf8"',
-            HistoryType    => 'AddNote',
-            HistoryComment => 'Added note (Note)',
-            UserID         => 1,
-            Attachment     => [
+        my $ArticleID = $ArticleBackendObject->ArticleCreate(
+            TicketID             => $TicketID,
+            IsVisibleForCustomer => 0,
+            SenderType           => 'agent',
+            Subject              => 'Selenium subject test',
+            Body                 => '<!DOCTYPE html><html><body><img src="cid:' . $ContentID . '" /></body></html>',
+            ContentType          => 'text/html; charset="utf8"',
+            HistoryType          => 'AddNote',
+            HistoryComment       => 'Added note (Note)',
+            UserID               => 1,
+            Attachment           => [
                 {
                     Content     => $Content,
                     ContentID   => $ContentID,
@@ -275,21 +275,22 @@ $Selenium->RunTest(
         );
 
         # get last article id
-        my @ArticleIDs = $TicketObject->ArticleIndex(
+        my @Articles = $Kernel::OM->Get('Kernel::System::Ticket::Article')->ArticleList(
             TicketID => $TicketID,
+            OnlyLast => 1,
         );
-        my $LastArticleID = pop @ArticleIDs;
+        my $LastArticleID = $Articles[0]->{ArticleID};
 
         # get article attachments
         my $HTMLContent     = '';
-        my %AttachmentIndex = $TicketObject->ArticleAttachmentIndex(
+        my %AttachmentIndex = $ArticleBackendObject->ArticleAttachmentIndex(
             ArticleID => $LastArticleID,
             UserID    => 1,
         );
 
         # go through all attachments
         for my $FileID ( sort keys %AttachmentIndex ) {
-            my %Attachment = $TicketObject->ArticleAttachment(
+            my %Attachment = $ArticleBackendObject->ArticleAttachment(
                 ArticleID => $LastArticleID,
                 FileID    => $FileID,
                 UserID    => 1,
@@ -322,8 +323,111 @@ $Selenium->RunTest(
             'Inline attachment found in note reply',
         );
 
+        # add a template
+        my $RandomID               = $Helper->GetRandomID();
+        my $TemplateText           = 'This is a test template';
+        my $StandardTemplateObject = $Kernel::OM->Get('Kernel::System::StandardTemplate');
+        my $TemplateID             = $StandardTemplateObject->StandardTemplateAdd(
+            Name         => 'UTTemplate_' . $RandomID,
+            Template     => $TemplateText,
+            ContentType  => 'text/plain; charset=utf-8',
+            TemplateType => 'Note',
+            ValidID      => 1,
+            UserID       => 1,
+        );
+
+        $Self->True(
+            $TemplateID,
+            "Template is created - ID $TemplateID",
+        );
+
+        my $QueueObject = $Kernel::OM->Get('Kernel::System::Queue');
+        my $QueueID = $QueueObject->QueueLookup( Queue => 'Raw' );
+
+        # assign the template to our queue
+        my $Success = $QueueObject->QueueStandardTemplateMemberAdd(
+            QueueID            => $QueueID,
+            StandardTemplateID => $TemplateID,
+            Active             => 1,
+            UserID             => 1,
+        );
+        $Self->True(
+            $Success,
+            "Template got assigned to 'Raw'",
+        );
+
+        # now switch to mobile mode and reload the window
+        $Selenium->set_window_size( 600, 400 );
+        $Selenium->VerifiedGet("${ScriptAlias}index.pl?Action=AgentTicketZoom;TicketID=$TicketID");
+
+        $Selenium->execute_script(
+            "\$('.Cluster ul.Actions').scrollLeft(\$('#nav-Note').offset().left - \$('#nav-Note').width());"
+        );
+
+        # open the note screen (which should be an iframe now)
+        $Selenium->find_element("//a[contains(\@href, \'Action=AgentTicketNote;TicketID=$TicketID' )]")
+            ->VerifiedClick();
+
+        # wait for the iframe to show up
+        $Selenium->WaitFor(
+            JavaScript =>
+                "return typeof(\$) === 'function' && \$('form#Compose', \$('.PopupIframe').contents()).length == 1"
+        );
+
+        # get frame name
+        my $FrameName = $Selenium->execute_script(
+            "return \$('iframe.PopupIframe').attr('name');"
+        );
+
+        $Selenium->switch_to_frame($FrameName);
+
+        # expand the article widget
+        $Selenium->find_element( "#WidgetArticle .Toggle a", 'css' )->click();
+
+        $Selenium->execute_script(
+            "\$('#WidgetArticle .Toggle a', \$('.PopupIframe').contents()).trigger('click')"
+        );
+
+        # check if the richtext is empty
+        $Self->Is(
+            $Selenium->find_element( '#RichText', 'css' )->get_value(),
+            '',
+            "RichText is empty",
+        );
+
+        # select the created template
+        $Selenium->execute_script(
+            "\$('#StandardTemplateID').val('$TemplateID').trigger('redraw.InputField').trigger('change');"
+        );
+
+        # wait a short time and for the spinner to disappear
+        sleep(2);
+        $Selenium->WaitFor(
+            JavaScript =>
+                "return typeof(\$) === 'function' && \$('.AJAXLoader:visible', \$('.PopupIframe').contents()).length == 0"
+        );
+
+        my $CKEditorValue = $Selenium->execute_script(
+            "return CKEDITOR.instances.RichText.getData()"
+        );
+
+        $Self->Is(
+            $CKEditorValue,
+            $TemplateText,
+            "RichText contains the correct value from the selected template",
+        );
+
+        # delete template
+        $Success = $StandardTemplateObject->StandardTemplateDelete(
+            ID => $TemplateID,
+        );
+        $Self->True(
+            $Success,
+            "Template is deleted - ID $TemplateID",
+        );
+
         # delete created test tickets
-        my $Success = $TicketObject->TicketDelete(
+        $Success = $TicketObject->TicketDelete(
             TicketID => $TicketID,
             UserID   => $TestUserID,
         );

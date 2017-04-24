@@ -701,7 +701,7 @@
         </Setting>
     </ConfigItem>
     <ConfigItem Name="MinimumLogLevel" Required="1" Valid="1">
-        <Description Translatable="1">Set minimum loglevel. If you select 'error', just errors are logged. With 'debug' you get all logging messages.</Description>
+        <Description Translatable="1">Set the minimum log level. If you select 'error', just errors are logged. With 'debug' you get all logging messages. The order of log levels is: 'debug', 'info', 'notice' and 'error'.</Description>
         <Group>Framework</Group>
         <SubGroup>Core::Log</SubGroup>
         <Setting>
@@ -930,6 +930,28 @@
             </Hash>
         </Setting>
     </ConfigItem>
+    <ConfigItem Name="Frontend::NotifyModule###5000-SystemConfigurationIsDirty-Check" Required="1" Valid="1">
+        <Description Translatable="1">Defines the module to display a notification in the agent interface, if there are modified sysconfig settings that are not deployed yet.</Description>
+        <Group>Framework</Group>
+        <SubGroup>Frontend::Agent::ModuleNotify</SubGroup>
+        <Setting>
+            <Hash>
+                <Item Key="Module">Kernel::Output::HTML::Notification::SystemConfigurationIsDirtyCheck</Item>
+                <Item Key="Group">admin</Item>
+            </Hash>
+        </Setting>
+    </ConfigItem>
+    <ConfigItem Name="Frontend::NotifyModule###5200-SystemConfigurationInvalid-Check" Required="1" Valid="1">
+        <Description Translatable="1">Defines the module to display a notification in the agent interface, if there are invalid sysconfig settings deployed.</Description>
+        <Group>Framework</Group>
+        <SubGroup>Frontend::Agent::ModuleNotify</SubGroup>
+        <Setting>
+            <Hash>
+                <Item Key="Module">Kernel::Output::HTML::Notification::SystemConfigurationInvalidCheck</Item>
+                <Item Key="Group">admin</Item>
+            </Hash>
+        </Setting>
+    </ConfigItem>
     <ConfigItem Name="Frontend::NotifyModule###5500-OutofOffice-Check" Required="1" Valid="1">
         <Description Translatable="1">Defines the module to display a notification in the agent interface, if the agent is logged in while having out-of-office active.</Description>
         <Group>Framework</Group>
@@ -947,6 +969,17 @@
         <Setting>
             <Hash>
                 <Item Key="Module">Kernel::Output::HTML::Notification::SystemMaintenanceCheck</Item>
+            </Hash>
+        </Setting>
+    </ConfigItem>
+    <ConfigItem Name="Frontend::NotifyModule###6050-SystemConfiguration-OutOfSync-Check" Required="1" Valid="1">
+        <Description Translatable="1">Defines the module to display a notification in the agent interface if the system configuration is out of sync.</Description>
+        <Group>Daemon</Group>
+        <SubGroup>Frontend::Agent::ModuleNotify</SubGroup>
+        <Setting>
+            <Hash>
+                <Item Key="Module">Kernel::Output::HTML::Notification::SystemConfigurationOutOfSyncCheck</Item>
+                <Item Key="AllowedDelayMinutes">5</Item>
             </Hash>
         </Setting>
     </ConfigItem>
@@ -1036,14 +1069,6 @@
             <String Regex="^[0-9]{1,8}$">21600</String>
         </Setting>
     </ConfigItem>
-    <ConfigItem Name="SessionActiveTime" Required="1" Valid="1">
-        <Description Translatable="1">Sets the time (in seconds) a user is marked as active (minimum active time is 300 seconds).</Description>
-        <Group>Framework</Group>
-        <SubGroup>Core::Session</SubGroup>
-        <Setting>
-            <String Regex="^[3-9][0-9]{2,6}|[1-9][0-9]{3,6}$">600</String>
-        </Setting>
-    </ConfigItem>
     <ConfigItem Name="SessionDeleteIfTimeToOld" Required="1" Valid="1">
         <Description Translatable="1">Deletes requested sessions if they have timed out.</Description>
         <Group>Framework</Group>
@@ -1089,7 +1114,7 @@
         </Setting>
     </ConfigItem>
     <ConfigItem Name="AgentSessionLimitPriorWarning" Required="0" Valid="0">
-        <Description Translatable="1">Sets the maximum number of active agents within the timespan defined in SessionActiveTime before a prior warning will be visible for the logged in agents.</Description>
+        <Description Translatable="1">Sets the maximum number of active agents within the timespan defined in SessionMaxIdleTime before a prior warning will be visible for the logged in agents.</Description>
         <Group>Framework</Group>
         <SubGroup>Core::Session</SubGroup>
         <Setting>
@@ -1097,7 +1122,7 @@
         </Setting>
     </ConfigItem>
     <ConfigItem Name="AgentSessionLimit" Required="0" Valid="1">
-        <Description Translatable="1">Sets the maximum number of active agents within the timespan defined in SessionActiveTime.</Description>
+        <Description Translatable="1">Sets the maximum number of active agents within the timespan defined in SessionMaxIdleTime.</Description>
         <Group>Framework</Group>
         <SubGroup>Core::Session</SubGroup>
         <Setting>
@@ -1105,7 +1130,7 @@
         </Setting>
     </ConfigItem>
     <ConfigItem Name="AgentSessionPerUserLimit" Required="0" Valid="1">
-        <Description Translatable="1">Sets the maximum number of active sessions per agent within the timespan defined in SessionActiveTime.</Description>
+        <Description Translatable="1">Sets the maximum number of active sessions per agent within the timespan defined in SessionMaxIdleTime.</Description>
         <Group>Framework</Group>
         <SubGroup>Core::Session</SubGroup>
         <Setting>
@@ -1113,7 +1138,7 @@
         </Setting>
     </ConfigItem>
     <ConfigItem Name="CustomerSessionLimit" Required="0" Valid="1">
-        <Description Translatable="1">Sets the maximum number of active customers within the timespan defined in SessionActiveTime.</Description>
+        <Description Translatable="1">Sets the maximum number of active customers within the timespan defined in SessionMaxIdleTime.</Description>
         <Group>Framework</Group>
         <SubGroup>Core::Session</SubGroup>
         <Setting>
@@ -1121,7 +1146,7 @@
         </Setting>
     </ConfigItem>
     <ConfigItem Name="CustomerSessionPerUserLimit" Required="0" Valid="1">
-        <Description Translatable="1">Sets the maximum number of active sessions per customers within the timespan defined in SessionActiveTime.</Description>
+        <Description Translatable="1">Sets the maximum number of active sessions per customers within the timespan defined in SessionMaxIdleTime.</Description>
         <Group>Framework</Group>
         <SubGroup>Core::Session</SubGroup>
         <Setting>
@@ -7291,6 +7316,18 @@
             </Option>
         </Setting>
     </ConfigItem>
+    <ConfigItem Name="Package::EventModulePost###8000-LinkObjectEventTypes" Required="0" Valid="1">
+        <Description Translatable="1">Package event module to update configuration for link object event types.</Description>
+        <Group>Framework</Group>
+        <SubGroup>Core::Package</SubGroup>
+        <Setting>
+            <Hash>
+                <Item Key="Module">Kernel::System::Package::Event::LinkObjectEventTypes</Item>
+                <Item Key="Event">(PackageInstall|PackageReinstall|PackageUpgrade|PackageUninstall)</Item>
+                <Item Key="Transaction">1</Item>
+            </Hash>
+        </Setting>
+    </ConfigItem>
     <ConfigItem Name="Package::EventModulePost###9000-SupportDataSend" Required="0" Valid="1">
         <Description Translatable="1">Package event module file a scheduler task for update registration.</Description>
         <Group>Framework</Group>
@@ -7865,18 +7902,6 @@ You can log in via the following URL:
             <String Regex="">user_id</String>
         </Setting>
     </ConfigItem>
-    <ConfigItem Name="PreferencesView" Required="1" Valid="1">
-        <Description Translatable="1">Sets the display order of the different items in the preferences view.</Description>
-        <Group>Framework</Group>
-        <SubGroup>Frontend::Agent::Preferences</SubGroup>
-        <Setting>
-            <Array>
-                <Item Translatable="1">User Profile</Item>
-                <Item Translatable="1">Notification Settings</Item>
-                <Item Translatable="1">Other Settings</Item>
-            </Array>
-        </Setting>
-    </ConfigItem>
     <ConfigItem Name="PreferencesGroups###Password" Required="0" Valid="1">
         <Description Translatable="1">Defines the config parameters of this item, to be shown in the preferences view. 'PasswordRegExp' allows to match passwords against a regular expression. Define the minimum number of characters using 'PasswordMinSize'. Define if at least 2 lowercase and 2 uppercase letter characters are needed by setting the appropriate option to '1'. 'PasswordMin2Characters' defines if the password needs to contain at least 2 letter characters (set to 0 or 1). 'PasswordNeedDigit' controls the need of at least 1 digit (set to 0 or 1 to control). 'PasswordMaxLoginFailed' allows to set an agent to invalid-temporarily if max failed logins reached.</Description>
         <Group>Framework</Group>
@@ -7884,10 +7909,11 @@ You can log in via the following URL:
         <Setting>
             <Hash>
                 <Item Key="Module">Kernel::Output::HTML::Preferences::Password</Item>
-                <Item Key="Column">User Profile</Item>
+                <Item Key="PreferenceGroup">UserProfile</Item>
                 <Item Key="Label" Translatable="1">Change password</Item>
                 <Item Key="Prio">0500</Item>
                 <Item Key="Area">Agent</Item>
+                <Item Key="Desc" Translatable="1">Set a new password by filling in your current password and a new one.</Item>
                 <!-- <Item Key="PasswordRegExp">[a-z]|[A-z]|[0-9]|\.|;|,|:|-|\+|#|!|\$|&|\?</Item> -->
                 <Item Key="PasswordRegExp"></Item>
                 <Item Key="PasswordMinSize">0</Item>
@@ -7906,7 +7932,7 @@ You can log in via the following URL:
         <Setting>
             <Hash>
                 <Item Key="Module">Kernel::Output::HTML::Preferences::Generic</Item>
-                <Item Key="Column">User Profile</Item>
+                <Item Key="PreferenceGroup">UserProfile</Item>
                 <Item Key="Label" Translatable="1">Google Authenticator</Item>
                 <Item Key="Desc" Translatable="1">Enter your shared secret to enable two factor authentication.</Item>
                 <Item Key="Key" Translatable="1">Shared Secret</Item>
@@ -7924,7 +7950,7 @@ You can log in via the following URL:
         <Setting>
             <Hash>
                 <Item Key="Module">Kernel::Output::HTML::Preferences::Generic</Item>
-                <Item Key="Column">User Profile</Item>
+                <Item Key="PreferenceGroup">UserProfile</Item>
                 <Item Key="Label" Translatable="1">Spelling Dictionary</Item>
                 <Item Key="Key" Translatable="1">Default spelling dictionary</Item>
                 <Item Key="Data">
@@ -7947,7 +7973,7 @@ You can log in via the following URL:
         <Setting>
             <Hash>
                 <Item Key="Module">Kernel::Output::HTML::Preferences::Generic</Item>
-                <Item Key="Column">Other Settings</Item>
+                <Item Key="PreferenceGroup">Miscellaneous</Item>
                 <Item Key="Label" Translatable="1">Comment</Item>
                 <Item Key="Key" Translatable="1">Comment</Item>
                 <Item Key="Block">Input</Item>
@@ -7965,7 +7991,7 @@ You can log in via the following URL:
         <Setting>
             <Hash>
                 <Item Key="Module">Kernel::Output::HTML::Preferences::Generic</Item>
-                <Item Key="Column">Other Settings</Item>
+                <Item Key="PreferenceGroup">Miscellaneous</Item>
                 <Item Key="Label" Translatable="1">NameX</Item>
                 <Item Key="Key" Translatable="1">Default value for NameX</Item>
                 <Item Key="Block">Input</Item>
@@ -7983,9 +8009,10 @@ You can log in via the following URL:
         <Setting>
             <Hash>
                 <Item Key="Module">Kernel::Output::HTML::Preferences::Language</Item>
-                <Item Key="Column">User Profile</Item>
+                <Item Key="PreferenceGroup">UserProfile</Item>
                 <Item Key="Label" Translatable="1">Language</Item>
-                <Item Key="Key" Translatable="1">Language</Item>
+                <Item Key="Desc" Translatable="1">Select the main interface language.</Item>
+                <Item Key="Key" Translatable="1"></Item>
                 <Item Key="PrefKey">UserLanguage</Item>
                 <Item Key="Prio">1000</Item>
                 <Item Key="Active">1</Item>
@@ -7999,9 +8026,10 @@ You can log in via the following URL:
         <Setting>
             <Hash>
                 <Item Key="Module">Kernel::Output::HTML::Preferences::Skin</Item>
-                <Item Key="Column">Other Settings</Item>
+                <Item Key="PreferenceGroup">Miscellaneous</Item>
                 <Item Key="Label" Translatable="1">Skin</Item>
-                <Item Key="Key" Translatable="1">Skin</Item>
+                <Item Key="Desc" Translatable="1">Select your preferred layout for the software.</Item>
+                <Item Key="Key" Translatable="1"></Item>
                 <Item Key="PrefKey">UserSkin</Item>
                 <Item Key="Prio">100</Item>
                 <Item Key="Active">1</Item>
@@ -8015,7 +8043,7 @@ You can log in via the following URL:
         <Setting>
             <Hash>
                 <Item Key="Module">Kernel::Output::HTML::Preferences::Theme</Item>
-                <Item Key="Column">User Profile</Item>
+                <Item Key="PreferenceGroup">UserProfile</Item>
                 <Item Key="Label" Translatable="1">Theme</Item>
                 <Item Key="Key" Translatable="1">Frontend theme</Item>
                 <Item Key="PrefKey">UserTheme</Item>
@@ -8031,9 +8059,10 @@ You can log in via the following URL:
         <Setting>
             <Hash>
                 <Item Key="Module">Kernel::Output::HTML::Preferences::TimeZone</Item>
-                <Item Key="Column">User Profile</Item>
+                <Item Key="PreferenceGroup">UserProfile</Item>
+                <Item Key="Desc" Translatable="1">Select your personal time zone. All times will be displayed relative to this time zone.</Item>
                 <Item Key="Label" Translatable="1">Time Zone</Item>
-                <Item Key="Key" Translatable="1">Time Zone</Item>
+                <Item Key="Key" Translatable="1"></Item>
                 <Item Key="PrefKey">UserTimeZone</Item>
                 <Item Key="Prio">3500</Item>
                 <Item Key="Active">1</Item>
@@ -8047,8 +8076,9 @@ You can log in via the following URL:
         <Setting>
             <Hash>
                 <Item Key="Module">Kernel::Output::HTML::Preferences::OutOfOffice</Item>
-                <Item Key="Column">User Profile</Item>
+                <Item Key="PreferenceGroup">UserProfile</Item>
                 <Item Key="Block">OutOfOffice</Item>
+                <Item Key="Desc" Translatable="1">If you're going to be out of office, you may wish to let other users know by setting the exact dates of your absence.</Item>
                 <Item Key="Label" Translatable="1">Out Of Office Time</Item>
                 <Item Key="Key" Translatable="1"></Item>
                 <Item Key="PrefKey">UserOutOfOffice</Item>
@@ -8064,7 +8094,7 @@ You can log in via the following URL:
         <Setting>
             <Hash>
                 <Item Key="Module">Kernel::Output::HTML::Preferences::Generic</Item>
-                <Item Key="Column">Other Settings</Item>
+                <Item Key="PreferenceGroup">Miscellaneous</Item>
                 <Item Key="Label" Translatable="1">CSV Separator</Item>
                 <Item Key="Desc" Translatable="1">Select the separator character used in CSV files (stats and searches). If you don't select a separator here, the default separator for your language will be used.</Item>
                 <Item Key="Key" Translatable="1">CSV Separator</Item>
@@ -8093,7 +8123,7 @@ You can log in via the following URL:
         </Setting>
     </ConfigItem>
     <ConfigItem Name="CustomerGroupSupport" Required="1" Valid="1">
-        <Description Translatable="1">Activates support for customer groups.</Description>
+        <Description Translatable="1">Activates support for customer and customer user groups.</Description>
         <Group>Framework</Group>
         <SubGroup>Frontend::Customer</SubGroup>
         <Setting>
@@ -8104,13 +8134,47 @@ You can log in via the following URL:
         </Setting>
     </ConfigItem>
     <ConfigItem Name="CustomerGroupAlwaysGroups" Required="1" Valid="1">
-        <Description Translatable="1">Defines the groups every customer user will be in (if CustomerGroupSupport is enabled and you don't want to manage every user for these groups).</Description>
+        <Description Translatable="1">Defines the groups every customer user will be in (if CustomerGroupSupport is enabled and you don't want to manage every customer user for these groups).</Description>
         <Group>Framework</Group>
         <SubGroup>Frontend::Customer</SubGroup>
         <Setting>
             <Array>
                 <Item>users</Item>
             </Array>
+        </Setting>
+    </ConfigItem>
+    <ConfigItem Name="CustomerGroupCompanyAlwaysGroups" Required="1" Valid="1">
+        <Description Translatable="1">Defines the groups every customer will be in (if CustomerGroupSupport is enabled and you don't want to manage every customer for these groups).</Description>
+        <Group>Framework</Group>
+        <SubGroup>Frontend::Customer</SubGroup>
+        <Setting>
+            <Array>
+                <Item>users</Item>
+            </Array>
+        </Setting>
+    </ConfigItem>
+    <ConfigItem Name="CustomerGroupPermissionContext###001-CustomerID-same" Required="1" Valid="1">
+        <Description Translatable="1">Defines a permission context for customer to group assignment.</Description>
+        <Group>Framework</Group>
+        <SubGroup>Frontend::Customer</SubGroup>
+        <Setting>
+            <Hash>
+                <Item Key="Value">Ticket::CustomerID::Same</Item>
+                <Item Key="Name" Translatable="1">Same Customer</Item>
+                <Item Key="Description" Translatable="1">Gives customer users group based access to tickets from customer users of the same customer (ticket CustomerID is a CustomerID of the customer user).</Item>
+            </Hash>
+        </Setting>
+    </ConfigItem>
+    <ConfigItem Name="CustomerGroupPermissionContext###100-CustomerID-other" Required="0" Valid="0">
+        <Description Translatable="1">Defines a permission context for customer to group assignment.</Description>
+        <Group>Framework</Group>
+        <SubGroup>Frontend::Customer</SubGroup>
+        <Setting>
+            <Hash>
+                <Item Key="Value">Ticket::CustomerID::Other</Item>
+                <Item Key="Name" Translatable="1">Other Customers</Item>
+                <Item Key="Description" Translatable="1">Provides customer users access to tickets even if the tickets are not assigned to a customer user of the same customer ID(s), based on permission groups.</Item>
+            </Hash>
         </Setting>
     </ConfigItem>
     <ConfigItem Name="CustomerFrontend::HeaderMetaModule###1-Refresh" Required="1" Valid="1">
@@ -8683,17 +8747,6 @@ via the Preferences button after logging in.
             </Hash>
         </Setting>
     </ConfigItem>
-    <ConfigItem Name="CustomerPreferencesView" Required="1" Valid="1">
-        <Description Translatable="1">Sets the order of the different items in the customer preferences view.</Description>
-        <Group>Framework</Group>
-        <SubGroup>Frontend::Customer::Preferences</SubGroup>
-        <Setting>
-            <Array>
-                <Item Translatable="1">User Profile</Item>
-                <Item Translatable="1">Other Settings</Item>
-            </Array>
-        </Setting>
-    </ConfigItem>
     <ConfigItem Name="CustomerPreferencesGroups###Password" Required="0" Valid="1">
         <Description Translatable="1">Defines all the parameters for this item in the customer preferences. 'PasswordRegExp' allows to match passwords against a regular expression. Define the minimum number of characters using 'PasswordMinSize'. Define if at least 2 lowercase and 2 uppercase letter characters are needed by setting the appropriate option to '1'. 'PasswordMin2Characters' defines if the password needs to contain at least 2 letter characters (set to 0 or 1). 'PasswordNeedDigit' controls the need of at least 1 digit (set to 0 or 1 to control).</Description>
         <Group>Framework</Group>
@@ -8701,10 +8754,11 @@ via the Preferences button after logging in.
         <Setting>
             <Hash>
                 <Item Key="Module">Kernel::Output::HTML::Preferences::Password</Item>
-                <Item Key="Column">Other Settings</Item>
+                <Item Key="PreferenceGroup">Miscellaneous</Item>
                 <Item Key="Label" Translatable="1">Change password</Item>
                 <Item Key="Prio">1000</Item>
                 <Item Key="Area">Customer</Item>
+                <Item Key="Desc" Translatable="1">Set a new password by filling in your current password and a new one.</Item>
                 <!-- <Item Key="PasswordRegExp">[a-z]|[A-z]|[0-9]|\.|;|,|:|-|\+|#|!|\$|&|\?</Item> -->
                 <Item Key="PasswordRegExp"></Item>
                 <Item Key="PasswordMinSize">0</Item>
@@ -8722,7 +8776,7 @@ via the Preferences button after logging in.
         <Setting>
             <Hash>
                 <Item Key="Module">Kernel::Output::HTML::Preferences::Generic</Item>
-                <Item Key="Column">Other Settings</Item>
+                <Item Key="PreferenceGroup">Miscellaneous</Item>
                 <Item Key="Label" Translatable="1">Google Authenticator</Item>
                 <Item Key="Key" Translatable="1">Shared Secret</Item>
                 <Item Key="Block">Input</Item>
@@ -8739,8 +8793,9 @@ via the Preferences button after logging in.
         <Setting>
             <Hash>
                 <Item Key="Module">Kernel::Output::HTML::Preferences::Language</Item>
-                <Item Key="Column">User Profile</Item>
+                <Item Key="PreferenceGroup">UserProfile</Item>
                 <Item Key="Label" Translatable="1">Interface language</Item>
+                <Item Key="Desc" Translatable="1">Select the main interface language.</Item>
                 <Item Key="Key" Translatable="1">Language</Item>
                 <Item Key="PrefKey">UserLanguage</Item>
                 <Item Key="Prio">2000</Item>
@@ -8755,22 +8810,24 @@ via the Preferences button after logging in.
         <Setting>
             <Hash>
                 <Item Key="Module">Kernel::Output::HTML::Preferences::TimeZone</Item>
-                <Item Key="Column">User Profile</Item>
+                <Item Key="PreferenceGroup">UserProfile</Item>
                 <Item Key="Label" Translatable="1">Time Zone</Item>
+                <Item Key="Desc" Translatable="1">Select your personal time zone. All times will be displayed relative to this time zone.</Item>
                 <Item Key="Key" Translatable="1">Time Zone</Item>
                 <Item Key="PrefKey">UserTimeZone</Item>
                 <Item Key="Prio">2500</Item>
                 <Item Key="Active">1</Item>
             </Hash>
         </Setting>
-    </ConfigItem>    <ConfigItem Name="CustomerPreferencesGroups###Theme" Required="0" Valid="1">
+    </ConfigItem>
+    <ConfigItem Name="CustomerPreferencesGroups###Theme" Required="0" Valid="1">
         <Description Translatable="1">Defines all the parameters for this item in the customer preferences.</Description>
         <Group>Framework</Group>
         <SubGroup>Frontend::Customer::Preferences</SubGroup>
         <Setting>
             <Hash>
                 <Item Key="Module">Kernel::Output::HTML::Preferences::Theme</Item>
-                <Item Key="Column">User Profile</Item>
+                <Item Key="PreferenceGroup">UserProfile</Item>
                 <Item Key="Label" Translatable="1">Theme</Item>
                 <Item Key="Key" Translatable="1">Select your frontend Theme.</Item>
                 <Item Key="PrefKey">UserTheme</Item>
@@ -8786,7 +8843,7 @@ via the Preferences button after logging in.
         <Setting>
             <Hash>
                 <Item Key="Module">Kernel::Output::HTML::Preferences::PGP</Item>
-                <Item Key="Column">Other Settings</Item>
+                <Item Key="PreferenceGroup">Miscellaneous</Item>
                 <Item Key="Label" Translatable="1">PGP Key</Item>
                 <Item Key="Key" Translatable="1">PGP Key Upload</Item>
                 <Item Key="PrefKey">UserPGPKey</Item>
@@ -8802,7 +8859,7 @@ via the Preferences button after logging in.
         <Setting>
             <Hash>
                 <Item Key="Module">Kernel::Output::HTML::Preferences::SMIME</Item>
-                <Item Key="Column">Other Settings</Item>
+                <Item Key="PreferenceGroup">Miscellaneous</Item>
                 <Item Key="Label" Translatable="1">S/MIME Certificate</Item>
                 <Item Key="Key" Translatable="1">S/MIME Certificate Upload</Item>
                 <Item Key="PrefKey">UserSMIMEKey</Item>
@@ -8846,10 +8903,10 @@ via the Preferences button after logging in.
                 <Loader>
                     <CSS>Core.Agent.Dashboard.css</CSS>
                     <CSS>Core.AllocationList.css</CSS>
-                    <CSS>thirdparty/fullcalendar-3.1.0/fullcalendar.min.css</CSS>
+                    <CSS>thirdparty/fullcalendar-3.2.0/fullcalendar.min.css</CSS>
                     <CSS>thirdparty/nvd3-1.7.1/nv.d3.css</CSS>
                     <JavaScript>thirdparty/momentjs-2.17.1/moment.min.js</JavaScript>
-                    <JavaScript>thirdparty/fullcalendar-3.1.0/fullcalendar.min.js</JavaScript>
+                    <JavaScript>thirdparty/fullcalendar-3.2.0/fullcalendar.min.js</JavaScript>
                     <JavaScript>thirdparty/d3-3.5.6/d3.min.js</JavaScript>
                     <JavaScript>thirdparty/nvd3-1.7.1/nvd3.min.js</JavaScript>
                     <JavaScript>thirdparty/nvd3-1.7.1/models/OTRSLineChart.js</JavaScript>
@@ -8967,6 +9024,103 @@ via the Preferences button after logging in.
             </Hash>
         </Setting>
     </ConfigItem>
+
+    <ConfigItem Name="Frontend::Module###AgentCustomerUserInformationCenter" Required="0" Valid="1">
+        <Description Translatable="1">Frontend module registration for the agent interface.</Description>
+        <Group>Framework</Group>
+        <SubGroup>Frontend::Agent::ModuleRegistration</SubGroup>
+        <Setting>
+            <FrontendModuleReg>
+                <Description Translatable="1">Customer User Information Center.</Description>
+                <Title></Title>
+                <NavBarName>Customer Users</NavBarName>
+                <NavBar>
+                    <Description Translatable="1"></Description>
+                    <Name Translatable="1">Customer User Information Center</Name>
+                    <Link>Action=AgentCustomerUserInformationCenter</Link>
+                    <LinkOption>onclick="window.setTimeout(function(){Core.Agent.CustomerUserInformationCenterSearch.OpenSearchDialog();}, 0); return false;"</LinkOption>
+                    <NavBar>Customers</NavBar>
+                    <Type></Type>
+                    <Block>ItemArea</Block>
+                    <AccessKey>u</AccessKey>
+                    <Prio>55</Prio>
+                </NavBar>
+                <Loader>
+                    <CSS>Core.AllocationList.css</CSS>
+                    <JavaScript>Core.UI.AllocationList.js</JavaScript>
+                    <JavaScript>Core.Agent.Dashboard.js</JavaScript>
+                    <JavaScript>Core.Agent.TableFilters.js</JavaScript>
+                    <JavaScript>Core.Agent.CustomerUserInformationCenter.js</JavaScript>
+                </Loader>
+            </FrontendModuleReg>
+        </Setting>
+    </ConfigItem>
+    <ConfigItem Name="Frontend::Module###AgentCustomerUserInformationCenterSearch" Required="0" Valid="1">
+        <Description Translatable="1">Frontend module registration for the agent interface.</Description>
+        <Group>Framework</Group>
+        <SubGroup>Frontend::Agent::ModuleRegistration</SubGroup>
+        <Setting>
+            <FrontendModuleReg>
+                <Description Translatable="1">Customer User Information Center Search.</Description>
+                <Title></Title>
+            </FrontendModuleReg>
+        </Setting>
+    </ConfigItem>
+    <ConfigItem Name="Frontend::Search###AgentCustomerUserInformationCenter" Required="0" Valid="1">
+        <Description Translatable="1">Search backend router.</Description>
+        <Group>Ticket</Group>
+        <SubGroup>Frontend::Agent::SearchRouter</SubGroup>
+        <Setting>
+            <Hash>
+                <Item Key="^AgentCustomerUserInformationCenter">Action=AgentCustomerUserInformationCenterSearch</Item>
+            </Hash>
+        </Setting>
+    </ConfigItem>
+    <ConfigItem Name="Frontend::Search::JavaScript###AgentCustomerUserInformationCenter" Required="0" Valid="1">
+        <Description Translatable="1">JavaScript function for the search frontend.</Description>
+        <Group>Ticket</Group>
+        <SubGroup>Frontend::Agent::SearchRouter</SubGroup>
+        <Setting>
+            <Hash>
+                <Item Key="^AgentCustomerUserInformationCenter">Core.Agent.CustomerUserInformationCenterSearch.OpenSearchDialog()</Item>
+            </Hash>
+        </Setting>
+    </ConfigItem>
+    <ConfigItem Name="AgentCustomerUserInformationCenter::Backend###0600-CUIC-CustomerCompanyInformation" Required="0" Valid="1">
+        <Description Translatable="1">Parameters for the dashboard backend of the customer company information of the agent interface . "Group" is used to restrict the access to the plugin (e. g. Group: admin;group1;group2;). "Default" determines if the plugin is enabled by default or if the user needs to enable it manually. "CacheTTLLocal" is the cache time in minutes for the plugin.</Description>
+        <Group>Framework</Group>
+        <SubGroup>Frontend::Agent::Dashboard</SubGroup>
+        <Setting>
+            <Hash>
+                <Item Key="Module">Kernel::Output::HTML::Dashboard::CustomerCompanyInformation</Item>
+                <Item Key="Title" Translatable="1">Customer Information</Item>
+                <Item Key="Description" Translatable="1">Customer Information</Item>
+                <Item Key="Attributes"></Item>
+                <Item Key="Block">ContentSmall</Item>
+                <Item Key="Group"></Item>
+                <Item Key="Default">1</Item>
+            </Hash>
+        </Setting>
+    </ConfigItem>
+    <ConfigItem Name="AgentCustomerUserInformationCenter::Backend###0100-CUIC-CustomerUserInformation" Required="0" Valid="1">
+        <Description Translatable="1">Parameters for the dashboard backend of the customer user information of the agent interface . "Group" is used to restrict the access to the plugin (e. g. Group: admin;group1;group2;). "Default" determines if the plugin is enabled by default or if the user needs to enable it manually. "CacheTTLLocal" is the cache time in minutes for the plugin.</Description>
+        <Group>Framework</Group>
+        <SubGroup>Frontend::Agent::Dashboard</SubGroup>
+        <Setting>
+            <Hash>
+                <Item Key="Module">Kernel::Output::HTML::Dashboard::CustomerUserInformation</Item>
+                <Item Key="Title" Translatable="1">Customer User Information</Item>
+                <Item Key="Description" Translatable="1">Customer User Information</Item>
+                <Item Key="Attributes"></Item>
+                <Item Key="Block">ContentSmall</Item>
+                <Item Key="Group"></Item>
+                <Item Key="Default">1</Item>
+            </Hash>
+        </Setting>
+    </ConfigItem>
+
+
+
     <ConfigItem Name="Frontend::Module###AgentPreferences" Required="0" Valid="1">
         <Description Translatable="1">Frontend module registration for the agent interface.</Description>
         <Group>Framework</Group>
@@ -8978,7 +9132,12 @@ via the Preferences button after logging in.
                 <NavBarName>Preferences</NavBarName>
                 <Loader>
                     <CSS>Core.Agent.Preferences.css</CSS>
+                    <CSS>Core.Agent.Admin.SystemConfiguration.css</CSS>
+                    <JavaScript>Core.UI.AllocationList.js</JavaScript>
+                    <JavaScript>Core.Agent.TableFilters.js</JavaScript>
                     <JavaScript>Core.Agent.Preferences.js</JavaScript>
+                    <JavaScript>Core.SystemConfiguration.js</JavaScript>
+                    <JavaScript>Core.SystemConfiguration.Date.js</JavaScript>
                 </Loader>
             </FrontendModuleReg>
         </Setting>
@@ -9022,20 +9181,18 @@ via the Preferences button after logging in.
             </FrontendModuleReg>
         </Setting>
     </ConfigItem>
-    <ConfigItem Name="Frontend::Module###AgentBook" Required="0" Valid="1">
+    <ConfigItem Name="Frontend::Module###AgentCustomerUserAddressBook" Required="0" Valid="1">
         <Description Translatable="1">Frontend module registration for the agent interface.</Description>
-        <Group>Framework</Group>
+        <Group>Ticket</Group>
         <SubGroup>Frontend::Agent::ModuleRegistration</SubGroup>
         <Setting>
             <FrontendModuleReg>
-                <Description Translatable="1">Address book of CustomerUser sources.</Description>
-                <Title Translatable="1">Address Book</Title>
-                <NavBarName></NavBarName>
+                <Description>Search Customer User</Description>
+                <Title>Search Customer User</Title>
+                <NavBarName>Ticket</NavBarName>
                 <Loader>
-                    <JavaScript>Core.Agent.CustomerSearch.js</JavaScript>
-                    <JavaScript>Core.Agent.CustomerSearchAutoComplete.js</JavaScript>
-                    <JavaScript>Core.Agent.TicketAction.js</JavaScript>
-                    <JavaScript>Core.Agent.Book.js</JavaScript>
+                    <CSS>Core.Agent.CustomerUserAddressBook.css</CSS>
+                    <JavaScript>Core.Agent.CustomerUserAddressBook.js</JavaScript>
                 </Loader>
             </FrontendModuleReg>
         </Setting>
@@ -9087,6 +9244,26 @@ via the Preferences button after logging in.
             <String>Action=AgentTicketSearch;Subaction=AJAX</String>
         </Setting>
     </ConfigItem>
+    <ConfigItem Name="Frontend::Search###AdminSystemConfiguration" Required="0" Valid="1">
+        <Description Translatable="1">Search backend router.</Description>
+        <Group>Ticket</Group>
+        <SubGroup>Frontend::Agent::SearchRouter</SubGroup>
+        <Setting>
+            <Hash>
+                <Item Key="^AdminSystemConfiguration">Action=AdminSystemConfiguration;Subaction=SearchDialog</Item>
+            </Hash>
+        </Setting>
+    </ConfigItem>
+    <ConfigItem Name="Frontend::Search::JavaScript###AdminSystemConfiguration" Required="0" Valid="1">
+        <Description Translatable="1">JavaScript function for the search frontend.</Description>
+        <Group>Ticket</Group>
+        <SubGroup>Frontend::Agent::SearchRouter</SubGroup>
+        <Setting>
+            <Hash>
+                <Item Key="^AdminSystemConfiguration">Core.Agent.Admin.SystemConfiguration.OpenSearchDialog()</Item>
+            </Hash>
+        </Setting>
+    </ConfigItem>
     <ConfigItem Name="Frontend::Module###Admin" Required="0" Valid="1">
         <Description Translatable="1">Frontend module registration for the agent interface.</Description>
         <Group>Framework</Group>
@@ -9114,7 +9291,6 @@ via the Preferences button after logging in.
                 <Loader>
                     <CSS>Core.Agent.Admin.css</CSS>
                     <JavaScript>Core.Agent.Admin.js</JavaScript>
-                    <JavaScript>Core.Agent.Admin.SysConfig.js</JavaScript>
                     <JavaScript>Core.UI.AllocationList.js</JavaScript>
                     <JavaScript>Core.Agent.TableFilters.js</JavaScript>
                 </Loader>
@@ -9122,7 +9298,7 @@ via the Preferences button after logging in.
         </Setting>
     </ConfigItem>
     <ConfigItem Name="Frontend::NavBarModule###2-AdminFavourites" Required="0" Valid="1">
-        <Description Translatable="1">Frontend module registration (show personal favourites as sub navigation items of 'Admin').</Description>
+        <Description Translatable="1">Frontend module registration (show personal favorites as sub navigation items of 'Admin').</Description>
         <Group>Framework</Group>
         <SubGroup>Frontend::Agent::NavBarModule</SubGroup>
         <Setting>
@@ -9303,18 +9479,42 @@ via the Preferences button after logging in.
             <FrontendModuleReg>
                 <Group>admin</Group>
                 <Description>Admin</Description>
-                <Title Translatable="1">Customers ↔ Groups</Title>
+                <Title Translatable="1">Customer Users ↔ Groups</Title>
                 <NavBarName>Admin</NavBarName>
                 <NavBarModule>
                     <Module>Kernel::Output::HTML::NavBar::ModuleAdmin</Module>
-                    <Name Translatable="1">Customer User ↔ Groups</Name>
-                    <Description Translatable="1">Link customer user to groups.</Description>
+                    <Name Translatable="1">Customer Users ↔ Groups</Name>
+                    <Description Translatable="1">Link customer users to groups.</Description>
                     <IconBig>fa-male</IconBig>
                     <IconSmall>fa-users</IconSmall>
                     <Prio>400</Prio>
                 </NavBarModule>
                 <Loader>
-                    <JavaScript>Core.Agent.Admin.CustomerUserGroup.js</JavaScript>
+                    <JavaScript>Core.Agent.Admin.CustomerGroup.js</JavaScript>
+                </Loader>
+            </FrontendModuleReg>
+        </Setting>
+    </ConfigItem>
+    <ConfigItem Name="Frontend::Module###AdminCustomerGroup" Required="0" Valid="1">
+        <Description Translatable="1">Frontend module registration for the agent interface.</Description>
+        <Group>Framework</Group>
+        <SubGroup>Frontend::Admin::ModuleRegistration</SubGroup>
+        <Setting>
+            <FrontendModuleReg>
+                <Group>admin</Group>
+                <Description>Admin</Description>
+                <Title Translatable="1">Customers ↔ Groups</Title>
+                <NavBarName>Admin</NavBarName>
+                <NavBarModule>
+                    <Module>Kernel::Output::HTML::NavBar::ModuleAdmin</Module>
+                    <Name Translatable="1">Customers ↔ Groups</Name>
+                    <Description Translatable="1">Link customers to groups.</Description>
+                    <IconBig>fa-building-o</IconBig>
+                    <IconSmall>fa-users</IconSmall>
+                    <Prio>410</Prio>
+                </NavBarModule>
+                <Loader>
+                    <JavaScript>Core.Agent.Admin.CustomerGroup.js</JavaScript>
                 </Loader>
             </FrontendModuleReg>
         </Setting>
@@ -9327,15 +9527,39 @@ via the Preferences button after logging in.
             <FrontendModuleReg>
                 <Group>admin</Group>
                 <Description>Admin</Description>
-                <Title Translatable="1">Customer User ↔ Services</Title>
+                <Title Translatable="1">Customer Users ↔ Services</Title>
                 <NavBarName>Admin</NavBarName>
                 <NavBarModule>
                     <Module>Kernel::Output::HTML::NavBar::ModuleAdmin</Module>
-                    <Name Translatable="1">Customer User ↔ Services</Name>
-                    <Description Translatable="1">Link customer user to services.</Description>
+                    <Name Translatable="1">Customer Users ↔ Services</Name>
+                    <Description Translatable="1">Link customer users to services.</Description>
                     <IconBig>fa-male</IconBig>
                     <IconSmall>fa-wrench</IconSmall>
                     <Prio>500</Prio>
+                </NavBarModule>
+                <Loader>
+                    <JavaScript>Core.Agent.Admin.CustomerUserService.js</JavaScript>
+                </Loader>
+            </FrontendModuleReg>
+        </Setting>
+    </ConfigItem>
+    <ConfigItem Name="Frontend::Module###AdminCustomerUserCustomer" Required="0" Valid="1">
+        <Description Translatable="1">Frontend module registration for the agent interface.</Description>
+        <Group>Framework</Group>
+        <SubGroup>Frontend::Admin::ModuleRegistration</SubGroup>
+        <Setting>
+            <FrontendModuleReg>
+                <Group>admin</Group>
+                <Description>Admin</Description>
+                <Title Translatable="1">Customer Users ↔ Customers</Title>
+                <NavBarName>Admin</NavBarName>
+                <NavBarModule>
+                    <Module>Kernel::Output::HTML::NavBar::ModuleAdmin</Module>
+                    <Name Translatable="1">Customer Users ↔ Customers</Name>
+                    <Description Translatable="1">Link customer users to customers.</Description>
+                    <IconBig>fa-male</IconBig>
+                    <IconSmall>fa-building-o</IconSmall>
+                    <Prio>510</Prio>
                 </NavBarModule>
                 <Loader>
                     <JavaScript>Core.Agent.Admin.CustomerUserService.js</JavaScript>
@@ -10011,7 +10235,7 @@ via the Preferences button after logging in.
         <SubGroup>Frontend::Agent::Stats</SubGroup>
         <Setting>
             <Array>
-                <Item>stats</Item>
+                <Item Translatable="1">stats</Item>
             </Array>
         </Setting>
     </ConfigItem>
@@ -10092,6 +10316,17 @@ via the Preferences button after logging in.
         <SubGroup>Frontend::Agent::Stats</SubGroup>
         <Setting>
             <Option SelectedID="1">
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
+            </Option>
+        </Setting>
+    </ConfigItem>
+    <ConfigItem Name="Stats::CustomerUserLoginsAsMultiSelect" Required="1" Valid="1">
+        <Description Translatable="1">Shows all the customer user identifiers in a multi-select field (not useful if you have a lot of customer user identifiers).</Description>
+        <Group>Framework</Group>
+        <SubGroup>Frontend::Agent::Stats</SubGroup>
+        <Setting>
+            <Option SelectedID="0">
                 <Item Key="0" Translatable="1">No</Item>
                 <Item Key="1" Translatable="1">Yes</Item>
             </Option>
@@ -10683,7 +10918,6 @@ via the Preferences button after logging in.
                 <Item>thirdparty/jquery-ui-1.12.1/jquery-ui.js</Item>
                 <Item>thirdparty/jquery-ui-touch-punch-0.2.3/jquery.ui.touch-punch.js</Item>
                 <Item>thirdparty/jquery-validate-1.15.0/jquery.validate.js</Item>
-                <Item>thirdparty/stacktrace-0.6.4/stacktrace.js</Item>
                 <Item>thirdparty/jquery-pubsub/pubsub.js</Item>
                 <Item>thirdparty/jquery-jstree-3.3.3/jquery.jstree.js</Item>
                 <Item>thirdparty/nunjucks-3.0.0/nunjucks.js</Item>
@@ -10720,6 +10954,8 @@ via the Preferences button after logging in.
                 <Item>Core.Agent.js</Item>
                 <Item>Core.Agent.Search.js</Item>
                 <Item>Core.Agent.CustomerInformationCenterSearch.js</Item>
+                <Item>Core.Agent.CustomerSearch.js</Item>
+                <Item>Core.Agent.CustomerUserInformationCenterSearch.js</Item>
                 <Item>Core.Agent.Header.js</Item>
                 <Item>Core.UI.Notification.js</Item>
                 <Item>Core.Agent.Responsive.js</Item>
@@ -10787,7 +11023,6 @@ via the Preferences button after logging in.
                 <Item>thirdparty/jquery-browser-detection/jquery-browser-detection.js</Item>
                 <Item>thirdparty/jquery-validate-1.15.0/jquery.validate.js</Item>
                 <Item>thirdparty/jquery-ui-1.12.1/jquery-ui.js</Item>
-                <Item>thirdparty/stacktrace-0.6.4/stacktrace.js</Item>
                 <Item>thirdparty/jquery-pubsub/pubsub.js</Item>
                 <Item>thirdparty/jquery-jstree-3.3.3/jquery.jstree.js</Item>
                 <Item>thirdparty/nunjucks-3.0.0/nunjucks.js</Item>
@@ -11250,8 +11485,8 @@ via the Preferences button after logging in.
         <SubGroup>Core::OTRSBusiness</SubGroup>
         <Setting>
             <Option SelectedID="1">
-                <Item Key="0">Development</Item>
-                <Item Key="1">Stable</Item>
+                <Item Key="0" Translatable="1">Development</Item>
+                <Item Key="1" Translatable="1">Stable</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -11283,6 +11518,146 @@ via the Preferences button after logging in.
         <SubGroup>Core::Fetchmail</SubGroup>
         <Setting>
             <String Regex="[/|\w]+fetchmail$" Check="File">/usr/bin/fetchmail</String>
+        </Setting>
+    </ConfigItem>
+    <ConfigItem Name="CustomerUser::Frontend::Overview###AddressBook" Required="1" Valid="1">
+        <Description Translatable="1">Defines an overview module to show the address book view of a customer user list.</Description>
+        <Group>Ticket</Group>
+        <SubGroup>Frontend::Agent::CustomerUserOverview</SubGroup>
+        <Setting>
+            <Hash>
+                <Item Key="Module">Kernel::Output::HTML::CustomerUser::OverviewAddressBook</Item>
+                <Item Key="Name">AddressBook</Item>
+            </Hash>
+        </Setting>
+    </ConfigItem>
+    <ConfigItem Name="CustomerUser::Frontend::AgentCustomerUserAddressBook###PageShown" Required="1" Valid="1">
+        <Description Translatable="1">Defines the number of entries per page for the AgentCustomerUserAddressBook result screen.</Description>
+        <Group>Ticket</Group>
+        <SubGroup>Frontend::Agent::ViewCustomerUserSearch</SubGroup>
+        <Setting>
+            <String Regex="">50</String>
+        </Setting>
+    </ConfigItem>
+    <ConfigItem Name="CustomerUser::Frontend::AgentCustomerUserAddressBook###DefaultFields" Required="1" Valid="1">
+        <Description Translatable="1">Defines the default filter fields in the customer user address book search (CustomerUser or CustomerCompany). For the CustomerCompany fields a prefix 'CustomerCompany_' must be added.</Description>
+        <Group>Ticket</Group>
+        <SubGroup>Frontend::Agent::ViewCustomerUserSearch</SubGroup>
+        <Setting>
+            <Array>
+                <Item>UserLogin</Item>
+                <Item>UserFirstname</Item>
+                <Item>UserLastname</Item>
+                <Item>UserEmail</Item>
+                <Item>UserCustomerID</Item>
+            </Array>
+        </Setting>
+    </ConfigItem>
+    <ConfigItem Name="CustomerUser::Frontend::AgentCustomerUserAddressBook###ShowColumns" Required="1" Valid="1">
+        <Description Translatable="1">Defines the shown columns and the position in the AgentCustomerUserAddressBook result screen.</Description>
+        <Group>Ticket</Group>
+        <SubGroup>Frontend::Agent::ViewCustomerUserSearch</SubGroup>
+        <Setting>
+            <Array>
+                <Item>UserFirstname</Item>
+                <Item>UserLastname</Item>
+                <Item>UserLogin</Item>
+                <Item>UserEmail</Item>
+                <Item>UserCustomerID</Item>
+            </Array>
+        </Setting>
+    </ConfigItem>
+    <ConfigItem Name="CustomerUser::Frontend::AgentCustomerUserAddressBook###SearchLimit" Required="1" Valid="1">
+        <Description Translatable="1">Defines the search limit for the AgentCustomerUserAddressBook screen.</Description>
+        <Group>Ticket</Group>
+        <SubGroup>Frontend::Agent::ViewCustomerUserSearch</SubGroup>
+        <Setting>
+            <String Regex="">10000</String>
+        </Setting>
+    </ConfigItem>
+
+    <ConfigItem Name="Frontend::Module###AdminSystemConfigurationDeployment" Required="0" Valid="1">
+        <Description Translatable="1">Frontend module registration for the agent interface.</Description>
+        <Group>Framework</Group>
+        <SubGroup>Frontend::Agent::ModuleRegistration</SubGroup>
+        <Setting>
+            <FrontendModuleReg>
+                <GroupRo></GroupRo>
+                <Group>admin</Group>
+                <Group>users</Group>
+                <Description Translatable="1">Manage System Configuration Deployments.</Description>
+                <Title Translatable="1">System Configuration Deployment</Title>
+                <NavBarName>SystemConfiguration</NavBarName>
+                 <Loader>
+                    <CSS>Core.Agent.Admin.SystemConfiguration.css</CSS>
+                    <JavaScript>thirdparty/clipboardjs-1.5.16/clipboard.min.js</JavaScript>
+                    <JavaScript>Core.SystemConfiguration.js</JavaScript>
+                    <JavaScript>Core.Agent.Admin.SystemConfiguration.js</JavaScript>
+                </Loader>
+            </FrontendModuleReg>
+        </Setting>
+    </ConfigItem>
+    <ConfigItem Name="Frontend::Module###AdminSystemConfiguration" Required="1" Valid="1">
+        <Description Translatable="1">Frontend module registration for the agent interface.</Description>
+        <Group>Framework</Group>
+        <SubGroup>Frontend::Agent::ModuleRegistration</SubGroup>
+        <Setting>
+            <FrontendModuleReg>
+                <GroupRo></GroupRo>
+                <Group>admin</Group>
+                <Description Translatable="1">Admin.</Description>
+                <Title Translatable="1">System Configuration</Title>
+                <NavBarName>Admin</NavBarName>
+                <NavBarModule>
+                    <Module>Kernel::Output::HTML::NavBar::ModuleAdmin</Module>
+                    <Name Translatable="1">System Configuration</Name>
+                    <Description Translatable="1">Edit the system configuration settings.</Description>
+                    <IconBig></IconBig>
+                    <IconSmall></IconSmall>
+                    <Prio>800</Prio>
+                </NavBarModule>
+                 <Loader>
+                    <CSS>Core.Agent.Admin.SystemConfiguration.css</CSS>
+                    <JavaScript>thirdparty/clipboardjs-1.5.16/clipboard.min.js</JavaScript>
+                    <JavaScript>Core.SystemConfiguration.js</JavaScript>
+                    <JavaScript>Core.SystemConfiguration.Date.js</JavaScript>
+                    <JavaScript>Core.Agent.Admin.SystemConfiguration.js</JavaScript>
+                </Loader>
+            </FrontendModuleReg>
+        </Setting>
+    </ConfigItem>
+    <ConfigItem Name="Frontend::Module###AdminSystemConfigurationGroup" Required="1" Valid="1">
+        <Description Translatable="1">Frontend module registration for the agent interface.</Description>
+        <Group>Framework</Group>
+        <SubGroup>Frontend::Agent::ModuleRegistration</SubGroup>
+        <Setting>
+            <FrontendModuleReg>
+                <GroupRo></GroupRo>
+                <Group>admin</Group>
+                <Description Translatable="1">Admin.</Description>
+                <Title Translatable="1">System Configuration Group</Title>
+                <NavBarName>Admin</NavBarName>
+                 <Loader>
+                    <CSS>Core.Agent.Admin.SystemConfiguration.css</CSS>
+                    <JavaScript>thirdparty/clipboardjs-1.5.16/clipboard.min.js</JavaScript>
+                    <JavaScript>Core.SystemConfiguration.js</JavaScript>
+                    <JavaScript>Core.SystemConfiguration.Date.js</JavaScript>
+                    <JavaScript>Core.SystemConfiguration.DateTime.js</JavaScript>
+                    <JavaScript>Core.SystemConfiguration.VacationDays.js</JavaScript>
+                    <JavaScript>Core.SystemConfiguration.VacationDaysOneTime.js</JavaScript>
+                    <JavaScript>Core.SystemConfiguration.WorkingHours.js</JavaScript>
+                    <JavaScript>Core.Form.js</JavaScript>
+                    <JavaScript>Core.Agent.Admin.SystemConfiguration.js</JavaScript>
+                </Loader>
+            </FrontendModuleReg>
+        </Setting>
+    </ConfigItem>
+    <ConfigItem Name="EditAnotherUsersPreferencesGroup" Required="1" Valid="1">
+        <Description Translatable="1">Specifies the group where the user needs rw permissions so that they can edit other users preferences.</Description>
+        <Group>Framework</Group>
+        <SubGroup>Core</SubGroup>
+        <Setting>
+            <String>admin</String>
         </Setting>
     </ConfigItem>
 </otrs_config>

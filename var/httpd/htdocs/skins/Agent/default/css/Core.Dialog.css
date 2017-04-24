@@ -61,6 +61,11 @@
     color: #000;
 }
 
+.RTL .Dialog > .Header .Close {
+    right: auto;
+    left: 8px;
+}
+
 .Dialog > .Header .Close:hover i {
     color: #E57633;
 }
@@ -152,6 +157,13 @@
     width: 98%;
 }
 
+.Dialog .Field .FocusField {
+    position: absolute;
+    left: -9999px;
+    top: -9999px;
+    z-index: -1;
+}
+
 .Dialog .Buttons {
     background: #ddd;
     border-top: 1px solid #ccc;
@@ -194,12 +206,12 @@
 /* Pure continuous text dialogs */
 
 .TextDialog {
-    padding: 15px;
+    padding: 10px;
     line-height: 150%;
     width: 550px;
     font-size: 13px;
     max-height: 450px;
-    overflow: scroll;
+    overflow: auto;
 }
 
 .TextDialog p,

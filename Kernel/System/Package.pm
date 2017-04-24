@@ -21,7 +21,7 @@ use Kernel::System::WebUserAgent;
 use Kernel::System::VariableCheck qw(:all);
 use Kernel::Language qw(Translatable);
 
-use base qw(Kernel::System::EventHandler);
+use parent qw(Kernel::System::EventHandler);
 
 our @ObjectDependencies = (
     'Kernel::Config',
@@ -33,6 +33,8 @@ our @ObjectDependencies = (
     'Kernel::System::Loader',
     'Kernel::System::Log',
     'Kernel::System::Main',
+    'Kernel::System::SysConfig::Migration',
+    'Kernel::System::SysConfig::XML',
     'Kernel::System::Time',
     'Kernel::System::XML',
 );
@@ -128,13 +130,12 @@ sub new {
 =head2 RepositoryList()
 
 returns a list of repository packages
-using Result => 'short' will only return name, version, install_status md5sum and vendor
-instead of the structure
 
     my @List = $PackageObject->RepositoryList();
 
     my @List = $PackageObject->RepositoryList(
-        Result => 'short',
+        Result => 'short',  # will only return name, version, install_status md5sum and vendor
+        instead of the structure
     );
 
 =cut
@@ -575,8 +576,11 @@ sub PackageInstall {
     );
 
     # install config
-    my $SysConfigObject = Kernel::System::SysConfig->new();
-    $SysConfigObject->WriteDefault();
+    $Self->_ConfigurationDeploy(
+        Comments => "Package Install $Structure{Name}->{Content} $Structure{Version}->{Content}",
+        Package  => $Structure{Name}->{Content},
+        Action   => 'PackageInstall',
+    );
 
     # install database (post)
     if ( $Structure{DatabaseInstall} && $Structure{DatabaseInstall}->{post} ) {
@@ -598,7 +602,13 @@ sub PackageInstall {
     }
 
     $Kernel::OM->Get('Kernel::System::Cache')->CleanUp(
-        KeepTypes => ['XMLParse'],
+        KeepTypes => [
+            'XMLParse',
+            'DefaultSettingListGet',
+            'DefaultSettingList',
+            'SysConfigDefault',
+            'SysConfig_ConfigurationXML2DB',
+        ],
     );
     $Kernel::OM->Get('Kernel::System::Loader')->CacheDelete();
 
@@ -674,8 +684,11 @@ sub PackageReinstall {
     }
 
     # install config
-    my $SysConfigObject = Kernel::System::SysConfig->new();
-    $SysConfigObject->WriteDefault();
+    $Self->_ConfigurationDeploy(
+        Comments => "Package Reinstall $Structure{Name}->{Content} $Structure{Version}->{Content}",
+        Package  => $Structure{Name}->{Content},
+        Action   => 'PackageReinstall',
+    );
 
     # reinstall code (post)
     if ( $Structure{CodeReinstall} ) {
@@ -687,7 +700,13 @@ sub PackageReinstall {
     }
 
     $Kernel::OM->Get('Kernel::System::Cache')->CleanUp(
-        KeepTypes => ['XMLParse'],
+        KeepTypes => [
+            'XMLParse',
+            'DefaultSettingListGet',
+            'DefaultSettingList',
+            'SysConfigDefault',
+            'SysConfig_ConfigurationXML2DB',
+        ],
     );
     $Kernel::OM->Get('Kernel::System::Loader')->CacheDelete();
 
@@ -900,7 +919,7 @@ sub PackageUpgrade {
 
                 if (
                     $Part->{TagType} eq 'End'
-                    && ( defined $NotUseTag      && $Part->{Tag} eq $NotUseTag )
+                    && ( defined $NotUseTag      && $Part->{Tag}      eq $NotUseTag )
                     && ( defined $NotUseTagLevel && $Part->{TagLevel} eq $NotUseTagLevel )
                     )
                 {
@@ -978,8 +997,11 @@ sub PackageUpgrade {
     }
 
     # install config
-    my $SysConfigObject = Kernel::System::SysConfig->new();
-    $SysConfigObject->WriteDefault();
+    $Self->_ConfigurationDeploy(
+        Comments => "Package Upgrade $Structure{Name}->{Content} $Structure{Version}->{Content}",
+        Package  => $Structure{Name}->{Content},
+        Action   => 'PackageUpgrade',
+    );
 
     # upgrade database (post)
     if ( $Structure{DatabaseUpgrade}->{post} && ref $Structure{DatabaseUpgrade}->{post} eq 'ARRAY' )
@@ -997,7 +1019,7 @@ sub PackageUpgrade {
 
                 if (
                     $Part->{TagType} eq 'End'
-                    && ( defined $NotUseTag      && $Part->{Tag} eq $NotUseTag )
+                    && ( defined $NotUseTag      && $Part->{Tag}      eq $NotUseTag )
                     && ( defined $NotUseTagLevel && $Part->{TagLevel} eq $NotUseTagLevel )
                     )
                 {
@@ -1097,7 +1119,13 @@ sub PackageUpgrade {
     }
 
     $Kernel::OM->Get('Kernel::System::Cache')->CleanUp(
-        KeepTypes => ['XMLParse'],
+        KeepTypes => [
+            'XMLParse',
+            'DefaultSettingListGet',
+            'DefaultSettingList',
+            'SysConfigDefault',
+            'SysConfig_ConfigurationXML2DB',
+        ],
     );
     $Kernel::OM->Get('Kernel::System::Loader')->CacheDelete();
 
@@ -1174,8 +1202,11 @@ sub PackageUninstall {
     $Self->RepositoryRemove( Name => $Structure{Name}->{Content} );
 
     # install config
-    my $SysConfigObject = Kernel::System::SysConfig->new();
-    $SysConfigObject->WriteDefault();
+    $Self->_ConfigurationDeploy(
+        Comments => "Package Uninstall $Structure{Name}->{Content} $Structure{Version}->{Content}",
+        Package  => $Structure{Name}->{Content},
+        Action   => 'PackageUninstall',
+    );
 
     # uninstall database (post)
     if ( $Structure{DatabaseUninstall} && $Structure{DatabaseUninstall}->{post} ) {
@@ -1195,7 +1226,13 @@ sub PackageUninstall {
     $Self->{ConfigObject} = Kernel::Config->new( %{$Self} );
 
     $Kernel::OM->Get('Kernel::System::Cache')->CleanUp(
-        KeepTypes => ['XMLParse'],
+        KeepTypes => [
+            'XMLParse',
+            'DefaultSettingListGet',
+            'DefaultSettingList',
+            'SysConfigDefault',
+            'SysConfig_ConfigurationXML2DB',
+        ],
     );
     $Kernel::OM->Get('Kernel::System::Loader')->CacheDelete();
 
@@ -2263,7 +2300,7 @@ sub PackageBuild {
                         for my $Key ( sort keys %{$Tag} ) {
 
                             if (
-                                $Key ne 'Tag'
+                                $Key    ne 'Tag'
                                 && $Key ne 'Content'
                                 && $Key ne 'TagType'
                                 && $Key ne 'TagLevel'
@@ -2674,6 +2711,7 @@ generates a MD5 Sum for all files in a given package
     );
 
 returns:
+
     $MD5SumLookup = {
         'Direcoty/File1' => 'f3f30bd59afadf542770d43edb280489'
         'Direcoty/File2' => 'ccb8a0b86adf125a36392e388eb96778'
@@ -2711,8 +2749,8 @@ sub PackageFileGetMD5Sum {
     );
     my %Structure = $Self->PackageParse( String => $Package );
 
-    return 1 if !$Structure{Filelist};
-    return 1 if ref $Structure{Filelist} ne 'ARRAY';
+    return {} if !$Structure{Filelist};
+    return {} if ref $Structure{Filelist} ne 'ARRAY';
 
     # cleanup the Home variable (remove tailing "/")
     my $Home = $Self->{Home};
@@ -3856,7 +3894,13 @@ sub _PackageUninstallMerged {
     );
 
     $Kernel::OM->Get('Kernel::System::Cache')->CleanUp(
-        KeepTypes => ['XMLParse'],
+        KeepTypes => [
+            'XMLParse',
+            'DefaultSettingListGet',
+            'DefaultSettingList',
+            'SysConfigDefault',
+            'SysConfig_ConfigurationXML2DB',
+        ],
     );
     $Kernel::OM->Get('Kernel::System::Loader')->CacheDelete();
 
@@ -4063,7 +4107,7 @@ sub _CheckDBMerged {
 
             if (
                 $Part->{TagType} eq 'End'
-                && ( defined $NotUseTag      && $Part->{Tag} eq $NotUseTag )
+                && ( defined $NotUseTag      && $Part->{Tag}      eq $NotUseTag )
                 && ( defined $NotUseTagLevel && $Part->{TagLevel} eq $NotUseTagLevel )
                 )
             {
@@ -4237,6 +4281,144 @@ sub CloudFileGet {
     # return repo list
     return $OperationResult->{Data};
 
+}
+
+sub _ConfigurationDeploy {
+    my ( $Self, %Param ) = @_;
+
+    # check needed stuff
+    for my $Needed (qw(Package Action)) {
+        if ( !$Param{$Needed} ) {
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
+                Priority => 'error',
+                Message  => "Need $Needed!",
+            );
+            return;
+        }
+    }
+
+    my $SysConfigObject = Kernel::System::SysConfig->new();
+
+    if (
+        !$SysConfigObject->ConfigurationXML2DB(
+            UserID  => 1,
+            Force   => 1,
+            CleanUp => 1,
+        )
+        )
+    {
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
+            Priority => 'error',
+            Message  => "There was a problem writing XML to DB.",
+        );
+        return;
+    }
+
+    # get OTRS home directory
+    my $Home = $Kernel::OM->Get('Kernel::Config')->Get('Home');
+
+    # build file location for OTRS5 config file
+    my $OTRS5ConfigFile = "$Home/Kernel/Config/Backups/ZZZAutoOTRS5.pm";
+
+    # if this is a Packageupgrade and if there is a ZZZAutoOTRS5.pm file in the backup location
+    # (this file has been copied there during the migration from OTRS 5 to OTRS 6)
+    if ( $Param{Action} eq 'PackageUpgrade' && -e $OTRS5ConfigFile ) {
+
+        # delete categories cache
+        $Kernel::OM->Get('Kernel::System::Cache')->Delete(
+            Type => 'SysConfig',
+            Key  => 'ConfigurationCategoriesGet',
+        );
+
+        # get all config categories
+        my %Categories = $SysConfigObject->ConfigurationCategoriesGet();
+
+        # to store all setting names from this package
+        my @PackageSettings;
+
+        # get all config files names for this package
+        CONFIGXMLFILE:
+        for my $ConfigXMLFile ( @{ $Categories{ $Param{Package} }->{Files} } ) {
+
+            my $FileLocation = "$Home/Kernel/Config/Files/XML/$ConfigXMLFile";
+
+            # get the content of the XML file
+            my $ContentRef = $Kernel::OM->Get('Kernel::System::Main')->FileRead(
+                Location => $FileLocation,
+                Mode     => 'utf8',
+                Result   => 'SCALAR',
+            );
+
+            # check error, but continue
+            if ( !$ContentRef ) {
+                $Kernel::OM->Get('Kernel::System::Log')->Log(
+                    Priority => 'error',
+                    Message  => "Could not read content of $FileLocation!",
+                );
+                next CONFIGXMLFILE;
+            }
+
+            # get all settings from this package
+            my @SettingList = $Kernel::OM->Get('Kernel::System::SysConfig::XML')->SettingListParse(
+                XMLInput    => ${$ContentRef},
+                XMLFilename => $ConfigXMLFile,
+            );
+
+            # get all the setting names from this file
+            for my $Setting (@SettingList) {
+                push @PackageSettings, $Setting->{XMLContentParsed}->{Name};
+            }
+        }
+
+        # sort the settings
+        @PackageSettings = sort @PackageSettings;
+
+        # run the migration of the effective values (only for the package settings)
+        my $Success = $Kernel::OM->Get('Kernel::System::SysConfig::Migration')->MigrateConfigEffectiveValues(
+            FileClass       => 'Kernel::Config::Backups::ZZZAutoOTRS5',
+            FilePath        => $OTRS5ConfigFile,
+            PackageSettings => \@PackageSettings,                         # only migrate the given package settings
+            NoOutput => 1,    # we do not want to print status output to the screen
+        );
+
+        # deploy only the package settings
+        # (even if the migration of the effective values was not or only party successfull)
+        $Success = $SysConfigObject->ConfigurationDeploy(
+            Comments      => $Param{Comments},
+            NoValidation  => 1,
+            UserID        => 1,
+            Force         => 1,
+            DirtySettings => \@PackageSettings,
+        );
+
+        # check error
+        if ( !$Success ) {
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
+                Priority => 'error',
+                Message  => "Could not deploy configuration!",
+            );
+            return;
+        }
+    }
+
+    else {
+
+        my $Success = $SysConfigObject->ConfigurationDeploy(
+            Comments => $Param{Comments},
+            NotDirty => 1,
+            UserID   => 1,
+            Force    => 1,
+        );
+        if ( !$Success ) {
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
+                Priority => 'error',
+                Message  => "Could not deploy configuration!",
+            );
+            return;
+        }
+    }
+
+    return 1;
 }
 
 sub DESTROY {

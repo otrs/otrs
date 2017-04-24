@@ -12,20 +12,21 @@ use utf8;
 
 use vars (qw($Self));
 
-# get needed objects
-my $QueueObject   = $Kernel::OM->Get('Kernel::System::Queue');
-my $ServiceObject = $Kernel::OM->Get('Kernel::System::Service');
-my $SLAObject     = $Kernel::OM->Get('Kernel::System::SLA');
-my $StateObject   = $Kernel::OM->Get('Kernel::System::State');
-my $TicketObject  = $Kernel::OM->Get('Kernel::System::Ticket');
-my $TimeObject    = $Kernel::OM->Get('Kernel::System::Time');
-my $TypeObject    = $Kernel::OM->Get('Kernel::System::Type');
-my $UserObject    = $Kernel::OM->Get('Kernel::System::User');
+my $QueueObject          = $Kernel::OM->Get('Kernel::System::Queue');
+my $ServiceObject        = $Kernel::OM->Get('Kernel::System::Service');
+my $SLAObject            = $Kernel::OM->Get('Kernel::System::SLA');
+my $StateObject          = $Kernel::OM->Get('Kernel::System::State');
+my $TicketObject         = $Kernel::OM->Get('Kernel::System::Ticket');
+my $ArticleObject        = $Kernel::OM->Get('Kernel::System::Ticket::Article');
+my $ArticleBackendObject = $ArticleObject->BackendForChannel( ChannelName => 'Internal' );
+my $TimeObject           = $Kernel::OM->Get('Kernel::System::Time');
+my $TypeObject           = $Kernel::OM->Get('Kernel::System::Type');
+my $UserObject           = $Kernel::OM->Get('Kernel::System::User');
 
-# get helper object
 $Kernel::OM->ObjectParamAdd(
     'Kernel::System::UnitTest::Helper' => {
-        RestoreDatabase => 1,
+        RestoreDatabase  => 1,
+        UseTmpArticleDir => 1,
     },
 );
 my $Helper = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
@@ -192,10 +193,10 @@ $Self->Is(
     'TicketOwnerSet() (ChangeBy - System ID 1 now)',
 );
 
-my $ArticleID = $TicketObject->ArticleCreate(
-    TicketID    => $TicketID,
-    ArticleType => 'note-internal',
-    SenderType  => 'agent',
+my $ArticleID = $ArticleBackendObject->ArticleCreate(
+    TicketID             => $TicketID,
+    SenderType           => 'agent',
+    IsVisibleForCustomer => 0,
     From =>
         'Some Agent Some Agent Some Agent Some Agent Some Agent Some Agent Some Agent Some Agent Some Agent Some Agent Some Agent <email@example.com>',
     To =>
@@ -233,20 +234,19 @@ If you feel the urge to write Perl modules, perlnewmod will give you good advice
 
 $Self->True(
     $ArticleID,
-    'ArticleCreate()',
+    'ArticleCreate()'
 );
 
 $Self->Is(
-    $TicketObject->ArticleCount( TicketID => $TicketID ),
+    scalar $ArticleObject->ArticleList( TicketID => $TicketID ),
     1,
     'ArticleCount',
 );
 
-my %Article = $TicketObject->ArticleGet( ArticleID => $ArticleID );
-$Self->Is(
-    $Article{Title},
-    'Some Ticket_Title',
-    'ArticleGet()',
+my %Article = $ArticleBackendObject->ArticleGet(
+    TicketID  => $TicketID,
+    ArticleID => $ArticleID,
+    UserID    => 1,
 );
 $Self->True(
     $Article{From} eq
@@ -255,31 +255,35 @@ $Self->True(
 );
 
 for my $Key (qw( Body Subject From To ReplyTo )) {
-    my $Success = $TicketObject->ArticleUpdate(
+    my $Success = $ArticleBackendObject->ArticleUpdate(
+        TicketID  => $TicketID,
         ArticleID => $ArticleID,
         Key       => $Key,
         Value     => "New $Key",
         UserID    => 1,
-        TicketID  => $TicketID,
     );
     $Self->True(
         $Success,
-        'ArticleUpdate()',
+        'ArticleUpdate()'
     );
-    my %Article2 = $TicketObject->ArticleGet( ArticleID => $ArticleID );
+    my %Article2 = $ArticleBackendObject->ArticleGet(
+        TicketID  => $TicketID,
+        ArticleID => $ArticleID,
+        UserID    => 1,
+    );
     $Self->Is(
         $Article2{$Key},
         "New $Key",
-        'ArticleUpdate()',
+        'ArticleUpdate()'
     );
 
     # set old value
-    $Success = $TicketObject->ArticleUpdate(
+    $Success = $ArticleBackendObject->ArticleUpdate(
+        TicketID  => $TicketID,
         ArticleID => $ArticleID,
         Key       => $Key,
         Value     => $Article{$Key},
         UserID    => 1,
-        TicketID  => $TicketID,
     );
 }
 
@@ -1336,46 +1340,6 @@ $Self->Is(
     'TicketGet() (Lock)',
 );
 
-%Article = $TicketObject->ArticleGet( ArticleID => $ArticleID );
-$Self->Is(
-    $Article{Title},
-    'Very long title 01234567890123456789012345678901234567890123456789'
-        . '0123456789012345678901234567890123456789012345678901234567890123456789'
-        . '0123456789012345678901234567890123456789012345678901234567890123456789'
-        . '0123456789012345678901234567890123456789',
-    'ArticleGet() (Title)',
-);
-$Self->Is(
-    $Article{Queue},
-    'Junk',
-    'ArticleGet() (Queue)',
-);
-$Self->Is(
-    $Article{Priority},
-    '2 low',
-    'ArticleGet() (Priority)',
-);
-$Self->Is(
-    $Article{State},
-    'open',
-    'ArticleGet() (State)',
-);
-$Self->Is(
-    $Article{Owner},
-    'root@localhost',
-    'ArticleGet() (Owner)',
-);
-$Self->Is(
-    $Article{Responsible},
-    'root@localhost',
-    'ArticleGet() (Responsible)',
-);
-$Self->Is(
-    $Article{Lock},
-    'lock',
-    'ArticleGet() (Lock)',
-);
-
 my @MoveQueueList = $TicketObject->MoveQueueList(
     TicketID => $TicketID,
     Type     => 'Name',
@@ -1436,14 +1400,14 @@ $Self->Is(
     'TicketAccountedTimeGet()',
 );
 
-my $AccountedTime2 = $TicketObject->ArticleAccountedTimeGet(
+my $AccountedTime2 = $ArticleObject->ArticleAccountedTimeGet(
     ArticleID => $ArticleID,
 );
 
 $Self->Is(
     $AccountedTime2,
     4132.56,
-    'ArticleAccountedTimeGet()',
+    'ArticleAccountedTimeGet()'
 );
 
 my ( $Sec, $Min, $Hour, $Day, $Month, $Year ) = $TimeObject->SystemTime2Date(
@@ -1558,7 +1522,7 @@ my %TicketCreated = $TicketObject->TicketGet(
     UserID   => 1,
 );
 
-# wait 5 seconds
+# wait 2 seconds
 $Helper->FixedTimeAddSeconds(2);
 
 my $TicketIDSortOrder2 = $TicketObject->TicketCreate(
@@ -1573,7 +1537,7 @@ my $TicketIDSortOrder2 = $TicketObject->TicketCreate(
     UserID       => 1,
 );
 
-# wait 5 seconds
+# wait 2 seconds
 $Helper->FixedTimeAddSeconds(2);
 
 my $Success = $TicketObject->TicketStateSet(
@@ -1696,6 +1660,21 @@ my $TicketIDSortOrder4 = $TicketObject->TicketCreate(
     UserID       => 1,
 );
 
+# wait 2 seconds
+$Helper->FixedTimeAddSeconds(2);
+
+my $TicketIDSortOrder5 = $TicketObject->TicketCreate(
+    Title        => 'Some Ticket_Title - ticket sort/order by tests5 (with other queue)',
+    Queue        => 'Misc',
+    Lock         => 'unlock',
+    Priority     => '3 normal',
+    State        => 'new',
+    CustomerNo   => $CustomerNo,
+    CustomerUser => 'unittest@otrs.com',
+    OwnerID      => 1,
+    UserID       => 1,
+);
+
 # find oldest ticket by priority, age
 @TicketIDsSortOrder = $TicketObject->TicketSearch(
     Result       => 'ARRAY',
@@ -1766,6 +1745,24 @@ $Self->Is(
     $TicketIDsSortOrder[0],
     $TicketIDSortOrder1,
     'TicketTicketSearch() - ticket sort/order by (Age (Up))',
+);
+
+# sort by ticket queue
+@TicketIDsSortOrder = $TicketObject->TicketSearch(
+    Result       => 'ARRAY',
+    Title        => '%sort/order by test%',
+    Queues       => [ 'Misc', 'Raw' ],
+    CustomerID   => $CustomerNo,
+    CustomerUser => 'unittest@otrs.com',
+    OrderBy      => 'Up',
+    SortBy       => 'Queue',
+    UserID       => 1,
+    Limit        => 1,
+);
+$Self->Is(
+    $TicketIDsSortOrder[0],
+    $TicketIDSortOrder5,
+    'TicketTicketSearch() - ticket sort/order by (Queue (Up))',
 );
 
 $Count = $TicketObject->TicketSearch(

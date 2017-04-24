@@ -56,6 +56,13 @@ if ( !-e $ConfigObject->Get('PGP::Bin') ) {
         );
     }
 
+    elsif ( -e '/usr/local/bin/gpg' ) {
+        $ConfigObject->Set(
+            Key   => 'PGP::Bin',
+            Value => '/usr/local/bin/gpg'
+        );
+    }
+
     # Maybe it's a mac with mac ports.
     elsif ( -e '/opt/local/bin/gpg' ) {
         $ConfigObject->Set(
@@ -231,7 +238,10 @@ my %Ticket = $TicketObject->TicketGet(
     TicketID => $Return[1],
 );
 
-my @ArticleIndex = $TicketObject->ArticleGet(
+my $ArticleObject = $Kernel::OM->Get('Kernel::System::Ticket::Article');
+my $ArticleBackendObject = $ArticleObject->BackendForChannel( ChannelName => 'Email' );
+
+my @ArticleIndex = $ArticleObject->ArticleList(
     TicketID => $Return[1],
     UserID   => 1,
 );
@@ -242,13 +252,18 @@ $Self->Is(
     "Ticket created in $Ticket{Queue}",
 );
 
-my $GetBody = $ArticleIndex[0]{Body};
+my %FirstArticle = $ArticleBackendObject->ArticleGet(
+    %{ $ArticleIndex[0] },
+    UserID => 1,
+);
+
+my $GetBody = $FirstArticle{Body};
 chomp($GetBody);
 
 $Self->Is(
     $GetBody,
     'This is only a test.',
-    "Body decrypted $ArticleIndex[0]{Body}",
+    "Body decrypted $FirstArticle{Body}",
 );
 
 # Read email again to make sure that everything is there in the array.
@@ -300,7 +315,7 @@ my %TicketEncrypted = $TicketObject->TicketGet(
     TicketID => $ReturnEncrypted[1],
 );
 
-my @ArticleIndexEncrypted = $TicketObject->ArticleGet(
+my @ArticleIndexEncrypted = $ArticleObject->ArticleList(
     TicketID => $ReturnEncrypted[1],
     UserID   => 1,
 );
@@ -311,7 +326,12 @@ $Self->Is(
     "Ticket created in $TicketEncrypted{Queue}",
 );
 
-my $GetBodyEncrypted = $ArticleIndexEncrypted[0]{Body};
+my %FirstArticleEncrypted = $ArticleBackendObject->ArticleGet(
+    %{ $ArticleIndexEncrypted[0] },
+    UserID => 1,
+);
+
+my $GetBodyEncrypted = $FirstArticleEncrypted{Body};
 
 $Self->True(
     scalar $GetBodyEncrypted =~ m{no text message => see attachment},

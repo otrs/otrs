@@ -181,13 +181,11 @@ Core.App = (function (TargetNS) {
     TargetNS.Ready = function (Callback) {
         if ($.isFunction(Callback)) {
             $(document).ready(function () {
-                var Trace;
                 try {
                     Callback();
                 }
                 catch (Error) {
-                    Trace = printStackTrace({e: Error, guess: true}).join('\n');
-                    Core.Exception.HandleFinalError(Error, Trace);
+                    Core.Exception.HandleFinalError(Error);
                 }
             });
         }
@@ -366,16 +364,22 @@ Core.App = (function (TargetNS) {
      * @returns {String} The escaped string.
      * @param {String} StringToEscape - The string which is supposed to be escaped.
      * @description
-     *      Escapes the special HTML characters ( < > & ) in supplied string to their
+     *      Escapes the special HTML characters ( < > & ") in supplied string to their
      *      corresponding entities.
      */
     TargetNS.EscapeHTML = function (StringToEscape) {
         var HTMLEntities = {
             '&': '&amp;',
             '<': '&lt;',
-            '>': '&gt;'
+            '>': '&gt;',
+            '"': '&quot;'
         };
-        return StringToEscape.replace(/[&<>]/g, function(Entity) {
+
+        if (!StringToEscape) {
+            return false;
+        }
+
+        return StringToEscape.replace(/[&<>"]/g, function(Entity) {
             return HTMLEntities[Entity] || Entity;
         });
     };

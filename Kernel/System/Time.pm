@@ -34,7 +34,7 @@ This module is managing time functions.
 
 create a time object. Do not use it directly, instead use:
 
-    my $TimeObject = $Kernel::OM->Get('Kernel::System::Time');
+    my $TimeObject = $Kernel::OM->Get('Kernel::System::DateTime');
 
 =cut
 
@@ -92,7 +92,7 @@ sub SystemTime {
 
 =head2 SystemTime2TimeStamp()
 
-returns a time stamp for a given system time in "yyyy-mm-dd 23:59:59" format.
+returns a time stamp for a given system time in C<yyyy-mm-dd 23:59:59> format.
 
     my $TimeStamp = $TimeObject->SystemTime2TimeStamp(
         SystemTime => $SystemTime,
@@ -136,7 +136,7 @@ sub SystemTime2TimeStamp {
 =head2 CurrentTimestamp()
 
 returns a time stamp of the local system time (see L<SystemTime()>)
-in "yyyy-mm-dd 23:59:59" format.
+in C<yyyy-mm-dd 23:59:59> format.
 
     my $TimeStamp = $TimeObject->CurrentTimestamp();
 
@@ -375,8 +375,8 @@ sub Date2SystemTime {
 =head2 ServerLocalTimeOffsetSeconds()
 
 All framework code that calls this method only uses it to check if the server runs in UTC
-and therefore user time zones are allowed. It's not needed anymore in the future and is only
-in here to don't break code that hasn't been ported yet. It returns 0 to tell its callers
+and therefore user time zones are allowed. It's not needed any more in the future and is only
+in here to don't break code that has not been ported yet. It returns 0 to tell its callers
 that the server runs in UTC and so user time zones are allowed/active.
 
 ( originally returned the computed difference in seconds between UTC time and local time. )
@@ -552,7 +552,7 @@ sub DestinationTime {
 
 =head2 VacationCheck()
 
-check if the selected day is a vacation (it doesn't matter if you
+check if the selected day is a vacation (it does not matter if you
 insert 01 or 1 for month or day in the function or in the SysConfig)
 
 returns (true) vacation day if exists, returns false if date is no

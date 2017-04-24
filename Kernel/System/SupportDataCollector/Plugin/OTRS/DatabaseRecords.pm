@@ -11,7 +11,7 @@ package Kernel::System::SupportDataCollector::Plugin::OTRS::DatabaseRecords;
 use strict;
 use warnings;
 
-use base qw(Kernel::System::SupportDataCollector::PluginBase);
+use parent qw(Kernel::System::SupportDataCollector::PluginBase);
 
 use Kernel::Language qw(Translatable);
 
@@ -45,7 +45,7 @@ sub Run {
         },
         {
             SQL =>
-                "SELECT count(*) from article_attachment WHERE content_type NOT LIKE 'text/html%'",
+                "SELECT count(*) from article_data_mime_attachment WHERE content_type NOT LIKE 'text/html%'",
             Identifier => 'AttachmentCountDBNonHTML',
             Label      => Translatable("Attachments (DB, Without HTML)"),
         },

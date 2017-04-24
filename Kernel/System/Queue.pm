@@ -11,7 +11,7 @@ package Kernel::System::Queue;
 use strict;
 use warnings;
 
-use base qw(Kernel::System::EventHandler);
+use parent qw(Kernel::System::EventHandler);
 
 our @ObjectDependencies = (
     'Kernel::Config',
@@ -233,7 +233,7 @@ sub QueueStandardTemplateMemberAdd {
 
 =head2 QueueStandardTemplateMemberList()
 
-get std responses of a queue
+get standard responses of a queue
 
     my %Templates = $QueueObject->QueueStandardTemplateMemberList( QueueID => 123 );
 
@@ -378,7 +378,7 @@ get all valid system queues
 
     my %Queues = $QueueObject->GetAllQueues();
 
-get all system queues of a user with permission type (e. g. ro, move_into, rw, ...)
+get all system queues of a user with permission type (e. g. C<ro>, C<move_into>, C<rw>, ...)
 
     my %Queues = $QueueObject->GetAllQueues( UserID => 123, Type => 'ro' );
 
@@ -1086,7 +1086,6 @@ update queue attributes
         UnlockTimeOut       => ''
         FollowUpLock        => 1,
         ParentQueueID       => '',
-        CheckSysConfig      => 0,   # (optional) default 1
     );
 
 =cut
@@ -1106,11 +1105,6 @@ sub QueueUpdate {
             );
             return;
         }
-    }
-
-    # check CheckSysConfig param
-    if ( !defined $Param{CheckSysConfig} ) {
-        $Param{CheckSysConfig} = 1;
     }
 
     # FollowUpLock 0 | 1
@@ -1253,12 +1247,6 @@ sub QueueUpdate {
             }
         }
     }
-
-    # check all SysConfig options
-    return 1 if !$Param{CheckSysConfig};
-
-    # check all SysConfig options and correct them automatically if necessary
-    $Kernel::OM->Get('Kernel::System::SysConfig')->ConfigItemCheckAll();
 
     return 1;
 }

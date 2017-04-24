@@ -58,13 +58,14 @@ $Selenium->RunTest(
         );
 
         # create test article with subject that is link
-        my $BodyText  = 'www.seleniumtest.com';
-        my $ArticleID = $TicketObject->ArticleCreate(
-            TicketID    => $TicketID,
-            ArticleType => 'phone',
-            SenderType  => 'agent',
-            Subject     => 'Selenium Test Article',
-            Body        => '
+        my $BodyText      = 'www.seleniumtest.com';
+        my $ArticleObject = $Kernel::OM->Get('Kernel::System::Ticket::Article');
+        my $ArticleID     = $ArticleObject->BackendForChannel( ChannelName => 'Phone' )->ArticleCreate(
+            TicketID             => $TicketID,
+            IsVisibleForCustomer => 1,
+            SenderType           => 'agent',
+            Subject              => 'Selenium Test Article',
+            Body                 => '
 www.seleniumtest.com
 ftp.seleniumtest.com
 cdn.www.seleniumtest.com
@@ -104,14 +105,14 @@ sub-domain.www.seleniumtest.com
         }
 
         # turn off OutputFilter TextURL in sysconfig
-        my %TextURL = $Kernel::OM->Get('Kernel::System::SysConfig')->ConfigItemGet(
+        my %TextURL = $Kernel::OM->Get('Kernel::System::SysConfig')->SettingGet(
             Name    => 'Frontend::Output::FilterText###AAAURL',
             Default => 1,
         );
         $Helper->ConfigSettingChange(
             Valid => 0,
             Key   => 'Frontend::Output::FilterText###AAAURL',
-            Value => \%TextURL,
+            Value => $TextURL{EffectiveValue},
         );
 
         # refresh screen

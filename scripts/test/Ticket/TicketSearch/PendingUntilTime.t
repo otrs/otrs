@@ -19,7 +19,8 @@ my $TimeObject   = $Kernel::OM->Get('Kernel::System::Time');
 
 $Kernel::OM->ObjectParamAdd(
     'Kernel::System::UnitTest::Helper' => {
-        RestoreDatabase => 1,
+        RestoreDatabase  => 1,
+        UseTmpArticleDir => 1,
     },
 );
 my $Helper = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
@@ -177,9 +178,18 @@ my @Tests = (
     {
         Description =>
             "Test search param 'TicketPendingTimeNewerMinutes' with tickets which have a pending time and correct state",
-        TimeStamp          => '2016-04-14 19:30:00',
+        TimeStamp          => '2016-04-14 19:15:00',
         TicketSearchConfig => {
             TicketPendingTimeNewerMinutes => '60',
+        },
+        ExpectedResultTicketIDs => [ $TicketIDs[3] ],
+    },
+    {
+        Description =>
+            "Test search param 'TicketPendingTimeNewerMinutes' with tickets which have a pending time in future and correct state",
+        TimeStamp          => '2016-04-14 17:15:00',
+        TicketSearchConfig => {
+            TicketPendingTimeNewerMinutes => '-60',
         },
         ExpectedResultTicketIDs => [ $TicketIDs[3] ],
     },

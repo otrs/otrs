@@ -7,7 +7,7 @@
 # --
 
 package Kernel::System::EventHandler;
-## nofilter(TidyAll::Plugin::OTRS::Perl::PODSpelling)
+## nofilter(TidyAll::Plugin::OTRS::Perl::Pod::FunctionPod)
 
 use strict;
 use warnings;
@@ -24,7 +24,7 @@ Kernel::System::EventHandler - event handler interface
 
 Inherit from this class if you want to use events there.
 
-    use base qw(Kernel::System::EventHandler);
+    use parent qw(Kernel::System::EventHandler);
 
 In your class, have to call L</EventHandlerInit()> first.
 
@@ -34,8 +34,8 @@ for the given event, or queue them for later execution (so-called
 'Transaction' events).
 
 In the destructor, you should add a call to L</EventHandlerTransaction()>
-to make sure that also 'Transaction' events will be executed correctly.
-This is only neccessary if you use 'Transaction' events in your class.
+to make sure that also C<Transaction> events will be executed correctly.
+This is only necessary if you use C<Transaction> events in your class.
 
 =head1 PUBLIC INTERFACE
 

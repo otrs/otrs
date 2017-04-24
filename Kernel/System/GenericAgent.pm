@@ -26,6 +26,7 @@ our @ObjectDependencies = (
     'Kernel::System::Queue',
     'Kernel::System::State',
     'Kernel::System::Ticket',
+    'Kernel::System::Ticket::Article',
     'Kernel::System::Time',
     'Kernel::System::TemplateGenerator',
     'Kernel::System::CustomerUser',
@@ -1013,13 +1014,17 @@ sub _JobRunTicket {
             }
         }
 
-        my $ArticleID = $TicketObject->ArticleCreate(
-            TicketID    => $Param{TicketID},
-            ArticleType => $Param{Config}->{New}->{Note}->{ArticleType}
-                || $Param{Config}->{New}->{ArticleType}
-                || 'note-internal',
-            SenderType => 'agent',
-            From       => $Param{Config}->{New}->{Note}->{From}
+        my $ArticleBackendObject = $Kernel::OM->Get('Kernel::System::Ticket::Article')->BackendForChannel(
+            ChannelName => 'Internal',
+        );
+
+        my $ArticleID = $ArticleBackendObject->ArticleCreate(
+            TicketID             => $Param{TicketID},
+            SenderType           => 'agent',
+            IsVisibleForCustomer => $Param{Config}->{New}->{Note}->{IsVisibleForCustomer}
+                // $Param{Config}->{New}->{NoteIsVisibleForCustomer}
+                // 0,
+            From => $Param{Config}->{New}->{Note}->{From}
                 || $Param{Config}->{New}->{NoteFrom}
                 || 'GenericAgent',
             Subject => $Param{Config}->{New}->{Note}->{Subject}

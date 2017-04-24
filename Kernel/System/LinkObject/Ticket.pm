@@ -17,6 +17,7 @@ our @ObjectDependencies = (
     'Kernel::Config',
     'Kernel::System::Log',
     'Kernel::System::Ticket',
+    'Kernel::System::SysConfig',
 );
 
 =head1 NAME
@@ -231,7 +232,8 @@ sub ObjectDescriptionGet {
 
 return a hash list of the search results
 
-Return
+Returns:
+
     $SearchList = {
         NOTLINKED => {
             Source => {
@@ -439,7 +441,7 @@ sub LinkAddPost {
 
         # ticket event
         $TicketObject->EventHandler(
-            Event => 'TicketSlaveLinkAdd' . $Param{Type},
+            Event => 'TicketSourceLinkAdd' . $Param{Type},
             Data  => {
                 TicketID => $Param{Key},
             },
@@ -467,7 +469,7 @@ sub LinkAddPost {
 
         # ticket event
         $TicketObject->EventHandler(
-            Event  => 'TicketMasterLinkAdd' . $Param{Type},
+            Event  => 'TicketTargetLinkAdd' . $Param{Type},
             UserID => $Param{UserID},
             Data   => {
                 TicketID => $Param{Key},
@@ -588,7 +590,7 @@ sub LinkDeletePost {
 
         # ticket event
         $TicketObject->EventHandler(
-            Event => 'TicketSlaveLinkDelete' . $Param{Type},
+            Event => 'TicketSourceLinkDelete' . $Param{Type},
             Data  => {
                 TicketID => $Param{Key},
             },
@@ -616,7 +618,7 @@ sub LinkDeletePost {
 
         # ticket event
         $TicketObject->EventHandler(
-            Event => 'TicketMasterLinkDelete' . $Param{Type},
+            Event => 'TicketTargetLinkDelete' . $Param{Type},
             Data  => {
                 TicketID => $Param{Key},
             },
@@ -627,6 +629,89 @@ sub LinkDeletePost {
     }
 
     return 1;
+}
+
+=head2 EventTypeConfigUpdate()
+
+Updates the ticket event configuration based on configured link types.
+
+    my $Success = $LinkObjectTicketObject->EventTypeConfigUpdate();
+
+Returns true if successful.
+
+=cut
+
+sub EventTypeConfigUpdate {
+    my ( $Self, %Param ) = @_;
+
+    my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
+
+    my $LinkTypes    = $ConfigObject->Get('LinkObject::Type') || {};
+    my $TicketEvents = $ConfigObject->Get('Events')->{Ticket} || [];
+
+    # Add missing ticket events for all configured link object types.
+    my $TicketEventsAdded;
+    for my $LinkType ( sort keys %{$LinkTypes} ) {
+        for my $ObjectType (qw(Source Target)) {
+            for my $EventType (qw(Add Delete)) {
+                my $Event = "Ticket${ObjectType}Link${EventType}$LinkType";
+                if ( !grep { $_ eq $Event } @{$TicketEvents} ) {
+                    push @{$TicketEvents}, $Event;
+                    $TicketEventsAdded = 1;
+                }
+            }
+        }
+    }
+    return if !$TicketEventsAdded;
+
+    my $SettingName = 'Events###Ticket';
+
+    my $SysConfigObject = $Kernel::OM->Get('Kernel::System::SysConfig');
+
+    # Retrieve the effective setting value from SysConfig.
+    my %Setting = $SysConfigObject->SettingGet(
+        Name     => $SettingName,
+        Deployed => 1,
+    );
+    return if !IsHashRefWithData( \%Setting );
+
+    $Setting{EffectiveValue} = $TicketEvents;
+
+    # Lock the setting to admin user.
+    my $ExclusiveLockGUID = $SysConfigObject->SettingLock(
+        Name   => $SettingName,
+        Force  => 1,
+        UserID => 1,
+    );
+    $Setting{ExclusiveLockGUID} = $ExclusiveLockGUID;
+
+    # Update the setting.
+    my %UpdateSuccess = $SysConfigObject->SettingUpdate(
+        %Setting,
+        UserID => 1,
+    );
+
+    if ( !$UpdateSuccess{Success} ) {
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
+            Priority => 'error',
+            Message  => $UpdateSuccess{Error} // "Error while updating $SettingName!",
+        );
+
+        # Unlock the setting.
+        $SysConfigObject->SettingUnlock(
+            Name => $SettingName,
+        );
+
+        return;
+    }
+
+    # Deploy the configuration.
+    return $SysConfigObject->ConfigurationDeploy(
+        Comments      => "$SettingName Configuration Updated",
+        DirtySettings => [$SettingName],
+        UserID        => 1,
+        Force         => 1,
+    );
 }
 
 1;

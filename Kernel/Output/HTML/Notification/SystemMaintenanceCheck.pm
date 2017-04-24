@@ -8,7 +8,7 @@
 
 package Kernel::Output::HTML::Notification::SystemMaintenanceCheck;
 
-use base 'Kernel::Output::HTML::Base';
+use parent 'Kernel::Output::HTML::Base';
 
 use strict;
 use warnings;
@@ -53,12 +53,12 @@ sub Run {
         );
     }
 
-    my $SystemMaintenanceIsComming = $SystemMaintenanceObject->SystemMaintenanceIsComming();
+    my $SystemMaintenanceIsComing = $SystemMaintenanceObject->SystemMaintenanceIsComing();
 
-    if ($SystemMaintenanceIsComming) {
+    if ($SystemMaintenanceIsComing) {
 
         my $MaintenanceTime = $Kernel::OM->Get('Kernel::System::Time')->SystemTime2TimeStamp(
-            SystemTime => $SystemMaintenanceIsComming,
+            SystemTime => $SystemMaintenanceIsComing,
         );
         return $LayoutObject->Notify(
             Priority => 'Notice',

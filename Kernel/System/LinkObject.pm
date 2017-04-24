@@ -24,11 +24,11 @@ our @ObjectDependencies = (
 
 =head1 NAME
 
-Kernel::System::LinkObject - to link objects like tickets, faqs, ...
+Kernel::System::LinkObject - to link objects like tickets, faq entries, ...
 
 =head1 DESCRIPTION
 
-All functions to link objects like tickets, faqs, ...
+All functions to link objects like tickets, faq entries, ...
 
 =head1 PUBLIC INTERFACE
 
@@ -190,7 +190,7 @@ sub PossibleObjectsList {
 
 =head2 PossibleLinkList()
 
-return a 2d hash list of all possible links
+return a 2 dimensional hash list of all possible links
 
 Return
     %PossibleLinkList = (
@@ -1847,7 +1847,7 @@ sub TypeGet {
 
 =head2 TypeList()
 
-return a 2d hash list of all valid link types
+return a 2 dimensional hash list of all valid link types
 
 Return
     $TypeList{
@@ -1907,7 +1907,7 @@ sub TypeList {
 
 =head2 TypeGroupList()
 
-return a 2d hash list of all type groups
+return a 2 dimensional hash list of all type groups
 
 Return
     %TypeGroupList = (
@@ -2306,9 +2306,10 @@ sub ObjectDescriptionGet {
 
 =head2 ObjectSearch()
 
-return a hash reference of the search results
+return a hash reference of the search results.
 
-Return
+Returns:
+
     $ObjectList = {
         Ticket => {
             NOTLINKED => {

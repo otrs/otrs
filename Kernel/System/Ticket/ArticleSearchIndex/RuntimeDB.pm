@@ -16,6 +16,15 @@ our @ObjectDependencies = (
     'Kernel::System::Log',
 );
 
+sub new {
+    my ( $Type, %Param ) = @_;
+
+    my $Self = {};
+    bless( $Self, $Type );
+
+    return $Self;
+}
+
 sub ArticleIndexBuild {
     my ( $Self, %Param ) = @_;
 
@@ -76,7 +85,10 @@ sub _ArticleIndexQuerySQL {
     {
 
         if ( $Param{Data}->{$_} ) {
-            return ' INNER JOIN article art ON st.id = art.ticket_id ';
+            return '
+                INNER JOIN article sa ON st.id = sa.ticket_id
+                INNER JOIN article_data_mime art ON sa.id = art.article_id
+            ';
         }
     }
 
@@ -91,7 +103,7 @@ sub _ArticleIndexQuerySQLExt {
         if ( !$Param{$_} ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
-                Message  => "Need $_!"
+                Message  => "Need $_!",
             );
             return;
         }

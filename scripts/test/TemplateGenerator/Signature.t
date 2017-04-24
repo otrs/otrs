@@ -38,13 +38,14 @@ $Self->True(
 # get helper object
 $Kernel::OM->ObjectParamAdd(
     'Kernel::System::UnitTest::Helper' => {
-        RestoreDatabase => 1,
+        RestoreDatabase  => 1,
+        UseTmpArticleDir => 1,
     },
 );
 my $Helper = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
 
-# get needed objects
 my $TicketObject            = $Kernel::OM->Get('Kernel::System::Ticket');
+my $ArticleObject           = $Kernel::OM->Get('Kernel::System::Ticket::Article');
 my $QueueObject             = $Kernel::OM->Get('Kernel::System::Queue');
 my $SignatureObject         = $Kernel::OM->Get('Kernel::System::Signature');
 my $TemplateGeneratorObject = $Kernel::OM->Get('Kernel::System::TemplateGenerator');
@@ -155,18 +156,20 @@ for my $Test (@Tests) {
         "Ticket is created - ID $TicketID",
     );
 
+    my $ArticleBackendObject = $ArticleObject->BackendForChannel( ChannelName => 'Email' );
+
     # create test email article
-    my $ArticleID = $TicketObject->ArticleCreate(
-        TicketID       => $TicketID,
-        ArticleType    => 'email-external',
-        SenderType     => 'customer',
-        Subject        => 'some short description',
-        Body           => 'the message text',
-        Charset        => 'ISO-8859-15',
-        MimeType       => 'text/plain',
-        HistoryType    => 'EmailCustomer',
-        HistoryComment => 'Some free text!',
-        UserID         => 1,
+    my $ArticleID = $ArticleBackendObject->ArticleCreate(
+        TicketID             => $TicketID,
+        IsVisibleForCustomer => 1,
+        SenderType           => 'customer',
+        Subject              => 'some short description',
+        Body                 => 'the message text',
+        Charset              => 'ISO-8859-15',
+        MimeType             => 'text/plain',
+        HistoryType          => 'EmailCustomer',
+        HistoryComment       => 'Some free text!',
+        UserID               => 1,
     );
     $Self->True(
         $ArticleID,
@@ -174,9 +177,11 @@ for my $Test (@Tests) {
     );
 
     # get last article
-    my %Article = $TicketObject->ArticleLastCustomerArticle(
+    my %Article = $ArticleBackendObject->ArticleGet(
         TicketID      => $TicketID,
+        ArticleID     => $ArticleID,
         DynamicFields => 0,
+        UserID        => 1,
     );
 
     if ( !defined $Test->{ExpectedResult} ) {

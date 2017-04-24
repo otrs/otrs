@@ -27,7 +27,8 @@ my $QueueObject  = $Kernel::OM->Get('Kernel::System::Queue');
 # get helper object
 $Kernel::OM->ObjectParamAdd(
     'Kernel::System::UnitTest::Helper' => {
-        RestoreDatabase => 1,
+        RestoreDatabase  => 1,
+        UseTmpArticleDir => 1,
     },
 );
 my $Helper = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
@@ -208,7 +209,6 @@ for my $Test (@Tests) {
         SignatureID     => 1,
         Comment         => 'Some comment',
         UserID          => 1,
-        CheckSysConfig  => 0,
     );
     $Self->True(
         $QueueUpdated,

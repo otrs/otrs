@@ -55,7 +55,7 @@
             <div class="Content">
 [% RenderBlockStart("Enabled") %]
                 <form action="[% Env("CGIHandle") %]" method="post" enctype="multipart/form-data">
-                    <input type="hidden" name="Action" value="AdminSysConfig"/>
+                    <input type="hidden" name="Action" value="AdminSystemConfiguration"/>
                     <input type="hidden" name="Subaction" value="Edit"/>
                     <input type="hidden" name="SysConfigGroup" value="Framework"/>
                     <input type="hidden" name="SysConfigSubGroup" value="Core::PerformanceLog"/>
@@ -64,7 +64,7 @@
                         <p class="FieldExplanation">
                             [% Translate("Just use this feature if you want to log each request.") | html %]
                         </p>
-                        <p class="Error">
+                        <p class="FieldExplanation">
                             [% Translate("Activating this feature might affect your system performance!") | html %]
                         </p>
                         <div class="Field SpacingTop">
@@ -79,7 +79,7 @@
 [% RenderBlockEnd("Enabled") %]
 [% RenderBlockStart("Disabled") %]
                 <form action="[% Env("CGIHandle") %]" method="post" enctype="multipart/form-data">
-                    <input type="hidden" name="Action" value="AdminSysConfig"/>
+                    <input type="hidden" name="Action" value="AdminSystemConfiguration"/>
                     <input type="hidden" name="Subaction" value="Edit"/>
                     <input type="hidden" name="SysConfigGroup" value="Framework"/>
                     <input type="hidden" name="SysConfigSubGroup" value="Core::PerformanceLog"/>
@@ -88,7 +88,7 @@
                         <p class="FieldExplanation">
                             [% Translate("Just use this feature if you want to log each request.") | html %]
                         </p>
-                        <p class="Error">
+                        <p class="FieldExplanation">
                             [% Translate("Activating this feature might affect your system performance!") | html %]
                         </p>
                         <div class="Field SpacingTop">

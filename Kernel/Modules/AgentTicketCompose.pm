@@ -52,9 +52,12 @@ sub Run {
     }
 
     # get needed objects
-    my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
-    my $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
-    my $TimeObject   = $Kernel::OM->Get('Kernel::System::Time');
+    my $ConfigObject  = $Kernel::OM->Get('Kernel::Config');
+    my $TicketObject  = $Kernel::OM->Get('Kernel::System::Ticket');
+    my $TimeObject    = $Kernel::OM->Get('Kernel::System::Time');
+    my $ArticleObject = $Kernel::OM->Get('Kernel::System::Ticket::Article');
+
+    my $ArticleBackendObject = $ArticleObject->BackendForChannel( ChannelName => 'Email' );
 
     # get config for frontend module
     my $Config = $ConfigObject->Get("Ticket::Frontend::$Self->{Action}");
@@ -154,8 +157,8 @@ sub Run {
     my %GetParam;
     for (
         qw(
-        From To Cc Bcc Subject Body InReplyTo References ResponseID ReplyArticleID StateID
-        ArticleID ArticleTypeID TimeUnits Year Month Day Hour Minute FormID ReplyAll
+        From To Cc Bcc Subject Body InReplyTo References ResponseID ReplyArticleID StateID ArticleID
+        IsVisibleForCustomerPresent IsVisibleForCustomer TimeUnits Year Month Day Hour Minute FormID ReplyAll
         )
         )
     {
@@ -392,7 +395,8 @@ sub Run {
     DYNAMICFIELD:
     for my $DynamicFieldItem ( sort keys %DynamicFieldValues ) {
         next DYNAMICFIELD if !$DynamicFieldItem;
-        next DYNAMICFIELD if !$DynamicFieldValues{$DynamicFieldItem};
+        next DYNAMICFIELD if !defined $DynamicFieldValues{$DynamicFieldItem};
+        next DYNAMICFIELD if !length $DynamicFieldValues{$DynamicFieldItem};
 
         $DynamicFieldACLParameters{ 'DynamicField_' . $DynamicFieldItem } = $DynamicFieldValues{$DynamicFieldItem};
     }
@@ -856,38 +860,30 @@ sub Run {
             );
         }
 
-        # if there is no ArticleTypeID, use the default value
-        my $ArticleTypeID = $GetParam{ArticleTypeID} // $TicketObject->ArticleTypeLookup(
-            ArticleType => $Config->{DefaultArticleType},
-        );
-
-        # error page
-        if ( !$ArticleTypeID ) {
-            return $LayoutObject->ErrorScreen(
-                Message => Translatable('Can not determine the ArticleType!'),
-                Comment => Translatable('Please contact the administrator.'),
-            );
+        my $IsVisibleForCustomer = $Config->{IsVisibleForCustomerDefault};
+        if ( $GetParam{IsVisibleForCustomerPresent} ) {
+            $IsVisibleForCustomer = $GetParam{IsVisibleForCustomer} ? 1 : 0;
         }
 
         # send email
-        my $ArticleID = $TicketObject->ArticleSend(
-            ArticleTypeID  => $ArticleTypeID,
-            SenderType     => 'agent',
-            TicketID       => $Self->{TicketID},
-            HistoryType    => 'SendAnswer',
-            HistoryComment => "\%\%$Recipients",
-            From           => $GetParam{From},
-            To             => $GetParam{To},
-            Cc             => $GetParam{Cc},
-            Bcc            => $GetParam{Bcc},
-            Subject        => $GetParam{Subject},
-            UserID         => $Self->{UserID},
-            Body           => $GetParam{Body},
-            InReplyTo      => $GetParam{InReplyTo},
-            References     => $GetParam{References},
-            Charset        => $LayoutObject->{UserCharset},
-            MimeType       => $MimeType,
-            Attachment     => \@AttachmentData,
+        my $ArticleID = $ArticleBackendObject->ArticleSend(
+            IsVisibleForCustomer => $IsVisibleForCustomer,
+            SenderType           => 'agent',
+            TicketID             => $Self->{TicketID},
+            HistoryType          => 'SendAnswer',
+            HistoryComment       => "\%\%$Recipients",
+            From                 => $GetParam{From},
+            To                   => $GetParam{To},
+            Cc                   => $GetParam{Cc},
+            Bcc                  => $GetParam{Bcc},
+            Subject              => $GetParam{Subject},
+            UserID               => $Self->{UserID},
+            Body                 => $GetParam{Body},
+            InReplyTo            => $GetParam{InReplyTo},
+            References           => $GetParam{References},
+            Charset              => $LayoutObject->{UserCharset},
+            MimeType             => $MimeType,
+            Attachment           => \@AttachmentData,
             %ArticleParam,
         );
 
@@ -1167,18 +1163,41 @@ sub Run {
         );
 
         # get last customer article or selected article ...
-        my %Data;
+        my @ArticleList;
+
         if ( $GetParam{ArticleID} ) {
-            %Data = $TicketObject->ArticleGet(
-                ArticleID     => $GetParam{ArticleID},
-                DynamicFields => 1,
+
+            @ArticleList = $ArticleObject->ArticleList(
+                TicketID  => $Self->{TicketID},
+                ArticleID => $GetParam{ArticleID},
             );
         }
         else {
-            %Data = $TicketObject->ArticleLastCustomerArticle(
-                TicketID      => $Self->{TicketID},
-                DynamicFields => 1,
+
+            @ArticleList = $ArticleObject->ArticleList(
+                TicketID             => $Self->{TicketID},
+                IsVisibleForCustomer => 1,
+                OnlyLast             => 1,
             );
+        }
+
+        my %Data;
+
+        ARTICLEMETADATA:
+        for my $ArticleMetaData (@ArticleList) {
+
+            next ARTICLEMETADATA if !$ArticleMetaData;
+            next ARTICLEMETADATA if !IsHashRefWithData($ArticleMetaData);
+
+            my $CurrentArticleBackendObject = $ArticleObject->BackendForArticle( %{$ArticleMetaData} );
+
+            %Data = $CurrentArticleBackendObject->ArticleGet(
+                TicketID  => $Self->{TicketID},
+                ArticleID => $ArticleMetaData->{ArticleID},
+                UserID    => $Self->{UserID},
+            );
+
+            last ARTICLEMETADATA;
         }
 
         # set OrigFrom for correct email quoting (xxxx wrote)
@@ -1363,18 +1382,16 @@ sub Run {
         }
 
         # use customer database email
-        # do not add customer email to cc, if article type is email-internal
-        my $DataArticleType = $TicketObject->ArticleTypeLookup( ArticleTypeID => $Data{ArticleTypeID} );
+        # do not add customer email to cc, if article is visible for customer
         if (
             $ConfigObject->Get('Ticket::Frontend::ComposeAddCustomerAddress')
-            && $DataArticleType !~ m{internal}
+            && $Data{IsVisibleForCustomer}
             )
         {
-
             # check if customer is in recipient list
             if ( $Customer{UserEmail} && $Data{ToEmail} !~ /^\Q$Customer{UserEmail}\E$/i ) {
 
-                if ( $Data{SenderType} eq 'agent' && $DataArticleType !~ m{external} ) {
+                if ( $Data{SenderType} eq 'agent' && !$Data{IsVisibleForCustomer} ) {
                     if ( $Data{To} ) {
                         $Data{To} .= ', ' . $Customer{UserEmail};
                     }
@@ -1671,7 +1688,6 @@ sub Run {
             References       => "$References",
             TicketBackType   => $TicketBackType,
             DynamicFieldHTML => \%DynamicFieldHTML,
-            ArticleTypeID    => $GetParam{ArticleTypeID},    # don't use the ArticleID from the previous article
         );
         $Output .= $LayoutObject->Footer(
             Type => 'Small',
@@ -1723,42 +1739,12 @@ sub _Mask {
         Class => 'Modernize',
     );
 
-    # get ticket object
-    my $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
-
-    #  get article type
-    my %ArticleTypeList;
-
-    if ( $Config->{ArticleTypes} ) {
-
-        my @ArticleTypesPossible = @{ $Config->{ArticleTypes} };
-        for my $ArticleTypeID (@ArticleTypesPossible) {
-            my $ArticleType = $TicketObject->ArticleTypeLookup(
-                ArticleType => $ArticleTypeID,
-            );
-            $ArticleTypeList{$ArticleType} = $ArticleTypeID;
-        }
-
-        my %Selected;
-        if ( $Param{ArticleTypeID} ) {
-            $Selected{SelectedID} = $Param{ArticleTypeID};
-        }
-        else {
-            $Selected{SelectedValue} = $Config->{DefaultArticleType};
-        }
-
-        $Param{ArticleTypesStrg} = $LayoutObject->BuildSelection(
-            Data => \%ArticleTypeList,
-            Name => 'ArticleTypeID',
-            %Selected,
-            Class => 'Modernize',
-        );
-
-        $LayoutObject->Block(
-            Name => 'ArticleType',
-            Data => \%Param,
-        );
-    }
+    $LayoutObject->Block(
+        Name => 'IsVisibleForCustomer',
+        Data => {
+            IsVisibleForCustomer => $Config->{IsVisibleForCustomerDefault},
+        },
+    );
 
     # prepare errors!
     if ( $Param{Errors} ) {
@@ -1770,7 +1756,7 @@ sub _Mask {
     }
 
     # get used calendar
-    my $Calendar = $TicketObject->TicketCalendarGet(
+    my $Calendar = $Kernel::OM->Get('Kernel::System::Ticket')->TicketCalendarGet(
         QueueID => $Param{QueueID},
         SLAID   => $Param{SLAID},
     );
@@ -2028,24 +2014,13 @@ sub _Mask {
         );
     }
 
-    # show address book
-    if ( $LayoutObject->{BrowserJavaScriptSupport} ) {
-
-        # check if need to call Options block
-        if ( !$ShownOptionsBlock ) {
-            $LayoutObject->Block(
-                Name => 'TicketOptions',
-                Data => {},
-            );
-
-            # set flag to "true" in order to prevent calling the Options block again
-            $ShownOptionsBlock = 1;
-        }
-
-        $LayoutObject->Block(
-            Name => 'AddressBook',
-            Data => {},
-        );
+    # Show the customer user address book if the module is registered and java script support is available.
+    if (
+        $ConfigObject->Get('Frontend::Module')->{AgentCustomerUserAddressBook}
+        && $LayoutObject->{BrowserJavaScriptSupport}
+        )
+    {
+        $Param{OptionCustomerUserAddressBook} = 1;
     }
 
     # add rich text editor

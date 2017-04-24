@@ -11,7 +11,7 @@ package Kernel::System::Daemon::DaemonModules::SchedulerTaskWorker::Asynchronous
 use strict;
 use warnings;
 
-use base qw(Kernel::System::Daemon::DaemonModules::BaseTaskWorker);
+use parent qw(Kernel::System::Daemon::DaemonModules::BaseTaskWorker);
 
 our @ObjectDependencies = (
     'Kernel::System::Log',
@@ -76,6 +76,8 @@ sub Run {
 
     # Stop execution if an error in params is detected.
     return if !$CheckResult;
+
+    $Param{Data}->{Params} //= {};
 
     # Stop execution if invalid params ref is detected.
     return if !ref $Param{Data}->{Params};

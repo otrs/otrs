@@ -21,6 +21,25 @@ $Selenium->RunTest(
         # get helper object
         my $Helper = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
 
+        # Overload CustomerUser => Map setting defined in the Defaults.pm.
+        my $DefaultCustomerUser = $Kernel::OM->Get('Kernel::Config')->Get("CustomerUser");
+        $DefaultCustomerUser->{Map}->[5] = [
+            'UserEmail',
+            'Email',
+            'email',
+            1,
+            1,
+            'var',
+            '[% Env("CGIHandle") %]?Action=AgentTicketCompose;ResponseID=1;TicketID=[% Data.TicketID | uri %];ArticleID=[% Data.ArticleID | uri %]',
+            0,
+            '',
+            'AsPopup OTRSPopup_TicketAction',
+        ];
+        $Helper->ConfigSettingChange(
+            Key   => 'CustomerUser',
+            Value => $DefaultCustomerUser,
+        );
+
         $Helper->ConfigSettingChange(
             Key   => 'CheckEmailAddresses',
             Value => 0,
@@ -127,6 +146,14 @@ $Selenium->RunTest(
         # set size for small screens, because of sidebar with customer info overflow form for customer data
         $Selenium->set_window_size( 1000, 700 );
 
+        # Check if user email is a link in the Customer Information widget and has target property.
+        my $LinkTarget = $Selenium->execute_script("return \$('#CustomerInfo a.AsPopup').attr('target');");
+        $Self->Is(
+            $LinkTarget,
+            '_blank',
+            "Check if user email is a link in the Customer Information widget and has target property."
+        );
+
         # check AgentTicketCustomer screen
         for my $ID (
             qw(CustomerAutoComplete CustomerID Submit CustomerInfo CustomerTickets)
@@ -137,12 +164,10 @@ $Selenium->RunTest(
             $Element->is_displayed();
         }
 
-        my $AutoCompleteString
-            = "\"$TestCustomers[1] $TestCustomers[1]\" <$TestCustomers[1]\@localhost.com> ($TestCustomers[1])";
         $Selenium->find_element( "#CustomerAutoComplete", 'css' )->clear();
         $Selenium->find_element( "#CustomerAutoComplete", 'css' )->send_keys( $TestCustomers[1] );
         $Selenium->WaitFor( JavaScript => 'return typeof($) === "function" && $("li.ui-menu-item:visible").length' );
-        $Selenium->find_element("//*[text()='$AutoCompleteString']")->VerifiedClick();
+        $Selenium->find_element("//*[text()='$TestCustomers[1]']")->VerifiedClick();
 
         # wait until customer data is loading (CustomerID is filled after CustomerAutoComplete)
         $Selenium->WaitFor( JavaScript => 'return typeof($) === "function" && $("#CustomerID").val().length' );

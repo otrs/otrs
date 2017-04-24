@@ -150,12 +150,12 @@ my @Tests = (
             "From: TestFrom\@home.com\nTo: TestTo\@home.com\nSubject: Email without Reply-To tag\nTest Body Email.\n",
         ResultAutoResponse => {
             To   => 'TestFrom@home.com',
-            Body => 'OTRS_CUSTOMER_REALNAME tag: TestTo@home.com',
+            Body => 'OTRS_CUSTOMER_REALNAME tag: TestFrom@home.com',
         },
         ResultNotification => {
             To   => 'TestFrom@home.com',
             Body => 'OTRS_CUSTOMER_REALNAME tag: TestFrom@home.com',
-            }
+        },
     },
     {
         Name => 'Email with Reply-To tag',
@@ -168,7 +168,7 @@ my @Tests = (
         ResultNotification => {
             To   => 'TestFrom@home.com',
             Body => 'OTRS_CUSTOMER_REALNAME tag: TestReplyTo@home.com',
-            }
+        },
     },
     {
         Name => 'Email with CustomerID',
@@ -181,20 +181,20 @@ my @Tests = (
         ResultNotification => {
             To   => "$CustomerUser\@home.com",
             Body => "OTRS_CUSTOMER_REALNAME tag: $CustomerUser $CustomerUser",
-            }
+        },
     },
     {
         Name => 'Email with Customer as Recipient',
         Email =>
-            "From: TestRecipient\@home.com\nTo: TestTo\@home.com\nSubject: Email with Recipient\nTest Body Email.\n",
+            "From: TestRecipient\@home.com\nTo: $CustomerUser\@home.com\nSubject: Email with Recipient\nTest Body Email.\n",
         ResultAutoResponse => {
             To   => 'TestRecipient@home.com',
-            Body => 'OTRS_CUSTOMER_REALNAME tag: TestTo@home.com',
+            Body => 'OTRS_CUSTOMER_REALNAME tag: TestRecipient@home.com',
         },
         ResultNotification => {
             To   => 'TestRecipient@home.com',
             Body => 'OTRS_CUSTOMER_REALNAME tag: TestRecipient@home.com',
-            }
+        },
     },
 );
 
@@ -222,9 +222,6 @@ for my $Test (@Tests) {
         $Kernel::OM->ObjectsDiscard( Objects => [ 'Kernel::System::PostMaster', 'Kernel::System::Ticket' ] );
     }
 
-    # get ticket object
-    my $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
-
     # get test ticket ID
     my ($TicketID) = $Result =~ m{TicketID:\s+(\d+)};
     $Self->True(
@@ -232,13 +229,16 @@ for my $Test (@Tests) {
         "TicketID $TicketID - created from email",
     );
 
+    my $ArticleObject = $Kernel::OM->Get('Kernel::System::Ticket::Article');
+
     # get auto repsonse article data
-    my @ArticleIDs = $TicketObject->ArticleIndex(
+    my @MetaArticles = $ArticleObject->ArticleList(
         TicketID => $TicketID,
     );
-    my %ArticleAutoResponse = $TicketObject->ArticleGet(
-        ArticleID => $ArticleIDs[1],
-        UserID    => 1,
+
+    my %ArticleAutoResponse = $ArticleObject->BackendForArticle( %{ $MetaArticles[0] } )->ArticleGet(
+        %{ $MetaArticles[1] },
+        UserID => 1,
     );
 
     # check auto response article values
@@ -252,9 +252,9 @@ for my $Test (@Tests) {
     }
 
     # get notification article data
-    my %ArticleNotification = $TicketObject->ArticleGet(
-        ArticleID => $ArticleIDs[2],
-        UserID    => 1,
+    my %ArticleNotification = $ArticleObject->BackendForArticle( %{ $MetaArticles[0] } )->ArticleGet(
+        %{ $MetaArticles[2] },
+        UserID => 1,
     );
 
     for my $NotificationKey ( sort keys %{ $Test->{ResultNotification} } ) {

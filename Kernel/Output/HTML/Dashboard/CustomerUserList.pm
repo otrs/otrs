@@ -173,6 +173,8 @@ sub Run {
                 CustomerID => $Self->{CustomerID},
             },
         );
+
+        $Self->{EditCustomerPermission} = 1;
     }
 
     # get the permission for the phone ticket creation
@@ -209,32 +211,11 @@ sub Run {
             Name => 'ContentLargeCustomerUserListRow',
             Data => {
                 %Param,
-                CustomerKey       => $CustomerKey,
-                CustomerListEntry => $CustomerIDs->{$CustomerKey},
+                EditCustomerPermission => $Self->{EditCustomerPermission},
+                CustomerKey            => $CustomerKey,
+                CustomerListEntry      => $CustomerIDs->{$CustomerKey},
             },
         );
-
-        # can edit?
-        if ( $AddAccess && scalar keys %CustomerSource ) {
-            $LayoutObject->Block(
-                Name => 'ContentLargeCustomerUserListRowCustomerKeyLink',
-                Data => {
-                    %Param,
-                    CustomerKey       => $CustomerKey,
-                    CustomerListEntry => $CustomerIDs->{$CustomerKey},
-                },
-            );
-        }
-        else {
-            $LayoutObject->Block(
-                Name => 'ContentLargeCustomerUserListRowCustomerKeyText',
-                Data => {
-                    %Param,
-                    CustomerKey       => $CustomerKey,
-                    CustomerListEntry => $CustomerIDs->{$CustomerKey},
-                },
-            );
-        }
 
         if ( $ConfigObject->Get('ChatEngine::Active') ) {
 
@@ -242,12 +223,13 @@ sub Run {
             my $EnableChat = 1;
             my $ChatStartingAgentsGroup
                 = $ConfigObject->Get('ChatEngine::PermissionGroup::ChatStartingAgents') || 'users';
+            my $ChatStartingAgentsGroupPermission = $Kernel::OM->Get('Kernel::System::Group')->PermissionCheck(
+                UserID    => $Self->{UserID},
+                GroupName => $ChatStartingAgentsGroup,
+                Type      => 'rw',
+            );
 
-            if (
-                !defined $LayoutObject->{"UserIsGroup[$ChatStartingAgentsGroup]"}
-                || $LayoutObject->{"UserIsGroup[$ChatStartingAgentsGroup]"} ne 'Yes'
-                )
-            {
+            if ( !$ChatStartingAgentsGroupPermission ) {
                 $EnableChat = 0;
             }
             if (
@@ -262,13 +244,14 @@ sub Run {
                 my $VideoChatEnabled = 0;
                 my $VideoChatAgentsGroup
                     = $ConfigObject->Get('ChatEngine::PermissionGroup::VideoChatAgents') || 'users';
+                my $VideoChatAgentsGroupPermission = $Kernel::OM->Get('Kernel::System::Group')->PermissionCheck(
+                    UserID    => $Self->{UserID},
+                    GroupName => $VideoChatAgentsGroup,
+                    Type      => 'rw',
+                );
 
                 # Enable the video chat feature if system is entitled and agent is a member of configured group.
-                if (
-                    defined $Self->{"UserIsGroup[$VideoChatAgentsGroup]"}
-                    && $Self->{"UserIsGroup[$VideoChatAgentsGroup]"} eq 'Yes'
-                    )
-                {
+                if ($VideoChatAgentsGroupPermission) {
                     if ( $Kernel::OM->Get('Kernel::System::Main')->Require( 'Kernel::System::VideoChat', Silent => 1 ) )
                     {
                         $VideoChatEnabled = $Kernel::OM->Get('Kernel::System::VideoChat')->IsEnabled();
@@ -442,7 +425,7 @@ sub Run {
                 NameHTML    => $NameHTML,
                 RefreshTime => $Refresh,
                 CustomerID  => $Param{CustomerID},
-                }
+            },
         );
     }
 
@@ -450,7 +433,8 @@ sub Run {
         TemplateFile => 'AgentDashboardCustomerUserList',
         Data         => {
             %{ $Self->{Config} },
-            Name => $Self->{Name},
+            EditCustomerPermission => $Self->{EditCustomerPermission},
+            Name                   => $Self->{Name},
         },
         AJAX => $Param{AJAX},
     );

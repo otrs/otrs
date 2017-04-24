@@ -13,11 +13,12 @@ use warnings;
 
 use Time::HiRes();
 
-use base qw(Kernel::System::Console::BaseCommand);
+use parent qw(Kernel::System::Console::BaseCommand);
 
 our @ObjectDependencies = (
     'Kernel::Config',
     'Kernel::System::Ticket',
+    'Kernel::System::Ticket::Article',
 );
 
 sub Configure {
@@ -59,21 +60,22 @@ sub Run {
     my $Count      = 0;
     my $MicroSleep = $Self->GetOption('micro-sleep');
 
+    my $ArticleObject = $Kernel::OM->Get('Kernel::System::Ticket::Article');
+
     TICKETID:
     for my $TicketID (@TicketIDs) {
 
         $Count++;
 
-        # get articles
-        my @ArticleIndex = $TicketObject->ArticleIndex(
+        my @MetaArticles = $ArticleObject->ArticleList(
             TicketID => $TicketID,
             UserID   => 1,
         );
 
-        for my $ArticleID (@ArticleIndex) {
-            $TicketObject->ArticleIndexBuild(
-                ArticleID => $ArticleID,
-                UserID    => 1,
+        for my $MetaArticle (@MetaArticles) {
+            $ArticleObject->ArticleIndexBuild(
+                %{$MetaArticle},
+                UserID => 1,
             );
         }
 

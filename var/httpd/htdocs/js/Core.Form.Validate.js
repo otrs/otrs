@@ -283,6 +283,17 @@ Core.Form.Validate = (function (TargetNS) {
     // If email address should be validated, this function is overwritten in Init method
     $.validator.addMethod("Validate_Email", ValidatorMethodRequired, "");
 
+
+    // Validates e-mail address in a field, but does not return an error if field is empty
+    $.validator.addMethod("Validate_Email_Optional", function (Value, Element) {
+        if (!Value.length) {
+            return true;
+        }
+        else {
+            return $.validator.methods.email.call(this, Value, Element);
+        }
+    }, "");
+
     // Use the maxlength attribute to have a dynamic validation
     // Textarea fields will need JS code to set the maxlength attribute since is not supported by
     // XHTML
@@ -363,15 +374,16 @@ Core.Form.Validate = (function (TargetNS) {
                 MinuteElement = ClassValue.replace(DateMinuteClassPrefix, '');
             }
         });
-        if (YearElement.length && MonthElement.length && $('#' + YearElement).length && $('#' + MonthElement).length) {
-            DateObject = new Date($('#' + YearElement).val(), $('#' + MonthElement).val() - 1, Value);
-            if (DateObject.getFullYear() === parseInt($('#' + YearElement).val(), 10) &&
-                DateObject.getMonth() + 1 === parseInt($('#' + MonthElement).val(), 10) &&
+
+        if (YearElement.length && MonthElement.length && $('#' + Core.App.EscapeSelector(YearElement)).length && $('#' + Core.App.EscapeSelector(MonthElement)).length) {
+            DateObject = new Date($('#' + Core.App.EscapeSelector(YearElement)).val(), $('#' + Core.App.EscapeSelector(MonthElement)).val() - 1, Value);
+            if (DateObject.getFullYear() === parseInt($('#' + Core.App.EscapeSelector(YearElement)).val(), 10) &&
+                DateObject.getMonth() + 1 === parseInt($('#' + Core.App.EscapeSelector(MonthElement)).val(), 10) &&
                 DateObject.getDate() === parseInt(Value, 10)) {
 
                 DateCheck = new Date();
                 if (MinuteElement.length && HourElement.length) {
-                    DateObject.setHours($('#' + HourElement).val(), $('#' + MinuteElement).val(), 0, 0);
+                    DateObject.setHours($('#' + Core.App.EscapeSelector(HourElement)).val(), $('#' + Core.App.EscapeSelector(MinuteElement)).val(), 0, 0);
                 }
                 else {
                     DateCheck.setHours(0, 0, 0, 0);
@@ -586,6 +598,10 @@ Core.Form.Validate = (function (TargetNS) {
         Validate_Email: true
     });
 
+    $.validator.addClassRules("Validate_Email_Optional", {
+        Validate_Email_Optional: true
+    });
+
     $.validator.addClassRules("Validate_MaxLength", {
         Validate_MaxLength: true
     });
@@ -710,6 +726,29 @@ Core.Form.Validate = (function (TargetNS) {
         Validate_DependingRequiredOR: true
         /*eslint-enable camelcase */
     });
+
+    $.validator.addMethod("Validate_Regex", ValidatorMethodRegex, "");
+
+    /**
+     * @private
+     * @name ValidatorMethodRegex
+     * @memberof Core.Form.Validate
+     * @function
+     * @returns {Boolean} True, if Value has a length, false otherwise.
+     * @param {String} Value
+     * @param {DOMObject} Element
+     * @description
+     *      Validator method for checking if a value satisfies regex expression.
+     */
+    function ValidatorMethodRegex(Value, Element) {
+        var Regex = $(Element).attr("data-regex");
+
+        if (Value.match(Regex)) {
+            return true;
+        }
+
+        return false;
+    }
 
     /**
      * @name Init

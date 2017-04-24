@@ -30,6 +30,7 @@ our @ObjectDependencies = (
     'Kernel::System::StandardTemplate',
     'Kernel::System::SystemAddress',
     'Kernel::System::Ticket',
+    'Kernel::System::Ticket::Article',
     'Kernel::System::User',
     'Kernel::Output::HTML::Layout',
     'Kernel::System::JSON',
@@ -127,7 +128,7 @@ sub Salutation {
     }
 
     # get list unsupported tags for standard template
-    my @ListOfUnSupportedTag = qw/OTRS_AGENT_SUBJECT OTRS_AGENT_BODY OTRS_CUSTOMER_BODY OTRS_CUSTOMER_SUBJECT/;
+    my @ListOfUnSupportedTag = qw(OTRS_AGENT_SUBJECT OTRS_AGENT_BODY OTRS_CUSTOMER_BODY OTRS_CUSTOMER_SUBJECT);
 
     my $SalutationText = $Self->_RemoveUnSupportedTag(
         Text => $Salutation{Text} || '',
@@ -246,7 +247,7 @@ sub Signature {
     }
 
     # get list unsupported tags for standard template
-    my @ListOfUnSupportedTag = qw/OTRS_AGENT_SUBJECT OTRS_AGENT_BODY OTRS_CUSTOMER_BODY OTRS_CUSTOMER_SUBJECT/;
+    my @ListOfUnSupportedTag = qw(OTRS_AGENT_SUBJECT OTRS_AGENT_BODY OTRS_CUSTOMER_BODY OTRS_CUSTOMER_SUBJECT);
 
     my $SignatureText = $Self->_RemoveUnSupportedTag(
         Text => $Signature{Text} || '',
@@ -441,7 +442,7 @@ sub Template {
     $Language //= $Kernel::OM->Get('Kernel::Config')->Get('DefaultLanguage') || 'en';
 
     # get list unsupported tags for standard template
-    my @ListOfUnSupportedTag = qw/OTRS_AGENT_SUBJECT OTRS_AGENT_BODY OTRS_CUSTOMER_BODY OTRS_CUSTOMER_SUBJECT/;
+    my @ListOfUnSupportedTag = qw(OTRS_AGENT_SUBJECT OTRS_AGENT_BODY OTRS_CUSTOMER_BODY OTRS_CUSTOMER_SUBJECT);
 
     my $TemplateText = $Self->_RemoveUnSupportedTag(
         Text => $Template{Template} || '',
@@ -680,16 +681,31 @@ sub AutoResponse {
     return if !%AutoResponse;
 
     # get old article for quoting
-    my %Article = $TicketObject->ArticleLastCustomerArticle(
-        TicketID      => $Param{TicketID},
-        DynamicFields => 0,
+    my $ArticleObject = $Kernel::OM->Get('Kernel::System::Ticket::Article');
+    my @ArticleList   = $ArticleObject->ArticleList(
+        TicketID   => $Param{TicketID},
+        SenderType => 'customer',
+        OnlyLast   => 1,
     );
 
-    for (qw(From To Cc Subject Body)) {
-        if ( !$Param{OrigHeader}->{$_} ) {
-            $Param{OrigHeader}->{$_} = $Article{$_} || '';
+    if ( !@ArticleList ) {
+        @ArticleList = $ArticleObject->ArticleList(
+            TicketID             => $Param{TicketID},
+            IsVisibleForCustomer => 1,
+            OnlyLast             => 1,
+        );
+    }
+
+    if (@ArticleList) {
+        my %Article = $ArticleObject->BackendForArticle( %{ $ArticleList[0] } )
+            ->ArticleGet( %{ $ArticleList[0] }, UserID => $Param{UserID} );
+
+        for (qw(From To Cc Subject Body)) {
+            if ( !$Param{OrigHeader}->{$_} ) {
+                $Param{OrigHeader}->{$_} = $Article{$_} || '';
+            }
+            chomp $Param{OrigHeader}->{$_};
         }
-        chomp $Param{OrigHeader}->{$_};
     }
 
     # format body (only if longer than 86 chars)
@@ -858,7 +874,6 @@ sub NotificationEvent {
         $Param{CustomerMessageParams} = \%LocalCustomerMessageParams;
     }
 
-    # get ticket object
     my $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
 
     # get ticket
@@ -867,42 +882,58 @@ sub NotificationEvent {
         DynamicFields => 0,
     );
 
-    # get last article from customer
-    my %Article = $TicketObject->ArticleLastCustomerArticle(
-        TicketID      => $Param{TicketID},
-        DynamicFields => 0,
+    my $ArticleObject = $Kernel::OM->Get('Kernel::System::Ticket::Article');
+
+    # Get last article from customer.
+    my @CustomerArticles = $ArticleObject->ArticleList(
+        TicketID   => $Param{TicketID},
+        SenderType => 'customer',
+        OnlyLast   => 1,
     );
 
-    # get last article from agent
-    my @ArticleBoxAgent = $TicketObject->ArticleGet(
-        TicketID      => $Param{TicketID},
-        UserID        => $Param{UserID},
-        DynamicFields => 0,
-    );
-
-    my %ArticleAgent;
+    my %CustomerArticle;
 
     ARTICLE:
-    for my $Article ( reverse @ArticleBoxAgent ) {
+    for my $Article (@CustomerArticles) {
+        next ARTICLE if !$Article->{ArticleID};
 
-        next ARTICLE if $Article->{SenderType} ne 'agent';
-
-        %ArticleAgent = %{$Article};
-
-        last ARTICLE;
+        %CustomerArticle = $ArticleObject->BackendForArticle( %{$Article} )->ArticleGet(
+            %{$Article},
+            DynamicFields => 0,
+            UserID        => $Param{UserID},
+        );
     }
 
-    # get  HTMLUtils object
+    # Get last article from agent.
+    my @AgentArticles = $ArticleObject->ArticleList(
+        TicketID   => $Param{TicketID},
+        SenderType => 'agent',
+        OnlyLast   => 1,
+    );
+
+    my %AgentArticle;
+
+    ARTICLE:
+    for my $Article (@AgentArticles) {
+        next ARTICLE if !$Article->{ArticleID};
+
+        %AgentArticle = $ArticleObject->BackendForArticle( %{$Article} )->ArticleGet(
+            %{$Article},
+            DynamicFields => 0,
+            UserID        => $Param{UserID},
+        );
+    }
+
     my $HTMLUtilsObject = $Kernel::OM->Get('Kernel::System::HTMLUtils');
 
     # set the accounted time as part of the articles information
     ARTICLE:
-    for my $ArticleData ( \%Article, \%ArticleAgent ) {
+    for my $ArticleData ( \%CustomerArticle, \%AgentArticle ) {
 
         next ARTICLE if !$ArticleData->{ArticleID};
 
         # get accounted time
-        my $AccountedTime = $TicketObject->ArticleAccountedTimeGet(
+        my $AccountedTime = $ArticleObject->ArticleAccountedTimeGet(
             ArticleID => $ArticleData->{ArticleID},
         );
 
@@ -936,9 +967,9 @@ sub NotificationEvent {
         $Notification{$Attribute} = $Notification{Message}->{$Language}->{$Attribute};
     }
 
-    for my $Key (qw(From To Cc Subject Body ContentType ArticleType)) {
+    for my $Key (qw(From To Cc Subject Body ContentType)) {
         if ( !$Param{CustomerMessageParams}->{$Key} ) {
-            $Param{CustomerMessageParams}->{$Key} = $Article{$Key} || '';
+            $Param{CustomerMessageParams}->{$Key} = $CustomerArticle{$Key} || '';
         }
         chomp $Param{CustomerMessageParams}->{$Key};
     }
@@ -1017,7 +1048,7 @@ sub NotificationEvent {
         Text      => $Notification{Body},
         Recipient => $Param{Recipient},
         Data      => $Param{CustomerMessageParams},
-        DataAgent => \%ArticleAgent,
+        DataAgent => \%AgentArticle,
         TicketID  => $Param{TicketID},
         UserID    => $Param{UserID},
         Language  => $Language,
@@ -1027,7 +1058,7 @@ sub NotificationEvent {
         Text      => $Notification{Subject},
         Recipient => $Param{Recipient},
         Data      => $Param{CustomerMessageParams},
-        DataAgent => \%ArticleAgent,
+        DataAgent => \%AgentArticle,
         TicketID  => $Param{TicketID},
         UserID    => $Param{UserID},
         Language  => $Language,
@@ -1572,12 +1603,19 @@ sub _Replace {
 
                 # get real name based on reply-to
                 if ( $Data{ReplyTo} ) {
-                    $From = $Data{ReplyTo} || '';
+                    $From = $Data{ReplyTo};
+
+                    # remove email addresses
+                    $From =~ s/&lt;.*&gt;|<.*>|\(.*\)|\"|&quot;|;|,//g;
+
+                    # remove leading/trailing spaces
+                    $From =~ s/^\s+//g;
+                    $From =~ s/\s+$//g;
                 }
 
                 # generate real name based on sender line
                 if ( !$From ) {
-                    $From = $Data{From} || '';
+                    $From = $Data{To} || '';
 
                     # remove email addresses
                     $From =~ s/&lt;.*&gt;|<.*>|\(.*\)|\"|&quot;|;|,//g;
@@ -1647,11 +1685,11 @@ sub _RemoveUnSupportedTag {
     my ( $Self, %Param ) = @_;
 
     # check needed stuff
-    for (qw(Text ListOfUnSupportedTag)) {
-        if ( !defined $Param{$_} ) {
+    for my $Item (qw(Text ListOfUnSupportedTag)) {
+        if ( !defined $Param{$Item} ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
-                Message  => "Need $_!"
+                Message  => "Need $Item!"
             );
             return;
         }

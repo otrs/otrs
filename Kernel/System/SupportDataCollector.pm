@@ -92,6 +92,14 @@ collect system data
                 Value       => '0',
                 Message     => 'Please enable mod_perl to speed up OTRS.',
             },
+            {
+                Identifier       => 'Some::Identifier',
+                DisplayPath      => 'SomePath',
+                Status           => $StatusOK,
+                Label            => 'Some Label'
+                Value            => '0',
+                MessageFormatted => 'Some \n Formatted \n\t Text.',
+            },
         ],
     )
 
@@ -410,7 +418,7 @@ sub CollectAsynchronous {
 
 =head2 CleanupAsynchronous()
 
-cleanup asynchronous data (the asynchronous plug-in decide for themselves)
+clean-up asynchronous data (the asynchronous plug-in decide for themselves)
 
     my $Success = $SupportDataCollectorObject->CleanupAsynchronous();
 

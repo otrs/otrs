@@ -8,7 +8,7 @@
 
 package Kernel::Output::HTML::Notification::AgentTimeZoneCheck;
 
-use base 'Kernel::Output::HTML::Base';
+use parent 'Kernel::Output::HTML::Base';
 
 use strict;
 use warnings;
@@ -45,8 +45,9 @@ sub Run {
     my $LayoutObject = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
     return $LayoutObject->Notify(
         Priority => 'Notice',
-        Link     => $LayoutObject->{Baselink} . 'Action=AgentPreferences',
-        Info     => Translatable('Please select a time zone in your preferences and confirm it by clicking "Update".'),
+        Link     => $LayoutObject->{Baselink} . 'Action=AgentPreferences;Subaction=Group;Group=UserProfile',
+        Info =>
+            Translatable('Please select a time zone in your preferences and confirm it by clicking the save button.'),
     );
 }
 

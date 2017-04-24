@@ -755,9 +755,11 @@ sub XMLParse {
     # check cache
     if ($Checksum) {
         my $Cache = $CacheObject->Get(
-            Type => 'XMLParse',
-            Key  => $Checksum,
+            Type          => 'XMLParse',
+            Key           => $Checksum,
+            CacheInMemory => 0,
         );
+
         return @{$Cache} if $Cache;
     }
 
@@ -841,10 +843,11 @@ sub XMLParse {
     # set cache
     if ($Checksum) {
         $CacheObject->Set(
-            Type  => 'XMLParse',
-            Key   => $Checksum,
-            Value => $Self->{XMLARRAY},
-            TTL   => 30 * 24 * 60 * 60,
+            Type          => 'XMLParse',
+            Key           => $Checksum,
+            Value         => $Self->{XMLARRAY},
+            TTL           => 30 * 24 * 60 * 60,
+            CacheInMemory => 0,
         );
     }
 

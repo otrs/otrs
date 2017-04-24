@@ -22,7 +22,7 @@
 
         <div class="WidgetSimple">
             <div class="Header">
-                <h2>[% Translate("Favourites") | html %]</h2>
+                <h2>[% Translate("Favorites") | html %]</h2>
             </div>
             <div class="Content FavouriteList">
                 <table class="DataTable Favourites" [% IF !Data.Favourites.size() %]style="display: none;"[% END %]>
@@ -38,7 +38,7 @@
                     </tbody>
                 </table>
                 <p class="FieldExplanation">
-                    [% Translate("You can add favourites by moving your cursor over items on the right side and clicking the star icon.") | html %]
+                    [% Translate("You can add favorites by moving your cursor over items on the right side and clicking the star icon.") | html %]
                 </p>
             </div>
         </div>
@@ -93,9 +93,13 @@
                                 </span>
                                 <span class="Title">
                                     [% Translate(Item.Name) | html %]
+                                    <span class="InvisibleText">[% Item.Name | html %]</span>
                                 </span>
-                                <span class="Description">[% Translate(Item.Description) | html %]</span>
-                                <span class="Favourite AddAsFavourite" data-module="[% Item.item("Frontend::Module") | html %]" title="[% Translate("Set as favourite") | html %]">
+                                <span class="Description">
+                                    [% Translate(Item.Description) | html %]
+                                    <span class="InvisibleText">[% Item.Description | html %]</span>
+                                </span>
+                                <span class="Favourite AddAsFavourite" data-module="[% Item.item("Frontend::Module") | html %]" title="[% Translate("Set as favorite") | html %]">
                                     <i class="fa fa-star"></i>
                                     <i class="fa fa-star-o"></i>
                                 </span>
@@ -111,17 +115,25 @@
                             <tr>
                                 <th class="W20pc">[% Translate("Name") %]</th>
                                 <th>[% Translate("Description") %]</th>
-                                <th class="W10pc Center">[% Translate("As Favourite") %]</th>
+                                <th class="W10pc Center">[% Translate("As Favorite") %]</th>
                             </tr>
                         </thead>
                         <tbody>
                         [% FOREACH Item IN Data.Items %]
                             <tr [% IF Item.IsFavourite %]class="IsFavourite"[% END %] data-module="[% Item.item("Frontend::Module") | html %]">
-                                <td class="W20pc"><a class="AsBlock ModuleLink" href="[% Env("Baselink") %]Action=[% Item.item("Frontend::Module") | uri %]">[% Translate(Item.Name) | html %]</a></td>
-                                <td>[% Translate(Item.Description) | html %]</td>
+                                <td class="W20pc">
+                                    <a class="AsBlock ModuleLink" href="[% Env("Baselink") %]Action=[% Item.item("Frontend::Module") | uri %]">
+                                        [% Translate(Item.Name) | html %]
+                                        <span class="InvisibleText">[% Item.Name | html %]</span>
+                                    </a>
+                                </td>
+                                <td>
+                                    [% Translate(Item.Description) | html %]
+                                    <span class="InvisibleText">[% Item.Description | html %]</span>
+                                </td>
                                 <td class="W10pc Center FavouriteButtons">
                                     <span><i class="fa fa-star"></i></span>
-                                    <a href="#" class="Favourite AddAsFavourite" data-module="[% Item.item("Frontend::Module") | html %]" title="[% Translate("Set as favourite") | html %]">
+                                    <a href="#" class="Favourite AddAsFavourite" data-module="[% Item.item("Frontend::Module") | html %]" title="[% Translate("Set as favorite") | html %]">
                                         <i class="fa fa-star"></i>
                                         <i class="fa fa-star-o"></i>
                                     </a>

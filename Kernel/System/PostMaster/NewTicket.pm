@@ -22,6 +22,7 @@ our @ObjectDependencies = (
     'Kernel::System::Queue',
     'Kernel::System::State',
     'Kernel::System::Ticket',
+    'Kernel::System::Ticket::Article',
     'Kernel::System::Time',
     'Kernel::System::Type',
     'Kernel::System::User',
@@ -204,6 +205,15 @@ sub Run {
                     . " from customer source backend based on ($GetParam{'EmailFrom'}).",
             );
         }
+    }
+
+    # if there is no customer id found!
+    if (
+        !$GetParam{'X-OTRS-CustomerNo'}
+        && $ConfigObject->Get('PostMaster::NewTicket::AutoAssignCustomerIDForUnknownCustomers')
+        )
+    {
+        $GetParam{'X-OTRS-CustomerNo'} = $GetParam{SenderEmailAddress};
     }
 
     # if there is no customer user found!
@@ -442,27 +452,36 @@ sub Run {
         }
     }
 
-    # do article db insert
-    my $ArticleID = $TicketObject->ArticleCreate(
-        TicketID         => $TicketID,
-        ArticleType      => $GetParam{'X-OTRS-ArticleType'},
-        SenderType       => $GetParam{'X-OTRS-SenderType'},
-        From             => $GetParam{From},
-        ReplyTo          => $GetParam{ReplyTo},
-        To               => $GetParam{To},
-        Cc               => $GetParam{Cc},
-        Subject          => $GetParam{Subject},
-        MessageID        => $GetParam{'Message-ID'},
-        InReplyTo        => $GetParam{'In-Reply-To'},
-        References       => $GetParam{'References'},
-        ContentType      => $GetParam{'Content-Type'},
-        Body             => $GetParam{Body},
-        UserID           => $Param{InmailUserID},
-        HistoryType      => 'EmailCustomer',
-        HistoryComment   => "\%\%$Comment",
-        OrigHeader       => \%GetParam,
-        AutoResponseType => $AutoResponseType,
-        Queue            => $Queue,
+    my $ArticleBackendObject = $Kernel::OM->Get('Kernel::System::Ticket::Article')->BackendForChannel(
+        ChannelName => 'Email',
+    );
+
+    my $IsVisibleForCustomer = 1;
+    if ( length $GetParam{'X-OTRS-IsVisibleForCustomer'} ) {
+        $IsVisibleForCustomer = $GetParam{'X-OTRS-IsVisibleForCustomer'};
+    }
+
+    # Create email article.
+    my $ArticleID = $ArticleBackendObject->ArticleCreate(
+        TicketID             => $TicketID,
+        SenderType           => $GetParam{'X-OTRS-SenderType'},
+        IsVisibleForCustomer => $IsVisibleForCustomer,
+        From                 => $GetParam{From},
+        ReplyTo              => $GetParam{ReplyTo},
+        To                   => $GetParam{To},
+        Cc                   => $GetParam{Cc},
+        Subject              => $GetParam{Subject},
+        MessageID            => $GetParam{'Message-ID'},
+        InReplyTo            => $GetParam{'In-Reply-To'},
+        References           => $GetParam{'References'},
+        ContentType          => $GetParam{'Content-Type'},
+        Body                 => $GetParam{Body},
+        UserID               => $Param{InmailUserID},
+        HistoryType          => 'EmailCustomer',
+        HistoryComment       => "\%\%$Comment",
+        OrigHeader           => \%GetParam,
+        AutoResponseType     => $AutoResponseType,
+        Queue                => $Queue,
     );
 
     # close ticket if article create failed!
@@ -579,7 +598,7 @@ sub Run {
     }
 
     # write plain email to the storage
-    $TicketObject->ArticleWritePlain(
+    $ArticleBackendObject->ArticleWritePlain(
         ArticleID => $ArticleID,
         Email     => $Self->{ParserObject}->GetPlainEmail(),
         UserID    => $Param{InmailUserID},
@@ -587,7 +606,7 @@ sub Run {
 
     # write attachments to the storage
     for my $Attachment ( $Self->{ParserObject}->GetAttachments() ) {
-        $TicketObject->ArticleWriteAttachment(
+        $ArticleBackendObject->ArticleWriteAttachment(
             Filename           => $Attachment->{Filename},
             Content            => $Attachment->{Content},
             ContentType        => $Attachment->{ContentType},

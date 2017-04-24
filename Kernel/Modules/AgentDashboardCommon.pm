@@ -39,6 +39,11 @@ sub Run {
         $MainMenuConfigKey = 'AgentCustomerInformationCenter::MainMenu';
         $UserSettingsKey   = 'UserCustomerInformationCenter';
     }
+    elsif ( $Self->{Action} eq 'AgentCustomerUserInformationCenter' ) {
+        $BackendConfigKey  = 'AgentCustomerUserInformationCenter::Backend';
+        $MainMenuConfigKey = 'AgentCustomerUserInformationCenter::MainMenu';
+        $UserSettingsKey   = 'UserCustomerUserInformationCenter';
+    }
 
     # get needed objects
     my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
@@ -130,6 +135,26 @@ sub Run {
             }
         }
     }
+    elsif ( $Self->{Action} eq 'AgentCustomerUserInformationCenter' ) {
+
+        $Self->{CustomerUserID} = $ParamObject->GetParam( Param => 'CustomerUserID' );
+
+        # check CustomerUserID presence for all subactions that need it
+        if ( $Self->{Subaction} ne 'UpdatePosition' ) {
+
+            if ( !$Self->{CustomerUserID} ) {
+
+                $LayoutObject->AddJSOnDocumentComplete(
+                    Code => 'Core.Agent.CustomerUserInformationCenterSearch.OpenSearchDialog();'
+                );
+
+                my $Output = $LayoutObject->Header();
+                $Output .= $LayoutObject->NavigationBar();
+                $Output .= $LayoutObject->Footer();
+                return $Output;
+            }
+        }
+    }
 
     # get needed objects
     my $DynamicFieldObject = $Kernel::OM->Get('Kernel::System::DynamicField');
@@ -164,6 +189,9 @@ sub Run {
         my $URL = "Action=$Self->{Action}";
         if ( $Self->{CustomerID} ) {
             $URL .= ";CustomerID=" . $LayoutObject->LinkEncode( $Self->{CustomerID} );
+        }
+        if ( $Self->{CustomerUserID} ) {
+            $URL .= ";CustomerUserID=" . $LayoutObject->LinkEncode( $Self->{CustomerUserID} );
         }
 
         return $LayoutObject->Redirect(
@@ -273,6 +301,9 @@ sub Run {
         my $URL = "Action=$Self->{Action}";
         if ( $Self->{CustomerID} ) {
             $URL .= ";CustomerID=" . $LayoutObject->LinkEncode( $Self->{CustomerID} );
+        }
+        if ( $Self->{CustomerUserID} ) {
+            $URL .= ";CustomerUserID=" . $LayoutObject->LinkEncode( $Self->{CustomerUserID} );
         }
 
         return $LayoutObject->Redirect(
@@ -464,12 +495,27 @@ sub Run {
             $ContentBlockData{CustomerIDTitle} = "$CustomerCompanyData{CustomerCompanyName} ($Self->{CustomerID})";
         }
     }
+    elsif ( $Self->{Action} eq 'AgentCustomerUserInformationCenter' ) {
+
+        my %CustomerUserData = $Kernel::OM->Get('Kernel::System::CustomerUser')->CustomerUserDataGet(
+            User => $Self->{CustomerUserID},
+        );
+
+        $ContentBlockData{CustomerUserID} = $Self->{CustomerUserID};
+
+        # H1 title
+        $ContentBlockData{CustomerUserIDTitle}
+            = "\"$CustomerUserData{UserFirstname} $CustomerUserData{UserLastname}\" <$CustomerUserData{UserEmail}>";
+
+    }
 
     # show dashboard
     $LayoutObject->Block(
         Name => 'Content',
         Data => \%ContentBlockData,
     );
+
+    my $GroupObject = $Kernel::OM->Get('Kernel::System::Group');
 
     # get shown backends
     my %Backends;
@@ -482,8 +528,12 @@ sub Run {
             my @Groups = split /;/, $Config->{$Name}->{Group};
             GROUP:
             for my $Group (@Groups) {
-                my $Permission = 'UserIsGroupRo[' . $Group . ']';
-                if ( defined $Self->{$Permission} && $Self->{$Permission} eq 'Yes' ) {
+                my $HasPermission = $GroupObject->PermissionCheck(
+                    UserID    => $Self->{UserID},
+                    GroupName => $Group,
+                    Type      => 'ro',
+                );
+                if ($HasPermission) {
                     $PermissionOK = 1;
                     last GROUP;
                 }
@@ -562,10 +612,11 @@ sub Run {
             Name => $Element{Config}->{Block},
             Data => {
                 %{ $Element{Config} },
-                Name       => $Name,
-                NameForm   => $NameForm,
-                Content    => ${ $Element{Content} },
-                CustomerID => $Self->{CustomerID} || '',
+                Name           => $Name,
+                NameForm       => $NameForm,
+                Content        => ${ $Element{Content} },
+                CustomerID     => $Self->{CustomerID} || '',
+                CustomerUserID => $Self->{CustomerUserID} || '',
             },
         );
 
@@ -577,7 +628,7 @@ sub Run {
 
             # send data to JS
             $LayoutObject->AddJSData(
-                Key   => 'CanRefresh',
+                Key   => 'CanRefresh-' . $Name,
                 Value => {
                     Name     => $Name,
                     NameHTML => $NameHTML,
@@ -595,9 +646,9 @@ sub Run {
         }
 
         # if column is not a default column, add it for translation
-        for my $Column ( sort keys %{ $Element{Config}{DefaultColumns} } ) {
+        for my $Column ( sort keys %{ $Element{Config}->{DefaultColumns} } ) {
             if ( !defined $Columns->{$Column} ) {
-                $Columns->{$Column} = $Element{Config}{DefaultColumns}{$Column}
+                $Columns->{$Column} = $Element{Config}->{DefaultColumns}->{$Column}
             }
         }
 
@@ -678,7 +729,8 @@ sub Run {
                 Name => 'MainMenuItem',
                 Data => {
                     %{ $MainMenuConfig->{$MainMenuItem} },
-                    CustomerID => $Self->{CustomerID},
+                    CustomerID     => $Self->{CustomerID},
+                    CustomerUserID => $Self->{CustomerUserID},
                 },
             );
         }
@@ -708,6 +760,12 @@ sub Run {
             }
             elsif ( $Column eq 'PendingTime' ) {
                 $TranslatedWord = Translatable('Pending till');
+            }
+            elsif ( $Column eq 'CustomerCompanyName' ) {
+                $TranslatedWord = Translatable('Customer Company Name');
+            }
+            elsif ( $Column eq 'CustomerUserID' ) {
+                $TranslatedWord = Translatable('Customer User ID');
             }
 
             # send data to JS
@@ -766,14 +824,20 @@ sub _Element {
     my $GetColumnFilter       = $Param{GetColumnFilter};
     my $GetColumnFilterSelect = $Param{GetColumnFilterSelect};
 
+    my $GroupObject = $Kernel::OM->Get('Kernel::System::Group');
+
     # check permissions
     if ( $Configs->{$Name}->{Group} ) {
         my $PermissionOK = 0;
         my @Groups = split /;/, $Configs->{$Name}->{Group};
         GROUP:
         for my $Group (@Groups) {
-            my $Permission = 'UserIsGroupRo[' . $Group . ']';
-            if ( defined $Self->{$Permission} && $Self->{$Permission} eq 'Yes' ) {
+            my $HasPermission = $GroupObject->PermissionCheck(
+                UserID    => $Self->{UserID},
+                GroupName => $Group,
+                Type      => 'ro',
+            );
+            if ($HasPermission) {
                 $PermissionOK = 1;
                 last GROUP;
             }
@@ -792,12 +856,12 @@ sub _Element {
         Config                => $Configs->{$Name},
         Name                  => $Name,
         CustomerID            => $Self->{CustomerID} || '',
+        CustomerUserID        => $Self->{CustomerUserID} || '',
         SortBy                => $SortBy,
         OrderBy               => $OrderBy,
         ColumnFilter          => $ColumnFilter,
         GetColumnFilter       => $GetColumnFilter,
         GetColumnFilterSelect => $GetColumnFilterSelect,
-
     );
 
     # get module config
@@ -815,10 +879,11 @@ sub _Element {
 
     if ( $Param{FilterContentOnly} ) {
         my $FilterContent = $Object->FilterContent(
-            FilterColumn => $Param{FilterColumn},
-            Config       => $Configs->{$Name},
-            Name         => $Name,
-            CustomerID   => $Self->{CustomerID} || '',
+            FilterColumn   => $Param{FilterColumn},
+            Config         => $Configs->{$Name},
+            Name           => $Name,
+            CustomerID     => $Self->{CustomerID} || '',
+            CustomerUserID => $Self->{CustomerUserID} || '',
         );
         return $FilterContent;
     }
@@ -849,7 +914,8 @@ sub _Element {
 
     if ( !$CacheKey ) {
         $CacheKey = $Name . '-'
-            . ( $Self->{CustomerID} || '' ) . '-'
+            . ( $Self->{CustomerID}     || '' ) . '-'
+            . ( $Self->{CustomerUserID} || '' ) . '-'
             . $LayoutObject->{UserLanguage};
     }
     if ( $Config{CacheTTL} ) {
@@ -864,8 +930,9 @@ sub _Element {
     if ( !defined $Content || $SortBy ) {
         $CacheUsed = 0;
         $Content   = $Object->Run(
-            AJAX       => $Param{AJAX},
-            CustomerID => $Self->{CustomerID} || '',
+            AJAX           => $Param{AJAX},
+            CustomerID     => $Self->{CustomerID} || '',
+            CustomerUserID => $Self->{CustomerUserID} || '',
         );
     }
 

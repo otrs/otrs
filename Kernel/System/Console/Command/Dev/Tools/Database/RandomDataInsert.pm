@@ -13,7 +13,7 @@ use warnings;
 
 use Kernel::System::VariableCheck qw(:all);
 
-use base qw(Kernel::System::Console::BaseCommand);
+use parent qw(Kernel::System::Console::BaseCommand);
 
 our @ObjectDependencies = (
     'Kernel::Config',
@@ -25,7 +25,9 @@ our @ObjectDependencies = (
     'Kernel::System::Group',
     'Kernel::System::Queue',
     'Kernel::System::Ticket',
+    'Kernel::System::Ticket::Article',
     'Kernel::System::User',
+    'Kernel::System::Priority',
 );
 
 sub Configure {
@@ -168,7 +170,7 @@ sub Run {
             Title        => RandomSubject(),
             QueueID      => $QueueIDs[ int( rand($#QueueIDs) ) ],
             Lock         => 'unlock',
-            Priority     => '3 normal',
+            Priority     => PriorityGet(),
             State        => 'new',
             CustomerNo   => int( rand(1000) ),
             CustomerUser => RandomAddress(),
@@ -194,20 +196,23 @@ sub Run {
             print "Ticket with ID '$TicketID' created.\n";
 
             for ( 1 .. $Self->GetOption('articles-per-ticket') // 10 ) {
-                my $ArticleID = $Kernel::OM->Get('Kernel::System::Ticket')->ArticleCreate(
-                    TicketID       => $TicketID,
-                    ArticleType    => 'note-external',
-                    SenderType     => 'customer',
-                    From           => RandomAddress(),
-                    To             => RandomAddress(),
-                    Cc             => RandomAddress(),
-                    Subject        => RandomSubject(),
-                    Body           => RandomBody(),
-                    ContentType    => 'text/plain; charset=ISO-8859-15',
-                    HistoryType    => 'AddNote',
-                    HistoryComment => 'Some free text!',
-                    UserID         => $UserIDs[ int( rand($#UserIDs) ) ],
-                    NoAgentNotify  => 1,                                 # if you don't want to send agent notifications
+                my $ArticleBackendObject = $Kernel::OM->Get('Kernel::System::Ticket::Article')->BackendForChannel(
+                    ChannelName => 'Internal',
+                );
+                my $ArticleID = $ArticleBackendObject->ArticleCreate(
+                    TicketID             => $TicketID,
+                    IsVisibleForCustomer => 1,
+                    SenderType           => 'customer',
+                    From                 => RandomAddress(),
+                    To                   => RandomAddress(),
+                    Cc                   => RandomAddress(),
+                    Subject              => RandomSubject(),
+                    Body                 => RandomBody(),
+                    ContentType          => 'text/plain; charset=ISO-8859-15',
+                    HistoryType          => 'AddNote',
+                    HistoryComment       => 'Some free text!',
+                    UserID               => $UserIDs[ int( rand($#UserIDs) ) ],
+                    NoAgentNotify => 1,    # if you don't want to send agent notifications
                 );
 
                 if ( $Self->GetOption('mark-tickets-as-seen') ) {
@@ -376,6 +381,18 @@ sub RandomBody {
         $Body .= $Text[ int( rand( $#Text + 1 ) ) ] . "\n";
     }
     return $Body;
+}
+
+sub PriorityGet {
+    my %PriorityList = $Kernel::OM->Get('Kernel::System::Priority')->PriorityList(
+        Valid => 1,
+    );
+
+    my @Priorities;
+    for my $PriorityID ( sort keys %PriorityList ) {
+        push @Priorities, $PriorityList{$PriorityID};
+    }
+    return $Priorities[ int( rand( $#Priorities + 1 ) ) ];
 }
 
 sub QueueGet {

@@ -58,26 +58,6 @@ sub Run {
             NoOutOfOffice => 1,
         );
 
-        # get group object
-        my $GroupObject = $Kernel::OM->Get('Kernel::System::Group');
-
-        # get groups rw
-        my %GroupData = $GroupObject->PermissionUserGet(
-            UserID => $UserData{UserID},
-            Type   => 'rw',
-        );
-        for my $GroupKey ( sort keys %GroupData ) {
-            $UserData{"UserIsGroup[$GroupData{$GroupKey}]"} = 'Yes';
-        }
-
-        # get groups ro
-        %GroupData = $GroupObject->PermissionUserGet(
-            UserID => $UserData{UserID},
-            Type   => 'ro',
-        );
-        for my $GroupKey ( sort keys %GroupData ) {
-            $UserData{"UserIsGroupRo[$GroupData{$GroupKey}]"} = 'Yes';
-        }
         my $NewSessionID = $Kernel::OM->Get('Kernel::System::AuthSession')->CreateSessionID(
             %UserData,
             UserLastRequest => $Kernel::OM->Get('Kernel::System::Time')->SystemTime(),
@@ -513,6 +493,31 @@ sub _Edit {
     $LayoutObject->Block( Name => 'ActionList' );
     $LayoutObject->Block( Name => 'ActionOverview' );
 
+    # check if the current user has the permissions to edit another users preferences
+    if ( $Param{Action} eq 'Change' ) {
+
+        my $GroupObject                      = $Kernel::OM->Get('Kernel::System::Group');
+        my $EditAnotherUsersPreferencesGroup = $GroupObject->GroupLookup(
+            Group => $Kernel::OM->Get('Kernel::Config')->Get('EditAnotherUsersPreferencesGroup'),
+        );
+
+        # get user groups, where the user has the rw privilege
+        my %Groups = $GroupObject->PermissionUserGet(
+            UserID => $Self->{UserID},
+            Type   => 'rw',
+        );
+
+        # if the user is a member in this group he can access the feature
+        if ( $Groups{$EditAnotherUsersPreferencesGroup} ) {
+            $LayoutObject->Block(
+                Name => 'ActionEditPreferences',
+                Data => {
+                    UserID => $Param{UserID},
+                },
+            );
+        }
+    }
+
     # get valid list
     my %ValidList        = $Kernel::OM->Get('Kernel::System::Valid')->ValidList();
     my %ValidListReverse = reverse %ValidList;
@@ -529,12 +534,20 @@ sub _Edit {
         Data => \%Param,
     );
 
-    # shows header
     if ( $Param{Action} eq 'Change' ) {
+
+        # shows edit header
         $LayoutObject->Block( Name => 'HeaderEdit' );
+
+        # shows effective permissions matrix
+        $Self->_EffectivePermissions(%Param);
     }
     else {
+
+        # shows add header and hints
         $LayoutObject->Block( Name => 'HeaderAdd' );
+        $LayoutObject->Block( Name => 'MarkerMandatory' );
+        $LayoutObject->Block( Name => 'ShowPasswordHint' );
         $LayoutObject->Block(
             Name => 'ShowPasswordHint',
         );
@@ -564,98 +577,6 @@ sub _Edit {
         $LayoutObject->Block( Name => 'UserLoginServerError' );
     }
 
-    # get config object
-    my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
-
-    my @Groups = @{ $ConfigObject->Get('PreferencesView') };
-    for my $Column (@Groups) {
-        my %Data        = ();
-        my %Preferences = %{ $ConfigObject->Get('PreferencesGroups') };
-
-        GROUP:
-        for my $Group ( sort keys %Preferences ) {
-            next GROUP if $Preferences{$Group}->{Column} ne $Column;
-
-            if ( $Data{ $Preferences{$Group}->{Prio} } ) {
-                COUNT:
-                for ( 1 .. 151 ) {
-                    $Preferences{$Group}->{Prio}++;
-                    if ( !$Data{ $Preferences{$Group}->{Prio} } ) {
-                        $Data{ $Preferences{$Group}->{Prio} } = $Group;
-                        last COUNT;
-                    }
-                }
-            }
-            $Data{ $Preferences{$Group}->{Prio} } = $Group;
-        }
-
-        # sort
-        for my $Key ( sort keys %Data ) {
-            $Data{ sprintf( "%07d", $Key ) } = $Data{$Key};
-            delete $Data{$Key};
-        }
-
-        # show each preferences setting
-        PRIO:
-        for my $Prio ( sort keys %Data ) {
-            my $Group = $Data{$Prio};
-            if ( !$ConfigObject->{PreferencesGroups}->{$Group} ) {
-                next PRIO;
-            }
-            my %Preference = %{ $ConfigObject->{PreferencesGroups}->{$Group} };
-            if ( $Group eq 'Password' ) {
-                next PRIO;
-            }
-            my $Module = $Preference{Module} || 'Kernel::Output::HTML::Preferences::Generic';
-
-            # load module
-            if ( $Kernel::OM->Get('Kernel::System::Main')->Require($Module) ) {
-
-                # TODO: This needs to be changed to Object Manager
-                my $Object = $Module->new(
-                    %{$Self},
-                    UserObject => $Kernel::OM->Get('Kernel::System::User'),
-                    ConfigItem => \%Preference,
-                    Debug      => $Self->{Debug},
-                );
-                my @Params = $Object->Param( UserData => \%Param );
-                if (@Params) {
-                    for my $ParamItem (@Params) {
-                        $LayoutObject->Block(
-                            Name => 'Item',
-                            Data => { %Param, },
-                        );
-                        if (
-                            ref( $ParamItem->{Data} ) eq 'HASH'
-                            || ref( $Preference{Data} ) eq 'HASH'
-                            )
-                        {
-                            my %BuildSelectionParams = (
-                                %Preference,
-                                %{$ParamItem},
-                            );
-                            $BuildSelectionParams{Class} = join( ' ', $BuildSelectionParams{Class} // '', 'Modernize' );
-
-                            $ParamItem->{'Option'} = $LayoutObject->BuildSelection(
-                                %BuildSelectionParams,
-                            );
-                        }
-                        $LayoutObject->Block(
-                            Name => $ParamItem->{Block} || $Preference{Block} || 'Option',
-                            Data => {
-                                Group => $Group,
-                                %Preference,
-                                %{$ParamItem},
-                            },
-                        );
-                    }
-                }
-            }
-            else {
-                return $LayoutObject->FatalError();
-            }
-        }
-    }
     return 1;
 }
 
@@ -779,6 +700,82 @@ sub _Overview {
     }
 
     return 1;
+}
+
+sub _EffectivePermissions {
+    my ( $Self, %Param ) = @_;
+
+    # get layout object
+    my $LayoutObject = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
+
+    # show tables
+    $LayoutObject->Block(
+        Name => 'EffectivePermissions',
+    );
+
+    my %Groups;
+    my %Permissions;
+
+    # go through permission types
+    my @Types = @{ $Kernel::OM->Get('Kernel::Config')->Get('System::Permission') };
+    for my $Type (@Types) {
+
+        # show header
+        $LayoutObject->Block(
+            Name => 'HeaderGroupPermissionType',
+            Data => {
+                Type => $Type,
+            },
+        );
+
+        # get groups of the user
+        my %UserGroups = $Kernel::OM->Get('Kernel::System::Group')->PermissionUserGet(
+            UserID => $Param{UserID},
+            Type   => $Type,
+        );
+
+        # store data in lookup hashes
+        for my $GroupID ( sort keys %UserGroups ) {
+            $Groups{$GroupID} = $UserGroups{$GroupID};
+            $Permissions{$GroupID}{$Type} = 1;
+        }
+    }
+
+    # show message if no permissions found
+    if ( !%Permissions ) {
+        $LayoutObject->Block(
+            Name => 'NoGroupPermissionsFoundMsg',
+        );
+        return;
+    }
+
+    # go through groups, sort by name
+    for my $GroupID ( sort { uc( $Groups{$a} ) cmp uc( $Groups{$b} ) } keys %Groups ) {
+
+        # show table rows
+        $LayoutObject->Block(
+            Name => 'GroupPermissionTableRow',
+            Data => {
+                ID   => $GroupID,
+                Name => $Groups{$GroupID},
+            },
+        );
+
+        # show permission marks
+        for my $Type (@Types) {
+            my $PermissionMark = $Permissions{$GroupID}{$Type} ? 'On' : 'Off';
+            my $HighlightMark = $Type eq 'rw' ? 'Highlight' : '';
+            $LayoutObject->Block(
+                Name => 'GroupPermissionMark',
+            );
+            $LayoutObject->Block(
+                Name => 'GroupPermissionMark' . $PermissionMark,
+                Data => {
+                    Highlight => $HighlightMark,
+                },
+            );
+        }
+    }
 }
 
 1;

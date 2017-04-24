@@ -8,7 +8,7 @@
 
 package Kernel::Output::HTML::Preferences::OutOfOffice;
 
-use base 'Kernel::Output::HTML::Base';
+use parent 'Kernel::Output::HTML::Base';
 
 use strict;
 use warnings;
@@ -96,7 +96,7 @@ sub Run {
         qw(OutOfOffice OutOfOfficeStartYear OutOfOfficeStartMonth OutOfOfficeStartDay OutOfOfficeEndYear OutOfOfficeEndMonth OutOfOfficeEndDay)
         )
     {
-        $Param{$Key} = $ParamObject->GetParam( Param => $Key );
+        $Param{$Key} = $ParamObject->GetParam( Param => $Key ) || '';
     }
 
     my $OutOfOfficeStartTime = $TimeObject->TimeStamp2SystemTime(

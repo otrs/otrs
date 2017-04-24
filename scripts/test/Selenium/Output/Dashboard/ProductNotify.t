@@ -12,88 +12,107 @@ use utf8;
 
 use vars (qw($Self));
 
-# get selenium object
 my $Selenium = $Kernel::OM->Get('Kernel::System::UnitTest::Selenium');
 
 $Selenium->RunTest(
     sub {
 
-        # get helper object
-        my $Helper = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
+        # Get needed objects.
+        my $Helper       = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
+        my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
 
-        # get dashboard ProductNotify plugin default sysconfig
-        my %ProductNotifyConfig = $Kernel::OM->Get('Kernel::System::SysConfig')->ConfigItemGet(
+        # Disable all dashboard plugins.
+        my $Config = $ConfigObject->Get('DashboardBackend');
+        $Helper->ConfigSettingChange(
+            Valid => 0,
+            Key   => 'DashboardBackend',
+            Value => $Config,
+        );
+
+        # Get dashboard ProductNotify plugin default sysconfig.
+        my %ProductNotifyConfig = $Kernel::OM->Get('Kernel::System::SysConfig')->SettingGet(
             Name    => 'DashboardBackend###0000-ProductNotify',
             Default => 1,
         );
 
-        # set dashboard ProductNotify plugin to valid
-        %ProductNotifyConfig = map { $_->{Key} => $_->{Content} }
-            grep { defined $_->{Key} } @{ $ProductNotifyConfig{Setting}->[1]->{Hash}->[1]->{Item} };
-
         $Helper->ConfigSettingChange(
             Valid => 1,
             Key   => 'DashboardBackend###0000-ProductNotify',
-            Value => \%ProductNotifyConfig,
+            Value => $ProductNotifyConfig{EffectiveValue},
         );
 
-        # get main object
-        my $MainObject = $Kernel::OM->Get('Kernel::System::Main');
+        # Get current properties and set next version.
+        my $Product                = $ConfigObject->Get('Product');
+        my $Version                = $ConfigObject->Get('Version');
+        my @Parts                  = split /\./, $Version;
+        my $NextVersionFirstNumber = $Parts[0] + 1;
 
-        # get content of RELEASE
-        my $Home = $Kernel::OM->Get('Kernel::Config')->Get('Home');
-        my $Content = $MainObject->FileRead( Location => "$Home/RELEASE" );
+        my @ProductFeeds;
+        for my $Count ( 1 .. 2 ) {
+            my $Number = $Helper->GetRandomNumber();
+            push @ProductFeeds, {
+                Version => "$NextVersionFirstNumber.0.$Count",
+                Link    => "https://www.otrs.com/release-notes-$Number",
+            };
+        }
 
-        my $OriginalContent = ${$Content};
+        # Override Request() from WebUserAgent to always return some test data without making any
+        #   actual web service calls. This should prevent instability in case cloud services are
+        #   unavailable at the exact moment of this test run.
+        my $CustomCode = <<"EOS";
+use Kernel::System::WebUserAgent;
+package Kernel::System::WebUserAgent;
+use strict;
+use warnings;
+{
+    no warnings 'redefine';
+    sub Request {
+        my \$JSONString = '{"Results":{"PublicFeeds":[{"Success":"1","Operation":"ProductFeed","Data":{"CacheTTL":"4320","Release":[{"Name":"OTRS","Severity":"Patch","Version":"$ProductFeeds[0]->{Version}","Link":"$ProductFeeds[0]->{Link}"},{"Name":"OTRS","Severity":"Patch","Version":"$ProductFeeds[1]->{Version}","Link":"$ProductFeeds[1]->{Link}"}]}}]},"ErrorMessage":"","Success":1}';
+        return (
+            Content => \\\$JSONString,
+            Status  => '200 OK',
+        );
+    }
+}
+1;
+EOS
+        $Helper->CustomCodeActivate(
+            Code => $CustomCode,
+        );
 
-        # Fake an OTRS 4.0.0 release so that we always have update news available.
-        my $TestContent = <<EOF;
-PRODUCT = OTRS
-VERSION = 4.0.0
-EOF
+        # Make sure cache is correct.
+        $Kernel::OM->Get('Kernel::System::Cache')->Delete(
+            Type => 'DashboardProductNotify',
+            Key =>
+                "CloudService::PublicFeeds::Operation::ProductFeed::Language::en::Product::${Product}::Version::$Version",
+        );
 
-        eval {
-            # update RELEASE with test version
-            $MainObject->FileWrite(
-                Location => "$Home/RELEASE",
-                Content  => \$TestContent,
-            );
+        # Create test user and login.
+        my $TestUserLogin = $Helper->TestUserCreate(
+            Groups => [ 'admin', 'users' ],
+        ) || die "Did not get test user";
 
-            # create test user and login
-            my $TestUserLogin = $Helper->TestUserCreate(
-                Groups => [ 'admin', 'users' ],
-            ) || die "Did not get test user";
+        $Selenium->Login(
+            Type     => 'Agent',
+            User     => $TestUserLogin,
+            Password => $TestUserLogin,
+        );
 
-            $Selenium->Login(
-                Type     => 'Agent',
-                User     => $TestUserLogin,
-                Password => $TestUserLogin,
-            );
+        # Get script alias.
+        my $ScriptAlias = $ConfigObject->Get('ScriptAlias');
 
-            # wait until page has loaded, if necessary
-            $Selenium->WaitFor(
-                JavaScript =>
-                    'return typeof($) === "function" && $(".WidgetSimple").length;'
-            );
+        # Navigate to dashboard screen.
+        $Selenium->VerifiedGet("${ScriptAlias}index.pl?Action=AgentDashboard");
 
-            # test if ProductNotify plugin shows correct link
-            my $ProductNotifyLink = "https://www.otrs.com/release-notes-otrs-help-desk";
+        # Check if ProductNotify plugin has items with correct text and links.
+        for my $Item (@ProductFeeds) {
             $Self->True(
-                index( $Selenium->get_page_source(), $ProductNotifyLink ) > -1,
-                "ProductNotify dashboard plugin link - found",
+                $Selenium->execute_script(
+                    "return \$('#Dashboard0000-ProductNotify tbody tr:contains(\"$Item->{Version}\") a[href=\"$Item->{Link}\"]').length;"
+                ),
+                "ProductNotify dashboard plugin which text contains '$Item->{Version}' and link '$Item->{Link}' - found",
             );
-        };
-
-        my $EvalError = $@;
-
-        # restore default RELEASE version
-        $MainObject->FileWrite(
-            Location => "$Home/RELEASE",
-            Content  => \$OriginalContent,
-        );
-
-        die $EvalError if $EvalError;
-
+        }
     }
 );
 

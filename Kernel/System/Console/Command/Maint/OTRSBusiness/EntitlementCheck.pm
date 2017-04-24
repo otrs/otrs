@@ -12,7 +12,7 @@ use strict;
 use warnings;
 use utf8;
 
-use base qw(Kernel::System::Console::BaseCommand);
+use parent qw(Kernel::System::Console::BaseCommand);
 
 our @ObjectDependencies = (
     'Kernel::System::OTRSBusiness',
@@ -43,12 +43,14 @@ sub Run {
 
     $Self->Print("<yellow>Checking the $OTRSBusinessStr entitlement status...</yellow>\n");
 
+    my $Force = $Self->GetOption('force') || 0;
+
     # get OTRS Business object
     my $OTRSBusinessObject = $Kernel::OM->Get('Kernel::System::OTRSBusiness');
 
     my $OTRSBusinessInstalled = $OTRSBusinessObject->OTRSBusinessIsInstalled();
 
-    if ( !$OTRSBusinessInstalled ) {
+    if ( !$Force && !$OTRSBusinessInstalled ) {
 
         $Self->Print("$OTRSBusinessStr is not installed in this system, skipping...\n");
         $Self->Print("<green>Done.</green>\n");
@@ -74,8 +76,6 @@ sub Run {
     }
 
     my $SystemTime = $TimeObject->SystemTime();
-
-    my $Force = $Self->GetOption('force') || 0;
 
     # do not update registration info before the next update (unless is forced)
     if ( !$Force && $SystemTime < $NextUpdateSystemTime ) {

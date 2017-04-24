@@ -17,29 +17,30 @@ use vars (qw($Self));
 # tickets with stale entries in article_search can still be deleted (see bug#11677).
 #
 
-# get config object
 my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
+
+$Kernel::OM->ObjectParamAdd(
+    'Kernel::System::UnitTest::Helper' => {
+        RestoreDatabase  => 1,
+        UseTmpArticleDir => 1,
+    },
+);
+my $Helper = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
 
 $ConfigObject->Set(
     Key   => 'Ticket::SearchIndexModule',
     Value => 'Kernel::System::Ticket::ArticleSearchIndex::StaticDB',
 );
 
-# get ticket object
-my $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
+my $TicketObject         = $Kernel::OM->Get('Kernel::System::Ticket');
+my $ArticleObject        = $Kernel::OM->Get('Kernel::System::Ticket::Article');
+my $ArticleBackendObject = $ArticleObject->BackendForChannel( ChannelName => 'Internal' );
 
 $Self->True(
-    $TicketObject->isa('Kernel::System::Ticket::ArticleSearchIndex::StaticDB'),
-    "TicketObject loaded the correct backend",
+    $ArticleObject->{ArticleSearchIndexModule},
+    'Kernel::System::Ticket::ArticleSearchIndex::StaticDB',
+    'ArticleObject loaded the correct backend',
 );
-
-# get helper object
-$Kernel::OM->ObjectParamAdd(
-    'Kernel::System::UnitTest::Helper' => {
-        RestoreDatabase => 1,
-    },
-);
-my $Helper = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
 
 # create some content
 my $TicketID = $TicketObject->TicketCreate(
@@ -55,39 +56,40 @@ my $TicketID = $TicketObject->TicketCreate(
 );
 $Self->True(
     $TicketID,
-    'TicketCreate()',
+    'TicketCreate()'
 );
 
-my $ArticleID = $TicketObject->ArticleCreate(
-    TicketID    => $TicketID,
-    ArticleType => 'note-internal',
-    SenderType  => 'agent',
-    From        => 'Some Agent <email@example.com>',
-    To          => 'Some Customer <customer@example.com>',
-    Subject     => 'some short description',
-    Body        => 'the message text
+my $ArticleID = $ArticleBackendObject->ArticleCreate(
+    TicketID             => $TicketID,
+    SenderType           => 'agent',
+    IsVisibleForCustomer => 1,
+    From                 => 'Some Agent <email@example.com>',
+    To                   => 'Some Customer <customer@example.com>',
+    Subject              => 'some short description',
+    Body                 => 'the message text
 Perl modules provide a range of features to help you avoid reinventing the wheel, and can be downloaded from CPAN ( http://www.cpan.org/ ). A number of popular modules are included with the Perl distribution itself.',
     ContentType    => 'text/plain; charset=ISO-8859-15',
     HistoryType    => 'OwnerUpdate',
     HistoryComment => 'Some free text!',
     UserID         => 1,
-    NoAgentNotify  => 1,                                   # if you don't want to send agent notifications
+    NoAgentNotify  => 1,
 );
 $Self->True(
     $ArticleID,
-    'ArticleCreate()',
+    'ArticleCreate()'
 );
 
-my $IndexBuilt = $TicketObject->ArticleIndexBuild(
+my $IndexBuilt = $ArticleObject->ArticleIndexBuild(
+    TicketID  => $TicketID,
     ArticleID => $ArticleID,
     UserID    => 1,
 );
 $Self->True(
-    $ArticleID,
-    'Search index was created.',
+    $IndexBuilt,
+    'Search index was created.'
 );
 
-# Make sure that the TicketObject gets recreated for each loop.
+# Discard existing ticket object.
 $Kernel::OM->ObjectsDiscard( Objects => ['Kernel::System::Ticket'] );
 
 $ConfigObject->Set(
@@ -103,7 +105,7 @@ my $Delete = $TicketObject->TicketDelete(
 );
 $Self->True(
     $Delete,
-    'TicketDelete()',
+    'TicketDelete()'
 );
 
 # cleanup is done by RestoreDatabase.

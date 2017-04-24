@@ -13,12 +13,13 @@ use warnings;
 
 use Time::HiRes();
 
-use base qw(Kernel::System::Console::BaseCommand);
+use parent qw(Kernel::System::Console::BaseCommand);
 
 our @ObjectDependencies = (
     'Kernel::Config',
     'Kernel::System::DB',
     'Kernel::System::Ticket',
+    'Kernel::System::Ticket::Article',
 );
 
 sub Configure {
@@ -108,9 +109,11 @@ sub Run {
             push @ArticleIDs, $Row[0];
         }
 
+        my $ArticleObject = $Kernel::OM->Get('Kernel::System::Ticket::Article');
+
         $Count = 0;
         for my $ArticleID (@ArticleIDs) {
-            $TicketObject->ArticleFlagDelete(
+            $ArticleObject->ArticleFlagDelete(
                 ArticleID => $ArticleID,
                 Key       => 'Seen',
                 AllUsers  => 1,

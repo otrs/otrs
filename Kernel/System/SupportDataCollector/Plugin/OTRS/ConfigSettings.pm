@@ -11,7 +11,7 @@ package Kernel::System::SupportDataCollector::Plugin::OTRS::ConfigSettings;
 use strict;
 use warnings;
 
-use base qw(Kernel::System::SupportDataCollector::PluginBase);
+use parent qw(Kernel::System::SupportDataCollector::PluginBase);
 
 use Kernel::Language qw(Translatable);
 
@@ -37,7 +37,7 @@ sub Run {
         Organization
         Ticket::IndexModule
         Ticket::SearchIndexModule
-        Ticket::StorageModule
+        Ticket::Article::Backend::MIMEBase
         SendmailModule
         Frontend::RichText
     );

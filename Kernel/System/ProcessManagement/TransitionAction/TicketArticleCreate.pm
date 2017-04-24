@@ -14,11 +14,12 @@ use utf8;
 
 use Kernel::System::VariableCheck qw(:all);
 
-use base qw(Kernel::System::ProcessManagement::TransitionAction::Base);
+use parent qw(Kernel::System::ProcessManagement::TransitionAction::Base);
 
 our @ObjectDependencies = (
     'Kernel::System::Log',
     'Kernel::System::Ticket',
+    'Kernel::System::Ticket::Article',
     'Kernel::System::User',
 );
 
@@ -63,9 +64,8 @@ sub new {
         TransitionActionEntityID => 'TA123',
         Config                   => {
             # required:
-            ArticleType      => 'note-internal',                        # note-external|phone|fax|sms|...
-                                                                        #   excluding any email type
             SenderType       => 'agent',                                # agent|system|customer
+            IsVisibleForCustomer => 1,                                  # 0 or 1
             ContentType      => 'text/plain; charset=ISO-8859-15',      # or optional Charset & MimeType
             Subject          => 'some short description',               # required
             Body             => 'the message text',                     # required
@@ -140,19 +140,6 @@ sub Run {
         }
     }
 
-    # check ArticleType
-    if ( $Param{Config}->{ArticleType} =~ m{\A email }msxi ) {
-        $Kernel::OM->Get('Kernel::System::Log')->Log(
-            Priority => 'error',
-            Message  => $CommonMessage
-                . "ArticleType $Param{Config}->{ArticleType} is not supported",
-        );
-        return;
-    }
-
-    # get ticket object
-    my $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
-
     # If "From" is not set
     if ( !$Param{Config}->{From} ) {
 
@@ -165,7 +152,11 @@ sub Run {
         $Param{Config}->{From} = $User{UserFullname} . ' <' . $User{UserEmail} . '>';
     }
 
-    my $ArticleID = $TicketObject->ArticleCreate(
+    my $ArticleBackendObject = $Kernel::OM->Get('Kernel::System::Ticket::Article')->BackendForChannel(
+        ChannelName => 'Internal',
+    );
+
+    my $ArticleID = $ArticleBackendObject->ArticleCreate(
         %{ $Param{Config} },
         TicketID => $Param{Ticket}->{TicketID},
         UserID   => $Param{UserID},
@@ -183,7 +174,7 @@ sub Run {
 
     # set time units
     if ( $Param{Config}->{TimeUnit} ) {
-        $TicketObject->TicketAccountTime(
+        $Kernel::OM->Get('Kernel::System::Ticket')->TicketAccountTime(
             TicketID  => $Param{Ticket}->{TicketID},
             ArticleID => $ArticleID,
             TimeUnit  => $Param{Config}->{TimeUnit},

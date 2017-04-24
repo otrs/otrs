@@ -177,6 +177,11 @@ Core.UI.ActionRow = (function (TargetNS) {
             TicketView = 'Small';
         }
 
+        // Hide 'Select all' checkbox in Large and Medium view when table is empty.
+        if ((TicketView === 'Medium' || TicketView === 'Large') && $('#EmptyMessage' + TicketView).length === 1) {
+            $('#SelectAllTickets').closest('li').addClass('Hidden');
+        }
+
         $('#SelectAllTickets').on('click', function () {
             var Status = $(this).prop('checked');
             $(TicketElementSelectors[TicketView]).prop('checked', Status).triggerHandler('click');
@@ -185,6 +190,7 @@ Core.UI.ActionRow = (function (TargetNS) {
         $(TicketElementSelectors[TicketView]).on('click', function (Event) {
             Event.stopPropagation();
             Core.UI.ActionRow.UpdateActionRow($(this), $(TicketElementSelectors[TicketView]), $('div.OverviewActions ul.Actions'));
+            Core.Form.SelectAllCheckboxes($(this), $('#SelectAllTickets'));
         });
 
         $('#BulkAction a').on('click', function () {

@@ -21,7 +21,8 @@ my $QueueObject         = $Kernel::OM->Get('Kernel::System::Queue');
 # get helper object
 $Kernel::OM->ObjectParamAdd(
     'Kernel::System::UnitTest::Helper' => {
-        RestoreDatabase => 1,
+        RestoreDatabase  => 1,
+        UseTmpArticleDir => 1,
     },
 );
 my $HelperObject = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
@@ -37,12 +38,12 @@ my $QueueID = $QueueObject->QueueAdd(
     Name                => $QueueName,
     ValidID             => 1,
     GroupID             => 1,
-    FirstResponseTime   => 30,
-    FirstResponseNotify => 70,
-    UpdateTime          => 240,
-    UpdateNotify        => 80,
-    SolutionTime        => 2440,
-    SolutionNotify      => 90,
+    FirstResponseTime   => 0,
+    FirstResponseNotify => 0,
+    UpdateTime          => 0,
+    UpdateNotify        => 0,
+    SolutionTime        => 0,
+    SolutionNotify      => 0,
     SystemAddressID     => 1,
     SalutationID        => 1,
     SignatureID         => 1,
@@ -222,8 +223,10 @@ for my $TypeID ( sort keys %AutoResponseType ) {
 
         # auto-reply
 
-        # get ticket object
-        my $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
+        my $TicketObject         = $Kernel::OM->Get('Kernel::System::Ticket');
+        my $ArticleBackendObject = $Kernel::OM->Get('Kernel::System::Ticket::Article')->BackendForChannel(
+            ChannelName => 'Email',
+        );
 
         # create a new ticket
         my $TicketID = $TicketObject->TicketCreate(
@@ -243,19 +246,19 @@ for my $TypeID ( sort keys %AutoResponseType ) {
             'TicketCreate() - TicketID should not be undef',
         );
 
-        my $ArticleID1 = $TicketObject->ArticleCreate(
-            TicketID       => $TicketID,
-            ArticleType    => 'email-internal',
-            SenderType     => 'agent',
-            From           => 'Some Agent <otrs@example.com>',
-            To             => 'Suplier<suplier@example.com>',
-            Subject        => 'Email for suplier',
-            Body           => 'the message text',
-            Charset        => 'utf8',
-            MimeType       => 'text/plain',
-            HistoryType    => 'OwnerUpdate',
-            HistoryComment => 'Some free text!',
-            UserID         => 1,
+        my $ArticleID1 = $ArticleBackendObject->ArticleCreate(
+            TicketID             => $TicketID,
+            IsVisibleForCustomer => 0,
+            SenderType           => 'agent',
+            From                 => 'Some Agent <otrs@example.com>',
+            To                   => 'Suplier<suplier@example.com>',
+            Subject              => 'Email for suplier',
+            Body                 => 'the message text',
+            Charset              => 'utf8',
+            MimeType             => 'text/plain',
+            HistoryType          => 'OwnerUpdate',
+            HistoryComment       => 'Some free text!',
+            UserID               => 1,
         );
         $Self->True(
             $ArticleID1,
@@ -269,21 +272,21 @@ for my $TypeID ( sort keys %AutoResponseType ) {
             'Cleanup Email backend',
         );
 
-        my $ArticleID2 = $TicketObject->ArticleCreate(
-            TicketID         => $TicketID,
-            ArticleType      => 'email-internal',
-            SenderType       => 'customer',
-            From             => 'Suplier<suplier@example.com>',
-            To               => 'Some Agent <otrs@example.com>',
-            Subject          => 'some short description',
-            Body             => 'the message text',
-            Charset          => 'utf8',
-            MimeType         => 'text/plain',
-            HistoryType      => 'OwnerUpdate',
-            HistoryComment   => 'Some free text!',
-            UserID           => 1,
-            AutoResponseType => 'auto reply',
-            OrigHeader       => {
+        my $ArticleID2 = $ArticleBackendObject->ArticleCreate(
+            TicketID             => $TicketID,
+            IsVisibleForCustomer => 0,
+            SenderType           => 'customer',
+            From                 => 'Suplier<suplier@example.com>',
+            To                   => 'Some Agent <otrs@example.com>',
+            Subject              => 'some short description',
+            Body                 => 'the message text',
+            Charset              => 'utf8',
+            MimeType             => 'text/plain',
+            HistoryType          => 'OwnerUpdate',
+            HistoryComment       => 'Some free text!',
+            UserID               => 1,
+            AutoResponseType     => 'auto reply',
+            OrigHeader           => {
                 From    => 'Some Agent <otrs@example.com>',
                 Subject => 'some short description',
             },

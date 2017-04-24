@@ -7,13 +7,14 @@
 # --
 
 package Kernel::System::DB;
-## nofilter(TidyAll::Plugin::OTRS::Perl::PODSpelling)
+## nofilter(TidyAll::Plugin::OTRS::Perl::Pod::FunctionPod)
 
 use strict;
 use warnings;
 
 use DBI;
 use List::Util();
+use Storable;
 
 use Kernel::System::VariableCheck qw(:all);
 
@@ -22,7 +23,7 @@ our @ObjectDependencies = (
     'Kernel::System::Encode',
     'Kernel::System::Log',
     'Kernel::System::Main',
-    'Kernel::System::Time',
+    'Kernel::System::DateTime',
 );
 
 our $UseSlaveDB = 0;
@@ -431,7 +432,11 @@ sub Do {
     # - This avoids time inconsistencies of app and db server
     # - This avoids timestamp problems in Postgresql servers where
     #   the timestamp is sometimes 1 second off the perl timestamp.
-    my $Timestamp = $Kernel::OM->Get('Kernel::System::Time')->CurrentTimestamp();
+    my $DateTimeObject = $Kernel::OM->Create(
+        'Kernel::System::DateTime',
+    );
+    my $Timestamp = $DateTimeObject->ToString();
+
     $Param{SQL} =~ s{
         (?<= \s | \( | , )  # lookahead
         current_timestamp   # replace current_timestamp by 'yyyy-mm-dd hh:mm:ss'
@@ -828,10 +833,10 @@ to retrieve the column names of a database statement
 sub GetColumnNames {
     my $Self = shift;
 
-    my $ColumnNames = $Self->{Cursor}->{NAME};
+    my $ColumnNames = $Kernel::OM->Get('Kernel::System::Encode')->EncodeInput( $Self->{Cursor}->{NAME} );
 
     my @Result;
-    if ( ref $ColumnNames eq 'ARRAY' ) {
+    if ( IsArrayRefWithData($ColumnNames) ) {
         @Result = @{$ColumnNames};
     }
 
@@ -876,19 +881,20 @@ sub SelectAll {
 =head2 GetDatabaseFunction()
 
 to get database functions like
-    o Limit
-    o DirectBlob
-    o QuoteSingle
-    o QuoteBack
-    o QuoteSemicolon
-    o NoLikeInLargeText
-    o CurrentTimestamp
-    o Encode
-    o Comment
-    o ShellCommit
-    o ShellConnect
-    o Connect
-    o LikeEscapeString
+
+    - Limit
+    - DirectBlob
+    - QuoteSingle
+    - QuoteBack
+    - QuoteSemicolon
+    - NoLikeInLargeText
+    - CurrentTimestamp
+    - Encode
+    - Comment
+    - ShellCommit
+    - ShellConnect
+    - Connect
+    - LikeEscapeString
 
     my $What = $DBObject->GetDatabaseFunction('DirectBlob');
 
@@ -934,8 +940,13 @@ sub SQLProcessor {
     my @SQL;
     if ( $Param{Database} && ref $Param{Database} eq 'ARRAY' ) {
 
+        # make a deep copy in order to prevent modyfing the input data
+        # see also Bug#12764 - Database function SQLProcessor() modifies given parameter data
+        # https://bugs.otrs.org/show_bug.cgi?id=12764
+        my @Database = @{ Storable::dclone( $Param{Database} ) };
+
         my @Table;
-        for my $Tag ( @{ $Param{Database} } ) {
+        for my $Tag (@Database) {
 
             # create table
             if ( $Tag->{Tag} eq 'Table' || $Tag->{Tag} eq 'TableCreate' ) {
@@ -951,7 +962,7 @@ sub SQLProcessor {
 
             # unique
             elsif (
-                $Tag->{Tag} eq 'Unique'
+                $Tag->{Tag}    eq 'Unique'
                 || $Tag->{Tag} eq 'UniqueCreate'
                 || $Tag->{Tag} eq 'UniqueDrop'
                 )
@@ -965,7 +976,7 @@ sub SQLProcessor {
 
             # index
             elsif (
-                $Tag->{Tag} eq 'Index'
+                $Tag->{Tag}    eq 'Index'
                 || $Tag->{Tag} eq 'IndexCreate'
                 || $Tag->{Tag} eq 'IndexDrop'
                 )
@@ -979,7 +990,7 @@ sub SQLProcessor {
 
             # foreign keys
             elsif (
-                $Tag->{Tag} eq 'ForeignKey'
+                $Tag->{Tag}    eq 'ForeignKey'
                 || $Tag->{Tag} eq 'ForeignKeyCreate'
                 || $Tag->{Tag} eq 'ForeignKeyDrop'
                 )
@@ -1121,8 +1132,8 @@ generate SQL condition query based on a search expression
     )
 
 Note that the comparisons are usually performed case insensitively.
-Only VARCHAR colums with a size less or equal 3998 are supported,
-as for locator objects the functioning of SQL function LOWER() can't
+Only C<VARCHAR> columns with a size less or equal 3998 are supported,
+as for locator objects the functioning of SQL function C<LOWER()> can't
 be guaranteed.
 
 =cut
@@ -1537,6 +1548,161 @@ sub QueryCondition {
         );
     }
 
+    return $SQL;
+}
+
+=head2 QueryInCondition()
+
+Generate a SQL IN condition query based on the given table key and values.
+
+    my $SQL = $DBObject->QueryInCondition(
+        Key       => 'table.column',
+        Values    => [ 1, 2, 3, 4, 5, 6 ],
+        QuoteType => '(undef|Integer|Number)',
+        BindMode  => (0|1),
+        Negate    => (0|1),
+    );
+
+Returns the SQL string:
+
+    my $SQL = "ticket_id IN (1, 2, 3, 4, 5, 6)"
+
+Return a separated IN condition for more then C<MaxParamCountForInCondition> values:
+
+    my $SQL = "( ticket_id IN ( 1, 2, 3, 4, 5, 6 ... ) OR ticket_id IN ( ... ) )"
+
+Return the SQL String with ?-values and a array with values references in bind mode:
+
+    $BindModeResult = (
+        'SQL'    => 'ticket_id IN (?, ?, ?, ?, ?, ?)',
+        'Values' => [1, 2, 3, 4, 5, 6],
+    );
+
+    or
+
+    $BindModeResult = (
+        'SQL'    => '( ticket_id IN (?, ?, ?, ?, ?, ?) OR ticket_id IN ( ?, ... ) )',
+        'Values' => [1, 2, 3, 4, 5, 6, ... ],
+    );
+
+Returns the SQL string for a negated in condition:
+
+    my $SQL = "ticket_id NOT IN (1, 2, 3, 4, 5, 6)"
+
+    or
+
+    my $SQL = "( ticket_id NOT IN ( 1, 2, 3, 4, 5, 6 ... ) AND ticket_id NOT IN ( ... ) )"
+
+=cut
+
+sub QueryInCondition {
+    my ( $Self, %Param ) = @_;
+
+    if ( !$Param{Key} ) {
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
+            Priority => 'error',
+            Message  => "Need Key!",
+        );
+        return;
+    }
+
+    if ( !IsArrayRefWithData( $Param{Values} ) ) {
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
+            Priority => 'error',
+            Message  => "Need Values!",
+        );
+        return;
+    }
+
+    if ( $Param{QuoteType} && $Param{QuoteType} eq 'Like' ) {
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
+            Priority => 'error',
+            Message  => "QuoteType 'Like' is not allowed for 'IN' conditions!",
+        );
+        return;
+    }
+
+    $Param{Negate}   //= 0;
+    $Param{BindMode} //= 0;
+
+    # Set the flag for string because of the other handling in the sql statement with strings.
+    my $IsString;
+    if ( !$Param{QuoteType} ) {
+        $IsString = 1;
+    }
+
+    my @Values = @{ $Param{Values} };
+
+    # Perform quoting depending on given quote type (only if not in bind mode)
+    if ( !$Param{BindMode} ) {
+
+        # Sort the values to cache the SQL query.
+        if ($IsString) {
+            @Values = sort { $a cmp $b } @Values;
+        }
+        else {
+            @Values = sort { $a <=> $b } @Values;
+        }
+
+        @Values = map { $Self->Quote( $_, $Param{QuoteType} ) } @Values;
+
+        # Something went wrong during the quoting, if the count is not equal.
+        return if scalar @Values != scalar @{ $Param{Values} };
+    }
+
+    # Set the correct operator and connector (only needed for splitted conditions).
+    my $Operator  = 'IN';
+    my $Connector = 'OR';
+
+    if ( $Param{Negate} ) {
+        $Operator  = 'NOT IN';
+        $Connector = 'AND';
+    }
+
+    my @SQLStrings;
+    my @BindValues;
+
+    # Split IN statement with more than the defined 'MaxParamCountForInCondition' elements in more
+    # then one statements combined with OR, because some databases e.g. oracle doesn't support more
+    # than 1000 elements for one IN statement.
+    while ( scalar @Values ) {
+
+        my @ValuesPart;
+        if ( $Self->GetDatabaseFunction('MaxParamCountForInCondition') ) {
+            @ValuesPart = splice @Values, 0, $Self->GetDatabaseFunction('MaxParamCountForInCondition');
+        }
+        else {
+            @ValuesPart = splice @Values;
+        }
+
+        my $ValueString;
+        if ( $Param{BindMode} ) {
+            $ValueString = join ', ', ('?') x scalar @ValuesPart;
+            push @BindValues, @ValuesPart;
+        }
+        elsif ($IsString) {
+            $ValueString = join ', ', map {"'$_'"} @ValuesPart;
+        }
+        else {
+            $ValueString = join ', ', @ValuesPart;
+        }
+
+        push @SQLStrings, "$Param{Key} $Operator ($ValueString)";
+    }
+
+    my $SQL = join " $Connector ", @SQLStrings;
+
+    if ( scalar @SQLStrings > 1 ) {
+        $SQL = '( ' . $SQL . ' )';
+    }
+
+    if ( $Param{BindMode} ) {
+        my $BindRefList = [ map { \$_ } @BindValues ];
+        return (
+            'SQL'    => $SQL,
+            'Values' => $BindRefList,
+        );
+    }
     return $SQL;
 }
 
