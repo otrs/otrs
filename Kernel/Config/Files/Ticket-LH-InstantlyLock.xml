@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<otrs_config version="1.0" init="Application">
+    <ConfigItem Name="Ticket::EventModulePost###3100-LockAutoSetInAgentTicketPhone" Required="0" Valid="1">
+        <Description Translatable="1">When agent creates a ticket, whether or not the ticket is automatically locked to the agent.</Description>
+        <Group>Ticket</Group>
+        <SubGroup>Core::Ticket</SubGroup>
+        <Setting>
+            <Hash>
+                <Item Key="Module">Kernel::System::Ticket::Event::LockAutoSet</Item>
+                <Item Key="Event">TicketCreate</Item>
+                <Item Key="Source">PhoneCallCustomer</Item>
+            </Hash>
+        </Setting>
+    </ConfigItem>
+    <ConfigItem Name="Ticket::EventModulePost###3200-LockAutoSetInAgentTicketEmail" Required="0" Valid="1">
+        <Description Translatable="1">When agent creates a ticket, whether or not the ticket is automatically locked to the agent.</Description>
+        <Group>Ticket</Group>
+        <SubGroup>Core::Ticket</SubGroup>
+        <Setting>
+            <Hash>
+                <Item Key="Module">Kernel::System::Ticket::Event::LockAutoSet</Item>
+                <Item Key="Event">TicketCreate</Item>
+                <Item Key="Source">EmailAgent</Item>
+            </Hash>
+        </Setting>
+    </ConfigItem>
+</otrs_config>
