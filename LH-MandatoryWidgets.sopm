@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<otrs_package version="1.0">
+    <Name>LH-MandatoryWidgetsOTRS5</Name>
+    <Version>0.0.0</Version>
+    <Framework>5.0.x</Framework>
+    <Vendor>OTRS AG</Vendor>
+    <URL>http://otrs.org/</URL>
+    <License>GNU AFFERO GENERAL PUBLIC LICENSE Version 3, November 2007</License>
+    <Description Lang="en">No redirect on ticket close.</Description>
+    <Description Lang="de">Keine Umleitung auf Ticket schließen. </Description>
+    <Filelist>
+        <File Permission="644" Location="Custom/Kernel/Modules/AgentDashboardCommon.pm" />
+        <File Permission="644" Location="Custom/Kernel/Output/HTML/Templates/Standard/AgentDashboardCommon.tt" />
+        <File Permission="644" Location="Kernel/Config/Files/Ticket-LH-MandatoryWidgets.xml" />
+    </Filelist>
+</otrs_package>
