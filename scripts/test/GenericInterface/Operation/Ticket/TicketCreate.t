@@ -22,6 +22,16 @@ use Kernel::GenericInterface::Operation::Session::SessionCreate;
 
 use Kernel::System::VariableCheck qw(IsArrayRefWithData IsHashRefWithData IsStringWithData);
 
+# get daemon status
+my $Home         = $Kernel::OM->Get('Kernel::Config')->Get('Home');
+my $Daemon       = $Home . '/bin/otrs.Daemon.pl';
+my $DaemonStatus = system("perl $Daemon status");
+
+$Self->False(
+    $DaemonStatus =~ m{Daemon running}i ? 1 : 0,
+    'Daemon is not running',
+);
+
 # Skip SSL certificate verification.
 $Kernel::OM->ObjectParamAdd(
     'Kernel::System::UnitTest::Helper' => {
