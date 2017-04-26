@@ -15,7 +15,6 @@ use Kernel::System::VariableCheck qw(:all);
 
 use base qw(Kernel::System::ProcessManagement::TransitionAction::Base);
 
-
 sub new {
     my ( $Type, %Param ) = @_;
     my $Self = {%Param};
@@ -33,17 +32,6 @@ sub Run {
     my $CommonMessage = "Process: $Param{ProcessEntityID} Activity: $Param{ActivityEntityID}"
         . " Transition: $Param{TransitionEntityID}"
         . " TransitionAction: $Param{TransitionActionEntityID} - ";
-		
-	if ( !IsHashRefWithData( $Param{Config} ) ) {
-        $Self->{LogObject}->Log(
-            Priority => 'error',
-            Message  => "Config Error!".$CommonMessage,
-        );
-        return;
-	}
-
-    # override UserID if specified as a parameter in the TA config
-    $Param{UserID} = $Self->_OverrideUserID(%Param);
     # use ticket attributes if needed
     $Self->_ReplaceTicketAttributes(%Param);
 	my $TicketID	  = $Param{Ticket}->{TicketID};
@@ -73,5 +61,4 @@ sub Run {
     );		
 	return 1;
 }
-
 1;
