@@ -1317,7 +1317,7 @@ sub Image {
         else {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
-                Message  => "Imagetype of File $Param{File} not supported"
+                Message  => "Imagetype of File $Param{File} not supported",
             );
             return;
         }
@@ -1389,14 +1389,14 @@ sub HLine {
     if ( !$Self->{PDF} ) {
         $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'error',
-            Message  => "Need a PDF Document!"
+            Message  => "Need a PDF Document!",
         );
         return;
     }
     if ( !$Self->{Page} ) {
         $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'error',
-            Message  => "Need a Page!"
+            Message  => "Need a Page!",
         );
         return;
     }
@@ -1515,14 +1515,14 @@ sub PositionSet {
     if ( !$Self->{PDF} ) {
         $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'error',
-            Message  => "Need a PDF Document!"
+            Message  => "Need a PDF Document!",
         );
         return;
     }
     if ( !$Self->{Page} ) {
         $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'error',
-            Message  => "Need a Page!"
+            Message  => "Need a Page!",
         );
         return;
     }
@@ -1646,14 +1646,14 @@ sub PositionGet {
     if ( !$Self->{PDF} ) {
         $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'error',
-            Message  => "Need a PDF Document!"
+            Message  => "Need a PDF Document!",
         );
         return;
     }
     if ( !$Self->{Page} ) {
         $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'error',
-            Message  => "Need a Page!"
+            Message  => "Need a Page!",
         );
         return;
     }
@@ -1679,14 +1679,14 @@ sub DimSet {
     if ( !$Self->{PDF} ) {
         $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'error',
-            Message  => "Need a PDF Document!"
+            Message  => "Need a PDF Document!",
         );
         return;
     }
     if ( !$Self->{Page} ) {
         $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'error',
-            Message  => "Need a Page!"
+            Message  => "Need a Page!",
         );
         return;
     }

@@ -5034,7 +5034,7 @@ via the Preferences button after logging in.
                     <Link>Action=AdminCustomerUser;Nav=Agent</Link>
                     <LinkOption></LinkOption>
                     <NavBar>Customers</NavBar>
-                    <Description Translatable="1"></Description>
+                    <Description></Description>
                     <Type></Type>
                     <Block>ItemArea</Block>
                     <AccessKey></AccessKey>
@@ -5070,7 +5070,7 @@ via the Preferences button after logging in.
                     <Link>Action=AdminCustomerCompany;Nav=Agent</Link>
                     <LinkOption></LinkOption>
                     <NavBar>Customers</NavBar>
-                    <Description Translatable="1"></Description>
+                    <Description></Description>
                     <Type></Type>
                     <Block>ItemArea</Block>
                     <AccessKey></AccessKey>

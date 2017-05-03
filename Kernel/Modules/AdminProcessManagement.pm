@@ -1905,6 +1905,7 @@ sub _GetParams {
 sub _CheckProcessDelete {
     my ( $Self, %Param ) = @_;
 
+    # get needed objects
     my $LayoutObject = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
 
     # get Process data
@@ -2091,9 +2092,10 @@ sub _GetProcessData {
 
     my ( $Self, %Param ) = @_;
 
-    my $LayoutObject = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
-
     my %ProcessData;
+
+    # get needed objects
+    my $LayoutObject = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
 
     # get process data
     my $Process = $Kernel::OM->Get('Kernel::System::ProcessManagement::DB::Process')->ProcessGet(

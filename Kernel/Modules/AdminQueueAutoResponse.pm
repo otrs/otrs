@@ -115,7 +115,7 @@ sub Run {
         # get Type Auto Responses data
         my %TypeResponsesData = $AutoResponseObject->AutoResponseTypeList();
 
-        # Set Autoresponses IDs for this queue.
+        # set Auto Responses IDs for this queue.
         for my $TypeID ( sort keys %TypeResponsesData ) {
             push( @NewIDs, $ParamObject->GetParam( Param => "IDs_$TypeID" ) );
         }

@@ -83,7 +83,7 @@ sub StdAttachmentAdd {
         if ( !$Param{$_} ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
-                Message  => "Need $_!"
+                Message  => "Need $_!",
             );
             return;
         }
@@ -135,7 +135,7 @@ sub StdAttachmentGet {
     if ( !$Param{ID} ) {
         $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'error',
-            Message  => 'Need ID!'
+            Message  => 'Need ID!',
         );
         return;
     }
@@ -170,6 +170,7 @@ sub StdAttachmentGet {
             ChangeBy    => $Row[9],
         );
     }
+
     return %Data;
 }
 
@@ -197,7 +198,7 @@ sub StdAttachmentUpdate {
         if ( !$Param{$_} ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
-                Message  => "Need $_!"
+                Message  => "Need $_!",
             );
             return;
         }
@@ -250,6 +251,7 @@ sub StdAttachmentUpdate {
             ],
         );
     }
+
     return 1;
 }
 
@@ -271,7 +273,7 @@ sub StdAttachmentDelete {
         if ( !$Param{$_} ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
-                Message  => "Need $_!"
+                Message  => "Need $_!",
             );
             return;
         }
@@ -353,9 +355,7 @@ sub StdAttachmentLookup {
         CacheInBackend => 0,
     );
 
-    if ($Cached) {
-        return $Cached;
-    }
+    return $Cached if $Cached;
 
     # get data
     my $SQL;

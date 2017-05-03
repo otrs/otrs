@@ -1238,7 +1238,7 @@ sub _DynamicFieldReorder {
         ID => $Param{ID},
     );
 
-    # extract the field order form the params
+    # extract the field order from the params
     my $TriggerFieldOrder = $Param{FieldOrder};
 
     # get all fields

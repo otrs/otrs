@@ -107,10 +107,10 @@ sub new {
         || $LayoutObject->{BrowserRichText}
         || 0;
 
-    # strip html and ascii attachments of content
+    # strip HTML and ASCII attachments of content
     $Self->{StripPlainBodyAsAttachment} = 1;
 
-    # check if rich text is enabled, if not only strip ascii attachments
+    # check if rich text is enabled, if not only strip ASCII attachments
     if ( !$Self->{RichText} ) {
         $Self->{StripPlainBodyAsAttachment} = 2;
     }
@@ -624,7 +624,7 @@ sub Run {
             return $LayoutObject->ErrorScreen( Message => Translatable('Invalid ArticleID!') );
         }
 
-        # if it is a html email, return here
+        # if it is a HTML email, return here
         return $LayoutObject->Attachment(
             Filename => $ConfigObject->Get('Ticket::Hook')
                 . "-$Article{TicketNumber}-$Article{TicketID}-$Article{ArticleID}",
@@ -1082,7 +1082,7 @@ sub MaskAgentZoom {
                 Link  => '#',
                 Class => 'ClusterLink',
                 Items => $MenuClusters{$Cluster}->{Items},
-                }
+                },
         }
 
         # display all items
@@ -2644,7 +2644,7 @@ sub _ArticleTree {
             );
 
             # if we have two events that happened 'nearly' the same time, treat
-            # them as if they happened exactly on the same time (treshold 5 seconds)
+            # them as if they happened exactly on the same time (threshold 5 seconds)
             if (
                 $LastCreateSystemTime
                 && $Item->{CreateSystemTime} <= $LastCreateSystemTime
@@ -3152,10 +3152,10 @@ sub _ArticleItem {
         return 1;
     }
 
-    # show body as html or plain text
+    # show body as HTML or plain text
     my $ViewMode = 'BodyHTML';
 
-    # in case show plain article body (if no html body as attachment exists of if rich
+    # in case show plain article body (if no HTML body as attachment exists of if rich
     # text is not enabled)
     if ( !$Self->{RichText} || !$Article{AttachmentIDOfHTMLBody} ) {
         $ViewMode = 'BodyPlain';
@@ -3163,7 +3163,7 @@ sub _ArticleItem {
         # remember plain body for further processing by ArticleViewModules
         $Article{BodyPlain} = $Article{Body};
 
-        # html quoting
+        # HTML quoting
         $Article{Body} = $LayoutObject->Ascii2Html(
             NewLine        => $ConfigObject->Get('DefaultViewNewLine'),
             Text           => $Article{Body},
@@ -3280,7 +3280,7 @@ sub _ArticleMenu {
                     }
                 );
 
-                # build html string
+                # build HTML string
                 my $StandardResponsesStrg = $LayoutObject->BuildSelection(
                     Name  => 'ResponseID',
                     ID    => 'ResponseID',
@@ -3424,7 +3424,7 @@ sub _ArticleMenu {
                         }
                     );
 
-                    # build html string
+                    # build HTML string
                     my $StandardForwardsStrg = $LayoutObject->BuildSelection(
                         Name  => 'ForwardTemplateID',
                         ID    => 'ForwardTemplateID',

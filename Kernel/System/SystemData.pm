@@ -273,9 +273,9 @@ Returns true if update was successful or false if otherwise - for instance
 if key did not exist.
 
     my $Result = $SystemDataObject->SystemDataUpdate(
-        Key     => 'OTRS Version',
-        Value   => 'Some New Value',
-        UserID  => 123,
+        Key    => 'OTRS Version',
+        Value  => 'Some New Value',
+        UserID => 123,
     );
 
 =cut
