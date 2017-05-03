@@ -106,11 +106,11 @@ sub DefaultSettingAdd {
         }
     }
 
+    my @DefaultSettings = $Self->DefaultSettingList();
+
     # Check duplicate name
-    my %SettingData = $Self->DefaultSettingLookup(
-        Name => $Param{Name},
-    );
-    return if %SettingData;
+    my $SettingData = grep { $_->{Name} eq $Param{Name} } @DefaultSettings;
+    return if IsHashRefWithData($SettingData);
 
     # Check config level.
     $Param{HasConfigLevel} //= 0;
@@ -185,8 +185,10 @@ sub DefaultSettingAdd {
     my $DefaultID;
 
     # Fetch the default setting ID.
+    ROW:
     while ( my @Row = $DBObject->FetchrowArray() ) {
         $DefaultID = $Row[0];
+        last ROW;
     }
 
     # Add default setting version.
@@ -212,7 +214,7 @@ sub DefaultSettingAdd {
         my $CacheObject = $Kernel::OM->Get('Kernel::System::Cache');
         $CacheObject->Delete(
             Type => 'SysConfigDefault',
-            Key  => 'DefaultSettingGet::' . $SettingData{Name},
+            Key  => 'DefaultSettingGet::' . $SettingData->{Name},
         );
         $CacheObject->CleanUp(
             Type => 'DefaultSettingListGet',
@@ -1135,7 +1137,7 @@ sub DefaultSettingList {
 
         # Start SQL statement.
         my $SQL = '
-            SELECT id, name, is_dirty, exclusive_lock_guid
+            SELECT id, name, is_dirty, exclusive_lock_guid, xml_content_raw
             FROM sysconfig_default
             ORDER BY id';
 
@@ -1149,6 +1151,7 @@ sub DefaultSettingList {
                 Name              => $Row[1],
                 IsDirty           => $Row[2],
                 ExclusiveLockGUID => $Row[3],
+                XMLContentRaw     => $Row[4],
             };
         }
 
@@ -1603,9 +1606,12 @@ Returns:
 sub DefaultSettingDirtyCleanUp {
     my ( $Self, %Param ) = @_;
 
-    my @DirtySettings = $Self->DefaultSettingList(
-        IsDirty => 1,
-    );
+    my @DirtySettings;
+    if ( !$Param{AllSettings} ) {
+        @DirtySettings = $Self->DefaultSettingList(
+            IsDirty => 1,
+        );
+    }
 
     # Remove is dirty flag for default settings.
     return if !$Kernel::OM->Get('Kernel::System::DB')->Do(
@@ -1617,11 +1623,18 @@ sub DefaultSettingDirtyCleanUp {
 
     my $CacheObject = $Kernel::OM->Get('Kernel::System::Cache');
 
-    for my $Setting (@DirtySettings) {
-        $CacheObject->Delete(
+    if ( $Param{AllSettings} ) {
+        $CacheObject->CleanUp(
             Type => 'SysConfigDefault',
-            Key  => 'DefaultSettingGet::' . $Setting->{Name},
         );
+    }
+    else {
+        for my $Setting (@DirtySettings) {
+            $CacheObject->Delete(
+                Type => 'SysConfigDefault',
+                Key  => 'DefaultSettingGet::' . $Setting->{Name},
+            );
+        }
     }
     $CacheObject->CleanUp(
         Type => 'DefaultSettingListGet',

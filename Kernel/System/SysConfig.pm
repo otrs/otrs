@@ -2274,14 +2274,19 @@ sub ConfigurationXML2DB {
 
     my $CleanUpNeeded;
 
+    my @DefaultSettings = $SysConfigDBObject->DefaultSettingList();
+
     # Create/Update settings in DB.
     SETTING:
     for my $SettingName ( sort keys %Settings ) {
 
         # Check if exists.
-        my %SettingData = $SysConfigDBObject->DefaultSettingLookup(
-            Name => $SettingName,
-        );
+        my %SettingData;
+
+        my ($SettingExisting) = grep { $_->{Name} eq $SettingName } @DefaultSettings;
+        if ( IsHashRefWithData($SettingExisting) ) {
+            %SettingData = %{$SettingExisting};
+        }
 
         # Create a local clone of the value to prevent any modification.
         my $Value = $Kernel::OM->Get('Kernel::System::Storable')->Clone(
@@ -2974,20 +2979,11 @@ sub ConfigurationDeploy {
 
     SETTING:
     for my $CurrentSetting (@Settings) {
-
-        my %Setting = $Self->SettingGet(
-            Name    => $CurrentSetting->{Name},
-            Default => 1,
-            NoCache => 1,                         # do not cache result, it will be deleted soon
-        );
-
-        %Setting = ( %Setting, %{$CurrentSetting} );
-
-        next SETTING if !$Setting{IsValid};
+        next SETTING if !$CurrentSetting->{IsValid};
 
         my %EffectiveValueCheck = $Self->SettingEffectiveValueCheck(
-            XMLContentParsed => $Setting{XMLContentParsed},
-            EffectiveValue   => $Setting{EffectiveValue},
+            XMLContentParsed => $CurrentSetting->{XMLContentParsed},
+            EffectiveValue   => $CurrentSetting->{EffectiveValue},
             NoValidation     => $Param{NoValidation} //= 0,
             UserID           => $Param{UserID},
         );
@@ -2996,7 +2992,7 @@ sub ConfigurationDeploy {
 
         $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'error',
-            Message  => "Setting $Setting{Name} Effective value is not correct: $EffectiveValueCheck{Error}",
+            Message  => "Setting $CurrentSetting->{Name} Effective value is not correct: $EffectiveValueCheck{Error}",
         );
         return;
     }
@@ -3781,8 +3777,8 @@ sub ConfigurationSearch {
 
         # check category
         if (
-            $Param{Category}                    &&
-            $Param{Category} ne 'All'           &&
+            $Param{Category} &&
+            $Param{Category} ne 'All' &&
             $Settings{$SettingName}->{Category} &&
             $Settings{$SettingName}->{Category} ne $Param{Category}
             )
@@ -4774,7 +4770,7 @@ sub _GetSettingsToDeploy {
     }
     else {
         @ModifiedSettingsList = $SysConfigDBObject->ModifiedSettingListGet(
-            IsGlobal => 1
+            IsGlobal => 1,
         );
     }
 
@@ -4784,7 +4780,15 @@ sub _GetSettingsToDeploy {
         my %ModifiedSettingsLookup = map { $_->{Name} => $_ } @ModifiedSettingsList;
 
         # Merge modified into defaults.
-        %SettingsLookup = ( %SettingsLookup, %ModifiedSettingsLookup );
+        KEY:
+        for my $Key ( sort keys %SettingsLookup ) {
+            next KEY if !$ModifiedSettingsLookup{$Key};
+
+            $SettingsLookup{$Key} = {
+                %{ $SettingsLookup{$Key} },
+                %{ $ModifiedSettingsLookup{$Key} },
+            };
+        }
 
         my @Settings = map { $SettingsLookup{$_} } ( sort keys %SettingsLookup );
 
@@ -4814,7 +4818,10 @@ sub _GetSettingsToDeploy {
             next SETTING if !%ModifiedSetting;
         }
 
-        $SettingsLookup{$SettingName} = \%ModifiedSetting;
+        $SettingsLookup{$SettingName} = {
+            %{ $SettingsLookup{$SettingName} },
+            %ModifiedSetting,
+        };
     }
 
     my @Settings = map { $SettingsLookup{$_} } ( sort keys %SettingsLookup );
@@ -4862,7 +4869,9 @@ sub _HandleSettingsToDeploy {
     my $SysConfigDBObject = $Kernel::OM->Get('Kernel::System::SysConfig::DB');
 
     # Remove is dirty flag for default settings.
-    my $DefaultCleanup = $SysConfigDBObject->DefaultSettingDirtyCleanUp();
+    my $DefaultCleanup = $SysConfigDBObject->DefaultSettingDirtyCleanUp(
+        AllSettings => $Param{AllSettings},
+    );
     if ( !$DefaultCleanup ) {
         $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'error',

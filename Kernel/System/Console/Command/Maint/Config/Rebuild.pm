@@ -14,6 +14,7 @@ use warnings;
 use parent qw(Kernel::System::Console::BaseCommand);
 
 our @ObjectDependencies = (
+    'Kernel::System::Cache',
     'Kernel::System::SysConfig',
 );
 
@@ -36,6 +37,11 @@ sub Run {
     my ( $Self, %Param ) = @_;
 
     $Self->Print("<yellow>Rebuilding the system configuration...</yellow>\n");
+
+    # Enable in memory cache, which is normally disabled for commands.
+    $Kernel::OM->Get('Kernel::System::Cache')->Configure(
+        CacheInMemory => 1,
+    );
 
     # Get SysConfig object.
     my $SysConfigObject = $Kernel::OM->Get('Kernel::System::SysConfig');
