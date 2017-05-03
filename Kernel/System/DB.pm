@@ -14,7 +14,6 @@ use warnings;
 
 use DBI;
 use List::Util();
-use Storable;
 
 use Kernel::System::VariableCheck qw(:all);
 
@@ -23,7 +22,8 @@ our @ObjectDependencies = (
     'Kernel::System::Encode',
     'Kernel::System::Log',
     'Kernel::System::Main',
-    'Kernel::System::Time',
+    'Kernel::System::DateTime',
+    'Kernel::System::Storable',
 );
 
 our $UseSlaveDB = 0;
@@ -72,13 +72,18 @@ sub new {
     # 0=off; 1=updates; 2=+selects; 3=+Connects;
     $Self->{Debug} = $Param{Debug} || 0;
 
-    # get config object
     my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
 
-    # get config data
-    $Self->{DSN}  = $Param{DatabaseDSN}  || $ConfigObject->Get('DatabaseDSN');
-    $Self->{USER} = $Param{DatabaseUser} || $ConfigObject->Get('DatabaseUser');
-    $Self->{PW}   = $Param{DatabasePw}   || $ConfigObject->Get('DatabasePw');
+    # Get config data in following order of significance:
+    #   1 - Parameters passed to constructor
+    #   2 - Test database configuration
+    #   3 - Main database configuration
+    $Self->{DSN} =
+        $Param{DatabaseDSN} || $ConfigObject->Get('TestDatabaseDSN') || $ConfigObject->Get('DatabaseDSN');
+    $Self->{USER} =
+        $Param{DatabaseUser} || $ConfigObject->Get('TestDatabaseUser') || $ConfigObject->Get('DatabaseUser');
+    $Self->{PW} =
+        $Param{DatabasePw} || $ConfigObject->Get('TestDatabasePw') || $ConfigObject->Get('DatabasePw');
 
     $Self->{IsSlaveDB} = $Param{IsSlaveDB};
 
@@ -432,7 +437,11 @@ sub Do {
     # - This avoids time inconsistencies of app and db server
     # - This avoids timestamp problems in Postgresql servers where
     #   the timestamp is sometimes 1 second off the perl timestamp.
-    my $Timestamp = $Kernel::OM->Get('Kernel::System::Time')->CurrentTimestamp();
+    my $DateTimeObject = $Kernel::OM->Create(
+        'Kernel::System::DateTime',
+    );
+    my $Timestamp = $DateTimeObject->ToString();
+
     $Param{SQL} =~ s{
         (?<= \s | \( | , )  # lookahead
         current_timestamp   # replace current_timestamp by 'yyyy-mm-dd hh:mm:ss'
@@ -939,10 +948,14 @@ sub SQLProcessor {
         # make a deep copy in order to prevent modyfing the input data
         # see also Bug#12764 - Database function SQLProcessor() modifies given parameter data
         # https://bugs.otrs.org/show_bug.cgi?id=12764
-        my @Database = @{ Storable::dclone( $Param{Database} ) };
+        my @Database = @{
+            $Kernel::OM->Get('Kernel::System::Storable')->Clone(
+                Data => $Param{Database},
+                )
+        };
 
         my @Table;
-        for my $Tag ( @Database ) {
+        for my $Tag (@Database) {
 
             # create table
             if ( $Tag->{Tag} eq 'Table' || $Tag->{Tag} eq 'TableCreate' ) {

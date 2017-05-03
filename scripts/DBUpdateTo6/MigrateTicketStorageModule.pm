@@ -11,7 +11,7 @@ package scripts::DBUpdateTo6::MigrateTicketStorageModule;    ## no critic
 use strict;
 use warnings;
 
-use base qw(scripts::DBUpdateTo6::Base);
+use parent qw(scripts::DBUpdateTo6::Base);
 
 our @ObjectDependencies = (
     'Kernel::Config',
@@ -27,6 +27,14 @@ scripts::DBUpdateTo6::MigrateTicketStorageModule - Migrate Ticket::StorageModule
 
 sub Run {
     my ( $Self, %Param ) = @_;
+
+    my $Home     = $Kernel::OM->Get('Kernel::Config')->Get('Home');
+    my $FilePath = "$Home/Kernel/Config/Backups/ZZZAutoOTRS5.pm";
+
+    if ( !-f $FilePath ) {
+        print "\nCould not find Kernel/Config/Backups/ZZZAutoOTRS5.pm, skipping... ";
+        return 1;
+    }
 
     my $SysConfigObject = $Kernel::OM->Get('Kernel::System::SysConfig');
 
