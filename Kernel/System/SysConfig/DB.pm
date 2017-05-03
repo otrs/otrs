@@ -134,6 +134,7 @@ sub DefaultSettingAdd {
         $Param{$Key} = $Kernel::OM->Get('Kernel::System::YAML')->Dump(
             Data => $Param{$Key},
         );
+        $DefaultVersionParams{$Key} = $Param{$Key};
     }
 
     # Set GuID.
@@ -214,7 +215,7 @@ sub DefaultSettingAdd {
         my $CacheObject = $Kernel::OM->Get('Kernel::System::Cache');
         $CacheObject->Delete(
             Type => 'SysConfigDefault',
-            Key  => 'DefaultSettingGet::' . $SettingData->{Name},
+            Key  => 'DefaultSettingGet::' . $Param{Name},
         );
         $CacheObject->CleanUp(
             Type => 'DefaultSettingListGet',
@@ -663,6 +664,7 @@ sub DefaultSettingUpdate {
         $Param{$Key} = $Kernel::OM->Get('Kernel::System::YAML')->Dump(
             Data => $Param{$Key},
         );
+        $DefaultVersionParams{$Key} = $Param{$Key};
     }
 
     # Set is dirty value.
@@ -1667,9 +1669,9 @@ Add a new SysConfig default version entry.
         UserModificationActive   => 0,                             # 1 or 0, optional, default 0
         UserPreferencesGroup     => 'Advanced',                    # optional
         XMLContentRaw            => $XMLString,                    # the XML structure as it is on the config file
-        XMLContentParsed         => $XMLParsedToPerl,              # the setting XML structure converted into a Perl structure
+        XMLContentParsed         => $XMLParsedToPerl,              # the setting XML structure converted into YAML
         XMLFilename              => 'Framework.xml'                # the name of the XML file
-        EffectiveValue           => $SettingEffectiveValue,        # the value as will be stored in the Perl configuration file
+        EffectiveValue           => $YAMLEffectiveValue,           # YAML EffectiveValue
         UserID                   => 1,
         NoCleanup                => 0,                             # (optional) Default 0. If enabled, system WILL NOT DELETE CACHE. In this case, it must be done manually.
                                                                    #    USE IT CAREFULLY.
@@ -1714,14 +1716,12 @@ sub DefaultSettingVersionAdd {
     for my $Key (qw(IsInvisible IsReadonly IsRequired IsValid UserModificationPossible UserModificationActive)) {
         $Param{$Key} = ( defined $Param{$Key} && $Param{$Key} ? 1 : 0 );
     }
-
-    # Serialize data as string.
-    for my $Key (qw(XMLContentParsed EffectiveValue)) {
-        $Param{$Key} = $Kernel::OM->Get('Kernel::System::YAML')->Dump(
-            Data => $Param{$Key},
+    if ( $Param{EffectiveValue} eq "/usr/bin/gpg/mod" ) {
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
+            Priority => 'error',
+            Message  => "Need!"
         );
     }
-
     my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
 
     # Insert the default.

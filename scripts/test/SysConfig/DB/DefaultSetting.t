@@ -22,6 +22,8 @@ $Kernel::OM->ObjectParamAdd(
 );
 my $HelperObject = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
 
+my $YAMLObject = $Kernel::OM->Get('Kernel::System::YAML');
+
 #
 # Prepare valid config XML and Perl
 #
@@ -607,8 +609,9 @@ for my $Test (@Tests) {
     #
     my $DefaultSettingID;
     if ( exists $Test->{Config}->{DefaultSettingAdd} ) {
+
         $DefaultSettingID = $SysConfigDBObject->DefaultSettingAdd(
-            %{ $Test->{Config}->{DefaultSettingAdd}->{Data} }
+            %{ $Test->{Config}->{DefaultSettingAdd}->{Data} },
         );
 
         my $Result = $DefaultSettingID ? 1 : 0;
@@ -707,11 +710,22 @@ for my $Test (@Tests) {
     #
     my $DefaultSettingVersionID;
     if ( exists $Test->{Config}->{DefaultSettingVersionAdd} ) {
+
+        my $XMLContentParsedYAML = $YAMLObject->Dump(
+            Data => $Test->{Config}->{DefaultSettingVersionAdd}->{Data}->{XMLContentParsed},
+        );
+
+        my $EffectiveValueYAML = $YAMLObject->Dump(
+            Data => $Test->{Config}->{DefaultSettingVersionAdd}->{Data}->{EffectiveValue},
+        );
+
         $DefaultSettingVersionID = $SysConfigDBObject->DefaultSettingVersionAdd(
             DefaultID => $Test->{Config}->{DefaultSettingVersionAdd}->{DefaultID}
             ? $Test->{Config}->{DefaultSettingVersionAdd}->{DefaultID}
             : $DefaultSettingID,
-            %{ $Test->{Config}->{DefaultSettingVersionAdd}->{Data} }
+            %{ $Test->{Config}->{DefaultSettingVersionAdd}->{Data} },
+            XMLContentParsed => $XMLContentParsedYAML,
+            EffectiveValue   => $EffectiveValueYAML,
         );
 
         my $Result = $DefaultSettingVersionID ? 1 : 0;
