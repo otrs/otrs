@@ -77,6 +77,7 @@ my %SkipFields = (
     Changed                   => 1,
     UnlockTimeout             => 1,
     CreateTimeUnix            => 1,
+    TimeUnit                  => 1,
 );
 
 # create dynamic field properties
