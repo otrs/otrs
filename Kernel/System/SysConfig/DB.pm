@@ -109,7 +109,7 @@ sub DefaultSettingAdd {
     my @DefaultSettings = $Self->DefaultSettingList();
 
     # Check duplicate name
-    my $SettingData = grep { $_->{Name} eq $Param{Name} } @DefaultSettings;
+    my ($SettingData) = grep { $_->{Name} eq $Param{Name} } @DefaultSettings;
     return if IsHashRefWithData($SettingData);
 
     # Check config level.
