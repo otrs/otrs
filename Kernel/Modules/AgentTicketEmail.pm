@@ -1271,6 +1271,10 @@ sub Run {
             CustomerID   => $CustomerID,
             CustomerUser => $SelectedCustomerUser,
             UserID       => $Self->{UserID},
+
+            # Get the ticket source : EmailAgent.
+            Source    => $Config->{HistoryType},
+            NewUserID => $NewUserID,
         );
 
         # set ticket dynamic fields

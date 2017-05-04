@@ -24,6 +24,7 @@ sub new {
 
     # allocate new hash for object
     my $Self = {%Param};
+
     bless( $Self, $Type );
 
     #get config object
@@ -1285,6 +1286,10 @@ sub Run {
             CustomerNo   => $CustomerID,
             CustomerUser => $SelectedCustomerUser,
             UserID       => $Self->{UserID},
+
+            # Get the ticket source : PhoneCallCustomer.
+            Source    => $Config->{HistoryType},
+            NewUserID => $GetParam{NewUserID},
         );
 
         # set ticket dynamic fields
