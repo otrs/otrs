@@ -266,6 +266,7 @@ for my $Key (qw( Body Subject From To ReplyTo )) {
         $Success,
         'ArticleUpdate()'
     );
+
     my %Article2 = $ArticleBackendObject->ArticleGet(
         TicketID  => $TicketID,
         ArticleID => $ArticleID,
@@ -286,6 +287,12 @@ for my $Key (qw( Body Subject From To ReplyTo )) {
         UserID    => 1,
     );
 }
+
+$ArticleObject->ArticleIndexBuild(
+    TicketID  => $TicketID,
+    ArticleID => $ArticleID,
+    UserID    => 1,
+);
 
 my $TicketSearchTicketNumber = substr $Ticket{TicketNumber}, 0, 10;
 my %TicketIDs = $TicketObject->TicketSearch(
@@ -505,7 +512,7 @@ $Self->False(
 %TicketIDs = $TicketObject->TicketSearch(
     Result              => 'HASH',
     Limit               => 100,
-    Body                => 'write perl modules',
+    MIMEBase_Body       => 'write perl modules',
     ConditionInline     => 1,
     ContentSearchPrefix => '*',
     ContentSearchSuffix => '*',
@@ -515,13 +522,13 @@ $Self->False(
 );
 $Self->True(
     $TicketIDs{$TicketID},
-    'TicketSearch() (HASH:Body,StateType:Closed)',
+    'TicketSearch() (HASH:MIMEBase_Body,StateType:Closed)',
 );
 
 %TicketIDs = $TicketObject->TicketSearch(
     Result              => 'HASH',
     Limit               => 100,
-    Body                => 'write perl modules',
+    MIMEBase_Body       => 'write perl modules',
     ConditionInline     => 1,
     ContentSearchPrefix => '*',
     ContentSearchSuffix => '*',
@@ -531,7 +538,7 @@ $Self->True(
 );
 $Self->True(
     !$TicketIDs{$TicketID},
-    'TicketSearch() (HASH:Body,StateType:Open)',
+    'TicketSearch() (HASH:MIMEBase_,StateType:Open)',
 );
 
 $TicketObject->MoveTicket(
@@ -635,7 +642,7 @@ for my $Condition (
 
         # result limit
         Limit               => 1000,
-        From                => $Condition,
+        MIMEBase_From       => $Condition,
         ConditionInline     => 1,
         ContentSearchPrefix => '*',
         ContentSearchSuffix => '*',
@@ -644,7 +651,7 @@ for my $Condition (
     );
     $Self->True(
         $TicketIDs{$TicketID},
-        "TicketSearch() (HASH:From,ConditionInline,From='$Condition')",
+        "TicketSearch() (HASH:MIMEBase_From,ConditionInline,MIMEBase_From='$Condition')",
     );
 }
 
@@ -671,16 +678,17 @@ for my $Condition (
 
         # result limit
         Limit               => 1000,
-        From                => $Condition,
+        MIMEBase_From       => $Condition,
         ConditionInline     => 1,
         ContentSearchPrefix => '*',
         ContentSearchSuffix => '*',
         UserID              => 1,
         Permission          => 'rw',
     );
+
     $Self->True(
         ( !$TicketIDs{$TicketID} ),
-        "TicketSearch() (HASH:From,ConditionInline,From='$Condition')",
+        "TicketSearch() (HASH:MIMEBase_From,ConditionInline,MIMEBase_From='$Condition')",
     );
 }
 

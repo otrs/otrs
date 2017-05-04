@@ -1433,36 +1433,16 @@ sub Run {
                     );
                 }
 
-                my $JSONBody = $Kernel::OM->Get('Kernel::System::JSON')->Encode(
-                    Data => \@ChatMessageList,
+                my $ArticleChatBackend = $ArticleObject->BackendForChannel( ChannelName => 'Chat' );
+                $ChatArticleID = $ArticleChatBackend->ArticleCreate(
+                    TicketID             => $TicketID,
+                    SenderType           => $Config->{SenderType},
+                    ChatMessageList      => \@ChatMessageList,
+                    IsVisibleForCustomer => $Config->{IsVisibleForCustomer},
+                    UserID               => $Self->{UserID},
+                    HistoryType          => $Config->{HistoryType},
+                    HistoryComment       => $Config->{HistoryComment} || '%%',
                 );
-
-                my $ChatArticleType = 'chat-internal';
-                if (
-                    $Chat{RequesterType} eq 'Customer'
-                    || $Chat{TargetType} eq 'Customer'
-                    )
-                {
-                    $ChatArticleType = 'chat-external';
-                }
-
-                # TODO: Fix chat article creation
-                # $ChatArticleID = $ArticleObject->ArticleCreate(
-                #     NoAgentNotify  => $NoAgentNotify,
-                #     TicketID       => $TicketID,
-                #     ArticleType    => $ChatArticleType,
-                #     SenderType     => $Config->{SenderType},
-                #     From           => $GetParam{From},
-                #     To             => $GetParam{To},
-                #     Subject        => $Kernel::OM->Get('Kernel::Language')->Translate('Chat'),
-                #     Body           => $JSONBody,
-                #     MimeType       => 'application/json',
-                #     Charset        => $LayoutObject->{UserCharset},
-                #     UserID         => $Self->{UserID},
-                #     HistoryType    => $Config->{HistoryType},
-                #     HistoryComment => $Config->{HistoryComment} || '%%',
-                #     Queue          => $QueueObject->QueueLookup( QueueID => $NewQueueID ),
-                # );
             }
             if ($ChatArticleID) {
 

@@ -127,14 +127,15 @@ ALTER TABLE article ADD CONSTRAINT FK_article_change_by_id FOREIGN KEY (change_b
 ALTER TABLE article_data_mime ADD CONSTRAINT FK_article_data_mime_article5d FOREIGN KEY (article_id) REFERENCES article (id);
 ALTER TABLE article_data_mime ADD CONSTRAINT FK_article_data_mime_create_db FOREIGN KEY (create_by) REFERENCES users (id);
 ALTER TABLE article_data_mime ADD CONSTRAINT FK_article_data_mime_change_12 FOREIGN KEY (change_by) REFERENCES users (id);
-ALTER TABLE article_search ADD CONSTRAINT FK_article_search_article_se5d FOREIGN KEY (article_sender_type_id) REFERENCES article_sender_type (id);
-ALTER TABLE article_search ADD CONSTRAINT FK_article_search_ticket_id_id FOREIGN KEY (ticket_id) REFERENCES ticket (id);
+ALTER TABLE article_search_index ADD CONSTRAINT FK_article_search_index_artiea FOREIGN KEY (article_id) REFERENCES article (id);
+ALTER TABLE article_search_index ADD CONSTRAINT FK_article_search_index_tickd8 FOREIGN KEY (ticket_id) REFERENCES ticket (id);
 ALTER TABLE article_data_mime_plain ADD CONSTRAINT FK_article_data_mime_plain_a4f FOREIGN KEY (article_id) REFERENCES article (id);
 ALTER TABLE article_data_mime_plain ADD CONSTRAINT FK_article_data_mime_plain_cb6 FOREIGN KEY (create_by) REFERENCES users (id);
 ALTER TABLE article_data_mime_plain ADD CONSTRAINT FK_article_data_mime_plain_cbc FOREIGN KEY (change_by) REFERENCES users (id);
 ALTER TABLE article_data_mime_attachment ADD CONSTRAINT FK_article_data_mime_attachmdb FOREIGN KEY (article_id) REFERENCES article (id);
 ALTER TABLE article_data_mime_attachment ADD CONSTRAINT FK_article_data_mime_attachm63 FOREIGN KEY (create_by) REFERENCES users (id);
 ALTER TABLE article_data_mime_attachment ADD CONSTRAINT FK_article_data_mime_attachm5c FOREIGN KEY (change_by) REFERENCES users (id);
+ALTER TABLE article_data_otrs_chat ADD CONSTRAINT FK_article_data_otrs_chat_arcf FOREIGN KEY (article_id) REFERENCES article (id);
 ALTER TABLE time_accounting ADD CONSTRAINT FK_time_accounting_article_i95 FOREIGN KEY (article_id) REFERENCES article (id);
 ALTER TABLE time_accounting ADD CONSTRAINT FK_time_accounting_ticket_id91 FOREIGN KEY (ticket_id) REFERENCES ticket (id);
 ALTER TABLE time_accounting ADD CONSTRAINT FK_time_accounting_create_bybb FOREIGN KEY (create_by) REFERENCES users (id);

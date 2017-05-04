@@ -59,9 +59,6 @@
         <div class="Field">
             <input type="text" name="Fulltext" value="[% Data.Fulltext | html %]" class="W50pc" />
             <a class="RemoveButton" href="#" title="[% Translate("Remove this entry") | html %]"><i class="fa fa-minus-square-o"></i><span class="InvisibleText">[% Translate("Remove") | html %]</span></a>
-            <div class="FieldExplanation">
-                [% Translate("Searches in the attributes From, To, Cc, Subject and the article body, overriding other attributes with the same name.") | html %]
-            </div>
         </div>
         <div class="Clear"></div>
         <label for="TicketNumber" id="LabelTicketNumber">[% Config("Ticket::Hook") %]:</label>
@@ -112,42 +109,15 @@
             <a class="RemoveButton" href="#" title="[% Translate("Remove this entry") | html %]"><i class="fa fa-minus-square-o"></i><span class="InvisibleText">[% Translate("Remove") | html %]</span></a>
         </div>
         <div class="Clear"></div>
-        <label for="From" id="LabelFrom">[% Translate("From") | html %]:</label>
+
+[% RenderBlockStart("SearchableArticleField") %]
+        <label for="[% Data.ArticleFieldKey | html %]" id="Label[% Data.ArticleFieldKey | html %]">[% Data.ArticleFieldLabel | html %]:</label>
         <div class="Field">
-            <input type="text" name="From" value="[% Data.From | html %]" class="W50pc"/>
+            <input type="text" name="[% Data.ArticleFieldKey | html %]" value="[% Data.ArticleFieldValue | html %]" class="W50pc"/>
             <a class="RemoveButton" href="#" title="[% Translate("Remove this entry") | html %]"><i class="fa fa-minus-square-o"></i><span class="InvisibleText">[% Translate("Remove") | html %]</span></a>
         </div>
         <div class="Clear"></div>
-        <label for="To" id="LabelTo">[% Translate("To") | html %]:</label>
-        <div class="Field">
-            <input type="text" name="To" value="[% Data.To | html %]" class="W50pc"/>
-            <a class="RemoveButton" href="#" title="[% Translate("Remove this entry") | html %]"><i class="fa fa-minus-square-o"></i><span class="InvisibleText">[% Translate("Remove") | html %]</span></a>
-        </div>
-        <div class="Clear"></div>
-        <label for="Cc" id="LabelCc">[% Translate("Cc") | html %]:</label>
-        <div class="Field">
-            <input type="text" name="Cc" value="[% Data.Cc | html %]" class="W50pc"/>
-            <a class="RemoveButton" href="#" title="[% Translate("Remove this entry") | html %]"><i class="fa fa-minus-square-o"></i><span class="InvisibleText">[% Translate("Remove") | html %]</span></a>
-        </div>
-        <div class="Clear"></div>
-        <label for="Subject" id="LabelSubject">[% Translate("Subject") | html %]:</label>
-        <div class="Field">
-            <input type="text" name="Subject" value="[% Data.Subject | html %]" class="W50pc"/>
-            <a class="RemoveButton" href="#" title="[% Translate("Remove this entry") | html %]"><i class="fa fa-minus-square-o"></i><span class="InvisibleText">[% Translate("Remove") | html %]</span></a>
-        </div>
-        <div class="Clear"></div>
-        <label for="Body" id="LabelBody">[% Translate("Text") | html %]:</label>
-        <div class="Field">
-            <input type="text" name="Body" value="[% Data.Body | html %]" class="W50pc"/>
-            <a class="RemoveButton" href="#" title="[% Translate("Remove this entry") | html %]"><i class="fa fa-minus-square-o"></i><span class="InvisibleText">[% Translate("Remove") | html %]</span></a>
-        </div>
-        <div class="Clear"></div>
-        <label for="AttachmentName" id="LabelAttachmentName">[% Translate("Attachment Name") | html %]:</label>
-        <div class="Field">
-            <input type="text" name="AttachmentName" placeholder="[% Translate("(e. g. m*file or myfi*)") | html %]" value="[% Data.AttachmentName | html %]" class="W50pc"/>
-            <a class="RemoveButton" href="#" title="[% Translate("Remove this entry") | html %]"><i class="fa fa-minus-square-o"></i><span class="InvisibleText">[% Translate("Remove") | html %]</span></a>
-        </div>
-        <div class="Clear"></div>
+[% RenderBlockEnd("SearchableArticleField") %]
 
 [% RenderBlockStart("DynamicField") %]
         [% Data.Label %]

@@ -634,21 +634,17 @@ CREATE TABLE article_data_mime (
     INDEX article_data_mime_message_id_md5 (a_message_id_md5)
 );
 # ----------------------------------------------------------
-#  create table article_search
+#  create table article_search_index
 # ----------------------------------------------------------
-CREATE TABLE article_search (
-    id BIGINT NOT NULL,
+CREATE TABLE article_search_index (
+    id BIGINT NOT NULL AUTO_INCREMENT,
     ticket_id BIGINT NOT NULL,
-    article_sender_type_id SMALLINT NOT NULL,
-    a_from TEXT NULL,
-    a_to TEXT NULL,
-    a_cc TEXT NULL,
-    a_subject TEXT NULL,
-    a_body MEDIUMTEXT NOT NULL,
-    incoming_time INTEGER NOT NULL,
+    article_id BIGINT NOT NULL,
+    article_key VARCHAR (200) NOT NULL,
+    article_value MEDIUMTEXT NULL,
     PRIMARY KEY(id),
-    INDEX article_search_article_sender_type_id (article_sender_type_id),
-    INDEX article_search_ticket_id (ticket_id)
+    INDEX article_search_index_article_id (article_id),
+    INDEX article_search_index_ticket_id (ticket_id)
 );
 # ----------------------------------------------------------
 #  create table article_data_mime_plain
@@ -683,6 +679,21 @@ CREATE TABLE article_data_mime_attachment (
     change_by INTEGER NOT NULL,
     PRIMARY KEY(id),
     INDEX article_data_mime_attachment_article_id (article_id)
+);
+# ----------------------------------------------------------
+#  create table article_data_otrs_chat
+# ----------------------------------------------------------
+CREATE TABLE article_data_otrs_chat (
+    id BIGINT NOT NULL AUTO_INCREMENT,
+    article_id BIGINT NOT NULL,
+    chat_participant_id VARCHAR (255) NOT NULL,
+    chat_participant_name VARCHAR (255) NOT NULL,
+    chat_participant_type VARCHAR (255) NOT NULL,
+    message_text TEXT NOT NULL,
+    system_generated SMALLINT NOT NULL,
+    create_time DATETIME NOT NULL,
+    PRIMARY KEY(id),
+    INDEX article_data_otrs_chat_article_id (article_id)
 );
 # ----------------------------------------------------------
 #  create table time_accounting

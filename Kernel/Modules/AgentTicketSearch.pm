@@ -114,6 +114,9 @@ sub Run {
         FieldFilter => $DynamicFieldFilter || {},
     );
 
+    # collect all searchable article field definitions and add the fields to the attributes array
+    my %ArticleSearchableFields = $Kernel::OM->Get('Kernel::System::Ticket::Article')->SearchableFieldsList();
+
     # load profiles string params (press load profile)
     if ( ( $Self->{Subaction} eq 'LoadProfile' && $Self->{Profile} ) || $Self->{TakeLastSearch} ) {
         %GetParam = $SearchProfileObject->SearchProfileGet(
@@ -131,19 +134,16 @@ sub Run {
     # get search string params (get submitted params)
     else {
         for my $Key (
-            qw(TicketNumber Title From To Cc Subject Body CustomerID CustomerIDRaw
-            CustomerUserLogin CustomerUserLoginRaw CustomerUserID StateType Agent ResultForm
-            TimeSearchType ChangeTimeSearchType CloseTimeSearchType LastChangeTimeSearchType
-            EscalationTimeSearchType PendingTimeSearchType
-            UseSubQueues AttachmentName
-            ArticleTimeSearchType SearchInArchive
-            Fulltext ShownAttributes
-            ArticleCreateTimePointFormat ArticleCreateTimePoint
-            ArticleCreateTimePointStart
+            sort keys %ArticleSearchableFields,
+            qw(
+            TicketNumber Title CustomerID CustomerIDRaw CustomerUserLogin CustomerUserLoginRaw
+            CustomerUserID StateType Agent ResultForm TimeSearchType ChangeTimeSearchType
+            CloseTimeSearchType LastChangeTimeSearchType EscalationTimeSearchType PendingTimeSearchType
+            UseSubQueues ArticleTimeSearchType SearchInArchive Fulltext ShownAttributes
+            ArticleCreateTimePointFormat ArticleCreateTimePoint ArticleCreateTimePointStart
             ArticleCreateTimeStart ArticleCreateTimeStartDay ArticleCreateTimeStartMonth
-            ArticleCreateTimeStartYear
-            ArticleCreateTimeStop ArticleCreateTimeStopDay ArticleCreateTimeStopMonth
-            ArticleCreateTimeStopYear
+            ArticleCreateTimeStartYear ArticleCreateTimeStop ArticleCreateTimeStopDay
+            ArticleCreateTimeStopMonth ArticleCreateTimeStopYear
             TicketCreateTimePointFormat TicketCreateTimePoint
             TicketCreateTimePointStart
             TicketCreateTimeStart TicketCreateTimeStartDay TicketCreateTimeStartMonth
@@ -184,7 +184,6 @@ sub Run {
             )
             )
         {
-
             # get search string params (get submitted params)
             $GetParam{$Key} = $ParamObject->GetParam( Param => $Key );
 
@@ -537,14 +536,6 @@ sub Run {
                 return $LayoutObject->Redirect(
                     OP => "Action=AgentTicketZoom;TicketID=$TicketID",
                 );
-            }
-        }
-
-        # prepare full text search
-        if ( $GetParam{Fulltext} ) {
-            $GetParam{ContentSearch} = 'OR';
-            for my $Key (qw(From To Cc Subject Body)) {
-                $GetParam{$Key} = $GetParam{Fulltext};
             }
         }
 
@@ -1322,39 +1313,13 @@ sub Run {
                 Value    => '-',
                 Disabled => 1,
             },
-
-            # Article fields
-            {
-                Key   => 'From',
-                Value => Translatable('From'),
-            },
-            {
-                Key   => 'To',
-                Value => Translatable('To'),
-            },
-            {
-                Key   => 'Cc',
-                Value => Translatable('Cc'),
-            },
-            {
-                Key   => 'Subject',
-                Value => Translatable('Subject'),
-            },
-            {
-                Key   => 'Body',
-                Value => Translatable('Body'),
-            },
         );
 
-        if (
-            $ConfigObject->Get('Ticket::Article::Backend::MIMEBase')->{ArticleStorage} eq
-            'Kernel::System::Ticket::Article::Backend::MIMEBase::ArticleStorageDB'
-            )
-        {
+        for my $ArticleFieldKey ( sort keys %ArticleSearchableFields ) {
             push @Attributes, (
                 {
-                    Key   => 'AttachmentName',
-                    Value => Translatable('Attachment Name'),
+                    Key   => $ArticleSearchableFields{$ArticleFieldKey}->{Key},
+                    Value => Translatable( $ArticleSearchableFields{$ArticleFieldKey}->{Label} ),
                 },
             );
         }
@@ -2230,6 +2195,18 @@ sub Run {
                 EmptySearch => $EmptySearch,
             },
         );
+
+        # create the field entries to be displayed in the modal dialog
+        for my $ArticleFieldKey ( sort keys %ArticleSearchableFields ) {
+            $LayoutObject->Block(
+                Name => 'SearchableArticleField',
+                Data => {
+                    ArticleFieldLabel => $ArticleSearchableFields{$ArticleFieldKey}->{Label},
+                    ArticleFieldKey   => $ArticleSearchableFields{$ArticleFieldKey}->{Key},
+                    ArticleFieldValue => $GetParam{$ArticleFieldKey} // '',
+                },
+            );
+        }
 
         # output Dynamic fields blocks
         # cycle trough the activated Dynamic Fields for this screen
