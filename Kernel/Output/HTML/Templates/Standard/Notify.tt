@@ -15,7 +15,7 @@
             [% Translate(Data.Info) | html %]
 [% RenderBlockEnd("Text") %]
 [% RenderBlockStart("Data") %]
-            [% Data.Data %]
+            [% Translate(Data.Data) | html %]
 [% RenderBlockEnd("Data") %]
 [% RenderBlockStart("LinkStop") %]
         </a>
