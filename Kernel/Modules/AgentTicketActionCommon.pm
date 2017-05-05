@@ -1121,6 +1121,7 @@ sub Run {
         }
         my $SLAs = $Self->_GetSLAs(
             %GetParam,
+            UserID         => $Self->{UserID},
             CustomerUserID => $CustomerUser,
             QueueID        => $QueueID,
             StateID        => $StateID,
