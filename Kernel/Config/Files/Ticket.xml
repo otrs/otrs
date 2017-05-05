@@ -6921,7 +6921,7 @@
         </Setting>
     </ConfigItem>
     <ConfigItem Name="System::Permission" Required="1" Valid="1">
-        <Description Translatable="1">Standard available permissions for agents within the application. If more permissions are needed, they can be entered here. Permissions must be defined to be effective. Some other good permissions have also been provided built-in: note, close, pending, customer, freetext, move, compose, responsible, forward, and bounce. Make sure that "rw" is always the last registered permission.</Description>
+        <Description Translatable="1">Defines the standard available permissions for agents within the application. If more permissions are needed, you can enter them here. Permissions must be hard coded to be effective. Some other good permissions have also been provided built-in: note, close, pending, customer, freetext, move, compose, responsible, forward, and bounce. Make sure that "rw" is always the last registered permission.</Description>
         <Group>Ticket</Group>
         <SubGroup>Core::Ticket</SubGroup>
         <Setting>
@@ -6936,6 +6936,18 @@
             </Array>
         </Setting>
     </ConfigItem>
+    <ConfigItem Name="System::Customer::Permission" Required="1" Valid="1">
+        <Description Translatable="1">Defines the standard available permissions for customers within the application. If more permissions are needed, you can enter them here. Permissions must be hard coded to be effective. Please ensure, when adding any of the afore mentioned permissions, that the "rw" permission remains the last entry.</Description>
+        <Group>Framework</Group>
+        <SubGroup>Core::Ticket</SubGroup>
+        <Setting>
+            <Array>
+                <Item>ro</Item>
+                <Item>rw</Item>
+            </Array>
+        </Setting>
+    </ConfigItem>
+
     <ConfigItem Name="Ticket::Permission###1-OwnerCheck" Required="0" Valid="1">
         <Description Translatable="1">Module to grant access to the owner of a ticket.</Description>
         <Group>Ticket</Group>
