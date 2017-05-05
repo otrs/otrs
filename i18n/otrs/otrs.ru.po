@@ -3317,7 +3317,7 @@ msgstr "Зайти данным пользователем"
 
 #. Template: AdminCustomerUser
 msgid "Switch to customer"
-msgstr "Переключится на клиента"
+msgstr "Переключиться на клиента"
 
 #. Template: AdminCustomerUser
 msgid "Add Customer User"
@@ -9643,11 +9643,11 @@ msgstr "Обратитесь к документации или спросите
 
 #. Template: CustomerFooterJS
 msgid "Switch to mobile mode"
-msgstr "Переключится на мобильный режим"
+msgstr "Переключиться на мобильный режим"
 
 #. Template: CustomerFooterJS
 msgid "Switch to desktop mode"
-msgstr "Переключится на режим ПК"
+msgstr "Переключиться на режим ПК"
 
 #. Template: CustomerFooterJS
 msgid "Not available"
