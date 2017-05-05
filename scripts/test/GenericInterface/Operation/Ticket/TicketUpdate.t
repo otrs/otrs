@@ -261,6 +261,37 @@ $Self->True(
 # get config object
 my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
 
+# disable DNS lookups
+$Helper->ConfigSettingChange(
+    Valid => 1,
+    Key   => 'CheckMXRecord',
+    Value => '0',
+);
+$ConfigObject->Set(
+    Key   => 'CheckMXRecord',
+    Value => 0,
+);
+$Helper->ConfigSettingChange(
+    Valid => 1,
+    Key   => 'CheckEmailAddresses',
+    Value => '1',
+);
+$ConfigObject->Set(
+    Key   => 'CheckEmailAddresses',
+    Value => 1,
+);
+
+# switch to test email dispatch
+$Helper->ConfigSettingChange(
+    Valid => 1,
+    Key   => 'SendmailModule',
+    Value => 'Kernel::System::Email::Test',
+);
+$ConfigObject->Set(
+    Key   => 'SendmailModule',
+    Value => 'Kernel::System::Email::Test',
+);
+
 # get remote host with some precautions for certain unit test systems
 my $Host = $Helper->GetTestHTTPHostname();
 
@@ -637,6 +668,148 @@ my @Tests = (
         },
         Operation => 'TicketUpdate',
     },
+    {
+        Name           => 'Ticket with a sent article but missing "To"',
+        SuccessRequest => '1',
+        RequestData    => {
+            TicketID => $TicketID1,
+            Ticket   => {
+                Title => 'Updated',
+            },
+            Article => {
+                Subject                         => 'Article subject äöüßÄÖÜ€ис',
+                Body                            => 'Article body !"Â§$%&/()=?Ã<U+009C>*Ã<U+0084>Ã<U+0096>L:L@,.-',
+                AutoResponseType                => 'auto reply',
+                ArticleType                     => 'email-external',
+                SenderType                      => 'agent',
+                From                            => 'enjoy@otrs.com',
+                Charset                         => 'utf8',
+                MimeType                        => 'text/plain',
+                HistoryType                     => 'NewTicket',
+                HistoryComment                  => '% % ',
+                TimeUnit                        => 25,
+                ForceNotificationToUserID       => [1],
+                ExcludeNotificationToUserID     => [1],
+                ExcludeMuteNotificationToUserID => [1],
+                ArticleSend                     => 1,
+
+                #                 To                              => 'mail@example.com',
+            },
+        },
+        ExpectedReturnRemoteData => {
+            Success => 1,
+            Data    => {
+                Error => {
+                    ErrorCode => 'TicketCreate.InvalidParameter',
+                    ErrorMessage =>
+                        'TicketCreate: Article->To parameter must be a valid email address when Article->ArticleSend is set!',
+                },
+            },
+        },
+        ExpectedReturnLocalData => {
+            Success => 1,
+            Data    => {
+                Error => {
+                    ErrorCode => 'TicketCreate.InvalidParameter',
+                    ErrorMessage =>
+                        'TicketCreate: Article->To parameter must be a valid email address when Article->ArticleSend is set!',
+                },
+            },
+        },
+        Operation => 'TicketUpdate',
+    },
+    {
+        Name           => 'Ticket with a sent article but invalid "To"',
+        SuccessRequest => '1',
+        RequestData    => {
+            TicketID => $TicketID1,
+            Ticket   => {
+                Title => 'Updated',
+            },
+            Article => {
+                Subject                         => 'Article subject äöüßÄÖÜ€ис',
+                Body                            => 'Article body !"Â§$%&/()=?Ã<U+009C>*Ã<U+0084>Ã<U+0096>L:L@,.-',
+                AutoResponseType                => 'auto reply',
+                ArticleType                     => 'email-external',
+                SenderType                      => 'agent',
+                From                            => 'enjoy@otrs.com',
+                Charset                         => 'utf8',
+                MimeType                        => 'text/plain',
+                HistoryType                     => 'NewTicket',
+                HistoryComment                  => '% % ',
+                TimeUnit                        => 25,
+                ForceNotificationToUserID       => [1],
+                ExcludeNotificationToUserID     => [1],
+                ExcludeMuteNotificationToUserID => [1],
+                ArticleSend                     => 1,
+                To                              => 'invalid-email-address',
+            },
+        },
+        ExpectedReturnRemoteData => {
+            Success => 1,
+            Data    => {
+                Error => {
+                    ErrorCode => 'TicketCreate.InvalidParameter',
+                    ErrorMessage =>
+                        'TicketCreate: Article->To parameter must be a valid email address when Article->ArticleSend is set!',
+                },
+            },
+        },
+        ExpectedReturnLocalData => {
+            Success => 1,
+            Data    => {
+                Error => {
+                    ErrorCode => 'TicketCreate.InvalidParameter',
+                    ErrorMessage =>
+                        'TicketCreate: Article->To parameter must be a valid email address when Article->ArticleSend is set!',
+                },
+            },
+        },
+        Operation => 'TicketUpdate',
+    },
+    {
+        Name           => 'Ticket with a sent article',
+        SuccessRequest => '1',
+        RequestData    => {
+            TicketID => $TicketID1,
+            Ticket   => {
+                Title => 'Updated',
+            },
+            Article => {
+                Subject                         => 'Article subject äöüßÄÖÜ€ис',
+                Body                            => 'Article body !"Â§$%&/()=?Ã<U+009C>*Ã<U+0084>Ã<U+0096>L:L@,.-',
+                AutoResponseType                => 'auto reply',
+                ArticleType                     => 'email-external',
+                SenderType                      => 'agent',
+                From                            => 'enjoy@otrs.com',
+                Charset                         => 'utf8',
+                MimeType                        => 'text/plain',
+                HistoryType                     => 'NewTicket',
+                HistoryComment                  => '% % ',
+                TimeUnit                        => 25,
+                ForceNotificationToUserID       => [1],
+                ExcludeNotificationToUserID     => [1],
+                ExcludeMuteNotificationToUserID => [1],
+                ArticleSend                     => 1,
+                To                              => 'root@localhost',
+            },
+        },
+        ExpectedReturnRemoteData => {
+            Success => 1,
+            Data    => {
+                TicketID     => $Ticket{TicketID},
+                TicketNumber => $Ticket{TicketNumber},
+            },
+        },
+        ExpectedReturnLocalData => {
+            Success => 1,
+            Data    => {
+                TicketID     => $Ticket{TicketID},
+                TicketNumber => $Ticket{TicketNumber},
+            },
+        },
+        Operation => 'TicketUpdate',
+    },
 );
 
 # debugger object
@@ -655,7 +828,11 @@ $Self->Is(
     'DebuggerObject instantiate correctly',
 );
 
+my $EmailTestObject = $Kernel::OM->Get('Kernel::System::Email::Test');
+
 for my $Test (@Tests) {
+
+    $EmailTestObject->CleanUp();
 
     # create local object
     my $LocalObject = "Kernel::GenericInterface::Operation::Ticket::$Test->{Operation}"->new(
@@ -729,6 +906,36 @@ for my $Test (@Tests) {
         $Test->{SuccessRequest},
         "$Test->{Name} - Requester successful result",
     );
+
+    # Check if email has been sent
+    if (
+        $Test->{RequestData}->{Article}->{ArticleSend}
+        && !defined $RequesterResult->{Data}->{Error}
+        && $RequesterResult->{Success}
+        )
+    {
+
+        my $Emails = $EmailTestObject->EmailsGet();
+        $Self->True(
+            scalar IsArrayRefWithData($Emails),
+            "$Test->{Name} - Email(s) must have been sent.",
+        );
+
+        my $RecipientFound = 0;
+        EMAIL:
+        for my $Email ( @{$Emails} ) {
+            next EMAIL if !IsArrayRefWithData( $Email->{ToArray} );
+            next EMAIL if !grep { $_ eq $Test->{RequestData}->{Article}->{To} } @{ $Email->{ToArray} };
+
+            $RecipientFound = 1;
+            last EMAIL;
+        }
+
+        $Self->True(
+            $RecipientFound,
+            "$Test->{Name} - Email must have been sent to $Test->{RequestData}->{Article}->{To}.",
+        );
+    }
 
     # remove ErrorMessage parameter from direct call
     # result to be consistent with SOAP call result
