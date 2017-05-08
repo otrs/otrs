@@ -128,6 +128,8 @@ sub PreRun {
 sub Run {
     my ( $Self, %Param ) = @_;
 
+    my $LogObject = $Kernel::OM->Get('Kernel::System::Log');
+
     $Self->{CurrentWorkersCount} = scalar keys %{ $Self->{CurrentWorkers} };
 
     my @TaskList = $Self->{SchedulerDBObject}->TaskListUnlocked();
@@ -202,9 +204,9 @@ sub Run {
                 my $TaskName = $Task{Name} || '';
                 my $TaskType = $Task{Type} || '';
 
-                $Kernel::OM->Get('Kernel::System::Log')->Log(
+                $LogObject->Log(
                     Priority => 'error',
-                    Message  => "Task $TaskType $TaskName ($TaskID) was deleted due missing task data!",
+                    Message  => "Task $TaskType $TaskName (ID $TaskID) was deleted due missing task data!",
                 );
 
                 exit 1;
@@ -234,18 +236,31 @@ sub Run {
                 my $TaskName = $Task{Name} || '';
                 my $TaskType = $Task{Type} || '';
 
-                $Kernel::OM->Get('Kernel::System::Log')->Log(
+                $LogObject->Log(
                     Priority => 'error',
-                    Message  => "Task $TaskType $TaskName ($TaskID) was deleted due missing handler object!",
+                    Message  => "Task $TaskType $TaskName (ID $TaskID) was deleted due missing handler object!",
                 );
 
                 exit 1;
             }
 
+            my $TaskName = $Task{Name} || '';
+            my $TaskType = $Task{Type} || '';
+
+            $LogObject->Log(
+                Priority => 'info',
+                Message  => "Task $TaskType $TaskName (ID $TaskID) started.",
+            );
+
             $TaskHandlerObject->Run(
                 TaskID   => $TaskID,
-                TaskName => $Task{Name} || '',
+                TaskName => $TaskName,
                 Data     => $Task{Data},
+            );
+
+            $LogObject->Log(
+                Priority => 'info',
+                Message  => "Task $TaskType $TaskName (ID $TaskID) finished.",
             );
 
             # Force transactional events to run by discarding all objects before deleting the task.
@@ -260,7 +275,7 @@ sub Run {
 
         # Check if fork was not possible.
         if ( $PID < 0 ) {
-            $Kernel::OM->Get('Kernel::System::Log')->Log(
+            $LogObject->Log(
                 Priority => 'error',
                 Message  => "Could not create a child process (worker) for task id $TaskID!",
             );
