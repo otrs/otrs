@@ -35,6 +35,8 @@ sub Run {
     #create local object
     my $CheckItemObject = Kernel::System::CheckItem->new( %{$Self} );
 
+    my $Notification = $ParamObject->GetParam( Param => 'Notification' ) || '';
+
     # ------------------------------------------------------------ #
     # change
     # ------------------------------------------------------------ #
@@ -45,6 +47,18 @@ sub Run {
         );
         my $Output = $LayoutObject->Header();
         $Output .= $LayoutObject->NavigationBar();
+
+        if ( $Notification && $Notification eq 'Update' ) {
+            $Output .= $LayoutObject->Notify( Info => Translatable('System e-mail address updated!') );
+        }
+        elsif ( $Notification && $Notification eq 'NotPosibleSetInvalid' ) {
+            $Output
+                .= $LayoutObject->Notify(
+                Info =>
+                    Translatable('System e-mail address is a parameter in some queue(s) and it should not be changed!')
+                );
+        }
+
         $Self->_Edit(
             Action => 'Change',
             %Data,
@@ -91,29 +105,25 @@ sub Run {
         # if no errors occurred
         if ( !%Errors ) {
 
+            my $Success = $SystemAddressObject->SystemAddressUpdate(
+                %GetParam,
+                UserID => $Self->{UserID},
+            );
+
             # update email system address
-            if (
-                $SystemAddressObject->SystemAddressUpdate(
-                    %GetParam,
-                    UserID => $Self->{UserID},
-                )
-                )
-            {
-                # if the user would like to continue editing system e-mail address, just redirect to the edit screen
-                # otherwise return to overview
-                if (
-                    defined $ParamObject->GetParam( Param => 'ContinueAfterSave' )
-                    && ( $ParamObject->GetParam( Param => 'ContinueAfterSave' ) eq '1' )
-                    )
-                {
-                    return $LayoutObject->Redirect(
-                        OP => "Action=$Self->{Action};Subaction=Change;ID=$GetParam{ID}"
-                    );
-                }
-                else {
-                    return $LayoutObject->Redirect( OP => "Action=$Self->{Action}" );
-                }
+            my $Notification = $Success ? 'Update' : 'NotPosibleSetInvalid';
+
+            # if the user would like to continue editing system e-mail address, just redirect to the edit screen
+            # otherwise return to overview
+            if ( $ParamObject->GetParam( Param => 'ContinueAfterSave' ) eq '1' ) {
+                return $LayoutObject->Redirect(
+                    OP => "Action=$Self->{Action};Subaction=Change;ID=$GetParam{ID};Notification=$Notification"
+                );
             }
+            else {
+                return $LayoutObject->Redirect( OP => "Action=$Self->{Action};Notification=$Notification" );
+            }
+
         }
 
         # something has gone wrong
@@ -234,6 +244,18 @@ sub Run {
 
         my $Output = $LayoutObject->Header();
         $Output .= $LayoutObject->NavigationBar();
+
+        if ( $Notification && $Notification eq 'Update' ) {
+            $Output .= $LayoutObject->Notify( Info => Translatable('System e-mail address updated!') );
+        }
+        elsif ( $Notification && $Notification eq 'NotPosibleSetInvalid' ) {
+            $Output
+                .= $LayoutObject->Notify(
+                Info =>
+                    Translatable('System e-mail address is a parameter in some queue(s) and it should not be changed!')
+                );
+        }
+
         $Output .= $LayoutObject->Output(
             TemplateFile => 'AdminSystemAddress',
             Data         => \%Param,
