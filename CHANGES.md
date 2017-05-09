@@ -1,4 +1,5 @@
 #6.0.0.beta1 2017-??-??
+ - 2017-05-08 Fixed bug#[9397](https://bugs.otrs.org/show_bug.cgi?id=9397) - User time zone isn't considered in the ticket search.
  - 2017-05-02 Require at least PostgreSQL 9.2.
  - 2017-04-24 Fixed bug#[12788](https://bugs.otrs.org/show_bug.cgi?id=12788) - Error during DB Update Script when Appointment tables already exist.
  - 2017-04-19 Fixed bug#[10873](https://bugs.otrs.org/show_bug.cgi?id=10873)(PR#1706) - Agent names sorted incorrectly in AgentTicketSearch. Thanks to S7!
@@ -96,6 +97,7 @@
  - 2015-11-27 Improved command Maint::Ticket::InvalidUserCleanup. It can now now both unlock tickets of invalid users and also (optionally) change their state to make sure they will not be overlooked. Thanks to Moritz Lenz @ noris networks.
 
 #5.0.20 2017-??-??
+ - 2017-05-08 Fixed bug#[12286](https://bugs.otrs.org/show_bug.cgi?id=12286) - Article body with non-allowed characters breaks SOAP response.
  - 2017-05-05 Fixed bug#[12791](https://bugs.otrs.org/show_bug.cgi?id=12791) - ArticleSend Documentation is incorrect.
 
 #5.0.19 2017-05-09
