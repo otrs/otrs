@@ -310,6 +310,7 @@ set a cookie
         Key     => ID,
         Value   => 123456,
         Expires => '+3660s',
+        Domain  => '',          # optional, use this domain for the cookie.
         Path    => 'otrs/',     # optional, only allow cookie for given path
         Secure  => 1,           # optional, set secure attribute to disable cookie on HTTP (HTTPS only)
         HTTPOnly => 1,          # optional, sets HttpOnly attribute of cookie to prevent access via JavaScript
@@ -328,6 +329,7 @@ sub SetCookie {
         -expires  => $Param{Expires},
         -secure   => $Param{Secure} || '',
         -httponly => $Param{HTTPOnly} || '',
+        -domain   => $Param{Domain} || '',
         -path     => '/' . $Param{Path},
     );
 }

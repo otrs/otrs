@@ -1031,6 +1031,33 @@
             <String Regex="">OTRSAgentInterface</String>
         </Setting>
     </ConfigItem>
+    <ConfigItem Name="SessionDomain" Required="1" Valid="1">
+        <Description Translatable="1">Defines the domain of the session cookie. E.g. artsalliancemedia.com.</Description>
+        <Group>Framework</Group>
+        <SubGroup>Core::Session</SubGroup>
+        <Setting>
+            <String Regex=""></String>
+        </Setting>
+    </ConfigItem>
+    <ConfigItem Name="SessionPath" Required="1" Valid="1">
+        <Description Translatable="1">Defines the path of the session cookie. E.g. otrs/.</Description>
+        <Group>Framework</Group>
+        <SubGroup>Core::Session</SubGroup>
+        <Setting>
+            <String Regex="">&lt;OTRS_CONFIG_ScriptAlias&gt;</String>
+        </Setting>
+    </ConfigItem>
+    <ConfigItem Name="SessionHTTPOnly" Required="1" Valid="1">
+        <Description Translatable="1">Prevents access to cookies from JavaScript.</Description>
+        <Group>Framework</Group>
+        <SubGroup>Core::Session</SubGroup>
+        <Setting>
+            <Option SelectedID="1">
+                <Item Key="0">No</Item>
+                <Item Key="1">Yes</Item>
+            </Option>
+        </Setting>
+    </ConfigItem>
     <ConfigItem Name="CustomerPanelSessionName" Required="1" Valid="1">
         <Description Translatable="1">Defines the name of the key for customer sessions.</Description>
         <Group>Framework</Group>
