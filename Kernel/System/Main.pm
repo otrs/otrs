@@ -1108,7 +1108,7 @@ sub _Dump {
     }
 
     $Self->{LogObject}->Log(
-        Priority => 'error',
+        Priority => 'notice',
         Message  => "Unknown ref '" . ref( ${$Data} ) . "'!",
     );
 
