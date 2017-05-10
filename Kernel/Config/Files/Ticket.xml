@@ -11979,9 +11979,10 @@ Thanks for your help!
         <SubGroup>Core::Ticket</SubGroup>
         <Setting>
             <Hash>
-                <Item Key="Module">Kernel::System::Ticket::Event::LockAutoSet</Item>
+                <Item Key="Module">Kernel::System::Ticket::Event::LockAfterCreate</Item>
                 <Item Key="Event">TicketCreate</Item>
                 <Item Key="Source">PhoneCallCustomer</Item>
+                <Item Key="Transaction">1</Item>
             </Hash>
         </Setting>
     </ConfigItem>
@@ -11991,9 +11992,10 @@ Thanks for your help!
         <SubGroup>Core::Ticket</SubGroup>
         <Setting>
             <Hash>
-                <Item Key="Module">Kernel::System::Ticket::Event::LockAutoSet</Item>
+                <Item Key="Module">Kernel::System::Ticket::Event::LockAfterCreate</Item>
                 <Item Key="Event">TicketCreate</Item>
                 <Item Key="Source">EmailAgent</Item>
+                <Item Key="Transaction">1</Item>
             </Hash>
         </Setting>
     </ConfigItem>

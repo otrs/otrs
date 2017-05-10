@@ -6,7 +6,7 @@
 # did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
 # --
 
-package Kernel::System::Ticket::Event::LockAutoSet;
+package Kernel::System::Ticket::Event::LockAfterCreate;
 
 use strict;
 use warnings;
@@ -38,21 +38,19 @@ sub Run {
             return;
         }
     }
-    for (qw(TicketID)) {
-        if ( !$Param{Data}->{$_} ) {
-            $Kernel::OM->Get('Kernel::System::Log')->Log(
-                Priority => 'error',
-                Message  => "Need $_ in Data!"
-            );
-            return;
-        }
+    if ( !$Param{Data}->{TicketID} ) {
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
+            Priority => 'error',
+            Message  => "Need $_ in Data!"
+        );
+        return;
     }
 
     # Check ticket NewUserID.
-    return 1 if ( $Param{Data}->{NewUserID} && $Param{Data}->{NewUserID} ne '' );
+    return 1 if ( $Param{Data}->{NewUserID} );
 
     # Check ticket source.
-    return 1 if $Param{Data}->{Source} ne $Param{Config}->{Source};
+    return 1 if ( $Param{Data}->{Source} ne $Param{Config}->{Source} );
 
     # Get ticket object.
     my $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
@@ -63,8 +61,11 @@ sub Run {
         DynamicFields => 0,
     );
 
+    # If ticket closed,return 1.
+    return 1 if ( $Ticket{State} =~ /^close/i );
+
     # If ticket locked ,return 1.
-    return 1 if lc $Ticket{Lock} ne 'unlock';
+    return 1 if ( lc $Ticket{Lock} ne 'unlock' );
 
     # Set lock.
     $TicketObject->TicketLockSet(
