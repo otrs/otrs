@@ -2265,7 +2265,8 @@ sub Run {
             return $Self->{LayoutObject}->Attachment(
                 Filename    => $Filename . '.csv',
                 ContentType => "text/csv",
-                Content     => $Output,
+                # added BOM for proper UTF-8 handling in Excel
+                Content     => chr(0xFEFF) . $Output,
             );
         }
 
