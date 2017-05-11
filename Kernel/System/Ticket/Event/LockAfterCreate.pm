@@ -29,7 +29,7 @@ sub Run {
     my ( $Self, %Param ) = @_;
 
     # Check needed stuff.
-    for (qw(Data Event Config)) {
+    for (qw(Data Event Config UserID)) {
         if ( !$Param{$_} ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
@@ -47,10 +47,10 @@ sub Run {
     }
 
     # Check ticket NewUserID.
-    return 1 if ( $Param{Data}->{NewUserID} );
+    return 1 if ( $Param{NewUserID} );
 
     # Check ticket source.
-    return 1 if ( $Param{Data}->{Source} ne $Param{Config}->{Source} );
+    return 1 if ( $Param{Source} ne $Param{Config}->{Source} );
 
     # Get ticket object.
     my $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');

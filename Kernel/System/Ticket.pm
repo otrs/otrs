@@ -675,12 +675,12 @@ sub TicketCreate {
         Event => 'TicketCreate',
         Data  => {
             TicketID => $TicketID,
-
-            # The ticket source : PhoneCallCustomer or EmailAgent.
-            Source    => $Param{Source},
-            NewUserID => $Param{NewUserID},
         },
         UserID => $Param{UserID},
+
+        # The ticket source : PhoneCallCustomer or EmailAgent.
+        Source    => $Param{Source},
+        NewUserID => $Param{NewUserID},
     );
 
     return $TicketID;
