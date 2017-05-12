@@ -867,7 +867,15 @@ sub Run {
 
             # redirect parent window to last screen overview on closed tickets
             if ( $StateData{TypeName} =~ /^close/i ) {
-                $ReturnURL = $Self->{LastScreenOverview} || 'Action=AgentDashboard';
+
+                # Get redirect screen.
+                my $NextScreen = $Self->{UserCloseNextMask} || 'AgentDashboard';
+                if ( $NextScreen eq 'AgentDashboard' || $NextScreen eq 'AgentTicketStatusView' ) {
+                    $ReturnURL = "Action=$NextScreen";
+                }
+                else {
+                    $ReturnURL = "Action=$NextScreen;TicketID=$Self->{TicketID}";
+                }
             }
         }
 

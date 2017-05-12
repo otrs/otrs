@@ -820,11 +820,21 @@ sub Run {
                 );
             }
 
-            # redirect to last screen (e. g. zoom view) and to queue view if
+            # Redirect to last screen (e. g. zoom view) and to queue view if
             # the ticket is closed (move to the next task).
+            my $ReturnURL;
             if ( $StateData{TypeName} =~ /^close/i ) {
+
+                # Get redirect screen.
+                my $NextScreen = $Self->{UserCloseNextMask} || 'AgentDashboard';
+                if ( $NextScreen eq 'AgentDashboard' || $NextScreen eq 'AgentTicketStatusView' ) {
+                    $ReturnURL = "Action=$NextScreen";
+                }
+                else {
+                    $ReturnURL = "Action=$NextScreen;TicketID=$Self->{TicketID}";
+                }
                 return $LayoutObject->PopupClose(
-                    URL => ( $Self->{LastScreenOverview} || 'Action=AgentDashboard' ),
+                    URL => $ReturnURL,
                 );
             }
 
