@@ -1,4 +1,7 @@
 #6.0.0.beta1 2017-??-??
+ - 2017-05-10 Fixed bug#[12607](https://bugs.otrs.org/show_bug.cgi?id=12607) - Missing explanation for sending e-mail at bulk menu (not obvious).
+ - 2017-05-10 Fixed bug#[8089](https://bugs.otrs.org/show_bug.cgi?id=8089) - Escalated Tickets widget does not show time as in other dashboard widgets.
+ - 2017-05-08 Fixed bug#[8249](http://bugs.otrs.org/show_bug.cgi?id=8249) - System addresses should be unique.
  - 2017-05-08 Fixed bug#[12193](https://bugs.otrs.org/show_bug.cgi?id=12193) - Article never decrypted when StoreDecryptedData set to no.
      Disabling permanent storage of decrypted articles caused encrypted articles to be virtually unusable on any OTRS system that didn't use specific customized code for decryption.
      OTRS currently isn't equipped to decrypt and display mails and their attachments on the fly in ticket zoom.
@@ -101,12 +104,32 @@
  - 2015-11-27 Improved command Maint::Ticket::InvalidUserCleanup. It can now now both unlock tickets of invalid users and also (optionally) change their state to make sure they will not be overlooked. Thanks to Moritz Lenz @ noris networks.
 
 #5.0.20 2017-??-??
+ - 2017-05-11 Fixed bug#[12809](https://bugs.otrs.org/show_bug.cgi?id=12809) - Unable to select queue if queue comment is empty (with modified Ticket::Frontend::NewQueueSelectionString).
+ - 2017-05-11 Fixed bug#[11066](https://bugs.otrs.org/show_bug.cgi?id=11066) - Can only spell check everything or nothing.
+ - 2017-05-11 Fixed bug#[10685](https://bugs.otrs.org/show_bug.cgi?id=10685) - Removing an agent's access to a ticket while he is viewing the ticket leads to interface issues on the agent's side.
+ - 2017-05-10 Fixed bug#[10569](https://bugs.otrs.org/show_bug.cgi?id=10569) - DynamicField of type date resets after ticket split.
+ - 2017-05-10 Fixed bug#[7913](https://bugs.otrs.org/show_bug.cgi?id=7913) - Incorrect parsing of Content-Type with additional attributes.
+ - 2017-05-10 Fixed bug#[6144](https://bugs.otrs.org/show_bug.cgi?id=6144) - Invaild System Email Address Problem.
+ - 2017-05-09 Fixed bug#[12498](https://bugs.otrs.org/show_bug.cgi?id=12498) - An invalid date used in a search attribute returns a wrong result.
+ - 2017-05-09 Fixed bug#[12613](https://bugs.otrs.org/show_bug.cgi?id=12613) - Accents are missing from accented letters.
+ - 2017-05-09 Fixed bug#[12086](https://bugs.otrs.org/show_bug.cgi?id=12086) - Labels overflows for some languages.
+ - 2017-05-09 Fixed bug#[4424](http://bugs.otrs.org/show_bug.cgi?id=4424) - Package Manager rebuild() creates invalid XML packages.
+ - 2017-05-09 Fixed bug#[8249](http://bugs.otrs.org/show_bug.cgi?id=8249) - System addresses should be unique.
+ - 2017-05-09 Fixed bug#[12417](https://bugs.otrs.org/show_bug.cgi?id=12417) - Missing CustomerCompanyName column from LinkObject.
+ - 2017-05-09 Fixed bug#[9972](https://bugs.otrs.org/show_bug.cgi?id=9972) - Spelling check unit test is not working correctly.
+ - 2017-05-09 Fixed bug#[12086](https://bugs.otrs.org/show_bug.cgi?id=12086) - Labels overflows for some languages.
  - 2017-05-09 Fixed bug#[12697](https://bugs.otrs.org/show_bug.cgi?id=12697) - Ticket menu in customer interface doesn't expand on touchscreen devices.
+ - 2017-05-09 Updated UnitTest DynamicFieldFromCustomerUser with new scenarios (bug#12587).
  - 2017-05-09 Fixed bug#[12389](https://bugs.otrs.org/show_bug.cgi?id=12389) - Attachments with alias charsets are not properly processed in GenericInterface.
+ - 2017-05-08 Fixed bug#[6751](http://bugs.otrs.org/show_bug.cgi?id=6751) - Problem if service name gets to long, or if service has too many subservices.
  - 2017-05-08 Fixed bug#[12286](https://bugs.otrs.org/show_bug.cgi?id=12286) - Article body with non-allowed characters breaks SOAP response.
+ - 2017-05-08 Fixed bug#[12193](https://bugs.otrs.org/show_bug.cgi?id=12193) - Article never decrypted when StoreDecryptedData set to no.
+ - 2017-05-08 Fixed bug#[12347](https://bugs.otrs.org/show_bug.cgi?id=12347) - Error message "No such TicketID" on ticket delete.
+ - 2017-05-08 Fixed bug#[11508](https://bugs.otrs.org/show_bug.cgi?id=11508) - Change Date has a confussing label in the ticket list statistic result.
  - 2017-05-05 Fixed bug#[12791](https://bugs.otrs.org/show_bug.cgi?id=12791) - ArticleSend Documentation is incorrect.
 
 #5.0.19 2017-05-09
+ - 2017-05-10 Fixed bug#[12572](https://bugs.otrs.org/show_bug.cgi?id=12572) - Non-process tickets generate error messages in the syslog if process data are allowed to be displayed.
  - 2017-05-04 Updated translations, thanks to all translators.
  - 2017-05-03 Fixed bug#[12803](https://bugs.otrs.org/show_bug.cgi?id=12803) - TranslationsUpdate console command does not consider strings from var/packagesetup folder.
  - 2017-05-03 Added a web timeout config option for the support data collection and suppress the log message, if the internal web request for the support data collection doesn't work.
