@@ -5604,6 +5604,17 @@
             <String Regex="^\d+%?$">320</String>
         </Setting>
     </ConfigItem>
+        <ConfigItem Name="Ticket::Frontend::AgentTicketCompose###BlockSystemAddressRecipient" Required="1" Valid="1">
+        <Description Translatable="1">Defines if system addresses must be checked to be absent from ticket responses, in wich case the user receives an error message and the response is not sent.</Description>
+        <Group>Ticket</Group>
+        <SubGroup>Frontend::Agent::Ticket::ViewCompose</SubGroup>
+        <Setting>
+            <Option SelectedID="1">
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
+            </Option>
+        </Setting>
+    </ConfigItem>
     <ConfigItem Name="Ticket::Frontend::ResponseFormat" Required="1" Valid="1">
         <Description Translatable="1">Defines the format of responses in the ticket compose screen of the agent interface ([% Data.OrigFrom | html %] is From 1:1, [% Data.OrigFromName | html %] is only realname of From).</Description>
         <Group>Ticket</Group>
