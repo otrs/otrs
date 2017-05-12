@@ -4776,7 +4776,7 @@ via the Preferences button after logging in.
         </Setting>
     </ConfigItem>
     <ConfigItem Name="AgentCustomerInformationCenter::Backend###0600-CIC-CustomerCompanyInformation" Required="0" Valid="1">
-        <Description Translatable="1">Parameters for the dashboard backend of the customer company information of the agent interface . "Group" is used to restrict the access to the plugin (e. g. Group: admin;group1;group2;). "Default" determines if the plugin is enabled by default or if the user needs to enable it manually. "CacheTTLLocal" is the cache time in minutes for the plugin.</Description>
+        <Description Translatable="1">Parameters for the dashboard backend of the customer company information of the agent interface . "Group" is used to restrict the access to the plugin (e. g. Group: admin;group1;group2;). "Default" determines if the plugin is enabled by default or if the user needs to enable it manually. "CacheTTLLocal" is the cache time in minutes for the plugin."Mandatory" is widgets can't be disabled by agents in their dashboard,value is "0"(no) or "1"(yes).</Description>
         <Group>Framework</Group>
         <SubGroup>Frontend::Agent::Dashboard</SubGroup>
         <Setting>
@@ -4788,6 +4788,7 @@ via the Preferences button after logging in.
                 <Item Key="Block">ContentSmall</Item>
                 <Item Key="Group"></Item>
                 <Item Key="Default">1</Item>
+                <Item Key="Mandatory">1</Item>
             </Hash>
         </Setting>
     </ConfigItem>
@@ -5961,7 +5962,7 @@ via the Preferences button after logging in.
         </Setting>
     </ConfigItem>
     <ConfigItem Name="DashboardBackend###0000-ProductNotify" Required="0" Valid="1">
-        <Description Translatable="1">Defines the parameters for the dashboard backend. "Group" is used to restrict access to the plugin (e. g. Group: admin;group1;group2;). "Default" indicates if the plugin is enabled by default or if the user needs to enable it manually. "CacheTTLLocal" defines the cache expiration period in minutes for the plugin.</Description>
+        <Description Translatable="1">Defines the parameters for the dashboard backend. "Group" is used to restrict access to the plugin (e. g. Group: admin;group1;group2;). "Default" indicates if the plugin is enabled by default or if the user needs to enable it manually. "CacheTTLLocal" defines the cache expiration period in minutes for the plugin."Mandatory" is widgets can't be disabled by agents in their dashboard,value is "0"(no) or "1"(yes).</Description>
         <Group>Framework</Group>
         <SubGroup>Frontend::Agent::Dashboard</SubGroup>
         <Setting>
@@ -5973,11 +5974,12 @@ via the Preferences button after logging in.
                 <Item Key="Group">admin</Item>
                 <Item Key="Default">1</Item>
                 <Item Key="CacheTTLLocal">1440</Item>
+                <Item Key="Mandatory">1</Item>
             </Hash>
         </Setting>
     </ConfigItem>
     <ConfigItem Name="DashboardBackend###0390-UserOutOfOffice" Required="0" Valid="1">
-        <Description Translatable="1">Defines the parameters for the dashboard backend. "Limit" defines the number of entries displayed by default. "Group" is used to restrict access to the plugin (e. g. Group: admin;group1;group2;). "Default" indicates if the plugin is enabled by default or if the user needs to enable it manually. "CacheTTLLocal" defines the cache expiration period in minutes for the plugin.</Description>
+        <Description Translatable="1">Defines the parameters for the dashboard backend. "Limit" defines the number of entries displayed by default. "Group" is used to restrict access to the plugin (e. g. Group: admin;group1;group2;). "Default" indicates if the plugin is enabled by default or if the user needs to enable it manually. "CacheTTLLocal" defines the cache expiration period in minutes for the plugin."Mandatory" is widgets can't be disabled by agents in their dashboard,value is "0"(no) or "1"(yes).</Description>
         <Group>Framework</Group>
         <SubGroup>Frontend::Agent::Dashboard</SubGroup>
         <Setting>
@@ -5992,11 +5994,12 @@ via the Preferences button after logging in.
                 <Item Key="Group"></Item>
                 <Item Key="Default">1</Item>
                 <Item Key="CacheTTLLocal">5</Item>
+                <Item Key="Mandatory">1</Item>
             </Hash>
         </Setting>
     </ConfigItem>
     <ConfigItem Name="DashboardBackend###0400-UserOnline" Required="0" Valid="1">
-        <Description Translatable="1">Defines the parameters for the dashboard backend. "Limit" defines the number of entries displayed by default. "Group" is used to restrict access to the plugin (e. g. Group: admin;group1;group2;). "Default" indicates if the plugin is enabled by default or if the user needs to enable it manually. "CacheTTLLocal" defines the cache expiration period in minutes for the plugin.</Description>
+        <Description Translatable="1">Defines the parameters for the dashboard backend. "Limit" defines the number of entries displayed by default. "Group" is used to restrict access to the plugin (e. g. Group: admin;group1;group2;). "Default" indicates if the plugin is enabled by default or if the user needs to enable it manually. "CacheTTLLocal" defines the cache expiration period in minutes for the plugin."Mandatory" is widgets can't be disabled by agents in their dashboard,value is "0"(no) or "1"(yes).</Description>
         <Group>Framework</Group>
         <SubGroup>Frontend::Agent::Dashboard</SubGroup>
         <Setting>
@@ -6013,11 +6016,12 @@ via the Preferences button after logging in.
                 <Item Key="Group"></Item>
                 <Item Key="Default">0</Item>
                 <Item Key="CacheTTLLocal">5</Item>
+                <Item Key="Mandatory">0</Item>
             </Hash>
         </Setting>
     </ConfigItem>
     <ConfigItem Name="DashboardBackend###0405-News" Required="0" Valid="1">
-        <Description Translatable="1">Defines the parameters for the dashboard backend. "Limit" defines the number of entries displayed by default. "Group" is used to restrict access to the plugin (e. g. Group: admin;group1;group2;). "Default" indicates if the plugin is enabled by default or if the user needs to enable it manually. "CacheTTL" indicates the cache expiration period in minutes for the plugin.</Description>
+        <Description Translatable="1">Defines the parameters for the dashboard backend. "Limit" defines the number of entries displayed by default. "Group" is used to restrict access to the plugin (e. g. Group: admin;group1;group2;). "Default" indicates if the plugin is enabled by default or if the user needs to enable it manually. "CacheTTL" indicates the cache expiration period in minutes for the plugin."Mandatory" is widgets can't be disabled by agents in their dashboard,value is "0"(no) or "1"(yes).</Description>
         <Group>Framework</Group>
         <SubGroup>Frontend::Agent::Dashboard</SubGroup>
         <Setting>
@@ -6030,11 +6034,12 @@ via the Preferences button after logging in.
                 <Item Key="Group"></Item>
                 <Item Key="Default">1</Item>
                 <Item Key="CacheTTL">360</Item>
+                <Item Key="Mandatory">1</Item>
             </Hash>
         </Setting>
     </ConfigItem>
     <ConfigItem Name="DashboardBackend###0410-RSS" Required="0" Valid="0">
-        <Description Translatable="1">Defines the parameters for the dashboard backend. "Limit" defines the number of entries displayed by default. "Group" is used to restrict access to the plugin (e. g. Group: admin;group1;group2;). "Default" indicates if the plugin is enabled by default or if the user needs to enable it manually. "CacheTTL" indicates the cache expiration period in minutes for the plugin.</Description>
+        <Description Translatable="1">Defines the parameters for the dashboard backend. "Limit" defines the number of entries displayed by default. "Group" is used to restrict access to the plugin (e. g. Group: admin;group1;group2;). "Default" indicates if the plugin is enabled by default or if the user needs to enable it manually. "CacheTTL" indicates the cache expiration period in minutes for the plugin."Mandatory" is widgets can't be disabled by agents in their dashboard,value is "0"(no) or "1"(yes).</Description>
         <Group>Framework</Group>
         <SubGroup>Frontend::Agent::Dashboard</SubGroup>
         <Setting>
@@ -6053,11 +6058,12 @@ via the Preferences button after logging in.
                 <Item Key="Group"></Item>
                 <Item Key="Default">1</Item>
                 <Item Key="CacheTTL">360</Item>
+                <Item Key="Mandatory">1</Item>
             </Hash>
         </Setting>
     </ConfigItem>
     <ConfigItem Name="DashboardBackend###0420-CmdOutput" Required="0" Valid="0">
-        <Description Translatable="1">Defines the parameters for the dashboard backend. "Cmd" is used to specify command with parameters. "Group" is used to restrict access to the plugin (e. g. Group: admin;group1;group2;). "Default" indicates if the plugin is enabled by default or if the user needs to enable it manually. "CacheTTL" indicates the cache expiration period in minutes for the plugin.</Description>
+        <Description Translatable="1">Defines the parameters for the dashboard backend. "Cmd" is used to specify command with parameters. "Group" is used to restrict access to the plugin (e. g. Group: admin;group1;group2;). "Default" indicates if the plugin is enabled by default or if the user needs to enable it manually. "CacheTTL" indicates the cache expiration period in minutes for the plugin."Mandatory" is widgets can't be disabled by agents in their dashboard,value is "0"(no) or "1"(yes).</Description>
         <Group>Framework</Group>
         <SubGroup>Frontend::Agent::Dashboard</SubGroup>
         <Setting>
@@ -6070,11 +6076,12 @@ via the Preferences button after logging in.
                 <Item Key="Default">0</Item>
                 <Item Key="CacheTTL">60</Item>
                 <Item Key="Cmd">/bin/echo Configure me please.</Item>
+                <Item Key="Mandatory">0</Item>
             </Hash>
         </Setting>
     </ConfigItem>
     <ConfigItem Name="DashboardBackend###0200-Image" Required="0" Valid="0">
-        <Description Translatable="1">Defines the parameters for the dashboard backend. "Group" is used to restrict access to the plugin (e. g. Group: admin;group1;group2;). "Default" indicates if the plugin is enabled by default or if the user needs to enable it manually. "CacheTTL" indicates the cache expiration period in minutes for the plugin.</Description>
+        <Description Translatable="1">Defines the parameters for the dashboard backend. "Group" is used to restrict access to the plugin (e. g. Group: admin;group1;group2;). "Default" indicates if the plugin is enabled by default or if the user needs to enable it manually. "CacheTTL" indicates the cache expiration period in minutes for the plugin."Mandatory" is widgets can't be disabled by agents in their dashboard,value is "0"(no) or "1"(yes).</Description>
         <Group>Framework</Group>
         <SubGroup>Frontend::Agent::Dashboard</SubGroup>
         <Setting>
@@ -6090,11 +6097,12 @@ via the Preferences button after logging in.
                 <Item Key="LinkTitle">http://otrs.org/</Item>
                 <Item Key="Width">198</Item>
                 <Item Key="Height">140</Item>
+                <Item Key="Mandatory">1</Item>
             </Hash>
         </Setting>
     </ConfigItem>
     <ConfigItem Name="DashboardBackend###0210-MOTD" Required="0" Valid="0">
-        <Description Translatable="1">Shows the message of the day (MOTD) in the agent dashboard. "Group" is used to restrict access to the plugin (e. g. Group: admin;group1;group2;). "Default" indicates if the plugin is enabled by default or if the user needs to enable it manually.</Description>
+        <Description Translatable="1">Shows the message of the day (MOTD) in the agent dashboard. "Group" is used to restrict access to the plugin (e. g. Group: admin;group1;group2;). "Default" indicates if the plugin is enabled by default or if the user needs to enable it manually."Mandatory" is widgets can't be disabled by agents in their dashboard,value is "0"(no) or "1"(yes).</Description>
         <Group>Framework</Group>
         <SubGroup>Frontend::Agent::Dashboard</SubGroup>
         <Setting>
@@ -6104,11 +6112,12 @@ via the Preferences button after logging in.
                 <Item Key="Group"></Item>
                 <Item Key="Default">1</Item>
                 <Item Key="Title">Message of the Day</Item>
+                <Item Key="Mandatory">1</Item>
             </Hash>
         </Setting>
     </ConfigItem>
     <ConfigItem Name="DashboardBackend###0300-IFrame" Required="0" Valid="0">
-        <Description Translatable="1">Defines the parameters for the dashboard backend. "Group" is used to restrict access to the plugin (e. g. Group: admin;group1;group2;). "Default" indicates if the plugin is enabled by default or if the user needs to enable it manually. "CacheTTL" indicates the cache expiration period in minutes for the plugin.</Description>
+        <Description Translatable="1">Defines the parameters for the dashboard backend. "Group" is used to restrict access to the plugin (e. g. Group: admin;group1;group2;). "Default" indicates if the plugin is enabled by default or if the user needs to enable it manually. "CacheTTL" indicates the cache expiration period in minutes for the plugin."Mandatory" is widgets can't be disabled by agents in their dashboard,value is "0"(no) or "1"(yes).</Description>
         <Group>Framework</Group>
         <SubGroup>Frontend::Agent::Dashboard</SubGroup>
         <Setting>
@@ -6129,6 +6138,7 @@ via the Preferences button after logging in.
                 <Item Key="Frameborder">1</Item>
                 <Item Key="Align">left</Item>
                 <Item Key="Scrolling">auto</Item>
+                <Item Key="Mandatory">1</Item>
             </Hash>
         </Setting>
     </ConfigItem>
