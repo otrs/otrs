@@ -1,4 +1,6 @@
 #6.0.0.beta1 2017-??-??
+ - 2017-05-11 Fixed bug#[12442](https://bugs.otrs.org/show_bug.cgi?id=12442) - Add-ons verification fails in some Oracle configurations because they are stored as CHAR instead of BLOB.
+ - 2017-05-11 Fixed bug#[11066](https://bugs.otrs.org/show_bug.cgi?id=11066) - Can only spell check everything or nothing.
  - 2017-05-10 Fixed bug#[12607](https://bugs.otrs.org/show_bug.cgi?id=12607) - Missing explanation for sending e-mail at bulk menu (not obvious).
  - 2017-05-10 Fixed bug#[8089](https://bugs.otrs.org/show_bug.cgi?id=8089) - Escalated Tickets widget does not show time as in other dashboard widgets.
  - 2017-05-08 Fixed bug#[8249](http://bugs.otrs.org/show_bug.cgi?id=8249) - System addresses should be unique.
@@ -104,6 +106,7 @@
  - 2015-11-27 Improved command Maint::Ticket::InvalidUserCleanup. It can now now both unlock tickets of invalid users and also (optionally) change their state to make sure they will not be overlooked. Thanks to Moritz Lenz @ noris networks.
 
 #5.0.20 2017-??-??
+ - 2017-05-11 Fixed bug#[12216](https://bugs.otrs.org/show_bug.cgi?id=12216) - Inconsistent behaviour in pop-ups which lock tickets.
  - 2017-05-11 Fixed bug#[12809](https://bugs.otrs.org/show_bug.cgi?id=12809) - Unable to select queue if queue comment is empty (with modified Ticket::Frontend::NewQueueSelectionString).
  - 2017-05-11 Fixed bug#[11066](https://bugs.otrs.org/show_bug.cgi?id=11066) - Can only spell check everything or nothing.
  - 2017-05-11 Fixed bug#[10685](https://bugs.otrs.org/show_bug.cgi?id=10685) - Removing an agent's access to a ticket while he is viewing the ticket leads to interface issues on the agent's side.
