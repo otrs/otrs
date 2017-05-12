@@ -858,7 +858,7 @@ sub SendEmail {
                 Address => $Email->address()
             );
 
-            if ($IsLocal) {
+            if ($IsLocal && $Config->{BlockSystemAddressRecipient} ) {
                 $Error{ $Line . 'IsLocalAddress' } = 'ServerError';
             }
         }
