@@ -279,6 +279,12 @@ sub Run {
                 $Active = 1;
                 last BACKEND;
             }
+
+            # The default widgets can not be removed.
+            if ( $Config->{$Name}->{Default} && $Config->{$Name}->{Mandatory} ) {
+                $Active = 1;
+            }
+
             my $Key = $UserSettingsKey . $Name;
 
             # update session
@@ -645,6 +651,20 @@ sub Run {
             );
         }
 
+        # Show remove link if removing is available.
+        # Do not show the delete link when the widget is the default and the agent is disabled.
+        if ( !$Config->{$Name}->{Default} || !$Config->{$Name}->{Mandatory} ) {
+            $LayoutObject->Block(
+                Name => $Element{Config}->{Block} . 'Remove',
+                Data => {
+                    %{ $Element{Config} },
+                    Name           => $Name,
+                    CustomerID     => $Self->{CustomerID} || '',
+                    CustomerUserID => $Self->{CustomerUserID} || '',
+                },
+            );
+        }
+
         # if column is not a default column, add it for translation
         for my $Column ( sort keys %{ $Element{Config}->{DefaultColumns} } ) {
             if ( !defined $Columns->{$Column} ) {
@@ -896,14 +916,22 @@ sub _Element {
         if ( $Backends->{$Name} ) {
             $Checked = 'checked="checked"';
         }
+
+        # Check whether the widget is forcibly displayed.Mandatory widgets  displayed in a gray-prohibited.
+        my $Readonly = '';
+        if ( $Configs->{$Name}->{Default} && $Configs->{$Name}->{Mandatory} ) {
+            $Readonly = 'disabled="disabled"';
+        }
         $LayoutObject->Block(
             Name => 'ContentSettings',
             Data => {
                 %Config,
-                Name    => $Name,
-                Checked => $Checked,
+                Name     => $Name,
+                Checked  => $Checked,
+                Readonly => $Readonly,
             },
         );
+
         return if !$Backends->{$Name};
     }
 
