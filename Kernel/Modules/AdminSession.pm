@@ -100,6 +100,9 @@ sub Run {
                 elsif ( $Key =~ /Password|Pw/ ) {
                     $Data{$Key} = '[xxx]';
                 }
+                elsif ( $Key eq 'Config' || $Key eq 'CompanyConfig' ) {
+                    $Data{$Key} = 'HASH of data';
+                }
                 else {
                     $Data{$Key} = $LayoutObject->Ascii2Html( Text => $Data{$Key} );
                 }
