@@ -61,11 +61,43 @@ sub new {
 
         next COUNT if !$GenericModule;
 
+        my $EnableBackend = 1;    # Enable backend by default
+
+        # Get configuration of backend
+        my $EnableBackendByHost = $ConfigObject->Get("AuthModule::EnableByHost$Count");
+
+        # Defined?
+        if ( $EnableBackendByHost && $ENV{HTTP_HOST} ) {
+
+            if ( ref $EnableBackendByHost ne 'ARRAY' ) {
+
+                # Only one host specified, so create a reference to single element list
+                $EnableBackendByHost = [$EnableBackendByHost];
+            }
+
+            $EnableBackend = 0;    # Filtering regexp defined - disable backend
+
+            REGEXP:
+            for my $RegExp ( @{$EnableBackendByHost} ) {
+
+                # skip if empty regexp
+                next REGEXP if !$RegExp;
+
+                # check if regexp is matching
+                if ( $ENV{HTTP_HOST} =~ /$RegExp/i ) {
+                    $EnableBackend = 1;
+                    last REGEXP;    # Host matched, no need to check others
+                }
+            }
+        }
         if ( !$MainObject->Require($GenericModule) ) {
             $MainObject->Die("Can't load backend module $GenericModule! $@");
         }
 
         $Self->{"AuthBackend$Count"} = $GenericModule->new( Count => $Count );
+
+        # Mark enabled or not for PreAuth filtering
+        $Self->{"AuthBackend$Count"}->{Enabled} = $EnableBackend;
     }
 
     # load 2factor auth modules
@@ -117,7 +149,10 @@ Get module options. Currently there is just one option, "PreAuth".
 sub GetOption {
     my ( $Self, %Param ) = @_;
 
-    return $Self->{AuthBackend}->GetOption(%Param);
+    # Find first enabled backend
+    for my $Count ( '', 1 .. 10 ) {
+        return $Self->{"AuthBackend$Count"}->GetOption(%Param) if $Self->{"AuthBackend$Count"}->{Enabled};
+    }
 }
 
 =head2 Auth()
@@ -147,6 +182,9 @@ sub Auth {
 
         # return on no config setting
         next COUNT if !$Self->{"AuthBackend$Count"};
+
+        # check if enabled
+        next COUNT if !$Self->{"AuthBackend$Count"}->{Enabled};
 
         # check auth backend
         $User = $Self->{"AuthBackend$Count"}->Auth(%Param);
