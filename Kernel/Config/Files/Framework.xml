@@ -549,6 +549,21 @@
             </Option>
         </Setting>
     </ConfigItem>
+    <ConfigItem Name="TimeInputMinutesStep" Required="1" Valid="1">
+        <Description Translatable="1">Defines step between minute values in minute dropdown.</Description>
+        <Group>Framework</Group>
+        <SubGroup>Core::Time</SubGroup>
+        <Setting>
+            <Option SelectedID="1">
+                <Item Key="1" Translatable="1">Every single minute</Item>
+                <Item Key="2" Translatable="1">Every second minute</Item>
+                <Item Key="5" Translatable="1">Every 5 minutes</Item>
+                <Item Key="10" Translatable="1">Every 10 minutes</Item>
+                <Item Key="15" Translatable="1">Every 15 minutes</Item>
+                <Item Key="30" Translatable="1">Every half an hour</Item>
+            </Option>
+        </Setting>
+    </ConfigItem>
     <ConfigItem Name="TimeShowAlwaysLong" Required="1" Valid="1">
         <Description Translatable="1">Shows time in long format (days, hours, minutes), if set to "Yes"; or in short format (days, hours), if set to "No".</Description>
         <Group>Framework</Group>
