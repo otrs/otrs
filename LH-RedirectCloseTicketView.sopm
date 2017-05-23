@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<otrs_package version="1.0">
+    <Name>LH-RedirectCloseTicketViewOTRS6</Name>
+    <Version>0.0.0</Version>
+    <Framework>6.0.x</Framework>
+    <Vendor>OTRS AG</Vendor>
+    <URL>http://otrs.org/</URL>
+    <License>GNU AFFERO GENERAL PUBLIC LICENSE Version 3, November 2007</License>
+    <Description Lang="en">No redirect on ticket close.</Description>
+    <Description Lang="de">Keine Umleitung auf Ticket schließen. </Description>
+    <Filelist>
+        <File Permission="644" Location="Custom/Kernel/Modules/AgentTicketActionCommon.pm" />
+        <File Permission="644" Location="Custom/Kernel/Modules/AgentTicketPhoneCommon.pm" />
+        <File Permission="644" Location="Kernel/Config/Files/XML/TicketLHRedirectCloseTicketView.xml" />
+    </Filelist>
+</otrs_package>
