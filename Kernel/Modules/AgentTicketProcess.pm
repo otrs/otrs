@@ -2902,15 +2902,11 @@ sub _RenderResponsible {
         ValidateRequired => '',
     );
 
-    my $PossibleNone = 1;
-
     # if field is required put in the necessary variables for
     #    ValidateRequired class input field, Mandatory class for the label
-    #    do not allow empty selection
     if ( $Param{ActivityDialogField}->{Display} && $Param{ActivityDialogField}->{Display} == 2 ) {
         $Data{ValidateRequired} = 'Validate_Required';
         $Data{MandatoryClass}   = 'Mandatory';
-        $PossibleNone           = 0;
     }
 
     my $SelectedValue;
@@ -2950,23 +2946,18 @@ sub _RenderResponsible {
     #    (if any)
     if (
         !$SelectedValue
-        && !$PossibleNone
+        && $Param{ActivityDialogField}->{Display} == 2
         && IsHashRefWithData( $Param{Ticket} )
         )
     {
         $SelectedValue = $Param{Ticket}->{Responsible};
     }
 
-    # use current user as fallback, for all other cases where there is still no user
-    elsif ( !$SelectedValue ) {
-        $SelectedValue = $UserObject->UserLookup( UserID => $Self->{UserID} );
-    }
-
     # if we have a user already and the field is not mandatory and it is the same as in ticket, then
     #    set it to none (as it doesn't need to be changed afterall)
     elsif (
         $SelectedValue
-        && $PossibleNone
+        && $Param{ActivityDialogField}->{Display} != 2
         && IsHashRefWithData( $Param{Ticket} )
         && $SelectedValue eq $Param{Ticket}->{Responsible}
         )
@@ -2990,12 +2981,11 @@ sub _RenderResponsible {
 
     # build Responsible string
     $Data{Content} = $LayoutObject->BuildSelection(
-        Data         => $Responsibles,
-        Name         => 'ResponsibleID',
-        Translation  => 1,
-        SelectedID   => $SelectedID,
-        Class        => "Modernize $ServerError",
-        PossibleNone => $PossibleNone,
+        Data        => $Responsibles,
+        Name        => 'ResponsibleID',
+        Translation => 1,
+        SelectedID  => $SelectedID,
+        Class       => "Modernize $ServerError",
     );
 
     # send data to JS
@@ -3076,15 +3066,11 @@ sub _RenderOwner {
         ValidateRequired => '',
     );
 
-    my $PossibleNone = 1;
-
     # if field is required put in the necessary variables for
     #    ValidateRequired class input field, Mandatory class for the label
-    #    do not allow empty selection
     if ( $Param{ActivityDialogField}->{Display} && $Param{ActivityDialogField}->{Display} == 2 ) {
         $Data{ValidateRequired} = 'Validate_Required';
         $Data{MandatoryClass}   = 'Mandatory';
-        $PossibleNone           = 0;
     }
 
     my $SelectedValue;
@@ -3127,23 +3113,18 @@ sub _RenderOwner {
     #    (if any)
     if (
         !$SelectedValue
-        && !$PossibleNone
+        && $Param{ActivityDialogField}->{Display} == 2
         && IsHashRefWithData( $Param{Ticket} )
         )
     {
         $SelectedValue = $Param{Ticket}->{Owner};
     }
 
-    # use current user as fallback, for all other cases where there is still no user
-    elsif ( !$SelectedValue ) {
-        $SelectedValue = $UserObject->UserLookup( UserID => $Self->{UserID} );
-    }
-
     # if we have a user already and the field is not mandatory and it is the same as in ticket, then
     #    set it to none (as it doesn't need to be changed afterall)
     elsif (
         $SelectedValue
-        && $PossibleNone
+        && $Param{ActivityDialogField}->{Display} != 2
         && IsHashRefWithData( $Param{Ticket} )
         && $SelectedValue eq $Param{Ticket}->{Owner}
         )
@@ -3167,12 +3148,11 @@ sub _RenderOwner {
 
     # build Owner string
     $Data{Content} = $LayoutObject->BuildSelection(
-        Data         => $Owners,
-        Name         => 'OwnerID',
-        Translation  => 1,
-        SelectedID   => $SelectedID || '',
-        Class        => "Modernize $ServerError",
-        PossibleNone => $PossibleNone,
+        Data        => $Owners,
+        Name        => 'OwnerID',
+        Translation => 1,
+        SelectedID  => $SelectedID || '',
+        Class       => "Modernize $ServerError",
     );
 
     # send data to JS
@@ -5747,6 +5727,9 @@ sub _GetResponsibles {
         }
     }
 
+    # Add empty user selection.
+    $ShownUsers{''} = '-';
+
     # workflow
     my $ACL = $TicketObject->TicketAcl(
         %Param,
@@ -5842,6 +5825,9 @@ sub _GetOwners {
             }
         }
     }
+
+    # Add empty user selection.
+    $ShownUsers{''} = '-';
 
     # workflow
     my $ACL = $TicketObject->TicketAcl(
