@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<otrs_package version="1.0">
+    <Name>LH-InstantlyLockOTRS6</Name>
+    <Version>0.0.0</Version>
+    <Framework>6.0.x</Framework>
+    <Vendor>OTRS AG</Vendor>
+    <URL>http://otrs.org/</URL>
+    <License>GNU AFFERO GENERAL PUBLIC LICENSE Version 3, November 2007</License>
+    <Description Lang="en">Instantly lock new phone tickets.</Description>
+    <Description Lang="de">Automatisch sperren die neuen Tickets. </Description>
+    <Filelist>
+        <File Permission="644" Location="Kernel/System/Ticket/Event/LockAutoSet.pm" />
+        <File Permission="644" Location="Custom/Kernel/Modules/AgentTicketPhone.pm" />
+        <File Permission="644" Location="Custom/Kernel/Modules/AgentTicketEmail.pm" />
+        <File Permission="644" Location="Custom/Kernel/System/Ticket.pm" />
+        <File Permission="644" Location="Kernel/Config/Files/XML/TicketLHInstantlyLock.xml" />
+    </Filelist>
+</otrs_package>
