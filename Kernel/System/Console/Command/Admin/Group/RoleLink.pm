@@ -1,6 +1,5 @@
 # --
-# Kernel/System/Console/Command/Admin/Group/RoleLink.pm - console command
-# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -12,7 +11,7 @@ package Kernel::System::Console::Command::Admin::Group::RoleLink;
 use strict;
 use warnings;
 
-use base qw(Kernel::System::Console::BaseCommand);
+use parent qw(Kernel::System::Console::BaseCommand);
 
 our @ObjectDependencies = (
     'Kernel::System::Group',
@@ -39,11 +38,11 @@ sub Configure {
     $Self->AddOption(
         Name => 'permission',
         Description =>
-            'Permissions (ro|move_into|create|owner|priority|rw) the role should have for the group which it is going to be linked to.',
+            'Permissions (ro|move_into|create|note|owner|priority|rw) the role should have for the group which it is going to be linked to.',
         Required   => 1,
         HasValue   => 1,
         Multiple   => 1,
-        ValueRegex => qr/(ro|move_into|create|owner|priority|rw)/smx,
+        ValueRegex => qr/(ro|move_into|create|note|owner|priority|rw)/smx,
     );
 
     return;
@@ -76,7 +75,7 @@ sub Run {
     $Self->Print("<yellow>Trying to link role $Self->{RoleName} to group $Self->{GroupName}...</yellow>\n");
 
     my %Permissions;
-    for my $Permission (qw(ro move_into create owner priority rw)) {
+    for my $Permission (qw(ro move_into create note owner priority rw)) {
         $Permissions{$Permission} = ( grep { $_ eq $Permission } @{ $Self->GetOption('permission') // [] } ) ? 1 : 0;
     }
 
@@ -101,15 +100,3 @@ sub Run {
 }
 
 1;
-
-=back
-
-=head1 TERMS AND CONDITIONS
-
-This software is part of the OTRS project (L<http://otrs.org/>).
-
-This software comes with ABSOLUTELY NO WARRANTY. For details, see
-the enclosed file COPYING for license information (AGPL). If you
-did not receive this file, see L<http://www.gnu.org/licenses/agpl.txt>.
-
-=cut

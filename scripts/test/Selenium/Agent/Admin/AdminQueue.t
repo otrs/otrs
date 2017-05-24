@@ -1,6 +1,5 @@
 # --
-# AdminQueue.t - frontend tests for AdminQueue
-# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -13,23 +12,16 @@ use utf8;
 
 use vars (qw($Self));
 
-use Kernel::System::UnitTest::Helper;
-use Kernel::System::UnitTest::Selenium;
-
-# get needed objects
-my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
-
-my $Selenium = Kernel::System::UnitTest::Selenium->new(
-    Verbose => 1,
-);
+# get selenium object
+my $Selenium = $Kernel::OM->Get('Kernel::System::UnitTest::Selenium');
 
 $Selenium->RunTest(
     sub {
 
-        my $Helper = Kernel::System::UnitTest::Helper->new(
-            RestoreSystemConfiguration => 0,
-        );
+        # get helper object
+        my $Helper = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
 
+        # create test user and login
         my $TestUserLogin = $Helper->TestUserCreate(
             Groups => ['admin'],
         ) || die "Did not get test user";
@@ -40,16 +32,25 @@ $Selenium->RunTest(
             Password => $TestUserLogin,
         );
 
-        my $ScriptAlias = $ConfigObject->Get('ScriptAlias');
+        # get script alias
+        my $ScriptAlias = $Kernel::OM->Get('Kernel::Config')->Get('ScriptAlias');
 
-        $Selenium->get("${ScriptAlias}index.pl?Action=AdminQueue");
+        # navigate to AdminQueue screen
+        $Selenium->VerifiedGet("${ScriptAlias}index.pl?Action=AdminQueue");
 
+        # check overview AdminQueue
         $Selenium->find_element( "table",             'css' );
         $Selenium->find_element( "table thead tr th", 'css' );
         $Selenium->find_element( "table tbody tr td", 'css' );
 
+        # check breadcrumb on Overview screen
+        $Self->True(
+            $Selenium->find_element( '.BreadCrumb', 'css' ),
+            "Breadcrumb is found on Overview screen.",
+        );
+
         # click 'add new queue' link
-        $Selenium->find_element( "a.Create", 'css' )->click();
+        $Selenium->find_element( "a.Create", 'css' )->VerifiedClick();
 
         # check add page
         for my $ID (
@@ -61,12 +62,24 @@ $Selenium->RunTest(
             $Element->is_displayed();
         }
 
+        # check breadcrumb on Add screen
+        my $Count = 1;
+        for my $BreadcrumbText ( 'Manage Queues', 'Add Queue' ) {
+            $Self->Is(
+                $Selenium->execute_script("return \$('.BreadCrumb li:eq($Count)').text().trim()"),
+                $BreadcrumbText,
+                "Breadcrumb text '$BreadcrumbText' is found on screen"
+            );
+
+            $Count++;
+        }
+
         # check client side validation
         my $Element = $Selenium->find_element( "#Name", 'css' );
         $Element->send_keys("");
-        $Element->submit();
+        $Element->VerifiedSubmit();
 
-        #$Element->click("button#Submit");
+        #$Element->VerifiedClick("button#Submit");
         $Self->Is(
             $Selenium->execute_script(
                 "return \$('#Name').hasClass('Error')"
@@ -75,20 +88,27 @@ $Selenium->RunTest(
             'Client side validation correctly detected missing input value',
         );
 
+        # navigate to AdminQueue screen again
+        $Selenium->VerifiedGet("${ScriptAlias}index.pl?Action=AdminQueue");
+
+        # create test queue
+        $Selenium->find_element( "a.Create", 'css' )->VerifiedClick();
+
         # create a real test queue
-        my $RandomID = $Helper->GetRandomID();
+        my $RandomID = "Queue" . $Helper->GetRandomID();
 
-        $Selenium->find_element( "#Name",                         'css' )->send_keys($RandomID);
-        $Selenium->find_element( "#GroupID option[value='1']",    'css' )->click();
-        $Selenium->find_element( "#FollowUpID option[value='1']", 'css' )->click();
+        $Selenium->find_element( "#Name", 'css' )->send_keys($RandomID);
+        $Selenium->execute_script("\$('#GroupID').val('1').trigger('redraw.InputField').trigger('change');");
+        $Selenium->execute_script("\$('#FollowUpID').val('1').trigger('redraw.InputField').trigger('change');");
+        $Selenium->execute_script("\$('#SalutationID').val('1').trigger('redraw.InputField').trigger('change');");
+        $Selenium->execute_script("\$('#SystemAddressID').val('1').trigger('redraw.InputField').trigger('change');");
+        $Selenium->execute_script("\$('#SignatureID').val('1').trigger('redraw.InputField').trigger('change');");
+        $Selenium->execute_script("\$('#ValidID').val('1').trigger('redraw.InputField').trigger('change');");
+        $Selenium->find_element( "#Comment", 'css' )->send_keys('Selenium test queue');
+        $Selenium->find_element( "#Name",    'css' )->VerifiedSubmit();
 
-        #$Selenium->find_element("#FollowUpLock[value='']", 'css')->click();
-        $Selenium->find_element( "#SalutationID option[value='1']",    'css' )->click();
-        $Selenium->find_element( "#SystemAddressID option[value='1']", 'css' )->click();
-        $Selenium->find_element( "#SignatureID option[value='1']",     'css' )->click();
-        $Selenium->find_element( "#ValidID option[value='1']",         'css' )->click();
-        $Selenium->find_element( "#Comment",                           'css' )->send_keys('Selenium test queue');
-        $Selenium->find_element( "#Name",                              'css' )->submit();
+        # navigate to AdminQueue screen again
+        $Selenium->VerifiedGet("${ScriptAlias}index.pl?Action=AdminQueue");
 
         # check Queue - Responses page
         $Self->True(
@@ -100,7 +120,7 @@ $Selenium->RunTest(
         $Selenium->find_element( "table tbody tr td", 'css' );
 
         # go to new queue again
-        $Selenium->find_element( $RandomID, 'link_text' )->click();
+        $Selenium->find_element( $RandomID, 'link_text' )->VerifiedClick();
 
         # check new queue values
         $Self->Is(
@@ -149,23 +169,55 @@ $Selenium->RunTest(
             "#Comment stored value",
         );
 
+        # check breadcrumb on Edit screen
+        $Count = 1;
+        for my $BreadcrumbText ( 'Manage Queues', 'Edit Queue: ' . $RandomID ) {
+            $Self->Is(
+                $Selenium->execute_script("return \$('.BreadCrumb li:eq($Count)').text().trim()"),
+                $BreadcrumbText,
+                "Breadcrumb text '$BreadcrumbText' is found on screen"
+            );
+
+            $Count++;
+        }
+
         # set test queue to invalid
-        $Selenium->find_element( "#GroupID option[value='2']", 'css' )->click();
-        $Selenium->find_element( "#ValidID option[value='2']", 'css' )->click();
-        $Selenium->find_element( "#Comment",                   'css' )->clear();
-        $Selenium->find_element( "#Comment",                   'css' )->submit();
+        $Selenium->execute_script("\$('#GroupID').val('2').trigger('redraw.InputField').trigger('change');");
+        $Selenium->execute_script("\$('#FollowUpLock').val('1').trigger('redraw.InputField').trigger('change');");
+        $Selenium->execute_script("\$('#ValidID').val('2').trigger('redraw.InputField').trigger('change');");
+        $Selenium->find_element( "#Comment", 'css' )->clear();
+        $Selenium->find_element( "#Comment", 'css' )->VerifiedSubmit();
+
+        #check is there notification after queue is updated
+        my $Notification = 'Queue updated!';
+        $Self->True(
+            $Selenium->execute_script("return \$('.MessageBox.Notice p:contains($Notification)').length"),
+            "$Notification - notification is found."
+        );
+
+        # navigate to AdminQueue screen again
+        $Selenium->VerifiedGet("${ScriptAlias}index.pl?Action=AdminQueue");
 
         # check overview page
         $Self->True(
             index( $Selenium->get_page_source(), $RandomID ) > -1,
             'New queue found on table'
         );
+
         $Selenium->find_element( "table",             'css' );
         $Selenium->find_element( "table thead tr th", 'css' );
         $Selenium->find_element( "table tbody tr td", 'css' );
 
+        # check class of invalid Queue in the overview table
+        $Self->True(
+            $Selenium->execute_script(
+                "return \$('tr.Invalid td a:contains($RandomID)').length"
+            ),
+            "There is a class 'Invalid' for test Queue",
+        );
+
         # go to new state again
-        $Selenium->find_element( $RandomID, 'link_text' )->click();
+        $Selenium->find_element( $RandomID, 'link_text' )->VerifiedClick();
 
         # check new queue values
         $Self->Is(
@@ -179,6 +231,11 @@ $Selenium->RunTest(
             "#GroupID updated value",
         );
         $Self->Is(
+            $Selenium->find_element( '#FollowUpLock', 'css' )->get_value(),
+            1,
+            "#FollowUpLock updated value",
+        );
+        $Self->Is(
             $Selenium->find_element( '#ValidID', 'css' )->get_value(),
             2,
             "#ValidID updated value",
@@ -189,12 +246,20 @@ $Selenium->RunTest(
             "#Comment updated value",
         );
 
-        # Since there are no tickets that rely on our test queue, we can remove them again
-        # from the DB.
-        my $QueueID = $Kernel::OM->Get('Kernel::System::Queue')->QueueLookup(
+        # since there are no tickets that rely on our test queue, we can remove them again
+        # from the DB
+        my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
+        my $QueueID  = $Kernel::OM->Get('Kernel::System::Queue')->QueueLookup(
             Queue => $RandomID,
         );
-        my $Success = $Kernel::OM->Get('Kernel::System::DB')->Do(
+        my $Success = $DBObject->Do(
+            SQL => "DELETE FROM queue_preferences WHERE queue_id = $QueueID",
+        );
+        $Self->True(
+            $Success,
+            "QueueDelete preferences - $RandomID",
+        );
+        $Success = $DBObject->Do(
             SQL => "DELETE FROM queue WHERE id = $QueueID",
         );
         $Self->True(
@@ -202,12 +267,12 @@ $Selenium->RunTest(
             "QueueDelete - $RandomID",
         );
 
-        # Make sure the cache is correct.
+        # make sure the cache is correct
         $Kernel::OM->Get('Kernel::System::Cache')->CleanUp(
             Type => 'Queue',
         );
 
-        }
+    }
 );
 
 1;

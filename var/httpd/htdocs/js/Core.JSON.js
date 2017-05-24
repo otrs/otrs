@@ -1,6 +1,5 @@
 // --
-// Core.JSON.js - Resizable
-// Copyright (C) 2001-2011 OTRS AG, http://otrs.org/
+// Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 // --
 // This software comes with ABSOLUTELY NO WARRANTY. For details, see
 // the enclosed file COPYING for license information (AGPL). If you
@@ -24,7 +23,7 @@ Core.JSON = (function (TargetNS) {
     // let you see a javascript error message instead of the 'old browser' warning box.
     // Therefore we do the dependency check silent in this case.
     if (!Core.Debug.CheckDependency('Core.JSON', 'JSON.parse', 'JSON parser', true)) {
-        return;
+        return false;
     }
 
     /**
@@ -38,6 +37,10 @@ Core.JSON = (function (TargetNS) {
      */
     TargetNS.Parse = function (JSONString) {
         var JSONObject;
+
+        if (typeof JSONString !== 'string' && typeof JSONString !== 'undefined') {
+            return JSONString;
+        }
 
         try {
             JSONObject = JSON.parse(JSONString);

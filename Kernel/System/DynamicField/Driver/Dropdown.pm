@@ -1,6 +1,5 @@
 # --
-# Kernel/System/DynamicField/Driver/Dropdown.pm - Delegate for DynamicField Dropdown Driver
-# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -14,7 +13,7 @@ use warnings;
 
 use Kernel::System::VariableCheck qw(:all);
 
-use base qw(Kernel::System::DynamicField::Driver::BaseSelect);
+use parent qw(Kernel::System::DynamicField::Driver::BaseSelect);
 
 our @ObjectDependencies = (
     'Kernel::Config',
@@ -26,7 +25,7 @@ our @ObjectDependencies = (
 
 Kernel::System::DynamicField::Driver::Dropdown
 
-=head1 SYNOPSIS
+=head1 DESCRIPTION
 
 DynamicFields Dropdown Driver delegate
 
@@ -35,9 +34,7 @@ DynamicFields Dropdown Driver delegate
 This module implements the public interface of L<Kernel::System::DynamicField::Backend>.
 Please look there for a detailed reference of the functions.
 
-=over 4
-
-=item new()
+=head2 new()
 
 usually, you want to create an instance of this
 by using Kernel::System::DynamicField::Backend->new();
@@ -59,9 +56,10 @@ sub new {
         'IsFiltrable'                  => 1,
         'IsStatsCondition'             => 1,
         'IsCustomerInterfaceCapable'   => 1,
+        'IsLikeOperatorCapable'        => 1,
     };
 
-    # get the Dynamic Field Backend custmom extensions
+    # get the Dynamic Field Backend custom extensions
     my $DynamicFieldDriverExtensions
         = $Kernel::OM->Get('Kernel::Config')->Get('DynamicFields::Extension::Driver::Dropdown');
 
@@ -87,7 +85,7 @@ sub new {
             }
         }
 
-        # check if extension contains more behabiors
+        # check if extension contains more behaviors
         if ( IsHashRefWithData( $Extension->{Behaviors} ) ) {
 
             %{ $Self->{Behaviors} } = (
@@ -101,8 +99,6 @@ sub new {
 }
 
 1;
-
-=back
 
 =head1 TERMS AND CONDITIONS
 

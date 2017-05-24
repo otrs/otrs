@@ -1,6 +1,5 @@
 # --
-# AdminPriority.t - frontend tests for AdminPriority
-# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -13,23 +12,16 @@ use utf8;
 
 use vars (qw($Self));
 
-use Kernel::System::UnitTest::Helper;
-use Kernel::System::UnitTest::Selenium;
-
-#get needed objects
-my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
-
-my $Selenium = Kernel::System::UnitTest::Selenium->new(
-    Verbose => 1,
-);
+# get selenium object
+my $Selenium = $Kernel::OM->Get('Kernel::System::UnitTest::Selenium');
 
 $Selenium->RunTest(
     sub {
 
-        my $Helper = Kernel::System::UnitTest::Helper->new(
-            RestoreSystemConfiguration => 0,
-        );
+        # get helper object
+        my $Helper = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
 
+        # create test user and login
         my $TestUserLogin = $Helper->TestUserCreate(
             Groups => ['admin'],
         ) || die "Did not get test user";
@@ -40,10 +32,13 @@ $Selenium->RunTest(
             Password => $TestUserLogin,
         );
 
-        my $ScriptAlias = $ConfigObject->Get('ScriptAlias');
+        # get script alias
+        my $ScriptAlias = $Kernel::OM->Get('Kernel::Config')->Get('ScriptAlias');
 
-        $Selenium->get("${ScriptAlias}index.pl?Action=AdminPriority");
+        # navigate to AdminPriority screen
+        $Selenium->VerifiedGet("${ScriptAlias}index.pl?Action=AdminPriority");
 
+        # check overview AdminPriority
         $Self->True(
             index( $Selenium->get_page_source(), '3 normal' ) > -1,
             '3 normal found on page',
@@ -53,8 +48,14 @@ $Selenium->RunTest(
         $Selenium->find_element( "table thead tr th", 'css' );
         $Selenium->find_element( "table tbody tr td", 'css' );
 
+        # check breadcrumb on Overview screen
+        $Self->True(
+            $Selenium->find_element( '.BreadCrumb', 'css' ),
+            "Breadcrumb is found on Overview screen.",
+        );
+
         # click 'add new priority' link
-        $Selenium->find_element("//a[contains(\@href, \'Subaction=Add' )]")->click();
+        $Selenium->find_element("//a[contains(\@href, \'Action=AdminPriority;Subaction=Add' )]")->VerifiedClick();
 
         # check add page
         my $Element = $Selenium->find_element( "#Name", 'css' );
@@ -62,9 +63,21 @@ $Selenium->RunTest(
         $Element->is_enabled();
         $Selenium->find_element( "#ValidID", 'css' );
 
+        # check breadcrumb on Add screen
+        my $Count = 1;
+        for my $BreadcrumbText ( 'Priority Management', 'Add Priority' ) {
+            $Self->Is(
+                $Selenium->execute_script("return \$('.BreadCrumb li:eq($Count)').text().trim()"),
+                $BreadcrumbText,
+                "Breadcrumb text '$BreadcrumbText' is found on screen"
+            );
+
+            $Count++;
+        }
+
         # check client side validation
         $Selenium->find_element( "#Name", 'css' )->clear();
-        $Selenium->find_element( "#Name", 'css' )->submit();
+        $Selenium->find_element( "#Name", 'css' )->VerifiedSubmit();
         $Self->Is(
             $Selenium->execute_script(
                 "return \$('#Name').hasClass('Error')"
@@ -74,11 +87,11 @@ $Selenium->RunTest(
         );
 
         # create a real test priority
-        my $RandomID = $Helper->GetRandomID();
+        my $RandomID = "Priority" . $Helper->GetRandomID();
 
-        $Selenium->find_element( "#Name",                      'css' )->send_keys($RandomID);
-        $Selenium->find_element( "#ValidID option[value='1']", 'css' )->click();
-        $Selenium->find_element( "#Name",                      'css' )->submit();
+        $Selenium->find_element( "#Name", 'css' )->send_keys($RandomID);
+        $Selenium->execute_script("\$('#ValidID').val('1').trigger('redraw.InputField').trigger('change');");
+        $Selenium->find_element( "#Name", 'css' )->VerifiedSubmit();
 
         $Self->True(
             index( $Selenium->get_page_source(), $RandomID ) > -1,
@@ -89,7 +102,7 @@ $Selenium->RunTest(
         $Selenium->find_element( "table tbody tr td", 'css' );
 
         # go to new priority again
-        $Selenium->find_element( $RandomID, 'link_text' )->click();
+        $Selenium->find_element( $RandomID, 'link_text' )->VerifiedClick();
 
         # check new priority values
         $Self->Is(
@@ -103,9 +116,29 @@ $Selenium->RunTest(
             "#ValidID stored value",
         );
 
+        # check breadcrumb on Edit screen
+        $Count = 1;
+        for my $BreadcrumbText ( 'Priority Management', 'Edit Priority: ' . $RandomID ) {
+            $Self->Is(
+                $Selenium->execute_script("return \$('.BreadCrumb li:eq($Count)').text().trim()"),
+                $BreadcrumbText,
+                "Breadcrumb text '$BreadcrumbText' is found on screen"
+            );
+
+            $Count++;
+        }
+
         # set test priority to invalid
-        $Selenium->find_element( "#ValidID option[value='2']", 'css' )->click();
-        $Selenium->find_element( "#Name",                      'css' )->submit();
+        $Selenium->execute_script("\$('#ValidID').val('2').trigger('redraw.InputField').trigger('change');");
+        $Selenium->find_element( "#Name", 'css' )->VerifiedSubmit();
+
+        # check class of invalid Priority in the overview table
+        $Self->True(
+            $Selenium->execute_script(
+                "return \$('tr.Invalid td a:contains($RandomID)').length"
+            ),
+            "There is a class 'Invalid' for test Priority",
+        );
 
         # check overview page
         $Self->True(
@@ -117,7 +150,7 @@ $Selenium->RunTest(
         $Selenium->find_element( "table tbody tr td", 'css' );
 
         # go to new priority again
-        $Selenium->find_element( $RandomID, 'link_text' )->click();
+        $Selenium->find_element( $RandomID, 'link_text' )->VerifiedClick();
 
         # check new priority values
         $Self->Is(
@@ -131,8 +164,8 @@ $Selenium->RunTest(
             "#ValidID updated value",
         );
 
-        # Since there are no tickets that rely on our test priority, we can remove them again
-        # from the DB.
+        # since there are no tickets that rely on our test priority, we can remove them again
+        # from the DB
         if ($RandomID) {
             my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
             $RandomID = $DBObject->Quote($RandomID);
@@ -146,12 +179,12 @@ $Selenium->RunTest(
             );
         }
 
-        # Make sure the cache is correct.
+        # make sure the cache is correct
         $Kernel::OM->Get('Kernel::System::Cache')->CleanUp(
             Type => 'Priority',
         );
 
-        }
+    }
 );
 
 1;

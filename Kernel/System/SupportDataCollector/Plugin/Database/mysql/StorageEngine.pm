@@ -1,6 +1,5 @@
 # --
-# Kernel/System/SupportDataCollector/Plugin/Database/mysql/StorageEngine.pm - system data collector plugin
-# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -12,14 +11,16 @@ package Kernel::System::SupportDataCollector::Plugin::Database::mysql::StorageEn
 use strict;
 use warnings;
 
-use base qw(Kernel::System::SupportDataCollector::PluginBase);
+use parent qw(Kernel::System::SupportDataCollector::PluginBase);
+
+use Kernel::Language qw(Translatable);
 
 our @ObjectDependencies = (
     'Kernel::System::DB',
 );
 
 sub GetDisplayPath {
-    return 'Database';
+    return Translatable('Database');
 }
 
 sub Run {
@@ -39,7 +40,7 @@ sub Run {
         $DefaultStorageEngine = $Row[1];
         $Self->AddResultOk(
             Identifier => 'DefaultStorageEngine',
-            Label      => 'Default Storage Engine',
+            Label      => Translatable('Default Storage Engine'),
             Value      => $DefaultStorageEngine,
         );
     }
@@ -56,32 +57,20 @@ sub Run {
     if (@TablesWithDifferentStorageEngine) {
         $Self->AddResultProblem(
             Identifier => 'TablesWithDifferentStorageEngine',
-            Label      => 'Table Storage Engine',
+            Label      => Translatable('Table Storage Engine'),
             Value      => join( ', ', @TablesWithDifferentStorageEngine ),
-            Message    => 'Tables with a different storage engine than the default engine were found.'
+            Message    => Translatable('Tables with a different storage engine than the default engine were found.')
         );
     }
     else {
         $Self->AddResultOk(
             Identifier => 'TablesWithDifferentStorageEngine',
-            Label      => 'Table Storage Engine',
+            Label      => Translatable('Table Storage Engine'),
             Value      => '',
         );
     }
 
     return $Self->GetResults();
 }
-
-=back
-
-=head1 TERMS AND CONDITIONS
-
-This software is part of the OTRS project (L<http://otrs.org/>).
-
-This software comes with ABSOLUTELY NO WARRANTY. For details, see
-the enclosed file COPYING for license information (AGPL). If you
-did not receive this file, see L<http://www.gnu.org/licenses/agpl.txt>.
-
-=cut
 
 1;

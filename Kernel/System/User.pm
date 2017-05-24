@@ -1,6 +1,5 @@
 # --
-# Kernel/System/User.pm - some user functions
-# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -23,6 +22,7 @@ our @ObjectDependencies = (
     'Kernel::System::Encode',
     'Kernel::System::Log',
     'Kernel::System::Main',
+    'Kernel::System::SearchProfile',
     'Kernel::System::Time',
     'Kernel::System::Valid',
 );
@@ -31,22 +31,16 @@ our @ObjectDependencies = (
 
 Kernel::System::User - user lib
 
-=head1 SYNOPSIS
+=head1 DESCRIPTION
 
 All user functions. E. g. to add and updated user and other functions.
 
 =head1 PUBLIC INTERFACE
 
-=over 4
+=head2 new()
 
-=cut
+Don't use the constructor directly, use the ObjectManager instead:
 
-=item new()
-
-create an object. Do not use it directly, instead use:
-
-    use Kernel::System::ObjectManager;
-    local $Kernel::OM = Kernel::System::ObjectManager->new();
     my $UserObject = $Kernel::OM->Get('Kernel::System::User');
 
 =cut
@@ -79,7 +73,7 @@ sub new {
     return $Self;
 }
 
-=item GetUserData()
+=head2 GetUserData()
 
 get user data (UserLogin, UserFirstname, UserLastname, UserEmail, ...)
 
@@ -210,6 +204,9 @@ sub GetUserData {
         }
     }
 
+    # Store CacheTTL locally so that we can reduce it for users that are out of office.
+    my $CacheTTL = $Self->{CacheTTL};
+
     # check valid, return if there is locked for valid users
     if ( $Param{Valid} ) {
 
@@ -226,7 +223,7 @@ sub GetUserData {
             # set cache
             $Kernel::OM->Get('Kernel::System::Cache')->Set(
                 Type  => $Self->{CacheType},
-                TTL   => $Self->{CacheTTL},
+                TTL   => $CacheTTL,
                 Key   => $CacheKey,
                 Value => {},
             );
@@ -274,13 +271,23 @@ sub GetUserData {
             my $TimeEnd = $TimeObject->TimeStamp2SystemTime(
                 String => $End,
             );
-            my $Till = int( ( $TimeEnd - $Time ) / 60 / 60 / 24 );
-            my $TillDate
-                = "$Preferences{OutOfOfficeEndYear}-$Preferences{OutOfOfficeEndMonth}-$Preferences{OutOfOfficeEndDay}";
             if ( $TimeStart < $Time && $TimeEnd > $Time ) {
-                $Preferences{OutOfOfficeMessage} = "*** out of office till $TillDate/$Till d ***";
+                my $OutOfOfficeMessageTemplate =
+                    $ConfigObject->Get('OutOfOfficeMessageTemplate') || '*** out of office until %s (%s d left) ***';
+                my $TillDate = sprintf(
+                    '%04d-%02d-%02d',
+                    $Preferences{OutOfOfficeEndYear},
+                    $Preferences{OutOfOfficeEndMonth},
+                    $Preferences{OutOfOfficeEndDay}
+                );
+                my $Till = int( ( $TimeEnd - $Time ) / 60 / 60 / 24 );
+                $Preferences{OutOfOfficeMessage} = sprintf( $OutOfOfficeMessageTemplate, $TillDate, $Till );
                 $Data{UserLastname} .= ' ' . $Preferences{OutOfOfficeMessage};
             }
+
+            # Reduce CacheTTL to one hour for users that are out of office to make sure the cache expires timely
+            #   even if there is no update action.
+            $CacheTTL = 60 * 60 * 1;
         }
     }
 
@@ -307,7 +314,7 @@ sub GetUserData {
     # set cache
     $Kernel::OM->Get('Kernel::System::Cache')->Set(
         Type  => $Self->{CacheType},
-        TTL   => $Self->{CacheTTL},
+        TTL   => $CacheTTL,
         Key   => $CacheKey,
         Value => \%Data,
     );
@@ -315,7 +322,7 @@ sub GetUserData {
     return %Data;
 }
 
-=item UserAdd()
+=head2 UserAdd()
 
 to add new users
 
@@ -325,6 +332,7 @@ to add new users
         UserLogin     => 'mhuber',
         UserPw        => 'some-pass', # not required
         UserEmail     => 'email@example.com',
+        UserMobile    => '1234567890', # not required
         ValidID       => 1,
         ChangeUserID  => 123,
     );
@@ -376,6 +384,10 @@ sub UserAdd {
     # get database object
     my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
 
+    # Don't store the user's password in plaintext initially. It will be stored in a
+    #   hashed version later with SetPassword().
+    my $RandomPassword = $Self->GenerateRandomPassword();
+
     # sql
     return if !$DBObject->Do(
         SQL => "INSERT INTO $Self->{UserTable} "
@@ -386,7 +398,7 @@ sub UserAdd {
             . " (?, ?, ?, ?, ?, ?, current_timestamp, ?, current_timestamp, ?)",
         Bind => [
             \$Param{UserTitle}, \$Param{UserFirstname}, \$Param{UserLastname},
-            \$Param{UserLogin}, \$Param{UserPw},        \$Param{ValidID},
+            \$Param{UserLogin}, \$RandomPassword, \$Param{ValidID},
             \$Param{ChangeUserID}, \$Param{ChangeUserID},
         ],
     );
@@ -435,6 +447,13 @@ sub UserAdd {
         Value  => $Param{UserEmail}
     );
 
+    # set mobile phone
+    $Self->SetPreferences(
+        UserID => $UserID,
+        Key    => 'UserMobile',
+        Value  => $Param{UserMobile} || '',
+    );
+
     # delete cache
     $Kernel::OM->Get('Kernel::System::Cache')->CleanUp(
         Type => $Self->{CacheType},
@@ -443,7 +462,7 @@ sub UserAdd {
     return $UserID;
 }
 
-=item UserUpdate()
+=head2 UserUpdate()
 
 to update users
 
@@ -454,6 +473,7 @@ to update users
         UserLogin     => 'mhuber',
         UserPw        => 'some-pass', # not required
         UserEmail     => 'email@example.com',
+        UserMobile    => '1234567890', # not required
         ValidID       => 1,
         ChangeUserID  => 123,
     );
@@ -474,7 +494,12 @@ sub UserUpdate {
         }
     }
 
-    # check if a user with this login (username) already exits
+    # store old user login for later use
+    my $OldUserLogin = $Self->UserLookup(
+        UserID => $Param{UserID},
+    );
+
+    # check if a user with this login (username) already exists
     if (
         $Self->UserLoginExistsCheck(
             UserLogin => $Param{UserLogin},
@@ -530,16 +555,27 @@ sub UserUpdate {
         Value  => $Param{UserEmail}
     );
 
-    # get cache object
-    my $CacheObject = $Kernel::OM->Get('Kernel::System::Cache');
-
-    # delete cache
-    $CacheObject->CleanUp(
-        Type => $Self->{CacheType},
+    # set email address
+    $Self->SetPreferences(
+        UserID => $Param{UserID},
+        Key    => 'UserMobile',
+        Value  => $Param{UserMobile} || '',
     );
 
-    # TODO Not needed to delete the cache if ValidID or Name was nat changed
+    # update search profiles if the UserLogin changed
+    if ( lc $OldUserLogin ne lc $Param{UserLogin} ) {
+        $Kernel::OM->Get('Kernel::System::SearchProfile')->SearchProfileUpdateUserLogin(
+            Base         => 'TicketSearch',
+            UserLogin    => $OldUserLogin,
+            NewUserLogin => $Param{UserLogin},
+        );
+    }
 
+    $Self->_UserCacheClear( UserID => $Param{UserID} );
+
+    # TODO Not needed to delete the cache if ValidID or Name was not changed
+
+    my $CacheObject = $Kernel::OM->Get('Kernel::System::Cache');
     my $SystemPermissionConfig = $Kernel::OM->Get('Kernel::Config')->Get('System::Permission') || [];
 
     for my $Type ( @{$SystemPermissionConfig}, 'rw' ) {
@@ -557,7 +593,7 @@ sub UserUpdate {
     return 1;
 }
 
-=item UserSearch()
+=head2 UserSearch()
 
 to search users
 
@@ -678,7 +714,7 @@ sub UserSearch {
     return %Users;
 }
 
-=item SetPassword()
+=head2 SetPassword()
 
 to set users passwords
 
@@ -722,7 +758,7 @@ sub SetPassword {
         $CryptedPw = $Pw;
     }
 
-    # crypt with unix crypt
+    # crypt with UNIX crypt
     elsif ( $CryptType eq 'crypt' ) {
 
         # encode output, needed by crypt() only non utf8 signs
@@ -756,10 +792,16 @@ sub SetPassword {
     elsif ( $CryptType eq 'sha1' ) {
 
         my $SHAObject = Digest::SHA->new('sha1');
-
-        # encode output, needed by sha1_hex() only non utf8 signs
         $Kernel::OM->Get('Kernel::System::Encode')->EncodeOutput( \$Pw );
+        $SHAObject->add($Pw);
+        $CryptedPw = $SHAObject->hexdigest();
+    }
 
+    # crypt with sha512
+    elsif ( $CryptType eq 'sha512' ) {
+
+        my $SHAObject = Digest::SHA->new('sha512');
+        $Kernel::OM->Get('Kernel::System::Encode')->EncodeOutput( \$Pw );
         $SHAObject->add($Pw);
         $CryptedPw = $SHAObject->hexdigest();
     }
@@ -826,16 +868,18 @@ sub SetPassword {
     return 1;
 }
 
-=item UserLookup()
+=head2 UserLookup()
 
 user login or id lookup
 
     my $UserLogin = $UserObject->UserLookup(
         UserID => 1,
+        Silent => 1, # optional, don't generate log entry if user was not found
     );
 
     my $UserID = $UserObject->UserLookup(
         UserLogin => 'some_user_login',
+        Silent    => 1, # optional, don't generate log entry if user was not found
     );
 
 =cut
@@ -882,10 +926,12 @@ sub UserLookup {
         }
 
         if ( !$ID ) {
-            $Kernel::OM->Get('Kernel::System::Log')->Log(
-                Priority => 'error',
-                Message  => "No UserID found for '$Param{UserLogin}'!",
-            );
+            if ( !$Param{Silent} ) {
+                $Kernel::OM->Get('Kernel::System::Log')->Log(
+                    Priority => 'error',
+                    Message  => "No UserID found for '$Param{UserLogin}'!",
+                );
+            }
             return;
         }
 
@@ -925,10 +971,12 @@ sub UserLookup {
         }
 
         if ( !$Login ) {
-            $Kernel::OM->Get('Kernel::System::Log')->Log(
-                Priority => 'error',
-                Message  => "No UserLogin found for '$Param{UserID}'!",
-            );
+            if ( !$Param{Silent} ) {
+                $Kernel::OM->Get('Kernel::System::Log')->Log(
+                    Priority => 'error',
+                    Message  => "No UserLogin found for '$Param{UserID}'!",
+                );
+            }
             return;
         }
 
@@ -944,12 +992,12 @@ sub UserLookup {
     }
 }
 
-=item UserName()
+=head2 UserName()
 
 get user name
 
     my $Name = $UserObject->UserName(
-        UserLogin => 'some-login',
+        User => 'some-login',
     );
 
     or
@@ -969,7 +1017,7 @@ sub UserName {
     return $User{UserFullname};
 }
 
-=item UserList()
+=head2 UserList()
 
 return a hash with all users
 
@@ -1081,7 +1129,7 @@ sub UserList {
     return %Users;
 }
 
-=item GenerateRandomPassword()
+=head2 GenerateRandomPassword()
 
 generate a random password
 
@@ -1108,7 +1156,7 @@ sub GenerateRandomPassword {
     return $Password;
 }
 
-=item SetPreferences()
+=head2 SetPreferences()
 
 set user preferences
 
@@ -1146,11 +1194,32 @@ sub SetPreferences {
         && defined $Param{Value}
         && $User{ $Param{Key} } eq $Param{Value};
 
-    # get config object
-    my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
+    $Self->_UserCacheClear( UserID => $Param{UserID} );
+
+    # get user preferences config
+    my $GeneratorModule = $Kernel::OM->Get('Kernel::Config')->Get('User::PreferencesModule')
+        || 'Kernel::System::User::Preferences::DB';
+
+    # get generator preferences module
+    my $PreferencesObject = $Kernel::OM->Get($GeneratorModule);
+
+    # set preferences
+    return $PreferencesObject->SetPreferences(%Param);
+}
+
+sub _UserCacheClear {
+    my ( $Self, %Param ) = @_;
+
+    if ( !$Param{UserID} ) {
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
+            Priority => 'error',
+            Message  => "Need UserID!"
+        );
+        return;
+    }
 
     # get configuration for the full name order
-    my $FirstnameLastNameOrder = $ConfigObject->Get('FirstnameLastnameOrder') || 0;
+    my $FirstnameLastNameOrder = $Kernel::OM->Get('Kernel::Config')->Get('FirstnameLastnameOrder') || 0;
 
     # create cachekey
     my $Login = $Self->UserLookup( UserID => $Param{UserID} );
@@ -1163,10 +1232,16 @@ sub SetPreferences {
         'GetUserData::UserID::' . $Param{UserID} . '::0::' . $FirstnameLastNameOrder . '::1',
         'GetUserData::UserID::' . $Param{UserID} . '::1::' . $FirstnameLastNameOrder . '::0',
         'GetUserData::UserID::' . $Param{UserID} . '::1::' . $FirstnameLastNameOrder . '::1',
-        'UserList::Short::0::' . $FirstnameLastNameOrder,
-        'UserList::Short::1::' . $FirstnameLastNameOrder,
-        'UserList::Long::0::' . $FirstnameLastNameOrder,
-        'UserList::Long::1::' . $FirstnameLastNameOrder,
+        'UserList::Short::0::' . $FirstnameLastNameOrder . '::0',
+        'UserList::Short::0::' . $FirstnameLastNameOrder . '::1',
+        'UserList::Short::1::' . $FirstnameLastNameOrder . '::0',
+        'UserList::Short::1::' . $FirstnameLastNameOrder . '::1',
+        'UserList::Long::0::' . $FirstnameLastNameOrder . '::0',
+        'UserList::Long::0::' . $FirstnameLastNameOrder . '::1',
+        'UserList::Long::1::' . $FirstnameLastNameOrder . '::0',
+        'UserList::Long::1::' . $FirstnameLastNameOrder . '::1',
+        'UserLookup::ID::' . $Login,
+        'UserLookup::Login::' . $Param{UserID},
     );
 
     # get cache object
@@ -1181,18 +1256,10 @@ sub SetPreferences {
         );
     }
 
-    # get user preferences config
-    my $GeneratorModule = $ConfigObject->Get('User::PreferencesModule')
-        || 'Kernel::System::User::Preferences::DB';
-
-    # get generator preferences module
-    my $PreferencesObject = $Kernel::OM->Get($GeneratorModule);
-
-    # set preferences
-    return $PreferencesObject->SetPreferences(%Param);
+    return 1;
 }
 
-=item GetPreferences()
+=head2 GetPreferences()
 
 get user preferences
 
@@ -1215,7 +1282,7 @@ sub GetPreferences {
     return $PreferencesObject->GetPreferences(%Param);
 }
 
-=item SearchPreferences()
+=head2 SearchPreferences()
 
 search in user preferences
 
@@ -1239,7 +1306,7 @@ sub SearchPreferences {
     return $PreferencesObject->SearchPreferences(@_);
 }
 
-=item TokenGenerate()
+=head2 TokenGenerate()
 
 generate a random token
 
@@ -1274,7 +1341,7 @@ sub TokenGenerate {
     return $Token;
 }
 
-=item TokenCheck()
+=head2 TokenCheck()
 
 check password token
 
@@ -1322,7 +1389,7 @@ sub TokenCheck {
 
 =begin Internal:
 
-=item _UserFullname()
+=head2 _UserFullname()
 
 Builds the user fullname based on firstname, lastname and login. The order
 can be configured.
@@ -1381,7 +1448,20 @@ sub _UserFullname {
             . ') ' . $Param{UserLastname}
             . ', ' . $Param{UserFirstname};
     }
-
+    elsif ( $FirstnameLastNameOrder eq '6' ) {
+        $UserFullname = $Param{UserLastname} . ' '
+            . $Param{UserFirstname};
+    }
+    elsif ( $FirstnameLastNameOrder eq '7' ) {
+        $UserFullname = $Param{UserLastname} . ' '
+            . $Param{UserFirstname} . ' ('
+            . $Param{UserLogin} . ')';
+    }
+    elsif ( $FirstnameLastNameOrder eq '8' ) {
+        $UserFullname = '(' . $Param{UserLogin}
+            . ') ' . $Param{UserLastname}
+            . ' ' . $Param{UserFirstname};
+    }
     return $UserFullname;
 }
 
@@ -1389,9 +1469,9 @@ sub _UserFullname {
 
 =cut
 
-=item UserLoginExistsCheck()
+=head2 UserLoginExistsCheck()
 
-return 1 if another user with this login (username) already exits
+return 1 if another user with this login (username) already exists
 
     $Exist = $UserObject->UserLoginExistsCheck(
         UserLogin => 'Some::UserLogin',
@@ -1426,8 +1506,6 @@ sub UserLoginExistsCheck {
 }
 
 1;
-
-=back
 
 =head1 TERMS AND CONDITIONS
 

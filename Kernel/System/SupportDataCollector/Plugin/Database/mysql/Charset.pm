@@ -1,6 +1,5 @@
 # --
-# Kernel/System/SupportDataCollector/Plugin/Database/mysql/Charset.pm - system data collector plugin
-# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -12,14 +11,16 @@ package Kernel::System::SupportDataCollector::Plugin::Database::mysql::Charset;
 use strict;
 use warnings;
 
-use base qw(Kernel::System::SupportDataCollector::PluginBase);
+use parent qw(Kernel::System::SupportDataCollector::PluginBase);
+
+use Kernel::Language qw(Translatable);
 
 our @ObjectDependencies = (
     'Kernel::System::DB',
 );
 
 sub GetDisplayPath {
-    return 'Database';
+    return Translatable('Database');
 }
 
 sub Run {
@@ -37,16 +38,16 @@ sub Run {
         if ( $Row[1] =~ /utf8/i ) {
             $Self->AddResultOk(
                 Identifier => 'ClientEncoding',
-                Label      => 'Client Connection Charset',
+                Label      => Translatable('Client Connection Charset'),
                 Value      => $Row[1],
             );
         }
         else {
             $Self->AddResultProblem(
                 Identifier => 'ClientEncoding',
-                Label      => 'Client Connection Charset',
+                Label      => Translatable('Client Connection Charset'),
                 Value      => $Row[1],
-                Message    => 'Setting character_set_client needs to be utf8.',
+                Message    => Translatable('Setting character_set_client needs to be utf8.'),
             );
         }
     }
@@ -56,22 +57,24 @@ sub Run {
         if ( $Row[1] =~ /utf8/i ) {
             $Self->AddResultOk(
                 Identifier => 'ServerEncoding',
-                Label      => 'Server Database Charset',
+                Label      => Translatable('Server Database Charset'),
                 Value      => $Row[1],
             );
         }
         else {
             $Self->AddResultProblem(
                 Identifier => 'ServerEncoding',
-                Label      => 'Server Database Charset',
+                Label      => Translatable('Server Database Charset'),
                 Value      => $Row[1],
-                Message    => 'Setting character_set_database needs to be UNICODE or UTF8.',
+                Message    => Translatable('Setting character_set_database needs to be UNICODE or UTF8.'),
             );
         }
     }
 
     my @TablesWithInvalidCharset;
-    $DBObject->Prepare( SQL => 'show table status' );
+
+    # Views have engine == null, ignore those.
+    $DBObject->Prepare( SQL => 'show table status where engine is not null' );
     while ( my @Row = $DBObject->FetchrowArray() ) {
         if ( $Row[14] !~ /^utf8/i ) {
             push @TablesWithInvalidCharset, $Row[0];
@@ -80,32 +83,20 @@ sub Run {
     if (@TablesWithInvalidCharset) {
         $Self->AddResultProblem(
             Identifier => 'TableEncoding',
-            Label      => 'Table Charset',
+            Label      => Translatable('Table Charset'),
             Value      => join( ', ', @TablesWithInvalidCharset ),
-            Message    => 'There were tables found which do not have utf8 as charset.',
+            Message    => Translatable('There were tables found which do not have utf8 as charset.'),
         );
     }
     else {
         $Self->AddResultOk(
             Identifier => 'TableEncoding',
-            Label      => 'Table Charset',
+            Label      => Translatable('Table Charset'),
             Value      => '',
         );
     }
 
     return $Self->GetResults();
 }
-
-=back
-
-=head1 TERMS AND CONDITIONS
-
-This software is part of the OTRS project (L<http://otrs.org/>).
-
-This software comes with ABSOLUTELY NO WARRANTY. For details, see
-the enclosed file COPYING for license information (AGPL). If you
-did not receive this file, see L<http://www.gnu.org/licenses/agpl.txt>.
-
-=cut
 
 1;

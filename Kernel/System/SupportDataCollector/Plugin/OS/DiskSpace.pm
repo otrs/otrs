@@ -1,6 +1,5 @@
 # --
-# Kernel/System/SupportDataCollector/Plugin/OS/DiskSpace.pm - system data collector plugin
-# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -12,14 +11,16 @@ package Kernel::System::SupportDataCollector::Plugin::OS::DiskSpace;
 use strict;
 use warnings;
 
-use base qw(Kernel::System::SupportDataCollector::PluginBase);
+use parent qw(Kernel::System::SupportDataCollector::PluginBase);
+
+use Kernel::Language qw(Translatable);
 
 our @ObjectDependencies = (
     'Kernel::Config',
 );
 
 sub GetDisplayPath {
-    return 'Operating System';
+    return Translatable('Operating System');
 }
 
 sub Run {
@@ -69,41 +70,29 @@ sub Run {
         if (@ProblemPartitions) {
             if ($StatusProblem) {
                 $Self->AddResultProblem(
-                    Label   => 'Disk Usage',
+                    Label   => Translatable('Disk Usage'),
                     Value   => join( ', ', @ProblemPartitions ),
-                    Message => 'The partition where OTRS is located is almost full.',
+                    Message => Translatable('The partition where OTRS is located is almost full.'),
                 );
             }
             else {
                 $Self->AddResultWarning(
-                    Label   => 'Disk Usage',
+                    Label   => Translatable('Disk Usage'),
                     Value   => join( ', ', @ProblemPartitions ),
-                    Message => 'The partition where OTRS is located is almost full.',
+                    Message => Translatable('The partition where OTRS is located is almost full.'),
                 );
             }
         }
         else {
             $Self->AddResultOk(
-                Label   => 'Disk Usage',
+                Label   => Translatable('Disk Usage'),
                 Value   => '',
-                Message => 'The partition where OTRS is located has no disk space problems.',
+                Message => Translatable('The partition where OTRS is located has no disk space problems.'),
             );
         }
     }
 
     return $Self->GetResults();
 }
-
-=back
-
-=head1 TERMS AND CONDITIONS
-
-This software is part of the OTRS project (L<http://otrs.org/>).
-
-This software comes with ABSOLUTELY NO WARRANTY. For details, see
-the enclosed file COPYING for license information (AGPL). If you
-did not receive this file, see L<http://www.gnu.org/licenses/agpl.txt>.
-
-=cut
 
 1;

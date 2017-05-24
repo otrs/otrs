@@ -1,6 +1,5 @@
 # --
-# Kernel/System/Stats/Dynamic/Ticket.pm - all advice functions
-# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -13,6 +12,7 @@ use strict;
 use warnings;
 
 use Kernel::System::VariableCheck qw(:all);
+use Kernel::Language qw(Translatable);
 
 our @ObjectDependencies = (
     'Kernel::Config',
@@ -38,8 +38,6 @@ sub new {
     # allocate new hash for object
     my $Self = {};
     bless( $Self, $Type );
-
-    $Self->{DBSlaveObject} = $Param{DBSlaveObject} || $Kernel::OM->Get('Kernel::System::DB');
 
     # get the dynamic fields for ticket object
     $Self->{DynamicField} = $Kernel::OM->Get('Kernel::System::DynamicField')->DynamicFieldListGet(
@@ -77,6 +75,7 @@ sub GetObjectAttributes {
     my $StateObject    = $Kernel::OM->Get('Kernel::System::State');
     my $PriorityObject = $Kernel::OM->Get('Kernel::System::Priority');
     my $LockObject     = $Kernel::OM->Get('Kernel::System::Lock');
+    my $DBObject       = $Kernel::OM->Get('Kernel::System::DB');
 
     my $ValidAgent = 0;
     if (
@@ -87,10 +86,12 @@ sub GetObjectAttributes {
         $ValidAgent = 1;
     }
 
-    # get user list
+    # Get user list without the out of office message, because of the caching in the statistics
+    #   and not meaningful with a date selection.
     my %UserList = $UserObject->UserList(
-        Type  => 'Long',
-        Valid => $ValidAgent,
+        Type          => 'Long',
+        Valid         => $ValidAgent,
+        NoOutOfOffice => 1,
     );
 
     # get state list
@@ -123,7 +124,7 @@ sub GetObjectAttributes {
 
     my @ObjectAttributes = (
         {
-            Name             => 'Queue',
+            Name             => Translatable('Queue'),
             UseAsXvalue      => 1,
             UseAsValueSeries => 1,
             UseAsRestriction => 1,
@@ -134,7 +135,7 @@ sub GetObjectAttributes {
             Values           => \%QueueList,
         },
         {
-            Name             => 'State',
+            Name             => Translatable('State'),
             UseAsXvalue      => 1,
             UseAsValueSeries => 1,
             UseAsRestriction => 1,
@@ -143,7 +144,7 @@ sub GetObjectAttributes {
             Values           => \%StateList,
         },
         {
-            Name             => 'State Type',
+            Name             => Translatable('State Type'),
             UseAsXvalue      => 1,
             UseAsValueSeries => 1,
             UseAsRestriction => 1,
@@ -152,7 +153,7 @@ sub GetObjectAttributes {
             Values           => \%StateTypeList,
         },
         {
-            Name             => 'Priority',
+            Name             => Translatable('Priority'),
             UseAsXvalue      => 1,
             UseAsValueSeries => 1,
             UseAsRestriction => 1,
@@ -161,7 +162,7 @@ sub GetObjectAttributes {
             Values           => \%PriorityList,
         },
         {
-            Name             => 'Created in Queue',
+            Name             => Translatable('Created in Queue'),
             UseAsXvalue      => 1,
             UseAsValueSeries => 1,
             UseAsRestriction => 1,
@@ -172,7 +173,7 @@ sub GetObjectAttributes {
             Values           => \%QueueList,
         },
         {
-            Name             => 'Created Priority',
+            Name             => Translatable('Created Priority'),
             UseAsXvalue      => 1,
             UseAsValueSeries => 1,
             UseAsRestriction => 1,
@@ -181,7 +182,7 @@ sub GetObjectAttributes {
             Values           => \%PriorityList,
         },
         {
-            Name             => 'Created State',
+            Name             => Translatable('Created State'),
             UseAsXvalue      => 1,
             UseAsValueSeries => 1,
             UseAsRestriction => 1,
@@ -190,7 +191,7 @@ sub GetObjectAttributes {
             Values           => \%StateList,
         },
         {
-            Name             => 'Lock',
+            Name             => Translatable('Lock'),
             UseAsXvalue      => 1,
             UseAsValueSeries => 1,
             UseAsRestriction => 1,
@@ -199,7 +200,7 @@ sub GetObjectAttributes {
             Values           => \%LockList,
         },
         {
-            Name             => 'Title',
+            Name             => Translatable('Title'),
             UseAsXvalue      => 0,
             UseAsValueSeries => 0,
             UseAsRestriction => 1,
@@ -207,60 +208,52 @@ sub GetObjectAttributes {
             Block            => 'InputField',
         },
         {
-            Name             => 'CustomerUserLogin',
+            Name             => Translatable('From'),
             UseAsXvalue      => 0,
             UseAsValueSeries => 0,
             UseAsRestriction => 1,
-            Element          => 'CustomerUserLogin',
+            Element          => 'MIMEBase_From',
             Block            => 'InputField',
         },
         {
-            Name             => 'From',
+            Name             => Translatable('To'),
             UseAsXvalue      => 0,
             UseAsValueSeries => 0,
             UseAsRestriction => 1,
-            Element          => 'From',
+            Element          => 'MIMEBase_To',
             Block            => 'InputField',
         },
         {
-            Name             => 'To',
+            Name             => Translatable('Cc'),
             UseAsXvalue      => 0,
             UseAsValueSeries => 0,
             UseAsRestriction => 1,
-            Element          => 'To',
+            Element          => 'MIMEBase_Cc',
             Block            => 'InputField',
         },
         {
-            Name             => 'Cc',
+            Name             => Translatable('Subject'),
             UseAsXvalue      => 0,
             UseAsValueSeries => 0,
             UseAsRestriction => 1,
-            Element          => 'Cc',
+            Element          => 'MIMEBase_Subject',
             Block            => 'InputField',
         },
         {
-            Name             => 'Subject',
+            Name             => Translatable('Text'),
             UseAsXvalue      => 0,
             UseAsValueSeries => 0,
             UseAsRestriction => 1,
-            Element          => 'Subject',
+            Element          => 'MIMEBase_Body',
             Block            => 'InputField',
         },
         {
-            Name             => 'Text',
-            UseAsXvalue      => 0,
-            UseAsValueSeries => 0,
-            UseAsRestriction => 1,
-            Element          => 'Body',
-            Block            => 'InputField',
-        },
-        {
-            Name             => 'Create Time',
+            Name             => Translatable('Create Time'),
             UseAsXvalue      => 1,
             UseAsValueSeries => 1,
             UseAsRestriction => 1,
             Element          => 'CreateTime',
-            TimePeriodFormat => 'DateInputFormat',    # 'DateInputFormatLong',
+            TimePeriodFormat => 'DateInputFormat',             # 'DateInputFormatLong',
             Block            => 'Time',
             TimeStop         => $Today,
             Values           => {
@@ -269,12 +262,12 @@ sub GetObjectAttributes {
             },
         },
         {
-            Name             => 'Last changed times',
+            Name             => Translatable('Last changed times'),
             UseAsXvalue      => 1,
             UseAsValueSeries => 1,
             UseAsRestriction => 1,
             Element          => 'LastChangeTime',
-            TimePeriodFormat => 'DateInputFormat',      # 'DateInputFormatLong',
+            TimePeriodFormat => 'DateInputFormat',                    # 'DateInputFormatLong',
             Block            => 'Time',
             TimeStop         => $Today,
             Values           => {
@@ -283,12 +276,12 @@ sub GetObjectAttributes {
             },
         },
         {
-            Name             => 'Change times',
+            Name             => Translatable('Change times'),
             UseAsXvalue      => 1,
             UseAsValueSeries => 1,
             UseAsRestriction => 1,
             Element          => 'ChangeTime',
-            TimePeriodFormat => 'DateInputFormat',    # 'DateInputFormatLong',
+            TimePeriodFormat => 'DateInputFormat',              # 'DateInputFormatLong',
             Block            => 'Time',
             TimeStop         => $Today,
             Values           => {
@@ -297,12 +290,26 @@ sub GetObjectAttributes {
             },
         },
         {
-            Name             => 'Close Time',
+            Name             => Translatable('Pending until time'),
+            UseAsXvalue      => 1,
+            UseAsValueSeries => 1,
+            UseAsRestriction => 1,
+            Element          => 'PendingUntilTime',
+            TimePeriodFormat => 'DateInputFormat',                    # 'DateInputFormatLong',
+            Block            => 'Time',
+            TimeStop         => $Today,
+            Values           => {
+                TimeStart => 'TicketPendingTimeNewerDate',
+                TimeStop  => 'TicketPendingTimeOlderDate',
+            },
+        },
+        {
+            Name             => Translatable('Close Time'),
             UseAsXvalue      => 1,
             UseAsValueSeries => 1,
             UseAsRestriction => 1,
             Element          => 'CloseTime2',
-            TimePeriodFormat => 'DateInputFormat',    # 'DateInputFormatLong',
+            TimePeriodFormat => 'DateInputFormat',            # 'DateInputFormatLong',
             Block            => 'Time',
             TimeStop         => $Today,
             Values           => {
@@ -311,12 +318,12 @@ sub GetObjectAttributes {
             },
         },
         {
-            Name             => 'Escalation',
+            Name             => Translatable('Escalation'),
             UseAsXvalue      => 1,
             UseAsValueSeries => 1,
             UseAsRestriction => 1,
             Element          => 'EscalationTime',
-            TimePeriodFormat => 'DateInputFormatLong',    # 'DateInputFormat',
+            TimePeriodFormat => 'DateInputFormatLong',        # 'DateInputFormat',
             Block            => 'Time',
             TimeStop         => $Today,
             Values           => {
@@ -325,12 +332,12 @@ sub GetObjectAttributes {
             },
         },
         {
-            Name             => 'Escalation - First Response Time',
+            Name             => Translatable('Escalation - First Response Time'),
             UseAsXvalue      => 1,
             UseAsValueSeries => 1,
             UseAsRestriction => 1,
             Element          => 'EscalationResponseTime',
-            TimePeriodFormat => 'DateInputFormatLong',                # 'DateInputFormat',
+            TimePeriodFormat => 'DateInputFormatLong',                              # 'DateInputFormat',
             Block            => 'Time',
             TimeStop         => $Today,
             Values           => {
@@ -339,12 +346,12 @@ sub GetObjectAttributes {
             },
         },
         {
-            Name             => 'Escalation - Update Time',
+            Name             => Translatable('Escalation - Update Time'),
             UseAsXvalue      => 1,
             UseAsValueSeries => 1,
             UseAsRestriction => 1,
             Element          => 'EscalationUpdateTime',
-            TimePeriodFormat => 'DateInputFormatLong',        # 'DateInputFormat',
+            TimePeriodFormat => 'DateInputFormatLong',                      # 'DateInputFormat',
             Block            => 'Time',
             TimeStop         => $Today,
             Values           => {
@@ -353,12 +360,12 @@ sub GetObjectAttributes {
             },
         },
         {
-            Name             => 'Escalation - Solution Time',
+            Name             => Translatable('Escalation - Solution Time'),
             UseAsXvalue      => 1,
             UseAsValueSeries => 1,
             UseAsRestriction => 1,
             Element          => 'EscalationSolutionTime',
-            TimePeriodFormat => 'DateInputFormatLong',          # 'DateInputFormat',
+            TimePeriodFormat => 'DateInputFormatLong',                        # 'DateInputFormat',
             Block            => 'Time',
             TimeStop         => $Today,
             Values           => {
@@ -372,7 +379,8 @@ sub GetObjectAttributes {
 
         # get service list
         my %Service = $Kernel::OM->Get('Kernel::System::Service')->ServiceList(
-            UserID => 1,
+            KeepChildren => $ConfigObject->Get('Ticket::Service::KeepChildren'),
+            UserID       => 1,
         );
 
         # get sla list
@@ -382,7 +390,7 @@ sub GetObjectAttributes {
 
         my @ObjectAttributeAdd = (
             {
-                Name             => 'Service',
+                Name             => Translatable('Service'),
                 UseAsXvalue      => 1,
                 UseAsValueSeries => 1,
                 UseAsRestriction => 1,
@@ -393,7 +401,7 @@ sub GetObjectAttributes {
                 Values           => \%Service,
             },
             {
-                Name             => 'SLA',
+                Name             => Translatable('SLA'),
                 UseAsXvalue      => 1,
                 UseAsValueSeries => 1,
                 UseAsRestriction => 1,
@@ -415,7 +423,7 @@ sub GetObjectAttributes {
         );
 
         my %ObjectAttribute1 = (
-            Name             => 'Type',
+            Name             => Translatable('Type'),
             UseAsXvalue      => 1,
             UseAsValueSeries => 1,
             UseAsRestriction => 1,
@@ -432,7 +440,7 @@ sub GetObjectAttributes {
 
         my @ObjectAttributeAdd = (
             {
-                Name             => 'Agent/Owner',
+                Name             => Translatable('Agent/Owner'),
                 UseAsXvalue      => 1,
                 UseAsValueSeries => 1,
                 UseAsRestriction => 1,
@@ -442,7 +450,7 @@ sub GetObjectAttributes {
                 Values           => \%UserList,
             },
             {
-                Name             => 'Created by Agent/Owner',
+                Name             => Translatable('Created by Agent/Owner'),
                 UseAsXvalue      => 1,
                 UseAsValueSeries => 1,
                 UseAsRestriction => 1,
@@ -452,7 +460,7 @@ sub GetObjectAttributes {
                 Values           => \%UserList,
             },
             {
-                Name             => 'Responsible',
+                Name             => Translatable('Responsible'),
                 UseAsXvalue      => 1,
                 UseAsValueSeries => 1,
                 UseAsRestriction => 1,
@@ -468,22 +476,21 @@ sub GetObjectAttributes {
 
     if ( $ConfigObject->Get('Stats::CustomerIDAsMultiSelect') ) {
 
-        # Get CustomerID
-        # (This way also can be the solution for the CustomerUserID)
-        $Self->{DBSlaveObject}->Prepare(
+        # Get all CustomerIDs which are related to a ticket.
+        $DBObject->Prepare(
             SQL => "SELECT DISTINCT customer_id FROM ticket",
         );
 
         # fetch the result
         my %CustomerID;
-        while ( my @Row = $Self->{DBSlaveObject}->FetchrowArray() ) {
+        while ( my @Row = $DBObject->FetchrowArray() ) {
             if ( $Row[0] ) {
                 $CustomerID{ $Row[0] } = $Row[0];
             }
         }
 
         my %ObjectAttribute = (
-            Name             => 'CustomerID',
+            Name             => Translatable('CustomerID'),
             UseAsXvalue      => 1,
             UseAsValueSeries => 1,
             UseAsRestriction => 1,
@@ -496,22 +503,102 @@ sub GetObjectAttributes {
     }
     else {
 
+        my @CustomerIDAttributes = (
+            {
+                Name             => Translatable('CustomerID (complex search)'),
+                UseAsXvalue      => 0,
+                UseAsValueSeries => 0,
+                UseAsRestriction => 1,
+                Element          => 'CustomerID',
+                Block            => 'InputField',
+            },
+            {
+                Name             => Translatable('CustomerID (exact match)'),
+                UseAsXvalue      => 0,
+                UseAsValueSeries => 0,
+                UseAsRestriction => 1,
+                Element          => 'CustomerIDRaw',
+                Block            => 'InputField',
+            },
+        );
+
+        push @ObjectAttributes, @CustomerIDAttributes;
+    }
+
+    if ( $ConfigObject->Get('Stats::CustomerUserLoginsAsMultiSelect') ) {
+
+        # Get all CustomerUserLogins which are related to a tiket.
+        $DBObject->Prepare(
+            SQL => "SELECT DISTINCT customer_user_id FROM ticket",
+        );
+
+        # fetch the result
+        my %CustomerUserIDs;
+        while ( my @Row = $DBObject->FetchrowArray() ) {
+            if ( $Row[0] ) {
+                $CustomerUserIDs{ $Row[0] } = $Row[0];
+            }
+        }
+
         my %ObjectAttribute = (
-            Name             => 'CustomerID',
-            UseAsXvalue      => 0,
-            UseAsValueSeries => 0,
+            Name             => Translatable('Assigned to Customer User Login'),
+            UseAsXvalue      => 1,
+            UseAsValueSeries => 1,
             UseAsRestriction => 1,
-            Element          => 'CustomerID',
-            Block            => 'InputField',
+            Element          => 'CustomerUserLoginRaw',
+            Block            => 'MultiSelectField',
+            Values           => \%CustomerUserIDs,
         );
 
         push @ObjectAttributes, \%ObjectAttribute;
     }
+    else {
+
+        my @CustomerUserAttributes = (
+            {
+                Name             => Translatable('Assigned to Customer User Login (complex search)'),
+                UseAsXvalue      => 0,
+                UseAsValueSeries => 0,
+                UseAsRestriction => 1,
+                Element          => 'CustomerUserLogin',
+                Block            => 'InputField',
+            },
+            {
+                Name               => Translatable('Assigned to Customer User Login (exact match)'),
+                UseAsXvalue        => 0,
+                UseAsValueSeries   => 0,
+                UseAsRestriction   => 1,
+                Element            => 'CustomerUserLoginRaw',
+                Block              => 'InputField',
+                CSSClass           => 'CustomerAutoCompleteSimple',
+                HTMLDataAttributes => {
+                    'customer-search-type' => 'CustomerUser',
+                },
+            },
+        );
+
+        push @ObjectAttributes, @CustomerUserAttributes;
+    }
+
+    # Add always the field for the customer user login accessible tickets as auto complete field.
+    my %ObjectAttribute = (
+        Name               => Translatable('Accessible to Customer User Login (exact match)'),
+        UseAsXvalue        => 0,
+        UseAsValueSeries   => 0,
+        UseAsRestriction   => 1,
+        Element            => 'CustomerUserID',
+        Block              => 'InputField',
+        CSSClass           => 'CustomerAutoCompleteSimple',
+        HTMLDataAttributes => {
+            'customer-search-type' => 'CustomerUser',
+        },
+    );
+    push @ObjectAttributes, \%ObjectAttribute;
 
     if ( $ConfigObject->Get('Ticket::ArchiveSystem') ) {
 
         my %ObjectAttribute = (
-            Name             => 'Archive Search',
+            Name             => Translatable('Archive Search'),
             UseAsXvalue      => 0,
             UseAsValueSeries => 0,
             UseAsRestriction => 1,
@@ -519,9 +606,9 @@ sub GetObjectAttributes {
             Block            => 'SelectField',
             Translation      => 1,
             Values           => {
-                ArchivedTickets    => 'Archived tickets',
-                NotArchivedTickets => 'Unarchived tickets',
-                AllTickets         => 'All tickets',
+                ArchivedTickets    => Translatable('Archived tickets'),
+                NotArchivedTickets => Translatable('Unarchived tickets'),
+                AllTickets         => Translatable('All tickets'),
             },
         );
 
@@ -631,7 +718,7 @@ sub GetObjectAttributes {
                     Element          => $DynamicFieldStatsParameter->{Element},
                     Block            => $DynamicFieldStatsParameter->{Block},
                     Values           => $DynamicFieldStatsParameter->{Values},
-                    Translation      => 0,
+                    Translation      => $DynamicFieldStatsParameter->{TranslatableValues} || 0,
                     IsDynamicField   => 1,
                     ShowAsTree       => $DynamicFieldConfig->{Config}->{TreeView} || 0,
                 );
@@ -656,17 +743,31 @@ sub GetObjectAttributes {
     return @ObjectAttributes;
 }
 
+sub GetStatElementPreview {
+    my ( $Self, %Param ) = @_;
+
+    return int rand 50;
+}
+
 sub GetStatElement {
     my ( $Self, %Param ) = @_;
 
     # get dynamic field backend object
     my $DynamicFieldBackendObject = $Kernel::OM->Get('Kernel::System::DynamicField::Backend');
+    my $DBObject                  = $Kernel::OM->Get('Kernel::System::DB');
+    my $ConfigObject              = $Kernel::OM->Get('Kernel::Config');
 
     # escape search attributes for ticket search
     my %AttributesToEscape = (
         'CustomerID' => 1,
         'Title'      => 1,
     );
+
+    # Map the CustomerID search parameter to CustomerIDRaw search parameter for the
+    #   exact search match, if the 'Stats::CustomerIDAsMultiSelect' is active.
+    if ( $ConfigObject->Get('Stats::CustomerIDAsMultiSelect') ) {
+        $Param{CustomerIDRaw} = $Param{CustomerID};
+    }
 
     for my $ParameterName ( sort keys %Param ) {
         if (
@@ -720,19 +821,18 @@ sub GetStatElement {
             if ( ref $Param{$ParameterName} ) {
                 if ( ref $Param{$ParameterName} eq 'ARRAY' ) {
                     $Param{$ParameterName} = [
-                        map { $Self->{DBSlaveObject}->QueryStringEscape( QueryString => $_ ) }
+                        map { $DBObject->QueryStringEscape( QueryString => $_ ) }
                             @{ $Param{$ParameterName} }
                     ];
                 }
             }
             else {
-                $Param{$ParameterName}
-                    = $Self->{DBSlaveObject}->QueryStringEscape( QueryString => $Param{$ParameterName} );
+                $Param{$ParameterName} = $DBObject->QueryStringEscape( QueryString => $Param{$ParameterName} );
             }
         }
     }
 
-    if ( $Kernel::OM->Get('Kernel::Config')->Get('Ticket::ArchiveSystem') ) {
+    if ( $ConfigObject->Get('Ticket::ArchiveSystem') ) {
         $Param{SearchInArchive} ||= '';
         if ( $Param{SearchInArchive} eq 'AllTickets' ) {
             $Param{ArchiveFlags} = [ 'y', 'n' ];
@@ -752,7 +852,7 @@ sub GetStatElement {
         Permission => 'ro',
         Limit      => 100_000_000,
         %Param,
-    );
+    ) || 0;
 }
 
 sub ExportWrapper {

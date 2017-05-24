@@ -1,6 +1,5 @@
 # --
-# Kernel/GenericInterface/Invoker/TestSimple.pm - GenericInterface test data Invoker backend
-# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -20,15 +19,9 @@ our $ObjectManagerDisabled = 1;
 
 Kernel::GenericInterface::Invoker::Test::Test - GenericInterface test Invoker backend
 
-=head1 SYNOPSIS
-
 =head1 PUBLIC INTERFACE
 
-=over 4
-
-=cut
-
-=item new()
+=head2 new()
 
 usually, you want to create an instance of this
 by using Kernel::GenericInterface::Invoker->new();
@@ -55,9 +48,9 @@ sub new {
     return $Self;
 }
 
-=item PrepareRequest()
+=head2 PrepareRequest()
 
-prepare the invocation of the configured remote webservice.
+prepare the invocation of the configured remote web service.
 This will just return the data that was passed to the function.
 
     my $Result = $InvokerObject->PrepareRequest(
@@ -85,9 +78,9 @@ sub PrepareRequest {
     };
 }
 
-=item HandleResponse()
+=head2 HandleResponse()
 
-handle response data of the configured remote webservice.
+handle response data of the configured remote web service.
 This will just return the data that was passed to the function.
 
     my $Result = $InvokerObject->HandleResponse(
@@ -119,6 +112,28 @@ sub HandleResponse {
         };
     }
 
+    if ( $Param{Data}->{ResponseContent} && $Param{Data}->{ResponseContent} =~ m{ReSchedule=1} ) {
+
+        # ResponseContent has URI like params, convert them into a hash
+        my %QueryParams = split /[&=]/, $Param{Data}->{ResponseContent};
+
+        # unscape URI strings in query parameters
+        for my $Param ( sort keys %QueryParams ) {
+            $QueryParams{$Param} = URI::Escape::uri_unescape( $QueryParams{$Param} );
+        }
+
+        # fix ExecutrionTime param
+        if ( $QueryParams{ExecutionTime} ) {
+            $QueryParams{ExecutionTime} =~ s{(\d+)\+(\d+)}{$1 $2};
+        }
+
+        return {
+            Success      => 0,
+            ErrorMessage => 'Re-Scheduling...',
+            Data         => \%QueryParams,
+        };
+    }
+
     return {
         Success => 1,
         Data    => $Param{Data},
@@ -126,8 +141,6 @@ sub HandleResponse {
 }
 
 1;
-
-=back
 
 =head1 TERMS AND CONDITIONS
 

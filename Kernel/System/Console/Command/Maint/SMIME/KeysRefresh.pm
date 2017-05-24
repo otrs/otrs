@@ -1,6 +1,5 @@
 # --
-# Kernel/System/Console/Command/Maint/SMIME/KeysRefresh.pm - console command
-# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -12,7 +11,7 @@ package Kernel::System::Console::Command::Maint::SMIME::KeysRefresh;
 use strict;
 use warnings;
 
-use base qw(Kernel::System::Console::BaseCommand);
+use parent qw(Kernel::System::Console::BaseCommand);
 
 our @ObjectDependencies = (
     'Kernel::Config',
@@ -31,7 +30,7 @@ sub Configure {
     );
     $Self->AddOption(
         Name        => 'force',
-        Description => "force to execute even if SMIME is not enabled in SysConfig.",
+        Description => "Execute even if SMIME is not enabled in SysConfig.",
         Required    => 0,
         HasValue    => 0,
         ValueRegex  => qr/.*/smx,
@@ -57,7 +56,7 @@ sub PreRun {
         die "SMIME is not activated in SysConfig!\n";
     }
 
-    my $OpenSSLBin = $ConfigObject->Get('SMIME::Bin');
+    my $OpenSSLBin = $ConfigObject->Get('SMIME::Bin') || '/usr/bin/openssl';
     if ( !-e $OpenSSLBin ) {
         die "OpenSSL binary $OpenSSLBin does not exists!\n";
     }
@@ -122,15 +121,3 @@ sub Run {
 }
 
 1;
-
-=back
-
-=head1 TERMS AND CONDITIONS
-
-This software is part of the OTRS project (L<http://otrs.org/>).
-
-This software comes with ABSOLUTELY NO WARRANTY. For details, see
-the enclosed file COPYING for license information (AGPL). If you
-did not receive this file, see L<http://www.gnu.org/licenses/agpl.txt>.
-
-=cut

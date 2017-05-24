@@ -1,6 +1,5 @@
 # --
-# AdminSession.t - frontend tests for AdminSession
-# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -13,25 +12,16 @@ use utf8;
 
 use vars (qw($Self));
 
-use Kernel::System::UnitTest::Helper;
-use Kernel::System::UnitTest::Selenium;
-
-# get needed objects
-my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
-
-my $Selenium = Kernel::System::UnitTest::Selenium->new(
-    Verbose => 1,
-);
+# get selenium object
+my $Selenium = $Kernel::OM->Get('Kernel::System::UnitTest::Selenium');
 
 $Selenium->RunTest(
     sub {
 
-        my $Helper = Kernel::System::UnitTest::Helper->new(
-            RestoreSystemConfiguration => 0,
-        );
+        # get helper object
+        my $Helper = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
 
-        my $AuthSessionObject = $Kernel::OM->Get('Kernel::System::AuthSession');
-
+        # create test user and login
         my $TestUserLogin = $Helper->TestUserCreate(
             Groups => ['admin'],
         ) || die "Did not get test user";
@@ -42,10 +32,12 @@ $Selenium->RunTest(
             Password => $TestUserLogin,
         );
 
+        # get authsession object
+        my $AuthSessionObject = $Kernel::OM->Get('Kernel::System::AuthSession');
+
+        # check current sessions
         my $CurrentSessionID;
-
         my @SessionIDs = $AuthSessionObject->GetAllSessionIDs();
-
         SESSION_ID:
         for my $SessionID (@SessionIDs) {
             my %SessionData = $AuthSessionObject->GetSessionIDData(
@@ -63,9 +55,17 @@ $Selenium->RunTest(
             "Current session ID found for user $TestUserLogin",
         ) || return;
 
-        my $ScriptAlias = $ConfigObject->Get('ScriptAlias');
+        # get script alias
+        my $ScriptAlias = $Kernel::OM->Get('Kernel::Config')->Get('ScriptAlias');
 
-        $Selenium->get("${ScriptAlias}index.pl?Action=AdminSession");
+        # navigate to AdminSession screen
+        $Selenium->VerifiedGet("${ScriptAlias}index.pl?Action=AdminSession");
+
+        # check breadcrumb on Overview screen
+        $Self->True(
+            $Selenium->find_element( '.BreadCrumb', 'css' ),
+            "Breadcrumb is found on Overview screen.",
+        );
 
         $Self->True(
             index( $Selenium->get_page_source(), $CurrentSessionID ) > -1,
@@ -73,7 +73,7 @@ $Selenium->RunTest(
         );
         $Selenium->find_element( "table", 'css' );
 
-        $Selenium->get(
+        $Selenium->VerifiedGet(
             "${ScriptAlias}index.pl?Action=AdminSession;Subaction=Detail;WantSessionID=$CurrentSessionID"
         );
 
@@ -85,23 +85,28 @@ $Selenium->RunTest(
             index( $Selenium->get_page_source(), $TestUserLogin ) > -1,
             'UserLogin found on page',
         );
-        $Self->True(
-            index( $Selenium->get_page_source(), 'UserIsGroup[admin]' ) > -1,
-            'UserIsGroup[admin] found on page',
-        );
-        $Self->True(
-            index( $Selenium->get_page_source(), 'UserIsGroupRo[admin]' ) > -1,
-            'UserIsGroupRo[admin] found on page',
-        );
 
         $Selenium->find_element( "table", 'css' );
 
+        # check breadcrumb on detail view screen
+        my $Count                    = 1;
+        my $DetailViewBreadcrumbText = "Detail Session View for User: $TestUserLogin $TestUserLogin";
+        for my $BreadcrumbText ( 'Session Management', $DetailViewBreadcrumbText ) {
+            $Self->Is(
+                $Selenium->execute_script("return \$('.BreadCrumb li:eq($Count)').text().trim()"),
+                $BreadcrumbText,
+                "Breadcrumb text '$BreadcrumbText' is found on screen"
+            );
+
+            $Count++;
+        }
+
         # kill current session, this means a logout effectively
-        $Selenium->find_element( "a#KillThisSession", 'css' )->click();
+        $Selenium->find_element( "a#KillThisSession", 'css' )->VerifiedClick();
 
         # make sure that we now see the login screen
         $Selenium->find_element( "#LoginBox", 'css' );
-        }
+    }
 );
 
 1;

@@ -1,6 +1,5 @@
 # --
-# Kernel/System/SupportDataCollector/Plugin/OTRS/DatabaseRecords.pm - system data collector plugin
-# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -12,14 +11,17 @@ package Kernel::System::SupportDataCollector::Plugin::OTRS::DatabaseRecords;
 use strict;
 use warnings;
 
-use base qw(Kernel::System::SupportDataCollector::PluginBase);
+use parent qw(Kernel::System::SupportDataCollector::PluginBase);
+
+use Kernel::Language qw(Translatable);
 
 our @ObjectDependencies = (
+    'Kernel::Config',
     'Kernel::System::DB',
 );
 
 sub GetDisplayPath {
-    return 'OTRS/Database Records';
+    return Translatable('OTRS') . '/' . Translatable('Database Records');
 }
 
 sub Run {
@@ -29,63 +31,63 @@ sub Run {
         {
             SQL        => "SELECT count(*) FROM ticket",
             Identifier => 'TicketCount',
-            Label      => "Tickets",
+            Label      => Translatable("Tickets"),
         },
         {
             SQL        => "SELECT count(*) FROM ticket_history",
             Identifier => 'TicketHistoryCount',
-            Label      => "Ticket History Entries",
+            Label      => Translatable("Ticket History Entries"),
         },
         {
             SQL        => "SELECT count(*) FROM article",
             Identifier => 'ArticleCount',
-            Label      => "Articles",
+            Label      => Translatable("Articles"),
         },
         {
             SQL =>
-                "SELECT count(*) from article_attachment WHERE content_type NOT LIKE 'text/html%'",
+                "SELECT count(*) from article_data_mime_attachment WHERE content_type NOT LIKE 'text/html%'",
             Identifier => 'AttachmentCountDBNonHTML',
-            Label      => "Attachments (DB, Without HTML)",
+            Label      => Translatable("Attachments (DB, Without HTML)"),
         },
         {
             SQL        => "SELECT count(DISTINCT(customer_user_id)) FROM ticket",
             Identifier => 'DistinctTicketCustomerCount',
-            Label      => "Customers With At Least One Ticket",
+            Label      => Translatable("Customers With At Least One Ticket"),
         },
         {
             SQL        => "SELECT count(*) FROM queue",
             Identifier => 'QueueCount',
-            Label      => "Queues",
+            Label      => Translatable("Queues"),
         },
         {
             SQL        => "SELECT count(*) FROM users",
             Identifier => 'AgentCount',
-            Label      => "Agents",
+            Label      => Translatable("Agents"),
         },
         {
             SQL        => "SELECT count(*) FROM roles",
             Identifier => 'RoleCount',
-            Label      => "Roles",
+            Label      => Translatable("Roles"),
         },
         {
             SQL        => "SELECT count(*) FROM groups",
             Identifier => 'GroupCount',
-            Label      => "Groups",
+            Label      => Translatable("Groups"),
         },
         {
             SQL        => "SELECT count(*) FROM dynamic_field",
             Identifier => 'DynamicFieldCount',
-            Label      => "Dynamic Fields",
+            Label      => Translatable("Dynamic Fields"),
         },
         {
             SQL        => "SELECT count(*) FROM dynamic_field_value",
             Identifier => 'DynamicFieldValueCount',
-            Label      => "Dynamic Field Values",
+            Label      => Translatable("Dynamic Field Values"),
         },
         {
             SQL        => "SELECT count(*) FROM dynamic_field WHERE valid_id > 1",
             Identifier => 'InvalidDynamicFieldCount',
-            Label      => "Invalid Dynamic Fields",
+            Label      => Translatable("Invalid Dynamic Fields"),
         },
         {
             SQL => "
@@ -94,17 +96,28 @@ sub Run {
                     JOIN dynamic_field ON dynamic_field.id = dynamic_field_value.field_id
                 WHERE dynamic_field.valid_id > 1",
             Identifier => 'InvalidDynamicFieldValueCount',
-            Label      => "Invalid Dynamic Field Values",
+            Label      => Translatable("Invalid Dynamic Field Values"),
         },
         {
             SQL        => "SELECT count(*) FROM gi_webservice_config",
             Identifier => 'WebserviceCount',
-            Label      => "GenericInterface Webservices",
+            Label      => Translatable("GenericInterface Webservices"),
         },
         {
             SQL        => "SELECT count(*) FROM pm_process",
             Identifier => 'ProcessCount',
-            Label      => "Processes",
+            Label      => Translatable("Processes"),
+        },
+        {
+            SQL => "
+                SELECT count(*)
+                FROM dynamic_field df
+                    LEFT JOIN dynamic_field_value dfv ON df.id = dfv.field_id
+                    RIGHT JOIN ticket t ON t.id = dfv.object_id
+                WHERE df.name = '"
+                . $Kernel::OM->Get('Kernel::Config')->Get("Process::DynamicFieldProcessManagementProcessID") . "'",
+            Identifier => 'ProcessTickets',
+            Label      => Translatable("Process Tickets"),
         },
     );
 
@@ -131,7 +144,7 @@ sub Run {
                 Identifier => $Check->{Identifier},
                 Label      => $Check->{Label},
                 Value      => $Counts{ $Check->{Identifier} },
-                Message    => 'Could not determine value.',
+                Message    => Translatable('Could not determine value.'),
             );
         }
     }
@@ -151,28 +164,16 @@ sub Run {
 
     $Self->AddResultInformation(
         Identifier => 'TicketWindowTime',
-        Label      => 'Months Between First And Last Ticket',
+        Label      => Translatable('Months Between First And Last Ticket'),
         Value      => sprintf( "%.02f", $TicketWindowTime ),
     );
     $Self->AddResultInformation(
         Identifier => 'TicketsPerMonth',
-        Label      => 'Tickets Per Month (avg)',
+        Label      => Translatable('Tickets Per Month (avg)'),
         Value      => sprintf( "%.02f", $Counts{TicketCount} / $TicketWindowTime ),
     );
 
     return $Self->GetResults();
 }
-
-=back
-
-=head1 TERMS AND CONDITIONS
-
-This software is part of the OTRS project (L<http://otrs.org/>).
-
-This software comes with ABSOLUTELY NO WARRANTY. For details, see
-the enclosed file COPYING for license information (AGPL). If you
-did not receive this file, see L<http://www.gnu.org/licenses/agpl.txt>.
-
-=cut
 
 1;

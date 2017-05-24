@@ -1,6 +1,5 @@
 # --
-# Kernel/System/NotificationEvent.pm - notification system module
-# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -12,32 +11,31 @@ package Kernel::System::NotificationEvent;
 use strict;
 use warnings;
 
+use Kernel::Language qw(Translatable);
+use Kernel::System::VariableCheck qw(:all);
+
 our @ObjectDependencies = (
     'Kernel::System::DB',
     'Kernel::System::Log',
     'Kernel::System::Valid',
+    'Kernel::System::YAML',
+    'Kernel::System::Cache'
 );
 
 =head1 NAME
 
 Kernel::System::NotificationEvent - to manage the notifications
 
-=head1 SYNOPSIS
+=head1 DESCRIPTION
 
 All functions to manage the notification and the notification jobs.
 
 =head1 PUBLIC INTERFACE
 
-=over 4
+=head2 new()
 
-=cut
+Don't use the constructor directly, use the ObjectManager instead:
 
-=item new()
-
-create an object. Do not use it directly, instead use:
-
-    use Kernel::System::ObjectManager;
-    local $Kernel::OM = Kernel::System::ObjectManager->new();
     my $NotificationEventObject = $Kernel::OM->Get('Kernel::System::NotificationEvent');
 
 =cut
@@ -49,40 +47,128 @@ sub new {
     my $Self = {};
     bless( $Self, $Type );
 
+    $Self->{CacheType} = 'NotificationEvent';
+    $Self->{CacheTTL}  = 60 * 60 * 24 * 20;
     return $Self;
 }
 
-=item NotificationList()
+=head2 NotificationList()
 
 returns a hash of all notifications
 
-    my %List = $NotificationEventObject->NotificationList();
+    my %List = $NotificationEventObject->NotificationList(
+        Type    => 'Ticket', # type of notifications; default: 'Ticket'
+        Details => 1,        # include notification detailed data. possible (0|1) # ; default: 0
+        All     => 1,        # optional: if given all notification types will be returned, even if type is given (possible: 0|1)
+    );
 
 =cut
 
 sub NotificationList {
     my ( $Self, %Param ) = @_;
 
+    $Param{Type} ||= 'Ticket';
+    $Param{Details} = $Param{Details} ? 1 : 0;
+    $Param{All}     = $Param{All}     ? 1 : 0;
+
+    my $CacheObject = $Kernel::OM->Get('Kernel::System::Cache');
+
+    my $CacheKey    = $Self->{CacheType} . '::' . $Param{Type} . '::' . $Param{Details} . '::' . $Param{All};
+    my $CacheResult = $CacheObject->Get(
+        Type => $Self->{CacheType},
+        Key  => $CacheKey,
+    );
+
+    if ( ref $CacheResult eq 'HASH' ) {
+        return %{$CacheResult};
+    }
+
     # get database object
     my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
 
-    $DBObject->Prepare( SQL => 'SELECT id, name FROM notification_event' );
+    $DBObject->Prepare( SQL => 'SELECT id FROM notification_event' );
 
-    my %Data;
+    my @NotificationList;
     while ( my @Row = $DBObject->FetchrowArray() ) {
-        $Data{ $Row[0] } = $Row[1];
+        push @NotificationList, $Row[0];
     }
 
-    return %Data;
+    my %Result;
+
+    ITEMID:
+    for my $ItemID ( sort @NotificationList ) {
+
+        my %NotificationData = $Self->NotificationGet(
+            ID     => $ItemID,
+            UserID => 1,
+        );
+
+        $NotificationData{Data}->{NotificationType} ||= ['Ticket'];
+
+        if ( !$Param{All} ) {
+            next ITEMID if $NotificationData{Data}->{NotificationType}->[0] ne $Param{Type};
+        }
+
+        if ( $Param{Details} ) {
+            $Result{$ItemID} = \%NotificationData;
+        }
+        else {
+            $Result{$ItemID} = $NotificationData{Name};
+        }
+    }
+
+    $CacheObject->Set(
+        Type  => $Self->{CacheType},
+        Key   => $CacheKey,
+        Value => \%Result,
+        TTL   => $Self->{CacheTTL},
+    );
+
+    return %Result;
 }
 
-=item NotificationGet()
+=head2 NotificationGet()
 
 returns a hash of the notification data
 
-    my %Notification = $NotificationEventObject->NotificationGet( Name => 'NotificationName' );
+    my %Notification = $NotificationEventObject->NotificationGet(
+        Name => 'NotificationName',
+    );
 
-    my %Notification = $NotificationEventObject->NotificationGet( ID => 123 );
+    my %Notification = $NotificationEventObject->NotificationGet(
+        ID => 1,
+    );
+
+Returns:
+
+    %Notification = (
+        ID      => 123,
+        Name    => 'Agent::Move',
+        Data => {
+            Events => [ 'TicketQueueUpdate' ],
+            ...
+            Queue => [ 'SomeQueue' ],
+        },
+        Message => {
+            en => {
+                Subject     => 'Hello',
+                Body        => 'Hello World',
+                ContentType => 'text/plain',
+            },
+            de => {
+                Subject     => 'Hallo',
+                Body        => 'Hallo Welt',
+                ContentType => 'text/plain',
+            },
+        },
+        Comment    => 'An optional comment',
+        ValidID    => 1,
+        CreateTime => '2010-10-27 20:15:00',
+        CreateBy   => 2,
+        ChangeTime => '2010-10-27 20:15:00',
+        ChangeBy   => 1,
+        UserID     => 3,
+    );
 
 =cut
 
@@ -93,7 +179,7 @@ sub NotificationGet {
     if ( !$Param{Name} && !$Param{ID} ) {
         $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'error',
-            Message  => 'Need Name or ID!'
+            Message  => 'Need Name or ID!',
         );
         return;
     }
@@ -101,44 +187,48 @@ sub NotificationGet {
     # get database object
     my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
 
+    # general query structure
+    my $SQL = '
+        SELECT id, name, valid_id, comments, create_time, create_by, change_time, change_by
+        FROM notification_event
+        WHERE ';
+
     if ( $Param{Name} ) {
+
         $DBObject->Prepare(
-            SQL => 'SELECT id, name, subject, text, content_type, charset, valid_id, '
-                . 'comments, create_time, create_by, change_time, change_by '
-                . 'FROM notification_event WHERE name = ?',
+            SQL  => $SQL . 'name = ?',
             Bind => [ \$Param{Name} ],
         );
     }
     else {
         $DBObject->Prepare(
-            SQL => 'SELECT id, name, subject, text, content_type, charset, valid_id, '
-                . 'comments, create_time, create_by, change_time, change_by '
-                . 'FROM notification_event WHERE id = ?',
+            SQL  => $SQL . 'id = ?',
             Bind => [ \$Param{ID} ],
         );
     }
 
+    # get notification event data
     my %Data;
     while ( my @Row = $DBObject->FetchrowArray() ) {
         $Data{ID}         = $Row[0];
         $Data{Name}       = $Row[1];
-        $Data{Subject}    = $Row[2];
-        $Data{Body}       = $Row[3];
-        $Data{Type}       = $Row[4];
-        $Data{Charset}    = $Row[5];
-        $Data{ValidID}    = $Row[6];
-        $Data{Comment}    = $Row[7];
-        $Data{CreateTime} = $Row[8];
-        $Data{CreateBy}   = $Row[9];
-        $Data{ChangeTime} = $Row[10];
-        $Data{ChangeBy}   = $Row[11];
+        $Data{ValidID}    = $Row[2];
+        $Data{Comment}    = $Row[3];
+        $Data{CreateTime} = $Row[4];
+        $Data{CreateBy}   = $Row[5];
+        $Data{ChangeTime} = $Row[6];
+        $Data{ChangeBy}   = $Row[7];
     }
 
     return if !%Data;
 
+    # get notification event item data
     $DBObject->Prepare(
-        SQL => 'SELECT event_key, event_value FROM notification_event_item ' .
-            ' WHERE notification_id = ?',
+        SQL => '
+            SELECT event_key, event_value
+            FROM notification_event_item
+            WHERE notification_id = ?
+            ORDER BY event_key, event_value ASC',
         Bind => [ \$Data{ID} ],
     );
 
@@ -146,25 +236,52 @@ sub NotificationGet {
         push @{ $Data{Data}->{ $Row[0] } }, $Row[1];
     }
 
+    # get notification event message data
+    $DBObject->Prepare(
+        SQL => '
+            SELECT subject, text, content_type, language
+            FROM notification_event_message
+            WHERE notification_id = ?',
+        Bind => [ \$Data{ID} ],
+    );
+
+    while ( my @Row = $DBObject->FetchrowArray() ) {
+
+        # add to message hash with the language as key
+        $Data{Message}->{ $Row[3] } = {
+            Subject     => $Row[0],
+            Body        => $Row[1],
+            ContentType => $Row[2],
+        };
+    }
+
     return %Data;
 }
 
-=item NotificationAdd()
+=head2 NotificationAdd()
 
 adds a new notification to the database
 
     my $ID = $NotificationEventObject->NotificationAdd(
-        Name    => 'JobName',
-        Subject => 'JobName',
-        Body    => 'JobName',
-        Type    => 'text/plain',
-        Charset => 'iso-8895-1',
+        Name => 'Agent::OwnerUpdate',
         Data => {
-            Events => [ 'TicketQueueUpdate', ],
+            Events => [ 'TicketQueueUpdate' ],
             ...
-            Queue => [ 'SomeQueue', ],
+            Queue => [ 'SomeQueue' ],
         },
-        Comment => 'An optional comment', # Optional
+        Message => {
+            en => {
+                Subject     => 'Hello',
+                Body        => 'Hello World',
+                ContentType => 'text/plain',
+            },
+            de => {
+                Subject     => 'Hallo',
+                Body        => 'Hallo Welt',
+                ContentType => 'text/plain',
+            },
+        },
+        Comment => 'An optional comment', # (optional)
         ValidID => 1,
         UserID  => 123,
     );
@@ -175,18 +292,20 @@ sub NotificationAdd {
     my ( $Self, %Param ) = @_;
 
     # check needed stuff
-    for (qw(Name Subject Body Type Charset Data UserID)) {
-        if ( !$Param{$_} ) {
+    for my $Argument (qw(Name Data Message ValidID UserID)) {
+        if ( !$Param{$Argument} ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
-                Message  => "Need $_!"
+                Message  => "Need $Argument!",
             );
             return;
         }
     }
 
     # check if job name already exists
-    my %Check = $Self->NotificationGet( Name => $Param{Name} );
+    my %Check = $Self->NotificationGet(
+        Name => $Param{Name},
+    );
     if (%Check) {
         $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'error',
@@ -195,22 +314,46 @@ sub NotificationAdd {
         return;
     }
 
+    # check message parameter
+    if ( !IsHashRefWithData( $Param{Message} ) ) {
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
+            Priority => 'error',
+            Message  => "Need Message!",
+        );
+        return;
+    }
+
+    # check each argument for each message language
+    for my $Language ( sort keys %{ $Param{Message} } ) {
+
+        for my $Argument (qw(Subject Body ContentType)) {
+
+            # error if message data is incomplete
+            if ( !$Param{Message}->{$Language}->{$Argument} ) {
+                $Kernel::OM->Get('Kernel::System::Log')->Log(
+                    Priority => 'error',
+                    Message  => "Need Message argument '$Argument' for language '$Language'!",
+                );
+                return;
+            }
+
+            # fix some bad stuff from some browsers (Opera)!
+            $Param{Message}->{$Language}->{Body} =~ s/(\n\r|\r\r\n|\r\n|\r)/\n/g;
+        }
+    }
+
     # get database object
     my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
 
-    # fix some bad stuff from some browsers (Opera)!
-    $Param{Body} =~ s/(\n\r|\r\r\n|\r\n|\r)/\n/g;
-
     # insert data into db
     return if !$DBObject->Do(
-        SQL => 'INSERT INTO notification_event '
-            . '(name, subject, text, content_type, charset, valid_id, comments, '
-            . 'create_time, create_by, change_time, change_by) VALUES '
-            . '(?, ?, ?, ?, ?, ?, ?, current_timestamp, ?, current_timestamp, ?)',
+        SQL => '
+            INSERT INTO notification_event
+                (name, valid_id, comments, create_time, create_by, change_time, change_by)
+            VALUES (?, ?, ?, current_timestamp, ?, current_timestamp, ?)',
         Bind => [
-            \$Param{Name},    \$Param{Subject}, \$Param{Body},
-            \$Param{Type},    \$Param{Charset}, \$Param{ValidID},
-            \$Param{Comment}, \$Param{UserID},  \$Param{UserID},
+            \$Param{Name}, \$Param{ValidID}, \$Param{Comment},
+            \$Param{UserID}, \$Param{UserID},
         ],
     );
 
@@ -225,8 +368,16 @@ sub NotificationAdd {
         $ID = $Row[0];
     }
 
-    return if !$ID;
+    # error handling
+    if ( !$ID ) {
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
+            Priority => 'error',
+            Message  => "Could not get ID for just added notification '$Param{Name}'!",
+        );
+        return;
+    }
 
+    # insert notification event item data
     for my $Key ( sort keys %{ $Param{Data} } ) {
 
         ITEM:
@@ -235,34 +386,70 @@ sub NotificationAdd {
             next ITEM if !defined $Item;
             next ITEM if $Item eq '';
 
-            $DBObject->Do(
-                SQL => 'INSERT INTO notification_event_item '
-                    . '(notification_id, event_key, event_value) VALUES (?, ?, ?)',
+            return if !$DBObject->Do(
+                SQL => '
+                    INSERT INTO notification_event_item
+                        (notification_id, event_key, event_value)
+                    VALUES (?, ?, ?)',
                 Bind => [ \$ID, \$Key, \$Item ],
             );
         }
     }
 
+    # insert notification event message data
+    for my $Language ( sort keys %{ $Param{Message} } ) {
+
+        my %Message = %{ $Param{Message}->{$Language} };
+
+        return if !$DBObject->Do(
+            SQL => '
+                INSERT INTO notification_event_message
+                    (notification_id, subject, text, content_type, language)
+                VALUES (?, ?, ?, ?, ?)',
+            Bind => [
+                \$ID,
+                \$Message{Subject},
+                \$Message{Body},
+                \$Message{ContentType},
+                \$Language,
+            ],
+        );
+    }
+
+    $Kernel::OM->Get('Kernel::System::Cache')->CleanUp(
+        Type => $Self->{CacheType},
+    );
+
     return $ID;
 }
 
-=item NotificationUpdate()
+=head2 NotificationUpdate()
 
 update a notification in database
 
     my $Ok = $NotificationEventObject->NotificationUpdate(
         ID      => 123,
-        Name    => 'JobName',
-        Subject => 'JobName',
-        Body    => 'JobName',
-        Type    => 'text/plain',
-        Charset => 'utf8',
+        Name    => 'Agent::OwnerUpdate',
         Data => {
-            Queue => [ 'SomeQueue', ],
+            Events => [ 'TicketQueueUpdate' ],
             ...
-            Valid => [ 1, ],
+            Queue => [ 'SomeQueue' ],
         },
-        UserID => 123,
+        Message => {
+            en => {
+                Subject     => 'Hello',
+                Body        => 'Hello World',
+                ContentType => 'text/plain',
+            },
+            de => {
+                Subject     => 'Hallo',
+                Body        => 'Hallo Welt',
+                ContentType => 'text/plain',
+            },
+        },
+        Comment => 'An optional comment',  # (optional)
+        ValidID => 1,
+        UserID  => 123,
     );
 
 =cut
@@ -271,40 +458,67 @@ sub NotificationUpdate {
     my ( $Self, %Param ) = @_;
 
     # check needed stuff
-    for (qw(ID Name Subject Body Type Charset Data UserID)) {
-        if ( !$Param{$_} ) {
+    for my $Argument (qw(ID Name Data Message ValidID UserID)) {
+        if ( !$Param{$Argument} ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
-                Message  => "Need $_!"
+                Message  => "Need $Argument!",
             );
             return;
+        }
+    }
+
+    # check message parameter
+    if ( !IsHashRefWithData( $Param{Message} ) ) {
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
+            Priority => 'error',
+            Message  => "Need Message!",
+        );
+        return;
+    }
+
+    # check each argument for each message language
+    for my $Language ( sort keys %{ $Param{Message} } ) {
+
+        for my $Argument (qw(Subject Body ContentType)) {
+
+            # error if message data is incomplete
+            if ( !$Param{Message}->{$Language}->{$Argument} ) {
+                $Kernel::OM->Get('Kernel::System::Log')->Log(
+                    Priority => 'error',
+                    Message  => "Need Message argument '$Argument' for language '$Language'!",
+                );
+                return;
+            }
+
+            # fix some bad stuff from some browsers (Opera)!
+            $Param{Message}->{$Language}->{Body} =~ s/(\n\r|\r\r\n|\r\n|\r)/\n/g;
         }
     }
 
     # get database object
     my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
 
-    # fix some bad stuff from some browsers (Opera)!
-    $Param{Body} =~ s/(\n\r|\r\r\n|\r\n|\r)/\n/g;
-
     # update data in db
     return if !$DBObject->Do(
-        SQL => 'UPDATE notification_event SET '
-            . 'name = ?, subject = ?, text = ?, content_type = ?, charset = ?, '
-            . 'valid_id = ?, comments = ?, '
-            . 'change_time = current_timestamp, change_by = ? WHERE id = ?',
+        SQL => '
+            UPDATE notification_event
+            SET name = ?, valid_id = ?, comments = ?, change_time = current_timestamp, change_by = ?
+            WHERE id = ?',
         Bind => [
-            \$Param{Name},    \$Param{Subject}, \$Param{Body},
-            \$Param{Type},    \$Param{Charset}, \$Param{ValidID},
-            \$Param{Comment}, \$Param{UserID},  \$Param{ID},
+            \$Param{Name},    \$Param{ValidID},
+            \$Param{Comment}, \$Param{UserID},
+            \$Param{ID},
         ],
     );
 
+    # delete existing notification event item data
     $DBObject->Do(
         SQL  => 'DELETE FROM notification_event_item WHERE notification_id = ?',
         Bind => [ \$Param{ID} ],
     );
 
+    # add new notification event item data
     for my $Key ( sort keys %{ $Param{Data} } ) {
 
         ITEM:
@@ -314,22 +528,58 @@ sub NotificationUpdate {
             next ITEM if $Item eq '';
 
             $DBObject->Do(
-                SQL => 'INSERT INTO notification_event_item '
-                    . '(notification_id, event_key, event_value) VALUES (?, ?, ?)',
-                Bind => [ \$Param{ID}, \$Key, \$Item ],
+                SQL => '
+                    INSERT INTO notification_event_item
+                        (notification_id, event_key, event_value)
+                    VALUES (?, ?, ?)',
+                Bind => [
+                    \$Param{ID},
+                    \$Key,
+                    \$Item,
+                ],
             );
         }
     }
 
+    # delete existing notification event message data
+    $DBObject->Do(
+        SQL  => 'DELETE FROM notification_event_message WHERE notification_id = ?',
+        Bind => [ \$Param{ID} ],
+    );
+
+    # insert new notification event message data
+    for my $Language ( sort keys %{ $Param{Message} } ) {
+
+        my %Message = %{ $Param{Message}->{$Language} };
+
+        $DBObject->Do(
+            SQL => '
+                INSERT INTO notification_event_message
+                    (notification_id, subject, text, content_type, language)
+                VALUES (?, ?, ?, ?, ?)',
+            Bind => [
+                \$Param{ID},
+                \$Message{Subject},
+                \$Message{Body},
+                \$Message{ContentType},
+                \$Language,
+            ],
+        );
+    }
+
+    $Kernel::OM->Get('Kernel::System::Cache')->CleanUp(
+        Type => $Self->{CacheType},
+    );
+
     return 1;
 }
 
-=item NotificationDelete()
+=head2 NotificationDelete()
 
 deletes an notification from the database
 
     $NotificationEventObject->NotificationDelete(
-        ID     => 123,
+        ID     => 1,
         UserID => 123,
     );
 
@@ -339,22 +589,24 @@ sub NotificationDelete {
     my ( $Self, %Param ) = @_;
 
     # check needed stuff
-    for (qw(ID UserID)) {
-        if ( !$Param{$_} ) {
+    for my $Argument (qw(ID UserID)) {
+        if ( !$Param{$Argument} ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
-                Message  => "Need $_!"
+                Message  => "Need $Argument!",
             );
             return;
         }
     }
 
     # check if job name exists
-    my %Check = $Self->NotificationGet( ID => $Param{ID} );
+    my %Check = $Self->NotificationGet(
+        ID => $Param{ID},
+    );
     if ( !%Check ) {
         $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'error',
-            Message  => "Can't delete notification '$Check{Name}', notification does not exist",
+            Message  => "Can't delete notification with ID '$Param{ID}'. Notification does not exist!",
         );
         return;
     }
@@ -362,16 +614,56 @@ sub NotificationDelete {
     # get database object
     my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
 
-    # delete notification
-    $DBObject->Do(
+    # delete notification event item
+    my $DeleteOK = $DBObject->Do(
         SQL  => 'DELETE FROM notification_event_item WHERE notification_id = ?',
         Bind => [ \$Param{ID} ],
     );
-    $DBObject->Do(
+
+    # error handling
+    if ( !$DeleteOK ) {
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
+            Priority => 'error',
+            Message  => "Can't delete notification_event_item with ID '$Param{ID}'!",
+        );
+        return;
+    }
+
+    # delete notification event message
+    $DeleteOK = $DBObject->Do(
+        SQL  => 'DELETE FROM notification_event_message WHERE notification_id = ?',
+        Bind => [ \$Param{ID} ],
+    );
+
+    # error handling
+    if ( !$DeleteOK ) {
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
+            Priority => 'error',
+            Message  => "Can't delete notification_event_message with ID '$Param{ID}'!",
+        );
+        return;
+    }
+
+    # delete notification event
+    $DeleteOK = $DBObject->Do(
         SQL  => 'DELETE FROM notification_event WHERE id = ?',
         Bind => [ \$Param{ID} ],
     );
 
+    # error handling
+    if ( !$DeleteOK ) {
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
+            Priority => 'error',
+            Message  => "Can't delete notification_event with ID '$Param{ID}'!",
+        );
+        return;
+    }
+
+    $Kernel::OM->Get('Kernel::System::Cache')->CleanUp(
+        Type => $Self->{CacheType},
+    );
+
+    # success
     $Kernel::OM->Get('Kernel::System::Log')->Log(
         Priority => 'notice',
         Message  => "NotificationEvent notification '$Check{Name}' deleted (UserID=$Param{UserID}).",
@@ -380,11 +672,13 @@ sub NotificationDelete {
     return 1;
 }
 
-=item NotificationEventCheck()
+=head2 NotificationEventCheck()
 
 returns array of notification affected by event
 
-    my @IDs = $NotificationEventObject->NotificationEventCheck( Event => 'ArticleCreate' );
+    my @IDs = $NotificationEventObject->NotificationEventCheck(
+        Event => 'ArticleCreate',
+    );
 
 =cut
 
@@ -395,7 +689,7 @@ sub NotificationEventCheck {
     if ( !$Param{Event} ) {
         $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'error',
-            Message  => 'Need Name!'
+            Message  => 'Need Name!',
         );
         return;
     }
@@ -404,12 +698,18 @@ sub NotificationEventCheck {
     my $DBObject    = $Kernel::OM->Get('Kernel::System::DB');
     my $ValidObject = $Kernel::OM->Get('Kernel::System::Valid');
 
+    my @ValidIDs = $ValidObject->ValidIDsGet();
+    my $ValidIDString = join ', ', @ValidIDs;
+
     $DBObject->Prepare(
-        SQL => 'SELECT DISTINCT(nei.notification_id) FROM ' .
-            'notification_event ne, notification_event_item nei WHERE ' .
-            'ne.id = nei.notification_id AND ' .
-            "ne.valid_id IN ( ${\(join ', ', $ValidObject->ValidIDsGet())} ) AND " .
-            'nei.event_key = \'Events\' AND nei.event_value = ?',
+        SQL => "
+            SELECT DISTINCT(nei.notification_id)
+            FROM notification_event ne, notification_event_item nei
+            WHERE ne.id = nei.notification_id
+                AND ne.valid_id IN ( $ValidIDString )
+                AND nei.event_key = 'Events'
+                AND nei.event_value = ?
+            ORDER BY nei.notification_id ASC",
         Bind => [ \$Param{Event} ],
     );
 
@@ -421,9 +721,115 @@ sub NotificationEventCheck {
     return @IDs;
 }
 
-1;
+=head2 NotificationImport()
 
-=back
+import an Notification YAML file/content
+
+    my $NotificationImport = $NotificationObject->NotificationImport(
+        Content                   => $YAMLContent, # mandatory, YAML format
+        OverwriteExistingNotifications => 0,            # 0 || 1
+        UserID                    => 1,            # mandatory
+    );
+
+Returns:
+
+    $NotificationImport = {
+        Success      => 1,                         # 1 if success or undef if operation could not
+                                                   #    be performed
+        Message     => 'The Message to show.',     # error message
+        AddedNotifications   => 'Notification1, Notification2',               # list of Notifications correctly added
+        UpdatedNotifications => 'Notification3, Notification4',               # list of Notifications correctly updated
+        NotificationErrors   => 'Notification5',                     # list of Notifications that could not be added or updated
+    };
+
+=cut
+
+sub NotificationImport {
+    my ( $Self, %Param ) = @_;
+
+    for my $Needed (qw(Content UserID)) {
+
+        # check needed stuff
+        if ( !$Param{$Needed} ) {
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
+                Priority => 'error',
+                Message  => "Need $Needed!",
+            );
+            return {
+                Success => 0,
+                Message => "$Needed is missing can not continue.",
+            };
+        }
+    }
+
+    my $NotificationData = $Kernel::OM->Get('Kernel::System::YAML')->Load(
+        Data => $Param{Content},
+    );
+
+    if ( ref $NotificationData ne 'ARRAY' ) {
+        return {
+            Success => 0,
+            Message =>
+                Translatable("Couldn't read Notification configuration file. Please make sure the file is valid."),
+        };
+    }
+
+    my @UpdatedNotifications;
+    my @AddedNotifications;
+    my @NotificationErrors;
+
+    my %CurrentNotifications = $Self->NotificationList(
+        UserID => $Param{UserID},
+    );
+    my %ReverseCurrentNotifications = reverse %CurrentNotifications;
+
+    Notification:
+    for my $Notification ( @{$NotificationData} ) {
+
+        next Notification if !$Notification;
+        next Notification if ref $Notification ne 'HASH';
+
+        if ( $Param{OverwriteExistingNotifications} && $ReverseCurrentNotifications{ $Notification->{Name} } ) {
+            my $Success = $Self->NotificationUpdate(
+                %{$Notification},
+                ID     => $ReverseCurrentNotifications{ $Notification->{Name} },
+                UserID => $Param{UserID},
+            );
+
+            if ($Success) {
+                push @UpdatedNotifications, $Notification->{Name};
+            }
+            else {
+                push @NotificationErrors, $Notification->{Name};
+            }
+
+        }
+        else {
+
+            # now add the Notification
+            my $Success = $Self->NotificationAdd(
+                %{$Notification},
+                UserID => $Param{UserID},
+            );
+
+            if ($Success) {
+                push @AddedNotifications, $Notification->{Name};
+            }
+            else {
+                push @NotificationErrors, $Notification->{Name};
+            }
+        }
+    }
+
+    return {
+        Success              => 1,
+        AddedNotifications   => join( ', ', @AddedNotifications ) || '',
+        UpdatedNotifications => join( ', ', @UpdatedNotifications ) || '',
+        NotificationErrors   => join( ', ', @NotificationErrors ) || '',
+    };
+}
+
+1;
 
 =head1 TERMS AND CONDITIONS
 

@@ -1,6 +1,5 @@
 # --
-# Kernel/System/Web/InterfaceAgent.pm - the agent interface file (incl. auth)
-# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -12,39 +11,37 @@ package Kernel::System::Web::InterfaceAgent;
 use strict;
 use warnings;
 
+use Kernel::Language qw(Translatable);
+use Kernel::System::DateTime qw(:all);
+
 our @ObjectDependencies = (
     'Kernel::Config',
-    'Kernel::Language',
     'Kernel::Output::HTML::Layout',
     'Kernel::System::Auth',
     'Kernel::System::AuthSession',
     'Kernel::System::DB',
-    'Kernel::System::Encode',
     'Kernel::System::Email',
     'Kernel::System::Group',
     'Kernel::System::Log',
     'Kernel::System::Main',
-    'Kernel::System::Ticket',
+    'Kernel::System::Scheduler',
     'Kernel::System::Time',
     'Kernel::System::User',
     'Kernel::System::Web::Request',
+    'Kernel::System::Valid',
 );
 
 =head1 NAME
 
 Kernel::System::Web::InterfaceAgent - the agent web interface
 
-=head1 SYNOPSIS
+=head1 DESCRIPTION
 
-the global agent web interface (incl. auth, session, ...)
+the global agent web interface (authentication, session handling, ...)
 
 =head1 PUBLIC INTERFACE
 
-=over 4
-
-=cut
-
-=item new()
+=head2 new()
 
 create agent web interface object. Do not use it directly, instead use:
 
@@ -72,33 +69,18 @@ sub new {
     # get debug level
     $Self->{Debug} = $Param{Debug} || 0;
 
-    $Self->{ConfigObject} = $Kernel::OM->Get('Kernel::Config');
     $Kernel::OM->ObjectParamAdd(
         'Kernel::System::Log' => {
-            LogPrefix => $Self->{ConfigObject}->Get('CGILogPrefix'),
+            LogPrefix => $Kernel::OM->Get('Kernel::Config')->Get('CGILogPrefix'),
         },
         'Kernel::System::Web::Request' => {
             WebRequest => $Param{WebRequest} || 0,
         },
-
-        # Don't autoconnect as this would cause internal server errors on failure.
-        'Kernel::System::DB' => {
-            AutoConnectNo => 1,
-        },
     );
-
-    $Self->{EncodeObject}  = $Kernel::OM->Get('Kernel::System::Encode');
-    $Self->{GroupObject}   = $Kernel::OM->Get('Kernel::System::Group');
-    $Self->{LogObject}     = $Kernel::OM->Get('Kernel::System::Log');
-    $Self->{MainObject}    = $Kernel::OM->Get('Kernel::System::Main');
-    $Self->{ParamObject}   = $Kernel::OM->Get('Kernel::System::Web::Request');
-    $Self->{SessionObject} = $Kernel::OM->Get('Kernel::System::AuthSession');
-    $Self->{TimeObject}    = $Kernel::OM->Get('Kernel::System::Time');
-    $Self->{UserObject}    = $Kernel::OM->Get('Kernel::System::User');
 
     # debug info
     if ( $Self->{Debug} ) {
-        $Self->{LogObject}->Log(
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'debug',
             Message  => 'Global handle started...',
         );
@@ -107,7 +89,7 @@ sub new {
     return $Self;
 }
 
-=item Run()
+=head2 Run()
 
 execute the object
 
@@ -121,9 +103,12 @@ sub Run {
     # get common framework params
     my %Param;
 
+    my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
+    my $ParamObject  = $Kernel::OM->Get('Kernel::System::Web::Request');
+
     # get session id
-    $Param{SessionName} = $Self->{ConfigObject}->Get('SessionName') || 'SessionID';
-    $Param{SessionID} = $Self->{ParamObject}->GetParam( Param => $Param{SessionName} ) || '';
+    $Param{SessionName} = $ConfigObject->Get('SessionName') || 'SessionID';
+    $Param{SessionID} = $ParamObject->GetParam( Param => $Param{SessionName} ) || '';
 
     # drop old session id (if exists)
     my $QueryString = $ENV{QUERY_STRING} || '';
@@ -137,15 +122,20 @@ sub Run {
         RequestedURL => $QueryString,
     };
     for my $Key ( sort keys %{$FrameworkParams} ) {
-        $Param{$Key} = $Self->{ParamObject}->GetParam( Param => $Key )
+        $Param{$Key} = $ParamObject->GetParam( Param => $Key )
             || $FrameworkParams->{$Key};
+    }
+
+    # validate language
+    if ( $Param{Lang} && $Param{Lang} !~ m{\A[a-z]{2}(?:_[A-Z]{2})?\z}xms ) {
+        delete $Param{Lang};
     }
 
     # check if the browser sends the SessionID cookie and set the SessionID-cookie
     # as SessionID! GET or POST SessionID have the lowest priority.
     my $BrowserHasCookie = 0;
-    if ( $Self->{ConfigObject}->Get('SessionUseCookie') ) {
-        $Param{SessionIDCookie} = $Self->{ParamObject}->GetCookie( Key => $Param{SessionName} );
+    if ( $ConfigObject->Get('SessionUseCookie') ) {
+        $Param{SessionIDCookie} = $ParamObject->GetCookie( Key => $Param{SessionName} );
         if ( $Param{SessionIDCookie} ) {
             $Param{SessionID} = $Param{SessionIDCookie};
         }
@@ -156,58 +146,48 @@ sub Run {
             Lang         => $Param{Lang},
             UserLanguage => $Param{Lang},
         },
-        'Kernel::Lanugage' => {
+        'Kernel::Language' => {
             UserLanguage => $Param{Lang}
         },
     );
 
     my $CookieSecureAttribute;
-    if ( $Self->{ConfigObject}->Get('HttpType') eq 'https' ) {
+    if ( $ConfigObject->Get('HttpType') eq 'https' ) {
 
         # Restrict Cookie to HTTPS if it is used.
         $CookieSecureAttribute = 1;
     }
 
-    $Self->{DBObject} = $Kernel::OM->Get('Kernel::System::DB');
-    my $DBCanConnect = $Self->{DBObject}->Connect();
+    my $DBCanConnect = $Kernel::OM->Get('Kernel::System::DB')->Connect();
 
-    # Restore original behaviour of Kernel::System::DB for all objects created in future
-    $Kernel::OM->ObjectParamAdd(
-        'Kernel::System::DB' => {
-            AutoConnectNo => undef,
-        },
-    );
-    if ( !$DBCanConnect || $Self->{ParamObject}->Error() ) {
+    if ( !$DBCanConnect || $ParamObject->Error() ) {
         my $LayoutObject = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
         if ( !$DBCanConnect ) {
             $LayoutObject->FatalError(
-                Comment => 'Please contact your administrator',
+                Comment => Translatable('Please contact the administrator.'),
             );
             return;
         }
-        if ( $Self->{ParamObject}->Error() ) {
+        if ( $ParamObject->Error() ) {
             $LayoutObject->FatalError(
-                Message => $Self->{ParamObject}->Error(),
-                Comment => 'Please contact your administrator',
+                Message => $ParamObject->Error(),
+                Comment => Translatable('Please contact the administrator.'),
             );
             return;
         }
-    }
-
-    # application and add-on application common objects
-    my %CommonObject = %{ $Self->{ConfigObject}->Get('Frontend::CommonObject') };
-    for my $Key ( sort keys %CommonObject ) {
-        $Self->{$Key} //= $Kernel::OM->Get( $CommonObject{$Key} );
     }
 
     # get common application and add-on application params
-    my %CommonObjectParam = %{ $Self->{ConfigObject}->Get('Frontend::CommonParam') };
+    my %CommonObjectParam = %{ $ConfigObject->Get('Frontend::CommonParam') };
     for my $Key ( sort keys %CommonObjectParam ) {
-        $Param{$Key} = $Self->{ParamObject}->GetParam( Param => $Key ) || $CommonObjectParam{$Key};
+        $Param{$Key} = $ParamObject->GetParam( Param => $Key ) || $CommonObjectParam{$Key};
     }
 
     # security check Action Param (replace non word chars)
     $Param{Action} =~ s/\W//g;
+
+    my $SessionObject = $Kernel::OM->Get('Kernel::System::AuthSession');
+    my $UserObject    = $Kernel::OM->Get('Kernel::System::User');
 
     # check request type
     if ( $Param{Action} eq 'PreLogin' ) {
@@ -228,9 +208,13 @@ sub Run {
     elsif ( $Param{Action} eq 'Login' ) {
 
         # get params
-        my $PostUser = $Self->{ParamObject}->GetParam( Param => 'User' ) || '';
-        my $PostPw = $Self->{ParamObject}->GetParam(
+        my $PostUser = $ParamObject->GetParam( Param => 'User' ) || '';
+        my $PostPw = $ParamObject->GetParam(
             Param => 'Password',
+            Raw   => 1
+        ) || '';
+        my $PostTwoFactorToken = $ParamObject->GetParam(
+            Param => 'TwoFactorToken',
             Raw   => 1
         ) || '';
 
@@ -239,26 +223,27 @@ sub Run {
 
         # check submitted data
         my $User = $AuthObject->Auth(
-            User => $PostUser,
-            Pw   => $PostPw
+            User           => $PostUser,
+            Pw             => $PostPw,
+            TwoFactorToken => $PostTwoFactorToken,
         );
 
         # login is invalid
         if ( !$User ) {
 
-            my $Expires = '+' . $Self->{ConfigObject}->Get('SessionMaxTime') . 's';
-            if ( !$Self->{ConfigObject}->Get('SessionUseCookieAfterBrowserClose') ) {
+            my $Expires = '+' . $ConfigObject->Get('SessionMaxTime') . 's';
+            if ( !$ConfigObject->Get('SessionUseCookieAfterBrowserClose') ) {
                 $Expires = '';
             }
 
             $Kernel::OM->ObjectParamAdd(
                 'Kernel::Output::HTML::Layout' => {
                     SetCookies => {
-                        OTRSBrowserHasCookie => $Self->{ParamObject}->SetCookie(
+                        OTRSBrowserHasCookie => $ParamObject->SetCookie(
                             Key      => 'OTRSBrowserHasCookie',
                             Value    => 1,
                             Expires  => $Expires,
-                            Path     => $Self->{ConfigObject}->Get('ScriptAlias'),
+                            Path     => $ConfigObject->Get('ScriptAlias'),
                             Secure   => $CookieSecureAttribute,
                             HTTPOnly => 1,
                         ),
@@ -268,10 +253,10 @@ sub Run {
             my $LayoutObject = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
 
             # redirect to alternate login
-            if ( $Self->{ConfigObject}->Get('LoginURL') ) {
+            if ( $ConfigObject->Get('LoginURL') ) {
                 $Param{RequestedURL} = $LayoutObject->LinkEncode( $Param{RequestedURL} );
                 print $LayoutObject->Redirect(
-                    ExtURL => $Self->{ConfigObject}->Get('LoginURL')
+                    ExtURL => $ConfigObject->Get('LoginURL')
                         . "?Reason=LoginFailed&RequestedURL=$Param{RequestedURL}",
                 );
                 return;
@@ -281,14 +266,14 @@ sub Run {
             $LayoutObject->Print(
                 Output => \$LayoutObject->Login(
                     Title   => 'Login',
-                    Message => $Self->{LogObject}->GetLogEntry(
+                    Message => $Kernel::OM->Get('Kernel::System::Log')->GetLogEntry(
                         Type => 'Info',
                         What => 'Message',
                         )
                         || $LayoutObject->{LanguageObject}->Translate( $AuthObject->GetLastErrorMessage() )
-                        || $LayoutObject->{LanguageObject}
-                        ->Translate('Login failed! Your user name or password was entered incorrectly.'),
+                        || Translatable('Login failed! Your user name or password was entered incorrectly.'),
                     LoginFailed => 1,
+                    MessageType => 'Error',
                     User        => $User,
                     %Param,
                 ),
@@ -297,14 +282,13 @@ sub Run {
         }
 
         # login is successful
-        my %UserData = $Self->{UserObject}->GetUserData(
+        my %UserData = $UserObject->GetUserData(
             User  => $User,
             Valid => 1
         );
 
         # check if the browser supports cookies
-
-        if ( $Self->{ParamObject}->GetCookie( Key => 'OTRSBrowserHasCookie' ) ) {
+        if ( $ParamObject->GetCookie( Key => 'OTRSBrowserHasCookie' ) ) {
             $Kernel::OM->ObjectParamAdd(
                 'Kernel::Output::HTML::Layout' => {
                     BrowserHasCookie => 1,
@@ -316,9 +300,9 @@ sub Run {
         if ( !$UserData{UserID} || !$UserData{UserLogin} ) {
 
             # redirect to alternate login
-            if ( $Self->{ConfigObject}->Get('LoginURL') ) {
+            if ( $ConfigObject->Get('LoginURL') ) {
                 print $Kernel::OM->Get('Kernel::Output::HTML::Layout')->Redirect(
-                    ExtURL => $Self->{ConfigObject}->Get('LoginURL') . '?Reason=SystemError',
+                    ExtURL => $ConfigObject->Get('LoginURL') . '?Reason=SystemError',
                 );
                 return;
             }
@@ -330,36 +314,20 @@ sub Run {
                 Output => \$LayoutObject->Login(
                     Title => 'Panic!',
                     Message =>
-                        'Panic, user authenticated but no user data can be found in OTRS DB!! Perhaps the user is invalid.',
+                        Translatable(
+                        'Panic, user authenticated but no user data can be found in OTRS DB!! Perhaps the user is invalid.'
+                        ),
                     %Param,
+                    MessageType => 'Error',
                 ),
             );
             return;
         }
 
-        # get groups rw/ro
-        for my $Type (qw(rw ro)) {
-
-            my %GroupData = $Self->{GroupObject}->PermissionUserGet(
-                UserID => $UserData{UserID},
-                Type   => $Type,
-            );
-
-            for ( sort keys %GroupData ) {
-
-                if ( $Type eq 'rw' ) {
-                    $UserData{"UserIsGroup[$GroupData{$_}]"} = 'Yes';
-                }
-                else {
-                    $UserData{"UserIsGroupRo[$GroupData{$_}]"} = 'Yes';
-                }
-            }
-        }
-
         # create new session id
-        my $NewSessionID = $Self->{SessionObject}->CreateSessionID(
+        my $NewSessionID = $SessionObject->CreateSessionID(
             %UserData,
-            UserLastRequest => $Self->{TimeObject}->SystemTime(),
+            UserLastRequest => $Kernel::OM->Get('Kernel::System::Time')->SystemTime(),
             UserType        => 'User',
         );
 
@@ -367,55 +335,79 @@ sub Run {
         if ( !$NewSessionID ) {
 
             # get error message
-            my $Error = $Self->{SessionObject}->SessionIDErrorMessage() || '';
+            my $Error = $SessionObject->SessionIDErrorMessage() || '';
 
             # output error message
             my $LayoutObject = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
             $LayoutObject->Print(
                 Output => \$LayoutObject->Login(
-                    Title   => 'Login',
-                    Message => $Error,
+                    Title       => 'Login',
+                    Message     => $Error,
+                    MessageType => 'Error',
                     %Param,
                 ),
             );
             return;
         }
 
-        # set time zone offset if TimeZoneFeature is active
-        if (
-            $Self->{ConfigObject}->Get('TimeZoneUser')
-            && $Self->{ConfigObject}->Get('TimeZoneUserBrowserAutoOffset')
-            )
-        {
-            my $TimeOffset = $Self->{ParamObject}->GetParam( Param => 'TimeOffset' ) || 0;
-            if ( $TimeOffset > 0 ) {
-                $TimeOffset = '-' . ( $TimeOffset / 60 );
-            }
-            else {
-                $TimeOffset = $TimeOffset / 60;
-                $TimeOffset =~ s/-/+/;
-            }
+        # get time object
+        my $TimeObject = $Kernel::OM->Get('Kernel::System::Time');
 
-            $Self->{UserObject}->SetPreferences(
-                UserID => $UserData{UserID},
-                Key    => 'UserTimeZone',
-                Value  => $TimeOffset,
-            );
-            $Self->{SessionObject}->UpdateSessionID(
-                SessionID => $NewSessionID,
-                Key       => 'UserTimeZone',
-                Value     => $TimeOffset,
-            );
-        }
+        # execution in 20 seconds
+        my $ExecutionTime = $TimeObject->SystemTime2TimeStamp(
+            SystemTime => ( $TimeObject->SystemTime() + 20 ),
+        );
+
+        # add a asychronous executor scheduler task to count the concurrent user
+        $Kernel::OM->Get('Kernel::System::Scheduler')->TaskAdd(
+            ExecutionTime            => $ExecutionTime,
+            Type                     => 'AsynchronousExecutor',
+            Name                     => 'PluginAsynchronous::ConcurrentUser',
+            MaximumParallelInstances => 1,
+            Data                     => {
+                Object   => 'Kernel::System::SupportDataCollector::PluginAsynchronous::OTRS::ConcurrentUsers',
+                Function => 'RunAsynchronous',
+            },
+        );
+
+        # get time zone
+        my $UserTimeZone = $UserData{UserTimeZone} || UserDefaultTimeZoneGet();
+        $SessionObject->UpdateSessionID(
+            SessionID => $NewSessionID,
+            Key       => 'UserTimeZone',
+            Value     => $UserTimeZone,
+        );
+
+        # check if the time zone offset reported by the user's browser differs from that
+        # of the OTRS user's time zone offset
+        my $DateTimeObject = $Kernel::OM->Create(
+            'Kernel::System::DateTime',
+            ObjectParams => {
+                TimeZone => $UserTimeZone,
+            },
+        );
+        my $OTRSUserTimeZoneOffset = $DateTimeObject->Format( Format => '%{offset}' ) / 60;
+        my $BrowserTimeZoneOffset = ( $ParamObject->GetParam( Param => 'TimeZoneOffset' ) || 0 ) * -1;
+
+        # TimeZoneOffsetDifference contains the difference of the time zone offset between
+        # the user's OTRS time zone setting and the one reported by the user's browser.
+        # If there is a difference it can be evaluated later to e. g. show a message
+        # for the user to check his OTRS time zone setting.
+        my $UserTimeZoneOffsetDifference = abs( $OTRSUserTimeZoneOffset - $BrowserTimeZoneOffset );
+        $SessionObject->UpdateSessionID(
+            SessionID => $NewSessionID,
+            Key       => 'UserTimeZoneOffsetDifference',
+            Value     => $UserTimeZoneOffsetDifference,
+        );
 
         # create a new LayoutObject with SessionIDCookie
-        my $Expires = '+' . $Self->{ConfigObject}->Get('SessionMaxTime') . 's';
-        if ( !$Self->{ConfigObject}->Get('SessionUseCookieAfterBrowserClose') ) {
+        my $Expires = '+' . $ConfigObject->Get('SessionMaxTime') . 's';
+        if ( !$ConfigObject->Get('SessionUseCookieAfterBrowserClose') ) {
             $Expires = '';
         }
 
         my $SecureAttribute;
-        if ( $Self->{ConfigObject}->Get('HttpType') eq 'https' ) {
+        if ( $ConfigObject->Get('HttpType') eq 'https' ) {
 
             # Restrict Cookie to HTTPS if it is used.
             $SecureAttribute = 1;
@@ -424,19 +416,19 @@ sub Run {
         $Kernel::OM->ObjectParamAdd(
             'Kernel::Output::HTML::Layout' => {
                 SetCookies => {
-                    SessionIDCookie => $Self->{ParamObject}->SetCookie(
+                    SessionIDCookie => $ParamObject->SetCookie(
                         Key      => $Param{SessionName},
                         Value    => $NewSessionID,
                         Expires  => $Expires,
-                        Path     => $Self->{ConfigObject}->Get('ScriptAlias'),
+                        Path     => $ConfigObject->Get('ScriptAlias'),
                         Secure   => scalar $CookieSecureAttribute,
                         HTTPOnly => 1,
                     ),
-                    OTRSBrowserHasCookie => $Self->{ParamObject}->SetCookie(
+                    OTRSBrowserHasCookie => $ParamObject->SetCookie(
                         Key      => 'OTRSBrowserHasCookie',
                         Value    => '',
                         Expires  => '-1y',
-                        Path     => $Self->{ConfigObject}->Get('ScriptAlias'),
+                        Path     => $ConfigObject->Get('ScriptAlias'),
                         Secure   => $CookieSecureAttribute,
                         HTTPOnly => 1,
                     ),
@@ -445,6 +437,48 @@ sub Run {
                 SessionName => $Param{SessionName},
             },
         );
+
+        # Check if Chat is active
+        if ( $Kernel::OM->Get('Kernel::Config')->Get('ChatEngine::Active') ) {
+            my $ChatReceivingAgentsGroup
+                = $Kernel::OM->Get('Kernel::Config')->Get('ChatEngine::PermissionGroup::ChatReceivingAgents');
+
+            my $ChatReceivingAgentsGroupPermission = $Kernel::OM->Get('Kernel::System::Group')->PermissionCheck(
+                UserID    => $UserData{UserID},
+                GroupName => $ChatReceivingAgentsGroup,
+                Type      => 'rw',
+            );
+
+            if (
+                $UserData{UserID} != -1
+                && $ChatReceivingAgentsGroup
+                && $ChatReceivingAgentsGroupPermission
+                && $Kernel::OM->Get('Kernel::Config')->Get('Ticket::Agent::UnavailableForExternalChatsOnLogin')
+                )
+            {
+                # Get user preferences
+                my %Preferences = $Kernel::OM->Get('Kernel::System::User')->GetPreferences(
+                    UserID => $UserData{UserID},
+                );
+
+                if ( $Preferences{ChatAvailability} && $Preferences{ChatAvailability} == 2 ) {
+
+                    # User is available for external chats. Set his availability to internal only.
+                    $Kernel::OM->Get('Kernel::System::User')->SetPreferences(
+                        Key    => 'ChatAvailability',
+                        Value  => '1',
+                        UserID => $UserData{UserID},
+                    );
+
+                    # Set ChatAvailabilityNotification to display notification in agent interface (only once)
+                    $Kernel::OM->Get('Kernel::System::User')->SetPreferences(
+                        Key    => 'ChatAvailabilityNotification',
+                        Value  => '1',
+                        UserID => $UserData{UserID},
+                    );
+                }
+            }
+        }
 
         # redirect with new session id and old params
         # prepare old redirect URL -- do not redirect to Login or Logout (loop)!
@@ -466,13 +500,13 @@ sub Run {
         my $LayoutObject = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
 
         # check session id
-        if ( !$Self->{SessionObject}->CheckSessionID( SessionID => $Param{SessionID} ) ) {
+        if ( !$SessionObject->CheckSessionID( SessionID => $Param{SessionID} ) ) {
 
             # redirect to alternate login
-            if ( $Self->{ConfigObject}->Get('LoginURL') ) {
+            if ( $ConfigObject->Get('LoginURL') ) {
                 $Param{RequestedURL} = $LayoutObject->LinkEncode( $Param{RequestedURL} );
                 print $LayoutObject->Redirect(
-                    ExtURL => $Self->{ConfigObject}->Get('LoginURL')
+                    ExtURL => $ConfigObject->Get('LoginURL')
                         . "?Reason=InvalidSessionID&RequestedURL=$Param{RequestedURL}",
                 );
                 return;
@@ -481,8 +515,9 @@ sub Run {
             # show login screen
             $LayoutObject->Print(
                 Output => \$LayoutObject->Login(
-                    Title   => 'Logout',
-                    Message => $LayoutObject->{LanguageObject}->Translate('Session invalid. Please log in again.'),
+                    Title       => 'Logout',
+                    Message     => Translatable('Session invalid. Please log in again.'),
+                    MessageType => 'Error',
                     %Param,
                 ),
             );
@@ -490,7 +525,7 @@ sub Run {
         }
 
         # get session data
-        my %UserData = $Self->{SessionObject}->GetSessionIDData(
+        my %UserData = $SessionObject->GetSessionIDData(
             SessionID => $Param{SessionID},
         );
 
@@ -498,11 +533,11 @@ sub Run {
         $Kernel::OM->ObjectParamAdd(
             'Kernel::Output::HTML::Layout' => {
                 SetCookies => {
-                    SessionIDCookie => $Self->{ParamObject}->SetCookie(
+                    SessionIDCookie => $ParamObject->SetCookie(
                         Key      => $Param{SessionName},
                         Value    => '',
                         Expires  => '-1y',
-                        Path     => $Self->{ConfigObject}->Get('ScriptAlias'),
+                        Path     => $ConfigObject->Get('ScriptAlias'),
                         Secure   => scalar $CookieSecureAttribute,
                         HTTPOnly => 1,
                     ),
@@ -517,33 +552,30 @@ sub Run {
         $LayoutObject->ChallengeTokenCheck();
 
         # remove session id
-        if ( !$Self->{SessionObject}->RemoveSessionID( SessionID => $Param{SessionID} ) ) {
+        if ( !$SessionObject->RemoveSessionID( SessionID => $Param{SessionID} ) ) {
             $LayoutObject->FatalError(
-                Message => 'Can`t remove SessionID',
-                Comment => 'Please contact your administrator',
+                Message => Translatable('Can`t remove SessionID.'),
+                Comment => Translatable('Please contact the administrator.'),
             );
             return;
         }
 
         # redirect to alternate login
-        if ( $Self->{ConfigObject}->Get('LogoutURL') ) {
+        if ( $ConfigObject->Get('LogoutURL') ) {
             print $LayoutObject->Redirect(
-                ExtURL => $Self->{ConfigObject}->Get('LogoutURL') . "?Reason=Logout",
+                ExtURL => $ConfigObject->Get('LogoutURL') . "?Reason=Logout",
             );
             return 1;
         }
 
         # show logout screen
-        my $LogoutMessage = $LayoutObject->{LanguageObject}->Translate(
-            'Logout successful. Thank you for using %s!',
-            $Self->{ConfigObject}->Get("ProductName"),
-        );
+        my $LogoutMessage = $LayoutObject->{LanguageObject}->Translate('Logout successful.');
 
         $LayoutObject->Print(
             Output => \$LayoutObject->Login(
                 Title       => 'Logout',
                 Message     => $LogoutMessage,
-                MessageType => 'Logout',
+                MessageType => 'Success',
                 %Param,
             ),
         );
@@ -556,31 +588,32 @@ sub Run {
         my $LayoutObject = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
 
         # check feature
-        if ( !$Self->{ConfigObject}->Get('LostPassword') ) {
+        if ( !$ConfigObject->Get('LostPassword') ) {
 
             # show normal login
             $LayoutObject->Print(
                 Output => \$LayoutObject->Login(
-                    Title   => 'Login',
-                    Message => $LayoutObject->{LanguageObject}->Translate('Feature not active!'),
+                    Title       => 'Login',
+                    Message     => Translatable('Feature not active!'),
+                    MessageType => 'Error',
                 ),
             );
             return;
         }
 
         # get params
-        my $User  = $Self->{ParamObject}->GetParam( Param => 'User' )  || '';
-        my $Token = $Self->{ParamObject}->GetParam( Param => 'Token' ) || '';
+        my $User  = $ParamObject->GetParam( Param => 'User' )  || '';
+        my $Token = $ParamObject->GetParam( Param => 'Token' ) || '';
 
         # get user login by token
         if ( !$User && $Token ) {
-            my %UserList = $Self->{UserObject}->SearchPreferences(
+            my %UserList = $UserObject->SearchPreferences(
                 Key   => 'UserToken',
                 Value => $Token,
             );
             USERS:
             for my $UserID ( sort keys %UserList ) {
-                my %UserData = $Self->{UserObject}->GetUserData(
+                my %UserData = $UserObject->GetUserData(
                     UserID => $UserID,
                     Valid  => 1,
                 );
@@ -592,19 +625,24 @@ sub Run {
         }
 
         # get user data
-        my %UserData = $Self->{UserObject}->GetUserData(
+        my %UserData = $UserObject->GetUserData(
             User  => $User,
             Valid => 1
         );
-        if ( !$UserData{UserID} ) {
+
+        # verify user is valid when requesting password reset
+        my @ValidIDs = $Kernel::OM->Get('Kernel::System::Valid')->ValidIDsGet();
+        my $UserIsValid = grep { $UserData{ValidID} && $UserData{ValidID} == $_ } @ValidIDs;
+        if ( !$UserData{UserID} || !$UserIsValid ) {
 
             # Security: pretend that password reset instructions were actually sent to
             #   make sure that users cannot find out valid usernames by
             #   just trying and checking the result message.
             $LayoutObject->Print(
                 Output => \$LayoutObject->Login(
-                    Title   => 'Login',
-                    Message => 'Sent password reset instructions. Please check your email.',
+                    Title       => 'Login',
+                    Message     => Translatable('Sent password reset instructions. Please check your email.'),
+                    MessageType => 'Success',
                     %Param,
                 ),
             );
@@ -618,14 +656,14 @@ sub Run {
         if ( !$Token ) {
 
             # generate token
-            $UserData{Token} = $Self->{UserObject}->TokenGenerate(
+            $UserData{Token} = $UserObject->TokenGenerate(
                 UserID => $UserData{UserID},
             );
 
             # send token notify email with link
-            my $Body = $Self->{ConfigObject}->Get('NotificationBodyLostPasswordToken')
+            my $Body = $ConfigObject->Get('NotificationBodyLostPasswordToken')
                 || 'ERROR: NotificationBodyLostPasswordToken is missing!';
-            my $Subject = $Self->{ConfigObject}->Get('NotificationSubjectLostPasswordToken')
+            my $Subject = $ConfigObject->Get('NotificationSubjectLostPasswordToken')
                 || 'ERROR: NotificationSubjectLostPasswordToken is missing!';
             for ( sort keys %UserData ) {
                 $Body =~ s/<OTRS_$_>/$UserData{$_}/gi;
@@ -639,14 +677,15 @@ sub Run {
             );
             if ( !$Sent ) {
                 $LayoutObject->FatalError(
-                    Comment => 'Please contact your administrator',
+                    Comment => Translatable('Please contact the administrator.'),
                 );
                 return;
             }
             $LayoutObject->Print(
                 Output => \$LayoutObject->Login(
-                    Title   => 'Login',
-                    Message => 'Sent password reset instructions. Please check your email.',
+                    Title       => 'Login',
+                    Message     => Translatable('Sent password reset instructions. Please check your email.'),
+                    MessageType => 'Success',
                     %Param,
                 ),
             );
@@ -655,15 +694,16 @@ sub Run {
 
         # reset password
         # check if token is valid
-        my $TokenValid = $Self->{UserObject}->TokenCheck(
+        my $TokenValid = $UserObject->TokenCheck(
             Token  => $Token,
             UserID => $UserData{UserID},
         );
         if ( !$TokenValid ) {
             $LayoutObject->Print(
                 Output => \$LayoutObject->Login(
-                    Title   => 'Login',
-                    Message => 'Invalid Token!',
+                    Title       => 'Login',
+                    Message     => Translatable('Invalid Token!'),
+                    MessageType => 'Error',
                     %Param,
                 ),
             );
@@ -671,18 +711,18 @@ sub Run {
         }
 
         # get new password
-        $UserData{NewPW} = $Self->{UserObject}->GenerateRandomPassword();
+        $UserData{NewPW} = $UserObject->GenerateRandomPassword();
 
         # update new password
-        $Self->{UserObject}->SetPassword(
+        $UserObject->SetPassword(
             UserLogin => $User,
             PW        => $UserData{NewPW}
         );
 
         # send notify email
-        my $Body = $Self->{ConfigObject}->Get('NotificationBodyLostPassword')
+        my $Body = $ConfigObject->Get('NotificationBodyLostPassword')
             || 'New Password is: <OTRS_NEWPW>';
-        my $Subject = $Self->{ConfigObject}->Get('NotificationSubjectLostPassword')
+        my $Subject = $ConfigObject->Get('NotificationSubjectLostPassword')
             || 'New Password!';
         for ( sort keys %UserData ) {
             $Body =~ s/<OTRS_$_>/$UserData{$_}/gi;
@@ -697,7 +737,7 @@ sub Run {
 
         if ( !$Sent ) {
             $LayoutObject->FatalError(
-                Comment => 'Please contact your administrator',
+                Comment => Translatable('Please contact the administrator.'),
             );
             return;
         }
@@ -707,9 +747,10 @@ sub Run {
         );
         $LayoutObject->Print(
             Output => \$LayoutObject->Login(
-                Title   => 'Login',
-                Message => $Message,
-                User    => $User,
+                Title       => 'Login',
+                Message     => $Message,
+                User        => $User,
+                MessageType => 'Success',
                 %Param,
             ),
         );
@@ -731,12 +772,12 @@ sub Run {
             );
             return;
         }
-        elsif ( $Self->{ConfigObject}->Get('LoginURL') ) {
+        elsif ( $ConfigObject->Get('LoginURL') ) {
 
             # redirect to alternate login
             $Param{RequestedURL} = $LayoutObject->LinkEncode( $Param{RequestedURL} );
             print $LayoutObject->Redirect(
-                ExtURL => $Self->{ConfigObject}->Get('LoginURL')
+                ExtURL => $ConfigObject->Get('LoginURL')
                     . "?RequestedURL=$Param{RequestedURL}",
             );
             return;
@@ -753,20 +794,20 @@ sub Run {
     }
 
     # run modules if a version value exists
-    elsif ( $Self->{MainObject}->Require("Kernel::Modules::$Param{Action}") ) {
+    elsif ( $Kernel::OM->Get('Kernel::System::Main')->Require("Kernel::Modules::$Param{Action}") ) {
 
         # check session id
-        if ( !$Self->{SessionObject}->CheckSessionID( SessionID => $Param{SessionID} ) ) {
+        if ( !$SessionObject->CheckSessionID( SessionID => $Param{SessionID} ) ) {
 
             # put '%Param' into LayoutObject
             $Kernel::OM->ObjectParamAdd(
                 'Kernel::Output::HTML::Layout' => {
                     SetCookies => {
-                        SessionIDCookie => $Self->{ParamObject}->SetCookie(
+                        SessionIDCookie => $ParamObject->SetCookie(
                             Key      => $Param{SessionName},
                             Value    => '',
                             Expires  => '-1y',
-                            Path     => $Self->{ConfigObject}->Get('ScriptAlias'),
+                            Path     => $ConfigObject->Get('ScriptAlias'),
                             Secure   => scalar $CookieSecureAttribute,
                             HTTPOnly => 1,
                         ),
@@ -789,12 +830,12 @@ sub Run {
                 );
                 return;
             }
-            elsif ( $Self->{ConfigObject}->Get('LoginURL') ) {
+            elsif ( $ConfigObject->Get('LoginURL') ) {
 
                 # redirect to alternate login
                 $Param{RequestedURL} = $LayoutObject->LinkEncode( $Param{RequestedURL} );
                 print $LayoutObject->Redirect(
-                    ExtURL => $Self->{ConfigObject}->Get('LoginURL')
+                    ExtURL => $ConfigObject->Get('LoginURL')
                         . "?Reason=InvalidSessionID&RequestedURL=$Param{RequestedURL}",
                 );
                 return;
@@ -805,7 +846,8 @@ sub Run {
                 Output => \$LayoutObject->Login(
                     Title => 'Login',
                     Message =>
-                        $LayoutObject->{LanguageObject}->Translate( $Self->{SessionObject}->SessionIDErrorMessage() ),
+                        $LayoutObject->{LanguageObject}->Translate( $SessionObject->SessionIDErrorMessage() ),
+                    MessageType => 'Error',
                     %Param,
                 ),
             );
@@ -813,7 +855,7 @@ sub Run {
         }
 
         # get session data
-        my %UserData = $Self->{SessionObject}->GetSessionIDData(
+        my %UserData = $SessionObject->GetSessionIDData(
             SessionID => $Param{SessionID},
         );
 
@@ -823,9 +865,9 @@ sub Run {
             my $LayoutObject = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
 
             # redirect to alternate login
-            if ( $Self->{ConfigObject}->Get('LoginURL') ) {
+            if ( $ConfigObject->Get('LoginURL') ) {
                 print $LayoutObject->Redirect(
-                    ExtURL => $Self->{ConfigObject}->Get('LoginURL') . '?Reason=SystemError',
+                    ExtURL => $ConfigObject->Get('LoginURL') . '?Reason=SystemError',
                 );
                 return;
             }
@@ -833,8 +875,9 @@ sub Run {
             # show login screen
             $LayoutObject->Print(
                 Output => \$LayoutObject->Login(
-                    Title   => 'Panic!',
-                    Message => 'Panic! Invalid Session!!!',
+                    Title       => 'Panic!',
+                    Message     => Translatable('Panic! Invalid Session!!!'),
+                    MessageType => 'Error',
                     %Param,
                 ),
             );
@@ -842,44 +885,61 @@ sub Run {
         }
 
         # check module registry
-        my $ModuleReg = $Self->{ConfigObject}->Get('Frontend::Module')->{ $Param{Action} };
+        my $ModuleReg = $ConfigObject->Get('Frontend::Module')->{ $Param{Action} };
         if ( !$ModuleReg ) {
 
-            $Self->{LogObject}->Log(
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
                 Message =>
                     "Module Kernel::Modules::$Param{Action} not registered in Kernel/Config.pm!",
             );
-            $Kernel::OM->Get('Kernel::Output::HTML::Layout')
-                ->FatalError( Comment => 'Please contact your administrator' );
+            $Kernel::OM->Get('Kernel::Output::HTML::Layout')->FatalError(
+                Comment => Translatable('Please contact the administrator.'),
+            );
             return;
         }
 
         # module permisson check
-        if ( !$ModuleReg->{GroupRo} && !$ModuleReg->{Group} ) {
+        if (
+            ref $ModuleReg->{GroupRo} eq 'ARRAY'
+            && !scalar @{ $ModuleReg->{GroupRo} }
+            && ref $ModuleReg->{Group} eq 'ARRAY'
+            && !scalar @{ $ModuleReg->{Group} }
+            )
+        {
             $Param{AccessRo} = 1;
             $Param{AccessRw} = 1;
         }
         else {
+            my $GroupObject = $Kernel::OM->Get('Kernel::System::Group');
+
             PERMISSION:
             for my $Permission (qw(GroupRo Group)) {
                 my $AccessOk = 0;
                 my $Group    = $ModuleReg->{$Permission};
-                my $Key      = "UserIs$Permission";
                 next PERMISSION if !$Group;
                 if ( ref $Group eq 'ARRAY' ) {
                     INNER:
-                    for ( @{$Group} ) {
-                        next INNER if !$_;
-                        next INNER if !$UserData{ $Key . "[$_]" };
-                        next INNER if $UserData{ $Key . "[$_]" } ne 'Yes';
+                    for my $GroupName ( @{$Group} ) {
+                        next INNER if !$GroupName;
+                        next INNER if !$GroupObject->PermissionCheck(
+                            UserID    => $UserData{UserID},
+                            GroupName => $GroupName,
+                            Type      => $Permission eq 'GroupRo' ? 'ro' : 'rw',
+
+                        );
                         $AccessOk = 1;
                         last INNER;
                     }
                 }
                 else {
-                    if ( $UserData{ $Key . "[$Group]" } && $UserData{ $Key . "[$Group]" } eq 'Yes' )
-                    {
+                    my $HasPermission = $GroupObject->PermissionCheck(
+                        UserID    => $UserData{UserID},
+                        GroupName => $Group,
+                        Type      => $Permission eq 'GroupRo' ? 'ro' : 'rw',
+
+                    );
+                    if ($HasPermission) {
                         $AccessOk = 1;
                     }
                 }
@@ -894,7 +954,7 @@ sub Run {
             if ( !$Param{AccessRo} && !$Param{AccessRw} || !$Param{AccessRo} && $Param{AccessRw} ) {
 
                 print $Kernel::OM->Get('Kernel::Output::HTML::Layout')->NoPermission(
-                    Message => 'No Permission to use this frontend module!'
+                    Message => Translatable('No Permission to use this frontend module!')
                 );
                 return;
             }
@@ -910,15 +970,45 @@ sub Run {
         );
         $Kernel::OM->ObjectsDiscard( Objects => ['Kernel::Output::HTML::Layout'] );
 
-        # updated last request time
-        $Self->{SessionObject}->UpdateSessionID(
-            SessionID => $Param{SessionID},
-            Key       => 'UserLastRequest',
-            Value     => $Self->{TimeObject}->SystemTime(),
-        );
+        # update last request time
+        if (
+            !$ParamObject->IsAJAXRequest()
+            || $Param{Action} eq 'AgentVideoChat'
+            ||
+            (
+                $Param{Action} eq 'AgentChat'
+                &&
+                $Param{Subaction} ne 'ChatGetOpenRequests' &&
+                $Param{Subaction} ne 'ChatMonitorCheck'
+            )
+            )
+        {
+            $SessionObject->UpdateSessionID(
+                SessionID => $Param{SessionID},
+                Key       => 'UserLastRequest',
+                Value     => $Kernel::OM->Get('Kernel::System::Time')->SystemTime(),
+            );
+        }
+
+        # Override user settings.
+        my $Home = $ConfigObject->Get('Home');
+        my $File = "$Home/Kernel/Config/Files/User/$UserData{UserID}.pm";
+        if ( -e $File ) {
+            if ( !require $File ) {
+                die "ERROR: $!\n";
+            }
+
+            # prepare file
+            $File =~ s/\Q$Home\E//g;
+            $File =~ s/^\///g;
+            $File =~ s/\/\//\//g;
+            $File =~ s/\//::/g;
+            $File =~ s/\.pm$//g;
+            $File->Load($ConfigObject);
+        }
 
         # pre application module
-        my $PreModule = $Self->{ConfigObject}->Get('PreApplicationModule');
+        my $PreModule = $ConfigObject->Get('PreApplicationModule');
         if ($PreModule) {
             my %PreModuleList;
             if ( ref $PreModule eq 'HASH' ) {
@@ -932,11 +1022,11 @@ sub Run {
             for my $PreModuleKey ( sort keys %PreModuleList ) {
                 my $PreModule = $PreModuleList{$PreModuleKey};
                 next MODULE if !$PreModule;
-                next MODULE if !$Self->{MainObject}->Require($PreModule);
+                next MODULE if !$Kernel::OM->Get('Kernel::System::Main')->Require($PreModule);
 
                 # debug info
                 if ( $Self->{Debug} ) {
-                    $Self->{LogObject}->Log(
+                    $Kernel::OM->Get('Kernel::System::Log')->Log(
                         Priority => 'debug',
                         Message  => "PreApplication module $PreModule is used.",
                     );
@@ -946,11 +1036,9 @@ sub Run {
 
                 # use module
                 my $PreModuleObject = $PreModule->new(
-                    %{$Self},
                     %Param,
                     %UserData,
-                    ModuleReg    => $ModuleReg,
-                    LayoutObject => $LayoutObject,
+                    ModuleReg => $ModuleReg,
                 );
                 my $Output = $PreModuleObject->PreRun();
                 if ($Output) {
@@ -962,38 +1050,36 @@ sub Run {
 
         # debug info
         if ( $Self->{Debug} ) {
-            $Self->{LogObject}->Log(
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'debug',
                 Message  => 'Kernel::Modules::' . $Param{Action} . '->new',
             );
         }
 
-        # proof of concept! - create $GenericObject
-        my $GenericObject = ( 'Kernel::Modules::' . $Param{Action} )->new(
-            %{$Self},
+        my $FrontendObject = ( 'Kernel::Modules::' . $Param{Action} )->new(
             %Param,
             %UserData,
-            LayoutObject => $Kernel::OM->Get('Kernel::Output::HTML::Layout'),
-            ModuleReg    => $ModuleReg,
+            ModuleReg => $ModuleReg,
+            Debug     => $Self->{Debug},
         );
 
         # debug info
         if ( $Self->{Debug} ) {
-            $Self->{LogObject}->Log(
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'debug',
                 Message  => 'Kernel::Modules::' . $Param{Action} . '->run',
             );
         }
 
-        # ->Run $Action with $GenericObject
-        $Kernel::OM->Get('Kernel::Output::HTML::Layout')->Print( Output => \$GenericObject->Run() );
+        # ->Run $Action with $FrontendObject
+        $Kernel::OM->Get('Kernel::Output::HTML::Layout')->Print( Output => \$FrontendObject->Run() );
 
         # log request time
-        if ( $Self->{ConfigObject}->Get('PerformanceLog') ) {
+        if ( $ConfigObject->Get('PerformanceLog') ) {
             if ( ( !$QueryString && $Param{Action} ) || $QueryString !~ /Action=/ ) {
                 $QueryString = 'Action=' . $Param{Action} . '&Subaction=' . $Param{Subaction};
             }
-            my $File = $Self->{ConfigObject}->Get('PerformanceLog::File');
+            my $File = $ConfigObject->Get('PerformanceLog::File');
             ## no critic
             if ( open my $Out, '>>', $File ) {
                 ## use critic
@@ -1003,15 +1089,15 @@ sub Run {
                     . "::$UserData{UserLogin}::$QueryString\n";
                 close $Out;
 
-                $Self->{LogObject}->Log(
-                    Priority => 'notice',
+                $Kernel::OM->Get('Kernel::System::Log')->Log(
+                    Priority => 'debug',
                     Message  => "Response::Agent: "
                         . ( time() - $Self->{PerformanceLogStart} )
                         . "s taken (URL:$QueryString:$UserData{UserLogin})",
                 );
             }
             else {
-                $Self->{LogObject}->Log(
+                $Kernel::OM->Get('Kernel::System::Log')->Log(
                     Priority => 'error',
                     Message  => "Can't write $File: $!",
                 );
@@ -1021,7 +1107,7 @@ sub Run {
     }
 
     # print an error screen
-    my %Data = $Self->{SessionObject}->GetSessionIDData(
+    my %Data = $SessionObject->GetSessionIDData(
         SessionID => $Param{SessionID},
     );
     $Kernel::OM->ObjectParamAdd(
@@ -1030,7 +1116,9 @@ sub Run {
             %Data,
         },
     );
-    $Kernel::OM->Get('Kernel::Output::HTML::Layout')->FatalError( Comment => 'Please contact your administrator' );
+    $Kernel::OM->Get('Kernel::Output::HTML::Layout')->FatalError(
+        Comment => Translatable('Please contact the administrator.'),
+    );
     return;
 }
 
@@ -1039,7 +1127,7 @@ sub DESTROY {
 
     # debug info
     if ( $Self->{Debug} ) {
-        $Self->{LogObject}->Log(
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'debug',
             Message  => 'Global handle stopped.',
         );
@@ -1049,8 +1137,6 @@ sub DESTROY {
 }
 
 1;
-
-=back
 
 =head1 TERMS AND CONDITIONS
 

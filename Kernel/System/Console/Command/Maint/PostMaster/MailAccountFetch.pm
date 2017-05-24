@@ -1,6 +1,5 @@
 # --
-# Kernel/System/Console/Command/Maint/PostMaster/MailAccountFetch.pm - console command
-# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -12,7 +11,7 @@ package Kernel::System::Console::Command::Maint::PostMaster::MailAccountFetch;
 use strict;
 use warnings;
 
-use base qw(Kernel::System::Console::BaseCommand);
+use parent qw(Kernel::System::Console::BaseCommand);
 
 our @ObjectDependencies = (
     'Kernel::System::Log',
@@ -24,6 +23,13 @@ sub Configure {
     my ( $Self, %Param ) = @_;
 
     $Self->Description('Fetch incoming emails from configured mail accounts.');
+    $Self->AddOption(
+        Name        => 'mail-account-id',
+        Description => "Fetch mail only from this account (default: fetch from all).",
+        Required    => 0,
+        HasValue    => 1,
+        ValueRegex  => qr{^\d+$}smx,
+    );
     $Self->AddOption(
         Name        => 'force-pid',
         Description => "Start even if another process is still registered in the database.",
@@ -75,17 +81,39 @@ sub Run {
     $Self->Print("<yellow>Fetching incoming mails from mail accounts...</yellow>\n\n");
 
     my $MailAccountObject = $Kernel::OM->Get('Kernel::System::MailAccount');
+    my $MailAccountID     = $Self->GetOption('mail-account-id');
 
     my %List = $MailAccountObject->MailAccountList( Valid => 1 );
+    my ( $ErrorCount, $FetchedCount );
+
+    KEY:
     for my $Key ( sort keys %List ) {
+        next KEY if ( $MailAccountID && $Key != $MailAccountID );
         my %Data = $MailAccountObject->MailAccountGet( ID => $Key );
         $Self->Print("<yellow>$Data{Host} ($Data{Type})...</yellow>\n");
-        $MailAccountObject->MailAccountFetch(
+        my $Status = $MailAccountObject->MailAccountFetch(
             %Data,
             Debug  => $Self->GetOption('debug'),
             CMD    => 1,
             UserID => 1,
         );
+        if ($Status) {
+            $FetchedCount++;
+        }
+        else {
+            $ErrorCount++;
+        }
+    }
+
+    if ($ErrorCount) {
+
+        # Error messages printed by backend
+        return $Self->ExitCodeError();
+    }
+
+    if ( !$FetchedCount && $MailAccountID ) {
+        $Self->PrintError("Could not find mail account $MailAccountID.");
+        return $Self->ExitCodeError();
     }
 
     $Self->Print("<green>Done.</green>\n");
@@ -109,15 +137,3 @@ sub PostRun {
 }
 
 1;
-
-=back
-
-=head1 TERMS AND CONDITIONS
-
-This software is part of the OTRS project (L<http://otrs.org/>).
-
-This software comes with ABSOLUTELY NO WARRANTY. For details, see
-the enclosed file COPYING for license information (AGPL). If you
-did not receive this file, see L<http://www.gnu.org/licenses/agpl.txt>.
-
-=cut

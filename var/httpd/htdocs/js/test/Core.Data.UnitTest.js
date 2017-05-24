@@ -1,6 +1,5 @@
 // --
-// Core.Data.UnitTest.js - UnitTests
-// Copyright (C) 2001-2012 OTRS AG, http://otrs.org/\n";
+// Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 // --
 // This software comes with ABSOLUTELY NO WARRANTY. For details, see
 // the enclosed file COPYING for license information (AGPL). If you
@@ -9,19 +8,20 @@
 
 "use strict";
 
-var OTRS = OTRS || {};
+var Core = Core || {};
 
 Core.Data = (function (Namespace) {
     Namespace.RunUnitTests = function(){
-        module('Core.Data');
-        test('Core.Data.Set()', function(){
-
-            expect(5);
+        QUnit.module('Core.Data');
+        QUnit.test('Core.Data.Set()', function(Assert){
 
             /*
              * Create a div containter for the tests
              */
-            var $TestDiv = $('<div id="Container"></div>');
+            var Sign, ObjectOne, ObjectTwo, ResultOneEmpty, NonexistingResult,
+                ResultOne, ResultTwo,
+                ObjectThree, ObjectFour, ResultCompare,
+                $TestDiv = $('<div id="Container"></div>');
             $TestDiv.append('<span id="ElementOne"></span>');
             $TestDiv.append('<span id="ElementTwo"></span>');
             $('body').append($TestDiv);
@@ -30,25 +30,44 @@ Core.Data = (function (Namespace) {
              * Run the tests
              */
 
-            var Sign = 'Save This Information';
-            var ObjectOne = $('#ElementOne');
-            var ObjectTwo = $('#ElementTwo');
+            Assert.expect(9);
 
-            var ResultOneEmpty = Core.Data.Get(ObjectOne,'One');
-            deepEqual(ResultOneEmpty, {}, 'information not yet stored');
+            Sign = 'Save This Information';
+            ObjectOne = $('#ElementOne');
+            ObjectTwo = $('#ElementTwo');
 
-            var NonexistingResult = Core.Data.Get($('#nonexisting_selector'),'One');
-            deepEqual(NonexistingResult, {}, 'nonexisting element');
+            ResultOneEmpty = Core.Data.Get(ObjectOne, 'One');
+            Assert.deepEqual(ResultOneEmpty, {}, 'information not yet stored');
 
-            Core.Data.Set(ObjectOne,'One',Sign);
-            Core.Data.Set(ObjectTwo,'Two',Sign);
+            NonexistingResult = Core.Data.Get($('#nonexisting_selector'), 'One');
+            Assert.deepEqual(NonexistingResult, {}, 'nonexisting element');
 
-            var ResultOne = Core.Data.Get(ObjectOne,'One');
-            var ResultTwo = Core.Data.Get(ObjectTwo,'Two');
+            Core.Data.Set(ObjectOne, 'One', Sign);
+            Core.Data.Set(ObjectTwo, 'Two', Sign);
 
-            equal(ResultOne, Sign, 'okay');
-            equal(ResultTwo, Sign, 'okay');
-            equal(ResultOne, ResultTwo, 'okay');
+            ResultOne = Core.Data.Get(ObjectOne, 'One');
+            ResultTwo = Core.Data.Get(ObjectTwo, 'Two');
+
+            Assert.equal(ResultOne, Sign, 'okay');
+            Assert.equal(ResultTwo, Sign, 'okay');
+            Assert.equal(ResultOne, ResultTwo, 'okay');
+
+            /* test CopyObject and CompareObject functions */
+            ObjectThree = {
+                "ItemOne": "abcd"
+            };
+
+            ObjectFour = Core.Data.CopyObject(ObjectThree);
+            Assert.deepEqual(ObjectThree, ObjectFour, 'okay');
+
+            ResultCompare = Core.Data.CompareObject(ObjectThree, ObjectFour);
+            Assert.equal(ResultCompare, true, 'okay');
+
+            ObjectThree.ItemTwo = "1234";
+            Assert.notDeepEqual(ObjectThree, ObjectFour, 'okay');
+
+            ResultCompare = Core.Data.CompareObject(ObjectThree, ObjectFour);
+            Assert.equal(ResultCompare, false, 'okay');
 
              /*
              * Cleanup div container and contents

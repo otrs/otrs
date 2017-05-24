@@ -1,6 +1,5 @@
 # --
-# Kernel/Modules/CustomerTicketMessage.pm - to handle customer messages
-# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -15,6 +14,7 @@ use warnings;
 our $ObjectManagerDisabled = 1;
 
 use Kernel::System::VariableCheck qw(:all);
+use Kernel::Language qw(Translatable);
 
 sub new {
     my ( $Type, %Param ) = @_;
@@ -22,6 +22,14 @@ sub new {
     # allocate new hash for object
     my $Self = {%Param};
     bless( $Self, $Type );
+
+    # get form id
+    $Self->{FormID} = $Kernel::OM->Get('Kernel::System::Web::Request')->GetParam( Param => 'FormID' );
+
+    # create form id
+    if ( !$Self->{FormID} ) {
+        $Self->{FormID} = $Kernel::OM->Get('Kernel::System::Web::UploadCache')->FormIDCreate();
+    }
 
     return $Self;
 }
@@ -32,7 +40,7 @@ sub Run {
     # get params
     my %GetParam;
     my $ParamObject = $Kernel::OM->Get('Kernel::System::Web::Request');
-    for my $Key (qw( Subject Body PriorityID TypeID ServiceID SLAID Expand Dest)) {
+    for my $Key (qw( Subject Body PriorityID TypeID ServiceID SLAID Expand Dest FromChatID)) {
         $GetParam{$Key} = $ParamObject->GetParam( Param => $Key );
     }
 
@@ -55,7 +63,7 @@ sub Run {
     my $LayoutObject  = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
     my $BackendObject = $Kernel::OM->Get('Kernel::System::DynamicField::Backend');
 
-    # reduce the dynamic fields to only the ones that are desinged for customer interface
+    # reduce the dynamic fields to only the ones that are designed for customer interface
     my @CustomerDynamicFields;
     DYNAMICFIELD:
     for my $DynamicFieldConfig ( @{$DynamicField} ) {
@@ -76,7 +84,7 @@ sub Run {
     for my $DynamicFieldConfig ( @{$DynamicField} ) {
         next DYNAMICFIELD if !IsHashRefWithData($DynamicFieldConfig);
 
-        # extract the dynamic field value form the web request
+        # extract the dynamic field value from the web request
         $DynamicFieldValues{ $DynamicFieldConfig->{Name} } =
             $BackendObject->EditFieldValueGet(
             DynamicFieldConfig => $DynamicFieldConfig,
@@ -100,12 +108,25 @@ sub Run {
     my $QueueObject  = $Kernel::OM->Get('Kernel::System::Queue');
     my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
 
-    # get form id
-    my $FormID = $ParamObject->GetParam( Param => 'FormID' );
+    if ( $GetParam{FromChatID} ) {
+        if ( !$ConfigObject->Get('ChatEngine::Active') ) {
+            return $LayoutObject->FatalError(
+                Message => Translatable('Chat is not active.'),
+            );
+        }
 
-    # create form id
-    if ( !$FormID ) {
-        $FormID = $Kernel::OM->Get('Kernel::System::Web::UploadCache')->FormIDCreate();
+        # Check chat participant
+        my %ChatParticipant = $Kernel::OM->Get('Kernel::System::Chat')->ChatParticipantCheck(
+            ChatID      => $GetParam{FromChatID},
+            ChatterType => 'Customer',
+            ChatterID   => $Self->{UserID},
+        );
+
+        if ( !%ChatParticipant ) {
+            return $LayoutObject->FatalError(
+                Message => Translatable('No permission.'),
+            );
+        }
     }
 
     if ( !$Self->{Subaction} ) {
@@ -119,13 +140,15 @@ sub Run {
                 if ($QueueDefaultID) {
                     $Param{ToSelected} = $QueueDefaultID . '||' . $QueueDefault;
                 }
+                $ACLCompatGetParam{QueueID} = $QueueDefaultID;
             }
 
             # warn if there is no (valid) default queue and the customer can't select one
             elsif ( !$Config->{'Queue'} ) {
                 $LayoutObject->CustomerFatalError(
-                    Message => 'Check SysConfig setting for ' . $Self->{Action} . '::QueueDefault.',
-                    Comment => 'Please contact your administrator',
+                    Message => $LayoutObject->{LanguageObject}
+                        ->Translate( 'Check SysConfig setting for %s::QueueDefault.', $Self->{Action} ),
+                    Comment => Translatable('Please contact the administrator.'),
                 );
                 return;
             }
@@ -134,7 +157,14 @@ sub Run {
             my ( $QueueIDParam, $QueueParam ) = split( /\|\|/, $GetParam{Dest} );
             my $QueueIDLookup = $QueueObject->QueueLookup( Queue => $QueueParam );
             if ( $QueueIDLookup && $QueueIDLookup eq $QueueIDParam ) {
-                $Param{ToSelected} = $GetParam{Dest};
+                my $CustomerPanelOwnSelection = $Kernel::OM->Get('Kernel::Config')->Get('CustomerPanelOwnSelection');
+                if ( %{ $CustomerPanelOwnSelection // {} } ) {
+                    $Param{ToSelected} = $QueueIDParam . '||' . $CustomerPanelOwnSelection->{$QueueParam};
+                }
+                else {
+                    $Param{ToSelected} = $GetParam{Dest};
+                }
+                $ACLCompatGetParam{QueueID} = $QueueIDLookup;
             }
         }
 
@@ -170,6 +200,7 @@ sub Run {
                     # set possible values filter from ACLs
                     my $ACL = $TicketObject->TicketAcl(
                         %GetParam,
+                        %ACLCompatGetParam,
                         Action         => $Self->{Action},
                         TicketID       => $Self->{TicketID},
                         ReturnType     => 'Ticket',
@@ -206,17 +237,18 @@ sub Run {
         $Output    .= $LayoutObject->CustomerNavigationBar();
         $Output    .= $Self->_MaskNew(
             %GetParam,
-            QueueID          => $QueueDefaultID,
+            %ACLCompatGetParam,
             ToSelected       => $Param{ToSelected},
             DynamicFieldHTML => \%DynamicFieldHTML,
+            FromChatID       => $GetParam{FromChatID} || '',
         );
         $Output .= $LayoutObject->CustomerFooter();
         return $Output;
     }
     elsif ( $Self->{Subaction} eq 'StoreNew' ) {
 
-        # challenge token check for write action
-        $LayoutObject->ChallengeTokenCheck( Type => 'Customer' );
+        my $ArticleObject = $Kernel::OM->Get('Kernel::System::Ticket::Article');
+        my $ArticleBackendObject = $ArticleObject->BackendForChannel( ChannelName => 'Phone' );
 
         my $NextScreen = $Config->{NextScreenAfterNewTicket};
         my %Error;
@@ -251,10 +283,10 @@ sub Run {
             $GetParam{TypeID} = $TypeList{ $Config->{'TicketTypeDefault'} };
             if ( !$GetParam{TypeID} ) {
                 $LayoutObject->CustomerFatalError(
-                    Message => 'Check SysConfig setting for '
-                        . $Self->{Action}
-                        . '::TicketTypeDefault.',
-                    Comment => 'Please contact your administrator',
+                    Message =>
+                        $LayoutObject->{LanguageObject}
+                        ->Translate( 'Check SysConfig setting for %s::TicketTypeDefault.', $Self->{Action} ),
+                    Comment => Translatable('Please contact the administrator.'),
                 );
                 return;
             }
@@ -277,7 +309,7 @@ sub Run {
             next COUNT if !$Delete;
             $Error{AttachmentDelete} = 1;
             $UploadCacheObject->FormIDRemoveFile(
-                FormID => $FormID,
+                FormID => $Self->{FormID},
                 FileID => $Count,
             );
             $IsUpload = 1;
@@ -291,7 +323,7 @@ sub Run {
                 Param => 'file_upload',
             );
             $UploadCacheObject->FormIDAddFile(
-                FormID      => $FormID,
+                FormID      => $Self->{FormID},
                 Disposition => 'attachment',
                 %UploadStuff,
             );
@@ -299,7 +331,7 @@ sub Run {
 
         # get all attachments meta data
         my @Attachments = $UploadCacheObject->FormIDGetAllFilesMeta(
-            FormID => $FormID,
+            FormID => $Self->{FormID},
         );
 
         # create html strings for all dynamic fields
@@ -368,8 +400,9 @@ sub Run {
                     my $Output = $LayoutObject->CustomerHeader( Title => 'Error' );
                     $Output .= $LayoutObject->CustomerError(
                         Message =>
-                            "Could not perform validation on field $DynamicFieldConfig->{Label}!",
-                        Comment => 'Please contact your administrator',
+                            $LayoutObject->{LanguageObject}
+                            ->Translate( 'Could not perform validation on field %s!', $DynamicFieldConfig->{Label} ),
+                        Comment => Translatable('Please contact the administrator.'),
                     );
                     $Output .= $LayoutObject->CustomerFooter();
                     return $Output;
@@ -403,6 +436,20 @@ sub Run {
                 MaxCharacters => $ConfigObject->Get('Ticket::Frontend::TextAreaNote'),
                 PlainText     => $GetParam{Body},
             );
+        }
+
+        # if there is FromChatID, get related messages and prepend them to body
+        if ( $GetParam{FromChatID} ) {
+            my @ChatMessages = $Kernel::OM->Get('Kernel::System::Chat')->ChatMessageList(
+                ChatID => $GetParam{FromChatID},
+            );
+
+            for my $Message (@ChatMessages) {
+                $Message->{MessageText} = $LayoutObject->Ascii2Html(
+                    Text        => $Message->{MessageText},
+                    LinkFeature => 1,
+                );
+            }
         }
 
         # check queue
@@ -452,9 +499,10 @@ sub Run {
             && $Config->{Service}
             && $Config->{ServiceMandatory}
             && !$GetParam{ServiceID}
+            && !$IsUpload
             )
         {
-            $Error{'ServiceIDInvalid'} = ' ServerError';
+            $Error{'ServiceIDInvalid'} = 'ServerError';
         }
 
         # check mandatory sla
@@ -463,9 +511,10 @@ sub Run {
             && $Config->{SLA}
             && $Config->{SLAMandatory}
             && !$GetParam{SLAID}
+            && !$IsUpload
             )
         {
-            $Error{'SLAIDInvalid'} = ' ServerError';
+            $Error{'SLAIDInvalid'} = 'ServerError';
         }
 
         # check type
@@ -495,6 +544,9 @@ sub Run {
             $Output .= $LayoutObject->CustomerFooter();
             return $Output;
         }
+
+        # challenge token check for write action
+        $LayoutObject->ChallengeTokenCheck( Type => 'Customer' );
 
         # if customer is not allowed to set priority, set it to default
         if ( !$Config->{Priority} ) {
@@ -556,20 +608,20 @@ sub Run {
             UserLogin => $Self->{UserLogin},
         );
         my $From      = "\"$FullName\" <$Self->{UserEmail}>";
-        my $ArticleID = $TicketObject->ArticleCreate(
-            TicketID         => $TicketID,
-            ArticleType      => $Config->{ArticleType},
-            SenderType       => $Config->{SenderType},
-            From             => $From,
-            To               => $To,
-            Subject          => $GetParam{Subject},
-            Body             => $GetParam{Body},
-            MimeType         => $MimeType,
-            Charset          => $LayoutObject->{UserCharset},
-            UserID           => $ConfigObject->Get('CustomerPanelUserID'),
-            HistoryType      => $Config->{HistoryType},
-            HistoryComment   => $Config->{HistoryComment} || '%%',
-            AutoResponseType => ( $ConfigObject->Get('AutoResponseForWebTickets') )
+        my $ArticleID = $ArticleBackendObject->ArticleCreate(
+            TicketID             => $TicketID,
+            IsVisibleForCustomer => 1,
+            SenderType           => $Config->{SenderType},
+            From                 => $From,
+            To                   => $To,
+            Subject              => $GetParam{Subject},
+            Body                 => $GetParam{Body},
+            MimeType             => $MimeType,
+            Charset              => $LayoutObject->{UserCharset},
+            UserID               => $ConfigObject->Get('CustomerPanelUserID'),
+            HistoryType          => $Config->{HistoryType},
+            HistoryComment       => $Config->{HistoryComment} || '%%',
+            AutoResponseType     => ( $ConfigObject->Get('AutoResponseForWebTickets') )
             ? 'auto reply'
             : '',
             OrigHeader => {
@@ -604,9 +656,47 @@ sub Run {
             );
         }
 
+        # Permissions check were done earlier
+        if ( $GetParam{FromChatID} ) {
+            my $ChatObject = $Kernel::OM->Get('Kernel::System::Chat');
+            my %Chat       = $ChatObject->ChatGet(
+                ChatID => $GetParam{FromChatID},
+            );
+            my @ChatMessageList = $ChatObject->ChatMessageList(
+                ChatID => $GetParam{FromChatID},
+            );
+            my $ChatArticleID;
+
+            if (@ChatMessageList) {
+                for my $Message (@ChatMessageList) {
+                    $Message->{MessageText} = $LayoutObject->Ascii2Html(
+                        Text        => $Message->{MessageText},
+                        LinkFeature => 1,
+                    );
+                }
+
+                my $ArticleChatBackend = $ArticleObject->BackendForChannel( ChannelName => 'Chat' );
+
+                $ChatArticleID = $ArticleChatBackend->ArticleCreate(
+                    TicketID             => $TicketID,
+                    SenderType           => $Config->{SenderType},
+                    ChatMessageList      => \@ChatMessageList,
+                    IsVisibleForCustomer => 1,
+                    UserID               => $ConfigObject->Get('CustomerPanelUserID'),
+                    HistoryType          => $Config->{HistoryType},
+                    HistoryComment       => $Config->{HistoryComment} || '%%',
+                );
+            }
+            if ($ChatArticleID) {
+                $ChatObject->ChatDelete(
+                    ChatID => $GetParam{FromChatID},
+                );
+            }
+        }
+
         # get pre loaded attachment
         my @AttachmentData = $UploadCacheObject->FormIDGetAllFilesData(
-            FormID => $FormID,
+            FormID => $Self->{FormID},
         );
 
         # get submitted attachment
@@ -642,7 +732,7 @@ sub Run {
             }
 
             # write existing file to backend
-            $TicketObject->ArticleWriteAttachment(
+            $ArticleBackendObject->ArticleWriteAttachment(
                 %{$Attachment},
                 ArticleID => $ArticleID,
                 UserID    => $ConfigObject->Get('CustomerPanelUserID'),
@@ -650,7 +740,7 @@ sub Run {
         }
 
         # remove pre submitted attachments
-        $UploadCacheObject->FormIDRemove( FormID => $FormID );
+        $UploadCacheObject->FormIDRemove( FormID => $Self->{FormID} );
 
         # redirect
         return $LayoutObject->Redirect(
@@ -721,7 +811,6 @@ sub Run {
         DYNAMICFIELD:
         for my $DynamicFieldConfig ( @{$DynamicField} ) {
             next DYNAMICFIELD if !IsHashRefWithData($DynamicFieldConfig);
-            next DYNAMICFIELD if $DynamicFieldConfig->{ObjectType} ne 'Ticket';
 
             my $IsACLReducible = $BackendObject->HasBehavior(
                 DynamicFieldConfig => $DynamicFieldConfig,
@@ -829,8 +918,8 @@ sub Run {
     }
     else {
         return $LayoutObject->ErrorScreen(
-            Message => 'No Subaction!!',
-            Comment => 'Please contact your administrator',
+            Message => Translatable('No Subaction!'),
+            Comment => Translatable('Please contact the administrator.'),
         );
     }
 
@@ -913,7 +1002,7 @@ sub _GetTos {
     # check own selection
     my %NewTos = ( '', '-' );
     my $Module = $Kernel::OM->Get('Kernel::Config')->Get('CustomerPanel::NewTicketQueueSelectionModule')
-        || 'Kernel::Output::HTML::CustomerNewTicketQueueSelectionGeneric';
+        || 'Kernel::Output::HTML::CustomerNewTicket::QueueSelectionGeneric';
     if ( $Kernel::OM->Get('Kernel::System::Main')->Require($Module) ) {
         my $Object = $Module->new(
             %{$Self},
@@ -922,7 +1011,7 @@ sub _GetTos {
         );
 
         # log loaded module
-        if ( $Self->{Debug} > 1 ) {
+        if ( $Self->{Debug} && $Self->{Debug} > 1 ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'debug',
                 Message  => "Module: $Module loaded!",
@@ -948,27 +1037,12 @@ sub _GetTos {
 sub _MaskNew {
     my ( $Self, %Param ) = @_;
 
-    # get form id
-    my $FormID = $Kernel::OM->Get('Kernel::System::Web::Request')->GetParam( Param => 'FormID' );
-
-    # create form id
-    if ( !$FormID ) {
-        $FormID = $Kernel::OM->Get('Kernel::System::Web::UploadCache')->FormIDCreate();
-    }
-
-    $Param{FormID} = $FormID;
+    $Param{FormID} = $Self->{FormID};
     $Param{Errors}->{QueueInvalid} = $Param{Errors}->{QueueInvalid} || '';
 
     my $DynamicFieldNames = $Self->_GetFieldsToUpdate(
         OnlyDynamicFields => 1,
     );
-
-    # create a string with the quoted dynamic field names separated by commas
-    if ( IsArrayRefWithData($DynamicFieldNames) ) {
-        for my $Field ( @{$DynamicFieldNames} ) {
-            $Param{DynamicFieldNamesStrg} .= ", '" . $Field . "'";
-        }
-    }
 
     my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
 
@@ -986,7 +1060,7 @@ sub _MaskNew {
         # check own selection
         my %NewTos = ( '', '-' );
         my $Module = $ConfigObject->Get('CustomerPanel::NewTicketQueueSelectionModule')
-            || 'Kernel::Output::HTML::CustomerNewTicketQueueSelectionGeneric';
+            || 'Kernel::Output::HTML::CustomerNewTicket::QueueSelectionGeneric';
         if ( $Kernel::OM->Get('Kernel::System::Main')->Require($Module) ) {
             my $Object = $Module->new(
                 %{$Self},
@@ -995,7 +1069,7 @@ sub _MaskNew {
             );
 
             # log loaded module
-            if ( $Self->{Debug} > 1 ) {
+            if ( $Self->{Debug} && $Self->{Debug} > 1 ) {
                 $Kernel::OM->Get('Kernel::System::Log')->Log(
                     Priority => 'debug',
                     Message  => "Module: $Module loaded!",
@@ -1025,7 +1099,7 @@ sub _MaskNew {
             Multiple   => 0,
             Size       => 0,
             Name       => 'Dest',
-            Class      => "Validate_Required " . $Param{Errors}->{QueueInvalid},
+            Class      => "Validate_Required Modernize " . $Param{Errors}->{QueueInvalid},
             SelectedID => $Param{ToSelected} || $Param{QueueID},
             TreeView   => $TreeView,
         );
@@ -1058,8 +1132,9 @@ sub _MaskNew {
             $PrioritySelected{SelectedValue} = $Config->{PriorityDefault} || '3 normal';
         }
         $Param{PriorityStrg} = $LayoutObject->BuildSelection(
-            Data => \%Priorities,
-            Name => 'PriorityID',
+            Data  => \%Priorities,
+            Name  => 'PriorityID',
+            Class => 'Modernize',
             %PrioritySelected,
         );
         $LayoutObject->Block(
@@ -1088,7 +1163,7 @@ sub _MaskNew {
             PossibleNone => 1,
             Sort         => 'AlphanumericValue',
             Translation  => 0,
-            Class        => "Validate_Required " . ( $Param{Errors}->{TypeIDInvalid} || '' ),
+            Class        => "Validate_Required Modernize " . ( $Param{Errors}->{TypeIDInvalid} || '' ),
         );
         $LayoutObject->Block(
             Name => 'TicketType',
@@ -1110,39 +1185,26 @@ sub _MaskNew {
             );
         }
 
-        if ( $Config->{ServiceMandatory} ) {
-            $Param{ServiceStrg} = $LayoutObject->BuildSelection(
-                Data         => \%Services,
-                Name         => 'ServiceID',
-                SelectedID   => $Param{ServiceID},
-                Class        => "Validate_Required " . ( $Param{Errors}->{ServiceIDInvalid} || '' ),
-                PossibleNone => 1,
-                TreeView     => $TreeView,
-                Sort         => 'TreeView',
-                Translation  => 0,
-                Max          => 200,
-            );
-            $LayoutObject->Block(
-                Name => 'TicketServiceMandatory',
-                Data => \%Param,
-            );
-        }
-        else {
-            $Param{ServiceStrg} = $LayoutObject->BuildSelection(
-                Data         => \%Services,
-                Name         => 'ServiceID',
-                SelectedID   => $Param{ServiceID},
-                PossibleNone => 1,
-                TreeView     => $TreeView,
-                Sort         => 'TreeView',
-                Translation  => 0,
-                Max          => 200,
-            );
-            $LayoutObject->Block(
-                Name => 'TicketService',
-                Data => \%Param,
-            );
-        }
+        $Param{ServiceStrg} = $LayoutObject->BuildSelection(
+            Data       => \%Services,
+            Name       => 'ServiceID',
+            SelectedID => $Param{ServiceID},
+            Class      => 'Modernize '
+                . ( $Config->{ServiceMandatory} ? 'Validate_Required ' : '' )
+                . ( $Param{Errors}->{ServiceIDInvalid} || '' ),
+            PossibleNone => 1,
+            TreeView     => $TreeView,
+            Sort         => 'TreeView',
+            Translation  => 0,
+            Max          => 200,
+        );
+        $LayoutObject->Block(
+            Name => 'TicketService',
+            Data => {
+                ServiceMandatory => $Config->{ServiceMandatory} || 0,
+                %Param,
+            },
+        );
 
         # reset previous ServiceID to reset SLA-List if no service is selected
         if ( !$Services{ $Param{ServiceID} || '' } ) {
@@ -1158,37 +1220,25 @@ sub _MaskNew {
                 );
             }
 
-            if ( $Config->{SLAMandatory} ) {
-                $Param{SLAStrg} = $LayoutObject->BuildSelection(
-                    Data         => \%SLA,
-                    Name         => 'SLAID',
-                    SelectedID   => $Param{SLAID},
-                    Class        => "Validate_Required " . ( $Param{Errors}->{SLAIDInvalid} || '' ),
-                    PossibleNone => 1,
-                    Sort         => 'AlphanumericValue',
-                    Translation  => 0,
-                    Max          => 200,
-                );
-                $LayoutObject->Block(
-                    Name => 'TicketSLAMandatory',
-                    Data => \%Param,
-                );
-            }
-            else {
-                $Param{SLAStrg} = $LayoutObject->BuildSelection(
-                    Data         => \%SLA,
-                    Name         => 'SLAID',
-                    SelectedID   => $Param{SLAID},
-                    PossibleNone => 1,
-                    Sort         => 'AlphanumericValue',
-                    Translation  => 0,
-                    Max          => 200,
-                );
-                $LayoutObject->Block(
-                    Name => 'TicketSLA',
-                    Data => \%Param,
-                );
-            }
+            $Param{SLAStrg} = $LayoutObject->BuildSelection(
+                Data       => \%SLA,
+                Name       => 'SLAID',
+                SelectedID => $Param{SLAID},
+                Class      => 'Modernize '
+                    . ( $Config->{SLAMandatory} ? 'Validate_Required ' : '' )
+                    . ( $Param{Errors}->{SLAInvalid} || '' ),
+                PossibleNone => 1,
+                Sort         => 'AlphanumericValue',
+                Translation  => 0,
+                Max          => 200,
+            );
+            $LayoutObject->Block(
+                Name => 'TicketSLA',
+                Data => {
+                    SLAMandatory => $Config->{SLAMandatory} || 0,
+                    %Param,
+                    }
+            );
         }
     }
 
@@ -1206,7 +1256,7 @@ sub _MaskNew {
         FieldFilter => $Config->{DynamicField} || {},
     );
 
-    # reduce the dynamic fields to only the ones that are desinged for customer interface
+    # reduce the dynamic fields to only the ones that are designed for customer interface
     my @CustomerDynamicFields;
     DYNAMICFIELD:
     for my $DynamicFieldConfig ( @{$DynamicField} ) {
@@ -1281,11 +1331,38 @@ sub _MaskNew {
         $Param{RichTextHeight} = $Config->{RichTextHeight} || 0;
         $Param{RichTextWidth}  = $Config->{RichTextWidth}  || 0;
 
-        $LayoutObject->Block(
-            Name => 'RichText',
+        # set up customer rich text editor
+        $LayoutObject->CustomerSetRichTextParameters(
             Data => \%Param,
         );
     }
+
+    # Permissions have been checked before in Run()
+    if ( $Param{FromChatID} ) {
+        my @ChatMessages = $Kernel::OM->Get('Kernel::System::Chat')->ChatMessageList(
+            ChatID => $Param{FromChatID},
+        );
+
+        for my $Message (@ChatMessages) {
+            $Message->{MessageText} = $LayoutObject->Ascii2Html(
+                Text        => $Message->{MessageText},
+                LinkFeature => 1,
+            );
+        }
+
+        $LayoutObject->Block(
+            Name => 'ChatArticlePreview',
+            Data => {
+                ChatMessages => \@ChatMessages,
+            },
+        );
+    }
+
+    # send data to JS
+    $LayoutObject->AddJSData(
+        Key   => 'DynamicFieldNames',
+        Value => $DynamicFieldNames,
+    );
 
     # get output back
     return $LayoutObject->Output(

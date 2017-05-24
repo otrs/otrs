@@ -1,6 +1,5 @@
 # --
-# Admin/CustomerUser/Add.t - command tests
-# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -15,8 +14,14 @@ use vars (qw($Self));
 
 my $CommandObject = $Kernel::OM->Get('Kernel::System::Console::Command::Admin::CustomerUser::Add');
 
-my $HelperObject = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
-my $RandomName   = $HelperObject->GetRandomID();
+# get helper object
+$Kernel::OM->ObjectParamAdd(
+    'Kernel::System::UnitTest::Helper' => {
+        RestoreDatabase => 1,
+    },
+);
+my $Helper     = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
+my $RandomName = $Helper->GetRandomID();
 
 $Kernel::OM->Get('Kernel::Config')->Set(
     Key   => 'CheckEmailAddresses',
@@ -33,8 +38,8 @@ $Self->Is(
 
 # provide minimum options
 $ExitCode = $CommandObject->Execute(
-    '--user-name',   $RandomName, '--first-name',    'Test',
-    '--last-name',   'Test',      '--email-address', $RandomName . '@test.test',
+    '--user-name', $RandomName, '--first-name', 'Test',
+    '--last-name', 'Test', '--email-address', $RandomName . '@test.test',
     '--customer-id', 'Test'
 );
 $Self->Is(
@@ -45,8 +50,8 @@ $Self->Is(
 
 # provide minimum options
 $ExitCode = $CommandObject->Execute(
-    '--user-name',   $RandomName, '--first-name',    'Test',
-    '--last-name',   'Test',      '--email-address', $RandomName . '@test.test',
+    '--user-name', $RandomName, '--first-name', 'Test',
+    '--last-name', 'Test', '--email-address', $RandomName . '@test.test',
     '--customer-id', 'Test'
 );
 $Self->Is(
@@ -55,18 +60,6 @@ $Self->Is(
     "Minimum options (user already exists)",
 );
 
-# delete customer user
-my $Success = $Kernel::OM->Get('Kernel::System::DB')->Do(
-    SQL => "DELETE FROM customer_user WHERE login = '$RandomName'",
-);
-$Self->True(
-    $Success,
-    "CustomerUserDelete - $RandomName",
-);
-
-# Make sure the cache is correct.
-$Kernel::OM->Get('Kernel::System::Cache')->CleanUp(
-    Type => 'CustomerUser',
-);
+# cleanup is done by RestoreDatabase
 
 1;

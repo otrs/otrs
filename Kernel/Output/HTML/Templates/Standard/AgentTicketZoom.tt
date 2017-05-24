@@ -1,0 +1,692 @@
+# --
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# --
+# This software comes with ABSOLUTELY NO WARRANTY. For details, see
+# the enclosed file COPYING for license information (AGPL). If you
+# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# --
+## nofilter(TidyAll::Plugin::OTRS::TT::ScriptUsage)
+
+[% RenderBlockStart("ArticleFilterDialog") %]
+<div id="ArticleFilterDialog" class="Hidden">
+    <form action="[% Env("CGIHandle") %]" method="post" id="ArticleFilterDialogForm" name="ArticleFilterDialogForm">
+        <input type="hidden" value="AgentTicketZoom" name="Action"/>
+        <input type="hidden" value="ArticleFilterSet" name="Subaction"/>
+        <input type="hidden" value="[% Data.TicketID | html %]" name="TicketID"/>
+        <fieldset class="TableLike">
+            <label for="CommunicationChannelFilter">[% Translate("Communication channel") | html %]:</label>
+            <div class="Field">
+                [% Data.Channels %]
+            </div>
+            <div class="Clear"></div>
+            <label for="CustomerVisibilityFilter">[% Translate("Customer visibility") | html %]:</label>
+            <div class="Field">
+                [% Data.CustomerVisibility %]
+            </div>
+            <div class="Clear"></div>
+            <label for="ArticleSenderTypeFilter">[% Translate("Sender Type") | html %]:</label>
+            <div class="Field">
+                [% Data.ArticleSenderTypeFilterString %]
+            </div>
+            <div class="Clear"></div>
+            <label for="SaveDefaults">[% Translate("Save filter settings as default") | html %]:</label>
+            <div class="Field">
+                <input type="checkbox" id="SaveDefaults" name="SaveDefaults" value="1" />
+            </div>
+        </fieldset>
+    </form>
+</div>
+[% RenderBlockEnd("ArticleFilterDialog") %]
+
+[% RenderBlockStart("EventTypeFilterDialog") %]
+<div id="EventTypeFilterDialog" class="Hidden">
+    <form action="[% Env("CGIHandle") %]" method="post" id="EventTypeFilterDialogForm" name="EventTypeFilterDialogForm">
+        <input type="hidden" value="AgentTicketZoom" name="Action"/>
+        <input type="hidden" value="EvenTypeFilterSet" name="Subaction"/>
+        <input type="hidden" value="[% Data.TicketID | html %]" name="TicketID"/>
+        <fieldset class="TableLike">
+            <label for="EventTypeFilter">[% Translate("Event Type") | html %]:</label>
+            <div class="Field">
+                [% Data.EventTypeFilterString %]
+            </div>
+            <div class="Clear"></div>
+            <label for="SaveDefaults">[% Translate("Save as default") | html %]:</label>
+            <div class="Field">
+                <input type="checkbox" id="SaveDefaults" name="SaveDefaults" value="1" />
+            </div>
+        </fieldset>
+    </form>
+</div>
+[% RenderBlockEnd("EventTypeFilterDialog") %]
+
+[% RenderBlockStart("Header") %]
+<div class="MainBox ARIARoleMain TicketZoom [% IF Data.UseArticleColors %]UseArticleColors[% END %]">
+    <div class="ClearLeft"></div>
+    <div class="Headline">
+        <div class="Flag" title="[% Translate(Data.Priority) | html %]"><span class="PriorityID-[% Data.PriorityID | html %]">[% Translate(Data.Priority) | html %]</span></div>
+        <h1>
+            [% Data.Hook %][% Config('Ticket::HookDivider') %][% Data.TicketNumber %] &mdash; [% Data.Title | html %]
+        </h1>
+    </div>
+
+# Iframe used for fixing bug#8545: Attachment download not possible if pop up of another action is open
+# All downloads (e.g. attachments) have this iframe as target. This prevents the browser from sending
+# an http request to the TicketZoom window. It sends the download request to this iframe instead.
+# Sending the download request to the main window would lead to an alert message about leaving the page
+# if at the same time a popup window (e.g. for a ticket answer) is opened.
+    <iframe src="about:blank" width="0" height="0" name="AttachmentWindow" id="AttachmentWindow"></iframe>
+
+    <div class="LayoutFixedSidebar SidebarLast">
+        <div class="SidebarColumn">
+            [% FOREACH Widget IN Data.SidebarWidgets; %]
+                [% IF Widget.Async; %]
+                    <div id="[% Widget.ElementID %]">
+                        <div class="WidgetIsLoading">
+                            <i class="fa fa-spinner fa-spin"></i>
+                        </div>
+                    </div>
+                [% ELSE; %]
+                    [% Widget.Output %]
+                [% END; %]
+            [% END; %]
+        </div>
+        <div class="ContentColumn">
+            <div class="WidgetSimple">
+                <div class="Content OverflowVisible">
+                    <div class="ActionRow Cluster">
+                        <ul class="Actions">
+[% RenderBlockStart("TicketMenu") %]
+                            <li id="nav-[% Data.Name | replace(' ', '-') | html %]">
+                            [% IF Data.Type == 'Cluster' %]
+                                <span class="[% Data.Class %]" >[% Translate(Data.Name) | html %] <i class="fa fa-caret-down"></i></span>
+                            [% ELSE %]
+                                <a href="[% Env("Baselink") %][% Data.Link | Interpolate %]" class="[% Data.Class %]" [% Data.LinkParam %] title="[% Translate(Data.Description) | html %]">[% Translate(Data.Name) | html %]</a>
+                            [% END %]
+[% RenderBlockStart("TicketMenuSubContainer") %]
+                                <ul id="nav-[% Data.Name | replace(' ', '-') | html %]-container">
+[% RenderBlockStart("TicketMenuSubContainerItem") %]
+                                    <li id="nav-[% Data.Name | replace(' ', '-') | html %]">
+                                        <a href="[% Env("Baselink") %][% Data.Link | Interpolate %]" class="[% Data.Class | html %]" [% Data.LinkParam %] title="[% Translate(Data.Description) | html %]">[% Translate(Data.Name) | html %]</a>
+                                    </li>
+[% RenderBlockEnd("TicketMenuSubContainerItem") %]
+                                </ul>
+[% RenderBlockEnd("TicketMenuSubContainer") %]
+                            </li>
+[% RenderBlockEnd("TicketMenu") %]
+[% RenderBlockStart("TicketMenuPhoneAsDropdown") %]
+                            <li>
+                                <form title="[% Translate(Data.Name) | html %]" action="[% Env("CGIHandle") %]" method="get" id="[% Data.FormID | html %]">
+                                    <input type="hidden" name="Action" value="[% Data.Action | html %]"/>
+                                    <input type="hidden" name="TicketID" value="[% Data.TicketID | html %]"/>
+                                    <label for="[% Data.PhoneElementID | html %]" class="InvisibleText">[% Translate(Data.Name) | html %]:</label>
+                                    [% Data.StandardReplyStrg %]
+                                </form>
+                            </li>
+[% RenderBlockEnd("TicketMenuPhoneAsDropdown") %]
+[% RenderBlockStart("MoveLink") %]
+                            <li class="[% Data.Class | html %]">
+                                <form title="[% Translate("Move ticket to a different queue") | html %]" action="[% Env("CGIHandle") %]" method="post">
+                                    <input type="hidden" name="Action" value="AgentTicketMove"/>
+                                    <input type="hidden" name="QueueID" value="[% Data.QueueID | html %]"/>
+                                    <input type="hidden" name="TicketID" value="[% Data.TicketID | html %]"/>
+                                    <label for="DestQueueID" class="InvisibleText">[% Translate("Queue") | html %]:</label>
+                                    [% Data.MoveQueuesStrg %]
+                                </form>
+                            </li>
+[% RenderBlockEnd("MoveLink") %]
+[% RenderBlockStart("MoveForm") %]
+                            <li>
+                                <a href="[% Env("Baselink") %]Action=AgentTicketMove;TicketID=[% Data.TicketID | uri %];" class="AsPopup PopupType_TicketAction" title="[% Translate("Change Queue") | html %]">[% Translate("Queue") | html %]</a>
+                            </li>
+[% RenderBlockEnd("MoveForm") %]
+                        </ul>
+                        <div class="Clear"></div>
+                    </div>
+                </div>
+            </div>
+
+[% RenderBlockStart("ProcessWidget") %]
+            <div class="WidgetSimple Expanded" id="DynamicFieldsWidget">
+                <div class="Header">
+                    <div class="WidgetAction Toggle"><a href="#" title="[% Translate("Show or hide the content") | html %]"><i class="fa fa-caret-right"></i><i class="fa fa-caret-down"></i></a></div>
+                    <h2>[% Translate(Data.WidgetTitle) | html %]</h2>
+                </div>
+[% RenderBlockStart("NextActivityDialogs") %]
+                <div class="LightRow Bottom">
+                    <ul class="Actions">
+                        <li><strong>[% Translate(Data.ActivityName) | html %]:</strong></li>
+[% RenderBlockStart("ActivityDialog") %]
+                        <li>
+                            <a title="[% Translate(Data.Name) | html %]" class="AsPopup PopupType_TicketAction" href="[% Env("Baselink") %]Action=AgentTicketProcess;Subaction=DisplayActivityDialog;TicketID=[% Data.TicketID | uri %];ProcessEntityID=[% Data.ProcessEntityID | uri %];ActivityDialogEntityID=[% Data.ActivityDialogEntityID | uri %]">[% Translate(Data.Name) | html %]</a>
+                        </li>
+[% RenderBlockEnd("ActivityDialog") %]
+                    </ul>
+[% RenderBlockStart("NoActivityDialogs") %]
+                    <span class="ActionMessage">[% Translate("There are no dialogs available at this point in the process.") | html %]</span>
+[% RenderBlockEnd("NoActivityDialogs") %]
+                    <div class="Clear"></div>
+                </div>
+[% RenderBlockEnd("NextActivityDialogs") %]
+                <div class="Content ProcessInfo">
+                    <div class="ProcessInformation">
+                        <fieldset>
+[% RenderBlockStart("ProcessWidgetDynamicFieldGroups") %]
+[% RenderBlockStart("ProcessWidgetDynamicFieldGroupSeparator") %]
+                            <h2 class="FieldSetSeparator">[% Data.Name %]</h2>
+[% RenderBlockEnd("ProcessWidgetDynamicFieldGroupSeparator") %]
+[% RenderBlockStart("ProcessWidgetDynamicField") %]
+                            <div class="FieldContainer DynamicFieldAutoResize">
+                                <label title="[% Data.Label | html %]">
+                                    [% Data.Label | html %]
+[% RenderBlockStart("ProcessWidgetDynamicFieldValueOverlayTrigger") %]
+                                    <a href="#" class="ShowFieldInfoOverlay">+</a>
+[% RenderBlockEnd("ProcessWidgetDynamicFieldValueOverlayTrigger") %]
+                                </label>
+                                <p class="Value CutValue DynamicField_[% Data.Name %]">
+<!-- OutputFilterHook_WidgetDynamicFieldBegin -->
+[% RenderBlockStart("ProcessWidgetDynamicFieldLink") %]
+                                    <span title="[% Data.Title %]"><a href="[% Data.Link | Interpolate %]"[% IF Data.LinkPreview %] data-trigger="floater" data-floater-url="[% Data.LinkPreview | Interpolate %]"[% END %] target="_blank" class="DynamicFieldLink">[% Data.Value %]</a></span>
+[% RenderBlockEnd("ProcessWidgetDynamicFieldLink") %]
+[% RenderBlockStart("ProcessWidgetDynamicFieldPlain") %]
+                                    [% Data.Value %]
+[% RenderBlockEnd("ProcessWidgetDynamicFieldPlain") %]
+<!-- OutputFilterHook_WidgetDynamicFieldEnd -->
+                                </p>
+                                <p class="ValueLong">
+[% RenderBlockStart("ProcessWidgetDynamicFieldValueLong") %]
+                                    [% Data.Value %]
+[% RenderBlockEnd("ProcessWidgetDynamicFieldValueLong") %]
+                                </p>
+                                <div class="Clear"></div>
+                            </div>
+[% RenderBlockEnd("ProcessWidgetDynamicField") %]
+[% RenderBlockEnd("ProcessWidgetDynamicFieldGroups") %]
+                        </fieldset>
+                    </div>
+                </div>
+            </div>
+[% RenderBlockEnd("ProcessWidget") %]
+
+            <div id="ArticleTree">
+[% Data.ArticleTree %]
+            </div>
+
+[% RenderBlockStart("HintNoArticles") %]
+            <div class="WidgetSimple">
+                <div class="Content">
+                    [% Translate("This item has no articles yet.") | html %]
+                </div>
+            </div>
+[% RenderBlockEnd("HintNoArticles") %]
+
+            <div id="ArticleItems">
+[% Data.ArticleItems %]
+            </div>
+
+            [% FOREACH Widget IN Data.MainWidgets; %]
+                [% IF Widget.Async; %]
+                    <div id="[% Widget.ElementID %]"></div>
+                [% ELSE; %]
+                    [% Widget.Output %]
+                [% END; %]
+            [% END; %]
+
+        </div>
+        <div class="Clear"></div>
+    </div>
+
+</div>
+[% RenderBlockEnd("Header") %]
+
+[% RenderBlockStart("Tree") %]
+<div class="WidgetSimple">
+    <div class="Header">
+        <div class="WidgetAction Toggle">
+            <a href="#" title="[% Translate("Show or hide the content") | html %]">
+                <i class="fa fa-caret-right"></i>
+                <i class="fa fa-caret-down"></i>
+            </a>
+        </div>
+        <h2>
+        [% IF Data.ZoomTimeline %]
+            [% Translate("Ticket Timeline View") | html %]
+        [% ELSE %]
+            [% Translate("Article Overview - %s Article(s)", Data.ArticleCount) | html %]
+        [% END %]
+        </h2>
+        <div class="AdditionalInformation ControlRow">
+
+[% RenderBlockStart("ArticlePages") %]
+            <div class="ArticlePages Icons">
+        [% FOREACH page IN [1 .. Data.Pages]; %]
+                <a href="[% Env("Baselink") %]Action=AgentTicketZoom;TicketID=[% Data.TicketID | uri %];ArticlePage=[% page %]" title="[% Translate('Page %s', page) %]" data-page="[% page %]" [% IF page == Data.CurrentPage %]class="Active"[% END %]>[% page %]</a>
+        [% END; %]
+            </div>
+[% RenderBlockEnd("ArticlePages") %]
+[% RenderBlockStart("ArticleFilterDialogLink") %]
+            <div class="ArticleFilter Icons">
+                <span class="InvisibleText">[% Translate("Article Filter") | html %]:</span>
+# Only show one: Set or Reset.
+#[% RenderBlockStart("ArticleFilterSetLink") %]
+                <a href="#" id="SetArticleFilter" title="[% Translate("Add Filter") | html %]"><i class="fa fa-filter"></i><span>[% Translate("Set") | html %]</span></a>
+#[% RenderBlockEnd("ArticleFilterSetLink") %]
+[% RenderBlockStart("ArticleFilterResetLink") %]
+                <a href="#" id="ResetArticleFilter" title="[% Translate("Reset Filter") | html %]"><i class="fa fa-trash-o"></i><span>[% Translate("Reset") | html %]</span></a>
+[% RenderBlockEnd("ArticleFilterResetLink") %]
+            </div>
+[% RenderBlockEnd("ArticleFilterDialogLink") %]
+            <div class="ArticleView Icons">
+                <span class="InvisibleText">[% Translate("Article View") | html %]:</span>
+[% RenderBlockStart("Expand") %]
+                <a class="OneArticle Active" href="[% Env("Baselink") %]Action=AgentTicketZoom;TicketID=[% Data.TicketID | uri %];ArticleID=[% Data.ArticleID | uri %];ZoomExpand=0;ArticlePage=[% Data.Page | uri %]" title="[% Translate("Show one article") | html %]"><i class="fa fa-minus"></i><span>[% Translate("Show one article") | html %]</span></a>
+                <a class="AllArticles" href="[% Env("Baselink") %]Action=AgentTicketZoom;TicketID=[% Data.TicketID | uri %];ArticleID=[% Data.ArticleID | uri %];ZoomExpand=1;ArticlePage=[% Data.Page | uri %]" title="[% Translate("Show all articles") | html %]"><i class="fa fa-bars"></i><span>[% Translate("Show all articles") | html %]</span></a>
+            [% IF Config("TimelineViewEnabled") == 1 %]
+                <a class="Timeline [% Data.Class | html %]" href="[% Env("Baselink") %]Action=AgentTicketZoom;TicketID=[% Data.TicketID | uri %];ArticleID=[% Data.ArticleID | uri %];ZoomTimeline=1" title="[% Translate("Show Ticket Timeline View") | html %]"><i class="fa fa-clock-o"></i><span>[% Translate("Show Ticket Timeline View") | html %]</span></a>
+            [% END %]
+[% RenderBlockEnd("Expand") %]
+[% RenderBlockStart("Collapse") %]
+                <a class="OneArticle" href="[% Env("Baselink") %]Action=AgentTicketZoom;TicketID=[% Data.TicketID | uri %];ArticleID=[% Data.ArticleID | uri %];ZoomExpand=0" title="[% Translate("Show one article") | html %]"><i class="fa fa-minus"></i><span>[% Translate("Show one article") | html %]</span></a>
+                <a class="AllArticles Active" href="[% Env("Baselink") %]Action=AgentTicketZoom;TicketID=[% Data.TicketID | uri %];ArticleID=[% Data.ArticleID | uri %];ZoomExpand=1" title="[% Translate("Show all articles") | html %]"><i class="fa fa-bars"></i><span>[% Translate("Show all articles") | html %]</span></a>
+            [% IF Config("TimelineViewEnabled") == 1 %]
+                <a class="Timeline [% Data.Class | html %]" href="[% Env("Baselink") %]Action=AgentTicketZoom;TicketID=[% Data.TicketID | uri %];ArticleID=[% Data.ArticleID | uri %];ZoomTimeline=1" title="[% Translate("Show Ticket Timeline View") | html %]"><i class="fa fa-clock-o"></i><span>[% Translate("Show Ticket Timeline View") | html %]</span></a>
+            [% END %]
+[% RenderBlockEnd("Collapse") %]
+[% IF Config("TimelineViewEnabled") == 1 %]
+[% RenderBlockStart("Timeline") %]
+                <a class="OneArticle" href="[% Env("Baselink") %]Action=AgentTicketZoom;TicketID=[% Data.TicketID | uri %];ArticleID=[% Data.ArticleID | uri %];ZoomExpand=0" title="[% Translate("Show one article") | html %]"><i class="fa fa-minus"></i><span>[% Translate("Show one article") | html %]</span></a>
+                <a class="AllArticles" href="[% Env("Baselink") %]Action=AgentTicketZoom;TicketID=[% Data.TicketID | uri %];ArticleID=[% Data.ArticleID | uri %];ZoomExpand=1" title="[% Translate("Show all articles") | html %]"><i class="fa fa-bars"></i><span>[% Translate("Show all articles") | html %]</span></a>
+                <a class="Timeline Active" href="[% Env("Baselink") %]Action=AgentTicketZoom;TicketID=[% Data.TicketID | uri %];ArticleID=[% Data.ArticleID | uri %];ZoomTimeline=1" title="[% Translate("Show Ticket Timeline View") | html %]"><i class="fa fa-clock-o"></i><span>[% Translate("Show Ticket Timeline View") | html %]</span></a>
+[% RenderBlockEnd("Timeline") %]
+[% END %]
+            </div>
+            <div class="Clear"></div>
+        </div>
+    </div>
+    <div class="Content">
+
+[% RenderBlockStart("ArticleList") %]
+        <div class="TicketList">
+            <div id="ArticleTableBody" class="ActionRow">
+                <div class="Scroller">
+                    <table id="ArticleTable" class="DataTable [% Data.TableClasses | html %]">
+                        <thead>
+                            <tr>
+                                <th class="UnreadArticles">
+                                    <a class="UnreadArticles" href="#" title="[% Translate("Unread articles") | html %]">
+                                        <span class="UnreadArticles">
+                                            <i class="fa fa-star"></i>
+                                            <i class="fa fa-star"></i>
+                                        </span>
+                                    </a>
+                                </th>
+                                <th class="No Sortable"><a href="#">[% Translate("No.") | html %]</a></th>
+                                <th class="Type Sortable"><a href="#">[% Translate("Type") | html %]</a></th>
+                                <th class="Channel Sortable"><a href="#">[% Translate("Channel") | html %]</a></th>
+                                <th class="IsVisibleForCustomer Sortable"><a href="#">[% Translate("Visible for Customer") | html %]</a></th>
+                                <th class="Direction Sortable"><a href="#" title="[% Translate("Direction") | html %]"><i class="fa fa-exchange"></i></a></th>
+                                <th class="From Sortable"><a href="#">[% Translate("From") | html %]</a></th>
+                                <th class="Subject Sortable"><a href="#">[% Translate("Subject") | html %]</a></th>
+                                <th class="Created Sortable"><a href="#">[% Translate("Created") | html %]</a></th>
+                                <th class="Attachments Last">
+                                    <a href="#" title="[% Translate("Attachments") | html %]">
+                                        <i class="fa fa-paperclip"></i>
+                                    </a>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+[% RenderBlockStart("TreeItem") %]
+                            <tr class="[% Data.SenderType | html %] [% IF Data.IsVisibleForCustomer %]VisibleForCustomer[% END %] [% Data.ClassRow | html %]" id="Row[% Data.ArticleNumber | uri %]">
+                                <td class="[% Data.Class | html %] UnreadArticles Fixed NonTextContent">
+[% RenderBlockStart("TreeItemImportantArticle") %]
+                                    <span class="ImportantArticles" title="[% Translate("Important") | html %]">
+                                        <i class="fa fa-info-circle"></i>
+                                        <em>[% Translate("Important") | html %]</em>
+                                    </span>
+[% RenderBlockEnd("TreeItemImportantArticle") %]
+[% RenderBlockStart("TreeItemNewArticle") %]
+                                    <span class="[% Data.Class | html %]" title="[% Translate("Unread Article!") | html %]">
+                                        <i class="fa fa-star"></i>
+                                        <i class="fa fa-star"></i>
+                                    </span>
+[% RenderBlockEnd("TreeItemNewArticle") %]
+[% RenderBlockStart("TreeItemNoNewArticle") %]
+                                    <span class="NoContent"></span>
+[% RenderBlockEnd("TreeItemNoNewArticle") %]
+                                </td>
+                                <td class="No">
+                                    [% Data.ArticleNumber | html %]
+                                    <input type="hidden" class="ArticleInfo" name="Link[% Data.ArticleNumber | uri %]" value="[% Env("Baselink") %]Action=AgentTicketZoom;Subaction=ArticleUpdate;Count=[% Data.ArticleNumber | uri %];TicketID=[% Data.TicketID | html %];ArticleID=[% Data.ArticleID | html %];"/>
+                                    <input type="hidden" class="ArticleID" value="[% Data.ArticleID | html %]" />
+                                    <input type="hidden" class="SortData" value="[% Data.ArticleNumber | html %]" />
+                                </td>
+                                <td class="Type">
+                                    <div>[% Translate(Data.SenderType) | html %]</div>
+                                    <input type="hidden" class="SortData" value="[% Translate(Data.SenderType) | html %]" />
+                                </td>
+                                <td class="Channel">
+                                    <div>[% Translate(Data.Channel) | html %]</div>
+                                    <input type="hidden" class="SortData" value="[% Translate(Data.Channel) | html %]" />
+                                </td>
+                                <td class="IsVisibleForCustomer">
+                                    <div>
+                                        [% IF Data.IsVisibleForCustomer %]
+                                            [% Translate("Yes") | html %]
+                                        [% ELSE %]
+                                            [% Translate("No") | html %]
+                                        [% END %]
+                                    </div>
+                                    <input type="hidden" class="SortData" value="[% Translate(Data.Channel) | html %]" />
+                                </td>
+                                <td class="Direction">
+[% RenderBlockStart("TreeItemDirectionIncoming") %]
+                                    <span class="Direction Incoming" title="[% Translate("Incoming message") | html %]">
+                                        <i class="fa fa-long-arrow-left"></i>
+                                        <i class="fa fa-square-o"></i>
+                                    </span>
+                                    <input type="hidden" class="SortData" value="0" />
+[% RenderBlockEnd("TreeItemDirectionIncoming") %]
+[% RenderBlockStart("TreeItemDirectionOutgoing") %]
+                                    <span class="Direction Outgoing" title="[% Translate("Outgoing message") | html %]">
+                                        <i class="fa fa-long-arrow-right"></i>
+                                        <i class="fa fa-square-o"></i>
+                                    </span>
+                                    <input type="hidden" class="SortData" value="1" />
+[% RenderBlockEnd("TreeItemDirectionOutgoing") %]
+[% RenderBlockStart("TreeItemDirectionInternal") %]
+                                    <span class="Direction Internal" title="[% Translate("Internal message") | html %]">
+                                        <i class="fa fa-square-o"></i>
+                                    </span>
+                                    <input type="hidden" class="SortData" value="2" />
+[% RenderBlockEnd("TreeItemDirectionInternal") %]
+                                </td>
+                                <td class="From">
+                                    <div title="[% Data.From | html %]"><a href="#">[% Data.FromRealname | truncate(34) | html %]</a></div>
+                                    <input type="hidden" class="SortData" value="[% Data.From | html %]" />
+                                </td>
+                                <td class="Subject">
+                                    <div title="[% Data.Subject | html %]"><a href="#">[% Data.Subject | truncate(36) | html %]</a></div>
+                                    <input type="hidden" class="SortData" value="[% Data.Subject | html %]" />
+                                </td>
+                                <td class="Created">
+                                    <a href="#">[% Data.CreateTime | Localize("TimeShort") %]</a>
+# Include custom sorting information: date in ISO format.
+# Other date formats cannot be sorted reliably.
+                                    <input type="hidden" class="SortData" value="[% Data.Created | html %]" />
+                                </td>
+                                <td class="Attachments Attachment Fixed NonTextContent">
+[% RenderBlockStart("TreeItemAttachment") %]
+[% PROCESS ArticleAttachments.tt %]
+[% RenderBlockEnd("TreeItemAttachment") %]
+[% RenderBlockStart("TreeItemNoAttachment") %]
+                                    <span class="NoContent"></span>
+[% RenderBlockEnd("TreeItemNoAttachment") %]
+                                </td>
+                            </tr>
+[% RenderBlockEnd("TreeItem") %]
+                        </tbody>
+                    </table>
+                </div>
+                <div class="Handle ui-resizable-handle ui-resizable-s">
+                    <a href="#">[% Translate("Resize") | html %]</a>
+                </div>
+            </div>
+        </div>
+[% RenderBlockEnd("ArticleList") %]
+
+[% RenderBlockStart("TimelineView") %]
+
+        <div class="TimelineViewTicketActions Hidden">
+[% RenderBlockStart("TimelineViewTicketActions") %]
+            <div class="TicketActions ArticleID_[% Data.ArticleID | html %]">
+[% PROCESS ArticleActionMenu.tt %]
+            </div>
+[% RenderBlockEnd("TimelineViewTicketActions") %]
+        </div>
+
+        <div class="TimelineViewArticleAttachments Hidden">
+[% RenderBlockStart("TimelineViewArticleAttachments") %]
+            <div class="ArticleAttachments ArticleID_[% Data.ArticleID | html %]">
+[% PROCESS ArticleAttachments.tt %]
+            </div>
+[% RenderBlockEnd("TimelineViewArticleAttachments") %]
+        </div>
+
+        <ul class="Hidden">
+            <li id="TemplateListItem">
+                <h3>
+                    <div class="UnreadArticles Remarkable" title="[% Translate("Mark this article as read") | html %]">
+                        <i class="fa fa-star"></i>
+                        <i class="fa fa-star"></i>
+                    </div>
+                    <i class="fa fa-info-circle" title="[% Translate("Important") | html %]"></i>
+                    <em></em>
+                    <strong class="Type"></strong>
+                    <span><span></span></span>
+                    <a href="#" class="ShowFullArticleText" title="[% Translate("Show Full Text") | html %]">
+                        <i class="fa fa-search-plus"></i>
+                    </a>
+                </h3>
+            </li>
+        </ul>
+
+        <div id="TemplateArticleData" class="Hidden">
+            <ul>
+                <li class="subject">
+                    <strong>[% Translate("Subject") | html %]: </strong>
+                </li>
+                <li class="from">
+                    <strong>[% Translate("From") | html %]: </strong>
+                </li>
+                <li class="to">
+                    <strong>[% Translate("To") | html %]: </strong>
+                </li>
+                <li class="cc">
+                    <strong>[% Translate("Cc") | html %]: </strong>
+                </li>
+            </ul>
+            <div class="Hidden FullArticlePlainText" data-title="[% Translate("Full Article Text") | html %]">
+                <div class="TimelinePlainText"></div>
+            </div>
+            <p class="PlainText"></p>
+            <div class="Hidden ArticleIFrame" data-title="[% Translate("Full Article Text") | html %]"></div>
+        </div>
+
+        <div class="TimelineView [% IF Data.UseArticleColors %]UseArticleColors[% END %]">
+            <ul class="ListLeft">
+                <li class="NoEvents">[% Translate("No more events found. Please try changing the filter settings.") | html %]</li>
+            </ul>
+            <ul class="ListRight"></ul>
+            <div class="Clear"></div>
+            <span><i class="fa fa-spinner fa-spin"></i></span>
+        </div>
+
+[% RenderBlockEnd("TimelineView") %]
+
+    </div>
+</div>
+[% RenderBlockEnd("Tree") %]
+
+[% RenderBlockStart("ArticleItem") %]
+<div>
+    <a name="Article[% Data.ArticleID | html %]"></a>
+    <div class="WidgetSimple Expanded [% Data.SenderType | html %] [% IF Data.IsVisibleForCustomer %]VisibleForCustomer[% END %]">
+        <div class="Header">
+            <div class="WidgetAction Toggle">
+                <a href="[% Env("Baselink") %]Action=AgentTicketZoom;TicketID=[% Data.TicketID | uri %];ArticleID=[% Data.ArticleID | uri %]" title="[% Translate("Show or hide the content") | html %]"><i class="fa fa-caret-right"></i><i class="fa fa-caret-down"></i></a>
+            </div>
+            <h2>[% Translate("Article #%s", Data.ArticleNumber) | html %] &ndash; [% Data.Subject | html %]</h2>
+            <div class="AdditionalInformation SpacingLoader">
+                [% Translate("Created") | html %]: [% Data.CreateTime | Localize("TimeShort") %]
+[% RenderBlockStart("ArticleCreatedBy") %]
+                [% Translate("by") | html %] [% Data.CreateByUser | html %]
+[% RenderBlockEnd("ArticleCreatedBy") %]
+            </div>
+        </div>
+
+[% PROCESS ArticleActionMenu.tt %]
+
+        <div class="Content">
+            <div class="ArticleMailHeader">
+                <fieldset class="TableLike FixedLabelSmall">
+[% RenderBlockStart("RowRecipient") %]
+                    <label class="Switchable">[% Translate(Data.Key) | html %]:</label>
+                    <p class="Value" title="[% Data.Value | html %]">
+                        <span class="Switch [% Data.ValueHidden | html %]">[% Data.Value | html %]</span>
+                        <span class="Switch [% Data.RealnameHidden | html %]">[% Data.Realname | html %]</span>
+                    </p>
+                    <div class="Clear"></div>
+[% RenderBlockEnd("RowRecipient") %]
+[% RenderBlockStart("RowData") %]
+                    <label>[% Translate(Data.Key) | html %]:</label>
+                    <p class="Value" title="[% Data.Value | html %]">[% Data.Value | html %]</p>
+                    <div class="Clear"></div>
+[% RenderBlockEnd("RowData") %]
+
+# show article options like signed, crypted, ...
+[% RenderBlockStart("ArticleOption") %]
+                    <label>[% Translate(Data.Key) | html %]:</label>
+                    <div title="[% Data.Value | html %]" class="[% Data.Result | html %] Value">[% Translate(Data.Value) | html %]</div>
+                    <div class="Clear"></div>
+[% RenderBlockEnd("ArticleOption") %]
+
+#                    <!-- Include the full subject so that it can be copied. The one in the title bar is shortened. -->
+                    <label>[% Translate("Subject") | html %]:</label>
+                    <p class="Value">[% Data.Subject | html %]</p>
+                    <div class="Clear"></div>
+
+# show article accounted time
+[% RenderBlockStart("ArticleAccountedTime") %]
+                    <label>[% Translate(Data.Key) | html %]:</label>
+                    <p class="Value">[% Data.Value | html %]</p>
+                    <div class="Clear"></div>
+[% RenderBlockEnd("ArticleAccountedTime") %]
+
+# show article dynamic fields
+[% RenderBlockStart("ArticleDynamicField") %]
+                    <label>[% Translate(Data.Label) | html %]:</label>
+[% RenderBlockStart("ArticleDynamicFieldLink") %]
+                    <p class="Value" title="[% Data.Title %]"><a href="[% Data.Link | Interpolate %]" target="_blank" class="DynamicFieldLink">[% Data.Value %]</a></p>
+[% RenderBlockEnd("ArticleDynamicFieldLink") %]
+[% RenderBlockStart("ArticleDynamicFieldPlain") %]
+                    <p class="Value" title="[% Data.Title %]">[% Data.Value %]</p>
+[% RenderBlockEnd("ArticleDynamicFieldPlain") %]
+                    <div class="Clear"></div>
+[% RenderBlockEnd("ArticleDynamicField") %]
+
+# example of how to use fixed dynamic field blocks for customizations
+# Note: Field1 and Field2 are the names of the fields and had to be replaced with the actual
+# field names
+#[% RenderBlockStart("ArticleDynamicFieldField1") %]
+#                        <label>[% Translate(Data.Label) | html %]:</label>
+#[% RenderBlockStart("ArticleDynamicFieldField1Link") %]
+#                    <p class="Value" title="[% Data.Title %]"><a href="[% Data.Link | Interpolate %]" target="_blank" class="DynamicFieldLink">[% Data.Value %]</a></p>
+#[% RenderBlockEnd("ArticleDynamicField1Link") %]
+#[% RenderBlockStart("ArticleDynamicFieldField1Plain") %]
+#                    <p class="Value" title="[% Data.Title %]">[% Data.Value %]</p>
+#[% RenderBlockEnd("ArticleDynamicFieldField1Plain") %]
+#                        <div class="Clear"></div>
+#[% RenderBlockEnd("ArticleDynamicFieldField1") %]
+#[% RenderBlockStart("ArticleDynamicFieldField2") %]
+#                        <label>[% Translate(Data.Label) | html %]:</label>
+#[% RenderBlockStart("ArticleDynamicFieldField2Link") %]
+#                    <p class="Value" title="[% Data.Title %]"><a href="[% Data.Link | Interpolate %]" target="_blank" class="DynamicFieldLink">[% Data.Value %]</a></p>
+#[% RenderBlockEnd("ArticleDynamicFieldField2Link") %]
+#[% RenderBlockStart("ArticleDynamicFieldField2Plain") %]
+#                    <p class="Value" title="[% Data.Title %]">[% Data.Value %]</p>
+#[% RenderBlockEnd("ArticleDynamicFieldField2Plain") %]
+#                        <div class="Clear"></div>
+#[% RenderBlockEnd("ArticleDynamicFieldField2") %]
+
+# show attachments
+[% RenderBlockStart("ArticleAttachment") %]
+                    <label>[% Translate("Attachment") | html %]:</label>
+                    <p class="Value">
+[% RenderBlockStart("ArticleAttachmentRow") %]
+[% RenderBlockStart("ArticleAttachmentRowLink") %]
+                        <a class="[% Data.Class | html %]" href="[% Data.Link %]" [% Data.Target %] title="[% Translate(Data.Action) | html %]">[% Data.Filename | html %]</a>
+[% RenderBlockEnd("ArticleAttachmentRowLink") %]
+[% RenderBlockStart("ArticleAttachmentRowNoLink") %]
+                        [% Data.Filename | html %]
+[% RenderBlockEnd("ArticleAttachmentRowNoLink") %]
+                        [% IF Data.FilesizeRaw %]
+                            ([% Data.FilesizeRaw | Localize('Filesize') | html %])
+                        [% END %]
+                        <br />
+[% RenderBlockEnd("ArticleAttachmentRow") %]
+                    </p>
+                    <div class="Clear"></div>
+[% RenderBlockEnd("ArticleAttachment") %]
+                </fieldset>
+            </div>
+            <div class="ArticleMailContent[% IF Data.ArticleMetaData && Data.ArticleMetaData.size() %] WithMeta[% END %]">
+
+[% RenderBlockStart("BodyPlain") %]
+[% Data.BodyNote %]
+                <div class="ArticleBody">
+[% Data.Body %]
+                </div>
+[% RenderBlockEnd("BodyPlain") %]
+[% RenderBlockStart("BodyHTML") %]
+                <div class="ArticleMailContentHTMLWrapper">
+[% RenderBlockStart("BrowserLinkMessage") %]
+# Show info, that links within the iframe must be clicked with strg/cmd/shift (depending on the used browser and os)
+# to open the links in a new window without the security permissions given to the iframe
+                    <div class="MessageBrowser">
+                        <p>
+        [% Translate("To open links in the following article, you might need to press Ctrl or Cmd or Shift key while clicking the link (depending on your browser and OS).") | html %]
+                        </p>
+                        <a class="Close" title="[% Translate("Close this message") | html %]" href="#"><i class="fa fa-times"></i></a>
+                    </div>
+[% RenderBlockEnd("BrowserLinkMessage") %]
+# execute IFrame JS asynchronously. Otherwise it could happen before our API was loaded
+# the following JS code must be within the template, otherwise it could happen, that also this code itself is not loaded yet
+<script>
+function CheckIFrameHeight(IFrameID) {
+    if (typeof Core === 'object' && typeof Core.Agent === 'object' && typeof Core.Agent.TicketZoom === 'object') {
+        Core.Agent.TicketZoom.IframeAutoHeight($('#' + IFrameID));
+    }
+    else {
+        window.setTimeout(function () {
+            CheckIFrameHeight(IFrameID);
+        }, 500);
+    }
+}
+</script>
+
+# Use the HTML5 sandbox attribute to prevent plugins and scripts from being executed in the browser.
+# Append session info to URL because IE will not send cookies.
+# Set 'allow-popups' to allow IE10+ to open links. ref: http://www.w3.org/html/wg/wiki/ChangeProposals/sandbox_allow_popups
+                    <iframe sandbox="allow-same-origin allow-popups ms-allow-popups allow-popups-to-escape-sandbox" width="100%" frameborder="0" id="Iframe[% Data.ArticleID | html %]" onload="window.setTimeout( function (){ CheckIFrameHeight('Iframe[% Data.ArticleID | html %]'); }, 500);" src="[% Env("Baselink") %]Action=AgentTicketAttachment;Subaction=HTMLView;TicketID=[% Data.TicketID | html %];ArticleID=[% Data.ArticleID | html %];FileID=[% Data.HTMLBodyAttachmentID | html %];[% Env("SessionName") | html %]=[% Env("SessionID") | html %]"></iframe>
+                    <script type="text/javascript">
+                    // workaround for firefox, which seems to cache the src attribute of iframes sometimes which leads to
+                    // the wrong iframe content being displayed (see https://bugzilla.mozilla.org/show_bug.cgi?id=356558)
+                    document.getElementById('Iframe[% Data.ArticleID | html %]').contentWindow.location.href = document.getElementById('Iframe[% Data.ArticleID | html %]').src
+                    </script>
+                </div>
+[% RenderBlockEnd("BodyHTML") %]
+[% RenderBlockStart("BodyChat") %]
+[% INCLUDE "ChatDisplay.tt" %]
+[% RenderBlockEnd("BodyChat") %]
+
+            [% IF Data.ArticleMetaData && Data.ArticleMetaData.size() %]
+                <div class="ArticleMeta">
+                [% FOREACH Entry IN Data.ArticleMetaData %]
+                    <h2>[% Entry.Name | html %]</h2>
+                    <ul>
+                    [% FOREACH Item IN Entry.Matches %]
+                        <li><a href="[% Item.URL | html %]"[% IF Item.URLPreview %] data-trigger="floater" data-floater-url="[% Item.URLPreview | html %]"[% END %] target="[% Item.Target | html %]">[% Item.Text | truncate(100) | html %]</a></li>
+                    [% END %]
+                    </ul>
+                [% END %]
+                </div>
+            [% END %]
+            </div>
+        </div>
+    </div>
+</div>
+[% RenderBlockEnd("ArticleItem") %]
+
+[% RenderBlockStart("TicketZoomInit") %]
+
+[% RenderBlockEnd("TicketZoomInit") %]

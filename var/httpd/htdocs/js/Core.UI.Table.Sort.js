@@ -1,6 +1,5 @@
 // --
-// Core.UI.Table.Sort.js - table sorting functions
-// Copyright (C) 2001-2011 OTRS AG, http://otrs.org/
+// Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 // --
 // This software comes with ABSOLUTELY NO WARRANTY. For details, see
 // the enclosed file COPYING for license information (AGPL). If you
@@ -51,13 +50,16 @@ Core.UI.Table.Sort = (function (TargetNS) {
      *      used for the sorting.
      */
     TargetNS.Init = function ($Table, Finished) {
+        var $SortableColumns,
+            $InitialSorting,
+            SortOrder,
+            Headers = {},
+            InitialSort = [],
+            ColumnCount = 0;
+
         if (isJQueryObject($Table)) {
-            var $SortableColumns = $Table.find('th.Sortable'),
-                $InitialSorting = $SortableColumns.filter('.InitialSorting'),
-                SortOrder,
-                Headers = {},
-                InitialSort = [],
-                ColumnCount = 0;
+            $SortableColumns = $Table.find('th.Sortable');
+            $InitialSorting = $SortableColumns.filter('.InitialSorting');
 
             // Only start, if there are columns that allow sorting
             if ($SortableColumns.length) {
@@ -79,11 +81,20 @@ Core.UI.Table.Sort = (function (TargetNS) {
                 $Table.tablesorter({
                     headers: Headers,
                     sortList: InitialSort,
-                    textExtraction: CustomTextExtractor
+                    textExtraction: CustomTextExtractor,
+                    language: {
+                      sortAsc      : Core.Language.Translate('Ascending sort applied, '),
+                      sortDesc     : Core.Language.Translate('Descending sort applied, '),
+                      sortNone     : Core.Language.Translate('No sort applied, '),
+                      sortDisabled : Core.Language.Translate('sorting is disabled'),
+                      nextAsc      : Core.Language.Translate('activate to apply an ascending sort'),
+                      nextDesc     : Core.Language.Translate('activate to apply a descending sort'),
+                      nextNone     : Core.Language.Translate('activate to remove the sort')
+                    }
                 });
 
                 if ($.isFunction(Finished)) {
-                    $Table.bind('sortEnd', Finished);
+                    $Table.on('sortEnd', Finished);
                 }
             }
         }

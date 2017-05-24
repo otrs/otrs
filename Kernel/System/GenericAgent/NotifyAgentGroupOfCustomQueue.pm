@@ -1,6 +1,5 @@
 # --
-# Kernel/System/GenericAgent/NotifyAgentGroupOfCustomQueue.pm - generic agent notifications
-# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -104,58 +103,15 @@ sub Run {
         return;
     }
 
-    # get agentss who are sucscribed the ticket queue to the custom queues
-    my @UserIDs = $TicketObject->GetSubscribedUserIDsByQueueID(
-        QueueID => $Ticket{QueueID},
-    );
-
-    # get user object
-    my $UserObject = $Kernel::OM->Get('Kernel::System::User');
-
-    # send each agent the escalation notification
-    USER:
-    for my $UserID (@UserIDs) {
-
-        my %User = $UserObject->GetUserData(
-            UserID => $UserID,
-            Valid  => 1,
-        );
-
-        next USER if !%User || $User{OutOfOfficeMessage};
-
-        # check if today a reminder is already sent
-        my ( $Sec, $Min, $Hour, $Day, $Month, $Year ) = $TimeObject->SystemTime2Date(
-            SystemTime => $TimeObject->SystemTime(),
-        );
-        my @Lines = $TicketObject->HistoryGet(
-            TicketID => $Ticket{TicketID},
-            UserID   => 1,
-        );
-
-        my $Sent = 0;
-        for my $Line (@Lines) {
-
-            if (
-                $Line->{Name} =~ /\%\%$EscalationType\%\%/
-                && $Line->{Name} =~ /\Q%%$User{UserEmail}\E$/i
-                && $Line->{CreateTime} =~ /$Year-$Month-$Day/
-                )
-            {
-                $Sent = 1;
-            }
-        }
-
-        next USER if $Sent;
-
-        # send agent notification
-        $TicketObject->SendAgentNotification(
+    # trigger notification event
+    $TicketObject->EventHandler(
+        Event => 'Notification' . $EscalationType,
+        Data  => {
             TicketID              => $Param{TicketID},
             CustomerMessageParams => \%Param,
-            Type                  => $EscalationType,
-            RecipientID           => $UserID,
-            UserID                => 1,
-        );
-    }
+        },
+        UserID => 1,
+    );
 
     return 1;
 }

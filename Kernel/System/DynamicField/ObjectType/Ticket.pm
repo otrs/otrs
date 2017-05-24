@@ -1,6 +1,5 @@
 # --
-# Kernel/System/DynamicField/ObjectType/Ticket.pm - Ticket object handler for DynamicField
-# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -27,15 +26,13 @@ our @ObjectDependencies = (
 
 Kernel::System::DynamicField::ObjectType::Ticket
 
-=head1 SYNOPSIS
+=head1 DESCRIPTION
 
 Ticket object handler for DynamicFields
 
 =head1 PUBLIC INTERFACE
 
-=over 4
-
-=item new()
+=head2 new()
 
 usually, you want to create an instance of this
 by using Kernel::System::DynamicField::ObjectType::Ticket->new();
@@ -51,7 +48,7 @@ sub new {
     return $Self;
 }
 
-=item PostValueSet()
+=head2 PostValueSet()
 
 perform specific functions after the Value set for this object type.
 
@@ -234,8 +231,6 @@ sub PostValueSet {
 }
 
 1;
-
-=back
 
 =head1 TERMS AND CONDITIONS
 

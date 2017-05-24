@@ -1,6 +1,5 @@
 // --
-// Core.UI.DnD.js - provides all UI functions
-// Copyright (C) 2001-2011 OTRS AG, http://otrs.org/
+// Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 // --
 // This software comes with ABSOLUTELY NO WARRANTY. For details, see
 // the enclosed file COPYING for license information (AGPL). If you
@@ -22,7 +21,7 @@ Core.UI = Core.UI || {};
 Core.UI.DnD = (function (TargetNS) {
 
     if (!Core.Debug.CheckDependency('Core.UI.DnD', '$([]).sortable', 'jQuery UI sortable')) {
-        return;
+        return false;
     }
 
     /**

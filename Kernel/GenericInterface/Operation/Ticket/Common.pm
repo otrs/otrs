@@ -1,6 +1,5 @@
 # --
-# Kernel/GenericInterface/Operation/Ticket/Common.pm - Ticket common operation functions
-# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -23,17 +22,11 @@ our $ObjectManagerDisabled = 1;
 
 Kernel::GenericInterface::Operation::Ticket::Common - Base class for all Ticket Operations
 
-=head1 SYNOPSIS
-
 =head1 PUBLIC INTERFACE
 
-=over 4
+=head2 Init()
 
-=cut
-
-=item Init()
-
-initialize the operation by checking the webservice configuration and gather of the dynamic fields
+initialize the operation by checking the web service configuration and gather of the dynamic fields
 
     my $Return = $CommonObject->Init(
         WebserviceID => 1,
@@ -57,7 +50,7 @@ sub Init {
         };
     }
 
-    # get webservice configuration
+    # get web service configuration
     my $Webservice = $Kernel::OM->Get('Kernel::System::GenericInterface::Webservice')->WebserviceGet(
         ID => $Param{WebserviceID},
     );
@@ -91,7 +84,7 @@ sub Init {
     };
 }
 
-=item ValidateQueue()
+=head2 ValidateQueue()
 
 checks if the given queue or queue ID is valid.
 
@@ -155,7 +148,7 @@ sub ValidateQueue {
     return 1;
 }
 
-=item ValidateLock()
+=head2 ValidateLock()
 
 checks if the given lock or lock ID is valid.
 
@@ -205,7 +198,7 @@ sub ValidateLock {
     return 1;
 }
 
-=item ValidateType()
+=head2 ValidateType()
 
 checks if the given type or type ID is valid.
 
@@ -267,7 +260,7 @@ sub ValidateType {
     return 1;
 }
 
-=item ValidateCustomer()
+=head2 ValidateCustomer()
 
 checks if the given customer user or customer ID is valid.
 
@@ -326,7 +319,7 @@ sub ValidateCustomer {
     return 1;
 }
 
-=item ValidateService()
+=head2 ValidateService()
 
 checks if the given service or service ID is valid.
 
@@ -406,7 +399,7 @@ sub ValidateService {
     return 1;
 }
 
-=item ValidateSLA()
+=head2 ValidateSLA()
 
 checks if the given service or service ID is valid.
 
@@ -511,7 +504,7 @@ sub ValidateSLA {
     return 1;
 }
 
-=item ValidateState()
+=head2 ValidateState()
 
 checks if the given state or state ID is valid.
 
@@ -574,7 +567,7 @@ sub ValidateState {
     return 1;
 }
 
-=item ValidatePriority()
+=head2 ValidatePriority()
 
 checks if the given priority or priority ID is valid.
 
@@ -644,7 +637,7 @@ sub ValidatePriority {
     return 1;
 }
 
-=item ValidateOwner()
+=head2 ValidateOwner()
 
 checks if the given owner or owner ID is valid.
 
@@ -673,7 +666,7 @@ sub ValidateOwner {
     );
 }
 
-=item ValidateResponsible()
+=head2 ValidateResponsible()
 
 checks if the given responsible or responsible ID is valid.
 
@@ -702,7 +695,7 @@ sub ValidateResponsible {
     );
 }
 
-=item ValidatePendingTime()
+=head2 ValidatePendingTime()
 
 checks if the given pending time is valid.
 
@@ -713,6 +706,12 @@ checks if the given pending time is valid.
             Day    => 23,
             Hour   => 15,
             Minute => 0,
+        },
+    );
+
+    my $Success = $CommonObject->ValidatePendingTime(
+        PendingTime => {
+            Diff => 10080,
         },
     );
 
@@ -727,6 +726,18 @@ sub ValidatePendingTime {
     # check needed stuff
     return if !$Param{PendingTime};
     return if !IsHashRefWithData( $Param{PendingTime} );
+
+    # if only the Diff attribute is present, check if it's a valid number and return.
+    # Nothing else needs to be checked in that case.
+    if ( keys %{ $Param{PendingTime} } == 1 && defined $Param{PendingTime}->{Diff} ) {
+        return if $Param{PendingTime}->{Diff} !~ m{\A \d+ \z}msx;
+        return 1;
+    }
+    elsif ( defined $Param{PendingTime}->{Diff} ) {
+
+        # the use of Diff along with any other option is forbidden
+        return;
+    }
 
     # check that no time attribute is empty or negative
     for my $TimeAttribute ( sort keys %{ $Param{PendingTime} } ) {
@@ -744,7 +755,7 @@ sub ValidatePendingTime {
     return 1;
 }
 
-=item ValidateAutoResponseType()
+=head2 ValidateAutoResponseType()
 
 checks if the given AutoResponseType is valid.
 
@@ -774,76 +785,7 @@ sub ValidateAutoResponseType {
     return;
 }
 
-=item ValidateArticleType()
-
-checks if the given ArticleType or ArticleType ID is valid.
-
-    my $Success = $CommonObject->ValidateArticleType(
-        ArticleTypeID => 123,
-    );
-
-    my $Success = $CommonObject->ValidateArticleType(
-        ArticleType => 'some ArticleType',
-    );
-
-    returns
-    $Success = 1            # or 0
-
-=cut
-
-sub ValidateArticleType {
-    my ( $Self, %Param ) = @_;
-
-    # check needed stuff
-    return if !$Param{ArticleTypeID} && !$Param{ArticleType};
-
-    # get ticket object
-    my $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
-
-    my %ArticleTypeList = $TicketObject->ArticleTypeList(
-        Result => 'HASH',
-
-        # add type parameter for customer as requester with UserType parameter, if is not set
-        # to  'Customer' the Type parameter is ignored
-        Type => $Param{UserType} || '',
-    );
-
-    # check for ArticleType name sent
-    if (
-        $Param{ArticleType}
-        && $Param{ArticleType} ne ''
-        && !$Param{ArticleTypeID}
-        )
-    {
-        my $ArticleTypeID = $TicketObject->ArticleTypeLookup(
-            ArticleType => $Param{ArticleType},
-        );
-
-        return if !$ArticleTypeID;
-
-        # check if $ArticleType is valid
-        return if !$ArticleTypeList{$ArticleTypeID};
-    }
-
-    # otherwise use ArticleTypeID
-    elsif ( $Param{ArticleTypeID} ) {
-        my $ArticleType = $TicketObject->ArticleTypeLookup(
-            ArticleTypeID => $Param{ArticleTypeID},
-        );
-
-        return if !$ArticleType;
-
-        # check if $ArticleType is valid
-        return if !$ArticleTypeList{ $Param{ArticleTypeID} };
-    }
-    else {
-        return;
-    }
-
-    return 1;
-}
-
-=item ValidateFrom()
+=head2 ValidateFrom()
 
 checks if the given from is valid.
 
@@ -875,7 +817,40 @@ sub ValidateFrom {
     return 1;
 }
 
-=item ValidateSenderType()
+=head2 ValidateArticleCommunicationChannel()
+
+checks if provided Communication Channel is valid.
+
+    my $Success = $CommonObject->ValidateArticleCommunicationChannel(
+        CommunicationChannel   => 'Internal',   # optional
+                                                # or
+        CommunicationChannelID => 1,            # optional
+    );
+
+    returns
+    $Success = 1            # or 0
+
+=cut
+
+sub ValidateArticleCommunicationChannel {
+    my ( $Self, %Param ) = @_;
+
+    # check needed stuff
+    if ( !$Param{CommunicationChannel} && !$Param{CommunicationChannelID} ) {
+        return;
+    }
+
+    my %CommunicationChannel = $Kernel::OM->Get('Kernel::System::CommunicationChannel')->ChannelGet(
+        ChannelID   => $Param{CommunicationChannelID},
+        ChannelName => $Param{CommunicationChannel},
+    );
+
+    return if !%CommunicationChannel;
+
+    return 1;
+}
+
+=head2 ValidateSenderType()
 
 checks if the given SenderType or SenderType ID is valid.
 
@@ -898,12 +873,9 @@ sub ValidateSenderType {
     # check needed stuff
     return if !$Param{SenderTypeID} && !$Param{SenderType};
 
-    # get ticket object
-    my $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
+    my $ArticleObject = $Kernel::OM->Get('Kernel::System::Ticket::Article');
 
-    my %SenderTypeList = $TicketObject->ArticleSenderTypeList(
-        Result => 'HASH',
-    );
+    my %SenderTypeList = $ArticleObject->ArticleSenderTypeList();
 
     # check for SenderType name sent
     if (
@@ -912,7 +884,7 @@ sub ValidateSenderType {
         && !$Param{SenderTypeID}
         )
     {
-        my $SenderTypeID = $TicketObject->ArticleSenderTypeLookup(
+        my $SenderTypeID = $ArticleObject->ArticleSenderTypeLookup(
             SenderType => $Param{SenderType},
         );
 
@@ -924,7 +896,7 @@ sub ValidateSenderType {
 
     # otherwise use SenderTypeID
     elsif ( $Param{SenderTypeID} ) {
-        my $SenderType = $TicketObject->ArticleSenderTypeLookup(
+        my $SenderType = $ArticleObject->ArticleSenderTypeLookup(
             SenderTypeID => $Param{SenderTypeID},
         );
 
@@ -940,7 +912,7 @@ sub ValidateSenderType {
     return 1;
 }
 
-=item ValidateMimeType()
+=head2 ValidateMimeType()
 
 checks if the given MimeType is valid.
 
@@ -964,7 +936,7 @@ sub ValidateMimeType {
     return 1;
 }
 
-=item ValidateCharset()
+=head2 ValidateCharset()
 
 checks if the given Charset is valid.
 
@@ -983,14 +955,13 @@ sub ValidateCharset {
     # check needed stuff
     return if !$Param{Charset};
 
-    my $CharsetList = $Self->_CharsetList();
-
-    return if !$CharsetList->{ $Param{Charset} };
+    use Encode;
+    return if !Encode::resolve_alias( $Param{Charset} );
 
     return 1;
 }
 
-=item ValidateHistoryType()
+=head2 ValidateHistoryType()
 
 checks if the given HistoryType is valid.
 
@@ -1027,7 +998,7 @@ sub ValidateHistoryType {
     return 1;
 }
 
-=item ValidateTimeUnit()
+=head2 ValidateTimeUnit()
 
 checks if the given TimeUnit is valid.
 
@@ -1046,13 +1017,13 @@ sub ValidateTimeUnit {
     # check needed stuff
     return if !$Param{TimeUnit};
 
-    # TimeUnit must be possitive
-    return if $Param{TimeUnit} !~ m{\A \d+? \z}xms;
+    # TimeUnit must be positive
+    return if $Param{TimeUnit} !~ m{\A \d+([.,]\d+)? \z}xms;
 
     return 1;
 }
 
-=item ValidateUserID()
+=head2 ValidateUserID()
 
 checks if the given user ID is valid.
 
@@ -1076,7 +1047,7 @@ sub ValidateUserID {
     );
 }
 
-=item ValidateDynamicFieldName()
+=head2 ValidateDynamicFieldName()
 
 checks if the given dynamic field name is valid.
 
@@ -1102,7 +1073,7 @@ sub ValidateDynamicFieldName {
     return 1;
 }
 
-=item ValidateDynamicFieldValue()
+=head2 ValidateDynamicFieldValue()
 
 checks if the given dynamic field value is valid.
 
@@ -1113,7 +1084,7 @@ checks if the given dynamic field value is valid.
 
     my $Success = $CommonObject->ValidateDynamicFieldValue(
         Value => [                      # Only for fields that can handle multiple values like
-            'some value',               #   Miltiselect
+            'some value',               #   Multiselect
             'some other value',
         ],
     );
@@ -1128,7 +1099,11 @@ sub ValidateDynamicFieldValue {
 
     # check needed stuff
     return if !IsHashRefWithData( $Self->{DynamicFieldLookup} );
-    return if !IsStringWithData( $Param{Value} );
+
+    # possible structures are string and array, no data inside is needed
+    if ( !IsString( $Param{Value} ) && ref $Param{Value} ne 'ARRAY' ) {
+        return;
+    }
 
     # get dynamic field config
     my $DynamicFieldConfig = $Self->{DynamicFieldLookup}->{ $Param{Name} };
@@ -1142,7 +1117,7 @@ sub ValidateDynamicFieldValue {
     return $ValueType;
 }
 
-=item ValidateDynamicFieldObjectType()
+=head2 ValidateDynamicFieldObjectType()
 
 checks if the given dynamic field name is valid.
 
@@ -1172,7 +1147,7 @@ sub ValidateDynamicFieldObjectType {
     return 1;
 }
 
-=item SetDynamicFieldValue()
+=head2 SetDynamicFieldValue()
 
 sets the value of a dynamic field.
 
@@ -1181,7 +1156,7 @@ sets the value of a dynamic field.
         Value     => 'some value',          # String or Integer or DateTime format
         TicketID  => 123
         ArticleID => 123
-        UserID => 123,
+        UserID    => 123,
     );
 
     my $Result = $CommonObject->SetDynamicFieldValue(
@@ -1209,13 +1184,21 @@ sub SetDynamicFieldValue {
     my ( $Self, %Param ) = @_;
 
     # check needed stuff
-    for my $Needed (qw(Value Name UserID)) {
-        if ( !IsStringWithData( $Param{$Needed} ) ) {
+    for my $Needed (qw(Name UserID)) {
+        if ( !IsString( $Param{$Needed} ) ) {
             return {
                 Success      => 0,
-                ErrorMessage => "SetDynamicFieldValue() Got no $Needed!"
+                ErrorMessage => "SetDynamicFieldValue() Invalid value for $Needed, just string is allowed!"
             };
         }
+    }
+
+    # check value structure
+    if ( !IsString( $Param{Value} ) && ref $Param{Value} ne 'ARRAY' ) {
+        return {
+            Success      => 0,
+            ErrorMessage => "SetDynamicFieldValue() Invalid value for Value, just string and array are allowed!"
+        };
     }
 
     return if !IsHashRefWithData( $Self->{DynamicFieldLookup} );
@@ -1250,16 +1233,15 @@ sub SetDynamicFieldValue {
         }
 }
 
-=item CreateAttachment()
+=head2 CreateAttachment()
 
-cretes a new attachment for the given article.
+creates a new attachment for the given article.
 
     my $Result = $CommonObject->CreateAttachment(
-        Content     => $Data,                   # file content (Base64 encoded)
-        ContentType => 'some content type',
-        Filename    => 'some filename',
-        ArticleID   => 456,
-        UserID      => 123.
+        TicketID   => 123,
+        Attachment => $Data,                   # file content (Base64 encoded)
+        ArticleID  => 456,
+        UserID     => 123,
     );
 
     returns
@@ -1278,7 +1260,7 @@ sub CreateAttachment {
     my ( $Self, %Param ) = @_;
 
     # check needed stuff
-    for my $Needed (qw(Attachment ArticleID UserID)) {
+    for my $Needed (qw(TicketID Attachment ArticleID UserID)) {
         if ( !$Param{$Needed} ) {
             return {
                 Success      => 0,
@@ -1287,8 +1269,13 @@ sub CreateAttachment {
         }
     }
 
+    my $ArticleBackendObject = $Kernel::OM->Get('Kernel::System::Ticket::Article')->BackendForArticle(
+        TicketID  => $Param{TicketID},
+        ArticleID => $Param{ArticleID},
+    );
+
     # write attachment
-    my $Success = $Kernel::OM->Get('Kernel::System::Ticket')->ArticleWriteAttachment(
+    my $Success = $ArticleBackendObject->ArticleWriteAttachment(
         %{ $Param{Attachment} },
         Content   => MIME::Base64::decode_base64( $Param{Attachment}->{Content} ),
         ArticleID => $Param{ArticleID},
@@ -1297,10 +1284,10 @@ sub CreateAttachment {
 
     return {
         Success => $Success,
-        }
+    };
 }
 
-=item CheckCreatePermissions ()
+=head2 CheckCreatePermissions ()
 
 Tests if the user have the permissions to create a ticket on a determined queue
 
@@ -1356,7 +1343,7 @@ sub CheckCreatePermissions {
     return 1;
 }
 
-=item CheckAccessPermissions()
+=head2 CheckAccessPermissions()
 
 Tests if the user have access permissions over a ticket
 
@@ -1397,7 +1384,7 @@ sub CheckAccessPermissions {
 
 =begin Internal:
 
-=item _ValidateUser()
+=head2 _ValidateUser()
 
 checks if the given user or user ID is valid.
 
@@ -1452,48 +1439,9 @@ sub _ValidateUser {
     return 1;
 }
 
-=item _CharsetList()
-
-returns a list of all available charsets.
-
-    my $CharsetList = $CommonObject->_CharsetList(
-        UserID => 123,
-    );
-
-    returns
-    $Success = {
-        #...
-        iso-8859-1  => 1,
-        iso-8859-15 => 1,
-        MacRoman    => 1,
-        utf8        => 1,
-        #...
-    }
-
-=cut
-
-sub _CharsetList {
-    my ( $Self, %Param ) = @_;
-
-    # get charset array
-    use Encode;
-    my @CharsetList = Encode->encodings(":all");
-
-    my %CharsetHash;
-
-    # create a charset lookup table
-    for my $Charset (@CharsetList) {
-        $CharsetHash{$Charset} = 1;
-    }
-
-    return \%CharsetHash;
-}
-
 1;
 
 =end Internal:
-
-=back
 
 =head1 TERMS AND CONDITIONS
 

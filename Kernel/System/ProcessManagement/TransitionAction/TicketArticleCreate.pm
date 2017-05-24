@@ -1,6 +1,5 @@
 # --
-# Kernel/System/ProcessManagement/TransitionAction/TicketArticleCreate.pm - A Module to create an article
-# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -15,33 +14,29 @@ use utf8;
 
 use Kernel::System::VariableCheck qw(:all);
 
-use base qw(Kernel::System::ProcessManagement::TransitionAction::Base);
+use parent qw(Kernel::System::ProcessManagement::TransitionAction::Base);
 
 our @ObjectDependencies = (
     'Kernel::System::Log',
     'Kernel::System::Ticket',
+    'Kernel::System::Ticket::Article',
+    'Kernel::System::User',
 );
 
 =head1 NAME
 
 Kernel::System::ProcessManagement::TransitionAction::TicketArticleCreate - A module to create an article
 
-=head1 SYNOPSIS
+=head1 DESCRIPTION
 
 All TicketArticleCreate functions.
 
 =head1 PUBLIC INTERFACE
 
-=over 4
+=head2 new()
 
-=cut
+Don't use the constructor directly, use the ObjectManager instead:
 
-=item new()
-
-create an object. Do not use it directly, instead use:
-
-    use Kernel::System::ObjectManager;
-    local $Kernel::OM = Kernel::System::ObjectManager->new();
     my $TicketArticleCreateObject = $Kernel::OM->Get('Kernel::System::ProcessManagement::TransitionAction::TicketArticleCreate');
 
 =cut
@@ -56,7 +51,7 @@ sub new {
     return $Self;
 }
 
-=item Run()
+=head2 Run()
 
     Run Data
 
@@ -69,9 +64,8 @@ sub new {
         TransitionActionEntityID => 'TA123',
         Config                   => {
             # required:
-            ArticleType      => 'note-internal',                        # note-external|phone|fax|sms|...
-                                                                        #   excluding any email type
             SenderType       => 'agent',                                # agent|system|customer
+            IsVisibleForCustomer => 1,                                  # 0 or 1
             ContentType      => 'text/plain; charset=ISO-8859-15',      # or optional Charset & MimeType
             Subject          => 'some short description',               # required
             Body             => 'the message text',                     # required
@@ -146,20 +140,23 @@ sub Run {
         }
     }
 
-    # check ArticleType
-    if ( $Param{Config}->{ArticleType} =~ m{\A email }msxi ) {
-        $Kernel::OM->Get('Kernel::System::Log')->Log(
-            Priority => 'error',
-            Message  => $CommonMessage
-                . "ArticleType $Param{Config}->{ArticleType} is not supported",
+    # If "From" is not set
+    if ( !$Param{Config}->{From} ) {
+
+        # Get current user data
+        my %User = $Kernel::OM->Get('Kernel::System::User')->GetUserData(
+            UserID => $Param{UserID},
         );
-        return;
+
+        # Set "From" field according to user - UserFullname <UserEmail>
+        $Param{Config}->{From} = $User{UserFullname} . ' <' . $User{UserEmail} . '>';
     }
 
-    # get ticket object
-    my $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
+    my $ArticleBackendObject = $Kernel::OM->Get('Kernel::System::Ticket::Article')->BackendForChannel(
+        ChannelName => 'Internal',
+    );
 
-    my $ArticleID = $TicketObject->ArticleCreate(
+    my $ArticleID = $ArticleBackendObject->ArticleCreate(
         %{ $Param{Config} },
         TicketID => $Param{Ticket}->{TicketID},
         UserID   => $Param{UserID},
@@ -177,7 +174,7 @@ sub Run {
 
     # set time units
     if ( $Param{Config}->{TimeUnit} ) {
-        $TicketObject->TicketAccountTime(
+        $Kernel::OM->Get('Kernel::System::Ticket')->TicketAccountTime(
             TicketID  => $Param{Ticket}->{TicketID},
             ArticleID => $ArticleID,
             TimeUnit  => $Param{Config}->{TimeUnit},
@@ -189,8 +186,6 @@ sub Run {
 }
 
 1;
-
-=back
 
 =head1 TERMS AND CONDITIONS
 

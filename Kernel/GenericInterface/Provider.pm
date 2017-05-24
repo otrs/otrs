@@ -1,6 +1,5 @@
 # --
-# Kernel/GenericInterface/Provider.pm - GenericInterface provider handler
-# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -30,21 +29,12 @@ our @ObjectDependencies = (
 
 Kernel::GenericInterface::Provider - handler for incoming webservice requests.
 
-=head1 SYNOPSIS
-
 =head1 PUBLIC INTERFACE
 
-=over 4
+=head2 new()
 
-=cut
+Don't use the constructor directly, use the ObjectManager instead:
 
-=item new()
-
-create an object
-
-    use Kernel::System::ObjectManager;
-
-    local $Kernel::OM = Kernel::System::ObjectManager->new();
     my $ProviderObject = $Kernel::OM->Get('Kernel::GenericInterface::Provider');
 
 =cut
@@ -59,7 +49,7 @@ sub new {
     return $Self;
 }
 
-=item Run()
+=head2 Run()
 
 receives the current incoming web service request, handles it,
 and returns an appropriate answer based on the configured requested
@@ -72,13 +62,6 @@ web service.
 
 sub Run {
     my ( $Self, %Param ) = @_;
-
-    # common objects
-    local $Kernel::OM = Kernel::System::ObjectManager->new(
-        'Kernel::System::Log' => {
-            LogPrefix => 'GenericInterfaceProvider',
-        },
-    );
 
     #
     # First, we need to locate the desired webservice and load its configuration data.
@@ -212,6 +195,8 @@ sub Run {
     {
         my $MappingInObject = Kernel::GenericInterface::Mapping->new(
             DebuggerObject => $DebuggerObject,
+            Operation      => $Operation,
+            OperationType  => $ProviderConfig->{Operation}->{$Operation}->{Type},
             MappingConfig =>
                 $ProviderConfig->{Operation}->{$Operation}->{MappingInbound},
         );
@@ -255,6 +240,7 @@ sub Run {
 
     my $OperationObject = Kernel::GenericInterface::Operation->new(
         DebuggerObject => $DebuggerObject,
+        Operation      => $Operation,
         OperationType  => $ProviderConfig->{Operation}->{$Operation}->{Type},
         WebserviceID   => $WebserviceID,
     );
@@ -312,6 +298,8 @@ sub Run {
     {
         my $MappingOutObject = Kernel::GenericInterface::Mapping->new(
             DebuggerObject => $DebuggerObject,
+            Operation      => $Operation,
+            OperationType  => $ProviderConfig->{Operation}->{$Operation}->{Type},
             MappingConfig =>
                 $ProviderConfig->{Operation}->{$Operation}->{MappingOutbound},
         );
@@ -368,7 +356,9 @@ sub Run {
     return;
 }
 
-=item _GenerateErrorResponse()
+=begin Internal:
+
+=head2 _GenerateErrorResponse()
 
 returns an error message to the client.
 
@@ -398,7 +388,7 @@ sub _GenerateErrorResponse {
 
 1;
 
-=back
+=end Internal:
 
 =head1 TERMS AND CONDITIONS
 

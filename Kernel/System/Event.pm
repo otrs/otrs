@@ -1,6 +1,5 @@
 # --
-# Kernel/System/Event.pm - the global event module
-# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -21,22 +20,16 @@ our @ObjectDependencies = (
 
 Kernel::System::Event - events management
 
-=head1 SYNOPSIS
+=head1 DESCRIPTION
 
 Global module to manage events.
 
 =head1 PUBLIC INTERFACE
 
-=over 4
+=head2 new()
 
-=cut
+Don't use the constructor directly, use the ObjectManager instead:
 
-=item new()
-
-create an object. Do not use it directly, instead use:
-
-    use Kernel::System::ObjectManager;
-    local $Kernel::OM = Kernel::System::ObjectManager->new();
     my $EventObject = $Kernel::OM->Get('Kernel::System::Event');
 
 =cut
@@ -51,7 +44,7 @@ sub new {
     return $Self;
 }
 
-=item EventList()
+=head2 EventList()
 
 get a list of available events in the system.
 
@@ -109,8 +102,6 @@ sub EventList {
 }
 
 1;
-
-=back
 
 =head1 TERMS AND CONDITIONS
 

@@ -1,6 +1,5 @@
 # --
-# Kernel/Modules/AdminGenericAgent.pm - admin generic agent interface
-# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -13,6 +12,7 @@ use strict;
 use warnings;
 
 use Kernel::System::VariableCheck qw(:all);
+use Kernel::Language qw(Translatable);
 
 our $ObjectManagerDisabled = 1;
 
@@ -100,13 +100,13 @@ sub Run {
 
         # get single params
         for my $Parameter (
-            qw(TicketNumber Title From To Cc Subject Body CustomerID
+            qw(TicketNumber Title MIMEBase_From MIMEBase_To MIMEBase_Cc MIMEBase_Subject MIMEBase_Body CustomerID
             CustomerUserLogin Agent SearchInArchive
             NewTitle
             NewCustomerID NewPendingTime NewPendingTimeType NewCustomerUserLogin
             NewStateID NewQueueID NewPriorityID NewOwnerID NewResponsibleID
             NewTypeID NewServiceID NewSLAID
-            NewNoteFrom NewNoteSubject NewNoteBody NewNoteTimeUnits NewModule
+            NewNoteFrom NewNoteSubject NewNoteBody NewNoteIsVisibleForCustomer NewNoteTimeUnits NewModule
             NewParamKey1 NewParamKey2 NewParamKey3 NewParamKey4
             NewParamValue1 NewParamValue2 NewParamValue3 NewParamValue4
             NewParamKey5 NewParamKey6 NewParamKey7 NewParamKey8
@@ -180,7 +180,7 @@ sub Run {
         for my $DynamicFieldConfig ( @{ $Self->{DynamicField} } ) {
             next DYNAMICFIELD if !IsHashRefWithData($DynamicFieldConfig);
 
-            # extract the dynamic field value form the web request
+            # extract the dynamic field value from the web request
             my $DynamicFieldValue = $DynamicFieldBackendObject->EditFieldValueGet(
                 DynamicFieldConfig      => $DynamicFieldConfig,
                 ParamObject             => $ParamObject,
@@ -248,6 +248,16 @@ sub Run {
             $Errors{ProfileInvalid} = 'ServerError';
         }
 
+        # Check if ticket selection contains stop words
+        my %StopWordsServerErrors = $Self->_StopWordsServerErrorsGet(
+            MIMEBase_From    => $GetParam{MIMEBase_From},
+            MIMEBase_To      => $GetParam{MIMEBase_To},
+            MIMEBase_Cc      => $GetParam{MIMEBase_Cc},
+            MIMEBase_Subject => $GetParam{MIMEBase_Subject},
+            MIMEBase_Body    => $GetParam{MIMEBase_Body},
+        );
+        %Errors = ( %Errors, %StopWordsServerErrors );
+
         # if no errors occurred
         if ( !%Errors ) {
 
@@ -271,9 +281,22 @@ sub Run {
             );
 
             if ($JobAddResult) {
-                return $LayoutObject->Redirect(
-                    OP => "Action=$Self->{Action}",
-                );
+
+                # if the user would like to continue editing the generic agent job, just redirect to the edit screen
+                if (
+                    defined $ParamObject->GetParam( Param => 'ContinueAfterSave' )
+                    && ( $ParamObject->GetParam( Param => 'ContinueAfterSave' ) eq '1' )
+                    )
+                {
+                    my $Profile = $Self->{Profile} || '';
+                    return $LayoutObject->Redirect( OP => "Action=$Self->{Action};Subaction=Update;Profile=$Profile" );
+                }
+                else {
+
+                    # otherwise return to overview
+                    return $LayoutObject->Redirect( OP => "Action=$Self->{Action}" );
+                }
+
             }
             else {
                 $Errors{ProfileInvalid}    = 'ServerError';
@@ -288,6 +311,7 @@ sub Run {
             %GetParam,
             %DynamicFieldValues,
             %Errors,
+            StopWordsAlreadyChecked => 1,
         );
 
         # generate search mask
@@ -310,6 +334,7 @@ sub Run {
 
         # generate search mask
         my $Output = $LayoutObject->Header( Title => 'Edit' );
+
         $Output .= $LayoutObject->NavigationBar();
         $Output .= $LayoutObject->Output(
             TemplateFile => 'AdminGenericAgent',
@@ -345,8 +370,12 @@ sub Run {
         Name => 'ActionAdd',
     );
     $LayoutObject->Block(
+        Name => 'Filter',
+    );
+    $LayoutObject->Block(
         Name => 'Overview',
     );
+
     my %Jobs = $GenericAgentObject->JobList();
 
     # if there are any data, it is shown
@@ -397,7 +426,8 @@ sub _MaskUpdate {
             Name => $Self->{Profile},
         );
     }
-    $JobData{Profile} = $Self->{Profile};
+    $JobData{Profile}   = $Self->{Profile};
+    $JobData{Subaction} = $Self->{Subaction};
 
     # get config object
     my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
@@ -423,6 +453,7 @@ sub _MaskUpdate {
         Size        => 5,
         Translation => 0,
         SelectedID  => $JobData{OwnerIDs},
+        Class       => 'Modernize',
     );
     $JobData{NewOwnerStrg} = $LayoutObject->BuildSelection(
         Data        => \%ShownUsers,
@@ -431,6 +462,7 @@ sub _MaskUpdate {
         Multiple    => 0,
         Translation => 0,
         SelectedID  => $JobData{NewOwnerID},
+        Class       => 'Modernize',
     );
     my %Hours;
     for my $Number ( 0 .. 23 ) {
@@ -443,37 +475,37 @@ sub _MaskUpdate {
         Multiple    => 1,
         Translation => 0,
         SelectedID  => $JobData{ScheduleHours},
+        Class       => 'Modernize',
     );
+    my %Minutes;
+    for my $Number ( 0 .. 59 ) {
+        $Minutes{$Number} = sprintf( "%02d", $Number );
+    }
     $JobData{ScheduleMinutesList} = $LayoutObject->BuildSelection(
-        Data => {
-            '00' => '00',
-            10   => '10',
-            20   => '20',
-            30   => '30',
-            40   => '40',
-            50   => '50',
-        },
+        Data        => \%Minutes,
         Name        => 'ScheduleMinutes',
         Size        => 6,
         Multiple    => 1,
         Translation => 0,
         SelectedID  => $JobData{ScheduleMinutes},
+        Class       => 'Modernize',
     );
     $JobData{ScheduleDaysList} = $LayoutObject->BuildSelection(
         Data => {
-            1 => 'Mon',
-            2 => 'Tue',
-            3 => 'Wed',
-            4 => 'Thu',
-            5 => 'Fri',
-            6 => 'Sat',
-            0 => 'Sun',
+            1 => Translatable('Mon'),
+            2 => Translatable('Tue'),
+            3 => Translatable('Wed'),
+            4 => Translatable('Thu'),
+            5 => Translatable('Fri'),
+            6 => Translatable('Sat'),
+            0 => Translatable('Sun'),
         },
         Sort       => 'NumericKey',
         Name       => 'ScheduleDays',
         Size       => 7,
         Multiple   => 1,
         SelectedID => $JobData{ScheduleDays},
+        Class      => 'Modernize',
     );
 
     # get state object
@@ -490,6 +522,7 @@ sub _MaskUpdate {
         Multiple   => 1,
         Size       => 5,
         SelectedID => $JobData{StateIDs},
+        Class      => 'Modernize',
     );
     $JobData{NewStatesStrg} = $LayoutObject->BuildSelection(
         Data => {
@@ -502,28 +535,29 @@ sub _MaskUpdate {
         Size       => 5,
         Multiple   => 0,
         SelectedID => $JobData{NewStateID},
+        Class      => 'Modernize',
     );
     $JobData{NewPendingTimeTypeStrg} = $LayoutObject->BuildSelection(
         Data => [
             {
                 Key   => 60,
-                Value => 'minute(s)',
+                Value => Translatable('minute(s)'),
             },
             {
                 Key   => 3600,
-                Value => 'hour(s)',
+                Value => Translatable('hour(s)'),
             },
             {
                 Key   => 86400,
-                Value => 'day(s)',
+                Value => Translatable('day(s)'),
             },
             {
                 Key   => 2592000,
-                Value => 'month(s)',
+                Value => Translatable('month(s)'),
             },
             {
                 Key   => 31536000,
-                Value => 'year(s)',
+                Value => Translatable('year(s)'),
             },
 
         ],
@@ -533,6 +567,7 @@ sub _MaskUpdate {
         SelectedID  => $JobData{NewPendingTimeType},
         Translation => 1,
         Title       => $LayoutObject->{LanguageObject}->Translate('Time unit'),
+        Class       => 'Modernize',
     );
 
     # get queue object
@@ -546,6 +581,7 @@ sub _MaskUpdate {
         SelectedIDRefArray => $JobData{QueueIDs},
         TreeView           => $TreeView,
         OnChangeSubmit     => 0,
+        Class              => 'Modernize',
     );
     $JobData{NewQueuesStrg} = $LayoutObject->AgentQueueListOption(
         Data           => { $QueueObject->GetAllQueues(), },
@@ -555,6 +591,7 @@ sub _MaskUpdate {
         SelectedID     => $JobData{NewQueueID},
         TreeView       => $TreeView,
         OnChangeSubmit => 0,
+        Class          => 'Modernize',
     );
 
     # get priority object
@@ -571,6 +608,7 @@ sub _MaskUpdate {
         Size       => 5,
         Multiple   => 1,
         SelectedID => $JobData{PriorityIDs},
+        Class      => 'Modernize',
     );
     $JobData{NewPrioritiesStrg} = $LayoutObject->BuildSelection(
         Data => {
@@ -583,6 +621,7 @@ sub _MaskUpdate {
         Size       => 5,
         Multiple   => 0,
         SelectedID => $JobData{NewPriorityID},
+        Class      => 'Modernize',
     );
 
     # get time option
@@ -632,21 +671,21 @@ sub _MaskUpdate {
         );
         $JobData{ $Type . 'TimePointStart' } = $LayoutObject->BuildSelection(
             Data => {
-                Last   => 'within the last ...',
-                Next   => 'within the next ...',
-                Before => 'more than ... ago',
+                Last   => Translatable('within the last ...'),
+                Next   => Translatable('within the next ...'),
+                Before => Translatable('more than ... ago'),
             },
             Name       => $Type . 'TimePointStart',
             SelectedID => $JobData{ $Type . 'TimePointStart' } || 'Last',
         );
         $JobData{ $Type . 'TimePointFormat' } = $LayoutObject->BuildSelection(
             Data => {
-                minute => 'minute(s)',
-                hour   => 'hour(s)',
-                day    => 'day(s)',
-                week   => 'week(s)',
-                month  => 'month(s)',
-                year   => 'year(s)',
+                minute => Translatable('minute(s)'),
+                hour   => Translatable('hour(s)'),
+                day    => Translatable('day(s)'),
+                week   => Translatable('week(s)'),
+                month  => Translatable('month(s)'),
+                year   => Translatable('year(s)'),
             },
             Name       => $Type . 'TimePointFormat',
             SelectedID => $JobData{ $Type . 'TimePointFormat' },
@@ -670,11 +709,13 @@ sub _MaskUpdate {
         Data       => $ConfigObject->Get('YesNoOptions'),
         Name       => 'NewDelete',
         SelectedID => $JobData{NewDelete} || 0,
+        Class      => 'Modernize',
     );
     $JobData{ValidOption} = $LayoutObject->BuildSelection(
         Data       => $ConfigObject->Get('YesNoOptions'),
         Name       => 'Valid',
         SelectedID => defined( $JobData{Valid} ) ? $JobData{Valid} : 1,
+        Class      => 'Modernize',
     );
 
     # get lock object
@@ -691,6 +732,7 @@ sub _MaskUpdate {
         Multiple   => 1,
         Size       => 3,
         SelectedID => $JobData{LockIDs},
+        Class      => 'Modernize',
     );
     $JobData{NewLockOption} = $LayoutObject->BuildSelection(
         Data => {
@@ -703,7 +745,20 @@ sub _MaskUpdate {
         Size       => 3,
         Multiple   => 0,
         SelectedID => $JobData{NewLockID},
+        Class      => 'Modernize',
     );
+
+    # Show server errors if ticket selection contains stop words
+    my %StopWordsServerErrors;
+    if ( !$Param{StopWordsAlreadyChecked} ) {
+        %StopWordsServerErrors = $Self->_StopWordsServerErrorsGet(
+            MIMEBase_From    => $JobData{MIMEBase_From},
+            MIMEBase_To      => $JobData{MIMEBase_To},
+            MIMEBase_Cc      => $JobData{MIMEBase_Cc},
+            MIMEBase_Subject => $JobData{MIMEBase_Subject},
+            MIMEBase_Body    => $JobData{MIMEBase_Body},
+        );
+    }
 
     # REMARK: we changed the wording "Send no notifications" to
     # "Send agent/customer notifications on changes" in frontend.
@@ -711,11 +766,12 @@ sub _MaskUpdate {
     # Because of this case we changed 1=>'Yes' to 1=>'No'
     $JobData{SendNoNotificationOption} = $LayoutObject->BuildSelection(
         Data => {
-            '1' => 'No',
-            '0' => 'Yes'
+            '1' => Translatable('No'),
+            '0' => Translatable('Yes'),
         },
         Name       => 'NewSendNoNotification',
         SelectedID => $JobData{NewSendNoNotification} || 0,
+        Class      => 'Modernize',
     );
     $LayoutObject->Block(
         Name => 'ActionList',
@@ -726,8 +782,9 @@ sub _MaskUpdate {
     $LayoutObject->Block(
         Name => 'Edit',
         Data => {
-            %Param,
             %JobData,
+            %Param,
+            %StopWordsServerErrors,
         },
     );
 
@@ -764,6 +821,7 @@ sub _MaskUpdate {
             Size        => 3,
             Multiple    => 1,
             Translation => 0,
+            Class       => 'Modernize',
         );
         $LayoutObject->Block(
             Name => 'TicketType',
@@ -777,6 +835,7 @@ sub _MaskUpdate {
             Size        => 3,
             Multiple    => 0,
             Translation => 0,
+            Class       => 'Modernize',
         );
         $LayoutObject->Block(
             Name => 'NewTicketType',
@@ -790,7 +849,7 @@ sub _MaskUpdate {
         # get list type
         my %Service = $Kernel::OM->Get('Kernel::System::Service')->ServiceList(
             Valid        => 1,
-            KeepChildren => 1,
+            KeepChildren => $ConfigObject->Get('Ticket::Service::KeepChildren') // 0,
             UserID       => $Self->{UserID},
         );
         my %NewService = %Service;
@@ -803,6 +862,7 @@ sub _MaskUpdate {
             TreeView    => $TreeView,
             Translation => 0,
             Max         => 200,
+            Class       => 'Modernize',
         );
         $JobData{NewServicesStrg} = $LayoutObject->BuildSelection(
             Data        => \%NewService,
@@ -813,6 +873,7 @@ sub _MaskUpdate {
             TreeView    => $TreeView,
             Translation => 0,
             Max         => 200,
+            Class       => 'Modernize',
         );
         my %SLA = $Kernel::OM->Get('Kernel::System::SLA')->SLAList(
             UserID => $Self->{UserID},
@@ -826,6 +887,7 @@ sub _MaskUpdate {
             Multiple    => 1,
             Translation => 0,
             Max         => 200,
+            Class       => 'Modernize',
         );
         $JobData{NewSLAsStrg} = $LayoutObject->BuildSelection(
             Data        => \%SLA,
@@ -836,6 +898,7 @@ sub _MaskUpdate {
             Multiple    => 0,
             Translation => 0,
             Max         => 200,
+            Class       => 'Modernize',
         );
         $LayoutObject->Block(
             Name => 'TicketService',
@@ -856,6 +919,7 @@ sub _MaskUpdate {
             Multiple    => 1,
             Translation => 0,
             SelectedID  => $JobData{ResponsibleIDs},
+            Class       => 'Modernize',
         );
         $JobData{NewResponsibleStrg} = $LayoutObject->BuildSelection(
             Data        => \%ShownUsers,
@@ -864,6 +928,7 @@ sub _MaskUpdate {
             Multiple    => 0,
             Translation => 0,
             SelectedID  => $JobData{NewResponsibleID},
+            Class       => 'Modernize',
         );
         $LayoutObject->Block(
             Name => 'TicketResponsible',
@@ -880,12 +945,13 @@ sub _MaskUpdate {
 
         $JobData{'SearchInArchiveStrg'} = $LayoutObject->BuildSelection(
             Data => {
-                ArchivedTickets    => 'Archived tickets',
-                NotArchivedTickets => 'Unarchived tickets',
-                AllTickets         => 'All tickets',
+                ArchivedTickets    => Translatable('Archived tickets'),
+                NotArchivedTickets => Translatable('Unarchived tickets'),
+                AllTickets         => Translatable('All tickets'),
             },
             Name       => 'SearchInArchive',
             SelectedID => $JobData{SearchInArchive} || 'AllTickets',
+            Class      => 'Modernize',
         );
 
         $LayoutObject->Block(
@@ -895,12 +961,13 @@ sub _MaskUpdate {
 
         $JobData{'NewArchiveFlagStrg'} = $LayoutObject->BuildSelection(
             Data => {
-                y => 'archive tickets',
-                n => 'restore tickets from archive',
+                'y' => Translatable('archive tickets'),
+                'n' => Translatable('restore tickets from archive'),
             },
             Name         => 'NewArchiveFlag',
             PossibleNone => 1,
             SelectedID   => $JobData{NewArchiveFlag} || '',
+            Class        => 'Modernize',
         );
 
         $LayoutObject->Block(
@@ -1152,10 +1219,12 @@ sub _MaskRun {
     }
     else {
         $LayoutObject->FatalError(
-            Message => "Need Profile!",
+            Message => Translatable('Need Profile!'),
         );
     }
     $JobData{Profile} = $Self->{Profile};
+    $Param{Subaction} = $Self->{Subaction};
+    $Param{Profile}   = $Self->{Profile};
 
     # dynamic fields search parameters for ticket search
     my %DynamicFieldSearchParameters;
@@ -1205,28 +1274,43 @@ sub _MaskRun {
         }
     }
 
-    # get ticket object
-    my $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
+    # remove residual dynamic field data from job definition
+    # they are passed through dedicated variable anyway
+    PARAM_NAME:
+    for my $ParamName ( sort keys %JobData ) {
+        next PARAM_NAME if !( $ParamName =~ /^DynamicField_/ );
+        delete $JobData{$ParamName};
+    }
+
+    # get needed objects
+    my $TicketObject  = $Kernel::OM->Get('Kernel::System::Ticket');
+    my $ArticleObject = $Kernel::OM->Get('Kernel::System::Ticket::Article');
+    my $ConfigObject  = $Kernel::OM->Get('Kernel::Config');
 
     # perform ticket search
+    my $GenericAgentTicketSearch = $ConfigObject->Get("Ticket::GenericAgentTicketSearch") || {};
     my $Counter = $TicketObject->TicketSearch(
-        Result          => 'COUNT',
-        SortBy          => 'Age',
-        OrderBy         => 'Down',
-        UserID          => 1,
-        Limit           => 60_000,
-        ConditionInline => 1,
+        Result              => 'COUNT',
+        SortBy              => 'Age',
+        OrderBy             => 'Down',
+        UserID              => 1,
+        Limit               => 60_000,
+        ContentSearchPrefix => '*',
+        ContentSearchSuffix => '*',
+        ConditionInline     => $GenericAgentTicketSearch->{ExtendedSearchCondition},
         %JobData,
         %DynamicFieldSearchParameters,
     ) || 0;
 
     my @TicketIDs = $TicketObject->TicketSearch(
-        Result          => 'ARRAY',
-        SortBy          => 'Age',
-        OrderBy         => 'Down',
-        UserID          => 1,
-        Limit           => 30,
-        ConditionInline => 1,
+        Result              => 'ARRAY',
+        SortBy              => 'Age',
+        OrderBy             => 'Down',
+        UserID              => 1,
+        Limit               => 30,
+        ContentSearchPrefix => '*',
+        ContentSearchSuffix => '*',
+        ConditionInline     => $GenericAgentTicketSearch->{ExtendedSearchCondition},
         %JobData,
         %DynamicFieldSearchParameters,
     );
@@ -1246,28 +1330,46 @@ sub _MaskRun {
         },
     );
 
+    my $RunLimit = $ConfigObject->Get('Ticket::GenericAgentRunLimit');
+    if ( $Counter > $RunLimit ) {
+        $LayoutObject->Block(
+            Name => 'RunLimit',
+            Data => {
+                Counter  => $Counter,
+                RunLimit => $RunLimit,
+            },
+        );
+    }
+
     if (@TicketIDs) {
         $LayoutObject->Block(
             Name => 'ResultBlock',
         );
         for my $TicketID (@TicketIDs) {
 
-            # get first article data
-            my %Data = $TicketObject->ArticleFirstArticle(
+            # Get ticket data.
+            my %Ticket = $TicketObject->TicketGet(
                 TicketID      => $TicketID,
                 DynamicFields => 0,
             );
 
-            # Fall-back for tickets without articles
-            if ( !%Data ) {
-
-                # get ticket data instead
-                %Data = $TicketObject->TicketGet(
-                    TicketID      => $TicketID,
-                    DynamicFields => 0,
+            # Get article data.
+            my @Articles = $ArticleObject->ArticleList(
+                TicketID  => $TicketID,
+                OnlyFirst => 1,
+            );
+            my %Article;
+            for my $Article (@Articles) {
+                %Article = $ArticleObject->BackendForArticle( %{$Article} )->ArticleGet(
+                    %{$Article},
+                    UserID => $Self->{UserID},
                 );
+            }
 
-                # set missing information
+            my %Data = ( %Ticket, %Article );
+
+            # Set missing information for tickets without articles.
+            if ( !%Article ) {
                 $Data{Subject} = $Data{Title};
             }
 
@@ -1299,7 +1401,7 @@ sub _MaskRun {
 
     # HTML search mask output
     my $Output = $LayoutObject->Header(
-        Title => 'Affected Tickets',
+        Title => Translatable('Affected Tickets'),
     );
     $Output .= $LayoutObject->NavigationBar();
     $Output .= $LayoutObject->Output(
@@ -1310,6 +1412,56 @@ sub _MaskRun {
     # build footer
     $Output .= $LayoutObject->Footer();
     return $Output;
+}
+
+sub _StopWordsServerErrorsGet {
+    my ( $Self, %Param ) = @_;
+
+    if ( !%Param ) {
+        $Kernel::OM->Get('Kernel::Output::HTML::Layout')->FatalError(
+            Message => Translatable('Got no values to check.'),
+        );
+    }
+
+    my $ArticleObject = $Kernel::OM->Get('Kernel::System::Ticket::Article');
+
+    my %StopWordsServerErrors;
+    if ( !$ArticleObject->SearchStringStopWordsUsageWarningActive() ) {
+        return %StopWordsServerErrors;
+    }
+
+    my %SearchStrings;
+
+    FIELD:
+    for my $Field ( sort keys %Param ) {
+        next FIELD if !defined $Param{$Field};
+        next FIELD if !length $Param{$Field};
+
+        $SearchStrings{$Field} = $Param{$Field};
+    }
+
+    if (%SearchStrings) {
+
+        my $StopWords = $ArticleObject->SearchStringStopWordsFind(
+            SearchStrings => \%SearchStrings,
+        );
+
+        FIELD:
+        for my $Field ( sort keys %{$StopWords} ) {
+            next FIELD if !defined $StopWords->{$Field};
+            next FIELD if ref $StopWords->{$Field} ne 'ARRAY';
+            next FIELD if !@{ $StopWords->{$Field} };
+
+            $StopWordsServerErrors{ $Field . 'Invalid' } = 'ServerError';
+            $StopWordsServerErrors{ $Field . 'InvalidTooltip' }
+                = $Kernel::OM->Get('Kernel::Output::HTML::Layout')->{LanguageObject}
+                ->Translate('Please remove the following words because they cannot be used for the ticket selection:')
+                . ' '
+                . join( ',', sort @{ $StopWords->{$Field} } );
+        }
+    }
+
+    return %StopWordsServerErrors;
 }
 
 1;

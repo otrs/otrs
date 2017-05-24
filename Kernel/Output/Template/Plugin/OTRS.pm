@@ -1,6 +1,5 @@
 # --
-# Kernel/Output/Template/Plugin/OTRS.pm - TT plugin for OTRS
-# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -12,9 +11,11 @@ package Kernel::Output::Template::Plugin::OTRS;
 use strict;
 use warnings;
 
-use base qw(Template::Plugin);
+use parent qw(Template::Plugin);
 
 use Scalar::Util;
+
+our $ObjectManagerDisabled = 1;
 
 =head1 NAME
 
@@ -22,11 +23,7 @@ Kernel::Output::Template::Plugin::OTRS - Template Toolkit extension plugin
 
 =head1 PUBLIC INTERFACE
 
-=over 4
-
-=cut
-
-=item new()
+=head2 new()
 
 this plugin registers a few filters and functions in Template::Toolkit.
 
@@ -60,12 +57,15 @@ sub new {
     my ( $Class, $Context, @Params ) = @_;
 
     # Produce a weak reference to the LayoutObject and use that in the filters.
+    # We do this because there could be more than one LayoutObject in the process,
+    #   so we don't fetch it from the ObjectManager.
+    #
     # Don't use $Context in the filters as that creates a circular dependency.
     my $LayoutObject = $Context->{LayoutObject};
     Scalar::Util::weaken($LayoutObject);
 
     my $ConfigFunction = sub {
-        return $LayoutObject->{ConfigObject}->Get(@_);
+        return $Kernel::OM->Get('Kernel::Config')->Get(@_);
     };
 
     my $EnvFunction = sub {
@@ -94,6 +94,9 @@ sub new {
         elsif ( $Format eq 'Date' ) {
             return $LayoutObject->{LanguageObject}->FormatTimeString( $_[0], 'DateFormatShort' );
         }
+        elsif ( $Format eq 'Filesize' ) {
+            return $LayoutObject->HumanReadableDataSize( Size => $_[0] );
+        }
         return;
     };
 
@@ -111,6 +114,9 @@ sub new {
             elsif ( $Format eq 'Date' ) {
                 return $LayoutObject->{LanguageObject}->FormatTimeString( $_[0], 'DateFormatShort' );
             }
+            elsif ( $Format eq 'Filesize' ) {
+                return $LayoutObject->HumanReadableDataSize( Size => $_[0] );
+            }
             return;
         };
     };
@@ -123,7 +129,7 @@ sub new {
         if ( index( $_[0], '[%' ) == -1 ) {
             return $_[0];
         }
-        return $Context->process( \$_[0] );
+        return $Context->include( \$_[0] );
     };
 
     my $InterpolateFilterFactory = sub {
@@ -134,7 +140,7 @@ sub new {
             if ( index( $_[0], '[%' ) == -1 ) {
                 return $_[0];
             }
-            return $FilterContext->process( \$_[0] );
+            return $FilterContext->include( \$_[0] );
         };
     };
 
@@ -163,8 +169,6 @@ sub new {
         _PARAMS  => \@Params,
     }, $Class;
 }
-
-=back
 
 =head1 TERMS AND CONDITIONS
 

@@ -7,7 +7,7 @@
         <Setting>
             <FrontendModuleReg>
                 <Group>admin</Group>
-                <Description>Admin</Description>
+                <Description Translatable="1">This module is part of the admin area of OTRS.</Description>
                 <Title Translatable="1">Process Management</Title>
                 <NavBarName>Admin</NavBarName>
                 <Loader>
@@ -21,11 +21,12 @@
                     <JavaScript>Core.UI.AllocationList.js</JavaScript>
                 </Loader>
                 <NavBarModule>
-                    <Module>Kernel::Output::HTML::NavBarModuleAdmin</Module>
+                    <Module>Kernel::Output::HTML::NavBar::ModuleAdmin</Module>
                     <Name Translatable="1">Process Management</Name>
                     <Description Translatable="1">Configure Processes.</Description>
                     <Block>System</Block>
                     <Prio>750</Prio>
+                    <IconBig>fa-sitemap</IconBig>
                 </NavBarModule>
             </FrontendModuleReg>
         </Setting>
@@ -37,7 +38,7 @@
         <Setting>
             <FrontendModuleReg>
                 <Group>admin</Group>
-                <Description>Admin</Description>
+                <Description Translatable="1">This module is part of the admin area of OTRS.</Description>
                 <Title Translatable="1">Process Management Activity GUI</Title>
                 <Loader>
                     <CSS>Core.Agent.Admin.ProcessManagement.css</CSS>
@@ -55,7 +56,7 @@
         <Setting>
             <FrontendModuleReg>
                 <Group>admin</Group>
-                <Description>Admin</Description>
+                <Description Translatable="1">This module is part of the admin area of OTRS.</Description>
                 <Title Translatable="1">Process Management Activity Dialog GUI</Title>
                 <Loader>
                     <CSS>Core.Agent.Admin.ProcessManagement.css</CSS>
@@ -73,7 +74,7 @@
         <Setting>
             <FrontendModuleReg>
                 <Group>admin</Group>
-                <Description>Admin</Description>
+                <Description Translatable="1">This module is part of the admin area of OTRS.</Description>
                 <Title Translatable="1">Process Management Transition GUI</Title>
                 <Loader>
                     <CSS>Core.Agent.Admin.ProcessManagement.css</CSS>
@@ -89,7 +90,7 @@
         <Setting>
             <FrontendModuleReg>
                 <Group>admin</Group>
-                <Description>Admin</Description>
+                <Description Translatable="1">This module is part of the admin area of OTRS.</Description>
                 <Title Translatable="1">Process Management Transition Action GUI</Title>
                 <Loader>
                     <CSS>Core.Agent.Admin.ProcessManagement.css</CSS>
@@ -105,7 +106,7 @@
         <Setting>
             <FrontendModuleReg>
                 <Group>admin</Group>
-                <Description>Admin</Description>
+                <Description Translatable="1">This module is part of the admin area of OTRS.</Description>
                 <Title Translatable="1">Process Management Path GUI</Title>
                 <Loader>
                     <CSS>Core.Agent.Admin.ProcessManagement.css</CSS>
@@ -123,7 +124,7 @@
         <SubGroup>Frontend::Agent::NavBarModule</SubGroup>
         <Setting>
             <Hash>
-                <Item Key="Module">Kernel::Output::HTML::NavBarAgentTicketProcess</Item>
+                <Item Key="Module">Kernel::Output::HTML::NavBar::AgentTicketProcess</Item>
             </Hash>
         </Setting>
     </ConfigItem>
@@ -135,11 +136,11 @@
         <SubGroup>Frontend::Agent::ModuleRegistration</SubGroup>
         <Setting>
             <FrontendModuleReg>
-                <Description>Create new process ticket</Description>
-                <Title>New process ticket</Title>
+                <Description Translatable="1">Create new process ticket.</Description>
+                <Title Translatable="1">New process ticket</Title>
                 <NavBarName>Ticket</NavBarName>
                 <NavBar>
-                    <Description Translatable="1">Create New process ticket</Description>
+                    <Description Translatable="1">Create New process ticket.</Description>
                     <Name Translatable="1">New process ticket</Name>
                     <Link>Action=AgentTicketProcess</Link>
                     <LinkOption></LinkOption>
@@ -152,13 +153,15 @@
                 <Loader>
                     <CSS>Core.Agent.TicketProcess.css</CSS>
                     <JavaScript>Core.Agent.CustomerSearch.js</JavaScript>
+                    <JavaScript>Core.Agent.CustomerSearchAutoComplete.js</JavaScript>
                     <JavaScript>Core.Agent.TicketAction.js</JavaScript>
                     <JavaScript>Core.Agent.TicketProcess.js</JavaScript>
+                    <JavaScript>Core.TicketProcess.js</JavaScript>
                 </Loader>
             </FrontendModuleReg>
         </Setting>
     </ConfigItem>
-    <ConfigItem Name="Ticket::EventModulePost###TicketProcessTransitions" Required="0" Valid="1">
+    <ConfigItem Name="Ticket::EventModulePost###9800-TicketProcessTransitions" Required="0" Valid="1">
         <Description Translatable="1">Event module registration. For more performance you can define a trigger event (e. g. Event =&gt; TicketCreate).</Description>
         <Group>ProcessManagement</Group>
         <SubGroup>Core::Ticket</SubGroup>
@@ -256,13 +259,14 @@
         <SubGroup>Frontend::Agent::Ticket::MenuModule</SubGroup>
         <Setting>
             <Hash>
-                <Item Key="Module">Kernel::Output::HTML::TicketMenuProcess</Item>
-                <Item Key="Name">Process Enroll</Item>
-                <Item Key="Description" Translatable="1">Enroll this ticket into a process</Item>
+                <Item Key="Module">Kernel::Output::HTML::TicketMenu::Process</Item>
+                <Item Key="Name">Process</Item>
+                <Item Key="Description" Translatable="1">Enroll process for this ticket</Item>
                 <Item Key="Action">AgentTicketProcess</Item>
                 <Item Key="Link">Action=AgentTicketProcess;IsProcessEnroll=1;TicketID=[% Data.TicketID | html %]</Item>
                 <Item Key="Target"></Item>
                 <Item Key="PopupType">TicketAction</Item>
+                <Item Key="Cluster"></Item>
             </Hash>
         </Setting>
     </ConfigItem>
@@ -272,11 +276,11 @@
         <SubGroup>Frontend::Customer::ModuleRegistration</SubGroup>
         <Setting>
             <FrontendModuleReg>
-                <Description>Process Ticket</Description>
+                <Description Translatable="1">Process Ticket.</Description>
                 <NavBarName>Ticket</NavBarName>
-                <Title>Process ticket</Title>
+                <Title Translatable="1">Process ticket</Title>
                 <NavBar>
-                    <Description Translatable="1">Create new process ticket</Description>
+                    <Description Translatable="1">Create new process ticket.</Description>
                     <Name Translatable="1">New process ticket</Name>
                     <Link>Action=CustomerTicketProcess</Link>
                     <LinkOption></LinkOption>
@@ -288,6 +292,9 @@
                 </NavBar>
                 <Loader>
                     <CSS>Core.Customer.TicketProcess.css</CSS>
+                    <JavaScript>Core.TicketProcess.js</JavaScript>
+                    <JavaScript>Core.Customer.TicketProcess.js</JavaScript>
+                    <JavaScript>Core.TicketProcess.js</JavaScript>
                 </Loader>
             </FrontendModuleReg>
         </Setting>
@@ -298,7 +305,7 @@
         <SubGroup>Frontend::Customer::NavBarModule</SubGroup>
         <Setting>
             <Hash>
-                <Item Key="Module">Kernel::Output::HTML::NavBarCustomerTicketProcess</Item>
+                <Item Key="Module">Kernel::Output::HTML::NavBar::CustomerTicketProcess</Item>
             </Hash>
         </Setting>
     </ConfigItem>
@@ -349,7 +356,7 @@
         </Setting>
     </ConfigItem>
     <ConfigItem Name="Ticket::Frontend::CustomerTicketProcess###StateType" Required="1" Valid="1">
-        <Description Translatable="1">Determines the next possible ticket states, for process tickets in the agent interface.</Description>
+        <Description Translatable="1">Determines the next possible ticket states, for process tickets in the customer interface.</Description>
         <Group>ProcessManagement</Group>
         <SubGroup>Frontend::Agent::Ticket::ViewProcess</SubGroup>
         <Setting>
@@ -359,14 +366,25 @@
             </Array>
         </Setting>
     </ConfigItem>
+    <ConfigItem Name="Ticket::Frontend::AgentTicketProcess::CustomerIDReadOnly" Required="1" Valid="1">
+        <Description Translatable="1">Controls if CustomerID is read-only in the agent interface.</Description>
+        <Group>ProcessManagement</Group>
+        <SubGroup>Frontend::Agent::Ticket::ViewProcess</SubGroup>
+        <Setting>
+            <Option SelectedID="1">
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
+            </Option>
+        </Setting>
+    </ConfigItem>
     <ConfigItem Name="ProcessManagement::Transition::Debug::Enabled" Required="1" Valid="1">
         <Description Translatable="1">If enabled debugging information for transitions is logged.</Description>
         <Group>ProcessManagement</Group>
         <SubGroup>Core::Transition</SubGroup>
         <Setting>
             <Option SelectedID="0">
-                    <Item Key="0">No</Item>
-                    <Item Key="1">Yes</Item>
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -376,10 +394,10 @@
         <SubGroup>Core::Transition</SubGroup>
         <Setting>
             <Option SelectedID="debug">
-                    <Item Key="debug">Debug</Item>
-                    <Item Key="info">Info</Item>
-                    <Item Key="notice">Notice</Item>
-                    <Item Key="error">Error</Item>
+                <Item Key="debug" Translatable="1">Debug</Item>
+                <Item Key="info" Translatable="1">Info</Item>
+                <Item Key="notice" Translatable="1">Notice</Item>
+                <Item Key="error" Translatable="1">Error</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -400,9 +418,9 @@
         <SubGroup>Frontend::Agent::Dashboard</SubGroup>
         <Setting>
             <Hash>
-                <Item Key="Module">Kernel::Output::HTML::DashboardTicketGeneric</Item>
+                <Item Key="Module">Kernel::Output::HTML::Dashboard::TicketGeneric</Item>
                 <Item Key="Title" Translatable="1">Running Process Tickets</Item>
-                <Item Key="Description">All tickets with a reminder set where the reminder date has been reached</Item>
+                <Item Key="Description" Translatable="1">All tickets with a reminder set where the reminder date has been reached</Item>
                 <Item Key="Attributes">StateType=new;StateType=open;StateType=pending reminder;StateType=pending auto</Item>
                 <Item Key="Time">UntilTime</Item>
                 <Item Key="IsProcessWidget">1</Item>

@@ -1,6 +1,5 @@
 // --
-// Core.Debug.UnitTest.js - UnitTests
-// Copyright (C) 2001-2012 OTRS AG, http://otrs.org/\n";
+// Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 // --
 // This software comes with ABSOLUTELY NO WARRANTY. For details, see
 // the enclosed file COPYING for license information (AGPL). If you
@@ -9,34 +8,34 @@
 
 "use strict";
 
-var OTRS = OTRS || {};
+var Core = Core || {};
 Core.Debug = Core.Debug || {};
 
 Core.Debug = (function (Namespace) {
     Namespace.RunUnitTests = function(){
-        module('Core.Debug');
-        test('Core.Debug.CheckDependency()', function(){
+        QUnit.module('Core.Debug');
+        QUnit.test('Core.Debug.CheckDependency()', function(Assert){
 
             Core.Debug.DummyFunction = function(){};
 
-            expect(4);
+            Assert.expect(4);
 
-            equal(
+            Assert.equal(
                 Core.Debug.CheckDependency('Core.Debug.RunUnitTests', 'Core.Debug.DummyFunction', 'existing_function', true),
                 true
             );
 
-            equal(
+            Assert.equal(
                 Core.Debug.CheckDependency('Core.Debug.RunUnitTests', 'Core.Debug.DummyFunction2', 'existing_function', true),
                 false
             );
 
-            equal(
+            Assert.equal(
                 Core.Debug.CheckDependency('Core.Debug.RunUnitTests', 'Core.Debug2.DummyFunction2', 'existing_function', true),
                 false
                 );
 
-            equal(
+            Assert.equal(
                 Core.Debug.CheckDependency('Core.Debug.RunUnitTests', 'nonexisting_function', 'nonexisting_function', true),
                 false
             );

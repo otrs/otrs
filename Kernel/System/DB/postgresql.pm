@@ -1,6 +1,5 @@
 # --
-# Kernel/System/DB/postgresql.pm - postgresql database backend
-# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -56,8 +55,19 @@ sub LoadPreferences {
     # our results: "PostgreSQL 9.2.4", "PostgreSQL 9.1.9".
     $Self->{'DB::Version'} = "SELECT SUBSTRING(VERSION(), 'PostgreSQL [0-9\.]*')";
 
-    # dbi attributes
-    $Self->{'DB::Attribute'} = {};
+    $Self->{'DB::ListTables'} = <<'EOF',
+SELECT
+    table_name
+FROM
+    information_schema.tables
+WHERE
+    table_type = 'BASE TABLE'
+    AND table_schema NOT IN ('pg_catalog', 'information_schema')
+ORDER BY table_name
+EOF
+
+        # dbi attributes
+        $Self->{'DB::Attribute'} = {};
 
     # set current time stamp if different to "current_timestamp"
     $Self->{'DB::CurrentTimestamp'} = '';
@@ -220,6 +230,9 @@ sub TableCreate {
         # auto increment
         if ( $Tag->{AutoIncrement} && $Tag->{AutoIncrement} =~ /^true$/i ) {
             $SQL = "    $Tag->{Name} serial";
+            if ( $Tag->{Type} =~ /^bigint$/i ) {
+                $SQL = "    $Tag->{Name} bigserial";
+            }
         }
 
         # normal data type
@@ -277,31 +290,27 @@ sub TableCreate {
     $SQL .= "\n";
     push @Return, $SQLStart . $SQL . $SQLEnd;
 
-    # add indexs
+    # add indexes
     for my $Name ( sort keys %Index ) {
-        push(
-            @Return,
+        push @Return,
             $Self->IndexCreate(
-                TableName => $TableName,
-                Name      => $Name,
-                Data      => $Index{$Name},
-            ),
-        );
+            TableName => $TableName,
+            Name      => $Name,
+            Data      => $Index{$Name},
+            );
     }
 
     # add foreign keys
     for my $ForeignKey ( sort keys %Foreign ) {
         my @Array = @{ $Foreign{$ForeignKey} };
         for ( 0 .. $#Array ) {
-            push(
-                @{ $Self->{Post} },
+            push @{ $Self->{Post} },
                 $Self->ForeignKeyCreate(
-                    LocalTableName   => $TableName,
-                    Local            => $Array[$_]->{Local},
-                    ForeignTableName => $ForeignKey,
-                    Foreign          => $Array[$_]->{Foreign},
-                ),
-            );
+                LocalTableName   => $TableName,
+                Local            => $Array[$_]->{Local},
+                ForeignTableName => $ForeignKey,
+                Foreign          => $Array[$_]->{Foreign},
+                );
         }
     }
     return @Return;
@@ -344,6 +353,8 @@ sub TableAlter {
     my $ReferenceName = '';
     my @Reference     = ();
     my $Table         = '';
+
+    TAG:
     for my $Tag (@Param) {
 
         if ( $Tag->{Tag} eq 'TableAlter' && $Tag->{TagType} eq 'Start' ) {
@@ -366,6 +377,17 @@ sub TableAlter {
 
             # Type translation
             $Tag = $Self->_TypeTranslation($Tag);
+
+            # auto increment
+            if ( $Tag->{AutoIncrement} && $Tag->{AutoIncrement} =~ /^true$/i ) {
+
+                my $PseudoType = 'serial';
+                if ( $Tag->{Type} =~ /^bigint$/i ) {
+                    $PseudoType = 'bigserial';
+                }
+                push @SQL, $SQLStart . " ADD $Tag->{Name} $PseudoType NOT NULL";
+                next TAG;
+            }
 
             # normal data type
             push @SQL, $SQLStart . " ADD $Tag->{Name} $Tag->{Type} NULL";
@@ -409,6 +431,9 @@ sub TableAlter {
                 push @SQL, $SQLStart . " RENAME $Tag->{NameOld} TO $Tag->{NameNew}";
             }
             push @SQL, $SQLStart . " ALTER $Tag->{NameNew} TYPE $Tag->{Type}";
+
+            # if there is an AutoIncrement column no other changes are needed
+            next TAG if $Tag->{AutoIncrement} && $Tag->{AutoIncrement} =~ /^true$/i;
 
             # remove possible default
             push @SQL, "ALTER TABLE $Table ALTER $Tag->{NameNew} DROP DEFAULT";
@@ -503,23 +528,37 @@ sub IndexCreate {
             return;
         }
     }
-    my $SQL   = "CREATE INDEX $Param{Name} ON $Param{TableName} (";
-    my @Array = @{ $Param{Data} };
+    my $CreateIndexSQL = "CREATE INDEX $Param{Name} ON $Param{TableName} (";
+    my @Array          = @{ $Param{Data} };
     for ( 0 .. $#Array ) {
         if ( $_ > 0 ) {
-            $SQL .= ', ';
+            $CreateIndexSQL .= ', ';
         }
-        $SQL .= $Array[$_]->{Name};
-        if ( $Array[$_]->{Size} ) {
-
-            #           $SQL .= "($Array[$_]->{Size})";
-        }
+        $CreateIndexSQL .= $Array[$_]->{Name};
     }
-    $SQL .= ')';
+    $CreateIndexSQL .= ')';
+
+    # put two literal dollar characters in a string
+    # this is needed for the postgres 'do' statement
+    my $DollarDollar = '$$';
+
+    # build SQL to create index within a "try/catch block"
+    # to prevent errors if index exists already
+    $CreateIndexSQL = <<"EOF";
+DO $DollarDollar
+BEGIN
+IF NOT EXISTS (
+    SELECT 1
+    FROM pg_indexes
+    WHERE indexname = '$Param{Name}'
+    ) THEN
+    $CreateIndexSQL;
+END IF;
+END$DollarDollar;
+EOF
 
     # return SQL
-    return ($SQL);
-
+    return ($CreateIndexSQL);
 }
 
 sub IndexDrop {
@@ -561,7 +600,7 @@ sub ForeignKeyCreate {
         );
         $ForeignKey = substr $ForeignKey, 0, 58;
         $ForeignKey .= substr $MD5, 0,  1;
-        $ForeignKey .= substr $MD5, 61, 1;
+        $ForeignKey .= substr $MD5, 31, 1;
     }
 
     # add foreign key
@@ -593,7 +632,7 @@ sub ForeignKeyDrop {
         );
         $ForeignKey = substr $ForeignKey, 0, 58;
         $ForeignKey .= substr $MD5, 0,  1;
-        $ForeignKey .= substr $MD5, 61, 1;
+        $ForeignKey .= substr $MD5, 31, 1;
     }
 
     # drop foreign key
@@ -741,12 +780,6 @@ sub _TypeTranslation {
     }
 
     # performance option
-    elsif ( $Tag->{Type} =~ /^smallint$/i ) {
-        $Tag->{Type} = 'INTEGER';
-    }
-    elsif ( $Tag->{Type} =~ /^bigint$/i ) {
-        $Tag->{Type} = 'INTEGER';
-    }
     elsif ( $Tag->{Type} =~ /^longblob$/i ) {
         $Tag->{Type} = 'TEXT';
     }

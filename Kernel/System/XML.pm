@@ -1,6 +1,5 @@
 # --
-# Kernel/System/XML.pm - lib xml
-# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -26,22 +25,16 @@ our @ObjectDependencies = (
 
 Kernel::System::XML - xml lib
 
-=head1 SYNOPSIS
+=head1 DESCRIPTION
 
 All xml related functions.
 
 =head1 PUBLIC INTERFACE
 
-=over 4
+=head2 new()
 
-=cut
+Don't use the constructor directly, use the ObjectManager instead:
 
-=item new()
-
-create an object. Do not use it directly, instead use:
-
-    use Kernel::System::ObjectManager;
-    local $Kernel::OM = Kernel::System::ObjectManager->new();
     my $XMLObject = $Kernel::OM->Get('Kernel::System::XML');
 
 =cut
@@ -56,7 +49,7 @@ sub new {
     return $Self;
 }
 
-=item XMLHashAdd()
+=head2 XMLHashAdd()
 
 add an XMLHash to storage
 
@@ -138,7 +131,7 @@ sub XMLHashAdd {
     return;
 }
 
-=item XMLHashUpdate()
+=head2 XMLHashUpdate()
 
 update an XMLHash to storage
 
@@ -169,7 +162,7 @@ sub XMLHashUpdate {
     return $Self->XMLHashAdd(%Param);
 }
 
-=item XMLHashGet()
+=head2 XMLHashGet()
 
 get an XMLHash from the database
 
@@ -261,7 +254,7 @@ sub XMLHashGet {
     return @XMLHash;
 }
 
-=item XMLHashDelete()
+=head2 XMLHashDelete()
 
 delete an XMLHash from the database
 
@@ -303,7 +296,7 @@ sub XMLHashDelete {
     return 1;
 }
 
-=item XMLHashMove()
+=head2 XMLHashMove()
 
 move an XMLHash from one type or/and key to another
 
@@ -362,7 +355,7 @@ sub XMLHashMove {
     return 1;
 }
 
-=item XMLHashSearch()
+=head2 XMLHashSearch()
 
 Search an XMLHash in the database.
 
@@ -481,7 +474,7 @@ sub XMLHashSearch {
     return @Keys;
 }
 
-=item XMLHashList()
+=head2 XMLHashList()
 
 generate a list of XMLHashes in the database
 
@@ -519,7 +512,7 @@ sub XMLHashList {
     return @Keys;
 }
 
-=item XMLHash2XML()
+=head2 XMLHash2XML()
 
 generate an XML string from an XMLHash
 
@@ -540,7 +533,7 @@ sub XMLHash2XML {
     return $Output;
 }
 
-=item XMLParse2XMLHash()
+=head2 XMLParse2XMLHash()
 
 parse an XML file and return an XMLHash structure
 
@@ -628,7 +621,7 @@ sub XMLParse2XMLHash {
 
 }
 
-=item XMLHash2D()
+=head2 XMLHash2D()
 
 returns a simple hash with tag keys as keys and the values of C<XMLHash> as values.
 As a side effect the data structure C<XMLHash> is enriched with tag keys.
@@ -678,7 +671,7 @@ sub XMLHash2D {
     return %{ $Self->{XMLHash} };
 }
 
-=item XMLStructure2XMLHash()
+=head2 XMLStructure2XMLHash()
 
 get an @XMLHash from a @XMLStructure with current TagKey param
 
@@ -719,7 +712,7 @@ sub XMLStructure2XMLHash {
     return ( \%{ $Self->{XMLHash2} } );
 }
 
-=item XMLParse()
+=head2 XMLParse()
 
 parse an XML file
 
@@ -761,10 +754,15 @@ sub XMLParse {
 
     # check cache
     if ($Checksum) {
+
+        # set CacheInMemory to 0 to prevent modification of the cache from outside
+        # See bug#[12761](https://bugs.otrs.org/show_bug.cgi?id=12761) for further details
         my $Cache = $CacheObject->Get(
-            Type => 'XMLParse',
-            Key  => $Checksum,
+            Type          => 'XMLParse',
+            Key           => $Checksum,
+            CacheInMemory => 0,
         );
+
         return @{$Cache} if $Cache;
     }
 
@@ -818,7 +816,8 @@ sub XMLParse {
             );
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
-                Message  => 'XML::Parser produced errors. I use XML::Parser::Lite as fallback!'
+                Message =>
+                    "XML::Parser had errors, falling back to XML::Parser::Lite. Offending XML was: $Param{String}",
             );
         }
     }
@@ -846,11 +845,15 @@ sub XMLParse {
 
     # set cache
     if ($Checksum) {
+
+        # set CacheInMemory to 0 to prevent modification of the cache from outside
+        # See bug#[12761](https://bugs.otrs.org/show_bug.cgi?id=12761) for further details
         $CacheObject->Set(
-            Type  => 'XMLParse',
-            Key   => $Checksum,
-            Value => $Self->{XMLARRAY},
-            TTL   => 30 * 24 * 60 * 60,
+            Type          => 'XMLParse',
+            Key           => $Checksum,
+            Value         => $Self->{XMLARRAY},
+            TTL           => 30 * 24 * 60 * 60,
+            CacheInMemory => 0,
         );
     }
 
@@ -859,7 +862,7 @@ sub XMLParse {
 
 =begin Internal:
 
-=item  _XMLHashAddAutoIncrement()
+=head2  _XMLHashAddAutoIncrement()
 
 Generate a new integer key.
 All keys for that type must be integers.
@@ -1561,8 +1564,6 @@ sub _ES {
 1;
 
 =end Internal:
-
-=back
 
 =head1 TERMS AND CONDITIONS
 

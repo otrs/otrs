@@ -1,6 +1,5 @@
 // --
-// Core.Agent.Admin.DynamicFieldDropdown.js - provides the special module functions for the Dropdown Dynamic Fields.
-// Copyright (C) 2001-2011 OTRS AG, http://otrs.org/
+// Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 // --
 // This software comes with ABSOLUTELY NO WARRANTY. For details, see
 // the enclosed file COPYING for license information (AGPL). If you
@@ -52,15 +51,16 @@ Core.Agent.Admin.DynamicFieldDropdown = (function (TargetNS) {
 
         // add the input replacement to the mapping type so it can be parsed and distinguish from
         // empty values by the server
-        $('#'+ IDSelector).closest('fieldset').append($Clone);
+        $('#' + IDSelector).closest('fieldset').append($Clone);
 
         // remove the value from default list
         if ($Key !== ''){
-            $('#DefaultValue').find("option[value='"+ $Key +"']").remove();
+            $('#DefaultValue').find("option[value='" + $Key + "']").remove();
+            $('#DefaultValue').trigger('redraw.InputField');
         }
 
         // remove possible value
-        $('#'+ IDSelector).parent().remove();
+        $('#' + IDSelector).parent().remove();
 
         return false;
     };
@@ -81,7 +81,7 @@ Core.Agent.Admin.DynamicFieldDropdown = (function (TargetNS) {
             ValueCounter = $('#ValueCounter').val();
 
         // increment key counter
-        ValueCounter ++;
+        ValueCounter++;
 
         // remove unnecessary classes
         $Clone.removeClass('Hidden ValueTemplate');
@@ -105,10 +105,10 @@ Core.Agent.Admin.DynamicFieldDropdown = (function (TargetNS) {
             $(this).parent().find('#' + ID + 'ServerError').attr('name', ID + '_' + ValueCounter + 'ServerError');
 
             // add event handler to remove button
-            if( $(this).hasClass('RemoveButton') ) {
+            if($(this).hasClass('RemoveButton')) {
 
                 // bind click function to remove button
-                $(this).bind('click', function () {
+                $(this).on('click', function () {
                     TargetNS.RemoveValue($(this).attr('id'));
                     return false;
                 });
@@ -126,8 +126,8 @@ Core.Agent.Admin.DynamicFieldDropdown = (function (TargetNS) {
         // set new value for KeyName
         $('#ValueCounter').val(ValueCounter);
 
-        $('.DefaultValueKeyItem,.DefaultValueItem').bind('keyup', function () {
-            Core.Agent.Admin.DynamicFieldDropdown.RecreateDefaultValueList();
+        $('.DefaultValueKeyItem,.DefaultValueItem').on('keyup', function () {
+            TargetNS.RecreateDefaultValueList();
         });
 
         return false;
@@ -154,7 +154,7 @@ Core.Agent.Admin.DynamicFieldDropdown = (function (TargetNS) {
         $('#DefaultValue').empty();
 
         // add the default "possible none" element
-        $('#DefaultValue').append($('<option>', { value : '' }).text('-'));
+        $('#DefaultValue').append($('<option>', { value: '' }).text('-'));
 
         // find all active possible values keys (this will omit all previously deleted keys)
         $('.ValueRow > .DefaultValueKeyItem').each(function(){
@@ -172,7 +172,7 @@ Core.Agent.Admin.DynamicFieldDropdown = (function (TargetNS) {
 
             // check if both are none empty and add them to the default values list
             if (Key !== '' && Value !== '') {
-                $('#DefaultValue').append($('<option>', { value : Key }).text(Value));
+                $('#DefaultValue').append($('<option>', { value: Key }).text(Value));
 
             }
         });
@@ -181,7 +181,7 @@ Core.Agent.Admin.DynamicFieldDropdown = (function (TargetNS) {
         SelectOptions = $("#DefaultValue option");
 
         // sort the array by the text (this means the Value)
-        SelectOptions.sort(function(a,b) {
+        SelectOptions.sort(function(a, b) {
             if (a.text > b.text) {
                 return 1;
             }
@@ -194,14 +194,51 @@ Core.Agent.Admin.DynamicFieldDropdown = (function (TargetNS) {
         });
 
         // clear the list again and re-populate it with the sorted list
-        $("#DefaultValue").empty().append( SelectOptions );
+        $("#DefaultValue").empty().append(SelectOptions);
 
         // set the selected value as it was before, this will not apply if the key name was
         // changed
         $('#DefaultValue').val(SelectedValue);
 
+        $('#DefaultValue').trigger('redraw.InputField');
+
         return false;
     };
+
+    /**
+     * @name Init
+     * @memberof Core.Agent.Admin.DynamicFieldDropdown
+     * @function
+     * @description
+     *       Initialize module functionality
+     */
+    TargetNS.Init = function () {
+        $('.ShowWarning').on('change keyup', function () {
+            $('p.Warning').removeClass('Hidden');
+        });
+
+        //bind click function to add button
+        $('#AddValue').on('click', function () {
+            TargetNS.AddValue(
+                $(this).closest('fieldset').find('.ValueInsert')
+            );
+            return false;
+        });
+
+        //bind click function to remove button
+        $('.ValueRemove').on('click', function () {
+            TargetNS.RemoveValue($(this).attr('id'));
+            return false;
+        });
+
+        $('.DefaultValueKeyItem,.DefaultValueItem').on('keyup', function () {
+            TargetNS.RecreateDefaultValueList();
+        });
+
+        Core.Agent.Admin.DynamicField.ValidationInit();
+    };
+
+    Core.Init.RegisterNamespace(TargetNS, 'APP_MODULE');
 
     return TargetNS;
 }(Core.Agent.Admin.DynamicFieldDropdown || {}));

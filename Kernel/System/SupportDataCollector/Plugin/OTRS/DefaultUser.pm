@@ -1,6 +1,5 @@
 # --
-# Kernel/System/SupportDataCollector/Plugin/OTRS/DefaultUser.pm - system data collector plugin
-# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -12,7 +11,9 @@ package Kernel::System::SupportDataCollector::Plugin::OTRS::DefaultUser;
 use strict;
 use warnings;
 
-use base qw(Kernel::System::SupportDataCollector::PluginBase);
+use parent qw(Kernel::System::SupportDataCollector::PluginBase);
+
+use Kernel::Language qw(Translatable);
 
 our @ObjectDependencies = (
     'Kernel::System::Auth',
@@ -21,7 +22,7 @@ our @ObjectDependencies = (
 );
 
 sub GetDisplayPath {
-    return 'OTRS';
+    return Translatable('OTRS');
 }
 
 sub Run {
@@ -57,32 +58,22 @@ sub Run {
 
     if ($DefaultPassword) {
         $Self->AddResultProblem(
-            Label => 'Default Admin Password',
+            Label => Translatable('Default Admin Password'),
             Value => '',
             Message =>
-                'Security risk: the agent account root@localhost still has the default password. Please change it or invalidate the account.',
+                Translatable(
+                'Security risk: the agent account root@localhost still has the default password. Please change it or invalidate the account.'
+                ),
         );
     }
     else {
         $Self->AddResultOk(
-            Label => 'Default Admin Password',
+            Label => Translatable('Default Admin Password'),
             Value => '',
         );
     }
 
     return $Self->GetResults();
 }
-
-=back
-
-=head1 TERMS AND CONDITIONS
-
-This software is part of the OTRS project (L<http://otrs.org/>).
-
-This software comes with ABSOLUTELY NO WARRANTY. For details, see
-the enclosed file COPYING for license information (AGPL). If you
-did not receive this file, see L<http://www.gnu.org/licenses/agpl.txt>.
-
-=cut
 
 1;

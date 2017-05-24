@@ -198,6 +198,13 @@ fieldset h2 {
     text-shadow: 0 1px 0 #FFF;
 }
 
+fieldset h2 + p.Description {
+    font-size: 11px;
+    margin-left: 0px;
+    padding: 10px 10px;
+    color: #555;
+}
+
 fieldset h2 + div {
     padding-top: 13px;
     border-top: 1px solid #FFF;
@@ -234,6 +241,7 @@ fieldset select {
 
 .TicketCompose fieldset #Subject {
     width: 50%;
+    max-width: 614px;
 }
 
 fieldset.Columns .Column {
@@ -265,6 +273,10 @@ fieldset.Columns label,
 fieldset .RichTextHolder {
     padding: 0;
     margin-top: 3px;
+}
+
+fieldset div.Field {
+    padding: 0 !important;
 }
 
 .Preferences .Content {
@@ -311,6 +323,16 @@ fieldset .RichTextHolder {
  */
 textarea {
     font-family: monospace,fixed;
+}
+
+/**
+ * @subsection  Input Readonly
+ */
+input[type=text][readonly],
+input[type=password][readonly],
+input[type=email][readonly],
+textarea[readonly] {
+    background-color: #DDD;
 }
 
 /**
@@ -483,4 +505,23 @@ fieldset .ShowTreeSelection {
     width: 400px;
     height: 300px;
     margin: -10px -15px;
+}
+
+/**
+ * @subsection Chat
+ */
+
+.ArticleChat {
+    padding: 2px 5px;
+    font-size: 11px;
+    max-height: 100px;
+    overflow: auto;
+    background: #fff;
+    border: 1px solid #eee;
+}
+
+.ArticleMailContent .ArticleChat {
+    max-height: none;
+    font-size: 12px;
+    padding: 10px;
 }

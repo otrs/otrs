@@ -1,6 +1,5 @@
 # --
-# AdminPerformanceLog.t - frontend tests for AdminPerformanceLog
-# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -13,32 +12,23 @@ use utf8;
 
 use vars (qw($Self));
 
-use Kernel::System::UnitTest::Helper;
-use Kernel::System::UnitTest::Selenium;
-
-# get needed objects
-my $ConfigObject    = $Kernel::OM->Get('Kernel::Config');
-my $DBObject        = $Kernel::OM->Get('Kernel::System::DB');
-my $SysConfigObject = $Kernel::OM->Get('Kernel::System::SysConfig');
-
-my $Selenium = Kernel::System::UnitTest::Selenium->new(
-    Verbose => 1,
-);
+# get selenium object
+my $Selenium = $Kernel::OM->Get('Kernel::System::UnitTest::Selenium');
 
 $Selenium->RunTest(
     sub {
 
-        my $Helper = Kernel::System::UnitTest::Helper->new(
-            RestoreSystemConfiguration => 1,
-        );
+        # get helper object
+        my $Helper = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
 
         # enable PerformanceLog
-        $SysConfigObject->ConfigItemUpdate(
+        $Helper->ConfigSettingChange(
             Valid => 1,
             Key   => 'PerformanceLog',
             Value => 1
         );
 
+        # create test user and login
         my $TestUserLogin = $Helper->TestUserCreate(
             Groups => ['admin'],
         ) || die "Did not get test user";
@@ -49,9 +39,26 @@ $Selenium->RunTest(
             Password => $TestUserLogin,
         );
 
-        my $ScriptAlias = $ConfigObject->Get('ScriptAlias');
+        # get script alias
+        my $ScriptAlias = $Kernel::OM->Get('Kernel::Config')->Get('ScriptAlias');
 
-        $Selenium->get("${ScriptAlias}index.pl?Action=AdminPerformanceLog");
+        # navigate to AdminPerformanceLog screen
+        $Selenium->VerifiedGet("${ScriptAlias}index.pl?Action=AdminPerformanceLog");
+
+        # check breadcrumb on Overview screen
+        $Self->True(
+            $Selenium->find_element( '.BreadCrumb', 'css' ),
+            "Breadcrumb is found on Overview screen.",
+        );
+
+        my %RangeBreadcrumb = (
+            5    => 'Range (last 5 m)',
+            30   => 'Range (last 30 m)',
+            60   => 'Range (last 1 h 0 m)',
+            120  => 'Range (last 2 h 0 m)',
+            1440 => 'Range (last 1 d 0 h )',
+            2880 => 'Range (last 2 d 0 h )',
+        );
 
         # check for Admin on different range time screens
         for my $Time (
@@ -59,7 +66,7 @@ $Selenium->RunTest(
             )
         {
             # click on Admin
-            $Selenium->find_element("//a[contains(\@href, \'Interface=Agent;Minute=$Time' )]")->click();
+            $Selenium->find_element("//a[contains(\@href, \'Interface=Agent;Minute=$Time' )]")->VerifiedClick();
 
             # check screen layout
             $Selenium->find_element( "table",             'css' );
@@ -67,11 +74,24 @@ $Selenium->RunTest(
             $Selenium->find_element( "table tbody tr td", 'css' );
             $Selenium->find_element( "div.Progressbar",   'css' )->is_displayed();
 
+            # check breadcrumb on Add screen
+            my $Count = 1;
+            for my $BreadcrumbText ( 'Performance Log', $RangeBreadcrumb{$Time} ) {
+                $Self->Is(
+                    $Selenium->execute_script("return \$('.BreadCrumb li:eq($Count)').text().trim()"),
+                    $BreadcrumbText,
+                    "Breadcrumb text '$BreadcrumbText' is found on screen"
+                );
+
+                $Count++;
+            }
+
             # click on "Go to overview"
-            $Selenium->find_element("//a[contains(\@href, \'Action=AdminPerformanceLog' )]")->click();
-        }
+            $Selenium->find_element("//a[contains(\@href, \'Action=AdminPerformanceLog' )]")->VerifiedClick();
 
         }
+
+    }
 
 );
 

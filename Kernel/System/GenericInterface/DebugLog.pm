@@ -1,6 +1,5 @@
 # --
-# Kernel/System/GenericInterface/DebugLog.pm - log interface for generic interface
-# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -24,22 +23,16 @@ our @ObjectDependencies = (
 
 Kernel::System::GenericInterface::DebugLog - log interface for generic interface
 
-=head1 SYNOPSIS
+=head1 DESCRIPTION
 
 All log functions.
 
 =head1 PUBLIC INTERFACE
 
-=over 4
-
-=cut
-
-=item new()
+=head2 new()
 
 create a debug log object. Do not use it directly, instead use:
 
-    use Kernel::System::ObjectManager;
-    local $Kernel::OM = Kernel::System::ObjectManager->new();
     my $DebugLogObject = $Kernel::OM->Get('Kernel::System::GenericInterface::DebugLog');
 
 =cut
@@ -57,7 +50,7 @@ sub new {
     return $Self;
 }
 
-=item LogAdd()
+=head2 LogAdd()
 
 add a communication bit to database
 if we don't already have a communication chain, create it
@@ -202,7 +195,7 @@ sub LogAdd {
     return 1;
 }
 
-=item LogGet()
+=head2 LogGet()
 
 get communication chain data
 
@@ -287,7 +280,7 @@ sub LogGet {
     return \%LogData;
 }
 
-=item LogGetWithData()
+=head2 LogGetWithData()
 
 get all individual entries for a communication chain
 
@@ -376,7 +369,7 @@ sub LogGetWithData {
     return $LogData;
 }
 
-=item LogDelete()
+=head2 LogDelete()
 
 delete a complete communication chain
 
@@ -440,6 +433,7 @@ sub LogDelete {
     }
     else {
         my $LogData = $Self->LogSearch(
+            Limit        => 1,
             WebserviceID => $Param{WebserviceID},
         );
         if ( !IsArrayRefWithData($LogData) ) {
@@ -517,7 +511,7 @@ sub LogDelete {
     return 1;
 }
 
-=item LogSearch()
+=head2 LogSearch()
 
 search for log chains based on several criteria
 when the parameter 'WithData' is set, the complete communication chains will be returned
@@ -527,6 +521,7 @@ when the parameter 'WithData' is set, the complete communication chains will be 
         CommunicationType => 'Provider',     # optional, 'Provider' or 'Requester'
         CreatedAtOrAfter  => '2011-01-01 00:00:00', # optional
         CreatedAtOrBefore => '2011-12-31 23:59:59', # optional
+        Limit             => 1000, # optional, default 100
         RemoteIP          => '192.168.0.1', # optional, must be valid IPv4 or IPv6 address
         WebserviceID      => 1, # optional
         WithData          => 0, # optional
@@ -561,7 +556,7 @@ sub LogSearch {
     # param check
     KEY:
     for my $Key (
-        qw(CommunicationID CommunicationType CreatedAtOrAfter CreatedAtOrBefore RemoteIP WebserviceID WithData)
+        qw(CommunicationID CommunicationType CreatedAtOrAfter CreatedAtOrBefore Limit RemoteIP WebserviceID WithData)
         )
     {
         next KEY if !defined $Param{$Key};
@@ -603,6 +598,13 @@ sub LogSearch {
         $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'error',
             Message  => "$Key '$Param{$Key}' is not valid!",
+        );
+        return;
+    }
+    if ( $Param{Limit} && !IsPositiveInteger( $Param{Limit} ) ) {
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
+            Priority => 'error',
+            Message  => 'Limit is not a positive integer!',
         );
         return;
     }
@@ -681,8 +683,9 @@ sub LogSearch {
 
     if (
         !$DBObject->Prepare(
-            SQL  => $SQL . $SQLExt,
-            Bind => \@Bind,
+            SQL   => $SQL . $SQLExt,
+            Bind  => \@Bind,
+            Limit => $Param{Limit} || 100,
         )
         )
     {
@@ -727,7 +730,7 @@ sub LogSearch {
 
 =cut
 
-=item _LogAddChain()
+=head2 _LogAddChain()
 
 establish communication chain in database
 
@@ -827,8 +830,6 @@ sub _LogAddChain {
 1;
 
 =end Internal:
-
-=back
 
 =head1 TERMS AND CONDITIONS
 

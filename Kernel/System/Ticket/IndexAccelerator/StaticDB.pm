@@ -1,6 +1,5 @@
 # --
-# Kernel/System/Ticket/IndexAccelerator/StaticDB.pm - static db queue ticket index module
-# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -19,8 +18,16 @@ our @ObjectDependencies = (
     'Kernel::System::Lock',
     'Kernel::System::Log',
     'Kernel::System::State',
+    'Kernel::System::Ticket',
     'Kernel::System::Time',
 );
+
+sub new {
+    my ($Type) = @_;
+
+    my $Self = {};
+    return bless( $Self, $Type );
+}
 
 sub TicketAcceleratorUpdate {
     my ( $Self, %Param ) = @_;
@@ -39,7 +46,7 @@ sub TicketAcceleratorUpdate {
     # check if ticket is shown or not
     my $IndexUpdateNeeded = 0;
     my $IndexSelected     = 0;
-    my %TicketData        = $Self->TicketGet(
+    my %TicketData        = $Kernel::OM->Get('Kernel::System::Ticket')->TicketGet(
         %Param,
         DynamicFields => 0,
     );
@@ -212,7 +219,7 @@ sub TicketAcceleratorAdd {
     }
 
     # get ticket data
-    my %TicketData = $Self->TicketGet(
+    my %TicketData = $Kernel::OM->Get('Kernel::System::Ticket')->TicketGet(
         %Param,
         DynamicFields => 0,
     );
@@ -294,7 +301,7 @@ sub TicketLockAcceleratorAdd {
     }
 
     # get ticket data
-    my %TicketData = $Self->TicketGet(
+    my %TicketData = $Kernel::OM->Get('Kernel::System::Ticket')->TicketGet(
         %Param,
         DynamicFields => 0,
     );

@@ -1,6 +1,5 @@
 # --
-# Kernel/Modules/AgentTicketCustomer.pm - to set the ticket customer and show the customer history
-# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -12,7 +11,10 @@ package Kernel::Modules::AgentTicketCustomer;
 use strict;
 use warnings;
 
-use Kernel::System::CustomerUser;
+use Kernel::Language qw(Translatable);
+
+our $ObjectManagerDisabled = 1;
+
 use Kernel::System::VariableCheck qw(:all);
 
 sub new {
@@ -22,21 +24,6 @@ sub new {
     my $Self = {%Param};
     bless( $Self, $Type );
 
-    # check needed Objects
-    for my $Needed (qw(ParamObject DBObject TicketObject LayoutObject LogObject ConfigObject)) {
-        if ( !$Self->{$Needed} ) {
-            $Self->{LayoutObject}->FatalError( Message => "Got no $Needed!" );
-        }
-    }
-
-    $Self->{Search}     = $Self->{ParamObject}->GetParam( Param => 'Search' )     || 0;
-    $Self->{CustomerID} = $Self->{ParamObject}->GetParam( Param => 'CustomerID' ) || '';
-
-    # customer user object
-    $Self->{CustomerUserObject} = Kernel::System::CustomerUser->new(%Param);
-
-    $Self->{Config} = $Self->{ConfigObject}->Get("Ticket::Frontend::$Self->{Action}");
-
     return $Self;
 }
 
@@ -45,20 +32,29 @@ sub Run {
 
     my $Output;
 
+    # get layout object
+    my $LayoutObject = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
+
     # check needed stuff
     if ( !$Self->{TicketID} ) {
 
         # error page
-        return $Self->{LayoutObject}->ErrorScreen(
-            Message => 'No TicketID is given!',
-            Comment => 'Please contact the admin.',
+        return $LayoutObject->ErrorScreen(
+            Message => Translatable('No TicketID is given!'),
+            Comment => Translatable('Please contact the administrator.'),
         );
     }
 
+    # get ticket object
+    my $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
+
+    # get config
+    my $Config = $Kernel::OM->Get('Kernel::Config')->Get("Ticket::Frontend::$Self->{Action}");
+
     # check permissions
     if (
-        !$Self->{TicketObject}->TicketPermission(
-            Type     => $Self->{Config}->{Permission},
+        !$TicketObject->TicketPermission(
+            Type     => $Config->{Permission},
             TicketID => $Self->{TicketID},
             UserID   => $Self->{UserID}
         )
@@ -66,32 +62,16 @@ sub Run {
     {
 
         # error screen, don't show ticket
-        return $Self->{LayoutObject}->NoPermission(
-            Message    => "You need $Self->{Config}->{Permission} permissions!",
+        return $LayoutObject->NoPermission(
+            Message => $LayoutObject->{LanguageObject}->Translate( 'You need %s permissions!', $Config->{Permission} ),
             WithHeader => 'yes',
         );
-    }
-
-    # check permissions
-    if ( $Self->{TicketID} ) {
-        if (
-            !$Self->{TicketObject}->TicketPermission(
-                Type     => 'customer',
-                TicketID => $Self->{TicketID},
-                UserID   => $Self->{UserID}
-            )
-            )
-        {
-
-            # no permission screen, don't show ticket
-            return $Self->{LayoutObject}->NoPermission( WithHeader => 'yes' );
-        }
     }
 
     # get ACL restrictions
     my %PossibleActions = ( 1 => $Self->{Action} );
 
-    my $ACL = $Self->{TicketObject}->TicketAcl(
+    my $ACL = $TicketObject->TicketAcl(
         Data          => \%PossibleActions,
         Action        => $Self->{Action},
         TicketID      => $Self->{TicketID},
@@ -99,7 +79,7 @@ sub Run {
         ReturnSubType => '-',
         UserID        => $Self->{UserID},
     );
-    my %AclAction = $Self->{TicketObject}->TicketAclActionData();
+    my %AclAction = $TicketObject->TicketAclActionData();
 
     # check if ACL restrictions exist
     if ( $ACL || IsHashRefWithData( \%AclAction ) ) {
@@ -108,37 +88,43 @@ sub Run {
 
         # show error screen if ACL prohibits this action
         if ( !$AclActionLookup{ $Self->{Action} } ) {
-            return $Self->{LayoutObject}->NoPermission( WithHeader => 'yes' );
+            return $LayoutObject->NoPermission( WithHeader => 'yes' );
         }
     }
+
+    # get param object
+    my $ParamObject = $Kernel::OM->Get('Kernel::System::Web::Request');
 
     if ( $Self->{Subaction} eq 'Update' ) {
 
         # challenge token check for write action
-        $Self->{LayoutObject}->ChallengeTokenCheck();
+        $LayoutObject->ChallengeTokenCheck();
 
         # set customer id
-        my $ExpandCustomerName1 = $Self->{ParamObject}->GetParam( Param => 'ExpandCustomerName1' )
+        my $ExpandCustomerName1 = $ParamObject->GetParam( Param => 'ExpandCustomerName1' )
             || 0;
-        my $ExpandCustomerName2 = $Self->{ParamObject}->GetParam( Param => 'ExpandCustomerName2' )
+        my $ExpandCustomerName2 = $ParamObject->GetParam( Param => 'ExpandCustomerName2' )
             || 0;
-        my $CustomerUserOption = $Self->{ParamObject}->GetParam( Param => 'CustomerUserOption' )
+        my $CustomerUserOption = $ParamObject->GetParam( Param => 'CustomerUserOption' )
             || '';
-        $Param{CustomerUserID}       = $Self->{ParamObject}->GetParam( Param => 'CustomerUserID' )       || '';
-        $Param{CustomerID}           = $Self->{ParamObject}->GetParam( Param => 'CustomerID' )           || '';
-        $Param{SelectedCustomerUser} = $Self->{ParamObject}->GetParam( Param => 'SelectedCustomerUser' ) || '';
+        $Param{CustomerUserID}       = $ParamObject->GetParam( Param => 'CustomerUserID' )       || '';
+        $Param{CustomerID}           = $ParamObject->GetParam( Param => 'CustomerID' )           || '';
+        $Param{SelectedCustomerUser} = $ParamObject->GetParam( Param => 'SelectedCustomerUser' ) || '';
 
         # use customer login instead of email address if applicable
         if ( $Param{SelectedCustomerUser} ne '' ) {
             $Param{CustomerUserID} = $Param{SelectedCustomerUser};
         }
 
+        # get customer user object
+        my $CustomerUserObject = $Kernel::OM->Get('Kernel::System::CustomerUser');
+
         # Expand Customer Name
         if ($ExpandCustomerName1) {
 
             # search customer
             my %CustomerUserList = ();
-            %CustomerUserList = $Self->{CustomerUserObject}->CustomerSearch(
+            %CustomerUserList = $CustomerUserObject->CustomerSearch(
                 Search => $Param{CustomerUserID},
             );
 
@@ -152,7 +138,7 @@ sub Run {
             }
             if ( $Param{CustomerUserListCount} == 1 ) {
                 $Param{CustomerUserID} = $Param{CustomerUserListLastUser};
-                my %CustomerUserData = $Self->{CustomerUserObject}->CustomerUserDataGet(
+                my %CustomerUserData = $CustomerUserObject->CustomerUserDataGet(
                     User => $Param{CustomerUserListLastUser},
                 );
                 if ( $CustomerUserData{UserCustomerID} ) {
@@ -172,10 +158,10 @@ sub Run {
 
         # get customer user and customer id
         elsif ($ExpandCustomerName2) {
-            my %CustomerUserData = $Self->{CustomerUserObject}->CustomerUserDataGet(
+            my %CustomerUserData = $CustomerUserObject->CustomerUserDataGet(
                 User => $CustomerUserOption,
             );
-            my %CustomerUserList = $Self->{CustomerUserObject}->CustomerSearch(
+            my %CustomerUserList = $CustomerUserObject->CustomerSearch(
                 UserLogin => $CustomerUserOption,
             );
             for my $KeyCustomerUser ( sort keys %CustomerUserList ) {
@@ -203,7 +189,7 @@ sub Run {
 
         # update customer user data
         if (
-            $Self->{TicketObject}->TicketCustomerSet(
+            $TicketObject->TicketCustomerSet(
                 TicketID => $Self->{TicketID},
                 No       => $Param{CustomerID},
                 User     => $Param{CustomerUserID},
@@ -213,14 +199,14 @@ sub Run {
         {
 
             # redirect
-            return $Self->{LayoutObject}->PopupClose(
+            return $LayoutObject->PopupClose(
                 URL => "Action=AgentTicketZoom;TicketID=$Self->{TicketID}",
             );
         }
         else {
 
             # error?!
-            return $Self->{LayoutObject}->ErrorScreen();
+            return $LayoutObject->ErrorScreen();
         }
     }
 
@@ -235,34 +221,46 @@ sub Form {
 
     my $Output;
 
+    # get layout object
+    my $LayoutObject = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
+
     # print header
-    $Output .= $Self->{LayoutObject}->Header(
+    $Output .= $LayoutObject->Header(
         Type => 'Small',
     );
-    my $TicketCustomerID = $Self->{CustomerID};
+    my $TicketCustomerID = $Kernel::OM->Get('Kernel::System::Web::Request')->GetParam( Param => 'CustomerID' ) || '';
 
     # print change form if ticket id is given
     my %CustomerUserData = ();
     if ( $Self->{TicketID} ) {
 
-        # set some customer search autocomplete properties
-        $Self->{LayoutObject}->Block(
-            Name => 'CustomerSearchAutoComplete',
+        # get config object
+        my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
+
+        # set JS data
+        $LayoutObject->AddJSData(
+            Key   => 'CustomerSearch',
+            Value => {
+                ShowCustomerTickets => $ConfigObject->Get('Ticket::Frontend::ShowCustomerTickets'),
+            },
         );
 
         # get ticket data
-        my %TicketData = $Self->{TicketObject}->TicketGet( TicketID => $Self->{TicketID} );
+        my %TicketData = $Kernel::OM->Get('Kernel::System::Ticket')->TicketGet( TicketID => $Self->{TicketID} );
         if ( $TicketData{CustomerUserID} || $Param{CustomerUserID} ) {
-            %CustomerUserData = $Self->{CustomerUserObject}->CustomerUserDataGet(
+            %CustomerUserData = $Kernel::OM->Get('Kernel::System::CustomerUser')->CustomerUserDataGet(
                 User => $Param{CustomerUserID} || $TicketData{CustomerUserID},
             );
         }
         $TicketCustomerID = $TicketData{CustomerID};
         $Param{SelectedCustomerUser} = $TicketData{CustomerUserID};
 
-        $Param{Table} = $Self->{LayoutObject}->AgentCustomerViewTable(
-            Data => \%CustomerUserData,
-            Max  => $Self->{ConfigObject}->Get('Ticket::Frontend::CustomerInfoComposeMaxSize'),
+        $Param{Table} = $LayoutObject->AgentCustomerViewTable(
+            Data => {
+                %CustomerUserData,
+                TicketID => $Self->{TicketID},
+            },
+            Max => $Kernel::OM->Get('Kernel::Config')->Get('Ticket::Frontend::CustomerInfoComposeMaxSize'),
         );
 
         # show customer field as "FirstName Lastname" <MailAddress>
@@ -270,18 +268,18 @@ sub Form {
             $TicketData{CustomerUserID} = "\"$CustomerUserData{UserFirstname} " .
                 "$CustomerUserData{UserLastname}\" <$CustomerUserData{UserEmail}>";
         }
-        $Self->{LayoutObject}->Block(
+        $LayoutObject->Block(
             Name => 'Customer',
             Data => { %TicketData, %Param, },
         );
     }
 
     $Output
-        .= $Self->{LayoutObject}->Output(
+        .= $LayoutObject->Output(
         TemplateFile => 'AgentTicketCustomer',
         Data         => \%Param
         );
-    $Output .= $Self->{LayoutObject}->Footer(
+    $Output .= $LayoutObject->Footer(
         Type => 'Small',
     );
     return $Output;

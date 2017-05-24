@@ -1,6 +1,5 @@
 # --
-# Kernel/Modules/AdminService.pm - admin frontend to manage services
-# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -71,6 +70,23 @@ sub Run {
             $Error{'NameInvalid'} = 'ServerError';
         }
 
+        my $ServiceName = '';
+        if ( $GetParam{ParentID} ) {
+            my $Prefix = $ServiceObject->ServiceLookup(
+                ServiceID => $GetParam{ParentID},
+            );
+
+            if ($Prefix) {
+                $ServiceName = $Prefix . "::";
+            }
+        }
+        $ServiceName .= $GetParam{Name};
+
+        if ( length $ServiceName > 200 ) {
+            $Error{'NameInvalid'} = 'ServerError';
+            $Error{LongName} = 1;
+        }
+
         if ( !%Error ) {
 
             my $LogObject = $Kernel::OM->Get('Kernel::System::Log');
@@ -114,7 +130,7 @@ sub Run {
                 }
                 for my $Item ( sort keys %Preferences ) {
                     my $Module = $Preferences{$Item}->{Module}
-                        || 'Kernel::Output::HTML::ServicePreferencesGeneric';
+                        || 'Kernel::Output::HTML::ServicePreferences::Generic';
 
                     # load module
                     if ( !$Kernel::OM->Get('Kernel::System::Main')->Require($Module) ) {
@@ -146,8 +162,22 @@ sub Run {
                     }
                 }
 
-                # redirect to overview
-                return $LayoutObject->Redirect( OP => "Action=$Self->{Action}" );
+                # if the user would like to continue editing the service, just redirect to the edit screen
+                if (
+                    defined $ParamObject->GetParam( Param => 'ContinueAfterSave' )
+                    && ( $ParamObject->GetParam( Param => 'ContinueAfterSave' ) eq '1' )
+                    )
+                {
+                    my $ID = $ParamObject->GetParam( Param => 'ServiceID' ) || '';
+                    return $LayoutObject->Redirect(
+                        OP => "Action=$Self->{Action};Subaction=ServiceEdit;ServiceID=$ID"
+                    );
+                }
+                else {
+
+                    # otherwise return to overview
+                    return $LayoutObject->Redirect( OP => "Action=$Self->{Action}" );
+                }
             }
         }
 
@@ -187,7 +217,7 @@ sub Run {
                 Data     => $LayoutObject->{LanguageObject}->Translate( "Please activate %s first!", "Service" ),
                 Link =>
                     $LayoutObject->{Baselink}
-                    . 'Action=AdminSysConfig;Subaction=Edit;SysConfigGroup=Ticket;SysConfigSubGroup=Core::Ticket#Ticket::Service',
+                    . 'Action=AdminSystemConfiguration;Subaction=Edit;SysConfigGroup=Ticket;SysConfigSubGroup=Core::Ticket#Ticket::Service',
             );
         }
 
@@ -199,6 +229,7 @@ sub Run {
 
         $LayoutObject->Block( Name => 'ActionList' );
         $LayoutObject->Block( Name => 'ActionAdd' );
+        $LayoutObject->Block( Name => 'Filter' );
 
         # output overview result
         $LayoutObject->Block(
@@ -274,7 +305,11 @@ sub _MaskNew {
     # output overview
     $LayoutObject->Block(
         Name => 'Overview',
-        Data => { %Param, },
+        Data => {
+            ServiceID   => $ServiceData{ServiceID},
+            ServiceName => $ServiceData{Name},
+            %Param,
+        },
     );
 
     $LayoutObject->Block( Name => 'ActionList' );
@@ -298,6 +333,7 @@ sub _MaskNew {
         TreeView       => ( $ListType eq 'tree' ) ? 1 : 0,
         DisabledBranch => $ServiceData{Name},
         Translation    => 0,
+        Class          => 'Modernize',
     );
 
     # get valid list
@@ -308,6 +344,7 @@ sub _MaskNew {
         Data       => \%ValidList,
         Name       => 'ValidID',
         SelectedID => $ServiceData{ValidID} || $ValidListReverse{valid},
+        Class      => 'Modernize',
     );
 
     # output service edit
@@ -316,17 +353,6 @@ sub _MaskNew {
         Data => { %Param, %ServiceData, },
     );
 
-    # shows header
-    if ( $ServiceData{ServiceID} ne 'NEW' ) {
-        $LayoutObject->Block(
-            Name => 'HeaderEdit',
-            Data => {%ServiceData},
-        );
-    }
-    else {
-        $LayoutObject->Block( Name => 'HeaderAdd' );
-    }
-
     # show each preferences setting
     my %Preferences = ();
     if ( $ConfigObject->Get('ServicePreferences') ) {
@@ -334,7 +360,7 @@ sub _MaskNew {
     }
     for my $Item ( sort keys %Preferences ) {
         my $Module = $Preferences{$Item}->{Module}
-            || 'Kernel::Output::HTML::ServicePreferencesGeneric';
+            || 'Kernel::Output::HTML::ServicePreferences::Generic';
 
         # load module
         if ( !$Kernel::OM->Get('Kernel::System::Main')->Require($Module) ) {
@@ -357,9 +383,14 @@ sub _MaskNew {
                     || ref( $Preferences{$Item}->{Data} ) eq 'HASH'
                     )
                 {
-                    $ParamItem->{'Option'} = $LayoutObject->BuildSelection(
+                    my %BuildSelectionParams = (
                         %{ $Preferences{$Item} },
                         %{$ParamItem},
+                    );
+                    $BuildSelectionParams{Class} = join( ' ', $BuildSelectionParams{Class} // '', 'Modernize' );
+
+                    $ParamItem->{'Option'} = $LayoutObject->BuildSelection(
+                        %BuildSelectionParams,
                     );
                 }
                 $LayoutObject->Block(
@@ -379,4 +410,5 @@ sub _MaskNew {
         Data         => \%Param
     );
 }
+
 1;

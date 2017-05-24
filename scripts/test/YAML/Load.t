@@ -1,6 +1,5 @@
 # --
-# YAML/Load.t - YAML module testscript
-# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -13,9 +12,8 @@ use utf8;
 
 use vars qw( $Self %Param );
 
-# get needed objects
-my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
-my $YAMLObject   = $Kernel::OM->Get('Kernel::System::YAML');
+# get YAML object
+my $YAMLObject = $Kernel::OM->Get('Kernel::System::YAML');
 
 my @Tests = (
     {

@@ -1,6 +1,5 @@
 # --
-# TicketSubject.t - ticket module testscript
-# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -13,7 +12,7 @@ use utf8;
 
 use vars (qw($Self));
 
-# get needed objects
+# get config object
 my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
 
 for my $TicketHook ( 'Ticket#', 'Call#', 'Ticket' ) {
@@ -45,11 +44,6 @@ for my $TicketHook ( 'Ticket#', 'Call#', 'Ticket' ) {
         );
 
         my $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
-
-        $Self->True(
-            $TicketObject->isa('Kernel::System::Ticket::Number::DateChecksum'),
-            "TicketObject loaded the correct backend",
-        );
 
         # check GetTNByString
         my $Tn = $TicketObject->TicketCreateNumber() || 'NONE!!!';

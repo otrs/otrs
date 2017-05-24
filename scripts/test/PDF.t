@@ -1,6 +1,5 @@
 # --
-# PDF.t - PDF tests
-# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -14,12 +13,16 @@ use utf8;
 use vars (qw($Self));
 
 # get needed objects
-my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
-my $MainObject   = $Kernel::OM->Get('Kernel::System::Main');
-my $PDFObject    = $Kernel::OM->Get('Kernel::System::PDF');
+my $MainObject = $Kernel::OM->Get('Kernel::System::Main');
+my $PDFObject  = $Kernel::OM->Get('Kernel::System::PDF');
 
-die 'PDF support is disabled in sysconfig or CPAN module PDF::API2 is missing!'
-    if !$PDFObject;
+# get helper object
+$Kernel::OM->ObjectParamAdd(
+    'Kernel::System::UnitTest::Helper' => {
+        RestoreDatabase => 1,
+    },
+);
+my $Helper = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
 
 # create a pdf document
 my $DocumentNew1 = $PDFObject->DocumentNew(
@@ -818,16 +821,16 @@ $TableCalculate{1}{Width}  = 300;
 $TableCalculate{1}{Border} = 1;
 
 $TableCalculate{1}{CellData}[0][0]{Content}
-    = "Welcome to OTRS!\n\nthank you for installing OTRS.\n\nYou will find updates and patches at http://otrs.org/. Online\ndocumentation is available at http://doc.otrs.org/. You can also\ntake advantage of our mailing lists http://lists.otrs.org/.\n\n\nYour OTRS Team\n\n    Manage your communication!";
+    = "Welcome to OTRS!\n\nthank you for installing OTRS.\n\nYou will find updates and patches at http://otrs.org/. Online\ndocumentation is available at http://otrs.github.io/doc/. You can also\ntake advantage of our mailing lists http://lists.otrs.org/.\n\n\nYour OTRS Team\n\n    Manage your communication!";
 $TableCalculate{1}{CellData}[0][1]{Content}
-    = "\nWelcome to OTRS!\n\nthank you for installing OTRS.\n\nYou will find updates and patches at http://otrs.org/. Online\ndocumentation is available at http://doc.otrs.org/. You can also\ntake advantage of our mailing lists http://lists.otrs.org/.\n\n\nYour OTRS Team\n\n\tManage your communication!\n";
+    = "\nWelcome to OTRS!\n\nthank you for installing OTRS.\n\nYou will find updates and patches at http://otrs.org/. Online\ndocumentation is available at http://otrs.github.io/doc/. You can also\ntake advantage of our mailing lists http://lists.otrs.org/.\n\n\nYour OTRS Team\n\n\tManage your communication!\n";
 $TableCalculate{1}{CellData}[1][0]{Content}
-    = "\tWelcome to OTRS!\n\nthank you for installing OTRS.\n\nYou will find updates and patches at http://otrs.org/. Online\ndocumentation is available at http://doc.otrs.org/. You can also\ntake advantage of our mailing lists http://lists.otrs.org/.\n\n\nYour OTRS Team\n\n    Manage your communication!\n\t";
+    = "\tWelcome to OTRS!\n\nthank you for installing OTRS.\n\nYou will find updates and patches at http://otrs.org/. Online\ndocumentation is available at http://otrs.github.io/doc/. You can also\ntake advantage of our mailing lists http://lists.otrs.org/.\n\n\nYour OTRS Team\n\n    Manage your communication!\n\t";
 $TableCalculate{1}{CellData}[1][1]{Content}
-    = "\r\r\nWelcome to OTRS!\n\nthank you for installing OTRS.\n\nYou will find updates and patches at http://otrs.org/. Online\ndocumentation is available at http://doc.otrs.org/. You can also\ntake advantage of our mailing lists http://lists.otrs.org/.\n\rYour OTRS Team\n\n    Manage your communication!\r\n";
+    = "\r\r\nWelcome to OTRS!\n\nthank you for installing OTRS.\n\nYou will find updates and patches at http://otrs.org/. Online\ndocumentation is available at http://otrs.github.io/doc/. You can also\ntake advantage of our mailing lists http://lists.otrs.org/.\n\rYour OTRS Team\n\n    Manage your communication!\r\n";
 
 $TableCalculate{1}{ReturnCellData}[0][0]{Content}
-    = "Welcome to OTRS!\n\nthank you for installing OTRS.\n\nYou will find updates and patches at http://otrs.org/. Online\ndocumentation is available at http://doc.otrs.org/. You can also\ntake advantage of our mailing lists http://lists.otrs.org/.\n\n\nYour OTRS Team\n\n    Manage your communication!";
+    = "Welcome to OTRS!\n\nthank you for installing OTRS.\n\nYou will find updates and patches at http://otrs.org/. Online\ndocumentation is available at http://otrs.github.io/doc/. You can also\ntake advantage of our mailing lists http://lists.otrs.org/.\n\n\nYour OTRS Team\n\n    Manage your communication!";
 $TableCalculate{1}{ReturnCellData}[0][0]{Type}            = 'ReturnLeftOver';
 $TableCalculate{1}{ReturnCellData}[0][0]{Font}            = 'Testfont1';
 $TableCalculate{1}{ReturnCellData}[0][0]{FontSize}        = 10;
@@ -836,7 +839,7 @@ $TableCalculate{1}{ReturnCellData}[0][0]{Align}           = 'left';
 $TableCalculate{1}{ReturnCellData}[0][0]{Lead}            = 0;
 $TableCalculate{1}{ReturnCellData}[0][0]{BackgroundColor} = 'NULL';
 $TableCalculate{1}{ReturnCellData}[0][1]{Content}
-    = "\nWelcome to OTRS!\n\nthank you for installing OTRS.\n\nYou will find updates and patches at http://otrs.org/. Online\ndocumentation is available at http://doc.otrs.org/. You can also\ntake advantage of our mailing lists http://lists.otrs.org/.\n\n\nYour OTRS Team\n\n  Manage your communication!\n";
+    = "\nWelcome to OTRS!\n\nthank you for installing OTRS.\n\nYou will find updates and patches at http://otrs.org/. Online\ndocumentation is available at http://otrs.github.io/doc/. You can also\ntake advantage of our mailing lists http://lists.otrs.org/.\n\n\nYour OTRS Team\n\n  Manage your communication!\n";
 $TableCalculate{1}{ReturnCellData}[0][1]{Type}            = 'ReturnLeftOver';
 $TableCalculate{1}{ReturnCellData}[0][1]{Font}            = 'Testfont1';
 $TableCalculate{1}{ReturnCellData}[0][1]{FontSize}        = 10;
@@ -845,7 +848,7 @@ $TableCalculate{1}{ReturnCellData}[0][1]{Align}           = 'left';
 $TableCalculate{1}{ReturnCellData}[0][1]{Lead}            = 0;
 $TableCalculate{1}{ReturnCellData}[0][1]{BackgroundColor} = 'NULL';
 $TableCalculate{1}{ReturnCellData}[1][0]{Content}
-    = "  Welcome to OTRS!\n\nthank you for installing OTRS.\n\nYou will find updates and patches at http://otrs.org/. Online\ndocumentation is available at http://doc.otrs.org/. You can also\ntake advantage of our mailing lists http://lists.otrs.org/.\n\n\nYour OTRS Team\n\n    Manage your communication!\n  ";
+    = "  Welcome to OTRS!\n\nthank you for installing OTRS.\n\nYou will find updates and patches at http://otrs.org/. Online\ndocumentation is available at http://otrs.github.io/doc/. You can also\ntake advantage of our mailing lists http://lists.otrs.org/.\n\n\nYour OTRS Team\n\n    Manage your communication!\n  ";
 $TableCalculate{1}{ReturnCellData}[1][0]{Type}            = 'ReturnLeftOver';
 $TableCalculate{1}{ReturnCellData}[1][0]{Font}            = 'Testfont1';
 $TableCalculate{1}{ReturnCellData}[1][0]{FontSize}        = 10;
@@ -854,7 +857,7 @@ $TableCalculate{1}{ReturnCellData}[1][0]{Align}           = 'left';
 $TableCalculate{1}{ReturnCellData}[1][0]{Lead}            = 0;
 $TableCalculate{1}{ReturnCellData}[1][0]{BackgroundColor} = 'NULL';
 $TableCalculate{1}{ReturnCellData}[1][1]{Content}
-    = "\nWelcome to OTRS!\n\nthank you for installing OTRS.\n\nYou will find updates and patches at http://otrs.org/. Online\ndocumentation is available at http://doc.otrs.org/. You can also\ntake advantage of our mailing lists http://lists.otrs.org/.\nYour OTRS Team\n\n    Manage your communication!\n";
+    = "\nWelcome to OTRS!\n\nthank you for installing OTRS.\n\nYou will find updates and patches at http://otrs.org/. Online\ndocumentation is available at http://otrs.github.io/doc/. You can also\ntake advantage of our mailing lists http://lists.otrs.org/.\nYour OTRS Team\n\n    Manage your communication!\n";
 $TableCalculate{1}{ReturnCellData}[1][1]{Type}            = 'ReturnLeftOver';
 $TableCalculate{1}{ReturnCellData}[1][1]{Font}            = 'Testfont1';
 $TableCalculate{1}{ReturnCellData}[1][1]{FontSize}        = 10;
@@ -2723,8 +2726,13 @@ $Self->True(
     "PageBlankNew2()",
 );
 
+# get config object
+my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
+
+my $Home = $ConfigObject->Get('Home');
+
 my $FileContent1 = $MainObject->FileRead(
-    Location => $ConfigObject->Get('Home') . '/scripts/test/sample/PDF/PDF-test1-iso-8859-1.txt',
+    Location => $Home . '/scripts/test/sample/PDF/PDF-test1-iso-8859-1.txt',
 );
 
 my %CharsetTestData1;
@@ -2808,7 +2816,7 @@ $Self->True(
 );
 
 my $FileContent2 = $MainObject->FileRead(
-    Location => $ConfigObject->Get('Home') . '/scripts/test/sample/PDF/PDF-test1-utf-8.txt',
+    Location => $Home . '/scripts/test/sample/PDF/PDF-test1-utf-8.txt',
 );
 
 my %CharsetTestData2;
@@ -2892,7 +2900,7 @@ $Self->True(
 );
 
 my $FileContent3 = $MainObject->FileRead(
-    Location => $ConfigObject->Get('Home') . '/scripts/test/sample/PDF/PDF-test2-utf-8.txt',
+    Location => $Home . '/scripts/test/sample/PDF/PDF-test2-utf-8.txt',
 );
 
 my %CharsetTestData3;
@@ -2943,5 +2951,7 @@ $Self->True(
     $CharsetTest3Ok,
     "CharsetTest3()",
 );
+
+# cleanup cache is done by RestoreDatabase
 
 1;

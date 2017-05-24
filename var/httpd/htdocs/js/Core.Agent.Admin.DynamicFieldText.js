@@ -1,6 +1,5 @@
 // --
-// Core.Agent.Admin.DynamicFieldText.js - provides the special module functions for the Text Dynamic Fields.
-// Copyright (C) 2001-2011 OTRS AG, http://otrs.org/
+// Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 // --
 // This software comes with ABSOLUTELY NO WARRANTY. For details, see
 // the enclosed file COPYING for license information (AGPL). If you
@@ -34,7 +33,7 @@ Core.Agent.Admin.DynamicFieldText = (function (TargetNS) {
     TargetNS.RemoveRegEx = function(IDSelector) {
 
         var ObjectIndex = IDSelector.match(/.+_(\d+)/)[1];
-        $('#RegExRow_'+ ObjectIndex).remove();
+        $('#RegExRow_' + ObjectIndex).remove();
 
         return true;
     };
@@ -53,7 +52,7 @@ Core.Agent.Admin.DynamicFieldText = (function (TargetNS) {
             RegExCounter = $('#RegExCounter').val();
 
         // increment RegEx counter
-        RegExCounter ++;
+        RegExCounter++;
 
         // remove unnecessary classes
         $Clone.removeClass('Hidden RegExTemplate');
@@ -79,10 +78,10 @@ Core.Agent.Admin.DynamicFieldText = (function (TargetNS) {
             $(this).parent().find('#' + ID + 'ServerError').attr('name', ID + '_' + RegExCounter + 'ServerError');
 
             // add event handler to remove button
-            if( $(this).hasClass('RemoveRegEx') ) {
+            if($(this).hasClass('RemoveRegEx')) {
 
                 // bind click function to remove button
-                $(this).bind('click', function () {
+                $(this).on('click', function () {
                     TargetNS.RemoveRegEx($(this).attr('id'));
                     return false;
                 });
@@ -102,6 +101,32 @@ Core.Agent.Admin.DynamicFieldText = (function (TargetNS) {
 
         return false;
     };
+
+    /**
+    * @name Init
+    * @memberof Core.Agent.Admin.DynamicFieldText
+    * @function
+    * @description
+    *       Initialize module functionality
+    */
+    TargetNS.Init = function () {
+
+        $('.ShowWarning').on('change keyup', function () {
+            $('p.Warning').removeClass('Hidden');
+        });
+
+        // click handler to add regex
+        $('#AddRegEx').on('click', function () {
+            TargetNS.AddRegEx(
+                $(this).closest('fieldset').find('.RegExInsert')
+            );
+            return false;
+        });
+
+        Core.Agent.Admin.DynamicField.ValidationInit();
+    };
+
+    Core.Init.RegisterNamespace(TargetNS, 'APP_MODULE');
 
     return TargetNS;
 }(Core.Agent.Admin.DynamicFieldText || {}));

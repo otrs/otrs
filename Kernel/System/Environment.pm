@@ -1,6 +1,5 @@
 # --
-# Kernel/System/Environment.pm - collect environment info
-# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -26,22 +25,16 @@ our @ObjectDependencies = (
 
 Kernel::System::Environment - collect environment info
 
-=head1 SYNOPSIS
+=head1 DESCRIPTION
 
 Functions to collect environment info
 
 =head1 PUBLIC INTERFACE
 
-=over 4
-
-=cut
-
-=item new()
+=head2 new()
 
 create environment object. Do not use it directly, instead use:
 
-    use Kernel::System::ObjectManager;
-    local $Kernel::OM = Kernel::System::ObjectManager->new();
     my $EnvironmentObject = $Kernel::OM->Get('Kernel::System::Environment');
 
 =cut
@@ -56,7 +49,7 @@ sub new {
     return $Self;
 }
 
-=item OSInfoGet()
+=head2 OSInfoGet()
 
 collect operating system information
 
@@ -132,27 +125,6 @@ sub OSInfoGet {
 
         $OSName = 'MacOSX ' . $MacVersion;
     }
-    elsif ( $^O eq 'MSWin32' ) {
-
-        if ( $MainObject->Require('Win32') ) {
-
-            my @WinVersion;
-            no strict 'refs';    ## no critic
-
-            if ( defined &Win32::GetOSDisplayName ) {
-                @WinVersion = Win32::GetOSDisplayName();
-            }
-            else {
-                @WinVersion = Win32::GetOSName();
-            }
-
-            use strict;
-            $OSName = join ' ', @WinVersion;
-        }
-        else {
-            $OSName = "Unknown Windows version";
-        }
-    }
     elsif ( $^O eq 'freebsd' ) {
         $OSName = `uname -r`;
     }
@@ -164,7 +136,6 @@ sub OSInfoGet {
         linux   => 'Linux',
         freebsd => 'FreeBSD',
         darwin  => 'MacOSX',
-        MSWin32 => 'Windows',
     );
 
     # collect OS data
@@ -185,7 +156,7 @@ sub OSInfoGet {
     return %EnvOS;
 }
 
-=item ModuleVersionGet()
+=head2 ModuleVersionGet()
 
 Return the version of an installed perl module:
 
@@ -229,7 +200,7 @@ sub ModuleVersionGet {
     return MM->parse_version($Path);
 }
 
-=item PerlInfoGet()
+=head2 PerlInfoGet()
 
 collect perl information:
 
@@ -274,12 +245,10 @@ sub PerlInfoGet {
             parent
             Algorithm::Diff
             Apache::DBI
-            Authen::SASL
             CGI
             Class::Inspector
             Crypt::PasswdMD5
             CSS::Minifier
-            Date::Pcalc
             Email::Valid
             Encode::Locale
             IO::Interactive
@@ -297,7 +266,7 @@ sub PerlInfoGet {
             Net::IMAP::Simple
             Net::HTTP
             Net::SSLGlue
-            Proc::Daemon
+            PDF::API2
             SOAP::Lite
             Sys::Hostname::Long
             Text::CSV
@@ -319,7 +288,7 @@ sub PerlInfoGet {
     return %EnvPerl;
 }
 
-=item DBInfoGet()
+=head2 DBInfoGet()
 
 collect database information
 
@@ -356,7 +325,7 @@ sub DBInfoGet {
     return %EnvDB;
 }
 
-=item OTRSInfoGet()
+=head2 OTRSInfoGet()
 
 collect OTRS information
 
@@ -395,8 +364,6 @@ sub OTRSInfoGet {
 }
 
 1;
-
-=back
 
 =head1 TERMS AND CONDITIONS
 

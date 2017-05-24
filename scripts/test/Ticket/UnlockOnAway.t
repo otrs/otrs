@@ -1,6 +1,5 @@
 # --
-# Ticket/UnlockOnAway.t - automatic ticket unlocking test script
-# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -13,19 +12,28 @@ use utf8;
 
 use vars (qw($Self));
 
-# get needed objects
-my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
-my $HelperObject = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
-my $UserObject   = $Kernel::OM->Get('Kernel::System::User');
-my $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
-my $TimeObject   = $Kernel::OM->Get('Kernel::System::Time');
+my $UserObject           = $Kernel::OM->Get('Kernel::System::User');
+my $TicketObject         = $Kernel::OM->Get('Kernel::System::Ticket');
+my $TimeObject           = $Kernel::OM->Get('Kernel::System::Time');
+my $ArticleBackendObject = $Kernel::OM->Get('Kernel::System::Ticket::Article')->BackendForChannel(
+    ChannelName => 'Internal',
+);
 
-$ConfigObject->Set(
+# get helper object
+$Kernel::OM->ObjectParamAdd(
+    'Kernel::System::UnitTest::Helper' => {
+        RestoreDatabase  => 1,
+        UseTmpArticleDir => 1,
+    },
+);
+my $Helper = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
+
+$Kernel::OM->Get('Kernel::Config')->Set(
     Key   => 'Ticket::UnlockOnAway',
     Value => 1,
 );
 
-my $TestUserLogin = $HelperObject->TestUserCreate(
+my $TestUserLogin = $Helper->TestUserCreate(
     Groups => [ 'users', ],
 );
 
@@ -47,18 +55,18 @@ my $TicketID = $TicketObject->TicketCreate(
 
 $Self->True( $TicketID, 'Could create ticket' );
 
-$TicketObject->ArticleCreate(
-    TicketID       => $TicketID,
-    ArticleType    => 'note-internal',
-    SenderType     => 'agent',
-    Subject        => 'Should not unlock',
-    Body           => '.',
-    ContentType    => 'text/plain; charset=UTF-8',
-    HistoryComment => 'Just a test',
-    HistoryType    => 'OwnerUpdate',
-    UserID         => 1,
-    NoAgentNotify  => 1,
-    UnlockOnAway   => 1,
+$ArticleBackendObject->ArticleCreate(
+    TicketID             => $TicketID,
+    SenderType           => 'agent',
+    IsVisibleForCustomer => 0,
+    Subject              => 'Should not unlock',
+    Body                 => '.',
+    ContentType          => 'text/plain; charset=UTF-8',
+    HistoryComment       => 'Just a test',
+    HistoryType          => 'OwnerUpdate',
+    UserID               => 1,
+    NoAgentNotify        => 1,
+    UnlockOnAway         => 1,
 );
 my %Ticket = $TicketObject->TicketGet(
     TicketID => $TicketID,
@@ -79,6 +87,11 @@ $UserObject->SetPreferences(
 my ( $Sec, $Min, $Hour, $Day, $Month, $Year, $WeekDay ) = $TimeObject->SystemTime2Date(
     SystemTime => $TimeObject->SystemTime(),
 );
+
+# Special case for leap years. There is no Feb 29 in the next and previous years in this case.
+if ( $Month == 2 && $Day == 29 ) {
+    $Day--;
+}
 
 $UserObject->SetPreferences(
     UserID => $Ticket{OwnerID},
@@ -111,18 +124,18 @@ $UserObject->SetPreferences(
     Value  => $Day,
 );
 
-$TicketObject->ArticleCreate(
-    TicketID       => $TicketID,
-    ArticleType    => 'note-internal',
-    SenderType     => 'agent',
-    Subject        => 'Should now unlock',
-    Body           => '.',
-    ContentType    => 'text/plain; charset=UTF-8',
-    HistoryComment => 'Just a test',
-    HistoryType    => 'OwnerUpdate',
-    UserID         => 1,
-    NoAgentNotify  => 1,
-    UnlockOnAway   => 1,
+$ArticleBackendObject->ArticleCreate(
+    TicketID             => $TicketID,
+    SenderType           => 'agent',
+    IsVisibleForCustomer => 0,
+    Subject              => 'Should now unlock',
+    Body                 => '.',
+    ContentType          => 'text/plain; charset=UTF-8',
+    HistoryComment       => 'Just a test',
+    HistoryType          => 'OwnerUpdate',
+    UserID               => 1,
+    NoAgentNotify        => 1,
+    UnlockOnAway         => 1,
 );
 %Ticket = $TicketObject->TicketGet(
     TicketID => $TicketID,
@@ -135,10 +148,6 @@ $Self->Is(
     'Ticket now unlocked (UnlockOnAway)',
 );
 
-# the ticket is no longer needed
-$TicketObject->TicketDelete(
-    TicketID => $TicketID,
-    UserID   => 1,
-);
+# cleanup is done by RestoreDatabase.
 
 1;

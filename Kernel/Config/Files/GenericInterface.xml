@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <otrs_config version="1.0" init="Application">
-    <ConfigItem Name="Ticket::EventModulePost###1000-GenericInterface" Required="0" Valid="1">
+    <ConfigItem Name="Ticket::EventModulePost###9900-GenericInterface" Required="0" Valid="1">
         <Description Translatable="1">Performs the configured action for each event (as an Invoker) for each configured Webservice.</Description>
         <Group>GenericInterface</Group>
         <SubGroup>Core::Ticket</SubGroup>
@@ -12,7 +12,7 @@
             </Hash>
         </Setting>
     </ConfigItem>
-    <ConfigItem Name="Package::EventModulePost###1000-GenericInterface" Required="0" Valid="1">
+    <ConfigItem Name="Package::EventModulePost###9900-GenericInterface" Required="0" Valid="1">
         <Description Translatable="1">Performs the configured action for each event (as an Invoker) for each configured Webservice.</Description>
         <Group>GenericInterface</Group>
         <SubGroup>Core::Package</SubGroup>
@@ -24,7 +24,7 @@
             </Hash>
         </Setting>
     </ConfigItem>
-    <ConfigItem Name="CustomerCompany::EventModulePost###1000-GenericInterface" Required="0" Valid="1">
+    <ConfigItem Name="CustomerCompany::EventModulePost###9900-GenericInterface" Required="0" Valid="1">
         <Description Translatable="1">Performs the configured action for each event (as an Invoker) for each configured Webservice.</Description>
         <Group>GenericInterface</Group>
         <SubGroup>Core::CustomerCompany</SubGroup>
@@ -36,7 +36,7 @@
             </Hash>
         </Setting>
     </ConfigItem>
-    <ConfigItem Name="CustomerUser::EventModulePost###1000-GenericInterface" Required="0" Valid="1">
+    <ConfigItem Name="CustomerUser::EventModulePost###9900-GenericInterface" Required="0" Valid="1">
         <Description Translatable="1">Performs the configured action for each event (as an Invoker) for each configured Webservice.</Description>
         <Group>GenericInterface</Group>
         <SubGroup>Core::CustomerUser</SubGroup>
@@ -48,7 +48,7 @@
             </Hash>
         </Setting>
     </ConfigItem>
-    <ConfigItem Name="Queue::EventModulePost###1000-GenericInterface" Required="0" Valid="1">
+    <ConfigItem Name="Queue::EventModulePost###9900-GenericInterface" Required="0" Valid="1">
         <Description Translatable="1">Performs the configured action for each event (as an Invoker) for each configured Webservice.</Description>
         <Group>GenericInterface</Group>
         <SubGroup>Core::Queue</SubGroup>
@@ -60,7 +60,7 @@
             </Hash>
         </Setting>
     </ConfigItem>
-    <ConfigItem Name="DynamicField::EventModulePost###1000-GenericInterface" Required="0" Valid="1">
+    <ConfigItem Name="DynamicField::EventModulePost###9900-GenericInterface" Required="0" Valid="1">
         <Description Translatable="1">Performs the configured action for each event (as an Invoker) for each configured Webservice.</Description>
         <Group>GenericInterface</Group>
         <SubGroup>Core::DynamicField</SubGroup>
@@ -96,14 +96,6 @@
             <String Regex="">300</String><!-- default 5 min -->
         </Setting>
     </ConfigItem>
-    <ConfigItem Name="GenericInterface::Webservice::Path::Separator" Required="1" Valid="1">
-        <Description Translatable="1">Webservice path separator.</Description>
-        <Group>GenericInterface</Group>
-        <SubGroup>GenericInterface::Webservice</SubGroup>
-        <Setting>
-            <String>»</String>
-        </Setting>
-    </ConfigItem>
     <ConfigItem Name="Frontend::Module###AdminGenericInterfaceDebugger" Required="0" Valid="1">
         <Description Translatable="1">Frontend module registration for the agent interface.</Description>
         <Group>GenericInterface</Group>
@@ -115,7 +107,6 @@
                 <Title Translatable="1">GenericInterface Debugger GUI</Title>
                 <Loader>
                     <CSS>Core.Agent.Admin.GenericInterface.css</CSS>
-                    <CSS_IE7>Core.Agent.Admin.GenericInterface.IE7.css</CSS_IE7>
                     <JavaScript>Core.Agent.Admin.GenericInterfaceDebugger.js</JavaScript>
                 </Loader>
             </FrontendModuleReg>
@@ -132,7 +123,7 @@
                 <Title Translatable="1">GenericInterface Web Service GUI</Title>
                 <NavBarName>Admin</NavBarName>
                 <NavBarModule>
-                    <Module>Kernel::Output::HTML::NavBarModuleAdmin</Module>
+                    <Module>Kernel::Output::HTML::NavBar::ModuleAdmin</Module>
                     <Name Translatable="1">Web Services</Name>
                     <Description Translatable="1">Create and manage web services.</Description>
                     <Block>System</Block>
@@ -156,6 +147,9 @@
                 <Title Translatable="1">GenericInterface TransportHTTPSOAP GUI</Title>
                 <Loader>
                     <CSS>Core.Agent.Admin.GenericInterface.css</CSS>
+                    <CSS>Core.Agent.SortedTree.css</CSS>
+                    <JavaScript>Core.Agent.Admin.GenericInterfaceTransportHTTPSOAP.js</JavaScript>
+                    <JavaScript>Core.Agent.SortedTree.js</JavaScript>
                 </Loader>
             </FrontendModuleReg>
         </Setting>
@@ -171,6 +165,7 @@
                 <Title Translatable="1">GenericInterface TransportHTTPREST GUI</Title>
                 <Loader>
                     <CSS>Core.Agent.Admin.GenericInterface.css</CSS>
+                    <JavaScript>Core.Agent.Admin.GenericInterfaceTransportHTTPREST.js</JavaScript>
                 </Loader>
             </FrontendModuleReg>
         </Setting>
@@ -320,8 +315,7 @@
                 <Title Translatable="1">GenericInterface Webservice Mapping GUI</Title>
                 <Loader>
                     <CSS>Core.Agent.Admin.GenericInterface.css</CSS>
-                    <CSS_IE7>Core.Agent.Admin.GenericInterface.IE7.css</CSS_IE7>
-                    <JavaScript>Core.Agent.Admin.GenericInterfaceMappingSimple.js</JavaScript>
+                    <JavaScript>Core.Agent.Admin.GenericInterfaceMapping.js</JavaScript>
                 </Loader>
             </FrontendModuleReg>
         </Setting>
@@ -334,6 +328,34 @@
         <Setting>
             <Hash>
                 <Item Key="ConfigDialog">AdminGenericInterfaceMappingSimple</Item>
+            </Hash>
+        </Setting>
+    </ConfigItem>
+
+    <ConfigItem Name="Frontend::Module###AdminGenericInterfaceMappingXSLT" Required="0" Valid="1">
+        <Description Translatable="1">Frontend module registration for the agent interface.</Description>
+        <Group>GenericInterface</Group>
+        <SubGroup>Frontend::Admin::ModuleRegistration</SubGroup>
+        <Setting>
+            <FrontendModuleReg>
+                <Group>admin</Group>
+                <Description>Admin</Description>
+                <Title Translatable="1">GenericInterface Webservice Mapping GUI</Title>
+                <Loader>
+                    <CSS>Core.Agent.Admin.GenericInterface.css</CSS>
+                    <JavaScript>Core.Agent.Admin.GenericInterfaceMappingXSLT.js</JavaScript>
+                </Loader>
+            </FrontendModuleReg>
+        </Setting>
+    </ConfigItem>
+
+    <ConfigItem Name="GenericInterface::Mapping::Module###XSLT" Required="0" Valid="1">
+        <Description Translatable="1">GenericInterface module registration for the mapping layer.</Description>
+        <Group>GenericInterface</Group>
+        <SubGroup>GenericInterface::Mapping::ModuleRegistration</SubGroup>
+        <Setting>
+            <Hash>
+                <Item Key="ConfigDialog">AdminGenericInterfaceMappingXSLT</Item>
             </Hash>
         </Setting>
     </ConfigItem>
@@ -400,12 +422,15 @@
         </Setting>
     </ConfigItem>
 
-    <ConfigItem Name="GenericInterface::Operation::TicketCreate###ArticleType" Required="1" Valid="1">
-        <Description Translatable="1">Defines the default type of the article for this operation.</Description>
+    <ConfigItem Name="GenericInterface::Operation::TicketCreate###IsVisibleForCustomer" Required="1" Valid="1">
+        <Description Translatable="1">Defines the default visibility of the article to customer for this operation.</Description>
         <Group>GenericInterface</Group>
         <SubGroup>GenericInterface::Operation::TicketCreate</SubGroup>
         <Setting>
-            <String Regex="">webrequest</String>
+            <Option SelectedID="1">
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
+            </Option>
         </Setting>
     </ConfigItem>
     <ConfigItem Name="GenericInterface::Operation::TicketCreate###HistoryType" Required="1" Valid="1">
@@ -433,12 +458,23 @@
         </Setting>
     </ConfigItem>
 
-    <ConfigItem Name="GenericInterface::Operation::TicketUpdate###ArticleType" Required="1" Valid="1">
-        <Description Translatable="1">Defines the default type of the article for this operation.</Description>
+    <ConfigItem Name="GenericInterface::Operation::TicketUpdate###IsVisibleForCustomer" Required="1" Valid="1">
+        <Description Translatable="1">Defines the default visibility of the article to customer for this operation.</Description>
         <Group>GenericInterface</Group>
         <SubGroup>GenericInterface::Operation::TicketUpdate</SubGroup>
         <Setting>
-            <String Regex="">webrequest</String>
+            <Option SelectedID="1">
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
+            </Option>
+        </Setting>
+    </ConfigItem>
+    <ConfigItem Name="GenericInterface::Operation::ResponseLoggingMaxSize" Required="1" Valid="1">
+        <Description Translatable="1">Defines the maximum size in KiloByte of GenericInterface responses that get logged to the gi_debugger_entry_content table.</Description>
+        <Group>GenericInterface</Group>
+        <SubGroup>GenericInterface::Operation::ResponseLoggingMaxSize</SubGroup>
+        <Setting>
+            <String Regex="">200</String>
         </Setting>
     </ConfigItem>
     <ConfigItem Name="GenericInterface::Operation::TicketUpdate###HistoryType" Required="1" Valid="1">
@@ -479,12 +515,12 @@
         <SubGroup>GenericInterface::Operation::TicketSearch</SubGroup>
         <Setting>
             <Option SelectedID="Age">
-                <Item Key="Age">Age</Item>
-                <Item Key="Ticket">Ticket</Item>
-                <Item Key="Subject">Subject</Item>
-                <Item Key="Queue">Queue</Item>
-                <Item Key="Priority">Priority</Item>
-                <Item Key="EscalationTime">EscalationTime</Item>
+                <Item Key="Age" Translatable="1">Age</Item>
+                <Item Key="Ticket" Translatable="1">Ticket</Item>
+                <Item Key="Subject" Translatable="1">Subject</Item>
+                <Item Key="Queue" Translatable="1">Queue</Item>
+                <Item Key="Priority" Translatable="1">Priority</Item>
+                <Item Key="EscalationTime" Translatable="1">EscalationTime</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -494,8 +530,8 @@
         <SubGroup>GenericInterface::Operation::TicketSearch</SubGroup>
         <Setting>
             <Option SelectedID="Down">
-                <Item Key="Down">Down</Item>
-                <Item Key="Up">Up</Item>
+                <Item Key="Down" Translatable="1">Down</Item>
+                <Item Key="Up" Translatable="1">Up</Item>
             </Option>
         </Setting>
     </ConfigItem>

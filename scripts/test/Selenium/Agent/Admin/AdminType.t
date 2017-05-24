@@ -1,6 +1,5 @@
 # --
-# AdminType.t - frontend tests for AdminType
-# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -13,23 +12,16 @@ use utf8;
 
 use vars (qw($Self));
 
-use Kernel::System::UnitTest::Helper;
-use Kernel::System::UnitTest::Selenium;
-
-# get needed objects
-my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
-
-my $Selenium = Kernel::System::UnitTest::Selenium->new(
-    Verbose => 1,
-);
+# get selenium object
+my $Selenium = $Kernel::OM->Get('Kernel::System::UnitTest::Selenium');
 
 $Selenium->RunTest(
     sub {
 
-        my $Helper = Kernel::System::UnitTest::Helper->new(
-            RestoreSystemConfiguration => 0,
-        );
+        # get helper object
+        my $Helper = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
 
+        # create test user and login
         my $TestUserLogin = $Helper->TestUserCreate(
             Groups => ['admin'],
         ) || die "Did not get test user";
@@ -40,15 +32,28 @@ $Selenium->RunTest(
             Password => $TestUserLogin,
         );
 
-        my $ScriptAlias = $ConfigObject->Get('ScriptAlias');
-        $Selenium->get("${ScriptAlias}index.pl?Action=AdminType");
+        # get config object
+        my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
 
+        # get script alias
+        my $ScriptAlias = $ConfigObject->Get('ScriptAlias');
+
+        # navigate to AdminType screen
+        $Selenium->VerifiedGet("${ScriptAlias}index.pl?Action=AdminType");
+
+        # check overview screen
         $Selenium->find_element( "table",             'css' );
         $Selenium->find_element( "table thead tr th", 'css' );
         $Selenium->find_element( "table tbody tr td", 'css' );
 
+        # check breadcrumb on Overview screen
+        $Self->True(
+            $Selenium->find_element( '.BreadCrumb', 'css' ),
+            "Breadcrumb is found on Overview screen.",
+        );
+
         # click 'add new type' link
-        $Selenium->find_element("//a[contains(\@href, \'Subaction=Add' )]")->click();
+        $Selenium->find_element("//a[contains(\@href, \'Action=AdminType;Subaction=Add' )]")->VerifiedClick();
 
         # check add page
         my $Element = $Selenium->find_element( "#Name", 'css' );
@@ -58,7 +63,7 @@ $Selenium->RunTest(
 
         # check client side validation
         $Selenium->find_element( "#Name", 'css' )->clear();
-        $Selenium->find_element( "#Name", 'css' )->submit();
+        $Selenium->find_element( "#Name", 'css' )->VerifiedSubmit();
         $Self->Is(
             $Selenium->execute_script(
                 "return \$('#Name').hasClass('Error')"
@@ -67,28 +72,66 @@ $Selenium->RunTest(
             'Client side validation correctly detected missing input value',
         );
 
-        # create a real test type
-        my $RandomID = $Helper->GetRandomID();
+        # check breadcrumb on Add screen
+        my $Count = 1;
+        for my $BreadcrumbText ( 'Type Management', 'Add Type' ) {
+            $Self->Is(
+                $Selenium->execute_script("return \$('.BreadCrumb li:eq($Count)').text().trim()"),
+                $BreadcrumbText,
+                "Breadcrumb text '$BreadcrumbText' is found on screen"
+            );
 
-        $Selenium->find_element( "#Name",                      'css' )->send_keys($RandomID);
-        $Selenium->find_element( "#ValidID option[value='1']", 'css' )->click();
-        $Selenium->find_element( "#Name",                      'css' )->submit();
+            $Count++;
+        }
+
+        # check form action
+        $Self->True(
+            $Selenium->find_element( '#Submit', 'css' ),
+            "Submit is found on Add screen.",
+        );
+
+        # create a real test type
+        my $TypeRandomID = "Type" . $Helper->GetRandomID();
+
+        $Selenium->find_element( "#Name", 'css' )->send_keys($TypeRandomID);
+        $Selenium->execute_script("\$('#ValidID').val('1').trigger('redraw.InputField').trigger('change');");
+        $Selenium->find_element( "#Name", 'css' )->VerifiedSubmit();
 
         $Self->True(
-            index( $Selenium->get_page_source(), $RandomID ) > -1,
-            "$RandomID found on page",
+            index( $Selenium->get_page_source(), $TypeRandomID ) > -1,
+            "$TypeRandomID found on page",
         );
         $Selenium->find_element( "table",             'css' );
         $Selenium->find_element( "table thead tr th", 'css' );
         $Selenium->find_element( "table tbody tr td", 'css' );
 
         # go to new type again
-        $Selenium->find_element( $RandomID, 'link_text' )->click();
+        $Selenium->find_element( $TypeRandomID, 'link_text' )->VerifiedClick();
+
+        # check breadcrumb on Edit screen
+        $Count = 1;
+        for my $BreadcrumbText ( 'Type Management', 'Edit Type: ' . $TypeRandomID ) {
+            $Self->Is(
+                $Selenium->execute_script("return \$('.BreadCrumb li:eq($Count)').text().trim()"),
+                $BreadcrumbText,
+                "Breadcrumb text '$BreadcrumbText' is found on screen"
+            );
+
+            $Count++;
+        }
+
+        # check form actions
+        for my $Action (qw(Submit SubmitAndContinue)) {
+            $Self->True(
+                $Selenium->find_element( "#$Action", 'css' ),
+                "$Action is found on Edit screen.",
+            );
+        }
 
         # check new type values
         $Self->Is(
             $Selenium->find_element( '#Name', 'css' )->get_value(),
-            $RandomID,
+            $TypeRandomID,
             "#Name stored value",
         );
         $Self->Is(
@@ -97,26 +140,72 @@ $Selenium->RunTest(
             "#ValidID stored value",
         );
 
+        # get current value of Ticket::Type::Default
+        my $DefaultTicketType = $ConfigObject->Get('Ticket::Type::Default');
+
+        # set test Type as a default ticket type
+        $Helper->ConfigSettingChange(
+            Valid => 1,
+            Key   => 'Ticket::Type::Default',
+            Value => $TypeRandomID
+        );
+
+        # Allow apache to pick up the changed SysConfig via Apache::Reload.
+        sleep 1;
+
+        # try to set test type to invalid
+        $Selenium->execute_script("\$('#ValidID').val('2').trigger('redraw.InputField').trigger('change');");
+        $Selenium->find_element( "#Name", 'css' )->VerifiedSubmit();
+
+        # default ticket type cannot be set to invalid
+        $Self->True(
+            index(
+                $Selenium->get_page_source(),
+                "The ticket type is set as a default ticket type, so it cannot be set to invalid!"
+                ) > -1,
+            "$TypeRandomID ticket type is set as a default ticket type, so it cannot be set to invalid!",
+        ) || die;
+
+        # reset default ticket type
+        $Helper->ConfigSettingChange(
+            Valid => 1,
+            Key   => 'Ticket::Type::Default',
+            Value => $DefaultTicketType
+        );
+
+        # Allow apache to pick up the changed SysConfig via Apache::Reload.
+        sleep 1;
+
         # set test type to invalid
-        $Selenium->find_element( "#ValidID option[value='2']", 'css' )->click();
-        $Selenium->find_element( "#Name",                      'css' )->submit();
+        $Selenium->find_element( "#Name", 'css' )->clear();
+        $Selenium->find_element( "#Name", 'css' )->send_keys($TypeRandomID);
+        $Selenium->execute_script("\$('#ValidID').val('2').trigger('redraw.InputField').trigger('change');");
+        $Selenium->find_element( "#Name", 'css' )->VerifiedSubmit();
+
+        # check class of invalid Type in the overview table
+        $Self->True(
+            $Selenium->execute_script(
+                "return \$('tr.Invalid td a:contains($TypeRandomID)').length"
+            ),
+            "There is a class 'Invalid' for test Type",
+        );
 
         # check overview page
         $Self->True(
-            index( $Selenium->get_page_source(), $RandomID ) > -1,
-            "$RandomID found on page",
+            index( $Selenium->get_page_source(), $TypeRandomID ) > -1,
+            "$TypeRandomID found on page",
         );
         $Selenium->find_element( "table",             'css' );
         $Selenium->find_element( "table thead tr th", 'css' );
         $Selenium->find_element( "table tbody tr td", 'css' );
 
         # go to new type again
-        $Selenium->find_element( $RandomID, 'link_text' )->click();
+        $Selenium->find_element( $TypeRandomID, 'link_text' )->VerifiedClick();
 
         # check new type values
         $Self->Is(
             $Selenium->find_element( '#Name', 'css' )->get_value(),
-            $RandomID,
+            $TypeRandomID,
             "#Name updated value",
         );
         $Self->Is(
@@ -125,27 +214,27 @@ $Selenium->RunTest(
             "#ValidID updated value",
         );
 
-        # Since there are no tickets that rely on our test types, we can remove them again
-        # from the DB.
-        if ($RandomID) {
+        # since there are no tickets that rely on our test types, we can remove them again
+        # from the DB
+        if ($TypeRandomID) {
             my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
-            $RandomID = $DBObject->Quote($RandomID);
+            $TypeRandomID = $DBObject->Quote($TypeRandomID);
             my $Success = $DBObject->Do(
                 SQL  => "DELETE FROM ticket_type WHERE name = ?",
-                Bind => [ \$RandomID ],
+                Bind => [ \$TypeRandomID ],
             );
             $Self->True(
                 $Success,
-                "TypeDelete - $RandomID",
+                "TypeDelete - $TypeRandomID",
             );
         }
 
-        # Make sure the cache is correct.
+        # make sure the cache is corrects
         $Kernel::OM->Get('Kernel::System::Cache')->CleanUp(
             Type => 'Type',
         );
 
-        }
+    }
 );
 
 1;

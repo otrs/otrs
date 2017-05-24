@@ -1,6 +1,5 @@
 # --
-# Kernel/GenericInterface/Debugger.pm - GenericInterface data debugger interface
-# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -20,7 +19,7 @@ our $ObjectManagerDisabled = 1;
 
 Kernel::GenericInterface::Debugger
 
-=head1 SYNOPSIS
+=head1 DESCRIPTION
 
 GenericInterface data debugger interface.
 
@@ -31,11 +30,7 @@ based on the configured debug level.
 
 =head1 PUBLIC INTERFACE
 
-=over 4
-
-=cut
-
-=item new()
+=head2 new()
 
 create an object.
 
@@ -132,7 +127,7 @@ sub new {
     return $Self;
 }
 
-=item DebugLog()
+=head2 DebugLog()
 
 add one piece of data to the logging of this communication process.
 
@@ -229,7 +224,7 @@ EOF
     return 1;
 }
 
-=item Debug()
+=head2 Debug()
 
 passes data to DebugLog with debug level 'debug'
 
@@ -251,7 +246,7 @@ sub Debug {
     return 1;
 }
 
-=item Info()
+=head2 Info()
 
 passes data to DebugLog with debug level 'info'
 
@@ -273,7 +268,7 @@ sub Info {
     return 1;
 }
 
-=item Notice()
+=head2 Notice()
 
 passes data to DebugLog with debug level 'notice'
 
@@ -295,7 +290,7 @@ sub Notice {
     return 1;
 }
 
-=item Error()
+=head2 Error()
 
 passes data to DebugLog with debug level 'error'
 then returns data structure to be used as return value in calling function
@@ -325,7 +320,7 @@ sub Error {
 
 =cut
 
-=item DESTROY()
+=head2 DESTROY()
 
 destructor, this will write the log entries to the database.
 
@@ -341,8 +336,6 @@ sub DESTROY {
 1;
 
 =end Internal:
-
-=back
 
 =head1 TERMS AND CONDITIONS
 

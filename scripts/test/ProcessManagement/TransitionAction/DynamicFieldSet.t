@@ -1,6 +1,5 @@
 # --
-# DynamicFieldSet.t - DynamicFieldSet testscript
-# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -15,31 +14,31 @@ use vars (qw($Self));
 
 use Kernel::System::VariableCheck qw(:all);
 
-# get needed objects
-my $ConfigObject       = $Kernel::OM->Get('Kernel::Config');
-my $HelperObject       = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
-my $DBObject           = $Kernel::OM->Get('Kernel::System::DB');
-my $DynamicFieldObject = $Kernel::OM->Get('Kernel::System::DynamicField');
-my $TicketObject       = $Kernel::OM->Get('Kernel::System::Ticket');
-my $UserObject         = $Kernel::OM->Get('Kernel::System::User');
-my $ModuleObject       = $Kernel::OM->Get('Kernel::System::ProcessManagement::TransitionAction::DynamicFieldSet');
+# get helper object
+$Kernel::OM->ObjectParamAdd(
+    'Kernel::System::UnitTest::Helper' => {
+        RestoreDatabase  => 1,
+        UseTmpArticleDir => 1,
+    },
+);
+my $Helper = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
 
 # define variables
-my $UserID          = 1;
-my $ModuleName      = 'DynamicFieldSet';
-my $NumericRandomID = int rand 1000_000;
-my $DFName1         = 'Test1' . $NumericRandomID;
-my $DFName2         = 'Test2' . $NumericRandomID;
+my $UserID     = 1;
+my $ModuleName = 'DynamicFieldSet';
+my $RandomID   = $Helper->GetRandomID();
+my $DFName1    = 'Test1' . $RandomID;
+my $DFName2    = 'Test2' . $RandomID;
 
 # set user details
-my $TestUserLogin = $HelperObject->TestUserCreate();
-my $TestUserID    = $UserObject->UserLookup(
+my $TestUserLogin = $Helper->TestUserCreate();
+my $TestUserID    = $Kernel::OM->Get('Kernel::System::User')->UserLookup(
     UserLogin => $TestUserLogin,
 );
 
-# ----------------------------------------
+#
 # Create the dynamic fields for testing
-# ----------------------------------------
+#
 
 my @NewDynamicFieldConfig = (
     {
@@ -72,7 +71,7 @@ my @AddedDynamicFields;
 for my $DynamicFieldConfig (@NewDynamicFieldConfig) {
 
     # add the new dynamic field
-    my $ID = $DynamicFieldObject->DynamicFieldAdd(
+    my $ID = $Kernel::OM->Get('Kernel::System::DynamicField')->DynamicFieldAdd(
         %{$DynamicFieldConfig},
         FieldOrder => 99999,
         ValidID    => 1,
@@ -89,26 +88,21 @@ for my $DynamicFieldConfig (@NewDynamicFieldConfig) {
     );
 }
 
-# ----------------------------------------
+# get ticket object
+my $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
 
-# ----------------------------------------
+#
 # Create a test ticket
-# ----------------------------------------
+#
 my $TicketID = $TicketObject->TicketCreate(
-    TN            => undef,
     Title         => 'test',
     QueueID       => 1,
     Lock          => 'unlock',
     Priority      => '3 normal',
     StateID       => 1,
     TypeID        => 1,
-    Service       => undef,
-    SLA           => undef,
-    CustomerID    => undef,
-    CustomerUser  => undef,
     OwnerID       => 1,
     ResponsibleID => 1,
-    ArchiveFlag   => undef,
     UserID        => $UserID,
 );
 
@@ -126,8 +120,6 @@ $Self->True(
     IsHashRefWithData( \%Ticket ),
     "TicketGet() - Get Ticket with ID $TicketID.",
 );
-
-# ----------------------------------------
 
 # Run() tests
 my @Tests = (
@@ -198,18 +190,6 @@ my @Tests = (
         },
         Success => 0,
     },
-
-    #    {
-    #        Name   => 'Wrong Field Value',
-    #        Config => {
-    #            UserID => $UserID,
-    #            Ticket => \%Ticket,
-    #            Config => {
-    #                $DFName2 => 'TestString',
-    #            },
-    #        },
-    #        Success => 0,
-    #    },
     {
         Name   => 'Correct ASCII Dropdown',
         Config => {
@@ -268,6 +248,17 @@ my @Tests = (
         Success => 1,
     },
     {
+        Name   => 'Correct Ticket->Queue + Ticket->QueueID Dropdown',
+        Config => {
+            UserID => $UserID,
+            Ticket => \%Ticket,
+            Config => {
+                $DFName1 => '<OTRS_TICKET_Queue> <OTRS_TICKET_QueueID>',
+            },
+        },
+        Success => 1,
+    },
+    {
         Name   => 'Correct Ticket->NotExisting Dropdown',
         Config => {
             UserID => $UserID,
@@ -299,7 +290,7 @@ for my $Test (@Tests) {
     # make a deep copy to avoid changing the definition
     my $OrigTest = Storable::dclone($Test);
 
-    my $Success = $ModuleObject->Run(
+    my $Success = $Kernel::OM->Get('Kernel::System::ProcessManagement::TransitionAction::DynamicFieldSet')->Run(
         %{ $Test->{Config} },
         ProcessEntityID          => 'P1',
         ActivityEntityID         => 'A1',
@@ -317,7 +308,7 @@ for my $Test (@Tests) {
 
     $Self->True(
         $Success,
-        "$ModuleName Run() - Test:'$Test->{Name}' | excecuted with True"
+        "$ModuleName Run() - Test:'$Test->{Name}' | executed with True"
     );
 
     # get ticket
@@ -358,6 +349,18 @@ for my $Test (@Tests) {
                 "$ModuleName - Test:'$Test->{Name}' | Attribute: DynamicField_$Attribute value: $OrigTest->{Config}->{Config}->{$Attribute} should been replaced",
             );
         }
+        elsif (
+            $OrigTest->{Config}->{Config}->{$Attribute}
+            =~ m{\A<OTRS_TICKET_([A-Za-z0-9_]+)> [ ] <OTRS_TICKET_([A-Za-z0-9_]+)>\z}msx
+            )
+        {
+            $ExpectedValue = ( $Ticket{$1} // '' ) . ' ' . ( $Ticket{$2} // '' );
+            $Self->IsNot(
+                $Test->{Config}->{Config}->{$Attribute},
+                $OrigTest->{Config}->{Config}->{$Attribute},
+                "$ModuleName - Test:'$Test->{Name}' | Attribute: DynamicField_$Attribute value: $OrigTest->{Config}->{Config}->{$Attribute} should been replaced",
+            );
+        }
 
         $Self->Is(
             $Ticket{ 'DynamicField_' . $Attribute },
@@ -377,34 +380,6 @@ for my $Test (@Tests) {
     }
 }
 
-#-----------------------------------------
-# Destructors to remove our Testitems
-# ----------------------------------------
-
-# Ticket
-my $Delete = $TicketObject->TicketDelete(
-    TicketID => $TicketID,
-    UserID   => 1,
-);
-$Self->True(
-    $Delete,
-    "TicketDelete() - $TicketID",
-);
-
-# DynamicFields
-for my $ID (@AddedDynamicFields) {
-    my $Success = $DynamicFieldObject->DynamicFieldDelete(
-        ID      => $ID,
-        UserID  => 1,
-        Reorder => 1,
-    );
-
-    $Self->True(
-        $Success,
-        "DynamicFieldDelete() - Remove DynamicField $ID from the system with True"
-    );
-}
-
-# ----------------------------------------
+# cleanup is done by RestoreDatabase
 
 1;

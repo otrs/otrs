@@ -1,6 +1,5 @@
 # --
-# Process.t - ProcessManagement DB process tests
-# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -17,18 +16,23 @@ use vars (qw($Self));
 use Kernel::System::VariableCheck qw(:all);
 
 # get needed objects
-my $ConfigObject   = $Kernel::OM->Get('Kernel::Config');
 my $CacheObject    = $Kernel::OM->Get('Kernel::System::Cache');
-my $HelperObject   = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
 my $ActivityObject = $Kernel::OM->Get('Kernel::System::ProcessManagement::DB::Activity');
 my $ProcessObject  = $Kernel::OM->Get('Kernel::System::ProcessManagement::DB::Process');
-my $EntityObject   = $Kernel::OM->Get('Kernel::System::ProcessManagement::DB::Entity');
+
+# get helper object
+$Kernel::OM->ObjectParamAdd(
+    'Kernel::System::UnitTest::Helper' => {
+        RestoreDatabase => 1,
+    },
+);
+my $Helper = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
 
 # set fixed time
-$HelperObject->FixedTimeSet();
+$Helper->FixedTimeSet();
 
 # define needed variables
-my $RandomID          = $HelperObject->GetRandomID();
+my $RandomID          = $Helper->GetRandomID();
 my $UserID            = 1;
 my $ActivityEntityID1 = 'A1-' . $RandomID;
 my $ActivityEntityID2 = 'A2-' . $RandomID;
@@ -37,7 +41,7 @@ my $ActivityName1     = 'Activity1';
 my $ActivityName2     = 'Activity2';
 my $ActivityName3     = 'Activity3';
 
-my $EntityID = $EntityObject->EntityIDGenerate(
+my $EntityID = $Kernel::OM->Get('Kernel::System::ProcessManagement::DB::Entity')->EntityIDGenerate(
     EntityType => 'Process',
     UserID     => 1,
 );
@@ -297,7 +301,7 @@ my @Tests = (
         Success => 1,
     },
     {
-        Name   => 'ProcessAdd Test 15: EntityID Full Lenght',
+        Name   => 'ProcessAdd Test 15: EntityID Full Length',
         Config => {
             EntityID      => $EntityID,
             Name          => $EntityID,
@@ -372,7 +376,7 @@ my @AddedProcessList = map {$_} sort keys %AddedProcess;
     {
         Name   => 'ProcessGet Test 4: Wrong ID',
         Config => {
-            ID            => 'NotExistent' . $RandomID,
+            ID            => '9999999',
             EntityID      => undef,
             ActivityNames => 0,
             UserID        => $UserID,
@@ -383,7 +387,7 @@ my @AddedProcessList = map {$_} sort keys %AddedProcess;
         Name   => 'ProcessGet Test 5: Wrong EntityID',
         Config => {
             ID            => undef,
-            EntityID      => 'NotExistent' . $RandomID,
+            EntityID      => '9999999',
             ActivityNames => 0,
             UserID        => $UserID,
         },
@@ -850,7 +854,7 @@ for my $Test (@Tests) {
         print "Force a gap between create and update process, Waiting 2s\n";
 
         # wait 2 seconds
-        $HelperObject->FixedTimeAddSeconds(2);
+        $Helper->FixedTimeAddSeconds(2);
 
         my $Success = $ProcessObject->ProcessUpdate( %{ $Test->{Config} } );
 
@@ -1164,7 +1168,7 @@ for my $Test (@Tests) {
     {
         Name   => 'ProcessDelete Test 4: Wrong process ID',
         Config => {
-            ID     => $RandomID,
+            ID     => '9999999',
             UserID => $UserID,
         },
         Success => 0,
@@ -1254,33 +1258,6 @@ $Self->IsDeeply(
     "ProcessListGet Test 2: Correct List | Cache",
 );
 
-print "------------System Cleanup------------\n";
+# cleanup is done by RestoreDatabase
 
-# remove added activities
-for my $ActivityID (@AddedActivities) {
-    my $Success = $ActivityObject->ActivityDelete(
-        ID     => $ActivityID,
-        UserID => $UserID,
-    );
-
-    # sanity check
-    $Self->True(
-        $Success,
-        "ActivityDelete() ActivityID:$ActivityID | Deleted sucessfully",
-    );
-}
-
-# remove added processes
-for my $ProcessID ( sort keys %AddedProcess ) {
-    my $Success = $ProcessObject->ProcessDelete(
-        ID     => $ProcessID,
-        UserID => $UserID,
-    );
-
-    # sanity check
-    $Self->True(
-        $Success,
-        "ProcessDelete() ProcessID:$ProcessID | Deleted sucessfully",
-    );
-}
 1;

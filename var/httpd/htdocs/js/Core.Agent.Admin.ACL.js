@@ -1,6 +1,5 @@
 // --
-// Core.Agent.Admin.ACL.js - provides the special module functions for the ACL administration interface
-// Copyright (C) 2003-2013 OTRS AG, http://otrs.org/
+// Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 // --
 // This software comes with ABSOLUTELY NO WARRANTY. For details, see
 // the enclosed file COPYING for license information (AGPL). If you
@@ -39,6 +38,20 @@ Core.Agent.Admin.ACL = (function (TargetNS) {
     var KeysWithoutSubkeys = [ 'ActivityDialog', 'Action', 'Process' ];
 
     /**
+     * @name Init
+     * @memberof Core.Agent.Admin.ACL
+     * @function
+     * @description
+     *      This function initialize the module.
+     */
+    TargetNS.Init = function() {
+        Core.UI.Table.InitTableFilter($('#FilterACLs'), $('#ACLs'), 0);
+        if (Core.Config.Get('Subaction') === 'ACLEdit') {
+            TargetNS.InitACLEdit();
+        }
+    };
+
+    /**
      * @private
      * @name ShowDeleteACLConfirmationDialog
      * @memberof Core.Agent.Admin.ACL
@@ -60,14 +73,14 @@ Core.Agent.Admin.ACL = (function (TargetNS) {
             true,
             [
                {
-                   Label: TargetNS.Localization.CancelMsg,
+                   Label: Core.Language.Translate('Cancel'),
                    Class: 'Primary',
                    Function: function () {
                        Core.UI.Dialog.CloseDialog($('.Dialog'));
                    }
                },
                {
-                   Label: TargetNS.Localization.DeleteMsg,
+                   Label: Core.Language.Translate('Delete'),
                    Function: function () {
                        var Data = {
                                Action: 'AdminACL',
@@ -114,7 +127,7 @@ Core.Agent.Admin.ACL = (function (TargetNS) {
             Data,
             Level1Key, Level2Key, Level3Key, Level4Key,
             $ItemObjLevel1, $ItemObjLevel2, $ItemObjLevel3, $ItemObjLevel4,
-            $TempObjLevel1, $TempObjLevel2, $TempObjLevel3, $TempObjLevel4,
+            $TempObjLevel2, $TempObjLevel3, $TempObjLevel4,
             SelectHTML,
             Value,
             Class,
@@ -135,7 +148,7 @@ Core.Agent.Admin.ACL = (function (TargetNS) {
                 $ItemObjLevel1
                     .attr('data-content', Level1Key)
                     .find('strong')
-                    .text(Level1Key)
+                    .text(Core.App.EscapeHTML(Level1Key))
                     .next('ul')
                     .find('.Icon.AddButton')
                     .after($('#' + Level1Key).parent().html());
@@ -158,15 +171,15 @@ Core.Agent.Admin.ACL = (function (TargetNS) {
                             $ItemObjLevel2
                                 .attr('data-content', Level2Key)
                                 .find('strong')
-                                .text(Level2Key)
+                                .text(Core.App.EscapeHTML(Level2Key))
                                 .next('ul')
                                 .find('.Icon.AddButton')
                                 .next('input')
                                 .attr('data-parent', Level2Key);
 
-                            if ( Level2Key === 'DynamicField' ) {
+                            if (Level2Key === 'DynamicField') {
                                 SelectHTML = $('#' + Level2Key).parent().html();
-                                SelectHTML += '<span class="AddAll">' + Core.Agent.Admin.ACL.Localization.AddAll + '</span>';
+                                SelectHTML += '<span class="AddAll">' + Core.Language.Translate('Add all') + '</span>';
 
                                 $ItemObjLevel2
                                     .find('input')
@@ -196,7 +209,7 @@ Core.Agent.Admin.ACL = (function (TargetNS) {
                                         $ItemObjLevel3
                                             .attr('data-content', Value)
                                             .find('em')
-                                            .before('<span>' + Value + '</span>');
+                                            .before('<span>' + Core.App.EscapeHTML(Value) + '</span>');
 
                                         $TempObjLevel3.append($ItemObjLevel3);
                                     }
@@ -221,12 +234,12 @@ Core.Agent.Admin.ACL = (function (TargetNS) {
                                             $ItemObjLevel3
                                                 .attr('data-content', Level3Key)
                                                 .children('.Icon')
-                                                .after('<span>' + Level3Key + '</span>' + ':');
+                                                .after('<span>' + Core.App.EscapeHTML(Level3Key) + '</span>' + ':');
 
                                             if (typeof Data[Level1Key][Level2Key][Level3Key] !== 'object') {
 
                                                 Class = 'True';
-                                                Bool  = parseInt(Data[Level1Key][Level2Key][Level3Key], 10);
+                                                Bool = parseInt(Data[Level1Key][Level2Key][Level3Key], 10);
 
                                                 if (Bool === 0) {
                                                     Class = 'False';
@@ -256,7 +269,7 @@ Core.Agent.Admin.ACL = (function (TargetNS) {
                                                         $ItemObjLevel4
                                                             .attr('data-content', Value)
                                                             .find('em')
-                                                            .before('<span>' + Value + '</span>');
+                                                            .before('<span>' + Core.App.EscapeHTML(Value) + '</span>');
 
                                                         $TempObjLevel4.append($ItemObjLevel4);
                                                     }
@@ -296,6 +309,7 @@ Core.Agent.Admin.ACL = (function (TargetNS) {
 
         var AlreadyAdded = false,
             Value = $Object.val(),
+            ValueEscaped = Core.App.EscapeHTML(Value),
             Level = parseInt($Object.attr('data-level'), 10),
             $LevelObj, $Target, $TriggerObj,
             Prefix, SelectHTML,
@@ -317,14 +331,14 @@ Core.Agent.Admin.ACL = (function (TargetNS) {
                 $LevelObj
                     .attr('data-content', Value)
                     .find('strong')
-                    .text(Value)
+                    .text(ValueEscaped)
                     .next('ul')
                     .find('.Icon.AddButton')
                     .after($('#' + Value).parent().html());
                 $Target.append($LevelObj);
             }
             else {
-                alert(Core.Agent.Admin.ACL.Localization.AlreadyAdded);
+                alert(Core.Language.Translate('An item with this name is already present.'));
             }
             $Object.blur().val('');
         }
@@ -351,15 +365,15 @@ Core.Agent.Admin.ACL = (function (TargetNS) {
                 $LevelObj
                     .attr('data-content', Value)
                     .find('strong')
-                    .text(Value)
+                    .text(ValueEscaped)
                     .next('ul')
                     .find('.Icon.AddButton')
                     .next('input')
                     .attr('data-parent', Value);
 
-                if ( Value === 'DynamicField' ) {
+                if (Value === 'DynamicField') {
                     SelectHTML = $('#' + Value).parent().html();
-                    SelectHTML += '<span class="AddAll">' + Core.Agent.Admin.ACL.Localization.AddAll + '</span>';
+                    SelectHTML += '<span class="AddAll">' + Core.Language.Translate('Add all') + '</span>';
 
                     $LevelObj
                         .find('input')
@@ -379,7 +393,7 @@ Core.Agent.Admin.ACL = (function (TargetNS) {
                 }
             }
             else {
-                alert(Core.Agent.Admin.ACL.Localization.AlreadyAdded);
+                alert(Core.Language.Translate('An item with this name is already present.'));
             }
             $Object.blur().val('');
         }
@@ -392,7 +406,7 @@ Core.Agent.Admin.ACL = (function (TargetNS) {
                 $LevelObj
                     .attr('data-content', Value)
                     .children('.Icon')
-                    .after('<span>' + Value + '</span>' + ':');
+                    .after('<span>' + ValueEscaped + '</span>' + ':');
                 $LevelObj.insertBefore($Object.parent());
 
                 if (Type === 'Boolean') {
@@ -409,13 +423,13 @@ Core.Agent.Admin.ACL = (function (TargetNS) {
             }
             $Object.val('');
 
-            if ( Value && Type !== 'Boolean' ) {
+            if (Value && Type !== 'Boolean') {
                 $TriggerObj.click();
             }
         }
         else if (Level === 4) {
 
-            $LevelObj   = $('#TemplateLevel4 > li').clone();
+            $LevelObj = $('#TemplateLevel4 > li').clone();
             $TriggerObj = $Object.next('.AddButton');
 
             if (Value) {
@@ -428,7 +442,7 @@ Core.Agent.Admin.ACL = (function (TargetNS) {
                 $LevelObj
                     .attr('data-content', Value)
                     .find('em')
-                    .before('<span>' + Value + '</span>');
+                    .before('<span>' + ValueEscaped + '</span>');
                 $LevelObj.insertBefore($Object.parent());
             }
             $Object
@@ -449,18 +463,16 @@ Core.Agent.Admin.ACL = (function (TargetNS) {
      * @function
      * @returns {Object} ACL data structure.
      * @param {jQueryObject} $ItemObj
-     * @param {String} Type
      * @description
      *      Collects the ACL data.
      */
-    TargetNS.CollectACLData = function($ItemObj, Type) {
+    TargetNS.CollectACLData = function($ItemObj) {
 
         var Structure = {},
             $SubItemsObj,
             ItemNameLevel1,
             ItemNameLevel2,
-            ItemNameLevel3,
-            ItemNameLevel4;
+            ItemNameLevel3;
 
         $ItemObj.children('li.DataItem').each(function() {
 
@@ -522,7 +534,7 @@ Core.Agent.Admin.ACL = (function (TargetNS) {
      */
     TargetNS.InitACLEdit = function () {
 
-        $('#ACLDelete').bind('click.ACLDelete', function (Event) {
+        $('#ACLDelete').on('click.ACLDelete', function (Event) {
             ShowDeleteACLConfirmationDialog($(Event.target).closest('a'));
             Event.stopPropagation();
             return false;
@@ -559,15 +571,15 @@ Core.Agent.Admin.ACL = (function (TargetNS) {
 
         $('.ACLStructure').on('click', '.AddAll', function() {
             var $SelectObj = $(this).prev('select'),
-                Boolean = '';
+                BooleanStr = '';
 
             if ($SelectObj.hasClass('Boolean')) {
-                Boolean = 'Boolean';
+                BooleanStr = 'Boolean';
             }
 
             $SelectObj.find('option').each(function() {
                 $SelectObj.val($(this).attr('value'));
-                TargetNS.AddItem($SelectObj, Boolean);
+                TargetNS.AddItem($SelectObj, BooleanStr);
             });
         });
 
@@ -624,6 +636,14 @@ Core.Agent.Admin.ACL = (function (TargetNS) {
 
         $('.ACLStructure').on('click', '.Editable span', function() {
 
+            var $Obj = $(this),
+                Value = $Obj.text(),
+                Width = $Obj.width() + 3,
+                $SelectObj = $('#TemplateLevel3').find('select'),
+                $SelectObjClone = $SelectObj.clone(),
+                RegexResult,
+                LastLevel = true;
+
             // only apply on right spans
             if ($(this).hasClass('Icon')) {
                 return false;
@@ -633,15 +653,6 @@ Core.Agent.Admin.ACL = (function (TargetNS) {
             if ($(this).nextAll('ul').hasClass('Boolean')) {
                 return false;
             }
-
-            var $Obj = $(this),
-                Value = $Obj.text(),
-                Width = $Obj.width() + 3,
-                $SelectObj = $('#TemplateLevel3').find('select'),
-                $SelectObjClone = $SelectObj.clone(),
-                Regex,
-                RegexResult,
-                LastLevel = true;
 
             // decide if we are already on the last level
             if (!$(this).next('em').length) {
@@ -718,9 +729,11 @@ Core.Agent.Admin.ACL = (function (TargetNS) {
 
         $('.ACLStructure').on('blur keydown', '.LiveEdit', function(Event) {
 
+            var Value;
+
             if ((Event.type === 'keydown' && Event.which === 13) || Event.type !== 'keydown') {
 
-                var Value = $(this).val();
+                Value = $(this).val();
 
                 if (Value) {
 
@@ -775,11 +788,11 @@ Core.Agent.Admin.ACL = (function (TargetNS) {
         });
 
         $('.ACLStructure').on('change', '.NewDataKeyDropdown', function() {
-            var Boolean = '';
+            var BooleanStr = '';
             if ($(this).hasClass('Boolean')) {
-                Boolean = 'Boolean';
+                BooleanStr = 'Boolean';
             }
-            TargetNS.AddItem($(this), Boolean);
+            TargetNS.AddItem($(this), BooleanStr);
         });
 
         $('.ACLStructure').on('click', '.DataItem em', function() {
@@ -791,7 +804,7 @@ Core.Agent.Admin.ACL = (function (TargetNS) {
         $('.ACLStructure').on('click', '.Icon.RemoveButton', function() {
             var Remove = false;
             if ($(this).nextAll('ul').find('li').length > 1) {
-                if (confirm(Core.Agent.Admin.ACL.Localization.ConfirmRemoval)) {
+                if (confirm(Core.Language.Translate('This item still contains sub items. Are you sure you want to remove this item including its sub items?'))) {
                     Remove = true;
                 }
             }
@@ -810,15 +823,15 @@ Core.Agent.Admin.ACL = (function (TargetNS) {
             TargetNS.AddItem($(this));
         });
 
-        $('#SubmitAndContinue').bind('click', function() {
+        $('#SubmitAndContinue').on('click', function() {
             $('#ContinueAfterSave').val(1);
             $('#Submit').click();
         });
 
-        $('#Submit, #SubmitAndContinue').bind('click', function(Event) {
+        $('#Submit, #SubmitAndContinue').on('click', function() {
 
             // collect data from the input areas
-            TargetNS.ConfigMatch  = TargetNS.CollectACLData($('#ACLMatch'));
+            TargetNS.ConfigMatch = TargetNS.CollectACLData($('#ACLMatch'));
             TargetNS.ConfigChange = TargetNS.CollectACLData($('#ACLChange'));
 
             $('input[name=ConfigMatch]').val(Core.JSON.Stringify(TargetNS.ConfigMatch));
@@ -840,19 +853,25 @@ Core.Agent.Admin.ACL = (function (TargetNS) {
             $('.LiveEdit, .NewDataItem').each(function() {
 
                 // only do it for the 'Action' item (can be extended in the future)
-                if ( $(this).closest('ul').closest('li').data('content') === 'Action' ) {
+                if ($(this).closest('ul').closest('li').data('content') === 'Action') {
+
+                    // if the element doesn't have an ID, generate one.
+                    // this is needed for the autocomplete for work properly, e.g.
+                    // to hide the loader icon after the results have been fetched
+                    Core.UI.GetID($(this));
 
                     Core.UI.Autocomplete.Init(
                         $(this),
                         function(Request, Response) {
                             var Data = [],
-                                ItemLC = '';
+                                ItemLC = '',
+                                PossibleActionsList = Core.Config.Get('PossibleActionsList');
 
                             if (Request.term === '**') {
-                                Data = Core.Agent.Admin.ACL.Autocomplete.Action;
+                                Data = PossibleActionsList;
                             }
                             else {
-                                $.each(Core.Agent.Admin.ACL.Autocomplete.Action, function(Index, Item) {
+                                $.each(PossibleActionsList, function(Index, Item) {
                                     ItemLC = Item.value.toLowerCase();
                                     if (ItemLC.indexOf(Request.term.toLowerCase()) !== -1) {
                                         Data.push(Item);
@@ -872,6 +891,8 @@ Core.Agent.Admin.ACL = (function (TargetNS) {
 
         });
     };
+
+    Core.Init.RegisterNamespace(TargetNS, 'APP_MODULE');
 
     return TargetNS;
 }(Core.Agent.Admin.ACL || {}));

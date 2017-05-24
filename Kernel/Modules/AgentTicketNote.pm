@@ -1,6 +1,5 @@
 # --
-# Kernel/Modules/AgentTicketNote.pm - to add notes to a ticket
-# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -12,6 +11,6 @@ package Kernel::Modules::AgentTicketNote;
 use strict;
 use warnings;
 
-use base qw( Kernel::Modules::AgentTicketActionCommon );
+use parent qw( Kernel::Modules::AgentTicketActionCommon );
 
 1;

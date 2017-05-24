@@ -1,6 +1,5 @@
 # --
-# Kernel/GenericInterface/Operation/Ticket/TicketCreate.pm - GenericInterface Ticket TicketCreate operation backend
-# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -12,9 +11,9 @@ package Kernel::GenericInterface::Operation::Ticket::TicketCreate;
 use strict;
 use warnings;
 
-use Kernel::System::VariableCheck qw(IsArrayRefWithData IsHashRefWithData IsStringWithData);
+use Kernel::System::VariableCheck qw(IsArrayRefWithData IsHashRefWithData IsString IsStringWithData);
 
-use base qw(
+use parent qw(
     Kernel::GenericInterface::Operation::Common
     Kernel::GenericInterface::Operation::Ticket::Common
 );
@@ -25,15 +24,9 @@ our $ObjectManagerDisabled = 1;
 
 Kernel::GenericInterface::Operation::Ticket::TicketCreate - GenericInterface Ticket TicketCreate Operation backend
 
-=head1 SYNOPSIS
-
 =head1 PUBLIC INTERFACE
 
-=over 4
-
-=cut
-
-=item new()
+=head2 new()
 
 usually, you want to create an instance of this
 by using Kernel::GenericInterface::Operation->new();
@@ -63,7 +56,7 @@ sub new {
     return $Self;
 }
 
-=item Run()
+=head2 Run()
 
 perform TicketCreate Operation. This will return the created ticket number.
 
@@ -111,21 +104,22 @@ perform TicketCreate Operation. This will return the created ticket number.
                     Hour   => 23,
                     Minute => 05,
                 },
+                # or
+                # PendingTime {
+                #     Diff => 10080, # Pending time in minutes
+                #},
             },
             Article => {
-                ArticleTypeID                   => 123,                        # optional
-                ArticleType                     => 'some article type name',   # optional
                 SenderTypeID                    => 123,                        # optional
+                IsVisibleForCustomer            => 1,                          # optional
                 SenderType                      => 'some sender type name',    # optional
                 AutoResponseType                => 'some auto response type',  # optional
                 From                            => 'some from string',         # optional
                 Subject                         => 'some subject',
-                Body                            => 'some body'
-
-                ContentType                     => 'some content type',        # ContentType or MimeType and Charset is requieed
+                Body                            => 'some body',
+                ContentType                     => 'some content type',        # ContentType or MimeType and Charset is required
                 MimeType                        => 'some mime type',
                 Charset                         => 'some charset',
-
                 HistoryType                     => 'some history type',        # optional
                 HistoryComment                  => 'Some  history comment',    # optional
                 TimeUnit                        => 123,                        # optional
@@ -339,16 +333,19 @@ sub Run {
         }
     }
 
-    # check attributes that can be gather by sysconfig
+    # Check attributes that can be set by sysconfig.
     if ( !$Article->{AutoResponseType} ) {
         $Article->{AutoResponseType} = $Self->{Config}->{AutoResponseType} || '';
     }
-    if ( !$Article->{ArticleTypeID} && !$Article->{ArticleType} ) {
-        $Article->{ArticleType} = $Self->{Config}->{ArticleType} || '';
+
+    # TODO: GenericInterface::Operation::TicketCreate###CommunicationChannel
+    if ( !$Article->{CommunicationChannelID} && !$Article->{CommunicationChannel} ) {
+        $Article->{CommunicationChannel} = 'Internal';
+    }
+    if ( !defined $Article->{IsVisibleForCustomer} ) {
+        $Article->{IsVisibleForCustomer} = $Self->{Config}->{IsVisibleForCustomer} // 1;
     }
     if ( !$Article->{SenderTypeID} && !$Article->{SenderType} ) {
-
-        # $Article->{SenderType} = $Self->{Config}->{SenderType} || '';
         $Article->{SenderType} = $UserType eq 'User' ? 'agent' : 'customer';
     }
     if ( !$Article->{HistoryType} ) {
@@ -366,7 +363,7 @@ sub Run {
             return {
                 Success => 0,
                 %{$ArticleCheck},
-                }
+            };
         }
         return $Self->ReturnError( %{$ArticleCheck} );
     }
@@ -476,7 +473,7 @@ sub Run {
 
 =begin Internal:
 
-=item _CheckTicket()
+=head2 _CheckTicket()
 
 checks if the given ticket parameters are valid.
 
@@ -660,7 +657,7 @@ sub _CheckTicket {
         }
 }
 
-=item _CheckArticle()
+=head2 _CheckArticle()
 
 checks if the given article parameter is valid.
 
@@ -713,19 +710,19 @@ sub _CheckArticle {
         };
     }
 
-    # check Article->ArticleType
-    if ( !$Article->{ArticleTypeID} && !$Article->{ArticleType} ) {
+    # check Article->CommunicationChannel
+    if ( !$Article->{CommunicationChannel} && !$Article->{CommunicationChannelID} ) {
 
         # return internal server error
         return {
-            ErrorMessage => "TicketCreate: Article->ArticleTypeID or Article->ArticleType parameter"
-                . " is required and Sysconfig ArticleTypeID setting could not be read!"
+            ErrorMessage => "TicketCreate: Article->CommunicationChannelID or Article->CommunicationChannel parameter"
+                . " is required and Sysconfig CommunicationChannelID setting could not be read!"
         };
     }
-    if ( !$Self->ValidateArticleType( %{$Article} ) ) {
+    if ( !$Self->ValidateArticleCommunicationChannel( %{$Article} ) ) {
         return {
             ErrorCode    => 'TicketCreate.InvalidParameter',
-            ErrorMessage => "TicketCreate: Article->ArticleTypeID or Article->ArticleType parameter"
+            ErrorMessage => "TicketCreate: Article->CommunicationChannel or Article->CommunicationChannelID parameter"
                 . " is invalid!",
         };
     }
@@ -938,7 +935,7 @@ sub _CheckArticle {
     };
 }
 
-=item _CheckDynamicField()
+=head2 _CheckDynamicField()
 
 checks if the given dynamic field parameter is valid.
 
@@ -966,7 +963,11 @@ sub _CheckDynamicField {
 
     # check DynamicField item internally
     for my $Needed (qw(Name Value)) {
-        if ( !defined $DynamicField->{$Needed} || !IsStringWithData( $DynamicField->{$Needed} ) ) {
+        if (
+            !defined $DynamicField->{$Needed}
+            || ( !IsString( $DynamicField->{$Needed} ) && ref $DynamicField->{$Needed} ne 'ARRAY' )
+            )
+        {
             return {
                 ErrorCode    => 'TicketCreate.MissingParameter',
                 ErrorMessage => "TicketCreate: DynamicField->$Needed  parameter is missing!",
@@ -996,7 +997,7 @@ sub _CheckDynamicField {
     };
 }
 
-=item _CheckAttachment()
+=head2 _CheckAttachment()
 
 checks if the given attachment parameter is valid.
 
@@ -1074,7 +1075,7 @@ sub _CheckAttachment {
     };
 }
 
-=item _TicketCreate()
+=head2 _TicketCreate()
 
 creates a ticket with its article and sets dynamic fields and attachments if specified.
 
@@ -1089,7 +1090,7 @@ creates a ticket with its article and sets dynamic fields and attachments if spe
     returns:
 
     $Response = {
-        Success => 1,                               # if everething is OK
+        Success => 1,                               # if everything was OK
         Data => {
             TicketID     => 123,
             TicketNumber => 'TN3422332',
@@ -1237,6 +1238,32 @@ sub _TicketCreate {
         }
     }
 
+    # set dynamic fields (only for object type 'ticket')
+    if ( IsArrayRefWithData($DynamicFieldList) ) {
+
+        DYNAMICFIELD:
+        for my $DynamicField ( @{$DynamicFieldList} ) {
+            next DYNAMICFIELD if !$Self->ValidateDynamicFieldObjectType( %{$DynamicField} );
+
+            my $Result = $Self->SetDynamicFieldValue(
+                %{$DynamicField},
+                TicketID => $TicketID,
+                UserID   => $Param{UserID},
+            );
+
+            if ( !$Result->{Success} ) {
+                my $ErrorMessage =
+                    $Result->{ErrorMessage} || "Dynamic Field $DynamicField->{Name} could not be"
+                    . " set, please contact the system administrator";
+
+                return {
+                    Success      => 0,
+                    ErrorMessage => $ErrorMessage,
+                };
+            }
+        }
+    }
+
     if ( !defined $Article->{NoAgentNotify} ) {
 
         # check if new owner is given (then send no agent notify)
@@ -1274,39 +1301,49 @@ sub _TicketCreate {
         );
     }
 
-    # create article
-    my $ArticleID = $TicketObject->ArticleCreate(
-        NoAgentNotify  => $Article->{NoAgentNotify}  || 0,
-        TicketID       => $TicketID,
-        ArticleTypeID  => $Article->{ArticleTypeID}  || '',
-        ArticleType    => $Article->{ArticleType}    || '',
-        SenderTypeID   => $Article->{SenderTypeID}   || '',
-        SenderType     => $Article->{SenderType}     || '',
-        From           => $From,
-        To             => $To,
-        Subject        => $Article->{Subject},
-        Body           => $Article->{Body},
-        MimeType       => $Article->{MimeType}       || '',
-        Charset        => $Article->{Charset}        || '',
-        ContentType    => $Article->{ContentType}    || '',
-        UserID         => $Param{UserID},
-        HistoryType    => $Article->{HistoryType},
-        HistoryComment => $Article->{HistoryComment} || '%%',
-        AutoResponseType => $Article->{AutoResponseType},
-        OrigHeader       => {
+    if ( !$Article->{CommunicationChannel} ) {
+
+        my %CommunicationChannel = $Kernel::OM->Get('Kernel::System::CommunicationChannel')->ChannelGet(
+            ChannelID => $Article->{CommunicationChannelID},
+        );
+        $Article->{CommunicationChannel} = $CommunicationChannel{ChannelName};
+    }
+
+    my $ArticleBackendObject = $Kernel::OM->Get('Kernel::System::Ticket::Article')->BackendForChannel(
+        ChannelName => $Article->{CommunicationChannel},
+    );
+
+    # Create article.
+    my $ArticleID = $ArticleBackendObject->ArticleCreate(
+        NoAgentNotify => $Article->{NoAgentNotify} || 0,
+        TicketID      => $TicketID,
+        SenderTypeID  => $Article->{SenderTypeID}  || '',
+        SenderType    => $Article->{SenderType}    || '',
+        IsVisibleForCustomer => $Article->{IsVisibleForCustomer},
+        From                 => $From,
+        To                   => $To,
+        Subject              => $Article->{Subject},
+        Body                 => $Article->{Body},
+        MimeType             => $Article->{MimeType} || '',
+        Charset              => $Article->{Charset} || '',
+        ContentType          => $Article->{ContentType} || '',
+        UserID               => $Param{UserID},
+        HistoryType          => $Article->{HistoryType},
+        HistoryComment       => $Article->{HistoryComment} || '%%',
+        AutoResponseType     => $Article->{AutoResponseType},
+        OrigHeader           => {
             From    => $From,
             To      => $To,
             Subject => $Article->{Subject},
             Body    => $Article->{Body},
-
         },
     );
 
     if ( !$ArticleID ) {
         return {
             Success      => 0,
-            ErrorMessage => 'Article could not be created, please contact the system administrator'
-            }
+            ErrorMessage => 'Article could not be created, please contact the system administrator',
+        };
     }
 
     # set owner (if owner or owner id is given)
@@ -1356,10 +1393,18 @@ sub _TicketCreate {
         );
     }
 
-    # set dynamic fields
+    # set dynamic fields (only for object type 'article')
     if ( IsArrayRefWithData($DynamicFieldList) ) {
 
+        DYNAMICFIELD:
         for my $DynamicField ( @{$DynamicFieldList} ) {
+
+            my $IsArticleDynamicField = $Self->ValidateDynamicFieldObjectType(
+                %{$DynamicField},
+                Article => 1,
+            );
+            next DYNAMICFIELD if !$IsArticleDynamicField;
+
             my $Result = $Self->SetDynamicFieldValue(
                 %{$DynamicField},
                 TicketID  => $TicketID,
@@ -1385,6 +1430,7 @@ sub _TicketCreate {
 
         for my $Attachment ( @{$AttachmentList} ) {
             my $Result = $Self->CreateAttachment(
+                TicketID   => $TicketID,
                 Attachment => $Attachment,
                 ArticleID  => $ArticleID,
                 UserID     => $Param{UserID}
@@ -1407,7 +1453,7 @@ sub _TicketCreate {
     my %TicketData = $TicketObject->TicketGet(
         TicketID      => $TicketID,
         DynamicFields => 0,
-        UserID        => $Param{UserId},
+        UserID        => $Param{UserID},
     );
 
     if ( !IsHashRefWithData( \%TicketData ) ) {
@@ -1431,8 +1477,6 @@ sub _TicketCreate {
 1;
 
 =end Internal:
-
-=back
 
 =head1 TERMS AND CONDITIONS
 

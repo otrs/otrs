@@ -1,6 +1,5 @@
 # --
-# Kernel/System/Stats.pm - all stats core functions
-# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -13,19 +12,24 @@ use strict;
 use warnings;
 
 use MIME::Base64;
-use Date::Pcalc qw(:all);
-use Storable qw();
 
+use POSIX qw(ceil);
+
+use Kernel::Language qw(Translatable);
 use Kernel::System::VariableCheck qw(:all);
+use Kernel::Output::HTML::Statistics::View;
 
 our @ObjectDependencies = (
     'Kernel::Config',
     'Kernel::Language',
+    'Kernel::Output::HTML::Statistics::View',
     'Kernel::System::Cache',
+    'Kernel::System::DB',
     'Kernel::System::Encode',
     'Kernel::System::Group',
     'Kernel::System::Log',
     'Kernel::System::Main',
+    'Kernel::System::Storable',
     'Kernel::System::Time',
     'Kernel::System::User',
     'Kernel::System::XML',
@@ -35,24 +39,35 @@ our @ObjectDependencies = (
 
 Kernel::System::Stats - stats lib
 
-=head1 SYNOPSIS
+=head1 DESCRIPTION
 
 All stats functions.
 
+=head2 Explanation for the time zone parameter
+
+The time zone parameter is available, if the statistic is a dynamic statistic. The selected periods in the frontend are time zone neutral and for the
+search parameters, the selection will be converted to the OTRS time zone, because the times
+are stored within this time zone in the database.
+
+This means e.g. if an absolute period of time from 2015-08-01 00:00:00 to 2015-09-10 23:59:59 and a time zone with an offset of +6 hours has been selected,
+the period will be converted from the +6 time zone to the OTRS time zone for the search parameter,
+so that the right time will be used for searching the database. Given that the OTRS time zone is set to UTC, this
+would result in a period of 2015-07-31 18:00:00 to 2015-09-10 17:59:59 UTC.
+
+For a relative time period, e. g. the last 10 full days, and a time zone with an offset of +10 hours, a DateTime object with the +10 time zone will be created
+for the current time. For the period end date, this date will be taken and extended to the end of the day. Then, 10 full days will be subtracted from this.
+This is the start of the period, which will be extended to 00:00:00. Start and end date will be converted to the time zone of OTRS to search the database.
+
+Example for relative time period 'last 10 full days' with selected time zone offset +10 hours, current date/time within this time zone 2015-09-10 16:00:00, OTRS time zone is UTC:
+End date: 2015-09-10 16:00:00 -> extended to 2015-09-10 23:59:59 -> 2015-09-10 13:59:59 OTRS time zone (UTC)
+Start date: 2015-09-10 16:00:00 - 10 days -> 2015-08-31 16:00:00 -> extended to 00:00:00: 2015-09-01 00:00:00 -> 2015-08-31 14:00:00 OTRS time zone (UTC)
+
 =head1 PUBLIC INTERFACE
 
-=over 4
+=head2 new()
 
-=item new()
+Don't use the constructor directly, use the ObjectManager instead:
 
-create an object. Do not use it directly, instead use:
-
-    use Kernel::System::ObjectManager;
-    local $Kernel::OM = Kernel::System::ObjectManager->new(
-        'Kernel::System::Stats' => {
-            UserID  => 123,
-        }
-    );
     my $StatsObject = $Kernel::OM->Get('Kernel::System::Stats');
 
 =cut
@@ -64,24 +79,34 @@ sub new {
     my $Self = {};
     bless( $Self, $Type );
 
-    $Self->{UserID} = $Param{UserID} || die "Got no UserID!";
-
     # temporary directory
     $Self->{StatsTempDir} = $Kernel::OM->Get('Kernel::Config')->Get('Home') . '/var/stats/';
 
     return $Self;
 }
 
-=item StatsAdd()
+=head2 StatsAdd()
 
 add new empty stats
 
-    my $StatID = $StatsObject->StatsAdd();
+    my $StatID = $StatsObject->StatsAdd(
+        UserID => $UserID,
+    );
 
 =cut
 
 sub StatsAdd {
-    my $Self = shift;
+    my ( $Self, %Param ) = @_;
+
+    for my $Needed (qw(UserID)) {
+        if ( !$Param{$Needed} ) {
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
+                Priority => "error",
+                Message  => "Need $Needed.",
+            );
+            return;
+        }
+    }
 
     # get needed objects
     my $XMLObject  = $Kernel::OM->Get('Kernel::System::XML');
@@ -110,13 +135,13 @@ sub StatsAdd {
             { Content => $TimeStamp },
         ],
         CreatedBy => [
-            { Content => $Self->{UserID} },
+            { Content => $Param{UserID} },
         ],
         Changed => [
             { Content => $TimeStamp },
         ],
         ChangedBy => [
-            { Content => $Self->{UserID} },
+            { Content => $Param{UserID} },
         ],
         Valid => [
             { Content => 1 },
@@ -150,7 +175,7 @@ sub StatsAdd {
     return $StatID;
 }
 
-=item StatsGet()
+=head2 StatsGet()
 
 get a hash ref of the stats you need
 
@@ -217,6 +242,11 @@ sub StatsGet {
         if ( defined $StatsXML->{$Key}->[1]->{Content} ) {
             $Stat{$Key} = $StatsXML->{$Key}->[1]->{Content};
         }
+    }
+
+    # time zone
+    if ( defined $StatsXML->{TimeZone}->[1]->{Content} ) {
+        $Stat{TimeZone} = $StatsXML->{TimeZone}->[1]->{Content};
     }
 
     # process all arrays
@@ -306,6 +336,7 @@ sub StatsGet {
                 if ( !$StatAttributes[0] ) {
                     shift @StatAttributes;
                 }
+
                 REF:
                 for my $Ref (@StatAttributes) {
                     if ( !defined $Attribute->{Translation} ) {
@@ -326,29 +357,35 @@ sub StatsGet {
                     }
 
                     for my $Index ( 1 .. $#{ $Ref->{SelectedValues} } ) {
-                        push(
-                            @{ $Attribute->{SelectedValues} },
-                            $Ref->{SelectedValues}->[$Index]->{Content}
-                        );
+                        push @{ $Attribute->{SelectedValues} }, $Ref->{SelectedValues}->[$Index]->{Content};
                     }
 
-                    # settings for working with time elements
-                    for (
-                        qw(TimeStop TimeStart TimeRelativeUnit
-                        TimeRelativeCount TimeScaleCount
-                        )
-                        )
-                    {
-                        if ( $Ref->{$_} && ( !$Attribute->{$_} || $Ref->{Fixed} ) ) {
-                            $Attribute->{$_} = $Ref->{$_};
+                    if ( $Attribute->{Block} eq 'Time' ) {
+
+                        # settings for working with time elements
+                        for (
+                            qw(TimeStop TimeStart TimeRelativeUnit
+                            TimeRelativeCount TimeRelativeUpcomingCount TimeScaleCount
+                            )
+                            )
+                        {
+                            if ( defined $Ref->{$_} && ( !$Attribute->{$_} || $Ref->{Fixed} ) ) {
+                                $Attribute->{$_} = $Ref->{$_};
+                            }
                         }
+
+                        # set a default value for the time relative upcoming count field
+                        $Attribute->{TimeRelativeUpcomingCount} //= 0;
                     }
+
                     $Allowed{$Element} = 1;
                 }
             }
+
             push @StatAttributesSimplified, $Attribute;
 
         }
+
         $Stat{$Key} = \@StatAttributesSimplified;
     }
 
@@ -365,19 +402,30 @@ sub StatsGet {
     return \%Stat;
 }
 
-=item StatsUpdate()
+=head2 StatsUpdate()
 
 update a stat
 
     $StatsObject->StatsUpdate(
         StatID => '123',
-        Hash   => \%Hash
+        Hash   => \%Hash,
+        UserID => $UserID,
     );
 
 =cut
 
 sub StatsUpdate {
     my ( $Self, %Param ) = @_;
+
+    for my $Needed (qw(UserID)) {
+        if ( !$Param{$Needed} ) {
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
+                Priority => "error",
+                Message  => "Need $Needed.",
+            );
+            return;
+        }
+    }
 
     # declaration of the hash
     my %StatXML;
@@ -440,8 +488,9 @@ sub StatsUpdate {
                 }
 
                 # stetting for working with time elements
-                for (qw(TimeStop TimeStart TimeRelativeUnit TimeRelativeCount TimeScaleCount)) {
-                    if ( $Ref->{$_} ) {
+                for (qw(TimeStop TimeStart TimeRelativeUnit TimeRelativeCount TimeRelativeUpcomingCount TimeScaleCount))
+                {
+                    if ( defined $Ref->{$_} ) {
                         $StatXML{$Key}->[$Index]->{$_} = $Ref->{$_};
                     }
                 }
@@ -467,7 +516,7 @@ sub StatsUpdate {
         SystemTime => $TimeObject->SystemTime(),
     );
     $StatXML{Changed}->[1]->{Content}   = $TimeStamp;
-    $StatXML{ChangedBy}->[1]->{Content} = $Self->{UserID};
+    $StatXML{ChangedBy}->[1]->{Content} = $Param{UserID};
 
     # get xml object
     my $XMLObject = $Kernel::OM->Get('Kernel::System::XML');
@@ -519,7 +568,7 @@ sub StatsUpdate {
     return 1;
 }
 
-=item StatsDelete()
+=head2 StatsDelete()
 
 delete a stats
 
@@ -599,12 +648,13 @@ sub StatsDelete {
     return 1;
 }
 
-=item StatsListGet()
+=head2 StatsListGet()
 
 fetches all statistics that the current user may see
 
     my $StatsRef = $StatsObject->StatsListGet(
         AccessRw => 1, # Optional, indicates that user may see all statistics
+        UserID   => $UserID,
     );
 
     Returns
@@ -620,6 +670,16 @@ fetches all statistics that the current user may see
 
 sub StatsListGet {
     my ( $Self, %Param ) = @_;
+
+    for my $Needed (qw(UserID)) {
+        if ( !$Param{$Needed} ) {
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
+                Priority => "error",
+                Message  => "Need $Needed.",
+            );
+            return;
+        }
+    }
 
     my @SearchResult;
 
@@ -649,7 +709,9 @@ sub StatsListGet {
         if ( !( @SearchResult = $XMLObject->XMLHashSearch( Type => 'Stats' ) ) ) {
 
             # Import sample stats
-            $Self->_AutomaticSampleImport();
+            $Self->_AutomaticSampleImport(
+                UserID => $Param{UserID},
+            );
 
             # Load stats again
             return if !( @SearchResult = $XMLObject->XMLHashSearch( Type => 'Stats' ) );
@@ -668,7 +730,7 @@ sub StatsListGet {
 
     # get user groups
     my %GroupList = $Kernel::OM->Get('Kernel::System::Group')->PermissionUserGet(
-        UserID => $Self->{UserID},
+        UserID => $Param{UserID},
         Type   => 'ro',
     );
 
@@ -682,7 +744,7 @@ sub StatsListGet {
         );
 
         my $UserPermission = 0;
-        if ( $Param{AccessRw} || $Self->{UserID} == 1 ) {
+        if ( $Param{AccessRw} || $Param{UserID} == 1 ) {
 
             $UserPermission = 1;
         }
@@ -708,7 +770,7 @@ sub StatsListGet {
     return \%Result;
 }
 
-=item GetStatsList()
+=head2 GetStatsList()
 
 lists all stats id's
 
@@ -716,12 +778,23 @@ lists all stats id's
         AccessRw  => 1, # Optional, indicates that user may see all statistics
         OrderBy   => 'ID' || 'Title' || 'Object', # optional
         Direction => 'ASC' || 'DESC',             # optional
+        UserID    => $UserID,
     );
 
 =cut
 
 sub GetStatsList {
     my ( $Self, %Param ) = @_;
+
+    for my $Needed (qw(UserID)) {
+        if ( !$Param{$Needed} ) {
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
+                Priority => "error",
+                Message  => "Need $Needed.",
+            );
+            return;
+        }
+    }
 
     $Param{OrderBy}   ||= 'ID';
     $Param{Direction} ||= 'ASC';
@@ -744,7 +817,7 @@ sub GetStatsList {
     return \@SortArray;
 }
 
-=item SumBuild()
+=head2 SumBuild()
 
 build sum in x or/and y axis
 
@@ -762,9 +835,9 @@ sub SumBuild {
     my @Data = @{ $Param{Array} };
 
     # add sum y
-    if ( $Param{SumRow} ) {
+    if ( $Param{SumCol} ) {
 
-        push @{ $Data[1] }, 'Sum';
+        push @{ $Data[1] }, Translatable('Sum');
 
         for my $Index1 ( 2 .. $#Data ) {
 
@@ -793,7 +866,7 @@ sub SumBuild {
     }
 
     # add sum x
-    if ( $Param{SumCol} ) {
+    if ( $Param{SumRow} ) {
 
         my @SumRow = ();
         $SumRow[0] = 'Sum';
@@ -825,532 +898,10 @@ sub SumBuild {
 
         push @Data, \@SumRow;
     }
-    return \@Data;
+    return @Data;
 }
 
-=item GenerateGraph()
-
-make graph from result array
-
-    my $Graph = $StatsObject->GenerateGraph(
-        Array        => \@StatArray,
-        GraphSize    => '800x600',
-        HeadArrayRef => $HeadArrayRef,
-        Title        => 'All Tickets of the month',
-        Format       => 'GD::Graph::lines',
-    );
-
-=cut
-
-sub GenerateGraph {
-    my ( $Self, %Param ) = @_;
-
-    # check if need params are available
-    for (qw(Array GraphSize HeadArrayRef Title Format)) {
-        if ( !$Param{$_} ) {
-            $Kernel::OM->Get('Kernel::System::Log')->Log(
-                Priority => 'error',
-                Message  => "Need $_!"
-            );
-            return;
-        }
-    }
-
-    my @StatArray    = @{ $Param{Array} };
-    my $HeadArrayRef = $Param{HeadArrayRef};
-    my $GDBackend    = $Param{Format};
-
-    # delete SumCol and SumRow if present
-    if ( $StatArray[-1][0] eq 'Sum' ) {
-        pop @StatArray;
-    }
-    if ( $HeadArrayRef->[-1] eq 'Sum' ) {
-        pop @{$HeadArrayRef};
-        for my $Row (@StatArray) {
-            pop @{$Row};
-        }
-    }
-
-    # get main object
-    my $MainObject = $Kernel::OM->Get('Kernel::System::Main');
-
-    # load gd modules
-    for my $Module ( 'GD', 'GD::Graph', $GDBackend ) {
-        if ( !$MainObject->Require($Module) ) {
-            $Kernel::OM->Get('Kernel::System::Log')->Log(
-                Priority => 'error',
-                Message  => "Need $Module!"
-            );
-            return;
-        }
-    }
-
-    # remove first y/x position
-    my $Xlabel = shift @{$HeadArrayRef};
-
-    # get first col for legend
-    my @YLine;
-    for my $Tmp (@StatArray) {
-        push @YLine, $Tmp->[0];
-        shift @{$Tmp};
-    }
-
-    # build plot data
-    my @PData = ( $HeadArrayRef, @StatArray );
-    my ( $XSize, $YSize ) = split( m{x}x, $Param{GraphSize} );
-    my $Graph = $GDBackend->new( $XSize || 550, $YSize || 350 );
-
-    # get config object
-    my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
-
-    # set fonts so we can use non-latin characters
-    my $FontDir    = $ConfigObject->Get('Home') . '/var/fonts/';
-    my $TitleFont  = $FontDir . $ConfigObject->Get('Stats::Graph::TitleFont');
-    my $LegendFont = $FontDir . $ConfigObject->Get('Stats::Graph::LegendFont');
-    $Graph->set_title_font( $TitleFont, 14 );
-
-    # there are different font options for different font types
-    if ( $GDBackend eq 'GD::Graph::pie' ) {
-        $Graph->set_value_font( $LegendFont, 9 );
-    }
-    else {
-        $Graph->set_values_font( $LegendFont, 9 );
-        $Graph->set_legend_font( $LegendFont, 9 );
-        $Graph->set_x_label_font( $LegendFont, 9 );
-        $Graph->set_y_label_font( $LegendFont, 9 );
-        $Graph->set_x_axis_font( $LegendFont, 9 );
-        $Graph->set_y_axis_font( $LegendFont, 9 );
-    }
-    $Graph->set(
-        x_label => $Xlabel,
-
-        #        y_label => 'Ylabel',
-        title => $Param{Title},
-
-        #        y_max_value => 20,
-        #        y_tick_number => 16,
-        #        y_label_skip => 4,
-        #        x_tick_number => 8,
-        t_margin    => $ConfigObject->Get('Stats::Graph::t_margin')    || 10,
-        b_margin    => $ConfigObject->Get('Stats::Graph::b_margin')    || 10,
-        l_margin    => $ConfigObject->Get('Stats::Graph::l_margin')    || 10,
-        r_margin    => $ConfigObject->Get('Stats::Graph::r_margin')    || 20,
-        bgclr       => $ConfigObject->Get('Stats::Graph::bgclr')       || 'white',
-        transparent => $ConfigObject->Get('Stats::Graph::transparent') || 0,
-        interlaced  => 1,
-        fgclr       => $ConfigObject->Get('Stats::Graph::fgclr')       || 'black',
-        boxclr      => $ConfigObject->Get('Stats::Graph::boxclr')      || 'white',
-        accentclr   => $ConfigObject->Get('Stats::Graph::accentclr')   || 'black',
-        shadowclr   => $ConfigObject->Get('Stats::Graph::shadowclr')   || 'black',
-        legendclr   => $ConfigObject->Get('Stats::Graph::legendclr')   || 'black',
-        textclr     => $ConfigObject->Get('Stats::Graph::textclr')     || 'black',
-        dclrs       => $ConfigObject->Get('Stats::Graph::dclrs')
-            || [
-            qw(red green blue yellow purple orange pink marine cyan lgray lblue lyellow lgreen lred lpurple lorange lbrown)
-            ],
-        x_tick_offset       => 0,
-        x_label_position    => 1 / 2,
-        y_label_position    => 1 / 2,
-        x_labels_vertical   => 31,
-        line_width          => $ConfigObject->Get('Stats::Graph::line_width') || 1,
-        legend_placement    => $ConfigObject->Get('Stats::Graph::legend_placement') || 'BC',
-        legend_spacing      => $ConfigObject->Get('Stats::Graph::legend_spacing') || 4,
-        legend_marker_width => $ConfigObject->Get('Stats::Graph::legend_marker_width')
-            || 12,
-        legend_marker_height => $ConfigObject->Get('Stats::Graph::legend_marker_height')
-            || 8,
-    );
-
-    # set legend (y-line)
-    if ( $Param{Format} ne 'GD::Graph::pie' ) {
-        $Graph->set_legend(@YLine);
-    }
-
-    # investigate the possible output types
-    my @OutputTypeList = $Graph->export_format();
-
-    # transfer array to hash
-    my %OutputTypes;
-    for my $OutputType (@OutputTypeList) {
-        $OutputTypes{$OutputType} = 1;
-    }
-
-    # select output type
-    my $Ext;
-    if ( $OutputTypes{'png'} ) {
-        $Ext = 'png';
-    }
-    elsif ( $OutputTypes{'gif'} ) {
-        $Ext = 'gif';
-    }
-    elsif ( $OutputTypes{'jpeg'} ) {
-        $Ext = 'jpeg';
-    }
-
-    # error handling
-    if ( !$Ext ) {
-
-        $Kernel::OM->Get('Kernel::System::Log')->Log(
-            Priority => 'error',
-            Message =>
-                "The support of png, jpeg and gif output is not activated in the GD CPAN module!",
-        );
-
-        return;
-    }
-
-    # create graph
-    my $Content = eval { $Graph->plot( \@PData )->$Ext() };
-
-    return $Content;
-}
-
-=item CompletenessCheck()
-
-    my @Notify = $StatsObject->CompletenessCheck(
-        StatData => \%StatData,
-        Section => 'All' || 'Specification' || 'ValueSeries' || 'Restrictions || Xaxis'
-    );
-
-=cut
-
-sub CompletenessCheck {
-    my ( $Self, %Param ) = @_;
-
-    my @Notify;
-    my @NotifySelected;
-    my @IndexArray;
-
-    $Notify[0] = {
-        Info     => 'Please fill out the required fields!',
-        Priority => 'Error'
-    };
-    $Notify[1] = {
-        Info     => 'Please select a file!',
-        Priority => 'Error'
-    };
-    $Notify[2] = {
-        Info     => 'Please select an object!',
-        Priority => 'Error'
-    };
-    $Notify[3] = {
-        Info     => 'Please select a graph size!',
-        Priority => 'Error'
-    };
-    $Notify[4] = {
-        Info     => 'Please select one element for the X-axis!',
-        Priority => 'Error'
-    };
-    $Notify[6] = {
-        Info =>
-            'Please select only one element or turn of the button \'Fixed\' where the select field is marked!',
-        Priority => 'Error'
-    };
-    $Notify[7] = {
-        Info     => 'If you use a checkbox you have to select some attributes of the select field!',
-        Priority => 'Error'
-    };
-    $Notify[8] = {
-        Info =>
-            'Please insert a value in the selected input field or turn off the \'Fixed\' checkbox!',
-        Priority => 'Error'
-    };
-    $Notify[9] = {
-        Info     => 'The selected end time is before the start time!',
-        Priority => 'Error'
-    };
-    $Notify[10] = {
-        Info     => 'You have to select one or more attributes from the select field!',
-        Priority => 'Error'
-    };
-    $Notify[11] = {
-        Info     => 'The selected Date isn\'t valid!',
-        Priority => 'Error'
-    };
-    $Notify[12] = {
-        Info     => 'Please select only one or two elements via the checkbox!',
-        Priority => 'Error'
-    };
-    $Notify[13] = {
-        Info     => 'If you use a time scale element you can only select one element!',
-        Priority => 'Error'
-    };
-    $Notify[14] = {
-        Info     => 'You have an error in your time selection!',
-        Priority => 'Error'
-    };
-    $Notify[15] = {
-        Info     => 'Your reporting time interval is too small, please use a larger time scale!',
-        Priority => 'Error'
-    };
-    $Notify[16] = {
-        Info     => 'There is something wrong with your time scale selection. Please check it!',
-        Priority => 'Error'
-    };
-    $Notify[17] = {
-        Info     => 'You have to select a time scale like day or month!',
-        Priority => 'Error'
-    };
-
-    # check if need params are available
-    NEED:
-    for my $Need (qw(StatData Section)) {
-        next NEED if $Param{$Need};
-        $Kernel::OM->Get('Kernel::System::Log')->Log(
-            Priority => 'error',
-            Message  => "Need $Need"
-        );
-        return;
-    }
-
-    my %StatData = %{ $Param{StatData} };
-    if ( $Param{Section} eq 'Specification' || $Param{Section} eq 'All' ) {
-        KEY:
-        for (qw(Title Description StatType Permission Format ObjectModule)) {
-            if ( !$StatData{$_} ) {
-                push @IndexArray, 0;
-                last KEY;
-            }
-        }
-        if ( $StatData{StatType} && $StatData{StatType} eq 'static' && !$StatData{File} ) {
-            push @IndexArray, 1;
-        }
-        if ( $StatData{StatType} && $StatData{StatType} eq 'dynamic' && !$StatData{Object} ) {
-            push @IndexArray, 2;
-        }
-        if ( !$Param{StatData}{GraphSize} && $Param{StatData}{Format} ) {
-            FORMAT:
-            for ( @{ $StatData{Format} } ) {
-                if ( $_ =~ m{^GD::Graph\.*}x ) {
-                    push @IndexArray, 3;
-                    last FORMAT;
-                }
-            }
-        }
-    }
-
-    # get needed objects
-    my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
-    my $TimeObject   = $Kernel::OM->Get('Kernel::System::Time');
-
-    # for form calls
-    if ( $StatData{StatType} && $StatData{StatType} eq 'dynamic' ) {
-        if (
-            ( $Param{Section} eq 'Xaxis' || $Param{Section} eq 'All' )
-            && $StatData{StatType} eq 'dynamic'
-            )
-        {
-            my $Flag = 0;
-            XVALUE:
-            for my $Xvalue ( @{ $StatData{UseAsXvalue} } ) {
-                next XVALUE if !$Xvalue->{Selected};
-
-                if ( $Xvalue->{Block} eq 'Time' ) {
-                    if ( $Xvalue->{TimeStart} && $Xvalue->{TimeStop} ) {
-                        my $TimeStart = $TimeObject->TimeStamp2SystemTime(
-                            String => $Xvalue->{TimeStart}
-                        );
-                        my $TimeStop = $TimeObject->TimeStamp2SystemTime(
-                            String => $Xvalue->{TimeStop}
-                        );
-                        if ( !$TimeStart || !$TimeStop ) {
-                            push @IndexArray, 11;
-                            last XVALUE;
-                        }
-                        elsif ( $TimeStart > $TimeStop ) {
-                            push @IndexArray, 9;
-                            last XVALUE;
-                        }
-                    }
-                    elsif ( !$Xvalue->{TimeRelativeUnit} || !$Xvalue->{TimeRelativeCount} ) {
-                        push @IndexArray, 9;
-                        last XVALUE;
-                    }
-
-                    if ( !$Xvalue->{SelectedValues}[0] ) {
-                        push @IndexArray, 16;
-                    }
-                    elsif ( $Xvalue->{Fixed} && $#{ $Xvalue->{SelectedValues} } > 0 ) {
-                        push @IndexArray, 16;
-                    }
-                }
-                $Flag = 1;
-                last XVALUE;
-            }
-            if ( !$Flag ) {
-                push @IndexArray, 4;
-            }
-        }
-        if (
-            ( $Param{Section} eq 'ValueSeries' || $Param{Section} eq 'All' )
-            && $StatData{StatType} eq 'dynamic'
-            )
-        {
-            my $Counter = 0;
-            my $Flag    = 0;
-            VALUESERIES:
-            for my $ValueSeries ( @{ $StatData{UseAsValueSeries} } ) {
-                next VALUESERIES if !$ValueSeries->{Selected};
-
-                if (
-                    $ValueSeries->{Block} eq 'Time'
-                    || $ValueSeries->{Block} eq 'TimeExtended'
-                    )
-                {
-                    if ( $ValueSeries->{Fixed} && $#{ $ValueSeries->{SelectedValues} } > 0 ) {
-                        push @IndexArray, 6;
-                    }
-                    elsif ( !$ValueSeries->{SelectedValues}[0] ) {
-                        push @IndexArray, 7;
-                    }
-                    $Flag = 1;
-                }
-
-                $Counter++;
-            }
-            if ( $Counter > 1 && $Flag ) {
-                push @IndexArray, 13;
-            }
-            elsif ( $Counter > 2 ) {
-                push @IndexArray, 12;
-            }
-        }
-        if (
-            ( $Param{Section} eq 'Restrictions' || $Param{Section} eq 'All' )
-            && $StatData{StatType} eq 'dynamic'
-            )
-        {
-            RESTRICTION:
-            for my $Restriction ( @{ $StatData{UseAsRestriction} } ) {
-                next RESTRICTION if !$Restriction->{Selected};
-
-                if ( $Restriction->{Block} eq 'SelectField' ) {
-                    if ( $Restriction->{Fixed} && $#{ $Restriction->{SelectedValues} } > 0 ) {
-                        push @IndexArray, 6;
-                        last RESTRICTION;
-                    }
-                    elsif ( !$Restriction->{SelectedValues}[0] ) {
-                        push @IndexArray, 7;
-                        last RESTRICTION;
-                    }
-                }
-                elsif (
-                    $Restriction->{Block} eq 'InputField'
-                    && !$Restriction->{SelectedValues}[0]
-                    && $Restriction->{Fixed}
-                    )
-                {
-                    push @IndexArray, 8;
-                    last RESTRICTION;
-                }
-                elsif (
-                    $Restriction->{Block} eq 'Time'
-                    || $Restriction->{Block} eq 'TimeExtended'
-                    )
-                {
-                    if ( $Restriction->{TimeStart} && $Restriction->{TimeStop} ) {
-                        my $TimeStart = $TimeObject->TimeStamp2SystemTime(
-                            String => $Restriction->{TimeStart}
-                        );
-                        my $TimeStop = $TimeObject->TimeStamp2SystemTime(
-                            String => $Restriction->{TimeStop}
-                        );
-                        if ( !$TimeStart || !$TimeStop ) {
-                            push @IndexArray, 11;
-                            last RESTRICTION;
-                        }
-                        elsif ( $TimeStart > $TimeStop ) {
-                            push @IndexArray, 9;
-                            last RESTRICTION;
-                        }
-                    }
-                    elsif (
-                        !$Restriction->{TimeRelativeUnit}
-                        || !$Restriction->{TimeRelativeCount}
-                        )
-                    {
-                        push @IndexArray, 9;
-                        last RESTRICTION;
-                    }
-                }
-            }
-        }
-
-        # check if the timeperiod is too big or the time scale too small
-        # used only for fixed time values
-        # remark time functions should be exportet in external functions (tr)
-        if ( $Param{Section} eq 'All' && $StatData{StatType} eq 'dynamic' ) {
-            my $Stat = $Self->StatsGet( StatID => $StatData{StatID} );
-
-            XVALUE:
-            for my $Xvalue ( @{ $Stat->{UseAsXvalue} } ) {
-                next XVALUE
-                    if !( $Xvalue->{Selected} && $Xvalue->{Fixed} && $Xvalue->{Block} eq 'Time' );
-
-                my $Flag = 1;
-                VALUESERIES:
-                for my $ValueSeries ( @{ $Stat->{UseAsValueSeries} } ) {
-                    if ( $ValueSeries->{Selected} && $ValueSeries->{Block} eq 'Time' ) {
-                        $Flag = 0;
-                        last VALUESERIES;
-                    }
-                }
-
-                last XVALUE if !$Flag;
-
-                my $ScalePeriod = 0;
-                my $TimePeriod  = 0;
-
-                my $Count = $Xvalue->{TimeScaleCount} ? $Xvalue->{TimeScaleCount} : 1;
-
-                my %TimeInSeconds = (
-                    Year   => 31536000,    # 60 * 60 * 60 * 365
-                    Month  => 2592000,     # 60 * 60 * 24 * 30
-                    Week   => 604800,      # 60 * 60 * 24 * 7
-                    Day    => 86400,       # 60 * 60 * 24
-                    Hour   => 3600,        # 60 * 60
-                    Minute => 60,
-                    Second => 1,
-                );
-
-                $ScalePeriod = $TimeInSeconds{ $Xvalue->{SelectedValues}[0] };
-
-                if ( !$ScalePeriod ) {
-                    push @IndexArray, 17;
-                    last XVALUE;
-                }
-
-                if ( $Xvalue->{TimeStop} && $Xvalue->{TimeStart} ) {
-                    $TimePeriod = (
-                        $TimeObject->TimeStamp2SystemTime( String => $Xvalue->{TimeStop} )
-                        )
-                        - (
-                        $TimeObject->TimeStamp2SystemTime( String => $Xvalue->{TimeStart} )
-                        );
-                }
-                else {
-                    $TimePeriod = $TimeInSeconds{ $Xvalue->{TimeRelativeUnit} }
-                        * $Xvalue->{TimeRelativeCount};
-                }
-
-                my $MaxAttr = $ConfigObject->Get('Stats::MaxXaxisAttributes') || 1000;
-                if ( $TimePeriod / ( $ScalePeriod * $Count ) > $MaxAttr ) {
-                    push @IndexArray, 15;
-                }
-
-                last XVALUE;
-            }
-        }
-    }
-    for (@IndexArray) {
-        push @NotifySelected, $Notify[$_];
-    }
-
-    return @NotifySelected;
-
-}
-
-=item GetStatsObjectAttributes()
+=head2 GetStatsObjectAttributes()
 
 Get all attributes from the object in dependence of the use
 
@@ -1399,18 +950,29 @@ sub GetStatsObjectAttributes {
     return @ObjectAttributes;
 }
 
-=item GetStaticFiles()
+=head2 GetStaticFiles()
 
 Get all static files
 
     my $FileHash = $StatsObject->GetStaticFiles(
         OnlyUnusedFiles => 1 | 0, # optional default 0
+        UserID => $UserID,
     );
 
 =cut
 
 sub GetStaticFiles {
     my ( $Self, %Param ) = @_;
+
+    for my $Needed (qw(UserID)) {
+        if ( !$Param{$Needed} ) {
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
+                Priority => "error",
+                Message  => "Need $Needed.",
+            );
+            return;
+        }
+    }
 
     my $Directory = $Kernel::OM->Get('Kernel::Config')->Get('Home');
     if ( $Directory !~ m{^.*\/$}x ) {
@@ -1430,11 +992,17 @@ sub GetStaticFiles {
     if ( $Param{OnlyUnusedFiles} ) {
 
         # get all Stats from the db
-        my $Result = $Self->GetStatsList();
+        my $Result = $Self->GetStatsList(
+            UserID => $Param{UserID},
+        );
 
         if ( defined $Result ) {
             for my $StatID ( @{$Result} ) {
-                my $Data = $Self->StatsGet( StatID => $StatID );
+                my $Data = $Self->StatsGet(
+                    StatID             => $StatID,
+                    UserID             => $Param{UserID},
+                    NoObjectAttributes => 1,
+                );
 
                 # check witch one are static statistics
                 if ( $Data->{File} && $Data->{StatType} eq 'static' ) {
@@ -1462,7 +1030,7 @@ sub GetStaticFiles {
     return \%Filelist;
 }
 
-=item GetDynamicFiles()
+=head2 GetDynamicFiles()
 
 Get all static objects
 
@@ -1492,7 +1060,7 @@ sub GetDynamicFiles {
     return \%Filelist;
 }
 
-=item GetObjectName()
+=head2 GetObjectName()
 
 Get the name of a dynamic object
 
@@ -1524,7 +1092,7 @@ sub GetObjectName {
     return $Name;
 }
 
-=item GetObjectBehaviours()
+=head2 GetObjectBehaviours()
 
 get behaviours that a statistic supports
 
@@ -1566,7 +1134,7 @@ sub GetObjectBehaviours {
     return \%ObjectBehaviours;
 }
 
-=item ObjectFileCheck()
+=head2 ObjectFileCheck()
 
 check readable object file
 
@@ -1595,7 +1163,7 @@ sub ObjectFileCheck {
     return;
 }
 
-=item Export()
+=head2 Export()
 
 get content from stats for export
 
@@ -1709,11 +1277,12 @@ sub Export {
     return \%File;
 }
 
-=item Import()
+=head2 Import()
 
 import a stats from xml file
 
     my $StatID = $StatsObject->Import(
+        UserID  => $UserID,
         Content => $UploadStuff{Content},
     );
 
@@ -1722,12 +1291,14 @@ import a stats from xml file
 sub Import {
     my ( $Self, %Param ) = @_;
 
-    if ( !$Param{Content} ) {
-        $Kernel::OM->Get('Kernel::System::Log')->Log(
-            Priority => 'error',
-            Message  => 'Need Content!'
-        );
-        return;
+    for my $Needed (qw(UserID Content)) {
+        if ( !$Param{$Needed} ) {
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
+                Priority => "error",
+                Message  => "Need $Needed.",
+            );
+            return;
+        }
     }
 
     # get xml object
@@ -1799,9 +1370,9 @@ sub Import {
 
     # meta tags
     $StatsXML->{Created}->[1]->{Content}    = $TimeStamp;
-    $StatsXML->{CreatedBy}->[1]->{Content}  = $Self->{UserID};
+    $StatsXML->{CreatedBy}->[1]->{Content}  = $Param{UserID};
     $StatsXML->{Changed}->[1]->{Content}    = $TimeStamp;
-    $StatsXML->{ChangedBy}->[1]->{Content}  = $Self->{UserID};
+    $StatsXML->{ChangedBy}->[1]->{Content}  = $Param{UserID};
     $StatsXML->{StatNumber}->[1]->{Content} = $StatID + $ConfigObject->Get('Stats::StatsStartNumber');
 
     my $DynamicFiles = $Self->GetDynamicFiles();
@@ -1941,7 +1512,7 @@ sub Import {
     return $StatID;
 }
 
-=item GetParams()
+=head2 GetParams()
 
     get all edit params from stats for view
 
@@ -1980,13 +1551,15 @@ sub GetParams {
     return \@Params;
 }
 
-=item StatsRun()
+=head2 StatsRun()
 
 run a statistic.
 
     my $StatArray = $StatsObject->StatsRun(
         StatID     => '123',
         GetParam   => \%GetParam,
+        Preview    => 1,        # optional, return fake data for preview (only for dynamic stats)
+        UserID     => $UserID,
     );
 
 =cut
@@ -1995,93 +1568,7 @@ sub StatsRun {
     my ( $Self, %Param ) = @_;
 
     # check needed params
-    NEED:
-    for my $Need (qw(StatID GetParam)) {
-        next NEED if $Param{$Need};
-        $Kernel::OM->Get('Kernel::System::Log')->Log(
-            Priority => 'error',
-            Message  => "Need $Need!"
-        );
-        return;
-    }
-
-    # get config object
-    my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
-
-    # use the mirror db if configured
-    if ( $ConfigObject->Get('Core::MirrorDB::DSN') ) {
-        my $ExtraDatabaseObject = Kernel::System::DB->new(
-            DatabaseDSN  => $ConfigObject->Get('Core::MirrorDB::DSN'),
-            DatabaseUser => $ConfigObject->Get('Core::MirrorDB::User'),
-            DatabasePw   => $ConfigObject->Get('Core::MirrorDB::Password'),
-        );
-        if ( !$ExtraDatabaseObject ) {
-            $Kernel::OM->Get('Kernel::System::Log')->Log(
-                Priority => 'error',
-                Message  => 'There is no MirroDB!',
-            );
-            return;
-        }
-        $Self->{DBSlaveObject} = $ExtraDatabaseObject;
-    }
-
-    my $Stat = $Self->StatsGet( StatID => $Param{StatID} );
-    my %GetParam = %{ $Param{GetParam} };
-    my @Result;
-
-    # get data if it is a static stats
-    if ( $Stat->{StatType} eq 'static' ) {
-        @Result = $Self->_GenerateStaticStats(
-            ObjectModule => $Stat->{ObjectModule},
-            GetParam     => $Param{GetParam},
-            Title        => $Stat->{Title},
-            StatID       => $Stat->{StatID},
-            Cache        => $Stat->{Cache},
-        );
-    }
-
-    # get data if it is a dynaymic stats
-    elsif ( $Stat->{StatType} eq 'dynamic' ) {
-        @Result = $Self->_GenerateDynamicStats(
-            ObjectModule     => $Stat->{ObjectModule},
-            Object           => $Stat->{Object},
-            UseAsXvalue      => $GetParam{UseAsXvalue},
-            UseAsValueSeries => $GetParam{UseAsValueSeries},
-            UseAsRestriction => $GetParam{UseAsRestriction},
-            Title            => $Stat->{Title},
-            StatID           => $Stat->{StatID},
-            Cache            => $Stat->{Cache},
-        );
-    }
-
-    # build sum in row or col
-    if ( ( $Stat->{SumRow} || $Stat->{SumCol} ) && $Stat->{Format} !~ m{^GD::Graph\.*}x ) {
-        return $Self->SumBuild(
-            Array  => \@Result,
-            SumRow => $Stat->{SumRow},
-            SumCol => $Stat->{SumCol},
-        );
-    }
-
-    return \@Result;
-}
-
-=item StatsResultCacheCompute()
-
-computes stats results and adds them to the cache.
-This can be used to precompute stats data e. g. for dashboard widgets in a cron job.
-
-    my $StatArray = $StatsObject->StatsResultCacheCompute(
-        StatID       => '123',
-        UserGetParam => \%UserGetParam, # user settings of non-fixed fields
-    );
-
-=cut
-
-sub StatsResultCacheCompute {
-    my ( $Self, %Param ) = @_;
-
-    for my $Needed (qw(StatID UserGetParam)) {
+    for my $Needed (qw(StatID GetParam UserID)) {
         if ( !$Param{$Needed} ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
@@ -2091,8 +1578,140 @@ sub StatsResultCacheCompute {
         }
     }
 
-    my %GetParam = $Self->_StatsParamsGenerate(%Param);
-    return if !%GetParam;
+    my $Stat = $Self->StatsGet( StatID => $Param{StatID} );
+    my %GetParam = %{ $Param{GetParam} };
+    my @Result;
+
+    # Perform calculations on the slave DB, if configured.
+    local $Kernel::System::DB::UseSlaveDB = 1;
+
+    # get data if it is a static stats
+    if ( $Stat->{StatType} eq 'static' ) {
+
+        return if $Param{Preview};    # not supported for static stats
+
+        @Result = $Self->_GenerateStaticStats(
+            ObjectModule => $Stat->{ObjectModule},
+            GetParam     => $Param{GetParam},
+            Title        => $Stat->{Title},
+            StatID       => $Stat->{StatID},
+            Cache        => $Stat->{Cache},
+            UserID       => $Param{UserID},
+        );
+    }
+
+    # get data if it is a dynaymic stats
+    elsif ( $Stat->{StatType} eq 'dynamic' ) {
+        @Result = $Self->_GenerateDynamicStats(
+            ObjectModule     => $Stat->{ObjectModule},
+            Object           => $Stat->{Object},
+            UseAsXvalue      => $GetParam{UseAsXvalue},
+            UseAsValueSeries => $GetParam{UseAsValueSeries} || [],
+            UseAsRestriction => $GetParam{UseAsRestriction} || [],
+            Title            => $Stat->{Title},
+            StatID           => $Stat->{StatID},
+            TimeZone         => $GetParam{TimeZone},
+            Cache            => $Stat->{Cache},
+            Preview          => $Param{Preview},
+            UserID           => $Param{UserID},
+        );
+    }
+
+    # Build sum in row or col.
+    if ( @Result && ( $Stat->{SumRow} || $Stat->{SumCol} ) && $Stat->{Format} !~ m{^GD::Graph\.*}x ) {
+        @Result = $Self->SumBuild(
+            Array  => \@Result,
+            SumRow => $Stat->{SumRow},
+            SumCol => $Stat->{SumCol},
+        );
+    }
+
+    # Exchange axis if selected.
+    if ( $GetParam{ExchangeAxis} ) {
+        my @NewStatArray;
+        my $Title = $Result[0]->[0];
+
+        shift(@Result);
+        for my $Key1 ( 0 .. $#Result ) {
+            for my $Key2 ( 0 .. $#{ $Result[0] } ) {
+                $NewStatArray[$Key2]->[$Key1] = $Result[$Key1]->[$Key2];
+            }
+        }
+        $NewStatArray[0]->[0] = '';
+        unshift( @NewStatArray, [$Title] );
+        @Result = @NewStatArray;
+    }
+
+    # Translate the column and row description.
+    $Self->_ColumnAndRowTranslation(
+        StatArrayRef => \@Result,
+        StatRef      => $Stat,
+        ExchangeAxis => $GetParam{ExchangeAxis},
+    );
+
+    return \@Result;
+}
+
+=head2 StatsResultCacheCompute()
+
+computes stats results and adds them to the cache.
+This can be used to precompute stats data e. g. for dashboard widgets in a cron job.
+
+    my $StatArray = $StatsObject->StatsResultCacheCompute(
+        StatID       => '123',
+        UserID       => $UserID,        # target UserID
+        UserGetParam => \%UserGetParam, # user settings of non-fixed fields
+    );
+
+=cut
+
+sub StatsResultCacheCompute {
+    my ( $Self, %Param ) = @_;
+
+    for my $Needed (qw(StatID UserGetParam UserID)) {
+        if ( !$Param{$Needed} ) {
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
+                Priority => 'error',
+                Message  => "Need $Needed!"
+            );
+            return;
+        }
+    }
+
+    my $Stat = $Self->StatsGet(
+        StatID => $Param{StatID},
+    );
+
+    my $StatsViewObject = $Kernel::OM->Get('Kernel::Output::HTML::Statistics::View');
+
+    my $StatConfigurationValid = $StatsViewObject->StatsConfigurationValidate(
+        Stat   => $Stat,
+        Errors => {},
+        UserID => $Param{UserID},
+    );
+    if ( !$StatConfigurationValid ) {
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
+            Priority => 'error',
+            Message  => "This statistic contains configuration errors, skipping.",
+        );
+        return;
+    }
+
+    my %GetParam = eval {
+        $StatsViewObject->StatsParamsGet(
+            Stat         => $Stat,
+            UserGetParam => $Param{UserGetParam},
+        );
+    };
+
+    if ( $@ || !%GetParam ) {
+        my $Errors = ref $@ ? join( "\n", @{$@} ) : $@;
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
+            Priority => 'error',
+            Message  => "The dashboard widget configuration for this user contains errors, skipping: $Errors"
+        );
+        return;
+    }
 
     # get main object
     my $MainObject = $Kernel::OM->Get('Kernel::System::Main');
@@ -2103,11 +1722,12 @@ sub StatsResultCacheCompute {
         String => \$DumpString,
     );
 
-    my $CacheKey = "StatsRunCached::$Self->{UserID}::$Param{StatID}::$MD5Sum";
+    my $CacheKey = "StatsRunCached::$Param{UserID}::$Param{StatID}::$MD5Sum";
 
     my $Result = $Self->StatsRun(
         StatID   => $Param{StatID},
         GetParam => \%GetParam,
+        UserID   => $Param{UserID},
     );
 
     # Only set/update the cache after computing it, otherwise no cache data
@@ -2123,14 +1743,15 @@ sub StatsResultCacheCompute {
     );
 }
 
-=item StatsResultCacheGet()
+=head2 StatsResultCacheGet()
 
 gets cached statistic results. Will never run the statistic.
 This can be used to fetch cached stats data e. g. for stats widgets in the dashboard.
 
     my $StatArray = $StatsObject->StatsResultCacheGet(
         StatID       => '123',
-        GetParam     => \%GetParam,
+        UserID       => $UserID,    # target UserID
+        UserGetParam => \%GetParam,
     );
 
 =cut
@@ -2138,7 +1759,7 @@ This can be used to fetch cached stats data e. g. for stats widgets in the dashb
 sub StatsResultCacheGet {
     my ( $Self, %Param ) = @_;
 
-    for my $Needed (qw(StatID UserGetParam)) {
+    for my $Needed (qw(StatID UserGetParam UserID)) {
         if ( !$Param{$Needed} ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
@@ -2148,8 +1769,41 @@ sub StatsResultCacheGet {
         }
     }
 
-    my %GetParam = $Self->_StatsParamsGenerate(%Param);
-    return if !%GetParam;
+    my $Stat = $Self->StatsGet(
+        StatID => $Param{StatID},
+    );
+
+    my $StatsViewObject = $Kernel::OM->Get('Kernel::Output::HTML::Statistics::View');
+
+    my $StatConfigurationValid = $StatsViewObject->StatsConfigurationValidate(
+        Stat   => $Stat,
+        Errors => {},
+        UserID => $Param{UserID},
+    );
+    if ( !$StatConfigurationValid ) {
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
+            Priority => 'error',
+            Message  => "This statistic contains configuration errors, skipping.",
+        );
+        return;
+    }
+
+    my %GetParam = eval {
+        $StatsViewObject->StatsParamsGet(
+            Stat         => $Stat,
+            UserGetParam => $Param{UserGetParam},
+            UserID       => $Param{UserID},
+        );
+    };
+
+    if ( $@ || !%GetParam ) {
+        my $Errors = ref $@ ? join( "\n", @{$@} ) : $@;
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
+            Priority => 'error',
+            Message  => "The dashboard widget configuration for this user contains errors, skipping: $Errors"
+        );
+        return;
+    }
 
     # get main object
     my $MainObject = $Kernel::OM->Get('Kernel::System::Main');
@@ -2160,7 +1814,7 @@ sub StatsResultCacheGet {
         String => \$DumpString,
     );
 
-    my $CacheKey = "StatsRunCached::$Self->{UserID}::$Param{StatID}::$MD5Sum";
+    my $CacheKey = "StatsRunCached::$Param{UserID}::$Param{StatID}::$MD5Sum";
 
     return $Kernel::OM->Get('Kernel::System::Cache')->Get(
         Type => 'StatsRun',
@@ -2171,305 +1825,15 @@ sub StatsResultCacheGet {
     );
 }
 
-# This internal function gets the full stats parameters merged with the user's
-#   parameters.
-sub _StatsParamsGenerate {
-    my ( $Self, %Param ) = @_;
-
-    for my $Needed (qw(StatID UserGetParam)) {
-        if ( !$Param{$Needed} ) {
-            $Kernel::OM->Get('Kernel::System::Log')->Log(
-                Priority => 'error',
-                Message  => "Need $Needed!"
-            );
-            return;
-        }
-    }
-
-    my %UserGetParam = %{ $Param{UserGetParam} };
-
-    my $Stat = $Self->StatsGet( StatID => $Param{StatID} );
-    if ( !IsHashRefWithData($Stat) ) {
-        $Kernel::OM->Get('Kernel::System::Log')->Log(
-            Priority => 'error',
-            Message  => "Could not load stat $Param{StatID}!"
-        );
-    }
-
-    # get time object
-    my $TimeObject = $Kernel::OM->Get('Kernel::System::Time');
-
-    # Get current date for static stats.
-    my ( $s, $m, $h, $D, $M, $Y ) = $TimeObject->SystemTime2Date(
-        SystemTime => $TimeObject->SystemTime(),
-    );
-
-    # get params
-    my %GetParam;
-
-    my %TimeInSeconds = (
-        Year   => 31536000,    # 60 * 60 * 60 * 365
-        Month  => 2592000,     # 60 * 60 * 24 * 30
-        Week   => 604800,      # 60 * 60 * 24 * 7
-        Day    => 86400,       # 60 * 60 * 24
-        Hour   => 3600,        # 60 * 60
-        Minute => 60,
-        Second => 1,
-    );
-
-    # not sure, if this is the right way
-    if ( $Stat->{StatType} eq 'static' ) {
-        $GetParam{Year}  = $Y;
-        $GetParam{Month} = $M;
-        $GetParam{Day}   = $D;
-
-        my $Params = $Self->GetParams( StatID => $Param{StatID} );
-        PARAMITEM:
-        for my $ParamItem ( @{$Params} ) {
-
-            next PARAMITEM if !defined $UserGetParam{ $ParamItem->{Name} };
-
-            # param is array
-            if ( $ParamItem->{Multiple} ) {
-                $GetParam{ $ParamItem->{Name} } = $UserGetParam{ $ParamItem->{Name} } || [];
-                next PARAMITEM;
-            }
-
-            # param is string
-            $GetParam{ $ParamItem->{Name} } = $UserGetParam{ $ParamItem->{Name} };
-        }
-    }
-    else {
-
-        # get config object
-        my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
-
-        my $TimePeriod = 0;
-
-        for my $Use (qw(UseAsRestriction UseAsXvalue UseAsValueSeries)) {
-            $Stat->{$Use} ||= [];
-
-            my @Array   = @{ $Stat->{$Use} };
-            my $Counter = 0;
-            ELEMENT:
-            for my $Element (@Array) {
-                next ELEMENT if !$Element->{Selected};
-
-                if ( !$Element->{Fixed} ) {
-                    if ( $UserGetParam{ $Use . $Element->{Element} } )
-                    {
-                        if ( ref $UserGetParam{ $Use . $Element->{Element} } ) {
-                            $Element->{SelectedValues} = $UserGetParam{ $Use . $Element->{Element} };
-                        }
-                        else {
-                            $Element->{SelectedValues} = [ $UserGetParam{ $Use . $Element->{Element} } ];
-                        }
-                    }
-                    if ( $Element->{Block} eq 'Time' ) {
-
-                        # Check if it is an absolute time period
-                        if ( $Element->{TimeStart} )
-                        {
-
-                            # Use the stat data as fallback
-                            my %Time = (
-                                TimeStart => $Element->{TimeStart},
-                                TimeStop  => $Element->{TimeStop},
-                            );
-
-                            for my $Limit (qw(Start Stop)) {
-                                for my $Unit (qw(Year Month Day Hour Minute Second)) {
-                                    if (
-                                        defined(
-                                            $UserGetParam{
-                                                $Use
-                                                    . $Element->{Element}
-                                                    . "$Limit$Unit"
-                                                }
-                                        )
-                                        )
-                                    {
-                                        $Time{ $Limit . $Unit } = $UserGetParam{
-                                            $Use
-                                                . $Element->{Element}
-                                                . "$Limit$Unit"
-                                        };
-                                    }
-                                }
-                                if ( !defined( $Time{ $Limit . 'Hour' } ) ) {
-                                    if ( $Limit eq 'Start' ) {
-                                        $Time{StartHour}   = 0;
-                                        $Time{StartMinute} = 0;
-                                        $Time{StartSecond} = 0;
-                                    }
-                                    elsif ( $Limit eq 'Stop' ) {
-                                        $Time{StopHour}   = 23;
-                                        $Time{StopMinute} = 59;
-                                        $Time{StopSecond} = 59;
-                                    }
-                                }
-                                elsif ( !defined( $Time{ $Limit . 'Second' } ) ) {
-                                    if ( $Limit eq 'Start' ) {
-                                        $Time{StartSecond} = 0;
-                                    }
-                                    elsif ( $Limit eq 'Stop' ) {
-                                        $Time{StopSecond} = 59;
-                                    }
-                                }
-                                if ( $Time{ $Limit . 'Year' } ) {
-                                    $Time{"Time$Limit"} = sprintf(
-                                        "%04d-%02d-%02d %02d:%02d:%02d",
-                                        $Time{ $Limit . 'Year' },
-                                        $Time{ $Limit . 'Month' },
-                                        $Time{ $Limit . 'Day' },
-                                        $Time{ $Limit . 'Hour' },
-                                        $Time{ $Limit . 'Minute' },
-                                        $Time{ $Limit . 'Second' },
-                                    );
-                                }
-                            }
-
-                            # integrate this functionality in the completenesscheck
-                            if (
-                                $TimeObject->TimeStamp2SystemTime(
-                                    String => $Time{TimeStart}
-                                )
-                                < $TimeObject->TimeStamp2SystemTime(
-                                    String => $Element->{TimeStart}
-                                )
-                                )
-                            {
-
-                                $Kernel::OM->Get('Kernel::System::Log')->Log(
-                                    Priority => 'error',
-                                    Message =>
-                                        "User StartTime $Time{TimeStart} is before configured StartTime $Element->{TimeStart}!",
-                                );
-
-                                return;
-                            }
-
-                            # integrate this functionality in the completenesscheck
-                            if (
-                                $TimeObject->TimeStamp2SystemTime(
-                                    String => $Time{TimeStop}
-                                )
-                                > $TimeObject->TimeStamp2SystemTime(
-                                    String => $Element->{TimeStop}
-                                )
-                                )
-                            {
-                                $Kernel::OM->Get('Kernel::System::Log')->Log(
-                                    Priority => 'error',
-                                    Message =>
-                                        "User StopTime $Time{TimeStop} is after configured StopTime $Element->{TimeStop}!",
-                                );
-
-                                return;
-                            }
-
-                            $Element->{TimeStart} = $Time{TimeStart};
-                            $Element->{TimeStop}  = $Time{TimeStop};
-                            $TimePeriod           = (
-                                $TimeObject->TimeStamp2SystemTime(
-                                    String => $Element->{TimeStop}
-                                    )
-                                )
-                                - (
-                                $TimeObject->TimeStamp2SystemTime(
-                                    String => $Element->{TimeStart}
-                                    )
-                                );
-                        }
-                        else {
-                            my %Time;
-                            $Time{TimeRelativeUnit} = $UserGetParam{ $Use . $Element->{Element} . 'TimeRelativeUnit' };
-                            $Time{TimeRelativeCount}
-                                = $UserGetParam{ $Use . $Element->{Element} . 'TimeRelativeCount' };
-
-                            # Use Values of the stat as fallback
-                            $Time{TimeRelativeCount} //= $Element->{TimeRelativeCount};
-                            $Time{TimeRelativeUnit}  //= $Element->{TimeRelativeUnit};
-
-                            my $TimePeriodAdmin = $Element->{TimeRelativeCount}
-                                * $TimeInSeconds{ $Element->{TimeRelativeUnit} };
-                            my $TimePeriodAgent = $Time{TimeRelativeCount}
-                                * $TimeInSeconds{ $Time{TimeRelativeUnit} };
-
-                            # integrate this functionality in the completenesscheck
-                            if ( $TimePeriodAgent > $TimePeriodAdmin ) {
-                                $Kernel::OM->Get('Kernel::System::Log')->Log(
-                                    Priority => 'error',
-                                    Message =>
-                                        "User TimePeriod is greater than allowed TimePeriod!",
-                                );
-
-                                return;
-                            }
-
-                            $TimePeriod                   = $TimePeriodAgent;
-                            $Element->{TimeRelativeCount} = $Time{TimeRelativeCount};
-                            $Element->{TimeRelativeUnit}  = $Time{TimeRelativeUnit};
-                        }
-                        if ( $UserGetParam{ $Use . $Element->{Element} . 'TimeScaleCount' } )
-                        {
-                            $Element->{TimeScaleCount} = $UserGetParam{ $Use . $Element->{Element} . 'TimeScaleCount' };
-                        }
-                        else {
-                            $Element->{TimeScaleCount} = 1;
-                        }
-                    }
-                }
-
-                $GetParam{$Use}[$Counter] = $Element;
-                $Counter++;
-
-            }
-            if ( ref $GetParam{$Use} ne 'ARRAY' ) {
-                $GetParam{$Use} = [];
-            }
-        }
-
-        # check if the timeperiod is too big or the time scale too small
-        if (
-            $GetParam{UseAsXvalue}[0]{Block} eq 'Time'
-            && (
-                !$GetParam{UseAsValueSeries}[0]
-                || (
-                    $GetParam{UseAsValueSeries}[0]
-                    && $GetParam{UseAsValueSeries}[0]{Block} ne 'Time'
-                )
-            )
-            )
-        {
-            my $ScalePeriod = $TimeInSeconds{ $GetParam{UseAsXvalue}[0]{SelectedValues}[0] } || 0;
-
-            # integrate this functionality in the completenesscheck
-            if (
-                $TimePeriod / ( $ScalePeriod * $GetParam{UseAsXvalue}[0]{TimeScaleCount} )
-                > ( $ConfigObject->Get('Stats::MaxXaxisAttributes') || 1000 )
-                )
-            {
-                $Kernel::OM->Get('Kernel::System::Log')->Log(
-                    Priority => 'error',
-                    Message =>
-                        "The reporting time interval is too small, please use a larger time scale!",
-                );
-
-                return;
-            }
-        }
-    }
-
-    return %GetParam;
-}
-
-=item StringAndTimestamp2Filename()
+=head2 StringAndTimestamp2Filename()
 
 builds a filename with a string and a timestamp.
 (space will be replaced with _ and - e.g. Title-of-File_2006-12-31_11-59)
 
-    my $Filename = $StatsObject->StringAndTimestamp2Filename( String => 'Title' );
+    my $Filename = $StatsObject->StringAndTimestamp2Filename(
+        String   => 'Title',
+        TimeZone => 'Europe/Berlin',  # optional
+    );
 
 =cut
 
@@ -2484,28 +1848,32 @@ sub StringAndTimestamp2Filename {
         return;
     }
 
-    # get time object
-    my $TimeObject = $Kernel::OM->Get('Kernel::System::Time');
+    my $DateTimeObject = $Kernel::OM->Create('Kernel::System::DateTime');
+    if ( defined $Param{TimeZone} ) {
+        $DateTimeObject->ToTimeZone( TimeZone => $Param{TimeZone} );
+    }
 
-    my ( $s, $m, $h, $D, $M, $Y ) = $TimeObject->SystemTime2Date(
-        SystemTime => $TimeObject->SystemTime(),
-    );
-    $M = sprintf( "%02d", $M );
-    $D = sprintf( "%02d", $D );
-    $h = sprintf( "%02d", $h );
-    $m = sprintf( "%02d", $m );
-
-    $Param{String} = $Kernel::OM->Get('Kernel::System::Main')->FilenameCleanUp(
+    my $MainObject = $Kernel::OM->Get('Kernel::System::Main');
+    $Param{String} = $MainObject->FilenameCleanUp(
         Filename => $Param{String},
         Type     => 'Attachment',
     );
 
-    my $Filename = $Param{String} . '_' . "$Y-$M-$D" . '_' . "$h-$m";
+    my $Filename = $Param{String} . '_';
+    $Filename .= $DateTimeObject->Format( Format => '%Y-%m-%d_%H:%M' );
+
+    if ( defined $Param{TimeZone} ) {
+        my $TimeZone = $MainObject->FilenameCleanUp(
+            Filename => $Param{TimeZone},
+            Type     => 'Attachment',
+        );
+        $Filename .= '_TimeZone_' . $TimeZone;
+    }
 
     return $Filename;
 }
 
-=item StatNumber2StatID()
+=head2 StatNumber2StatID()
 
 insert the stat number get the stat id
 
@@ -2541,12 +1909,13 @@ sub StatNumber2StatID {
     return;
 }
 
-=item StatsInstall()
+=head2 StatsInstall()
 
 installs stats
 
     my $Result = $StatsObject->StatsInstall(
         FilePrefix => 'FAQ',  # (optional)
+        UserID     => $UserID,
     );
 
 =cut
@@ -2554,14 +1923,28 @@ installs stats
 sub StatsInstall {
     my ( $Self, %Param ) = @_;
 
+    for my $Needed (qw(UserID)) {
+        if ( !$Param{$Needed} ) {
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
+                Priority => 'error',
+                Message  => "Need $Needed!"
+            );
+            return;
+        }
+    }
+
     # prepare prefix
     $Param{FilePrefix} = $Param{FilePrefix} ? $Param{FilePrefix} . '-' : '';
 
     # start AutomaticSampleImport if no stats are installed
-    $Self->GetStatsList();
+    $Self->GetStatsList(
+        UserID => $Param{UserID},
+    );
 
     # cleanup stats
-    $Self->StatsCleanUp();
+    $Self->StatsCleanUp(
+        UserID => $Param{UserID},
+    );
 
     # get main object
     my $MainObject = $Kernel::OM->Get('Kernel::System::Main');
@@ -2588,6 +1971,7 @@ sub StatsInstall {
         # import stat
         my $StatID = $Self->Import(
             Content => ${$XMLContentRef},
+            UserID  => $Param{UserID},
         );
 
         next FILE if !$StatID;
@@ -2602,18 +1986,29 @@ sub StatsInstall {
     return 1;
 }
 
-=item StatsUninstall()
+=head2 StatsUninstall()
 
 uninstalls stats
 
     my $Result = $StatsObject->StatsUninstall(
         FilePrefix => 'FAQ',  # (optional)
+        UserID     => $UserID,
     );
 
 =cut
 
 sub StatsUninstall {
     my ( $Self, %Param ) = @_;
+
+    for my $Needed (qw(UserID)) {
+        if ( !$Param{$Needed} ) {
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
+                Priority => 'error',
+                Message  => "Need $Needed!"
+            );
+            return;
+        }
+    }
 
     # prepare prefix
     $Param{FilePrefix} = $Param{FilePrefix} ? $Param{FilePrefix} . '-' : '';
@@ -2638,16 +2033,19 @@ sub StatsUninstall {
         # delete stats
         $Self->StatsDelete(
             StatID => ${$StatsIDRef},
+            UserID => $Param{UserID},
         );
     }
 
     # cleanup stats
-    $Self->StatsCleanUp();
+    $Self->StatsCleanUp(
+        UserID => $Param{UserID},
+    );
 
     return 1;
 }
 
-=item StatsCleanUp()
+=head2 StatsCleanUp()
 
 removed stats with not existing backend file
 
@@ -2656,10 +2054,22 @@ removed stats with not existing backend file
 =cut
 
 sub StatsCleanUp {
-    my $Self = shift;
+    my ( $Self, %Param ) = @_;
+
+    for my $Needed (qw(UserID)) {
+        if ( !$Param{$Needed} ) {
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
+                Priority => 'error',
+                Message  => "Need $Needed!"
+            );
+            return;
+        }
+    }
 
     # get a list of all stats
-    my $ListRef = $Self->GetStatsList();
+    my $ListRef = $Self->GetStatsList(
+        UserID => $Param{UserID},
+    );
 
     return if !$ListRef;
     return if ref $ListRef ne 'ARRAY';
@@ -2682,7 +2092,10 @@ sub StatsCleanUp {
             && $MainObject->Require( $HashRef->{ObjectModule} );
 
         # delete stats
-        $Self->StatsDelete( StatID => $StatsID );
+        $Self->StatsDelete(
+            StatID => $StatsID,
+            UserID => $Param{UserID},
+        );
     }
 
     return 1;
@@ -2690,7 +2103,7 @@ sub StatsCleanUp {
 
 =begin Internal:
 
-=item _GenerateStaticStats()
+=head2 _GenerateStaticStats()
 
     take the stat configuration and get the stat table
 
@@ -2700,6 +2113,7 @@ sub StatsCleanUp {
         Title        => $Stat->{Title},
         StatID       => $Stat->{StatID},
         Cache        => $Stat->{Cache},
+        UserID       => $UserID,
     );
 
 =cut
@@ -2709,7 +2123,7 @@ sub _GenerateStaticStats {
 
     # check needed params
     NEED:
-    for my $Need (qw(ObjectModule GetParam Title StatID)) {
+    for my $Need (qw(ObjectModule GetParam Title StatID UserID)) {
         next NEED if $Param{$Need};
         $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'error',
@@ -2744,7 +2158,7 @@ sub _GenerateStaticStats {
     my $UserObject = $Kernel::OM->Get('Kernel::System::User');
 
     my %User = $UserObject->GetUserData(
-        UserID => $Self->{UserID},
+        UserID => $Param{UserID},
     );
 
     # run stats function
@@ -2753,9 +2167,8 @@ sub _GenerateStaticStats {
 
         # these two lines are requirements of me, perhaps this
         # information is needed for former static stats
-        Format       => $Param{Format}->[0],
-        Module       => $Param{ObjectModule},
-        UserLanguage => $User{UserLanguage},
+        Format => $Param{Format}->[0],
+        Module => $Param{ObjectModule},
     );
 
     $Result[0]->[0] = $Param{Title} . ' ' . $Result[0]->[0];
@@ -2772,7 +2185,7 @@ sub _GenerateStaticStats {
     return @Result;
 }
 
-=item _GenerateDynamicStats()
+=head2 _GenerateDynamicStats()
 
     take the stat configuration and get the stat table
 
@@ -2784,7 +2197,10 @@ sub _GenerateStaticStats {
         UseAsRestriction => \UseAsRestrictionElements,
         Title            => 'TicketStat',
         StatID           => 123,
-        Cache            => 1,      # optional
+        TimeZone         => 'Europe/Berlin',   # optional,
+        Cache            => 1,      # optional,
+        Preview          => 1,      # optional, generate fake data
+        UserID           => $UserID,
     );
 
 =cut
@@ -2798,8 +2214,11 @@ sub _GenerateDynamicStats {
     my $TitleTimeStart = '';
     my $TitleTimeStop  = '';
 
+    my $Preview = $Param{Preview};
+    my $UserID  = $Param{UserID};
+
     NEED:
-    for my $Need (qw(ObjectModule UseAsXvalue UseAsValueSeries Title Object StatID)) {
+    for my $Need (qw(ObjectModule UseAsXvalue UseAsValueSeries Title Object StatID UserID)) {
         next NEED if $Param{$Need};
         $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'error',
@@ -2826,6 +2245,10 @@ sub _GenerateDynamicStats {
     $NewParam{Object}       = $Param{Object};
     $NewParam{ObjectModule} = $Param{ObjectModule};
 
+    if ( $Param{TimeZone} ) {
+        $NewParam{TimeZone} = $Param{TimeZone};
+    }
+
     # search for a better way to cache stats (StatID and Cache)
     $NewParam{StatID} = $Param{StatID};
     $NewParam{Cache}  = $Param{Cache};
@@ -2836,82 +2259,161 @@ sub _GenerateDynamicStats {
             next ELEMENT if !$Element->{Selected};
 
             # Clone the element as we are going to modify it - avoid modifying the original data
-            $Element = ${ Storable::dclone( \$Element ) };
+            $Element = ${ $Kernel::OM->Get('Kernel::System::Storable')->Clone( Data => \$Element ) };
 
             delete $Element->{Selected};
             delete $Element->{Fixed};
             if ( $Element->{Block} eq 'Time' ) {
                 delete $Element->{TimePeriodFormat};
                 if ( $Element->{TimeRelativeUnit} ) {
-                    my ( $s, $m, $h, $D, $M, $Y ) = $TimeObject->SystemTime2Date(
-                        SystemTime => $TimeObject->SystemTime(),
+
+                    my $TimeStamp = $TimeObject->CurrentTimestamp();
+
+                    # add the selected timezone to the current timestamp
+                    # to get the real start timestamp for the selected timezone
+                    if ( $Param{TimeZone} ) {
+                        $TimeStamp = $Self->_FromOTRSTimeZone(
+                            String   => $TimeStamp,
+                            TimeZone => $Param{TimeZone},
+                        );
+                    }
+
+                    my $SystemTime = $TimeObject->TimeStamp2SystemTime(
+                        String => $TimeStamp,
                     );
 
-                    my $Count = $Element->{TimeRelativeCount} ? $Element->{TimeRelativeCount} : 1;
+                    my ( $s, $m, $h, $D, $M, $Y ) = $TimeObject->SystemTime2Date(
+                        SystemTime => $SystemTime,
+                    );
 
-                    # -1 because the current time will be not counted
-                    $Count -= 1;
+                    # -1 because the current time will be included
+                    my $CountUpcoming = $Element->{TimeRelativeUpcomingCount} - 1;
+
+                    # add the upcoming count to the count past for the calculation
+                    my $CountPast = $Element->{TimeRelativeCount} + $CountUpcoming;
 
                     if ( $Element->{TimeRelativeUnit} eq 'Year' ) {
-                        ( $Y, $M, $D ) = Add_Delta_YMD( $Y, $M, $D, -1, 0, 0 );
+                        ( $Y, $M, $D ) = $Self->_AddDeltaYMD( $Y, $M, $D, $CountUpcoming, 0, 0 );
                         $Element->{TimeStop} = sprintf( "%04d-%02d-%02d %02d:%02d:%02d", $Y, 12, 31, 23, 59, 59 );
-                        ( $Y, $M, $D ) = Add_Delta_YMD( $Y, $M, $D, -$Count, 0, 0 );
+                        ( $Y, $M, $D ) = $Self->_AddDeltaYMD( $Y, $M, $D, -$CountPast, 0, 0 );
                         $Element->{TimeStart} = sprintf( "%04d-%02d-%02d %02d:%02d:%02d", $Y, 1, 1, 0, 0, 0 );
+
                     }
-                    elsif ( $Element->{TimeRelativeUnit} eq 'Month' ) {
-                        ( $Y, $M, $D ) = Add_Delta_YMD( $Y, $M, $D, 0, -1, 0 );
+                    elsif ( $Element->{TimeRelativeUnit} eq 'HalfYear' ) {
+
+                        # $CountUpcoming was reduced by 1 before, this has to be reverted for half-year
+                        $CountUpcoming++;
+
+                        ( $Y, $M, $D ) = $Self->_AddDeltaYMD(
+                            $Y, $M, $D, 0, ( $M > 6 ? 1 : 0 ) * 6 - $M + ( 6 * $CountUpcoming ),
+                            0
+                        );
                         $Element->{TimeStop} = sprintf(
                             "%04d-%02d-%02d %02d:%02d:%02d",
-                            $Y, $M, Days_in_Month( $Y, $M ),
+                            $Y, $M, $Self->_DaysInMonth( $Y, $M ),
                             23, 59, 59
                         );
-                        ( $Y, $M, $D ) = Add_Delta_YMD( $Y, $M, $D, 0, -$Count, 0 );
+
+                        # $CountPast was reduced by 1 before, this has to be reverted for half-year
+                        #     Examples:
+                        #     Half-year set to 1, $CountPast will be 0 then - 0 * 6 = 0 (means this half-year)
+                        #     Half-year set to 2, $CountPast will be 1 then - 1 * 6 = 6 (means last half-year)
+                        #     With the fix, example 1 will mean last half-year and example 2 will mean
+                        #     last two half-years
+                        $CountPast++;
+                        ( $Y, $M, $D ) = $Self->_AddDeltaYMD( $Y, $M, $D, 0, -$CountPast * 6 + 1, 0 );
+                        $Element->{TimeStart} = sprintf( "%04d-%02d-%02d %02d:%02d:%02d", $Y, $M, 1, 0, 0, 0 );
+                    }
+                    elsif ( $Element->{TimeRelativeUnit} eq 'Quarter' ) {
+
+                        # $CountUpcoming was reduced by 1 before, this has to be reverted for quarter
+                        $CountUpcoming++;
+
+                        my $LastQuarter = ceil( $M / 3 ) - 1;
+                        ( $Y, $M, $D )
+                            = $Self->_AddDeltaYMD( $Y, $M, $D, 0, $LastQuarter * 3 - $M + ( 3 * $CountUpcoming ), 0 );
+                        $Element->{TimeStop} = sprintf(
+                            "%04d-%02d-%02d %02d:%02d:%02d",
+                            $Y, $M, $Self->_DaysInMonth( $Y, $M ),
+                            23, 59, 59
+                        );
+
+                        # $CountPast was reduced by 1 before, this has to be reverted for quarter
+                        #     Examples:
+                        #     Quarter set to 1, $CountPast will be 0 then - 0 * 3 = 0 (means this quarter)
+                        #     Quarter set to 2, $CountPast will be 1 then - 1 * 3 = 3 (means last quarter)
+                        #     With the fix, example 1 will mean last quarter and example 2 will mean
+                        #     last two quarters
+                        $CountPast++;
+                        ( $Y, $M, $D ) = $Self->_AddDeltaYMD( $Y, $M, $D, 0, -$CountPast * 3 + 1, 0 );
+                        $Element->{TimeStart} = sprintf( "%04d-%02d-%02d %02d:%02d:%02d", $Y, $M, 1, 0, 0, 0 );
+                    }
+                    elsif ( $Element->{TimeRelativeUnit} eq 'Month' ) {
+                        ( $Y, $M, $D ) = $Self->_AddDeltaYMD( $Y, $M, $D, 0, $CountUpcoming, 0 );
+                        $Element->{TimeStop} = sprintf(
+                            "%04d-%02d-%02d %02d:%02d:%02d",
+                            $Y, $M, $Self->_DaysInMonth( $Y, $M ),
+                            23, 59, 59
+                        );
+                        ( $Y, $M, $D ) = $Self->_AddDeltaYMD( $Y, $M, $D, 0, -$CountPast, 0 );
                         $Element->{TimeStart} = sprintf( "%04d-%02d-%02d %02d:%02d:%02d", $Y, $M, 1, 0, 0, 0 );
                     }
                     elsif ( $Element->{TimeRelativeUnit} eq 'Week' ) {
-                        ( $Y, $M, $D ) = Add_Delta_YMD( $Y, $M, $D, 0, 0, 0 );
+
+                        # $CountUpcoming was reduced by 1 before, this has to be reverted for week
+                        $CountUpcoming++;
+
+                        ( $Y, $M, $D ) = $Self->_AddDeltaYMD( $Y, $M, $D, 0, 0, ( $CountUpcoming * 7 ) - 1 );
                         $Element->{TimeStop} = sprintf(
                             "%04d-%02d-%02d %02d:%02d:%02d",
                             $Y, $M, $D, 23, 59, 59
                         );
 
-                        # $Count was reduced by 1 before, this has to be reverted for Week
+                        # $CountPast was reduced by 1 before, this has to be reverted for Week
                         #     Examples:
-                        #     Week set to 1, $Count will be 0 then - 0 * 7 = 0 (means today)
-                        #     Week set to 2, $Count will be 1 then - 1 * 7 = 7 (means last week)
+                        #     Week set to 1, $CountPast will be 0 then - 0 * 7 = 0 (means today)
+                        #     Week set to 2, $CountPast will be 1 then - 1 * 7 = 7 (means last week)
                         #     With the fix, example 1 will mean last week and example 2 will mean
                         #     last two weeks
-                        $Count++;
-                        ( $Y, $M, $D ) = Add_Delta_Days( $Y, $M, $D, -$Count * 7 );
+                        $CountPast++;
+                        ( $Y, $M, $D ) = $Self->_AddDeltaDays( $Y, $M, $D, -$CountPast * 7 + 1 );
                         $Element->{TimeStart} = sprintf( "%04d-%02d-%02d %02d:%02d:%02d", $Y, $M, $D, 0, 0, 0 );
                     }
                     elsif ( $Element->{TimeRelativeUnit} eq 'Day' ) {
-                        ( $Y, $M, $D ) = Add_Delta_YMD( $Y, $M, $D, 0, 0, -1 );
+                        ( $Y, $M, $D ) = $Self->_AddDeltaYMD( $Y, $M, $D, 0, 0, $CountUpcoming );
                         $Element->{TimeStop} = sprintf( "%04d-%02d-%02d %02d:%02d:%02d", $Y, $M, $D, 23, 59, 59 );
-                        ( $Y, $M, $D ) = Add_Delta_YMD( $Y, $M, $D, 0, 0, -$Count );
+                        ( $Y, $M, $D ) = $Self->_AddDeltaYMD( $Y, $M, $D, 0, 0, -$CountPast );
                         $Element->{TimeStart} = sprintf( "%04d-%02d-%02d %02d:%02d:%02d", $Y, $M, $D, 0, 0, 0 );
                     }
                     elsif ( $Element->{TimeRelativeUnit} eq 'Hour' ) {
-                        ( $Y, $M, $D, $h, $m, $s ) = Add_Delta_DHMS( $Y, $M, $D, $h, $m, $s, 0, -1, 0, 0 );
+                        ( $Y, $M, $D, $h, $m, $s )
+                            = $Self->_AddDeltaDHMS( $Y, $M, $D, $h, $m, $s, 0, $CountUpcoming, 0, 0 );
                         $Element->{TimeStop} = sprintf( "%04d-%02d-%02d %02d:%02d:%02d", $Y, $M, $D, $h, 59, 59 );
-                        ( $Y, $M, $D, $h, $m, $s ) = Add_Delta_DHMS( $Y, $M, $D, $h, $m, $s, 0, -$Count, 0, 0 );
+                        ( $Y, $M, $D, $h, $m, $s )
+                            = $Self->_AddDeltaDHMS( $Y, $M, $D, $h, $m, $s, 0, -$CountPast, 0, 0 );
                         $Element->{TimeStart} = sprintf( "%04d-%02d-%02d %02d:%02d:%02d", $Y, $M, $D, $h, 0, 0 );
                     }
                     elsif ( $Element->{TimeRelativeUnit} eq 'Minute' ) {
-                        ( $Y, $M, $D, $h, $m, $s ) = Add_Delta_DHMS( $Y, $M, $D, $h, $m, $s, 0, 0, -1, 0 );
+                        ( $Y, $M, $D, $h, $m, $s )
+                            = $Self->_AddDeltaDHMS( $Y, $M, $D, $h, $m, $s, 0, 0, $CountUpcoming, 0 );
                         $Element->{TimeStop} = sprintf( "%04d-%02d-%02d %02d:%02d:%02d", $Y, $M, $D, $h, $m, 59 );
-                        ( $Y, $M, $D, $h, $m, $s ) = Add_Delta_DHMS( $Y, $M, $D, $h, $m, $s, 0, 0, -$Count, 0 );
+                        ( $Y, $M, $D, $h, $m, $s )
+                            = $Self->_AddDeltaDHMS( $Y, $M, $D, $h, $m, $s, 0, 0, -$CountPast, 0 );
                         $Element->{TimeStart} = sprintf( "%04d-%02d-%02d %02d:%02d:%02d", $Y, $M, $D, $h, $m, 0 );
                     }
                     elsif ( $Element->{TimeRelativeUnit} eq 'Second' ) {
-                        ( $Y, $M, $D, $h, $m, $s ) = Add_Delta_DHMS( $Y, $M, $D, $h, $m, $s, 0, 0, 0, -1 );
+                        ( $Y, $M, $D, $h, $m, $s )
+                            = $Self->_AddDeltaDHMS( $Y, $M, $D, $h, $m, $s, 0, 0, 0, $CountUpcoming );
                         $Element->{TimeStop} = sprintf( "%04d-%02d-%02d %02d:%02d:%02d", $Y, $M, $D, $h, $m, $s );
-                        ( $Y, $M, $D, $h, $m, $s ) = Add_Delta_DHMS( $Y, $M, $D, $h, $m, $s, 0, 0, 0, -$Count );
+                        ( $Y, $M, $D, $h, $m, $s )
+                            = $Self->_AddDeltaDHMS( $Y, $M, $D, $h, $m, $s, 0, 0, 0, -$CountPast );
                         $Element->{TimeStart} = sprintf( "%04d-%02d-%02d %02d:%02d:%02d", $Y, $M, $D, $h, $m, $s );
                     }
                     delete $Element->{TimeRelativeUnit};
                     delete $Element->{TimeRelativeCount};
+                    delete $Element->{TimeRelativeUpcomingCount};
                 }
+
                 $TitleTimeStart = $Element->{TimeStart};
                 $TitleTimeStop  = $Element->{TimeStop};
             }
@@ -2921,6 +2423,7 @@ sub _GenerateDynamicStats {
                 my @Values = keys( %{ $Element->{Values} } );
                 $Element->{SelectedValues} = \@Values;
             }
+
             push @{ $NewParam{$Use} }, $Element;
         }
     }
@@ -2938,8 +2441,17 @@ sub _GenerateDynamicStats {
             $RestrictionAttribute{$Element} = $RestrictionPart->{SelectedValues}[0];
         }
         elsif ( $RestrictionPart->{Block} eq 'Time' ) {
-            $RestrictionAttribute{ $RestrictionPart->{Values}{TimeStop} }  = $RestrictionPart->{TimeStop};
-            $RestrictionAttribute{ $RestrictionPart->{Values}{TimeStart} } = $RestrictionPart->{TimeStart};
+
+            # convert start and stop time to OTRS time zone
+            $RestrictionAttribute{ $RestrictionPart->{Values}{TimeStart} } = $Self->_ToOTRSTimeZone(
+                String   => $RestrictionPart->{TimeStart},
+                TimeZone => $Param{TimeZone},
+            );
+
+            $RestrictionAttribute{ $RestrictionPart->{Values}{TimeStop} } = $Self->_ToOTRSTimeZone(
+                String   => $RestrictionPart->{TimeStop},
+                TimeZone => $Param{TimeZone},
+            );
         }
         else {
             $RestrictionAttribute{$Element} = $RestrictionPart->{SelectedValues};
@@ -2951,7 +2463,7 @@ sub _GenerateDynamicStats {
     my $UserObject     = $Kernel::OM->Get('Kernel::System::User');
 
     my %User = $UserObject->GetUserData(
-        UserID => $Self->{UserID},
+        UserID => $UserID,
     );
 
     # get the selected Xvalue
@@ -2989,7 +2501,8 @@ sub _GenerateDynamicStats {
 
         # in these constellation $Count > 1 is not useful!!
         if (
-            $Param{UseAsValueSeries}[0]{Block}
+            $Param{UseAsValueSeries}
+            && $Param{UseAsValueSeries}[0]{Block}
             && $Param{UseAsValueSeries}[0]{Block} eq 'Time'
             && $Element->{SelectedValues}[0] eq 'Day'
             )
@@ -3013,13 +2526,33 @@ sub _GenerateDynamicStats {
             $Second = 0;
             $Minute = 0;
             $Hour   = 0;
-            ( $Year, $Month, $Day ) = Monday_of_Week( Week_of_Year( $Year, $Month, $Day ) )
+            ( $Year, $Month, $Day ) = $Self->_MondayOfWeek( $Year, $Month, $Day )
         }
         elsif ( $Element->{SelectedValues}[0] eq 'Month' ) {
             $Second = 0;
             $Minute = 0;
             $Hour   = 0;
             $Day    = 1;
+        }
+        elsif ( $Element->{SelectedValues}[0] eq 'Quarter' ) {
+            $Second = 0;
+            $Minute = 0;
+            $Hour   = 0;
+            $Day    = 1;
+
+            # calculate the start month for the quarter
+            my $QuarterNum = ceil( $Month / 3 );
+            $Month = ( $QuarterNum * 3 ) - 2;
+        }
+        elsif ( $Element->{SelectedValues}[0] eq 'HalfYear' ) {
+            $Second = 0;
+            $Minute = 0;
+            $Hour   = 0;
+            $Day    = 1;
+
+            # calculate the start month for the half-year
+            my $HalfYearNum = ceil( $Month / 6 );
+            $Month = ( $HalfYearNum * 6 ) - 5;
         }
         elsif ( $Element->{SelectedValues}[0] eq 'Year' ) {
             $Second = 0;
@@ -3041,7 +2574,7 @@ sub _GenerateDynamicStats {
                 $Year, $Month, $Day, $Hour, $Minute, $Second
             );
             if ( $Element->{SelectedValues}[0] eq 'Second' ) {
-                ( $ToYear, $ToMonth, $ToDay, $ToHour, $ToMinute, $ToSecond ) = Add_Delta_DHMS(
+                ( $ToYear, $ToMonth, $ToDay, $ToHour, $ToMinute, $ToSecond ) = $Self->_AddDeltaDHMS(
                     $Year, $Month, $Day, $Hour, $Minute, $Second, 0, 0, 0,
                     $Count - 1
                 );
@@ -3054,7 +2587,7 @@ sub _GenerateDynamicStats {
                 );
             }
             elsif ( $Element->{SelectedValues}[0] eq 'Minute' ) {
-                ( $ToYear, $ToMonth, $ToDay, $ToHour, $ToMinute, $ToSecond ) = Add_Delta_DHMS(
+                ( $ToYear, $ToMonth, $ToDay, $ToHour, $ToMinute, $ToSecond ) = $Self->_AddDeltaDHMS(
                     $Year, $Month, $Day, $Hour, $Minute, $Second, 0, 0, $Count,
                     -1
                 );
@@ -3067,7 +2600,7 @@ sub _GenerateDynamicStats {
                 );
             }
             elsif ( $Element->{SelectedValues}[0] eq 'Hour' ) {
-                ( $ToYear, $ToMonth, $ToDay, $ToHour, $ToMinute, $ToSecond ) = Add_Delta_DHMS(
+                ( $ToYear, $ToMonth, $ToDay, $ToHour, $ToMinute, $ToSecond ) = $Self->_AddDeltaDHMS(
                     $Year, $Month, $Day, $Hour, $Minute, $Second, 0, $Count, 0,
                     -1
                 );
@@ -3080,12 +2613,12 @@ sub _GenerateDynamicStats {
                 );
             }
             elsif ( $Element->{SelectedValues}[0] eq 'Day' ) {
-                ( $ToYear, $ToMonth, $ToDay, $ToHour, $ToMinute, $ToSecond ) = Add_Delta_DHMS(
+                ( $ToYear, $ToMonth, $ToDay, $ToHour, $ToMinute, $ToSecond ) = $Self->_AddDeltaDHMS(
                     $Year, $Month, $Day, $Hour, $Minute, $Second, $Count, 0, 0,
                     -1
                 );
-                my $Dow = Day_of_Week( $Year, $Month, $Day );
-                $Dow = $LanguageObject->Translate( Day_of_Week_Abbreviation($Dow) );
+                my $Dow = $Self->_DayOfWeek( $Year, $Month, $Day );
+                $Dow = $LanguageObject->Translate( $Self->_DayOfWeekAbbreviation($Dow) );
                 if ( $ToDay eq $Day ) {
                     push @HeaderLine, "$Dow $Day";
                 }
@@ -3100,13 +2633,13 @@ sub _GenerateDynamicStats {
                 }
             }
             elsif ( $Element->{SelectedValues}[0] eq 'Week' ) {
-                ( $ToYear, $ToMonth, $ToDay ) = Add_Delta_YMD( $Year, $Month, $Day, 0, 0, $Count * 7 );
-                ( $ToYear, $ToMonth, $ToDay, $ToHour, $ToMinute, $ToSecond ) = Add_Delta_DHMS(
+                ( $ToYear, $ToMonth, $ToDay ) = $Self->_AddDeltaYMD( $Year, $Month, $Day, 0, 0, $Count * 7 );
+                ( $ToYear, $ToMonth, $ToDay, $ToHour, $ToMinute, $ToSecond ) = $Self->_AddDeltaDHMS(
                     $ToYear, $ToMonth, $ToDay, $Hour, $Minute, $Second, 0, 0, 0,
                     -1
                 );
                 my %WeekNum;
-                ( $WeekNum{Week}, $WeekNum{Year} ) = Week_of_Year( $Year, $Month, $Day );
+                ( $WeekNum{Week}, $WeekNum{Year} ) = $Self->_WeekOfYear( $Year, $Month, $Day );
                 my $TranslateWeek = $LanguageObject->Translate('week');
                 push(
                     @HeaderLine,
@@ -3118,8 +2651,8 @@ sub _GenerateDynamicStats {
                 );
             }
             elsif ( $Element->{SelectedValues}[0] eq 'Month' ) {
-                ( $ToYear, $ToMonth, $ToDay ) = Add_Delta_YMD( $Year, $Month, $Day, 0, $Count, 0 );
-                ( $ToYear, $ToMonth, $ToDay, $ToHour, $ToMinute, $ToSecond ) = Add_Delta_DHMS(
+                ( $ToYear, $ToMonth, $ToDay ) = $Self->_AddDeltaYMD( $Year, $Month, $Day, 0, $Count, 0 );
+                ( $ToYear, $ToMonth, $ToDay, $ToHour, $ToMinute, $ToSecond ) = $Self->_AddDeltaDHMS(
                     $ToYear, $ToMonth, $ToDay, $Hour, $Minute, $Second, 0, 0, 0,
                     -1
                 );
@@ -3137,9 +2670,59 @@ sub _GenerateDynamicStats {
                     );
                 }
             }
+            elsif ( $Element->{SelectedValues}[0] eq 'Quarter' ) {
+                ( $ToYear, $ToMonth, $ToDay ) = $Self->_AddDeltaYMD( $Year, $Month, $Day, 0, $Count * 3, 0 );
+                ( $ToYear, $ToMonth, $ToDay, $ToHour, $ToMinute, $ToSecond ) = $Self->_AddDeltaDHMS(
+                    $ToYear, $ToMonth, $ToDay, $Hour, $Minute, $Second, 0, 0, 0,
+                    -1
+                );
+
+                if ( ( $ToMonth - $Month ) == 2 ) {
+                    my $QuarterNum       = ceil( $Month / 3 );
+                    my $TranslateQuarter = $LanguageObject->Translate('quarter');
+                    push(
+                        @HeaderLine,
+                        sprintf( "$TranslateQuarter $QuarterNum-%04d", $Year )
+                    );
+                }
+                else {
+                    push(
+                        @HeaderLine,
+                        sprintf(
+                            "%02d.%02d.%04d - %02d.%02d.%04d",
+                            $Day, $Month, $Year, $ToDay, $ToMonth, $ToYear
+                            )
+                    );
+                }
+            }
+            elsif ( $Element->{SelectedValues}[0] eq 'HalfYear' ) {
+                ( $ToYear, $ToMonth, $ToDay ) = $Self->_AddDeltaYMD( $Year, $Month, $Day, 0, $Count * 6, 0 );
+                ( $ToYear, $ToMonth, $ToDay, $ToHour, $ToMinute, $ToSecond ) = $Self->_AddDeltaDHMS(
+                    $ToYear, $ToMonth, $ToDay, $Hour, $Minute, $Second, 0, 0, 0,
+                    -1
+                );
+
+                if ( ( $ToMonth - $Month ) == 5 ) {
+                    my $HalfYearNum       = ceil( $Month / 6 );
+                    my $TranslateHalfYear = $LanguageObject->Translate('half-year');
+                    push(
+                        @HeaderLine,
+                        sprintf( "$TranslateHalfYear $HalfYearNum-%04d", $Year )
+                    );
+                }
+                else {
+                    push(
+                        @HeaderLine,
+                        sprintf(
+                            "%02d.%02d.%04d - %02d.%02d.%04d",
+                            $Day, $Month, $Year, $ToDay, $ToMonth, $ToYear
+                            )
+                    );
+                }
+            }
             elsif ( $Element->{SelectedValues}[0] eq 'Year' ) {
-                ( $ToYear, $ToMonth, $ToDay ) = Add_Delta_YMD( $Year, $Month, $Day, $Count, 0, 0 );
-                ( $ToYear, $ToMonth, $ToDay, $ToHour, $ToMinute, $ToSecond ) = Add_Delta_DHMS(
+                ( $ToYear, $ToMonth, $ToDay ) = $Self->_AddDeltaYMD( $Year, $Month, $Day, $Count, 0, 0 );
+                ( $ToYear, $ToMonth, $ToDay, $ToHour, $ToMinute, $ToSecond ) = $Self->_AddDeltaDHMS(
                     $ToYear, $ToMonth, $ToDay, $Hour, $Minute, $Second, 0, 0, 0,
                     -1
                 );
@@ -3156,7 +2739,7 @@ sub _GenerateDynamicStats {
                     );
                 }
             }
-            ( $Year, $Month, $Day, $Hour, $Minute, $Second ) = Add_Delta_DHMS(
+            ( $Year, $Month, $Day, $Hour, $Minute, $Second ) = $Self->_AddDeltaDHMS(
                 $ToYear, $ToMonth, $ToDay, $ToHour, $ToMinute, $ToSecond, 0, 0, 0,
                 1
             );
@@ -3167,8 +2750,16 @@ sub _GenerateDynamicStats {
             push(
                 @{ $Xvalue->{SelectedValues} },
                 {
-                    TimeStart => $TimeStart,
-                    TimeStop  => $TimeStop
+                    # convert to OTRS time zone for correct database search parameter
+                    TimeStart => $Self->_ToOTRSTimeZone(
+                        String   => $TimeStart,
+                        TimeZone => $Param{TimeZone},
+                    ),
+
+                    TimeStop => $Self->_ToOTRSTimeZone(
+                        String   => $TimeStop,
+                        TimeZone => $Param{TimeZone},
+                    ),
                 }
             );
         }
@@ -3184,7 +2775,14 @@ sub _GenerateDynamicStats {
         # build the headerline
 
         for my $Valuename ( @{ $Xvalue->{SelectedValues} } ) {
-            push @HeaderLine, $LanguageObject->Translate( $Xvalue->{Values}{$Valuename} );
+
+            # Do not translate the values, please see bug#12384 for more information.
+            push @HeaderLine, $Xvalue->{Values}{$Valuename};
+        }
+
+        # Prevent randomization of x-axis in preview, sort it alphabetically see bug#12714.
+        if ($Preview) {
+            @HeaderLine = sort { lc($a) cmp lc($b) } @HeaderLine;
         }
     }
 
@@ -3192,6 +2790,7 @@ sub _GenerateDynamicStats {
     my %ValueSeries;
     my @ArraySelected;
     my $ColumnName = '';
+    my $HeaderLineStart;
 
     # give me all possible elements for Value Series
     REF1:
@@ -3201,7 +2800,9 @@ sub _GenerateDynamicStats {
         if ( $Ref1->{Block} ne 'Time' ) {
             my %SelectedValues;
             for my $Ref2 ( @{ $Ref1->{SelectedValues} } ) {
-                $SelectedValues{$Ref2} = $LanguageObject->Translate( $Ref1->{Values}{$Ref2} );
+
+                # Do not translate the values, please see bug#12384 for more information.
+                $SelectedValues{$Ref2} = $Ref1->{Values}{$Ref2};
             }
             push(
                 @ArraySelected,
@@ -3215,29 +2816,65 @@ sub _GenerateDynamicStats {
             next REF1;
         }
 
-        # timescale elements need a special handling
-        @HeaderLine = ();
+        # timescale elements need a special handling, so we save the start value and reset the HeaderLine
+        $HeaderLineStart = $HeaderLine[0];
+        @HeaderLine      = ();
 
         # these all makes only sense, if the count of xaxis is 1
         if ( $Ref1->{SelectedValues}[0] eq 'Year' ) {
-            if ( $Count == 1 ) {
-                for ( 1 .. 12 ) {
-                    push @HeaderLine, "$MonthArrayRef->[$_] $_";
+
+            if ( $Element->{SelectedValues}[0] eq 'Month' ) {
+
+                if ( $Count == 1 ) {
+                    for my $Month ( 1 .. 12 ) {
+                        push @HeaderLine, "$MonthArrayRef->[$Month] $Month";
+                    }
                 }
-            }
-            else {
-                for ( my $Month = 1; $Month < 12; $Month += $Count ) {
-                    push(
-                        @HeaderLine,
-                        "$MonthArrayRef->[$Month] - $MonthArrayRef->[$Month + $Count - 1]"
-                    );
+                else {
+                    for ( my $Month = 1; $Month < 12; $Month += $Count ) {
+                        push(
+                            @HeaderLine,
+                            "$MonthArrayRef->[$Month] - $MonthArrayRef->[$Month + $Count - 1]"
+                        );
+                    }
                 }
+                $VSSecond = 0;
+                $VSMinute = 0;
+                $VSHour   = 0;
+                $VSDay    = 1;
+                $VSMonth  = 1;
             }
-            $VSSecond   = 0;
-            $VSMinute   = 0;
-            $VSHour     = 0;
-            $VSDay      = 1;
-            $VSMonth    = 1;
+            elsif ( $Element->{SelectedValues}[0] eq 'Quarter' ) {
+
+                my $TranslateQuarter = $LanguageObject->Translate('quarter');
+                for my $Quarter ( 1 .. 4 ) {
+                    push @HeaderLine, "$TranslateQuarter $Quarter";
+                }
+                $VSSecond = 0;
+                $VSMinute = 0;
+                $VSHour   = 0;
+                $VSDay    = 1;
+                $VSMonth  = 1;
+
+                # remove the year from the HeaderLineStart value to have the same values as the new generated HeaderLine
+                $HeaderLineStart =~ s{ -\d\d\d\d }{}xms;
+            }
+            elsif ( $Element->{SelectedValues}[0] eq 'HalfYear' ) {
+
+                my $TranslateHalfYear = $LanguageObject->Translate('half-year');
+                for my $HalfYear ( 1 .. 2 ) {
+                    push @HeaderLine, "$TranslateHalfYear $HalfYear";
+                }
+                $VSSecond = 0;
+                $VSMinute = 0;
+                $VSHour   = 0;
+                $VSDay    = 1;
+                $VSMonth  = 1;
+
+                # remove the year from the HeaderLineStart value to have the same values as the new generated HeaderLine
+                $HeaderLineStart =~ s{ -\d\d\d\d }{}xms;
+            }
+
             $ColumnName = 'Year';
         }
         elsif ( $Ref1->{SelectedValues}[0] eq 'Month' ) {
@@ -3255,7 +2892,7 @@ sub _GenerateDynamicStats {
         elsif ( $Ref1->{SelectedValues}[0] eq 'Week' ) {
 
             for my $Count ( 1 .. 7 ) {
-                push @HeaderLine, Day_of_Week_to_Text($Count);
+                push @HeaderLine, $Self->_DayOfWeekToText($Count);
             }
 
             $VSSecond   = 0;
@@ -3309,13 +2946,13 @@ sub _GenerateDynamicStats {
 
         if ( $Ref1->{SelectedValues}[0] eq 'Year' ) {
             while (
-                $TimeObject->TimeStamp2SystemTime( String => $TimeStop )
+                !$TimeStop || $TimeObject->TimeStamp2SystemTime( String => $TimeStop )
                 < $TimeAbsolutStopUnixTime
                 )
             {
                 $TimeStart = sprintf( "%04d-01-01 00:00:00", $VSYear );
-                ( $ToYear, $ToMonth, $ToDay ) = Add_Delta_YMD( $VSYear, $VSMonth, $VSDay, $Count, 0, 0 );
-                ( $ToYear, $ToMonth, $ToDay, $ToHour, $ToMinute, $ToSecond ) = Add_Delta_DHMS(
+                ( $ToYear, $ToMonth, $ToDay ) = $Self->_AddDeltaYMD( $VSYear, $VSMonth, $VSDay, $Count, 0, 0 );
+                ( $ToYear, $ToMonth, $ToDay, $ToHour, $ToMinute, $ToSecond ) = $Self->_AddDeltaDHMS(
                     $ToYear, $ToMonth, $ToDay, $VSHour, $VSMinute, $VSSecond, 0,
                     0, 0, -1
                 );
@@ -3326,7 +2963,7 @@ sub _GenerateDynamicStats {
                     $Ref1->{Values}{TimeStart} => $TimeStart
                 };
 
-                ( $VSYear, $VSMonth, $VSDay, $VSHour, $VSMinute, $VSSecond ) = Add_Delta_DHMS(
+                ( $VSYear, $VSMonth, $VSDay, $VSHour, $VSMinute, $VSSecond ) = $Self->_AddDeltaDHMS(
                     $ToYear, $ToMonth, $ToDay, $ToHour, $ToMinute, $ToSecond, 0,
                     0, 0, 1
                 );
@@ -3334,81 +2971,90 @@ sub _GenerateDynamicStats {
         }
         elsif ( $Ref1->{SelectedValues}[0] eq 'Month' ) {
             while (
-                $TimeObject->TimeStamp2SystemTime( String => $TimeStop )
+                !$TimeStop || $TimeObject->TimeStamp2SystemTime( String => $TimeStop )
                 < $TimeAbsolutStopUnixTime
                 )
             {
                 $TimeStart = sprintf( "%04d-%02d-01 00:00:00", $VSYear, $VSMonth );
-                ( $ToYear, $ToMonth, $ToDay ) = Add_Delta_YMD( $VSYear, $VSMonth, $VSDay, 0, $Count, 0 );
-                ( $ToYear, $ToMonth, $ToDay, $ToHour, $ToMinute, $ToSecond ) = Add_Delta_DHMS(
+                ( $ToYear, $ToMonth, $ToDay ) = $Self->_AddDeltaYMD( $VSYear, $VSMonth, $VSDay, 0, $Count, 0 );
+                ( $ToYear, $ToMonth, $ToDay, $ToHour, $ToMinute, $ToSecond ) = $Self->_AddDeltaDHMS(
                     $ToYear, $ToMonth, $ToDay, $VSHour, $VSMinute, $VSSecond, 0,
                     0, 0, -1
                 );
                 $TimeStop = sprintf( "%04d-%02d-%02d 23:59:59", $ToYear, $ToMonth, $ToDay );
 
-                #                    if ($Count == 1) {
+                my $TranslateMonth = $LanguageObject->Translate( $MonthArrayRef->[$VSMonth] );
+
                 $ValueSeries{
                     $VSYear . '-'
                         . sprintf( "%02d", $VSMonth ) . ' '
-                        . $MonthArrayRef->[$VSMonth]
+                        . $TranslateMonth
                     } = {
                     $Ref1->{Values}{TimeStop}  => $TimeStop,
                     $Ref1->{Values}{TimeStart} => $TimeStart
                     };
 
-                ( $VSYear, $VSMonth, $VSDay, $VSHour, $VSMinute, $VSSecond ) = Add_Delta_DHMS(
+                ( $VSYear, $VSMonth, $VSDay, $VSHour, $VSMinute, $VSSecond ) = $Self->_AddDeltaDHMS(
                     $ToYear, $ToMonth, $ToDay, $ToHour, $ToMinute, $ToSecond, 0,
                     0, 0, 1
                 );
             }
+
+            # remove the value for this selected value
+            $HeaderLineStart = '';
         }
         elsif ( $Ref1->{SelectedValues}[0] eq 'Week' ) {
             while (
-                $TimeObject->TimeStamp2SystemTime( String => $TimeStop )
+                !$TimeStop || $TimeObject->TimeStamp2SystemTime( String => $TimeStop )
                 < $TimeAbsolutStopUnixTime
                 )
             {
-                my @Monday = Monday_of_Week( Week_of_Year( $VSYear, $VSMonth, $VSDay ) );
+                my @Monday = $Self->_MondayOfWeek( $VSYear, $VSMonth, $VSDay );
 
                 $TimeStart = sprintf( "%04d-%02d-%02d 00:00:00", @Monday );
-                ( $ToYear, $ToMonth, $ToDay ) = Add_Delta_Days( @Monday, 6 );
+                ( $ToYear, $ToMonth, $ToDay ) = $Self->_AddDeltaDays( @Monday, $Count * 7 );
+                ( $ToYear, $ToMonth, $ToDay, $ToHour, $ToMinute, $ToSecond ) = $Self->_AddDeltaDHMS(
+                    $ToYear, $ToMonth, $ToDay, $VSHour, $VSMinute, $VSSecond, 0,
+                    0, 0, -1
+                );
                 $TimeStop = sprintf( "%04d-%02d-%02d 23:59:59", $ToYear, $ToMonth, $ToDay );
 
                 $ValueSeries{
-                    $VSYear . '-'
-                        . sprintf( "%02d", $VSMonth ) . ' '
-                        . $MonthArrayRef->[$VSMonth]
+                    sprintf( "%04d-%02d-%02d", @Monday ) . ' - '
+                        . sprintf( "%04d-%02d-%02d", $ToYear, $ToMonth, $ToDay )
                     } = {
                     $Ref1->{Values}{TimeStop}  => $TimeStop,
                     $Ref1->{Values}{TimeStart} => $TimeStart
                     };
 
-                ( $VSYear, $VSMonth, $VSDay, $VSHour, $VSMinute, $VSSecond ) = Add_Delta_DHMS(
+                ( $VSYear, $VSMonth, $VSDay, $VSHour, $VSMinute, $VSSecond ) = $Self->_AddDeltaDHMS(
                     $ToYear, $ToMonth, $ToDay, $ToHour, $ToMinute, $ToSecond, 0,
                     0, 0, 1
                 );
             }
+
+            # remove the value for this selected value
+            $HeaderLineStart = '';
         }
         elsif ( $Ref1->{SelectedValues}[0] eq 'Day' ) {
             while (
-                $TimeObject->TimeStamp2SystemTime( String => $TimeStop )
+                !$TimeStop || $TimeObject->TimeStamp2SystemTime( String => $TimeStop )
                 < $TimeAbsolutStopUnixTime
                 )
             {
                 $TimeStart = sprintf( "%04d-%02d-%02d 00:00:00", $VSYear, $VSMonth, $VSDay );
-                ( $ToYear, $ToMonth, $ToDay, $ToHour, $ToMinute, $ToSecond ) = Add_Delta_DHMS(
+                ( $ToYear, $ToMonth, $ToDay, $ToHour, $ToMinute, $ToSecond ) = $Self->_AddDeltaDHMS(
                     $VSYear, $VSMonth, $VSDay, $VSHour, $VSMinute, $VSSecond,
                     $Count, 0, 0, -1
                 );
                 $TimeStop = sprintf( "%04d-%02d-%02d 23:59:59", $ToYear, $ToMonth, $ToDay );
 
-                #                    if ($Count == 1) {
                 $ValueSeries{ sprintf( "%04d-%02d-%02d", $VSYear, $VSMonth, $VSDay ) } = {
                     $Ref1->{Values}{TimeStop}  => $TimeStop,
                     $Ref1->{Values}{TimeStart} => $TimeStart
                 };
 
-                ( $VSYear, $VSMonth, $VSDay, $VSHour, $VSMinute, $VSSecond ) = Add_Delta_DHMS(
+                ( $VSYear, $VSMonth, $VSDay, $VSHour, $VSMinute, $VSSecond ) = $Self->_AddDeltaDHMS(
                     $ToYear, $ToMonth, $ToDay, $ToHour, $ToMinute, $ToSecond, 0,
                     0, 0, 1
                 );
@@ -3416,12 +3062,12 @@ sub _GenerateDynamicStats {
         }
         elsif ( $Ref1->{SelectedValues}[0] eq 'Hour' ) {
             while (
-                $TimeObject->TimeStamp2SystemTime( String => $TimeStop )
+                !$TimeStop || $TimeObject->TimeStamp2SystemTime( String => $TimeStop )
                 < $TimeAbsolutStopUnixTime
                 )
             {
                 $TimeStart = sprintf( "%04d-%02d-%02d %02d:00:00", $VSYear, $VSMonth, $VSDay, $VSHour );
-                ( $ToYear, $ToMonth, $ToDay, $ToHour, $ToMinute, $ToSecond ) = Add_Delta_DHMS(
+                ( $ToYear, $ToMonth, $ToDay, $ToHour, $ToMinute, $ToSecond ) = $Self->_AddDeltaDHMS(
                     $VSYear, $VSMonth, $VSDay, $VSHour, $VSMinute, $VSSecond, 0,
                     $Count, 0, -1
                 );
@@ -3435,7 +3081,7 @@ sub _GenerateDynamicStats {
                     $Ref1->{Values}{TimeStop}  => $TimeStop,
                     $Ref1->{Values}{TimeStart} => $TimeStart
                     };
-                ( $VSYear, $VSMonth, $VSDay, $VSHour, $VSMinute, $VSSecond ) = Add_Delta_DHMS(
+                ( $VSYear, $VSMonth, $VSDay, $VSHour, $VSMinute, $VSSecond ) = $Self->_AddDeltaDHMS(
                     $ToYear, $ToMonth, $ToDay, $ToHour, $ToMinute, $ToSecond, 0,
                     0, 0, 1
                 );
@@ -3444,7 +3090,7 @@ sub _GenerateDynamicStats {
 
         elsif ( $Ref1->{SelectedValues}[0] eq 'Minute' ) {
             while (
-                $TimeObject->TimeStamp2SystemTime( String => $TimeStop )
+                !$TimeStop || $TimeObject->TimeStamp2SystemTime( String => $TimeStop )
                 < $TimeAbsolutStopUnixTime
                 )
             {
@@ -3452,7 +3098,7 @@ sub _GenerateDynamicStats {
                     "%04d-%02d-%02d %02d:%02d:00",
                     $VSYear, $VSMonth, $VSDay, $VSHour, $VSMinute
                 );
-                ( $ToYear, $ToMonth, $ToDay, $ToHour, $ToMinute, $ToSecond ) = Add_Delta_DHMS(
+                ( $ToYear, $ToMonth, $ToDay, $ToHour, $ToMinute, $ToSecond ) = $Self->_AddDeltaDHMS(
                     $VSYear, $VSMonth, $VSDay, $VSHour, $VSMinute, $VSSecond, 0,
                     0, $Count, -1
                 );
@@ -3469,7 +3115,7 @@ sub _GenerateDynamicStats {
                     $Ref1->{Values}{TimeStop}  => $TimeStop,
                     $Ref1->{Values}{TimeStart} => $TimeStart
                     };
-                ( $VSYear, $VSMonth, $VSDay, $VSHour, $VSMinute, $VSSecond ) = Add_Delta_DHMS(
+                ( $VSYear, $VSMonth, $VSDay, $VSHour, $VSMinute, $VSSecond ) = $Self->_AddDeltaDHMS(
                     $ToYear, $ToMonth, $ToDay, $ToHour, $ToMinute, $ToSecond, 0,
                     0, 0, 1
                 );
@@ -3558,7 +3204,7 @@ sub _GenerateDynamicStats {
     my $CacheString = $Self->_GetCacheString(%Param);
 
     # take the cache value if configured and available
-    if ( $Param{Cache} ) {
+    if ( $Param{Cache} && !$Preview ) {
         my @StatArray = $Self->_GetResultCache(
             Filename => 'Stats' . $Param{StatID} . '-' . $CacheString . '.cache',
         );
@@ -3611,32 +3257,83 @@ sub _GenerateDynamicStats {
     }
 
     my @DataArray;
-    if ( $StatObject->can('GetStatTable') ) {
 
-        # get the whole stats table
-        @DataArray = $StatObject->GetStatTable(
-            ValueSeries    => $Param{UseAsValueSeries},    #\%ValueSeries,
-            XValue         => $Xvalue,
-            Restrictions   => \%RestrictionAttribute,
-            TableStructure => \%TableStructure,
-        );
-    }
-    else {
-        for my $Row ( sort keys %TableStructure ) {
-            my @ResultRow = ($Row);
-            for my $Cell ( @{ $TableStructure{$Row} } ) {
-                my $Quantity = $StatObject->GetStatElement( %{$Cell} );
-                push @ResultRow, $Quantity;
-            }
-            push @DataArray, \@ResultRow;
+    # Dynamic List Statistic
+    if ( $StatObject->can('GetStatTable') ) {
+        if ($Preview) {
+            return if !$StatObject->can('GetStatTablePreview');
+
+            @DataArray = $StatObject->GetStatTablePreview(
+                ValueSeries    => $Param{UseAsValueSeries},    #\%ValueSeries,
+                XValue         => $Xvalue,
+                Restrictions   => \%RestrictionAttribute,
+                TableStructure => \%TableStructure,
+                TimeZone       => $Param{TimeZone},
+            );
+        }
+        else {
+            # get the whole stats table
+            @DataArray = $StatObject->GetStatTable(
+                ValueSeries    => $Param{UseAsValueSeries},    #\%ValueSeries,
+                XValue         => $Xvalue,
+                Restrictions   => \%RestrictionAttribute,
+                TableStructure => \%TableStructure,
+                TimeZone       => $Param{TimeZone},
+            );
         }
     }
 
-    # fill up empty array elements, e.g month as value series (February has 28 day and Januar 31)
-    for my $Row (@DataArray) {
-        for my $Index ( 1 .. $#HeaderLine ) {
-            if ( !defined $Row->[$Index] ) {
-                $Row->[$Index] = '';
+    # Dynamic Matrix Statistic
+    else {
+
+        if ($Preview) {
+            return if !$StatObject->can('GetStatElementPreview');
+        }
+
+        for my $Row ( sort keys %TableStructure ) {
+            my @ResultRow = ($Row);
+            for my $Cell ( @{ $TableStructure{$Row} } ) {
+                if ($Preview) {
+                    push @ResultRow, $StatObject->GetStatElementPreview( %{$Cell} );
+                }
+                else {
+                    push @ResultRow, $StatObject->GetStatElement( %{$Cell} ) || 0;
+                }
+            }
+            push @DataArray, \@ResultRow;
+        }
+
+        my $RowCounter = 0;
+
+        # fill up empty array elements, e.g month as value series (February has 28 day and Januar 31)
+        for my $Row (@DataArray) {
+
+            $RowCounter++;
+
+            if ( $RowCounter == 1 && $HeaderLineStart ) {
+
+                # determine the skipping counter
+                my $SkippingCounter = 0;
+
+                INDEX:
+                for my $Index ( 1 .. $#HeaderLine ) {
+
+                    if ( $HeaderLine[$Index] eq $HeaderLineStart ) {
+                        last INDEX;
+                    }
+
+                    $SkippingCounter++;
+                }
+
+                for my $Index ( 1 .. $SkippingCounter ) {
+                    splice @{$Row}, $Index, 0, '';
+                }
+            }
+
+            for my $Index ( 1 .. $#HeaderLine ) {
+                if ( !defined $Row->[$Index] ) {
+                    $Row->[$Index] = '';
+                }
             }
         }
     }
@@ -3645,7 +3342,8 @@ sub _GenerateDynamicStats {
     # so you don't need this function
     if ( $StatObject->can('GetHeaderLine') ) {
         my $HeaderRef = $StatObject->GetHeaderLine(
-            XValue => $Xvalue,
+            XValue       => $Xvalue,
+            Restrictions => \%RestrictionAttribute,
         );
 
         if ($HeaderRef) {
@@ -3655,28 +3353,29 @@ sub _GenerateDynamicStats {
 
     my @StatArray = ( [$Title], \@HeaderLine, @DataArray );
 
-    return @StatArray if !$Param{Cache};
+    if ( !$Param{Cache} || $Preview ) {
+        return @StatArray
+    }
 
     # check if we should cache this result
     if ( !$TitleTimeStart || !$TitleTimeStop ) {
         $Kernel::OM->Get('Kernel::System::Log')->Log(
-            Priority => 'error',
-            Message =>
-                "Can't cache: StatID $Param{StatID} has no time period, so you can't cache the stat!",
+            Priority => 'notice',
+            Message  => "Can't cache: StatID $Param{StatID} has no time period, so you can't cache the stat!",
         );
         return @StatArray;
     }
 
-    if (
-        $TimeObject->TimeStamp2SystemTime( String => $TitleTimeStop )
-        > $TimeObject->SystemTime()
-        )
-    {
+    # convert to OTRS time zone to get the correct time for the check
+    my $CheckTimeStop = $Self->_ToOTRSTimeZone(
+        String   => $TitleTimeStop,
+        TimeZone => $Param{TimeZone},
+    );
 
+    if ( $TimeObject->TimeStamp2SystemTime( String => $CheckTimeStop ) > $TimeObject->SystemTime() ) {
         $Kernel::OM->Get('Kernel::System::Log')->Log(
-            Priority => 'error',
-            Message =>
-                "Can't cache StatID $Param{StatID}: The selected end time is in the future!",
+            Priority => 'notice',
+            Message  => "Can't cache StatID $Param{StatID}: The selected end time is in the future!",
         );
         return @StatArray;
     }
@@ -3687,6 +3386,178 @@ sub _GenerateDynamicStats {
         Result   => \@StatArray,
     );
     return @StatArray;
+}
+
+=head2 _ColumnAndRowTranslation()
+
+Translate the column and row name if needed.
+
+    $StatsObject->_ColumnAndRowTranslation(
+        StatArrayRef => $StatArrayRef,
+        StatRef      => $StatRef,
+        ExchangeAxis => 1 | 0,
+    );
+
+=cut
+
+sub _ColumnAndRowTranslation {
+    my ( $Self, %Param ) = @_;
+
+    # check if need params are available
+    for my $NeededParam (qw(StatArrayRef StatRef)) {
+        if ( !$Param{$NeededParam} ) {
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
+                Priority => "error",
+                Message  => "_ColumnAndRowTranslation: Need $NeededParam!"
+            );
+        }
+    }
+
+    # Cut the statistic array in the three pieces, to handle the diffrent values for the translation.
+    my $TitleArrayRef = shift @{ $Param{StatArrayRef} };
+    my $HeadArrayRef  = shift @{ $Param{StatArrayRef} };
+    my $StatArrayRef  = $Param{StatArrayRef};
+
+    my $LanguageObject = $Kernel::OM->Get('Kernel::Language');
+
+    # Find out, if the column or row names should be translated.
+    my %Translation;
+    my %Sort;
+
+    for my $Use (qw( UseAsXvalue UseAsValueSeries )) {
+        if (
+            $Param{StatRef}->{StatType} eq 'dynamic'
+            && $Param{StatRef}->{$Use}
+            && ref( $Param{StatRef}->{$Use} ) eq 'ARRAY'
+            )
+        {
+
+            my @Array = @{ $Param{StatRef}->{$Use} };
+
+            ELEMENT:
+            for my $Element (@Array) {
+                next ELEMENT if !$Element->{Selected};
+
+                if ( $Element->{Translation} && $Element->{Block} eq 'Time' ) {
+                    $Translation{$Use} = 'Time';
+                }
+                elsif ( $Element->{Translation} ) {
+                    $Translation{$Use} = 'Common';
+                }
+                else {
+                    $Translation{$Use} = '';
+                }
+
+                if ( $Element->{Translation} && $Element->{Block} ne 'Time' && !$Element->{SortIndividual} ) {
+                    $Sort{$Use} = 1;
+                }
+
+                last ELEMENT;
+            }
+        }
+    }
+
+    # Check if the axis are changed.
+    if ( $Param{ExchangeAxis} ) {
+        my $UseAsXvalueOld = $Translation{UseAsXvalue};
+        $Translation{UseAsXvalue}      = $Translation{UseAsValueSeries};
+        $Translation{UseAsValueSeries} = $UseAsXvalueOld;
+
+        my $SortUseAsXvalueOld = $Sort{UseAsXvalue};
+        $Sort{UseAsXvalue}      = $Sort{UseAsValueSeries};
+        $Sort{UseAsValueSeries} = $SortUseAsXvalueOld;
+    }
+
+    # Translate the headline array, if all values must be translated and
+    #   otherwise translate only the first value of the header.
+    if ( $Translation{UseAsXvalue} && $Translation{UseAsXvalue} ne 'Time' ) {
+        for my $Word ( @{$HeadArrayRef} ) {
+            $Word = $LanguageObject->Translate($Word);
+        }
+    }
+    else {
+        $HeadArrayRef->[0] = $LanguageObject->Translate( $HeadArrayRef->[0] );
+    }
+
+    # Sort the headline array after translation.
+    if ( $Sort{UseAsXvalue} ) {
+        my @HeadOld = @{$HeadArrayRef};
+
+        # Because the first value is no sortable column name
+        shift @HeadOld;
+
+        # Special handling if the sumfunction is used.
+        my $SumColRef;
+        if ( $Param{StatRef}->{SumRow} ) {
+            $SumColRef = pop @HeadOld;
+        }
+
+        my @SortedHead = sort { $a cmp $b } @HeadOld;
+
+        # Special handling if the sumfunction is used.
+        if ( $Param{StatRef}->{SumCol} ) {
+            push @SortedHead, $SumColRef;
+            push @HeadOld,    $SumColRef;
+        }
+
+        # Add the row names to the new StatArray.
+        my @StatArrayNew;
+        for my $Row ( @{$StatArrayRef} ) {
+            push @StatArrayNew, [ $Row->[0] ];
+        }
+
+        for my $ColumnName (@SortedHead) {
+            my $Counter = 0;
+            COLUMNNAMEOLD:
+            for my $ColumnNameOld (@HeadOld) {
+                $Counter++;
+                next COLUMNNAMEOLD if $ColumnNameOld ne $ColumnName;
+
+                for my $RowLine ( 0 .. $#StatArrayNew ) {
+                    push @{ $StatArrayNew[$RowLine] }, $StatArrayRef->[$RowLine]->[$Counter];
+                }
+                last COLUMNNAMEOLD;
+            }
+        }
+
+        # Bring the data back to the diffrent references.
+        unshift @SortedHead, $HeadArrayRef->[0];
+        @{$HeadArrayRef} = @SortedHead;
+        @{$StatArrayRef} = @StatArrayNew;
+    }
+
+    # Translate the row description.
+    if ( $Translation{UseAsValueSeries} && $Translation{UseAsValueSeries} ne 'Time' ) {
+        for my $Word ( @{$StatArrayRef} ) {
+            $Word->[0] = $LanguageObject->Translate( $Word->[0] );
+        }
+    }
+
+    # Sort the row description.
+    if ( $Sort{UseAsValueSeries} ) {
+
+        # Special handling if the sumfunction is used.
+        my $SumRowArrayRef;
+        if ( $Param{StatRef}->{SumRow} ) {
+            $SumRowArrayRef = pop @{$StatArrayRef};
+        }
+
+        my $DisableDefaultResultSort = grep { $_->{DisableDefaultResultSort} && $_->{DisableDefaultResultSort} == 1 }
+            @{ $Param{StatRef}->{UseAsXvalue} };
+
+        if ( !$DisableDefaultResultSort ) {
+            @{$StatArrayRef} = sort { $a->[0] cmp $b->[0] } @{$StatArrayRef};
+        }
+
+        # Special handling if the sumfunction is used.
+        if ( $Param{StatRef}->{SumRow} ) {
+            push @{$StatArrayRef}, $SumRowArrayRef;
+        }
+    }
+
+    unshift( @{$StatArrayRef}, $TitleArrayRef, $HeadArrayRef );
+
+    return 1;
 }
 
 sub _WriteResultCache {
@@ -3728,7 +3599,7 @@ sub _WriteResultCache {
     return 1;
 }
 
-=item _CreateStaticResultCacheFilename()
+=head2 _CreateStaticResultCacheFilename()
 
 create a filename out of the GetParam information and the stat id
 
@@ -3782,10 +3653,15 @@ sub _CreateStaticResultCacheFilename {
         Type     => 'md5',
     );
 
-    return 'Stats' . $Param{StatID} . '-' . $MD5Key . '.cache';
+    return
+        'Stats'
+        . $Param{StatID} . '-'
+        . $Kernel::OM->Get('Kernel::Language')->{UserLanguage} . '-'
+        . $MD5Key
+        . '.cache';
 }
 
-=item _SetResultCache()
+=head2 _SetResultCache()
 
 cache the stats result with a given cache key (Filename).
 
@@ -3800,11 +3676,11 @@ sub _SetResultCache {
     my ( $Self, %Param ) = @_;
 
     # check needed params
-    for my $NeededParam (qw( Filename Result)) {
-        if ( !$Param{$NeededParam} ) {
+    for my $Needed (qw(Filename Result)) {
+        if ( !$Param{$Needed} ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
-                Message  => "Need $NeededParam!"
+                Message  => "Need $Needed!"
             );
             return;
         }
@@ -3823,7 +3699,7 @@ sub _SetResultCache {
     return 1;
 }
 
-=item _GetResultCache()
+=head2 _GetResultCache()
 
 get stats result from cache, if any
 
@@ -3860,7 +3736,7 @@ sub _GetResultCache {
     return;
 }
 
-=item _DeleteCache()
+=head2 _DeleteCache()
 
 clean up stats result cache.
 
@@ -3884,6 +3760,16 @@ sub _MonthArray {
 
 sub _AutomaticSampleImport {
     my ( $Self, %Param ) = @_;
+
+    for my $Needed (qw(UserID)) {
+        if ( !$Param{$Needed} ) {
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
+                Priority => 'error',
+                Message  => "Need $Needed!"
+            );
+            return;
+        }
+    }
 
     my $Language  = $Kernel::OM->Get('Kernel::Config')->Get('DefaultLanguage');
     my $Directory = $Self->{StatsTempDir};
@@ -3930,6 +3816,7 @@ sub _AutomaticSampleImport {
 
             my $StatID = $Self->Import(
                 Content => $Content,
+                UserID  => $Param{UserID},
             );
         }
     }
@@ -3938,7 +3825,85 @@ sub _AutomaticSampleImport {
     return 1;
 }
 
-=item _GetCacheString()
+=head2 _FromOTRSTimeZone()
+
+Converts the given date/time string from OTRS time zone to the given time zone.
+
+    my $String = $StatsObject->_FromOTRSTimeZone(
+        String   => '2016-02-20 20:00:00',
+        TimeZone => 'Europe/Berlin',
+    );
+
+Returns (example for OTRS time zone being set to UTC):
+
+    $TimeStamp = '2016-02-20 21:00:00',
+
+=cut
+
+sub _FromOTRSTimeZone {
+    my ( $Self, %Param ) = @_;
+
+    # check needed params
+    if ( !$Param{String} ) {
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
+            Priority => 'error',
+            Message  => 'Need String!',
+        );
+        return;
+    }
+
+    return $Param{String} if !$Param{TimeZone};
+
+    my $DateTimeObject = $Kernel::OM->Create(
+        'Kernel::System::DateTime',
+        ObjectParams => {
+            String => $Param{String},
+        },
+    );
+    $DateTimeObject->ToTimeZone( TimeZone => $Param{TimeZone} );
+
+    return $DateTimeObject->ToString();
+}
+
+=head2 _ToOTRSTimeZone()
+
+Converts the given date/time string from the given time zone to OTRS time zone.
+
+    my $String = $StatsObject->_ToOTRSTimeZone(
+        String    => '2016-02-20 18:00:00',
+        TimeZone  => 'Europe/Berlin',
+    );
+
+Returns (example for OTRS time zone being set to UTC):
+
+    $TimeStamp = '2016-02-20 17:00:00',
+
+=cut
+
+sub _ToOTRSTimeZone {
+    my ( $Self, %Param ) = @_;
+
+    # check needed params
+    if ( !$Param{String} ) {
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
+            Priority => 'error',
+            Message  => 'Need String!',
+        );
+        return;
+    }
+
+    return $Param{String} if !$Param{TimeZone};
+
+    my $DateTimeObject = $Kernel::OM->Create(
+        'Kernel::System::DateTime',
+        ObjectParams => \%Param,
+    );
+    $DateTimeObject->ToOTRSTimeZone();
+
+    return $DateTimeObject->ToString();
+}
+
+=head2 _GetCacheString()
 
 returns a string that can be used for caching this particular statistic
 with the given parameters.
@@ -3953,34 +3918,421 @@ with the given parameters.
 
 sub _GetCacheString {
     my ( $Self, %Param ) = @_;
-    my $CacheString = '';
+
+    # add the Language to the cache key
+    my $Result = 'Language:' . $Kernel::OM->Get('Kernel::Language')->{UserLanguage};
+
+    if ( $Param{TimeZone} ) {
+        $Result .= 'TimeZone:' . $Param{TimeZone};
+    }
 
     for my $Use (qw(UseAsXvalue UseAsValueSeries UseAsRestriction)) {
-        USEREF:
-        for my $UseRef ( @{ $Param{$Use} } ) {
-            $CacheString .= '__' . $UseRef->{Name} . '_';
-            if ( $UseRef->{SelectedValues} ) {
-                $CacheString .= join( '_', sort @{ $UseRef->{SelectedValues} } )
+        $Result .= "$Use:";
+        for my $Element ( @{ $Param{$Use} } ) {
+            $Result .= "Name:$Element->{Name}:";
+            if ( $Element->{Block} eq 'Time' ) {
+                if ( $Element->{SelectedValues}[0] && $Element->{TimeScaleCount} ) {
+                    $Result .= "TimeScaleUnit:$Element->{SelectedValues}[0]:";
+                    $Result .= "TimeScaleCount:$Element->{TimeScaleCount}:";
+                }
+
+                if ( $Element->{TimeStart} && $Element->{TimeStop} ) {
+                    $Result .= "TimeStart:$Element->{TimeStart}:TimeStop:$Element->{TimeStop}:";
+                }
             }
-            elsif ( $UseRef->{TimeStart} && $UseRef->{TimeStop} ) {
-                $CacheString .= $UseRef->{TimeStart} . '-' . $UseRef->{TimeStop};
+            if ( $Element->{SelectedValues} ) {
+                $Result .= "SelectedValues:" . join( ',', sort @{ $Element->{SelectedValues} } ) . ':';
             }
         }
     }
 
-    my $MD5Key = $Kernel::OM->Get('Kernel::System::Main')->FilenameCleanUp(
-        Filename => $CacheString,
+    # Convert to MD5 (not sure if this is needed any more).
+    $Result = $Kernel::OM->Get('Kernel::System::Main')->FilenameCleanUp(
+        Filename => $Result,
         Type     => 'md5',
     );
 
-    return $MD5Key;
+    return $Result;
+}
+
+=head2 _AddDeltaYMD()
+
+Substitute for Date::Pcalc::Add_Delta_YMD() which uses Kernel::System::DateTime.
+
+=cut
+
+sub _AddDeltaYMD {
+    my ( $Self, $Year, $Month, $Day, $YearsToAdd, $MonthsToAdd, $DaysToAdd ) = @_;
+
+    my $DateTimeObject = $Kernel::OM->Create(
+        'Kernel::System::DateTime',
+        ObjectParams => {
+            Year     => $Year,
+            Month    => $Month,
+            Day      => $Day,
+            TimeZone => 'floating',
+        },
+    );
+
+    if ( !$DateTimeObject ) {
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
+            Priority => "error",
+            Message  => "Error creating DateTime object.",
+        );
+
+        return ( $Year, $Month, $Day, );
+    }
+
+    $DateTimeObject->Add(
+        Years  => $YearsToAdd  || 0,
+        Months => $MonthsToAdd || 0,
+        Days   => $DaysToAdd   || 0,
+    );
+    my $DateTimeValues = $DateTimeObject->Get();
+
+    return (
+        $DateTimeValues->{Year},
+        $DateTimeValues->{Month},
+        $DateTimeValues->{Day},
+    );
+}
+
+=head2 _AddDeltaDHMS()
+
+Substitute for Date::Pcalc::Add_Delta_DHMS() which uses Kernel::System::DateTime.
+
+=cut
+
+sub _AddDeltaDHMS {
+    my ( $Self, $Year, $Month, $Day, $Hour, $Minute, $Second, $DaysToAdd, $HoursToAdd, $MinutesToAdd, $SecondsToAdd )
+        = @_;
+
+    my $DateTimeObject = $Kernel::OM->Create(
+        'Kernel::System::DateTime',
+        ObjectParams => {
+            Year     => $Year,
+            Month    => $Month,
+            Day      => $Day,
+            Hour     => $Hour,
+            Minute   => $Minute,
+            Second   => $Second,
+            TimeZone => 'floating',
+        },
+    );
+
+    if ( !$DateTimeObject ) {
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
+            Priority => "error",
+            Message  => "Error creating DateTime object.",
+        );
+
+        return ( $Year, $Month, $Day, $Hour, $Minute, $Second, );
+    }
+
+    $DateTimeObject->Add(
+        Days    => $DaysToAdd    || 0,
+        Hours   => $HoursToAdd   || 0,
+        Minutes => $MinutesToAdd || 0,
+        Seconds => $SecondsToAdd || 0,
+    );
+    my $DateTimeValues = $DateTimeObject->Get();
+
+    return (
+        $DateTimeValues->{Year},
+        $DateTimeValues->{Month},
+        $DateTimeValues->{Day},
+        $DateTimeValues->{Hour},
+        $DateTimeValues->{Minute},
+        $DateTimeValues->{Second},
+    );
+}
+
+=head2 _AddDeltaDays()
+
+Substitute for Date::Pcalc::Add_Delta_Days() which uses Kernel::System::DateTime.
+
+=cut
+
+sub _AddDeltaDays {
+    my ( $Self, $Year, $Month, $Day, $DaysToAdd ) = @_;
+
+    my $DateTimeObject = $Kernel::OM->Create(
+        'Kernel::System::DateTime',
+        ObjectParams => {
+            Year     => $Year,
+            Month    => $Month,
+            Day      => $Day,
+            TimeZone => 'floating',
+        },
+    );
+
+    if ( !$DateTimeObject ) {
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
+            Priority => "error",
+            Message  => "Error creating DateTime object.",
+        );
+
+        return ( $Year, $Month, $Day, );
+    }
+
+    $DateTimeObject->Add(
+        Days => $DaysToAdd || 0,
+    );
+    my $DateTimeValues = $DateTimeObject->Get();
+
+    return (
+        $DateTimeValues->{Year},
+        $DateTimeValues->{Month},
+        $DateTimeValues->{Day},
+    );
+}
+
+=head2 _DaysInMonth()
+
+Substitute for Date::Pcalc::Days_in_Month() which uses Kernel::System::DateTime.
+
+=cut
+
+sub _DaysInMonth {
+    my ( $Self, $Year, $Month ) = @_;
+
+    my $DateTimeObject = $Kernel::OM->Create(
+        'Kernel::System::DateTime',
+        ObjectParams => {
+            Year     => $Year,
+            Month    => $Month,
+            Day      => 1,
+            TimeZone => 'floating',
+        },
+    );
+
+    if ( !$DateTimeObject ) {
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
+            Priority => "error",
+            Message  => "Error creating DateTime object.",
+        );
+
+        return;
+    }
+
+    my $LastDayOfMonth = $DateTimeObject->LastDayOfMonthGet();
+
+    return $LastDayOfMonth->{Day};
+}
+
+=head2 _DayOfWeek()
+
+Substitute for Date::Pcalc::Day_of_Week() which uses Kernel::System::DateTime.
+
+=cut
+
+sub _DayOfWeek {
+    my ( $Self, $Year, $Month, $Day ) = @_;
+
+    my $DateTimeObject = $Kernel::OM->Create(
+        'Kernel::System::DateTime',
+        ObjectParams => {
+            Year     => $Year,
+            Month    => $Month,
+            Day      => $Day,
+            TimeZone => 'floating',
+        },
+    );
+
+    if ( !$DateTimeObject ) {
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
+            Priority => "error",
+            Message  => "Error creating DateTime object.",
+        );
+
+        return;
+    }
+
+    my $DateTimeValues = $DateTimeObject->Get();
+
+    return $DateTimeValues->{DayOfWeek};
+}
+
+=head2 _DayOfWeekAbbreviation()
+
+Substitute for Date::Pcalc::Day_of_Week_Abbreviation()
+
+=cut
+
+sub _DayOfWeekAbbreviation {
+    my ( $Self, $DayOfWeek ) = @_;
+
+    my %DayOfWeekAbbrs = (
+        1 => 'Mon',
+        2 => 'Tue',
+        3 => 'Wed',
+        4 => 'Thu',
+        5 => 'Fri',
+        6 => 'Sat',
+        7 => 'Sun',
+    );
+
+    return if !$DayOfWeekAbbrs{$DayOfWeek};
+
+    return $DayOfWeekAbbrs{$DayOfWeek};
+}
+
+=head2 _DayOfWeekToText()
+
+Substitute for Date::Pcalc::Day_of_Week_to_Text()
+
+=cut
+
+sub _DayOfWeekToText {
+    my ( $Self, $DayOfWeek ) = @_;
+
+    my %DayOfWeekTexts = (
+        1 => 'Monday',
+        2 => 'Tuesday',
+        3 => 'Wednesday',
+        4 => 'Thursday',
+        5 => 'Friday',
+        6 => 'Saturday',
+        7 => 'Sunday',
+    );
+
+    return if !$DayOfWeekTexts{$DayOfWeek};
+
+    return $DayOfWeekTexts{$DayOfWeek};
+}
+
+=head2 _MondayOfWeek()
+
+Substitute for Date::Pcalc::Monday_of_Week(), using Kernel::System::DateTime, note different parameters
+
+=cut
+
+sub _MondayOfWeek {
+    my ( $Self, $Year, $Month, $Day ) = @_;
+
+    my $DateTimeObject = $Kernel::OM->Create(
+        'Kernel::System::DateTime',
+        ObjectParams => {
+            Year     => $Year,
+            Month    => $Month,
+            Day      => $Day,
+            TimeZone => 'floating',
+        },
+    );
+
+    if ( !$DateTimeObject ) {
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
+            Priority => "error",
+            Message  => "Error creating DateTime object.",
+        );
+
+        return;
+    }
+
+    my $DateTimeValues = $DateTimeObject->Get();
+    my $DaysToSubtract = $DateTimeValues->{DayOfWeek} - 1;
+    return $DateTimeValues->{Day} if !$DaysToSubtract;
+
+    $DateTimeObject->Subtract( Days => $DaysToSubtract );
+    $DateTimeValues = $DateTimeObject->Get();
+    return $DateTimeValues->{Day};
+}
+
+=head2 _WeekOfYear()
+
+Substitute for Date::Pcalc::Week_of_Year(), using Kernel::System::DateTime
+
+=cut
+
+sub _WeekOfYear {
+    my ( $Self, $Year, $Month, $Day ) = @_;
+
+    my $DateTimeObject = $Kernel::OM->Create(
+        'Kernel::System::DateTime',
+        ObjectParams => {
+            Year     => $Year,
+            Month    => $Month,
+            Day      => $Day,
+            TimeZone => 'floating',
+        },
+    );
+
+    if ( !$DateTimeObject ) {
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
+            Priority => "error",
+            Message  => "Error creating DateTime object.",
+        );
+
+        return;
+    }
+
+    return (
+        $DateTimeObject->Format( Format => '%{week_number}' ),
+        $DateTimeObject->Format( Format => '%{week_year}' ),
+    );
+}
+
+=head2 _HumanReadableAgeGet()
+
+Re-implementation of L<CustomerAge()|Kernel::Output::HTML::Layout/CustomerAge()> since this object is inaccessible from
+the backend.
+
+TODO: Currently, there is no support for translation of statistic values, it's planned to be implemented later on. For
+the time being, this method will return a string in English only.
+
+    my $HumanReadableAge = $StatsObject->_HumanReadableAgeGet(
+        Age   => 360,
+    );
+
+Returns (converted seconds in human readable format, i.e. '1 d 2 h'):
+
+    $HumanReadableAge = '6 h',
+
+=cut
+
+sub _HumanReadableAgeGet {
+    my ( $Self, %Param ) = @_;
+
+    my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
+
+    my $Age       = defined( $Param{Age} ) ? $Param{Age} : return;
+    my $AgeStrg   = '';
+    my $DayDsc    = 'd';
+    my $HourDsc   = 'h';
+    my $MinuteDsc = 'm';
+    if ( $ConfigObject->Get('TimeShowCompleteDescription') ) {
+        $DayDsc    = 'day(s)';
+        $HourDsc   = 'hour(s)';
+        $MinuteDsc = 'minute(s)';
+    }
+    if ( $Age =~ /^-(.*)/ ) {
+        $Age     = $1;
+        $AgeStrg = '-';
+    }
+
+    # get days
+    if ( $Age >= 86400 ) {
+        $AgeStrg .= int( ( $Age / 3600 ) / 24 ) . ' ';
+        $AgeStrg .= $DayDsc . ' ';
+    }
+
+    # get hours
+    if ( $Age >= 3600 ) {
+        $AgeStrg .= int( ( $Age / 3600 ) % 24 ) . ' ';
+        $AgeStrg .= $HourDsc . ' ';
+    }
+
+    # get minutes (just if age < 1 day)
+    if ( $ConfigObject->Get('TimeShowAlwaysLong') || $Age < 86400 ) {
+        $AgeStrg .= int( ( $Age / 60 ) % 60 ) . ' ';
+        $AgeStrg .= $MinuteDsc;
+    }
+    return $AgeStrg;
 }
 
 1;
 
 =end Internal:
-
-=back
 
 =head1 TERMS AND CONDITIONS
 

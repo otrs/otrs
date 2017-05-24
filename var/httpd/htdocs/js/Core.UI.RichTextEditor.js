@@ -1,6 +1,5 @@
 // --
-// Core.UI.RichTextEditor.js - provides all UI functions
-// Copyright (C) 2001-2013 OTRS AG, http://otrs.org/
+// Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 // --
 // This software comes with ABSOLUTELY NO WARRANTY. For details, see
 // the enclosed file COPYING for license information (AGPL). If you
@@ -46,18 +45,19 @@ Core.UI.RichTextEditor = (function (TargetNS) {
      * @memberof Core.UI.RichTextEditor
      * @function
      * @returns {jQueryObject} FormID element.
+     * @param {jQueryObject} $EditorArea - The jQuery object of the element that has become a rich text editor.
      * @description
      *      Check in the window which hidden element has a name same to 'FormID' and return it like a JQuery object.
      */
-    function CheckFormID() {
+    function CheckFormID($EditorArea) {
         if (typeof $FormID === 'undefined') {
-            $FormID = $('input:hidden[name=FormID]');
+            $FormID = $EditorArea.closest('form').find('input:hidden[name=FormID]');
         }
         return $FormID;
     }
 
     /**
-     * @name Init
+     * @name InitEditor
      * @memberof Core.UI.RichTextEditor
      * @function
      * @returns {Boolean} Returns false on error.
@@ -65,11 +65,15 @@ Core.UI.RichTextEditor = (function (TargetNS) {
      * @description
      *      This function initializes the application and executes the needed functions.
      */
-    TargetNS.Init = function ($EditorArea) {
+    TargetNS.InitEditor = function ($EditorArea) {
         var EditorID = '',
             Editor,
-            Instance,
-            UserLanguage;
+            UserLanguage,
+            UploadURL = '';
+
+        if (typeof CKEDITOR === 'undefined') {
+            return false;
+        }
 
         if (isJQueryObject($EditorArea) && $EditorArea.hasClass('HasCKEInstance')) {
             return false;
@@ -90,27 +94,37 @@ Core.UI.RichTextEditor = (function (TargetNS) {
             CKEDITOR.addCss(Core.Config.Get('RichText.EditingAreaCSS'));
 
             // Remove the validation error tooltip if content is added to the editor
-            Editor.editor.on('change', function(evt) {
+            Editor.editor.on('change', function() {
                 window.clearTimeout(TimeOutRTEOnChange);
                 TimeOutRTEOnChange = window.setTimeout(function () {
                     Core.Form.Validate.ValidateElement($(Editor.editor.element.$));
                 }, 250);
             });
 
-            // if spell checker is used on paste new content should spell check again
-            Editor.editor.on('paste', function(evt) {
-                Core.Config.Set('TextIsSpellChecked', false);
-            });
-            // if spell checker is used on any key new content should spell check again
-            Editor.editor.on('key', function(evt) {
-                Core.Config.Set('TextIsSpellChecked', false);
-            });
+            Core.App.Publish('Event.UI.RichTextEditor.InstanceCreated', [Editor]);
+        });
+
+        CKEDITOR.on('instanceReady', function (Editor) {
+            Core.App.Publish('Event.UI.RichTextEditor.InstanceReady', [Editor]);
         });
 
         // The format for the language is different between OTRS and CKEditor (see bug#8024)
         // To correct this, we replace "_" with "-" in the language (e.g. zh_CN becomes zh-cn)
         UserLanguage = Core.Config.Get('UserLanguage').replace(/_/, "-");
 
+        // build URL for image upload
+        if (CheckFormID($EditorArea).length) {
+
+            UploadURL = Core.Config.Get('Baselink')
+                    + 'Action='
+                    + Core.Config.Get('RichText.PictureUploadAction', 'PictureUpload')
+                    + '&FormID='
+                    + CheckFormID($EditorArea).val()
+                    + '&' + Core.Config.Get('SessionName')
+                    + '=' + Core.Config.Get('SessionID');
+        }
+
+        /*eslint-disable camelcase */
         Editor = CKEDITOR.replace(EditorID,
         {
             customConfig: '', // avoid loading external config files
@@ -119,88 +133,109 @@ Core.UI.RichTextEditor = (function (TargetNS) {
             width: Core.Config.Get('RichText.Width', 620),
             resize_minWidth: Core.Config.Get('RichText.Width', 620),
             height: Core.Config.Get('RichText.Height', 320),
-            removePlugins : 'elementspath,scayt,menubutton',
+            removePlugins: CheckFormID($EditorArea).length ? '' : 'image2,uploadimage',
             forcePasteAsPlainText: false,
             format_tags: 'p;h1;h2;h3;h4;h5;h6;pre',
             fontSize_sizes: '8px;10px;12px;16px;18px;20px;22px;24px;26px;28px;30px;',
-            extraAllowedContent: 'div table tr td th colgroup col img style[*]{*}',
+            extraAllowedContent: 'div[type]{*}; img[*]; col[width]; style[*]{*}; *[id](*)',
             enterMode: CKEDITOR.ENTER_BR,
             shiftEnterMode: CKEDITOR.ENTER_BR,
             contentsLangDirection: Core.Config.Get('RichText.TextDir', 'ltr'),
-            disableNativeSpellChecker: false,
-            toolbar: CheckFormID().length ? Core.Config.Get('RichText.Toolbar') : Core.Config.Get('RichText.ToolbarWithoutImage'),
-            filebrowserUploadUrl: Core.Config.Get('Baselink'),
-            extraPlugins: Core.Config.Get('RichText.SpellChecker') ? 'aspell,splitquote' : 'splitquote',
+            toolbar: CheckFormID($EditorArea).length ? Core.Config.Get('RichText.Toolbar') : Core.Config.Get('RichText.ToolbarWithoutImage'),
+            filebrowserBrowseUrl: '',
+            filebrowserUploadUrl: UploadURL,
+            extraPlugins: 'splitquote,preventimagepaste',
             entities: false,
-            skin: 'bootstrapck'
+            skin: 'moono-lisa'
         });
-        if (CheckFormID().length) {
-            CKEDITOR.config.action = Core.Config.Get('RichText.PictureUploadAction', 'PictureUpload');
-            CKEDITOR.config.formID = CheckFormID().val();
-        }
-        CKEDITOR.config.spellerPagesServerScript = Core.Config.Get('Baselink');
+        /*eslint-enable camelcase */
 
-        // Hack for updating the textarea with the RTE content (bug#5857)
-        // Rename the original function to another name, than overwrite the original one
-        CKEDITOR.instances[EditorID].updateElementOriginal = CKEDITOR.instances[EditorID].updateElement;
-        CKEDITOR.instances[EditorID].updateElement = function() {
-            var Data;
+        // check if creating CKEditor was successful
+        // might be a problem on mobile devices e.g.
+        if (typeof Editor !== 'undefined') {
+            // Hack for updating the textarea with the RTE content (bug#5857)
+            // Rename the original function to another name, than overwrite the original one
+            CKEDITOR.instances[EditorID].updateElementOriginal = CKEDITOR.instances[EditorID].updateElement;
+            CKEDITOR.instances[EditorID].updateElement = function() {
+                var Data;
 
-            // First call the original function
-            CKEDITOR.instances[EditorID].updateElementOriginal();
+                // First call the original function
+                CKEDITOR.instances[EditorID].updateElementOriginal();
 
-            // Now check if there is actually any non-whitespace content in the
-            //  textarea field. If not, set it to an empty value to make sure
-            //  the server side validation works correctly and there is no trash
-            //  like '<br/>' stored in the DB.
-            Data = this.element.getValue(); // get textarea content
+                // Now check if there is actually any non-whitespace content in the
+                //  textarea field. If not, set it to an empty value to make sure
+                //  the server side validation works correctly and there is no trash
+                //  like '<br/>' stored in the DB.
+                Data = this.element.getValue(); // get textarea content
 
-            // only if data contains no image tag,
-            // this is important for inline images, we don't want to remove them!
-            if ( !Data.match(/<img/) ) {
-
-                // remove tags and whitespace for checking
-                Data = Data.replace(/\s+|&nbsp;|<\/?\w+[^>]*\/?>/g, '');
-                if (!Data.length) {
-                    this.element.setValue(''); // reset textarea
+                // only if data contains no image tag,
+                // this is important for inline images, we don't want to remove them!
+                if (!Data.match(/<img/)) {
+                    // remove tags and whitespace for checking
+                    Data = Data.replace(/\s+|&nbsp;|<\/?\w+[^>]*\/?>/g, '');
+                    if (!Data.length) {
+                        this.element.setValue(''); // reset textarea
+                    }
                 }
-            }
-        };
+            };
 
-        // Needed for clientside validation of RTE
-        CKEDITOR.instances[EditorID].on('blur', function () {
-            CKEDITOR.instances[EditorID].updateElement();
-            Core.Form.Validate.ValidateElement($EditorArea);
-        });
+            // Needed for clientside validation of RTE
+            CKEDITOR.instances[EditorID].on('blur', function () {
+                CKEDITOR.instances[EditorID].updateElement();
+                Core.Form.Validate.ValidateElement($EditorArea);
+            });
 
-        // needed for client-side validation
-        CKEDITOR.instances[EditorID].on('focus', function () {
-            if ($EditorArea.attr('class').match(/Error/)) {
-                window.setTimeout(function () {
-                    CKEDITOR.instances[EditorID].updateElement();
-                    Core.Form.Validate.ValidateElement($EditorArea);
-                }, 0);
-            }
-        });
+            // needed for client-side validation
+            CKEDITOR.instances[EditorID].on('focus', function () {
 
-        // mainly needed for client-side validation
-        $EditorArea.focus(function () {
-            TargetNS.Focus($EditorArea);
-            Core.UI.ScrollTo($("label[for=" + $EditorArea.attr('id') + "]"));
-        });
+                Core.App.Publish('Event.UI.RichTextEditor.Focus', [Editor]);
+
+                if ($EditorArea.attr('class').match(/Error/)) {
+                    window.setTimeout(function () {
+                        CKEDITOR.instances[EditorID].updateElement();
+                        Core.Form.Validate.ValidateElement($EditorArea);
+                    }, 0);
+                }
+            });
+
+            // mainly needed for client-side validation
+            $EditorArea.focus(function () {
+                TargetNS.Focus($EditorArea);
+                Core.UI.ScrollTo($("label[for=" + $EditorArea.attr('id') + "]"));
+            });
+        }
     };
 
     /**
-     * @name InitAll
+     * @name InitAllEditors
      * @memberof Core.UI.RichTextEditor
      * @function
      * @description
      *      This function initializes as a rich text editor every textarea element that containing the RichText class.
      */
-    TargetNS.InitAll = function () {
+    TargetNS.InitAllEditors = function () {
+        if (typeof CKEDITOR === 'undefined') {
+            return;
+        }
+
         $('textarea.RichText').each(function () {
-            TargetNS.Init($(this));
+            TargetNS.InitEditor($(this));
         });
+    };
+
+    /**
+     * @name Init
+     * @memberof Core.UI.RichTextEditor
+     * @function
+     * @description
+     *      This function initializes JS functionality.
+     */
+    TargetNS.Init = function () {
+        if (typeof CKEDITOR === 'undefined') {
+            return;
+        }
+
+        TargetNS.InitAllEditors();
     };
 
     /**
@@ -213,8 +248,10 @@ Core.UI.RichTextEditor = (function (TargetNS) {
      *      Get RTE jQuery element.
      */
     TargetNS.GetRTE = function ($EditorArea) {
+        var $RTE;
+
         if (isJQueryObject($EditorArea)) {
-            var $RTE = $('#cke_' + $EditorArea.attr('id'));
+            $RTE = $('#cke_' + $EditorArea.attr('id'));
             return ($RTE.length ? $RTE : undefined);
         }
     };
@@ -261,8 +298,6 @@ Core.UI.RichTextEditor = (function (TargetNS) {
      *      This function check if a rich text editor is enable in this moment.
      */
     TargetNS.IsEnabled = function ($EditorArea) {
-        var EditorID = '';
-
         if (typeof CKEDITOR === 'undefined') {
             return false;
         }
@@ -299,6 +334,8 @@ Core.UI.RichTextEditor = (function (TargetNS) {
             $EditorArea.focus();
         }
     };
+
+    Core.Init.RegisterNamespace(TargetNS, 'APP_MODULE');
 
     return TargetNS;
 }(Core.UI.RichTextEditor || {}));

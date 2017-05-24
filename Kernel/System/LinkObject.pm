@@ -1,6 +1,5 @@
 # --
-# Kernel/System/LinkObject.pm - to link objects
-# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -25,24 +24,18 @@ our @ObjectDependencies = (
 
 =head1 NAME
 
-Kernel::System::LinkObject - to link objects like tickets, faqs, ...
+Kernel::System::LinkObject - to link objects like tickets, faq entries, ...
 
-=head1 SYNOPSIS
+=head1 DESCRIPTION
 
-All functions to link objects like tickets, faqs, ...
+All functions to link objects like tickets, faq entries, ...
 
 =head1 PUBLIC INTERFACE
 
-=over 4
+=head2 new()
 
-=cut
+Don't use the constructor directly, use the ObjectManager instead:
 
-=item new()
-
-create an object. Do not use it directly, instead use:
-
-    use Kernel::System::ObjectManager;
-    local $Kernel::OM = Kernel::System::ObjectManager->new();
     my $LinkObject = $Kernel::OM->Get('Kernel::System::LinkObject');
 
 =cut
@@ -60,7 +53,7 @@ sub new {
     return $Self;
 }
 
-=item PossibleTypesList()
+=head2 PossibleTypesList()
 
 return a hash of all possible types
 
@@ -139,7 +132,7 @@ sub PossibleTypesList {
     return %PossibleTypesList;
 }
 
-=item PossibleObjectsList()
+=head2 PossibleObjectsList()
 
 return a hash of all possible objects
 
@@ -195,9 +188,9 @@ sub PossibleObjectsList {
     return %PossibleObjectsList;
 }
 
-=item PossibleLinkList()
+=head2 PossibleLinkList()
 
-return a 2d hash list of all possible links
+return a 2 dimensional hash list of all possible links
 
 Return
     %PossibleLinkList = (
@@ -311,7 +304,7 @@ sub PossibleLinkList {
     return %PossibleLinkList;
 }
 
-=item LinkAdd()
+=head2 LinkAdd()
 
 add a new link between two elements
 
@@ -569,7 +562,7 @@ sub LinkAdd {
     return 1;
 }
 
-=item LinkCleanup()
+=head2 LinkCleanup()
 
 deletes old links from database
 
@@ -628,7 +621,7 @@ sub LinkCleanup {
     return 1;
 }
 
-=item LinkDelete()
+=head2 LinkDelete()
 
 deletes a link
 
@@ -821,7 +814,7 @@ sub LinkDelete {
     return 1;
 }
 
-=item LinkDeleteAll()
+=head2 LinkDeleteAll()
 
 delete all links of an object
 
@@ -899,7 +892,7 @@ sub LinkDeleteAll {
     return 1;
 }
 
-=item LinkList()
+=head2 LinkList()
 
 get all existing links for a given object
 
@@ -1132,7 +1125,7 @@ sub LinkList {
     return \%Links;
 }
 
-=item LinkListWithData()
+=head2 LinkListWithData()
 
 get all existing links for a given object with data of the other objects
 
@@ -1276,7 +1269,7 @@ sub LinkListWithData {
     return $LinkList;
 }
 
-=item LinkKeyList()
+=head2 LinkKeyList()
 
 return a hash with all existing links of a given object
 
@@ -1349,7 +1342,7 @@ sub LinkKeyList {
     return %LinkKeyList;
 }
 
-=item LinkKeyListWithData()
+=head2 LinkKeyListWithData()
 
 return a hash with all existing links of a given object
 
@@ -1422,7 +1415,7 @@ sub LinkKeyListWithData {
     return %LinkKeyList;
 }
 
-=item ObjectLookup()
+=head2 ObjectLookup()
 
 lookup a link object
 
@@ -1450,9 +1443,6 @@ sub ObjectLookup {
         return;
     }
 
-    # get database object
-    my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
-
     if ( $Param{ObjectID} ) {
 
         # check cache
@@ -1462,6 +1452,9 @@ sub ObjectLookup {
             Key  => $CacheKey,
         );
         return $Cache if $Cache;
+
+        # get database object
+        my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
 
         # ask the database
         return if !$DBObject->Prepare(
@@ -1508,7 +1501,8 @@ sub ObjectLookup {
         );
         return $Cache if $Cache;
 
-        # get check item object
+        # get needed object
+        my $DBObject        = $Kernel::OM->Get('Kernel::System::DB');
         my $CheckItemObject = $Kernel::OM->Get('Kernel::System::CheckItem');
 
         # investigate the object id
@@ -1568,7 +1562,7 @@ sub ObjectLookup {
     }
 }
 
-=item TypeLookup()
+=head2 TypeLookup()
 
 lookup a link type
 
@@ -1607,9 +1601,6 @@ sub TypeLookup {
         return;
     }
 
-    # get database object
-    my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
-
     if ( $Param{TypeID} ) {
 
         # check cache
@@ -1619,6 +1610,9 @@ sub TypeLookup {
             Key  => $CacheKey,
         );
         return $Cache if $Cache;
+
+        # get database object
+        my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
 
         # ask the database
         return if !$DBObject->Prepare(
@@ -1669,6 +1663,9 @@ sub TypeLookup {
             Key  => $CacheKey,
         );
         return $Cache if $Cache;
+
+        # get database object
+        my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
 
         # investigate the type id
         my $TypeID;
@@ -1729,7 +1726,7 @@ sub TypeLookup {
     }
 }
 
-=item TypeGet()
+=head2 TypeGet()
 
 get a link type
 
@@ -1765,8 +1762,12 @@ sub TypeGet {
     }
 
     # check cache
-    return %{ $Self->{Cache}->{TypeGet}->{TypeID}->{ $Param{TypeID} } }
-        if $Self->{Cache}->{TypeGet}->{TypeID}->{ $Param{TypeID} };
+    my $CacheKey = 'TypeGet::TypeID::' . $Param{TypeID};
+    my $Cache    = $Kernel::OM->Get('Kernel::System::Cache')->Get(
+        Type => $Self->{CacheType},
+        Key  => $CacheKey,
+    );
+    return %{$Cache} if $Cache;
 
     # get database object
     my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
@@ -1833,15 +1834,20 @@ sub TypeGet {
     # add pointed value
     $Type{Pointed} = $Type{SourceName} ne $Type{TargetName} ? 1 : 0;
 
-    # cache result
-    $Self->{Cache}->{TypeGet}->{TypeID}->{ $Param{TypeID} } = \%Type;
+    # set cache
+    $Kernel::OM->Get('Kernel::System::Cache')->Set(
+        Type  => $Self->{CacheType},
+        TTL   => $Self->{CacheTTL},
+        Key   => $CacheKey,
+        Value => \%Type,
+    );
 
     return %Type;
 }
 
-=item TypeList()
+=head2 TypeList()
 
-return a 2d hash list of all valid link types
+return a 2 dimensional hash list of all valid link types
 
 Return
     $TypeList{
@@ -1899,9 +1905,9 @@ sub TypeList {
     return %TypeList;
 }
 
-=item TypeGroupList()
+=head2 TypeGroupList()
 
-return a 2d hash list of all type groups
+return a 2 dimensional hash list of all type groups
 
 Return
     %TypeGroupList = (
@@ -1998,7 +2004,7 @@ sub TypeGroupList {
     return %TypeGroupList;
 }
 
-=item PossibleType()
+=head2 PossibleType()
 
 return true if both types are NOT together in a type group
 
@@ -2039,7 +2045,7 @@ sub PossibleType {
     return 1;
 }
 
-=item StateLookup()
+=head2 StateLookup()
 
 lookup a link state
 
@@ -2067,9 +2073,6 @@ sub StateLookup {
         return;
     }
 
-    # get database object
-    my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
-
     if ( $Param{StateID} ) {
 
         # check cache
@@ -2079,6 +2082,9 @@ sub StateLookup {
             Key  => $CacheKey,
         );
         return $Cache if $Cache;
+
+        # get database object
+        my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
 
         # ask the database
         return if !$DBObject->Prepare(
@@ -2125,6 +2131,9 @@ sub StateLookup {
         );
         return $Cache if $Cache;
 
+        # get database object
+        my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
+
         # ask the database
         return if !$DBObject->Prepare(
             SQL => '
@@ -2162,7 +2171,7 @@ sub StateLookup {
     }
 }
 
-=item StateList()
+=head2 StateList()
 
 return a hash list of all valid link states
 
@@ -2213,7 +2222,7 @@ sub StateList {
     return %StateList;
 }
 
-=item ObjectPermission()
+=head2 ObjectPermission()
 
 checks read permission for a given object and UserID.
 
@@ -2250,7 +2259,7 @@ sub ObjectPermission {
     );
 }
 
-=item ObjectDescriptionGet()
+=head2 ObjectDescriptionGet()
 
 return a hash of object descriptions
 
@@ -2295,11 +2304,12 @@ sub ObjectDescriptionGet {
     return %Description;
 }
 
-=item ObjectSearch()
+=head2 ObjectSearch()
 
-return a hash reference of the search results
+return a hash reference of the search results.
 
-Return
+Returns:
+
     $ObjectList = {
         Ticket => {
             NOTLINKED => {
@@ -2352,8 +2362,6 @@ sub ObjectSearch {
 }
 
 1;
-
-=back
 
 =head1 TERMS AND CONDITIONS
 

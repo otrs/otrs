@@ -1,6 +1,5 @@
 # --
-# Kernel/System/ProcessManagement/Process.pm - Process Management DB Process backend
-# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -23,6 +22,7 @@ use Kernel::System::VariableCheck qw(:all);
 
 our @ObjectDependencies = (
     'Kernel::Config',
+    'Kernel::Language',
     'Kernel::System::Cache',
     'Kernel::System::DB',
     'Kernel::System::DynamicField',
@@ -37,22 +37,16 @@ our @ObjectDependencies = (
 
 Kernel::System::ProcessManagement::DB::Process
 
-=head1 SYNOPSIS
+=head1 DESCRIPTION
 
 Process Management DB Process backend
 
 =head1 PUBLIC INTERFACE
 
-=over 4
+=head2 new()
 
-=cut
+Don't use the constructor directly, use the ObjectManager instead:
 
-=item new()
-
-create an object. Do not use it directly, instead use:
-
-    use Kernel::System::ObjectManager;
-    local $Kernel::OM = Kernel::System::ObjectManager->new();
     my $ProcessObject = $Kernel::OM->Get('Kernel::System::ProcessManagement::DB::Process');
 
 =cut
@@ -83,7 +77,7 @@ sub new {
     return $Self;
 }
 
-=item ProcessAdd()
+=head2 ProcessAdd()
 
 add new Process
 
@@ -206,7 +200,7 @@ sub ProcessAdd {
     return $ID;
 }
 
-=item ProcessDelete()
+=head2 ProcessDelete()
 
 delete a Process
 
@@ -254,7 +248,7 @@ sub ProcessDelete {
     return 1;
 }
 
-=item ProcessGet()
+=head2 ProcessGet()
 
 get Process attributes
 
@@ -567,7 +561,7 @@ sub ProcessGet {
     return \%Data;
 }
 
-=item ProcessUpdate()
+=head2 ProcessUpdate()
 
 update Process attributes
 
@@ -708,7 +702,7 @@ sub ProcessUpdate {
     return 1;
 }
 
-=item ProcessList()
+=head2 ProcessList()
 
 get a Process list
 
@@ -732,6 +726,7 @@ get a Process list
     $List = {
         'P1' => 'NameOfProcess',
     }
+
 =cut
 
 sub ProcessList {
@@ -808,7 +803,7 @@ sub ProcessList {
     return \%Data;
 }
 
-=item ProcessListGet()
+=head2 ProcessListGet()
 
 get a Process list with all process details
 
@@ -908,7 +903,7 @@ sub ProcessListGet {
     return \@Data;
 }
 
-=item ProcessDump()
+=head2 ProcessDump()
 
 gets a complete processes information dump from the DB including: Process State, Activities,
 ActivityDialogs, Transitions and TransitionActions
@@ -1388,7 +1383,7 @@ EOF
     }
 }
 
-=item ProcessImport()
+=head2 ProcessImport()
 
 import a process YAML file/content
 
@@ -1762,9 +1757,10 @@ sub ProcessImport {
     }
 
     return (
-        Message => 'Process '
-            . $ProcessData->{Process}->{Name}
-            . ' and all its data has been imported successfully.',
+        Message => $Kernel::OM->Get('Kernel::Language')->Translate(
+            'The process "%s" and all of its data has been imported successfully.',
+            $ProcessData->{Process}->{Name}
+        ),
         Success => 1,
     );
 }
@@ -2111,8 +2107,6 @@ sub _ProcessImportRollBack {
 }
 
 1;
-
-=back
 
 =head1 TERMS AND CONDITIONS
 

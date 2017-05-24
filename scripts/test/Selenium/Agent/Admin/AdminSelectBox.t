@@ -1,6 +1,5 @@
 # --
-# AdminSelectBox.t - frontend tests for AdminSQL
-# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -13,23 +12,16 @@ use utf8;
 
 use vars (qw($Self));
 
-use Kernel::System::UnitTest::Helper;
-use Kernel::System::UnitTest::Selenium;
-
-# get needed objects
-my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
-
-my $Selenium = Kernel::System::UnitTest::Selenium->new(
-    Verbose => 1,
-);
+# get selenium object
+my $Selenium = $Kernel::OM->Get('Kernel::System::UnitTest::Selenium');
 
 $Selenium->RunTest(
     sub {
 
-        my $Helper = Kernel::System::UnitTest::Helper->new(
-            RestoreSystemConfiguration => 0,
-        );
+        # get helper object
+        my $Helper = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
 
+        # create test user and login
         my $TestUserLogin = $Helper->TestUserCreate(
             Groups => ['admin'],
         ) || die "Did not get test user";
@@ -40,13 +32,15 @@ $Selenium->RunTest(
             Password => $TestUserLogin,
         );
 
-        my $ScriptAlias = $ConfigObject->Get('ScriptAlias');
+        # get script alias
+        my $ScriptAlias = $Kernel::OM->Get('Kernel::Config')->Get('ScriptAlias');
 
-        $Selenium->get("${ScriptAlias}index.pl?Action=AdminSelectBox");
+        # navigate to AdminSelectBox screen
+        $Selenium->VerifiedGet("${ScriptAlias}index.pl?Action=AdminSelectBox");
 
         # empty SQL statement, check client side validation
         $Selenium->find_element( "#SQL", 'css' )->clear();
-        $Selenium->find_element( "#SQL", 'css' )->submit();
+        $Selenium->find_element( "#SQL", 'css' )->VerifiedSubmit();
         $Self->Is(
             $Selenium->execute_script(
                 "return \$('#SQL').hasClass('Error')"
@@ -58,7 +52,7 @@ $Selenium->RunTest(
         # wrong SQL statement, check server side validation
         $Selenium->find_element( "#SQL", 'css' )->clear();
         $Selenium->find_element( "#SQL", 'css' )->send_keys("SELECT * FROM");
-        $Selenium->find_element( "#SQL", 'css' )->submit();
+        $Selenium->find_element( "#SQL", 'css' )->VerifiedSubmit();
         $Self->Is(
             $Selenium->execute_script(
                 "return \$('#SQL').hasClass('ServerError')"
@@ -70,7 +64,7 @@ $Selenium->RunTest(
         # correct SQL statement
         $Selenium->find_element( "#SQL", 'css' )->clear();
         $Selenium->find_element( "#SQL", 'css' )->send_keys("SELECT * FROM valid");
-        $Selenium->find_element( "#SQL", 'css' )->submit();
+        $Selenium->find_element( "#SQL", 'css' )->VerifiedSubmit();
 
         # verify results
         my @Elements = $Selenium->find_elements( 'table thead tr', 'css' );
@@ -80,13 +74,14 @@ $Selenium->RunTest(
             "Result table header row found",
         );
 
-        @Elements = $Selenium->find_elements( 'table tbody tr', 'css' );
         $Self->Is(
-            scalar @Elements,
+            $Selenium->execute_script(
+                "return \$('#Results tbody tr:visible').length"
+            ),
             3,
             "Result table body rows found",
         );
-        }
+    }
 );
 
 1;

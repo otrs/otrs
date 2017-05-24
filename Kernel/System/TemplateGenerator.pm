@@ -1,6 +1,5 @@
 # --
-# Kernel/System/TemplateGenerator.pm - generate salutations, signatures and responses
-# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -8,7 +7,6 @@
 # --
 
 package Kernel::System::TemplateGenerator;
-## nofilter(TidyAll::Plugin::OTRS::Perl::Time)
 
 use strict;
 use warnings;
@@ -23,38 +21,36 @@ our @ObjectDependencies = (
     'Kernel::System::CustomerUser',
     'Kernel::System::DynamicField',
     'Kernel::System::DynamicField::Backend',
+    'Kernel::System::Encode',
     'Kernel::System::HTMLUtils',
     'Kernel::System::Log',
-    'Kernel::System::Notification',
     'Kernel::System::Queue',
     'Kernel::System::Salutation',
     'Kernel::System::Signature',
     'Kernel::System::StandardTemplate',
     'Kernel::System::SystemAddress',
     'Kernel::System::Ticket',
+    'Kernel::System::Ticket::Article',
     'Kernel::System::User',
+    'Kernel::Output::HTML::Layout',
+    'Kernel::System::JSON',
+
 );
 
 =head1 NAME
 
 Kernel::System::TemplateGenerator - signature lib
 
-=head1 SYNOPSIS
+=head1 DESCRIPTION
 
 All signature functions.
 
 =head1 PUBLIC INTERFACE
 
-=over 4
+=head2 new()
 
-=cut
+Don't use the constructor directly, use the ObjectManager instead:
 
-=item new()
-
-create an object. Do not use it directly, instead use:
-
-    use Kernel::System::ObjectManager;
-    local $Kernel::OM = Kernel::System::ObjectManager->new();
     my $TemplateGeneratorObject = $Kernel::OM->Get('Kernel::System::TemplateGenerator');
 
 =cut
@@ -71,7 +67,7 @@ sub new {
     return $Self;
 }
 
-=item Salutation()
+=head2 Salutation()
 
 generate salutation
 
@@ -131,10 +127,18 @@ sub Salutation {
         );
     }
 
+    # get list unsupported tags for standard template
+    my @ListOfUnSupportedTag = qw(OTRS_AGENT_SUBJECT OTRS_AGENT_BODY OTRS_CUSTOMER_BODY OTRS_CUSTOMER_SUBJECT);
+
+    my $SalutationText = $Self->_RemoveUnSupportedTag(
+        Text => $Salutation{Text} || '',
+        ListOfUnSupportedTag => \@ListOfUnSupportedTag,
+    );
+
     # replace place holder stuff
-    my $SalutationText = $Self->_Replace(
+    $SalutationText = $Self->_Replace(
         RichText => $Self->{RichText},
-        Text     => $Salutation{Text},
+        Text     => $SalutationText,
         TicketID => $Param{TicketID},
         Data     => $Param{Data},
         UserID   => $Param{UserID},
@@ -150,7 +154,7 @@ sub Salutation {
     return $SalutationText;
 }
 
-=item Signature()
+=head2 Signature()
 
 generate salutation
 
@@ -242,10 +246,18 @@ sub Signature {
         );
     }
 
+    # get list unsupported tags for standard template
+    my @ListOfUnSupportedTag = qw(OTRS_AGENT_SUBJECT OTRS_AGENT_BODY OTRS_CUSTOMER_BODY OTRS_CUSTOMER_SUBJECT);
+
+    my $SignatureText = $Self->_RemoveUnSupportedTag(
+        Text => $Signature{Text} || '',
+        ListOfUnSupportedTag => \@ListOfUnSupportedTag,
+    );
+
     # replace place holder stuff
-    my $SignatureText = $Self->_Replace(
+    $SignatureText = $Self->_Replace(
         RichText => $Self->{RichText},
-        Text     => $Signature{Text},
+        Text     => $SignatureText,
         TicketID => $Param{TicketID} || '',
         Data     => $Param{Data},
         QueueID  => $Param{QueueID},
@@ -262,7 +274,7 @@ sub Signature {
     return $SignatureText;
 }
 
-=item Sender()
+=head2 Sender()
 
 generate sender address (FROM string) for emails
 
@@ -340,7 +352,7 @@ sub Sender {
     }
 
     # prepare realname quote
-    if ( $Address{RealName} =~ /(,|@|\(|\)|:)/ && $Address{RealName} !~ /^("|')/ ) {
+    if ( $Address{RealName} =~ /([.]|,|@|\(|\)|:)/ && $Address{RealName} !~ /^("|')/ ) {
         $Address{RealName} =~ s/"//g;    # remove any quotes that are already present
         $Address{RealName} = '"' . $Address{RealName} . '"';
     }
@@ -349,7 +361,7 @@ sub Sender {
     return $Sender;
 }
 
-=item Template()
+=head2 Template()
 
 generate template
 
@@ -410,19 +422,146 @@ sub Template {
         );
     }
 
+    # get user language
+    my $Language;
+    if ( defined $Param{TicketID} ) {
+
+        # get ticket data
+        my %Ticket = $Kernel::OM->Get('Kernel::System::Ticket')->TicketGet(
+            TicketID => $Param{TicketID},
+        );
+
+        # get recipient
+        my %User = $Kernel::OM->Get('Kernel::System::CustomerUser')->CustomerUserDataGet(
+            User => $Ticket{CustomerUserID},
+        );
+        $Language = $User{UserLanguage};
+    }
+
+    # if customer language is not defined, set default language
+    $Language //= $Kernel::OM->Get('Kernel::Config')->Get('DefaultLanguage') || 'en';
+
+    # get list unsupported tags for standard template
+    my @ListOfUnSupportedTag = qw(OTRS_AGENT_SUBJECT OTRS_AGENT_BODY OTRS_CUSTOMER_BODY OTRS_CUSTOMER_SUBJECT);
+
+    my $TemplateText = $Self->_RemoveUnSupportedTag(
+        Text => $Template{Template} || '',
+        ListOfUnSupportedTag => \@ListOfUnSupportedTag,
+    );
+
     # replace place holder stuff
-    my $TemplateText = $Self->_Replace(
+    $TemplateText = $Self->_Replace(
         RichText => $Self->{RichText},
-        Text     => $Template{Template} || '',
+        Text     => $TemplateText || '',
         TicketID => $Param{TicketID} || '',
         Data     => $Param{Data} || {},
         UserID   => $Param{UserID},
+        Language => $Language,
     );
 
     return $TemplateText;
 }
 
-=item Attributes()
+=head2 GenericAgentArticle()
+
+generate internal or external notes
+
+    my $GenericAgentArticle = $TemplateGeneratorObject->GenericAgentArticle(
+        Notification    => $NotificationDataHashRef,
+        TicketID        => 123,
+        UserID          => 123,
+        Data            => $ArticleHashRef,             # Optional
+    );
+
+=cut
+
+sub GenericAgentArticle {
+    my ( $Self, %Param ) = @_;
+
+    # check needed stuff
+    for (qw(TicketID Notification UserID)) {
+        if ( !$Param{$_} ) {
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
+                Priority => 'error',
+                Message  => "Need $_!"
+            );
+            return;
+        }
+    }
+
+    my %Template = %{ $Param{Notification} };
+
+    # get ticket object
+    my $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
+
+    # get ticket
+    my %Ticket = $TicketObject->TicketGet(
+        TicketID      => $Param{TicketID},
+        DynamicFields => 0,
+    );
+
+    # do text/plain to text/html convert
+    if (
+        $Self->{RichText}
+        && $Template{ContentType} =~ /text\/plain/i
+        && $Template{Body}
+        )
+    {
+        $Template{ContentType} = 'text/html';
+        $Template{Body}        = $Kernel::OM->Get('Kernel::System::HTMLUtils')->ToHTML(
+            String => $Template{Body},
+        );
+    }
+
+    # do text/html to text/plain convert
+    if (
+        !$Self->{RichText}
+        && $Template{ContentType} =~ /text\/html/i
+        && $Template{Body}
+        )
+    {
+        $Template{ContentType} = 'text/plain';
+        $Template{Body}        = $Kernel::OM->Get('Kernel::System::HTMLUtils')->ToAscii(
+            String => $Template{Body},
+        );
+    }
+
+    # replace place holder stuff
+    $Template{Body} = $Self->_Replace(
+        RichText  => $Self->{RichText},
+        Text      => $Template{Body},
+        Recipient => $Param{Recipient},
+        Data      => $Param{Data} || {},
+        TicketID  => $Param{TicketID},
+        UserID    => $Param{UserID},
+    );
+    $Template{Subject} = $Self->_Replace(
+        RichText  => 0,
+        Text      => $Template{Subject},
+        Recipient => $Param{Recipient},
+        Data      => $Param{Data} || {},
+        TicketID  => $Param{TicketID},
+        UserID    => $Param{UserID},
+    );
+
+    $Template{Subject} = $TicketObject->TicketSubjectBuild(
+        TicketNumber => $Ticket{TicketNumber},
+        Subject      => $Template{Subject} || '',
+        Type         => 'New',
+    );
+
+    # add URLs and verify to be full HTML document
+    if ( $Self->{RichText} ) {
+
+        $Template{Body} = $Kernel::OM->Get('Kernel::System::HTMLUtils')->LinkQuote(
+            String => $Template{Body},
+        );
+    }
+
+    return %Template;
+}
+
+=head2 Attributes()
 
 generate attributes
 
@@ -480,7 +619,7 @@ sub Attributes {
     return %{ $Param{Data} };
 }
 
-=item AutoResponse()
+=head2 AutoResponse()
 
 generate response
 
@@ -542,16 +681,31 @@ sub AutoResponse {
     return if !%AutoResponse;
 
     # get old article for quoting
-    my %Article = $TicketObject->ArticleLastCustomerArticle(
-        TicketID      => $Param{TicketID},
-        DynamicFields => 0,
+    my $ArticleObject = $Kernel::OM->Get('Kernel::System::Ticket::Article');
+    my @ArticleList   = $ArticleObject->ArticleList(
+        TicketID   => $Param{TicketID},
+        SenderType => 'customer',
+        OnlyLast   => 1,
     );
 
-    for (qw(From To Cc Subject Body)) {
-        if ( !$Param{OrigHeader}->{$_} ) {
-            $Param{OrigHeader}->{$_} = $Article{$_} || '';
+    if ( !@ArticleList ) {
+        @ArticleList = $ArticleObject->ArticleList(
+            TicketID             => $Param{TicketID},
+            IsVisibleForCustomer => 1,
+            OnlyLast             => 1,
+        );
+    }
+
+    if (@ArticleList) {
+        my %Article = $ArticleObject->BackendForArticle( %{ $ArticleList[0] } )
+            ->ArticleGet( %{ $ArticleList[0] }, UserID => $Param{UserID} );
+
+        for (qw(From To Cc Subject Body)) {
+            if ( !$Param{OrigHeader}->{$_} ) {
+                $Param{OrigHeader}->{$_} = $Article{$_} || '';
+            }
+            chomp $Param{OrigHeader}->{$_};
         }
-        chomp $Param{OrigHeader}->{$_};
     }
 
     # format body (only if longer than 86 chars)
@@ -582,8 +736,8 @@ sub AutoResponse {
     }
 
     # get recipient
-    my %User = $Kernel::OM->Get('Kernel::System::CustomerUser')->GetPreferences(
-        UserID => $Ticket{CustomerUserID},
+    my %User = $Kernel::OM->Get('Kernel::System::CustomerUser')->CustomerUserDataGet(
+        User => $Ticket{CustomerUserID},
     );
 
     # get user language
@@ -668,7 +822,7 @@ sub AutoResponse {
         );
 
         $AutoResponse{Text} = $Kernel::OM->Get('Kernel::System::HTMLUtils')->DocumentComplete(
-            Charset => $AutoResponse{Charset},
+            Charset => 'utf-8',
             String  => $AutoResponse{Text},
         );
     }
@@ -676,53 +830,50 @@ sub AutoResponse {
     return %AutoResponse;
 }
 
-=item NotificationAgent()
+=head2 NotificationEvent()
 
-generate response
+replace all OTRS smart tags in the notification body and subject
 
-NotificationAgent
-    TicketID
-        Owner
-        Responsible
-        CUSTOMER_DATA
-    ArticleID
-        CUSTOMER_SUBJECT
-        CUSTOMER_EMAIL
-    UserID
-
-    To
-    Cc
-    Bcc
-    Subject
-    Body
-    ContentType
-    SenderAddress
-    SenderRealname
-
-    my %NotificationAgent = $TemplateGeneratorObject->NotificationAgent(
-        Type        => 'Move', # notification types, see database
-        TicketID    => 123,
-        RecipientID => 123,
-        UserID      => 123,
+    my %NotificationEvent = $TemplateGeneratorObject->NotificationEvent(
+        TicketID              => 123,
+        Recipient             => $UserDataHashRef,          # Agent or Customer data get result
+        Notification          => $NotificationDataHashRef,
+        CustomerMessageParams => $ArticleHashRef,           # optional
+        UserID                => 123,
     );
 
 =cut
 
-sub NotificationAgent {
+sub NotificationEvent {
     my ( $Self, %Param ) = @_;
 
     # check needed stuff
-    for (qw(TicketID Type RecipientID UserID)) {
-        if ( !$Param{$_} ) {
+    for my $Needed (qw(TicketID Notification Recipient UserID)) {
+        if ( !$Param{$Needed} ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
-                Message  => "Need $_!"
+                Message  => "Need $Needed!",
             );
             return;
         }
     }
 
-    # get ticket object
+    if ( !IsHashRefWithData( $Param{Notification} ) ) {
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
+            Priority => 'error',
+            Message  => "Notification is invalid!",
+        );
+        return;
+    }
+
+    my %Notification = %{ $Param{Notification} };
+
+    # exchanging original reference prevent it to grow up
+    if ( ref $Param{CustomerMessageParams} && ref $Param{CustomerMessageParams} eq 'HASH' ) {
+        my %LocalCustomerMessageParams = %{ $Param{CustomerMessageParams} };
+        $Param{CustomerMessageParams} = \%LocalCustomerMessageParams;
+    }
+
     my $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
 
     # get ticket
@@ -731,17 +882,96 @@ sub NotificationAgent {
         DynamicFields => 0,
     );
 
-    # get old article for quoting
-    my %Article = $TicketObject->ArticleLastCustomerArticle(
-        TicketID      => $Param{TicketID},
-        DynamicFields => 0,
+    my $ArticleObject = $Kernel::OM->Get('Kernel::System::Ticket::Article');
+
+    # Get last article from customer.
+    my @CustomerArticles = $ArticleObject->ArticleList(
+        TicketID   => $Param{TicketID},
+        SenderType => 'customer',
+        OnlyLast   => 1,
     );
 
-    for (qw(From To Cc Subject Body)) {
-        if ( !$Param{CustomerMessageParams}->{$_} ) {
-            $Param{CustomerMessageParams}->{$_} = $Article{$_} || '';
+    my %CustomerArticle;
+
+    ARTICLE:
+    for my $Article (@CustomerArticles) {
+        next ARTICLE if !$Article->{ArticleID};
+
+        %CustomerArticle = $ArticleObject->BackendForArticle( %{$Article} )->ArticleGet(
+            %{$Article},
+            DynamicFields => 0,
+            UserID        => $Param{UserID},
+        );
+    }
+
+    # Get last article from agent.
+    my @AgentArticles = $ArticleObject->ArticleList(
+        TicketID   => $Param{TicketID},
+        SenderType => 'agent',
+        OnlyLast   => 1,
+    );
+
+    my %AgentArticle;
+
+    ARTICLE:
+    for my $Article (@AgentArticles) {
+        next ARTICLE if !$Article->{ArticleID};
+
+        %AgentArticle = $ArticleObject->BackendForArticle( %{$Article} )->ArticleGet(
+            %{$Article},
+            DynamicFields => 0,
+            UserID        => $Param{UserID},
+        );
+    }
+
+    my $HTMLUtilsObject = $Kernel::OM->Get('Kernel::System::HTMLUtils');
+
+    # set the accounted time as part of the articles information
+    ARTICLE:
+    for my $ArticleData ( \%CustomerArticle, \%AgentArticle ) {
+
+        next ARTICLE if !$ArticleData->{ArticleID};
+
+        # get accounted time
+        my $AccountedTime = $ArticleObject->ArticleAccountedTimeGet(
+            ArticleID => $ArticleData->{ArticleID},
+        );
+
+        $ArticleData->{TimeUnit} = $AccountedTime;
+    }
+
+    # get system default language
+    my $DefaultLanguage = $Kernel::OM->Get('Kernel::Config')->Get('DefaultLanguage') || 'en';
+
+    my $Languages = [ $Param{Recipient}->{UserLanguage}, $DefaultLanguage, 'en' ];
+
+    my $Language;
+    LANGUAGE:
+    for my $Item ( @{$Languages} ) {
+        next LANGUAGE if !$Item;
+        next LANGUAGE if !$Notification{Message}->{$Item};
+
+        # set language
+        $Language = $Item;
+        last LANGUAGE;
+    }
+
+    # if no language, then take the first one available
+    if ( !$Language ) {
+        my @NotificationLanguages = sort keys %{ $Notification{Message} };
+        $Language = $NotificationLanguages[0];
+    }
+
+    # copy the correct language message attributes to a flat structure
+    for my $Attribute (qw(Subject Body ContentType)) {
+        $Notification{$Attribute} = $Notification{Message}->{$Language}->{$Attribute};
+    }
+
+    for my $Key (qw(From To Cc Subject Body ContentType)) {
+        if ( !$Param{CustomerMessageParams}->{$Key} ) {
+            $Param{CustomerMessageParams}->{$Key} = $CustomerArticle{$Key} || '';
         }
-        chomp $Param{CustomerMessageParams}->{$_};
+        chomp $Param{CustomerMessageParams}->{$Key};
     }
 
     # format body (only if longer the 86 chars)
@@ -765,25 +995,29 @@ sub NotificationAgent {
     }
 
     # fill up required attributes
-    for (qw(Subject Body)) {
-        if ( !$Param{CustomerMessageParams}->{$_} ) {
-            $Param{CustomerMessageParams}->{$_} = "No $_";
+    for my $Text (qw(Subject Body)) {
+        if ( !$Param{CustomerMessageParams}->{$Text} ) {
+            $Param{CustomerMessageParams}->{$Text} = "No $Text";
         }
     }
 
-    # get recipient
-    my %User = $Kernel::OM->Get('Kernel::System::User')->GetUserData(
-        UserID => $Param{RecipientID},
-        Valid  => 1,
-    );
+    my $Start = '<';
+    my $End   = '>';
+    if ( $Notification{ContentType} =~ m{text\/html} ) {
+        $Start = '&lt;';
+        $End   = '&gt;';
+    }
 
-    # get user language
-    my $Language = $User{UserLanguage} || $Kernel::OM->Get('Kernel::Config')->Get('DefaultLanguage') || 'en';
+    # replace <OTRS_CUSTOMER_DATA_*> tags early from CustomerMessageParams, the rests will be replaced
+    # by ticket customer user
+    KEY:
+    for my $Key ( sort keys %{ $Param{CustomerMessageParams} || {} } ) {
 
-    # get notification data
-    my %Notification = $Kernel::OM->Get('Kernel::System::Notification')->NotificationGet(
-        Name => $Language . '::Agent::' . $Param{Type},
-    );
+        next KEY if !$Param{CustomerMessageParams}->{$Key};
+
+        $Notification{Body} =~ s/${Start}OTRS_CUSTOMER_DATA_$Key${End}/$Param{CustomerMessageParams}->{$Key}/gi;
+        $Notification{Subject} =~ s/<OTRS_CUSTOMER_DATA_$Key>/$Param{CustomerMessageParams}->{$Key}{$_}/gi;
+    }
 
     # do text/plain to text/html convert
     if ( $Self->{RichText} && $Notification{ContentType} =~ /text\/plain/i ) {
@@ -802,60 +1036,45 @@ sub NotificationAgent {
     }
 
     # get notify texts
-    for (qw(Subject Body)) {
-        if ( !$Notification{$_} ) {
-            $Notification{$_} = "No Notification $_ for $Param{Type} found!";
+    for my $Text (qw(Subject Body)) {
+        if ( !$Notification{$Text} ) {
+            $Notification{$Text} = "No Notification $Text for $Param{Type} found!";
         }
     }
 
     # replace place holder stuff
     $Notification{Body} = $Self->_Replace(
-        RichText    => $Self->{RichText},
-        Text        => $Notification{Body},
-        RecipientID => $Param{RecipientID},
-        Data        => $Param{CustomerMessageParams},
-        TicketID    => $Param{TicketID},
-        UserID      => $Param{UserID},
-        Language    => $Language,
+        RichText  => $Self->{RichText},
+        Text      => $Notification{Body},
+        Recipient => $Param{Recipient},
+        Data      => $Param{CustomerMessageParams},
+        DataAgent => \%AgentArticle,
+        TicketID  => $Param{TicketID},
+        UserID    => $Param{UserID},
+        Language  => $Language,
     );
     $Notification{Subject} = $Self->_Replace(
-        RichText    => 0,
-        Text        => $Notification{Subject},
-        RecipientID => $Param{RecipientID},
-        Data        => $Param{CustomerMessageParams},
-        TicketID    => $Param{TicketID},
-        UserID      => $Param{UserID},
-        Language    => $Language,
+        RichText  => 0,
+        Text      => $Notification{Subject},
+        Recipient => $Param{Recipient},
+        Data      => $Param{CustomerMessageParams},
+        DataAgent => \%AgentArticle,
+        TicketID  => $Param{TicketID},
+        UserID    => $Param{UserID},
+        Language  => $Language,
     );
 
-    # prepare subject (insert old subject)
-    $Param{CustomerMessageParams}->{Subject} = $TicketObject->TicketSubjectClean(
-        TicketNumber => $Ticket{TicketNumber},
-        Subject      => $Param{CustomerMessageParams}->{Subject} || '',
-    );
-    if ( $Notification{Subject} =~ /<OTRS_CUSTOMER_SUBJECT\[(.+?)\]>/ ) {
-        my $SubjectChar = $1;
-        $Param{CustomerMessageParams}->{Subject} =~ s/^(.{$SubjectChar}).*$/$1 [...]/;
-
-        $Notification{Subject}
-            =~ s/<OTRS_CUSTOMER_SUBJECT\[.+?\]>/$Param{CustomerMessageParams}->{Subject}/g;
-    }
     $Notification{Subject} = $TicketObject->TicketSubjectBuild(
         TicketNumber => $Ticket{TicketNumber},
         Subject      => $Notification{Subject} || '',
         Type         => 'New',
     );
 
-    # add urls and verify to be full html document
+    # add URLs and verify to be full HTML document
     if ( $Self->{RichText} ) {
 
         $Notification{Body} = $Kernel::OM->Get('Kernel::System::HTMLUtils')->LinkQuote(
             String => $Notification{Body},
-        );
-
-        $Notification{Body} = $Kernel::OM->Get('Kernel::System::HTMLUtils')->DocumentComplete(
-            Charset => $Notification{Charset},
-            String  => $Notification{Body},
         );
     }
 
@@ -933,11 +1152,29 @@ sub _Replace {
 
     # translate ticket values if needed
     if ( $Param{Language} ) {
+
         my $LanguageObject = Kernel::Language->new(
             UserLanguage => $Param{Language},
         );
+
+        # Translate the diffrent values.
         for my $Field (qw(Type State StateType Lock Priority)) {
             $Ticket{$Field} = $LanguageObject->Translate( $Ticket{$Field} );
+        }
+
+        # Transform the date values from the ticket data (but not the dynamic field values).
+        ATTRIBUTE:
+        for my $Attribute ( sort keys %Ticket ) {
+            next ATTRIBUTE if $Attribute =~ m{ \A DynamicField_ }xms;
+            next ATTRIBUTE if !$Ticket{$Attribute};
+
+            if ( $Ticket{$Attribute} =~ m{\A(\d\d\d\d)-(\d\d)-(\d\d)\s(\d\d):(\d\d):(\d\d)\z}xi ) {
+                $Ticket{$Attribute} = $LanguageObject->FormatTimeString(
+                    $Ticket{$Attribute},
+                    'DateFormat',
+                    'NoSeconds',
+                );
+            }
         }
     }
 
@@ -948,29 +1185,62 @@ sub _Replace {
         );
     }
 
-    # get config object
     my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
 
-    # replace config options
+    # Replace config options.
     my $Tag = $Start . 'OTRS_CONFIG_';
-    $Param{Text} =~ s{$Tag(.+?)$End}{$ConfigObject->Get($1)}egx;
+    $Param{Text} =~ s{$Tag(.+?)$End}{
+        my $Replace = '';
+        # Mask secret config options.
+        if ($1 =~ m{(Password|Pw)\d*$}smxi) {
+            $Replace = 'xxx';
+        }
+        else {
+            $Replace = $ConfigObject->Get($1) // '';
+        }
+        $Replace;
+    }egx;
 
     # cleanup
     $Param{Text} =~ s/$Tag.+?$End/-/gi;
 
+    my %Recipient = %{ $Param{Recipient} || {} };
+
     # get user object
     my $UserObject = $Kernel::OM->Get('Kernel::System::User');
 
-    # get recipient data and replace it with <OTRS_...
-    $Tag = $Start . 'OTRS_';
-    if ( $Param{RecipientID} ) {
+    if ( !%Recipient && $Param{RecipientID} ) {
 
-        my %Recipient = $UserObject->GetUserData(
+        %Recipient = $UserObject->GetUserData(
             UserID        => $Param{RecipientID},
             NoOutOfOffice => 1,
         );
+    }
 
-        # html quoting of content
+    my $HashGlobalReplace = sub {
+        my ( $Tag, %H ) = @_;
+
+        # Generate one single matching string for all keys to save performance.
+        my $Keys = join '|', map {quotemeta} grep { defined $H{$_} } keys %H;
+
+        # Add all keys also as lowercase to be able to match case insensitive,
+        #   e. g. <OTRS_CUSTOMER_From> and <OTRS_CUSTOMER_FROM>.
+        for my $Key ( sort keys %H ) {
+            $H{ lc $Key } = $H{$Key};
+        }
+
+        $Param{Text} =~ s/(?:$Tag)($Keys)$End/$H{ lc $1 }/ieg;
+    };
+
+    # get recipient data and replace it with <OTRS_...
+    $Tag = $Start . 'OTRS_';
+
+    # include more readable tag <OTRS_NOTIFICATION_RECIPIENT
+    my $RecipientTag = $Start . 'OTRS_NOTIFICATION_RECIPIENT_';
+
+    if (%Recipient) {
+
+        # HTML quoting of content
         if ( $Param{RichText} ) {
             ATTRIBUTE:
             for my $Attribute ( sort keys %Recipient ) {
@@ -981,16 +1251,17 @@ sub _Replace {
             }
         }
 
-        # replace it
-        ATTRIBUTE:
-        for my $Attribute ( sort keys %Recipient ) {
-            next ATTRIBUTE if !defined $Recipient{$Attribute};
-            $Param{Text} =~ s/$Tag$Attribute$End/$Recipient{$Attribute}/gi;
-        }
+        $HashGlobalReplace->( "$Tag|$RecipientTag", %Recipient );
     }
+
+    # cleanup
+    $Param{Text} =~ s/$RecipientTag.+?$End/-/gi;
 
     # get owner data and replace it with <OTRS_OWNER_...
     $Tag = $Start . 'OTRS_OWNER_';
+
+    # include more readable version <OTRS_TICKET_OWNER
+    my $OwnerTag = $Start . 'OTRS_TICKET_OWNER_';
 
     if ( $Ticket{OwnerID} ) {
 
@@ -1011,41 +1282,26 @@ sub _Replace {
             }
         }
 
-        # replace it
-        ATTRIBUTE:
-        for my $Attribute ( sort keys %Owner ) {
-            next ATTRIBUTE if !defined $Owner{$Attribute};
-            $Param{Text} =~ s/$Tag$Attribute$End/$Owner{$Attribute}/gi;
-        }
+        $HashGlobalReplace->( "$Tag|$OwnerTag", %Owner );
     }
 
     # cleanup
     $Param{Text} =~ s/$Tag.+?$End/-/gi;
-
-    my $HashGlobalReplace = sub {
-        my ( $Tag, %H ) = @_;
-
-        # Generate one single matching string for all keys to save performance.
-        my $Keys = join '|', map {quotemeta} grep { defined $H{$_} } keys %H;
-
-        # Add all keys also as lowercase to be able to match case insensitive,
-        #   e. g. <OTRS_CUSTOMER_From> and <OTRS_CUSTOMER_FROM>.
-        for my $Key ( sort keys %H ) {
-            $H{ lc $Key } = $H{$Key};
-        }
-
-        $Param{Text} =~ s/(?:$Tag)($Keys)$End/$H{ lc $1 }/ieg;
-    };
+    $Param{Text} =~ s/$OwnerTag.+?$End/-/gi;
 
     # get owner data and replace it with <OTRS_RESPONSIBLE_...
     $Tag = $Start . 'OTRS_RESPONSIBLE_';
+
+    # include more readable version <OTRS_TICKET_RESPONSIBLE
+    my $ResponsibleTag = $Start . 'OTRS_TICKET_RESPONSIBLE_';
+
     if ( $Ticket{ResponsibleID} ) {
         my %Responsible = $UserObject->GetUserData(
             UserID        => $Ticket{ResponsibleID},
             NoOutOfOffice => 1,
         );
 
-        # html quoting of content
+        # HTML quoting of content
         if ( $Param{RichText} ) {
 
             ATTRIBUTE:
@@ -1057,12 +1313,12 @@ sub _Replace {
             }
         }
 
-        # replace it
-        $HashGlobalReplace->( $Tag, %Responsible );
+        $HashGlobalReplace->( "$Tag|$ResponsibleTag", %Responsible );
     }
 
     # cleanup
     $Param{Text} =~ s/$Tag.+?$End/-/gi;
+    $Param{Text} =~ s/$ResponsibleTag.+?$End/-/gi;
 
     $Tag = $Start . 'OTRS_Agent_';
     my $Tag2        = $Start . 'OTRS_CURRENT_';
@@ -1071,7 +1327,7 @@ sub _Replace {
         NoOutOfOffice => 1,
     );
 
-    # html quoting of content
+    # HTML quoting of content
     if ( $Param{RichText} ) {
 
         ATTRIBUTE:
@@ -1090,7 +1346,6 @@ sub _Replace {
     $Param{Text} =~ s/$Start OTRS_LAST_NAME $End/$CurrentUser{UserLastname}/gxms;
 
     # cleanup
-    $Param{Text} =~ s/$Tag.+?$End/-/gi;
     $Param{Text} =~ s/$Tag2.+?$End/-/gi;
 
     # ticket data
@@ -1199,64 +1454,102 @@ sub _Replace {
     # cleanup
     $Param{Text} =~ s/$Tag.+?$End/-/gi;
 
-    # get customer params and replace it with <OTRS_CUSTOMER_...
-    my %Data = %{ $Param{Data} };
+    # get customer and agent params and replace it with <OTRS_CUSTOMER_... or <OTRS_AGENT_...
+    my %ArticleData = (
+        'OTRS_CUSTOMER_' => $Param{Data}      || {},
+        'OTRS_AGENT_'    => $Param{DataAgent} || {},
+    );
 
-    # html quoting of content
-    if ( $Param{RichText} ) {
+    # use a list to get customer first
+    for my $DataType (qw(OTRS_CUSTOMER_ OTRS_AGENT_)) {
+        my %Data = %{ $ArticleData{$DataType} };
 
-        ATTRIBUTE:
-        for my $Attribute ( sort keys %Data ) {
-            next ATTRIBUTE if !$Data{$Attribute};
-            $Data{$Attribute} = $Kernel::OM->Get('Kernel::System::HTMLUtils')->ToHTML(
-                String => $Data{$Attribute},
-            );
+        # HTML quoting of content
+        if (
+            $Param{RichText}
+            && ( !$Data{ContentType} || $Data{ContentType} !~ /application\/json/ )
+            )
+        {
+
+            ATTRIBUTE:
+            for my $Attribute ( sort keys %Data ) {
+                next ATTRIBUTE if !$Data{$Attribute};
+
+                $Data{$Attribute} = $Kernel::OM->Get('Kernel::System::HTMLUtils')->ToHTML(
+                    String => $Data{$Attribute},
+                );
+            }
         }
-    }
-    if (%Data) {
 
-        # check if original content isn't text/plain, don't use it
-        if ( $Data{'Content-Type'} && $Data{'Content-Type'} !~ /(text\/plain|\btext\b)/i ) {
-            $Data{Body} = '-> no quotable message <-';
-        }
+        if (%Data) {
 
-        # replace <OTRS_CUSTOMER_*> tags
-        $Tag = $Start . 'OTRS_CUSTOMER_';
-        $HashGlobalReplace->( $Tag, %Data );
+            # Check if content type is JSON
+            if ( $Data{'ContentType'} && $Data{'ContentType'} =~ /application\/json/ ) {
 
-        # replace <OTRS_CUSTOMER_BODY> and <OTRS_COMMENT> tags
-        for my $Key (qw(OTRS_CUSTOMER_BODY OTRS_COMMENT)) {
-            $Tag = $Start . $Key;
-            if ( $Param{Text} =~ /$Tag$End(\n|\r|)/g ) {
-                my $Line       = 2500;
-                my @Body       = split( /\n/, $Data{Body} );
+                # if article is chat related
+                if ( $Data{'ArticleType'} =~ /chat/ ) {
+
+                    # remove spaces
+                    $Data{Body} =~ s/\n/ /gms;
+
+                    my $Body = $Kernel::OM->Get('Kernel::System::JSON')->Decode(
+                        Data => $Data{Body},
+                    );
+
+                    # replace body with HTML text
+                    $Data{Body} = $Kernel::OM->Get('Kernel::Output::HTML::Layout')->Output(
+                        TemplateFile => "ChatDisplay",
+                        Data         => {
+                            ChatMessages => $Body,
+                        },
+                    );
+                }
+            }
+
+            # check if original content isn't text/plain, don't use it
+            if ( $Data{'Content-Type'} && $Data{'Content-Type'} !~ /(text\/plain|\btext\b)/i ) {
+                $Data{Body} = '-> no quotable message <-';
+            }
+
+            # replace <OTRS_CUSTOMER_*> and <OTRS_AGENT_*> tags
+            $Tag = $Start . $DataType;
+            $HashGlobalReplace->( $Tag, %Data );
+
+            # prepare body (insert old email) <OTRS_CUSTOMER_EMAIL[n]>, <OTRS_CUSTOMER_NOTE[n]>
+            #   <OTRS_CUSTOMER_BODY[n]>, <OTRS_AGENT_EMAIL[n]>..., <OTRS_COMMENT>
+            if ( $Param{Text} =~ /$Start(?:(?:$DataType(EMAIL|NOTE|BODY)\[(.+?)\])|(?:OTRS_COMMENT))$End/g ) {
+
+                my $Line       = $2 || 2500;
                 my $NewOldBody = '';
-                COUNTER:
-                for ( my $i = 0; $i < $Line; $i++ ) {
-                    if ( $#Body >= $i ) {
+                my @Body       = split( /\n/, $Data{Body} );
+
+                for my $Counter ( 0 .. $Line - 1 ) {
+
+                    # 2002-06-14 patch of Pablo Ruiz Garcia
+                    # http://lists.otrs.org/pipermail/dev/2002-June/000012.html
+                    if ( $#Body >= $Counter ) {
 
                         # add no quote char, do it later by using DocumentCleanup()
                         if ( $Param{RichText} ) {
-                            $NewOldBody .= $Body[$i];
+                            $NewOldBody .= $Body[$Counter];
                         }
 
                         # add "> " as quote char
                         else {
-                            $NewOldBody .= "> $Body[$i]";
+                            $NewOldBody .= "> $Body[$Counter]";
                         }
 
                         # add new line
-                        if ( $i < ( $Line - 1 ) ) {
+                        if ( $Counter < ( $Line - 1 ) ) {
                             $NewOldBody .= "\n";
                         }
                     }
-                    else {
-                        last COUNTER;
-                    }
+                    $Counter++;
                 }
+
                 chomp $NewOldBody;
 
-                # html quoting of content
+                # HTML quoting of content
                 if ( $Param{RichText} && $NewOldBody ) {
 
                     # remove trailing new lines
@@ -1272,127 +1565,103 @@ sub _Replace {
                 }
 
                 # replace tag
-                $Param{Text} =~ s/$Tag$End/$NewOldBody/g;
+                $Param{Text}
+                    =~ s/$Start(?:(?:$DataType(EMAIL|NOTE|BODY)\[(.+?)\])|(?:OTRS_COMMENT))$End/$NewOldBody/g;
             }
-        }
 
-        # replace <OTRS_CUSTOMER_EMAIL[]> tags
-        $Tag = $Start . 'OTRS_CUSTOMER_EMAIL';
-        if ( $Param{Text} =~ /$Tag\[(.+?)\]$End/g ) {
-            my $Line       = $1;
-            my @Body       = split( /\n/, $Data{Body} );
-            my $NewOldBody = '';
-            for ( my $i = 0; $i < $Line; $i++ ) {
+            # replace <OTRS_CUSTOMER_SUBJECT[]>  and  <OTRS_AGENT_SUBJECT[]> tags
+            $Tag = "$Start$DataType" . 'SUBJECT';
+            if ( $Param{Text} =~ /$Tag\[(.+?)\]$End/g ) {
 
-                # 2002-06-14 patch of Pablo Ruiz Garcia
-                # http://lists.otrs.org/pipermail/dev/2002-June/000012.html
-                if ( $#Body >= $i ) {
-
-                    # add no quote char, do it later by using DocumentCleanup()
-                    if ( $Param{RichText} ) {
-                        $NewOldBody .= $Body[$i];
-                    }
-
-                    # add "> " as quote char
-                    else {
-                        $NewOldBody .= "> $Body[$i]";
-                    }
-
-                    # add new line
-                    if ( $i < ( $Line - 1 ) ) {
-                        $NewOldBody .= "\n";
-                    }
-                }
-            }
-            chomp $NewOldBody;
-
-            # html quoting of content
-            if ( $Param{RichText} && $NewOldBody ) {
-
-                # remove trailing new lines
-                for ( 1 .. 10 ) {
-                    $NewOldBody =~ s/(<br\/>)\s{0,20}$//gs;
-                }
-
-                # add quote
-                $NewOldBody = "<blockquote type=\"cite\">$NewOldBody</blockquote>";
-                $NewOldBody = $Kernel::OM->Get('Kernel::System::HTMLUtils')->DocumentCleanup(
-                    String => $NewOldBody,
+                my $SubjectChar = $1;
+                my $Subject     = $Kernel::OM->Get('Kernel::System::Ticket')->TicketSubjectClean(
+                    TicketNumber => $Ticket{TicketNumber},
+                    Subject      => $Data{Subject},
                 );
+
+                $Subject =~ s/^(.{$SubjectChar}).*$/$1 [...]/;
+                $Param{Text} =~ s/$Tag\[.+?\]$End/$Subject/g;
             }
 
-            # replace tag
-            $Param{Text} =~ s/$Tag\[.+?\]$End/$NewOldBody/g;
+            if ( $DataType eq 'OTRS_CUSTOMER_' ) {
+
+                # Arnold Ligtvoet - otrs@ligtvoet.org
+                # get <OTRS_EMAIL_DATE[]> from body and replace with received date
+                use POSIX qw(strftime);
+                $Tag = $Start . 'OTRS_EMAIL_DATE';
+
+                if ( $Param{Text} =~ /$Tag\[(.+?)\]$End/g ) {
+
+                    my $TimeZone       = $1;
+                    my $DateTimeObject = $Kernel::OM->Create('Kernel::System::DateTime');
+                    my $EmailDate      = $DateTimeObject->Format( Format => '%A, %B %e, %Y at %T ' );
+                    $EmailDate .= "($TimeZone)";
+                    $Param{Text} =~ s/$Tag\[.+?\]$End/$EmailDate/g;
+                }
+            }
         }
 
-        # replace <OTRS_CUSTOMER_SUBJECT[]> tags
-        $Tag = $Start . 'OTRS_CUSTOMER_SUBJECT';
-        if ( $Param{Text} =~ /$Tag\[(.+?)\]$End/g ) {
+        if ( $DataType eq 'OTRS_CUSTOMER_' ) {
 
-            my $SubjectChar = $1;
-            my $Subject     = $Kernel::OM->Get('Kernel::System::Ticket')->TicketSubjectClean(
-                TicketNumber => $Ticket{TicketNumber},
-                Subject      => $Data{Subject},
-            );
+            # get and prepare realname
+            $Tag = $Start . 'OTRS_CUSTOMER_REALNAME';
+            if ( $Param{Text} =~ /$Tag$End/i ) {
 
-            $Subject =~ s/^(.{$SubjectChar}).*$/$1 [...]/;
-            $Param{Text} =~ s/$Tag\[.+?\]$End/$Subject/g;
+                my $From;
+
+                if ( $Ticket{CustomerUserID} ) {
+
+                    $From = $Kernel::OM->Get('Kernel::System::CustomerUser')->CustomerName(
+                        UserLogin => $Ticket{CustomerUserID}
+                    );
+                }
+
+                # try to get the real name directly from the data
+                $From //= $Recipient{Realname};
+
+                # get real name based on reply-to
+                if ( $Data{ReplyTo} ) {
+                    $From = $Data{ReplyTo};
+
+                    # remove email addresses
+                    $From =~ s/&lt;.*&gt;|<.*>|\(.*\)|\"|&quot;|;|,//g;
+
+                    # remove leading/trailing spaces
+                    $From =~ s/^\s+//g;
+                    $From =~ s/\s+$//g;
+                }
+
+                # generate real name based on sender line
+                if ( !$From ) {
+                    $From = $Data{To} || '';
+
+                    # remove email addresses
+                    $From =~ s/&lt;.*&gt;|<.*>|\(.*\)|\"|&quot;|;|,//g;
+
+                    # remove leading/trailing spaces
+                    $From =~ s/^\s+//g;
+                    $From =~ s/\s+$//g;
+                }
+
+                # replace <OTRS_CUSTOMER_REALNAME> with from
+                $Param{Text} =~ s/$Tag$End/$From/g;
+            }
         }
-
-        # Arnold Ligtvoet - otrs@ligtvoet.org
-        # get <OTRS_EMAIL_DATE[]> from body and replace with received date
-        use POSIX qw(strftime);
-        $Tag = $Start . 'OTRS_EMAIL_DATE';
-
-        if ( $Param{Text} =~ /$Tag\[(.+?)\]$End/g ) {
-
-            my $TimeZone = $1;
-            my $EmailDate = strftime( '%A, %B %e, %Y at %T ', localtime );    ## no critic
-            $EmailDate .= "($TimeZone)";
-            $Param{Text} =~ s/$Tag\[.+?\]$End/$EmailDate/g;
-        }
-    }
-
-    # get and prepare realname
-    $Tag = $Start . 'OTRS_CUSTOMER_REALNAME';
-    if ( $Param{Text} =~ /$Tag$End/i ) {
-
-        my $From = '';
-
-        if ( $Ticket{CustomerUserID} ) {
-
-            $From = $Kernel::OM->Get('Kernel::System::CustomerUser')->CustomerName(
-                UserLogin => $Ticket{CustomerUserID}
-            );
-        }
-
-        # generate real name based on sender line
-        if ( !$From ) {
-            $From = $Data{To} || '';
-
-            # remove email addresses
-            $From =~ s/&lt;.*&gt;|<.*>|\(.*\)|\"|&quot;|;|,//g;
-
-            # remove leading/trailing spaces
-            $From =~ s/^\s+//g;
-            $From =~ s/\s+$//g;
-        }
-
-        # replace <OTRS_CUSTOMER_REALNAME> with from
-        $Param{Text} =~ s/$Tag$End/$From/g;
     }
 
     # get customer data and replace it with <OTRS_CUSTOMER_DATA_...
     $Tag  = $Start . 'OTRS_CUSTOMER_';
     $Tag2 = $Start . 'OTRS_CUSTOMER_DATA_';
 
-    if ( $Ticket{CustomerUserID} ) {
+    if ( $Ticket{CustomerUserID} || $Param{Data}->{CustomerUserID} ) {
+
+        my $CustomerUserID = $Param{Data}->{CustomerUserID} || $Ticket{CustomerUserID};
 
         my %CustomerUser = $Kernel::OM->Get('Kernel::System::CustomerUser')->CustomerUserDataGet(
-            User => $Ticket{CustomerUserID},
+            User => $CustomerUserID,
         );
 
-        # html quoting of content
+        # HTML quoting of content
         if ( $Param{RichText} ) {
 
             ATTRIBUTE:
@@ -1411,14 +1680,58 @@ sub _Replace {
     # cleanup all not needed <OTRS_CUSTOMER_DATA_ tags
     $Param{Text} =~ s/(?:$Tag|$Tag2).+?$End/-/gi;
 
+    # cleanup all not needed <OTRS_AGENT_ tags
+    $Tag = $Start . 'OTRS_AGENT_';
+    $Param{Text} =~ s/$Tag.+?$End/-/gi;
+
     return $Param{Text};
+}
+
+=head2 _RemoveUnSupportedTag()
+
+cleanup all not supported tags
+
+    my $Text = $TemplateGeneratorObject->_RemoveUnSupportedTag(
+        Text => $SomeTextWithTags,
+        ListOfUnSupportedTag => \@ListOfUnSupportedTag,
+    );
+
+=cut
+
+sub _RemoveUnSupportedTag {
+
+    my ( $Self, %Param ) = @_;
+
+    # check needed stuff
+    for my $Item (qw(Text ListOfUnSupportedTag)) {
+        if ( !defined $Param{$Item} ) {
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
+                Priority => 'error',
+                Message  => "Need $Item!"
+            );
+            return;
+        }
+    }
+
+    my $Start = '<';
+    my $End   = '>';
+    if ( $Self->{RichText} ) {
+        $Start = '&lt;';
+        $End   = '&gt;';
+        $Param{Text} =~ s/(\n|\r)//g;
+    }
+
+    # cleanup all not supported tags
+    my $NotSupportedTag = $Start . "(?:" . join( "|", @{ $Param{ListOfUnSupportedTag} } ) . ")" . $End;
+    $Param{Text} =~ s/$NotSupportedTag/-/gi;
+
+    return $Param{Text};
+
 }
 
 1;
 
 =end Internal:
-
-=back
 
 =head1 TERMS AND CONDITIONS
 

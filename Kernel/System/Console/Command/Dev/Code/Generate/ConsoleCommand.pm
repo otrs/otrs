@@ -1,6 +1,5 @@
 # --
-# Kernel/System/Console/Command/Dev/Code/Generate/ConsoleCommand.pm - command skeleton generator
-# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -15,7 +14,7 @@ use warnings;
 use File::Path     ();
 use File::Basename ();
 
-use base qw(Kernel::System::Console::BaseCommand);
+use parent qw(Kernel::System::Console::BaseCommand);
 
 our @ObjectDependencies = (
     'Kernel::Config',
@@ -27,6 +26,14 @@ sub Configure {
     my ( $Self, %Param ) = @_;
 
     $Self->Description('Generate a console command skeleton.');
+    $Self->AddOption(
+        Name => 'module-directory',
+        Description =>
+            "Specify the directory containing the module where the new command should be created (otherwise the OTRS home directory will be used).",
+        Required   => 0,
+        HasValue   => 1,
+        ValueRegex => qr/.*/smx,
+    );
     $Self->AddArgument(
         Name        => 'name',
         Description => "Specify the name of the new command (e.g. 'Admin::Test::Command').",
@@ -35,11 +42,28 @@ sub Configure {
     );
 }
 
+sub PreRun {
+    my ( $Self, %Param ) = @_;
+
+    my $ModuleDirectory = $Self->GetOption('module-directory');
+    if ( $ModuleDirectory && !-d $ModuleDirectory ) {
+        die "Directory $ModuleDirectory does not exist.\n";
+    }
+
+    return;
+}
+
 sub Run {
     my ( $Self, %Param ) = @_;
 
     my $CommandName = $Self->GetArgument('name');
     my $Home        = $Kernel::OM->Get('Kernel::Config')->Get('Home');
+
+    my $TargetHome      = $Home;
+    my $ModuleDirectory = $Self->GetOption('module-directory');
+    if ($ModuleDirectory) {
+        $TargetHome = $ModuleDirectory;
+    }
 
     # create perl module file
     my $CommandPathPM = $CommandName . ".pm";
@@ -63,7 +87,7 @@ sub Run {
         },
     );
 
-    my $TargetLocationPM  = "$Home/Kernel/System/Console/Command/$CommandPathPM";
+    my $TargetLocationPM  = "$TargetHome/Kernel/System/Console/Command/$CommandPathPM";
     my $TargetDirectoryPM = File::Basename::dirname($TargetLocationPM);
 
     if ( !-d $TargetDirectoryPM ) {
@@ -110,7 +134,7 @@ sub Run {
         },
     );
 
-    my $TargetLocationUT  = "$Home/scripts/test/Console/Command/$CommandPathUT";
+    my $TargetLocationUT  = "$TargetHome/scripts/test/Console/Command/$CommandPathUT";
     my $TargetDirectoryUT = File::Basename::dirname($TargetLocationUT);
 
     if ( !-d $TargetDirectoryUT ) {
@@ -137,15 +161,3 @@ sub Run {
 }
 
 1;
-
-=back
-
-=head1 TERMS AND CONDITIONS
-
-This software is part of the OTRS project (L<http://otrs.org/>).
-
-This software comes with ABSOLUTELY NO WARRANTY. For details, see
-the enclosed file COPYING for license information (AGPL). If you
-did not receive this file, see L<http://www.gnu.org/licenses/agpl.txt>.
-
-=cut

@@ -45,10 +45,6 @@ ul.Tablelike li.OneRow .AsBlock {
     text-overflow: ellipsis;
 }
 
-ul.Tablelike li.Even {
-    background-color: #F5F5F5;
-}
-
 ul.Tablelike li:nth-child(even) {
     background-color: #F5F5F5;
 }
@@ -91,6 +87,30 @@ ul.Tablelike li.Header + li {
     background: #f5f5f5;
 }
 
+.WidgetSimple.WidgetLoading i {
+    display: block;
+    text-align: center;
+    margin: 10px 0px;
+}
+
+.WidgetSimple.MobileNotAvailableWidget {
+    display: none;
+}
+
+.WidgetSimple .WidgetSimple {
+    background: #F2EFEF;
+    border: 1px solid #ddd;
+    margin: 15px 10px;
+}
+
+.WidgetSimple .WidgetSimple .WidgetSimple {
+    background: #f5f5f5;
+}
+
+.WidgetSimple .WidgetSimple .WidgetSimple h2 {
+    font-size: 12px;
+}
+
 .WidgetSimple > .Header,
 .WidgetSimple.Collapsed.AnimationRunning > .Header {
     padding: 2px 5px 2px 5px;
@@ -126,6 +146,10 @@ ul.Tablelike li.Header + li {
      */
     min-height: 0%;
     /* END IE9 Hover Bug Workaround */
+}
+
+.WidgetSimple > .Content.OverflowVisible {
+    overflow: visible;
 }
 
 .WidgetSimple.QueueOverview > .Content {
@@ -196,6 +220,14 @@ ul.Tablelike li.Header + li {
     background: url("../img/loader.gif") no-repeat left center;
 }
 
+.WidgetIsLoading {
+    text-align: center;
+    padding: 20px;
+    font-size: 14px;
+    color: #777;
+    border: 1px dotted #bbb;
+}
+
 /**
  * @subsection  WidgetBox
  */
@@ -258,7 +290,7 @@ ul.Tablelike li.Header + li {
 
 .ActionMenu {
     top: 4px;
-    right: 3px;
+    right: 7px;
     padding-left: 3px;
     position: absolute;
     display: none;
@@ -274,7 +306,8 @@ ul.Tablelike li.Header + li {
     border-bottom-right-radius: 2px;
 }
 
-.Header:hover .ActionMenu {
+.Header:hover .ActionMenu,
+.Header .ActionMenu.Visible {
     display: block;
 }
 
@@ -301,6 +334,25 @@ ul.Tablelike li.Header + li {
     display: block;
 }
 
+.WidgetAction.WithText {
+    width: auto;
+}
+
+.WidgetAction.WithText a {
+    color: #999;
+    font-size: 11px;
+    white-space: nowrap;
+    line-height: 16px;
+}
+
+.WidgetAction.WithText a i {
+    font-size: 14px;
+    position: relative;
+    top: -2px;
+    display: inline-block !important;
+    margin-left: 5px;
+}
+
 .WidgetAction.Toggle,
 .Expanded.AnimationRunning > .Header > .WidgetAction.Toggle {
     height: 13px;
@@ -317,11 +369,20 @@ ul.Tablelike li.Header + li {
     color: #555 !important;
 }
 
-.Expanded .WidgetAction.Toggle i.fa-caret-right {
+.RTL .WidgetAction.Toggle i {
+    left: auto;
+    right: 7px;
+}
+
+.Expanded > .Header > .WidgetAction.Toggle i.fa-caret-right {
     display: none !important;
 }
 
-.Collapsed .WidgetAction.Toggle i.fa-caret-down {
+.RTL .WidgetSimple .Header > .WidgetAction.Toggle i.fa-caret-right {
+    transform: rotateY(180deg);
+}
+
+.Collapsed > .Header > .WidgetAction.Toggle i.fa-caret-down {
     display: none !important;
 }
 
@@ -355,7 +416,8 @@ ul.Tablelike li.Header + li {
     vertical-align: middle;
 }
 
-.WidgetAction:hover i {
+.WidgetAction:hover i,
+.WidgetAction a:focus i {
     color: #000;
 }
 
@@ -367,8 +429,44 @@ ul.Tablelike li.Header + li {
     right: 0px;
 }
 
+ul.WidgetTooltip {
+    width: 170px;
+    right: -3px;
+    top: 21px;
+    background: rgba(216, 216, 216, 0.85);
+}
+
+ul.WidgetTooltip li {
+    padding: 7px 13px 2px 23px;
+    text-align: left;
+    position: relative;
+    border-bottom: 1px solid #ccc;
+}
+
+ul.WidgetTooltip li i {
+    position: absolute;
+    left: 6px;
+    top: 7px;
+    color: #aaa !important;
+}
+
+ul.WidgetTooltip li:last-child {
+    border-bottom: 0px;
+}
+
+ul.WidgetTooltip li a {
+    color: #333;
+}
+
+ul.WidgetTooltip li a:hover {
+    text-decoration: underline;
+}
+
+ul.WidgetTooltip li a:hover i {
+    color: #333 !important;
+}
+
 .WidgetTooltip a {
-    background-color: #fff;
     padding: 0px;
     line-height: 150%;
     font-size: 11px;
@@ -403,7 +501,7 @@ ul.Tablelike li.Header + li {
     margin: 0px auto;
     padding: 2px 3px;
     display: block;
-    width: 249px;
+    width: 240px;
 }
 
 .WidgetSimple .ActionList select + .FieldExplanation {
@@ -414,7 +512,8 @@ ul.Tablelike li.Header + li {
     margin-top: -5px;
 }
 
-.CallForAction, .cke_dialog_footer_buttons a.cke_dialog_ui_button {
+.CallForAction,
+.cke_dialog_footer_buttons a.cke_dialog_ui_button {
     padding: 0px;
     background: #eee;
     border: 1px solid #ccc;
@@ -422,6 +521,15 @@ ul.Tablelike li.Header + li {
     display: inline-block;
     cursor: pointer;
     transition: all ease-in 0.2s;
+}
+
+.CallForAction.Inline {
+    position: relative;
+    top: -1px;
+}
+
+.CallForAction:disabled {
+    cursor: default;
 }
 
 .cke_dialog_footer_buttons a.cke_dialog_ui_button {
@@ -441,12 +549,14 @@ ul.Tablelike li.Header + li {
     margin-top: 5px;
 }
 
-.ActionList li a.Fullsize, .CallForAction.Fullsize {
+.ActionList li a.Fullsize,
+.CallForAction.Fullsize {
     display: block;
 }
 
 .CallForAction.Fullsize {
-    width: 248px;
+    width: 100%;
+    box-sizing: border-box;
     text-align: center;
 }
 
@@ -466,14 +576,15 @@ ul.Tablelike li.Header + li {
     padding: 0;
 }
 
-.CallForAction:hover {
+.CallForAction:hover,
+.CallForAction:focus {
     color: #000;
     border-color: #aaa;
 }
 
 .CallForAction span,
 .cke_dialog_footer_buttons td a.cke_dialog_ui_button span {
-    height: 12px;
+    min-height: 12px;
     padding: 3px 7px 6px;
     line-height: 14px;
     vertical-align: middle;
@@ -485,6 +596,24 @@ ul.Tablelike li.Header + li {
     text-shadow: 0 1px 0 #FFF;
     cursor: pointer;
     position: relative;
+}
+
+.CallForAction.Inline span {
+    padding: 2px 7px 4px 7px;
+}
+
+.CallForAction.Small span {
+    padding: 0px 3px 2px 3px;
+    font-size: 10px;
+}
+
+.CallForAction.Fullsize span {
+    padding: 3px 20px 5px 20px;
+}
+
+.CallForAction:disabled span {
+    color: graytext !important;
+    cursor: default;
 }
 
 .cke_dialog_footer_buttons td a.cke_dialog_ui_button span {
@@ -503,6 +632,10 @@ ul.Tablelike li.Header + li {
     text-align: center;
 }
 
+.RTL .CallForAction span i {
+    margin-left: 5px;
+}
+
 .CallForAction.Fullsize.Center span i {
     position: absolute;
     left: 4px;
@@ -510,7 +643,8 @@ ul.Tablelike li.Header + li {
 }
 
 .CallForAction:active,
-.CallForAction:hover {
+.CallForAction:hover,
+.CallForAction:focus {
     background-color: #e5e5e5;
     border-color: #999;
 }
@@ -523,12 +657,13 @@ ul.Tablelike li.Header + li {
 
 .CallForAction.Disabled, .CallForAction.Disabled span {
     color: #999;
-    cursor: default;
+    cursor: no-drop;
 }
 
 input.FilterBox {
     padding: 4px 5px;
-    width: 238px;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .SearchBox {
@@ -697,11 +832,11 @@ input.FilterBox {
     background: none;
 }
 
-#ProgressBar li:last-child, #ProgressBar li.Last {
+#ProgressBar li:last-child {
     border-right-width: 1px;
 }
 
-#ProgressBar li:last-child a, #ProgressBar li.Last a {
+#ProgressBar li:last-child a {
     border-right-width: 1px;
     padding-right: 14px;
 }
@@ -777,6 +912,117 @@ input.FilterBox {
 }
 
 /**
+ * @subsection      Widget messages
+ */
+
+.WidgetSimple .WidgetMessage {
+    background: #eee;
+    margin: 10px -8px !important;
+    padding: 5px 20px;
+    font-size: 11px;
+    border-top: 1px solid #ddd;
+    border-bottom: 1px solid #ddd;
+    color: #555;
+    line-height: 150%;
+}
+
+.WidgetSimple .WidgetMessage p + p {
+    margin-top: 2px;
+}
+
+.WidgetSimple .WidgetMessage p + p:last-child {
+    margin-bottom: 2px;
+}
+
+.SidebarColumn .WidgetSimple .WidgetMessage {
+    margin: 5px -8px;
+    padding: 5px 8px;
+}
+
+.WidgetSimple .WidgetMessage.Bottom {
+    margin-bottom: -10px !important;
+}
+
+.WidgetSimple .WidgetMessage.Top {
+    margin-top: 0px !important;
+}
+
+.WidgetSimple .WidgetMessage.Error {
+    background: #b8384e;
+    color: rgba(255, 255, 255, 0.8);
+    border: 0px;
+}
+
+.WidgetSimple .WidgetMessage.Warning {
+    background: #F7AE40;
+    border-color: #D18F2B;
+    color: #774a06;
+}
+
+.WidgetSimple .WidgetMessage.Warning * {
+}
+
+.WidgetSimple .WidgetMessage.Success {
+    background: #6EB22A;
+    color: #fff;
+    border-color: #52891B;
+}
+
+.WidgetSimple .WidgetMessage.Notice {
+    background: #2A61AF;
+    color: #fff;
+    border-color: #15468C;
+}
+
+.WidgetSimple .WidgetMessage button {
+    background: #eee;
+    border: 1px solid #aaa;
+    display: inline-block;
+    margin-right: 5px;
+    transition: all ease 0.3s;
+}
+
+.WidgetSimple .WidgetMessage button:hover {
+    cursor: pointer;
+    background: #ddd;
+}
+
+/**
+ * @subsection      Overlays
+ */
+
+.WidgetSimple.HasOverlay {
+    position: relative;
+    overflow: hidden;
+}
+
+.WidgetSimple .Overlay {
+    position: absolute;
+    box-sizing: border-box;
+    left: 0px;
+    top: 0px;
+    height: 100%;
+    width: 100%;
+    background: rgba(255, 255, 255, 0.1);
+    text-align: center;
+    font-size: 16px;
+    z-index: 2;
+}
+
+.WidgetSimple .Overlay i {
+    position: absolute;
+    top: 50%;
+    margin-top: -8px;
+    left: 50%;
+    color: #777;
+    margin-left: -8px;
+}
+
+.WidgetSimple .Overlay i.fa-check {
+    color: #5BAD5B;
+}
+
+/**
  * @subsection      Icon colors
  */
 
@@ -790,6 +1036,81 @@ input.FilterBox {
 .CallForAction span i.fa-download,
 .CallForAction span i.fa-upload {
     color: #2D6F9E;
+}
+
+/**
+ * @subsection      Chat icons
+ */
+
+.UserChatIcons {
+    float: right;
+}
+
+.UserChatIcons.Block {
+    float: none;
+    margin-top: 2px;
+}
+
+.UserChatIcons i {
+    color: #999;
+    margin-right: 3px;
+}
+
+.UserChatIcons .Unavailable i,
+.UserChatIcons .Unsupported i {
+    opacity: 0.4;
+}
+
+.UserStatusIcon {
+    cursor: default;
+    margin-right: 3px;
+}
+
+.UserStatusIcon.Inline {
+    margin-right: 0;
+}
+
+.UserStatusIcon.Active i {
+    color: #0a0;
+}
+
+.UserStatusIcon.Offline i {
+    color: #000;
+}
+
+.UserStatusIcon.Unavailable i {
+    color: #d00;
+    opacity: 1;
+}
+
+.UserStatusIcon.Away i {
+    color: #fb0;
+}
+
+button.HighlightHint {
+    animation: ButtonHint 0.7s infinite alternate;
+}
+
+button.HighlightError {
+    animation: ButtonError 0.7s infinite alternate;
+}
+
+@keyframes ButtonHint {
+    from {
+        box-shadow: none;
+        }
+    to {
+        box-shadow: 0 0 10px green;
+    }
+}
+
+@keyframes ButtonError {
+    from {
+        box-shadow: none;
+        }
+    to {
+        box-shadow: 0 0 10px red;
+    }
 }
 
 } /* end @media */

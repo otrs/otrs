@@ -1,6 +1,5 @@
 # --
-# ReferenceData.t - ReferenceData module tests
-# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -17,6 +16,7 @@ use Kernel::System::VariableCheck qw(:all);
 
 # get needed objects
 my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
+my $Helper       = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
 
 # use ReferenceData ISO list
 $ConfigObject->Set(
@@ -37,8 +37,7 @@ $Self->True(
 );
 
 # let's assume these countries don't go anywhere
-
-my @CountryList = ( 'Netherlands', 'Germany', 'Switzerland', 'United States', 'Japan' );
+my @CountryList = ( 'Netherlands', 'Germany', 'Switzerland', 'United States of America', 'Japan' );
 
 for my $Country (@CountryList) {
     $Self->True(
@@ -48,7 +47,6 @@ for my $Country (@CountryList) {
 }
 
 # set configuration to small list
-
 $ConfigObject->Set(
     Key   => 'ReferenceData::OwnCountryList',
     Value => {

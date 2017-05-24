@@ -1,6 +1,5 @@
 # --
-# Kernel/Modules/AdminRegistration.pm - to register the OTRS system
-# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -27,33 +26,56 @@ sub new {
 sub Run {
     my ( $Self, %Param ) = @_;
 
+    # get needed objects
+    my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
+    my $LayoutObject = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
+
+    # check if cloud services are disabled
+    my $CloudServicesDisabled = $ConfigObject->Get('CloudServices::Disabled') || 0;
+
+    # define parameter for breadcrumb during system registration
+    my $WithoutBreadcrumb;
+
+    if ($CloudServicesDisabled) {
+
+        my $Output = $LayoutObject->Header( Title => 'Error' );
+        $Output .= $LayoutObject->Output(
+            TemplateFile => 'CloudServicesDisabled',
+            Data         => \%Param
+        );
+        $Output .= $LayoutObject->Footer();
+        return $Output
+    }
+
     my $RegistrationState = $Kernel::OM->Get('Kernel::System::SystemData')->SystemDataGet(
         Key => 'Registration::State',
     ) || '';
 
-    # if system is not yet registered, subaction should be 'register'
+    # if system is not yet registered, sub-action should be 'register'
     if ( $RegistrationState ne 'registered' ) {
 
         $Self->{Subaction} ||= 'OTRSIDValidate';
 
-        # subaction can't be 'Deregister' or UpdateNow
+        # sub-action can't be 'Deregister' or UpdateNow
         if ( $Self->{Subaction} eq 'Deregister' || $Self->{Subaction} eq 'UpdateNow' ) {
             $Self->{Subaction} = 'OTRSIDValidate';
         }
+
+        # during system registration, don't create breadcrumb item 'Validate OTRS-ID'
+        $WithoutBreadcrumb = 1 if $Self->{Subaction} eq 'OTRSIDValidate';
     }
 
-    my $LayoutObject       = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
+    # get needed objects
     my $ParamObject        = $Kernel::OM->Get('Kernel::System::Web::Request');
     my $RegistrationObject = $Kernel::OM->Get('Kernel::System::Registration');
-    my $ConfigObject       = $Kernel::OM->Get('Kernel::Config');
 
     # ------------------------------------------------------------ #
-    # Scheduler not running screen
+    # Daemon not running screen
     # ------------------------------------------------------------ #
     if (
         $Self->{Subaction} ne 'OTRSIDValidate'
         && $RegistrationState ne 'registered'
-        && !$Self->_SchedulerRunning()
+        && !$Self->_DaemonRunning()
         )
     {
 
@@ -66,7 +88,7 @@ sub Run {
         );
 
         $LayoutObject->Block(
-            Name => 'SchedulerNotRunning',
+            Name => 'DaemonNotRunning',
         );
 
         $Output .= $LayoutObject->Output(
@@ -159,7 +181,10 @@ sub Run {
         $Output .= $LayoutObject->NavigationBar();
         $LayoutObject->Block(
             Name => 'Overview',
-            Data => \%Param,
+            Data => {
+                %Param,
+                Subaction => $WithoutBreadcrumb ? '' : $Self->{Subaction},
+            },
         );
 
         my $EntitlementStatus  = 'forbidden';
@@ -173,7 +198,7 @@ sub Run {
             );
         }
 
-        # users should not be able to de-register their system if they either have
+        # users should not be able to deregister their system if they either have
         # OTRS Business Solution installed or are entitled to use it (by having a valid contract).
         if (
             $RegistrationState eq 'registered'
@@ -195,11 +220,11 @@ sub Run {
                 Data => \%Param,
             );
 
-            # check if the scheduler is not running
-            if ( $RegistrationState ne 'registered' && !$Self->_SchedulerRunning() ) {
+            # check if the daemon is not running
+            if ( $RegistrationState ne 'registered' && !$Self->_DaemonRunning() ) {
 
                 $LayoutObject->Block(
-                    Name => 'OTRSIDValidationSchedulerNotRunning',
+                    Name => 'OTRSIDValidationDaemonNotRunning',
                 );
             }
             else {
@@ -238,7 +263,10 @@ sub Run {
         $Output .= $LayoutObject->NavigationBar();
         $LayoutObject->Block(
             Name => 'Overview',
-            Data => \%Param,
+            Data => {
+                %Param,
+                Subaction => $Self->{Subaction},
+            },
         );
 
         $Param{SystemTypeOption} = $LayoutObject->BuildSelection(
@@ -288,7 +316,10 @@ sub Run {
         $Output .= $LayoutObject->NavigationBar();
         $LayoutObject->Block(
             Name => 'Overview',
-            Data => \%Param,
+            Data => {
+                %Param,
+                Subaction => $Self->{Subaction},
+                }
         );
 
         $LayoutObject->Block(
@@ -369,7 +400,10 @@ sub Run {
         $Output .= $LayoutObject->NavigationBar();
         $LayoutObject->Block(
             Name => 'Overview',
-            Data => \%Param,
+            Data => {
+                %Param,
+                Subaction => $Self->{Subaction},
+                }
         );
 
         my %RegistrationData = $RegistrationObject->RegistrationDataGet();
@@ -384,7 +418,7 @@ sub Run {
             Class         => 'Validate_Required ' . ( $Param{Errors}->{'TypeIDInvalid'} || '' ),
         );
 
-        # fallback for support data sending switch
+        # fall-back for support data sending switch
         if ( !defined $RegistrationData{SupportDataSending} ) {
             $RegistrationData{SupportDataSending} = 'No';
         }
@@ -434,7 +468,7 @@ sub Run {
 
         # log change
         if ( $Result{Success} ) {
-            $Self->{LogObject}->Log(
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'notice',
                 Message =>
                     "System Registration: User $Self->{UserID} changed Description: '$Description', Type: '$RegistrationType'.",
@@ -551,7 +585,10 @@ sub _SentDataOverview {
 
     $LayoutObject->Block(
         Name => 'Overview',
-        Data => \%Param,
+        Data => {
+            %Param,
+            Subaction => 'SentDataOverview',
+            }
     );
 
     $LayoutObject->Block( Name => 'ActionList' );
@@ -608,22 +645,22 @@ sub _SentDataOverview {
     return $Output;
 }
 
-sub _SchedulerRunning {
+sub _DaemonRunning {
     my ( $Self, %Param ) = @_;
 
-    # try to get scheduler PID
-    my %PID = $Kernel::OM->Get('Kernel::System::PID')->PIDGet(
-        Name => 'otrs.Scheduler',
+    # get config object
+    my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
+
+    # get the NodeID from the SysConfig settings, this is used on High Availability systems.
+    my $NodeID = $ConfigObject->Get('NodeID') || 1;
+
+    # get running daemon cache
+    my $Running = $Kernel::OM->Get('Kernel::System::Cache')->Get(
+        Type => 'DaemonRunning',
+        Key  => $NodeID,
     );
 
-    my $PIDUpdateTime = $Kernel::OM->Get('Kernel::Config')->Get('Scheduler::PIDUpdateTime') || 600;
-
-    # check if scheduler process is registered in the DB and if the update was not too long ago
-    if ( !%PID || ( time() - $PID{Changed} > 4 * $PIDUpdateTime ) ) {
-        return;
-    }
-
-    return 1;
+    return $Running;
 }
 
 1;

@@ -1,6 +1,5 @@
 # --
-# Kernel/System/DB/mysql.pm - mysql database backend
-# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -16,6 +15,7 @@ use Encode ();
 
 our @ObjectDependencies = (
     'Kernel::Config',
+    'Kernel::System::Encode',
     'Kernel::System::Log',
     'Kernel::System::Main',
     'Kernel::System::Time',
@@ -56,6 +56,8 @@ sub LoadPreferences {
     $Self->{'DB::Version'}
         = "SELECT CONCAT( IF (INSTR( VERSION(),'MariaDB'),'MariaDB ','MySQL '), SUBSTRING_INDEX(VERSION(),'-',1))";
 
+    $Self->{'DB::ListTables'} = 'SHOW TABLES';
+
     # DBI/DBD::mysql attributes
     # disable automatic reconnects as they do not execute DB::Connect, which will
     # cause charset problems
@@ -86,6 +88,7 @@ sub LoadPreferences {
 sub PreProcessSQL {
     my ( $Self, $SQLRef ) = @_;
     $Self->_FixMysqlUTF8($SQLRef);
+    $Kernel::OM->Get('Kernel::System::Encode')->EncodeOutput($SQLRef);
     return;
 }
 
@@ -94,8 +97,18 @@ sub PreProcessBindData {
 
     my $Size = scalar @{ $BindRef // [] };
 
+    my $EncodeObject = $Kernel::OM->Get('Kernel::System::Encode');
+
     for ( my $I = 0; $I < $Size; $I++ ) {
+
         $Self->_FixMysqlUTF8( \$BindRef->[$I] );
+
+        # DBD::mysql 4.042+ requires data to be octets, so we encode the data on our own.
+        #   The mysql_enable_utf8 flag seems to be unusable because it treats ALL data as UTF8 unless
+        #   it has a custom bind data type like SQL_BLOB.
+        #
+        #   See also https://bugs.otrs.org/show_bug.cgi?id=12677.
+        $EncodeObject->EncodeOutput( \$BindRef->[$I] );
     }
     return;
 }
@@ -321,35 +334,17 @@ sub TableCreate {
     $SQL .= "\n";
     push @Return, $SQLStart . $SQL . $SQLEnd;
 
-    # add indexs
-    #    for my $Name (sort keys %Index) {
-    #        push (@Return, $Self->IndexCreate(
-    #            TableName => $TableName,
-    #            Name => $Name,
-    #            Data => $Index{$Name},
-    #        ));
-    #    }
-    # add uniq
-    #    for my $Name (sort keys %Uniq) {
-    #        push (@Return, $Self->UniqueCreate(
-    #            TableName => $TableName,
-    #            Name => $Name,
-    #            Data => $Uniq{$Name},
-    #        ));
-    #    }
     # add foreign keys
     for my $ForeignKey ( sort keys %Foreign ) {
         my @Array = @{ $Foreign{$ForeignKey} };
         for ( 0 .. $#Array ) {
-            push(
-                @{ $Self->{Post} },
+            push @{ $Self->{Post} },
                 $Self->ForeignKeyCreate(
-                    LocalTableName   => $TableName,
-                    Local            => $Array[$_]->{Local},
-                    ForeignTableName => $ForeignKey,
-                    Foreign          => $Array[$_]->{Foreign},
-                ),
-            );
+                LocalTableName   => $TableName,
+                Local            => $Array[$_]->{Local},
+                ForeignTableName => $ForeignKey,
+                Foreign          => $Array[$_]->{Foreign},
+                );
         }
     }
     return @Return;
@@ -566,22 +561,31 @@ sub IndexCreate {
         }
     }
 
-    my $SQL   = "CREATE INDEX $Param{Name} ON $Param{TableName} (";
-    my @Array = @{ $Param{Data} };
+    my $CreateIndexSQL = "CREATE INDEX $Param{Name} ON $Param{TableName} (";
+    my @Array          = @{ $Param{Data} };
     for ( 0 .. $#Array ) {
         if ( $_ > 0 ) {
-            $SQL .= ', ';
+            $CreateIndexSQL .= ', ';
         }
-        $SQL .= $Array[$_]->{Name};
+        $CreateIndexSQL .= $Array[$_]->{Name};
         if ( $Array[$_]->{Size} ) {
-            $SQL .= "($Array[$_]->{Size})";
+            $CreateIndexSQL .= "($Array[$_]->{Size})";
         }
     }
-    $SQL .= ')';
+    $CreateIndexSQL .= ')';
+
+    my @SQL;
+
+    # create index only if it does not exist already
+    push @SQL,
+        "SET \@IndexExists := (SELECT COUNT(*) FROM information_schema.statistics WHERE table_schema = DATABASE() AND table_name = '$Param{TableName}' AND index_name = '$Param{Name}')";
+    push @SQL,
+        "SET \@IndexSQLStatement := IF( \@IndexExists = 0, '$CreateIndexSQL', 'SELECT ''INFO: Index $Param{Name} already exists, skipping.''' )";
+    push @SQL, "PREPARE IndexStatement FROM \@IndexSQLStatement";
+    push @SQL, "EXECUTE IndexStatement";
 
     # return SQL
-    return ($SQL);
-
+    return @SQL;
 }
 
 sub IndexDrop {
@@ -623,7 +627,7 @@ sub ForeignKeyCreate {
         );
         $ForeignKey = substr $ForeignKey, 0, 58;
         $ForeignKey .= substr $MD5, 0,  1;
-        $ForeignKey .= substr $MD5, 61, 1;
+        $ForeignKey .= substr $MD5, 31, 1;
     }
 
     # add foreign key
@@ -655,12 +659,10 @@ sub ForeignKeyDrop {
         );
         $ForeignKey = substr $ForeignKey, 0, 58;
         $ForeignKey .= substr $MD5, 0,  1;
-        $ForeignKey .= substr $MD5, 61, 1;
+        $ForeignKey .= substr $MD5, 31, 1;
     }
 
-    # drop foreign key
     my @SQL;
-
     if ( $Kernel::OM->Get('Kernel::Config')->Get('Database::ShellOutput') ) {
         push @SQL, $Self->{'DB::Comment'}
             . ' MySQL does not create foreign key constraints in MyISAM. Dropping nonexisting constraints in MyISAM works just fine.';
@@ -668,12 +670,21 @@ sub ForeignKeyDrop {
             . ' However, if the table is converted to InnoDB, this will result in an error. Therefore, only drop constraints if they exist.';
     }
 
+    # drop foreign key
     push @SQL,
         "SET \@FKExists := (SELECT COUNT(*) FROM information_schema.table_constraints WHERE table_schema = DATABASE() AND table_name = '$Param{LocalTableName}' AND constraint_name = '$ForeignKey')";
     push @SQL,
         "SET \@FKSQLStatement := IF( \@FKExists > 0, 'ALTER TABLE $Param{LocalTableName} DROP FOREIGN KEY $ForeignKey', 'SELECT ''INFO: Foreign key constraint $ForeignKey does not exist, skipping.''' )";
     push @SQL, "PREPARE FKStatement FROM \@FKSQLStatement";
     push @SQL, "EXECUTE FKStatement";
+
+    # drop index with the same name like the foreign key
+    push @SQL,
+        "SET \@IndexExists := (SELECT COUNT(*) FROM information_schema.statistics WHERE table_schema = DATABASE() AND table_name = '$Param{LocalTableName}' AND index_name = '$ForeignKey')";
+    push @SQL,
+        "SET \@IndexSQLStatement := IF( \@IndexExists > 0, 'DROP INDEX $ForeignKey ON $Param{LocalTableName}', 'SELECT ''INFO: Index $ForeignKey does not exist, skipping.''' )";
+    push @SQL, "PREPARE IndexStatement FROM \@IndexSQLStatement";
+    push @SQL, "EXECUTE IndexStatement";
 
     return @SQL;
 }

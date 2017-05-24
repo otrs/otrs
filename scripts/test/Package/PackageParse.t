@@ -1,6 +1,5 @@
 # --
-# PackageParse.t - Package Parse tests
-# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -15,14 +14,13 @@ use vars (qw($Self));
 
 use Kernel::System::VariableCheck qw(:all);
 
-# get needed objects
-my $ConfigObject  = $Kernel::OM->Get('Kernel::Config');
+# get package object
 my $PackageObject = $Kernel::OM->Get('Kernel::System::Package');
 
 # get OTRS Version
-my $OTRSVersion = $ConfigObject->Get('Version');
+my $OTRSVersion = $Kernel::OM->Get('Kernel::Config')->Get('Version');
 
-# leave only mayor and minor level versions
+# leave only major and minor level versions
 $OTRSVersion =~ s{ (\d+ \. \d+) .+ }{$1}msx;
 
 # add x as patch level version
@@ -115,5 +113,8 @@ for my $Test (@Tests) {
         );
     }
 }
+
+# cleanup cache
+$Kernel::OM->Get('Kernel::System::Cache')->CleanUp();
 
 1;

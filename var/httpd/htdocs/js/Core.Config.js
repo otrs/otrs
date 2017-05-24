@@ -1,6 +1,5 @@
 // --
-// Core.Config.js - provides the JS config
-// Copyright (C) 2001-2012 OTRS AG, http://otrs.org/
+// Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 // --
 // This software comes with ABSOLUTELY NO WARRANTY. For details, see
 // the enclosed file COPYING for license information (AGPL). If you
@@ -36,10 +35,10 @@ Core.Config = (function (TargetNS) {
      * @description
      *      The prefix for all config keys to avoid name conflicts
      */
-        ConfigPrefix = 'Config';
+        ConfigPrefix = '';
 
     if (!Core.Debug.CheckDependency('Core.Config', 'Core.Data', 'Core.Data')) {
-        return;
+        return false;
     }
 
     /**
@@ -115,11 +114,11 @@ Core.Config = (function (TargetNS) {
      * @memberof Core.Config
      * @function
      * @param {Object} Data - The config data to include as a javascript object
-     * @param {String} Key - The key in the config where the data structure is saved to. If undefined, the Data is added to the root of the hash.
+     * @param {String} ConfigKey - The key in the config where the data structure is saved to. If undefined, the Data is added to the root of the hash.
      * @description
      *      This function includes the given data into the config hash.
      */
-    TargetNS.AddConfig = function (Data, Key) {
+    TargetNS.AddConfig = function (Data, ConfigKey) {
         var ConfigOptions,
             Keys,
             KeyToken,
@@ -134,13 +133,13 @@ Core.Config = (function (TargetNS) {
          */
         ConfigOptions = Core.Data.CopyObject(Data);
 
-        if (typeof Key === 'undefined') {
+        if (typeof ConfigKey === 'undefined') {
             $.each(Data, function (Key, Value) {
-                ConfigLevel[ConfigPrefix + Key] = Value;
+                TargetNS.Set(Key,Value);
             });
         }
         else {
-            Keys = Key.split('.');
+            Keys = ConfigKey.split('.');
             for (KeyToken in Keys) {
                 if (Keys.length === Count + 1) {
                     ConfigLevel[ConfigPrefix + Keys[KeyToken]] = ConfigOptions;
@@ -178,20 +177,34 @@ Core.Config = (function (TargetNS) {
         'Microsoft Internet Explorer 7': function () {
             return ($.browser.msie && $.browser.version === '7.0');
         },
+        'Microsoft Internet Explorer 8': function () {
+            return ($.browser.msie && $.browser.version === '8.0');
+        },
+        'Microsoft Internet Explorer 9': function () {
+            return ($.browser.msie && $.browser.version === '9.0');
+        },
+        'Microsoft Internet Explorer 10': function () {
+            return ($.browser.msie && $.browser.version === '10.0');
+        },
         'Konqueror (without WebKit engine)': function () {
             return ($.browser.webkit && navigator.vendor === 'KDE');
         },
-        // all Netscape, Mozilla, Firefox before Gecko Version 1.9 (Firefox 3)
+        // all Netscape, Mozilla, Firefox before version 31 (Gecko version 31)
         'Netscape, old Mozilla, old Firefox': function () {
             var BrowserVersion,
                 BrowserDetected = false;
             if ($.browser.mozilla) {
                 BrowserVersion = $.browser.version.split('.');
-                if (parseInt(BrowserVersion[0], 10) < 10) {
+                if (parseInt(BrowserVersion[0], 10) < 31) {
                     BrowserDetected = true;
                 }
             }
             return BrowserDetected;
+        },
+        // Safari version 5 and older on Mac and Windows (webkit version 534.x.x)
+        'Safari Version 5 and older': function () {
+            var BrowserVersion = $.browser.version.split('.');
+            return ($.browser.safari && parseInt(BrowserVersion[0], 10) < 535);
         }
     }, 'BrowserBlackList::Agent');
 
@@ -211,20 +224,34 @@ Core.Config = (function (TargetNS) {
         'Microsoft Internet Explorer 7': function () {
             return ($.browser.msie && $.browser.version === '7.0');
         },
+        'Microsoft Internet Explorer 8': function () {
+            return ($.browser.msie && $.browser.version === '8.0');
+        },
+        'Microsoft Internet Explorer 9': function () {
+            return ($.browser.msie && $.browser.version === '9.0');
+        },
+        'Microsoft Internet Explorer 10': function () {
+            return ($.browser.msie && $.browser.version === '10.0');
+        },
         'Konqueror (without WebKit engine)': function () {
             return ($.browser.webkit && navigator.vendor === 'KDE');
         },
-        // all Netscape, Mozilla, Firefox before Gecko Version 1.9 (Firefox 3)
+        // all Netscape, Mozilla, Firefox before version 31 (Gecko version 31)
         'Netscape, old Mozilla, old Firefox': function () {
             var BrowserVersion,
-            BrowserDetected = false;
+                BrowserDetected = false;
             if ($.browser.mozilla) {
                 BrowserVersion = $.browser.version.split('.');
-                if (parseInt(BrowserVersion[0], 10) < 10) {
+                if (parseInt(BrowserVersion[0], 10) < 31) {
                     BrowserDetected = true;
                 }
             }
             return BrowserDetected;
+        },
+        // Safari version 5 and older on Mac and Windows (webkit version 534.x.x)
+        'Safari Version 5 and older': function () {
+            var BrowserVersion = $.browser.version.split('.');
+            return ($.browser.safari && parseInt(BrowserVersion[0], 10) < 535);
         }
     }, 'BrowserBlackList::Customer');
 

@@ -1,6 +1,5 @@
 # --
-# Kernel/Modules/AdminCustomerUserGroup.pm - to add/update/delete groups <-> users
-# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -51,6 +50,8 @@ sub Run {
     # set search limit
     my $SearchLimit = 200;
 
+    $Param{CustomerUserSearch} = $ParamObject->GetParam( Param => 'CustomerUserSearch' ) || '*';
+
     # ------------------------------------------------------------ #
     # user <-> group 1:n
     # ------------------------------------------------------------ #
@@ -66,9 +67,10 @@ sub Run {
         my %Types;
         for my $Type ( @{ $ConfigObject->Get('System::Customer::Permission') } ) {
             my %Data = $CustomerGroupObject->GroupMemberList(
-                UserID => $ID,
-                Type   => $Type,
-                Result => 'HASH',
+                UserID         => $ID,
+                Type           => $Type,
+                Result         => 'HASH',
+                RawPermissions => 1,
             );
             $Types{$Type} = \%Data;
         }
@@ -77,10 +79,11 @@ sub Run {
         $Output .= $LayoutObject->NavigationBar();
         $Output .= $Self->_Change(
             %Types,
-            Data => \%GroupData,
-            ID   => $UserData{UserID},
-            Name => "$CustomerName ($UserData{UserLogin})",
-            Type => 'CustomerUser',
+            Data               => \%GroupData,
+            ID                 => $UserData{UserID},
+            Name               => "$CustomerName ($UserData{UserLogin})",
+            Type               => 'CustomerUser',
+            CustomerUserSearch => $Param{CustomerUserSearch},
         );
         $Output .= $LayoutObject->Footer();
 
@@ -94,9 +97,6 @@ sub Run {
 
         # Get params.
         $Param{Subaction} = $ParamObject->GetParam( Param => 'Subaction' );
-
-        $Param{CustomerUserSearch} = $ParamObject->GetParam( Param => "CustomerUserSearch" )
-            || '*';
 
         # get group data
         my $ID = $ParamObject->GetParam( Param => 'ID' );
@@ -119,7 +119,7 @@ sub Run {
         # output rows
         for my $Counter ( 1 .. $MaxCount ) {
 
-            # get service
+            # get user
             my %User = $CustomerUserObject->CustomerUserDataGet(
                 User => $CustomerUserKeyList[ $Counter - 1 ],
             );
@@ -134,9 +134,10 @@ sub Run {
         my %Types;
         for my $Type ( @{ $ConfigObject->Get('System::Customer::Permission') } ) {
             my %Data = $CustomerGroupObject->GroupMemberList(
-                GroupID => $ID,
-                Type    => $Type,
-                Result  => 'HASH',
+                GroupID        => $ID,
+                Type           => $Type,
+                Result         => 'HASH',
+                RawPermissions => 1,
             );
             $Types{$Type} = \%Data;
         }
@@ -167,9 +168,6 @@ sub Run {
         $LayoutObject->ChallengeTokenCheck();
 
         my $ID = $ParamObject->GetParam( Param => 'ID' ) || '';
-
-        $Param{CustomerUserSearch} = $ParamObject->GetParam( Param => 'CustomerUserSearch' )
-            || '*';
 
         # get new groups
         my %Permissions;
@@ -203,11 +201,23 @@ sub Run {
             );
         }
 
-        # redirect to overview
-        return $LayoutObject->Redirect(
-            OP =>
-                "Action=$Self->{Action};CustomerUserSearch=$Param{CustomerUserSearch}"
-        );
+        # If the user would like to continue editing the customer user relations for group
+        #   just redirect to the edit screen.
+        if (
+            defined $ParamObject->GetParam( Param => 'ContinueAfterSave' )
+            && ( $ParamObject->GetParam( Param => 'ContinueAfterSave' ) eq '1' )
+            )
+        {
+            return $LayoutObject->Redirect(
+                OP =>
+                    "Action=$Self->{Action};Subaction=Group;ID=$ID;CustomerUserSearch=$Param{CustomerUserSearch}"
+            );
+        }
+        else {
+            return $LayoutObject->Redirect(
+                OP => "Action=$Self->{Action};CustomerUserSearch=$Param{CustomerUserSearch}"
+            );
+        }
     }
 
     # ------------------------------------------------------------ #
@@ -219,9 +229,6 @@ sub Run {
         $LayoutObject->ChallengeTokenCheck();
 
         my $ID = $ParamObject->GetParam( Param => 'ID' );
-
-        $Param{CustomerUserSearch} = $ParamObject->GetParam( Param => 'CustomerUserSearch' )
-            || '*';
 
         # get new groups
         my %Permissions;
@@ -251,20 +258,28 @@ sub Run {
             );
         }
 
-        # return to overview
-        return $LayoutObject->Redirect(
-            OP =>
-                "Action=$Self->{Action};CustomerUserSearch=$Param{CustomerUserSearch}"
-        );
+        # If the user would like to continue editing the group relations for customer user
+        #   just redirect to the edit screen and otherwise return to relations overview.
+        if (
+            defined $ParamObject->GetParam( Param => 'ContinueAfterSave' )
+            && ( $ParamObject->GetParam( Param => 'ContinueAfterSave' ) eq '1' )
+            )
+        {
+            return $LayoutObject->Redirect(
+                OP =>
+                    "Action=$Self->{Action};Subaction=CustomerUser;ID=$ID;CustomerUserSearch=$Param{CustomerUserSearch}"
+            );
+        }
+        else {
+            return $LayoutObject->Redirect(
+                OP => "Action=$Self->{Action};CustomerUserSearch=$Param{CustomerUserSearch}"
+            );
+        }
     }
 
     # ------------------------------------------------------------ #
     # overview
     # ------------------------------------------------------------ #
-
-    # get params
-    $Param{CustomerUserSearch} = $ParamObject->GetParam( Param => 'CustomerUserSearch' )
-        || '*';
 
     my $Output = $LayoutObject->Header();
     $Output .= $LayoutObject->NavigationBar();
@@ -333,21 +348,34 @@ sub _Change {
     my $Type        = $Param{Type} || 'CustomerUser';
     my $NeType      = $Type eq 'Group' ? 'CustomerUser' : 'Group';
     my %VisibleType = (
-        CustomerUser => 'Customer',
+        CustomerUser => 'Customer User',
         Group        => 'Group',
     );
     my $SearchLimit = $Param{SearchLimit};
 
     my @ItemList = ();
 
+    if ( $VisibleType{$NeType} eq 'Customer User' ) {
+        $Param{BreadcrumbTitle} = "Change Customer User Relations for Group";
+    }
+    else {
+        $Param{BreadcrumbTitle} = "Change Group Relations for Customer User";
+    }
+
     # overview
-    $LayoutObject->Block( Name => 'Overview' );
+    $LayoutObject->Block(
+        Name => 'Overview',
+        Data => {
+            %Param,
+            OverviewLink => $Self->{Action} . ';CustomerUserSearch=' . $Param{CustomerUserSearch},
+        },
+    );
     $LayoutObject->Block( Name => 'ActionList' );
     $LayoutObject->Block(
         Name => 'ActionOverview',
         Data => {
             CustomerUserSearch => $Param{CustomerUserSearch},
-            }
+        },
     );
 
     if ( $NeType eq 'CustomerUser' ) {
@@ -372,7 +400,7 @@ sub _Change {
     }
     else {
 
-        # Output config shutcut to CustomerAlwaysGroups
+        # output config shortcut to CustomerAlwaysGroups
         $LayoutObject->Block( Name => 'AlwaysGroupsConfig' );
 
         $LayoutObject->Block( Name => 'Filter' );
@@ -387,23 +415,45 @@ sub _Change {
             ActionHome    => 'Admin' . $Type,
             VisibleNeType => $VisibleType{$NeType},
             VisibleType   => $VisibleType{$Type},
+            Subaction     => $Self->{Subaction},
         },
     );
 
     $LayoutObject->Block(
-        Name => "ChangeHeading$VisibleType{$NeType}",
+        Name => 'ChangeHeading' . $NeType,
     );
+
+    my @GroupPermissions;
 
     TYPE:
     for my $Type ( @{ $ConfigObject->Get('System::Customer::Permission') } ) {
         next TYPE if !$Type;
         my $Mark = $Type eq 'rw' ? "Highlight" : '';
+
+        push @GroupPermissions, $Type;
+
         $LayoutObject->Block(
             Name => 'ChangeHeader',
             Data => {
                 %Param,
                 Mark => $Mark,
                 Type => $Type,
+            },
+        );
+    }
+
+    # set group permissions
+    $LayoutObject->AddJSData(
+        Key   => 'RelationItems',
+        Value => \@GroupPermissions,
+    );
+
+    # check if there are groups/customers
+    if ( !%Data ) {
+        $LayoutObject->Block(
+            Name => 'NoDataFoundMsgList',
+            Data => {
+                ColSpan => 3,
             },
         );
     }
@@ -416,15 +466,6 @@ sub _Change {
                 Name => 'ChangeItemCountLimit',
                 Data => {
                     ItemCount => 0,
-                },
-            );
-
-            my $ColSpan = "3";
-
-            $LayoutObject->Block(
-                Name => 'NoDataFoundMsg',
-                Data => {
-                    ColSpan => $ColSpan,
                 },
             );
 
@@ -493,7 +534,7 @@ sub _Change {
                 Data => {
                     Name => $CustomerAlwaysGroups[ $ID - 1 ],
                 },
-                )
+            );
         }
     }
 
@@ -517,9 +558,13 @@ sub _Overview {
     my %GroupData           = %{ $Param{GroupData} };
     my $SearchLimit         = $Param{SearchLimit};
 
+    # overview
     $LayoutObject->Block(
         Name => 'Overview',
-        Data => {},
+        Data => {
+            %Param,
+            OverviewLink => $Self->{Action},
+            }
     );
 
     $LayoutObject->Block( Name => 'ActionList' );
@@ -555,7 +600,7 @@ sub _Overview {
             },
         );
         $LayoutObject->Block(
-            Name => 'NoDataFoundMsgList',
+            Name => 'NoDataFoundMsgCustomer',
         );
     }
     elsif ( @CustomerUserKeyList > $SearchLimit ) {
@@ -595,23 +640,31 @@ sub _Overview {
 
     my @CustomerAlwaysGroups = @{ $ConfigObject->Get('CustomerGroupAlwaysGroups') };
 
-    GROUP:
-    for my $ID (
-        sort { uc( $GroupData{$a} ) cmp uc( $GroupData{$b} ) }
-        keys %GroupData
-        )
-    {
-        next GROUP if ( grep /\Q$GroupData{$ID}\E/, @CustomerAlwaysGroups );
+    if (%GroupData) {
+        GROUP:
+        for my $ID (
+            sort { uc( $GroupData{$a} ) cmp uc( $GroupData{$b} ) }
+            keys %GroupData
+            )
+        {
+            next GROUP if ( grep /\Q$GroupData{$ID}\E/, @CustomerAlwaysGroups );
 
-        # output gorup block
+            # output gorup block
+            $LayoutObject->Block(
+                Name => 'Listn1',
+                Data => {
+                    %Param,
+                    ID        => $ID,
+                    Name      => $GroupData{$ID},
+                    Subaction => 'Group',
+                },
+            );
+        }
+    }
+    else {
         $LayoutObject->Block(
-            Name => 'Listn1',
-            Data => {
-                %Param,
-                ID        => $ID,
-                Name      => $GroupData{$ID},
-                Subaction => 'Group',
-            },
+            Name => 'NoDataFoundMsgGroup',
+            Data => {},
         );
     }
 

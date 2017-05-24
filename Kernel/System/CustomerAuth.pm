@@ -1,6 +1,5 @@
 # --
-# Kernel/System/CustomerAuth.pm - provides the authentication
-# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -11,6 +10,8 @@ package Kernel::System::CustomerAuth;
 
 use strict;
 use warnings;
+
+use Kernel::Language qw(Translatable);
 
 our @ObjectDependencies = (
     'Kernel::Config',
@@ -25,23 +26,17 @@ our @ObjectDependencies = (
 
 Kernel::System::CustomerAuth - customer authentication module.
 
-=head1 SYNOPSIS
+=head1 DESCRIPTION
 
 The authentication module for the customer interface.
 
 =head1 PUBLIC INTERFACE
 
-=over 4
+=head2 new()
 
-=cut
+Don't use the constructor directly, use the ObjectManager instead:
 
-=item new()
-
-create an object. Do not use it directly, instead use:
-
-    use Kernel::System::ObjectManager;
-    local $Kernel::OM = Kernel::System::ObjectManager->new();
-    my $CustomerUserObject = $Kernel::OM->Get('Kernel::System::CustomerUser');
+    my $CustomerAuthObject = $Kernel::OM->Get('Kernel::System::CustomerAuth');
 
 =cut
 
@@ -56,7 +51,7 @@ sub new {
     my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
     my $MainObject   = $Kernel::OM->Get('Kernel::System::Main');
 
-    # load generator auth module
+    # load auth modules
     SOURCE:
     for my $Count ( '', 1 .. 10 ) {
         my $GenericModule = $ConfigObject->Get("Customer::AuthModule$Count");
@@ -68,13 +63,25 @@ sub new {
         $Self->{"Backend$Count"} = $GenericModule->new( %{$Self}, Count => $Count );
     }
 
+    # load 2factor auth modules
+    SOURCE:
+    for my $Count ( '', 1 .. 10 ) {
+        my $GenericModule = $ConfigObject->Get("Customer::AuthTwoFactorModule$Count");
+        next SOURCE if !$GenericModule;
+
+        if ( !$MainObject->Require($GenericModule) ) {
+            $MainObject->Die("Can't load backend module $GenericModule! $@");
+        }
+        $Self->{"AuthTwoFactorBackend$Count"} = $GenericModule->new( %{$Self}, Count => $Count );
+    }
+
     # Initialize last error message
     $Self->{LastErrorMessage} = '';
 
     return $Self;
 }
 
-=item GetOption()
+=head2 GetOption()
 
 Get module options. Currently there is just one option, "PreAuth".
 
@@ -90,7 +97,7 @@ sub GetOption {
     return $Self->{Backend}->GetOption(%Param);
 }
 
-=item Auth()
+=head2 Auth()
 
 The authentication function.
 
@@ -120,6 +127,34 @@ sub Auth {
 
         # check auth backend
         $User = $Self->{"Backend$_"}->Auth(%Param);
+
+        # next on no success
+        next COUNT if !$User;
+
+        # check 2factor auth backends
+        my $TwoFactorAuth;
+        TWOFACTORSOURCE:
+        for my $Count ( '', 1 .. 10 ) {
+
+            # return on no config setting
+            next TWOFACTORSOURCE if !$Self->{"AuthTwoFactorBackend$Count"};
+
+            # 2factor backend
+            my $AuthOk = $Self->{"AuthTwoFactorBackend$Count"}->Auth(
+                TwoFactorToken => $Param{TwoFactorToken},
+                User           => $User,
+            );
+            $TwoFactorAuth = $AuthOk ? 'passed' : 'failed';
+
+            last TWOFACTORSOURCE if $AuthOk;
+        }
+
+        # if at least one 2factor auth backend was checked but none was successful,
+        # it counts as a failed login
+        if ( $TwoFactorAuth && $TwoFactorAuth ne 'passed' ) {
+            $User = undef;
+            last COUNT;
+        }
 
         # remember auth backend
         if ($User) {
@@ -175,7 +210,7 @@ sub Auth {
 
         $Self->{LastErrorMessage} =
             $ConfigObject->Get('SystemMaintenance::IsActiveDefaultLoginErrorMessage')
-            || "It is currently not possible to login due to a scheduled system maintenance.";
+            || Translatable("It is currently not possible to login due to a scheduled system maintenance.");
 
         return;
     }
@@ -190,7 +225,7 @@ sub Auth {
     return $User;
 }
 
-=item GetLastErrorMessage()
+=head2 GetLastErrorMessage()
 
 Retrieve $Self->{LastErrorMessage} content.
 
@@ -209,8 +244,6 @@ sub GetLastErrorMessage {
 }
 
 1;
-
-=back
 
 =head1 TERMS AND CONDITIONS
 

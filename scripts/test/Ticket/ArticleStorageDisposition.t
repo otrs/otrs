@@ -1,6 +1,5 @@
 # --
-# ArticleStorageDisposition.t - test file to check the disposition of the attachments
-# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -13,28 +12,19 @@ use utf8;
 
 use vars (qw($Self));
 
-# get needed objects
-my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
-my $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
+my $ConfigObject         = $Kernel::OM->Get('Kernel::Config');
+my $TicketObject         = $Kernel::OM->Get('Kernel::System::Ticket');
+my $ArticleObject        = $Kernel::OM->Get('Kernel::System::Ticket::Article');
+my $ArticleBackendObject = $ArticleObject->BackendForChannel( ChannelName => 'Internal' );
 
-my $UserID   = 1;
-my $RandomID = $Kernel::OM->Get('Kernel::System::UnitTest::Helper')->GetRandomID();
-
-my $TicketID = $TicketObject->TicketCreate(
-    Title        => 'Some Ticket_Title',
-    Queue        => 'Raw',
-    Lock         => 'unlock',
-    Priority     => '3 normal',
-    State        => 'closed successful',
-    CustomerNo   => '123465',
-    CustomerUser => 'customer@example.com',
-    OwnerID      => 1,
-    UserID       => 1,
+$Kernel::OM->ObjectParamAdd(
+    'Kernel::System::UnitTest::Helper' => {
+        RestoreDatabase  => 1,
+        UseTmpArticleDir => 1,
+    },
 );
-$Self->True(
-    $TicketID,
-    "TicketCreate() - TicketID:'$TicketID'",
-);
+my $Helper = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
+my $UserID = 1;
 
 my @Tests = (
 
@@ -51,7 +41,6 @@ my @Tests = (
         },
         ExpectedResults => {
             Filename           => 'testing.pdf',
-            Filesize           => '3 Bytes',
             FilesizeRaw        => 3,
             ContentID          => '<testing123@example.com>',
             ContentType        => 'application/pdf',
@@ -71,7 +60,6 @@ my @Tests = (
         },
         ExpectedResults => {
             Filename           => 'testing.pdf',
-            Filesize           => '3 Bytes',
             FilesizeRaw        => 3,
             ContentID          => '',
             ContentType        => 'application/pdf',
@@ -91,7 +79,6 @@ my @Tests = (
         },
         ExpectedResults => {
             Filename           => 'testing.pdf',
-            Filesize           => '3 Bytes',
             FilesizeRaw        => 3,
             ContentID          => '<testing123@example.com>',
             ContentType        => 'application/pdf',
@@ -111,7 +98,6 @@ my @Tests = (
         },
         ExpectedResults => {
             Filename           => 'testing.pdf',
-            Filesize           => '3 Bytes',
             FilesizeRaw        => 3,
             ContentID          => '',
             ContentType        => 'application/pdf',
@@ -131,7 +117,6 @@ my @Tests = (
         },
         ExpectedResults => {
             Filename           => 'testing.pdf',
-            Filesize           => '3 Bytes',
             FilesizeRaw        => 3,
             ContentID          => '',
             ContentType        => 'application/pdf',
@@ -151,7 +136,6 @@ my @Tests = (
         },
         ExpectedResults => {
             Filename           => 'testing.pdf',
-            Filesize           => '3 Bytes',
             FilesizeRaw        => 3,
             ContentID          => '<testing123@example.com>',
             ContentType        => 'application/pdf',
@@ -173,7 +157,6 @@ my @Tests = (
         },
         ExpectedResults => {
             Filename           => 'testing.png',
-            Filesize           => '3 Bytes',
             FilesizeRaw        => 3,
             ContentID          => '<testing123@example.com>',
             ContentType        => 'image/png',
@@ -193,7 +176,6 @@ my @Tests = (
         },
         ExpectedResults => {
             Filename           => 'testing.png',
-            Filesize           => '3 Bytes',
             FilesizeRaw        => 3,
             ContentID          => '',
             ContentType        => 'image/png',
@@ -215,7 +197,6 @@ my @Tests = (
         # images with content id and no disposition should be inline
         ExpectedResults => {
             Filename           => 'testing.png',
-            Filesize           => '3 Bytes',
             FilesizeRaw        => 3,
             ContentID          => '<testing123@example.com>',
             ContentType        => 'image/png',
@@ -235,7 +216,6 @@ my @Tests = (
         },
         ExpectedResults => {
             Filename           => 'testing.png',
-            Filesize           => '3 Bytes',
             FilesizeRaw        => 3,
             ContentID          => '',
             ContentType        => 'image/png',
@@ -255,7 +235,6 @@ my @Tests = (
         },
         ExpectedResults => {
             Filename           => 'testing.png',
-            Filesize           => '3 Bytes',
             FilesizeRaw        => 3,
             ContentID          => '',
             ContentType        => 'image/png',
@@ -275,7 +254,6 @@ my @Tests = (
         },
         ExpectedResults => {
             Filename           => 'testing.png',
-            Filesize           => '3 Bytes',
             FilesizeRaw        => 3,
             ContentID          => '<testing123@example.com>',
             ContentType        => 'image/png',
@@ -297,7 +275,6 @@ my @Tests = (
         },
         ExpectedResults => {
             Filename           => 'file-2',
-            Filesize           => '3 Bytes',
             FilesizeRaw        => 3,
             ContentID          => '<testing123@example.com>',
             ContentType        => 'text/html',
@@ -317,7 +294,6 @@ my @Tests = (
         },
         ExpectedResults => {
             Filename           => 'file-2',
-            Filesize           => '3 Bytes',
             FilesizeRaw        => 3,
             ContentID          => '',
             ContentType        => 'text/html',
@@ -339,7 +315,6 @@ my @Tests = (
         # special attachments with no disposition should be inline
         ExpectedResults => {
             Filename           => 'file-2',
-            Filesize           => '3 Bytes',
             FilesizeRaw        => 3,
             ContentID          => '<testing123@example.com>',
             ContentType        => 'text/html',
@@ -359,7 +334,6 @@ my @Tests = (
         },
         ExpectedResults => {
             Filename           => 'file-2',
-            Filesize           => '3 Bytes',
             FilesizeRaw        => 3,
             ContentID          => '',
             ContentType        => 'text/html',
@@ -379,7 +353,6 @@ my @Tests = (
         },
         ExpectedResults => {
             Filename           => 'file-2',
-            Filesize           => '3 Bytes',
             FilesizeRaw        => 3,
             ContentID          => '',
             ContentType        => 'text/html',
@@ -399,7 +372,6 @@ my @Tests = (
         },
         ExpectedResults => {
             Filename           => 'file-2',
-            Filesize           => '3 Bytes',
             FilesizeRaw        => 3,
             ContentID          => '<testing123@example.com>',
             ContentType        => 'text/html',
@@ -409,46 +381,64 @@ my @Tests = (
     },
 );
 
-for my $Test (@Tests) {
-    for my $Backend (qw(DB FS)) {
+for my $Backend (qw(DB FS)) {
 
-        # Make sure that the TicketObject gets recreated for each loop.
-        $Kernel::OM->ObjectsDiscard( Objects => ['Kernel::System::Ticket'] );
+    my $TicketID = $TicketObject->TicketCreate(
+        Title        => 'Some Ticket_Title',
+        Queue        => 'Raw',
+        Lock         => 'unlock',
+        Priority     => '3 normal',
+        State        => 'closed successful',
+        CustomerNo   => 'unittest',
+        CustomerUser => 'customer@example.com',
+        OwnerID      => 1,
+        UserID       => 1,
+    );
+    $Self->True(
+        $TicketID,
+        "TicketCreate() - TicketID: '$TicketID'"
+    );
+
+    for my $Test (@Tests) {
+
+        # Make sure that the article backend object gets recreated for each loop.
+        $Kernel::OM->ObjectsDiscard( Objects => [ ref $ArticleBackendObject ] );
 
         $ConfigObject->Set(
-            Key   => 'Ticket::StorageModule',
-            Value => 'Kernel::System::Ticket::ArticleStorage' . $Backend,
+            Key   => 'Ticket::Article::Backend::MIMEBase###ArticleStorage',
+            Value => 'Kernel::System::Ticket::Article::Backend::MIMEBase::ArticleStorage' . $Backend,
         );
 
-        my $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
+        $ArticleBackendObject = $ArticleObject->BackendForChannel( ChannelName => 'Internal' );
 
-        $Self->True(
-            $TicketObject->isa( 'Kernel::System::Ticket::ArticleStorage' . $Backend ),
-            "TicketObject loaded the correct backend",
+        $Self->Is(
+            $ArticleBackendObject->{ArticleStorageModule},
+            'Kernel::System::Ticket::Article::Backend::MIMEBase::ArticleStorage' . $Backend,
+            'Article backend loaded the correct storage module'
         );
 
         # create an article
-        my $ArticleID = $TicketObject->ArticleCreate(
-            TicketID       => $TicketID,
-            ArticleType    => 'note-internal',
-            SenderType     => 'agent',
-            From           => 'Some Agent <email@example.com>',
-            To             => 'Some Customer <customer-a@example.com>',
-            Subject        => 'some short description',
-            Body           => 'the message text',
-            ContentType    => 'text/plain; charset=ISO-8859-15',
-            HistoryType    => 'OwnerUpdate',
-            HistoryComment => 'Some free text!',
-            UserID         => 1,
-            NoAgentNotify  => 1,                                         # if you don't want to send agent notifications
+        my $ArticleID = $ArticleBackendObject->ArticleCreate(
+            TicketID             => $TicketID,
+            SenderType           => 'agent',
+            IsVisibleForCustomer => 0,
+            From                 => 'Some Agent <email@example.com>',
+            To                   => 'Some Customer <customer-a@example.com>',
+            Subject              => 'some short description',
+            Body                 => 'the message text',
+            ContentType          => 'text/plain; charset=ISO-8859-15',
+            HistoryType          => 'OwnerUpdate',
+            HistoryComment       => 'Some free text!',
+            UserID               => 1,
+            NoAgentNotify        => 1,
         );
         $Self->True(
             $ArticleID,
-            "ArticleCreate() - ArticleID:'$ArticleID'",
+            "ArticleCreate() - ArticleID: '$ArticleID'"
         );
 
         # create attachment
-        my $Success = $TicketObject->ArticleWriteAttachment(
+        my $Success = $ArticleBackendObject->ArticleWriteAttachment(
             %{ $Test->{Config} },
             ArticleID => $ArticleID,
         );
@@ -458,7 +448,7 @@ for my $Test (@Tests) {
         );
 
         # get the list of all attachments (should be only 1)
-        my %AttachmentIndex = $TicketObject->ArticleAttachmentIndex(
+        my %AttachmentIndex = $ArticleBackendObject->ArticleAttachmentIndex(
             ArticleID => $ArticleID,
             UserID    => $UserID,
         );
@@ -471,7 +461,7 @@ for my $Test (@Tests) {
         );
 
         # get the attachment individually
-        my %Attachment = $TicketObject->ArticleAttachment(
+        my %Attachment = $ArticleBackendObject->ArticleAttachment(
             ArticleID => $ArticleID,
             FileID    => $AttachmentID,
             UserID    => $UserID,
@@ -487,17 +477,19 @@ for my $Test (@Tests) {
             \%ExpectedAttachment,
             "$Test->{Name} | $Backend ArticleAttachment",
         );
-    }
-}
 
-# the ticket is no longer needed
-my $Success = $TicketObject->TicketDelete(
-    TicketID => $TicketID,
-    UserID   => 1,
-);
-$Self->True(
-    $Success,
-    "TicketDelete() - TicketID:'$TicketID'",
-);
+    }
+
+    # cleanup is done by RestoreDatabase, but we need to additionally
+    # run TicketDelete() to cleanup the FS backend too
+    my $Success = $TicketObject->TicketDelete(
+        TicketID => $TicketID,
+        UserID   => 1,
+    );
+    $Self->True(
+        $Success,
+        "TicketDelete() - TicketID: '$TicketID'",
+    );
+}
 
 1;

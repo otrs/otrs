@@ -1,6 +1,5 @@
 # --
-# Environment.t - Environment tests
-# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -13,9 +12,7 @@ use utf8;
 
 use vars (qw($Self));
 
-use Kernel::System::ObjectManager;
-
-# get needed objects
+# get environment object
 my $EnvironmentObject = $Kernel::OM->Get('Kernel::System::Environment');
 
 my %OSInfo = $EnvironmentObject->OSInfoGet();

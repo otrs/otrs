@@ -1,6 +1,5 @@
 // --
-// Core.Form.Validate.js - provides functions for validating form inputs
-// Copyright (C) 2001-2012 OTRS AG, http://otrs.org/
+// Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 // --
 // This software comes with ABSOLUTELY NO WARRANTY. For details, see
 // the enclosed file COPYING for license information (AGPL). If you
@@ -29,46 +28,47 @@ Core.Form.Validate = (function (TargetNS) {
      *      Default options.
      */
     var Options = {
-        FormClass:          'Validate',
-        ErrorClass:         'Error',
-        ErrorLabelClass:    'LabelError',
-        ServerErrorClass:   'ServerError',
-        ServerLabelClass:   'ServerLabelError',
-        IgnoreClass:        'ValidationIgnore',
-        SubmitFunction:     {}
+        FormClass: 'Validate',
+        ErrorClass: 'Error',
+        ErrorLabelClass: 'LabelError',
+        ServerErrorClass: 'ServerError',
+        ServerLabelClass: 'ServerLabelError',
+        IgnoreClass: 'ValidationIgnore',
+        SubmitFunction: {}
     };
 
     /*
      * check dependencies first
      */
     if (!Core.Debug.CheckDependency('Core.Form.Validate', 'Core.UI.Accessibility', 'Core.UI.Accessibility')) {
-        return;
+        return false;
     }
 
     if (!Core.Debug.CheckDependency('Core.Form.Validate', 'Core.UI.Dialog', 'Core.UI.Dialog')) {
-        return;
+        return false;
     }
 
     if (!Core.Debug.CheckDependency('Core.Form.Validate', 'Core.Form', 'Core.Form')) {
-        return;
+        return false;
     }
 
     if (!Core.Debug.CheckDependency('Core.Form.Validate', 'Core.UI.RichTextEditor', 'Core.UI.RichTextEditor')) {
-        return;
+        return false;
     }
 
     if (!Core.Debug.CheckDependency('Core.Form.Validate', 'Core.Form.ErrorTooltips', 'Core.Form.ErrorTooltips')) {
-        return;
+        return false;
     }
 
     if (!Core.Debug.CheckDependency('Core.Form.Validate', 'Core.App', 'Core.App')) {
-        return;
+        return false;
     }
 
     /**
      * @name HighlightError
      * @memberof Core.Form.Validate
      * @function
+     * @returns {Boolean} False if error is already highlighted
      * @param {DOMObject} Element - The DOM object of the form  or any element.
      * @param {String} ErrorType - The error type (a class that identifies the error type).
      * @description
@@ -84,14 +84,28 @@ Core.Form.Validate = (function (TargetNS) {
             ErrorType = 'Error';
         }
 
+        // If the element, which has an validation error, is a richtext element, than manually trigger the focus event
+        if (Core.UI.RichTextEditor.IsEnabled($Element)) {
+            window.setTimeout(function () {
+                $Element.focus();
+            }, 0);
+        }
+
+        // If the element is an Input Field, than manually trigger the focus event
+        if (Core.UI.InputFields.IsEnabled($Element)) {
+            window.setTimeout(function () {
+                $('#' + $Element.data('modernized')).focus();
+            }, 0);
+        }
+
         // Check if the element has already an error class
         // (that means, this function call is an additional call)
         if ($Element.hasClass(Options.ErrorClass)) {
-            return;
+            return false;
         }
 
         // Add error class to field and its label
-        $Element.addClass(Options.ErrorClass);
+        $Element.addClass(Options.ErrorClass).triggerHandler('error.InputField');
         $(Element.form).find("label[for=" + Core.App.EscapeSelector(Element.id) + "]").addClass(Options.ErrorLabelClass);
 
         // mark field as invalid for screenreader users
@@ -123,13 +137,6 @@ Core.Form.Validate = (function (TargetNS) {
 
         // speak the error message for screen reader users
         Core.UI.Accessibility.AudibleAlert(InputErrorMessageText);
-
-        // if the element, which has an validation error, is a richtext element, than manually trigger the focus event
-        if (Core.UI.RichTextEditor.IsEnabled($Element)) {
-            window.setTimeout(function () {
-                $Element.focus();
-            }, 0);
-        }
 
         // if the element is within a collapsed widget, expand that widget to show the error message to the user
         if ($Element.closest('.WidgetSimple.Collapsed').find('.WidgetAction.Toggle > a').length) {
@@ -170,8 +177,10 @@ Core.Form.Validate = (function (TargetNS) {
 
         if (RemoveError) {
             // remove error classes from element and its label
-            $Element.removeClass(Options.ErrorClass).removeClass(Options.ServerErrorClass);
-            $(Element.form).find("label[for=" + Core.App.EscapeSelector(Element.id) + "]").removeClass(Options.ErrorLabelClass);
+            $Element.removeClass(Options.ErrorClass).removeClass(Options.ServerErrorClass).triggerHandler('error.InputField');
+            if (Element.id && Element.id.length) {
+                $(Element.form).find("label[for=" + Core.App.EscapeSelector(Element.id) + "]").removeClass(Options.ErrorLabelClass);
+            }
 
             // mark field as valid for screenreader users
             $Element.attr('aria-invalid', false);
@@ -274,22 +283,33 @@ Core.Form.Validate = (function (TargetNS) {
     // If email address should be validated, this function is overwritten in Init method
     $.validator.addMethod("Validate_Email", ValidatorMethodRequired, "");
 
+
+    // Validates e-mail address in a field, but does not return an error if field is empty
+    $.validator.addMethod("Validate_Email_Optional", function (Value, Element) {
+        if (!Value.length) {
+            return true;
+        }
+        else {
+            return $.validator.methods.email.call(this, Value, Element);
+        }
+    }, "");
+
     // Use the maxlength attribute to have a dynamic validation
     // Textarea fields will need JS code to set the maxlength attribute since is not supported by
     // XHTML
-    $.validator.addMethod("Validate_MaxLength",function (Value, Element) {
+    $.validator.addMethod("Validate_MaxLength", function (Value, Element) {
 
         // JS takes new lines '\n\r' in textarea elements as 1 character '\n' for length
         // calculation purposes therefore is needed to re-add the '\r' to get the correct length
         // for validation and match to perl and database criteria
-        return ( Value.replace(/\n\r?/g, "\n\r").length <= $(Element).data('maxlength') );
+        return (Value.replace(/\n\r?/g, "\n\r").length <= $(Element).data('maxlength'));
     }, "");
 
-    $.validator.addMethod("Validate_DateYear", function (Value, Element) {
+    $.validator.addMethod("Validate_DateYear", function (Value) {
         return (parseInt(Value, 10) > 999 && parseInt(Value, 10) < 10000);
     }, "");
 
-    $.validator.addMethod("Validate_DateMonth", function (Value, Element) {
+    $.validator.addMethod("Validate_DateMonth", function (Value) {
         return (parseInt(Value, 10) > 0 && parseInt(Value, 10) < 13);
     }, "");
 
@@ -301,13 +321,17 @@ Core.Form.Validate = (function (TargetNS) {
      * @returns {Boolean} True for a valid date, false otherwise.
      * @param {String} Value
      * @param {DOMObject} Element
-     * @param {Object} [Options]
-     * @param {Boolean} [Options.DateInFuture]
-     * @param {Boolean} [Options.DateNotInFuture]
+     * @param {Object} [DateOptions]
+     * @param {Boolean} [DateOptions.DateInFuture]
+     * @param {Boolean} [DateOptions.DateNotInFuture]
+     * @param {String} [DateOptions.DateAfterPrefix] - Check if the value is after the supplied field prefix
+     * @param {String} [DateOptions.DateAfterValue] - Check if the value is after the supplied date
+     * @param {String} [DateOptions.DateBeforePrefix] - Check if the value is before the supplied field prefix
+     * @param {String} [DateOptions.DateBeforeValue] - Check if the value is before the supplied date
      * @description
      *      Validator method for dates.
      */
-    function DateValidator (Value, Element, Options) {
+    function DateValidator (Value, Element, DateOptions) {
         var Classes = $(Element).attr('class'),
         DateObject,
         RegExYear,
@@ -322,48 +346,108 @@ Core.Form.Validate = (function (TargetNS) {
         DateMonthClassPrefix = 'Validate_DateMonth_',
         DateHourClassPrefix = 'Validate_DateHour_',
         DateMinuteClassPrefix = 'Validate_DateMinute_',
-        DateCheck;
+        DateAfterBefore,
+        DateCheck,
+        $UsedObj;
+
+        // Skip validation if field is not used (bug#12210)
+        $UsedObj = $(Element).siblings('input.DynamicFieldText[id*="Used"][type="checkbox"]');
+        if ($UsedObj.length > 0 && $UsedObj.is(':checked') === false) {
+            return true;
+        }
 
         RegExYear = new RegExp(DateYearClassPrefix);
         RegExMonth = new RegExp(DateMonthClassPrefix);
         RegExHour = new RegExp(DateHourClassPrefix);
         RegExMinute = new RegExp(DateMinuteClassPrefix);
-        $.each(Classes.split(' '), function (Index, Value) {
-            if (RegExYear.test(Value)) {
-                YearElement = Value.replace(DateYearClassPrefix, '');
+        $.each(Classes.split(' '), function (Index, ClassValue) {
+            if (RegExYear.test(ClassValue)) {
+                YearElement = ClassValue.replace(DateYearClassPrefix, '');
             }
-            if (RegExMonth.test(Value)) {
-                MonthElement = Value.replace(DateMonthClassPrefix, '');
+            if (RegExMonth.test(ClassValue)) {
+                MonthElement = ClassValue.replace(DateMonthClassPrefix, '');
             }
-            if (RegExHour.test(Value)) {
-                HourElement = Value.replace(DateHourClassPrefix, '');
+            if (RegExHour.test(ClassValue)) {
+                HourElement = ClassValue.replace(DateHourClassPrefix, '');
             }
-            if (RegExMinute.test(Value)) {
-                MinuteElement = Value.replace(DateMinuteClassPrefix, '');
+            if (RegExMinute.test(ClassValue)) {
+                MinuteElement = ClassValue.replace(DateMinuteClassPrefix, '');
             }
         });
-        if (YearElement.length && MonthElement.length && $('#' + YearElement).length && $('#' + MonthElement).length) {
-            DateObject = new Date($('#' + YearElement).val(), $('#' + MonthElement).val() - 1, Value);
-            if (DateObject.getFullYear() === parseInt($('#' + YearElement).val(), 10) &&
-                DateObject.getMonth() + 1 === parseInt($('#' + MonthElement).val(), 10) &&
+
+        if (YearElement.length && MonthElement.length && $('#' + Core.App.EscapeSelector(YearElement)).length && $('#' + Core.App.EscapeSelector(MonthElement)).length) {
+            DateObject = new Date($('#' + Core.App.EscapeSelector(YearElement)).val(), $('#' + Core.App.EscapeSelector(MonthElement)).val() - 1, Value);
+            if (DateObject.getFullYear() === parseInt($('#' + Core.App.EscapeSelector(YearElement)).val(), 10) &&
+                DateObject.getMonth() + 1 === parseInt($('#' + Core.App.EscapeSelector(MonthElement)).val(), 10) &&
                 DateObject.getDate() === parseInt(Value, 10)) {
 
                 DateCheck = new Date();
-                if ( MinuteElement.length && HourElement.length ) {
-                    DateObject.setHours($('#' + HourElement).val(), $('#' + MinuteElement).val(), 0, 0);
+                if (MinuteElement.length && HourElement.length) {
+                    DateObject.setHours($('#' + Core.App.EscapeSelector(HourElement)).val(), $('#' + Core.App.EscapeSelector(MinuteElement)).val(), 0, 0);
                 }
                 else {
                     DateCheck.setHours(0, 0, 0, 0);
                 }
 
-                if (Options.DateInFuture) {
+                if (DateOptions.DateInFuture) {
                     if (DateObject >= DateCheck) {
                         return true;
                     }
                 }
-                else if (Options.DateNotInFuture) {
+                else if (DateOptions.DateNotInFuture) {
                     if (DateObject <= DateCheck) {
                         return true;
+                    }
+                }
+                else if (
+                    DateOptions.DateAfterPrefix || DateOptions.DateBeforePrefix
+                    || DateOptions.DateAfterValue || DateOptions.DateBeforeValue
+                    )
+                {
+                    DateAfterBefore = DateOptions.DateAfterPrefix || DateOptions.DateBeforePrefix
+                        || DateOptions.DateAfterValue || DateOptions.DateBeforeValue;
+
+                    if (DateOptions.DateAfterPrefix || DateOptions.DateBeforePrefix) {
+                        DateAfterBefore = Core.App.EscapeSelector(DateAfterBefore);
+                        if (
+                            $('#' + DateAfterBefore + 'Year').length &&
+                            $('#' + DateAfterBefore + 'Month').length &&
+                            $('#' + DateAfterBefore + 'Day').length
+                            )
+                        {
+                            DateCheck = new Date(
+                                $('#' + DateAfterBefore + 'Year').val(),
+                                $('#' + DateAfterBefore + 'Month').val() - 1,
+                                $('#' + DateAfterBefore + 'Day').val()
+                            );
+                            if (
+                                $('#' + DateAfterBefore + 'Hour').length &&
+                                $('#' + DateAfterBefore + 'Minute').length
+                                )
+                            {
+                                DateCheck.setHours(
+                                    $('#' + DateAfterBefore + 'Hour').val(),
+                                    $('#' + DateAfterBefore + 'Minute').val(),
+                                    0,
+                                    0
+                                );
+                            }
+                            else {
+                                DateCheck.setHours(0, 0, 0, 0);
+                            }
+                        }
+                    } else {
+                        DateCheck = new Date(DateAfterBefore);
+                    }
+
+                    if (DateOptions.DateAfterPrefix || DateOptions.DateAfterValue) {
+                        if (DateObject >= DateCheck) {
+                            return true;
+                        }
+                    } else if (DateOptions.DateBeforePrefix || DateOptions.DateBeforeValue) {
+                        if (DateObject <= DateCheck) {
+                            return true;
+                        }
                     }
                 }
                 else {
@@ -379,7 +463,8 @@ Core.Form.Validate = (function (TargetNS) {
     }, "");
 
     $.validator.addMethod("Validate_DateInFuture", function (Value, Element) {
-        var $DateSelection = $(Element).parent().find('input[type=checkbox].DateSelection');
+        var $DateSelection = $(Element).parent().find('input[type=checkbox].DateSelection, input[type=radio].DateSelection');
+
         // do not do this check for unchecked date/datetime fields
         // check first if the field exists to regard the check for the pending reminder field
         if ($DateSelection.length && !$DateSelection.prop("checked")) {
@@ -389,7 +474,8 @@ Core.Form.Validate = (function (TargetNS) {
     }, "");
 
     $.validator.addMethod("Validate_DateNotInFuture", function (Value, Element) {
-        var $DateSelection = $(Element).parent().find('input[type=checkbox].DateSelection');
+        var $DateSelection = $(Element).parent().find('input[type=checkbox].DateSelection, input[type=radio].DateSelection');
+
         // do not do this check for unchecked date/datetime fields
         // check first if the field exists to regard the check for the pending reminder field
         if ($DateSelection.length && !$DateSelection.prop("checked")) {
@@ -398,15 +484,49 @@ Core.Form.Validate = (function (TargetNS) {
         return DateValidator(Value, Element, { DateNotInFuture: true });
     }, "");
 
-    $.validator.addMethod("Validate_DateHour", function (Value, Element) {
+    $.validator.addMethod("Validate_DateAfter", function (Value, Element) {
+        var $DateSelection = $(Element).parent().find('input[type=checkbox].DateSelection');
+        // do not do this check for unchecked date/datetime fields
+        // check first if the field exists to regard the check for the pending reminder field
+        if ($DateSelection.length && !$DateSelection.prop("checked")) {
+            return true;
+        }
+        if ($(Element).data('validate-date-after')) {
+            return DateValidator(Value, Element, { DateAfterValue: $(Element).data('validate-date-after') });
+        }
+        return DateValidator(Value, Element, {
+            DateAfterPrefix: $.grep(Element.className.split(" "), function(ClassName){
+                return ClassName.indexOf('Validate_DateAfter_') === 0;
+            }).join().substring(19)
+        });
+    }, "");
+
+    $.validator.addMethod("Validate_DateBefore", function (Value, Element) {
+        var $DateSelection = $(Element).parent().find('input[type=checkbox].DateSelection');
+        // do not do this check for unchecked date/datetime fields
+        // check first if the field exists to regard the check for the pending reminder field
+        if ($DateSelection.length && !$DateSelection.prop("checked")) {
+            return true;
+        }
+        if ($(Element).data('validate-date-before')) {
+            return DateValidator(Value, Element, { DateBeforeValue: $(Element).data('validate-date-before') });
+        }
+        return DateValidator(Value, Element, {
+            DateBeforePrefix: $.grep(Element.className.split(" "), function(ClassName){
+                return ClassName.indexOf('Validate_DateBefore_') === 0;
+            }).join().substring(20)
+        });
+    }, "");
+
+    $.validator.addMethod("Validate_DateHour", function (Value) {
         return (parseInt(Value, 10) >= 0 && parseInt(Value, 10) < 24);
     }, "");
 
-    $.validator.addMethod("Validate_DateMinute", function (Value, Element) {
+    $.validator.addMethod("Validate_DateMinute", function (Value) {
         return (parseInt(Value, 10) >= 0 && parseInt(Value, 10) < 60);
     }, "");
 
-    $.validator.addMethod("Validate_TimeUnits", function (Value, Element) {
+    $.validator.addMethod("Validate_TimeUnits", function (Value) {
         return (Value === "" || /^-{0,1}\d+?((\.|,){0,1}\d+?){0,1}$/.test(Value));
     }, "");
 
@@ -421,9 +541,9 @@ Core.Form.Validate = (function (TargetNS) {
             RegExEqual,
             I;
         RegExEqual = new RegExp(EqualClassPrefix);
-        $.each(Classes.split(' '), function (Index, Value) {
-            if (RegExEqual.test(Value)) {
-                EqualElements.push(Value.replace(EqualClassPrefix, ''));
+        $.each(Classes.split(' '), function (Index, ClassValue) {
+            if (RegExEqual.test(ClassValue)) {
+                EqualElements.push(ClassValue.replace(EqualClassPrefix, ''));
             }
         });
         if (EqualElements.length) {
@@ -453,9 +573,9 @@ Core.Form.Validate = (function (TargetNS) {
             }
         });
 
-        if ( GroupClass !== '' ) {
-            $(Element).closest('fieldset fieldset.TableLike').find('.' + GroupClass).each( function () {
-                if ( $(Element).attr('id') !== $(this).attr('id') && $(this).val() === Value ) {
+        if (GroupClass !== '') {
+            $(Element).closest('fieldset fieldset.TableLike').find('.' + GroupClass).each(function () {
+                if ($(Element).attr('id') !== $(this).attr('id') && $(this).val() === Value) {
                     ApplyRule = 0;
                 }
             });
@@ -465,6 +585,7 @@ Core.Form.Validate = (function (TargetNS) {
         return ApplyRule;
     });
 
+    /*eslint-disable camelcase */
     $.validator.addClassRules("Validate_Required", {
         Validate_Required: true
     });
@@ -475,6 +596,10 @@ Core.Form.Validate = (function (TargetNS) {
 
     $.validator.addClassRules("Validate_Email", {
         Validate_Email: true
+    });
+
+    $.validator.addClassRules("Validate_Email_Optional", {
+        Validate_Email_Optional: true
     });
 
     $.validator.addClassRules("Validate_MaxLength", {
@@ -521,6 +646,7 @@ Core.Form.Validate = (function (TargetNS) {
     $.validator.addClassRules("Validate_NotEqual", {
         Validate_NotEqual: true
     });
+    /*eslint-enable camelcase */
 
     /**
      * @private
@@ -569,7 +695,9 @@ Core.Form.Validate = (function (TargetNS) {
 
 
     $.validator.addClassRules("Validate_DependingRequiredAND", {
+        /*eslint-disable camelcase */
         Validate_DependingRequiredAND: true
+        /*eslint-enable camelcase */
     });
 
     /*
@@ -594,8 +722,33 @@ Core.Form.Validate = (function (TargetNS) {
 
 
     $.validator.addClassRules("Validate_DependingRequiredOR", {
+        /*eslint-disable camelcase */
         Validate_DependingRequiredOR: true
+        /*eslint-enable camelcase */
     });
+
+    $.validator.addMethod("Validate_Regex", ValidatorMethodRegex, "");
+
+    /**
+     * @private
+     * @name ValidatorMethodRegex
+     * @memberof Core.Form.Validate
+     * @function
+     * @returns {Boolean} True, if Value has a length, false otherwise.
+     * @param {String} Value
+     * @param {DOMObject} Element
+     * @description
+     *      Validator method for checking if a value satisfies regex expression.
+     */
+    function ValidatorMethodRegex(Value, Element) {
+        var Regex = $(Element).attr("data-regex");
+
+        if (Value.match(Regex)) {
+            return true;
+        }
+
+        return false;
+    }
 
     /**
      * @name Init
@@ -605,8 +758,7 @@ Core.Form.Validate = (function (TargetNS) {
      *      This function initializes the validation on all forms on the page which have a class named "Validate".
      */
     TargetNS.Init = function () {
-        var i = 0,
-            FormSelector,
+        var FormSelector,
             $ServerErrors,
             ServerErrorDialogCloseFunction;
 
@@ -619,7 +771,7 @@ Core.Form.Validate = (function (TargetNS) {
 
         // There is a configuration option in OTRS that controls if email addresses
         //  should be validated or not.
-        if (Core.Config.Get('CheckEmailAddresses')) {
+        if (parseInt(Core.Config.Get('CheckEmailAddresses'), 10)) {
             $.validator.addMethod("Validate_Email", $.validator.methods.email, "");
         }
 
@@ -660,7 +812,7 @@ Core.Form.Validate = (function (TargetNS) {
                 $ServerErrors.eq(0).focus();
             };
 
-            Core.UI.Dialog.ShowAlert(Core.Config.Get('ValidateServerErrorTitle'), Core.Config.Get('ValidateServerErrorMsg'), ServerErrorDialogCloseFunction);
+            Core.UI.Dialog.ShowAlert(Core.Language.Translate('Error'), Core.Language.Translate('One or more errors occurred!'), ServerErrorDialogCloseFunction);
         }
     };
 
@@ -668,7 +820,7 @@ Core.Form.Validate = (function (TargetNS) {
      * @name ValidateElement
      * @memberof Core.Form.Validate
      * @function
-     * @returns {Boolean} Truem, if element validates, false otherwise.
+     * @returns {Boolean} True, if element validates, false otherwise.
      * @param {jQueryObject} $Element
      * @description
      *      Validate a single element.
@@ -785,6 +937,8 @@ Core.Form.Validate = (function (TargetNS) {
             .find("input:not([type='hidden']), textarea, select")
             .removeClass(Options.IgnoreClass);
     };
+
+    Core.Init.RegisterNamespace(TargetNS, 'APP_GLOBAL');
 
     return TargetNS;
 }(Core.Form.Validate || {}));

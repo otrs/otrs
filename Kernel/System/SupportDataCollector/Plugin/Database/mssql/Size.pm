@@ -1,6 +1,5 @@
 # --
-# Kernel/System/SupportDataCollector/Plugin/Database/mssql/Size.pm - system data collector plugin
-# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -12,14 +11,16 @@ package Kernel::System::SupportDataCollector::Plugin::Database::mssql::Size;
 use strict;
 use warnings;
 
-use base qw(Kernel::System::SupportDataCollector::PluginBase);
+use parent qw(Kernel::System::SupportDataCollector::PluginBase);
+
+use Kernel::Language qw(Translatable);
 
 our @ObjectDependencies = (
     'Kernel::System::DB',
 );
 
 sub GetDisplayPath {
-    return 'Database';
+    return Translatable('Database');
 }
 
 sub Run {
@@ -44,32 +45,20 @@ sub Run {
         # $Row[2] unallocated space
         if ( $Row[1] ) {
             $Self->AddResultInformation(
-                Label => 'Database Size',
+                Label => Translatable('Database Size'),
                 Value => $Row[1],
             );
         }
         else {
             $Self->AddResultProblem(
-                Label   => 'Database Size',
+                Label   => Translatable('Database Size'),
                 Value   => $Row[1],
-                Message => 'Could not determine database size.'
+                Message => Translatable('Could not determine database size.')
             );
         }
     }
 
     return $Self->GetResults();
 }
-
-=back
-
-=head1 TERMS AND CONDITIONS
-
-This software is part of the OTRS project (L<http://otrs.org/>).
-
-This software comes with ABSOLUTELY NO WARRANTY. For details, see
-the enclosed file COPYING for license information (AGPL). If you
-did not receive this file, see L<http://www.gnu.org/licenses/agpl.txt>.
-
-=cut
 
 1;

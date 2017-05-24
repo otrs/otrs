@@ -1,6 +1,5 @@
 // --
-// Core.UI.Accordion.js - provides all UI functions
-// Copyright (C) 2001-2013 OTRS AG, http://otrs.org/
+// Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 // --
 // This software comes with ABSOLUTELY NO WARRANTY. For details, see
 // the enclosed file COPYING for license information (AGPL). If you
@@ -85,12 +84,13 @@ Core.UI.Accordion = (function (TargetNS) {
      *      This function initializes the accordion effect on the specified list.
      */
     TargetNS.Init = function ($Element, LinkSelector, ContentSelector) {
+
+        var $LinkSelectors = $Element.find(LinkSelector);
+
         // If no accordion element is found, stop
         if (!isJQueryObject($Element) || $Element.length === 0) {
             return false;
         }
-
-        var $LinkSelectors = $Element.find(LinkSelector);
 
         // Stop, if no link selector is found
         if ($LinkSelectors.length === 0) {

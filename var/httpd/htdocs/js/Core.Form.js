@@ -1,6 +1,5 @@
 // --
-// Core.Form.js - provides functions for form handling
-// Copyright (C) 2001-2012 OTRS AG, http://otrs.org/
+// Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 // --
 // This software comes with ABSOLUTELY NO WARRANTY. For details, see
 // the enclosed file COPYING for license information (AGPL). If you
@@ -24,7 +23,7 @@ Core.Form = (function (TargetNS) {
      * check dependencies first
      */
     if (!Core.Debug.CheckDependency('Core.Form', 'Core.Data', 'Core.Data')) {
-        return;
+        return false;
     }
 
     /**
@@ -43,9 +42,9 @@ Core.Form = (function (TargetNS) {
 
         // save action data to the given element
         if (!$Form.hasClass('AlreadyDisabled')) {
-            $.each($Form.find("input:not([type='hidden']), textarea, select, button"), function (key, value) {
+            $.each($Form.find("input:not([type='hidden']), textarea, select, button"), function () {
                 var ReadonlyValue = $(this).attr('readonly'),
-                    TagnameValue  = $(this).prop('tagName'),
+                    TagnameValue = $(this).prop('tagName'),
                     DisabledValue = $(this).attr('disabled');
 
                 if (TagnameValue === 'BUTTON') {
@@ -65,6 +64,8 @@ Core.Form = (function (TargetNS) {
 
             // Add a speaking class to the form on DisableForm
             $Form.addClass('AlreadyDisabled');
+
+            Core.App.Publish('Event.Form.DisableForm', [$Form]);
         }
 
     };
@@ -90,8 +91,8 @@ Core.Form = (function (TargetNS) {
             .find('button')
             .removeAttr('disabled');
 
-        $.each($Form.find("input:not([type='hidden']), textarea, select, button"), function (key, value) {
-            var TagnameValue  = $(this).prop('tagName'),
+        $.each($Form.find("input:not([type='hidden']), textarea, select, button"), function () {
+            var TagnameValue = $(this).prop('tagName'),
                 ReadonlyValue = Core.Data.Get($(this), 'OldReadonlyStatus'),
                 DisabledValue = Core.Data.Get($(this), 'OldDisabledStatus');
 
@@ -109,6 +110,8 @@ Core.Form = (function (TargetNS) {
 
         // Remove the speaking class to the form on DisableForm
         $Form.removeClass('AlreadyDisabled');
+
+        Core.App.Publish('Event.Form.EnableForm', [$Form]);
     };
 
     /**
@@ -121,13 +124,15 @@ Core.Form = (function (TargetNS) {
      *      This function selects or deselects all checkboxes given by the ElementName.
      */
     TargetNS.SelectAllCheckboxes = function ($ClickedBox, $SelectAllCheckbox) {
+        var ElementName, SelectAllID, $Elements,
+            Status, CountCheckboxes, CountSelectedCheckboxes;
+
         if (isJQueryObject($ClickedBox, $SelectAllCheckbox)) {
-            var ElementName = $ClickedBox.attr('name'),
-                SelectAllID = $SelectAllCheckbox.attr('id'),
-                $Elements = $('input[type="checkbox"][name=' + ElementName + ']').filter('[id!=' + SelectAllID + ']:visible'),
-                Status = $ClickedBox.prop('checked'),
-                CountCheckboxes,
-                CountSelectedCheckboxes;
+            ElementName = $ClickedBox.attr('name');
+            SelectAllID = $SelectAllCheckbox.attr('id');
+            $Elements = $('input[type="checkbox"][name="' + Core.App.EscapeSelector(ElementName) + '"]').filter('[id!="' + Core.App.EscapeSelector(SelectAllID) + '"]:visible');
+            Status = $ClickedBox.prop('checked');
+
             if ($ClickedBox.attr('id') && $ClickedBox.attr('id') === SelectAllID) {
                 $Elements.prop('checked', Status).triggerHandler('click');
             }
@@ -157,19 +162,26 @@ Core.Form = (function (TargetNS) {
     TargetNS.InitSelectAllCheckboxes = function ($Checkboxes, $SelectAllCheckbox) {
         if (isJQueryObject($Checkboxes, $SelectAllCheckbox)) {
             // Mark SelectAll checkbox if all depending checkboxes are already marked on initialization
-            if ($Checkboxes.filter('[id!=' + $SelectAllCheckbox.attr('id') + ']').length === $Checkboxes.filter(':checked').length) {
+            if ($Checkboxes.filter(':checked').length && ($Checkboxes.filter('[id!="' + Core.App.EscapeSelector($SelectAllCheckbox.attr('id')) + '"]').length === $Checkboxes.filter(':checked').length)) {
                 $SelectAllCheckbox.prop('checked', true);
             }
 
-            // Remove checkbox selection, if filter is used/changed
-            Core.App.Subscribe('Event.UI.Table.InitTableFilter.Change', function ($FilterInput, $Container, ColumnNumber) {
+            // Adjust  checkbox selection, if filter is used/changed
+            Core.App.Subscribe('Event.UI.Table.InitTableFilter.Change', function ($FilterInput, $Container) {
+
+                var CountCheckboxesVisible = $Checkboxes.filter('[id!="' + Core.App.EscapeSelector($SelectAllCheckbox.attr('id')) + '"]:visible');
+
                 // Only continue, if the filter event is associated with the container we are working in
                 if (!$.contains($Container[0], $SelectAllCheckbox[0])) {
-                    return false;
+                    return;
                 }
 
-                $Checkboxes.prop('checked', false);
-                $SelectAllCheckbox.prop('checked', false);
+                if (CountCheckboxesVisible.length && (CountCheckboxesVisible.filter(':checked').length === CountCheckboxesVisible.length)) {
+                    $SelectAllCheckbox.prop('checked', true);
+                }
+                else {
+                    $SelectAllCheckbox.prop('checked', false);
+                }
             });
         }
     };

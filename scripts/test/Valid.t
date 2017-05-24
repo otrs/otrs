@@ -1,6 +1,5 @@
 # --
-# Valid.t - valid module tests
-# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -16,6 +15,14 @@ use vars (qw($Self));
 # get needed objects
 my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
 my $ValidObject  = $Kernel::OM->Get('Kernel::System::Valid');
+
+# get helper object
+$Kernel::OM->ObjectParamAdd(
+    'Kernel::System::UnitTest::Helper' => {
+        RestoreDatabase => 1,
+    },
+);
+my $Helper = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
 
 # tests the method to make sure there is at least 2 registries: valid - invalid
 my %ValidList = $ValidObject->ValidList();
@@ -78,5 +85,7 @@ for my $ValidIDKey ( sort keys %ValidList ) {
         "Test ValidLookup $Counter - both IDs are equivalent.",
     );
 }
+
+# cleanup cache is done by RestoreDatabase
 
 1;

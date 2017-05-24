@@ -1,6 +1,5 @@
 # --
-# Kernel/System/PostMaster/NewTicket.pm - sub part of PostMaster.pm
-# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -23,7 +22,9 @@ our @ObjectDependencies = (
     'Kernel::System::Queue',
     'Kernel::System::State',
     'Kernel::System::Ticket',
+    'Kernel::System::Ticket::Article',
     'Kernel::System::Time',
+    'Kernel::System::Type',
     'Kernel::System::User',
 );
 
@@ -108,6 +109,22 @@ sub Run {
         }
     }
 
+    my $TypeID;
+
+    if ( $GetParam{'X-OTRS-Type'} ) {
+
+        # Check if type exists
+        $TypeID = $Kernel::OM->Get('Kernel::System::Type')->TypeLookup( Type => $GetParam{'X-OTRS-Type'} );
+
+        if ( !$TypeID ) {
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
+                Priority => 'error',
+                Message =>
+                    "Type $GetParam{'X-OTRS-Type'} does not exist, falling back to default type."
+            );
+        }
+    }
+
     # get sender email
     my @EmailAddresses = $Self->{ParserObject}->SplitAddressLine(
         Line => $GetParam{From},
@@ -150,17 +167,20 @@ sub Run {
                 );
             }
 
-            # get customer user object
-            my $CustomerUserObject = $Kernel::OM->Get('Kernel::System::CustomerUser');
+            if ( $GetParam{EmailFrom} ) {
 
-            my %List = $CustomerUserObject->CustomerSearch(
-                PostMasterSearch => lc( $GetParam{EmailFrom} ),
-            );
+                # get customer user object
+                my $CustomerUserObject = $Kernel::OM->Get('Kernel::System::CustomerUser');
 
-            for my $UserLogin ( sort keys %List ) {
-                %CustomerData = $CustomerUserObject->CustomerUserDataGet(
-                    User => $UserLogin,
+                my %List = $CustomerUserObject->CustomerSearch(
+                    PostMasterSearch => lc( $GetParam{EmailFrom} ),
                 );
+
+                for my $UserLogin ( sort keys %List ) {
+                    %CustomerData = $CustomerUserObject->CustomerUserDataGet(
+                        User => $UserLogin,
+                    );
+                }
             }
         }
 
@@ -188,7 +208,11 @@ sub Run {
     }
 
     # if there is no customer id found!
-    if ( !$GetParam{'X-OTRS-CustomerNo'} ) {
+    if (
+        !$GetParam{'X-OTRS-CustomerNo'}
+        && $ConfigObject->Get('PostMaster::NewTicket::AutoAssignCustomerIDForUnknownCustomers')
+        )
+    {
         $GetParam{'X-OTRS-CustomerNo'} = $GetParam{SenderEmailAddress};
     }
 
@@ -229,12 +253,12 @@ sub Run {
     my $NewTn    = $TicketObject->TicketCreateNumber();
     my $TicketID = $TicketObject->TicketCreate(
         TN           => $NewTn,
-        Title        => $GetParam{Subject},
+        Title        => $GetParam{'X-OTRS-Title'} || $GetParam{Subject},
         QueueID      => $QueueID,
         Lock         => $GetParam{'X-OTRS-Lock'} || 'unlock',
         Priority     => $Priority,
         State        => $State,
-        Type         => $GetParam{'X-OTRS-Type'} || '',
+        TypeID       => $TypeID,
         Service      => $GetParam{'X-OTRS-Service'} || '',
         SLA          => $GetParam{'X-OTRS-SLA'} || '',
         CustomerID   => $GetParam{'X-OTRS-CustomerNo'},
@@ -331,7 +355,7 @@ sub Run {
         next DYNAMICFIELDID if !$DynamicFieldList->{$DynamicFieldID};
         my $Key = 'X-OTRS-DynamicField-' . $DynamicFieldList->{$DynamicFieldID};
 
-        if ( $GetParam{$Key} ) {
+        if ( defined $GetParam{$Key} && length $GetParam{$Key} ) {
 
             # get dynamic field config
             my $DynamicFieldGet = $DynamicFieldObject->DynamicFieldGet(
@@ -364,8 +388,12 @@ sub Run {
     for my $Item ( sort keys %Values ) {
         for my $Count ( 1 .. 16 ) {
             my $Key = $Item . $Count;
-            if ( $GetParam{$Key} && $DynamicFieldListReversed{ $Values{$Item} . $Count } ) {
-
+            if (
+                defined $GetParam{$Key}
+                && length $GetParam{$Key}
+                && $DynamicFieldListReversed{ $Values{$Item} . $Count }
+                )
+            {
                 # get dynamic field config
                 my $DynamicFieldGet = $DynamicFieldObject->DynamicFieldGet(
                     ID => $DynamicFieldListReversed{ $Values{$Item} . $Count },
@@ -392,7 +420,7 @@ sub Run {
 
         my $Key = 'X-OTRS-TicketTime' . $Count;
 
-        if ( $GetParam{$Key} ) {
+        if ( defined $GetParam{$Key} && length $GetParam{$Key} ) {
 
             # get time object
             my $TimeObject = $Kernel::OM->Get('Kernel::System::Time');
@@ -424,27 +452,36 @@ sub Run {
         }
     }
 
-    # do article db insert
-    my $ArticleID = $TicketObject->ArticleCreate(
-        TicketID         => $TicketID,
-        ArticleType      => $GetParam{'X-OTRS-ArticleType'},
-        SenderType       => $GetParam{'X-OTRS-SenderType'},
-        From             => $GetParam{From},
-        ReplyTo          => $GetParam{ReplyTo},
-        To               => $GetParam{To},
-        Cc               => $GetParam{Cc},
-        Subject          => $GetParam{Subject},
-        MessageID        => $GetParam{'Message-ID'},
-        InReplyTo        => $GetParam{'In-Reply-To'},
-        References       => $GetParam{'References'},
-        ContentType      => $GetParam{'Content-Type'},
-        Body             => $GetParam{Body},
-        UserID           => $Param{InmailUserID},
-        HistoryType      => 'EmailCustomer',
-        HistoryComment   => "\%\%$Comment",
-        OrigHeader       => \%GetParam,
-        AutoResponseType => $AutoResponseType,
-        Queue            => $Queue,
+    my $ArticleBackendObject = $Kernel::OM->Get('Kernel::System::Ticket::Article')->BackendForChannel(
+        ChannelName => 'Email',
+    );
+
+    my $IsVisibleForCustomer = 1;
+    if ( length $GetParam{'X-OTRS-IsVisibleForCustomer'} ) {
+        $IsVisibleForCustomer = $GetParam{'X-OTRS-IsVisibleForCustomer'};
+    }
+
+    # Create email article.
+    my $ArticleID = $ArticleBackendObject->ArticleCreate(
+        TicketID             => $TicketID,
+        SenderType           => $GetParam{'X-OTRS-SenderType'},
+        IsVisibleForCustomer => $IsVisibleForCustomer,
+        From                 => $GetParam{From},
+        ReplyTo              => $GetParam{ReplyTo},
+        To                   => $GetParam{To},
+        Cc                   => $GetParam{Cc},
+        Subject              => $GetParam{Subject},
+        MessageID            => $GetParam{'Message-ID'},
+        InReplyTo            => $GetParam{'In-Reply-To'},
+        References           => $GetParam{'References'},
+        ContentType          => $GetParam{'Content-Type'},
+        Body                 => $GetParam{Body},
+        UserID               => $Param{InmailUserID},
+        HistoryType          => 'EmailCustomer',
+        HistoryComment       => "\%\%$Comment",
+        OrigHeader           => \%GetParam,
+        AutoResponseType     => $AutoResponseType,
+        Queue                => $Queue,
     );
 
     # close ticket if article create failed!
@@ -501,7 +538,7 @@ sub Run {
         next DYNAMICFIELDID if !$DynamicFieldID;
         next DYNAMICFIELDID if !$DynamicFieldList->{$DynamicFieldID};
         my $Key = 'X-OTRS-DynamicField-' . $DynamicFieldList->{$DynamicFieldID};
-        if ( $GetParam{$Key} ) {
+        if ( defined $GetParam{$Key} && length $GetParam{$Key} ) {
 
             # get dynamic field config
             my $DynamicFieldGet = $DynamicFieldObject->DynamicFieldGet(
@@ -534,8 +571,12 @@ sub Run {
     for my $Item ( sort keys %Values ) {
         for my $Count ( 1 .. 16 ) {
             my $Key = $Item . $Count;
-            if ( $GetParam{$Key} && $DynamicFieldListReversed{ $Values{$Item} . $Count } ) {
-
+            if (
+                defined $GetParam{$Key}
+                && length $GetParam{$Key}
+                && $DynamicFieldListReversed{ $Values{$Item} . $Count }
+                )
+            {
                 # get dynamic field config
                 my $DynamicFieldGet = $DynamicFieldObject->DynamicFieldGet(
                     ID => $DynamicFieldListReversed{ $Values{$Item} . $Count },
@@ -557,7 +598,7 @@ sub Run {
     }
 
     # write plain email to the storage
-    $TicketObject->ArticleWritePlain(
+    $ArticleBackendObject->ArticleWritePlain(
         ArticleID => $ArticleID,
         Email     => $Self->{ParserObject}->GetPlainEmail(),
         UserID    => $Param{InmailUserID},
@@ -565,7 +606,7 @@ sub Run {
 
     # write attachments to the storage
     for my $Attachment ( $Self->{ParserObject}->GetAttachments() ) {
-        $TicketObject->ArticleWriteAttachment(
+        $ArticleBackendObject->ArticleWriteAttachment(
             Filename           => $Attachment->{Filename},
             Content            => $Attachment->{Content},
             ContentType        => $Attachment->{ContentType},

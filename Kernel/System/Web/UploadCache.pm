@@ -1,6 +1,5 @@
 # --
-# Kernel/System/Web/UploadCache.pm - a fs upload cache
-# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -20,22 +19,16 @@ our @ObjectDependencies = (
 
 Kernel::System::Web::UploadCache - an upload file system cache
 
-=head1 SYNOPSIS
+=head1 DESCRIPTION
 
 All upload cache functions.
 
 =head1 PUBLIC INTERFACE
 
-=over 4
+=head2 new()
 
-=cut
+Don't use the constructor directly, use the ObjectManager instead:
 
-=item new()
-
-create an object. Do not use it directly, instead use:
-
-    use Kernel::System::ObjectManager;
-    local $Kernel::OM = Kernel::System::ObjectManager->new();
     my $WebUploadCacheObject = $Kernel::OM->Get('Kernel::System::Web::UploadCache');
 
 =cut
@@ -57,7 +50,7 @@ sub new {
     return;
 }
 
-=item FormIDCreate()
+=head2 FormIDCreate()
 
 create a new Form ID
 
@@ -71,7 +64,7 @@ sub FormIDCreate {
     return $Self->{Backend}->FormIDCreate(@_);
 }
 
-=item FormIDRemove()
+=head2 FormIDRemove()
 
 remove all data for a provided Form ID
 
@@ -85,7 +78,7 @@ sub FormIDRemove {
     return $Self->{Backend}->FormIDRemove(@_);
 }
 
-=item FormIDAddFile()
+=head2 FormIDAddFile()
 
 add a file to a Form ID
 
@@ -116,7 +109,7 @@ sub FormIDAddFile {
     return $Self->{Backend}->FormIDAddFile(@_);
 }
 
-=item FormIDRemoveFile()
+=head2 FormIDRemoveFile()
 
 removes a file from a form id
 
@@ -133,7 +126,7 @@ sub FormIDRemoveFile {
     return $Self->{Backend}->FormIDRemoveFile(@_);
 }
 
-=item FormIDGetAllFilesData()
+=head2 FormIDGetAllFilesData()
 
 returns an array with a hash ref of all files for a Form ID
 
@@ -151,7 +144,7 @@ sub FormIDGetAllFilesData {
     return @{ $Self->{Backend}->FormIDGetAllFilesData(@_) };
 }
 
-=item FormIDGetAllFilesMeta()
+=head2 FormIDGetAllFilesMeta()
 
 returns an array with a hash ref of all files for a Form ID
 
@@ -171,7 +164,7 @@ sub FormIDGetAllFilesMeta {
     return @{ $Self->{Backend}->FormIDGetAllFilesMeta(@_) };
 }
 
-=item FormIDCleanUp()
+=head2 FormIDCleanUp()
 
 Removed no longer needed temporary files.
 
@@ -188,8 +181,6 @@ sub FormIDCleanUp {
 }
 
 1;
-
-=back
 
 =head1 TERMS AND CONDITIONS
 

@@ -1,6 +1,5 @@
 # --
-# Kernel/System/Console/Command/Maint/Stats/Generate.pm - console command
-# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -12,14 +11,16 @@ package Kernel::System::Console::Command::Maint::Stats::Generate;
 use strict;
 use warnings;
 
-use base qw(Kernel::System::Console::BaseCommand);
+use parent qw(Kernel::System::Console::BaseCommand);
 
 our @ObjectDependencies = (
     'Kernel::Config',
     'Kernel::Language',
+    'Kernel::Output::PDF::Statistics',
     'Kernel::System::CSV',
     'Kernel::System::CheckItem',
     'Kernel::System::Email',
+    'Kernel::System::Main',
     'Kernel::System::PDF',
     'Kernel::System::Stats',
     'Kernel::System::Time',
@@ -64,10 +65,10 @@ sub Configure {
     );
     $Self->AddOption(
         Name        => 'format',
-        Description => "Target format (CSV|Excel|PDF) for which the file should be generated (defaults to CSV).",
+        Description => "Target format (CSV|Excel|Print) for which the file should be generated (defaults to CSV).",
         Required    => 0,
         HasValue    => 1,
-        ValueRegex  => qr/(CSV|Excel|PDF)/smx,
+        ValueRegex  => qr/(CSV|Excel|Print|PDF)/smx,
     );
     $Self->AddOption(
         Name        => 'separator',
@@ -82,6 +83,14 @@ sub Configure {
             "Adds a heading line consisting of statistics title and creation date in case of Excel or CSV as output format.",
         Required   => 0,
         HasValue   => 0,
+        ValueRegex => qr/.*/smx,
+    );
+    $Self->AddOption(
+        Name => 'timezone',
+        Description =>
+            "Target time zone (e.g. Europe/Berlin) for which the file should be generated.",
+        Required   => 0,
+        HasValue   => 1,
         ValueRegex => qr/.*/smx,
     );
     $Self->AddOption(
@@ -121,13 +130,6 @@ sub Configure {
 sub PreRun {
     my ( $Self, %Param ) = @_;
 
-    # create object manager
-    local $Kernel::OM = Kernel::System::ObjectManager->new(
-        'Kernel::System::Stats' => {
-            UserID => 1,
-        },
-    );
-
     # check if the passed stat number exists
     $Self->{StatNumber} = $Self->GetOption('number');
     $Self->{StatID} = $Kernel::OM->Get('Kernel::System::Stats')->StatNumber2StatID( StatNumber => $Self->{StatNumber} );
@@ -157,7 +159,7 @@ sub PreRun {
     # if there is a recipient, we also need a mail body
     if ( $Self->GetOption('mail-recipient') && !$Self->{MailBody} ) {
         die
-            "You defined at least one --mail-recipient which means that you also need to define a mail body using --mail-body.'\n";
+            "You defined at least one --mail-recipient which means that you also need to define a mail body using --mail-body.\n";
     }
 
     # if a target directory has been passed, check if it exists
@@ -170,6 +172,11 @@ sub PreRun {
     $Self->{Language} = $Kernel::OM->Get('Kernel::Config')->Get('DefaultLanguage') || 'en';
     if ( $Self->GetOption('language') ) {
         $Self->{Language} = $Self->GetOption('language');
+        $Kernel::OM->ObjectParamAdd(
+            'Kernel::Language' => {
+                UserLanguage => $Self->{Language},
+            },
+        );
     }
 
     # set up used format & separator
@@ -182,13 +189,6 @@ sub PreRun {
 sub Run {
     my ( $Self, %Param ) = @_;
 
-    # create object manager
-    local $Kernel::OM = Kernel::System::ObjectManager->new(
-        'Kernel::System::Stats' => {
-            UserID => 1,
-        },
-    );
-
     $Self->Print("<yellow>Generating statistic number $Self->{StatNumber}...</yellow>\n");
 
     my ( $s, $m, $h, $D, $M, $Y ) =
@@ -197,7 +197,10 @@ sub Run {
         );
 
     my %GetParam;
-    my $Stat = $Kernel::OM->Get('Kernel::System::Stats')->StatsGet( StatID => $Self->{StatID} );
+    my $Stat = $Kernel::OM->Get('Kernel::System::Stats')->StatsGet(
+        StatID => $Self->{StatID},
+        UserID => 1,
+    );
 
     if ( $Stat->{StatType} eq 'static' ) {
         $GetParam{Year}  = $Y;
@@ -206,16 +209,19 @@ sub Run {
 
         # get params from -p
         # only for static files
-        my $Params = $Kernel::OM->Get('Kernel::System::Stats')->GetParams( StatID => $Self->{StatID} );
+        my $Params = $Kernel::OM->Get('Kernel::System::Stats')->GetParams(
+            StatID => $Self->{StatID},
+            UserID => 1,
+        );
         for my $ParamItem ( @{$Params} ) {
             if ( !$ParamItem->{Multiple} ) {
-                my $Value = GetParam(
+                my $Value = $Self->GetParam(
                     Param  => $ParamItem->{Name},
                     Params => $Self->{Params}
                 );
                 if ( defined $Value ) {
                     $GetParam{ $ParamItem->{Name} } =
-                        GetParam(
+                        $Self->GetParam(
                         Param  => $ParamItem->{Name},
                         Params => $Self->{Params},
                         );
@@ -225,7 +231,7 @@ sub Run {
                 }
             }
             else {
-                my @Value = GetArray(
+                my @Value = $Self->GetArray(
                     Param  => $ParamItem->{Name},
                     Params => $Self->{Params},
                 );
@@ -240,6 +246,12 @@ sub Run {
     }
     elsif ( $Stat->{StatType} eq 'dynamic' ) {
         %GetParam = %{$Stat};
+
+        # overwrite the default stats timezone with the given timezone
+        my $TimeZone = $Self->GetOption('timezone');
+        if ( defined $TimeZone && length $TimeZone ) {
+            $GetParam{TimeZone} = $TimeZone;
+        }
     }
 
     # run stat...
@@ -247,7 +259,8 @@ sub Run {
         $Kernel::OM->Get('Kernel::System::Stats')->StatsRun(
             StatID   => $Self->{StatID},
             GetParam => \%GetParam,
-            )
+            UserID   => 1,
+        ),
     };
 
     # generate output
@@ -256,134 +269,24 @@ sub Run {
     my $HeadArrayRef   = shift(@StatArray);
     my $CountStatArray = @StatArray;
     my $Time           = sprintf( "%04d-%02d-%02d %02d:%02d:%02d", $Y, $M, $D, $h, $m, $s );
+    my @WithHeader;
+    if ( $Self->GetOption('with-header') ) {
+        @WithHeader = ( "Name: $Title", "Created: $Time" );
+    }
     if ( !@StatArray ) {
         push( @StatArray, [ ' ', 0 ] );
     }
     my %Attachment;
 
-    if ( $Self->{Format} eq 'PDF' && $Kernel::OM->Get('Kernel::System::PDF') ) {
+    if ( $Self->{Format} eq 'Print' || $Self->{Format} eq 'PDF' ) {
 
-        $Self->Print("<yellow>Chosen format: PDF.</yellow>\n");
-
-        # Create the PDF
-        my %User = $Kernel::OM->Get('Kernel::System::User')->GetUserData( UserID => 1 );
-
-        my $PrintedBy  = $Kernel::OM->Get('Kernel::Language')->Translate('printed by');
-        my $Page       = $Kernel::OM->Get('Kernel::Language')->Translate('Page');
-        my $SystemTime = $Kernel::OM->Get('Kernel::System::Time')->SystemTime();
-        my $TimeStamp =
-            $Kernel::OM->Get('Kernel::System::Time')->SystemTime2TimeStamp(
-            SystemTime => $SystemTime,
-            );
-        my $Time =
-            $Kernel::OM->Get('Kernel::Language')->FormatTimeString(
-            $TimeStamp, 'DateFormat'
-            );
-
-        # create the content array
-        my $CellData;
-        my $CounterRow  = 0;
-        my $CounterHead = 0;
-        for my $Content ( @{$HeadArrayRef} ) {
-            $CellData->[$CounterRow]->[$CounterHead]->{Content} = $Content;
-            $CellData->[$CounterRow]->[$CounterHead]->{Font}    = 'ProportionalBold';
-            $CounterHead++;
-        }
-        if ( $CounterHead > 0 ) {
-            $CounterRow++;
-        }
-        for my $Row (@StatArray) {
-            my $CounterColumn = 0;
-            for my $Content ( @{$Row} ) {
-                $CellData->[$CounterRow]->[$CounterColumn]->{Content} = $Content;
-                $CounterColumn++;
-            }
-            $CounterRow++;
-        }
-        if ( !$CellData->[0]->[0] ) {
-            $CellData->[0]->[0]->{Content} =
-                $Kernel::OM->Get('Kernel::Language')->Translate('No Result!');
-        }
-
-        # page params
-        my %PageParam;
-        $PageParam{PageOrientation} = 'landscape';
-        $PageParam{MarginTop}       = 30;
-        $PageParam{MarginRight}     = 40;
-        $PageParam{MarginBottom}    = 40;
-        $PageParam{MarginLeft}      = 40;
-        $PageParam{HeaderRight} =
-            $Kernel::OM->Get('Kernel::Config')->Get('Stats::StatsHook')
-            . $Stat->{StatNumber};
-        $PageParam{FooterLeft}   = 'otrs.GenerateStats.pl';
-        $PageParam{HeadlineLeft} = $Title;
-        $PageParam{HeadlineRight} =
-            $PrintedBy . ' '
-            . $User{UserFirstname} . ' '
-            . $User{UserLastname} . ' ('
-            . $User{UserEmail} . ') '
-            . $Time;
-
-        # table params
-        my %TableParam;
-        $TableParam{CellData}            = $CellData;
-        $TableParam{Type}                = 'Cut';
-        $TableParam{FontSize}            = 6;
-        $TableParam{Border}              = 0;
-        $TableParam{BackgroundColorEven} = '#AAAAAA';
-        $TableParam{BackgroundColorOdd}  = '#DDDDDD';
-        $TableParam{Padding}             = 1;
-        $TableParam{PaddingTop}          = 3;
-        $TableParam{PaddingBottom}       = 3;
-
-        # get maximum number of pages
-        my $MaxPages = $Kernel::OM->Get('Kernel::Config')->Get('PDF::MaxPages');
-        if ( !$MaxPages || $MaxPages < 1 || $MaxPages > 1000 ) {
-            $MaxPages = 100;
-        }
-
-        # create new pdf document
-        $Kernel::OM->Get('Kernel::System::PDF')->DocumentNew(
-            Title  => $Kernel::OM->Get('Kernel::Config')->Get('Product') . ': ' . $Title,
-            Encode => 'utf-8',
+        my $PDFString = $Kernel::OM->Get('Kernel::Output::PDF::Statistics')->GeneratePDF(
+            Stat         => $Stat,
+            Title        => $Title,
+            HeadArrayRef => $HeadArrayRef,
+            StatArray    => \@StatArray,
+            TimeZone     => $GetParam{TimeZone},
         );
-
-        # start table output
-        my $Loop    = 1;
-        my $Counter = 1;
-        while ($Loop) {
-
-            # if first page
-            if ( $Counter == 1 ) {
-                $Kernel::OM->Get('Kernel::System::PDF')->PageNew(
-                    %PageParam,
-                    FooterRight => $Page . ' ' . $Counter,
-                );
-            }
-
-            # output table (or a fragment of it)
-            %TableParam = $Kernel::OM->Get('Kernel::System::PDF')->Table( %TableParam, );
-
-            # stop output or another page
-            if ( $TableParam{State} ) {
-                $Loop = 0;
-            }
-            else {
-                $Kernel::OM->Get('Kernel::System::PDF')->PageNew(
-                    %PageParam,
-                    FooterRight => $Page . ' ' . ( $Counter + 1 ),
-                );
-            }
-            $Counter++;
-
-            # check max pages
-            if ( $Counter >= $MaxPages ) {
-                $Loop = 0;
-            }
-        }
-
-        # return the document
-        my $PDFString = $Kernel::OM->Get('Kernel::System::PDF')->DocumentOutput();
 
         # save the pdf with the title and timestamp as filename, or read it from param
         my $Filename;
@@ -392,7 +295,8 @@ sub Run {
         }
         else {
             $Filename = $Kernel::OM->Get('Kernel::System::Stats')->StringAndTimestamp2Filename(
-                String => $Stat->{Title} . " Created",
+                String   => $Stat->{Title} . " Created",
+                TimeZone => $GetParam{TimeZone},
             );
         }
         %Attachment = (
@@ -406,18 +310,11 @@ sub Run {
     elsif ( $Self->{Format} eq 'Excel' ) {
 
         # Create the Excel data
-        my $Output;
-
-        $Self->Print("<yellow>Chosen format: Excel.</yellow>\n");
-
-        # Only add the name if parameter is set
-        if ( $Self->GetOption('with-header') ) {
-            $Output .= "Name: $Title; Created: $Time\n";
-        }
-        $Output .= $Kernel::OM->Get('Kernel::System::CSV')->Array2CSV(
-            Head   => $HeadArrayRef,
-            Data   => \@StatArray,
-            Format => 'Excel',
+        my $Output = $Kernel::OM->Get('Kernel::System::CSV')->Array2CSV(
+            WithHeader => \@WithHeader,
+            Head       => $HeadArrayRef,
+            Data       => \@StatArray,
+            Format     => 'Excel',
         );
 
         # save the Excel with the title and timestamp as filename, or read it from param
@@ -427,7 +324,8 @@ sub Run {
         }
         else {
             $Filename = $Kernel::OM->Get('Kernel::System::Stats')->StringAndTimestamp2Filename(
-                String => $Stat->{Title} . " Created",
+                String   => $Stat->{Title} . " Created",
+                TimeZone => $GetParam{TimeZone},
             );
         }
 
@@ -442,18 +340,11 @@ sub Run {
     else {
 
         # Create the CSV data
-        my $Output;
-
-        $Self->Print("<yellow>Chosen format: CSV.</yellow>\n");
-
-        # Only add the name if parameter is set
-        if ( $Self->GetOption('with-header') ) {
-            $Output .= "Name: $Title; Created: $Time\n";
-        }
-        $Output .= $Kernel::OM->Get('Kernel::System::CSV')->Array2CSV(
-            Head      => $HeadArrayRef,
-            Data      => \@StatArray,
-            Separator => $Self->{Separator},
+        my $Output = $Kernel::OM->Get('Kernel::System::CSV')->Array2CSV(
+            WithHeader => \@WithHeader,
+            Head       => $HeadArrayRef,
+            Data       => \@StatArray,
+            Separator  => $Self->{Separator},
         );
 
         # save the csv with the title and timestamp as filename, or read it from param
@@ -463,7 +354,8 @@ sub Run {
         }
         else {
             $Filename = $Kernel::OM->Get('Kernel::System::Stats')->StringAndTimestamp2Filename(
-                String => $Stat->{Title} . " Created",
+                String   => $Stat->{Title} . " Created",
+                TimeZone => $GetParam{TimeZone},
             );
         }
 
@@ -478,15 +370,20 @@ sub Run {
 
     # write output
     if ( $Self->{TargetDirectory} ) {
-        if ( open my $Filehandle, '>', "$Self->{TargetDirectory}/$Attachment{Filename}" ) {    ## no critic
-            print $Filehandle $Attachment{Content};
-            close $Filehandle;
-            $Self->Print("<yellow>Writing file $Self->{TargetDirectory}/$Attachment{Filename}.</yellow>\n");
+
+        my $Success = $Kernel::OM->Get('Kernel::System::Main')->FileWrite(
+            Location => "$Self->{TargetDirectory}/$Attachment{Filename}",
+            Content  => \$Attachment{Content},
+            Mode     => 'binmode',
+        );
+
+        if ($Success) {
+            $Self->Print("  Writing file <yellow>$Self->{TargetDirectory}/$Attachment{Filename}</yellow>.\n");
             $Self->Print("<green>Done.</green>\n");
             return $Self->ExitCodeOk();
         }
         else {
-            $Self->PrintError("Can't write $Self->{TargetDirectory}/$Attachment{Filename}: $!");
+            $Self->PrintError("Can't write $Self->{TargetDirectory}/$Attachment{Filename}!");
             return $Self->ExitCodeError();
         }
     }
@@ -499,7 +396,7 @@ sub Run {
         if ( !$Kernel::OM->Get('Kernel::System::CheckItem')->CheckEmail( Address => $Recipient ) ) {
 
             $Self->PrintError(
-                "Warning: email address $Recipient invalid, skipping address."
+                "Email address $Recipient invalid, skipping address."
                     . $Kernel::OM->Get('Kernel::System::CheckItem')->CheckError()
             );
             next RECIPIENT;
@@ -521,10 +418,10 @@ sub Run {
 }
 
 sub GetParam {
-    my (%Param) = @_;
+    my ( $Self, %Param ) = @_;
 
     if ( !$Param{Param} ) {
-        print STDERR "ERROR: Need 'Param' in GetParam()\n";
+        $Self->PrintError("Need 'Param' in GetParam()");
     }
     my @P = split( /&/, $Param{Params} || '' );
     for (@P) {
@@ -537,10 +434,10 @@ sub GetParam {
 }
 
 sub GetArray {
-    my (%Param) = @_;
+    my ( $Self, %Param ) = @_;
 
     if ( !$Param{Param} ) {
-        print STDERR "ERROR: Need 'Param' in GetArray()\n";
+        $Self->PrintError("Need 'Param' in GetArray()");
     }
     my @P = split( /&/, $Param{Params} || '' );
     my @Array;
@@ -554,15 +451,3 @@ sub GetArray {
 }
 
 1;
-
-=back
-
-=head1 TERMS AND CONDITIONS
-
-This software is part of the OTRS project (L<http://otrs.org/>).
-
-This software comes with ABSOLUTELY NO WARRANTY. For details, see
-the enclosed file COPYING for license information (AGPL). If you
-did not receive this file, see L<http://www.gnu.org/licenses/agpl.txt>.
-
-=cut

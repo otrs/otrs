@@ -1,6 +1,5 @@
 # --
-# Kernel/System/Console/Command/Dev/Tools/Database/XML2SQL.pm - console command
-# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -12,7 +11,9 @@ package Kernel::System::Console::Command::Dev::Tools::Database::XML2SQL;
 use strict;
 use warnings;
 
-use base qw(Kernel::System::Console::BaseCommand);
+use parent qw(Kernel::System::Console::BaseCommand);
+
+## nofilter(TidyAll::Plugin::OTRS::Perl::ObjectManagerCreation)
 
 our @ObjectDependencies = (
     'Kernel::Config',
@@ -89,7 +90,7 @@ sub Run {
 
     my @DatabaseType = ( $Self->GetOption('database-type') );
     if ( $Self->GetOption('database-type') eq 'all' ) {
-        @DatabaseType = qw(mysql postgresql oracle mssql)
+        @DatabaseType = qw(mysql postgresql oracle)
     }
 
     my $SourceFilename = $Self->GetOption('source-path');
@@ -112,11 +113,8 @@ sub Run {
 
     for my $DatabaseType (@DatabaseType) {
 
-        local $Kernel::OM = Kernel::System::ObjectManager->new(
-            'Kernel::System::DB' => {
-                AutoConnectNo => 1,    # don't try with foreign drivers
-            },
-        );
+        local $Kernel::OM = Kernel::System::ObjectManager->new();
+
         $Kernel::OM->Get('Kernel::Config')->Set(
             Key   => 'Database::Type',
             Value => $DatabaseType,
@@ -223,15 +221,3 @@ sub Dump {
 }
 
 1;
-
-=back
-
-=head1 TERMS AND CONDITIONS
-
-This software is part of the OTRS project (L<http://otrs.org/>).
-
-This software comes with ABSOLUTELY NO WARRANTY. For details, see
-the enclosed file COPYING for license information (AGPL). If you
-did not receive this file, see L<http://www.gnu.org/licenses/agpl.txt>.
-
-=cut

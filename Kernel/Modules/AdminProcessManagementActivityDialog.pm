@@ -1,6 +1,5 @@
 # --
-# Kernel/Modules/AdminProcessManagementActivityDialog.pm - process management activity
-# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -13,6 +12,7 @@ use strict;
 use warnings;
 
 use Kernel::System::VariableCheck qw(:all);
+use Kernel::Language qw(Translatable);
 
 our $ObjectManagerDisabled = 1;
 
@@ -81,7 +81,7 @@ sub Run {
     }
 
     my $DynamicFieldList = $Kernel::OM->Get('Kernel::System::DynamicField')->DynamicFieldList(
-        ObjectType => [ 'Ticket', 'Article' ],
+        ObjectType => ['Ticket'],
         ResultType => 'HASH',
     );
 
@@ -179,14 +179,14 @@ sub Run {
 
             # add server error error class
             $Error{NameServerError}        = 'ServerError';
-            $Error{NameServerErrorMessage} = 'This field is required';
+            $Error{NameServerErrorMessage} = Translatable('This field is required');
         }
 
         if ( !$GetParam->{DescriptionShort} ) {
 
             # add server error error class
             $Error{DescriptionShortServerError} = 'ServerError';
-            $Error{DecriptionShortErrorMessage} = 'This field is required';
+            $Error{DecriptionShortErrorMessage} = Translatable('This field is required');
         }
 
         # check if permission exists
@@ -229,7 +229,7 @@ sub Run {
         # show error if can't generate a new EntityID
         if ( !$EntityID ) {
             return $LayoutObject->ErrorScreen(
-                Message => "There was an error generating a new EntityID for this ActivityDialog",
+                Message => Translatable("There was an error generating a new EntityID for this ActivityDialog"),
             );
         }
 
@@ -244,7 +244,7 @@ sub Run {
         # show error if can't create
         if ( !$ActivityDialogID ) {
             return $LayoutObject->ErrorScreen(
-                Message => "There was an error creating the ActivityDialog",
+                Message => Translatable("There was an error creating the ActivityDialog"),
             );
         }
 
@@ -259,8 +259,10 @@ sub Run {
         # show error if can't set
         if ( !$Success ) {
             return $LayoutObject->ErrorScreen(
-                Message => "There was an error setting the entity sync status for ActivityDialog "
-                    . "entity:$EntityID",
+                Message => $LayoutObject->{LanguageObject}->Translate(
+                    'There was an error setting the entity sync status for ActivityDialog entity: %s',
+                    $EntityID
+                ),
             );
         }
 
@@ -273,8 +275,6 @@ sub Run {
         my $ActivityDialogConfig = $Self->_GetActivityDialogConfig(
             EntityID => $EntityID,
         );
-
-        my $ConfigJSON = $LayoutObject->JSONEncode( Data => $ActivityDialogConfig );
 
         # check if needed to open another window or if popup should go back
         if ( $Redirect && $Redirect eq '1' ) {
@@ -295,7 +295,7 @@ sub Run {
                     Subaction => 'FieldEdit',
                     Field     => $RedirectField,
                 },
-                ConfigJSON => $ConfigJSON,
+                ConfigJSON => $ActivityDialogConfig,
             );
         }
         else {
@@ -309,7 +309,7 @@ sub Run {
                 # close the popup
                 return $Self->_PopupResponse(
                     ClosePopup => 1,
-                    ConfigJSON => $ConfigJSON,
+                    ConfigJSON => $ActivityDialogConfig,
                 );
             }
             else {
@@ -318,7 +318,7 @@ sub Run {
                 return $Self->_PopupResponse(
                     Redirect   => 1,
                     Screen     => $LastScreen,
-                    ConfigJSON => $ConfigJSON,
+                    ConfigJSON => $ActivityDialogConfig,
                 );
             }
         }
@@ -332,7 +332,7 @@ sub Run {
         # check for ActivityDialogID
         if ( !$ActivityDialogID ) {
             return $LayoutObject->ErrorScreen(
-                Message => "Need ActivityDialogID!",
+                Message => Translatable("Need ActivityDialogID!"),
             );
         }
 
@@ -348,7 +348,10 @@ sub Run {
         # check for valid Activity Dialog data
         if ( !IsHashRefWithData($ActivityDialogData) ) {
             return $LayoutObject->ErrorScreen(
-                Message => "Could not get data for ActivityDialogID $ActivityDialogID",
+                Message => $LayoutObject->{LanguageObject}->Translate(
+                    'Could not get data for ActivityDialogID %s',
+                    $ActivityDialogID
+                ),
             );
         }
 
@@ -439,14 +442,14 @@ sub Run {
 
             # add server error error class
             $Error{NameServerError}        = 'ServerError';
-            $Error{NameServerErrorMessage} = 'This field is required';
+            $Error{NameServerErrorMessage} = Translatable('This field is required');
         }
 
         if ( !$GetParam->{DescriptionShort} ) {
 
             # add server error error class
             $Error{DescriptionShortServerError} = 'ServerError';
-            $Error{DecriptionShortErrorMessage} = 'This field is required';
+            $Error{DecriptionShortErrorMessage} = Translatable('This field is required');
         }
 
         # check if permission exists
@@ -493,7 +496,7 @@ sub Run {
         # show error if can't update
         if ( !$Success ) {
             return $LayoutObject->ErrorScreen(
-                Message => "There was an error updating the ActivityDialog",
+                Message => Translatable("There was an error updating the ActivityDialog"),
             );
         }
 
@@ -508,8 +511,10 @@ sub Run {
         # show error if can't set
         if ( !$Success ) {
             return $LayoutObject->ErrorScreen(
-                Message => "There was an error setting the entity sync status for ActivityDialog "
-                    . "entity:$ActivityDialogData->{EntityID}",
+                Message => $LayoutObject->{LanguageObject}->Translate(
+                    'There was an error setting the entity sync status for ActivityDialog entity: %s',
+                    $ActivityDialogData->{EntityID}
+                ),
             );
         }
 
@@ -522,8 +527,6 @@ sub Run {
         my $ActivityDialogConfig = $Self->_GetActivityDialogConfig(
             EntityID => $ActivityDialogData->{EntityID},
         );
-
-        my $ConfigJSON = $LayoutObject->JSONEncode( Data => $ActivityDialogConfig );
 
         # check if needed to open another window or if popup should go back
         if ( $Redirect && $Redirect eq '1' ) {
@@ -544,7 +547,7 @@ sub Run {
                     Subaction => 'FieldEdit',
                     Field     => $RedirectField,
                 },
-                ConfigJSON => $ConfigJSON,
+                ConfigJSON => $ActivityDialogConfig,
             );
         }
         else {
@@ -558,7 +561,7 @@ sub Run {
                 # close the popup
                 return $Self->_PopupResponse(
                     ClosePopup => 1,
-                    ConfigJSON => $ConfigJSON,
+                    ConfigJSON => $ActivityDialogConfig,
                 );
             }
             else {
@@ -567,7 +570,7 @@ sub Run {
                 return $Self->_PopupResponse(
                     Redirect   => 1,
                     Screen     => $LastScreen,
-                    ConfigJSON => $ConfigJSON,
+                    ConfigJSON => $ActivityDialogConfig,
                 );
             }
         }
@@ -581,6 +584,7 @@ sub Run {
         # close the popup
         return $Self->_PopupResponse(
             ClosePopup => 1,
+            ConfigJSON => '',
         );
     }
 
@@ -589,7 +593,7 @@ sub Run {
     # ------------------------------------------------------------ #
     else {
         return $LayoutObject->ErrorScreen(
-            Message => "This subaction is not valid",
+            Message => Translatable("This subaction is not valid"),
         );
     }
 }
@@ -673,7 +677,7 @@ sub _ShowEdit {
     }
 
     my $DynamicFieldList = $Kernel::OM->Get('Kernel::System::DynamicField')->DynamicFieldList(
-        ObjectType => [ 'Ticket', 'Article' ],
+        ObjectType => ['Ticket'],
         ResultType => 'HASH',
     );
 
@@ -769,7 +773,10 @@ sub _ShowEdit {
             );
         }
 
-        $Param{Title} = "Edit Activity Dialog \"$ActivityDialogData->{Name}\"";
+        $Param{Title} = $LayoutObject->{LanguageObject}->Translate(
+            'Edit Activity Dialog "%s"',
+            $ActivityDialogData->{Name}
+        );
     }
     else {
 
@@ -795,7 +802,7 @@ sub _ShowEdit {
             );
         }
 
-        $Param{Title} = 'Create New Activity Dialog';
+        $Param{Title} = Translatable('Create New Activity Dialog');
     }
 
     # get interface infos
@@ -818,9 +825,9 @@ sub _ShowEdit {
     # create interface selection
     $Param{InterfaceSelection} = $LayoutObject->BuildSelection(
         Data => {
-            AgentInterface    => 'Agent Interface',
-            CustomerInterface => 'Customer Interface',
-            BothInterfaces    => 'Agent and Customer Interface',
+            AgentInterface    => Translatable('Agent Interface'),
+            CustomerInterface => Translatable('Customer Interface'),
+            BothInterfaces    => Translatable('Agent and Customer Interface'),
         },
         Name         => 'Interface',
         ID           => 'Interface',
@@ -828,6 +835,7 @@ sub _ShowEdit {
         Sort         => 'AlphanumericKey',
         Translation  => 1,
         PossibleNone => 0,
+        Class        => 'Modernize',
     );
 
     # create permission selection
@@ -839,53 +847,82 @@ sub _ShowEdit {
         Sort       => 'AlphanumericKey',
         Translation  => 1,
         PossibleNone => 1,
-        Class        => $Param{PermissionServerError} || '',
+        Class        => 'Modernize' . ( $Param{PermissionServerError} || '' ),
     );
 
     # create "required lock" selection
     $Param{RequiredLockSelection} = $LayoutObject->BuildSelection(
         Data => {
-            0 => 'No',
-            1 => 'Yes',
+            0 => Translatable('No'),
+            1 => Translatable('Yes'),
         },
         Name        => 'RequiredLock',
         ID          => 'RequiredLock',
         SelectedID  => $ActivityDialogData->{Config}->{RequiredLock} || 0,
         Sort        => 'AlphanumericKey',
         Translation => 1,
-        Class       => $Param{RequiredLockServerError} || '',
+        Class       => 'Modernize ' . ( $Param{RequiredLockServerError} || '' ),
     );
 
     # create Display selection
     $Param{DisplaySelection} = $LayoutObject->BuildSelection(
         Data => {
-            0 => 'Do not show Field',
-            1 => 'Show Field',
-            2 => 'Show Field As Mandatory',
+            0 => Translatable('Do not show Field'),
+            1 => Translatable('Show Field'),
+            2 => Translatable('Show Field As Mandatory'),
         },
         Name        => 'Display',
         ID          => 'Display',
         Sort        => 'AlphanumericKey',
         Translation => 1,
+        Class       => 'Modernize',
     );
 
     # create ArticleType selection
     $Param{ArticleTypeSelection} = $LayoutObject->BuildSelection(
         Data => [
-            'note-internal',
-            'note-external',
-            'note-report',
-            'phone',
-            'fax',
-            'sms',
-            'webrequest',
+            Translatable('note-internal'),
+            Translatable('note-external'),
+            Translatable('note-report'),
+            Translatable('phone'),
+            Translatable('fax'),
+            Translatable('sms'),
+            Translatable('webrequest'),
         ],
-        SelectedValue => 'note-internal',
+        SelectedValue => Translatable('note-internal'),
         Name          => 'ArticleType',
         ID            => 'ArticleType',
         Sort          => 'Alphanumeric',
         Translation   => 1,
+        Class         => 'Modernize',
     );
+
+    my %TimeUnitsSelectionList = (
+        0 => Translatable('Do not show Field'),
+        2 => Translatable('Show Field As Mandatory'),
+    );
+
+    if ( !$ConfigObject->Get('Ticket::Frontend::NeedAccountedTime') ) {
+        $TimeUnitsSelectionList{1} = 'Show Field';
+    }
+
+    # create TimeUnits selection
+    if ( $ConfigObject->Get('Ticket::Frontend::AccountTime') ) {
+
+        $Param{TimeUnitsSelection} = $LayoutObject->BuildSelection(
+            Data          => \%TimeUnitsSelectionList,
+            SelectedValue => 0,
+            Name          => 'TimeUnits',
+            ID            => 'TimeUnits',
+            Translation   => 1,
+            Class         => 'Modernize',
+        );
+
+        $LayoutObject->Block(
+            Name => 'TimeUnitsContainer',
+            Data => \%Param,
+        );
+    }
 
     # extract parameters from config
     $Param{DescriptionShort} = $Param{ActivityDialogData}->{Config}->{DescriptionShort};
@@ -1018,20 +1055,24 @@ sub _PopupResponse {
     my $LayoutObject = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
 
     if ( $Param{Redirect} && $Param{Redirect} eq 1 ) {
-        $LayoutObject->Block(
-            Name => 'Redirect',
-            Data => {
+
+        # send data to JS
+        $LayoutObject->AddJSData(
+            Key   => 'Redirect',
+            Value => {
                 ConfigJSON => $Param{ConfigJSON},
                 %{ $Param{Screen} },
-            },
+                }
         );
     }
     elsif ( $Param{ClosePopup} && $Param{ClosePopup} eq 1 ) {
-        $LayoutObject->Block(
-            Name => 'ClosePopup',
-            Data => {
+
+        # send data to JS
+        $LayoutObject->AddJSData(
+            Key   => 'ClosePopup',
+            Value => {
                 ConfigJSON => $Param{ConfigJSON},
-            },
+                }
         );
     }
 

@@ -1,6 +1,5 @@
 # --
-# Kernel/System/Ticket/Event/ResponsibleAutoSet.pm - a event module for auto set of responible
-# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -68,7 +67,7 @@ sub Run {
         DynamicFields => 0,
     );
 
-    # check responible update
+    # check responsible update
     if ( $Ticket{ResponsibleID} == 1 && $Param{UserID} != 1 ) {
         $TicketObject->TicketResponsibleSet(
             TicketID           => $Param{Data}->{TicketID},

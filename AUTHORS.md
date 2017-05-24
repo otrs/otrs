@@ -14,11 +14,13 @@ The following persons contributed to OTRS:
 * Christopher T. Kuhn <christopher.kuhn@otrs.com>
 * Cyrille Bollu <info@belnet.be>
 * Daniel Zamorano <daniel.zamorano@otrs.com>
+* David Crimi <deathpoison.dc@gmail.com>
 * Denis Nelubin <dnelubin@gmail.com>
 * Dennis Schmelter <dennis.schmelter@otrs.com>
 * Diego Selzlein <diegoselzlein@gmail.com>
 * Dietmar Berg <dietmar.berg@thalesgroup.com>
 * Dominik Klein <dominik.klein@otrs.com>
+* Dusan Vuckovic <dusan.vuckovic@muehlbauer.de>
 * Elias Probst <elias.probst@otrs.com>
 * Elva Novoa <elva.novoa@otrs.com>
 * Enrique Matías Sánchez (Quique) <cronopios@gmail.com>
@@ -27,6 +29,7 @@ The following persons contributed to OTRS:
 * Gerald Young <gerald.young@noynim.com>
 * Henning Oschwald <henning.oschwald@otrs.com>
 * IB Development Team <dev@ib.pl>
+* Jan Steinweg <jan.steinweg@otrs.com>
 * Jens Bothe <jens.bothe@otrs.com>
 * Jens Pfeifer <jens.pfeifer@otrs.com>
 * Johannes Hörburger <johannes.hoerburger@otrs.com>
@@ -43,7 +46,6 @@ The following persons contributed to OTRS:
 * Martin Gross <martin@pc-coholic.de>
 * Martin Gruner <martin.gruner@otrs.com>
 * Mathias Bräunling <mathias.braeunling@otrs.com>
-* Merkushov Victor <merkushov.victor@gmail.com>
 * Michael Tänzer <neo@nhng.de>
 * Michiel Beijen <michiel.beijen@otrs.com>
 * Moritz Lenz <mlenz@noris.net>
@@ -51,10 +53,10 @@ The following persons contributed to OTRS:
 * Nils Leideck <nils.leideck@leidex.net>
 * Nils Leideck <nils.leideck@otrs.com>
 * Norihiro Tanaka <noritnk@kcn.ne.jp>
-* Németh Csaba <csaba@sopron.hu>
 * Oberson Dylan <dylan.oberson@epfl.ch>
 * Oliver Tappe <oliver.tappe@otrs.com>
 * Olivier Sallou <olivier.sallou@irisa.fr>
+* Patrick Brischler <patrick.brischler@otrs.com>
 * Patrick Rauscher <prauscher@ohai.su>
 * Paul Waring <paul@xk7.net>
 * Peter Krantz <peter@peterkrantz.se>
@@ -77,8 +79,10 @@ The following persons contributed to OTRS:
 * Walter Souto <walter.souto@saude.go.gov.br>
 * Wojciech Kuchta <klapi85@gmail.com>
 * Wojciech Kuchta <wojciech.kuchta@allegro.pl>
+* djurici <igor.djuric@muehlbauer.de>
 * juanmclavero <juanm.clavero@ibsalut.es>
 * otrsintern <otrsintern@gmail.com>
 * s7design <otrs@s7designcreative.com>
 * sergot <filip@sergot.pl>
+* vlascoder <vlascoder@gmail.com>
 * Úr Balázs <urbalazs@gmail.com>

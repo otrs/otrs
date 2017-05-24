@@ -1,6 +1,5 @@
 // --
-// Core.UI.AllocationList.js - provides functionality for allocation lists
-// Copyright (C) 2001-2012 OTRS AG, http://otrs.org/
+// Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 // --
 // This software comes with ABSOLUTELY NO WARRANTY. For details, see
 // the enclosed file COPYING for license information (AGPL). If you
@@ -21,7 +20,7 @@ Core.UI = Core.UI || {};
  */
 Core.UI.AllocationList = (function (TargetNS) {
     if (!Core.Debug.CheckDependency('Core.UI.AllocationList', '$([]).sortable', 'jQuery UI sortable')) {
-        return;
+        return false;
     }
 
     /**

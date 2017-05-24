@@ -1,6 +1,5 @@
 # --
-# Kernel/System/Valid.pm - all valid functions
-# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -22,22 +21,16 @@ our @ObjectDependencies = (
 
 Kernel::System::Valid - valid lib
 
-=head1 SYNOPSIS
+=head1 DESCRIPTION
 
 All valid functions.
 
 =head1 PUBLIC INTERFACE
 
-=over 4
+=head2 new()
 
-=cut
+Don't use the constructor directly, use the ObjectManager instead:
 
-=item new()
-
-create an object. Do not use it directly, instead use:
-
-    use Kernel::System::ObjectManager;
-    local $Kernel::OM = Kernel::System::ObjectManager->new();
     my $ValidObject = $Kernel::OM->Get('Kernel::System::Valid');
 
 =cut
@@ -55,7 +48,7 @@ sub new {
     return $Self;
 }
 
-=item ValidList()
+=head2 ValidList()
 
 return a valid list as hash
 
@@ -97,7 +90,7 @@ sub ValidList {
     return %Data;
 }
 
-=item ValidLookup()
+=head2 ValidLookup()
 
 returns the id or the name of a valid
 
@@ -153,7 +146,7 @@ sub ValidLookup {
     return $ReturnData;
 }
 
-=item ValidIDsGet()
+=head2 ValidIDsGet()
 
 return all valid ids as array
 
@@ -173,8 +166,6 @@ sub ValidIDsGet {
 }
 
 1;
-
-=back
 
 =head1 TERMS AND CONDITIONS
 

@@ -1,6 +1,5 @@
 # --
-# Kernel/System/ProcessManagement/Entity.pm - Process Management DB Entity backend
-# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -24,22 +23,16 @@ our @ObjectDependencies = (
 
 Kernel::System::ProcessManagement::DB::Entity
 
-=head1 SYNOPSIS
+=head1 DESCRIPTION
 
 Process Management DB Entity backend
 
 =head1 PUBLIC INTERFACE
 
-=over 4
+=head2 new()
 
-=cut
+Don't use the constructor directly, use the ObjectManager instead:
 
-=item new()
-
-create an object. Do not use it directly, instead use:
-
-    use Kernel::System::ObjectManager;
-    local $Kernel::OM = Kernel::System::ObjectManager->new();
     my $EntityObject = $Kernel::OM->Get('Kernel::System::ProcessManagement::DB::Entity');
 
 =cut
@@ -62,7 +55,7 @@ sub new {
     return $Self;
 }
 
-=item EntityIDGenerate()
+=head2 EntityIDGenerate()
 
 generate unique Entity ID
 
@@ -114,7 +107,7 @@ sub EntityIDGenerate {
     return $EntityID;
 }
 
-=item EntitySyncStateSet()
+=head2 EntitySyncStateSet()
 
 set sync state for an entity.
 
@@ -184,7 +177,7 @@ sub EntitySyncStateSet {
     return 1;
 }
 
-=item EntitySyncStateGet()
+=head2 EntitySyncStateGet()
 
 gets the sync state of an entity
 
@@ -198,7 +191,7 @@ gets the sync state of an entity
 
 If sync state was found, returns:
 
-    $ObjectLockState = {
+    $EntitySyncState = {
         EntityType       => 'Process',
         EntityID         => 'P1',
         SyncState        => 'not_sync',
@@ -265,7 +258,7 @@ sub EntitySyncStateGet {
     return \%Result;
 }
 
-=item EntitySyncStateDelete()
+=head2 EntitySyncStateDelete()
 
 deletes sync state of an entity.
 
@@ -317,7 +310,7 @@ sub EntitySyncStateDelete {
     return 1;
 }
 
-=item EntitySyncStatePurge()
+=head2 EntitySyncStatePurge()
 
 deletes all entries .
 
@@ -350,7 +343,7 @@ sub EntitySyncStatePurge {
     return 1;
 }
 
-=item EntitySyncStateList()
+=head2 EntitySyncStateList()
 
 gets a list of sync states.
 
@@ -449,8 +442,6 @@ sub EntitySyncStateList {
 }
 
 1;
-
-=back
 
 =head1 TERMS AND CONDITIONS
 

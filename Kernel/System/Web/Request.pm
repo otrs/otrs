@@ -1,6 +1,5 @@
 # --
-# Kernel/System/Web/Request.pm - a wrapper for CGI.pm or Apache::Request.pm
-# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -26,17 +25,13 @@ our @ObjectDependencies = (
 
 Kernel::System::Web::Request - global CGI interface
 
-=head1 SYNOPSIS
+=head1 DESCRIPTION
 
 All cgi param functions.
 
 =head1 PUBLIC INTERFACE
 
-=over 4
-
-=cut
-
-=item new()
+=head2 new()
 
 create param object. Do not use it directly, instead use:
 
@@ -73,22 +68,13 @@ sub new {
     # max 5 MB posts
     $CGI::POST_MAX = $ConfigObject->Get('WebMaxFileUpload') || 1024 * 1024 * 5;    ## no critic
 
-    # we need to modify the tempdir
-    # for windows because the users
-    # group do not have enough rights
-    # for the default tempdir c:\windows\temp
-    # so we use a directory in otrs as tempdir (bug#10522)
-    if ( $^O eq 'MSWin32' ) {
-        $CGITempFile::TMPDIRECTORY = $ConfigObject->Get('TempDir');
-    }
-
     # query object (in case use already existing WebRequest, e. g. fast cgi)
     $Self->{Query} = $Param{WebRequest} || CGI->new();
 
     return $Self;
 }
 
-=item Error()
+=head2 Error()
 
 to get the error back
 
@@ -113,14 +99,13 @@ sub Error {
     ## use critic
 }
 
-=item GetParam()
+=head2 GetParam()
 
-to get single request parameters.
-By default, trimming is performed on the data.
+to get single request parameters. By default, trimming is performed on the data.
 
     my $Param = $ParamObject->GetParam(
         Param => 'ID',
-        Raw   => 1,     # optional, input data is not changed
+        Raw   => 1,       # optional, input data is not changed
     );
 
 =cut
@@ -129,6 +114,13 @@ sub GetParam {
     my ( $Self, %Param ) = @_;
 
     my $Value = $Self->{Query}->param( $Param{Param} );
+
+    # Fallback to query string for mixed requests.
+    my $RequestMethod = $Self->{Query}->request_method() // '';
+    if ( $RequestMethod eq 'POST' && !defined $Value ) {
+        $Value = $Self->{Query}->url_param( $Param{Param} );
+    }
+
     $Kernel::OM->Get('Kernel::System::Encode')->EncodeInput( \$Value );
 
     my $Raw = defined $Param{Raw} ? $Param{Raw} : 0;
@@ -148,7 +140,7 @@ sub GetParam {
     return $Value;
 }
 
-=item GetParamNames()
+=head2 GetParamNames()
 
 to get names of all parameters passed to the script.
 
@@ -156,7 +148,7 @@ to get names of all parameters passed to the script.
 
 Example:
 
-Called URL: index.pl?Action=AdminSysConfig;Subaction=Save;Name=Config::Option::Valid
+Called URL: index.pl?Action=AdminSystemConfiguration;Subaction=Save;Name=Config::Option::Valid
 
     my @ParamNames = $ParamObject->GetParamNames();
     print join " :: ", @ParamNames;
@@ -170,7 +162,19 @@ sub GetParamNames {
     # fetch all names
     my @ParamNames = $Self->{Query}->param();
 
-    # is encode needed?
+    # Fallback to query string for mixed requests.
+    my $RequestMethod = $Self->{Query}->request_method() // '';
+    if ( $RequestMethod eq 'POST' ) {
+        my %POSTNames;
+        @POSTNames{@ParamNames} = @ParamNames;
+        my @GetNames = $Self->{Query}->url_param();
+        GETNAME:
+        for my $GetName (@GetNames) {
+            next GETNAME if !defined $GetName;
+            push @ParamNames, $GetName if !exists $POSTNames{$GetName};
+        }
+    }
+
     for my $Name (@ParamNames) {
         $Kernel::OM->Get('Kernel::System::Encode')->EncodeInput( \$Name );
     }
@@ -178,7 +182,7 @@ sub GetParamNames {
     return @ParamNames;
 }
 
-=item GetArray()
+=head2 GetArray()
 
 to get array request parameters.
 By default, trimming is performed on the data.
@@ -193,7 +197,13 @@ By default, trimming is performed on the data.
 sub GetArray {
     my ( $Self, %Param ) = @_;
 
-    my @Values = $Self->{Query}->param( $Param{Param} );
+    my @Values = $Self->{Query}->multi_param( $Param{Param} );
+
+    # Fallback to query string for mixed requests.
+    my $RequestMethod = $Self->{Query}->request_method() // '';
+    if ( $RequestMethod eq 'POST' && !@Values ) {
+        @Values = $Self->{Query}->url_param( $Param{Param} );
+    }
 
     $Kernel::OM->Get('Kernel::System::Encode')->EncodeInput( \@Values );
 
@@ -204,7 +214,12 @@ sub GetArray {
         # get check item object
         my $CheckItemObject = $Kernel::OM->Get('Kernel::System::CheckItem');
 
+        VALUE:
         for my $Value (@Values) {
+
+            # don't validate CGI::File::Temp objects from file uploads
+            next VALUE if !$Value || ref \$Value ne 'SCALAR';
+
             $CheckItemObject->StringClean(
                 StringRef => \$Value,
                 TrimLeft  => 1,
@@ -216,7 +231,7 @@ sub GetArray {
     return @Values;
 }
 
-=item GetUploadAll()
+=head2 GetUploadAll()
 
 gets file upload data.
 
@@ -240,7 +255,7 @@ sub GetUploadAll {
     return if !$Upload;
 
     # get real file name
-    my $UploadFilenameOrig = $Self->GetParam( Param => $Param{Param} ) || 'unkown';
+    my $UploadFilenameOrig = $Self->GetParam( Param => $Param{Param} ) || 'unknown';
 
     my $NewFileName = "$UploadFilenameOrig";    # use "" to get filename of anony. object
     $Kernel::OM->Get('Kernel::System::Encode')->EncodeInput( \$NewFileName );
@@ -250,14 +265,11 @@ sub GetUploadAll {
     $NewFileName =~ s/.*\\(.+?)/$1/g;
 
     # return a string
-    my $Content;
+    my $Content = '';
     while (<$Upload>) {
         $Content .= $_;
     }
     close $Upload;
-
-    # Check if content is there, IE is always sending file uploads without content.
-    return if !$Content;
 
     my $ContentType = $Self->_GetUploadInfo(
         Filename => $UploadFilenameOrig,
@@ -287,7 +299,7 @@ sub _GetUploadInfo {
     return $FileInfo->{ $Param{Header} };
 }
 
-=item SetCookie()
+=head2 SetCookie()
 
 set a cookie
 
@@ -317,7 +329,7 @@ sub SetCookie {
     );
 }
 
-=item GetCookie()
+=head2 GetCookie()
 
 get a cookie
 
@@ -333,7 +345,7 @@ sub GetCookie {
     return $Self->{Query}->cookie( $Param{Key} );
 }
 
-=item IsAJAXRequest()
+=head2 IsAJAXRequest()
 
 checks if the current request was sent by AJAX
 
@@ -344,12 +356,10 @@ checks if the current request was sent by AJAX
 sub IsAJAXRequest {
     my ( $Self, %Param ) = @_;
 
-    return $Self->{Query}->http('X-Requested-With') eq 'XMLHttpRequest' ? 1 : 0;
+    return ( $Self->{Query}->http('X-Requested-With') // '' ) eq 'XMLHttpRequest' ? 1 : 0;
 }
 
 1;
-
-=back
 
 =head1 TERMS AND CONDITIONS
 

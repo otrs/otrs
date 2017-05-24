@@ -1,6 +1,5 @@
 # --
-# Kernel/Modules/AdminOTRSBusiness.pm - OTRSBusiness deployment
-# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -30,11 +29,28 @@ sub new {
 sub Run {
     my ( $Self, %Param ) = @_;
 
-    my $OTRSBusinessObject = $Kernel::OM->Get('Kernel::System::OTRSBusiness');
-    my $LayoutObject       = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
-    my $OTRSBusinessLabel  = '<strong>OTRS Business Solution</strong>™';
+    # get layout object
+    my $LayoutObject = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
 
-    my $ParamObject           = $Kernel::OM->Get('Kernel::System::Web::Request');
+    # check if cloud services are disabled
+    my $CloudServicesDisabled = $Kernel::OM->Get('Kernel::Config')->Get('CloudServices::Disabled') || 0;
+
+    if ($CloudServicesDisabled) {
+
+        my $Output = $LayoutObject->Header( Title => 'Error' );
+        $Output .= $LayoutObject->Output(
+            TemplateFile => 'CloudServicesDisabled',
+            Data         => \%Param
+        );
+        $Output .= $LayoutObject->Footer();
+        return $Output
+    }
+
+    # get needed objects
+    my $OTRSBusinessObject = $Kernel::OM->Get('Kernel::System::OTRSBusiness');
+    my $ParamObject        = $Kernel::OM->Get('Kernel::System::Web::Request');
+
+    my $OTRSBusinessLabel     = '<strong>OTRS Business Solution</strong>™';
     my $NotificationCode      = $ParamObject->GetParam( Param => 'NotificationCode' );
     my %NotificationCode2Text = (
         InstallOk => {

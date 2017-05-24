@@ -1,6 +1,5 @@
 # --
-# Kernel/Modules/AdminAttachment.pm - provides admin std template module
-# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -11,6 +10,8 @@ package Kernel::Modules::AdminAttachment;
 
 use strict;
 use warnings;
+
+use Kernel::Language qw(Translatable);
 
 our $ObjectManagerDisabled = 1;
 
@@ -90,16 +91,21 @@ sub Run {
                 UserID => $Self->{UserID},
             );
             if ($Update) {
-                $Self->_Overview();
-                my $Output = $LayoutObject->Header();
-                $Output .= $LayoutObject->NavigationBar();
-                $Output .= $LayoutObject->Notify( Info => 'Attachment updated!' );
-                $Output .= $LayoutObject->Output(
-                    TemplateFile => 'AdminAttachment',
-                    Data         => \%Param,
-                );
-                $Output .= $LayoutObject->Footer();
-                return $Output;
+
+                # if the user would like to continue editing the attachment, just redirect to the edit screen
+                if (
+                    defined $ParamObject->GetParam( Param => 'ContinueAfterSave' )
+                    && ( $ParamObject->GetParam( Param => 'ContinueAfterSave' ) eq '1' )
+                    )
+                {
+                    my $ID = $ParamObject->GetParam( Param => 'ID' ) || '';
+                    return $LayoutObject->Redirect( OP => "Action=$Self->{Action};Subaction=Change;ID=$ID" );
+                }
+                else {
+
+                    # otherwise return to overview
+                    return $LayoutObject->Redirect( OP => "Action=$Self->{Action}" );
+                }
             }
         }
 
@@ -182,7 +188,7 @@ sub Run {
                 $Self->_Overview();
                 my $Output = $LayoutObject->Header();
                 $Output .= $LayoutObject->NavigationBar();
-                $Output .= $LayoutObject->Notify( Info => 'Attachment added!' );
+                $Output .= $LayoutObject->Notify( Info => Translatable('Attachment added!') );
                 $Output .= $LayoutObject->Output(
                     TemplateFile => 'AdminAttachment',
                     Data         => \%Param,
@@ -218,15 +224,16 @@ sub Run {
         $LayoutObject->ChallengeTokenCheck();
 
         my $ID = $ParamObject->GetParam( Param => 'ID' );
-
         my $Delete = $StdAttachmentObject->StdAttachmentDelete(
             ID => $ID,
         );
-        if ( !$Delete ) {
-            return $LayoutObject->ErrorScreen();
-        }
 
-        return $LayoutObject->Redirect( OP => "Action=$Self->{Action}" );
+        return $LayoutObject->Attachment(
+            ContentType => 'text/html',
+            Content     => ($Delete) ? $ID : 0,
+            Type        => 'inline',
+            NoCache     => 1,
+        );
     }
 
     # ------------------------------------------------------------ #
@@ -294,7 +301,7 @@ sub _Edit {
         Data       => \%ValidList,
         Name       => 'ValidID',
         SelectedID => $Param{ValidID} || $ValidListReverse{valid},
-        Class      => 'Validate_Required ' . ( $Param{Errors}->{'ValidIDInvalid'} || '' ),
+        Class      => 'Modernize Validate_Required ' . ( $Param{Errors}->{'ValidIDInvalid'} || '' ),
     );
 
     # add class for validation
@@ -309,16 +316,6 @@ sub _Edit {
             %{ $Param{Errors} },
         },
     );
-
-    # shows header
-    if ( $Param{Action} eq 'Change' ) {
-        $LayoutObject->Block( Name => 'HeaderEdit' );
-        $LayoutObject->Block( Name => 'ContenLabelEdit' );
-    }
-    else {
-        $LayoutObject->Block( Name => 'HeaderAdd' );
-        $LayoutObject->Block( Name => 'ContenLabelAdd' );
-    }
 
     return 1;
 }
@@ -340,6 +337,9 @@ sub _Overview {
         Name => 'ActionAdd',
     );
     $LayoutObject->Block(
+        Name => 'Filter',
+    );
+    $LayoutObject->Block(
         Name => 'OverviewResult',
         Data => \%Param,
     );
@@ -357,13 +357,6 @@ sub _Overview {
             my %Data = $StdAttachmentObject->StdAttachmentGet(
                 ID => $ID,
             );
-
-            if ( $ValidList{ $Data{ValidID} } eq 'valid' ) {
-                $Data{Invalid} = '';
-            }
-            else {
-                $Data{Invalid} = 'Invalid';
-            }
 
             $LayoutObject->Block(
                 Name => 'OverviewResultRow',

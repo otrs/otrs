@@ -1,6 +1,5 @@
 # --
-# Kernel/GenericInterface/Operation.pm - GenericInterface operation interface
-# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -23,18 +22,14 @@ our $ObjectManagerDisabled = 1;
 
 Kernel::GenericInterface::Operation - GenericInterface Operation interface
 
-=head1 SYNOPSIS
+=head1 DESCRIPTION
 
 Operations are called by web service requests from remote
 systems.
 
 =head1 PUBLIC INTERFACE
 
-=over 4
-
-=cut
-
-=item new()
+=head2 new()
 
 create an object.
 
@@ -54,6 +49,7 @@ create an object.
 
     my $OperationObject = Kernel::GenericInterface::Operation->new(
         DebuggerObject => $DebuggerObject,
+        Operation      => 'TicketCreate',            # the name of the operation in the web service
         OperationType  => 'Ticket::TicketCreate',    # the local operation backend to use
         WebserviceID   => $WebserviceID,             # ID of the currently used web service
     );
@@ -67,7 +63,7 @@ sub new {
     bless( $Self, $Type );
 
     # check needed objects
-    for my $Needed (qw(DebuggerObject OperationType WebserviceID)) {
+    for my $Needed (qw(DebuggerObject Operation OperationType WebserviceID)) {
         if ( !$Param{$Needed} ) {
 
             return {
@@ -105,7 +101,7 @@ sub new {
     return $Self;
 }
 
-=item Run()
+=head2 Run()
 
 perform the selected Operation.
 
@@ -133,8 +129,6 @@ sub Run {
 }
 
 1;
-
-=back
 
 =head1 TERMS AND CONDITIONS
 

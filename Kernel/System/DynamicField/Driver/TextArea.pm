@@ -1,6 +1,5 @@
 # --
-# Kernel/System/DynamicField/Driver/TextArea.pm - Delegate for DynamicField TextArea Driver
-# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -14,7 +13,7 @@ use warnings;
 
 use Kernel::System::VariableCheck qw(:all);
 
-use base qw(Kernel::System::DynamicField::Driver::BaseText);
+use parent qw(Kernel::System::DynamicField::Driver::BaseText);
 
 our @ObjectDependencies = (
     'Kernel::Config',
@@ -26,7 +25,7 @@ our @ObjectDependencies = (
 
 Kernel::System::DynamicField::Driver::TextArea
 
-=head1 SYNOPSIS
+=head1 DESCRIPTION
 
 DynamicFields TextArea Driver delegate
 
@@ -35,9 +34,7 @@ DynamicFields TextArea Driver delegate
 This module implements the public interface of L<Kernel::System::DynamicField::Backend>.
 Please look there for a detailed reference of the functions.
 
-=over 4
-
-=item new()
+=head2 new()
 
 usually, you want to create an instance of this
 by using Kernel::System::DynamicField::Backend->new();
@@ -51,7 +48,7 @@ sub new {
     my $Self = {};
     bless( $Self, $Type );
 
-    # set the maximum lenght for the textarea fields to still be a searchable field in some
+    # set the maximum length for the text-area fields to still be a searchable field in some
     # databases
     $Self->{MaxLength} = 3800;
 
@@ -63,9 +60,10 @@ sub new {
         'IsFiltrable'                  => 0,
         'IsStatsCondition'             => 1,
         'IsCustomerInterfaceCapable'   => 1,
+        'IsLikeOperatorCapable'        => 1,
     };
 
-    # get the Dynamic Field Backend custmom extensions
+    # get the Dynamic Field Backend custom extensions
     my $DynamicFieldDriverExtensions
         = $Kernel::OM->Get('Kernel::Config')->Get('DynamicFields::Extension::Driver::TextArea');
 
@@ -91,7 +89,7 @@ sub new {
             }
         }
 
-        # check if extension contains more behabiors
+        # check if extension contains more behaviors
         if ( IsHashRefWithData( $Extension->{Behaviors} ) ) {
 
             %{ $Self->{Behaviors} } = (
@@ -120,7 +118,7 @@ sub EditFieldRender {
     }
     $Value = $Param{Value} // $Value;
 
-    # extract the dynamic field value form the web request
+    # extract the dynamic field value from the web request
     my $FieldValue = $Self->EditFieldValueGet(
         %Param,
     );
@@ -164,11 +162,11 @@ sub EditFieldRender {
     );
 
     # create field HTML
-    # the XHTML definition does not support maxlenght attribute for a textarea field,
+    # the XHTML definition does not support maxlength attribute for a text-area field,
     # we use data-maxlength instead
     # Notice that some browsers count new lines \n\r as only 1 character. In these cases the
     # validation framework might generate an error while the user is still capable to enter text in the
-    # textarea. Otherwise the maxlenght property will prevent to enter more text than the maximum.
+    # text-area. Otherwise the maxlength property will prevent to enter more text than the maximum.
     my $MaxLength = $Param{MaxLength} // $Self->{MaxLength};
     my $HTMLString = <<"EOF";
 <textarea class="$FieldClass" id="$FieldName" name="$FieldName" title="$FieldLabelEscaped" rows="$RowsNumber" cols="$ColsNumber" data-maxlength="$MaxLength">$ValueEscaped</textarea>
@@ -287,7 +285,7 @@ sub EditFieldValueValidate {
 sub DisplayValueRender {
     my ( $Self, %Param ) = @_;
 
-    # set HTMLOuput as default if not specified
+    # set HTMLOutput as default if not specified
     if ( !defined $Param{HTMLOutput} ) {
         $Param{HTMLOutput} = 1;
     }
@@ -296,7 +294,7 @@ sub DisplayValueRender {
     my $Value = defined $Param{Value} ? $Param{Value} : '';
     my $Title = $Value;
 
-    # HTMLOuput transformations
+    # HTMLOutput transformations
     if ( $Param{HTMLOutput} ) {
 
         $Value = $Param{LayoutObject}->Ascii2Html(
@@ -351,7 +349,7 @@ sub SearchFieldRender {
         $Value = $FieldValue;
     }
 
-    # check if value is an arrayref (GenericAgent Jobs and NotificationEvents)
+    # check if value is an array reference (GenericAgent Jobs and NotificationEvents)
     if ( IsArrayRefWithData($Value) ) {
         $Value = @{$Value}[0];
     }
@@ -385,44 +383,7 @@ EOF
     return $Data;
 }
 
-sub SearchFieldParameterBuild {
-    my ( $Self, %Param ) = @_;
-
-    # get field value
-    my $Value = $Self->SearchFieldValueGet(%Param);
-
-    if ( !$Value ) {
-        return {
-            Parameter => {
-                'Like' => '',
-            },
-            Display => '',
-            }
-    }
-
-    # return search parameter structure
-    return {
-        Parameter => {
-            'Like' => '*' . $Value . '*',
-        },
-        Display => $Value,
-    };
-}
-
-sub StatsSearchFieldParameterBuild {
-    my ( $Self, %Param ) = @_;
-
-    my $Operator = 'Equals';
-    my $Value    = $Param{Value};
-
-    return {
-        $Operator => $Value,
-    };
-}
-
 1;
-
-=back
 
 =head1 TERMS AND CONDITIONS
 

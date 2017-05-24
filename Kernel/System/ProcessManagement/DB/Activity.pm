@@ -1,6 +1,5 @@
 # --
-# Kernel/System/ProcessManagement/Activity.pm - Process Management DB Activity backend
-# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -27,22 +26,16 @@ our @ObjectDependencies = (
 
 Kernel::System::ProcessManagement::DB::Activity
 
-=head1 SYNOPSIS
+=head1 DESCRIPTION
 
 Process Management DB Activity backend
 
 =head1 PUBLIC INTERFACE
 
-=over 4
+=head2 new()
 
-=cut
+Don't use the constructor directly, use the ObjectManager instead:
 
-=item new()
-
-create an object. Do not use it directly, instead use:
-
-    use Kernel::System::ObjectManager;
-    local $Kernel::OM = Kernel::System::ObjectManager->new();
     my $ActivityObject = $Kernel::OM->Get('Kernel::System::ProcessManagement::DB::Activity');
 
 =cut
@@ -66,7 +59,7 @@ sub new {
     return $Self;
 }
 
-=item ActivityAdd()
+=head2 ActivityAdd()
 
 add new Activity
 
@@ -173,7 +166,7 @@ sub ActivityAdd {
     return $ID;
 }
 
-=item ActivityDelete()
+=head2 ActivityDelete()
 
 delete an Activity
 
@@ -221,7 +214,7 @@ sub ActivityDelete {
     return 1;
 }
 
-=item ActivityGet()
+=head2 ActivityGet()
 
 get Activity attributes
 
@@ -395,7 +388,7 @@ sub ActivityGet {
     return \%Data;
 }
 
-=item ActivityUpdate()
+=head2 ActivityUpdate()
 
 update Activity attributes
 
@@ -514,7 +507,7 @@ sub ActivityUpdate {
     return 1;
 }
 
-=item ActivityList()
+=head2 ActivityList()
 
 get an Activity list
 
@@ -536,6 +529,7 @@ get an Activity list
     $List = {
         'A1' => 'Activity1',
     }
+
 =cut
 
 sub ActivityList {
@@ -595,7 +589,7 @@ sub ActivityList {
     return \%Data;
 }
 
-=item ActivityListGet()
+=head2 ActivityListGet()
 
 get an Activity list with all activity details
 
@@ -690,8 +684,6 @@ sub ActivityListGet {
 }
 
 1;
-
-=back
 
 =head1 TERMS AND CONDITIONS
 

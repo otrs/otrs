@@ -1,6 +1,5 @@
 # --
-# Kernel/System/DynamicField/Driver/Multiselect.pm - Delegate for DynamicField Multiselect Driver
-# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -14,7 +13,7 @@ use warnings;
 
 use Kernel::System::VariableCheck qw(:all);
 
-use base qw(Kernel::System::DynamicField::Driver::BaseSelect);
+use parent qw(Kernel::System::DynamicField::Driver::BaseSelect);
 
 our @ObjectDependencies = (
     'Kernel::Config',
@@ -27,7 +26,7 @@ our @ObjectDependencies = (
 
 Kernel::System::DynamicField::Driver::Multiselect
 
-=head1 SYNOPSIS
+=head1 DESCRIPTION
 
 DynamicFields Multiselect Driver delegate
 
@@ -36,9 +35,7 @@ DynamicFields Multiselect Driver delegate
 This module implements the public interface of L<Kernel::System::DynamicField::Backend>.
 Please look there for a detailed reference of the functions.
 
-=over 4
-
-=item new()
+=head2 new()
 
 usually, you want to create an instance of this
 by using Kernel::System::DynamicField::Backend->new();
@@ -60,9 +57,10 @@ sub new {
         'IsFiltrable'                  => 0,
         'IsStatsCondition'             => 1,
         'IsCustomerInterfaceCapable'   => 1,
+        'IsLikeOperatorCapable'        => 1,
     };
 
-    # get the Dynamic Field Backend custmom extensions
+    # get the Dynamic Field Backend custom extensions
     my $DynamicFieldDriverExtensions
         = $Kernel::OM->Get('Kernel::Config')->Get('DynamicFields::Extension::Driver::Multiselect');
 
@@ -88,7 +86,7 @@ sub new {
             }
         }
 
-        # check if extension contains more behabiors
+        # check if extension contains more behaviors
         if ( IsHashRefWithData( $Extension->{Behaviors} ) ) {
 
             %{ $Self->{Behaviors} } = (
@@ -262,7 +260,7 @@ sub EditFieldRender {
         $Value = $Param{Template}->{$FieldName};
     }
 
-    # extract the dynamic field value form the web request
+    # extract the dynamic field value from the web request
     my $FieldValue = $Self->EditFieldValueGet(
         %Param,
     );
@@ -273,7 +271,7 @@ sub EditFieldRender {
     }
 
     # check and set class if necessary
-    my $FieldClass = 'DynamicFieldText';
+    my $FieldClass = 'DynamicFieldText Modernize';
     if ( defined $Param{Class} && $Param{Class} ne '' ) {
         $FieldClass .= ' ' . $Param{Class};
     }
@@ -416,7 +414,7 @@ sub EditFieldValueGet {
     my $Value;
 
     # check if there is a Template and retrieve the dynamic field value from there
-    if ( IsHashRefWithData( $Param{Template} ) ) {
+    if ( IsHashRefWithData( $Param{Template} ) && defined $Param{Template}->{$FieldName} ) {
         $Value = $Param{Template}->{$FieldName};
     }
 
@@ -505,7 +503,7 @@ sub EditFieldValueValidate {
 sub DisplayValueRender {
     my ( $Self, %Param ) = @_;
 
-    # set HTMLOuput as default if not specified
+    # set HTMLOutput as default if not specified
     if ( !defined $Param{HTMLOutput} ) {
         $Param{HTMLOutput} = 1;
     }
@@ -582,7 +580,7 @@ sub DisplayValueRender {
             }
         }
 
-        # HTMLOuput transformations
+        # HTMLOutput transformations
         if ( $Param{HTMLOutput} ) {
 
             $ReadableValue = $Param{LayoutObject}->Ascii2Html(
@@ -719,7 +717,7 @@ sub StatsFieldParameterBuild {
         Values             => $Values,
         Name               => $Param{DynamicFieldConfig}->{Label},
         Element            => 'DynamicField_' . $Param{DynamicFieldConfig}->{Name},
-        TranslatableValues => $Param{DynamicFieldconfig}->{Config}->{TranslatableValues},
+        TranslatableValues => $Param{DynamicFieldConfig}->{Config}->{TranslatableValues},
         Block              => 'MultiSelectField',
     };
 }
@@ -752,7 +750,7 @@ sub ReadableValueRender {
     # set new line separator
     my $ItemSeparator = ', ';
 
-    # Ouput transformations
+    # Output transformations
     $Value = join( $ItemSeparator, @ReadableValues );
     $Title = $Value;
 
@@ -892,7 +890,7 @@ sub BuildSelectionDataGet {
     my $FilteredPossibleValues = $Param{PossibleValues};
 
     # get the possible values again as it might or might not contain the possible none and it could
-    # oso ve overritten
+    # also be overwritten
     my $ConfigPossibleValues = $Self->PossibleValuesGet(%Param);
 
     # check if $PossibleValues differs from configured PossibleValues
@@ -915,7 +913,7 @@ sub BuildSelectionDataGet {
                 %Values = map { $_ => 1 } @{ $Param{Value} };
             }
 
-            # loop on all filtred possible values
+            # loop on all filtered possible values
             for my $Key ( sort keys %{$FilteredPossibleValues} ) {
 
                 # special case for possible none
@@ -969,7 +967,7 @@ sub BuildSelectionDataGet {
                         # mark element as disabled
                         $DisabledElements{$ElementLongName} = 1;
 
-                        # also set the disabled flag for current emlement to add
+                        # also set the disabled flag for current element to add
                         $Disabled = 1;
                     }
 
@@ -999,8 +997,6 @@ sub BuildSelectionDataGet {
 }
 
 1;
-
-=back
 
 =head1 TERMS AND CONDITIONS
 

@@ -1,6 +1,5 @@
 # --
-# Delete.t - command tests
-# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -13,11 +12,12 @@ use utf8;
 
 use vars (qw($Self));
 
+# get command object
 my $CommandObject = $Kernel::OM->Get('Kernel::System::Console::Command::Maint::Cache::Delete');
 
 my ( $Result, $ExitCode );
 
-my $HelperObject = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
+my $Helper = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
 
 # create cache object and disable inmemory caching to force
 # the cache to read from file system
@@ -26,8 +26,8 @@ $CacheObject->Configure(
     CacheInMemory => 0,
 );
 
-my $ObjectType = $HelperObject->GetRandomID();
-my $ObjectKey  = $HelperObject->GetRandomID();
+my $ObjectType = $Helper->GetRandomID();
+my $ObjectKey  = $Helper->GetRandomNumber();
 
 # create dummy cache entry
 my $CacheSet = $CacheObject->Set(
@@ -62,8 +62,8 @@ $Self->Is(
 );
 
 # create another dummy cache entry with TTL 1 day
-$ObjectType = $HelperObject->GetRandomID();
-$ObjectKey  = $HelperObject->GetRandomID();
+$ObjectType = $Helper->GetRandomID();
+$ObjectKey  = $Helper->GetRandomNumber();
 
 $CacheSet = $CacheObject->Set(
     Type  => $ObjectType,
@@ -98,8 +98,8 @@ $Self->Is(
 );
 
 # create another dummy cache entry with TTL 1 day
-$ObjectType = $HelperObject->GetRandomID();
-$ObjectKey  = $HelperObject->GetRandomID();
+$ObjectType = $Helper->GetRandomID();
+$ObjectKey  = $Helper->GetRandomNumber();
 
 $CacheSet = $CacheObject->Set(
     Type  => $ObjectType,

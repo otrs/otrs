@@ -17,6 +17,10 @@
  * @subsection  Event Graph
  */
 
+.MessageBox + #calendar {
+    margin-top: 10px !important;
+}
+
 div.EventDetails {
     z-index: 5;
     width: 400px;
@@ -90,22 +94,18 @@ div.EventDetails {
 /* User lists, DashboardUserOnline */
 
 .DashboardUser .UserRow,
-.DashboardUserOnline .UserRow {
+.DashboardUserOnline .UserRow p {
     padding-top: 3px;
     clear: both;
 }
 
-.DashboardUserOnline .UserRow a:first-child,
-.DashboardUserOnline .UserRow span:first-child,
-.DashboardUser .UserRow span:first-child {
-    float: left;
-    width: 80%;
+.DashboardUserOnline .UserRow p {
+    display: inline;
     padding-bottom: 3px;
 }
 
-.DashboardUserOnline .UserRow a.DashboardUserOnlineChatStart {
-    float: right;
-    padding-bottom: 0px;
+#RefreshUsers {
+    margin-top: 5px;
 }
 
 } /* end @media */

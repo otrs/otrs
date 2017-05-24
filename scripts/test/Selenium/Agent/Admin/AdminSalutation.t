@@ -1,6 +1,5 @@
 # --
-# AdminSalutation.t - frontend tests for AdminSalutation
-# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -13,26 +12,19 @@ use utf8;
 
 use vars (qw($Self));
 
-use Kernel::System::UnitTest::Helper;
-use Kernel::System::UnitTest::Selenium;
-
 # get needed objects
 my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
 my $DBObject     = $Kernel::OM->Get('Kernel::System::DB');
-
-my $Selenium = Kernel::System::UnitTest::Selenium->new(
-    Verbose => 1,
-);
+my $Selenium     = $Kernel::OM->Get('Kernel::System::UnitTest::Selenium');
 
 $Selenium->RunTest(
     sub {
 
-        my $Helper = Kernel::System::UnitTest::Helper->new(
-            RestoreSystemConfiguration => 1,
-        );
+        # get helper object
+        my $Helper = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
 
         # do not check RichText
-        $Kernel::OM->Get('Kernel::System::SysConfig')->ConfigItemUpdate(
+        $Helper->ConfigSettingChange(
             Valid => 1,
             Key   => 'Frontend::RichText',
             Value => 0
@@ -49,16 +41,21 @@ $Selenium->RunTest(
         );
 
         my $ScriptAlias = $ConfigObject->Get('ScriptAlias');
-
-        $Selenium->get("${ScriptAlias}index.pl?Action=AdminSalutation");
+        $Selenium->VerifiedGet("${ScriptAlias}index.pl?Action=AdminSalutation");
 
         # check overview screen
         $Selenium->find_element( "table",             'css' );
         $Selenium->find_element( "table thead tr th", 'css' );
         $Selenium->find_element( "table tbody tr td", 'css' );
 
+        # check breadcrumb on Overview screen
+        $Self->True(
+            $Selenium->find_element( '.BreadCrumb', 'css' ),
+            "Breadcrumb is found on Overview screen.",
+        );
+
         # click 'Add salutation'
-        $Selenium->find_element("//a[contains(\@href, \'Action=AdminSalutation;Subaction=Add' )]")->click();
+        $Selenium->find_element("//a[contains(\@href, \'Action=AdminSalutation;Subaction=Add' )]")->VerifiedClick();
         for my $ID (
             qw(Name RichText ValidID Comment)
             )
@@ -68,10 +65,22 @@ $Selenium->RunTest(
             $Element->is_displayed();
         }
 
+        # check breadcrumb on Add screen
+        my $Count = 1;
+        for my $BreadcrumbText ( 'Salutation Management', 'Add Salutation' ) {
+            $Self->Is(
+                $Selenium->execute_script("return \$('.BreadCrumb li:eq($Count)').text().trim()"),
+                $BreadcrumbText,
+                "Breadcrumb text '$BreadcrumbText' is found on screen"
+            );
+
+            $Count++;
+        }
+
         # check client side validation
         my $Element = $Selenium->find_element( "#Name", 'css' );
         $Element->send_keys("");
-        $Element->submit();
+        $Element->VerifiedSubmit();
 
         $Self->Is(
             $Selenium->execute_script(
@@ -82,14 +91,14 @@ $Selenium->RunTest(
         );
 
         # create real test Salutation
-        my $SalutationRandomID = "salutation" . $Helper->GetRandomID();
+        my $SalutationRandomID = "Salutation" . $Helper->GetRandomID();
         my $SalutationRichText = "Dear <OTRS_OWNER_Userfirstname>>,\n\nThank you for your request.";
         my $SalutationComment  = "Selenium Salutation test";
 
         $Selenium->find_element( "#Name",     'css' )->send_keys($SalutationRandomID);
         $Selenium->find_element( "#RichText", 'css' )->send_keys($SalutationRichText);
         $Selenium->find_element( "#Comment",  'css' )->send_keys($SalutationComment);
-        $Selenium->find_element( "#Name",     'css' )->submit();
+        $Selenium->find_element( "#Name",     'css' )->VerifiedSubmit();
 
         # check if test Salutation show on AdminSalutation screen
         $Self->True(
@@ -98,7 +107,7 @@ $Selenium->RunTest(
         );
 
         # check test Salutation values
-        $Selenium->find_element( $SalutationRandomID, 'link_text' )->click();
+        $Selenium->find_element( $SalutationRandomID, 'link_text' )->VerifiedClick();
 
         $Self->Is(
             $Selenium->find_element( '#Name', 'css' )->get_value(),
@@ -121,17 +130,29 @@ $Selenium->RunTest(
             "#ValidID stored value",
         );
 
+        # check breadcrumb on Edit screen
+        $Count = 1;
+        for my $BreadcrumbText ( 'Salutation Management', 'Edit Salutation: ' . $SalutationRandomID ) {
+            $Self->Is(
+                $Selenium->execute_script("return \$('.BreadCrumb li:eq($Count)').text().trim()"),
+                $BreadcrumbText,
+                "Breadcrumb text '$BreadcrumbText' is found on screen"
+            );
+
+            $Count++;
+        }
+
         # edit test Salutation, clear comment and set it to invalid
         my $EditSalutationRichText = "Dear <OTRS_CUSTOMER_Userlastname>,\n\nThank you for your request.";
 
-        $Selenium->find_element( "#RichText",                  'css' )->clear();
-        $Selenium->find_element( "#RichText",                  'css' )->send_keys($EditSalutationRichText);
-        $Selenium->find_element( "#Comment",                   'css' )->clear();
-        $Selenium->find_element( "#ValidID option[value='2']", 'css' )->click();
-        $Selenium->find_element( "#Name",                      'css' )->submit();
+        $Selenium->find_element( "#RichText", 'css' )->clear();
+        $Selenium->find_element( "#RichText", 'css' )->send_keys($EditSalutationRichText);
+        $Selenium->find_element( "#Comment",  'css' )->clear();
+        $Selenium->execute_script("\$('#ValidID').val('2').trigger('redraw.InputField').trigger('change');");
+        $Selenium->find_element( "#Name", 'css' )->VerifiedSubmit();
 
         # check edited Salutation
-        $Selenium->find_element( $SalutationRandomID, 'link_text' )->click();
+        $Selenium->find_element( $SalutationRandomID, 'link_text' )->VerifiedClick();
 
         $Self->Is(
             $Selenium->find_element( '#RichText', 'css' )->get_value(),
@@ -149,7 +170,18 @@ $Selenium->RunTest(
             "#ValidID updated value",
         );
 
-        # Since there are no tickets that rely on our test Salutation, we can remove them
+        # go back to AdminSalutation overview screen
+        $Selenium->VerifiedGet("${ScriptAlias}index.pl?Action=AdminSalutation");
+
+        # chack class of invalid Salutation in the overview table
+        $Self->True(
+            $Selenium->execute_script(
+                "return \$('tr.Invalid td a:contains($SalutationRandomID)').length"
+            ),
+            "There is a class 'Invalid' for test Salutation",
+        );
+
+        # since there are no tickets that rely on our test Salutation, we can remove them
         # again from the DB.
         if ($SalutationRandomID) {
             $SalutationRandomID = $DBObject->Quote($SalutationRandomID);
@@ -170,7 +202,7 @@ $Selenium->RunTest(
             Type => 'Salutation'
         );
 
-        }
+    }
 
 );
 

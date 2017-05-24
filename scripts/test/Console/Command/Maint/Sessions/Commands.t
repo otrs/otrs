@@ -1,6 +1,5 @@
 # --
-# Maint/Sessions/Commands.t - command tests
-# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -13,12 +12,21 @@ use utf8;
 
 use vars (qw($Self));
 
+# get helper object
+$Kernel::OM->ObjectParamAdd(
+    'Kernel::System::UnitTest::Helper' => {
+        RestoreDatabase => 1,
+    },
+);
+my $Helper = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
+
 my %NewSessionData = (
     UserLogin => 'root',
     UserEmail => 'root@example.com',
     UserType  => 'User',
 );
 
+# get session object
 my $SessionObject = $Kernel::OM->Get('Kernel::System::AuthSession');
 
 my $SessionID = $SessionObject->CreateSessionID(%NewSessionData);
@@ -30,6 +38,7 @@ $Self->True(
 
 my ( $Result, $ExitCode );
 
+# get ListAll command object
 my $ListAllCommandObject = $Kernel::OM->Get('Kernel::System::Console::Command::Maint::Session::ListAll');
 {
     local *STDOUT;
@@ -48,6 +57,7 @@ $Self->True(
     "SessionID is listed",
 );
 
+# get DeleteAll command object
 my $DeleteAllCommandObject = $Kernel::OM->Get('Kernel::System::Console::Command::Maint::Session::DeleteAll');
 
 $ExitCode = $DeleteAllCommandObject->Execute();
@@ -85,6 +95,7 @@ $Self->True(
 
 $SessionID = $SessionObject->CreateSessionID(%NewSessionData);
 
+# get DeleteExpired command object
 my $DeleteExpiredCommandObject = $Kernel::OM->Get('Kernel::System::Console::Command::Maint::Session::DeleteExpired');
 
 $Kernel::OM->Get('Kernel::Config')->Set(
@@ -108,6 +119,7 @@ $Self->Is(
 
 undef $Result;
 
+# get ListExpired command object
 my $ListExpiredCommandObject = $Kernel::OM->Get('Kernel::System::Console::Command::Maint::Session::ListExpired');
 {
     local *STDOUT;
@@ -163,5 +175,7 @@ $Self->Is(
     0,
     "Expired sessions deleted",
 );
+
+# cleanup cache is done by RestoreDatabase
 
 1;

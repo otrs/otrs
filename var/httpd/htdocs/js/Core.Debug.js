@@ -1,6 +1,5 @@
 // --
-// Core.Debug.js - provides debugging functions
-// Copyright (C) 2001-2012 OTRS AG, http://otrs.org/
+// Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 // --
 // This software comes with ABSOLUTELY NO WARRANTY. For details, see
 // the enclosed file COPYING for license information (AGPL). If you
@@ -38,10 +37,12 @@ Core.Debug = (function (TargetNS) {
      *      Container variable for the generic DebugLog object.
      */
         DebugLog;
+    /*eslint-disable no-console */
     if (typeof console === 'object' && typeof console.log === 'function') {
         DebugConsole = console;
         DebugLog = console.log;
     }
+    /*eslint-enable no-console */
     else if (typeof opera === 'object' && typeof opera.PostError === 'function') {
         DebugConsole = opera;
         DebugLog = opera.PostError;
@@ -76,14 +77,14 @@ Core.Debug = (function (TargetNS) {
      * @param {Boolean} Silent
      *      Do not issue an alert
      *
-     * @return true if the required item was found, false otherwise (an an alert and an exception will be issued in that case)
+     * @return true if the required item was found, false otherwise (an alert and an exception will be issued in that case)
      */
 
     /**
      * @name CheckDependency
      * @memberof Core.Debug
      * @function
-     * @returns {Boolean} True if the required item was found, false otherwise (an an alert and an exception will be issued in that case).
+     * @returns {Boolean} True if the required item was found, false otherwise (an alert and an exception will be issued in that case).
      * @param {String} TargetNamespace - Namespace for which the check is executed.
      * @param {String} Required - The name of the function/namespace whose presence is checked.
      * @param {String} RequiredLabel - Label for the required item which will be included in the error message.
@@ -96,17 +97,24 @@ Core.Debug = (function (TargetNS) {
         var RequiredEval, ErrorMessage;
 
         try {
+            /*eslint-disable no-eval */
             RequiredEval = eval('try{ typeof ' + Required + '} catch (E) {}');
+            /*eslint-enable no-eval */
         }
-        catch (Exception) {
+        catch (Event) {
+            // no code here
+            $.noop(Event);
         }
 
         if (RequiredEval === 'function' || RequiredEval === 'object') {
             return true;
         }
         if (!Silent) {
-            ErrorMessage = 'Namespace ' + TargetNamespace + ' could not be initialized, because ' +
-                RequiredLabel + ' could not be found.';
+
+            ErrorMessage = 'Namespace ' + TargetNamespace + ' could not be initialized, because ' + RequiredLabel + ' could not be found.';
+            if (typeof Core.Language !== 'undefined') {
+                ErrorMessage = Core.Language.Translate('Namespace %s could not be initialized, because %s could not be found.', TargetNamespace, RequiredLabel);
+            }
             alert(ErrorMessage);
             // don't use Core.Exception here, it may not be available
             throw ErrorMessage;
@@ -129,8 +137,6 @@ Core.Debug = (function (TargetNS) {
      */
     TargetNS.SimulateRTLPage = function () {
 
-        $('body').addClass('RTL');
-
         var ExcludeTags = {
             'html': 1,
             'head': 1,
@@ -143,6 +149,9 @@ Core.Debug = (function (TargetNS) {
             'iframe': 1
         },
         Replacement = 'رسال الإجابة (البريد الإلكتروني';
+
+
+        $('body').addClass('RTL');
 
         /**
          * @private

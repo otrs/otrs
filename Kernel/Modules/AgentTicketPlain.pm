@@ -1,6 +1,5 @@
 # --
-# Kernel/Modules/AgentTicketPlain.pm - to get a plain view
-# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -12,21 +11,15 @@ package Kernel::Modules::AgentTicketPlain;
 use strict;
 use warnings;
 
+use Kernel::Language qw(Translatable);
+
+our $ObjectManagerDisabled = 1;
+
 sub new {
     my ( $Type, %Param ) = @_;
 
-    # allocate new hash for object
     my $Self = {%Param};
     bless( $Self, $Type );
-
-    # check needed objects
-    for (qw(ParamObject DBObject TicketObject LayoutObject LogObject ConfigObject UserObject)) {
-        if ( !$Self->{$_} ) {
-            $Self->{LayoutObject}->FatalError( Message => "Got no $_!" );
-        }
-    }
-
-    $Self->{ArticleID} = $Self->{ParamObject}->GetParam( Param => 'ArticleID' );
 
     return $Self;
 }
@@ -34,46 +27,69 @@ sub new {
 sub Run {
     my ( $Self, %Param ) = @_;
 
-    # check needed stuff
-    if ( !$Self->{ArticleID} ) {
-        return $Self->{LayoutObject}->ErrorScreen(
-            Message => 'No ArticleID!',
-            Comment => 'Please contact your administrator'
+    my $TicketID = $Self->{TicketID};
+    my $ArticleID = $Kernel::OM->Get('Kernel::System::Web::Request')->GetParam( Param => 'ArticleID' );
+
+    my $LayoutObject = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
+
+    if ( !$ArticleID ) {
+        return $LayoutObject->ErrorScreen(
+            Message => Translatable('No ArticleID!'),
+            Comment => Translatable('Please contact the administrator.'),
         );
     }
 
+    my %Ticket = $Kernel::OM->Get('Kernel::System::Ticket')->TicketGet(
+        TicketID => $TicketID,
+    );
+
     # check permissions
-    my $Access = $Self->{TicketObject}->TicketPermission(
+    my $Access = $Kernel::OM->Get('Kernel::System::Ticket')->TicketPermission(
         Type     => 'ro',
-        TicketID => $Self->{TicketID},
+        TicketID => $TicketID,
         UserID   => $Self->{UserID}
     );
 
     # error screen, don't show ticket
     if ( !$Access ) {
-        return $Self->{LayoutObject}->NoPermission();
+        return $LayoutObject->NoPermission();
     }
 
-    my %Article = $Self->{TicketObject}->ArticleGet(
-        ArticleID     => $Self->{ArticleID},
-        DynamicFields => 0,
+    my $ArticleObject        = $Kernel::OM->Get('Kernel::System::Ticket::Article');
+    my $ArticleBackendObject = $ArticleObject->BackendForArticle(
+        TicketID  => $TicketID,
+        ArticleID => $ArticleID,
     );
-    my $Plain = $Self->{TicketObject}->ArticlePlain( ArticleID => $Self->{ArticleID} );
-    if ( !$Plain ) {
-        return $Self->{LayoutObject}->ErrorScreen(
-            Message => 'Can\'t read plain article! Maybe there is no plain email in backend! '
-            , 'Read BackendMessage.',
-            Comment => 'Please contact your administrator',
+    if ( $ArticleBackendObject->ChannelNameGet() ne 'Email' ) {
+        return $LayoutObject->ErrorScreen(
+            Message => Translatable('This is not an email article.'),
+            Comment => Translatable('Please contact the administrator.'),
         );
     }
 
-    # download email
-    if ( $Self->{Subaction} eq 'Download' ) {
+    my %Article = $ArticleBackendObject->ArticleGet(
+        TicketID  => $TicketID,
+        ArticleID => $ArticleID,
+        UserID    => $Self->{UserID},
+    );
 
-        # return file
-        my $Filename = "Ticket-$Article{TicketNumber}-TicketID-$Article{TicketID}-"
-            . "ArticleID-$Article{ArticleID}.eml";
-        return $Self->{LayoutObject}->Attachment(
+    my $Plain = $ArticleBackendObject->ArticlePlain(
+        TicketID  => $TicketID,
+        ArticleID => $ArticleID
+    );
+    if ( !$Plain ) {
+        return $LayoutObject->ErrorScreen(
+            Message => Translatable(
+                'Can\'t read plain article! Maybe there is no plain email in backend! Read backend message.'
+            ),
+            Comment => Translatable('Please contact the administrator.'),
+        );
+    }
+
+    # Download email.
+    if ( $Self->{Subaction} eq 'Download' ) {
+        my $Filename = "Ticket-$Ticket{TicketNumber}-TicketID-$TicketID-ArticleID-$ArticleID.eml";
+        return $LayoutObject->Attachment(
             Filename    => $Filename,
             ContentType => 'message/rfc822',
             Content     => $Plain,
@@ -81,15 +97,15 @@ sub Run {
         );
     }
 
-    # show plain emails
-    $Plain = $Self->{LayoutObject}->Ascii2Html(
+    # Show plain emails.
+    $Plain = $LayoutObject->Ascii2Html(
         Text           => $Plain,
         HTMLResultMode => 1,
     );
 
-    # do some highlightings
+    # Do some highlightings.
     $Plain
-        =~ s/^((From|To|Cc|Bcc|Subject|Reply-To|Organization|X-Company):.*)/<span class="Error">$1<\/span>/gmi;
+        =~ s/^((From|To|Cc|Bcc|Subject|Reply-To|Organization|X-Company|Content-Type|Content-Transfer-Encoding):.*)/<span class="Error">$1<\/span>/gmi;
     $Plain =~ s/^(Date:.*)/<span class="Error">$1<\/span>/m;
     $Plain
         =~ s/^((X-Mailer|User-Agent|X-OS):.*(Mozilla|Win?|Outlook|Microsoft|Internet Mail Service).*)/<span class="Error">$1<\/span>/gmi;
@@ -97,17 +113,18 @@ sub Run {
     $Plain =~ s/^(From .*)/<span class="Error">$1<\/span>/gm;
     $Plain =~ s/^(X-OTRS.*)/<span class="Error">$1<\/span>/gmi;
 
-    my $Output = $Self->{LayoutObject}->Header(
+    my $Output = $LayoutObject->Header(
         Type => 'Small',
     );
-    $Output .= $Self->{LayoutObject}->Output(
+    $Output .= $LayoutObject->Output(
         TemplateFile => 'AgentTicketPlain',
         Data         => {
             Text => $Plain,
+            %Ticket,
             %Article,
         },
     );
-    $Output .= $Self->{LayoutObject}->Footer(
+    $Output .= $LayoutObject->Footer(
         Type => 'Small',
     );
     return $Output;

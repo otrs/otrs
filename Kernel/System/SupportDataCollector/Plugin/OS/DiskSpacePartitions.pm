@@ -1,6 +1,5 @@
 # --
-# Kernel/System/SupportDataCollector/Plugin/OS/DiskSpacePartitions.pm - system data collector plugin
-# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -12,12 +11,14 @@ package Kernel::System::SupportDataCollector::Plugin::OS::DiskSpacePartitions;
 use strict;
 use warnings;
 
-use base qw(Kernel::System::SupportDataCollector::PluginBase);
+use parent qw(Kernel::System::SupportDataCollector::PluginBase);
+
+use Kernel::Language qw(Translatable);
 
 our @ObjectDependencies = ();
 
 sub GetDisplayPath {
-    return 'Operating System/Disk Partitions Usage';
+    return Translatable('Operating System') . '/' . Translatable('Disk Partitions Usage');
 }
 
 sub Run {
@@ -79,7 +80,7 @@ sub Run {
         $PreviousLine = '';
     }
 
-    my %UsedIdentifiers;
+    my %SeenPartitions;
     LINE:
     for my $Line (@CleanLines) {
 
@@ -87,19 +88,16 @@ sub Run {
         $Line =~ s{\A\s+}{};
 
         if ( $Line =~ m{\A .+? \s .* \s \d+ % .+? \z}msx ) {
-            my ( $Partition, $UsedPercent ) = $Line =~ m{\A (.+?) \s .*? \s (\d+)%.+? \z}msx;
+            my ( $Partition, $UsedPercent, $MountPoint ) = $Line =~ m{\A (.+?) \s .*? \s (\d+)%.+? (/.*) \z}msx;
 
-            my $Identifier = $Partition;
-            if ( defined $UsedIdentifiers{$Partition} ) {
-                $Identifier .= '_' . $UsedIdentifiers{$Partition};
-                $UsedIdentifiers{$Partition}++;
-            }
-            else {
-                $UsedIdentifiers{$Partition} = 1;
-            }
+            $MountPoint //= '';
+
+            $Partition = "$MountPoint ($Partition)";
+
+            next LINE if $SeenPartitions{$Partition}++;
 
             $Self->AddResultInformation(
-                Identifier => $Identifier,
+                Identifier => $Partition,
                 Label      => $Partition,
                 Value      => $UsedPercent . '%',
             );
@@ -108,17 +106,5 @@ sub Run {
 
     return $Self->GetResults();
 }
-
-=back
-
-=head1 TERMS AND CONDITIONS
-
-This software is part of the OTRS project (L<http://otrs.org/>).
-
-This software comes with ABSOLUTELY NO WARRANTY. For details, see
-the enclosed file COPYING for license information (AGPL). If you
-did not receive this file, see L<http://www.gnu.org/licenses/agpl.txt>.
-
-=cut
 
 1;

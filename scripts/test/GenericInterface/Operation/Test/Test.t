@@ -1,6 +1,5 @@
 # --
-# Test.t - Operations tests
-# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -16,14 +15,14 @@ use vars (qw($Self));
 use Kernel::GenericInterface::Debugger;
 use Kernel::GenericInterface::Operation;
 
-# helper object
+# get helper object
 # skip SSL certificate verification
 $Kernel::OM->ObjectParamAdd(
     'Kernel::System::UnitTest::Helper' => {
         SkipSSLVerify => 1,
     },
 );
-my $HelperObject = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
+my $Helper = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
 
 my $DebuggerObject = Kernel::GenericInterface::Debugger->new(
     DebuggerConfig => {
@@ -38,6 +37,7 @@ my $DebuggerObject = Kernel::GenericInterface::Debugger->new(
 my $OperationObject = Kernel::GenericInterface::Operation->new(
     DebuggerObject => $DebuggerObject,
     WebserviceID   => 1,
+    Operation      => 'Test',
     OperationType  => 'Test::Test',
 );
 $Self->Is(
@@ -119,12 +119,6 @@ for my $Test (@OperationTests) {
         $OperationResult->{Data},
         $Test->{ResultData},
         'Test data set ' . $Counter . ' Test: Data Structure.',
-    );
-
-    $Self->Is(
-        $OperationResult->{Success},
-        $Test->{ResultSuccess},
-        'Test data set ' . $Counter . ' success status',
     );
 
     if ( !$OperationResult->{Success} && $Test->{ResultErrorMessage} ) {

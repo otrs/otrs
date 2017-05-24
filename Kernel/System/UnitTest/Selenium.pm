@@ -1,6 +1,5 @@
 # --
-# Selenium.pm - run frontend tests
-# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -8,28 +7,32 @@
 # --
 
 package Kernel::System::UnitTest::Selenium;
-## nofilter(TidyAll::Plugin::OTRS::Perl::Goto)
 
 use strict;
 use warnings;
 
-use base qw(Selenium::Remote::Driver);
 use MIME::Base64();
+use File::Path();
 use File::Temp();
+use Time::HiRes();
 
 use Kernel::Config;
 use Kernel::System::User;
+use Kernel::System::UnitTest::Helper;
 
 our @ObjectDependencies = (
     'Kernel::Config',
+    'Kernel::System::AuthSession',
     'Kernel::System::Log',
     'Kernel::System::Main',
+    'Kernel::System::Time',
     'Kernel::System::UnitTest',
+    'Kernel::System::UnitTest::Helper',
 );
 
 =head1 NAME
 
-Kernel::System::UnitTest::Selenium - run frontend tests
+Kernel::System::UnitTest::Selenium - run front end tests
 
 This class inherits from Selenium::Remote::Driver. You can use
 its full API (see
@@ -38,28 +41,29 @@ L<http://search.cpan.org/~aivaturi/Selenium-Remote-Driver-0.15/lib/Selenium/Remo
 Every successful Selenium command will be logged as a successful unit test.
 In case of an error, an exception will be thrown that you can catch in your
 unit test file and handle with C<HandleError()> in this class. It will output
-a failing test result and generate a screenshot for analysis.
+a failing test result and generate a screen shot for analysis.
 
-=over 4
+=head2 new()
 
-=cut
+create a selenium object to run front end tests.
 
-=item new()
+To do this, you need a running C<selenium> or C<phantomjs> server.
 
-create a selenium object to run fontend tests.
-
-To do this, you need a running selenium or phantomjs server.
-
-Specify the connection details in Config.pm, like this:
+Specify the connection details in C<Config.pm>, like this:
 
     $Self->{'SeleniumTestsConfig'} = {
         remote_server_addr  => 'localhost',
         port                => '4444',
         browser_name        => 'phantomjs',
         platform            => 'ANY',
+        window_height       => 1200,    # optional, default 1000
+        window_width        => 1600,    # optional, default 1200
+        extra_capabilities => {
+            marionette     => \0,   # Required to run FF 47 or older on Selenium 3+.
+        },
     };
 
-Then you can use the full API of Selenium::Remote::Driver on this object.
+Then you can use the full API of L<Selenium::Remote::Driver> on this object.
 
 =cut
 
@@ -84,37 +88,37 @@ sub new {
         }
     }
 
-    my $Self = $Class->SUPER::new(%SeleniumTestsConfig);
+    $Kernel::OM->Get('Kernel::System::Main')->RequireBaseClass('Selenium::Remote::Driver')
+        || die "Could not load Selenium::Remote::Driver";
+
+    $Kernel::OM->Get('Kernel::System::Main')->Require('Kernel::System::UnitTest::Selenium::WebElement')
+        || die "Could not load Kernel::System::UnitTest::Selenium::WebElement";
+
+    my $Self = $Class->SUPER::new(
+        webelement_class => 'Kernel::System::UnitTest::Selenium::WebElement',
+        %SeleniumTestsConfig
+    );
     $Self->{UnitTestObject}      = $Param{UnitTestObject};
     $Self->{SeleniumTestsActive} = 1;
 
     #$Self->debug_on();
-    $Self->set_window_size( 1024, 768 );
 
-    # get remote host with some precautions for certain unit test systems
-    my $FQDN = $Kernel::OM->Get('Kernel::Config')->Get('FQDN');
+    # set screen size from config or use defauls
+    my $Height = $SeleniumTestsConfig{window_height} || 1200;
+    my $Width  = $SeleniumTestsConfig{window_width}  || 1400;
 
-    # try to resolve fqdn host
-    if ( $FQDN ne 'yourhost.example.com' && gethostbyname($FQDN) ) {
-        $Self->{BaseURL} = $FQDN;
-    }
+    $Self->set_window_size( $Height, $Width );
 
-    # try to resolve localhost instead
-    if ( !$Self->{BaseURL} && gethostbyname('localhost') ) {
-        $Self->{BaseURL} = 'localhost';
-    }
+    $Self->{BaseURL} = $Kernel::OM->Get('Kernel::Config')->Get('HttpType') . '://';
+    $Self->{BaseURL} .= Kernel::System::UnitTest::Helper->GetTestHTTPHostname();
 
-    # use hardcoded localhost ip address
-    if ( !$Self->{BaseURL} ) {
-        $Self->{BaseURL} = '127.0.0.1';
-    }
-
-    $Self->{BaseURL} = $Kernel::OM->Get('Kernel::Config')->Get('HttpType') . '://' . $Self->{BaseURL};
+    # Remember the start system time for the selenium test run.
+    $Self->{TestStartSystemTime} = $Kernel::OM->Get('Kernel::System::Time')->SystemTime();
 
     return $Self;
 }
 
-=item RunTest()
+=head2 RunTest()
 
 runs a selenium test if Selenium testing is configured and performs proper
 error handling (calls C<HandleError()> if needed).
@@ -139,12 +143,16 @@ sub RunTest {
     return 1;
 }
 
-=item _execute_command()
+=begin Internal:
+
+=head2 _execute_command()
 
 Override internal command of base class.
 
 We use it to output successful command runs to the UnitTest object.
 Errors will cause an exeption and be caught elsewhere.
+
+=end Internal:
 
 =cut
 
@@ -161,17 +169,23 @@ sub _execute_command {    ## no critic
         }
     );
 
-    $Self->{UnitTestObject}->True(
-        1,
-        $TestName
-    );
+    if ( $Self->{SuppressCommandRecording} ) {
+        print $TestName;
+    }
+    else {
+        $Self->{UnitTestObject}->True( 1, $TestName );
+    }
 
     return $Result;
 }
 
-=item get()
+=head2 get()
 
 Override get method of base class to prepend the correct base URL.
+
+    $SeleniumObject->get(
+        $URL,
+    );
 
 =cut
 
@@ -187,7 +201,53 @@ sub get {    ## no critic
     return;
 }
 
-=item Login()
+=head2 VerifiedGet()
+
+perform a get() call, but wait for the page to be fully loaded (works only within OTRS).
+Will die() if the verification fails.
+
+    $SeleniumObject->VerifiedGet(
+        $URL,
+    );
+
+=cut
+
+sub VerifiedGet {
+    my ( $Self, $URL ) = @_;
+
+    $Self->get($URL);
+
+    $Self->WaitFor(
+        JavaScript =>
+            'return typeof(Core) == "object" && typeof(Core.App) == "object" && Core.App.PageLoadComplete'
+    ) || die "OTRS API verification failed after page load.";
+
+    return;
+}
+
+=head2 VerifiedRefresh()
+
+perform a refresh() call, but wait for the page to be fully loaded (works only within OTRS).
+Will die() if the verification fails.
+
+    $SeleniumObject->VerifiedRefresh();
+
+=cut
+
+sub VerifiedRefresh {
+    my ( $Self, $URL ) = @_;
+
+    $Self->refresh();
+
+    $Self->WaitFor(
+        JavaScript =>
+            'return typeof(Core) == "object" && typeof(Core.App) == "object" && Core.App.PageLoadComplete'
+    ) || die "OTRS API verification failed after page load.";
+
+    return;
+}
+
+=head2 Login()
 
 login to agent or customer interface
 
@@ -215,68 +275,184 @@ sub Login {
 
     $Self->{UnitTestObject}->True( 1, 'Initiating login...' );
 
-    eval {
-        $Self->delete_all_cookies();
+    # we will try several times to log in
+    my $MaxTries = 5;
 
-        my $ScriptAlias = $Kernel::OM->Get('Kernel::Config')->Get('ScriptAlias');
+    TRY:
+    for my $Try ( 1 .. $MaxTries ) {
 
-        if ( $Param{Type} eq 'Agent' ) {
-            $ScriptAlias .= 'index.pl';
-        }
-        else {
-            $ScriptAlias .= 'customer.pl';
-        }
+        eval {
+            my $ScriptAlias = $Kernel::OM->Get('Kernel::Config')->Get('ScriptAlias');
 
-        # First load the page so we can delete any pre-existing cookies
-        $Self->get("${ScriptAlias}");
-        $Self->delete_all_cookies();
-
-        # Now load it again to login
-        $Self->get("${ScriptAlias}");
-
-        my $Element = $Self->find_element( 'input#User', 'css' );
-        $Element->is_displayed();
-        $Element->is_enabled();
-        $Element->send_keys( $Param{User} );
-
-        $Element = $Self->find_element( 'input#Password', 'css' );
-        $Element->is_displayed();
-        $Element->is_enabled();
-        $Element->send_keys( $Param{Password} );
-
-        # login
-        $Element->submit();
-
-        # Wait until form has loaded, if neccessary
-        ACTIVESLEEP:
-        for my $Second ( 1 .. 20 ) {
-            if ( $Self->execute_script("return \$('a#LogoutButton').length") ) {
-                last ACTIVESLEEP;
+            if ( $Param{Type} eq 'Agent' ) {
+                $ScriptAlias .= 'index.pl';
             }
-            sleep 1;
+            else {
+                $ScriptAlias .= 'customer.pl';
+            }
+
+            $Self->get("${ScriptAlias}");
+
+            $Self->delete_all_cookies();
+            $Self->VerifiedGet("${ScriptAlias}?Action=Login;User=$Param{User};Password=$Param{Password}");
+
+            # login successful?
+            $Self->find_element( 'a#LogoutButton', 'css' );    # dies if not found
+
+            $Self->{UnitTestObject}->True( 1, 'Login sequence ended...' );
+        };
+
+        # an error happend
+        if ($@) {
+
+            $Self->{UnitTestObject}->True( 1, "Login attempt $Try of $MaxTries not successful." );
+
+            # try again
+            next TRY if $Try < $MaxTries;
+
+            # log error
+            $Self->HandleError($@);
+            die "Login failed!";
         }
 
-        # login succressful?
-        $Element = $Self->find_element( 'a#LogoutButton', 'css' );
-
-        $Self->{UnitTestObject}->True( 1, 'Login sequence ended...' );
-    };
-    if ($@) {
-        $Self->HandleError($@);
-        die "Login failed!";
+        # login was sucessful
+        else {
+            last TRY;
+        }
     }
 
     return 1;
 }
 
-=item HandleError()
+=head2 WaitFor()
+
+wait with increasing sleep intervals until the given condition is true or the wait time is over.
+Exactly one condition (JavaScript or WindowCount) must be specified.
+
+    my $Success = $SeleniumObject->WaitFor(
+        JavaScript   => 'return $(".someclass").length',   # Javascript code that checks condition
+        AlertPresent => 1,                                 # Wait until an alert, confirm or prompt dialog is present
+        WindowCount  => 2,                                 # Wait until this many windows are open
+        Callback     => sub { ... }                        # Wait until function returns true
+        Time         => 20,                                # optional, wait time in seconds (default 20)
+    );
+
+=cut
+
+sub WaitFor {
+    my ( $Self, %Param ) = @_;
+
+    if ( !$Param{JavaScript} && !$Param{WindowCount} && !$Param{AlertPresent} && !$Param{Callback} ) {
+        die "Need JavaScript, WindowCount or AlertPresent.";
+    }
+
+    local $Self->{SuppressCommandRecording} = 1;
+
+    $Param{Time} //= 20;
+    my $WaitedSeconds = 0;
+    my $Interval      = 0.1;
+
+    while ( $WaitedSeconds <= $Param{Time} ) {
+        if ( $Param{JavaScript} ) {
+            return 1 if $Self->execute_script( $Param{JavaScript} )
+        }
+        elsif ( $Param{WindowCount} ) {
+            return 1 if scalar( @{ $Self->get_window_handles() } ) == $Param{WindowCount};
+        }
+        elsif ( $Param{AlertPresent} ) {
+
+            # Eval is needed because the method would throw if no alert is present (yet).
+            return 1 if eval { $Self->get_alert_text() };
+        }
+        elsif ( $Param{Callback} ) {
+            return 1 if $Param{Callback}->();
+        }
+        Time::HiRes::sleep($Interval);
+        $WaitedSeconds += $Interval;
+        $Interval += 0.1;
+    }
+
+    my $Argument = '';
+    for my $Key (qw(JavaScript WindowCount AlertPresent)) {
+        $Argument = "$Key => $Param{$Key}" if $Param{$Key};
+    }
+    $Argument = "Callback" if $Param{Callback};
+
+    die "WaitFor($Argument) failed.";
+}
+
+=head2 DragAndDrop()
+
+Drag and drop an element.
+
+    $SeleniumObject->DragAndDrop(
+        Element         => '.Element', # (required) css selector of element which should be dragged
+        Target          => '.Target',  # (required) css selector of element on which the dragged element should be dropped
+        TargetOffset    => {           # (optional) Offset for target. If not specified, the mouse will move to the middle of the element.
+            X   => 150,
+            Y   => 100,
+        }
+    );
+
+=cut
+
+sub DragAndDrop {
+
+    my ( $Self, %Param ) = @_;
+
+    # Value is optional parameter
+    for my $Needed (qw(Element Target)) {
+        if ( !$Param{$Needed} ) {
+            die "Need $Needed";
+        }
+    }
+
+    my %TargetOffset;
+    if ( $Param{TargetOffset} ) {
+        %TargetOffset = (
+            xoffset => $Param{TargetOffset}->{X} || 0,
+            yoffset => $Param{TargetOffset}->{Y} || 0,
+        );
+    }
+
+    # Make sure Element is visible
+    $Self->WaitFor(
+        JavaScript => 'return typeof($) === "function" && $(\'' . $Param{Element} . ':visible\').length;',
+    );
+    my $Element = $Self->find_element( $Param{Element}, 'css' );
+
+    # Move mouse to from element, drag and drop
+    $Self->mouse_move_to_location( element => $Element );
+
+    # Holds the mouse button on the element
+    $Self->button_down();
+
+    # Make sure Target is visible
+    $Self->WaitFor(
+        JavaScript => 'return typeof($) === "function" && $(\'' . $Param{Target} . ':visible\').length;',
+    );
+    my $Target = $Self->find_element( $Param{Target}, 'css' );
+
+    # Move mouse to the destination
+    $Self->mouse_move_to_location(
+        element => $Target,
+        %TargetOffset,
+    );
+
+    # Release
+    $Self->button_up();
+
+    return;
+}
+
+=head2 HandleError()
 
 use this method to handle any Selenium exceptions.
 
     $SeleniumObject->HandleError($@);
 
-It will create a failing test result and store a screenshot of the page
-for analysis.
+It will create a failing test result and store a screen shot of the page
+for analysis (in folder /var/otrs-unittest if it exists, in $Home/var/httpd/htdocs otherwise).
 
 =cut
 
@@ -290,33 +466,58 @@ sub HandleError {
     return if !$Data;
     $Data = MIME::Base64::decode_base64($Data);
 
-    # This file should survive unit test scenario runs, so save it in a global directory.
-    my ( $FH, $Filename ) = File::Temp::tempfile(
-        DIR    => '/tmp/',
-        SUFFIX => '.png',
-        UNLINK => 0,
-    );
-    close $FH;
+    #
+    # Store screenshots in a local folder from where they can be opened directly in the browser.
+    #
+    my $LocalScreenshotDir = $Kernel::OM->Get('Kernel::Config')->Get('Home') . '/var/httpd/htdocs/SeleniumScreenshots';
+    mkdir $LocalScreenshotDir || return $Self->False( 1, "Could not create $LocalScreenshotDir." );
+
+    my $Filename = $Kernel::OM->Get('Kernel::System::Time')->CurrentTimestamp();
+    $Filename .= '-' . ( int rand 100_000_000 ) . '.png';
+    $Filename =~ s{[ :]}{-}smxg;
+
+    my $HttpType = $Kernel::OM->Get('Kernel::Config')->Get('HttpType');
+    my $Hostname = $Kernel::OM->Get('Kernel::System::UnitTest::Helper')->GetTestHTTPHostname();
+    my $URL      = "$HttpType://$Hostname/"
+        . $Kernel::OM->Get('Kernel::Config')->Get('Frontend::WebPath')
+        . "SeleniumScreenshots/$Filename";
+
     $Kernel::OM->Get('Kernel::System::Main')->FileWrite(
-        Location => $Filename,
-        Content  => \$Data,
-    );
+        Directory => $LocalScreenshotDir,
+        Filename  => $Filename,
+        Content   => \$Data,
+    ) || return $Self->False( 1, "Could not write file $LocalScreenshotDir/$Filename" );
 
-    $Self->{UnitTestObject}->False(
-        1,
-        "Saved screenshot in file://$Filename",
-    );
+    #
+    # If a shared screenshot folder is present, then we also store the screenshot there for external use.
+    #
+    if ( -d '/var/otrs-unittest/' ) {
 
-    #}
+        my $SharedScreenshotDir = '/var/otrs-unittest/SeleniumScreenshots';
+        mkdir $SharedScreenshotDir || return $Self->False( 1, "Could not create $SharedScreenshotDir." );
+
+        $Kernel::OM->Get('Kernel::System::Main')->FileWrite(
+            Directory => $SharedScreenshotDir,
+            Filename  => $Filename,
+            Content   => \$Data,
+        ) || return $Self->False( 1, "Could not write file $SharedScreenshotDir/$Filename" );
+    }
+
+    $Self->{UnitTestObject}->False( 1, "Saved screenshot in $URL" );
+    $Self->{UnitTestObject}->AttachSeleniumScreenshot(
+        Filename => $Filename,
+        Content  => $Data
+    );
 }
 
-=item DESTROY()
+=head2 DEMOLISH()
 
-cleanup. Adds a unit test result to indicate the shutdown.
+override DEMOLISH from L<Selenium::Remote::Driver> (required because this class is managed by L<Moo>).
+Adds a unit test result to indicate the shutdown, and performs some clean-ups.
 
 =cut
 
-sub DESTROY {
+sub DEMOLISH {
     my $Self = shift;
 
     # Could be missing on early die.
@@ -325,13 +526,39 @@ sub DESTROY {
     }
 
     if ( $Self->{SeleniumTestsActive} ) {
-        $Self->SUPER::DESTROY();
+        $Self->SUPER::DEMOLISH(@_);
+    }
+
+    # Cleanup possibly leftover zombie firefox profiles.
+    my @LeftoverFirefoxProfiles = $Kernel::OM->Get('Kernel::System::Main')->DirectoryRead(
+        Directory => '/tmp/',
+        Filter    => 'anonymous*webdriver-profile',
+    );
+
+    for my $LeftoverFirefoxProfile (@LeftoverFirefoxProfiles) {
+        if ( -d $LeftoverFirefoxProfile ) {
+            File::Path::remove_tree($LeftoverFirefoxProfile);
+        }
+    }
+
+    # Cleanup all sessions, which was created after the selenium test start time.
+    my $AuthSessionObject = $Kernel::OM->Get('Kernel::System::AuthSession');
+
+    my @Sessions = $AuthSessionObject->GetAllSessionIDs();
+
+    SESSION:
+    for my $SessionID (@Sessions) {
+
+        my %SessionData = $AuthSessionObject->GetSessionIDData( SessionID => $SessionID );
+
+        next SESSION if !%SessionData;
+        next SESSION if $SessionData{UserSessionStart} && $SessionData{UserSessionStart} < $Self->{TestStartSystemTime};
+
+        $AuthSessionObject->RemoveSessionID( SessionID => $SessionID );
     }
 }
 
 1;
-
-=back
 
 =head1 TERMS AND CONDITIONS
 

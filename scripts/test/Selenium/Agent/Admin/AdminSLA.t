@@ -1,6 +1,5 @@
 # --
-# AdminSLA.t - frontend tests for AdminSLA
-# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -13,23 +12,15 @@ use utf8;
 
 use vars (qw($Self));
 
-use Kernel::System::UnitTest::Helper;
-use Kernel::System::UnitTest::Selenium;
-
 # get needed objects
 my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
 my $DBObject     = $Kernel::OM->Get('Kernel::System::DB');
-
-my $Selenium = Kernel::System::UnitTest::Selenium->new(
-    Verbose => 1,
-);
+my $Selenium     = $Kernel::OM->Get('Kernel::System::UnitTest::Selenium');
 
 $Selenium->RunTest(
     sub {
 
-        my $Helper = Kernel::System::UnitTest::Helper->new(
-            RestoreSystemConfiguration => 0,
-        );
+        my $Helper = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
 
         my $TestUserLogin = $Helper->TestUserCreate(
             Groups => ['admin'],
@@ -43,15 +34,21 @@ $Selenium->RunTest(
 
         my $ScriptAlias = $ConfigObject->Get('ScriptAlias');
 
-        $Selenium->get("${ScriptAlias}index.pl?Action=AdminSLA");
+        $Selenium->VerifiedGet("${ScriptAlias}index.pl?Action=AdminSLA");
 
         # check overview screen
         $Selenium->find_element( "table",             'css' );
         $Selenium->find_element( "table thead tr th", 'css' );
         $Selenium->find_element( "table tbody tr td", 'css' );
 
+        # check breadcrumb on Overview screen
+        $Self->True(
+            $Selenium->find_element( '.BreadCrumb', 'css' ),
+            "Breadcrumb is found on Overview screen.",
+        );
+
         # click "Add SLA"
-        $Selenium->find_element("//a[contains(\@href, \'Subaction=SLAEdit' )]")->click();
+        $Selenium->find_element("//a[contains(\@href, \'Subaction=SLAEdit' )]")->VerifiedClick();
 
         # check add SLA screen
         for my $ID (
@@ -66,7 +63,7 @@ $Selenium->RunTest(
 
         # check client side validation
         $Selenium->find_element( "#Name", 'css' )->clear();
-        $Selenium->find_element( "#Name", 'css' )->submit();
+        $Selenium->find_element( "#Name", 'css' )->VerifiedSubmit();
         $Self->Is(
             $Selenium->execute_script(
                 "return \$('#Name').hasClass('Error')"
@@ -75,13 +72,25 @@ $Selenium->RunTest(
             'Client side validation correctly detected missing input value',
         );
 
+        # check breadcrumb on Add screen
+        my $Count = 1;
+        for my $BreadcrumbText ( 'SLA Management', 'Add SLA' ) {
+            $Self->Is(
+                $Selenium->execute_script("return \$('.BreadCrumb li:eq($Count)').text().trim()"),
+                $BreadcrumbText,
+                "Breadcrumb text '$BreadcrumbText' is found on screen"
+            );
+
+            $Count++;
+        }
+
         # create test SLA
         my $SLARandomID = "SLA" . $Helper->GetRandomID();
         my $SLAComment  = "Selenium SLA test";
 
         $Selenium->find_element( "#Name",    'css' )->send_keys($SLARandomID);
         $Selenium->find_element( "#Comment", 'css' )->send_keys($SLAComment);
-        $Selenium->find_element( "#Name",    'css' )->submit();
+        $Selenium->find_element( "#Name",    'css' )->VerifiedSubmit();
 
         # check if test SLA show on AdminSLA screen
         $Self->True(
@@ -90,7 +99,7 @@ $Selenium->RunTest(
         );
 
         # check test SLA values
-        $Selenium->find_element( $SLARandomID, 'link_text' )->click();
+        $Selenium->find_element( $SLARandomID, 'link_text' )->VerifiedClick();
 
         $Self->Is(
             $Selenium->find_element( '#Name', 'css' )->get_value(),
@@ -108,13 +117,33 @@ $Selenium->RunTest(
             "#ValidID stored value",
         );
 
+        # check breadcrumb on Edit screen
+        $Count = 1;
+        for my $BreadcrumbText ( 'SLA Management', 'Edit SLA: ' . $SLARandomID ) {
+            $Self->Is(
+                $Selenium->execute_script("return \$('.BreadCrumb li:eq($Count)').text().trim()"),
+                $BreadcrumbText,
+                "Breadcrumb text '$BreadcrumbText' is found on screen"
+            );
+
+            $Count++;
+        }
+
         # remove test SLA comment and set it to invalid
-        $Selenium->find_element( "#Comment",                   'css' )->clear();
-        $Selenium->find_element( "#ValidID option[value='2']", 'css' )->click();
-        $Selenium->find_element( "#Name",                      'css' )->submit();
+        $Selenium->find_element( "#Comment", 'css' )->clear();
+        $Selenium->execute_script("\$('#ValidID').val('2').trigger('redraw.InputField').trigger('change');");
+        $Selenium->find_element( "#Name", 'css' )->VerifiedSubmit();
+
+        # check class of invalid SLA in the overview table
+        $Self->True(
+            $Selenium->execute_script(
+                "return \$('tr.Invalid td a:contains($SLARandomID)').length"
+            ),
+            "There is a class 'Invalid' for test SLA",
+        );
 
         # check edited SLA values
-        $Selenium->find_element( $SLARandomID, 'link_text' )->click();
+        $Selenium->find_element( $SLARandomID, 'link_text' )->VerifiedClick();
 
         $Self->Is(
             $Selenium->find_element( '#Comment', 'css' )->get_value(),
@@ -127,12 +156,19 @@ $Selenium->RunTest(
             "#ValidID stored value",
         );
 
-        # Since there are no tickets that rely on our test SLA we can remove it from DB
+        # since there are no tickets that rely on our test SLA we can remove it from DB
         my $SLAID = $Kernel::OM->Get('Kernel::System::SLA')->SLALookup(
             Name => $SLARandomID,
         );
         if ($SLARandomID) {
             my $Success = $DBObject->Do(
+                SQL => "DELETE FROM sla_preferences WHERE sla_id = $SLAID",
+            );
+            $Self->True(
+                $Success,
+                "SLAPreferencesDelete - $SLARandomID",
+            );
+            $Success = $DBObject->Do(
                 SQL => "DELETE FROM sla WHERE id = $SLAID",
             );
             $Self->True(
@@ -141,7 +177,7 @@ $Selenium->RunTest(
             );
         }
 
-        }
+    }
 
 );
 

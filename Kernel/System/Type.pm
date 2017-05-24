@@ -1,6 +1,5 @@
 # --
-# Kernel/System/Type.pm - All ticket type related functions
-# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -13,6 +12,8 @@ use strict;
 use warnings;
 
 our @ObjectDependencies = (
+    'Kernel::Config',
+    'Kernel::System::SysConfig',
     'Kernel::System::Cache',
     'Kernel::System::DB',
     'Kernel::System::Log',
@@ -23,22 +24,16 @@ our @ObjectDependencies = (
 
 Kernel::System::Type - type lib
 
-=head1 SYNOPSIS
+=head1 DESCRIPTION
 
 All type functions.
 
 =head1 PUBLIC INTERFACE
 
-=over 4
-
-=cut
-
-=item new()
+=head2 new()
 
 create an object
 
-    use Kernel::System::ObjectManager;
-    local $Kernel::OM = Kernel::System::ObjectManager->new();
     my $TypeObject = $Kernel::OM->Get('Kernel::System::Type');
 
 =cut
@@ -56,7 +51,7 @@ sub new {
     return $Self;
 }
 
-=item TypeAdd()
+=head2 TypeAdd()
 
 add a new ticket type
 
@@ -123,7 +118,7 @@ sub TypeAdd {
     return $ID;
 }
 
-=item TypeGet()
+=head2 TypeGet()
 
 get types attributes
 
@@ -235,7 +230,7 @@ sub TypeGet {
     return %Type;
 }
 
-=item TypeUpdate()
+=head2 TypeUpdate()
 
 update type attributes
 
@@ -277,6 +272,23 @@ sub TypeUpdate {
         return;
     }
 
+    my %Type = $Self->TypeGet(
+        ID => $Param{ID},
+    );
+
+    # check if the type is set as a default ticket type
+    if (
+        $Kernel::OM->Get('Kernel::Config')->Get('Ticket::Type::Default') eq $Type{Name}
+        && $Param{ValidID} != 1
+        )
+    {
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
+            Priority => 'error',
+            Message  => "The ticket type is set as a default ticket type, so it cannot be set to invalid!"
+        );
+        return;
+    }
+
     # sql
     return if !$Kernel::OM->Get('Kernel::System::DB')->Do(
         SQL => 'UPDATE ticket_type SET name = ?, valid_id = ?, '
@@ -294,7 +306,7 @@ sub TypeUpdate {
     return 1;
 }
 
-=item TypeList()
+=head2 TypeList()
 
 get type list
 
@@ -361,7 +373,7 @@ sub TypeList {
     return %TypeList;
 }
 
-=item TypeLookup()
+=head2 TypeLookup()
 
 get id or name for a ticket type
 
@@ -415,7 +427,7 @@ sub TypeLookup {
     return $ReturnData;
 }
 
-=item NameExistsCheck()
+=head2 NameExistsCheck()
 
     return 1 if another type with this name already exits
 
@@ -449,8 +461,6 @@ sub NameExistsCheck {
     return 0;
 }
 1;
-
-=back
 
 =head1 TERMS AND CONDITIONS
 

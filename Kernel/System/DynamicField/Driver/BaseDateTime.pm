@@ -1,6 +1,5 @@
 # --
-# Kernel/System/DynamicField/Driver/BaseDateTime.pm - Dynamic field Driver functions
-# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -13,8 +12,9 @@ use strict;
 use warnings;
 
 use Kernel::System::VariableCheck qw(:all);
+use Kernel::Language qw(Translatable);
 
-use base qw(Kernel::System::DynamicField::Driver::Base);
+use parent qw(Kernel::System::DynamicField::Driver::Base);
 
 our @ObjectDependencies = (
     'Kernel::System::DB',
@@ -29,13 +29,11 @@ Kernel::System::DynamicField::Driver::BaseDateTime - sub module of
 Kernel::System::DynamicField::Driver::Date and
 Kernel::System::DynamicField::Driver::DateTime
 
-=head1 SYNOPSIS
+=head1 DESCRIPTION
 
 Date common functions.
 
 =head1 PUBLIC INTERFACE
-
-=over 4
 
 =cut
 
@@ -126,18 +124,25 @@ sub SearchSQLGet {
         SmallerThanEquals => '<=',
     );
 
-    if ( $Operators{ $Param{Operator} } ) {
-        my $SQL = " $Param{TableAlias}.value_date $Operators{$Param{Operator}} '";
-        $SQL .= $Kernel::OM->Get('Kernel::System::DB')->Quote( $Param{SearchTerm} ) . "' ";
-        return $SQL;
+    if ( $Param{Operator} eq 'Empty' ) {
+        if ( $Param{SearchTerm} ) {
+            return " $Param{TableAlias}.value_date IS NULL ";
+        }
+        else {
+            return " $Param{TableAlias}.value_date IS NOT NULL ";
+        }
+    }
+    elsif ( !$Operators{ $Param{Operator} } ) {
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
+            'Priority' => 'error',
+            'Message'  => "Unsupported Operator $Param{Operator}",
+        );
+        return;
     }
 
-    $Kernel::OM->Get('Kernel::System::Log')->Log(
-        'Priority' => 'error',
-        'Message'  => "Unsupported Operator $Param{Operator}",
-    );
-
-    return;
+    my $SQL = " $Param{TableAlias}.value_date $Operators{ $Param{Operator} } '";
+    $SQL .= $Kernel::OM->Get('Kernel::System::DB')->Quote( $Param{SearchTerm} ) . "' ";
+    return $SQL;
 }
 
 sub SearchSQLOrderFieldGet {
@@ -161,29 +166,26 @@ sub EditFieldRender {
         $Value = $FieldConfig->{DefaultValue} || '';
     }
 
-    my %SplitedFieldValues;
     if ( defined $Param{Value} ) {
         $Value = $Param{Value};
     }
+
     if ($Value) {
         my ( $Year, $Month, $Day, $Hour, $Minute, $Second ) = $Value =~
             m{ \A ( \d{4} ) - ( \d{2} ) - ( \d{2} ) \s ( \d{2} ) : ( \d{2} ) : ( \d{2} ) \z }xms;
 
-        %SplitedFieldValues = (
-
-            # if a value is sent this value must be active, then the Used part needs to be set to 1
-            # otherwise user can easily forget to mark the checkbox and this could lead into data
-            # lost Bug#8258
-            $FieldName . 'Used'   => 1,
-            $FieldName . 'Year'   => $Year,
-            $FieldName . 'Month'  => $Month,
-            $FieldName . 'Day'    => $Day,
-            $FieldName . 'Hour'   => $Hour,
-            $FieldName . 'Minute' => $Minute,
-        );
+        # If a value is sent this value must be active, then the Used part needs to be set to 1
+        #   otherwise user can easily forget to mark the checkbox and this could lead into data
+        #   lost (Bug#8258).
+        $FieldConfig->{ $FieldName . 'Used' }   = 1;
+        $FieldConfig->{ $FieldName . 'Year' }   = $Year;
+        $FieldConfig->{ $FieldName . 'Month' }  = $Month;
+        $FieldConfig->{ $FieldName . 'Day' }    = $Day;
+        $FieldConfig->{ $FieldName . 'Hour' }   = $Hour;
+        $FieldConfig->{ $FieldName . 'Minute' } = $Minute;
     }
 
-    # extract the dynamic field value form the web request
+    # extract the dynamic field value from the web request
     # TransformDates is always needed from EditFieldRender Bug#8452
     my $FieldValues = $Self->EditFieldValueGet(
         TransformDates       => 1,
@@ -250,7 +252,6 @@ sub EditFieldRender {
         $FieldName . Optional => 1,
         Validate              => 1,
         %{$FieldConfig},
-        %SplitedFieldValues,
         %YearsPeriodRange,
     );
 
@@ -311,7 +312,7 @@ sub EditFieldValueGet {
     my %DynamicFieldValues;
 
     # check if there is a Template and retrieve the dynamic field value from there
-    if ( IsHashRefWithData( $Param{Template} ) ) {
+    if ( IsHashRefWithData( $Param{Template} ) && defined $Param{Template}->{ $Prefix . 'Used' } ) {
         for my $Type (qw(Used Year Month Day Hour Minute)) {
             $DynamicFieldValues{ $Prefix . $Type } = $Param{Template}->{ $Prefix . $Type } || 0;
         }
@@ -480,12 +481,14 @@ sub DisplayValueRender {
     my $Title = $Value;
 
     # set field link form config
-    my $Link = $Param{DynamicFieldConfig}->{Config}->{Link} || '';
+    my $Link        = $Param{DynamicFieldConfig}->{Config}->{Link}        || '';
+    my $LinkPreview = $Param{DynamicFieldConfig}->{Config}->{LinkPreview} || '';
 
     my $Data = {
-        Value => $Value,
-        Title => $Title,
-        Link  => $Link,
+        Value       => $Value,
+        Title       => $Title,
+        Link        => $Link,
+        LinkPreview => $LinkPreview,
     };
 
     return $Data;
@@ -609,10 +612,10 @@ EOF
 
         $HTMLString .= $Param{LayoutObject}->BuildSelection(
             Data => {
-                'Before' => 'more than ... ago',
-                'Last'   => 'within the last ...',
-                'Next'   => 'within the next ...',
-                'After'  => 'in more than ...',
+                'Before' => Translatable('more than ... ago'),
+                'Last'   => Translatable('within the last ...'),
+                'Next'   => Translatable('within the next ...'),
+                'After'  => Translatable('in more than ...'),
             },
             Sort           => 'IndividualKey',
             SortIndividual => [ 'Before', 'Last', 'Next', 'After' ],
@@ -626,12 +629,12 @@ EOF
         );
         $HTMLString .= ' ' . $Param{LayoutObject}->BuildSelection(
             Data => {
-                minute => 'minute(s)',
-                hour   => 'hour(s)',
-                day    => 'day(s)',
-                week   => 'week(s)',
-                month  => 'month(s)',
-                year   => 'year(s)',
+                minute => Translatable('minute(s)'),
+                hour   => Translatable('hour(s)'),
+                day    => Translatable('day(s)'),
+                week   => Translatable('week(s)'),
+                month  => Translatable('month(s)'),
+                year   => Translatable('year(s)'),
             },
             Name       => $FieldName . 'Format',
             SelectedID => $Value->{Format}->{ $FieldName . 'Format' } || 'day',
@@ -639,7 +642,7 @@ EOF
 
         my $AdditionalText;
         if ( $Param{UseLabelHints} ) {
-            $AdditionalText = 'before/after';
+            $AdditionalText = Translatable('before/after');
         }
 
         # call EditLabelRender on the common backend
@@ -657,6 +660,15 @@ EOF
         return $Data;
     }
 
+    # to set the years range
+    my %YearsPeriodRange;
+    if ( defined $FieldConfig->{YearsPeriod} && $FieldConfig->{YearsPeriod} eq '1' ) {
+        %YearsPeriodRange = (
+            YearPeriodPast   => $FieldConfig->{YearsInPast}   || 0,
+            YearPeriodFuture => $FieldConfig->{YearsInFuture} || 0,
+        );
+    }
+
     # build HTML for start value set
     $HTMLString .= $Param{LayoutObject}->BuildDateSelection(
         %Param,
@@ -666,6 +678,8 @@ EOF
         DiffTime             => -( ( 60 * 60 * 24 ) * 30 ),
         Validate             => 1,
         %{ $Value->{ValueStart} },
+        %YearsPeriodRange,
+        OverrideTimeZone => 1,
     );
 
     # to put a line break between the two search dates
@@ -688,11 +702,13 @@ EOF
         DiffTime             => +( ( 60 * 60 * 24 ) * 30 ),
         Validate             => 1,
         %{ $Value->{ValueStop} },
+        %YearsPeriodRange,
+        OverrideTimeZone => 1,
     );
 
     my $AdditionalText;
     if ( $Param{UseLabelHints} ) {
-        $AdditionalText = 'between';
+        $AdditionalText = Translatable('between');
     }
 
     # call EditLabelRender on the common Driver
@@ -759,7 +775,7 @@ sub SearchFieldValueGet {
 
         $DynamicFieldValues{$Prefix} = 1;
 
-        # check if return value structure is nedded
+        # check if return value structure is needed
         if ( defined $Param{ReturnProfileStructure} && $Param{ReturnProfileStructure} eq '1' ) {
             return \%DynamicFieldValues;
         }
@@ -949,13 +965,13 @@ sub SearchFieldParameterBuild {
             # get time object
             my $TimeObject = $Kernel::OM->Get('Kernel::System::Time');
 
-            # get the current time in epoch seconds and as timestamp
+            # get the current time in epoch seconds and as time-stamp
             my $Now          = $TimeObject->SystemTime();
             my $NowTimeStamp = $TimeObject->SystemTime2TimeStamp(
                 SystemTime => $Now,
             );
 
-            # calculate diff time seconds
+            # calculate difference time seconds
             my $DiffTimeSeconds = $DiffTimeMinutes * 60;
 
             my $DisplayValue = '';
@@ -963,7 +979,7 @@ sub SearchFieldParameterBuild {
             # define to search before or after that time stamp
             if ( $Start eq 'Before' ) {
 
-                # we must subtract the diff because it is in the past
+                # we must subtract the difference because it is in the past
                 my $TimeStamp = $TimeObject->SystemTime2TimeStamp(
                     SystemTime => $Now - $DiffTimeSeconds,
                 );
@@ -976,7 +992,7 @@ sub SearchFieldParameterBuild {
             }
             elsif ( $Start eq 'Last' ) {
 
-                # we must subtract the diff because it is in the past
+                # we must subtract the differences because it is in the past
                 my $TimeStamp = $TimeObject->SystemTime2TimeStamp(
                     SystemTime => $Now - $DiffTimeSeconds,
                 );
@@ -990,7 +1006,7 @@ sub SearchFieldParameterBuild {
             }
             elsif ( $Start eq 'Next' ) {
 
-                # we must add the diff because it is in the future
+                # we must add the difference because it is in the future
                 my $TimeStamp = $TimeObject->SystemTime2TimeStamp(
                     SystemTime => $Now + $DiffTimeSeconds,
                 );
@@ -1004,7 +1020,7 @@ sub SearchFieldParameterBuild {
             }
             elsif ( $Start eq 'After' ) {
 
-                # we must add the diff because it is in the future
+                # we must add the difference because it is in the future
                 my $TimeStamp = $TimeObject->SystemTime2TimeStamp(
                     SystemTime => $Now + $DiffTimeSeconds,
                 );
@@ -1178,12 +1194,21 @@ sub ValueLookup {
 
     my $Value = defined $Param{Key} ? $Param{Key} : '';
 
+    # check if a translation is possible
+    if ( defined $Param{LanguageObject} ) {
+
+        # translate value
+        $Value = $Param{LanguageObject}->FormatTimeString(
+            $Value,
+            'DateFormat',
+            'NoSeconds',
+        );
+    }
+
     return $Value;
 }
 
 1;
-
-=back
 
 =head1 TERMS AND CONDITIONS
 

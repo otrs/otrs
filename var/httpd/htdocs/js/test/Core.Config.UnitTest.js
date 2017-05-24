@@ -1,6 +1,5 @@
 // --
-// Core.Config.UnitTest.js - UnitTests
-// Copyright (C) 2001-2012 OTRS AG, http://otrs.org/\n";
+// Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 // --
 // This software comes with ABSOLUTELY NO WARRANTY. For details, see
 // the enclosed file COPYING for license information (AGPL). If you
@@ -9,50 +8,53 @@
 
 "use strict";
 
-var OTRS = OTRS || {};
+var Core = Core || {};
 Core.Config = Core.Config || {};
 
 Core.Config = (function (Namespace) {
     Namespace.RunUnitTests = function(){
-        module('Core.Config');
-        test('Core.Config.Get()', function(){
-            expect(6);
-
+        QUnit.module('Core.Config');
+        QUnit.test('Core.Config.Get()', function(Assert){
             var ConfigTest = 'Test value';
+
+            Assert.expect(6);
+
             Core.Config.Set('Test', ConfigTest);
-            deepEqual(Core.Config.Get('Test'), ConfigTest);
+            Assert.deepEqual(Core.Config.Get('Test'), ConfigTest);
 
             Core.Config.Set('RichText.Test', ConfigTest);
-            deepEqual(Core.Config.Get('RichText.Test'), ConfigTest);
+            Assert.deepEqual(Core.Config.Get('RichText.Test'), ConfigTest);
 
             Core.Config.Set('RichText.Test2', ConfigTest);
-            deepEqual(Core.Config.Get('RichText.Test2'), ConfigTest);
+            Assert.deepEqual(Core.Config.Get('RichText.Test2'), ConfigTest);
 
-            deepEqual(Core.Config.Get('non.existing.dummy.ns'), undefined);
+            Assert.deepEqual(Core.Config.Get('non.existing.dummy.ns'), undefined);
 
-            deepEqual(Core.Config.Get('EasyName', 42), 42, "Test for default value");
+            Assert.deepEqual(Core.Config.Get('EasyName', 42), 42, "Test for default value");
 
-            deepEqual(Core.Config.Get('non.existing.dummy.ns', 'DefaultValueTest'), 'DefaultValueTest', "Test for default value 2");
+            Assert.deepEqual(Core.Config.Get('non.existing.dummy.ns', 'DefaultValueTest'), 'DefaultValueTest', "Test for default value 2");
         });
 
-        test('Core.Config.AddConfig()', function(){
-            expect(3);
+        QUnit.test('Core.Config.AddConfig()', function(Assert){
 
             var ConfigTest = {
-                Width:  600,
+                Width: 600,
                 Height: 400,
                 Name: 'Test'
             };
+
+            Assert.expect(3);
+
             Core.Config.AddConfig(ConfigTest, 'RichText');
-            deepEqual(Core.Config.Get('RichText'), ConfigTest);
+            Assert.deepEqual(Core.Config.Get('RichText'), ConfigTest);
 
             Core.Config.AddConfig(ConfigTest, 'RichText.Details');
-            deepEqual(Core.Config.Get('RichText.Details'), ConfigTest);
+            Assert.deepEqual(Core.Config.Get('RichText.Details'), ConfigTest);
 
             ConfigTest = '{"Width":"600","Height":"400","Name":"Test"}';
 
-            Core.Config.AddConfig(ConfigTest,'RichText.JSONStuff');
-            deepEqual(Core.Config.Get('RichText.JSONStuff'), ConfigTest);
+            Core.Config.AddConfig(ConfigTest, 'RichText.JSONStuff');
+            Assert.deepEqual(Core.Config.Get('RichText.JSONStuff'), ConfigTest);
         });
     };
 

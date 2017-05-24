@@ -1,6 +1,5 @@
 // --
-// Core.JavaScriptEnhancements.UnitTest.js - UnitTests
-// Copyright (C) 2001-2012 OTRS AG, http://otrs.org/\n";
+// Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 // --
 // This software comes with ABSOLUTELY NO WARRANTY. For details, see
 // the enclosed file COPYING for license information (AGPL). If you
@@ -9,21 +8,21 @@
 
 "use strict";
 
-var OTRS = OTRS || {};
+var Core = Core || {};
 
 Core.JavaScriptEnhancements = {};
 Core.JavaScriptEnhancements.RunUnitTests = function(){
 
-    module('Core.JavaScriptEnhancements');
+    QUnit.module('Core.JavaScriptEnhancements');
 
-    test('isJQueryObject()', function(){
-        expect(6);
+    QUnit.test('isJQueryObject()', function(Assert){
+        Assert.expect(6);
 
-        equal(isJQueryObject($([])), true, 'empty jQuery object');
-        equal(isJQueryObject($('body')), true, 'simple jQuery object');
-        equal(isJQueryObject({}), false, 'plain object');
-        equal(isJQueryObject(undefined), false, 'undefined');
-        equal(isJQueryObject($([]), $([])), true, 'multiple');
-        equal(isJQueryObject($([]), $([]), {}), false, 'multiple, one plain object');
+        Assert.equal(isJQueryObject($([])), true, 'empty jQuery object');
+        Assert.equal(isJQueryObject($('body')), true, 'simple jQuery object');
+        Assert.equal(isJQueryObject({}), false, 'plain object');
+        Assert.equal(isJQueryObject(undefined), false, 'undefined');
+        Assert.equal(isJQueryObject($([]), $([])), true, 'multiple');
+        Assert.equal(isJQueryObject($([]), $([]), {}), false, 'multiple, one plain object');
     });
 };

@@ -1,6 +1,5 @@
 # --
-# Kernel/Modules/AdminSLA.pm - admin frontend to manage slas
-# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -45,6 +44,7 @@ sub Run {
         # html output
         $Output .= $Self->_MaskNew(
             %Param,
+            Subaction => $Self->{Subaction},
         );
         $Output .= $LayoutObject->Footer();
 
@@ -126,7 +126,7 @@ sub Run {
                 }
                 for my $Item ( sort keys %Preferences ) {
                     my $Module = $Preferences{$Item}->{Module}
-                        || 'Kernel::Output::HTML::SLAPreferencesGeneric';
+                        || 'Kernel::Output::HTML::SLAPreferences::Generic';
 
                     # load module
                     if ( !$Kernel::OM->Get('Kernel::System::Main')->Require($Module) ) {
@@ -158,7 +158,21 @@ sub Run {
                     }
                 }
 
-                return $LayoutObject->Redirect( OP => "Action=$Self->{Action}" );
+                # if the user would like to continue editing the SLA, just redirect to the edit screen
+                if (
+                    defined $ParamObject->GetParam( Param => 'ContinueAfterSave' )
+                    && ( $ParamObject->GetParam( Param => 'ContinueAfterSave' ) eq '1' )
+                    )
+                {
+                    return $LayoutObject->Redirect(
+                        OP => "Action=$Self->{Action};Subaction=SLAEdit;SLAID=$GetParam{SLAID}"
+                    );
+                }
+                else {
+
+                    # otherwise return to overview
+                    return $LayoutObject->Redirect( OP => "Action=$Self->{Action}" );
+                }
             }
 
         }
@@ -200,7 +214,7 @@ sub Run {
                 Data     => $LayoutObject->{LanguageObject}->Translate( "Please activate %s first!", "Service" ),
                 Link =>
                     $LayoutObject->{Baselink}
-                    . 'Action=AdminSysConfig;Subaction=Edit;SysConfigGroup=Ticket;SysConfigSubGroup=Core::Ticket#Ticket::Service',
+                    . 'Action=AdminSystemConfiguration;Subaction=Edit;SysConfigGroup=Ticket;SysConfigSubGroup=Core::Ticket#Ticket::Service',
             );
         }
 
@@ -214,6 +228,7 @@ sub Run {
 
         $LayoutObject->Block( Name => 'ActionList' );
         $LayoutObject->Block( Name => 'ActionAdd' );
+        $LayoutObject->Block( Name => 'Filter' );
 
         # output overview result
         $LayoutObject->Block(
@@ -225,9 +240,8 @@ sub Run {
 
         # get service list
         my %ServiceList = $Kernel::OM->Get('Kernel::System::Service')->ServiceList(
-            Valid        => 0,
-            KeepChildren => 1,
-            UserID       => $Self->{UserID},
+            Valid  => 0,
+            UserID => $Self->{UserID},
         );
 
         # get valid list
@@ -336,7 +350,7 @@ sub _MaskNew {
     # get service list
     my %ServiceList = $Kernel::OM->Get('Kernel::System::Service')->ServiceList(
         Valid        => 1,
-        KeepChildren => 1,
+        KeepChildren => $ConfigObject->Get('Ticket::Service::KeepChildren') // 0,
         UserID       => $Self->{UserID},
     );
 
@@ -352,11 +366,15 @@ sub _MaskNew {
         Translation => 0,
         TreeView    => ( $ListType eq 'tree' ) ? 1 : 0,
         Max         => 200,
+        Class       => 'Modernize',
     );
 
     # generate CalendarOptionStrg
     my %CalendarList;
-    for my $CalendarNumber ( '', 1 .. 50 ) {
+
+    my $Maximum = $ConfigObject->Get("MaximumCalendarNumber") || 50;
+
+    for my $CalendarNumber ( '', 1 .. $Maximum ) {
         if ( $ConfigObject->Get("TimeVacationDays::Calendar$CalendarNumber") ) {
             $CalendarList{$CalendarNumber} = "Calendar $CalendarNumber - "
                 . $ConfigObject->Get( "TimeZone::Calendar" . $CalendarNumber . "Name" );
@@ -368,6 +386,7 @@ sub _MaskNew {
         SelectedID   => $Param{Calendar} || $SLAData{Calendar},
         Translation  => 0,
         PossibleNone => 1,
+        Class        => 'Modernize',
     );
     my %NotifyLevelList = (
         10 => '10%',
@@ -410,12 +429,16 @@ sub _MaskNew {
         Data       => \%ValidList,
         Name       => 'ValidID',
         SelectedID => $Param{ValidID} || $SLAData{ValidID} || $ValidListReverse{valid},
+        Class      => 'Modernize',
     );
 
     # output sla edit
     $LayoutObject->Block(
         Name => 'Overview',
         Data => {
+            SLAID     => $SLAData{SLAID},
+            SLAName   => $SLAData{Name},
+            Subaction => $Param{Subaction},
             %Param
         },
     );
@@ -446,7 +469,7 @@ sub _MaskNew {
     }
     for my $Item ( sort keys %Preferences ) {
         my $Module = $Preferences{$Item}->{Module}
-            || 'Kernel::Output::HTML::SLAPreferencesGeneric';
+            || 'Kernel::Output::HTML::SLAPreferences::Generic';
 
         # load module
         if ( !$Kernel::OM->Get('Kernel::System::Main')->Require($Module) ) {
@@ -469,9 +492,14 @@ sub _MaskNew {
                     || ref( $Preferences{$Item}->{Data} ) eq 'HASH'
                     )
                 {
-                    $ParamItem->{'Option'} = $LayoutObject->BuildSelection(
+                    my %BuildSelectionParams = (
                         %{ $Preferences{$Item} },
                         %{$ParamItem},
+                    );
+                    $BuildSelectionParams{Class} = join( ' ', $BuildSelectionParams{Class} // '', 'Modernize' );
+
+                    $ParamItem->{'Option'} = $LayoutObject->BuildSelection(
+                        %BuildSelectionParams,
                     );
                 }
                 $LayoutObject->Block(

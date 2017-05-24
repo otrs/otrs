@@ -1,6 +1,5 @@
 # --
-# Kernel/System/Stats/Dynamic/TicketAccountedTime.pm - stats for accounted ticket time
-# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -13,9 +12,11 @@ use strict;
 use warnings;
 
 use Kernel::System::VariableCheck qw(:all);
+use Kernel::Language qw(Translatable);
 
 our @ObjectDependencies = (
     'Kernel::Config',
+    'Kernel::Language',
     'Kernel::System::DB',
     'Kernel::System::DynamicField',
     'Kernel::System::DynamicField::Backend',
@@ -37,8 +38,6 @@ sub new {
     # allocate new hash for object
     my $Self = {};
     bless( $Self, $Type );
-
-    $Self->{DBSlaveObject} = $Param{DBSlaveObject} || $Kernel::OM->Get('Kernel::System::DB');
 
     # get the dynamic fields for ticket object
     $Self->{DynamicField} = $Kernel::OM->Get('Kernel::System::DynamicField')->DynamicFieldListGet(
@@ -86,10 +85,12 @@ sub GetObjectAttributes {
         $ValidAgent = 1;
     }
 
-    # get user list
+    # Get user list without the out of office message, because of the caching in the statistics
+    #   and not meaningful with a date selection.
     my %UserList = $UserObject->UserList(
-        Type  => 'Long',
-        Valid => $ValidAgent,
+        Type          => 'Long',
+        Valid         => $ValidAgent,
+        NoOutOfOffice => 1,
     );
 
     # get state list
@@ -117,10 +118,10 @@ sub GetObjectAttributes {
 
     my @ObjectAttributes = (
         {
-            Name             => 'Evaluation by',
+            Name             => Translatable('Evaluation by'),
             UseAsXvalue      => 1,
-            UseAsValueSeries => 0,
-            UseAsRestriction => 1,
+            UseAsValueSeries => 1,
+            UseAsRestriction => 0,
             Element          => 'KindsOfReporting',
             Block            => 'MultiSelectField',
             Translation      => 1,
@@ -129,7 +130,7 @@ sub GetObjectAttributes {
             Values           => $Self->_KindsOfReporting(),
         },
         {
-            Name             => 'Queue',
+            Name             => Translatable('Queue'),
             UseAsXvalue      => 1,
             UseAsValueSeries => 1,
             UseAsRestriction => 1,
@@ -140,7 +141,7 @@ sub GetObjectAttributes {
             Values           => \%QueueList,
         },
         {
-            Name             => 'State',
+            Name             => Translatable('State'),
             UseAsXvalue      => 1,
             UseAsValueSeries => 1,
             UseAsRestriction => 1,
@@ -149,7 +150,7 @@ sub GetObjectAttributes {
             Values           => \%StateList,
         },
         {
-            Name             => 'State Type',
+            Name             => Translatable('State Type'),
             UseAsXvalue      => 1,
             UseAsValueSeries => 1,
             UseAsRestriction => 1,
@@ -158,7 +159,7 @@ sub GetObjectAttributes {
             Values           => \%StateTypeList,
         },
         {
-            Name             => 'Priority',
+            Name             => Translatable('Priority'),
             UseAsXvalue      => 1,
             UseAsValueSeries => 1,
             UseAsRestriction => 1,
@@ -167,7 +168,7 @@ sub GetObjectAttributes {
             Values           => \%PriorityList,
         },
         {
-            Name             => 'Created in Queue',
+            Name             => Translatable('Created in Queue'),
             UseAsXvalue      => 1,
             UseAsValueSeries => 1,
             UseAsRestriction => 1,
@@ -178,7 +179,7 @@ sub GetObjectAttributes {
             Values           => \%QueueList,
         },
         {
-            Name             => 'Created Priority',
+            Name             => Translatable('Created Priority'),
             UseAsXvalue      => 1,
             UseAsValueSeries => 1,
             UseAsRestriction => 1,
@@ -187,7 +188,7 @@ sub GetObjectAttributes {
             Values           => \%PriorityList,
         },
         {
-            Name             => 'Created State',
+            Name             => Translatable('Created State'),
             UseAsXvalue      => 1,
             UseAsValueSeries => 1,
             UseAsRestriction => 1,
@@ -196,7 +197,7 @@ sub GetObjectAttributes {
             Values           => \%StateList,
         },
         {
-            Name             => 'Lock',
+            Name             => Translatable('Lock'),
             UseAsXvalue      => 1,
             UseAsValueSeries => 1,
             UseAsRestriction => 1,
@@ -205,7 +206,7 @@ sub GetObjectAttributes {
             Values           => \%LockList,
         },
         {
-            Name             => 'Title',
+            Name             => Translatable('Title'),
             UseAsXvalue      => 0,
             UseAsValueSeries => 0,
             UseAsRestriction => 1,
@@ -213,60 +214,52 @@ sub GetObjectAttributes {
             Block            => 'InputField',
         },
         {
-            Name             => 'CustomerUserLogin',
+            Name             => Translatable('From'),
             UseAsXvalue      => 0,
             UseAsValueSeries => 0,
             UseAsRestriction => 1,
-            Element          => 'CustomerUserLogin',
+            Element          => 'MIMEBase_From',
             Block            => 'InputField',
         },
         {
-            Name             => 'From',
+            Name             => Translatable('To'),
             UseAsXvalue      => 0,
             UseAsValueSeries => 0,
             UseAsRestriction => 1,
-            Element          => 'From',
+            Element          => 'MIMEBase_To',
             Block            => 'InputField',
         },
         {
-            Name             => 'To',
+            Name             => Translatable('Cc'),
             UseAsXvalue      => 0,
             UseAsValueSeries => 0,
             UseAsRestriction => 1,
-            Element          => 'To',
+            Element          => 'MIMEBase_Cc',
             Block            => 'InputField',
         },
         {
-            Name             => 'Cc',
+            Name             => Translatable('Subject'),
             UseAsXvalue      => 0,
             UseAsValueSeries => 0,
             UseAsRestriction => 1,
-            Element          => 'Cc',
+            Element          => 'MIMEBase_Subject',
             Block            => 'InputField',
         },
         {
-            Name             => 'Subject',
+            Name             => Translatable('Text'),
             UseAsXvalue      => 0,
             UseAsValueSeries => 0,
             UseAsRestriction => 1,
-            Element          => 'Subject',
+            Element          => 'MIMEBase_Body',
             Block            => 'InputField',
         },
         {
-            Name             => 'Text',
-            UseAsXvalue      => 0,
-            UseAsValueSeries => 0,
-            UseAsRestriction => 1,
-            Element          => 'Body',
-            Block            => 'InputField',
-        },
-        {
-            Name             => 'Ticket/Article Accounted Time',
+            Name             => Translatable('Ticket/Article Accounted Time'),
             UseAsXvalue      => 1,
             UseAsValueSeries => 1,
             UseAsRestriction => 1,
             Element          => 'ArticleAccountedTime',
-            TimePeriodFormat => 'DateInputFormat',                 # 'DateInputFormatLong',
+            TimePeriodFormat => 'DateInputFormat',                               # 'DateInputFormatLong',
             Block            => 'Time',
             Values           => {
                 TimeStart => 'ArticleAccountedTimeNewerDate',
@@ -274,12 +267,12 @@ sub GetObjectAttributes {
             },
         },
         {
-            Name             => 'Ticket Create Time',
+            Name             => Translatable('Ticket Create Time'),
             UseAsXvalue      => 1,
             UseAsValueSeries => 1,
             UseAsRestriction => 1,
             Element          => 'CreateTime',
-            TimePeriodFormat => 'DateInputFormat',      # 'DateInputFormatLong',
+            TimePeriodFormat => 'DateInputFormat',                    # 'DateInputFormatLong',
             Block            => 'Time',
             Values           => {
                 TimeStart => 'TicketCreateTimeNewerDate',
@@ -287,12 +280,12 @@ sub GetObjectAttributes {
             },
         },
         {
-            Name             => 'Last changed times',
+            Name             => Translatable('Last changed times'),
             UseAsXvalue      => 1,
             UseAsValueSeries => 1,
             UseAsRestriction => 1,
             Element          => 'LastChangeTime',
-            TimePeriodFormat => 'DateInputFormat',      # 'DateInputFormatLong',
+            TimePeriodFormat => 'DateInputFormat',                    # 'DateInputFormatLong',
             Block            => 'Time',
             Values           => {
                 TimeStart => 'TicketLastChangeTimeNewerDate',
@@ -300,12 +293,12 @@ sub GetObjectAttributes {
             },
         },
         {
-            Name             => 'Change times',
+            Name             => Translatable('Change times'),
             UseAsXvalue      => 1,
             UseAsValueSeries => 1,
             UseAsRestriction => 1,
             Element          => 'ChangeTime',
-            TimePeriodFormat => 'DateInputFormat',    # 'DateInputFormatLong',
+            TimePeriodFormat => 'DateInputFormat',              # 'DateInputFormatLong',
             Block            => 'Time',
             Values           => {
                 TimeStart => 'TicketChangeTimeNewerDate',
@@ -313,12 +306,12 @@ sub GetObjectAttributes {
             },
         },
         {
-            Name             => 'Ticket Close Time',
+            Name             => Translatable('Ticket Close Time'),
             UseAsXvalue      => 1,
             UseAsValueSeries => 1,
             UseAsRestriction => 1,
             Element          => 'CloseTime2',
-            TimePeriodFormat => 'DateInputFormat',     # 'DateInputFormatLong',
+            TimePeriodFormat => 'DateInputFormat',                   # 'DateInputFormatLong',
             Block            => 'Time',
             Values           => {
                 TimeStart => 'TicketCloseTimeNewerDate',
@@ -326,12 +319,12 @@ sub GetObjectAttributes {
             },
         },
         {
-            Name             => 'Escalation',
+            Name             => Translatable('Escalation'),
             UseAsXvalue      => 1,
             UseAsValueSeries => 1,
             UseAsRestriction => 1,
             Element          => 'EscalationTime',
-            TimePeriodFormat => 'DateInputFormatLong',    # 'DateInputFormat',
+            TimePeriodFormat => 'DateInputFormatLong',        # 'DateInputFormat',
             Block            => 'Time',
             Values           => {
                 TimeStart => 'TicketEscalationTimeNewerDate',
@@ -339,12 +332,12 @@ sub GetObjectAttributes {
             },
         },
         {
-            Name             => 'Escalation - First Response Time',
+            Name             => Translatable('Escalation - First Response Time'),
             UseAsXvalue      => 1,
             UseAsValueSeries => 1,
             UseAsRestriction => 1,
             Element          => 'EscalationResponseTime',
-            TimePeriodFormat => 'DateInputFormatLong',                # 'DateInputFormat',
+            TimePeriodFormat => 'DateInputFormatLong',                              # 'DateInputFormat',
             Block            => 'Time',
             Values           => {
                 TimeStart => 'TicketEscalationResponseTimeNewerDate',
@@ -352,12 +345,12 @@ sub GetObjectAttributes {
             },
         },
         {
-            Name             => 'Escalation - Update Time',
+            Name             => Translatable('Escalation - Update Time'),
             UseAsXvalue      => 1,
             UseAsValueSeries => 1,
             UseAsRestriction => 1,
             Element          => 'EscalationUpdateTime',
-            TimePeriodFormat => 'DateInputFormatLong',        # 'DateInputFormat',
+            TimePeriodFormat => 'DateInputFormatLong',                      # 'DateInputFormat',
             Block            => 'Time',
             Values           => {
                 TimeStart => 'TicketEscalationUpdateTimeNewerDate',
@@ -365,12 +358,12 @@ sub GetObjectAttributes {
             },
         },
         {
-            Name             => 'Escalation - Solution Time',
+            Name             => Translatable('Escalation - Solution Time'),
             UseAsXvalue      => 1,
             UseAsValueSeries => 1,
             UseAsRestriction => 1,
             Element          => 'EscalationSolutionTime',
-            TimePeriodFormat => 'DateInputFormatLong',          # 'DateInputFormat',
+            TimePeriodFormat => 'DateInputFormatLong',                        # 'DateInputFormat',
             Block            => 'Time',
             Values           => {
                 TimeStart => 'TicketEscalationSolutionTimeNewerDate',
@@ -383,7 +376,8 @@ sub GetObjectAttributes {
 
         # get service list
         my %Service = $Kernel::OM->Get('Kernel::System::Service')->ServiceList(
-            UserID => 1,
+            KeepChildren => $ConfigObject->Get('Ticket::Service::KeepChildren'),
+            UserID       => 1,
         );
 
         # get sla list
@@ -393,7 +387,7 @@ sub GetObjectAttributes {
 
         my @ObjectAttributeAdd = (
             {
-                Name             => 'Service',
+                Name             => Translatable('Service'),
                 UseAsXvalue      => 1,
                 UseAsValueSeries => 1,
                 UseAsRestriction => 1,
@@ -404,7 +398,7 @@ sub GetObjectAttributes {
                 Values           => \%Service,
             },
             {
-                Name             => 'SLA',
+                Name             => Translatable('SLA'),
                 UseAsXvalue      => 1,
                 UseAsValueSeries => 1,
                 UseAsRestriction => 1,
@@ -426,7 +420,7 @@ sub GetObjectAttributes {
         );
 
         my %ObjectAttribute1 = (
-            Name             => 'Type',
+            Name             => Translatable('Type'),
             UseAsXvalue      => 1,
             UseAsValueSeries => 1,
             UseAsRestriction => 1,
@@ -442,7 +436,7 @@ sub GetObjectAttributes {
     if ( $ConfigObject->Get('Ticket::ArchiveSystem') ) {
 
         my %ObjectAttribute = (
-            Name             => 'Archive Search',
+            Name             => Translatable('Archive Search'),
             UseAsXvalue      => 0,
             UseAsValueSeries => 0,
             UseAsRestriction => 1,
@@ -450,9 +444,9 @@ sub GetObjectAttributes {
             Block            => 'SelectField',
             Translation      => 1,
             Values           => {
-                ArchivedTickets    => 'Archived tickets',
-                NotArchivedTickets => 'Unarchived tickets',
-                AllTickets         => 'All tickets',
+                ArchivedTickets    => Translatable('Archived tickets'),
+                NotArchivedTickets => Translatable('Unarchived tickets'),
+                AllTickets         => Translatable('All tickets'),
             },
         );
 
@@ -463,7 +457,7 @@ sub GetObjectAttributes {
 
         my @ObjectAttributeAdd = (
             {
-                Name             => 'Accounted time by Agent',
+                Name             => Translatable('Accounted time by Agent'),
                 UseAsXvalue      => 1,
                 UseAsValueSeries => 1,
                 UseAsRestriction => 1,
@@ -473,7 +467,7 @@ sub GetObjectAttributes {
                 Values           => \%UserList,
             },
             {
-                Name             => 'Agent/Owner',
+                Name             => Translatable('Agent/Owner'),
                 UseAsXvalue      => 1,
                 UseAsValueSeries => 1,
                 UseAsRestriction => 1,
@@ -483,7 +477,7 @@ sub GetObjectAttributes {
                 Values           => \%UserList,
             },
             {
-                Name             => 'Created by Agent/Owner',
+                Name             => Translatable('Created by Agent/Owner'),
                 UseAsXvalue      => 1,
                 UseAsValueSeries => 1,
                 UseAsRestriction => 1,
@@ -493,7 +487,7 @@ sub GetObjectAttributes {
                 Values           => \%UserList,
             },
             {
-                Name             => 'Responsible',
+                Name             => Translatable('Responsible'),
                 UseAsXvalue      => 1,
                 UseAsValueSeries => 1,
                 UseAsRestriction => 1,
@@ -507,24 +501,25 @@ sub GetObjectAttributes {
         push @ObjectAttributes, @ObjectAttributeAdd;
     }
 
+    my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
+
     if ( $ConfigObject->Get('Stats::CustomerIDAsMultiSelect') ) {
 
-        # Get CustomerID
-        # (This way also can be the solution for the CustomerUserID)
-        $Self->{DBSlaveObject}->Prepare(
+        # Get all CustomerIDs which are related to a ticket.
+        $DBObject->Prepare(
             SQL => "SELECT DISTINCT customer_id FROM ticket",
         );
 
         # fetch the result
         my %CustomerID;
-        while ( my @Row = $Self->{DBSlaveObject}->FetchrowArray() ) {
+        while ( my @Row = $DBObject->FetchrowArray() ) {
             if ( $Row[0] ) {
                 $CustomerID{ $Row[0] } = $Row[0];
             }
         }
 
         my %ObjectAttribute = (
-            Name             => 'CustomerID',
+            Name             => Translatable('CustomerID'),
             UseAsXvalue      => 1,
             UseAsValueSeries => 1,
             UseAsRestriction => 1,
@@ -537,17 +532,97 @@ sub GetObjectAttributes {
     }
     else {
 
+        my @CustomerIDAttributes = (
+            {
+                Name             => Translatable('CustomerID (complex search)'),
+                UseAsXvalue      => 0,
+                UseAsValueSeries => 0,
+                UseAsRestriction => 1,
+                Element          => 'CustomerID',
+                Block            => 'InputField',
+            },
+            {
+                Name             => Translatable('CustomerID (exact match)'),
+                UseAsXvalue      => 0,
+                UseAsValueSeries => 0,
+                UseAsRestriction => 1,
+                Element          => 'CustomerIDRaw',
+                Block            => 'InputField',
+            },
+        );
+
+        push @ObjectAttributes, @CustomerIDAttributes;
+    }
+
+    if ( $ConfigObject->Get('Stats::CustomerUserLoginsAsMultiSelect') ) {
+
+        # Get all CustomerUserLogins which are related to a tiket.
+        $DBObject->Prepare(
+            SQL => "SELECT DISTINCT customer_user_id FROM ticket",
+        );
+
+        # fetch the result
+        my %CustomerUserIDs;
+        while ( my @Row = $DBObject->FetchrowArray() ) {
+            if ( $Row[0] ) {
+                $CustomerUserIDs{ $Row[0] } = $Row[0];
+            }
+        }
+
         my %ObjectAttribute = (
-            Name             => 'CustomerID',
-            UseAsXvalue      => 0,
-            UseAsValueSeries => 0,
+            Name             => Translatable('Assigned to Customer User Login'),
+            UseAsXvalue      => 1,
+            UseAsValueSeries => 1,
             UseAsRestriction => 1,
-            Element          => 'CustomerID',
-            Block            => 'InputField',
+            Element          => 'CustomerUserLoginRaw',
+            Block            => 'MultiSelectField',
+            Values           => \%CustomerUserIDs,
         );
 
         push @ObjectAttributes, \%ObjectAttribute;
     }
+    else {
+
+        my @CustomerUserAttributes = (
+            {
+                Name             => Translatable('Assigned to Customer User Login (complex search)'),
+                UseAsXvalue      => 0,
+                UseAsValueSeries => 0,
+                UseAsRestriction => 1,
+                Element          => 'CustomerUserLogin',
+                Block            => 'InputField',
+            },
+            {
+                Name               => Translatable('Assigned to Customer User Login (exact match)'),
+                UseAsXvalue        => 0,
+                UseAsValueSeries   => 0,
+                UseAsRestriction   => 1,
+                Element            => 'CustomerUserLoginRaw',
+                Block              => 'InputField',
+                CSSClass           => 'CustomerAutoCompleteSimple',
+                HTMLDataAttributes => {
+                    'customer-search-type' => 'CustomerUser',
+                },
+            },
+        );
+
+        push @ObjectAttributes, @CustomerUserAttributes;
+    }
+
+    # Add always the field for the customer user login accessible tickets as auto complete field.
+    my %ObjectAttribute = (
+        Name               => Translatable('Accessible to Customer User Login (exact match)'),
+        UseAsXvalue        => 0,
+        UseAsValueSeries   => 0,
+        UseAsRestriction   => 1,
+        Element            => 'CustomerUserID',
+        Block              => 'InputField',
+        CSSClass           => 'CustomerAutoCompleteSimple',
+        HTMLDataAttributes => {
+            'customer-search-type' => 'CustomerUser',
+        },
+    );
+    push @ObjectAttributes, \%ObjectAttribute;
 
     # get dynamic field backend object
     my $DynamicFieldBackendObject = $Kernel::OM->Get('Kernel::System::DynamicField::Backend');
@@ -651,7 +726,7 @@ sub GetObjectAttributes {
                     Element          => $DynamicFieldStatsParameter->{Element},
                     Block            => $DynamicFieldStatsParameter->{Block},
                     Values           => $DynamicFieldStatsParameter->{Values},
-                    Translation      => 0,
+                    Translation      => $DynamicFieldStatsParameter->{TranslatableValues} || 0,
                     IsDynamicField   => 1,
                     ShowAsTree       => $DynamicFieldConfig->{Config}->{TreeView} || 0,
                 );
@@ -676,91 +751,255 @@ sub GetObjectAttributes {
     return @ObjectAttributes;
 }
 
-sub GetStatTable {
+sub GetStatElementPreview {
     my ( $Self, %Param ) = @_;
-    my @StatArray;
-    if ( $Param{XValue}{Element} && $Param{XValue}{Element} eq 'KindsOfReporting' ) {
 
-        for my $Row ( sort keys %{ $Param{TableStructure} } ) {
-            my @ResultRow        = ($Row);
-            my %SearchAttributes = ( %{ $Param{TableStructure}{$Row}[0] } );
-
-            my %Reporting = $Self->_ReportingValues(
-                SearchAttributes         => \%SearchAttributes,
-                SelectedKindsOfReporting => $Param{XValue}{SelectedValues},
-            );
-
-            KIND:
-            for my $Kind ( @{ $Self->_SortedKindsOfReporting() } ) {
-                next KIND if !defined $Reporting{$Kind};
-                push @ResultRow, $Reporting{$Kind};
-            }
-            push @StatArray, \@ResultRow;
-        }
-    }
-    else {
-        my $KindsOfReportingRef = $Self->_KindsOfReporting();
-        $Param{Restrictions}{KindsOfReporting} ||= ['TotalTime'];
-        my $NumberOfReportingKinds   = scalar @{ $Param{Restrictions}{KindsOfReporting} };
-        my $SelectedKindsOfReporting = $Param{Restrictions}{KindsOfReporting};
-
-        delete $Param{Restrictions}{KindsOfReporting};
-        for my $Row ( sort keys %{ $Param{TableStructure} } ) {
-            my @ResultRow = ($Row);
-
-            for my $Cell ( @{ $Param{TableStructure}{$Row} } ) {
-                my %SearchAttributes = %{$Cell};
-                my %Reporting        = $Self->_ReportingValues(
-                    SearchAttributes         => \%SearchAttributes,
-                    SelectedKindsOfReporting => $SelectedKindsOfReporting,
-                );
-
-                my $CellContent = '';
-
-                if ( $NumberOfReportingKinds == 1 ) {
-                    my @Values = values %Reporting;
-                    $CellContent = $Values[0];
-                }
-                else {
-
-                    KIND:
-                    for my $Kind ( @{ $Self->_SortedKindsOfReporting() } ) {
-                        next KIND if !defined $Reporting{$Kind};
-                        $CellContent
-                            .= "$Reporting{$Kind} (" . $KindsOfReportingRef->{$Kind} . "), ";
-                    }
-                }
-                push @ResultRow, $CellContent;
-            }
-            push @StatArray, \@ResultRow;
-        }
-    }
-    return @StatArray;
-
+    return int rand 50;
 }
 
-sub GetHeaderLine {
-
+sub GetStatElement {
     my ( $Self, %Param ) = @_;
 
-    if ( $Param{XValue}{Element} eq 'KindsOfReporting' ) {
+    my $DBObject     = $Kernel::OM->Get('Kernel::System::DB');
+    my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
 
-        my %Selected = map { $_ => 1 } @{ $Param{XValue}{SelectedValues} };
+    # Escape search attributes for ticket search.
+    my %AttributesToEscape = (
+        'CustomerID' => 1,
+        'Title'      => 1,
+    );
 
-        my $Attributes = $Self->_KindsOfReporting();
-        my @HeaderLine = ('Evaluation by');
-        my $SortedRef  = $Self->_SortedKindsOfReporting();
-
-        ATTRIBUTE:
-        for my $Attribute ( @{$SortedRef} ) {
-            next ATTRIBUTE if !$Selected{$Attribute};
-            push @HeaderLine, $Attributes->{$Attribute};
-        }
-        return \@HeaderLine;
-
+    # Map the CustomerID search parameter to CustomerIDRaw search parameter for the
+    #   exact search match, if the 'Stats::CustomerIDAsMultiSelect' is active.
+    if ( $ConfigObject->Get('Stats::CustomerIDAsMultiSelect') ) {
+        $Param{CustomerIDRaw} = $Param{CustomerID};
     }
-    return;
 
+    # get ticket search relevant attributes
+    my %TicketSearch;
+    ATTRIBUTE:
+    for my $Attribute ( @{ $Self->_AllowedTicketSearchAttributes() } ) {
+
+        # special handling for dynamic field date/time fields
+        if ( $Attribute =~ m{ \A DynamicField_ }xms ) {
+            SEARCHATTRIBUTE:
+            for my $SearchAttribute ( sort keys %Param ) {
+
+                # because of Date/DateTime dynamic fields we allow multiple
+                # values for a single dynamic field.
+                # e.g. Text
+                # DynamicField_TestText
+                # e.g. DateTime
+                # DynamicField_DateTest_SmallerThanEquals
+                # DynamicField_DateTest_GreaterThanEquals
+                next SEARCHATTRIBUTE if $SearchAttribute !~ m{ \A \Q$Attribute\E }xms;
+
+                $TicketSearch{$SearchAttribute} = $Param{$SearchAttribute};
+
+                # don't exist loop
+                # there can be more than one attribute param per allowed attribute
+            }
+        }
+        else {
+            next ATTRIBUTE if !$Param{$Attribute};
+            $TicketSearch{$Attribute} = $Param{$Attribute};
+        }
+
+        next ATTRIBUTE if !$AttributesToEscape{$Attribute};
+
+        # escape search parameters for ticket search
+        if ( ref $TicketSearch{$Attribute} ) {
+            if ( ref $TicketSearch{$Attribute} eq 'ARRAY' ) {
+                $TicketSearch{$Attribute} = [
+                    map { $DBObject->QueryStringEscape( QueryString => $_ ) }
+                        @{ $TicketSearch{$Attribute} }
+                ];
+            }
+        }
+        else {
+            $TicketSearch{$Attribute} = $DBObject->QueryStringEscape(
+                QueryString => $TicketSearch{$Attribute}
+            );
+        }
+    }
+
+    # get dynamic field backend object
+    my $DynamicFieldBackendObject = $Kernel::OM->Get('Kernel::System::DynamicField::Backend');
+
+    for my $ParameterName ( sort keys %TicketSearch ) {
+
+        if ( $ParameterName =~ m{ \A DynamicField_ ( [a-zA-Z\d]+ ) (?: _ ( [a-zA-Z\d]+ ) )? \z }xms ) {
+            my $FieldName = $1;
+            my $Operator  = $2;
+
+            # loop over the dynamic fields configured
+            DYNAMICFIELD:
+            for my $DynamicFieldConfig ( @{ $Self->{DynamicField} } ) {
+                next DYNAMICFIELD if !IsHashRefWithData($DynamicFieldConfig);
+                next DYNAMICFIELD if !$DynamicFieldConfig->{Name};
+
+                # skip all fields that do not match with current field name
+                # without the 'DynamicField_' prefix
+                next DYNAMICFIELD if $DynamicFieldConfig->{Name} ne $FieldName;
+
+                # skip all fields not designed to be supported by statistics
+                my $IsStatsCondition = $DynamicFieldBackendObject->HasBehavior(
+                    DynamicFieldConfig => $DynamicFieldConfig,
+                    Behavior           => 'IsStatsCondition',
+                );
+
+                next DYNAMICFIELD if !$IsStatsCondition;
+
+                # get new search parameter
+                my $DynamicFieldStatsSearchParameter = $DynamicFieldBackendObject->StatsSearchFieldParameterBuild(
+                    DynamicFieldConfig => $DynamicFieldConfig,
+                    Value              => $TicketSearch{$ParameterName},
+                    Operator           => $Operator,
+                );
+
+                # add new search parameter
+                if ( !IsHashRefWithData( $TicketSearch{"DynamicField_$FieldName"} ) ) {
+                    $TicketSearch{"DynamicField_$FieldName"} =
+                        $DynamicFieldStatsSearchParameter;
+                }
+
+                # extend search parameter
+                elsif ( IsHashRefWithData($DynamicFieldStatsSearchParameter) ) {
+                    $TicketSearch{"DynamicField_$FieldName"} = {
+                        %{ $TicketSearch{"DynamicField_$FieldName"} },
+                        %{$DynamicFieldStatsSearchParameter},
+                    };
+                }
+            }
+        }
+    }
+
+    if ( $ConfigObject->Get('Ticket::ArchiveSystem') ) {
+        $Param{SearchInArchive} ||= '';
+        if ( $Param{SearchInArchive} eq 'AllTickets' ) {
+            $TicketSearch{ArchiveFlags} = [ 'y', 'n' ];
+        }
+        elsif ( $Param{SearchInArchive} eq 'ArchivedTickets' ) {
+            $TicketSearch{ArchiveFlags} = ['y'];
+        }
+        else {
+            $TicketSearch{ArchiveFlags} = ['n'];
+        }
+    }
+
+    my @Where;
+    if (%TicketSearch) {
+
+        # get the involved tickets
+        my @TicketIDs = $Kernel::OM->Get('Kernel::System::Ticket')->TicketSearch(
+            UserID     => 1,
+            Result     => 'ARRAY',
+            Permission => 'ro',
+            Limit      => 100_000_000,
+            %TicketSearch,
+        );
+
+        # Do nothing, if there are no tickets.
+        return 0 if !@TicketIDs;
+
+        my $SQLTicketIDInCondition = $DBObject->QueryInCondition(
+            Key       => 'ticket_id',
+            Values    => \@TicketIDs,
+            QuoteType => 'Integer',
+            BindMode  => 0,
+        );
+        push @Where, $SQLTicketIDInCondition;
+    }
+
+    if ( $Param{AccountedByAgent} ) {
+
+        my $SQLAccountedByAgentInCondition = $DBObject->QueryInCondition(
+            Key       => 'create_by',
+            Values    => $Param{AccountedByAgent},
+            QuoteType => 'Integer',
+            BindMode  => 0,
+        );
+        push @Where, $SQLAccountedByAgentInCondition;
+    }
+
+    if ( $Param{ArticleAccountedTimeOlderDate} && $Param{ArticleAccountedTimeNewerDate} ) {
+        my $Start = $DBObject->Quote( $Param{ArticleAccountedTimeNewerDate} );
+        my $Stop  = $DBObject->Quote( $Param{ArticleAccountedTimeOlderDate} );
+        push @Where, "create_time >= '$Start' AND create_time <= '$Stop'";
+    }
+
+    my $WhereString = '';
+    if (@Where) {
+        $WhereString = 'WHERE ' . join ' AND ', @Where;
+    }
+
+    my $SelectedKindOfReporting = 'TotalTime';
+    if ( IsArrayRefWithData( $Param{KindsOfReporting} ) ) {
+        $SelectedKindOfReporting = $Param{KindsOfReporting}->[0];
+    }
+
+    my $Reporting = 0;
+
+    if ( $SelectedKindOfReporting eq 'TotalTime' ) {
+
+        $DBObject->Prepare(
+            SQL => "SELECT SUM(time_unit) FROM time_accounting $WhereString"
+        );
+
+        while ( my @Row = $DBObject->FetchrowArray() ) {
+            $Reporting = $Row[0] ? int( $Row[0] * 100 ) / 100 : 0;
+        }
+
+        return $Reporting;
+    }
+
+    # db query
+    $DBObject->Prepare(
+        SQL => "SELECT ticket_id, article_id, time_unit FROM time_accounting $WhereString"
+    );
+
+    my %TicketID;
+    my %ArticleID;
+    my $Time = 0;
+    while ( my @Row = $DBObject->FetchrowArray() ) {
+        $TicketID{ $Row[0] }  += $Row[2];
+        $ArticleID{ $Row[1] } += $Row[2];
+        $Time                 += $Row[2];
+    }
+
+    my @TicketTimeLine  = sort { $a <=> $b } values %TicketID;
+    my @ArticleTimeLine = sort { $a <=> $b } values %ArticleID;
+
+    if ( $SelectedKindOfReporting eq 'TicketAverage' ) {
+        my $NumberOfTickets = scalar keys %TicketID;
+        my $Average = $NumberOfTickets ? $Time / $NumberOfTickets : 0;
+        $Reporting = sprintf( "%.2f", $Average );
+    }
+    if ( $SelectedKindOfReporting eq 'TicketMinTime' ) {
+        $Reporting = $TicketTimeLine[0] || 0;
+    }
+    if ( $SelectedKindOfReporting eq 'TicketMaxTime' ) {
+        $Reporting = $TicketTimeLine[-1] || 0;
+    }
+    if ( $SelectedKindOfReporting eq 'NumberOfTickets' ) {
+        $Reporting = scalar keys %TicketID;
+    }
+    if ( $SelectedKindOfReporting eq 'ArticleAverage' ) {
+        my $NumberOfArticles = scalar keys %ArticleID;
+        my $Average = $NumberOfArticles ? $Time / $NumberOfArticles : 0;
+        $Reporting = sprintf( "%.2f", $Average );
+    }
+    if ( $SelectedKindOfReporting eq 'ArticleMinTime' ) {
+        $Reporting = $ArticleTimeLine[0] || 0;
+    }
+    if ( $SelectedKindOfReporting eq 'ArticleMaxTime' ) {
+        $Reporting = $ArticleTimeLine[-1] || 0;
+    }
+    if ( $SelectedKindOfReporting eq 'NumberOfArticles' ) {
+        $Reporting = scalar keys %ArticleID;
+    }
+
+    return $Reporting;
 }
 
 sub ExportWrapper {
@@ -929,343 +1168,19 @@ sub ImportWrapper {
     return \%Param;
 }
 
-sub _ReportingValues {
-    my ( $Self, %Param ) = @_;
-    my $SearchAttributes = $Param{SearchAttributes};
-    my @Where;
-
-    #
-    # escape search attributes for ticket search
-    #
-    my %AttributesToEscape = (
-        'CustomerID' => 1,
-        'Title'      => 1,
-    );
-
-    # get ticket search relevant attributes
-    my %TicketSearch;
-    ATTRIBUTE:
-    for my $Attribute ( @{ $Self->_AllowedTicketSearchAttributes() } ) {
-
-        # special handling for dynamic field date/time fields
-        if ( $Attribute =~ m{ \A DynamicField_ }xms ) {
-            SEARCHATTRIBUTE:
-            for my $SearchAttribute ( sort keys %{$SearchAttributes} ) {
-
-                # because of Date/DateTime dynamic fields we allow multiple
-                # values for a single dynamic field.
-                # e.g. Text
-                # DynamicField_TestText
-                # e.g. DateTime
-                # DynamicField_DateTest_SmallerThanEquals
-                # DynamicField_DateTest_GreaterThanEquals
-                next SEARCHATTRIBUTE if $SearchAttribute !~ m{ \A \Q$Attribute\E }xms;
-
-                $TicketSearch{$SearchAttribute} = $SearchAttributes->{$SearchAttribute};
-
-                # don't exist loop
-                # there can be more than one attribute param per allowed attribute
-            }
-        }
-        else {
-            next ATTRIBUTE if !$SearchAttributes->{$Attribute};
-            $TicketSearch{$Attribute} = $SearchAttributes->{$Attribute};
-        }
-
-        next ATTRIBUTE if !$AttributesToEscape{$Attribute};
-
-        # escape search parameters for ticket search
-        if ( ref $TicketSearch{$Attribute} ) {
-            if ( ref $TicketSearch{$Attribute} eq 'ARRAY' ) {
-                $TicketSearch{$Attribute} = [
-                    map { $Self->{DBSlaveObject}->QueryStringEscape( QueryString => $_ ) }
-                        @{ $TicketSearch{$Attribute} }
-                ];
-            }
-        }
-        else {
-            $TicketSearch{$Attribute} = $Self->{DBSlaveObject}->QueryStringEscape(
-                QueryString => $TicketSearch{$Attribute}
-            );
-        }
-    }
-
-    # get dynamic field backend object
-    my $DynamicFieldBackendObject = $Kernel::OM->Get('Kernel::System::DynamicField::Backend');
-
-    for my $ParameterName ( sort keys %TicketSearch ) {
-        if (
-            $ParameterName =~ m{ \A DynamicField_ ( [a-zA-Z\d]+ ) (?: _ ( [a-zA-Z\d]+ ) )? \z }xms
-            )
-        {
-            my $FieldName = $1;
-            my $Operator  = $2;
-
-            # loop over the dynamic fields configured
-            DYNAMICFIELD:
-            for my $DynamicFieldConfig ( @{ $Self->{DynamicField} } ) {
-                next DYNAMICFIELD if !IsHashRefWithData($DynamicFieldConfig);
-                next DYNAMICFIELD if !$DynamicFieldConfig->{Name};
-
-                # skip all fields that do not match with current field name
-                # without the 'DynamicField_' prefix
-                next DYNAMICFIELD if $DynamicFieldConfig->{Name} ne $FieldName;
-
-                # skip all fields not designed to be supported by statistics
-                my $IsStatsCondition = $DynamicFieldBackendObject->HasBehavior(
-                    DynamicFieldConfig => $DynamicFieldConfig,
-                    Behavior           => 'IsStatsCondition',
-                );
-
-                next DYNAMICFIELD if !$IsStatsCondition;
-
-                # get new search parameter
-                my $DynamicFieldStatsSearchParameter = $DynamicFieldBackendObject->StatsSearchFieldParameterBuild(
-                    DynamicFieldConfig => $DynamicFieldConfig,
-                    Value              => $TicketSearch{$ParameterName},
-                    Operator           => $Operator,
-                );
-
-                # add new search parameter
-                if ( !IsHashRefWithData( $TicketSearch{"DynamicField_$FieldName"} ) ) {
-                    $TicketSearch{"DynamicField_$FieldName"} =
-                        $DynamicFieldStatsSearchParameter;
-                }
-
-                # extend search parameter
-                elsif ( IsHashRefWithData($DynamicFieldStatsSearchParameter) ) {
-                    $TicketSearch{"DynamicField_$FieldName"} = {
-                        %{ $TicketSearch{"DynamicField_$FieldName"} },
-                        %{$DynamicFieldStatsSearchParameter},
-                    };
-                }
-            }
-        }
-    }
-
-    if ( $Kernel::OM->Get('Kernel::Config')->Get('Ticket::ArchiveSystem') ) {
-        $SearchAttributes->{SearchInArchive} ||= '';
-        if ( $SearchAttributes->{SearchInArchive} eq 'AllTickets' ) {
-            $TicketSearch{ArchiveFlags} = [ 'y', 'n' ];
-        }
-        elsif ( $SearchAttributes->{SearchInArchive} eq 'ArchivedTickets' ) {
-            $TicketSearch{ArchiveFlags} = ['y'];
-        }
-        else {
-            $TicketSearch{ArchiveFlags} = ['n'];
-        }
-    }
-
-    if (%TicketSearch) {
-
-        # get the involved tickets
-        my @TicketIDs = $Kernel::OM->Get('Kernel::System::Ticket')->TicketSearch(
-            UserID     => 1,
-            Result     => 'ARRAY',
-            Permission => 'ro',
-            Limit      => 100_000_000,
-            %TicketSearch,
-        );
-
-        # do nothing, if there are no tickets
-        if ( !@TicketIDs ) {
-            my %Reporting;
-            for my $Kind ( @{ $Param{SelectedKindsOfReporting} } ) {
-                $Reporting{$Kind} = 0;
-            }
-            return %Reporting;
-        }
-
-        # get db type
-        my $DBType = $Self->{DBSlaveObject}->{'DB::Type'};
-
-        # here comes a workaround for ORA-01795: maximum number of expressions in a list is 1000
-        # for oracle we make sure, that we don 't get more than 1000 ticket ids in a list
-        # so instead of "ticket_id IN ( 1, 2, 3, ... 2001 )", we are splitting this up to
-        # "ticket_id IN ( 1, 2, 3, ... 1000 ) OR ticket_id IN ( 1001, 1002, ... 2000)"
-        # see bugzilla #9723: http://bugs.otrs.org/show_bug.cgi?id=9723
-        if ( $DBType eq 'oracle' ) {
-
-            # save number of TicketIDs
-            my $TicketAmount = scalar @TicketIDs;
-
-            # init vars
-            my @TicketIDStrings;
-            my $TicktIDString   = '';
-            my $TicketIDCounter = 1;
-
-            # build array of strings with a maximum of 1000 ticket ids
-            for my $TicketID (@TicketIDs) {
-
-                # start building string
-                if ( $TicketIDCounter == 1 ) {
-                    $TicktIDString .= $TicketID;
-                }
-                else {
-                    $TicktIDString .= ', ' . $TicketID;
-                }
-
-                # at 1000 elements push them into array
-                if ( $TicketIDCounter == 1000 ) {
-
-                    # push string with maximum of 1000 values
-                    push @TicketIDStrings, $TicktIDString;
-
-                    # subtract 1000 from remaining ticket amount
-                    # we use this to push the remaining tickets
-                    $TicketAmount = $TicketAmount - 1000;
-
-                    # reset variables
-                    $TicktIDString   = '';
-                    $TicketIDCounter = 0;
-                }
-                $TicketIDCounter++;
-            }
-
-            # check if there are tickets left
-            if ($TicketAmount) {
-
-                # push remaining tickets
-                push @TicketIDStrings, $TicktIDString;
-            }
-
-            # init used vars for the following loop
-            my $TicketStringCounter = 1;
-            my $TicketString        = '';
-
-            # build sql string
-            for my $TicketIDString (@TicketIDStrings) {
-                if ( $TicketStringCounter == 1 ) {
-                    $TicketString .= "ticket_id IN ( $TicketIDString )";
-                }
-                else {
-                    $TicketString .= " OR ticket_id IN ( $TicketIDString )";
-                }
-                $TicketStringCounter++;
-            }
-
-            push @Where, $TicketString;
-        }
-        else {
-
-            # for all other databases, just join all TicketIDs in a string
-            my $TicketString = join ', ', @TicketIDs;
-            push @Where, "ticket_id IN ( $TicketString )";
-        }
-    }
-
-    if ( $SearchAttributes->{AccountedByAgent} ) {
-        my @AccountedByAgent = map { $Self->{DBSlaveObject}->Quote( $_, 'Integer' ) }
-            @{ $SearchAttributes->{AccountedByAgent} };
-        my $String = join ', ', @AccountedByAgent;
-        push @Where, "create_by IN ( $String )";
-    }
-
-    if (
-        $SearchAttributes->{ArticleAccountedTimeOlderDate}
-        && $SearchAttributes->{ArticleAccountedTimeNewerDate}
-        )
-    {
-        my $Start = $Self->{DBSlaveObject}->Quote( $SearchAttributes->{ArticleAccountedTimeNewerDate} );
-        my $Stop  = $Self->{DBSlaveObject}->Quote( $SearchAttributes->{ArticleAccountedTimeOlderDate} );
-        push @Where, "create_time >= '$Start' AND create_time <= '$Stop'";
-    }
-    my $WhereString = '';
-    if (@Where) {
-        $WhereString = 'WHERE ' . join ' AND ', @Where;
-    }
-
-    # ask only for the needed kinds to get a better performance
-    my %SelectedKindsOfReporting = map { $_ => 1 } @{ $Param{SelectedKindsOfReporting} };
-    my %Reporting;
-
-    if ( $SelectedKindsOfReporting{TotalTime} ) {
-
-        # db query
-        $Self->{DBSlaveObject}->Prepare(
-            SQL => "SELECT SUM(time_unit) FROM time_accounting $WhereString"
-        );
-
-        while ( my @Row = $Self->{DBSlaveObject}->FetchrowArray() ) {
-            $Reporting{TotalTime} = $Row[0] ? int( $Row[0] * 100 ) / 100 : 0;
-        }
-    }
-    if (
-        !$SelectedKindsOfReporting{TicketAverage}
-        && !$SelectedKindsOfReporting{TicketMinTime}
-        && !$SelectedKindsOfReporting{TicketMaxTime}
-        && !$SelectedKindsOfReporting{NumberOfTickets}
-        && !$SelectedKindsOfReporting{ArticleAverage}
-        && !$SelectedKindsOfReporting{ArticleMaxTime}
-        && !$SelectedKindsOfReporting{ArticleMinTime}
-        && !$SelectedKindsOfReporting{NumberOfArticles}
-        )
-    {
-        return %Reporting;
-    }
-
-    # db query
-    $Self->{DBSlaveObject}->Prepare(
-        SQL => "SELECT ticket_id, article_id, time_unit FROM time_accounting $WhereString"
-    );
-
-    my %TicketID;
-    my %ArticleID;
-    my $Time = 0;
-    while ( my @Row = $Self->{DBSlaveObject}->FetchrowArray() ) {
-        $TicketID{ $Row[0] }  += $Row[2];
-        $ArticleID{ $Row[1] } += $Row[2];
-        $Time                 += $Row[2];
-    }
-
-    my @TicketTimeLine  = sort { $a <=> $b } values %TicketID;
-    my @ArticleTimeLine = sort { $a <=> $b } values %ArticleID;
-
-    if ( $SelectedKindsOfReporting{TicketAverage} ) {
-        my $NumberOfTickets = scalar keys %TicketID;
-        my $Average = $NumberOfTickets ? $Time / $NumberOfTickets : 0;
-        $Reporting{TicketAverage} = sprintf( "%.2f", $Average );
-    }
-    if ( $SelectedKindsOfReporting{TicketMinTime} ) {
-        $Reporting{TicketMinTime} = $TicketTimeLine[0] || 0;
-    }
-    if ( $SelectedKindsOfReporting{TicketMaxTime} ) {
-        $Reporting{TicketMaxTime} = $TicketTimeLine[-1] || 0;
-    }
-    if ( $SelectedKindsOfReporting{NumberOfTickets} ) {
-        $Reporting{NumberOfTickets} = scalar keys %TicketID;
-    }
-    if ( $SelectedKindsOfReporting{ArticleAverage} ) {
-        my $NumberOfArticles = scalar keys %ArticleID;
-        my $Average = $NumberOfArticles ? $Time / $NumberOfArticles : 0;
-        $Reporting{ArticleAverage} = sprintf( "%.2f", $Average );
-    }
-    if ( $SelectedKindsOfReporting{ArticleMinTime} ) {
-        $Reporting{ArticleMinTime} = $ArticleTimeLine[0] || 0;
-    }
-    if ( $SelectedKindsOfReporting{ArticleMaxTime} ) {
-        $Reporting{ArticleMaxTime} = $ArticleTimeLine[-1] || 0;
-    }
-    if ( $SelectedKindsOfReporting{NumberOfArticles} ) {
-        $Reporting{NumberOfArticles} = scalar keys %ArticleID;
-    }
-
-    return %Reporting;
-}
-
 sub _KindsOfReporting {
     my $Self = shift;
 
     my %KindsOfReporting = (
-        TotalTime        => 'Total Time',
-        TicketAverage    => 'Ticket Average',
-        TicketMinTime    => 'Ticket Min Time',
-        TicketMaxTime    => 'Ticket Max Time',
-        NumberOfTickets  => 'Number of Tickets',
-        ArticleAverage   => 'Article Average',
-        ArticleMinTime   => 'Article Min Time',
-        ArticleMaxTime   => 'Article Max Time',
-        NumberOfArticles => 'Number of Articles',
+        TotalTime        => Translatable('Total Time'),
+        TicketAverage    => Translatable('Ticket Average'),
+        TicketMinTime    => Translatable('Ticket Min Time'),
+        TicketMaxTime    => Translatable('Ticket Max Time'),
+        NumberOfTickets  => Translatable('Number of Tickets'),
+        ArticleAverage   => Translatable('Article Average'),
+        ArticleMinTime   => Translatable('Article Min Time'),
+        ArticleMaxTime   => Translatable('Article Max Time'),
+        NumberOfArticles => Translatable('Number of Articles'),
     );
     return \%KindsOfReporting;
 }
@@ -1313,7 +1228,9 @@ sub _AllowedTicketSearchAttributes {
         ResponsibleIDs
         WatchUserIDs
         CustomerID
+        CustomerIDRaw
         CustomerUserLogin
+        CustomerUserLoginRaw
         CreatedUserIDs
         CreatedTypes
         CreatedTypeIDs

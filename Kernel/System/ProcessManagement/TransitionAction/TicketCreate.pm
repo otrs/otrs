@@ -1,6 +1,5 @@
 # --
-# Kernel/System/ProcessManagement/TransitionAction/TicketCreate.pm - A Module to create a ticket
-# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -15,7 +14,7 @@ use utf8;
 
 use Kernel::System::VariableCheck qw(:all);
 
-use base qw(Kernel::System::ProcessManagement::TransitionAction::Base);
+use parent qw(Kernel::System::ProcessManagement::TransitionAction::Base);
 
 our @ObjectDependencies = (
     'Kernel::Config',
@@ -25,29 +24,25 @@ our @ObjectDependencies = (
     'Kernel::System::Log',
     'Kernel::System::State',
     'Kernel::System::Ticket',
+    'Kernel::System::Ticket::Article',
     'Kernel::System::Time',
+    'Kernel::System::User',
 );
 
 =head1 NAME
 
 Kernel::System::ProcessManagement::TransitionAction::TicketCreate - A module to create a ticket
 
-=head1 SYNOPSIS
+=head1 DESCRIPTION
 
 All TicketArticleCreate functions.
 
 =head1 PUBLIC INTERFACE
 
-=over 4
+=head2 new()
 
-=cut
+Don't use the constructor directly, use the ObjectManager instead:
 
-=item new()
-
-create an object. Do not use it directly, instead use:
-
-    use Kernel::System::ObjectManager;
-    local $Kernel::OM = Kernel::System::ObjectManager->new();
     my $TicketCreateObject = $Kernel::OM->Get('Kernel::System::ProcessManagement::TransitionAction::TicketCreate');
 
 =cut
@@ -62,7 +57,7 @@ sub new {
     return $Self;
 }
 
-=item Run()
+=head2 Run()
 
     Run Data
 
@@ -82,7 +77,7 @@ sub new {
             State         => 'new',              # or StateID => 5,
             CustomerID    => '123465',
             CustomerUser  => 'customer@example.com',
-            OwnerID       => 123,
+            Owner         => 'someuserlogin',    # or OwnerID => 123
 
             # ticket optional:
             TN              => $TicketObject->TicketCreateNumber(), # optional
@@ -94,15 +89,14 @@ sub new {
             PendingTime     => '2011-12-23 23:05:00', # optional (for pending states)
             PendingTimeDiff => 123 ,                  # optional (for pending states)
 
-            # article required:
-            ArticleType      => 'note-internal',                        # note-external|phone|fax|sms|...
-                                                                        #   excluding any email type
-            SenderType       => 'agent',                                # agent|system|customer
-            ContentType      => 'text/plain; charset=ISO-8859-15',      # or optional Charset & MimeType
-            Subject          => 'some short description',               # required
-            Body             => 'the message text',                     # required
-            HistoryType      => 'OwnerUpdate',                          # EmailCustomer|Move|AddNote|PriorityUpdate|WebRequestCustomer|...
-            HistoryComment   => 'Some free text!',
+            # article required: (if one of them is not present, article will not be created without any error message)
+            SenderType           => 'agent',                            # agent|system|customer
+            IsVisibleForCustomer => 1,                                  # required
+            ContentType          => 'text/plain; charset=ISO-8859-15',  # or optional Charset & MimeType
+            Subject              => 'some short description',           # required
+            Body                 => 'the message text',                 # required
+            HistoryType          => 'OwnerUpdate',                      # EmailCustomer|Move|AddNote|PriorityUpdate|WebRequestCustomer|...
+            HistoryComment       => 'Some free text!',
 
             # article optional:
             From             => 'Some Agent <email@example.com>',       # not required but useful
@@ -197,6 +191,13 @@ sub Run {
         }
     }
 
+    # Get OwnerID from Owner
+    if ( $TicketParam{Owner} && !$TicketParam{OwnerID} ) {
+        $TicketParam{OwnerID} = $Kernel::OM->Get('Kernel::System::User')->UserLookup(
+            UserLogin => $TicketParam{Owner},
+        );
+    }
+
     # get ticket object
     my $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
 
@@ -278,7 +279,7 @@ sub Run {
     # extract the article params
     my %ArticleParam;
     for my $Attribute (
-        qw( ArticleType SenderType ContentType Subject Body HistoryType
+        qw( SenderType IsVisibleForCustomer ContentType Subject Body HistoryType
         HistoryComment From To Cc ReplyTo MessageID InReplyTo References NoAgentNotify
         AutoResponseType ForceNotificationToUserID ExcludeNotificationToUserID
         ExcludeMuteNotificationToUserID
@@ -290,40 +291,49 @@ sub Run {
         }
     }
 
-    # check ArticleType
-    if ( $ArticleParam{ArticleType} =~ m{\A email }msxi ) {
-        $Kernel::OM->Get('Kernel::System::Log')->Log(
-            Priority => 'error',
-            Message  => $CommonMessage
-                . "ArticleType $Param{Config}->{ArticleType} is not supported",
-        );
-        return;
+    # check if article can be created
+    my $ArticleCreate = 1;
+    for my $Needed (qw(SenderType IsVisibleForCustomer ContentType Subject Body HistoryType HistoryComment)) {
+        if ( !defined $ArticleParam{$Needed} ) {
+            $ArticleCreate = 0;
+        }
     }
 
-    # create article for the new ticket
-    my $ArticleID = $TicketObject->ArticleCreate(
-        %ArticleParam,
-        TicketID => $TicketID,
-        UserID   => $Param{UserID},
-    );
-    if ( !$ArticleID ) {
-        $Kernel::OM->Get('Kernel::System::Log')->Log(
-            Priority => 'error',
-            Message  => $CommonMessage
-                . "Couldn't create Article on Ticket: $TicketID from Ticket: "
-                . $Param{Ticket}->{TicketID} . '!',
-        );
-        return;
-    }
+    my $ArticleID;
 
-    # set time units
-    if ( $Param{Config}->{TimeUnit} ) {
-        $TicketObject->TicketAccountTime(
-            TicketID  => $TicketID,
-            ArticleID => $ArticleID,
-            TimeUnit  => $Param{Config}->{TimeUnit},
-            UserID    => $Param{UserID},
+    if ($ArticleCreate) {
+
+        my $ArticleBackendObject = $Kernel::OM->Get('Kernel::System::Ticket::Article')->BackendForChannel(
+            ChannelName => 'Internal',
         );
+
+        # Create article for the new ticket.
+        $ArticleID = $ArticleBackendObject->ArticleCreate(
+            %ArticleParam,
+            TicketID => $TicketID,
+            UserID   => $Param{UserID},
+        );
+
+        if ( !$ArticleID ) {
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
+                Priority => 'error',
+                Message  => $CommonMessage
+                    . "Couldn't create Article on Ticket: $TicketID from Ticket: "
+                    . $Param{Ticket}->{TicketID} . '!',
+            );
+        }
+        else {
+
+            # set time units
+            if ( $Param{Config}->{TimeUnit} ) {
+                $TicketObject->TicketAccountTime(
+                    TicketID  => $TicketID,
+                    ArticleID => $ArticleID,
+                    TimeUnit  => $Param{Config}->{TimeUnit},
+                    UserID    => $Param{UserID},
+                );
+            }
+        }
     }
 
     # set dynamic fields for ticket and article
@@ -354,6 +364,10 @@ sub Run {
 
         my $ObjectID = $TicketID;
         if ( $DynamicFieldConfig->{ObjectType} ne 'Ticket' ) {
+
+            # skip article dynamic fields if Article was not created
+            next DYNAMICFIELD if !$ArticleCreate || !$ArticleID;
+
             $ObjectID = $ArticleID;
         }
 
@@ -448,8 +462,6 @@ sub Run {
 }
 
 1;
-
-=back
 
 =head1 TERMS AND CONDITIONS
 

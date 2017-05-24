@@ -1,6 +1,5 @@
 # --
-# Kernel/System/HTMLUtils.pm - creating and modifying html strings
-# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -12,10 +11,13 @@ package Kernel::System::HTMLUtils;
 use strict;
 use warnings;
 
+use utf8;
+
 use MIME::Base64;
 
 our @ObjectDependencies = (
     'Kernel::Config',
+    'Kernel::System::Encode',
     'Kernel::System::Log',
 );
 
@@ -23,22 +25,16 @@ our @ObjectDependencies = (
 
 Kernel::System::HTMLUtils - creating and modifying html strings
 
-=head1 SYNOPSIS
+=head1 DESCRIPTION
 
 A module for creating and modifying html strings.
 
 =head1 PUBLIC INTERFACE
 
-=over 4
+=head2 new()
 
-=cut
+Don't use the constructor directly, use the ObjectManager instead:
 
-=item new()
-
-create an object. Do not use it directly, instead use:
-
-    use Kernel::System::ObjectManager;
-    local $Kernel::OM = Kernel::System::ObjectManager->new();
     my $HTMLUtilsObject = $Kernel::OM->Get('Kernel::System::HTMLUtils');
 
 =cut
@@ -56,9 +52,9 @@ sub new {
     return $Self;
 }
 
-=item ToAscii()
+=head2 ToAscii()
 
-convert a html string to an ascii string
+convert an HTML string to an ASCII string
 
     my $Ascii = $HTMLUtilsObject->ToAscii( String => $String );
 
@@ -78,8 +74,12 @@ sub ToAscii {
         }
     }
 
+    # make sure to flag the input string as unicode (utf8) because replacements below can
+    # introduce unicode encoded characters (see bug#10970, bug#11596 and bug#12097 for more info)
+    $Kernel::OM->Get('Kernel::System::Encode')->EncodeInput( \$Param{String} );
+
     # get length of line for forcing line breakes
-    my $LineLength = $Self->{'Ticket::Frontend::TextAreaNote'} || 78;
+    my $LineLength = $Kernel::OM->Get('Kernel::Config')->Get('Ticket::Frontend::TextAreaNote') || 78;
 
     # find <a href=....> and replace it with [x]
     my $LinkList = '';
@@ -479,24 +479,27 @@ sub ToAscii {
         (&\#(\d+);?)
     }
     {
-        my $Chr = chr( $2 );
-        if ( $Chr ) {
-            $Chr;
+        my $ChrOrig = $1;
+        my $Dec = $2;
+
+        # Don't process UTF-16 surrogate pairs. Used on their own, these are not valid UTF-8 code
+        # points and can result in errors in old Perl versions. See bug#12588 for more information.
+        # - High Surrogate codes (U+D800-U+DBFF)
+        # - Low Surrogate codes (U+DC00-U+DFFF)
+        if ( $Dec >= 55296 && $Dec <= 57343 ) {
+            $ChrOrig;
         }
         else {
-            $1;
-        };
-    }egx;
+            my $Chr = chr($Dec);
 
-    # encode html entities like "&#3d;"
-    $Param{String} =~ s{
-        (&\#[xX]([0-9a-fA-F]+);?)
-    }
-    {
-        my $ChrOrig = $1;
-        my $Hex = hex( $2 );
-        if ( $Hex ) {
-            my $Chr = chr( $Hex );
+            # Make sure we get valid UTF8 code points, but skip characters from 128 to 255
+            #   (inclusive), since they are by default internally not encoded as UTF-8 for
+            #   backward compatibility reasons. See bug#12457 for more information.
+            if ( $Dec < 128 || $Dec> 255 ) {
+                Encode::_utf8_off($Chr);
+                $Chr = Encode::decode('utf-8', $Chr, 0);
+            }
+
             if ( $Chr ) {
                 $Chr;
             }
@@ -504,8 +507,45 @@ sub ToAscii {
                 $ChrOrig;
             }
         }
-        else {
+    }egx;
+
+    # encode html entities like "&#x3d;"
+    $Param{String} =~ s{
+        (&\#[xX]([0-9a-fA-F]+);?)
+    }
+    {
+        my $ChrOrig = $1;
+        my $Dec = hex( $2 );
+
+        # Don't process UTF-16 surrogate pairs. Used on their own, these are not valid UTF-8 code
+        # points and can result in errors in old Perl versions. See bug#12588 for more information.
+        # - High Surrogate codes (U+D800-U+DBFF)
+        # - Low Surrogate codes (U+DC00-U+DFFF)
+        if ( $Dec >= 55296 && $Dec <= 57343 ) {
             $ChrOrig;
+        }
+        else {
+            if ( $Dec ) {
+                my $Chr = chr( $Dec );
+
+                # Make sure we get valid UTF8 code points, but skip characters from 128 to 255
+                #   (inclusive), since they are by default internally not encoded as UTF-8 for
+                #   backward compatibility reasons. See bug#12457 for more information.
+                if ( $Dec < 128 || $Dec > 255 ) {
+                    Encode::_utf8_off($Chr);
+                    $Chr = Encode::decode('utf-8', $Chr, 0);
+                }
+
+                if ( $Chr ) {
+                    $Chr;
+                }
+                else {
+                    $ChrOrig;
+                }
+            }
+            else {
+                $ChrOrig;
+            }
         }
     }egx;
 
@@ -543,9 +583,9 @@ sub ToAscii {
     return $Param{String};
 }
 
-=item ToHTML()
+=head2 ToHTML()
 
-convert an ascii string to a html string
+convert an ASCII string to an HTML string
 
     my $HTMLString = $HTMLUtilsObject->ToHTML( String => $String );
 
@@ -578,7 +618,7 @@ sub ToHTML {
     return $Param{String};
 }
 
-=item DocumentComplete()
+=head2 DocumentComplete()
 
 check and e. g. add <html> and <body> tags to given html string
 
@@ -608,6 +648,9 @@ sub DocumentComplete {
     my $Css = $Kernel::OM->Get('Kernel::Config')->Get('Frontend::RichText::DefaultCSS')
         || 'font-size: 12px; font-family:Courier,monospace,fixed;';
 
+    # escape special characters like double-quotes, e.g. used in font names with spaces
+    $Css = $Self->ToHTML( String => $Css );
+
     # Use the HTML5 doctype because it is compatible with HTML4 and causes the browsers
     #   to render the content in standards mode, which is more safe than quirks mode.
     my $Body = '<!DOCTYPE html><html><head>';
@@ -617,7 +660,7 @@ sub DocumentComplete {
     return $Body;
 }
 
-=item DocumentStrip()
+=head2 DocumentStrip()
 
 remove html document tags from string
 
@@ -649,7 +692,7 @@ sub DocumentStrip {
     return $Param{String};
 }
 
-=item DocumentCleanup()
+=head2 DocumentCleanup()
 
 perform some sanity checks on HTML content.
 
@@ -721,9 +764,9 @@ sub DocumentCleanup {
     return $Param{String};
 }
 
-=item LinkQuote()
+=head2 LinkQuote()
 
-URL link detections in HTML code, add "<a href" if missing
+detect links in HTML code, add C<a href> if missing
 
     my $HTMLWithLinks = $HTMLUtilsObject->LinkQuote(
         String    => $HTMLString,
@@ -765,7 +808,7 @@ sub LinkQuote {
 
         # add target to existing "<a href"
         ${$String} =~ s{
-            (<a\s{1,10})(.+?)>
+            (<a\s{1,10})([^>]+)>
         }
         {
             my $Start = $1;
@@ -779,28 +822,30 @@ sub LinkQuote {
         }egxsi;
     }
 
-    # remove existing "<a href" on all other tags (to find not linked urls) and remember it
+    my $Marker = "§" x 10;
+
+    # Remove existing <a>...</a> tags and their content to be re-inserted later, this must not be quoted.
+    # Also remove other tags to avoid quoting in tag parameters.
     my $Counter = 0;
-    my %LinkHash;
+    my %TagHash;
     ${$String} =~ s{
-        (<a\s.+?>.+?</a>)
+        (<a\s[^>]*?>[^>]*</a>|<[^>]+?>)
     }
     {
         my $Content = $1;
-        $Counter++;
-        my $Key  = "############LinkHash-$Counter############";
-        $LinkHash{$Key} = $Content;
+        my $Key     = "${Marker}TagHash-$Counter${Marker}";
+        $TagHash{$Counter++} = $Content;
         $Key;
     }egxism;
 
-    # replace not "<a href" found urls and link it
+    # Add <a> tags for URLs in the content.
     my $Target = '';
     if ( $Param{Target} ) {
         $Target = " target=\"$Param{Target}\"";
     }
     ${$String} =~ s{
         (                                          # $1 greater-than and less-than sign
-            > | < | \s+ | \#{6} |
+            > | < | \s+ | §{10} |
             (?: &[a-zA-Z0-9]+; )                   # get html entities
         )
         (                                          # $2
@@ -812,17 +857,21 @@ sub LinkQuote {
         (                                          # $3
             (?: [a-z0-9\-]+ \. )*                  # get subdomains, optional
             [a-z0-9\-]+                            # get top level domain
+            (?:                                    # optional port number
+                [:]
+                [0-9]+
+            )?
             (?:                                    # file path element
                 [\/\.]
-                | [a-zA-Z0-9\-]
+                | [a-zA-Z0-9\-_=%]
             )*
             (?:                                    # param string
                 [\?]                               # if param string is there, "?" must be present
-                [a-zA-Z0-9&;=%\-_]*                # param string content, this will also catch entities like &amp;
+                [a-zA-Z0-9&;=%\-_:\.\/]*           # param string content, this will also catch entities like &amp;
             )?
             (?:                                    # link hash string
                 [\#]                               #
-                [a-zA-Z0-9&;=%\-_]*                # hash string content, this will also catch entities like &amp;
+                [a-zA-Z0-9&;=%\-_:\.\/]*           # hash string content, this will also catch entities like &amp;
             )?
         )
         (?=                                        # $4
@@ -837,7 +886,7 @@ sub LinkQuote {
                 | (?: &[a-zA-Z0-9]+; )+            # html entities
                 | $                                # bug# 2715
             )
-            | \#{6}                                # ending LinkHash
+            | §{10}                                # ending TagHash
         )
     }
     {
@@ -873,34 +922,32 @@ sub LinkQuote {
         $Start . "<a href=\"$HrefLink\"$Target title=\"$HrefLink\">$DisplayLink<\/a>" . $End;
     }egxism;
 
-    my ( $Key, $Value );
-
-    # add already existing "<a href" again
-    while ( ( $Key, $Value ) = each(%LinkHash) ) {
-        ${$String} =~ s{$Key}{$Value};
-    }
+    # Re-add previously removed tags.
+    ${$String} =~ s{${Marker}TagHash-(\d+)${Marker}}{$TagHash{$1}}egsxim;
 
     # check ref && return result like called
-    if ($StringScalar) {
+    if ( defined $StringScalar ) {
         return ${$String};
     }
     return $String;
 }
 
-=item Safety()
+=head2 Safety()
 
-To remove/strip active html tags/addons (javascript, applets, embeds and objects)
+To remove/strip active html tags/addons (javascript, C<applet>s, C<embed>s and C<object>s)
 from html strings.
 
     my %Safe = $HTMLUtilsObject->Safety(
-        String       => $HTMLString,
-        NoApplet     => 1,
-        NoObject     => 1,
-        NoEmbed      => 1,
-        NoSVG        => 1,
-        NoIntSrcLoad => 0,
-        NoExtSrcLoad => 1,
-        NoJavaScript => 1,
+        String         => $HTMLString,
+        NoApplet       => 1,
+        NoObject       => 1,
+        NoEmbed        => 1,
+        NoSVG          => 1,
+        NoImg          => 1,
+        NoIntSrcLoad   => 0,
+        NoExtSrcLoad   => 1,
+        NoJavaScript   => 1,
+        ReplacementStr => 'string',          # optional, string to show instead of applet, object, embed, svg and img tags
     );
 
 also string ref is possible
@@ -911,6 +958,7 @@ also string ref is possible
         NoObject     => 1,
         NoEmbed      => 1,
         NoSVG        => 1,
+        NoImg        => 1,
         NoIntSrcLoad => 0,
         NoExtSrcLoad => 1,
         NoJavaScript => 1,
@@ -1020,18 +1068,20 @@ sub Safety {
             }egsxim;
         }
 
-        # remove HTTP refirects
+        # remove HTTP redirects
         $Replaced += ${$String} =~ s{
             $TagStart meta [^>]+? http-equiv=('|"|)refresh [^>]+? $TagEnd
         }
         {}sgxim;
+
+        my $ReplacementStr = $Param{ReplacementStr} // '';
 
         # remove <applet> tags
         if ( $Param{NoApplet} ) {
             $Replaced += ${$String} =~ s{
                 $TagStart applet.*? $TagEnd (.*?) $TagStart /applet \s* $TagEnd
             }
-            {}sgxim;
+            {$ReplacementStr}sgxim;
         }
 
         # remove <Object> tags
@@ -1039,7 +1089,7 @@ sub Safety {
             $Replaced += ${$String} =~ s{
                 $TagStart object.*? $TagEnd (.*?) $TagStart /object \s* $TagEnd
             }
-            {}sgxim;
+            {$ReplacementStr}sgxim;
         }
 
         # remove <svg> tags
@@ -1047,7 +1097,15 @@ sub Safety {
             $Replaced += ${$String} =~ s{
                 $TagStart svg.*? $TagEnd (.*?) $TagStart /svg \s* $TagEnd
             }
-            {}sgxim;
+            {$ReplacementStr}sgxim;
+        }
+
+        # remove <img> tags
+        if ( $Param{NoImg} ) {
+            $Replaced += ${$String} =~ s{
+                $TagStart img.*? (.*?) \s* $TagEnd
+            }
+            {$ReplacementStr}sgxim;
         }
 
         # remove <embed> tags
@@ -1055,7 +1113,7 @@ sub Safety {
             $Replaced += ${$String} =~ s{
                 $TagStart embed.*? $TagEnd
             }
-            {}sgxim;
+            {$ReplacementStr}sgxim;
         }
 
         # check each html tag
@@ -1068,15 +1126,9 @@ sub Safety {
 
                 # remove on action attributes
                 $Replaced += $Tag =~ s{
-                    (?:\s|/) on[^"']+=("[^"]+"|'[^']+'|.+?)($TagEnd|\s)
+                    (?:\s|/) on[a-z]+\s*=("[^"]+"|'[^']+'|.+?)($TagEnd|\s)
                 }
                 {$2}sgxim;
-
-                # remove entities in tag
-                $Replaced += $Tag =~ s{
-                    (&\{.+?\})
-                }
-                {}sgxim;
 
                 # remove javascript in a href links or src links
                 $Replaced += $Tag =~ s{
@@ -1140,7 +1192,7 @@ sub Safety {
     return %Safety;
 }
 
-=item EmbeddedImagesExtract()
+=head2 EmbeddedImagesExtract()
 
 extracts embedded images with data-URLs from an HTML document.
 
@@ -1151,7 +1203,7 @@ extracts embedded images with data-URLs from an HTML document.
 
 Returns nothing. If embedded images were found, these will be appended
 to the attachments list, and the image data URL will be replaced with a
-cid: URL in the document.
+C<cid:> URL in the document.
 
 =cut
 
@@ -1168,7 +1220,7 @@ sub EmbeddedImagesExtract {
     if ( ref $Param{AttachmentsRef} ne 'ARRAY' ) {
         $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'error',
-            Message  => "Need DocumentRef!"
+            Message  => "Need AttachmentsRef!"
         );
         return;
     }
@@ -1200,8 +1252,6 @@ sub EmbeddedImagesExtract {
 }
 
 1;
-
-=back
 
 =head1 TERMS AND CONDITIONS
 

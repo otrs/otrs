@@ -1,6 +1,5 @@
 # --
-# Admin/Group/CustomerLink.t - command tests
-# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -17,8 +16,14 @@ my $CommandObject = $Kernel::OM->Get('Kernel::System::Console::Command::Admin::G
 
 my ( $Result, $ExitCode );
 
-my $HelperObject = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
-my $RandomName   = $HelperObject->GetRandomID();
+# get helper object
+$Kernel::OM->ObjectParamAdd(
+    'Kernel::System::UnitTest::Helper' => {
+        RestoreDatabase => 1,
+    },
+);
+my $Helper     = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
+my $RandomName = $Helper->GetRandomID();
 
 $Kernel::OM->Get('Kernel::Config')->Set(
     Key   => 'CheckEmailAddresses',
@@ -34,8 +39,10 @@ $Self->Is(
 );
 
 # provide minimum options (invalid customer)
-$ExitCode = $CommandObject->Execute( '--customer-user-login', $RandomName, '--group-name', $RandomName, '--permission',
-    'ro' );
+$ExitCode = $CommandObject->Execute(
+    '--customer-user-login', $RandomName, '--group-name', $RandomName, '--permission',
+    'ro'
+);
 $Self->Is(
     $ExitCode,
     1,
@@ -53,9 +60,16 @@ my $CustomerUserLogin = $Kernel::OM->Get('Kernel::System::CustomerUser')->Custom
     UserID         => 1,
 );
 
+$Self->True(
+    $CustomerUserLogin,
+    "Test customer is created - $CustomerUserLogin",
+);
+
 # provide minimum options (invalid group)
-$ExitCode = $CommandObject->Execute( '--customer-user-login', $CustomerUserLogin, '--group-name', $RandomName,
-    '--permission', 'ro' );
+$ExitCode = $CommandObject->Execute(
+    '--customer-user-login', $CustomerUserLogin, '--group-name', $RandomName,
+    '--permission', 'ro'
+);
 $Self->Is(
     $ExitCode,
     1,
@@ -63,9 +77,10 @@ $Self->Is(
 );
 
 # provide minimum options (invalid permission)
-$ExitCode
-    = $CommandObject->Execute( '--customer-user-login', $CustomerUserLogin, '--group-name', 'users', '--permission',
-    'xx' );
+$ExitCode = $CommandObject->Execute(
+    '--customer-user-login', $CustomerUserLogin, '--group-name', 'users', '--permission',
+    'xx'
+);
 $Self->Is(
     $ExitCode,
     1,
@@ -73,38 +88,16 @@ $Self->Is(
 );
 
 # provide minimum options (okay)
-$ExitCode
-    = $CommandObject->Execute( '--customer-user-login', $CustomerUserLogin, '--group-name', 'users', '--permission',
-    'ro' );
+$ExitCode = $CommandObject->Execute(
+    '--customer-user-login', $CustomerUserLogin, '--group-name', 'users', '--permission',
+    'ro'
+);
 $Self->Is(
     $ExitCode,
     0,
     "Minimum options (parameters okay)",
 );
 
-# remove test role
-my $Success = $Kernel::OM->Get('Kernel::System::DB')->Do(
-    SQL => "DELETE FROM group_customer_user WHERE user_id = '$RandomName'",
-);
-$Self->True(
-    $Success,
-    "GroupCustomerDelete - $RandomName",
-);
-
-$Success = $Kernel::OM->Get('Kernel::System::DB')->Do(
-    SQL => "DELETE FROM customer_user WHERE login = '$RandomName'",
-);
-$Self->True(
-    $Success,
-    "CustomerDelete - $RandomName",
-);
-
-# Make sure the cache is correct.
-$Kernel::OM->Get('Kernel::System::Cache')->CleanUp(
-    Type => 'Group',
-);
-$Kernel::OM->Get('Kernel::System::Cache')->CleanUp(
-    Type => 'CustomerUser',
-);
+# cleanup is done by RestoreDatabase
 
 1;

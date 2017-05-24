@@ -1,6 +1,5 @@
 # --
-# Kernel/Modules/AdminQueueTemplates.pm - to manage queue <-> templates assignments
-# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -139,6 +138,23 @@ sub Run {
                 UserID             => $Self->{UserID},
             );
         }
+
+        # if the user would like to continue editing the templates - queue relation just redirect to the edit screen
+        # otherwise return to relations overview
+        if (
+            defined $ParamObject->GetParam( Param => 'ContinueAfterSave' )
+            && ( $ParamObject->GetParam( Param => 'ContinueAfterSave' ) eq '1' )
+            )
+        {
+            return $LayoutObject->Redirect(
+                OP => "Action=$Self->{Action};Subaction=Queue;ID=$QueueID"
+            );
+        }
+        else {
+            return $LayoutObject->Redirect(
+                OP => "Action=$Self->{Action}"
+            );
+        }
     }
 
     # ------------------------------------------------------------ #
@@ -171,7 +187,22 @@ sub Run {
             );
         }
 
-        return $LayoutObject->Redirect( OP => "Action=$Self->{Action}" );
+        # if the user would like to continue editing the queue - templates relation just redirect to the edit screen
+        # otherwise return to relations overview
+        if (
+            defined $ParamObject->GetParam( Param => 'ContinueAfterSave' )
+            && ( $ParamObject->GetParam( Param => 'ContinueAfterSave' ) eq '1' )
+            )
+        {
+            return $LayoutObject->Redirect(
+                OP => "Action=$Self->{Action};Subaction=Template;ID=$TemplateID"
+            );
+        }
+        else {
+            return $LayoutObject->Redirect(
+                OP => "Action=$Self->{Action}"
+            );
+        }
     }
 
     # ------------------------------------------------------------ #
@@ -198,7 +229,20 @@ sub _Change {
 
     my $MyType       = $VisibleType{$Type};
     my $LayoutObject = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
-    $LayoutObject->Block( Name => 'Overview' );
+
+    my $BreadcrumbTitle = $LayoutObject->{LanguageObject}->Translate('Change Queue Relations for Template');
+
+    if ( $VisibleType{$Type} eq 'Queue' ) {
+        $BreadcrumbTitle = $LayoutObject->{LanguageObject}->Translate('Change Template Relations for Queue');
+    }
+
+    $LayoutObject->Block(
+        Name => 'Overview',
+        Data => {
+            Name            => $Param{Name},
+            BreadcrumbTitle => $BreadcrumbTitle,
+        },
+    );
     $LayoutObject->Block( Name => 'ActionList' );
     $LayoutObject->Block( Name => 'ActionOverview' );
     $LayoutObject->Block( Name => 'Filter' );
@@ -212,16 +256,24 @@ sub _Change {
         Name => 'Change',
         Data => {
             %Param,
-            ActionHome    => 'Admin' . $Type,
-            NeType        => $NeType,
-            VisibleType   => $VisibleType{$Type},
-            VisibleNeType => $VisibleType{$NeType},
-            Queue         => $QueueTag,
-
+            ActionHome      => 'Admin' . $Type,
+            NeType          => $NeType,
+            VisibleType     => $VisibleType{$Type},
+            VisibleNeType   => $VisibleType{$NeType},
+            Queue           => $QueueTag,
+            BreadcrumbTitle => $BreadcrumbTitle,
         },
     );
 
-    $LayoutObject->Block( Name => "ChangeHeader$VisibleType{$NeType}" );
+    # check if there are queue/template
+    if ( !%Data ) {
+        $LayoutObject->Block(
+            Name => 'NoDataFoundMsgList',
+            Data => {
+                ColSpan => 2,
+            },
+        );
+    }
 
     $LayoutObject->Block(
         Name => 'ChangeHeader',

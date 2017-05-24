@@ -1,11 +1,12 @@
 // --
-// Core.UI.Popup.js - provides functionality to open popup windows
-// Copyright (C) 2001-2012 OTRS AG, http://otrs.org/
+// Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 // --
 // This software comes with ABSOLUTELY NO WARRANTY. For details, see
 // the enclosed file COPYING for license information (AGPL). If you
 // did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
 // --
+
+/*eslint-disable no-window*/
 
 "use strict";
 
@@ -58,19 +59,32 @@ Core.UI.Popup = (function (TargetNS) {
      * @description
      *      Time to wait before a popup is registered at the parent window.
      */
-        RegisterPopupTimeOut = 1000;
+        RegisterPopupTimeOut = 1000,
+
+    /**
+     * @private
+     * @name WindowMode
+     * @memberof Core.UI.Popup
+     * @member {String}
+     * @description
+     *      Defines the mode to open popups.
+     *      If the screen size is <1024px (ScreenL), we do not open popup windows,
+     *      but add fullsize iframes to the page.
+     *      Mode can be 'Popup' or 'Iframe'.
+     */
+        WindowMode = 'Popup';
 
     if (!Core.Debug.CheckDependency('Core.UI.Dialog', 'Core.Config', 'Core.Config')) {
-        return;
+        return false;
     }
 
     PopupProfiles = {
         'Default': {
             WindowURLParams: "dependent=yes,location=no,menubar=no,resizable=yes,scrollbars=yes,status=no,toolbar=no",
-            Left:            100,
-            Top:             100,
-            Width:           1000,
-            Height:          700
+            Left: 100,
+            Top: 100,
+            Width: 1040,
+            Height: 700
         }
     };
 
@@ -80,7 +94,7 @@ Core.UI.Popup = (function (TargetNS) {
      * @memberof Core.UI.Popup
      * @function
      * @description
-     *      Check which popup window are still open.
+     *      Check which popup windows are still open.
      */
     function CheckOpenPopups() {
         $.each(OpenPopups, function (Key, Value) {
@@ -103,6 +117,67 @@ Core.UI.Popup = (function (TargetNS) {
     function GetPopupObjectByType(Type) {
         return OpenPopups[Type];
     }
+
+    /**
+     * @private
+     * @name GetWindowParentObject
+     * @memberof Core.UI.Popup
+     * @function
+     * @returns {Object} Parent window object.
+     * @description
+     *      Get the window parent object of the current popup.
+     */
+    function GetWindowParentObject() {
+        // we have a normal popup, opener is defined
+        // In Chrome/Webkit/Android window.opener is null instead of undefined
+        // In IE (Win Phone) window.opener is undefined
+        // typeof null === object
+        if (window.opener !== null && typeof window.opener !== 'undefined') {
+            // Special handling for IE11
+            // Because of permission problems, IE11 returns a valid window object
+            // but without the needed JS object "Core". window.parent contains that element
+            if (typeof window.opener.Core !== 'undefined') {
+                return window.opener;
+            }
+            else {
+                return window.parent;
+            }
+        }
+        else {
+            return window.parent;
+        }
+    }
+
+    /**
+     * @private
+     * @name CurrentIsPopupWindow
+     * @memberof Core.UI.Popup
+     * @function
+     * @returns {String} Returns the type of popup if one, undefined otherwise.
+     * @description
+     *      Checks if current window is an OTRS popup.
+     */
+    function CurrentIsPopupWindow() {
+        var PopupType;
+
+        if (window.name.match(/OTRSPopup_([^_]+)_.+/)) {
+            PopupType = RegExp.$1;
+        }
+
+        return PopupType;
+    }
+
+    /**
+     * @name CurrentIsPopupWindow
+     * @memberof Core.UI.Popup
+     * @function
+     * @returns {String} Returns the type of popup if one, undefined otherwise.
+     * @description
+     *      Checks if current window is an OTRS popup.
+     */
+    TargetNS.CurrentIsPopupWindow = function () {
+        return CurrentIsPopupWindow();
+    };
 
     /**
      * @name ProfileAdd
@@ -138,7 +213,7 @@ Core.UI.Popup = (function (TargetNS) {
      *      Register the pop-up event for a window.
      */
     TargetNS.RegisterPopupEvent = function () {
-        $(window).bind('Popup', function (Event, Type, Param) {
+        $(window).on('Popup', function (Event, Type, Param) {
             if (Type && typeof Type !== 'undefined') {
                 if (Type === 'Reload') {
                     window.location.reload();
@@ -158,11 +233,17 @@ Core.UI.Popup = (function (TargetNS) {
      * @function
      * @param {String} Type - The event type that will be launched.
      * @param {Object} Param  - The element that contain information about the new screen address.
+     * @param {Boolean} ExecuteInMobileMode - Do not execute this on mobile devices.
      * @description
      *      This function starts the pop-up event.
      */
-    TargetNS.FirePopupEvent = function (Type, Param) {
-        $(window).unbind('beforeunload.Popup').unbind('unload.Popup');
+    TargetNS.FirePopupEvent = function (Type, Param, ExecuteInMobileMode) {
+        if (ExecuteInMobileMode === false && !$('body').hasClass('Visible-ScreenXL') && (!localStorage.getItem("DesktopMode") || parseInt(localStorage.getItem("DesktopMode"), 10) <= 0)) {
+            return;
+        }
+
+        $(window).off('beforeunload.Popup');
+        Core.App.UnbindWindowUnloadEvent('Popup');
         $(window).trigger('Popup', [Type, Param]);
     };
 
@@ -187,7 +268,7 @@ Core.UI.Popup = (function (TargetNS) {
             }
         });
         if (Size) {
-            return Core.Config.Get('PopupLeaveParentWindowMsg');
+            return Core.Language.Translate('If you now leave this page, all open popup windows will be closed, too!');
         }
     };
 
@@ -215,13 +296,17 @@ Core.UI.Popup = (function (TargetNS) {
      * @name RegisterPopupAtParentWindow
      * @memberof Core.UI.Popup
      * @function
-     * @param {Object} WindowObject - The element is a javascript window object.
+     * @param {Object} WindowObject - Real window object.
+     * @param {String} Type - the window type.
      * @description
      *      This function set the type for a popup window.
      */
     TargetNS.RegisterPopupAtParentWindow = function (WindowObject) {
-        var TypeRegEx = /OTRSPopup_([^_]+)_.*/.exec(WindowObject.name),
-            Type = RegExp.$1;
+        var Type;
+
+        /OTRSPopup_([^_]+)_.*/.exec(WindowObject.name);
+        Type = RegExp.$1;
+
         if (typeof OpenPopups[Type] === 'undefined') {
             OpenPopups[Type] = WindowObject;
         }
@@ -241,16 +326,33 @@ Core.UI.Popup = (function (TargetNS) {
      */
     TargetNS.InitRegisterPopupAtParentWindow = function () {
         window.setTimeout(function () {
-            if (window.name.match(/OTRSPopup_.+/) &&
-                window.opener &&
-                window.opener.Core &&
-                window.opener.Core.UI &&
-                window.opener.Core.UI.Popup
+            var PopupType = CurrentIsPopupWindow(),
+                ParentWindow;
+
+            if (typeof PopupType !== 'undefined') {
+                ParentWindow = GetWindowParentObject();
+            }
+
+            // if the window has a name, it's most probably the popup itself, see bug#12185.
+            // This can happen if the parent window gets reloaded while the popup window tries
+            // to register itself to it. When there is no parent, GetWindowParentObject() will return
+            // the current window which is the popup itself. This leads to a situation where the popup window
+            // registers itself as popup in its own namespace, which will then lead to a confirmation
+            // message asking the user if they really want to navigate away from the current page when trying
+            // to close the popup by either submitting a form, closing it manually or using a close link.
+            if (ParentWindow &&
+                !ParentWindow.name &&
+                ParentWindow.Core &&
+                ParentWindow.Core.UI &&
+                ParentWindow.Core.UI.Popup
             ) {
                 try {
-                    window.opener.Core.UI.Popup.RegisterPopupAtParentWindow(window);
+                    ParentWindow.Core.UI.Popup.RegisterPopupAtParentWindow(window, PopupType);
                 }
-                catch (Error) {}
+                catch (Event) {
+                    // no code here
+                    $.noop(Event);
+                }
             }
             Core.UI.Popup.InitRegisterPopupAtParentWindow();
         }, RegisterPopupTimeOut);
@@ -270,6 +372,40 @@ Core.UI.Popup = (function (TargetNS) {
     };
 
     /**
+     * @name GetWindowMode
+     * @memberof Core.UI.Popup
+     * @function
+     * @returns {String} The window mode ('Popup' or 'Iframe') or undefined.
+     * @description
+     *      Get the window mode.
+     */
+    TargetNS.GetWindowMode = function () {
+        if (WindowMode === 'Popup' || WindowMode === 'Iframe') {
+            return WindowMode;
+        }
+        else {
+            return undefined;
+        }
+    };
+
+    /**
+     * @name SetWindowMode
+     * @memberof Core.UI.Popup
+     * @function
+     * @param {String} Mode - The new window mode ('Popup' or 'Iframe').
+     * @description
+     *      Set the window mode.
+     */
+    TargetNS.SetWindowMode = function (Mode) {
+        if (Mode === 'Popup' || Mode === 'Iframe') {
+            WindowMode = Mode;
+        }
+        else {
+            WindowMode = undefined;
+        }
+    };
+
+    /**
      * @name Resize
      * @memberof Core.UI.Popup
      * @function
@@ -280,9 +416,13 @@ Core.UI.Popup = (function (TargetNS) {
      *      This function resizes an opened window.
      */
     TargetNS.Resize = function (Type, Width, Height) {
-        var Object = GetPopupObjectByType(Type);
-        if (typeof Object !== 'undefined') {
-            Object.resizeTo(Width, Height);
+        var PopupObject = GetPopupObjectByType(Type);
+        // do not resize in iframe mode
+        if (WindowMode === 'Iframe') {
+            return;
+        }
+        if (typeof PopupObject !== 'undefined') {
+            PopupObject.resizeTo(Width, Height);
         }
     };
 
@@ -293,10 +433,11 @@ Core.UI.Popup = (function (TargetNS) {
      * @param {String} URL - The URL to be open in the new window.
      * @param {String} Type - The type of a window, e.g. 'Action'.
      * @param {String} Profile - The profile of a window, which defines the window parameters. Optional, default is 'Default'.
+     * @param {Int}    Unlinked - Optional parameter, if it's 1, popup will not be linked with the parent
      * @description
      *      This function opens a popup window. Every popup is of a specific type and there can only be one window of a type at a time.
      */
-    TargetNS.OpenPopup = function (URL, Type, Profile) {
+    TargetNS.OpenPopup = function (URL, Type, Profile, Unlinked) {
         var PopupObject,
             PopupProfile,
             NewWindow,
@@ -304,14 +445,25 @@ Core.UI.Popup = (function (TargetNS) {
             ConfirmClosePopup = true,
             PopupFeatures;
 
+        // If we are in a mobile environment on opening the popup, open it as an iframe
+        if (Core.App.Responsive.IsSmallerOrEqual(Core.App.Responsive.GetScreenSize(), 'ScreenL') && (!localStorage.getItem("DesktopMode") || parseInt(localStorage.getItem("DesktopMode"), 10) <= 0)) {
+            TargetNS.SetWindowMode('Iframe');
+        }
+        else {
+            TargetNS.SetWindowMode('Popup');
+        }
+
         CheckOpenPopups();
         if (URL) {
             PopupObject = GetPopupObjectByType(Type);
 
-            if (typeof PopupObject !== 'undefined') {
-                ConfirmClosePopup = window.confirm(Core.Config.Get('PopupAlreadyOpenMsg'));
-                if (ConfirmClosePopup) {
-                    TargetNS.ClosePopup(PopupObject);
+            // perform only if popups are not unlinked
+            if (!Unlinked) {
+                if (typeof PopupObject !== 'undefined') {
+                    ConfirmClosePopup = window.confirm(Core.Language.Translate('A popup of this screen is already open. Do you want to close it and load this one instead?'));
+                    if (ConfirmClosePopup) {
+                        TargetNS.ClosePopup(PopupObject);
+                    }
                 }
             }
 
@@ -325,25 +477,63 @@ Core.UI.Popup = (function (TargetNS) {
                  *  by including the current time in the name string. This name is also needed
                  *  to save the Type parameter.
                  */
-                WindowName = 'OTRSPopup_' + Type + '_' + Date.parse(new Date());
-                PopupFeatures = PopupProfiles[PopupProfile].WindowURLParams;
-                // Get the position of the current screen on browsers which support it (non-IE) and
-                //  use it to open the popup on the same screen
-                PopupFeatures += ',left=' + ((window.screen.left || 0) + PopupProfiles[PopupProfile].Left);
-                PopupFeatures += ',top=' + ((window.screen.top || 0) + PopupProfiles[PopupProfile].Top);
-                PopupFeatures += ',width=' + PopupProfiles[PopupProfile].Width;
-                PopupFeatures += ',height=' + PopupProfiles[PopupProfile].Height;
 
-                NewWindow = window.open(URL, WindowName, PopupFeatures);
-
-                // check for popup blockers.
-                // currently, popup windows cannot easily be detected in chrome, because it will
-                //      load the entire content in an invisible window.
-                if (!NewWindow ||  NewWindow.closed || typeof NewWindow.closed === 'undefined') {
-                    window.alert(Core.Config.Get('PopupBlockerMsg'));
+                 /* if Unlined is passed and eq 1 add, diferent name of the popup
+                 * it will ensure that popup is nor linked with the parent window
+                 */
+                if (Unlinked && Unlinked === 1) {
+                    WindowName = 'PopupOTRS_' + Type + '_' + Date.parse(new Date());
                 }
                 else {
-                    OpenPopups[Type] = NewWindow;
+                    WindowName = 'OTRSPopup_' + Type + '_' + Date.parse(new Date());
+                }
+
+                if (WindowMode === 'Popup') {
+                    PopupFeatures = PopupProfiles[PopupProfile].WindowURLParams;
+                    // Get the position of the current screen on browsers which support it (non-IE) and
+                    //  use it to open the popup on the same screen
+                    PopupFeatures += ',left=' + ((window.screen.left || 0) + PopupProfiles[PopupProfile].Left);
+                    PopupFeatures += ',width=' + PopupProfiles[PopupProfile].Width;
+
+                    // Bug#11205 (http://bugs.otrs.org/show_bug.cgi?id=11205)
+                    // On small screens (still wide enough to open a popup)
+                    // it can happen, that the popup window is higher than the screen height
+                    // In this case, reduce the popup height to fit into the screen
+                    // We don't have to do that for the width, because a smaller screen width
+                    // would result in a "responsive popup" aka iframe.
+                    if (window.screen.availHeight < PopupProfiles[PopupProfile].Height + PopupProfiles[PopupProfile].Top) {
+                        PopupFeatures += ',height=' + (window.screen.availHeight - PopupProfiles[PopupProfile].Top - 20);
+                        // Adjust top position to have the same distance between top and bottom line.
+                        PopupFeatures += ',top=' + ((window.screen.top || 0) + (PopupProfiles[PopupProfile].Top / 2));
+                    }
+                    else {
+                        PopupFeatures += ',height=' + PopupProfiles[PopupProfile].Height;
+                        PopupFeatures += ',top=' + ((window.screen.top || 0) + PopupProfiles[PopupProfile].Top);
+                    }
+
+                    NewWindow = window.open(URL, WindowName, PopupFeatures);
+
+                    // check for popup blockers.
+                    // currently, popup windows cannot easily be detected in chrome, because it will
+                    //      load the entire content in an invisible window.
+                    if (!NewWindow || NewWindow.closed || typeof NewWindow.closed === 'undefined') {
+                        window.alert(Core.Language.Translate('Could not open popup window. Please disable any popup blockers for this application.'));
+                    }
+                    else {
+                        OpenPopups[Type] = NewWindow;
+                    }
+
+                }
+                else if (WindowMode === 'Iframe') {
+                    // jump to the top
+                    window.scrollTo(0, 0);
+
+                    // prevent scrolling of the main window
+                    $('html').addClass('NoScroll');
+
+                    // add iframe overlay
+                    $('body').append('<iframe data-popuptype="' + Type + '" name="' + WindowName + '" class="PopupIframe" src="' + URL + '"></iframe>');
+                    $('iframe.PopupIframe').height($(window).height());
                 }
             }
         }
@@ -376,17 +566,114 @@ Core.UI.Popup = (function (TargetNS) {
      * @name ClosePopup
      * @memberof Core.UI.Popup
      * @function
-     * @param {String|Object} Popup - The type of a popup or the window object.
+     * @param {String|Object} PopupType - The type of a popup or the window object. If not defined, the current popup windoe is closed.
      * @description
-     *      This function closes a opened popup.
+     *      This function closes an opened popup.
+     *      If no parameter is given, we are in the popup itself and want to close it.
+     *      If a parameter is defined we are in the parent window and want to close a specific popup window.
+     *      There are four possible states for this function:
+     *      1) In parent window, trying to close a "real" popup
+     *      2) In parent window, trying to close an iframe-popup ("responsive mode")
+     *      3) In the popup itself, closing itself ("real" popup)
+     *      4) In the popup itself, closing itself (iframe-popup, "responsive mode")
      */
-    TargetNS.ClosePopup = function (Popup) {
-        if (typeof Popup === 'string') {
-            Popup = GetPopupObjectByType(Popup);
+    TargetNS.ClosePopup = function (PopupType) {
+        var PopupObject,
+            ParentObject,
+            PlaceOfExecution,
+            LocalWindowMode;
+
+        // If PopupType is defined, we are in the parent window and want to close a specific popup
+        // Otherwise we are in the popup itself
+        if (typeof PopupType === 'undefined') {
+            PlaceOfExecution = 'Popup';
+
+            // get PopupType of active popup
+            PopupType = CurrentIsPopupWindow();
+
+            // the PopupObject is the active window
+            PopupObject = window;
+
+            // the parent window object is reached differently, if popup or iframe
+            ParentObject = GetWindowParentObject();
         }
-        if (typeof Popup !== 'undefined') {
-            Popup.close();
-            CheckOpenPopups();
+        else {
+            PlaceOfExecution = 'Parent';
+
+            // if parameter PopupType is a string, we need to get the window object
+            if (typeof PopupType === 'string') {
+                // This only works in parent window
+                PopupObject = GetPopupObjectByType(PopupType);
+                ParentObject = window;
+            }
+            // in some circumstances the parameter PopupType is an window object instead of a string
+            else {
+                PopupObject = PopupType;
+
+                // we can now find out the type of the popup based on the popup object
+                if (PopupObject && typeof PopupObject.name !== 'undefined' && PopupObject.name.match(/OTRSPopup_([^_]+)_.+/)) {
+                    PopupType = RegExp.$1;
+                }
+
+                // we are still in the parent window
+                ParentObject = window;
+            }
+        }
+
+        if (typeof PopupObject !== 'undefined' && typeof ParentObject !== 'undefined') {
+            // Retrieve correct WindowMode (which is only correctly set in the parent window)
+            if (PlaceOfExecution === 'Parent') {
+                LocalWindowMode = TargetNS.GetWindowMode();
+            }
+            else if (PlaceOfExecution === 'Popup') {
+                LocalWindowMode = ParentObject.Core.UI.Popup.GetWindowMode();
+            }
+
+            // if we are in a real popup, we can now savely close the popup.
+            if (LocalWindowMode === 'Popup') {
+                PopupObject.close();
+            }
+            // closing the Iframe is a little bit more complicated
+            else if (LocalWindowMode === 'Iframe') {
+                $('iframe.PopupIframe[data-popuptype=' + PopupType + ']', ParentObject.document).remove();
+                $('html', ParentObject.document).removeClass('NoScroll');
+            }
+        }
+
+        CheckOpenPopups();
+    };
+
+    /**
+     * @name ExecuteInParentWindow
+     * @memberof Core.UI.Popup
+     * @function
+     * @param {Function} FunctionToExecute - The callback function to execute in the parent window.
+     * @param {Array} [FunctionParameters] - Optional function parameters as array.
+     * @description
+     *      Takes a callback function and hands it over to the parent window (to be executed there).
+     *      This is needed to call a function in the parent window from the popup window. The popup window
+     *      can be a real popup or an iframe, so it is not as easy as calling window.opener.
+     *      IMPORTANT: The FunctionToExecute always needs the ParentWindowObject as first Parameter,
+     *      which is used inside this function.
+     */
+    TargetNS.ExecuteInParentWindow = function (FunctionToExecute, FunctionParameters) {
+        var ParentWindow = GetWindowParentObject();
+
+        if (typeof ParentWindow === 'undefined' || ParentWindow === null) {
+            return;
+        }
+
+        if (typeof FunctionParameters === 'undefined') {
+            FunctionParameters = [ParentWindow];
+        }
+        else {
+            FunctionParameters.unshift(ParentWindow);
+        }
+
+        if (typeof FunctionToExecute !== 'undefined' && $.isFunction(FunctionToExecute)) {
+            // call the function with a new this context (first param)
+            // and additional params where the first one is also the parent window object (for use within the function)
+            FunctionToExecute.apply(ParentWindow, FunctionParameters);
         }
     };
 
@@ -398,27 +685,58 @@ Core.UI.Popup = (function (TargetNS) {
      *      The init function.
      */
     TargetNS.Init = function () {
-        $(window).bind('beforeunload.Popup', function () {
+
+        var PopupURL,
+            PopupClose = Core.Config.Get('PopupClose');
+
+        if (PopupClose === 'LoadParentURLAndClose') {
+            PopupURL = Core.Config.Get('PopupURL');
+            if (TargetNS.CurrentIsPopupWindow()) {
+                TargetNS.ExecuteInParentWindow(function(WindowObject) {
+                    WindowObject.Core.UI.Popup.FirePopupEvent('URL', { URL: Core.Config.Get('Baselink') + PopupURL });
+                });
+                TargetNS.ClosePopup();
+            }
+            else {
+                window.location.href = Core.Config.Get('Baselink') + PopupURL;
+            }
+        }
+        else if (PopupClose === 'ReloadParentAndClose') {
+            TargetNS.ExecuteInParentWindow(function(WindowObject) {
+                WindowObject.Core.UI.Popup.FirePopupEvent('Reload');
+            });
+            TargetNS.ClosePopup();
+        }
+
+        $(window).on('beforeunload.Popup', function () {
             return Core.UI.Popup.CheckPopupsOnUnload();
         });
-        $(window).bind('unload.Popup', function () {
-            Core.UI.Popup.ClosePopupsOnUnload();
-        });
+        Core.App.BindWindowUnloadEvent('Popup', Core.UI.Popup.ClosePopupsOnUnload);
         Core.UI.Popup.RegisterPopupEvent();
 
         // if this window is a popup itself, register another function
-        if (window.name.match(/OTRSPopup_.+/) && window.opener !== null) {
+        if (CurrentIsPopupWindow()) {
             Core.UI.Popup.InitRegisterPopupAtParentWindow();
-            $('.CancelClosePopup').bind('click', function () {
-                window.close();
+            $('.CancelClosePopup').on('click', function () {
+                TargetNS.ClosePopup();
             });
-            $('.UndoClosePopup').bind('click', function () {
-                var RedirectURL = $(this).attr('href');
-                window.opener.Core.UI.Popup.FirePopupEvent('URL', { URL: RedirectURL });
-                window.close();
+            $('.UndoClosePopup').on('click', function () {
+                var RedirectURL = $(this).attr('href'),
+                    ParentWindow = GetWindowParentObject();
+                ParentWindow.Core.UI.Popup.FirePopupEvent('URL', { URL: RedirectURL });
+                TargetNS.ClosePopup();
             });
+
+            // add a class to the body element, if this popup is a real popup
+            if (window.opener) {
+                $('body').addClass('RealPopup');
+            }
         }
     };
 
+    Core.Init.RegisterNamespace(TargetNS, 'APP_GLOBAL');
+
     return TargetNS;
 }(Core.UI.Popup || {}));
+
+/*eslint-enable no-window*/

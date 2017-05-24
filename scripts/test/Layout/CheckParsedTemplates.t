@@ -1,6 +1,5 @@
 # --
-# scripts/test/Layout/CheckParsedTemplates.t - layout module testscript
-# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -13,21 +12,24 @@ use utf8;
 
 use vars (qw($Self));
 
-use Kernel::Output::HTML::Layout;
-
 use Kernel::System::VariableCheck qw(:all);
 
 # get needed objects
-my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
-my $MainObject   = $Kernel::OM->Get('Kernel::System::Main');
-my $ParamObject  = $Kernel::OM->Get('Kernel::System::Web::Request');
+my $MainObject = $Kernel::OM->Get('Kernel::System::Main');
 
-my $LayoutObject = Kernel::Output::HTML::Layout->new(
-    UserChallengeToken => 'TestToken',
-    UserID             => 1,
-    Lang               => 'de',
-    SessionID          => 123,
+$Kernel::OM->ObjectParamAdd(
+    'Kernel::System::UnitTest::Helper' => {
+        RestoreDatabase => 1,
+    },
 );
+my $Helper = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
+
+$Kernel::OM->ObjectParamAdd(
+    'Kernel::Output::HTML::Layout' => {
+        UserID => 1,
+    },
+);
+my $LayoutObject = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
 
 # here everyone can insert example data for the tests
 my %Data = (
@@ -47,7 +49,7 @@ my $StartTime = time();
 
 # --------------------------------------------------------------------#
 # Search for $Data{""} etc. because this is the most dangerous bug if you
-# modify the Output funciton
+# modify the Output function
 # --------------------------------------------------------------------#
 
 # check the header
@@ -97,8 +99,8 @@ $Self->True(
 );
 
 # check all dtl files
-my $HomeDirectory = $ConfigObject->Get('Home');
-my $DTLDirectory  = $HomeDirectory . '/Kernel/Output/HTML/Standard/';
+my $HomeDirectory = $Kernel::OM->Get('Kernel::Config')->Get('Home');
+my $DTLDirectory  = $HomeDirectory . '/Kernel/Output/HTML/Templates/Standard/';
 my $DIR;
 if ( !opendir $DIR, $DTLDirectory ) {
     print "Can not open Directory: $DTLDirectory";
@@ -163,5 +165,7 @@ for my $File (@Files) {
         );
     }
 }
+
+# cleanup cache is done by RestoreDatabase
 
 1;

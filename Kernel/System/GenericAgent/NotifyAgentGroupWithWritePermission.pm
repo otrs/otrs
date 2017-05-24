@@ -1,6 +1,5 @@
 # --
-# Kernel/System/GenericAgent/NotifyAgentGroupWithWritePermission.pm - generic agent notifications
-# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -105,64 +104,15 @@ sub Run {
         return;
     }
 
-    # get rw member of group
-    my %Queue = $Kernel::OM->Get('Kernel::System::Queue')->QueueGet(
-        ID    => $Ticket{QueueID},
-        Cache => 1,
-    );
-    my %UserList = $Kernel::OM->Get('Kernel::System::Group')->PermissionGroupGet(
-        GroupID => $Queue{GroupID},
-        Type    => 'rw',
-    );
-
-    # get user object
-    my $UserObject = $Kernel::OM->Get('Kernel::System::User');
-
-    # send each agent the escalation notification
-    USER:
-    for my $UserID ( sort keys %UserList ) {
-
-        my %User = $UserObject->GetUserData(
-            UserID => $UserID,
-            Valid  => 1,
-        );
-
-        next USER if !%User || $User{OutOfOfficeMessage};
-
-        # check if today a reminder is already sent
-        my ( $Sec, $Min, $Hour, $Day, $Month, $Year ) = $TimeObject->SystemTime2Date(
-            SystemTime => $TimeObject->SystemTime(),
-        );
-
-        my @Lines = $TicketObject->HistoryGet(
-            TicketID => $Ticket{TicketID},
-            UserID   => 1,
-        );
-
-        my $Sent = 0;
-        for my $Line (@Lines) {
-
-            if (
-                $Line->{Name} =~ /\%\%$EscalationType\%\%/
-                && $Line->{Name} =~ /\Q%%$User{UserEmail}\E$/i
-                && $Line->{CreateTime} =~ /$Year-$Month-$Day/
-                )
-            {
-                $Sent = 1;
-            }
-        }
-
-        next USER if $Sent;
-
-        # send agent notification
-        $TicketObject->SendAgentNotification(
+    # trigger notification event
+    $TicketObject->EventHandler(
+        Event => 'Notification' . $EscalationType,
+        Data  => {
             TicketID              => $Param{TicketID},
             CustomerMessageParams => \%Param,
-            Type                  => $EscalationType,
-            RecipientID           => $UserID,
-            UserID                => 1,
-        );
-    }
+        },
+        UserID => 1,
+    );
 
     return 1;
 }

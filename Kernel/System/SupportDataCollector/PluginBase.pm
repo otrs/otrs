@@ -1,6 +1,5 @@
 # --
-# Kernel/System/SupportDataCollector/PluginBase.pm - system data collector plugin base class
-# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -14,6 +13,8 @@ use warnings;
 
 use Scalar::Util qw();
 
+use Kernel::Language qw(Translatable);
+
 our $StatusUnknown = 0;
 our $StatusInfo    = 1;
 our $StatusOK      = 2;
@@ -21,11 +22,11 @@ our $StatusWarning = 3;
 our $StatusProblem = 4;
 
 our %Status2Name = (
-    $StatusUnknown => 'Unknown',
-    $StatusOK      => 'OK',
-    $StatusWarning => 'Warning',
-    $StatusProblem => 'Problem',
-    $StatusInfo    => 'Information',
+    $StatusUnknown => Translatable('Unknown'),
+    $StatusOK      => Translatable('OK'),
+    $StatusWarning => Translatable('Warning'),
+    $StatusProblem => Translatable('Problem'),
+    $StatusInfo    => Translatable('Information'),
 );
 
 our @ObjectDependencies = ();
@@ -42,7 +43,7 @@ sub new {
 
 # Override this in the plugins to specify their DisplayPath
 sub GetDisplayPath {
-    return 'General';
+    return Translatable('General');
 }
 
 sub AddResultUnknown {
@@ -103,6 +104,9 @@ sub _AddResult {
         $Result{Identifier} = Scalar::Util::blessed($Self);
     }
 
+    $Result{ShortIdentifier} = $Result{Identifier};
+    $Result{ShortIdentifier} =~ s{Kernel::System::SupportDataCollector::Plugin(Asynchronous)?::}{}xmsg;
+
     $Result{DisplayPath} //= $Self->GetDisplayPath();
 
     $Self->{Results} //= [];
@@ -118,17 +122,5 @@ sub GetResults {
         Result  => $Self->{Results} // [],
     );
 }
-
-=back
-
-=head1 TERMS AND CONDITIONS
-
-This software is part of the OTRS project (L<http://otrs.org/>).
-
-This software comes with ABSOLUTELY NO WARRANTY. For details, see
-the enclosed file COPYING for license information (AGPL). If you
-did not receive this file, see L<http://www.gnu.org/licenses/agpl.txt>.
-
-=cut
 
 1;

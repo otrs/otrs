@@ -1,6 +1,5 @@
 # --
-# Kernel/System/Ticket/Event/ArticleSearchIndex.pm - update article search index
-# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -12,9 +11,11 @@ package Kernel::System::Ticket::Event::ArticleSearchIndex;
 use strict;
 use warnings;
 
+use parent qw(Kernel::System::AsynchronousExecutor);
+
 our @ObjectDependencies = (
     'Kernel::System::Log',
-    'Kernel::System::Ticket',
+    'Kernel::System::Ticket::Article',
 );
 
 sub new {
@@ -52,9 +53,14 @@ sub Run {
 
     return 1 if !$Param{Data}->{ArticleID};
 
-    $Kernel::OM->Get('Kernel::System::Ticket')->ArticleIndexBuild(
-        ArticleID => $Param{Data}->{ArticleID},
-        UserID    => 1,
+    $Self->AsyncCall(
+        ObjectName     => 'Kernel::System::Ticket::Article',
+        FunctionName   => 'ArticleSearchIndexBuild',
+        FunctionParams => {
+            TicketID  => $Param{Data}->{TicketID},
+            ArticleID => $Param{Data}->{ArticleID},
+            UserID    => 1,
+        },
     );
 
     return 1;

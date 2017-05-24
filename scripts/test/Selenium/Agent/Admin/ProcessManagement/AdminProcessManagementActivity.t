@@ -1,6 +1,5 @@
 # --
-# AdminProcessManagementActivity.t - frontend tests for AdminProcessManagementActivity
-# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -13,20 +12,16 @@ use utf8;
 
 use vars (qw($Self));
 
-use Kernel::System::UnitTest::Helper;
-use Kernel::System::UnitTest::Selenium;
-
-my $Selenium = Kernel::System::UnitTest::Selenium->new(
-    Verbose => 1,
-);
+# get selenium object
+my $Selenium = $Kernel::OM->Get('Kernel::System::UnitTest::Selenium');
 
 $Selenium->RunTest(
     sub {
 
-        my $Helper = Kernel::System::UnitTest::Helper->new(
-            RestoreSystemConfiguration => 0,
-        );
+        # get helper object
+        my $Helper = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
 
+        # create test user and login
         my $TestUserLogin = $Helper->TestUserCreate(
             Groups => ['admin'],
         ) || die "Did not get test user";
@@ -45,24 +40,28 @@ $Selenium->RunTest(
         # define needed variables
         my $ProcessRandom  = 'Process' . $Helper->GetRandomID();
         my $ActivityRandom = 'Activity' . $Helper->GetRandomID();
-        my $ScriptAlias    = $Kernel::OM->Get('Kernel::Config')->Get('ScriptAlias');
 
-        # go to AdminProcessManagement screen
-        $Selenium->get("${ScriptAlias}index.pl?Action=AdminProcessManagement");
+        # get script alias
+        my $ScriptAlias = $Kernel::OM->Get('Kernel::Config')->Get('ScriptAlias');
+
+        # navigate to AdminProcessManagement screen
+        $Selenium->VerifiedGet("${ScriptAlias}index.pl?Action=AdminProcessManagement");
 
         # create new test Process
-        $Selenium->find_element("//a[contains(\@href, \'Subaction=ProcessNew' )]")->click();
+        $Selenium->find_element("//a[contains(\@href, \'Subaction=ProcessNew' )]")->VerifiedClick();
         $Selenium->find_element( "#Name",        'css' )->send_keys($ProcessRandom);
         $Selenium->find_element( "#Description", 'css' )->send_keys("Selenium Test Process");
-        $Selenium->find_element( "#Name",        'css' )->submit();
-        sleep 1;
+        $Selenium->find_element( "#Name",        'css' )->VerifiedSubmit();
 
         # create new test Activity
-        $Selenium->find_element("//a[contains(\@href, \'Subaction=ActivityNew' )]")->click();
+        $Selenium->find_element("//a[contains(\@href, \'Subaction=ActivityNew' )]")->VerifiedClick();
 
         # switch to pop up window
+        $Selenium->WaitFor( WindowCount => 2 );
         my $Handles = $Selenium->get_window_handles();
         $Selenium->switch_to_window( $Handles->[1] );
+
+        $Selenium->WaitFor( JavaScript => "return typeof(\$) === 'function' && \$('#Name').length" );
 
         # check AdminProcessManagementActivity screen
         for my $ID (
@@ -76,7 +75,7 @@ $Selenium->RunTest(
 
         # check client side validation
         $Selenium->find_element( "#Name", 'css' )->clear();
-        $Selenium->find_element( "#Name", 'css' )->submit();
+        $Selenium->find_element( "#Name", 'css' )->VerifiedSubmit();
         $Self->Is(
             $Selenium->execute_script(
                 "return \$('#Name').hasClass('Error')"
@@ -88,13 +87,19 @@ $Selenium->RunTest(
         # input name field and submit
         $Selenium->find_element( "#Name", 'css' )->send_keys($ActivityRandom);
         $Selenium->find_element( "#Name", 'css' )->submit();
-        sleep 2;
 
         # switch back to main window
+        $Selenium->WaitFor( WindowCount => 1 );
         $Selenium->switch_to_window( $Handles->[0] );
 
         # check for created test activity using filter on AdminProcessManagement screen
+        $Selenium->WaitFor(
+            JavaScript =>
+                "return typeof(\$) === 'function' && \$('ul#Activities li:contains($ActivityRandom)').length"
+        );
         $Selenium->find_element( "#ActivityFilter", 'css' )->send_keys($ActivityRandom);
+
+        # wait for filter to kick in
         sleep 1;
 
         $Self->True(
@@ -115,9 +120,12 @@ $Selenium->RunTest(
         }
 
         # check for stored value and edit test Activity
-        $Selenium->find_element("//a[contains(\@href, \'Subaction=ActivityEdit;ID=$ActivityID' )]")->click();
+        $Selenium->find_element("//a[contains(\@href, \'Subaction=ActivityEdit;ID=$ActivityID' )]")->VerifiedClick();
+        $Selenium->WaitFor( WindowCount => 2 );
         $Handles = $Selenium->get_window_handles();
         $Selenium->switch_to_window( $Handles->[1] );
+
+        $Selenium->WaitFor( JavaScript => "return typeof(\$) === 'function' && \$('#Name').length" );
 
         $Self->Is(
             $Selenium->find_element( '#Name', 'css' )->get_value(),
@@ -127,40 +135,68 @@ $Selenium->RunTest(
 
         $Selenium->find_element( "#Name", 'css' )->send_keys("edit");
         $Selenium->find_element( "#Name", 'css' )->submit();
-        sleep 2;
 
-        # return to main window
+        # return to main window after the popup is closed, as the popup sends commands to the main window.
+        $Selenium->WaitFor( WindowCount => 1 );
         $Selenium->switch_to_window( $Handles->[0] );
 
-        # get process id and return to overview afterwards
+        # get process id
         my $ProcessID = $Selenium->execute_script('return $("#ProcessDelete").data("id")') || undef;
-        $Selenium->get("${ScriptAlias}index.pl?Action=AdminProcessManagement");
 
-        # delete test ActivityDialog
-        my $Success = $DBObject->Do(
-            SQL => "DELETE FROM pm_activity WHERE id = $ActivityID",
+        # navigate to AdminProcessManagement screen
+        $Selenium->VerifiedGet("${ScriptAlias}index.pl?Action=AdminProcessManagement");
+
+        # set process to inactive
+        $Selenium->find_element( $ProcessRandom, 'link_text' )->VerifiedClick();
+        $Selenium->execute_script("\$('#StateEntityID').val('S2').trigger('redraw.InputField').trigger('change');");
+        $Selenium->find_element( "#Submit", 'css' )->VerifiedClick();
+
+        # test search filter
+        $Selenium->find_element( "#Filter", 'css' )->clear();
+        $Selenium->find_element( "#Filter", 'css' )->send_keys($ProcessRandom);
+
+        # check class of invalid Process in the overview table
+        $Self->True(
+            $Selenium->execute_script(
+                "return \$('tr.Invalid td:contains($ProcessRandom)').length"
+            ),
+            "There is a class 'Invalid' for test Process",
         );
+
+        # delete test activity
+        my $Success = $Kernel::OM->Get('Kernel::System::ProcessManagement::DB::Activity')->ActivityDelete(
+            ID     => $ActivityID,
+            UserID => $TestUserID,
+        );
+
         $Self->True(
             $Success,
-            "ActivityID - $ActivityRandom",
+            "Activity is deleted - $ActivityID",
         );
 
-        # delete process
-        my $Delete = $DBObject->Do(
-            SQL => "DELETE FROM pm_process WHERE id = $ProcessID",
+        # delete test process
+        $Success = $Kernel::OM->Get('Kernel::System::ProcessManagement::DB::Process')->ProcessDelete(
+            ID     => $ProcessID,
+            UserID => $TestUserID,
         );
 
         $Self->True(
-            $Delete,
-            "Successfully deleted test process.",
+            $Success,
+            "Process is deleted - $ProcessID",
         );
 
-        # make sure the cache is correct
-        $Kernel::OM->Get('Kernel::System::Cache')->CleanUp(
-            Type => 'ProcessManagement_Activity',
-        );
+        # synchronize process after deleting test process
+        $Selenium->find_element("//a[contains(\@href, \'Subaction=ProcessSync' )]")->VerifiedClick();
 
+        # make sure cache is correct
+        for my $Cache (
+            qw(ProcessManagement_Activity ProcessManagement_Process )
+            )
+        {
+            $Kernel::OM->Get('Kernel::System::Cache')->CleanUp( Type => $Cache );
         }
+
+    }
 );
 
 1;

@@ -1,6 +1,5 @@
 # --
-# Kernel/Modules/AdminUserGroup.pm - to add/update/delete groups <-> users
-# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -150,7 +149,9 @@ sub Run {
             for my $Permission ( sort keys %Permissions ) {
                 $NewPermission{$Permission} = 0;
                 my @Array = @{ $Permissions{$Permission} };
+                ID:
                 for my $ID (@Array) {
+                    next ID if !$ID;
                     if ( $UserID == $ID ) {
                         $NewPermission{$Permission} = 1;
                     }
@@ -163,9 +164,19 @@ sub Run {
                 UserID     => $Self->{UserID},
             );
         }
-        return $LayoutObject->Redirect(
-            OP => "Action=$Self->{Action}",
-        );
+
+        # if the user would like to continue editing the group-user relation just redirect to the edit screen
+        # otherwise return to relations overview
+        if (
+            defined $ParamObject->GetParam( Param => 'ContinueAfterSave' )
+            && ( $ParamObject->GetParam( Param => 'ContinueAfterSave' ) eq '1' )
+            )
+        {
+            return $LayoutObject->Redirect( OP => "Action=$Self->{Action};Subaction=Group;ID=$ID" );
+        }
+        else {
+            return $LayoutObject->Redirect( OP => "Action=$Self->{Action}" );
+        }
     }
 
     # ------------------------------------------------------------ #
@@ -194,7 +205,9 @@ sub Run {
             for my $Permission ( sort keys %Permissions ) {
                 $NewPermission{$Permission} = 0;
                 my @Array = @{ $Permissions{$Permission} };
+                ID:
                 for my $ID (@Array) {
+                    next ID if !$ID;
                     if ( $GroupID eq $ID ) {
                         $NewPermission{$Permission} = 1;
                     }
@@ -207,9 +220,19 @@ sub Run {
                 UserID     => $Self->{UserID},
             );
         }
-        return $LayoutObject->Redirect(
-            OP => "Action=$Self->{Action}",
-        );
+
+        # if the user would like to continue editing the group-user relation just redirect to the edit screen
+        # otherwise return to relations overview
+        if (
+            defined $ParamObject->GetParam( Param => 'ContinueAfterSave' )
+            && ( $ParamObject->GetParam( Param => 'ContinueAfterSave' ) eq '1' )
+            )
+        {
+            return $LayoutObject->Redirect( OP => "Action=$Self->{Action};Subaction=User;ID=$ID" );
+        }
+        else {
+            return $LayoutObject->Redirect( OP => "Action=$Self->{Action}" );
+        }
     }
 
     # ------------------------------------------------------------ #
@@ -237,9 +260,12 @@ sub _Change {
     # get layout object
     my $LayoutObject = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
 
-    $LayoutObject->Block(
-        Name => 'Overview',
-    );
+    $Param{BreadcrumbTitle} = $LayoutObject->{LanguageObject}->Translate("Change Group Relations for Agent");
+
+    if ( $VisibleType{$Type} eq 'Group' ) {
+        $Param{BreadcrumbTitle} = $LayoutObject->{LanguageObject}->Translate("Change Agent Relations for Group");
+    }
+
     $LayoutObject->Block(
         Name => 'ActionList',
     );
@@ -260,12 +286,22 @@ sub _Change {
         },
     );
 
-    $LayoutObject->Block(
-        Name => "ChangeHeader$VisibleType{$NeType}",
-    );
+    # check if there are groups
+    if ( $NeType eq 'Group' ) {
+        if ( !%Data ) {
+            $LayoutObject->Block(
+                Name => 'NoDataFoundMsgList',
+                Data => {
+                    ColSpan => 8,
+                },
+            );
+        }
+    }
 
     # get config object
     my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
+
+    my @Permissions;
 
     TYPE:
     for my $Type ( @{ $ConfigObject->Get('System::Permission') } ) {
@@ -279,7 +315,15 @@ sub _Change {
                 Type => $Type,
             },
         );
+
+        push @Permissions, $Type;
     }
+
+    # set permissions
+    $LayoutObject->AddJSData(
+        Key   => 'RelationItems',
+        Value => \@Permissions,
+    );
 
     for my $ID ( sort { uc( $Data{$a} ) cmp uc( $Data{$b} ) } keys %Data ) {
 
@@ -378,16 +422,25 @@ sub _Overview {
     my %GroupData = $Kernel::OM->Get('Kernel::System::Group')->GroupList(
         Valid => 1,
     );
-    for my $GroupID ( sort { uc( $GroupData{$a} ) cmp uc( $GroupData{$b} ) } keys %GroupData ) {
 
-        # set output class
+    if (%GroupData) {
+        for my $GroupID ( sort { uc( $GroupData{$a} ) cmp uc( $GroupData{$b} ) } keys %GroupData ) {
+
+            # set output class
+            $LayoutObject->Block(
+                Name => 'Listn1',
+                Data => {
+                    Name      => $GroupData{$GroupID},
+                    Subaction => 'Group',
+                    ID        => $GroupID,
+                },
+            );
+        }
+    }
+    else {
         $LayoutObject->Block(
-            Name => 'Listn1',
-            Data => {
-                Name      => $GroupData{$GroupID},
-                Subaction => 'Group',
-                ID        => $GroupID,
-            },
+            Name => 'NoDataFoundMsg',
+            Data => {},
         );
     }
 

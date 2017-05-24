@@ -1,6 +1,5 @@
 // --
-// Core.Agent.TableFilters.js - provides the special module functions for the dashboard
-// Copyright (C) 2001-2011 OTRS AG, http://otrs.org/
+// Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 // --
 // This software comes with ABSOLUTELY NO WARRANTY. For details, see
 // the enclosed file COPYING for license information (AGPL). If you
@@ -25,7 +24,7 @@ Core.Agent.TableFilters = (function (TargetNS) {
      * check dependencies first
      */
     if (!Core.Debug.CheckDependency('Core.Agent.TableFilters', 'Core.UI.AllocationList', 'Core.UI.AllocationList')) {
-        return;
+        return false;
     }
 
     /**
@@ -37,9 +36,15 @@ Core.Agent.TableFilters = (function (TargetNS) {
      *      Initialize autocompletion for CustomerID.
      */
     TargetNS.InitCustomerIDAutocomplete = function ($Input) {
+        var AutoCompleteConfig = Core.Config.Get('CustomerIDAutocomplete');
+
+        if (typeof AutoCompleteConfig === 'undefined') {
+            return;
+        }
+
         $Input.autocomplete({
-            minLength: Core.Config.Get('CustomerAutocomplete.MinQueryLength'),
-            delay: Core.Config.Get('CustomerAutocomplete.QueryDelay'),
+            minLength: AutoCompleteConfig.MinQueryLength,
+            delay: AutoCompleteConfig.QueryDelay,
             open: function() {
                 // force a higher z-index than the overlay/dialog
                 $(this).autocomplete('widget').addClass('ui-overlay-autocomplete');
@@ -47,10 +52,11 @@ Core.Agent.TableFilters = (function (TargetNS) {
             },
             source: function (Request, Response) {
                 var URL = Core.Config.Get('Baselink'), Data = {
-                    Action: 'AgentCustomerInformationCenterSearch',
+                    Action: 'AgentCustomerSearch',
                     Subaction: 'SearchCustomerID',
+                    IncludeUnknownTicketCustomers: parseInt(Core.Config.Get('IncludeUnknownTicketCustomers'), 10),
                     Term: Request.term,
-                    MaxResults: Core.Config.Get('CustomerAutocomplete.MaxResultsDisplayed')
+                    MaxResults: AutoCompleteConfig.MaxResultsDisplayed
                 };
 
                 // if an old ajax request is already running, stop the old request and start the new one
@@ -62,15 +68,15 @@ Core.Agent.TableFilters = (function (TargetNS) {
                 }
 
                 $Input.data('AutoCompleteXHR', Core.AJAX.FunctionCall(URL, Data, function (Result) {
-                    var Data = [];
+                    var ValueData = [];
                     $Input.removeData('AutoCompleteXHR');
                     $.each(Result, function () {
-                        Data.push({
+                        ValueData.push({
                             label: this.Label + ' (' + this.Value + ')',
                             value: this.Value
                         });
                     });
-                    Response(Data);
+                    Response(ValueData);
                 }));
             },
             select: function (Event, UI) {
@@ -93,9 +99,15 @@ Core.Agent.TableFilters = (function (TargetNS) {
      *      Initialize autocompletion for Customer User.
      */
     TargetNS.InitCustomerUserAutocomplete = function ($Input) {
+        var AutoCompleteConfig = Core.Config.Get('CustomerUserAutocomplete');
+
+        if (typeof AutoCompleteConfig === 'undefined') {
+            return;
+        }
+
         $Input.autocomplete({
-            minLength: Core.Config.Get('CustomerUserAutocomplete.MinQueryLength'),
-            delay: Core.Config.Get('CustomerUserAutocomplete.QueryDelay'),
+            minLength: AutoCompleteConfig.MinQueryLength,
+            delay: AutoCompleteConfig.QueryDelay,
             open: function() {
                 // force a higher z-index than the overlay/dialog
                 $(this).autocomplete('widget').addClass('ui-overlay-autocomplete');
@@ -104,8 +116,9 @@ Core.Agent.TableFilters = (function (TargetNS) {
             source: function (Request, Response) {
                 var URL = Core.Config.Get('Baselink'), Data = {
                     Action: 'AgentCustomerSearch',
+                    IncludeUnknownTicketCustomers: parseInt(Core.Config.Get('IncludeUnknownTicketCustomers'), 10),
                     Term: Request.term,
-                    MaxResults: Core.Config.Get('CustomerUserAutocomplete.MaxResultsDisplayed')
+                    MaxResults: AutoCompleteConfig.MaxResultsDisplayed
                 };
 
                 // if an old ajax request is already running, stop the old request and start the new one
@@ -117,16 +130,16 @@ Core.Agent.TableFilters = (function (TargetNS) {
                 }
 
                 $Input.data('AutoCompleteXHR', Core.AJAX.FunctionCall(URL, Data, function (Result) {
-                    var Data = [];
+                    var ValueData = [];
                     $Input.removeData('AutoCompleteXHR');
                     $.each(Result, function () {
-                        Data.push({
-                            label: this.CustomerValue + " (" + this.CustomerKey + ")",
-                            value: this.CustomerValue,
-                            key: this.CustomerKey
+                        ValueData.push({
+                            label: this.Label + " (" + this.Value + ")",
+                            value: this.Label,
+                            key: this.Value
                         });
                     });
-                    Response(Data);
+                    Response(ValueData);
                 }));
             },
             select: function (Event, UI) {
@@ -150,9 +163,15 @@ Core.Agent.TableFilters = (function (TargetNS) {
      *      Initialize autocompletion for User.
      */
     TargetNS.InitUserAutocomplete = function ($Input, Subaction) {
+        var AutoCompleteConfig = Core.Config.Get('UserAutocomplete');
+
+        if (typeof AutoCompleteConfig === 'undefined') {
+            return;
+        }
+
         $Input.autocomplete({
-            minLength: Core.Config.Get('UserAutocomplete.MinQueryLength'),
-            delay: Core.Config.Get('UserAutocomplete.QueryDelay'),
+            minLength: AutoCompleteConfig.MinQueryLength,
+            delay: AutoCompleteConfig.QueryDelay,
             open: function() {
                 // force a higher z-index than the overlay/dialog
                 $(this).autocomplete('widget').addClass('ui-overlay-autocomplete');
@@ -163,7 +182,7 @@ Core.Agent.TableFilters = (function (TargetNS) {
                     Action: 'AgentUserSearch',
                     Subaction: Subaction,
                     Term: Request.term,
-                    MaxResults: Core.Config.Get('UserAutocomplete.MaxResultsDisplayed')
+                    MaxResults: AutoCompleteConfig.MaxResultsDisplayed
                 };
 
                 // if an old ajax request is already running, stop the old request and start the new one
@@ -175,16 +194,16 @@ Core.Agent.TableFilters = (function (TargetNS) {
                 }
 
                 $Input.data('AutoCompleteXHR', Core.AJAX.FunctionCall(URL, Data, function (Result) {
-                    var Data = [];
+                    var ValueData = [];
                     $Input.removeData('AutoCompleteXHR');
                     $.each(Result, function () {
-                        Data.push({
+                        ValueData.push({
                             label: this.UserValue + " (" + this.UserKey + ")",
                             value: this.UserValue,
                             key: this.UserKey
                         });
                     });
-                    Response(Data);
+                    Response(ValueData);
                 }));
             },
             select: function (Event, UI) {
@@ -232,7 +251,7 @@ Core.Agent.TableFilters = (function (TargetNS) {
         }
 
         Data.Columns = {};
-        Data.Order   = [];
+        Data.Order = [];
 
         $ContainerObj.find('.AvailableFields').find('li').each(function() {
             FieldName = $(this).attr('data-fieldname');
@@ -251,16 +270,14 @@ Core.Agent.TableFilters = (function (TargetNS) {
      * @name SetAllocationList
      * @memberof Core.Agent.TableFilters
      * @function
-     * @param {Object} Event
-     * @param {Object} UI - jQuery UI object
      * @description
      *      Initialize allocation list.
      */
-    TargetNS.SetAllocationList = function (Event, UI) {
+    TargetNS.SetAllocationList = function () {
         $('.AllocationListContainer').each(function() {
 
             var $ContainerObj = $(this),
-                DataEnabledJSON   = $ContainerObj.closest('form.WidgetSettingsForm').find('input.ColumnsEnabledJSON').val(),
+                DataEnabledJSON = $ContainerObj.closest('form.WidgetSettingsForm').find('input.ColumnsEnabledJSON').val(),
                 DataAvailableJSON = $ContainerObj.closest('form.WidgetSettingsForm').find('input.ColumnsAvailableJSON').val(),
                 DataEnabled,
                 DataAvailable,
@@ -280,7 +297,7 @@ Core.Agent.TableFilters = (function (TargetNS) {
                 // get field translation
                 Translation = Core.Config.Get('Column' + Field) || Field;
 
-                $FieldObj = $('<li />').attr('title', Field).attr('data-fieldname', Field).text(Translation);
+                $FieldObj = $('<li />').attr('title', Translation).attr('data-fieldname', Field).text(Translation);
                 $ContainerObj.find('.AssignedFields').append($FieldObj);
             });
             $.each(DataAvailable, function(Index, Field) {
@@ -288,7 +305,7 @@ Core.Agent.TableFilters = (function (TargetNS) {
                 // get field translation
                 Translation = Core.Config.Get('Column' + Field) || Field;
 
-                $FieldObj = $('<li />').attr('title', Field).attr('data-fieldname', Field).text(Translation);
+                $FieldObj = $('<li />').attr('title', Translation).attr('data-fieldname', Field).text(Translation);
                 $ContainerObj.find('.AvailableFields').append($FieldObj);
             });
 
@@ -313,13 +330,11 @@ Core.Agent.TableFilters = (function (TargetNS) {
                 var URL = Core.Config.Get('Baselink') + Core.AJAX.SerializeForm($Form);
                 Core.AJAX.ContentUpdate($('#' + ElementID), URL, function () {
                     Core.UI.ToggleTwoContainer($('#' + ElementID + '-setting'), $('#' + ElementID));
-                    Core.UI.Table.InitCSSPseudoClasses();
                 });
                 return false;
             });
         }
     };
-
 
     return TargetNS;
 }(Core.Agent.TableFilters || {}));

@@ -1,6 +1,5 @@
 # --
-# Kernel/Modules/AdminCustomerUserService.pm - to add/update/delete customerusers <-> services
-# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -195,11 +194,24 @@ sub Run {
             );
         }
 
-        # redirect to overview
-        return $LayoutObject->Redirect(
-            OP =>
-                "Action=$Self->{Action};CustomerUserSearch=$Param{CustomerUserSearch}"
-        );
+        # if the user would like to continue editing the customer user allocating just redirect to the edit screen
+        if (
+            defined $ParamObject->GetParam( Param => 'ContinueAfterSave' )
+            && ( $ParamObject->GetParam( Param => 'ContinueAfterSave' ) eq '1' )
+            )
+        {
+            return $LayoutObject->Redirect(
+                OP =>
+                    "Action=$Self->{Action};Subaction=AllocateCustomerUser;CustomerUserLogin=$Param{CustomerUserLogin};CustomerUserSearch=$Param{CustomerUserSearch}"
+            );
+        }
+        else {
+
+            # otherwise return to relations overview
+            return $LayoutObject->Redirect(
+                OP => "Action=$Self->{Action};CustomerUserSearch=$Param{CustomerUserSearch}"
+            );
+        }
     }
 
     # ------------------------------------------------------------ #
@@ -238,11 +250,25 @@ sub Run {
             );
         }
 
-        # redirect to overview
-        return $LayoutObject->Redirect(
-            OP =>
-                "Action=$Self->{Action};CustomerUserSearch=$Param{CustomerUserSearch}"
-        );
+        # if the user would like to continue editing the customer user allocating just redirect to the edit screen
+        if (
+            defined $ParamObject->GetParam( Param => 'ContinueAfterSave' )
+            && ( $ParamObject->GetParam( Param => 'ContinueAfterSave' ) eq '1' )
+            )
+        {
+            return $LayoutObject->Redirect(
+                OP =>
+                    "Action=$Self->{Action};Subaction=AllocateService;ServiceID=$Param{ServiceID};CustomerUserSearch=$Param{CustomerUserSearch}"
+            );
+        }
+        else {
+
+            # otherwise return to relations overview
+            return $LayoutObject->Redirect(
+                OP =>
+                    "Action=$Self->{Action};CustomerUserSearch=$Param{CustomerUserSearch}"
+            );
+        }
     }
 
     # ------------------------------------------------------------ #
@@ -336,8 +362,21 @@ sub _Change {
 
     my $LayoutObject = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
 
+    if ( $VisibleType{$NeType} eq 'Customer' ) {
+        $Param{BreadcrumbTitle} = "Allocate Customers to Service";
+    }
+    else {
+        $Param{BreadcrumbTitle} = "Allocate Services to Customer";
+    }
+
     # overview
-    $LayoutObject->Block( Name => 'Overview' );
+    $LayoutObject->Block(
+        Name => 'Overview',
+        Data => {
+            %Param,
+            OverviewLink => $Self->{Action} . ';CustomerUserSearch=' . $Param{CustomerUserSearch},
+        },
+    );
     $LayoutObject->Block( Name => 'ActionList' );
     $LayoutObject->Block(
         Name => 'ActionOverview',
@@ -381,11 +420,12 @@ sub _Change {
             VisibleNeType   => $VisibleType{$NeType},
             SubactionHeader => $Subaction{$Type},
             IDHeaderStrg    => $IDStrg{$Type},
+            Subaction       => $Self->{Subaction},
             %Param,
         },
     );
 
-    $LayoutObject->Block( Name => "AllocateItemHeader$VisibleType{$NeType}" );
+    my $ColSpan = 2;
 
     if ( $NeType eq 'CustomerUser' ) {
 
@@ -396,10 +436,8 @@ sub _Change {
                 Data => { ItemCount => 0 },
             );
 
-            my $ColSpan = 2;
-
             $LayoutObject->Block(
-                Name => 'NoDataFoundMsg',
+                Name => 'NoDataFoundMsgList',
                 Data => {
                     ColSpan => $ColSpan,
                 },
@@ -427,6 +465,15 @@ sub _Change {
         # add suffix for correct sorting
         for my $DataKey ( sort keys %Data ) {
             $Data{$DataKey} .= '::';
+        }
+
+        if ( !%ServiceData ) {
+            $LayoutObject->Block(
+                Name => 'NoDataFoundMsgList',
+                Data => {
+                    ColSpan => $ColSpan,
+                },
+            );
         }
 
     }
@@ -475,7 +522,14 @@ sub _Overview {
 
     my $LayoutObject = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
 
-    $LayoutObject->Block( Name => 'Overview' );
+    # overview
+    $LayoutObject->Block(
+        Name => 'Overview',
+        Data => {
+            %Param,
+            OverviewLink => $Self->{Action},
+        },
+    );
     $LayoutObject->Block( Name => 'ActionList' );
 
     # output search block
@@ -512,7 +566,7 @@ sub _Overview {
         );
 
         $LayoutObject->Block(
-            Name => 'NoDataFoundMsgList',
+            Name => 'NoDataFoundMsg',
         );
     }
     elsif ( @CustomerUserKeyList > $SearchLimit ) {
@@ -552,20 +606,31 @@ sub _Overview {
         $ServiceDataSort{$ServiceDataKey} .= '::';
     }
 
-    for my $ID (
-        sort { uc( $ServiceDataSort{$a} ) cmp uc( $ServiceDataSort{$b} ) }
-        keys %ServiceDataSort
-        )
-    {
+    # get service data
+    if (%ServiceDataSort) {
+        for my $ID (
+            sort { uc( $ServiceDataSort{$a} ) cmp uc( $ServiceDataSort{$b} ) }
+            keys %ServiceDataSort
+            )
+        {
 
-        # output service row block
+            # output service row block
+            $LayoutObject->Block(
+                Name => 'ResultServiceRow',
+                Data => {
+                    %Param,
+                    ID   => $ID,
+                    Name => $ServiceData{$ID},
+                },
+            );
+        }
+    }
+
+    # otherwise a no data message is displayed
+    else {
         $LayoutObject->Block(
-            Name => 'ResultServiceRow',
-            Data => {
-                %Param,
-                ID   => $ID,
-                Name => $ServiceData{$ID},
-            },
+            Name => 'NoServiceFoundMsg',
+            Data => {},
         );
     }
 

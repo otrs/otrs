@@ -1,6 +1,5 @@
 // --
-// Core.Agent.CustomerInformationCenterSearch.js - provides the special module functions for the CIC search
-// Copyright (C) 2001-2012 OTRS AG, http://otrs.org/
+// Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 // --
 // This software comes with ABSOLUTELY NO WARRANTY. For details, see
 // the enclosed file COPYING for license information (AGPL). If you
@@ -30,7 +29,7 @@ Core.Agent.CustomerInformationCenterSearch = (function (TargetNS) {
      *      Shows waiting dialog until screen is ready.
      */
     function ShowWaitingDialog(){
-        Core.UI.Dialog.ShowContentDialog('<div class="Spacing Center"><span class="AJAXLoader" title="' + Core.Config.Get('LoadingMsg') + '"></span></div>', Core.Config.Get('LoadingMsg'), '10px', 'Center', true);
+        Core.UI.Dialog.ShowContentDialog('<div class="Spacing Center"><span class="AJAXLoader" title="' + Core.Language.Translate('Loading...') + '"></span></div>', Core.Language.Translate('Loading...'), '10px', 'Center', true);
     }
 
     /**
@@ -77,15 +76,15 @@ Core.Agent.CustomerInformationCenterSearch = (function (TargetNS) {
                 };
 
                 $Input.data('AutoCompleteXHR', Core.AJAX.FunctionCall(URL, Data, function (Result) {
-                    var Data = [];
+                    var ValueData = [];
                     $Input.removeData('AutoCompleteXHR');
                     $.each(Result, function () {
-                        Data.push({
+                        ValueData.push({
                             label: this.Label,
                             value: this.Value
                         });
                     });
-                    Response(Data);
+                    Response(ValueData);
                 }));
         }, function (Event, UI) {
             Redirect(UI.item.value, Event);
@@ -116,7 +115,8 @@ Core.Agent.CustomerInformationCenterSearch = (function (TargetNS) {
                 if (!$('.Dialog:visible').length) {
                     return;
                 }
-                Core.UI.Dialog.ShowContentDialog(HTML, Core.Config.Get('SearchMsg'), '10px', 'Center', true);
+                Core.UI.Dialog.ShowContentDialog(HTML, Core.Language.Translate('Search'), '10px', 'Center', true);
+                TargetNS.Init();
 
             }, 'html'
         );
@@ -130,8 +130,8 @@ Core.Agent.CustomerInformationCenterSearch = (function (TargetNS) {
      *      This function initializes the search dialog.
      */
     TargetNS.Init = function () {
-        TargetNS.InitAutocomplete( $("#AgentCustomerInformationCenterSearchCustomerID"), 'SearchCustomerID' );
-        TargetNS.InitAutocomplete( $("#AgentCustomerInformationCenterSearchCustomerUser"), 'SearchCustomerUser' );
+        TargetNS.InitAutocomplete($("#AgentCustomerInformationCenterSearchCustomerID"), 'SearchCustomerID');
+        TargetNS.InitAutocomplete($("#AgentCustomerInformationCenterSearchCustomerUser"), 'SearchCustomerUser');
     };
 
     return TargetNS;
