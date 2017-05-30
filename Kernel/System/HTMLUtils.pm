@@ -62,7 +62,7 @@ convert an HTML string to an ASCII string
 
 sub ToAscii {
     my ( $Self, %Param ) = @_;
-
+    
     # check needed stuff
     for (qw(String)) {
         if ( !defined $Param{$_} ) {
