@@ -548,7 +548,7 @@ sub RequesterPerformRequest {
             my $User     = $Config->{Authentication}->{User};
             my $Password = $Config->{Authentication}->{Password};
             if ( IsStringWithData($User) && IsStringWithData($Password) ) {
-                $URL =~ s{ ( http s? :// ) }{$1\Q$User\E:\Q$Password\E@}xmsi;
+                $URL =~ s{ ( http s? :// ) }{$1$User:$Password@}xmsi;
             }
         }
     }
