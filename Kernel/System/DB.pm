@@ -974,7 +974,7 @@ sub SQLProcessor {
 
             # unique
             elsif (
-                $Tag->{Tag} eq 'Unique'
+                $Tag->{Tag}    eq 'Unique'
                 || $Tag->{Tag} eq 'UniqueCreate'
                 || $Tag->{Tag} eq 'UniqueDrop'
                 )
@@ -988,7 +988,7 @@ sub SQLProcessor {
 
             # index
             elsif (
-                $Tag->{Tag} eq 'Index'
+                $Tag->{Tag}    eq 'Index'
                 || $Tag->{Tag} eq 'IndexCreate'
                 || $Tag->{Tag} eq 'IndexDrop'
                 )
@@ -1002,7 +1002,7 @@ sub SQLProcessor {
 
             # foreign keys
             elsif (
-                $Tag->{Tag} eq 'ForeignKey'
+                $Tag->{Tag}    eq 'ForeignKey'
                 || $Tag->{Tag} eq 'ForeignKeyCreate'
                 || $Tag->{Tag} eq 'ForeignKeyDrop'
                 )

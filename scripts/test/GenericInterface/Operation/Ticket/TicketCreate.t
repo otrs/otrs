@@ -22,7 +22,15 @@ use Kernel::GenericInterface::Operation::Session::SessionCreate;
 
 use Kernel::System::VariableCheck qw(IsArrayRefWithData IsHashRefWithData IsStringWithData);
 
-my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
+# get daemon status
+my $Home         = $Kernel::OM->Get('Kernel::Config')->Get('Home');
+my $Daemon       = $Home . '/bin/otrs.Daemon.pl';
+my $DaemonStatus = system("perl $Daemon status");
+
+$Self->False(
+    $DaemonStatus =~ m{Daemon running}i ? 1 : 0,
+    'Daemon is not running',
+);
 
 $Kernel::OM->ObjectParamAdd(
     'Kernel::System::UnitTest::Helper' => {
@@ -78,6 +86,13 @@ $Helper->ConfigSettingChange(
     Key   => 'CustomerGroupSupport',
     Value => 1,
 );
+
+$Kernel::OM->ObjectsDiscard(
+    Objects            => ['Kernel::Config'],
+    ForcePackageReload => 1,
+);
+
+my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
 
 # check if SSL Certificate verification is disabled
 $Self->Is(

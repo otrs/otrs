@@ -963,7 +963,7 @@ sub Run {
                 my $IsLocal = $Kernel::OM->Get('Kernel::System::SystemAddress')->SystemAddressIsLocalAddress(
                     Address => $Email->address()
                 );
-                if ($IsLocal) {
+                if ($IsLocal && $Config->{BlockSystemAddressRecipient} ) {
                     $Error{ $Parameter . 'IsLocalAddress' } = 'ServerError';
                 }
             }
