@@ -391,6 +391,11 @@ sub _NotificationFilter {
     # get dynamic field backend object
     my $DynamicFieldBackendObject = $Kernel::OM->Get('Kernel::System::DynamicField::Backend');
 
+    my $ArticleObject = $Kernel::OM->Get('Kernel::System::Ticket::Article');
+
+    # get the search article fields to retrieve values for
+    my %ArticleSearchableFields = $ArticleObject->ArticleSearchableFieldsList();
+
     KEY:
     for my $Key ( sort keys %{ $Notification{Data} } ) {
 
@@ -402,10 +407,7 @@ sub _NotificationFilter {
         next KEY if $Key eq 'RecipientRoles';
         next KEY if $Key eq 'TransportEmailTemplate';
         next KEY if $Key eq 'Events';
-        next KEY if $Key eq 'ArticleTypeID';
         next KEY if $Key eq 'ArticleSenderTypeID';
-        next KEY if $Key eq 'ArticleSubjectMatch';
-        next KEY if $Key eq 'ArticleBodyMatch';
         next KEY if $Key eq 'ArticleAttachmentInclude';
         next KEY if $Key eq 'NotificationArticleTypeID';
         next KEY if $Key eq 'Transports';
@@ -421,6 +423,9 @@ sub _NotificationFilter {
         next KEY if $Key eq 'EmailMissingSigningKeys';
         next KEY if $Key eq 'EmailDefaultSigningKeys';
         next KEY if $Key eq 'NotificationType';
+
+        # ignore article searchable fields
+        next KEY if $ArticleSearchableFields{$Key};
 
         # check recipient fields from transport methods
         if ( $Key =~ m{\A Recipient}xms ) {
@@ -483,7 +488,11 @@ sub _NotificationFilter {
             }
             else {
 
-                if ( $Value eq $Param{Ticket}->{$Key} ) {
+                if (
+                    $Param{Ticket}->{$Key}
+                    && $Value eq $Param{Ticket}->{$Key}
+                    )
+                {
                     $Match = 1;
                     last VALUE;
                 }
@@ -499,7 +508,7 @@ sub _NotificationFilter {
         && $Param{Data}->{ArticleID}
         )
     {
-        my $BackendObject = $Kernel::OM->Get('Kernel::System::Ticket::Article')->BackendForArticle(
+        my $BackendObject = $ArticleObject->BackendForArticle(
             TicketID  => $Param{Data}->{TicketID},
             ArticleID => $Param{Data}->{ArticleID},
         );
@@ -510,24 +519,6 @@ sub _NotificationFilter {
             UserID        => $Param{UserID},
             DynamicFields => 0,
         );
-
-        # check article type
-        if ( $Notification{Data}->{ArticleTypeID} ) {
-
-            my $Match = 0;
-            VALUE:
-            for my $Value ( @{ $Notification{Data}->{ArticleTypeID} } ) {
-
-                next VALUE if !$Value;
-
-                if ( $Value == $Article{ArticleTypeID} ) {
-                    $Match = 1;
-                    last VALUE;
-                }
-            }
-
-            return if !$Match;
-        }
 
         # check article sender type
         if ( $Notification{Data}->{ArticleSenderTypeID} ) {
@@ -547,19 +538,25 @@ sub _NotificationFilter {
             return if !$Match;
         }
 
-        # check subject & body
-        KEY:
-        for my $Key (qw(Subject Body)) {
+        my %ArticleData = $BackendObject->ArticleSearchableContentGet(
+            TicketID  => $Param{Data}->{TicketID},
+            ArticleID => $Param{Data}->{ArticleID},
+            UserID    => $Param{UserID},
+        );
 
-            next KEY if !$Notification{Data}->{ 'Article' . $Key . 'Match' };
+        # check article backend fields
+        KEY:
+        for my $Key ( sort keys %ArticleSearchableFields ) {
+
+            next KEY if !$Notification{Data}->{$Key};
 
             my $Match = 0;
             VALUE:
-            for my $Value ( @{ $Notification{Data}->{ 'Article' . $Key . 'Match' } } ) {
+            for my $Value ( @{ $Notification{Data}->{$Key} } ) {
 
                 next VALUE if !$Value;
 
-                if ( $Article{$Key} =~ /\Q$Value\E/i ) {
+                if ( $ArticleData{$Key}->{String} =~ /\Q$Value\E/i ) {
                     $Match = 1;
                     last VALUE;
                 }
@@ -1264,12 +1261,23 @@ sub _SendRecipientNotification {
         );
 
         # get last notification sent ticket history entry for this transport and this user
-        my $LastNotificationHistory = first {
-            $_->{HistoryType} eq 'SendAgentNotification'
-                && $_->{Name} eq
-                "\%\%$Param{Notification}->{Name}\%\%$Param{Recipient}->{UserLogin}\%\%$Param{Transport}"
+        my $LastNotificationHistory;
+        if ( defined $Param{Recipient}->{Source} && $Param{Recipient}->{Source} eq 'CustomerUser' ) {
+            $LastNotificationHistory = first {
+                $_->{HistoryType} eq 'SendCustomerNotification'
+                    && $_->{Name} eq
+                    "\%\%$Param{Recipient}->{UserEmail}"
+            }
+            reverse @HistoryLines;
         }
-        reverse @HistoryLines;
+        else {
+            $LastNotificationHistory = first {
+                $_->{HistoryType} eq 'SendAgentNotification'
+                    && $_->{Name} eq
+                    "\%\%$Param{Notification}->{Name}\%\%$Param{Recipient}->{UserLogin}\%\%$Param{Transport}"
+            }
+            reverse @HistoryLines;
+        }
 
         if ( $LastNotificationHistory && $LastNotificationHistory->{CreateTime} ) {
 

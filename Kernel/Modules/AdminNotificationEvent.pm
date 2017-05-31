@@ -53,6 +53,10 @@ sub Run {
     my $MainObject              = $Kernel::OM->Get('Kernel::System::Main');
     my $Notification            = $ParamObject->GetParam( Param => 'Notification' );
 
+    # get the search article fields to retrieve values for
+    my %ArticleSearchableFields = $Kernel::OM->Get('Kernel::System::Ticket::Article')->ArticleSearchableFieldsList();
+    my @ArticleSearchableFieldsKeys = sort keys %ArticleSearchableFields;
+
     # get registered transport layers
     my %RegisteredTransports = %{ $Kernel::OM->Get('Kernel::Config')->Get('Notification::Transport') || {} };
 
@@ -98,17 +102,18 @@ sub Run {
 
         my %GetParam;
         for my $Parameter (
-            qw(ID Name Comment ValidID Events ArticleSubjectMatch ArticleBodyMatch IsVisibleForCustomer ArticleSenderTypeID Transports)
+            @ArticleSearchableFieldsKeys,
+            qw(ID Name Comment ValidID Events IsVisibleForCustomer ArticleSenderTypeID Transports)
             )
         {
             $GetParam{$Parameter} = $ParamObject->GetParam( Param => $Parameter ) || '';
         }
         PARAMETER:
         for my $Parameter (
+            @ArticleSearchableFieldsKeys,
             qw(Recipients RecipientAgents RecipientGroups RecipientRoles
             Events StateID QueueID PriorityID LockID TypeID ServiceID SLAID
-            CustomerID CustomerUserID
-            IsVisibleForCustomer ArticleSubjectMatch ArticleBodyMatch ArticleAttachmentInclude
+            CustomerID CustomerUserID IsVisibleForCustomer ArticleAttachmentInclude
             ArticleSenderTypeID Transports OncePerDay SendOnOutOfOffice
             VisibleForAgent VisibleForAgentTooltip LanguageID AgentEnabledByDefault)
             )
@@ -204,14 +209,20 @@ sub Run {
             @{ $GetParam{Data}->{Events} || [] }
             )
         {
-            if (
-                !$GetParam{ArticleSenderTypeID}
-                && $GetParam{ArticleSubjectMatch} eq ''
-                && $GetParam{ArticleBodyMatch} eq ''
-                )
-            {
-                $ArticleFilterMissing = 1;
+            my $ArticleFilterValueSet = $GetParam{ArticleSenderTypeID} ? 1 : 0;
+
+            ARTICLEFIELDKEY:
+            for my $ArticleFieldKey (@ArticleSearchableFieldsKeys) {
+
+                last ARTICLEFIELDKEY if $ArticleFilterValueSet;
+                next ARTICLEFIELDKEY if !$GetParam{$ArticleFieldKey};
+
+                $ArticleFilterValueSet = 1;
+
+                last ARTICLEFIELDKEY;
             }
+
+            $ArticleFilterMissing = 1 if !$ArticleFilterValueSet;
         }
 
         # required Article filter only on ArticleCreate and ArticleSend event
@@ -253,14 +264,14 @@ sub Run {
 
             # define ServerError Class attribute if necessary
             $GetParam{ArticleSenderTypeIDServerError} = "";
-            $GetParam{ArticleSubjectMatchServerError} = "";
-            $GetParam{ArticleBodyMatchServerError}    = "";
 
             if ($ArticleFilterMissing) {
 
                 $GetParam{ArticleSenderTypeIDServerError} = "ServerError";
-                $GetParam{ArticleSubjectMatchServerError} = "ServerError";
-                $GetParam{ArticleBodyMatchServerError}    = "ServerError";
+
+                for my $ArticleTypeKey (@ArticleSearchableFieldsKeys) {
+                    $GetParam{ $ArticleTypeKey . 'ServerError' } = "ServerError";
+                }
             }
 
             my $Output = $LayoutObject->Header();
@@ -312,16 +323,18 @@ sub Run {
 
         my %GetParam;
         for my $Parameter (
-            qw(Name Comment ValidID Events ArticleSubjectMatch ArticleBodyMatch IsVisibleForCustomer ArticleSenderTypeID Transports)
+            @ArticleSearchableFieldsKeys,
+            qw(Name Comment ValidID Events IsVisibleForCustomer ArticleSenderTypeID Transports)
             )
         {
             $GetParam{$Parameter} = $ParamObject->GetParam( Param => $Parameter ) || '';
         }
         PARAMETER:
         for my $Parameter (
+            @ArticleSearchableFieldsKeys,
             qw(Recipients RecipientAgents RecipientRoles RecipientGroups Events StateID QueueID
             PriorityID LockID TypeID ServiceID SLAID CustomerID CustomerUserID
-            IsVisibleForCustomer ArticleSubjectMatch ArticleBodyMatch ArticleAttachmentInclude
+            IsVisibleForCustomer ArticleAttachmentInclude
             ArticleSenderTypeID Transports OncePerDay SendOnOutOfOffice
             VisibleForAgent VisibleForAgentTooltip LanguageID AgentEnabledByDefault)
             )
@@ -417,14 +430,20 @@ sub Run {
             @{ $GetParam{Data}->{Events} || [] }
             )
         {
-            if (
-                !$GetParam{ArticleSenderTypeID}
-                && $GetParam{ArticleSubjectMatch} eq ''
-                && $GetParam{ArticleBodyMatch} eq ''
-                )
-            {
-                $ArticleFilterMissing = 1;
+            my $ArticleFilterValueSet = $GetParam{ArticleSenderTypeID} ? 1 : 0;
+
+            ARTICLEFIELDKEY:
+            for my $ArticleFieldKey (@ArticleSearchableFieldsKeys) {
+
+                last ARTICLEFIELDKEY if $ArticleFilterValueSet;
+                next ARTICLEFIELDKEY if !$GetParam{$ArticleFieldKey};
+
+                $ArticleFilterValueSet = 1;
+
+                last ARTICLEFIELDKEY;
             }
+
+            $ArticleFilterMissing = 1 if !$ArticleFilterValueSet;
         }
 
         # required Article filter only on ArticleCreate and Article Send event
@@ -463,14 +482,14 @@ sub Run {
 
             # checking if article filter exist if necessary
             $GetParam{ArticleSenderTypeIDServerError} = "";
-            $GetParam{ArticleSubjectMatchServerError} = "";
-            $GetParam{ArticleBodyMatchServerError}    = "";
 
             if ($ArticleFilterMissing) {
 
                 $GetParam{ArticleSenderTypeIDServerError} = "ServerError";
-                $GetParam{ArticleSubjectMatchServerError} = "ServerError";
-                $GetParam{ArticleBodyMatchServerError}    = "ServerError";
+
+                for my $ArticleTypeKey (@ArticleSearchableFieldsKeys) {
+                    $GetParam{ $ArticleTypeKey . 'ServerError' } = "ServerError";
+                }
             }
 
             my $Output = $LayoutObject->Header();
@@ -1177,10 +1196,31 @@ sub _Edit {
         Class       => 'Modernize W75pc',
     );
 
+    # get all searchable article field definitions
+    my %ArticleSearchableFields = $Kernel::OM->Get('Kernel::System::Ticket::Article')->ArticleSearchableFieldsList();
+
+    for my $ArticleFieldKey ( sort keys %ArticleSearchableFields ) {
+
+        my $Value = '';
+
+        if ( IsArrayRefWithData( $Param{Data}->{$ArticleFieldKey} ) ) {
+            $Value = $Param{Data}->{$ArticleFieldKey}->[0];
+        }
+
+        $LayoutObject->Block(
+            Name => 'BackendArticleField',
+            Data => {
+                Label => Translatable( $ArticleSearchableFields{$ArticleFieldKey}->{Label} ),
+                Key   => $ArticleSearchableFields{$ArticleFieldKey}->{Key},
+                Value => $Value,
+            },
+        );
+    }
+
     # take over data fields
     KEY:
     for my $Key (
-        qw(VisibleForAgent VisibleForAgentTooltip CustomerID CustomerUserID ArticleSubjectMatch ArticleBodyMatch)
+        qw(VisibleForAgent VisibleForAgentTooltip CustomerID CustomerUserID)
         )
     {
         next KEY if !$Param{Data}->{$Key};

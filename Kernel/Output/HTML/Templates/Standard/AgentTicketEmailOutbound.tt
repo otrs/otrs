@@ -300,11 +300,6 @@
                 <div class="Field">
 
 <!-- OutputFilterHook_TicketOptionsBegin -->
-
-[% RenderBlockStart("SpellCheck") %]
-                    <a href="#" id="OptionSpellCheck">[ [% Translate("Spell check") | html %] ]</a>
-[% RenderBlockEnd("SpellCheck") %]
-
 <!-- OutputFilterHook_TicketOptionsEnd -->
 
                 </div>
@@ -337,7 +332,7 @@
                         <li>
                             <button type="button" id="AttachmentDeleteButton[% Data.FileID | html %]" name="AttachmentDeleteButton[% Data.FileID | html %]" value="[% Translate("Delete") | html %]" class="CallForAction Inline Small SpacingRight"><span>[% Translate("Delete") | html %]</span></button>
                             <input type="hidden" id="AttachmentDelete[% Data.FileID | html %]" name="AttachmentDelete[% Data.FileID | html %]" />
-                            [% Data.Filename | html %] ([% Data.Filesize | html %])
+                            [% Data.Filename | html %] ([% Data.Filesize | Localize('Filesize') | html %])
                         </li>
 [% RenderBlockEnd("Attachment") %]
                         <li>

@@ -34,6 +34,7 @@ Core.Customer.TicketZoom = (function (TargetNS) {
      */
     function CalculateHeight(Iframe){
         Iframe = isJQueryObject(Iframe) ? Iframe.get(0) : Iframe;
+
         setTimeout(function () {
             var $IframeContent = $(Iframe.contentDocument || Iframe.contentWindow.document),
                 NewHeight = $IframeContent.height();
@@ -62,8 +63,10 @@ Core.Customer.TicketZoom = (function (TargetNS) {
      *      Resizes Iframe to its max inner height and (optionally) calls callback.
      */
     function ResizeIframe(Iframe, Callback){
+        Iframe = isJQueryObject(Iframe) ? Iframe.get(0) : Iframe;
+
         // initial height calculation
-        $(Iframe).attr('onload', function() {
+        $(Iframe).on('load', function() {
             CalculateHeight(this);
             if ($.isFunction(Callback)) {
                 Callback();
@@ -85,8 +88,10 @@ Core.Customer.TicketZoom = (function (TargetNS) {
     function CheckIframe(Iframe, Callback){
         var Source;
 
+        Iframe = isJQueryObject(Iframe) ? Iframe.get(0) : Iframe;
+
         if ($.browser.safari || $.browser.opera){
-            $(Iframe).load(function(){
+            $(Iframe).load(Iframe.src, null, function() {
                 setTimeout(ResizeIframe, 0, this, Callback);
             });
             Source = Iframe.src;
@@ -94,7 +99,7 @@ Core.Customer.TicketZoom = (function (TargetNS) {
             Iframe.src = Source;
         }
         else {
-            $(Iframe).load(function(){
+            $(Iframe).load(Iframe.src, null, function() {
                 ResizeIframe(this, Callback);
             });
         }
@@ -225,11 +230,6 @@ Core.Customer.TicketZoom = (function (TargetNS) {
             $('> input[name=ArticleState]', $VisibleMessage).val("true");
             ResizeIframe($VisibleIframe.get(0));
         }
-
-        // add switchable toggle
-        $('div.Label.Switchable').off('click.Switch').on('click.Switch', function() {
-            $(this).next('span').find('.Switch').toggleClass('Hidden');
-        });
 
         // init browser link message close button
         if ($('.MessageBrowser').length) {

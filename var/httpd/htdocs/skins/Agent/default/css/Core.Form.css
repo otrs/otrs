@@ -491,6 +491,16 @@ form label.LabelError {
     color: #555;
 }
 
+#EmailRecipientsList span,
+#EmailRecipientsList a.Collapse {
+    display: none;
+}
+
+#EmailRecipientsList.Expanded span,
+#EmailRecipientsList.Expanded a.Expand {
+    display: inline;
+}
+
 /**
  * @note        Give the user a hint about linked label elements (they are clickable and
  *                  give focus to the linked element.
@@ -706,15 +716,16 @@ fieldset.TableLike.Narrow > .Row > label,
 fieldset.TableLike.Narrow > .Value,
 fieldset.TableLike.Narrow > .Row > .Value {
     line-height: 1.3em;
-    overflow-wrap: break-word;
+}
+
+fieldset.TableLike.Narrow > label,
+fieldset.TableLike.Narrow > .Row > label,
+fieldset.TableLike.Narrow > .Value,
+fieldset.TableLike.Narrow > .Row > .Value,
+fieldset.TableLike > label,
+fieldset.TableLike > .Row > label {
     word-wrap: break-word;
-    -ms-word-break: break-all;
-    word-break: break-all;
-    word-break: break-word;
-    -ms-hyphens: auto;
-    -moz-hyphens: auto;
-    -webkit-hyphens: auto;
-    hyphens: auto;
+    overflow-wrap: break-word;
 }
 
 iframe.Signature {

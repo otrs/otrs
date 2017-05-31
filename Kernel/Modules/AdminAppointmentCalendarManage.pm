@@ -26,7 +26,14 @@ sub new {
     bless( $Self, $Type );
 
     # Certain search parameters for ticket appointments should be stored as scalars, not array refs.
-    $Self->{SearchParamScalar} = [ 'From', 'To', 'Cc', 'Subject', 'Body', 'AttachmentName' ];
+    $Self->{SearchParamScalar} = [
+        'MIMEBase_From',
+        'MIMEBase_To',
+        'MIMEBase_Cc',
+        'MIMEBase_Subject',
+        'MIMEBase_Body',
+        'MIMEBase_AttachmentName',
+    ];
 
     return $Self;
 }
@@ -1019,7 +1026,7 @@ sub _GetTicketAppointmentParams {
                     $TicketAppointmentParams{$RuleID}->{RuleID} = $RuleID;
                 }
                 if ( $Field eq 'SearchParam' ) {
-                    if ( $Key =~ /^SearchParam_${RuleID}_([A-Za-z]+)$/ ) {
+                    if ( $Key =~ /^SearchParam_${RuleID}_([A-Za-z_]+)$/ ) {
                         my $SearchParam = $1;
 
                         # Store search params:

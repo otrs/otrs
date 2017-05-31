@@ -153,6 +153,14 @@ sub Run {
             RealNames => 1,
         );
 
+        # TODO: Make handling article fields more generic and agnostic to different article backends.
+
+        # Add generic subject field to chat articles.
+        if ( $ArticleBackendObject->ChannelNameGet() eq 'Chat' ) {
+            $ArticleData{Subject}      = $LayoutObject->{LanguageObject}->Translate('Chat');
+            $ArticleData{FromRealname} = $LayoutObject->{LanguageObject}->Translate('OTRS');
+        }
+
         # Get attachment index.
         my %AtmIndex = $ArticleBackendObject->ArticleAttachmentIndex(
             ArticleID        => $ArticleMetaData->{ArticleID},
@@ -791,26 +799,17 @@ sub Run {
                     );
                 }
 
-                my $JSONBody = $Kernel::OM->Get('Kernel::System::JSON')->Encode(
-                    Data => \@ChatMessageList,
+                my $ArticleChatBackend = $ArticleObject->BackendForChannel( ChannelName => 'Chat' );
+
+                $ChatArticleID = $ArticleChatBackend->ArticleCreate(
+                    TicketID             => $Self->{TicketID},
+                    SenderType           => $Config->{SenderType},
+                    ChatMessageList      => \@ChatMessageList,
+                    IsVisibleForCustomer => 1,
+                    UserID               => $ConfigObject->Get('CustomerPanelUserID'),
+                    HistoryType          => $Config->{HistoryType},
+                    HistoryComment       => $Config->{HistoryComment} || '%%',
                 );
-
-                my $ChatArticleType = 'chat-external';
-
-                # TODO: Handle articles coming from chat channel.
-                # $ChatArticleID = $ArticleBackendObject->ArticleCreate(
-                #     TicketID             => $Self->{TicketID},
-                #     IsVisibleForCustomer => 1,
-                #     SenderType           => $Config->{SenderType},
-                #     From                 => $From,
-                #     Subject              => $Kernel::OM->Get('Kernel::Language')->Translate('Chat'),
-                #     Body                 => $JSONBody,
-                #     MimeType             => 'application/json',
-                #     Charset              => $LayoutObject->{UserCharset},
-                #     UserID               => $ConfigObject->Get('CustomerPanelUserID'),
-                #     HistoryType          => $Config->{HistoryType},
-                #     HistoryComment       => $Config->{HistoryComment} || '%%',
-                # );
             }
             if ($ChatArticleID) {
                 $ChatObject->ChatDelete(
@@ -1376,9 +1375,11 @@ sub _Mask {
         $LayoutObject->Block(
             Name => 'TicketDynamicField',
             Data => {
-                Label => $Label,
-                Value => $ValueStrg->{Value},
-                Title => $ValueStrg->{Title},
+                Label       => $Label,
+                Value       => $ValueStrg->{Value},
+                Title       => $ValueStrg->{Title},
+                Link        => $DynamicFieldConfig->{Config}->{Link},
+                LinkPreview => $DynamicFieldConfig->{Config}->{LinkPreview},
             },
         );
 
@@ -1528,9 +1529,20 @@ sub _Mask {
             $ShownArticles++;
         }
 
+        # Calculate difference between article create time and now in seconds.
+        my $ArticleCreateTimeObject = $Kernel::OM->Create(
+            'Kernel::System::DateTime',
+            ObjectParams => {
+                String => $Article{CreateTime},
+            },
+        );
+        my $Delta = $ArticleCreateTimeObject->Delta(
+            DateTimeObject => $Kernel::OM->Create('Kernel::System::DateTime'),
+        );
+
         # do some html quoting
         $Article{Age} = $LayoutObject->CustomerAge(
-            Age   => $Article{AgeTimeUnix},
+            Age   => $Delta->{AbsoluteSeconds},
             Space => ' ',
         );
 
@@ -1561,25 +1573,16 @@ sub _Mask {
             );
         }
 
-        # do some strips && quoting
-        my $RecipientDisplayType = $ConfigObject->Get('Ticket::Frontend::DefaultRecipientDisplayType') || 'Realname';
-        my $SenderDisplayType    = $ConfigObject->Get('Ticket::Frontend::DefaultSenderDisplayType')    || 'Realname';
         KEY:
         for my $Key (qw(From To Cc)) {
 
             next KEY if !$Article{$Key};
 
-            my $DisplayType = $Key eq 'From'             ? $SenderDisplayType : $RecipientDisplayType;
-            my $HiddenType  = $DisplayType eq 'Realname' ? 'Value'            : 'Realname';
-
             $LayoutObject->Block(
                 Name => 'ArticleRow',
                 Data => {
-                    Key                  => $Key,
-                    Value                => $Article{$Key},
-                    Realname             => $Article{ $Key . 'Realname' },
-                    ArticleID            => $Article{ArticleID},
-                    $HiddenType . Hidden => 'Hidden',
+                    Key      => $Key,
+                    Realname => $Article{ $Key . 'Realname' },
                 },
             );
         }
@@ -1662,19 +1665,13 @@ sub _Mask {
             ChannelID => $Article{CommunicationChannelID},
         );
 
-        # TODO: chat backend not yet created, maybe this condition needs an update afterwards!
-        if (
-            $CommunicationChannelData{ChannelName} eq 'ChatExternal'
-            || $CommunicationChannelData{ChannelName} eq 'ChatInternal'
-            )
-        {
+        if ( $CommunicationChannelData{ChannelName} eq 'Chat' ) {
+
             $LayoutObject->Block(
                 Name => 'BodyChat',
                 Data => {
-                    ChatMessages => $Kernel::OM->Get('Kernel::System::JSON')->Decode(
-                        Data => $Article{Body},
-                    ),
-                    }
+                    ChatMessages => $Article{ChatMessageList},
+                },
             );
         }
         else {

@@ -114,6 +114,9 @@ sub Run {
         FieldFilter => $DynamicFieldFilter || {},
     );
 
+    # collect all searchable article field definitions and add the fields to the attributes array
+    my %ArticleSearchableFields = $Kernel::OM->Get('Kernel::System::Ticket::Article')->ArticleSearchableFieldsList();
+
     # load profiles string params (press load profile)
     if ( ( $Self->{Subaction} eq 'LoadProfile' && $Self->{Profile} ) || $Self->{TakeLastSearch} ) {
         %GetParam = $SearchProfileObject->SearchProfileGet(
@@ -131,19 +134,16 @@ sub Run {
     # get search string params (get submitted params)
     else {
         for my $Key (
-            qw(TicketNumber Title From To Cc Subject Body CustomerID CustomerIDRaw
-            CustomerUserLogin CustomerUserLoginRaw CustomerUserID StateType Agent ResultForm
-            TimeSearchType ChangeTimeSearchType CloseTimeSearchType LastChangeTimeSearchType
-            EscalationTimeSearchType PendingTimeSearchType
-            UseSubQueues AttachmentName
-            ArticleTimeSearchType SearchInArchive
-            Fulltext ShownAttributes
-            ArticleCreateTimePointFormat ArticleCreateTimePoint
-            ArticleCreateTimePointStart
+            sort keys %ArticleSearchableFields,
+            qw(
+            TicketNumber Title CustomerID CustomerIDRaw CustomerUserLogin CustomerUserLoginRaw
+            CustomerUserID StateType Agent ResultForm TimeSearchType ChangeTimeSearchType
+            CloseTimeSearchType LastChangeTimeSearchType EscalationTimeSearchType PendingTimeSearchType
+            UseSubQueues ArticleTimeSearchType SearchInArchive Fulltext ShownAttributes
+            ArticleCreateTimePointFormat ArticleCreateTimePoint ArticleCreateTimePointStart
             ArticleCreateTimeStart ArticleCreateTimeStartDay ArticleCreateTimeStartMonth
-            ArticleCreateTimeStartYear
-            ArticleCreateTimeStop ArticleCreateTimeStopDay ArticleCreateTimeStopMonth
-            ArticleCreateTimeStopYear
+            ArticleCreateTimeStartYear ArticleCreateTimeStop ArticleCreateTimeStopDay
+            ArticleCreateTimeStopMonth ArticleCreateTimeStopYear
             TicketCreateTimePointFormat TicketCreateTimePoint
             TicketCreateTimePointStart
             TicketCreateTimeStart TicketCreateTimeStartDay TicketCreateTimeStartMonth
@@ -184,7 +184,6 @@ sub Run {
             )
             )
         {
-
             # get search string params (get submitted params)
             $GetParam{$Key} = $ParamObject->GetParam( Param => $Key );
 
@@ -332,9 +331,18 @@ sub Run {
     # show result site
     if ( $Self->{Subaction} eq 'Search' && !$Self->{EraseTemplate} ) {
 
+        $Self->{ProfileName} = '';
+        if ( $Self->{Profile} ) {
+            $Self->{ProfileName} = "($Self->{Profile})";
+        }
+
         # fill up profile name (e.g. with last-search)
         if ( !$Self->{Profile} || !$Self->{SaveProfile} ) {
             $Self->{Profile} = Translatable('last-search');
+        }
+
+        if ( !$Self->{ProfileName} ) {
+            $Self->{ProfileName} = "($Self->{Profile})";
         }
 
         # save search profile (under last-search or real profile name)
@@ -443,10 +451,22 @@ sub Run {
                     && $GetParam{ $TimeType . 'TimeStartYear' }
                     )
                 {
-                    $GetParam{ $TimeType . 'TimeNewerDate' } = $GetParam{ $TimeType . 'TimeStartYear' } . '-'
-                        . $GetParam{ $TimeType . 'TimeStartMonth' } . '-'
-                        . $GetParam{ $TimeType . 'TimeStartDay' }
-                        . ' 00:00:00';
+                    my $DateTimeObject = $Kernel::OM->Create(
+                        'Kernel::System::DateTime',
+                        ObjectParams => {
+                            Year   => $GetParam{ $TimeType . 'TimeStartYear' },
+                            Month  => $GetParam{ $TimeType . 'TimeStartMonth' },
+                            Day    => $GetParam{ $TimeType . 'TimeStartDay' },
+                            Hour   => 0,                                           # midnight
+                            Minute => 0,
+                            Second => 0,
+                            TimeZone => $Self->{UserTimeZone} || Kernel::System::DateTime->UserDefaultTimeZoneGet(),
+                        },
+                    );
+
+                    # Convert start time to local system time zone.
+                    $DateTimeObject->ToOTRSTimeZone();
+                    $GetParam{ $TimeType . 'TimeNewerDate' } = $DateTimeObject->ToString();
                 }
                 if (
                     $GetParam{ $TimeType . 'TimeStopDay' }
@@ -454,10 +474,22 @@ sub Run {
                     && $GetParam{ $TimeType . 'TimeStopYear' }
                     )
                 {
-                    $GetParam{ $TimeType . 'TimeOlderDate' } = $GetParam{ $TimeType . 'TimeStopYear' } . '-'
-                        . $GetParam{ $TimeType . 'TimeStopMonth' } . '-'
-                        . $GetParam{ $TimeType . 'TimeStopDay' }
-                        . ' 23:59:59';
+                    my $DateTimeObject = $Kernel::OM->Create(
+                        'Kernel::System::DateTime',
+                        ObjectParams => {
+                            Year   => $GetParam{ $TimeType . 'TimeStopYear' },
+                            Month  => $GetParam{ $TimeType . 'TimeStopMonth' },
+                            Day    => $GetParam{ $TimeType . 'TimeStopDay' },
+                            Hour   => 23,                                         # just before midnight
+                            Minute => 59,
+                            Second => 59,
+                            TimeZone => $Self->{UserTimeZone} || Kernel::System::DateTime->UserDefaultTimeZoneGet(),
+                        },
+                    );
+
+                    # Convert stop time to local system time zone.
+                    $DateTimeObject->ToOTRSTimeZone();
+                    $GetParam{ $TimeType . 'TimeOlderDate' } = $DateTimeObject->ToString();
                 }
             }
             elsif ( $GetParam{ $TimeMap{$TimeType} . 'SearchType' } eq 'TimePoint' ) {
@@ -537,14 +569,6 @@ sub Run {
                 return $LayoutObject->Redirect(
                     OP => "Action=AgentTicketZoom;TicketID=$TicketID",
                 );
-            }
-        }
-
-        # prepare full text search
-        if ( $GetParam{Fulltext} ) {
-            $GetParam{ContentSearch} = 'OR';
-            for my $Key (qw(From To Cc Subject Body)) {
-                $GetParam{$Key} = $GetParam{Fulltext};
             }
         }
 
@@ -945,7 +969,7 @@ sub Run {
 
                 my %Info = ( %Data, %UserInfo );
                 my $Created = $LayoutObject->{LanguageObject}->FormatTimeString(
-                    $Data{Created},
+                    $Data{CreateTime} // $Data{Created},
                     'DateFormat',
                 );
                 my $Owner    = "$Info{Owner} ($Info{UserFullname})";
@@ -1186,12 +1210,13 @@ sub Run {
 
                 View => $Self->{View},
 
-                Env        => $Self,
-                LinkPage   => $LinkPage,
-                LinkSort   => $LinkSort,
-                LinkFilter => $LinkFilter,
-                LinkBack   => $LinkBack,
-                Profile    => $Self->{Profile},
+                Env         => $Self,
+                LinkPage    => $LinkPage,
+                LinkSort    => $LinkSort,
+                LinkFilter  => $LinkFilter,
+                LinkBack    => $LinkBack,
+                Profile     => $Self->{Profile},
+                ProfileName => $Self->{ProfileName},
 
                 TitleName => Translatable('Search Results'),
                 Bulk      => 1,
@@ -1238,7 +1263,7 @@ sub Run {
             FoundStopWords => [],
         };
 
-        if ( $Kernel::OM->Get('Kernel::System::Ticket')->SearchStringStopWordsUsageWarningActive() ) {
+        if ( $Kernel::OM->Get('Kernel::System::Ticket::Article')->SearchStringStopWordsUsageWarningActive() ) {
             my @ParamNames = $ParamObject->GetParamNames();
             my %SearchStrings;
             SEARCHSTRINGPARAMNAME:
@@ -1248,7 +1273,7 @@ sub Run {
             }
 
             $StopWordCheckResult->{FoundStopWords}
-                = $Kernel::OM->Get('Kernel::System::Ticket')->SearchStringStopWordsFind(
+                = $Kernel::OM->Get('Kernel::System::Ticket::Article')->SearchStringStopWordsFind(
                 SearchStrings => \%SearchStrings,
                 );
         }
@@ -1322,39 +1347,13 @@ sub Run {
                 Value    => '-',
                 Disabled => 1,
             },
-
-            # Article fields
-            {
-                Key   => 'From',
-                Value => Translatable('From'),
-            },
-            {
-                Key   => 'To',
-                Value => Translatable('To'),
-            },
-            {
-                Key   => 'Cc',
-                Value => Translatable('Cc'),
-            },
-            {
-                Key   => 'Subject',
-                Value => Translatable('Subject'),
-            },
-            {
-                Key   => 'Body',
-                Value => Translatable('Body'),
-            },
         );
 
-        if (
-            $ConfigObject->Get('Ticket::Article::Backend::MIMEBase')->{ArticleStorage} eq
-            'Kernel::System::Ticket::Article::Backend::MIMEBase::ArticleStorageDB'
-            )
-        {
+        for my $ArticleFieldKey ( sort keys %ArticleSearchableFields ) {
             push @Attributes, (
                 {
-                    Key   => 'AttachmentName',
-                    Value => Translatable('Attachment Name'),
+                    Key   => $ArticleSearchableFields{$ArticleFieldKey}->{Key},
+                    Value => Translatable( $ArticleSearchableFields{$ArticleFieldKey}->{Label} ),
                 },
             );
         }
@@ -1959,14 +1958,18 @@ sub Run {
         );
         $Param{ArticleCreateTimeStart} = $LayoutObject->BuildDateSelection(
             %GetParam,
-            Prefix   => 'ArticleCreateTimeStart',
-            Format   => 'DateInputFormat',
-            DiffTime => -( ( 60 * 60 * 24 ) * 30 ),
+            Prefix                   => 'ArticleCreateTimeStart',
+            Format                   => 'DateInputFormat',
+            DiffTime                 => -( ( 60 * 60 * 24 ) * 30 ),
+            Validate                 => 1,
+            ValidateDateBeforePrefix => 'ArticleCreateTimeStop',
         );
         $Param{ArticleCreateTimeStop} = $LayoutObject->BuildDateSelection(
             %GetParam,
-            Prefix => 'ArticleCreateTimeStop',
-            Format => 'DateInputFormat',
+            Prefix                  => 'ArticleCreateTimeStop',
+            Format                  => 'DateInputFormat',
+            Validate                => 1,
+            ValidateDateAfterPrefix => 'ArticleCreateTimeStart',
         );
         $Param{TicketCreateTimePoint} = $LayoutObject->BuildSelection(
             Data       => [ 1 .. 59 ],
@@ -1995,14 +1998,18 @@ sub Run {
         );
         $Param{TicketCreateTimeStart} = $LayoutObject->BuildDateSelection(
             %GetParam,
-            Prefix   => 'TicketCreateTimeStart',
-            Format   => 'DateInputFormat',
-            DiffTime => -( ( 60 * 60 * 24 ) * 30 ),
+            Prefix                   => 'TicketCreateTimeStart',
+            Format                   => 'DateInputFormat',
+            DiffTime                 => -( ( 60 * 60 * 24 ) * 30 ),
+            Validate                 => 1,
+            ValidateDateBeforePrefix => 'TicketCreateTimeStop',
         );
         $Param{TicketCreateTimeStop} = $LayoutObject->BuildDateSelection(
             %GetParam,
-            Prefix => 'TicketCreateTimeStop',
-            Format => 'DateInputFormat',
+            Prefix                  => 'TicketCreateTimeStop',
+            Format                  => 'DateInputFormat',
+            Validate                => 1,
+            ValidateDateAfterPrefix => 'TicketCreateTimeStart',
         );
 
         $Param{TicketPendingTimePoint} = $LayoutObject->BuildSelection(
@@ -2034,14 +2041,18 @@ sub Run {
         );
         $Param{TicketPendingTimeStart} = $LayoutObject->BuildDateSelection(
             %GetParam,
-            Prefix   => 'TicketPendingTimeStart',
-            Format   => 'DateInputFormat',
-            DiffTime => -( ( 60 * 60 * 24 ) * 30 ),
+            Prefix                   => 'TicketPendingTimeStart',
+            Format                   => 'DateInputFormat',
+            DiffTime                 => -( ( 60 * 60 * 24 ) * 30 ),
+            Validate                 => 1,
+            ValidateDateBeforePrefix => 'TicketPendingTimeStop',
         );
         $Param{TicketPendingTimeStop} = $LayoutObject->BuildDateSelection(
             %GetParam,
-            Prefix => 'TicketPendingTimeStop',
-            Format => 'DateInputFormat',
+            Prefix                  => 'TicketPendingTimeStop',
+            Format                  => 'DateInputFormat',
+            Validate                => 1,
+            ValidateDateAfterPrefix => 'TicketPendingTimeStart',
         );
 
         $Param{TicketChangeTimePoint} = $LayoutObject->BuildSelection(
@@ -2071,14 +2082,18 @@ sub Run {
         );
         $Param{TicketChangeTimeStart} = $LayoutObject->BuildDateSelection(
             %GetParam,
-            Prefix   => 'TicketChangeTimeStart',
-            Format   => 'DateInputFormat',
-            DiffTime => -( ( 60 * 60 * 24 ) * 30 ),
+            Prefix                   => 'TicketChangeTimeStart',
+            Format                   => 'DateInputFormat',
+            DiffTime                 => -( ( 60 * 60 * 24 ) * 30 ),
+            Validate                 => 1,
+            ValidateDateBeforePrefix => 'TicketChangeTimeStop',
         );
         $Param{TicketChangeTimeStop} = $LayoutObject->BuildDateSelection(
             %GetParam,
-            Prefix => 'TicketChangeTimeStop',
-            Format => 'DateInputFormat',
+            Prefix                  => 'TicketChangeTimeStop',
+            Format                  => 'DateInputFormat',
+            Validate                => 1,
+            ValidateDateAfterPrefix => 'TicketChangeTimeStart',
         );
 
         $Param{TicketCloseTimePoint} = $LayoutObject->BuildSelection(
@@ -2108,14 +2123,18 @@ sub Run {
         );
         $Param{TicketCloseTimeStart} = $LayoutObject->BuildDateSelection(
             %GetParam,
-            Prefix   => 'TicketCloseTimeStart',
-            Format   => 'DateInputFormat',
-            DiffTime => -( ( 60 * 60 * 24 ) * 30 ),
+            Prefix                   => 'TicketCloseTimeStart',
+            Format                   => 'DateInputFormat',
+            DiffTime                 => -( ( 60 * 60 * 24 ) * 30 ),
+            Validate                 => 1,
+            ValidateDateBeforePrefix => 'TicketCloseTimeStop',
         );
         $Param{TicketCloseTimeStop} = $LayoutObject->BuildDateSelection(
             %GetParam,
-            Prefix => 'TicketCloseTimeStop',
-            Format => 'DateInputFormat',
+            Prefix                  => 'TicketCloseTimeStop',
+            Format                  => 'DateInputFormat',
+            Validate                => 1,
+            ValidateDateAfterPrefix => 'TicketCloseTimeStart',
         );
 
         $Param{TicketLastChangeTimePoint} = $LayoutObject->BuildSelection(
@@ -2145,14 +2164,18 @@ sub Run {
         );
         $Param{TicketLastChangeTimeStart} = $LayoutObject->BuildDateSelection(
             %GetParam,
-            Prefix   => 'TicketLastChangeTimeStart',
-            Format   => 'DateInputFormat',
-            DiffTime => -( ( 60 * 60 * 24 ) * 30 ),
+            Prefix                   => 'TicketLastChangeTimeStart',
+            Format                   => 'DateInputFormat',
+            DiffTime                 => -( ( 60 * 60 * 24 ) * 30 ),
+            Validate                 => 1,
+            ValidateDateBeforePrefix => 'TicketLastChangeTimeStop',
         );
         $Param{TicketLastChangeTimeStop} = $LayoutObject->BuildDateSelection(
             %GetParam,
-            Prefix => 'TicketLastChangeTimeStop',
-            Format => 'DateInputFormat',
+            Prefix                  => 'TicketLastChangeTimeStop',
+            Format                  => 'DateInputFormat',
+            Validate                => 1,
+            ValidateDateAfterPrefix => 'TicketLastChangeTimeStart',
         );
 
         $Param{TicketEscalationTimePoint} = $LayoutObject->BuildSelection(
@@ -2183,14 +2206,18 @@ sub Run {
         );
         $Param{TicketEscalationTimeStart} = $LayoutObject->BuildDateSelection(
             %GetParam,
-            Prefix   => 'TicketEscalationTimeStart',
-            Format   => 'DateInputFormat',
-            DiffTime => -( ( 60 * 60 * 24 ) * 30 ),
+            Prefix                   => 'TicketEscalationTimeStart',
+            Format                   => 'DateInputFormat',
+            DiffTime                 => -( ( 60 * 60 * 24 ) * 30 ),
+            Validate                 => 1,
+            ValidateDateBeforePrefix => 'TicketEscalationTimeStop',
         );
         $Param{TicketEscalationTimeStop} = $LayoutObject->BuildDateSelection(
             %GetParam,
-            Prefix => 'TicketEscalationTimeStop',
-            Format => 'DateInputFormat',
+            Prefix                  => 'TicketEscalationTimeStop',
+            Format                  => 'DateInputFormat',
+            Validate                => 1,
+            ValidateDateAfterPrefix => 'TicketEscalationTimeStart',
         );
 
         my %GetParamBackup = %GetParam;
@@ -2230,6 +2257,18 @@ sub Run {
                 EmptySearch => $EmptySearch,
             },
         );
+
+        # create the field entries to be displayed in the modal dialog
+        for my $ArticleFieldKey ( sort keys %ArticleSearchableFields ) {
+            $LayoutObject->Block(
+                Name => 'SearchableArticleField',
+                Data => {
+                    ArticleFieldLabel => $ArticleSearchableFields{$ArticleFieldKey}->{Label},
+                    ArticleFieldKey   => $ArticleSearchableFields{$ArticleFieldKey}->{Key},
+                    ArticleFieldValue => $GetParam{$ArticleFieldKey} // '',
+                },
+            );
+        }
 
         # output Dynamic fields blocks
         # cycle trough the activated Dynamic Fields for this screen

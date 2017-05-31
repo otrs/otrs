@@ -1433,36 +1433,16 @@ sub Run {
                     );
                 }
 
-                my $JSONBody = $Kernel::OM->Get('Kernel::System::JSON')->Encode(
-                    Data => \@ChatMessageList,
+                my $ArticleChatBackend = $ArticleObject->BackendForChannel( ChannelName => 'Chat' );
+                $ChatArticleID = $ArticleChatBackend->ArticleCreate(
+                    TicketID             => $TicketID,
+                    SenderType           => $Config->{SenderType},
+                    ChatMessageList      => \@ChatMessageList,
+                    IsVisibleForCustomer => $Config->{IsVisibleForCustomer},
+                    UserID               => $Self->{UserID},
+                    HistoryType          => $Config->{HistoryType},
+                    HistoryComment       => $Config->{HistoryComment} || '%%',
                 );
-
-                my $ChatArticleType = 'chat-internal';
-                if (
-                    $Chat{RequesterType} eq 'Customer'
-                    || $Chat{TargetType} eq 'Customer'
-                    )
-                {
-                    $ChatArticleType = 'chat-external';
-                }
-
-                # TODO: Fix chat article creation
-                # $ChatArticleID = $ArticleObject->ArticleCreate(
-                #     NoAgentNotify  => $NoAgentNotify,
-                #     TicketID       => $TicketID,
-                #     ArticleType    => $ChatArticleType,
-                #     SenderType     => $Config->{SenderType},
-                #     From           => $GetParam{From},
-                #     To             => $GetParam{To},
-                #     Subject        => $Kernel::OM->Get('Kernel::Language')->Translate('Chat'),
-                #     Body           => $JSONBody,
-                #     MimeType       => 'application/json',
-                #     Charset        => $LayoutObject->{UserCharset},
-                #     UserID         => $Self->{UserID},
-                #     HistoryType    => $Config->{HistoryType},
-                #     HistoryComment => $Config->{HistoryComment} || '%%',
-                #     Queue          => $QueueObject->QueueLookup( QueueID => $NewQueueID ),
-                # );
             }
             if ($ChatArticleID) {
 
@@ -2243,6 +2223,10 @@ sub _GetTos {
                 || '<Realname> <<Email>> - Queue: <Queue>';
             $String =~ s/<Queue>/$QueueData{Name}/g;
             $String =~ s/<QueueComment>/$QueueData{Comment}/g;
+
+            # remove trailing spaces
+            $String =~ s{\s+\z}{} if !$QueueData{Comment};
+
             if ( $ConfigObject->Get('Ticket::Frontend::NewQueueSelectionType') ne 'Queue' )
             {
                 my %SystemAddressData = $Kernel::OM->Get('Kernel::System::SystemAddress')->SystemAddressGet(
@@ -2658,37 +2642,14 @@ sub _MaskPhoneNew {
         );
     }
 
-    my $ShownOptionsBlock;
-
-    # show spell check
-    if ( $LayoutObject->{BrowserSpellChecker} ) {
-
-        # check if need to call Options block
-        if ( !$ShownOptionsBlock ) {
-            $LayoutObject->Block(
-                Name => 'TicketOptions',
-                Data => {
-                    %Param,
-                },
-            );
-
-            # set flag to "true" in order to prevent calling the Options block again
-            $ShownOptionsBlock = 1;
-        }
-
-        $LayoutObject->Block(
-            Name => 'SpellCheck',
-            Data => {
-                %Param,
-            },
-        );
-    }
-
     # show customer edit link
     my $OptionCustomer = $LayoutObject->Permission(
         Action => 'AdminCustomerUser',
         Type   => 'rw',
     );
+
+    my $ShownOptionsBlock;
+
     if ($OptionCustomer) {
 
         # check if need to call Options block

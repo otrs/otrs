@@ -230,7 +230,7 @@ INSERT INTO follow_up_possible (name, comments, valid_id, create_by, create_time
 -- ----------------------------------------------------------
 INSERT INTO follow_up_possible (name, comments, valid_id, create_by, create_time, change_by, change_time)
     VALUES
-    ('new ticket', 'Follow-ups for closed tickets are not possible. A new ticket will be created..', 1, 1, current_timestamp, 1, current_timestamp);
+    ('new ticket', 'Follow-ups for closed tickets are not possible. A new ticket will be created.', 1, 1, current_timestamp, 1, current_timestamp);
 -- ----------------------------------------------------------
 --  insert into table queue
 -- ----------------------------------------------------------
@@ -742,6 +742,12 @@ INSERT INTO ticket_history_type (name, valid_id, create_by, create_time, change_
     VALUES
     ('TitleUpdate', 1, 1, current_timestamp, 1, current_timestamp);
 -- ----------------------------------------------------------
+--  insert into table ticket_history_type
+-- ----------------------------------------------------------
+INSERT INTO ticket_history_type (name, valid_id, create_by, create_time, change_by, change_time)
+    VALUES
+    ('ArticleCreate', 1, 1, current_timestamp, 1, current_timestamp);
+-- ----------------------------------------------------------
 --  insert into table article_sender_type
 -- ----------------------------------------------------------
 INSERT INTO article_sender_type (name, valid_id, create_by, create_time, change_by, change_time)
@@ -803,6 +809,17 @@ ArticleDataTables:
 - article_data_mime
 - article_data_mime_plain
 - article_data_mime_attachment
+', 1, 1, current_timestamp, 1, current_timestamp);
+-- ----------------------------------------------------------
+--  insert into table communication_channel
+-- ----------------------------------------------------------
+INSERT INTO communication_channel (name, module, package_name, channel_data, valid_id, create_by, create_time, change_by, change_time)
+    VALUES
+    ('Chat', 'Kernel::System::CommunicationChannel::Chat', 'Framework', '---
+ArticleDataArticleIDField: article_id
+ArticleDataIsDroppable: 0
+ArticleDataTables:
+- article_data_otrs_chat
 ', 1, 1, current_timestamp, 1, current_timestamp);
 -- ----------------------------------------------------------
 --  insert into table article

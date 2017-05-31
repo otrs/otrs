@@ -11,7 +11,6 @@ package Kernel::Output::HTML::Layout;
 use strict;
 use warnings;
 
-use Storable;
 use URI::Escape qw();
 
 use Kernel::System::Time;
@@ -31,6 +30,7 @@ our @ObjectDependencies = (
     'Kernel::System::Log',
     'Kernel::System::Main',
     'Kernel::System::OTRSBusiness',
+    'Kernel::System::Storable',
     'Kernel::System::SystemMaintenance',
     'Kernel::System::Time',
     'Kernel::System::User',
@@ -376,16 +376,6 @@ EOF
     # check if rich text is active
     if ( !$ConfigObject->Get('Frontend::RichText') ) {
         $Self->{BrowserRichText} = 0;
-    }
-
-    # check if spell check should be active
-    if ( $Self->{BrowserJavaScriptSupport} && $ConfigObject->Get('SpellChecker') ) {
-        if ( $ConfigObject->Get('Frontend::RichText') ) {
-            $Self->{BrowserSpellCheckerInline} = 1;
-        }
-        else {
-            $Self->{BrowserSpellChecker} = 1;
-        }
     }
 
     # load theme
@@ -1579,8 +1569,6 @@ sub Footer {
         ChallengeToken                 => $Self->{UserChallengeToken},
         CustomerPanelSessionName       => $ConfigObject->Get('CustomerPanelSessionName'),
         UserLanguage                   => $Self->{UserLanguage},
-        SpellChecker                   => $ConfigObject->Get('SpellChecker'),
-        NeedSpellCheck                 => $ConfigObject->Get('Ticket::Frontend::NeedSpellCheck'),
         RichTextSet                    => $ConfigObject->Get('Frontend::RichText'),
         CheckEmailAddresses            => $ConfigObject->Get('CheckEmailAddresses'),
         MenuDragDropEnabled            => $ConfigObject->Get('Frontend::MenuDragDropEnabled'),
@@ -1595,7 +1583,7 @@ sub Footer {
                 &&
                 (
                 $ConfigObject->Get('Ticket::SearchIndexModule')
-                eq 'Kernel::System::Ticket::ArticleSearchIndex::StaticDB'
+                eq 'Kernel::System::Ticket::ArticleSearchIndex::DB'
                 )
             ) ? 1 : 0,
         SearchFrontend => $JSCall,
@@ -1817,8 +1805,6 @@ sub Ascii2Html {
         ${$Text} =~ s/(\n\r|\r\r\n|\r\n)/\n/g;
         ${$Text} =~ s/\r/\n/g;
         ${$Text} =~ s/(.{4,$Param{NewLine}})(?:\s|\z)/$1\n/gm;
-        my $ForceNewLine = $Param{NewLine} + 10;
-        ${$Text} =~ s/(.{$ForceNewLine})(.+?)/$1\n$2/g;
     }
 
     # remove tabs
@@ -2097,7 +2083,7 @@ sub CustomerAge {
     }
 
     # get minutes (just if age < 1 day)
-    if ( $ConfigObject->Get('TimeShowAlwaysLong') || $Age < 86400 ) {
+    if ( $Param{TimeShowAlwaysLong} || $ConfigObject->Get('TimeShowAlwaysLong') || $Age < 86400 ) {
         $AgeStrg .= int( ( $Age / 60 ) % 60 ) . ' ';
         $AgeStrg .= $Self->{LanguageObject}->Translate($MinuteDsc);
     }
@@ -3203,6 +3189,7 @@ sub BuildDateSelection {
     my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
 
     my $DateInputStyle = $ConfigObject->Get('TimeInputFormat');
+    my $MinuteStep     = $ConfigObject->Get('TimeInputMinutesStep');
     my $Prefix         = $Param{Prefix} || '';
     my $DiffTime       = $Param{DiffTime} || 0;
     my $Format         = defined( $Param{Format} ) ? $Param{Format} : 'DateInputFormatLong';
@@ -3425,13 +3412,14 @@ sub BuildDateSelection {
 
         # minute
         if ( $DateInputStyle eq 'Option' ) {
-            my %Minute = map { $_ => sprintf( "%02d", $_ ); } ( 0 .. 59 );
+            my %Minute
+                = map { $_ => sprintf( "%02d", $_ ); } map { $_ * $MinuteStep } ( 0 .. ( 60 / $MinuteStep - 1 ) );
             $Param{Minute} = $Self->BuildSelection(
                 Name       => $Prefix . 'Minute',
                 Data       => \%Minute,
                 SelectedID => defined( $Param{ $Prefix . 'Minute' } )
                 ? int( $Param{ $Prefix . 'Minute' } )
-                : int($m),
+                : int( $m - $m % $MinuteStep ),
                 Translation => 0,
                 Class       => $Validate ? ( 'Validate_DateMinute ' . $Class ) : $Class,
                 Title       => $Self->{LanguageObject}->Translate('Minutes'),
@@ -3528,6 +3516,67 @@ sub BuildDateSelection {
     $Self->{HasDatepicker} = 1;    # Call some Datepicker init code.
 
     return $Output;
+}
+
+=head2 HumanReadableDataSize()
+
+Produces human readable data size.
+
+    my $SizeStr = $MainObject->HumanReadableDataSize(
+        Size => 123,  # size in bytes
+    );
+
+Returns
+
+    '123 B'
+
+=cut
+
+sub HumanReadableDataSize {
+    my ( $Self, %Param ) = @_;
+
+    if ( !defined( $Param{Size} ) ) {
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
+            Priority => 'error',
+            Message  => 'Need Size!',
+        );
+        return;
+    }
+
+    if ( $Param{Size} !~ /^\d+$/ ) {
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
+            Priority => 'error',
+            Message  => 'Size must be integer!',
+        );
+        return;
+    }
+
+    my $SizeStr        = '';
+    my $LanguageObject = $Kernel::OM->Get('Kernel::Language');
+
+    # Use convention described on https://en.wikipedia.org/wiki/File_size
+    #   We cannot use floating point output as OTRS has no locale informatin for the decimal mark.
+    if ( $Param{Size} > ( 1024**4 ) ) {
+        my $ReadableSize = int $Param{Size} / ( 1024**4 );
+        $SizeStr = $LanguageObject->Translate( '%s TB', $ReadableSize );
+    }
+    elsif ( $Param{Size} > ( 1024**3 ) ) {
+        my $ReadableSize = int $Param{Size} / ( 1024**3 );
+        $SizeStr = $LanguageObject->Translate( '%s GB', $ReadableSize );
+    }
+    elsif ( $Param{Size} > ( 1024**2 ) ) {
+        my $ReadableSize = int $Param{Size} / ( 1024**2 );
+        $SizeStr = $LanguageObject->Translate( '%s MB', $ReadableSize );
+    }
+    elsif ( $Param{Size} > 1024 ) {
+        my $ReadableSize = int $Param{Size} / (1024);
+        $SizeStr = $LanguageObject->Translate( '%s KB', $ReadableSize );
+    }
+    else {
+        $SizeStr = $LanguageObject->Translate( '%s B', $Param{Size} );
+    }
+
+    return $SizeStr;
 }
 
 sub CustomerLogin {
@@ -4939,7 +4988,7 @@ sub _BuildSelectionDataRefCreate {
 
     # dclone $Param{Data} because the subroutine unfortunately modifies
     # the original data ref
-    my $DataLocal = Storable::dclone( $Param{Data} );
+    my $DataLocal = $Kernel::OM->Get('Kernel::System::Storable')->Clone( Data => $Param{Data} );
 
     # if HashRef was given
     if ( ref $DataLocal eq 'HASH' ) {
@@ -5625,8 +5674,7 @@ sub SetRichTextParameters {
     my $ScreenRichTextHeight = $Param{Data}->{RichTextHeight} || $ConfigObject->Get("Frontend::RichTextHeight");
     my $ScreenRichTextWidth  = $Param{Data}->{RichTextWidth}  || $ConfigObject->Get("Frontend::RichTextWidth");
     my $PictureUploadAction = $Param{Data}->{RichTextPictureUploadAction} || '';
-    my $TextDir             = $Self->{TextDirection}                      || '';
-    my $SpellChecker        = $Self->{BrowserSpellCheckerInline}          || '';
+    my $TextDir = $Self->{TextDirection} || '';
     my $EditingAreaCSS = 'body.cke_editable { ' . $ConfigObject->Get("Frontend::RichText::DefaultCSS") . ' }';
 
     # decide if we need to use the enhanced mode (with tables)
@@ -5644,7 +5692,7 @@ sub SetRichTextParameters {
             '/',
             [
                 'Image',   'HorizontalRule', 'PasteText', 'PasteFromWord', 'SplitQuote', 'RemoveQuote',
-                '-',       '-',              'Find',      'Replace',       'SpellCheck', 'TextColor',
+                '-',       '-',              'Find',      'Replace',       'TextColor',
                 'BGColor', 'RemoveFormat',   '-',         'ShowBlocks',    'Source',     'SpecialChar',
                 '-',       'Maximize'
             ],
@@ -5660,7 +5708,7 @@ sub SetRichTextParameters {
             '/',
             [
                 'HorizontalRule', 'PasteText', 'PasteFromWord', 'SplitQuote', 'RemoveQuote', '-',
-                '-',              'Find',      'Replace',       'SpellCheck', 'TextColor',   'BGColor',
+                '-',              'Find',      'Replace',       'TextColor',  'BGColor',
                 'RemoveFormat',   '-',         'ShowBlocks',    'Source',     'SpecialChar', '-',
                 'Maximize'
             ],
@@ -5674,7 +5722,7 @@ sub SetRichTextParameters {
                 'BulletedList',  '-',            'Outdent',        'Indent', '-',    'JustifyLeft',
                 'JustifyCenter', 'JustifyRight', 'JustifyBlock',   '-',      'Link', 'Unlink',
                 '-',             'Image',        'HorizontalRule', '-',      'Undo', 'Redo',
-                '-',             'Find',         'SpellCheck'
+                '-',             'Find'
             ],
             '/',
             [
@@ -5691,7 +5739,7 @@ sub SetRichTextParameters {
                 'JustifyCenter', 'JustifyRight', 'JustifyBlock', '-',
                 'Link',          'Unlink',       '-',            'HorizontalRule',
                 '-',             'Undo',         'Redo',         '-',
-                'Find',          'SpellCheck'
+                'Find'
             ],
             '/',
             [
@@ -5709,7 +5757,6 @@ sub SetRichTextParameters {
             Height         => $ScreenRichTextHeight,
             Width          => $ScreenRichTextWidth,
             TextDir        => $TextDir,
-            SpellChecker   => $SpellChecker,
             EditingAreaCSS => $EditingAreaCSS,
             Lang           => {
                 SplitQuote  => $LanguageObject->Translate('Split Quote'),
@@ -5753,7 +5800,6 @@ sub CustomerSetRichTextParameters {
     my $ScreenRichTextHeight = $ConfigObject->Get("Frontend::RichTextHeight");
     my $ScreenRichTextWidth  = $ConfigObject->Get("Frontend::RichTextWidth");
     my $TextDir              = $Self->{TextDirection} || '';
-    my $SpellChecker         = $Self->{BrowserSpellCheckerInline} || '';
     my $PictureUploadAction  = $Param{Data}->{RichTextPictureUploadAction} || '';
     my $EditingAreaCSS       = 'body { ' . $ConfigObject->Get("Frontend::RichText::DefaultCSS") . ' }';
 
@@ -5772,7 +5818,7 @@ sub CustomerSetRichTextParameters {
             '/',
             [
                 'Image',   'HorizontalRule', 'PasteText', 'PasteFromWord', 'SplitQuote', 'RemoveQuote',
-                '-',       '-',              'Find',      'Replace',       'SpellCheck', 'TextColor',
+                '-',       '-',              'Find',      'Replace',       'TextColor',
                 'BGColor', 'RemoveFormat',   '-',         'ShowBlocks',    'Source',     'SpecialChar',
                 '-',       'Maximize'
             ],
@@ -5788,7 +5834,7 @@ sub CustomerSetRichTextParameters {
             '/',
             [
                 'HorizontalRule', 'PasteText', 'PasteFromWord', 'SplitQuote', 'RemoveQuote', '-',
-                '-',              'Find',      'Replace',       'SpellCheck', 'TextColor',   'BGColor',
+                '-',              'Find',      'Replace',       'TextColor',  'BGColor',
                 'RemoveFormat',   '-',         'ShowBlocks',    'Source',     'SpecialChar', '-',
                 'Maximize'
             ],
@@ -5802,7 +5848,7 @@ sub CustomerSetRichTextParameters {
                 'BulletedList',  '-',            'Outdent',        'Indent', '-',    'JustifyLeft',
                 'JustifyCenter', 'JustifyRight', 'JustifyBlock',   '-',      'Link', 'Unlink',
                 '-',             'Image',        'HorizontalRule', '-',      'Undo', 'Redo',
-                '-',             'Find',         'SpellCheck'
+                '-',             'Find'
             ],
             '/',
             [
@@ -5819,7 +5865,7 @@ sub CustomerSetRichTextParameters {
                 'JustifyCenter', 'JustifyRight', 'JustifyBlock', '-',
                 'Link',          'Unlink',       '-',            'HorizontalRule',
                 '-',             'Undo',         'Redo',         '-',
-                'Find',          'SpellCheck'
+                'Find'
             ],
             '/',
             [
@@ -5837,7 +5883,6 @@ sub CustomerSetRichTextParameters {
             Height         => $ScreenRichTextHeight,
             Width          => $ScreenRichTextWidth,
             TextDir        => $TextDir,
-            SpellChecker   => $SpellChecker,
             EditingAreaCSS => $EditingAreaCSS,
             Lang           => {
                 SplitQuote => $LanguageObject->Translate('Split Quote'),

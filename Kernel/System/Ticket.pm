@@ -730,8 +730,11 @@ sub TicketDelete {
 
     my $ArticleObject = $Kernel::OM->Get('Kernel::System::Ticket::Article');
 
-    # update full text index
-    return if !$ArticleObject->ArticleIndexDeleteTicket(%Param);
+    # Delete article search index.
+    return if !$ArticleObject->ArticleSearchIndexDelete(
+        TicketID => $Param{TicketID},
+        UserID   => $Param{UserID},
+    );
 
     # get database object
     my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
@@ -5835,10 +5838,10 @@ sub TicketMerge {
         Bind => [ \$Param{MainTicketID}, \$Param{UserID}, \$Param{MergeTicketID} ],
     );
 
-    # bug 9635
-    # do the same with article_search (harmless if not used)
+    # former bug 9635 (with table article_index)
+    # do the same with article_search_index (harmless if not used)
     return if !$DBObject->Do(
-        SQL  => 'UPDATE article_search SET ticket_id = ? WHERE ticket_id = ?',
+        SQL  => 'UPDATE article_search_index SET ticket_id = ? WHERE ticket_id = ?',
         Bind => [ \$Param{MainTicketID}, \$Param{MergeTicketID} ],
     );
 

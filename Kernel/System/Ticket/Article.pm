@@ -155,7 +155,7 @@ sub BackendForChannel {
                 Priority => 'error',
                 Message  => "Need $Needed!",
             );
-            return;
+            return $Kernel::OM->Get('Kernel::System::Ticket::Article::Backend::Invalid');
         }
     }
 
@@ -696,36 +696,237 @@ sub ArticleSenderTypeLookup {
     return { reverse %SenderTypes }->{ $Param{SenderType} };
 }
 
-# TODO: check / fix
-# article search index methods
-sub ArticleIndexBuild {
+=head2 ArticleSearchIndexBuild()
+
+Rebuilds the current article search index table content. Existing article entries will be replaced.
+
+    my $Success = $ArticleObject->ArticleSearchIndexBuild(
+        TicketID  => 123,
+        ArticleID => 123,
+        UserID    => 1,
+    );
+
+Returns:
+
+    True if indexing process was successfully finished, False if not.
+
+=cut
+
+sub ArticleSearchIndexBuild {
     my ( $Self, %Param ) = @_;
 
-    return $Kernel::OM->Get( $Self->{ArticleSearchIndexModule} )->ArticleIndexBuild(%Param);
+    return $Kernel::OM->Get( $Self->{ArticleSearchIndexModule} )->ArticleSearchIndexBuild(%Param);
 }
 
-sub ArticleIndexDelete {
+=head2 ArticleSearchIndexDelete()
+
+Deletes entries from the article search index table base on supplied C<ArticleID> or C<TicketID>.
+
+    my $Success = $ArticleObject->ArticleSearchIndexDelete(
+        ArticleID => 123,   # required, deletes search index for single article
+                            # or
+        TicketID  => 123,   # required, deletes search index for all ticket articles
+
+        UserID    => 1,     # required
+    );
+
+Returns:
+
+    True if delete process was successfully finished, False if not.
+
+=cut
+
+sub ArticleSearchIndexDelete {
     my ( $Self, %Param ) = @_;
 
-    return $Kernel::OM->Get( $Self->{ArticleSearchIndexModule} )->ArticleIndexDelete(%Param);
+    return $Kernel::OM->Get( $Self->{ArticleSearchIndexModule} )->ArticleSearchIndexDelete(%Param);
 }
 
-sub ArticleIndexDeleteTicket {
+=head2 ArticleSearchIndexSQLJoinNeeded()
+
+Checks the given search parameters for used article backend fields.
+
+    my $Needed = $ArticleObject->ArticleSearchIndexSQLJoinNeeded(
+        SearchParams => {
+            ...
+            ConditionInline         => 1,
+            ContentSearchPrefix     => '*',
+            ContentSearchSuffix     => '*',
+            MIMEBase_From           => '%spam@example.com%',
+            MIMEBase_To             => '%service@example.com%',
+            MIMEBase_Cc             => '%client@example.com%',
+            MIMEBase_Subject        => '%VIRUS 32%',
+            MIMEBase_Body           => '%VIRUS 32%',
+            MIMEBase_AttachmentName => '%anyfile.txt%',
+            Chat_ChatterName        => '%Some Chatter Name%',
+            Chat_MessageText        => '%Some Message Text%'
+            ...
+        },
+    );
+
+Returns:
+
+    True if article search index usage is needed, False if not.
+
+=cut
+
+sub ArticleSearchIndexSQLJoinNeeded {
     my ( $Self, %Param ) = @_;
 
-    return $Kernel::OM->Get( $Self->{ArticleSearchIndexModule} )->ArticleIndexDeleteTicket(%Param);
+    return $Kernel::OM->Get( $Self->{ArticleSearchIndexModule} )->ArticleSearchIndexSQLJoinNeeded(%Param);
 }
 
-sub _ArticleIndexQuerySQL {
+=head2 ArticleSearchIndexSQLJoin()
+
+Generates SQL string extensions, including the needed table joins for the article index search.
+
+    my $SQLExtenion = $ArticleObject->ArticleSearchIndexSQLJoin(
+        SearchParams => {
+            ...
+            ConditionInline         => 1,
+            ContentSearchPrefix     => '*',
+            ContentSearchSuffix     => '*',
+            MIMEBase_From           => '%spam@example.com%',
+            MIMEBase_To             => '%service@example.com%',
+            MIMEBase_Cc             => '%client@example.com%',
+            MIMEBase_Subject        => '%VIRUS 32%',
+            MIMEBase_Body           => '%VIRUS 32%',
+            MIMEBase_AttachmentName => '%anyfile.txt%',
+            Chat_ChatterName        => '%Some Chatter Name%',
+            Chat_MessageText        => '%Some Message Text%'
+            ...
+        },
+    );
+
+Returns:
+
+    $SQLExtension = 'LEFT JOIN article_search_index ArticleFulltext ON art.id = ArticleFulltext.article_id ';
+
+=cut
+
+sub ArticleSearchIndexSQLJoin {
     my ( $Self, %Param ) = @_;
 
-    return $Kernel::OM->Get( $Self->{ArticleSearchIndexModule} )->_ArticleIndexQuerySQL(%Param);
+    return $Kernel::OM->Get( $Self->{ArticleSearchIndexModule} )->ArticleSearchIndexSQLJoin(%Param);
 }
 
-sub _ArticleIndexQuerySQLExt {
+=head2 ArticleSearchIndexWhereCondition()
+
+Generates SQL query conditions for the used article fields, that may be used in the WHERE clauses of main
+SQL queries to the database.
+
+    my $SQLExtenion = $ArticleObject->ArticleSearchIndexWhereCondition(
+        SearchParams => {
+            ...
+            ConditionInline         => 1,
+            ContentSearchPrefix     => '*',
+            ContentSearchSuffix     => '*',
+            MIMEBase_From           => '%spam@example.com%',
+            MIMEBase_To             => '%service@example.com%',
+            MIMEBase_Cc             => '%client@example.com%',
+            MIMEBase_Subject        => '%VIRUS 32%',
+            MIMEBase_Body           => '%VIRUS 32%',
+            MIMEBase_AttachmentName => '%anyfile.txt%',
+            Chat_ChatterName        => '%Some Chatter Name%',
+            Chat_MessageText        => '%Some Message Text%'
+            ...
+        },
+    );
+
+Returns:
+
+    $SQLConditions = " AND (MIMEBase_From.article_value LIKE '%spam@example.com%') ";
+
+=cut
+
+sub ArticleSearchIndexWhereCondition {
     my ( $Self, %Param ) = @_;
 
-    return $Kernel::OM->Get( $Self->{ArticleSearchIndexModule} )->_ArticleIndexQuerySQLExt(%Param);
+    return $Kernel::OM->Get( $Self->{ArticleSearchIndexModule} )->ArticleSearchIndexWhereCondition(%Param);
+}
+
+=head2 SearchStringStopWordsFind()
+
+Find stop words within given search string.
+
+    my $StopWords = $ArticleObject->SearchStringStopWordsFind(
+        SearchStrings => {
+            'Fulltext'      => '(this AND is) OR test',
+            'MIMEBase_From' => 'myself',
+        },
+    );
+
+    Returns Hashref with found stop words.
+
+=cut
+
+sub SearchStringStopWordsFind {
+    my ( $Self, %Param ) = @_;
+
+    return $Kernel::OM->Get( $Self->{ArticleSearchIndexModule} )->SearchStringStopWordsFind(%Param);
+}
+
+=head2 SearchStringStopWordsUsageWarningActive()
+
+Checks if warnings for stop words in search strings are active or not.
+
+    my $WarningActive = $ArticleObject->SearchStringStopWordsUsageWarningActive();
+
+=cut
+
+sub SearchStringStopWordsUsageWarningActive {
+    my ( $Self, %Param ) = @_;
+
+    return $Kernel::OM->Get( $Self->{ArticleSearchIndexModule} )->SearchStringStopWordsUsageWarningActive(%Param);
+}
+
+=head2 ArticleSearchableFieldsList()
+
+Get list of searchable fields across all article backends.
+
+    my %SearchableFields = $ArticleObject->ArticleSearchableFieldsList();
+
+Returns:
+
+    %SearchableFields = (
+        'MIMEBase_Body' => {
+            Filterable => 1,
+            Key        => 'MIMEBase_Body',
+            Label      => 'Body',
+            Type       => 'Text',
+        },
+        'MIMEBase_Subject' => {
+            Filterable => 1,
+            Key        => 'MIMEBase_Subject',
+            Label      => 'Subject',
+            Type       => 'Text',
+        },
+        ...
+    );
+
+=cut
+
+sub ArticleSearchableFieldsList {
+    my ( $Self, %Param ) = @_;
+
+    my @CommunicationChannels = $Kernel::OM->Get('Kernel::System::CommunicationChannel')->ChannelList(
+        ValidID => 1,
+    );
+
+    my %SearchableFields;
+
+    for my $Channel (@CommunicationChannels) {
+
+        my $CurrentArticleBackendObject = $Self->BackendForChannel(
+            ChannelName => $Channel->{ChannelName},
+        );
+
+        my %BackendSearchableFields = $CurrentArticleBackendObject->BackendSearchableFieldsGet();
+
+        %SearchableFields = ( %SearchableFields, %BackendSearchableFields );
+    }
+
+    return %SearchableFields;
 }
 
 =head1 PRIVATE FUNCTIONS

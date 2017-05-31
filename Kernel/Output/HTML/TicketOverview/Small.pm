@@ -468,6 +468,7 @@ sub Run {
             # Get ticket data.
             my %Ticket = $TicketObject->TicketGet(
                 TicketID      => $TicketID,
+                Extended      => 1,
                 DynamicFields => 0,
             );
 
@@ -1388,13 +1389,15 @@ sub Run {
 
         # escalation human times
         if ( $Article{EscalationTime} ) {
-            $Article{EscalationTimeHuman} = $LayoutObject->CustomerAgeInHours(
-                Age   => $Article{EscalationTime},
-                Space => ' ',
+            $Article{EscalationTimeHuman} = $LayoutObject->CustomerAge(
+                Age                => $Article{EscalationTime},
+                TimeShowAlwaysLong => 1,
+                Space              => ' ',
             );
-            $Article{EscalationTimeWorkingTime} = $LayoutObject->CustomerAgeInHours(
-                Age   => $Article{EscalationTimeWorkingTime},
-                Space => ' ',
+            $Article{EscalationTimeWorkingTime} = $LayoutObject->CustomerAge(
+                Age                => $Article{EscalationTimeWorkingTime},
+                TimeShowAlwaysLong => 1,
+                Space              => ' ',
             );
         }
 
@@ -1520,13 +1523,15 @@ sub Run {
                     $EscalationData{EscalationTime}            = $Article{EscalationTime};
                     $EscalationData{EscalationDestinationDate} = $Article{EscalationDestinationDate};
 
-                    $EscalationData{EscalationTimeHuman} = $LayoutObject->CustomerAgeInHours(
-                        Age   => $EscalationData{EscalationTime},
-                        Space => ' ',
+                    $EscalationData{EscalationTimeHuman} = $LayoutObject->CustomerAge(
+                        Age                => $EscalationData{EscalationTime},
+                        TimeShowAlwaysLong => 1,
+                        Space              => ' ',
                     );
-                    $EscalationData{EscalationTimeWorkingTime} = $LayoutObject->CustomerAgeInHours(
-                        Age   => $EscalationData{EscalationTimeWorkingTime},
-                        Space => ' ',
+                    $EscalationData{EscalationTimeWorkingTime} = $LayoutObject->CustomerAge(
+                        Age                => $EscalationData{EscalationTimeWorkingTime},
+                        TimeShowAlwaysLong => 1,
+                        Space              => ' ',
                     );
                     if (
                         defined $Article{EscalationTime}
@@ -1546,9 +1551,10 @@ sub Run {
                 my $CSSClass  = '';
                 if ( $TicketColumn eq 'EscalationSolutionTime' ) {
                     $BlockType = 'Escalation';
-                    $DataValue = $LayoutObject->CustomerAgeInHours(
+                    $DataValue = $LayoutObject->CustomerAge(
                         Age => $Article{SolutionTime} || 0,
-                        Space => ' ',
+                        TimeShowAlwaysLong => 1,
+                        Space              => ' ',
                     );
                     if ( defined $Article{SolutionTime} && $Article{SolutionTime} < 60 * 60 * 1 ) {
                         $CSSClass = 'Warning';
@@ -1556,9 +1562,10 @@ sub Run {
                 }
                 elsif ( $TicketColumn eq 'EscalationResponseTime' ) {
                     $BlockType = 'Escalation';
-                    $DataValue = $LayoutObject->CustomerAgeInHours(
+                    $DataValue = $LayoutObject->CustomerAge(
                         Age => $Article{FirstResponseTime} || 0,
-                        Space => ' ',
+                        TimeShowAlwaysLong => 1,
+                        Space              => ' ',
                     );
                     if (
                         defined $Article{FirstResponseTime}
@@ -1570,9 +1577,10 @@ sub Run {
                 }
                 elsif ( $TicketColumn eq 'EscalationUpdateTime' ) {
                     $BlockType = 'Escalation';
-                    $DataValue = $LayoutObject->CustomerAgeInHours(
+                    $DataValue = $LayoutObject->CustomerAge(
                         Age => $Article{UpdateTime} || 0,
-                        Space => ' ',
+                        TimeShowAlwaysLong => 1,
+                        Space              => ' ',
                     );
                     if ( defined $Article{UpdateTime} && $Article{UpdateTime} < 60 * 60 * 1 ) {
                         $CSSClass = 'Warning';
