@@ -244,7 +244,7 @@ sub Run {
             }
 
             # The default widgets can not be removed.
-            if ( $Config->{$Name}->{Default} && $Config->{$Name}->{Mandatory} ) {
+            if ( $Config->{$Name}->{Mandatory} ) {
                 $Active = 1;
             }
             my $Key = $UserSettingsKey . $Name;
@@ -491,6 +491,9 @@ sub Run {
         if ( defined $Self->{$Key} ) {
             $Backends{$Name} = $Self->{$Key};
         }
+        elsif ( $Config->{$Name}->{Mandatory} ) {
+            $Backends{$Name} = $Config->{$Name}->{Mandatory};
+        }
         else {
             $Backends{$Name} = $Config->{$Name}->{Default};
         }
@@ -575,7 +578,7 @@ sub Run {
 
         # Show remove link if removing is available.
         # Do not show the delete link when the widget is the default and the agent is disabled.
-        if ( !$Config->{$Name}->{Default} || !$Config->{$Name}->{Mandatory} ) {
+        if ( !$Config->{$Name}->{Mandatory} ) {
             $LayoutObject->Block(
                 Name => $Element{Config}->{Block} . 'Remove',
                 Data => {
@@ -833,13 +836,13 @@ sub _Element {
     # add backend to settings selection
     if ($Backends) {
         my $Checked = '';
-        if ( $Backends->{$Name} ) {
+        if ( $Backends->{$Name} || $Configs->{$Name}->{Mandatory} ) {
             $Checked = 'checked="checked"';
         }
 
         # Check whether the widget is forcibly displayed.Mandatory widgets  displayed in a gray-prohibited.
         my $Readonly = '';
-        if ( $Configs->{$Name}->{Default} && $Configs->{$Name}->{Mandatory} ) {
+        if ( $Configs->{$Name}->{Mandatory} ) {
             $Readonly = 'disabled="disabled"';
         }
         $LayoutObject->Block(
