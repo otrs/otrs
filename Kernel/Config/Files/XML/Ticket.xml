@@ -5821,7 +5821,7 @@
         </Value>
     </Setting>
     <Setting Name="DashboardBackend###0100-TicketPendingReminder" Required="0" Valid="1">
-        <Description Translatable="1">Parameters for the dashboard backend of the ticket pending reminder overview of the agent interface . "Limit" is the number of entries shown by default. "Group" is used to restrict the access to the plugin (e. g. Group: admin;group1;group2;). "Default" determines if the plugin is enabled by default or if the user needs to enable it manually. "CacheTTLLocal" is the cache time in minutes for the plugin. Note: Only Ticket attributes and Dynamic Fields (DynamicField_NameX) are allowed for DefaultColumns."Mandatory" is widgets can't be disabled by agents in their dashboard,value is "0"(no) or "1"(yes).</Description>
+        <Description Translatable="1">Parameters for the dashboard backend of the ticket pending reminder overview of the agent interface . "Limit" is the number of entries shown by default. "Group" is used to restrict the access to the plugin (e. g. Group: admin;group1;group2;). "Default" determines if the plugin is enabled by default or if the user needs to enable it manually. "CacheTTLLocal" is the cache time in minutes for the plugin. Note: Only Ticket attributes and Dynamic Fields (DynamicField_NameX) are allowed for DefaultColumns. "Mandatory" determines if the plugin is mandatory and not able to be disabled by the user manually.</Description>
         <Navigation>Frontend::Agent::Dashboard</Navigation>
         <Value>
             <Hash>
@@ -5874,7 +5874,7 @@
         </Value>
     </Setting>
     <Setting Name="DashboardBackend###0110-TicketEscalation" Required="0" Valid="1">
-        <Description Translatable="1">Parameters for the dashboard backend of the ticket escalation overview of the agent interface . "Limit" is the number of entries shown by default. "Group" is used to restrict the access to the plugin (e. g. Group: admin;group1;group2;). "Default" determines if the plugin is enabled by default or if the user needs to enable it manually. "CacheTTLLocal" is the cache time in minutes for the plugin. Note: Only Ticket attributes and Dynamic Fields (DynamicField_NameX) are allowed for DefaultColumns."Mandatory" is widgets can't be disabled by agents in their dashboard,value is "0"(no) or "1"(yes).</Description>
+        <Description Translatable="1">Parameters for the dashboard backend of the ticket escalation overview of the agent interface . "Limit" is the number of entries shown by default. "Group" is used to restrict the access to the plugin (e. g. Group: admin;group1;group2;). "Default" determines if the plugin is enabled by default or if the user needs to enable it manually. "CacheTTLLocal" is the cache time in minutes for the plugin. Note: Only Ticket attributes and Dynamic Fields (DynamicField_NameX) are allowed for DefaultColumns. "Mandatory" determines if the plugin is mandatory and not able to be disabled by the user manually.</Description>
         <Navigation>Frontend::Agent::Dashboard</Navigation>
         <Value>
             <Hash>
@@ -5927,7 +5927,7 @@
         </Value>
     </Setting>
     <Setting Name="DashboardBackend###0120-TicketNew" Required="0" Valid="1">
-        <Description Translatable="1">Parameters for the dashboard backend of the new tickets overview of the agent interface. "Limit" is the number of entries shown by default. "Group" is used to restrict the access to the plugin (e. g. Group: admin;group1;group2;). "Default" determines if the plugin is enabled by default or if the user needs to enable it manually. "CacheTTLLocal" is the cache time in minutes for the plugin. Note: Only Ticket attributes and Dynamic Fields (DynamicField_NameX) are allowed for DefaultColumns."Mandatory" is widgets can't be disabled by agents in their dashboard,value is "0"(no) or "1"(yes).</Description>
+        <Description Translatable="1">Parameters for the dashboard backend of the new tickets overview of the agent interface. "Limit" is the number of entries shown by default. "Group" is used to restrict the access to the plugin (e. g. Group: admin;group1;group2;). "Default" determines if the plugin is enabled by default or if the user needs to enable it manually. "CacheTTLLocal" is the cache time in minutes for the plugin. Note: Only Ticket attributes and Dynamic Fields (DynamicField_NameX) are allowed for DefaultColumns. "Mandatory" determines if the plugin is mandatory and not able to be disabled by the user manually.</Description>
         <Navigation>Frontend::Agent::Dashboard</Navigation>
         <Value>
             <Hash>
@@ -5980,7 +5980,7 @@
         </Value>
     </Setting>
     <Setting Name="DashboardBackend###0130-TicketOpen" Required="0" Valid="1">
-        <Description Translatable="1">Parameters for the dashboard backend of the open tickets overview of the agent interface. "Limit" is the number of entries shown by default. "Group" is used to restrict the access to the plugin (e. g. Group: admin;group1;group2;). "Default" determines if the plugin is enabled by default or if the user needs to enable it manually. "CacheTTLLocal" is the cache time in minutes for the plugin. Note: Only Ticket attributes and Dynamic Fields (DynamicField_NameX) are allowed for DefaultColumns."Mandatory" is widgets can't be disabled by agents in their dashboard,value is "0"(no) or "1"(yes).</Description>
+        <Description Translatable="1">Parameters for the dashboard backend of the open tickets overview of the agent interface. "Limit" is the number of entries shown by default. "Group" is used to restrict the access to the plugin (e. g. Group: admin;group1;group2;). "Default" determines if the plugin is enabled by default or if the user needs to enable it manually. "CacheTTLLocal" is the cache time in minutes for the plugin. Note: Only Ticket attributes and Dynamic Fields (DynamicField_NameX) are allowed for DefaultColumns. "Mandatory" determines if the plugin is mandatory and not able to be disabled by the user manually.</Description>
         <Navigation>Frontend::Agent::Dashboard</Navigation>
         <Value>
             <Hash>
@@ -6033,7 +6033,7 @@
         </Value>
     </Setting>
     <Setting Name="DashboardBackend###0250-TicketStats" Required="0" Valid="1">
-        <Description Translatable="1">Parameters for the dashboard backend of the ticket stats of the agent interface. "Limit" is the number of entries shown by default. "Group" is used to restrict the access to the plugin (e. g. Group: admin;group1;group2;). "Default" determines if the plugin is enabled by default or if the user needs to enable it manually. "CacheTTLLocal" is the cache time in minutes for the plugin."Mandatory" is widgets can't be disabled by agents in their dashboard,value is "0"(no) or "1"(yes).</Description>
+        <Description Translatable="1">Parameters for the dashboard backend of the ticket stats of the agent interface. "Limit" is the number of entries shown by default. "Group" is used to restrict the access to the plugin (e. g. Group: admin;group1;group2;). "Default" determines if the plugin is enabled by default or if the user needs to enable it manually. "CacheTTLLocal" is the cache time in minutes for the plugin. "Mandatory" determines if the plugin is mandatory and not able to be disabled by the user manually.</Description>
         <Navigation>Frontend::Agent::Dashboard</Navigation>
         <Value>
             <Hash>
@@ -6051,7 +6051,7 @@
         </Value>
     </Setting>
     <Setting Name="DashboardBackend###0260-TicketCalendar" Required="0" Valid="1">
-        <Description Translatable="1">Parameters for the dashboard backend of the upcoming events widget of the agent interface. "Limit" is the number of entries shown by default. "Group" is used to restrict the access to the plugin (e. g. Group: admin;group1;group2;). "Default" determines if the plugin is enabled by default or if the user needs to enable it manually. "CacheTTLLocal" is the cache time in minutes for the plugin."Mandatory" is widgets can't be disabled by agents in their dashboard,value is "0"(no) or "1"(yes).</Description>
+        <Description Translatable="1">Parameters for the dashboard backend of the upcoming events widget of the agent interface. "Limit" is the number of entries shown by default. "Group" is used to restrict the access to the plugin (e. g. Group: admin;group1;group2;). "Default" determines if the plugin is enabled by default or if the user needs to enable it manually. "CacheTTLLocal" is the cache time in minutes for the plugin. "Mandatory" determines if the plugin is mandatory and not able to be disabled by the user manually.</Description>
         <Navigation>Frontend::Agent::Dashboard</Navigation>
         <Value>
             <Hash>
@@ -6069,7 +6069,7 @@
         </Value>
     </Setting>
      <Setting Name="DashboardBackend###0270-TicketQueueOverview" Required="0" Valid="1">
-        <Description Translatable="1">Parameters for the dashboard backend of the queue overview widget of the agent interface. "Group" is used to restrict the access to the plugin (e. g. Group: admin;group1;group2;). "QueuePermissionGroup" is not mandatory, queues are only listed if they belong to this permission group if you enable it. "States" is a list of states, the key is the sort order of the state in the widget. "Default" determines if the plugin is enabled by default or if the user needs to enable it manually. "CacheTTLLocal" is the cache time in minutes for the plugin."Mandatory" is widgets can't be disabled by agents in their dashboard,value is "0"(no) or "1"(yes).</Description>
+        <Description Translatable="1">Parameters for the dashboard backend of the queue overview widget of the agent interface. "Group" is used to restrict the access to the plugin (e. g. Group: admin;group1;group2;). "QueuePermissionGroup" is not mandatory, queues are only listed if they belong to this permission group if you enable it. "States" is a list of states, the key is the sort order of the state in the widget. "Default" determines if the plugin is enabled by default or if the user needs to enable it manually. "CacheTTLLocal" is the cache time in minutes for the plugin. "Mandatory" determines if the plugin is mandatory and not able to be disabled by the user manually.</Description>
         <Navigation>Frontend::Agent::Dashboard</Navigation>
         <Value>
             <Hash>
@@ -6095,7 +6095,7 @@
         </Value>
     </Setting>
     <Setting Name="DashboardBackend###0280-DashboardEventsTicketCalendar" Required="0" Valid="1">
-        <Description Translatable="1">Parameters for the dashboard backend of the ticket events calendar of the agent interface. "Limit" is the number of entries shown by default. "Group" is used to restrict the access to the plugin (e. g. Group: admin;group1;group2;). "Default" determines if the plugin is enabled by default or if the user needs to enable it manually. "CacheTTLLocal" is the cache time in minutes for the plugin."Mandatory" is widgets can't be disabled by agents in their dashboard,value is "0"(no) or "1"(yes).</Description>
+        <Description Translatable="1">Parameters for the dashboard backend of the ticket events calendar of the agent interface. "Limit" is the number of entries shown by default. "Group" is used to restrict the access to the plugin (e. g. Group: admin;group1;group2;). "Default" determines if the plugin is enabled by default or if the user needs to enable it manually. "CacheTTLLocal" is the cache time in minutes for the plugin. "Mandatory" determines if the plugin is mandatory and not able to be disabled by the user manually.</Description>
         <Navigation>Frontend::Agent::Dashboard</Navigation>
         <Value>
             <Hash>
