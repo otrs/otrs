@@ -271,6 +271,7 @@ sub Run {
         $LayoutObject->ChallengeTokenCheck();
 
         my @Backends = $ParamObject->GetArray( Param => 'Backend' );
+
         for my $Name ( sort keys %{$Config} ) {
             my $Active = 0;
             BACKEND:
@@ -281,10 +282,9 @@ sub Run {
             }
 
             # The default widgets can not be removed.
-            if ( $Config->{$Name}->{Default} && $Config->{$Name}->{Mandatory} ) {
+            if ( $Config->{$Name}->{Mandatory} ) {
                 $Active = 1;
             }
-
             my $Key = $UserSettingsKey . $Name;
 
             # update session
@@ -546,10 +546,12 @@ sub Run {
             }
             next BACKEND if !$PermissionOK;
         }
-
         my $Key = $UserSettingsKey . $Name;
         if ( defined $Self->{$Key} ) {
             $Backends{$Name} = $Self->{$Key};
+        }
+        elsif ( defined $Config->{$Name}->{Mandatory} ) {
+            $Backends{$Name} = $Config->{$Name}->{Mandatory};
         }
         else {
             $Backends{$Name} = $Config->{$Name}->{Default};
@@ -653,7 +655,7 @@ sub Run {
 
         # Show remove link if removing is available.
         # Do not show the delete link when the widget is the default and the agent is disabled.
-        if ( !$Config->{$Name}->{Default} || !$Config->{$Name}->{Mandatory} ) {
+        if ( !$Config->{$Name}->{Mandatory} ) {
             $LayoutObject->Block(
                 Name => $Element{Config}->{Block} . 'Remove',
                 Data => {
@@ -896,7 +898,6 @@ sub _Element {
 
     # Perform the actual data fetching and computation on the slave db, if configured
     local $Kernel::System::DB::UseSlaveDB = 1;
-
     if ( $Param{FilterContentOnly} ) {
         my $FilterContent = $Object->FilterContent(
             FilterColumn   => $Param{FilterColumn},
@@ -906,6 +907,7 @@ sub _Element {
             CustomerUserID => $Self->{CustomerUserID} || '',
         );
         return $FilterContent;
+
     }
 
     my $LayoutObject = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
@@ -913,13 +915,13 @@ sub _Element {
     # add backend to settings selection
     if ($Backends) {
         my $Checked = '';
-        if ( $Backends->{$Name} ) {
+        if ( $Backends->{$Name} || $Configs->{$Name}->{Mandatory} ) {
             $Checked = 'checked="checked"';
         }
 
         # Check whether the widget is forcibly displayed.Mandatory widgets  displayed in a gray-prohibited.
         my $Readonly = '';
-        if ( $Configs->{$Name}->{Default} && $Configs->{$Name}->{Mandatory} ) {
+        if ( $Configs->{$Name}->{Mandatory} ) {
             $Readonly = 'disabled="disabled"';
         }
         $LayoutObject->Block(
