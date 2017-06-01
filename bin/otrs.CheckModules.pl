@@ -30,7 +30,6 @@ use lib dirname($RealBin) . '/Custom';
 use Kernel::System::Environment;
 use Kernel::System::VariableCheck qw( :all );
 
-use Linux::Distribution;
 use ExtUtils::MakeMaker;
 use File::Path;
 use Getopt::Long;
@@ -71,6 +70,11 @@ our %InstTypeToCMD = (
         CMD       => 'zypper install %s',
         UseModule => 0,
     },
+    ports => {
+        CMD       => 'cd /usr/ports %s',
+        SubCMD    => ' && make -C %s install clean',
+        UseModule => 0,
+    },
     default => {
         CMD => 'cpan %s',
     },
@@ -95,9 +99,20 @@ our %DistToInstType = (
 
     # zypper
     suse => 'zypper',
+
+    # FreeBSD
+    freebsd => 'ports',
 );
 
-our $OSDist = Linux::Distribution::distribution_name() || '';
+our $OSDist;
+eval {
+    require Linux::Distribution;
+    import  Linux::Distribution;
+    $OSDist = Linux::Distribution::distribution_name() || '';
+};
+if (!defined $OSDist) {
+    $OSDist = $^O;
+}
 
 my $AllModules;
 my $PackageList;
@@ -144,6 +159,7 @@ my @NeededModules = (
             aptget => 'libapache-dbi-perl',
             emerge => 'dev-perl/Apache-DBI',
             zypper => 'perl-Apache-DBI',
+            ports  => 'www/p5-Apache-DBI',
         },
     },
     {
@@ -154,6 +170,7 @@ my @NeededModules = (
             aptget => 'libapache2-mod-perl2',
             emerge => 'dev-perl/Apache-Reload',
             zypper => 'apache2-mod_perl',
+            ports  => 'www/mod_perl2',
         },
     },
     {
@@ -163,6 +180,7 @@ my @NeededModules = (
         InstTypes => {
             emerge => 'perl-core/Archive-Tar',
             zypper => 'perl-Archive-Tar',
+            ports  => 'archivers/p5-Archive-Tar',
         },
     },
     {
@@ -172,8 +190,8 @@ my @NeededModules = (
         InstTypes => {
             aptget => 'libarchive-zip-perl',
             emerge => 'dev-perl/Archive-Zip',
-            zypper => 'Archive-Zip',
             zypper => 'perl-Archive-Zip',
+            ports  => 'archivers/p5-Archive-Zip',
         },
     },
     {
@@ -184,6 +202,7 @@ my @NeededModules = (
             aptget => 'libcrypt-eksblowfish-perl',
             emerge => 'dev-perl/Crypt-Eksblowfish',
             zypper => 'perl-Crypt-Eksblowfish',
+            ports  => 'security/p5-Crypt-Eksblowfish',
         },
     },
     {
@@ -194,6 +213,7 @@ my @NeededModules = (
             aptget => 'libcrypt-ssleay-perl',
             emerge => 'dev-perl/Crypt-SSLeay',
             zypper => 'perl-Crypt-SSLeay',
+            ports  => 'security/p5-Crypt-SSLeay',
         },
     },
     {
@@ -203,6 +223,7 @@ my @NeededModules = (
             aptget => 'libtimedate-perl',
             emerge => 'dev-perl/TimeDate',
             zypper => 'perl-TimeDate',
+            ports  => 'devel/p5-TimeDate',
         },
     },
     {
@@ -212,6 +233,7 @@ my @NeededModules = (
             aptget => 'libdatetime-perl',
             emerge => 'dev-perl/DateTime',
             zypper => 'perl-DateTime',
+            ports  => 'devel/p5-TimeDate',
         },
     },
     {
@@ -221,6 +243,7 @@ my @NeededModules = (
             aptget => 'libdatetime-perl',
             emerge => 'dev-perl/DateTime',
             zypper => 'perl-DateTime',
+            ports  => 'devel/p5-TimeDate',
         },
     },
     {
@@ -229,7 +252,8 @@ my @NeededModules = (
         InstTypes => {
             aptget => 'libdbi-perl',
             emerge => 'dev-perl/DBI',
-            zypper => 'perl-DBI'
+            zypper => 'perl-DBI',
+            ports  => 'databases/p5-DBI',
         },
     },
     {
@@ -239,7 +263,8 @@ my @NeededModules = (
         InstTypes => {
             aptget => 'libdbd-mysql-perl',
             emerge => 'dev-perl/DBD-mysql',
-            zypper => 'perl-DBD-mysql'
+            zypper => 'perl-DBD-mysql',
+            ports  => 'databases/p5-DBD-mysql',
         },
     },
     {
@@ -258,6 +283,7 @@ my @NeededModules = (
             emerge => undef,
             yum    => undef,
             zypper => undef,
+            ports  => 'databases/p5-DBD-ODBC',
         },
     },
     {
@@ -269,6 +295,7 @@ my @NeededModules = (
             emerge => undef,
             yum    => undef,
             zypper => undef,
+            ports  => undef,
         },
     },
     {
@@ -279,6 +306,7 @@ my @NeededModules = (
             aptget => 'libdbd-pg-perl',
             emerge => 'dev-perl/DBD-Pg',
             zypper => 'perl-DBD-Pg',
+            ports  => 'databases/p5-DBD-Pg',
         },
     },
     {
@@ -287,7 +315,8 @@ my @NeededModules = (
         InstTypes => {
             aptget => 'libdigest-sha-perl',
             emerge => 'dev-perl/Digest-SHA',
-            zypper => 'perl-Digest-SHA'
+            zypper => 'perl-Digest-SHA',
+            ports  => 'security/p5-Digest-SHA'
         },
     },
     {
@@ -299,6 +328,28 @@ my @NeededModules = (
             aptget => 'libencode-hanextra-perl',
             emerge => 'dev-perl/Encode-HanExtra',
             zypper => 'perl-Encode-HanExtra',
+            ports  => 'chinese/p5-Encode-HanExtra',
+        },
+    },
+    {
+        Module    => 'Excel::Writer::XLSX',
+        Required  => 1,
+        Comment   => 'Required for Excel export.',
+        InstTypes => {
+            aptget => 'libexcel-writer-xlsx-perl',
+            emerge => undef,
+            zypper => 'perl-Excel-Writer-XLSX',
+            ports  => 'textproc/p5-Excel-Writer-XLSX',
+        },
+    },
+    {
+        Module    => 'HTML::Truncate',
+        Required  => 1,
+        InstTypes => {
+            aptget => 'libhtml-truncate-perl',
+            emerge => undef,
+            zypper => 'perl-HTML-Truncate',
+            ports  => 'textproc/p5-HTML-Translate',
         },
     },
     {
@@ -309,6 +360,7 @@ my @NeededModules = (
             aptget => 'libio-socket-ssl-perl',
             emerge => 'dev-perl/IO-Socket-SSL',
             zypper => 'perl-IO-Socket-SSL',
+            ports  => 'security/p5-IO-Socket-SSL',
         },
     },
     {
@@ -319,6 +371,17 @@ my @NeededModules = (
             aptget => 'libjson-xs-perl',
             emerge => 'dev-perl/JSON-XS',
             zypper => 'perl-JSON-XS',
+            ports  => 'converters/p5-JSON-XS',
+        },
+    },
+    {
+        Module    => 'Lingua::Translit',
+        Required  => 1,
+        InstTypes => {
+            aptget => 'liblingua-translit-perl',
+            emerge => 'dev-perl/Lingua-Translit',
+            zypper => 'perl-Lingua-Translit',
+            ports  => 'devel/p5-Lingua-Translit',
         },
     },
     {
@@ -330,6 +393,7 @@ my @NeededModules = (
             aptget => 'libscalar-list-utils-perl',
             emerge => 'perl-core/Scalar-List-Utils',
             zypper => 'perl-Scalar-List-Utils',
+            ports  => 'lang/p5-Scalar-List-Utils',
         },
     },
     {
@@ -339,6 +403,7 @@ my @NeededModules = (
             aptget => 'libwww-perl',
             emerge => 'dev-perl/libwww-perl',
             zypper => 'perl-libwww-perl',
+            ports  => 'www/p5-libwww',
         },
     },
     {
@@ -350,6 +415,7 @@ my @NeededModules = (
             aptget => 'libmail-imapclient-perl',
             emerge => 'dev-perl/Mail-IMAPClient',
             zypper => 'perl-Mail-IMAPClient',
+            ports  => 'mail/p5-Mail-IMAPClient',
         },
         Depends => [
             {
@@ -360,6 +426,7 @@ my @NeededModules = (
                     aptget => 'libio-socket-ssl-perl',
                     emerge => 'dev-perl/IO-Socket-SSL',
                     zypper => 'perl-IO-Socket-SSL',
+                    ports  => 'security/p5-IO-Socket-SSL',
                 },
             },
             {
@@ -392,6 +459,7 @@ my @NeededModules = (
             aptget => 'libapache2-mod-perl2',
             emerge => 'www-apache/mod_perl',
             zypper => 'apache2-mod_perl',
+            ports  => 'www/mod_perl2',
         },
     },
     {
@@ -408,6 +476,7 @@ my @NeededModules = (
             aptget => 'libnet-dns-perl',
             emerge => 'dev-perl/Net-DNS',
             zypper => 'perl-Net-DNS',
+            ports  => 'dns/p5-Net-DNS',
         },
     },
     {
@@ -418,6 +487,27 @@ my @NeededModules = (
             aptget => 'libnet-ldap-perl',
             emerge => 'dev-perl/perl-ldap',
             zypper => 'perl-ldap',
+            ports  => 'net/p5-perl-ldap',
+        },
+    },
+    {
+        Module    => 'Pod::Strip',
+        Required  => 1,
+        InstTypes => {
+            aptget => 'libpod-strip-perl',
+            emerge => 'dev-perl/Pod-Strip',
+            zypper => 'perl-Pod-Strip',
+            ports  => 'textproc/p5-Pod-Strip',
+        },
+    },
+    {
+        Module    => 'Schedule::Cron::Events',
+        Required  => 1,
+        InstTypes => {
+            aptget => 'libschedule-cron-events-perl',
+            emerge => 'dev-perl/Schedule-Cron-Events',
+            zypper => 'perl-Schedule-Cron-Events',
+            ports  => 'sysutils/p5-Schedule-Cron-Events',
         },
     },
     {
@@ -428,6 +518,7 @@ my @NeededModules = (
             aptget => 'libtemplate-perl',
             emerge => 'dev-perl/Template-Toolkit',
             zypper => 'perl-Template-Toolkit',
+            ports  => 'www/p5-Template-Toolkit',
         },
     },
     {
@@ -438,6 +529,7 @@ my @NeededModules = (
             aptget => 'libtemplate-perl',
             emerge => 'dev-perl/Template-Toolkit',
             zypper => 'perl-Template-Toolkit',
+            ports  => 'www/p5-Template-Toolkit',
         },
     },
     {
@@ -448,6 +540,7 @@ my @NeededModules = (
             aptget => 'libtext-csv-xs-perl',
             emerge => 'dev-perl/Text-CSV_XS',
             zypper => 'perl-Text-CSV_XS',
+            ports  => 'textproc/p5-Text-CSV_XS',
         },
     },
     {
@@ -458,6 +551,7 @@ my @NeededModules = (
             aptget => 'perl',
             emerge => 'perl-core/Time-HiRes',
             zypper => 'perl-Time-HiRes',
+            ports  => 'devel/p5-Time-HiRes',
         },
     },
     {
@@ -467,6 +561,7 @@ my @NeededModules = (
         InstTypes => {
             aptget => 'libxml-libxml-perl',
             zypper => 'perl-XML-LibXML',
+            ports  => 'textproc/p5-XML-LibXML',
         },
     },
     {
@@ -476,6 +571,7 @@ my @NeededModules = (
         InstTypes => {
             aptget => 'libxml-libxslt-perl',
             zypper => 'perl-XML-LibXSLT',
+            ports  => 'textproc/p5-XML-LibXSLT',
         },
     },
     {
@@ -486,6 +582,7 @@ my @NeededModules = (
             aptget => 'libxml-parser-perl',
             emerge => 'dev-perl/XML-Parser',
             zypper => 'perl-XML-Parser',
+            ports  => 'textproc/p5-XML-Parser',
         },
     },
     {
@@ -496,6 +593,7 @@ my @NeededModules = (
             aptget => 'libyaml-libyaml-perl',
             emerge => 'dev-perl/YAML-LibYAML',
             zypper => 'perl-YAML-LibYAML',
+            ports  => 'textproc/p5-YAML-LibYAML',
         },
     },
 );
