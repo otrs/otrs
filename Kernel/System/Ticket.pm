@@ -4811,6 +4811,10 @@ sub TicketInvolvedAgentsList {
 
         next USER if !%User;
 
+        if ( $User{OutOfOfficeMessage} ) {
+            $User{UserFullname} = "$User{UserFirstname} $User{UserLastname}";
+        }
+
         push @UserInfo, \%User;
     }
 

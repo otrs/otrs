@@ -1833,9 +1833,60 @@ sub _Mask {
 
                 # skip if old owner is already in the list
                 next USER if $SeenOldOwner{ $User->{UserID} };
+
+                # get preferences
+                my %Preferences = $UserObject->GetPreferences( UserID => $User->{UserID} );
+
+                my $OutOfOfficeMessage = '';
+
+                # out of office check
+                if ( $Preferences{OutOfOffice} ) {
+                    my $Time      = $Kernel::OM->Create('Kernel::System::DateTime');
+                    my $TimeStart = $Kernel::OM->Create(
+                        'Kernel::System::DateTime',
+                        ObjectParams => {
+                            Year  => $Preferences{OutOfOfficeStartYear},
+                            Month => $Preferences{OutOfOfficeStartMonth},
+                            Day   => $Preferences{OutOfOfficeStartDay},
+                            }
+                    );
+                    my $TimeEnd = $Kernel::OM->Create(
+                        'Kernel::System::DateTime',
+                        ObjectParams => {
+                            Year   => $Preferences{OutOfOfficeEndYear},
+                            Month  => $Preferences{OutOfOfficeEndMonth},
+                            Day    => $Preferences{OutOfOfficeEndDay},
+                            Hour   => 23,
+                            Minute => 59,
+                            Second => 59,
+                            }
+                    );
+
+                    if ( $TimeStart < $Time && $TimeEnd > $Time )
+                    {
+                        my $OutOfOfficeMessageTemplate =
+                            $ConfigObject->Get('OutOfOfficeMessageTemplate')
+                            || '*** out of office until %s (%s d left) ***';
+                        my $TillDate = sprintf(
+                            '%04d-%02d-%02d',
+                            $Preferences{OutOfOfficeEndYear},
+                            $Preferences{OutOfOfficeEndMonth},
+                            $Preferences{OutOfOfficeEndDay}
+                        );
+                        my $Till = int(
+                            (
+                                $Time->Delta(
+                                    DateTimeObject => $TimeEnd,
+                                    )->{AbsoluteSeconds}
+                            ) / 60 / 60 / 24
+                        );
+                        $OutOfOfficeMessage = sprintf( $OutOfOfficeMessageTemplate, $TillDate, $Till );
+                    }
+                }
+
                 $SeenOldOwner{ $User->{UserID} } = 1;
                 my $Key   = $User->{UserID};
-                my $Value = "$Counter: $User->{UserFullname}";
+                my $Value = "$Counter: $User->{UserFullname} $OutOfOfficeMessage";
                 push @OldOwners, {
                     Key   => $Key,
                     Value => $Value,
@@ -1879,7 +1930,9 @@ sub _Mask {
             Filters      => {
                 OldOwners => {
                     Name   => $LayoutObject->{LanguageObject}->Translate('Previous Owner'),
-                    Values => \%OldOwnersShown,
+                    Values => $Self->_GetOldOwners(
+                        QueueID => $Ticket{QueueID},
+                    ),
                 },
             },
         );
@@ -2554,7 +2607,6 @@ sub _GetOldOwners {
         my $Counter = 1;
         USER:
         for my $User ( reverse @OldUserInfo ) {
-
             next USER if $UserHash{ $User->{UserID} };
 
             $UserHash{ $User->{UserID} } = "$Counter: $User->{UserFullname}";

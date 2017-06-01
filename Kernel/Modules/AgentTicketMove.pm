@@ -1236,8 +1236,7 @@ sub AgentMove {
             OldOwners => {
                 Name   => $LayoutObject->{LanguageObject}->Translate('Previous Owner'),
                 Values => $Self->_GetOldOwners(
-                    QueueID  => $Param{DestQueueID},
-                    AllUsers => $Param{OwnerAll},
+                    QueueID => $Param{DestQueueID},
                 ),
             },
         },
@@ -1612,6 +1611,7 @@ sub _GetOldOwners {
         USER:
         for my $User ( reverse @OldUserInfo ) {
             next USER if $UserHash{ $User->{UserID} };
+
             $UserHash{ $User->{UserID} } = "$Counter: $User->{UserFullname}";
             $Counter++;
         }
