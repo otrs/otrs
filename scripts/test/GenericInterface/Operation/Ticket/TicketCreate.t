@@ -22,17 +22,14 @@ use Kernel::GenericInterface::Operation::Session::SessionCreate;
 
 use Kernel::System::VariableCheck qw(IsArrayRefWithData IsHashRefWithData IsStringWithData);
 
-my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
-
-# Skip SSL certificate verification.
 $Kernel::OM->ObjectParamAdd(
     'Kernel::System::UnitTest::Helper' => {
-        SkipSSLVerify => 1,
+        SkipSSLVerify     => 1,
+        DisableAsyncCalls => 1,
     },
 );
 my $Helper = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
-
-# $Helper->FixedTimeSet();
+$Helper->{DestroyLog} = 1;
 
 my $RandomID = $Helper->GetRandomID();
 
@@ -80,6 +77,13 @@ $Helper->ConfigSettingChange(
     Key   => 'CustomerGroupSupport',
     Value => 1,
 );
+
+$Kernel::OM->ObjectsDiscard(
+    Objects            => ['Kernel::Config'],
+    ForcePackageReload => 1,
+);
+
+my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
 
 # check if SSL Certificate verification is disabled
 $Self->Is(
@@ -3205,7 +3209,61 @@ my @Tests        = (
         },
         Operation => 'TicketCreate',
     },
-
+    {
+        Name           => 'Ticket with CDATA tags',
+        SuccessRequest => 1,
+        SuccessCreate  => 1,
+        RequestData    => {
+            Ticket => {
+                Title         => 'Ticket Title',
+                CustomerUser  => $TestCustomerUserLogin,
+                QueueID       => $Queues[0]->{QueueID},
+                TypeID        => $TypeID,
+                ServiceID     => $ServiceID,
+                SLAID         => $SLAID,
+                StateID       => $StateID,
+                PriorityID    => $PriorityID,
+                OwnerID       => $OwnerID,
+                ResponsibleID => $ResponsibleID,
+                PendingTime   => {
+                    Year   => 2012,
+                    Month  => 12,
+                    Day    => 16,
+                    Hour   => 20,
+                    Minute => 48,
+                },
+            },
+            Article => {
+                Subject                         => 'Article subject',
+                Body                            => 'Test content <[[https://example.com/]]>',
+                AutoResponseType                => 'auto reply',
+                ArticleTypeID                   => 1,
+                SenderTypeID                    => 1,
+                From                            => 'enjoy@otrs.com',
+                ContentType                     => 'text/plain; charset=UTF8',
+                HistoryType                     => 'NewTicket',
+                HistoryComment                  => '% % ',
+                TimeUnit                        => 25,
+                ForceNotificationToUserID       => [1],
+                ExcludeNotificationToUserID     => [1],
+                ExcludeMuteNotificationToUserID => [1],
+            },
+            DynamicField => {
+                Name  => $DynamicFieldDateTimeConfig{Name},
+                Value => '2012-01-17 12:40:00',
+            },
+            Attachment => {
+                Content     => 'VGhpcyBpcyBhIHRlc3QgdGV4dC4=',
+                ContentType => 'text/plain; charset=UTF8',
+                Disposition => 'attachment',
+                Filename    => 'Test.txt',
+            },
+        },
+        Auth => {
+            SessionID => $NewSessionID,
+        },
+        Operation => 'TicketCreate',
+    },
     {
         Name           => 'Ticket with Names',
         SuccessRequest => 1,
@@ -3231,8 +3289,8 @@ my @Tests        = (
                 },
             },
             Article => {
-                Subject                         => 'Article subject äöüßÄÖÜ€ис',
-                Body                            => 'Article body !"Â§$%&/()=?Ã*ÃÃL:L@,.-',
+                Subject => 'Article subject äöüßÄÖÜ€ис',
+                Body    => 'Article body ɟ ɠ ɡ ɢ ɣ ɤ ɥ ɦ ɧ ʀ ʁ ʂ ʃ ʄ ʅ ʆ ʇ ʈ ʉ ʊ ʋ ʌ ʍ ʎ',
                 AutoResponseType                => 'auto reply',
                 SenderType                      => 'agent',
                 IsVisibleForCustomer            => 1,
@@ -3282,8 +3340,8 @@ my @Tests        = (
                 },
             },
             Article => {
-                Subject                         => 'Article subject äöüßÄÖÜ€ис',
-                Body                            => 'Article body !"Â§$%&/()=?Ã*ÃÃL:L@,.-',
+                Subject => 'Article subject äöüßÄÖÜ€ис',
+                Body    => 'Article body ɟ ɠ ɡ ɢ ɣ ɤ ɥ ɦ ɧ ʀ ʁ ʂ ʃ ʄ ʅ ʆ ʇ ʈ ʉ ʊ ʋ ʌ ʍ ʎ',
                 AutoResponseType                => 'auto reply',
                 SenderType                      => 'agent',
                 IsVisibleForCustomer            => 1,
@@ -3788,6 +3846,58 @@ my @Tests        = (
         },
         Operation => 'TicketCreate',
     },
+    {
+        Name           => 'Ticket with Alias Charsets attachment',
+        SuccessRequest => 1,
+        SuccessCreate  => 1,
+        RequestData    => {
+            Ticket => {
+                Title         => 'Ticket Title',
+                CustomerUser  => $TestCustomerUserLogin,
+                QueueID       => $Queues[0]->{QueueID},
+                TypeID        => $TypeID,
+                ServiceID     => $ServiceID,
+                SLAID         => $SLAID,
+                StateID       => $StateID,
+                PriorityID    => $PriorityID,
+                OwnerID       => $OwnerID,
+                ResponsibleID => $ResponsibleID,
+                PendingTime   => {
+                    Year   => 2012,
+                    Month  => 12,
+                    Day    => 16,
+                    Hour   => 20,
+                    Minute => 48,
+                },
+            },
+            Article => {
+                Subject                         => 'Article subject',
+                Body                            => 'Article body',
+                AutoResponseType                => 'auto reply',
+                ArticleTypeID                   => 1,
+                SenderTypeID                    => 1,
+                From                            => 'enjoy@otrs.com',
+                ContentType                     => 'text/plain; charset=US-ASCII',
+                HistoryType                     => 'NewTicket',
+                HistoryComment                  => '% % ',
+                TimeUnit                        => 25,
+                ForceNotificationToUserID       => [1],
+                ExcludeNotificationToUserID     => [1],
+                ExcludeMuteNotificationToUserID => [1],
+            },
+            DynamicField => {
+                Name  => $DynamicFieldDateTimeConfig{Name},
+                Value => '2012-01-17 12:40:00',
+            },
+            Attachment => {
+                Content     => 'VGhpcyBpcyBhIHRlc3QgdGV4dC4=',
+                ContentType => 'text/plain; charset=US-ASCII',
+                Filename    => 'Test.txt',
+                Disposition => 'attachment',
+            },
+        },
+        Operation => 'TicketCreate',
+    },
 );
 
 # debugger object
@@ -3891,7 +4001,7 @@ for my $Test (@Tests) {
             $LocalResult->{Data}->{ArticleID},
             "$Test->{Name} - Local result ArticleID with True."
         );
-        $Self->Is(
+        $Self->IsDeeply(
             $LocalResult->{Data}->{Error},
             undef,
             "$Test->{Name} - Local result Error is undefined."
@@ -3910,7 +4020,7 @@ for my $Test (@Tests) {
             $RequesterResult->{Data}->{ArticleID},
             "$Test->{Name} - Requester result ArticleID with True."
         );
-        $Self->Is(
+        $Self->IsDeeply(
             $RequesterResult->{Data}->{Error},
             undef,
             "$Test->{Name} - Requester result Error is undefined."
@@ -3927,7 +4037,7 @@ for my $Test (@Tests) {
         );
 
         $Self->True(
-            IsHashRefWithData( \%LocalTicketData ),
+            scalar %LocalTicketData,
             "$Test->{Name} - created local ticket structure with True."
         );
 
@@ -3939,7 +4049,7 @@ for my $Test (@Tests) {
         );
 
         $Self->True(
-            IsHashRefWithData( \%RequesterTicketData ),
+            scalar %RequesterTicketData,
             "$Test->{Name} - created requester ticket structure with True."
         );
 
@@ -4228,6 +4338,11 @@ $Self->True(
 
 # get DB object
 my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
+$Self->Is(
+    ref $DBObject,
+    'Kernel::System::DB',
+    "DBObject created correctly",
+);
 my $Success;
 
 # delete queues

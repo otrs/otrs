@@ -448,7 +448,7 @@ sub GetMessageBody {
     my ( $Self, %Param ) = @_;
 
     # check if message body is already there
-    return $Self->{MessageBody} if $Self->{MessageBody};
+    return $Self->{MessageBody} if defined $Self->{MessageBody};
 
     # get encode object
     my $EncodeObject = $Kernel::OM->Get('Kernel::System::Encode');
@@ -651,6 +651,9 @@ sub PartsAttachments {
     $PartData{ContentType} = $Part->head()->get('Content-Type') || 'text/plain;';
     chomp $PartData{ContentType};
 
+    # Fix for broken content type headers, see bug#7913 or DuplicatedContentTypeHeader.t.
+    $PartData{ContentType} =~ s{\r?\n}{}smxg;
+
     # get mime type
     $PartData{MimeType} = $Part->head()->mime_type();
 
@@ -669,9 +672,8 @@ sub PartsAttachments {
         if ( !$PartData{Content} ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'notice',
-                Message  => "Totally empty attachment part ($PartCounter)",
+                Message  => "Empty attachment part ($PartCounter)",
             );
-            return;
         }
     }
 

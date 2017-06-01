@@ -102,6 +102,9 @@ sub Run {
     my $SearchProfileObject = $Kernel::OM->Get('Kernel::System::SearchProfile');
     my $TakeLastSearch = $ParamObject->GetParam( Param => 'TakeLastSearch' ) || '';
 
+    # collect all searchable article field definitions and add the fields to the attributes array
+    my %ArticleSearchableFields = $Kernel::OM->Get('Kernel::System::Ticket::Article')->ArticleSearchableFieldsList();
+
     # load profiles string params (press load profile)
     if ( ( $Self->{Subaction} eq 'LoadProfile' && $Profile ) || $TakeLastSearch ) {
         %GetParam = $SearchProfileObject->SearchProfileGet(
@@ -114,11 +117,12 @@ sub Run {
     # get search string params (get submitted params)
     else {
         for my $Key (
-            qw(TicketNumber From To Cc Subject Body ResultForm TimeSearchType StateType
-            SearchInArchive AttachmentName TicketCreateTimePointFormat TicketCreateTimePoint
-            TicketCreateTimePointStart TicketCreateTimeStart TicketCreateTimeStartDay
-            TicketCreateTimeStartMonth TicketCreateTimeStartYear TicketCreateTimeStop
-            TicketCreateTimeStopDay TicketCreateTimeStopMonth TicketCreateTimeStopYear
+            sort keys %ArticleSearchableFields,
+            qw(TicketNumber ResultForm TimeSearchType StateType SearchInArchive
+            TicketCreateTimePointFormat TicketCreateTimePoint TicketCreateTimePointStart
+            TicketCreateTimeStart TicketCreateTimeStartDay TicketCreateTimeStartMonth
+            TicketCreateTimeStartYear TicketCreateTimeStop TicketCreateTimeStopDay
+            TicketCreateTimeStopMonth TicketCreateTimeStopYear
             )
             )
         {
@@ -253,9 +257,18 @@ sub Run {
     # show result page
     if ( !%ServerErrors && $Self->{Subaction} eq 'Search' && !$EraseTemplate ) {
 
+        my $ProfileName = '';
+        if ($Profile) {
+            $ProfileName = "($Profile)";
+        }
+
         # fill up profile name (e.g. with last-search)
         if ( !$Profile || !$SaveProfile ) {
             $Profile = 'last-search';
+        }
+
+        if ( !$ProfileName ) {
+            $ProfileName = "($Profile)";
         }
 
         # store search URL in LastScreenOverview to make sure the
@@ -320,10 +333,22 @@ sub Run {
                     && $GetParam{ $TimeType . 'TimeStartYear' }
                     )
                 {
-                    $GetParam{ $TimeType . 'TimeNewerDate' } = $GetParam{ $TimeType . 'TimeStartYear' } . '-'
-                        . $GetParam{ $TimeType . 'TimeStartMonth' } . '-'
-                        . $GetParam{ $TimeType . 'TimeStartDay' }
-                        . ' 00:00:00';
+                    my $DateTimeObject = $Kernel::OM->Create(
+                        'Kernel::System::DateTime',
+                        ObjectParams => {
+                            Year   => $GetParam{ $TimeType . 'TimeStartYear' },
+                            Month  => $GetParam{ $TimeType . 'TimeStartMonth' },
+                            Day    => $GetParam{ $TimeType . 'TimeStartDay' },
+                            Hour   => 0,                                           # midnight
+                            Minute => 0,
+                            Second => 0,
+                            TimeZone => $Self->{UserTimeZone} || Kernel::System::DateTime->UserDefaultTimeZoneGet(),
+                        },
+                    );
+
+                    # Convert start time to local system time zone.
+                    $DateTimeObject->ToOTRSTimeZone();
+                    $GetParam{ $TimeType . 'TimeNewerDate' } = $DateTimeObject->ToString();
                 }
                 if (
                     $GetParam{ $TimeType . 'TimeStopDay' }
@@ -331,10 +356,22 @@ sub Run {
                     && $GetParam{ $TimeType . 'TimeStopYear' }
                     )
                 {
-                    $GetParam{ $TimeType . 'TimeOlderDate' } = $GetParam{ $TimeType . 'TimeStopYear' } . '-'
-                        . $GetParam{ $TimeType . 'TimeStopMonth' } . '-'
-                        . $GetParam{ $TimeType . 'TimeStopDay' }
-                        . ' 23:59:59';
+                    my $DateTimeObject = $Kernel::OM->Create(
+                        'Kernel::System::DateTime',
+                        ObjectParams => {
+                            Year   => $GetParam{ $TimeType . 'TimeStopYear' },
+                            Month  => $GetParam{ $TimeType . 'TimeStopMonth' },
+                            Day    => $GetParam{ $TimeType . 'TimeStopDay' },
+                            Hour   => 23,                                         # just before midnight
+                            Minute => 59,
+                            Second => 59,
+                            TimeZone => $Self->{UserTimeZone} || Kernel::System::DateTime->UserDefaultTimeZoneGet(),
+                        },
+                    );
+
+                    # Convert stop time to local system time zone.
+                    $DateTimeObject->ToOTRSTimeZone();
+                    $GetParam{ $TimeType . 'TimeOlderDate' } = $DateTimeObject->ToString();
                 }
             }
             elsif ( $GetParam{ $TimeMap{$TimeType} . 'SearchType' } eq 'TimePoint' ) {
@@ -827,7 +864,7 @@ sub Run {
 
                 my %Info = ( %Data, %UserInfo );
                 my $Created = $LayoutObject->{LanguageObject}->FormatTimeString(
-                    $Data{Created},
+                    $Data{CreateTime} // $Data{Created},
                     'DateFormat',
                 );
 
@@ -1473,11 +1510,12 @@ sub Run {
             Data         => {
                 %Param,
                 %PageNav,
-                Order      => $Order,
-                StateSort  => $StateSort,
-                TicketSort => $TicketSort,
-                AgeSort    => $AgeSort,
-                Profile    => $Profile,
+                Order       => $Order,
+                StateSort   => $StateSort,
+                TicketSort  => $TicketSort,
+                AgeSort     => $AgeSort,
+                Profile     => $Profile,
+                ProfileName => $ProfileName,
             },
         );
 
@@ -1840,6 +1878,24 @@ sub MaskForm {
         Data => { %Param, },
     );
 
+    # create the fulltext field entries to be displayed
+    my %ArticleSearchableFields = $Kernel::OM->Get('Kernel::System::Ticket::Article')->ArticleSearchableFieldsList();
+
+    for my $ArticleFieldKey (
+        sort { $ArticleSearchableFields{$a}->{Label} cmp $ArticleSearchableFields{$b}->{Label} }
+        keys %ArticleSearchableFields
+        )
+    {
+        $LayoutObject->Block(
+            Name => 'SearchableArticleField',
+            Data => {
+                ArticleFieldLabel => $ArticleSearchableFields{$ArticleFieldKey}->{Label},
+                ArticleFieldKey   => $ArticleSearchableFields{$ArticleFieldKey}->{Key},
+                ArticleFieldValue => $Param{$ArticleFieldKey} // '',
+            },
+        );
+    }
+
     # enable archive search
     if (
         $ConfigObject->Get('Ticket::ArchiveSystem')
@@ -1931,17 +1987,6 @@ sub MaskForm {
         }
     }
 
-    if (
-        $ConfigObject->Get('Ticket::Article::Backend::MIMEBase')->{ArticleStorage} eq
-        'Kernel::System::Ticket::Article::Backend::MIMEBase::ArticleStorageDB'
-        )
-    {
-        $LayoutObject->Block(
-            Name => 'Attachment',
-            Data => \%Param,
-        );
-    }
-
     # html search mask output
     return $LayoutObject->Output(
         TemplateFile => 'CustomerTicketSearch',
@@ -1952,8 +1997,8 @@ sub MaskForm {
 sub _StopWordsServerErrorsGet {
     my ( $Self, %Param ) = @_;
 
-    # get layout object
-    my $LayoutObject = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
+    my $LayoutObject  = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
+    my $ArticleObject = $Kernel::OM->Get('Kernel::System::Ticket::Article');
 
     if ( !%Param ) {
         $LayoutObject->FatalError(
@@ -1962,7 +2007,7 @@ sub _StopWordsServerErrorsGet {
     }
 
     my %StopWordsServerErrors;
-    if ( !$Kernel::OM->Get('Kernel::System::Ticket')->SearchStringStopWordsUsageWarningActive() ) {
+    if ( !$ArticleObject->SearchStringStopWordsUsageWarningActive() ) {
         return %StopWordsServerErrors;
     }
 
@@ -1978,8 +2023,8 @@ sub _StopWordsServerErrorsGet {
 
     if (%SearchStrings) {
 
-        my $StopWords = $Kernel::OM->Get('Kernel::System::Ticket')->SearchStringStopWordsFind(
-            SearchStrings => \%SearchStrings
+        my $StopWords = $ArticleObject->SearchStringStopWordsFind(
+            SearchStrings => \%SearchStrings,
         );
 
         FIELD:

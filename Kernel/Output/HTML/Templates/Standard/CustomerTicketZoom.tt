@@ -73,7 +73,7 @@
                         <h3><a href="[% Env("Baselink") %]Action=[% Env("Action") %];TicketNumber=[% Data.TicketNumber | uri %];TicketID=[% Data.TicketID | uri %];ArticleID=[% Data.ArticleID | uri %]">[% Data.FromRealname | html %] &ndash; <span title="[% Data.Subject | html %]">[% Data.Subject | html %]</span></a></h3>
 [% RenderBlockEnd("ArticleExpanded") %]
 
-                        <span class="Age" title="[% Data.Created | Localize("TimeLong") | html %]">[% Data.Age %]</span>
+                        <span class="Age" title="[% Data.CreateTime | Localize("TimeLong") | html %]">[% Data.Age %]</span>
                         <div class="Clear"></div>
                     </div>
                     <input type="hidden" name="ArticleState" value="untouched" />
@@ -81,11 +81,8 @@
                         <div class="Details SeperatorRow">
 [% RenderBlockStart("ArticleRow") %]
                             <div>
-                                <div class="Label Switchable">[% Translate(Data.Key) | html %]:</div>
-                                <span title="[% Data.Value | html %]">
-                                    <span class="Switch [% Data.ValueHidden | html %]">[% Data.Value | html %]</span>
-                                    <span class="Switch [% Data.RealnameHidden | html %]">[% Data.Realname | html %]</span>
-                                </span>
+                                <div class="Label">[% Translate(Data.Key) | html %]:</div>
+                                <span title="[% Data.Realname | html %]">[% Data.Realname | html %]</span>
                                 <div class="Clear"></div>
                             </div>
 [% RenderBlockEnd("ArticleRow") %]
@@ -132,15 +129,15 @@
                                 <div>
 [% RenderBlockStart("ArticleAttachmentRow") %]
                                     <i class="fa fa-paperclip"></i>
-                                    <span class="DownloadAttachment" title="[% Data.Filename | html %] - [% Data.Filesize | html %]">
+                                    <span class="DownloadAttachment" title="[% Data.Filename | html %] - [% Data.FilesizeRaw | Localize('Filesize') | html %]">
 [% RenderBlockStart("ArticleAttachmentRowLink") %]
                                         <a href="[% Data.Link %]" [% Data.Target %] title="[% Translate(Data.Action) | html %]">[% Data.Filename | html %]</a>
 [% RenderBlockEnd("ArticleAttachmentRowLink") %]
 [% RenderBlockStart("ArticleAttachmentRowNoLink") %]
                                         [% Data.Filename | html %]
 [% RenderBlockEnd("ArticleAttachmentRowNoLink") %]
-                                        [% IF Data.Filesize %]
-                                            ([% Data.Filesize | html %])
+                                        [% IF Data.FilesizeRaw %]
+                                            ([% Data.FilesizeRaw | Localize('Filesize') | html %])
                                         [% END %]
                                     </span>
 [% RenderBlockEnd("ArticleAttachmentRow") %]
@@ -237,7 +234,7 @@
 [% RenderBlockStart("TicketDynamicField") %]
                     <li>
                         <span class="Key">[% Translate(Data.Label) | html %]:</span>
-                        <span title="[% Data.Title | html %]">[% Data.Value %]</span>
+                        <span title="[% Data.Title | html %]"><a href="[% Data.Link | Interpolate %]" class="DynamicFieldLink" [% IF Data.LinkPreview %] data-trigger="floater" data-floater-url="[% Data.LinkPreview | Interpolate %]"[% END %] target="_blank">[% Data.Value %]</a></span>
                     </li>
 [% RenderBlockEnd("TicketDynamicField") %]
 # example of how to use fixed dynamic field blocks for customizations
@@ -313,8 +310,8 @@
                             <input type="hidden" id="AttachmentUpload" name="AttachmentUpload" value="0" />
 
 [% RenderBlockStart("FollowUpAttachment") %]
-                            <div class="Attachment" title="[% Data.Filename | html %] - [% Data.Filesize | html %]">
-                                [% Data.Filename | html %] ([% Data.Filesize | html %])
+                            <div class="Attachment" title="[% Data.Filename | html %] - [% Data.Filesize | Localize('Filesize') | html %]">
+                                [% Data.Filename | html %] ([% Data.Filesize | Localize('Filesize') | html %])
                                 <button type="button" id="AttachmentDeleteButton[% Data.FileID | html %]" name="AttachmentDeleteButton[% Data.FileID | html %]" value="[% Translate("Delete") | html %]">[% Translate("Delete") | html %]</button>
                                 <input type="hidden" id="AttachmentDelete[% Data.FileID | html %]" name="AttachmentDelete[% Data.FileID | html %]" />
                             </div>

@@ -546,11 +546,12 @@ sub Run {
             }
             next BACKEND if !$PermissionOK;
         }
+
         my $Key = $UserSettingsKey . $Name;
         if ( defined $Self->{$Key} ) {
             $Backends{$Name} = $Self->{$Key};
         }
-        elsif ( defined $Config->{$Name}->{Mandatory} ) {
+        elsif ( $Config->{$Name}->{Mandatory} ) {
             $Backends{$Name} = $Config->{$Name}->{Mandatory};
         }
         else {
@@ -898,6 +899,7 @@ sub _Element {
 
     # Perform the actual data fetching and computation on the slave db, if configured
     local $Kernel::System::DB::UseSlaveDB = 1;
+
     if ( $Param{FilterContentOnly} ) {
         my $FilterContent = $Object->FilterContent(
             FilterColumn   => $Param{FilterColumn},
@@ -907,7 +909,6 @@ sub _Element {
             CustomerUserID => $Self->{CustomerUserID} || '',
         );
         return $FilterContent;
-
     }
 
     my $LayoutObject = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
@@ -933,7 +934,6 @@ sub _Element {
                 Readonly => $Readonly,
             },
         );
-
         return if !$Backends->{$Name};
     }
 

@@ -127,7 +127,7 @@ sub ProviderProcessRequest {
         #       UserLogin => 'user',
         #       Password  => 'secret',
         #    );
-        for my $QueryParam ( split '&', $QueryParamsStr ) {
+        for my $QueryParam ( split /[;&]/, $QueryParamsStr ) {
             my ( $Key, $Value ) = split '=', $QueryParam;
 
             # Convert + characters to its encoded representation, see bug#11917
@@ -242,6 +242,15 @@ sub ProviderProcessRequest {
     # read request
     my $Content;
     read STDIN, $Content, $Length;
+
+    # If there is no STDIN data it might be caused by fastcgi already having read the request.
+    # In this case we need to get the data from CGI.
+    if ( !IsStringWithData($Content) && $RequestMethod ne 'GET' ) {
+        my $ParamName = $RequestMethod . 'DATA';
+        $Content = $Kernel::OM->Get('Kernel::System::Web::Request')->GetParam(
+            Param => $ParamName,
+        );
+    }
 
     # check if we have content
     if ( !IsStringWithData($Content) ) {
@@ -876,6 +885,16 @@ sub _Output {
     # set keep-alive
     my $Connection = $Self->{KeepAlive} ? 'Keep-Alive' : 'close';
 
+    # prepare additional headers
+    my $AdditionalHeaderStrg = '';
+    if ( IsHashRefWithData( $Self->{TransportConfig}->{Config}->{AdditionalHeaders} ) ) {
+        my %AdditionalHeaders = %{ $Self->{TransportConfig}->{Config}->{AdditionalHeaders} };
+        for my $AdditionalHeader ( sort keys %AdditionalHeaders ) {
+            $AdditionalHeaderStrg
+                .= $AdditionalHeader . ': ' . ( $AdditionalHeaders{$AdditionalHeader} || '' ) . "\r\n";
+        }
+    }
+
     # in the constructor of this module STDIN and STDOUT are set to binmode without any additional
     # layer (according to the documentation this is the same as set :raw). Previous solutions for
     # binary responses requires the set of :raw or :utf8 according to IO layers.
@@ -894,6 +913,7 @@ sub _Output {
     print STDOUT "Content-Type: $ContentType; charset=UTF-8\r\n";
     print STDOUT "Content-Length: $ContentLength\r\n";
     print STDOUT "Connection: $Connection\r\n";
+    print STDOUT $AdditionalHeaderStrg;
     print STDOUT "\r\n";
     print STDOUT $Param{Content};
 

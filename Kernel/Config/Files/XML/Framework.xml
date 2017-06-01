@@ -74,6 +74,13 @@
             <Item ValueType="String" ValueRegex=""></Item>
         </Value>
     </Setting>
+    <Setting Name="SupportDataCollector::WebUserAgent::Timeout" Required="0" Valid="0" ConfigLevel="200">
+        <Description Translatable="1">Defines the timeout (in seconds, minimum is 20 seconds) for the support data collection with the public module 'PublicSupportDataCollector' (e.g. used from the OTRS Daemon).</Description>
+        <Navigation>Core</Navigation>
+        <Value>
+            <Item ValueType="String" ValueRegex="^[2-9][0-9]{1,}|[1-9][0-9]{2,}$">20</Item>
+        </Value>
+    </Setting>
     <Setting Name="NodeID" Required="0" Valid="0" ConfigLevel="200">
         <Description Translatable="1">Defines the cluster node identifier. This is only used in cluster configurations where there is more than one OTRS frontend system. Note: only values from 1 to 99 are allowed.</Description>
         <Navigation>Core</Navigation>
@@ -460,6 +467,20 @@
             <Item ValueType="Select" SelectedID="Option">
                 <Item ValueType="Option" Value="Option" Translatable="1">Option</Item>
                 <Item ValueType="Option" Value="Input" Translatable="1">Input</Item>
+            </Item>
+        </Value>
+    </Setting>
+    <Setting Name="TimeInputMinutesStep" Required="1" Valid="1">
+        <Description Translatable="1">Defines the available steps in time selections. Select "Minute" to be able to select all minutes of one hour from 1-59. Select "30 Minutes" to only make full and half hours available.</Description>
+        <Navigation>Core::Time</Navigation>
+        <Value>
+            <Item ValueType="Select" SelectedID="1">
+                <Item ValueType="Option" Value="1" Translatable="1">Minute</Item>
+                <Item ValueType="Option" Value="2" Translatable="1">2 Minutes</Item>
+                <Item ValueType="Option" Value="5" Translatable="1">5 Minutes</Item>
+                <Item ValueType="Option" Value="10" Translatable="1">10 Minutes</Item>
+                <Item ValueType="Option" Value="15" Translatable="1">15 Minutes</Item>
+                <Item ValueType="Option" Value="30" Translatable="1">30 Minutes</Item>
             </Item>
         </Value>
     </Setting>
@@ -6897,41 +6918,6 @@
             <Item ValueType="String" ValueRegex="">&lt;OTRS_CONFIG_Home&gt;/scripts/tools/xml2html.pl</Item>
         </Value>
     </Setting>
-    <Setting Name="SpellChecker" Required="1" Valid="1">
-        <Description Translatable="1">Enables spell checker support.</Description>
-        <Navigation>Core::SpellChecker</Navigation>
-        <Value>
-            <Item ValueType="Checkbox">0</Item>
-        </Value>
-    </Setting>
-    <Setting Name="SpellCheckerBin" Required="1" Valid="1" ConfigLevel="200">
-        <Description Translatable="1">Install ispell or aspell on the system, if you want to use a spell checker. Please specify the path to the aspell or ispell binary on your operating system.</Description>
-        <Navigation>Core::SpellChecker</Navigation>
-        <Value>
-            <Item ValueType="String" ValueRegex="">/usr/bin/ispell</Item>
-        </Value>
-    </Setting>
-    <Setting Name="SpellCheckerDictDefault" Required="1" Valid="1">
-        <Description Translatable="1">Defines the default spell checker dictionary.</Description>
-        <Navigation>Core::SpellChecker</Navigation>
-        <Value>
-            <Item ValueType="String" ValueRegex="">english</Item>
-        </Value>
-    </Setting>
-    <Setting Name="SpellCheckerIgnore" Required="1" Valid="1">
-        <Description Translatable="1">Defines a default list of words, that are ignored by the spell checker.</Description>
-        <Navigation>Core::SpellChecker</Navigation>
-        <Value>
-            <Array>
-                <Item>www</Item>
-                <Item>webmail</Item>
-                <Item>https</Item>
-                <Item>http</Item>
-                <Item>html</Item>
-                <Item>rfc</Item>
-            </Array>
-        </Value>
-    </Setting>
     <Setting Name="WebUserAgent::Timeout" Required="1" Valid="1" ConfigLevel="200">
         <Description Translatable="1">Sets the timeout (in seconds) for http/ftp downloads.</Description>
         <Navigation>Core::WebUserAgent</Navigation>
@@ -7276,13 +7262,6 @@
             </Hash>
         </Value>
     </Setting>
-    <Setting Name="PGP::StoreDecryptedData" Required="1" Valid="1">
-        <Description Translatable="1">If this option is enabled, then the decrypted data will be stored in the database if they are displayed in AgentTicketZoom.</Description>
-        <Navigation>Core::Crypt::PGP</Navigation>
-        <Value>
-            <Item ValueType="Checkbox">1</Item>
-        </Value>
-    </Setting>
     <Setting Name="PGP::Method" Required="1" Valid="1">
         <Description Translatable="1">Sets the method PGP will use to sing and encrypt emails. Note Inline method is not compatible with RichText messages.</Description>
         <Navigation>Core::Crypt::PGP</Navigation>
@@ -7326,13 +7305,6 @@
         <Navigation>Core::Crypt::SMIME</Navigation>
         <Value>
             <Item ValueType="String" ValueRegex="^\d+$">86400</Item><!-- default 1 day -->
-        </Value>
-    </Setting>
-    <Setting Name="SMIME::StoreDecryptedData" Required="1" Valid="1">
-        <Description Translatable="1">If this option is enabled, then the decrypted data will be stored in the database if they are displayed in AgentTicketZoom.</Description>
-        <Navigation>Core::Crypt::SMIME</Navigation>
-        <Value>
-            <Item ValueType="Checkbox">1</Item>
         </Value>
     </Setting>
     <Setting Name="SMIME::FetchFromCustomer" Required="1" Valid="1">
@@ -7551,28 +7523,6 @@ You can log in via the following URL:
             </Hash>
         </Value>
     </Setting>
-    <Setting Name="PreferencesGroups###SpellDict" Required="0" Valid="0">
-        <Description Translatable="1">Defines the config parameters of this item, to be shown in the preferences view. Take care to maintain the dictionaries installed in the system in the data section.</Description>
-        <Navigation>Frontend::Agent::Preferences</Navigation>
-        <Value>
-            <Hash>
-                <Item Key="Module">Kernel::Output::HTML::Preferences::Generic</Item>
-                <Item Key="PreferenceGroup">UserProfile</Item>
-                <Item Key="Label" Translatable="1">Spelling Dictionary</Item>
-                <Item Key="Key" Translatable="1">Default spelling dictionary</Item>
-                <Item Key="Data">
-                    <Hash>
-                        <Item Key="english">English</Item>
-                        <Item Key="deutsch">Deutsch</Item>
-                    </Hash>
-                </Item>
-                <Item Key="DataSelected">english</Item>
-                <Item Key="PrefKey">UserSpellDict</Item>
-                <Item Key="Prio">2000</Item>
-                <Item Key="Active">1</Item>
-            </Hash>
-        </Value>
-    </Setting>
     <Setting Name="PreferencesGroups###Comment" Required="0" Valid="1">
         <Description Translatable="1">Defines the config parameters of this item, to be shown in the preferences view.</Description>
         <Navigation>Frontend::Agent::Preferences</Navigation>
@@ -7647,6 +7597,7 @@ You can log in via the following URL:
                 <Item Key="Module">Kernel::Output::HTML::Preferences::Theme</Item>
                 <Item Key="PreferenceGroup">UserProfile</Item>
                 <Item Key="Label" Translatable="1">Theme</Item>
+                <Item Key="Desc" Translatable="1">Select your preferred theme for OTRS.</Item>
                 <Item Key="Key" Translatable="1">Frontend theme</Item>
                 <Item Key="PrefKey">UserTheme</Item>
                 <Item Key="Prio">3000</Item>
@@ -7721,14 +7672,14 @@ You can log in via the following URL:
         </Value>
     </Setting>
     <Setting Name="CustomerGroupSupport" Required="1" Valid="1">
-        <Description Translatable="1">Activates support for customer groups.</Description>
+        <Description Translatable="1">Activates support for customer and customer user groups.</Description>
         <Navigation>Frontend::Customer</Navigation>
         <Value>
             <Item ValueType="Checkbox">0</Item>
         </Value>
     </Setting>
     <Setting Name="CustomerGroupAlwaysGroups" Required="1" Valid="1">
-        <Description Translatable="1">Defines the groups every customer user will be in (if CustomerGroupSupport is enabled and you don't want to manage every user for these groups).</Description>
+        <Description Translatable="1">Defines the groups every customer user will be in (if CustomerGroupSupport is enabled and you don't want to manage every customer user for these groups).</Description>
         <Navigation>Frontend::Customer</Navigation>
         <Value>
             <Array>
@@ -8039,6 +7990,7 @@ via the Preferences button after logging in.
                 <Item ValueType="Option" Value="plain">Plain</Item>
                 <Item ValueType="Option" Value="sha1">SHA-1</Item>
                 <Item ValueType="Option" Value="sha2">SHA-2</Item>
+                <Item ValueType="Option" Value="sha512">SHA-512</Item>
                 <Item ValueType="Option" Value="bcrypt">bcrypt</Item>
             </Item>
         </Value>
@@ -8294,6 +8246,7 @@ via the Preferences button after logging in.
                 <Item Key="PreferenceGroup">Miscellaneous</Item>
                 <Item Key="Label" Translatable="1">Google Authenticator</Item>
                 <Item Key="Key" Translatable="1">Shared Secret</Item>
+                <Item Key="Desc" Translatable="1">Enter your shared secret to enable two factor authentication.</Item>
                 <Item Key="Block">Input</Item>
                 <Item Key="PrefKey">UserGoogleAuthenticatorSecretKey</Item>
                 <Item Key="Prio">1100</Item>
@@ -8341,6 +8294,7 @@ via the Preferences button after logging in.
                 <Item Key="Module">Kernel::Output::HTML::Preferences::Theme</Item>
                 <Item Key="PreferenceGroup">UserProfile</Item>
                 <Item Key="Label" Translatable="1">Theme</Item>
+                <Item Key="Desc" Translatable="1">Select your preferred theme for OTRS.</Item>
                 <Item Key="Key" Translatable="1">Select your frontend Theme.</Item>
                 <Item Key="PrefKey">UserTheme</Item>
                 <Item Key="Prio">1000</Item>
@@ -8356,7 +8310,8 @@ via the Preferences button after logging in.
                 <Item Key="Module">Kernel::Output::HTML::Preferences::PGP</Item>
                 <Item Key="PreferenceGroup">Miscellaneous</Item>
                 <Item Key="Label" Translatable="1">PGP Key</Item>
-                <Item Key="Key" Translatable="1">PGP Key Upload</Item>
+                <Item Key="Desc" Translatable="1">Upload your PGP key.</Item>
+                <Item Key="Key" Translatable="1">PGP Key</Item>
                 <Item Key="PrefKey">UserPGPKey</Item>
                 <Item Key="Prio">10000</Item>
                 <Item Key="Active">1</Item>
@@ -8371,7 +8326,8 @@ via the Preferences button after logging in.
                 <Item Key="Module">Kernel::Output::HTML::Preferences::SMIME</Item>
                 <Item Key="PreferenceGroup">Miscellaneous</Item>
                 <Item Key="Label" Translatable="1">S/MIME Certificate</Item>
-                <Item Key="Key" Translatable="1">S/MIME Certificate Upload</Item>
+                <Item Key="Desc" Translatable="1">Upload your S/MIME certificate.</Item>
+                <Item Key="Key" Translatable="1">S/MIME Certificate</Item>
                 <Item Key="PrefKey">UserSMIMEKey</Item>
                 <Item Key="Prio">11000</Item>
                 <Item Key="Active">1</Item>
@@ -8838,61 +8794,6 @@ via the Preferences button after logging in.
                     <Item Key="Description" Translatable="1">Picture upload module.</Item>
                     <Item Key="Title" Translatable="1">Picture Upload</Item>
                     <Item Key="NavBarName">Ticket</Item>
-                </Hash>
-            </Item>
-        </Value>
-    </Setting>
-    <Setting Name="Frontend::Module###AgentSpelling" Required="0" Valid="1">
-        <Description Translatable="1">Frontend module registration for the agent interface.</Description>
-        <Navigation>Frontend::Agent::ModuleRegistration</Navigation>
-        <Value>
-            <Item ValueType="FrontendRegistration">
-                <Hash>
-                    <Item Key="Group">
-                        <Array>
-                        </Array>
-                    </Item>
-                    <Item Key="GroupRo">
-                        <Array>
-                        </Array>
-                    </Item>
-                    <Item Key="Description" Translatable="1">Spell checker.</Item>
-                    <Item Key="Title" Translatable="1">Spell Checker</Item>
-                    <Item Key="NavBarName"></Item>
-                </Hash>
-            </Item>
-        </Value>
-    </Setting>
-    <Setting Name="Loader::Module::AgentSpelling###001-Framework" Required="0" Valid="1">
-        <Description Translatable="1">Loader module registration for the agent interface.</Description>
-        <Navigation>Frontend::Agent::ModuleRegistration</Navigation>
-        <Value>
-            <Hash>
-                <Item Key="JavaScript">
-                    <Array>
-                        <Item>Core.Agent.TicketAction.js</Item>
-                    </Array>
-                </Item>
-            </Hash>
-        </Value>
-    </Setting>
-    <Setting Name="Frontend::Module###SpellingInline" Required="0" Valid="1">
-        <Description Translatable="1">Frontend module registration for the agent interface.</Description>
-        <Navigation>Frontend::Agent::ModuleRegistration</Navigation>
-        <Value>
-            <Item ValueType="FrontendRegistration">
-                <Hash>
-                    <Item Key="Group">
-                        <Array>
-                        </Array>
-                    </Item>
-                    <Item Key="GroupRo">
-                        <Array>
-                        </Array>
-                    </Item>
-                    <Item Key="Description" Translatable="1">Spell checker.</Item>
-                    <Item Key="Title" Translatable="1">Spell Checker</Item>
-                    <Item Key="NavBarName"></Item>
                 </Hash>
             </Item>
         </Value>
@@ -10902,27 +10803,6 @@ via the Preferences button after logging in.
             </Item>
         </Value>
     </Setting>
-    <Setting Name="CustomerFrontend::Module###SpellingInline" Required="0" Valid="1">
-        <Description Translatable="1">Frontend module registration for the customer interface.</Description>
-        <Navigation>Frontend::Agent::ModuleRegistration</Navigation>
-        <Value>
-            <Item ValueType="FrontendRegistration">
-                <Hash>
-                    <Item Key="Group">
-                        <Array>
-                        </Array>
-                    </Item>
-                    <Item Key="GroupRo">
-                        <Array>
-                        </Array>
-                    </Item>
-                    <Item Key="Description" Translatable="1">Spell checker.</Item>
-                    <Item Key="Title" Translatable="1">Spell Checker</Item>
-                    <Item Key="NavBarName"></Item>
-                </Hash>
-            </Item>
-        </Value>
-    </Setting>
     <Setting Name="Frontend::Themes" Required="0" Valid="1">
         <Description Translatable="1">Activates the available themes on the system. Value 1 means active, 0 means inactive.</Description>
         <Navigation>Core::Web</Navigation>
@@ -11952,6 +11832,7 @@ via the Preferences button after logging in.
                 <Item>Core.UI.InputFields.js</Item>
                 <Item>Core.UI.Accessibility.js</Item>
                 <Item>Core.UI.Dialog.js</Item>
+                <Item>Core.UI.Floater.js</Item>
                 <Item>Core.UI.RichTextEditor.js</Item>
                 <Item>Core.UI.Datepicker.js</Item>
                 <Item>Core.UI.Popup.js</Item>
@@ -12057,6 +11938,18 @@ via the Preferences button after logging in.
             </Hash>
         </Value>
     </Setting>
+    <Setting Name="Loader::Agent::Skin###002-high-contrast" Required="0" Valid="1">
+        <Description Translatable="1">High contrast skin for visually impaired users.</Description>
+        <Navigation>Frontend::Agent</Navigation>
+        <Value>
+            <Hash>
+                <Item Key="InternalName">highcontrast</Item>
+                <Item Key="VisibleName" Translatable="1">High Contrast</Item>
+                <Item Key="Description" Translatable="1">High contrast skin for visually impaired users.</Item>
+                <Item Key="HomePage">www.otrs.com</Item>
+            </Hash>
+        </Value>
+    </Setting>
     <Setting Name="Loader::Agent::DefaultSelectedSkin" Required="1" Valid="1">
         <Description Translatable="1">The agent skin's InternalName which should be used in the agent interface. Please check the available skins in Frontend::Agent::Skins.</Description>
         <Navigation>Frontend::Agent</Navigation>
@@ -12115,6 +12008,13 @@ via the Preferences button after logging in.
         <Navigation>Frontend::Admin::AdminCustomerUser</Navigation>
         <Value>
             <Item ValueType="Checkbox">1</Item>
+        </Value>
+    </Setting>
+    <Setting Name="AdminCustomerUser::UseAutoComplete" Required="1" Valid="1">
+        <Description Translatable="1">Controls if the autocomplete field will be used for the customer ID selection in the AdminCustomerUser interface.</Description>
+        <Navigation>Frontend::Admin::AdminCustomerUser</Navigation>
+        <Value>
+            <Item ValueType="Checkbox">0</Item>
         </Value>
     </Setting>
      <Setting Name="AdminCustomerCompany::RunInitialWildcardSearch" Required="1" Valid="1">
@@ -12489,6 +12389,11 @@ via the Preferences button after logging in.
                         <Item>thirdparty/clipboardjs-1.5.16/clipboard.min.js</Item>
                         <Item>Core.SystemConfiguration.js</Item>
                         <Item>Core.SystemConfiguration.Date.js</Item>
+                        <Item>Core.SystemConfiguration.DateTime.js</Item>
+                        <Item>Core.SystemConfiguration.VacationDays.js</Item>
+                        <Item>Core.SystemConfiguration.VacationDaysOneTime.js</Item>
+                        <Item>Core.SystemConfiguration.WorkingHours.js</Item>
+                        <Item>Core.Form.js</Item>
                         <Item>Core.Agent.Admin.SystemConfiguration.js</Item>
                     </Array>
                 </Item>

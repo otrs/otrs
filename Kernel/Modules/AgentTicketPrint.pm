@@ -974,7 +974,8 @@ sub _PDFOutputArticles {
         my $Attachments;
         for my $FileID ( sort keys %AtmIndex ) {
             my %File = %{ $AtmIndex{$FileID} };
-            $Attachments .= $File{Filename} . ' (' . $File{Filesize} . ")\n";
+            my $Filesize = $LayoutObject->HumanReadableDataSize( Size => $File{Filesize} );
+            $Attachments .= $File{Filename} . ' (' . $Filesize . ")\n";
         }
 
         # get config object
@@ -1031,7 +1032,7 @@ sub _PDFOutputArticles {
         $TableParam1{CellData}[$Row][0]{Content} = $LayoutObject->{LanguageObject}->Translate('Created') . ':';
         $TableParam1{CellData}[$Row][0]{Font}    = 'ProportionalBold';
         $TableParam1{CellData}[$Row][1]{Content} = $LayoutObject->{LanguageObject}->FormatTimeString(
-            $Article{Created},
+            $Article{CreateTime},
             'DateFormat',
         );
         $TableParam1{CellData}[$Row][1]{Content}
@@ -1134,31 +1135,30 @@ sub _PDFOutputArticles {
             }
         }
 
-        # TODO: Handle articles coming from chat channel.
-        # if ( $Article{ArticleType} eq 'chat-external' || $Article{ArticleType} eq 'chat-internal' )
-        # {
-        #     $Article{Body} = $Kernel::OM->Get('Kernel::System::JSON')->Decode(
-        #         Data => $Article{Body}
-        #     );
-        #     my $Lines;
-        #     if ( IsArrayRefWithData( $Article{Body} ) ) {
-        #         for my $Line ( @{ $Article{Body} } ) {
-        #             my $CreateTime
-        #                 = $LayoutObject->{LanguageObject}->FormatTimeString( $Line->{CreateTime}, 'DateFormat' );
-        #             if ( $Line->{SystemGenerated} ) {
-        #                 $Lines .= '[' . $CreateTime . '] ' . $Line->{MessageText} . "\n";
-        #             }
-        #             else {
-        #                 $Lines
-        #                     .= '['
-        #                     . $CreateTime . '] '
-        #                     . $Line->{ChatterName} . ' '
-        #                     . $Line->{MessageText} . "\n";
-        #             }
-        #         }
-        #     }
-        #     $Article{Body} = $Lines;
-        # }
+        my %CommunicationChannel = $Kernel::OM->Get('Kernel::System::CommunicationChannel')->ChannelGet(
+            ChannelID => $Article{CommunicationChannelID},
+        );
+
+        if ( $CommunicationChannel{ChannelName} eq 'Chat' ) {
+            my $Lines = '';
+            if ( IsArrayRefWithData( $Article{ChatMessageList} ) ) {
+                for my $Line ( @{ $Article{ChatMessageList} } ) {
+                    my $CreateTime
+                        = $LayoutObject->{LanguageObject}->FormatTimeString( $Line->{CreateTime}, 'DateFormat' );
+                    if ( $Line->{SystemGenerated} ) {
+                        $Lines .= '[' . $CreateTime . '] ' . $Line->{MessageText} . "\n";
+                    }
+                    else {
+                        $Lines
+                            .= '['
+                            . $CreateTime . '] '
+                            . $Line->{ChatterName} . ' '
+                            . $Line->{MessageText} . "\n";
+                    }
+                }
+            }
+            $Article{Body} = $Lines;
+        }
 
         # table params (article body)
         my %TableParam2;

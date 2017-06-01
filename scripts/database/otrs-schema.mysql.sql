@@ -48,7 +48,7 @@ CREATE TABLE valid (
 CREATE TABLE users (
     id INTEGER NOT NULL AUTO_INCREMENT,
     login VARCHAR (200) NOT NULL,
-    pw VARCHAR (64) NOT NULL,
+    pw VARCHAR (128) NOT NULL,
     title VARCHAR (50) NULL,
     first_name VARCHAR (100) NOT NULL,
     last_name VARCHAR (100) NOT NULL,
@@ -469,6 +469,9 @@ CREATE TABLE ticket_history (
     owner_id INTEGER NOT NULL,
     priority_id SMALLINT NOT NULL,
     state_id SMALLINT NOT NULL,
+    a_communication_channel_id BIGINT NULL,
+    a_sender_type_id SMALLINT NULL,
+    a_is_visible_for_customer SMALLINT NULL,
     create_time DATETIME NOT NULL,
     create_by INTEGER NOT NULL,
     change_time DATETIME NOT NULL,
@@ -622,7 +625,7 @@ CREATE TABLE article_data_mime (
     a_in_reply_to MEDIUMTEXT NULL,
     a_references MEDIUMTEXT NULL,
     a_content_type VARCHAR (250) NULL,
-    a_body MEDIUMTEXT NOT NULL,
+    a_body MEDIUMTEXT NULL,
     incoming_time INTEGER NOT NULL,
     content_path VARCHAR (250) NULL,
     create_time DATETIME NOT NULL,
@@ -634,21 +637,17 @@ CREATE TABLE article_data_mime (
     INDEX article_data_mime_message_id_md5 (a_message_id_md5)
 );
 # ----------------------------------------------------------
-#  create table article_search
+#  create table article_search_index
 # ----------------------------------------------------------
-CREATE TABLE article_search (
-    id BIGINT NOT NULL,
+CREATE TABLE article_search_index (
+    id BIGINT NOT NULL AUTO_INCREMENT,
     ticket_id BIGINT NOT NULL,
-    article_sender_type_id SMALLINT NOT NULL,
-    a_from TEXT NULL,
-    a_to TEXT NULL,
-    a_cc TEXT NULL,
-    a_subject TEXT NULL,
-    a_body MEDIUMTEXT NOT NULL,
-    incoming_time INTEGER NOT NULL,
+    article_id BIGINT NOT NULL,
+    article_key VARCHAR (200) NOT NULL,
+    article_value MEDIUMTEXT NULL,
     PRIMARY KEY(id),
-    INDEX article_search_article_sender_type_id (article_sender_type_id),
-    INDEX article_search_ticket_id (ticket_id)
+    INDEX article_search_index_article_id (article_id, article_key),
+    INDEX article_search_index_ticket_id (ticket_id, article_key)
 );
 # ----------------------------------------------------------
 #  create table article_data_mime_plain
@@ -676,13 +675,28 @@ CREATE TABLE article_data_mime_attachment (
     content_id VARCHAR (250) NULL,
     content_alternative VARCHAR (50) NULL,
     disposition VARCHAR (15) NULL,
-    content LONGBLOB NOT NULL,
+    content LONGBLOB NULL,
     create_time DATETIME NOT NULL,
     create_by INTEGER NOT NULL,
     change_time DATETIME NOT NULL,
     change_by INTEGER NOT NULL,
     PRIMARY KEY(id),
     INDEX article_data_mime_attachment_article_id (article_id)
+);
+# ----------------------------------------------------------
+#  create table article_data_otrs_chat
+# ----------------------------------------------------------
+CREATE TABLE article_data_otrs_chat (
+    id BIGINT NOT NULL AUTO_INCREMENT,
+    article_id BIGINT NOT NULL,
+    chat_participant_id VARCHAR (255) NOT NULL,
+    chat_participant_name VARCHAR (255) NOT NULL,
+    chat_participant_type VARCHAR (255) NOT NULL,
+    message_text TEXT NULL,
+    system_generated SMALLINT NOT NULL,
+    create_time DATETIME NOT NULL,
+    PRIMARY KEY(id),
+    INDEX article_data_otrs_chat_article_id (article_id)
 );
 # ----------------------------------------------------------
 #  create table time_accounting
@@ -902,7 +916,7 @@ CREATE TABLE customer_user (
     login VARCHAR (200) NOT NULL,
     email VARCHAR (150) NOT NULL,
     customer_id VARCHAR (150) NOT NULL,
-    pw VARCHAR (64) NULL,
+    pw VARCHAR (128) NULL,
     title VARCHAR (50) NULL,
     first_name VARCHAR (100) NOT NULL,
     last_name VARCHAR (100) NOT NULL,
@@ -1186,7 +1200,7 @@ CREATE TABLE virtual_fs_preferences (
 CREATE TABLE virtual_fs_db (
     id BIGINT NOT NULL AUTO_INCREMENT,
     filename TEXT NOT NULL,
-    content LONGBLOB NOT NULL,
+    content LONGBLOB NULL,
     create_time DATETIME NOT NULL,
     PRIMARY KEY(id),
     INDEX virtual_fs_db_filename (filename(255))
@@ -1676,4 +1690,16 @@ CREATE TABLE calendar_appointment_ticket (
     INDEX calendar_appointment_ticket_calendar_id (calendar_id),
     INDEX calendar_appointment_ticket_rule_id (rule_id),
     INDEX calendar_appointment_ticket_ticket_id (ticket_id)
+);
+# ----------------------------------------------------------
+#  create table ticket_number_counter
+# ----------------------------------------------------------
+CREATE TABLE ticket_number_counter (
+    id BIGINT NOT NULL AUTO_INCREMENT,
+    counter BIGINT NOT NULL,
+    counter_uid VARCHAR (32) NOT NULL,
+    create_time DATETIME NULL,
+    PRIMARY KEY(id),
+    UNIQUE INDEX ticket_number_counter_uid (counter_uid),
+    INDEX ticket_number_counter_create_time (create_time)
 );

@@ -57,7 +57,7 @@
 <Table Name="users">
     <Column Name="id" Required="true" PrimaryKey="true" AutoIncrement="true" Type="INTEGER"/>
     <Column Name="login" Required="true" Size="200" Type="VARCHAR"/>
-    <Column Name="pw" Required="true" Size="64" Type="VARCHAR"/>
+    <Column Name="pw" Required="true" Size="128" Type="VARCHAR"/>
     <Column Name="title" Required="false" Size="50" Type="VARCHAR"/>
     <Column Name="first_name" Required="true" Size="100" Type="VARCHAR"/>
     <Column Name="last_name" Required="true" Size="100" Type="VARCHAR"/>
@@ -762,6 +762,9 @@
     <Column Name="owner_id" Required="true" Type="INTEGER"/>
     <Column Name="priority_id" Required="true" Type="SMALLINT"/>
     <Column Name="state_id" Required="true" Type="SMALLINT"/>
+    <Column Name="a_communication_channel_id" Required="false" Type="BIGINT"/>
+    <Column Name="a_sender_type_id" Required="false" Type="SMALLINT"/>
+    <Column Name="a_is_visible_for_customer" Required="false" Type="SMALLINT"/>
     <Column Name="create_time" Required="true" Type="DATE"/>
     <Column Name="create_by" Required="true" Type="INTEGER"/>
     <Column Name="change_time" Required="true" Type="DATE"/>
@@ -790,6 +793,12 @@
     <Index Name="ticket_history_state_id">
         <IndexColumn Name="state_id"/>
     </Index>
+    <ForeignKey ForeignTable="communication_channel">
+        <Reference Local="a_communication_channel_id" Foreign="id"/>
+    </ForeignKey>
+    <ForeignKey ForeignTable="article_sender_type">
+        <Reference Local="a_sender_type_id" Foreign="id"/>
+    </ForeignKey>
     <Index Name="ticket_history_create_time">
         <IndexColumn Name="create_time"/>
     </Index>
@@ -1042,21 +1051,19 @@
     <Column Name="a_in_reply_to" Required="false" Size="1800000" Type="VARCHAR"/>
     <Column Name="a_references" Required="false" Size="1800000" Type="VARCHAR"/>
     <Column Name="a_content_type" Required="false" Size="250" Type="VARCHAR"/>
-    <Column Name="a_body" Required="true" Size="1800000" Type="VARCHAR"/>
+    <Column Name="a_body" Required="false" Size="1800000" Type="VARCHAR"/>
     <Column Name="incoming_time" Required="true" Type="INTEGER"/>
     <Column Name="content_path" Required="false" Size="250" Type="VARCHAR"/>
     <Column Name="create_time" Required="true" Type="DATE"/>
     <Column Name="create_by" Required="true" Type="INTEGER"/>
     <Column Name="change_time" Required="true" Type="DATE"/>
     <Column Name="change_by" Required="true" Type="INTEGER"/>
-
     <Index Name="article_data_mime_message_id_md5">
         <IndexColumn Name="a_message_id_md5"/>
     </Index>
     <Index Name="article_data_mime_article_id">
         <IndexColumn Name="article_id"/>
     </Index>
-
     <ForeignKey ForeignTable="article">
         <Reference Local="article_id" Foreign="id"/>
     </ForeignKey>
@@ -1066,28 +1073,26 @@
     </ForeignKey>
 </Table>
 
-<!-- article_search - article search index -->
-<Table Name="article_search">
-    <Column Name="id" Required="true" PrimaryKey="true" Type="BIGINT"/>
+<!-- article_search_index - article search index -->
+<Table Name="article_search_index">
+    <Column Name="id" Required="true" PrimaryKey="true" AutoIncrement="true" Type="BIGINT"/>
     <Column Name="ticket_id" Required="true" Type="BIGINT"/>
-    <Column Name="article_sender_type_id" Required="true" Type="SMALLINT"/>
-    <Column Name="a_from" Required="false" Size="3800" Type="VARCHAR"/>
-    <Column Name="a_to" Required="false" Size="3800" Type="VARCHAR"/>
-    <Column Name="a_cc" Required="false" Size="3800" Type="VARCHAR"/>
-    <Column Name="a_subject" Required="false" Size="3800" Type="VARCHAR"/>
-    <Column Name="a_body" Required="true" Size="1800000" Type="VARCHAR"/>
-    <Column Name="incoming_time" Required="true" Type="INTEGER"/>
-    <Index Name="article_search_ticket_id">
+    <Column Name="article_id" Required="true" Type="BIGINT"/>
+    <Column Name="article_key" Required="true" Size="200" Type="VARCHAR"/>
+    <Column Name="article_value" Required="false" Size="1800000" Type="VARCHAR"/>
+    <Index Name="article_search_index_ticket_id">
         <IndexColumn Name="ticket_id"/>
+        <IndexColumn Name="article_key"/>
     </Index>
-    <Index Name="article_search_article_sender_type_id">
-        <IndexColumn Name="article_sender_type_id"/>
+    <Index Name="article_search_index_article_id">
+        <IndexColumn Name="article_id"/>
+        <IndexColumn Name="article_key"/>
     </Index>
     <ForeignKey ForeignTable="ticket">
         <Reference Local="ticket_id" Foreign="id"/>
     </ForeignKey>
-    <ForeignKey ForeignTable="article_sender_type">
-        <Reference Local="article_sender_type_id" Foreign="id"/>
+    <ForeignKey ForeignTable="article">
+        <Reference Local="article_id" Foreign="id"/>
     </ForeignKey>
 </Table>
 
@@ -1124,7 +1129,7 @@
     <Column Name="content_id" Required="false" Size="250" Type="VARCHAR"/>
     <Column Name="content_alternative" Required="false" Size="50" Type="VARCHAR"/>
     <Column Name="disposition" Required="false" Size="15" Type="VARCHAR"/>
-    <Column Name="content" Required="true" Type="LONGBLOB"/>
+    <Column Name="content" Required="false" Type="LONGBLOB"/>
     <Column Name="create_time" Required="true" Type="DATE"/>
     <Column Name="create_by" Required="true" Type="INTEGER"/>
     <Column Name="change_time" Required="true" Type="DATE"/>
@@ -1140,6 +1145,24 @@
     <ForeignKey ForeignTable="users">
         <Reference Local="create_by" Foreign="id"/>
         <Reference Local="change_by" Foreign="id"/>
+    </ForeignKey>
+</Table>
+
+<!-- article data for chat based backend -->
+<Table Name="article_data_otrs_chat">
+    <Column Name="id" Required="true" PrimaryKey="true" AutoIncrement="true" Type="BIGINT"/>
+    <Column Name="article_id" Required="true" Type="BIGINT"/>
+    <Column Name="chat_participant_id" Required="true" Size="255" Type="VARCHAR" />
+    <Column Name="chat_participant_name" Required="true" Size="255" Type="VARCHAR"/>
+    <Column Name="chat_participant_type" Required="true" Size="255" Type="VARCHAR"/>
+    <Column Name="message_text" Required="false" Size="3800" Type="VARCHAR" />
+    <Column Name="system_generated" Required="true" Type="SMALLINT" />
+    <Column Name="create_time" Required="true" Type="DATE"/>
+    <Index Name="article_data_otrs_chat_article_id">
+        <IndexColumn Name="article_id"/>
+    </Index>
+    <ForeignKey ForeignTable="article">
+        <Reference Local="article_id" Foreign="id"/>
     </ForeignKey>
 </Table>
 
@@ -1464,7 +1487,7 @@
     <Column Name="login" Required="true" Size="200" Type="VARCHAR"/>
     <Column Name="email" Required="true" Size="150" Type="VARCHAR"/>
     <Column Name="customer_id" Required="true" Size="150" Type="VARCHAR"/>
-    <Column Name="pw" Required="false" Size="64" Type="VARCHAR"/>
+    <Column Name="pw" Required="false" Size="128" Type="VARCHAR"/>
     <Column Name="title" Required="false" Size="50" Type="VARCHAR"/>
     <Column Name="first_name" Required="true" Size="100" Type="VARCHAR"/>
     <Column Name="last_name" Required="true" Size="100" Type="VARCHAR"/>
@@ -1845,7 +1868,7 @@
 <Table Name="virtual_fs_db">
     <Column Name="id" Required="true" PrimaryKey="true" AutoIncrement="true" Type="BIGINT"/>
     <Column Name="filename" Required="true" Size="350" Type="VARCHAR"/>
-    <Column Name="content" Required="true" Type="LONGBLOB"/>
+    <Column Name="content" Required="false" Type="LONGBLOB"/>
     <Column Name="create_time" Required="true" Type="DATE"/>
     <Index Name="virtual_fs_db_filename">
         <IndexColumn Name="filename" Size="255"/>
@@ -2545,4 +2568,17 @@
     </ForeignKey>
 </Table>
 
+<!-- Ticket Counter -->
+<Table Name="ticket_number_counter">
+    <Column Name="id" Required="true" PrimaryKey="true" AutoIncrement="true" Type="BIGINT" />
+    <Column Name="counter" Required="true" Type="BIGINT" />
+    <Column Name="counter_uid" Required="true" Size="32" Type="VARCHAR" />
+    <Column Name="create_time" Type="DATE" />
+    <Unique Name="ticket_number_counter_uid">
+        <UniqueColumn Name="counter_uid" />
+    </Unique>
+    <Index Name="ticket_number_counter_create_time">
+        <IndexColumn Name="create_time" />
+    </Index>
+</Table>
 </database>

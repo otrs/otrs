@@ -44,6 +44,7 @@
                     <div class="Content">
 
                         <fieldset class="TableLike FixedLabel">
+
                             <label class="Mandatory" for="Subject"><span class="Marker">*</span> [% Translate("Subject") | html %]:</label>
                             <div class="Field">
                                 <input type="text" class="Validate_DependingRequiredAND Validate_Depending_Body [% Data.SubjectInvalid %] W75pc" id="Subject" name="Subject" value="[% Data.Subject | html %]" />
@@ -51,14 +52,6 @@
                                 <div id="SubjectServerError" class="TooltipErrorMessage"><p>[% Translate("This field is required.") | html %]</p></div>
                             </div>
                             <div class="Clear"></div>
-
-[% RenderBlockStart("SpellCheck") %]
-                            <label>[% Translate("Options") | html %]:</label>
-                            <div class="Field">
-                                <a href="#" id="OptionSpellCheck">[ [% Translate("Spell check") | html %] ]</a>
-                            </div>
-                            <div class="Clear"></div>
-[% RenderBlockEnd("SpellCheck") %]
 
                             <label class="Mandatory" for="Body"><span class="Marker">*</span> [% Translate("Text") | html %]:</label>
                             <div class="RichTextField">
@@ -101,6 +94,13 @@
                     <div class="Content">
 
                         <fieldset class="TableLike FixedLabel">
+
+                            <label for="Recipients">[% Translate("Recipients") | html %]:</label>
+                            <div class="Field">
+                                <span id="EmailRecipientsList"><i class="fa fa-spinner fa-spin"></i></span>
+                            </div>
+                            <div class="Clear"></div>
+
                             <label class="Mandatory" for="EmailSubject"><span class="Marker">*</span> [% Translate("Subject") | html %]:</label>
                             <div class="Field">
                                 <input type="text" class="Validate_DependingRequiredAND Validate_Depending_EmailBody [% Data.SubjectInvalid %] W75pc" id="EmailSubject" name="EmailSubject" value="[% Data.EmailSubject | html %]" />
@@ -108,14 +108,6 @@
                                 <div id="EmailSubjectServerError" class="TooltipErrorMessage"><p>[% Translate("This field is required.") | html %]</p></div>
                             </div>
                             <div class="Clear"></div>
-
-[% RenderBlockStart("SpellCheckEmail") %]
-                            <label>[% Translate("Options") | html %]:</label>
-                            <div class="Field">
-                                <a href="#" id="EmailOptionSpellCheck">[ [% Translate("Spell check") | html %] ]</a>
-                            </div>
-                            <div class="Clear"></div>
-[% RenderBlockEnd("SpellCheckEmail") %]
 
                             <label class="Mandatory" for="EmailBody"><span class="Marker">*</span> [% Translate("Text") | html %]:</label>
                             <div class="RichTextField">

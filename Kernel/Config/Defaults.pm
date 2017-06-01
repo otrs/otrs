@@ -313,6 +313,10 @@ sub LoadDefaults {
     # (default date input format) [Option|Input]
     $Self->{TimeInputFormat} = 'Option';
 
+    # TimeInputMinutesStep
+    # (default minute step in minutes dropdown) [1,2,5,10,15,30]
+    $Self->{TimeInputMinutesStep} = 1;
+
     # AttachmentDownloadType
     # (if the tickets attachments will be opened in browser or just to
     # force the download) [attachment|inline]
@@ -904,20 +908,6 @@ sub LoadDefaults {
 #    $Self->{'MIME-Viewer'}->{'text/xml'} = $Self->{Home}.'/scripts/tools/xml2html.pl';
 
     # --------------------------------------------------- #
-    # SpellChecker
-    # --------------------------------------------------- #
-    # (If ispell or aspell is available, then we will provide a spelling
-    # checker.)
-    #    $Self->{SpellChecker} = 0;
-    $Self->{SpellChecker}            = 0;
-    $Self->{SpellCheckerBin}         = '/usr/bin/ispell';
-    $Self->{SpellCheckerDictDefault} = 'english';
-
-    # SpellCheckerIgnore
-    # (A list of ignored words.)
-    $Self->{SpellCheckerIgnore} = [ 'www', 'webmail', 'https', 'http', 'html', 'rfc' ];
-
-    # --------------------------------------------------- #
     # directories                                         #
     # --------------------------------------------------- #
     # root directory
@@ -1006,6 +996,7 @@ sub LoadDefaults {
         'Core.UI.InputFields.js',
         'Core.UI.Accessibility.js',
         'Core.UI.Dialog.js',
+        'Core.UI.Floater.js',
         'Core.UI.RichTextEditor.js',
         'Core.UI.Datepicker.js',
         'Core.UI.Popup.js',
@@ -1164,26 +1155,6 @@ sub LoadDefaults {
         'Prio'                              => '0500',
         'Desc'                              => 'Set a new password by filling in your current password and a new one.',
     };
-    $Self->{PreferencesGroups}->{SpellDict} = {
-        Module => 'Kernel::Output::HTML::Preferences::Generic',
-        PreferenceGroup => 'Miscellaneous',
-        Label  => 'Spelling Dictionary',
-        Desc   => 'Select your default spelling dictionary.',
-        Data   => {
-
-            # installed dict catalog (check your insalled catalogues, e. g. deutsch -=> german!)
-            # dict => frontend (ispell)
-            'english' => 'English',
-            'deutsch' => 'Deutsch',
-
-            # dict => frontend (aspell)
-#            'english' => 'English',
-#            'german'  => 'Deutsch',
-        },
-        PrefKey => 'UserSpellDict',
-        Prio    => 5000,
-        Active  => 1,
-    };
     $Self->{PreferencesGroups}->{Comment} = {
         'Active'  => '0',
         'Block'   => 'Input',
@@ -1211,6 +1182,7 @@ sub LoadDefaults {
         'PreferenceGroup'  => 'UserProfile',
         'Key'     => 'Frontend theme',
         'Label'   => 'Theme',
+        'Desc'    => 'Select your preferred theme for OTRS.',
         'Module'  => 'Kernel::Output::HTML::Preferences::Theme',
         'PrefKey' => 'UserTheme',
         'Prio'    => '3000',

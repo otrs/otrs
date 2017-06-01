@@ -99,6 +99,10 @@ sub new {
 
     }
 
+    if ( $Param{DisableAsyncCalls} ) {
+        $Self->DisableAsyncCalls();
+    }
+
     return $Self;
 }
 
@@ -396,6 +400,7 @@ sub FixedTimeSet {
     #   to get a hold of the overrides.
     my @Objects = (
         'Kernel::System::Time',
+        'Kernel::System::DB',
         'Kernel::System::Cache::FileStorable',
         'Kernel::System::PID',
     );
@@ -485,6 +490,13 @@ sub DESTROY {
     FixedTimeUnset();
 
     # FixedDateTimeObjectUnset();
+
+    if ( $Self->{DestroyLog} ) {
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
+            Priority => 'error',
+            Message  => "Helper is destroyed!"
+        );
+    }
 
     # Cleanup temporary database if it was set up.
     $Self->TestDatabaseCleanup() if $Self->{ProvideTestDatabase};
@@ -758,10 +770,27 @@ sub UseTmpArticleDir {
     return 1;
 }
 
+=head2 DisableAsyncCalls()
+
+Disable scheduling of asynchronous tasks using C<AsynchronousExecutor> component of OTRS daemon.
+
+=cut
+
+sub DisableAsyncCalls {
+    my ( $Self, %Param ) = @_;
+
+    $Self->ConfigSettingChange(
+        Valid => 1,
+        Key   => 'DisableAsyncCalls',
+        Value => 1,
+    );
+
+    return 1;
+}
+
 =head2 ProvideTestDatabase()
 
-Provide temporary database for the test. Please first define test database settings in C<Config.pm>,
-i.e:
+Provide temporary database for the test. Please first define test database settings in C<Config.pm>, i.e:
 
     $Self->{TestDatabase} = {
         DatabaseDSN  => 'DBI:mysql:database=otrs_test;host=127.0.0.1;',
@@ -769,8 +798,8 @@ i.e:
         DatabasePw   => 'otrs_test',
     };
 
-The method call will override global database configuration for duration of the test, i.e. temporary
-database will receive all calls sent over system C<DBObject>.
+The method call will override global database configuration for duration of the test, i.e. temporary database will
+receive all calls sent over system C<DBObject>.
 
 All database contents will be automatically dropped when the Helper object is destroyed.
 
@@ -782,6 +811,8 @@ All database contents will be automatically dropped when the Helper object is de
             '/opt/otrs/scripts/database/otrs-initial_insert.xml',
         ],
     );
+
+This method returns 'undef' in case the test database is not configured. If it is configured, but the supplied XML cannot be read or executed, this method will C<die()> to interrupt the test with an error.
 
 =cut
 
@@ -808,7 +839,7 @@ sub ProvideTestDatabase {
 
         # Override database connection settings in memory.
         $ConfigObject->Set(
-            Key   => $Key,
+            Key   => "Test$Key",
             Value => $TestDatabase->{$Key},
         );
 
@@ -831,9 +862,9 @@ no warnings 'redefine';
 use utf8;
 sub Load {
     my (\$File, \$Self) = \@_;
-    \$Self->{DatabaseDSN}  = '$EscapedSettings{DatabaseDSN}';
-    \$Self->{DatabaseUser} = '$EscapedSettings{DatabaseUser}';
-    \$Self->{DatabasePw}   = '$EscapedSettings{DatabasePw}';
+    \$Self->{TestDatabaseDSN}  = '$EscapedSettings{DatabaseDSN}';
+    \$Self->{TestDatabaseUser} = '$EscapedSettings{DatabaseUser}';
+    \$Self->{TestDatabasePw}   = '$EscapedSettings{DatabasePw}';
 }
 1;^,
         Identifier => $Identifier,
@@ -854,7 +885,7 @@ sub Load {
             Priority => 'error',
             Message  => 'Error clearing temporary database!',
         );
-        return;
+        die 'Error clearing temporary database!';
     }
 
     # Load supplied XML files.
@@ -877,7 +908,7 @@ sub Load {
                     Priority => 'error',
                     Message  => "Could not load '$XMLFile'!",
                 );
-                return;
+                die "Could not load '$XMLFile'!";
             }
 
             # Concatenate the file contents, but make sure to remove duplicated XML tags first.
@@ -906,7 +937,7 @@ sub Load {
                 Priority => 'error',
                 Message  => 'Error executing supplied XML!',
             );
-            return;
+            die 'Error executing supplied XML!';
         }
     }
 
@@ -978,11 +1009,17 @@ sub TestDatabaseCleanup {
 
 =head2 DatabaseXMLExecute()
 
-Execute supplied XML against current database. Content of supplied XML parameter must be valid OTRS
+Execute supplied XML against current database. Content of supplied XML or XMLFilename parameter must be valid OTRS
 database XML schema.
 
     $Helper->DatabaseXMLExecute(
-        XML => $XML,     # (required) OTRS database XML schema to execute
+        XML => $XML,     # OTRS database XML schema to execute
+    );
+
+Alternatively, it can also load an XML file to execute:
+
+    $Helper->DatabaseXMLExecute(
+        XMLFile => '/path/to/file',  # OTRS database XML file to execute
     );
 
 =cut
@@ -990,21 +1027,38 @@ database XML schema.
 sub DatabaseXMLExecute {
     my ( $Self, %Param ) = @_;
 
-    if ( !$Param{XML} ) {
+    if ( !$Param{XML} && !$Param{XMLFile} ) {
         $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'error',
-            Message  => 'Need XML!',
+            Message  => 'Need XML or XMLFile!',
         );
         return;
     }
 
-    my @XMLArray = $Kernel::OM->Get('Kernel::System::XML')->XMLParse( String => $Param{XML} );
+    my $XML = $Param{XML};
+
+    if ( !$XML ) {
+
+        $XML = $Kernel::OM->Get('Kernel::System::Main')->FileRead(
+            Location => $Param{XMLFile},
+        );
+        if ( !$XML ) {
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
+                Priority => 'error',
+                Message  => "Could not load '$Param{XMLFile}'!",
+            );
+            die "Could not load '$Param{XMLFile}'!";
+        }
+        $XML = ${$XML};
+    }
+
+    my @XMLArray = $Kernel::OM->Get('Kernel::System::XML')->XMLParse( String => $XML );
     if ( !@XMLArray ) {
         $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'error',
             Message  => 'Could not parse XML!',
         );
-        return;
+        die 'Could not parse XML!';
     }
 
     my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
@@ -1017,7 +1071,7 @@ sub DatabaseXMLExecute {
             Priority => 'error',
             Message  => 'Could not generate SQL!',
         );
-        return;
+        die 'Could not generate SQL!';
     }
 
     my @SQLPost = $DBObject->SQLProcessorPost();
@@ -1029,7 +1083,7 @@ sub DatabaseXMLExecute {
                 Priority => 'error',
                 Message  => 'Database action failed: ' . $DBObject->Error(),
             );
-            return;
+            die 'Database action failed: ' . $DBObject->Error();
         }
     }
 

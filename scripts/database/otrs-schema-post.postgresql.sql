@@ -90,6 +90,8 @@ ALTER TABLE ticket ADD CONSTRAINT FK_ticket_responsible_user_id_id FOREIGN KEY (
 ALTER TABLE ticket_flag ADD CONSTRAINT FK_ticket_flag_ticket_id_id FOREIGN KEY (ticket_id) REFERENCES ticket (id);
 ALTER TABLE ticket_flag ADD CONSTRAINT FK_ticket_flag_create_by_id FOREIGN KEY (create_by) REFERENCES users (id);
 ALTER TABLE ticket_history ADD CONSTRAINT FK_ticket_history_article_id_id FOREIGN KEY (article_id) REFERENCES article (id);
+ALTER TABLE ticket_history ADD CONSTRAINT FK_ticket_history_a_sender_type_id_id FOREIGN KEY (a_sender_type_id) REFERENCES article_sender_type (id);
+ALTER TABLE ticket_history ADD CONSTRAINT FK_ticket_history_a_communication_channel_id_id FOREIGN KEY (a_communication_channel_id) REFERENCES communication_channel (id);
 ALTER TABLE ticket_history ADD CONSTRAINT FK_ticket_history_queue_id_id FOREIGN KEY (queue_id) REFERENCES queue (id);
 ALTER TABLE ticket_history ADD CONSTRAINT FK_ticket_history_ticket_id_id FOREIGN KEY (ticket_id) REFERENCES ticket (id);
 ALTER TABLE ticket_history ADD CONSTRAINT FK_ticket_history_history_type_id_id FOREIGN KEY (history_type_id) REFERENCES ticket_history_type (id);
@@ -126,14 +128,15 @@ ALTER TABLE article ADD CONSTRAINT FK_article_change_by_id FOREIGN KEY (change_b
 ALTER TABLE article_data_mime ADD CONSTRAINT FK_article_data_mime_article_id_id FOREIGN KEY (article_id) REFERENCES article (id);
 ALTER TABLE article_data_mime ADD CONSTRAINT FK_article_data_mime_create_by_id FOREIGN KEY (create_by) REFERENCES users (id);
 ALTER TABLE article_data_mime ADD CONSTRAINT FK_article_data_mime_change_by_id FOREIGN KEY (change_by) REFERENCES users (id);
-ALTER TABLE article_search ADD CONSTRAINT FK_article_search_article_sender_type_id_id FOREIGN KEY (article_sender_type_id) REFERENCES article_sender_type (id);
-ALTER TABLE article_search ADD CONSTRAINT FK_article_search_ticket_id_id FOREIGN KEY (ticket_id) REFERENCES ticket (id);
+ALTER TABLE article_search_index ADD CONSTRAINT FK_article_search_index_article_id_id FOREIGN KEY (article_id) REFERENCES article (id);
+ALTER TABLE article_search_index ADD CONSTRAINT FK_article_search_index_ticket_id_id FOREIGN KEY (ticket_id) REFERENCES ticket (id);
 ALTER TABLE article_data_mime_plain ADD CONSTRAINT FK_article_data_mime_plain_article_id_id FOREIGN KEY (article_id) REFERENCES article (id);
 ALTER TABLE article_data_mime_plain ADD CONSTRAINT FK_article_data_mime_plain_create_by_id FOREIGN KEY (create_by) REFERENCES users (id);
 ALTER TABLE article_data_mime_plain ADD CONSTRAINT FK_article_data_mime_plain_change_by_id FOREIGN KEY (change_by) REFERENCES users (id);
 ALTER TABLE article_data_mime_attachment ADD CONSTRAINT FK_article_data_mime_attachment_article_id_id FOREIGN KEY (article_id) REFERENCES article (id);
 ALTER TABLE article_data_mime_attachment ADD CONSTRAINT FK_article_data_mime_attachment_create_by_id FOREIGN KEY (create_by) REFERENCES users (id);
 ALTER TABLE article_data_mime_attachment ADD CONSTRAINT FK_article_data_mime_attachment_change_by_id FOREIGN KEY (change_by) REFERENCES users (id);
+ALTER TABLE article_data_otrs_chat ADD CONSTRAINT FK_article_data_otrs_chat_article_id_id FOREIGN KEY (article_id) REFERENCES article (id);
 ALTER TABLE time_accounting ADD CONSTRAINT FK_time_accounting_article_id_id FOREIGN KEY (article_id) REFERENCES article (id);
 ALTER TABLE time_accounting ADD CONSTRAINT FK_time_accounting_ticket_id_id FOREIGN KEY (ticket_id) REFERENCES ticket (id);
 ALTER TABLE time_accounting ADD CONSTRAINT FK_time_accounting_create_by_id FOREIGN KEY (create_by) REFERENCES users (id);

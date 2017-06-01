@@ -482,30 +482,16 @@ sub TicketSearch {
 
     my $SQLFrom = ' FROM ticket st ';
 
-    my $ArticleJoinSQL
-        = $Kernel::OM->Get('Kernel::System::Ticket::Article')->_ArticleIndexQuerySQL( Data => \%Param ) || '';
+    my $ArticleObject = $Kernel::OM->Get('Kernel::System::Ticket::Article');
 
-    # sql, use also article table if needed
-    $SQLFrom .= $ArticleJoinSQL;
+    # check for needed article table join
+    my $ArticleTableJoined = 0;
 
-    # only search for attachment name if Article Storage is set to DB
-    if (
-        $Param{AttachmentName}
-        && (
-            $Kernel::OM->Get('Kernel::Config')->Get('Ticket::Article::Backend::MIMEBase')->{'ArticleStorage'} eq
-            'Kernel::System::Ticket::Article::Backend::MIMEBase::ArticleStorageDB'
-        )
-        )
-    {
-
-        # joins to article and article_data_mime_attachment are needed, it can not use existing article joins
-        # otherwise the search will be limited to already matching articles
-        my $AttachmentJoinSQL = '
-        INNER JOIN article art_for_att ON st.id = art_for_att.ticket_id
-        INNER JOIN article_data_mime_attachment att ON att.article_id = art_for_att.id ';
-
-        # SQL, use also article_data_mime_attachment table if needed
-        $SQLFrom .= $AttachmentJoinSQL;
+    # check for needed article search index table join
+    if ( $ArticleObject->ArticleSearchIndexSQLJoinNeeded( SearchParams => \%Param ) ) {
+        $SQLFrom .= ' INNER JOIN article art ON st.id = art.ticket_id ';
+        $SQLFrom .= $ArticleObject->ArticleSearchIndexSQLJoin( SearchParams => \%Param );
+        $ArticleTableJoined = 1;
     }
 
     # use also history table if required
@@ -1315,7 +1301,7 @@ sub TicketSearch {
         VALUE:
         for my $Value ( @{ $Param{$Key} } ) {
 
-            next VALUE if !$Value;
+            next VALUE if !defined $Value || !length $Value;
 
             # replace wild card search
             if (
@@ -1367,44 +1353,14 @@ sub TicketSearch {
         }
     }
 
-    my $ArticleObject = $Kernel::OM->Get('Kernel::System::Ticket::Article');
+    # Search article attributes.
+    if ($ArticleTableJoined) {
 
-    # search article attributes
-    my $ArticleIndexSQLExt = $ArticleObject->_ArticleIndexQuerySQLExt( Data => \%Param );
-    $SQLExt .= $ArticleIndexSQLExt;
+        $SQLExt .= $ArticleObject->ArticleSearchIndexWhereCondition( SearchParams => \%Param );
 
-    # restrict search from customers to only customer articles
-    if ( $Param{CustomerUserID} && $ArticleIndexSQLExt ) {
-        $SQLExt .= ' AND sa.is_visible_for_customer = 1 ';
-    }
-
-    # only search for attachment name if Article Storage is set to DB
-    if (
-        $Param{AttachmentName}
-        && (
-            $Kernel::OM->Get('Kernel::Config')->Get('Ticket::Article::Backend::MIMEBase')->{'ArticleStorage'} eq
-            'Kernel::System::Ticket::Article::Backend::MIMEBase::ArticleStorageDB'
-        )
-        )
-    {
-        $SQLExt .= ' AND ';
-
-        # replace wild card search
-        my $Key   = 'att.filename';
-        my $Value = $Param{AttachmentName};
-        $Value =~ s/\*/%/gi;
-
-        # use search condition extension
-        $SQLExt .= $DBObject->QueryCondition(
-            Key          => $Key,
-            Value        => $Value,
-            SearchPrefix => $Param{ContentSearchPrefix},
-            SearchSuffix => $Param{ContentSearchSuffix},
-        );
-
-        # restrict search from customers to only customer articles
+        # Restrict search from customers to only customer articles.
         if ( $Param{CustomerUserID} ) {
-            $SQLExt .= ' AND art_for_att.is_visible_for_customer = 1 ';
+            $SQLExt .= ' AND art.is_visible_for_customer = 1 ';
         }
     }
 
@@ -1518,9 +1474,10 @@ sub TicketSearch {
                 }
             }
             elsif ( $DynamicField->{ObjectType} eq 'Article' ) {
-                if ( !$ArticleJoinSQL ) {
-                    $ArticleJoinSQL = ' INNER JOIN article art ON st.id = art.ticket_id ';
-                    $SQLFrom .= $ArticleJoinSQL;
+
+                if ( !$ArticleTableJoined ) {
+                    $SQLFrom .= ' INNER JOIN article art ON st.id = art.ticket_id ';
+                    $ArticleTableJoined = 1;
                 }
 
                 if ($QueryForEmptyValues) {
@@ -1569,7 +1526,7 @@ sub TicketSearch {
 
     # get articles created older/newer than x minutes or older/newer than a date
     my %ArticleTime = (
-        ArticleCreateTime => 'art.incoming_time',
+        ArticleCreateTime => "art.create_time",
     );
     for my $Key ( sort keys %ArticleTime ) {
 
@@ -1581,7 +1538,11 @@ sub TicketSearch {
             my $Time = $TimeObject->SystemTime()
                 - ( $Param{ $Key . 'OlderMinutes' } * 60 );
 
-            $SQLExt .= " AND $ArticleTime{$Key} <= '$Time'";
+            my $TimeStamp = $TimeObject->SystemTime2TimeStamp(
+                SystemTime => $Time,
+            );
+
+            $SQLExt .= " AND ($ArticleTime{$Key} <= '$TimeStamp')";
         }
 
         # get articles created newer than x minutes
@@ -1592,7 +1553,11 @@ sub TicketSearch {
             my $Time = $TimeObject->SystemTime()
                 - ( $Param{ $Key . 'NewerMinutes' } * 60 );
 
-            $SQLExt .= " AND $ArticleTime{$Key} >= '$Time'";
+            my $TimeStamp = $TimeObject->SystemTime2TimeStamp(
+                SystemTime => $Time,
+            );
+
+            $SQLExt .= " AND ($ArticleTime{$Key} >= '$TimeStamp')";
         }
 
         # get articles created older than xxxx-xx-xx xx:xx date
@@ -1630,7 +1595,7 @@ sub TicketSearch {
             }
             $CompareOlderNewerDate = $SystemTime;
 
-            $SQLExt .= " AND $ArticleTime{$Key} <= '" . $SystemTime . "'";
+            $SQLExt .= " AND ($ArticleTime{$Key} <= '" . $Param{ $Key . 'OlderDate' } . "')";
 
         }
 
@@ -1673,7 +1638,7 @@ sub TicketSearch {
             # don't execute queries if older/newer date restriction show now valid timeframe
             return if $CompareOlderNewerDate && $SystemTime > $CompareOlderNewerDate;
 
-            $SQLExt .= " AND $ArticleTime{$Key} >= '" . $SystemTime . "'";
+            $SQLExt .= " AND ($ArticleTime{$Key} >= '" . $Param{ $Key . 'NewerDate' } . "')";
         }
     }
 
@@ -2288,9 +2253,9 @@ sub TicketSearch {
                             $DBObject->Quote( $DynamicField->{ID}, 'Integer' ) . ") ";
                     }
                     elsif ( $ArticleDynamicFieldName2Config{$DynamicFieldName} ) {
-                        if ( !$ArticleJoinSQL ) {
-                            $ArticleJoinSQL = ' INNER JOIN article art ON st.id = art.ticket_id ';
-                            $SQLFrom .= $ArticleJoinSQL;
+                        if ( !$ArticleTableJoined ) {
+                            $SQLFrom .= ' INNER JOIN article art ON st.id = art.ticket_id ';
+                            $ArticleTableJoined = 1;
                         }
 
                         $SQLFrom
@@ -2374,7 +2339,7 @@ sub TicketSearch {
 
     # check cache
     my $CacheObject;
-    if ( ( $ArticleIndexSQLExt && $Param{FullTextIndex} ) || $Param{CacheTTL} ) {
+    if ( ( $ArticleTableJoined && $Param{FullTextIndex} ) || $Param{CacheTTL} ) {
         $CacheObject = $Kernel::OM->Get('Kernel::System::Cache');
         my $CacheData = $CacheObject->Get(
             Type => 'TicketSearch',
@@ -2452,126 +2417,6 @@ sub TicketSearch {
         }
         return @TicketIDs;
     }
-}
-
-=head2 SearchStringStopWordsFind()
-
-Find stop words within given search string.
-
-    my $StopWords = $TicketObject->SearchStringStopWordsFind(
-        SearchStrings => {
-            'Fulltext' => '(this AND is) OR test',
-            'From'     => 'myself',
-        },
-    );
-
-    Returns Hashref with found stop words.
-
-=cut
-
-sub SearchStringStopWordsFind {
-    my ( $Self, %Param ) = @_;
-
-    # check needed stuff
-    for my $Key (qw(SearchStrings)) {
-        if ( !$Param{$Key} ) {
-            $Kernel::OM->Get('Kernel::System::Log')->Log(
-                Priority => 'error',
-                Message  => "Need $Key!",
-            );
-            return;
-        }
-    }
-
-    my $StopWordRaw = $Kernel::OM->Get('Kernel::Config')->Get('Ticket::SearchIndex::StopWords') || {};
-    if ( !$StopWordRaw || ref $StopWordRaw ne 'HASH' ) {
-
-        $Kernel::OM->Get('Kernel::System::Log')->Log(
-            Priority => 'error',
-            Message  => "Invalid config option Ticket::SearchIndex::StopWords! "
-                . "Please reset the search index options to reactivate the factory defaults.",
-        );
-
-        return;
-    }
-
-    my %StopWord;
-    LANGUAGE:
-    for my $Language ( sort keys %{$StopWordRaw} ) {
-
-        if ( !$Language || !$StopWordRaw->{$Language} || ref $StopWordRaw->{$Language} ne 'ARRAY' ) {
-
-            $Kernel::OM->Get('Kernel::System::Log')->Log(
-                Priority => 'error',
-                Message  => "Invalid config option Ticket::SearchIndex::StopWords###$Language! "
-                    . "Please reset this option to reactivate the factory defaults.",
-            );
-
-            next LANGUAGE;
-        }
-
-        WORD:
-        for my $Word ( @{ $StopWordRaw->{$Language} } ) {
-
-            next WORD if !defined $Word || !length $Word;
-
-            $Word = lc $Word;
-
-            $StopWord{$Word} = 1;
-        }
-    }
-
-    my $SearchIndexAttributes = $Kernel::OM->Get('Kernel::Config')->Get('Ticket::SearchIndex::Attribute');
-    my $WordLengthMin         = $SearchIndexAttributes->{WordLengthMin} || 3;
-    my $WordLengthMax         = $SearchIndexAttributes->{WordLengthMax} || 30;
-
-    my %StopWordsFound;
-    SEARCHSTRING:
-    for my $Key ( sort keys %{ $Param{SearchStrings} } ) {
-        my $SearchString = $Param{SearchStrings}->{$Key};
-        my %Result       = $Kernel::OM->Get('Kernel::System::DB')->QueryCondition(
-            'Key'      => '.',             # resulting SQL is irrelevant
-            'Value'    => $SearchString,
-            'BindMode' => 1,
-        );
-
-        next SEARCHSTRING if !%Result || ref $Result{Values} ne 'ARRAY' || !@{ $Result{Values} };
-
-        my %Words;
-        for my $Value ( @{ $Result{Values} } ) {
-            my @Words = split '\s+', $$Value;
-            for my $Word (@Words) {
-                $Words{ lc $Word } = 1;
-            }
-        }
-
-        @{ $StopWordsFound{$Key} }
-            = grep { $StopWord{$_} || length $_ < $WordLengthMin || length $_ > $WordLengthMax } sort keys %Words;
-    }
-
-    return \%StopWordsFound;
-}
-
-=head2 SearchStringStopWordsUsageWarningActive()
-
-Checks if warnings for stop words in search strings are active or not.
-
-    my $WarningActive = $TicketObject->SearchStringStopWordsUsageWarningActive();
-
-=cut
-
-sub SearchStringStopWordsUsageWarningActive {
-    my ( $Self, %Param ) = @_;
-
-    my $ConfigObject        = $Kernel::OM->Get('Kernel::Config');
-    my $SearchIndexModule   = $ConfigObject->Get('Ticket::SearchIndexModule');
-    my $WarnOnStopWordUsage = $ConfigObject->Get('Ticket::SearchIndex::WarnOnStopWordUsage') || 0;
-
-    if ( $SearchIndexModule eq 'Kernel::System::Ticket::ArticleSearchIndex::StaticDB' && $WarnOnStopWordUsage ) {
-        return 1;
-    }
-
-    return 0;
 }
 
 1;

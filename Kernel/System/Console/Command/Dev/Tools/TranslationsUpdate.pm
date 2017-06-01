@@ -17,7 +17,6 @@ use File::Basename;
 use File::Copy;
 use Lingua::Translit;
 use Pod::Strip;
-use Storable ();
 
 use Kernel::Language;
 
@@ -25,6 +24,7 @@ our @ObjectDependencies = (
     'Kernel::Config',
     'Kernel::System::Encode',
     'Kernel::System::Main',
+    'Kernel::System::Storable',
     'Kernel::System::SysConfig',
     'Kernel::System::Time',
 );
@@ -273,6 +273,7 @@ sub HandleLanguage {
             Recursive => 1,
         );
 
+        # include Custom folder for modules
         my $CustomKernelDir = "$ModuleDirectory/Custom/Kernel";
         if ( $IsSubTranslation && -d $CustomKernelDir ) {
             my @CustomPerlModuleList = $Kernel::OM->Get('Kernel::System::Main')->DirectoryRead(
@@ -281,6 +282,16 @@ sub HandleLanguage {
                 Recursive => 1,
             );
             push @PerlModuleList, @CustomPerlModuleList;
+        }
+
+        # include var/packagesetup folder for modules
+        if ($IsSubTranslation) {
+            my @PackageSetupModuleList = $Kernel::OM->Get('Kernel::System::Main')->DirectoryRead(
+                Directory => "$ModuleDirectory/var/packagesetup",
+                Filter    => '*.pm',
+                Recursive => 1,
+            );
+            push @PerlModuleList, @PackageSetupModuleList;
         }
 
         FILE:
@@ -299,6 +310,7 @@ sub HandleLanguage {
             }
 
             $File =~ s{^.*/(Kernel/)}{$1}smx;
+            $File =~ s{^.*/(var/packagesetup/)}{$1}smx;
 
             my $Content = ${$ContentRef};
 

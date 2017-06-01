@@ -182,18 +182,30 @@ sub RepositoryList {
             Vendor  => $Row[4],
         );
 
-        # correct any 'dos-style' line endings - http://bugs.otrs.org/show_bug.cgi?id=9838
-        $Row[3] =~ s{\r\n}{\n}xmsg;
-        $Package{MD5sum} = $MainObject->MD5sum( String => \$Row[3] );
+        my $Content = $Row[3];
+
+        if ( $Content && !$DBObject->GetDatabaseFunction('DirectBlob') ) {
+
+            # Backwards compatibility: don't decode existing values that were not yet properly Base64 encoded.
+            if ( $Content =~ m{ \A [a-zA-Z0-9+/\n]+ ={0,2} [\n]? \z }smx ) {    # Does it look like Base64?
+                $Content = decode_base64($Content);
+                $Kernel::OM->Get('Kernel::System::Encode')->EncodeInput( \$Content );
+            }
+        }
+
+        # Correct any 'dos-style' line endings that might have been introduced by saving an
+        #   opm file from a mail client on Windows (see http://bugs.otrs.org/show_bug.cgi?id=9838).
+        $Content =~ s{\r\n}{\n}xmsg;
+        $Package{MD5sum} = $MainObject->MD5sum( String => \$Content );
 
         # get package attributes
-        if ( $Row[3] && $Result eq 'Short' ) {
+        if ( $Content && $Result eq 'Short' ) {
 
             push @Data, {%Package};
         }
-        elsif ( $Row[3] ) {
+        elsif ($Content) {
 
-            my %Structure = $Self->PackageParse( String => \$Row[3] );
+            my %Structure = $Self->PackageParse( String => \$Content );
             push @Data, { %Package, %Structure };
         }
     }
@@ -265,8 +277,16 @@ sub RepositoryGet {
 
     # fetch data
     my $Package = '';
+    ROW:
     while ( my @Row = $DBObject->FetchrowArray() ) {
         $Package = $Row[0];
+
+        next ROW if $DBObject->GetDatabaseFunction('DirectBlob');
+
+        # Backwards compatibility: don't decode existing values that were not yet properly Base64 encoded.
+        next ROW if $Package !~ m{ \A [a-zA-Z0-9+/\n]+ ={0,2} [\n]? \z }smx;    # looks like Base64?
+        $Package = decode_base64($Package);
+        $Kernel::OM->Get('Kernel::System::Encode')->EncodeInput( \$Package );
     }
 
     if ( !$Package ) {
@@ -365,6 +385,12 @@ sub RepositoryAdd {
     # add new package
     my $FileName = $Structure{Name}->{Content} . '-' . $Structure{Version}->{Content} . '.xml';
 
+    my $Content = $Param{String};
+    if ( !$DBObject->GetDatabaseFunction('DirectBlob') ) {
+        $Kernel::OM->Get('Kernel::System::Encode')->EncodeOutput( \$Content );
+        $Content = encode_base64($Content);
+    }
+
     return if !$DBObject->Do(
         SQL => 'INSERT INTO package_repository (name, version, vendor, filename, '
             . ' content_type, content, install_status, '
@@ -374,7 +400,7 @@ sub RepositoryAdd {
             . ' current_timestamp, 1, current_timestamp, 1)',
         Bind => [
             \$Structure{Name}->{Content}, \$Structure{Version}->{Content},
-            \$Structure{Vendor}->{Content}, \$FileName, \$Param{String},
+            \$Structure{Vendor}->{Content}, \$FileName, \$Content,
         ],
     );
 
@@ -2297,24 +2323,24 @@ sub PackageBuild {
                             $XML .= " Type=\"$Type\"";
                         }
 
+                        KEY:
                         for my $Key ( sort keys %{$Tag} ) {
 
-                            if (
-                                $Key ne 'Tag'
-                                && $Key ne 'Content'
-                                && $Key ne 'TagType'
-                                && $Key ne 'TagLevel'
-                                && $Key ne 'TagCount'
-                                && $Key ne 'TagKey'
-                                && $Key ne 'TagLastLevel'
-                                )
-                            {
-                                if ( defined( $Tag->{$Key} ) ) {
-                                    $XML .= ' '
-                                        . $Self->_Encode($Key) . '="'
-                                        . $Self->_Encode( $Tag->{$Key} ) . '"';
-                                }
-                            }
+                            next KEY if $Key eq 'Tag';
+                            next KEY if $Key eq 'Content';
+                            next KEY if $Key eq 'TagType';
+                            next KEY if $Key eq 'TagLevel';
+                            next KEY if $Key eq 'TagCount';
+                            next KEY if $Key eq 'TagKey';
+                            next KEY if $Key eq 'TagLastLevel';
+
+                            next KEY if !defined $Tag->{$Key};
+
+                            next KEY if $Tag->{TagLevel} == 3 && lc $Key eq 'type';
+
+                            $XML .= ' '
+                                . $Self->_Encode($Key) . '="'
+                                . $Self->_Encode( $Tag->{$Key} ) . '"';
                         }
 
                         $XML .= ">";
