@@ -460,6 +460,25 @@ my @NeededModules = (
         },
     },
     {
+        Module    => 'REST::Client',
+        Required  => 0,
+        Comment   => 'Required for the REST interface.',
+        InstTypes => {
+            aptget => 'librt-client-rest-perl',
+            emerge => 'dev-perl/YAML-LibYAML',
+            zypper => 'perl-YAML-LibYAML',
+        },
+    },
+    {
+        Module    => 'SOAP::Lite',
+        Required  => 0,
+        Comment   => 'Required for the SOAP interface.',
+        InstTypes => {
+            aptget => 'libsoap-lite-perl',
+            zypper => 'perl-SOAP-Lite',
+        },
+    },
+    {
         Module    => 'Template',
         Required  => 1,
         Comment   => 'Template::Toolkit, the rendering engine of OTRS.',
