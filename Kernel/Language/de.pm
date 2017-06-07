@@ -1766,7 +1766,7 @@ sub Data {
         'Title or salutation' => 'Titel oder Anrede',
         'Firstname' => 'Vorname',
         'Lastname' => 'Nachname',
-        'A user with this username already exists!' => 'Es existiert bereits ein Nuter mit diesem Benutzernamen!',
+        'A user with this username already exists!' => 'Es existiert bereits ein Nutzer mit diesem Benutzernamen!',
         'Will be auto-generated if left empty.' => 'Wird für ein leeres Feld automatisch generiert.',
         'Mobile' => 'Mobiltelefon',
         'On' => 'Ein',
