@@ -1266,6 +1266,10 @@ sub Run {
             CustomerNo   => $CustomerID,
             CustomerUser => $SelectedCustomerUser,
             UserID       => $Self->{UserID},
+
+            # Get the ticket source : PhoneCallCustomer.
+            Source    => $Config->{HistoryType},
+            NewUserID => $GetParam{NewUserID},
         );
 
         # set ticket dynamic fields
