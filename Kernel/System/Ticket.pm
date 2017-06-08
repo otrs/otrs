@@ -362,7 +362,7 @@ sub TicketCheckNumber {
 
 =head2 TicketCreate()
 
-creates a new ticket
+Creates a new ticket.
 
     my $TicketID = $TicketObject->TicketCreate(
         Title        => 'Some Ticket Title',
@@ -374,6 +374,8 @@ creates a new ticket
         CustomerUser => 'customer@example.com',
         OwnerID      => 123,
         UserID       => 123,
+        Source       => PhoneCallCustomer,
+        NewUserID    => 123,
     );
 
 or
@@ -677,6 +679,10 @@ sub TicketCreate {
             TicketID => $TicketID,
         },
         UserID => $Param{UserID},
+
+        # The ticket source : PhoneCallCustomer or EmailAgent.
+        Source    => $Param{Source},
+        NewUserID => $Param{NewUserID},
     );
 
     return $TicketID;
@@ -6973,7 +6979,7 @@ sub TicketArticleStorageSwitch {
 
                     Encode::_utf8_off( $Attachment->{Filename} );
 
-                    # replace invalid characters with � (U+FFFD, Unicode replacement character)
+                    # replace invalid characters with (U+FFFD, Unicode replacement character)
                     # If it runs on good UTF-8 input, output should be identical to input
                     $Attachment->{Filename} = eval {
                         Encode::decode( 'UTF-8', $Attachment->{Filename} );
