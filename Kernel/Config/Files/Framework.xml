@@ -8810,6 +8810,18 @@ via the Preferences button after logging in.
             </Hash>
         </Setting>
     </ConfigItem>
+    <ConfigItem Name="Frontend::Module###Redirect" Required="0" Valid="1">
+        <Description Translatable="1">Frontend module registration for the agent interface.</Description>
+        <Group>Ticket</Group>
+        <SubGroup>Frontend::Agent::ModuleRegistration</SubGroup>
+        <Setting>
+            <FrontendModuleReg>
+                <Description></Description>
+                <NavBarName></NavBarName>
+                <Title></Title>
+            </FrontendModuleReg>
+        </Setting>
+    </ConfigItem>
     <ConfigItem Name="Frontend::Module###Logout" Required="0" Valid="1">
         <Description Translatable="1">Frontend module registration for the agent interface.</Description>
         <Group>Framework</Group>

@@ -6760,6 +6760,22 @@
             </Hash>
         </Setting>
     </ConfigItem>
+    <ConfigItem Name="Ticket::Frontend::MenuModule###510-Redirect" Required="0" Valid="0">
+        <Description Translatable="1">Shows a link in the ticket action row to redirect the agent in the ticket zoom view of the agent interface. "Module" defines the HTML module to prepare the ticket action row item. "Name" defines the ticket action row item name. "Descripton" defines the ticket action row item tool-tip content. "Action" defines the action name for the ticket action row item. "Link" defines the link parameters to call the redirect module and may contain extra parameters. E.g. "[% Data.Ticket.State | html %]" adds the current ticket state to the "href" parameter (E.g. "http://www.example.com/search?query=[% Data.Ticket.State | html %])" may result into "http://www.example.com/search?query=pending+reminder". "Target" defines the hyper link target. If "PopUpType" is left empty, "_new" as value for "Target" will open the new page in a new browser window or browser tab.</Description>
+        <Group>Ticket</Group>
+        <SubGroup>Frontend::Agent::Ticket::MenuModule</SubGroup>
+        <Setting>
+            <Hash>
+                <Item Key="Module">Kernel::Output::HTML::TicketMenuGeneric</Item>
+                <Item Key="Name" Translatable="1">Redirect</Item>
+                <Item Key="Description" Translatable="1">Redirect</Item>
+                <Item Key="Action">Redirect</Item>
+                <Item Key="Link">Action=Redirect;Url=[% "http://www.example.com" | html %]</Item>
+                <Item Key="Target"></Item>
+                <Item Key="PopupType">TicketAction</Item>
+            </Hash>
+        </Setting>
+    </ConfigItem>
     <ConfigItem Name="Ticket::Frontend::OverviewMenuModule###001-Sort" Required="0" Valid="1">
         <Description Translatable="1">Shows a select of ticket attributes to order the queue view ticket list. The possible selections can be configured via 'TicketOverviewMenuSort###SortAttributes'.</Description>
         <Group>Ticket</Group>
