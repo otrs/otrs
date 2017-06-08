@@ -569,6 +569,10 @@ sub TicketCreate {
             TicketID => $TicketID,
         },
         UserID => $Param{UserID},
+
+        # The ticket source : PhoneCallCustomer or EmailAgent.
+        Source    => $Param{Source},
+        NewUserID => $Param{NewUserID},
     );
 
     return $TicketID;
@@ -1165,7 +1169,7 @@ sub TicketGet {
         }
 
         # use cache only when a ticket number is found otherwise a non-existant ticket
-        # is cached. That can cause errors when the cache isn't expired and postmaster
+        # is cached. That can cause errors when the cache is not expired and postmaster
         # creates that ticket
         if ( $Ticket{TicketID} ) {
             $Kernel::OM->Get('Kernel::System::Cache')->Set(
@@ -1859,7 +1863,7 @@ sub TicketMoveList {
 
 =item TicketQueueSet()
 
-to move a ticket (sends notification to agents of selected my queues, if ticket isn't closed)
+to move a ticket (sends notification to agents of selected my queues, if ticket is not closed)
 
     my $Success = $TicketObject->TicketQueueSet(
         QueueID  => 123,
@@ -2497,7 +2501,7 @@ get escalation properties of a ticket
         UserID => $Param{UserID},
     );
 
-it returnes
+it return
 
     (general escalation info)
     EscalationDestinationIn          (escalation in e. g. 1h 4m)
@@ -3867,7 +3871,7 @@ to lock or unlock a ticket
 
 Optional attribute:
 SendNoNotification, disable or enable agent and customer notification for this
-action. Otherwise a notification will be sent to agent and cusomer.
+action. Otherwise a notification will be sent to agent and customer.
 
 For example:
 
@@ -4139,7 +4143,7 @@ to set a ticket state
 
 Optional attribute:
 SendNoNotification, disable or enable agent and customer notification for this
-action. Otherwise a notification will be sent to agent and cusomer.
+action. Otherwise a notification will be sent to agent and customer.
 
 For example:
 
@@ -4472,7 +4476,7 @@ Return:
 
 Optional attribute:
 SendNoNotification, disable or enable agent and customer notification for this
-action. Otherwise a notification will be sent to agent and cusomer.
+action. Otherwise a notification will be sent to agent and customer.
 
 For example:
 
@@ -4697,7 +4701,7 @@ Return:
 
 Optional attribute:
 SendNoNotification, disable or enable agent and customer notification for this
-action. Otherwise a notification will be sent to agent and cusomer.
+action. Otherwise a notification will be sent to agent and customer.
 
 For example:
 
@@ -6515,7 +6519,7 @@ sub TicketWatchSubscribe {
 
 =item TicketWatchUnsubscribe()
 
-to remove a subscribtion of a ticket
+to remove a subscription of a ticket
 
     my $Success = $TicketObject->TicketWatchUnsubscribe(
         TicketID    => 111,
@@ -7067,7 +7071,7 @@ sub TicketArticleStorageSwitch {
 
                     Encode::_utf8_off( $Attachment->{Filename} );
 
-                    # replace invalid characters with � (U+FFFD, Unicode replacement character)
+                    # replace invalid characters with (U+FFFD, Unicode replacement character)
                     # If it runs on good UTF-8 input, output should be identical to input
                     $Attachment->{Filename} = eval {
                         Encode::decode( 'UTF-8', $Attachment->{Filename} );
