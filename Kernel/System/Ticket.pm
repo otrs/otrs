@@ -495,7 +495,6 @@ sub TicketCreate {
     # get ticket id
     my $TicketID = $Self->TicketIDLookup(
         TicketNumber => $Param{TN},
-        UserID       => $Param{UserID},
     );
 
     # add history entry
