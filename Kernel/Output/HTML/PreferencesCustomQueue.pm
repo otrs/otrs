@@ -53,10 +53,9 @@ sub Param {
             Type   => $Self->{ConfigItem}->{Permission} || 'ro',
         );
     }
-    if ( $Kernel::OM->Get('Kernel::System::Web::Request')->GetArray( Param => 'QueueID' ) ) {
-        @CustomQueueIDs = $Kernel::OM->Get('Kernel::System::Web::Request')->GetArray( Param => 'QueueID' );
-    }
-    elsif ( $Param{UserData}->{UserID} && !defined $CustomQueueIDs[0] ) {
+    
+    @CustomQueueIDs = $Kernel::OM->Get('Kernel::System::Web::Request')->GetArray( Param => 'QueueID' );
+    if ( !@CustomQueueIDs && $Param{UserData}->{UserID} ) {
         @CustomQueueIDs = $QueueObject->GetAllCustomQueues(
             UserID => $Param{UserData}->{UserID}
         );
