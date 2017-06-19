@@ -878,6 +878,34 @@ $Self->IsDeeply(
     'Search for two values in a same field, match one ticket using an array ',
 );
 
+# Check that we can use an Equals-Search for a value that contains a *
+my $ValueWithAsterisk = '* is an asterisk';
+$BackendObject->ValueSet(
+    DynamicFieldConfig => $FieldConfig[0],
+    ObjectID           => $TicketData[0]{TicketID},
+    Value              => $ValueWithAsterisk,
+    UserID             => 1,
+);
+
+my $DynamicFieldName = $FieldConfig[0]->{Name};
+
+@TicketResultSearch = $TicketObject->TicketSearch(
+    Result                       => 'ARRAY',
+    Limit                        => 100,
+    "DynamicField_$DynamicFieldName" => {
+        Equals => $ValueWithAsterisk,
+    },
+    UserID     => 1,
+    Permission => 'r0',
+);
+
+$Self->IsDeeply(
+    \@TicketResultSearch,
+    [ $TicketData[0]{TicketID} ],
+    "can do an 'Equals' search with a dynamic field value that contain an asterisk",
+);
+
+
 # Check that searching for non-existing dynamic fields is an error
 my $Result = $TicketObject->TicketSearch(
     Result                                    => 'COUNT',

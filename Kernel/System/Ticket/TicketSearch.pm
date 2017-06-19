@@ -1393,10 +1393,12 @@ sub TicketSearch {
             for my $Text (@SearchParams) {
                 next TEXT if ( !defined $Text || $Text eq '' );
 
-                $Text =~ s/\*/%/gi;
+                if ( $Operator eq 'Like' ) {
+                    $Text =~ s/\*/%/gi;
 
-                # check search attribute, we do not need to search for *
-                next TEXT if $Text =~ /^\%{1,3}$/;
+                    # check search attribute, we do not need to search for *
+                    next TEXT if $Text =~ /^\%{1,3}$/;
+                }
 
                 # skip validation for empty values
                 if ( $Operator ne 'Empty' ) {
