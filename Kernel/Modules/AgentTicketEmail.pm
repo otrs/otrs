@@ -2575,10 +2575,10 @@ sub _MaskEmailNew {
     # build text template string
     if ( IsHashRefWithData( \%StandardTemplates ) ) {
         $Param{StandardTemplateStrg} = $LayoutObject->BuildSelection(
-            Data       => $Param{StandardTemplates}  || {},
-            Name       => 'StandardTemplateID',
-            SelectedID => $Param{StandardTemplateID} || '',
-            Class      => 'Modernize',
+            Data         => \%StandardTemplates,
+            Name         => 'StandardTemplateID',
+            SelectedID   => $Param{StandardTemplateID} || '',
+            Class        => 'Modernize',
             PossibleNone => 1,
             Sort         => 'AlphanumericValue',
             Translation  => 1,
