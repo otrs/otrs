@@ -378,6 +378,14 @@ sub Run {
 
             $TicketEntry{$Attribute} = $TicketEntryRaw{$Attribute};
         }
+        
+        # get accounted time
+        	
+    	my $TimeUnit = $TicketObject->TicketAccountedTimeGet(
+    		TicketID => $TicketID,
+    	);
+    
+    	$TicketEntry{'TimeUnit'} = $TimeUnit;
 
         # add dynamic fields array into 'DynamicField' hash key if any
         if (@DynamicFields) {
@@ -511,7 +519,16 @@ sub Run {
                     $Article{DynamicField} = \@ArticleDynamicFields;
                 }
 
-                push @ArticleBox, \%Article;
+
+		#get article accounted time
+
+		my $ArticleTime = $TicketObject->ArticleAccountedTimeGet(
+                    ArticleID => $ArticleRaw->{ArticleID}
+                );
+                
+		$Article{'TimeUnit'} = $ArticleTime;
+
+		push @ArticleBox, \%Article;
             }
             $TicketBundle->{Article} = \@ArticleBox;
         }
