@@ -768,6 +768,7 @@ sub CustomerName {
                 UserLastname  => $Name{UserLastname},
                 NameOrder     => $FirstnameLastNameOrder,
             );
+
             return $UserFullname;
         }
     }
