@@ -5611,6 +5611,8 @@ Thanks for your help!
         'FirstResponseDiffInMin' => '首次响应时间差（分钟）',
         'FirstResponseInMin' => '首次响应时间（分钟）',
         'Firstname Lastname' => '名 姓',
+        'LastnameFirstname' => '姓名',
+        'Firstname, Lastname' => '名， 姓',
         'Firstname Lastname (UserLogin)' => '名 姓（登录用户名）',
         'FollowUp for [%s]. %s' => '[%s]. %s的跟进',
         'For these state types the ticket numbers are striked through in the link table.' =>
@@ -6666,6 +6668,8 @@ Thanks for your help!
             '指定系统发送通知的姓名，这个发件人姓名用于创建通知管理员完整的显示名称（如"OTRS通知"otrs@your.example.com）。',
         'Specifies the order in which the firstname and the lastname of agents will be displayed.' =>
             '指定服务人员显示姓和名的先后顺序。',
+        'Specifies the order in which the firstname and the lastname of customers will be displayed.' =>
+            '指定用户显示姓和名的先后顺序。',
         'Specifies the path of the file for the logo in the page header (gif|jpg|png, 700 x 100 pixel).' =>
             '指定页面头部LOGO文件的路径（gif|jpg|png，700 X 100 像素）。',
         'Specifies the path of the file for the performance log.' => '指定性能日志文件的路径。',

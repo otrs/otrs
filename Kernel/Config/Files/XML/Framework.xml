@@ -7801,8 +7801,8 @@ You can log in via the following URL:
         <Value>
             <Hash>
                 <Item Key="Module">Kernel::Output::HTML::CustomerUser::Generic</Item>
-                <Item Key="Required">UserFirstname;UserLastname;</Item>
-                <Item Key="Attributes">UserFirstname;UserLastname;</Item>
+                <Item Key="Required">UserLastname;UserFirstname;</Item>
+                <Item Key="Attributes">UserLastname;UserFirstname;</Item>
                 <Item Key="CSS">Core.Agent.CustomerUser.Google.css</Item>
                 <Item Key="CSSClass">Google</Item>
                 <Item Key="Target">_blank</Item>
@@ -7818,8 +7818,8 @@ You can log in via the following URL:
         <Value>
             <Hash>
                 <Item Key="Module">Kernel::Output::HTML::CustomerUser::Generic</Item>
-                <Item Key="Required">UserFirstname;UserLastname;</Item>
-                <Item Key="Attributes">UserFirstname;UserLastname;</Item>
+                <Item Key="Required">UserLastname;UserFirstname;</Item>
+                <Item Key="Attributes">UserLastname;UserFirstname;</Item>
                 <Item Key="CSS">Core.Agent.CustomerUser.LinkedIn.css</Item>
                 <Item Key="CSSClass">LinkedIn</Item>
                 <Item Key="Target">_blank</Item>
@@ -7835,8 +7835,8 @@ You can log in via the following URL:
         <Value>
             <Hash>
                 <Item Key="Module">Kernel::Output::HTML::CustomerUser::Generic</Item>
-                <Item Key="Required">UserFirstname;UserLastname;</Item>
-                <Item Key="Attributes">UserFirstname;UserLastname;</Item>
+                <Item Key="Required">UserLastname;UserFirstname;</Item>
+                <Item Key="Attributes">UserLastname;UserFirstname;</Item>
                 <Item Key="CSS">Core.Agent.CustomerUser.Xing.css</Item>
                 <Item Key="CSSClass">Xing</Item>
                 <Item Key="Target">_blank</Item>
@@ -11865,6 +11865,20 @@ via the Preferences button after logging in.
                 <Item ValueType="Option" Value="7" Translatable="1">Lastname Firstname (UserLogin)</Item>
                 <Item ValueType="Option" Value="8" Translatable="1">(UserLogin) Lastname Firstname</Item>
                 <!-- End Hungarian -->
+                <Item ValueType="Option" Value="9" Translatable="1">LastnameFirstname</Item>
+            </Item>
+        </Value>
+    </Setting>
+    <Setting Name="CustomerFirstnameLastnameOrder" Required="1" Valid="1">
+        <Description Translatable="1">Specifies the order in which the firstname and the lastname of customers will be displayed.</Description>
+        <Navigation>Frontend::Agent</Navigation>
+        <Value>
+            <Item ValueType="Select" SelectedID="0">
+                <Item ValueType="Option" Value="0" Translatable="1">Firstname Lastname</Item>
+                <Item ValueType="Option" Value="1" Translatable="1">Lastname Firstname</Item>
+                <Item ValueType="Option" Value="2" Translatable="1">Firstname, Lastname</Item>
+                <Item ValueType="Option" Value="3" Translatable="1">Lastname, Firstname</Item>
+                <Item ValueType="Option" Value="4" Translatable="1">LastnameFirstname</Item>
             </Item>
         </Value>
     </Setting>
@@ -12260,8 +12274,8 @@ via the Preferences button after logging in.
         <Value>
             <Array>
                 <Item>UserLogin</Item>
-                <Item>UserFirstname</Item>
                 <Item>UserLastname</Item>
+                <Item>UserFirstname</Item>
                 <Item>UserEmail</Item>
                 <Item>UserCustomerID</Item>
             </Array>
@@ -12272,8 +12286,8 @@ via the Preferences button after logging in.
         <Navigation>Frontend::Agent::View::CustomerUserAddressBook</Navigation>
         <Value>
             <Array>
-                <Item>UserFirstname</Item>
                 <Item>UserLastname</Item>
+                <Item>UserFirstname</Item>
                 <Item>UserLogin</Item>
                 <Item>UserEmail</Item>
                 <Item>UserCustomerID</Item>

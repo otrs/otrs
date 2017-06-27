@@ -288,6 +288,26 @@ sub CustomerSearch {
 
         # get customer search result of backend and merge it
         my %SubData = $Self->{"CustomerUser$Count"}->CustomerSearch(%Param);
+
+        # get configuration for the full name order
+        my $FirstnameLastNameOrder = $Kernel::OM->Get('Kernel::Config')->Get('CustomerFirstnameLastnameOrder') || 0;
+
+        for my $CustomerLogin ( sort keys %SubData ) {
+            my %User = $Self->{"CustomerUser$Count"}->CustomerUserDataGet(
+                User => $CustomerLogin,
+            );
+
+            # generate the full name and save it in the hash
+            my $UserFullname = $Self->_CustomerUserFullname(
+                UserFirstname => $User{UserFirstname},
+                UserLastname  => $User{UserLastname},
+                NameOrder     => $FirstnameLastNameOrder,
+            );
+
+            $SubData{$CustomerLogin} = $UserFullname . ' ' . $User{UserEmail};
+            $SubData{$CustomerLogin} =~ s/^(.*)\s(.+?\@.+?\..+?)(\s|)$/"$1" <$2>/;
+        }
+
         %Data = ( %SubData, %Data );
     }
     return %Data;
@@ -735,9 +755,20 @@ sub CustomerName {
         next SOURCE if !$Self->{"CustomerUser$Count"};
 
         # get customer name and return it
-        my $Name = $Self->{"CustomerUser$Count"}->CustomerName(%Param);
-        if ($Name) {
-            return $Name;
+        my %Name = $Self->{"CustomerUser$Count"}->CustomerUserDataGet( User => $Param{UserLogin} );
+
+        # get configuration for the full name order
+        my $FirstnameLastNameOrder = $Kernel::OM->Get('Kernel::Config')->Get('CustomerFirstnameLastnameOrder') || 0;
+
+        if (%Name) {
+
+            # generate the full name and save it in the hash
+            my $UserFullname = $Self->_CustomerUserFullname(
+                UserFirstname => $Name{UserFirstname},
+                UserLastname  => $Name{UserLastname},
+                NameOrder     => $FirstnameLastNameOrder,
+            );
+            return $UserFullname;
         }
     }
     return;
@@ -828,6 +859,9 @@ sub CustomerUserDataGet {
     my $CustomerCompanyObject     = $Kernel::OM->Get('Kernel::System::CustomerCompany');
     my $DynamicFieldBackendObject = $Kernel::OM->Get('Kernel::System::DynamicField::Backend');
 
+    # get configuration for the full name order
+    my $FirstnameLastNameOrder = $ConfigObject->Get('CustomerFirstnameLastnameOrder') || 0;
+
     SOURCE:
     for my $Count ( '', 1 .. 10 ) {
 
@@ -835,6 +869,15 @@ sub CustomerUserDataGet {
 
         my %Customer = $Self->{"CustomerUser$Count"}->CustomerUserDataGet( %Param, );
         next SOURCE if !%Customer;
+
+        # generate the full name and save it in the hash
+        my $UserFullname = $Self->_CustomerUserFullname(
+            %Customer,
+            NameOrder => $FirstnameLastNameOrder,
+        );
+
+        # save the generated fullname in the hash.
+        $Customer{UserFullname} = $UserFullname;
 
         # add preferences defaults
         my $Config = $ConfigObject->Get('CustomerPreferencesGroups');
@@ -1297,6 +1340,58 @@ sub CustomerUserCacheClear {
     }
 
     return 1;
+}
+
+=head2 _CustomerUserFullname()
+
+Builds the customer user full name based on first name, last name. The order
+can be configured.
+
+    my $Fullname = $Object->_CustomerUserFullname(
+        UserFirstname => 'Test',
+        UserLastname  => 'Person',
+        NameOrder     => 0,         # optional 0, 1, 2, 3, 4
+    );
+
+=cut
+
+sub _CustomerUserFullname {
+    my ( $Self, %Param ) = @_;
+
+    for my $Needed (qw(UserFirstname UserLastname)) {
+        if ( !$Param{$Needed} ) {
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
+                Priority => 'error',
+                Message  => "Need $Needed!",
+            );
+
+            return;
+        }
+    }
+
+    my $FirstnameLastNameOrder = $Param{NameOrder} || 0;
+
+    my $UserFullname;
+    if ( $FirstnameLastNameOrder eq '0' ) {
+        $UserFullname = $Param{UserFirstname} . ' '
+            . $Param{UserLastname};
+    }
+    elsif ( $FirstnameLastNameOrder eq '1' ) {
+        $UserFullname = $Param{UserLastname} . ' '
+            . $Param{UserFirstname};
+    }
+    elsif ( $FirstnameLastNameOrder eq '2' ) {
+        $UserFullname = $Param{UserFirstname} . ', '
+            . $Param{UserLastname};
+    }
+    elsif ( $FirstnameLastNameOrder eq '3' ) {
+        $UserFullname = $Param{UserLastname} . ', '
+            . $Param{UserFirstname};
+    }
+    elsif ( $FirstnameLastNameOrder eq '4' ) {
+        $UserFullname = $Param{UserLastname} . $Param{UserFirstname};
+    }
+    return $UserFullname;
 }
 
 =head2 CustomerUserCustomerMemberAdd()

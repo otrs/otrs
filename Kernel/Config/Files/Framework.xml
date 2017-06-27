@@ -8202,8 +8202,8 @@ You can log in via the following URL:
         <Setting>
             <Hash>
                 <Item Key="Module">Kernel::Output::HTML::CustomerUser::Generic</Item>
-                <Item Key="Required">UserFirstname;UserLastname;</Item>
-                <Item Key="Attributes">UserFirstname;UserLastname;</Item>
+                <Item Key="Required">UserLastname;UserFirstname;</Item>
+                <Item Key="Attributes">UserLastname;UserFirstname;</Item>
                 <Item Key="CSS">Core.Agent.CustomerUser.Google.css</Item>
                 <Item Key="CSSClass">Google</Item>
                 <Item Key="Target">_blank</Item>
@@ -8220,8 +8220,8 @@ You can log in via the following URL:
         <Setting>
             <Hash>
                 <Item Key="Module">Kernel::Output::HTML::CustomerUser::Generic</Item>
-                <Item Key="Required">UserFirstname;UserLastname;</Item>
-                <Item Key="Attributes">UserFirstname;UserLastname;</Item>
+                <Item Key="Required">UserLastname;UserFirstname;</Item>
+                <Item Key="Attributes">UserLastname;UserFirstname;</Item>
                 <Item Key="CSS">Core.Agent.CustomerUser.LinkedIn.css</Item>
                 <Item Key="CSSClass">LinkedIn</Item>
                 <Item Key="Target">_blank</Item>
@@ -8238,8 +8238,8 @@ You can log in via the following URL:
         <Setting>
             <Hash>
                 <Item Key="Module">Kernel::Output::HTML::CustomerUser::Generic</Item>
-                <Item Key="Required">UserFirstname;UserLastname;</Item>
-                <Item Key="Attributes">UserFirstname;UserLastname;</Item>
+                <Item Key="Required">UserLastname;UserFirstname;</Item>
+                <Item Key="Attributes">UserLastname;UserFirstname;</Item>
                 <Item Key="CSS">Core.Agent.CustomerUser.Xing.css</Item>
                 <Item Key="CSSClass">Xing</Item>
                 <Item Key="Target">_blank</Item>
@@ -10988,6 +10988,21 @@ via the Preferences button after logging in.
                 <Item Key="7" Translatable="1">Lastname Firstname (UserLogin)</Item>
                 <Item Key="8" Translatable="1">(UserLogin) Lastname Firstname</Item>
                 <!-- End Hungarian -->
+                <Item Key="9" Translatable="1">LastnameFirstname</Item>
+            </Option>
+        </Setting>
+    </ConfigItem>
+    <ConfigItem Name="CustomerFirstnameLastnameOrder" Required="1" Valid="1">
+        <Description Translatable="1">Specifies the order in which the firstname and the lastname of customers will be displayed.</Description>
+        <Group>Framework</Group>
+        <SubGroup>Frontend::Agent</SubGroup>
+        <Setting>
+            <Option SelectedID="0">
+                <Item Key="0" Translatable="1">Firstname Lastname</Item>
+                <Item Key="1" Translatable="1">Lastname Firstname</Item>
+                <Item Key="2" Translatable="1">Firstname, Lastname</Item>
+                <Item Key="3" Translatable="1">Lastname, Firstname</Item>
+                <Item Key="4" Translatable="1">LastnameFirstname</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -11454,8 +11469,8 @@ via the Preferences button after logging in.
         <Setting>
             <Array>
                 <Item>UserLogin</Item>
-                <Item>UserFirstname</Item>
                 <Item>UserLastname</Item>
+                <Item>UserFirstname</Item>
                 <Item>UserEmail</Item>
                 <Item>UserCustomerID</Item>
             </Array>
@@ -11467,8 +11482,8 @@ via the Preferences button after logging in.
         <SubGroup>Frontend::Agent::ViewCustomerUserSearch</SubGroup>
         <Setting>
             <Array>
-                <Item>UserFirstname</Item>
                 <Item>UserLastname</Item>
+                <Item>UserFirstname</Item>
                 <Item>UserLogin</Item>
                 <Item>UserEmail</Item>
                 <Item>UserCustomerID</Item>
