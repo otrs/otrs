@@ -767,7 +767,7 @@ sub CustomerName {
             my $UserFullname = $Self->_CustomerUserFullname(
                 UserFirstname => $Name{UserFirstname},
                 UserLastname  => $Name{UserLastname},
-                UserLogin     => $User{UserLogin},
+                UserLogin     => $Name{UserLogin},
                 NameOrder     => $FirstnameLastNameOrder,
             );
             return $UserFullname;
