@@ -1,4 +1,6 @@
 #6.0.0.beta1 2017-??-??
+ - 2017-06-28 Fixed bug#[11028](https://bugs.otrs.org/show_bug.cgi?id=11028) - Owner and responsible always pre-selected in initial process screen.
+ - 2017-06-27 Fixed bug#[11422](https://bugs.otrs.org/show_bug.cgi?id=11422) - List in the Dashboard: standard priority is ignored if you use a filter.
  - 2017-06-23 Fixed bug#[12850](https://bugs.otrs.org/show_bug.cgi?id=12850) - Pre-Selection for processes directly in the URL doesn't work any longer.
  - 2017-06-21 Added Generic Interface TicketGet operation response attribute 'TimeUnit', thanks to Thomas Wouters.
  - 2017-06-21 Fixed bug#[12869](https://bugs.otrs.org/show_bug.cgi?id=12869) - Queue highlighting is not possible to disable.
@@ -133,6 +135,8 @@
  - 2015-11-27 Improved command Maint::Ticket::InvalidUserCleanup. It can now now both unlock tickets of invalid users and also (optionally) change their state to make sure they will not be overlooked. Thanks to Moritz Lenz @ noris networks.
 
 #5.0.21 2017-??-??
+ - 2017-06-27 Fixed bug#[12108](https://bugs.otrs.org/show_bug.cgi?id=12108) - Kernel::System::EmailParser not fully functional in Entity-Mode.
+ - 2017-06-27 Fixed bug#[10683](https://bugs.otrs.org/show_bug.cgi?id=10683) - Custom column order in dashboard gets mixed after changing the "shown tickets" value.
  - 2017-06-26 Fixed bug#[12560](https://bugs.otrs.org/show_bug.cgi?id=12560) - Search DynamicField or Condition.
  - 2017-06-26 Fixed bug#[9731](https://bugs.otrs.org/show_bug.cgi?id=9731) - Reply screen uses only email instead of full customer details.
  - 2017-06-23 Fixed bug#[12850](https://bugs.otrs.org/show_bug.cgi?id=12850) - Pre-Selection for processes directly in the URL doesn't work any longer.

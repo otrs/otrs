@@ -358,6 +358,10 @@ $Selenium->RunTest(
 
         # Expand article details.
         $Selenium->find_element( '.WidgetAction.Expand', 'css' )->click();
+        $Selenium->WaitFor(
+            JavaScript =>
+                'return typeof($) === "function" && $("#ArticleItems .PopupType_TicketAction:visible").length;'
+        );
 
         # click on reply
         $Selenium->execute_script(
@@ -383,7 +387,9 @@ $Selenium->RunTest(
             "Error message found.",
         );
 
-        $Selenium->WaitFor( JavaScript => 'return typeof($) === "function" && $(".Dialog.Modal.Alert:visible").length' );
+        $Selenium->WaitFor(
+            JavaScript => 'return typeof($) === "function" && $(".Dialog.Modal.Alert:visible").length'
+        );
 
         $Selenium->find_element( "#DialogButton1", 'css' )->VerifiedClick();
 
