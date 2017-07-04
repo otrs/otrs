@@ -1851,7 +1851,7 @@
                 <Item Key="TicketLinkDelete" Translatable="1">Deleted link to ticket "%s".</Item>
                 <Item Key="TimeAccounting" Translatable="1">%s time unit(s) accounted. Now total %s time unit(s).</Item>
                 <Item Key="TitleUpdate" Translatable="1">Title updated: Old: "%s", New: "%s"</Item>
-                <Item Key="TypeUpdate" Translatable="1">Updated Type to %s (ID=%s).</Item>
+                <Item Key="TypeUpdate" Translatable="1">Type updated. New: %s (ID=%s), Old: %s (ID=%s).</Item>
                 <Item Key="Unlock" Translatable="1">Unlocked ticket.</Item>
                 <Item Key="Unsubscribe" Translatable="1">Removed subscription for user "%s".</Item>
                 <Item Key="WebRequestCustomer" Translatable="1">Customer request via web.</Item>

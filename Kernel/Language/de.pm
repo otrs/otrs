@@ -6845,6 +6845,7 @@ Ihr Helpdesk-Team
         'Updated SLA to %s (ID=%s).' => 'SLA aktualisiert "%s" (ID=%s).',
         'Updated Service to %s (ID=%s).' => 'Service aktualisiert "%s" (ID=%s).',
         'Updated Type to %s (ID=%s).' => 'Typ aktualisiert "%s" (ID=%s).',
+        'Type updated. New: %s (ID=%s), Old: %s (ID=%s).' => 'Typ aktualisiert. Neu: %s (ID=%s), alt: %s (ID=%s).',
         'Updated: %s' => 'Aktualisiert: %s',
         'Updated: %s=%s;%s=%s;%s=%s;' => 'Aktualisiert: %s=%s;%s=%s;%s=%s;',
         'Updates the ticket escalation index after a ticket attribute got updated.' =>
