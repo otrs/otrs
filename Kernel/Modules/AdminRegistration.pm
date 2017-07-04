@@ -279,7 +279,7 @@ sub Run {
                 Test        => Translatable('Test'),
                 Training    => Translatable('Training'),
                 Development => Translatable('Development'),
-            }
+            },
             PossibleNone  => 1,
             Name          => 'Type',
             SelectedValue => $Param{SystemType},
@@ -425,7 +425,7 @@ sub Run {
                 Test        => Translatable('Test'),
                 Training    => Translatable('Training'),
                 Development => Translatable('Development'),
-            }
+            },
             PossibleNone  => 1,
             Name          => 'Type',
             SelectedValue => $Param{Type} // $RegistrationData{Type},
