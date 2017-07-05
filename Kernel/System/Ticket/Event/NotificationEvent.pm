@@ -625,7 +625,7 @@ sub _RecipientsGet {
 
             if (
                 $Recipient
-                =~ /^Agent(Owner|Responsible|Watcher|WritePermissions|MyQueues|MyServices|MyQueuesMyServices)$/
+                =~ /^Agent(Owner|Responsible|Watcher|WritePermissions|MyQueues|MyServices|MyQueuesMyServices|Create)$/
                 )
             {
 
@@ -729,6 +729,9 @@ sub _RecipientsGet {
                     my @UserIDs = sort keys %SubscribedUserIDs;
 
                     push @{ $Notification{Data}->{RecipientAgents} }, @UserIDs;
+                }
+                elsif ( $Recipient eq 'AgentCreate' ) {
+                    push @{ $Notification{Data}->{RecipientAgents} }, $Ticket{CreateBy};
                 }
             }
 

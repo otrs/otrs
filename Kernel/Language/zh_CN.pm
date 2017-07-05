@@ -2781,6 +2781,7 @@ sub Data {
             '下列通知已成功更新：%s',
         'There where errors adding/updating the following Notifications: %s. Please check the log file for more information.' =>
             '添加/更新下列通知时出现错误：%s，请检查OTRS日志以获取更多信息。',
+        'Agent who creates the ticket' => '工单创建人（服务人员）',
         'Agent who owns the ticket' => '拥有这个工单的服务人员',
         'Agent who is responsible for the ticket' => '对这个工单负责的服务人员',
         'All agents watching the ticket' => '所有关注这个工单的服务人员',
