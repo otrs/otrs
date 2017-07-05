@@ -557,7 +557,7 @@
                             [% Translate("Subject") | html %]:
                                         </label>
                                         <div class="Field">
-                                            <input type="text" name="[% Data.LanguageID | html %]_Subject" id="[% Data.LanguageID | html %]_Subject" value="[% Data.Subject | html %]" class="W75pc Validate_Required [% Data.SubjectServerError | html %]" maxlength="200"/>
+                                            <input type="text" name="[% Data.LanguageID | html %]_Subject" id="[% Data.LanguageID | html %]_Subject" value="[% Data.Subject | html %]" class="W75pc Validate_Required [% Data.SubjectServerError | html %]"/>
                                             <div id="[% Data.LanguageID | html %]_SubjectError" class="TooltipErrorMessage">
                                                 <p>[% Translate("This field is required.") | html %]</p>
                                             </div>
