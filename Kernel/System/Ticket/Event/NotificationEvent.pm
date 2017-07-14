@@ -628,7 +628,9 @@ sub _RecipientsGet {
                 =~ /^Agent(Owner|Responsible|Watcher|WritePermissions|MyQueues|MyServices|MyQueuesMyServices|Create)$/
                 )
             {
-
+                if ( $Recipient eq 'AgentCreate' ) {
+                    push @{ $Notification{Data}->{RecipientAgents} }, $Ticket{CreateBy};
+                }
                 if ( $Recipient eq 'AgentOwner' ) {
                     push @{ $Notification{Data}->{RecipientAgents} }, $Ticket{OwnerID};
                 }

@@ -775,7 +775,7 @@ sub _Edit {
 
     $Param{RecipientsStrg} = $LayoutObject->BuildSelection(
         Data => {
-            AgentCreate               => Translatable('Agent who creates the ticket'),
+            AgentCreate               => Translatable('who created the ticket'),
             AgentOwner                => Translatable('Agent who owns the ticket'),
             AgentResponsible          => Translatable('Agent who is responsible for the ticket'),
             AgentWatcher              => Translatable('All agents watching the ticket'),
@@ -785,6 +785,7 @@ sub _Edit {
             AgentMyQueuesMyServices   => Translatable('All agents subscribed to both the ticket\'s queue and service'),
             Customer                  => Translatable('Customer user of the ticket'),
             AllRecipientsFirstArticle => Translatable('All recipients of the first article'),
+            AllRecipientsLastArticle  => Translatable('All recipients of the last article'),
         },
         Name       => 'Recipients',
         Multiple   => 1,
