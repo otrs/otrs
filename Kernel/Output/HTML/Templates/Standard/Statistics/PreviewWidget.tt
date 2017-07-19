@@ -130,7 +130,7 @@
     [% IF Data.PreviewResult && PreviewFormats.size %]
 
         <div class="PreviewSettings">
-            [% Translate('Preview format:') | html %]
+            [% Translate('Preview format') | html %]:
             [% FOREACH Format IN PreviewFormats.sort %]
             <button class="CallForAction SwitchPreviewFormat" data-format="[% Format %]"><span>[% Translate(FormatConfig.item(Format)) | html %]</span></button>
             [% END %]
