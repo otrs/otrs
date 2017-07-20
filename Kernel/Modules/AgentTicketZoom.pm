@@ -1116,6 +1116,11 @@ sub MaskAgentZoom {
         );
     }
 
+    # check if ticket is normal or process ticket
+    my $IsProcessTicket = $TicketObject->TicketCheckForProcessType(
+        'TicketID' => $Self->{TicketID}
+    );
+
     # show articles items
     if ( !$Self->{ZoomTimeline} ) {
 
@@ -1190,6 +1195,9 @@ sub MaskAgentZoom {
 
         MENU:
         for my $Menu ( sort keys %Menus ) {
+            if ( !$IsProcessTicket && ("AgentTicketProcessTrace" eq $Menus{$Menu}->{Action})) {
+                next MENU;
+            }
 
             # load module
             if ( !$Kernel::OM->Get('Kernel::System::Main')->Require( $Menus{$Menu}->{Module} ) ) {
@@ -1332,11 +1340,6 @@ sub MaskAgentZoom {
             Name => 'HintNoArticles',
         );
     }
-
-    # check if ticket is normal or process ticket
-    my $IsProcessTicket = $TicketObject->TicketCheckForProcessType(
-        'TicketID' => $Self->{TicketID}
-    );
 
     # show process widget  and activity dialogs on process tickets
     if ($IsProcessTicket) {

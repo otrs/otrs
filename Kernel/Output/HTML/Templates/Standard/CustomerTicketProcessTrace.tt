@@ -1,0 +1,69 @@
+# --
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# --
+# This software comes with ABSOLUTELY NO WARRANTY. For details, see
+# the enclosed file COPYING for license information (AGPL). If you
+# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# --
+
+
+<div class="LayoutPopup ARIARoleMain">
+
+    <div class="Header">
+        <h1>
+            [% Translate("History") | html %] [% Config("Ticket::Hook") %]: [% Data.TicketNumber | html %] - [% Data.Title | html %]
+        </h1>
+        <p>
+            <a href="#" class="CancelClosePopup">[% Translate("Close") | html %]</a>
+        </p>
+    </div>
+
+    <div class="Content">
+        <div class="WidgetSimple">
+            <div class="Header">
+                <h2>
+                    [% Translate("Process History") | html %]
+                </h2>
+            </div>
+            <div class="Content">
+                <table class="DataTable">
+                    <thead>
+                        <tr>
+                            <th>[% Translate("ActivityName") | html %]</th>
+                            <th>[% Translate("Operator") | html %]</th>
+                            <th>[% Translate("StartTime") | html %]</th>
+                            <th>[% Translate("CompleteTime") | html %]</th>
+                            <th>[% Translate("ConsumeTime") | html %]</th>
+                            <th>[% Translate("Circulation") | html %]</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+[% RenderBlockStart("Row") %]
+                        <tr>
+                            <td>
+                                [% Data.ActivityName | html %]
+                            </td>
+                            <td title="[% Data.Operator | html %]">
+                                [% Data.Operator | html %]
+                            </td>
+                            <td>
+                                [% Data.StartTime | html%]
+                            </td>
+                            <td>
+                                [% Data.EndTime | html %]
+                            </td>
+                            <td>
+                                [% Data.ConsumeTime | html %]
+                            </td>
+                            <td>
+                                [% Data.Circulation | html %]
+                            </td>
+                        </tr>
+[% RenderBlockEnd("Row") %]
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
