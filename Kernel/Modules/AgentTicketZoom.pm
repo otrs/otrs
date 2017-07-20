@@ -1195,7 +1195,7 @@ sub MaskAgentZoom {
 
         MENU:
         for my $Menu ( sort keys %Menus ) {
-            if ( !$IsProcessTicket && ("AgentTicketProcessTrace" eq $Menus{$Menu}->{Action})) {
+            if ( !$IsProcessTicket && ( "AgentTicketProcessTrace" eq $Menus{$Menu}->{Action} ) ) {
                 next MENU;
             }
 

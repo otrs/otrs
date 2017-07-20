@@ -30,6 +30,7 @@ sub Run {
 
     # get layout object
     my $LayoutObject = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
+
     # check needed stuff
     if ( !$Self->{TicketID} ) {
 
@@ -88,10 +89,10 @@ sub Run {
     # get customer of ticket
     my $ProcessOperator = $Ticket{CustomerUserID};
 
-    if ( $ProcessOperator ) {
+    if ($ProcessOperator) {
         my %CustomerUserData = $Kernel::OM->Get('Kernel::System::CustomerUser')->CustomerUserDataGet(
-            User  => $ProcessOperator,            
-            Valid => 1        
+            User  => $ProcessOperator,
+            Valid => 1
         );
 
         $ProcessOperator = $CustomerUserData{UserFullname};
@@ -125,32 +126,32 @@ sub Run {
     my @ProcessHistory;
     my $Variable = 0;
     my $TicketIDRecord;
-    for my $Data ( @Lines ) {
+    for my $Data (@Lines) {
 
         # replace text
         if ( $Data->{Name} && $Data->{Name} =~ m/^%%/x ) {
-            
+
             $Data->{Name} =~ s/^%%//xg;
             my @Values = split( /%%/x, $Data->{Name} );
 
             # check  Activity  process  or not
             if (
-                 $Values[1] &&
-                ($Values[1] eq "ProcessManagementActivityID") && 
-                ($Data->{HistoryType} eq 'TicketDynamicFieldUpdate')
+                $Values[1] &&
+                ( $Values[1] eq "ProcessManagementActivityID" ) &&
+                ( $Data->{HistoryType} eq 'TicketDynamicFieldUpdate' )
                 )
             {
 
-                # check history records , choose the record which oldValue equals null,that means the first record. 
-                if( !($Values[5]) ) {
+                # check history records , choose the record which oldValue equals null,that means the first record.
+                if ( !( $Values[5] ) ) {
 
                     my $OperatorName = $Data->{UserFullname};
                     my %ProcessInformation;
 
                     #get activity from activity_id
-                    $ActivityData = $ActivityObject->ActivityGet(        
-                        Interface        => 'AgentInterface',       
-                        ActivityEntityID => $Values[3],    
+                    $ActivityData = $ActivityObject->ActivityGet(
+                        Interface        => 'AgentInterface',
+                        ActivityEntityID => $Values[3],
                     );
 
                     #check owner of ticket , if owner's name is null ,just instead of process user.
@@ -158,7 +159,7 @@ sub Run {
                         $ProcessOperator = $OperatorName;
                     }
 
-                    $ProcessInformation{Operator}        = $ProcessOperator;
+                    $ProcessInformation{Operator}     = $ProcessOperator;
                     $ProcessInformation{StartTime}    = $Data->{CreateTime};
                     $ProcessInformation{ActivityName} = $ActivityData->{Name};
                     push @ProcessHistory, \%ProcessInformation;
@@ -169,29 +170,30 @@ sub Run {
                     my $OperatorName = $Data->{UserFullname};
 
                     # activity data
-                    $ActivityData = $ActivityObject->ActivityGet(        
-                        Interface        => 'AgentInterface',       
-                        ActivityEntityID => $Values[3],    
+                    $ActivityData = $ActivityObject->ActivityGet(
+                        Interface        => 'AgentInterface',
+                        ActivityEntityID => $Values[3],
                     );
 
-                    my $OldActivityData = $ActivityObject->ActivityGet(        
-                        Interface        => 'AgentInterface',       
-                        ActivityEntityID => $Values[5],    
+                    my $OldActivityData = $ActivityObject->ActivityGet(
+                        Interface        => 'AgentInterface',
+                        ActivityEntityID => $Values[5],
                     );
 
                     # the first record
                     if ( $Variable == 0 ) {
-                        $ProcessHistory[0]{EndTime}    = $Data->{CreateTime};
-                        $ProcessHistory[0]{Circulation} = $ProcessHistory[0]{ActivityName}."--->".$ActivityData->{Name};
+                        $ProcessHistory[0]{EndTime} = $Data->{CreateTime};
+                        $ProcessHistory[0]{Circulation}
+                            = $ProcessHistory[0]{ActivityName} . "--->" . $ActivityData->{Name};
                     }
                     else {
 
                         # the other records
-                        $ProcessInformation{Operator}        = $OperatorName;
-                        $ProcessInformation{StartTime}    = $ProcessHistory[$Variable-1]{EndTime};
+                        $ProcessInformation{Operator}     = $OperatorName;
+                        $ProcessInformation{StartTime}    = $ProcessHistory[ $Variable - 1 ]{EndTime};
                         $ProcessInformation{ActivityName} = $OldActivityData->{Name};
                         $ProcessInformation{EndTime}      = $Data->{CreateTime};
-                        $ProcessInformation{Circulation}   = $OldActivityData->{Name}."--->".$ActivityData->{Name};
+                        $ProcessInformation{Circulation}  = $OldActivityData->{Name} . "--->" . $ActivityData->{Name};
                         push @ProcessHistory, \%ProcessInformation;
                     }
 
@@ -207,8 +209,8 @@ sub Run {
                         $ProcessHistory[$Variable]->{ConsumeTime} = 0;
                     }
                     else {
-                        my $SpendTime = $ProcessUpdateEndTime - $ProcessUpdateStartTime;
-                        my $ConsumeTime   = $LayoutObject->CustomerAge(
+                        my $SpendTime   = $ProcessUpdateEndTime - $ProcessUpdateStartTime;
+                        my $ConsumeTime = $LayoutObject->CustomerAge(
                             Age   => $SpendTime,
                             Space => ' ',
                         );
@@ -220,7 +222,7 @@ sub Run {
         }
     }
 
-    if( @ProcessHistory ) {
+    if (@ProcessHistory) {
 
         for my $Real (@ProcessHistory) {
 

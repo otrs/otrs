@@ -112,7 +112,7 @@ sub Run {
     my @ProcessHistory;
     my $Variable = 0;
     my $TicketIDRecord;
-    for my $Data ( @Lines ) {
+    for my $Data (@Lines) {
 
         # replace text
         if ( $Data->{Name} && $Data->{Name} =~ m/^%%/x ) {
@@ -123,13 +123,13 @@ sub Run {
             my @Values = split( /%%/x, $Data->{Name} );
 
             # check  Activity  process  or not
-            if ( 
-                 $Values[1] &&
-                ($Values[1] eq "ProcessManagementActivityID") && 
-                ($Data->{HistoryType} eq 'TicketDynamicFieldUpdate')
+            if (
+                $Values[1] &&
+                ( $Values[1] eq "ProcessManagementActivityID" ) &&
+                ( $Data->{HistoryType} eq 'TicketDynamicFieldUpdate' )
                 )
             {
-                # check history records , choose the record which oldValue is undefine, that means the first record. 
+                # check history records , choose the record which oldValue is undefine, that means the first record.
                 if ( !$Values[5] ) {
 
                     my %ProcessInformation;
@@ -151,29 +151,30 @@ sub Run {
                     my %ProcessInformation;
 
                     # activity data
-                    $ActivityData = $ActivityObject->ActivityGet(        
-                        Interface        => 'AgentInterface',       
-                        ActivityEntityID => $Values[3],    
+                    $ActivityData = $ActivityObject->ActivityGet(
+                        Interface        => 'AgentInterface',
+                        ActivityEntityID => $Values[3],
                     );
 
-                    my $OldActivityData = $ActivityObject->ActivityGet(        
-                        Interface        => 'AgentInterface',       
-                        ActivityEntityID => $Values[5],    
+                    my $OldActivityData = $ActivityObject->ActivityGet(
+                        Interface        => 'AgentInterface',
+                        ActivityEntityID => $Values[5],
                     );
 
                     # the first record
                     if ( $Variable == 0 ) {
-                        $ProcessHistory[0]{EndTime}    = $Data->{CreateTime};
-                        $ProcessHistory[0]{Circulation} = $ProcessHistory[0]{ActivityName}."--->".$ActivityData->{Name};
+                        $ProcessHistory[0]{EndTime} = $Data->{CreateTime};
+                        $ProcessHistory[0]{Circulation}
+                            = $ProcessHistory[0]{ActivityName} . "--->" . $ActivityData->{Name};
                     }
                     else {
 
                         # the other records
                         $ProcessInformation{Operator}     = $Data->{UserFullname};
-                        $ProcessInformation{StartTime}    = $ProcessHistory[$Variable-1]{EndTime};
+                        $ProcessInformation{StartTime}    = $ProcessHistory[ $Variable - 1 ]{EndTime};
                         $ProcessInformation{ActivityName} = $OldActivityData->{Name};
                         $ProcessInformation{EndTime}      = $Data->{CreateTime};
-                        $ProcessInformation{Circulation}  = $OldActivityData->{Name}."--->".$ActivityData->{Name};
+                        $ProcessInformation{Circulation}  = $OldActivityData->{Name} . "--->" . $ActivityData->{Name};
                         push @ProcessHistory, \%ProcessInformation;
                     }
 
@@ -189,8 +190,8 @@ sub Run {
                         $ProcessHistory[$Variable]->{ConsumeTime} = 0;
                     }
                     else {
-                        my $SpendTime = $ProcessUpdateEndTime - $ProcessUpdateStartTime;
-                        my $ConsumeTime   = $LayoutObject->CustomerAge(
+                        my $SpendTime   = $ProcessUpdateEndTime - $ProcessUpdateStartTime;
+                        my $ConsumeTime = $LayoutObject->CustomerAge(
                             Age   => $SpendTime,
                             Space => ' ',
                         );
@@ -203,8 +204,8 @@ sub Run {
         }
     }
 
-    if ( @ProcessHistory ) {
-        for my $Real ( @ProcessHistory ){
+    if (@ProcessHistory) {
+        for my $Real (@ProcessHistory) {
 
             $LayoutObject->Block(
                 Name => 'Row',

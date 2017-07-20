@@ -1296,6 +1296,7 @@ sub _Mask {
                 );
             }
         }
+
         # process history option
         $LayoutObject->Block(
             Name => 'ProcessHistory',
