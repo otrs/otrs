@@ -10,7 +10,7 @@ package Kernel::Modules::AgentTicketProcessTrace;
 
 use strict;
 use warnings;
-use Data::Dumper;
+
 use Kernel::System::VariableCheck qw(:all);
 
 our $ObjectManagerDisabled = 1;
