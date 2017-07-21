@@ -23,6 +23,13 @@
                 [% Data.Title | html %]
             </h2>
             <ul id="TicketOptions">
+[% RenderBlockStart("ProcessHistory") %]
+                <li class="Last">
+                    <a href="[% Env("Baselink") %]Action=CustomerTicketProcessTrace;TicketID=[% Data.TicketID | uri %]" class="AsPopup PopupType_TicketAction" title="[% Translate("Process History") | html %]">
+                        <span>[% Translate("Process History") | html %]</span>
+                    </a>
+                </li>
+[% RenderBlockEnd("ProcessHistory") %]
 [% RenderBlockStart("Chat") %]
                 <li>
                     <a target="_blank" href="[% Env("Baselink") %]Action=CustomerChat;Subaction=CreateChatRequest;TicketID=[% Data.TicketID | uri %];" class="Print" title="[% Translate("Start a chat from this ticket") | html %]">
