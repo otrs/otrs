@@ -912,43 +912,43 @@ sub Run {
     }
 
     # show also responsible if feature is enabled and there is a responsible filter
-#    if ( $ConfigObject->Get('Ticket::Responsible') && $TicketSearchSummary{Responsible} ) {
-#        $LayoutObject->Block(
-#            Name => 'ContentLargeTicketGenericFilterResponsible',
-#            Data => {
-#                %Param,
-#                %{ $Self->{Config} },
-#                Name => $Self->{Name},
-#                %{$Summary},
-#            },
-#        );
-#    }
+    #    if ( $ConfigObject->Get('Ticket::Responsible') && $TicketSearchSummary{Responsible} ) {
+    #        $LayoutObject->Block(
+    #            Name => 'ContentLargeTicketGenericFilterResponsible',
+    #            Data => {
+    #                %Param,
+    #                %{ $Self->{Config} },
+    #                Name => $Self->{Name},
+    #                %{$Summary},
+    #            },
+    #        );
+    #    }
 
     # show only myqueues if we have the filter
-#    if ( $TicketSearchSummary{MyQueues} ) {
-#        $LayoutObject->Block(
-#            Name => 'ContentLargeTicketGenericFilterMyQueues',
-#            Data => {
-#                %Param,
-#                %{ $Self->{Config} },
-#                Name => $Self->{Name},
-#                %{$Summary},
-#            },
-#        );
-#    }
+    #    if ( $TicketSearchSummary{MyQueues} ) {
+    #        $LayoutObject->Block(
+    #            Name => 'ContentLargeTicketGenericFilterMyQueues',
+    #            Data => {
+    #                %Param,
+    #                %{ $Self->{Config} },
+    #                Name => $Self->{Name},
+    #                %{$Summary},
+    #            },
+    #        );
+    #    }
 
     # show only myservices if we have the filter
-#    if ( $TicketSearchSummary{MyServices} ) {
-#        $LayoutObject->Block(
-#            Name => 'ContentLargeTicketGenericFilterMyServices',
-#            Data => {
-#                %Param,
-#                %{ $Self->{Config} },
-#                Name => $Self->{Name},
-#                %{$Summary},
-#            },
-#        );
-#    }
+    #    if ( $TicketSearchSummary{MyServices} ) {
+    #        $LayoutObject->Block(
+    #            Name => 'ContentLargeTicketGenericFilterMyServices',
+    #            Data => {
+    #                %Param,
+    #                %{ $Self->{Config} },
+    #                Name => $Self->{Name},
+    #                %{$Summary},
+    #            },
+    #        );
+    #    }
 
     # show my Ealsation Ticket
     if ( $TicketSearchSummary{MyEscalation} ) {
@@ -2509,36 +2509,37 @@ sub _SearchParamsGet {
     my %LockName2ID = reverse %LockList;
 
     my %TicketSearchSummary = (
-#        Locked => {
-#            OwnerIDs => $TicketSearch{OwnerIDs} // [ $Self->{UserID}, ],
-#            LockIDs => [ '2', '3' ],    # 'lock' and 'tmp_lock'
-#        },
-#        Watcher => {
-#            WatchUserIDs => [ $Self->{UserID}, ],
-#            LockIDs      => $TicketSearch{LockIDs} // undef,
-#        },
-#        Responsible => {
-#            ResponsibleIDs => $TicketSearch{ResponsibleIDs} // [ $Self->{UserID}, ],
-#            LockIDs        => $TicketSearch{LockIDs}        // undef,
-#        },
-#        MyQueues => {
-#            QueueIDs => \@MyQueues,
-#            LockIDs  => $TicketSearch{LockIDs} // undef,
-#        },
-#        MyServices => {
-#            QueueIDs   => \@ViewableQueueIDs,
-#            ServiceIDs => \@MyServiceIDs,
-#            LockIDs    => $TicketSearch{LockIDs} // undef,
-#        },
+
+        #        Locked => {
+        #            OwnerIDs => $TicketSearch{OwnerIDs} // [ $Self->{UserID}, ],
+        #            LockIDs => [ '2', '3' ],    # 'lock' and 'tmp_lock'
+        #        },
+        #        Watcher => {
+        #            WatchUserIDs => [ $Self->{UserID}, ],
+        #            LockIDs      => $TicketSearch{LockIDs} // undef,
+        #        },
+        #        Responsible => {
+        #            ResponsibleIDs => $TicketSearch{ResponsibleIDs} // [ $Self->{UserID}, ],
+        #            LockIDs        => $TicketSearch{LockIDs}        // undef,
+        #        },
+        #        MyQueues => {
+        #            QueueIDs => \@MyQueues,
+        #            LockIDs  => $TicketSearch{LockIDs} // undef,
+        #        },
+        #        MyServices => {
+        #            QueueIDs   => \@ViewableQueueIDs,
+        #            ServiceIDs => \@MyServiceIDs,
+        #            LockIDs    => $TicketSearch{LockIDs} // undef,
+        #        },
         MyOpenTickets => {
-            StateType  => 'open',
-            OwnerIDs   => $TicketSearch{OwnerIDs} // [ $Self->{UserID}, ],
-            LockIDs    => $TicketSearch{LockIDs} // undef,
+            StateType => 'open',
+            OwnerIDs  => $TicketSearch{OwnerIDs} // [ $Self->{UserID}, ],
+            LockIDs   => $TicketSearch{LockIDs} // undef,
         },
         CloseTickets => {
-            StateType  => 'closed',
-            OwnerIDs   => $TicketSearch{OwnerIDs} // [ $Self->{UserID}, ],
-            LockIDs    => $TicketSearch{LockIDs} // undef,
+            StateType => 'closed',
+            OwnerIDs  => $TicketSearch{OwnerIDs} // [ $Self->{UserID}, ],
+            LockIDs   => $TicketSearch{LockIDs} // undef,
         },
         All => {
             OwnerIDs => $TicketSearch{OwnerIDs} // undef,
