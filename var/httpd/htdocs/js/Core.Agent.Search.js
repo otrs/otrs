@@ -387,7 +387,9 @@ Core.Agent.Search = (function (TargetNS) {
                 }
 
                 Core.UI.InputFields.Activate($('.Dialog:visible'));
-
+                $('#Attribute').on('change', function () {
+                    $('.AddButton').trigger('click');
+                });
                 // register add of attribute
                 $('.AddButton').on('click', function () {
                     var Attribute = $('#Attribute').val();
