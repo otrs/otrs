@@ -1255,6 +1255,12 @@ sub _Mask {
                 );
             }
         }
+
+        # process history option
+        $LayoutObject->Block(
+            Name => 'ProcessHistory',
+            Data => \%Param,
+        );
     }
 
     # get dynamic field config for frontend module
