@@ -25,7 +25,7 @@
             <div class="Field">
 [% IF Data.TicketAppointmentRuleID %]
                 <p id="Title" class="ReadOnlyValue">
-                    <a target="_blank" href="[% Env("Baselink") %]Action=AgentTicketZoom;TicketID=[% Data.TicketID %]">[% Data.Title | html %]</a>
+                    <a target="[% Data.Target | html %]" href="[% Env("Baselink") %]Action=AgentTicketZoom;TicketID=[% Data.TicketID %]">[% Data.Title | html %]</a>
                 </p>
 [% ELSE %]
 [% IF Data.PermissionLevel < 2 %]
