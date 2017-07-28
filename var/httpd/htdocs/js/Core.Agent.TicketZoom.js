@@ -117,19 +117,22 @@ Core.Agent.TicketZoom = (function (TargetNS) {
      */
     TargetNS.IframeAutoHeight = function ($Iframe) {
         var NewHeight;
-
+        var IframBodyHeight;
         if (isJQueryObject($Iframe)) {
-
+            $Iframe.width($Iframe.width() - 2);
+            IframBodyHeight = $Iframe.contents().find("body").height();
             NewHeight = $Iframe.contents().height();
             if (!NewHeight || isNaN(NewHeight)) {
                 NewHeight = Core.Config.Get('Ticket::Frontend::HTMLArticleHeightDefault');
             }
             else {
-                if (NewHeight > Core.Config.Get('Ticket::Frontend::HTMLArticleHeightMax')) {
+                if (IframBodyHeight > Core.Config.Get('Ticket::Frontend::HTMLArticleHeightMax')) {
                     NewHeight = Core.Config.Get('Ticket::Frontend::HTMLArticleHeightMax');
                 }
+                else {
+                    NewHeight = IframBodyHeight;
+                }
             }
-
             // add delta for scrollbar
             NewHeight = parseInt(NewHeight, 10) + 25;
             $Iframe.height(NewHeight + 'px');
