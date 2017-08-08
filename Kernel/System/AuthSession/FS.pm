@@ -34,6 +34,21 @@ sub new {
     # get more common params
     $Self->{SessionSpool} = $ConfigObject->Get('SessionDir');
     $Self->{SystemID}     = $ConfigObject->Get('SystemID');
+    
+    # check if cache directory exists and in case create one
+    for my $Directory ( $Self->{SessionSpool} ) {
+        if ( !-e $Directory ) {
+            ## no critic
+            if ( !mkdir( $Directory, 0770 ) ) {
+                ## use critic
+                $Kernel::OM->Get('Kernel::System::Log')->Log(
+                    Priority => 'error',
+                    Message  => "Can't create directory '$Directory': $!",
+                );
+            }
+        }
+    }
+
 
     if ( !-e $Self->{SessionSpool} ) {
         if ( !mkdir( $Self->{SessionSpool}, 0770 ) ) {    ## no critic
