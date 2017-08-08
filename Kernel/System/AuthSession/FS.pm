@@ -35,6 +35,16 @@ sub new {
     # get more common params
     $Self->{SessionSpool} = $ConfigObject->Get('SessionDir');
     $Self->{SystemID}     = $ConfigObject->Get('SystemID');
+     
++    if ( !-e $Self->{SessionSpool} ) {
++        if ( !mkdir( $Self->{SessionSpool}, 0770 ) ) {    ## no critic
++            $Kernel::OM->Get('Kernel::System::Log')->Log(
++                Priority => 'error',
++                Message  => "Can't create directory '$Self->{SessionSpool}': $!",
++            );
++        }
++    }
++
 
     return $Self;
 }
