@@ -106,10 +106,6 @@ Core.Agent.Admin.GenericAgent = (function (TargetNS) {
             }
         });
 
-// ---
-// ChinaCore
-// ---
-
         $('#TicketEvent').bind('change', function (){
             if ($('#EventType').val() !== null) {
                 TargetNS.AddEvent($('#EventType').val());
@@ -123,7 +119,7 @@ Core.Agent.Admin.GenericAgent = (function (TargetNS) {
                 return;
             }
         });
-// ---
+
         $('#EventType').on('change', function (){
             TargetNS.ToggleEventSelect($(this).val());
         });
