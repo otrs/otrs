@@ -8957,6 +8957,17 @@
                     <AccessKey>n</AccessKey>
                     <Prio>200</Prio>
                 </NavBar>
+                 <NavBar>
+                    <Description Translatable="1">New Ticket</Description>
+                    <Name Translatable="1">New Ticket</Name>
+                    <Link>Action=AgentTicketPhone</Link>
+                    <LinkOption></LinkOption>
+                    <NavBar>Create new ticket</NavBar>
+                    <Type>Menu</Type>
+                    <Block></Block>
+                    <AccessKey>n</AccessKey>
+                    <Prio>20010</Prio>
+                </NavBar>
                 <Loader>
                     <JavaScript>Core.Agent.CustomerSearch.js</JavaScript>
                     <JavaScript>Core.Agent.CustomerSearchAutoComplete.js</JavaScript>
