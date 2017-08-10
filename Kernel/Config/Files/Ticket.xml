@@ -5851,6 +5851,28 @@
             </Array>
         </Setting>
     </ConfigItem>
+
+    <ConfigItem Name="Ticket::Frontend::AgentTicketCompose###State" Required="0" Valid="0">
+        <Description Translatable="1">Defines the next possible states after composing / answering a ticket in the ticket compose screen of the agent interface.</Description>
+        <Group>Ticket</Group>
+        <SubGroup>Frontend::Agent::Ticket::ViewCompose</SubGroup>
+        <Setting>
+            <Hash>
+                <Item Key="closed successful" Translatable="1">0</Item>
+                <Item Key="closed unsuccessful" Translatable="1">0</Item>
+                <Item Key="closed with workaround" Translatable="1">0</Item>
+                <Item Key="merged" Translatable="1">0</Item>
+                <Item Key="new" Translatable="1">0</Item>
+                <Item Key="open" Translatable="1">0</Item>
+                <Item Key="pending auto close+" Translatable="1">0</Item>
+                <Item Key="pending auto close-" Translatable="1">0</Item>
+                <Item Key="pending reminder" Translatable="1">0</Item>
+                <Item Key="removed" Translatable="1">0</Item>
+            </Hash>
+        </Setting>
+    </ConfigItem>
+
+
     <ConfigItem Name="Ticket::Frontend::AgentTicketCompose###IsVisibleForCustomerDefault" Required="1" Valid="1">
         <Description Translatable="1">Defines if the message in the ticket compose screen of the agent interface is visible for the customer by default.</Description>
         <Group>Ticket</Group>
@@ -5971,6 +5993,27 @@
             </Array>
         </Setting>
     </ConfigItem>
+
+    <ConfigItem Name="Ticket::Frontend::AgentTicketForward###State" Required="0" Valid="0">
+        <Description Translatable="1">Defines the next possible states after forwarding a ticket in the ticket forward screen of the agent interface.</Description>
+        <Group>Ticket</Group>
+        <SubGroup>Frontend::Agent::Ticket::ViewForward</SubGroup>
+        <Setting>
+            <Hash>
+                <Item Key="closed successful" Translatable="1">0</Item>
+                <Item Key="closed unsuccessful" Translatable="1">0</Item>
+                <Item Key="closed with workaround" Translatable="1">0</Item>
+                <Item Key="merged" Translatable="1">0</Item>
+                <Item Key="new" Translatable="1">0</Item>
+                <Item Key="open" Translatable="1">0</Item>
+                <Item Key="pending auto close+" Translatable="1">0</Item>
+                <Item Key="pending auto close-" Translatable="1">0</Item>
+                <Item Key="pending reminder" Translatable="1">0</Item>
+                <Item Key="removed" Translatable="1">0</Item>
+            </Hash>
+        </Setting>
+    </ConfigItem>
+
     <ConfigItem Name="Ticket::Frontend::AgentTicketForward###IsVisibleForCustomerDefault" Required="0" Valid="1">
         <Description Translatable="1">Defines if the message in the ticket forward screen of the agent interface is visible for the customer by default.</Description>
         <Group>Ticket</Group>
@@ -6023,6 +6066,27 @@
             </Array>
         </Setting>
     </ConfigItem>
+
+    <ConfigItem Name="Ticket::Frontend::AgentTicketEmailOutbound###State" Required="0" Valid="0">
+        <Description Translatable="1">Defines the next possible states after sending a message in the email outbound screen of the agent interface.</Description>
+        <Group>Ticket</Group>
+        <SubGroup>Frontend::Agent::Ticket::ViewEmailOutbound</SubGroup>
+        <Setting>
+            <Hash>
+                <Item Key="closed successful" Translatable="1">0</Item>
+                <Item Key="closed unsuccessful" Translatable="1">0</Item>
+                <Item Key="closed with workaround" Translatable="1">0</Item>
+                <Item Key="merged" Translatable="1">0</Item>
+                <Item Key="new" Translatable="1">0</Item>
+                <Item Key="open" Translatable="1">0</Item>
+                <Item Key="pending auto close+" Translatable="1">0</Item>
+                <Item Key="pending auto close-" Translatable="1">0</Item>
+                <Item Key="pending reminder" Translatable="1">0</Item>
+                <Item Key="removed" Translatable="1">0</Item>
+            </Hash>
+        </Setting>
+    </ConfigItem>
+
     <ConfigItem Name="Ticket::Frontend::AgentTicketEmailOutbound###IsVisibleForCustomerDefault" Required="0" Valid="1">
         <Description Translatable="1">Defines if the message in the email outbound screen of the agent interface is visible for the customer by default.</Description>
         <Group>Ticket</Group>
