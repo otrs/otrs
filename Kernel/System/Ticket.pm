@@ -4246,25 +4246,51 @@ sub TicketStateList {
             Result => 'HASH',
         );
     }
-    elsif ( $Param{Action} ) {
 
-        if (
-            ref $ConfigObject->Get("Ticket::Frontend::$Param{Action}")->{StateType} ne
-            'ARRAY'
-            )
-        {
-            $Kernel::OM->Get('Kernel::System::Log')->Log(
-                Priority => 'error',
-                Message  => "Need config for Ticket::Frontend::$Param{Action}->StateType!"
-            );
-            return;
+    elsif (
+        $Param{Action}
+        && $ConfigObject->Get("Ticket::Frontend::$Param{Action}")
+        &&
+        $ConfigObject->Get("Ticket::Frontend::$Param{Action}")->{State}
+        )
+    {
+
+        # load config state list
+        my $StateConfigList = $ConfigObject->Get("Ticket::Frontend::$Param{Action}")->{State};
+
+        if ( ref $StateConfigList eq 'HASH' && $StateConfigList ) {
+
+            for my $ConfigState ( sort keys %{$StateConfigList} ) {
+
+                if ( $StateConfigList->{$ConfigState} && $StateConfigList->{$ConfigState} eq '1' ) {
+                    my %State = $StateObject->StateGet(
+                        Name => $ConfigState,
+                    );
+
+                    $States{ $State{ID} } = $State{Name};
+                }
+            }
         }
 
-        my @StateType = @{ $ConfigObject->Get("Ticket::Frontend::$Param{Action}")->{StateType} };
-        %States = $StateObject->StateGetStatesByType(
-            StateType => \@StateType,
-            Result    => 'HASH',
-        );
+        else {
+            if (
+                ref $ConfigObject->Get("Ticket::Frontend::$Param{Action}")->{StateType} ne
+                'ARRAY'
+                )
+            {
+                $Kernel::OM->Get('Kernel::System::Log')->Log(
+                    Priority => 'error',
+                    Message  => "Need config for Ticket::Frontend::$Param{Action}->StateType!"
+                );
+                return;
+            }
+
+            my @StateType = @{ $ConfigObject->Get("Ticket::Frontend::$Param{Action}")->{StateType} };
+            %States = $StateObject->StateGetStatesByType(
+                StateType => \@StateType,
+                Result    => 'HASH',
+            );
+        }
     }
 
     # get whole states list
