@@ -574,7 +574,8 @@ sub _NameExistsCheck {
     if ($Flag) {
         $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'error',
-            Message  => "An Auto-Response with name '$Param{Name}' already exists!",
+            Message  => $Kernel::OM->Get('Kernel::Language')
+                ->Translate( 'An auto-response with the name "%s" already exists.', $Param{Name} ),
         );
         return;
     }
