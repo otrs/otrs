@@ -111,6 +111,7 @@ sub Run {
                 Value => \@StatsIDs
             );
         }
+        system $ConfigObject->Get('Home') . "/bin/otrs.Console.pl Maint::Stats::Dashboard::Generate > /dev/null&";
     }
 
     # get needed objects

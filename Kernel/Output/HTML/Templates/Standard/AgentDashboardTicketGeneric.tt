@@ -16,21 +16,45 @@
 [% RenderBlockStart("ContentLargeTicketGenericFilterAccessibleForCustomerUser") %]
         <li class="AdditionalFilter [% Data.item("AccessibleForCustomerUser::Selected") | html %]"><a href="#" id="DashboardAdditionalFilter[% Data.Name | html %]AccessibleForCustomerUser" data-filter="AccessibleForCustomerUser">[% Translate("Accessible for customer user") | html %]</a></li>
 [% RenderBlockEnd("ContentLargeTicketGenericFilterAccessibleForCustomerUser") %]
-[% RenderBlockStart("ContentLargeTicketGenericFilterLocked") %]
-        <li class="[% Data.item("Locked::Selected") | html %]"><a href="#" id="Dashboard[% Data.Name | html %]Locked" data-filter="Locked">[% Translate("My locked tickets") | html %] ([% Data.Locked | html %])</a></li>
-[% RenderBlockEnd("ContentLargeTicketGenericFilterLocked") %]
-[% RenderBlockStart("ContentLargeTicketGenericFilterWatcher") %]
-        <li class="[% Data.item("Watcher::Selected") | html %]"><a href="#" id="Dashboard[% Data.Name | html %]Watcher" data-filter="Watcher">[% Translate("My watched tickets") | html %] ([% Data.Watcher | html %])</a></li>
-[% RenderBlockEnd("ContentLargeTicketGenericFilterWatcher") %]
-[% RenderBlockStart("ContentLargeTicketGenericFilterResponsible") %]
-        <li class="[% Data.item("Responsible::Selected") | html %]"><a href="#" id="Dashboard[% Data.Name | html %]Responsible" data-filter="Responsible">[% Translate("My responsibilities") | html %] ([% Data.Responsible | html %])</a></li>
-[% RenderBlockEnd("ContentLargeTicketGenericFilterResponsible") %]
-[% RenderBlockStart("ContentLargeTicketGenericFilterMyQueues") %]
-        <li class="[% Data.item("MyQueues::Selected") | html %]"><a href="#" id="Dashboard[% Data.Name | html %]MyQueues" data-filter="MyQueues">[% Translate("Tickets in My Queues") | html %] ([% Data.MyQueues | html %])</a></li>
-[% RenderBlockEnd("ContentLargeTicketGenericFilterMyQueues") %]
-[% RenderBlockStart("ContentLargeTicketGenericFilterMyServices") %]
-        <li class="[% Data.item("MyServices::Selected") | html %]"><a href="#" id="Dashboard[% Data.Name | html %]MyServices" data-filter="MyServices">[% Translate("Tickets in My Services") | html %] ([% Data.MyServices | html %])</a></li>
-[% RenderBlockEnd("ContentLargeTicketGenericFilterMyServices") %]
+#[% RenderBlockStart("ContentLargeTicketGenericFilterLocked") %]
+#        <li class="[% Data.item("Locked::Selected") | html %]"><a href="#" id="Dashboard[% Data.Name | html %]Locked" data-filter="Locked">[% Translate("My locked tickets") | html %] ([% Data.Locked | html %])</a></li>
+#[% RenderBlockEnd("ContentLargeTicketGenericFilterLocked") %]
+#[% RenderBlockStart("ContentLargeTicketGenericFilterWatcher") %]
+#        <li class="[% Data.item("Watcher::Selected") | html %]"><a href="#" id="Dashboard[% Data.Name | html %]Watcher" data-filter="Watcher">[% Translate("My watched tickets") | html %] ([% Data.Watcher | html %])</a></li>
+#[% RenderBlockEnd("ContentLargeTicketGenericFilterWatcher") %]
+#[% RenderBlockStart("ContentLargeTicketGenericFilterResponsible") %]
+#        <li class="[% Data.item("Responsible::Selected") | html %]"><a href="#" id="Dashboard[% Data.Name | html %]Responsible" data-filter="Responsible">[% Translate("My responsibilities") | html %] ([% Data.Responsible | html %])</a></li>
+#[% RenderBlockEnd("ContentLargeTicketGenericFilterResponsible") %]
+
+[% RenderBlockStart("ContentLargeTicketGenericFilterMyOpenTicket") %]
+        <li class="[% Data.item("MyOpenTickets::Selected") | html %]"><a href="#" id="Dashboard[% Data.Name | html %]MyOpenTickets" data-filter="MyOpenTickets">[% Translate("open") | html %] ([% Data.MyOpenTickets | html %])</a></li>
+[% RenderBlockEnd("ContentLargeTicketGenericFilterMyOpenTicket") %]
+[% RenderBlockStart("ContentLargeTicketGenericFilterCloseTicket") %]
+        <li class="[% Data.item("CloseTickets::Selected") | html %]"><a href="#" id="Dashboard[% Data.Name | html %]CloseTickets" data-filter="CloseTickets">[% Translate("Close Tickets") | html %] ([% Data.CloseTickets | html %])</a></li>
+[% RenderBlockEnd("ContentLargeTicketGenericFilterCloseTicket") %]
+
+[% RenderBlockStart("ContentLargeTicketGenericFilterMyQueueUnassignedTicket") %]
+        <li class="[% Data.item("MyQueueUnassignedTicket::Selected") | html %]"><a href="#" id="Dashboard[% Data.Name | html %]MyQueueUnassignedTicket" data-filter="MyQueueUnassignedTicket">[% Translate("Unassigned Tickets") | html %] ([% Data.MyQueueUnassignedTicket | html %])</a></li>
+[% RenderBlockEnd("ContentLargeTicketGenericFilterMyQueueUnassignedTicket") %]
+[% RenderBlockStart("ContentLargeTicketGenericFilterMyQueueOpenTicket") %]
+        <li class="[% Data.item("MyQeueOpenTickets::Selected") | html %]"><a href="#" id="Dashboard[% Data.Name | html %]MyQeueOpenTickets" data-filter="MyQeueOpenTickets">[% Translate("open") | html %] ([% Data.MyQeueOpenTickets | html %])</a></li>
+[% RenderBlockEnd("ContentLargeTicketGenericFilterMyQueueOpenTicket") %]
+[% RenderBlockStart("ContentLargeTicketGenericFilterMyQueueCloseTickets") %]
+        <li class="[% Data.item("MyQueueCloseTickets::Selected") | html %]"><a href="#" id="Dashboard[% Data.Name | html %]MyQueueCloseTickets" data-filter="MyQueueCloseTickets">[% Translate("Close Tickets") | html %] ([% Data.MyQueueCloseTickets | html %])</a></li>
+[% RenderBlockEnd("ContentLargeTicketGenericFilterMyQueueCloseTickets") %]
+
+#[% RenderBlockStart("ContentLargeTicketGenericFilterMyEscalation") %]
+#        <li class="[% Data.item("MyEscalation::Selected") | html %]"><a href="#" id="Dashboard[% Data.Name | html %]MyEscalation" data-filter="MyEscalation">[% Translate("Tickets Escalation") | html %] ([% Data.MyEscalation | html %])</a></li>
+#[% RenderBlockEnd("ContentLargeTicketGenericFilterMyEscalation") %]
+#[% RenderBlockStart("ContentLargeTicketGenericFilterMyPendingReminder") %]
+#        <li class="[% Data.item("MyPendingReminder::Selected") | html %]"><a href="#" id="Dashboard[% Data.Name | html %]MyPendingReminder" data-filter="MyPendingReminder">[% Translate("Pending Reminder Ticket") | html %] ([% Data.MyPendingReminder | html %])</a></li>
+#[% RenderBlockEnd("ContentLargeTicketGenericFilterMyPendingReminder") %]
+#[% RenderBlockStart("ContentLargeTicketGenericFilterMyServices") %]
+#        <li class="[% Data.item("MyServices::Selected") | html %]"><a href="#" id="Dashboard[% Data.Name | html %]MyServices" data-filter="MyServices">[% Translate("Tickets in My Services") | html %] ([% Data.MyServices | html %])</a></li>
+#[% RenderBlockEnd("ContentLargeTicketGenericFilterMyServices") %]
+#[% RenderBlockStart("ContentLargeTicketGenericFilterMyQueues") %]
+#        <li class="[% Data.item("MyQueues::Selected") | html %]"><a href="#" id="Dashboard[% Data.Name | html %]MyQueues" data-filter="MyQueues">[% Translate("Tickets in My Queues") | html %] ([% Data.MyQueues | html %])</a></li>
+#[% RenderBlockEnd("ContentLargeTicketGenericFilterMyQueues") %]
         <li class="[% Data.item("All::Selected") | html %] Last"><a href="#" id="Dashboard[% Data.Name | html %]All" data-filter="All">[% Translate("All tickets") | html %] ([% Data.All | html %])</a></li>
     </ul>
 </div>

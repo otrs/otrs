@@ -6903,6 +6903,11 @@ Thanks for your help!
         'notice' => '注意',
         'off' => '关',
         'reverse' => '倒序',
+        'My Queue Tickets' => '我队列的工单',
+        'Parameters for the dashboard backend of the queue tickets overview of the agent interface. "Limit" is the number of entries shown by default. "Group" is used to restrict the access to the plugin (e. g. Group: admin;group1;group2;). "Default" determines if the plugin is enabled by default or if the user needs to enable it manually. "CacheTTLLocal" is the cache time in minutes for the plugin. Note: Only Ticket attributes and Dynamic Fields (DynamicField_NameX) are allowed for DefaultColumns. Possible settings: 0 = Disabled, 1 = Available, 2 = Enabled by default.' =>
+            '服务人员界面我的队列工单概览仪表板后端的参数。“Limit（限制）定义默认显示的条目数。“GROUP（组）用于到本插件的访问权限限制（如 Group:admin;group1;group2）。“Default（默认）”代表这个插件是默认启用还是需要用户手动启用。“CacheTTLLocal”表明本插件的缓存过期时间（单位：分钟）。注意：只有工单属性和动态字段（DynamicField_NameX）允许作为默认字段。可能的设置为：0 = 禁用， 1 = 可用，2 = 默认启用。',
+        'Close Tickets' => '关闭的工单',
+        'Unassigned Tickets' => '未分派的工单',
 
     };
 
