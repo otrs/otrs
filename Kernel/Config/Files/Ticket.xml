@@ -2944,6 +2944,26 @@
             </Array>
         </Setting>
     </ConfigItem>
+
+    <ConfigItem Name="Ticket::Frontend::AgentTicketFreeText###State" Required="0" Valid="0">
+        <Description Translatable="1">Defines the next state of a ticket after adding a note, in the ticket free text screen of the agent interface.</Description>
+        <Group>Ticket</Group>
+        <SubGroup>Frontend::Agent::Ticket::ViewFreeText</SubGroup>
+        <Setting>
+            <Hash>
+                <Item Key="closed successful" Translatable="1">0</Item>
+                <Item Key="closed unsuccessful" Translatable="1">0</Item>
+                <Item Key="closed with workaround" Translatable="1">0</Item>
+                <Item Key="merged" Translatable="1">0</Item>
+                <Item Key="new" Translatable="1">0</Item>
+                <Item Key="open" Translatable="1">0</Item>
+                <Item Key="pending auto close+" Translatable="1">0</Item>
+                <Item Key="pending auto close-" Translatable="1">0</Item>
+                <Item Key="pending reminder" Translatable="1">0</Item>
+                <Item Key="removed" Translatable="1">0</Item>
+            </Hash>
+        </Setting>
+    </ConfigItem>
     <ConfigItem Name="Ticket::Frontend::AgentTicketFreeText###StateDefault" Required="0" Valid="0">
         <Description Translatable="1">Defines the default next state of a ticket after adding a note, in the ticket free text screen of the agent interface.</Description>
         <Group>Ticket</Group>
@@ -3147,6 +3167,25 @@
             </Array>
         </Setting>
     </ConfigItem>
+    <ConfigItem Name="Ticket::Frontend::AgentTicketPhoneOutbound###State" Required="0" Valid="0">
+        <Description Translatable="1">Next possible ticket states after adding a phone note in the ticket phone outbound screen of the agent interface.</Description>
+        <Group>Ticket</Group>
+        <SubGroup>Frontend::Agent::Ticket::ViewPhoneOutbound</SubGroup>
+        <Setting>
+            <Hash>
+                <Item Key="closed successful" Translatable="1">0</Item>
+                <Item Key="closed unsuccessful" Translatable="1">0</Item>
+                <Item Key="closed with workaround" Translatable="1">0</Item>
+                <Item Key="merged" Translatable="1">0</Item>
+                <Item Key="new" Translatable="1">0</Item>
+                <Item Key="open" Translatable="1">0</Item>
+                <Item Key="pending auto close+" Translatable="1">0</Item>
+                <Item Key="pending auto close-" Translatable="1">0</Item>
+                <Item Key="pending reminder" Translatable="1">0</Item>
+                <Item Key="removed" Translatable="1">0</Item>
+            </Hash>
+        </Setting>
+    </ConfigItem>
     <ConfigItem Name="Ticket::Frontend::AgentTicketPhoneOutbound###HistoryType" Required="1" Valid="1">
         <Description Translatable="1">Defines the history type for the ticket phone outbound screen action, which gets used for ticket history in the agent interface.</Description>
         <Group>Ticket</Group>
@@ -3237,6 +3276,25 @@
                 <Item Translatable="1">pending reminder</Item>
                 <Item Translatable="1">closed</Item>
             </Array>
+        </Setting>
+    </ConfigItem>
+    <ConfigItem Name="Ticket::Frontend::AgentTicketPhoneInbound###State" Required="0" Valid="0">
+        <Description Translatable="1">Next possible ticket states after adding a phone note in the ticket phone inbound screen of the agent interface.</Description>
+        <Group>Ticket</Group>
+        <SubGroup>Frontend::Agent::Ticket::ViewPhoneInbound</SubGroup>
+        <Setting>
+            <Hash>
+                <Item Key="closed successful" Translatable="1">0</Item>
+                <Item Key="closed unsuccessful" Translatable="1">0</Item>
+                <Item Key="closed with workaround" Translatable="1">0</Item>
+                <Item Key="merged" Translatable="1">0</Item>
+                <Item Key="new" Translatable="1">0</Item>
+                <Item Key="open" Translatable="1">0</Item>
+                <Item Key="pending auto close+" Translatable="1">0</Item>
+                <Item Key="pending auto close-" Translatable="1">0</Item>
+                <Item Key="pending reminder" Translatable="1">0</Item>
+                <Item Key="removed" Translatable="1">0</Item>
+            </Hash>
         </Setting>
     </ConfigItem>
     <ConfigItem Name="Ticket::Frontend::AgentTicketPhoneInbound###HistoryType" Required="1" Valid="1">
@@ -3428,6 +3486,26 @@
             </Array>
         </Setting>
     </ConfigItem>
+
+    <ConfigItem Name="Ticket::Frontend::AgentTicketPhone###State" Required="0" Valid="0">
+        <Description Translatable="1">Determines the next possible ticket states, after the creation of a new phone ticket in the agent interface.</Description>
+        <Group>Ticket</Group>
+        <SubGroup>Frontend::Agent::Ticket::ViewPhoneNew</SubGroup>
+        <Setting>
+            <Hash>
+                <Item Key="closed successful" Translatable="1">0</Item>
+                <Item Key="closed unsuccessful" Translatable="1">0</Item>
+                <Item Key="closed with workaround" Translatable="1">0</Item>
+                <Item Key="merged" Translatable="1">0</Item>
+                <Item Key="new" Translatable="1">0</Item>
+                <Item Key="open" Translatable="1">0</Item>
+                <Item Key="pending auto close+" Translatable="1">0</Item>
+                <Item Key="pending auto close-" Translatable="1">0</Item>
+                <Item Key="pending reminder" Translatable="1">0</Item>
+                <Item Key="removed" Translatable="1">0</Item>
+            </Hash>
+        </Setting>
+    </ConfigItem>
     <ConfigItem Name="Ticket::Frontend::AgentTicketPhone###HistoryType" Required="1" Valid="1">
         <Description Translatable="1">Defines the history type for the phone ticket screen action, which gets used for ticket history in the agent interface.</Description>
         <Group>Ticket</Group>
@@ -3555,6 +3633,25 @@
                 <Item Translatable="1">pending reminder</Item>
                 <Item Translatable="1">closed</Item>
             </Array>
+        </Setting>
+    </ConfigItem>
+    <ConfigItem Name="Ticket::Frontend::AgentTicketEmail###State" Required="0" Valid="0">
+        <Description Translatable="1">Determines the next possible ticket states, after the creation of a new email ticket in the agent interface.</Description>
+        <Group>Ticket</Group>
+        <SubGroup>Frontend::Agent::Ticket::ViewEmailNew</SubGroup>
+        <Setting>
+            <Hash>
+                <Item Key="closed successful" Translatable="1">0</Item>
+                <Item Key="closed unsuccessful" Translatable="1">0</Item>
+                <Item Key="closed with workaround" Translatable="1">0</Item>
+                <Item Key="merged" Translatable="1">0</Item>
+                <Item Key="new" Translatable="1">0</Item>
+                <Item Key="open" Translatable="1">0</Item>
+                <Item Key="pending auto close+" Translatable="1">0</Item>
+                <Item Key="pending auto close-" Translatable="1">0</Item>
+                <Item Key="pending reminder" Translatable="1">0</Item>
+                <Item Key="removed" Translatable="1">0</Item>
+            </Hash>
         </Setting>
     </ConfigItem>
     <ConfigItem Name="Ticket::Frontend::AgentTicketEmail###HistoryType" Required="1" Valid="1">
@@ -3758,6 +3855,25 @@
             <Array>
                 <Item Translatable="1">closed</Item>
             </Array>
+        </Setting>
+    </ConfigItem>
+    <ConfigItem Name="Ticket::Frontend::AgentTicketClose###State" Required="0" Valid="0">
+        <Description Translatable="1">Defines the next state of a ticket after adding a note, in the close ticket screen of the agent interface.</Description>
+        <Group>Ticket</Group>
+        <SubGroup>Frontend::Agent::Ticket::ViewClose</SubGroup>
+        <Setting>
+            <Hash>
+                <Item Key="closed successful" Translatable="1">0</Item>
+                <Item Key="closed unsuccessful" Translatable="1">0</Item>
+                <Item Key="closed with workaround" Translatable="1">0</Item>
+                <Item Key="merged" Translatable="1">0</Item>
+                <Item Key="new" Translatable="1">0</Item>
+                <Item Key="open" Translatable="1">0</Item>
+                <Item Key="pending auto close+" Translatable="1">0</Item>
+                <Item Key="pending auto close-" Translatable="1">0</Item>
+                <Item Key="pending reminder" Translatable="1">0</Item>
+                <Item Key="removed" Translatable="1">0</Item>
+            </Hash>
         </Setting>
     </ConfigItem>
     <ConfigItem Name="Ticket::Frontend::AgentTicketClose###StateDefault" Required="0" Valid="1">
@@ -4065,6 +4181,25 @@
             </Array>
         </Setting>
     </ConfigItem>
+    <ConfigItem Name="Ticket::Frontend::AgentTicketNote###State" Required="0" Valid="0">
+        <Description Translatable="1">Defines the next state of a ticket after adding a note, in the ticket note screen of the agent interface.</Description>
+        <Group>Ticket</Group>
+        <SubGroup>Frontend::Agent::Ticket::ViewNote</SubGroup>
+        <Setting>
+            <Hash>
+                <Item Key="closed successful" Translatable="1">0</Item>
+                <Item Key="closed unsuccessful" Translatable="1">0</Item>
+                <Item Key="closed with workaround" Translatable="1">0</Item>
+                <Item Key="merged" Translatable="1">0</Item>
+                <Item Key="new" Translatable="1">0</Item>
+                <Item Key="open" Translatable="1">0</Item>
+                <Item Key="pending auto close+" Translatable="1">0</Item>
+                <Item Key="pending auto close-" Translatable="1">0</Item>
+                <Item Key="pending reminder" Translatable="1">0</Item>
+                <Item Key="removed" Translatable="1">0</Item>
+            </Hash>
+        </Setting>
+    </ConfigItem>
     <ConfigItem Name="Ticket::Frontend::AgentTicketNote###StateDefault" Required="0" Valid="0">
         <Description Translatable="1">Defines the default next state of a ticket after adding a note, in the ticket note screen of the agent interface.</Description>
         <Group>Ticket</Group>
@@ -4369,6 +4504,25 @@
             </Array>
         </Setting>
     </ConfigItem>
+    <ConfigItem Name="Ticket::Frontend::AgentTicketOwner###State" Required="0" Valid="0">
+        <Description Translatable="1">Defines the next state of a ticket after adding a note, in the ticket owner screen of a zoomed ticket in the agent interface.</Description>
+        <Group>Ticket</Group>
+        <SubGroup>Frontend::Agent::Ticket::ViewOwner</SubGroup>
+        <Setting>
+            <Hash>
+                <Item Key="closed successful" Translatable="1">0</Item>
+                <Item Key="closed unsuccessful" Translatable="1">0</Item>
+                <Item Key="closed with workaround" Translatable="1">0</Item>
+                <Item Key="merged" Translatable="1">0</Item>
+                <Item Key="new" Translatable="1">0</Item>
+                <Item Key="open" Translatable="1">0</Item>
+                <Item Key="pending auto close+" Translatable="1">0</Item>
+                <Item Key="pending auto close-" Translatable="1">0</Item>
+                <Item Key="pending reminder" Translatable="1">0</Item>
+                <Item Key="removed" Translatable="1">0</Item>
+            </Hash>
+        </Setting>
+    </ConfigItem>
     <ConfigItem Name="Ticket::Frontend::AgentTicketOwner###StateDefault" Required="0" Valid="1">
         <Description Translatable="1">Defines the default next state of a ticket after adding a note, in the ticket owner screen of a zoomed ticket in the agent interface.</Description>
         <Group>Ticket</Group>
@@ -4669,6 +4823,25 @@
                 <Item Translatable="1">pending reminder</Item>
                 <Item Translatable="1">pending auto</Item>
             </Array>
+        </Setting>
+    </ConfigItem>
+    <ConfigItem Name="Ticket::Frontend::AgentTicketPending###State" Required="0" Valid="0">
+        <Description Translatable="1">Defines the next state of a ticket after adding a note, in the ticket pending screen of a zoomed ticket in the agent interface.</Description>
+        <Group>Ticket</Group>
+        <SubGroup>Frontend::Agent::Ticket::ViewPending</SubGroup>
+        <Setting>
+            <Hash>
+                <Item Key="closed successful" Translatable="1">0</Item>
+                <Item Key="closed unsuccessful" Translatable="1">0</Item>
+                <Item Key="closed with workaround" Translatable="1">0</Item>
+                <Item Key="merged" Translatable="1">0</Item>
+                <Item Key="new" Translatable="1">0</Item>
+                <Item Key="open" Translatable="1">0</Item>
+                <Item Key="pending auto close+" Translatable="1">0</Item>
+                <Item Key="pending auto close-" Translatable="1">0</Item>
+                <Item Key="pending reminder" Translatable="1">0</Item>
+                <Item Key="removed" Translatable="1">0</Item>
+            </Hash>
         </Setting>
     </ConfigItem>
     <ConfigItem Name="Ticket::Frontend::AgentTicketPending###StateDefault" Required="0" Valid="1">
@@ -4975,6 +5148,25 @@
             </Array>
         </Setting>
     </ConfigItem>
+    <ConfigItem Name="Ticket::Frontend::AgentTicketPriority###State" Required="0" Valid="0">
+        <Description Translatable="1">Defines the next state of a ticket after adding a note, in the ticket priority screen of a zoomed ticket in the agent interface.</Description>
+        <Group>Ticket</Group>
+        <SubGroup>Frontend::Agent::Ticket::ViewPriority</SubGroup>
+        <Setting>
+            <Hash>
+                <Item Key="closed successful" Translatable="1">0</Item>
+                <Item Key="closed unsuccessful" Translatable="1">0</Item>
+                <Item Key="closed with workaround" Translatable="1">0</Item>
+                <Item Key="merged" Translatable="1">0</Item>
+                <Item Key="new" Translatable="1">0</Item>
+                <Item Key="open" Translatable="1">0</Item>
+                <Item Key="pending auto close+" Translatable="1">0</Item>
+                <Item Key="pending auto close-" Translatable="1">0</Item>
+                <Item Key="pending reminder" Translatable="1">0</Item>
+                <Item Key="removed" Translatable="1">0</Item>
+            </Hash>
+        </Setting>
+    </ConfigItem>
     <ConfigItem Name="Ticket::Frontend::AgentTicketPriority###StateDefault" Required="0" Valid="1">
         <Description Translatable="1">Defines the default next state of a ticket after adding a note, in the ticket priority screen of a zoomed ticket in the agent interface.</Description>
         <Group>Ticket</Group>
@@ -5279,6 +5471,25 @@
             </Array>
         </Setting>
     </ConfigItem>
+    <ConfigItem Name="Ticket::Frontend::AgentTicketResponsible###State" Required="0" Valid="0">
+        <Description Translatable="1">Defines the next state of a ticket after adding a note, in the ticket responsible screen of the agent interface.</Description>
+        <Group>Ticket</Group>
+        <SubGroup>Frontend::Agent::Ticket::ViewResponsible</SubGroup>
+        <Setting>
+            <Hash>
+                <Item Key="closed successful" Translatable="1">0</Item>
+                <Item Key="closed unsuccessful" Translatable="1">0</Item>
+                <Item Key="closed with workaround" Translatable="1">0</Item>
+                <Item Key="merged" Translatable="1">0</Item>
+                <Item Key="new" Translatable="1">0</Item>
+                <Item Key="open" Translatable="1">0</Item>
+                <Item Key="pending auto close+" Translatable="1">0</Item>
+                <Item Key="pending auto close-" Translatable="1">0</Item>
+                <Item Key="pending reminder" Translatable="1">0</Item>
+                <Item Key="removed" Translatable="1">0</Item>
+            </Hash>
+        </Setting>
+    </ConfigItem>
     <ConfigItem Name="Ticket::Frontend::AgentTicketResponsible###StateDefault" Required="0" Valid="1">
         <Description Translatable="1">Defines the default next state of a ticket after adding a note, in the ticket responsible screen of the agent interface.</Description>
         <Group>Ticket</Group>
@@ -5485,6 +5696,26 @@
             </Array>
         </Setting>
     </ConfigItem>
+
+    <ConfigItem Name="Ticket::Frontend::AgentTicketBulk###State" Required="0" Valid="0">
+        <Description Translatable="1">Determines the next possible ticket states, after the creation of a new phone ticket in the agent interface.</Description>
+        <Group>Ticket</Group>
+        <SubGroup>Frontend::Agent::Ticket::ViewBulk</SubGroup>
+        <Setting>
+            <Hash>
+                <Item Key="closed successful" Translatable="1">0</Item>
+                <Item Key="closed unsuccessful" Translatable="1">0</Item>
+                <Item Key="closed with workaround" Translatable="1">0</Item>
+                <Item Key="merged" Translatable="1">0</Item>
+                <Item Key="new" Translatable="1">0</Item>
+                <Item Key="open" Translatable="1">0</Item>
+                <Item Key="pending auto close+" Translatable="1">0</Item>
+                <Item Key="pending auto close-" Translatable="1">0</Item>
+                <Item Key="pending reminder" Translatable="1">0</Item>
+                <Item Key="removed" Translatable="1">0</Item>
+            </Hash>
+        </Setting>
+    </ConfigItem>
     <ConfigItem Name="Ticket::Frontend::AgentTicketBulk###StateDefault" Required="0" Valid="0">
         <Description Translatable="1">Defines the default next state of a ticket after adding a note, in the ticket bulk screen of the agent interface.</Description>
         <Group>Ticket</Group>
@@ -5580,6 +5811,25 @@
             </Array>
         </Setting>
     </ConfigItem>
+    <ConfigItem Name="Ticket::Frontend::AgentTicketMove###State" Required="0" Valid="0">
+        <Description Translatable="1">Defines the next state of a ticket after being moved to another queue, in the move ticket screen of the agent interface.</Description>
+        <Group>Ticket</Group>
+        <SubGroup>Frontend::Agent::Ticket::ViewMove</SubGroup>
+        <Setting>
+            <Hash>
+                <Item Key="closed successful" Translatable="1">0</Item>
+                <Item Key="closed unsuccessful" Translatable="1">0</Item>
+                <Item Key="closed with workaround" Translatable="1">0</Item>
+                <Item Key="merged" Translatable="1">0</Item>
+                <Item Key="new" Translatable="1">0</Item>
+                <Item Key="open" Translatable="1">0</Item>
+                <Item Key="pending auto close+" Translatable="1">0</Item>
+                <Item Key="pending auto close-" Translatable="1">0</Item>
+                <Item Key="pending reminder" Translatable="1">0</Item>
+                <Item Key="removed" Translatable="1">0</Item>
+            </Hash>
+        </Setting>
+    </ConfigItem>
     <ConfigItem Name="Ticket::Frontend::AgentTicketMove###Priority" Required="1" Valid="1">
         <Description Translatable="1">Shows the ticket priority options in the move ticket screen of the agent interface.</Description>
         <Group>Ticket</Group>
@@ -5663,6 +5913,26 @@
             </Array>
         </Setting>
     </ConfigItem>
+
+    <ConfigItem Name="Ticket::Frontend::AgentTicketBounce###State" Required="0" Valid="0">
+        <Description Translatable="1">Determines the next possible ticket states, after the creation of a new phone ticket in the agent interface.</Description>
+        <Group>Ticket</Group>
+        <SubGroup>Frontend::Agent::Ticket::ViewBounce</SubGroup>
+        <Setting>
+            <Hash>
+                <Item Key="closed successful" Translatable="1">0</Item>
+                <Item Key="closed unsuccessful" Translatable="1">0</Item>
+                <Item Key="closed with workaround" Translatable="1">0</Item>
+                <Item Key="merged" Translatable="1">0</Item>
+                <Item Key="new" Translatable="1">0</Item>
+                <Item Key="open" Translatable="1">0</Item>
+                <Item Key="pending auto close+" Translatable="1">0</Item>
+                <Item Key="pending auto close-" Translatable="1">0</Item>
+                <Item Key="pending reminder" Translatable="1">0</Item>
+                <Item Key="removed" Translatable="1">0</Item>
+            </Hash>
+        </Setting>
+    </ConfigItem>
     <ConfigItem Name="Ticket::Frontend::BounceText" Required="1" Valid="1">
         <Description Translatable="1">Defines the default ticket bounced notification for customer/sender in the ticket bounce screen of the agent interface.</Description>
         <Group>Ticket</Group>
@@ -5713,6 +5983,28 @@
             </Array>
         </Setting>
     </ConfigItem>
+
+    <ConfigItem Name="Ticket::Frontend::AgentTicketCompose###State" Required="0" Valid="0">
+        <Description Translatable="1">Defines the next possible states after composing / answering a ticket in the ticket compose screen of the agent interface.</Description>
+        <Group>Ticket</Group>
+        <SubGroup>Frontend::Agent::Ticket::ViewCompose</SubGroup>
+        <Setting>
+            <Hash>
+                <Item Key="closed successful" Translatable="1">0</Item>
+                <Item Key="closed unsuccessful" Translatable="1">0</Item>
+                <Item Key="closed with workaround" Translatable="1">0</Item>
+                <Item Key="merged" Translatable="1">0</Item>
+                <Item Key="new" Translatable="1">0</Item>
+                <Item Key="open" Translatable="1">0</Item>
+                <Item Key="pending auto close+" Translatable="1">0</Item>
+                <Item Key="pending auto close-" Translatable="1">0</Item>
+                <Item Key="pending reminder" Translatable="1">0</Item>
+                <Item Key="removed" Translatable="1">0</Item>
+            </Hash>
+        </Setting>
+    </ConfigItem>
+
+
     <ConfigItem Name="Ticket::Frontend::AgentTicketCompose###IsVisibleForCustomerDefault" Required="1" Valid="1">
         <Description Translatable="1">Defines if the message in the ticket compose screen of the agent interface is visible for the customer by default.</Description>
         <Group>Ticket</Group>
@@ -5844,6 +6136,27 @@
             </Array>
         </Setting>
     </ConfigItem>
+
+    <ConfigItem Name="Ticket::Frontend::AgentTicketForward###State" Required="0" Valid="0">
+        <Description Translatable="1">Defines the next possible states after forwarding a ticket in the ticket forward screen of the agent interface.</Description>
+        <Group>Ticket</Group>
+        <SubGroup>Frontend::Agent::Ticket::ViewForward</SubGroup>
+        <Setting>
+            <Hash>
+                <Item Key="closed successful" Translatable="1">0</Item>
+                <Item Key="closed unsuccessful" Translatable="1">0</Item>
+                <Item Key="closed with workaround" Translatable="1">0</Item>
+                <Item Key="merged" Translatable="1">0</Item>
+                <Item Key="new" Translatable="1">0</Item>
+                <Item Key="open" Translatable="1">0</Item>
+                <Item Key="pending auto close+" Translatable="1">0</Item>
+                <Item Key="pending auto close-" Translatable="1">0</Item>
+                <Item Key="pending reminder" Translatable="1">0</Item>
+                <Item Key="removed" Translatable="1">0</Item>
+            </Hash>
+        </Setting>
+    </ConfigItem>
+
     <ConfigItem Name="Ticket::Frontend::AgentTicketForward###IsVisibleForCustomerDefault" Required="0" Valid="1">
         <Description Translatable="1">Defines if the message in the ticket forward screen of the agent interface is visible for the customer by default.</Description>
         <Group>Ticket</Group>
@@ -5907,6 +6220,27 @@
             </Array>
         </Setting>
     </ConfigItem>
+
+    <ConfigItem Name="Ticket::Frontend::AgentTicketEmailOutbound###State" Required="0" Valid="0">
+        <Description Translatable="1">Defines the next possible states after sending a message in the email outbound screen of the agent interface.</Description>
+        <Group>Ticket</Group>
+        <SubGroup>Frontend::Agent::Ticket::ViewEmailOutbound</SubGroup>
+        <Setting>
+            <Hash>
+                <Item Key="closed successful" Translatable="1">0</Item>
+                <Item Key="closed unsuccessful" Translatable="1">0</Item>
+                <Item Key="closed with workaround" Translatable="1">0</Item>
+                <Item Key="merged" Translatable="1">0</Item>
+                <Item Key="new" Translatable="1">0</Item>
+                <Item Key="open" Translatable="1">0</Item>
+                <Item Key="pending auto close+" Translatable="1">0</Item>
+                <Item Key="pending auto close-" Translatable="1">0</Item>
+                <Item Key="pending reminder" Translatable="1">0</Item>
+                <Item Key="removed" Translatable="1">0</Item>
+            </Hash>
+        </Setting>
+    </ConfigItem>
+
     <ConfigItem Name="Ticket::Frontend::AgentTicketEmailOutbound###IsVisibleForCustomerDefault" Required="0" Valid="1">
         <Description Translatable="1">Defines if the message in the email outbound screen of the agent interface is visible for the customer by default.</Description>
         <Group>Ticket</Group>
@@ -8634,6 +8968,25 @@
                 <Item Translatable="1">open</Item>
                 <Item Translatable="1">closed</Item>
             </Array>
+        </Setting>
+    </ConfigItem>
+    <ConfigItem Name="Ticket::Frontend::CustomerTicketZoom###State" Required="0" Valid="0">
+        <Description Translatable="1">Defines the next possible states for customer tickets in the customer interface.</Description>
+        <Group>Ticket</Group>
+        <SubGroup>Frontend::Customer::Ticket::ViewZoom</SubGroup>
+        <Setting>
+            <Hash>
+                <Item Key="closed successful" Translatable="1">0</Item>
+                <Item Key="closed unsuccessful" Translatable="1">0</Item>
+                <Item Key="closed with workaround" Translatable="1">0</Item>
+                <Item Key="merged" Translatable="1">0</Item>
+                <Item Key="new" Translatable="1">0</Item>
+                <Item Key="open" Translatable="1">0</Item>
+                <Item Key="pending auto close+" Translatable="1">0</Item>
+                <Item Key="pending auto close-" Translatable="1">0</Item>
+                <Item Key="pending reminder" Translatable="1">0</Item>
+                <Item Key="removed" Translatable="1">0</Item>
+            </Hash>
         </Setting>
     </ConfigItem>
     <ConfigItem Name="Ticket::Frontend::CustomerTicketZoom###AttributesView" Required="1" Valid="1">
