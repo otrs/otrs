@@ -88,6 +88,12 @@ sub Run {
             $Errors{ErrorType}   = $CheckItemObject->CheckErrorType();
         }
 
+        # check email realname
+        if (index($GetParam{Realname}, ',') != -1) {
+            $Errors{RealnameInvalid} = 'ServerError';
+            $Errors{ErrorType} = 'InvalidSyntax';
+        }
+
         # if no errors occurred
         if ( !%Errors ) {
 
@@ -180,6 +186,12 @@ sub Run {
         {
             $Errors{NameInvalid} = 'ServerError';
             $Errors{ErrorType}   = $CheckItemObject->CheckErrorType();
+        }
+
+        # check email realname
+        if (index($GetParam{Realname}, ',') != -1) {
+            $Errors{RealnameInvalid} = 'ServerError';
+            $Errors{ErrorType} = 'InvalidSyntax';
         }
 
         # if no errors occurred
