@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -32,6 +32,7 @@ sub Run {
     my $ParamObject  = $Kernel::OM->Get('Kernel::System::Web::Request');
     my $LayoutObject = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
     my $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
+    my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
 
     if ( $Self->{Subaction} eq 'CancelAndUnlockTickets' ) {
 
@@ -45,7 +46,7 @@ sub Run {
         if ( !@TicketIDs ) {
             return $LayoutObject->ErrorScreen(
                 Message => Translatable('Can\'t lock Tickets, no TicketIDs are given!'),
-                Comment => Translatable('Please contact the admin.'),
+                Comment => Translatable('Please contact the administrator.'),
             );
         }
 
@@ -88,8 +89,81 @@ sub Run {
 
     }
 
-    # get config object
-    my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
+    elsif ( $Self->{Subaction} eq 'AJAXUpdate' ) {
+        my $QueueID = $ParamObject->GetParam( Param => 'QueueID' ) || '';
+
+        # Get all users.
+        my %AllGroupsMembers = $Kernel::OM->Get('Kernel::System::User')->UserList(
+            Type  => 'Long',
+            Valid => 1
+        );
+
+        # Put only possible rw agents to owner list.
+        if ( !$ConfigObject->Get('Ticket::ChangeOwnerToEveryone') ) {
+            my %AllGroupsMembersNew;
+            my @QueueIDs;
+
+            if ($QueueID) {
+                push @QueueIDs, $QueueID;
+            }
+            else {
+                my @TicketIDs = grep {$_} $ParamObject->GetArray( Param => 'TicketID' );
+                for my $TicketID (@TicketIDs) {
+                    my %Ticket = $TicketObject->TicketGet(
+                        TicketID      => $TicketID,
+                        DynamicFields => 0,
+                    );
+                    push @QueueIDs, $Ticket{QueueID};
+                }
+            }
+
+            my $QueueObject = $Kernel::OM->Get('Kernel::System::Queue');
+            my $GroupObject = $Kernel::OM->Get('Kernel::System::Group');
+
+            for my $QueueID (@QueueIDs) {
+                my $GroupID = $QueueObject->GetQueueGroupID( QueueID => $QueueID );
+                my %GroupMember = $GroupObject->PermissionGroupGet(
+                    GroupID => $GroupID,
+                    Type    => 'rw',
+                );
+                USER_ID:
+                for my $UserID ( sort keys %GroupMember ) {
+                    next USER_ID if !$AllGroupsMembers{$UserID};
+                    $AllGroupsMembersNew{$UserID} = $AllGroupsMembers{$UserID};
+                }
+                %AllGroupsMembers = %AllGroupsMembersNew;
+            }
+        }
+
+        my @JSONData = (
+            {
+                Name         => 'OwnerID',
+                Data         => \%AllGroupsMembers,
+                PossibleNone => 1,
+            }
+        );
+
+        if (
+            $ConfigObject->Get('Ticket::Responsible')
+            && $ConfigObject->Get("Ticket::Frontend::$Self->{Action}")->{Responsible}
+            )
+        {
+            push @JSONData, {
+                Name         => 'ResponsibleID',
+                Data         => \%AllGroupsMembers,
+                PossibleNone => 1,
+            };
+        }
+
+        my $JSON = $LayoutObject->BuildSelectionJSON( [@JSONData] );
+
+        return $LayoutObject->Attachment(
+            ContentType => 'application/json; charset=' . $LayoutObject->{Charset},
+            Content     => $JSON,
+            Type        => 'inline',
+            NoCache     => 1,
+        );
+    }
 
     # check if bulk feature is enabled
     if ( !$ConfigObject->Get('Ticket::Frontend::BulkFeature') ) {
@@ -101,7 +175,7 @@ sub Run {
     # get involved tickets, filtering empty TicketIDs
     my @ValidTicketIDs;
     my @IgnoreLockedTicketIDs;
-    my @TicketIDs = grep {$_}
+    my @TicketIDs = sort grep {$_}
         $ParamObject->GetArray( Param => 'TicketID' );
 
     my $Config = $ConfigObject->Get("Ticket::Frontend::$Self->{Action}");
@@ -136,13 +210,13 @@ sub Run {
             return $LayoutObject->ErrorScreen(
                 Message => Translatable('No selectable TicketID is given!'),
                 Comment =>
-                    Translatable('You either selected no ticket or only tickets which are locked by other agents'),
+                    Translatable('You either selected no ticket or only tickets which are locked by other agents.'),
             );
         }
         else {
             return $LayoutObject->ErrorScreen(
                 Message => Translatable('No TicketID is given!'),
-                Comment => Translatable('You need to select at least one ticket'),
+                Comment => Translatable('You need to select at least one ticket.'),
             );
         }
     }
@@ -238,8 +312,7 @@ sub Run {
         # check some stuff
         if (
             $GetParam{Subject}
-            &&
-            $ConfigObject->Get('Ticket::Frontend::AccountTime')
+            && $ConfigObject->Get('Ticket::Frontend::AccountTime')
             && $ConfigObject->Get('Ticket::Frontend::NeedAccountedTime')
             && $GetParam{TimeUnits} eq ''
             )
@@ -249,8 +322,7 @@ sub Run {
 
         if (
             $GetParam{EmailSubject}
-            &&
-            $ConfigObject->Get('Ticket::Frontend::AccountTime')
+            && $ConfigObject->Get('Ticket::Frontend::AccountTime')
             && $ConfigObject->Get('Ticket::Frontend::NeedAccountedTime')
             && $GetParam{EmailTimeUnits} eq ''
             )
@@ -399,6 +471,9 @@ sub Run {
         }
     }
 
+    my @TicketsWithError;
+    my @TicketsWithLockNotice;
+
     TICKET_ID:
     for my $TicketID (@TicketIDs) {
         my %Ticket = $TicketObject->TicketGet(
@@ -415,53 +490,36 @@ sub Run {
         if ( !$Access ) {
 
             # error screen, don't show ticket
-            $Output .= $LayoutObject->Notify(
-                Data => "$Ticket{TicketNumber}: "
-                    . $LayoutObject->{LanguageObject}->Translate("You don't have write access to this ticket."),
-            );
+            push @TicketsWithError, $Ticket{TicketNumber};
             next TICKET_ID;
         }
 
         # check if it's already locked by somebody else
-        if ( !$Config->{RequiredLock} ) {
-            $Output .= $LayoutObject->Notify(
-                Data => "$Ticket{TicketNumber}: "
-                    . $LayoutObject->{LanguageObject}->Translate("Ticket selected."),
-            );
-        }
-        else {
+        if ( $Config->{RequiredLock} ) {
             if ( grep ( { $_ eq $TicketID } @IgnoreLockedTicketIDs ) ) {
-                $Output .= $LayoutObject->Notify(
-                    Priority => 'Error',
-                    Data     => "$Ticket{TicketNumber}: "
-                        . $LayoutObject->{LanguageObject}->Translate(
-                        "Ticket is locked by another agent and will be ignored!"
-                        ),
-                );
+                push @TicketsWithError, $Ticket{TicketNumber};
                 next TICKET_ID;
             }
-            else {
+            elsif ( $Ticket{Lock} eq 'unlock' ) {
                 $LockedTickets .= "LockedTicketID=" . $TicketID . ';';
                 $Param{TicketsWereLocked} = 1;
+
+                # set lock
+                $TicketObject->TicketLockSet(
+                    TicketID => $TicketID,
+                    Lock     => 'lock',
+                    UserID   => $Self->{UserID},
+                );
+
+                # set user id
+                $TicketObject->TicketOwnerSet(
+                    TicketID  => $TicketID,
+                    UserID    => $Self->{UserID},
+                    NewUserID => $Self->{UserID},
+                );
+
+                push @TicketsWithLockNotice, $Ticket{TicketNumber};
             }
-
-            # set lock
-            $TicketObject->TicketLockSet(
-                TicketID => $TicketID,
-                Lock     => 'lock',
-                UserID   => $Self->{UserID},
-            );
-
-            # set user id
-            $TicketObject->TicketOwnerSet(
-                TicketID  => $TicketID,
-                UserID    => $Self->{UserID},
-                NewUserID => $Self->{UserID},
-            );
-            $Output .= $LayoutObject->Notify(
-                Data => "$Ticket{TicketNumber}: "
-                    . $LayoutObject->{LanguageObject}->Translate("Ticket locked."),
-            );
         }
 
         # remember selected ticket ids
@@ -823,6 +881,32 @@ sub Run {
             $ActionFlag = 1;
         }
         $Counter++;
+    }
+
+    # notify user about actions (errors)
+    if (@TicketsWithError) {
+        my $NotificationError = $LayoutObject->{LanguageObject}->Translate(
+            "The following tickets were ignored because they are locked by another agent or you don't have write access to these tickets: %s.",
+            join( ", ", @TicketsWithError ),
+        );
+
+        $Output .= $LayoutObject->Notify(
+            Priority => 'Error',
+            Data     => $NotificationError,
+        );
+    }
+
+    # notify user about actions (notices)
+    if (@TicketsWithLockNotice) {
+        my $NotificationNotice = $LayoutObject->{LanguageObject}->Translate(
+            "The following tickets were locked: %s.",
+            join( ", ", @TicketsWithLockNotice ),
+        );
+
+        $Output .= $LayoutObject->Notify(
+            Priority => 'Notice',
+            Data     => $NotificationNotice,
+        );
     }
 
     # redirect

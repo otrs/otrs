@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -36,7 +36,7 @@ Kernel::System::Web::InterfaceAgent - the agent web interface
 
 =head1 SYNOPSIS
 
-the global agent web interface (incl. auth, session, ...)
+the global agent web interface (authentication, session handling, ...)
 
 =head1 PUBLIC INTERFACE
 
@@ -167,14 +167,14 @@ sub Run {
         my $LayoutObject = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
         if ( !$DBCanConnect ) {
             $LayoutObject->FatalError(
-                Comment => Translatable('Please contact your administrator'),
+                Comment => Translatable('Please contact the administrator.'),
             );
             return;
         }
         if ( $ParamObject->Error() ) {
             $LayoutObject->FatalError(
                 Message => $ParamObject->Error(),
-                Comment => Translatable('Please contact your administrator'),
+                Comment => Translatable('Please contact the administrator.'),
             );
             return;
         }
@@ -316,10 +316,10 @@ sub Run {
             # show need user data error message
             $LayoutObject->Print(
                 Output => \$LayoutObject->Login(
-                    Title => 'Panic!',
+                    Title => 'Error',
                     Message =>
                         Translatable(
-                        'Panic, user authenticated but no user data can be found in OTRS DB!! Perhaps the user is invalid.'
+                        'Authentication succeeded, but no user data record is found in the database. Please contact the administrator.'
                         ),
                     %Param,
                     MessageType => 'Error',
@@ -352,6 +352,7 @@ sub Run {
             %UserData,
             UserLastRequest => $Kernel::OM->Get('Kernel::System::Time')->SystemTime(),
             UserType        => 'User',
+            SessionSource   => 'AgentInterface',
         );
 
         # show error message if no session id has been created
@@ -567,8 +568,8 @@ sub Run {
         # remove session id
         if ( !$SessionObject->RemoveSessionID( SessionID => $Param{SessionID} ) ) {
             $LayoutObject->FatalError(
-                Message => Translatable('Can`t remove SessionID'),
-                Comment => Translatable('Please contact your administrator'),
+                Message => Translatable('Can`t remove SessionID.'),
+                Comment => Translatable('Please contact the administrator.'),
             );
             return;
         }
@@ -690,7 +691,7 @@ sub Run {
             );
             if ( !$Sent ) {
                 $LayoutObject->FatalError(
-                    Comment => Translatable('Please contact your administrator'),
+                    Comment => Translatable('Please contact the administrator.'),
                 );
                 return;
             }
@@ -750,7 +751,7 @@ sub Run {
 
         if ( !$Sent ) {
             $LayoutObject->FatalError(
-                Comment => Translatable('Please contact your administrator'),
+                Comment => Translatable('Please contact the administrator.'),
             );
             return;
         }
@@ -887,8 +888,8 @@ sub Run {
             # show login screen
             $LayoutObject->Print(
                 Output => \$LayoutObject->Login(
-                    Title       => 'Panic!',
-                    Message     => Translatable('Panic! Invalid Session!!!'),
+                    Title       => 'Error',
+                    Message     => Translatable('Error: invalid session.'),
                     MessageType => 'Error',
                     %Param,
                 ),
@@ -906,7 +907,7 @@ sub Run {
                     "Module Kernel::Modules::$Param{Action} not registered in Kernel/Config.pm!",
             );
             $Kernel::OM->Get('Kernel::Output::HTML::Layout')->FatalError(
-                Comment => Translatable('Please contact your administrator'),
+                Comment => Translatable('Please contact the administrator.'),
             );
             return;
         }
@@ -969,6 +970,7 @@ sub Run {
         # update last request time
         if (
             !$ParamObject->IsAJAXRequest()
+            || $Param{Action} eq 'AgentVideoChat'
             ||
             (
                 $Param{Action} eq 'AgentChat'
@@ -1068,7 +1070,7 @@ sub Run {
                 close $Out;
 
                 $Kernel::OM->Get('Kernel::System::Log')->Log(
-                    Priority => 'notice',
+                    Priority => 'debug',
                     Message  => "Response::Agent: "
                         . ( time() - $Self->{PerformanceLogStart} )
                         . "s taken (URL:$QueryString:$UserData{UserLogin})",
@@ -1095,7 +1097,7 @@ sub Run {
         },
     );
     $Kernel::OM->Get('Kernel::Output::HTML::Layout')->FatalError(
-        Comment => Translatable('Please contact your administrator'),
+        Comment => Translatable('Please contact the administrator.'),
     );
     return;
 }

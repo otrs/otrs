@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -19,11 +19,6 @@ $Selenium->RunTest(
     sub {
 
         # get helper object
-        $Kernel::OM->ObjectParamAdd(
-            'Kernel::System::UnitTest::Helper' => {
-                RestoreSystemConfiguration => 1,
-                }
-        );
         my $Helper = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
 
         # create test user and login
@@ -65,11 +60,18 @@ $Selenium->RunTest(
         # create test article with subject that is link
         my $BodyText  = 'www.seleniumtest.com';
         my $ArticleID = $TicketObject->ArticleCreate(
-            TicketID       => $TicketID,
-            ArticleType    => 'phone',
-            SenderType     => 'agent',
-            Subject        => 'Selenium Test Article',
-            Body           => 'www.seleniumtest.com',
+            TicketID    => $TicketID,
+            ArticleType => 'phone',
+            SenderType  => 'agent',
+            Subject     => 'Selenium Test Article',
+            Body        => '
+www.seleniumtest.com
+ftp.seleniumtest.com
+cdn.www.seleniumtest.com
+my.ftp.de
+myftp.de
+sub-domain.www.seleniumtest.com
+            ',
             ContentType    => 'text/plain; charset=ISO-8859-15',
             HistoryType    => 'OwnerUpdate',
             HistoryComment => 'Some free text!',
@@ -84,22 +86,29 @@ $Selenium->RunTest(
         my $ScriptAlias = $Kernel::OM->Get('Kernel::Config')->Get('ScriptAlias');
         $Selenium->VerifiedGet("${ScriptAlias}index.pl?Action=AgentTicketZoom;TicketID=$TicketID;ArticleID=$ArticleID");
 
-        # check for link in article body
-        my $ExpectedLink = 'href="http://www.seleniumtest.com"';
-        $Self->True(
-            index( $Selenium->get_page_source(), $ExpectedLink ) > -1,
-            "TextURL link $BodyText on zoom view - found",
+        my @ExpectedLinks = (
+            'http://www.seleniumtest.com',
+            'ftp://ftp.seleniumtest.com',
+            'http://cdn.www.seleniumtest.com',
+            'http://my.ftp.de',
+            'http://myftp.de',
+            'http://sub-domain.www.seleniumtest.com',
         );
 
-        # get sysconfig object
-        my $SysConfigObject = $Kernel::OM->Get('Kernel::System::SysConfig');
+        # check for links in article body
+        for my $ExpectedLink (@ExpectedLinks) {
+            $Self->True(
+                index( $Selenium->get_page_source(), 'href="' . $ExpectedLink . '"' ) > -1,
+                "TextURL link $ExpectedLink on zoom view - found",
+            );
+        }
 
         # turn off OutputFilter TextURL in sysconfig
-        my %TextURL = $SysConfigObject->ConfigItemGet(
+        my %TextURL = $Kernel::OM->Get('Kernel::System::SysConfig')->ConfigItemGet(
             Name    => 'Frontend::Output::FilterText###AAAURL',
             Default => 1,
         );
-        $SysConfigObject->ConfigItemUpdate(
+        $Helper->ConfigSettingChange(
             Valid => 0,
             Key   => 'Frontend::Output::FilterText###AAAURL',
             Value => \%TextURL,
@@ -108,12 +117,13 @@ $Selenium->RunTest(
         # refresh screen
         $Selenium->VerifiedRefresh();
 
-        # link shouldn't be present anymore with OutputFilter turned off
-        $Self->True(
-            index( $Selenium->get_page_source(), $ExpectedLink ) == -1,
-            "TextURL link $BodyText on zoom view - not found",
-        );
-
+        # links shouldn't be present anymore with OutputFilter turned off
+        for my $ExpectedLink (@ExpectedLinks) {
+            $Self->True(
+                index( $Selenium->get_page_source(), 'href="' . $ExpectedLink . '"' ) == -1,
+                "TextURL link $ExpectedLink on zoom view - not found",
+            );
+        }
     }
 );
 

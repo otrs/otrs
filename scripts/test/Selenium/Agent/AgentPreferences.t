@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -20,17 +20,9 @@ $Selenium->RunTest(
     sub {
 
         # get helper object
-        $Kernel::OM->ObjectParamAdd(
-            'Kernel::System::UnitTest::Helper' => {
-                RestoreSystemConfiguration => 1,
-            },
-        );
         my $Helper = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
 
-        # get sysconfig object
-        my $SysConfigObject = $Kernel::OM->Get('Kernel::System::SysConfig');
-
-        $SysConfigObject->ConfigItemUpdate(
+        $Helper->ConfigSettingChange(
             Valid => 1,
             Key   => 'Ticket::Service',
             Value => 1,
@@ -130,13 +122,15 @@ JAVASCRIPT
         );
 
         # now enable the checkbox and try to submit again, it should work this time
-        $Selenium->find_element( "//input[\@id='Notification-" . $NotificationID . "-Email-checkbox']" )->click();
+        $Selenium->find_element( "//input[\@id='Notification-" . $NotificationID . "-Email-checkbox']" )
+            ->VerifiedClick();
         $Selenium->find_element("//button[\@id='NotificationEventTransportUpdate'][\@type='submit']")->VerifiedClick();
 
         $Selenium->execute_script($CheckAlertJS);
 
         # now that the checkbox is checked, it should not be possible to disable it again
-        $Selenium->find_element( "//input[\@id='Notification-" . $NotificationID . "-Email-checkbox']" )->click();
+        $Selenium->find_element( "//input[\@id='Notification-" . $NotificationID . "-Email-checkbox']" )
+            ->VerifiedClick();
 
         $Self->Is(
             $Selenium->execute_script("return window.getLastAlert()"),
@@ -187,7 +181,7 @@ JAVASCRIPT
             $Selenium->execute_script(
                 "\$('#UserLanguage').val('$Language').trigger('redraw.InputField').trigger('change');"
             );
-            $Selenium->find_element("//button[\@id='UserLanguageUpdate'][\@type='submit']")->VerifiedClick();
+            $Selenium->find_element("//button[\@id='UserLanguageUpdate'][\@type='submit']")->VerifiedSubmit();
 
             # check edited language value
             $Self->Is(
@@ -211,6 +205,26 @@ JAVASCRIPT
                 ) || die;
             }
         }
+
+        # Inject malicious code in user language variable.
+        my $MaliciousCode = 'en\\\'});window.iShouldNotExist=true;Core.Config.AddConfig({a:\\\'';
+        $Selenium->execute_script(
+            "\$('#UserLanguage').append(
+                \$('<option/>', {
+                    value: '$MaliciousCode',
+                    text: 'Malevolent'
+                })
+            ).val('$MaliciousCode').trigger('redraw.InputField').trigger('change');"
+        );
+        $Selenium->find_element( '#UserLanguage', 'css' )->VerifiedSubmit();
+
+        # Check if malicious code was sanitized.
+        $Self->True(
+            $Selenium->execute_script(
+                "return typeof window.iShouldNotExist === 'undefined';"
+            ),
+            'Malicious variable is undefined'
+        );
     }
 );
 

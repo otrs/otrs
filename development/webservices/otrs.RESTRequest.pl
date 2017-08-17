@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU AFFERO General Public License as published by
@@ -9,12 +9,12 @@
 #
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program; if not, write to the Free Software
-# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
+# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 # or see http://www.gnu.org/licenses/agpl.txt.
 # --
 
@@ -60,13 +60,11 @@ my $UpdateControllerAndRequest = '/Webservice/GenericTicketConnectorREST/Ticket/
 # This is the base URL for Ticket Search
 my $SearchControllerAndRequest = '/Webservice/GenericTicketConnectorREST/Ticket';
 
-# ---
 # TicketGet Example
 # See the documentation of OTRSGenericInterfaceREST on how to setup
 #   - webservice
 #   - transport
 #   - operations
-# ---
 my $GetParams = {
     UserLogin => "some agent user login",       # to be filled with valid agent login
     Password  => "some agent user password",    # to be filled with valid agent password
@@ -97,15 +95,11 @@ else {
 
 }
 
-# ---
-
-# ---
 # TicketSearch Example
 # See the documentation of OTRSGenericInterfaceREST on how to setup
 #   - webservice
 #   - transport
 #   - operations
-# ---
 my $SearchParams = {
     UserLogin => "some agent user login",       # to be filled with valid agent login
     Password  => "some agent user password",    # to be filled with valid agent password
@@ -138,15 +132,11 @@ else {
 
 }
 
-# ---
-
-# ---
 # TicketCreate Example
 # See the documentation of OTRSGenericInterfaceREST on how to setup
 # - webservice
 # - transport
 # - operations
-# ---
 my $CreateOrUpdateParams = {
     UserLogin => "some agent user login",       # to be filled with valid agent login
     Password  => "some agent user password",    # to be filled with valid agent password
@@ -198,15 +188,11 @@ else {
 
 }
 
-# ---
-
-# ---
 # TicketUpdate Example
 # See the documentation of OTRSGenericInterfaceREST on how to setup
 #   - webservice
 #   - transport
 #   - operations
-# ---
 my $UpdateJSONParams = encode_json $CreateOrUpdateParams;
 
 my @UpdateRequestParam = (
@@ -236,5 +222,3 @@ else {
     print Dumper($Data);
 
 }
-
-# ---

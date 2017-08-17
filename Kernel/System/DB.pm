@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -7,7 +7,7 @@
 # --
 
 package Kernel::System::DB;
-## nofilter(TidyAll::Plugin::OTRS::Perl::PODSpelling)
+## nofilter(TidyAll::Plugin::OTRS::Perl::Pod::FunctionPod)
 
 use strict;
 use warnings;
@@ -22,6 +22,7 @@ our @ObjectDependencies = (
     'Kernel::System::Encode',
     'Kernel::System::Log',
     'Kernel::System::Main',
+    'Kernel::System::Storable',
     'Kernel::System::Time',
 );
 
@@ -171,8 +172,20 @@ sub Connect {
     # check database handle
     if ( $Self->{dbh} ) {
 
-        return $Self->{dbh} if $Self->{dbh}->ping();
+        my $PingTimeout = 10;        # Only ping every 10 seconds (see bug#12383).
+        my $CurrentTime = time();    ## no critic
 
+        if ( $CurrentTime - ( $Self->{LastPingTime} // 0 ) < $PingTimeout ) {
+            return $Self->{dbh};
+        }
+
+        # Ping to see if the connection is still alive.
+        if ( $Self->{dbh}->ping() ) {
+            $Self->{LastPingTime} = $CurrentTime;
+            return $Self->{dbh};
+        }
+
+        # Ping failed: cause a reconnect.
         delete $Self->{dbh};
     }
 
@@ -774,10 +787,10 @@ to retrieve the column names of a database statement
 sub GetColumnNames {
     my $Self = shift;
 
-    my $ColumnNames = $Self->{Cursor}->{NAME};
+    my $ColumnNames = $Kernel::OM->Get('Kernel::System::Encode')->EncodeInput( $Self->{Cursor}->{NAME} );
 
     my @Result;
-    if ( ref $ColumnNames eq 'ARRAY' ) {
+    if ( IsArrayRefWithData($ColumnNames) ) {
         @Result = @{$ColumnNames};
     }
 
@@ -822,19 +835,20 @@ sub SelectAll {
 =item GetDatabaseFunction()
 
 to get database functions like
-    o Limit
-    o DirectBlob
-    o QuoteSingle
-    o QuoteBack
-    o QuoteSemicolon
-    o NoLikeInLargeText
-    o CurrentTimestamp
-    o Encode
-    o Comment
-    o ShellCommit
-    o ShellConnect
-    o Connect
-    o LikeEscapeString
+
+    - Limit
+    - DirectBlob
+    - QuoteSingle
+    - QuoteBack
+    - QuoteSemicolon
+    - NoLikeInLargeText
+    - CurrentTimestamp
+    - Encode
+    - Comment
+    - ShellCommit
+    - ShellConnect
+    - Connect
+    - LikeEscapeString
 
     my $What = $DBObject->GetDatabaseFunction('DirectBlob');
 
@@ -880,8 +894,17 @@ sub SQLProcessor {
     my @SQL;
     if ( $Param{Database} && ref $Param{Database} eq 'ARRAY' ) {
 
+        # make a deep copy in order to prevent modyfing the input data
+        # see also Bug#12764 - Database function SQLProcessor() modifies given parameter data
+        # https://bugs.otrs.org/show_bug.cgi?id=12764
+        my @Database = @{
+            $Kernel::OM->Get('Kernel::System::Storable')->Clone(
+                Data => $Param{Database},
+                )
+        };
+
         my @Table;
-        for my $Tag ( @{ $Param{Database} } ) {
+        for my $Tag (@Database) {
 
             # create table
             if ( $Tag->{Tag} eq 'Table' || $Tag->{Tag} eq 'TableCreate' ) {
@@ -1127,8 +1150,8 @@ generate SQL condition query based on a search expression
     )
 
 Note that the comparisons are usually performed case insensitively.
-Only VARCHAR colums with a size less or equal 3998 are supported,
-as for locator objects the functioning of SQL function LOWER() can't
+Only C<VARCHAR> columns with a size less or equal 3998 are supported,
+as for locator objects the functioning of SQL function C<LOWER()> can't
 be guaranteed.
 
 =cut

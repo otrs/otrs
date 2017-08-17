@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -83,7 +83,7 @@ sub SystemTime {
 
 =item SystemTime2TimeStamp()
 
-returns a time stamp for a given system time in "yyyy-mm-dd 23:59:59" format.
+returns a time stamp for a given system time in C<yyyy-mm-dd 23:59:59> format.
 
     my $TimeStamp = $TimeObject->SystemTime2TimeStamp(
         SystemTime => $SystemTime,
@@ -127,7 +127,7 @@ sub SystemTime2TimeStamp {
 =item CurrentTimestamp()
 
 returns a time stamp of the local system time (see L<SystemTime()>)
-in "yyyy-mm-dd 23:59:59" format.
+in C<yyyy-mm-dd 23:59:59> format.
 
     my $TimeStamp = $TimeObject->CurrentTimestamp();
 
@@ -395,9 +395,8 @@ sub MailTimeStamp {
 
     # According to RFC 2822, section 3.3
 
-    # ---
     # The date and time-of-day SHOULD express local time.
-
+    #
     # The zone specifies the offset from Coordinated Universal Time (UTC,
     # formerly referred to as "Greenwich Mean Time") that the date and
     # time-of-day represent.  The "+" or "-" indicates whether the
@@ -412,7 +411,6 @@ sub MailTimeStamp {
     # in a local time zone other than Universal Time and therefore
     # indicates that the date-time contains no information about the local
     # time zone.
-    # ---
 
     my @DayMap   = qw/Sun Mon Tue Wed Thu Fri Sat/;
     my @MonthMap = qw/Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec/;
@@ -733,8 +731,8 @@ sub DestinationTime {
 
                 # Check if we have a working hour
                 if ( grep { $H == $_ } @{ $TimeWorkingHours->{ $LDay{$WDay} } } ) {
-                    if ( $Param{Time} > 60 * 60 ) {
-                        my $RestOfHour = 3600 - ( $Minute * 60 + $Second );
+                    my $RestOfHour = 3600 - ( $Minute * 60 + $Second );
+                    if ( $Param{Time} > $RestOfHour ) {
                         $DestinationTime += $RestOfHour;
                         $Param{Time} -= $RestOfHour;
                     }
@@ -784,7 +782,7 @@ sub DestinationTime {
 
 =item VacationCheck()
 
-check if the selected day is a vacation (it doesn't matter if you
+check if the selected day is a vacation (it does not matter if you
 insert 01 or 1 for month or day in the function or in the SysConfig)
 
 returns (true) vacation day if exists, returns false if date is no

@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -29,7 +29,7 @@ All valid functions.
 
 =item PopupClose()
 
-Generate a small HTML page which closes the popup window and
+Generate a small HTML page which closes the pop-up window and
 executes an action in the main window.
 
     # load specific URL in main window

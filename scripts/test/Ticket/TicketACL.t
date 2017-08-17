@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -23,11 +23,13 @@ my $PriorityObject     = $Kernel::OM->Get('Kernel::System::Priority');
 my $SLAObject          = $Kernel::OM->Get('Kernel::System::SLA');
 my $StateObject        = $Kernel::OM->Get('Kernel::System::State');
 my $DynamicFieldObject = $Kernel::OM->Get('Kernel::System::DynamicField');
+my $StorableObject     = $Kernel::OM->Get('Kernel::System::Storable');
 
 # get helper object
 $Kernel::OM->ObjectParamAdd(
     'Kernel::System::UnitTest::Helper' => {
-        RestoreDatabase => 1,
+        RestoreDatabase  => 1,
+        UseTmpArticleDir => 1,
     },
 );
 my $Helper = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
@@ -249,32 +251,32 @@ $Self->True(
     "StateAdd() ID ($NewStateID) added successfully"
 );
 
-# set dynamic_field options
-my $DynamicFieldName = 'DynamicField' . $RandomID;
-my $DynamicFieldID   = $DynamicFieldObject->DynamicFieldAdd(
-    Name       => $DynamicFieldName,
-    Label      => 'a description',
-    FieldOrder => 99999,
-    FieldType  => 'Text',
-    ObjectType => 'Ticket',
-    Config     => {
-        DefaultValue => 'Default',
-    },
-    Reorder => 0,
-    ValidID => 1,
-    UserID  => 1,
-);
+# Create test ticket dynamic fields.
+my @DynamicFieldIDs;
+my @DynamicFieldNames;
+for my $Count ( 1 .. 2 ) {
+    my $DynamicFieldName = 'DynamicField' . $Count . $RandomID;
+    my $DynamicFieldID   = $DynamicFieldObject->DynamicFieldAdd(
+        Name       => $DynamicFieldName,
+        Label      => 'a description',
+        FieldOrder => 99999,
+        FieldType  => 'Text',
+        ObjectType => 'Ticket',
+        Config     => {
+            DefaultValue => 'Default',
+        },
+        Reorder => 0,
+        ValidID => 1,
+        UserID  => 1,
+    );
+    $Self->True(
+        $DynamicFieldID,
+        "DynamicFieldAdd() ID ($DynamicFieldID) added successfully"
+    );
 
-# sanity check
-$Self->True(
-    $DynamicFieldID,
-    "DynamicFieldAdd() ID ($DynamicFieldID) added successfully"
-);
-
-my $DynamicFieldData = $DynamicFieldObject->DynamicFieldGet(
-    ID     => $DynamicFieldID,
-    UserID => 1,
-);
+    push @DynamicFieldIDs,   $DynamicFieldID;
+    push @DynamicFieldNames, $DynamicFieldName;
+}
 
 # TODO integrate this tests with database tests
 # set testing ACLs options
@@ -423,6 +425,18 @@ my %TestACLs = (
             },
         },
     },
+    'DynamicField-2' => {
+        Properties => {
+            DynamicField => {
+                DynamicField_Field2 => ['0'],    # zero-value, see bug#12273
+            },
+        },
+        PossibleNot => {
+            Ticket => {
+                State => ['open'],
+            },
+        },
+    },
 );
 
 $ConfigObject->Set(
@@ -464,24 +478,32 @@ $Self->True(
     "TicketCreate() ID ($TicketID) created successfully",
 );
 
-# set the dynamic field value
-my $DynamicFieldValueSetSuccess = $Kernel::OM->Get('Kernel::System::DynamicFieldValue')->ValueSet(
-    FieldID  => $DynamicFieldID,
-    ObjectID => $TicketID,
-    Value    => [
-        {
-            ValueText => 'Item1',
-        },
-    ],
-    UserID => $UserID,
-);
+# Set the test ticket dynamic field values.
+for my $Count ( 0 .. 1 ) {
+    my $Value;
+    if ( $Count == 0 ) {
+        $Value = 'Item1';
+    }
+    elsif ( $Count == 1 ) {
+        $Value = '0';
+    }
+    my $DynamicFieldValueSetSuccess = $Kernel::OM->Get('Kernel::System::DynamicFieldValue')->ValueSet(
+        FieldID  => $DynamicFieldIDs[$Count],
+        ObjectID => $TicketID,
+        Value    => [
+            {
+                ValueText => $Value,
+            },
+        ],
+        UserID => $UserID,
+    );
 
-# sanity check
-$Self->True(
-    $DynamicFieldValueSetSuccess,
-    "DynamicField ValueSet() for DynamicField ID ($DynamicFieldID), Ticket ID ($TicketID)"
-        . "set successfully",
-);
+    $Self->True(
+        $DynamicFieldValueSetSuccess,
+        "DynamicField ValueSet() for DynamicField ID ($DynamicFieldIDs[$Count]),"
+            . "Ticket ID ($TicketID) set successfully",
+    );
+}
 
 # define form update based tests
 my @Tests = (
@@ -936,6 +958,28 @@ my @Tests = (
             ReturnSubType => 'State',
             DynamicField  => {
                 DynamicField_Field1 => ['Item1']
+            },
+            UserID => $UserID,
+        },
+        SuccessMatch => 1,
+        ReturnData   => {
+            1 => 'new',
+            3 => 'closed',
+        },
+    },
+
+    {
+        Name   => 'ACL DynamicField-2 - DynamicField with zero value',
+        Config => {
+            Data => {
+                1 => 'new',
+                2 => 'open',
+                3 => 'closed',
+            },
+            ReturnType    => 'Ticket',
+            ReturnSubType => 'State',
+            DynamicField  => {
+                DynamicField_Field2 => ['0'],    # zero-value, see bug#12273
             },
             UserID => $UserID,
         },
@@ -2475,7 +2519,7 @@ $Self->True(
             'DB-DynamicField-1-A' => {
                 PropertiesDatabase => {
                     DynamicField => {
-                        'DynamicField_' . $DynamicFieldName => ['Item2'],
+                        'DynamicField_' . $DynamicFieldNames[0] => ['Item2'],
                     },
                 },
                 PossibleNot => {
@@ -2495,7 +2539,7 @@ $Self->True(
             ReturnSubType => 'State',
             TicketID      => $TicketID,
             DynamicField  => {
-                'DynamicField_' . $DynamicFieldName => ['Item2']
+                'DynamicField_' . $DynamicFieldNames[0] => ['Item2']
             },
             UserID => $UserID,
         },
@@ -2509,7 +2553,7 @@ $Self->True(
             'DB-DynamicField-1-B' => {
                 PropertiesDatabase => {
                     DynamicField => {
-                        'DynamicField_' . $DynamicFieldName => ['Item1'],
+                        'DynamicField_' . $DynamicFieldNames[0] => ['Item1'],
                     },
                 },
                 PossibleNot => {
@@ -2529,7 +2573,7 @@ $Self->True(
             ReturnSubType => 'State',
             TicketID      => $TicketID,
             DynamicField  => {
-                'DynamicField_' . $DynamicFieldName => ['Item2']
+                'DynamicField_' . $DynamicFieldNames[0] => ['Item2']
             },
             UserID => $UserID,
         },
@@ -2546,12 +2590,12 @@ $Self->True(
             'DB-DynamicField-1-C' => {
                 Properties => {
                     DynamicField => {
-                        'DynamicField_' . $DynamicFieldName => ['Item1'],
+                        'DynamicField_' . $DynamicFieldNames[0] => ['Item1'],
                     },
                 },
                 PropertiesDatabase => {
                     DynamicField => {
-                        'DynamicField_' . $DynamicFieldName => ['Item1'],
+                        'DynamicField_' . $DynamicFieldNames[0] => ['Item1'],
                     },
                 },
                 PossibleNot => {
@@ -2571,7 +2615,7 @@ $Self->True(
             ReturnSubType => 'State',
             TicketID      => $TicketID,
             DynamicField  => {
-                'DynamicField_' . $DynamicFieldName => ['Item2']
+                'DynamicField_' . $DynamicFieldNames[0] => ['Item2']
             },
             UserID => $UserID,
         },
@@ -2585,12 +2629,12 @@ $Self->True(
             'DB-DynamicField-1-C' => {
                 Properties => {
                     DynamicField => {
-                        'DynamicField_' . $DynamicFieldName => ['Item2'],
+                        'DynamicField_' . $DynamicFieldNames[0] => ['Item2'],
                     },
                 },
                 PropertiesDatabase => {
                     DynamicField => {
-                        'DynamicField_' . $DynamicFieldName => ['Item1'],
+                        'DynamicField_' . $DynamicFieldNames[0] => ['Item1'],
                     },
                 },
                 PossibleNot => {
@@ -2610,7 +2654,7 @@ $Self->True(
             ReturnSubType => 'State',
             TicketID      => $TicketID,
             DynamicField  => {
-                'DynamicField_' . $DynamicFieldName => ['Item2']
+                'DynamicField_' . $DynamicFieldNames[0] => ['Item2']
             },
             UserID => $UserID,
         },
@@ -2619,6 +2663,35 @@ $Self->True(
             1 => 'new',
             3 => 'closed',
         },
+    },
+    {
+        Name => 'ACL DB-DynamicField - restrict action',
+        ACLs => {
+            'DB-DynamicField' => {
+                Properties => {
+                    DynamicField => {
+                        'DynamicField_' . $DynamicFieldNames[0] => ['Item1'],
+                    },
+                },
+                PossibleNot => {
+                    Action => ['AgentTicketClose'],
+                },
+            },
+        },
+        Config => {
+            Data => {
+                1 => 'AgentTicketPrint',
+                2 => 'AgentTicketClose',
+            },
+            ReturnType    => 'Action',
+            ReturnSubType => '-',
+            TicketID      => $TicketID,
+            UserID        => $UserID,
+        },
+        SuccessMatch     => 1,
+        ReturnActionData => {
+            1 => 'AgentTicketPrint',
+            }
     },
 
     # user based tests
@@ -2767,6 +2840,49 @@ $Self->True(
     },
 );
 
+# Get role object.
+my $GroupObject = $Kernel::OM->Get('Kernel::System::Group');
+
+# Add some roles
+my $RoleID1 = $GroupObject->RoleAdd(
+    Name    => "unittest1-$RandomID",
+    Comment => 'comment describing the role',
+    ValidID => 1,
+    UserID  => 1,
+);
+$Self->IsNot(
+    $RoleID1,
+    undef,
+    "RoleAdd() - RoleID1",
+);
+my $RoleID2 = $GroupObject->RoleAdd(
+    Name    => "unittest2-$RandomID",
+    Comment => 'comment describing the role',
+    ValidID => 1,
+    UserID  => 1,
+);
+$Self->IsNot(
+    $RoleID2,
+    undef,
+    "RoleAdd() - RoleID2",
+);
+
+my $RemoveRoles = sub {
+
+    for my $RoleID ( $RoleID1, $RoleID2 ) {
+        my $Success = $GroupObject->PermissionRoleUserAdd(
+            UID    => $UserID,
+            RID    => $RoleID,
+            Active => 0,
+            UserID => 1,
+        );
+        $Self->True(
+            $Success,
+            "Test user removed from Role $RoleID",
+        );
+    }
+};
+
 my $ExecuteTests = sub {
     my %Param = @_;
     my @Tests = @{ $Param{Tests} };
@@ -2775,6 +2891,22 @@ my $ExecuteTests = sub {
 
         # clean previous data
         $TicketObject->{TicketAclData} = {};
+
+        if ( $Test->{AddRoles} ) {
+            $RemoveRoles->();
+            for my $RoleID ( @{ $Test->{AddRoles} } ) {
+                my $Success = $GroupObject->PermissionRoleUserAdd(
+                    UID    => $UserID,
+                    RID    => $RoleID,
+                    Active => 1,
+                    UserID => 1,
+                );
+                $Self->True(
+                    $Success,
+                    "Test user added to Role $RoleID",
+                );
+            }
+        }
 
         $ConfigObject->Set(
             Key   => 'TicketAcl',
@@ -2851,6 +2983,9 @@ my $ExecuteTests = sub {
             "$Test->{Name} ACLs are clean",
         );
 
+        if ( $Test->{AddRoles} ) {
+            $RemoveRoles->();
+        }
     }
 };
 $ExecuteTests->( Tests => \@Tests );
@@ -3586,6 +3721,476 @@ $ExecuteTests->( Tests => \@Tests );
 $Self->True(
     1,
     "--- Start Special ACL Tests ---",
+);
+$ExecuteTests->( Tests => \@Tests );
+
+# Array match tests
+my @TestsNormal = (
+    {
+        Name => 'ACL User Role - No roles check unittest1',
+        ACLs => {
+            'Role-Test' => {
+                Properties => {
+                    User => {
+                        Role => ["unittest1-$RandomID"],
+                    },
+                },
+                Possible => {
+                    Ticket => {
+                        Priority => [ '1 very low', '3 medium', ],
+                    },
+                },
+            },
+        },
+        Config => {
+            Data => {
+                1 => '1 very low',
+                2 => '2 low',
+                3 => '3 medium',
+            },
+            ReturnType    => 'Ticket',
+            ReturnSubType => 'Priority',
+            UserID        => $UserID,
+        },
+        SuccessMatch => 0,
+        ReturnData   => {
+            1 => '1 very low',
+            2 => '2 low',
+            3 => '3 medium',
+        },
+    },
+    {
+        Name => 'ACL User Role - 1 role (wrong) check unittest1',
+        ACLs => {
+            'Role-Test' => {
+                Properties => {
+                    User => {
+                        Role => ["unittest1-$RandomID"],
+                    },
+                },
+                Possible => {
+                    Ticket => {
+                        Priority => [ '1 very low', '3 medium', ],
+                    },
+                },
+            },
+        },
+        Config => {
+            Data => {
+                1 => '1 very low',
+                2 => '2 low',
+                3 => '3 medium',
+            },
+            ReturnType    => 'Ticket',
+            ReturnSubType => 'Priority',
+            UserID        => $UserID,
+        },
+        AddRoles     => [$RoleID2],
+        SuccessMatch => 0,
+        ReturnData   => {
+            1 => '1 very low',
+            2 => '2 low',
+            3 => '3 medium',
+        },
+    },
+    {
+        Name => 'ACL User Role -  1 role check unittest1',
+        ACLs => {
+            'Role-Test' => {
+                Properties => {
+                    User => {
+                        Role => ["unittest1-$RandomID"],
+                    },
+                },
+                Possible => {
+                    Ticket => {
+                        Priority => [ '1 very low', '3 medium', ],
+                    },
+                },
+            },
+        },
+        Config => {
+            Data => {
+                1 => '1 very low',
+                2 => '2 low',
+                3 => '3 medium',
+            },
+            ReturnType    => 'Ticket',
+            ReturnSubType => 'Priority',
+            UserID        => $UserID,
+        },
+        AddRoles     => [$RoleID1],
+        SuccessMatch => 1,
+        ReturnData   => {
+            1 => '1 very low',
+            3 => '3 medium',
+        },
+    },
+    {
+        Name => 'ACL User Role -  2 role check unittest1',
+        ACLs => {
+            'Role-Test' => {
+                Properties => {
+                    User => {
+                        Role => ["unittest1-$RandomID"],
+                    },
+                },
+                Possible => {
+                    Ticket => {
+                        Priority => [ '1 very low', '3 medium', ],
+                    },
+                },
+            },
+        },
+        Config => {
+            Data => {
+                1 => '1 very low',
+                2 => '2 low',
+                3 => '3 medium',
+            },
+            ReturnType    => 'Ticket',
+            ReturnSubType => 'Priority',
+            UserID        => $UserID,
+        },
+        AddRoles     => [ $RoleID1, $RoleID2 ],
+        SuccessMatch => 1,
+        ReturnData   => {
+            1 => '1 very low',
+            3 => '3 medium',
+        },
+    },
+    {
+        Name => 'ACL User Role -  2 role check unittest2',
+        ACLs => {
+            'Role-Test' => {
+                Properties => {
+                    User => {
+                        Role => ["unittest2-$RandomID"],
+                    },
+                },
+                Possible => {
+                    Ticket => {
+                        Priority => [ '1 very low', '3 medium', ],
+                    },
+                },
+            },
+        },
+        Config => {
+            Data => {
+                1 => '1 very low',
+                2 => '2 low',
+                3 => '3 medium',
+            },
+            ReturnType    => 'Ticket',
+            ReturnSubType => 'Priority',
+            UserID        => $UserID,
+        },
+        AddRoles     => [ $RoleID1, $RoleID2 ],
+        SuccessMatch => 1,
+        ReturnData   => {
+            1 => '1 very low',
+            3 => '3 medium',
+        },
+    },
+);
+
+my %TestModifiers = (
+    RegExp => [
+        {
+            Name => 'ACL User Role - No roles check [RegExp]unittest1',
+            Role => ["[RegExp]unittest1"]
+        },
+        {
+            Name => 'ACL User Role - 1 role (wrong) check [RegExp]unittest1',
+            Role => ["[RegExp]unittest1"]
+        },
+        {
+            Name => 'ACL User Role -  1 role check [RegExp]unittest1',
+            Role => ["[RegExp]unittest1"]
+        },
+        {
+            Name => 'ACL User Role -  2 role check [RegExp]unittest1',
+            Role => ["[RegExp]unittest1"]
+        },
+        {
+            Name => 'ACL User Role -  2 role check [RegExp]unittest2',
+            Role => ["[RegExp]unittest2"]
+        }
+    ],
+    regexp => [
+        {
+            Name => 'ACL User Role - No roles check [regexp]unittest1',
+            Role => ["[regexp]unittest1"]
+        },
+        {
+            Name => 'ACL User Role - 1 role (wrong) check [regexp]unittest1',
+            Role => ["[regexp]unittest1"]
+        },
+        {
+            Name => 'ACL User Role -  1 role check [regexp]unittest1',
+            Role => ["[regexp]unittest1"]
+        },
+        {
+            Name => 'ACL User Role -  2 role check [regexp]unittest1',
+            Role => ["[regexp]unittest1"]
+        },
+        {
+            Name => 'ACL User Role -  2 role check [regexp]unittest2',
+            Role => ["[regexp]unittest2"]
+        },
+        ]
+);
+
+my $NumberOfTests = $#TestsNormal;
+
+for my $TestCase ( sort keys %TestModifiers ) {
+    for my $Index ( 0 .. $NumberOfTests ) {
+
+        my $Test = $StorableObject->Clone( Data => $TestsNormal[$Index] );
+
+        $Test->{Name} = $TestModifiers{$TestCase}->[$Index]->{Name};
+        $Test->{ACLs}->{'Role-Test'}->{Properties}->{User}->{Role} = $TestModifiers{$TestCase}->[$Index]->{Role};
+
+        push @TestsNormal, $Test;
+    }
+}
+
+my @TestsNot = (
+    {
+        Name => 'ACL User Role - No roles check [Not]unittest1:',
+        ACLs => {
+            'Role-Test' => {
+                Properties => {
+                    User => {
+                        Role => ["[Not]unittest1-$RandomID"],
+                    },
+                },
+                Possible => {
+                    Ticket => {
+                        Priority => [ '1 very low', '3 medium', ],
+                    },
+                },
+            },
+        },
+        Config => {
+            Data => {
+                1 => '1 very low',
+                2 => '2 low',
+                3 => '3 medium',
+            },
+            ReturnType    => 'Ticket',
+            ReturnSubType => 'Priority',
+            UserID        => $UserID,
+        },
+        SuccessMatch => 1,
+        ReturnData   => {
+            1 => '1 very low',
+            3 => '3 medium',
+        },
+    },
+    {
+        Name => 'ACL User Role - 1 role (wrong) check [Not]unittest1:',
+        ACLs => {
+            'Role-Test' => {
+                Properties => {
+                    User => {
+                        Role => ["[Not]unittest1-$RandomID"],
+                    },
+                },
+                Possible => {
+                    Ticket => {
+                        Priority => [ '1 very low', '3 medium', ],
+                    },
+                },
+            },
+        },
+        Config => {
+            Data => {
+                1 => '1 very low',
+                2 => '2 low',
+                3 => '3 medium',
+            },
+            ReturnType    => 'Ticket',
+            ReturnSubType => 'Priority',
+            UserID        => $UserID,
+        },
+        AddRoles     => [$RoleID2],
+        SuccessMatch => 1,
+        ReturnData   => {
+            1 => '1 very low',
+            3 => '3 medium',
+        },
+    },
+    {
+        Name => 'ACL User Role - 1 role check [Not]unittest1:',
+        ACLs => {
+            'Role-Test' => {
+                Properties => {
+                    User => {
+                        Role => ["[Not]unittest1-$RandomID"],
+                    },
+                },
+                Possible => {
+                    Ticket => {
+                        Priority => [ '1 very low', '3 medium', ],
+                    },
+                },
+            },
+        },
+        Config => {
+            Data => {
+                1 => '1 very low',
+                2 => '2 low',
+                3 => '3 medium',
+            },
+            ReturnType    => 'Ticket',
+            ReturnSubType => 'Priority',
+            UserID        => $UserID,
+        },
+        AddRoles     => [$RoleID1],
+        SuccessMatch => 0,
+        ReturnData   => {
+            1 => '1 very low',
+            2 => '2 low',
+            3 => '3 medium',
+        },
+    },
+    {
+        Name => 'ACL User Role -  2 role check [Not]unittest1:',
+        ACLs => {
+            'Role-Test' => {
+                Properties => {
+                    User => {
+                        Role => ["[Not]unittest1-$RandomID"],
+                    },
+                },
+                Possible => {
+                    Ticket => {
+                        Priority => [ '1 very low', '3 medium', ],
+                    },
+                },
+            },
+        },
+        Config => {
+            Data => {
+                1 => '1 very low',
+                2 => '2 low',
+                3 => '3 medium',
+            },
+            ReturnType    => 'Ticket',
+            ReturnSubType => 'Priority',
+            UserID        => $UserID,
+        },
+        AddRoles     => [ $RoleID1, $RoleID2 ],
+        SuccessMatch => 0,
+        ReturnData   => {
+            1 => '1 very low',
+            2 => '2 low',
+            3 => '3 medium',
+        },
+    },
+    {
+        Name => 'ACL User Role -  2 role check [Not]unittest2:',
+        ACLs => {
+            'Role-Test' => {
+                Properties => {
+                    User => {
+                        Role => ["[Not]unittest2-$RandomID"],
+                    },
+                },
+                Possible => {
+                    Ticket => {
+                        Priority => [ '1 very low', '3 medium', ],
+                    },
+                },
+            },
+        },
+        Config => {
+            Data => {
+                1 => '1 very low',
+                2 => '2 low',
+                3 => '3 medium',
+            },
+            ReturnType    => 'Ticket',
+            ReturnSubType => 'Priority',
+            UserID        => $UserID,
+        },
+        AddRoles     => [ $RoleID1, $RoleID2 ],
+        SuccessMatch => 0,
+        ReturnData   => {
+            1 => '1 very low',
+            2 => '2 low',
+            3 => '3 medium',
+        },
+    },
+);
+
+%TestModifiers = (
+    RegExp => [
+        {
+            Name => 'ACL User Role - No roles check [NotRegExp]unittest1',
+            Role => ["[NotRegExp]unittest1"]
+        },
+        {
+            Name => 'ACL User Role - 1 role (wrong) check [NotRegExp]unittest1',
+            Role => ["[NotRegExp]unittest1"]
+        },
+        {
+            Name => 'ACL User Role -  1 role check [NotRegExp]unittest1',
+            Role => ["[NotRegExp]unittest1"]
+        },
+        {
+            Name => 'ACL User Role -  2 role check [NotRegExp]unittest1',
+            Role => ["[NotRegExp]unittest1"]
+        },
+        {
+            Name => 'ACL User Role -  2 role check [NotRegExp]unittest2',
+            Role => ["[NotRegExp]unittest2"]
+        }
+    ],
+    regexp => [
+        {
+            Name => 'ACL User Role - No roles check [Notregexp]unittest1',
+            Role => ["[Notregexp]unittest1"]
+        },
+        {
+            Name => 'ACL User Role - 1 role (wrong) check [Notregexp]unittest1',
+            Role => ["[Notregexp]unittest1"]
+        },
+        {
+            Name => 'ACL User Role -  1 role check [Notregexp]unittest1',
+            Role => ["[Notregexp]unittest1"]
+        },
+        {
+            Name => 'ACL User Role -  2 role check [Notregexp]unittest1',
+            Role => ["[Notregexp]unittest1"]
+        },
+        {
+            Name => 'ACL User Role -  2 role check [Notregexp]unittest2',
+            Role => ["[Notregexp]unittest2"]
+        },
+        ]
+);
+
+$NumberOfTests = $#TestsNot;
+
+for my $TestCase ( sort keys %TestModifiers ) {
+    for my $Index ( 0 .. $NumberOfTests ) {
+
+        my $Test = Storable::dclone( $TestsNot[$Index] );
+
+        $Test->{Name} = $TestModifiers{$TestCase}->[$Index]->{Name};
+        $Test->{ACLs}->{'Role-Test'}->{Properties}->{User}->{Role} = $TestModifiers{$TestCase}->[$Index]->{Role};
+
+        push @TestsNot, $Test;
+    }
+}
+
+@Tests = ( @TestsNormal, @TestsNot );
+
+$Self->True(
+    1,
+    "--- Start Array match ACL Tests ---",
 );
 $ExecuteTests->( Tests => \@Tests );
 

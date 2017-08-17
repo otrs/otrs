@@ -1,5 +1,5 @@
 // --
-// Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+// Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 // --
 // This software comes with ABSOLUTELY NO WARRANTY. For details, see
 // the enclosed file COPYING for license information (AGPL). If you
@@ -69,6 +69,41 @@ Core.Agent.Admin.NotificationEvent = (function (TargetNS) {
 
         // Run on first view.
         VisibleForAgentHandler();
+
+        // set up attributes (enable/disable) to some fields on click
+        $('#EmailSecuritySettings').click(function() {
+            var InputField = [
+                "EmailSigningCrypting_Search",
+                "EmailMissingSigningKeys_Search",
+                "EmailMissingCryptingKeys_Search",
+                "EmailDefaultSigningKeys_Search"
+            ];
+
+            if (this.checked) {
+                $.each(InputField, function(index, item) {
+                    $('#' + item)
+                        .removeAttr('readonly disabled')
+                        .parent()
+                        .removeClass('AlreadyDisabled');
+                });
+
+                $('.Security').removeAttr('disabled', 'disabled');
+            }
+            else {
+                $.each(InputField, function(index, item) {
+                    $('#' + item)
+                        .attr({
+                            'readonly' : 'readonly',
+                            'disabled' : 'disabled'
+                        })
+                        .parent()
+                        .addClass('AlreadyDisabled');
+                });
+
+                $('.Security').attr('disabled', 'disabled');
+            }
+        });
+
     };
 
    /**

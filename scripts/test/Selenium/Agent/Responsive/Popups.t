@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -18,13 +18,7 @@ my $Selenium = $Kernel::OM->Get('Kernel::System::UnitTest::Selenium');
 $Selenium->RunTest(
     sub {
 
-        # get needed objects
-        $Kernel::OM->ObjectParamAdd(
-            'Kernel::System::UnitTest::Helper' => {
-                RestoreSystemConfiguration => 1,
-            },
-        );
-
+        # get helper object
         my $Helper = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
 
         $Selenium->set_window_size( 600, 400 );
@@ -81,7 +75,7 @@ $Selenium->RunTest(
             "Link for priority popup is displayed and enabled",
         );
 
-        $Selenium->find_element("//a[contains(\@href, \'Action=AgentTicketPriority')]")->click();
+        $Selenium->find_element("//a[contains(\@href, \'Action=AgentTicketPriority')]")->VerifiedClick();
 
         # wait for popup iframe to show
         $Selenium->WaitFor(
@@ -97,7 +91,7 @@ $Selenium->RunTest(
         # as long as the overlay is opened, elements below it should not be usable, e.g. the mobile navigation toggle
         my $Success;
         eval {
-            $Success = $Selenium->find_element( "#ResponsiveNavigationHandle", "css" )->click();
+            $Success = $Selenium->find_element( "#ResponsiveNavigationHandle", "css" )->VerifiedClick();
         };
 
         $Self->False(

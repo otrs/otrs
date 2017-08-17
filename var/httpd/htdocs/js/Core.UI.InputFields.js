@@ -1,5 +1,5 @@
 // --
-// Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+// Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 // --
 // This software comes with ABSOLUTELY NO WARRANTY. For details, see
 // the enclosed file COPYING for license information (AGPL). If you
@@ -225,11 +225,10 @@ Core.UI.InputFields = (function (TargetNS) {
         // Restore select fields
         $('select.Modernize', $Context).each(function (Index, SelectObj) {
             var $SelectObj = $(SelectObj),
-                $SearchObj = $('#' + Core.App.EscapeSelector($SelectObj.data('modernized'))),
                 $ShowTreeObj = $SelectObj.next('.ShowTreeSelection');
 
             if ($SelectObj.data('modernized')) {
-                $SearchObj.parents('.InputField_Container')
+                 $('#' + Core.App.EscapeSelector($SelectObj.data('modernized'))).parents('.InputField_Container')
                     .blur()
                     .remove();
                 $SelectObj.show()
@@ -304,6 +303,11 @@ Core.UI.InputFields = (function (TargetNS) {
             $SearchObj
                 .attr('readonly', 'readonly')
                 .attr('title', Core.Config.Get('InputFieldsNotAvailable'));
+
+            // when the original field does no longer provide any valid options,
+            // we also want to remove existing selections
+            $InputContainerObj.find('.InputField_Selection').remove();
+            $InputContainerObj.find('.InputField_More').remove();
         }
         else {
 
@@ -1420,7 +1424,10 @@ Core.UI.InputFields = (function (TargetNS) {
                             search_callback: function (Search, Node) {
                                 var SearchString = TargetNS.RemoveDiacritics(Search),
                                     NodeString = TargetNS.RemoveDiacritics(Node.text);
-                                return (NodeString.toLowerCase().indexOf(SearchString.toLowerCase()) !== -1);
+                                return (
+                                    // we're doing toLowerCase() AND toUpperCase() because of bug#11548
+                                    (NodeString.toLowerCase().indexOf(SearchString.toLowerCase()) !== -1 || NodeString.toUpperCase().indexOf(SearchString.toUpperCase()) !== -1)
+                                );
                             }
                         },
                         plugins: [ 'multiselect', 'search', 'wholerow' ]
@@ -2168,6 +2175,11 @@ Core.UI.InputFields = (function (TargetNS) {
                             break;
                     }
 
+                })
+
+                // Close dropdown if search field has been removed from DOM (bug#12243)
+                .off('remove.InputField').on('remove.InputField', function () {
+                    CloseOpenSelections();
                 });
 
                 // Handle custom redraw event on original select field

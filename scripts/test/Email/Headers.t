@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -60,7 +60,7 @@ for my $Test (@Tests) {
         To         => 'john.smith2@example.com',
         Subject    => 'some subject',
         Body       => 'Some Body',
-        Type       => 'text/html',
+        MimeType   => 'text/html',
         Charset    => 'utf8',
         References => $Test->{Header},
         InReplyTo  => $Test->{Header},
@@ -125,12 +125,12 @@ $Kernel::OM->Get('Kernel::Config')->Set(
 );
 
 ( $Header, $Body ) = $Kernel::OM->Get('Kernel::System::Email')->Send(
-    From    => 'john.smith@example.com',
-    To      => 'john.smith2@example.com',
-    Subject => 'some subject',
-    Body    => 'Some Body',
-    Type    => 'text/html',
-    Charset => 'utf8',
+    From     => 'john.smith@example.com',
+    To       => 'john.smith2@example.com',
+    Subject  => 'some subject',
+    Body     => 'Some Body',
+    MimeType => 'text/html',
+    Charset  => 'utf8',
 );
 
 ($XMailerHeader)    = $$Header =~ m{^X-Mailer:\s+(.*?)$}ixms;

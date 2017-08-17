@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -11,6 +11,8 @@ use warnings;
 use utf8;
 
 use vars (qw($Self));
+
+use Kernel::Config;
 
 # get helper object
 my $Helper = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
@@ -84,6 +86,86 @@ my %User = $Kernel::OM->Get('Kernel::System::User')->GetUserData(
 $Self->False(
     $User{UserID},
     'Rollback worked',
+);
+
+my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
+$Self->Is(
+    scalar $ConfigObject->Get('nonexisting_dummy'),
+    undef,
+    "Config setting does not exist yet",
+);
+
+my $Value = q$1'"$;
+
+$Helper->ConfigSettingChange(
+    Valid => 1,
+    Key   => 'nonexisting_dummy',
+    Value => $Value,
+);
+
+$Self->Is(
+    scalar $ConfigObject->Get('nonexisting_dummy'),
+    $Value,
+    "Runtime config updated",
+);
+
+my $NewConfigObject = Kernel::Config->new();
+$Self->Is(
+    scalar $NewConfigObject->Get('nonexisting_dummy'),
+    $Value,
+    "System config updated",
+);
+
+# Check custom code injection.
+my $RandomNumber   = $Helper->GetRandomNumber();
+my $PackageName    = "Kernel::Config::Files::ZZZZUnitTest$RandomNumber";
+my $SubroutineName = "Sub$RandomNumber";
+my $SubroutinePath = "${PackageName}::$SubroutineName";
+$Self->False(
+    defined &$SubroutinePath,
+    "Subroutine $SubroutinePath() is not defined yet",
+);
+
+my $CustomCode = <<"EOS";
+package $PackageName;
+use strict;
+use warnings;
+## nofilter(TidyAll::Plugin::OTRS::Perl::TestSubs)
+sub $SubroutineName {
+    return 'Hello, world!';
+}
+1;
+EOS
+$Helper->CustomCodeActivate(
+    Code       => $CustomCode,
+    Identifier => $RandomNumber,
+);
+
+# Require custom code file.
+my $Loaded = $Kernel::OM->Get('Kernel::System::Main')->Require($PackageName);
+$Self->True(
+    $Loaded,
+    "Require - $PackageName",
+);
+
+$Self->True(
+    defined &$SubroutinePath,
+    "Subroutine $SubroutinePath() is now defined",
+);
+
+$Helper->CustomFileCleanup();
+
+$NewConfigObject = Kernel::Config->new();
+$Self->Is(
+    scalar $NewConfigObject->Get('nonexisting_dummy'),
+    undef,
+    "System config reset",
+);
+
+$Self->Is(
+    scalar $ConfigObject->Get('nonexisting_dummy'),
+    $Value,
+    "Runtime config still has the changed value, it will be destroyed at the end of every test",
 );
 
 1;

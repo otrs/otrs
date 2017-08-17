@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -99,7 +99,7 @@
 [% RenderBlockEnd("MetaIcon") %]
 [% RenderBlockEnd("Meta") %]
             <h2>
-                <a href="[% Env("Baselink") %]Action=AgentTicketZoom;TicketID=[% Data.TicketID | uri %]" class="MasterActionLink">[% Config("Ticket::Hook") %]: [% Data.TicketNumber %] &ndash; [% Data.Title | html %]</a>
+                <a href="[% Env("Baselink") %]Action=AgentTicketZoom;TicketID=[% Data.TicketID | uri %]" class="MasterActionLink">[% Config("Ticket::Hook") %][% Config("Ticket::HookDivider") %][% Data.TicketNumber %] &ndash; [% Data.Title | html %]</a>
             </h2>
 [% RenderBlockStart("MenuItem") %]
             <a href="[% Env("Baselink") %][% Data.Link %]" [% Data.LinkParam %] title="[% Translate(Data.Description) | html %]">[% Translate(Data.Name) | html %]</a>
@@ -187,7 +187,7 @@
                             <label>[% Translate("Subject") | html %]</label><div title="[% Data.Subject | html %]">[% Data.Subject | html %]</div>
                         </td>
                         <td>
-                            <label>[% Translate("Owner") | html %]</label><div title="[% Data.UserFirstname | html %] [% Data.UserLastname | html %] ([% Data.Owner | html %])">[% Data.UserFirstname | html %] [% Data.UserLastname | html %]</div>
+                            <label>[% Translate("Owner") | html %]</label><div title="[% Data.UserFirstname | html %] [% Data.UserLastname | html %] ([% Data.Owner | html %])">[% Data.UserFullname | html %]</div>
                         </td>
                         <td>
                             <label>[% Translate("Lock") | html %]</label><div title="[% Translate(Data.Lock) | html %]">[% Translate(Data.Lock) | html %]</div>
@@ -326,6 +326,25 @@
         $(this).toggleClass('Opened')
         return false;
     });
+
+    $('.OverviewMedium li').on('mouseenter', function() {
+        $(this).find('ul.InlineActions').css('top', '0px');
+    });
+    $('.OverviewMedium li').on('mouseleave', function(Event) {
+
+        // Workaround for bug#12403: The inlineActions would hide if hovering
+        // over the queue selection due to a bug in IE. As this is working fine
+        // in MS Edge with the former pure css solution, this whole function
+        // TargetNS.InitInlineActions could be dropped as soon as IE11 support is
+        // ceased for OTRS. Remember to re-add the needed css in this case:
+        //      .OverviewLarge > li:hover ul.InlineActions { top: 0px; }    (Core.OverviewLarge.css)
+        //      .OverviewPreview > li:hover ul.InlineActions { top: 0px; }  (Core.OverviewMedium.css)
+        if (Event.target.tagName.toLowerCase() === 'select') {
+            return false;
+        }
+        $(this).find('ul.InlineActions').css('top', '-30px');
+    });
+
 //]]></script>
 [% RenderBlockEnd("DocumentReadyStart") %]
 [% END %]

@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -48,7 +48,7 @@ sub Run {
     if ( !$Self->{TicketID} ) {
         return $LayoutObject->ErrorScreen(
             Message => Translatable('No TicketID is given!'),
-            Comment => Translatable('Please contact the admin.'),
+            Comment => Translatable('Please contact the administrator.'),
         );
     }
 
@@ -393,7 +393,7 @@ sub Run {
     DYNAMICFIELD:
     for my $DynamicFieldItem ( sort keys %DynamicFieldValues ) {
         next DYNAMICFIELD if !$DynamicFieldItem;
-        next DYNAMICFIELD if !$DynamicFieldValues{$DynamicFieldItem};
+        next DYNAMICFIELD if !defined $DynamicFieldValues{$DynamicFieldItem};
 
         $DynamicFieldACLParameters{ 'DynamicField_' . $DynamicFieldItem } = $DynamicFieldValues{$DynamicFieldItem};
     }
@@ -697,7 +697,7 @@ sub Run {
                             'Could not perform validation on field %s!',
                             $DynamicFieldConfig->{Label},
                         ),
-                        Comment => Translatable('Please contact the admin.'),
+                        Comment => Translatable('Please contact the administrator.'),
                     );
                 }
 
@@ -835,7 +835,7 @@ sub Run {
         if ( !$ArticleTypeID ) {
             return $LayoutObject->ErrorScreen(
                 Message => Translatable('Can not determine the ArticleType!'),
-                Comment => Translatable('Please contact the admin.'),
+                Comment => Translatable('Please contact the administrator.'),
             );
         }
 
@@ -1149,6 +1149,11 @@ sub Run {
         $Data{OrigFromName} =~ s/<.*>|\(.*\)|\"|;|,//g;
         $Data{OrigFromName} =~ s/( $)|(  $)//g;
 
+        # Fallback to OrigFrom if realname part is empty.
+        if ( !$Data{OrigFromName} ) {
+            $Data{OrigFromName} = $Data{OrigFrom};
+        }
+
         # get customer data
         my %Customer;
         if ( $Ticket{CustomerUserID} ) {
@@ -1422,32 +1427,27 @@ sub Run {
             UserID    => $Self->{UserID},
         );
 
-        my $ResponseFormat = $ConfigObject->Get('Ticket::Frontend::ResponseFormat')
-            || '[% Data.Salutation | html %]
-[% Data.StdResponse | html %]
-[% Data.Signature | html %]
-
-[% Data.Created | Localize("TimeShort") %] - [% Data.OrigFromName | html %] [% Translate("wrote") | html %]:
-[% Data.Body | html %]
-';
+        my $ResponseFormat = $ConfigObject->Get('Ticket::Frontend::ResponseFormat');
 
         # make sure body is rich text
         my %DataHTML = %Data;
         if ( $LayoutObject->{BrowserRichText} ) {
-            $ResponseFormat = $LayoutObject->Ascii2RichText(
-                String => $ResponseFormat,
-            );
+            if ($ResponseFormat) {
+                $ResponseFormat = $LayoutObject->Ascii2RichText(
+                    String => $ResponseFormat,
+                );
 
-            # restore qdata formatting for Output replacement
-            $ResponseFormat =~ s/&quot;/"/gi;
+                # restore qdata formatting for Output replacement
+                $ResponseFormat =~ s/&quot;/"/gi;
 
-            # html quote to have it correct in edit area
-            $ResponseFormat = $LayoutObject->Ascii2Html(
-                Text => $ResponseFormat,
-            );
+                # html quote to have it correct in edit area
+                $ResponseFormat = $LayoutObject->Ascii2Html(
+                    Text => $ResponseFormat,
+                );
 
-            # restore qdata formatting for Output replacement
-            $ResponseFormat =~ s/&quot;/"/gi;
+                # restore qdata formatting for Output replacement
+                $ResponseFormat =~ s/&quot;/"/gi;
+            }
 
             # quote all non html content to have it correct in edit area
             KEY:
@@ -1866,12 +1866,18 @@ sub _Mask {
             Name => 'PreFilledCc',
         );
 
-        # split To values
+        # split Cc values
         for my $Email ( Mail::Address->parse( $Param{Cc} ) ) {
+
+            my $DataEmail = $Email->address();
+            if ( $Email->phrase() ) {
+                $DataEmail = $Email->phrase() . ' <' . $Email->address() . '>';
+            }
+
             $LayoutObject->Block(
                 Name => 'PreFilledCcRow',
                 Data => {
-                    Email => $Email->address(),
+                    Email => $DataEmail,
                 },
             );
         }
@@ -1879,17 +1885,23 @@ sub _Mask {
     }
 
     # set preselected values for To field
-    if ( $Param{To} ne '' && !$CustomerCounter ) {
+    if ( defined $Param{To} && $Param{To} ne '' && !$CustomerCounter ) {
         $LayoutObject->Block(
             Name => 'PreFilledTo',
         );
 
         # split To values
         for my $Email ( Mail::Address->parse( $Param{To} ) ) {
+
+            my $DataEmail = $Email->address();
+            if ( $Email->phrase() ) {
+                $DataEmail = $Email->phrase() . ' <' . $Email->address() . '>';
+            }
+
             $LayoutObject->Block(
                 Name => 'PreFilledToRow',
                 Data => {
-                    Email => $Email->address(),
+                    Email => $DataEmail,
                 },
             );
         }

@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -11,13 +11,15 @@ package Kernel::System::NotificationEvent;
 use strict;
 use warnings;
 
+use Kernel::Language qw(Translatable);
 use Kernel::System::VariableCheck qw(:all);
 
 our @ObjectDependencies = (
     'Kernel::System::DB',
     'Kernel::System::Log',
     'Kernel::System::Valid',
-    'Kernel::System::YAML'
+    'Kernel::System::YAML',
+    'Kernel::System::Cache'
 );
 
 =head1 NAME
@@ -51,6 +53,9 @@ sub new {
     my $Self = {};
     bless( $Self, $Type );
 
+    $Self->{CacheType} = 'NotificationEvent';
+    $Self->{CacheTTL}  = 60 * 60 * 24 * 20;
+
     return $Self;
 }
 
@@ -58,35 +63,75 @@ sub new {
 
 returns a hash of all notifications
 
-    my %List = $NotificationEventObject->NotificationList();
+    my %List = $NotificationEventObject->NotificationList(
+        Type    => 'Ticket', # type of notifications; default: 'Ticket'
+        Details => 1,        # include notification detailed data. possible (0|1) # ; default: 0
+        All     => 1,        # optional: if given all notification types will be returned, even if type is given (possible: 0|1)
+    );
 
 =cut
 
 sub NotificationList {
     my ( $Self, %Param ) = @_;
 
+    $Param{Type} ||= 'Ticket';
+    $Param{Details} = $Param{Details} ? 1 : 0;
+    $Param{All}     = $Param{All}     ? 1 : 0;
+
+    my $CacheObject = $Kernel::OM->Get('Kernel::System::Cache');
+
+    my $CacheKey    = $Self->{CacheType} . '::' . $Param{Type} . '::' . $Param{Details} . '::' . $Param{All};
+    my $CacheResult = $CacheObject->Get(
+        Type => $Self->{CacheType},
+        Key  => $CacheKey,
+    );
+
+    if ( ref $CacheResult eq 'HASH' ) {
+        return %{$CacheResult};
+    }
+
     # get database object
     my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
 
-    $DBObject->Prepare( SQL => 'SELECT id, name FROM notification_event' );
+    $DBObject->Prepare( SQL => 'SELECT id FROM notification_event' );
 
-    my %Data;
+    my @NotificationList;
     while ( my @Row = $DBObject->FetchrowArray() ) {
-        $Data{ $Row[0] } = $Row[1];
+        push @NotificationList, $Row[0];
     }
 
-    if ( $Param{Details} ) {
-        for my $ItemID ( sort keys %Data ) {
+    my %Result;
 
-            my %NotificationData = $Self->NotificationGet(
-                ID     => $ItemID,
-                UserID => 1,
-            );
-            $Data{$ItemID} = \%NotificationData;
+    ITEMID:
+    for my $ItemID ( sort @NotificationList ) {
+
+        my %NotificationData = $Self->NotificationGet(
+            ID     => $ItemID,
+            UserID => 1,
+        );
+
+        $NotificationData{Data}->{NotificationType} ||= ['Ticket'];
+
+        if ( !$Param{All} ) {
+            next ITEMID if $NotificationData{Data}->{NotificationType}->[0] ne $Param{Type};
+        }
+
+        if ( $Param{Details} ) {
+            $Result{$ItemID} = \%NotificationData;
+        }
+        else {
+            $Result{$ItemID} = $NotificationData{Name};
         }
     }
 
-    return %Data;
+    $CacheObject->Set(
+        Type  => $Self->{CacheType},
+        Key   => $CacheKey,
+        Value => \%Result,
+        TTL   => $Self->{CacheTTL},
+    );
+
+    return %Result;
 }
 
 =item NotificationGet()
@@ -189,7 +234,8 @@ sub NotificationGet {
         SQL => '
             SELECT event_key, event_value
             FROM notification_event_item
-            WHERE notification_id = ?',
+            WHERE notification_id = ?
+            ORDER BY event_key, event_value ASC',
         Bind => [ \$Data{ID} ],
     );
 
@@ -377,6 +423,10 @@ sub NotificationAdd {
         );
     }
 
+    $Kernel::OM->Get('Kernel::System::Cache')->CleanUp(
+        Type => $Self->{CacheType},
+    );
+
     return $ID;
 }
 
@@ -524,6 +574,10 @@ sub NotificationUpdate {
         );
     }
 
+    $Kernel::OM->Get('Kernel::System::Cache')->CleanUp(
+        Type => $Self->{CacheType},
+    );
+
     return 1;
 }
 
@@ -612,6 +666,10 @@ sub NotificationDelete {
         return;
     }
 
+    $Kernel::OM->Get('Kernel::System::Cache')->CleanUp(
+        Type => $Self->{CacheType},
+    );
+
     # success
     $Kernel::OM->Get('Kernel::System::Log')->Log(
         Priority => 'notice',
@@ -657,7 +715,8 @@ sub NotificationEventCheck {
             WHERE ne.id = nei.notification_id
                 AND ne.valid_id IN ( $ValidIDString )
                 AND nei.event_key = 'Events'
-                AND nei.event_value = ?",
+                AND nei.event_value = ?
+            ORDER BY nei.notification_id ASC",
         Bind => [ \$Param{Event} ],
     );
 
@@ -706,17 +765,19 @@ sub NotificationImport {
             return {
                 Success => 0,
                 Message => "$Needed is missing can not continue.",
-                }
+            };
         }
     }
 
-    my $NotificationData = $Kernel::OM->Get('Kernel::System::YAML')->Load( Data => $Param{Content} );
+    my $NotificationData = $Kernel::OM->Get('Kernel::System::YAML')->Load(
+        Data => $Param{Content},
+    );
 
     if ( ref $NotificationData ne 'ARRAY' ) {
         return {
             Success => 0,
             Message =>
-                "Couldn't read Notification configuration file. Please make sure the file is valid.",
+                Translatable("Couldn't read Notification configuration file. Please make sure the file is valid."),
         };
     }
 
@@ -724,7 +785,9 @@ sub NotificationImport {
     my @AddedNotifications;
     my @NotificationErrors;
 
-    my %CurrentNotifications = $Self->NotificationList( UserID => $Param{UserID} );
+    my %CurrentNotifications = $Self->NotificationList(
+        UserID => $Param{UserID},
+    );
     my %ReverseCurrentNotifications = reverse %CurrentNotifications;
 
     Notification:
@@ -736,6 +799,7 @@ sub NotificationImport {
         if ( $Param{OverwriteExistingNotifications} && $ReverseCurrentNotifications{ $Notification->{Name} } ) {
             my $Success = $Self->NotificationUpdate(
                 %{$Notification},
+                ID     => $ReverseCurrentNotifications{ $Notification->{Name} },
                 UserID => $Param{UserID},
             );
 
@@ -769,7 +833,7 @@ sub NotificationImport {
         AddedNotifications   => join( ', ', @AddedNotifications ) || '',
         UpdatedNotifications => join( ', ', @UpdatedNotifications ) || '',
         NotificationErrors   => join( ', ', @NotificationErrors ) || '',
-        }
+    };
 }
 
 1;

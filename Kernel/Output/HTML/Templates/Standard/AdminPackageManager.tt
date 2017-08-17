@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -132,6 +132,76 @@
     </div>
 </div>
 [% RenderBlockEnd("Reinstall") %]
+[% RenderBlockStart("IncompatibleInfo") %]
+<div class="MainBox ARIARoleMain LayoutFixedSidebar SidebarFirst">
+    <h1>[% Translate("Package Manager") | html %]</h1>
+
+    <div class="SidebarColumn">
+        <div class="WidgetSimple">
+            <div class="Header">
+                <h2>[% Translate("Actions") | html %]</h3>
+                </div>
+                <div class="Content">
+                    <ul class="ActionList">
+                        <li>
+                            <a href="[% Env("Baselink") %]Action=[% Env("Action") %]" class="CallForAction Fullsize Center"><span><i class="fa fa-caret-left"></i>[% Translate("Go to overview") | html %]</span></a>
+                        </li>
+                        <li>
+                            <a href="http://otrs.github.io/doc/manual/admin/stable/en/html/upgrading.html" target="_blank" class="CallForAction Fullsize Center"><span><i class="fa fa-external-link"></i>[% Translate("Go to upgrading instructions") | html %]</span></a>
+                        </li>
+                        <li>
+                            <a href="https://portal.otrs.com/" target="_blank" class="CallForAction Fullsize Center"><span><i class="fa fa-external-link"></i>[% Translate("Go to the OTRS customer portal") | html %]</span></a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="ContentColumn">
+
+            <div class="WidgetSimple">
+                <div class="Header">
+                    <h2> [% Data.Name | html %] [% Data.Version | html %] [% Translate("package information") | html %]</h2>
+                </div>
+                <div class="Content">
+                    [% IF Data.Type == 'InstallIncompatible' %]
+                    <h2>[% Translate("Package installation requires a patch level update of OTRS.") | html %]</h2>
+                    [% ELSIF Data.Type =='UpgradeIncompatible' %]
+                    <h2>[% Translate("Package update requires a patch level update of OTRS.") | html %]</h2>
+                    [% END %]
+                    <p>[% Translate("If you are a OTRS Business Solution™ customer, please visit our customer portal and file a request.") | html %]</p>
+                    <p><strong>[% Translate("Everything else will be done as part of your contract.") | html %]</strong></p>
+                    <p class="SpacingTop">[% Translate("Please note that your installed OTRS version is %s.", Config("Version")) | html %]</p>
+                    [% IF Data.RequiredMinimumVersion %]
+                    <p><span class="MinimumRequired">[% Translate("To install this package, you need to update OTRS to version %s or newer.", Data.RequiredMinimumVersion) | html %]</span></p>
+                    [% END %]
+                    [% IF Data.RequiredMaximumVersion %]
+                    <p><span class="MaximumRequired">[% Translate("This package can only be installed on OTRS version %s or older.", Data.RequiredMaximumVersion) | html %] </span></p>
+                    [% END %]
+                    [% IF !Data.RequiredMinimumVersion && Data.RequiredFramework %]
+                    <p><span class="MaximumRequired">[% Translate("This package can only be installed on OTRS version %s or newer.", Data.RequiredFramework) | html %] </span></p>
+                    [% END %]
+                    <h2 class="SpacingTop">[% Translate("Why should I keep OTRS up to date?") | html %]</h2>
+                    <ul class="Default">
+                        <li>
+                            [% Translate("You will receive updates about relevant security issues.") | html %]
+                        </li>
+                        <li>
+                            [% Translate("You will receive updates for all other relevant OTRS issues.") | html %]
+                        </li>
+                    </ul>
+                    <h2 class="SpacingTop">[% Translate("How can I do a patch level update if I don’t have a contract?") | html %]</h2>
+                    <p>[% Translate("Please find all relevant information within the upgrading instructions at %s.",
+                        '<a href="http://otrs.github.io/doc/manual/admin/stable/en/html/upgrading.html" target="_blank">otrs.github.io</<a>'
+                        ) | html %]
+                    </p>
+                    <p>[% Translate("In case you would have further questions we would be glad to answer them.") | html %] <br />[% Translate("Please visit our customer portal and file a request.") | html %]</p>
+                </div>
+            </div>
+        </div>
+        <div class="Clear"></div>
+    </div>
+</div>
+[% RenderBlockEnd("IncompatibleInfo") %]
 [% RenderBlockStart("Intro") %]
 <div class="MainBox ARIARoleMain LayoutFixedSidebar SidebarFirst">
     <h1>[% Translate("Package Manager") | html %]</h1>
@@ -184,6 +254,7 @@
         </div>
         <div class="Clear"></div>
     </div>
+</div>
 [% RenderBlockEnd("Intro") %]
 
 
@@ -534,10 +605,10 @@
                                 </td>
                                 <td>
 [% RenderBlockStart("PackageItemFilelistFileNoteDiff") %]
-                                    <a href="[% Env("Baselink") %]Action=[% Env("Action") %];Subaction=ViewDiff;Name=[% Data.Name | uri %];Version=[% Data.Version | uri %];File=[% Data.File | uri %];Location=[% Data.Location | uri %]" title="[% Data.Message | html %]" class="AsBlock [% Data.Icon | html %]"></a>
+                                    <a href="[% Env("Baselink") %]Action=[% Env("Action") %];Subaction=ViewDiff;Name=[% Data.Name | uri %];Version=[% Data.Version | uri %];File=[% Data.File | uri %];Location=[% Data.Location | uri %]" title="[% Translate(Data.Message) | html %]" class="AsBlock [% Data.Icon | html %]"></a>
 [% RenderBlockEnd("PackageItemFilelistFileNoteDiff") %]
 [% RenderBlockStart("PackageItemFilelistFileNote") %]
-                                    <span title="[% Data.Message | html %]" class="AsBlock [% Data.Icon | html %]"></span>
+                                    <span title="[% Translate(Data.Message) | html %]" class="AsBlock [% Data.Icon | html %]"></span>
 [% RenderBlockEnd("PackageItemFilelistFileNote") %]
                                 </td>
                                 <td>
@@ -563,12 +634,12 @@
                     <table class="DataTable W100pc">
                         <thead>
                             <tr>
-                                <th>[% Translate("Type") | html %]: </th>
-                                <th>[% Translate("Name") | html %]: </th>
-                                <th>[% Translate("Required") | html %]: </th>
-                                <th>[% Translate("Size") | html %]: </th>
-                                <th>[% Translate("PrimaryKey") | html %]: </th>
-                                <th>[% Translate("AutoIncrement") | html %]: </th>
+                                <th>[% Translate("Type") | html %]</th>
+                                <th>[% Translate("Name") | html %]</th>
+                                <th>[% Translate("Required") | html %]</th>
+                                <th>[% Translate("Size") | html %]</th>
+                                <th>[% Translate("Primary Key") | html %]</th>
+                                <th>[% Translate("Auto Increment") | html %]</th>
                             </tr>
                         </thead>
                         <tbody>

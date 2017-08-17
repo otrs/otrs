@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -94,9 +94,9 @@ sub _ShowScreen {
             '10',
             '100',
             '1000',
+            '10000',
         ],
         Name          => 'FilterLimit',
-        PossibleNone  => 1,
         SelectedValue => '100',
         Translate     => 0,
         Class         => 'Modernize',

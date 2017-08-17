@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -86,7 +86,7 @@ $Selenium->RunTest(
             UserLogin => $TestUserLogin,
         );
 
-        $Selenium->find_element("//input[\@value='$UserID'][\@name='rw']")->click();
+        $Selenium->find_element("//input[\@value='$UserID'][\@name='rw']")->VerifiedClick();
         $Selenium->find_element("//button[\@value='Submit'][\@type='submit']")->VerifiedClick();
 
         # check if test group is present in AdminUserGroup
@@ -101,10 +101,10 @@ $Selenium->RunTest(
 
         # edit test group permissions
         $Selenium->find_element( $RandomID, 'link_text' )->VerifiedClick();
-        $Selenium->find_element("//input[\@value='$UserID'][\@name='rw']")->click();
-        $Selenium->find_element("//input[\@value='$UserID'][\@name='ro']")->click();
-        $Selenium->find_element("//input[\@value='$UserID'][\@name='note']")->click();
-        $Selenium->find_element("//input[\@value='$UserID'][\@name='owner']")->click();
+        $Selenium->find_element("//input[\@value='$UserID'][\@name='rw']")->VerifiedClick();
+        $Selenium->find_element("//input[\@value='$UserID'][\@name='ro']")->VerifiedClick();
+        $Selenium->find_element("//input[\@value='$UserID'][\@name='note']")->VerifiedClick();
+        $Selenium->find_element("//input[\@value='$UserID'][\@name='owner']")->VerifiedClick();
         $Selenium->find_element("//button[\@value='Submit'][\@type='submit']")->VerifiedClick();
 
         # check edited test group permissions

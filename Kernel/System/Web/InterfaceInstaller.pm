@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -114,7 +114,7 @@ sub Run {
         print $LayoutObject->Error(
             Message => Translatable('SecureMode active!'),
             Comment => Translatable(
-                'If you want to re-run the Installer, disable the SecureMode in the SysConfig'
+                'If you want to re-run the Installer, disable the SecureMode in the SysConfig.'
             ),
         );
         print $LayoutObject->Footer();
@@ -139,7 +139,7 @@ sub Run {
         print $LayoutObject->Header();
         print $LayoutObject->Error(
             Message => $LayoutObject->{LanguageObject}->Translate( 'Action "%s" not found!', $Param{Action} ),
-            Comment => Translatable('Please contact the admin.'),
+            Comment => Translatable('Please contact the administrator.'),
         );
         print $LayoutObject->Footer();
     }

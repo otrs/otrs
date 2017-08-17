@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -11,6 +11,7 @@ package Kernel::System::ACL::DB::ACL;
 use strict;
 use warnings;
 
+use Kernel::Language qw(Translatable);
 use Kernel::System::VariableCheck qw(:all);
 
 our @ObjectDependencies = (
@@ -589,6 +590,7 @@ get an ACL list
     $List = {
         1 => 'NameOfACL',
     }
+
 =cut
 
 sub ACLList {
@@ -771,13 +773,14 @@ sub ACLListGet {
 
 =item ACLsNeedSync()
 
-Check if there are unsynchronized ACLs
+Check if there are ACLs that are not yet deployed
 
     my $SyncCount = $ACLObject->ACLsNeedSync();
 
     Returns:
 
     $SyncCount = 0 || Number of ALCs that need to be synced
+
 =cut
 
 sub ACLsNeedSync {
@@ -1011,8 +1014,7 @@ sub ACLImport {
     if ( ref $ACLData ne 'ARRAY' ) {
         return {
             Success => 0,
-            Message =>
-                "Couldn't read ACL configuration file. Please make sure the file is valid.",
+            Message => Translatable("Couldn't read ACL configuration file. Please make sure the file is valid."),
         };
     }
 
@@ -1170,8 +1172,8 @@ sub _ACLItemOutput {
     $Output =~ s{\[empty\]}{}xmsg;
 
     my $Name = $Param{Key};
-    $Name =~ s{\"}{\\"}xmsg;
-    my $Key = '$Self->{TicketAcl}->{"' . $Name . '"}';
+    $Name =~ s{\'}{\\'}xmsg;
+    my $Key = '$Self->{TicketAcl}->{\'' . $Name . '\'}';
 
     $Output =~ s{\$VAR1}{$Key}mxs;
 
@@ -1265,6 +1267,8 @@ sub _ACLMigrateFrom33 {
 }
 
 1;
+
+=end Internal:
 
 =back
 

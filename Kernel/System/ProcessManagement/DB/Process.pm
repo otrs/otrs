@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -22,6 +22,7 @@ use Kernel::System::VariableCheck qw(:all);
 
 our @ObjectDependencies = (
     'Kernel::Config',
+    'Kernel::Language',
     'Kernel::System::Cache',
     'Kernel::System::DB',
     'Kernel::System::DynamicField',
@@ -731,6 +732,7 @@ get a Process list
     $List = {
         'P1' => 'NameOfProcess',
     }
+
 =cut
 
 sub ProcessList {
@@ -1761,9 +1763,10 @@ sub ProcessImport {
     }
 
     return (
-        Message => 'Process '
-            . $ProcessData->{Process}->{Name}
-            . ' and all its data has been imported successfully.',
+        Message => $Kernel::OM->Get('Kernel::Language')->Translate(
+            'The process "%s" and all of its data has been imported successfully.',
+            $ProcessData->{Process}->{Name}
+        ),
         Success => 1,
     );
 }

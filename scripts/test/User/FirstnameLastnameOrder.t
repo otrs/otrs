@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -28,9 +28,28 @@ $ConfigObject->Set(
     Value => 0,
 );
 
-# add user
-my $UserRandom = 'user' . $Helper->GetRandomID();
+# create non existing user login
+my $UserRandom;
+TRY:
+for my $Try ( 1 .. 20 ) {
 
+    $UserRandom = 'unittest-' . $Helper->GetRandomID();
+
+    my $UserID = $UserObject->UserLookup(
+        UserLogin => $UserRandom,
+    );
+
+    last TRY if !$UserID;
+
+    next TRY if $Try ne 20;
+
+    $Self->True(
+        0,
+        'Find non existing user login.',
+    );
+}
+
+# add user
 my $UserID = $UserObject->UserAdd(
     UserFirstname => 'John',
     UserLastname  => 'Doe',

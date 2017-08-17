@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -20,6 +20,7 @@ our @ObjectDependencies = (
     'Kernel::System::CSV',
     'Kernel::System::CheckItem',
     'Kernel::System::Email',
+    'Kernel::System::Main',
     'Kernel::System::PDF',
     'Kernel::System::Stats',
     'Kernel::System::Time',
@@ -260,7 +261,7 @@ sub Run {
 
         # overwrite the default stats timezone with the given timezone
         my $TimeZone = $Self->GetOption('timezone');
-        if ( length $TimeZone ) {
+        if ( defined $TimeZone && length $TimeZone ) {
             $GetParam{TimeZone} = $TimeZone;
         }
     }
@@ -381,15 +382,20 @@ sub Run {
 
     # write output
     if ( $Self->{TargetDirectory} ) {
-        if ( open my $Filehandle, '>', "$Self->{TargetDirectory}/$Attachment{Filename}" ) {    ## no critic
-            print $Filehandle $Attachment{Content};
-            close $Filehandle;
+
+        my $Success = $Kernel::OM->Get('Kernel::System::Main')->FileWrite(
+            Location => "$Self->{TargetDirectory}/$Attachment{Filename}",
+            Content  => \$Attachment{Content},
+            Mode     => 'binmode',
+        );
+
+        if ($Success) {
             $Self->Print("  Writing file <yellow>$Self->{TargetDirectory}/$Attachment{Filename}</yellow>.\n");
             $Self->Print("<green>Done.</green>\n");
             return $Self->ExitCodeOk();
         }
         else {
-            $Self->PrintError("Can't write $Self->{TargetDirectory}/$Attachment{Filename}: $!");
+            $Self->PrintError("Can't write $Self->{TargetDirectory}/$Attachment{Filename}!");
             return $Self->ExitCodeError();
         }
     }
@@ -457,15 +463,3 @@ sub GetArray {
 }
 
 1;
-
-=back
-
-=head1 TERMS AND CONDITIONS
-
-This software is part of the OTRS project (L<http://otrs.org/>).
-
-This software comes with ABSOLUTELY NO WARRANTY. For details, see
-the enclosed file COPYING for license information (AGPL). If you
-did not receive this file, see L<http://www.gnu.org/licenses/agpl.txt>.
-
-=cut

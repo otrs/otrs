@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -21,70 +21,187 @@ $Selenium->RunTest(
     sub {
 
         # get needed objects
-        $Kernel::OM->ObjectParamAdd(
-            'Kernel::System::UnitTest::Helper' => {
-                RestoreSystemConfiguration => 1,
-            },
-        );
-        my $ConfigObject    = $Kernel::OM->Get('Kernel::Config');
-        my $Helper          = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
-        my $SysConfigObject = $Kernel::OM->Get('Kernel::System::SysConfig');
+        my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
+        my $Helper       = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
 
         # disable check email addresses
-        $ConfigObject->Set(
+        $Helper->ConfigSettingChange(
             Key   => 'CheckEmailAddresses',
             Value => 0,
         );
 
         # do not check RichText
-        $SysConfigObject->ConfigItemUpdate(
+        $Helper->ConfigSettingChange(
             Valid => 1,
             Key   => 'Frontend::RichText',
             Value => 0
         );
 
         # do not check service and type
-        $SysConfigObject->ConfigItemUpdate(
+        $Helper->ConfigSettingChange(
             Valid => 1,
             Key   => 'Ticket::Service',
             Value => 0
         );
-        $SysConfigObject->ConfigItemUpdate(
+        $Helper->ConfigSettingChange(
             Valid => 1,
             Key   => 'Ticket::Type',
             Value => 0
         );
 
         # disable RequiredLock for AgentTicketCompose
-        $SysConfigObject->ConfigItemUpdate(
+        $Helper->ConfigSettingChange(
             Valid => 1,
             Key   => 'Ticket::Frontend::AgentTicketCompose###RequiredLock',
             Value => 0
         );
 
-        $SysConfigObject->ConfigItemUpdate(
+        $Helper->ConfigSettingChange(
             Valid => 1,
             Key   => 'Ticket::Frontend::AgentTicketCompose###DefaultArticleType',
             Value => 'email-internal'
         );
 
         # use test email backend
-        $SysConfigObject->ConfigItemUpdate(
+        $Helper->ConfigSettingChange(
             Valid => 1,
             Key   => 'SendmailModule',
             Value => 'Kernel::System::Email::Test',
         );
+
+        my $RandomID = $Helper->GetRandomID();
+
+        my $DynamicFieldObject = $Kernel::OM->Get('Kernel::System::DynamicField');
+
+        my %DynamicFields = (
+            Text => {
+                Name       => 'TestText' . $RandomID,
+                Label      => 'TestText' . $RandomID,
+                FieldOrder => 9990,
+                FieldType  => 'Text',
+                ObjectType => 'Ticket',
+                Config     => {
+                    DefaultValue => '',
+                    Link         => '',
+                },
+                Reorder => 1,
+                ValidID => 1,
+                UserID  => 1,
+            },
+            Dropdown => {
+                Name       => 'TestDropdown' . $RandomID,
+                Label      => 'TestDropdown' . $RandomID,
+                FieldOrder => 9990,
+                FieldType  => 'Dropdown',
+                ObjectType => 'Ticket',
+                Config     => {
+                    DefaultValue   => '',
+                    Link           => '',
+                    PossibleNone   => 0,
+                    PossibleValues => {
+                        0 => 'No',
+                        1 => 'Yes',
+                    },
+                    TranslatableValues => 1,
+                },
+                Reorder => 1,
+                ValidID => 1,
+                UserID  => 1,
+            },
+            Multiselect => {
+                Name       => 'TestMultiselect' . $RandomID,
+                Label      => 'TestMultiselect' . $RandomID,
+                FieldOrder => 9990,
+                FieldType  => 'Multiselect',
+                ObjectType => 'Ticket',
+                Config     => {
+                    DefaultValue   => '',
+                    Link           => '',
+                    PossibleNone   => 0,
+                    PossibleValues => {
+                        year  => 'year',
+                        month => 'month',
+                        week  => 'week',
+                    },
+                    TranslatableValues => 1,
+                },
+                Reorder => 1,
+                ValidID => 1,
+                UserID  => 1,
+            },
+            Date => {
+                Name       => 'TestDate' . $RandomID,
+                Label      => 'TestDate' . $RandomID,
+                FieldOrder => 9990,
+                FieldType  => 'Date',
+                ObjectType => 'Ticket',
+                Config     => {
+                    DefaultValue  => 0,
+                    YearsInFuture => 0,
+                    YearsInPast   => 0,
+                    YearsPeriod   => 0,
+                },
+                Reorder => 1,
+                ValidID => 1,
+                UserID  => 1,
+            },
+            DateTime => {
+                Name       => 'TestDateTime' . $RandomID,
+                Label      => 'TestDateTime' . $RandomID,
+                FieldOrder => 9990,
+                FieldType  => 'DateTime',
+                ObjectType => 'Ticket',
+                Config     => {
+                    DefaultValue  => 0,
+                    YearsInFuture => 0,
+                    YearsInPast   => 0,
+                    YearsPeriod   => 0,
+                },
+                Reorder => 1,
+                ValidID => 1,
+                UserID  => 1,
+            },
+        );
+
+        my @DynamicFieldIDs;
+
+        # Create test dynamic field of type date
+        for my $DynamicFieldType ( sort keys %DynamicFields ) {
+
+            my $DynamicFieldID = $DynamicFieldObject->DynamicFieldAdd(
+                %{ $DynamicFields{$DynamicFieldType} },
+            );
+
+            $Self->True(
+                $DynamicFieldID,
+                "Dynamic field $DynamicFields{$DynamicFieldType}->{Name} - ID $DynamicFieldID - created",
+            );
+
+            push @DynamicFieldIDs, $DynamicFieldID;
+        }
 
         # get standard template object
         my $StandardTemplateObject = $Kernel::OM->Get('Kernel::System::StandardTemplate');
 
         # create a new template
         my $TemplateID = $StandardTemplateObject->StandardTemplateAdd(
-            Name     => 'New Standard Template' . $Helper->GetRandomID(),
+            Name     => 'New Standard Template' . $RandomID,
             Template => "Thank you for your email.
                              Ticket state: <OTRS_TICKET_State>.\n
                              Ticket lock: <OTRS_TICKET_Lock>.\n
                              Ticket priority: <OTRS_TICKET_Priority>.\n
+                             Ticket created: <OTRS_TICKET_Created>.\n
+                             DynamicField Text: <OTRS_TICKET_DynamicField_" . $DynamicFields{Text}->{Name} . "_Value>
+                             DynamicField Dropdown: <OTRS_TICKET_DynamicField_"
+                . $DynamicFields{Dropdown}->{Name}
+                . "_Value>
+                             DynamicField Multiselect: <OTRS_TICKET_DynamicField_"
+                . $DynamicFields{Multiselect}->{Name}
+                . "_Value>
+                             DynamicField Date: <OTRS_TICKET_DynamicField_" . $DynamicFields{Date}->{Name} . "_Value>
+                             DynamicField DateTime: <OTRS_TICKET_DynamicField_"
+                . $DynamicFields{DateTime}->{Name}
+                . "_Value>
                             ",
             ContentType  => 'text/plain; charset=utf-8',
             TemplateType => 'Answer',
@@ -112,7 +229,7 @@ $Selenium->RunTest(
         my $CustomerUserObject = $Kernel::OM->Get('Kernel::System::CustomerUser');
 
         # add test customer for testing
-        my $TestCustomer       = 'Customer' . $Helper->GetRandomID();
+        my $TestCustomer       = 'Customer' . $RandomID;
         my $CustomerEmail      = "$TestCustomer\@localhost.com";
         my $TestCustomerUserID = $CustomerUserObject->CustomerUserAdd(
             Source         => 'CustomerUser',
@@ -150,6 +267,18 @@ $Selenium->RunTest(
             Priority => '4 high',
             Lock     => 'unlock',
         );
+
+        my %DynamicFieldValues = (
+            Text        => "Test Text $RandomID",
+            Dropdown    => '1',
+            Multiselect => 'year',
+        );
+
+        my %DynamicFieldDateValues = (
+            Date     => '2016-04-13 00:00:00',
+            DateTime => '2016-04-13 14:20:00',
+        );
+
         my $TicketID = $TicketObject->TicketCreate(
             Title        => 'Selenium ticket',
             QueueID      => 1,
@@ -166,6 +295,23 @@ $Selenium->RunTest(
             "Ticket is created - ID $TicketID",
         );
 
+        my $DynamicFieldBackendObject = $Kernel::OM->Get('Kernel::System::DynamicField::Backend');
+
+        for my $DynamicFieldType ( sort keys %DynamicFieldValues, sort keys %DynamicFieldDateValues ) {
+
+            # Set the value from the dynamic field.
+            my $DynamicFieldConfig = $DynamicFieldObject->DynamicFieldGet(
+                Name => $DynamicFields{$DynamicFieldType}->{Name},
+            );
+
+            $DynamicFieldBackendObject->ValueSet(
+                DynamicFieldConfig => $DynamicFieldConfig,
+                ObjectID           => $TicketID,
+                Value  => $DynamicFieldValues{$DynamicFieldType} || $DynamicFieldDateValues{$DynamicFieldType},
+                UserID => 1,
+            );
+        }
+
         # create test email article
         my $ArticleID = $TicketObject->ArticleCreate(
             TicketID       => $TicketID,
@@ -173,6 +319,8 @@ $Selenium->RunTest(
             SenderType     => 'customer',
             Subject        => 'some short description',
             Body           => 'the message text',
+            From           => "\"$TestCustomer $TestCustomer\" <${CustomerEmail}>",
+            To             => 'Some Customer A <customer-a@example.com>',
             Charset        => 'ISO-8859-15',
             MimeType       => 'text/plain',
             HistoryType    => 'EmailCustomer',
@@ -182,6 +330,10 @@ $Selenium->RunTest(
         $Self->True(
             $ArticleID,
             "Article is created - ID $ArticleID",
+        );
+
+        my %CreatedTicketData = $TicketObject->TicketGet(
+            TicketID => $TicketID,
         );
 
         # create test user and login
@@ -240,23 +392,84 @@ $Selenium->RunTest(
         my $LanguageObject = $Kernel::OM->Get('Kernel::Language');
 
         for my $Item ( sort keys %TicketData ) {
-            my $TransletedStateValue = $LanguageObject->Translate( $TicketData{$Item} );
+            my $TransletedTicketValue = $LanguageObject->Translate( $TicketData{$Item} );
 
             # check translated value
             $Self->True(
-                index( $Selenium->get_page_source(), $TransletedStateValue ) > -1,
-                "Translated \'$Item\' value is found - $TicketData{$Item} .",
+                index( $Selenium->get_page_source(), $TransletedTicketValue ) > -1,
+                "Translated \'$Item\' value is found - $TransletedTicketValue .",
+            );
+        }
+
+        # Check if the transformed date value exists.
+        my $TranslatedTicketCreated = $LanguageObject->FormatTimeString(
+            $CreatedTicketData{Created},
+            'DateFormat',
+            'NoSeconds',
+        );
+
+        $Self->True(
+            index( $Selenium->get_page_source(), $TranslatedTicketCreated ) > -1,
+            "Translated \'Created\' value is found - $TranslatedTicketCreated.",
+        );
+
+        for my $DynamicFieldType ( sort keys %DynamicFieldValues ) {
+
+            my $Value = $DynamicFields{$DynamicFieldType}->{Config}->{PossibleValues}
+                ? $DynamicFields{$DynamicFieldType}->{Config}->{PossibleValues}
+                ->{ $DynamicFieldValues{$DynamicFieldType} }
+                : $DynamicFieldValues{$DynamicFieldType};
+
+            my $TransletedDynamicFieldValue = $LanguageObject->Translate($Value);
+
+            # check dynamic field date format
+            $Self->True(
+                index( $Selenium->get_page_source(), $DynamicFieldType . ': ' . $TransletedDynamicFieldValue . "\n" )
+                    > -1,
+                "Translated date format for  \'DynamicField_$DynamicFields{$DynamicFieldType}->{Name}\' value is found - $TransletedDynamicFieldValue.",
+            );
+        }
+
+        for my $DynamicFieldType ( sort keys %DynamicFieldDateValues ) {
+
+            my $DateFormat = $DynamicFieldType eq 'Date' ? 'DateFormatShort' : 'DateFormat';
+
+            my $LanguageFormatDateValue = $LanguageObject->FormatTimeString(
+                $DynamicFieldDateValues{$DynamicFieldType},
+                $DateFormat,
+                'NoSeconds',
+            );
+
+            # check dynamic field date format
+            $Self->True(
+                index( $Selenium->get_page_source(), $DynamicFieldType . ': ' . $LanguageFormatDateValue . "\n" ) > -1,
+                "Translated date format for  \'DynamicField_$DynamicFields{$DynamicFieldType}->{Name}\' value is found - $LanguageFormatDateValue.",
             );
         }
 
         # input required fields and submit compose
         my $AutoCompleteString = "\"$TestCustomer $TestCustomer\" <$TestCustomer\@localhost.com> ($TestCustomer)";
+
+        # add test text to body
+        my $ComposeText = "Selenium Compose Text";
+        $Selenium->find_element( "#RichText", 'css' )->send_keys($ComposeText);
+
+        # Try to add the same customer user, expecting server error for duplicated entry, see bug #9731.
         $Selenium->find_element( "#ToCustomer", 'css' )->send_keys($TestCustomer);
-
         $Selenium->WaitFor( JavaScript => 'return typeof($) === "function" && $("li.ui-menu-item:visible").length' );
+        $Selenium->find_element("//li[text()='$AutoCompleteString']")->click();
+        $Selenium->WaitFor( JavaScript => 'return typeof($) === "function" && $(".Dialog.Modal").length' );
 
-        $Selenium->find_element("//*[text()='$AutoCompleteString']")->click();
-        $Selenium->find_element( "#RichText",       'css' )->send_keys('Selenium Compose Text');
+        $Self->Is(
+            $Selenium->execute_script('return $(".Dialog.Modal .Header h1").text().trim();'),
+            'Duplicated entry',
+            "Warning dialog for entry duplication is found",
+        );
+
+        # click 'Ok' for modal dialog 'Duplicated entry'
+        $Selenium->find_element("//button[\@id='DialogButton1'][\@type='button']")->click();
+
+        # submit form
         $Selenium->find_element( "#submitRichText", 'css' )->click();
 
         $Selenium->WaitFor( WindowCount => 1 );
@@ -265,7 +478,7 @@ $Selenium->RunTest(
         # force sub menus to be visible in order to be able to click one of the links
         $Selenium->execute_script("\$('.Cluster ul ul').addClass('ForceVisible');");
 
-        $Selenium->find_element("//*[text()='History']")->click();
+        $Selenium->find_element("//*[text()='History']")->VerifiedClick();
 
         $Selenium->WaitFor( WindowCount => 2 );
         $Handles = $Selenium->get_window_handles();
@@ -312,6 +525,19 @@ $Selenium->RunTest(
             $Success,
             "Delete customer user - $TestCustomer",
         );
+
+        for my $DynamicFieldID (@DynamicFieldIDs) {
+
+            # delete created test dynamic field
+            $Success = $DynamicFieldObject->DynamicFieldDelete(
+                ID     => $DynamicFieldID,
+                UserID => 1,
+            );
+            $Self->True(
+                $Success,
+                "Dynamic field - ID $DynamicFieldID - deleted",
+            );
+        }
 
         # make sure the cache is correct
         for my $Cache (

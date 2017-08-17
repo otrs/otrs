@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -24,7 +24,7 @@ my $PreviousDaemonStatus = `$Daemon status`;
 
 # stop daemon if it was already running before this test
 if ( $PreviousDaemonStatus =~ m{Daemon running}i ) {
-    `$Daemon stop`;
+    `$^X $Daemon stop`;
 
     my $SleepTime = 2;
 
@@ -39,21 +39,29 @@ my $TaskWorkerObject  = $Kernel::OM->Get('Kernel::System::Daemon::DaemonModules:
 my $SchedulerDBObject = $Kernel::OM->Get('Kernel::System::Daemon::SchedulerDB');
 my $Helper            = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
 
-# wait until task is executed
-ACTIVESLEEP:
-for my $Sec ( 1 .. 120 ) {
+my $RunTasks = sub {
 
-    # run the worker
-    $TaskWorkerObject->Run();
+    local $SIG{CHLD} = "IGNORE";
 
-    my @List = $SchedulerDBObject->TaskList();
+    # wait until task is executed
+    ACTIVESLEEP:
+    for my $Sec ( 1 .. 120 ) {
 
-    last ACTIVESLEEP if !scalar @List;
+        # run the worker
+        $TaskWorkerObject->Run();
+        $TaskWorkerObject->_WorkerPIDsCheck();
 
-    sleep 1;
+        my @List = $SchedulerDBObject->TaskList();
 
-    print "Waiting $Sec secs for scheduler tasks to be executed\n";
-}
+        last ACTIVESLEEP if !scalar @List;
+
+        sleep 1;
+
+        print "Waiting $Sec secs for scheduler tasks to be executed\n";
+    }
+};
+
+$RunTasks->();
 
 # get original Cron settings
 my $OriginalSettings = $ConfigObject->Get('Daemon::SchedulerCronTaskManager::Task') || {};
@@ -245,12 +253,15 @@ for my $Test (@Tests) {
             "$Test->{Name} - task manager creates one task",
         );
 
+        local $SIG{CHLD} = "IGNORE";
+
         # wait until task is executed
         ACTIVESLEEP:
         for my $Sec ( 1 .. 120 ) {
 
             # run the worker
             $TaskWorkerObject->Run();
+            $TaskWorkerObject->_WorkerPIDsCheck();
 
             @List = $SchedulerDBObject->TaskList(
                 Type => 'Cron',
@@ -452,7 +463,7 @@ $Self->True(
 
 # start daemon if it was already running before this test
 if ( $PreviousDaemonStatus =~ m{Daemon running}i ) {
-    system("$Daemon start");
+    system("$^X $Daemon start");
 }
 
 # cleanup cache

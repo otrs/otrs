@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -10,6 +10,8 @@ package Kernel::Modules::AdminRegistration;
 
 use strict;
 use warnings;
+
+use Kernel::Language qw(Translatable);
 
 our $ObjectManagerDisabled = 1;
 
@@ -35,7 +37,9 @@ sub Run {
 
     if ($CloudServicesDisabled) {
 
-        my $Output = $LayoutObject->Header( Title => 'Error' );
+        my $Output = $LayoutObject->Header(
+            Title => Translatable('Error'),
+        );
         $Output .= $LayoutObject->Output(
             TemplateFile => 'CloudServicesDisabled',
             Data         => \%Param
@@ -258,11 +262,16 @@ sub Run {
         );
 
         $Param{SystemTypeOption} = $LayoutObject->BuildSelection(
-            Data          => [qw( Production Test Training Development )],
+            Data => {
+                Production  => Translatable('Production'),
+                Test        => Translatable('Test'),
+                Training    => Translatable('Training'),
+                Development => Translatable('Development'),
+            },
             PossibleNone  => 1,
             Name          => 'Type',
             SelectedValue => $Param{SystemType},
-            Class         => 'Validate_Required ' . ( $Param{Errors}->{'TypeIDInvalid'} || '' ),
+            Class         => 'Modernize Validate_Required ' . ( $Param{Errors}->{'TypeIDInvalid'} || '' ),
         );
 
         my $EnvironmentObject = $Kernel::OM->Get('Kernel::System::Environment');
@@ -393,11 +402,16 @@ sub Run {
         $Param{Description} //= $RegistrationData{Description};
 
         $Param{SystemTypeOption} = $LayoutObject->BuildSelection(
-            Data          => [qw( Production Test Training Development )],
+            Data => {
+                Production  => Translatable('Production'),
+                Test        => Translatable('Test'),
+                Training    => Translatable('Training'),
+                Development => Translatable('Development'),
+            },
             PossibleNone  => 1,
             Name          => 'Type',
             SelectedValue => $Param{Type} // $RegistrationData{Type},
-            Class         => 'Validate_Required ' . ( $Param{Errors}->{'TypeIDInvalid'} || '' ),
+            Class         => 'Modernize Validate_Required ' . ( $Param{Errors}->{'TypeIDInvalid'} || '' ),
         );
 
         # fall-back for support data sending switch

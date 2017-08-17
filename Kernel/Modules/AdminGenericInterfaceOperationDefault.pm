@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -567,11 +567,11 @@ sub _ShowScreen {
     return $Output;
 }
 
-=item _OperationTypeCheck()
-
-checks if a given OperationType is registered in the system.
-
-=cut
+# =item _OperationTypeCheck()
+#
+# checks if a given OperationType is registered in the system.
+#
+# =cut
 
 sub _OperationTypeCheck {
     my ( $Self, %Param ) = @_;
@@ -584,11 +584,11 @@ sub _OperationTypeCheck {
     return ref $Operations->{ $Param{OperationType} } eq 'HASH' ? 1 : 0;
 }
 
-=item _MappingTypeCheck()
-
-checks if a given MappingType is registered in the system.
-
-=cut
+# =item _MappingTypeCheck()
+#
+# checks if a given MappingType is registered in the system.
+#
+# =cut
 
 sub _MappingTypeCheck {
     my ( $Self, %Param ) = @_;

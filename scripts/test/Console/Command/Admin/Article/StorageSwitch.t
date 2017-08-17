@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -16,15 +16,10 @@ use vars (qw($Self));
 my $CommandObject = $Kernel::OM->Get('Kernel::System::Console::Command::Admin::Article::StorageSwitch');
 my $TicketObject  = $Kernel::OM->Get('Kernel::System::Ticket');
 
-$Kernel::OM->ObjectParamAdd(
-    'Kernel::System::UnitTest::Helper' => {
-        RestoreSystemConfiguration => 1,
-    },
-);
 my $HelperObject = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
 
 # make sure ticket is created in ArticleStorageDB
-$Kernel::OM->Get('Kernel::System::SysConfig')->ConfigItemUpdate(
+$HelperObject->ConfigSettingChange(
     Valid => 1,
     Key   => 'Ticket::StorageModule',
     Value => 'Kernel::System::Ticket::ArticleStorageDB',

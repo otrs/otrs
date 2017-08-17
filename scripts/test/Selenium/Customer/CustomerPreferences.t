@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -122,8 +122,27 @@ $Selenium->RunTest(
                 "Test widget 'Ticket overview' found on screen"
             );
         }
-    }
 
+        # Inject malicious code in user language variable.
+        my $MaliciousCode = 'en\\\'});window.iShouldNotExist=true;Core.Config.AddConfig({a:\\\'';
+        $Selenium->execute_script(
+            "\$('#UserLanguage').append(
+                \$('<option/>', {
+                    value: '$MaliciousCode',
+                    text: 'Malevolent'
+                })
+            ).val('$MaliciousCode').trigger('redraw.InputField').trigger('change');"
+        );
+        $Selenium->find_element( '#UserLanguage', 'css' )->VerifiedSubmit();
+
+        # Check if malicious code was sanitized.
+        $Self->True(
+            $Selenium->execute_script(
+                "return typeof window.iShouldNotExist === 'undefined';"
+            ),
+            'Malicious variable is undefined'
+        );
+    }
 );
 
 1;

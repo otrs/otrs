@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -10,6 +10,8 @@ package Kernel::System::ProcessManagement::DB::Process::State;
 
 use strict;
 use warnings;
+
+use Kernel::Language qw(Translatable);
 
 our @ObjectDependencies = (
     'Kernel::System::Log',
@@ -48,9 +50,9 @@ sub new {
 
     # create States list
     $Self->{StateList} = {
-        'S1' => 'Active',
-        'S2' => 'Inactive',
-        'S3' => 'FadeAway',
+        'S1' => Translatable('Active'),
+        'S2' => Translatable('Inactive'),
+        'S3' => Translatable('FadeAway'),
     };
 
     return $Self;
@@ -71,6 +73,7 @@ get a State list
         'S2' => 'Inactive',
         'S3' => 'FadeAway',
     }
+
 =cut
 
 sub StateList {
@@ -107,6 +110,7 @@ get State name or State EntityID
 
     Returns:
     $EntityID = 'S1';
+
 =cut
 
 sub StateLookup {

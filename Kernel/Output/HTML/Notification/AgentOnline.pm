@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -12,6 +12,7 @@ use strict;
 use warnings;
 
 our @ObjectDependencies = (
+    'Kernel::Config',
     'Kernel::System::AuthSession',
     'Kernel::System::Time',
     'Kernel::Output::HTML::Layout',
@@ -36,10 +37,12 @@ sub Run {
     # get session object
     my $SessionObject = $Kernel::OM->Get('Kernel::System::AuthSession');
 
+    my $SessionMaxIdleTime = $Kernel::OM->Get('Kernel::Config')->Get('SessionMaxIdleTime');
+
     # get session info
-    my %Online      = ();
-    my @Sessions    = $SessionObject->GetAllSessionIDs();
-    my $IdleMinutes = $Param{Config}->{IdleMinutes} || 60 * 2;
+    my %Online   = ();
+    my @Sessions = $SessionObject->GetAllSessionIDs();
+
     for (@Sessions) {
         my %Data = $SessionObject->GetSessionIDData(
             SessionID => $_,
@@ -48,7 +51,7 @@ sub Run {
             $Self->{UserID} ne $Data{UserID}
             && $Data{UserType} eq 'User'
             && $Data{UserLastRequest}
-            && $Data{UserLastRequest} + ( $IdleMinutes * 60 ) > $Kernel::OM->Get('Kernel::System::Time')->SystemTime()
+            && $Data{UserLastRequest} + $SessionMaxIdleTime > $Kernel::OM->Get('Kernel::System::Time')->SystemTime()
             && $Data{UserFirstname}
             && $Data{UserLastname}
             )

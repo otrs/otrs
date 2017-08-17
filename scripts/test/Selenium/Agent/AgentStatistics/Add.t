@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -19,11 +19,6 @@ $Selenium->RunTest(
     sub {
 
         # get helper object
-        $Kernel::OM->ObjectParamAdd(
-            'Kernel::System::UnitTest::Helper' => {
-                RestoreSystemConfiguration => 1,
-            },
-        );
         my $Helper = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
 
         # create test user and login
@@ -57,7 +52,7 @@ $Selenium->RunTest(
             ],
         };
 
-        my $Success = $Kernel::OM->Get('Kernel::System::SysConfig')->ConfigItemUpdate(
+        my $Success = $Helper->ConfigSettingChange(
             Valid => 1,
             Key   => 'Ticket::Service',
             Value => 1,
@@ -149,6 +144,16 @@ $Selenium->RunTest(
                 Restrictionvalue => 3,
             },
             {
+                Title             => 'Statistic DynamicMatrix' . $Helper->GetRandomID(),
+                Object            => 'Kernel::System::Stats::Dynamic::Ticket',
+                Type              => 'DynamicMatrix',
+                XAxis             => 'XAxisCreateTime',
+                YAxis             => 'YAxisSLAIDs',
+                RestrictionID     => 'RestrictionsQueueIDs',
+                Restrictionvalue  => 3,
+                SelectedTimeField => 1,
+            },
+            {
                 Title            => 'Statistic - TicketAccountedTime' . $Helper->GetRandomID(),
                 Object           => 'Kernel::System::Stats::Dynamic::TicketAccountedTime',
                 Type             => 'DynamicList',
@@ -175,7 +180,6 @@ $Selenium->RunTest(
                 RestrictionID    => 'RestrictionsServiceIDs',
                 Restrictionvalue => $ServiceIDs[0],
             },
-
         );
 
         my @StatsFormatDynamicMatrix = (
@@ -212,7 +216,8 @@ $Selenium->RunTest(
             $Selenium->VerifiedGet("${ScriptAlias}index.pl?Action=AgentStatistics;Subaction=Add");
 
             # add new statistics
-            $Selenium->find_element("//a[contains(\@data-statistic-preselection, \'$StatsData->{Type}\' )]")->click();
+            $Selenium->find_element("//a[contains(\@data-statistic-preselection, \'$StatsData->{Type}\' )]")
+                ->VerifiedClick();
             $Selenium->WaitFor( JavaScript => 'return typeof($) === "function" && $("#Title").length' );
 
             my $Description = 'Description ' . $StatsData->{Title};
@@ -226,7 +231,7 @@ $Selenium->RunTest(
             $Selenium->find_element("//button[\@value='Save'][\@type='submit']")->VerifiedClick();
 
             # check X-axis configuration dialog
-            $Selenium->find_element( ".EditXAxis", 'css' )->click();
+            $Selenium->find_element( ".EditXAxis", 'css' )->VerifiedClick();
             if ( $StatsData->{Object} ne 'Kernel::System::Stats::Dynamic::TicketList' ) {
                 $Selenium->execute_script(
                     "\$('#EditDialog select').val('$StatsData->{XAxis}').trigger('redraw.InputField').trigger('change');"
@@ -235,7 +240,7 @@ $Selenium->RunTest(
             $Selenium->find_element( "#DialogButton1", 'css' )->VerifiedClick();
 
             # check Y-axis configuration dialog
-            $Selenium->find_element( ".EditYAxis", 'css' )->click();
+            $Selenium->find_element( ".EditYAxis", 'css' )->VerifiedClick();
             $Selenium->execute_script(
                 "\$('#EditDialog select').val('$StatsData->{YAxis}').trigger('redraw.InputField').trigger('change');"
             );
@@ -255,7 +260,7 @@ $Selenium->RunTest(
             $Selenium->find_element( "#DialogButton1", 'css' )->VerifiedClick();
 
             # check Restrictions configuration dialog
-            $Selenium->find_element( ".EditRestrictions", 'css' )->click();
+            $Selenium->find_element( ".EditRestrictions", 'css' )->VerifiedClick();
             $Selenium->execute_script(
                 "\$('#EditDialog select option[value=\"$StatsData->{RestrictionID}\"]').prop('selected', true).trigger('redraw.InputField').trigger('change');"
             );
@@ -272,7 +277,7 @@ $Selenium->RunTest(
             $Selenium->find_element( "#DialogButton1", 'css' )->VerifiedClick();
 
             # change preview format to Print
-            $Selenium->find_element("//button[contains(\@data-format, \'Print')]")->click();
+            $Selenium->find_element("//button[contains(\@data-format, \'Print')]")->VerifiedClick();
             $Self->True(
                 $Selenium->execute_script("return \$('#PreviewContentPrint').css('display')") eq 'block',
                 "Print format is displayed",
@@ -287,10 +292,29 @@ $Selenium->RunTest(
             for my $StatsFormat (@StatsFormat) {
 
                 # change preview format
-                $Selenium->find_element("//button[contains(\@data-format, \'$StatsFormat->{Format}')]")->click();
+                $Selenium->find_element("//button[contains(\@data-format, \'$StatsFormat->{Format}')]")
+                    ->VerifiedClick();
                 $Self->True(
                     $Selenium->execute_script("return \$('#$StatsFormat->{PreviewContent}').css('display')") eq 'block',
                     "StackedArea format is displayed",
+                );
+            }
+
+            # Check the options for the cache field in the general section.
+            if ( $StatsData->{SelectedTimeField} ) {
+
+                $Self->True(
+                    $Selenium->execute_script(
+                        "return \$('#Cache option[value=\"1\"]').val() == 1 && \$('#Cache option[value=\"1\"]')[0].innerHTML == 'Yes'"
+                    ),
+                    'Found element "Yes" in Cache the select field.',
+                );
+            }
+            else {
+
+                $Self->False(
+                    $Selenium->execute_script("return \$('#Cache option[value=\"1\"]').val() == 1"),
+                    'Found no element "Yes" in the Cache select field.',
                 );
             }
 

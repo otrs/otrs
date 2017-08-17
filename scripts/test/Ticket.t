@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -25,7 +25,8 @@ my $UserObject    = $Kernel::OM->Get('Kernel::System::User');
 # get helper object
 $Kernel::OM->ObjectParamAdd(
     'Kernel::System::UnitTest::Helper' => {
-        RestoreDatabase => 1,
+        RestoreDatabase  => 1,
+        UseTmpArticleDir => 1,
     },
 );
 my $Helper = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
@@ -703,7 +704,10 @@ my $ChangeTime = $TicketData{Changed};
 $Helper->FixedTimeAddSeconds(5);
 
 my $TicketTitle = $TicketObject->TicketTitleUpdate(
-    Title    => 'Some Title 1234567',
+    Title => 'Very long title 01234567890123456789012345678901234567890123456789'
+        . '0123456789012345678901234567890123456789012345678901234567890123456789'
+        . '0123456789012345678901234567890123456789012345678901234567890123456789'
+        . '0123456789012345678901234567890123456789',
     TicketID => $TicketID,
     UserID   => 1,
 );
@@ -739,7 +743,7 @@ $Self->Is(
 
 $Self->Is(
     $HistoryItem->{Name},
-    '%%Some Ticket_Title%%Some Title 1234567',
+    '%%Some Ticket_Title%%Very long title 0123456789012345678901234567890123...',
     "TicketTitleUpdate - Found new title",
 );
 
@@ -1306,7 +1310,10 @@ $Self->False(
 my %Ticket2 = $TicketObject->TicketGet( TicketID => $TicketID );
 $Self->Is(
     $Ticket2{Title},
-    'Some Title 1234567',
+    'Very long title 01234567890123456789012345678901234567890123456789'
+        . '0123456789012345678901234567890123456789012345678901234567890123456789'
+        . '0123456789012345678901234567890123456789012345678901234567890123456789'
+        . '0123456789012345678901234567890123456789',
     'TicketGet() (Title)',
 );
 $Self->Is(
@@ -1333,7 +1340,10 @@ $Self->Is(
 %Article = $TicketObject->ArticleGet( ArticleID => $ArticleID );
 $Self->Is(
     $Article{Title},
-    'Some Title 1234567',
+    'Very long title 01234567890123456789012345678901234567890123456789'
+        . '0123456789012345678901234567890123456789012345678901234567890123456789'
+        . '0123456789012345678901234567890123456789012345678901234567890123456789'
+        . '0123456789012345678901234567890123456789',
     'ArticleGet() (Title)',
 );
 $Self->Is(
@@ -1549,7 +1559,7 @@ my %TicketCreated = $TicketObject->TicketGet(
     UserID   => 1,
 );
 
-# wait 5 seconds
+# wait 2 seconds
 $Helper->FixedTimeAddSeconds(2);
 
 my $TicketIDSortOrder2 = $TicketObject->TicketCreate(
@@ -1564,7 +1574,7 @@ my $TicketIDSortOrder2 = $TicketObject->TicketCreate(
     UserID       => 1,
 );
 
-# wait 5 seconds
+# wait 2 seconds
 $Helper->FixedTimeAddSeconds(2);
 
 my $Success = $TicketObject->TicketStateSet(
@@ -1687,6 +1697,21 @@ my $TicketIDSortOrder4 = $TicketObject->TicketCreate(
     UserID       => 1,
 );
 
+# wait 2 seconds
+$Helper->FixedTimeAddSeconds(2);
+
+my $TicketIDSortOrder5 = $TicketObject->TicketCreate(
+    Title        => 'Some Ticket_Title - ticket sort/order by tests5 (with other queue)',
+    Queue        => 'Misc',
+    Lock         => 'unlock',
+    Priority     => '3 normal',
+    State        => 'new',
+    CustomerNo   => $CustomerNo,
+    CustomerUser => 'unittest@otrs.com',
+    OwnerID      => 1,
+    UserID       => 1,
+);
+
 # find oldest ticket by priority, age
 @TicketIDsSortOrder = $TicketObject->TicketSearch(
     Result       => 'ARRAY',
@@ -1759,6 +1784,24 @@ $Self->Is(
     'TicketTicketSearch() - ticket sort/order by (Age (Up))',
 );
 
+# sort by ticket queue
+@TicketIDsSortOrder = $TicketObject->TicketSearch(
+    Result       => 'ARRAY',
+    Title        => '%sort/order by test%',
+    Queues       => [ 'Misc', 'Raw' ],
+    CustomerID   => $CustomerNo,
+    CustomerUser => 'unittest@otrs.com',
+    OrderBy      => 'Up',
+    SortBy       => 'Queue',
+    UserID       => 1,
+    Limit        => 1,
+);
+$Self->Is(
+    $TicketIDsSortOrder[0],
+    $TicketIDSortOrder5,
+    'TicketTicketSearch() - ticket sort/order by (Queue (Up))',
+);
+
 $Count = $TicketObject->TicketSearch(
     Result       => 'COUNT',
     Title        => '%sort/order by test%',
@@ -1788,9 +1831,7 @@ for my $TicketIDDelete (
     );
 }
 
-# ---
 # avoid StateType and StateTypeID problems in TicketSearch()
-# ---
 
 my %StateTypeList = $StateObject->StateTypeList(
     UserID => 1,

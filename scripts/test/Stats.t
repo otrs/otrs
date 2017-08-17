@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -238,19 +238,17 @@ $Self->True(
 );
 
 # check the sumbuild function
-my @StatArray = @{
-    $StatsObject->SumBuild(
-        Array => [
-            ['Title'],
-            [ 'SomeText', 'Column1', 'Column2', 'Column3', 'Column4', 'Column5', 'Column6', ],
-            [ 'Row1',     1,         1,         1,         0,         1,         undef, ],
-            [ 'Row2',     2,         2,         2,         0,         2,         undef, ],
-            [ 'Row3',     3,         undef,     3,         0,         3,         undef, ],
-        ],
-        SumRow => 1,
-        SumCol => 1,
-    ),
-};
+my @StatArray = $StatsObject->SumBuild(
+    Array => [
+        ['Title'],
+        [ 'SomeText', 'Column1', 'Column2', 'Column3', 'Column4', 'Column5', 'Column6', ],
+        [ 'Row1',     1,         1,         1,         0,         1,         undef, ],
+        [ 'Row2',     2,         2,         2,         0,         2,         undef, ],
+        [ 'Row3',     3,         undef,     3,         0,         3,         undef, ],
+    ],
+    SumRow => 1,
+    SumCol => 1,
+);
 
 my @SubStatArray = @{ $StatArray[-1] };
 $Counter = $SubStatArray[-1];
@@ -382,9 +380,7 @@ $Self->False(
     'StatsListGet() contains Stat2',
 );
 
-# ---
 # import a Stat and export it - then check if it is the same string
-# ---
 
 # load example file
 my $Path          = $ConfigObject->Get('Home') . '/scripts/test/sample/Stats/Stats.TicketOverview.de.xml';
@@ -444,12 +440,10 @@ $ExportContent->{Content} =~ s/^<\?xml.*?>.*?<otrs_stats/<otrs_stats/ms;
 $Self->Is(
     $ImportContent,
     $ExportContent->{Content},
-    "Export-Importcheck - check if import file content equal export file content.\n Be careful, if it gives errors if you run OTRS with default charset uft-8,\n because the examplefile is iso-8859-1, but at my test there a no problems to compare a utf-8 string with an iso string?!\n",
+    "Export-Importcheck - check if import file content equal export file content.\n Be careful, if it gives errors if you run OTRS with default charset utf-8,\n because the examplefile is iso-8859-1, but at my test there a no problems to compare a utf-8 string with an iso string?!\n",
 );
 
-# ---
 # try to use otrs.Console.pl Maint::Stats::Generate
-# ---
 
 # check the imported stat
 my $Stat4 = $StatsObject->StatsGet( StatID => $StatID );

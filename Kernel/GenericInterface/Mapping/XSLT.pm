@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -17,7 +17,7 @@ our $ObjectManagerDisabled = 1;
 
 =head1 NAME
 
-Kernel::GenericInterface::Mapping::XSLT - GenericInterface XSLT data mapping backend
+Kernel::GenericInterface::Mapping::XSLT - GenericInterface C<XSLT> data mapping backend
 
 =head1 SYNOPSIS
 
@@ -75,7 +75,7 @@ sub new {
 
 =item Map()
 
-provides mapping based on XSLT stylesheets
+provides mapping based on C<XSLT> style sheets
 
     my $ReturnData = $MappingObject->Map(
         Data => {

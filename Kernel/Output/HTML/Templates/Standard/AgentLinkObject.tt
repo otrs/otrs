@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -14,7 +14,7 @@
             [% Translate("Link Object: %s", Data.SourceObjectLong) | html %]
         </h1>
         <p>
-            <a href="[% Env("Baselink") %]Action=[% Env("Action") %];Subaction=Close" id="LinkAddCloseLink">[% Translate("Close") | html %]</a>
+            <a href="[% Env("Baselink") %]Action=[% Env("Action") %];Subaction=Close" id="LinkAddCloseLink">[% Translate("Close dialog") | html %]</a>
 
 [% RenderBlockStart("LinkAddTemporaryLink") %]
 [% WRAPPER JSOnDocumentComplete %]
@@ -93,7 +93,7 @@
     });
 //]]></script>
 [% END %]
-                            <button type="submit" id="SubmitSelect" name="SubmitSelect" value="[% Translate("Select") | html %]">[% Translate("Select") | html %]</button>
+                            <button type="submit" id="SubmitSelect" name="SubmitSelect" value="[% Translate("Select") | html %]" class="CallForAction Inline"><span>[% Translate("Select") | html %]</span></button>
                         </div>
                     </fieldset>
                 </div>
@@ -136,7 +136,7 @@
             [% Translate("Unlink Object: %s", Data.SourceObjectNormal) | html %]
         </h1>
         <p>
-            <a href="[% Env("Baselink") %]Action=[% Env("Action") %];Subaction=Close" id="LinkDeleteCloseLink">[% Translate("Close") | html %]</a>
+            <a href="[% Env("Baselink") %]Action=[% Env("Action") %];Subaction=Close" id="LinkDeleteCloseLink">[% Translate("Close dialog") | html %]</a>
 
 [% RenderBlockStart("LinkDeleteTemporaryLink") %]
 [% WRAPPER JSOnDocumentComplete %]

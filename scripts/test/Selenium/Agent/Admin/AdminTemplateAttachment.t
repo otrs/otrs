@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -129,7 +129,7 @@ $Selenium->RunTest(
         # change test Attachment relation for test Template
         $Selenium->find_element("//a[contains(\@href, \'Subaction=Template;ID=$TemplateID' )]")->VerifiedClick();
 
-        $Selenium->find_element("//input[\@value='$AttachmentID'][\@type='checkbox']")->click();
+        $Selenium->find_element("//input[\@value='$AttachmentID'][\@type='checkbox']")->VerifiedClick();
         $Selenium->find_element("//button[\@value='Submit'][\@type='submit']")->VerifiedClick();
 
         # check test Template relation for test Attachment
@@ -140,7 +140,7 @@ $Selenium->RunTest(
             "$AttachmentRandomID is in a relation with $TemplateRandomID",
         );
 
-        $Selenium->find_element("//input[\@value='$TemplateID'][\@type='checkbox']")->click();
+        $Selenium->find_element("//input[\@value='$TemplateID'][\@type='checkbox']")->VerifiedClick();
         $Selenium->find_element("//button[\@value='Submit'][\@type='submit']")->VerifiedClick();
 
         # since there are no tickets that rely on our test TemplateAttachment,

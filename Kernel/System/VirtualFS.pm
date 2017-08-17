@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -20,11 +20,11 @@ our @ObjectDependencies = (
 
 =head1 NAME
 
-Kernel::System::VirtualFS - virtual fs lib
+Kernel::System::VirtualFS - virtual filesystem lib
 
 =head1 SYNOPSIS
 
-All virtual fs functions.
+All virtual filesystem functions.
 
 =head1 PUBLIC INTERFACE
 

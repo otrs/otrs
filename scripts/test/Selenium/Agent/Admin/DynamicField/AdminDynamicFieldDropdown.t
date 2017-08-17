@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -19,17 +19,9 @@ $Selenium->RunTest(
     sub {
 
         # get helper object
-        $Kernel::OM->ObjectParamAdd(
-            'Kernel::System::UnitTest::Helper' => {
-                RestoreSystemConfiguration => 1,
-            },
-        );
         my $Helper = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
 
-        # get sysconfig object
-        my $SysConfigObject = $Kernel::OM->Get('Kernel::System::SysConfig');
-
-        my %DynamicFieldsOverviewPageShownSysConfig = $SysConfigObject->ConfigItemGet(
+        my %DynamicFieldsOverviewPageShownSysConfig = $Kernel::OM->Get('Kernel::System::SysConfig')->ConfigItemGet(
             Name => 'PreferencesGroups###DynamicFieldsOverviewPageShown',
         );
 
@@ -37,7 +29,7 @@ $Selenium->RunTest(
             grep { defined $_->{Key} } @{ $DynamicFieldsOverviewPageShownSysConfig{Setting}->[1]->{Hash}->[1]->{Item} };
 
         # show more dynamic fields per page as the default value
-        $SysConfigObject->ConfigItemUpdate(
+        $Helper->ConfigSettingChange(
             Valid => 1,
             Key   => 'PreferencesGroups###DynamicFieldsOverviewPageShown',
             Value => {
@@ -101,7 +93,7 @@ $Selenium->RunTest(
 
             $Selenium->find_element( "#Name",     'css' )->send_keys($RandomID);
             $Selenium->find_element( "#Label",    'css' )->send_keys($RandomID);
-            $Selenium->find_element( "#AddValue", 'css' )->click();
+            $Selenium->find_element( "#AddValue", 'css' )->VerifiedClick();
             $Selenium->find_element( "#Key_1",    'css' )->send_keys("Key1");
             $Selenium->find_element( "#Value_1",  'css' )->send_keys("Value1");
 
@@ -113,7 +105,7 @@ $Selenium->RunTest(
             );
 
             # add another possible value
-            $Selenium->find_element( "#AddValue", 'css' )->click();
+            $Selenium->find_element( "#AddValue", 'css' )->VerifiedClick();
             $Selenium->find_element( "#Key_2",    'css' )->send_keys("Key2");
             $Selenium->find_element( "#Value_2",  'css' )->send_keys("Value2");
 
@@ -197,9 +189,6 @@ $Selenium->RunTest(
                 "#ValidID updated value",
             );
 
-            # go back to AdminDynamicField screen
-            $Selenium->VerifiedGet("${ScriptAlias}index.pl?Action=AdminDynamicField");
-
             # delete DynamicFields
             my $DynamicFieldObject = $Kernel::OM->Get('Kernel::System::DynamicField');
             my $DynamicField       = $DynamicFieldObject->DynamicFieldGet(
@@ -215,6 +204,9 @@ $Selenium->RunTest(
                 $Success,
                 "DynamicFieldDelete() - $RandomID"
             );
+
+            # Go back to AdminDynamicField screen.
+            $Selenium->VerifiedGet("${ScriptAlias}index.pl?Action=AdminDynamicField");
 
         }
 

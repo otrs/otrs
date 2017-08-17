@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -70,6 +70,13 @@ sub Configure {
         Required    => 0,
         HasValue    => 0,
     );
+    $Self->AddOption(
+        Name        => 'limit',
+        Description => "Specify result entries limit, default is 100.",
+        Required    => 0,
+        HasValue    => 1,
+        ValueRegex  => qr/^\d+$/smx,
+    );
 
     return;
 }
@@ -85,6 +92,7 @@ sub Run {
     my $RemoteIP          = $Self->GetOption('remote-ip');
     my $WebserviceID      = $Self->GetOption('webservice-id');
     my $WithData          = $Self->GetOption('with-data');
+    my $Limit             = $Self->GetOption('limit');
 
     # create needed objects
     my $DebugLogObject = $Kernel::OM->Get('Kernel::System::GenericInterface::DebugLog');
@@ -99,6 +107,7 @@ sub Run {
         RemoteIP          => $RemoteIP,
         WebserviceID      => $WebserviceID,
         WithData          => $WithData,
+        Limit             => $Limit,
     );
 
     if ( ref $LogData eq 'ARRAY' ) {
@@ -135,15 +144,3 @@ sub Run {
 }
 
 1;
-
-=back
-
-=head1 TERMS AND CONDITIONS
-
-This software is part of the OTRS project (L<http://otrs.org/>).
-
-This software comes with ABSOLUTELY NO WARRANTY. For details, see
-the enclosed file COPYING for license information (AGPL). If you
-did not receive this file, see L<http://www.gnu.org/licenses/agpl.txt>.
-
-=cut

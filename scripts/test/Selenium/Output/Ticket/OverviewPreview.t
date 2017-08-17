@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -19,11 +19,6 @@ $Selenium->RunTest(
     sub {
 
         # get helper object
-        $Kernel::OM->ObjectParamAdd(
-            'Kernel::System::UnitTest::Helper' => {
-                RestoreSystemConfiguration => 1,
-                }
-        );
         my $Helper = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
 
         # get sort attributes config params
@@ -34,14 +29,27 @@ $Selenium->RunTest(
         );
 
         # defines from which ticket attributes the agent can select the result order
-        $Kernel::OM->Get('Kernel::Config')->Set(
+        $Helper->ConfigSettingChange(
             Key   => 'TicketOverviewMenuSort###SortAttributes',
             Value => \%SortOverview,
         );
-        $Kernel::OM->Get('Kernel::System::SysConfig')->ConfigItemUpdate(
+        $Helper->ConfigSettingChange(
             Valid => 1,
             Key   => 'TicketOverviewMenuSort###SortAttributes',
             Value => \%SortOverview,
+        );
+        $Helper->ConfigSettingChange(
+            Valid => 1,
+            Key   => 'Ticket::NewArticleIgnoreSystemSender',
+            Value => 0,
+        );
+
+        # Override FirstnameLastnameOrder setting to check if it is taken into account
+        #   (see bug#12554 for more information).
+        $Helper->ConfigSettingChange(
+            Valid => 1,
+            Key   => 'FirstnameLastnameOrder',
+            Value => 5,
         );
 
         # create test user and login
@@ -55,13 +63,22 @@ $Selenium->RunTest(
             Password => $TestUserLogin,
         );
 
+        my $UserObject = $Kernel::OM->Get('Kernel::System::User');
+
         # get test user ID
         my $TestUserID = $Kernel::OM->Get('Kernel::System::User')->UserLookup(
             UserLogin => $TestUserLogin,
         );
 
+        # Get user data.
+        my %TestUser = $UserObject->GetUserData(
+            UserID => $TestUserID,
+        );
+
+        my $RandomID = $Helper->GetRandomID();
+
         # create test queue
-        my $QueueName = 'Queue' . $Helper->GetRandomID();
+        my $QueueName = 'Queue' . $RandomID;
         my $QueueID   = $Kernel::OM->Get('Kernel::System::Queue')->QueueAdd(
             Name            => $QueueName,
             ValidID         => 1,
@@ -77,8 +94,37 @@ $Selenium->RunTest(
             "QueueAdd() successful for test $QueueName - ID $QueueID",
         );
 
+        my $AutoResponseObject = $Kernel::OM->Get('Kernel::System::AutoResponse');
+
+        # create auto response
+        my $AutoResponseID = $AutoResponseObject->AutoResponseAdd(
+            Name        => 'AutoResponse' . $RandomID,
+            ValidID     => 1,
+            Subject     => 'Some Subject..',
+            Response    => 'Auto Response Test....',
+            ContentType => 'text/plain',
+            AddressID   => 1,
+            TypeID      => 1,
+            UserID      => 1,
+        );
+        $Self->True(
+            $AutoResponseID,
+            "Auto response created.",
+        );
+
+        my $AutoResponseSuccess = $AutoResponseObject->AutoResponseQueue(
+            QueueID         => $QueueID,
+            AutoResponseIDs => [$AutoResponseID],
+            UserID          => 1,
+        );
+        $Self->True(
+            $AutoResponseSuccess,
+            "Auto response added for created queue.",
+        );
+
         # get ticket object
         my $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
+        $TicketObject->{SendNoNotification} = 0;
 
         # create test tickets
         my @TicketIDs;
@@ -108,12 +154,71 @@ $Selenium->RunTest(
         }
         my @SortTicketNumbers = sort @TicketNumbers;
 
+        my $RandomNumber = $Helper->GetRandomNumber();
+
+        for my $Index (qw(0 1 2)) {
+
+            # Add articles to the tickets
+            my $ArticleID1 = $TicketObject->ArticleCreate(
+                TicketID         => $TicketIDs[$Index],
+                ArticleType      => 'webrequest',
+                SenderType       => 'customer',
+                ContentType      => 'text/plain',
+                From             => "Some Customer A <customer-a$RandomNumber\@example.com>",
+                To               => "Some otrs system <email$RandomNumber\@example.com>",
+                Subject          => "First article of the ticket # $Index",
+                Body             => 'the message text',
+                HistoryComment   => 'Some free text!',
+                HistoryType      => 'NewTicket',
+                UserID           => 1,
+                AutoResponseType => 'auto reply',
+                OrigHeader       => {
+                    'Subject' => "First article of the ticket # $Index",
+                    'Body'    => 'the message text',
+                    'To'      => "Some otrs system <email$RandomNumber\@example.com>",
+                    'From'    => "Some Customer A <customer-a$RandomNumber\@example.com>",
+                },
+            );
+
+            $Self->True(
+                $ArticleID1,
+                "First article created for ticket# $Index",
+            );
+
+            # only for third ticket add agent article
+            if ( $Index > 1 ) {
+                my $ArticleID2 = $TicketObject->ArticleCreate(
+                    TicketID       => $TicketIDs[$Index],
+                    ArticleType    => 'email-external',
+                    SenderType     => 'agent',
+                    ContentType    => 'text/plain',
+                    From           => "Some otrs system <email$RandomNumber\@example.com>",
+                    To             => "Some Customer A <customer-a$RandomNumber\@example.com>",
+                    Subject        => "Second article of the ticket # $Index",
+                    Body           => 'agent reply',
+                    HistoryComment => 'Some free text!',
+                    HistoryType    => 'SendAnswer',
+                    UserID         => 1,
+                );
+                $Self->True(
+                    $ArticleID2,
+                    "Second article created for ticket# $Index",
+                );
+            }
+        }
+
         # go to queue ticket overview
         my $ScriptAlias = $Kernel::OM->Get('Kernel::Config')->Get('ScriptAlias');
         $Selenium->VerifiedGet("${ScriptAlias}index.pl?Action=AgentTicketQueue;QueueID=$QueueID;View=");
 
-        # switch to medium view
+        # Switch to large view.
         $Selenium->find_element( "a.Large", 'css' )->VerifiedClick();
+
+        # Check if owner name conforms to current FirstnameLastNameOrder setting.
+        $Self->True(
+            index( $Selenium->get_page_source(), $TestUser{UserFullname} ) > -1,
+            "$TestUser{UserFullname} - found on screen"
+        );
 
         # sort by ticket number
         $Selenium->execute_script(
@@ -127,7 +232,7 @@ $Selenium->RunTest(
         );
 
         # set 10 tickets per page
-        $Selenium->find_element( "a#ShowContextSettingsDialog", 'css' )->click();
+        $Selenium->find_element( "a#ShowContextSettingsDialog", 'css' )->VerifiedClick();
         $Selenium->execute_script(
             "\$('#UserTicketOverviewPreviewPageShown').val('10').trigger('redraw.InputField').trigger('change');"
         );
@@ -165,6 +270,83 @@ $Selenium->RunTest(
             "$SortTicketNumbers[14] - not found on screen after changing views"
         );
 
+        # check which articles are selected
+        my $SelectedArticle1 = $Selenium->execute_script(
+            "return \$('li#TicketID_" . $TicketIDs[0] . " .Preview li.Active').index();",
+        );
+        $Self->Is(
+            $SelectedArticle1,
+            1,
+            "Selected article for First ticket is OK.",
+        );
+
+        my $SelectedArticle2 = $Selenium->execute_script(
+            "return \$('li#TicketID_" . $TicketIDs[1] . " .Preview li.Active').index();",
+        );
+        $Self->Is(
+            $SelectedArticle2,
+            1,
+            "Selected article for Second ticket is OK.",
+        );
+
+        my $SelectedArticle3 = $Selenium->execute_script(
+            "return \$('li#TicketID_" . $TicketIDs[2] . " .Preview li.Active').index();",
+        );
+        $Self->Is(
+            $SelectedArticle3,
+            2,
+            "Selected article for Third ticket is OK.",
+        );
+
+        # update Ticket::NewArticleIgnoreSystemSender
+        $Helper->ConfigSettingChange(
+            Valid => 1,
+            Key   => 'Ticket::NewArticleIgnoreSystemSender',
+            Value => 1,
+        );
+
+        # reload the page
+        $Selenium->VerifiedGet("${ScriptAlias}index.pl?Action=AgentTicketQueue;QueueID=$QueueID;View=");
+
+        # sort by ticket number
+        $Selenium->execute_script(
+            "\$('#SortBy').val('TicketNumber|Up').trigger('redraw.InputField').trigger('change');"
+        );
+
+        # wait for page reload after changing sort param
+        $Selenium->WaitFor(
+            JavaScript =>
+                'return typeof($) === "function" && $("a[href*=\'SortBy=TicketNumber;OrderBy=Up\']").length'
+        );
+
+        # check which articles are selected
+        $SelectedArticle1 = $Selenium->execute_script(
+            "return \$('li#TicketID_" . $TicketIDs[0] . " .Preview li.Active').index();",
+        );
+        $Self->Is(
+            $SelectedArticle1,
+            0,
+            "Selected article for First ticket is OK(Ticket::NewArticleIgnoreSystemSender enabled).",
+        );
+
+        $SelectedArticle2 = $Selenium->execute_script(
+            "return \$('li#TicketID_" . $TicketIDs[1] . " .Preview li.Active').index();",
+        );
+        $Self->Is(
+            $SelectedArticle2,
+            0,
+            "Selected article for Second ticket is OK(Ticket::NewArticleIgnoreSystemSender enabled).",
+        );
+
+        $SelectedArticle3 = $Selenium->execute_script(
+            "return \$('li#TicketID_" . $TicketIDs[2] . " .Preview li.Active').index();",
+        );
+        $Self->Is(
+            $SelectedArticle3,
+            2,
+            "Selected article for Third ticket is OK(Ticket::NewArticleIgnoreSystemSender enabled).",
+        );
+
         # delete created test tickets
         my $Success;
         for my $TicketID (@TicketIDs) {
@@ -178,8 +360,28 @@ $Selenium->RunTest(
             );
         }
 
+        my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
+
+        # delete auto response links(queue)
+        $Success = $DBObject->Do(
+            SQL => "DELETE FROM queue_auto_response WHERE auto_response_id = $AutoResponseID",
+        );
+        $Self->True(
+            $Success,
+            "Delete auto response links - $AutoResponseID",
+        );
+
+        # delete created auto response
+        $Success = $DBObject->Do(
+            SQL => "DELETE FROM auto_response WHERE id = $AutoResponseID",
+        );
+        $Self->True(
+            $Success,
+            "Delete auto response - $AutoResponseID",
+        );
+
         # delete created test queue
-        $Success = $Kernel::OM->Get('Kernel::System::DB')->Do(
+        $Success = $DBObject->Do(
             SQL => "DELETE FROM queue WHERE id = $QueueID",
         );
         $Self->True(

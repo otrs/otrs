@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -166,17 +166,20 @@ sub Run {
                 );
             }
 
-            # get customer user object
-            my $CustomerUserObject = $Kernel::OM->Get('Kernel::System::CustomerUser');
+            if ( $GetParam{EmailFrom} ) {
 
-            my %List = $CustomerUserObject->CustomerSearch(
-                PostMasterSearch => lc( $GetParam{EmailFrom} ),
-            );
+                # get customer user object
+                my $CustomerUserObject = $Kernel::OM->Get('Kernel::System::CustomerUser');
 
-            for my $UserLogin ( sort keys %List ) {
-                %CustomerData = $CustomerUserObject->CustomerUserDataGet(
-                    User => $UserLogin,
+                my %List = $CustomerUserObject->CustomerSearch(
+                    PostMasterSearch => lc( $GetParam{EmailFrom} ),
                 );
+
+                for my $UserLogin ( sort keys %List ) {
+                    %CustomerData = $CustomerUserObject->CustomerUserDataGet(
+                        User => $UserLogin,
+                    );
+                }
             }
         }
 
@@ -204,7 +207,11 @@ sub Run {
     }
 
     # if there is no customer id found!
-    if ( !$GetParam{'X-OTRS-CustomerNo'} ) {
+    if (
+        !$GetParam{'X-OTRS-CustomerNo'}
+        && $ConfigObject->Get('PostMaster::NewTicket::AutoAssignCustomerIDForUnknownCustomers')
+        )
+    {
         $GetParam{'X-OTRS-CustomerNo'} = $GetParam{SenderEmailAddress};
     }
 
@@ -347,7 +354,7 @@ sub Run {
         next DYNAMICFIELDID if !$DynamicFieldList->{$DynamicFieldID};
         my $Key = 'X-OTRS-DynamicField-' . $DynamicFieldList->{$DynamicFieldID};
 
-        if ( $GetParam{$Key} ) {
+        if ( defined $GetParam{$Key} && length $GetParam{$Key} ) {
 
             # get dynamic field config
             my $DynamicFieldGet = $DynamicFieldObject->DynamicFieldGet(
@@ -380,8 +387,12 @@ sub Run {
     for my $Item ( sort keys %Values ) {
         for my $Count ( 1 .. 16 ) {
             my $Key = $Item . $Count;
-            if ( $GetParam{$Key} && $DynamicFieldListReversed{ $Values{$Item} . $Count } ) {
-
+            if (
+                defined $GetParam{$Key}
+                && length $GetParam{$Key}
+                && $DynamicFieldListReversed{ $Values{$Item} . $Count }
+                )
+            {
                 # get dynamic field config
                 my $DynamicFieldGet = $DynamicFieldObject->DynamicFieldGet(
                     ID => $DynamicFieldListReversed{ $Values{$Item} . $Count },
@@ -408,7 +419,7 @@ sub Run {
 
         my $Key = 'X-OTRS-TicketTime' . $Count;
 
-        if ( $GetParam{$Key} ) {
+        if ( defined $GetParam{$Key} && length $GetParam{$Key} ) {
 
             # get time object
             my $TimeObject = $Kernel::OM->Get('Kernel::System::Time');
@@ -517,7 +528,7 @@ sub Run {
         next DYNAMICFIELDID if !$DynamicFieldID;
         next DYNAMICFIELDID if !$DynamicFieldList->{$DynamicFieldID};
         my $Key = 'X-OTRS-DynamicField-' . $DynamicFieldList->{$DynamicFieldID};
-        if ( $GetParam{$Key} ) {
+        if ( defined $GetParam{$Key} && length $GetParam{$Key} ) {
 
             # get dynamic field config
             my $DynamicFieldGet = $DynamicFieldObject->DynamicFieldGet(
@@ -550,8 +561,12 @@ sub Run {
     for my $Item ( sort keys %Values ) {
         for my $Count ( 1 .. 16 ) {
             my $Key = $Item . $Count;
-            if ( $GetParam{$Key} && $DynamicFieldListReversed{ $Values{$Item} . $Count } ) {
-
+            if (
+                defined $GetParam{$Key}
+                && length $GetParam{$Key}
+                && $DynamicFieldListReversed{ $Values{$Item} . $Count }
+                )
+            {
                 # get dynamic field config
                 my $DynamicFieldGet = $DynamicFieldObject->DynamicFieldGet(
                     ID => $DynamicFieldListReversed{ $Values{$Item} . $Count },

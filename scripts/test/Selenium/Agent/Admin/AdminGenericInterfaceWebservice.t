@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -75,7 +75,7 @@ $Selenium->RunTest(
             $Selenium->find_element("//button[\@type='submit']")->VerifiedClick();
 
             # import web service
-            $Selenium->find_element( "#ImportButton", 'css' )->click();
+            $Selenium->find_element( "#ImportButton", 'css' )->VerifiedClick();
 
             my $File     = $Webservice . '.yml';
             my $Location = $ConfigObject->Get('Home') . "/scripts/test/sample/Webservice/$File";
@@ -132,7 +132,7 @@ $Selenium->RunTest(
             );
 
             # delete web service
-            $Selenium->find_element( "#DeleteButton",  'css' )->click();
+            $Selenium->find_element( "#DeleteButton",  'css' )->VerifiedClick();
             $Selenium->find_element( "#DialogButton2", 'css' )->VerifiedClick();
 
             # wait until delete dialog has closed and action performed

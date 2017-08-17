@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -109,8 +109,8 @@ $('#SysConfigGroup').bind('change', function(){
                             <input name="file_upload" type="file" />
                         </div>
                         <div class="Field">
-                            <button title="[% Translate("Load SysConfig settings from file") | html %]" class="Primary" type="submit" value="[% Translate("Import") | html %]">
-                                [% Translate("Import") | html %]
+                            <button title="[% Translate("Load SysConfig settings from file") | html %]" class="CallForAction Primary" type="submit" value="[% Translate("Import") | html %]">
+                                <span>[% Translate("Import") | html %]</span>
                             </button>
                             [% Translate("or") | html %]
                             <a href="[% Env("Baselink") %]Action=[% Env("Action") %]">[% Translate("Cancel") | html %]</a>

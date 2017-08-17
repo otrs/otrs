@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU AFFERO General Public License as published by
@@ -9,12 +9,12 @@
 #
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program; if not, write to the Free Software
-# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
+# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 # or see http://www.gnu.org/licenses/agpl.txt.
 # --
 
@@ -111,7 +111,7 @@ GetOptions(
 # check needed params
 if ($Help) {
     print "otrs.CheckModules.pl - OTRS CheckModules\n";
-    print "Copyright (C) 2001-2016 OTRS AG, http://otrs.com/\n";
+    print "Copyright (C) 2001-2017 OTRS AG, http://otrs.com/\n";
     print "usage: otrs.CheckModules.pl [-list|all] \n";
     print "
    otrs.CheckModules.pl
@@ -131,6 +131,8 @@ my $NoColors;
 if ( $ENV{nocolors} || $Options =~ m{\A nocolors}msxi ) {
     $NoColors = 1;
 }
+
+my $ExitCode = 0;    # success
 
 # config
 my @NeededModules = (
@@ -262,6 +264,15 @@ my @NeededModules = (
         },
     },
     {
+        Module    => 'Digest::SHA',    # Supposed to be in perlcore, but seems to be missing on some distributions.
+        Required  => 1,
+        InstTypes => {
+            aptget => 'libdigest-sha-perl',
+            emerge => 'dev-perl/Digest-SHA',
+            zypper => 'perl-Digest-SHA'
+        },
+    },
+    {
         Module    => 'Encode::HanExtra',
         Version   => '0.23',
         Required  => 0,
@@ -331,6 +342,26 @@ my @NeededModules = (
                     aptget => 'libio-socket-ssl-perl',
                     emerge => 'dev-perl/IO-Socket-SSL',
                     zypper => 'perl-IO-Socket-SSL',
+                },
+            },
+            {
+                Module    => 'Authen::SASL',
+                Required  => 0,
+                Comment   => 'Required for MD5 authentication mechanisms in IMAP connections.',
+                InstTypes => {
+                    aptget => 'libauthen-sasl-perl',
+                    emerge => 'dev-perl/Authen-SASL',
+                    zypper => 'perl-Authen-SASL',
+                },
+            },
+            {
+                Module    => 'Authen::NTLM',
+                Required  => 0,
+                Comment   => 'Required for NTLM authentication mechanism in IMAP connections.',
+                InstTypes => {
+                    aptget => 'libauthen-ntlm-perl',
+                    emerge => 'dev-perl/Authen-NTLM',
+                    zypper => 'perl-Authen-NTLM',
                 },
             },
         ],
@@ -576,6 +607,7 @@ sub _Check {
             else {
                 print color('red') . 'FAILED!' . color('reset') . " $ErrorMessage\n";
             }
+            $ExitCode = 1;    # error
         }
         else {
             my $OutputVersion = $Version;
@@ -614,6 +646,7 @@ sub _Check {
         if ($Required) {
             $Required = 'required';
             $Color    = 'red';
+            $ExitCode = 1;            # error
         }
         else {
             $Required = 'optional';
@@ -760,4 +793,4 @@ sub _GetInstallCommand {
     );
 }
 
-exit 0;
+exit $ExitCode;

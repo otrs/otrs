@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -11,6 +11,8 @@ package Kernel::System::UnitTest::Helper;
 
 use strict;
 use warnings;
+
+use File::Path qw(rmtree);
 
 use Kernel::System::SysConfig;
 
@@ -76,6 +78,9 @@ sub new {
         $Self->{UnitTestObject}->True( 1, 'Creating backup of the system configuration.' );
     }
 
+    # Remove any leftover custom files from aborted previous runs.
+    $Self->CustomFileCleanup();
+
     # set environment variable to skip SSL certificate verification if needed
     if ( $Param{SkipSSLVerify} ) {
 
@@ -87,6 +92,11 @@ sub new {
 
         $Self->{RestoreSSLVerify} = 1;
         $Self->{UnitTestObject}->True( 1, 'Skipping SSL certificates verification' );
+    }
+
+    # switch article dir to a temporary one to avoid collisions
+    if ( $Param{UseTmpArticleDir} ) {
+        $Self->UseTmpArticleDir();
     }
 
     if ( $Param{RestoreDatabase} ) {
@@ -129,20 +139,16 @@ to create test data.
 
 # Use package variables here (instead of attributes in $Self)
 # to make it work across several unit tests that run during the same second.
-my $GetRandomNumberPreviousEpoch = 0;
-my $GetRandomNumberCounter       = 0;
+my %GetRandomNumberPrevious;
 
 sub GetRandomNumber {
-    my ( $Self, %Param ) = @_;
 
-    my $Epoch = time();
-    $GetRandomNumberPreviousEpoch //= 0;
-    if ( $GetRandomNumberPreviousEpoch != $Epoch ) {
-        $GetRandomNumberPreviousEpoch = $Epoch;
-        $GetRandomNumberCounter       = 0;
-    }
+    my $PIDReversed = reverse $$;
+    my $PID = reverse sprintf '%.6d', $PIDReversed;
 
-    return $Epoch . $GetRandomNumberCounter++;
+    my $Prefix = $PID . substr time(), -5, 5;
+
+    return $Prefix . $GetRandomNumberPrevious{$Prefix}++ || 0;
 }
 
 =item TestUserCreate()
@@ -161,22 +167,33 @@ the login name of the new user, the password is the same.
 sub TestUserCreate {
     my ( $Self, %Param ) = @_;
 
-    # create test user
-    my $TestUserLogin = $Self->GetRandomID();
-
     # disable email checks to create new user
     my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
     local $ConfigObject->{CheckEmailAddresses} = 0;
 
-    my $TestUserID = $Kernel::OM->Get('Kernel::System::User')->UserAdd(
-        UserFirstname => $TestUserLogin,
-        UserLastname  => $TestUserLogin,
-        UserLogin     => $TestUserLogin,
-        UserPw        => $TestUserLogin,
-        UserEmail     => $TestUserLogin . '@localunittest.com',
-        ValidID       => 1,
-        ChangeUserID  => 1,
-    ) || die "Could not create test user";
+    # create test user
+    my $TestUserID;
+    my $TestUserLogin;
+    COUNT:
+    for my $Count ( 1 .. 10 ) {
+
+        $TestUserLogin = $Self->GetRandomID();
+
+        $TestUserID = $Kernel::OM->Get('Kernel::System::User')->UserAdd(
+            UserFirstname => $TestUserLogin,
+            UserLastname  => $TestUserLogin,
+            UserLogin     => $TestUserLogin,
+            UserPw        => $TestUserLogin,
+            UserEmail     => $TestUserLogin . '@localunittest.com',
+            ValidID       => 1,
+            ChangeUserID  => 1,
+        );
+
+        last COUNT if $TestUserID;
+    }
+
+    die 'Could not create test user login' if !$TestUserLogin;
+    die 'Could not create test user'       if !$TestUserID;
 
     # Remember UserID of the test user to later set it to invalid
     #   in the destructor.
@@ -244,19 +261,28 @@ sub TestCustomerUserCreate {
     local $ConfigObject->{CheckEmailAddresses} = 0;
 
     # create test user
-    my $TestUserLogin = $Self->GetRandomID();
+    my $TestUser;
+    COUNT:
+    for my $Count ( 1 .. 10 ) {
 
-    my $TestUser = $Kernel::OM->Get('Kernel::System::CustomerUser')->CustomerUserAdd(
-        Source         => 'CustomerUser',
-        UserFirstname  => $TestUserLogin,
-        UserLastname   => $TestUserLogin,
-        UserCustomerID => $TestUserLogin,
-        UserLogin      => $TestUserLogin,
-        UserPassword   => $TestUserLogin,
-        UserEmail      => $TestUserLogin . '@localunittest.com',
-        ValidID        => 1,
-        UserID         => 1,
-    ) || die "Could not create test user";
+        my $TestUserLogin = $Self->GetRandomID();
+
+        $TestUser = $Kernel::OM->Get('Kernel::System::CustomerUser')->CustomerUserAdd(
+            Source         => 'CustomerUser',
+            UserFirstname  => $TestUserLogin,
+            UserLastname   => $TestUserLogin,
+            UserCustomerID => $TestUserLogin,
+            UserLogin      => $TestUserLogin,
+            UserPassword   => $TestUserLogin,
+            UserEmail      => $TestUserLogin . '@localunittest.com',
+            ValidID        => 1,
+            UserID         => 1,
+        );
+
+        last COUNT if $TestUser;
+    }
+
+    die 'Could not create test user' if !$TestUser;
 
     # Remember UserID of the test user to later set it to invalid
     #   in the destructor.
@@ -437,20 +463,19 @@ BEGIN {
 sub DESTROY {
     my $Self = shift;
 
-    # Reset time freeze
+    # reset time freeze
     FixedTimeUnset();
 
-    #
-    # Restore system configuration if needed
-    #
+    # restore system configuration if needed
     if ( $Self->{SysConfigBackup} ) {
         $Self->{SysConfigObject}->Upload( Content => $Self->{SysConfigBackup} );
         $Self->{UnitTestObject}->True( 1, 'Restored the system configuration' );
     }
 
-    #
-    # Restore environment variable to skip SSL certificate verification if needed
-    #
+    # Remove any custom files.
+    $Self->CustomFileCleanup();
+
+    # restore environment variable to skip SSL certificate verification if needed
     if ( $Self->{RestoreSSLVerify} ) {
 
         $ENV{PERL_LWP_SSL_VERIFY_HOSTNAME} = $Self->{PERL_LWP_SSL_VERIFY_HOSTNAME};
@@ -460,7 +485,7 @@ sub DESTROY {
         $Self->{UnitTestObject}->True( 1, 'Restored SSL certificates verification' );
     }
 
-    # Restore database, clean caches
+    # restore database, clean caches
     if ( $Self->{RestoreDatabase} ) {
         my $RollbackSuccess = $Self->Rollback();
         $Kernel::OM->Get('Kernel::System::Cache')->CleanUp();
@@ -470,6 +495,11 @@ sub DESTROY {
     # disable email checks to create new user
     my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
     local $ConfigObject->{CheckEmailAddresses} = 0;
+
+    # cleanup temporary article directory
+    if ( $Self->{TmpArticleDir} && -d $Self->{TmpArticleDir} ) {
+        File::Path::rmtree( $Self->{TmpArticleDir} );
+    }
 
     # invalidate test users
     if ( ref $Self->{TestUsers} eq 'ARRAY' && @{ $Self->{TestUsers} } ) {
@@ -528,6 +558,187 @@ sub DESTROY {
             );
         }
     }
+}
+
+=item ConfigSettingChange()
+
+temporarily change a configuration setting system wide to another value,
+both in the current ConfigObject and also in the system configuration on disk.
+
+This will be reset when the Helper object is destroyed.
+
+Please note that this will not work correctly in clustered environments.
+
+    $Helper->ConfigSettingChange(
+        Valid => 1,            # (optional) enable or disable setting
+        Key   => 'MySetting',  # setting name
+        Value => { ... } ,     # setting value
+    );
+
+=cut
+
+sub ConfigSettingChange {
+    my ( $Self, %Param ) = @_;
+
+    my $Valid = $Param{Valid} // 1;
+    my $Key   = $Param{Key};
+    my $Value = $Param{Value};
+
+    die "Need 'Key'" if !defined $Key;
+
+    my $RandomNumber = $Self->GetRandomNumber();
+
+    my $KeyDump = $Key;
+    $KeyDump =~ s|'|\\'|smxg;
+    $KeyDump = "\$Self->{'$KeyDump'}";
+    $KeyDump =~ s|\#{3}|'}->{'|smxg;
+
+    # Also set at runtime in the ConfigObject. This will be destroyed at the end of the unit test.
+    $Kernel::OM->Get('Kernel::Config')->Set(
+        Key   => $Key,
+        Value => $Valid ? $Value : undef,
+    );
+
+    my $ValueDump;
+    if ($Valid) {
+        $ValueDump = $Kernel::OM->Get('Kernel::System::Main')->Dump($Value);
+        $ValueDump =~ s/\$VAR1/$KeyDump/;
+    }
+    else {
+        $ValueDump = "delete $KeyDump;"
+    }
+
+    my $PackageName = "ZZZZUnitTest$RandomNumber";
+
+    my $Content = <<"EOF";
+# OTRS config file (automatically generated)
+# VERSION:1.1
+package Kernel::Config::Files::$PackageName;
+use strict;
+use warnings;
+no warnings 'redefine';
+use utf8;
+sub Load {
+    my (\$File, \$Self) = \@_;
+    $ValueDump
+}
+1;
+EOF
+    my $Home     = $Kernel::OM->Get('Kernel::Config')->Get('Home');
+    my $FileName = "$Home/Kernel/Config/Files/$PackageName.pm";
+    $Kernel::OM->Get('Kernel::System::Main')->FileWrite(
+        Location => $FileName,
+        Mode     => 'utf8',
+        Content  => \$Content,
+    ) || die "Could not write $FileName";
+
+    return 1;
+}
+
+=head2 CustomCodeActivate()
+
+Temporarily include custom code in the system. For example, you may use this to redefine a
+subroutine from another class. This change will persist for remainder of the test.
+
+All code will be removed when the Helper object is destroyed.
+
+Please note that this will not work correctly in clustered environments.
+
+    $Helper->CustomCodeActivate(
+        Code => q^
+package Kernel::System::WebUserAgent;
+use strict;
+use warnings;
+use Kernel::System::WebUserAgent;
+{
+    no warnings 'redefine';
+    sub Request {
+        my $JSONString = '{"Results":{},"ErrorMessage":"","Success":1}';
+        return (
+            Content => \$JSONString,
+            Status  => '200 OK',
+        );
+    }
+}
+1;^,
+        Identifier => 'News',   # (optional) Code identifier to include in file name
+    );
+
+=cut
+
+sub CustomCodeActivate {
+    my ( $Self, %Param ) = @_;
+
+    my $Code = $Param{Code};
+    my $Identifier = $Param{Identifier} || $Self->GetRandomNumber();
+
+    die "Need 'Code'" if !defined $Code;
+
+    my $PackageName = "ZZZZUnitTest$Identifier";
+
+    my $Home     = $Kernel::OM->Get('Kernel::Config')->Get('Home');
+    my $FileName = "$Home/Kernel/Config/Files/$PackageName.pm";
+    $Kernel::OM->Get('Kernel::System::Main')->FileWrite(
+        Location => $FileName,
+        Mode     => 'utf8',
+        Content  => \$Code,
+    ) || die "Could not write $FileName";
+
+    return 1;
+}
+
+=head2 CustomFileCleanup()
+
+Remove all custom files from C<ConfigSettingChange()> and C<CustomCodeActivate()>.
+
+=cut
+
+sub CustomFileCleanup {
+    my ( $Self, %Param ) = @_;
+
+    my $Home  = $Kernel::OM->Get('Kernel::Config')->Get('Home');
+    my @Files = $Kernel::OM->Get('Kernel::System::Main')->DirectoryRead(
+        Directory => "$Home/Kernel/Config/Files",
+        Filter    => "ZZZZUnitTest*.pm",
+    );
+    for my $File (@Files) {
+        $Kernel::OM->Get('Kernel::System::Main')->FileDelete(
+            Location => $File,
+        ) || die "Could not delete $File";
+    }
+    return 1;
+}
+
+=item UseTmpArticleDir()
+
+switch the article storage directory to a temporary one to prevent collisions;
+
+=cut
+
+sub UseTmpArticleDir {
+    my ( $Self, %Param ) = @_;
+
+    my $Home = $Kernel::OM->Get('Kernel::Config')->Get('Home');
+
+    my $TmpArticleDir;
+    TRY:
+    for my $Try ( 1 .. 100 ) {
+
+        $TmpArticleDir = $Home . '/var/tmp/unittest-article-' . $Self->GetRandomNumber();
+
+        next TRY if -e $TmpArticleDir;
+        last TRY;
+    }
+
+    $Self->ConfigSettingChange(
+        Valid => 1,
+        Key   => 'ArticleDir',
+        Value => $TmpArticleDir,
+    );
+
+    $Self->{TmpArticleDir} = $TmpArticleDir;
+
+    return 1;
 }
 
 1;

@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -93,7 +93,7 @@ $Selenium->RunTest(
         # change test role relation for test user
         $Selenium->find_element( $FullUserID, 'link_text' )->VerifiedClick();
 
-        $Selenium->find_element("//input[\@value='$RoleID']")->click();
+        $Selenium->find_element("//input[\@value='$RoleID']")->VerifiedClick();
         $Selenium->find_element("//button[\@value='Submit'][\@type='submit']")->VerifiedClick();
 
         #check and edit test user relation for test role
@@ -128,7 +128,7 @@ $Selenium->RunTest(
         );
 
         # remove test relation
-        $Selenium->find_element("//input[\@value='$UserID']")->click();
+        $Selenium->find_element("//input[\@value='$UserID']")->VerifiedClick();
         $Selenium->find_element("//button[\@value='Submit'][\@type='submit']")->VerifiedClick();
 
         # check if relation is clear

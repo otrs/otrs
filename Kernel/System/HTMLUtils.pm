@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -18,6 +18,7 @@ use HTML::Truncate;
 
 our @ObjectDependencies = (
     'Kernel::Config',
+    'Kernel::System::Encode',
     'Kernel::System::Log',
 );
 
@@ -60,7 +61,7 @@ sub new {
 
 =item ToAscii()
 
-convert a html string to an ascii string
+convert an HTML string to an ASCII string
 
     my $Ascii = $HTMLUtilsObject->ToAscii( String => $String );
 
@@ -80,8 +81,11 @@ sub ToAscii {
         }
     }
 
+    # turn on utf8 flag (bug#10970, bug#11596 and bug#12097)
+    $Kernel::OM->Get('Kernel::System::Encode')->EncodeInput( \$Param{String} );
+
     # get length of line for forcing line breakes
-    my $LineLength = $Self->{'Ticket::Frontend::TextAreaNote'} || 78;
+    my $LineLength = $Kernel::OM->Get('Kernel::Config')->Get('Ticket::Frontend::TextAreaNote') || 78;
 
     # find <a href=....> and replace it with [x]
     my $LinkList = '';
@@ -481,17 +485,34 @@ sub ToAscii {
         (&\#(\d+);?)
     }
     {
-        my $Chr = chr( $2 );
-        # make sure we get valid UTF8 code points
-        Encode::_utf8_off( $Chr);
-        $Chr = Encode::decode('utf-8', $Chr, 0);
+        my $ChrOrig = $1;
+        my $Dec = $2;
 
-        if ( $Chr ) {
-            $Chr;
+        # Don't process UTF-16 surrogate pairs. Used on their own, these are not valid UTF-8 code
+        # points and can result in errors in old Perl versions. See bug#12588 for more information.
+        # - High Surrogate codes (U+D800-U+DBFF)
+        # - Low Surrogate codes (U+DC00-U+DFFF)
+        if ( $Dec >= 55296 && $Dec <= 57343 ) {
+            $ChrOrig;
         }
         else {
-            $1;
-        };
+            my $Chr = chr($Dec);
+
+            # Make sure we get valid UTF8 code points, but skip characters from 128 to 255
+            #   (inclusive), since they are by default internally not encoded as UTF-8 for
+            #   backward compatibility reasons. See bug#12457 for more information.
+            if ( $Dec < 128 || $Dec> 255 ) {
+                Encode::_utf8_off($Chr);
+                $Chr = Encode::decode('utf-8', $Chr, 0);
+            }
+
+            if ( $Chr ) {
+                $Chr;
+            }
+            else {
+                $ChrOrig;
+            }
+        }
     }egx;
 
     # encode html entities like "&#x3d;"
@@ -500,21 +521,37 @@ sub ToAscii {
     }
     {
         my $ChrOrig = $1;
-        my $Hex = hex( $2 );
-        if ( $Hex ) {
-            my $Chr = chr( $Hex );
-            # make sure we get valid UTF8 code points
-            Encode::_utf8_off( $Chr);
-            $Chr = Encode::decode('utf-8', $Chr, 0);
-            if ( $Chr ) {
-                $Chr;
+        my $Dec = hex( $2 );
+
+        # Don't process UTF-16 surrogate pairs. Used on their own, these are not valid UTF-8 code
+        # points and can result in errors in old Perl versions. See bug#12588 for more information.
+        # - High Surrogate codes (U+D800-U+DBFF)
+        # - Low Surrogate codes (U+DC00-U+DFFF)
+        if ( $Dec >= 55296 && $Dec <= 57343 ) {
+            $ChrOrig;
+        }
+        else {
+            if ( $Dec ) {
+                my $Chr = chr( $Dec );
+
+                # Make sure we get valid UTF8 code points, but skip characters from 128 to 255
+                #   (inclusive), since they are by default internally not encoded as UTF-8 for
+                #   backward compatibility reasons. See bug#12457 for more information.
+                if ( $Dec < 128 || $Dec > 255 ) {
+                    Encode::_utf8_off($Chr);
+                    $Chr = Encode::decode('utf-8', $Chr, 0);
+                }
+
+                if ( $Chr ) {
+                    $Chr;
+                }
+                else {
+                    $ChrOrig;
+                }
             }
             else {
                 $ChrOrig;
             }
-        }
-        else {
-            $ChrOrig;
         }
     }egx;
 
@@ -554,9 +591,12 @@ sub ToAscii {
 
 =item ToHTML()
 
-convert an ascii string to a html string
+convert an ASCII string to an HTML string
 
-    my $HTMLString = $HTMLUtilsObject->ToHTML( String => $String );
+    my $HTMLString = $HTMLUtilsObject->ToHTML(
+        String             => $String,
+        ReplaceDoubleSpace => 0,        # replace &nbsp;&nbsp; with "  ", optional 1 or 0 (defaults to 1)
+    );
 
 =cut
 
@@ -582,7 +622,7 @@ sub ToHTML {
     $Param{String} =~ s/>/&gt;/g;
     $Param{String} =~ s/"/&quot;/g;
     $Param{String} =~ s/(\n|\r)/<br\/>\n/g;
-    $Param{String} =~ s/  /&nbsp;&nbsp;/g;
+    $Param{String} =~ s/  /&nbsp;&nbsp;/g if $Param{ReplaceDoubleSpace};
 
     return $Param{String};
 }
@@ -732,7 +772,7 @@ sub DocumentCleanup {
 
 =item LinkQuote()
 
-URL link detections in HTML code, add "<a href" if missing
+detect links in HTML code, add C<a href> if missing
 
     my $HTMLWithLinks = $HTMLUtilsObject->LinkQuote(
         String    => $HTMLString,
@@ -774,7 +814,7 @@ sub LinkQuote {
 
         # add target to existing "<a href"
         ${$String} =~ s{
-            (<a\s{1,10})(.+?)>
+            (<a\s{1,10})([^>]+)>
         }
         {
             my $Start = $1;
@@ -788,28 +828,30 @@ sub LinkQuote {
         }egxsi;
     }
 
-    # remove existing "<a href" on all other tags (to find not linked urls) and remember it
+    my $Marker = "§" x 10;
+
+    # Remove existing <a>...</a> tags and their content to be re-inserted later, this must not be quoted.
+    # Also remove other tags to avoid quoting in tag parameters.
     my $Counter = 0;
-    my %LinkHash;
+    my %TagHash;
     ${$String} =~ s{
-        (<a\s.+?>.+?</a>)
+        (<a\s[^>]*?>[^>]*</a>|<[^>]+?>)
     }
     {
         my $Content = $1;
-        $Counter++;
-        my $Key  = "############LinkHash-$Counter############";
-        $LinkHash{$Key} = $Content;
+        my $Key     = "${Marker}TagHash-$Counter${Marker}";
+        $TagHash{$Counter++} = $Content;
         $Key;
     }egxism;
 
-    # replace not "<a href" found urls and link it
+    # Add <a> tags for URLs in the content.
     my $Target = '';
     if ( $Param{Target} ) {
         $Target = " target=\"$Param{Target}\"";
     }
     ${$String} =~ s{
         (                                          # $1 greater-than and less-than sign
-            > | < | \s+ | \#{6} |
+            > | < | \s+ | §{10} |
             (?: &[a-zA-Z0-9]+; )                   # get html entities
         )
         (                                          # $2
@@ -850,7 +892,7 @@ sub LinkQuote {
                 | (?: &[a-zA-Z0-9]+; )+            # html entities
                 | $                                # bug# 2715
             )
-            | \#{6}                                # ending LinkHash
+            | §{10}                                # ending TagHash
         )
     }
     {
@@ -886,12 +928,8 @@ sub LinkQuote {
         $Start . "<a href=\"$HrefLink\"$Target title=\"$HrefLink\">$DisplayLink<\/a>" . $End;
     }egxism;
 
-    my ( $Key, $Value );
-
-    # add already existing "<a href" again
-    while ( ( $Key, $Value ) = each(%LinkHash) ) {
-        ${$String} =~ s{$Key}{$Value};
-    }
+    # Re-add previously removed tags.
+    ${$String} =~ s{${Marker}TagHash-(\d+)${Marker}}{$TagHash{$1}}egsxim;
 
     # check ref && return result like called
     if ($StringScalar) {
@@ -902,7 +940,7 @@ sub LinkQuote {
 
 =item Safety()
 
-To remove/strip active html tags/addons (javascript, applets, embeds and objects)
+To remove/strip active html tags/addons (javascript, C<applet>s, C<embed>s and C<object>s)
 from html strings.
 
     my %Safe = $HTMLUtilsObject->Safety(
@@ -1171,7 +1209,7 @@ extracts embedded images with data-URLs from an HTML document.
 
 Returns nothing. If embedded images were found, these will be appended
 to the attachments list, and the image data URL will be replaced with a
-cid: URL in the document.
+C<cid:> URL in the document.
 
 =cut
 

@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -42,8 +42,10 @@ sub Run {
         # challenge token check for write action
         $LayoutObject->ChallengeTokenCheck();
 
-        my $SourceObject      = $ParamObject->GetParam( Param => 'SourceObject' )      || '';
-        my $DestinationObject = $ParamObject->GetParam( Param => 'DestinationObject' ) || '';
+        my $SourceObject                   = $ParamObject->GetParam( Param => 'SourceObject' )                   || '';
+        my $SourceObjectID                 = $ParamObject->GetParam( Param => 'SourceObjectID' )                 || '';
+        my $DestinationObject              = $ParamObject->GetParam( Param => 'DestinationObject' )              || '';
+        my $AdditionalLinkListWithDataJSON = $ParamObject->GetParam( Param => 'AdditionalLinkListWithDataJSON' ) || '';
 
         my $Success = $LayoutObject->ComplexTablePreferencesSet(
             DestinationObject => $DestinationObject,
@@ -61,7 +63,7 @@ sub Run {
         my $LinkListWithData = $Kernel::OM->Get('Kernel::System::LinkObject')->LinkListWithData(
             Object           => $SourceObject,
             Object2          => $DestinationObject,
-            Key              => $Self->{TicketID},
+            Key              => $SourceObjectID,
             State            => 'Valid',
             UserID           => $Self->{UserID},
             ObjectParameters => {
@@ -71,13 +73,27 @@ sub Run {
             },
         );
 
+        if ($AdditionalLinkListWithDataJSON) {
+
+            # decode JSON string
+            my $AdditionalLinkListWithData = $Kernel::OM->Get('Kernel::System::JSON')->Decode(
+                Data => $AdditionalLinkListWithDataJSON,
+            );
+
+            $LinkListWithData = {
+                %{$LinkListWithData},
+                %{$AdditionalLinkListWithData},
+            };
+        }
+
         # create the link table
         my $LinkTableStrg = $LayoutObject->LinkObjectTableCreate(
-            LinkListWithData => $LinkListWithData,
-            ViewMode         => 'Complex',           # only make sense for complex
-            Object           => $SourceObject,
-            Key              => $Self->{TicketID},
-            AJAX             => 1,
+            LinkListWithData               => $LinkListWithData,
+            ViewMode                       => 'Complex',                         # only make sense for complex
+            Object                         => $SourceObject,
+            Key                            => $SourceObjectID,
+            AJAX                           => 1,
+            AdditionalLinkListWithDataJSON => $AdditionalLinkListWithDataJSON,
         );
 
         return $LayoutObject->Attachment(
@@ -108,7 +124,7 @@ sub Run {
     if ( !$Form{SourceObject} || !$Form{SourceKey} ) {
         return $LayoutObject->ErrorScreen(
             Message => Translatable('Need SourceObject and SourceKey!'),
-            Comment => Translatable('Please contact the admin.'),
+            Comment => Translatable('Please contact the administrator.'),
         );
     }
 
@@ -502,7 +518,7 @@ sub Run {
             return $LayoutObject->ErrorScreen(
                 Message => $LayoutObject->{LanguageObject}
                     ->Translate( 'The object %s cannot link with other object!', $Form{SourceObject} ),
-                Comment => Translatable('Please contact the admin.'),
+                Comment => Translatable('Please contact the administrator.'),
             );
         }
 

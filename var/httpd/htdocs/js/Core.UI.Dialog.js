@@ -1,5 +1,5 @@
 // --
-// Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+// Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 // --
 // This software comes with ABSOLUTELY NO WARRANTY. For details, see
 // the enclosed file COPYING for license information (AGPL). If you
@@ -79,10 +79,27 @@ Core.UI.Dialog = (function (TargetNS) {
      *      Focuses the first element within the dialog.
      */
     function FocusFirstElement() {
-        $('div.Dialog:visible .Content')
-            .find('a:visible, input:visible, textarea:visible, select:visible, button:visible')
-            .filter(':first')
-            .focus(1);
+        var $FirstElement = $('div.Dialog:visible .Content')
+                .find('a:visible, input:visible, textarea:visible, select:visible, button:visible')
+                .filter(':first'),
+            $FocusField;
+
+        if (!$FirstElement) {
+            return;
+        }
+
+        // If first element is modernized input field, prepend a semi-hidden text field and set focus on it instead.
+        //   This will prevent automatic expansion of the input field, but still move tab index to the dialog and allow
+        //   for keyboard navigation in it. See bug#12681 for more information.
+        if ($FirstElement.hasClass('InputField_Search')) {
+            $FocusField = $('<input/>')
+                .addClass('FocusField')
+                .insertBefore($FirstElement);
+            $FocusField.focus();
+        }
+        else {
+            $FirstElement.focus();
+        }
     }
 
     /**
@@ -351,7 +368,7 @@ Core.UI.Dialog = (function (TargetNS) {
                 Type: 'Close',
                 Function: Params.OnClose
             }];
-            $Content.append('<div class="Center Spacing"><button type="button" id="DialogButton1" class="CallForAction Close"><span>Ok</span></button></div>');
+            $Content.append('<div class="Center Spacing"><button type="button" id="DialogButton1" class="CallForAction Close"><span>OK</span></button></div>');
         }
         // Define different other types here...
         else if (Params.Type === 'Search') {
@@ -371,14 +388,14 @@ Core.UI.Dialog = (function (TargetNS) {
                 $Content.append('<div class="InnerContent"></div>').find('.InnerContent').append(Params.HTML);
                 $ButtonFooter = $('<div class="ContentFooter Center"></div>');
                 $.each(Params.Buttons, function (Index, Value) {
-                    var Classes = '';
+                    var Classes = 'CallForAction';
                     if (Value.Type === 'Close') {
-                        Classes = 'Close';
+                        Classes += ' Close';
                     }
                     if (Value.Class) {
                         Classes += ' ' + Value.Class;
                     }
-                    $ButtonFooter.append('<button id="DialogButton' + (Index - 0 + 1) + '" ' + (Classes.length ? ('class="' + Classes + ' CallForAction" ') : '') + 'type="button"><span>' + Value.Label + '</span></button> ');
+                    $ButtonFooter.append('<button id="DialogButton' + (Index - 0 + 1) + '" class="' + Classes + '" type="button"><span>' + Value.Label + '</span></button> ');
                 });
                 $ButtonFooter.appendTo($Content);
             }

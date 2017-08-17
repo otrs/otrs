@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -78,6 +78,7 @@ Core.Config.Set('Grouped', [% Translate("Grouped") | JSON %]);
 Core.Config.Set('Stacked', [% Translate("Stacked") | JSON %]);
 Core.Config.Set('Expanded', [% Translate("Expanded") | JSON %]);
 Core.Config.Set('Stream', [% Translate("Stream") | JSON %]);
+Core.Config.Set('NoDataAvailable', [% Translate("No Data Available.") | JSON %]);
 
 (function(){
     var Timeout = 500;

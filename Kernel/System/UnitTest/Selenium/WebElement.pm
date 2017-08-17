@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -12,6 +12,14 @@ use strict;
 use warnings;
 
 use base qw(Selenium::Remote::WebElement);
+
+=head1 NAME
+
+Kernel::System::UnitTest::Selenium::WebElement - Utility functions for Selenium WebElements
+
+=over 4
+
+=cut
 
 =item VerifiedSubmit()
 
@@ -28,7 +36,7 @@ sub VerifiedSubmit {
 
     $Self->driver()->WaitFor(
         JavaScript =>
-            'return typeof(Core) == "object" && typeof(Core.Config) == "object" && Core.Config.Get("Baselink")'
+            'return typeof(Core) == "object" && typeof(Core.App) == "object" && Core.App.PageLoadComplete'
     ) || die "OTRS API verification failed after element submit.";
 
     return;
@@ -52,7 +60,7 @@ sub VerifiedClick {    ## no critic
 
     $Self->driver()->WaitFor(
         JavaScript =>
-            'return typeof(Core) == "object" && typeof(Core.Config) == "object" && Core.Config.Get("Baselink")'
+            'return typeof(Core) == "object" && typeof(Core.App) == "object" && Core.App.PageLoadComplete'
     ) || die "OTRS API verification failed after element click.";
 
     return;

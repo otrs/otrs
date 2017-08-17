@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -20,6 +20,15 @@ $Selenium->RunTest(
 
         # get helper object
         my $Helper = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
+
+        # get time object
+        my $TimeObject = $Kernel::OM->Get('Kernel::System::Time');
+
+        # get DB object
+        my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
+
+        # get SystemMaintenance object
+        my $SystemMaintenanceObject = $Kernel::OM->Get('Kernel::System::SystemMaintenance');
 
         # create test user and login
         my $TestUserLogin = $Helper->TestUserCreate(
@@ -69,9 +78,6 @@ $Selenium->RunTest(
             'Client side validation correctly detected missing input value',
         );
 
-        # get time object
-        my $TimeObject = $Kernel::OM->Get('Kernel::System::Time');
-
         # create error test SystemMaintenance scenario
         # get test end time - 1 hour of current time
         my ( $SecWrong, $MinWrong, $HourWrong, $DayWrong, $MonthWrong, $YearWrong, ) = $TimeObject->SystemTime2Date(
@@ -84,13 +90,13 @@ $Selenium->RunTest(
 
         $Selenium->find_element( "#Comment", 'css' )->send_keys($SysMainComment);
 
-        $Selenium->find_element( "#StopDateDay option[value='" . int($DayWrong) . "']",     'css' )->click();
-        $Selenium->find_element( "#StopDateMonth option[value='" . int($MonthWrong) . "']", 'css' )->click();
+        $Selenium->find_element( "#StopDateDay option[value='" . int($DayWrong) . "']",     'css' )->VerifiedClick();
+        $Selenium->find_element( "#StopDateMonth option[value='" . int($MonthWrong) . "']", 'css' )->VerifiedClick();
         $Selenium->execute_script(
             "\$('#StopDateYear').val('$YearWrong').trigger('redraw.InputField').trigger('change');"
         );
-        $Selenium->find_element( "#StopDateHour option[value='" . int($HourWrong) . "']",  'css' )->click();
-        $Selenium->find_element( "#StopDateMinute option[value='" . int($MinWrong) . "']", 'css' )->click();
+        $Selenium->find_element( "#StopDateHour option[value='" . int($HourWrong) . "']",  'css' )->VerifiedClick();
+        $Selenium->find_element( "#StopDateMinute option[value='" . int($MinWrong) . "']", 'css' )->VerifiedClick();
 
         $Selenium->find_element( "#Comment", 'css' )->VerifiedSubmit();
         $Self->True(
@@ -109,20 +115,20 @@ $Selenium->RunTest(
         );
 
         # create real test SystemMaintenance
-        $Selenium->find_element( "#StartDateDay option[value='" . int($DayStart) . "']",     'css' )->click();
-        $Selenium->find_element( "#StartDateMonth option[value='" . int($MonthStart) . "']", 'css' )->click();
+        $Selenium->find_element( "#StartDateDay option[value='" . int($DayStart) . "']",     'css' )->VerifiedClick();
+        $Selenium->find_element( "#StartDateMonth option[value='" . int($MonthStart) . "']", 'css' )->VerifiedClick();
         $Selenium->execute_script(
             "\$('#StartDateYear').val('$YearStart').trigger('redraw.InputField').trigger('change');"
         );
-        $Selenium->find_element( "#StartDateHour option[value='" . int($HourStart) . "']",  'css' )->click();
-        $Selenium->find_element( "#StartDateMinute option[value='" . int($MinStart) . "']", 'css' )->click();
-        $Selenium->find_element( "#StopDateDay option[value='" . int($DayEnd) . "']",       'css' )->click();
-        $Selenium->find_element( "#StopDateMonth option[value='" . int($MonthEnd) . "']",   'css' )->click();
+        $Selenium->find_element( "#StartDateHour option[value='" . int($HourStart) . "']",  'css' )->VerifiedClick();
+        $Selenium->find_element( "#StartDateMinute option[value='" . int($MinStart) . "']", 'css' )->VerifiedClick();
+        $Selenium->find_element( "#StopDateDay option[value='" . int($DayEnd) . "']",       'css' )->VerifiedClick();
+        $Selenium->find_element( "#StopDateMonth option[value='" . int($MonthEnd) . "']",   'css' )->VerifiedClick();
         $Selenium->execute_script(
             "\$('#StopDateYear').val('$YearEnd').trigger('redraw.InputField').trigger('change');"
         );
-        $Selenium->find_element( "#StopDateHour option[value='" . int($HourEnd) . "']",  'css' )->click();
-        $Selenium->find_element( "#StopDateMinute option[value='" . int($MinEnd) . "']", 'css' )->click();
+        $Selenium->find_element( "#StopDateHour option[value='" . int($HourEnd) . "']",  'css' )->VerifiedClick();
+        $Selenium->find_element( "#StopDateMinute option[value='" . int($MinEnd) . "']", 'css' )->VerifiedClick();
         $Selenium->find_element( "#LoginMessage",  'css' )->send_keys($SysMainLogin);
         $Selenium->find_element( "#NotifyMessage", 'css' )->send_keys($SysMainNotify);
         $Selenium->find_element( "#Comment",       'css' )->VerifiedSubmit();
@@ -135,9 +141,6 @@ $Selenium->RunTest(
             index( $Selenium->get_page_source(), $SysMainComment ) > -1,
             "$SysMainComment found on page",
         );
-
-        # get DB object
-        my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
 
         # get test SystemMaintenanceID
         my $SysMainCommentQuoted = $DBObject->Quote($SysMainComment);
@@ -211,16 +214,159 @@ $Selenium->RunTest(
             "#ValidID updated value",
         );
 
-        # delete test SystemMaintenance
-        my $Success = $Kernel::OM->Get('Kernel::System::SystemMaintenance')->SystemMaintenanceDelete(
-            ID     => $SysMainID,
-            UserID => 1,
-        );
-        $Self->True(
-            $Success,
-            "Deleted - $SysMainComment",
+        # click 'Go to overview'
+        $Selenium->find_element("//a[contains(\@href, 'AdminSystemMaintenance')]")->VerifiedClick();
+
+        # click to delete test SystemMaintenance
+        $Selenium->find_element("//a[contains(\@href, 'Subaction=Delete;SystemMaintenanceID=$SysMainID')]")->click();
+
+        $Selenium->WaitFor( AlertPresent => 1 );
+
+        # accept delete confirmation dialog
+        $Selenium->accept_alert();
+
+        $Selenium->WaitFor(
+            JavaScript =>
+                'return typeof(Core) == "object" && typeof(Core.App) == "object" && Core.App.PageLoadComplete'
         );
 
+        $Self->True(
+            index( $Selenium->get_page_source(), $SysMainComment ) == -1,
+            "Deleted - $SysMainComment"
+        );
+
+        # define test SystemMaintenance scenarios
+        my @Tests = (
+            {
+                # now, duration 2 hours
+                StartDate => $TimeObject->SystemTime(),
+                StopDate  => $TimeObject->SystemTime() + 2 * 60 * 60,
+                Comment   => $SysMainComment . ' maintenance period #1',
+                ValidID   => 1,
+                UserID    => 1,
+            },
+            {
+                # 1 day later, duration 2 hours
+                StartDate => $TimeObject->SystemTime() + 24 * 60 * 60,
+                StopDate  => $TimeObject->SystemTime() + 24 * 60 * 60 + 2 * 60 * 60,
+                Comment   => $SysMainComment . ' maintenance period #2',
+                ValidID   => 1,
+                UserID    => 1,
+            },
+            {
+                # 2 days later, duration 2 hours
+                StartDate => $TimeObject->SystemTime() + 2 * 24 * 60 * 60,
+                StopDate  => $TimeObject->SystemTime() + 2 * 24 * 60 * 60 + 2 * 60 * 60,
+                Comment   => $SysMainComment . ' maintenance period #3',
+                ValidID   => 1,
+                UserID    => 1,
+            },
+            {
+                # 3 days later, duration 2 hours
+                StartDate => $TimeObject->SystemTime() + 3 * 24 * 60 * 60,
+                StopDate  => $TimeObject->SystemTime() + 3 * 24 * 60 * 60 + 2 * 60 * 60,
+                Comment   => $SysMainComment . ' maintenance period #4',
+                ValidID   => 1,
+                UserID    => 1,
+            },
+            {
+                # 4 days later, duration 2 hours
+                StartDate => $TimeObject->SystemTime() + 4 * 24 * 60 * 60,
+                StopDate  => $TimeObject->SystemTime() + 4 * 24 * 60 * 60 + 2 * 60 * 60,
+                Comment   => $SysMainComment . ' maintenance period #5',
+                ValidID   => 1,
+                UserID    => 1,
+            },
+            {
+                # 5 days later, duration 2 hours
+                StartDate => $TimeObject->SystemTime() + 5 * 24 * 60 * 60,
+                StopDate  => $TimeObject->SystemTime() + 5 * 24 * 60 * 60 + 2 * 60 * 60,
+                Comment   => $SysMainComment . ' maintenance period #6',
+                ValidID   => 1,
+                UserID    => 1,
+            },
+            {
+                # 6 days later, duration 2 hours
+                StartDate => $TimeObject->SystemTime() + 6 * 24 * 60 * 60,
+                StopDate  => $TimeObject->SystemTime() + 6 * 24 * 60 * 60 + 2 * 60 * 60,
+                Comment   => $SysMainComment . ' maintenance period #7',
+                ValidID   => 1,
+                UserID    => 1,
+            },
+            {
+                # 7 days later, duration 2 hours
+                StartDate => $TimeObject->SystemTime() + 7 * 24 * 60 * 60,
+                StopDate  => $TimeObject->SystemTime() + 7 * 24 * 60 * 60 + 2 * 60 * 60,
+                Comment   => $SysMainComment . ' maintenance period #8',
+                ValidID   => 1,
+                UserID    => 1,
+            },
+            {
+                # 8 days later, duration 2 hours
+                StartDate => $TimeObject->SystemTime() + 8 * 24 * 60 * 60,
+                StopDate  => $TimeObject->SystemTime() + 8 * 24 * 60 * 60 + 2 * 60 * 60,
+                Comment   => $SysMainComment . ' maintenance period #9',
+                ValidID   => 1,
+                UserID    => 1,
+            },
+            {
+                # one week earlier, duration 2 hours
+                StartDate => $TimeObject->SystemTime() - 7 * 24 * 60 * 60,
+                StopDate  => $TimeObject->SystemTime() - 7 * 24 * 60 * 60 + 2 * 60 * 60,
+                Comment   => $SysMainComment . ' maintenance period #10',
+                ValidID   => 1,
+                UserID    => 1,
+            },
+        );
+
+        # create test SystemMaintenances
+        my @SystemMaintenanceIDs;
+        for my $Test (@Tests) {
+            my $SystemMaintenanceID = $SystemMaintenanceObject->SystemMaintenanceAdd(
+                StartDate => $Test->{StartDate},
+                StopDate  => $Test->{StopDate},
+                Comment   => $Test->{Comment},
+                ValidID   => $Test->{ValidID},
+                UserID    => $Test->{UserID},
+            );
+
+            push @SystemMaintenanceIDs, $SystemMaintenanceID;
+        }
+
+        # navigate to AdminSystemMaintenance screen
+        $Selenium->VerifiedGet("${ScriptAlias}index.pl?Action=AdminSystemMaintenance");
+
+        # check created SystemMaintenances
+        for my $Test (@Tests) {
+            $Self->True(
+                index( $Selenium->get_page_source(), $Test->{Comment} ) > -1,
+                "Created system maintenance with comment '$Test->{Comment}' is found on page.",
+            );
+        }
+
+        # check order of displayed SystemMaintenances by comments and lines
+        for my $i ( 1 .. 10 ) {
+
+            # set the correct index for the @Tests array (line 1 contains last test comment)
+            my $Index = $i;
+            $Index = ( $Index eq 1 ) ? $Index = 9 : $Index = $Index - 2;
+
+            my $TrIndex = $i - 1;
+
+            $Self->Is(
+                $Selenium->execute_script("return \$('tbody tr:visible:eq($TrIndex) td:eq(2)').text()"),
+                $Tests[$Index]->{Comment},
+                "Found system maintenance with comment '$Tests[$Index]->{Comment}' in line $i."
+            );
+        }
+
+        # delete created SystemMaintenances
+        for my $SystemMaintenanceID (@SystemMaintenanceIDs) {
+            my $Success = $SystemMaintenanceObject->SystemMaintenanceDelete(
+                ID     => $SystemMaintenanceID,
+                UserID => 1,
+            );
+        }
     }
 
 );

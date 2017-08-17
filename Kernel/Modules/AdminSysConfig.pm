@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -976,13 +976,13 @@ sub Run {
         );
 
         # list Groups
-        my %List = $SysConfigObject->ConfigGroupList();
+        my %GroupList = $SysConfigObject->ConfigGroupList();
 
         $Group = $ParamObject->GetParam( Param => 'SysConfigGroup' );
 
         # create select Box
         $Data{List} = $LayoutObject->BuildSelection(
-            Data         => \%List,
+            Data         => \%GroupList,
             SelectedID   => $Group,
             Name         => 'SysConfigGroup',
             Translation  => 0,
@@ -1005,16 +1005,17 @@ sub Run {
 
         $LayoutObject->Block( Name => 'OverviewResult' );
 
-        %List = $SysConfigObject->ConfigSubGroupList( Name => $Group );
+        my %SubGroupList;
+        %SubGroupList = $SysConfigObject->ConfigSubGroupList( Name => $Group ) if $Group;
 
         # if there are any results, they are shown
-        if (%List) {
-            for ( sort keys %List ) {
+        if (%SubGroupList) {
+            for my $Item ( sort keys %SubGroupList ) {
                 $LayoutObject->Block(
                     Name => 'Row',
                     Data => {
-                        SubGroup      => $_,
-                        SubGroupCount => $List{$_},
+                        SubGroup      => $Item,
+                        SubGroupCount => $SubGroupList{$Item},
                         Group         => $Group,
                     },
                 );

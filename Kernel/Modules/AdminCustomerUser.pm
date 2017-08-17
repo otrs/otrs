@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -120,6 +120,7 @@ sub Run {
             %UserData,
             UserLastRequest => $Kernel::OM->Get('Kernel::System::Time')->SystemTime(),
             UserType        => 'Customer',
+            SessionSource   => 'CustomerInterface',
         );
 
         # get customer interface session name
@@ -667,43 +668,43 @@ sub _Overview {
         );
     }
 
-    # get config object
-    my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
-
-    # same Limit as $Self->{CustomerUserMap}->{CustomerUserSearchListLimit}
-    # smallest Limit from all sources
-    my $Limit = 400;
-    SOURCE:
-    for my $Count ( '', 1 .. 10 ) {
-        next SOURCE if !$ConfigObject->Get("CustomerUser$Count");
-        my $CustomerUserMap = $ConfigObject->Get("CustomerUser$Count");
-        next SOURCE if !$CustomerUserMap->{CustomerUserSearchListLimit};
-        if ( $CustomerUserMap->{CustomerUserSearchListLimit} < $Limit ) {
-            $Limit = $CustomerUserMap->{CustomerUserSearchListLimit};
-        }
-    }
-
-    my %AllUsers = $CustomerUserObject->CustomerSearch(
-        Search => $Param{Search},
-        Limit  => $Limit + 1,
-        Valid  => 0,
-    );
-
-    if ( keys %AllUsers <= $Limit ) {
-        my $ListAll = keys %AllUsers;
-        $LayoutObject->Block(
-            Name => 'OverviewHeader',
-            Data => {
-                ListAll => $ListAll,
-                Limit   => $Limit,
-            },
-        );
-    }
-
     # when there is no data to show, a message is displayed on the table with this colspan
     my $ColSpan = 6;
 
     if ( $Param{Search} ) {
+
+        # get config object
+        my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
+
+        # same Limit as $Self->{CustomerUserMap}->{CustomerUserSearchListLimit}
+        # smallest Limit from all sources
+        my $Limit = 400;
+        SOURCE:
+        for my $Count ( '', 1 .. 10 ) {
+            next SOURCE if !$ConfigObject->Get("CustomerUser$Count");
+            my $CustomerUserMap = $ConfigObject->Get("CustomerUser$Count");
+            next SOURCE if !$CustomerUserMap->{CustomerUserSearchListLimit};
+            if ( $CustomerUserMap->{CustomerUserSearchListLimit} < $Limit ) {
+                $Limit = $CustomerUserMap->{CustomerUserSearchListLimit};
+            }
+        }
+
+        my %AllUsers = $CustomerUserObject->CustomerSearch(
+            Search => $Param{Search},
+            Limit  => $Limit + 1,
+            Valid  => 0,
+        );
+
+        if ( keys %AllUsers <= $Limit ) {
+            my $ListAll = keys %AllUsers;
+            $LayoutObject->Block(
+                Name => 'OverviewHeader',
+                Data => {
+                    ListAll => $ListAll,
+                    Limit   => $Limit,
+                },
+            );
+        }
 
         my %List = $CustomerUserObject->CustomerSearch(
             Search => $Param{Search},
@@ -729,7 +730,7 @@ sub _Overview {
             Data => \%Param,
         );
 
-        if ( $ConfigObject->Get('SwitchToCustomer') && $Self->{SwitchToCustomerPermission} )
+        if ( $ConfigObject->Get('SwitchToCustomer') && $Self->{SwitchToCustomerPermission} && $Param{Nav} ne 'None' )
         {
             $ColSpan = 7;
             $LayoutObject->Block(

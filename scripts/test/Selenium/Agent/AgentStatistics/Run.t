@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -19,15 +19,10 @@ $Selenium->RunTest(
     sub {
 
         # get helper object
-        $Kernel::OM->ObjectParamAdd(
-            'Kernel::System::UnitTest::Helper' => {
-                RestoreSystemConfiguration => 1,
-            },
-        );
         my $Helper = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
 
         # show more stats per page as the default 50
-        my $Success = $Kernel::OM->Get('Kernel::System::SysConfig')->ConfigItemUpdate(
+        my $Success = $Helper->ConfigSettingChange(
             Valid => 1,
             Key   => 'Stats::SearchPageShown',
             Value => 99,
@@ -101,7 +96,7 @@ $Selenium->RunTest(
             ->VerifiedClick();
 
         # run test statistic
-        $Selenium->find_element( "#StartStatistic", 'css' )->click();
+        $Selenium->find_element( "#StartStatistic", 'css' )->VerifiedClick();
         $Selenium->WaitFor( WindowCount => 2 );
 
         # switch to another window

@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -922,11 +922,10 @@ sub FutureTaskAdd {
         );
 
         my @FilteredList = @List;
-
-        if ( $Param{Name} ) {
+        if ( $Param{Name} && @List ) {
 
             # remove all tasks that does not match specified task name
-            @FilteredList = grep { $_->{Name} eq $Param{Name} } @List;
+            @FilteredList = grep { ( $_->{Name} || '' ) eq $Param{Name} } @List;
         }
 
         # compare the number of task with the maximum parallel limit

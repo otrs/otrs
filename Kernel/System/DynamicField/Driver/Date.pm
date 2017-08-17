@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -107,6 +107,10 @@ sub new {
 sub ValueSet {
     my ( $Self, %Param ) = @_;
 
+    # Convert the ISO date string to a ISO date time string, if only the date is given to
+    #   have the correct format.
+    $Param{Value} = $Self->_ConvertDate2DateTime( $Param{Value} );
+
     # check for no time in date fields
     if ( $Param{Value} && $Param{Value} !~ m{\A \d{4}-\d{2}-\d{2}\s00:00:00 \z}xms ) {
         $Kernel::OM->Get('Kernel::System::Log')->Log(
@@ -137,6 +141,10 @@ sub ValueValidate {
     my $Prefix          = 'DynamicField_' . $Param{DynamicFieldConfig}->{Name};
     my $DateRestriction = $Param{DynamicFieldConfig}->{Config}->{DateRestriction};
 
+    # Convert the ISO date string to a ISO date time string, if only the date is given to
+    #   have the correct format.
+    $Param{Value} = $Self->_ConvertDate2DateTime( $Param{Value} );
+
     # check for no time in date fields
     if (
         $Param{Value}
@@ -146,7 +154,7 @@ sub ValueValidate {
     {
         $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'error',
-            Message  => "The value for the field Date is invalid!\n"
+            Message  => "The value for the Date field ($Param{DynamicFieldConfig}->{Name}) is invalid!\n"
                 . "The date must be valid and the time must be 00:00:00"
                 . " (or 23:59:59 for search parameters)",
         );
@@ -169,20 +177,39 @@ sub ValueValidate {
             String => $Param{Value},
         );
         my $SystemTime = $TimeObject->SystemTime();
+        my ( $SystemTimePast, $SystemTimeFuture ) = $SystemTime;
 
-        if ( $DateRestriction eq 'DisableFutureDates' && $ValueSystemTime > $SystemTime ) {
+        # if validating date only value, allow today for selection
+        if ( $Param{DynamicFieldConfig}->{FieldType} eq 'Date' ) {
+
+            # calculate today system time boundaries
+            my @Today = $TimeObject->SystemTime2Date(
+                SystemTime => $SystemTime,
+            );
+            $SystemTimePast = $TimeObject->Date2SystemTime(
+                Year   => $Today[5],
+                Month  => $Today[4],
+                Day    => $Today[3],
+                Hour   => 0,
+                Minute => 0,
+                Second => 0,
+            );
+            $SystemTimeFuture = $SystemTimePast + 60 * 60 * 24 - 1;    # 23:59:59
+        }
+
+        if ( $DateRestriction eq 'DisableFutureDates' && $ValueSystemTime > $SystemTimeFuture ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
                 Message =>
-                    "The value for the field Date is in the future! The date needs to be in the past!",
+                    "The value for the Date field ($Param{DynamicFieldConfig}->{Name}) is in the future! The date needs to be in the past!",
             );
             return;
         }
-        elsif ( $DateRestriction eq 'DisablePastDates' && $ValueSystemTime < $SystemTime ) {
+        elsif ( $DateRestriction eq 'DisablePastDates' && $ValueSystemTime < $SystemTimePast ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
                 Message =>
-                    "The value for the field Date is in the past! The date needs to be in the future!",
+                    "The value for the Date field ($Param{DynamicFieldConfig}->{Name}) is in the past! The date needs to be in the future!",
             );
             return;
         }
@@ -203,15 +230,14 @@ sub SearchSQLGet {
     );
 
     if ( $Operators{ $Param{Operator} } ) {
+
+        # Convert the ISO date string to a ISO date time string, if only the date is given to
+        #   have the correct format.
+        $Param{SearchTerm} = $Self->_ConvertDate2DateTime( $Param{SearchTerm} );
+
         my $SQL = " $Param{TableAlias}.value_date $Operators{$Param{Operator}} '"
-            . $Kernel::OM->Get('Kernel::System::DB')->Quote( $Param{SearchTerm} );
+            . $Kernel::OM->Get('Kernel::System::DB')->Quote( $Param{SearchTerm} ) . "' ";
 
-        # Append hh:mm:ss if only the ISO date was supplied to get a full date-time string.
-        if ( $Param{SearchTerm} =~ m{\A \d{4}-\d{2}-\d{2}\z}xms ) {
-            $SQL .= " 00:00:00";
-        }
-
-        $SQL .= "' ";
         return $SQL;
     }
 
@@ -238,7 +264,6 @@ sub EditFieldRender {
         $Value = $FieldConfig->{DefaultValue} || '';
     }
 
-    my %SplitedFieldValues;
     if ( defined $Param{Value} ) {
         $Value = $Param{Value};
     }
@@ -246,18 +271,15 @@ sub EditFieldRender {
         my ( $Year, $Month, $Day, $Hour, $Minute, $Second ) = $Value =~
             m{ \A ( \d{4} ) - ( \d{2} ) - ( \d{2} ) \s ( \d{2} ) : ( \d{2} ) : ( \d{2} ) \z }xms;
 
-        %SplitedFieldValues = (
-
-            # if a value is sent this value must be active, then the Used part needs to be set to 1
-            # otherwise user can easily forget to mark the checkbox and this could lead into data
-            # lost Bug#8258
-            $FieldName . 'Used'   => 1,
-            $FieldName . 'Year'   => $Year,
-            $FieldName . 'Month'  => $Month,
-            $FieldName . 'Day'    => $Day,
-            $FieldName . 'Hour'   => $Hour,
-            $FieldName . 'Minute' => $Minute,
-        );
+        # If a value is sent this value must be active, then the Used part needs to be set to 1
+        #   otherwise user can easily forget to mark the checkbox and this could lead into data
+        #   lost (Bug#8258).
+        $FieldConfig->{ $FieldName . 'Used' }   = 1;
+        $FieldConfig->{ $FieldName . 'Year' }   = $Year;
+        $FieldConfig->{ $FieldName . 'Month' }  = $Month;
+        $FieldConfig->{ $FieldName . 'Day' }    = $Day;
+        $FieldConfig->{ $FieldName . 'Hour' }   = $Hour;
+        $FieldConfig->{ $FieldName . 'Minute' } = $Minute;
     }
 
     # extract the dynamic field value form the web request
@@ -324,7 +346,6 @@ sub EditFieldRender {
         $FieldName . Optional => 1,
         Validate              => 1,
         %{$FieldConfig},
-        %SplitedFieldValues,
         %YearsPeriodRange,
         OverrideTimeZone => 1,
     );
@@ -507,12 +528,31 @@ sub EditFieldValueValidate {
             String => $ManualTimeStamp,
         );
         my $SystemTime = $TimeObject->SystemTime();
+        my ( $SystemTimePast, $SystemTimeFuture ) = $SystemTime;
 
-        if ( $DateRestriction eq 'DisableFutureDates' && $ValueSystemTime > $SystemTime ) {
+        # if validating date only value, allow today for selection
+        if ( $Param{DynamicFieldConfig}->{FieldType} eq 'Date' ) {
+
+            # calculate today system time boundaries
+            my @Today = $TimeObject->SystemTime2Date(
+                SystemTime => $SystemTime,
+            );
+            $SystemTimePast = $TimeObject->Date2SystemTime(
+                Year   => $Today[5],
+                Month  => $Today[4],
+                Day    => $Today[3],
+                Hour   => 0,
+                Minute => 0,
+                Second => 0,
+            );
+            $SystemTimeFuture = $SystemTimePast + 60 * 60 * 24 - 1;    # 23:59:59
+        }
+
+        if ( $DateRestriction eq 'DisableFutureDates' && $ValueSystemTime > $SystemTimeFuture ) {
             $ServerError  = 1;
             $ErrorMessage = "Invalid date (need a past date)!";
         }
-        elsif ( $DateRestriction eq 'DisablePastDates' && $ValueSystemTime < $SystemTime ) {
+        elsif ( $DateRestriction eq 'DisablePastDates' && $ValueSystemTime < $SystemTimePast ) {
             $ServerError  = 1;
             $ErrorMessage = "Invalid date (need a future date)!";
         }
@@ -740,6 +780,15 @@ EOF
         return $Data;
     }
 
+    # to set the years range
+    my %YearsPeriodRange;
+    if ( defined $FieldConfig->{YearsPeriod} && $FieldConfig->{YearsPeriod} eq '1' ) {
+        %YearsPeriodRange = (
+            YearPeriodPast   => $FieldConfig->{YearsInPast}   || 0,
+            YearPeriodFuture => $FieldConfig->{YearsInFuture} || 0,
+        );
+    }
+
     # build HTML for start value set
     $HTMLString .= $Param{LayoutObject}->BuildDateSelection(
         %Param,
@@ -749,6 +798,8 @@ EOF
         DiffTime             => -( ( 60 * 60 * 24 ) * 30 ),
         Validate             => 1,
         %{ $Value->{ValueStart} },
+        %YearsPeriodRange,
+        OverrideTimeZone => 1,
     );
 
     # build HTML for "and" separator
@@ -763,6 +814,8 @@ EOF
         DiffTime             => +( ( 60 * 60 * 24 ) * 30 ),
         Validate             => 1,
         %{ $Value->{ValueStop} },
+        %YearsPeriodRange,
+        OverrideTimeZone => 1,
     );
 
     my $AdditionalText;
@@ -1302,7 +1355,53 @@ sub RandomValueSet {
     };
 }
 
+sub ValueLookup {
+    my ( $Self, %Param ) = @_;
+
+    my $Value = defined $Param{Key} ? $Param{Key} : '';
+
+    # check if a translation is possible
+    if ( defined $Param{LanguageObject} ) {
+
+        # translate value
+        $Value = $Param{LanguageObject}->FormatTimeString(
+            $Value,
+            'DateFormatShort',
+        );
+    }
+
+    return $Value;
+}
+
+=begin Internal:
+
+=item _ConvertDate2DateTime()
+
+Append hh:mm:ss if only the ISO date was supplied to get a full date-time string.
+
+    my $DateTime = $BackendObject->_ConvertDate2DateTime(
+        '2017-01-01',
+    );
+
+Returns
+
+    $DataTime = '2017-01-01 00:00:00'
+
+=cut
+
+sub _ConvertDate2DateTime {
+    my ( $Self, $Value ) = @_;
+
+    if ( $Value && $Value =~ m{ \A \d{4}-\d{2}-\d{2} \z }xms ) {
+        $Value .= ' 00:00:00';
+    }
+
+    return $Value;
+}
+
 1;
+
+=end Internal:
 
 =back
 

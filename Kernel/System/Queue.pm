@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -183,7 +183,7 @@ to add a template to a queue
     my $Success = $QueueObject->QueueStandardTemplateMemberAdd(
         QueueID            => 123,
         StandardTemplateID => 123,
-        Active             => 1,        # optional
+        Active             => 1,        # to set/confirm (1) or remove (0) the relation
         UserID             => 123,
     );
 
@@ -239,7 +239,7 @@ sub QueueStandardTemplateMemberAdd {
 
 =item QueueStandardTemplateMemberList()
 
-get std responses of a queue
+get standard responses of a queue
 
     my %Templates = $QueueObject->QueueStandardTemplateMemberList( QueueID => 123 );
 
@@ -384,7 +384,7 @@ get all valid system queues
 
     my %Queues = $QueueObject->GetAllQueues();
 
-get all system queues of a user with permission type (e. g. ro, move_into, rw, ...)
+get all system queues of a user with permission type (e. g. C<ro>, C<move_into>, C<rw>, ...)
 
     my %Queues = $QueueObject->GetAllQueues( UserID => 123, Type => 'ro' );
 

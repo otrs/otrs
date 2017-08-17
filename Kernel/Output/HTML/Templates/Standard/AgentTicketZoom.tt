@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -131,7 +131,7 @@
     <div class="Headline">
         <div class="Flag" title="[% Translate(Data.Priority) | html %]"><span class="PriorityID-[% Data.PriorityID | html %]">[% Translate(Data.Priority) | html %]</span></div>
         <h1>
-            [% Data.Hook %][% Data.TicketNumber %] &mdash; [% Data.Title | html %]
+            [% Data.Hook %][% Config('Ticket::HookDivider') %][% Data.TicketNumber %] &mdash; [% Data.Title | html %]
         </h1>
     </div>
 
@@ -267,13 +267,57 @@
 [% RenderBlockEnd("PendingUntil") %]
 [% RenderBlockStart("Owner") %]
                         <label>[% Translate("Owner") | html %]:</label>
-                        <p class="Value" title="[% Data.UserFullname | html %] [% Data.OutOfOfficeMessage | html %] ([% Data.UserLogin | html %])">[% Data.UserFullname | html %] [% Data.OutOfOfficeMessage | html %]</p>
+                        <p class="Value" title="[% Data.UserFullname | html %] ([% Data.UserLogin | html %])">
+                            [% IF Data.EnableChat %]
+                            <span class="UserStatusIcon [% Data.UserState | html %]">
+                                <i class="fa fa-circle" title="[% Data.UserStateDescription | html %]"></i>
+                            </span>
+                            [% END %]
+                            [% Data.UserFullname | html %]
+                            [% IF Data.AgentEnableChat && Data.UserID != Env('UserID') %]
+                            <span class="UserChatIcons Block Hidden">
+                                <a href="#" title="[% Translate("Start chat") | html %]" type="button" class="UserChatStart" data-user-id="[% Data.UserID | html %]" data-user-type="User" data-user-fullname="[% Data.UserFullname | html %]" data-ticket-id="[% Data.TicketID | html %]">
+                                    <i class="fa fa-comments"></i>
+                                </a>
+                                [% IF Data.VideoChatEnabled %]
+                                <a href="#" title="[% Translate("Video call") | html %]" type="button" class="UserVideoCallStart[% IF !Data.VideoChatAvailable %] Unavailable[% ELSIF !Data.VideoChatSupport %] Unsupported[% END %]" data-user-id="[% Data.UserID | html %]" data-user-type="User" data-user-fullname="[% Data.UserFullname | html %]" data-ticket-id="[% Data.TicketID | html %]">
+                                    <i class="fa fa-video-camera"></i>
+                                </a>
+                                <a href="#" title="[% Translate("Audio call") | html %]" type="button" class="UserAudioCallStart[% IF !Data.VideoChatAvailable %] Unavailable[% ELSIF !Data.VideoChatSupport %] Unsupported[% END %]" data-user-id="[% Data.UserID | html %]" data-user-type="User"  data-user-fullname="[% Data.UserFullname | html %]" data-ticket-id="[% Data.TicketID | html %]">
+                                    <i class="fa fa-microphone"></i>
+                                </a>
+                                [% END %]
+                            </span>
+                            [% END %]
+                        </p>
                         <div class="Clear"></div>
 
 [% RenderBlockEnd("Owner") %]
 [% RenderBlockStart("Responsible") %]
                         <label>[% Translate("Responsible") | html %]:</label>
-                        <p class="Value" title="[% Data.UserFullname | html %] [% Data.OutOfOfficeMessage | html %] ([% Data.UserLogin | html %])">[% Data.UserFullname | html %] [% Data.OutOfOfficeMessage | html %]</p>
+                        <p class="Value" title="[% Data.UserFullname | html %] ([% Data.UserLogin | html %])">
+                            [% IF Data.EnableChat %]
+                            <span class="UserStatusIcon [% Data.UserState | html %]">
+                                <i class="fa fa-circle" title="[% Data.UserStateDescription | html %]"></i>
+                            </span>
+                            [% END %]
+                            [% Data.UserFullname | html %]
+                            [% IF Data.AgentEnableChat && Data.UserID != Env('UserID') %]
+                            <span class="UserChatIcons Block Hidden">
+                                <a href="#" title="[% Translate("Start chat") | html %]" type="button" class="UserChatStart" data-user-id="[% Data.UserID | html %]" data-user-type="User" data-user-fullname="[% Data.UserFullname | html %]" data-ticket-id="[% Data.TicketID | html %]">
+                                    <i class="fa fa-comments"></i>
+                                </a>
+                                [% IF Data.VideoChatEnabled %]
+                                <a href="#" title="[% Translate("Video call") | html %]" type="button" class="UserVideoCallStart[% IF !Data.VideoChatAvailable %] Unavailable[% ELSIF !Data.VideoChatSupport %] Unsupported[% END %]" data-user-id="[% Data.UserID | html %]" data-user-type="User" data-user-fullname="[% Data.UserFullname | html %]" data-ticket-id="[% Data.TicketID | html %]">
+                                    <i class="fa fa-video-camera"></i>
+                                </a>
+                                <a href="#" title="[% Translate("Audio call") | html %]" type="button" class="UserAudioCallStart[% IF !Data.VideoChatAvailable %] Unavailable[% ELSIF !Data.VideoChatSupport %] Unsupported[% END %]" data-user-id="[% Data.UserID | html %]" data-user-type="User"  data-user-fullname="[% Data.UserFullname | html %]" data-ticket-id="[% Data.TicketID | html %]">
+                                    <i class="fa fa-microphone"></i>
+                                </a>
+                                [% END %]
+                            </span>
+                            [% END %]
+                        </p>
                         <div class="Clear"></div>
 
 [% RenderBlockEnd("Responsible") %]
@@ -426,7 +470,9 @@ $('#[% Data.FormID | html %] select[name=[% Data.PhoneElementID | html %]]').bin
 [% WRAPPER JSOnDocumentComplete %]
 <script type="text/javascript">//<![CDATA[
     $('#DestQueueID').bind('change', function (Event) {
-        $(this).closest('form').submit();
+        if ($('#DestQueueID option:selected').val()) {
+            $(this).closest('form').submit();
+        }
     });
 //]]></script>
 [% END %]
@@ -490,7 +536,7 @@ $('.ShowFieldInfoOverlay').bind('click', function() {
         Buttons: [
             {
                 Type: 'Close',
-                Label: [% Translate("Close") | JSON %],
+                Label: [% Translate("Close dialog") | JSON %],
                 Function: function() {
                     Core.UI.Dialog.CloseDialog($('.Dialog:visible'));
                     Core.Form.EnableForm($('form[name="compose"]'));
@@ -928,7 +974,7 @@ Core.Agent.TicketZoom.TimelineView.Init(TicketID, ListObjects, ArticleID);
 [% RenderBlockStart("ArticleDynamicField") %]
                     <label>[% Translate(Data.Label) | html %]:</label>
 [% RenderBlockStart("ArticleDynamicFieldLink") %]
-                    <p class="Value" title="[% Data.Title %]"><a href="[% Data.Link | Interpolate %]" target="_blank" class="DynamicFieldLink">[% Data.Value %]</a></p>
+                    <p class="Value" title="[% Data.Title %]"><a href="[% Data.Link | Interpolate %]" [% IF Data.LinkPreview %] data-trigger="floater" data-floater-url="[% Data.LinkPreview | Interpolate %]"[% END %] target="_blank" class="DynamicFieldLink">[% Data.Value %]</a></p>
 [% RenderBlockEnd("ArticleDynamicFieldLink") %]
 [% RenderBlockStart("ArticleDynamicFieldPlain") %]
                     <p class="Value" title="[% Data.Title %]">[% Data.Value %]</p>
@@ -1082,8 +1128,6 @@ function CheckIFrameHeight(IFrameID) {
 
 [% RenderBlockStart("TicketZoomInit") %]
 
-[% INCLUDE "ChatStartForm.tt" %]
-
 [% WRAPPER JSOnDocumentComplete %]
 <script type="text/javascript">//<![CDATA[
     Core.Agent.TicketZoom.Init({ ArticleTableHeight: parseInt('[% Env("UserTicketZoomArticleTableHeight") %]', 10)});
@@ -1091,60 +1135,11 @@ function CheckIFrameHeight(IFrameID) {
     Core.Config.Set('Ticket::Frontend::HTMLArticleHeightMax', parseInt("[% Config("Ticket::Frontend::HTMLArticleHeightMax") %]" || 0, 10));
     Core.Config.Set('Language.AttachmentViewMessage', [% Translate('Article could not be opened! Perhaps it is on another article page?') | JSON %]);
 
-    $('a.CreateChatRequest').bind('click', function() {
-        var UserID = $(this).data('user-id'),
-            $Dialog = $('#DashboardUserOnlineChatStartDialog').clone();
-
-        $Dialog.find('input[name=ChatStartUserID]').val($(this).data('customer-user-id'));
-        $Dialog.find('input[name=ChatStartUserType]').val($(this).data('user-type'));
-        $Dialog.find('input[name=ChatStartUserFullname]').val($(this).data('user-fullname'));
-        $Dialog.find('input[name=TicketID]').val($(this).data('ticket-id'));
-        $Dialog.find('input[name=ChannelID]').val($(this).data('channel-id'));
-
-        Core.UI.Dialog.ShowContentDialog($Dialog.html(), [% Translate('Start chat') | JSON %], '100px', 'Center', true);
-
-        // Only enable button if there is a message
-        $('.Dialog textarea[name="ChatStartFirstMessage"]').on('keyup', function(){
-            $('.Dialog button').prop('disabled', $(this).val().length ? false : true );
-        });
-
-        $('.Dialog form').on('submit', function(){
-            if (!$('.Dialog textarea[name=ChatStartFirstMessage]').val().length) {
-                return false;
-            }
-            // Close after submit
-            window.setTimeout(function(){
-                Core.UI.Dialog.CloseDialog($('.Dialog'));
-            }, 1);
-        });
-
-        return false;
-    });
-
     if (typeof Core.UI.Floater !== 'undefined') {
         Core.UI.Floater.Init();
     }
 
 //]]></script>
 [% END %]
+[% INCLUDE "MetaFloater.tt" %]
 [% RenderBlockEnd("TicketZoomInit") %]
-
-<div class="MetaFloater Hidden">
-    <a href="#" class="Scale" title="[% Translate('Scale preview content') | html %]" style="display: none;">
-        <i class="fa fa-search-plus"></i>
-    </a>
-    <a href="#" class="Open" target="_blank" title="[% Translate('Open URL in new tab') | html %]" style="display: none;">
-        <i class="fa fa-external-link"></i>
-    </a>
-    <a href="#" class="Close" title="[% Translate('Close preview') | html %]">
-        <i class="fa fa-times"></i>
-    </a>
-    <i class="fa fa-spinner fa-spin"></i>
-    <div class="NoPreview">
-        <i class="fa fa-warning"></i>
-        [% Translate("A preview of this website can't be provided because it didn't allow to be embedded.") | html %]
-    </div>
-    <div class="Content" style="display: none;">
-        <iframe sandbox="allow-scripts allow-forms"></iframe>
-    </div>
-</div>

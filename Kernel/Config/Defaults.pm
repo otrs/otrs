@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2013 OTRS AG, http://otrs.org/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -30,7 +30,29 @@ use lib dirname($Bin) . '/Custom';
 use File::stat;
 use Digest::MD5;
 
+use Exporter qw(import);
+our @EXPORT = qw(Translatable);
+
 our @ObjectDependencies = ();
+
+=head1 NAME
+
+Kernel::Config::Defaults - Base class for the ConfigObject.
+
+=head1 DESCRIPTION
+
+This class implements several internal functions that are used internally in
+L<Kernel::Config>. The two externally used functions are documented as part
+of L<Kernel::Config>, even though they are actually implemented here.
+
+=head1 PUBLIC INTERFACE
+
+=head2 LoadDefaults()
+
+loads the default values of settings that are required to run OTRS even
+when it was not fully configured yet.
+
+=cut
 
 sub LoadDefaults {
     my $Self = shift;
@@ -83,7 +105,7 @@ sub LoadDefaults {
 
     # ProductName
     # (Application name displayed in frontend.)
-    $Self->{ProductName} = 'OTRS 5';
+    $Self->{ProductName} = 'OTRS 5s';
 
     # --------------------------------------------------- #
     # database settings                                   #
@@ -110,13 +132,6 @@ sub LoadDefaults {
 
     # The database DSN for PostgreSQL ==> more: "perldoc DBD::Pg"
 #    $Self->{DatabaseDSN} = "DBI:Pg:dbname=<OTRS_CONFIG_Database>;host=<OTRS_CONFIG_DatabaseHost>;";
-
-    # The database DSN for Microsoft SQL Server - only supported if OTRS is
-    # installed on Windows as well
-    #    $Self->{DatabaseDSN} = "DBI:ODBC:$Self->{Database}";
-    # If you use ODBC, no database auto detection is possible,
-    # so set the database type here. Possible: mysq,postgresql,mssql,oracle
-    #    $Self->{'Database::Type'} = 'mssql';
 
     # The database DSN for Oracle ==> more: "perldoc DBD::oracle"
 #    $Self->{DatabaseDSN} = "DBI:Oracle://$Self->{DatabaseHost}:1521/$Self->{Database}";
@@ -175,6 +190,7 @@ sub LoadDefaults {
         'hi' => 'Hindi',
         'hr' => 'Croatian',
         'hu' => 'Hungarian',
+        'id' => 'Indonesian',
         'it' => 'Italian',
         'ja' => 'Japanese',
         'lt' => 'Lithuanian',
@@ -224,6 +240,7 @@ sub LoadDefaults {
         'hi' => 'हिन्दी',
         'hr' => 'Hrvatski',
         'hu' => 'Magyar',
+        'id' => 'Bahasa Indonesia',
         'it' => 'Italiano',
         'ja' => '日本語',
         'lt' => 'Lietuvių kalba',
@@ -700,6 +717,9 @@ sub LoadDefaults {
         '200-UID-Check' => {
           'Module' => 'Kernel::Output::HTML::Notification::UIDCheck',
         },
+        '250-AgentSessionLimit' => {
+          'Module' => 'Kernel::Output::HTML::Notification::AgentSessionLimit',
+        },
         '500-OutofOffice-Check' => {
           'Module' => 'Kernel::Output::HTML::Notification::OutofOfficeCheck',
         },
@@ -751,7 +771,7 @@ sub LoadDefaults {
     # SessionMaxIdleTime
     # (After this time (in seconds) without new http request, then
     # the user get logged off)
-    $Self->{SessionMaxIdleTime} = 6 * 60 * 60;
+    $Self->{SessionMaxIdleTime} = 2 * 60 * 60;
 
     # SessionDeleteIfTimeToOld
     # (Delete session's witch are requested and to old?) [0|1]
@@ -968,6 +988,7 @@ sub LoadDefaults {
         'Core.UI.InputFields.js',
         'Core.UI.Accessibility.js',
         'Core.UI.Dialog.js',
+        'Core.UI.Floater.js',
         'Core.UI.RichTextEditor.js',
         'Core.UI.Datepicker.js',
         'Core.UI.Popup.js',
@@ -1109,6 +1130,7 @@ sub LoadDefaults {
         'Active' => '1',
         'Area' => 'Agent',
         'Column' => 'User Profile',
+        'Desc' => 'Set a new password by filling in your current password and a new one.',
         'Label' => 'Change password',
         'Module' => 'Kernel::Output::HTML::Preferences::Password',
         'PasswordMaxLoginFailed' => '0',
@@ -1156,6 +1178,7 @@ sub LoadDefaults {
         'Column' => 'User Profile',
         'Key' => 'Language',
         'Label' => 'Language',
+        'Desc' => 'Select the main interface language.',
         'Module' => 'Kernel::Output::HTML::Preferences::Language',
         'PrefKey' => 'UserLanguage',
         'Prio' => '1000'
@@ -1163,6 +1186,7 @@ sub LoadDefaults {
     $Self->{PreferencesGroups}->{Theme} = {
         'Active' => '1',
         'Column' => 'User Profile',
+        'Desc' => 'Select your preferred theme for OTRS.',
         'Key' => 'Frontend theme',
         'Label' => 'Theme',
         'Module' => 'Kernel::Output::HTML::Preferences::Theme',
@@ -1559,7 +1583,7 @@ via the Preferences button after logging in.
 #        CacheTTL => 0,
 #        Map => [
 #            # note: Login, Email and CustomerID needed!
-#            # var, frontend, storage, shown (1=always,2=lite), required, storage-type, http-link, readonly
+#            # var, frontend, storage, shown (1=always,2=lite), required, storage-type, http-link, readonly, http-link-target, link class(es)
 #            [ 'UserTitle',      'Title',      'title',           1, 0, 'var', '', 0 ],
 #            [ 'UserFirstname',  'Firstname',  'givenname',       1, 1, 'var', '', 0 ],
 #            [ 'UserLastname',   'Lastname',   'sn',              1, 1, 'var', '', 0 ],
@@ -1570,6 +1594,8 @@ via the Preferences button after logging in.
 #            [ 'UserPhone',      'Phone',      'telephonenumber', 1, 0, 'var', '', 0 ],
 #            [ 'UserAddress',    'Address',    'postaladdress',   1, 0, 'var', '', 0 ],
 #            [ 'UserComment',    'Comment',    'description',     1, 0, 'var', '', 0 ],
+#            # this is needed, if "SMIME::FetchFromCustomer" is active
+#            # [ 'UserSMIMECertificate', 'SMIMECertificate', 'userSMIMECertificate',      0, 1, 'var', '', 0 ],
 #        ],
 #    };
 
@@ -1787,105 +1813,12 @@ via the Preferences button after logging in.
     return;
 }
 
-sub Get {
-    my ( $Self, $What ) = @_;
-
-    # debug
-    if ( $Self->{Debug} > 1 ) {
-        my $Value = defined $Self->{$What} ? $Self->{$What} : '<undef>';
-        print STDERR "Debug: Config.pm ->Get('$What') --> $Value\n";
-    }
-
-    return $Self->{$What};
-}
-
-sub Set {
-    my ( $Self, %Param ) = @_;
-
-    for (qw(Key)) {
-        if ( !defined $Param{$_} ) {
-            $Param{$_} = '';
-        }
-    }
-
-    # debug
-    if ( $Self->{Debug} > 1 ) {
-        my $Value = defined $Param{Value} ? $Param{Value} : '<undef>';
-        print STDERR "Debug: Config.pm ->Set(Key => $Param{Key}, Value => $Value)\n";
-    }
-
-    # set runtime config option
-    if ( $Param{Key} =~ /^(.+?)###(.+?)$/ ) {
-        if ( !defined $Param{Value} ) {
-            delete $Self->{$1}->{$2};
-        }
-        else {
-            $Self->{$1}->{$2} = $Param{Value};
-        }
-    }
-    else {
-        if ( !defined $Param{Value} ) {
-            delete $Self->{ $Param{Key} };
-        }
-        else {
-            $Self->{ $Param{Key} } = $Param{Value};
-        }
-    }
-    return 1;
-}
-
-## nofilter(TidyAll::Plugin::OTRS::Perl::Translatable)
-
-=item Translatable()
-
-this is a no-op to mark a text as translatable in the Perl code.
-We use our own version here instead of importing Language::Translatable to not add a dependency.
-
-=cut
-
-sub Translatable {
-    return shift;
-}
-
 #
-# ConfigChecksum
+# Hereafter the functions should be documented in Kernel::Config (Kernel/Config.pod.dist), not in
+#   Kernel::Config:Defaults.
 #
-# This function returns an MD5 sum that is generated from all available
-#   config files (Kernel/Config.pm, Kernel/Config/Defaults.pm, Kernel/Config/Files/*.(pm|xml) except ZZZAAuto.pm) and their
-#   modification timestamps. Whenever a file is changed, added or removed,
-#   this checksum will change.
-#
-sub ConfigChecksum {
-    my $Self = shift;
 
-    my @Files = glob( $Self->{Home} . "/Kernel/Config/Files/*.pm");
-
-    # Ignore ZZZAAuto.pm, because this is only a cached version of the XML files which
-    # will be in the checksum. Otherwise the SysConfig cannot use its cache files.
-    @Files = grep { $_!~ m/ZZZAAuto\.pm$/smx } @Files;
-
-    push @Files, glob( $Self->{Home} . "/Kernel/Config/Files/*.xml");
-    push @Files, $Self->{Home} . "/Kernel/Config/Defaults.pm" ;
-    push @Files, $Self->{Home} . "/Kernel/Config.pm";
-
-    # Create a string with filenames and file mtimes of the config files
-    my $ConfigString;
-    for my $File (@Files) {
-
-        # get file metadata
-        my $Stat = stat( $File );
-
-        if ( !$Stat ) {
-            print STDERR "Error: cannot stat file '$File': $!";
-            return;
-        }
-
-        $ConfigString .= $File . $Stat->mtime();
-    }
-
-    return Digest::MD5::md5_hex( $ConfigString );
-}
-
+# Please see the documentation in Kernel/Config.pod.dist.
 sub new {
     my ( $Type, %Param ) = @_;
 
@@ -2084,6 +2017,96 @@ sub new {
     }
 
     return $Self;
+}
+
+# Please see the documentation in Kernel/Config.pod.dist.
+sub Get {
+    my ( $Self, $What ) = @_;
+
+    # debug
+    if ( $Self->{Debug} > 1 ) {
+        my $Value = defined $Self->{$What} ? $Self->{$What} : '<undef>';
+        print STDERR "Debug: Config.pm ->Get('$What') --> $Value\n";
+    }
+
+    return $Self->{$What};
+}
+
+# Please see the documentation in Kernel/Config.pod.dist.
+sub Set {
+    my ( $Self, %Param ) = @_;
+
+    for (qw(Key)) {
+        if ( !defined $Param{$_} ) {
+            $Param{$_} = '';
+        }
+    }
+
+    # debug
+    if ( $Self->{Debug} > 1 ) {
+        my $Value = defined $Param{Value} ? $Param{Value} : '<undef>';
+        print STDERR "Debug: Config.pm ->Set(Key => $Param{Key}, Value => $Value)\n";
+    }
+
+    # set runtime config option
+    if ( $Param{Key} =~ /^(.+?)###(.+?)$/ ) {
+        if ( !defined $Param{Value} ) {
+            delete $Self->{$1}->{$2};
+        }
+        else {
+            $Self->{$1}->{$2} = $Param{Value};
+        }
+    }
+    else {
+        if ( !defined $Param{Value} ) {
+            delete $Self->{ $Param{Key} };
+        }
+        else {
+            $Self->{ $Param{Key} } = $Param{Value};
+        }
+    }
+    return 1;
+}
+
+## nofilter(TidyAll::Plugin::OTRS::Perl::Translatable)
+
+# This is a no-op to mark a text as translatable in the Perl code.
+#   We use our own version here instead of importing Language::Translatable to not add a dependency.
+
+sub Translatable {
+    return shift;
+}
+
+# Please see the documentation in Kernel/Config.pod.dist.
+sub ConfigChecksum {
+    my $Self = shift;
+
+    my @Files = glob( $Self->{Home} . "/Kernel/Config/Files/*.pm");
+
+    # Ignore ZZZAAuto.pm, because this is only a cached version of the XML files which
+    # will be in the checksum. Otherwise the SysConfig cannot use its cache files.
+    @Files = grep { $_!~ m/ZZZAAuto\.pm$/smx } @Files;
+
+    push @Files, glob( $Self->{Home} . "/Kernel/Config/Files/*.xml");
+    push @Files, $Self->{Home} . "/Kernel/Config/Defaults.pm" ;
+    push @Files, $Self->{Home} . "/Kernel/Config.pm";
+
+    # Create a string with filenames and file mtimes of the config files
+    my $ConfigString;
+    for my $File (@Files) {
+
+        # get file metadata
+        my $Stat = stat( $File );
+
+        if ( !$Stat ) {
+            print STDERR "Error: cannot stat file '$File': $!";
+            return;
+        }
+
+        $ConfigString .= $File . $Stat->mtime();
+    }
+
+    return Digest::MD5::md5_hex( $ConfigString );
 }
 
 1;

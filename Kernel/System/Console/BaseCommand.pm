@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -14,6 +14,7 @@ use warnings;
 use Getopt::Long();
 use Term::ANSIColor();
 use IO::Interactive();
+use Encode::Locale();
 
 our @ObjectDependencies = (
     'Kernel::Config',
@@ -167,7 +168,7 @@ indicate which arguments it can process.
 Please note that required arguments have to be specified before any optional ones.
 
 The information about known arguments and options (see below) will be used to generate
-usage help and also to automatically verify the data provided by the user on the commandline.
+usage help and also to automatically verify the data provided by the user on the command line.
 
 =cut
 
@@ -204,7 +205,7 @@ sub AddArgument {
 
 =item GetArgument()
 
-fetch an argument value as provided by the user on the commandline.
+fetch an argument value as provided by the user on the command line.
 
     my $Filename = $CommandObject->GetArgument('filename');
 
@@ -236,7 +237,7 @@ indicate which arguments it can process.
         Multiple     => 0,  # optional, allow more than one occurrence (only possible if HasValue is true)
     );
 
-=head4 Option Naming Conventions
+B<Option Naming Conventions>
 
 If there is a source and a target involved in the command, the related options should start
 with C<--source> and C<--target>, for example C<--source-path>.
@@ -295,7 +296,7 @@ sub AddOption {
 
 =item GetOption()
 
-fetch an option as provided by the user on the commandline.
+fetch an option as provided by the user on the command line.
 
     my $Iterations = $CommandObject->GetOption('iterations');
 
@@ -366,7 +367,7 @@ sub PostRun {
 
 =item Execute()
 
-this method will parse/validate the commandline arguments supplied by the user.
+this method will parse/validate the command line arguments supplied by the user.
 If that was ok, the Run() method of the command will be called.
 
 =cut
@@ -427,6 +428,21 @@ sub Execute {
         return $Self->ExitCodeError();
     }
 
+    # If we have an interactive console, make sure that the output can handle UTF-8.
+    if (
+        IO::Interactive::is_interactive()
+        && !$Kernel::OM->Get('Kernel::Config')->Get('SuppressConsoleEncodingCheck')
+        )
+    {
+        my $ConsoleEncoding = lc $Encode::Locale::ENCODING_CONSOLE_OUT;    ## no critic
+
+        if ( $ConsoleEncoding ne 'utf-8' ) {
+            $Self->PrintError(
+                "The terminal encoding should be set to 'utf-8', but is '$ConsoleEncoding'. Some characters might not be displayed correctly."
+            );
+        }
+    }
+
     eval { $Self->PreRun(); };
     if ($@) {
         $Self->PrintError($@);
@@ -465,7 +481,7 @@ sub Execute {
 =item ExitCodeError()
 
 returns an exit code to signal something went wrong (mostly for better
-code readabiliby).
+code readability).
 
     return $CommandObject->ExitCodeError();
 
@@ -647,7 +663,7 @@ sub _ParseGlobalOptions {
 
 =item _ParseCommandlineArguments()
 
-parses and validates the commandline arguments provided by the user according to
+parses and validates the command line arguments provided by the user according to
 the configured arguments and options of the command.
 
 Returns a hash with argument and option values if all needed values were supplied

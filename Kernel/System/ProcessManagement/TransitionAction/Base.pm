@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -103,9 +103,15 @@ sub _ReplaceTicketAttributes {
                 );
                 next REPLACEMENT if !$DynamicFieldConfig;
 
+                # get the display value for each dynamic field
+                my $DisplayValue = $DynamicFieldBackendObject->ValueLookup(
+                    DynamicFieldConfig => $DynamicFieldConfig,
+                    Key                => $Param{Ticket}->{"DynamicField_$DynamicFieldName"},
+                );
+
                 my $DisplayValueStrg = $DynamicFieldBackendObject->ReadableValueRender(
                     DynamicFieldConfig => $DynamicFieldConfig,
-                    Value              => $Param{Ticket}->{"DynamicField_$DynamicFieldName"},
+                    Value              => $DisplayValue,
                 );
 
                 $Param{Config}->{$Attribute}

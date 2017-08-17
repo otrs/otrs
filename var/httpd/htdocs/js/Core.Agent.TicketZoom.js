@@ -1,5 +1,5 @@
 // --
-// Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+// Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 // --
 // This software comes with ABSOLUTELY NO WARRANTY. For details, see
 // the enclosed file COPYING for license information (AGPL). If you
@@ -410,7 +410,7 @@ Core.Agent.TicketZoom = (function (TargetNS) {
             TargetNS.CheckURLHash();
         }
 
-        $('a.AsPopup').bind('click', function () {
+        $('a.AsPopup').off('click').on('click', function () {
             var Matches,
                 PopupType = 'TicketAction';
 
@@ -441,6 +441,9 @@ Core.Agent.TicketZoom = (function (TargetNS) {
         $('label.Switchable').off('click.Switch').on('click.Switch', function() {
             $(this).next('p.Value').find('.Switch').toggleClass('Hidden');
         });
+
+        // Initialize allocation list for link object table.
+        Core.Agent.TableFilters.SetAllocationList();
     };
 
     return TargetNS;

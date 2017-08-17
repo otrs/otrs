@@ -2,11 +2,11 @@
 
 What is OTRS?
 =============
-OTRS is an Open source Ticket Request System with many features to manage
-customer telephone calls and e-mails. It is distributed under the GNU
-AFFERO General Public License (AGPL) and tested on Linux, Solaris, AIX,
-FreeBSD, OpenBSD and Mac OS 10.x. Do you receive many e-mails and
-want to answer them with a team of agents? You're going to love OTRS!
+OTRS (the former Open Ticket Request System now stands for Open Technology
+ – Real Service) is an open source ticket request system with many features
+to manage customer telephone calls and e-mails. It is distributed under the
+GNU AFFERO General Public License (AGPL) and tested on various Linux platforms.
+Do you receive many e-mails and want to answer them with a team of agents? You're going to love OTRS!
 
 You can find a list of features in the
 [online documentation](http://otrs.github.io/doc/manual/admin/5.0/en/html/otrs.html#features-of-otrs).
@@ -20,29 +20,27 @@ accompanying [COPYING](COPYING) file for more details.
 
 Documentation
 =============
-You can find quick documentation in README.* and the long version
-[online](http://otrs.github.io/doc/). The source code of OTRS and its public extension
-modules is available on [github](http://otrs.github.io).
+You can find documentation [online](http://doc.otrs.com/). The source code of OTRS and its public extension
+modules is available on [github](https://github.com/OTRS).
 
 
-Professional Services
-=====================
+Professional Services for OTRS – OTRS Business Solution™
+========================================================
 
 Whether you need help in configuring or customizing OTRS or you want to be on the safe side,
 don't hesitate to contact us: We offer a wide range of professional services such as
 world-wide enterprise support, consulting and engineering including process design,
 implementation, customization, application support, and fully managed service.
 
-Our [Service Contracts](http://www.otrs.com/en/solutions/service-contracts/) guarantee instant help
-and professional support as well as support assessment and last but not least free access to
-[OTRS Feature Add-ons](http://www.otrs.com/en/solutions/subscriptions/otrsfeatureadd-ons/) -
-useful additional features for your OTRS.
+Our [OTRS Business Solution™](https://www.otrs.com/otrs-business-solution-improving-customer-service/)
+offers you best professional support from the OTRS team, reliable OTRS security and regular free updates
+as well as an [exclusive set of additional Business Features](https://www.otrs.com/solutions/otrs-business-solution-on-premise/#integrated-business-features)
+that you can flexibly activate or deactivate according to different deployment scenarios.
 
-The [OTRS Group](http://www.otrs.com/) offers specific
-[training programs](http://www.otrs.com/en/solutions/training/) in different countries.
+The [OTRS Group](https://www.otrs.com/) offers specific
+[training programs](https://www.otrs.com/public-otrs-trainings/) in different countries.
 You can either participate in one of our public OTRS Administrator trainings which take place regularly,
 or benefit from an inhouse training that covers all the specific needs of your company.
-
 
 Software requirements
 =====================
@@ -50,13 +48,13 @@ Perl
 - Perl 5.10.0 or higher
 
 Webserver
-- Webserver with CGI support (CGI is not recommended)
 - Apache2 + mod_perl2 or higher (recommended)
+- Webserver with CGI support (CGI is not recommended)
 
 Databases
 - MySQL 5.0 or higher
 - MariaDB
-- PostgreSQL 8.4 or higher
+- PostgreSQL 9.0 or higher
 - Oracle 10g or higher
 
 Browsers

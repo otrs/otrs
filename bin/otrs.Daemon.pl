@@ -1,6 +1,6 @@
 #!/usr/bin/perl -X
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU AFFERO General Public License as published by
@@ -9,12 +9,12 @@
 #
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program; if not, write to the Free Software
-# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
+# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 # or see http://www.gnu.org/licenses/agpl.txt.
 # --
 
@@ -35,7 +35,7 @@ use Fcntl qw(:flock);
 use Kernel::System::ObjectManager;
 
 print STDOUT "otrs.Daemon.pl - the OTRS daemon\n";
-print STDOUT "Copyright (C) 2001-2016 OTRS AG, http://otrs.com/\n\n";
+print STDOUT "Copyright (C) 2001-2017 OTRS AG, http://otrs.com/\n\n";
 
 local $Kernel::OM = Kernel::System::ObjectManager->new(
     'Kernel::System::Log' => {
@@ -46,7 +46,7 @@ local $Kernel::OM = Kernel::System::ObjectManager->new(
 # Don't allow to run these scripts as root.
 if ( $> == 0 ) {    # $EFFECTIVE_USER_ID
     print STDERR
-        "Error: You cannot run otrs.Damon.pl as root. Please run it as the 'otrs' user or with the help of su:\n";
+        "Error: You cannot run otrs.Daemon.pl as root. Please run it as the 'otrs' user or with the help of su:\n";
     print STDERR "  su -c \"bin/otrs.Daemon.pl ...\" -s /bin/bash otrs\n";
     exit 1;
 }
@@ -64,7 +64,7 @@ if ( $NodeID !~ m{ \A \d+ \z }xms && $NodeID > 0 && $NodeID < 1000 ) {
 }
 
 # get pid directory
-my $PIDDir  = $ConfigObject->Get('Home') . '/var/run/';
+my $PIDDir = $ConfigObject->Get('Daemon::PID::Path') || $ConfigObject->Get('Home') . '/var/run/';
 my $PIDFile = $PIDDir . "Daemon-NodeID-$NodeID.pid";
 my $PIDFH;
 
@@ -515,13 +515,13 @@ sub _PIDLock {
 
     # create new PID file (set exclusive lock while writing the PIDFile)
     open my $FH, '>', $PIDFile || die "Can not create PID file: $PIDFile\n";    ## no critic
-    return if !flock( $FH, LOCK_EX | LOCK_NB );
+    flock( $FH, LOCK_EX | LOCK_NB ) || die "Can not get exclusive lock for writing PID file: $PIDFile\n";
     print $FH $$;
     close $FH;
 
     # keep PIDFile shared locked forever
-    open $PIDFH, '<', $PIDFile || die "Can not create PID file: $PIDFile\n";    ## no critic
-    return if !flock( $PIDFH, LOCK_SH | LOCK_NB );
+    open $PIDFH, '<', $PIDFile || die "Can not read PID file: $PIDFile\n";    ## no critic
+    flock( $PIDFH, LOCK_SH | LOCK_NB ) ||  die "Can not get shared lock for reading PID file: $PIDFile\n";
 
     return 1;
 }

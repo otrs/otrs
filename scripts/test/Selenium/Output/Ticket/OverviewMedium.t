@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -19,11 +19,6 @@ $Selenium->RunTest(
     sub {
 
         # get helper object
-        $Kernel::OM->ObjectParamAdd(
-            'Kernel::System::UnitTest::Helper' => {
-                RestoreSystemConfiguration => 1,
-                }
-        );
         my $Helper = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
 
         # get sort attributes config params
@@ -34,14 +29,22 @@ $Selenium->RunTest(
         );
 
         # defines from which ticket attributes the agent can select the result order
-        $Kernel::OM->Get('Kernel::Config')->Set(
+        $Helper->ConfigSettingChange(
             Key   => 'TicketOverviewMenuSort###SortAttributes',
             Value => \%SortOverview,
         );
-        $Kernel::OM->Get('Kernel::System::SysConfig')->ConfigItemUpdate(
+        $Helper->ConfigSettingChange(
             Valid => 1,
             Key   => 'TicketOverviewMenuSort###SortAttributes',
             Value => \%SortOverview,
+        );
+
+        # Override FirstnameLastnameOrder setting to check if it is taken into account
+        #   (see bug#12554 for more information).
+        $Helper->ConfigSettingChange(
+            Valid => 1,
+            Key   => 'FirstnameLastnameOrder',
+            Value => 3,
         );
 
         # create test user and login
@@ -55,9 +58,16 @@ $Selenium->RunTest(
             Password => $TestUserLogin,
         );
 
+        my $UserObject = $Kernel::OM->Get('Kernel::System::User');
+
         # get test user ID
-        my $TestUserID = $Kernel::OM->Get('Kernel::System::User')->UserLookup(
+        my $TestUserID = $UserObject->UserLookup(
             UserLogin => $TestUserLogin,
+        );
+
+        # Get user data.
+        my %TestUser = $UserObject->GetUserData(
+            UserID => $TestUserID,
         );
 
         # create test queue
@@ -115,6 +125,12 @@ $Selenium->RunTest(
         # switch to medium view
         $Selenium->find_element( "a.Medium", 'css' )->VerifiedClick();
 
+        # Check if owner name conforms to current FirstnameLastNameOrder setting.
+        $Self->True(
+            index( $Selenium->get_page_source(), $TestUser{UserFullname} ) > -1,
+            "$TestUser{UserFullname} - found on screen"
+        );
+
         # sort by ticket number
         $Selenium->execute_script(
             "\$('#SortBy').val('TicketNumber|Up').trigger('redraw.InputField').trigger('change');"
@@ -127,7 +143,7 @@ $Selenium->RunTest(
         );
 
         # set 10 tickets per page
-        $Selenium->find_element( "a#ShowContextSettingsDialog", 'css' )->click();
+        $Selenium->find_element( "a#ShowContextSettingsDialog", 'css' )->VerifiedClick();
         $Selenium->execute_script(
             "\$('#UserTicketOverviewMediumPageShown').val('10').trigger('redraw.InputField').trigger('change');"
         );

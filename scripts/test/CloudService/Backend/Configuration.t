@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -34,6 +34,14 @@ my @Tests = (
             Config => {
                 Name        => 'SMSCloudService',
                 Description => 'Cloud Service for sending SMS requests.',
+            },
+            ValidID => 1,
+            UserID  => 1,
+        },
+        Update => {
+            Config => {
+                Name        => 'SMSCloudServiceUpdate',
+                Description => 'Cloud Service Update for sending SMS requests.',
             },
             ValidID => 1,
             UserID  => 1,

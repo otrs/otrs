@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -26,11 +26,11 @@ our @ObjectDependencies = (
 
 =head1 NAME
 
-Kernel::System::SysConfig - to manage sys config settings
+Kernel::System::SysConfig - to manage system configuration settings
 
 =head1 SYNOPSIS
 
-All functions to manage sys config settings.
+All functions to manage system configuration settings.
 
 =head1 PUBLIC INTERFACE
 

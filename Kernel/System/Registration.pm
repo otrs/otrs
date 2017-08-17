@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -630,8 +630,12 @@ sub RegistrationUpdateSend {
     # send SupportData if sending is activated
     if ( $SupportDataSending eq 'Yes' ) {
 
+        my $SupportDataCollectorWebTimeout = $ConfigObject->Get('SupportDataCollector::WebUserAgent::Timeout');
+
         my %CollectResult = eval {
-            $Kernel::OM->Get('Kernel::System::SupportDataCollector')->Collect();
+            $Kernel::OM->Get('Kernel::System::SupportDataCollector')->Collect(
+                WebTimeout => $SupportDataCollectorWebTimeout,
+            );
         };
         if ( !$CollectResult{Success} ) {
             my $ErrorMessage = $CollectResult{ErrorMessage} || $@ || 'unknown error';

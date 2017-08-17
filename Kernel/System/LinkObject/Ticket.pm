@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -10,6 +10,8 @@ package Kernel::System::LinkObject::Ticket;
 
 use strict;
 use warnings;
+
+use Kernel::System::VariableCheck qw(:all);
 
 our @ObjectDependencies = (
     'Kernel::Config',
@@ -220,6 +222,7 @@ sub ObjectDescriptionGet {
     return if !%Ticket;
 
     my $ParamHook = $Kernel::OM->Get('Kernel::Config')->Get('Ticket::Hook') || 'Ticket#';
+    $ParamHook .= $Kernel::OM->Get('Kernel::Config')->Get('Ticket::HookDivider') || '';
 
     # create description
     %Description = (
@@ -234,7 +237,8 @@ sub ObjectDescriptionGet {
 
 return a hash list of the search results
 
-Return
+Returns:
+
     $SearchList = {
         NOTLINKED => {
             Source => {
@@ -282,6 +286,18 @@ sub ObjectSearch {
     }
     if ( $Param{SearchParams}->{TicketTitle} ) {
         $Search{Title} = '*' . $Param{SearchParams}->{TicketTitle} . '*';
+    }
+
+    if ( IsArrayRefWithData( $Param{SearchParams}->{ArchiveID} ) ) {
+        if ( $Param{SearchParams}->{ArchiveID}->[0] eq 'AllTickets' ) {
+            $Search{ArchiveFlags} = [ 'y', 'n' ];
+        }
+        elsif ( $Param{SearchParams}->{ArchiveID}->[0] eq 'NotArchivedTickets' ) {
+            $Search{ArchiveFlags} = ['n'];
+        }
+        elsif ( $Param{SearchParams}->{ArchiveID}->[0] eq 'ArchivedTickets' ) {
+            $Search{ArchiveFlags} = ['y'];
+        }
     }
 
     # get ticket object

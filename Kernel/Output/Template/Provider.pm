@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -43,7 +43,7 @@ Kernel::Output::Template::Provider - Template Toolkit custom provider
 
 =item OTRSInit()
 
-performs some post-initialization and creates a bridget between Template::Toolkit
+performs some post-initialization and creates a bridge between Template::Toolkit
 and OTRS by adding the OTRS objects to the Provider object. This method must be
 called after instantiating the Provider object.
 
@@ -376,11 +376,11 @@ sub _PreProcessTemplateContent {
 
 =item MigrateDTLtoTT()
 
-translates old DTL template content to Template::Toolkit syntax.
+translates old C<DTL> template content to L<Template::Toolkit> syntax.
 
     my $TTCode = $ProviderObject->MigrateDTLtoTT( Content => $DTLCode );
 
-If an error was found, this method will die(), so please use eval around it.
+If an error was found, this method will C<die()>, so please use eval around it.
 
 =cut
 

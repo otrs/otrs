@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -59,7 +59,7 @@ sub new {
 
 =item SystemDataAdd()
 
-add new systemdata value
+add a new C<SystemData> value.
 
 Result is true if adding was OK, and false if it failed, for instance because
 the key already existed.
@@ -251,7 +251,7 @@ sub SystemDataGroupGet {
     while ( my @Data = $Self->{DBObject}->FetchrowArray() ) {
         $Data[0] =~ s/^${Group}:://;
 
-        $Result{ $Data[0] } = $Data[1];
+        $Result{ $Data[0] } = $Data[1] // '';
     }
 
     # set cache
@@ -269,7 +269,7 @@ sub SystemDataGroupGet {
 
 update system data
 
-Returns true if update was succesful or false if otherwise - for instance
+Returns true if update was successful or false if otherwise - for instance
 if key did not exist.
 
     my $Result = $SystemDataObject->SystemDataUpdate(
@@ -336,7 +336,7 @@ sub SystemDataUpdate {
 
 update system data
 
-Returns true if delete was succesful or false if otherwise - for instance
+Returns true if delete was successful or false if otherwise - for instance
 if key did not exist.
 
     $SystemDataObject->SystemDataDelete(

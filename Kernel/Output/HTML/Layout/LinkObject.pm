@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -57,18 +57,20 @@ sub LinkObjectTableCreate {
     if ( $Param{ViewMode} =~ m{ \A Simple }xms ) {
 
         return $Self->LinkObjectTableCreateSimple(
-            LinkListWithData => $Param{LinkListWithData},
-            ViewMode         => $Param{ViewMode},
+            LinkListWithData               => $Param{LinkListWithData},
+            ViewMode                       => $Param{ViewMode},
+            AdditionalLinkListWithDataJSON => $Param{AdditionalLinkListWithDataJSON},
         );
     }
     else {
 
         return $Self->LinkObjectTableCreateComplex(
-            LinkListWithData => $Param{LinkListWithData},
-            ViewMode         => $Param{ViewMode},
-            AJAX             => $Param{AJAX},
-            SourceObject     => $Param{Object},
-            ObjectID         => $Param{Key},
+            LinkListWithData               => $Param{LinkListWithData},
+            ViewMode                       => $Param{ViewMode},
+            AJAX                           => $Param{AJAX},
+            SourceObject                   => $Param{Object},
+            ObjectID                       => $Param{Key},
+            AdditionalLinkListWithDataJSON => $Param{AdditionalLinkListWithDataJSON},
         );
     }
 }
@@ -162,20 +164,20 @@ sub LinkObjectTableCreateComplex {
 
         ITEM:
         for my $Item ( @{ $Block->{ItemList} } ) {
+            if ( !grep { $_->{Key} } @{$Item} ) {
+                $Item->[0] = {
+                    Type => 'Text',
+                    Content =>
+                        'ERROR: Key attribute not found in any column of the item list.',
+                };
+            }
 
-            next ITEM if $Item->[0]->{Key} && $Block->{Object};
+            next ITEM if $Block->{Object};
 
             if ( !$Block->{Object} ) {
                 $Item->[0] = {
                     Type    => 'Text',
                     Content => 'ERROR: Object attribute not found in the block data.',
-                };
-            }
-            else {
-                $Item->[0] = {
-                    Type => 'Text',
-                    Content =>
-                        'ERROR: Key attribute not found in the first column of the item list.',
                 };
             }
         }
@@ -194,11 +196,14 @@ sub LinkObjectTableCreateComplex {
 
         for my $Item ( @{ $Block->{ItemList} } ) {
 
+            # search for key
+            my ($ItemWithKey) = grep { $_->{Key} } @{$Item};
+
             # define check-box cell
             my $CheckboxCell = {
                 Type         => 'LinkTypeList',
                 Content      => '',
-                LinkTypeList => $LinkList{ $Block->{Object} }->{ $Item->[0]->{Key} },
+                LinkTypeList => $LinkList{ $Block->{Object} }->{ $ItemWithKey->{Key} },
                 Translate    => 1,
             };
 
@@ -223,11 +228,14 @@ sub LinkObjectTableCreateComplex {
 
             for my $Item ( @{ $Block->{ItemList} } ) {
 
+                # search for key
+                my ($ItemWithKey) = grep { $_->{Key} } @{$Item};
+
                 # define check-box cell
                 my $CheckboxCell = {
                     Type    => 'Checkbox',
                     Name    => 'LinkTargetKeys',
-                    Content => $Item->[0]->{Key},
+                    Content => $ItemWithKey->{Key},
                 };
 
                 # add check-box cell to item
@@ -250,13 +258,16 @@ sub LinkObjectTableCreateComplex {
 
             for my $Item ( @{ $Block->{ItemList} } ) {
 
+                # search for key
+                my ($ItemWithKey) = grep { $_->{Key} } @{$Item};
+
                 # define check-box delete cell
                 my $CheckboxCell = {
                     Type         => 'CheckboxDelete',
                     Object       => $Block->{Object},
                     Content      => '',
-                    Key          => $Item->[0]->{Key},
-                    LinkTypeList => $LinkList{ $Block->{Object} }->{ $Item->[0]->{Key} },
+                    Key          => $ItemWithKey->{Key},
+                    LinkTypeList => $LinkList{ $Block->{Object} }->{ $ItemWithKey->{Key} },
                     Translate    => 1,
                 };
 
@@ -324,7 +335,9 @@ sub LinkObjectTableCreateComplex {
 
         # check if registered in SysConfig
         if (
-            IsHashRefWithData($Config)
+            # AgentLinkObject not allowed because it would result in nested forms
+            $OriginalAction ne 'AgentLinkObject'
+            && IsHashRefWithData($Config)
             && $Config->{ $Block->{Blockname} }
             && grep { $OriginalAction eq $_ } @SettingsVisible
             )
@@ -346,17 +359,40 @@ sub LinkObjectTableCreateComplex {
                 PrefKey => "LinkObject::ComplexTable-" . $Block->{Blockname},
             );
 
+            # Add translations for the allocation lists for regular columns.
+            for my $Column ( @{ $Block->{AllColumns} } ) {
+                $LayoutObject->Block(
+                    Name => 'ColumnTranslation',
+                    Data => {
+                        ColumnName      => $Column->{ColumnName},
+                        ColumnTranslate => $Column->{ColumnTranslate},
+                    },
+                );
+                $LayoutObject->Block(
+                    Name => 'ColumnTranslationSeparator',
+                );
+            }
+
+            $LayoutObject->Block(
+                Name => 'ContentLargePreferencesForm',
+                Data => {
+                    Name     => $Block->{Blockname},
+                    NameForm => $Block->{Blockname},
+                },
+            );
+
             $LayoutObject->Block(
                 Name => $Preferences{Name} . 'PreferencesItem' . $Preferences{Block},
                 Data => {
                     %Preferences,
-                    NameForm          => $Block->{Blockname},
-                    NamePref          => $Preferences{Name},
-                    Name              => $Block->{Blockname},
-                    SourceObject      => $Param{SourceObject},
-                    DestinationObject => $Block->{Blockname},
-                    OriginalAction    => $OriginalAction,
-                    SourceObjectData  => $SourceObjectData,
+                    NameForm                       => $Block->{Blockname},
+                    NamePref                       => $Preferences{Name},
+                    Name                           => $Block->{Blockname},
+                    SourceObject                   => $Param{SourceObject},
+                    DestinationObject              => $Block->{Blockname},
+                    OriginalAction                 => $OriginalAction,
+                    SourceObjectData               => $SourceObjectData,
+                    AdditionalLinkListWithDataJSON => $Param{AdditionalLinkListWithDataJSON},
                 },
             );
         }
@@ -585,7 +621,7 @@ sub LinkObjectTableCreateSimple {
 
 =item LinkObjectSelectableObjectList()
 
-return a selection list of linkable objects
+return a selection list of link-able objects
 
     my $String = $LayoutObject->LinkObjectSelectableObjectList(
         Object   => 'Ticket',
@@ -789,6 +825,8 @@ sub ComplexTablePreferencesGet {
         }
     }
 
+    my @AllColumns = ( @ColumnsAvailable, @ColumnsEnabled );
+
     # check if the user has filter preferences for this widget
     my %Preferences = $Kernel::OM->Get('Kernel::System::User')->GetPreferences(
         UserID => $Self->{UserID},
@@ -843,6 +881,7 @@ sub ComplexTablePreferencesGet {
         ColumnsEnabled   => $JSONObject->Encode( Data => \@ColumnsEnabled ),
         ColumnsAvailable => $JSONObject->Encode( Data => \@ColumnsAvailableNotEnabled ),
         Translation      => 1,
+        AllColumns       => \@AllColumns,
     );
 
     return %Params;
@@ -904,6 +943,14 @@ sub ComplexTablePreferencesSet {
 
     # remove Columns (not needed)
     delete $Preference->{Columns};
+
+    if ( $Param{DestinationObject} eq 'Ticket' ) {
+
+        # Make sure that ticket number is always present, otherwise there will be problems.
+        if ( !grep { $_ eq 'TicketNumber' } @{ $Preference->{Order} } ) {
+            unshift @{ $Preference->{Order} }, 'TicketNumber';
+        }
+    }
 
     if ( IsHashRefWithData($Preference) ) {
 

@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -372,7 +372,7 @@ sub IsIPv6Address {
 
 =item IsMD5Sum()
 
-test supplied data to determine if it is an md5sum (32 hex characters)
+test supplied data to determine if it is an C<MD5> sum (32 hex characters)
 
 returns 1 if data matches criteria or undef otherwise
 

@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -37,7 +37,7 @@ Kernel::System::Web::InterfaceCustomer - the customer web interface
 
 =head1 SYNOPSIS
 
-the global customer web interface (incl. auth, session, ...)
+the global customer web interface (authentication, session handling, ...)
 
 =head1 PUBLIC INTERFACE
 
@@ -167,14 +167,14 @@ sub Run {
         my $LayoutObject = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
         if ( !$DBCanConnect ) {
             $LayoutObject->CustomerFatalError(
-                Comment => Translatable('Please contact your administrator'),
+                Comment => Translatable('Please contact the administrator.'),
             );
             return;
         }
         if ( $ParamObject->Error() ) {
             $LayoutObject->CustomerFatalError(
                 Message => $ParamObject->Error(),
-                Comment => Translatable('Please contact your administrator'),
+                Comment => Translatable('Please contact the administrator.'),
             );
             return;
         }
@@ -314,9 +314,9 @@ sub Run {
             # show need user data error message
             $LayoutObject->Print(
                 Output => \$LayoutObject->CustomerLogin(
-                    Title   => 'Panic!',
+                    Title   => 'Error',
                     Message => Translatable(
-                        'Authentication succeeded, but no customer record is found in the customer backend. Please contact your administrator.'
+                        'Authentication succeeded, but no customer record is found in the customer backend. Please contact the administrator.'
                     ),
                     %Param,
                 ),
@@ -346,6 +346,7 @@ sub Run {
             %UserData,
             UserLastRequest => $Kernel::OM->Get('Kernel::System::Time')->SystemTime(),
             UserType        => 'Customer',
+            SessionSource   => 'CustomerInterface',
         );
 
         # show error message if no session id has been created
@@ -509,7 +510,7 @@ sub Run {
         # remove session id
         if ( !$SessionObject->RemoveSessionID( SessionID => $Param{SessionID} ) ) {
             $LayoutObject->CustomerFatalError(
-                Comment => Translatable('Please contact your administrator')
+                Comment => Translatable('Please contact the administrator.')
             );
             return;
         }
@@ -627,7 +628,7 @@ sub Run {
             );
             if ( !$Sent ) {
                 $LayoutObject->FatalError(
-                    Comment => Translatable('Please contact your administrator'),
+                    Comment => Translatable('Please contact the administrator.'),
                 );
                 return;
             }
@@ -673,7 +674,7 @@ sub Run {
             $LayoutObject->Print(
                 Output => \$LayoutObject->CustomerLogin(
                     Title   => 'Login',
-                    Message => Translatable('Reset password unsuccessful. Please contact your administrator'),
+                    Message => Translatable('Reset password unsuccessful. Please contact the administrator.'),
                     User    => $User,
                 ),
             );
@@ -697,7 +698,7 @@ sub Run {
         );
         if ( !$Sent ) {
             $LayoutObject->CustomerFatalError(
-                Comment => Translatable('Please contact your administrator')
+                Comment => Translatable('Please contact the administrator.')
             );
             return;
         }
@@ -1037,8 +1038,8 @@ sub Run {
             # show login screen
             $LayoutObject->Print(
                 Output => \$LayoutObject->CustomerLogin(
-                    Title   => 'Panic!',
-                    Message => Translatable('Panic! Invalid Session!!!'),
+                    Title   => 'Error',
+                    Message => Translatable('Error: invalid session.'),
                     %Param,
                 ),
             );
@@ -1057,7 +1058,7 @@ sub Run {
                     "Module Kernel::Modules::$Param{Action} not registered in Kernel/Config.pm!",
             );
             $LayoutObject->CustomerFatalError(
-                Comment => Translatable('Please contact your administrator'),
+                Comment => Translatable('Please contact the administrator.'),
             );
             return;
         }
@@ -1083,7 +1084,7 @@ sub Run {
                     Message  => 'No Permission to use this frontend action module!'
                 );
                 $LayoutObject->CustomerFatalError(
-                    Comment => Translatable('Please contact your administrator'),
+                    Comment => Translatable('Please contact the administrator.'),
                 );
                 return;
             }
@@ -1122,7 +1123,7 @@ sub Run {
                             Message  => 'No Permission to use this frontend subaction module!'
                         );
                         $LayoutObject->CustomerFatalError(
-                            Comment => Translatable('Please contact your administrator')
+                            Comment => Translatable('Please contact the administrator.')
                         );
                         return;
                     }
@@ -1143,7 +1144,11 @@ sub Run {
         my $LayoutObject = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
 
         # update last request time
-        if ( !$ParamObject->IsAJAXRequest() ) {
+        if (
+            !$ParamObject->IsAJAXRequest()
+            || $Param{Action} eq 'CustomerVideoChat'
+            )
+        {
             $SessionObject->UpdateSessionID(
                 SessionID => $Param{SessionID},
                 Key       => 'UserLastRequest',
@@ -1231,7 +1236,7 @@ sub Run {
                     . "::$UserData{UserLogin}::$QueryString\n";
                 close $Out;
                 $Kernel::OM->Get('Kernel::System::Log')->Log(
-                    Priority => 'notice',
+                    Priority => 'debug',
                     Message  => 'Response::Customer: '
                         . ( time() - $Self->{PerformanceLogStart} )
                         . "s taken (URL:$QueryString:$UserData{UserLogin})",
@@ -1259,7 +1264,7 @@ sub Run {
     );
     my $LayoutObject = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
     $LayoutObject->CustomerFatalError(
-        Comment => Translatable('Please contact your administrator'),
+        Comment => Translatable('Please contact the administrator.'),
     );
     return;
 }

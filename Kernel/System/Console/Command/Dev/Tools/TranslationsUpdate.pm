@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -183,8 +183,15 @@ sub HandleLanguage {
     my $WritePOT = $Param{WritePO} || -e $TargetPOTFile;
 
     if ( !-w $TargetFile ) {
-        $Self->PrintError("Ignoring nonexisting file $TargetFile!");
-        return;
+        if ( -w $TargetPOFile ) {
+            $Self->Print(
+                "Creating missing file <yellow>$TargetFile</yellow>\n"
+            );
+        }
+        else {
+            $Self->PrintError("Ignoring missing file $TargetFile!");
+            return;
+        }
     }
 
     if ( !@OriginalTranslationStrings ) {
@@ -263,6 +270,7 @@ sub HandleLanguage {
             Recursive => 1,
         );
 
+        # include Custom folder for modules
         my $CustomKernelDir = "$ModuleDirectory/Custom/Kernel";
         if ( $IsSubTranslation && -d $CustomKernelDir ) {
             my @CustomPerlModuleList = $Kernel::OM->Get('Kernel::System::Main')->DirectoryRead(
@@ -271,6 +279,16 @@ sub HandleLanguage {
                 Recursive => 1,
             );
             push @PerlModuleList, @CustomPerlModuleList;
+        }
+
+        # include var/packagesetup folder for modules
+        if ($IsSubTranslation) {
+            my @PackageSetupModuleList = $Kernel::OM->Get('Kernel::System::Main')->DirectoryRead(
+                Directory => "$ModuleDirectory/var/packagesetup",
+                Filter    => '*.pm',
+                Recursive => 1,
+            );
+            push @PerlModuleList, @PackageSetupModuleList;
         }
 
         FILE:
@@ -289,6 +307,7 @@ sub HandleLanguage {
             }
 
             $File =~ s{^.*/(Kernel/)}{$1}smx;
+            $File =~ s{^.*/(var/packagesetup/)}{$1}smx;
 
             my $Content = ${$ContentRef};
 
@@ -334,7 +353,7 @@ sub HandleLanguage {
             }egx;
         }
 
-        # add translatable strings from XB XML
+        # add translatable strings from DB XML
         my @DBXMLFiles = "$Home/scripts/database/otrs-initial_insert.xml";
         if ($IsSubTranslation) {
             @DBXMLFiles = $Kernel::OM->Get('Kernel::System::Main')->DirectoryRead(
@@ -367,6 +386,10 @@ sub HandleLanguage {
                 my $Word = $1 // '';
 
                 if ($Word && !$UsedWords{$Word}++) {
+
+                    if ($IsSubTranslation) {
+                        $File =~ s{^.*/(.+\.sopm)}{$1}smx;
+                    }
 
                     push @OriginalTranslationStrings, {
                         Location => "Database XML Definition: $File",
@@ -705,7 +728,7 @@ sub WritePerlLanguageFile {
 
         $NewOut = <<"EOF";
 $Separator
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 $Separator
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -802,15 +825,3 @@ EOF
 }
 
 1;
-
-=back
-
-=head1 TERMS AND CONDITIONS
-
-This software is part of the OTRS project (L<http://otrs.org/>).
-
-This software comes with ABSOLUTELY NO WARRANTY. For details, see
-the enclosed file COPYING for license information (AGPL). If you
-did not receive this file, see L<http://www.gnu.org/licenses/agpl.txt>.
-
-=cut

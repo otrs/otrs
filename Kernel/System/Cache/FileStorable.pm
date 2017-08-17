@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -133,6 +133,9 @@ sub Get {
 
     # check if cache exists
     return if !$Content;
+
+    # Check if file has contents, due to a race condition the file could be empty, see bug#12881.
+    return if !${$Content};
 
     # read data structure back from file dump, use block eval for safety reasons
     my $Storage = eval { Storable::thaw( ${$Content} ) };

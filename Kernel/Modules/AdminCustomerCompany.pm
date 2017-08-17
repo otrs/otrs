@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -39,6 +39,9 @@ sub Run {
     my $LayoutObject          = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
     my $CustomerCompanyObject = $Kernel::OM->Get('Kernel::System::CustomerCompany');
 
+    my %GetParam;
+    $GetParam{Source} = $ParamObject->GetParam( Param => 'Source' ) || 'CustomerCompany';
+
     # ------------------------------------------------------------ #
     # change
     # ------------------------------------------------------------ #
@@ -74,12 +77,10 @@ sub Run {
         $LayoutObject->ChallengeTokenCheck();
 
         my $Note = '';
-        my ( %GetParam, %Errors );
-        $GetParam{Source}            = $ParamObject->GetParam( Param => 'Source' );
-        $GetParam{CustomerCompanyID} = $ParamObject->GetParam( Param => 'CustomerCompanyID' );
+        my %Errors;
         $GetParam{CustomerCompanyID} = $ParamObject->GetParam( Param => 'CustomerCompanyID' );
 
-        for my $Entry ( @{ $ConfigObject->Get('CustomerCompany')->{Map} } ) {
+        for my $Entry ( @{ $ConfigObject->Get( $GetParam{Source} )->{Map} } ) {
             $GetParam{ $Entry->[0] } = $ParamObject->GetParam( Param => $Entry->[0] ) // '';
 
             # check mandatory fields
@@ -121,6 +122,7 @@ sub Run {
                 $Self->_Overview(
                     Nav    => $Nav,
                     Search => $Search,
+                    %GetParam,
                 );
                 my $Output = $LayoutObject->Header();
                 $Output .= $LayoutObject->NavigationBar(
@@ -173,9 +175,7 @@ sub Run {
     # add
     # ------------------------------------------------------------ #
     elsif ( $Self->{Subaction} eq 'Add' ) {
-        my %GetParam = ();
-        $GetParam{Name}   = $ParamObject->GetParam( Param => 'Name' );
-        $GetParam{Source} = $ParamObject->GetParam( Param => 'Source' );
+        $GetParam{Name} = $ParamObject->GetParam( Param => 'Name' );
         my $Output = $LayoutObject->Header();
         $Output .= $LayoutObject->NavigationBar(
             Type => $NavigationBarType,
@@ -202,13 +202,12 @@ sub Run {
         $LayoutObject->ChallengeTokenCheck();
 
         my $Note = '';
-        my ( %GetParam, %Errors );
+        my %Errors;
 
-        $GetParam{Source} = $ParamObject->GetParam( Param => 'Source' );
-        my $CustomerCompanyKey = $ConfigObject->Get('CustomerCompany')->{CustomerCompanyKey};
+        my $CustomerCompanyKey = $ConfigObject->Get( $GetParam{Source} )->{CustomerCompanyKey};
         my $CustomerCompanyID;
 
-        for my $Entry ( @{ $ConfigObject->Get('CustomerCompany')->{Map} } ) {
+        for my $Entry ( @{ $ConfigObject->Get( $GetParam{Source} )->{Map} } ) {
             $GetParam{ $Entry->[0] } = $ParamObject->GetParam( Param => $Entry->[0] ) // '';
 
             # check mandatory fields
@@ -247,6 +246,7 @@ sub Run {
                 $Self->_Overview(
                     Nav    => $Nav,
                     Search => $Search,
+                    %GetParam,
                 );
                 my $Output = $LayoutObject->Header();
                 $Output .= $LayoutObject->NavigationBar(
@@ -304,6 +304,7 @@ sub Run {
         $Self->_Overview(
             Nav    => $Nav,
             Search => $Search,
+            %GetParam,
         );
         my $Output = $LayoutObject->Header();
         $Output .= $LayoutObject->NavigationBar(
@@ -365,7 +366,7 @@ sub _Edit {
             my $Block = 'Input';
 
             # build selections or input fields
-            if ( $ConfigObject->Get('CustomerCompany')->{Selections}->{ $Entry->[0] } ) {
+            if ( $ConfigObject->Get( $Param{Source} )->{Selections}->{ $Entry->[0] } ) {
                 my $OptionRequired = '';
                 if ( $Entry->[4] ) {
                     $OptionRequired = 'Validate_Required';
@@ -375,7 +376,7 @@ sub _Edit {
                 $Block = 'Option';
                 $Param{Option} = $LayoutObject->BuildSelection(
                     Data =>
-                        $ConfigObject->Get('CustomerCompany')->{Selections}
+                        $ConfigObject->Get( $Param{Source} )->{Selections}
                         ->{ $Entry->[0] },
                     Name  => $Entry->[0],
                     Class => "$OptionRequired Modernize " .
@@ -520,43 +521,42 @@ sub _Overview {
         );
     }
 
-    # get config object
-    my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
-
-    # same Limit as $Self->{CustomerCompanyMap}->{'CustomerCompanySearchListLimit'}
-    # smallest Limit from all sources
-    my $Limit = 400;
-    SOURCE:
-    for my $Count ( '', 1 .. 10 ) {
-        next SOURCE if !$ConfigObject->Get("CustomerCompany$Count");
-        my $CustomerUserMap = $ConfigObject->Get("CustomerCompany$Count");
-        next SOURCE if !$CustomerUserMap->{CustomerCompanySearchListLimit};
-        if ( $CustomerUserMap->{CustomerCompanySearchListLimit} < $Limit ) {
-            $Limit = $CustomerUserMap->{CustomerCompanySearchListLimit};
-        }
-    }
-
-    my %ListAll = $CustomerCompanyObject->CustomerCompanyList(
-        Search => $Param{Search},
-        Limit  => $Limit + 1,
-        Valid  => 0,
-    );
-
-    if ( keys %ListAll <= $Limit ) {
-        my $ListAll = keys %ListAll;
-        $LayoutObject->Block(
-            Name => 'OverviewHeader',
-            Data => {
-                ListAll => $ListAll,
-                Limit   => $Limit,
-            },
-        );
-    }
-
-    my %List = ();
-
     # if there are any registries to search, the table is filled and shown
     if ( $Param{Search} ) {
+
+        # get config object
+        my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
+
+        # same Limit as $Self->{CustomerCompanyMap}->{'CustomerCompanySearchListLimit'}
+        # smallest Limit from all sources
+        my $Limit = 400;
+        SOURCE:
+        for my $Count ( '', 1 .. 10 ) {
+            next SOURCE if !$ConfigObject->Get("CustomerCompany$Count");
+            my $CustomerUserMap = $ConfigObject->Get("CustomerCompany$Count");
+            next SOURCE if !$CustomerUserMap->{CustomerCompanySearchListLimit};
+            if ( $CustomerUserMap->{CustomerCompanySearchListLimit} < $Limit ) {
+                $Limit = $CustomerUserMap->{CustomerCompanySearchListLimit};
+            }
+        }
+
+        my %ListAll = $CustomerCompanyObject->CustomerCompanyList(
+            Search => $Param{Search},
+            Limit  => $Limit + 1,
+            Valid  => 0,
+        );
+
+        if ( keys %ListAll <= $Limit ) {
+            my $ListAll = keys %ListAll;
+            $LayoutObject->Block(
+                Name => 'OverviewHeader',
+                Data => {
+                    ListAll => $ListAll,
+                    Limit   => $Limit,
+                },
+            );
+        }
+
         my %List = $CustomerCompanyObject->CustomerCompanyList(
             Search => $Param{Search},
             Valid  => 0,
@@ -584,7 +584,7 @@ sub _Overview {
         # get valid list
         my %ValidList = $Kernel::OM->Get('Kernel::System::Valid')->ValidList();
 
-        if ( !$ConfigObject->Get('CustomerCompany')->{Params}->{ForeignDB} ) {
+        if ( !$ConfigObject->Get( $Param{Source} )->{Params}->{ForeignDB} ) {
             $LayoutObject->Block( Name => 'LocalDB' );
         }
 
@@ -602,7 +602,7 @@ sub _Overview {
                     },
                 );
 
-                if ( !$ConfigObject->Get('CustomerCompany')->{Params}->{ForeignDB} ) {
+                if ( !$ConfigObject->Get( $Param{Source} )->{Params}->{ForeignDB} ) {
                     $LayoutObject->Block(
                         Name => 'LocalDBRow',
                         Data => {

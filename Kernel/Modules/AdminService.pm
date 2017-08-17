@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -68,6 +68,23 @@ sub Run {
 
         if ( !$GetParam{Name} ) {
             $Error{'NameInvalid'} = 'ServerError';
+        }
+
+        my $ServiceName = '';
+        if ( $GetParam{ParentID} ) {
+            my $Prefix = $ServiceObject->ServiceLookup(
+                ServiceID => $GetParam{ParentID},
+            );
+
+            if ($Prefix) {
+                $ServiceName = $Prefix . "::";
+            }
+        }
+        $ServiceName .= $GetParam{Name};
+
+        if ( length $ServiceName > 200 ) {
+            $Error{'NameInvalid'} = 'ServerError';
+            $Error{LongName} = 1;
         }
 
         if ( !%Error ) {

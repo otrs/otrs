@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -19,26 +19,41 @@ $Selenium->RunTest(
     sub {
 
         # get needed objects
-        $Kernel::OM->ObjectParamAdd(
-            'Kernel::System::UnitTest::Helper' => {
-                RestoreSystemConfiguration => 1,
-            },
-        );
-        my $Helper          = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
-        my $SysConfigObject = $Kernel::OM->Get('Kernel::System::SysConfig');
-        my $ConfigObject    = $Kernel::OM->Get('Kernel::Config');
+        my $Helper       = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
+        my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
 
         # disable all dashboard plugins
         my $Config = $ConfigObject->Get('DashboardBackend');
-        $SysConfigObject->ConfigItemUpdate(
+        $Helper->ConfigSettingChange(
             Valid => 0,
             Key   => 'DashboardBackend',
             Value => \%$Config,
         );
 
+        $Helper->ConfigSettingChange(
+            Valid => 1,
+            Key   => 'Stats::ExchangeAxis',
+            Value => 1,
+        );
+
         # add at least one dashboard setting dashboard sysconfig so dashboard can be loaded
-        $SysConfigObject->ConfigItemReset(
-            Name => 'DashboardBackend###0400-UserOnline',
+        $Helper->ConfigSettingChange(
+            Valid => 1,
+            Key   => 'DashboardBackend###0400-UserOnline',
+            Value => {
+                'Block'         => 'ContentSmall',
+                'CacheTTLLocal' => '5',
+                'Default'       => '0',
+                'Description'   => '',
+                'Filter'        => 'Agent',
+                'Group'         => '',
+                'IdleMinutes'   => '60',
+                'Limit'         => '10',
+                'Module'        => 'Kernel::Output::HTML::Dashboard::UserOnline',
+                'ShowEmail'     => '0',
+                'SortBy'        => 'UserFullname',
+                'Title'         => 'Online'
+            },
         );
 
         # create test user and login
@@ -95,12 +110,12 @@ $Selenium->RunTest(
 
         # enable stats widget on dashboard
         my $StatsInSettings = "Settings10" . $TestStatID . "-Stats";
-        $Selenium->find_element( ".SettingsWidget .Header a", "css" )->click();
+        $Selenium->find_element( ".SettingsWidget .Header a", "css" )->VerifiedClick();
         $Selenium->WaitFor(
             JavaScript => "return typeof(\$) === 'function' && \$('.SettingsWidget.Expanded').length;"
         );
 
-        $Selenium->find_element( "#$StatsInSettings",      'css' )->click();
+        $Selenium->find_element( "#$StatsInSettings",      'css' )->VerifiedClick();
         $Selenium->find_element( ".SettingsWidget button", 'css' )->VerifiedClick();
 
         my $CommandObject = $Kernel::OM->Get('Kernel::System::Console::Command::Maint::Stats::Dashboard::Generate');
@@ -111,6 +126,39 @@ $Selenium->RunTest(
             $Selenium->execute_script('return $(".nv-legend-text:contains(Misc)").length'),
             1,
             "Legend entry for Misc queue found.",
+        );
+
+        # Exchange axis and check if it works.
+        my $StatsWidgetID = "10$TestStatID-Stats";
+        $Selenium->execute_script("\$('#Dashboard$StatsWidgetID-toggle').trigger('click');");
+        $Selenium->execute_script("\$('#ExchangeAxis').val('1').trigger('redraw.InputField').trigger('change');");
+        $Selenium->execute_script( "\$('#Dashboard$StatsWidgetID" . "_submit').trigger('click');" );
+
+        sleep 1;
+
+        $ExitCode = $CommandObject->Execute();
+        $Selenium->VerifiedRefresh();
+
+        $Self->Is(
+            $Selenium->execute_script('return $(".nv-legend-text:contains(open)").length'),
+            1,
+            "Legend entry for open state found.",
+        );
+
+        # Change the language from the user to test the translations.
+        $Kernel::OM->Get('Kernel::System::User')->SetPreferences(
+            UserID => $TestUserID,
+            Key    => 'UserLanguage',
+            Value  => 'de',
+        );
+
+        $ExitCode = $CommandObject->Execute();
+        $Selenium->VerifiedRefresh();
+
+        $Self->Is(
+            $Selenium->execute_script('return $(".nv-legend-text:contains(offen)").length'),
+            1,
+            "Legend entry for open state found.",
         );
 
         # delete test stat

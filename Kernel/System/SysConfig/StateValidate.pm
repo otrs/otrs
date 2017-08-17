@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -145,7 +145,7 @@ sub Validate {
 Without the parameter Data, this function returns a valid state name,
 which can be used to auto-correct a sysconfig option with an invalid state name.
 If the parameter Data is given, and it is a hash reference, then all keys and values of the
-hash will be checked, and corrected if neccessary.
+hash will be checked, and corrected if necessary.
 
     my $Value = $StateValidateObject->GetAutoCorrectValue(
         Data => {                                            # (optional)

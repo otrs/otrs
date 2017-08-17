@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -131,8 +131,10 @@ sub Run {
     # get search string params (get submitted params)
     else {
         for my $Key (
-            qw(TicketNumber Title From To Cc Subject Body CustomerID CustomerUserLogin StateType
-            Agent ResultForm TimeSearchType ChangeTimeSearchType CloseTimeSearchType LastChangeTimeSearchType EscalationTimeSearchType
+            qw(TicketNumber Title From To Cc Subject Body CustomerID CustomerIDRaw
+            CustomerUserLogin CustomerUserLoginRaw StateType Agent ResultForm
+            TimeSearchType ChangeTimeSearchType CloseTimeSearchType LastChangeTimeSearchType
+            EscalationTimeSearchType
             UseSubQueues AttachmentName
             ArticleTimeSearchType SearchInArchive
             Fulltext ShownAttributes
@@ -659,6 +661,7 @@ sub Run {
                     # get ticket data instead
                     %Data = $TicketObject->TicketGet(
                         TicketID      => $TicketID,
+                        Extended      => 1,
                         DynamicFields => 1,
                     );
 
@@ -774,7 +777,7 @@ sub Run {
 
             my %HeaderMap = (
                 TicketNumber => Translatable('Ticket Number'),
-                CustomerName => Translatable('Customer Realname'),
+                CustomerName => Translatable('Customer Name'),
             );
 
             my @CSVHeadTranslated = map { $LayoutObject->{LanguageObject}->Translate( $HeaderMap{$_} || $_ ); }
@@ -1307,11 +1310,19 @@ sub Run {
             },
             {
                 Key   => 'CustomerID',
-                Value => Translatable('CustomerID'),
+                Value => Translatable('CustomerID (complex search)'),
+            },
+            {
+                Key   => 'CustomerIDRaw',
+                Value => Translatable('CustomerID (exact match)'),
             },
             {
                 Key   => 'CustomerUserLogin',
-                Value => Translatable('Customer User Login'),
+                Value => Translatable('Customer User Login (complex search)'),
+            },
+            {
+                Key   => 'CustomerUserLoginRaw',
+                Value => Translatable('Customer User Login (exact match)'),
             },
             {
                 Key   => 'StateIDs',
@@ -1778,21 +1789,13 @@ sub Run {
             Base      => 'TicketSearch',
             UserLogin => $Self->{UserLogin},
         );
-        delete $Profiles{''};
-        delete $Profiles{'last-search'};
-        if ($EmptySearch) {
-            $Profiles{''} = '-';
-        }
-        else {
-            $Profiles{'last-search'} = '-';
-        }
         $Param{ProfilesStrg} = $LayoutObject->BuildSelection(
-            Data       => \%Profiles,
-            Name       => 'Profile',
-            ID         => 'SearchProfile',
-            SelectedID => $Profile,
-
-            # Do not modernize this field as this causes problems with the automatic focusing of the first element.
+            Data         => \%Profiles,
+            Name         => 'Profile',
+            ID           => 'SearchProfile',
+            SelectedID   => $Profile,
+            Class        => 'Modernize',
+            PossibleNone => 1,
         );
 
         $Param{StatesStrg} = $LayoutObject->BuildSelection(
@@ -1889,11 +1892,13 @@ sub Run {
             Prefix   => 'ArticleCreateTimeStart',
             Format   => 'DateInputFormat',
             DiffTime => -( ( 60 * 60 * 24 ) * 30 ),
+            Validate => 1,
         );
         $Param{ArticleCreateTimeStop} = $LayoutObject->BuildDateSelection(
             %GetParam,
-            Prefix => 'ArticleCreateTimeStop',
-            Format => 'DateInputFormat',
+            Prefix   => 'ArticleCreateTimeStop',
+            Format   => 'DateInputFormat',
+            Validate => 1,
         );
         $Param{TicketCreateTimePoint} = $LayoutObject->BuildSelection(
             Data       => [ 1 .. 59 ],
@@ -1925,11 +1930,13 @@ sub Run {
             Prefix   => 'TicketCreateTimeStart',
             Format   => 'DateInputFormat',
             DiffTime => -( ( 60 * 60 * 24 ) * 30 ),
+            Validate => 1,
         );
         $Param{TicketCreateTimeStop} = $LayoutObject->BuildDateSelection(
             %GetParam,
-            Prefix => 'TicketCreateTimeStop',
-            Format => 'DateInputFormat',
+            Prefix   => 'TicketCreateTimeStop',
+            Format   => 'DateInputFormat',
+            Validate => 1,
         );
 
         $Param{TicketChangeTimePoint} = $LayoutObject->BuildSelection(
@@ -1962,11 +1969,13 @@ sub Run {
             Prefix   => 'TicketChangeTimeStart',
             Format   => 'DateInputFormat',
             DiffTime => -( ( 60 * 60 * 24 ) * 30 ),
+            Validate => 1,
         );
         $Param{TicketChangeTimeStop} = $LayoutObject->BuildDateSelection(
             %GetParam,
-            Prefix => 'TicketChangeTimeStop',
-            Format => 'DateInputFormat',
+            Prefix   => 'TicketChangeTimeStop',
+            Format   => 'DateInputFormat',
+            Validate => 1,
         );
 
         $Param{TicketCloseTimePoint} = $LayoutObject->BuildSelection(
@@ -1999,11 +2008,13 @@ sub Run {
             Prefix   => 'TicketCloseTimeStart',
             Format   => 'DateInputFormat',
             DiffTime => -( ( 60 * 60 * 24 ) * 30 ),
+            Validate => 1,
         );
         $Param{TicketCloseTimeStop} = $LayoutObject->BuildDateSelection(
             %GetParam,
-            Prefix => 'TicketCloseTimeStop',
-            Format => 'DateInputFormat',
+            Prefix   => 'TicketCloseTimeStop',
+            Format   => 'DateInputFormat',
+            Validate => 1,
         );
 
         $Param{TicketLastChangeTimePoint} = $LayoutObject->BuildSelection(
@@ -2036,11 +2047,13 @@ sub Run {
             Prefix   => 'TicketLastChangeTimeStart',
             Format   => 'DateInputFormat',
             DiffTime => -( ( 60 * 60 * 24 ) * 30 ),
+            Validate => 1,
         );
         $Param{TicketLastChangeTimeStop} = $LayoutObject->BuildDateSelection(
             %GetParam,
-            Prefix => 'TicketLastChangeTimeStop',
-            Format => 'DateInputFormat',
+            Prefix   => 'TicketLastChangeTimeStop',
+            Format   => 'DateInputFormat',
+            Validate => 1,
         );
 
         $Param{TicketEscalationTimePoint} = $LayoutObject->BuildSelection(
@@ -2074,11 +2087,13 @@ sub Run {
             Prefix   => 'TicketEscalationTimeStart',
             Format   => 'DateInputFormat',
             DiffTime => -( ( 60 * 60 * 24 ) * 30 ),
+            Validate => 1,
         );
         $Param{TicketEscalationTimeStop} = $LayoutObject->BuildDateSelection(
             %GetParam,
-            Prefix => 'TicketEscalationTimeStop',
-            Format => 'DateInputFormat',
+            Prefix   => 'TicketEscalationTimeStop',
+            Format   => 'DateInputFormat',
+            Validate => 1,
         );
 
         my %GetParamBackup = %GetParam;

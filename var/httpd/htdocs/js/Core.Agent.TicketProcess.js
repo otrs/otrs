@@ -1,5 +1,5 @@
 // --
-// Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+// Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 // --
 // This software comes with ABSOLUTELY NO WARRANTY. For details, see
 // the enclosed file COPYING for license information (AGPL). If you
@@ -34,7 +34,7 @@ Core.Agent.TicketProcess = (function (TargetNS) {
                 Action: 'AgentTicketProcess',
                 Subaction: 'DisplayActivityDialogAJAX',
                 ProcessEntityID: $('#ProcessEntityID').val(),
-                FormID: $('input:hidden[name=FormID]').val(),
+                FormID: $(this).closest('form').find('input:hidden[name=FormID]').val(),
                 IsAjaxRequest: 1,
                 IsMainWindow: 1
             };

@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -482,10 +482,15 @@ sub Run {
 
         my $ImportedConfig;
 
+        my $Home = $Kernel::OM->Get('Kernel::Config')->Get('Home');
+
+        my $MainObject = $Kernel::OM->Get('Kernel::System::Main');
+
         # get web service name
         my $WebserviceName;
-
         my $ExampleWebServiceFilename = $ParamObject->GetParam( Param => 'ExampleWebService' ) || '';
+        my $FileWithoutExtension;
+
         if ($ExampleWebServiceFilename) {
             $ExampleWebServiceFilename =~ s{/+|\.{2,}}{}smx;    # remove slashes and ..
 
@@ -495,7 +500,52 @@ sub Run {
                 );
             }
 
-            my $Home    = $Kernel::OM->Get('Kernel::Config')->Get('Home');
+            # extract file name
+            $ExampleWebServiceFilename =~ m{(.*?)\.yml$}smx;
+            $FileWithoutExtension = $1;
+
+            # Run _pre.pm if available.
+            if ( -e "$Home/var/webservices/examples/" . $FileWithoutExtension . "_pre.pm" ) {
+
+                my $BackendName = 'var::webservices::examples::' . $FileWithoutExtension . '_pre';
+
+                my $Loaded = $MainObject->Require(
+                    $BackendName,
+                );
+
+                if ( !$Loaded ) {
+                    return $LayoutObject->ErrorScreen(
+                        Message => "Could not load $BackendName.",
+                    );
+
+                }
+
+                my $BackendPre = $Kernel::OM->Get(
+                    $BackendName,
+                );
+
+                if ( $BackendPre->can('DependencyCheck') ) {
+                    my %Result = $BackendPre->DependencyCheck();
+                    if ( !$Result{Success} && $Result{ErrorMessage} ) {
+
+                        return $Self->_ShowEdit(
+                            DependencyErrorMessage => $Result{ErrorMessage},
+                            %Param,
+                            Action => 'Add',
+                        );
+                    }
+                }
+
+                my %Status = $BackendPre->Run();
+                if ( !$Status{Success} ) {
+
+                    # show the error screen
+                    return $LayoutObject->ErrorScreen(
+                        Message => $Status{Error},
+                    );
+                }
+            }
+
             my $Content = $Kernel::OM->Get('Kernel::System::Main')->FileRead(
                 Location => "$Home/var/webservices/examples/$ExampleWebServiceFilename",
                 Mode     => 'utf8',
@@ -606,6 +656,33 @@ sub Run {
             UserID  => $Self->{UserID},
         );
 
+        if (
+            $FileWithoutExtension
+            && -e "$Home/var/webservices/examples/" . $FileWithoutExtension . "_post.pm"
+            )
+        {
+            my $BackendName = 'var::webservices::examples::' . $FileWithoutExtension . '_post';
+
+            my $Loaded = $MainObject->Require(
+                $BackendName,
+            );
+
+            if ($Loaded) {
+                my $BackendPost = $Kernel::OM->Get(
+                    $BackendName,
+                );
+
+                my %Status = $BackendPost->Run();
+                if ( !$Status{Success} ) {
+
+                    # show the error screen
+                    return $LayoutObject->ErrorScreen(
+                        Message => $Status{Error},
+                    );
+                }
+            }
+        }
+
         # define notification
         my $Notify = $LayoutObject->{LanguageObject}->Translate(
             'Web service "%s" created!',
@@ -681,7 +758,7 @@ sub _ShowOverview {
     $LayoutObject->Block(
         Name => 'WebservicePathElement',
         Data => {
-            Name => 'Web Services',
+            Name => Translatable('Web Services'),
             Link => 'Action=AdminGenericInterfaceWebservice',
             Nav  => '',
         },
@@ -786,6 +863,14 @@ sub _ShowEdit {
     my $Output = $LayoutObject->Header();
     $Output .= $LayoutObject->NavigationBar();
 
+    if ( $Param{DependencyErrorMessage} ) {
+        $Output .= $LayoutObject->Notify(
+            Priority => 'Notice',
+            Data     => $Param{DependencyErrorMessage},
+
+        );
+    }
+
     # show notifications if any
     if ( $Param{Notify} ) {
         $Output .= $LayoutObject->Notify(
@@ -802,7 +887,7 @@ sub _ShowEdit {
     $LayoutObject->Block(
         Name => 'WebservicePathElement',
         Data => {
-            Name => 'Web Services',
+            Name => Translatable('Web Services'),
             Link => 'Action=AdminGenericInterfaceWebservice',
             Nav  => '',
         },
@@ -849,19 +934,18 @@ sub _ShowEdit {
             );
         }
 
-        # TODO: Since at the moment there are no sample web services, we keep this feature disabled.
-        # Enable this feature after Business solution is updated.
-        # $LayoutObject->Block(
-        #     Name => 'ExampleWebServices',
-        #     Data => {
-        #         %Frontend,
-        #     },
-        # );
+        # Enable Example web services
+        $LayoutObject->Block(
+            Name => 'ExampleWebServices',
+            Data => {
+                %Frontend,
+            },
+        );
 
         $LayoutObject->Block(
             Name => 'WebservicePathElementNoLink',
             Data => {
-                Name => 'New Web service',
+                Name => Translatable('New Web service'),
                 Link => 'Action=AdminGenericInterfaceWebservice;Subaction=' . $Param{Action},
                 Nav  => '',
             },
@@ -1004,18 +1088,18 @@ sub _ShowEdit {
     # meta configuration for output blocks
     my %CommTypeConfig = (
         Provider => {
-            Title             => $LayoutObject->{LanguageObject}->Translate('OTRS as provider'),
+            Title             => Translatable('OTRS as provider'),
             SelectedTransport => $ProviderData->{Transport}->{Type},
             ActionType        => 'Operation',
-            ActionsTitle      => 'Operations',
+            ActionsTitle      => Translatable('Operations'),
             ActionsConfig     => $ProviderData->{Operation},
             ControllerData    => \%GIOperations,
         },
         Requester => {
-            Title             => $LayoutObject->{LanguageObject}->Translate('OTRS as requester'),
+            Title             => Translatable('OTRS as requester'),
             SelectedTransport => $RequesterData->{Transport}->{Type},
             ActionType        => 'Invoker',
-            ActionsTitle      => 'Invokers',
+            ActionsTitle      => Translatable('Invokers'),
             ActionsConfig     => $RequesterData->{Invoker},
             ControllerData    => \%GIInvokers,
         },

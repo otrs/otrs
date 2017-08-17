@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -107,10 +107,11 @@ sub Require {
     if ($@) {
 
         if ( !$Param{Silent} ) {
+            my $Message = $@;
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Caller   => 1,
                 Priority => 'error',
-                Message  => "$@",
+                Message  => $Message,
             );
         }
 
@@ -413,8 +414,8 @@ to write data to file system
         Permission => '644',     # optional - unix file permissions
     );
 
-Platform note: MacOS (HFS+) stores filenames as Unicode NFD internally,
-and DirectoryRead() will also report them as NFD.
+Platform note: MacOS (HFS+) stores filenames as Unicode C<NFD> internally,
+and DirectoryRead() will also report them as C<NFD>.
 
 =cut
 
@@ -645,7 +646,7 @@ sub FileGetMTime {
 
 =item MD5sum()
 
-get a md5 sum of a file or a string
+get an C<MD5> sum of a file or a string
 
     my $MD5Sum = $MainObject->MD5sum(
         Filename => '/path/to/me_to_alal.xml',
@@ -847,8 +848,8 @@ does not have to exist:
         Silent    => 1,     # will not log errors if the directory does not exist
     );
 
-Platform note: MacOS (HFS+) stores filenames as Unicode NFD internally,
-and DirectoryRead() will also report them as NFD.
+Platform note: MacOS (HFS+) stores filenames as Unicode C<NFD> internally,
+and DirectoryRead() will also report them as C<NFD>.
 
 =cut
 
@@ -1088,6 +1089,15 @@ sub _Dump {
 
     # data is a ref reference
     if ( ref ${$Data} eq 'REF' ) {
+
+        # start recursion
+        $Self->_Dump( ${$Data} );
+
+        return;
+    }
+
+    # data is a JSON::PP::Boolean
+    if ( ref ${$Data} eq 'JSON::PP::Boolean' ) {
 
         # start recursion
         $Self->_Dump( ${$Data} );

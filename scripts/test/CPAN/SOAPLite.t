@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -20,12 +20,11 @@ use Kernel::System::VariableCheck qw(:all);
 my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
 $Kernel::OM->ObjectParamAdd(
     'Kernel::System::UnitTest::Helper' => {
-        RestoreSystemConfiguration => 1,
-        RestoreDatabase            => 1,
+
+        RestoreDatabase => 1,
     },
 );
-my $Helper          = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
-my $SysConfigObject = $Kernel::OM->Get('Kernel::System::SysConfig');
+my $Helper = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
 
 my $RandomID = $Helper->GetRandomID();
 
@@ -34,12 +33,12 @@ my $SOAPUser     = 'User' . $RandomID;
 my $SOAPPassword = $RandomID;
 
 # update sysconfig settings
-$SysConfigObject->ConfigItemUpdate(
+$Helper->ConfigSettingChange(
     Valid => 1,
     Key   => 'SOAP::User',
     Value => $SOAPUser,
 );
-$SysConfigObject->ConfigItemUpdate(
+$Helper->ConfigSettingChange(
     Valid => 1,
     Key   => 'SOAP::Password',
     Value => $SOAPPassword,
@@ -71,12 +70,10 @@ my $SOAPObject = SOAP::Lite->new(
     uri   => $URI,
 );
 
-# ---
 # Tests for number of params in SOAP call
 # SOAP::Lite 0.715 is broken in line 1993, this file was patched in CPAN directory in order to fix
 # this problem. There is a similar problem reported in SOAP::Lite bug tracker in:
 # http://sourceforge.net/tracker/?func=detail&aid=3547564&group_id=66000&atid=513017
-# ---
 
 my @Tests = (
     {

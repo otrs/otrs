@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -80,7 +80,7 @@ sub new {
 =item Map()
 
 provides 1:1 and regex mapping for keys and values
-also the use of a default for unmapped keys and values is possible
+also the use of a default for keys and values that were not mapped is possible
 
 we need the config to be in the following format
 

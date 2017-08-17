@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -26,7 +26,7 @@ Kernel::System::Spelling - spelling lib
 =head1 SYNOPSIS
 
 This module is the spellchecker backend wrapper of OTRS.
-Currently, ispell and aspell are supported as spellchecker backends.
+Currently, C<ispell> and C<aspell> are supported as spellchecker backends.
 
 =head1 PUBLIC INTERFACE
 

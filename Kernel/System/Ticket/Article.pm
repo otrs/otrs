@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -264,6 +264,13 @@ sub ArticleCreate {
         $Param{MD5} = $Kernel::OM->Get('Kernel::System::Main')->MD5sum( String => $Param{MessageID} );
     }
 
+    # Generate unique fingerprint for searching created article in database to prevent race conditions
+    #   (see https://bugs.otrs.org/show_bug.cgi?id=12438).
+    my $RandomString = $Kernel::OM->Get('Kernel::System::Main')->GenerateRandomString(
+        Length => 32,
+    );
+    my $ArticleInsertFingerprint = $$ . '-' . $RandomString . '-' . ( $Param{MessageID} // '' );
+
     # get database object
     my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
 
@@ -290,7 +297,8 @@ sub ArticleCreate {
         Bind => [
             \$Param{TicketID}, \$Param{ArticleTypeID}, \$Param{SenderTypeID},
             \$Param{From},     \$Param{ReplyTo},       \$Param{To},
-            \$Param{Cc},       \$Param{Subject},       \$Param{MessageID},
+            \$Param{Cc},       \$Param{Subject},
+            \$ArticleInsertFingerprint,    # just for next search; will be updated with correct MessageID
             \$Param{MD5},
             \$Param{InReplyTo}, \$Param{References}, \$Param{Body},
             \$Param{ContentType}, \$Self->{ArticleContentPath}, \$ValidID,
@@ -301,7 +309,7 @@ sub ArticleCreate {
     # get article id
     my $ArticleID = $Self->_ArticleGetId(
         TicketID     => $Param{TicketID},
-        MessageID    => $Param{MessageID},
+        MessageID    => $ArticleInsertFingerprint,
         From         => $Param{From},
         Subject      => $Param{Subject},
         IncomingTime => $IncomingTime
@@ -311,10 +319,16 @@ sub ArticleCreate {
     if ( !$ArticleID ) {
         $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'error',
-            Message  => 'Can\'t get ArticleID from INSERT!',
+            Message  => "Can't get ArticleID from insert (TicketID=$Param{TicketID}, MessageID=$Param{MessageID})!",
         );
         return;
     }
+
+    # Save correct Message-ID now.
+    return if !$DBObject->Do(
+        SQL  => 'UPDATE article SET a_message_id = ? WHERE id = ?',
+        Bind => [ \$Param{MessageID}, \$ArticleID ],
+    );
 
     # check for base64 encoded images in html body and upload them
     for my $Attachment (@AttachmentConvert) {
@@ -455,6 +469,7 @@ sub ArticleCreate {
             TicketID         => $Param{TicketID},
             UserID           => $Param{UserID},
             AutoResponseType => $Param{AutoResponseType},
+            ArticleType      => $Param{ArticleType}
         );
     }
 
@@ -1292,7 +1307,7 @@ only requested article types
 
 returns articles in array / hash by given ticket id but
 only requested article sender types (could be useful when
-trying to exclude autoreplies sent by system sender from
+trying to exclude auto replies sent by system sender from
 certain views)
 
     my @ArticleIndex = $TicketObject->ArticleGet(
@@ -2131,9 +2146,10 @@ send article via email and create article with attachments
         TicketID    => 123,
         ArticleType => 'note-internal',                                        # email-external|email-internal|phone|fax|...
         SenderType  => 'agent',                                                # agent|system|customer
-        From        => 'Some Agent <email@example.com>',                       # not required but useful
-        To          => 'Some Customer A <customer-a@example.com>',             # not required but useful
-        Cc          => 'Some Customer B <customer-b@example.com>',             # not required but useful
+        From        => 'Some Agent <email@example.com>',                       # required
+        To          => 'Some Customer A <customer-a@example.com>',             # required if both Cc and Bcc are not present
+        Cc          => 'Some Customer B <customer-b@example.com>',             # required if both To and Bcc are not present
+        Bcc         => 'Some Customer C <customer-c@example.com>',             # required if both To and Cc are not present
         ReplyTo     => 'Some Customer B <customer-b@example.com>',             # not required, is possible to use 'Reply-To' instead
         Subject     => 'some short description',                               # required
         Body        => 'the message text',                                     # required
@@ -2377,6 +2393,7 @@ send an auto response to a customer via email
             Subject => 'For the message!',
         },
         UserID          => 123,
+        ArticleType     => 'email-internal'  # optional
     );
 
 Events:
@@ -2558,7 +2575,13 @@ sub SendAutoResponse {
             User => $Ticket{CustomerUserID},
         );
 
-        if ( $CustomerUser{UserEmail} && $OrigHeader{From} !~ /\Q$CustomerUser{UserEmail}\E/i ) {
+        $Param{ArticleType} //= '';
+        if (
+            $CustomerUser{UserEmail}
+            && $OrigHeader{From} !~ /\Q$CustomerUser{UserEmail}\E/i
+            && $Param{ArticleType} ne 'email-internal'
+            )
+        {
             $Cc = $CustomerUser{UserEmail};
         }
     }
@@ -2965,8 +2988,6 @@ sub ArticleAccountedTimeDelete {
     return 1;
 }
 
-1;
-
 # the following is the pod for Kernel/System/Ticket/ArticleStorage*.pm
 
 =item ArticleDelete()
@@ -3152,6 +3173,7 @@ sub ArticleAttachmentIndex {
                 &&
                 $File{Filename} eq 'file-1'
                 && $File{ContentType} =~ /text\/plain/i
+                && $File{Disposition} eq 'inline'
                 )
             {
                 $AttachmentIDPlain = $AttachmentID;
@@ -3165,6 +3187,7 @@ sub ArticleAttachmentIndex {
                 &&
                 ( $File{Filename} =~ /^file-[12]$/ || $File{Filename} eq 'file-1.html' )
                 && $File{ContentType} =~ /text\/html/i
+                && $File{Disposition} eq 'inline'
                 )
             {
                 $AttachmentIDHTML = $AttachmentID;

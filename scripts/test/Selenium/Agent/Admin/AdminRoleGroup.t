@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -102,7 +102,7 @@ $Selenium->RunTest(
 
         # set permissions
         for my $Permission (qw(ro note owner)) {
-            $Selenium->find_element("//input[\@value='$GroupID'][\@name='$Permission']")->click();
+            $Selenium->find_element("//input[\@value='$GroupID'][\@name='$Permission']")->VerifiedClick();
         }
 
         $Selenium->find_element("//button[\@value='Submit'][\@type='submit']")->VerifiedClick();
@@ -172,7 +172,7 @@ $Selenium->RunTest(
 
         # set permissions
         for my $Permission (qw(note move_into priority create)) {
-            $Selenium->find_element("//input[\@value='$RoleID'][\@name='$Permission']")->click();
+            $Selenium->find_element("//input[\@value='$RoleID'][\@name='$Permission']")->VerifiedClick();
         }
         $Selenium->find_element("//button[\@value='Submit'][\@type='submit']")->VerifiedClick();
 

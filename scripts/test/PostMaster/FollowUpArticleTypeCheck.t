@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -26,7 +26,8 @@ my $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
 # get helper object
 $Kernel::OM->ObjectParamAdd(
     'Kernel::System::UnitTest::Helper' => {
-        RestoreDatabase => 1,
+        RestoreDatabase  => 1,
+        UseTmpArticleDir => 1,
     },
 );
 my $Helper = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
@@ -57,6 +58,7 @@ $Self->True(
 my $ArticleID = $TicketObject->ArticleCreate(
     TicketID       => $TicketID,
     ArticleType    => 'email-external',
+    MessageID      => 'message-id-email-external',
     SenderType     => 'customer',
     From           => "Customer <$CustomerAddress>",
     To             => "Agent <$AgentAddress>",
@@ -77,6 +79,7 @@ $Self->True(
 $ArticleID = $TicketObject->ArticleCreate(
     TicketID       => $TicketID,
     ArticleType    => 'email-internal',
+    MessageID      => 'message-id-email-internal',
     SenderType     => 'agent',
     From           => "Agent <$AgentAddress>",
     To             => "Provider <$InternalAddress>",
@@ -98,6 +101,7 @@ $Self->True(
 $ArticleID = $TicketObject->ArticleCreate(
     TicketID       => $TicketID,
     ArticleType    => 'email-internal',
+    MessageID      => 'message-id-email-internal-customer',
     SenderType     => 'agent',
     From           => "Agent <$AgentAddress>",
     To             => "Customer <$CustomerAddress>",
@@ -225,18 +229,38 @@ Some Content in Body",
             SenderType  => 'customer',
         },
     },
+
+    # response from an unknown address, but in response to the internal article (References)
+    {
+        Name  => 'Response to internal mail from unknown sender',
+        Email => "From: Somebody <unknown\@address.com>
+To: Agent <$AgentAddress>
+References: <message-id-email-internal>
+Subject: $Subject
+
+Some Content in Body",
+        Check => {
+            ArticleType => 'email-internal',
+            SenderType  => 'customer',
+        },
+        JobConfig => {
+            ArticleType => 'email-internal',
+            Module      => 'Kernel::System::PostMaster::Filter::FollowUpArticleTypeCheck',
+            SenderType  => 'customer',
+        },
+    },
 );
 
 my $RunTest = sub {
     my $Test = shift;
 
     $ConfigObject->Set(
-        Key   => 'PostMaster::PostFilterModule',
+        Key   => 'PostMaster::PreCreateFilterModule',
         Value => {},
     );
 
     $ConfigObject->Set(
-        Key   => 'PostMaster::PostFilterModule',
+        Key   => 'PostMaster::PreCreateFilterModule',
         Value => {
             '000-FollowUpArticleTypeCheck' => {
                 %{ $Test->{JobConfig} }

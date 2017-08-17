@@ -681,13 +681,20 @@ fieldset.TableLike.FixedLabelSmall > p.FixedValueSmall > em.Error {
 }
 
 fieldset.TableLike.Narrow > label,
-fieldset.TableLike.Narrow > .Row > label {
-    line-height: 1.3em;
-}
-
+fieldset.TableLike.Narrow > .Row > label,
 fieldset.TableLike.Narrow > .Value,
 fieldset.TableLike.Narrow > .Row > .Value {
     line-height: 1.3em;
+}
+
+fieldset.TableLike.Narrow > label,
+fieldset.TableLike.Narrow > .Row > label,
+fieldset.TableLike.Narrow > .Value,
+fieldset.TableLike.Narrow > .Row > .Value,
+fieldset.TableLike > label,
+fieldset.TableLike > .Row > label {
+    word-wrap: break-word;
+    overflow-wrap: break-word;
 }
 
 iframe.Signature {

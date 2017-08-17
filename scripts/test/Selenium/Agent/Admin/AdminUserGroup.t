@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -67,7 +67,7 @@ $Selenium->RunTest(
         $Selenium->find_element( $GroupName, 'link_text' )->VerifiedClick();
 
         # give full read and write access to the tickets in test group for test user
-        $Selenium->find_element("//input[\@value='$UserID'][\@name='rw']")->click();
+        $Selenium->find_element("//input[\@value='$UserID'][\@name='rw']")->VerifiedClick();
         $Selenium->find_element("//button[\@value='Submit'][\@type='submit']")->VerifiedClick();
 
         # test filter for Users
@@ -135,7 +135,7 @@ $Selenium->RunTest(
 
         # set permissions
         for my $Permission (qw(rw ro note owner)) {
-            $Selenium->find_element("//input[\@value='$UserID'][\@name='$Permission']")->click();
+            $Selenium->find_element("//input[\@value='$UserID'][\@name='$Permission']")->VerifiedClick();
         }
 
         $Selenium->find_element("//button[\@value='Submit'][\@type='submit']")->VerifiedClick();
@@ -185,7 +185,7 @@ $Selenium->RunTest(
 
         # set permissions
         for my $Permission (qw(ro note priority)) {
-            $Selenium->find_element("//input[\@value='$GroupID'][\@name='$Permission']")->click();
+            $Selenium->find_element("//input[\@value='$GroupID'][\@name='$Permission']")->VerifiedClick();
         }
 
         $Selenium->find_element("//button[\@value='Submit'][\@type='submit']")->VerifiedClick();

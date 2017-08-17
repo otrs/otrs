@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -282,9 +282,12 @@ EOF
 
         my $FieldNameUsed0 = $FieldNameUsed . '0';
         my $FieldNameUsed1 = $FieldNameUsed . '1';
+        my $TranslatedDesc = $Param{LayoutObject}->{LanguageObject}->Translate(
+            'Ignore this field.',
+        );
         $HTMLString = <<"EOF";
 <input type="radio" id="$FieldNameUsed0" name="$FieldNameUsed" value="" $FieldUsedChecked0 />
-Ignore this field.
+$TranslatedDesc
 <div class="clear"></div>
 <input type="radio" id="$FieldNameUsed1" name="$FieldNameUsed" value="1" $FieldUsedChecked1 />
 EOF
@@ -352,8 +355,13 @@ sub EditFieldValueGet {
     my %Data;
 
     # check if there is a Template and retrieve the dynamic field value from there
-    if ( IsHashRefWithData( $Param{Template} ) && defined $Param{Template}->{$FieldName} ) {
-
+    if (
+        IsHashRefWithData( $Param{Template} ) && (
+            defined $Param{Template}->{$FieldName}
+            || defined $Param{Template}->{ $FieldName . 'Used' }
+        )
+        )
+    {
         # get dynamic field value form Template
         $Data{FieldValue} = $Param{Template}->{$FieldName};
 
@@ -517,7 +525,7 @@ sub SearchFieldRender {
     }
 
     # check and set class if necessary
-    my $FieldClass = 'DynamicFieldDropdown';
+    my $FieldClass = 'DynamicFieldDropdown Modernize';
 
     my $HTMLString = $Param{LayoutObject}->BuildSelection(
         Data => {

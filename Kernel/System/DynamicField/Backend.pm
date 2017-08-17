@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -505,7 +505,7 @@ sub ValueSet {
 
 compares if two dynamic field values are different.
 
-This function relies on Kernel::System::VariableCheck::DataIsDifferent() but with some exeptions
+This function relies on Kernel::System::VariableCheck::DataIsDifferent() but with some exceptions
 depending on each field.
 
     my $Success = $BackendObject->ValueIsDifferent(
@@ -1909,7 +1909,7 @@ sub HistoricalValuesGet {
 
 =item ValueLookup()
 
-returns the display value for a value key for a defined Dynamic Field. This function is meaningfull
+returns the display value for a value key for a defined Dynamic Field. This function is meaningful
 for those Dynamic Fields that stores a value different than the value that is shown ( e.g. a
 Dropdown field could store Key = 1 and Display Value = One ) other fields return the same value
 as the value key

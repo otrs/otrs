@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -110,7 +110,8 @@
 
                         <label for="RichText">[% Translate("Signature") | html %]:</label>
                         <div class="RichTextField">
-                            <textarea id="RichText" class="RichText" rows="10" cols="60" name="Text">[% Data.Text | html %]</textarea>
+                            [%# Textareas always swallow the first newline from their data, therefore we must prepend one since we want to preserve white space. %]
+                            <textarea id="RichText" class="RichText" rows="10" cols="60" name="Text">[% "\n" _ Data.Text | html %]</textarea>
                         </div>
                         <div class="Clear"></div>
 

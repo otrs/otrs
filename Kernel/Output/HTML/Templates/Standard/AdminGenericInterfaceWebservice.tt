@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -8,7 +8,7 @@
 
 [%
 SET OTRSBusinessLabel     = '<strong>OTRS Business Solution</strong>™';
-SET OTRSBusinessLinkLabel = '<strong><a href="#" class="OTRSBusinessRequired">OTRS Business Solution</a></strong>™';
+SET OTRSBusinessLinkLabelWithContractLevel = '<strong><a href="#" class="OTRSBusinessRequired">OTRS Business Solution™ PROFESSIONAL/ENTERPRISE</a></strong>';
 %]
 
 [% RenderBlockStart("Main") %]
@@ -18,12 +18,12 @@ SET OTRSBusinessLinkLabel = '<strong><a href="#" class="OTRSBusinessRequired">OT
         <li>[% Translate("You are here") | html %]:</li>
 [% RenderBlockStart("WebservicePathElement") %]
         <li>
-            <a href="[% Env("Baselink") %][% Data.Link %];Nav=[% Data.Nav | uri %]">[% Data.Name | html %]</a>
+            <a href="[% Env("Baselink") %][% Data.Link %];Nav=[% Data.Nav | uri %]">[% Translate(Data.Name) | html %]</a>
         </li>
 [% RenderBlockEnd("WebservicePathElement") %]
 [% RenderBlockStart("WebservicePathElementNoLink") %]
         <li>
-            [% Data.Name | html %]
+            [% Translate(Data.Name) | html %]
         </li>
 [% RenderBlockEnd("WebservicePathElementNoLink") %]
     </ul>
@@ -76,8 +76,8 @@ SET OTRSBusinessLinkLabel = '<strong><a href="#" class="OTRSBusinessRequired">OT
                                 </form>
                             </div>
                             <div class="ContentFooter Center">
-                                <button class="Primary" type="button" id="CloneButtonAction">[% Translate("Clone") | html %]</button>
-                                <button type="button" id="CancelCloneButtonAction">[% Translate("Cancel") | html %]</button>
+                                <button class="Primary CallForAction" type="button" id="CloneButtonAction" value="[% Translate("Clone") | html %]"><span>[% Translate("Clone") | html %]</span></button>
+                                <button class="CallForAction" type="button" id="CancelCloneButtonAction" value="[% Translate("Cancel") | html %]"><span>[% Translate("Cancel") | html %]</span></button>
                             </div>
                         </div>
                     </li>
@@ -106,7 +106,7 @@ SET OTRSBusinessLinkLabel = '<strong><a href="#" class="OTRSBusinessRequired">OT
                                         <div class="SpacingTop"></div>
                                         <label class="Mandatory" for="ConfigFile"><span class="Marker">*</span>[% Translate("Configuration File") | html %]:</label>
                                         <div class="Field">
-                                            <input id="ConfigFile" class=" W75pc Validate_Required" type="file" maxlength="250" value="" name="ConfigFile"/>
+                                            <input id="ConfigFile" class="Validate_Required" type="file" maxlength="250" value="" name="ConfigFile"/>
                                             <div id="ConfigFileError" class="TooltipErrorMessage"><p>[% Translate("This field is required.") | html %]</p></div>
                                             <div class="FieldExplanation">[% Translate("The file must be a valid web service configuration YAML file.") | html %]</div>
                                         </div>
@@ -115,8 +115,8 @@ SET OTRSBusinessLinkLabel = '<strong><a href="#" class="OTRSBusinessRequired">OT
                                 </form>
                             </div>
                             <div class="ContentFooter Center">
-                                <button class="Primary" type="submit" id="ImportButtonAction">[% Translate("Import") | html %]</button>
-                                <button type="button" id="CancelImportButtonAction">[% Translate("Cancel") | html %]</button>
+                                <button class="Primary CallForAction" type="submit" id="ImportButtonAction" value="[% Translate("Import") | html %]"><span>[% Translate("Import") | html %]</span></button>
+                                <button class="CallForAction" type="button" id="CancelImportButtonAction" value="[% Translate("Cancel") | html %]"><span>[% Translate("Cancel") | html %]</span></button>
                             </div>
                         </div>
                     </li>
@@ -161,14 +161,15 @@ SET OTRSBusinessLinkLabel = '<strong><a href="#" class="OTRSBusinessRequired">OT
         </div>
 [% RenderBlockEnd("ActionList") %]
 [% RenderBlockStart("ExampleWebServices") %]
-        <div class="WidgetSimple">
+        <div class="WidgetSimple" id="ExampleWebServices">
             <div class="Header">
-                <h2>[% Translate("Example Web Services") | html %]</h2>
+                <h2>[% Translate("Ready-to-run Web Services") | html %]</h2>
             </div>
             <div class="Content">
             [% IF Data.ExampleWebServiceList %]
                 <p class="FieldExplanation">
-                    [% Translate("Here you can activate best practice example web service that are part of %s. Please note that some additional configuration may be required.", OTRSBusinessLabel) %]
+                    [% Translate("Here you can activate ready-to-run web services showcasing our best practices that are a part of %s.", OTRSBusinessLabel) %]
+                    [% Translate("Please note that these web services may depend on other modules only available with certain %s contract levels (there will be a notification with further details when importing).", OTRSBusinessLabel) %]
                 </p>
                 <ul class="ActionList SpacingTop">
                     <li>
@@ -179,15 +180,15 @@ SET OTRSBusinessLinkLabel = '<strong><a href="#" class="OTRSBusinessRequired">OT
                             <div id="ExampleWebServiceError" class="TooltipErrorMessage"><p>[% Translate("This field is required.") | html %]</p></div>
                             <div id="ExampleWebServiceServerError" class="TooltipErrorMessage"><p>[% Translate("This field is required.") | html %]</p></div>
 
-                            <button class="CallForAction Fullsize Center SpacingTop" type="submit" value="[% Translate("Import example web service") | html %]">
-                                <span><i class="fa fa-upload"></i>[% Translate("Import example web service") | html %]</span>
+                            <button class="CallForAction Fullsize Center SpacingTop" type="submit" value="[% Translate("Import ready-to-run web service") | html %]">
+                                <span><i class="fa fa-upload"></i>[% Translate("Import ready-to-run web service") | html %]</span>
                             </button>
                         </form>
                     </li>
                 </ul>
             [% ELSE %]
                 <p class="FieldExplanation">
-                    [% Translate("Do you want to benefit from web services created by experts? Upgrade to %s to be able to import some sophisticated example web services.", OTRSBusinessLinkLabel) %]
+                    [% Translate("Would you like to benefit from web services created by experts? Upgrade to %s to import some sophisticated ready-to-run web services.", OTRSBusinessLinkLabelWithContractLevel) %]
                 </p>
             [% END %]
             </div>
@@ -444,7 +445,7 @@ SET OTRSBusinessLinkLabel = '<strong><a href="#" class="OTRSBusinessRequired">OT
 [% RenderBlockStart("SaveAndFinishButton") %]
                             [% Translate("or") | html %]
                             <button type="submit" id="SaveAndFinishButton" class="CallForAction" value="[% Translate("Save and finish") | html %]"><span>[% Translate("Save and finish") | html %]</span></button>
-                            <input type="hidden" name="ReturnToWebservice" id="ReturnToWebservice" value="" />
+                            <input type="hidden" name="ReturnToWebservice" id="ReturnToWebservice" value="" autocomplete="off" />
 [% WRAPPER JSOnDocumentComplete %]
 <script type="text/javascript">//<![CDATA[
 $('#SaveAndFinishButton').bind('click', function(){

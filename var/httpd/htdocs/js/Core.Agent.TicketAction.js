@@ -1,5 +1,5 @@
 // --
-// Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+// Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 // --
 // This software comes with ABSOLUTELY NO WARRANTY. For details, see
 // the enclosed file COPYING for license information (AGPL). If you
@@ -111,7 +111,8 @@ Core.Agent.TicketAction = (function (TargetNS) {
             Core.Data.Get($Link.closest('tr'), 'Email')
             .replace(/&quot;/g, '"')
             .replace(/&lt;/g, '<')
-            .replace(/&gt;/g, '>');
+            .replace(/&gt;/g, '>')
+            .replace(/&amp;/g, '&');
         $Element.val(NewValue);
 
         Length = $Element.val().length;
@@ -214,7 +215,7 @@ Core.Agent.TicketAction = (function (TargetNS) {
                                 Core.UI.Dialog.CloseDialog($('.Dialog:visible'));
                                 Core.Form.EnableForm($('#RichText').closest('form'));
                             },
-                            Class: 'Primary CallForAction'
+                            Class: 'Primary'
                         }
                     ]);
                     return false;

@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -429,6 +429,15 @@ my @Tests = (
         Success => 0,
     },
     {
+        Name   => 'Correct Value Date (without time)',
+        Config => {
+            DynamicFieldConfig => $DynamicFieldConfigs{Date},
+            Value              => '2013-01-01',
+            UserID             => $UserID,
+        },
+        Success => 1,
+    },
+    {
         Name   => 'Text Value Date',
         Config => {
             DynamicFieldConfig => $DynamicFieldConfigs{Date},
@@ -636,6 +645,23 @@ my @Tests = (
         Success => 1,
     },
     {
+        Name   => 'Correct today date for date field which only allow old dates (search value)',
+        Config => {
+            DynamicFieldConfig => $DynamicFieldConfigs{DateOnlyPast},
+            Value              => (
+                split(
+                    /\s/,
+                    $TimeObject->SystemTime2TimeStamp(
+                        SystemTime => $TimeObject->SystemTime(),
+                        )
+                    )
+                )[0]
+                . " 00:00:00",
+            UserID => $UserID,
+        },
+        Success => 1,
+    },
+    {
         Name   => 'Correct future date for date field which only allow future dates (search value)',
         Config => {
             DynamicFieldConfig => $DynamicFieldConfigs{DateOnlyFuture},
@@ -644,6 +670,23 @@ my @Tests = (
                     /\s/,
                     $TimeObject->SystemTime2TimeStamp(
                         SystemTime => $TimeObject->SystemTime() + 259200,
+                        )
+                    )
+                )[0]
+                . " 00:00:00",
+            UserID => $UserID,
+        },
+        Success => 1,
+    },
+    {
+        Name   => 'Correct today date for date field which only allow future dates (search value)',
+        Config => {
+            DynamicFieldConfig => $DynamicFieldConfigs{DateOnlyFuture},
+            Value              => (
+                split(
+                    /\s/,
+                    $TimeObject->SystemTime2TimeStamp(
+                        SystemTime => $TimeObject->SystemTime(),
                         )
                     )
                 )[0]
@@ -697,9 +740,6 @@ my @Tests = (
         Success => 0,
     },
 );
-
-# UTC tests
-local $ENV{TZ} = 'UTC';
 
 # execute tests
 for my $Test (@Tests) {

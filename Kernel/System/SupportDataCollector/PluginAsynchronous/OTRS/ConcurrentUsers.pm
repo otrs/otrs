@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -15,6 +15,7 @@ use base qw(Kernel::System::SupportDataCollector::PluginAsynchronous);
 
 use Date::Pcalc qw(Add_Delta_YMD Add_Delta_DHMS);
 
+use Kernel::Language qw(Translatable);
 use Kernel::System::VariableCheck qw(:all);
 
 our @ObjectDependencies = (
@@ -36,7 +37,7 @@ sub Run {
 
     # the table details data
     $Self->AddResultInformation(
-        Label => 'Concurrent Users Details',
+        Label => Translatable('Concurrent Users Details'),
         Value => $ConcurrentUsers || [],
     );
 
@@ -74,7 +75,7 @@ sub Run {
         }
 
         $Self->AddResultInformation(
-            DisplayPath => 'OTRS/Concurrent Users',
+            DisplayPath => Translatable('OTRS') . '/' . Translatable('Concurrent Users'),
             Identifier  => $Identifier,
             Label       => "Max. $Label",
             Value       => $MaxValue,
@@ -117,11 +118,11 @@ sub RunAsynchronous {
     if ( IsArrayRefWithData($AsynchronousData) ) {
 
         # already existing entry counter
-        my $AsynchronousDataCounter = scalar @{$AsynchronousData} - 1;
+        my $AsynchronousDataCount = scalar @{$AsynchronousData} - 1;
 
         # check if for the current hour already a value exists
         COUNTER:
-        for my $Counter ( 0 .. $AsynchronousDataCounter ) {
+        for my $Counter ( 0 .. $AsynchronousDataCount ) {
 
             next COUNTER
                 if $AsynchronousData->[$Counter]->{TimeStamp}
@@ -163,12 +164,6 @@ sub RunAsynchronous {
         }
     }
 
-    # get the session active time
-    my $SessionActiveTime = $Kernel::OM->Get('Kernel::Config')->Get('SessionActiveTime') || 60 * 10;
-
-    # get all sessions
-    my @Sessions = $AuthSessionObject->GetAllSessionIDs();
-
     # to count the agents and customer user sessions
     my %CountConcurrentUser = (
         TimeStamp             => $TimeStamp,
@@ -178,47 +173,18 @@ sub RunAsynchronous {
         CustomerSessionUnique => 0,
     );
 
-    # to save the unique agents and customer users
-    my %LookupUsers;
-    my %LookupCustomers;
+    for my $UserType (qw(User Customer)) {
 
-    # collect the existing sessions of each user (not customer user)
-    SESSION:
-    for my $SessionID (@Sessions) {
+        my %ActiveSessions = $AuthSessionObject->GetActiveSessions(
+            UserType => $UserType,
+        );
 
-        # get session data
-        my %SessionData = $AuthSessionObject->GetSessionIDData( SessionID => $SessionID );
-
-        next SESSION if !%SessionData;
-
-        # get needed data
-        my $UserType        = $SessionData{UserType}        || '';
-        my $UserLastRequest = $SessionData{UserLastRequest} || $SystemTimeNow;
-        my $UserLogin       = $SessionData{UserLogin};
-
-        next SESSION if $UserType ne 'User' && $UserType ne 'Customer';
-        next SESSION if ( $UserLastRequest + $SessionActiveTime ) < $SystemTimeNow;
-
-        $CountConcurrentUser{ $UserType . 'Session' }++;
-
-        if ( $UserType eq 'User' ) {
-
-            if ( !$LookupUsers{$UserLogin} ) {
-                $CountConcurrentUser{UserSessionUnique}++;
-                $LookupUsers{$UserLogin} = 1;
-            }
-        }
-        elsif ( $UserType eq 'Customer' ) {
-
-            if ( !$LookupCustomers{$UserLogin} ) {
-                $CountConcurrentUser{CustomerSessionUnique}++;
-                $LookupCustomers{$UserLogin} = 1;
-            }
-        }
+        $CountConcurrentUser{ $UserType . 'Session' }       = $ActiveSessions{Total};
+        $CountConcurrentUser{ $UserType . 'SessionUnique' } = scalar keys %{ $ActiveSessions{PerUser} };
     }
 
     # update the concurrent user counter, if a higher value for the current hour exists
-    if ($CurrentHourPosition) {
+    if ( defined $CurrentHourPosition ) {
 
         my $ChangedConcurrentUserCounter;
 
@@ -245,17 +211,5 @@ sub RunAsynchronous {
 
     return 1;
 }
-
-=back
-
-=head1 TERMS AND CONDITIONS
-
-This software is part of the OTRS project (L<http://otrs.org/>).
-
-This software comes with ABSOLUTELY NO WARRANTY. For details, see
-the enclosed file COPYING for license information (AGPL). If you
-did not receive this file, see L<http://www.gnu.org/licenses/agpl.txt>.
-
-=cut
 
 1;

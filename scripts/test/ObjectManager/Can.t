@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -37,6 +37,16 @@ if ( !$ConfigObject->Get('PGP') ) {
 my $SkipChat;
 if ( !$ConfigObject->Get('ChatEngine::Active') ) {
     $SkipChat = 1;
+}
+
+my $SkipCalendar;
+if ( !$Kernel::OM->Get('Kernel::System::Main')->Require( 'Kernel::System::Calendar', Silent => 1 ) ) {
+    $SkipCalendar = 1;
+}
+
+my $SkipTeam;
+if ( !$Kernel::OM->Get('Kernel::System::Main')->Require( 'Kernel::System::Calendar::Team', Silent => 1 ) ) {
+    $SkipTeam = 1;
 }
 
 my $Home = $ConfigObject->Get('Home');
@@ -90,10 +100,14 @@ for my $Directory ( sort @DirectoriesToSearch ) {
             next OPERATION if $OperationChecked{"$1->$2()"};
 
             # skip crypt object if it is not configured
-            next OPERATION if $1 eq 'Kernel::System::Crypt::SMIME' && $SkipCryptSMIME;
-            next OPERATION if $1 eq 'Kernel::System::Crypt::PGP'   && $SkipCryptPGP;
-            next OPERATION if $1 eq 'Kernel::System::Chat'         && $SkipChat;
-            next OPERATION if $1 eq 'Kernel::System::ChatChannel'  && $SkipChat;
+            next OPERATION if $1 eq 'Kernel::System::Crypt::SMIME'          && $SkipCryptSMIME;
+            next OPERATION if $1 eq 'Kernel::System::Crypt::PGP'            && $SkipCryptPGP;
+            next OPERATION if $1 eq 'Kernel::System::Chat'                  && $SkipChat;
+            next OPERATION if $1 eq 'Kernel::System::ChatChannel'           && $SkipChat;
+            next OPERATION if $1 eq 'Kernel::System::VideoChat'             && $SkipChat;
+            next OPERATION if $1 eq 'Kernel::System::Calendar'              && $SkipCalendar;
+            next OPERATION if $1 eq 'Kernel::System::Calendar::Appointment' && $SkipCalendar;
+            next OPERATION if $1 eq 'Kernel::System::Calendar::Team'        && $SkipTeam;
 
             # load object
             my $Object = $Kernel::OM->Get("$1");

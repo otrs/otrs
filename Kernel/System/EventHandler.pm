@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -7,7 +7,7 @@
 # --
 
 package Kernel::System::EventHandler;
-## nofilter(TidyAll::Plugin::OTRS::Perl::PODSpelling)
+## nofilter(TidyAll::Plugin::OTRS::Perl::Pod::FunctionPod)
 
 use strict;
 use warnings;
@@ -34,8 +34,8 @@ for the given event, or queue them for later execution (so-called
 'Transaction' events).
 
 In the destructor, you should add a call to L</EventHandlerTransaction()>
-to make sure that also 'Transaction' events will be executed correctly.
-This is only neccessary if you use 'Transaction' events in your class.
+to make sure that also C<Transaction> events will be executed correctly.
+This is only necessary if you use C<Transaction> events in your class.
 
 =head1 PUBLIC INTERFACE
 

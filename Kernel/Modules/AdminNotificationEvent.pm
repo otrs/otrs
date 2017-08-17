@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -194,6 +194,8 @@ sub Run {
         # update
         my $Ok;
         my $ArticleFilterMissing;
+
+        $GetParam{Data}->{NotificationType} = ['Ticket'];
 
         # checking if article filter exist if necessary
         if (
@@ -403,6 +405,8 @@ sub Run {
         # add
         my $ID;
         my $ArticleFilterMissing;
+
+        $GetParam{Data}->{NotificationType} = ['Ticket'];
 
         # define ServerError Message if necessary
         if (
