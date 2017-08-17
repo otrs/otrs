@@ -167,8 +167,10 @@ sub Sync {
 
     # get whole user dn
     my $UserDN;
+    my $UserAttr;
     for my $Entry ( $Result->all_entries() ) {
         $UserDN = $Entry->dn();
+        $UserAttr = $Entry->get_value($Self->{UserAttr});
     }
 
     # log if there is no LDAP user entry
@@ -369,7 +371,7 @@ sub Sync {
                 $Filter = "($Self->{AccessAttr}=" . escape_filter_value($UserDN) . ')';
             }
             else {
-                $Filter = "($Self->{AccessAttr}=" . escape_filter_value( $Param{User} ) . ')';
+                $Filter = "($Self->{AccessAttr}=" . escape_filter_value( $UserAttr ) . ')';
             }
             my $Result = $LDAP->search(
                 base   => $GroupDN,
