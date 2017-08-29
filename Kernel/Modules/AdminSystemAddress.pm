@@ -88,6 +88,12 @@ sub Run {
             $Errors{ErrorType}   = $CheckItemObject->CheckErrorType();
         }
 
+        # check email realname
+        if (index($GetParam{Realname}, ',') != -1) {
+            $Errors{RealnameInvalid} = 'ServerError';
+            $Errors{ErrorType} = 'InvalidSyntax';
+        }
+
         # check if a system address exist with this name
         my $NameExists = $SystemAddressObject->NameExistsCheck(
             Name => $GetParam{Name},
@@ -192,6 +198,11 @@ sub Run {
             $Errors{ErrorType}   = $CheckItemObject->CheckErrorType();
         }
 
+        # check email realname
+        if (index($GetParam{Realname}, ',') != -1) {
+            $Errors{RealnameInvalid} = 'ServerError';
+            $Errors{ErrorType} = 'InvalidSyntax';
+        }
         # check if a system address exist with this name
         my $NameExists = $SystemAddressObject->NameExistsCheck(
             Name => $GetParam{Name},
