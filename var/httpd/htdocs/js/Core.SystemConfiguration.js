@@ -200,6 +200,7 @@ var Core = Core || {};
                 $('#ConfigTree')
                     .jstree({
                         core: {
+                            multiple: false,
                             animation: 70,
                             themes: {
                                 name: 'InputField',
@@ -359,7 +360,7 @@ var Core = Core || {};
                     FullName = FullName.substr(0, FullName.lastIndexOf("_Hash"));
                 }
                 else {
-                    // Array is not empty.
+                    // Hash is not empty.
                     return;
                 }
             }
@@ -479,7 +480,7 @@ var Core = Core || {};
      */
     function ValueSet(Data, Name, Value) {
         var Result = Data,
-            StructureArray = Name.split("_"),
+            StructureArray = Name.split(/_(?=Array|Hash)/),
             HashKey,
             SettingName = StructureArray.shift(),
             Structure,
@@ -1396,7 +1397,7 @@ var Core = Core || {};
             if (ID.indexOf("_Hash###") > 0) {
                 // put placeholders
                 while (ID.indexOf("_Hash###") > 0) {
-                    SubString = ID.match(/(_Hash###.*?)(_|Day$|Month$|Year$|Hour$|Minute$|$)/)[1];
+                    SubString = ID.match(/(_Hash###.*?)(_Array|_Hash|Day$|Month$|Year$|Hour$|Minute$|$)/)[1];
 
                     ID = ID.replace(SubString, "_PLACEHOLDER" + Count);
                     Count++;
@@ -1564,6 +1565,7 @@ var Core = Core || {};
                 TargetNS.Init();
                 if (Core.Config.Get('Action') == 'AgentPreferences') {
                     Core.Agent.Preferences.InitSysConfig();
+                    Core.UI.Table.InitTableFilter($("#FilterSettings"), $(".SettingsList"));
                 }
                 else {
                     Core.Agent.Admin.SystemConfiguration.InitGroupView(true);
@@ -1583,12 +1585,19 @@ var Core = Core || {};
                 Core.UI.InputFields.InitSelect(
                     $(".SettingsList .Modernize")
                 );
+
+                // scroll to top to see all the settings from the current node
+                $('html, body').animate({
+                    scrollTop: $('.ContentColumn .WidgetSimple').first().position().top
+                }, 'fast');
             }, 'html'
         );
 
-        window.setTimeout(function() {
-            Core.Agent.Admin.SystemConfiguration.InitFavourites();
-        }, 1000);
+        if ($('#SysConfigFavourites').length) {
+            window.setTimeout(function() {
+                Core.Agent.Admin.SystemConfiguration.InitFavourites();
+            }, 1000);
+        }
     }
 
     Core.Init.RegisterNamespace(TargetNS, 'APP_MODULE');

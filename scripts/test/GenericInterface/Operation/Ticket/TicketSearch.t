@@ -55,11 +55,8 @@ $ConfigObject->Set(
     Value => 0,
 );
 
-# get time object
-my $TimeObject = $Kernel::OM->Get('Kernel::System::Time');
-
 # get the start time for the test
-my $StartTime = $TimeObject->SystemTime();
+my $StartTime = $Kernel::OM->Create('Kernel::System::DateTime');
 
 # get user object
 my $UserObject = $Kernel::OM->Get('Kernel::System::User');
@@ -165,8 +162,8 @@ my @DynamicFieldProperties = (
     },
     {
         Name       => "DFT4$RandomID",
-        FieldOrder => 9993,
-        FieldType  => 'Checkbox',        # mandatory, selects the DF backend to use for this field
+        FieldOrder => 9994,
+        FieldType  => 'Date',            # mandatory, selects the DF backend to use for this field
         Config     => {
             DefaultValue => 'Default',
         },
@@ -174,6 +171,14 @@ my @DynamicFieldProperties = (
     {
         Name       => "DFT5$RandomID",
         FieldOrder => 9995,
+        FieldType  => 'Checkbox',        # mandatory, selects the DF backend to use for this field
+        Config     => {
+            DefaultValue => 'Default',
+        },
+    },
+    {
+        Name       => "DFT6$RandomID",
+        FieldOrder => 9996,
         FieldType  => 'Multiselect',     # mandatory, selects the DF backend to use for this field
         Config     => {
             DefaultValue   => [ 'ticket2_field5', 'ticket4_field5' ],
@@ -243,7 +248,7 @@ $Self->True(
 );
 
 # update escalation times directly in the DB
-my $EscalationTime = $TimeObject->SystemTime() + 120;
+my $EscalationTime = $StartTime->ToEpoch() + 120;
 return if !$Kernel::OM->Get('Kernel::System::DB')->Do(
     SQL => '
         UPDATE ticket
@@ -292,12 +297,19 @@ $BackendObject->ValueSet(
 $BackendObject->ValueSet(
     DynamicFieldConfig => $TestFieldConfig[3],
     ObjectID           => $TicketID1,
-    Value              => '0',
+    Value              => '2001-01-01 00:00:00',
     UserID             => 1,
 );
 
 $BackendObject->ValueSet(
     DynamicFieldConfig => $TestFieldConfig[4],
+    ObjectID           => $TicketID1,
+    Value              => '0',
+    UserID             => 1,
+);
+
+$BackendObject->ValueSet(
+    DynamicFieldConfig => $TestFieldConfig[5],
     ObjectID           => $TicketID1,
     Value              => [ 'ticket1_field51', 'ticket1_field52', 'ticket1_field53' ],
     UserID             => 1,
@@ -404,12 +416,19 @@ $BackendObject->ValueSet(
 $BackendObject->ValueSet(
     DynamicFieldConfig => $TestFieldConfig[3],
     ObjectID           => $TicketID2,
-    Value              => '1',
+    Value              => '2011-11-11 00:00:00',
     UserID             => 1,
 );
 
 $BackendObject->ValueSet(
     DynamicFieldConfig => $TestFieldConfig[4],
+    ObjectID           => $TicketID2,
+    Value              => '1',
+    UserID             => 1,
+);
+
+$BackendObject->ValueSet(
+    DynamicFieldConfig => $TestFieldConfig[5],
     ObjectID           => $TicketID2,
     Value              => [
         'ticket1_field5',
@@ -604,7 +623,6 @@ my $ArticleContentGet = sub {
         my %ArticleContent = $ArticleBackendObject->ArticleGet(
             %Param,
             ArticleID => $Article->{ArticleID},
-            UserID    => 1,
         );
 
         push @ArticleContents, \%ArticleContent;
@@ -677,7 +695,6 @@ my $ArticleAttachmentContentGet = sub {
         # Get attachment index.
         my %AtmIndex = $ArticleBackendObject->ArticleAttachmentIndex(
             ArticleID        => $Article->{ArticleID},
-            UserID           => 1,
             ExcludePlainText => 1,
             ExcludeHTMLBody  => $Param{HTMLBody} ? 0 : 1,
         );
@@ -691,7 +708,6 @@ my $ArticleAttachmentContentGet = sub {
             my %Attachment = $ArticleBackendObject->ArticleAttachment(
                 ArticleID => $Article->{ArticleID},
                 FileID    => $FileID,
-                UserID    => 1,
             );
 
             next ATTACHMENT if !IsHashRefWithData( \%Attachment );
@@ -739,15 +755,15 @@ for my $Key ( sort keys %TicketEntryFour ) {
 # add ticket id
 push @TicketIDs, $TicketID4;
 
-# set webservice name
+# set web service name
 my $WebserviceName = '-Test-' . $RandomID;
 
-# create webservice object
+# create web service object
 my $WebserviceObject = $Kernel::OM->Get('Kernel::System::GenericInterface::Webservice');
 $Self->Is(
     'Kernel::System::GenericInterface::Webservice',
     ref $WebserviceObject,
-    "Create webservice object"
+    "Create web service object"
 );
 
 my $WebserviceID = $WebserviceObject->WebserviceAdd(
@@ -767,13 +783,13 @@ my $WebserviceID = $WebserviceObject->WebserviceAdd(
 );
 $Self->True(
     $WebserviceID,
-    'Added Webservice'
+    'Added web service'
 );
 
 # get remote host with some precautions for certain unit test systems
 my $Host = $Helper->GetTestHTTPHostname();
 
-# prepare webservice config
+# prepare web service config
 my $RemoteSystem =
     $ConfigObject->Get('HttpType')
     . '://'
@@ -817,6 +833,7 @@ my $WebserviceConfig = {
                 NameSpace => 'http://otrs.org/SoapTestInterface/',
                 Encoding  => 'UTF-8',
                 Endpoint  => $RemoteSystem,
+                Timeout   => 120,
             },
         },
         Invoker => {
@@ -830,7 +847,7 @@ my $WebserviceConfig = {
     },
 };
 
-# update webservice with real config
+# update web service with real config
 my $WebserviceUpdate = $WebserviceObject->WebserviceUpdate(
     ID      => $WebserviceID,
     Name    => $WebserviceName,
@@ -840,7 +857,7 @@ my $WebserviceUpdate = $WebserviceObject->WebserviceUpdate(
 );
 $Self->True(
     $WebserviceUpdate,
-    "Updated Webservice $WebserviceID - $WebserviceName"
+    "Updated web service $WebserviceID - $WebserviceName"
 );
 
 # Get SessionID
@@ -858,7 +875,7 @@ my $UserLogin = $Helper->TestUserCreate(
 );
 my $Password = $UserLogin;
 
-# start requester with our webservice
+# start requester with our web service
 my $RequesterSessionResult = $RequesterSessionObject->Run(
     WebserviceID => $WebserviceID,
     Invoker      => 'SessionCreate',
@@ -1361,13 +1378,34 @@ my @Tests = (
         Operation => 'TicketSearch',
     },
     {
+        Name           => "Test DF Date " . $TestCounter++,
+        SuccessRequest => 1,
+        RequestData    => {
+            "DynamicField_DFT4$RandomID" => {
+                GreaterThanEquals => '2010-01-01',
+            },
+            SortBy => 'TicketNumber',
+        },
+        ExpectedReturnLocalData => {
+            Data => {
+                TicketID => [$TicketID2],
+            },
+            Success => 1
+        },
+        ExpectedReturnRemoteData => {
+            Data => {
+                TicketID => $TicketID2,
+            },
+            Success => 1,
+        },
+        Operation => 'TicketSearch',
+    },
+    {
         Name           => "Test LastChangeTimeNewerDate +  CreateTimeNewerDate " . $TestCounter++,
         SuccessRequest => 1,
         RequestData    => {
-            TicketLastChangeTimeNewerDate =>
-                $TimeObject->SystemTime2TimeStamp( SystemTime => $StartTime ),
-            TicketCreateTimeNewerDate =>
-                $TimeObject->SystemTime2TimeStamp( SystemTime => $StartTime ),
+            TicketLastChangeTimeNewerDate => $StartTime->ToString(),
+            TicketCreateTimeNewerDate     => $StartTime->ToString(),
             SortBy  => 'Ticket',    # force order, because the Age (default) can be the same
             OrderBy => 'Down',
         },
@@ -1389,8 +1427,12 @@ my @Tests = (
         Name           => "Test CreateTimeNewerDate " . $TestCounter++,
         SuccessRequest => 1,
         RequestData    => {
-            TicketCreateTimeNewerDate =>
-                $TimeObject->SystemTime2TimeStamp( SystemTime => $TimeObject->SystemTime() + 1 ),
+            TicketCreateTimeNewerDate => $Kernel::OM->Create(
+                'Kernel::System::DateTime',
+                ObjectParams => {
+                    Epoch => $StartTime->ToEpoch() + 10,
+                },
+                )->ToString(),
             SortBy  => 'Ticket',    # force order, because the Age (default) can be the same
             OrderBy => 'Down',
         },
@@ -1408,10 +1450,8 @@ my @Tests = (
         Name           => "Test Limit " . $TestCounter++,
         SuccessRequest => 1,
         RequestData    => {
-            TicketLastChangeTimeNewerDate =>
-                $TimeObject->SystemTime2TimeStamp( SystemTime => $StartTime ),
-            TicketCreateTimeNewerDate =>
-                $TimeObject->SystemTime2TimeStamp( SystemTime => $StartTime ),
+            TicketLastChangeTimeNewerDate => $StartTime->ToString(),
+            TicketCreateTimeNewerDate     => $StartTime->ToString(),
             SortBy  => 'Ticket',    # force order, because the Age (default) can be the same
             OrderBy => 'Down',
             Limit   => 1,
@@ -1941,7 +1981,7 @@ for my $Test (@Tests) {
         "$Test->{Name} - Create local object",
     );
 
-    # start requester with our webservice
+    # start requester with our web service
     my $LocalResult = $LocalObject->Run(
         WebserviceID => $WebserviceID,
         Invoker      => $Test->{Operation},
@@ -1967,7 +2007,7 @@ for my $Test (@Tests) {
         "$Test->{Name} - Create requester object"
     );
 
-    # start requester with our webservice
+    # start requester with our web service
     my $RequesterResult = $RequesterObject->Run(
         WebserviceID => $WebserviceID,
         Invoker      => $Test->{Operation},
@@ -2021,14 +2061,14 @@ for my $Test (@Tests) {
 
 # cleanup
 
-# cleanup webservice
+# cleanup web service
 my $WebserviceDelete = $WebserviceObject->WebserviceDelete(
     ID     => $WebserviceID,
     UserID => $UserID,
 );
 $Self->True(
     $WebserviceDelete,
-    "Deleted Webservice $WebserviceID"
+    "Deleted web service $WebserviceID"
 );
 
 # delete the tickets

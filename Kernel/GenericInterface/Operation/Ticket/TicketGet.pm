@@ -119,7 +119,6 @@ one or more ticket entries in one call.
                     ResponsibleID      => 123,
                     Age                => 3456,
                     Created            => '2010-10-27 20:15:00'
-                    CreateTimeUnix     => '1231414141',
                     CreateBy           => 123,
                     Changed            => '2010-10-27 20:15:15',
                     ChangeBy           => 123,
@@ -283,7 +282,7 @@ sub Run {
         );
     }
 
-    # Get the list of dynamic fields for object article.
+    # Get the list of article dynamic fields
     my $ArticleDynamicFieldList = $Kernel::OM->Get('Kernel::System::DynamicField')->DynamicFieldList(
         ObjectType => 'Article',
         ResultType => 'HASH',
@@ -364,7 +363,7 @@ sub Run {
         my %TicketEntry;
         my @DynamicFields;
 
-        # remove all dynamic fields form main ticket hash and set them into an array.
+        # remove all dynamic fields from main ticket hash and set them into an array.
         ATTRIBUTE:
         for my $Attribute ( sort keys %TicketEntryRaw ) {
 
@@ -378,6 +377,10 @@ sub Run {
 
             $TicketEntry{$Attribute} = $TicketEntryRaw{$Attribute};
         }
+
+        $TicketEntry{TimeUnit} = $TicketObject->TicketAccountedTimeGet(
+            TicketID => $TicketID,
+        );
 
         # add dynamic fields array into 'DynamicField' hash key if any
         if (@DynamicFields) {
@@ -431,7 +434,6 @@ sub Run {
                 TicketID      => $TicketID,
                 ArticleID     => $Article->{ArticleID},
                 DynamicFields => $DynamicFields,
-                UserID        => 1,
             );
             $Article = \%ArticleData;
 
@@ -440,7 +442,6 @@ sub Run {
             # get attachment index (without attachments)
             my %AtmIndex = $ArticleBackendObject->ArticleAttachmentIndex(
                 ArticleID => $Article->{ArticleID},
-                UserID    => $UserID,
                 %ExcludeAttachments,
             );
 
@@ -453,7 +454,6 @@ sub Run {
                 my %Attachment = $ArticleBackendObject->ArticleAttachment(
                     ArticleID => $Article->{ArticleID},
                     FileID    => $FileID,                 # as returned by ArticleAttachmentIndex
-                    UserID    => $UserID,
                 );
 
                 next ATTACHMENT if !IsHashRefWithData( \%Attachment );
@@ -486,13 +486,14 @@ sub Run {
                 my %Article;
                 my @ArticleDynamicFields;
 
-                # remove all dynamic fields form main article hash and set them into an array.
+                # remove all dynamic fields from main article hash and set them into an array.
                 ATTRIBUTE:
                 for my $Attribute ( sort keys %{$ArticleRaw} ) {
 
                     if ( $Attribute =~ m{\A DynamicField_(.*) \z}msx ) {
 
-                        # Skip dynamic fields that are not for article object
+                        # skip dynamic fields that are not article related
+                        # this is needed because ArticleGet() also returns ticket dynamic fields
                         next ATTRIBUTE if ( !$ArticleDynamicFieldLookup{$1} );
 
                         push @ArticleDynamicFields, {
@@ -504,6 +505,10 @@ sub Run {
 
                     $Article{$Attribute} = $ArticleRaw->{$Attribute};
                 }
+
+                $Article{TimeUnit} = $ArticleObject->ArticleAccountedTimeGet(
+                    ArticleID => $ArticleRaw->{ArticleID}
+                );
 
                 # add dynamic fields array into 'DynamicField' hash key if any
                 if (@ArticleDynamicFields) {

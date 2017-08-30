@@ -288,6 +288,9 @@ Core.App = (function (TargetNS) {
                 return false;
             }
 
+            // Show 'No Connection' dialog content.
+            $DialogObj.find('.NoConnection').show();
+
             Core.UI.Dialog.ShowDialog({
                 HTML : $DialogObj,
                 Title : Core.Language.Translate("Connection error"),
@@ -352,7 +355,7 @@ Core.App = (function (TargetNS) {
      */
     TargetNS.EscapeSelector = function (Selector) {
         if (Selector && Selector.length) {
-            return Selector.replace(/( |#|:|\.|\[|\]|@|!|"|\$|%|&|<|=|>|'|\(|\)|\*|\+|,|\?|\/|\;|\\|\^|{|}|`|\||~)/g, '\\$1');
+            return Selector.replace(/( |#|:|\.|\[|\]|@|!|"|\$|%|&|<|=|>|'|\(|\)|\*|\+|,|\?|\/|;|\\|\^|{|}|`|\||~)/g, '\\$1');
         }
         return '';
     };

@@ -13,7 +13,23 @@ use utf8;
 
 use vars (qw($Self));
 
+$Kernel::OM->ObjectParamAdd(
+    'Kernel::System::UnitTest::Helper' => {
+        DisableAsyncCalls => 1,
+    },
+);
+my $Helper = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
+
 my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
+
+# Get the last ticket counter id.
+my $Success = $DBObject->Prepare(
+    SQL => 'SELECT MAX(id) from ticket_number_counter',
+);
+my $InitialCounterID;
+while ( my @Row = $DBObject->FetchrowArray() ) {
+    $InitialCounterID = $Row[0];
+}
 
 my $CacheType = 'UnitTestTicketCounter';
 
@@ -35,7 +51,8 @@ for my $TicketNumberBackend (qw (AutoIncrement Date DateChecksum)) {
             $Kernel::OM->ObjectsDiscard();
 
             $Kernel::OM->Get('Kernel::Config')->Set(
-                Key => 'Ticket::EventModulePost###950-TicketAppointments',
+                Key   => 'Ticket::EventModulePost',
+                Value => {},
             );
 
             my $TicketNumber
@@ -59,7 +76,7 @@ for my $TicketNumberBackend (qw (AutoIncrement Date DateChecksum)) {
                 Key   => "${TicketNumberBackend}::${ChildIndex}",
                 Value => {
                     TicketNumber => $TicketNumber,
-                    TicketID     => $TicketID
+                    TicketID     => $TicketID,
                 },
                 TTL => 60 * 10,
             );
@@ -134,6 +151,17 @@ for my $TicketNumberBackend (qw (AutoIncrement Date DateChecksum)) {
     }
     $CacheObject->CleanUp(
         Type => $CacheType,
+    );
+}
+
+# Cleanup counters.
+if ($InitialCounterID) {
+    $Success = $DBObject->Do(
+        SQL => "DELETE from ticket_number_counter WHERE id > $InitialCounterID",
+    );
+    $Self->True(
+        $Success,
+        "Removed added ticket number counters",
     );
 }
 

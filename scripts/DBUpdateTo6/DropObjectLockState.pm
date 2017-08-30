@@ -16,7 +16,6 @@ use parent qw(scripts::DBUpdateTo6::Base);
 our @ObjectDependencies = (
     'Kernel::System::DB',
     'Kernel::System::Log',
-    'Kernel::System::XML',
 );
 
 =head1 NAME
@@ -31,8 +30,12 @@ sub Run {
     # get needed objects
     my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
 
-    my %Tables = map { lc($_) => 1 } $DBObject->ListTables();
-    return 1 if !$Tables{gi_object_lock_state};
+    # check if table still exists
+    my $TableExists = $Self->TableExists(
+        Table => 'gi_object_lock_state',
+    );
+
+    return 1 if !$TableExists;
 
     # get number of remaining entries
     return if !$DBObject->Prepare(
@@ -48,41 +51,15 @@ sub Run {
     # if there are some entries left, these must be deleted by other modules
     # so we give them a chance to be migrated from these modules
     if ($Count) {
-        print STDERR
-            "\nThere are still entries in your gi_object_lock_state table, therefore it will not be deleted.\n";
+        print
+            "\n    There are still entries in your gi_object_lock_state table, therefore it will not be deleted.\n";
         return 1;
     }
 
-    # drop table 'notifications'
+    # drop table 'gi_object_lock_state'
     my $XMLString = '<TableDrop Name="gi_object_lock_state"/>';
 
-    my @SQL;
-    my @SQLPost;
-
-    my $XMLObject = $Kernel::OM->Get('Kernel::System::XML');
-
-    # create database specific SQL and PostSQL commands
-    my @XMLARRAY = $XMLObject->XMLParse( String => $XMLString );
-
-    # create database specific SQL
-    push @SQL, $DBObject->SQLProcessor(
-        Database => \@XMLARRAY,
-    );
-
-    # create database specific PostSQL
-    push @SQLPost, $DBObject->SQLProcessorPost();
-
-    # execute SQL
-    for my $SQL ( @SQL, @SQLPost ) {
-        my $Success = $DBObject->Do( SQL => $SQL );
-        if ( !$Success ) {
-            $Kernel::OM->Get('Kernel::System::Log')->Log(
-                Priority => 'error',
-                Message  => "Error during execution of '$SQL'!",
-            );
-            return;
-        }
-    }
+    return if !$Self->ExecuteXMLDBString( XMLString => $XMLString );
 
     return 1;
 }

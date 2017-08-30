@@ -60,8 +60,9 @@ sub Run {
 
         my $NewSessionID = $Kernel::OM->Get('Kernel::System::AuthSession')->CreateSessionID(
             %UserData,
-            UserLastRequest => $Kernel::OM->Get('Kernel::System::Time')->SystemTime(),
+            UserLastRequest => $Kernel::OM->Create('Kernel::System::DateTime')->ToEpoch(),
             UserType        => 'User',
+            SessionSource   => 'AgentInterface',
         );
 
         # create a new LayoutObject with SessionIDCookie
@@ -548,9 +549,6 @@ sub _Edit {
         $LayoutObject->Block( Name => 'HeaderAdd' );
         $LayoutObject->Block( Name => 'MarkerMandatory' );
         $LayoutObject->Block( Name => 'ShowPasswordHint' );
-        $LayoutObject->Block(
-            Name => 'ShowPasswordHint',
-        );
     }
 
     # add the correct server error message
@@ -776,6 +774,7 @@ sub _EffectivePermissions {
             );
         }
     }
+    return;
 }
 
 1;

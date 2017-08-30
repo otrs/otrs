@@ -7,6 +7,7 @@
 # --
 
 package Kernel::System::SysConfig::ValueType::Textarea;
+## nofilter(TidyAll::Plugin::OTRS::Perl::LayoutObject)
 
 use strict;
 use warnings;
@@ -53,8 +54,7 @@ Extracts the effective value from a XML parsed setting.
 
     my $SettingHTML = $ValueTypeObject->SettingRender(
         Name           => 'SettingName',
-        DefaultID      =>  123,               # (required)
-        EffectiveValue => 'Textarea content',
+        EffectiveValue => 'Textarea content', # (optional)
         DefaultValue   => 'Textarea content', # (optional)
         Class          => 'My class'          # (optional)
         Item           => [                   # (optional) XML parsed item
@@ -80,14 +80,12 @@ Returns:
 sub SettingRender {
     my ( $Self, %Param ) = @_;
 
-    for my $Needed (qw(Name EffectiveValue)) {
-        if ( !defined $Param{$Needed} ) {
-            $Kernel::OM->Get('Kernel::System::Log')->Log(
-                Priority => 'error',
-                Message  => "Need $Needed",
-            );
-            return;
-        }
+    if ( !defined $Param{Name} ) {
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
+            Priority => 'error',
+            Message  => "Need Name",
+        );
+        return;
     }
 
     $Param{Class}        //= '';
@@ -100,7 +98,7 @@ sub SettingRender {
 
     my $EffectiveValue = $Param{EffectiveValue};
     if (
-        !$EffectiveValue
+        !defined $EffectiveValue
         && $Param{Item}
         && $Param{Item}->[0]->{Content}
         )

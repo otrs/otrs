@@ -75,7 +75,6 @@
         <Data Key="user_id">1</Data>
         <Data Key="group_id">1</Data>
         <Data Key="permission_key" Type="Quote">rw</Data>
-        <Data Key="permission_value">1</Data>
         <Data Key="create_by">1</Data>
         <Data Key="create_time">current_timestamp</Data>
         <Data Key="change_by">1</Data>
@@ -85,7 +84,6 @@
         <Data Key="user_id">1</Data>
         <Data Key="group_id">2</Data>
         <Data Key="permission_key" Type="Quote">rw</Data>
-        <Data Key="permission_value">1</Data>
         <Data Key="create_by">1</Data>
         <Data Key="create_time">current_timestamp</Data>
         <Data Key="change_by">1</Data>
@@ -95,7 +93,6 @@
         <Data Key="user_id">1</Data>
         <Data Key="group_id">3</Data>
         <Data Key="permission_key" Type="Quote">rw</Data>
-        <Data Key="permission_value">1</Data>
         <Data Key="create_by">1</Data>
         <Data Key="create_time">current_timestamp</Data>
         <Data Key="change_by">1</Data>
@@ -750,8 +747,6 @@ Your OTRS Team
         <Data Key="change_time">current_timestamp</Data>
     </Insert>
 
-
-    <!-- TODO: Remove no longer used history ticket types in/after Omnichannel Phase 5-->
     <Insert Table="ticket_history_type">
         <Data Key="id" Type="AutoIncrement">1</Data>
         <Data Key="name" Type="Quote">NewTicket</Data>
@@ -1204,7 +1199,7 @@ Your OTRS Team
     </Insert>
     <Insert Table="ticket_history_type">
         <Data Key="id" Type="AutoIncrement">51</Data>
-        <Data Key="name" Type="Quote">ArticleCreate</Data>
+        <Data Key="name" Type="Quote">EmailResend</Data>
         <Data Key="valid_id">1</Data>
         <Data Key="create_by">1</Data>
         <Data Key="create_time">current_timestamp</Data>
@@ -1250,7 +1245,6 @@ Your OTRS Team
         <Data Key="ticket_priority_id">3</Data>
         <Data Key="ticket_state_id">1</Data>
         <Data Key="title" Type="Quote">Welcome to OTRS!</Data>
-        <Data Key="create_time_unix">1436949030</Data>
         <Data Key="timeout">0</Data>
         <Data Key="until_time">0</Data>
         <Data Key="escalation_time">0</Data>
@@ -1270,11 +1264,11 @@ Your OTRS Team
         <Data Key="package_name" Type="Quote">Framework</Data>
         <Data Key="channel_data" Type="Quote">---
 ArticleDataArticleIDField: article_id
-ArticleDataIsDroppable: 0
 ArticleDataTables:
 - article_data_mime
 - article_data_mime_plain
 - article_data_mime_attachment
+- article_data_mime_send_error
 </Data>
         <Data Key="valid_id">1</Data>
         <Data Key="create_by">1</Data>
@@ -1289,11 +1283,11 @@ ArticleDataTables:
         <Data Key="package_name" Type="Quote">Framework</Data>
         <Data Key="channel_data" Type="Quote">---
 ArticleDataArticleIDField: article_id
-ArticleDataIsDroppable: 0
 ArticleDataTables:
 - article_data_mime
 - article_data_mime_plain
 - article_data_mime_attachment
+- article_data_mime_send_error
 </Data>
         <Data Key="valid_id">1</Data>
         <Data Key="create_by">1</Data>
@@ -1308,11 +1302,11 @@ ArticleDataTables:
         <Data Key="package_name" Type="Quote">Framework</Data>
         <Data Key="channel_data" Type="Quote">---
 ArticleDataArticleIDField: article_id
-ArticleDataIsDroppable: 0
 ArticleDataTables:
 - article_data_mime
 - article_data_mime_plain
 - article_data_mime_attachment
+- article_data_mime_send_error
 </Data>
         <Data Key="valid_id">1</Data>
         <Data Key="create_by">1</Data>
@@ -1327,7 +1321,6 @@ ArticleDataTables:
         <Data Key="package_name" Type="Quote">Framework</Data>
         <Data Key="channel_data" Type="Quote">---
 ArticleDataArticleIDField: article_id
-ArticleDataIsDroppable: 0
 ArticleDataTables:
 - article_data_otrs_chat
 </Data>
@@ -2104,6 +2097,72 @@ Your OTRS Group
         <Data Key="notification_id">14</Data>
         <Data Key="event_key" Type="Quote">NotificationType</Data>
         <Data Key="event_value" Type="Quote">Appointment</Data>
+    </Insert>
+
+    <Insert Table="notification_event">
+        <Data Key="id" Type="AutoIncrement">15</Data>
+        <Data Key="name" Type="Quote" Translatable="1">Ticket email delivery failure notification</Data>
+        <Data Key="valid_id">1</Data>
+        <Data Key="comments" Type="Quote"></Data>
+        <Data Key="create_by">1</Data>
+        <Data Key="create_time">current_timestamp</Data>
+        <Data Key="change_by">1</Data>
+        <Data Key="change_time">current_timestamp</Data>
+    </Insert>
+    <Insert Table="notification_event_item">
+        <Data Key="notification_id">15</Data>
+        <Data Key="event_key" Type="Quote">AgentEnabledByDefault</Data>
+        <Data Key="event_value" Type="Quote">Email</Data>
+    </Insert>
+    <Insert Table="notification_event_item">
+        <Data Key="notification_id">15</Data>
+        <Data Key="event_key" Type="Quote">ArticleAttachmentInclude</Data>
+        <Data Key="event_value" Type="Quote">0</Data>
+    </Insert>
+    <Insert Table="notification_event_item">
+        <Data Key="notification_id">15</Data>
+        <Data Key="event_key" Type="Quote">ArticleCommunicationChannelID</Data>
+        <Data Key="event_value" Type="Quote">1</Data>
+    </Insert>
+    <Insert Table="notification_event_item">
+        <Data Key="notification_id">15</Data>
+        <Data Key="event_key" Type="Quote">Events</Data>
+        <Data Key="event_value" Type="Quote">ArticleEmailSendingError</Data>
+    </Insert>
+    <Insert Table="notification_event_item">
+        <Data Key="notification_id">15</Data>
+        <Data Key="event_key" Type="Quote">LanguageID</Data>
+        <Data Key="event_value" Type="Quote">en</Data>
+    </Insert>
+    <Insert Table="notification_event_item">
+        <Data Key="notification_id">15</Data>
+        <Data Key="event_key" Type="Quote">RecipientGroups</Data>
+        <Data Key="event_value" Type="Quote">2</Data>
+    </Insert>
+    <Insert Table="notification_event_item">
+        <Data Key="notification_id">15</Data>
+        <Data Key="event_key" Type="Quote">Recipients</Data>
+        <Data Key="event_value" Type="Quote">AgentResponsible</Data>
+    </Insert>
+    <Insert Table="notification_event_item">
+        <Data Key="notification_id">15</Data>
+        <Data Key="event_key" Type="Quote">Recipients</Data>
+        <Data Key="event_value" Type="Quote">AgentOwner</Data>
+    </Insert>
+    <Insert Table="notification_event_item">
+        <Data Key="notification_id">15</Data>
+        <Data Key="event_key" Type="Quote">TransportEmailTemplate</Data>
+        <Data Key="event_value" Type="Quote">Default</Data>
+    </Insert>
+    <Insert Table="notification_event_item">
+        <Data Key="notification_id">15</Data>
+        <Data Key="event_key" Type="Quote">Transports</Data>
+        <Data Key="event_value" Type="Quote">Email</Data>
+    </Insert>
+    <Insert Table="notification_event_item">
+        <Data Key="notification_id">15</Data>
+        <Data Key="event_key" Type="Quote">VisibleForAgent</Data>
+        <Data Key="event_value" Type="Quote">0</Data>
     </Insert>
 
     <!-- notification_event_message - en -->
@@ -3822,6 +3881,23 @@ Ponavljanje: &lt;OTRS_APPOINTMENT_RECURRING&gt;<br />
 <a href="&lt;OTRS_CONFIG_HttpType&gt;://&lt;OTRS_CONFIG_FQDN&gt;/&lt;OTRS_CONFIG_ScriptAlias&gt;index.pl?Action=AgentAppointmentCalendarOverview;AppointmentID=&lt;OTRS_APPOINTMENT_APPOINTMENTID&gt;" title="&lt;OTRS_CONFIG_HttpType&gt;://&lt;OTRS_CONFIG_FQDN&gt;/&lt;OTRS_CONFIG_ScriptAlias&gt;index.pl?Action=AgentAppointmentCalendarOverview;AppointmentID=&lt;OTRS_APPOINTMENT_APPOINTMENTID&gt;">&lt;OTRS_CONFIG_HttpType&gt;://&lt;OTRS_CONFIG_FQDN&gt;/&lt;OTRS_CONFIG_ScriptAlias&gt;index.pl?Action=AgentAppointmentCalendarOverview;AppointmentID=&lt;OTRS_APPOINTMENT_APPOINTMENTID&gt;</a><br />
 <br />
 -- &lt;OTRS_CONFIG_NotificationSenderName&gt;]]></Data>
+    </Insert>
+    <Insert Table="notification_event_message">
+        <Data Key="id" Type="AutoIncrement">110</Data>
+        <Data Key="notification_id">15</Data>
+        <Data Key="content_type" Type="Quote">text/plain</Data>
+        <Data Key="language" Type="Quote">en</Data>
+        <Data Key="subject" Type="Quote"><![CDATA[Email Delivery Failure]]></Data>
+        <Data Key="text" Type="Quote"><![CDATA[Hi <OTRS_NOTIFICATION_RECIPIENT_UserFirstname>,
+
+Please note, that the delivery of an email article of [<OTRS_CONFIG_Ticket::Hook><OTRS_CONFIG_Ticket::HookDivider><OTRS_TICKET_TicketNumber>] has failed. Please check the email address of your recipient for mistakes and try again. You can manually resend the article from the ticket if required.
+
+Error Message:
+<OTRS_AGENT_TransmissionStatusMessage>
+
+<OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<OTRS_TICKET_TicketID>;ArticleID=<OTRS_AGENT_ArticleID>
+
+-- <OTRS_CONFIG_NotificationSenderName>]]></Data>
     </Insert>
 
     <!-- Internal dynamic fields for ProcessManagement -->

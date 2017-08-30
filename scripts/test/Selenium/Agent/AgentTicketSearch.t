@@ -32,6 +32,7 @@ $Selenium->RunTest(
         my $RandomID = $Helper->GetRandomID();
 
         my $DynamicFieldObject = $Kernel::OM->Get('Kernel::System::DynamicField');
+        my $DFTextName         = 'Text' . $RandomID;
 
         my %DynamicFields = (
             Date => {
@@ -61,6 +62,19 @@ $Selenium->RunTest(
                     YearsInFuture => 0,
                     YearsInPast   => 50,
                     YearsPeriod   => 1,
+                },
+                Reorder => 1,
+                ValidID => 1,
+                UserID  => 1,
+            },
+            Text => {
+                Name       => $DFTextName,
+                Label      => $DFTextName,
+                FieldOrder => 9990,
+                FieldType  => 'Text',
+                ObjectType => 'Ticket',
+                Config     => {
+                    DefaultValue => '',
                 },
                 Reorder => 1,
                 ValidID => 1,
@@ -106,6 +120,7 @@ $Selenium->RunTest(
         );
         $Helper->FixedTimeSet($SystemTime);
 
+        my @TicketIDs;
         my $TitleRandom  = "Title" . $RandomID;
         my $TicketNumber = $TicketObject->TicketCreateNumber();
         my $TicketID     = $TicketObject->TicketCreate(
@@ -123,6 +138,7 @@ $Selenium->RunTest(
             $TicketID,
             "Ticket is created - ID $TicketID",
         );
+        push @TicketIDs, $TicketID;
 
         my $MinCharString        = 'ct';
         my $MaxCharString        = $RandomID . ( 't' x 50 );
@@ -196,7 +212,9 @@ $Selenium->RunTest(
         }
 
         # Add search filter by ticket number and run it.
-        $Selenium->find_element( '.AddButton',        'css' )->click();
+        $Selenium->execute_script(
+            "\$('#Attribute').val('TicketNumber').trigger('redraw.InputField').trigger('change');",
+        );
         $Selenium->find_element( 'TicketNumber',      'name' )->send_keys($TicketNumber);
         $Selenium->find_element( '#SearchFormSubmit', 'css' )->VerifiedClick();
 
@@ -337,7 +355,6 @@ $Selenium->RunTest(
         $Selenium->execute_script(
             "\$('#Attribute').val('TicketCreateTimeSlot').trigger('redraw.InputField').trigger('change');",
         );
-        $Selenium->find_element( '.AddButton', 'css' )->click();
         for my $Field (qw(Start Stop)) {
             $Selenium->find_element( "#TicketCreateTime${Field}Day",   'css' )->send_keys('04');
             $Selenium->find_element( "#TicketCreateTime${Field}Month", 'css' )->send_keys('05');
@@ -360,7 +377,6 @@ $Selenium->RunTest(
         $Selenium->execute_script(
             "\$('#Attribute').val('TicketCreateTimeSlot').trigger('redraw.InputField').trigger('change');",
         );
-        $Selenium->find_element( '.AddButton', 'css' )->click();
         for my $Field (qw(Start Stop)) {
             $Selenium->find_element( "#TicketCreateTime${Field}Day",   'css' )->send_keys('05');
             $Selenium->find_element( "#TicketCreateTime${Field}Month", 'css' )->send_keys('05');
@@ -384,7 +400,6 @@ $Selenium->RunTest(
         $Selenium->execute_script(
             "\$('#Attribute').val('TicketCreateTimeSlot').trigger('redraw.InputField').trigger('change');",
         );
-        $Selenium->find_element( '.AddButton',                  'css' )->click();
         $Selenium->find_element( '#TicketCreateTimeStartDay',   'css' )->send_keys('31');
         $Selenium->find_element( '#TicketCreateTimeStartMonth', 'css' )->send_keys('04');
         $Selenium->find_element( '#TicketCreateTimeStartYear',  'css' )->send_keys('2017');
@@ -436,7 +451,6 @@ $Selenium->RunTest(
         $Selenium->execute_script(
             "\$('#Attribute').val('PriorityIDs').trigger('redraw.InputField').trigger('change');",
         );
-        $Selenium->find_element( '.AddButton',          'css' )->click();
         $Selenium->find_element( '#PriorityIDs_Search', 'css' )->click();
 
         # Wait until drop down list is shown.
@@ -464,7 +478,6 @@ $Selenium->RunTest(
             $Selenium->execute_script(
                 "\$('#Attribute').val('Search_DynamicField_$DynamicFields{$DynamicFieldType}->{Name}TimeSlot').trigger('redraw.InputField').trigger('change');",
             );
-            $Selenium->find_element( '.AddButton', 'css' )->click();
 
             for my $DatePart (qw(StartYear StartMonth StartDay StopYear StopMonth StopDay)) {
                 my $Element = $Selenium->find_element(
@@ -486,19 +499,88 @@ $Selenium->RunTest(
             }
         }
 
-        # clean up test data from the DB
-        my $Success = $TicketObject->TicketDelete(
-            TicketID => $TicketID,
-            UserID   => 1,
+        # Test for dynamic field text type search with '||' (see bug#12560).
+        # Create two tickets and set two different DF values for them.
+        my $TextTypeDynamicFieldConfig = $DynamicFieldObject->DynamicFieldGet(
+            Name => $DFTextName,
+        );
+        my $BackendObject = $Kernel::OM->Get('Kernel::System::DynamicField::Backend');
+        my $Success;
+        for my $DFValue (qw(GASZ JLEB)) {
+            my $Title    = "Title$DFValue" . $RandomID;
+            my $Number   = $TicketObject->TicketCreateNumber();
+            my $TicketID = $TicketObject->TicketCreate(
+                TN         => $Number,
+                Title      => $Title,
+                Queue      => 'Raw',
+                Lock       => 'unlock',
+                Priority   => '3 normal',
+                State      => 'open',
+                CustomerID => 'SeleniumCustomer',
+                OwnerID    => 1,
+                UserID     => 1,
+            );
+            $Self->True(
+                $TicketID,
+                "Ticket is created - ID $TicketID",
+            );
+            push @TicketIDs, $TicketID;
+
+            $Success = $BackendObject->ValueSet(
+                DynamicFieldConfig => $TextTypeDynamicFieldConfig,
+                ObjectID           => $TicketID,
+                Value              => $DFValue,
+                UserID             => 1,
+            );
+            $Self->True(
+                $Success,
+                "Value '$DFValue' is set successfully for ticketID $TicketID",
+            );
+        }
+
+        # Navigate to AgentTicketSearch screen.
+        $Selenium->VerifiedGet("${ScriptAlias}index.pl?Action=AgentTicketSearch");
+
+        # Wait until form and overlay has loaded, if necessary.
+        $Selenium->WaitFor( JavaScript => "return typeof(\$) === 'function' && \$('#SearchProfile').length" );
+
+        my $TextFieldID = 'Search_DynamicField_' . $DynamicFields{Text}->{Name};
+
+        # Add search filter by text dynamic field and run it.
+        $Selenium->execute_script(
+            "\$('#Attribute').val('$TextFieldID').trigger('redraw.InputField').trigger('change');",
+        );
+        $Selenium->WaitFor(
+            JavaScript => "return typeof(\$) === 'function' && \$('#SearchInsert #$TextFieldID').length"
+        );
+        $Selenium->find_element( '#' . $TextFieldID,  'css' )->clear();
+        $Selenium->find_element( '#' . $TextFieldID,  'css' )->send_keys('GASZ||JLEB');
+        $Selenium->find_element( '#SearchFormSubmit', 'css' )->VerifiedClick();
+
+        # Check if the last two created tickets are in the table.
+        $Self->True(
+            $Selenium->execute_script("return \$('#OverviewBody tbody tr[id=TicketID_$TicketIDs[1]').length;"),
+            "TicketID $TicketIDs[1] is found in the table"
         );
         $Self->True(
-            $Success,
-            "Ticket with ticket ID $TicketID is deleted",
+            $Selenium->execute_script("return \$('#OverviewBody tbody tr[id=TicketID_$TicketIDs[2]').length;"),
+            "TicketID $TicketIDs[2] is found in the table"
         );
 
-        for my $DynamicFieldID (@DynamicFieldIDs) {
+        # Clean up test data from the DB.
+        for my $TicketID (@TicketIDs) {
+            $Success = $TicketObject->TicketDelete(
+                TicketID => $TicketID,
+                UserID   => 1,
+            );
+            $Self->True(
+                $Success,
+                "Ticket - ID $TicketID - deleted",
+            );
+        }
 
-            # delete created test dynamic field
+        # Delete created test dynamic fields.
+        for my $DynamicFieldID (@DynamicFieldIDs) {
             $Success = $DynamicFieldObject->DynamicFieldDelete(
                 ID     => $DynamicFieldID,
                 UserID => 1,
@@ -509,7 +591,7 @@ $Selenium->RunTest(
             );
         }
 
-        # make sure the cache is correct
+        # Make sure the cache is correct.
         $Kernel::OM->Get('Kernel::System::Cache')->CleanUp( Type => 'Ticket' );
 
     },

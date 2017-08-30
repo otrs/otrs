@@ -22,17 +22,14 @@ use Kernel::GenericInterface::Operation::Session::SessionCreate;
 
 use Kernel::System::VariableCheck qw(IsArrayRefWithData IsHashRefWithData IsStringWithData);
 
-my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
-
-# Skip SSL certificate verification.
 $Kernel::OM->ObjectParamAdd(
     'Kernel::System::UnitTest::Helper' => {
-        SkipSSLVerify => 1,
+        SkipSSLVerify     => 1,
+        DisableAsyncCalls => 1,
     },
 );
 my $Helper = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
-
-# $Helper->FixedTimeSet();
+$Helper->{DestroyLog} = 1;
 
 my $RandomID = $Helper->GetRandomID();
 
@@ -80,6 +77,13 @@ $Helper->ConfigSettingChange(
     Key   => 'CustomerGroupSupport',
     Value => 1,
 );
+
+$Kernel::OM->ObjectsDiscard(
+    Objects            => ['Kernel::Config'],
+    ForcePackageReload => 1,
+);
+
+my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
 
 # check if SSL Certificate verification is disabled
 $Self->Is(
@@ -400,7 +404,7 @@ $DynamicFieldMultiselectConfig{ID} = $FieldMultiselectID;
 # add date-time dynamic field
 my %DynamicFieldDateTimeConfig = (
     Name       => "Unittest4$RandomID",
-    FieldOrder => 9991,
+    FieldOrder => 9994,
     FieldType  => 'DateTime',
     ObjectType => 'Ticket',
     Label      => 'Description',
@@ -425,15 +429,43 @@ $Self->True(
 # add ID
 $DynamicFieldDateTimeConfig{ID} = $FieldDateTimeID;
 
-# create webservice object
+# add date-time dynamic field
+my %DynamicFieldDateConfig = (
+    Name       => "Unittest5$RandomID",
+    FieldOrder => 9995,
+    FieldType  => 'Date',
+    ObjectType => 'Ticket',
+    Label      => 'Description',
+    Config     => {
+        DefaultValue  => 0,
+        YearsInFuture => 0,
+        YearsInPast   => 0,
+        YearsPeriod   => 0,
+    },
+    ValidID => 1,
+);
+my $FieldDateID = $DynamicFieldObject->DynamicFieldAdd(
+    %DynamicFieldDateConfig,
+    UserID  => 1,
+    Reorder => 0,
+);
+$Self->True(
+    $FieldDateID,
+    "Dynamic Field $FieldDateID",
+);
+
+# add ID
+$DynamicFieldDateConfig{ID} = $FieldDateID;
+
+# create web service object
 my $WebserviceObject = $Kernel::OM->Get('Kernel::System::GenericInterface::Webservice');
 $Self->Is(
     'Kernel::System::GenericInterface::Webservice',
     ref $WebserviceObject,
-    'Create webservice object'
+    'Create web service object'
 );
 
-# set webservice name
+# set web service name
 my $WebserviceName = '-Test-' . $RandomID;
 
 my $WebserviceID = $WebserviceObject->WebserviceAdd(
@@ -453,13 +485,13 @@ my $WebserviceID = $WebserviceObject->WebserviceAdd(
 );
 $Self->True(
     $WebserviceID,
-    "Added Webservice",
+    "Added web service",
 );
 
 # get remote host with some precautions for certain unit test systems
 my $Host = $Helper->GetTestHTTPHostname();
 
-# prepare webservice config
+# prepare web service config
 my $RemoteSystem =
     $ConfigObject->Get('HttpType')
     . '://'
@@ -503,6 +535,7 @@ my $WebserviceConfig = {
                 NameSpace => 'http://otrs.org/SoapTestInterface/',
                 Encoding  => 'UTF-8',
                 Endpoint  => $RemoteSystem,
+                Timeout   => 120,
             },
         },
         Invoker => {
@@ -516,7 +549,7 @@ my $WebserviceConfig = {
     },
 };
 
-# update webservice with real config
+# update web service with real config
 my $WebserviceUpdate = $WebserviceObject->WebserviceUpdate(
     ID      => $WebserviceID,
     Name    => $WebserviceName,
@@ -526,7 +559,7 @@ my $WebserviceUpdate = $WebserviceObject->WebserviceUpdate(
 );
 $Self->True(
     $WebserviceUpdate,
-    "Updated Webservice $WebserviceID - $WebserviceName"
+    "Updated web service $WebserviceID - $WebserviceName"
 );
 
 # Get SessionID
@@ -556,7 +589,7 @@ my $CustomerPassword  = $CustomerUserLogin;
 my $CustomerUserLogin2 = $Helper->TestCustomerUserCreate();
 my $CustomerPassword2  = $CustomerUserLogin2;
 
-# start requester with our webservice
+# start requester with our web service
 my $RequesterSessionResult = $RequesterSessionObject->Run(
     WebserviceID => $WebserviceID,
     Invoker      => 'SessionCreate',
@@ -3894,6 +3927,227 @@ my @Tests        = (
         },
         Operation => 'TicketCreate',
     },
+    {
+        Name           => 'Article with Email communication channel',
+        SuccessRequest => 1,
+        SuccessCreate  => 1,
+        RequestData    => {
+            Ticket => {
+                Title         => 'Ticket Title',
+                CustomerUser  => $TestCustomerUserLogin,
+                QueueID       => $Queues[0]->{QueueID},
+                TypeID        => $TypeID,
+                ServiceID     => $ServiceID,
+                SLAID         => $SLAID,
+                StateID       => $StateID,
+                PriorityID    => $PriorityID,
+                OwnerID       => $OwnerID,
+                ResponsibleID => $ResponsibleID,
+                PendingTime   => {
+                    Year   => 2012,
+                    Month  => 12,
+                    Day    => 16,
+                    Hour   => 20,
+                    Minute => 48,
+                },
+            },
+            Article => {
+                Subject                         => 'Article subject',
+                Body                            => 'Article body',
+                AutoResponseType                => 'auto reply',
+                ArticleTypeID                   => 1,
+                SenderTypeID                    => 1,
+                CommunicationChannel            => 'Email',
+                From                            => 'enjoy@otrs.com',
+                ContentType                     => 'text/plain; charset=US-ASCII',
+                HistoryType                     => 'NewTicket',
+                HistoryComment                  => '% % ',
+                TimeUnit                        => 25,
+                ForceNotificationToUserID       => [1],
+                ExcludeNotificationToUserID     => [1],
+                ExcludeMuteNotificationToUserID => [1],
+            },
+            DynamicField => {
+                Name  => $DynamicFieldDateTimeConfig{Name},
+                Value => '2012-01-17 12:40:00',
+            },
+            Attachment => {
+                Content     => 'VGhpcyBpcyBhIHRlc3QgdGV4dC4=',
+                ContentType => 'text/plain; charset=US-ASCII',
+                Filename    => 'Test.txt',
+                Disposition => 'attachment',
+            },
+        },
+        Operation => 'TicketCreate',
+    },
+
+    {
+        Name           => 'Article with Internal communication channel',
+        SuccessRequest => 1,
+        SuccessCreate  => 1,
+        RequestData    => {
+            Ticket => {
+                Title         => 'Ticket Title',
+                CustomerUser  => $TestCustomerUserLogin,
+                QueueID       => $Queues[0]->{QueueID},
+                TypeID        => $TypeID,
+                ServiceID     => $ServiceID,
+                SLAID         => $SLAID,
+                StateID       => $StateID,
+                PriorityID    => $PriorityID,
+                OwnerID       => $OwnerID,
+                ResponsibleID => $ResponsibleID,
+                PendingTime   => {
+                    Year   => 2012,
+                    Month  => 12,
+                    Day    => 16,
+                    Hour   => 20,
+                    Minute => 48,
+                },
+            },
+            Article => {
+                Subject                         => 'Article subject',
+                Body                            => 'Article body',
+                AutoResponseType                => 'auto reply',
+                ArticleTypeID                   => 1,
+                SenderTypeID                    => 1,
+                CommunicationChannel            => 'Internal',
+                From                            => 'enjoy@otrs.com',
+                ContentType                     => 'text/plain; charset=US-ASCII',
+                HistoryType                     => 'NewTicket',
+                HistoryComment                  => '% % ',
+                TimeUnit                        => 25,
+                ForceNotificationToUserID       => [1],
+                ExcludeNotificationToUserID     => [1],
+                ExcludeMuteNotificationToUserID => [1],
+            },
+            DynamicField => {
+                Name  => $DynamicFieldDateTimeConfig{Name},
+                Value => '2012-01-17 12:40:00',
+            },
+            Attachment => {
+                Content     => 'VGhpcyBpcyBhIHRlc3QgdGV4dC4=',
+                ContentType => 'text/plain; charset=US-ASCII',
+                Filename    => 'Test.txt',
+                Disposition => 'attachment',
+            },
+        },
+        Operation => 'TicketCreate',
+    },
+    {
+        Name           => 'Article with Phone communication channel',
+        SuccessRequest => 1,
+        SuccessCreate  => 1,
+        RequestData    => {
+            Ticket => {
+                Title         => 'Ticket Title',
+                CustomerUser  => $TestCustomerUserLogin,
+                QueueID       => $Queues[0]->{QueueID},
+                TypeID        => $TypeID,
+                ServiceID     => $ServiceID,
+                SLAID         => $SLAID,
+                StateID       => $StateID,
+                PriorityID    => $PriorityID,
+                OwnerID       => $OwnerID,
+                ResponsibleID => $ResponsibleID,
+                PendingTime   => {
+                    Year   => 2012,
+                    Month  => 12,
+                    Day    => 16,
+                    Hour   => 20,
+                    Minute => 48,
+                },
+            },
+            Article => {
+                Subject                         => 'Article subject',
+                Body                            => 'Article body',
+                AutoResponseType                => 'auto reply',
+                ArticleTypeID                   => 1,
+                SenderTypeID                    => 1,
+                CommunicationChannel            => 'Phone',
+                From                            => 'enjoy@otrs.com',
+                ContentType                     => 'text/plain; charset=US-ASCII',
+                HistoryType                     => 'NewTicket',
+                HistoryComment                  => '% % ',
+                TimeUnit                        => 25,
+                ForceNotificationToUserID       => [1],
+                ExcludeNotificationToUserID     => [1],
+                ExcludeMuteNotificationToUserID => [1],
+            },
+            DynamicField => {
+                Name  => $DynamicFieldDateTimeConfig{Name},
+                Value => '2012-01-17 12:40:00',
+            },
+            Attachment => {
+                Content     => 'VGhpcyBpcyBhIHRlc3QgdGV4dC4=',
+                ContentType => 'text/plain; charset=US-ASCII',
+                Filename    => 'Test.txt',
+                Disposition => 'attachment',
+            },
+        },
+        Operation => 'TicketCreate',
+    },
+    {
+        Name           => 'Article with wrong communication channel',
+        SuccessRequest => 1,
+        SuccessCreate  => 0,
+        RequestData    => {
+            Ticket => {
+                Title         => 'Ticket Title',
+                CustomerUser  => $TestCustomerUserLogin,
+                QueueID       => $Queues[0]->{QueueID},
+                TypeID        => $TypeID,
+                ServiceID     => $ServiceID,
+                SLAID         => $SLAID,
+                StateID       => $StateID,
+                PriorityID    => $PriorityID,
+                OwnerID       => $OwnerID,
+                ResponsibleID => $ResponsibleID,
+                PendingTime   => {
+                    Year   => 2012,
+                    Month  => 12,
+                    Day    => 16,
+                    Hour   => 20,
+                    Minute => 48,
+                },
+            },
+            Article => {
+                Subject                         => 'Article subject',
+                Body                            => 'Article body',
+                AutoResponseType                => 'auto reply',
+                SenderTypeID                    => 1,
+                IsVisibleForCustomer            => 1,
+                CommunicationChannel            => 'Test123',
+                From                            => 'enjoy@otrs.com',
+                ContentType                     => 'text/plain; charset=UTF8',
+                HistoryType                     => 'NewTicket',
+                HistoryComment                  => '% % ',
+                TimeUnit                        => 25,
+                ForceNotificationToUserID       => [1],
+                ExcludeNotificationToUserID     => [1],
+                ExcludeMuteNotificationToUserID => [1],
+            },
+            DynamicField => {
+                Name  => $DynamicFieldDateTimeConfig{Name},
+                Value => '2012-01-17 12:40:00',
+            },
+            Attachment => {
+                Content     => 'VGhpcyBpcyBhIHRlc3QgdGV4dC4=',
+                ContentType => 'text/plain; charset=US-ASCII',
+                Filename    => 'Test.txt',
+                Disposition => 'attachment',
+            },
+        },
+        ExpectedData => {
+            Data => {
+                Error => {
+                    ErrorCode => 'TicketCreate.InvalidParameter',
+                },
+            },
+            Success => 1
+        },
+        Operation => 'TicketCreate',
+    },
 );
 
 # debugger object
@@ -3933,7 +4187,7 @@ for my $Test (@Tests) {
         %Auth = %{ $Test->{Auth} };
     }
 
-    # start requester with our webservice
+    # start requester with our web service
     my $LocalResult = $LocalObject->Run(
         WebserviceID => $WebserviceID,
         Invoker      => $Test->{Operation},
@@ -3958,7 +4212,7 @@ for my $Test (@Tests) {
         "$Test->{Name} - Create requester object"
     );
 
-    # start requester with our webservice
+    # start requester with our web service
     my $RequesterResult = $RequesterObject->Run(
         WebserviceID => $WebserviceID,
         Invoker      => $Test->{Operation},
@@ -3997,7 +4251,7 @@ for my $Test (@Tests) {
             $LocalResult->{Data}->{ArticleID},
             "$Test->{Name} - Local result ArticleID with True."
         );
-        $Self->Is(
+        $Self->IsDeeply(
             $LocalResult->{Data}->{Error},
             undef,
             "$Test->{Name} - Local result Error is undefined."
@@ -4016,7 +4270,7 @@ for my $Test (@Tests) {
             $RequesterResult->{Data}->{ArticleID},
             "$Test->{Name} - Requester result ArticleID with True."
         );
-        $Self->Is(
+        $Self->IsDeeply(
             $RequesterResult->{Data}->{Error},
             undef,
             "$Test->{Name} - Requester result Error is undefined."
@@ -4033,7 +4287,7 @@ for my $Test (@Tests) {
         );
 
         $Self->True(
-            IsHashRefWithData( \%LocalTicketData ),
+            scalar %LocalTicketData,
             "$Test->{Name} - created local ticket structure with True."
         );
 
@@ -4045,7 +4299,7 @@ for my $Test (@Tests) {
         );
 
         $Self->True(
-            IsHashRefWithData( \%RequesterTicketData ),
+            scalar %RequesterTicketData,
             "$Test->{Name} - created requester ticket structure with True."
         );
 
@@ -4103,7 +4357,6 @@ for my $Test (@Tests) {
             TicketID      => $LocalResult->{Data}->{TicketID},
             ArticleID     => $LocalResult->{Data}->{ArticleID},
             DynamicFields => 1,
-            UserID        => 1,
         );
 
         my $RequesterArticleBackendObject = $ArticleObject->BackendForArticle(
@@ -4116,7 +4369,6 @@ for my $Test (@Tests) {
             TicketID      => $RequesterResult->{Data}->{TicketID},
             ArticleID     => $RequesterResult->{Data}->{ArticleID},
             DynamicFields => 1,
-            UserID        => 1,
         );
 
         for my $Attribute (qw(Subject Body ContentType MimeType Charset From)) {
@@ -4155,6 +4407,11 @@ for my $Test (@Tests) {
             @RequestedDynamicFields = @{ $Test->{RequestData}->{DynamicField} };
         }
         for my $DynamicField (@RequestedDynamicFields) {
+
+            if ( $DynamicField->{FieldType} eq 'Date' && $DynamicField->{Value} =~ m{ \A \d{4}-\d{2}-\d{2} \z }xms ) {
+                $DynamicField->{Value} .= ' 00:00:00';
+            }
+
             $Self->IsDeeply(
                 $LocalTicketData{ 'DynamicField_' . $DynamicField->{Name} } // '',
                 $DynamicField->{Value},
@@ -4167,7 +4424,6 @@ for my $Test (@Tests) {
         # check attachments
         my %AttachmentIndex = $LocalArticleBackendObject->ArticleAttachmentIndex(
             ArticleID        => $LocalResult->{Data}->{ArticleID},
-            UserID           => 1,
             ExcludePlainText => 1,
             ExcludeHTMLBody  => 1,
         );
@@ -4179,7 +4435,6 @@ for my $Test (@Tests) {
             my %Attachment = $LocalArticleBackendObject->ArticleAttachment(
                 ArticleID => $LocalResult->{Data}->{ArticleID},
                 FileID    => $FileID,
-                UserID    => 1,
             );
 
             next ATTACHMENT if !IsHashRefWithData( \%Attachment );
@@ -4210,7 +4465,7 @@ for my $Test (@Tests) {
 
         # remove attributes that might be different from local and requester responses
         for my $Attribute (
-            qw(TicketID TicketNumber Created Changed Age CreateTimeUnix UnlockTimeout)
+            qw(TicketID TicketNumber Created Changed Age UnlockTimeout)
             )
         {
             delete $LocalTicketData{$Attribute};
@@ -4226,7 +4481,6 @@ for my $Test (@Tests) {
         # remove attributes that might be different from local and requester responses
         for my $Attribute (
             qw( Age AgeTimeUnix ArticleID TicketID CreateTime ChangeTime IncomingTime TicketNumber
-            CreateTimeUnix
             )
             )
         {
@@ -4322,18 +4576,23 @@ for my $Test (@Tests) {
     }
 }
 
-# delete webservice
+# delete web service
 my $WebserviceDelete = $WebserviceObject->WebserviceDelete(
     ID     => $WebserviceID,
     UserID => 1,
 );
 $Self->True(
     $WebserviceDelete,
-    "Deleted Webservice $WebserviceID",
+    "Deleted web service $WebserviceID",
 );
 
 # get DB object
 my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
+$Self->Is(
+    ref $DBObject,
+    'Kernel::System::DB',
+    "DBObject created correctly",
+);
 my $Success;
 
 # delete queues

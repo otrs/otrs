@@ -76,7 +76,6 @@ my %SkipFields = (
     Created                   => 1,
     Changed                   => 1,
     UnlockTimeout             => 1,
-    CreateTimeUnix            => 1,
 );
 
 # create dynamic field properties
@@ -230,6 +229,7 @@ my %TicketEntryOne = $TicketObject->TicketGet(
     DynamicFields => 0,
     UserID        => $UserID,
 );
+$TicketEntryOne{TimeUnit} = $TicketObject->TicketAccountedTimeGet( TicketID => $TicketID1 );
 
 $Self->True(
     IsHashRefWithData( \%TicketEntryOne ),
@@ -281,6 +281,7 @@ my %TicketEntryOneDF = $TicketObject->TicketGet(
     DynamicFields => 1,
     UserID        => $UserID,
 );
+$TicketEntryOneDF{TimeUnit} = $TicketObject->TicketAccountedTimeGet( TicketID => $TicketID1 );
 
 $Self->True(
     IsHashRefWithData( \%TicketEntryOneDF ),
@@ -369,6 +370,7 @@ my %TicketEntryTwo = $TicketObject->TicketGet(
     DynamicFields => 0,
     UserID        => $UserID,
 );
+$TicketEntryTwo{TimeUnit} = $TicketObject->TicketAccountedTimeGet( TicketID => $TicketID2 );
 
 $Self->True(
     IsHashRefWithData( \%TicketEntryTwo ),
@@ -391,6 +393,7 @@ my %TicketEntryTwoDF = $TicketObject->TicketGet(
     DynamicFields => 1,
     UserID        => $UserID,
 );
+$TicketEntryTwoDF{TimeUnit} = $TicketObject->TicketAccountedTimeGet( TicketID => $TicketID2 );
 
 $Self->True(
     IsHashRefWithData( \%TicketEntryTwoDF ),
@@ -438,6 +441,7 @@ my %TicketEntryThree = $TicketObject->TicketGet(
     DynamicFields => 0,
     UserID        => $UserID,
 );
+$TicketEntryThree{TimeUnit} = $TicketObject->TicketAccountedTimeGet( TicketID => $TicketID3 );
 
 $Self->True(
     IsHashRefWithData( \%TicketEntryThree ),
@@ -496,6 +500,12 @@ my $ArticleID41 = $ArticleBackendObject->ArticleCreate(
     UserID               => 1,
     NoAgentNotify        => 1,
 );
+my $Success = $TicketObject->TicketAccountTime(
+    TicketID  => $TicketID4,
+    ArticleID => $ArticleID41,
+    TimeUnit  => '4.5',
+    UserID    => 1,
+);
 
 # second article
 my $ArticleID42 = $ArticleBackendObject->ArticleCreate(
@@ -513,6 +523,12 @@ my $ArticleID42 = $ArticleBackendObject->ArticleCreate(
     HistoryComment       => 'second article',
     UserID               => 1,
     NoAgentNotify        => 1,
+);
+$Success = $TicketObject->TicketAccountTime(
+    TicketID  => $TicketID4,
+    ArticleID => $ArticleID42,
+    TimeUnit  => '2',
+    UserID    => 1,
 );
 
 # third article
@@ -557,7 +573,6 @@ my $ArticleContentGet = sub {
         my %ArticleContent = $ArticleBackendObject->ArticleGet(
             %Param,
             ArticleID => $Article->{ArticleID},
-            UserID    => 1,
         );
 
         for my $Key ( sort keys %ArticleContent ) {
@@ -568,6 +583,10 @@ my $ArticleContentGet = sub {
                 delete $ArticleContent{$Key};
             }
         }
+
+        $ArticleContent{TimeUnit} = $ArticleObject->ArticleAccountedTimeGet(
+            ArticleID => $Article->{ArticleID},
+        );
 
         push @ArticleContents, \%ArticleContent;
     }
@@ -747,7 +766,6 @@ my $ArticleAttachmentContentGet = sub {
         # Get attachment index.
         my %AtmIndex = $ArticleBackendObject->ArticleAttachmentIndex(
             ArticleID        => $Article->{ArticleID},
-            UserID           => 1,
             ExcludePlainText => 1,
             ExcludeHTMLBody  => $Param{HTMLBody} ? 0 : 1,
         );
@@ -761,7 +779,6 @@ my $ArticleAttachmentContentGet = sub {
             my %Attachment = $ArticleBackendObject->ArticleAttachment(
                 ArticleID => $Article->{ArticleID},
                 FileID    => $FileID,
-                UserID    => 1,
             );
 
             next ATTACHMENT if !IsHashRefWithData( \%Attachment );
@@ -835,6 +852,7 @@ my %TicketEntryFour = $TicketObject->TicketGet(
     DynamicFields => 0,
     UserID        => $UserID,
 );
+$TicketEntryFour{TimeUnit} = $TicketObject->TicketAccountedTimeGet( TicketID => $TicketID4 );
 
 $Self->True(
     IsHashRefWithData( \%TicketEntryFour ),
@@ -855,6 +873,7 @@ my %TicketEntryFourDF = $TicketObject->TicketGet(
     DynamicFields => 1,
     UserID        => $UserID,
 );
+$TicketEntryFourDF{TimeUnit} = $TicketObject->TicketAccountedTimeGet( TicketID => $TicketID4 );
 
 for my $Key ( sort keys %TicketEntryFourDF ) {
     if ( !defined $TicketEntryFourDF{$Key} ) {
@@ -900,6 +919,7 @@ my %TicketEntryFive = $TicketObject->TicketGet(
     DynamicFields => 0,
     UserID        => $UserID,
 );
+$TicketEntryFive{TimeUnit} = $TicketObject->TicketAccountedTimeGet( TicketID => $TicketID5 );
 
 $Self->True(
     IsHashRefWithData( \%TicketEntryFive ),
@@ -1064,6 +1084,7 @@ my $WebserviceConfig = {
                 NameSpace => 'http://otrs.org/SoapTestInterface/',
                 Encoding  => 'UTF-8',
                 Endpoint  => $RemoteSystem,
+                Timeout   => 120,
             },
         },
         Invoker => {

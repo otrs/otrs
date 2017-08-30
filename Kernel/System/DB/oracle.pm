@@ -13,9 +13,9 @@ use warnings;
 
 our @ObjectDependencies = (
     'Kernel::Config',
+    'Kernel::System::DateTime',
     'Kernel::System::Log',
     'Kernel::System::Main',
-    'Kernel::System::Time',
 );
 
 sub new {
@@ -764,7 +764,7 @@ sub IndexDrop {
         if ( !$Param{$_} ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
-                Message  => "Need $_!"
+                Message  => "Need $_!",
             );
             return;
         }
@@ -774,8 +774,25 @@ sub IndexDrop {
         Name => $Param{Name},
     );
 
-    my $SQL = 'DROP INDEX ' . $Index;
-    return ($SQL);
+    my $DropIndexSQL = 'DROP INDEX ' . $Index;
+
+    my $Shell = '';
+    if ( $Kernel::OM->Get('Kernel::Config')->Get('Database::ShellOutput') ) {
+        $Shell = "/\n--";
+    }
+
+    # build sql to drop index within a "try/catch block"
+    # to prevent errors if index does not exist
+    $DropIndexSQL = <<"EOF";
+BEGIN
+    EXECUTE IMMEDIATE '$DropIndexSQL';
+EXCEPTION
+  WHEN OTHERS THEN NULL;
+END;
+$Shell
+EOF
+
+    return ($DropIndexSQL);
 }
 
 sub ForeignKeyCreate {
@@ -800,6 +817,22 @@ sub ForeignKeyCreate {
     # add foreign key
     my $CreateForeignKeySQL = "ALTER TABLE $Param{LocalTableName} ADD CONSTRAINT $ForeignKey FOREIGN KEY "
         . "($Param{Local}) REFERENCES $Param{ForeignTableName} ($Param{Foreign})";
+
+    my $Shell = '';
+    if ( $Kernel::OM->Get('Kernel::Config')->Get('Database::ShellOutput') ) {
+        $Shell = "/\n--";
+    }
+
+    # build sql to create foreign key within a "try/catch block"
+    # to prevent errors if foreign key exists already
+    $CreateForeignKeySQL = <<"EOF";
+BEGIN
+    EXECUTE IMMEDIATE '$CreateForeignKeySQL';
+EXCEPTION
+  WHEN OTHERS THEN NULL;
+END;
+$Shell
+EOF
 
     # build index name
     my $IndexName = $Self->_IndexName(
@@ -835,13 +868,20 @@ sub ForeignKeyDrop {
         Name => "FK_$Param{LocalTableName}_$Param{Local}_$Param{Foreign}",
     );
 
-    # drop foreign key
-    my $SQL = "ALTER TABLE $Param{LocalTableName} DROP CONSTRAINT $ForeignKey";
-
     my $Shell = '';
     if ( $Kernel::OM->Get('Kernel::Config')->Get('Database::ShellOutput') ) {
         $Shell = "/\n--";
     }
+
+    # drop foreign key
+    my $DropForeignKeySQL = <<"EOF";
+BEGIN
+    EXECUTE IMMEDIATE 'ALTER TABLE $Param{LocalTableName} DROP CONSTRAINT $ForeignKey';
+EXCEPTION
+  WHEN OTHERS THEN NULL;
+END;
+$Shell
+EOF
 
     # build index name
     my $IndexName = $Self->_IndexName(
@@ -858,7 +898,7 @@ END;
 $Shell
 EOF
 
-    return ( $SQL, $DropIndexSQL );
+    return ( $DropForeignKeySQL, $DropIndexSQL );
 }
 
 sub UniqueCreate {
@@ -879,20 +919,35 @@ sub UniqueCreate {
         Name => $Param{Name},
     );
 
-    my $SQL   = "ALTER TABLE $Param{TableName} ADD CONSTRAINT $Unique UNIQUE (";
-    my @Array = @{ $Param{Data} };
-    my $Name  = '';
+    my $CreateUniqueSQL = "ALTER TABLE $Param{TableName} ADD CONSTRAINT $Unique UNIQUE (";
+    my @Array           = @{ $Param{Data} };
+    my $Name            = '';
     for ( 0 .. $#Array ) {
         if ( $_ > 0 ) {
-            $SQL .= ', ';
+            $CreateUniqueSQL .= ', ';
         }
-        $SQL  .= $Array[$_]->{Name};
+        $CreateUniqueSQL .= $Array[$_]->{Name};
         $Name .= '_' . $Array[$_]->{Name};
     }
-    $SQL .= ')';
+    $CreateUniqueSQL .= ')';
 
-    return ($SQL);
+    my $Shell = '';
+    if ( $Kernel::OM->Get('Kernel::Config')->Get('Database::ShellOutput') ) {
+        $Shell = "/\n--";
+    }
 
+    # build SQL to create unique constraint within a "try/catch block"
+    # to prevent errors if unique constraint does already exist
+    $CreateUniqueSQL = <<"EOF";
+BEGIN
+    EXECUTE IMMEDIATE '$CreateUniqueSQL';
+EXCEPTION
+  WHEN OTHERS THEN NULL;
+END;
+$Shell
+EOF
+
+    return ($CreateUniqueSQL);
 }
 
 sub UniqueDrop {
@@ -913,16 +968,33 @@ sub UniqueDrop {
         Name => $Param{Name},
     );
 
-    my $SQL = "ALTER TABLE $Param{TableName} DROP CONSTRAINT $Unique";
-    return ($SQL);
+    my $DropUniqueSQL = "ALTER TABLE $Param{TableName} DROP CONSTRAINT $Unique";
+
+    my $Shell = '';
+    if ( $Kernel::OM->Get('Kernel::Config')->Get('Database::ShellOutput') ) {
+        $Shell = "/\n--";
+    }
+
+    # build SQL to drop unique constraint within a "try/catch block"
+    # to prevent errors if unique constraint does not exist
+    $DropUniqueSQL = <<"EOF";
+BEGIN
+    EXECUTE IMMEDIATE '$DropUniqueSQL';
+EXCEPTION
+  WHEN OTHERS THEN NULL;
+END;
+$Shell
+EOF
+
+    return ($DropUniqueSQL);
 }
 
 sub Insert {
     my ( $Self, @Param ) = @_;
 
     # get needed objects
-    my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
-    my $TimeObject   = $Kernel::OM->Get('Kernel::System::Time');
+    my $ConfigObject   = $Kernel::OM->Get('Kernel::Config');
+    my $DateTimeObject = $Kernel::OM->Create('Kernel::System::DateTime');
 
     my $SQL    = '';
     my @Keys   = ();
@@ -988,7 +1060,7 @@ sub Insert {
                 $Value .= $Tmp;
             }
             else {
-                my $Timestamp = $TimeObject->CurrentTimestamp();
+                my $Timestamp = $DateTimeObject->ToString();
                 $Value .= '\'' . $Timestamp . '\'';
             }
         }

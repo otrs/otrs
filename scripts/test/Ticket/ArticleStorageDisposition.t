@@ -405,7 +405,7 @@ for my $Backend (qw(DB FS)) {
         $Kernel::OM->ObjectsDiscard( Objects => [ ref $ArticleBackendObject ] );
 
         $ConfigObject->Set(
-            Key   => 'Ticket::Article::Backend::MIMEBase###ArticleStorage',
+            Key   => 'Ticket::Article::Backend::MIMEBase::ArticleStorage',
             Value => 'Kernel::System::Ticket::Article::Backend::MIMEBase::ArticleStorage' . $Backend,
         );
 
@@ -450,7 +450,6 @@ for my $Backend (qw(DB FS)) {
         # get the list of all attachments (should be only 1)
         my %AttachmentIndex = $ArticleBackendObject->ArticleAttachmentIndex(
             ArticleID => $ArticleID,
-            UserID    => $UserID,
         );
         my $AttachmentID = grep { $AttachmentIndex{$_}->{Filename} eq $Test->{Config}->{Filename} }
             keys %AttachmentIndex;
@@ -464,7 +463,6 @@ for my $Backend (qw(DB FS)) {
         my %Attachment = $ArticleBackendObject->ArticleAttachment(
             ArticleID => $ArticleID,
             FileID    => $AttachmentID,
-            UserID    => $UserID,
         );
 
         # add the missing content to the test expected resutls

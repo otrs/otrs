@@ -21,43 +21,17 @@ our @ObjectDependencies = (
     'Kernel::System::SysConfig',
 );
 
-=head1 NAME
-
-scripts::DBUpdateTo6::MigrateTimeZoneConfiguration - Migrate timezone configuration.
-
-=cut
-
-sub Run {
+sub CheckPreviousRequirement {
     my ( $Self, %Param ) = @_;
 
-    #
-    # Remove agent and customer UserTimeZone preferences because they contain
-    # offsets instead of time zones
-    #
-    my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
-    return if !$DBObject->Do(
-        SQL  => 'DELETE FROM user_preferences WHERE preferences_key = ?',
-        Bind => [
-            \'UserTimeZone',
-        ],
-    );
-    return if !$DBObject->Do(
-        SQL  => 'DELETE FROM customer_preferences WHERE preferences_key = ?',
-        Bind => [
-            \'UserTimeZone',
-        ],
-    );
-
-    #
-    # Check for interactive mode
-    #
     if ( $Param{CommandlineOptions}->{NonInteractive} || !is_interactive() ) {
-        print
-            "\n\tMigration of time zone settings is being skipped because this script is being executed in non-interactive mode.\n";
-        print "\tPlease make sure to set the following SysConfig options after this script has been executed:\n";
-        print "\tOTRSTimeZone\n";
-        print "\tUserDefaultTimeZone\n";
-        print "\tTimeZone::Calendar1 to TimeZone::Calendar9 (depending on the calendars in use)\n";
+        return 1;
+    }
+
+    # Check if configuration was already made.
+    my $OTRSTimeZone        = $Kernel::OM->Get('Kernel::Config')->Get('OTRSTimeZone')        // 'UTC';
+    my $UserDefaultTimeZone = $Kernel::OM->Get('Kernel::Config')->Get('UserDefaultTimeZone') // 'UTC';
+    if ( $OTRSTimeZone ne 'UTC' || $UserDefaultTimeZone ne 'UTC' ) {
         return 1;
     }
 
@@ -88,31 +62,27 @@ sub Run {
     my $TimeZoneByOffset = $DateTimeObject->TimeZoneByOffsetList();
     if ( exists $TimeZoneByOffset->{$TimeOffset} ) {
         print
-            "\nThe currently configured time offset is $TimeOffset hours, these are the suggestions for a corresponding OTRS time zone:\n\n";
+            "\n\n        The currently configured time offset is $TimeOffset hours, these are the suggestions for a corresponding OTRS time zone: \n\n";
 
-        print join( "\n", sort @{ $TimeZoneByOffset->{$TimeOffset} } ) . "\n";
+        print "        " . join( "\n        ", sort @{ $TimeZoneByOffset->{$TimeOffset} } ) . "\n";
     }
 
     if ( $SuggestedTimeZone && $TimeZones{$SuggestedTimeZone} ) {
-        print "\nIt seems that $SuggestedTimeZone should be the correct time zone to set for your OTRS.\n";
+        print "\n\n        It seems that $SuggestedTimeZone should be the correct time zone to set for your OTRS. \n";
     }
 
-    my $Success = $Self->_ConfigureTimeZone(
+    $Self->{TargetTimeZones}->{OTRSTimeZone} = $Self->_AskForTimeZone(
         ConfigKey => 'OTRSTimeZone',
         TimeZones => \%TimeZones,
     );
 
-    return if !$Success;
-
     #
     # UserDefaultTimeZone
     #
-    $Success = $Self->_ConfigureTimeZone(
+    $Self->{TargetTimeZones}->{UserDefaultTimeZone} = $Self->_AskForTimeZone(
         ConfigKey => 'UserDefaultTimeZone',
         TimeZones => \%TimeZones,
     );
-
-    return if !$Success;
 
     #
     # TimeZone::Calendar[1..9] (but only those that have already a time offset set)
@@ -123,42 +93,83 @@ sub Run {
         my $CalendarTimeZone = $ConfigObject->Get($ConfigKey);
         next CALENDAR if !defined $CalendarTimeZone;
 
-        $Success = $Self->_ConfigureTimeZone(
+        $Self->{TargetTimeZones}->{$ConfigKey} = $Self->_AskForTimeZone(
             ConfigKey => $ConfigKey,
             TimeZones => \%TimeZones,
         );
-
-        return if !$Success;
     }
+
+    print "\n";
 
     return 1;
 }
 
-sub _ConfigureTimeZone {
+=head1 NAME
+
+scripts::DBUpdateTo6::MigrateTimeZoneConfiguration - Migrate timezone configuration.
+
+=cut
+
+sub Run {
     my ( $Self, %Param ) = @_;
 
-    my $TimeZone = $Self->_AskForTimeZone(
-        ConfigKey => $Param{ConfigKey},
-        TimeZones => $Param{TimeZones},
+    #
+    # Remove agent and customer UserTimeZone preferences because they contain
+    # offsets instead of time zones
+    #
+    my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
+    return if !$DBObject->Do(
+        SQL  => 'DELETE FROM user_preferences WHERE preferences_key = ?',
+        Bind => [
+            \'UserTimeZone',
+        ],
     );
+    return if !$DBObject->Do(
+        SQL  => 'DELETE FROM customer_preferences WHERE preferences_key = ?',
+        Bind => [
+            \'UserTimeZone',
+        ],
+    );
+
+    my $Verbose = $Param{CommandlineOptions}->{Verbose} || 0;
+
+    #
+    # Check for interactive mode
+    #
+    if ( $Param{CommandlineOptions}->{NonInteractive} || !is_interactive() ) {
+
+        if ($Verbose) {
+            print
+                "\n        - Migration of time zone settings is being skipped because this script is being executed in non-interactive mode. \n"
+                . "        Please make sure to set the following SysConfig options after this script has been executed: \n"
+                . "        OTRSTimeZone \n"
+                . "        UserDefaultTimeZone \n"
+                . "        TimeZone::Calendar1 to TimeZone::Calendar9 (depending on the calendars in use) \n\n";
+        }
+        return 1;
+    }
 
     my $SysConfigObject = $Kernel::OM->Get('Kernel::System::SysConfig');
 
-    my $ExclusiveLockGUID = $SysConfigObject->SettingLock(
-        Name   => $Param{ConfigKey},
-        Force  => 1,
-        UserID => 1,
-    );
+    for my $ConfigKey ( sort keys %{ $Self->{TargetTimeZones} // {} } ) {
+        my $ExclusiveLockGUID = $SysConfigObject->SettingLock(
+            Name   => $ConfigKey,
+            Force  => 1,
+            UserID => 1,
+        );
 
-    my %Result = $SysConfigObject->SettingUpdate(
-        Name              => $Param{ConfigKey},
-        IsValid           => 1,
-        EffectiveValue    => $TimeZone,
-        ExclusiveLockGUID => $ExclusiveLockGUID,
-        UserID            => 1,
-    );
+        my %Result = $SysConfigObject->SettingUpdate(
+            Name              => $ConfigKey,
+            IsValid           => 1,
+            EffectiveValue    => $Self->{TargetTimeZones}->{$ConfigKey},
+            ExclusiveLockGUID => $ExclusiveLockGUID,
+            UserID            => 1,
+        );
 
-    return $Result{Success};
+        return if !$Result{Success};
+    }
+
+    return 1;
 }
 
 sub _AskForTimeZone {
@@ -168,7 +179,7 @@ sub _AskForTimeZone {
     print "\n";
     while ( !defined $TimeZone || !$Param{TimeZones}->{$TimeZone} ) {
         print
-            "Enter the time zone to use for $Param{ConfigKey} (leave empty to show a list of all available time zones): ";
+            "        Enter the time zone to use for $Param{ConfigKey} (leave empty to show a list of all available time zones): ";
         $TimeZone = <>;
 
         # Remove white space
@@ -176,12 +187,12 @@ sub _AskForTimeZone {
 
         if ( length $TimeZone ) {
             if ( !$Param{TimeZones}->{$TimeZone} ) {
-                print "Invalid time zone.\n";
+                print "        Invalid time zone. \n";
             }
         }
         else {
             # Show list of all available time zones
-            print join( "\n", sort keys %{ $Param{TimeZones} } ) . "\n";
+            print "        " . join( "\n        ", sort keys %{ $Param{TimeZones} } ) . " \n";
         }
     }
 

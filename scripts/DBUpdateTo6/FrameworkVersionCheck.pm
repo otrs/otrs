@@ -26,12 +26,31 @@ scripts::DBUpdateTo6::FrameworkVersionCheck - Checks required framework version 
 sub Run {
     my ( $Self, %Param ) = @_;
 
+    return 1;
+}
+
+=head2 CheckPreviousRequirement()
+
+check for initial conditions for running this migration step.
+
+Returns 1 on success
+
+    my $Result = $DBUpdateTo6Object->CheckPreviousRequirement();
+
+=cut
+
+sub CheckPreviousRequirement {
+    my ( $Self, %Param ) = @_;
+
+    my $Verbose = $Param{CommandlineOptions}->{Verbose} || 0;
     my $Home = $Kernel::OM->Get('Kernel::Config')->Get('Home');
 
     # load RELEASE file
-    if ( -e !"$Home/RELEASE" ) {
-        die "Error: $Home/RELEASE does not exist!";
+    if ( !-e "$Home/RELEASE" ) {
+        print "\n    Error: $Home/RELEASE does not exist!\n";
+        return;
     }
+
     my $ProductName;
     my $Version;
     if ( open( my $Product, '<', "$Home/RELEASE" ) ) {    ## no critic
@@ -50,15 +69,18 @@ sub Run {
         close($Product);
     }
     else {
-        die "Error: Can't read $Home/RELEASE: $!";
+        print "\n    Error: Can't read $Home/RELEASE: $!\n";
+        return;
     }
 
     if ( $ProductName ne 'OTRS' ) {
-        die "Error: No OTRS system found"
+        print "    Error:    No OTRS system found.\n";
+        return;
     }
     if ( $Version !~ /^6\.0(.*)$/ ) {
 
-        die "Error: You are trying to run this script on the wrong framework version $Version!"
+        print "\n    Error: You are trying to run this script on the wrong framework version $Version!\n";
+        return;
     }
 
     return 1;

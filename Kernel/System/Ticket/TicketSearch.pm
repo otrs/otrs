@@ -332,7 +332,7 @@ sub TicketSearch {
         Queue                  => 'sq.name',
         Type                   => 'st.type_id',
         Priority               => 'st.ticket_priority_id',
-        Age                    => 'st.create_time_unix',
+        Age                    => 'st.create_time',
         Created                => 'st.create_time',
         Changed                => 'st.change_time',
         Service                => 'st.service_id',
@@ -1405,6 +1405,7 @@ sub TicketSearch {
                     my $ValidateSuccess = $DynamicFieldBackendObject->ValueValidate(
                         DynamicFieldConfig => $DynamicField,
                         Value              => $Text,
+                        NoValidateRegex    => 1,
                         UserID             => $Param{UserID} || 1,
                     );
                     if ( !$ValidateSuccess ) {
@@ -1519,10 +1520,8 @@ sub TicketSearch {
     }
 
     # get time object
-    my $TimeObject = $Kernel::OM->Get('Kernel::System::Time');
-
     # remember current time to prevent searches for future timestamps
-    my $CurrentSystemTime = $TimeObject->SystemTime();
+    my $DateTimeObject = $Kernel::OM->Create('Kernel::System::DateTime');
 
     # get articles created older/newer than x minutes or older/newer than a date
     my %ArticleTime = (
@@ -1535,14 +1534,10 @@ sub TicketSearch {
 
             $Param{ $Key . 'OlderMinutes' } ||= 0;
 
-            my $Time = $TimeObject->SystemTime()
-                - ( $Param{ $Key . 'OlderMinutes' } * 60 );
+            my $Time = $Kernel::OM->Create('Kernel::System::DateTime');
+            $Time->Subtract( Minutes => $Param{ $Key . 'OlderMinutes' } );
 
-            my $TimeStamp = $TimeObject->SystemTime2TimeStamp(
-                SystemTime => $Time,
-            );
-
-            $SQLExt .= " AND ($ArticleTime{$Key} <= '$TimeStamp')";
+            $SQLExt .= sprintf( " AND ( %s <= '%s' )", $ArticleTime{$Key}, $Time->ToString() );
         }
 
         # get articles created newer than x minutes
@@ -1550,14 +1545,10 @@ sub TicketSearch {
 
             $Param{ $Key . 'NewerMinutes' } ||= 0;
 
-            my $Time = $TimeObject->SystemTime()
-                - ( $Param{ $Key . 'NewerMinutes' } * 60 );
+            my $Time = $Kernel::OM->Create('Kernel::System::DateTime');
+            $Time->Subtract( Minutes => $Param{ $Key . 'NewerMinutes' } );
 
-            my $TimeStamp = $TimeObject->SystemTime2TimeStamp(
-                SystemTime => $Time,
-            );
-
-            $SQLExt .= " AND ($ArticleTime{$Key} >= '$TimeStamp')";
+            $SQLExt .= sprintf( " AND ( %s >= '%s' )", $ArticleTime{$Key}, $Time->ToString() );
         }
 
         # get articles created older than xxxx-xx-xx xx:xx date
@@ -1575,15 +1566,18 @@ sub TicketSearch {
                 return;
             }
 
-            # convert param date to system time
-            my $SystemTime = $TimeObject->Date2SystemTime(
-                Year   => $1,
-                Month  => $2,
-                Day    => $3,
-                Hour   => $4,
-                Minute => $5,
-                Second => $6,
+            my $SystemTime = $Kernel::OM->Create(
+                'Kernel::System::DateTime',
+                ObjectParams => {
+                    Year   => $1,
+                    Month  => $2,
+                    Day    => $3,
+                    Hour   => $4,
+                    Minute => $5,
+                    Second => $6,
+                    }
             );
+
             if ( !$SystemTime ) {
                 $Kernel::OM->Get('Kernel::System::Log')->Log(
                     Priority => 'error',
@@ -1614,13 +1608,17 @@ sub TicketSearch {
             }
 
             # convert param date to system time
-            my $SystemTime = $TimeObject->Date2SystemTime(
-                Year   => $1,
-                Month  => $2,
-                Day    => $3,
-                Hour   => $4,
-                Minute => $5,
-                Second => $6,
+            my $SystemTime = $Kernel::OM->Create(
+                'Kernel::System::DateTime',
+                ObjectParams => {
+
+                    Year   => $1,
+                    Month  => $2,
+                    Day    => $3,
+                    Hour   => $4,
+                    Minute => $5,
+                    Second => $6,
+                    }
             );
             if ( !$SystemTime ) {
                 $Kernel::OM->Get('Kernel::System::Log')->Log(
@@ -1633,7 +1631,7 @@ sub TicketSearch {
             }
 
             # don't execute queries if newer date is after current date
-            return if $SystemTime > $CurrentSystemTime;
+            return if $SystemTime > $DateTimeObject;
 
             # don't execute queries if older/newer date restriction show now valid timeframe
             return if $CompareOlderNewerDate && $SystemTime > $CompareOlderNewerDate;
@@ -1644,7 +1642,7 @@ sub TicketSearch {
 
     # get tickets created/escalated older/newer than x minutes
     my %TicketTime = (
-        TicketCreateTime             => 'st.create_time_unix',
+        TicketCreateTime             => 'st.create_time',
         TicketEscalationTime         => 'st.escalation_time',
         TicketEscalationUpdateTime   => 'st.escalation_update_time',
         TicketEscalationResponseTime => 'st.escalation_response_time',
@@ -1662,10 +1660,12 @@ sub TicketSearch {
                 $SQLExt .= " AND $TicketTime{$Key} != 0";
             }
 
-            my $Time = $TimeObject->SystemTime();
-            $Time -= ( $Param{ $Key . 'OlderMinutes' } * 60 );
+            my $Time = $DateTimeObject->Clone();
+            $Time->Subtract( Minutes => $Param{ $Key . 'OlderMinutes' } );
 
-            $SQLExt .= " AND $TicketTime{$Key} <= $Time";
+            my $TargetTime = $Key eq 'TicketCreateTime' ? $Time->ToString() : $Time->ToEpoch();
+
+            $SQLExt .= sprintf( " AND ( %s <= '%s' )", $TicketTime{$Key}, $TargetTime );
         }
 
         # get tickets created or escalated newer than x minutes
@@ -1678,10 +1678,12 @@ sub TicketSearch {
                 $SQLExt .= " AND $TicketTime{$Key} != 0";
             }
 
-            my $Time = $TimeObject->SystemTime();
-            $Time -= ( $Param{ $Key . 'NewerMinutes' } * 60 );
+            my $Time = $Kernel::OM->Create('Kernel::System::DateTime');
+            $Time->Subtract( Minutes => $Param{ $Key . 'NewerMinutes' } );
 
-            $SQLExt .= " AND $TicketTime{$Key} >= $Time";
+            my $TargetTime = $Key eq 'TicketCreateTime' ? $Time->ToString() : $Time->ToEpoch();
+
+            $SQLExt .= sprintf( " AND ( %s >= '%s' )", $TicketTime{$Key}, $TargetTime );
         }
     }
 
@@ -1709,9 +1711,13 @@ sub TicketSearch {
             if ( $Key =~ m{ \A TicketEscalation }xms ) {
                 $SQLExt .= " AND $TicketTime{$Key} != 0";
             }
-            my $Time = $TimeObject->TimeStamp2SystemTime(
-                String => $Param{ $Key . 'OlderDate' },
+            my $Time = $Kernel::OM->Create(
+                'Kernel::System::DateTime',
+                ObjectParams => {
+                    String => $Param{ $Key . 'OlderDate' },
+                    }
             );
+
             if ( !$Time ) {
                 $Kernel::OM->Get('Kernel::System::Log')->Log(
                     Priority => 'error',
@@ -1723,7 +1729,9 @@ sub TicketSearch {
             }
             $CompareOlderNewerDate = $Time;
 
-            $SQLExt .= " AND $TicketTime{$Key} <= $Time";
+            my $TargetTime = $Key eq 'TicketCreateTime' ? $Time->ToString() : $Time->ToEpoch();
+
+            $SQLExt .= sprintf( " AND ( %s <= '%s' )", $TicketTime{$Key}, $TargetTime );
         }
 
         # get tickets created/escalated newer than xxxx-xx-xx xx:xx date
@@ -1744,8 +1752,11 @@ sub TicketSearch {
             if ( $Key =~ m{ \A TicketEscalation }xms ) {
                 $SQLExt .= " AND $TicketTime{$Key} != 0";
             }
-            my $Time = $TimeObject->TimeStamp2SystemTime(
-                String => $Param{ $Key . 'NewerDate' },
+            my $Time = $Kernel::OM->Create(
+                'Kernel::System::DateTime',
+                ObjectParams => {
+                    String => $Param{ $Key . 'NewerDate' },
+                    }
             );
             if ( !$Time ) {
                 $Kernel::OM->Get('Kernel::System::Log')->Log(
@@ -1758,12 +1769,14 @@ sub TicketSearch {
             }
 
             # don't execute queries if newer date is after current date
-            return if $Time > $CurrentSystemTime;
+            return if $Time > $DateTimeObject;
 
             # don't execute queries if older/newer date restriction show now valid timeframe
             return if $CompareOlderNewerDate && $Time > $CompareOlderNewerDate;
 
-            $SQLExt .= " AND $TicketTime{$Key} >= $Time";
+            my $TargetTime = $Key eq 'TicketCreateTime' ? $Time->ToString() : $Time->ToEpoch();
+
+            $SQLExt .= sprintf( " AND ( %s >= '%s' )", $TicketTime{$Key}, $TargetTime );
         }
     }
 
@@ -1772,12 +1785,10 @@ sub TicketSearch {
 
         $Param{TicketChangeTimeOlderMinutes} ||= 0;
 
-        my $TimeStamp = $TimeObject->SystemTime();
-        $TimeStamp -= ( $Param{TicketChangeTimeOlderMinutes} * 60 );
+        my $TimeStamp = $Kernel::OM->Create('Kernel::System::DateTime');
+        $TimeStamp->Subtract( Minutes => $Param{TicketChangeTimeOlderMinutes} );
 
-        $Param{TicketChangeTimeOlderDate} = $TimeObject->SystemTime2TimeStamp(
-            SystemTime => $TimeStamp,
-        );
+        $Param{TicketChangeTimeOlderDate} = $TimeStamp->ToString();
     }
 
     # get tickets changed newer than x minutes
@@ -1785,12 +1796,10 @@ sub TicketSearch {
 
         $Param{TicketChangeTimeNewerMinutes} ||= 0;
 
-        my $TimeStamp = $TimeObject->SystemTime();
-        $TimeStamp -= ( $Param{TicketChangeTimeNewerMinutes} * 60 );
+        my $TimeStamp = $Kernel::OM->Create('Kernel::System::DateTime');
+        $TimeStamp->Subtract( Minutes => $Param{TicketChangeTimeNewerMinutes} );
 
-        $Param{TicketChangeTimeNewerDate} = $TimeObject->SystemTime2TimeStamp(
-            SystemTime => $TimeStamp,
-        );
+        $Param{TicketChangeTimeNewerDate} = $TimeStamp->ToString();
     }
 
     # get tickets based on ticket history changed older than xxxx-xx-xx xx:xx date
@@ -1809,9 +1818,14 @@ sub TicketSearch {
             );
             return;
         }
-        my $Time = $TimeObject->TimeStamp2SystemTime(
-            String => $Param{TicketChangeTimeOlderDate},
+
+        my $Time = $Kernel::OM->Create(
+            'Kernel::System::DateTime',
+            ObjectParams => {
+                String => $Param{TicketChangeTimeOlderDate},
+                }
         );
+
         if ( !$Time ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
@@ -1840,9 +1854,14 @@ sub TicketSearch {
             );
             return;
         }
-        my $Time = $TimeObject->TimeStamp2SystemTime(
-            String => $Param{TicketChangeTimeNewerDate},
+
+        my $Time = $Kernel::OM->Create(
+            'Kernel::System::DateTime',
+            ObjectParams => {
+                String => $Param{TicketChangeTimeNewerDate},
+                }
         );
+
         if ( !$Time ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
@@ -1854,7 +1873,7 @@ sub TicketSearch {
         }
 
         # don't execute queries if newer date is after current date
-        return if $Time > $CurrentSystemTime;
+        return if $Time > $DateTimeObject;
 
         # don't execute queries if older/newer date restriction show now valid timeframe
         return if $CompareChangeTimeOlderNewerDate && $Time > $CompareChangeTimeOlderNewerDate;
@@ -1868,12 +1887,10 @@ sub TicketSearch {
 
         $Param{TicketLastChangeTimeOlderMinutes} ||= 0;
 
-        my $TimeStamp = $TimeObject->SystemTime();
-        $TimeStamp -= ( $Param{TicketLastChangeTimeOlderMinutes} * 60 );
+        my $TimeStamp = $DateTimeObject->Clone();
+        $TimeStamp->Subtract( Minutes => $Param{TicketLastChangeTimeOlderMinutes} );
 
-        $Param{TicketLastChangeTimeOlderDate} = $TimeObject->SystemTime2TimeStamp(
-            SystemTime => $TimeStamp,
-        );
+        $Param{TicketLastChangeTimeOlderDate} = $TimeStamp->ToString();
     }
 
     # get tickets changed newer than x minutes
@@ -1881,12 +1898,10 @@ sub TicketSearch {
 
         $Param{TicketLastChangeTimeNewerMinutes} ||= 0;
 
-        my $TimeStamp = $TimeObject->SystemTime();
-        $TimeStamp -= ( $Param{TicketLastChangeTimeNewerMinutes} * 60 );
+        my $TimeStamp = $DateTimeObject->Clone();
+        $TimeStamp->Subtract( Minutes => $Param{TicketLastChangeTimeNewerMinutes} );
 
-        $Param{TicketLastChangeTimeNewerDate} = $TimeObject->SystemTime2TimeStamp(
-            SystemTime => $TimeStamp,
-        );
+        $Param{TicketLastChangeTimeNewerDate} = $TimeStamp->ToString();
     }
 
     # get tickets changed older than xxxx-xx-xx xx:xx date
@@ -1905,9 +1920,14 @@ sub TicketSearch {
             );
             return;
         }
-        my $Time = $TimeObject->TimeStamp2SystemTime(
-            String => $Param{TicketLastChangeTimeOlderDate},
+
+        my $Time = $Kernel::OM->Create(
+            'Kernel::System::DateTime',
+            ObjectParams => {
+                String => $Param{TicketLastChangeTimeOlderDate},
+                }
         );
+
         if ( !$Time ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
@@ -1936,9 +1956,14 @@ sub TicketSearch {
             );
             return;
         }
-        my $Time = $TimeObject->TimeStamp2SystemTime(
-            String => $Param{TicketLastChangeTimeNewerDate},
+
+        my $Time = $Kernel::OM->Create(
+            'Kernel::System::DateTime',
+            ObjectParams => {
+                String => $Param{TicketLastChangeTimeNewerDate},
+                }
         );
+
         if ( !$Time ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
@@ -1950,7 +1975,7 @@ sub TicketSearch {
         }
 
         # don't execute queries if newer date is after current date
-        return if $Time > $CurrentSystemTime;
+        return if $Time > $DateTimeObject;
 
         # don't execute queries if older/newer date restriction show now valid timeframe
         return
@@ -1965,12 +1990,10 @@ sub TicketSearch {
 
         $Param{TicketCloseTimeOlderMinutes} ||= 0;
 
-        my $TimeStamp = $TimeObject->SystemTime();
-        $TimeStamp -= ( $Param{TicketCloseTimeOlderMinutes} * 60 );
+        my $TimeStamp = $DateTimeObject->Clone();
+        $TimeStamp->Subtract( Minutes => $Param{TicketCloseTimeOlderMinutes} );
 
-        $Param{TicketCloseTimeOlderDate} = $TimeObject->SystemTime2TimeStamp(
-            SystemTime => $TimeStamp,
-        );
+        $Param{TicketCloseTimeOlderDate} = $TimeStamp->ToString();
     }
 
     # get tickets closed newer than x minutes
@@ -1978,12 +2001,10 @@ sub TicketSearch {
 
         $Param{TicketCloseTimeNewerMinutes} ||= 0;
 
-        my $TimeStamp = $TimeObject->SystemTime();
-        $TimeStamp -= ( $Param{TicketCloseTimeNewerMinutes} * 60 );
+        my $TimeStamp = $DateTimeObject->Clone();
+        $TimeStamp->Subtract( Minutes => $Param{TicketCloseTimeNewerMinutes} );
 
-        $Param{TicketCloseTimeNewerDate} = $TimeObject->SystemTime2TimeStamp(
-            SystemTime => $TimeStamp,
-        );
+        $Param{TicketCloseTimeNewerDate} = $TimeStamp->ToString();
     }
 
     # get tickets closed older than xxxx-xx-xx xx:xx date
@@ -2002,9 +2023,14 @@ sub TicketSearch {
             );
             return;
         }
-        my $Time = $TimeObject->TimeStamp2SystemTime(
-            String => $Param{TicketCloseTimeOlderDate},
+
+        my $Time = $Kernel::OM->Create(
+            'Kernel::System::DateTime',
+            ObjectParams => {
+                String => $Param{TicketCloseTimeOlderDate},
+                }
         );
+
         if ( !$Time ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
@@ -2024,10 +2050,12 @@ sub TicketSearch {
         my @StateID = ( $Self->HistoryTypeLookup( Type => 'NewTicket' ) );
         push( @StateID, $Self->HistoryTypeLookup( Type => 'StateUpdate' ) );
         if (@StateID) {
-            $SQLExt .= " AND th.history_type_id IN  (${\(join ', ', sort @StateID)}) AND "
-                . " th.state_id IN (${\(join ', ', sort @List)}) AND "
-                . "th.create_time <= '"
-                . $DBObject->Quote( $Param{TicketCloseTimeOlderDate} ) . "'";
+            $SQLExt .= sprintf(
+                " AND th.history_type_id IN (%s) AND th.state_id IN (%s) AND th.create_time <= '%s'",
+                ( join ', ', sort @StateID ),
+                ( join ', ', sort @List ),
+                $DBObject->Quote( $Param{TicketCloseTimeOlderDate} )
+                )
         }
     }
 
@@ -2044,9 +2072,14 @@ sub TicketSearch {
             );
             return;
         }
-        my $Time = $TimeObject->TimeStamp2SystemTime(
-            String => $Param{TicketCloseTimeNewerDate},
+
+        my $Time = $Kernel::OM->Create(
+            'Kernel::System::DateTime',
+            ObjectParams => {
+                String => $Param{TicketCloseTimeNewerDate},
+                }
         );
+
         if ( !$Time ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
@@ -2058,7 +2091,7 @@ sub TicketSearch {
         }
 
         # don't execute queries if newer date is after current date
-        return if $Time > $CurrentSystemTime;
+        return if $Time > $DateTimeObject;
 
         # don't execute queries if older/newer date restriction show now valid timeframe
         return if $CompareCloseTimeOlderNewerDate && $Time > $CompareCloseTimeOlderNewerDate;
@@ -2071,10 +2104,12 @@ sub TicketSearch {
         my @StateID = ( $Self->HistoryTypeLookup( Type => 'NewTicket' ) );
         push( @StateID, $Self->HistoryTypeLookup( Type => 'StateUpdate' ) );
         if (@StateID) {
-            $SQLExt .= " AND th.history_type_id IN  (${\(join ', ', sort @StateID)}) AND "
-                . " th.state_id IN (${\(join ', ', sort @List)}) AND "
-                . " th.create_time >= '"
-                . $DBObject->Quote( $Param{TicketCloseTimeNewerDate} ) . "'";
+            $SQLExt .= sprintf(
+                " AND th.history_type_id IN (%s) AND th.state_id IN (%s) AND th.create_time >= '%s'",
+                ( join ', ', sort @StateID ),
+                ( join ', ', sort @List ),
+                $DBObject->Quote( $Param{TicketCloseTimeNewerDate} )
+                )
         }
     }
 
@@ -2102,12 +2137,11 @@ sub TicketSearch {
 
         $Param{TicketPendingTimeOlderMinutes} ||= 0;
 
-        my $TimeStamp = $TimeObject->SystemTime();
-        $TimeStamp -= ( $Param{TicketPendingTimeOlderMinutes} * 60 );
+        my $TimeStamp = $Kernel::OM->Create('Kernel::System::DateTime');
 
-        $Param{TicketPendingTimeOlderDate} = $TimeObject->SystemTime2TimeStamp(
-            SystemTime => $TimeStamp,
-        );
+        $TimeStamp->Subtract( Minutes => $Param{TicketPendingTimeOlderMinutes} );
+
+        $Param{TicketPendingTimeOlderDate} = $TimeStamp->ToString();
     }
 
     # get tickets pending newer than x minutes
@@ -2115,12 +2149,10 @@ sub TicketSearch {
 
         $Param{TicketPendingTimeNewerMinutes} ||= 0;
 
-        my $TimeStamp = $TimeObject->SystemTime();
-        $TimeStamp -= ( $Param{TicketPendingTimeNewerMinutes} * 60 );
+        my $TimeStamp = $DateTimeObject->Clone();
+        $TimeStamp->Subtract( Minutes => $Param{TicketPendingTimeNewerMinutes} );
 
-        $Param{TicketPendingTimeNewerDate} = $TimeObject->SystemTime2TimeStamp(
-            SystemTime => $TimeStamp,
-        );
+        $Param{TicketPendingTimeNewerDate} = $TimeStamp->ToString();
     }
 
     # get pending tickets older than xxxx-xx-xx xx:xx date
@@ -2139,9 +2171,14 @@ sub TicketSearch {
             );
             return;
         }
-        my $TimeStamp = $TimeObject->TimeStamp2SystemTime(
-            String => $Param{TicketPendingTimeOlderDate},
+
+        my $TimeStamp = $Kernel::OM->Create(
+            'Kernel::System::DateTime',
+            ObjectParams => {
+                String => $Param{TicketPendingTimeOlderDate},
+                }
         );
+
         if ( !$TimeStamp ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
@@ -2153,7 +2190,7 @@ sub TicketSearch {
         }
         $ComparePendingTimeOlderNewerDate = $TimeStamp;
 
-        $SQLExt .= " AND st.until_time <= $TimeStamp";
+        $SQLExt .= " AND st.until_time <= " . $TimeStamp->ToEpoch();
     }
 
     # get pending tickets newer than xxxx-xx-xx xx:xx date
@@ -2169,9 +2206,14 @@ sub TicketSearch {
             );
             return;
         }
-        my $TimeStamp = $TimeObject->TimeStamp2SystemTime(
-            String => $Param{TicketPendingTimeNewerDate},
+
+        my $TimeStamp = $Kernel::OM->Create(
+            'Kernel::System::DateTime',
+            ObjectParams => {
+                String => $Param{TicketPendingTimeNewerDate},
+                }
         );
+
         if ( !$TimeStamp ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
@@ -2186,7 +2228,7 @@ sub TicketSearch {
         return
             if $ComparePendingTimeOlderNewerDate && $TimeStamp > $ComparePendingTimeOlderNewerDate;
 
-        $SQLExt .= " AND st.until_time >= $TimeStamp";
+        $SQLExt .= " AND st.until_time >= " . $TimeStamp->ToEpoch();
     }
 
     # archive flag

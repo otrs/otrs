@@ -19,7 +19,7 @@ our @EXPORT_OK = qw(Translatable);    ## no critic
 use File::stat;
 use Digest::MD5;
 
-use Kernel::System::DateTime qw(:all);
+use Kernel::System::DateTime;
 
 our @ObjectDependencies = (
     'Kernel::Config',
@@ -65,11 +65,6 @@ sub new {
     my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
     my $MainObject   = $Kernel::OM->Get('Kernel::System::Main');
 
-    # check if LanguageDebug is configured
-    if ( $ConfigObject->Get('LanguageDebug') ) {
-        $Self->{LanguageDebug} = 1;
-    }
-
     # user language
     $Self->{UserLanguage} = $Param{UserLanguage}
         || $ConfigObject->Get('DefaultLanguage')
@@ -82,7 +77,7 @@ sub new {
     }
 
     # take time zone
-    $Self->{TimeZone} = $Param{UserTimeZone} || $Param{TimeZone} || OTRSTimeZoneGet();
+    $Self->{TimeZone} = $Param{UserTimeZone} || $Param{TimeZone} || Kernel::System::DateTime->OTRSTimeZoneGet();
 
     # Debug
     if ( $Self->{Debug} > 0 ) {
@@ -321,7 +316,7 @@ sub FormatTimeString {
         if (
             $Config ne 'DateFormatShort'
             && $Self->{TimeZone}
-            && $Self->{TimeZone} ne OTRSTimeZoneGet()
+            && $Self->{TimeZone} ne Kernel::System::DateTime->OTRSTimeZoneGet()
             )
         {
             return $ReturnString . " ($Self->{TimeZone})";

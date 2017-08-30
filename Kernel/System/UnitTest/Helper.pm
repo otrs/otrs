@@ -8,6 +8,7 @@
 
 package Kernel::System::UnitTest::Helper;
 ## nofilter(TidyAll::Plugin::OTRS::Perl::Time)
+## nofilter(TidyAll::Plugin::OTRS::Migrations::OTRS6::TimeObject)
 ## nofilter(TidyAll::Plugin::OTRS::Migrations::OTRS6::DateTime)
 
 use strict;
@@ -81,7 +82,7 @@ sub new {
         $Self->{PERL_LWP_SSL_VERIFY_HOSTNAME} = $ENV{PERL_LWP_SSL_VERIFY_HOSTNAME};
 
         # set environment value to 0
-        $ENV{PERL_LWP_SSL_VERIFY_HOSTNAME} = 0;
+        $ENV{PERL_LWP_SSL_VERIFY_HOSTNAME} = 0;    ## no critic
 
         $Self->{RestoreSSLVerify} = 1;
         $Self->{UnitTestObject}->True( 1, 'Skipping SSL certificates verification' );
@@ -97,6 +98,10 @@ sub new {
         my $StartedTransaction = $Self->BeginWork();
         $Self->{UnitTestObject}->True( $StartedTransaction, 'Started database transaction.' );
 
+    }
+
+    if ( $Param{DisableAsyncCalls} ) {
+        $Self->DisableAsyncCalls();
     }
 
     return $Self;
@@ -396,6 +401,7 @@ sub FixedTimeSet {
     #   to get a hold of the overrides.
     my @Objects = (
         'Kernel::System::Time',
+        'Kernel::System::DB',
         'Kernel::System::Cache::FileStorable',
         'Kernel::System::PID',
     );
@@ -405,7 +411,7 @@ sub FixedTimeSet {
         $FilePath =~ s{::}{/}xmsg;
         $FilePath .= '.pm';
         if ( $INC{$FilePath} ) {
-            no warnings 'redefine';
+            no warnings 'redefine';    ## no critic
             delete $INC{$FilePath};
             $Kernel::OM->Get('Kernel::System::Main')->Require($Object);
         }
@@ -444,7 +450,7 @@ sub FixedTimeAddSeconds {
 
 # See http://perldoc.perl.org/5.10.0/perlsub.html#Overriding-Built-in-Functions
 BEGIN {
-    no warnings 'redefine';
+    no warnings 'redefine';    ## no critic
     *CORE::GLOBAL::time = sub {
         return defined $FixedTime ? $FixedTime : CORE::time();
     };
@@ -486,6 +492,13 @@ sub DESTROY {
 
     # FixedDateTimeObjectUnset();
 
+    if ( $Self->{DestroyLog} ) {
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
+            Priority => 'error',
+            Message  => "Helper is destroyed!"
+        );
+    }
+
     # Cleanup temporary database if it was set up.
     $Self->TestDatabaseCleanup() if $Self->{ProvideTestDatabase};
 
@@ -495,7 +508,7 @@ sub DESTROY {
     # restore environment variable to skip SSL certificate verification if needed
     if ( $Self->{RestoreSSLVerify} ) {
 
-        $ENV{PERL_LWP_SSL_VERIFY_HOSTNAME} = $Self->{PERL_LWP_SSL_VERIFY_HOSTNAME};
+        $ENV{PERL_LWP_SSL_VERIFY_HOSTNAME} = $Self->{PERL_LWP_SSL_VERIFY_HOSTNAME};    ## no critic
 
         $Self->{RestoreSSLVerify} = 0;
 
@@ -575,6 +588,8 @@ sub DESTROY {
             );
         }
     }
+
+    return;
 }
 
 =head2 ConfigSettingChange()
@@ -663,6 +678,7 @@ Please note that this will not work correctly in clustered environments.
 
     $Helper->CustomCodeActivate(
         Code => q^
+sub Kernel::Config::Files::ZZZZUnitTestIdentifier::Load {} # no-op, avoid warning logs
 use Kernel::System::WebUserAgent;
 package Kernel::System::WebUserAgent;
 use strict;
@@ -749,11 +765,29 @@ sub UseTmpArticleDir {
 
     $Self->ConfigSettingChange(
         Valid => 1,
-        Key   => 'Ticket::Article::Backend::MIMEBase###ArticleDataDir',
+        Key   => 'Ticket::Article::Backend::MIMEBase::ArticleDataDir',
         Value => $TmpArticleDir,
     );
 
     $Self->{TmpArticleDir} = $TmpArticleDir;
+
+    return 1;
+}
+
+=head2 DisableAsyncCalls()
+
+Disable scheduling of asynchronous tasks using C<AsynchronousExecutor> component of OTRS daemon.
+
+=cut
+
+sub DisableAsyncCalls {
+    my ( $Self, %Param ) = @_;
+
+    $Self->ConfigSettingChange(
+        Valid => 1,
+        Key   => 'DisableAsyncCalls',
+        Value => 1,
+    );
 
     return 1;
 }

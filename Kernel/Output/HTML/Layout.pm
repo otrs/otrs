@@ -12,8 +12,8 @@ use strict;
 use warnings;
 
 use URI::Escape qw();
+use Digest::MD5 qw(md5_hex);
 
-use Kernel::System::Time;
 use Kernel::System::VariableCheck qw(:all);
 use Kernel::Language qw(Translatable);
 
@@ -23,6 +23,7 @@ our @ObjectDependencies = (
     'Kernel::System::AuthSession',
     'Kernel::System::Chat',
     'Kernel::System::CustomerGroup',
+    'Kernel::System::DateTime',
     'Kernel::System::Group',
     'Kernel::System::Encode',
     'Kernel::System::HTMLUtils',
@@ -32,7 +33,6 @@ our @ObjectDependencies = (
     'Kernel::System::OTRSBusiness',
     'Kernel::System::Storable',
     'Kernel::System::SystemMaintenance',
-    'Kernel::System::Time',
     'Kernel::System::User',
     'Kernel::System::VideoChat',
     'Kernel::System::Web::Request',
@@ -96,16 +96,7 @@ sub new {
         $Self->{UserTheme} = $ConfigObject->Get('DefaultTheme');
     }
 
-    # We'll keep one default TimeObject and one for the user's time zone (if needed)
-    $Self->{TimeObject} = $Kernel::OM->Get('Kernel::System::Time');
-
-    if ( $Self->{UserTimeZone} ) {
-        $Self->{UserTimeObject} = Kernel::System::Time->new( %{$Self} );
-    }
-    else {
-        $Self->{UserTimeObject} = $Self->{TimeObject};
-        $Self->{UserTimeZone}   = '';
-    }
+    $Self->{UserTimeZone} ||= '';
 
     # Determine the language to use based on the browser setting, if there
     #   is none yet.
@@ -510,6 +501,8 @@ sub Block {
         Name => $Param{Name},
         Data => $Param{Data},
         };
+
+    return 1;
 }
 
 =head2 JSONEncode()
@@ -694,7 +687,7 @@ sub Login {
         $Self->{SetCookies}->{OTRSBrowserHasCookie} = $Kernel::OM->Get('Kernel::System::Web::Request')->SetCookie(
             Key      => 'OTRSBrowserHasCookie',
             Value    => 1,
-            Expires  => '1y',
+            Expires  => '+1y',
             Path     => $ConfigObject->Get('ScriptAlias'),
             Secure   => $CookieSecureAttribute,
             HttpOnly => 1,
@@ -1111,7 +1104,7 @@ create notify lines
         Info => 'Some Error Message',
     );
 
-    errors from log backend, if no error extists, a '' will be returned
+    errors from log backend, if no error exists, a '' will be returned
 
     my $Output = $LayoutObject->Notify(
         Priority => 'Error',
@@ -1440,6 +1433,14 @@ sub Header {
             }
         }
 
+        # generate avatar
+        if ( $ConfigObject->Get('Frontend::AvatarEngine') eq 'Gravatar' && $Self->{UserEmail} ) {
+            $Param{Avatar} = '//www.gravatar.com/avatar/' . md5_hex( lc $Self->{UserEmail} ) . '?s=100&d=mm';
+        }
+        else {
+            $Param{UserInitials} = $Self->UserInitialsGet( Fullname => $Self->{UserFullname} );
+        }
+
         # show logged in notice
         if ( $Param{ShowPrefLink} ) {
             $Self->Block(
@@ -1569,6 +1570,7 @@ sub Footer {
         ChallengeToken                 => $Self->{UserChallengeToken},
         CustomerPanelSessionName       => $ConfigObject->Get('CustomerPanelSessionName'),
         UserLanguage                   => $Self->{UserLanguage},
+        WebMaxFileUpload               => $ConfigObject->Get('WebMaxFileUpload'),
         RichTextSet                    => $ConfigObject->Get('Frontend::RichText'),
         CheckEmailAddresses            => $ConfigObject->Get('CheckEmailAddresses'),
         MenuDragDropEnabled            => $ConfigObject->Get('Frontend::MenuDragDropEnabled'),
@@ -1674,7 +1676,7 @@ sub Print {
 
     # Disable perl warnings in case of printing unicode private chars,
     #   see https://rt.perl.org/Public/Bug/Display.html?id=121226.
-    no warnings 'nonchar';
+    no warnings 'nonchar';    ## no critic
 
     print ${ $Param{Output} };
 
@@ -1683,14 +1685,14 @@ sub Print {
 
 =head2 Ascii2Html()
 
-convert ascii to html string
+convert ASCII to html string
 
     my $HTML = $LayoutObject->Ascii2Html(
         Text            => 'Some <> Test <font color="red">Test</font>',
-        Max             => 20,       # max 20 chars folowed by [..]
+        Max             => 20,       # max 20 chars flowed by [..]
         VMax            => 15,       # first 15 lines
         NewLine         => 0,        # move \r to \n
-        HTMLResultMode  => 0,        # replace " " with &nbsp;
+        HTMLResultMode  => 0,        # replace " " with C<&nbsp;>
         StripEmptyLines => 0,
         Type            => 'Normal', # JSText or Normal text
         LinkFeature     => 0,        # do some URL detections
@@ -2121,7 +2123,7 @@ build a HTML option element based on given data
         DisabledBranch => 'Branch',          # (optional) disable all elements of this branch (use string or arrayref)
         Max            => 100,               # (optional) default 100 max size of the shown value
         HTMLQuote      => 0,                 # (optional) default 1 (0|1) disable html quote
-        Title          => 'Tooltip Text',    # (optional) string will be shown as Tooltip on mouseover
+        Title          => 'C<Tooltip> Text',    # (optional) string will be shown as c<Tooltip> on c<mouseover>
         OptionTitle    => 1,                 # (optional) default 0 (0|1) show title attribute (the option value) on every option element
 
         Filters => {                         # (optional) filter data, used by InputFields
@@ -2384,7 +2386,7 @@ sub Permission {
     }
 
     # Array access restriction.
-    elsif ( $Item && ref $Item eq 'ARRAY' ) {
+    elsif ( IsArrayRefWithData($Item) ) {
         for my $GroupName ( @{$Item} ) {
             return 1 if $GroupObject->PermissionCheck(
                 UserID    => $Self->{UserID},
@@ -2392,6 +2394,11 @@ sub Permission {
                 Type      => $Param{Type},
             );
         }
+    }
+
+    # Allow access if there is no configuration for module group permission.
+    elsif ( !IsArrayRefWithData( $Config->{GroupRo} ) && !IsArrayRefWithData( $Config->{Group} ) ) {
+        return 1;
     }
 
     return 0;
@@ -2454,12 +2461,13 @@ sub ReturnValue {
 returns browser output to display/download a attachment
 
     $HTML = $LayoutObject->Attachment(
-        Type        => 'inline',        # optional, default: attachment, possible: inline|attachment
-        Filename    => 'FileName.png',  # optional
-        ContentType => 'image/png',
-        Content     => $Content,
-        Sandbox     => 1,               # optional, default 0; use content security policy to prohibit external
-                                        #   scripts, flash etc.
+        Type             => 'inline',          # optional, default: attachment, possible: inline|attachment
+        Filename         => 'FileName.png',    # optional
+        AdditionalHeader => $AdditionalHeader, # optional
+        ContentType      => 'image/png',
+        Content          => $Content,
+        Sandbox          => 1,                 # optional, default 0; use content security policy to prohibit external
+                                               #   scripts, flash etc.
     );
 
     or for AJAX html snippets
@@ -2540,6 +2548,10 @@ sub Attachment {
         # referrer:   don't send referrers to prevent referrer-leak attacks
         $Output
             .= "Content-Security-Policy: default-src *; img-src * data:; script-src 'none'; object-src 'self'; frame-src 'none'; style-src 'unsafe-inline'; referrer no-referrer;\n";
+    }
+
+    if ( $Param{AdditionalHeader} ) {
+        $Output .= $Param{AdditionalHeader} . "\n";
     }
 
     if ( $Param{Charset} ) {
@@ -3212,13 +3224,28 @@ sub BuildDateSelection {
     my $ValidateDateBeforePrefix = $Param{ValidateDateBeforePrefix} || '';
     my $ValidateDateBeforeValue  = $Param{ValidateDateBeforeValue}  || '';
 
-    my ( $s, $m, $h, $D, $M, $Y ) = $Self->{UserTimeObject}->SystemTime2Date(
-        SystemTime => $Self->{UserTimeObject}->SystemTime() + $DiffTime,
-    );
+    my $GetCurSysDTUnitFromLowest = sub {
+        my %Param = @_;
 
-    my ( $Cs, $Cm, $Ch, $CD, $CM, $CY ) = $Self->{UserTimeObject}->SystemTime2Date(
-        SystemTime => $Self->{UserTimeObject}->SystemTime(),
+        my $DateTimeObject = $Kernel::OM->Create(
+            'Kernel::System::DateTime',
+            ObjectParams => {
+                TimeZone => $Self->{UserTimeZone}
+                }
+        );
+        if ( $Param{AddSeconds} ) {
+            $DateTimeObject->Add( Seconds => $Param{AddSeconds} );
+        }
+
+        my %Details = %{ $DateTimeObject->Get() };
+
+        return map { $Details{$_} } (qw(Second Minute Hour Day Month Year));
+    };
+
+    my ( $s, $m, $h, $D, $M, $Y ) = $GetCurSysDTUnitFromLowest->(
+        AddSeconds => $DiffTime,
     );
+    my ( $Cs, $Cm, $Ch, $CD, $CM, $CY ) = $GetCurSysDTUnitFromLowest->();
 
     # time zone translation
     if (
@@ -3606,7 +3633,7 @@ sub CustomerLogin {
         $Self->{SetCookies}->{OTRSBrowserHasCookie} = $Kernel::OM->Get('Kernel::System::Web::Request')->SetCookie(
             Key      => 'OTRSBrowserHasCookie',
             Value    => 1,
-            Expires  => '1y',
+            Expires  => '+1y',
             Path     => $ConfigObject->Get('ScriptAlias'),
             Secure   => $CookieSecureAttribute,
             HttpOnly => 1,
@@ -3984,6 +4011,7 @@ sub CustomerFooter {
         InputFieldsActivated     => $ConfigObject->Get('ModernizeCustomerFormFields'),
         Autocomplete             => $AutocompleteConfigJSON,
         VideoChatEnabled         => $Param{VideoChatEnabled},
+        WebMaxFileUpload         => $ConfigObject->Get('WebMaxFileUpload'),
     );
 
     for my $Config ( sort keys %JSConfig ) {
@@ -4503,6 +4531,351 @@ sub RichTextDocumentComplete {
     return $Param{String};
 }
 
+=head2 FormatRelativeTime()
+
+Returns approximate duration for provided DateTimeObject in words.
+
+    my %Result = $LayoutObject->FormatRelativeTime(
+        DateTimeObject => $DateTimeObject,      # (required)
+    );
+
+    0 <-> 9 secs
+        just now
+
+    10 <-> 29 secs
+        less than a minute ago
+
+    30 secs <-> 1 min, 29 secs
+        1 minute ago
+
+    1 min, 30 secs <-> 44 mins, 29 secs
+        [2..44] minutes ago
+
+    44 mins, 30 secs <-> 89 mins, 29 secs
+        about 1 hour ago
+
+    89 mins, 30 secs <-> 23 hrs, 59 mins, 59 secs
+        about [2..24] hours ago
+
+    24 hrs, 0 mins, 0 secs <-> 41 hrs, 59 mins, 59 secs
+        1 day ago
+
+    41 hrs, 59 mins, 30 secs <-> 29 days, 23 hrs, 59 mins, 29 secs
+        [2..29] days ago
+
+    29 days, 23 hrs, 59 mins, 30 secs <-> 44 days, 23 hrs, 59 mins, 29 secs
+        about 1 month ago
+
+    45 days, 0 hrs, 0 mins, 0 secs <-> 1 yr minus 1 sec
+        about [2..12] months ago
+
+    1 yr <-> 1 yr, 3 months
+        about 1 year ago
+
+    1 yr, 3 months <-> 1 yr, 9 months
+        over 1 year ago
+
+    1 yr, 9 months <-> 2 yr minus 1 sec
+        almost 2 years ago
+
+    2 yrs <-> max time or date
+        (same rules as 1 yr)
+
+Returns:
+    %Result = (
+        Message => "%s years ago",
+        Value   => "4",
+    );
+
+=cut
+
+sub FormatRelativeTime {
+    my ( $Self, %Param ) = @_;
+
+    if ( !$Param{DateTimeObject} ) {
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
+            Priority => 'error',
+            Message  => "Need DateTimeObject!",
+        );
+        return ();
+    }
+
+    if ( ref $Param{DateTimeObject} ne 'Kernel::System::DateTime' ) {
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
+            Priority => 'error',
+            Message  => 'Provided parameter is not a DateTime object!',
+        );
+        return ();
+    }
+
+    # Get current DateTime object.
+    my $CurrentDateTimeObject = $Kernel::OM->Create(
+        'Kernel::System::DateTime',
+    );
+
+    my $Delta = $CurrentDateTimeObject->Delta( DateTimeObject => $Param{DateTimeObject} );
+    my $Past = $CurrentDateTimeObject > $Param{DateTimeObject};
+
+    my %Result;
+    if ( $Delta->{AbsoluteSeconds} < 10 ) {
+        %Result = (
+            Message => Translatable('just now'),
+            Value   => '0',
+        );
+    }
+    elsif ( $Delta->{AbsoluteSeconds} < 30 ) {
+        if ($Past) {
+            %Result = (
+                Message => Translatable('less than a minute ago'),
+                Value   => '1',
+            );
+        }
+        else {
+            %Result = (
+                Message => Translatable('in less than a minute'),
+                Value   => '1',
+
+            );
+        }
+    }
+    elsif ( $Delta->{AbsoluteSeconds} < 90 ) {
+        if ($Past) {
+            %Result = (
+                Message => Translatable('a minute ago'),
+                Value   => '1',
+
+            );
+        }
+        else {
+            %Result = (
+                Message => Translatable('in a minute'),
+                Value   => '1',
+
+            );
+        }
+    }
+    elsif ( $Delta->{AbsoluteSeconds} < 2670 ) {
+        my $Minutes = sprintf( "%.0f", $Delta->{AbsoluteSeconds} / 60 );
+        if ($Past) {
+            %Result = (
+                Message => Translatable('%s minutes ago'),
+                Value   => $Minutes,
+
+            );
+        }
+        else {
+            %Result = (
+                Message => Translatable('in %s minutes'),
+                Value   => $Minutes,
+
+            );
+        }
+    }
+    elsif ( $Delta->{AbsoluteSeconds} < 5340 ) {
+        if ($Past) {
+            %Result = (
+                Message => Translatable('about an hour ago'),
+                Value   => '1',
+
+            );
+        }
+        else {
+            %Result = (
+                Message => Translatable('in an hour'),
+                Value   => '1',
+
+            );
+        }
+    }
+    elsif ( $Delta->{AbsoluteSeconds} < 86400 ) {
+        my $Hours = sprintf( "%.0f", $Delta->{AbsoluteSeconds} / 3600 );
+        if ($Past) {
+            %Result = (
+                Message => Translatable('about %s hours ago'),
+                Value   => $Hours,
+
+            );
+        }
+        else {
+            %Result = (
+                Message => Translatable('in %s hours'),
+                Value   => $Hours,
+
+            );
+        }
+    }
+    elsif ( $Delta->{AbsoluteSeconds} < 151200 ) {
+        if ($Past) {
+            %Result = (
+                Message => Translatable('a day ago'),
+                Value   => '1',
+
+            );
+        }
+        else {
+            %Result = (
+                Message => Translatable('in a day'),
+                Value   => '1',
+
+            );
+        }
+    }
+    elsif ( $Delta->{AbsoluteSeconds} < 2592000 ) {
+        my $Days = sprintf( "%.0f", $Delta->{AbsoluteSeconds} / 86400 );
+        if ($Past) {
+            %Result = (
+                Message => Translatable('%s days ago'),
+                Value   => $Days,
+
+            );
+        }
+        else {
+            %Result = (
+                Message => Translatable('in %s days'),
+                Value   => $Days,
+
+            );
+        }
+    }
+    elsif ( $Delta->{AbsoluteSeconds} < 3888000 ) {
+        if ($Past) {
+            %Result = (
+                Message => Translatable('about a month ago'),
+                Value   => '1',
+
+            );
+        }
+        else {
+            %Result = (
+                Message => Translatable('in a month'),
+                Value   => '1',
+
+            );
+        }
+    }
+    elsif ( $Delta->{AbsoluteSeconds} < 31536000 ) {
+        my $Months = sprintf( "%.0f", $Delta->{AbsoluteSeconds} / 2592000 );
+        if ($Past) {
+            %Result = (
+                Message => Translatable('about %s months ago'),
+                Value   => $Months,
+
+            );
+        }
+        else {
+            %Result = (
+                Message => Translatable('in %s months'),
+                Value   => $Months,
+
+            );
+        }
+    }
+    else {
+        my $Years = $Delta->{AbsoluteSeconds} / 31536000;
+
+        if ($Past) {
+            if ( $Years < 2 ) {
+                if ( $Years < 1.25 ) {
+                    %Result = (
+                        Message => Translatable('about a year ago'),
+                        Value   => '1',
+
+                    );
+                }
+                elsif ( $Years < 1.75 ) {
+                    %Result = (
+                        Message => Translatable('over a year ago'),
+                        Value   => '1',
+
+                    );
+                }
+                else {
+                    %Result = (
+                        Message => Translatable('almost %s years ago'),
+                        Value   => '2',
+
+                    );
+                }
+            }
+            else {
+                my $YearsInteger = int($Years);
+                if ( ( $Years - $YearsInteger ) < 0.25 ) {
+                    %Result = (
+                        Message => Translatable('about %s years ago'),
+                        Value   => $YearsInteger,
+
+                    );
+                }
+                elsif ( ( $Years - $YearsInteger ) < 0.75 ) {
+                    %Result = (
+                        Message => Translatable('over %s years ago'),
+                        Value   => $YearsInteger,
+
+                    );
+                }
+                else {
+                    %Result = (
+                        Message => Translatable('almost %s years ago'),
+                        Value   => $YearsInteger + 1,
+
+                    );
+                }
+            }
+        }
+        else {
+            if ( $Years < 2 ) {
+                if ( $Years < 1.25 ) {
+                    %Result = (
+                        Message => Translatable('in a year'),
+                        Value   => '1',
+
+                    );
+                }
+                elsif ( $Years < 1.75 ) {
+                    %Result = (
+                        Message => Translatable('in over a year'),
+                        Value   => '1',
+
+                    );
+                }
+                else {
+                    %Result = (
+                        Message => Translatable('in almost %s years'),
+                        Value   => '2',
+
+                    );
+                }
+            }
+            else {
+                my $YearsInteger = int($Years);
+                if ( ( $Years - $YearsInteger ) < 0.25 ) {
+                    %Result = (
+                        Message => Translatable('in %s years'),
+                        Value   => $YearsInteger,
+
+                    );
+                }
+                elsif ( ( $Years - $YearsInteger ) < 0.75 ) {
+                    %Result = (
+                        Message => Translatable('in over %s years'),
+                        Value   => $YearsInteger,
+
+                    );
+                }
+                else {
+                    %Result = (
+                        Message => Translatable('in almost %s years'),
+                        Value   => $YearsInteger + 1,
+
+                    );
+                }
+            }
+        }
+    }
+
+    return %Result;
+}
+
 =begin Internal:
 
 =cut
@@ -4995,7 +5368,7 @@ sub _BuildSelectionDataRefCreate {
 
         # get missing parents and mark them for disable later
         if ( $OptionRef->{Sort} eq 'TreeView' ) {
-            my %List = reverse %{$DataLocal};
+            my %List = reverse %{ $DataLocal || {} };
 
             # get each data value
             for my $Key ( sort keys %List ) {
@@ -5058,8 +5431,10 @@ sub _BuildSelectionDataRefCreate {
 
             # add suffix for correct sorting
             my %SortHash;
-            for ( sort keys %{$DataLocal} ) {
-                $SortHash{$_} = $DataLocal->{$_} . '::';
+            KEY:
+            for my $Key ( sort keys %{$DataLocal} ) {
+                next KEY if !defined $DataLocal->{$Key};
+                $SortHash{$Key} = $DataLocal->{$Key} . '::';
             }
             @SortKeys = sort { lc $SortHash{$a} cmp lc $SortHash{$b} } ( keys %SortHash );
         }
@@ -5266,7 +5641,7 @@ sub _BuildSelectionDataRefCreate {
         )
     {
         for my $Row ( @{$DataRef} ) {
-            if ( $DisabledElements{ $Row->{Value} } ) {
+            if ( defined $Row->{Value} && $DisabledElements{ $Row->{Value} } ) {
                 $Row->{Key}      = '-';
                 $Row->{Disabled} = 1;
             }
@@ -5289,10 +5664,21 @@ sub _BuildSelectionDataRefCreate {
         for my $Row ( @{$DataRef} ) {
             if (
                 (
-                    $OptionRef->{SelectedID}->{ $Row->{Key} }
-                    || $OptionRef->{SelectedValue}->{ $Row->{Value} }
+                    (
+                        defined $Row->{Key}
+                        && $OptionRef->{SelectedID}->{ $Row->{Key} }
+                    )
+                    ||
+                    (
+                        defined $Row->{Value}
+                        && $OptionRef->{SelectedValue}->{ $Row->{Value} }
+                    )
                 )
-                && !$DisabledElements{ $Row->{Value} }
+                &&
+                (
+                    defined $Row->{Value}
+                    && !$DisabledElements{ $Row->{Value} }
+                )
                 )
             {
                 $Row->{Selected} = 1;
@@ -5635,13 +6021,6 @@ sub WrapPlainText {
     return $WorkString;
 }
 
-#COMPAT: to 3.0.x and lower (can be removed later)
-sub TransfromDateSelection {
-    my $Self = shift;
-
-    return $Self->TransformDateSelection(@_);
-}
-
 =head2 SetRichTextParameters()
 
 set properties for rich text editor and send them to JS via AddJSData()
@@ -5673,6 +6052,7 @@ sub SetRichTextParameters {
     # get needed variables
     my $ScreenRichTextHeight = $Param{Data}->{RichTextHeight} || $ConfigObject->Get("Frontend::RichTextHeight");
     my $ScreenRichTextWidth  = $Param{Data}->{RichTextWidth}  || $ConfigObject->Get("Frontend::RichTextWidth");
+    my $RichTextType         = $Param{Data}->{RichTextType}   || '';
     my $PictureUploadAction = $Param{Data}->{RichTextPictureUploadAction} || '';
     my $TextDir = $Self->{TextDirection} || '';
     my $EditingAreaCSS = 'body.cke_editable { ' . $ConfigObject->Get("Frontend::RichText::DefaultCSS") . ' }';
@@ -5681,7 +6061,14 @@ sub SetRichTextParameters {
     my @Toolbar;
     my @ToolbarWithoutImage;
 
-    if ( $ConfigObject->Get("Frontend::RichText::EnhancedMode") == '1' ) {
+    if ( $RichTextType eq 'CodeMirror' ) {
+        @Toolbar = @ToolbarWithoutImage = [
+            [ 'autoFormat', 'CommentSelectedRange', 'UncommentSelectedRange', 'AutoComplete' ],
+            [ 'Find', 'Replace', '-', 'SelectAll' ],
+            ['Maximize'],
+        ];
+    }
+    elsif ( $ConfigObject->Get("Frontend::RichText::EnhancedMode") == '1' ) {
         @Toolbar = [
             [
                 'Bold',   'Italic',       'Underline',    'Strike',        'Subscript',    'Superscript',
@@ -5765,8 +6152,11 @@ sub SetRichTextParameters {
             Toolbar             => $Toolbar[0],
             ToolbarWithoutImage => $ToolbarWithoutImage[0],
             PictureUploadAction => $PictureUploadAction,
+            Type                => $RichTextType,
             }
     );
+
+    return 1;
 }
 
 =head2 CustomerSetRichTextParameters()
@@ -5893,6 +6283,58 @@ sub CustomerSetRichTextParameters {
             }
     );
 
+    return 1;
+}
+
+=head2 UserInitialsGet()
+
+Get initials from a full name of a user.
+
+    my $UserInitials = $LayoutObject->UserInitialsGet(
+        Fullname => 'John Doe',
+    );
+
+Returns string of exactly two uppercase characters that represent user initials:
+
+    $UserInitials = 'JD';
+
+Please note that this function will return 'O' if invalid name (without any word characters) was supplied.
+
+=cut
+
+sub UserInitialsGet {
+    my ( $Self, %Param ) = @_;
+
+    # Fallback in case name is invalid.
+    my $UserInitials = 'O';
+    return $UserInitials if !$Param{Fullname};
+
+    # Remove anything found in brackets (email address, etc).
+    my $Fullname = $Param{Fullname} =~ s/[<[{(].*[>\]})]//r;
+
+    # Split full name by whitespace.
+    my @UserNames = split /\s+/, $Fullname;
+    if (@UserNames) {
+
+        # Cleanup unnecessary characters.
+        my $FirstName = $UserNames[0] =~ s/\W//gr;
+        return $UserInitials if !$FirstName;
+
+        # Get first character of first name.
+        $UserInitials = uc substr $FirstName, 0, 1;
+
+        if ( @UserNames > 1 ) {
+
+            # Cleanup unnecessary characters.
+            my $LastName = $UserNames[-1] =~ s/\W//gr;
+            return $UserInitials if !$LastName;
+
+            # Get first character of last name.
+            $UserInitials .= uc substr $LastName, 0, 1;
+        }
+    }
+
+    return $UserInitials;
 }
 
 1;

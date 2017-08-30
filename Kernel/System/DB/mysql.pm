@@ -15,10 +15,10 @@ use Encode ();
 
 our @ObjectDependencies = (
     'Kernel::Config',
+    'Kernel::System::DateTime',
     'Kernel::System::Encode',
     'Kernel::System::Log',
     'Kernel::System::Main',
-    'Kernel::System::Time',
 );
 
 sub new {
@@ -125,6 +125,8 @@ sub _FixMysqlUTF8 {
     return if !Encode::is_utf8($$StringRef);
 
     $$StringRef =~ s/([\x{10000}-\x{10FFFF}])/"\x{FFFD}"/eg;
+
+    return;
 }
 
 sub Quote {
@@ -457,9 +459,9 @@ sub TableAlter {
             # normal data type
             push @SQL, $SQLStart . " CHANGE $Tag->{NameOld} $Tag->{NameNew} $Tag->{Type} NULL";
 
-            # remove possible default (not on TEXT/BLOB/LONGBLOB type, not supported by mysql)
+            # set default as NULL (not on TEXT/BLOB/LONGBLOB type, not supported by mysql)
             if ( $Tag->{Type} !~ /^(TEXT|MEDIUMTEXT|BLOB|LONGBLOB)$/i ) {
-                push @SQL, "ALTER TABLE $Table ALTER $Tag->{NameNew} DROP DEFAULT";
+                push @SQL, "ALTER TABLE $Table CHANGE $Tag->{NameNew} $Tag->{NameNew} $Tag->{Type} DEFAULT NULL";
             }
 
             # investigate the default value
@@ -596,13 +598,26 @@ sub IndexDrop {
         if ( !$Param{$_} ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
-                Message  => "Need $_!"
+                Message  => "Need $_!",
             );
             return;
         }
     }
-    my $SQL = 'DROP INDEX ' . $Param{Name} . ' ON ' . $Param{TableName};
-    return ($SQL);
+
+    my $DropIndexSQL = 'DROP INDEX ' . $Param{Name} . ' ON ' . $Param{TableName};
+
+    my @SQL;
+
+    # drop index only if it does still exist
+    push @SQL,
+        "SET \@IndexExists := (SELECT COUNT(*) FROM information_schema.statistics WHERE table_schema = DATABASE() AND table_name = '$Param{TableName}' AND index_name = '$Param{Name}')";
+    push @SQL,
+        "SET \@IndexSQLStatement := IF( \@IndexExists > 0, '$DropIndexSQL', 'SELECT ''INFO: Index $Param{Name} does not exist, skipping.''' )";
+    push @SQL, "PREPARE IndexStatement FROM \@IndexSQLStatement";
+    push @SQL, "EXECUTE IndexStatement";
+
+    # return SQL
+    return @SQL;
 }
 
 sub ForeignKeyCreate {
@@ -631,10 +646,20 @@ sub ForeignKeyCreate {
     }
 
     # add foreign key
-    my $SQL = "ALTER TABLE $Param{LocalTableName} ADD CONSTRAINT $ForeignKey FOREIGN KEY "
+    my $CreateForeignKeySQL = "ALTER TABLE $Param{LocalTableName} ADD CONSTRAINT $ForeignKey FOREIGN KEY "
         . "($Param{Local}) REFERENCES $Param{ForeignTableName} ($Param{Foreign})";
 
-    return ($SQL);
+    my @SQL;
+
+    # create foreign key
+    push @SQL,
+        "SET \@FKExists := (SELECT COUNT(*) FROM information_schema.table_constraints WHERE table_schema = DATABASE() AND table_name = '$Param{LocalTableName}' AND constraint_name = '$ForeignKey')";
+    push @SQL,
+        "SET \@FKSQLStatement := IF( \@FKExists = 0, '$CreateForeignKeySQL', 'SELECT ''INFO: Foreign key constraint $ForeignKey does already exist, skipping.''' )";
+    push @SQL, "PREPARE FKStatement FROM \@FKSQLStatement";
+    push @SQL, "EXECUTE FKStatement";
+
+    return @SQL;
 }
 
 sub ForeignKeyDrop {
@@ -702,19 +727,27 @@ sub UniqueCreate {
             return;
         }
     }
-    my $SQL   = "ALTER TABLE $Param{TableName} ADD CONSTRAINT $Param{Name} UNIQUE INDEX (";
-    my @Array = @{ $Param{Data} };
+    my $CreateUniqueSQL = "ALTER TABLE $Param{TableName} ADD CONSTRAINT $Param{Name} UNIQUE INDEX (";
+    my @Array           = @{ $Param{Data} };
     for ( 0 .. $#Array ) {
         if ( $_ > 0 ) {
-            $SQL .= ', ';
+            $CreateUniqueSQL .= ', ';
         }
-        $SQL .= $Array[$_]->{Name};
+        $CreateUniqueSQL .= $Array[$_]->{Name};
     }
-    $SQL .= ')';
+    $CreateUniqueSQL .= ')';
 
-    # return SQL
-    return ($SQL);
+    my @SQL;
 
+    # create unique constraint
+    push @SQL,
+        "SET \@UniqueExists := (SELECT COUNT(*) FROM information_schema.table_constraints WHERE table_schema = DATABASE() AND table_name = '$Param{TableName}' AND constraint_name = '$Param{Name}')";
+    push @SQL,
+        "SET \@UniqueSQLStatement := IF( \@UniqueExists = 0, '$CreateUniqueSQL', 'SELECT ''INFO: Unique constraint $Param{Name} does already exist, skipping.''' )";
+    push @SQL, "PREPARE UniqueStatement FROM \@UniqueSQLStatement";
+    push @SQL, "EXECUTE UniqueStatement";
+
+    return @SQL;
 }
 
 sub UniqueDrop {
@@ -730,16 +763,27 @@ sub UniqueDrop {
             return;
         }
     }
-    my $SQL = 'ALTER TABLE ' . $Param{TableName} . ' DROP INDEX ' . $Param{Name};
-    return ($SQL);
+    my $DropUniqueSQL = 'ALTER TABLE ' . $Param{TableName} . ' DROP INDEX ' . $Param{Name};
+
+    my @SQL;
+
+    # create unique constraint
+    push @SQL,
+        "SET \@UniqueExists := (SELECT COUNT(*) FROM information_schema.table_constraints WHERE table_schema = DATABASE() AND table_name = '$Param{TableName}' AND constraint_name = '$Param{Name}')";
+    push @SQL,
+        "SET \@UniqueSQLStatement := IF( \@UniqueExists > 0, '$DropUniqueSQL', 'SELECT ''INFO: Unique constraint $Param{Name} does not exist, skipping.''' )";
+    push @SQL, "PREPARE UniqueStatement FROM \@UniqueSQLStatement";
+    push @SQL, "EXECUTE UniqueStatement";
+
+    return @SQL;
 }
 
 sub Insert {
     my ( $Self, @Param ) = @_;
 
     # get needed objects
-    my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
-    my $TimeObject   = $Kernel::OM->Get('Kernel::System::Time');
+    my $ConfigObject   = $Kernel::OM->Get('Kernel::Config');
+    my $DateTimeObject = $Kernel::OM->Create('Kernel::System::DateTime');
 
     my $SQL    = '';
     my @Keys   = ();
@@ -800,7 +844,7 @@ sub Insert {
                 $Value .= $Tmp;
             }
             else {
-                my $Timestamp = $TimeObject->CurrentTimestamp();
+                my $Timestamp = $DateTimeObject->ToString();
                 $Value .= '\'' . $Timestamp . '\'';
             }
         }

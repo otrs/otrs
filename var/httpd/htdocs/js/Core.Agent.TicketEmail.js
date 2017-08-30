@@ -29,8 +29,6 @@ Core.Agent.TicketEmail = (function (TargetNS) {
      */
     TargetNS.Init = function () {
         var CustomerKey,
-            $Form,
-            FieldID,
             ArticleComposeOptions = Core.Config.Get('ArticleComposeOptions'),
             DynamicFieldNames = Core.Config.Get('DynamicFieldNames'),
             DataEmail = Core.Config.Get('DataEmail'),
@@ -88,22 +86,6 @@ Core.Agent.TicketEmail = (function (TargetNS) {
             return false;
         });
 
-        // choose attachment
-        $('#FileUpload').on('change', function () {
-            $Form = $('#FileUpload').closest('form');
-            Core.Form.Validate.DisableValidation($Form);
-            $Form.find('#AttachmentUpload').val('1').end().submit();
-        });
-
-        // delete attachment
-        $('button[id*=AttachmentDeleteButton]').on('click', function () {
-            $Form = $(this).closest('form');
-            FieldID = $(this).attr('id').split('AttachmentDeleteButton')[1];
-            $('#AttachmentDelete' + FieldID).val(1);
-            Core.Form.Validate.DisableValidation($Form);
-            $Form.trigger('submit');
-        });
-
         // add a new ticket customer user
         if (typeof DataEmail !== 'undefined' && typeof DataCustomer !== 'undefined') {
             Core.Agent.CustomerSearch.AddTicketCustomer('ToCustomer', DataEmail, DataCustomer, true);
@@ -134,13 +116,14 @@ Core.Agent.TicketEmail = (function (TargetNS) {
      *      Create on change event handler
      */
     function FieldUpdate (Value, ModifiedFields) {
-        var SignatureURL, FieldValue;
+        var SignatureURL, FieldValue, CustomerUser;
         $('#' + Value).on('change', function () {
             Core.AJAX.FormUpdate($('#NewEmailTicket'), 'AJAXUpdate', Value, ModifiedFields);
 
             if (Value === 'Dest') {
                 FieldValue = $(this).val() || '';
-                SignatureURL = Core.Config.Get('Baselink') + 'Action=' + Core.Config.Get('Action') + ';Subaction=Signature;Dest=' + FieldValue;
+                CustomerUser = $('#SelectedCustomerUser').val() || '';
+                SignatureURL = Core.Config.Get('Baselink') + 'Action=' + Core.Config.Get('Action') + ';Subaction=Signature;Dest=' + FieldValue + ';SelectedCustomerUser=' + CustomerUser;
                 if (!Core.Config.Get('SessionIDCookie')) {
                     SignatureURL += ';' + Core.Config.Get('SessionName') + '=' + Core.Config.Get('SessionID');
                 }

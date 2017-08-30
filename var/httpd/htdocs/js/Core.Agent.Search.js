@@ -113,12 +113,13 @@ Core.Agent.Search = (function (TargetNS) {
      * @memberof Core.Agent.Search
      * @function
      * @param {String} Profile - The profile name that will be delete.
+     * @param {String} SearchProfileAction - The action of search profile delete module.
      * @description
      *      Delete a profile via an ajax requests.
      */
-    function SearchProfileDelete(Profile) {
+    function SearchProfileDelete(Profile, SearchProfileAction) {
         var Data = {
-            Action: 'AgentTicketSearch',
+            Action: SearchProfileAction,
             Subaction: 'AJAXProfileDelete',
             Profile: Profile
         };
@@ -389,7 +390,7 @@ Core.Agent.Search = (function (TargetNS) {
                 Core.UI.InputFields.Activate($('.Dialog:visible'));
 
                 // register add of attribute
-                $('.AddButton').on('click', function () {
+                $('#Attribute').on('change', function () {
                     var Attribute = $('#Attribute').val();
                     TargetNS.SearchAttributeAdd(Attribute);
                     TargetNS.AdditionalAttributeSelectionRebuild();
@@ -535,6 +536,7 @@ Core.Agent.Search = (function (TargetNS) {
 
                 // delete profile
                 $('#SearchProfileDelete').on('click', function (Event) {
+                    var SearchProfileAction = $('#SearchAction').val();
 
                     // strip all already used attributes
                     $('#SearchProfile').find('option:selected').each(function () {
@@ -544,7 +546,7 @@ Core.Agent.Search = (function (TargetNS) {
                             $('#SearchInsert').text('');
 
                             // remove remote
-                            SearchProfileDelete($(this).val());
+                            SearchProfileDelete($(this).val(), SearchProfileAction);
 
                             // remove local
                             $(this).remove();

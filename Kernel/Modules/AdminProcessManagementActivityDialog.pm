@@ -878,20 +878,19 @@ sub _ShowEdit {
         Class       => 'Modernize',
     );
 
-    # create ArticleType selection
-    $Param{ArticleTypeSelection} = $LayoutObject->BuildSelection(
-        Data => [
-            Translatable('note-internal'),
-            Translatable('note-external'),
-            Translatable('note-report'),
-            Translatable('phone'),
-            Translatable('fax'),
-            Translatable('sms'),
-            Translatable('webrequest'),
-        ],
-        SelectedValue => Translatable('note-internal'),
-        Name          => 'ArticleType',
-        ID            => 'ArticleType',
+    my @ChannelList = $Kernel::OM->Get('Kernel::System::CommunicationChannel')->ChannelList();
+
+    # Allow only Internal and Phone communication channels, this has to be hard coded at the moment.
+    my %Channels = map { $_->{ChannelName} => $_->{DisplayName} }
+        grep { $_->{ChannelName} eq 'Internal' || $_->{ChannelName} eq 'Phone' }
+        @ChannelList;
+
+    # create Communication Channel selection ()
+    $Param{CommunicationChannelSelection} = $LayoutObject->BuildSelection(
+        Data          => \%Channels,
+        SelectedValue => 'Internal',
+        Name          => 'CommunicationChannel',
+        ID            => 'CommunicationChannel',
         Sort          => 'Alphanumeric',
         Translation   => 1,
         Class         => 'Modernize',

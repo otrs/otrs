@@ -322,7 +322,13 @@ sub TableCreateComplex {
             $ColumnTranslate = Translatable('Pending till');
         }
         elsif ( $Column eq 'CustomerCompanyName' ) {
-            $ColumnTranslate = Translatable('Customer Company Name');
+            $ColumnTranslate = Translatable('Customer Name');
+        }
+        elsif ( $Column eq 'CustomerID' ) {
+            $ColumnTranslate = Translatable('Customer ID');
+        }
+        elsif ( $Column eq 'CustomerName' ) {
+            $ColumnTranslate = Translatable('Customer User Name');
         }
         elsif ( $Column eq 'CustomerUserID' ) {
             $ColumnTranslate = Translatable('Customer User ID');
@@ -469,7 +475,7 @@ sub TableCreateComplex {
                         my %OwnerInfo = $Kernel::OM->Get('Kernel::System::User')->GetUserData(
                             UserID => $Ticket->{OwnerID},
                         );
-                        $Hash{'Content'} = $OwnerInfo{'UserFirstname'} . ' ' . $OwnerInfo{'UserLastname'};
+                        $Hash{'Content'} = $OwnerInfo{'UserFullname'};
                     }
                     elsif ( $Column eq 'Responsible' ) {
 
@@ -477,8 +483,7 @@ sub TableCreateComplex {
                         my %ResponsibleInfo = $Kernel::OM->Get('Kernel::System::User')->GetUserData(
                             UserID => $Ticket->{ResponsibleID},
                         );
-                        $Hash{'Content'} = $ResponsibleInfo{'UserFirstname'} . ' '
-                            . $ResponsibleInfo{'UserLastname'};
+                        $Hash{'Content'} = $ResponsibleInfo{'UserFullname'};
                     }
                     elsif ( $Column eq 'CustomerName' ) {
 

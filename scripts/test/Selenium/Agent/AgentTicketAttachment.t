@@ -123,9 +123,9 @@ $Selenium->RunTest(
             # check if attachment exists
             $Self->True(
                 $Selenium->execute_script(
-                    "return \$('.ArticleMailHeader a[href*=\"Action=AgentTicketAttachment;TicketID=$TicketID;ArticleID=$ArticleID\"]:contains($TestAttachment->{Name})').length;"
+                    "return \$('.ArticleAttachments a[href*=\"Action=AgentTicketAttachment;TicketID=$TicketID;ArticleID=$ArticleID;FileID=1\"][title*=\"$TestAttachment->{Name}\"]').length;"
                 ),
-                "'$TestAttachment->{Name}' is found on page",
+                "'$TestAttachment->{Name}' is found on page"
             );
 
             # check ticket attachment

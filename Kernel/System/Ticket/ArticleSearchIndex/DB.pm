@@ -64,6 +64,8 @@ sub ArticleSearchIndexBuild {
         UserID    => $Param{UserID},
     );
 
+    return 1 if !%ArticleSearchableContent;
+
     # clear old data from search index table
     my $Success = $Self->ArticleSearchIndexDelete(
         ArticleID => $Param{ArticleID},
@@ -81,6 +83,34 @@ sub ArticleSearchIndexBuild {
     my $FilterStopWords = $Kernel::OM->Get('Kernel::Config')->Get('Ticket::SearchIndex::FilterStopWords') // 1;
 
     my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
+
+    # Use regular multi-inserts for MySQL and PostgreSQL:
+    # INSERT INTO table (field1, field2) VALUES (?, ?), (?, ?);
+    my $SQLStart  = 'INSERT INTO article_search_index (ticket_id, article_id, article_key, article_value) VALUES ';
+    my $SQLInsert = '(?, ?, ?, ?) ';
+    my $SQLInsertConnector = ', ';
+    my $SQLEnd             = '';
+
+    # Oracle has a special syntax:
+    # INSERT ALL
+    #   INTO suppliers (supplier_id, supplier_name) VALUES (1000, 'IBM')
+    #   INTO suppliers (supplier_id, supplier_name) VALUES (2000, 'Microsoft')
+    #   INTO suppliers (supplier_id, supplier_name) VALUES (3000, 'Google')
+    # SELECT * FROM dual;
+    if ( lc $DBObject->GetDatabaseFunction('Type') eq 'oracle' ) {
+        $SQLStart  = 'INSERT ALL ';
+        $SQLInsert = '
+            INTO article_search_index (
+                ticket_id, article_id, article_key, article_value
+            )
+            VALUES (?, ?, ?, ?) ';
+        $SQLInsertConnector = ' ';
+        $SQLEnd             = 'SELECT * FROM DUAL';
+    }
+
+    my $SQL = $SQLStart;
+    my $Counter;
+    my @Bind;
 
     for my $FieldKey ( sort keys %ArticleSearchableContent ) {
 
@@ -101,16 +131,24 @@ sub ArticleSearchIndexBuild {
             $ArticleSearchableContent{$FieldKey}->{String} = lc $ArticleSearchableContent{$FieldKey}->{String};
         }
 
-        my $Success = $DBObject->Do(
-            SQL => '
-                INSERT INTO article_search_index (ticket_id, article_id, article_key, article_value)
-                VALUES (?, ?, ?, ?)',
-            Bind => [
-                \$Param{TicketID}, \$Param{ArticleID}, \$ArticleSearchableContent{$FieldKey}->{Key},
-                \$ArticleSearchableContent{$FieldKey}->{String},
-            ],
+        my @CurrentBind = (
+            \$Param{TicketID},
+            \$Param{ArticleID},
+            \$ArticleSearchableContent{$FieldKey}->{Key},
+            \$ArticleSearchableContent{$FieldKey}->{String},
         );
+
+        $SQL .= $SQLInsertConnector if $Counter++;
+        $SQL .= $SQLInsert;
+        push @Bind, @CurrentBind;
     }
+
+    $SQL .= $SQLEnd;
+
+    return if !$DBObject->Do(
+        SQL  => $SQL,
+        Bind => \@Bind,
+    );
 
     return 1;
 }

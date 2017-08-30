@@ -100,7 +100,7 @@ sub ArticleCreate {
     if ( !IsArrayRefWithData( $Param{ChatMessageList} ) ) {
         $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'error',
-            Message  => 'ChatMessageList must be AoH!',
+            Message  => 'ChatMessageList must be an array reference!',
         );
         return;
     }
@@ -113,8 +113,10 @@ sub ArticleCreate {
         return;
     }
 
+    my $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
+
     # for the event handler, before any actions have taken place
-    my %OldTicketData = $Kernel::OM->Get('Kernel::System::Ticket')->TicketGet(
+    my %OldTicketData = $TicketObject->TicketGet(
         TicketID      => $Param{TicketID},
         DynamicFields => 1,
     );
@@ -148,7 +150,7 @@ sub ArticleCreate {
     for my $ChatMessage ( @{ $Param{ChatMessageList} } ) {
         next CHAT_MESSAGE if !IsHashRefWithData($ChatMessage);
 
-        my $Success = $Kernel::OM->Get('Kernel::System::DB')->Do(
+        my $Success = $DBObject->Do(
             SQL => '
                 INSERT INTO article_data_otrs_chat
                     (article_id, chat_participant_id, chat_participant_name, chat_participant_type,
@@ -175,7 +177,7 @@ sub ArticleCreate {
     );
 
     # add history row
-    $Kernel::OM->Get('Kernel::System::Ticket')->HistoryAdd(
+    $TicketObject->HistoryAdd(
         ArticleID    => $ArticleID,
         TicketID     => $Param{TicketID},
         CreateUserID => $Param{UserID},
@@ -198,7 +200,7 @@ sub ArticleCreate {
         );
 
         if ( $OwnerInfo{OutOfOfficeMessage} ) {
-            $Kernel::OM->Get('Kernel::System::Ticket')->TicketLockSet(
+            $TicketObject->TicketLockSet(
                 TicketID => $Param{TicketID},
                 Lock     => 'unlock',
                 UserID   => $Param{UserID},
@@ -227,6 +229,8 @@ sub ArticleCreate {
         $Param{SenderType} = $ArticleObject->ArticleSenderTypeLookup( SenderTypeID => $Param{SenderTypeID} );
     }
 
+    my $ObjectDateTime = $Kernel::OM->Create('Kernel::System::DateTime');
+
     # reset unlock time if customer sent an update
     if ( $Param{SenderType} eq 'customer' ) {
 
@@ -247,8 +251,8 @@ sub ArticleCreate {
         }
 
         if ( $LastSenderTypeID && $LastSenderTypeID == $AgentSenderTypeID ) {
-            $Kernel::OM->Get('Kernel::System::Ticket')->TicketUnlockTimeoutUpdate(
-                UnlockTimeout => $Kernel::OM->Create('Kernel::System::DateTime')->ToEpoch(),
+            $TicketObject->TicketUnlockTimeoutUpdate(
+                UnlockTimeout => $ObjectDateTime->ToEpoch(),
                 TicketID      => $Param{TicketID},
                 UserID        => $Param{UserID},
             );
@@ -257,8 +261,8 @@ sub ArticleCreate {
 
     # check if latest article is sent to customer
     elsif ( $Param{SenderType} eq 'agent' ) {
-        $Kernel::OM->Get('Kernel::System::Ticket')->TicketUnlockTimeoutUpdate(
-            UnlockTimeout => $Kernel::OM->Create('Kernel::System::DateTime')->ToEpoch(),
+        $TicketObject->TicketUnlockTimeoutUpdate(
+            UnlockTimeout => $ObjectDateTime->ToEpoch(),
             TicketID      => $Param{TicketID},
             UserID        => $Param{UserID},
         );
@@ -273,10 +277,9 @@ sub ArticleCreate {
 Returns single article data.
 
     my %Article = $ArticleBackendObject->ArticleGet(
-        TicketID       => 123,   # (required)
-        ArticleID      => 123,   # (required)
-        DynamicFields  => 1,     # (optional) To include the dynamic field values for this article on the return structure.
-        UserID         => 123,   # (required)
+        TicketID      => 123,   # (required)
+        ArticleID     => 123,   # (required)
+        DynamicFields => 1,     # (optional) To include the dynamic field values for this article on the return structure.
     );
 
 Returns:
@@ -310,11 +313,11 @@ Returns:
 sub ArticleGet {
     my ( $Self, %Param ) = @_;
 
-    for (qw(TicketID ArticleID UserID)) {
-        if ( !$Param{$_} ) {
+    for my $Item (qw(TicketID ArticleID)) {
+        if ( !$Param{$Item} ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
-                Message  => "Need $_!"
+                Message  => "Need $Item!"
             );
             return;
         }
@@ -426,20 +429,22 @@ Events:
 sub ArticleUpdate {
     my ( $Self, %Param ) = @_;
 
-    for (qw(TicketID ArticleID UserID)) {
-        if ( !$Param{$_} ) {
+    for my $Item (qw(TicketID ArticleID UserID)) {
+        if ( !$Param{$Item} ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
-                Message  => "Need $_!",
+                Message  => "Need $Item!",
             );
             return;
         }
     }
 
+    my $ArticleObject = $Kernel::OM->Get('Kernel::System::Ticket::Article');
+
     # Lookup for sender type ID.
     if ( $Param{Key} eq 'SenderType' ) {
         $Param{Key}   = 'SenderTypeID';
-        $Param{Value} = $Kernel::OM->Get('Kernel::System::Ticket::Article')->ArticleSenderTypeLookup(
+        $Param{Value} = $ArticleObject->ArticleSenderTypeLookup(
             SenderType => $Param{Value},
         );
     }
@@ -448,7 +453,7 @@ sub ArticleUpdate {
         if ( !IsArrayRefWithData( $Param{Value} ) ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
-                Message  => 'Value must be AoH!',
+                Message  => 'Value must be an array reference!',
             );
             return;
         }
@@ -508,7 +513,7 @@ sub ArticleUpdate {
         %Param,
     );
 
-    $Kernel::OM->Get('Kernel::System::Ticket::Article')->_ArticleCacheClear(
+    $ArticleObject->_ArticleCacheClear(
         TicketID => $Param{TicketID},
     );
 
@@ -562,17 +567,6 @@ sub ArticleDelete {    ## no critic;
     return $Self->_MetaArticleDelete(
         %Param,
     );
-}
-
-=head2 ArticleAttachmentIndex()
-
-Compatibility method, returns nothing. Will be removed after all places invoking C<ArticleAttachmentIndex()> on article
-backends are improved.
-
-=cut
-
-sub ArticleAttachmentIndex {
-    return;
 }
 
 =head2 BackendSearchableFieldsGet()
@@ -665,11 +659,11 @@ my %ArticleSearchData = {
 sub ArticleSearchableContentGet {
     my ( $Self, %Param ) = @_;
 
-    for (qw(TicketID ArticleID UserID)) {
-        if ( !$Param{$_} ) {
+    for my $Item (qw(TicketID ArticleID UserID)) {
+        if ( !$Param{$Item} ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
-                Message  => "Need $_!"
+                Message  => "Need $Item!"
             );
             return;
         }
@@ -711,6 +705,34 @@ sub ArticleSearchableContentGet {
     }
 
     return %ArticleSearchData;
+}
+
+=head2 ArticleHasHTMLContent()
+
+Returns 1 if article has HTML content.
+
+    my $ArticleHasHTMLContent = $ArticleBackendObject->ArticleHasHTMLContent(
+        TicketID  => 1,
+        ArticleID => 2,
+        UserID    => 1,
+    );
+
+Result:
+
+    $ArticleHasHTMLContent = 1;
+
+=cut
+
+sub ArticleHasHTMLContent {
+    my ( $Self, %Param ) = @_;
+
+    return 1;
+}
+
+sub ArticleAttachmentIndex {
+    my ( $Self, %Param ) = @_;
+
+    return;
 }
 
 1;

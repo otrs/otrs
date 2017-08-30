@@ -100,10 +100,18 @@ sub Run {
         # challenge token check for write action
         $LayoutObject->ChallengeTokenCheck();
 
+        # TODO:
+        # Events, IsVisibleForCustomer, ArticleSenderTypeID, ArticleIsVisibleForCustomer,
+        # ArticleCommunicationChannelID, Transports are used twice! Why? See below.
+        # The same is done in the other subactions.
+        # Also check each transport (Email, SMS, Webview) template file for duplicate ids like IsVisibleForCustomer!
+
         my %GetParam;
         for my $Parameter (
             @ArticleSearchableFieldsKeys,
-            qw(ID Name Comment ValidID Events IsVisibleForCustomer ArticleSenderTypeID Transports)
+            qw(ID Name Comment ValidID Events IsVisibleForCustomer
+            ArticleSenderTypeID ArticleIsVisibleForCustomer ArticleCommunicationChannelID
+            Transports)
             )
         {
             $GetParam{$Parameter} = $ParamObject->GetParam( Param => $Parameter ) || '';
@@ -114,8 +122,9 @@ sub Run {
             qw(Recipients RecipientAgents RecipientGroups RecipientRoles
             Events StateID QueueID PriorityID LockID TypeID ServiceID SLAID
             CustomerID CustomerUserID IsVisibleForCustomer ArticleAttachmentInclude
-            ArticleSenderTypeID Transports OncePerDay SendOnOutOfOffice
-            VisibleForAgent VisibleForAgentTooltip LanguageID AgentEnabledByDefault)
+            ArticleSenderTypeID ArticleIsVisibleForCustomer ArticleCommunicationChannelID
+            Transports OncePerDay SendOnOutOfOffice VisibleForAgent VisibleForAgentTooltip
+            LanguageID AgentEnabledByDefault)
             )
         {
             my @Data = $ParamObject->GetArray( Param => $Parameter );
@@ -209,7 +218,12 @@ sub Run {
             @{ $GetParam{Data}->{Events} || [] }
             )
         {
-            my $ArticleFilterValueSet = $GetParam{ArticleSenderTypeID} ? 1 : 0;
+            my $ArticleFilterValueSet = 0;
+            for my $ArticleFilter (qw(ArticleSenderTypeID ArticleIsVisibleForCustomer ArticleCommunicationChannelID)) {
+                if ( $GetParam{$ArticleFilter} ) {
+                    $ArticleFilterValueSet = 1;
+                }
+            }
 
             ARTICLEFIELDKEY:
             for my $ArticleFieldKey (@ArticleSearchableFieldsKeys) {
@@ -245,7 +259,7 @@ sub Run {
             {
                 my $ID = $ParamObject->GetParam( Param => 'ID' ) || '';
                 return $LayoutObject->Redirect(
-                    OP => "Action=$Self->{Action};Subaction=Change;ID=$ID;Notification=Update"
+                    OP => "Action=$Self->{Action};Subaction=Change;ID=$ID;Notification=Update",
                 );
             }
             else {
@@ -324,7 +338,9 @@ sub Run {
         my %GetParam;
         for my $Parameter (
             @ArticleSearchableFieldsKeys,
-            qw(Name Comment ValidID Events IsVisibleForCustomer ArticleSenderTypeID Transports)
+            qw(Name Comment ValidID Events IsVisibleForCustomer
+            ArticleSenderTypeID ArticleIsVisibleForCustomer ArticleCommunicationChannelID
+            Transports)
             )
         {
             $GetParam{$Parameter} = $ParamObject->GetParam( Param => $Parameter ) || '';
@@ -335,8 +351,9 @@ sub Run {
             qw(Recipients RecipientAgents RecipientRoles RecipientGroups Events StateID QueueID
             PriorityID LockID TypeID ServiceID SLAID CustomerID CustomerUserID
             IsVisibleForCustomer ArticleAttachmentInclude
-            ArticleSenderTypeID Transports OncePerDay SendOnOutOfOffice
-            VisibleForAgent VisibleForAgentTooltip LanguageID AgentEnabledByDefault)
+            ArticleSenderTypeID ArticleIsVisibleForCustomer ArticleCommunicationChannelID
+            Transports OncePerDay SendOnOutOfOffice VisibleForAgent VisibleForAgentTooltip
+            LanguageID AgentEnabledByDefault)
             )
         {
             my @Data = $ParamObject->GetArray( Param => $Parameter );
@@ -430,7 +447,12 @@ sub Run {
             @{ $GetParam{Data}->{Events} || [] }
             )
         {
-            my $ArticleFilterValueSet = $GetParam{ArticleSenderTypeID} ? 1 : 0;
+            my $ArticleFilterValueSet = 0;
+            for my $ArticleFilter (qw(ArticleSenderTypeID ArticleIsVisibleForCustomer ArticleCommunicationChannelID)) {
+                if ( $GetParam{$ArticleFilter} ) {
+                    $ArticleFilterValueSet = 1;
+                }
+            }
 
             ARTICLEFIELDKEY:
             for my $ArticleFieldKey (@ArticleSearchableFieldsKeys) {
@@ -714,6 +736,8 @@ sub Run {
             Data         => \%Param,
         );
         $Output .= $LayoutObject->Footer();
+
+        return $Output;
     }
 
     # ------------------------------------------------------------
@@ -734,6 +758,7 @@ sub Run {
         return $Output;
     }
 
+    return;
 }
 
 sub _Edit {
@@ -759,6 +784,7 @@ sub _Edit {
 
     $Param{RecipientsStrg} = $LayoutObject->BuildSelection(
         Data => {
+            AgentCreateBy             => Translatable('Agent who created the ticket'),
             AgentOwner                => Translatable('Agent who owns the ticket'),
             AgentResponsible          => Translatable('Agent who is responsible for the ticket'),
             AgentWatcher              => Translatable('All agents watching the ticket'),
@@ -766,7 +792,7 @@ sub _Edit {
             AgentMyQueues             => Translatable('All agents subscribed to the ticket\'s queue'),
             AgentMyServices           => Translatable('All agents subscribed to the ticket\'s service'),
             AgentMyQueuesMyServices   => Translatable('All agents subscribed to both the ticket\'s queue and service'),
-            Customer                  => Translatable('Customer of the ticket'),
+            Customer                  => Translatable('Customer user of the ticket'),
             AllRecipientsFirstArticle => Translatable('All recipients of the first article'),
             AllRecipientsLastArticle  => Translatable('All recipients of the last article'),
         },
@@ -1184,6 +1210,31 @@ sub _Edit {
         Max         => 200,
     );
 
+    $Param{ArticleCustomerVisibilityStrg} = $LayoutObject->BuildSelection(
+        Data => {
+            0 => 'Invisible to customer',
+            1 => 'Visible to customer',
+        },
+        Name         => 'ArticleIsVisibleForCustomer',
+        SelectedID   => $Param{Data}->{ArticleIsVisibleForCustomer},
+        Class        => 'Modernize W75pc',
+        Translation  => 1,
+        PossibleNone => 1,
+    );
+
+    my @CommunicationChannelList = $Kernel::OM->Get('Kernel::System::CommunicationChannel')->ChannelList();
+    my %CommunicationChannels = map { $_->{ChannelID} => $_->{DisplayName} } @CommunicationChannelList;
+
+    $Param{ArticleCommunicationChannelStrg} = $LayoutObject->BuildSelection(
+        Data        => \%CommunicationChannels,
+        Name        => 'ArticleCommunicationChannelID',
+        SelectedID  => $Param{Data}->{ArticleCommunicationChannelID},
+        Class       => 'Modernize W75pc',
+        Multiple    => 1,
+        Size        => 5,
+        Translation => 1,
+    );
+
     $Param{ArticleAttachmentIncludeStrg} = $LayoutObject->BuildSelection(
         Data => {
             0 => 'No',
@@ -1311,45 +1362,69 @@ sub _Edit {
                 next TRANSPORT;
             }
             else {
-                my $TransportChecked = '';
-                if ( grep { $_ eq $Transport } @{ $Param{Data}->{Transports} } ) {
-                    $TransportChecked = 'checked="checked"';
+
+                my $TransportObject = $Kernel::OM->Get( $RegisteredTransports{$Transport}->{Module} );
+
+                my $IsActive = 1;
+
+                # Check only if function is available due backwards compatibility.
+                if ( $TransportObject->can('IsActive') ) {
+                    $IsActive = $TransportObject->IsActive();
                 }
 
-                # set Email transport selected on add screen
-                if ( $Transport eq 'Email' && !$Param{ID} ) {
-                    $TransportChecked = 'checked="checked"'
-                }
+                if ($IsActive) {
 
-                # get transport settings string from transport object
-                my $TransportSettings =
-                    $Kernel::OM->Get( $RegisteredTransports{$Transport}->{Module} )->TransportSettingsDisplayGet(
-                    %Param,
+                    my $TransportChecked = '';
+                    if ( grep { $_ eq $Transport } @{ $Param{Data}->{Transports} } ) {
+                        $TransportChecked = 'checked="checked"';
+                    }
+
+                    # set Email transport selected on add screen
+                    if ( $Transport eq 'Email' && !$Param{ID} ) {
+                        $TransportChecked = 'checked="checked"'
+                    }
+
+                    # get transport settings string from transport object
+                    my $TransportSettings =
+                        $TransportObject->TransportSettingsDisplayGet(
+                        %Param,
+                        );
+
+                    # it should decide if the default value for the
+                    # notification on AgentPreferences is enabled or not
+                    my $AgentEnabledByDefault = 0;
+                    if ( grep { $_ eq $Transport } @{ $Param{Data}->{AgentEnabledByDefault} } ) {
+                        $AgentEnabledByDefault = 1;
+                    }
+                    elsif ( !$Param{ID} && defined $RegisteredTransports{$Transport}->{AgentEnabledByDefault} ) {
+                        $AgentEnabledByDefault = $RegisteredTransports{$Transport}->{AgentEnabledByDefault};
+                    }
+                    my $AgentEnabledByDefaultChecked = ( $AgentEnabledByDefault ? 'checked="checked"' : '' );
+
+                    # transport
+                    $LayoutObject->Block(
+                        Name => 'TransportRowEnabled',
+                        Data => {
+                            Transport                    => $Transport,
+                            TransportName                => $RegisteredTransports{$Transport}->{Name},
+                            TransportChecked             => $TransportChecked,
+                            SettingsString               => $TransportSettings,
+                            AgentEnabledByDefaultChecked => $AgentEnabledByDefaultChecked,
+                            TransportsServerError        => $Param{TransportsServerError},
+                        },
                     );
-
-                # it should decide if the default value for the
-                # notification on AgentPreferences is enabled or not
-                my $AgentEnabledByDefault = 0;
-                if ( grep { $_ eq $Transport } @{ $Param{Data}->{AgentEnabledByDefault} } ) {
-                    $AgentEnabledByDefault = 1;
                 }
-                elsif ( !$Param{ID} && defined $RegisteredTransports{$Transport}->{AgentEnabledByDefault} ) {
-                    $AgentEnabledByDefault = $RegisteredTransports{$Transport}->{AgentEnabledByDefault};
-                }
-                my $AgentEnabledByDefaultChecked = ( $AgentEnabledByDefault ? 'checked="checked"' : '' );
+                else {
 
-                # transport
-                $LayoutObject->Block(
-                    Name => 'TransportRowEnabled',
-                    Data => {
-                        Transport                    => $Transport,
-                        TransportName                => $RegisteredTransports{$Transport}->{Name},
-                        TransportChecked             => $TransportChecked,
-                        SettingsString               => $TransportSettings,
-                        AgentEnabledByDefaultChecked => $AgentEnabledByDefaultChecked,
-                        TransportsServerError        => $Param{TransportsServerError},
-                    },
-                );
+                    # This trasnport needs to be active before use it.
+                    $LayoutObject->Block(
+                        Name => 'TransportRowNotActive',
+                        Data => {
+                            Transport     => $Transport,
+                            TransportName => $RegisteredTransports{$Transport}->{Name},
+                        },
+                    );
+                }
 
             }
 
@@ -1395,10 +1470,10 @@ sub _Overview {
 
         # get valid list
         my %ValidList = $Kernel::OM->Get('Kernel::System::Valid')->ValidList();
-        for ( sort { $List{$a} cmp $List{$b} } keys %List ) {
+        for my $NotificationID ( sort { $List{$a} cmp $List{$b} } keys %List ) {
 
             my %Data = $NotificationEventObject->NotificationGet(
-                ID => $_,
+                ID => $NotificationID,
             );
             $LayoutObject->Block(
                 Name => 'OverviewResultRow',

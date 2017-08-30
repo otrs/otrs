@@ -1111,7 +1111,7 @@ my @Tests = (
                 Select => '.HashItem:nth-of-type(2) input',
             },
             {
-                Write => 'Address',
+                Write => 'DynamicField_Address',    # check if keys with "_" works
             },
             {
                 Click => '.AddKey',
@@ -1120,7 +1120,7 @@ my @Tests = (
                 Select => '.HashItem:nth-of-type(2) .Entry',
             },
             {
-                Write => 'Street #, City',
+                Write => '0',                       # check if value can be 0
             },
             {
                 Hover => '.Setting',
@@ -1129,12 +1129,15 @@ my @Tests = (
                 Click => '.Update',
             },
             {
-                Select => 'input',
+                Select => '.HashItem:nth-of-type(1) .Content',
+            },
+            {
+                ElementValue => '0',
             },
         ],
         ExpectedResult => {
-            'First name' => 'John',
-            'Address'    => 'Street #, City',
+            'First name'           => 'John',
+            'DynamicField_Address' => '0',
         },
     },
     {
@@ -2685,10 +2688,47 @@ my @Tests = (
                 Click => '.Update',
             },
             {
-                Select => 'input',
+                Select => '.Setting input',
+            },
+            {
+                ElementValue => 'Ticket#45',
             },
         ],
         ExpectedResult => 'Ticket#45',
+    },
+    {
+        Name     => 'ExampleString',
+        Index    => 47,
+        Commands => [
+            {
+                Hover => '.Content',
+            },
+            {
+                Click => '.SettingEdit',
+            },
+            {
+                Select => '.Setting input',
+            },
+            {
+                Clear => 1,
+            },
+            {
+                Write => '',
+            },
+            {
+                Hover => '.Setting',
+            },
+            {
+                Click => '.Update',
+            },
+            {
+                Select => '.Setting input',
+            },
+            {
+                ElementValue => '',
+            },
+        ],
+        ExpectedResult => '',
     },
     {
         Name     => 'ExampleTextarea',
@@ -2718,8 +2758,45 @@ my @Tests = (
             {
                 Select => 'textarea',
             },
+            {
+                ElementValue => 'Area text',
+            },
         ],
         ExpectedResult => 'Area text',
+    },
+    {
+        Name     => 'ExampleTextarea',
+        Index    => 48,
+        Commands => [
+            {
+                Hover => '.Content',
+            },
+            {
+                Click => '.SettingEdit',
+            },
+            {
+                Select => 'textarea',
+            },
+            {
+                Clear => 1,
+            },
+            {
+                Write => '',
+            },
+            {
+                Hover => '.Setting',
+            },
+            {
+                Click => '.Update',
+            },
+            {
+                Select => 'textarea',
+            },
+            {
+                ElementValue => '',
+            },
+        ],
+        ExpectedResult => '',
     },
     {
         Name     => 'ExampleTimeZone',
@@ -3110,7 +3187,23 @@ $Selenium->RunTest(
         # get script alias
         my $ScriptAlias = $Kernel::OM->Get('Kernel::Config')->Get('ScriptAlias');
 
-        # navigate to AdminSysConfig screen
+        $Selenium->VerifiedGet("${ScriptAlias}index.pl?Action=AdminSystemConfiguration");
+
+        my $OTRSBusinessIsInstalled = $Kernel::OM->Get('Kernel::System::OTRSBusiness')->OTRSBusinessIsInstalled();
+        my $OBTeaserFound = index( $Selenium->get_page_source(), 'supports versioning, rollback and' ) > -1;
+        if ( !$OTRSBusinessIsInstalled ) {
+            $Self->True(
+                $OBTeaserFound,
+                "OTRSBusiness teaser found on page",
+            );
+        }
+        else {
+            $Self->False(
+                $OBTeaserFound,
+                "OTRSBusiness teaser not found on page",
+            );
+        }
+
         $Selenium->VerifiedGet("${ScriptAlias}index.pl?Action=AdminSystemConfigurationGroup;RootNavigation=Sample;");
 
         my $SelectedItem;
@@ -3200,8 +3293,7 @@ $Selenium->RunTest(
                 }
                 elsif ( $CommandType eq 'JS' ) {
 
-                    # wait for any tasks to complete
-
+                    # Wait for any tasks to complete.
                     $Selenium->WaitFor(
                         JavaScript => 'return $("' . $Prefix . '").hasClass("HasOverlay")==0',
                     );
@@ -3212,10 +3304,9 @@ $Selenium->RunTest(
                 }
             }
 
-            # Compare result
+            # compare results
             my %Setting = $SysConfigObject->SettingGet(
-                Name      => $Test->{Name},
-                Translate => 0,
+                Name => $Test->{Name},
             );
 
             if ( $Test->{ExpectedResult} ) {

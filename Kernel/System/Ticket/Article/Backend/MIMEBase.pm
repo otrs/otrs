@@ -19,18 +19,14 @@ use Kernel::System::VariableCheck qw(:all);
 our @ObjectDependencies = (
     'Kernel::Config',
     'Kernel::System::Cache',
-    'Kernel::System::CustomerUser',
     'Kernel::System::DB',
     'Kernel::System::Email',
     'Kernel::System::HTMLUtils',
     'Kernel::System::Log',
     'Kernel::System::Main',
-    'Kernel::System::PostMaster::LoopProtection',
-    'Kernel::System::State',
-    'Kernel::System::TemplateGenerator',
     'Kernel::System::Ticket',
     'Kernel::System::Ticket::Article',
-    'Kernel::System::Time',
+    'Kernel::System::Ticket::Article::Backend::Email',
     'Kernel::System::User',
 );
 
@@ -74,7 +70,7 @@ sub new {
 
     # Persistent for this object's lifetime so that we can have article objects with different storage modules.
     $Self->{ArticleStorageModule} = $Param{ArticleStorageModule}
-        || $Kernel::OM->Get('Kernel::Config')->Get('Ticket::Article::Backend::MIMEBase')->{'ArticleStorage'}
+        || $Kernel::OM->Get('Kernel::Config')->Get('Ticket::Article::Backend::MIMEBase::ArticleStorage')
         || 'Kernel::System::Ticket::Article::Backend::MIMEBase::ArticleStorageDB';
 
     return $Self;
@@ -95,6 +91,7 @@ Create a MIME article.
         From           => 'Some Agent <email@example.com>',       # not required but useful
         To             => 'Some Customer A <customer-a@example.com>', # not required but useful
         Cc             => 'Some Customer B <customer-b@example.com>', # not required but useful
+        Bcc            => 'Some Customer C <customer-c@example.com>', # not required but useful
         ReplyTo        => 'Some Customer B <customer-b@example.com>', # not required
         Subject        => 'some short description',               # not required but useful
         Body           => 'the message text',                     # not required but useful
@@ -196,11 +193,11 @@ sub ArticleCreate {
 
     # check ContentType vs. Charset & MimeType
     if ( !$Param{ContentType} ) {
-        for (qw(Charset MimeType)) {
-            if ( !$Param{$_} ) {
+        for my $Item (qw(Charset MimeType)) {
+            if ( !$Param{$Item} ) {
                 $Kernel::OM->Get('Kernel::System::Log')->Log(
                     Priority => 'error',
-                    Message  => "Need $_!"
+                    Message  => "Need $Item!"
                 );
                 return;
             }
@@ -208,11 +205,11 @@ sub ArticleCreate {
         $Param{ContentType} = "$Param{MimeType}; charset=$Param{Charset}";
     }
     else {
-        for (qw(ContentType)) {
-            if ( !$Param{$_} ) {
+        for my $Item (qw(ContentType)) {
+            if ( !$Param{$Item} ) {
                 $Kernel::OM->Get('Kernel::System::Log')->Log(
                     Priority => 'error',
-                    Message  => "Need $_!"
+                    Message  => "Need $Item!"
                 );
                 return;
             }
@@ -232,8 +229,10 @@ sub ArticleCreate {
         }
     }
 
+    my $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
+
     # for the event handler, before any actions have taken place
-    my %OldTicketData = $Kernel::OM->Get('Kernel::System::Ticket')->TicketGet(
+    my %OldTicketData = $TicketObject->TicketGet(
         TicketID      => $Param{TicketID},
         DynamicFields => 1,
     );
@@ -297,7 +296,7 @@ sub ArticleCreate {
     }
 
     # strip not wanted stuff
-    for my $Attribute (qw(From To Cc Subject MessageID InReplyTo References ReplyTo)) {
+    for my $Attribute (qw(From To Cc Bcc Subject MessageID InReplyTo References ReplyTo)) {
         if ( defined $Param{$Attribute} ) {
             $Param{$Attribute} =~ s/\n|\r//g;
         }
@@ -315,14 +314,16 @@ sub ArticleCreate {
     my @Articles = $ArticleObject->ArticleList( TicketID => $Param{TicketID} );
     my $FirstArticle = scalar @Articles ? 0 : 1;
 
+    my $MainObject = $Kernel::OM->Get('Kernel::System::Main');
+
     # calculate MD5 of Message ID
     if ( $Param{MessageID} ) {
-        $Param{MD5} = $Kernel::OM->Get('Kernel::System::Main')->MD5sum( String => $Param{MessageID} );
+        $Param{MD5} = $MainObject->MD5sum( String => $Param{MessageID} );
     }
 
     # Generate unique fingerprint for searching created article in database to prevent race conditions
     #   (see https://bugs.otrs.org/show_bug.cgi?id=12438).
-    my $RandomString = $Kernel::OM->Get('Kernel::System::Main')->GenerateRandomString(
+    my $RandomString = $MainObject->GenerateRandomString(
         Length => 32,
     );
     my $ArticleInsertFingerprint = $$ . '-' . $RandomString . '-' . ( $Param{MessageID} // '' );
@@ -349,15 +350,15 @@ sub ArticleCreate {
     return if !$DBObject->Do(
         SQL => '
             INSERT INTO article_data_mime (
-                article_id, a_from, a_reply_to, a_to, a_cc, a_subject, a_message_id,
+                article_id, a_from, a_reply_to, a_to, a_cc, a_bcc, a_subject, a_message_id,
                 a_message_id_md5, a_in_reply_to, a_references, a_content_type, a_body,
                 incoming_time, content_path, create_time, create_by, change_time, change_by)
             VALUES (
-                ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, current_timestamp, ?, current_timestamp, ?
+                ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, current_timestamp, ?, current_timestamp, ?
             )
         ',
         Bind => [
-            \$ArticleID, \$Param{From}, \$Param{ReplyTo}, \$Param{To}, \$Param{Cc},
+            \$ArticleID, \$Param{From}, \$Param{ReplyTo}, \$Param{To}, \$Param{Cc}, \$Param{Bcc},
             \$Param{Subject},
             \$ArticleInsertFingerprint,    # just for next search; will be updated with correct MessageID
             \$Param{MD5}, \$Param{InReplyTo}, \$Param{References}, \$Param{ContentType},
@@ -439,7 +440,7 @@ sub ArticleCreate {
     );
 
     # add history row
-    $Kernel::OM->Get('Kernel::System::Ticket')->HistoryAdd(
+    $TicketObject->HistoryAdd(
         ArticleID    => $ArticleID,
         TicketID     => $Param{TicketID},
         CreateUserID => $Param{UserID},
@@ -462,7 +463,7 @@ sub ArticleCreate {
         );
 
         if ( $OwnerInfo{OutOfOfficeMessage} ) {
-            $Kernel::OM->Get('Kernel::System::Ticket')->TicketLockSet(
+            $TicketObject->TicketLockSet(
                 TicketID => $Param{TicketID},
                 Lock     => 'unlock',
                 UserID   => $Param{UserID},
@@ -511,7 +512,7 @@ sub ArticleCreate {
         }
 
         if ( $LastSenderTypeID && $LastSenderTypeID == $AgentSenderTypeID ) {
-            $Kernel::OM->Get('Kernel::System::Ticket')->TicketUnlockTimeoutUpdate(
+            $TicketObject->TicketUnlockTimeoutUpdate(
                 UnlockTimeout => $IncomingTime,
                 TicketID      => $Param{TicketID},
                 UserID        => $Param{UserID},
@@ -521,7 +522,7 @@ sub ArticleCreate {
 
     # check if latest article is sent to customer
     elsif ( $Param{SenderType} eq 'agent' ) {
-        $Kernel::OM->Get('Kernel::System::Ticket')->TicketUnlockTimeoutUpdate(
+        $TicketObject->TicketUnlockTimeoutUpdate(
             UnlockTimeout => $IncomingTime,
             TicketID      => $Param{TicketID},
             UserID        => $Param{UserID},
@@ -530,20 +531,35 @@ sub ArticleCreate {
 
     # send auto response
     if ( $Param{AutoResponseType} ) {
-        $Self->SendAutoResponse(
-            OrigHeader           => $Param{OrigHeader},
-            TicketID             => $Param{TicketID},
-            UserID               => $Param{UserID},
-            AutoResponseType     => $Param{AutoResponseType},
-            SenderTypeID         => $Param{SenderTypeID},
-            IsVisibleForCustomer => $Param{IsVisibleForCustomer},
-        );
+
+        # Check if SendAutoResponse() method exists, before calling it. If it doesn't, get an instance of an additional
+        #   email backend first.
+        if ( $Self->can('SendAutoResponse') ) {
+            $Self->SendAutoResponse(
+                OrigHeader           => $Param{OrigHeader},
+                TicketID             => $Param{TicketID},
+                UserID               => $Param{UserID},
+                AutoResponseType     => $Param{AutoResponseType},
+                SenderTypeID         => $Param{SenderTypeID},
+                IsVisibleForCustomer => $Param{IsVisibleForCustomer},
+            );
+        }
+        else {
+            $Kernel::OM->Get('Kernel::System::Ticket::Article::Backend::Email')->SendAutoResponse(
+                OrigHeader           => $Param{OrigHeader},
+                TicketID             => $Param{TicketID},
+                UserID               => $Param{UserID},
+                AutoResponseType     => $Param{AutoResponseType},
+                SenderTypeID         => $Param{SenderTypeID},
+                IsVisibleForCustomer => $Param{IsVisibleForCustomer},
+            );
+        }
     }
 
     # send no agent notification!?
     return $ArticleID if $Param{NoAgentNotify};
 
-    my %Ticket = $Kernel::OM->Get('Kernel::System::Ticket')->TicketGet(
+    my %Ticket = $TicketObject->TicketGet(
         TicketID      => $Param{TicketID},
         DynamicFields => 0,
     );
@@ -647,11 +663,10 @@ sub ArticleCreate {
 Returns single article data.
 
     my %Article = $ArticleBackendObject->ArticleGet(
-        TicketID       => 123,   # (required)
-        ArticleID      => 123,   # (required)
-        DynamicFields  => 1,     # (optional) To include the dynamic field values for this article on the return structure.
-        RealNames      => 1,     # (optional) To include the From/To/Cc fields with real names.
-        UserID         => 123,   # (required)
+        TicketID      => 123,   # (required)
+        ArticleID     => 123,   # (required)
+        DynamicFields => 1,     # (optional) To include the dynamic field values for this article on the return structure.
+        RealNames     => 1,     # (optional) To include the From/To/Cc/Bcc fields with real names.
     );
 
 Returns:
@@ -662,6 +677,7 @@ Returns:
         From                 => 'Some Agent <email@example.com>',
         To                   => 'Some Customer A <customer-a@example.com>',
         Cc                   => 'Some Customer B <customer-b@example.com>',
+        Bcc                  => 'Some Customer C <customer-c@example.com>',
         ReplyTo              => 'Some Customer B <customer-b@example.com>',
         Subject              => 'some short description',
         MessageID            => '<asdasdasd.123@example.com>',
@@ -685,6 +701,7 @@ Returns:
         FromRealname => 'Some Agent',
         ToRealname   => 'Some Customer A',
         CcRealname   => 'Some Customer B',
+        BccRealname  => 'Some Customer C',
     );
 
 =cut
@@ -692,11 +709,11 @@ Returns:
 sub ArticleGet {
     my ( $Self, %Param ) = @_;
 
-    for (qw(TicketID ArticleID UserID)) {
-        if ( !$Param{$_} ) {
+    for my $Item (qw(TicketID ArticleID)) {
+        if ( !$Param{$Item} ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
-                Message  => "Need $_!"
+                Message  => "Need $Item!"
             );
             return;
         }
@@ -722,7 +739,7 @@ sub ArticleGet {
     my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
 
     my $SQL = '
-        SELECT sadm.a_from, sadm.a_reply_to, sadm.a_to, sadm.a_cc, sadm.a_subject,
+        SELECT sadm.a_from, sadm.a_reply_to, sadm.a_to, sadm.a_cc, sadm.a_bcc, sadm.a_subject,
             sadm.a_message_id, sadm.a_in_reply_to, sadm.a_references, sadm.a_content_type,
             sadm.a_body, sadm.incoming_time
         FROM article_data_mime sadm
@@ -744,13 +761,14 @@ sub ArticleGet {
             ReplyTo      => $Row[1],
             To           => $Row[2],
             Cc           => $Row[3],
-            Subject      => $Row[4],
-            MessageID    => $Row[5],
-            InReplyTo    => $Row[6],
-            References   => $Row[7],
-            ContentType  => $Row[8],
-            Body         => $Row[9],
-            IncomingTime => $Row[10],
+            Bcc          => $Row[4],
+            Subject      => $Row[5],
+            MessageID    => $Row[6],
+            InReplyTo    => $Row[7],
+            References   => $Row[8],
+            ContentType  => $Row[9],
+            Body         => $Row[10],
+            IncomingTime => $Row[11],
             SenderType   => $ArticleSenderTypeList{ $Article{SenderTypeID} },
         );
 
@@ -776,7 +794,7 @@ sub ArticleGet {
         }
 
         RECIPIENT:
-        for my $Key (qw(From To Cc Subject)) {
+        for my $Key (qw(From To Cc Bcc Subject)) {
             next RECIPIENT if !$Data{$Key};
 
             # Strip unwanted stuff from some fields.
@@ -838,7 +856,7 @@ sub ArticleGet {
 
 Update article data.
 
-Note: Keys C<Body>, C<Subject>, C<From>, C<To>, C<Cc>, C<ReplyTo>, C<SenderType>, C<SenderTypeID>
+Note: Keys C<Body>, C<Subject>, C<From>, C<To>, C<Cc>, C<Bcc>, C<ReplyTo>, C<SenderType>, C<SenderTypeID>
 and C<IsVisibleForCustomer> are implemented.
 
     my $Success = $ArticleBackendObject->ArticleUpdate(
@@ -865,11 +883,11 @@ Events:
 sub ArticleUpdate {
     my ( $Self, %Param ) = @_;
 
-    for (qw(TicketID ArticleID UserID Key)) {
-        if ( !$Param{$_} ) {
+    for my $Item (qw(TicketID ArticleID UserID Key)) {
+        if ( !$Param{$Item} ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
-                Message  => "Need $_!",
+                Message  => "Need $Item!",
             );
             return;
         }
@@ -883,10 +901,12 @@ sub ArticleUpdate {
         return;
     }
 
+    my $ArticleObject = $Kernel::OM->Get('Kernel::System::Ticket::Article');
+
     # Lookup for sender type ID.
     if ( $Param{Key} eq 'SenderType' ) {
         $Param{Key}   = 'SenderTypeID';
-        $Param{Value} = $Kernel::OM->Get('Kernel::System::Ticket::Article')->ArticleSenderTypeLookup(
+        $Param{Value} = $ArticleObject->ArticleSenderTypeLookup(
             SenderType => $Param{Value},
         );
     }
@@ -897,6 +917,7 @@ sub ArticleUpdate {
         From    => 'a_from',
         To      => 'a_to',
         Cc      => 'a_cc',
+        Bcc     => 'a_bcc',
         ReplyTo => 'a_reply_to',
     );
 
@@ -916,7 +937,7 @@ sub ArticleUpdate {
         );
     }
 
-    $Kernel::OM->Get('Kernel::System::Ticket::Article')->_ArticleCacheClear(
+    $ArticleObject->_ArticleCacheClear(
         TicketID => $Param{TicketID},
     );
 
@@ -925,274 +946,6 @@ sub ArticleUpdate {
         Data  => {
             TicketID  => $Param{TicketID},
             ArticleID => $Param{ArticleID},
-        },
-        UserID => $Param{UserID},
-    );
-
-    return 1;
-}
-
-=head2 SendAutoResponse()
-
-Send an auto response to a customer via email.
-
-    my $ArticleID = $ArticleBackendObject->SendAutoResponse(
-        TicketID         => 123,
-        AutoResponseType => 'auto reply',
-        OrigHeader       => {
-            From    => 'some@example.com',
-            Subject => 'For the message!',
-        },
-        UserID => 123,
-    );
-
-Events:
-    ArticleAutoResponse
-
-=cut
-
-sub SendAutoResponse {
-    my ( $Self, %Param ) = @_;
-
-    # check needed stuff
-    for (qw(TicketID UserID OrigHeader AutoResponseType)) {
-        if ( !$Param{$_} ) {
-            $Kernel::OM->Get('Kernel::System::Log')->Log(
-                Priority => 'error',
-                Message  => "Need $_!",
-            );
-            return;
-        }
-    }
-
-    # return if no notification is active
-    return 1 if $Self->{SendNoNotification};
-
-    # get orig email header
-    my %OrigHeader = %{ $Param{OrigHeader} };
-
-    # get ticket
-    my %Ticket = $Kernel::OM->Get('Kernel::System::Ticket')->TicketGet(
-        TicketID      => $Param{TicketID},
-        DynamicFields => 0,                  # not needed here, TemplateGenerator will fetch the ticket on its own
-    );
-
-    # get auto default responses
-    my %AutoResponse = $Kernel::OM->Get('Kernel::System::TemplateGenerator')->AutoResponse(
-        TicketID         => $Param{TicketID},
-        AutoResponseType => $Param{AutoResponseType},
-        OrigHeader       => $Param{OrigHeader},
-        UserID           => $Param{UserID},
-    );
-
-    # return if no valid auto response exists
-    return if !$AutoResponse{Text};
-    return if !$AutoResponse{SenderRealname};
-    return if !$AutoResponse{SenderAddress};
-
-    # send if notification should be sent (not for closed tickets)!?
-    my %State = $Kernel::OM->Get('Kernel::System::State')->StateGet( ID => $Ticket{StateID} );
-    if (
-        $Param{AutoResponseType} eq 'auto reply'
-        && ( $State{TypeName} eq 'closed' || $State{TypeName} eq 'removed' )
-        )
-    {
-
-        # add history row
-        $Kernel::OM->Get('Kernel::System::Ticket')->HistoryAdd(
-            TicketID    => $Param{TicketID},
-            HistoryType => 'Misc',
-            Name        => "Sent no auto response or agent notification because ticket is "
-                . "state-type '$State{TypeName}'!",
-            CreateUserID => $Param{UserID},
-        );
-
-        # return
-        return;
-    }
-
-    # log that no auto response was sent!
-    if ( $OrigHeader{'X-OTRS-Loop'} && $OrigHeader{'X-OTRS-Loop'} !~ /^(false|no)$/i ) {
-
-        # add history row
-        $Kernel::OM->Get('Kernel::System::Ticket')->HistoryAdd(
-            TicketID    => $Param{TicketID},
-            HistoryType => 'Misc',
-            Name        => "Sent no auto-response because the sender doesn't want "
-                . "an auto-response (e. g. loop or precedence header)",
-            CreateUserID => $Param{UserID},
-        );
-        $Kernel::OM->Get('Kernel::System::Log')->Log(
-            Priority => 'info',
-            Message  => "Sent no '$Param{AutoResponseType}' for Ticket ["
-                . "$Ticket{TicketNumber}] ($OrigHeader{From}) because the "
-                . "sender doesn't want an auto-response (e. g. loop or precedence header)"
-        );
-        return;
-    }
-
-    # check reply to for auto response recipient
-    if ( $OrigHeader{ReplyTo} ) {
-        $OrigHeader{From} = $OrigHeader{ReplyTo};
-    }
-
-    # get loop protection object
-    my $LoopProtectionObject = $Kernel::OM->Get('Kernel::System::PostMaster::LoopProtection');
-
-    # create email parser object
-    my $EmailParser = Kernel::System::EmailParser->new(
-        Mode => 'Standalone',
-    );
-
-    my @AutoReplyAddresses;
-    my @Addresses = $EmailParser->SplitAddressLine( Line => $OrigHeader{From} );
-    ADDRESS:
-    for my $Address (@Addresses) {
-        my $Email = $EmailParser->GetEmailAddress( Email => $Address );
-        if ( !$Email ) {
-
-            # add it to ticket history
-            $Kernel::OM->Get('Kernel::System::Ticket')->HistoryAdd(
-                TicketID     => $Param{TicketID},
-                CreateUserID => $Param{UserID},
-                HistoryType  => 'Misc',
-                Name         => "Sent no auto response to '$Address' - no valid email address.",
-            );
-
-            # log
-            $Kernel::OM->Get('Kernel::System::Log')->Log(
-                Priority => 'notice',
-                Message  => "Sent no auto response to '$Address' because of invalid address.",
-            );
-            next ADDRESS;
-
-        }
-        if ( !$LoopProtectionObject->Check( To => $Email ) ) {
-
-            # add history row
-            $Kernel::OM->Get('Kernel::System::Ticket')->HistoryAdd(
-                TicketID     => $Param{TicketID},
-                HistoryType  => 'LoopProtection',
-                Name         => "\%\%$Email",
-                CreateUserID => $Param{UserID},
-            );
-
-            # log
-            $Kernel::OM->Get('Kernel::System::Log')->Log(
-                Priority => 'notice',
-                Message  => "Sent no '$Param{AutoResponseType}' for Ticket ["
-                    . "$Ticket{TicketNumber}] ($Email) because of loop protection."
-            );
-            next ADDRESS;
-        }
-        else {
-
-            # increase loop count
-            return if !$LoopProtectionObject->SendEmail( To => $Email );
-        }
-
-        # check if sender is e. g. MAILER-DAEMON or Postmaster
-        my $NoAutoRegExp = $Kernel::OM->Get('Kernel::Config')->Get('SendNoAutoResponseRegExp');
-        if ( $Email =~ /$NoAutoRegExp/i ) {
-
-            # add it to ticket history
-            $Kernel::OM->Get('Kernel::System::Ticket')->HistoryAdd(
-                TicketID     => $Param{TicketID},
-                CreateUserID => $Param{UserID},
-                HistoryType  => 'Misc',
-                Name         => "Sent no auto response to '$Email', SendNoAutoResponseRegExp matched.",
-            );
-
-            # log
-            $Kernel::OM->Get('Kernel::System::Log')->Log(
-                Priority => 'info',
-                Message  => "Sent no auto response to '$Email' because config"
-                    . " option SendNoAutoResponseRegExp (/$NoAutoRegExp/i) matched.",
-            );
-            next ADDRESS;
-        }
-
-        push @AutoReplyAddresses, $Address;
-    }
-
-    my $AutoReplyAddresses = join( ', ', @AutoReplyAddresses );
-    my $Cc;
-
-    # also send CC to customer user if customer user id is used and addresses do not match
-    if ( $Ticket{CustomerUserID} ) {
-
-        my %CustomerUser = $Kernel::OM->Get('Kernel::System::CustomerUser')->CustomerUserDataGet(
-            User => $Ticket{CustomerUserID},
-        );
-
-        if (
-            $CustomerUser{UserEmail}
-            && $OrigHeader{From} !~ /\Q$CustomerUser{UserEmail}\E/i
-            && $Param{IsVisibleForCustomer}
-            )
-        {
-            $Cc = $CustomerUser{UserEmail};
-        }
-    }
-
-    # get history type
-    my $HistoryType;
-    if ( $Param{AutoResponseType} =~ /^auto follow up$/i ) {
-        $HistoryType = 'SendAutoFollowUp';
-    }
-    elsif ( $Param{AutoResponseType} =~ /^auto reply$/i ) {
-        $HistoryType = 'SendAutoReply';
-    }
-    elsif ( $Param{AutoResponseType} =~ /^auto reply\/new ticket$/i ) {
-        $HistoryType = 'SendAutoReply';
-    }
-    elsif ( $Param{AutoResponseType} =~ /^auto reject$/i ) {
-        $HistoryType = 'SendAutoReject';
-    }
-    else {
-        $HistoryType = 'Misc';
-    }
-
-    if ( !@AutoReplyAddresses && !$Cc ) {
-        $Kernel::OM->Get('Kernel::System::Log')->Log(
-            Priority => 'info',
-            Message  => "No auto response addresses for Ticket [$Ticket{TicketNumber}]"
-                . " (TicketID=$Param{TicketID})."
-        );
-        return;
-    }
-
-    # send email
-    my $ArticleID = $Self->ArticleSend(
-        IsVisibleForCustomer => 1,
-        SenderType           => 'system',
-        TicketID             => $Param{TicketID},
-        HistoryType          => $HistoryType,
-        HistoryComment       => "\%\%$AutoReplyAddresses",
-        From                 => "$AutoResponse{SenderRealname} <$AutoResponse{SenderAddress}>",
-        To                   => $AutoReplyAddresses,
-        Cc                   => $Cc,
-        Charset              => 'utf-8',
-        MimeType             => $AutoResponse{ContentType},
-        Subject              => $AutoResponse{Subject},
-        Body                 => $AutoResponse{Text},
-        InReplyTo            => $OrigHeader{'Message-ID'},
-        Loop                 => 1,
-        UserID               => $Param{UserID},
-    );
-
-    # log
-    $Kernel::OM->Get('Kernel::System::Log')->Log(
-        Priority => 'info',
-        Message  => "Sent auto response ($HistoryType) for Ticket [$Ticket{TicketNumber}]"
-            . " (TicketID=$Param{TicketID}, ArticleID=$ArticleID) to '$AutoReplyAddresses'."
-    );
-
-    # event
-    $Self->EventHandler(
-        Event => 'ArticleAutoResponse',
-        Data  => {
-            TicketID => $Param{TicketID},
         },
         UserID => $Param{UserID},
     );
@@ -1228,9 +981,17 @@ sub ArticleDelete {    ## no critic;
     # Delete from article storage.
     return if !$Kernel::OM->Get( $Self->{ArticleStorageModule} )->ArticleDelete(%Param);
 
+    my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
+
     # Delete article data.
-    return if !$Kernel::OM->Get('Kernel::System::DB')->Do(
+    return if !$DBObject->Do(
         SQL  => 'DELETE FROM article_data_mime WHERE article_id = ?',
+        Bind => [ \$Param{ArticleID} ],
+    );
+
+    # Delete related transmission error entries.
+    return if !$DBObject->Do(
+        SQL  => 'DELETE FROM article_data_mime_send_error WHERE article_id = ?',
         Bind => [ \$Param{ArticleID} ],
     );
 
@@ -1333,7 +1094,6 @@ Get article attachment from storage. This is a delegate method from active backe
     my %Attachment = $ArticleBackendObject->ArticleAttachment(
         ArticleID => 123,
         FileID    => 1,   # as returned by ArticleAttachmentIndex
-        UserID    => 123,
     );
 
 Returns:
@@ -1377,7 +1137,6 @@ Get article attachment index as hash.
 
     my %Index = $BackendObject->ArticleAttachmentIndex(
         ArticleID        => 123,
-        UserID           => 123,
         ExcludePlainText => 1,       # (optional) Exclude plain text attachment
         ExcludeHTMLBody  => 1,       # (optional) Exclude HTML body attachment
         ExcludeInline    => 1,       # (optional) Exclude inline attachments
@@ -1407,7 +1166,7 @@ Returns:
 
 =cut
 
-sub ArticleAttachmentIndex {
+sub ArticleAttachmentIndex {    ## no critic
     my $Self = shift;
     return $Kernel::OM->Get( $Self->{ArticleStorageModule} )->ArticleAttachmentIndex(@_);
 }
@@ -1436,6 +1195,12 @@ Returns:
         'MIMEBase_Cc' => {
             Label      => 'Cc',
             Key        => 'MIMEBase_Cc',
+            Type       => 'Text',
+            Filterable => 0,
+        },
+        'MIMEBase_Bcc' => {
+            Label      => 'Bcc',
+            Key        => 'MIMEBase_Bcc',
             Type       => 'Text',
             Filterable => 0,
         },
@@ -1483,6 +1248,13 @@ sub BackendSearchableFieldsGet {
             Type       => 'Text',
             Filterable => 0,
         },
+        'MIMEBase_Bcc' => {
+            Label                   => 'Bcc',
+            Key                     => 'MIMEBase_Bcc',
+            Type                    => 'Text',
+            Filterable              => 0,
+            HideInCustomerInterface => 1,
+        },
         'MIMEBase_Subject' => {
             Label      => 'Subject',
             Key        => 'MIMEBase_Subject',
@@ -1497,10 +1269,7 @@ sub BackendSearchableFieldsGet {
         },
     );
 
-    if (
-        $Kernel::OM->Get('Kernel::Config')->Get('Ticket::Article::Backend::MIMEBase')->{IndexAttachmentNames}
-        )
-    {
+    if ( $Kernel::OM->Get('Kernel::Config')->Get('Ticket::Article::Backend::MIMEBase::IndexAttachmentNames') ) {
         $SearchableFields{'MIMEBase_AttachmentName'} = {
             Label      => 'Attachment Name',
             Key        => 'MIMEBase_AttachmentName',
@@ -1520,7 +1289,7 @@ Get article attachment index as hash.
         TicketID       => 123,   # (required)
         ArticleID      => 123,   # (required)
         DynamicFields  => 1,     # (optional) To include the dynamic field values for this article on the return structure.
-        RealNames      => 1,     # (optional) To include the From/To/Cc fields with real names.
+        RealNames      => 1,     # (optional) To include the From/To/Cc/Bcc fields with real names.
         UserID         => 123,   # (required)
     );
 
@@ -1545,6 +1314,12 @@ Returns:
             Type       => 'Text',
             Filterable => 0,
         },
+        'Bcc'    => {
+            String     => 'Test User4 <testuser4@example.com>',
+            Key        => 'Bcc',
+            Type       => 'Text',
+            Filterable => 0,
+        },
         'Subject'    => {
             String     => 'This is a test subject!',
             Key        => 'Subject',
@@ -1564,11 +1339,11 @@ Returns:
 sub ArticleSearchableContentGet {
     my ( $Self, %Param ) = @_;
 
-    for (qw(TicketID ArticleID UserID)) {
-        if ( !$Param{$_} ) {
+    for my $Item (qw(TicketID ArticleID UserID)) {
+        if ( !$Param{$Item} ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
-                Message  => "Need $_!"
+                Message  => "Need $Item!"
             );
             return;
         }
@@ -1578,6 +1353,7 @@ sub ArticleSearchableContentGet {
         'MIMEBase_From'    => 'From',
         'MIMEBase_To'      => 'To',
         'MIMEBase_Cc'      => 'Cc',
+        'MIMEBase_Bcc'     => 'Bcc',
         'MIMEBase_Subject' => 'Subject',
         'MIMEBase_Body'    => 'Body',
     );
@@ -1633,6 +1409,47 @@ sub ArticleSearchableContentGet {
     }
 
     return %ArticleSearchData;
+}
+
+=head2 ArticleHasHTMLContent()
+
+Returns 1 if article has HTML content.
+
+    my $ArticleHasHTMLContent = $ArticleBackendObject->ArticleHasHTMLContent(
+        TicketID  => 1,
+        ArticleID => 2,
+        UserID    => 1,
+    );
+
+Result:
+
+    $ArticleHasHTMLContent = 1;     # or 0
+
+=cut
+
+sub ArticleHasHTMLContent {
+    my ( $Self, %Param ) = @_;
+
+    # Check needed stuff.
+    for my $Needed (qw(TicketID ArticleID UserID)) {
+        if ( !$Param{$Needed} ) {
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
+                Priority => 'error',
+                Message  => "Need $Needed!",
+            );
+            return;
+        }
+    }
+
+    # Check if there is HTML body attachment.
+    my %AttachmentIndexHTMLBody = $Self->ArticleAttachmentIndex(
+        %Param,
+        OnlyHTMLBody => 1,
+    );
+
+    my ($HTMLBodyAttachmentID) = sort keys %AttachmentIndexHTMLBody;
+
+    return $HTMLBodyAttachmentID ? 1 : 0;
 }
 
 1;

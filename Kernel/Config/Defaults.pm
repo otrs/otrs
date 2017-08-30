@@ -31,7 +31,7 @@ use File::stat;
 use Digest::MD5;
 
 use Exporter qw(import);
-our @EXPORT = qw(Translatable);
+our @EXPORT = qw(Translatable); ## no critic (allow automatic export)
 
 our @ObjectDependencies = ();
 
@@ -412,6 +412,10 @@ sub LoadDefaults {
     # password crypt type (bcrypt|sha2|sha1|md5|apr1|crypt|plain)
 #    $Self->{'AuthModule::DB::CryptType'} = 'sha2';
 
+    # If "bcrypt" was selected for CryptType, use cost specified here for bcrypt hashing.
+    #   Currently max. supported cost value is 31.
+    # $Self->{'AuthModule::DB::bcryptCost'} = 12;
+
     # This is an example configuration for an LDAP auth. backend.
     # (take care that Net::LDAP is installed!)
 #    $Self->{AuthModule} = 'Kernel::System::Auth::LDAP';
@@ -745,6 +749,11 @@ sub LoadDefaults {
         },
     };
 
+    # Make sure the daemon is able to deploy the configuration to all cluster nodes that have no ZZZAAuto.pm yet.
+    $Self->{DaemonModules}->{SystemConfigurationSyncManager} =  {
+      Module => 'Kernel::System::Daemon::DaemonModules::SystemConfigurationSyncManager'
+    };
+
     # --------------------------------------------------- #
     #                                                     #
     #             Start of config options!!!              #
@@ -784,7 +793,7 @@ sub LoadDefaults {
     # SessionMaxIdleTime
     # (After this time (in seconds) without new http request, then
     # the user get logged off)
-    $Self->{SessionMaxIdleTime} = 6 * 60 * 60;
+    $Self->{SessionMaxIdleTime} = 2 * 60 * 60;
 
     # SessionDeleteIfTimeToOld
     # (Delete session's witch are requested and to old?) [0|1]
@@ -917,7 +926,7 @@ sub LoadDefaults {
     $Self->{TempDir} = '<OTRS_CONFIG_Home>/var/tmp';
 
     # article dir
-    $Self->{'Ticket::Article::Backend::MIMEBase'}->{'ArticleDataDir'} = '<OTRS_CONFIG_Home>/var/article';
+    $Self->{'Ticket::Article::Backend::MIMEBase::ArticleDataDir'} = '<OTRS_CONFIG_Home>/var/article';
 
     # html template dirs
     $Self->{TemplateDir}       = '<OTRS_CONFIG_Home>/Kernel/Output';
@@ -973,13 +982,13 @@ sub LoadDefaults {
 
     # Customer Common JS
     $Self->{'Loader::Customer::CommonJS'}->{'000-Framework'} = [
-        'thirdparty/jquery-3.1.1/jquery.js',
+        'thirdparty/jquery-3.2.1/jquery.js',
         'thirdparty/jquery-browser-detection/jquery-browser-detection.js',
-        'thirdparty/jquery-validate-1.15.0/jquery.validate.js',
+        'thirdparty/jquery-validate-1.16.0/jquery.validate.js',
         'thirdparty/jquery-ui-1.12.1/jquery-ui.js',
         'thirdparty/jquery-pubsub/pubsub.js',
-        'thirdparty/jquery-jstree-3.3.3/jquery.jstree.js',
-        'thirdparty/nunjucks-3.0.0/nunjucks.js',
+        'thirdparty/jquery-jstree-3.3.4/jquery.jstree.js',
+        'thirdparty/nunjucks-3.0.1/nunjucks.js',
         'Core.Init.js',
         'Core.Debug.js',
         'Core.Exception.js',
@@ -996,6 +1005,7 @@ sub LoadDefaults {
         'Core.UI.InputFields.js',
         'Core.UI.Accessibility.js',
         'Core.UI.Dialog.js',
+        'Core.UI.Floater.js',
         'Core.UI.RichTextEditor.js',
         'Core.UI.Datepicker.js',
         'Core.UI.Popup.js',
@@ -1010,14 +1020,14 @@ sub LoadDefaults {
 
     # Agent Common JS
     $Self->{'Loader::Agent::CommonJS'}->{'000-Framework'} = [
-        'thirdparty/jquery-3.1.1/jquery.js',
+        'thirdparty/jquery-3.2.1/jquery.js',
         'thirdparty/jquery-browser-detection/jquery-browser-detection.js',
         'thirdparty/jquery-ui-1.12.1/jquery-ui.js',
         'thirdparty/jquery-ui-touch-punch-0.2.3/jquery.ui.touch-punch.js',
-        'thirdparty/jquery-validate-1.15.0/jquery.validate.js',
+        'thirdparty/jquery-validate-1.16.0/jquery.validate.js',
         'thirdparty/jquery-pubsub/pubsub.js',
-        'thirdparty/jquery-jstree-3.3.3/jquery.jstree.js',
-        'thirdparty/nunjucks-3.0.0/nunjucks.js',
+        'thirdparty/jquery-jstree-3.3.4/jquery.jstree.js',
+        'thirdparty/nunjucks-3.0.1/nunjucks.js',
         'Core.Init.js',
         'Core.JavaScriptEnhancements.js',
         'Core.Debug.js',
@@ -1181,6 +1191,7 @@ sub LoadDefaults {
         'PreferenceGroup'  => 'UserProfile',
         'Key'     => 'Frontend theme',
         'Label'   => 'Theme',
+        'Desc'    => 'Select your preferred theme for OTRS.',
         'Module'  => 'Kernel::Output::HTML::Preferences::Theme',
         'PrefKey' => 'UserTheme',
         'Prio'    => '3000',
@@ -1502,27 +1513,27 @@ via the Preferences button after logging in.
 
             # note: Login, Email and CustomerID needed!
             # var, frontend, storage, shown (1=always,2=lite), required, storage-type, http-link, readonly, http-link-target, link class(es)
-            [ 'UserTitle',      Translatable('Title or salutation'), 'title',  1, 0, 'var', '', 0 ],
-            [ 'UserFirstname',  Translatable('Firstname'),  'first_name', 1, 1, 'var', '', 0 ],
-            [ 'UserLastname',   Translatable('Lastname'),   'last_name',  1, 1, 'var', '', 0 ],
-            [ 'UserLogin',      Translatable('Username'),   'login',      1, 1, 'var', '', 0 ],
-            [ 'UserPassword',   Translatable('Password'),   'pw',         0, 0, 'var', '', 0 ],
-            [ 'UserEmail',      Translatable('Email'),      'email',      1, 1, 'var', '', 0 ],
-#            [ 'UserEmail',      Translatable('Email'), 'email',           1, 1, 'var', '[% Env("CGIHandle") %]?Action=AgentTicketCompose;ResponseID=1;TicketID=[% Data.TicketID | uri %];ArticleID=[% Data.ArticleID | uri %]', 0, '', 'AsPopup OTRSPopup_TicketAction' ],
-            [ 'UserCustomerID', Translatable('CustomerID'), 'customer_id', 0, 1, 'var', '', 0 ],
-#            [ 'UserCustomerIDs', Translatable('CustomerIDs'), 'customer_ids', 1, 0, 'var', '', 0 ],
-            [ 'UserPhone',        Translatable('Phone'),       'phone',        1, 0, 'var', '', 0 ],
-            [ 'UserFax',          Translatable('Fax'),         'fax',          1, 0, 'var', '', 0 ],
-            [ 'UserMobile',       Translatable('Mobile'),      'mobile',       1, 0, 'var', '', 0 ],
-            [ 'UserStreet',       Translatable('Street'),      'street',       1, 0, 'var', '', 0 ],
-            [ 'UserZip',          Translatable('Zip'),         'zip',          1, 0, 'var', '', 0 ],
-            [ 'UserCity',         Translatable('City'),        'city',         1, 0, 'var', '', 0 ],
-            [ 'UserCountry',      Translatable('Country'),     'country',      1, 0, 'var', '', 0 ],
-            [ 'UserComment',      Translatable('Comment'),     'comments',     1, 0, 'var', '', 0 ],
-            [ 'ValidID',          Translatable('Valid'),       'valid_id',     0, 1, 'int', '', 0 ],
+            [ 'UserTitle',        Translatable('Title or salutation'), 'title',          1, 0, 'var', '', 0, undef, undef ],
+            [ 'UserFirstname',    Translatable('Firstname'),           'first_name',     1, 1, 'var', '', 0, undef, undef ],
+            [ 'UserLastname',     Translatable('Lastname'),            'last_name',      1, 1, 'var', '', 0, undef, undef ],
+            [ 'UserLogin',        Translatable('Username'),            'login',          1, 1, 'var', '', 0, undef, undef ],
+            [ 'UserPassword',     Translatable('Password'),            'pw',             0, 0, 'var', '', 0, undef, undef ],
+            [ 'UserEmail',        Translatable('Email'),               'email',          1, 1, 'var', '', 0, undef, undef ],
+#            [ 'UserEmail',        Translatable('Email'),               'email',          1, 1, 'var', '[% Env("CGIHandle") %]?Action=AgentTicketCompose;ResponseID=1;TicketID=[% Data.TicketID | uri %];ArticleID=[% Data.ArticleID | uri %]', 0, '', 'AsPopup OTRSPopup_TicketAction' ],
+            [ 'UserCustomerID',   Translatable('CustomerID'),          'customer_id',    0, 1, 'var', '', 0, undef, undef ],
+#            [ 'UserCustomerIDs',  Translatable('CustomerIDs'),         'customer_ids',   1, 0, 'var', '', 0, undef, undef ],
+            [ 'UserPhone',        Translatable('Phone'),               'phone',          1, 0, 'var', '', 0, undef, undef ],
+            [ 'UserFax',          Translatable('Fax'),                 'fax',            1, 0, 'var', '', 0, undef, undef ],
+            [ 'UserMobile',       Translatable('Mobile'),              'mobile',         1, 0, 'var', '', 0, undef, undef ],
+            [ 'UserStreet',       Translatable('Street'),              'street',         1, 0, 'var', '', 0, undef, undef ],
+            [ 'UserZip',          Translatable('Zip'),                 'zip',            1, 0, 'var', '', 0, undef, undef ],
+            [ 'UserCity',         Translatable('City'),                'city',           1, 0, 'var', '', 0, undef, undef ],
+            [ 'UserCountry',      Translatable('Country'),             'country',        1, 0, 'var', '', 0, undef, undef ],
+            [ 'UserComment',      Translatable('Comment'),             'comments',       1, 0, 'var', '', 0, undef, undef ],
+            [ 'ValidID',          Translatable('Valid'),               'valid_id',       0, 1, 'int', '', 0, undef, undef ],
 
             # Dynamic field example
-#            [ 'DynamicField_Name_X', undef, 'Name_X', 0, 0, 'dynamic_field', undef, 0, undef, undef, ],
+#            [ 'DynamicField_Name_X', undef, 'Name_X', 0, 0, 'dynamic_field', undef, 0, undef, undef ],
         ],
 
         # default selections
@@ -1577,7 +1588,7 @@ via the Preferences button after logging in.
 #        CustomerUserSearchListLimit => 250,
 #        CustomerUserPostMasterSearchFields => ['mail'],
 #        CustomerUserNameFields => ['givenname', 'sn'],
-#        # show now own tickets in customer panel, CompanyTickets
+#        # show customer user and customer tickets in customer interface
 #        CustomerUserExcludePrimaryCustomerID => 0,
 #        # add a ldap filter for valid users (expert setting)
 #        # CustomerUserValidFilter => '(!(description=gesperrt))',
@@ -1590,18 +1601,22 @@ via the Preferences button after logging in.
 #        Map => [
 #            # note: Login, Email and CustomerID needed!
 #            # var, frontend, storage, shown (1=always,2=lite), required, storage-type, http-link, readonly, http-link-target, link class(es)
-#            [ 'UserTitle',       'Title',       'title',               1, 0, 'var', '', 1 ],
-#            [ 'UserFirstname',   'Firstname',   'givenname',           1, 1, 'var', '', 1 ],
-#            [ 'UserLastname',    'Lastname',    'sn',                  1, 1, 'var', '', 1 ],
-#            [ 'UserLogin',       'Username',    'uid',                 1, 1, 'var', '', 1 ],
-#            [ 'UserEmail',       'Email',       'mail',                1, 1, 'var', '', 1 ],
-#            [ 'UserCustomerID',  'CustomerID',  'mail',                0, 1, 'var', '', 1 ],
-#            # [ 'UserCustomerIDs', 'CustomerIDs', 'second_customer_ids', 1, 0, 'var', '', 1 ],
-#            [ 'UserPhone',       'Phone',       'telephonenumber',     1, 0, 'var', '', 1 ],
-#            [ 'UserAddress',     'Address',     'postaladdress',       1, 0, 'var', '', 1 ],
-#            [ 'UserComment',     'Comment',     'description',         1, 0, 'var', '', 1 ],
+#            [ 'UserTitle',       Translatable('Title or salutation'), 'title',               1, 0, 'var', '', 1, undef, undef ],
+#            [ 'UserFirstname',   Translatable('Firstname'),           'givenname',           1, 1, 'var', '', 1, undef, undef ],
+#            [ 'UserLastname',    Translatable('Lastname'),            'sn',                  1, 1, 'var', '', 1, undef, undef ],
+#            [ 'UserLogin',       Translatable('Username'),            'uid',                 1, 1, 'var', '', 1, undef, undef ],
+#            [ 'UserEmail',       Translatable('Email'),               'mail',                1, 1, 'var', '', 1, undef, undef ],
+#            [ 'UserCustomerID',  Translatable('CustomerID'),          'mail',                0, 1, 'var', '', 1, undef, undef ],
+#            # [ 'UserCustomerIDs', Translatable('CustomerIDs'),         'second_customer_ids', 1, 0, 'var', '', 1, undef, undef ],
+#            [ 'UserPhone',       Translatable('Phone'),               'telephonenumber',     1, 0, 'var', '', 1, undef, undef ],
+#            [ 'UserAddress',     Translatable('Address'),             'postaladdress',       1, 0, 'var', '', 1, undef, undef ],
+#            [ 'UserComment',     Translatable('Comment'),             'description',         1, 0, 'var', '', 1, undef, undef ],
+
 #            # this is needed, if "SMIME::FetchFromCustomer" is active
-#            # [ 'UserSMIMECertificate', 'SMIMECertificate', 'userSMIMECertificate', 0, 1, 'var', '', 1 ],
+#            # [ 'UserSMIMECertificate', 'SMIMECertificate', 'userSMIMECertificate', 0, 1, 'var', '', 1, undef, undef ],
+
+             # Dynamic field example
+#             [ 'DynamicField_Name_X', undef, 'Name_X', 0, 0, 'dynamic_field', undef, 0, undef, undef ],
 #        ],
 #    };
 
@@ -1664,7 +1679,7 @@ via the Preferences button after logging in.
             [ 'ValidID',                'Valid',      'valid_id',    0, 1, 'int', '', 0 ],
 
             # Dynamic field example
-#            [ 'DynamicField_Name_Y', undef, 'Name_Y', 0, 0, 'dynamic_field', undef, 0,],
+#            [ 'DynamicField_Name_Y', undef, 'Name_Y', 0, 0, 'dynamic_field', undef, 0 ],
         ],
     };
 
@@ -1752,7 +1767,6 @@ via the Preferences button after logging in.
         IconBig => '',
         IconSmall => '',
         Name => '',
-        Prio => '',
         Block => '',
     };
 
@@ -1789,8 +1803,7 @@ via the Preferences button after logging in.
         IconSmall   => '',
         Module      => 'Kernel::Output::HTML::NavBar::ModuleAdmin',
         Name        => Translatable('System Log'),
-        Prio        => '600',
-        Block => '',
+        Block => 'Administration',
     };
 
     $Self->{'Frontend::Module'}->{AdminSystemConfiguration} = {
@@ -1805,7 +1818,7 @@ via the Preferences button after logging in.
             'Core.Agent.Admin.SystemConfiguration.css',
         ],
         JavaScript => [
-            'thirdparty/clipboardjs-1.5.16/clipboard.min.js',
+            'thirdparty/clipboardjs-1.7.1/clipboard.min.js',
             'Core.SystemConfiguration.js',
             'Core.SystemConfiguration.Date.js',
             'Core.Agent.Admin.SystemConfiguration.js',
@@ -1818,10 +1831,9 @@ via the Preferences button after logging in.
         Name        => Translatable('System Configuration'),
         Description => Translatable('Edit the system configuration settings.'),
         Block       => 'System',
-        Prio        => 800,
         IconBig     => '',
         IconSmall    => '',
-        Block => '',
+        Block => 'Administration',
     };
 
     $Self->{'Frontend::Module'}->{AdminPackageManager} = {
@@ -1843,8 +1855,7 @@ via the Preferences button after logging in.
         Description => Translatable('Update and extend your system with software packages.'),
         Module      => 'Kernel::Output::HTML::NavBar::ModuleAdmin',
         Name        => Translatable('Package Manager'),
-        Prio        => '1000',
-        Block => '',
+        Block => 'Administration',
     };
 
     # specify Loader settings for Login screens
@@ -1905,12 +1916,15 @@ sub new {
 
     # load extra config files
     if ( -e "$Self->{Home}/Kernel/Config/Files/" ) {
+
         my @Files = glob("$Self->{Home}/Kernel/Config/Files/*.pm");
 
-        # sort
+        # Resorting the filelist.
         my @NewFileOrderPre  = ();
         my @NewFileOrderPost = ();
+
         for my $File (@Files) {
+
             if ( $File =~ /Ticket/ ) {
                 push @NewFileOrderPre, $File;
             }
@@ -1918,7 +1932,9 @@ sub new {
                 push @NewFileOrderPost, $File;
             }
         }
+
         @Files = ( @NewFileOrderPre, @NewFileOrderPost );
+
         FILE:
         for my $File (@Files) {
 
@@ -1927,111 +1943,35 @@ sub new {
                 next FILE;
             }
 
-            # check config file format - use 1.0 as eval string, 1.1 as require or do
-            my $FileFormat = 1;
-            my $ConfigFile = '';
-            ## no critic
-            if ( open( my $In, '<', $File ) ) {
-                ## use critic
+            my $RelativeFile = $File =~ s{\Q$Self->{Home}\E/*}{}gr;
 
-                # only try to find # VERSION:1.1 in the first 8 lines
-                my $TryCount = 0;
-                LINE:
-                while ( my $Line = <$In> ) {
-                    if ( $Line =~ /^\Q# VERSION:1.1\E/ ) {
-                        $FileFormat = 1.1;
-                        last LINE;
-                    }
-                    elsif ($Line =~ /^\Q# VERSION:2.0\E/) {
-                        $FileFormat = 2.0;
-                        last LINE;
-                    }
+            # Extract package name and load it.
+            my $Package = $RelativeFile;
+            $Package =~ s/^\///g;
+            $Package =~ s/\/{2,}/\//g;
+            $Package =~ s/\//::/g;
+            $Package =~ s/\.pm$//g;
 
-                    $TryCount++;
-                    if ( $TryCount >= 8 ) {
-                        last LINE;
-                    }
-                }
-                close($In);
+            eval {
 
-                # read file format 1.0 - file as string
-                if ( $FileFormat == 1 ) {
-                    open( my $In, '<', $File );
-                    $ConfigFile = do { local $/; <$In> };
-                    close $In;
-                }
-            }
-            else {
-                print STDERR "ERROR: $!: $File\n";
-            }
-
-            # use file format of config file
-            if ( $FileFormat == 1.1 || $FileFormat == 2.0 ) {
-
-                # check if mod_perl is used
-                my $Require = 1;
-                if ( exists $ENV{MOD_PERL} ) {
-
-                    # if mod_perl 2.x is used, check if Apache::Reload is use
-                    # on win32 Apache::Reload is not working correctly, so do also use "do"
-                    my $OS = $^O;
-                    ## no critic
-                    if ( $mod_perl::VERSION >= 1.99 && $OS ne 'MSWin32' ) {
-                        ## use critic
-                        my $ApacheReload = 0;
-                        MODULE:
-                        for my $Module ( sort keys %INC ) {
-                            $Module =~ s/\//::/g;
-                            $Module =~ s/\.pm$//g;
-                            if ( $Module eq 'Apache::Reload' || $Module eq 'Apache2::Reload' ) {
-                                $ApacheReload = 1;
-                                last MODULE;
-                            }
-                        }
-                        if ( !$ApacheReload ) {
-                            $Require = 0;
-                        }
-                    }
-
-                    # if mod_perl 1.x is used, do not use require
-                    else {
-                        $Require = 0;
-                    }
+                # Try to load file.
+                if ( !require $RelativeFile ) {
+                    die "ERROR: Could not load $File: $!\n";
                 }
 
-                # if require is usable, use it (because of better performance,
-                # if not, use do to do it on runtime)
-                ## no critic
-                if ($Require) {
-                    if ( !require $File ) {
-                        die "ERROR: $!\n";
-                    }
+                # Check if package has loaded and has a Load() method.
+                if (!$Package->can('Load')) {
+                    die "$Package has no Load() method.";
                 }
-                else {
-                    if ( !do $File ) {
-                        die "ERROR: $!\n";
-                    }
-                }
-                ## use critic
 
-                # prepare file
-                $File =~ s/\Q$Self->{Home}\E//g;
-                $File =~ s/^\///g;
-                $File =~ s/\/\//\//g;
-                $File =~ s/\//::/g;
-                $File =~ s/\.pm$//g;
-                $File->Load($Self);
-            }
-            else {
+                # Call package method but pass $Self as instance.
+                $Package->Load($Self);
+            };
 
-                # use eval for old file format
-                if ($ConfigFile) {
-                    if ( !eval $ConfigFile ) {    ## no critic
-                        print STDERR "ERROR: Syntax error in $File: $@\n";
-                    }
-
-                    # print STDERR "Notice: Loaded: $File\n";
-                }
+            if ( $@ ) {
+                my $ErrorMessage = $@;
+                print STDERR $@;
+                next FILE;
             }
         }
     }
@@ -2042,11 +1982,14 @@ sub new {
             "ERROR: $Self->{Home}/RELEASE does not exist! This file is needed by central system parts of OTRS, the system will not work without this file.\n";
         die;
     }
+
     if ( open( my $Product, '<', "$Self->{Home}/RELEASE" ) ) {    ## no critic
+
         while ( my $Line = <$Product> ) {
 
             # filtering of comment lines
             if ( $Line !~ /^#/ ) {
+
                 if ( $Line =~ /^PRODUCT\s{0,2}=\s{0,2}(.*)\s{0,2}$/i ) {
                     $Self->{Product} = $1;
                 }
@@ -2055,7 +1998,8 @@ sub new {
                 }
             }
         }
-        close($Product);
+
+        close $Product;
     }
     else {
         print STDERR
@@ -2072,7 +2016,9 @@ sub new {
         # replace config variables in config variables
         KEY:
         for my $Key ( sort keys %{$Self} ) {
+
             next KEY if !defined $Key;
+
             if ( defined $Self->{$Key} ) {
                 $Self->{$Key} =~ s/\<OTRS_CONFIG_(.+?)\>/$Self->{$1}/g;
             }
@@ -2081,6 +2027,8 @@ sub new {
             }
         }
     }
+
+    $Self->AutoloadPerlPackages();
 
     return $Self;
 }
@@ -2116,6 +2064,7 @@ sub Set {
 
     # set runtime config option
     if ( $Param{Key} =~ /^(.+?)###(.+?)$/ ) {
+
         if ( !defined $Param{Value} ) {
             delete $Self->{$1}->{$2};
         }
@@ -2124,6 +2073,7 @@ sub Set {
         }
     }
     else {
+
         if ( !defined $Param{Value} ) {
             delete $Self->{ $Param{Key} };
         }
@@ -2131,6 +2081,7 @@ sub Set {
             $Self->{ $Param{Key} } = $Param{Value};
         }
     }
+
     return 1;
 }
 
@@ -2173,6 +2124,42 @@ sub ConfigChecksum {
     }
 
     return Digest::MD5::md5_hex($ConfigString);
+}
+
+sub AutoloadPerlPackages {
+    my ($Self) = @_;
+
+    return 1 if !$Self->{AutoloadPerlPackages};
+    return 1 if ref $Self->{AutoloadPerlPackages} ne 'HASH';
+    my %AutoloadConfiguration = %{ $Self->{AutoloadPerlPackages} };
+    return 1 if !%AutoloadConfiguration;
+
+    CONFIGKEY:
+    for my $ConfigKey (sort keys %AutoloadConfiguration) {
+
+        my $ConfigValue = $AutoloadConfiguration{$ConfigKey};
+
+        next CONFIGKEY if ref $ConfigValue ne 'ARRAY';
+
+        PACKAGE:
+        for my $Package ( @{$ConfigValue} ) {
+
+            next PACKAGE if !$Package;
+
+            if ( substr($Package, 0, 16) ne 'Kernel::Autoload' ) {
+                print STDERR "Error: Autoload packages must be located in Kernel/Autoload, skipping $Package\n";
+                next PACKAGE;
+            }
+
+            # Don't use the MainObject here to load the file.
+            eval {
+                my $FileName = $Package =~ s{::}{/}smxgr;
+                require $FileName . '.pm'; ## nofilter(TidyAll::Plugin::OTRS::Perl::Require)
+            };
+        }
+    }
+
+    return 1;
 }
 
 1;

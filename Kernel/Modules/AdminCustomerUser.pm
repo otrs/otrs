@@ -108,8 +108,9 @@ sub Run {
         # create new session id
         my $NewSessionID = $Kernel::OM->Get('Kernel::System::AuthSession')->CreateSessionID(
             %UserData,
-            UserLastRequest => $Kernel::OM->Get('Kernel::System::Time')->SystemTime(),
+            UserLastRequest => $Kernel::OM->Create('Kernel::System::DateTime')->ToEpoch(),
             UserType        => 'Customer',
+            SessionSource   => 'CustomerInterface',
         );
 
         # get customer interface session name
@@ -974,6 +975,8 @@ sub _Overview {
         Key   => 'Nav',
         Value => $Param{Nav},
     );
+
+    return;
 }
 
 sub _Edit {
@@ -1259,6 +1262,112 @@ sub _Edit {
                     Name => "PreferencesGenericServerErrorMsg",
                     Data => { Name => $Entry->[0] },
                 );
+            }
+        }
+    }
+
+    my $PreferencesUsed = $ConfigObject->Get( $Param{Source} )->{AdminSetPreferences};
+    if ( ( defined $PreferencesUsed && $PreferencesUsed != 0 ) || !defined $PreferencesUsed ) {
+
+        my %Data;
+        my %Preferences = %{ $ConfigObject->Get('CustomerPreferencesGroups') };
+
+        GROUP:
+        for my $Group ( sort keys %Preferences ) {
+
+            next GROUP if !$Group;
+
+            my $PreferencesGroup = $Preferences{$Group};
+
+            next GROUP if !$PreferencesGroup;
+            next GROUP if ref $PreferencesGroup ne 'HASH';
+
+            if ( $Data{ $PreferencesGroup->{Prio} } ) {
+
+                COUNT:
+                for ( 1 .. 151 ) {
+
+                    $PreferencesGroup->{Prio}++;
+
+                    if ( !$Data{ $PreferencesGroup->{Prio} } ) {
+                        $Data{ $PreferencesGroup->{Prio} } = $Group;
+                        last COUNT;
+                    }
+                }
+            }
+
+            $Data{ $PreferencesGroup->{Prio} } = $Group;
+        }
+
+        # sort
+        for my $Key ( sort keys %Data ) {
+            $Data{ sprintf "%07d", $Key } = $Data{$Key};
+            delete $Data{$Key};
+        }
+
+        # show each preferences setting
+        PRIO:
+        for my $Prio ( sort keys %Data ) {
+
+            my $Group = $Data{$Prio};
+            if ( !$ConfigObject->{CustomerPreferencesGroups}->{$Group} ) {
+                next PRIO;
+            }
+
+            my %Preference = %{ $ConfigObject->{CustomerPreferencesGroups}->{$Group} };
+            if ( $Group eq 'Password' ) {
+                next PRIO;
+            }
+
+            my $Module = $Preference{Module}
+                || 'Kernel::Output::HTML::CustomerPreferencesGeneric';
+
+            # load module
+            if ( $Kernel::OM->Get('Kernel::System::Main')->Require($Module) ) {
+                my $Object = $Module->new(
+                    %{$Self},
+                    ConfigItem => \%Preference,
+                    UserObject => $Kernel::OM->Get('Kernel::System::CustomerUser'),
+                    Debug      => $Self->{Debug},
+                );
+                my @Params = $Object->Param( UserData => \%Param );
+                if (@Params) {
+                    for my $ParamItem (@Params) {
+                        $LayoutObject->Block(
+                            Name => 'Item',
+                            Data => {%Param},
+                        );
+                        if (
+                            ref $ParamItem->{Data} eq 'HASH'
+                            || ref $Preference{Data} eq 'HASH'
+                            )
+                        {
+                            my %BuildSelectionParams = (
+                                %Preference,
+                                %{$ParamItem},
+                            );
+                            $BuildSelectionParams{Class} = join( ' ', $BuildSelectionParams{Class} // '', 'Modernize' );
+
+                            $ParamItem->{Option} = $LayoutObject->BuildSelection(
+                                %BuildSelectionParams,
+                            );
+                        }
+
+                        $LayoutObject->Block(
+                            Name => $ParamItem->{Block} || $Preference{Block} || 'Option',
+                            Data => {
+                                Group => $Group,
+                                %Param,
+                                %Data,
+                                %Preference,
+                                %{$ParamItem},
+                            },
+                        );
+                    }
+                }
+            }
+            else {
+                return $LayoutObject->FatalError();
             }
         }
     }

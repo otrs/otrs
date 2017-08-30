@@ -44,7 +44,7 @@
                 </NavBar>
                 <NavBar>
                     <Description Translatable="1">Resource Overview (OTRS Business Solution™)</Description>
-                    <Name Translatable="1">Resource Overview</Name>
+                    <Name Translatable="1">Resource Overview (OTRS Business Solution™)</Name>
                     <Link>Action=AgentAppointmentCalendarOverview</Link>
                     <LinkOption>class="OTRSBusinessRequired"</LinkOption>
                     <NavBar>Calendar</NavBar>
@@ -65,14 +65,14 @@
                     <Prio>8000</Prio>
                 </NavBar>
                 <Loader>
-                    <CSS>thirdparty/fullcalendar-3.2.0/fullcalendar.min.css</CSS>
-                    <CSS>thirdparty/fullcalendar-scheduler-1.5.1/scheduler.min.css</CSS>
+                    <CSS>thirdparty/fullcalendar-3.4.0/fullcalendar.min.css</CSS>
+                    <CSS>thirdparty/fullcalendar-scheduler-1.6.2/scheduler.min.css</CSS>
                     <CSS>Core.AppointmentCalendar.css</CSS>
-                    <JavaScript>thirdparty/momentjs-2.17.1/moment.min.js</JavaScript>
-                    <JavaScript>thirdparty/fullcalendar-3.2.0/fullcalendar.min.js</JavaScript>
-                    <JavaScript>thirdparty/fullcalendar-scheduler-1.5.1/scheduler.min.js</JavaScript>
+                    <JavaScript>thirdparty/momentjs-2.18.1/moment.min.js</JavaScript>
+                    <JavaScript>thirdparty/fullcalendar-3.4.0/fullcalendar.min.js</JavaScript>
+                    <JavaScript>thirdparty/fullcalendar-scheduler-1.6.2/scheduler.min.js</JavaScript>
                     <JavaScript>Core.Agent.AppointmentCalendar.js</JavaScript>
-                    <JavaScript>thirdparty/clipboardjs-1.5.16/clipboard.min.js</JavaScript>
+                    <JavaScript>thirdparty/clipboardjs-1.7.1/clipboard.min.js</JavaScript>
                 </Loader>
             </FrontendModuleReg>
         </Setting>
@@ -116,7 +116,7 @@
     <ConfigItem Name="Frontend::Module###AdminAppointmentCalendarManage" Required="0" Valid="1">
         <Description Translatable="1">Frontend module registration for the agent interface.</Description>
         <Group>Calendar</Group>
-        <SubGroup>Frontend::Agent::ModuleRegistration</SubGroup>
+        <SubGroup>Frontend::Admin::ModuleRegistration</SubGroup>
         <Setting>
             <FrontendModuleReg>
                 <Group>admin</Group>
@@ -138,6 +138,7 @@
                 <NavBarModule>
                     <Module>Kernel::Output::HTML::NavBar::ModuleAdmin</Module>
                     <Name Translatable="1">Calendars</Name>
+                    <Block>Administration</Block>
                     <Description Translatable="1">Create and manage calendars.</Description>
                     <IconBig>fa-calendar</IconBig>
                     <Prio>1500</Prio>
@@ -145,7 +146,7 @@
                 <Loader>
                     <CSS>Core.AppointmentCalendar.Manage.css</CSS>
                     <CSS>thirdparty/spectrum-1.8.0/spectrum.css</CSS>
-                    <JavaScript>thirdparty/clipboardjs-1.5.16/clipboard.min.js</JavaScript>
+                    <JavaScript>thirdparty/clipboardjs-1.7.1/clipboard.min.js</JavaScript>
                     <JavaScript>thirdparty/spectrum-1.8.0/spectrum.js</JavaScript>
                     <JavaScript>Core.Agent.Admin.AppointmentCalendar.Manage.js</JavaScript>
                 </Loader>
@@ -468,7 +469,8 @@
                     <Module>Kernel::Output::HTML::NavBar::ModuleAdmin</Module>
                     <Name Translatable="1">Appointment Notifications</Name>
                     <Description Translatable="1">Create and manage appointment notifications.</Description>
-                    <Block>System</Block>
+                    <Block>Communication</Block>
+                    <IconBig>fa-bell-o</IconBig>
                     <Prio>400</Prio>
                 </NavBarModule>
                 <Loader>
@@ -592,7 +594,7 @@
 
     <!-- dashboard widget -->
     <ConfigItem Name="DashboardBackend###0500-AppointmentCalendar" Required="0" Valid="1">
-        <Description Translatable="1">Defines the parameters for the dashboard backend. "Limit" defines the number of entries displayed by default. "Group" is used to restrict access to the plugin (e. g. Group: admin;group1;group2;). "Default" indicates if the plugin is enabled by default or if the user needs to enable it manually. "CacheTTLLocal" defines the cache expiration period in minutes for the plugin.</Description>
+        <Description Translatable="1">Defines the parameters for the dashboard backend. "Limit" defines the number of entries displayed by default. "Group" is used to restrict access to the plugin (e. g. Group: admin;group1;group2;). "Default" indicates if the plugin is enabled by default or if the user needs to enable it manually. "CacheTTLLocal" defines the cache expiration period in minutes for the plugin. "Mandatory" determines if the plugin is always shown and can not be removed by agents.</Description>
         <Group>Framework</Group>
         <SubGroup>Frontend::Agent::Dashboard</SubGroup>
         <Setting>
@@ -654,11 +656,11 @@
                     <Prio>6500</Prio>
                 </NavBar>
                 <Loader>
-                    <CSS>thirdparty/fullcalendar-3.2.0/fullcalendar.min.css</CSS>
+                    <CSS>thirdparty/fullcalendar-3.4.0/fullcalendar.min.css</CSS>
                     <CSS>Core.AppointmentCalendar.css</CSS>
                     <CSS>Core.AppointmentCalendar.Agenda.css</CSS>
-                    <JavaScript>thirdparty/momentjs-2.17.1/moment.min.js</JavaScript>
-                    <JavaScript>thirdparty/fullcalendar-3.2.0/fullcalendar.min.js</JavaScript>
+                    <JavaScript>thirdparty/momentjs-2.18.1/moment.min.js</JavaScript>
+                    <JavaScript>thirdparty/fullcalendar-3.4.0/fullcalendar.min.js</JavaScript>
                     <JavaScript>Core.Agent.AppointmentCalendar.js</JavaScript>
                 </Loader>
             </FrontendModuleReg>
@@ -681,7 +683,7 @@
     <ConfigItem Name="Ticket::EventModulePost###950-TicketAppointments" Required="0" Valid="1">
         <Description Translatable="1">Triggers add or update of automatic calendar appointments based on certain ticket times.</Description>
         <Group>Calendar</Group>
-        <SubGroup>Core::Ticket</SubGroup>
+        <SubGroup>Core::Event::Ticket</SubGroup>
         <Setting>
             <Hash>
                 <Item Key="Module">Kernel::System::Ticket::Event::TicketAppointments</Item>

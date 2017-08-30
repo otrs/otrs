@@ -87,6 +87,95 @@ sub Run {
         );
     }
 
+    # Autocomplete is executed via AJAX request.
+    if ( $Self->{Subaction} eq 'AJAXAutocomplete' ) {
+        $LayoutObject->ChallengeTokenCheck();
+
+        my $Skip   = $ParamObject->GetParam( Param => 'Skip' )   || '';
+        my $Search = $ParamObject->GetParam( Param => 'Term' )   || '';
+        my $Filter = $ParamObject->GetParam( Param => 'Filter' ) || '{}';
+        my $MaxResults = int( $ParamObject->GetParam( Param => 'MaxResults' ) || 20 );
+
+        # Remove leading and trailing spaces from search term.
+        $Search =~ s{ \A \s* ( [^\s]+ ) \s* \z }{$1}xms;
+
+        # Parse passed search filter.
+        my $SearchFilter = $Kernel::OM->Get('Kernel::System::JSON')->Decode(
+            Data => $Filter,
+        );
+
+        # Workaround, all auto completion requests get posted by UTF8 anyway.
+        #   Convert any to 8bit string if application is not running in UTF8.
+        $Search = $Kernel::OM->Get('Kernel::System::Encode')->Convert2CharsetInternal(
+            Text => $Search,
+            From => 'utf-8',
+        );
+
+        my $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
+
+        my @TicketIDs;
+
+        # Search for tickets by:
+        #   - Ticket Number
+        #   - Ticket Title
+        if ($Search) {
+
+            @TicketIDs = $TicketObject->TicketSearch(
+                %{$SearchFilter},
+                TicketNumber => '%' . $Search . '%',
+                Limit        => $MaxResults,
+                Result       => 'ARRAY',
+                ArchiveFlags => ['n'],
+                UserID       => $Self->{UserID},
+            );
+
+            if ( !@TicketIDs ) {
+                @TicketIDs = $TicketObject->TicketSearch(
+                    %{$SearchFilter},
+                    Title        => '%' . $Search . '%',
+                    Limit        => $MaxResults,
+                    Result       => 'ARRAY',
+                    ArchiveFlags => ['n'],
+                    UserID       => $Self->{UserID},
+                );
+            }
+        }
+
+        my @Results;
+
+        # Include additional ticket information in results.
+        TICKET:
+        for my $TicketID (@TicketIDs) {
+            next TICKET if !$TicketID;
+            next TICKET if $TicketID eq $Skip;
+
+            my %Ticket = $TicketObject->TicketGet(
+                TicketID      => $TicketID,
+                DynamicFields => 0,
+                UserID        => $Self->{UserID},
+            );
+
+            next TICKET if !%Ticket;
+
+            push @Results, {
+                Key   => $Ticket{TicketNumber},
+                Value => $Ticket{TicketNumber} . ' ' . $Ticket{Title},
+            };
+        }
+
+        my $JSON = $LayoutObject->JSONEncode(
+            Data => \@Results || [],
+        );
+
+        # Send JSON response.
+        return $LayoutObject->Attachment(
+            ContentType => 'application/json; charset=' . $LayoutObject->{Charset},
+            Content     => $JSON || '',
+            Type        => 'inline',
+            NoCache     => 1,
+        );
+    }
+
     # check request
     if ( $ParamObject->GetParam( Param => 'SearchTemplate' ) && $Self->{Profile} ) {
         my $Profile = $LayoutObject->LinkEncode( $Self->{Profile} );
@@ -662,7 +751,6 @@ sub Run {
 
         # get needed objects
         my $CustomerUserObject = $Kernel::OM->Get('Kernel::System::CustomerUser');
-        my $TimeObject         = $Kernel::OM->Get('Kernel::System::Time');
 
         # get the ticket dynamic fields for CSV display
         my $CSVDynamicField = $DynamicFieldObject->DynamicFieldListGet(
@@ -714,7 +802,6 @@ sub Run {
                 my %Article = $ArticleObject->BackendForArticle( %{ $Articles[0] } )->ArticleGet(
                     %{ $Articles[0] },
                     DynamicFields => 1,
-                    UserID        => $Self->{UserID},
                 );
 
                 my %Data;
@@ -753,7 +840,6 @@ sub Run {
                                 TicketID      => $TicketID,
                                 ArticleID     => $Article->{ArticleID},
                                 DynamicFields => 0,
-                                UserID        => $Self->{UserID},
                             );
                             if ( $ArticleData{Body} ) {
                                 $Data{ArticleTree}
@@ -848,14 +934,13 @@ sub Run {
             my @CSVHeadTranslated = map { $LayoutObject->{LanguageObject}->Translate( $HeaderMap{$_} || $_ ); }
                 @CSVHead;
 
-            my $FileName = 'ticket_search';
-            my ( $s, $m, $h, $D, $M, $Y ) = $TimeObject->SystemTime2Date(
-                SystemTime => $TimeObject->SystemTime(),
+            my $CurDateTimeObject = $Kernel::OM->Create('Kernel::System::DateTime');
+            my $FileName          = sprintf(
+                'ticket_search_%s',
+                $CurDateTimeObject->Format(
+                    Format => '%Y-%m-%d_%H-%M'
+                    )
             );
-            $M = sprintf( "%02d", $M );
-            $D = sprintf( "%02d", $D );
-            $h = sprintf( "%02d", $h );
-            $m = sprintf( "%02d", $m );
 
             # get CSV object
             my $CSVObject = $Kernel::OM->Get('Kernel::System::CSV');
@@ -870,7 +955,7 @@ sub Run {
 
                 # return csv to download
                 return $LayoutObject->Attachment(
-                    Filename    => $FileName . "_" . "$Y-$M-$D" . "_" . "$h-$m.csv",
+                    Filename    => $FileName . '.csv',
                     ContentType => "text/csv; charset=" . $LayoutObject->{UserCharset},
                     Content     => $CSV,
                 );
@@ -886,7 +971,7 @@ sub Run {
 
                 # return Excel to download
                 return $LayoutObject->Attachment(
-                    Filename => $FileName . "_" . "$Y-$M-$D" . "_" . "$h-$m.xlsx",
+                    Filename => $FileName . '.xlsx',
                     ContentType =>
                         "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
                     Content => $Excel,
@@ -920,7 +1005,6 @@ sub Run {
                 my %Article = $ArticleObject->BackendForArticle( %{ $Articles[0] } )->ArticleGet(
                     %{ $Articles[0] },
                     DynamicFields => 1,
-                    UserID        => $Self->{UserID},
                 );
 
                 # get first article data
@@ -1096,8 +1180,7 @@ sub Run {
             # output "printed by"
             $PDFObject->Text(
                 Text => $PrintedBy . ' '
-                    . $Self->{UserFirstname} . ' '
-                    . $Self->{UserLastname} . ' ('
+                    . $Self->{UserFullname} . ' ('
                     . $Self->{UserEmail} . ')'
                     . ', ' . $Time,
                 FontSize => 9,
@@ -1127,17 +1210,17 @@ sub Run {
             }
 
             # return the pdf document
-            my $Filename = 'ticket_search';
-            my ( $s, $m, $h, $D, $M, $Y ) = $TimeObject->SystemTime2Date(
-                SystemTime => $TimeObject->SystemTime(),
+            my $CurDateTimeObject = $Kernel::OM->Create('Kernel::System::DateTime');
+            my $Filename          = sprintf(
+                'ticket_search_%s.pdf',
+                $CurDateTimeObject->Format(
+                    Format => '%Y-%m-%d_%H-%M'
+                    )
             );
-            $M = sprintf( "%02d", $M );
-            $D = sprintf( "%02d", $D );
-            $h = sprintf( "%02d", $h );
-            $m = sprintf( "%02d", $m );
+
             my $PDFString = $PDFObject->DocumentOutput();
             return $LayoutObject->Attachment(
-                Filename    => $Filename . "_" . "$Y-$M-$D" . "_" . "$h-$m.pdf",
+                Filename    => $Filename,
                 ContentType => "application/pdf",
                 Content     => $PDFString,
                 Type        => 'inline',
@@ -1679,16 +1762,18 @@ sub Run {
         }
 
         $Param{AttributesStrg} = $LayoutObject->BuildSelection(
-            Data     => \@Attributes,
-            Name     => 'Attribute',
-            Multiple => 0,
-            Class    => 'Modernize',
+            PossibleNone => 1,
+            Data         => \@Attributes,
+            Name         => 'Attribute',
+            Multiple     => 0,
+            Class        => 'Modernize',
         );
         $Param{AttributesOrigStrg} = $LayoutObject->BuildSelection(
-            Data     => \@Attributes,
-            Name     => 'AttributeOrig',
-            Multiple => 0,
-            Class    => 'Modernize',
+            PossibleNone => 1,
+            Data         => \@Attributes,
+            Name         => 'AttributeOrig',
+            Multiple     => 0,
+            Class        => 'Modernize',
         );
 
         # get all users of own groups
@@ -2420,7 +2505,7 @@ sub Run {
             Value => \@SearchAttributes,
         );
 
-        my $Output .= $LayoutObject->Output(
+        my $Output = $LayoutObject->Output(
             TemplateFile => 'AgentTicketSearch',
             Data         => \%Param,
             AJAX         => 1,

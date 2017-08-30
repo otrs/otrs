@@ -40,7 +40,7 @@ my @Tests = (
         AgentNotificationResultAdmin => '<!-- start Notify -->
 <div class="MessageBox Info">
     <p>
-            <a href="No-$ENV{"SCRIPT_NAME"}?Action=AdminOTRSBusiness" class="Button"><i class="fa fa-angle-double-up"></i> Upgrade to <b>OTRS Business Solution</b>™ now! </a>
+            <a href="No-$ENV{"SCRIPT_NAME"}?Action=AdminOTRSBusiness"> Upgrade to <b>OTRS Business Solution</b>™ now! </a>
     </p>
 </div>
 <!-- end Notify -->
@@ -197,12 +197,17 @@ if (!window.location.search.match(/^[?]Action=(AgentOTRSBusiness|Admin.*)/)) {
 
 for my $Test (@Tests) {
 
-    my $SystemTime = $Kernel::OM->Get('Kernel::System::Time')->TimeStamp2SystemTime(
-        String => $Test->{CurrentTime},
+    my $DateTimeObject = $Kernel::OM->Create(
+        'Kernel::System::DateTime',
+        ObjectParams => {
+            String => $Test->{CurrentTime},
+            }
     );
+    my $SystemTime = $DateTimeObject->ToEpoch();
+
     $Helper->FixedTimeSet($SystemTime);
 
-    no warnings 'redefine';
+    no warnings 'redefine';    ## no critic
 
     local *Kernel::System::OTRSBusiness::OTRSBusinessIsInstalled = sub {
         return $Test->{OTRSBusinessIsInstalled};

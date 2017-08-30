@@ -31,10 +31,6 @@ Core.Customer.TicketProcess = (function (TargetNS) {
 
         var PreSelectedProcessID = Core.Config.Get('PreSelectedProcessID');
 
-        if (typeof PreSelectedProcessID !== 'undefined') {
-            $('#ProcessEntityID').val(PreSelectedProcessID).trigger('change');
-        }
-
         $('#ProcessEntityID').on('change', function () {
             var Data = {
                 Action: 'CustomerTicketProcess',
@@ -132,6 +128,9 @@ Core.Customer.TicketProcess = (function (TargetNS) {
                         // Register event for tree selection dialog
                         Core.UI.TreeSelection.InitTreeSelection();
 
+                        // initialize ajax dnd upload
+                        Core.UI.InitAjaxDnDUpload();
+
                         // move help triggers into field rows for dynamic fields
                         $('.Row > .FieldHelpContainer').each(function () {
                             if (!$(this).next('label').find('.Marker').length) {
@@ -171,6 +170,11 @@ Core.Customer.TicketProcess = (function (TargetNS) {
             }
             return false;
         });
+
+        // If process is pre-selected trigger change event on ProcessEntityID field.
+        if (typeof PreSelectedProcessID !== 'undefined') {
+            $('#ProcessEntityID').val(PreSelectedProcessID).trigger('change');
+        }
     };
 
     Core.Init.RegisterNamespace(TargetNS, 'APP_MODULE');

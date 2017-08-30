@@ -10,7 +10,7 @@ package Kernel::System::CommunicationChannel;
 use strict;
 use warnings;
 
-use Kernel::System::VariableCheck qw(DataIsDifferent);
+use Kernel::System::VariableCheck qw(DataIsDifferent IsHashRefWithData);
 
 our @ObjectDependencies = (
     'Kernel::Config',
@@ -18,7 +18,9 @@ our @ObjectDependencies = (
     'Kernel::System::DB',
     'Kernel::System::Main',
     'Kernel::System::Log',
+    'Kernel::System::Ticket::Article',
     'Kernel::System::Valid',
+    'Kernel::System::XML',
     'Kernel::System::YAML',
 );
 
@@ -135,9 +137,11 @@ Returns:
     %CommunicationChannel = (
         ChannelID   => 1,
         ChannelName => 'Email',
-        Module      => 'Kernel::System::CommunicationChannel::Internal',
+        Module      => 'Kernel::System::CommunicationChannel::Email',
         PackageName => 'Framework',
         ChannelData => {...},                                               # Additional channel data (can be array, hash, scalar).
+        DisplayName => 'Email',                                             # Configurable
+        DisplayIcon => 'fa-envelope',                                       # Configurable
         ValidID     => 1,
         CreateTime  => '2017-01-01 00:00:00',
         CreateBy    => 1,
@@ -159,7 +163,8 @@ sub ChannelGet {
         return;
     }
 
-    my $CacheObject = $Kernel::OM->Get('Kernel::System::Cache');
+    my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
+    my $CacheObject  = $Kernel::OM->Get('Kernel::System::Cache');
 
     my $CacheType = 'CommunicationChannel';
     my $CacheKey  = 'ChannelGet::';
@@ -176,7 +181,15 @@ sub ChannelGet {
         Key  => $CacheKey,
     );
 
-    return %{$Cache} if ref $Cache eq 'HASH';
+    if ( ref $Cache eq 'HASH' ) {
+        my $Config = $ConfigObject->Get('CommunicationChannel')->{ $Cache->{ChannelName} } || {};
+
+        # Add some runtime values from config.
+        $Cache->{DisplayName} = $Config->{Name} || $Cache->{ChannelName};
+        $Cache->{DisplayIcon} = $Config->{Icon} || 'fa-exchange';
+
+        return %{$Cache};
+    }
 
     my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
 
@@ -202,28 +215,22 @@ sub ChannelGet {
         Bind => \@Bind,
     );
 
+    my $YAMLObject = $Kernel::OM->Get('Kernel::System::YAML');
+
     my %Result;
     while ( my @Row = $DBObject->FetchrowArray() ) {
         $Result{ChannelID}   = $Row[0];
         $Result{ChannelName} = $Row[1];
         $Result{Module}      = $Row[2];
         $Result{PackageName} = $Row[3];
-        $Result{ChannelData} = $Kernel::OM->Get('Kernel::System::YAML')->Load( Data => $Row[4] );
+        $Result{ChannelData} = $YAMLObject->Load( Data => $Row[4] );
         $Result{ValidID}     = $Row[5];
         $Result{CreateTime}  = $Row[6];
         $Result{CreateBy}    = $Row[7];
         $Result{ChangeTime}  = $Row[8];
         $Result{ChangeBy}    = $Row[9];
     }
-
-    if ( !%Result ) {
-        my $Parameter = $Param{ChannelName} || $Param{ChannelID};
-        $Kernel::OM->Get('Kernel::System::Log')->Log(
-            Priority => 'error',
-            Message  => "Communication channel $Parameter not found!",
-        );
-        return;
-    }
+    return if !%Result;
 
     $CacheObject->Set(
         Type  => $CacheType,
@@ -231,6 +238,12 @@ sub ChannelGet {
         Value => \%Result,
         TTL   => $Self->{CacheTTL},
     );
+
+    my $Config = $ConfigObject->Get('CommunicationChannel')->{ $Result{ChannelName} } || {};
+
+    # Add some runtime values from config (do not cache).
+    $Result{DisplayName} = $Config->{Name} || $Result{ChannelName};
+    $Result{DisplayIcon} = $Config->{Icon} || 'fa-exchange';
 
     return %Result;
 }
@@ -355,6 +368,8 @@ Returns:
             Module      => 'Kernel::System::CommunicationChannel::Email',
             PackageName => 'Framework',
             ChannelData => {...},
+            DisplayName => 'Email',
+            DisplayIcon => 'fa-envelope',
             ValidID     => 1,
             CreateTime  => '2017-01-01 00:00:00',
             CreateBy    => 1,
@@ -367,6 +382,8 @@ Returns:
             Module      => 'Kernel::System::CommunicationChannel::Phone',
             PackageName => 'Framework',
             ChannelData => {...},
+            DisplayName => 'Phone',
+            DisplayIcon => 'fa-phone',
             ValidID     => 1,
             CreateTime  => '2017-01-01 00:00:00',
             CreateBy    => 1,
@@ -381,14 +398,15 @@ Returns:
 sub ChannelList {
     my ( $Self, %Param ) = @_;
 
-    my $CacheObject = $Kernel::OM->Get('Kernel::System::Cache');
+    my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
+    my $CacheObject  = $Kernel::OM->Get('Kernel::System::Cache');
 
     my $CacheType = 'CommunicationChannel';
     my $CacheKey  = 'ChannelList';
 
     my @Bind;
     if ( defined $Param{ValidID} ) {
-        $CacheKey .= '::ValidID::' . ( $Param{ValidID} ? 1 : 0 );
+        $CacheKey .= '::ValidID::' . $Param{ValidID};
         push @Bind, \$Param{ValidID};
     }
 
@@ -397,7 +415,17 @@ sub ChannelList {
         Key  => $CacheKey,
     );
 
-    return @{$Cache} if ref $Cache eq 'ARRAY';
+    if ( ref $Cache eq 'ARRAY' ) {
+        for my $Channel ( @{$Cache} ) {
+            my $Config = $ConfigObject->Get('CommunicationChannel')->{ $Channel->{ChannelName} } || {};
+
+            # Add some runtime values from config.
+            $Channel->{DisplayName} = $Config->{Name} || $Channel->{ChannelName};
+            $Channel->{DisplayIcon} = $Config->{Icon} || 'fa-exchange';
+        }
+
+        return @{$Cache};
+    }
 
     my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
 
@@ -443,19 +471,32 @@ sub ChannelList {
         TTL   => $Self->{CacheTTL},
     );
 
+    for my $Channel (@Result) {
+        my $Config = $ConfigObject->Get('CommunicationChannel')->{ $Channel->{ChannelName} } || {};
+
+        # Add some runtime values from config (do not cache).
+        $Channel->{DisplayName} = $Config->{Name} || $Channel->{ChannelName};
+        $Channel->{DisplayIcon} = $Config->{Icon} || 'fa-exchange';
+    }
+
     return @Result;
 }
 
 =head2 ChannelSync()
 
-Synchronize communication channels in database with registered channels.
+Synchronize communication channels in the database with channel registration in configuration.
 
-    my @ChannelsAdded = $CommunicationChannelObject->ChannelSync(
+    my $Result = $CommunicationChannelObject->ChannelSync(
         UserID => 1,
     );
 
 Returns:
-    @ChannelsAdded = [ 'Email', 'Phone', ...];    # Normally, this array should be empty.
+
+    $Result = {
+        ChannelsUpdated => [ 'Email', 'Phone' ],
+        ChannelsAdded   => [ 'Chat' ],
+        ChannelsInvalid => [ 'Internal' ],
+    };
 
 =cut
 
@@ -468,31 +509,54 @@ sub ChannelSync {
             Message  => 'Need UserID!',
         );
 
-        return [];
+        return;
     }
 
-    my @Result;
+    # Get known channels and transform the result into a hash for easier lookup.
+    my %CommunicationChannels = map { $_->{ChannelName} => 1 } $Self->ChannelList();
 
-    my $ChannelsRegistered = $Kernel::OM->Get('Kernel::Config')->Get('Ticket::CommunicationChannel');
+    # Get channel registration data.
+    my $ChannelRegistration = $Kernel::OM->Get('Kernel::Config')->Get('CommunicationChannel');
+    my %ChannelsRegistered = map { $_ => 1 } keys %{ $ChannelRegistration // {} };
 
-    return @Result if !$ChannelsRegistered;
+    # Merge the already known and registered channels.
+    %CommunicationChannels = (
+        %CommunicationChannels,
+        %ChannelsRegistered,
+    );
 
     my $MainObject = $Kernel::OM->Get('Kernel::System::Main');
 
-    CHANNEL:
-    for my $Channel ( sort keys %{$ChannelsRegistered} ) {
-        my $ChannelName = $ChannelsRegistered->{$Channel}->{Name};
+    my %Result;
 
+    CHANNEL:
+    for my $Channel ( sort keys %CommunicationChannels ) {
+
+        # Get channel data if it is already known.
         my %CommunicationChannel = $Self->ChannelGet(
-            ChannelName => $ChannelName,
+            ChannelName => $Channel,
         );
 
-        my $Module = $ChannelsRegistered->{$Channel}->{Module};
+        # Check if channel registration is not present.
+        if ( !IsHashRefWithData( $ChannelRegistration->{$Channel} ) ) {
+
+            # Drop the channel, but only if there is no article data associated to it.
+            if ( $CommunicationChannel{ChannelID} ) {
+                $Self->ChannelDrop( ChannelID => $CommunicationChannel{ChannelID} );
+
+                push @{ $Result{ChannelsInvalid} }, $Channel;
+            }
+
+            next CHANNEL;
+        }
+
+        my $Module = $ChannelRegistration->{$Channel}->{Module};
         if ( !$Module ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
-                Message  => "Missing Module in registration (Ticket::CommunicationChannel###$Channel)!",
+                Message  => "Missing Module in registration (CommunicationChannel###$Channel)!",
             );
+
             next CHANNEL;
         }
 
@@ -506,6 +570,7 @@ sub ChannelSync {
                 Priority => 'error',
                 Message  => "System was unable to require module '$Module'!",
             );
+
             next CHANNEL;
         }
 
@@ -518,19 +583,19 @@ sub ChannelSync {
                 Priority => 'error',
                 Message  => "System was unable to retrieve package name ($Module)!",
             );
+
             next CHANNEL;
         }
 
         my %ChannelData = (
             ArticleDataTables         => [ $Object->ArticleDataTables() ],
             ArticleDataArticleIDField => $Object->ArticleDataArticleIDField(),
-            ArticleDataIsDroppable    => $Object->ArticleDataIsDroppable(),
         );
 
         # Update existing communication channel.
         if (%CommunicationChannel) {
             if (
-                $ChannelsRegistered->{$Channel}->{Module} ne $CommunicationChannel{Module}
+                $ChannelRegistration->{$Channel}->{Module} ne $CommunicationChannel{Module}
                 || $PackageName ne $CommunicationChannel{PackageName}
                 || DataIsDifferent(
                     Data1 => \%ChannelData,
@@ -540,8 +605,8 @@ sub ChannelSync {
             {
                 my $Success = $Self->ChannelUpdate(
                     ChannelID   => $CommunicationChannel{ChannelID},
-                    ChannelName => $ChannelName,
-                    Module      => $ChannelsRegistered->{$Channel}->{Module},
+                    ChannelName => $Channel,
+                    Module      => $ChannelRegistration->{$Channel}->{Module},
                     PackageName => $PackageName,
                     ChannelData => \%ChannelData,
                     ValidID     => 1,
@@ -551,20 +616,20 @@ sub ChannelSync {
                 if ( !$Success ) {
                     $Kernel::OM->Get('Kernel::System::Log')->Log(
                         Priority => 'error',
-                        Message  => "System was not able to update communication channel ($ChannelName)!",
+                        Message  => "System was not able to update communication channel ($Channel)!",
                     );
 
                     next CHANNEL;
                 }
 
-                push @Result, $ChannelName;
+                push @{ $Result{ChannelsUpdated} }, $Channel;
             }
         }
 
         # Create communication channel if it's missing.
         else {
             my $ChannelID = $Self->ChannelAdd(
-                ChannelName => $ChannelName,
+                ChannelName => $Channel,
                 ChannelData => \%ChannelData,
                 Module      => $Module,
                 PackageName => $PackageName,
@@ -574,17 +639,17 @@ sub ChannelSync {
             if ( !$ChannelID ) {
                 $Kernel::OM->Get('Kernel::System::Log')->Log(
                     Priority => 'error',
-                    Message  => "System was not able to add communication channel ($ChannelName)!",
+                    Message  => "System was not able to add communication channel ($Channel)!",
                 );
 
                 next CHANNEL;
             }
 
-            push @Result, $ChannelName;
+            push @{ $Result{ChannelsAdded} }, $Channel;
         }
     }
 
-    return @Result;
+    return %Result;
 }
 
 =head2 ChannelObjectGet()
@@ -630,12 +695,16 @@ sub ChannelObjectGet {
 
 =head2 ChannelDrop()
 
-Drop communication channel.
+Drop an invalid communication channel (that only exists in the database, but not in the configuration).
+By default, this will only drop channels that have no associated article data; use C<DropArticleData> to
+force article data removal as well. Channels provided by the OTRS framework can never be dropped.
 
     my $Success = $CommunicationChannelObject->ChannelDrop(
-        ChannelID   => 1,       # (optional) ChannelID
-                                # or
-        ChannelName => 'Email', # (optional) Delete by Channel name
+        ChannelID   => 1,               # (required) Delete by channel ID
+                                        # or
+        ChannelName => 'SomeChannel',   # (required) Delete by channel name
+
+        DropArticleData => 1,           # (optional) Also drop article data if possible, default: 0
     );
 
 Returns:
@@ -658,46 +727,92 @@ sub ChannelDrop {
     my %Channel = $Self->ChannelGet(%Param);
     return if !%Channel;
 
-    my $Loaded = $Kernel::OM->Get('Kernel::System::Main')->Require(
-        $Channel{Module},
-        Silent => 1,
+    # Avoid dropping channel if it's still registered.
+    my $ChannelRegistration = $Kernel::OM->Get('Kernel::Config')->Get('CommunicationChannel');
+    return if IsHashRefWithData( $ChannelRegistration->{ $Channel{ChannelName} } );
+
+    # Prevent dropping of channels provided by the framework (fail-safe).
+    return if $Channel{PackageName} eq 'Framework';
+
+    my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
+
+    # Find all existing articles that belongs to the channel.
+    return if !$DBObject->Prepare(
+        SQL => '
+            SELECT id, ticket_id
+            FROM article
+            WHERE communication_channel_id = ?
+            ORDER BY id ASC
+        ',
+        Bind => [ \$Channel{ChannelID} ],
     );
 
-    my %ChannelData;
-
-    if ($Loaded) {
-        my $Object = $Channel{Module}->new();
-
-        %ChannelData = (
-            ArticleDataTables         => [ $Object->ArticleDataTables() ],
-            ArticleDataArticleIDField => $Object->ArticleDataArticleIDField(),
-            ArticleDataIsDroppable    => $Object->ArticleDataIsDroppable(),
-        );
+    # Create article to ticket ID lookup map.
+    my %TicketLookup;
+    while ( my @Row = $DBObject->FetchrowArray() ) {
+        $TicketLookup{ $Row[0] } = $Row[1];
     }
 
-    # If, for some reason, module can't be found, get last known data from channel object.
-    else {
-        $Kernel::OM->Get('Kernel::System::Log')->Log(
-            Priority => 'error',
-            Message  => "System was not able to require module '$Channel{Module}'!",
-        );
+    # If some data was found and is not supposed to be dropped, bail out early!
+    return if %TicketLookup && !$Param{DropArticleData};
 
-        if ( ref $Channel{ChannelData} eq 'HASH' ) {
-            %ChannelData = %{ $Channel{ChannelData} };
+    if (%TicketLookup) {
+
+        # If specified channel backend is not in the system anymore, following method will, in fact, return invalid
+        #   channel backend instead, which should still be able to delete any articles.
+        my $ArticleBackendObject = $Kernel::OM->Get('Kernel::System::Ticket::Article')->BackendForChannel(%Channel);
+
+        # Remove articles and associated data.
+        for my $ArticleID ( sort keys %TicketLookup ) {
+            $ArticleBackendObject->ArticleDelete(
+                TicketID  => $TicketLookup{$ArticleID},
+                ArticleID => $ArticleID,
+                UserID    => 1,
+            );
         }
     }
 
-    if ( $ChannelData{ArticleDataIsDroppable} ) {
+    # Get a list of all tables in database.
+    my @Tables = $DBObject->ListTables();
 
-        # TODO: Delete article data.
-
-        $Self->ChannelDelete(%Param);
+    # Check for table existence.
+    my @TablesToDrop;
+    for my $ArticleDataTable ( @{ $Channel{Data}->{ArticleDataTables} // [] } ) {
+        if ( grep { $_ eq $ArticleDataTable } @Tables ) {
+            push @TablesToDrop, $ArticleDataTable;
+        }
     }
+
+    # Drop article storage tables.
+    if (@TablesToDrop) {
+        my $TableList = join ', ', @TablesToDrop;
+        my $DBType = $DBObject->{'DB::Type'};
+
+        if ( $DBType eq 'mysql' ) {
+
+            # Drop all article tables in same statement.
+            $DBObject->Do( SQL => "DROP TABLE $TableList" );
+        }
+        elsif ( $DBType eq 'postgresql' ) {
+
+            # Drop all article tables in same statement.
+            $DBObject->Do( SQL => "DROP TABLE $TableList" );
+        }
+        elsif ( $DBType eq 'oracle' ) {
+
+            # Drop every article table in a separate statement.
+            for my $Table (@TablesToDrop) {
+                $DBObject->Do( SQL => "DROP TABLE $Table CASCADE CONSTRAINTS" );
+            }
+        }
+    }
+
+    return $Self->ChannelDelete(%Param);
 }
 
 =head2 ChannelDelete()
 
-Delete communication channel.
+Delete communication channel record from the database.
 
     my $Success = $CommunicationChannelObject->ChannelDelete(
         ChannelID   => 1,       # (optional) Delete by ChannelID

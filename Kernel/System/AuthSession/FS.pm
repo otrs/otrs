@@ -15,10 +15,10 @@ use Kernel::Language qw(Translatable);
 
 our @ObjectDependencies = (
     'Kernel::Config',
+    'Kernel::System::DateTime',
     'Kernel::System::Log',
     'Kernel::System::Main',
     'Kernel::System::Storable',
-    'Kernel::System::Time',
 );
 
 sub new {
@@ -34,6 +34,15 @@ sub new {
     # get more common params
     $Self->{SessionSpool} = $ConfigObject->Get('SessionDir');
     $Self->{SystemID}     = $ConfigObject->Get('SystemID');
+
+    if ( !-e $Self->{SessionSpool} ) {
+        if ( !mkdir( $Self->{SessionSpool}, 0770 ) ) {    ## no critic
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
+                Priority => 'error',
+                Message  => "Can't create directory '$Self->{SessionSpool}': $!",
+            );
+        }
+    }
 
     return $Self;
 }
@@ -91,7 +100,7 @@ sub CheckSessionID {
     }
 
     # check session idle time
-    my $TimeNow            = $Kernel::OM->Get('Kernel::System::Time')->SystemTime();
+    my $TimeNow            = $Kernel::OM->Create('Kernel::System::DateTime')->ToEpoch();
     my $MaxSessionIdleTime = $ConfigObject->Get('SessionMaxIdleTime');
 
     if ( ( $TimeNow - $MaxSessionIdleTime ) >= $Data{UserLastRequest} ) {
@@ -193,7 +202,7 @@ sub CreateSessionID {
     my ( $Self, %Param ) = @_;
 
     # get system time
-    my $TimeNow = $Kernel::OM->Get('Kernel::System::Time')->SystemTime();
+    my $TimeNow = $Kernel::OM->Create('Kernel::System::DateTime')->ToEpoch();
 
     # get remote address and the http user agent
     my $RemoteAddr      = $ENV{REMOTE_ADDR}     || 'none';
@@ -249,8 +258,13 @@ sub CreateSessionID {
     my $UserLogin        = $Self->{Cache}->{$SessionID}->{UserLogin}        || '';
     my $UserSessionStart = $Self->{Cache}->{$SessionID}->{UserSessionStart} || '';
     my $UserLastRequest  = $Self->{Cache}->{$SessionID}->{UserLastRequest}  || '';
+    my $SessionSource    = $Self->{Cache}->{$SessionID}->{SessionSource}    || '';
 
     my $StateContent = $UserType . '####' . $UserLogin . '####' . $UserSessionStart . '####' . $UserLastRequest;
+
+    if ($SessionSource) {
+        $StateContent .= '####' . $SessionSource;
+    }
 
     # write state file
     $MainObject->FileWrite(
@@ -358,7 +372,7 @@ sub GetActiveSessions {
 
     my $MaxSessionIdleTime = $Kernel::OM->Get('Kernel::Config')->Get('SessionMaxIdleTime');
 
-    my $TimeNow = $Kernel::OM->Get('Kernel::System::Time')->SystemTime();
+    my $TimeNow = $Kernel::OM->Create('Kernel::System::DateTime')->ToEpoch();
 
     my $MainObject = $Kernel::OM->Get('Kernel::System::Main');
 
@@ -395,6 +409,10 @@ sub GetActiveSessions {
         my $UserType        = $SessionData[0] || '';
         my $UserLogin       = $SessionData[1] || '';
         my $UserLastRequest = $SessionData[3] || $TimeNow;
+        my $SessionSource   = $SessionData[4] || '';
+
+        # Don't count sessions from source 'GenericInterface'.
+        next SESSIONID if $SessionSource eq 'GenericInterface';
 
         next SESSIONID if $UserType ne $Param{UserType};
 
@@ -425,7 +443,7 @@ sub GetExpiredSessionIDs {
     my $MaxSessionIdleTime = $ConfigObject->Get('SessionMaxIdleTime');
 
     # get current time
-    my $TimeNow = $Kernel::OM->Get('Kernel::System::Time')->SystemTime();
+    my $TimeNow = $Kernel::OM->Create('Kernel::System::DateTime')->ToEpoch();
 
     # get main object
     my $MainObject = $Kernel::OM->Get('Kernel::System::Main');
@@ -544,11 +562,16 @@ sub DESTROY {
         my $UserLogin        = $Self->{Cache}->{$SessionID}->{UserLogin}        || '';
         my $UserSessionStart = $Self->{Cache}->{$SessionID}->{UserSessionStart} || '';
         my $UserLastRequest  = $Self->{Cache}->{$SessionID}->{UserLastRequest}  || '';
+        my $SessionSource    = $Self->{Cache}->{$SessionID}->{SessionSource}    || '';
 
         my $StateContent = $UserType . '####'
             . $UserLogin . '####'
             . $UserSessionStart . '####'
             . $UserLastRequest;
+
+        if ($SessionSource) {
+            $StateContent .= '####' . $SessionSource;
+        }
 
         # write state file
         $MainObject->FileWrite(

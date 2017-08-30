@@ -77,7 +77,7 @@
                 <tbody>
                     <tr>
                         <td>
-                            <label>[% Translate("From") | html %]</label><div title="[% Data.From | html %]">[% Data.FromRealname | html %]</div>
+                            <label>[% Translate("Sender") | html %]</label><div title="[% Data.ArticleFields.Sender.Value | html %]">[% Data.ArticleFields.Sender.Realname | truncate(36) | html %]</div>
                         </td>
                         <td>
                             <label>[% Translate("Age") | html %]</label>[% Data.Age | html %]
@@ -117,9 +117,6 @@
                     </tr>
                     <tr>
                         <td>
-                            <label>[% Translate("To") | html %]</label><div title="[% Data.To | html %]">[% Data.ToRealname | html %]</div>
-                        </td>
-                        <td>
                             <label>[% Translate("Created") | html %]</label>[% Data.Created | Localize("TimeLong") %]
                         </td>
                         <td>
@@ -153,11 +150,19 @@
                     </tr>
                     <tr>
                         <td>
-                            <label>[% Translate("Subject") | html %]</label><div title="[% Data.Subject | html %]">[% Data.Subject | html %]</div>
+                            <label>[% Translate("Subject") | html %]</label><div title="[% Data.ArticleFields.Subject.Value | html %]">[% Data.ArticleFields.Subject.Value | truncate(36) | html %]</div>
                         </td>
+[% RenderBlockStart("OwnerResponsible") %]
+[% IF Config('Ticket::Responsible') %]
                         <td>
-                            <label>[% Translate("Owner") | html %]</label><div title="[% Data.UserFirstname | html %] [% Data.UserLastname | html %] ([% Data.Owner | html %])">[% Data.UserFullname | html %]</div>
+                            <label>[% Translate("Owner") | html %] / [% Translate("Responsible") | html %]</label><div title="[% Data.OwnerFullname | html %] ([% Data.Owner | html %]) / [% Data.ResponsibleFullname | html %] ([% Data.Responsible | html %])">[% Data.OwnerFullname | html %] / [% Data.ResponsibleFullname | html %]</div>
                         </td>
+[% ELSE %]
+                        <td>
+                            <label>[% Translate("Owner") | html %]</label><div title="[% Data.OwnerFullname | html %] ([% Data.Owner | html %])">[% Data.OwnerFullname | html %]</div>
+                        </td>
+[% END %]
+[% RenderBlockEnd("OwnerResponsible") %]
                         <td>
                             <label>[% Translate("Lock") | html %]</label><div title="[% Translate(Data.Lock) | html %]">[% Translate(Data.Lock) | html %]</div>
                         </td>

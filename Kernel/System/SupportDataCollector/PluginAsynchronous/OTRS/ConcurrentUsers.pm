@@ -20,7 +20,7 @@ our @ObjectDependencies = (
     'Kernel::Config',
     'Kernel::System::AuthSession',
     'Kernel::System::SystemData',
-    'Kernel::System::Time',
+    'Kernel::System::DateTime',
 );
 
 sub GetDisplayPath {
@@ -143,9 +143,6 @@ sub RunAsynchronous {
             $AuthSessionObject->RemoveSessionID( SessionID => $SessionID );
         }
     }
-
-    # get all sessions
-    my @Sessions = $AuthSessionObject->GetAllSessionIDs();
 
     # to count the agents and customer user sessions
     my %CountConcurrentUser = (

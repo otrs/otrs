@@ -184,11 +184,11 @@ sub Run {
     my ( $Self, %Param ) = @_;
 
     # check needed stuff
-    for (qw(TicketIDs PageShown StartHit)) {
-        if ( !$Param{$_} ) {
+    for my $Item (qw(TicketIDs PageShown StartHit)) {
+        if ( !$Param{$Item} ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
-                Message  => "Need $_!"
+                Message  => "Need $Item!",
             );
             return;
         }
@@ -319,7 +319,7 @@ sub _Show {
     if ( !$Param{TicketID} ) {
         $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'error',
-            Message  => 'Need TicketID!'
+            Message  => 'Need TicketID!',
         );
         return;
     }
@@ -357,8 +357,13 @@ sub _Show {
         %Article = $ArticleObject->BackendForArticle( %{$Article} )->ArticleGet(
             %{$Article},
             DynamicFields => 0,
-            UserID        => $Self->{UserID},
         );
+
+        my %ArticleFields = $LayoutObject->ArticleFields(
+            %{$Article},
+        );
+
+        $Article{ArticleFields} = \%ArticleFields;
     }
 
     # Get ticket data.
@@ -389,10 +394,15 @@ sub _Show {
     );
     %Article = ( %UserInfo, %Article );
 
+    # get responsible info from Ticket
+    my %TicketResponsible = $Kernel::OM->Get('Kernel::System::User')->GetUserData(
+        UserID => $Ticket{ResponsibleID},
+    );
+
     # create human age
     $Article{Age} = $LayoutObject->CustomerAge(
         Age   => $Article{Age},
-        Space => ' '
+        Space => ' ',
     );
 
     # fetch all std. templates ...
@@ -534,7 +544,20 @@ sub _Show {
 
     $LayoutObject->Block(
         Name => 'DocumentContent',
-        Data => { %Param, %Article },
+        Data => {
+            %Param,
+            %Article,
+        },
+    );
+
+    $LayoutObject->Block(
+        Name => 'OwnerResponsible',
+        Data => {
+            Owner               => $UserInfo{'UserLogin'},
+            OwnerFullname       => $UserInfo{'UserFullname'},
+            Responsible         => $TicketResponsible{'UserLogin'},
+            ResponsibleFullname => $TicketResponsible{'UserFullname'},
+        },
     );
 
     # if "Actions per Ticket" (Inline Action Row) is active
@@ -630,7 +653,8 @@ sub _Show {
                 # run module
                 my @Data = $Object->Check(
                     Article => \%Article,
-                    %Param, Config => $Jobs{$Job}
+                    %Param,
+                    Config => $Jobs{$Job},
                 );
 
                 for my $DataRef (@Data) {
@@ -643,7 +667,8 @@ sub _Show {
                 # filter option
                 $Object->Filter(
                     Article => \%Article,
-                    %Param, Config => $Jobs{$Job}
+                    %Param,
+                    Config => $Jobs{$Job},
                 );
             }
         }
@@ -652,7 +677,11 @@ sub _Show {
     # create output
     $LayoutObject->Block(
         Name => 'AgentAnswer',
-        Data => { %Param, %Article, %AclAction },
+        Data => {
+            %Param,
+            %Article,
+            %AclAction,
+        },
     );
     if (
         $ConfigObject->Get('Frontend::Module')->{AgentTicketCompose}
@@ -674,7 +703,11 @@ sub _Show {
             if ($Access) {
                 $LayoutObject->Block(
                     Name => 'AgentAnswerCompose',
-                    Data => { %Param, %Article, %AclAction },
+                    Data => {
+                        %Param,
+                        %Article,
+                        %AclAction,
+                    },
                 );
             }
         }
@@ -703,7 +736,11 @@ sub _Show {
         if ($Access) {
             $LayoutObject->Block(
                 Name => 'AgentAnswerPhoneOutbound',
-                Data => { %Param, %Article, %AclAction },
+                Data => {
+                    %Param,
+                    %Article,
+                    %AclAction,
+                },
             );
         }
     }
@@ -712,7 +749,10 @@ sub _Show {
     if ( $ConfigObject->Get('Ticket::Type') ) {
         $LayoutObject->Block(
             Name => 'Type',
-            Data => { %Param, %Article },
+            Data => {
+                %Param,
+                %Article,
+            },
         );
     }
 
@@ -720,12 +760,18 @@ sub _Show {
     if ( $ConfigObject->Get('Ticket::Service') && $Article{Service} ) {
         $LayoutObject->Block(
             Name => 'Service',
-            Data => { %Param, %Article },
+            Data => {
+                %Param,
+                %Article,
+            },
         );
         if ( $Article{SLA} ) {
             $LayoutObject->Block(
                 Name => 'SLA',
-                Data => { %Param, %Article },
+                Data => {
+                    %Param,
+                    %Article,
+                },
             );
         }
     }
@@ -747,7 +793,10 @@ sub _Show {
         }
         $LayoutObject->Block(
             Name => 'FirstResponseTime',
-            Data => { %Param, %Article },
+            Data => {
+                %Param,
+                %Article,
+            },
         );
     }
 
@@ -768,7 +817,10 @@ sub _Show {
         }
         $LayoutObject->Block(
             Name => 'UpdateTime',
-            Data => { %Param, %Article },
+            Data => {
+                %Param,
+                %Article,
+            },
         );
     }
 
@@ -785,11 +837,14 @@ sub _Show {
             Space              => ' ',
         );
         if ( 60 * 60 * 1 > $Article{SolutionTime} ) {
-            $Article{SolutionTimeClass} = 'Warning'
+            $Article{SolutionTimeClass} = 'Warning';
         }
         $LayoutObject->Block(
             Name => 'SolutionTime',
-            Data => { %Param, %Article },
+            Data => {
+                %Param,
+                %Article,
+            },
         );
     }
 
@@ -975,7 +1030,10 @@ sub _Show {
     my $CustomerIDBlock = $Access ? 'CustomerIDRW' : 'CustomerIDRO';
     $LayoutObject->Block(
         Name => $CustomerIDBlock,
-        Data => { %Param, %Article },
+        Data => {
+            %Param,
+            %Article,
+        },
     );
 
     my %ActionRowTickets;
@@ -993,15 +1051,22 @@ sub _Show {
             );
         }
 
-        $Self->{ActionRowTickets}->{ $Param{TicketID} } = $LayoutObject->JSONEncode( Data => \@ActionItems );
+        $Self->{ActionRowTickets}->{ $Param{TicketID} } = $LayoutObject->JSONEncode(
+            Data => \@ActionItems,
+        );
     }
 
     # create & return output
     my $Output = $LayoutObject->Output(
         TemplateFile => 'AgentTicketOverviewMedium',
-        Data         => { %Param, %Article, %AclAction },
+        Data         => {
+            %Param,
+            %Article,
+            %AclAction,
+        },
     );
 
     return \$Output;
 }
+
 1;

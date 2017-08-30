@@ -24,7 +24,12 @@ $Selenium->RunTest(
 
         # set fixed time for test purposes
         $Helper->FixedTimeSet(
-            $Kernel::OM->Get('Kernel::System::Time')->TimeStamp2SystemTime( String => '2014-12-12 00:00:00' ),
+            $Kernel::OM->Create(
+                'Kernel::System::DateTime',
+                ObjectParams => {
+                    String => '2014-12-12 00:00:00'
+                    }
+                )->ToEpoch(),
         );
 
         # create test user and login
@@ -204,7 +209,7 @@ $Selenium->RunTest(
                 'Title'       => 'Escalated Tickets'
             },
             '0120-TicketNew' => {
-                'Attributes'     => 'StateType=new;',
+                'Attributes'     => 'StateType=new;OrderBy=Down;',
                 'Block'          => 'ContentLarge',
                 'CacheTTLLocal'  => '0.5',
                 'Default'        => '1',
@@ -243,7 +248,7 @@ $Selenium->RunTest(
                 'Title'       => 'New Tickets'
             },
             '0130-TicketOpen' => {
-                'Attributes'     => 'StateType=open;',
+                'Attributes'     => 'StateType=open;OrderBy=Down;',
                 'Block'          => 'ContentLarge',
                 'CacheTTLLocal'  => '0.5',
                 'Default'        => '1',

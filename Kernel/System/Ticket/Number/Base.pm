@@ -11,6 +11,8 @@ package Kernel::System::Ticket::Number::Base;
 use strict;
 use warnings;
 
+use Time::HiRes();
+
 use Kernel::System::VariableCheck qw(:all);
 
 our @ObjectDependencies = (
@@ -51,7 +53,8 @@ need to implement this function.
 
 =head2 TicketNumberCounterAdd()
 
-Add a new unique ticket counter entry (uses exclusive locking to avoid duplicate counter entries).
+Add a new unique ticket counter entry. These counters are used by the different number generators
+    to generate unique C<TicketNumber>s
 
     my $Counter = $TicketNumberObject->TicketNumberCounterAdd(
         Offset      => 123,
@@ -60,6 +63,13 @@ Add a new unique ticket counter entry (uses exclusive locking to avoid duplicate
 Returns:
 
     my $Counter = 123;  # undef in case of an error
+
+This method has logic to generate unique numbers even though concurrent processes might write to the
+same table. The algorithm runs as follows:
+    - Insert a new record into the C<ticket_number_counter> table with a C<counter> value of 0.
+    - Then update all preceding records including and up to the current one that still have value 0 and compute the correct value for each, which depends on the previous record.
+
+This works well also if concurrent processes write to the records at the same time, because they will compute the same (unique) values for the counters.
 
 =cut
 
@@ -82,27 +92,53 @@ sub TicketNumberCounterAdd {
         return;
     }
 
-    my $LockHandle = $Kernel::OM->Get('Kernel::System::ExclusiveLock')->ExclusiveLockGet(
-        LockKey => 'TicketNumberCounter',
-    );
-
-    return if !$LockHandle;
-
-    my $CounterUID = $LockHandle->LockUIDGet();
+    my $CounterUID = $Self->_GetUID();
 
     return if !$CounterUID;
-
-    # Get the last inserted counter.
-    my $SQL = 'SELECT COALESCE(MAX(counter),0) FROM ticket_number_counter';
-
-    my @Bind;
 
     my $DateTimeObject = $Kernel::OM->Create(
         'Kernel::System::DateTime'
     );
     my $CurrentTimeString = $DateTimeObject->ToString();
 
-    # Only get the value from the current date if the number generator modules is date based.
+    my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
+
+    # Insert new ticket counter into the database (with value 0)
+    return if !$DBObject->Do(
+        SQL => '
+            INSERT INTO ticket_number_counter
+                (counter, counter_uid, create_time)
+            VALUES
+                (  0, ?, ? )',
+        Bind => [ \$CounterUID, \$CurrentTimeString ],
+    );
+
+    # It's strange, but this sleep seems to be needed to make sure that other database sessions also see this record.
+    #   Without it, there were race conditions because the fillup of unset values below didn't find records that other
+    #   sessions already inserted.
+    Time::HiRes::sleep(0.1);
+
+    # Get the ID of the just inserted ticket counter.
+    return if !$DBObject->Prepare(
+        SQL => '
+            SELECT id
+            FROM ticket_number_counter
+            WHERE counter_uid = ?',
+        Bind  => [ \$CounterUID ],
+        Limit => 1,
+    );
+
+    my $CounterID;
+    while ( my @Data = $DBObject->FetchrowArray() ) {
+        $CounterID = $Data[0];
+    }
+
+    # Calculate the counter values for all records that don't have a generated value yet.
+    #   This is safe even if multiple processes access the records at the same time.
+
+    my $DateConditionSQL = '';
+
+    # Only get counters from the current date if the number generator module is date based.
     if ( $Self->IsDateBased() ) {
 
         my $DateTimeSettings = $DateTimeObject->Get();
@@ -110,53 +146,83 @@ sub TicketNumberCounterAdd {
             $DateTimeSettings->{$Element} = 0;
         }
 
-        my $TodayDateTimeObject = $Kernel::OM->Create(
-            'Kernel::System::DateTime',
-            ObjectParams => $DateTimeSettings,
-        );
-
-        $SQL .= ' WHERE create_time >= ?';
-        push @Bind, \$TodayDateTimeObject->ToString(),
+        $DateTimeObject->Set( %{$DateTimeSettings} );
+        $DateConditionSQL = " AND create_time >= '" . $DateTimeObject->ToString() . "'";
     }
 
-    my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
+    my $SQL = "
+        SELECT id
+        FROM ticket_number_counter
+        WHERE counter = 0
+            AND id <= ?
+            $DateConditionSQL
+        ORDER BY id ASC";
 
     return if !$DBObject->Prepare(
         SQL  => $SQL,
-        Bind => \@Bind
+        Bind => [ \$CounterID ]
     );
-    my $LastCounter;
-    while ( my @Data = $DBObject->FetchrowArray() ) {
-        $LastCounter = $Data[0];
+
+    my @UnsetCounterIDs;
+
+    ROW:
+    while ( my @Row = $DBObject->FetchrowArray() ) {
+        push @UnsetCounterIDs, $Row[0];
     }
 
-    my $NewCounter = $LastCounter + $Param{Offset};
+    my $SetOffset;
+    for my $UnsetCounterID (@UnsetCounterIDs) {
 
-    # Insert new ticket counter into the database based on the last one
-    return if !$DBObject->Do(
-        SQL => '
-            INSERT INTO ticket_number_counter
-                (counter, counter_uid, create_time)
-            VALUES
-                (  ?, ?, ? )',
-        Bind => [ \$NewCounter, \$CounterUID, \$CurrentTimeString ],
-    );
+        # Get previous counter record value (tolerate gaps).
+        my $PreviousCounter = 0;
 
-    # Get the just inserted ticket counter.
+        return if !$DBObject->Prepare(
+            SQL => "
+            SELECT counter
+            FROM ticket_number_counter
+            WHERE id < ?
+                $DateConditionSQL
+            ORDER BY id DESC",
+            Bind  => [ \$UnsetCounterID ],
+            Limit => 1,
+        );
+
+        while ( my @Data = $DBObject->FetchrowArray() ) {
+            $PreviousCounter = $Data[0] || 0;
+        }
+
+        # Offset must only be set once (following are consecutive).
+        my $NewCounter = $PreviousCounter + 1;
+        if ( !$SetOffset ) {
+            $NewCounter = $PreviousCounter + $Param{Offset};
+            $SetOffset  = 1;
+        }
+
+        # Update the counter value, unless another process already did it.
+        return if !$DBObject->Do(
+            SQL => '
+                UPDATE ticket_number_counter
+                SET counter = ?
+                WHERE id = ?
+                    AND counter = 0',
+            Bind => [ \$NewCounter, \$UnsetCounterID ],
+        );
+    }
+
+    # Get the just inserted ticket counter with the now computed value.
     return if !$DBObject->Prepare(
         SQL => '
             SELECT counter
             FROM ticket_number_counter
             WHERE counter_uid = ?',
-        Bind => [ \$CounterUID ],
+        Bind  => [ \$CounterUID ],
+        Limit => 1,
     );
 
     my $Counter;
     while ( my @Data = $DBObject->FetchrowArray() ) {
         $Counter = $Data[0];
     }
-
-    return if $Counter ne $NewCounter;
 
     return $Counter;
 }
@@ -340,6 +406,38 @@ sub TicketCreateNumber {
     return $Self->TicketCreateNumber( $Self->{LoopProtectionCounter} );
 }
 
+=head1 PRIVATE INTERFACE
+
+=head2 _GetUID()
+
+Generates a unique identifier.
+
+    my $UID = $TicketNumberObject->_GetUID();
+
+Returns:
+
+    my $UID = 14906327941360ed8455f125d0450277;
+
+=cut
+
+sub _GetUID {
+    my ( $Self, %Param ) = @_;
+
+    my $NodeID = $Kernel::OM->Get('Kernel::Config')->Get('NodeID') || 1;
+    my ( $Seconds, $Microseconds ) = Time::HiRes::gettimeofday();
+    my $ProcessID = $$;
+
+    my $CounterUID = $ProcessID . $Seconds . $Microseconds . $NodeID;
+
+    my $RandomString = $Kernel::OM->Get('Kernel::System::Main')->GenerateRandomString(
+        Length     => 32 - length $CounterUID,
+        Dictionary => [ 0 .. 9, 'a' .. 'f' ],    # hexadecimal
+    );
+
+    $CounterUID .= $RandomString;
+
+    return $CounterUID;
+}
 1;
 
 =head1 TERMS AND CONDITIONS

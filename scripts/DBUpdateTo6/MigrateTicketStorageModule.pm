@@ -30,9 +30,10 @@ sub Run {
 
     my $Home     = $Kernel::OM->Get('Kernel::Config')->Get('Home');
     my $FilePath = "$Home/Kernel/Config/Backups/ZZZAutoOTRS5.pm";
+    my $Verbose  = $Param{CommandlineOptions}->{Verbose} || 0;
 
     if ( !-f $FilePath ) {
-        print "\nCould not find Kernel/Config/Backups/ZZZAutoOTRS5.pm, skipping... ";
+        print "    Could not find Kernel/Config/Backups/ZZZAutoOTRS5.pm, skipping...\n" if $Verbose;
         return 1;
     }
 
@@ -44,15 +45,19 @@ sub Run {
     );
     Kernel::Config::Backups::ZZZAutoOTRS5->Load( \%OTRS5Config );
 
-    if ( $OTRS5Config{'Ticket::StorageModule'} eq 'Kernel::System::Ticket::ArticleStorageFS' ) {
+    if (
+        $OTRS5Config{'Ticket::StorageModule'}
+        && $OTRS5Config{'Ticket::StorageModule'} eq 'Kernel::System::Ticket::ArticleStorageFS'
+        )
+    {
         my $ExclusiveLockGUID = $SysConfigObject->SettingLock(
-            Name   => 'Ticket::Article::Backend::MIMEBase###ArticleStorage',
+            Name   => 'Ticket::Article::Backend::MIMEBase::ArticleStorage',
             Force  => 1,
             UserID => 1,
         );
 
         my %Result = $SysConfigObject->SettingUpdate(
-            Name              => 'Ticket::Article::Backend::MIMEBase###ArticleStorage',
+            Name              => 'Ticket::Article::Backend::MIMEBase::ArticleStorage',
             IsValid           => 1,
             EffectiveValue    => 'Kernel::System::Ticket::Article::Backend::MIMEBase::ArticleStorageFS',
             ExclusiveLockGUID => $ExclusiveLockGUID,
@@ -60,20 +65,20 @@ sub Run {
         );
 
         if ( !$Result{Success} ) {
-            print "\nUnable to migrate Ticket::StorageModule.\n";
+            print "\n    Error:Unable to migrate Ticket::StorageModule. \n\n";
             return;
         }
     }
 
     if ( $OTRS5Config{'Ticket::StorageModule::CheckAllBackends'} ) {
         my $ExclusiveLockGUID = $SysConfigObject->SettingLock(
-            Name   => 'Ticket::Article::Backend::MIMEBase###CheckAllStorageBackends',
+            Name   => 'Ticket::Article::Backend::MIMEBase::CheckAllStorageBackends',
             Force  => 1,
             UserID => 1,
         );
 
         my %Result = $SysConfigObject->SettingUpdate(
-            Name              => 'Ticket::Article::Backend::MIMEBase###CheckAllStorageBackends',
+            Name              => 'Ticket::Article::Backend::MIMEBase::CheckAllStorageBackends',
             IsValid           => 1,
             EffectiveValue    => 1,
             ExclusiveLockGUID => $ExclusiveLockGUID,
@@ -81,20 +86,20 @@ sub Run {
         );
 
         if ( !$Result{Success} ) {
-            print "\nUnable to migrate Ticket::StorageModule::CheckAllBackends.\n";
+            print "\n    Error:Unable to migrate Ticket::StorageModule::CheckAllBackends. \n";
             return;
         }
     }
 
     if ( $OTRS5Config{'ArticleDir'} ) {
         my $ExclusiveLockGUID = $SysConfigObject->SettingLock(
-            Name   => 'Ticket::Article::Backend::MIMEBase###ArticleDataDir',
+            Name   => 'Ticket::Article::Backend::MIMEBase::ArticleDataDir',
             Force  => 1,
             UserID => 1,
         );
 
         my %Result = $SysConfigObject->SettingUpdate(
-            Name              => 'Ticket::Article::Backend::MIMEBase###ArticleDataDir',
+            Name              => 'Ticket::Article::Backend::MIMEBase::ArticleDataDir',
             IsValid           => 1,
             EffectiveValue    => $OTRS5Config{'ArticleDir'},
             ExclusiveLockGUID => $ExclusiveLockGUID,
@@ -102,7 +107,7 @@ sub Run {
         );
 
         if ( !$Result{Success} ) {
-            print "\nUnable to migrate ArticleDir.\n";
+            print "\n    Error:Unable to migrate ArticleDir. \n\n";
             return;
         }
     }

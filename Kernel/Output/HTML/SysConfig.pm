@@ -462,9 +462,8 @@ Recursive helper for SettingRender().
 
     my $HTMLStr = $SysConfigObject->_SettingRender(
         Name             => 'Setting Name',
-        DefaultID        => 123,
         Value            => $XMLParsedToPerlValue,
-        EffectiveValue   => "Product 6",            # or a complex structure
+        EffectiveValue   => "Product 6",            # or a complex structure (optional)
         DefaultValue     => "Product 5",            # or a complex structure (optional)
         ValueType        => "String",               # (optional)
         IsAjax           => 1,                      # (optional) Default 0.
@@ -487,7 +486,7 @@ Returns:
 sub _SettingRender {
     my ( $Self, %Param ) = @_;
 
-    for my $Needed (qw(Value EffectiveValue UserID)) {
+    for my $Needed (qw(Value UserID)) {
         if ( !defined $Param{$Needed} ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
@@ -497,7 +496,8 @@ sub _SettingRender {
             return;
         }
     }
-    $Param{IDSuffix} //= '';
+    $Param{IDSuffix}       //= '';
+    $Param{EffectiveValue} //= '';
 
     my $Result = $Param{Result} || '';
     my %Objects;
@@ -738,13 +738,11 @@ sub _SettingRender {
 
                 my $ValueAttribute = $Objects{$ValueType}->ValueAttributeGet();
 
-                my $EffectiveValue = $Item->{$ValueAttribute} || '';
-
                 # Output item.
                 $HashItem .= $Objects{$ValueType}->SettingRender(
                     %Param,
                     Name           => $Param{Name},
-                    EffectiveValue => $EffectiveValue,
+                    EffectiveValue => $Item->{$ValueAttribute} // '',
                     Class          => 'Content',
                     Item           => [$Item],
                     IsAjax         => $Param{IsAjax},

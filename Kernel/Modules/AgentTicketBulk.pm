@@ -322,7 +322,7 @@ sub Run {
             }
 
             # get time stamp based on user time zone
-            %Time = $LayoutObject->TransfromDateSelection(
+            %Time = $LayoutObject->TransformDateSelection(
                 Year   => $ParamObject->GetParam( Param => 'Year' ),
                 Month  => $ParamObject->GetParam( Param => 'Month' ),
                 Day    => $ParamObject->GetParam( Param => 'Day' ),
@@ -388,16 +388,22 @@ sub Run {
                     );
                 }
 
-                # get time object
-                my $TimeObject = $Kernel::OM->Get('Kernel::System::Time');
-
                 if ( $StateData{TypeName} =~ /^pending/i ) {
-                    if ( !$TimeObject->Date2SystemTime( %Time, Second => 0 ) ) {
-                        $Error{'DateInvalid'} = 'ServerError';
-                    }
+
+                    # create datetime object
+                    my $PendingDateTimeObject = $Kernel::OM->Create(
+                        'Kernel::System::DateTime',
+                        ObjectParams => {
+                            %Time,
+                            Second => 0,
+                        },
+                    );
+
+                    # get current system epoch
+                    my $CurSystemDateTimeObject = $Kernel::OM->Create('Kernel::System::DateTime');
                     if (
-                        $TimeObject->Date2SystemTime( %Time, Second => 0 )
-                        < $TimeObject->SystemTime()
+                        !$PendingDateTimeObject
+                        || $PendingDateTimeObject < $CurSystemDateTimeObject
                         )
                     {
                         $Error{'DateInvalid'} = 'ServerError';
@@ -479,23 +485,19 @@ sub Run {
             elsif ( $GetParam{'MergeToSelection'} eq 'OptionMergeToOldest' ) {
 
                 # find oldest
-                my $TicketIDOldest;
-                my $TicketIDOldestID;
+                my $OldestCreateTime;
+                my $OldestTicketID;
                 for my $TicketIDCheck (@TicketIDs) {
                     my %Ticket = $TicketObject->TicketGet(
                         TicketID      => $TicketIDCheck,
                         DynamicFields => 0,
                     );
-                    if ( !defined $TicketIDOldest ) {
-                        $TicketIDOldest   = $Ticket{CreateTimeUnix};
-                        $TicketIDOldestID = $TicketIDCheck;
-                    }
-                    if ( $TicketIDOldest > $Ticket{CreateTimeUnix} ) {
-                        $TicketIDOldest   = $Ticket{CreateTimeUnix};
-                        $TicketIDOldestID = $TicketIDCheck;
+                    if ( !defined $OldestCreateTime || $OldestCreateTime gt $Ticket{Created} ) {
+                        $OldestCreateTime = $Ticket{Created};
+                        $OldestTicketID   = $TicketIDCheck;
                     }
                 }
-                $MainTicketID = $TicketIDOldestID;
+                $MainTicketID = $OldestTicketID;
             }
         }
 
@@ -712,7 +714,7 @@ sub Run {
                         TicketID             => $TicketID,
                         SenderType           => 'agent',
                         IsVisibleForCustomer => $GetParam{IsVisibleForCustomer},
-                        From                 => "$Self->{UserFirstname} $Self->{UserLastname} <$Self->{UserEmail}>",
+                        From                 => "$Self->{UserFullname} <$Self->{UserEmail}>",
                         Subject              => $GetParam{'Subject'},
                         Body                 => $GetParam{'Body'},
                         MimeType             => $MimeType,
@@ -1006,7 +1008,6 @@ sub _GetRecipientList {
                 %Article = $ArticleObject->BackendForArticle( %{$Article} )->ArticleGet(
                     %{$Article},
                     DynamicFields => 0,
-                    UserID        => $Self->{UserID},
                 );
             }
 

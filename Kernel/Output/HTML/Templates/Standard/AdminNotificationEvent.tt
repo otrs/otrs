@@ -10,7 +10,7 @@
 
 [% RenderBlockStart("Overview") %]
 <div class="MainBox ARIARoleMain LayoutFixedSidebar SidebarFirst">
-    <h1>[% Translate("Ticket Notification Management") | html %]</h1>
+    <h1 class="InvisibleText">[% Translate("Ticket Notification Management") | html %]</h1>
 
     [% BreadcrumbPath = [
             {
@@ -314,7 +314,7 @@
                         </div>
                         <div class="Clear"></div>
 
-                        <label for="CustomerUserID">[% Translate("Customer") | html %]: </label>
+                        <label for="CustomerUserID">[% Translate("Customer User ID") | html %]: </label>
                         <div class="Field">
                             <input type="text" name="CustomerUserID" id="CustomerUserID" class="W75pc" value="[% Data.CustomerUserID | html %]"/>
                         </div>
@@ -356,6 +356,18 @@
                             <div id="ArticleSenderTypeIDServerError" class="TooltipErrorMessage">
                                 <p>[% Translate("If ArticleCreate or ArticleSend is used as a trigger event, you need to specify an article filter as well. Please select at least one of the article filter fields.") | html %]</p>
                             </div>
+                        </div>
+                        <div class="Clear"></div>
+
+                        <label for="ArticleIsVisibleForCustomer">[% Translate("Customer visibility") | html %]: </label>
+                        <div class="Field">
+                            [% Data.ArticleCustomerVisibilityStrg %]
+                        </div>
+                        <div class="Clear"></div>
+
+                        <label for="ArticleCommunicationChannelID">[% Translate("Communication channel") | html %]: </label>
+                        <div class="Field">
+                            [% Data.ArticleCommunicationChannelStrg %]
                         </div>
                         <div class="Clear"></div>
 
@@ -488,6 +500,11 @@
                             <a href="[% Env("Baselink") %]Action=AdminOTRSBusiness" class="Button"><i class="fa fa-angle-double-up"></i> [% Translate("Upgrade to %s", OTRSBusinessLabel) %]</a>
                         </div>
 [% RenderBlockEnd("TransportRowRecommendation") %]
+[% RenderBlockStart("TransportRowNotActive") %]
+                        <div class="Field Info">
+                            <a href="[% Env("Baselink") %]Action=AdminCloudServices" class="Button"><i class="fa fa-angle-double-up"></i> [% Translate("Please activate this transport in order to use it.") %]</a>
+                        </div>
+[% RenderBlockEnd("TransportRowNotActive") %]
                         <div class="Clear"></div>
                     </fieldset>
 [% RenderBlockEnd("TransportRow") %]

@@ -23,13 +23,13 @@ our @ObjectDependencies = (
     'Kernel::Language',
     'Kernel::System::Cache',
     'Kernel::System::CheckItem',
+    'Kernel::System::DateTime',
     'Kernel::System::DB',
     'Kernel::System::DynamicField',
     'Kernel::System::DynamicField::Backend',
     'Kernel::System::Encode',
     'Kernel::System::Log',
     'Kernel::System::Main',
-    'Kernel::System::Time',
     'Kernel::System::Valid',
     'Kernel::System::DynamicField',
     'Kernel::System::DynamicField::Backend',
@@ -320,6 +320,10 @@ sub CustomerSearch {
         # as they cannot be retrieved here
         my @CustomerUserSearchFields = grep { !exists $Self->{ConfiguredDynamicFieldNames}->{$_} }
             @{ $Self->{CustomerUserMap}->{CustomerUserSearchFields} };
+
+        if ( $Param{CustomerUserOnly} ) {
+            @CustomerUserSearchFields = grep { $_ ne 'customer_id' } @CustomerUserSearchFields;
+        }
 
         my %QueryCondition = $Self->{DBObject}->QueryCondition(
             Key           => \@CustomerUserSearchFields,    #$Self->{CustomerUserMap}->{CustomerUserSearchFields},
@@ -1255,19 +1259,26 @@ sub CustomerUserDataGet {
         return;
     }
 
+    my $CustomerUserListFieldsMap = $Self->{CustomerUserMap}->{CustomerUserListFields};
+    if ( !IsArrayRefWithData($CustomerUserListFieldsMap) ) {
+        $CustomerUserListFieldsMap = [ 'first_name', 'last_name', 'email', ];
+    }
+
     # to build the UserMailString
-    my %LookupCustomerUserListFields = map { $_ => 1 } @{ $Self->{CustomerUserMap}->{CustomerUserListFields} };
+    my %LookupCustomerUserListFields = map { $_ => 1 } @{$CustomerUserListFieldsMap};
     my @CustomerUserListFields
         = map { $_->[0] } grep { $LookupCustomerUserListFields{ $_->[2] } } @{ $Self->{CustomerUserMap}->{Map} };
 
     my $UserMailString = '';
+    my @UserMailStringParts;
 
     FIELD:
     for my $Field (@CustomerUserListFields) {
         next FIELD if !$Data{$Field};
 
-        $UserMailString .= $Data{$Field} . ' ';
+        push @UserMailStringParts, $Data{$Field};
     }
+    $UserMailString = join ' ', @UserMailStringParts;
     $UserMailString =~ s/^(.*)\s(.+?\@.+?\..+?)(\s|)$/"$1" <$2>/;
 
     # add the UserMailString to the data hash
@@ -1281,9 +1292,16 @@ sub CustomerUserDataGet {
 
     # add last login timestamp
     if ( $Preferences{UserLastLogin} ) {
-        $Preferences{UserLastLoginTimestamp} = $Kernel::OM->Get('Kernel::System::Time')->SystemTime2TimeStamp(
-            SystemTime => $Preferences{UserLastLogin},
+
+        my $DateTimeObject = $Kernel::OM->Create(
+            'Kernel::System::DateTime',
+            ObjectParams => {
+                Epoch => $Preferences{UserLastLogin},
+            },
         );
+
+        $Preferences{UserLastLoginTimestamp} = $DateTimeObject->ToString();
+
     }
 
     # cache request
@@ -1341,13 +1359,11 @@ sub CustomerUserAdd {
     if ( !$Param{UserLogin} && $Self->{CustomerUserMap}->{AutoLoginCreation} ) {
 
         # get time object
-        my $TimeObject = $Kernel::OM->Get('Kernel::System::Time');
+        my $DateTimeObject = $Kernel::OM->Create('Kernel::System::DateTime');
+        my $DateTimeString = $DateTimeObject->Format( Format => '%Y%m%d%H%M' );
 
-        my ( $Sec, $Min, $Hour, $Day, $Month, $Year ) = $TimeObject->SystemTime2Date(
-            SystemTime => $TimeObject->SystemTime(),
-        );
         my $Prefix = $Self->{CustomerUserMap}->{AutoLoginCreationPrefix} || 'auto';
-        $Param{UserLogin} = "$Prefix-$Year$Month$Day$Hour$Min" . int( rand(99) );
+        $Param{UserLogin} = "$Prefix-$DateTimeString" . int( rand(99) );
     }
 
     # check if user login exists
@@ -1668,8 +1684,9 @@ sub SetPassword {
     }
     my $CryptedPw = '';
 
-    # get crypt type
-    my $CryptType = $Kernel::OM->Get('Kernel::Config')->Get('Customer::AuthModule::DB::CryptType') || 'sha2';
+    my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
+
+    my $CryptType = $ConfigObject->Get('Customer::AuthModule::DB::CryptType') || 'sha2';
 
     # get encode object
     my $EncodeObject = $Kernel::OM->Get('Kernel::System::Encode');
@@ -1744,7 +1761,14 @@ sub SetPassword {
             return;
         }
 
-        my $Cost = 9;
+        my $Cost = $ConfigObject->Get('Customer::AuthModule::DB::bcryptCost') // 12;
+
+        # Don't allow values smaller than 9 for security.
+        $Cost = 9 if $Cost < 9;
+
+        # Current Crypt::Eksblowfish::Bcrypt limit is 31.
+        $Cost = 31 if $Cost > 31;
+
         my $Salt = $MainObject->GenerateRandomString( Length => 16 );
 
         # remove UTF8 flag, required by Crypt::Eksblowfish::Bcrypt
@@ -1754,7 +1778,7 @@ sub SetPassword {
         my $Octets = Crypt::Eksblowfish::Bcrypt::bcrypt_hash(
             {
                 key_nul => 1,
-                cost    => 9,
+                cost    => $Cost,
                 salt    => $Salt,
             },
             $Pw

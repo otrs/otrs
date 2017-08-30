@@ -44,12 +44,12 @@ sub new {
     $Self->{CacheTTL}  = 60 * 60 * 24 * 20;
 
     $Self->{ArticleDataDir}
-        = $Kernel::OM->Get('Kernel::Config')->Get('Ticket::Article::Backend::MIMEBase')->{'ArticleDataDir'}
+        = $Kernel::OM->Get('Kernel::Config')->Get('Ticket::Article::Backend::MIMEBase::ArticleDataDir')
         || die 'Got no ArticleDataDir!';
 
     # do we need to check all backends, or just one?
     $Self->{CheckAllBackends}
-        = $Kernel::OM->Get('Kernel::Config')->Get('Ticket::Article::Backend::MIMEBase')->{'CheckAllStorageBackends'}
+        = $Kernel::OM->Get('Kernel::Config')->Get('Ticket::Article::Backend::MIMEBase::CheckAllStorageBackends')
         // 0;
 
     return $Self;
@@ -81,7 +81,6 @@ Get article attachment index as hash.
 
     my %Index = $BackendObject->ArticleAttachmentIndex(
         ArticleID        => 123,
-        UserID           => 123,
         ExcludePlainText => 1,       # (optional) Exclude plain text attachment
         ExcludeHTMLBody  => 1,       # (optional) Exclude HTML body attachment
         ExcludeInline    => 1,       # (optional) Exclude inline attachments
@@ -115,14 +114,12 @@ Returns:
 sub ArticleAttachmentIndex {
     my ( $Self, %Param ) = @_;
 
-    for my $Needed (qw(ArticleID UserID)) {
-        if ( !$Param{$Needed} ) {
-            $Kernel::OM->Get('Kernel::System::Log')->Log(
-                Priority => 'error',
-                Message  => "Need $Needed!",
-            );
-            return;
-        }
+    if ( !$Param{ArticleID} ) {
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
+            Priority => 'error',
+            Message  => 'Need ArticleID!',
+        );
+        return;
     }
 
     if ( $Param{ExcludeHTMLBody} && $Param{OnlyHTMLBody} ) {
@@ -260,7 +257,7 @@ sub _ArticleDeleteDirectory {
         if ( !rmdir $Path ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
-                Message  => "Can't remove: $Path: $!!",
+                Message  => "Can't remove '$Path': $!.",
             );
             return;
         }
@@ -292,8 +289,10 @@ sub _ArticleContentPathGet {
     # check key
     my $CacheKey = '_ArticleContentPathGet::' . $Param{ArticleID};
 
+    my $CacheObject = $Kernel::OM->Get('Kernel::System::Cache');
+
     # check cache
-    my $Cache = $Kernel::OM->Get('Kernel::System::Cache')->Get(
+    my $Cache = $CacheObject->Get(
         Type => $Self->{CacheType},
         Key  => $CacheKey,
     );
@@ -314,7 +313,7 @@ sub _ArticleContentPathGet {
     }
 
     # set cache
-    $Kernel::OM->Get('Kernel::System::Cache')->Set(
+    $CacheObject->Set(
         Type  => $Self->{CacheType},
         TTL   => $Self->{CacheTTL},
         Key   => $CacheKey,

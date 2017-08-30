@@ -1290,27 +1290,23 @@ sub _MaskRun {
     # perform ticket search
     my $GenericAgentTicketSearch = $ConfigObject->Get("Ticket::GenericAgentTicketSearch") || {};
     my $Counter = $TicketObject->TicketSearch(
-        Result              => 'COUNT',
-        SortBy              => 'Age',
-        OrderBy             => 'Down',
-        UserID              => 1,
-        Limit               => 60_000,
-        ContentSearchPrefix => '*',
-        ContentSearchSuffix => '*',
-        ConditionInline     => $GenericAgentTicketSearch->{ExtendedSearchCondition},
+        Result          => 'COUNT',
+        SortBy          => 'Age',
+        OrderBy         => 'Down',
+        UserID          => 1,
+        Limit           => 60_000,
+        ConditionInline => $GenericAgentTicketSearch->{ExtendedSearchCondition},
         %JobData,
         %DynamicFieldSearchParameters,
     ) || 0;
 
     my @TicketIDs = $TicketObject->TicketSearch(
-        Result              => 'ARRAY',
-        SortBy              => 'Age',
-        OrderBy             => 'Down',
-        UserID              => 1,
-        Limit               => 30,
-        ContentSearchPrefix => '*',
-        ContentSearchSuffix => '*',
-        ConditionInline     => $GenericAgentTicketSearch->{ExtendedSearchCondition},
+        Result          => 'ARRAY',
+        SortBy          => 'Age',
+        OrderBy         => 'Down',
+        UserID          => 1,
+        Limit           => 30,
+        ConditionInline => $GenericAgentTicketSearch->{ExtendedSearchCondition},
         %JobData,
         %DynamicFieldSearchParameters,
     );
@@ -1360,10 +1356,7 @@ sub _MaskRun {
             );
             my %Article;
             for my $Article (@Articles) {
-                %Article = $ArticleObject->BackendForArticle( %{$Article} )->ArticleGet(
-                    %{$Article},
-                    UserID => $Self->{UserID},
-                );
+                %Article = $ArticleObject->BackendForArticle( %{$Article} )->ArticleGet( %{$Article} );
             }
 
             my %Data = ( %Ticket, %Article );
@@ -1385,7 +1378,7 @@ sub _MaskRun {
             );
             $Data{UserLastname}  = $UserInfo{UserLastname};
             $Data{UserFirstname} = $UserInfo{UserFirstname};
-
+            $Data{UserFullname}  = $UserInfo{UserFullname};
             $LayoutObject->Block(
                 Name => 'Ticket',
                 Data => \%Data,

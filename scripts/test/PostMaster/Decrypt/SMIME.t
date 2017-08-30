@@ -236,12 +236,18 @@ my $FilterRand1      = 'filter' . $Helper->GetRandomID();
 $PostMasterFilter->FilterAdd(
     Name           => $FilterRand1,
     StopAfterMatch => 0,
-    Match          => {
-        'X-OTRS-BodyDecrypted' => 'Hi',
-    },
-    Set => {
-        'X-OTRS-Queue' => 'Junk',
-    },
+    Match          => [
+        {
+            Key   => 'X-OTRS-BodyDecrypted',
+            Value => 'Hi',
+        },
+    ],
+    Set => [
+        {
+            Key   => 'X-OTRS-Queue',
+            Value => 'Junk',
+        },
+    ],
 );
 
 # Read email content (from a file).
@@ -273,9 +279,19 @@ $ConfigObject->Set(
         }
 );
 
+my $CommunicationLogObject = $Kernel::OM->Create(
+    'Kernel::System::CommunicationLog',
+    ObjectParams => {
+        Transport => 'Email',
+        Direction => 'Incoming',
+    },
+);
+$CommunicationLogObject->ObjectLogStart( ObjectLogType => 'Message' );
+
 my $PostMasterObject = Kernel::System::PostMaster->new(
-    Email   => $Email,
-    Trusted => 1,
+    CommunicationLogObject => $CommunicationLogObject,
+    Email                  => $Email,
+    Trusted                => 1,
 );
 
 my @Return = $PostMasterObject->Run( Queue => '' );
@@ -289,6 +305,14 @@ $Self->Is(
 $Self->True(
     $Return[1] || 0,
     "Create new ticket (TicketID)",
+);
+
+$CommunicationLogObject->ObjectLogStop(
+    ObjectLogType => 'Message',
+    Status        => 'Successful',
+);
+$CommunicationLogObject->CommunicationStop(
+    Status => 'Successful',
 );
 
 # Get ticket object.
@@ -307,10 +331,7 @@ my @ArticleIndex         = $ArticleObject->ArticleList(
     UserID   => 1,
 );
 
-my %FirstArticle = $ArticleBackendObject->ArticleGet(
-    %{ $ArticleIndex[0] },
-    UserID => 1,
-);
+my %FirstArticle = $ArticleBackendObject->ArticleGet( %{ $ArticleIndex[0] } );
 
 $Self->Is(
     $Ticket{Queue},

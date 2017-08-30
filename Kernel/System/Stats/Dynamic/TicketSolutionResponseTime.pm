@@ -28,7 +28,7 @@ our @ObjectDependencies = (
     'Kernel::System::SLA',
     'Kernel::System::State',
     'Kernel::System::Ticket',
-    'Kernel::System::Time',
+    'Kernel::System::DateTime',
     'Kernel::System::Type',
     'Kernel::System::User',
 );
@@ -445,7 +445,7 @@ sub GetObjectAttributes {
         }
 
         my %ObjectAttribute = (
-            Name             => Translatable('CustomerID'),
+            Name             => Translatable('Customer ID'),
             UseAsXvalue      => 1,
             UseAsValueSeries => 1,
             UseAsRestriction => 1,
@@ -711,7 +711,7 @@ sub GetStatElement {
 
             SEARCHATTRIBUTE:
             for my $SearchAttribute ( sort keys %Param ) {
-                next SEARCHATTRIBUTE if $SearchAttribute !~ m{ \A \Q$Attribute\E _ }xms;
+                next SEARCHATTRIBUTE if $SearchAttribute !~ m{ \A \Q$Attribute\E }xms;
                 $TicketSearch{$SearchAttribute} = $Param{$SearchAttribute};
 
                 # Don't exist loop , there can be more than one attribute param per allowed attribute.
@@ -821,8 +821,6 @@ sub GetStatElement {
     # Do nothing, if there are no tickets.
     return 0 if !@TicketIDs;
 
-    my $TimeObject = $Kernel::OM->Get('Kernel::System::Time');
-
     my $Counter        = 0;
     my $CounterAllOver = 0;
 
@@ -844,11 +842,21 @@ sub GetStatElement {
             DynamicFields => 0,
         );
 
-        my $SolutionTime = $TimeObject->TimeStamp2SystemTime(
-            String => $Ticket{Closed},
+        my $CreatedDateTimeObject = $Kernel::OM->Create(
+            'Kernel::System::DateTime',
+            ObjectParams => {
+                String => $Ticket{Created}
+            },
+        );
+        my $ClosedDateTimeObject = $Kernel::OM->Create(
+            'Kernel::System::DateTime',
+            ObjectParams => {
+                String => $Ticket{Closed}
+            },
         );
 
-        $SolutionAllOver{$TicketID} = $SolutionTime - $Ticket{CreateTimeUnix};
+        my $Delta = $ClosedDateTimeObject->Delta( DateTimeObject => $CreatedDateTimeObject );
+        $SolutionAllOver{$TicketID} = $Delta->{AbsoluteSeconds};
 
         next TICKET if !defined $Ticket{SolutionInMin};
 
@@ -858,11 +866,16 @@ sub GetStatElement {
         $SolutionWorkingTime{$TicketID} = $Ticket{SolutionInMin};
 
         if ( $Ticket{FirstResponse} ) {
-            my $FirstResponse = $TimeObject->TimeStamp2SystemTime(
-                String => $Ticket{FirstResponse},
+
+            my $FirstResponseDateTimeObject = $Kernel::OM->Create(
+                'Kernel::System::DateTime',
+                ObjectParams => {
+                    String => $Ticket{FirstResponse}
+                },
             );
 
-            $Response{$TicketID}            = $FirstResponse - $Ticket{CreateTimeUnix};
+            my $Delta = $FirstResponseDateTimeObject->Delta( DateTimeObject => $CreatedDateTimeObject );
+            $Response{$TicketID}            = $Delta->{AbsoluteSeconds};
             $ResponseWorkingTime{$TicketID} = $Ticket{FirstResponseInMin};
         }
         else {
@@ -1209,7 +1222,7 @@ sub _GetAverage {
 
     my $Sum = 0;
     for my $Value ( values %{ $Param{Content} } ) {
-        $Sum += $Value;
+        $Sum += $Value || 0;
     }
     return $Sum / $Param{Count};
 }

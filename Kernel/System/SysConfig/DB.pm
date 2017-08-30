@@ -106,11 +106,11 @@ sub DefaultSettingAdd {
         }
     }
 
+    my @DefaultSettings = $Self->DefaultSettingList();
+
     # Check duplicate name
-    my %SettingData = $Self->DefaultSettingLookup(
-        Name => $Param{Name},
-    );
-    return if %SettingData;
+    my ($SettingData) = grep { $_->{Name} eq $Param{Name} } @DefaultSettings;
+    return if IsHashRefWithData($SettingData);
 
     # Check config level.
     $Param{HasConfigLevel} //= 0;
@@ -134,6 +134,7 @@ sub DefaultSettingAdd {
         $Param{$Key} = $Kernel::OM->Get('Kernel::System::YAML')->Dump(
             Data => $Param{$Key},
         );
+        $DefaultVersionParams{$Key} = $Param{$Key};
     }
 
     # Set GuID.
@@ -185,8 +186,10 @@ sub DefaultSettingAdd {
     my $DefaultID;
 
     # Fetch the default setting ID.
+    ROW:
     while ( my @Row = $DBObject->FetchrowArray() ) {
         $DefaultID = $Row[0];
+        last ROW;
     }
 
     # Add default setting version.
@@ -212,13 +215,13 @@ sub DefaultSettingAdd {
         my $CacheObject = $Kernel::OM->Get('Kernel::System::Cache');
         $CacheObject->Delete(
             Type => 'SysConfigDefault',
-            Key  => 'DefaultSettingGet::' . $SettingData{Name},
+            Key  => 'DefaultSettingGet::' . $Param{Name},
         );
         $CacheObject->CleanUp(
-            Type => 'DefaultSettingListGet',
+            Type => 'SysConfigDefaultListGet',
         );
         $CacheObject->Delete(
-            Type => 'DefaultSettingList',
+            Type => 'SysConfigDefaultList',
             Key  => 'DefaultSettingList',
         );
         $CacheObject->CleanUp(
@@ -276,6 +279,7 @@ Returns:
         CreateBy                 => 1,
         ChangeTime               => "2016-05-29 11:04:04",
         ChangeBy                 => 1,
+        SettingUID               => 'Default12320160529110404',
     );
 
 =cut
@@ -347,6 +351,9 @@ sub DefaultSettingGet {
         my $XMLContentParsed = $YAMLObject->Load( Data => $Data[13] );
         my $EffectiveValue   = $YAMLObject->Load( Data => $Data[15] );
 
+        my $TimeStamp = $Data[22];
+        $TimeStamp =~ s{:|-|[ ]}{}gmsx;
+
         %DefaultSetting = (
             DefaultID                => $Data[0],
             Name                     => $Data[1],
@@ -372,6 +379,7 @@ sub DefaultSettingGet {
             CreateBy                 => $Data[21],
             ChangeTime               => $Data[22],
             ChangeBy                 => $Data[23],
+            SettingUID               => "Default$Data[0]$TimeStamp",
         );
     }
 
@@ -400,9 +408,8 @@ Default setting lookup.
 Returns:
 
     %Result = (
-        DefaultID      => 1,
+        DefaultID      => 4,
         Name           => 'TheName',
-        XMLContentRaw  => '',           # XML Data
     );
 
 =cut
@@ -422,7 +429,7 @@ sub DefaultSettingLookup {
     my @Bind;
 
     my $SQL = '
-        SELECT id, name, xml_content_raw
+        SELECT id, name
         FROM sysconfig_default
         WHERE
     ';
@@ -440,17 +447,17 @@ sub DefaultSettingLookup {
 
     # db query
     return if !$DBObject->Prepare(
-        SQL  => $SQL,
-        Bind => \@Bind,
+        SQL   => $SQL,
+        Bind  => \@Bind,
+        Limit => 1,
     );
 
     my %Result;
 
     ROW:
     while ( my @Row = $DBObject->FetchrowArray() ) {
-        $Result{DefaultID}     = $Row[0];
-        $Result{Name}          = $Row[1];
-        $Result{XMLContentRaw} = $Row[2];
+        $Result{DefaultID} = $Row[0];
+        $Result{Name}      = $Row[1];
         last ROW;
     }
 
@@ -515,10 +522,10 @@ sub DefaultSettingDelete {
         Key  => 'DefaultSettingGet::' . $DefaultSetting{Name},
     );
     $CacheObject->CleanUp(
-        Type => 'DefaultSettingListGet',
+        Type => 'SysConfigDefaultListGet',
     );
     $CacheObject->Delete(
-        Type => 'DefaultSettingList',
+        Type => 'SysConfigDefaultList',
         Key  => 'DefaultSettingList',
     );
     $CacheObject->CleanUp(
@@ -528,18 +535,19 @@ sub DefaultSettingDelete {
         Type => 'SysConfigEntities',
     );
     $CacheObject->CleanUp(
-        Type => 'ConfigurationTranslatedGet',
-    );
-    $CacheObject->CleanUp(
         Type => 'SysConfigIsDirty',
     );
 
-    # Clean cache for _ConfigurationTranslatedGet.
+    # Clean cache for setting translations.
     my %Languages = %{ $Kernel::OM->Get('Kernel::Config')->Get('DefaultUsedLanguages') };
     for my $Language ( sort keys %Languages ) {
         $CacheObject->Delete(
-            Type => '_ConfigurationTranslatedGet',
-            Key  => "_ConfigurationTranslatedGet::$Language" . "::$DefaultSetting{Name}",
+            Type => 'SysConfig',
+            Key  => "SettingTranslatedGet::$Language" . "::$DefaultSetting{Name}",
+        );
+        $CacheObject->Delete(
+            Type => 'SysConfig',
+            Key  => "ConfigurationTranslatedGet::$Language",
         );
     }
 
@@ -661,6 +669,7 @@ sub DefaultSettingUpdate {
         $Param{$Key} = $Kernel::OM->Get('Kernel::System::YAML')->Dump(
             Data => $Param{$Key},
         );
+        $DefaultVersionParams{$Key} = $Param{$Key};
     }
 
     # Set is dirty value.
@@ -693,10 +702,10 @@ sub DefaultSettingUpdate {
         Key  => 'DefaultSettingGet::' . $DefaultSetting{Name},
     );
     $CacheObject->CleanUp(
-        Type => 'DefaultSettingListGet',
+        Type => 'SysConfigDefaultListGet',
     );
     $CacheObject->Delete(
-        Type => 'DefaultSettingList',
+        Type => 'SysConfigDefaultList',
         Key  => 'DefaultSettingList',
     );
     $CacheObject->CleanUp(
@@ -706,18 +715,19 @@ sub DefaultSettingUpdate {
         Type => 'SysConfigEntities',
     );
     $CacheObject->CleanUp(
-        Type => 'ConfigurationTranslatedGet',
-    );
-    $CacheObject->CleanUp(
         Type => 'SysConfigIsDirty',
     );
 
-    # Clean cache for _ConfigurationTranslatedGet.
+    # Clean cache for setting translations.
     my %Languages = %{ $Kernel::OM->Get('Kernel::Config')->Get('DefaultUsedLanguages') };
     for my $Language ( sort keys %Languages ) {
         $CacheObject->Delete(
-            Type => '_ConfigurationTranslatedGet',
-            Key  => "_ConfigurationTranslatedGet::$Language" . "::$DefaultSetting{Name}",
+            Type => 'SysConfig',
+            Key  => "SettingTranslatedGet::$Language" . "::$DefaultSetting{Name}",
+        );
+        $CacheObject->Delete(
+            Type => 'SysConfig',
+            Key  => "ConfigurationTranslatedGet::$Language",
         );
     }
 
@@ -977,8 +987,8 @@ sub DefaultSettingListGet {
     my @Filters;
     my @Bind;
 
-    my $CacheType = 'DefaultSettingListGet';
-    my $CacheKey  = 'DefaultSettingListGet';
+    my $CacheType = 'SysConfigDefaultListGet';
+    my $CacheKey  = 'DefaultSettingListGet';     # this cache key gets more elements
 
     # Check params have a default value.
     for my $Key ( sort keys %FieldFilters ) {
@@ -1042,32 +1052,60 @@ sub DefaultSettingListGet {
 
     return @{$Cache} if ref $Cache eq 'ARRAY';
 
-    # Start SQL statement.
     my $SQL = '
-        SELECT id, name
+        SELECT id, name, description, navigation, is_invisible, is_readonly, is_required, is_valid, has_configlevel,
+            user_modification_possible, user_modification_active, user_preferences_group, xml_content_raw,
+            xml_content_parsed, xml_filename, effective_value, is_dirty, exclusive_lock_guid, exclusive_lock_user_id,
+            exclusive_lock_expiry_time, create_time, create_by, change_time, change_by
         FROM sysconfig_default';
 
     $SQLFilter //= '';
 
     $SQL .= $SQLFilter . ' ORDER BY id';
 
-    my @Data;
     return if !$DBObject->Prepare(
         SQL  => $SQL,
         Bind => \@Bind,
     );
 
-    my @DefaultNames;
+    my @Data;
+    my $YAMLObject = $Kernel::OM->Get('Kernel::System::YAML');
+
     while ( my @Row = $DBObject->FetchrowArray() ) {
-        push @DefaultNames, $Row[1];
-    }
 
-    # Get default settings.
-    for my $Name (@DefaultNames) {
+        # De-serialize default data.
+        my $XMLContentParsed = $YAMLObject->Load( Data => $Row[13] );
+        my $EffectiveValue   = $YAMLObject->Load( Data => $Row[15] );
 
-        my %DefaultSetting = $Self->DefaultSettingGet(
-            Name    => $Name,
-            NoCache => $Param{NoCache},
+        my $TimeStamp = $Row[22];
+        $TimeStamp =~ s{:|-|[ ]}{}gmsx;
+
+        my %DefaultSetting = (
+            DefaultID                => $Row[0],
+            Name                     => $Row[1],
+            Description              => $Row[2],
+            Navigation               => $Row[3],
+            IsInvisible              => $Row[4],
+            IsReadonly               => $Row[5],
+            IsRequired               => $Row[6],
+            IsValid                  => $Row[7],
+            HasConfigLevel           => $Row[8],
+            UserModificationPossible => $Row[9],
+            UserModificationActive   => $Row[10],
+            UserPreferencesGroup     => $Row[11] || '',
+            XMLContentRaw            => $Row[12],
+            XMLContentParsed         => $XMLContentParsed,
+            XMLFilename              => $Row[14],
+            EffectiveValue           => $EffectiveValue,
+            IsDirty                  => $Row[16] ? 1 : 0,
+            ExclusiveLockGUID        => $Row[17],
+            ExclusiveLockUserID      => $Row[18],
+            ExclusiveLockExpiryTime  => $Row[19],
+            CreateTime               => $Row[20],
+            CreateBy                 => $Row[21],
+            ChangeTime               => $Row[22],
+            ChangeBy                 => $Row[23],
+            SettingUID               => "Default$Row[0]$TimeStamp",
         );
         push @Data, \%DefaultSetting;
     }
@@ -1116,7 +1154,7 @@ Returns:
 sub DefaultSettingList {
     my ( $Self, %Param ) = @_;
 
-    my $CacheType = 'DefaultSettingList';
+    my $CacheType = 'SysConfigDefaultList';
     my $CacheKey  = 'DefaultSettingList';
 
     my $DBObject    = $Kernel::OM->Get('Kernel::System::DB');
@@ -1128,14 +1166,16 @@ sub DefaultSettingList {
         Key  => $CacheKey,
     );
 
-    my @Data;
-    @Data = @{$Cache} if ref $Cache eq 'ARRAY';
+    my @DataRaw;
+    if ( ref $Cache eq 'ARRAY' ) {
+        @DataRaw = @{$Cache};
+    }
 
-    if ( !@Data ) {
+    if ( !@DataRaw ) {
 
         # Start SQL statement.
         my $SQL = '
-            SELECT id, name, is_dirty, exclusive_lock_guid
+            SELECT id, name, is_dirty, exclusive_lock_guid, xml_content_raw
             FROM sysconfig_default
             ORDER BY id';
 
@@ -1144,21 +1184,25 @@ sub DefaultSettingList {
         );
 
         while ( my @Row = $DBObject->FetchrowArray() ) {
-            push @Data, {
+            push @DataRaw, {
                 DefaultID         => $Row[0],
                 Name              => $Row[1],
                 IsDirty           => $Row[2],
                 ExclusiveLockGUID => $Row[3],
+                XMLContentRaw     => $Row[4],
             };
         }
 
         $CacheObject->Set(
             Type  => $CacheType,
             Key   => $CacheKey,
-            Value => \@Data,
+            Value => \@DataRaw,
             TTL   => $Self->{CacheTTL},
         );
     }
+
+    # Copy DataRaw to prevent modifications to in memory cache.
+    my @Data = @DataRaw;
 
     # filter
     if ( defined $Param{IsDirty} ) {
@@ -1326,7 +1370,7 @@ sub DefaultSettingLock {
         );
     }
     $CacheObject->CleanUp(
-        Type => 'DefaultSettingListGet',
+        Type => 'SysConfigDefaultListGet',
     );
 
     return $ExclusiveLockGUID;
@@ -1582,7 +1626,7 @@ sub DefaultSettingUnlock {
     }
 
     $CacheObject->CleanUp(
-        Type => 'DefaultSettingListGet',
+        Type => 'SysConfigDefaultListGet',
     );
 
     return 1;
@@ -1603,9 +1647,12 @@ Returns:
 sub DefaultSettingDirtyCleanUp {
     my ( $Self, %Param ) = @_;
 
-    my @DirtySettings = $Self->DefaultSettingList(
-        IsDirty => 1,
-    );
+    my @DirtySettings;
+    if ( !$Param{AllSettings} ) {
+        @DirtySettings = $Self->DefaultSettingList(
+            IsDirty => 1,
+        );
+    }
 
     # Remove is dirty flag for default settings.
     return if !$Kernel::OM->Get('Kernel::System::DB')->Do(
@@ -1617,17 +1664,24 @@ sub DefaultSettingDirtyCleanUp {
 
     my $CacheObject = $Kernel::OM->Get('Kernel::System::Cache');
 
-    for my $Setting (@DirtySettings) {
-        $CacheObject->Delete(
+    if ( $Param{AllSettings} ) {
+        $CacheObject->CleanUp(
             Type => 'SysConfigDefault',
-            Key  => 'DefaultSettingGet::' . $Setting->{Name},
         );
     }
+    else {
+        for my $Setting (@DirtySettings) {
+            $CacheObject->Delete(
+                Type => 'SysConfigDefault',
+                Key  => 'DefaultSettingGet::' . $Setting->{Name},
+            );
+        }
+    }
     $CacheObject->CleanUp(
-        Type => 'DefaultSettingListGet',
+        Type => 'SysConfigDefaultListGet',
     );
     $CacheObject->CleanUp(
-        Type => 'DefaultSettingList',
+        Type => 'SysConfigDefaultList',
     );
     $CacheObject->CleanUp(
         Type => 'SysConfigIsDirty',
@@ -1654,9 +1708,9 @@ Add a new SysConfig default version entry.
         UserModificationActive   => 0,                             # 1 or 0, optional, default 0
         UserPreferencesGroup     => 'Advanced',                    # optional
         XMLContentRaw            => $XMLString,                    # the XML structure as it is on the config file
-        XMLContentParsed         => $XMLParsedToPerl,              # the setting XML structure converted into a Perl structure
+        XMLContentParsed         => $XMLParsedToPerl,              # the setting XML structure converted into YAML
         XMLFilename              => 'Framework.xml'                # the name of the XML file
-        EffectiveValue           => $SettingEffectiveValue,        # the value as will be stored in the Perl configuration file
+        EffectiveValue           => $YAMLEffectiveValue,           # YAML EffectiveValue
         UserID                   => 1,
         NoCleanup                => 0,                             # (optional) Default 0. If enabled, system WILL NOT DELETE CACHE. In this case, it must be done manually.
                                                                    #    USE IT CAREFULLY.
@@ -1701,14 +1755,12 @@ sub DefaultSettingVersionAdd {
     for my $Key (qw(IsInvisible IsReadonly IsRequired IsValid UserModificationPossible UserModificationActive)) {
         $Param{$Key} = ( defined $Param{$Key} && $Param{$Key} ? 1 : 0 );
     }
-
-    # Serialize data as string.
-    for my $Key (qw(XMLContentParsed EffectiveValue)) {
-        $Param{$Key} = $Kernel::OM->Get('Kernel::System::YAML')->Dump(
-            Data => $Param{$Key},
+    if ( $Param{EffectiveValue} eq "/usr/bin/gpg/mod" ) {
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
+            Priority => 'error',
+            Message  => "Need!"
         );
     }
-
     my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
 
     # Insert the default.
@@ -2147,9 +2199,9 @@ sub DefaultSettingVersionListGet {
 
     # Set filters on SQL and cache key.
     my $SQLFilter = "WHERE $FieldName = '$FieldValue' ";
-    my $CacheKey  = 'DefaultSettingVersionList::' . $FieldCache;
 
     my $CacheType = 'SysConfigDefaultVersionList';
+    my $CacheKey  = 'DefaultSettingVersionList::' . $FieldCache;
 
     my $CacheObject = $Kernel::OM->Get('Kernel::System::Cache');
 
@@ -2395,18 +2447,19 @@ sub ModifiedSettingAdd {
         Type => 'SysConfigEntities',
     );
     $CacheObject->CleanUp(
-        Type => 'ConfigurationTranslatedGet',
-    );
-    $CacheObject->CleanUp(
         Type => 'SysConfigIsDirty',
     );
 
-    # Clean cache for _ConfigurationTranslatedGet.
+    # Clean cache for setting translations.
     my %Languages = %{ $Kernel::OM->Get('Kernel::Config')->Get('DefaultUsedLanguages') };
     for my $Language ( sort keys %Languages ) {
         $CacheObject->Delete(
-            Type => '_ConfigurationTranslatedGet',
-            Key  => "_ConfigurationTranslatedGet::$Language" . "::$Param{Name}",
+            Type => 'SysConfig',
+            Key  => "SettingTranslatedGet::$Language" . "::$Param{Name}",
+        );
+        $CacheObject->Delete(
+            Type => 'SysConfig',
+            Key  => "ConfigurationTranslatedGet::$Language",
         );
     }
 
@@ -2455,6 +2508,7 @@ Returns:
         CreateBy               => 1,
         ChangeTime             => "2016-05-29 11:04:04",
         ChangeBy               => 1,
+        SettingUID             => 'Modified12320160529110404',
     );
 
 =cut
@@ -2522,7 +2576,7 @@ sub ModifiedSettingGet {
     }
 
     my $CacheType = "SysConfigModified";
-    my $CacheKey  = 'ModifiedSettingGet::'
+    my $CacheKey  = 'ModifiedSettingGet::'    # this cache key gets more elements
         . $FieldName . '::'
         . $FieldValue . '::'
         . $Param{IsGlobal} . '::'
@@ -2535,7 +2589,6 @@ sub ModifiedSettingGet {
         Type => $CacheType,
         Key  => $CacheKey,
     );
-
     return %{$Cache} if ref $Cache eq 'HASH';
 
     my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
@@ -2565,6 +2618,9 @@ sub ModifiedSettingGet {
         # De-serialize modified data.
         my $EffectiveValue = $YAMLObject->Load( Data => $Data[6] );
 
+        my $TimeStamp = $Data[11];
+        $TimeStamp =~ s{:|-|[ ]}{}gmsx;
+
         %ModifiedSetting = (
             ModifiedID             => $Data[0],
             DefaultID              => $Data[1],
@@ -2579,6 +2635,7 @@ sub ModifiedSettingGet {
             CreateBy               => $Data[10],
             ChangeTime             => $Data[11],
             ChangeBy               => $Data[12],
+            SettingUID             => "Modified$Data[0]$TimeStamp",
         );
     }
 
@@ -2678,8 +2735,9 @@ sub ModifiedSettingListGet {
 
     my @Filters;
     my @Bind;
+
     my $CacheType = 'SysConfigModifiedList';
-    my $CacheKey  = 'ModifiedSettingList';
+    my $CacheKey  = 'ModifiedSettingList';     # this cache key gets more elements
 
     # Check params have a default value.
     for my $Key ( sort keys %FieldFilters ) {
@@ -2716,32 +2774,50 @@ sub ModifiedSettingListGet {
 
     return @{$Cache} if ref $Cache eq 'ARRAY';
 
-    # Start SQL statement.
     my $SQL = '
-        SELECT id, name
+        SELECT id, sysconfig_default_id, name, user_id, is_valid, user_modification_active,
+            effective_value, is_dirty, reset_to_default, create_time, create_by, change_time, change_by
         FROM sysconfig_modified';
 
     $SQL .= $SQLFilter . ' ORDER BY id';
 
     my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
 
-    my @Data;
+    # Get modified from database.
     return if !$DBObject->Prepare(
         SQL  => $SQL,
         Bind => \@Bind,
     );
 
-    my @ModifiedIDs;
+    my @Data;
+
+    my $YAMLObject = $Kernel::OM->Get('Kernel::System::YAML');
+
     while ( my @Row = $DBObject->FetchrowArray() ) {
-        push @ModifiedIDs, $Row[0];
-    }
 
-    # Get default settings.
-    for my $ItemID (@ModifiedIDs) {
+        # De-serialize modified data.
+        my $EffectiveValue = $YAMLObject->Load( Data => $Row[6] );
 
-        my %ModifiedSetting = $Self->ModifiedSettingGet(
-            ModifiedID => $ItemID,
+        my $TimeStamp = $Row[11];
+        $TimeStamp =~ s{:|-|[ ]}{}gmsx;
+
+        my %ModifiedSetting = (
+            ModifiedID             => $Row[0],
+            DefaultID              => $Row[1],
+            Name                   => $Row[2],
+            TargetUserID           => $Row[3],
+            IsValid                => $Row[4],
+            UserModificationActive => $Row[5],
+            EffectiveValue         => $EffectiveValue,
+            IsDirty                => $Row[7] ? 1 : 0,
+            ResetToDefault         => $Row[8] ? 1 : 0,
+            CreateTime             => $Row[9],
+            CreateBy               => $Row[10],
+            ChangeTime             => $Row[11],
+            ChangeBy               => $Row[12],
+            SettingUID             => "Modified$Row[0]$TimeStamp",
         );
+
         push @Data, \%ModifiedSetting;
     }
 
@@ -2835,18 +2911,19 @@ sub ModifiedSettingDelete {
         Type => 'SysConfigEntities',
     );
     $CacheObject->CleanUp(
-        Type => 'ConfigurationTranslatedGet',
-    );
-    $CacheObject->CleanUp(
         Type => 'SysConfigIsDirty',
     );
 
-    # Clean cache for _ConfigurationTranslatedGet.
+    # Clean cache for setting translations.
     my %Languages = %{ $Kernel::OM->Get('Kernel::Config')->Get('DefaultUsedLanguages') };
     for my $Language ( sort keys %Languages ) {
         $CacheObject->Delete(
-            Type => '_ConfigurationTranslatedGet',
-            Key  => "_ConfigurationTranslatedGet::$Language" . "::$ModifiedSetting{Name}",
+            Type => 'SysConfig',
+            Key  => "SettingTranslatedGet::$Language" . "::$ModifiedSetting{Name}",
+        );
+        $CacheObject->Delete(
+            Type => 'SysConfig',
+            Key  => "ConfigurationTranslatedGet::$Language",
         );
     }
 
@@ -3020,18 +3097,19 @@ sub ModifiedSettingUpdate {
         Type => 'SysConfigEntities',
     );
     $CacheObject->CleanUp(
-        Type => 'ConfigurationTranslatedGet',
-    );
-    $CacheObject->CleanUp(
         Type => 'SysConfigIsDirty',
     );
 
-    # Clean cache for _ConfigurationTranslatedGet.
+    # Clean cache for setting translations.
     my %Languages = %{ $Kernel::OM->Get('Kernel::Config')->Get('DefaultUsedLanguages') };
     for my $Language ( sort keys %Languages ) {
         $CacheObject->Delete(
-            Type => '_ConfigurationTranslatedGet',
-            Key  => "_ConfigurationTranslatedGet::$Language" . "::$Param{Name}",
+            Type => 'SysConfig',
+            Key  => "SettingTranslatedGet::$Language" . "::$Param{Name}",
+        );
+        $CacheObject->Delete(
+            Type => 'SysConfig',
+            Key  => "ConfigurationTranslatedGet::$Language",
         );
     }
 
@@ -3396,9 +3474,9 @@ sub ModifiedSettingVersionListGet {
 
     # Loop over filters and set them on SQL and cache key.
     my $SQLFilter = "WHERE $FieldName = '$FieldValue' ";
-    my $CacheKey  = 'ModifiedSettingVersionList::' . $FieldCache . '=' . $FieldValue;
 
     my $CacheType = 'SysConfigModifiedVersionList';
+    my $CacheKey  = 'ModifiedSettingVersionList::' . $FieldCache . '=' . $FieldValue;
 
     my $CacheObject = $Kernel::OM->Get('Kernel::System::Cache');
 
@@ -3569,8 +3647,8 @@ Returns:
 sub ModifiedSettingVersionListGetLast {
     my ( $Self, %Param ) = @_;
 
-    my $CacheKey  = 'ModifiedSettingVersionListGetLast';
     my $CacheType = 'SysConfigModifiedVersionList';
+    my $CacheKey  = 'ModifiedSettingVersionListGetLast';
 
     my $CacheObject = $Kernel::OM->Get('Kernel::System::Cache');
 
@@ -3729,8 +3807,8 @@ Returns:
 sub ConfigurationIsDirty {
     my ( $Self, %Param ) = @_;
 
-    my $CacheKey  = 'IsDirty';
     my $CacheType = 'SysConfigIsDirty';
+    my $CacheKey  = 'IsDirty';
 
     if ( $Param{UserID} ) {
         $CacheKey .= "::UserID=$Param{UserID}";

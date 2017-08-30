@@ -118,9 +118,6 @@
     <Column Name="user_id" Required="true" Type="INTEGER"/>
     <Column Name="group_id" Required="true" Type="INTEGER"/>
     <Column Name="permission_key" Required="true" Size="20" Type="VARCHAR"/>
-    <!-- permission_value is currently unneeded (always 1), but there could be old entries from
-        OTRS 4 or earlier which have 0 set. -->
-    <Column Name="permission_value" Required="true" Type="SMALLINT"/>
     <Column Name="create_time" Required="true" Type="DATE"/>
     <Column Name="create_by" Required="true" Type="INTEGER"/>
     <Column Name="change_time" Required="true" Type="DATE"/>
@@ -617,7 +614,6 @@
     <Column Name="escalation_response_time" Required="true" Type="INTEGER"/>
     <Column Name="escalation_solution_time" Required="true" Type="INTEGER"/>
     <Column Name="archive_flag" Required="true" Default="0" Type="SMALLINT"/>
-    <Column Name="create_time_unix" Required="true" Type="BIGINT"/>
     <Column Name="create_time" Required="true" Type="DATE"/>
     <Column Name="create_by" Required="true" Type="INTEGER"/>
     <Column Name="change_time" Required="true" Type="DATE"/>
@@ -670,9 +666,6 @@
     </Index>
     <Index Name="ticket_escalation_solution_time">
         <IndexColumn Name="escalation_solution_time"/>
-    </Index>
-    <Index Name="ticket_create_time_unix">
-        <IndexColumn Name="create_time_unix"/>
     </Index>
     <Index Name="ticket_create_time">
         <IndexColumn Name="create_time"/>
@@ -762,9 +755,6 @@
     <Column Name="owner_id" Required="true" Type="INTEGER"/>
     <Column Name="priority_id" Required="true" Type="SMALLINT"/>
     <Column Name="state_id" Required="true" Type="SMALLINT"/>
-    <Column Name="a_communication_channel_id" Required="false" Type="BIGINT"/>
-    <Column Name="a_sender_type_id" Required="false" Type="SMALLINT"/>
-    <Column Name="a_is_visible_for_customer" Required="false" Type="SMALLINT"/>
     <Column Name="create_time" Required="true" Type="DATE"/>
     <Column Name="create_by" Required="true" Type="INTEGER"/>
     <Column Name="change_time" Required="true" Type="DATE"/>
@@ -793,12 +783,6 @@
     <Index Name="ticket_history_state_id">
         <IndexColumn Name="state_id"/>
     </Index>
-    <ForeignKey ForeignTable="communication_channel">
-        <Reference Local="a_communication_channel_id" Foreign="id"/>
-    </ForeignKey>
-    <ForeignKey ForeignTable="article_sender_type">
-        <Reference Local="a_sender_type_id" Foreign="id"/>
-    </ForeignKey>
     <Index Name="ticket_history_create_time">
         <IndexColumn Name="create_time"/>
     </Index>
@@ -884,7 +868,7 @@
     <Column Name="group_id" Required="true" Type="INTEGER"/>
     <Column Name="s_lock" Required="true" Size="200" Type="VARCHAR"/>
     <Column Name="s_state" Required="true" Size="200" Type="VARCHAR"/>
-    <Column Name="create_time_unix" Required="true" Type="BIGINT"/>
+    <Column Name="create_time" Required="true" Type="DATE"/>
     <Index Name="ticket_index_ticket_id">
         <IndexColumn Name="ticket_id"/>
     </Index>
@@ -1006,6 +990,7 @@
     <Column Name="article_sender_type_id" Required="true" Type="SMALLINT"/>
     <Column Name="communication_channel_id" Required="true" Type="BIGINT"/>
     <Column Name="is_visible_for_customer" Required="true" Type="SMALLINT"/>
+    <Column Name="search_index_needs_rebuild" Required="true" Type="SMALLINT" Default="1"/>
     <Column Name="insert_fingerprint" Required="false" Size="64" Type="VARCHAR"/>
     <Column Name="create_time" Required="true" Type="DATE"/>
     <Column Name="create_by" Required="true" Type="INTEGER"/>
@@ -1020,6 +1005,9 @@
     </Index>
     <Index Name="article_communication_channel_id">
         <IndexColumn Name="communication_channel_id"/>
+    </Index>
+    <Index Name="article_search_index_needs_rebuild">
+        <IndexColumn Name="search_index_needs_rebuild"/>
     </Index>
 
     <ForeignKey ForeignTable="ticket">
@@ -1045,6 +1033,7 @@
     <Column Name="a_reply_to" Required="false" Size="1800000" Type="VARCHAR"/>
     <Column Name="a_to" Required="false" Size="1800000" Type="VARCHAR"/>
     <Column Name="a_cc" Required="false" Size="1800000" Type="VARCHAR"/>
+    <Column Name="a_bcc" Required="false" Size="1800000" Type="VARCHAR"/>
     <Column Name="a_subject" Required="false" Size="3800" Type="VARCHAR"/>
     <Column Name="a_message_id" Required="false" Size="3800" Type="VARCHAR"/>
     <Column Name="a_message_id_md5" Required="false" Size="32" Type="VARCHAR"/>
@@ -1060,9 +1049,6 @@
     <Column Name="change_by" Required="true" Type="INTEGER"/>
     <Index Name="article_data_mime_message_id_md5">
         <IndexColumn Name="a_message_id_md5"/>
-    </Index>
-    <Index Name="article_data_mime_article_id">
-        <IndexColumn Name="article_id"/>
     </Index>
     <ForeignKey ForeignTable="article">
         <Reference Local="article_id" Foreign="id"/>
@@ -1145,6 +1131,24 @@
     <ForeignKey ForeignTable="users">
         <Reference Local="create_by" Foreign="id"/>
         <Reference Local="change_by" Foreign="id"/>
+    </ForeignKey>
+</Table>
+
+<!-- article table to persistently track the status of sent messages. -->
+<Table Name="article_data_mime_send_error">
+    <Column Name="id" Required="true" PrimaryKey="true" AutoIncrement="true" Type="BIGINT"/>
+    <Column Name="article_id" Required="true" Type="BIGINT"/>
+    <Column Name="message_id" Required="false" Type="VARCHAR" Size="200"/>
+    <Column Name="log_message" Required="false" Type="VARCHAR" Size="1800000"/>
+    <Column Name="create_time" Required="true" Type="DATE"/>
+    <Index Name="article_data_mime_transmission_message_id">
+        <IndexColumn Name="message_id"/>
+    </Index>
+    <Index Name="article_data_mime_transmission_article_id">
+        <IndexColumn Name="article_id"/>
+    </Index>
+    <ForeignKey ForeignTable="article">
+        <Reference Local="article_id" Foreign="id"/>
     </ForeignKey>
 </Table>
 
@@ -2365,6 +2369,10 @@
         <Reference Local="sysconfig_default_id" Foreign="id"/>
     </ForeignKey>
 
+    <Index Name="scfv_sysconfig_default_id_name">
+        <IndexColumn Name="sysconfig_default_id" />
+        <IndexColumn Name="name" />
+    </Index>
 </Table>
 
 <Table Name="sysconfig_modified">
@@ -2568,21 +2576,6 @@
     </ForeignKey>
 </Table>
 
-<!-- Exclusive Lock -->
-<Table Name="exclusive_lock">
-    <Column Name="id" Required="true" PrimaryKey="true" AutoIncrement="true" Type="BIGINT" />
-    <Column Name="lock_key" Required="true" Size="255" Type="VARCHAR" />
-    <Column Name="lock_uid" Required="true" Size="32" Type="VARCHAR" />
-    <Column Name="create_time" Type="DATE" />
-    <Column Name="expiry_time" Type="DATE" />
-    <Unique Name="exclusive_lock_lock_uid">
-        <UniqueColumn Name="lock_uid" />
-    </Unique>
-    <Index Name="exclusive_lock_expiry_time">
-        <IndexColumn Name="expiry_time" />
-    </Index>
-</Table>
-
 <!-- Ticket Counter -->
 <Table Name="ticket_number_counter">
     <Column Name="id" Required="true" PrimaryKey="true" AutoIncrement="true" Type="BIGINT" />
@@ -2592,5 +2585,129 @@
     <Unique Name="ticket_number_counter_uid">
         <UniqueColumn Name="counter_uid" />
     </Unique>
+    <Index Name="ticket_number_counter_create_time">
+        <IndexColumn Name="create_time" />
+    </Index>
 </Table>
+
+<!-- mail queue -->
+<Table Name="mail_queue">
+    <Column Name="id" Required="true"  PrimaryKey="true" Type="BIGINT" AutoIncrement="true"/>
+    <Column Name="insert_fingerprint" Required="false" Size="64" Type="VARCHAR"/>
+    <Column Name="article_id" Required="false" Type="BIGINT" />
+    <Column Name="attempts" Required="true" Type="INTEGER" />
+    <Column Name="sender" Type="VARCHAR" Size="200" />
+    <Column Name="recipient" Required="true" Type="VARCHAR" Size="1800000" />
+    <Column Name="raw_message" Required="true" Type="LONGBLOB" />
+    <Column Name="due_time" Required="false" Type="DATE"/>
+    <Column Name="last_smtp_code" Required="false" Type="INTEGER" />
+    <Column Name="last_smtp_message" Required="false" Type="VARCHAR" Size="1800000" />
+    <Column Name="create_time" Required="true" Type="DATE"/>
+    <ForeignKey ForeignTable="article">
+        <Reference Local="article_id" Foreign="id"/>
+    </ForeignKey>
+    <Index Name="mail_queue_attempts">
+        <IndexColumn Name="attempts"/>
+    </Index>
+    <Unique Name="mail_queue_article_id">
+        <UniqueColumn Name="article_id"/>
+    </Unique>
+    <Unique Name="mail_queue_insert_fingerprint">
+        <UniqueColumn Name="insert_fingerprint"/>
+    </Unique>
+</Table>
+
+<!-- log communications -->
+<Table Name="communication_log">
+    <Column Name="id" Required="true"  PrimaryKey="true" Type="BIGINT" AutoIncrement="true"/>
+    <Column Name="insert_fingerprint" Required="false" Size="64" Type="VARCHAR"/>
+    <Column Name="transport" Required="true" Type="VARCHAR" Size="200"/>
+    <Column Name="direction" Required="true" Type="VARCHAR" Size="200"/>
+    <Column Name="status" Required="true" Type="VARCHAR" Size="200"/>
+    <Column Name="account_type" Required="false" Size="200" Type="VARCHAR"/>
+    <Column Name="account_id" Required="false" Size="200" Type="VARCHAR"/>
+    <Column Name="start_time" Required="true" Type="DATE"/>
+    <Column Name="end_time" Required="false" Type="DATE"/>
+    <Index Name="communication_transport">
+        <IndexColumn Name="transport"/>
+    </Index>
+    <Index Name="communication_direction">
+        <IndexColumn Name="direction"/>
+    </Index>
+    <Index Name="communication_status">
+        <IndexColumn Name="status"/>
+    </Index>
+</Table>
+
+<Table Name="communication_log_object">
+    <Column Name="id" Required="true"  PrimaryKey="true" Type="BIGINT" AutoIncrement="true"/>
+    <Column Name="insert_fingerprint" Required="false" Size="64" Type="VARCHAR"/>
+    <Column Name="communication_id" Required="true" Type="BIGINT"/>
+    <Column Name="object_type" Required="true" Type="VARCHAR" Size="50"/>
+    <Column Name="status" Required="true" Type="VARCHAR" Size="200" />
+    <Column Name="start_time" Required="true" Type="DATE"/>
+    <Column Name="end_time" Required="false" Type="DATE"/>
+    <ForeignKey ForeignTable="communication_log">
+        <Reference Local="communication_id" Foreign="id"/>
+    </ForeignKey>
+    <Index Name="communication_log_object_object_type">
+        <IndexColumn Name="object_type"/>
+    </Index>
+    <Index Name="communication_log_object_status">
+        <IndexColumn Name="status"/>
+    </Index>
+</Table>
+
+<Table Name="communication_log_object_entry">
+    <Column Name="id" Required="true" PrimaryKey="true" Type="BIGINT" AutoIncrement="true"/>
+    <Column Name="communication_log_object_id" Required="true" Type="BIGINT"/>
+    <Column Name="log_key" Required="true" Type="VARCHAR" Size="200"/>
+    <Column Name="log_value" Required="true" Type="VARCHAR" Size="1800000" />
+    <Column Name="priority" Required="true" Type="VARCHAR" Size="50"/>
+    <Column Name="create_time" Required="true" Type="DATE"/>
+    <ForeignKey ForeignTable="communication_log_object">
+        <Reference Local="communication_log_object_id" Foreign="id"/>
+    </ForeignKey>
+    <Index Name="communication_log_object_entry_key">
+        <IndexColumn Name="log_key"/>
+    </Index>
+</Table>
+
+<Table Name="communication_log_obj_lookup">
+    <Column Name="id" Required="true" PrimaryKey="true" Type="BIGINT" AutoIncrement="true"/>
+    <Column Name="communication_log_object_id" Required="true" Type="BIGINT"/>
+    <Column Name="object_type" Required="true" Type="VARCHAR" Size="200"/>
+    <Column Name="object_id" Required="true" Type="BIGINT"/>
+    <ForeignKey ForeignTable="communication_log_object">
+        <Reference Local="communication_log_object_id" Foreign="id"/>
+    </ForeignKey>
+    <Index Name="communication_log_obj_lookup_target">
+        <IndexColumn Name="object_type"/>
+        <IndexColumn Name="object_id"/>
+    </Index>
+</Table>
+
+<!-- form_draft -->
+<TableCreate Name="form_draft">
+    <Column Name="id" Required="true" PrimaryKey="true" AutoIncrement="true" Type="INTEGER" />
+    <Column Name="object_type" Required="true" Size="200" Type="VARCHAR" />
+    <Column Name="object_id" Required="true" Type="INTEGER" />
+    <Column Name="action" Required="true" Size="200" Type="VARCHAR" />
+    <Column Name="title" Required="false" Size="255" Type="VARCHAR" />
+    <Column Name="content" Required="true" Type="LONGBLOB" />
+    <Column Name="create_time" Required="true" Type="DATE" />
+    <Column Name="create_by" Required="true" Type="INTEGER" />
+    <Column Name="change_time" Required="true" Type="DATE" />
+    <Column Name="change_by" Required="true" Type="INTEGER" />
+    <Index Name="form_draft_object_type_object_id_action">
+        <IndexColumn Name="object_type" />
+        <IndexColumn Name="object_id" />
+        <IndexColumn Name="action" />
+    </Index>
+    <ForeignKey ForeignTable="users">
+        <Reference Local="create_by" Foreign="id" />
+        <Reference Local="change_by" Foreign="id" />
+    </ForeignKey>
+</TableCreate>
+
 </database>

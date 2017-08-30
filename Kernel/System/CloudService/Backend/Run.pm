@@ -326,7 +326,7 @@ sub Request {
         },
     );
 
-    # perform webservice request
+    # Perform web service request.
     my %Response;
     TRY:
     for my $Try ( 1 .. 3 ) {
@@ -516,7 +516,13 @@ sub OperationResultGet {
         }
         else {
 
-            next RESULT if $OperationResult->{InstanceName} ne $Param{InstanceName};
+            if (
+                !defined $OperationResult->{InstanceName}
+                || $OperationResult->{InstanceName} ne $Param{InstanceName}
+                )
+            {
+                next RESULT;
+            }
         }
 
         return $OperationResult;

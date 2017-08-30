@@ -23,13 +23,18 @@ my $HelperObject = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
 # Make sure ticket is created in ArticleStorageDB.
 $Kernel::OM->Get('Kernel::Config')->Set(
     Valid => 1,
-    Key   => 'Ticket::Article::Backend::MIMEBase###ArticleStorage',
+    Key   => 'Ticket::Article::Backend::MIMEBase::ArticleStorage',
     Value => 'Kernel::System::Ticket::Article::Backend::MIMEBase::ArticleStorageDB',
 );
 
 # create isolated time environment during test
 $HelperObject->FixedTimeSet(
-    $Kernel::OM->Get('Kernel::System::Time')->TimeStamp2SystemTime( String => '2000-10-20 00:00:00' ),
+    $Kernel::OM->Create(
+        'Kernel::System::DateTime',
+        ObjectParams => {
+            String => '2000-10-20 00:00:00',
+        },
+        )->ToEpoch()
 );
 
 # create test ticket with attachments

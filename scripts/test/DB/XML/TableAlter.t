@@ -42,6 +42,10 @@ my $XML = '
     <Index Name="test_f_name_a">
         <IndexColumn Name="name_a"/>
     </Index>
+    <Unique Name="unique_id_name_a">
+        <UniqueColumn Name="id"/>
+        <UniqueColumn Name="name_a"/>
+    </Unique>
 </TableCreate>
 ';
 my @XMLARRAY = $XMLObject->XMLParse( String => $XML );
@@ -92,6 +96,117 @@ $XML = '
     <IndexCreate Name="test_f_name_a2">
         <IndexColumn Name="name_a"/>
     </IndexCreate>
+</TableAlter>
+';
+@XMLARRAY = $XMLObject->XMLParse( String => $XML );
+
+@SQL = $DBObject->SQLProcessor( Database => \@XMLARRAY );
+$Self->True(
+    $SQL[0],
+    'SQLProcessor() ALTER TABLE',
+);
+
+for my $SQL (@SQL) {
+    $Self->True(
+        $DBObject->Do( SQL => $SQL ) || 0,
+        "Do() ALTER TABLE ($SQL)",
+    );
+}
+
+# try to drop the last index
+$XML = '
+<TableAlter Name="test_f">
+    <IndexDrop Name="test_f_name_a2"/>
+</TableAlter>
+';
+@XMLARRAY = $XMLObject->XMLParse( String => $XML );
+
+@SQL = $DBObject->SQLProcessor( Database => \@XMLARRAY );
+$Self->True(
+    $SQL[0],
+    'SQLProcessor() ALTER TABLE',
+);
+
+for my $SQL (@SQL) {
+    $Self->True(
+        $DBObject->Do( SQL => $SQL ) || 0,
+        "Do() ALTER TABLE ($SQL)",
+    );
+}
+
+# try to drop the last index again
+# has already been deleted, but should be fine, as IndexDrop should handle this
+$XML = '
+<TableAlter Name="test_f">
+    <IndexDrop Name="test_f_name_a2"/>
+</TableAlter>
+';
+@XMLARRAY = $XMLObject->XMLParse( String => $XML );
+
+@SQL = $DBObject->SQLProcessor( Database => \@XMLARRAY );
+$Self->True(
+    $SQL[0],
+    'SQLProcessor() ALTER TABLE',
+);
+
+for my $SQL (@SQL) {
+    $Self->True(
+        $DBObject->Do( SQL => $SQL ) || 0,
+        "Do() ALTER TABLE ($SQL)",
+    );
+}
+
+# try to add the same unique constraint again
+# this should not cause an error as the database driver
+# should take care to not create it again if it already exists
+$XML = '
+<TableAlter Name="test_f">
+    <UniqueCreate Name="unique_id_name_a">
+        <UniqueColumn Name="id"/>
+        <UniqueColumn Name="name_a"/>
+    </UniqueCreate>
+</TableAlter>
+';
+@XMLARRAY = $XMLObject->XMLParse( String => $XML );
+
+@SQL = $DBObject->SQLProcessor( Database => \@XMLARRAY );
+$Self->True(
+    $SQL[0],
+    'SQLProcessor() ALTER TABLE',
+);
+
+for my $SQL (@SQL) {
+    $Self->True(
+        $DBObject->Do( SQL => $SQL ) || 0,
+        "Do() ALTER TABLE ($SQL)",
+    );
+}
+
+# drop unique constraint
+$XML = '
+<TableAlter Name="test_f">
+    <UniqueDrop Name="unique_id_name_a"/>
+</TableAlter>
+';
+@XMLARRAY = $XMLObject->XMLParse( String => $XML );
+
+@SQL = $DBObject->SQLProcessor( Database => \@XMLARRAY );
+$Self->True(
+    $SQL[0],
+    'SQLProcessor() ALTER TABLE',
+);
+
+for my $SQL (@SQL) {
+    $Self->True(
+        $DBObject->Do( SQL => $SQL ) || 0,
+        "Do() ALTER TABLE ($SQL)",
+    );
+}
+
+# drop the same unique constraint again (should be fine)
+$XML = '
+<TableAlter Name="test_f">
+    <UniqueDrop Name="unique_id_name_a"/>
 </TableAlter>
 ';
 @XMLARRAY = $XMLObject->XMLParse( String => $XML );

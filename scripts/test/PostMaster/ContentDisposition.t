@@ -146,7 +146,7 @@ for my $Test (@Tests) {
     for my $Backend (qw(DB FS)) {
 
         $ConfigObject->Set(
-            Key   => 'Ticket::Article::Backend::MIMEBase###ArticleStorage',
+            Key   => 'Ticket::Article::Backend::MIMEBase::ArticleStorage',
             Value => 'Kernel::System::Ticket::ArticleStorage' . $Backend,
         );
 
@@ -161,13 +161,31 @@ for my $Test (@Tests) {
 
         my $TicketID;
         {
+            my $CommunicationLogObject = $Kernel::OM->Create(
+                'Kernel::System::CommunicationLog',
+                ObjectParams => {
+                    Transport => 'Email',
+                    Direction => 'Incoming',
+                },
+            );
+            $CommunicationLogObject->ObjectLogStart( ObjectLogType => 'Message' );
+
             my $PostMasterObject = Kernel::System::PostMaster->new(
-                Email => $ContentRef,
+                CommunicationLogObject => $CommunicationLogObject,
+                Email                  => $ContentRef,
             );
 
             my @Return = $PostMasterObject->Run();
 
             $TicketID = $Return[1];
+
+            $CommunicationLogObject->ObjectLogStop(
+                ObjectLogType => 'Message',
+                Status        => 'Successful',
+            );
+            $CommunicationLogObject->CommunicationStop(
+                Status => 'Successful',
+            );
         }
 
         $Self->True(
@@ -186,7 +204,6 @@ for my $Test (@Tests) {
 
         my %AttachmentIndex = $ArticleBackendObject->ArticleAttachmentIndex(
             ArticleID => $ArticleIDs[0],
-            UserID    => 1,
         );
 
         my %AttachmentsLookup = map { $AttachmentIndex{$_}->{Filename} => $_ } sort keys %AttachmentIndex;

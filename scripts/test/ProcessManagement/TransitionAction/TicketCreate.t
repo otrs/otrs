@@ -82,6 +82,49 @@ $Self->True(
 
 my @AddedTickets = ($TicketID);
 
+my $ArticleInternalBackendObject = $ArticleObject->BackendForChannel( ChannelName => 'Internal' );
+my $ArticlePhoneBackendObject    = $ArticleObject->BackendForChannel( ChannelName => 'Phone' );
+
+my $AgentArticleID = $ArticleInternalBackendObject->ArticleCreate(
+    TicketID             => $TicketID,
+    SenderType           => 'agent',
+    IsVisibleForCustomer => 0,
+    UserID               => $UserID,
+    From                 => 'Some Agent <email@example.com>',
+    To                   => 'Some Customer A <customer-a@example.com>',
+    Subject              => 'Subject from Agent',
+    Body                 => 'A short text from the agent',
+    Charset              => 'ISO-8859-15',
+    MimeType             => 'text/plain',
+    HistoryType          => 'OwnerUpdate',
+    HistoryComment       => 'Some free text!',
+);
+
+$Self->True(
+    IsStringWithData($AgentArticleID),
+    "Article (SenderType = agent) created.",
+);
+
+my $CustomerArticleID = $ArticlePhoneBackendObject->ArticleCreate(
+    TicketID             => $TicketID,
+    SenderType           => 'customer',
+    IsVisibleForCustomer => 1,
+    UserID               => $UserID,
+    From                 => 'Some Agent <email@example.com>',
+    To                   => 'Some Customer A <customer-a@example.com>',
+    Subject              => 'Subject from Customer',
+    Body                 => 'A short text from the customer',
+    Charset              => 'ISO-8859-15',
+    MimeType             => 'text/plain',
+    HistoryType          => 'OwnerUpdate',
+    HistoryComment       => 'Some free text!',
+);
+
+$Self->True(
+    IsStringWithData($CustomerArticleID),
+    "Article (SenderType = customer) created.",
+);
+
 my $UserLogin = $Kernel::OM->Get('Kernel::System::User')->UserLookup(
     UserID => 1,
 );
@@ -823,6 +866,134 @@ my @Tests = (
         },
         Success => 1,
     },
+    {
+        Name   => 'Correct Ticket->OTRS smart tags',
+        Config => {
+            UserID => $UserID,
+            Ticket => \%Ticket,
+            Config => {
+                Title         => 'ProcessManagement::TransitionAction::TicketCreate::8::' . $RandomID,
+                CustomerID    => '123465',
+                CustomerUser  => 'customer@example.com',
+                OwnerID       => 1,
+                TypeID        => 1,
+                ResponsibleID => 1,
+                PendingTime   => '2014-12-23 23:05:00',
+
+                SenderType           => 'agent',
+                IsVisibleForCustomer => 0,
+                ContentType          => 'text/plain; charset=ISO-8859-15',
+                Subject              => '<OTRS_AGENT_SUBJECT>',
+                Body                 => '<OTRS_CUSTOMER_BODY>',
+                HistoryType          => 'OwnerUpdate',
+                HistoryComment       => 'Some free text!',
+
+                NoAgentNotify => 0,
+
+                LinkAs   => 'Child',
+                TimeUnit => 123,
+            },
+        },
+        Success => 1,
+    },
+
+    {
+        Name   => 'Correct Ticket Phone Article',
+        Config => {
+            UserID => $UserID,
+            Ticket => \%Ticket,
+            Config => {
+                Title         => 'ProcessManagement::TransitionAction::TicketCreate::9::' . $RandomID,
+                CustomerID    => '123465',
+                CustomerUser  => 'customer@example.com',
+                OwnerID       => 1,
+                TypeID        => 1,
+                ResponsibleID => 1,
+                PendingTime   => '2014-12-23 23:05:00',
+
+                SenderType           => 'agent',
+                CommunicationChannel => 'Phone',
+                IsVisibleForCustomer => 0,
+                ContentType          => 'text/plain; charset=ISO-8859-15',
+                Subject              => 'some subject',
+                Body                 => 'some body',
+                HistoryType          => 'OwnerUpdate',
+                HistoryComment       => 'Some free text!',
+
+                NoAgentNotify => 0,
+
+                LinkAs   => 'Child',
+                TimeUnit => 123,
+            },
+        },
+        Success => 1,
+        Article => 1,
+    },
+    {
+        Name   => 'Correct Ticket Email Article',
+        Config => {
+            UserID => $UserID,
+            Ticket => \%Ticket,
+            Config => {
+                Title         => 'ProcessManagement::TransitionAction::TicketCreate::10::' . $RandomID,
+                CustomerID    => '123465',
+                CustomerUser  => 'customer@example.com',
+                OwnerID       => 1,
+                TypeID        => 1,
+                ResponsibleID => 1,
+                PendingTime   => '2014-12-23 23:05:00',
+
+                SenderType           => 'agent',
+                CommunicationChannel => 'Email',
+                IsVisibleForCustomer => 0,
+                ContentType          => 'text/plain; charset=ISO-8859-15',
+                Subject              => 'some subject',
+                Body                 => 'some body',
+                HistoryType          => 'OwnerUpdate',
+                HistoryComment       => 'Some free text!',
+
+                NoAgentNotify => 0,
+
+                LinkAs   => 'Child',
+                TimeUnit => 123,
+            },
+        },
+        Success => 1,
+        Article => 1,
+    },
+    {
+        Name   => 'Correct Ticket Internal Article',
+        Config => {
+            UserID => $UserID,
+            Ticket => \%Ticket,
+            Config => {
+                Title         => 'ProcessManagement::TransitionAction::TicketCreate::11::' . $RandomID,
+                CustomerID    => '123465',
+                CustomerUser  => 'customer@example.com',
+                OwnerID       => 1,
+                TypeID        => 1,
+                ResponsibleID => 1,
+                PendingTime   => '2014-12-23 23:05:00',
+
+                SenderType           => 'agent',
+                CommunicationChannel => 'Internal',
+                IsVisibleForCustomer => 0,
+                ContentType          => 'text/plain; charset=ISO-8859-15',
+                Subject              => 'some subject',
+                Body                 => 'some body',
+                HistoryType          => 'OwnerUpdate',
+                HistoryComment       => 'Some free text!',
+
+                NoAgentNotify => 0,
+
+                LinkAs   => 'Child',
+                TimeUnit => 123,
+            },
+        },
+        Success => 1,
+        Article => 1,
+    },
+
 );
 
 my %ExcludedArtributes = (
@@ -849,6 +1020,8 @@ my %ExcludedArtributes = (
     LinkAs                          => 1,
     TimeUnit                        => 1,
 );
+
+my $CommunicationChannelObject = $Kernel::OM->Get('Kernel::System::CommunicationChannel');
 
 for my $Test (@Tests) {
 
@@ -906,7 +1079,6 @@ for my $Test (@Tests) {
                     TicketID      => $NewTicketID,
                     ArticleID     => $Articles[0]->{ArticleID},
                     DynamicFields => 1,
-                    UserID        => 1,
                 );
             }
         }
@@ -919,6 +1091,21 @@ for my $Test (@Tests) {
             my $ArticleAttribute = $Attribute;
 
             if ( $Test->{Article} ) {
+                if ( $Attribute eq 'CommunicationChannel' ) {
+
+                    my %CommunicationChannel = $CommunicationChannelObject->ChannelGet(
+                        ChannelID => $Article{CommunicationChannelID},
+                    );
+
+                    $Self->Is(
+                        $CommunicationChannel{ChannelName},
+                        $Test->{Config}->{Config}->{$Attribute},
+                        "$ModuleName - Test:'$Test->{Name}' | Attribute: $Attribute for ArticleID:"
+                            . " $Article{ArticleID} match expected value",
+                    );
+                    next ATTRIBUTE;
+                }
+
                 $Self->True(
                     defined $Article{$ArticleAttribute},
                     "$ModuleName - Test:'$Test->{Name}' | Attribute: $Attribute for ArticleID:"
@@ -992,9 +1179,12 @@ for my $Test (@Tests) {
                 $ExpectedValue = 0;
             }
             elsif ( $Attribute eq 'PendingTime' && $OrigTest->{UpdatePendingTime} ) {
-                $ExpectedValue = $Kernel::OM->Get('Kernel::System::Time')->TimeStamp2SystemTime(
-                    String => $ExpectedValue,
-                );
+                $ExpectedValue = $Kernel::OM->Create(
+                    'Kernel::System::DateTime',
+                    ObjectParams => {
+                        String => $ExpectedValue,
+                        }
+                )->ToEpoch();
             }
 
             # TODO: currently disabled, re-enable it when AgentNotification is fully switch to NotificationEvent

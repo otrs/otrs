@@ -116,6 +116,7 @@ sub Run {
 
     # get search string params (get submitted params)
     else {
+        KEY:
         for my $Key (
             sort keys %ArticleSearchableFields,
             qw(TicketNumber ResultForm TimeSearchType StateType SearchInArchive
@@ -126,6 +127,7 @@ sub Run {
             )
             )
         {
+            next KEY if $ArticleSearchableFields{$Key} && $ArticleSearchableFields{$Key}->{HideInCustomerInterface};
 
             # get search string params (get submitted params)
             $GetParam{$Key} = $ParamObject->GetParam( Param => $Key );
@@ -527,7 +529,6 @@ sub Run {
         # get needed objects
         my $UserObject         = $Kernel::OM->Get('Kernel::System::User');
         my $CustomerUserObject = $Kernel::OM->Get('Kernel::System::CustomerUser');
-        my $TimeObject         = $Kernel::OM->Get('Kernel::System::Time');
 
         # CSV and Excel output
         if (
@@ -596,7 +597,6 @@ sub Run {
                         TicketID      => $TicketID,
                         ArticleID     => $Article->{ArticleID},
                         DynamicFields => 1,
-                        UserID        => $Self->{UserID},
                     );
                 }
 
@@ -633,7 +633,6 @@ sub Run {
                                 TicketID      => $TicketID,
                                 ArticleID     => $Article->{ArticleID},
                                 DynamicFields => 0,
-                                UserID        => $Self->{UserID},
                             );
                             if ( $Article{Body} ) {
                                 $Data{ArticleTree}
@@ -729,14 +728,13 @@ sub Run {
                 @CSVHead;
 
             # return csv to download
-            my $FileName = 'ticket_search';
-            my ( $s, $m, $h, $D, $M, $Y ) = $TimeObject->SystemTime2Date(
-                SystemTime => $TimeObject->SystemTime(),
+            my $CurSystemDateTimeObject = $Kernel::OM->Create('Kernel::System::DateTime');
+            my $FileName                = sprintf(
+                'ticket_search_%s',
+                $CurSystemDateTimeObject->Format(
+                    Format => '%Y-%m-%d_%H-%M'
+                    )
             );
-            $M = sprintf( "%02d", $M );
-            $D = sprintf( "%02d", $D );
-            $h = sprintf( "%02d", $h );
-            $m = sprintf( "%02d", $m );
 
             # get CSV object
             my $CSVObject = $Kernel::OM->Get('Kernel::System::CSV');
@@ -748,7 +746,7 @@ sub Run {
                     Data => \@CSVData,
                 );
                 return $LayoutObject->Attachment(
-                    Filename    => $FileName . "_" . "$Y-$M-$D" . "_" . "$h-$m.csv",
+                    Filename    => $FileName . '.csv',
                     ContentType => "text/csv; charset=" . $LayoutObject->{UserCharset},
                     Content     => $CSV,
                 );
@@ -764,7 +762,7 @@ sub Run {
                 );
 
                 return $LayoutObject->Attachment(
-                    Filename => $FileName . "_" . "$Y-$M-$D" . "_" . "$h-$m.xlsx",
+                    Filename => $FileName . '.xlsx',
                     ContentType =>
                         "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
                     Content => $Excel,
@@ -817,7 +815,6 @@ sub Run {
                     %Article = $ArticleObject->BackendForArticle( %{$Article} )->ArticleGet(
                         %{$Article},
                         DynamicFields => 0,
-                        UserID        => $Self->{UserID},
                     );
                 }
 
@@ -988,8 +985,7 @@ sub Run {
             # output "printed by"
             $PDFObject->Text(
                 Text => $PrintedBy . ' '
-                    . $Self->{UserFirstname} . ' '
-                    . $Self->{UserLastname} . ' ('
+                    . $Self->{UserFullname} . ' ('
                     . $Self->{UserEmail} . ')'
                     . ', ' . $Time,
                 FontSize => 9,
@@ -1019,17 +1015,15 @@ sub Run {
             }
 
             # return the pdf document
-            my $Filename = 'ticket_search';
-            my ( $s, $m, $h, $D, $M, $Y ) = $TimeObject->SystemTime2Date(
-                SystemTime => $TimeObject->SystemTime(),
+            my $CurSystemDateTimeObject = $Kernel::OM->Create('Kernel::System::DateTime');
+            my $Filename                = sprintf(
+                'ticket_search_%s.pdf',
+                $CurSystemDateTimeObject->Format( Format => '%Y-%m-%d_%H-%M' ),
             );
-            $M = sprintf( "%02d", $M );
-            $D = sprintf( "%02d", $D );
-            $h = sprintf( "%02d", $h );
-            $m = sprintf( "%02d", $m );
+
             my $PDFString = $PDFObject->DocumentOutput();
             return $LayoutObject->Attachment(
-                Filename    => $Filename . "_" . "$Y-$M-$D" . "_" . "$h-$m.pdf",
+                Filename    => $Filename,
                 ContentType => "application/pdf",
                 Content     => $PDFString,
                 Type        => 'inline',
@@ -1184,7 +1178,6 @@ sub Run {
                         %Article = $ArticleObject->BackendForArticle( %{$Article} )->ArticleGet(
                             %{$Article},
                             DynamicFields => 1,
-                            UserID        => $Self->{UserID},
                         );
                     }
 
@@ -1881,11 +1874,14 @@ sub MaskForm {
     # create the fulltext field entries to be displayed
     my %ArticleSearchableFields = $Kernel::OM->Get('Kernel::System::Ticket::Article')->ArticleSearchableFieldsList();
 
+    FIELD:
     for my $ArticleFieldKey (
         sort { $ArticleSearchableFields{$a}->{Label} cmp $ArticleSearchableFields{$b}->{Label} }
         keys %ArticleSearchableFields
         )
     {
+        next FIELD if $ArticleSearchableFields{$ArticleFieldKey}->{HideInCustomerInterface};
+
         $LayoutObject->Block(
             Name => 'SearchableArticleField',
             Data => {

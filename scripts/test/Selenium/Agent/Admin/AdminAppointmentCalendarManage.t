@@ -16,7 +16,11 @@ my $Selenium = $Kernel::OM->Get('Kernel::System::UnitTest::Selenium');
 
 $Selenium->RunTest(
     sub {
-
+        $Kernel::OM->ObjectParamAdd(
+            'Kernel::System::UnitTest::Helper' => {
+                DisableAsyncCalls => 1,
+            },
+        );
         my $Helper      = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
         my $GroupObject = $Kernel::OM->Get('Kernel::System::Group');
 
@@ -80,6 +84,32 @@ $Selenium->RunTest(
             "return \$('#GroupID').val($GroupID).trigger('redraw.InputField').trigger('change');"
         );
         $Selenium->find_element( 'form#CalendarFrom button#Submit', 'css' )->VerifiedClick();
+
+        # Verify download and copy-to-clipboard links.
+        for my $Class (qw(DownloadLink CopyToClipboard)) {
+            my $Element = $Selenium->find_element( ".$Class", 'css' );
+
+            my $URL;
+            if ( $Class eq 'DownloadLink' ) {
+                $URL = $Element->get_attribute('href');
+            }
+            elsif ( $Class eq 'CopyToClipboard' ) {
+                $URL = $Element->get_attribute('data-clipboard-text');
+            }
+
+            $Self->True(
+                $URL,
+                "$Class URL present"
+            );
+
+            # URL should not contain OTRS specific URL delimiter of semicolon (;).
+            #   For better compatibility, use standard ampersand (&) instead.
+            #   Please see bug#12667 for more information.
+            $Self->False(
+                ( $URL =~ /[;]/ ) ? 1 : 0,
+                "$Class URL does not contain forbidden characters"
+            );
+        }
 
         # Let's try to add calendar with same name.
         $Selenium->find_element( '.SidebarColumn ul.ActionList a#Add',   'css' )->VerifiedClick();
@@ -249,26 +279,6 @@ $Selenium->RunTest(
             $Success,
             "Deleted test group - $GroupID"
         );
-
-        # Remove scheduled asynchronous tasks from DB, as they may interfere with tests run later.
-        my @TaskIDs;
-        my @AllTasks = $SchedulerDBObject->TaskList(
-            Type => 'AsynchronousExecutor',
-        );
-        for my $Task (@AllTasks) {
-            if ( $Task->{Name} eq 'Kernel::System::Calendar-TicketAppointmentProcessCalendar()' ) {
-                push @TaskIDs, $Task->{TaskID};
-            }
-        }
-        for my $TaskID (@TaskIDs) {
-            my $Success = $SchedulerDBObject->TaskDelete(
-                TaskID => $TaskID,
-            );
-            $Self->True(
-                $Success,
-                "TaskDelete - Removed scheduled asynchronous task $TaskID",
-            );
-        }
 
         # Make sure cache is correct.
         for my $Cache (qw(Calendar Queue)) {

@@ -26,6 +26,7 @@
                     [% Setting.Name | html %]
                 </h2>
                 <p class="HeaderMessage">
+                <span class="Right">[% Setting.XMLFilename %]</span>&nbsp;&nbsp;
                 [% IF Env("Action") != 'AdminSystemConfigurationGroup' %]
                     <a href="[% Env("Baselink") %]Action=AdminSystemConfigurationGroup;RootNavigation=[% Setting.Navigation | uri %]">[% Setting.Navigation | html %]</a>
                 [% END %]
@@ -46,11 +47,34 @@
                 <a href="#" class="Button SettingDisabled [% IF Setting.IsValid == 1 %]Hidden[% END %]" title="[% Translate("Enable this setting, so it becomes effective") %]"><i class="fa fa-check"></i> [% Translate("Enable") %]</a>
                 [% END %]
 
-                <a href="[% Env("Baselink") %]Action=AdminSystemConfigurationSettingHistory;Subaction=ShowSettingHistory;SettingName=[% Setting.Name | uri %]" class="OTRSBusinessRequired SettingHistory Button"><i class="fa fa-clock-o"></i> [% Translate("History") %]</a>
+                <a href="[% Env("Baselink") %]Action=AdminSystemConfigurationSettingHistory;Subaction=ShowSettingHistory;SettingName=[% Setting.Name | uri %]" class="OTRSBusinessRequired SettingHistory Button"><i class="fa fa-clock-o"></i> [% Translate("History") %][% IF !Data.OTRSBusinessIsInstalled %] (OTRS Business Solution™)[% END %]</a>
                 <a href="#" class="ResetSetting Button" data-user-modification="[% Setting.UserModificationPossible %]" title="[% Translate("Reset this setting to its default state") %]">
                     <i class="fa fa-undo"></i>
                     [% Translate("Reset setting") %]
                 </a>
+
+                [% IF Setting.UserModificationPossible && Data.OTRSBusinessIsInstalled %]
+                <a href="[% Env("Baselink") %]Action=[% Env("Action") %];Subaction=UserModified;SettingName=[% Setting.Name | uri %]"
+                    class="UserModificationNotActive Button [% IF Setting.UserModificationActive %]Hidden[% END %]" title="[% Translate("Allow users to adapt this setting from within their personal preferences") %]">
+
+                    <i class="fa fa-users"></i>
+                    [% Translate("Allow users to update") %]
+                </a>
+                <a href="[% Env("Baselink") %]Action=[% Env("Action") %];Subaction=UserModified;SettingName=[% Setting.Name | uri %]"
+                    class="UserModificationActive Button [% IF !Setting.UserModificationActive %]Hidden[% END %]" title="[% Translate("Do not longer allow users to adapt this setting from within their personal preferences") %]">
+
+                    <i class="fa fa-users"></i>
+                    [% Translate("Forbid users to update") %]
+                </a>
+                [% END %]
+
+                [% IF Setting.UserModificationActive %]
+                <a href="[% Env("Baselink") %]Action=AdminSystemConfigurationUser;Subaction=ShowUsersSettingValue;SettingName=[% Setting.Name | uri %]" class="UserSettings Button" title="[% Translate("Show user specific changes for this setting") %]">
+                    <i class="fa fa-user"></i>
+                    [% Translate("Show user settings") %]
+                </a>
+                [% END %]
+
                 <span href="#" class="Button CopyToClipboard" data-clipboard-text="[% Config("HttpType") | html %]://[% Config("FQDN") | html %][% Env("Baselink") | html %]Action=AdminSystemConfiguration;Subaction=View;Setting=[% Setting.Name | uri %]" title="[% Translate("Copy a direct link to this setting to your clipboard") %]"><i class="fa fa-link"></i> [% Translate("Copy direct link") %]</span>
 
             [% IF Setting.IsFavourite %]

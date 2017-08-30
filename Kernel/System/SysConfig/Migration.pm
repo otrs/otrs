@@ -292,6 +292,8 @@ sub MigrateXMLStructure {
 
                 if ( $Setting =~ m{<SubGroup>(.*?)</SubGroup>} ) {
                     my $NavigationStr = $NavigationLookup{$1} || $1;
+
+                    $NavigationStr .= "::Loader";
                     $LoaderSetting .= sprintf( "\n%-*s%s", 8, "", "<Navigation>$NavigationStr</Navigation>" );
                 }
 
@@ -366,6 +368,7 @@ sub MigrateXMLStructure {
 
                     if ( $Setting =~ m{<SubGroup>(.*?)</SubGroup>} ) {
                         my $NavigationStr = $NavigationLookup{$1} || $1;
+                        $NavigationStr .= "::MainMenu";
                         $Navigation .= sprintf( "\n%-*s%s", 8, "", "<Navigation>$NavigationStr</Navigation>" );
                     }
 
@@ -445,6 +448,8 @@ sub MigrateXMLStructure {
 
                 if ( $Setting =~ m{<SubGroup>(.*?)</SubGroup>} ) {
                     my $NavigationStr = $NavigationLookup{$1} || $1;
+
+                    $NavigationStr .= '::AdminOverview';
                     $NavigationModule .= sprintf( "\n%-*s%s", 8, "", "<Navigation>$NavigationStr</Navigation>" );
                 }
 
@@ -482,7 +487,8 @@ sub MigrateXMLStructure {
                     $NavigationModule .= sprintf( "\n%-*s%s", 16, "", "</Item>" );
                 }
 
-                for my $NavBarTag (qw(Module Name Block Description IconBig IconSmall Prio)) {
+                NAVBARTAG:
+                for my $NavBarTag (qw(Module Name Block Description IconBig IconSmall CssClass)) {
                     my $Value      = '';
                     my $Attributes = '';
 
@@ -493,6 +499,13 @@ sub MigrateXMLStructure {
                         $Attributes = " $1";
                         $Value      = $2;
                     }
+
+                    # special treatment for OTRSBusiness tile CssClass
+                    if ( $NavBarTag eq 'CssClass' ) {
+                        next NAVBARTAG if $Name ne 'Frontend::NavigationModule###AdminOTRSBusiness';
+                        $Value = 'OTRSBusiness';
+                    }
+
                     $NavigationModule .= sprintf(
                         "\n%-*s%s", 16, "",
                         "<Item Key=\"$NavBarTag\"$Attributes>$Value</Item>",
@@ -547,16 +560,16 @@ sub MigrateXMLStructure {
         $Setting =~ s{
                 ^(\s+)                               # match space
                 <Option.*?SelectedID="(\d)"          # match SelectedID inside Option tag
-                .*?>No<                              # match No
-                .*?>Yes</Item>                       # match Yes
+                .*? Key="0" .*?>No<                  # match No
+                .*? Key="1" .*?>Yes</Item>           # match Yes
                 \s+?</Option>?                       # match end of option
             }
             {$1<Item ValueType="Checkbox">$2</Item>}gsmx;
         $Setting =~ s{
                 ^(\s+)                               # match space
                 <Option.*?SelectedID=""              # match empty SelectedID inside Option tag
-                .*?>No<                              # match No
-                .*?>Yes</Item>                       # match Yes
+                .*? Key="0" .*?>No<                  # match No
+                .*? Key="1" .*?>Yes</Item>           # match Yes
                 \s+?</Option>?                       # match end of option
             }
             {$1<Item ValueType="Checkbox">0</Item>}gsmx;
@@ -565,16 +578,16 @@ sub MigrateXMLStructure {
         $Setting =~ s{
                     ^(\s+)                               # match space
                     <Option.*?SelectedID="(\d)"          # match SelectedID inside Option tag
-                    .*?>Yes<                             # match Yes
-                    .*?>No</Item>                        # match No
+                    .*? Key="1" .*?>Yes<                 # match Yes
+                    .*? Key="0" .*?>No</Item>            # match No
                     \s+?</Option>                        # match end of option
                 }
                 {$1<Item ValueType="Checkbox">$2</Item>}gsmx;
         $Setting =~ s{
                     ^(\s+)                               # match space
                     <Option.*?SelectedID=""              # match empty SelectedID inside Option tag
-                    .*?>Yes<                             # match Yes
-                    .*?>No</Item>                        # match No
+                    .*? Key="1" .*?>Yes<                 # match Yes
+                    .*? Key="0" .*?>No</Item>            # match No
                     \s+?</Option>                        # match end of option
                 }
                 {$1<Item ValueType="Checkbox">0</Item>}gsmx;
@@ -588,7 +601,7 @@ sub MigrateXMLStructure {
                 # Set the ValueType 'Option' tag to the main item.
                 $Item =~ s{<Item\s+Key="(.*?)"(.*?)>(.*?)$}{<Item ValueType="Option" Value="$1"$2>$3}gsmx;
 
-                # Convert Options to chidren Item.
+                # Convert Options to children Item.
                 $Item =~ s{<Option(.*?)>}{<Item ValueType="Select"$1>}gsmx;
 
                 # Convert </Option> to </Item>
@@ -774,21 +787,33 @@ sub MigrateXMLStructure {
                     {$LinkBackendReplace}gsmx;
                 }
 
-                # fill dropdowns with existing values
+                # Fill dropdowns with existing values.
                 $Setting =~ s{<\/DefaultItem>(\s*?)<Item\sKey="(.*?)">(0|1|2)<}
                 {<\/DefaultItem>$1\t\t<Item Key="$2" SelectedID="$3"><}gsmx;
-                while (
-                    $Setting =~ m{"(0|1|2)"><\/Item>(\s*)<Item\sKey="(.*?)">(0|1|2)<}
-                    )
-                {
-                    if ( $2 ne 'Default' ) {
-                        $Setting =~ s{><\/Item>(\s*)<Item\sKey="(.*?)">(0|1|2)<}
-                        {></Item>$1<Item Key="$2" SelectedID="$3"><}gsmx;
+
+                # Only alter <Items> right after </DefaultItem> and before the closing the hash </Hash>
+                my $DropdownItems;
+                if ( $Setting =~ m{<\/DefaultItem>(.+)<\/Hash>\s+^[\s]}smx ) {
+
+                    $DropdownItems = $1;
+
+                    while (
+                        $DropdownItems =~ m{"(0|1|2)"><\/Item>(\s*)<Item\sKey="(.*?)">(0|1|2)<}
+                        )
+                    {
+                        if ( $2 ne 'Default' ) {
+                            $DropdownItems =~ s{><\/Item>(\s*)<Item\sKey="(.*?)">(0|1|2)<}
+                            {></Item>$1<Item Key="$2" SelectedID="$3"><}gsmx;
+                        }
                     }
+
+                    $DropdownItems =~ s{><\/Item>(\s*)<Item\sKey="Default"\sSelectedID="(0|1)"><}
+                        {></Item>\n\t\t\t\t<Item Key="Default">$2<}gsmx;
                 }
 
-                $Setting =~ s{><\/Item>(\s*)<Item\sKey="Default"\sSelectedID="(0|1)"><}
-                    {></Item>\n\t\t\t\t<Item Key="Default">$2<}gsmx;
+                if ($DropdownItems) {
+                    $Setting =~ s{(<\/DefaultItem>).+(<\/Hash>\s+^[\s])}{$1$DropdownItems$2}msx;
+                }
 
                 # replace tab with spaces
                 $Setting =~ s{\t}{    }gsmx;
@@ -818,9 +843,22 @@ sub MigrateXMLStructure {
         # Update SubGroup to the Navigation.
         $Setting =~ s{SubGroup>}{Navigation>}gsmx;
 
-        if ( $Setting =~ m{<Navigation>(.*?)</Navigation>} ) {
-            my $NavigationStr = $NavigationLookup{$1} || $1;
-            $Setting =~ s{<Navigation>.*?</Navigation>}{<Navigation>$NavigationStr</Navigation>}gsmx;
+        my @NavigationValues = $Setting =~ m{<Navigation>(.*?)</Navigation>}g;
+        if ( scalar @NavigationValues ) {
+            my $NavigationValue = $NavigationValues[0];
+            my $NavigationStr = $NavigationLookup{$NavigationValue} || $NavigationValue;
+
+            if (
+                scalar @NavigationValues < 2
+                || !grep { $NavigationStr eq $_ } (
+                    'Frontend::Admin::ModuleRegistration',
+                    'Frontend::Agent::ModuleRegistration',
+                    'Frontend::Customer::ModuleRegistration',
+                    )
+                )
+            {
+                $Setting =~ s{<Navigation>.*?</Navigation>}{<Navigation>$NavigationStr</Navigation>}gsmx;
+            }
         }
 
         # Update Setting to the Value.
@@ -1314,6 +1352,10 @@ sub MigrateXMLStructure {
             $Setting
                 =~ s{(ConfigItem\sName=".*?")}{$1 UserPreferencesGroup="$SettingsUserPreferencesGroup{$SettingName}"}gsmx;
         }
+
+        if ( $Setting =~ m{Name=\"DashboardBackend\#\#\#} ) {
+            $Setting =~ s{\n([ ]*)(<\/Hash>\n[ ]*<\/Value>)}{\n$1    <Item Key="Mandatory">0</Item>\n$1$2}xms;
+        }
     }
 
     my $Result = join( "", @Settings );
@@ -1402,7 +1444,13 @@ sub MigrateConfigEffectiveValues {
         my $FirstLevelKey = shift @SettingNameParts;
         my $LastLevelKey  = pop @SettingNameParts;
 
-        if (@SettingNameParts) {
+        if (
+            @SettingNameParts
+
+            # Skip any setting with more than one sub-levels in hash key (unsupported in OTRS 5).
+            && !defined $SettingsWithSubLevels{$FirstLevelKey}->{ $SettingNameParts[0] }
+            )
+        {
             $SettingsWithSubLevels{$FirstLevelKey}->{ $SettingNameParts[0] }->{$LastLevelKey} = 1;
         }
         else {
@@ -1755,9 +1803,10 @@ sub MigrateConfigEffectiveValues {
     my $AllSettingsCount = scalar keys %OTRS5Config;
 
     # TODO: Add explanation for the following output values
-    print "AllSettingsCount: " . $AllSettingsCount . "\n";
-    print "MissingCount: " . scalar @MissingSettings . "\n";
-    print "UnsuccessfullCount: " . scalar @UnsuccessfullSettings . "\n\n";
+    print "\n";
+    print "        - AllSettingsCount: " . $AllSettingsCount . "\n";
+    print "        - MissingCount: " . scalar @MissingSettings . "\n";
+    print "        - UnsuccessfullCount: " . scalar @UnsuccessfullSettings . "\n\n";
 
     # TODO: Maybe do not show the missing settings in the final version, just the Missing count above.
     if (@MissingSettings) {
@@ -1773,8 +1822,6 @@ sub MigrateConfigEffectiveValues {
             print $Setting . "\n";
         }
     }
-
-    print "\n\n";
 
     if ( $Param{ReturnMigratedSettingsCounts} ) {
         return {
@@ -1806,138 +1853,144 @@ sub NavigationLookupGet {
     my ( $Self, %Param ) = @_;
 
     return (
-        'CloudService::Admin::ModuleRegistration'             => 'CloudService::Admin::ModuleRegistration',
-        'ConfigLog'                                           => 'ConfigLog',
-        'ConfigSwitch'                                        => 'ConfigSwitch',
-        'Core'                                                => 'Core',
-        'Core::Cache'                                         => 'Core::Cache',
-        'Core::CustomerCompany'                               => 'Core::CustomerCompany',
-        'Core::CustomerUser'                                  => 'Core::CustomerUser',
-        'Core::Daemon::ModuleRegistration'                    => 'Daemon::ModuleRegistration',
-        'Core::DynamicField'                                  => 'Core::DynamicFields',
-        'Core::Fetchmail'                                     => 'Core::Fetchmail',
-        'Core::FulltextSearch'                                => 'Core::FulltextSearch',
-        'Core::LinkObject'                                    => 'Core::LinkObject',
-        'Core::Log'                                           => 'Core::Log',
-        'Core::MIME-Viewer'                                   => 'Core::MIME-Viewer',
-        'Core::MirrorDB'                                      => 'Core::MirrorDB',
-        'Core::OTRSBusiness'                                  => 'Core::OTRSBusiness',
-        'Core::Package'                                       => 'Core::Package',
-        'Core::PDF'                                           => 'Core::PDF',
-        'Core::PerformanceLog'                                => 'Core::PerformanceLog',
-        'Core::PostMaster'                                    => 'Core::PostMaster',
-        'Core::Queue'                                         => 'Core::Queue',
-        'Core::ReferenceData'                                 => 'Core::ReferenceData',
-        'Core::Sendmail'                                      => 'Core::Sendmail',
-        'Core::Session'                                       => 'Core::Session',
-        'Core::SOAP'                                          => 'Core::SOAP',
-        'Core::Stats'                                         => 'Core::Stats',
-        'Core::Ticket'                                        => 'Core::Ticket',
-        'Core::TicketACL'                                     => 'Core::Ticket::ACL',
-        'Core::TicketBulkAction'                              => 'Core::Ticket::BulkAction',
-        'Core::TicketDynamicFieldDefault'                     => 'Core::Ticket::DynamicFieldDefault',
-        'Core::TicketWatcher'                                 => 'Core::Ticket',
-        'Core::Time'                                          => 'Core::Time',
-        'Core::Time::Calendar1'                               => 'Core::Time::Calendar1',
-        'Core::Time::Calendar2'                               => 'Core::Time::Calendar2',
-        'Core::Time::Calendar3'                               => 'Core::Time::Calendar3',
-        'Core::Time::Calendar4'                               => 'Core::Time::Calendar4',
-        'Core::Time::Calendar5'                               => 'Core::Time::Calendar5',
-        'Core::Time::Calendar6'                               => 'Core::Time::Calendar6',
-        'Core::Time::Calendar7'                               => 'Core::Time::Calendar7',
-        'Core::Time::Calendar8'                               => 'Core::Time::Calendar8',
-        'Core::Time::Calendar9'                               => 'Core::Time::Calendar9',
-        'Core::Transition'                                    => 'Core::Transition',
-        'Core::Web'                                           => 'Core::Web',
-        'Core::WebUserAgent'                                  => 'Core::WebUserAgent',
-        'Crypt::PGP'                                          => 'Core::Crypt::PGP',
-        'Crypt::SMIME'                                        => 'Core::Crypt::SMIME',
-        'CustomerInformationCenter'                           => 'Frontend::Agent::CustomerInformationCenter',
-        'Daemon::SchedulerCronTaskManager::Task'              => 'Daemon::SchedulerCronTaskManager::Task',
-        'Daemon::SchedulerGenericAgentTaskManager'            => 'Daemon::SchedulerGenericAgentTaskManager',
-        'Daemon::SchedulerGenericInterfaceTaskManager'        => 'Daemon::SchedulerGenericInterfaceTaskManager',
-        'Daemon::SchedulerTaskWorker'                         => 'Daemon::SchedulerTaskWorker',
-        'DynamicFields::Driver::Registration'                 => 'Core::DynamicFields::DriverRegistration',
-        'DynamicFields::ObjectType::Registration'             => 'Core::DynamicFields::ObjectTypeRegistration',
-        'Frontend::Admin'                                     => 'Frontend::Admin',
-        'Frontend::Admin::AdminCustomerCompany'               => 'Frontend::Admin::AdminCustomerCompany',
-        'Frontend::Admin::AdminCustomerUser'                  => 'Frontend::Admin::AdminCustomerUser',
-        'Frontend::Admin::AdminNotificationEvent'             => 'Frontend::Admin::AdminNotificationEvent',
-        'Frontend::Admin::AdminSelectBox'                     => 'Frontend::Admin::AdminSelectBox',
-        'Frontend::Admin::ModuleRegistration'                 => 'Frontend::Admin::ModuleRegistration',
-        'Frontend::Agent'                                     => 'Frontend::Agent',
-        'Frontend::Agent::Auth::TwoFactor'                    => 'Frontend::Agent::Auth::TwoFactor',
-        'Frontend::Agent::Dashboard'                          => 'Frontend::Agent::Dashboard',
-        'Frontend::Agent::Dashboard::EventsTicketCalendar'    => 'Frontend::Agent::Dashboard::EventsTicketCalendar',
-        'Frontend::Agent::Dashboard::TicketFilters'           => 'Frontend::Agent::Dashboard::TicketFilters',
-        'Frontend::Agent::LinkObject'                         => 'Frontend::Agent::LinkObject',
-        'Frontend::Agent::ModuleMetaHead'                     => 'Frontend::Agent::ModuleMetaHead',
-        'Frontend::Agent::ModuleNotify'                       => 'Frontend::Agent::ModuleNotify',
-        'Frontend::Agent::ModuleRegistration'                 => 'Frontend::Agent::ModuleRegistration',
-        'Frontend::Agent::NavBarModule'                       => 'Frontend::Agent::NavBarModule',
-        'Frontend::Agent::Preferences'                        => 'Frontend::Agent::Preferences',
-        'Frontend::Agent::SearchRouter'                       => 'Frontend::Agent::SearchRouter',
-        'Frontend::Agent::Stats'                              => 'Frontend::Agent::Stats',
-        'Frontend::Agent::Ticket::ArticleAttachmentModule'    => 'Frontend::Agent::Ticket::ArticleAttachmentModule',
-        'Frontend::Agent::Ticket::ArticleComposeModule'       => 'Frontend::Agent::Ticket::ArticleComposeModule',
-        'Frontend::Agent::Ticket::ArticleViewModule'          => 'Frontend::Agent::Ticket::ArticleViewModule',
-        'Frontend::Agent::Ticket::ArticleViewModulePre'       => 'Frontend::Agent::Ticket::ArticleViewModulePre',
-        'Frontend::Agent::Ticket::MenuModule'                 => 'Frontend::Agent::Ticket::MenuModule',
-        'Frontend::Agent::Ticket::MenuModulePre'              => 'Frontend::Agent::Ticket::MenuModulePre',
-        'Frontend::Agent::Ticket::OverviewMenuModule'         => 'Frontend::Agent::Ticket::OverviewMenuModule',
-        'Frontend::Agent::Ticket::ViewBounce'                 => 'Frontend::Agent::Ticket::ViewBounce',
-        'Frontend::Agent::Ticket::ViewBulk'                   => 'Frontend::Agent::Ticket::ViewBulk',
-        'Frontend::Agent::Ticket::ViewClose'                  => 'Frontend::Agent::Ticket::ViewClose',
-        'Frontend::Agent::Ticket::ViewCompose'                => 'Frontend::Agent::Ticket::ViewCompose',
-        'Frontend::Agent::Ticket::ViewCustomer'               => 'Frontend::Agent::Ticket::ViewCustomer',
-        'Frontend::Agent::Ticket::ViewEmailNew'               => 'Frontend::Agent::Ticket::ViewEmailNew',
-        'Frontend::Agent::Ticket::ViewEmailOutbound'          => 'Frontend::Agent::Ticket::ViewEmailOutbound',
-        'Frontend::Agent::Ticket::ViewEscalation'             => 'Frontend::Agent::Ticket::ViewEscalation',
-        'Frontend::Agent::Ticket::ViewForward'                => 'Frontend::Agent::Ticket::ViewForward',
-        'Frontend::Agent::Ticket::ViewFreeText'               => 'Frontend::Agent::Ticket::ViewFreeText',
-        'Frontend::Agent::Ticket::ViewHistory'                => 'Frontend::Agent::Ticket::ViewHistory',
-        'Frontend::Agent::Ticket::ViewLocked'                 => 'Frontend::Agent::Ticket::ViewLocked',
-        'Frontend::Agent::Ticket::ViewMerge'                  => 'Frontend::Agent::Ticket::ViewMerge',
-        'Frontend::Agent::Ticket::ViewMove'                   => 'Frontend::Agent::Ticket::ViewMove',
-        'Frontend::Agent::Ticket::ViewNote'                   => 'Frontend::Agent::Ticket::ViewNote',
-        'Frontend::Agent::Ticket::ViewOwner'                  => 'Frontend::Agent::Ticket::ViewOwner',
-        'Frontend::Agent::Ticket::ViewPending'                => 'Frontend::Agent::Ticket::ViewPending',
-        'Frontend::Agent::Ticket::ViewPhoneInbound'           => 'Frontend::Agent::Ticket::ViewPhoneInbound',
-        'Frontend::Agent::Ticket::ViewPhoneNew'               => 'Frontend::Agent::Ticket::ViewPhoneNew',
-        'Frontend::Agent::Ticket::ViewPhoneOutbound'          => 'Frontend::Agent::Ticket::ViewPhoneOutbound',
-        'Frontend::Agent::Ticket::ViewPrint'                  => 'Frontend::Agent::Ticket::ViewPrint',
-        'Frontend::Agent::Ticket::ViewPriority'               => 'Frontend::Agent::Ticket::ViewPriority',
-        'Frontend::Agent::Ticket::ViewProcess'                => 'Frontend::Agent::Ticket::ViewProcess',
-        'Frontend::Agent::Ticket::ViewQueue'                  => 'Frontend::Agent::Ticket::ViewQueue',
-        'Frontend::Agent::Ticket::ViewResponsible'            => 'Frontend::Agent::Ticket::ViewResponsible',
-        'Frontend::Agent::Ticket::ViewSearch'                 => 'Frontend::Agent::Ticket::ViewSearch',
-        'Frontend::Agent::Ticket::ViewService'                => 'Frontend::Agent::Ticket::ViewService',
-        'Frontend::Agent::Ticket::ViewStatus'                 => 'Frontend::Agent::Ticket::ViewStatus',
-        'Frontend::Agent::Ticket::ViewWatch'                  => 'Frontend::Agent::Ticket::ViewWatch',
-        'Frontend::Agent::Ticket::ViewZoom'                   => 'Frontend::Agent::Ticket::ViewZoom',
-        'Frontend::Agent::TicketOverview'                     => 'Frontend::Agent::TicketOverview',
-        'Frontend::Agent::ToolBarModule'                      => 'Frontend::Agent::ToolBarModule',
-        'Frontend::Customer'                                  => 'Frontend::Customer',
-        'Frontend::Customer::Auth'                            => 'Frontend::Customer::Auth',
-        'Frontend::Customer::Auth::TwoFactor'                 => 'Frontend::Customer::Auth::TwoFactor',
-        'Frontend::Customer::ModuleMetaHead'                  => 'Frontend::Customer::ModuleMetaHead',
-        'Frontend::Customer::ModuleNotify'                    => 'Frontend::Customer::ModuleNotify',
-        'Frontend::Customer::ModuleRegistration'              => 'Frontend::Customer::ModuleRegistration',
-        'Frontend::Customer::NavBarModule'                    => 'Frontend::Customer::NavBarModule',
-        'Frontend::Customer::Preferences'                     => 'Frontend::Customer::Preferences',
-        'Frontend::Customer::Ticket::ViewNew'                 => 'Frontend::Customer::Ticket::ViewNew',
-        'Frontend::Customer::Ticket::ViewPrint'               => 'Frontend::Customer::Ticket::ViewPrint',
-        'Frontend::Customer::Ticket::ViewSearch'              => 'Frontend::Customer::Ticket::ViewSearch',
-        'Frontend::Customer::Ticket::ViewZoom'                => 'Frontend::Customer::Ticket::ViewZoom',
-        'Frontend::Customer::TicketOverview'                  => 'Frontend::Customer::TicketOverview',
-        'Frontend::Public'                                    => 'Frontend::Public',
-        'Frontend::Public::ModuleRegistration'                => 'Frontend::Public::ModuleRegistration',
-        'Frontend::Queue::Preferences'                        => 'Frontend::Admin::QueuePreferences',
-        'Frontend::Service::Preferences'                      => 'Frontend::Admin::ServicePreferences',
-        'Frontend::SLA::Preferences'                          => 'Frontend::Admin::SLAPreferences',
-        'GenericInterface::Invoker::ModuleRegistration'       => 'GenericInterface::Invoker::ModuleRegistration',
-        'GenericInterface::Mapping::ModuleRegistration'       => 'GenericInterface::Mapping::ModuleRegistration',
-        'GenericInterface::Operation::ModuleRegistration'     => 'GenericInterface::Operation::ModuleRegistration',
+        'CloudService::Admin::ModuleRegistration'      => 'CloudService::Admin::ModuleRegistration',
+        'ConfigLog'                                    => 'ConfigLog',
+        'ConfigSwitch'                                 => 'ConfigSwitch',
+        'Core'                                         => 'Core',
+        'Core::AppointmentCalendar::Event'             => 'Core::Event::AppointmentCalendar',
+        'Core::Cache'                                  => 'Core::Cache',
+        'Core::CustomerCompany'                        => 'Core::CustomerCompany',
+        'Core::CustomerUser'                           => 'Core::CustomerUser',
+        'Core::Daemon::ModuleRegistration'             => 'Daemon::ModuleRegistration',
+        'Core::DynamicField'                           => 'Core::DynamicFields',
+        'Core::Fetchmail'                              => 'Core::Email',
+        'Core::FulltextSearch'                         => 'Core::Ticket::FulltextSearch',
+        'Core::LinkObject'                             => 'Core::LinkObject',
+        'Core::Log'                                    => 'Core::Log',
+        'Core::MIME-Viewer'                            => 'Frontend::Agent::MIMEViewer',
+        'Core::MirrorDB'                               => 'Core::DB::Mirror',
+        'Core::OTRSBusiness'                           => 'Core::OTRSBusiness',
+        'Core::Package'                                => 'Core::Package',
+        'Core::PDF'                                    => 'Core::PDF',
+        'Core::PerformanceLog'                         => 'Core::PerformanceLog',
+        'Core::PostMaster'                             => 'Core::Email::PostMaster',
+        'Core::Queue'                                  => 'Core::Queue',
+        'Core::ReferenceData'                          => 'Core::ReferenceData',
+        'Core::Sendmail'                               => 'Core::Email',
+        'Core::Session'                                => 'Core::Session',
+        'Core::SOAP'                                   => 'Core::SOAP',
+        'Core::Stats'                                  => 'Core::Stats',
+        'Core::Ticket'                                 => 'Core::Ticket',
+        'Core::TicketACL'                              => 'Core::Ticket::ACL',
+        'Core::TicketBulkAction'                       => 'Frontend::Agent::View::TicketBulk',
+        'Core::TicketDynamicFieldDefault'              => 'Core::Ticket::DynamicFieldDefault',
+        'Core::TicketWatcher'                          => 'Core::Ticket',
+        'Core::Time'                                   => 'Core::Time',
+        'Core::Time::Calendar1'                        => 'Core::Time::Calendar1',
+        'Core::Time::Calendar2'                        => 'Core::Time::Calendar2',
+        'Core::Time::Calendar3'                        => 'Core::Time::Calendar3',
+        'Core::Time::Calendar4'                        => 'Core::Time::Calendar4',
+        'Core::Time::Calendar5'                        => 'Core::Time::Calendar5',
+        'Core::Time::Calendar6'                        => 'Core::Time::Calendar6',
+        'Core::Time::Calendar7'                        => 'Core::Time::Calendar7',
+        'Core::Time::Calendar8'                        => 'Core::Time::Calendar8',
+        'Core::Time::Calendar9'                        => 'Core::Time::Calendar9',
+        'Core::Transition'                             => 'Core::ProcessManagement',
+        'Core::Web'                                    => 'Frontend::Base',
+        'Core::WebUserAgent'                           => 'Core::WebUserAgent',
+        'Crypt::PGP'                                   => 'Core::Crypt::PGP',
+        'Crypt::SMIME'                                 => 'Core::Crypt::SMIME',
+        'CustomerInformationCenter'                    => 'Frontend::Agent::View::CustomerInformationCenter',
+        'Daemon::SchedulerCronTaskManager::Task'       => 'Daemon::SchedulerCronTaskManager::Task',
+        'Daemon::SchedulerGenericAgentTaskManager'     => 'Daemon::SchedulerGenericAgentTaskManager',
+        'Daemon::SchedulerGenericInterfaceTaskManager' => 'Daemon::SchedulerGenericInterfaceTaskManager',
+        'Daemon::SchedulerTaskWorker'                  => 'Daemon::SchedulerTaskWorker',
+        'DynamicFields::Driver::Registration'          => 'Core::DynamicFields::DriverRegistration',
+        'DynamicFields::ObjectType::Registration'      => 'Core::DynamicFields::ObjectTypeRegistration',
+
+        # 'Frontend::Admin'                                  => 'Frontend::Admin',
+        'Frontend::Admin::AdminCustomerCompany'   => 'Frontend::Admin::View::CustomerCompany',
+        'Frontend::Admin::AdminCustomerUser'      => 'Frontend::Admin::View::CustomerUser',
+        'Frontend::Admin::AdminNotificationEvent' => 'Frontend::Admin::View::NotificationEvent',
+        'Frontend::Admin::AdminSelectBox'         => 'Frontend::Admin::View::SelectBox',
+
+        # 'Frontend::Admin::ModuleRegistration'              => 'Frontend::Admin::ModuleRegistration',
+        'Frontend::Admin::SearchRouter'                    => 'Frontend::Admin::ModuleRegistration::MainMenu::Search',
+        'Frontend::Agent'                                  => 'Frontend::Agent',
+        'Frontend::Agent::Auth::TwoFactor'                 => 'Core::Auth::Agent::TwoFactor',
+        'Frontend::Agent::Dashboard'                       => 'Frontend::Agent::View::Dashboard',
+        'Frontend::Agent::Dashboard::EventsTicketCalendar' => 'Frontend::Agent::View::Dashboard::EventsTicketCalendar',
+        'Frontend::Agent::Dashboard::TicketFilters'        => 'Frontend::Agent::View::Dashboard::TicketFilters',
+        'Frontend::Agent::LinkObject'                      => 'Frontend::Agent::LinkObject',
+        'Frontend::Agent::ModuleMetaHead'                  => 'Frontend::Agent',
+        'Frontend::Agent::ModuleNotify'                    => 'Frontend::Agent::FrontendNotification',
+        'Frontend::Agent::NavBarModule'                    => 'Frontend::Agent::ModuleRegistration',
+        'Frontend::Agent::Preferences'                     => 'Frontend::Agent::View::Preferences',
+        'Frontend::Agent::SearchRouter'                    => 'Frontend::Agent::ModuleRegistration::MainMenu::Search',
+        'Frontend::Agent::Stats'                           => 'Frontend::Agent::Stats',
+        'Frontend::Agent::Ticket::ArticleAttachmentModule' => 'Frontend::Agent::View::TicketZoom',
+        'Frontend::Agent::Ticket::ArticleComposeModule'    => 'Frontend::Agent::ArticleComposeModule',
+        'Frontend::Agent::Ticket::ArticleViewModule'       => 'Frontend::Agent::View::TicketZoom',
+        'Frontend::Agent::Ticket::ArticleViewModulePre'    => 'Frontend::Agent::View::TicketZoom',
+        'Frontend::Agent::Ticket::MenuModule'              => 'Frontend::Agent::View::TicketZoom::MenuModule',
+        'Frontend::Agent::Ticket::MenuModulePre'           => 'Frontend::Agent::TicketOverview::MenuModule',
+        'Frontend::Agent::Ticket::OverviewMenuModule'      => 'Frontend::Agent::TicketOverview::MenuModule',
+        'Frontend::Agent::Ticket::ViewBounce'              => 'Frontend::Agent::View::TicketBounce',
+        'Frontend::Agent::Ticket::ViewBulk'                => 'Frontend::Agent::View::TicketBulk',
+        'Frontend::Agent::Ticket::ViewClose'               => 'Frontend::Agent::View::TicketClose',
+        'Frontend::Agent::Ticket::ViewCompose'             => 'Frontend::Agent::View::TicketCompose',
+        'Frontend::Agent::Ticket::ViewCustomer'            => 'Frontend::Agent::View::TicketCustomer',
+        'Frontend::Agent::Ticket::ViewEmailNew'            => 'Frontend::Agent::View::TicketEmailNew',
+        'Frontend::Agent::Ticket::ViewEmailOutbound'       => 'Frontend::Agent::View::TicketEmailOutbound',
+        'Frontend::Agent::Ticket::ViewEscalation'          => 'Frontend::Agent::View::TicketEscalation',
+        'Frontend::Agent::Ticket::ViewForward'             => 'Frontend::Agent::View::TicketForward',
+        'Frontend::Agent::Ticket::ViewFreeText'            => 'Frontend::Agent::View::TicketFreeText',
+        'Frontend::Agent::Ticket::ViewHistory'             => 'Frontend::Agent::View::TicketHistory',
+        'Frontend::Agent::Ticket::ViewLocked'              => 'Frontend::Agent::View::TicketLocked',
+        'Frontend::Agent::Ticket::ViewMerge'               => 'Frontend::Agent::View::TicketMerge',
+        'Frontend::Agent::Ticket::ViewMove'                => 'Frontend::Agent::View::TicketMove',
+        'Frontend::Agent::Ticket::ViewNote'                => 'Frontend::Agent::View::TicketNote',
+        'Frontend::Agent::Ticket::ViewOwner'               => 'Frontend::Agent::View::TicketOwner',
+        'Frontend::Agent::Ticket::ViewPending'             => 'Frontend::Agent::View::TicketPending',
+        'Frontend::Agent::Ticket::ViewPhoneInbound'        => 'Frontend::Agent::View::TicketPhoneInbound',
+        'Frontend::Agent::Ticket::ViewPhoneNew'            => 'Frontend::Agent::View::TicketPhoneNew',
+        'Frontend::Agent::Ticket::ViewPhoneOutbound'       => 'Frontend::Agent::View::TicketPhoneOutbound',
+        'Frontend::Agent::Ticket::ViewPrint'               => 'Frontend::Agent::View::TicketPrint',
+        'Frontend::Agent::Ticket::ViewPriority'            => 'Frontend::Agent::View::TicketPriority',
+        'Frontend::Agent::Ticket::ViewProcess'             => 'Frontend::Agent::View::TicketProcess',
+        'Frontend::Agent::Ticket::ViewQueue'               => 'Frontend::Agent::View::TicketQueue',
+        'Frontend::Agent::Ticket::ViewResponsible'         => 'Frontend::Agent::View::TicketResponsible',
+        'Frontend::Agent::Ticket::ViewSearch'              => 'Frontend::Agent::View::TicketSearch',
+        'Frontend::Agent::Ticket::ViewService'             => 'Frontend::Agent::View::TicketService',
+        'Frontend::Agent::Ticket::ViewStatus'              => 'Frontend::Agent::View::TicketStatus',
+        'Frontend::Agent::Ticket::ViewWatch'               => 'Frontend::Agent::View::TicketWatch',
+        'Frontend::Agent::Ticket::ViewZoom'                => 'Frontend::Agent::View::TicketZoom',
+        'Frontend::Agent::TicketOverview'                  => 'Frontend::Agent::TicketOverview',
+        'Frontend::Agent::ToolBarModule'                   => 'Frontend::Agent::ToolBar',
+        'Frontend::Agent::ViewCustomerUserSearch'          => 'Frontend::Agent::View::CustomerUserAddressBook',
+        'Frontend::Agent::CustomerInformationCenter'       => 'Frontend::Agent::View::CustomerInformationCenter',
+        'Frontend::Agent::Stats'                           => 'Frontend::Agent::View::Stats',
+        'Frontend::Customer'                               => 'Frontend::Customer',
+        'Frontend::Customer::Auth'                         => 'Core::Auth::Customer',
+        'Frontend::Customer::Auth::TwoFactor'              => 'Core::Auth::Customer::TwoFactor',
+        'Frontend::Customer::ModuleMetaHead'               => 'Frontend::Customer',
+        'Frontend::Customer::ModuleNotify'                 => 'Frontend::Customer::FrontendNotification',
+        'Frontend::Customer::ModuleRegistration'           => 'Frontend::Customer::ModuleRegistration',
+        'Frontend::Customer::NavBarModule'                 => 'Frontend::Customer::ModuleRegistration',
+        'Frontend::Customer::Preferences'                  => 'Frontend::Customer::View::Preferences',
+        'Frontend::Customer::Ticket::ViewNew'              => 'Frontend::Customer::View::TicketMessage',
+        'Frontend::Customer::Ticket::ViewPrint'            => 'Frontend::Customer::View::TicketPrint',
+        'Frontend::Customer::Ticket::ViewSearch'           => 'Frontend::Customer::View::TicketSearch',
+        'Frontend::Customer::Ticket::ViewZoom'             => 'Frontend::Customer::View::TicketZoom',
+        'Frontend::Customer::TicketOverview'               => 'Frontend::Customer::View::TicketOverview',
+        'Frontend::Public'                                 => 'Frontend::Public',
+        'Frontend::Public::ModuleRegistration'             => 'Frontend::Public::ModuleRegistration',
+        'Frontend::Queue::Preferences'                     => 'Core::Queue',
+        'Frontend::Service::Preferences'                   => 'Core::Service',
+        'Frontend::SLA::Preferences'                       => 'Core::SLA',
+        'GenericInterface::Invoker::ModuleRegistration'    => 'GenericInterface::Invoker::ModuleRegistration',
+        'GenericInterface::Mapping::ModuleRegistration'    => 'GenericInterface::Mapping::ModuleRegistration',
+        'GenericInterface::Operation::ModuleRegistration'  => 'GenericInterface::Operation::ModuleRegistration',
         'GenericInterface::Operation::ResponseLoggingMaxSize' => 'GenericInterface::Operation::ResponseLoggingMaxSize',
         'GenericInterface::Operation::TicketCreate'           => 'GenericInterface::Operation::TicketCreate',
         'GenericInterface::Operation::TicketSearch'           => 'GenericInterface::Operation::TicketSearch',
@@ -1945,10 +1998,17 @@ sub NavigationLookupGet {
         'GenericInterface::Transport::ModuleRegistration'     => 'GenericInterface::Transport::ModuleRegistration',
         'GenericInterface::Webservice'                        => 'GenericInterface::Webservice',
         'SystemMaintenance'                                   => 'Core::SystemMaintenance',
-        'Test'                                                => 'Test',
-        'TestComplex'                                         => 'TestComplex',
-        'TestComplex3th'                                      => 'TestComplex3th',
-        'TestFrontend'                                        => 'TestFrontend',
+
+        # Packages
+        'OutputFilter' => 'Frontend::Base::OutputFilter',
+
+        # OTRSBusiness
+        'Core::NotificationEvent'               => 'Frontend::Agent::View::NotificationView',
+        'Core::NotificationView'                => 'Frontend::Agent::View::NotificationView',
+        'Core::NotificationView::BulkAction'    => 'Frontend::Agent::View::NotificationView',
+        'Frontend::Agent::NotificationView'     => 'Frontend::Agent::View::NotificationView',
+        'Frontend'                              => 'Frontend::Base',
+        'Frontend::Admin::AdminContactWithData' => 'Frontend::Admin::View::ContactWithData',
     );
 }
 
@@ -2096,6 +2156,12 @@ sub _LookupNewConfigName {
 
         'Ticket::Frontend::ArticlePreViewModule###1-SMIME' =>
             'Ticket::Frontend::ArticlePreViewModule###2-SMIME',
+
+        # Moved and renamed config setting from OTRSBusiness.xml to Framework.xml
+        'ChatEngine::AgentOnlineThreshold' => 'SessionAgentOnlineThreshold',
+
+        # Moved and renamed config setting from OTRSBusiness.xml to Framework.xml
+        'ChatEngine::CustomerOnlineThreshold' => 'SessionCustomerOnlineThreshold',
     );
 
     # get the new name if found, otherwise use the given old name

@@ -309,7 +309,7 @@ sub NotificationAdd {
     if (%Check) {
         $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'error',
-            Message  => "Can't add notification '$Param{Name}', notification already exists!",
+            Message  => "A notification with the name '$Param{Name}' already exists.",
         );
         return;
     }
@@ -779,6 +779,7 @@ sub NotificationImport {
     my @NotificationErrors;
 
     my %CurrentNotifications = $Self->NotificationList(
+        %Param,
         UserID => $Param{UserID},
     );
     my %ReverseCurrentNotifications = reverse %CurrentNotifications;
@@ -802,7 +803,6 @@ sub NotificationImport {
             else {
                 push @NotificationErrors, $Notification->{Name};
             }
-
         }
         else {
 

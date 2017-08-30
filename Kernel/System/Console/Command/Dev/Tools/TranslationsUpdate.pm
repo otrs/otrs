@@ -22,11 +22,11 @@ use Kernel::Language;
 
 our @ObjectDependencies = (
     'Kernel::Config',
+    'Kernel::System::DateTime',
     'Kernel::System::Encode',
     'Kernel::System::Main',
     'Kernel::System::Storable',
     'Kernel::System::SysConfig',
-    'Kernel::System::Time',
 );
 
 sub Configure {
@@ -356,7 +356,7 @@ sub HandleLanguage {
             }egx;
         }
 
-        # add translatable strings from XB XML
+        # add translatable strings from DB XML
         my @DBXMLFiles = "$Home/scripts/database/otrs-initial_insert.xml";
         if ($IsSubTranslation) {
             @DBXMLFiles = $Kernel::OM->Get('Kernel::System::Main')->DirectoryRead(
@@ -389,6 +389,10 @@ sub HandleLanguage {
                 my $Word = $1 // '';
 
                 if ($Word && !$UsedWords{$Word}++) {
+
+                    if ($IsSubTranslation) {
+                        $File =~ s{^.*/(.+\.sopm)}{$1}smx;
+                    }
 
                     push @OriginalTranslationStrings, {
                         Location => "Database XML Definition: $File",
@@ -690,13 +694,10 @@ sub WritePOTFile {
 
     my $Package = $Param{Module} // 'OTRS';
 
-    my $TimeObject   = $Kernel::OM->Get('Kernel::System::Time');
-    my $CreationDate = $TimeObject->SystemTime2TimeStamp(
-        SystemTime => $TimeObject->SystemTime(),
+    # build creation date, only YEAR-MO-DA HO:MI is needed without seconds
+    my $CreationDate = $Kernel::OM->Create('Kernel::System::DateTime')->Format(
+        Format => '%Y-%m-%d %H:%M+0000'
     );
-
-    # only YEAR-MO-DA HO:MI is needed without seconds
-    $CreationDate = substr( $CreationDate, 0, -3 ) . '+0000';
 
     push @POTEntries, Locale::PO->new(
         -msgid => '',
@@ -872,8 +873,10 @@ EOF
     \$Self->{Completeness}        = $Completeness;
 
     # csv separator
-    \$Self->{Separator} = '$LanguageCoreObject->{Separator}';
+    \$Self->{Separator}         = '$LanguageCoreObject->{Separator}';
 
+    \$Self->{DecimalSeparator}  = '$LanguageCoreObject->{DecimalSeparator}';
+    \$Self->{ThousandSeparator} = '$LanguageCoreObject->{ThousandSeparator}';
 EOF
 
                 if ( $LanguageCoreObject->{TextDirection} ) {

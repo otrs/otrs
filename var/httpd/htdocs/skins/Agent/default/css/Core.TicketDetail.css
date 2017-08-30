@@ -16,7 +16,7 @@
  */
 div.Headline {
     height: 24px;
-    margin: 15px 0px 5px 0px;
+    margin: 5px 0px;
     position: relative;
 }
 
@@ -56,6 +56,16 @@ div.Headline .Flag {
 }
 
 /**
+ * @subsection  Article view settings
+ */
+
+.ArticleView {
+    position: absolute;
+    right: 3px;
+    top: 7px;
+}
+
+/**
  * @subsection  Article table head
  */
 
@@ -86,6 +96,11 @@ div.Headline .Flag {
     float: right;
 }
 
+#ArticleItems .WidgetMenu .LightRow {
+    background: #E8E8E8;
+    border-bottom: none;
+}
+
 #ArticleTableBody {
     position: relative;
     overflow: hidden;
@@ -106,54 +121,85 @@ div.Headline .Flag {
 }
 
 .ArticleMailHeader {
-    margin: 0 8px;
-    padding: 2px 0 7px;
     font-size: 11px;
-    border-bottom: 1px solid #C6C5C4;
+    margin: 10px 0px -5px 0px;
+}
+
+.Outgoing .ArticleMailHeader fieldset.TableLike.FixedLabelSmall > label,
+.Outgoing .ArticleMailHeader fieldset.TableLike.FixedLabelSmall > .Row > label {
+    width: 135px;
+    float: left;
+}
+
+#ArticleItems .ItemActions {
+    padding: 0px 10px;
+    box-sizing: border-box;
+    margin-right: 105px;
+    margin-right: 115px;
+    min-height: 28px;
+}
+
+#ArticleItems .Outgoing .ItemActions {
+    margin-left: 105px;
+    margin-right: 0px;
+}
+
+#ArticleItems .ArticleMailHeader label,
+#ArticleItems .ArticleMailHeader p.Value {
+    display: block;
+    margin: 0px;
+    padding: 0px;
+    line-height: 2.4em;
+}
+
+#ArticleItems .ArticleMailHeader p.Value {
+    width: calc(100% - 140px);
+    float: right;
+}
+
+#ArticleItems .Incoming .ArticleMailHeader p.Value {
+    width: calc(100% - 103px);
 }
 
 .ArticleMailContent {
-    padding: 11px 12px;
+    padding: 3px 12px 11px 12px;
     line-height: 1.3;
-}
-
-.ArticleMailContent.WithMeta {
-    overflow: hidden;
-}
-
-.ArticleMailContent.WithMeta .ArticleBody,
-.ArticleMailContent.WithMeta .ArticleMailContentHTMLWrapper {
-    width: 74%;
-    float: left;
     position: relative;
-    box-sizing: border-box;
 }
 
-.ArticleMailContent.WithMeta .ArticleMeta {
-    width: 25%;
-    float: right;
+.ArticleMailContent .ArticleMeta {
     background: #fff;
-    border: 1px solid #eee;
-    padding: 12px;
+    padding: 12px 12px 4px 12px;
+    text-align: right;
     box-sizing: border-box;
+    margin-left: 105px;
+    margin-top: -9px;
+    border-top: 1px solid #ddd !important;
+    position: relative;
+    z-index: 2;
 }
 
-.ArticleMailContent.WithMeta .ArticleMeta h2 {
-    font-size: 13px;
-    font-weight: bold;
-    border-bottom: 1px solid #eee;
-    padding-bottom: 5px;
+.Incoming .ArticleMailContent .ArticleMeta {
+    margin-left: 0px;
+    margin-right: 105px;
 }
 
-.ArticleMailContent.WithMeta .ArticleMeta ul + h2 {
-    margin-top: 10px;
+.ArticleMailContent .ArticleMeta h2 {
+    font-size: 12px;
+    color: #999;
+    display: inline-block;
+    margin-right: 10px;
 }
 
-.ArticleMailContent.WithMeta .ArticleMeta ul li {
+.ArticleMailContent .ArticleMeta ul {
     display: inline-block;
 }
 
-.ArticleMailContent.WithMeta .ArticleMeta ul li a {
+.ArticleMailContent .ArticleMeta ul li {
+    display: inline-block;
+}
+
+.ArticleMailContent .ArticleMeta ul li a {
     white-space: nowrap;
     display: block;
     background: #eee;
@@ -163,15 +209,121 @@ div.Headline .Flag {
     margin-bottom: 4px;
 }
 
-.ArticleMailContentHTMLWrapper {
-    -webkit-overflow-scrolling: touch;
-   overflow: auto;
+.Avatar {
+    border: 1px solid #eee;
+    position: absolute;
+    top: 30px;
+    background: #fff;
+    padding: 5px;
+    width: 70px;
+    height: 70px;
+}
+
+.Avatar i.ArticleSenderChannelIcon {
+    font-size: 15px;
+    position: absolute;
+    left: 5px;
+    bottom: 5px;
+    color: #444;
+    background: #fff;
+    padding: 4px;
+}
+
+.Avatar img {
     width: 100%;
+    height: 100%;
+}
+
+.Avatar i.InvalidChannelIcon {
+    font-size: 64px;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    margin-left: -32px;
+    margin-top: -32px;
+}
+
+.Outgoing .Avatar {
+    left: 10px;
+}
+
+.Incoming .Avatar {
+    right: 10px;
+}
+
+#ArticleItems .ArticleMailContentHTMLWrapper,
+#ArticleItems .ArticleHTML,
+#ArticleItems .ArticleBody {
+    -webkit-overflow-scrolling: touch;
+   margin-left: 105px;
+   position: relative;
+}
+
+#ArticleItems .Incoming .ArticleMailContentHTMLWrapper,
+#ArticleItems .Incoming .ArticleHTML,
+#ArticleItems .Incoming .ArticleBody {
+    margin-left: 0px;
+    margin-right: 105px;
+}
+
+.Outgoing .ArticleMailContentHTMLWrapper:after,
+.Incoming .ArticleMailContentHTMLWrapper:after,
+.Outgoing .ArticleHTML:after,
+.Incoming .ArticleHTML:after,
+.Outgoing .ArticleBody:after,
+.Incoming .ArticleBody:after {
+	border-color: rgba(255, 255, 255, 0);
+	top: 38px;
+	border: solid transparent;
+	content: " ";
+	height: 0;
+	width: 0;
+	position: absolute;
+	pointer-events: none;
+	border-width: 15px;
+	margin-top: -15px;
+}
+
+.Outgoing .ArticleMailContentHTMLWrapper:after,
+.Outgoing .ArticleHTML:after,
+.Outgoing .ArticleBody:after {
+    right: 100%;
+	border-right-color: #fff;
+}
+
+.Incoming .ArticleMailContentHTMLWrapper:after,
+.Incoming .ArticleHTML:after,
+.Incoming .ArticleBody:after {
+	left: 100%;
+	border-left-color: #fff;
+}
+
+.Incoming.NotVisibleForCustomer .ArticleMailContentHTMLWrapper:after,
+.Incoming.NotVisibleForCustomer .ArticleHTML:after,
+.Incoming.NotVisibleForCustomer .ArticleBody:after {
+    border-left-color: #ffcccc;
+}
+
+.Outgoing.NotVisibleForCustomer .ArticleMailContentHTMLWrapper:after,
+.Outgoing.NotVisibleForCustomer .ArticleHTML:after,
+.Outgoing.NotVisibleForCustomer .ArticleBody:after {
+    border-right-color: #ffcccc;
+}
+
+.ArticleSenderInitials {
+    text-align: center;
+}
+
+.ArticleSenderInitials span {
+    font-size: 22px;
+    line-height: 68px;
+    color: #CCC;
 }
 
 .ArticleMailContent iframe {
     background: #fff;
-    border: 1px solid #eee;
+    padding: 10px;
+    box-sizing: border-box;
 }
 
 .DataTable tbody td a.Attachment {
@@ -187,15 +339,13 @@ div.Headline .Flag {
  */
 
 .ArticleFilter,
-.ArticlePages,
-.ArticleView {
+.ArticlePages {
     float: left;
     margin-left: 10px;
 }
 
 .RTL .ArticleFilter,
-.RTL .ArticlePages,
-.RTL .ArticleView {
+.RTL .ArticlePages {
     float: right;
 }
 
@@ -325,19 +475,24 @@ div.Headline .Flag {
 
 /**
  * @subsection  ArticleBody
- * @note        styles for article body
+ * @note        Styles for article body
  */
+
+.SmallBox,
 .MessageBrowser {
-    margin: 5px 0;
-    padding: 0px;
-    border: 1px solid #999;
-    border-radius: 2px;
+    margin: 11px 11px 6px 11px;
     position: relative;
 }
 
 .MessageBrowser p {
      padding: 5px 25px 5px 25px;
      background-color: #DDD;
+     font-size: 11px;
+     text-align: center;
+}
+
+.SmallBox p {
+     padding: 5px 25px 5px 25px;
      font-size: 11px;
      text-align: center;
 }
@@ -356,11 +511,52 @@ div.Headline .Flag {
     color: #000;
 }
 
-
 /**
  * @subsection  ArticleColors
  * @note        article colors
  */
+
+/*.UseArticleColors tr.Incoming > td {
+    background: #d4defc;
+}
+
+.UseArticleColors tr.Outgoing > td {
+    background: #d3e5b5;
+}*/
+
+.UseArticleColors tr:nth-child(even) td {
+    background: #fff;
+}
+
+.UseArticleColors tr.NotVisibleForCustomer > td {
+    background: #FFCCCC;
+}
+
+.ArticleMailContent iframe,
+.ArticleMailContent .ArticleBody,
+.ArticleMailContent .ArticleHTML,
+.NotVisibleForCustomer .ArticleMailContent .ArticleMeta {
+    border: 5px solid #fff;
+}
+
+.UseArticleColors #ArticleItems .NotVisibleForCustomer .ArticleMailContent iframe,
+.UseArticleColors #ArticleItems .NotVisibleForCustomer .ArticleMailContent .ArticleBody,
+.UseArticleColors #ArticleItems .NotVisibleForCustomer .ArticleMailContent .ArticleHTML,
+.NotVisibleForCustomer .ArticleMailContent .ArticleMeta {
+    border: 5px solid #FFCCCC;
+}
+
+.UseArticleColors .Incoming.NotVisibleForCustomer .ArticleMailContentHTMLWrapper:after,
+.UseArticleColors .Incoming.NotVisibleForCustomer .ArticleHTML:after,
+.UseArticleColors .Incoming.NotVisibleForCustomer .ArticleBody:after {
+    border-left-color: #ffcccc;
+}
+
+.UseArticleColors .Outgoing.NotVisibleForCustomer .ArticleMailContentHTMLWrapper:after,
+.UseArticleColors .Outgoing.NotVisibleForCustomer .ArticleHTML:after,
+.UseArticleColors .Outgoing.NotVisibleForCustomer .ArticleBody:after {
+    border-right-color: #ffcccc;
+}
 
 .UseArticleColors #ArticleTable a {
     color: #000;
@@ -850,7 +1046,7 @@ div.Headline .Flag {
     font-style: normal;
 }
 
-.TimelinePlainText .ArticleChat {
+.TimelinePlainText .ArticleHTML {
     max-height: none;
     line-height: 120%;
     font-size: 12px;
@@ -863,6 +1059,14 @@ div.Headline .Flag {
 
 .ActionsTimelineView .Actions li select {
     max-width: 120px;
+}
+
+.ActionsTimelineView .ItemActions {
+    cursor: default;
+    position: relative;
+    overflow: hidden;
+    background: #EEEEEE;
+    border-bottom: 1px solid #CCC;
 }
 
 /* Define colors for different event types */
@@ -936,6 +1140,107 @@ div.Headline .Flag {
 .ItemRow i.Unsupported,
 .ItemRow a.Unsupported {
     opacity: 0.4;
+}
+
+.ArticleAttachments {
+    clear: both;
+    margin: 10px 0px -15px 105px;
+    overflow: hidden;
+}
+
+.Incoming .ArticleAttachments {
+    margin: 10px 105px 0px 0px;
+}
+
+.ArticleAttachments li {
+    float: left;
+    margin: 0px 10px 10px 0px;
+    background: #e8e8e8;
+    padding: 10px 45px 10px 15px;
+    font-size: 11px;
+    color: #777;
+    position: relative;
+}
+
+.ArticleAttachments li h5 {
+    font-size: 13px;
+    color: #000;
+}
+
+.ArticleAttachments li div {
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    width: 30px;
+    height: 100%;
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+.ArticleAttachments li div a {
+    height: 50%;
+    display: block;
+    background: #eee;
+    line-height: 250%;
+    text-align: center;
+    color: #aaa;
+    transition: all ease 0.3s;
+}
+
+.ArticleAttachments li div a:first-child:last-child {
+    height: 100%;
+    line-height: 500%;
+}
+
+.ArticleAttachments li div a:hover {
+    color: #333;
+}
+
+.ArticleAttachments li div a + a {
+    border-top: 1px solid #ccc;
+    margin-top: -1px;
+}
+
+@media only screen and (min-width: 0px) and (max-width: 1024px) {
+
+    .Avatar,
+    .ArticleMailContentHTMLWrapper:after,
+    .ArticleHTML:after,
+    .ArticleBody:after {
+        display: none;
+    }
+
+    #ArticleItems .ArticleMailContentHTMLWrapper,
+    #ArticleItems .ArticleHTML,
+    #ArticleItems .ArticleBody,
+    .ArticleMailContent .ArticleMeta,
+    .ItemActions,
+    .ArticleAttachments {
+        margin-left: 0px !important;
+        margin-right: 0px !important;
+    }
+
+    #ArticleItems .ItemActions .Actions li {
+        white-space: nowrap;
+    }
+
+    #ArticleItems .ItemActions .Actions li form {
+        width: auto;
+        overflow: visible;
+    }
+
+    #ArticleItems .ArticleMailHeader > fieldset {
+        margin-left: 20px;
+    }
+
+    #ArticleItems .ArticleMailHeader label,
+    #ArticleItems .ArticleMailHeader p.Value {
+        font-size: 1.2em;
+        width: auto;
+        float: none;
+        display: inline;
+    }
+
 }
 
 } /* end @media */

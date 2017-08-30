@@ -46,21 +46,21 @@ INSERT INTO groups (id, name, comments, valid_id, create_by, create_time, change
 # ----------------------------------------------------------
 #  insert into table group_user
 # ----------------------------------------------------------
-INSERT INTO group_user (user_id, group_id, permission_key, permission_value, create_by, create_time, change_by, change_time)
+INSERT INTO group_user (user_id, group_id, permission_key, create_by, create_time, change_by, change_time)
     VALUES
-    (1, 1, 'rw', 1, 1, current_timestamp, 1, current_timestamp);
+    (1, 1, 'rw', 1, current_timestamp, 1, current_timestamp);
 # ----------------------------------------------------------
 #  insert into table group_user
 # ----------------------------------------------------------
-INSERT INTO group_user (user_id, group_id, permission_key, permission_value, create_by, create_time, change_by, change_time)
+INSERT INTO group_user (user_id, group_id, permission_key, create_by, create_time, change_by, change_time)
     VALUES
-    (1, 2, 'rw', 1, 1, current_timestamp, 1, current_timestamp);
+    (1, 2, 'rw', 1, current_timestamp, 1, current_timestamp);
 # ----------------------------------------------------------
 #  insert into table group_user
 # ----------------------------------------------------------
-INSERT INTO group_user (user_id, group_id, permission_key, permission_value, create_by, create_time, change_by, change_time)
+INSERT INTO group_user (user_id, group_id, permission_key, create_by, create_time, change_by, change_time)
     VALUES
-    (1, 3, 'rw', 1, 1, current_timestamp, 1, current_timestamp);
+    (1, 3, 'rw', 1, current_timestamp, 1, current_timestamp);
 # ----------------------------------------------------------
 #  insert into table link_type
 # ----------------------------------------------------------
@@ -745,7 +745,7 @@ INSERT INTO ticket_history_type (id, name, valid_id, create_by, create_time, cha
 # ----------------------------------------------------------
 INSERT INTO ticket_history_type (id, name, valid_id, create_by, create_time, change_by, change_time)
     VALUES
-    (51, 'ArticleCreate', 1, 1, current_timestamp, 1, current_timestamp);
+    (51, 'EmailResend', 1, 1, current_timestamp, 1, current_timestamp);
 # ----------------------------------------------------------
 #  insert into table article_sender_type
 # ----------------------------------------------------------
@@ -767,9 +767,9 @@ INSERT INTO article_sender_type (id, name, valid_id, create_by, create_time, cha
 # ----------------------------------------------------------
 #  insert into table ticket
 # ----------------------------------------------------------
-INSERT INTO ticket (id, tn, queue_id, ticket_lock_id, user_id, responsible_user_id, ticket_priority_id, ticket_state_id, title, create_time_unix, timeout, until_time, escalation_time, escalation_response_time, escalation_update_time, escalation_solution_time, create_by, create_time, change_by, change_time)
+INSERT INTO ticket (id, tn, queue_id, ticket_lock_id, user_id, responsible_user_id, ticket_priority_id, ticket_state_id, title, timeout, until_time, escalation_time, escalation_response_time, escalation_update_time, escalation_solution_time, create_by, create_time, change_by, change_time)
     VALUES
-    (1, '2015071510123456', 2, 1, 1, 1, 3, 1, 'Welcome to OTRS!', 1436949030, 0, 0, 0, 0, 0, 0, 1, current_timestamp, 1, current_timestamp);
+    (1, '2015071510123456', 2, 1, 1, 1, 3, 1, 'Welcome to OTRS!', 0, 0, 0, 0, 0, 0, 1, current_timestamp, 1, current_timestamp);
 # ----------------------------------------------------------
 #  insert into table communication_channel
 # ----------------------------------------------------------
@@ -777,11 +777,11 @@ INSERT INTO communication_channel (id, name, module, package_name, channel_data,
     VALUES
     (1, 'Email', 'Kernel::System::CommunicationChannel::Email', 'Framework', '---
 ArticleDataArticleIDField: article_id
-ArticleDataIsDroppable: 0
 ArticleDataTables:
 - article_data_mime
 - article_data_mime_plain
 - article_data_mime_attachment
+- article_data_mime_send_error
 ', 1, 1, current_timestamp, 1, current_timestamp);
 # ----------------------------------------------------------
 #  insert into table communication_channel
@@ -790,11 +790,11 @@ INSERT INTO communication_channel (id, name, module, package_name, channel_data,
     VALUES
     (2, 'Phone', 'Kernel::System::CommunicationChannel::Phone', 'Framework', '---
 ArticleDataArticleIDField: article_id
-ArticleDataIsDroppable: 0
 ArticleDataTables:
 - article_data_mime
 - article_data_mime_plain
 - article_data_mime_attachment
+- article_data_mime_send_error
 ', 1, 1, current_timestamp, 1, current_timestamp);
 # ----------------------------------------------------------
 #  insert into table communication_channel
@@ -803,11 +803,11 @@ INSERT INTO communication_channel (id, name, module, package_name, channel_data,
     VALUES
     (3, 'Internal', 'Kernel::System::CommunicationChannel::Internal', 'Framework', '---
 ArticleDataArticleIDField: article_id
-ArticleDataIsDroppable: 0
 ArticleDataTables:
 - article_data_mime
 - article_data_mime_plain
 - article_data_mime_attachment
+- article_data_mime_send_error
 ', 1, 1, current_timestamp, 1, current_timestamp);
 # ----------------------------------------------------------
 #  insert into table communication_channel
@@ -816,7 +816,6 @@ INSERT INTO communication_channel (id, name, module, package_name, channel_data,
     VALUES
     (4, 'Chat', 'Kernel::System::CommunicationChannel::Chat', 'Framework', '---
 ArticleDataArticleIDField: article_id
-ArticleDataIsDroppable: 0
 ArticleDataTables:
 - article_data_otrs_chat
 ', 1, 1, current_timestamp, 1, current_timestamp);
@@ -1588,6 +1587,78 @@ INSERT INTO notification_event_item (notification_id, event_key, event_value)
 INSERT INTO notification_event_item (notification_id, event_key, event_value)
     VALUES
     (14, 'NotificationType', 'Appointment');
+# ----------------------------------------------------------
+#  insert into table notification_event
+# ----------------------------------------------------------
+INSERT INTO notification_event (id, name, valid_id, comments, create_by, create_time, change_by, change_time)
+    VALUES
+    (15, 'Ticket email delivery failure notification', 1, '', 1, current_timestamp, 1, current_timestamp);
+# ----------------------------------------------------------
+#  insert into table notification_event_item
+# ----------------------------------------------------------
+INSERT INTO notification_event_item (notification_id, event_key, event_value)
+    VALUES
+    (15, 'AgentEnabledByDefault', 'Email');
+# ----------------------------------------------------------
+#  insert into table notification_event_item
+# ----------------------------------------------------------
+INSERT INTO notification_event_item (notification_id, event_key, event_value)
+    VALUES
+    (15, 'ArticleAttachmentInclude', '0');
+# ----------------------------------------------------------
+#  insert into table notification_event_item
+# ----------------------------------------------------------
+INSERT INTO notification_event_item (notification_id, event_key, event_value)
+    VALUES
+    (15, 'ArticleCommunicationChannelID', '1');
+# ----------------------------------------------------------
+#  insert into table notification_event_item
+# ----------------------------------------------------------
+INSERT INTO notification_event_item (notification_id, event_key, event_value)
+    VALUES
+    (15, 'Events', 'ArticleEmailSendingError');
+# ----------------------------------------------------------
+#  insert into table notification_event_item
+# ----------------------------------------------------------
+INSERT INTO notification_event_item (notification_id, event_key, event_value)
+    VALUES
+    (15, 'LanguageID', 'en');
+# ----------------------------------------------------------
+#  insert into table notification_event_item
+# ----------------------------------------------------------
+INSERT INTO notification_event_item (notification_id, event_key, event_value)
+    VALUES
+    (15, 'RecipientGroups', '2');
+# ----------------------------------------------------------
+#  insert into table notification_event_item
+# ----------------------------------------------------------
+INSERT INTO notification_event_item (notification_id, event_key, event_value)
+    VALUES
+    (15, 'Recipients', 'AgentResponsible');
+# ----------------------------------------------------------
+#  insert into table notification_event_item
+# ----------------------------------------------------------
+INSERT INTO notification_event_item (notification_id, event_key, event_value)
+    VALUES
+    (15, 'Recipients', 'AgentOwner');
+# ----------------------------------------------------------
+#  insert into table notification_event_item
+# ----------------------------------------------------------
+INSERT INTO notification_event_item (notification_id, event_key, event_value)
+    VALUES
+    (15, 'TransportEmailTemplate', 'Default');
+# ----------------------------------------------------------
+#  insert into table notification_event_item
+# ----------------------------------------------------------
+INSERT INTO notification_event_item (notification_id, event_key, event_value)
+    VALUES
+    (15, 'Transports', 'Email');
+# ----------------------------------------------------------
+#  insert into table notification_event_item
+# ----------------------------------------------------------
+INSERT INTO notification_event_item (notification_id, event_key, event_value)
+    VALUES
+    (15, 'VisibleForAgent', '0');
 # ----------------------------------------------------------
 #  insert into table notification_event_message
 # ----------------------------------------------------------
@@ -3072,6 +3143,21 @@ Ponavljanje: &lt\;OTRS_APPOINTMENT_RECURRING&gt\;<br />
 <a href="&lt\;OTRS_CONFIG_HttpType&gt\;://&lt\;OTRS_CONFIG_FQDN&gt\;/&lt\;OTRS_CONFIG_ScriptAlias&gt\;index.pl?Action=AgentAppointmentCalendarOverview\;AppointmentID=&lt\;OTRS_APPOINTMENT_APPOINTMENTID&gt\;" title="&lt\;OTRS_CONFIG_HttpType&gt\;://&lt\;OTRS_CONFIG_FQDN&gt\;/&lt\;OTRS_CONFIG_ScriptAlias&gt\;index.pl?Action=AgentAppointmentCalendarOverview\;AppointmentID=&lt\;OTRS_APPOINTMENT_APPOINTMENTID&gt\;">&lt\;OTRS_CONFIG_HttpType&gt\;://&lt\;OTRS_CONFIG_FQDN&gt\;/&lt\;OTRS_CONFIG_ScriptAlias&gt\;index.pl?Action=AgentAppointmentCalendarOverview\;AppointmentID=&lt\;OTRS_APPOINTMENT_APPOINTMENTID&gt\;</a><br />
 <br />
 -- &lt\;OTRS_CONFIG_NotificationSenderName&gt\;');
+# ----------------------------------------------------------
+#  insert into table notification_event_message
+# ----------------------------------------------------------
+INSERT INTO notification_event_message (id, notification_id, content_type, language, subject, text)
+    VALUES
+    (110, 15, 'text/plain', 'en', 'Email Delivery Failure', 'Hi <OTRS_NOTIFICATION_RECIPIENT_UserFirstname>,
+
+Please note, that the delivery of an email article of [<OTRS_CONFIG_Ticket::Hook><OTRS_CONFIG_Ticket::HookDivider><OTRS_TICKET_TicketNumber>] has failed. Please check the email address of your recipient for mistakes and try again. You can manually resend the article from the ticket if required.
+
+Error Message:
+<OTRS_AGENT_TransmissionStatusMessage>
+
+<OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom\;TicketID=<OTRS_TICKET_TicketID>\;ArticleID=<OTRS_AGENT_ArticleID>
+
+-- <OTRS_CONFIG_NotificationSenderName>');
 # ----------------------------------------------------------
 #  insert into table dynamic_field
 # ----------------------------------------------------------

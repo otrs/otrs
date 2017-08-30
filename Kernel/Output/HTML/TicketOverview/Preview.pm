@@ -16,6 +16,7 @@ use Kernel::Language qw(Translatable);
 
 our @ObjectDependencies = (
     'Kernel::Config',
+    'Kernel::System::CommunicationChannel',
     'Kernel::System::CustomerUser',
     'Kernel::System::SystemAddress',
     'Kernel::System::DynamicField',
@@ -184,11 +185,11 @@ sub Run {
     my ( $Self, %Param ) = @_;
 
     # check needed stuff
-    for (qw(TicketIDs PageShown StartHit)) {
-        if ( !$Param{$_} ) {
+    for my $Item (qw(TicketIDs PageShown StartHit)) {
+        if ( !$Param{$Item} ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
-                Message  => "Need $_!"
+                Message  => "Need $Item!",
             );
             return;
         }
@@ -365,9 +366,15 @@ sub _Show {
             TicketID      => $Param{TicketID},
             ArticleID     => $Article->{ArticleID},
             DynamicFields => 0,
-            UserID        => $Self->{UserID},
         );
         %ArticleData = ( %ArticleData, %Ticket );
+
+        my %ArticleFields = $LayoutObject->ArticleFields(
+            TicketID  => $Param{TicketID},
+            ArticleID => $Article->{ArticleID},
+        );
+
+        $ArticleData{ArticleFields} = \%ArticleFields;
 
         push @ArticleBody, \%ArticleData;
 
@@ -394,6 +401,11 @@ sub _Show {
         UserID => $Article{OwnerID},
     );
     %Article = ( %UserInfo, %Article );
+
+    # get responsible info from ticket
+    my %TicketResponsible = $Kernel::OM->Get('Kernel::System::User')->GetUserData(
+        UserID => $Ticket{ResponsibleID},
+    );
 
     # create human age
     $Article{Age} = $LayoutObject->CustomerAge(
@@ -548,6 +560,16 @@ sub _Show {
         },
     );
 
+    $LayoutObject->Block(
+        Name => 'OwnerResponsible',
+        Data => {
+            Owner               => $UserInfo{'UserLogin'},
+            OwnerFullname       => $UserInfo{'UserFullname'},
+            Responsible         => $TicketResponsible{'UserLogin'},
+            ResponsibleFullname => $TicketResponsible{'UserFullname'},
+        },
+    );
+
     # if "Actions per Ticket" (Inline Action Row) is active
     if ( $Param{Config}->{TicketActionsPerTicket} ) {
         $LayoutObject->Block(
@@ -641,7 +663,8 @@ sub _Show {
                 # run module
                 my @Data = $Object->Check(
                     Article => \%Article,
-                    %Param, Config => $Jobs{$Job}
+                    %Param,
+                    Config => $Jobs{$Job},
                 );
 
                 for my $DataRef (@Data) {
@@ -661,7 +684,8 @@ sub _Show {
                 # filter option
                 $Object->Filter(
                     Article => \%Article,
-                    %Param, Config => $Jobs{$Job}
+                    %Param,
+                    Config => $Jobs{$Job},
                 );
             }
         }
@@ -670,7 +694,11 @@ sub _Show {
     # create output
     $LayoutObject->Block(
         Name => 'AgentAnswer',
-        Data => { %Param, %Article, %AclAction },
+        Data => {
+            %Param,
+            %Article,
+            %AclAction,
+        },
     );
     if (
         $ConfigObject->Get('Frontend::Module')->{AgentTicketCompose}
@@ -692,7 +720,11 @@ sub _Show {
             if ($Access) {
                 $LayoutObject->Block(
                     Name => 'AgentAnswerCompose',
-                    Data => { %Param, %Article, %AclAction },
+                    Data => {
+                        %Param,
+                        %Article,
+                        %AclAction,
+                    },
                 );
             }
         }
@@ -721,7 +753,11 @@ sub _Show {
         if ($Access) {
             $LayoutObject->Block(
                 Name => 'AgentAnswerPhoneOutbound',
-                Data => { %Param, %Article, %AclAction },
+                Data => {
+                    %Param,
+                    %Article,
+                    %AclAction,
+                },
             );
         }
     }
@@ -730,7 +766,10 @@ sub _Show {
     if ( $ConfigObject->Get('Ticket::Type') ) {
         $LayoutObject->Block(
             Name => 'Type',
-            Data => { %Param, %Article },
+            Data => {
+                %Param,
+                %Article,
+            },
         );
     }
 
@@ -738,12 +777,18 @@ sub _Show {
     if ( $ConfigObject->Get('Ticket::Service') && $Article{Service} ) {
         $LayoutObject->Block(
             Name => 'Service',
-            Data => { %Param, %Article },
+            Data => {
+                %Param,
+                %Article,
+            },
         );
         if ( $Article{SLA} ) {
             $LayoutObject->Block(
                 Name => 'SLA',
-                Data => { %Param, %Article },
+                Data => {
+                    %Param,
+                    %Article,
+                },
             );
         }
     }
@@ -752,7 +797,10 @@ sub _Show {
     if ( defined $Article{CustomerID} ) {
         $LayoutObject->Block(
             Name => 'CustomerID',
-            Data => { %Param, %Article },
+            Data => {
+                %Param,
+                %Article,
+            },
         );
 
         # test access to frontend module
@@ -782,13 +830,19 @@ sub _Show {
 
         $LayoutObject->Block(
             Name => $CustomerIDBlock,
-            Data => { %Param, %Article },
+            Data => {
+                %Param,
+                %Article,
+            },
         );
 
         if ( defined $Article{CustomerName} ) {
             $LayoutObject->Block(
                 Name => 'CustomerName',
-                Data => { %Param, %Article },
+                Data => {
+                    %Param,
+                    %Article,
+                },
             );
         }
     }
@@ -810,7 +864,10 @@ sub _Show {
         }
         $LayoutObject->Block(
             Name => 'FirstResponseTime',
-            Data => { %Param, %Article },
+            Data => {
+                %Param,
+                %Article,
+            },
         );
     }
 
@@ -831,7 +888,10 @@ sub _Show {
         }
         $LayoutObject->Block(
             Name => 'UpdateTime',
-            Data => { %Param, %Article },
+            Data => {
+                %Param,
+                %Article,
+            },
         );
     }
 
@@ -848,11 +908,14 @@ sub _Show {
             Space              => ' ',
         );
         if ( 60 * 60 * 1 > $Article{SolutionTime} ) {
-            $Article{SolutionTimeClass} = 'Warning'
+            $Article{SolutionTimeClass} = 'Warning';
         }
         $LayoutObject->Block(
             Name => 'SolutionTime',
-            Data => { %Param, %Article },
+            Data => {
+                %Param,
+                %Article,
+            },
         );
     }
 
@@ -884,7 +947,7 @@ sub _Show {
             ObjectID           => $Param{TicketID},
         );
 
-        next DYNAMICFIELD if ( !defined $Value );
+        next DYNAMICFIELD if !defined $Value;
 
         $Counter++;
 
@@ -1054,45 +1117,73 @@ sub _Show {
 
         $LayoutObject->Block(
             Name => 'ArticlesPreviewArea',
-            Data => { %Param, %Article, %AclAction },
+            Data => {
+                %Param,
+                %Article,
+                %AclAction,
+            },
         );
     }
+
+    my $CommunicationChannelObject = $Kernel::OM->Get('Kernel::System::CommunicationChannel');
+
+    # Save communication channel data to improve performance.
+    my %CommunicationChannelData;
 
     # show inline article
     for my $ArticleItem ( reverse @ArticleBody ) {
 
-        # check if just a only html email
-        my $MimeTypeText = $LayoutObject->CheckMimeType(
-            %{$ArticleItem},
-            Action => 'AgentTicketZoom',
+        $ArticleItem->{Body} = $LayoutObject->ArticlePreview(
+            TicketID   => $ArticleItem->{TicketID},
+            ArticleID  => $ArticleItem->{ArticleID},
+            ResultType => 'plain',
         );
-        if ($MimeTypeText) {
-            $ArticleItem->{BodyNote} = $MimeTypeText;
-            $ArticleItem->{Body}     = '';
-        }
-        else {
 
-            # html quoting
-            $ArticleItem->{Body} = $LayoutObject->Ascii2Html(
-                NewLine => $Param{Config}->{DefaultViewNewLine}  || 90,
-                Text    => $ArticleItem->{Body},
-                VMax    => $Param{Config}->{DefaultPreViewLines} || 25,
-                LinkFeature     => 1,
-                HTMLResultMode  => 1,
-                StripEmptyLines => $Param{Config}->{StripEmptyLines},
+        # html quoting
+        $ArticleItem->{Body} = $LayoutObject->Ascii2Html(
+            NewLine => $Param{Config}->{DefaultViewNewLine}  || 90,
+            Text    => $ArticleItem->{Body},
+            VMax    => $Param{Config}->{DefaultPreViewLines} || 25,
+            LinkFeature     => 1,
+            HTMLResultMode  => 1,
+            StripEmptyLines => $Param{Config}->{StripEmptyLines},
+        );
+
+        # Include some information about communication channel.
+        if ( !$CommunicationChannelData{ $ArticleItem->{CommunicationChannelID} } ) {
+
+            # Communication channel display name is part of the configuration.
+            my %CommunicationChannel = $CommunicationChannelObject->ChannelGet(
+                ChannelID => $ArticleItem->{CommunicationChannelID},
             );
+
+            # Presence of communication channel object indicates its validity.
+            my $ChannelObject = $CommunicationChannelObject->ChannelObjectGet(
+                ChannelID => $ArticleItem->{CommunicationChannelID},
+            );
+
+            $CommunicationChannelData{ $ArticleItem->{CommunicationChannelID} } = {
+                ChannelDisplayName => $CommunicationChannel{DisplayName},
+                ChannelInvalid     => !$ChannelObject,
+            };
         }
 
-        $ArticleItem->{Subject} = $TicketObject->TicketSubjectClean(
-            TicketNumber => $ArticleItem->{TicketNumber},
-            Subject      => $ArticleItem->{Subject} || '',
+        my @ArticleActions = $LayoutObject->ArticleActions(
+            TicketID  => $ArticleItem->{TicketID},
+            ArticleID => $ArticleItem->{ArticleID},
+            UserID    => $Self->{UserID},
+            Type      => 'Static',
         );
+
+        # Remove the 'Mark' action, which is implemented only in AgentTicketZoom.
+        @ArticleActions = grep { $_->{Name} ne 'Mark' } @ArticleActions;
 
         $LayoutObject->Block(
             Name => 'ArticlePreview',
             Data => {
                 %{$ArticleItem},
-                Class => $ArticleItem->{Class},
+                %{ $CommunicationChannelData{ $ArticleItem->{CommunicationChannelID} } },
+                MenuItems => \@ArticleActions,
             },
         );
 
@@ -1132,136 +1223,6 @@ sub _Show {
                     }
                 }
             }
-
-            if ($Access) {
-                $LayoutObject->Block(
-                    Name => 'ArticlePreviewActionRow',
-                    Data => {
-                        %{$ArticleItem}, %AclAction,
-                    },
-                );
-
-                # fetch all std. responses
-                my %StandardTemplates = $QueueObject->QueueStandardTemplateMemberList(
-                    QueueID       => $Article{QueueID},
-                    TemplateTypes => 1,
-                );
-
-                my %StandardResponses;
-                if ( IsHashRefWithData( $StandardTemplates{Answer} ) ) {
-                    %StandardResponses = %{ $StandardTemplates{Answer} };
-                }
-
-                # get StandardResponsesStrg
-                # get revers StandardResponse because we need to sort by Values
-                # from %ReverseStandardResponseHash we get value of Key by %StandardResponse Value
-                # and @StandardResponseArray is created as array of hashes with elements Key and Value
-
-                my %ReverseStandardResponseHash = reverse %StandardResponses;
-                my @StandardResponseArray       = map {
-                    {
-                        Key   => $ReverseStandardResponseHash{$_},
-                        Value => $_
-                    }
-                } sort values %StandardResponses;
-
-                unshift(
-                    @StandardResponseArray,
-                    {
-                        Key   => '0',
-                        Value => '- '
-                            . $LayoutObject->{LanguageObject}->Translate('Reply')
-                            . ' -',
-                        Selected => 1,
-                    }
-                );
-
-                # build html string
-                my $StandardResponsesStrg = $LayoutObject->BuildSelection(
-                    Name  => 'ResponseID',
-                    Class => 'Modernize',
-                    ID    => 'ResponseID' . $ArticleItem->{ArticleID},
-                    Data  => \@StandardResponseArray,
-                );
-
-                $LayoutObject->Block(
-                    Name => 'ArticlePreviewActionRowItem',
-                    Data => {
-                        %{$ArticleItem},
-                        StandardResponsesStrg => $StandardResponsesStrg,
-                        Name                  => Translatable('Reply'),
-                        Class                 => 'AsPopup',
-                        Action                => 'AgentTicketCompose',
-                        FormID                => 'Reply' . $ArticleItem->{ArticleID},
-                    },
-                );
-
-                push @{ $Self->{ReplyFieldsFormID} }, 'Reply' . $ArticleItem->{ArticleID};
-
-                # check if reply all is needed
-                my $Recipients = '';
-                KEY:
-                for my $Key (qw(From To Cc)) {
-                    next KEY if !$ArticleItem->{$Key};
-                    if ($Recipients) {
-                        $Recipients .= ', ';
-                    }
-                    $Recipients .= $ArticleItem->{$Key};
-                }
-                my $RecipientCount = 0;
-                if ($Recipients) {
-                    my $EmailParser = Kernel::System::EmailParser->new(
-                        %{$Self},
-                        Mode => 'Standalone',
-                    );
-                    my @Addresses = $EmailParser->SplitAddressLine( Line => $Recipients );
-                    ADDRESS:
-                    for my $Address (@Addresses) {
-                        my $Email = $EmailParser->GetEmailAddress( Email => $Address );
-                        next ADDRESS if !$Email;
-                        my $IsLocal = $Kernel::OM->Get('Kernel::System::SystemAddress')->SystemAddressIsLocalAddress(
-                            Address => $Email,
-                        );
-                        next ADDRESS if $IsLocal;
-                        $RecipientCount++;
-                    }
-                }
-                if ( $RecipientCount > 1 ) {
-
-                    # get StandardResponsesStrg
-                    shift(@StandardResponseArray);
-                    unshift(
-                        @StandardResponseArray,
-                        {
-                            Key   => '0',
-                            Value => '- '
-                                . $LayoutObject->{LanguageObject}->Translate('Reply All')
-                                . ' -',
-                            Selected => 1,
-                        }
-                    );
-                    $StandardResponsesStrg = $LayoutObject->BuildSelection(
-                        Name => 'ResponseID',
-                        ID   => 'ResponseIDAll' . $ArticleItem->{ArticleID},
-                        Data => \@StandardResponseArray,
-                    );
-
-                    $LayoutObject->Block(
-                        Name => 'ArticlePreviewActionRowItem',
-                        Data => {
-                            %{$ArticleItem},
-                            StandardResponsesStrg => $StandardResponsesStrg,
-                            Name                  => Translatable('Reply All'),
-                            Class                 => 'AsPopup',
-                            Action                => 'AgentTicketCompose',
-                            FormID                => 'ReplyAll' . $ArticleItem->{ArticleID},
-                            ReplyAll              => 1,
-                        },
-                    );
-
-                    push @{ $Self->{ReplyFieldsFormID} }, 'ReplyAll' . $ArticleItem->{ArticleID};
-                }
-            }
         }
     }
 
@@ -1292,4 +1253,5 @@ sub _Show {
     );
     return \$Output;
 }
+
 1;

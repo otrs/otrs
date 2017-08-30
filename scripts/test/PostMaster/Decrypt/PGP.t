@@ -120,6 +120,7 @@ for my $Count ( 1 .. 2 ) {
     my @Keys = $PGPObject->KeySearch(
         Search => $Search{$Count},
     );
+
     $Self->False(
         $Keys[0] || '',
         "Key:$Count - KeySearch()",
@@ -178,12 +179,18 @@ my $FilterRand1      = 'filter' . $Helper->GetRandomID();
 $PostMasterFilter->FilterAdd(
     Name           => $FilterRand1,
     StopAfterMatch => 0,
-    Match          => {
-        'X-OTRS-BodyDecrypted' => 'test',
-    },
-    Set => {
-        'X-OTRS-Queue' => 'Junk',
-    },
+    Match          => [
+        {
+            Key   => 'X-OTRS-BodyDecrypted',
+            Value => 'test',
+        },
+    ],
+    Set => [
+        {
+            Key   => 'X-OTRS-Queue',
+            Value => 'Junk',
+        },
+    ],
 );
 
 # Read email content (from a file).
@@ -192,10 +199,20 @@ my $Email = $MainObject->FileRead(
     Result   => 'ARRAY',
 );
 
+my $CommunicationLogObject = $Kernel::OM->Create(
+    'Kernel::System::CommunicationLog',
+    ObjectParams => {
+        Transport => 'Email',
+        Direction => 'Incoming',
+    },
+);
+$CommunicationLogObject->ObjectLogStart( ObjectLogType => 'Message' );
+
 # Part where StoreDecryptedBody is enabled
 my $PostMasterObject = Kernel::System::PostMaster->new(
-    Email   => $Email,
-    Trusted => 1,
+    CommunicationLogObject => $CommunicationLogObject,
+    Email                  => $Email,
+    Trusted                => 1,
 );
 
 $ConfigObject->Set(
@@ -252,10 +269,7 @@ $Self->Is(
     "Ticket created in $Ticket{Queue}",
 );
 
-my %FirstArticle = $ArticleBackendObject->ArticleGet(
-    %{ $ArticleIndex[0] },
-    UserID => 1,
-);
+my %FirstArticle = $ArticleBackendObject->ArticleGet( %{ $ArticleIndex[0] } );
 
 my $GetBody = $FirstArticle{Body};
 chomp($GetBody);
@@ -274,8 +288,9 @@ $Email = $MainObject->FileRead(
 
 # Part where StoreDecryptedBody is disabled
 $PostMasterObject = Kernel::System::PostMaster->new(
-    Email   => $Email,
-    Trusted => 1,
+    CommunicationLogObject => $CommunicationLogObject,
+    Email                  => $Email,
+    Trusted                => 1,
 );
 
 $ConfigObject->Set(
@@ -309,6 +324,14 @@ $Self->True(
     "Create new ticket (TicketID)",
 );
 
+$CommunicationLogObject->ObjectLogStop(
+    ObjectLogType => 'Message',
+    Status        => 'Successful',
+);
+$CommunicationLogObject->CommunicationStop(
+    Status => 'Successful',
+);
+
 my $TicketIDEncrypted = $Return[1];
 
 my %TicketEncrypted = $TicketObject->TicketGet(
@@ -326,10 +349,7 @@ $Self->Is(
     "Ticket created in $TicketEncrypted{Queue}",
 );
 
-my %FirstArticleEncrypted = $ArticleBackendObject->ArticleGet(
-    %{ $ArticleIndexEncrypted[0] },
-    UserID => 1,
-);
+my %FirstArticleEncrypted = $ArticleBackendObject->ArticleGet( %{ $ArticleIndexEncrypted[0] } );
 
 my $GetBodyEncrypted = $FirstArticleEncrypted{Body};
 

@@ -14,7 +14,7 @@
     <ConfigItem Name="Frontend::DebugMode" Required="0" Valid="1" ConfigLevel="100">
         <Description Translatable="1">Enables or disables the debug mode over frontend interface.</Description>
         <Group>Framework</Group>
-        <SubGroup>Core</SubGroup>
+        <SubGroup>Frontend::Base</SubGroup>
         <Setting>
             <Option SelectedID="0">
                 <Item Key="0" Translatable="1">No</Item>
@@ -25,7 +25,7 @@
     <ConfigItem Name="Frontend::AjaxDebug" Required="1" Valid="1">
         <Description Translatable="1">Delivers extended debugging information in the frontend in case any AJAX errors occur, if enabled.</Description>
         <Group>Framework</Group>
-        <SubGroup>Core</SubGroup>
+        <SubGroup>Frontend::Base</SubGroup>
         <Setting>
             <Option SelectedID="0">
                 <Item Key="0" Translatable="1">No</Item>
@@ -36,7 +36,7 @@
     <ConfigItem Name="Frontend::TemplateCache" Required="1" Valid="1" ConfigLevel="200">
         <Description Translatable="1">Enables or disables the caching for templates. WARNING: Do NOT disable template caching for production environments for it will cause a massive performance drop! This setting should only be disabled for debugging reasons!</Description>
         <Group>Framework</Group>
-        <SubGroup>Core</SubGroup>
+        <SubGroup>Frontend::Base</SubGroup>
         <Setting>
             <Option SelectedID="1">
                 <Item Key="0" Translatable="1">No</Item>
@@ -47,23 +47,12 @@
     <ConfigItem Name="ConfigLevel" Required="1" Valid="1">
         <Description Translatable="1">Sets the configuration level of the administrator. Depending on the config level, some sysconfig options will be not shown. The config levels are in in ascending order: Expert, Advanced, Beginner. The higher the config level is (e.g. Beginner is the highest), the less likely is it that the user can accidentally configure the system in a way that it is not usable any more.</Description>
         <Group>Framework</Group>
-        <SubGroup>Core</SubGroup>
+        <SubGroup>Frontend::Admin::View::SysConfig</SubGroup>
         <Setting>
             <Option SelectedID="100">
                 <Item Key="100" Translatable="1">100 (Expert)</Item>
                 <Item Key="200" Translatable="1">200 (Advanced)</Item>
                 <Item Key="300" Translatable="1">300 (Beginner)</Item>
-            </Option>
-        </Setting>
-    </ConfigItem>
-    <ConfigItem Name="ConfigImportAllowed" Required="1" Valid="1" ConfigLevel="200">
-        <Description Translatable="1">Controls if the admin is allowed to import a saved system configuration in SysConfig.</Description>
-        <Group>Framework</Group>
-        <SubGroup>Core</SubGroup>
-        <Setting>
-            <Option SelectedID="1">
-                <Item Key="0" Translatable="1">No</Item>
-                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -94,7 +83,7 @@
     <ConfigItem Name="SupportDataCollector::HTTPHostname" Required="0" Valid="0" ConfigLevel="200">
         <Description Translatable="1">Defines the HTTP hostname for the support data collection with the public module 'PublicSupportDataCollector' (e.g. used from the OTRS Daemon).</Description>
         <Group>Framework</Group>
-        <SubGroup>Core</SubGroup>
+        <SubGroup>Core::SupportDataCollector</SubGroup>
         <Setting>
             <String Regex=""></String>
         </Setting>
@@ -102,23 +91,15 @@
     <ConfigItem Name="SupportDataCollector::WebUserAgent::Timeout" Required="0" Valid="0" ConfigLevel="200">
         <Description Translatable="1">Defines the timeout (in seconds, minimum is 20 seconds) for the support data collection with the public module 'PublicSupportDataCollector' (e.g. used from the OTRS Daemon).</Description>
         <Group>Framework</Group>
-        <SubGroup>Core</SubGroup>
+        <SubGroup>Core::SupportDataCollector</SubGroup>
         <Setting>
             <String Regex="^[2-9][0-9]{1,}|[1-9][0-9]{2,}$">20</String>
-        </Setting>
-    </ConfigItem>
-    <ConfigItem Name="NodeID" Required="0" Valid="0" ConfigLevel="200">
-        <Description Translatable="1">Defines the cluster node identifier. This is only used in cluster configurations where there is more than one OTRS frontend system. Note: only values from 1 to 99 are allowed.</Description>
-        <Group>Framework</Group>
-        <SubGroup>Core</SubGroup>
-        <Setting>
-            <String Regex="^[1-9][\d]?$">1</String>
         </Setting>
     </ConfigItem>
     <ConfigItem Name="HttpType" Required="1" Valid="1" ConfigLevel="200">
         <Description Translatable="1">Defines the type of protocol, used by the web server, to serve the application. If https protocol will be used instead of plain http, it must be specified here. Since this has no affect on the web server's settings or behavior, it will not change the method of access to the application and, if it is wrong, it will not prevent you from logging into the application. This setting is only used as a variable, OTRS_CONFIG_HttpType which is found in all forms of messaging used by the application, to build links to the tickets within your system.</Description>
         <Group>Framework</Group>
-        <SubGroup>Core</SubGroup>
+        <SubGroup>Frontend::Base</SubGroup>
         <Setting>
             <Option SelectedID="http">
                 <Item Key="http">http</Item>
@@ -126,10 +107,21 @@
             </Option>
         </Setting>
     </ConfigItem>
+    <ConfigItem Name="HTTPSForceRedirect" Required="1" Valid="1" ConfigLevel="200">
+        <Description Translatable="1">Whether to force redirect all requests from http to https protocol. Please check that your web server is configured correctly for https protocol before activating this option.</Description>
+        <Group>Framework</Group>
+        <SubGroup>Frontend::Base</SubGroup>
+        <Setting>
+            <Option SelectedID="0">
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
+            </Option>
+        </Setting>
+    </ConfigItem>
     <ConfigItem Name="ScriptAlias" Required="1" Valid="1" ConfigLevel="200">
         <Description Translatable="1">Sets the prefix to the scripts folder on the server, as configured on the web server. This setting is used as a variable, OTRS_CONFIG_ScriptAlias which is found in all forms of messaging used by the application, to build links to the tickets within the system.</Description>
         <Group>Framework</Group>
-        <SubGroup>Core</SubGroup>
+        <SubGroup>Frontend::Base</SubGroup>
         <Setting>
             <String Regex="">otrs/</String>
         </Setting>
@@ -137,7 +129,7 @@
     <ConfigItem Name="AdminEmail" Required="1" Valid="1">
         <Description Translatable="1">Defines the system administrator's email address. It will be displayed in the error screens of the application.</Description>
         <Group>Framework</Group>
-        <SubGroup>Core</SubGroup>
+        <SubGroup>Core::Email</SubGroup>
         <Setting>
             <String Regex="">admin@example.com</String>
         </Setting>
@@ -153,7 +145,7 @@
     <ConfigItem Name="DefaultLanguage" Required="1" Valid="1">
         <Description Translatable="1">Defines the default front-end language. All the possible values are determined by the available language files on the system (see the next setting).</Description>
         <Group>Framework</Group>
-        <SubGroup>Core</SubGroup>
+        <SubGroup>Frontend::Base</SubGroup>
         <Setting>
             <String Regex="^(..|.._..)$">en</String>
         </Setting>
@@ -161,7 +153,7 @@
     <ConfigItem Name="DefaultUsedLanguages" Required="1" Valid="1">
         <Description Translatable="1">Defines all the languages that are available to the application. Specify only English names of languages here.</Description>
         <Group>Framework</Group>
-        <SubGroup>Core</SubGroup>
+        <SubGroup>Frontend::Base</SubGroup>
         <Setting>
             <Hash>
                 <Item Key="ar_SA" Translatable="1">Arabic (Saudi Arabia)</Item>
@@ -217,7 +209,7 @@
     <ConfigItem Name="DefaultUsedLanguagesNative" Required="1" Valid="1">
 <Description Translatable="1">Defines all the languages that are available to the application. Specify only native names of languages here.</Description>
         <Group>Framework</Group>
-        <SubGroup>Core</SubGroup>
+        <SubGroup>Frontend::Base</SubGroup>
         <Setting>
             <Hash>
                 <Item Key="ar_SA">العَرَبِية‎</Item>
@@ -273,7 +265,7 @@
     <ConfigItem Name="DefaultTheme" Required="1" Valid="1" ConfigLevel="200">
         <Description Translatable="1">Defines the default front-end (HTML) theme to be used by the agents and customers. If you like, you can add your own theme. Please refer the administrator manual located at http://otrs.github.io/doc/.</Description>
         <Group>Framework</Group>
-        <SubGroup>Core</SubGroup>
+        <SubGroup>Frontend::Base</SubGroup>
         <Setting>
             <String Regex="">Standard</String>
         </Setting>
@@ -281,7 +273,7 @@
     <ConfigItem Name="DefaultTheme::HostBased" Required="0" Valid="0" ConfigLevel="200">
         <Description Translatable="1">It is possible to configure different themes, for example to distinguish between agents and customers, to be used on a per-domain basis within the application. Using a regular expression (regex), you can configure a Key/Content pair to match a domain. The value in "Key" should match the domain, and the value in "Content" should be a valid theme on your system. Please see the example entries for the proper form of the regex.</Description>
         <Group>Framework</Group>
-        <SubGroup>Core</SubGroup>
+        <SubGroup>Frontend::Base</SubGroup>
         <Setting>
             <Hash>
                 <Item Key="host1\.example\.com">SomeTheme1</Item>
@@ -318,10 +310,10 @@
         <Setting>
             <Hash>
                 <Item Key="URL">skins/Agent/default/img/logo_bg.png</Item>
-                <Item Key="StyleTop">4px</Item>
-                <Item Key="StyleRight">38px</Item>
-                <Item Key="StyleHeight">85px</Item>
-                <Item Key="StyleWidth">270px</Item>
+                <Item Key="StyleTop">21px</Item>
+                <Item Key="StyleRight">29px</Item>
+                <Item Key="StyleHeight">55px</Item>
+                <Item Key="StyleWidth">230px</Item>
             </Hash>
         </Setting>
     </ConfigItem>
@@ -332,52 +324,52 @@
         <Setting>
             <Hash>
                 <Item Key="URL">skins/Agent/default/img/logo_bg.png</Item>
-                <Item Key="StyleTop">4px</Item>
-                <Item Key="StyleRight">38px</Item>
-                <Item Key="StyleHeight">67px</Item>
-                <Item Key="StyleWidth">270px</Item>
+                <Item Key="StyleTop">21px</Item>
+                <Item Key="StyleRight">29px</Item>
+                <Item Key="StyleHeight">55px</Item>
+                <Item Key="StyleWidth">230px</Item>
             </Hash>
         </Setting>
     </ConfigItem>
-    <ConfigItem Name="AgentLogoCustom###slim" Required="0" Valid="0">
+    <ConfigItem Name="AgentLogoCustom###slim" Required="0" Valid="1">
         <Description Translatable="1">The logo shown in the header of the agent interface for the skin "slim". See "AgentLogo" for further description.</Description>
         <Group>Framework</Group>
         <SubGroup>Frontend::Agent</SubGroup>
         <Setting>
             <Hash>
                 <Item Key="URL">skins/Agent/default/img/logo_bg.png</Item>
-                <Item Key="StyleTop">4px</Item>
-                <Item Key="StyleRight">38px</Item>
-                <Item Key="StyleHeight">67px</Item>
-                <Item Key="StyleWidth">270px</Item>
+                <Item Key="StyleTop">10px</Item>
+                <Item Key="StyleRight">5px</Item>
+                <Item Key="StyleHeight">45px</Item>
+                <Item Key="StyleWidth">220px</Item>
             </Hash>
         </Setting>
     </ConfigItem>
-    <ConfigItem Name="AgentLogoCustom###ivory" Required="0" Valid="0">
+    <ConfigItem Name="AgentLogoCustom###ivory" Required="0" Valid="1">
         <Description Translatable="1">The logo shown in the header of the agent interface for the skin "ivory". See "AgentLogo" for further description.</Description>
         <Group>Framework</Group>
         <SubGroup>Frontend::Agent</SubGroup>
         <Setting>
             <Hash>
                 <Item Key="URL">skins/Agent/default/img/logo_bg.png</Item>
-                <Item Key="StyleTop">4px</Item>
-                <Item Key="StyleRight">38px</Item>
-                <Item Key="StyleHeight">67px</Item>
-                <Item Key="StyleWidth">270px</Item>
+                <Item Key="StyleTop">21px</Item>
+                <Item Key="StyleRight">29px</Item>
+                <Item Key="StyleHeight">55px</Item>
+                <Item Key="StyleWidth">230px</Item>
             </Hash>
         </Setting>
     </ConfigItem>
-    <ConfigItem Name="AgentLogoCustom###ivory-slim" Required="0" Valid="0">
+    <ConfigItem Name="AgentLogoCustom###ivory-slim" Required="0" Valid="1">
         <Description Translatable="1">The logo shown in the header of the agent interface for the skin "ivory-slim". See "AgentLogo" for further description.</Description>
         <Group>Framework</Group>
         <SubGroup>Frontend::Agent</SubGroup>
         <Setting>
             <Hash>
                 <Item Key="URL">skins/Agent/default/img/logo_bg.png</Item>
-                <Item Key="StyleTop">4px</Item>
-                <Item Key="StyleRight">38px</Item>
-                <Item Key="StyleHeight">67px</Item>
-                <Item Key="StyleWidth">270px</Item>
+                <Item Key="StyleTop">10px</Item>
+                <Item Key="StyleRight">5px</Item>
+                <Item Key="StyleHeight">45px</Item>
+                <Item Key="StyleWidth">220px</Item>
             </Hash>
         </Setting>
     </ConfigItem>
@@ -440,7 +432,7 @@
         <Group>Framework</Group>
         <SubGroup>Core::Web</SubGroup>
         <Setting>
-            <String Regex="">&lt;OTRS_CONFIG_Frontend::WebPath&gt;js/thirdparty/ckeditor-4.6.1/</String>
+            <String Regex="">&lt;OTRS_CONFIG_Frontend::WebPath&gt;js/thirdparty/ckeditor-4.7.0/</String>
         </Setting>
     </ConfigItem>
     <ConfigItem Name="Frontend::RichTextWidth" Required="1" Valid="1">
@@ -589,7 +581,7 @@
     <ConfigItem Name="CheckMXRecord" Required="1" Valid="1">
         <Description Translatable="1">Makes the application check the MX record of email addresses before sending an email or submitting a telephone or email ticket.</Description>
         <Group>Framework</Group>
-        <SubGroup>Core</SubGroup>
+        <SubGroup>Core::Email</SubGroup>
         <Setting>
             <Option SelectedID="1">
                 <Item Key="0" Translatable="1">No</Item>
@@ -600,7 +592,7 @@
     <ConfigItem Name="CheckMXRecord::Nameserver" Required="0" Valid="0">
         <Description Translatable="1">Defines the address of a dedicated DNS server, if necessary, for the "CheckMXRecord" look-ups.</Description>
         <Group>Framework</Group>
-        <SubGroup>Core</SubGroup>
+        <SubGroup>Core::Email</SubGroup>
         <Setting>
             <String Regex="">ns.example.com</String>
         </Setting>
@@ -608,7 +600,7 @@
     <ConfigItem Name="CheckEmailAddresses" Required="1" Valid="1">
         <Description Translatable="1">Makes the application check the syntax of email addresses.</Description>
         <Group>Framework</Group>
-        <SubGroup>Core</SubGroup>
+        <SubGroup>Core::Email</SubGroup>
         <Setting>
             <Option SelectedID="1">
                 <Item Key="0" Translatable="1">No</Item>
@@ -619,7 +611,7 @@
     <ConfigItem Name="CheckEmailValidAddress" Required="1" Valid="1">
         <Description Translatable="1">Defines a regular expression that excludes some addresses from the syntax check (if "CheckEmailAddresses" is set to "Yes"). Please enter a regex in this field for email addresses, that aren't syntactically valid, but are necessary for the system (i.e. "root@localhost").</Description>
         <Group>Framework</Group>
-        <SubGroup>Core</SubGroup>
+        <SubGroup>Core::Email</SubGroup>
         <Setting>
             <String Regex="">^(root@localhost|admin@localhost)$</String>
         </Setting>
@@ -627,7 +619,7 @@
     <ConfigItem Name="CheckEmailInvalidAddress" Required="1" Valid="1">
         <Description Translatable="1">Defines a regular expression that filters all email addresses that should not be used in the application.</Description>
         <Group>Framework</Group>
-        <SubGroup>Core</SubGroup>
+        <SubGroup>Core::Email</SubGroup>
         <Setting>
             <String Regex="">@(example)\.(..|...)$</String>
         </Setting>
@@ -640,6 +632,17 @@
             <Option SelectedID="Simple">
                 <Item Key="Simple" Translatable="1">Simple</Item>
                 <Item Key="Complex" Translatable="1">Complex</Item>
+            </Option>
+        </Setting>
+    </ConfigItem>
+    <ConfigItem Name="LinkObject::ShowDeleteButton" Required="1" Valid="1">
+        <Description Translatable="1">Determines if a button to delete a link should be displayed next to each link in each zoom mask.</Description>
+        <Group>Framework</Group>
+        <SubGroup>Core::LinkObject</SubGroup>
+        <Setting>
+            <Option SelectedID="1">
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -838,6 +841,55 @@
             </Hash>
         </Setting>
     </ConfigItem>
+    <ConfigItem Name="CommunicationLog::Transport###Email" Required="1" Valid="1">
+        <Description Translatable="1">Registers a log module, that can be used to log communication related information.</Description>
+        <Group>Framework</Group>
+        <SubGroup>Core::CommunicationLog</SubGroup>
+        <Setting>
+            <Hash>
+                <Item Key="Name">Email</Item>
+                <Item Key="Module">Kernel::System::CommunicationLog::Transport::Email</Item>
+            </Hash>
+        </Setting>
+    </ConfigItem>
+    <ConfigItem Name="CommunicationLog::PurgeAfterHours::SuccessfulCommunications" Required="1" Valid="1">
+        <Description Translatable="1">Defines the number of hours a successful communication will be stored.</Description>
+        <Group>Framework</Group>
+        <SubGroup>Core::CommunicationLog</SubGroup>
+        <Setting>
+            <String Regex="\d+">168</String>
+        </Setting>
+    </ConfigItem>
+    <ConfigItem Name="CommunicationLog::PurgeAfterHours::AllCommunications" Required="1" Valid="1">
+        <Description Translatable="1">Defines the number of hours a communication will be stored, whichever its status.</Description>
+        <Group>Framework</Group>
+        <SubGroup>Core::CommunicationLog</SubGroup>
+        <Setting>
+            <String Regex="\d+">744</String>
+        </Setting>
+    </ConfigItem>
+    <ConfigItem Name="MailQueue" Required="1" Valid="1">
+        <Description Translatable="1">MailQueue configuration settings.</Description>
+        <Group>Framework</Group>
+        <SubGroup>Core::MailQueue</SubGroup>
+        <Setting>
+            <Hash>
+                <Item Key="ItemMaxAttempts">3</Item>
+                <Item Key="IncrementAttemptDelayInMinutes">2</Item>
+            </Hash>
+        </Setting>
+    </ConfigItem>
+    <ConfigItem Name="Frontend::AvatarEngine" Required="1" Valid="1" ConfigLevel="200">
+        <Description Translatable="1">Define which avatar engine should be used for the agent avatar on the header and the sender images in AgentTicketZoom. If 'None' is selected, initials will be displayed instead. Please note that selecting anything other than 'None' will transfer the encrypted email address of the particular user to an external service.</Description>
+        <Group>Framework</Group>
+        <SubGroup>Frontend::Agent</SubGroup>
+        <Setting>
+            <Option SelectedID="Gravatar">
+                <Item Key="None" Translatable="1">None</Item>
+                <Item Key="Gravatar">Gravatar.com</Item>
+            </Option>
+        </Setting>
+    </ConfigItem>
     <ConfigItem Name="LoginURL" Required="0" Valid="0" ConfigLevel="200">
         <Description Translatable="1">Defines an alternate URL, where the login link refers to.</Description>
         <Group>Framework</Group>
@@ -937,7 +989,6 @@
             <Hash>
                 <Item Key="Module">Kernel::Output::HTML::Notification::AgentOnline</Item>
                 <Item Key="ShowEmail">1</Item>
-                <Item Key="IdleMinutes">60</Item>
             </Hash>
         </Setting>
     </ConfigItem>
@@ -949,7 +1000,6 @@
             <Hash>
                 <Item Key="Module">Kernel::Output::HTML::Notification::CustomerOnline</Item>
                 <Item Key="ShowEmail">1</Item>
-                <Item Key="IdleMinutes">60</Item>
             </Hash>
         </Setting>
     </ConfigItem>
@@ -1089,7 +1139,7 @@
         <Group>Framework</Group>
         <SubGroup>Core::Session</SubGroup>
         <Setting>
-            <String Regex="^[0-9]{1,8}$">21600</String>
+            <String Regex="^[0-9]{1,8}$">7200</String>
         </Setting>
     </ConfigItem>
     <ConfigItem Name="SessionDeleteIfTimeToOld" Required="1" Valid="1">
@@ -1190,6 +1240,22 @@
         <SubGroup>Core::Session</SubGroup>
         <Setting>
             <String Regex="">sessions</String>
+        </Setting>
+    </ConfigItem>
+    <ConfigItem Name="SessionAgentOnlineThreshold" Required="1" Valid="1">
+        <Description Translatable="1">Defines the period of time (in minutes) before agent is marked as "away" due to inactivity (e.g. in the "Logged-In Users" widget or for the chat).</Description>
+        <Group>Framework</Group>
+        <SubGroup>Core::Session</SubGroup>
+        <Setting>
+            <String>5</String>
+        </Setting>
+    </ConfigItem>
+    <ConfigItem Name="SessionCustomerOnlineThreshold" Required="1" Valid="1">
+        <Description Translatable="1">Defines the period of time (in minutes) before customer is marked as "away" due to inactivity (e.g. in the "Logged-In Users" widget or for the chat).</Description>
+        <Group>Framework</Group>
+        <SubGroup>Core::Session</SubGroup>
+        <Setting>
+            <String>5</String>
         </Setting>
     </ConfigItem>
     <ConfigItem Name="TimeZone" Required="0" Valid="0">
@@ -7070,7 +7136,7 @@
     <ConfigItem Name="CGILogPrefix" Required="1" Valid="1">
         <Description Translatable="1">Specifies the text that should appear in the log file to denote a CGI script entry.</Description>
         <Group>Framework</Group>
-        <SubGroup>Core</SubGroup>
+        <SubGroup>Core::Log</SubGroup>
         <Setting>
             <String Regex="">OTRS-CGI</String>
         </Setting>
@@ -7078,7 +7144,7 @@
     <ConfigItem Name="Frontend::Output::FilterText###AAAURL" Required="0" Valid="1">
         <Description Translatable="1">Defines the filter that processes the text in the articles, in order to highlight URLs.</Description>
         <Group>Framework</Group>
-        <SubGroup>Core::Web</SubGroup>
+        <SubGroup>Frontend::Base::OutputFilter</SubGroup>
         <Setting>
             <Hash>
                 <Item Key="Module">Kernel::Output::HTML::FilterText::URL</Item>
@@ -7126,7 +7192,7 @@
     <ConfigItem Name="OutOfOfficeMessageTemplate" Required="0" Valid="1">
         <Description Translatable="1">Defines out of office message template. Two string parameters (%s) available: end date and number of days left.</Description>
         <Group>Framework</Group>
-        <SubGroup>Core</SubGroup>
+        <SubGroup>Frontend::Base</SubGroup>
         <Setting>
             <String Translatable="1">*** out of office until %s (%s d left) ***</String>
         </Setting>
@@ -7134,7 +7200,7 @@
     <ConfigItem Name="SwitchToUser" Required="1" Valid="1">
         <Description Translatable="1">Allows the administrators to login as other users, via the users administration panel.</Description>
         <Group>Framework</Group>
-        <SubGroup>Core</SubGroup>
+        <SubGroup>Core::Permission</SubGroup>
         <Setting>
             <Option SelectedID="0">
                 <Item Key="0" Translatable="1">No</Item>
@@ -7145,7 +7211,7 @@
     <ConfigItem Name="SwitchToCustomer" Required="1" Valid="1">
         <Description Translatable="1">Allows the administrators to login as other customers, via the customer user administration panel.</Description>
         <Group>Framework</Group>
-        <SubGroup>Core</SubGroup>
+        <SubGroup>Core::Permission</SubGroup>
         <Setting>
             <Option SelectedID="0">
                 <Item Key="0" Translatable="1">No</Item>
@@ -7156,7 +7222,7 @@
     <ConfigItem Name="SwitchToCustomer::PermissionGroup" Required="1" Valid="1">
         <Description Translatable="1">Specifies the group where the user needs rw permissions so that he can access the "SwitchToCustomer" feature.</Description>
         <Group>Framework</Group>
-        <SubGroup>Core</SubGroup>
+        <SubGroup>Core::Permission</SubGroup>
         <Setting>
             <String Regex="">admin</String>
         </Setting>
@@ -7297,22 +7363,10 @@
             </Option>
         </Setting>
     </ConfigItem>
-    <ConfigItem Name="Package::EventModulePost###8000-LinkObjectEventTypes" Required="0" Valid="1">
-        <Description Translatable="1">Package event module to update configuration for link object event types.</Description>
-        <Group>Framework</Group>
-        <SubGroup>Core::Package</SubGroup>
-        <Setting>
-            <Hash>
-                <Item Key="Module">Kernel::System::Package::Event::LinkObjectEventTypes</Item>
-                <Item Key="Event">(PackageInstall|PackageReinstall|PackageUpgrade|PackageUninstall)</Item>
-                <Item Key="Transaction">1</Item>
-            </Hash>
-        </Setting>
-    </ConfigItem>
     <ConfigItem Name="Package::EventModulePost###9000-SupportDataSend" Required="0" Valid="1">
         <Description Translatable="1">Package event module file a scheduler task for update registration.</Description>
         <Group>Framework</Group>
-        <SubGroup>Core::Package</SubGroup>
+        <SubGroup>Core::Event::Package</SubGroup>
         <Setting>
             <Hash>
                 <Item Key="Module">Kernel::System::Package::Event::SupportDataSend</Item>
@@ -7343,6 +7397,17 @@
                 <Item>DynamicFieldAdd</Item>
                 <Item>DynamicFieldUpdate</Item>
                 <Item>DynamicFieldDelete</Item>
+            </Array>
+        </Setting>
+    </ConfigItem>
+    <ConfigItem Name="Events###LinkObject" Required="1" Valid="1">
+        <Description Translatable="1">List of all LinkObject events to be displayed in the GUI.</Description>
+        <Group>Framework</Group>
+        <SubGroup>Frontend::Admin</SubGroup>
+        <Setting>
+            <Array>
+                <Item>LinkObjectLinkAdd</Item>
+                <Item>LinkObjectLinkDelete</Item>
             </Array>
         </Setting>
     </ConfigItem>
@@ -7665,7 +7730,7 @@
     <ConfigItem Name="NotificationSenderName" Required="1" Valid="1">
         <Description Translatable="1">Specifies the name that should be used by the application when sending notifications. The sender name is used to build the complete display name for the notification master (i.e. "OTRS Notifications" otrs@your.example.com).</Description>
         <Group>Framework</Group>
-        <SubGroup>Core</SubGroup>
+        <SubGroup>Core::Email</SubGroup>
         <Setting>
             <String Regex="">OTRS Notifications</String>
         </Setting>
@@ -7673,7 +7738,7 @@
     <ConfigItem Name="NotificationSenderEmail" Required="1" Valid="1">
         <Description Translatable="1">Specifies the email address that should be used by the application when sending notifications. The email address is used to build the complete display name for the notification master (i.e. "OTRS Notifications" otrs@your.example.com). You can use the OTRS_CONFIG_FQDN variable as set in your configuation, or choose another email address.</Description>
         <Group>Framework</Group>
-        <SubGroup>Core</SubGroup>
+        <SubGroup>Core::Email</SubGroup>
         <Setting>
             <String Regex="">otrs@&lt;OTRS_CONFIG_FQDN&gt;</String>
         </Setting>
@@ -7731,12 +7796,17 @@ You can log in via the following URL:
         </Setting>
     </ConfigItem>
     <ConfigItem Name="System::Permission" Required="1" Valid="1">
-        <Description Translatable="1">Defines the standard permissions available for agents within the application. If more permissions are needed, you can enter them here. Permissions must be hard coded to be effective. Please ensure, when adding any of the afore mentioned permissions, that the "rw" permission remains the last entry.</Description>
-        <Group>Framework</Group>
-        <SubGroup>Core</SubGroup>
+        <Description Translatable="1">Standard available permissions for agents within the application. If more permissions are needed, they can be entered here. Permissions must be defined to be effective. Some other good permissions have also been provided built-in: note, close, pending, customer, freetext, move, compose, responsible, forward, and bounce. Make sure that "rw" is always the last registered permission.</Description>
+        <Group>Ticket</Group>
+        <SubGroup>Core::Permission</SubGroup>
         <Setting>
             <Array>
                 <Item>ro</Item>
+                <Item>move_into</Item>
+                <Item>create</Item>
+                <Item>note</Item>
+                <Item>owner</Item>
+                <Item>priority</Item>
                 <Item>rw</Item>
             </Array>
         </Setting>
@@ -7744,7 +7814,7 @@ You can log in via the following URL:
     <ConfigItem Name="System::Customer::Permission" Required="1" Valid="1">
         <Description Translatable="1">Defines the standard permissions available for customers within the application. If more permissions are needed, you can enter them here. Permissions must be hard coded to be effective. Please ensure, when adding any of the afore mentioned permissions, that the "rw" permission remains the last entry.</Description>
         <Group>Framework</Group>
-        <SubGroup>Core</SubGroup>
+        <SubGroup>Core::Permission</SubGroup>
         <Setting>
             <Array>
                 <Item>ro</Item>
@@ -7897,6 +7967,8 @@ You can log in via the following URL:
                 <Item Key="Key" Translatable="1">Shared Secret</Item>
                 <Item Key="Block">Input</Item>
                 <Item Key="PrefKey">UserGoogleAuthenticatorSecretKey</Item>
+                <Item Key="ValidateRegex">^([A-Z2-7]{16}|)$</Item>
+                <Item Key="ValidateRegexMessage" Translatable="1">The secret you supplied is invalid. The secret must only contain letters (A-Z, uppercase) and numbers (2-7) and must consist of 16 characters.</Item>
                 <Item Key="Prio">0600</Item>
                 <Item Key="Active">0</Item>
             </Hash>
@@ -7981,6 +8053,7 @@ You can log in via the following URL:
                 <Item Key="Module">Kernel::Output::HTML::Preferences::Theme</Item>
                 <Item Key="PreferenceGroup">UserProfile</Item>
                 <Item Key="Label" Translatable="1">Theme</Item>
+                <Item Key="Desc" Translatable="1">Select your preferred theme for OTRS.</Item>
                 <Item Key="Key" Translatable="1">Frontend theme</Item>
                 <Item Key="PrefKey">UserTheme</Item>
                 <Item Key="Prio">3000</Item>
@@ -8131,7 +8204,6 @@ You can log in via the following URL:
             <Hash>
                 <Item Key="Module">Kernel::Output::HTML::Notification::AgentOnline</Item>
                 <Item Key="ShowEmail">1</Item>
-                <Item Key="IdleMinutes">60</Item>
             </Hash>
         </Setting>
     </ConfigItem>
@@ -8420,6 +8492,14 @@ via the Preferences button after logging in.
                 <Item Key="sha512">SHA-512</Item>
                 <Item Key="bcrypt">bcrypt</Item>
             </Option>
+        </Setting>
+    </ConfigItem>
+    <ConfigItem Name="Customer::AuthModule::DB::bcryptCost" Required="1" Valid="1" ConfigLevel="200">
+        <Description Translatable="1">If "bcrypt" was selected for CryptType, use cost specified here for bcrypt hashing. Currently max. supported cost value is 31.</Description>
+        <Group>Framework</Group>
+        <SubGroup>Frontend::Customer::Auth</SubGroup>
+        <Setting>
+            <String Regex="^[0-9]{1,2}$">12</String>
         </Setting>
     </ConfigItem>
     <ConfigItem Name="Customer::AuthModule::DB::Table" Required="1" Valid="1" ConfigLevel="200">
@@ -8716,8 +8796,11 @@ via the Preferences button after logging in.
                 <Item Key="PreferenceGroup">Miscellaneous</Item>
                 <Item Key="Label" Translatable="1">Google Authenticator</Item>
                 <Item Key="Key" Translatable="1">Shared Secret</Item>
+                <Item Key="Desc" Translatable="1">Enter your shared secret to enable two factor authentication.</Item>
                 <Item Key="Block">Input</Item>
                 <Item Key="PrefKey">UserGoogleAuthenticatorSecretKey</Item>
+                <Item Key="ValidateRegex">^([A-Z2-7]{16}|)$</Item>
+                <Item Key="ValidateRegexMessage" Translatable="1">The secret you supplied is invalid. The secret must only contain letters (A-Z, uppercase) and numbers (2-7) and must consist of 16 characters.</Item>
                 <Item Key="Prio">1100</Item>
                 <Item Key="Active">0</Item>
             </Hash>
@@ -8766,6 +8849,7 @@ via the Preferences button after logging in.
                 <Item Key="Module">Kernel::Output::HTML::Preferences::Theme</Item>
                 <Item Key="PreferenceGroup">UserProfile</Item>
                 <Item Key="Label" Translatable="1">Theme</Item>
+                <Item Key="Desc" Translatable="1">Select your preferred theme for OTRS.</Item>
                 <Item Key="Key" Translatable="1">Select your frontend Theme.</Item>
                 <Item Key="PrefKey">UserTheme</Item>
                 <Item Key="Prio">1000</Item>
@@ -8782,7 +8866,8 @@ via the Preferences button after logging in.
                 <Item Key="Module">Kernel::Output::HTML::Preferences::PGP</Item>
                 <Item Key="PreferenceGroup">Miscellaneous</Item>
                 <Item Key="Label" Translatable="1">PGP Key</Item>
-                <Item Key="Key" Translatable="1">PGP Key Upload</Item>
+                <Item Key="Desc" Translatable="1">Upload your PGP key.</Item>
+                <Item Key="Key" Translatable="1">PGP Key</Item>
                 <Item Key="PrefKey">UserPGPKey</Item>
                 <Item Key="Prio">10000</Item>
                 <Item Key="Active">1</Item>
@@ -8798,10 +8883,39 @@ via the Preferences button after logging in.
                 <Item Key="Module">Kernel::Output::HTML::Preferences::SMIME</Item>
                 <Item Key="PreferenceGroup">Miscellaneous</Item>
                 <Item Key="Label" Translatable="1">S/MIME Certificate</Item>
-                <Item Key="Key" Translatable="1">S/MIME Certificate Upload</Item>
+                <Item Key="Desc" Translatable="1">Upload your S/MIME certificate.</Item>
+                <Item Key="Key" Translatable="1">S/MIME Certificate</Item>
                 <Item Key="PrefKey">UserSMIMEKey</Item>
                 <Item Key="Prio">11000</Item>
                 <Item Key="Active">1</Item>
+            </Hash>
+        </Setting>
+    </ConfigItem>
+    <ConfigItem Name="PreferencesGroups###CommunicationLogPageShown" Required="0" Valid="1">
+        <Description Translatable="1">Parameters for the pages (in which the communication log entries are shown) of the communication log overview.</Description>
+        <Group>DynamicFields</Group>
+        <SubGroup>Frontend::Agent::Preferences</SubGroup>
+        <Setting>
+            <Hash>
+                <Item Key="Module">Kernel::Output::HTML::Preferences::Generic</Item>
+                <Item Key="PreferenceGroup">Miscellaneous</Item>
+                <Item Key="Label" Translatable="1">CommunicationLog Overview Limit</Item>
+                <Item Key="Key" Translatable="1">Communication log limit per page for CommunicationLog Overview</Item>
+                <Item Key="Data">
+                    <Hash>
+                        <Item Key="10">10</Item>
+                        <Item Key="15">15</Item>
+                        <Item Key="20">20</Item>
+                        <Item Key="25">25</Item>
+                        <Item Key="30">30</Item>
+                        <Item Key="35">35</Item>
+                        <Item Key="50">50</Item>
+                    </Hash>
+                </Item>
+                <Item Key="DataSelected">25</Item>
+                <Item Key="PrefKey">AdminCommunicationLogPageShown</Item>
+                <Item Key="Prio">8100</Item>
+                <Item Key="Active">0</Item>
             </Hash>
         </Setting>
     </ConfigItem>
@@ -8812,6 +8926,18 @@ via the Preferences button after logging in.
         <Setting>
             <FrontendModuleReg>
                 <Description>Logout</Description>
+                <Title></Title>
+                <NavBarName></NavBarName>
+            </FrontendModuleReg>
+        </Setting>
+    </ConfigItem>
+    <ConfigItem Name="Frontend::Module###AjaxAttachment" Required="0" Valid="1">
+        <Description Translatable="1">Frontend module registration for the agent interface.</Description>
+        <Group>Framework</Group>
+        <SubGroup>Frontend::Agent::ModuleRegistration</SubGroup>
+        <Setting>
+            <FrontendModuleReg>
+                <Description>AjaxAttachment</Description>
                 <Title></Title>
                 <NavBarName></NavBarName>
             </FrontendModuleReg>
@@ -8840,10 +8966,10 @@ via the Preferences button after logging in.
                 <Loader>
                     <CSS>Core.Agent.Dashboard.css</CSS>
                     <CSS>Core.AllocationList.css</CSS>
-                    <CSS>thirdparty/fullcalendar-3.2.0/fullcalendar.min.css</CSS>
+                    <CSS>thirdparty/fullcalendar-3.4.0/fullcalendar.min.css</CSS>
                     <CSS>thirdparty/nvd3-1.7.1/nv.d3.css</CSS>
-                    <JavaScript>thirdparty/momentjs-2.17.1/moment.min.js</JavaScript>
-                    <JavaScript>thirdparty/fullcalendar-3.2.0/fullcalendar.min.js</JavaScript>
+                    <JavaScript>thirdparty/momentjs-2.18.1/moment.min.js</JavaScript>
+                    <JavaScript>thirdparty/fullcalendar-3.4.0/fullcalendar.min.js</JavaScript>
                     <JavaScript>thirdparty/d3-3.5.6/d3.min.js</JavaScript>
                     <JavaScript>thirdparty/nvd3-1.7.1/nvd3.min.js</JavaScript>
                     <JavaScript>thirdparty/nvd3-1.7.1/models/OTRSLineChart.js</JavaScript>
@@ -9055,9 +9181,6 @@ via the Preferences button after logging in.
             </Hash>
         </Setting>
     </ConfigItem>
-
-
-
     <ConfigItem Name="Frontend::Module###AgentPreferences" Required="0" Valid="1">
         <Description Translatable="1">Frontend module registration for the agent interface.</Description>
         <Group>Framework</Group>
@@ -9157,7 +9280,7 @@ via the Preferences button after logging in.
     <ConfigItem Name="Frontend::Search###AdminSystemConfiguration" Required="0" Valid="1">
         <Description Translatable="1">Search backend router.</Description>
         <Group>Ticket</Group>
-        <SubGroup>Frontend::Agent::SearchRouter</SubGroup>
+        <SubGroup>Frontend::Admin::SearchRouter</SubGroup>
         <Setting>
             <Hash>
                 <Item Key="^AdminSystemConfiguration">Action=AdminSystemConfiguration;Subaction=SearchDialog</Item>
@@ -9167,7 +9290,7 @@ via the Preferences button after logging in.
     <ConfigItem Name="Frontend::Search::JavaScript###AdminSystemConfiguration" Required="0" Valid="1">
         <Description Translatable="1">JavaScript function for the search frontend.</Description>
         <Group>Ticket</Group>
-        <SubGroup>Frontend::Agent::SearchRouter</SubGroup>
+        <SubGroup>Frontend::Admin::SearchRouter</SubGroup>
         <Setting>
             <Hash>
                 <Item Key="^AdminSystemConfiguration">Core.Agent.Admin.SystemConfiguration.OpenSearchDialog()</Item>
@@ -9207,6 +9330,57 @@ via the Preferences button after logging in.
             </FrontendModuleReg>
         </Setting>
     </ConfigItem>
+    <ConfigItem Name="Frontend::AdminModuleGroups###001-Framework" Required="1" Valid="1">
+        <Description Translatable="1">Defines available groups for the admin overview screen.</Description>
+        <Group>Framework</Group>
+        <SubGroup>Frontend::Base::NavBarModule</SubGroup>
+        <Setting>
+            <Hash>
+                <Item Key="Ticket">
+                    <Hash>
+                        <Item Key="Title" Translatable="1">Ticket Settings</Item>
+                        <Item Key="Order">1000</Item>
+                    </Hash>
+                </Item>
+                <Item Key="Communication">
+                    <Hash>
+                        <Item Key="Title" Translatable="1">Communication &amp; Notifications</Item>
+                        <Item Key="Order">2000</Item>
+                    </Hash>
+                </Item>
+                <Item Key="Users">
+                    <Hash>
+                        <Item Key="Title" Translatable="1">Users, Groups &amp; Roles</Item>
+                        <Item Key="Order">3000</Item>
+                    </Hash>
+                </Item>
+                <Item Key="Automation">
+                    <Hash>
+                        <Item Key="Title" Translatable="1">Processes &amp; Automation</Item>
+                        <Item Key="Order">4000</Item>
+                    </Hash>
+                </Item>
+                <Item Key="OTRSGroup">
+                    <Hash>
+                        <Item Key="Title" Translatable="1">OTRS Group Services</Item>
+                        <Item Key="Order">5000</Item>
+                    </Hash>
+                </Item>
+                <Item Key="Administration">
+                    <Hash>
+                        <Item Key="Title" Translatable="1">Administration</Item>
+                        <Item Key="Order">6000</Item>
+                    </Hash>
+                </Item>
+                <Item Key="Miscellaneous">
+                    <Hash>
+                        <Item Key="Title" Translatable="1">Miscellaneous</Item>
+                        <Item Key="Order">7000</Item>
+                    </Hash>
+                </Item>
+            </Hash>
+        </Setting>
+    </ConfigItem>
     <ConfigItem Name="Frontend::NavBarModule###2-AdminFavourites" Required="0" Valid="1">
         <Description Translatable="1">Frontend module registration (show personal favorites as sub navigation items of 'Admin').</Description>
         <Group>Framework</Group>
@@ -9243,6 +9417,7 @@ via the Preferences button after logging in.
                 <NavBarModule>
                     <Module>Kernel::Output::HTML::NavBar::ModuleAdmin</Module>
                     <Name Translatable="1">Agents</Name>
+                    <Block>Users</Block>
                     <Description Translatable="1">Create and manage agents.</Description>
                     <IconBig>fa-user</IconBig>
                     <Prio>100</Prio>
@@ -9263,6 +9438,7 @@ via the Preferences button after logging in.
                 <NavBarModule>
                     <Module>Kernel::Output::HTML::NavBar::ModuleAdmin</Module>
                     <Name Translatable="1">Groups</Name>
+                    <Block>Users</Block>
                     <IconBig>fa-users</IconBig>
                     <Description Translatable="1">Create and manage groups.</Description>
                     <Prio>150</Prio>
@@ -9288,7 +9464,7 @@ via the Preferences button after logging in.
                     <IconBig>fa-user</IconBig>
                     <IconSmall>fa-users</IconSmall>
                     <Name Translatable="1">Agents ↔ Groups</Name>
-                    <Block>Agent</Block>
+                    <Block>Users</Block>
                     <Description Translatable="1">Link agents to groups.</Description>
                     <Prio>200</Prio>
                 </NavBarModule>
@@ -9324,6 +9500,7 @@ via the Preferences button after logging in.
                 <NavBarModule>
                     <Module>Kernel::Output::HTML::NavBar::ModuleAdmin</Module>
                     <Name Translatable="1">Customer User</Name>
+                    <Block>Users</Block>
                     <IconBig>fa-male</IconBig>
                     <Description Translatable="1">Create and manage customer users.</Description>
                     <Prio>300</Prio>
@@ -9361,6 +9538,7 @@ via the Preferences button after logging in.
                 <NavBarModule>
                     <Module>Kernel::Output::HTML::NavBar::ModuleAdmin</Module>
                     <Name Translatable="1">Customers</Name>
+                    <Block>Users</Block>
                     <Description Translatable="1">Create and manage customers.</Description>
                     <IconBig>fa-building-o</IconBig>
                     <Prio>310</Prio>
@@ -9394,6 +9572,7 @@ via the Preferences button after logging in.
                 <NavBarModule>
                     <Module>Kernel::Output::HTML::NavBar::ModuleAdmin</Module>
                     <Name Translatable="1">Customer Users ↔ Groups</Name>
+                    <Block>Users</Block>
                     <Description Translatable="1">Link customer users to groups.</Description>
                     <IconBig>fa-male</IconBig>
                     <IconSmall>fa-users</IconSmall>
@@ -9418,6 +9597,7 @@ via the Preferences button after logging in.
                 <NavBarModule>
                     <Module>Kernel::Output::HTML::NavBar::ModuleAdmin</Module>
                     <Name Translatable="1">Customers ↔ Groups</Name>
+                    <Block>Users</Block>
                     <Description Translatable="1">Link customers to groups.</Description>
                     <IconBig>fa-building-o</IconBig>
                     <IconSmall>fa-users</IconSmall>
@@ -9442,6 +9622,7 @@ via the Preferences button after logging in.
                 <NavBarModule>
                     <Module>Kernel::Output::HTML::NavBar::ModuleAdmin</Module>
                     <Name Translatable="1">Customer Users ↔ Services</Name>
+                    <Block>Users</Block>
                     <Description Translatable="1">Link customer users to services.</Description>
                     <IconBig>fa-male</IconBig>
                     <IconSmall>fa-wrench</IconSmall>
@@ -9466,6 +9647,7 @@ via the Preferences button after logging in.
                 <NavBarModule>
                     <Module>Kernel::Output::HTML::NavBar::ModuleAdmin</Module>
                     <Name Translatable="1">Customer Users ↔ Customers</Name>
+                    <Block>Users</Block>
                     <Description Translatable="1">Link customer users to customers.</Description>
                     <IconBig>fa-male</IconBig>
                     <IconSmall>fa-building-o</IconSmall>
@@ -9490,6 +9672,7 @@ via the Preferences button after logging in.
                 <NavBarModule>
                     <Module>Kernel::Output::HTML::NavBar::ModuleAdmin</Module>
                     <Name Translatable="1">Roles</Name>
+                    <Block>Users</Block>
                     <Description Translatable="1">Create and manage roles.</Description>
                     <IconBig>fa-circle-o</IconBig>
                     <Prio>600</Prio>
@@ -9513,6 +9696,7 @@ via the Preferences button after logging in.
                 <NavBarModule>
                     <Module>Kernel::Output::HTML::NavBar::ModuleAdmin</Module>
                     <Name Translatable="1">Agents ↔ Roles</Name>
+                    <Block>Users</Block>
                     <Description Translatable="1">Link agents to roles.</Description>
                     <IconBig>fa-user</IconBig>
                     <IconSmall>fa-circle-o</IconSmall>
@@ -9537,6 +9721,7 @@ via the Preferences button after logging in.
                 <NavBarModule>
                     <Module>Kernel::Output::HTML::NavBar::ModuleAdmin</Module>
                     <Name Translatable="1">Roles ↔ Groups</Name>
+                    <Block>Users</Block>
                     <Description Translatable="1">Link roles to groups.</Description>
                     <IconBig>fa-circle-o</IconBig>
                     <IconSmall>fa-users</IconSmall>
@@ -9561,6 +9746,7 @@ via the Preferences button after logging in.
                 <NavBarModule>
                     <Module>Kernel::Output::HTML::NavBar::ModuleAdmin</Module>
                     <Name Translatable="1">S/MIME Certificates</Name>
+                    <Block>Communication</Block>
                     <Description Translatable="1">Manage S/MIME certificates for email encryption.</Description>
                     <IconBig>fa-user-secret</IconBig>
                     <Prio>1100</Prio>
@@ -9584,6 +9770,7 @@ via the Preferences button after logging in.
                 <NavBarModule>
                     <Module>Kernel::Output::HTML::NavBar::ModuleAdmin</Module>
                     <Name Translatable="1">PGP Keys</Name>
+                    <Block>Communication</Block>
                     <Description Translatable="1">Manage PGP keys for email encryption.</Description>
                     <IconBig>fa-user-secret</IconBig>
                     <Prio>1200</Prio>
@@ -9604,6 +9791,7 @@ via the Preferences button after logging in.
                 <NavBarModule>
                     <Module>Kernel::Output::HTML::NavBar::ModuleAdmin</Module>
                     <Name Translatable="1">PostMaster Mail Accounts</Name>
+                    <Block>Communication</Block>
                     <Description Translatable="1">Manage POP3 or IMAP accounts to fetch email from.</Description>
                     <IconBig>fa-envelope-o</IconBig>
                     <Prio>100</Prio>
@@ -9627,8 +9815,9 @@ via the Preferences button after logging in.
                 <NavBarModule>
                     <Module>Kernel::Output::HTML::NavBar::ModuleAdmin</Module>
                     <Name Translatable="1">PostMaster Filters</Name>
+                    <Block>Communication</Block>
                     <Description Translatable="1">Filter incoming emails.</Description>
-                    <IconBig>fa-envelope-o</IconBig>
+                    <IconBig>fa-filter</IconBig>
                     <Prio>200</Prio>
                 </NavBarModule>
                 <Loader>
@@ -9651,6 +9840,7 @@ via the Preferences button after logging in.
                 <NavBarModule>
                     <Module>Kernel::Output::HTML::NavBar::ModuleAdmin</Module>
                     <Name Translatable="1">Admin Notification</Name>
+                    <Block>Communication</Block>
                     <Description Translatable="1">Send notifications to users.</Description>
                     <IconBig>fa-quote-right</IconBig>
                     <Prio>400</Prio>
@@ -9671,6 +9861,7 @@ via the Preferences button after logging in.
                 <NavBarModule>
                     <Module>Kernel::Output::HTML::NavBar::ModuleAdmin</Module>
                     <Name Translatable="1">Session Management</Name>
+                    <Block>Administration</Block>
                     <Description Translatable="1">Manage existing sessions.</Description>
                     <IconBig>fa-clock-o</IconBig>
                     <Prio>500</Prio>
@@ -9694,6 +9885,7 @@ via the Preferences button after logging in.
                 <NavBarModule>
                     <Module>Kernel::Output::HTML::NavBar::ModuleAdmin</Module>
                     <Name Translatable="1">Performance Log</Name>
+                    <Block>Administration</Block>
                     <Description Translatable="1">View performance benchmark results.</Description>
                     <IconBig>fa-bar-chart</IconBig>
                     <Prio>550</Prio>
@@ -9717,6 +9909,7 @@ via the Preferences button after logging in.
                 <NavBarModule>
                     <Module>Kernel::Output::HTML::NavBar::ModuleAdmin</Module>
                     <Name Translatable="1">System Registration</Name>
+                    <Block>OTRSGroup</Block>
                     <Description Translatable="1">Manage system registration.</Description>
                     <IconBig>fa-edit</IconBig>
                     <Prio>350</Prio>
@@ -9741,6 +9934,7 @@ via the Preferences button after logging in.
                 <NavBarModule>
                     <Module>Kernel::Output::HTML::NavBar::ModuleAdmin</Module>
                     <Name>OTRS Business Solution™</Name>
+                    <Block>OTRSGroup</Block>
                     <Description Translatable="1">Deploy and manage OTRS Business Solution™.</Description>
                     <IconBig>fa-angle-double-up</IconBig>
                     <Prio>360</Prio>
@@ -9779,6 +9973,7 @@ via the Preferences button after logging in.
                 <NavBarModule>
                     <Module>Kernel::Output::HTML::NavBar::ModuleAdmin</Module>
                     <Name Translatable="1">Support Data Collector</Name>
+                    <Block>OTRSGroup</Block>
                     <Description Translatable="1">Manage support data.</Description>
                     <IconBig>fa-search</IconBig>
                     <Prio>370</Prio>
@@ -9803,12 +9998,40 @@ via the Preferences button after logging in.
                 <NavBarModule>
                     <Module>Kernel::Output::HTML::NavBar::ModuleAdmin</Module>
                     <Name Translatable="1">Cloud Services</Name>
+                    <Block>OTRSGroup</Block>
                     <Description Translatable="1">Manage OTRS Group cloud services.</Description>
                     <IconBig>fa-cloud</IconBig>
                     <Prio>380</Prio>
                 </NavBarModule>
                 <Loader>
                     <CSS>Core.Agent.Admin.CloudServices.css</CSS>
+                </Loader>
+            </FrontendModuleReg>
+        </Setting>
+    </ConfigItem>
+    <ConfigItem Name="Frontend::Module###AdminCommunicationLog" Required="0" Valid="1">
+        <Description Translatable="1">Frontend module registration for the agent interface.</Description>
+        <Group>CommunicationLog</Group>
+        <SubGroup>Frontend::Admin::ModuleRegistration</SubGroup>
+        <Setting>
+            <FrontendModuleReg>
+                <Group>admin</Group>
+                <Description Translatable="1">This module is part of the admin area of OTRS.</Description>
+                <Title Translatable="1">Communication Log GUI</Title>
+                <NavBarName>Admin</NavBarName>
+                <NavBarModule>
+                    <Module>Kernel::Output::HTML::NavBar::ModuleAdmin</Module>
+                    <Name Translatable="1">Communication Log</Name>
+                    <Description Translatable="1">Display communication log entries.</Description>
+                    <IconBig>fa-table</IconBig>
+                    <Prio>1000</Prio>
+                    <Block>Communication</Block>
+                </NavBarModule>
+                <Loader>
+                    <CSS>Core.Agent.Admin.CommunicationLog.css</CSS>
+                    <JavaScript>Core.Agent.Admin.CommunicationLog.js</JavaScript>
+                    <JavaScript>thirdparty/jquery-tablesorter-2.28.14/jquery.tablesorter.js</JavaScript>
+                    <JavaScript>Core.UI.Table.Sort.js</JavaScript>
                 </Loader>
             </FrontendModuleReg>
         </Setting>
@@ -9826,6 +10049,7 @@ via the Preferences button after logging in.
                 <NavBarModule>
                     <Module>Kernel::Output::HTML::NavBar::ModuleAdmin</Module>
                     <Name Translatable="1">System Log</Name>
+                    <Block>Administration</Block>
                     <Description Translatable="1">View system log messages.</Description>
                     <IconBig>fa-file-text-o</IconBig>
                     <Prio>600</Prio>
@@ -9849,6 +10073,7 @@ via the Preferences button after logging in.
                 <NavBarModule>
                     <Module>Kernel::Output::HTML::NavBar::ModuleAdmin</Module>
                     <Name Translatable="1">SQL Box</Name>
+                    <Block>Administration</Block>
                     <Description Translatable="1">Execute SQL statements.</Description>
                     <IconBig>fa-terminal</IconBig>
                     <Prio>700</Prio>
@@ -9872,6 +10097,7 @@ via the Preferences button after logging in.
                 <NavBarModule>
                     <Module>Kernel::Output::HTML::NavBar::ModuleAdmin</Module>
                     <Name Translatable="1">Package Manager</Name>
+                    <Block>Administration</Block>
                     <Description Translatable="1">Update and extend your system with software packages.</Description>
                     <IconBig>fa-plug</IconBig>
                     <Prio>1000</Prio>
@@ -9892,6 +10118,7 @@ via the Preferences button after logging in.
                 <NavBarModule>
                     <Module>Kernel::Output::HTML::NavBar::ModuleAdmin</Module>
                     <Name Translatable="1">System Maintenance</Name>
+                    <Block>Administration</Block>
                     <Description Translatable="1">Schedule a maintenance period.</Description>
                     <IconBig>fa-wrench</IconBig>
                     <Prio>501</Prio>
@@ -9909,6 +10136,18 @@ via the Preferences button after logging in.
         <Setting>
             <FrontendModuleReg>
                 <Description Translatable="1">Logout of customer panel.</Description>
+                <Title></Title>
+                <NavBarName></NavBarName>
+            </FrontendModuleReg>
+        </Setting>
+    </ConfigItem>
+    <ConfigItem Name="CustomerFrontend::Module###AjaxAttachment" Required="0" Valid="1">
+        <Description Translatable="1">Frontend module registration for the agent interface.</Description>
+        <Group>Framework</Group>
+        <SubGroup>Frontend::Customer::ModuleRegistration</SubGroup>
+        <Setting>
+            <FrontendModuleReg>
+                <Description>AjaxAttachment</Description>
                 <Title></Title>
                 <NavBarName></NavBarName>
             </FrontendModuleReg>
@@ -10322,19 +10561,8 @@ via the Preferences button after logging in.
             </Hash>
         </Setting>
     </ConfigItem>
-    <ConfigItem Name="LanguageDebug" Required="1" Valid="1">
-        <Description Translatable="1">Debugs the translation set. If this is set to "Yes" all strings (text) without translations are written to STDERR. This can be helpful when you are creating a new translation file. Otherwise, this option should remain set to "No".</Description>
-        <Group>Framework</Group>
-        <SubGroup>Core</SubGroup>
-        <Setting>
-            <Option SelectedID="0">
-                <Item Key="0" Translatable="1">No</Item>
-                <Item Key="1" Translatable="1">Yes</Item>
-            </Option>
-        </Setting>
-    </ConfigItem>
     <ConfigItem Name="DashboardBackend###0000-ProductNotify" Required="0" Valid="1">
-        <Description Translatable="1">Defines the parameters for the dashboard backend. "Group" is used to restrict access to the plugin (e. g. Group: admin;group1;group2;). "Default" indicates if the plugin is enabled by default or if the user needs to enable it manually. "CacheTTLLocal" defines the cache expiration period in minutes for the plugin.</Description>
+        <Description Translatable="1">Defines the parameters for the dashboard backend. "Group" is used to restrict access to the plugin (e. g. Group: admin;group1;group2;). "Default" indicates if the plugin is enabled by default or if the user needs to enable it manually. "CacheTTLLocal" defines the cache expiration period in minutes for the plugin. "Mandatory" determines if the plugin is always shown and can not be removed by agents.</Description>
         <Group>Framework</Group>
         <SubGroup>Frontend::Agent::Dashboard</SubGroup>
         <Setting>
@@ -10350,7 +10578,7 @@ via the Preferences button after logging in.
         </Setting>
     </ConfigItem>
     <ConfigItem Name="DashboardBackend###0390-UserOutOfOffice" Required="0" Valid="1">
-        <Description Translatable="1">Defines the parameters for the dashboard backend. "Limit" defines the number of entries displayed by default. "Group" is used to restrict access to the plugin (e. g. Group: admin;group1;group2;). "Default" indicates if the plugin is enabled by default or if the user needs to enable it manually. "CacheTTLLocal" defines the cache expiration period in minutes for the plugin.</Description>
+        <Description Translatable="1">Defines the parameters for the dashboard backend. "Limit" defines the number of entries displayed by default. "Group" is used to restrict access to the plugin (e. g. Group: admin;group1;group2;). "Default" indicates if the plugin is enabled by default or if the user needs to enable it manually. "CacheTTLLocal" defines the cache expiration period in minutes for the plugin. "Mandatory" determines if the plugin is always shown and can not be removed by agents.</Description>
         <Group>Framework</Group>
         <SubGroup>Frontend::Agent::Dashboard</SubGroup>
         <Setting>
@@ -10358,7 +10586,6 @@ via the Preferences button after logging in.
                 <Item Key="Module">Kernel::Output::HTML::Dashboard::UserOutOfOffice</Item>
                 <Item Key="Title" Translatable="1">Out Of Office</Item>
                 <Item Key="Description"></Item>
-                <Item Key="IdleMinutes">60</Item>
                 <Item Key="SortBy">UserFullname</Item>
                 <Item Key="Block">ContentSmall</Item>
                 <Item Key="Limit">10</Item>
@@ -10369,16 +10596,15 @@ via the Preferences button after logging in.
         </Setting>
     </ConfigItem>
     <ConfigItem Name="DashboardBackend###0400-UserOnline" Required="0" Valid="1">
-        <Description Translatable="1">Defines the parameters for the dashboard backend. "Limit" defines the number of entries displayed by default. "Group" is used to restrict access to the plugin (e. g. Group: admin;group1;group2;). "Default" indicates if the plugin is enabled by default or if the user needs to enable it manually. "CacheTTLLocal" defines the cache expiration period in minutes for the plugin.</Description>
+        <Description Translatable="1">Defines the parameters for the dashboard backend. "Limit" defines the number of entries displayed by default. "Group" is used to restrict access to the plugin (e. g. Group: admin;group1;group2;). "Default" indicates if the plugin is enabled by default or if the user needs to enable it manually. "CacheTTLLocal" defines the cache expiration period in minutes for the plugin. "Mandatory" determines if the plugin is always shown and can not be removed by agents.</Description>
         <Group>Framework</Group>
         <SubGroup>Frontend::Agent::Dashboard</SubGroup>
         <Setting>
             <Hash>
                 <Item Key="Module">Kernel::Output::HTML::Dashboard::UserOnline</Item>
-                <Item Key="Title" Translatable="1">Online</Item>
+                <Item Key="Title" Translatable="1">Logged-In Users</Item>
                 <Item Key="Description"></Item>
                 <Item Key="ShowEmail">0</Item>
-                <Item Key="IdleMinutes">60</Item>
                 <Item Key="SortBy">UserFullname</Item>
                 <Item Key="Filter">Agent</Item>
                 <Item Key="Block">ContentSmall</Item>
@@ -10390,7 +10616,7 @@ via the Preferences button after logging in.
         </Setting>
     </ConfigItem>
     <ConfigItem Name="DashboardBackend###0405-News" Required="0" Valid="1">
-        <Description Translatable="1">Defines the parameters for the dashboard backend. "Limit" defines the number of entries displayed by default. "Group" is used to restrict access to the plugin (e. g. Group: admin;group1;group2;). "Default" indicates if the plugin is enabled by default or if the user needs to enable it manually. "CacheTTL" indicates the cache expiration period in minutes for the plugin.</Description>
+        <Description Translatable="1">Defines the parameters for the dashboard backend. "Limit" defines the number of entries displayed by default. "Group" is used to restrict access to the plugin (e. g. Group: admin;group1;group2;). "Default" indicates if the plugin is enabled by default or if the user needs to enable it manually. "CacheTTL" indicates the cache expiration period in minutes for the plugin. "Mandatory" determines if the plugin is always shown and can not be removed by agents.</Description>
         <Group>Framework</Group>
         <SubGroup>Frontend::Agent::Dashboard</SubGroup>
         <Setting>
@@ -10407,7 +10633,7 @@ via the Preferences button after logging in.
         </Setting>
     </ConfigItem>
     <ConfigItem Name="DashboardBackend###0410-RSS" Required="0" Valid="0">
-        <Description Translatable="1">Defines the parameters for the dashboard backend. "Limit" defines the number of entries displayed by default. "Group" is used to restrict access to the plugin (e. g. Group: admin;group1;group2;). "Default" indicates if the plugin is enabled by default or if the user needs to enable it manually. "CacheTTL" indicates the cache expiration period in minutes for the plugin.</Description>
+        <Description Translatable="1">Defines the parameters for the dashboard backend. "Limit" defines the number of entries displayed by default. "Group" is used to restrict access to the plugin (e. g. Group: admin;group1;group2;). "Default" indicates if the plugin is enabled by default or if the user needs to enable it manually. "CacheTTL" indicates the cache expiration period in minutes for the plugin. "Mandatory" determines if the plugin is always shown and can not be removed by agents.</Description>
         <Group>Framework</Group>
         <SubGroup>Frontend::Agent::Dashboard</SubGroup>
         <Setting>
@@ -10430,7 +10656,7 @@ via the Preferences button after logging in.
         </Setting>
     </ConfigItem>
     <ConfigItem Name="DashboardBackend###0420-CmdOutput" Required="0" Valid="0">
-        <Description Translatable="1">Defines the parameters for the dashboard backend. "Cmd" is used to specify command with parameters. "Group" is used to restrict access to the plugin (e. g. Group: admin;group1;group2;). "Default" indicates if the plugin is enabled by default or if the user needs to enable it manually. "CacheTTL" indicates the cache expiration period in minutes for the plugin.</Description>
+        <Description Translatable="1">Defines the parameters for the dashboard backend. "Cmd" is used to specify command with parameters. "Group" is used to restrict access to the plugin (e. g. Group: admin;group1;group2;). "Default" indicates if the plugin is enabled by default or if the user needs to enable it manually. "CacheTTL" indicates the cache expiration period in minutes for the plugin. "Mandatory" determines if the plugin is always shown and can not be removed by agents.</Description>
         <Group>Framework</Group>
         <SubGroup>Frontend::Agent::Dashboard</SubGroup>
         <Setting>
@@ -10447,7 +10673,7 @@ via the Preferences button after logging in.
         </Setting>
     </ConfigItem>
     <ConfigItem Name="DashboardBackend###0200-Image" Required="0" Valid="0">
-        <Description Translatable="1">Defines the parameters for the dashboard backend. "Group" is used to restrict access to the plugin (e. g. Group: admin;group1;group2;). "Default" indicates if the plugin is enabled by default or if the user needs to enable it manually. "CacheTTL" indicates the cache expiration period in minutes for the plugin.</Description>
+        <Description Translatable="1">Defines the parameters for the dashboard backend. "Group" is used to restrict access to the plugin (e. g. Group: admin;group1;group2;). "Default" indicates if the plugin is enabled by default or if the user needs to enable it manually. "CacheTTL" indicates the cache expiration period in minutes for the plugin. "Mandatory" determines if the plugin is always shown and can not be removed by agents.</Description>
         <Group>Framework</Group>
         <SubGroup>Frontend::Agent::Dashboard</SubGroup>
         <Setting>
@@ -10467,7 +10693,7 @@ via the Preferences button after logging in.
         </Setting>
     </ConfigItem>
     <ConfigItem Name="DashboardBackend###0210-MOTD" Required="0" Valid="0">
-        <Description Translatable="1">Shows the message of the day (MOTD) in the agent dashboard. "Group" is used to restrict access to the plugin (e. g. Group: admin;group1;group2;). "Default" indicates if the plugin is enabled by default or if the user needs to enable it manually.</Description>
+        <Description Translatable="1">Shows the message of the day (MOTD) in the agent dashboard. "Group" is used to restrict access to the plugin (e. g. Group: admin;group1;group2;). "Default" indicates if the plugin is enabled by default or if the user needs to enable it manually. "Mandatory" determines if the plugin is always shown and can not be removed by agents.</Description>
         <Group>Framework</Group>
         <SubGroup>Frontend::Agent::Dashboard</SubGroup>
         <Setting>
@@ -10481,7 +10707,7 @@ via the Preferences button after logging in.
         </Setting>
     </ConfigItem>
     <ConfigItem Name="DashboardBackend###0300-IFrame" Required="0" Valid="0">
-        <Description Translatable="1">Defines the parameters for the dashboard backend. "Group" is used to restrict access to the plugin (e. g. Group: admin;group1;group2;). "Default" indicates if the plugin is enabled by default or if the user needs to enable it manually. "CacheTTL" indicates the cache expiration period in minutes for the plugin.</Description>
+        <Description Translatable="1">Defines the parameters for the dashboard backend. "Group" is used to restrict access to the plugin (e. g. Group: admin;group1;group2;). "Default" indicates if the plugin is enabled by default or if the user needs to enable it manually. "CacheTTL" indicates the cache expiration period in minutes for the plugin. "Mandatory" determines if the plugin is always shown and can not be removed by agents.</Description>
         <Group>Framework</Group>
         <SubGroup>Frontend::Agent::Dashboard</SubGroup>
         <Setting>
@@ -10509,7 +10735,7 @@ via the Preferences button after logging in.
     <ConfigItem Name="Frontend::AgentLinkObject::WildcardSearch" Required="1" Valid="1">
         <Description Translatable="1">Starts a wildcard search of the active object after the link object mask is started.</Description>
         <Group>Framework</Group>
-        <SubGroup>Frontend::Agent::LinkObject</SubGroup>
+        <SubGroup>Frontend::Agent::View::LinkObject</SubGroup>
         <Setting>
             <Option SelectedID="0">
                 <Item Key="0" Translatable="1">No</Item>
@@ -10521,7 +10747,7 @@ via the Preferences button after logging in.
     <ConfigItem Name="Frontend::Output::FilterText###OutputFilterTextAutoLink" Required="0" Valid="0">
         <Description Translatable="1">Defines a filter to process the text in the articles, in order to highlight predefined keywords.</Description>
         <Group>Framework</Group>
-        <SubGroup>Core::Web</SubGroup>
+        <SubGroup>Frontend::Base::OutputFilter</SubGroup>
         <Setting>
             <Hash>
                 <Item Key="Module">Kernel::Output::HTML::FilterText::AutoLink</Item>
@@ -10536,7 +10762,7 @@ via the Preferences button after logging in.
     <ConfigItem Name="Frontend::Output::OutputFilterTextAutoLink###CVE" Required="0" Valid="0">
         <Description Translatable="1">Defines a filter for html output to add links behind CVE numbers. The element Image allows two input kinds. At once the name of an image (e.g. faq.png). In this case the OTRS image path will be used. The second possiblity is to insert the link to the image.</Description>
         <Group>Framework</Group>
-        <SubGroup>Core::Web</SubGroup>
+        <SubGroup>Frontend::Base::OutputFilter</SubGroup>
         <Setting>
             <Hash>
                 <Item Key="RegExp">
@@ -10579,7 +10805,7 @@ via the Preferences button after logging in.
     <ConfigItem Name="Frontend::Output::OutputFilterTextAutoLink###Bugtraq" Required="0" Valid="0">
         <Description Translatable="1">Defines a filter for html output to add links behind bugtraq numbers. The element Image allows two input kinds. At once the name of an image (e.g. faq.png). In this case the OTRS image path will be used. The second possiblity is to insert the link to the image.</Description>
         <Group>Framework</Group>
-        <SubGroup>Core::Web</SubGroup>
+        <SubGroup>Frontend::Base::OutputFilter</SubGroup>
         <!-- Example strings: BugTraq ID: 23862 | BugTraq ID: 8945 | Bugtraq ID 140 | BUGTRAQ:20070425 | BID 20799 -->
         <!-- Example URL: http://www.securityfocus.com/bid/23862/info  -->
         <Setting>
@@ -10621,7 +10847,7 @@ via the Preferences button after logging in.
     <ConfigItem Name="Frontend::Output::OutputFilterTextAutoLink###MSBulletins" Required="0" Valid="0">
         <Description Translatable="1">Defines a filter for html output to add links behind MSBulletin numbers. The element Image allows two input kinds. At once the name of an image (e.g. faq.png). In this case the OTRS image path will be used. The second possiblity is to insert the link to the image.</Description>
         <Group>Framework</Group>
-        <SubGroup>Core::Web</SubGroup>
+        <SubGroup>Frontend::Base::OutputFilter</SubGroup>
         <!-- Example strings: MS07-021 | MS04-028 | MS-07-002 -->
         <!-- Example URL: http://www.microsoft.com/technet/security/bulletin/MS07-021.mspx  -->
         <Setting>
@@ -10658,7 +10884,7 @@ via the Preferences button after logging in.
     <ConfigItem Name="Frontend::Output::OutputFilterTextAutoLink###Setting1" Required="0" Valid="0">
         <Description Translatable="1">Define a filter for html output to add links behind a defined string. The element Image allows two input kinds. At once the name of an image (e.g. faq.png). In this case the OTRS image path will be used. The second possiblity is to insert the link to the image.</Description>
         <Group>Framework</Group>
-        <SubGroup>Core::Web</SubGroup>
+        <SubGroup>Frontend::Base::OutputFilter</SubGroup>
         <Setting>
             <Hash>
                 <Item Key="RegExp">
@@ -10693,7 +10919,7 @@ via the Preferences button after logging in.
     <ConfigItem Name="Frontend::Output::OutputFilterTextAutoLink###Setting2" Required="0" Valid="0">
         <Description Translatable="1">Defines a filter for html output to add links behind a defined string. The element Image allows two input kinds. At once the name of an image (e.g. faq.png). In this case the OTRS image path will be used. The second possiblity is to insert the link to the image.</Description>
         <Group>Framework</Group>
-        <SubGroup>Core::Web</SubGroup>
+        <SubGroup>Frontend::Base::OutputFilter</SubGroup>
         <Setting>
             <Hash>
                 <Item Key="RegExp">
@@ -10747,7 +10973,7 @@ via the Preferences button after logging in.
     <ConfigItem Name="Loader::Enabled::CSS" Required="1" Valid="1">
         <Description Translatable="1">If enabled, OTRS will deliver all CSS files in minified form.</Description>
         <Group>Framework</Group>
-        <SubGroup>Core::Web</SubGroup>
+        <SubGroup>Frontend::Base::Loader</SubGroup>
         <Setting>
             <Option SelectedID="1">
                 <Item Key="1" Translatable="1">Yes</Item>
@@ -10758,7 +10984,7 @@ via the Preferences button after logging in.
     <ConfigItem Name="Loader::Enabled::JS" Required="1" Valid="1">
         <Description Translatable="1">If enabled, OTRS will deliver all JavaScript files in minified form.</Description>
         <Group>Framework</Group>
-        <SubGroup>Core::Web</SubGroup>
+        <SubGroup>Frontend::Base::Loader</SubGroup>
         <Setting>
             <Option SelectedID="1">
                 <Item Key="1" Translatable="1">Yes</Item>
@@ -10769,7 +10995,7 @@ via the Preferences button after logging in.
     <ConfigItem Name="Loader::Agent::CommonCSS###000-Framework" Required="1" Valid="1">
         <Description Translatable="1">List of CSS files to always be loaded for the agent interface.</Description>
         <Group>Framework</Group>
-        <SubGroup>Core::Web</SubGroup>
+        <SubGroup>Frontend::Base::Loader</SubGroup>
         <Setting>
             <Array>
                 <Item>Core.Reset.css</Item>
@@ -10798,7 +11024,7 @@ via the Preferences button after logging in.
     <ConfigItem Name="Loader::Agent::ResponsiveCSS###000-Framework" Required="1" Valid="1">
         <Description Translatable="1">List of responsive CSS files to always be loaded for the agent interface.</Description>
         <Group>Framework</Group>
-        <SubGroup>Core::Web</SubGroup>
+        <SubGroup>Frontend::Base::Loader</SubGroup>
         <Setting>
             <Array>
                 <Item>Core.Responsive.css</Item>
@@ -10808,17 +11034,17 @@ via the Preferences button after logging in.
     <ConfigItem Name="Loader::Agent::CommonJS###000-Framework" Required="1" Valid="1">
         <Description Translatable="1">List of JS files to always be loaded for the agent interface.</Description>
         <Group>Framework</Group>
-        <SubGroup>Core::Web</SubGroup>
+        <SubGroup>Frontend::Base::Loader</SubGroup>
         <Setting>
             <Array>
-                <Item>thirdparty/jquery-3.1.1/jquery.js</Item>
+                <Item>thirdparty/jquery-3.2.1/jquery.js</Item>
                 <Item>thirdparty/jquery-browser-detection/jquery-browser-detection.js</Item>
                 <Item>thirdparty/jquery-ui-1.12.1/jquery-ui.js</Item>
                 <Item>thirdparty/jquery-ui-touch-punch-0.2.3/jquery.ui.touch-punch.js</Item>
-                <Item>thirdparty/jquery-validate-1.15.0/jquery.validate.js</Item>
+                <Item>thirdparty/jquery-validate-1.16.0/jquery.validate.js</Item>
                 <Item>thirdparty/jquery-pubsub/pubsub.js</Item>
-                <Item>thirdparty/jquery-jstree-3.3.3/jquery.jstree.js</Item>
-                <Item>thirdparty/nunjucks-3.0.0/nunjucks.js</Item>
+                <Item>thirdparty/jquery-jstree-3.3.4/jquery.jstree.js</Item>
+                <Item>thirdparty/nunjucks-3.0.1/nunjucks.js</Item>
                 <Item>Core.Init.js</Item>
                 <Item>Core.JavaScriptEnhancements.js</Item>
                 <Item>Core.Debug.js</Item>
@@ -10863,7 +11089,7 @@ via the Preferences button after logging in.
     <ConfigItem Name="Loader::Agent::CommonJS###001-JQueryMigrate" Required="0" Valid="0">
         <Description Translatable="1">List of JS files to always be loaded for the agent interface.</Description>
         <Group>Framework</Group>
-        <SubGroup>Core::Web</SubGroup>
+        <SubGroup>Frontend::Base::Loader</SubGroup>
         <Setting>
             <Array>
                 <Item>thirdparty/jquery-migrate-3.0.0/jquery-migrate.js</Item>
@@ -10873,17 +11099,17 @@ via the Preferences button after logging in.
     <ConfigItem Name="Loader::Agent::CommonJS###100-CKEditor" Required="1" Valid="1">
         <Description Translatable="1">List of JS files to always be loaded for the agent interface.</Description>
         <Group>Framework</Group>
-        <SubGroup>Core::Web</SubGroup>
+        <SubGroup>Frontend::Base::Loader</SubGroup>
         <Setting>
             <Array>
-                <Item>thirdparty/ckeditor-4.6.1/ckeditor.js</Item>
+                <Item>thirdparty/ckeditor-4.7.0/ckeditor.js</Item>
             </Array>
         </Setting>
     </ConfigItem>
     <ConfigItem Name="Loader::Customer::CommonCSS###000-Framework" Required="1" Valid="1">
         <Description Translatable="1">List of CSS files to always be loaded for the customer interface.</Description>
         <Group>Framework</Group>
-        <SubGroup>Core::Web</SubGroup>
+        <SubGroup>Frontend::Base::Loader</SubGroup>
         <Setting>
             <Array>
                 <Item>Core.Reset.css</Item>
@@ -10904,7 +11130,7 @@ via the Preferences button after logging in.
     <ConfigItem Name="Loader::Customer::ResponsiveCSS###000-Framework" Required="1" Valid="1">
         <Description Translatable="1">List of responsive CSS files to always be loaded for the customer interface.</Description>
         <Group>Framework</Group>
-        <SubGroup>Core::Web</SubGroup>
+        <SubGroup>Frontend::Base::Loader</SubGroup>
         <Setting>
             <Array>
                 <Item>Core.Responsive.css</Item>
@@ -10914,16 +11140,16 @@ via the Preferences button after logging in.
     <ConfigItem Name="Loader::Customer::CommonJS###000-Framework" Required="1" Valid="1">
         <Description Translatable="1">List of JS files to always be loaded for the customer interface.</Description>
         <Group>Framework</Group>
-        <SubGroup>Core::Web</SubGroup>
+        <SubGroup>Frontend::Base::Loader</SubGroup>
         <Setting>
             <Array>
-                <Item>thirdparty/jquery-3.1.1/jquery.js</Item>
+                <Item>thirdparty/jquery-3.2.1/jquery.js</Item>
                 <Item>thirdparty/jquery-browser-detection/jquery-browser-detection.js</Item>
-                <Item>thirdparty/jquery-validate-1.15.0/jquery.validate.js</Item>
+                <Item>thirdparty/jquery-validate-1.16.0/jquery.validate.js</Item>
                 <Item>thirdparty/jquery-ui-1.12.1/jquery-ui.js</Item>
                 <Item>thirdparty/jquery-pubsub/pubsub.js</Item>
-                <Item>thirdparty/jquery-jstree-3.3.3/jquery.jstree.js</Item>
-                <Item>thirdparty/nunjucks-3.0.0/nunjucks.js</Item>
+                <Item>thirdparty/jquery-jstree-3.3.4/jquery.jstree.js</Item>
+                <Item>thirdparty/nunjucks-3.0.1/nunjucks.js</Item>
                 <Item>Core.Init.js</Item>
                 <Item>Core.Debug.js</Item>
                 <Item>Core.Exception.js</Item>
@@ -10940,6 +11166,7 @@ via the Preferences button after logging in.
                 <Item>Core.UI.InputFields.js</Item>
                 <Item>Core.UI.Accessibility.js</Item>
                 <Item>Core.UI.Dialog.js</Item>
+                <Item>Core.UI.Floater.js</Item>
                 <Item>Core.UI.RichTextEditor.js</Item>
                 <Item>Core.UI.Datepicker.js</Item>
                 <Item>Core.UI.Popup.js</Item>
@@ -10956,7 +11183,7 @@ via the Preferences button after logging in.
     <ConfigItem Name="Loader::Customer::CommonJS###001-JQueryMigrate" Required="0" Valid="0">
         <Description Translatable="1">List of JS files to always be loaded for the customer interface.</Description>
         <Group>Framework</Group>
-        <SubGroup>Core::Web</SubGroup>
+        <SubGroup>Frontend::Base::Loader</SubGroup>
         <Setting>
             <Array>
                 <Item>thirdparty/jquery-migrate-3.0.0/jquery-migrate.js</Item>
@@ -10966,10 +11193,10 @@ via the Preferences button after logging in.
     <ConfigItem Name="Loader::Customer::CommonJS###100-CKEditor" Required="1" Valid="1">
         <Description Translatable="1">List of JS files to always be loaded for the customer interface.</Description>
         <Group>Framework</Group>
-        <SubGroup>Core::Web</SubGroup>
+        <SubGroup>Frontend::Base::Loader</SubGroup>
         <Setting>
             <Array>
-                <Item>thirdparty/ckeditor-4.6.1/ckeditor.js</Item>
+                <Item>thirdparty/ckeditor-4.7.0/ckeditor.js</Item>
             </Array>
         </Setting>
     </ConfigItem>
@@ -11002,6 +11229,7 @@ via the Preferences button after logging in.
                 <Item Key="7" Translatable="1">Lastname Firstname (UserLogin)</Item>
                 <Item Key="8" Translatable="1">(UserLogin) Lastname Firstname</Item>
                 <!-- End Hungarian -->
+                <Item Key="9" Translatable="1">LastnameFirstname</Item>
             </Option>
         </Setting>
     </ConfigItem>
@@ -11009,7 +11237,7 @@ via the Preferences button after logging in.
     <ConfigItem Name="Loader::Agent::Skin###000-default" Required="0" Valid="1">
         <Description Translatable="1">Default skin for the agent interface.</Description>
         <Group>Framework</Group>
-        <SubGroup>Frontend::Agent</SubGroup>
+        <SubGroup>Frontend::Base::Loader</SubGroup>
         <Setting>
             <Hash>
                 <Item Key="InternalName">default</Item>
@@ -11022,7 +11250,7 @@ via the Preferences button after logging in.
     <ConfigItem Name="Loader::Agent::Skin###001-slim" Required="0" Valid="1">
         <Description Translatable="1">Default skin for the agent interface (slim version).</Description>
         <Group>Framework</Group>
-        <SubGroup>Frontend::Agent</SubGroup>
+        <SubGroup>Frontend::Base::Loader</SubGroup>
         <Setting>
             <Hash>
                 <Item Key="InternalName">slim</Item>
@@ -11035,7 +11263,7 @@ via the Preferences button after logging in.
     <ConfigItem Name="Loader::Agent::Skin###001-ivory" Required="0" Valid="1">
         <Description Translatable="1">Balanced white skin by Felix Niklas.</Description>
         <Group>Framework</Group>
-        <SubGroup>Frontend::Agent</SubGroup>
+        <SubGroup>Frontend::Base::Loader</SubGroup>
         <Setting>
             <Hash>
                 <Item Key="InternalName">ivory</Item>
@@ -11048,7 +11276,7 @@ via the Preferences button after logging in.
     <ConfigItem Name="Loader::Agent::Skin###001-ivory-slim" Required="0" Valid="1">
         <Description Translatable="1">Balanced white skin by Felix Niklas (slim version).</Description>
         <Group>Framework</Group>
-        <SubGroup>Frontend::Agent</SubGroup>
+        <SubGroup>Frontend::Base::Loader</SubGroup>
         <Setting>
             <Hash>
                 <Item Key="InternalName">ivory-slim</Item>
@@ -11058,10 +11286,23 @@ via the Preferences button after logging in.
             </Hash>
         </Setting>
     </ConfigItem>
+    <ConfigItem Name="Loader::Agent::Skin###002-high-contrast" Required="0" Valid="1">
+        <Description Translatable="1">High contrast skin for visually impaired users.</Description>
+        <Group>Framework</Group>
+        <SubGroup>Frontend::Base::Loader</SubGroup>
+        <Setting>
+            <Hash>
+                <Item Key="InternalName">highcontrast</Item>
+                <Item Key="VisibleName" Translatable="1">High Contrast</Item>
+                <Item Key="Description" Translatable="1">High contrast skin for visually impaired users.</Item>
+                <Item Key="HomePage">www.otrs.com</Item>
+            </Hash>
+        </Setting>
+    </ConfigItem>
     <ConfigItem Name="Loader::Agent::DefaultSelectedSkin" Required="1" Valid="1">
         <Description Translatable="1">The agent skin's InternalName which should be used in the agent interface. Please check the available skins in Frontend::Agent::Skins.</Description>
         <Group>Framework</Group>
-        <SubGroup>Frontend::Agent</SubGroup>
+        <SubGroup>Frontend::Base::Loader</SubGroup>
         <Setting>
             <String Regex="">default</String>
         </Setting>
@@ -11069,7 +11310,7 @@ via the Preferences button after logging in.
     <ConfigItem Name="Loader::Agent::DefaultSelectedSkin::HostBased" Required="0" Valid="0" ConfigLevel="200">
         <Description Translatable="1">It is possible to configure different skins, for example to distinguish between diferent agents, to be used on a per-domain basis within the application. Using a regular expression (regex), you can configure a Key/Content pair to match a domain. The value in "Key" should match the domain, and the value in "Content" should be a valid skin on your system. Please see the example entries for the proper form of the regex.</Description>
         <Group>Framework</Group>
-        <SubGroup>Frontend::Agent</SubGroup>
+        <SubGroup>Frontend::Base::Loader</SubGroup>
         <Setting>
             <Hash>
                 <Item Key="host1\.example\.com">SomeSkin1</Item>
@@ -11080,7 +11321,7 @@ via the Preferences button after logging in.
     <ConfigItem Name="Loader::Customer::Skin###000-default" Required="0" Valid="1">
         <Description Translatable="1">Default skin for the customer interface.</Description>
         <Group>Framework</Group>
-        <SubGroup>Frontend::Customer</SubGroup>
+        <SubGroup>Frontend::Base::Loader</SubGroup>
         <Setting>
             <Hash>
                 <Item Key="InternalName">default</Item>
@@ -11093,7 +11334,7 @@ via the Preferences button after logging in.
     <ConfigItem Name="Loader::Customer::SelectedSkin" Required="1" Valid="1">
         <Description Translatable="1">The customer skin's InternalName which should be used in the customer interface. Please check the available skins in Frontend::Customer::Skins.</Description>
         <Group>Framework</Group>
-        <SubGroup>Frontend::Customer</SubGroup>
+        <SubGroup>Frontend::Base::Loader</SubGroup>
         <Setting>
             <String Regex="">default</String>
         </Setting>
@@ -11101,7 +11342,7 @@ via the Preferences button after logging in.
     <ConfigItem Name="Loader::Customer::SelectedSkin::HostBased" Required="0" Valid="0" ConfigLevel="200">
         <Description Translatable="1">It is possible to configure different skins, for example to distinguish between diferent customers, to be used on a per-domain basis within the application. Using a regular expression (regex), you can configure a Key/Content pair to match a domain. The value in "Key" should match the domain, and the value in "Content" should be a valid skin on your system. Please see the example entries for the proper form of the regex.</Description>
         <Group>Framework</Group>
-        <SubGroup>Frontend::Customer</SubGroup>
+        <SubGroup>Frontend::Base::Loader</SubGroup>
         <Setting>
             <Hash>
                 <Item Key="host1\.example\.com">Someskin1</Item>
@@ -11189,7 +11430,7 @@ via the Preferences button after logging in.
     <ConfigItem Name="CustomerCompany::EventModulePost###2000-UpdateCustomerUsers" Required="0" Valid="1">
         <Description Translatable="1">Event module that updates customer users after an update of the Customer.</Description>
         <Group>Framework</Group>
-        <SubGroup>Core::CustomerCompany</SubGroup>
+        <SubGroup>Core::Event::CustomerCompany</SubGroup>
         <Setting>
             <Hash>
                 <Item Key="Module">Kernel::System::CustomerCompany::Event::CustomerUserUpdate</Item>
@@ -11201,7 +11442,7 @@ via the Preferences button after logging in.
     <ConfigItem Name="CustomerCompany::EventModulePost###2100-UpdateDynamicFieldObjectName" Required="0" Valid="1">
         <Description Translatable="1">Event module that updates customer company object name for dynamic fields.</Description>
         <Group>Framework</Group>
-        <SubGroup>Core::CustomerCompany</SubGroup>
+        <SubGroup>Core::Event::CustomerCompany</SubGroup>
         <Setting>
             <Hash>
                 <Item Key="Module">Kernel::System::CustomerCompany::Event::DynamicFieldObjectNameUpdate</Item>
@@ -11213,7 +11454,7 @@ via the Preferences button after logging in.
     <ConfigItem Name="CustomerUser::EventModulePost###2100-UpdateSearchProfiles" Required="0" Valid="1">
         <Description Translatable="1">Event module that updates customer user search profiles if login changes.</Description>
         <Group>Framework</Group>
-        <SubGroup>Core::CustomerUser</SubGroup>
+        <SubGroup>Core::Event::CustomerUser</SubGroup>
         <Setting>
             <Hash>
                 <Item Key="Module">Kernel::System::CustomerUser::Event::SearchProfileUpdate</Item>
@@ -11225,7 +11466,7 @@ via the Preferences button after logging in.
     <ConfigItem Name="CustomerUser::EventModulePost###2200-UpdateServiceMembership" Required="0" Valid="1">
         <Description Translatable="1">Event module that updates customer user service membership if login changes.</Description>
         <Group>Framework</Group>
-        <SubGroup>Core::CustomerUser</SubGroup>
+        <SubGroup>Core::Event::CustomerUser</SubGroup>
         <Setting>
             <Hash>
                 <Item Key="Module">Kernel::System::CustomerUser::Event::ServiceMemberUpdate</Item>
@@ -11237,7 +11478,7 @@ via the Preferences button after logging in.
     <ConfigItem Name="CustomerUser::EventModulePost###2000-UpdateDynamicFieldObjectName" Required="0" Valid="1">
         <Description Translatable="1">Event module that updates customer user object name for dynamic fields.</Description>
         <Group>Framework</Group>
-        <SubGroup>Core::CustomerUser</SubGroup>
+        <SubGroup>Core::Event::CustomerUser</SubGroup>
         <Setting>
             <Hash>
                 <Item Key="Module">Kernel::System::CustomerUser::Event::DynamicFieldObjectNameUpdate</Item>
@@ -11391,7 +11632,7 @@ via the Preferences button after logging in.
     <ConfigItem Name="OTRSBusiness::ReleaseChannel" Required="1" Valid="1" ConfigLevel="100">
         <Description Translatable="1">Specify the channel to be used to fetch OTRS Business Solution™ updates. Warning: Development releases might not be complete, your system might experience unrecoverable errors and on extreme cases could become unresponsive!</Description>
         <Group>Framework</Group>
-        <SubGroup>Core::OTRSBusiness</SubGroup>
+        <SubGroup>Core::Package</SubGroup>
         <Setting>
             <Option SelectedID="1">
                 <Item Key="0" Translatable="1">Development</Item>
@@ -11432,7 +11673,7 @@ via the Preferences button after logging in.
     <ConfigItem Name="CustomerUser::Frontend::Overview###AddressBook" Required="1" Valid="1">
         <Description Translatable="1">Defines an overview module to show the address book view of a customer user list.</Description>
         <Group>Ticket</Group>
-        <SubGroup>Frontend::Agent::CustomerUserOverview</SubGroup>
+        <SubGroup>Frontend::Agent::View::CustomerUserAddressBook</SubGroup>
         <Setting>
             <Hash>
                 <Item Key="Module">Kernel::Output::HTML::CustomerUser::OverviewAddressBook</Item>
@@ -11440,55 +11681,11 @@ via the Preferences button after logging in.
             </Hash>
         </Setting>
     </ConfigItem>
-    <ConfigItem Name="CustomerUser::Frontend::AgentCustomerUserAddressBook###PageShown" Required="1" Valid="1">
-        <Description Translatable="1">Defines the number of entries per page for the AgentCustomerUserAddressBook result screen.</Description>
-        <Group>Ticket</Group>
-        <SubGroup>Frontend::Agent::ViewCustomerUserSearch</SubGroup>
-        <Setting>
-            <String Regex="">50</String>
-        </Setting>
-    </ConfigItem>
-    <ConfigItem Name="CustomerUser::Frontend::AgentCustomerUserAddressBook###DefaultFields" Required="1" Valid="1">
-        <Description Translatable="1">Defines the default filter fields in the customer user address book search (CustomerUser or CustomerCompany). For the CustomerCompany fields a prefix 'CustomerCompany_' must be added.</Description>
-        <Group>Ticket</Group>
-        <SubGroup>Frontend::Agent::ViewCustomerUserSearch</SubGroup>
-        <Setting>
-            <Array>
-                <Item>UserLogin</Item>
-                <Item>UserFirstname</Item>
-                <Item>UserLastname</Item>
-                <Item>UserEmail</Item>
-                <Item>UserCustomerID</Item>
-            </Array>
-        </Setting>
-    </ConfigItem>
-    <ConfigItem Name="CustomerUser::Frontend::AgentCustomerUserAddressBook###ShowColumns" Required="1" Valid="1">
-        <Description Translatable="1">Defines the shown columns and the position in the AgentCustomerUserAddressBook result screen.</Description>
-        <Group>Ticket</Group>
-        <SubGroup>Frontend::Agent::ViewCustomerUserSearch</SubGroup>
-        <Setting>
-            <Array>
-                <Item>UserFirstname</Item>
-                <Item>UserLastname</Item>
-                <Item>UserLogin</Item>
-                <Item>UserEmail</Item>
-                <Item>UserCustomerID</Item>
-            </Array>
-        </Setting>
-    </ConfigItem>
-    <ConfigItem Name="CustomerUser::Frontend::AgentCustomerUserAddressBook###SearchLimit" Required="1" Valid="1">
-        <Description Translatable="1">Defines the search limit for the AgentCustomerUserAddressBook screen.</Description>
-        <Group>Ticket</Group>
-        <SubGroup>Frontend::Agent::ViewCustomerUserSearch</SubGroup>
-        <Setting>
-            <String Regex="">10000</String>
-        </Setting>
-    </ConfigItem>
 
     <ConfigItem Name="Frontend::Module###AdminSystemConfigurationDeployment" Required="0" Valid="1">
         <Description Translatable="1">Frontend module registration for the agent interface.</Description>
         <Group>Framework</Group>
-        <SubGroup>Frontend::Agent::ModuleRegistration</SubGroup>
+        <SubGroup>Frontend::Admin::ModuleRegistration</SubGroup>
         <Setting>
             <FrontendModuleReg>
                 <GroupRo></GroupRo>
@@ -11499,7 +11696,7 @@ via the Preferences button after logging in.
                 <NavBarName>SystemConfiguration</NavBarName>
                  <Loader>
                     <CSS>Core.Agent.Admin.SystemConfiguration.css</CSS>
-                    <JavaScript>thirdparty/clipboardjs-1.5.16/clipboard.min.js</JavaScript>
+                    <JavaScript>thirdparty/clipboardjs-1.7.1/clipboard.min.js</JavaScript>
                     <JavaScript>Core.SystemConfiguration.js</JavaScript>
                     <JavaScript>Core.Agent.Admin.SystemConfiguration.js</JavaScript>
                 </Loader>
@@ -11509,7 +11706,7 @@ via the Preferences button after logging in.
     <ConfigItem Name="Frontend::Module###AdminSystemConfiguration" Required="1" Valid="1">
         <Description Translatable="1">Frontend module registration for the agent interface.</Description>
         <Group>Framework</Group>
-        <SubGroup>Frontend::Agent::ModuleRegistration</SubGroup>
+        <SubGroup>Frontend::Admin::ModuleRegistration</SubGroup>
         <Setting>
             <FrontendModuleReg>
                 <GroupRo></GroupRo>
@@ -11520,6 +11717,7 @@ via the Preferences button after logging in.
                 <NavBarModule>
                     <Module>Kernel::Output::HTML::NavBar::ModuleAdmin</Module>
                     <Name Translatable="1">System Configuration</Name>
+                    <Block>Administration</Block>
                     <Description Translatable="1">Edit the system configuration settings.</Description>
                     <IconBig></IconBig>
                     <IconSmall></IconSmall>
@@ -11527,9 +11725,14 @@ via the Preferences button after logging in.
                 </NavBarModule>
                  <Loader>
                     <CSS>Core.Agent.Admin.SystemConfiguration.css</CSS>
-                    <JavaScript>thirdparty/clipboardjs-1.5.16/clipboard.min.js</JavaScript>
+                    <JavaScript>thirdparty/clipboardjs-1.7.1/clipboard.min.js</JavaScript>
                     <JavaScript>Core.SystemConfiguration.js</JavaScript>
                     <JavaScript>Core.SystemConfiguration.Date.js</JavaScript>
+                    <JavaScript>Core.SystemConfiguration.DateTime.js</JavaScript>
+                    <JavaScript>Core.SystemConfiguration.VacationDays.js</JavaScript>
+                    <JavaScript>Core.SystemConfiguration.VacationDaysOneTime.js</JavaScript>
+                    <JavaScript>Core.SystemConfiguration.WorkingHours.js</JavaScript>
+                    <JavaScript>Core.Form.js</JavaScript>
                     <JavaScript>Core.Agent.Admin.SystemConfiguration.js</JavaScript>
                 </Loader>
             </FrontendModuleReg>
@@ -11538,7 +11741,7 @@ via the Preferences button after logging in.
     <ConfigItem Name="Frontend::Module###AdminSystemConfigurationGroup" Required="1" Valid="1">
         <Description Translatable="1">Frontend module registration for the agent interface.</Description>
         <Group>Framework</Group>
-        <SubGroup>Frontend::Agent::ModuleRegistration</SubGroup>
+        <SubGroup>Frontend::Admin::ModuleRegistration</SubGroup>
         <Setting>
             <FrontendModuleReg>
                 <GroupRo></GroupRo>
@@ -11548,7 +11751,7 @@ via the Preferences button after logging in.
                 <NavBarName>Admin</NavBarName>
                  <Loader>
                     <CSS>Core.Agent.Admin.SystemConfiguration.css</CSS>
-                    <JavaScript>thirdparty/clipboardjs-1.5.16/clipboard.min.js</JavaScript>
+                    <JavaScript>thirdparty/clipboardjs-1.7.1/clipboard.min.js</JavaScript>
                     <JavaScript>Core.SystemConfiguration.js</JavaScript>
                     <JavaScript>Core.SystemConfiguration.Date.js</JavaScript>
                     <JavaScript>Core.SystemConfiguration.DateTime.js</JavaScript>
@@ -11564,9 +11767,61 @@ via the Preferences button after logging in.
     <ConfigItem Name="EditAnotherUsersPreferencesGroup" Required="1" Valid="1">
         <Description Translatable="1">Specifies the group where the user needs rw permissions so that they can edit other users preferences.</Description>
         <Group>Framework</Group>
-        <SubGroup>Core</SubGroup>
+        <SubGroup>Core::Permission</SubGroup>
         <Setting>
             <String>admin</String>
+        </Setting>
+    </ConfigItem>
+    <ConfigItem Name="CommunicationChannel###Email" Required="0" Valid="1">
+        <Description Translatable="1">Defines email communication channel.</Description>
+        <Group>Framework</Group>
+        <SubGroup>Core::CommunicationChannel</SubGroup>
+        <Setting>
+            <Hash>
+                <Item Key="Name" Translatable="1">Email</Item>
+                <Item Key="Icon">fa-envelope</Item>
+                <Item Key="Description" Translatable="1">Email communication channel.</Item>
+                <Item Key="Module">Kernel::System::CommunicationChannel::Email</Item>
+            </Hash>
+        </Setting>
+    </ConfigItem>
+    <ConfigItem Name="CommunicationChannel###Internal" Required="0" Valid="1">
+        <Description Translatable="1">Defines internal communication channel.</Description>
+        <Group>Framework</Group>
+        <SubGroup>Core::CommunicationChannel</SubGroup>
+        <Setting>
+            <Hash>
+                <Item Key="Name" Translatable="1">OTRS</Item>
+                <Item Key="Icon">fa-cloud</Item>
+                <Item Key="Description" Translatable="1">Internal communication channel.</Item>
+                <Item Key="Module">Kernel::System::CommunicationChannel::Internal</Item>
+            </Hash>
+        </Setting>
+    </ConfigItem>
+    <ConfigItem Name="CommunicationChannel###Phone" Required="0" Valid="1">
+        <Description Translatable="1">Defines phone communication channel.</Description>
+        <Group>Framework</Group>
+        <SubGroup>Core::CommunicationChannel</SubGroup>
+        <Setting>
+            <Hash>
+                <Item Key="Name" Translatable="1">Phone</Item>
+                <Item Key="Icon">fa-phone</Item>
+                <Item Key="Description" Translatable="1">Phone communication channel.</Item>
+                <Item Key="Module">Kernel::System::CommunicationChannel::Phone</Item>
+            </Hash>
+        </Setting>
+    </ConfigItem>
+    <ConfigItem Name="CommunicationChannel###Chat" Required="0" Valid="1">
+        <Description Translatable="1">Defines chat communication channel.</Description>
+        <Group>Framework</Group>
+        <SubGroup>Core::CommunicationChannel</SubGroup>
+        <Setting>
+            <Hash>
+                <Item Key="Name" Translatable="1">Chat</Item>
+                <Item Key="Icon">fa-comment</Item>
+                <Item Key="Description" Translatable="1">Chat communication channel.</Item>
+                <Item Key="Module">Kernel::System::CommunicationChannel::Chat</Item>
+            </Hash>
         </Setting>
     </ConfigItem>
 </otrs_config>

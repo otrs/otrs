@@ -442,7 +442,7 @@ Core.Agent.Admin.ACL = (function (TargetNS) {
                 $LevelObj
                     .attr('data-content', Value)
                     .find('em')
-                    .before('<span>' + ValueEscaped + '</span>');
+                    .before('<span>' + Value + '</span>');
                 $LevelObj.insertBefore($Object.parent());
             }
             $Object
@@ -613,6 +613,7 @@ Core.Agent.Admin.ACL = (function (TargetNS) {
         $('.ACLStructure').on('blur keydown', '.NewDataKey', function(Event) {
             if ((Event.type === 'keydown' && Event.which === 13) || Event.type !== 'keydown') {
                 TargetNS.AddItem($(this));
+                Core.UI.InputFields.Activate();
                 return false;
             }
         });
@@ -662,7 +663,7 @@ Core.Agent.Admin.ACL = (function (TargetNS) {
 
             if (LastLevel) {
 
-                // get contents of the 'prefixes' selectbox to decide wether or not we
+                // get contents of the 'prefixes' selectbox to decide whether or not we
                 // are dealing with a special type of string
                 $SelectObj.find('option').each(function() {
 
@@ -821,6 +822,7 @@ Core.Agent.Admin.ACL = (function (TargetNS) {
 
         $('.ACLStructure').on('change', '.ItemAdd', function() {
             TargetNS.AddItem($(this));
+            Core.UI.InputFields.Activate();
         });
 
         $('#SubmitAndContinue').on('click', function() {

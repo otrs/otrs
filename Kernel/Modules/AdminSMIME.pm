@@ -37,7 +37,7 @@ sub Run {
     # ------------------------------------------------------------ #
     if ( !$Kernel::OM->Get('Kernel::Config')->Get('SMIME') ) {
 
-        my $Output .= $LayoutObject->Header();
+        my $Output = $LayoutObject->Header();
         $Output .= $LayoutObject->NavigationBar();
 
         $LayoutObject->Block( Name => 'Overview' );
@@ -196,7 +196,7 @@ sub Run {
     # show add certificate form
     # ------------------------------------------------------------ #
     elsif ( $Self->{Subaction} eq 'ShowAddCertificate' ) {
-        $Self->_MaskAdd(
+        return $Self->_MaskAdd(
             Type => 'Certificate',
             %Param,
         );
@@ -575,6 +575,7 @@ sub Run {
         $Output .= $LayoutObject->Footer();
         return $Output;
     }
+    return;
 }
 
 sub _MaskAdd {
@@ -729,8 +730,10 @@ sub _SignerCertificateOverview {
     # and is not equal to the actual Certificate Fingerprint
     my @ShowCertList;
     my %RelatedCerts = map { $_->{Fingerprint} => 1 } @RelatedCerts;
-    @ShowCertList = grep ( !defined $RelatedCerts{ $_->{Fingerprint} }
-            && $_->{Fingerprint} ne $Param{CertFingerprint}, @AvailableCerts );
+    @ShowCertList = grep {
+        !defined $RelatedCerts{ $_->{Fingerprint} }
+            && $_->{Fingerprint} ne $Param{CertFingerprint}
+    } @AvailableCerts;
 
     $LayoutObject->Block( Name => 'Overview' );
     $LayoutObject->Block( Name => 'ActionList' );
@@ -837,4 +840,5 @@ sub _CertificateRead {
     return $Output;
 
 }
+
 1;

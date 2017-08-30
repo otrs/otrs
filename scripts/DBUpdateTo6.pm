@@ -12,6 +12,7 @@ use strict;
 use warnings;
 
 use Time::HiRes ();
+use Kernel::System::VariableCheck qw(IsHashRefWithData);
 
 our @ObjectDependencies = (
     'Kernel::System::Cache',
@@ -46,24 +47,76 @@ sub new {
 sub Run {
     my ( $Self, %Param ) = @_;
 
-    # enable auto-flushing of STDOUT
+    # Enable auto-flushing of STDOUT.
     $| = 1;    ## no critic
 
-    my $AddTiming = $Param{CommandlineOptions}->{Timing} || 0;
-    my $GeneralStart;
-    my $MessageComplement = '';
-    if ($AddTiming) {
-        $GeneralStart      = Time::HiRes::time();
-        $MessageComplement = " at $GeneralStart ";
+    # Enable timing feature in case it is call.
+    my $TimingEnabled = $Param{CommandlineOptions}->{Timing} || 0;
+
+    my $GeneralStartTime;
+    if ($TimingEnabled) {
+        $GeneralStartTime = Time::HiRes::time();
     }
 
+    print "\n Migration started ... \n";
+
+    my $SuccessfulMigration = 1;
+    my @Components = ( 'CheckPreviousRequirement', 'Run' );
+
+    COMPONENT:
+    for my $Component (@Components) {
+
+        $SuccessfulMigration = $Self->_ExecuteComponent(
+            Component => $Component,
+            %Param,
+        );
+        last COMPONENT if !$SuccessfulMigration;
+    }
+
+    if ($SuccessfulMigration) {
+        print "\n\n\n Migration completed! \n\n";
+    }
+    else {
+        print "\n\n\n Not possible to complete migration, check previous messages for more information. \n\n";
+    }
+
+    if ($TimingEnabled) {
+        my $GeneralStopTime = Time::HiRes::time();
+        my $GeneralExecutionTime = sprintf( "%.6f", $GeneralStopTime - $GeneralStartTime );
+        print "    Migration took $GeneralExecutionTime seconds.\n\n";
+    }
+
+    return $SuccessfulMigration;
+}
+
+sub _ExecuteComponent {
+    my ( $Self, %Param ) = @_;
+
+    if ( !$Param{Component} ) {
+        print " Error: Need Component!\n\n";
+        return;
+    }
+
+    my $Component = $Param{Component};
+
+    # Enable timing feature in case it is call.
+    my $TimingEnabled = $Param{CommandlineOptions}->{Timing} || 0;
+
+    # Get migration tasks.
     my @Tasks = $Self->_TasksGet();
 
-    print "\nMigration started$MessageComplement...\n\n";
+    # Get the number of total steps.
+    my $Steps               = scalar @Tasks;
+    my $CurrentStep         = 1;
+    my $SuccessfulMigration = 1;
 
-    # get the number of total steps
-    my $Steps = scalar @Tasks;
-    my $Step  = 1;
+    # Show initial message for current component
+    if ( $Component eq 'Run' ) {
+        print "\n Executing tasks ... \n\n";
+    }
+    else {
+        print "\n Checking requirements ... \n\n";
+    }
 
     TASK:
     for my $Task (@Tasks) {
@@ -73,18 +126,14 @@ sub Run {
 
         my $ModuleName = "scripts::DBUpdateTo6::$Task->{Module}";
         if ( !$Kernel::OM->Get('Kernel::System::Main')->Require($ModuleName) ) {
-            next TASK;
+            $SuccessfulMigration = 0;
+            last TASK;
         }
 
-        my $StartTime;
-        my $MessageTaskComplement = '';
-        if ($AddTiming) {
-            $StartTime             = Time::HiRes::time();
-            $MessageTaskComplement = " started at $StartTime ";
+        my $TaskStartTime;
+        if ($TimingEnabled) {
+            $TaskStartTime = Time::HiRes::time();
         }
-
-        # Show initial task message.
-        print "Step $Step of $Steps: $Task->{Message}$MessageTaskComplement...";
 
         # Run module.
         $Kernel::OM->ObjectParamAdd(
@@ -93,47 +142,73 @@ sub Run {
             },
         );
 
-        my $Object = $Kernel::OM->Create($ModuleName);
-        if ( !$Object ) {
-            print "Was not possible to create object for: $ModuleName.";
-            die;
+        $Self->{TaskObjects}->{$ModuleName} //= $Kernel::OM->Create($ModuleName);
+        if ( !$Self->{TaskObjects}->{$ModuleName} ) {
+            print "\n    Error: Could not create object for: $ModuleName.\n\n";
+            $SuccessfulMigration = 0;
+            last TASK;
         }
 
-        my $Success = $Object->Run(%Param);
+        my $Success = 1;
 
-        my $StopTime;
-        if ($AddTiming) {
-            $StopTime = Time::HiRes::time();
-            my $TaskTime = $StopTime - $StartTime;
-            $MessageTaskComplement = ", finished at $StopTime, it took $TaskTime seconds";
+        # Execute Run-Component
+        if ( $Component eq 'Run' ) {
+            print "    Step $CurrentStep of $Steps: $Task->{Message} ...\n";
+            $Success = $Self->{TaskObjects}->{$ModuleName}->$Component(%Param);
         }
 
-        if ($Success) {
-            print "done$MessageTaskComplement.\n\n";
+        # Execute previous check, printing a different message
+        elsif ( $Self->{TaskObjects}->{$ModuleName}->can($Component) ) {
+            print "    Requirement check for: $Task->{Message} ...\n";
+            $Success = $Self->{TaskObjects}->{$ModuleName}->$Component(%Param);
         }
+
+        # Do not handle timing if task has no appropriate component.
         else {
-            print "error$MessageTaskComplement.\n\n";
-            die;
+            next TASK;
         }
 
-        $Step++;
+        if ($TimingEnabled) {
+            my $StopTaskTime = Time::HiRes::time();
+            my $ExecutionTaskTime = sprintf( "%.6f", $StopTaskTime - $TaskStartTime );
+            print " ($ExecutionTaskTime seconds).";
+        }
+
+        if ( !$Success ) {
+            $SuccessfulMigration = 0;
+            last TASK;
+        }
+
+        $CurrentStep++;
     }
 
-    print "Migration completed!\n";
-
-    return 1;
+    return $SuccessfulMigration;
 }
 
 sub _TasksGet {
     my ( $Self, %Param ) = @_;
 
     my @Tasks = (
-
         {
             Message => 'Check framework version',
             Module  => 'FrameworkVersionCheck',
         },
-
+        {
+            Message => 'Check required Perl version',
+            Module  => 'PerlVersionCheck',
+        },
+        {
+            Message => 'Check required database version.',
+            Module  => 'DatabaseVersionCheck',
+        },
+        {
+            Message => 'Check required Perl modules',
+            Module  => 'PerlModulesCheck',
+        },
+        {
+            Message => 'Upgrade database structure',
+            Module  => 'UpgradeDatabaseStructure',
+        },
         {
             Message => 'Migrate configuration',
             Module  => 'MigrateConfigEffectiveValues',
@@ -179,6 +254,14 @@ sub _TasksGet {
             Module  => 'AddAppointmentCalendarNotification',
         },
         {
+            Message => 'Create Form Draft tables',
+            Module  => 'CreateFormDraftTables',
+        },
+        {
+            Message => 'Clean and drop group_user permission_value column',
+            Module  => 'CleanGroupUserPermissionValue',
+        },
+        {
             Message => 'Migrate GenericAgent jobs configuration',
             Module  => 'MigrateGenericAgentJobs',
         },
@@ -187,32 +270,44 @@ sub _TasksGet {
             Module  => 'MigrateTicketAppointments',
         },
         {
+            Message => 'Migrate Merged Ticket history name values',
+            Module  => 'MigrateTicketMergedHistory',
+        },
+        {
             Message => 'Migrate ticket statistics',
             Module  => 'MigrateTicketStats',
         },
         {
+            Message => 'Migrate ticket notifications',
+            Module  => 'MigrateTicketNotifications',
+        },
+        {
             Message => 'Create entries in new article table',
-            Module  => 'OCBIMigrateArticleData',
+            Module  => 'MigrateArticleData',
         },
         {
-            Message => 'Migrates ArticleType in ProcessManagement Data',
-            Module  => 'OCBIMigrateProcessManagementData',
+            Message => 'Post changes on article related tables',
+            Module  => 'PostArticleTableStructureChanges',
         },
         {
-            Message => 'Migrates ArticleType in PostMaster filters',
-            Module  => 'OCBIMigratePostMasterData',
+            Message => 'Migrate ArticleType in ProcessManagement Data',
+            Module  => 'MigrateProcessManagementData',
         },
         {
-            Message => 'Migrates ArticleType in GenericAgent jobs',
-            Module  => 'OCBIMigrateGenericAgentData',
+            Message => 'Migrate ArticleType in PostMaster filters',
+            Module  => 'MigratePostMasterData',
         },
         {
             Message => 'Migrate chat articles',
-            Module  => 'OCBIMigrateChatData',
+            Module  => 'MigrateChatData',
         },
         {
-            Message => 'Migrate ticket history',
-            Module  => 'OCBIMigrateTicketHistory',
+            Message => 'Initialize default cron jobs',
+            Module  => 'InitializeDefaultCronjobs',
+        },
+        {
+            Message => 'Migrate web service configuration',
+            Module  => 'MigrateWebServiceConfiguration',
         },
 
         # ...

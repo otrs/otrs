@@ -71,6 +71,11 @@ my $ElementExists = sub {
 
 $Selenium->RunTest(
     sub {
+        $Kernel::OM->ObjectParamAdd(
+            'Kernel::System::UnitTest::Helper' => {
+                DisableAsyncCalls => 1,
+            },
+        );
         my $Helper = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
 
         my $GroupObject    = $Kernel::OM->Get('Kernel::System::Group');
@@ -216,11 +221,27 @@ $Selenium->RunTest(
             'All three calendars visible',
         );
 
+        # Verify copy-to-clipboard link.
+        my $URL = $Selenium->find_element( '.CopyToClipboard', 'css' )->get_attribute('data-clipboard-text');
+
+        $Self->True(
+            $URL,
+            'CopyToClipboard URL present'
+        );
+
+        # URL should not contain OTRS specific URL delimiter of semicolon (;).
+        #   For better compatibility, use standard ampersand (&) instead.
+        #   Please see bug#12667 for more information.
+        $Self->False(
+            ( $URL =~ /[;]/ ) ? 1 : 0,
+            'CopyToClipboard URL does not contain forbidden characters'
+        );
+
         # click on the timeline view for an appointment dialog
         $Selenium->find_element( '.fc-timelineWeek-view .fc-slats td.fc-widget-content:nth-child(5)', 'css' )
             ->VerifiedClick();
 
-        # wait until form and overlay has loaded, if neccessary
+        # Wait until form and overlay has loaded, if necessary.
         $Selenium->WaitFor( JavaScript => "return typeof(\$) === 'function' && \$('#Title').length" );
 
         # elements that are not allowed in dialog
@@ -290,10 +311,13 @@ $Selenium->RunTest(
         # go to the ticket zoom screen
         $Selenium->VerifiedGet("${ScriptAlias}index.pl?Action=AgentTicketZoom;TicketID=${TicketID}");
 
-        # find link to the appointment on page
-        $Selenium->find_element( 'a.LinkObjectLink', 'css' )->VerifiedClick();
+        # Find link to the appointment on page.
+        my $LinkedAppointment = $Selenium->find_element(
+            "//a[contains(\@href, \'Action=AgentAppointmentCalendarOverview;AppointmentID=' )]"
+        );
+        $Selenium->VerifiedGet( $LinkedAppointment->get_attribute('href') );
 
-        # wait until form and overlay has loaded, if neccessary
+        # Wait until form and overlay has loaded, if necessary.
         $Selenium->WaitFor( JavaScript => "return typeof(\$) === 'function' && \$('#Title').length" );
 
         # check data
@@ -313,7 +337,7 @@ $Selenium->RunTest(
         );
         $Self->Is(
             $Selenium->execute_script(
-                "return \$('.PluginContainer div a[target=\"_blank\"]').text();"
+                "return \$('.PluginContainer div a[href*=\"Action=AgentTicketZoom;TicketID=$TicketID\"]').text();"
             ),
             "$TicketNumber Link Ticket $RandomID",
             'Link ticket matches',
@@ -339,7 +363,7 @@ $Selenium->RunTest(
         $Selenium->find_element( '.fc-timelineWeek-view .fc-slats td.fc-widget-content:nth-child(5)', 'css' )
             ->VerifiedClick();
 
-        # wait until form and overlay has loaded, if neccessary
+        # Wait until form and overlay has loaded, if necessary.
         $Selenium->WaitFor( JavaScript => "return typeof(\$) === 'function' && \$('#Title').length" );
 
         # enter some data
@@ -385,7 +409,7 @@ $Selenium->RunTest(
         $Selenium->find_element( '.fc-timelineWeek-view .fc-slats td.fc-widget-content:nth-child(5)', 'css' )
             ->VerifiedClick();
 
-        # wait until form and overlay has loaded, if neccessary
+        # Wait until form and overlay has loaded, if necessary.
         $Selenium->WaitFor( JavaScript => "return typeof(\$) === 'function' && \$('#Title').length" );
 
         # enter some data
@@ -424,7 +448,7 @@ $Selenium->RunTest(
         # click on an appointment
         $Selenium->find_element( '.fc-timeline-event', 'css' )->VerifiedClick();
 
-        # wait until form and overlay has loaded, if neccessary
+        # Wait until form and overlay has loaded, if necessary.
         $Selenium->WaitFor( JavaScript => "return typeof(\$) === 'function' && \$('#Title').length" );
 
         # click on Delete
@@ -557,7 +581,6 @@ $Selenium->RunTest(
 
         # find the appointment link
         my $AppointmentLink = $Selenium->find_element( '.fc-event-container a', 'css' );
-        $Selenium->mouse_move_to_location($AppointmentLink);
 
         # click on appointment
         $AppointmentLink->VerifiedClick();
@@ -764,26 +787,6 @@ $Selenium->RunTest(
             $Success,
             "Deleted test ticket - $TicketID",
         );
-
-        # Remove scheduled asynchronous tasks from DB, as they may interfere with tests run later.
-        my @TaskIDs;
-        my @AllTasks = $SchedulerDBObject->TaskList(
-            Type => 'AsynchronousExecutor',
-        );
-        for my $Task (@AllTasks) {
-            if ( $Task->{Name} eq 'Kernel::System::Calendar-TicketAppointmentProcessTicket()' ) {
-                push @TaskIDs, $Task->{TaskID};
-            }
-        }
-        for my $TaskID (@TaskIDs) {
-            my $Success = $SchedulerDBObject->TaskDelete(
-                TaskID => $TaskID,
-            );
-            $Self->True(
-                $Success,
-                "TaskDelete - Removed scheduled asynchronous task $TaskID",
-            );
-        }
 
         # Delete group-user relations.
         $Success = $DBObject->Do(

@@ -17,7 +17,6 @@ our @ObjectDependencies = (
     'Kernel::System::DB',
     'Kernel::System::Log',
     'Kernel::System::Package',
-    'Kernel::System::XML',
 );
 
 =head1 NAME
@@ -31,7 +30,7 @@ sub Run {
 
     my $DBObject      = $Kernel::OM->Get('Kernel::System::DB');
     my $PackageObject = $Kernel::OM->Get('Kernel::System::Package');
-    my $XMLObject     = $Kernel::OM->Get('Kernel::System::XML');
+    my $Verbose       = $Param{CommandlineOptions}->{Verbose} || 0;
 
     # Get list of all installed packages.
     my @RepositoryList = $PackageObject->RepositoryList();
@@ -59,11 +58,12 @@ sub Run {
     }
 
     if ($PackageVersion) {
-        print "\nFound package OTRSAppointmentCalendar $PackageVersion";
+
+        print "\n    Found package OTRSAppointmentCalendar $PackageVersion" if $Verbose;
 
         # Database upgrade is needed, because current version is not the latest.
         if ($DBUpdateNeeded) {
-            print ", executing database upgrade...\n";
+            print ", executing database upgrade...\n" if $Verbose;
 
             my @XMLStrings = (
                 '
@@ -77,51 +77,23 @@ sub Run {
                 ',
             );
 
-            # Create database specific SQL.
-            my @SQL;
-            my @SQLPost;
             for my $XMLString (@XMLStrings) {
-                my @XMLARRAY = $XMLObject->XMLParse( String => $XMLString );
-
-                # Create database specific SQL.
-                push @SQL, $DBObject->SQLProcessor(
-                    Database => \@XMLARRAY,
-                );
-
-                # Create database specific PostSQL.
-                push @SQLPost, $DBObject->SQLProcessorPost();
-            }
-
-            # Execute SQL.
-            for my $SQL ( @SQL, @SQLPost ) {
-                my $Success = $DBObject->Do( SQL => $SQL );
-                if ( !$Success ) {
-                    $Kernel::OM->Get('Kernel::System::Log')->Log(
-                        Priority => 'error',
-                        Message  => "Error during execution of '$SQL'!",
-                    );
-                    return;
-                }
+                return if !$Self->ExecuteXMLDBString( XMLString => $XMLString );
             }
 
             return 1;
         }
 
         # Appointment calendar tables exist and are up to date, so we do not have to create or upgrade them here.
-        print ", skipping database upgrade...\n";
+        print ", skipping database upgrade...\n" if $Verbose;
 
         return 1;
     }
 
-    # Get list of existing OTRS tables, in order to check if calendar tables already exist. This is needed because
-    #   update script might be executed multiple times, and by then OTRSAppointmentCalendar package has already been
-    #   merged so we cannot rely on its existence. Please see bug#12788 for more information.
-    my @OTRSTables = $DBObject->ListTables();
-
     # Define the XML data for the appointment calendar tables.
     my @XMLStrings = (
         '
-            <TableCreate Name="calendar">
+            <Table Name="calendar">
                 <Column Name="id" Required="true" PrimaryKey="true" AutoIncrement="true" Type="BIGINT" />
                 <Column Name="group_id" Required="true" Type="INTEGER" />
                 <Column Name="name" Required="true" Size="200" Type="VARCHAR" />
@@ -146,9 +118,9 @@ sub Run {
                     <Reference Local="create_by" Foreign="id" />
                     <Reference Local="change_by" Foreign="id" />
                 </ForeignKey>
-            </TableCreate>
+            </Table>
         ', '
-            <TableCreate Name="calendar_appointment">
+            <Table Name="calendar_appointment">
                 <Column Name="id" Required="true" PrimaryKey="true" AutoIncrement="true" Type="BIGINT" />
                 <Column Name="parent_id" Type="BIGINT" />
                 <Column Name="calendar_id" Required="true" Type="BIGINT" />
@@ -191,9 +163,9 @@ sub Run {
                     <Reference Local="create_by" Foreign="id" />
                     <Reference Local="change_by" Foreign="id" />
                 </ForeignKey>
-            </TableCreate>
+            </Table>
         ', '
-            <TableCreate Name="calendar_appointment_ticket">
+            <Table Name="calendar_appointment_ticket">
                 <Column Name="calendar_id" Required="true" Type="BIGINT" />
                 <Column Name="ticket_id" Required="true" Type="BIGINT" />
                 <Column Name="rule_id" Required="true" Size="32" Type="VARCHAR" />
@@ -224,47 +196,13 @@ sub Run {
                 <ForeignKey ForeignTable="calendar_appointment">
                     <Reference Local="appointment_id" Foreign="id" />
                 </ForeignKey>
-            </TableCreate>
+            </Table>
         ',
     );
 
-    # Create database specific SQL and PostSQL commands out of XML.
-    my @SQL;
-    my @SQLPost;
-    XML_STRING:
-    for my $XMLString (@XMLStrings) {
-
-        # Skip existing tables.
-        if ( $XMLString =~ /<TableCreate Name="([a-z_]+)">/ ) {
-            my $TableName = $1;
-            if ( grep { $_ eq $TableName } @OTRSTables ) {
-                print "\nTable '$TableName' already exists, skipping... ";
-                next XML_STRING;
-            }
-        }
-
-        my @XMLARRAY = $XMLObject->XMLParse( String => $XMLString );
-
-        # Create database specific SQL.
-        push @SQL, $DBObject->SQLProcessor(
-            Database => \@XMLARRAY,
-        );
-
-        # Create database specific PostSQL.
-        push @SQLPost, $DBObject->SQLProcessorPost();
-    }
-
-    # Execute SQL.
-    for my $SQL ( @SQL, @SQLPost ) {
-        my $Success = $DBObject->Do( SQL => $SQL );
-        if ( !$Success ) {
-            $Kernel::OM->Get('Kernel::System::Log')->Log(
-                Priority => 'error',
-                Message  => "Error during execution of '$SQL'!",
-            );
-            return;
-        }
-    }
+    return if !$Self->ExecuteXMLDBArray(
+        XMLArray => \@XMLStrings,
+    );
 
     return 1;
 }
