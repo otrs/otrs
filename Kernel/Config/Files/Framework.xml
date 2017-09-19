@@ -10658,10 +10658,11 @@ via the Preferences button after logging in.
             </Hash>
         </Setting>
     </ConfigItem>
-    <Setting Name="DashboardBackend###0410-OTRS-Blog" Required="0" Valid="1">
+    <ConfigItem Name="DashboardBackend###0410-OTRS-Blog" Required="0" Valid="1">
         <Description Translatable="1">Defines the parameters for the dashboard backend. "Limit" defines the number of entries displayed by default. "Group" is used to restrict access to the plugin (e. g. Group: admin;group1;group2;). "Default" indicates if the plugin is enabled by default or if the user needs to enable it manually. "CacheTTL" indicates the cache expiration period in minutes for the plugin. "Mandatory" determines if the plugin is always shown and can not be removed by agents.</Description>
-        <Navigation>Frontend::Agent::View::Dashboard</Navigation>
-        <Value>
+        <Group>Framework</Group>
+        <SubGroup>Frontend::Agent::Dashboard</SubGroup>
+        <Setting>
             <Hash>
                 <Item Key="Module">Kernel::Output::HTML::Dashboard::RSS</Item>
                 <Item Key="Title" Translatable="1">OTRS Blog</Item>
@@ -10672,10 +10673,9 @@ via the Preferences button after logging in.
                 <Item Key="Group"></Item>
                 <Item Key="Default">1</Item>
                 <Item Key="CacheTTL">360</Item>
-                <Item Key="Mandatory">0</Item>
             </Hash>
-        </Value>
-    </Setting>
+        </Setting>
+    </ConfigItem>
     <ConfigItem Name="DashboardBackend###0411-RSS" Required="0" Valid="0">
         <Description Translatable="1">Defines the parameters for the dashboard backend. "Limit" defines the number of entries displayed by default. "Group" is used to restrict access to the plugin (e. g. Group: admin;group1;group2;). "Default" indicates if the plugin is enabled by default or if the user needs to enable it manually. "CacheTTL" indicates the cache expiration period in minutes for the plugin. "Mandatory" determines if the plugin is always shown and can not be removed by agents.</Description>
         <Group>Framework</Group>
