@@ -37,7 +37,7 @@ Core.Config = (function (TargetNS) {
      */
         ConfigPrefix = '';
 
-    if (!Core.Debug.CheckDependency('Core.Config', 'Core.Data', 'Core.Data')) {
+    if (!Core.Debug.CheckDependency('Core.Config', 'Core.Data')) {
         return false;
     }
 
