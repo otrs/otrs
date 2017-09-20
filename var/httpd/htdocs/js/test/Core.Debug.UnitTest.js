@@ -18,7 +18,7 @@ Core.Debug = (function (Namespace) {
 
             Core.Debug.DummyFunction = function(){};
 
-            Assert.expect(4);
+            Assert.expect(3);
 
             Assert.equal(
                 Core.Debug.CheckDependency('Core.Debug.RunUnitTests', 'Core.Debug.DummyFunction', 'existing_function', true),
@@ -29,11 +29,6 @@ Core.Debug = (function (Namespace) {
                 Core.Debug.CheckDependency('Core.Debug.RunUnitTests', 'Core.Debug.DummyFunction2', 'existing_function', true),
                 false
             );
-
-            Assert.equal(
-                Core.Debug.CheckDependency('Core.Debug.RunUnitTests', 'Core.Debug2.DummyFunction2', 'existing_function', true),
-                false
-                );
 
             Assert.equal(
                 Core.Debug.CheckDependency('Core.Debug.RunUnitTests', 'nonexisting_function', 'nonexisting_function', true),
