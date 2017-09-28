@@ -7183,13 +7183,21 @@
         </Setting>
     </ConfigItem>
     <ConfigItem Name="DashboardEventsTicketCalendar###Queues" Required="1" Valid="1">
-        <Description Translatable="1">Defines queues that's tickets are used for displaying as calendar events.</Description>
+        <Description Translatable="1">Defines queues that's tickets are used for displaying as calendar events, uses regular expressions case insensative. Examples: use ".*" to match all queues, use "^Sales" to match all queues starting with Sales.</Description>
         <Group>Ticket</Group>
         <SubGroup>Frontend::Agent::Dashboard::EventsTicketCalendar</SubGroup>
         <Setting>
             <Array>
-                <Item>Raw</Item>
+                <Item>^Raw$</Item>
             </Array>
+        </Setting>
+    </ConfigItem>
+    <ConfigItem Name="DashboardEventsTicketCalendar::MinimumQueuePermissionsRequirement" Required="1" Valid="1">
+        <Description Translatable="1">Minimum permission requirement on defined queues for displaying calendar events.</Description>
+        <Group>Ticket</Group>
+        <SubGroup>Frontend::Agent::Dashboard::EventsTicketCalendar</SubGroup>
+        <Setting>
+            <String>ro</String>
         </Setting>
     </ConfigItem>
     <ConfigItem Name="DashboardEventsTicketCalendar::DynamicFieldStartTime" Required="0" Valid="1">

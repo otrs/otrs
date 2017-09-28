@@ -82,8 +82,10 @@ sub Run {
 
     $Param{CalendarWidth} = $ConfigObject->{DashboardEventsTicketCalendar}->{CalendarWidth};
 
+    my $MinimumQueuePermissionsRequirement = $ConfigObject->Get('DashboardEventsTicketCalendar::MinimumQueuePermissionsRequirement');
     my %QueuesAll = $Kernel::OM->Get('Kernel::System::Queue')->GetAllQueues(
         UserID => $Self->{UserID},
+        Type => $MinimumQueuePermissionsRequirement,
     );
 
     my $EventTicketFields  = $ConfigObject->Get('DashboardEventsTicketCalendar::TicketFieldsForEvents');
@@ -106,7 +108,7 @@ sub Run {
     my %QueuesConfigured;
     for my $Queue ( @{$Queues} ) {
         for my $QueueID ( sort keys %QueuesAll ) {
-            if ( $QueuesAll{$QueueID} eq $Queue ) {
+            if ( $QueuesAll{$QueueID} =~ /$Queue/i ) {
                 $QueuesConfigured{$QueueID} = $QueuesAll{$QueueID};
             }
         }
