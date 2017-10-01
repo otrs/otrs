@@ -9176,6 +9176,12 @@ via the Preferences button after logging in.
         <Navigation>Frontend::Base::NavBarModule</Navigation>
         <Value>
             <Hash>
+                <Item Key="OTRSGroup">
+                    <Hash>
+                        <Item Key="Title" Translatable="1">OTRS Group Services</Item>
+                        <Item Key="Order">1</Item>
+                    </Hash>
+                </Item>
                 <Item Key="Ticket">
                     <Hash>
                         <Item Key="Title" Translatable="1">Ticket Settings</Item>
@@ -9200,22 +9206,16 @@ via the Preferences button after logging in.
                         <Item Key="Order">4000</Item>
                     </Hash>
                 </Item>
-                <Item Key="OTRSGroup">
-                    <Hash>
-                        <Item Key="Title" Translatable="1">OTRS Group Services</Item>
-                        <Item Key="Order">5000</Item>
-                    </Hash>
-                </Item>
                 <Item Key="Administration">
                     <Hash>
                         <Item Key="Title" Translatable="1">Administration</Item>
-                        <Item Key="Order">6000</Item>
+                        <Item Key="Order">5000</Item>
                     </Hash>
                 </Item>
                 <Item Key="Miscellaneous">
                     <Hash>
                         <Item Key="Title" Translatable="1">Miscellaneous</Item>
-                        <Item Key="Order">7000</Item>
+                        <Item Key="Order">6000</Item>
                     </Hash>
                 </Item>
             </Hash>
