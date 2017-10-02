@@ -725,13 +725,16 @@ sub PartsAttachments {
         my ($SubjectString) = $Part->as_string() =~ m/^Subject: ([^\n]*(\n[ \t][^\n]*)*)/m;
         my $Subject = $Self->_DecodeString( String => $SubjectString );
 
-        # cleanup filename
-        $Subject = $Kernel::OM->Get('Kernel::System::Main')->FilenameCleanUp(
-            Filename => $Subject,
-            Type     => 'Attachment',
-        );
+        if ( defined($Subject) && ( length($Subject) > 0 ) ) {
 
-        if ( $Subject eq '' ) {
+            # cleanup filename
+            $Subject = $Kernel::OM->Get('Kernel::System::Main')->FilenameCleanUp(
+                Filename => $Subject,
+                Type     => 'Attachment',
+            );
+        }
+
+        if ( !defined($Subject) || ( length($Subject) == 0 ) ) {
             $Self->{NoFilenamePartCounter}++;
             $Subject = "file-$Self->{NoFilenamePartCounter}";
         }
