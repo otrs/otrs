@@ -755,7 +755,8 @@ sub SearchOptionList {
             };
     }
 
-    if ( $Kernel::OM->Get('Kernel::Config')->Get('Ticket::ArchiveSystem') ) {
+    if ( $Kernel::OM->Get('Kernel::Config')->Get('Ticket::ArchiveSystem')
+        && $Kernel::OM->Get('Kernel::Config')->Get('Ticket::AgentArchiveSystem') ) {
         push @SearchOptionList,
             {
             Key  => 'ArchiveID',
