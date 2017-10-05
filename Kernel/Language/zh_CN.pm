@@ -6906,6 +6906,15 @@ Thanks for your help!
         'notice' => '注意',
         'off' => '关',
         'reverse' => '倒序',
+        'Process History' => '流程单历史',
+        'ActivityName' => '活动名称',
+        'Operator' => '操作者',
+        'StartTime' => '开始时间',
+        'CompleteTime' => '完成时间',
+        'ConsumeTime' => '消耗时间',
+        'Circulation' => '流转',
+        'Shows a link in the menu to add a process history in the ticket zoom view of the agent interface.' => '在服务人员界面工单详情视图中，为流程单历史菜单显示一个链接。',
+        'Ticket process history.' => '工单的流程历史',
 
     };
 
