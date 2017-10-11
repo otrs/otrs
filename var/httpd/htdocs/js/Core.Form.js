@@ -257,5 +257,17 @@ Core.Form = (function (TargetNS) {
         }
     };
 
+    /**
+     * This makes all forms submittable by using Ctrl+Enter inside textareas.
+     * Does NOT work if Frontend::RichText is enabled!
+     */
+    $('textarea').keydown( function (Event) {
+        if ( Event.ctrlKey && Event.keyCode == 13 ) {
+            // We need to click() instead of submit(), since click() has
+            // a few useful event handlers tied to it, like validation.
+            $(this.form).find('button#submitRichText').click();
+        }
+    });
+
     return TargetNS;
 }(Core.Form || {}));
