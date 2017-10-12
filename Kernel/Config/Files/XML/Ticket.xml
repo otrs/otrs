@@ -11824,6 +11824,17 @@ Thanks for your help!
             </Hash>
         </Value>
     </Setting>
+    <Setting Name="DynamicFields::Driver###Integer" Required="0" Valid="1">
+        <Description Translatable="1">DynamicField backend registration.</Description>
+        <Navigation>Core::DynamicFields::DriverRegistration</Navigation>
+        <Value>
+            <Hash>
+                <Item Key="DisplayName" Translatable="1">Integer</Item>
+                <Item Key="Module">Kernel::System::DynamicField::Driver::Integer</Item>
+                <Item Key="ConfigDialog">AdminDynamicFieldText</Item>
+            </Hash>
+        </Value>
+    </Setting>
     <Setting Name="Ticket::Frontend::AgentTicketClose###DynamicField" Required="0" Valid="1">
         <Description Translatable="1">Dynamic fields shown in the ticket close screen of the agent interface.</Description>
         <Navigation>Frontend::Agent::View::TicketClose</Navigation>
