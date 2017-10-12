@@ -126,7 +126,7 @@ Core.Agent.Admin.GenericInterfaceDebugger = (function (TargetNS) {
             $('#RequestList tbody').html(HTML);
 
             $('#RequestList a').on('click', function() {
-                var CommunicationID = $(this).blur().parents('tr').find('input.CommunicationID').val();
+                var CommunicationID = $(this).blur().closest('tr').find('input.CommunicationID').val();
 
                 // highlight selected entry
                 $(this).parents('tr').addClass('Active').siblings().removeClass('Active');
