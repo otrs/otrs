@@ -53,6 +53,17 @@
             <li class="[% Data.Class | html %]"><a href="[% Data.Link %]" target="[% Data.Target | html %]" accesskey="[% Data.AccessKey | html %]" title="[% Translate(Data.Description) | html %]: [% Data.Count | html %][% Data.AccessKeyReference | html %]">[% Translate(Data.Description) | html %] <i class="icon-small fa fa-clock-o icon-show-reached"></i> <i class="icon-small fa fa-star icon-show-new"></i><i class="[% Data.Icon | html %]"></i> <span class="Counter">[% Data.Count | html %]</span> </a></li>
 [% RenderBlockEnd("ToolBarItem") %]
 
+[% RenderBlockStart("ToolBarTicketNumberSearch") %]
+        <li class="Extended SearchFulltext" style="margin-left: 10px">
+            <form action="[% Env("CGIHandle") %]" method="post" name="SearchTicketNumber">
+                <input type="hidden" name="Action" value="AgentTicketSearch"/>
+                <input type="hidden" name="Subaction" value="Search"/>
+                <input type="hidden" name="CheckTicketNumberAndRedirect" value="1"/>
+                <input type="text" size="25" name="TicketNumber" id="TicketNumber" placeholder="[% Translate("TicketNumber") %]" title="[% Translate("TicketNumber") %]"/>
+            </form>
+        </li>
+[% RenderBlockEnd("ToolBarTicketNumberSearch") %]
+
 [% RenderBlockStart("ToolBarSearchProfile") %]
             <li class="Extended SearchProfile">
                 <form action="[% Env("CGIHandle") %]" method="post" name="SearchProfile">
