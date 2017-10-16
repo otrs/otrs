@@ -483,6 +483,41 @@ sub TicketSearch {
     my $ArticleJoinSQL
         = $Kernel::OM->Get('Kernel::System::Ticket::Article')->_ArticleIndexQuerySQL( Data => \%Param ) || '';
 
+    # workaround for MySQL: suggest index to speed up text searching
+    # of unarchived tickets
+    if (
+        $ArticleJoinSQL && ( $ArticleJoinSQL ne ' ' )  # skip if SphinxAndStaticDB.pm is used
+        && $Kernel::OM->Get('Kernel::Config')->Get('Ticket::ArchiveSystem')
+        && ( $DBObject->GetDatabaseFunction('Type') eq 'mysql' )
+    ) {
+        my $ArchiveFlags = $Param{ArchiveFlags};
+
+        # if no flag is given, only search for not archived ticket
+        if ( !$ArchiveFlags ) {
+            $ArchiveFlags = ['n'];
+        }
+
+        # prepare search with archive flags, check arguments
+        if ( ref $ArchiveFlags ne 'ARRAY' ) {
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
+                Priority => 'error',
+                Message  => "Invalid attribute ArchiveFlags '$Param{ArchiveFlags}'!",
+            );
+            return;
+        }
+
+        # prepare options
+        my %Options;
+        for my $Key ( @{ $ArchiveFlags } ) {
+            $Options{$Key} = 1;
+        }
+
+        # add index suggestion only for searching for unarchieved ticekts
+        if ( !$Options{y} && $Options{n} ) {
+            $SQLFrom .= ' USE INDEX (ticket_archive_flag) ';
+        }
+    }
+
     # sql, use also article table if needed
     $SQLFrom .= $ArticleJoinSQL;
 
