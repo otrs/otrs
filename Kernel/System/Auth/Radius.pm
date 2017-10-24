@@ -123,6 +123,10 @@ sub Auth {
             return;
         }
     }
+    #utf8 encode user and password
+    utf8::encode($Pw);
+    utf8::encode($User);
+
     my $AuthResult = $Radius->check_pwd( $User, $Pw );
 
     # login note
