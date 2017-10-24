@@ -254,11 +254,8 @@
                 </div>
             </div>
 
-            <div class="WidgetSimple ScreenXL">
-                <div class="Header Expanded">
-                    <div class="WidgetAction Toggle">
-                        <a href="#" title="[% Translate("Save settings") | html %]"></a>
-                    </div>
+            <div class="WidgetSimple">
+                <div class="Header">
                     <h2>[% Translate("Save Activities, Activity Dialogs and Transitions") | html %]</h2>
                 </div>
                 <div class="Content">
