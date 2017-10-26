@@ -6232,7 +6232,7 @@ msgstr "E-Mail-Kopfzeilen setzen"
 
 #. Template: AdminPostMasterFilter
 msgid "Set email header"
-msgstr "Setze E-Mai-Kopfzeile"
+msgstr "Setze E-Mail-Kopfzeile"
 
 #. Template: AdminPostMasterFilter
 msgid "Set value"
