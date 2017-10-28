@@ -259,7 +259,7 @@ Core.Form = (function (TargetNS) {
 
     /**
      * This makes all forms submittable by using Ctrl+Enter inside textareas.
-     * On macOS you can use Command+Enter.
+     * On macOS you can use Command+Enter instead.
      * Does NOT work if Frontend::RichText is enabled!
      */
     $('textarea').keydown(function (Event) {
