@@ -4333,7 +4333,7 @@ Returns:
 
     %Categories = (
         All => {
-            DisplayName => 'All Settings',
+            DisplayName => Translatable('All Settings'),
             Files => [],
         },
         OTRSFree => {
