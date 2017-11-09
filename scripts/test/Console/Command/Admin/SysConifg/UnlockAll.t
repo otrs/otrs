@@ -13,7 +13,7 @@ use utf8;
 
 use vars (qw($Self));
 
-my $CommandObject = $Kernel::OM->Get('Kernel::System::Console::Command::Admin::SysConifg::UnlockAll');
+my $CommandObject = $Kernel::OM->Get('Kernel::System::Console::Command::Admin::SysConfig::UnlockAll');
 
 my ( $Result, $ExitCode );
 {
