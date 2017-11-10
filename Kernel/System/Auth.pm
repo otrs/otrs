@@ -288,6 +288,7 @@ sub Auth {
             %User,
             ValidID      => $ValidID,
             ChangeUserID => 1,
+            UserPw       => '',
         );
 
         return if !$Update;
