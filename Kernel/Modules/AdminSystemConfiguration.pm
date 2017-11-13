@@ -126,7 +126,7 @@ sub Run {
         my @SettingNames = $SysConfigObject->ConfigurationInvalidList();
         my @Parameters   = (
             {
-                Name  => 'Invalid settings',
+                Name  => Translatable('Invalid settings'),
                 Value => 'Invalid',
             }
         );
@@ -586,7 +586,7 @@ sub Run {
 
             return $LayoutObject->ErrorScreen(
                 Message =>
-                    'System Configuration could not be imported due to a unknown error, please check OTRS logs for more information',
+                    Translatable('System Configuration could not be imported due to a unknown error, please check OTRS logs for more information.'),
             );
         }
         elsif ( $ConfigurationLoad && $ConfigurationLoad eq '-1' ) {
@@ -645,7 +645,7 @@ sub _GetCategoriesStrg {
     my $CategoriesStrg = $Kernel::OM->Get('Kernel::Output::HTML::Layout')->BuildSelection(
         Data         => \%CategoryData,
         Name         => 'Category',
-        SelectedID   => $Category || 'All',
+        SelectedID   => $Category || $Kernel::OM->Get('Kernel::Language')->Translate('All'),
         PossibleNone => 0,
         Translation  => 1,
         Sort         => 'AlfaNumericKey',
