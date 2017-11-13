@@ -281,11 +281,18 @@ $Selenium->RunTest(
 
         $Selenium->WaitFor(
             JavaScript =>
-                "return typeof(\$) === 'function' && \$('a[href*=\"Subaction=TransitionEdit;ID=$TransitionID\"]').length"
+                "return typeof(\$) === 'function' && \$('a[href*=\"Subaction=TransitionEdit;ID=$TransitionID\"]:visible').length"
         );
 
-        # Go to edit test ActivityDialog screen again.
+        $Selenium->find_element( "#TransitionFilter", 'css' )->send_keys($TransitionRandom);
+
+        # Wait for filter to kick in.
+        sleep 2;
+
+        # Go to edit test Transition screen again.
         $Selenium->find_element("//a[contains(\@href, \'Subaction=TransitionEdit;ID=$TransitionID' )]")->click();
+
+        $Selenium->WaitFor( WindowCount => 2 );
         $Handles = $Selenium->get_window_handles();
         $Selenium->switch_to_window( $Handles->[1] );
 
@@ -317,6 +324,8 @@ $Selenium->RunTest(
         $Selenium->close();
         $Selenium->WaitFor( WindowCount => 1 );
         $Selenium->switch_to_window( $Handles->[0] );
+
+        $Selenium->WaitFor( JavaScript => "return typeof(\$) === 'function' && \$('#ProcessDelete').length" );
 
         # Get process id and return to overview afterwards.
         my $ProcessID = $Selenium->execute_script('return $("#ProcessDelete").data("id")') || undef;
