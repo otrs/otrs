@@ -1,4 +1,5 @@
 #6.0.0.beta1 2017-??-??
+ - 2017-11-13 Enhanced configurable access to archive searching in agent panel.
  - 2017-10-05 Configurable access to archive searching in agent panel.
  - 2017-03-26 Fixed bug#[12650](https://bugs.otrs.org/show_bug.cgi?id=12650)(PR#1636) - SendCustomerNotification does not respect newly assigned mail address. Thanks to S7!
  - 2017-03-24 Fixed bug#[12720](https://bugs.otrs.org/show_bug.cgi?id=12720)(PR#1672) - Settings window of Complex LinkObject is not translated. Thanks to S7!
