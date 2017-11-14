@@ -645,7 +645,7 @@ sub _GetCategoriesStrg {
     my $CategoriesStrg = $Kernel::OM->Get('Kernel::Output::HTML::Layout')->BuildSelection(
         Data         => \%CategoryData,
         Name         => 'Category',
-        SelectedID   => $Category || 'All',
+        SelectedID   => $Category || $Kernel::OM->Get('Kernel::Language')->Translate('All'),
         PossibleNone => 0,
         Translation  => 1,
         Sort         => 'AlphaNumericKey',
