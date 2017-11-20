@@ -1,6 +1,7 @@
 #7.0.0.alpha1 2018-??-??
 
 #6.0.2 2017-??-??
+ - 2017-11-20 Fixed bug#[13291](https://bugs.otrs.org/show_bug.cgi?id=13291) - Moving setting from one XML file to another doesn't update xml_filename in the sysconfig_default table.
  - 2017-11-17 Fixed bug#[13145](https://bugs.otrs.org/show_bug.cgi?id=13145) - Editing a transistion action results in error without logfile entry.
  - 2017-11-17 Fixed bug#[13347](https://bugs.otrs.org/show_bug.cgi?id=13347) - Internal article information disclosed by the customer search.
  - 2017-11-17 Fixed bug#[13343](https://bugs.otrs.org/show_bug.cgi?id=13343) - LDAP customer user backends should be implicitly read only.
