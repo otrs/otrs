@@ -72,9 +72,6 @@ $Selenium->RunTest(
         # navigate to AgentDashboard screen
         $Selenium->VerifiedGet("${ScriptAlias}index.pl?Action=AgentTicketPhone");
 
-        # subscribe on event for creation instance of RichTextEditor
-        $Selenium->execute_script("Core.App.Subscribe('Event.UI.RichTextEditor.InstanceReady', function () {});");
-
         # wait for the CKE to load
         $Selenium->WaitFor(
             JavaScript =>
@@ -100,6 +97,12 @@ $Selenium->RunTest(
 
         # now go through the test cases
         for my $TestCase ( @TestCasesBasic ) {
+
+            # wait for the CKE to load
+            $Selenium->WaitFor(
+                JavaScript =>
+                    "return typeof(\$) === 'function' && \$('body.cke_editable', \$('.cke_wysiwyg_frame').contents()).length == 1"
+            );
 
             $Selenium->execute_script( 'CKEDITOR.instances.RichText.setData("' . $TestCase->{Input} . '");' );
 
