@@ -5491,6 +5491,7 @@ sub _DisplayProcessList {
         Sort         => 'AlphanumericValue',
         Translation  => 0,
         AutoComplete => 'off',
+        TreeView     => 1,
     );
 
     # add rich text editor
