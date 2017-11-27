@@ -32,24 +32,6 @@
 
     [% INCLUDE "Breadcrumb.tt" Path = BreadcrumbPath %]
 
-    [% BreadcrumbPath = [
-            {
-                Name => Translate('Appointment Notification Management'),
-                Link => Env("Action"),
-            },
-        ]
-    %]
-
-    [% SWITCH Data.Action %]
-        [% CASE 'Add' %]
-            [% BreadcrumbPath.push({ Name => Translate("Add Notification"),}) %]
-        [% CASE 'Change' %]
-            [% USE EditTitle = String(Translate("Edit Notification")) %]
-            [% BreadcrumbPath.push({ Name => EditTitle.append( ': ', Data.Name ) }) %]
-    [% END %]
-
-    [% INCLUDE "Breadcrumb.tt" Path = BreadcrumbPath %]
-
     <div class="Clear"></div>
     <div class="SidebarColumn">
 [% RenderBlockStart("ActionList") %]
@@ -179,7 +161,7 @@
 
 [% RenderBlockStart("OverviewUpdate") %]
 
-        <form action="[% Env("CGIHandle") %]" method="post" class="Validate" name="compose" id="NotificationEvent">
+        <form action="[% Env("CGIHandle") %]" method="post" class="Validate PreventMultipleSubmits" name="compose" id="NotificationEvent">
             <div class="WidgetSimple">
                 <div class="Header">
                 [% IF Data.Action == 'Add' %]

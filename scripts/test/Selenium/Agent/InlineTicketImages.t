@@ -204,7 +204,9 @@ my $CheckTicketReplyOrForward = sub {
     $Selenium->switch_to_window( $Handles->[1] );
 
     # Wait without jQuery because it might not be loaded yet.
-    $Selenium->WaitFor( JavaScript => 'return typeof($) === "function" && $("#ToCustomer").length;' );
+    $Selenium->WaitFor(
+        JavaScript => 'return typeof($) === "function" && $("#ToCustomer").length && $("#submitRichText").length'
+    );
 
     if ( $Action eq 'Forward' ) {
         my $TestCustomer = $Param{TestCustomer};
@@ -229,7 +231,7 @@ my $CheckTicketReplyOrForward = sub {
     );
 
     # Input required fields and submit compose.
-    $Selenium->find_element( "#submitRichText", 'css' )->click();
+    $Selenium->execute_script("\$('#submitRichText').click()");
 
     $Selenium->WaitFor( WindowCount => 1 );
     $Selenium->switch_to_window( $Handles->[0] );

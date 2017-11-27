@@ -1741,7 +1741,7 @@ sub Run {
             );
 
             my $MaxAllowedPacket            = 0;
-            my $MaxAllowedPacketRecommended = 20;
+            my $MaxAllowedPacketRecommended = 64;
             while ( my @Data = $DBObject->FetchrowArray() ) {
                 if ( $Data[1] ) {
                     $MaxAllowedPacket = $Data[1] / 1024 / 1024;
@@ -1787,6 +1787,17 @@ sub Run {
             Name => 'CloudServicesWarning',
         );
     }
+
+    # Check if OTRS Daemon is running in the background.
+    #   Get daemon state from the cache.
+    my $DaemonRunning = $Kernel::OM->Get('Kernel::System::Cache')->Get(
+        Type => 'DaemonRunning',
+        Key  => $ConfigObject->Get('NodeID') || 1,
+    );
+    $LayoutObject->AddJSData(
+        Key   => 'DaemonCheckNotRunning',
+        Value => !$DaemonRunning,
+    );
 
     # Remove old package upgrade all data.
     my $SystemDataObject = $Kernel::OM->Get('Kernel::System::SystemData');

@@ -13,20 +13,20 @@ use utf8;
 
 use vars (qw($Self));
 
-# get selenium object
 my $Selenium = $Kernel::OM->Get('Kernel::System::UnitTest::Selenium');
 
 $Selenium->RunTest(
     sub {
 
-        # get helper object
         my $Helper          = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
         my $SysConfigObject = $Kernel::OM->Get('Kernel::System::SysConfig');
+
+        my $TicketHookValue = 'abc';
 
         $Helper->ConfigSettingChange(
             Valid => 1,
             Key   => 'Ticket::Hook',
-            Value => 'abc',
+            Value => $TicketHookValue,
         );
 
         $Helper->ConfigSettingChange(
@@ -38,13 +38,11 @@ $Selenium->RunTest(
             },
         );
 
-        my $Home = $Kernel::OM->Get('Kernel::Config')->Get('Home');
-
         # Rebuild system configuration.
         my $CommandObject = $Kernel::OM->Get('Kernel::System::Console::Command::Maint::Config::Rebuild');
         my $ExitCode      = $CommandObject->Execute('--cleanup');
 
-        # create test user and login
+        # Create test user and login.
         my $TestUserLogin = $Helper->TestUserCreate(
             Groups => ['admin'],
         ) || die "Did not get test user";
@@ -55,17 +53,27 @@ $Selenium->RunTest(
             Password => $TestUserLogin,
         );
 
-        # get script alias
         my $ScriptAlias = $Kernel::OM->Get('Kernel::Config')->Get('ScriptAlias');
 
-        # navigate to AdminSysConfig screen
+        # Navigate to AdminSysConfig screen.
         $Selenium->VerifiedGet("${ScriptAlias}index.pl?Action=AdminSystemConfiguration;");
 
+        # Wait until page is loaded with jstree content in sidebar.
         $Selenium->WaitFor(
-            JavaScript => 'return $("#SysConfigSearch").length',
+            JavaScript =>
+                'return typeof($) === "function" && $("#SysConfigSearch").length && $("#ConfigTree > ul:visible").length',
         );
-        $Selenium->find_element( "#SysConfigSearch",      "css" )->send_keys("Ticket::Hook");
-        $Selenium->find_element( "button[type='submit']", "css" )->VerifiedClick();
+
+        $Selenium->find_element( "#SysConfigSearch", "css" )->clear();
+        $Selenium->find_element( "#SysConfigSearch", "css" )->send_keys('Ticket::Hook');
+        $Selenium->WaitFor(
+            JavaScript => 'return typeof($) === "function" && !$("#AJAXLoaderSysConfigSearch:visible").length'
+        );
+        $Selenium->WaitFor( JavaScript => 'return typeof($) === "function" && $("li.ui-menu-item:visible").length' );
+        $Selenium->find_element( "button[type='submit']", "css" )->click();
+        $Selenium->WaitFor(
+            JavaScript => 'return typeof($) === "function" && $(".fa-exclamation-triangle").length',
+        );
 
         my $Message = $Selenium->find_element( ".fa-exclamation-triangle", "css" )->get_attribute('title');
         $Self->True(
@@ -73,59 +81,38 @@ $Selenium->RunTest(
                 =~ m{^This setting is currently being overridden in Kernel\/Config\/Files\/ZZZZUnitTest\d+.pm and can't thus be changed here!$}
             ? 1
             : 0,
-            "Check if setting overrided message is present."
+            "Check if setting overridden message is present."
         );
 
-        # Check if overrided Effective value is displayed
+        # Check if overridden Effective value is displayed.
         my $Value = $Selenium->find_element( "#Ticket\\:\\:Hook", "css" )->get_value();
         $Self->Is(
             $Value // '',
-            'abc',
+            $TicketHookValue,
             'Ticket::Hook value is rendered ok.',
         );
 
-        # navigate to AdminSysConfig screen
-        $Selenium->VerifiedGet("${ScriptAlias}index.pl?Action=AdminSystemConfiguration;");
+        # Navigate to AdminSysConfig screen.
+        $Selenium->VerifiedGet(
+            "${ScriptAlias}index.pl?Action=AdminSystemConfigurationGroup;RootNavigation=Frontend::Agent::View::TicketQueue"
+        );
 
-        # Use navigation to get to the Frontend::Agent::View::TicketQueue.
+        # Wait until page is loaded with jstree content in sidebar.
         $Selenium->WaitFor(
-            JavaScript => 'return $("li#Frontend > i").length',
-        );
-        $Selenium->find_element( "li#Frontend > i", "css" )->VerifiedClick();
-
-        $Selenium->WaitFor(
-            JavaScript => 'return $("li#Frontend\\\\:\\\\:Agent > i").length',
-        );
-        $Selenium->find_element( "li#Frontend\\:\\:Agent > i", "css" )->VerifiedClick();
-
-        $Selenium->WaitFor(
-            JavaScript => 'return $("li#Frontend\\\\:\\\\:Agent\\\\:\\\\:View > i").length',
-        );
-        $Selenium->find_element( "li#Frontend\\:\\:Agent\\:\\:View > i", "css" )->VerifiedClick();
-
-        $Selenium->WaitFor(
-            JavaScript => 'return $("a#Frontend\\\\:\\\\:Agent\\\\:\\\\:View\\\\:\\\\:TicketQueue_anchor").length',
+            JavaScript =>
+                'return typeof($) === "function" && $(".fa-exclamation-triangle").length && $("#ConfigTree > ul:visible").length',
         );
 
-        $Selenium->execute_script(
-            "\$('a#Frontend\\\\:\\\\:Agent\\\\:\\\\:View\\\\:\\\\:TicketQueue_anchor')[0].scrollIntoView(true);",
-        );
-        $Selenium->find_element( "a#Frontend\\:\\:Agent\\:\\:View\\:\\:TicketQueue_anchor", "css" )->VerifiedClick();
-
-        $Selenium->WaitFor(
-            JavaScript => 'return $(".fa-exclamation-triangle").length',
-        );
-
-        my $Message2 = $Selenium->find_element( ".fa-exclamation-triangle", "css" )->get_attribute('title');
+        $Message = $Selenium->find_element( ".fa-exclamation-triangle", "css" )->get_attribute('title');
         $Self->True(
-            $Message2
+            $Message
                 =~ m{^This setting is currently being overridden in Kernel\/Config\/Files\/ZZZZUnitTest\d+.pm and can't thus be changed here!$}
             ? 1
             : 0,
-            "Check if setting overrided message is present (when navigation is used)."
+            "Check if setting overridden message is present (when navigation is used)."
         );
 
-        # Check if overrided Effective value is displayed
+        # Check if overridden Effective value is displayed.
         my $HashValue1 = $Selenium->find_element(
             "#Ticket\\:\\:Frontend\\:\\:AgentTicketQueue\\#\\#\\#QueueSort_Hash\\#\\#\\#3",
             "css"
@@ -146,35 +133,53 @@ $Selenium->RunTest(
             'Check second hash item value',
         );
 
+        # Navigate to AdminSysConfig screen.
+        $Selenium->VerifiedGet(
+            "${ScriptAlias}index.pl?Action=AdminSystemConfiguration;Subaction=View;Setting=Frontend%3A%3ACSSPath"
+        );
+
+        # Check if setting is overridden
+        my $CSSPathOverridden = $Selenium->execute_script(
+            'return $(".SettingsList .WidgetSimple i.fa-exclamation-triangle").length;'
+        );
+        $Self->False(
+            $CSSPathOverridden,
+            'Make sure that Frontend::CSSPath is not overridden.'
+        );
+
         if ( $Kernel::OM->Get('Kernel::System::OTRSBusiness')->OTRSBusinessIsInstalled() ) {
 
             # Navigate to AgentPreferences screen.
             $Selenium->VerifiedGet("${ScriptAlias}index.pl?Action=AgentPreferences;Subaction=Group;Group=Advanced");
 
+            # Wait until page is loaded with jstree content in sidebar.
+            $Selenium->WaitFor(
+                JavaScript => 'return typeof($) === "function" && $("#ConfigTree > ul:visible").length',
+            );
+
             # Expand navigation.
             $Selenium->WaitFor(
                 JavaScript => 'return typeof($) === "function" && $("#ConfigTree li#Frontend > i").length;',
             );
-            $Selenium->find_element( '#ConfigTree li#Frontend > i', 'css' )->VerifiedClick();
+            $Selenium->find_element( '#ConfigTree li#Frontend > i', 'css' )->click();
 
             $Selenium->WaitFor(
                 JavaScript =>
                     'return typeof($) === "function" && $("#ConfigTree li#Frontend\\\\:\\\\:Agent > i").length;',
             );
-            $Selenium->find_element( '#ConfigTree li#Frontend\\:\\:Agent > i', 'css' )->VerifiedClick();
+            $Selenium->find_element( '#ConfigTree li#Frontend\\:\\:Agent > i', 'css' )->click();
 
             $Selenium->WaitFor(
                 JavaScript =>
                     'return typeof($) === "function" && $("#ConfigTree li#Frontend\\\\:\\\\:Agent\\\\:\\\\:View > i").length;',
             );
-            $Selenium->find_element( '#ConfigTree li#Frontend\\:\\:Agent\\:\\:View > i', 'css' )->VerifiedClick();
+            $Selenium->find_element( '#ConfigTree li#Frontend\\:\\:Agent\\:\\:View > i', 'css' )->click();
 
             $Selenium->WaitFor(
                 JavaScript =>
                     'return typeof($) === "function" && $("a#Frontend\\\\:\\\\:Agent\\\\:\\\\:View\\\\:\\\\:TicketEscalation_anchor").length;',
             );
-            $Selenium->find_element( 'a#Frontend\\:\\:Agent\\:\\:View\\:\\:TicketEscalation_anchor', 'css' )
-                ->VerifiedClick();
+            $Selenium->find_element( 'a#Frontend\\:\\:Agent\\:\\:View\\:\\:TicketEscalation_anchor', 'css' )->click();
 
             # Wait for AJAX.
             $Selenium->WaitFor(
@@ -192,8 +197,7 @@ $Selenium->RunTest(
                     .val("Down").trigger("redraw.InputField").trigger("change");'
             );
 
-            $Selenium->find_element( '.SettingsList li:nth-child(1) .SettingUpdateBox .Update', 'css' )
-                ->VerifiedClick();
+            $Selenium->find_element( '.SettingsList li:nth-child(1) .SettingUpdateBox .Update', 'css' )->click();
 
             # Wait for AJAX.
             $Selenium->WaitFor(
@@ -207,7 +211,7 @@ $Selenium->RunTest(
             );
 
             my $ModificationAllowed = $Selenium->execute_script(
-                'return $(".fa-exclamation-triangle").length === 0',
+                'return typeof($) === "function" && $(".fa-exclamation-triangle").length === 0',
             );
 
             $Self->True(
@@ -221,7 +225,7 @@ $Selenium->RunTest(
             );
 
             my $ModificationNotAllowed = $Selenium->execute_script(
-                'return $(".fa-exclamation-triangle").length === 1',
+                'return typeof($) === "function" && $(".fa-exclamation-triangle").length === 1',
             );
 
             $Self->True(

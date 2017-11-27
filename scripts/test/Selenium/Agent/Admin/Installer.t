@@ -135,7 +135,10 @@ $Selenium->RunTest(
             }
 
             $Selenium->find_element( '#ButtonCheckDB', 'css' )->VerifiedClick();
-            $Selenium->WaitFor( JavaScript => 'return typeof($) === "function" && $(".Result:visible").length === 1;' );
+            $Selenium->WaitFor(
+                Time       => 300,
+                JavaScript => 'return typeof($) === "function" && $(".Result:visible").length === 1;'
+            );
 
             $Self->Is(
                 $Selenium->execute_script("return \$('.Result p').text().trim();"),
@@ -144,7 +147,20 @@ $Selenium->RunTest(
             );
 
             # Go to next step of installation (Create Database).
-            $Selenium->find_element( '#FormDBSubmit', 'css' )->VerifiedClick();
+            $Selenium->execute_script("\$('#FormDBSubmit').click();");
+
+            $Selenium->WaitFor(
+                Time => 300,
+                JavaScript =>
+                    'return typeof($) === "function" && $(".Header h2").text().trim() === "Create Database (2/4)";'
+            );
+
+            # Verify we are on the second screen.
+            $Self->Is(
+                $Selenium->execute_script("return \$('.Header h2').text().trim()"),
+                'Create Database (2/4)',
+                'Loaded 2/4 screen'
+            );
 
             $Self->Is(
                 $Selenium->execute_script("return \$('.Result p').text().trim();"),
@@ -153,13 +169,49 @@ $Selenium->RunTest(
             );
 
             # Go to next step of installation (System Settings).
-            $Selenium->find_element("//button[\@type='submit']")->VerifiedClick();
+            $Selenium->execute_script("\$('button[type=submit]').click();");
+
+            $Selenium->WaitFor(
+                Time => 300,
+                JavaScript =>
+                    'return typeof($) === "function" && $(".Header h2").text().trim() === "System Settings (3/4)";'
+            );
+
+            # Verify we are on the the third screen.
+            $Self->Is(
+                $Selenium->execute_script("return \$('.Header h2').text().trim()"),
+                'System Settings (3/4)',
+                'Loaded 3/4 screen - System Settings'
+            );
 
             # Go to next step of installation (Mail Configuration).
-            $Selenium->find_element("//button[\@type='submit']")->VerifiedClick();
+            $Selenium->execute_script("\$('button[type=submit]').click();");
+
+            $Selenium->WaitFor(
+                Time => 300,
+                JavaScript =>
+                    'return typeof($) === "function" && $(".Header h2").text().trim() === "Mail Configuration (3/4)";'
+            );
+
+            # Verify we are on the the third screen.
+            $Self->Is(
+                $Selenium->execute_script("return \$('.Header h2').text().trim()"),
+                'Mail Configuration (3/4)',
+                'Loaded 3/4 screen - Mail Configuration'
+            );
+
+            $Selenium->WaitFor(
+                JavaScript => 'return typeof($) === "function" && $("#ButtonSkipMail").length === 1;'
+            );
 
             # Go to last step of installation.
-            $Selenium->find_element( '#ButtonSkipMail', 'css' )->VerifiedClick();
+            $Selenium->execute_script("\$('#ButtonSkipMail').click();");
+
+            $Selenium->WaitFor(
+                Time => 300,
+                JavaScript =>
+                    'return typeof($) === "function" && $(".Header h2").text().trim() === "Finished (4/4)";'
+            );
 
             # Verify we are on the last screen.
             $Self->Is(

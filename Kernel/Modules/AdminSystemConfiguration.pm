@@ -126,7 +126,7 @@ sub Run {
         my @SettingNames = $SysConfigObject->ConfigurationInvalidList();
         my @Parameters   = (
             {
-                Name  => 'Invalid settings',
+                Name  => Translatable('Invalid settings'),
                 Value => 'Invalid',
             }
         );
@@ -198,11 +198,6 @@ sub Run {
         $Output .= $LayoutObject->NavigationBar();
 
         my $RootNavigation = $ParamObject->GetParam( Param => 'RootNavigation' ) || '';
-
-        # Get path structure to show in the bread crumbs
-        my @Path = $SysConfigObject->SettingNavigationToPath(
-            Navigation => $RootNavigation,
-        );
 
         # Get navigation tree
         my %Tree = $SysConfigObject->ConfigurationNavigationTree();
@@ -388,15 +383,17 @@ sub Run {
     # direct link
     elsif ( $Self->{Subaction} eq 'View' ) {
 
-        my $View = $ParamObject->GetParam( Param => 'Setting' ) || '';
+        my $SettingName = $ParamObject->GetParam( Param => 'Setting' ) || '';
         my @SettingList;
 
-        if ($View) {
+        if ($SettingName) {
+
+            # URL-decode setting name, just in case. Please see bug#13271 for more information.
+            $SettingName = URI::Escape::uri_unescape($SettingName);
 
             my $SysConfigObject = $Kernel::OM->Get('Kernel::System::SysConfig');
-
-            my %Setting = $SysConfigObject->SettingGet(
-                Name            => $View,
+            my %Setting         = $SysConfigObject->SettingGet(
+                Name            => $SettingName,
                 OverriddenInXML => 1,
                 UserID          => $Self->{UserID},
             );
@@ -418,7 +415,7 @@ sub Run {
         $Output .= $LayoutObject->Output(
             TemplateFile => 'AdminSystemConfigurationView',
             Data         => {
-                View        => $View,
+                View        => $SettingName,
                 SettingList => \@SettingList,
                 %OutputData,
                 OTRSBusinessIsInstalled => $Kernel::OM->Get('Kernel::System::OTRSBusiness')->OTRSBusinessIsInstalled(),
@@ -589,7 +586,9 @@ sub Run {
 
             return $LayoutObject->ErrorScreen(
                 Message =>
-                    'System Configuration could not be imported due to a unknown error, please check OTRS logs for more information',
+                    Translatable(
+                    'System Configuration could not be imported due to an unknown error, please check OTRS logs for more information.'
+                    ),
             );
         }
         elsif ( $ConfigurationLoad && $ConfigurationLoad eq '-1' ) {
@@ -651,7 +650,7 @@ sub _GetCategoriesStrg {
         SelectedID   => $Category || 'All',
         PossibleNone => 0,
         Translation  => 1,
-        Sort         => 'AlfaNumericKey',
+        Sort         => 'AlphaNumericKey',
         Class        => 'Modernize',
         Title        => $Kernel::OM->Get('Kernel::Language')->Translate('Category Search'),
     );

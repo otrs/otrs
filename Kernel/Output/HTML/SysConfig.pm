@@ -101,10 +101,11 @@ sub SettingRender {
 
     my $Result = $Self->_SettingRender(
         %Setting,
-        Value                   => $Param{Setting}->{XMLContentParsed}->{Value},
+        Value                   => $Setting{XMLContentParsed}->{Value},
         RW                      => $RW,
         IsAjax                  => $Param{IsAjax},
         SkipEffectiveValueCheck => $Param{SkipEffectiveValueCheck},
+        EffectiveValue          => $Setting{EffectiveValue},
         UserID                  => $Param{UserID},
     );
 
@@ -297,19 +298,19 @@ sub SettingAddItem {
 
         STRUCTURE:
         for my $StructureItem (@SettingStructure) {
+
+            # NOTE: Array elements must contain same structure.
             if ( $StructureItem eq 'Hash' ) {
+
+                # Check original XML structure and search for the element with the same key.
+                # If found, system will use this structure.
+
                 my $HashKey = $Structure[$Index];
 
                 my ($Item) = grep { $HashKey eq $_->{Key} } @{ $DedicatedDefaultItem->{Item} };
                 last STRUCTURE if !$Item;
 
                 $DedicatedDefaultItem = $Item->{Hash}->[0];
-            }
-            else {
-                my $ArrayIndex = $Structure[$Index];
-
-                last STRUCTURE if !$DedicatedDefaultItem->{Item}->{$ArrayIndex};
-                $DedicatedDefaultItem = $DedicatedDefaultItem->{Item}->[$ArrayIndex]->{Array}->[0];
             }
 
             $Index++;
@@ -383,14 +384,23 @@ sub SettingAddItem {
             "Kernel::System::SysConfig::ValueType::$ValueType",
         );
 
-        $Result{Item} = "<div class='SettingContent'>\n";
+        # Check if ValueType should add SettingContent.
+        my $AddSettingContent = $BackendObject->AddSettingContent();
+
+        if ($AddSettingContent) {
+            $Result{Item} = "<div class='SettingContent'>\n";
+        }
+
         $Result{Item} .= $BackendObject->AddItem(
             Name        => $Setting{Name},
             DefaultItem => $DefaultItem,
             IDSuffix    => $Param{IDSuffix},
             UserID      => $Param{UserID},
         );
-        $Result{Item} .= '</div>';
+
+        if ($AddSettingContent) {
+            $Result{Item} .= '</div>';
+        }
     }
     else {
         $Result{Item} //= '';
@@ -470,9 +480,9 @@ Recursive helper for SettingRender().
 
     my $HTMLStr = $SysConfigObject->_SettingRender(
         Name             => 'Setting Name',
-        Value            => $XMLParsedToPerlValue,
-        EffectiveValue   => "Product 6",            # or a complex structure (optional)
-        DefaultValue     => "Product 5",            # or a complex structure (optional)
+        Value            => $XMLParsedToPerlValue,  # (required)
+        EffectiveValue   => "Product 6",            # (required) or a complex structure
+        DefaultValue     => "Product 5",            # (optional) or a complex structure
         ValueType        => "String",               # (optional)
         IsAjax           => 1,                      # (optional) Default 0.
         # ...
@@ -494,7 +504,7 @@ Returns:
 sub _SettingRender {
     my ( $Self, %Param ) = @_;
 
-    for my $Needed (qw(Value UserID)) {
+    for my $Needed (qw(Value EffectiveValue UserID)) {
         if ( !defined $Param{$Needed} ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
@@ -597,23 +607,28 @@ sub _SettingRender {
 
             $Index++;
 
-            # check attributes
+            # Add attributes that are defined in the XML file to the corresponding ModifiedXMLParsed items.
             if ( $Param{Value}->[0]->{Hash}->[0]->{Item} ) {
 
                 my ($HashItem) = grep { defined $_->{Key} && $_->{Key} eq $Item->{Key} }
                     @{ $Param{Value}->[0]->{Hash}->[0]->{Item} };
 
                 if ($HashItem) {
+
                     ATTRIBUTE:
                     for my $Attribute ( sort keys %{$HashItem} ) {
-                        next ATTRIBUTE if grep { $Attribute eq $_ } qw(Content DefaultItem Hash Array Key);
+
+                        # Do not override core attributes.
+                        next ATTRIBUTE if grep { $Attribute eq $_ } qw(Content DefaultItem Hash Array Key SelectedID);
 
                         if ( $Attribute eq 'Item' ) {
+
                             if (
                                 !$HashItem->{Item}->[0]->{ValueType}
                                 || $HashItem->{Item}->[0]->{ValueType} ne 'Option'
                                 )
                             {
+                                # Skip Items that contain Options (they can't be modified).
                                 next ATTRIBUTE;
                             }
                         }

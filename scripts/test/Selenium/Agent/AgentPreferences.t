@@ -116,10 +116,10 @@ $Selenium->RunTest(
         );
 
         # test different language scenarios
-        for my $Language (
-            qw(de es ru zh_CN sr_Cyrl en)
-            )
-        {
+        my @Languages = (qw(de es ru zh_CN sr_Cyrl en));
+        my $Count     = 0;
+        for my $Language (@Languages) {
+
             # change AgentPreference language
             $Selenium->execute_script(
                 "\$('#UserLanguage').val('$Language').trigger('redraw.InputField').trigger('change');"
@@ -131,7 +131,7 @@ $Selenium->RunTest(
             # wait for the ajax call to finish
             $Selenium->WaitFor(
                 JavaScript =>
-                    "return \$('#UserLanguage').closest('.WidgetSimple').hasClass('HasOverlay')"
+                    "return typeof(\$) === 'function' && \$('#UserLanguage').closest('.WidgetSimple').hasClass('HasOverlay')"
             );
             $Selenium->WaitFor(
                 JavaScript =>
@@ -147,7 +147,7 @@ $Selenium->RunTest(
 
             # create language object
             my $LanguageObject = Kernel::Language->new(
-                UserLanguage => "$Language",
+                UserLanguage => $Languages[ $Count - 1 ],
             );
 
             # check, if reload notification is shown
@@ -164,6 +164,9 @@ $Selenium->RunTest(
             $Selenium->VerifiedGet("${ScriptAlias}index.pl?Action=AgentPreferences;Subaction=Group;Group=UserProfile");
 
             # check for correct translation
+            $LanguageObject = Kernel::Language->new(
+                UserLanguage => $Language,
+            );
             for my $String ( 'Change password', 'Language', 'Out Of Office Time' ) {
                 my $Translation = $LanguageObject->Translate($String);
                 $Self->True(
@@ -171,6 +174,8 @@ $Selenium->RunTest(
                     "Test widget '$String' found on screen for language $Language ($Translation)"
                 ) || die;
             }
+
+            $Count++;
         }
 
         # try updating the UserGoogleAuthenticatorSecret (which has a regex validation configured)
@@ -180,7 +185,7 @@ $Selenium->RunTest(
         );
         $Selenium->WaitFor(
             JavaScript =>
-                "return \$('#UserGoogleAuthenticatorSecretKey').closest('.WidgetSimple').find('.WidgetMessage.Error:visible').length"
+                "return typeof(\$) === 'function' && \$('#UserGoogleAuthenticatorSecretKey').closest('.WidgetSimple').find('.WidgetMessage.Error:visible').length"
         );
 
         # wait for the message to disappear again
@@ -255,7 +260,7 @@ $Selenium->RunTest(
         # Wait for the AJAX call to finish.
         $Selenium->WaitFor(
             JavaScript =>
-                "return \$('#UserLanguage').closest('.WidgetSimple').hasClass('HasOverlay')"
+                "return typeof(\$) === 'function' && \$('#UserLanguage').closest('.WidgetSimple').hasClass('HasOverlay')"
         );
         $Selenium->WaitFor(
             JavaScript =>
@@ -318,7 +323,7 @@ JAVASCRIPT
         # wait for the ajax call to finish, an error message should occurr
         $Selenium->WaitFor(
             JavaScript =>
-                "return \$('.NotificationEvent').closest('.WidgetSimple').find('.WidgetMessage.Error:visible').length"
+                "return typeof(\$) === 'function' && \$('.NotificationEvent').closest('.WidgetSimple').find('.WidgetMessage.Error:visible').length"
         );
 
         my $LanguageObject = Kernel::Language->new(
@@ -341,8 +346,7 @@ JAVASCRIPT
         );
 
         # now enable the checkbox and try to submit again, it should work this time
-        $Selenium->find_element( "//input[\@id='Notification-" . $NotificationID . "-Email-checkbox']" )
-            ->VerifiedClick();
+        $Selenium->find_element( "#Notification-$NotificationID-Email-checkbox", 'css' )->click();
 
         $Selenium->execute_script(
             "\$('.NotificationEvent').closest('.WidgetSimple').find('.SettingUpdateBox').find('button').trigger('click');"
@@ -363,8 +367,7 @@ JAVASCRIPT
         );
 
         # now that the checkbox is checked, it should not be possible to disable it again
-        $Selenium->find_element( "//input[\@id='Notification-" . $NotificationID . "-Email-checkbox']" )
-            ->VerifiedClick();
+        $Selenium->find_element( "#Notification-$NotificationID-Email-checkbox", 'css' )->click();
 
         $Self->Is(
             $Selenium->execute_script("return window.getLastAlert()"),
@@ -411,7 +414,7 @@ JAVASCRIPT
         # wait for the ajax call to finish
         $Selenium->WaitFor(
             JavaScript =>
-                "return \$('#UserSkin').closest('.WidgetSimple').hasClass('HasOverlay')"
+                "return typeof(\$) === 'function' &&  \$('#UserSkin').closest('.WidgetSimple').hasClass('HasOverlay')"
         );
         $Selenium->WaitFor(
             JavaScript =>
@@ -446,6 +449,44 @@ JAVASCRIPT
             "#UserSkin updated value",
         );
 
+        if ( $Kernel::OM->Get('Kernel::System::OTRSBusiness')->OTRSBusinessIsInstalled() ) {
+
+            # Create non-admin user.
+            my $TestUserLogin2 = $Helper->TestUserCreate(
+                Groups   => ['users'],
+                Language => $Language,
+            ) || die "Did not get test user";
+
+            $Selenium->Login(
+                Type     => 'Agent',
+                User     => $TestUserLogin2,
+                Password => $TestUserLogin2,
+            );
+
+            # Open advanced preferences screen.
+            $Selenium->VerifiedGet("${ScriptAlias}index.pl?Action=AgentPreferences;Subaction=Group;Group=Advanced");
+
+            # Change category only if the dropdown is present.
+            my $CategoriesVisible = $Selenium->execute_script("return \$('#Category').length;");
+            if ($CategoriesVisible) {
+                $Selenium->execute_script(
+                    "\$('#Category').val('OTRSFree').trigger('redraw.InputField').trigger('change');"
+                );
+            }
+
+            $Selenium->WaitFor(
+                JavaScript =>
+                    "return \$('#ConfigTree ul').length"
+            ) || die 'AJAX error';
+
+            my $NavigationItems = $Selenium->execute_script("return \$('#ConfigTree ul > li').length;");
+
+            $Self->Is(
+                $NavigationItems,
+                1,
+                'Make sure there is one navigation item'
+            );
+        }
     }
 );
 

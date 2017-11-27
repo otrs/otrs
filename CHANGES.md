@@ -1,6 +1,74 @@
 #7.0.0.alpha1 2018-??-??
 
-#6.0.0.rc1 2017-??-??
+#6.0.2 2017-??-??
+ - 2017-11-27 Fixed bug#[13385](https://bugs.otrs.org/show_bug.cgi?id=13385) - Customer web request results in a phone article.
+ - 2017-11-27 Fixed bug#[13342](https://bugs.otrs.org/show_bug.cgi?id=13342) - Package installation results in an error until web server is restarted.
+ - 2017-11-27 Fixed bug#[13370](https://bugs.otrs.org/show_bug.cgi?id=13370) - Cloning DateTime object returns bad object(wrong unix timestamp).
+ - 2017-11-24 Fixed bug#[13266](https://bugs.otrs.org/show_bug.cgi?id=13266) - Article field not mandatory if time units are added.
+ - 2017-11-24 Fixed bug#[13323](https://bugs.otrs.org/show_bug.cgi?id=13323) - Visibility issues in SysConfig settings with large number of list items.
+ - 2017-11-24 Fixed bug#[13382](https://bugs.otrs.org/show_bug.cgi?id=13382) - Stats dashboard generate fails because of missing parameters in Stats.pm.
+ - 2017-11-23 Fixed bug#[13381](https://bugs.otrs.org/show_bug.cgi?id=13381) - Categories in Navigation (AgentPreferences screen) are not working for non-admin users.
+ - 2017-11-23 Fixed bug#[13374](https://bugs.otrs.org/show_bug.cgi?id=13374) - DBUpdate script deletes user time zone information on patch level updates.
+ - 2017-11-23 Fixed bug#[13376](https://bugs.otrs.org/show_bug.cgi?id=13376) - Standard values in System Configuration displayed as modified and contained in config.pm and locked.
+ - 2017-11-22 Fixed bug#[13365](https://bugs.otrs.org/show_bug.cgi?id=13365) - Incorrect accentuated characters in the draft name.
+ - 2017-11-22 Fixed bug#[13286](https://bugs.otrs.org/show_bug.cgi?id=13286) - SysConfig frontends allows changing seemingly read-only values.
+ - 2017-11-22 Fixed bug#[13288](https://bugs.otrs.org/show_bug.cgi?id=13288) - In several places of the OTRS 6 sys config it's not possible to add new entry.
+ - 2017-11-22 Fixed bug#[13373](https://bugs.otrs.org/show_bug.cgi?id=13373) - Console command to generate the dashboard stats stops working, if a user had a time zone selected in OTRS 5.
+ - 2017-11-22 Fixed bug#[13372](https://bugs.otrs.org/show_bug.cgi?id=13372) - Editing for agent dashboard statistics with a absolute time period on the x axes doesn't work and statitic can not be generated.
+ - 2017-11-22 Fixed bug#[13367](https://bugs.otrs.org/show_bug.cgi?id=13367) - Wrong output for article email content in agent ticket zoom.
+ - 2017-11-21 Fixed bug#[13357](https://bugs.otrs.org/show_bug.cgi?id=13357) - Improve handling of PGP parameters.
+ - 2017-11-20 Fixed bug#[13293](https://bugs.otrs.org/show_bug.cgi?id=13293) - Uninitialized value notice in AgentTicketZoom with enabled 'Ticket::NewArticleIgnoreSystemSender'.
+ - 2017-11-20 Fixed bug#[13361](https://bugs.otrs.org/show_bug.cgi?id=13361)(PR#1873) - Postmaster Filter matching is not correct, thanks to Pawel Boguslawski.
+ - 2017-11-20 Fixed bug#[13360](https://bugs.otrs.org/show_bug.cgi?id=13360) - Configuration Deployment Failure does not restore old values set for reset.
+ - 2017-11-20 Fixed bug#[13340](https://bugs.otrs.org/show_bug.cgi?id=13340) - UpgradeAll feature does not state it works only if OTRS Daemon is running.
+ - 2017-11-20 Fixed bug#[13316](https://bugs.otrs.org/show_bug.cgi?id=13316) - Obsolete directive in CSP.
+ - 2017-11-20 Fixed bug#[13250](https://bugs.otrs.org/show_bug.cgi?id=13250) - Disabled wrong value settings does not let to specify the correct value.
+ - 2017-11-20 Fixed bug#[13291](https://bugs.otrs.org/show_bug.cgi?id=13291) - Moving setting from one XML file to another doesn't update xml_filename in the sysconfig_default table.
+ - 2017-11-17 Fixed bug#[13145](https://bugs.otrs.org/show_bug.cgi?id=13145) - Editing a transistion action results in error without logfile entry.
+ - 2017-11-17 Fixed bug#[13347](https://bugs.otrs.org/show_bug.cgi?id=13347) - Internal article information disclosed by the customer search.
+ - 2017-11-17 Fixed bug#[13343](https://bugs.otrs.org/show_bug.cgi?id=13343) - LDAP customer user backends should be implicitly read only.
+ - 2017-11-17 Fixed bug#[13348](https://bugs.otrs.org/show_bug.cgi?id=13348) - User specific settings do not reset when set to the default value.
+ - 2017-11-16 Fixed bug#[13331](https://bugs.otrs.org/show_bug.cgi?id=13331) - Ticket Age is shown not updated on customer interface.
+ - 2017-11-16 Fixed bug#[13333](https://bugs.otrs.org/show_bug.cgi?id=13333) - Customer filter filter is too narrow on customer interface.
+ - 2017-11-14 Fixed bug#[13310](https://bugs.otrs.org/show_bug.cgi?id=13310) - Only 15 tickets in ticket lists if overview medium/preview disabled for new agents.
+ - 2017-11-14 Fixed bug#[13314](https://bugs.otrs.org/show_bug.cgi?id=13314) - Multiple submit possible for bulk action.
+
+#6.0.1 2017-11-21
+ - 2017-11-17 Fixed bug#[13344](https://bugs.otrs.org/show_bug.cgi?id=13344) - DBUpgrade-6.pl break UTF-8 letters in config.
+ - 2017-11-15 Fixed bug#[13328](https://bugs.otrs.org/show_bug.cgi?id=13328) - Postmaster filter migration for 'X-OTRS-ArticleType' and 'X-OTRS-FollowUp-ArticleType' are not working for sysconfig settings.
+ - 2017-11-13 Fixed bug#[13108](https://bugs.otrs.org/show_bug.cgi?id=13108) - Debugger only shows information if HTTP response was 20x.
+ - 2017-11-13 Updated translations, thanks to all translators.
+ - 2017-11-13 Fixed bug#[13330](https://bugs.otrs.org/show_bug.cgi?id=13330) - Postmaster filter from sysconfig are not working and stops working.
+ - 2017-11-13 Fixed bug#[13317](https://bugs.otrs.org/show_bug.cgi?id=13317) - Wrong avatar offset in user preferences.
+ - 2017-11-13 Fixed bug#[13318](https://bugs.otrs.org/show_bug.cgi?id=13318) - It is no longer possible to add a new navbar entry with the sysconfig frontend and the migration for own entries doesn't work.
+ - 2017-11-10 Fixed bug#[13281](https://bugs.otrs.org/show_bug.cgi?id=13281) - Not possible to add more than 4000 character in ticket notification texts.
+ - 2017-11-10 Fixed bug#[13320](https://bugs.otrs.org/show_bug.cgi?id=13320) - Internal Server Error in agent ticket move with Ticket::Frontend::MoveType type 'form' and with add article.
+ - 2017-11-08 Fixed bug#[13300](https://bugs.otrs.org/show_bug.cgi?id=13300) - Problem with the StatsCleanUp functionality during the package upgrade.
+ - 2017-11-08 Fixed bug#[13292](https://bugs.otrs.org/show_bug.cgi?id=13292) - Internal Server Error in ticket screens with missing articles in the file system.
+ - 2017-10-25 Fixed bug#[12392](https://bugs.otrs.org/show_bug.cgi?id=12392) - [thirdparty] gnupg 2.1 not working.
+
+#6.0.0.rc1 2017-11-14
+ - 2017-11-06 Updated translations, thanks to all translators.
+ - 2017-11-06 Fixed bug#[13282](https://bugs.otrs.org/show_bug.cgi?id=13282) - Try to bounce a ticket, Apache error about ObjectLog and an undefined value.
+ - 2017-11-06 Fixed bug#[13239](https://bugs.otrs.org/show_bug.cgi?id=13239) - Legacy descriptions in SysConfig.
+ - 2017-11-06 Fixed bug#[13290](https://bugs.otrs.org/show_bug.cgi?id=13290) - If Group and GroupRo and defined and both have any group set, system grants access for any user to this screen.
+ - 2017-11-06 Fixed bug#[13206](https://bugs.otrs.org/show_bug.cgi?id=13206) - Dashboard does not detect expired sessions.
+ - 2017-11-03 Submit with Ctrl/CMD + Enter in textareas, thanks to Perleone.
+ - 2017-11-03 Fixed bug#[13261](https://bugs.otrs.org/show_bug.cgi?id=13261) - Limit hit when installing ITSM package on MySQL.
+ - 2017-11-03 Fixed bug#[13271](https://bugs.otrs.org/show_bug.cgi?id=13271) - Breadcrumb for a specific SysConfig setting name garbles its encoding.
+ - 2017-11-03 Fixed bug#[13280](https://bugs.otrs.org/show_bug.cgi?id=13280) - Rebuild config fails for seemingly valid XML file.
+ - 2017-11-02 Fixed Need ObjectID! error on AgentTicketMove with article dynamic field, thanks to Pawel Boguslawski.
+ - 2017-11-02 Fixed bug#[13278](https://bugs.otrs.org/show_bug.cgi?id=13278) - Considering invalid 'navbar' items in sysconfig migration while upgrading a package from otrs5.
+ - 2017-10-27 Fixed bug#[12886](https://bugs.otrs.org/show_bug.cgi?id=12886) - AccessKeys not working.
+ - 2017-10-27 Fixed bug#[13254](https://bugs.otrs.org/show_bug.cgi?id=13254) - Delete icon of Attachment is not displayed on mobile view.
+ - 2017-10-27 Fixed bug#[13061](https://bugs.otrs.org/show_bug.cgi?id=13061) - PGP Agent Notification with expired certificate results in unencrypted message.
+ - 2017-10-27 Fixed bug#[13259](https://bugs.otrs.org/show_bug.cgi?id=13259) - Problem when enabling all setting.
+ - 2017-10-27 Fixed bug#[10946](https://bugs.otrs.org/show_bug.cgi?id=10946) - Stats Restrictions : 'Created in Queue' together with ' Close Time' doesn' work.
+ - 2017-10-27 Fixed links to SysConfig items in AdminCustomerUserGroup and AdminCustomerGroup screen, thanks to urbalazs.
+ - 2017-10-27 Fixed bug#[13264](https://bugs.otrs.org/show_bug.cgi?id=13264) - Hash of select items are not working properly in SysConfig.
+ - 2017-10-26 Fixed bug#[13263](https://bugs.otrs.org/show_bug.cgi?id=13263) - Fatal error after click on breadcrumb in agent preferences.
+ - 2017-10-25 Fixed bug#[13265](https://bugs.otrs.org/show_bug.cgi?id=13265) - Disabled sysconfig settings are active after migration (if the setting is active as default).
+ - 2017-10-25 Fixed bug#[13143](https://bugs.otrs.org/show_bug.cgi?id=13143) - Toolbar Search for Customer User should open new Customer User Information Center.
 
 #6.0.0.beta5 2017-11-01
  - 2017-10-23 Updated translations, thanks to all translators.
@@ -284,6 +352,16 @@
  - 2015-11-27 Improved command Maint::Ticket::InvalidUserCleanup. It can now now both unlock tickets of invalid users and also (optionally) change their state to make sure they will not be overlooked. Thanks to Moritz Lenz @ noris networks.
 
 #5.0.24 2017-??-??
+ - 2017-11-21 Fixed bug#[13362](https://bugs.otrs.org/show_bug.cgi?id=13362) - Issue with dynamic fields in ticket information widget in ticket zoom.
+ - 2017-11-03 Fixed bug#[11165](https://bugs.otrs.org/show_bug.cgi?id=11165) - Agent list for Owner and Responsible fields in bulk screen is different.
+ - 2017-11-03 Fixed bug#[13130](https://bugs.otrs.org/show_bug.cgi?id=13130) - Broken From-Header in auto response.
+ - 2017-10-27 Fixed bug#[13241](https://bugs.otrs.org/show_bug.cgi?id=13241) - Index for fulltext search not created when body empty or contains only stopwords.
+ - 2017-10-27 Fixed bug#[13142](https://bugs.otrs.org/show_bug.cgi?id=13142) - Error The given param 'QueueIDs' is invalid or an empty array reference!.
+ - 2017-10-27 Fixed bug#[13162](https://bugs.otrs.org/show_bug.cgi?id=13162) - In the settings of Agent's personal profile drop down field of "Screen after new ticket" view is in English.
+ - 2017-10-27 Fixed bug#[13222](https://bugs.otrs.org/show_bug.cgi?id=13222) - Missing QueueID in AgentTicketPhone causes ACL error during the creation of a ticket.
+ - 2017-10-26 Fixed bug#[13212](https://bugs.otrs.org/show_bug.cgi?id=13212) - Queue filter in dashboard not working for "Tickets in My Queues".
+ - 2017-10-26 Fixed bug#[13244](https://bugs.otrs.org/show_bug.cgi?id=13244) - Visibility issues when hovering over "No data found." row.
+ - 2017-10-24 Fixed bug#[12832](https://bugs.otrs.org/show_bug.cgi?id=12832) - Sort options for SOAP will not be saved.
  - 2017-10-20 Fixed bug#[11208](https://bugs.otrs.org/show_bug.cgi?id=11208) - OTRS installer.pl does not allow installing on MyISAM MySQL.
  - 2017-10-16 Fixed bug#[13032](https://bugs.otrs.org/show_bug.cgi?id=13032) - Search window closes on outside click.
  - 2017-10-13 Fixed bug#[13092](https://bugs.otrs.org/show_bug.cgi?id=13092) - ChangeTime of target ticket not updated on ticket merge.

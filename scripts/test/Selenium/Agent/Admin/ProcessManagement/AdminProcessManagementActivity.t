@@ -149,9 +149,10 @@ $Selenium->RunTest(
         # set process to inactive
         $Selenium->find_element( $ProcessRandom, 'link_text' )->VerifiedClick();
         $Selenium->execute_script("\$('#StateEntityID').val('S2').trigger('redraw.InputField').trigger('change');");
-        $Selenium->find_element( "#Submit", 'css' )->VerifiedClick();
+        $Selenium->execute_script("\$('#Submit').click()");
 
         # test search filter
+        $Selenium->WaitFor( JavaScript => 'return typeof($) === "function" && $("#Filter").length' );
         $Selenium->find_element( "#Filter", 'css' )->clear();
         $Selenium->find_element( "#Filter", 'css' )->send_keys($ProcessRandom);
 
