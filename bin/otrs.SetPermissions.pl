@@ -47,7 +47,7 @@ for my $GroupCheck (qw(wwwrun apache www-data www _www)) {
 }
 
 my $AdminGroup = 'root';    # default: root
-my ( $Help, $DryRun, $SkipArticleDir, @SkipRegex, $OtrsUserID, $WebGroupID, $AdminGroupID );
+my ( $Help, $DryRun, $SkipArticleDir, $FollowOutsideSym @SkipRegex, $OtrsUserID, $WebGroupID, $AdminGroupID );
 
 sub PrintUsage {
     print <<EOF;
@@ -62,6 +62,7 @@ Options:
  [--web-group=<WEB_GROUP>]     - Web server group ('_www', 'www-data' or similar), try to find a default.
  [--admin-group=<ADMIN_GROUP>] - Admin group, defaults to 'root'.
  [--skip-article-dir]          - Skip var/article as it might take too long on some systems.
+ [--follow-outside-symlinks]   - Follow directories outside the OTRS directory
  [--skip-regex="REGEX"]        - Add another skip regex like "^/var/my/directory". Paths start with / but are relative to the OTRS directory. --skip-regex can be specified multiple times.
  [--dry-run]                   - Only report, don't change.
  [--help]                      - Display help for this command.
@@ -102,13 +103,14 @@ my $ExitStatus = 0;
 
 sub Run {
     Getopt::Long::GetOptions(
-        'help'             => \$Help,
-        'otrs-user=s'      => \$OtrsUser,
-        'web-group=s'      => \$WebGroup,
-        'admin-group=s'    => \$AdminGroup,
-        'dry-run'          => \$DryRun,
-        'skip-article-dir' => \$SkipArticleDir,
-        'skip-regex=s'     => \@SkipRegex,
+        'help'             		=> \$Help,
+        'otrs-user=s'      		=> \$OtrsUser,
+        'web-group=s'     	 	=> \$WebGroup,
+        'admin-group=s'    		=> \$AdminGroup,
+        'dry-run'       	   	=> \$DryRun,
+        'skip-article-dir' 		=> \$SkipArticleDir,
+	'follow-outside-symlinks'	=> \$FollowOutsideSym,
+        'skip-regex=s'     		=> \@SkipRegex,
     );
 
     if ( defined $Help ) {
@@ -165,8 +167,9 @@ sub SetPermissions {
     return if !defined $File;
 
     # Make sure it is inside the OTRS directory to avoid following symlinks outside
-    if ( substr( $File, 0, $OTRSDirectoryLength ) ne $OTRSDirectory ) {
+    if ( substr( $File, 0, $OTRSDirectoryLength ) ne $OTRSDirectory && !defined $FollowOutsideSym ) {
         $File::Find::prune = 1;    # don't descend into subdirectories
+	print "Skipping directory $File since its a symlink outsite of OTRS basedir\n";
         return;
     }
 
