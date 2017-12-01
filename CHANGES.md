@@ -1,6 +1,7 @@
 #7.0.0.alpha1 2018-??-??
 
 #6.0.3 2017-??-??
+ - 2017-12-01 Fixed bug#[13170](https://bugs.otrs.org/show_bug.cgi?id=13170) - Frontend::RichTextWidth setting is not honored.
  - 2017-12-01 Fixed bug#[13350](https://bugs.otrs.org/show_bug.cgi?id=13350) - CheckMXRecord should not act when setting email address to invalid.
  - 2017-11-30 Fixed bug#[13299](https://bugs.otrs.org/show_bug.cgi?id=13299) - Dashboard widgets can't be rearranged in Chrome and Internet Explorer on touchscreen devices.
  - 2017-11-30 Fixed bug#[13379](https://bugs.otrs.org/show_bug.cgi?id=13379) - PendingTimeDiff is not updated, if no state update was done in a transition action.
