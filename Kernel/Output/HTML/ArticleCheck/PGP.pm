@@ -180,7 +180,7 @@ sub Check {
     if ( $Param{Article}->{Body} =~ m{ ^\s* -----BEGIN [ ] PGP [ ] SIGNED [ ] MESSAGE----- }xms ) {
 
         # get original message
-        my $Message = $TicketObject->ArticlePlain(
+        my $Message = $TicketBackendObject->ArticlePlain(
             ArticleID => $Self->{ArticleID},
             UserID    => $Self->{UserID},
         );
