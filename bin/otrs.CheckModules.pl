@@ -444,6 +444,16 @@ my @NeededModules = (
         },
     },
     {
+        Module    => 'Log::Syslog',
+        Required  => 0,
+        Comment   => 'Required for logging with Log::SysLog OTRS backend.',
+        InstTypes => {
+            aptget => 'libsys-syslog-perl',
+            emerge => 'perl-core/Sys-Syslog',
+            ports  => 'sysutils/p5-Sys-Syslog',
+        },
+    },
+    {
         Module    => 'Template',
         Required  => 1,
         Comment   => 'Template::Toolkit, the rendering engine of OTRS.',
