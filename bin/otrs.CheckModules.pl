@@ -444,7 +444,7 @@ my @NeededModules = (
         },
     },
     {
-        Module    => 'Log::Syslog',
+        Module    => 'Sys::Syslog',
         Required  => 0,
         Comment   => 'Required for logging with Log::SysLog OTRS backend.',
         InstTypes => {
