@@ -229,6 +229,13 @@ sub _TasksGet {
             Module  => 'InitializeDefaultCronjobs',
         },
         {
+            Message => 'Migrate package repository configuration',
+            Module  => 'MigratePackageRepositoryConfiguration',
+        },
+
+        # ...
+
+        {
             Message => 'Uninstall Merged Feature Add-Ons',
             Module  => 'UninstallMergedFeatureAddOns',
         },
