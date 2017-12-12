@@ -228,10 +228,6 @@ sub _TasksGet {
             Message => 'Initialize default cron jobs',
             Module  => 'InitializeDefaultCronjobs',
         },
-        {
-            Message => 'Migrate package repository configuration',
-            Module  => 'MigratePackageRepositoryConfiguration',
-        },
 
         # ...
 
