@@ -145,9 +145,7 @@ Core.UI.RichTextEditor = (function (TargetNS) {
                     + 'Action='
                     + Core.Config.Get('RichText.PictureUploadAction', 'PictureUpload')
                     + '&FormID='
-                    + CheckFormID($EditorArea).val()
-                    + '&' + Core.Config.Get('SessionName')
-                    + '=' + Core.Config.Get('SessionID');
+                    + CheckFormID($EditorArea).val();
         }
 
         // set default editor config, but allow custom config for other types for editors

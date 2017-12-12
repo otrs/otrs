@@ -119,7 +119,7 @@ sub Run {
         # get customer interface session name
         my $SessionName = $ConfigObject->Get('CustomerPanelSessionName') || 'CSID';
 
-        # create a new LayoutObject with SessionIDCookie
+        # Create a new LayoutObject with session cookie.
         my $Expires = '+' . $ConfigObject->Get('SessionMaxTime') . 's';
         if ( !$ConfigObject->Get('SessionUseCookieAfterBrowserClose') ) {
             $Expires = '';
@@ -135,7 +135,7 @@ sub Run {
         my $LayoutObject = Kernel::Output::HTML::Layout->new(
             %{$Self},
             SetCookies => {
-                SessionIDCookie => $ParamObject->SetCookie(
+                SessionID => $ParamObject->SetCookie(
                     Key      => $SessionName,
                     Value    => $NewSessionID,
                     Expires  => $Expires,
@@ -162,11 +162,6 @@ sub Run {
             . '/'
             . $ConfigObject->Get('ScriptAlias')
             . 'customer.pl';
-
-        # if no sessions are used we attach the session as URL parameter
-        if ( !$ConfigObject->Get('SessionUseCookie') ) {
-            $URL .= "?$SessionName=$NewSessionID";
-        }
 
         # redirect to customer interface with new session id
         return $LayoutObject->Redirect( ExtURL => $URL );

@@ -68,7 +68,7 @@ sub Run {
             SessionSource   => 'AgentInterface',
         );
 
-        # create a new LayoutObject with SessionIDCookie
+        # Create a new LayoutObject with session cookie.
         my $Expires = '+' . $ConfigObject->Get('SessionMaxTime') . 's';
         if ( !$ConfigObject->Get('SessionUseCookieAfterBrowserClose') ) {
             $Expires = '';
@@ -85,7 +85,7 @@ sub Run {
             'Kernel::Output::HTML::Layout' => {
                 %UserData,
                 SetCookies => {
-                    SessionIDCookie => $ParamObject->SetCookie(
+                    SessionID => $ParamObject->SetCookie(
                         Key      => $ConfigObject->Get('SessionName'),
                         Value    => $NewSessionID,
                         Expires  => $Expires,
@@ -96,7 +96,7 @@ sub Run {
                 },
                 SessionID   => $NewSessionID,
                 SessionName => $ConfigObject->Get('SessionName'),
-                }
+            },
         );
 
         $Kernel::OM->ObjectsDiscard( Objects => ['Kernel::Output::HTML::Layout'] );

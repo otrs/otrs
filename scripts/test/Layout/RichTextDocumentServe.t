@@ -39,7 +39,7 @@ my @Tests = (
         },
         Result => {
             ContentType => 'text/html; charset="utf-8"',
-            Content     => '<img src="index.pl?Action=SomeAction;FileID=0;SessionID=123">',
+            Content     => '<img src="index.pl?Action=SomeAction;FileID=0">',
         },
     },
     {
@@ -56,7 +56,7 @@ my @Tests = (
         },
         Result => {
             Content =>
-                '<img border="0" src="index.pl?Action=SomeAction;FileID=0;SessionID=123">',
+                '<img border="0" src="index.pl?Action=SomeAction;FileID=0">',
             ContentType => 'text/html; charset="utf-8"',
         },
     },
@@ -74,7 +74,7 @@ my @Tests = (
         },
         Result => {
             Content =>
-                "<img border=\"0\" \nsrc=\"index.pl?Action=SomeAction;FileID=0;SessionID=123\">",
+                "<img border=\"0\" \nsrc=\"index.pl?Action=SomeAction;FileID=0\">",
             ContentType => 'text/html; charset="utf-8"',
         },
     },
@@ -92,7 +92,7 @@ my @Tests = (
         },
         Result => {
             Content =>
-                '<img src="index.pl?Action=SomeAction;FileID=0;SessionID=123">',
+                '<img src="index.pl?Action=SomeAction;FileID=0">',
             ContentType => 'text/html; charset="utf-8"',
         },
     },
@@ -110,7 +110,7 @@ my @Tests = (
         },
         Result => {
             Content =>
-                '<img src="index.pl?Action=SomeAction;FileID=0;SessionID=123" />',
+                '<img src="index.pl?Action=SomeAction;FileID=0" />',
             ContentType => 'text/html; charset="utf-8"',
         },
     },
@@ -128,7 +128,7 @@ my @Tests = (
         },
         Result => {
             Content =>
-                '<img src=\'index.pl?Action=SomeAction;FileID=0;SessionID=123\' />',
+                '<img src=\'index.pl?Action=SomeAction;FileID=0\' />',
             ContentType => 'text/html; charset="utf-8"',
         },
     },
@@ -146,7 +146,7 @@ my @Tests = (
         },
         Result => {
             Content =>
-                '<img src=\'index.pl?Action=SomeAction;FileID=0;SessionID=123\' />',
+                '<img src=\'index.pl?Action=SomeAction;FileID=0\' />',
             ContentType => 'text/html; charset="utf-8"',
         },
     },
@@ -203,7 +203,7 @@ my @Tests = (
 <div style="margin: 5px 0; padding: 0px; border: 1px solid #999; border-radius: 2px; -moz-border-radius: 2px; -webkit-border-radius: 2px;">
     <div style="padding: 5px; background-color: #DDD; font-family:Geneva,Helvetica,Arial,sans-serif; font-size: 11px; text-align: center;">
         Zum Schutz Ihrer Privatsphäre wurden entfernte Inhalte blockiert.
-        <a href="index.pl?;LoadExternalImages=1;SessionID=123">Blockierte Inhalte laden.</a>
+        <a href="index.pl?;LoadExternalImages=1">Blockierte Inhalte laden.</a>
     </div>
 </div>
 1',
