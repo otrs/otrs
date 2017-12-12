@@ -1,6 +1,7 @@
 #7.0.0.alpha1 2018-??-??
 
 #6.0.4 ????-??-??
+ - 2017-12-12 Fixed bug#[13445](https://bugs.otrs.org/show_bug.cgi?id=13445) - System should use TimeZone ValueType in the Framework.xml instead of Select.
 
 #6.0.3 2017-12-19
  - 2017-12-11 Updated translations, thanks to all translators.
