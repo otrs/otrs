@@ -1,7 +1,5 @@
 # --
-# Copyright (C) 2002 Antti Kämäräinen <antti at seu.net>
-# Copyright (C) 2007-2012 Mikko Hynninen <first.last at tietokartano.fi>
-# Copyright (C) 2012-2013 Niklas Lampén <Niklas.Lampen@aava.eu>
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you

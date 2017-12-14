@@ -1,6 +1,5 @@
 # --
-# Copyright (C) 2006 Stelios Maistros <smaistros aegean.gr>
-# Copyright (C) 2006 George Thomas <gthomas aegean.gr>
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you

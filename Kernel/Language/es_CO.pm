@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2013 John Edisson Ortiz Roman <jortiz@slabinfo.com.co>
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you

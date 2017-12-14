@@ -1,7 +1,5 @@
 # --
-# Copyright (C) 2011 O.P.S <sales at OptForOPS.com>
-# Copyright (C) 2011 Chetan Nagaonkar <Chetan_Nagaonkar at OptForOPS.com>
-# Copyright (C) 2011 Chetan Nagaonkar <ChetanNagaonkar at yahoo.com>
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you

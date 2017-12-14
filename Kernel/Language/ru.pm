@@ -1,16 +1,5 @@
 # --
-# Copyright (C) 2003 Serg V Kravchenko <skraft at rgs.ru>
-# Copyright (C) 2007 Andrey Feldman <afeldman at alt-lan.ru>
-# Copyright (C) 2008-2009 Egor Tsilenko <bg8s at symlink.ru>
-# Copyright (C) 2009 Andrey Cherepanov <cas at altlinux.ru>
-# Copyright (C) 2010 Denis Kot <denis.kot at gmail.com>
-# Copyright (C) 2010 Andrey A. Fedorov <2af at mail.ru>
-# Copyright (C) 2010-2011 Eugene Kungurov <ekungurov83 at ya.ru>
-# Copyright (C) 2010 Sergey Romanov <romanov_s at mail.ru>
-# Copyright (C) 2012-2013 Vadim Goncharov <vgoncharov at mail.ru>
-# Copyright (C) 2013 Alexey Gluhov <glalexnn at yandex.ru>
-# Copyright (C) 2013 Andrey N. Burdin <BurdinAN at it-sakh.net>
-# Copyright (C) 2013 Yuriy Kolesnikov <ynkolesnikov at gmail.com>
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you

@@ -1,11 +1,5 @@
 # --
-# Copyright (C) 2005 zuowei <j2ee at hirain-sh.com>
-# Copyright (C) 2008-2010 Never Min <never at qnofae.org>
-# Copyright (C) 2009 Bin Du <bindu2008 at gmail.com>,
-# Copyright (C) 2009 Yiye Huang <yiyehuang at gmail.com>
-# Copyright (C) 2009 Qingjiu Jia <jiaqj at yahoo.com>
-# Copyright (C) 2011 Martin Liu <liuzh66 at gmail.com> http://martinliu.cn
-# Copyright (C) 2013 Michael Shi <micshi at 163.com>
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you

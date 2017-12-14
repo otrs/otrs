@@ -1,13 +1,5 @@
 # --
-# Copyright (C) 2004 Arne Georg Gleditsch <argggh at linpro.no>
-# Copyright (C) 2005 Espen Stefansen <libbe at stefansen dot net>
-# Copyright (C) 2006 Knut Haugen <knuthaug at linpro.no>
-# Copyright (C) 2007-2009 Fredrik Andersen <fredrik.andersen at husbanken.no>
-# Copyright (C) 2010-2011 Eirik Wulff <eirik at epledoktor.no>
-# Copyright (C) 2011 Lars Erik Utsi Gullerud <lerik at nolink.net>
-# Copyright (C) 2011 Espen Stefansen <libbe at stefansen dot net>
-# Copyright (C) 2012 Lars Magnus Herland <lars.magnus at herland.priv.no>
-# Copyright (C) 2013 Espen Stefansen <libbe at stefansen dot net>
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you

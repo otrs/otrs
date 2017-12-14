@@ -1,14 +1,10 @@
 # --
 # Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
-# Copyright (C) 2011 Damir Dzeko <damir punkt dzeko masterspace inet.hr>
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
 # did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
 # --
-
-# to be edited in ISO-8859-2 codepage, with UNIX-style line endings (LF)
-# based on Serbian translation (Croatian translation is still incomplete)
 
 package Kernel::Language::hr;
 
