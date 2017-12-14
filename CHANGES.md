@@ -1,4 +1,5 @@
 #7.0.0.alpha1 2018-??-??
+ - 2017-12-14 Fixed bug#[13411](https://bugs.otrs.org/show_bug.cgi?id=13411) - Names of search templates cut off.
  - 2017-12-12 Always require cookies for OTRS login - drop support for non-cookie sessions.
 
 #6.0.4 ????-??-??
