@@ -1507,7 +1507,7 @@ sub Run {
                         Age                => $EscalationData{EscalationTime},
                         TimeShowAlwaysLong => 1,
                         Space              => ' ',
-                    );
+                    ) || '-';
                     $EscalationData{EscalationTimeWorkingTime} = $LayoutObject->CustomerAge(
                         Age                => $EscalationData{EscalationTimeWorkingTime},
                         TimeShowAlwaysLong => 1,
@@ -1606,7 +1606,7 @@ sub Run {
                 $LayoutObject->Block(
                     Name => "RecordTicketColumn$BlockType",
                     Data => {
-                        GenericValue => $DataValue || '',
+                        GenericValue => $DataValue || '-',
                         Class        => $CSSClass  || '',
                     },
                 );
