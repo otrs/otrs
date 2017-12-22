@@ -1,5 +1,4 @@
 #7.0.0.alpha1 2018-??-??
- - 2017-12-14 Fixed bug#[13411](https://bugs.otrs.org/show_bug.cgi?id=13411) - Names of search templates cut off.
  - 2017-12-12 Always require cookies for OTRS login - drop support for non-cookie sessions.
 
 #6.0.4 ????-??-??
@@ -11,6 +10,7 @@
  - 2017-12-20 Fixed bug#[13431](https://bugs.otrs.org/show_bug.cgi?id=13431) - Notification article is visible for the customer although it shouldn't be.
  - 2017-12-18 Fixed bug#[13450](https://bugs.otrs.org/show_bug.cgi?id=13450) - Changing TicketType doesn't change Ticket::Frontend::CustomerTicketMessage###TicketTypeDefault.
  - 2017-12-18 Fixed bug#[13371](https://bugs.otrs.org/show_bug.cgi?id=13371) - Deleting a sysconfig entry in AgentPreferencesGroups breaks the config when saving.
+ - 2017-12-14 Fixed bug#[13411](https://bugs.otrs.org/show_bug.cgi?id=13411) - Names of search templates cut off.
  - 2017-12-13 Updated translations, thanks to all translators.
  - 2017-12-13 Fixed bug#[13351](https://bugs.otrs.org/show_bug.cgi?id=13351) - Templates of type "Create" don't get automatically loaded on AgentTicketPhone or AgentTicketEmail
  - 2017-12-13 Fixed bug#[13196](https://bugs.otrs.org/show_bug.cgi?id=13196) - Search in CustomerUser Information Center returns a search blank screen.
