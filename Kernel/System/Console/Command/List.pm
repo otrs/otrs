@@ -103,6 +103,19 @@ sub ListAllCommands {
         push @Commands, $CommandFile;
     }
 
+    my @CustomCommandFiles = $Kernel::OM->Get('Kernel::System::Main')->DirectoryRead(
+        Directory => $Kernel::OM->Get('Kernel::Config')->Get('Home') . '/Custom/Kernel/System/Console/Command',
+        Filter    => '*.pm',
+        Recursive => 1,
+    );
+
+    for my $CommandFile (@CustomCommandFiles) {
+        next COMMAND_FILE if ( $CommandFile =~ m{/Internal/}xms );
+        $CommandFile =~ s{^.*(Kernel/System.*)[.]pm$}{$1}xmsg;
+        $CommandFile =~ s{/+}{::}xmsg;
+        push @Commands, $CommandFile;
+    }
+
     # Sort first by directory, then by File
     my $Sort = sub {
         my ( $DirA, $FileA ) = split( /::(?=[^:]+$)/smx, $a );
