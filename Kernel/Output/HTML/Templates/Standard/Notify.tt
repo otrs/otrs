@@ -9,7 +9,7 @@
 <div class="MessageBox [% Data.BoxClass %]">
     <p>
 [% RenderBlockStart("LinkStart") %]
-        <a href="[% Data.LinkStart %]" class="[% Data.LinkClass | html %]">
+        <a href="[% Data.LinkStart %]" class="[% Data.LinkClass | html %]" [% IF Data.LinkTarget %]target="[% Data.LinkTarget | html %]"[% END %]>
 [% RenderBlockEnd("LinkStart") %]
 [% RenderBlockStart("Text") %]
             [% Translate(Data.Info) | html %]

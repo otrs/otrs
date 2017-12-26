@@ -67,6 +67,11 @@ sub Run {
     # add link if available
     if ( $Param{Config}->{Link} ) {
         $Arguments{Link} = $Param{Config}->{Link};
+
+        # Add link target if supplied.
+        if ( $Param{Config}->{Target} ) {
+            $Arguments{LinkTarget} = $Param{Config}->{Target};
+        }
     }
 
     return '' if !$Arguments{Info};

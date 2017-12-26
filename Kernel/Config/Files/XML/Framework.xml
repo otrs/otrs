@@ -931,7 +931,7 @@
         </Value>
     </Setting>
     <Setting Name="Frontend::NotifyModule###9000-Generic" Required="0" Valid="0">
-        <Description Translatable="1">Defines the module that shows a generic notification in the agent interface. Either "Text" - if configured - or the contents of "File" will be displayed.</Description>
+        <Description Translatable="1">Defines the module that shows a generic notification in the agent interface. Either "Text" - if configured - or the contents of "File" will be displayed. Use "Priority" key to style the notification. If "Link" key is supplied, notification text will be wrapped in an anchor leading to specified address. You can use "Target" key to define a target attribute of the defined link.</Description>
         <Navigation>Frontend::Agent::FrontendNotification</Navigation>
         <Value>
             <Hash>
@@ -939,7 +939,8 @@
                 <Item Key="Priority">Warning</Item>
                 <Item Key="Text">The OTRS Website</Item>
                 <Item Key="File">&lt;OTRS_CONFIG_Home&gt;/var/notify.txt</Item>
-                <Item Key="Link">http://www.otrs.com</Item>
+                <Item Key="Link">https://www.otrs.com</Item>
+                <Item Key="Target">_blank</Item>
             </Hash>
         </Value>
     </Setting>
