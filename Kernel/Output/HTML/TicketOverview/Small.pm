@@ -650,6 +650,8 @@ sub Run {
     # get dynamic field backend object
     my $DynamicFieldBackendObject = $Kernel::OM->Get('Kernel::System::DynamicField::Backend');
 
+    $Param{OrderBy} = $Param{OrderBy} || 'Up';
+
     my $TicketData = scalar @ArticleBox;
     if ($TicketData) {
 
@@ -674,24 +676,26 @@ sub Run {
                 Name => 'GeneralOverviewHeader',
             );
 
-            my $CSS = '';
-            my $OrderBy;
+            my $CSS     = '';
+            my $OrderBy = $Param{OrderBy};
             my $Link;
-            my $Title = $Item;
+            my $Title = $LayoutObject->{LanguageObject}->Translate($Item);
 
             if ( $Param{SortBy} && ( $Param{SortBy} eq $Item ) ) {
-                if ( $Param{OrderBy} && ( $Param{OrderBy} eq 'Up' ) ) {
-                    $OrderBy = 'Down';
+                my $TitleDesc;
+
+                # Change order for sorting column.
+                $OrderBy = $OrderBy eq 'Up' ? 'Down' : 'Up';
+
+                if ( $OrderBy eq 'Down' ) {
                     $CSS .= ' SortAscendingLarge';
+                    $TitleDesc = Translatable('sorted ascending');
                 }
                 else {
-                    $OrderBy = 'Up';
                     $CSS .= ' SortDescendingLarge';
+                    $TitleDesc = Translatable('sorted descending');
                 }
 
-                # set title description
-                my $TitleDesc
-                    = $OrderBy eq 'Down' ? Translatable('sorted descending') : Translatable('sorted ascending');
                 $TitleDesc = $LayoutObject->{LanguageObject}->Translate($TitleDesc);
                 $Title .= ', ' . $TitleDesc;
             }
@@ -728,7 +732,6 @@ sub Run {
         }
 
         my $CSS = '';
-        my $OrderBy;
 
         # show special ticket columns, if needed
         COLUMN:
@@ -739,7 +742,8 @@ sub Run {
             );
 
             $CSS = $Column;
-            my $Title = $LayoutObject->{LanguageObject}->Translate($Column);
+            my $Title   = $LayoutObject->{LanguageObject}->Translate($Column);
+            my $OrderBy = $Param{OrderBy};
 
             # output overall block so TicketNumber as well as other columns can be ordered
             $LayoutObject->Block(
@@ -750,18 +754,20 @@ sub Run {
             if ( $SpecialColumns{$Column} ) {
 
                 if ( $Param{SortBy} && ( $Param{SortBy} eq $Column ) ) {
-                    if ( $Param{OrderBy} && ( $Param{OrderBy} eq 'Up' ) ) {
-                        $OrderBy = 'Down';
+                    my $TitleDesc;
+
+                    # Change order for sorting column.
+                    $OrderBy = $OrderBy eq 'Up' ? 'Down' : 'Up';
+
+                    if ( $OrderBy eq 'Down' ) {
                         $CSS .= ' SortAscendingLarge';
+                        $TitleDesc = Translatable('sorted ascending');
                     }
                     else {
-                        $OrderBy = 'Up';
                         $CSS .= ' SortDescendingLarge';
+                        $TitleDesc = Translatable('sorted descending');
                     }
 
-                    # add title description
-                    my $TitleDesc
-                        = $OrderBy eq 'Down' ? Translatable('sorted ascending') : Translatable('sorted descending');
                     $TitleDesc = $LayoutObject->{LanguageObject}->Translate($TitleDesc);
                     $Title .= ', ' . $TitleDesc;
                 }
@@ -935,18 +941,20 @@ sub Run {
             elsif ( $Column !~ m{\A DynamicField_}xms ) {
 
                 if ( $Param{SortBy} && ( $Param{SortBy} eq $Column ) ) {
-                    if ( $Param{OrderBy} && ( $Param{OrderBy} eq 'Up' ) ) {
-                        $OrderBy = 'Down';
+                    my $TitleDesc;
+
+                    # Change order for sorting column.
+                    $OrderBy = $OrderBy eq 'Up' ? 'Down' : 'Up';
+
+                    if ( $OrderBy eq 'Down' ) {
                         $CSS .= ' SortAscendingLarge';
+                        $TitleDesc = Translatable('sorted ascending');
                     }
                     else {
-                        $OrderBy = 'Up';
                         $CSS .= ' SortDescendingLarge';
+                        $TitleDesc = Translatable('sorted descending');
                     }
 
-                    # add title description
-                    my $TitleDesc
-                        = $OrderBy eq 'Down' ? Translatable('sorted ascending') : Translatable('sorted descending');
                     $TitleDesc = $LayoutObject->{LanguageObject}->Translate($TitleDesc);
                     $Title .= ', ' . $TitleDesc;
                 }
@@ -1135,24 +1143,25 @@ sub Run {
 
                 if ($IsSortable) {
                     my $CSS = 'DynamicField_' . $DynamicFieldConfig->{Name};
-                    my $OrderBy;
                     if (
                         $Param{SortBy}
                         && ( $Param{SortBy} eq ( 'DynamicField_' . $DynamicFieldConfig->{Name} ) )
                         )
                     {
-                        if ( $Param{OrderBy} && ( $Param{OrderBy} eq 'Up' ) ) {
-                            $OrderBy = 'Down';
+                        my $TitleDesc;
+
+                        # Change order for sorting column.
+                        $OrderBy = $OrderBy eq 'Up' ? 'Down' : 'Up';
+
+                        if ( $OrderBy eq 'Down' ) {
                             $CSS .= ' SortAscendingLarge';
+                            $TitleDesc = Translatable('sorted ascending');
                         }
                         else {
-                            $OrderBy = 'Up';
                             $CSS .= ' SortDescendingLarge';
+                            $TitleDesc = Translatable('sorted descending');
                         }
 
-                        # add title description
-                        my $TitleDesc
-                            = $OrderBy eq 'Down' ? Translatable('sorted ascending') : Translatable('sorted descending');
                         $TitleDesc = $LayoutObject->{LanguageObject}->Translate($TitleDesc);
                         $Title .= ', ' . $TitleDesc;
                     }
@@ -1193,7 +1202,6 @@ sub Run {
                                 Label            => $Label,
                                 DynamicFieldName => $DynamicFieldConfig->{Name},
                                 ColumnFilterStrg => $ColumnFilterHTML,
-                                OrderBy          => $OrderBy,
                                 Title            => $Title,
                                 FilterTitle      => $FilterTitle,
                             },
@@ -1242,7 +1250,6 @@ sub Run {
                                 Label            => $Label,
                                 DynamicFieldName => $DynamicFieldConfig->{Name},
                                 ColumnFilterStrg => $ColumnFilterHTML,
-                                OrderBy          => $OrderBy,
                                 Title            => $Title,
                             },
                         );
