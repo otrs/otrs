@@ -2125,7 +2125,9 @@ sub ConfigurationTranslatedGet {
 
     return %{$Cache} if ref $Cache eq 'HASH';
 
-    my @SettingList = $Self->ConfigurationList();
+    my @SettingList = $Self->ConfigurationList(
+        IncludeInvisible => 1,
+    );
 
     my %Result;
 
@@ -2576,7 +2578,9 @@ sub ConfigurationXML2DB {
         return;
     }
 
-    my @SettingList = $Self->ConfigurationList();
+    my @SettingList = $Self->ConfigurationList(
+        IncludeInvisible => 1,
+    );
 
     my $StorableObject = $Kernel::OM->Get('Kernel::System::Storable');
 
@@ -3159,7 +3163,7 @@ Returns:
 sub ConfigurationList {
     my ( $Self, %Param ) = @_;
 
-    return $Kernel::OM->Get('Kernel::System::SysConfig::DB')->DefaultSettingList();
+    return $Kernel::OM->Get('Kernel::System::SysConfig::DB')->DefaultSettingList(%Param);
 }
 
 =head2 ConfigurationInvalidList()
@@ -4292,7 +4296,9 @@ sub ConfigurationSearch {
 
     my $Search = lc $Param{Search};
 
-    my %Settings = $Self->ConfigurationTranslatedGet();
+    my %Settings = $Self->ConfigurationTranslatedGet(
+        IncludeInvisible => $Param{IncludeInvisible},
+    );
 
     my %Result;
 
@@ -6122,7 +6128,9 @@ sub _DefaultSettingAddBulk {
     }
 
     # Get again all settings.
-    @SettingList = $Self->ConfigurationList();
+    @SettingList = $Self->ConfigurationList(
+        IncludeInvisible => 1,
+    );
 
     $Success = $SysConfigDBObject->DefaultSettingVersionBulkAdd(
         Settings    => \%Settings,
