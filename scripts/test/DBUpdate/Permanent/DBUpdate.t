@@ -16,7 +16,7 @@ my $Helper = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
 
 my $Home = $Kernel::OM->Get('Kernel::Config')->Get('Home');
 
-# set up a OTRS 5 database
+# Set up an OTRS 6 database.
 my @DatabaseXMLFiles = (
     "$Home/scripts/test/sample/DBUpdate/otrs6-schema.xml",
     "$Home/scripts/test/sample/DBUpdate/otrs6-initial_insert.xml",

@@ -36,12 +36,10 @@ sub Run {
     my $Verbose = $Param{CommandlineOptions}->{Verbose} || 0;
 
     my @Tasks = (
-
-  # {
-  #     Message =>
-  #         'Add table for dynamic field object names and add an index to speed up searching dynamic field text values',
-  #     Module => 'DynamicFieldChanges',
-  # },
+        {
+            Message => 'Adds an index to the communication log table',
+            Module  => 'CommunicationLogIndex',
+        },
     );
 
     print "\n" if $Verbose;
