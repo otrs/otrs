@@ -76,7 +76,7 @@ sub Run {
             UserID => 1,
         },
     );
-    ## nofilter(TidyAll::Plugin::OTRS::Perl::LayoutObject)
+
     my $LayoutObject = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
 
     my $Counter      = 1;

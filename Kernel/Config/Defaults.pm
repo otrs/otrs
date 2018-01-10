@@ -9,7 +9,7 @@
 # Default configuration for OTRS. All changes to this file will be lost after an
 #   update, please use AdminSystemConfiguration to configure your system.
 
-## nofilter(TidyAll::Plugin::OTRS::Perl::LayoutObject)
+
 
 package Kernel::Config::Defaults;
 

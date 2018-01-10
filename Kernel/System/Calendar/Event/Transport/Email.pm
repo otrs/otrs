@@ -7,7 +7,7 @@
 # --
 
 package Kernel::System::Calendar::Event::Transport::Email;
-## nofilter(TidyAll::Plugin::OTRS::Perl::LayoutObject)
+
 ## nofilter(TidyAll::Plugin::OTRS::Perl::ParamObject)
 
 use strict;

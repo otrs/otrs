@@ -404,7 +404,7 @@ sub CacheGenerate {
     my @Result;
 
     my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
-    ## nofilter(TidyAll::Plugin::OTRS::Perl::LayoutObject)
+
     my $LayoutObject = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
 
     my %AgentFrontends = %{ $ConfigObject->Get('Frontend::Module') // {} };
