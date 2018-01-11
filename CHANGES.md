@@ -3,6 +3,7 @@
  - 2017-12-12 Always require cookies for OTRS login - drop support for non-cookie sessions.
 
 #6.0.5 2018-??-??
+ - 2018-01-11 Fixed bug#[13536](https://bugs.otrs.org/show_bug.cgi?id=13536) - System maintenance does not show formatted timestamps and messages.
  - 2018-01-10 Fixed bug#[13523](https://bugs.otrs.org/show_bug.cgi?id=13523) - Loading an invalid communication ID causes all to be shown.
  - 2018-01-09 Follow-up fix for bug#[13325](https://bugs.otrs.org/show_bug.cgi?id=13325) - OTRS_CUSTOMER_BODY not working for most notification events.
 
