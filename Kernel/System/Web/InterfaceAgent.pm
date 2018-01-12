@@ -277,8 +277,9 @@ sub Run {
 
         # login is successful
         my %UserData = $UserObject->GetUserData(
-            User  => $User,
-            Valid => 1
+            User          => $User,
+            Valid         => 1,
+            NoOutOfOffice => 1,
         );
 
         # check needed data
