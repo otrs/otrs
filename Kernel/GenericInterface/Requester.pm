@@ -351,9 +351,9 @@ sub Run {
     $DataInclude{RequesterResponseInput} = $FunctionResult->{Data};
 
     my $DataIn = $FunctionResult->{Data};
-    my $SizeExeeded = $FunctionResult->{SizeExeeded} || 0;
+    my $SizeExceeded = $FunctionResult->{SizeExceeded} || 0;
 
-    if ($SizeExeeded) {
+    if ($SizeExceeded) {
         $DebuggerObject->Debug(
             Summary => "Incoming data before mapping was too large for logging",
             Data => 'See SysConfig option GenericInterface::Operation::ResponseLoggingMaxSize to change the maximum.',
@@ -415,7 +415,7 @@ sub Run {
 
         $DataIn = $FunctionResult->{Data};
 
-        if ($SizeExeeded) {
+        if ($SizeExceeded) {
             $DebuggerObject->Debug(
                 Summary => "Incoming data after mapping was too large for logging",
                 Data =>
