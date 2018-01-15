@@ -425,7 +425,6 @@ page completely.
     my $Success = $SeleniumObject->SwitchToFrame(
         FrameSelector => '.Iframe',     # (required) CSS selector of the frame element
         WaitForLoad   => 1,             # (optional) Wait until the frame has loaded, if necessary
-        Reload        => 1,             # (optional)
         Time          => 20,            # (optional) Wait time in seconds (default 20)
     );
 
@@ -439,18 +438,6 @@ sub SwitchToFrame {
     }
 
     if ( $Param{WaitForLoad} ) {
-        if ( $Param{Reload} ) {
-            $Self->execute_script( "
-                if (
-                    typeof(\$('$Param{FrameSelector}').get(0).contentWindow.Core) == 'object'
-                    && typeof(\$('$Param{FrameSelector}').get(0).contentWindow.Core.App) == 'object'
-                    )
-                {
-                    \$('$Param{FrameSelector}').get(0).contentWindow.Core.App.PageLoadComplete = false;
-                }
-            " );
-        }
-
         $Self->WaitFor(
             JavaScript => "return typeof(\$('$Param{FrameSelector}').get(0).contentWindow.Core) == 'object'
                 && typeof(\$('$Param{FrameSelector}').get(0).contentWindow.Core.App) == 'object'
