@@ -1,4 +1,5 @@
 #7.0.0.alpha1 2018-??-??
+ - 2018-01-22 Fixed bug#[13235](https://bugs.otrs.org/show_bug.cgi?id=13235) - Race condition when fetching mails.
  - 2017-12-26 Fixed bug#[13402](https://bugs.otrs.org/show_bug.cgi?id=13402) - Target \_blank value is not working for generic notifications.
  - 2017-12-12 Always require cookies for OTRS login - drop support for non-cookie sessions.
 
