@@ -1558,7 +1558,7 @@ sub SettingEffectiveValueCheck {
     elsif ( $Value->[0]->{Hash} ) {
 
         if ( ref $Param{EffectiveValue} ne 'HASH' ) {
-            $Result{Error} = 'Its not a hash!';
+            $Result{Error} = 'It is not a hash!';
             return %Result;
         }
 
@@ -1803,7 +1803,7 @@ sub SettingEffectiveValueCheck {
     elsif ( $Value->[0]->{Array} ) {
 
         if ( ref $Param{EffectiveValue} ne 'ARRAY' ) {
-            $Result{Error} = 'Its not an array!';
+            $Result{Error} = 'It is not an array!';
             return %Result;
         }
 
