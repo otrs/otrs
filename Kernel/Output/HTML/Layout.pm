@@ -702,7 +702,10 @@ sub Login {
 
         for my $CSSStatement ( sort keys %AgentLoginLogo ) {
             if ( $CSSStatement eq 'URL' ) {
-                my $WebPath = $ConfigObject->Get('Frontend::WebPath');
+                my $WebPath = '';
+                if ( $AgentLoginLogo{$CSSStatement} !~ /(http|ftp|https):\//i ) {
+                    $WebPath = $ConfigObject->Get('Frontend::WebPath');
+                }
                 $Data{'URL'} = 'url(' . $WebPath . $AgentLoginLogo{$CSSStatement} . ')';
             }
             else {
