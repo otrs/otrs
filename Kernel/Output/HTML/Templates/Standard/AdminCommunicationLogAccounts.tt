@@ -120,7 +120,7 @@
                     <tbody>
 [% RenderBlockStart("NoAccountsFound") %]
                         <tr>
-                            <td colspan="3">
+                            <td colspan="4">
                                 [% Translate("No accounts found.") | html %]
                             </td>
                         </tr>
