@@ -2280,7 +2280,7 @@ Lorem ipsum...
         },
         ExpectedResult => {
             Success => 0,
-            Error   => "Its not a hash!",
+            Error   => "It is not a hash!",
         },
     },
     {
@@ -2852,7 +2852,7 @@ Lorem ipsum...
         },
         ExpectedResult => {
             Success => 0,
-            Error   => 'Its not an array!',
+            Error   => 'It is not an array!',
         },
     },
     {
