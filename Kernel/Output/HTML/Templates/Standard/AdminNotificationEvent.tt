@@ -378,7 +378,7 @@
                         <div class="Clear"></div>
 
 [% RenderBlockStart("BackendArticleField") %]
-                        <label for="[% Data.Key %]">[% Data.Label %]:</label>
+                        <label for="[% Data.Key %]">[% Translate(Data.Label) %]:</label>
                         <div class="Field">
                             <input type="text" name="[% Data.Key %]" id="[% Data.Key %]" class="W75pc [% Data.Key %]ServerError" value="[% Data.Value | html %]"/>
                             <div id="[% Data.Key %]ServerError" class="TooltipErrorMessage">
