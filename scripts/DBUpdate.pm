@@ -218,6 +218,10 @@ sub _TasksGet {
             Module  => 'UpgradeDatabaseStructure',
         },
         {
+            Message => 'Migrate ZoomExpand setting',
+            Module  => 'MigrateZoomExpandConfig',
+        },
+        {
             Message => 'Refresh configuration cache',
             Module  => 'RebuildConfig',
         },
