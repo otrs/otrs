@@ -4,6 +4,7 @@
  - 2017-12-12 Always require cookies for OTRS login - drop support for non-cookie sessions.
 
 #6.0.5 2018-??-??
+ - 2018-01-31 Fixed bug#[13570](https://bugs.otrs.org/show_bug.cgi?id=13570) - Queue view display incorrect if you move a queue to be a sub-queue.
  - 2018-01-31 Fixed bug#[13598](https://bugs.otrs.org/show_bug.cgi?id=13598) - Hiding AgentTicketMove menu with ACL makes draft function unusable.
  - 2018-01-31 Fixed bug#[13562](https://bugs.otrs.org/show_bug.cgi?id=13562) - Drag and drop of a BMP image into the editor causes an error message.
  - 2018-01-31 Fixed bug#[13284](https://bugs.otrs.org/show_bug.cgi?id=13284) - Ticket title is not included in fulltext search.
