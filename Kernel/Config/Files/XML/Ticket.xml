@@ -4618,7 +4618,7 @@
         <Description Translatable="1">Defines if the message in the ticket forward screen of the agent interface is visible for the customer by default.</Description>
         <Navigation>Frontend::Agent::View::TicketForward</Navigation>
         <Value>
-            <Item ValueType="Checkbox">1</Item>
+            <Item ValueType="Checkbox">0</Item>
         </Value>
     </Setting>
     <Setting Name="Ticket::Frontend::AgentTicketForward###FormDraft" Required="0" Valid="1">
