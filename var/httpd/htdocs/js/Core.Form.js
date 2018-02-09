@@ -19,6 +19,8 @@ var Core = Core || {};
  */
 Core.Form = (function (TargetNS) {
 
+    var FormModified = false;
+
     /*
      * check dependencies first
      */
@@ -44,6 +46,35 @@ Core.Form = (function (TargetNS) {
         $('input[type="checkbox"][name="rw"]').not('#SelectAllrw').length){
         $('table th input:not([name="rw"]:visible)').prop('disabled', true);
         $('#SelectAllrw').addClass('Disabled');
+    }
+
+    /**
+    * @name Init
+    * @memberof Core.Form
+    * @function
+    * @description
+    *      This function initializes module functionality.
+    */
+    TargetNS.Init = function () {
+
+        $("form input, select, textarea").on('change', function() {
+            FormModified = true;
+
+            // Once there was any modification, do not check it any more.
+            $("form input, select, textarea").off('change');
+        });
+    }
+
+    /**
+     * @name IsFormModified
+     * @memberof Core.Form
+     * @function
+     * @description
+     * @returns {boolean} True if there was modification.
+     *      Checks if any element in any form on the screen has been modified.
+     */
+    TargetNS.IsFormModified = function () {
+        return FormModified;
     }
 
     /**
@@ -269,6 +300,8 @@ Core.Form = (function (TargetNS) {
             $(this.form).find(':submit').first().click();
         }
     });
+
+    Core.Init.RegisterNamespace(TargetNS, 'APP_MODULE');
 
     return TargetNS;
 }(Core.Form || {}));
