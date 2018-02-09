@@ -4223,7 +4223,7 @@ via the Preferences button after logging in.
                             <Array>
                             </Array>
                         </Item>
-                        <Item Key="Description" Translatable="1"></Item>
+                        <Item Key="Description" Translatable="1">Dashboard overview.</Item>
                         <Item Key="Name" Translatable="1">Dashboard</Item>
                         <Item Key="Link">Action=AgentDashboard</Item>
                         <Item Key="LinkOption"></Item>
@@ -4298,7 +4298,7 @@ via the Preferences button after logging in.
                             <Array>
                             </Array>
                         </Item>
-                        <Item Key="Description" Translatable="1"></Item>
+                        <Item Key="Description" Translatable="1">Customer Information Center search.</Item>
                         <Item Key="Name" Translatable="1">Customer Information Center</Item>
                         <Item Key="Link">Action=AgentCustomerInformationCenter</Item>
                         <Item Key="LinkOption">onclick="window.setTimeout(function(){Core.Agent.CustomerInformationCenterSearch.OpenSearchDialog();}, 0); return false;"</Item>
@@ -4319,7 +4319,7 @@ via the Preferences button after logging in.
                             <Array>
                             </Array>
                         </Item>
-                        <Item Key="Description" Translatable="1"></Item>
+                        <Item Key="Description" Translatable="1">Customer Information Center search.</Item>
                         <Item Key="Name" Translatable="1">Customers</Item>
                         <Item Key="Link">Action=AgentCustomerInformationCenter</Item>
                         <Item Key="LinkOption"></Item>
@@ -4470,7 +4470,7 @@ via the Preferences button after logging in.
                             <Array>
                             </Array>
                         </Item>
-                        <Item Key="Description" Translatable="1"></Item>
+                        <Item Key="Description" Translatable="1">Customer User Information Center search.</Item>
                         <Item Key="Name" Translatable="1">Customer User Information Center</Item>
                         <Item Key="Link">Action=AgentCustomerUserInformationCenter</Item>
                         <Item Key="LinkOption">onclick="window.setTimeout(function(){Core.Agent.CustomerUserInformationCenterSearch.OpenSearchDialog();}, 0); return false;"</Item>
@@ -4856,7 +4856,7 @@ via the Preferences button after logging in.
                             <Array>
                             </Array>
                         </Item>
-                        <Item Key="Description" Translatable="1"></Item>
+                        <Item Key="Description" Translatable="1">Admin modules overview.</Item>
                         <Item Key="Name" Translatable="1">Admin</Item>
                         <Item Key="Link">Action=Admin</Item>
                         <Item Key="LinkOption"></Item>
@@ -4887,7 +4887,7 @@ via the Preferences button after logging in.
                 <Item Key="Module">Kernel::Output::HTML::NavBar::ModuleAdmin</Item>
                 <Item Key="Name"></Item>
                 <Item Key="Block"></Item>
-                <Item Key="Description"></Item>
+                <Item Key="Description" Translatable="1">Admin modules overview.</Item>
                 <Item Key="IconBig"></Item>
                 <Item Key="IconSmall"></Item>
             </Hash>
@@ -5229,7 +5229,7 @@ via the Preferences button after logging in.
                             <Array>
                             </Array>
                         </Item>
-                        <Item Key="Description"></Item>
+                        <Item Key="Description" Translatable="1">Create and manage customer users.</Item>
                         <Item Key="Name" Translatable="1">Customer User Administration</Item>
                         <Item Key="Link">Action=AdminCustomerUser;Nav=Agent</Item>
                         <Item Key="LinkOption"></Item>
@@ -5324,7 +5324,7 @@ via the Preferences button after logging in.
                             <Array>
                             </Array>
                         </Item>
-                        <Item Key="Description"></Item>
+                        <Item Key="Description" Translatable="1">Create and manage customers.</Item>
                         <Item Key="Name" Translatable="1">Customer Administration</Item>
                         <Item Key="Link">Action=AdminCustomerCompany;Nav=Agent</Item>
                         <Item Key="LinkOption"></Item>
@@ -7238,7 +7238,7 @@ via the Preferences button after logging in.
                             <Item>stats</Item>
                         </Array>
                     </Item>
-                    <Item Key="Description" Translatable="1"></Item>
+                    <Item Key="Description" Translatable="1">Agent Statistics.</Item>
                     <Item Key="NavBarName">Reports</Item>
                 </Hash>
             </Item>
@@ -7295,7 +7295,7 @@ via the Preferences button after logging in.
                                 <Item>stats</Item>
                             </Array>
                         </Item>
-                        <Item Key="Description" Translatable="1"></Item>
+                        <Item Key="Description" Translatable="1">Statistics overview.</Item>
                         <Item Key="Name" Translatable="1">Reports</Item>
                         <Item Key="Link">Action=AgentStatistics;Subaction=Overview</Item>
                         <Item Key="LinkOption"></Item>
@@ -7318,7 +7318,7 @@ via the Preferences button after logging in.
                                 <Item>stats</Item>
                             </Array>
                         </Item>
-                        <Item Key="Description" Translatable="1"></Item>
+                        <Item Key="Description" Translatable="1">Statistic Reports overview.</Item>
                         <Item Key="Name" Translatable="1">Reports (OTRS Business Solution™)</Item>
                         <Item Key="Link">Action=AgentStatisticsReports;Subaction=Overview</Item>
                         <Item Key="LinkOption">class="OTRSBusinessRequired"</Item>
@@ -7341,7 +7341,7 @@ via the Preferences button after logging in.
                                 <Item>stats</Item>
                             </Array>
                         </Item>
-                        <Item Key="Description" Translatable="1"></Item>
+                        <Item Key="Description" Translatable="1">Statistics overview.</Item>
                         <Item Key="Name" Translatable="1">Statistics</Item>
                         <Item Key="Link">Action=AgentStatistics;Subaction=Overview</Item>
                         <Item Key="LinkOption"></Item>
@@ -7568,7 +7568,7 @@ via the Preferences button after logging in.
             <Hash>
                 <Item Key="Module">Kernel::Output::HTML::Dashboard::UserOutOfOffice</Item>
                 <Item Key="Title" Translatable="1">Out Of Office</Item>
-                <Item Key="Description"></Item>
+                <Item Key="Description" Translatable="1">Out of Office users.</Item>
                 <Item Key="SortBy">UserFullname</Item>
                 <Item Key="Block">ContentSmall</Item>
                 <Item Key="Limit">10</Item>
@@ -7586,7 +7586,7 @@ via the Preferences button after logging in.
             <Hash>
                 <Item Key="Module">Kernel::Output::HTML::Dashboard::UserOnline</Item>
                 <Item Key="Title" Translatable="1">Logged-In Users</Item>
-                <Item Key="Description"></Item>
+                <Item Key="Description" Translatable="1">Logged in users.</Item>
                 <Item Key="ShowEmail">0</Item>
                 <Item Key="SortBy">UserFullname</Item>
                 <Item Key="Filter">Agent</Item>
@@ -7606,7 +7606,7 @@ via the Preferences button after logging in.
             <Hash>
                 <Item Key="Module">Kernel::Output::HTML::Dashboard::News</Item>
                 <Item Key="Title" Translatable="1">OTRS News</Item>
-                <Item Key="Description"></Item>
+                <Item Key="Description" Translatable="1">News about OTRS.</Item>
                 <Item Key="Block">ContentSmall</Item>
                 <Item Key="Limit">6</Item>
                 <Item Key="Group"></Item>
@@ -7623,7 +7623,7 @@ via the Preferences button after logging in.
             <Hash>
                 <Item Key="Module">Kernel::Output::HTML::Dashboard::RSS</Item>
                 <Item Key="Title" Translatable="1">Custom RSS Feed</Item>
-                <Item Key="Description"></Item>
+                <Item Key="Description" Translatable="1">Custom RSS feed.</Item>
                 <Item Key="URL">http://www.otrs.com/en/rss.xml</Item>
                 <Item Key="URL_de">http://www.otrs.com/de/rss.xml</Item>
                 <Item Key="URL_es">http://www.otrs.com/es/rss.xml</Item>
@@ -7646,7 +7646,7 @@ via the Preferences button after logging in.
             <Hash>
                 <Item Key="Module">Kernel::Output::HTML::Dashboard::CmdOutput</Item>
                 <Item Key="Title" Translatable="1">Sample command output</Item>
-                <Item Key="Description"></Item>
+                <Item Key="Description" Translatable="1">Show command line output.</Item>
                 <Item Key="Block">ContentSmall</Item>
                 <Item Key="Group"></Item>
                 <Item Key="Default">0</Item>
