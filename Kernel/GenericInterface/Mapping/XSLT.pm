@@ -108,9 +108,9 @@ sub Map {
     my ( $Self, %Param ) = @_;
 
     # Check data - only accept undef or hash ref.
-    if ( defined $Param{Data} && ref $Param{Data} ne 'HASH' ) {
+    if ( defined $Param{Data} && ref $Param{Data} ne 'HASH' && ref $Param{Data} ne 'ARRAY') {
         return $Self->{DebuggerObject}->Error(
-            Summary => 'Got Data but it is not a hash ref in Mapping XSLT backend!'
+            Summary => 'Got Data but it is not a hash or array ref in Mapping XSLT backend!'
         );
     }
 
