@@ -4,6 +4,7 @@
  - 2017-12-12 Always require cookies for OTRS login - drop support for non-cookie sessions.
 
 #6.0.6 2018-??-??
+ - 2018-02-20 Fixed bug#[13674](https://bugs.otrs.org/show_bug.cgi?id=13674) - Wording issue in Session Management screen of Admin interface, thanks to Balazs Ur - (PR#1903).
  - 2018-02-20 Fixed bug#[13675](https://bugs.otrs.org/show_bug.cgi?id=13675) - Notification transport name and label are not marked for translation , thanks to Balazs Ur - (PR#1903).
  - 2018-02-16 Improved console output documentation for options that can be specified multiple times.
  - 2018-02-15 Fixed bug#[13644](https://bugs.otrs.org/show_bug.cgi?id=13644) - Attachment and text missing on some mails.
