@@ -9,8 +9,11 @@
 <head>
     <meta http-equiv="Content-type" content="text/html;charset=utf-8" />
     <meta id="viewport" name="viewport" content="">
-# set viewport for mobile mode, do not set viewport for DesktopMode
-    <script>
+
+	<meta name="google-signin-client_id" content="452118322847-jdqthu61olccee2f5qd5i02u2b5ct7br.apps.googleusercontent.com">
+
+# set viewport for mobile mode, do not set viewport for DesktopMode    
+	<script>
         (function(doc, win) {
             var viewport = doc.getElementById('viewport'),
                 isIFrame = (win.top.location.href !== win.location.href),
@@ -22,12 +25,18 @@
             }
             catch (Exception) {}
         }(document, window));
+
+
     </script>
+    <script src="https://apis.google.com/js/platform.js?onload=Core.Customer.Login.Google.init" async defer></script>
+
 [% RenderBlockStart("MetaLink") %]
     <link rel="[% Data.Rel | html %]" type="[% Data.Type | html %]" title="[% Data.Title | html %]" href="[% Data.Href %]" />
 [% RenderBlockEnd("MetaLink") %]
     <link rel="shortcut icon" href="[% Config("Frontend::ImagePath") %]icons/product.ico" type="image/ico" />
     <link rel="apple-touch-icon" href="[% Config("Frontend::ImagePath") %]icons/apple-touch-icon.png" />
+
+
 
 [% RenderBlockStart("CommonCSS") %]
     <link rel="stylesheet" type="text/css" href="[% Config("Frontend::WebPath") %]skins/Customer/[% Data.Skin | uri %]/[% Data.CSSDirectory | html %]/[% Data.Filename | html %]" />
@@ -75,7 +84,6 @@
           catch (Exception) {}
       }(document, window));
     </script>
-
     <title>[% Data.TitleArea | html %] [% Config("ProductName") %]</title>
 
 [% INCLUDE "HTMLHeadBlockEvents.tt" %]

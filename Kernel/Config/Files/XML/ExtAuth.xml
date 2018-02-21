@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<otrs_config version="2.0" init="Application">
+    <Setting Name="Loader::Module::CustomerLogin###100-ExtAuth" Required="0" Valid="1">
+        <Description Translatable="1">Loader module registration for the agent interface.</Description>
+        <Navigation>Frontend::Customer::ModuleRegistration::Loader</Navigation>
+        <Value>
+            <Hash>
+                <Item Key="JavaScript">
+                    <Array>
+                        <Item>Core.Customer.Login.Google.js</Item>
+                        <Item>Core.Customer.Login.Facebook.js</Item>
+                    </Array>
+                </Item>
+            </Hash>
+        </Value>
+    </Setting>
+    <Setting Name="Customer::AuthModule::Google" Required="0" Valid="1">
+        <Description Translatable="1">Defines configuration for the google-single-sign on module</Description>
+        <Navigation>CustomerAuth</Navigation>
+        <Value>
+            <Hash>
+                <Item Key="authtimeout">3</Item>
+                <Item Key="clientid">452118322847-jdqthu61olccee2f5qd5i02u2b5ct7br.apps.googleusercontent.com</Item>
+                <Item Key="createCustomerUser">1</Item>
+                <Item Key="createCustomerUserBackend">CustomerUser</Item>               
+                <Item Key="createCustomerUserMapping">
+                    <Hash>
+                        <Item Key="UserFirstname">given_name</Item>
+                        <Item Key="UserLastname">family_name</Item>
+                        <Item Key="UserLogin">email</Item>
+                        <Item Key="UserEmail">email</Item>
+                        <Item Key="UserCustomerID">email</Item>
+                    </Hash>
+                </Item>
+                <Item Key="createCustomerUserFixData">
+                    <Hash>
+                        <Item Key="ValidID">1</Item>
+
+                    </Hash>
+                </Item>
+                <Item Key="customerUserMatchMap">
+                    <Hash>
+                        <Item Key="UserEmail">email</Item>
+                    </Hash>
+                </Item>
+                <Item Key="customerUserMatchPref">
+                    <Hash>
+                    </Hash>
+                </Item>
+                <Item Key="updateCustomerUserMapping">
+                    <Hash>
+                        <Item Key="UserFirstname">given_name</Item>
+                        <Item Key="UserLastname">family_name</Item>
+                    </Hash>
+                </Item>
+                <Item Key="updateCustomerUserPref">
+                    <Hash>
+                        <Item Key="AvatarURL">picture</Item>
+                    </Hash>
+                </Item>
+
+            </Hash>
+        </Value>
+    </Setting>
+</otrs_config>
+	
