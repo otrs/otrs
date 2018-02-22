@@ -2454,11 +2454,11 @@ msgstr "Vistos"
 
 #. Template: AAATicket
 msgid "Watch"
-msgstr "Ver"
+msgstr "Vigilar"
 
 #. Template: AAATicket
 msgid "Unwatch"
-msgstr "No Vistos"
+msgstr "Dejar de vigilar"
 
 #. Template: AAATicket
 msgid "Lock it to work on it"
@@ -9058,7 +9058,7 @@ msgstr "Obtener todo"
 
 #. Template: AgentTicketEmailOutbound
 msgid "Outbound Email for %s%s"
-msgstr "Email de Salida para %s%s"
+msgstr "Correo de Salida para %s%s"
 
 #. Template: AgentTicketEscalation
 msgid "Ticket %s: first response time is over (%s/%s)!"
@@ -9090,7 +9090,7 @@ msgstr "Reenviar %s%s"
 
 #. Template: AgentTicketHistory
 msgid "History of %s%s"
-msgstr "Histórico de %s%s"
+msgstr "Historial de %s%s"
 
 #. Template: AgentTicketHistory
 msgid "History Content"
@@ -9102,11 +9102,11 @@ msgstr "Vista ampliada"
 
 #. Template: AgentTicketMerge
 msgid "Merge %s%s"
-msgstr "Unir %s%s"
+msgstr "Fusionar %s%s"
 
 #. Template: AgentTicketMerge
 msgid "Merge Settings"
-msgstr "Ajustes Unir"
+msgstr "Ajustes de Fusión"
 
 #. Template: AgentTicketMerge
 msgid "You need to use a ticket number!"
@@ -9126,7 +9126,7 @@ msgstr "Mover %s%s"
 
 #. Template: AgentTicketMove
 msgid "New Queue"
-msgstr "Nueva cola"
+msgstr "Nueva Cola"
 
 #. Template: AgentTicketOverviewMedium
 msgid "Select all"
@@ -9292,7 +9292,7 @@ msgstr "Busca en los atributos De, Para, Cc, Asunto y el cuerpo del artículo, i
 
 #. Template: AgentTicketSearch
 msgid "Customer User Login"
-msgstr "Nombre de usuario del cliente"
+msgstr "Nombre de Usuario del Cliente"
 
 #. Template: AgentTicketSearch
 msgid "Attachment Name"
@@ -9304,7 +9304,7 @@ msgstr "(ej. m*archivo or miar*)"
 
 #. Template: AgentTicketSearch
 msgid "Created in Queue"
-msgstr "Creado en la cola"
+msgstr "Creado en La Cola"
 
 #. Template: AgentTicketSearch
 msgid "Lock state"
@@ -9316,7 +9316,7 @@ msgstr "Vigilante"
 
 #. Template: AgentTicketSearch
 msgid "Article Create Time (before/after)"
-msgstr "Hora de creación del artículo (antes/después)"
+msgstr "Hora de Creación del Artículo (antes/después)"
 
 #. Template: AgentTicketSearch
 msgid "Article Create Time (between)"
@@ -9340,11 +9340,11 @@ msgstr "Hora de modificación del ticket (entre)"
 
 #. Template: AgentTicketSearch
 msgid "Ticket Last Change Time (before/after)"
-msgstr "Tiempo Último Cambio Ticket (antes/después)"
+msgstr "Tiempo Último Cambio del Ticket (antes/después)"
 
 #. Template: AgentTicketSearch
 msgid "Ticket Last Change Time (between)"
-msgstr "Tiempo Último Cambio Ticket (entre)"
+msgstr "Tiempo Último Cambio del Ticket (entre)"
 
 #. Template: AgentTicketSearch
 msgid "Ticket Close Time (before/after)"
@@ -9388,15 +9388,15 @@ msgstr "Guardar los ajustes del filtro como predeterminados"
 
 #. Template: AgentTicketZoom
 msgid "Event Type Filter"
-msgstr "Filtro Tipo Evento"
+msgstr "Filtro Tipo de Evento"
 
 #. Template: AgentTicketZoom
 msgid "Event Type"
-msgstr "Tipo Evento"
+msgstr "Tipo de Evento"
 
 #. Template: AgentTicketZoom
 msgid "Save as default"
-msgstr "Guardar como Por Defecto"
+msgstr "Guardar como predeterminado"
 
 #. Template: AgentTicketZoom
 msgid "Archive"
@@ -9408,7 +9408,7 @@ msgstr "Este ticket está archivado."
 
 #. Template: AgentTicketZoom
 msgid "Note: Type is invalid!"
-msgstr "Nota: el tipo es inválido!"
+msgstr "Nota: ¡El tipo es inválido!"
 
 #. Template: AgentTicketZoom
 msgid "Locked"
@@ -9440,7 +9440,7 @@ msgstr "Vista Linea Temporal de Ticket"
 
 #. Template: AgentTicketZoom
 msgid "Article Overview"
-msgstr "Vista General Artículo"
+msgstr "Vista General del Artículo"
 
 #. Template: AgentTicketZoom
 msgid "Article(s)"
@@ -9488,7 +9488,7 @@ msgstr "Importante"
 
 #. Template: AgentTicketZoom
 msgid "Unread Article!"
-msgstr "Artículo no leído"
+msgstr "¡Artículo no leído!"
 
 #. Template: AgentTicketZoom
 msgid "Incoming message"
@@ -9538,25 +9538,27 @@ msgstr "Cerrar este mensaje"
 
 #. Template: AgentTicketZoom
 msgid "Article could not be opened! Perhaps it is on another article page?"
-msgstr "El artículo no se pudo abrir! Tal vez sea en otro artículo de la página?"
+msgstr "¡El artículo no se pudo abrir! ¿Tal vez sea en otro artículo de la página?"
 
 #. Template: AgentTicketZoom
 msgid "Scale preview content"
-msgstr ""
+msgstr "Escala de contenido de vista previa"
 
 #. Template: AgentTicketZoom
 msgid "Open URL in new tab"
-msgstr ""
+msgstr "Abrir URL en una pestaña nueva"
 
 #. Template: AgentTicketZoom
 msgid "Close preview"
-msgstr ""
+msgstr "Cerrar vista previa"
 
 #. Template: AgentTicketZoom
 msgid ""
 "OTRS can't provide a preview of this website because it seems as if it "
 "didn't allow to be embedded."
 msgstr ""
+"OTRS no puede proporcionar una vista previa de este sitio web porque parece que"
+"no permite ser incrustado".
 
 #. Template: AttachmentBlocker
 msgid "To protect your privacy, remote content was blocked."
@@ -9572,7 +9574,7 @@ msgstr "Primer mensaje"
 
 #. Template: CloudServicesDisabled
 msgid "This feature requires cloud services."
-msgstr ""
+msgstr "Esta característica requiere servicios en la nube."
 
 #. Template: CloudServicesDisabled
 msgid "You can"
@@ -9713,11 +9715,11 @@ msgstr "¿Olvidó su contraseña?"
 
 #. Template: CustomerLogin
 msgid "2 Factor Token"
-msgstr "2 Factor de Señal"
+msgstr "Código de 2 Factores"
 
 #. Template: CustomerLogin
 msgid "Your 2 Factor Token"
-msgstr "Tu 2 Factor de Señal"
+msgstr "Su Código de 2 Factores"
 
 #. Template: CustomerLogin
 msgid "Log In"
