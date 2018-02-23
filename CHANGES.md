@@ -4,6 +4,7 @@
  - 2017-12-12 Always require cookies for OTRS login - drop support for non-cookie sessions.
 
 #6.0.6 2018-??-??
+ - 2018-02-23 Fixed bug#[13669](https://bugs.otrs.org/show_bug.cgi?id=13669) - Agent login interface login button problem.
  - 2018-02-23 Fixed bug#[13610](https://bugs.otrs.org/show_bug.cgi?id=13610) - AgentTicketEmail take wrong Database Credentials.
  - 2018-02-21 Fixed bug#[13680](https://bugs.otrs.org/show_bug.cgi?id=13680) - SLA edit screen is not fully modern.
  - 2018-02-21 Fixed bug#[13676](https://bugs.otrs.org/show_bug.cgi?id=13676) - Column headers and tooltips are not translated, to Balazs Ur - (PR#1904).
