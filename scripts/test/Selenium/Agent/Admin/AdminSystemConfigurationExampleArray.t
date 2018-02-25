@@ -587,7 +587,7 @@ my @Tests = (
             },
             {
                 Select =>
-                    '.Setting > .Array > .ArrayItem:nth-of-type(2) .Hash .HashItem:nth-of-type(4) .ArrayItem input',
+                    'input#ExampleArrayFrontendNavigationExampleArrayFrontendNavigation_Array2_Hash\\#\\#\\#Group_Array0',
             },
             {
                 Write => 'admin',
@@ -634,14 +634,6 @@ my @Tests = (
             },
             {
                 Click => '.Update',
-            },
-            {
-                # Select different input field, just to make sure that .Error is removed in input#NavBar.
-                Select => 'input#ExampleArrayFrontendNavigation_Array2_Hash\\#\\#\\#Name',
-            },
-            {
-                # Check if there are any remaining errors in this widget.
-                ElementMissing => '.Error',
             },
             {
                 Select => 'input',
