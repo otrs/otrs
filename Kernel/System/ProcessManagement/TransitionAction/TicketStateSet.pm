@@ -181,6 +181,7 @@ sub Run {
         IsHashRefWithData( \%StateData )
         && $StateData{TypeName} =~ m{\A pending}msxi
         && IsNumber( $Param{Config}->{PendingTimeDiff} )
+        && ! IsDateTimeString( $Param{Config}->{PendingTime} )
         )
     {
 
@@ -196,6 +197,38 @@ sub Run {
         );
     }
 
+    # set pending time
+    if (
+        IsHashRefWithData( \%StateData )
+        && $StateData{TypeName} =~ m{\A pending}msxi
+        && IsDateTimeString( $Param{Config}->{PendingTime} )
+        )
+    {
+        my $ObjectParams = {
+            String   => $Param{Config}->{PendingTime},
+        };
+        #Add TimeZone if given or use sysconfig default
+        if ( IsStringWithData($Param{Config}->{TimeZone}) )
+        {
+        		$ObjectParams->{TimeZone} = $Param{Config}->{TimeZone} 
+        }
+        # get datetime object
+        my $DateTimeObject = $Kernel::OM->Create('Kernel::System::DateTime',
+        	ObjectParams => $ObjectParams,
+        );
+        #Add Seconds if given	
+        if (IsNumber( $Param{Config}->{PendingTimeDiff}))
+        {
+        		$DateTimeObject->Add( Seconds => $Param{Config}->{PendingTimeDiff} ) 
+        }
+
+        # set pending time
+        $Kernel::OM->Get('Kernel::System::Ticket')->TicketPendingTimeSet(
+            UserID   => $Param{UserID},
+            TicketID => $Param{Ticket}->{TicketID},
+            String   => $DateTimeObject->ToString(),
+        );
+    }
     return $Success;
 }
 

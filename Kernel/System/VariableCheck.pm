@@ -26,6 +26,7 @@ our %EXPORT_TAGS = (    ## no critic
         'IsString',
         'IsStringWithData',
         'DataIsDifferent',
+        'IsDateTimeString',
     ],
 );
 Exporter::export_ok_tags('all');
@@ -227,6 +228,26 @@ sub IsInteger {
 
     return if !IsStringWithData(@_);
     return if $TestData !~ m{ \A [-]? (?: 0 | [1-9] \d* ) \z }xms;
+
+    return 1;
+}
+=head2 IsDateTimeString()
+
+test supplied data to determine if it is an datetime-string (yyyy-mm-dd hh:mm:ss)
+
+returns 1 if data matches criteria or undef otherwise
+
+    my $Result = IsDateTimeString(
+        '2018-01-01 10:10:10', # data to be tested
+    );
+
+=cut
+
+sub IsDateTimeString {
+    my $TestData = $_[0];
+
+    return if !IsStringWithData(@_);
+    return if $TestData !~  /^(2[0-9]{3})-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01]) (0[0-9]|1[0-9]|2[0123])\:([012345][0-9])\:([012345][0-9])$/;
 
     return 1;
 }
