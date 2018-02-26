@@ -674,6 +674,23 @@ sub Run {
         );
     }
 
+    # time accounting
+    if ( defined $GetParam{'X-OTRS-FollowUp-TimeUnit'} && $GetParam{'X-OTRS-FollowUp-TimeUnit'} =~ /^\s*\-?\d{1,10}((\.|,)\d{1,2})/ ) {
+        $TicketObject->TicketAccountTime(
+            TicketID  => $Param{TicketID},
+            ArticleID => $ArticleID,
+            TimeUnit  => $GetParam{'X-OTRS-FollowUp-TimeUnit'},
+            UserID    => $Param{InmailUserID},
+        );
+
+        $Self->{CommunicationLogObject}->ObjectLog(
+            ObjectLogType => 'Message',
+            Priority      => 'Debug',
+            Key           => 'Kernel::System::PostMaster::FollowUp',
+            Value         => "Added " . $GetParam{'X-OTRS-FollowUp-TimeUnit'} . " time units to ticket",
+        );
+    }
+
     # write log
     $Self->{CommunicationLogObject}->ObjectLog(
         ObjectLogType => 'Message',

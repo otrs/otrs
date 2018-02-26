@@ -11308,6 +11308,7 @@
                 <Item>X-OTRS-CustomerUser</Item>
                 <Item>X-OTRS-SenderType</Item>
                 <Item>X-OTRS-IsVisibleForCustomer</Item>
+                <Item>X-OTRS-TimeUnit</Item>
                 <Item>X-OTRS-FollowUp-Owner</Item>
                 <Item>X-OTRS-FollowUp-OwnerID</Item>
                 <Item>X-OTRS-FollowUp-Responsible</Item>
@@ -11322,6 +11323,7 @@
                 <Item>X-OTRS-FollowUp-SLA</Item>
                 <Item>X-OTRS-FollowUp-SenderType</Item>
                 <Item>X-OTRS-FollowUp-IsVisibleForCustomer</Item>
+                <Item>X-OTRS-FollowUp-TimeUnit</Item>
                 <Item>X-OTRS-FollowUp-Title</Item>
                 <Item>X-OTRS-FollowUp-State-Keep</Item>
                 <Item>X-OTRS-BodyDecrypted</Item>
