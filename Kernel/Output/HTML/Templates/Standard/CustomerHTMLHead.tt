@@ -10,8 +10,6 @@
     <meta http-equiv="Content-type" content="text/html;charset=utf-8" />
     <meta id="viewport" name="viewport" content="">
 
-	<meta name="google-signin-client_id" content="452118322847-jdqthu61olccee2f5qd5i02u2b5ct7br.apps.googleusercontent.com">
-
 # set viewport for mobile mode, do not set viewport for DesktopMode    
 	<script>
         (function(doc, win) {
@@ -28,7 +26,34 @@
 
 
     </script>
+[% RenderBlockStart("GoogleAuthScript") %]
+	<meta name="google-signin-client_id" content="[% Data.clientid | html %]">
     <script src="https://apis.google.com/js/platform.js?onload=Core.Customer.Login.Google.init" async defer></script>
+[% RenderBlockEnd("GoogleAuthScript") %]
+[% RenderBlockStart("FacebookAuthScript") %]
+<script>
+  window.fbAsyncInit = function() {
+    FB.init({
+      appId      : '854433174729774',
+      cookie     : true,
+      xfbml      : true,
+      version    : 'v2.12'
+    });
+      
+    FB.AppEvents.logPageView();   
+    onCUSignInFacebook();
+      
+  };
+
+  (function(d, s, id){
+     var js, fjs = d.getElementsByTagName(s)[0];
+     if (d.getElementById(id)) {return;}
+     js = d.createElement(s); js.id = id;
+     js.src = "https://connect.facebook.net/en_US/sdk.js";
+     fjs.parentNode.insertBefore(js, fjs);
+   }(document, 'script', 'facebook-jssdk'));
+</script>
+[% RenderBlockEnd("FacebookAuthScript") %]
 
 [% RenderBlockStart("MetaLink") %]
     <link rel="[% Data.Rel | html %]" type="[% Data.Type | html %]" title="[% Data.Title | html %]" href="[% Data.Href %]" />

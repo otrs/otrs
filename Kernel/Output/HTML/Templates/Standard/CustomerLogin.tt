@@ -6,46 +6,6 @@
 # did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
 # --
 [% InsertTemplate("CustomerHeader.tt") %]
-<script>window.twttr = (function(d, s, id) {
-  var js, fjs = d.getElementsByTagName(s)[0],
-    t = window.twttr || {};
-  if (d.getElementById(id)) return t;
-  js = d.createElement(s);
-  js.id = id;
-  js.src = "https://platform.twitter.com/widgets.js";
-  fjs.parentNode.insertBefore(js, fjs);
-
-  t._e = [];
-  t.ready = function(f) {
-    t._e.push(f);
-  };
-
-  return t;
-}(document, "script", "twitter-wjs"));</script>
-
-
-<script>
-  window.fbAsyncInit = function() {
-    FB.init({
-      appId      : '854433174729774',
-      cookie     : true,
-      xfbml      : true,
-      version    : 'v2.12'
-    });
-      
-    FB.AppEvents.logPageView();   
-    onCUSignInFacebook();
-      
-  };
-
-  (function(d, s, id){
-     var js, fjs = d.getElementsByTagName(s)[0];
-     if (d.getElementById(id)) {return;}
-     js = d.createElement(s); js.id = id;
-     js.src = "https://connect.facebook.net/en_US/sdk.js";
-     fjs.parentNode.insertBefore(js, fjs);
-   }(document, 'script', 'facebook-jssdk'));
-</script>
 
 <!-- start login -->
 <div id="MainBox" class="Login ARIARoleMain">
@@ -68,13 +28,11 @@
             [% Translate("Please see the documentation or ask your admin for further information.") | html %]
         </p>
     </div>
-
 [% RenderBlockStart("SystemMaintenance") %]
     <div class="WarningBox WithIcon">
         <i class="fa fa-exclamation-circle"></i> [% Translate(Data.LoginMessage) | html %]
     </div>
 [% RenderBlockEnd("SystemMaintenance") %]
-
     <div id="Slider">
         <div id="SlideArea">
 [% RenderBlockStart("PreLogin") %]
@@ -120,13 +78,17 @@
                     <div>
                         <button type="submit" value="[% Translate("Log In") | html %]" disabled="disabled">[% Translate("Log In") | html %]</button>
                     </div>
+[% RenderBlockStart("GoogleAuth") %]
                     <div class="g-signin2" data-onsuccess="onCUSignInGoogle"></div>
+[% RenderBlockEnd("GoogleAuth") %]
+[% RenderBlockStart("FacebookAuth") %]
                     <div>
                     		<fb:login-button 
 					 	 scope="public_profile,email"
 					 	 onlogin="onCUSignInFacebook();">
 						</fb:login-button>
 					</div>
+[% RenderBlockEnd("FacebookAuth") %]
                     <div class="Clear"></div>
                 </form>
 [% RenderBlockStart("CreateAccountLink") %]

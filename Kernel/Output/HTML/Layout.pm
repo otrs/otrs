@@ -3805,6 +3805,20 @@ sub CustomerLogin {
         }
     }
 
+	# show google-data if enabled
+	my $googleauthenabled = 0;
+    for my $Count ( '', 1 .. 10 ) {
+        $googleauthenabled = 1 if $ConfigObject->Get("Customer::AuthModule$Count") eq 'Kernel::System::CustomerAuth::Google';
+    }
+	
+	if ($googleauthenabled)
+	{
+		$Self->Block(
+	            Name => 'GoogleAuthScript',
+	            Data => {'clientid' => $ConfigObject->Get('Customer::AuthModule::Google')->{'clientid'}},
+	        );
+	}
+
     # show prelogin block, if in prelogin mode (e.g. SSO login)
     if ( defined $Param{'Mode'} && $Param{'Mode'} eq 'PreLogin' ) {
         $Self->Block(
@@ -3820,7 +3834,13 @@ sub CustomerLogin {
             Name => 'LoginBox',
             Data => \%Param,
         );
-
+        if ($googleauthenabled)
+        {
+			$Self->Block(
+		            Name => 'GoogleAuth',
+		            Data => {},
+		        );
+        }
         # show 2 factor password input if we have at least one backend enabled
         COUNT:
         for my $Count ( '', 1 .. 10 ) {
