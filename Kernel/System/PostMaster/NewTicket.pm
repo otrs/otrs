@@ -715,7 +715,7 @@ Message
     }
 
     # time accounting
-    if ( defined $GetParam{'X-OTRS-TimeUnit'} && $GetParam{'X-OTRS-TimeUnit'} =~ /^\s*\-?\d{1,10}((\.|,)\d{1,2})/ ) {
+    if ( defined $GetParam{'X-OTRS-TimeUnit'} && $GetParam{'X-OTRS-TimeUnit'} =~ /^\s*\-?\d{1,10}((\.|,)\d{1,2})?/ ) {
         $TicketObject->TicketAccountTime(
             TicketID  => $TicketID,
             ArticleID => $ArticleID,
