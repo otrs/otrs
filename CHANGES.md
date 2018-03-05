@@ -3,7 +3,9 @@
  - 2017-12-26 Fixed bug#[13402](https://bugs.otrs.org/show_bug.cgi?id=13402) - Target \_blank value is not working for generic notifications.
  - 2017-12-12 Always require cookies for OTRS login - drop support for non-cookie sessions.
 
-#6.0.6 2018-??-??
+#6.0.7 2018-??-??
+
+#6.0.6 2018-03-13
  - 2018-03-05 Updated translations, thanks to all translators.
  - 2018-03-05 Fixed bug#[13713](https://bugs.otrs.org/show_bug.cgi?id=13713) - Dashboard widget 'Appointments' ignores user specific time zone on output.
  - 2018-03-05 Fixed bug#[13709](https://bugs.otrs.org/show_bug.cgi?id=13709) - SupportDataCollector causes Internal Server Error.
