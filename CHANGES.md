@@ -4,6 +4,7 @@
  - 2017-12-12 Always require cookies for OTRS login - drop support for non-cookie sessions.
 
 #6.0.6 2018-??-??
+ - 2018-03-05 Updated translations, thanks to all translators.
  - 2018-03-05 Fixed bug#[13713](https://bugs.otrs.org/show_bug.cgi?id=13713) - Dashboard widget 'Appointments' ignores user specific time zone on output.
  - 2018-03-05 Fixed bug#[13709](https://bugs.otrs.org/show_bug.cgi?id=13709) - SupportDataCollector causes Internal Server Error.
  - 2018-03-05 Fixed bug#[13708](https://bugs.otrs.org/show_bug.cgi?id=13708) - GenericInterface article EventFilter does not work with ticket data.
