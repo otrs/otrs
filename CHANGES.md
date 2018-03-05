@@ -4,6 +4,7 @@
  - 2017-12-12 Always require cookies for OTRS login - drop support for non-cookie sessions.
 
 #6.0.6 2018-??-??
+ - 2018-03-05 Fixed bug#[13549](https://bugs.otrs.org/show_bug.cgi?id=13549) - Scrolling not possible for some articles on iOS Safari.
  - 2018-03-01 Reduced warnings thrown by Layout object when BuildSelection is used with TreeView option.
  - 2018-03-01 Fixed bug#[13703](https://bugs.otrs.org/show_bug.cgi?id=13703) - Complex LinkObject Table broken after successful configuration.
  - 2018-03-01 Fixed bug#[13687](https://bugs.otrs.org/show_bug.cgi?id=13687) - CustomerIDRaw parameter is empty in Customer View.
