@@ -150,7 +150,7 @@ sub Run {
     }
     
     #When the FileName has Invalid HTTP Characters the file can't get downloaded. That Regex removes that Characters
-    $Data{Filename} =~ s/[^A-Za-z0-9\-\.]//g;
+    $Data{Filename} =~ s/[^A-Za-z0-9\-\.\#\_]//g;
     
     # download it AttachmentDownloadType is configured
     return $LayoutObject->Attachment(
