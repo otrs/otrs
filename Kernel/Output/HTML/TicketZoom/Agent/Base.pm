@@ -206,7 +206,7 @@ sub _ArticleSenderImage {
     if (@Addresses) {
         my $Email = $EmailParser->GetEmailAddress( Email => $Addresses[0] );
         if ($Email) {
-            my $DefaultIcon = 'identicon';    # a geometric pattern based on an email hash
+            my $DefaultIcon = $Kernel::OM->Get('Kernel::Config')->Get('Frontend::Gravatar::ArticleDefaultImage');    # a geometric pattern based on an email hash
 
             # Get current user's email and compare it to the sender's email.
             if ( $Param{UserID} ) {
