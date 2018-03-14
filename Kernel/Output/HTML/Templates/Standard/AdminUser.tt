@@ -120,7 +120,7 @@
 [% RenderBlockStart("OverviewResultSwitchToUser") %]
                             <th>[% Translate("Login as") | html %]</th>
 [% RenderBlockEnd("OverviewResultSwitchToUser") %]
-                            <th>[% Translate("Validity") | html %]</th>
+                            <th>[% Translate("Validity") | html %]<input class="" id="CheckboxFilterInvalid" type="checkbox"></th>
                             <th>[% Translate("Changed") | html %]</th>
                             <th>[% Translate("Created") | html %]</th>
                         </tr>
