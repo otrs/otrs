@@ -1569,6 +1569,13 @@
             <Item ValueType="Checkbox">0</Item>
         </Value>
     </Setting>
+    <Setting Name="Ticket::Frontend::ArticleHeadVisibleDefault" Required="1" Valid="1">
+        <Description Translatable="1">Shows the article head information in the agent zoom view.</Description>
+        <Navigation>Frontend::Agent::View::TicketZoom</Navigation>
+        <Value>
+            <Item ValueType="Checkbox">0</Item>
+        </Value>
+    </Setting>
     <Setting Name="Ticket::Frontend::ZoomExpandSort" UserPreferencesGroup="Advanced" UserModificationActive="1" UserModificationPossible="1" Required="1" Valid="1">
         <Description Translatable="1">Shows the articles sorted normally or in reverse, under ticket zoom in the agent interface.</Description>
         <Navigation>Frontend::Agent::View::TicketZoom</Navigation>
