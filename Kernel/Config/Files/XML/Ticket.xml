@@ -1996,6 +1996,13 @@
             </Item>
         </Value>
     </Setting>
+    <Setting Name="Ticket::Frontend::AgentActivityDisplay" Required="1" Valid="1">
+        <Description Translatable="1">Enables the Activity Status Display of Agents</Description>
+        <Navigation>Frontend::Agent</Navigation>
+        <Value>
+            <Item ValueType="Checkbox">1</Item>
+        </Value>
+    </Setting>
     <Setting Name="Ticket::Frontend::AccountTime" Required="1" Valid="1">
         <Description Translatable="1">Activates time accounting.</Description>
         <Navigation>Frontend::Agent</Navigation>

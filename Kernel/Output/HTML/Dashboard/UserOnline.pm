@@ -397,6 +397,8 @@ sub Run {
             }
         }
 
+		my $showUserStatus = $Kernel::OM->Get('Kernel::Config')->Get('Ticket::Frontend::AgentActivityDisplay');
+
         $LayoutObject->Block(
             Name => 'ContentSmallUserOnlineRow',
             Data => {
@@ -404,8 +406,8 @@ sub Run {
                 ChatAccess           => $ChatAccess,
                 AgentEnableChat      => $AgentEnableChat,
                 CustomerEnableChat   => $CustomerEnableChat,
-                UserState            => $UserState,
-                UserStateDescription => $UserStateDescription,
+                UserState            => $showUserStatus?$UserState:undef,
+                UserStateDescription => $showUserStatus?$UserStateDescription:undef,
                 VideoChatEnabled     => $VideoChatEnabled,
                 VideoChatAvailable   => $VideoChatAvailable,
                 VideoChatSupport     => $VideoChatSupport,
