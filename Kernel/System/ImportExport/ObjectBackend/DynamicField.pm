@@ -11,6 +11,8 @@ package Kernel::System::ImportExport::ObjectBackend::DynamicField;
 use strict;
 use warnings;
 
+use Data::Dumper;
+
 use List::Util qw(min);	
 use MIME::Base64;
 use Kernel::Language qw(Translatable);
@@ -18,9 +20,21 @@ use Kernel::System::VariableCheck qw(:all);
 
 our @ObjectDependencies = (
     'Kernel::Config',
+    'Kernel::System::SysConfig',
+    'Kernel::System::GenericInterface::Webservice',
+    'Kernel::System::StandardTemplate',
+    'Kernel::System::Signature',
+    'Kernel::System::AutoResponse',
+    'Kernel::System::Salutation',
+    'Kernel::System::NotificationEvent',
+    'Kernel::System::GenericAgent',
     'Kernel::System::ProcessManagement::DB::Process',
     'Kernel::System::ProcessManagement::DB::Activity',
+    'Kernel::System::ProcessManagement::DB::Transition',
+    'Kernel::System::ProcessManagement::DB::TransitionAction',
     'Kernel::System::ProcessManagement::DB::Dialog',
+    'Kernel::System::PostMaster::Filter',
+    'Kernel::System::ACL::DB::ACL',
     'Kernel::System::DynamicField',
     'Kernel::System::JSON',
     'Kernel::System::ImportExport',
@@ -84,6 +98,90 @@ sub ObjectAttributesGet {
         {
             Key   => 'OverwriteSameOnImport',
             Name  => Translatable('Overwrite existing field on import'),
+            Input => {
+                Type => 'Checkbox',
+            },
+        },
+        {
+            Key   => 'ChangeProcessFieldNames',
+            Name  => Translatable('modify dynamic field names used in processes if import is via ID as Identfier'),
+            Input => {
+                Type => 'Checkbox',
+            },
+        },
+        {
+            Key   => 'ChangePostMasterFilterFieldNames',
+            Name  => Translatable('modify dynamic field names used in postmaster filter if import is via ID as Identfier'),
+            Input => {
+                Type => 'Checkbox',
+            },
+        },
+        {
+            Key   => 'ChangeACLFieldNames',
+            Name  => Translatable('modify dynamic field names used in ACL if import is via ID as Identfier'),
+            Input => {
+                Type => 'Checkbox',
+            },
+        },
+        {
+            Key   => 'ChangeGenericAgentFieldNames',
+            Name  => Translatable('modify dynamic field names used in GenericAgent if import is via ID as Identfier'),
+            Input => {
+                Type => 'Checkbox',
+            },
+        },
+        {
+            Key   => 'ChangeNotificationFieldNames',
+            Name  => Translatable('modify dynamic field names used in Notifications if import is via ID as Identfier'),
+            Input => {
+                Type => 'Checkbox',
+            },
+        },        
+        {
+            Key   => 'ChangeSalutationFieldNames',
+            Name  => Translatable('modify dynamic field names used in Salutations if import is via ID as Identfier'),
+            Input => {
+                Type => 'Checkbox',
+            },
+        },   
+        {
+            Key   => 'ChangeAutoResponseFieldNames',
+            Name  => Translatable('modify dynamic field names used in AutoResponses if import is via ID as Identfier'),
+            Input => {
+                Type => 'Checkbox',
+            },
+        },     
+        {
+            Key   => 'ChangeSignatureFieldNames',
+            Name  => Translatable('modify dynamic field names used in signatures if import is via ID as Identfier'),
+            Input => {
+                Type => 'Checkbox',
+            },
+        },      
+        {
+            Key   => 'ChangeTemplatesFieldNames',
+            Name  => Translatable('modify dynamic field names used in templates if import is via ID as Identfier'),
+            Input => {
+                Type => 'Checkbox',
+            },
+        },  
+        {
+            Key   => 'ChangeGenericInterfaceFieldNames',
+            Name  => Translatable('modify dynamic field names used in generic interface if import is via ID as Identfier'),
+            Input => {
+                Type => 'Checkbox',
+            },
+        },  
+        {
+            Key   => 'ChangeSysconfigFieldNames',
+            Name  => Translatable('modify dynamic field names used in sysconfig if import is via ID as Identfier'),
+            Input => {
+                Type => 'Checkbox',
+            },
+        },  
+        {
+            Key   => 'ChangeFieldNames',
+            Name  => Translatable('modify dynamic field names used in processes if import is via ID as Identfier'),
             Input => {
                 Type => 'Checkbox',
             },
@@ -190,7 +288,7 @@ sub MappingObjectAttributesGet {
         },
         {
             Key   => 'ValidID',
-            Value => Translatable('Valid State'),
+            Value => Translatable('Valid State(required)'),
         },
         {
             Key   => 'CreateTime',
@@ -653,9 +751,17 @@ sub ImportDataSave {
     	
     	if (scalar @{$DynamicFieldList} == 1)
     	{
-    		# exactly one Field left to update
 
+    		# exactly one Field left to update
          my %currentDynamicField = %{$DynamicFieldList->[0]};
+         
+		#check if we are allowed to update
+		if ( !$ObjectData->{OverwriteSameOnImport})
+		{
+			 my $RetCode = "update of $DynamicFieldData{Name} not done because not selected";
+        		return $DynamicFieldData{ID}, $RetCode;
+		}
+		
          $DynamicFieldData{ID} = $currentDynamicField{ID};	#overwrite the ID with the one to be updated
          
          if ($DynamicFieldData{Name} ne $currentDynamicField{Name})
@@ -668,7 +774,7 @@ sub ImportDataSave {
     			}
          }
    
-         my $ret = $DynamicFieldObject->DynamicFieldUpdate(%DynamicFieldData);
+        my $ret = $DynamicFieldObject->DynamicFieldUpdate(%DynamicFieldData);
     		if ( !$ret ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
@@ -678,6 +784,408 @@ sub ImportDataSave {
             );
             return;
         }
+
+        
+        # update dynamic fields in generic interface if requested
+        if ($ObjectData->{ChangeSysconfigFieldNames})
+        {
+        		# check if ID is selected as Identifier and Names differ
+        		if (scalar keys %Identifier == 1 && (keys %Identifier)[0] eq 'ID' && $DynamicFieldData{Name} ne $currentDynamicField{Name})
+        		{     
+        			my $SysconfigObject = $Kernel::OM->Get("Kernel::System::SysConfig");
+        			my @Settings = $SysconfigObject->ConfigurationSearch(Search => "$currentDynamicField{Name}");
+        			for my $SettingName (@Settings)
+        			{
+        				my %Setting = $SysconfigObject->SettingGet(Name => $SettingName);
+                     $Kernel::OM->Get('Kernel::System::Log')->Log(
+                        Priority => 'error',
+                        Message => Dumper(\@Settings),
+                    );          				
+        			}
+       			
+        		}
+        }     
+        
+        # update dynamic fields in generic interface if requested
+        if ($ObjectData->{ChangeGenericInterfaceFieldNames})
+        {
+        		# check if ID is selected as Identifier and Names differ
+        		if (scalar keys %Identifier == 1 && (keys %Identifier)[0] eq 'ID' && $DynamicFieldData{Name} ne $currentDynamicField{Name})
+        		{   
+        			my $WebserviceObject = $Kernel::OM->Get('Kernel::System::GenericInterface::Webservice');
+        			my $Webservices = $WebserviceObject->WebserviceList(Valid => 0);
+        			for my $WebserviceID (keys %{$Webservices})
+        			{
+        				my $Webservice = $WebserviceObject->WebserviceGet(ID => $WebserviceID);
+        				my $JSONString = $JSONObject->Encode(Data => $Webservice);
+        				# tag without _Value
+					$JSONString =~ s/DynamicField_$currentDynamicField{Name}/DynamicField_$DynamicFieldData{Name}/g;
+					# tag with _Value
+					$JSONString =~ s/DynamicField_$currentDynamicField{Name}_Value/DynamicField_$DynamicFieldData{Name}_Value/g;
+        				$Webservice = $JSONObject->Decode(Data => $JSONString);        	
+        				$Webservice->{UserID} = $Param{UserID};
+        				$WebserviceObject->WebserviceUpdate(%{$Webservice});			
+#                    $Kernel::OM->Get('Kernel::System::Log')->Log(
+#                        Priority => 'error',
+#                        Message => $JSONString,
+#                    );        			
+        			}
+        			
+        		}
+        }
+        
+        # update dynamic fields in templates if requested
+        if ($ObjectData->{ChangeTemplatesFieldNames})
+        {
+        		# check if ID is selected as Identifier and Names differ
+        		if (scalar keys %Identifier == 1 && (keys %Identifier)[0] eq 'ID' && $DynamicFieldData{Name} ne $currentDynamicField{Name})
+        		{
+        			my $TemplateObject = $Kernel::OM->Get("Kernel::System::StandardTemplate");
+        			my %Templates = $TemplateObject->StandardTemplateList(Valid => 0);
+        			for my $TemplateID (keys %Templates)
+        			{
+        				my %Template = $TemplateObject->StandardTemplateGet(ID => $TemplateID);
+        				my $JSONString = $JSONObject->Encode(Data => \%Template);
+        				# tag without _Value
+					$JSONString =~ s/DynamicField_$currentDynamicField{Name}/DynamicField_$DynamicFieldData{Name}/g;
+					# tag with _Value
+					$JSONString =~ s/DynamicField_$currentDynamicField{Name}_Value/DynamicField_$DynamicFieldData{Name}_Value/g;
+        				
+        				%Template = %{$JSONObject->Decode(Data => $JSONString)};
+        				$Template{UserID} = $Param{UserID};
+        				$TemplateObject->StandardTemplateUpdate(%Template);	
+        			}
+        		}
+        } 
+
+        # update dynamic fields in signatures if requested
+        if ($ObjectData->{ChangeSignatureFieldNames})
+        {
+        		# check if ID is selected as Identifier and Names differ
+        		if (scalar keys %Identifier == 1 && (keys %Identifier)[0] eq 'ID' && $DynamicFieldData{Name} ne $currentDynamicField{Name})
+        		{
+        			my $SignatureObject = $Kernel::OM->Get("Kernel::System::Signature");
+        			my %Signatures = $SignatureObject->SignatureList(Valid => 0);
+        			for my $SignatureID (keys %Signatures)
+        			{
+        				my %Signature = $SignatureObject->SignatureGet(ID => $SignatureID);
+        				my $JSONString = $JSONObject->Encode(Data => \%Signature);
+        				# tag without _Value
+					$JSONString =~ s/DynamicField_$currentDynamicField{Name}/DynamicField_$DynamicFieldData{Name}/g;
+					# tag with _Value
+					$JSONString =~ s/DynamicField_$currentDynamicField{Name}_Value/DynamicField_$DynamicFieldData{Name}_Value/g;
+        				
+        				%Signature = %{$JSONObject->Decode(Data => $JSONString)};
+        				$Signature{UserID} = $Param{UserID};
+        				$SignatureObject->SignatureUpdate(%Signature);	
+        			}
+        		}
+        }     
+        
+        # update dynamic fields in AutoResponse if requested
+        if ($ObjectData->{ChangeAutoResponseFieldNames})
+        {
+        		# check if ID is selected as Identifier and Names differ
+        		if (scalar keys %Identifier == 1 && (keys %Identifier)[0] eq 'ID' && $DynamicFieldData{Name} ne $currentDynamicField{Name})
+        		{
+        			my $AutoResponseObject = $Kernel::OM->Get("Kernel::System::AutoResponse");
+        			my %AutoResponses = $AutoResponseObject->AutoResponseList(Valid => 0);
+        			for my $AutoResponseID (keys %AutoResponses)
+        			{
+        				my %AutoResponse = $AutoResponseObject->AutoResponseGet(ID => $AutoResponseID);
+        				my $JSONString = $JSONObject->Encode(Data => \%AutoResponse);
+        				# tag without _Value
+					$JSONString =~ s/DynamicField_$currentDynamicField{Name}/DynamicField_$DynamicFieldData{Name}/g;
+					# tag with _Value
+					$JSONString =~ s/DynamicField_$currentDynamicField{Name}_Value/DynamicField_$DynamicFieldData{Name}_Value/g;
+        				
+        				%AutoResponse = %{$JSONObject->Decode(Data => $JSONString)};
+        				$AutoResponse{UserID} = $Param{UserID};
+        				$AutoResponseObject->AutoResponseUpdate(%AutoResponse);	
+        			}
+        		}
+        }
+        
+        # update dynamic fields in salutations if requested
+        if ($ObjectData->{ChangeSalutationFieldNames})
+        {
+        		# check if ID is selected as Identifier and Names differ
+        		if (scalar keys %Identifier == 1 && (keys %Identifier)[0] eq 'ID' && $DynamicFieldData{Name} ne $currentDynamicField{Name})
+        		{
+        			my $SalutationObject = $Kernel::OM->Get("Kernel::System::Salutation");
+        			my %SalutationList = $SalutationObject->SalutationList(Valid => 0);
+        			for my $SalutationID (keys %SalutationList)
+				{
+					my %Salutation = $SalutationObject->SalutationGet(ID => $SalutationID,);
+					my $JSONString = $JSONObject->Encode(Data => \%Salutation);
+        				# tag without _Value
+					$JSONString =~ s/DynamicField_$currentDynamicField{Name}/DynamicField_$DynamicFieldData{Name}/g;
+					# tag with _Value
+					$JSONString =~ s/DynamicField_$currentDynamicField{Name}_Value/DynamicField_$DynamicFieldData{Name}_Value/g;
+        				
+        				%Salutation = %{$JSONObject->Decode(Data => $JSONString)};
+        				$Salutation{UserID} = $Param{UserID};
+        				$SalutationObject->SalutationUpdate(%Salutation);	
+				}
+        		}        	
+        }
+        
+        # update dynamic fields in Notifications if requested
+        if ($ObjectData->{ChangeNotificationFieldNames})
+        {
+        		# check if ID is selected as Identifier and Names differ
+        		if (scalar keys %Identifier == 1 && (keys %Identifier)[0] eq 'ID' && $DynamicFieldData{Name} ne $currentDynamicField{Name})
+        		{
+        			my $NotificationObject = $Kernel::OM->Get('Kernel::System::NotificationEvent');
+        			my %Notifications = $NotificationObject->NotificationList(Details => 1,All => 1);
+        			for my $NotificationID (keys %Notifications)
+        			{
+        				my $JSONString = $JSONObject->Encode(Data => $Notifications{$NotificationID});
+        				# Event
+					$JSONString =~ s/"TicketDynamicFieldUpdate_$currentDynamicField{Name}"/"TicketDynamicFieldUpdate_$DynamicFieldData{Name}"/g;
+        				# tag without _Value
+					$JSONString =~ s/DynamicField_$currentDynamicField{Name}/DynamicField_$DynamicFieldData{Name}/g;
+					# tag with _Value
+					$JSONString =~ s/DynamicField_$currentDynamicField{Name}_Value/DynamicField_$DynamicFieldData{Name}_Value/g;
+        				
+        				my %Notification = %{$JSONObject->Decode(Data => $JSONString)};
+        				$Notification{UserID} = $Param{UserID};
+        				$NotificationObject->NotificationUpdate(%Notification);
+        			}
+#                    $Kernel::OM->Get('Kernel::System::Log')->Log(
+#                        Priority => 'error',
+#                        Message => Dumper(\%Notifications),
+#                    );
+        		}
+        } 
+        
+        # update dynamic fields in GenericAgent if requested
+        if ($ObjectData->{ChangeGenericAgentFieldNames})
+        {
+         	# check if ID is selected as Identifier and Names differ
+        		if (scalar keys %Identifier == 1 && (keys %Identifier)[0] eq 'ID' && $DynamicFieldData{Name} ne $currentDynamicField{Name})
+        		{
+        			my $GenericAgentObject = $Kernel::OM->Get('Kernel::System::GenericAgent');
+        			my %Jobs = $GenericAgentObject->JobList();
+        			for my $JobName (keys %Jobs)
+        			{
+        				my %Job = $GenericAgentObject->JobGet(Name => $JobName) ;
+        				my $JSONString = $JSONObject->Encode(Data => \%Job);
+        				# Event
+					$JSONString =~ s/TicketDynamicFieldUpdate_$currentDynamicField{Name}/TicketDynamicFieldUpdate_$DynamicFieldData{Name}/g;
+        				# Search
+					$JSONString =~ s/Search_DynamicField_$currentDynamicField{Name}/Search_DynamicField_$DynamicFieldData{Name}/g;
+					# Setter
+					$JSONString =~ s/DynamicField_$currentDynamicField{Name}/DynamicField_$DynamicFieldData{Name}/g;
+        				
+        				my $Job = $JSONObject->Decode(Data => $JSONString);
+        				
+					$GenericAgentObject->JobDelete(Name => $JobName, UserID => $Param{UserID});
+					$GenericAgentObject->JobAdd(Name => $JobName, UserID => $Param{UserID}, Data => $Job);
+        			}
+        		}        	
+        }
+        
+        # update dynamic fields in ACL if requested
+        if ($ObjectData->{ChangeACLFieldNames})
+        {
+         	# check if ID is selected as Identifier and Names differ
+        		if (scalar keys %Identifier == 1 && (keys %Identifier)[0] eq 'ID' && $DynamicFieldData{Name} ne $currentDynamicField{Name})
+        		{
+        			my $ACLObject = $Kernel::OM->Get('Kernel::System::ACL::DB::ACL');
+        			my $ACLList = $ACLObject->ACLListGet(UserID => 1);
+        			
+        			for my $ACL (@{$ACLList})
+        			{
+
+					my $JSONString = $JSONObject->Encode(Data => $ACL);
+        				# tag without _Value
+					$JSONString =~ s/"DynamicField_$currentDynamicField{Name}"/"DynamicField_$DynamicFieldData{Name}"/g;
+					# tag with _Value
+					$JSONString =~ s/"DynamicField_$currentDynamicField{Name}_Value"/"DynamicField_$DynamicFieldData{Name}_Value"/g;
+        				
+        				
+        				$ACL = $JSONObject->Decode(Data => $JSONString);
+					$ACLObject->ACLUpdate(%{$ACL},UserID => $Param{UserID});
+        			}
+        			
+
+        		}       	
+        }
+        
+        # update dynamic fields in postmaster filter if requested
+        if ($ObjectData->{ChangePostMasterFilterFieldNames})
+        {
+        	    # check if ID is selected as Identifier and Names differ
+        		if (scalar keys %Identifier == 1 && (keys %Identifier)[0] eq 'ID' && $DynamicFieldData{Name} ne $currentDynamicField{Name})
+        		{
+        			my $PostmasterFilterObject = $Kernel::OM->Get('Kernel::System::PostMaster::Filter');
+        			my %FilterList = $PostmasterFilterObject->FilterList();
+
+                for my $filtername (keys %FilterList)
+                {
+                		my %filter = $PostmasterFilterObject->FilterGet(Name => $filtername);
+                		
+                		for my $key (qw (Set Not Match))
+                		{
+                			$filter{$key} = [
+                			map {
+                				my $Key = $_->{'Key'};
+                				my $Value = $_->{'Value'};
+                				$Key =~ s/DynamicField-$currentDynamicField{Name}$/DynamicField-$DynamicFieldData{Name}/;
+                				if ($Value)
+                				{
+                					# tag without _Value
+								$Value =~ s/DynamicField_$currentDynamicField{Name}>/DynamicField_$DynamicFieldData{Name}>/g;
+								# tag with _Value
+								$Value =~ s/DynamicField_$currentDynamicField{Name}_Value>/DynamicField_$DynamicFieldData{Name}_Value>/g;
+                				}
+                				{
+                					'Key' => $Key,
+                					'Value' => $Value
+                				}
+                			} @{$filter{$key}}
+                			];
+                		}
+                		$PostmasterFilterObject->FilterDelete(Name => $filtername);
+                		$PostmasterFilterObject->FilterAdd(%filter);	
+                		# TODO Error handling
+
+                }
+        		}
+        }
+ 
+        # update dynamic fields in processes if requested
+        if ($ObjectData->{ChangeProcessFieldNames})
+        {
+        		# check if ID is selected as Identifier and Names differ
+        		if (scalar keys %Identifier == 1 && (keys %Identifier)[0] eq 'ID' && $DynamicFieldData{Name} ne $currentDynamicField{Name})
+        		{
+				# get all activity dialogs
+				my $ProcessActivityDialogObject = $Kernel::OM->Get("Kernel::System::ProcessManagement::DB::ActivityDialog");
+				my $ActivityDialogs = $ProcessActivityDialogObject->ActivityDialogListGet(UserID => 1,);
+				for my $ActivityDialog (@{$ActivityDialogs})
+				{                    
+					# change fieldname in fieldorder
+					$ActivityDialog->{Config}->{FieldOrder} = [
+						map { $_ =~ s/^DynamicField_$currentDynamicField{Name}$/DynamicField_$DynamicFieldData{Name}/; $_ } @{$ActivityDialog->{Config}->{FieldOrder}}
+						];
+						
+					# change fieldname in dialog
+					$ActivityDialog->{Config}->{Fields} = {
+						map {
+							my $oldkey = $_;
+							my $newkey = $_;
+							$newkey =~ s/^DynamicField_$currentDynamicField{Name}$/DynamicField_$DynamicFieldData{Name}/;
+							$newkey => $ActivityDialog->{Config}->{Fields}->{$oldkey}
+						} keys %{$ActivityDialog->{Config}->{Fields}}
+					};
+					
+
+                    my $Success = $ProcessActivityDialogObject->ActivityDialogUpdate(%{$ActivityDialog},UserID => $Param{UserID});
+ 			   		if ( !$Success ) {
+ 			           $Kernel::OM->Get('Kernel::System::Log')->Log(
+  			              Priority => 'error',
+    			              Message =>
+            			        "Can't update activity dialog $ActivityDialog->{EntityID} for dynamic field  : $DynamicFieldData{Name}"
+             		       ,
+       			     );
+    				    }                    
+				}
+				# get all transition
+				my $ProcessTransitionObject = $Kernel::OM->Get("Kernel::System::ProcessManagement::DB::Transition");
+				my $Transitions = $ProcessTransitionObject->TransitionListGet(UserID      => 1,);
+				for my $Transition (@{$Transitions})
+				{
+
+					$Transition->{Config}->{Condition} = {
+						map {
+							my $Condition = $Transition->{Config}->{Condition}->{$_};
+							$_ => {
+								'Type' => $Condition->{Type},
+								'Fields' => {
+									map {
+										my $oldkey = $_;
+										my $newkey = $_;
+										my $field = $Condition->{Fields}->{$_};
+										my $match = $field->{Match};
+										# tag without _Value
+										$match =~ s/DynamicField_$currentDynamicField{Name}>/DynamicField_$DynamicFieldData{Name}>/g;
+										# tag with _Value
+										$match =~ s/DynamicField_$currentDynamicField{Name}_Value>/DynamicField_$DynamicFieldData{Name}_Value>/g;
+										# key
+										$newkey =~ s/^DynamicField_$currentDynamicField{Name}$/DynamicField_$DynamicFieldData{Name}/;
+										$newkey => {
+											'Type' => $field->{Type},
+											'Match' => $match,
+										}
+									} keys %{$Condition->{Fields}}
+								},
+							}
+						} keys %{$Transition->{Config}->{Condition}}	# the level 1 conditions
+					};
+
+ 					
+					my $Success = $ProcessTransitionObject->TransitionUpdate(%{$Transition},UserID => $Param{UserID});
+					if ( !$Success ) {
+ 			           $Kernel::OM->Get('Kernel::System::Log')->Log(
+  			              Priority => 'error',
+    			              Message =>
+            			        "Can't update transition $Transition->{EntityID}  for dynamic field  : $DynamicFieldData{Name}"
+             		       ,
+       			     );
+    				    }                    
+				}
+				
+				
+				# get all transitionactions
+				my $ProcessTransitionActionObject = $Kernel::OM->Get("Kernel::System::ProcessManagement::DB::TransitionAction");
+				my $TransitionActions = $ProcessTransitionActionObject->TransitionActionListGet(UserID => 1);
+				for my $TransitionAction (@{$TransitionActions})
+				{
+                  
+                    
+					$TransitionAction->{Config}->{Config} = {
+						map {
+							my $newkey = $_;
+							my $Value = $TransitionAction->{Config}->{Config}->{$newkey};
+							# tag without _Value
+							$Value =~ s/DynamicField_$currentDynamicField{Name}>/DynamicField_$DynamicFieldData{Name}>/g;
+							# tag with _Value
+							$Value =~ s/DynamicField_$currentDynamicField{Name}_Value>/DynamicField_$DynamicFieldData{Name}_Value>/g;
+							# key
+							$newkey =~ s/^DynamicField_$currentDynamicField{Name}$/DynamicField_$DynamicFieldData{Name}/;
+							$newkey => $Value
+							
+						} keys %{$TransitionAction->{Config}->{Config}}
+					};
+					
+
+					# special operation for module Kernel::System::ProcessManagement::TransitionAction::DynamicFieldSet because field is not named with prefix
+					if ($TransitionAction->{Config}->{Module} eq 'Kernel::System::ProcessManagement::TransitionAction::DynamicFieldSet')
+					{
+						$TransitionAction->{Config}->{Config} = {map {
+							my $newkey = $_;
+							my $oldkey = $_;
+							$newkey =~ s/$currentDynamicField{Name}$/$DynamicFieldData{Name}/g;
+							$newkey => $TransitionAction->{Config}->{Config}->{$oldkey};
+						} keys %{$TransitionAction->{Config}->{Config}}
+						};
+					}
+					my $Success = $ProcessTransitionActionObject->TransitionActionUpdate(%{$TransitionAction},UserID => $Param{UserID});
+					if ( !$Success ) {
+ 			           $Kernel::OM->Get('Kernel::System::Log')->Log(
+  			              Priority => 'error',
+    			              Message =>
+            			        "Can't update transition action $TransitionAction->{EntityID}  for dynamic field  : $DynamicFieldData{Name}"
+             		       ,
+       			     );
+    				    }    			
+				}
+				
+        		}
+        }
+        
         my $RetCode = "update of $DynamicFieldData{Name} successful";
         return $ret, $RetCode;
      		
