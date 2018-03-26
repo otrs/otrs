@@ -20,6 +20,7 @@ use Unicode::Normalize;
 use List::Util qw();
 use Fcntl qw(:flock);
 use String::ShellQuote qw(shell_quote);
+use UUID::Tiny ':std';
 
 our @ObjectDependencies = (
     'Kernel::System::Encode',
@@ -1021,6 +1022,24 @@ sub ShellQuote {
     };
 
     return $QuotedString;
+}
+
+=head2 GenerateUUID()
+
+Generates a new UUID.
+
+    my $UUID = $MainObject->GenerateUUID();
+
+Returns
+
+    returns the UUID string.
+
+=cut
+
+sub GenerateUUID {
+    my ( $Self, $Param ) = @_;
+
+    return create_uuid_as_string();
 }
 
 =begin Internal:
