@@ -17,7 +17,7 @@ our @ObjectDependencies = ();
 
 =head1 NAME
 
-scripts::DBUpdate::RebuildConfig - Cleanup the system cache.
+scripts::DBUpdate::CacheCleanup - Cleanup the system cache.
 
 =cut
 
