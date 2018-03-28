@@ -236,6 +236,11 @@ sub _TasksGet {
         # ...
 
         {
+            Message => 'Update SysConfig deployments',
+            Module  => 'MigrateSysConfigDeployment',
+        },
+
+        {
             Message => 'Uninstall Merged Feature Add-Ons',
             Module  => 'UninstallMergedFeatureAddOns',
         },

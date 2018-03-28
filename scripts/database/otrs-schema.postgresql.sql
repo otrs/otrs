@@ -2745,6 +2745,7 @@ CREATE TABLE sysconfig_deployment_lock (
 -- ----------------------------------------------------------
 CREATE TABLE sysconfig_deployment (
     id serial NOT NULL,
+    uuid VARCHAR (36) NOT NULL,
     comments VARCHAR (250) NULL,
     user_id INTEGER NULL,
     effective_value TEXT NOT NULL,

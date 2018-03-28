@@ -1355,11 +1355,11 @@ EOF
             DeploymentID => $DeploymentID,
         );
         $Self->True(
-            $Deployment{EffectiveValueStrg} =~ m{$DeploymentID},
-            "User $UserID Round $Round DeploymentGet() - EffectiveValueStrg includes $DeploymentID",
+            $Deployment{EffectiveValueStrg} =~ m{$Deployment{DeploymentUUID}},
+            "User $UserID Round $Round DeploymentGet() - EffectiveValueStrg includes $Deployment{DeploymentUUID}",
         );
 
-        $UserDeployments{$UserID} = $DeploymentID;
+        $UserDeployments{$UserID} = $Deployment{DeploymentUUID};
 
         $DBObject->Prepare(
             SQL => '

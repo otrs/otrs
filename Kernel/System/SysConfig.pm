@@ -3706,7 +3706,7 @@ sub ConfigurationDeploySync {
         return;
     }
 
-    if ( $CurrentDeploymentID ne $LastDeployment{DeploymentID} ) {
+    if ( $CurrentDeploymentID ne $LastDeployment{DeploymentUUID} ) {
 
         # Write latest deployment to ZZZAAuto.pm
         my $EffectiveValueStrg = $LastDeployment{EffectiveValueStrg};

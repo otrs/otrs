@@ -12,6 +12,7 @@ use strict;
 use warnings;
 
 use MIME::Base64;
+use Time::HiRes;
 use utf8;
 
 use Kernel::System::VariableCheck qw( :all );
@@ -4311,45 +4312,38 @@ sub DeploymentAdd {
         }
     }
 
+    my $UUID = $Kernel::OM->Get('Kernel::System::Main')->GenerateUUID();
+
+    my $CurrentDeploymentIDStr = 'CurrentDeploymentID';
+    if ( $Param{TargetUserID} ) {
+        $CurrentDeploymentIDStr = 'CurrentUserDeploymentID';
+    }
+
+    # Add the deployment ID to the values
+    ${ $Param{EffectiveValueStrg} }
+        =~ s{( \s+ my [ ] \(\$File, [ ] \$Self\) [ ] = [ ] \@_; \s+ )}{$1\$Self->{'$CurrentDeploymentIDStr'} = '$UUID';\n}msx;
+
     # Create a deployment record without a real value.
     return if !$DBObject->Do(
         SQL => '
             INSERT INTO sysconfig_deployment
-                (comments, effective_value, user_id, create_time, create_by)
+                (uuid, comments, effective_value, user_id, create_time, create_by)
             VALUES
-                (?, ?, ?, ?, ?)',
+                (?, ?, ?, ?, ?, ?)',
         Bind => [
-            \$Param{Comments}, \'Invalid', \$Param{TargetUserID}, \$Param{DeploymentTimeStamp}, \$Param{UserID},
+            \$UUID, \$Param{Comments}, \${ $Param{EffectiveValueStrg} }, \$Param{TargetUserID},
+            \$Param{DeploymentTimeStamp}, \$Param{UserID},
         ],
     );
 
     # Get deployment ID.
-    my $SQL = '
-        SELECT id
-        FROM sysconfig_deployment
-        WHERE create_time = ?
-            AND create_by = ?';
-
-    my @Bind = ( \$Param{DeploymentTimeStamp}, \$Param{UserID} );
-
-    if ( $Param{TargetUserID} ) {
-        $SQL .= '
-            AND user_id = ?
-        ';
-        push @Bind, \$Param{TargetUserID};
-    }
-    else {
-        $SQL .= '
-            AND user_id IS NULL
-        ';
-    }
-
-    $SQL .= '
-        ORDER BY id DESC';
-
     return if !$DBObject->Prepare(
-        SQL   => $SQL,
-        Bind  => \@Bind,
+        SQL => '
+            SELECT id
+            FROM sysconfig_deployment
+            WHERE uuid = ?
+            ORDER BY id DESC',
+        Bind  => [ \$UUID ],
         Limit => 1,
     );
 
@@ -4359,46 +4353,29 @@ sub DeploymentAdd {
         $DeploymentID = $Row[0];
     }
 
-    my $CurrentDeploymentIDStr = 'CurrentDeploymentID';
-    if ( $Param{TargetUserID} ) {
-        $CurrentDeploymentIDStr = 'CurrentUserDeploymentID';
-    }
-
-    # Add the deployment ID to the values
-    ${ $Param{EffectiveValueStrg} }
-        =~ s{( \s+ my [ ] \(\$File, [ ] \$Self\) [ ] = [ ] \@_; \s+ )}{$1\$Self->{'$CurrentDeploymentIDStr'} = '$DeploymentID';\n}msx;
-
-    # Set the real deployment value.
-    return if !$DBObject->Do(
-        SQL => '
-            Update sysconfig_deployment
-            SET effective_value = ?
-            WHERE id = ?',
-        Bind => [
-            \${ $Param{EffectiveValueStrg} }, \$DeploymentID,
-        ],
-    );
-
     # Remove previous user deployments (if any).
-    for my $DeploymentID (@UserDeploymentIDs) {
+    for my $UserDeploymentID (@UserDeploymentIDs) {
         $Self->DeploymentDelete(
-            DeploymentID => $DeploymentID,
+            DeploymentID => $UserDeploymentID,
         );
     }
 
+    my $CacheObject = $Kernel::OM->Get('Kernel::System::Cache');
+    my $CacheType   = 'SysConfigDeployment';
+
     if ( $Param{TargetUserID} ) {
-        $Kernel::OM->Get('Kernel::System::Cache')->Delete(
-            Type => 'SysConfigDeployment',
+        $CacheObject->Delete(
+            Type => $CacheType,
             Key  => 'DeploymentUserList',
         );
     }
     else {
-        $Kernel::OM->Get('Kernel::System::Cache')->Delete(
-            Type => 'SysConfigDeployment',
+        $CacheObject->Delete(
+            Type => $CacheType,
             Key  => 'DeploymentList',
         );
-        $Kernel::OM->Get('Kernel::System::Cache')->Delete(
-            Type => 'SysConfigDeployment',
+        $CacheObject->Delete(
+            Type => $CacheType,
             Key  => 'DeploymentGetLast',
         );
     }
@@ -4418,6 +4395,7 @@ Returns:
 
     %Deployment = (
         DeploymentID       => 123,
+        DeploymentUUID     => 14906327941360ed8455f125d0450277,
         Comments           => 'Some Comments',
         EffectiveValueStrg => $SettingEffectiveValues,      # string with the value of all settings,
                                                             #   as seen in the Perl configuration file.
@@ -4458,7 +4436,7 @@ sub DeploymentGet {
     # Get deployment from database.
     return if !$DBObject->Prepare(
         SQL => '
-            SELECT id, comments, effective_value, user_id, create_time, create_by
+            SELECT id, uuid, comments, effective_value, user_id, create_time, create_by
             FROM sysconfig_deployment
             WHERE id = ?',
         Bind => [ \$Param{DeploymentID} ],
@@ -4469,23 +4447,16 @@ sub DeploymentGet {
 
         %Deployment = (
             DeploymentID       => $Data[0],
-            Comments           => $Data[1],
-            EffectiveValueStrg => $Data[2],
-            TargetUserID       => $Data[3],
-            CreateTime         => $Data[4],
-            CreateBy           => $Data[5],
+            DeploymentUUID     => $Data[1],
+            Comments           => $Data[2],
+            EffectiveValueStrg => $Data[3],
+            TargetUserID       => $Data[4],
+            CreateTime         => $Data[5],
+            CreateBy           => $Data[6],
         );
     }
 
     return if !%Deployment;
-
-    if ( $Deployment{EffectiveValueStrg} eq 'Invalid' ) {
-        $Kernel::OM->Get('Kernel::System::Log')->Log(
-            Priority => 'error',
-            Message  => "The Deployment $Param{DeploymentID} is invalid!",
-        );
-        return;
-    }
 
     $CacheObject->Set(
         Type  => $CacheType,
@@ -4508,6 +4479,7 @@ Returns:
     @List = (
         {
             DeploymentID       => 123,
+            DeploymentUUID     => 14906327941360ed8455f125d0450277,
             Comments           => 'Some Comments',
             EffectiveValueStrg => $SettingEffectiveValues,      # String with the value of all settings,
                                                                 #   as seen in the Perl configuration file.
@@ -4516,6 +4488,7 @@ Returns:
         },
         {
             DeploymentID       => 456,
+            DeploymentUUID     => 14906327941360ed8455f125d0450288,
             Comments           => 'Some Comments',
             EffectiveValueStrg => $SettingEffectiveValues2,     # String with the value of all settings,
                                                                 #   as seen in the Perl configuration file.
@@ -4643,6 +4616,7 @@ Returns:
 
     %Deployment = (
         DeploymentID       => 123,
+        DeploymentUUID     => 14906327941360ed8455f125d0450277,
         Comments           => 'Some Comments',
         EffectiveValueStrg => $SettingEffectiveValues,      # String with the value of all settings,
                                                             #   as seen in the Perl configuration file.
@@ -4735,24 +4709,27 @@ sub DeploymentDelete {
         Bind => [ \$Param{DeploymentID} ],
     );
 
-    $Kernel::OM->Get('Kernel::System::Cache')->Delete(
-        Type => 'SysConfigDeployment',
+    my $CacheObject = $Kernel::OM->Get('Kernel::System::Cache');
+    my $CacheType   = 'SysConfigDeployment';
+
+    $CacheObject->Delete(
+        Type => $CacheType,
         Key  => 'DeploymentGet::DeploymentID::' . $Param{DeploymentID},
     );
 
     if ( $Deployment{TargetUserID} ) {
-        $Kernel::OM->Get('Kernel::System::Cache')->Delete(
-            Type => 'SysConfigDeployment',
+        $CacheObject->Delete(
+            Type => $CacheType,
             Key  => 'DeploymentUserList',
         );
     }
     else {
-        $Kernel::OM->Get('Kernel::System::Cache')->Delete(
-            Type => 'SysConfigDeployment',
+        $CacheObject->Delete(
+            Type => $CacheType,
             Key  => 'DeploymentList',
         );
-        $Kernel::OM->Get('Kernel::System::Cache')->Delete(
-            Type => 'SysConfigDeployment',
+        $CacheObject->Delete(
+            Type => $CacheType,
             Key  => 'DeploymentGetLast',
         );
     }

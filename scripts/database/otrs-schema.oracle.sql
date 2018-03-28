@@ -5000,6 +5000,7 @@ END;
 -- ----------------------------------------------------------
 CREATE TABLE sysconfig_deployment (
     id NUMBER (12, 0) NOT NULL,
+    uuid VARCHAR2 (36) NOT NULL,
     comments VARCHAR2 (250) NULL,
     user_id NUMBER (12, 0) NULL,
     effective_value CLOB NOT NULL,

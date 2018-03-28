@@ -46,7 +46,7 @@ my $UpdateFile = sub {
     my $Content = ${ $ContentSCALARRef || \'' };
 
     if ( defined $Param{Value} ) {
-        $Content =~ s{ ({'CurrentDeploymentID'} [ ] = [ ] ')\d+(') }{$1$Param{Value}$2}msx;
+        $Content =~ s{ ({'CurrentDeploymentID'} [ ] = [ ] ').*(') }{$1$Param{Value}$2}msx;
     }
     if ( defined $Param{Remove} ) {
         $Content =~ s{ ({'CurrentDeploymentID)('})  }{$1Invalid$2}msx;
@@ -80,7 +80,7 @@ my $ReadDeploymentID = sub {
     my $Content = ${$ContentSCALARRef};
 
     my $CurrentDeploymentID;
-    if ( $Content =~ m{ {'CurrentDeploymentID'} [ ] = [ ] '(-?\d+)' }msx ) {
+    if ( $Content =~ m{ {'CurrentDeploymentID'} [ ] = [ ] '(-??.*?)' }msx ) {
         $CurrentDeploymentID = $1;
     }
 
@@ -102,7 +102,7 @@ $Self->IsNotDeeply(
 );
 
 my %LastDeployment   = $SysConfigDBObject->DeploymentGetLast();
-my $LastDeploymentID = $LastDeployment{DeploymentID};
+my $LastDeploymentID = $LastDeployment{DeploymentUUID};
 
 # Make sure deployment is in sync before tests.
 my $Success = $SysConfigObject->ConfigurationDeploySync();
@@ -166,10 +166,10 @@ my @Tests = (
     {
         Name   => 'Global Set DeploymentID to be greater',
         Config => {
-            Value => $LastDeploymentID + 1,
+            Value => $LastDeploymentID . 1,
             Type  => 'Global',
         },
-        DeploymentIDBefore => $LastDeploymentID + 1,
+        DeploymentIDBefore => $LastDeploymentID . 1,
         DeploymentIDAfter  => $LastDeploymentID,
         Success            => 1,
     },

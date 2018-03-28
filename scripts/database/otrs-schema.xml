@@ -2453,6 +2453,7 @@
 
 <Table Name="sysconfig_deployment">
     <Column Name="id" Required="true" PrimaryKey="true" AutoIncrement="true" Type="INTEGER"/>
+    <Column Name="uuid" Required="true" Size="36" Type="VARCHAR" />
     <Column Name="comments" Required="false" Size="250" Type="VARCHAR"/>
     <Column Name="user_id" Required="false" Type="INTEGER"/>
 

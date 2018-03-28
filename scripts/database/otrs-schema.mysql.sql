@@ -1624,6 +1624,7 @@ CREATE TABLE sysconfig_deployment_lock (
 # ----------------------------------------------------------
 CREATE TABLE sysconfig_deployment (
     id INTEGER NOT NULL AUTO_INCREMENT,
+    uuid VARCHAR (36) NOT NULL,
     comments VARCHAR (250) NULL,
     user_id INTEGER NULL,
     effective_value LONGBLOB NOT NULL,
