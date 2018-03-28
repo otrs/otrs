@@ -62,16 +62,14 @@ sub RebuildConfig {
     }
 
     # Rebuild ZZZAAuto.pm with current values
-    if (
-        !$SysConfigObject->ConfigurationDeploy(
-            Comments => $Param{Comments} || "Configuration Rebuild",
-            AllSettings  => 1,
-            Force        => 1,
-            NoValidation => 1,
-            UserID       => 1,
-        )
-        )
-    {
+    my %DeploymentResult = $SysConfigObject->ConfigurationDeploy(
+        Comments => $Param{Comments} || "Configuration Rebuild",
+        AllSettings  => 1,
+        Force        => 1,
+        NoValidation => 1,
+        UserID       => 1,
+    );
+    if ( !$DeploymentResult{Success} ) {
         print "\n\n    Error:There was a problem writing ZZZAAuto.pm.\n";
         return;
     }
