@@ -5,6 +5,7 @@
  - 2017-12-12 Always require cookies for OTRS login - drop support for non-cookie sessions.
 
 #6.0.7 2018-??-??
+ - 2018-03-27 Fixed bug#[13462](https://bugs.otrs.org/show_bug.cgi?id=13462) - OTRS creates empty Kernel/Config/Files/User/\*.pm files.
  - 2018-03-27 Fixed bug#[13717](https://bugs.otrs.org/show_bug.cgi?id=13717) - AgentTicketService can slow down a system, when having many services and many agents working on there.
  - 2018-03-26 Fixed bug#[10709](https://bugs.otrs.org/show_bug.cgi?id=10709) - ACL for Action AgentTicketBulk are inconsistent.
  - 2018-03-19 Fixed bug#[13711](https://bugs.otrs.org/show_bug.cgi?id=13711) - Multiple GenericInterface default Invoker and Operation frontend issues.
