@@ -1091,39 +1091,94 @@ Core.Agent.Admin.ProcessManagement = (function (TargetNS) {
      */
     TargetNS.InitActivityDialogEdit = function () {
         var MandatoryFields = ['Queue', 'State', 'Lock', 'Priority', 'Type', 'CustomerID'],
-            FieldsWithoutDefaultValue = ['CustomerID', 'Article'];
+            FieldsWithoutDefaultValue = ['CustomerID', 'Article' ],
+            FieldDisplayOnly = ['HorizontalRuler1', 
+            		'HorizontalRuler2', 'HorizontalRuler3', 'HorizontalRuler4', 'HorizontalRuler5', 
+            		'HorizontalRuler6', 'HorizontalRuler7', 'HorizontalRuler8', 'HorizontalRuler9', 'HorizontalRuler1'],
+        		FieldLayout = ['Layout1', 'Layout2', 'Layout3', 'Layout4', 'Layout5' ];
 
         function UpdateFields(Event, UI) {
             var Fieldname,
                 DefaultFieldConfig = {};
 
             // if the element was removed from the AssignedFields list, remove FieldDetails data
-            if (UI.sender.attr('id') === 'AssignedFields') {
+            if ($(Event.target).attr('id') === 'AvailableFields') {
+                
+
                 Core.UI.Table.InitTableFilter($('#FilterAvailableFields'), $('#AvailableFields'));
                 $(UI.item)
                     .removeData('config')
                     .removeAttr('data-config');
+                if ($(UI.item).data('islayout'))
+                {
+                	$(UI.item).find("ul li").appendTo($("#AvailableFields"));
+                    $("#AvailableFields").find(".LayoutField").hide();
+                }
             }
-            // otherwise, force the user to enter data in the modal dialog
+            // otherwise, force the user to enter data in the modal dialog if new in assigned fields
             else {
-                Fieldname = $.trim($(UI.item).data('id'));
-
-                // if Field is Mandatory set Display to "Show As Mandatory" as default
-                if ($.inArray(Fieldname, MandatoryFields) > -1) {
-                    DefaultFieldConfig.Display = "2";
+                if ($(UI.item).data('islayout'))
+                {
+                	$(UI.item).children("ul").show();
                 }
-                else {
-                    DefaultFieldConfig.Display = "1";
+//                alert($(Event.target).parent().data('id'));
+                var FieldConfig = $(UI.item).data('config');
+                if (typeof FieldConfig === 'string') {
+                	FieldConfig = Core.JSON.Parse(FieldConfig);
                 }
-
-                $(UI.item)
-                    .data('config', Core.JSON.Stringify(DefaultFieldConfig))
-                    .find('.FieldDetailsOverlay').trigger('click');
+                if (typeof FieldConfig === 'undefined')
+                {
+                	FieldConfig = {};
+                }
+                FieldConfig.LayoutChildOf = $(Event.target).parent().data('id');
+                $(UI.item).data('config', Core.JSON.Stringify(FieldConfig));
+                
+                if (UI.sender.attr('id') === 'AvailableFields')
+                {
+                    Fieldname = $.trim($(UI.item).data('id'));
+                    // if Field is Mandatory set Display to "Show As Mandatory" as default
+                    if ($.inArray(Fieldname, MandatoryFields) > -1) {
+                        DefaultFieldConfig.Display = "2";
+                    }
+                    else {
+                        DefaultFieldConfig.Display = "1";
+                    }
+                    DefaultFieldConfig.LayoutChildOf = $(Event.target).parent().data('id');
+	                $(UI.item)
+	                    .data('config', Core.JSON.Stringify(DefaultFieldConfig))
+	                    .find('.FieldDetailsOverlay').trigger('click');
+                }
             }
         }
 
+        //sort Elements to parents
+        $("#AssignedFields").find("[data-config]").each(function(){
+        	var FieldConfig = $(this).data('config');
+            if (typeof FieldConfig === 'string') {
+            	FieldConfig = Core.JSON.Parse(FieldConfig);
+            }
+        	if (FieldConfig.LayoutChildOf)
+        	{
+        		$(this).appendTo($('#AssignedFields'+FieldConfig.LayoutChildOf));
+//        		alert(FieldConfig.LayoutChildOf);
+        	}
+
+//        	Core.UI.AllocationList.Init("#AvailableFields, #"+$(this).attr('id'), ".AllocationList", UpdateFields, undefined);
+        })        
+       
         // Initialize Allocation List
-        Core.UI.AllocationList.Init("#AvailableFields, #AssignedFields", ".AllocationList", UpdateFields);
+        Core.UI.AllocationList.Init("#AvailableFields, #AssignedFields", ".AllocationList", UpdateFields, undefined);
+        
+        $("ul").find("[data-islayout='1']").find("ul").each(function(){
+        	Core.UI.AllocationList.Init("#AvailableFields, #"+$(this).attr('id'), ".AllocationList", UpdateFields, undefined);
+        })
+        Core.UI.AllocationList.Init("#AvailableFields, #AssignedFieldsLayout1", ".AllocationList", UpdateFields, undefined);
+
+        //Hide all LayoutChildFields for non Layout Elements
+        $(".NonLayoutField").hide();
+        
+        //Hide all LayoutChildFields in AvailableFields
+        $("#AvailableFields").find(".LayoutField").hide();
 
         // Initialize list filter
         Core.UI.Table.InitTableFilter($('#FilterAvailableFields'), $('#AvailableFields'));
@@ -1192,6 +1247,8 @@ Core.Agent.Admin.ProcessManagement = (function (TargetNS) {
                              FieldConfigElement.DescriptionLong = $('#DescLong').val();
                              FieldConfigElement.DefaultValue = $('#DefaultValue').val();
                              FieldConfigElement.Display = $('#Display').val();
+                             FieldConfigElement.LayoutStyle = $('#LayoutStyle').val();
+                             FieldConfigElement.LayoutChildOf = $('#LayoutChildOf').val();
 
                              if (Fieldname === 'Article') {
                                  if (typeof FieldConfigElement.Config === 'undefined'){
@@ -1213,10 +1270,10 @@ Core.Agent.Admin.ProcessManagement = (function (TargetNS) {
                                  // add the time units value to the fieldconfig
                                  FieldConfigElement.Config.TimeUnits = $('#TimeUnits').val();
                              }
-
                              $Element.closest('li').data('config', Core.JSON.Stringify(FieldConfigElement));
 
                              Core.UI.Dialog.CloseDialog($('.Dialog'));
+                             
                          }
                      },
                      {
@@ -1247,14 +1304,46 @@ Core.Agent.Admin.ProcessManagement = (function (TargetNS) {
                 $('#Display').find('option[value=0]').remove();
             }
 
+            // fields which are only Displayed
+            if ($.inArray(Fieldname, FieldDisplayOnly) > -1) {
+                $('#Display').find('option[value=0]').remove();
+                $('#Display').find('option[value=2]').remove();
+                $('#Display').val('1');
+                $('#DefaultValue').prop('readonly', true).prop('disabled', true);
+            }
+            
+            
+            // fields which are Layout Elements
+            if ($.inArray(Fieldname, FieldLayout) > -1) {
+            	$('#LayoutStyleSelectionContainer').removeClass('Hidden');
+            	$('label[for=LayoutStyle]').removeAttr('Style');
+            		
+            	$("#LayoutChildOf option[value='" + Fieldname + "']").remove();
+            	//TODO: prevent cycled dependencies
+            } 
+            $('#AvailableFields').find('li').each(function () {
+                var Field = $(this).data('id');
+                $("#LayoutChildOf option[value='" + Field + "']").remove();
+            }); 
+            
             // if there is a field config already the default settings from above are now overwritten
             if (typeof FieldConfig !== 'undefined') {
                 $('#DescShort').val(FieldConfig.DescriptionShort);
                 $('#DescLong').val(FieldConfig.DescriptionLong);
                 $('#DefaultValue').val(FieldConfig.DefaultValue);
 
+                if (FieldConfig.LayoutStyle) {
+            			$('#LayoutStyle').val(FieldConfig.LayoutStyle);
+                	}
+
+                if (FieldConfig.LayoutChildOf) {
+                	$("#LayoutChildOf").val(FieldConfig.LayoutChildOf);
+                    $('#LayoutChildOf').trigger('redraw.InputField');
+           		}
+                
                 if (typeof FieldConfig.Display !== 'undefined') {
                     $('#Display').val(FieldConfig.Display);
+                    
                 }
 
                 if (Fieldname === 'Article') {

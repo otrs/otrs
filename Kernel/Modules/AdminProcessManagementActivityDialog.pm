@@ -62,6 +62,11 @@ sub Run {
         Owner       => 'OwnerID',
         PendingTime => 'PendingTime',
         Title       => 'Title',
+        Layout1 => "Layout",
+        Layout2 => "Layout",
+        Layout3 => "Layout",
+        Layout4 => "Layout",
+        Layout5 => "Layout",
     };
 
     # add service and SLA fields, if option is activated in sysconfig.
@@ -656,6 +661,11 @@ sub _ShowEdit {
         Owner       => 'OwnerID',
         PendingTime => 'PendingTime',
         Title       => 'Title',
+        Layout1 => "Layout",
+        Layout2 => "Layout",
+        Layout3 => "Layout",
+        Layout4 => "Layout",
+        Layout5 => "Layout",
     };
 
     my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
@@ -729,11 +739,15 @@ sub _ShowEdit {
             keys %AvailableFieldsTranslated
             )
         {
+        	my $isLayout = ($Field =~ /^Layout/)?1:0;
+        	
             $LayoutObject->Block(
                 Name => 'AvailableFieldRow',
                 Data => {
                     Field               => $Field,
                     FieldnameTranslated => $AvailableFieldsTranslated{$Field},
+                    isLayout	=> $isLayout,
+                    
                 },
             );
         }
@@ -748,12 +762,13 @@ sub _ShowEdit {
             my $FieldConfigJSON = $Kernel::OM->Get('Kernel::System::JSON')->Encode(
                 Data => $FieldConfig,
             );
-
+			my $isLayout = ($Field =~ /^Layout/)?1:0;
             $LayoutObject->Block(
                 Name => 'AssignedFieldRow',
                 Data => {
                     Field       => $Field,
                     FieldConfig => $FieldConfigJSON,
+                    isLayout	=> $isLayout,
                 },
             );
         }
@@ -877,6 +892,40 @@ sub _ShowEdit {
         Translation => 1,
         Class       => 'Modernize',
     );
+    
+    # create LayoutStyle selection
+    $Param{LayoutStyleSelection} = $LayoutObject->BuildSelection(
+        Data => {
+            0 => Translatable('Horizontal'),
+            1 => Translatable('Vertical'),
+        },
+        Name        => 'LayoutStyle',
+        ID          => 'LayoutStyle',
+        Sort        => 'AlphanumericKey',
+        Translation => 1,
+        Class       => 'Modernize',
+    );
+    
+    
+    # create LayoutChildOf selection
+    # sort by translated field names
+        my %AvailableFieldsTranslated;
+        for my $Field ( grep /^Layout/, (sort keys %AvailableFields, @{ $ActivityDialogData->{Config}->{FieldOrder} }) ) {
+            my $Translation = $LayoutObject->{LanguageObject}->Translate($Field);
+            $AvailableFieldsTranslated{$Field} = $Translation;
+        }
+    $Param{LayoutChildOfSelection} = $LayoutObject->BuildSelection(
+        Data => \%AvailableFieldsTranslated,
+        Name        => 'Child of',
+        ID          => 'LayoutChildOf',
+        Sort        => 'AlphanumericKey',
+        Translation => 1,
+        Class       => 'Modernize',
+        Multiple		=> 0,
+        PossibleNone   => 1,
+        
+    );
+    
 
     my @ChannelList = $Kernel::OM->Get('Kernel::System::CommunicationChannel')->ChannelList();
 

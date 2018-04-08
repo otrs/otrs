@@ -136,6 +136,11 @@
     text-align: center;
 }
 
+.horizontalruler {
+	height: 1px;
+	background-color: #ddd;
+}
+
 textarea {
     font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
     padding: 5px;
