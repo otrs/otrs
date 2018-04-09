@@ -814,9 +814,9 @@ sub ImportDataSave {
         				my %Template = $TemplateObject->StandardTemplateGet(ID => $TemplateID);
         				my $JSONString = $JSONObject->Encode(Data => \%Template);
         				# tag without _Value
-					$JSONString =~ s/DynamicField_$currentDynamicField{Name}/DynamicField_$DynamicFieldData{Name}/g;
+					$JSONString =~ s/DynamicField_$currentDynamicField{Name}>/DynamicField_$DynamicFieldData{Name}>/g;
 					# tag with _Value
-					$JSONString =~ s/DynamicField_$currentDynamicField{Name}_Value/DynamicField_$DynamicFieldData{Name}_Value/g;
+					$JSONString =~ s/DynamicField_$currentDynamicField{Name}_Value>/DynamicField_$DynamicFieldData{Name}_Value>/g;
         				
         				%Template = %{$JSONObject->Decode(Data => $JSONString)};
         				$Template{UserID} = $Param{UserID};
@@ -838,9 +838,9 @@ sub ImportDataSave {
         				my %Signature = $SignatureObject->SignatureGet(ID => $SignatureID);
         				my $JSONString = $JSONObject->Encode(Data => \%Signature);
         				# tag without _Value
-						$JSONString =~ s/DynamicField_$currentDynamicField{Name}/DynamicField_$DynamicFieldData{Name}/g;
+						$JSONString =~ s/DynamicField_$currentDynamicField{Name}>/DynamicField_$DynamicFieldData{Name}>/g;
 						# tag with _Value
-						$JSONString =~ s/DynamicField_$currentDynamicField{Name}_Value/DynamicField_$DynamicFieldData{Name}_Value/g;
+						$JSONString =~ s/DynamicField_$currentDynamicField{Name}_Value>/DynamicField_$DynamicFieldData{Name}_Value>/g;
         				
         				%Signature = %{$JSONObject->Decode(Data => $JSONString)};
         				$Signature{UserID} = $Param{UserID};
@@ -862,9 +862,9 @@ sub ImportDataSave {
         				my %AutoResponse = $AutoResponseObject->AutoResponseGet(ID => $AutoResponseID);
         				my $JSONString = $JSONObject->Encode(Data => \%AutoResponse);
         				# tag without _Value
-						$JSONString =~ s/DynamicField_$currentDynamicField{Name}/DynamicField_$DynamicFieldData{Name}/g;
+						$JSONString =~ s/DynamicField_$currentDynamicField{Name}>/DynamicField_$DynamicFieldData{Name}>/g;
 						# tag with _Value
-						$JSONString =~ s/DynamicField_$currentDynamicField{Name}_Value/DynamicField_$DynamicFieldData{Name}_Value/g;
+						$JSONString =~ s/DynamicField_$currentDynamicField{Name}_Value>/DynamicField_$DynamicFieldData{Name}_Value>/g;
         				
         				%AutoResponse = %{$JSONObject->Decode(Data => $JSONString)};
         				$AutoResponse{UserID} = $Param{UserID};
@@ -886,9 +886,9 @@ sub ImportDataSave {
 					my %Salutation = $SalutationObject->SalutationGet(ID => $SalutationID,);
 					my $JSONString = $JSONObject->Encode(Data => \%Salutation);
         				# tag without _Value
-						$JSONString =~ s/DynamicField_$currentDynamicField{Name}/DynamicField_$DynamicFieldData{Name}/g;
+						$JSONString =~ s/DynamicField_$currentDynamicField{Name}>/DynamicField_$DynamicFieldData{Name}>/g;
 						# tag with _Value
-						$JSONString =~ s/DynamicField_$currentDynamicField{Name}_Value/DynamicField_$DynamicFieldData{Name}_Value/g;
+						$JSONString =~ s/DynamicField_$currentDynamicField{Name}_Value>/DynamicField_$DynamicFieldData{Name}_Value>/g;
         				
         				%Salutation = %{$JSONObject->Decode(Data => $JSONString)};
         				$Salutation{UserID} = $Param{UserID};
@@ -910,10 +910,10 @@ sub ImportDataSave {
         				my $JSONString = $JSONObject->Encode(Data => $Notifications{$NotificationID});
         				# Event
 						$JSONString =~ s/"TicketDynamicFieldUpdate_$currentDynamicField{Name}"/"TicketDynamicFieldUpdate_$DynamicFieldData{Name}"/g;
-	        				# tag without _Value
-						$JSONString =~ s/DynamicField_$currentDynamicField{Name}/DynamicField_$DynamicFieldData{Name}/g;
+	        			# tag without _Value
+						$JSONString =~ s/DynamicField_$currentDynamicField{Name}>/DynamicField_$DynamicFieldData{Name}>/g;
 						# tag with _Value
-						$JSONString =~ s/DynamicField_$currentDynamicField{Name}_Value/DynamicField_$DynamicFieldData{Name}_Value/g;
+						$JSONString =~ s/DynamicField_$currentDynamicField{Name}_Value>/DynamicField_$DynamicFieldData{Name}_Value>/g;
         				
         				my %Notification = %{$JSONObject->Decode(Data => $JSONString)};
         				$Notification{UserID} = $Param{UserID};
@@ -937,9 +937,9 @@ sub ImportDataSave {
         				# Event
 						$JSONString =~ s/TicketDynamicFieldUpdate_$currentDynamicField{Name}/TicketDynamicFieldUpdate_$DynamicFieldData{Name}/g;
         				# Search
-						$JSONString =~ s/Search_DynamicField_$currentDynamicField{Name}/Search_DynamicField_$DynamicFieldData{Name}/g;
+						$JSONString =~ s/Search_DynamicField_$currentDynamicField{Name}>/Search_DynamicField_$DynamicFieldData{Name}>/g;
 						# Setter
-						$JSONString =~ s/DynamicField_$currentDynamicField{Name}/DynamicField_$DynamicFieldData{Name}/g;
+						$JSONString =~ s/DynamicField_$currentDynamicField{Name}>/DynamicField_$DynamicFieldData{Name}>/g;
         				
         				my $Job = $JSONObject->Decode(Data => $JSONString);
 	        				
