@@ -11,8 +11,6 @@ package Kernel::System::ImportExport::ObjectBackend::DynamicField;
 use strict;
 use warnings;
 
-use Data::Dumper;
-
 use List::Util qw(min);	
 use MIME::Base64;
 use Kernel::Language qw(Translatable);
@@ -168,13 +166,6 @@ sub ObjectAttributesGet {
         {
             Key   => 'ChangeGenericInterfaceFieldNames',
             Name  => Translatable('modify dynamic field names used in generic interface if import is via ID as Identfier'),
-            Input => {
-                Type => 'Checkbox',
-            },
-        },  
-        {
-            Key   => 'ChangeSysconfigFieldNames',
-            Name  => Translatable('modify dynamic field names used in sysconfig if import is via ID as Identfier'),
             Input => {
                 Type => 'Checkbox',
             },
@@ -745,7 +736,7 @@ sub ImportDataSave {
         $DynamicFieldData{$Key} = $Value;
     }
     $DynamicFieldData{UserID} = $Param{UserID};
-    $DynamicFieldData{Reorder} = $ObjectData->{ReorderOnImport};
+    $DynamicFieldData{Reorder} = $ObjectData->{ReorderOnImport} || 0;
     $DynamicFieldData{FieldOrder} = $DynamicFieldData{FieldOrder} || $ObjectData->{DefaultFieldOrder};
       	
     	
@@ -786,26 +777,7 @@ sub ImportDataSave {
         }
 
         
-        # update dynamic fields in generic interface if requested
-        if ($ObjectData->{ChangeSysconfigFieldNames})
-        {
-        		# check if ID is selected as Identifier and Names differ
-        		if (scalar keys %Identifier == 1 && (keys %Identifier)[0] eq 'ID' && $DynamicFieldData{Name} ne $currentDynamicField{Name})
-        		{     
-        			my $SysconfigObject = $Kernel::OM->Get("Kernel::System::SysConfig");
-        			my @Settings = $SysconfigObject->ConfigurationSearch(Search => "$currentDynamicField{Name}");
-        			for my $SettingName (@Settings)
-        			{
-        				my %Setting = $SysconfigObject->SettingGet(Name => $SettingName);
-                     $Kernel::OM->Get('Kernel::System::Log')->Log(
-                        Priority => 'error',
-                        Message => Dumper(\@Settings),
-                    );          				
-        			}
-       			
-        		}
-        }     
-        
+      
         # update dynamic fields in generic interface if requested
         if ($ObjectData->{ChangeGenericInterfaceFieldNames})
         {
@@ -825,12 +797,7 @@ sub ImportDataSave {
         				$Webservice = $JSONObject->Decode(Data => $JSONString);        	
         				$Webservice->{UserID} = $Param{UserID};
         				$WebserviceObject->WebserviceUpdate(%{$Webservice});			
-#                    $Kernel::OM->Get('Kernel::System::Log')->Log(
-#                        Priority => 'error',
-#                        Message => $JSONString,
-#                    );        			
         			}
-        			
         		}
         }
         
@@ -871,9 +838,9 @@ sub ImportDataSave {
         				my %Signature = $SignatureObject->SignatureGet(ID => $SignatureID);
         				my $JSONString = $JSONObject->Encode(Data => \%Signature);
         				# tag without _Value
-					$JSONString =~ s/DynamicField_$currentDynamicField{Name}/DynamicField_$DynamicFieldData{Name}/g;
-					# tag with _Value
-					$JSONString =~ s/DynamicField_$currentDynamicField{Name}_Value/DynamicField_$DynamicFieldData{Name}_Value/g;
+						$JSONString =~ s/DynamicField_$currentDynamicField{Name}/DynamicField_$DynamicFieldData{Name}/g;
+						# tag with _Value
+						$JSONString =~ s/DynamicField_$currentDynamicField{Name}_Value/DynamicField_$DynamicFieldData{Name}_Value/g;
         				
         				%Signature = %{$JSONObject->Decode(Data => $JSONString)};
         				$Signature{UserID} = $Param{UserID};
@@ -895,9 +862,9 @@ sub ImportDataSave {
         				my %AutoResponse = $AutoResponseObject->AutoResponseGet(ID => $AutoResponseID);
         				my $JSONString = $JSONObject->Encode(Data => \%AutoResponse);
         				# tag without _Value
-					$JSONString =~ s/DynamicField_$currentDynamicField{Name}/DynamicField_$DynamicFieldData{Name}/g;
-					# tag with _Value
-					$JSONString =~ s/DynamicField_$currentDynamicField{Name}_Value/DynamicField_$DynamicFieldData{Name}_Value/g;
+						$JSONString =~ s/DynamicField_$currentDynamicField{Name}/DynamicField_$DynamicFieldData{Name}/g;
+						# tag with _Value
+						$JSONString =~ s/DynamicField_$currentDynamicField{Name}_Value/DynamicField_$DynamicFieldData{Name}_Value/g;
         				
         				%AutoResponse = %{$JSONObject->Decode(Data => $JSONString)};
         				$AutoResponse{UserID} = $Param{UserID};
@@ -919,9 +886,9 @@ sub ImportDataSave {
 					my %Salutation = $SalutationObject->SalutationGet(ID => $SalutationID,);
 					my $JSONString = $JSONObject->Encode(Data => \%Salutation);
         				# tag without _Value
-					$JSONString =~ s/DynamicField_$currentDynamicField{Name}/DynamicField_$DynamicFieldData{Name}/g;
-					# tag with _Value
-					$JSONString =~ s/DynamicField_$currentDynamicField{Name}_Value/DynamicField_$DynamicFieldData{Name}_Value/g;
+						$JSONString =~ s/DynamicField_$currentDynamicField{Name}/DynamicField_$DynamicFieldData{Name}/g;
+						# tag with _Value
+						$JSONString =~ s/DynamicField_$currentDynamicField{Name}_Value/DynamicField_$DynamicFieldData{Name}_Value/g;
         				
         				%Salutation = %{$JSONObject->Decode(Data => $JSONString)};
         				$Salutation{UserID} = $Param{UserID};
@@ -942,20 +909,16 @@ sub ImportDataSave {
         			{
         				my $JSONString = $JSONObject->Encode(Data => $Notifications{$NotificationID});
         				# Event
-					$JSONString =~ s/"TicketDynamicFieldUpdate_$currentDynamicField{Name}"/"TicketDynamicFieldUpdate_$DynamicFieldData{Name}"/g;
-        				# tag without _Value
-					$JSONString =~ s/DynamicField_$currentDynamicField{Name}/DynamicField_$DynamicFieldData{Name}/g;
-					# tag with _Value
-					$JSONString =~ s/DynamicField_$currentDynamicField{Name}_Value/DynamicField_$DynamicFieldData{Name}_Value/g;
+						$JSONString =~ s/"TicketDynamicFieldUpdate_$currentDynamicField{Name}"/"TicketDynamicFieldUpdate_$DynamicFieldData{Name}"/g;
+	        				# tag without _Value
+						$JSONString =~ s/DynamicField_$currentDynamicField{Name}/DynamicField_$DynamicFieldData{Name}/g;
+						# tag with _Value
+						$JSONString =~ s/DynamicField_$currentDynamicField{Name}_Value/DynamicField_$DynamicFieldData{Name}_Value/g;
         				
         				my %Notification = %{$JSONObject->Decode(Data => $JSONString)};
         				$Notification{UserID} = $Param{UserID};
         				$NotificationObject->NotificationUpdate(%Notification);
         			}
-#                    $Kernel::OM->Get('Kernel::System::Log')->Log(
-#                        Priority => 'error',
-#                        Message => Dumper(\%Notifications),
-#                    );
         		}
         } 
         
@@ -972,16 +935,16 @@ sub ImportDataSave {
         				my %Job = $GenericAgentObject->JobGet(Name => $JobName) ;
         				my $JSONString = $JSONObject->Encode(Data => \%Job);
         				# Event
-					$JSONString =~ s/TicketDynamicFieldUpdate_$currentDynamicField{Name}/TicketDynamicFieldUpdate_$DynamicFieldData{Name}/g;
+						$JSONString =~ s/TicketDynamicFieldUpdate_$currentDynamicField{Name}/TicketDynamicFieldUpdate_$DynamicFieldData{Name}/g;
         				# Search
-					$JSONString =~ s/Search_DynamicField_$currentDynamicField{Name}/Search_DynamicField_$DynamicFieldData{Name}/g;
-					# Setter
-					$JSONString =~ s/DynamicField_$currentDynamicField{Name}/DynamicField_$DynamicFieldData{Name}/g;
+						$JSONString =~ s/Search_DynamicField_$currentDynamicField{Name}/Search_DynamicField_$DynamicFieldData{Name}/g;
+						# Setter
+						$JSONString =~ s/DynamicField_$currentDynamicField{Name}/DynamicField_$DynamicFieldData{Name}/g;
         				
         				my $Job = $JSONObject->Decode(Data => $JSONString);
-        				
-					$GenericAgentObject->JobDelete(Name => $JobName, UserID => $Param{UserID});
-					$GenericAgentObject->JobAdd(Name => $JobName, UserID => $Param{UserID}, Data => $Job);
+	        				
+						$GenericAgentObject->JobDelete(Name => $JobName, UserID => $Param{UserID});
+						$GenericAgentObject->JobAdd(Name => $JobName, UserID => $Param{UserID}, Data => $Job);
         			}
         		}        	
         }
@@ -997,20 +960,17 @@ sub ImportDataSave {
         			
         			for my $ACL (@{$ACLList})
         			{
-
-					my $JSONString = $JSONObject->Encode(Data => $ACL);
+						my $JSONString = $JSONObject->Encode(Data => $ACL);
         				# tag without _Value
-					$JSONString =~ s/"DynamicField_$currentDynamicField{Name}"/"DynamicField_$DynamicFieldData{Name}"/g;
-					# tag with _Value
-					$JSONString =~ s/"DynamicField_$currentDynamicField{Name}_Value"/"DynamicField_$DynamicFieldData{Name}_Value"/g;
-        				
-        				
+						$JSONString =~ s/"DynamicField_$currentDynamicField{Name}"/"DynamicField_$DynamicFieldData{Name}"/g;
+						# tag with _Value
+						$JSONString =~ s/"DynamicField_$currentDynamicField{Name}_Value"/"DynamicField_$DynamicFieldData{Name}_Value"/g;
+	        				
+	        				
         				$ACL = $JSONObject->Decode(Data => $JSONString);
-					$ACLObject->ACLUpdate(%{$ACL},UserID => $Param{UserID});
+						$ACLObject->ACLUpdate(%{$ACL},UserID => $Param{UserID});
         			}
-        			
-
-        		}       	
+    		}       	
         }
         
         # update dynamic fields in postmaster filter if requested
@@ -1029,30 +989,28 @@ sub ImportDataSave {
                 		for my $key (qw (Set Not Match))
                 		{
                 			$filter{$key} = [
-                			map {
-                				my $Key = $_->{'Key'};
-                				my $Value = $_->{'Value'};
-                				$Key =~ s/DynamicField-$currentDynamicField{Name}$/DynamicField-$DynamicFieldData{Name}/;
-                				if ($Value)
-                				{
-                					# tag without _Value
-								$Value =~ s/DynamicField_$currentDynamicField{Name}>/DynamicField_$DynamicFieldData{Name}>/g;
-								# tag with _Value
-								$Value =~ s/DynamicField_$currentDynamicField{Name}_Value>/DynamicField_$DynamicFieldData{Name}_Value>/g;
-                				}
-                				{
-                					'Key' => $Key,
-                					'Value' => $Value
-                				}
-                			} @{$filter{$key}}
+	                			map {
+	                				my $Key = $_->{'Key'};
+	                				my $Value = $_->{'Value'};
+	                				$Key =~ s/DynamicField-$currentDynamicField{Name}$/DynamicField-$DynamicFieldData{Name}/;
+	                				if ($Value)
+	                				{
+	                					# tag without _Value
+										$Value =~ s/DynamicField_$currentDynamicField{Name}>/DynamicField_$DynamicFieldData{Name}>/g;
+										# tag with _Value
+										$Value =~ s/DynamicField_$currentDynamicField{Name}_Value>/DynamicField_$DynamicFieldData{Name}_Value>/g;
+	                				}
+	                				{
+	                					'Key' => $Key,
+	                					'Value' => $Value
+	                				}
+	                			} @{$filter{$key}}
                 			];
                 		}
                 		$PostmasterFilterObject->FilterDelete(Name => $filtername);
                 		$PostmasterFilterObject->FilterAdd(%filter);	
-                		# TODO Error handling
-
                 }
-        		}
+        	}
         }
  
         # update dynamic fields in processes if requested
@@ -1087,9 +1045,7 @@ sub ImportDataSave {
  			           $Kernel::OM->Get('Kernel::System::Log')->Log(
   			              Priority => 'error',
     			              Message =>
-            			        "Can't update activity dialog $ActivityDialog->{EntityID} for dynamic field  : $DynamicFieldData{Name}"
-             		       ,
-       			     );
+            			        "Can't update activity dialog $ActivityDialog->{EntityID} for dynamic field  : $DynamicFieldData{Name}");
     				    }                    
 				}
 				# get all transition
@@ -1131,9 +1087,7 @@ sub ImportDataSave {
  			           $Kernel::OM->Get('Kernel::System::Log')->Log(
   			              Priority => 'error',
     			              Message =>
-            			        "Can't update transition $Transition->{EntityID}  for dynamic field  : $DynamicFieldData{Name}"
-             		       ,
-       			     );
+            			        "Can't update transition $Transition->{EntityID}  for dynamic field  : $DynamicFieldData{Name}");
     				    }                    
 				}
 				
@@ -1164,12 +1118,13 @@ sub ImportDataSave {
 					# special operation for module Kernel::System::ProcessManagement::TransitionAction::DynamicFieldSet because field is not named with prefix
 					if ($TransitionAction->{Config}->{Module} eq 'Kernel::System::ProcessManagement::TransitionAction::DynamicFieldSet')
 					{
-						$TransitionAction->{Config}->{Config} = {map {
-							my $newkey = $_;
-							my $oldkey = $_;
-							$newkey =~ s/$currentDynamicField{Name}$/$DynamicFieldData{Name}/g;
-							$newkey => $TransitionAction->{Config}->{Config}->{$oldkey};
-						} keys %{$TransitionAction->{Config}->{Config}}
+						$TransitionAction->{Config}->{Config} = {
+							map {
+								my $newkey = $_;
+								my $oldkey = $_;
+								$newkey =~ s/$currentDynamicField{Name}$/$DynamicFieldData{Name}/g;
+								$newkey => $TransitionAction->{Config}->{Config}->{$oldkey};
+							} keys %{$TransitionAction->{Config}->{Config}}
 						};
 					}
 					my $Success = $ProcessTransitionActionObject->TransitionActionUpdate(%{$TransitionAction},UserID => $Param{UserID});
@@ -1177,13 +1132,11 @@ sub ImportDataSave {
  			           $Kernel::OM->Get('Kernel::System::Log')->Log(
   			              Priority => 'error',
     			              Message =>
-            			        "Can't update transition action $TransitionAction->{EntityID}  for dynamic field  : $DynamicFieldData{Name}"
-             		       ,
-       			     );
+            			        "Can't update transition action $TransitionAction->{EntityID}  for dynamic field  : $DynamicFieldData{Name}");
     				    }    			
 				}
 				
-        		}
+        	}
         }
         
         my $RetCode = "update of $DynamicFieldData{Name} successful";
