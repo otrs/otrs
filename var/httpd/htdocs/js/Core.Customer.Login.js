@@ -154,12 +154,12 @@ Core.Customer.Login = (function (TargetNS) {
         $LocalInputs.first().focus();
 
         // add all tab-able inputs
-        $LocalInputs.add($(Location + ' a, button'));
+        $LocalInputs = $LocalInputs.add($(Location + ' a, button'));
 
         // collect all global tab-able inputs
         // give the input fields of all other slides a negative 'tabindex' to prevent
         // the user from accidentally jumping to a hidden input field via the tab key
-        $Inputs.add('a, button').not($LocalInputs).attr('tabindex', -1);
+        $Inputs = $Inputs.add('a, button').not($LocalInputs).attr('tabindex', -1);
 
         // Change the 'tabindex' according to the navigation of the user
         $SliderNavigationLinks.click(function () {
