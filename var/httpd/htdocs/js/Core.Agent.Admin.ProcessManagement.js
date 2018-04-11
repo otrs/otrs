@@ -1094,8 +1094,8 @@ Core.Agent.Admin.ProcessManagement = (function (TargetNS) {
             FieldsWithoutDefaultValue = ['CustomerID', 'Article' ],
             FieldDisplayOnly = ['HorizontalRuler1', 
             		'HorizontalRuler2', 'HorizontalRuler3', 'HorizontalRuler4', 'HorizontalRuler5', 
-            		'HorizontalRuler6', 'HorizontalRuler7', 'HorizontalRuler8', 'HorizontalRuler9', 'HorizontalRuler1'],
-        		FieldLayout = ['Layout1', 'Layout2', 'Layout3', 'Layout4', 'Layout5' ];
+            		'HorizontalRuler6', 'HorizontalRuler7', 'HorizontalRuler8', 'HorizontalRuler9', 'HorizontalRuler10'],
+        		FieldLayout = ['Layout1', 'Layout2', 'Layout3', 'Layout4', 'Layout5', 'Layout6', 'Layout7', 'Layout8', 'Layout9', 'Layout10', 'Layout11', 'Layout12', 'Layout13', 'Layout14', 'Layout15', 'Layout16', 'Layout17', 'Layout18', 'Layout19', 'Layout20' ];
 
         function UpdateFields(Event, UI) {
             var Fieldname,
@@ -1130,7 +1130,7 @@ Core.Agent.Admin.ProcessManagement = (function (TargetNS) {
                 {
                 	FieldConfig = {};
                 }
-                FieldConfig.LayoutChildOf = $(Event.target).parent().data('id');
+                FieldConfig.LayoutChildOf = $(Event.target).parent().data('id') || '';
                 $(UI.item).data('config', Core.JSON.Stringify(FieldConfig));
                 
                 if (UI.sender.attr('id') === 'AvailableFields')
@@ -1143,7 +1143,7 @@ Core.Agent.Admin.ProcessManagement = (function (TargetNS) {
                     else {
                         DefaultFieldConfig.Display = "1";
                     }
-                    DefaultFieldConfig.LayoutChildOf = $(Event.target).parent().data('id');
+                    DefaultFieldConfig.LayoutChildOf = $(Event.target).parent().data('id') || '';
 	                $(UI.item)
 	                    .data('config', Core.JSON.Stringify(DefaultFieldConfig))
 	                    .find('.FieldDetailsOverlay').trigger('click');

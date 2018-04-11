@@ -67,6 +67,21 @@ sub Run {
         Layout3 => "Layout",
         Layout4 => "Layout",
         Layout5 => "Layout",
+        Layout6 => "Layout",
+        Layout7 => "Layout",
+        Layout8 => "Layout",
+        Layout9 => "Layout",
+        Layout10 => "Layout",
+        Layout11 => "Layout",
+        Layout12 => "Layout",
+        Layout13 => "Layout",
+        Layout14 => "Layout",
+        Layout15 => "Layout",
+        Layout16 => "Layout",
+        Layout17 => "Layout",
+        Layout18 => "Layout",
+        Layout19 => "Layout",
+        Layout20 => "Layout",
     };
 
     # add service and SLA fields, if option is activated in sysconfig.
@@ -666,7 +681,22 @@ sub _ShowEdit {
         Layout3 => "Layout",
         Layout4 => "Layout",
         Layout5 => "Layout",
-    };
+        Layout6 => "Layout",
+        Layout7 => "Layout",
+        Layout8 => "Layout",
+        Layout9 => "Layout",
+        Layout10 => "Layout",
+        Layout11 => "Layout",
+        Layout12 => "Layout",
+        Layout13 => "Layout",
+        Layout14 => "Layout",
+        Layout15 => "Layout",
+        Layout16 => "Layout",
+        Layout17 => "Layout",
+        Layout18 => "Layout",
+        Layout19 => "Layout",
+        Layout20 => "Layout",
+        };
 
     my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
 
@@ -906,27 +936,6 @@ sub _ShowEdit {
         Class       => 'Modernize',
     );
     
-    
-    # create LayoutChildOf selection
-    # sort by translated field names
-        my %AvailableFieldsTranslated;
-        for my $Field ( grep /^Layout/, (sort keys %AvailableFields, @{ $ActivityDialogData->{Config}->{FieldOrder} }) ) {
-            my $Translation = $LayoutObject->{LanguageObject}->Translate($Field);
-            $AvailableFieldsTranslated{$Field} = $Translation;
-        }
-    $Param{LayoutChildOfSelection} = $LayoutObject->BuildSelection(
-        Data => \%AvailableFieldsTranslated,
-        Name        => 'Child of',
-        ID          => 'LayoutChildOf',
-        Sort        => 'AlphanumericKey',
-        Translation => 1,
-        Class       => 'Modernize',
-        Multiple		=> 0,
-        PossibleNone   => 1,
-        
-    );
-    
-
     my @ChannelList = $Kernel::OM->Get('Kernel::System::CommunicationChannel')->ChannelList();
 
     # Allow only Internal and Phone communication channels, this has to be hard coded at the moment.

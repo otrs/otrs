@@ -11,6 +11,25 @@
 
 @media screen,projection,tv,handheld {
 
+.ProcessLayoutHorizontal {
+	display: table-cell;
+}
+
+.ProcessLayoutVertical {
+	display: table-row;
+}
+.ProcessLayout {
+	line-height: 1.9em;
+	width:	95%;
+    padding-top: 3px;
+    padding-bottom: 3px;
+    padding-left: 10px;
+    padding-right: 0px;
+    min-height: 20px;
+    display: table;
+}
+}	
+
 /**
  * @subsection  Extensions for ticket zoom
  */

@@ -250,10 +250,8 @@
                 <div id="LayoutStyleSelectionContainer" class="Field Hidden">
                     [% Data.LayoutStyleSelection %]
                 </div>
-                <div class="Clear"></div>
-                <label for="ChildOf" style="display:none">[% Translate("Child of") | html %]:</label>
                 <div id="LayoutStyleChildOfContainer" class="Field Hidden">
-                    [% Data.LayoutChildOfSelection %]
+                    <input id="LayoutChildOf">
                 </div>
                 <div class="Clear Hidden"></div>
             </fieldset>

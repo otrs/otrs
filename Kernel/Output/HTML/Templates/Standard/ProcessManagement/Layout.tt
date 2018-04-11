@@ -6,20 +6,33 @@
 # did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
 # --
 [% RenderBlockStart("Layout") %]
+[% RenderBlockStart("Layout:DescriptionShort") %]
+    <div class="FieldExplanation">[% Data.DescriptionShort | html %]</div>
+[% RenderBlockEnd("Layout:DescriptionShort") %]
+
 [% RenderBlockStart("Layout:DescriptionLong") %]
     <span class="FieldHelpContainer">
         <i class="fa fa-question-circle FieldHelpTrigger"></i>
         <span>[% Data.DescriptionLong | html %]</span>
     </span>
 [% RenderBlockEnd("Layout:DescriptionLong") %]
-<div class="">
-[% RenderBlockStart("Embedded") %]
-    [% Data.Embedded | html %]
-[% RenderBlockEnd("Embedded") %]
 
-[% RenderBlockStart("Layout:DescriptionShort") %]
-    <div class="FieldExplanation">[% Data.DescriptionShort | html %]</div>
-[% RenderBlockEnd("Layout:DescriptionShort") %]
+<div class="ProcessLayout">
+
+[% RenderBlockStart("EmbeddedHorizontal") %]
+<div class="ProcessLayoutHorizontal">
+    [% Data.Embedded %]
 </div>
+[% RenderBlockEnd("EmbeddedHorizontal") %]
+[% RenderBlockStart("EmbeddedVertical") %]
+<div class="ProcessLayoutVertical">
+<fieldset class="TableLike">
+    [% Data.Embedded %]
+	</fieldset>
+</div>
+[% RenderBlockEnd("EmbeddedVertical") %]
+
+</div>
+
 <div class="Clear"></div>
 [% RenderBlockEnd("Layout") %]

@@ -11,7 +11,6 @@ package Kernel::Modules::AgentTicketProcess;
 use strict;
 use warnings;
 
-use Data::Dumper;
 use Kernel::System::VariableCheck qw(:all);
 use Kernel::Language qw(Translatable);
 
@@ -56,8 +55,39 @@ sub new {
         Layout3 => "Layout",
         Layout4 => "Layout",
         Layout5 => "Layout",
+        Layout6 => "Layout",
+        Layout7 => "Layout",
+        Layout8 => "Layout",
+        Layout9 => "Layout",
+        Layout10 => "Layout",
+        Layout11 => "Layout",
+        Layout12 => "Layout",
+        Layout13 => "Layout",
+        Layout14 => "Layout",
+        Layout15 => "Layout",
+        Layout16 => "Layout",
+        Layout17 => "Layout",
+        Layout18 => "Layout",
+        Layout19 => "Layout",
+        Layout20 => "Layout",
     };
 
+	$Self->{Renderer} = {
+#		DynamicField => sub {$Self->_RenderDynamicField(@_)},
+		Layout => sub {$Self->_RenderLayout(@_)},
+		StateID => sub {$Self->_RenderState(@_)},
+		QueueID => sub {$Self->_RenderQueue(@_)},
+		PriorityID => sub {$Self->_RenderPriority(@_)},
+		LockID => sub {$Self->_RenderLock(@_)},
+		ServiceID => sub {$Self->_RenderService(@_)},
+		SLAID => sub {$Self->_RenderSLA(@_)},
+		OwnerID => sub {$Self->_RenderOwner(@_)},
+		ResponsibleID => sub {$Self->_RenderResponsible(@_)},
+		CustomerID => sub {$Self->_RenderCustomer(@_)},
+		Title => sub {$Self->_RenderTitle(@_)},
+		Article => sub {$Self->_RenderArticle(@_)},
+		TypeID => sub {$Self->_RenderType(@_)},
+	};
     return $Self;
 }
 
@@ -1315,22 +1345,7 @@ sub _OutputActivityDialog {
         );
     }
 
-	my %Renderer = (
-#		DynamicField => sub {$Self->_RenderDynamicField(@_)},
-		Layout => sub {$Self->_RenderLayout(@_)},
-		StateID => sub {$Self->_RenderState(@_)},
-		QueueID => sub {$Self->_RenderQueue(@_)},
-		PriorityID => sub {$Self->_RenderPriority(@_)},
-		LockID => sub {$Self->_RenderLock(@_)},
-		ServiceID => sub {$Self->_RenderService(@_)},
-		SLAID => sub {$Self->_RenderSLA(@_)},
-		OwnerID => sub {$Self->_RenderOwner(@_)},
-		ResponsibleID => sub {$Self->_RenderResponsible(@_)},
-		CustomerID => sub {$Self->_RenderCustomer(@_)},
-		Title => sub {$Self->_RenderTitle(@_)},
-		Article => sub {$Self->_RenderArticle(@_)},
-		TypeID => sub {$Self->_RenderType(@_)},
-	);
+
 
     my $ActivityActivityDialog;
     my %Ticket;
@@ -1677,160 +1692,18 @@ sub _OutputActivityDialog {
         ActivityDialogFields => $ActivityDialog->{Fields},
     );
 
-    # Loop through ActivityDialogFields and render their output
-    DIALOGFIELD:
-    for my $CurrentField ( @{ $ActivityDialog->{FieldOrder} } ) {
-        if ( !IsHashRefWithData( $ActivityDialog->{Fields}{$CurrentField} ) ) {
-            my $Message = $LayoutObject->{LanguageObject}->Translate(
-                'Can\'t get data for Field "%s" of ActivityDialog "%s"!',
-                $CurrentField,
-                $ActivityActivityDialog->{ActivityDialog},
-            );
+	$Output .= $Self->_RenderFields(
+		ActivityDialog => $ActivityDialog, 
+		Ticket => \%Ticket, 
+		Error => \%Error, 
+		ErrorMessages => \%ErrorMessages,
+ 		AJAXUpdatableFields => $AJAXUpdatableFields,
+ 		RenderedFields => \%RenderedFields,
+ 		GetParam => $Param{GetParam},
+ 		ActivityActivityDialog => $ActivityActivityDialog,
+ 		LayoutChildOf => '',	#starting at top
+	);
 
-            # does not show header and footer again
-            if ( $Self->{IsMainWindow} ) {
-                return $LayoutObject->Error(
-                    Message => $Message,
-                );
-            }
-
-            $LayoutObject->FatalError(
-                Message => $Message,
-            );
-        }
-
-        my %FieldData = %{ $ActivityDialog->{Fields}{$CurrentField} };
-
-        # We render just visible ActivityDialogFields
-        next DIALOGFIELD if !$FieldData{Display};
-        next DIALOGFIELD if $RenderedFields{$CurrentField};
-
-        # render DynamicFields
-        if ( $CurrentField =~ m{^DynamicField_(.*)}xms ) {
-            my $DynamicFieldName = $1;
-            my $Response         = $Self->_RenderDynamicField(
-                ActivityDialogField => $ActivityDialog->{Fields}{$CurrentField},
-                FieldName           => $DynamicFieldName,
-                DescriptionShort    => $ActivityDialog->{Fields}{$CurrentField}{DescriptionShort},
-                DescriptionLong     => $ActivityDialog->{Fields}{$CurrentField}{DescriptionLong},
-                Ticket              => \%Ticket || {},
-                Error               => \%Error || {},
-                ErrorMessages       => \%ErrorMessages || {},
-                FormID              => $Self->{FormID},
-                GetParam            => $Param{GetParam},
-                AJAXUpdatableFields => $AJAXUpdatableFields,
-            );
-
-            if ( !$Response->{Success} ) {
-
-                # does not show header and footer again
-                if ( $Self->{IsMainWindow} ) {
-                    return $LayoutObject->Error(
-                        Message => $Response->{Message},
-                    );
-                }
-
-                $LayoutObject->FatalError(
-                    Message => $Response->{Message},
-                );
-            }
-
-            $Output .= $Response->{HTML};
-
-            $RenderedFields{$CurrentField} = 1;
-
-        }
-        
-        # render fields
-        elsif ( defined $Renderer{$Self->{NameToID}->{$CurrentField}} )
-        {
-
-            my $Response = $Renderer{$Self->{NameToID}->{$CurrentField}}->(
-            	ActivityDialogConfig => $ActivityDialog,
-                ActivityDialogField => $ActivityDialog->{Fields}{$CurrentField},
-                FieldName           => $CurrentField,
-                DescriptionShort    => $ActivityDialog->{Fields}{$CurrentField}{DescriptionShort},
-                DescriptionLong     => $ActivityDialog->{Fields}{$CurrentField}{DescriptionLong},
-                Ticket              => \%Ticket || {},
-                Error               => \%Error || {},
-                FormID              => $Self->{FormID},
-                GetParam            => $Param{GetParam},
-                AJAXUpdatableFields => $AJAXUpdatableFields,
-                RenderedFields		=> \%RenderedFields,
-            );
-            if ( !$Response->{Success} ) {
-
-                # does not show header and footer again
-                if ( $Self->{IsMainWindow} ) {
-                    return $LayoutObject->Error(
-                        Message => $Response->{Message},
-                    );
-                }
-
-                $LayoutObject->FatalError(
-                    Message => $Response->{Message},
-                );
-            }
-
-            $Output .= $Response->{HTML};
-
-            $RenderedFields{ $Self->{NameToID}->{$CurrentField} } = 1;
-        }
-
-        elsif ( $CurrentField eq 'PendingTime' ) {
-
-            # PendingTime is just useful if we have State or StateID
-            if ( !grep {m{^(StateID|State)$}xms} @{ $ActivityDialog->{FieldOrder} } ) {
-                my $Message = $LayoutObject->{LanguageObject}->Translate(
-                    'PendingTime can just be used if State or StateID is configured for the same ActivityDialog. ActivityDialog: %s!',
-                    $ActivityActivityDialog->{ActivityDialog},
-                );
-
-                # does not show header and footer again
-                if ( $Self->{IsMainWindow} ) {
-                    return $LayoutObject->Error(
-                        Message => $Message,
-                    );
-                }
-
-                $LayoutObject->FatalError(
-                    Message => $Message,
-                );
-            }
-
-            next DIALOGFIELD if $RenderedFields{ $Self->{NameToID}->{$CurrentField} };
-
-            my $Response = $Self->_RenderPendingTime(
-                ActivityDialogField => $ActivityDialog->{Fields}{$CurrentField},
-                FieldName           => $CurrentField,
-                DescriptionShort    => $ActivityDialog->{Fields}{$CurrentField}{DescriptionShort},
-                DescriptionLong     => $ActivityDialog->{Fields}{$CurrentField}{DescriptionLong},
-                Ticket              => \%Ticket || {},
-                Error               => \%Error || {},
-                FormID              => $Self->{FormID},
-                GetParam            => $Param{GetParam},
-            );
-
-            if ( !$Response->{Success} ) {
-
-                # does not show header and footer again
-                if ( $Self->{IsMainWindow} ) {
-                    return $LayoutObject->Error(
-                        Message => $Response->{Message},
-                    );
-                }
-
-                $LayoutObject->FatalError(
-                    Message => $Response->{Message},
-                );
-            }
-
-            $Output .= $Response->{HTML};
-
-            $RenderedFields{ $Self->{NameToID}->{$CurrentField} } = 1;
-        }
-
-    }
 
     my $FooterCSSClass = 'Footer';
 
@@ -1901,6 +1774,210 @@ sub _OutputActivityDialog {
     return $Output;
 }
 
+sub _RenderFields {
+    my ( $Self, %Param ) = @_;
+	
+
+	my $Output;
+	my $AsSubOutput = $Param{AsSubOutput} || 0;
+
+    # get layout object
+    my $LayoutObject = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
+
+    # Loop through ActivityDialogFields and render their output
+    DIALOGFIELD:
+    for my $CurrentField ( @{ $Param{ActivityDialog}->{FieldOrder} } ) {
+        if ( !IsHashRefWithData( $Param{ActivityDialog}->{Fields}{$CurrentField} ) ) {
+            my $Message = $LayoutObject->{LanguageObject}->Translate(
+                'Can\'t get data for Field "%s" of ActivityDialog "%s"!',
+                $CurrentField,
+                $Param{ActivityActivityDialog}->{ActivityDialog},
+            );
+
+            # does not show header and footer again
+            if ( $Self->{IsMainWindow} ) {
+                return $LayoutObject->Error(
+                    Message => $Message,
+                );
+            }
+
+            $LayoutObject->FatalError(
+                Message => $Message,
+            );
+        }
+
+		
+
+        my %FieldData = %{ $Param{ActivityDialog}->{Fields}{$CurrentField} };
+
+        # We render just visible ActivityDialogFields
+        next DIALOGFIELD if !$FieldData{Display};
+        next DIALOGFIELD if $Param{RenderedFields}->{$CurrentField};
+        next DIALOGFIELD if $Param{ActivityDialog}->{Fields}{$CurrentField}{'LayoutChildOf'} ne $Param{LayoutChildOf};
+        
+  
+        my $SubOutput = $Self->_RenderFields(
+			ActivityDialog => $Param{ActivityDialog}, 
+			Ticket => $Param{Ticket}, 
+			Error => $Param{Error}, 
+			ErrorMessages => $Param{ErrorMessages},
+	 		AJAXUpdatableFields => $Param{AJAXUpdatableFields},
+	 		GetParam => $Param{GetParam},
+	 		RenderedFields => $Param{RenderedFields},
+	 		ActivityActivityDialog => $Param{ActivityActivityDialog},
+	 		LayoutChildOf => $CurrentField,
+	 		AsSubOutput => 1,
+		);
+		
+        # render DynamicFields
+        if ( $CurrentField =~ m{^DynamicField_(.*)}xms ) {
+            my $DynamicFieldName = $1;
+            my $Response         = $Self->_RenderDynamicField(
+                ActivityDialogField => $Param{ActivityDialog}->{Fields}{$CurrentField},
+                FieldName           => $DynamicFieldName,
+                DescriptionShort    => $Param{ActivityDialog}->{Fields}{$CurrentField}{DescriptionShort},
+                DescriptionLong     => $Param{ActivityDialog}->{Fields}{$CurrentField}{DescriptionLong},
+                Ticket              => $Param{Ticket} || {},
+                Error               => $Param{Error} || {},
+                ErrorMessages       => $Param{ErrorMessages} || {},
+                FormID              => $Self->{FormID},
+                GetParam            => $Param{GetParam},
+                AJAXUpdatableFields => $Param{AJAXUpdatableFields},
+            );
+
+            if ( !$Response->{Success} ) {
+
+                # does not show header and footer again
+                if ( $Self->{IsMainWindow} ) {
+                    return $LayoutObject->Error(
+                        Message => $Response->{Message},
+                    );
+                }
+
+                $LayoutObject->FatalError(
+                    Message => $Response->{Message},
+                );
+            }
+
+			if ($AsSubOutput)
+			{
+				push @{$Output}, $Response->{HTML};
+			} else
+			{
+            	$Output .= $Response->{HTML};
+			}
+
+            $Param{RenderedFields}->{$CurrentField} = 1;
+
+        }
+        
+        # render fields
+        elsif ( defined $Self->{Renderer}->{$Self->{NameToID}->{$CurrentField}} )
+        {
+
+            my $Response = $Self->{Renderer}->{$Self->{NameToID}->{$CurrentField}}->(
+                ActivityDialogField => $Param{ActivityDialog}->{Fields}{$CurrentField},
+                FieldName           => $CurrentField,
+                DescriptionShort    => $Param{ActivityDialog}->{Fields}{$CurrentField}{DescriptionShort},
+                DescriptionLong     => $Param{ActivityDialog}->{Fields}{$CurrentField}{DescriptionLong},
+                Ticket              => $Param{Ticket} || {},
+                Error               => $Param{Error} || {},
+                ErrorMessages       => $Param{ErrorMessages} || {},
+                FormID              => $Self->{FormID},
+                GetParam            => $Param{GetParam},
+                SubOutput			=> $SubOutput,
+                AJAXUpdatableFields => $Param{AJAXUpdatableFields},
+            );
+            if ( !$Response->{Success} ) {
+
+                # does not show header and footer again
+                if ( $Self->{IsMainWindow} ) {
+                    return $LayoutObject->Error(
+                        Message => $Response->{Message},
+                    );
+                }
+
+                $LayoutObject->FatalError(
+                    Message => $Response->{Message},
+                );
+            }
+
+			if ($AsSubOutput)
+			{
+				push @{$Output}, $Response->{HTML};
+			} else
+			{
+            	$Output .= $Response->{HTML};
+			}
+
+            $Param{RenderedFields}->{ $Self->{NameToID}->{$CurrentField} } = 1;
+        }
+
+        elsif ( $CurrentField eq 'PendingTime' ) {
+
+            # PendingTime is just useful if we have State or StateID
+            if ( !grep {m{^(StateID|State)$}xms} @{ $Param{ActivityDialog}->{FieldOrder} } ) {
+                my $Message = $LayoutObject->{LanguageObject}->Translate(
+                    'PendingTime can just be used if State or StateID is configured for the same ActivityDialog. ActivityDialog: %s!',
+                    $Param{ActivityActivityDialog}->{ActivityDialog},
+                );
+
+                # does not show header and footer again
+                if ( $Self->{IsMainWindow} ) {
+                    return $LayoutObject->Error(
+                        Message => $Message,
+                    );
+                }
+
+                $LayoutObject->FatalError(
+                    Message => $Message,
+                );
+            }
+
+            next DIALOGFIELD if $Param{RenderedFields}->{ $Self->{NameToID}->{$CurrentField} };
+
+            my $Response = $Self->_RenderPendingTime(
+                ActivityDialogField => $Param{ActivityDialog}->{Fields}{$CurrentField},
+                FieldName           => $CurrentField,
+                DescriptionShort    => $Param{ActivityDialog}->{Fields}{$CurrentField}{DescriptionShort},
+                DescriptionLong     => $Param{ActivityDialog}->{Fields}{$CurrentField}{DescriptionLong},
+                Ticket              => $Param{Ticket} || {},
+                Error               => $Param{Error} || {},
+                FormID              => $Self->{FormID},
+                GetParam            => $Param{GetParam},
+            );
+
+            if ( !$Response->{Success} ) {
+
+                # does not show header and footer again
+                if ( $Self->{IsMainWindow} ) {
+                    return $LayoutObject->Error(
+                        Message => $Response->{Message},
+                    );
+                }
+
+                $LayoutObject->FatalError(
+                    Message => $Response->{Message},
+                );
+            }
+
+			if ($AsSubOutput)
+			{
+				push @{$Output}, $Response->{HTML};
+			} else
+			{
+            	$Output .= $Response->{HTML};
+			}
+
+            $Param{RenderedFields}->{ $Self->{NameToID}->{$CurrentField} } = 1;
+        }		
+		
+    }
+	
+	
+	return $Output;
+};
+
 sub _RenderLayout {
     my ( $Self, %Param ) = @_;
 
@@ -1926,7 +2003,6 @@ sub _RenderLayout {
         };
     }
 
-	my $DialogConfig = $Param{ActivityDialogConfig} || {};
 	my $RenderedFields = $Param{RenderedFields} || {};
 
     my %Data = (
@@ -1959,41 +2035,22 @@ sub _RenderLayout {
             },
         );
     }
+
+
     
-#    my @SubElements = grep {
-#    	$Param{FieldName} eq $DialogConfig->{Fields}{$_}{LayoutChildOf} 
-#    } keys %{$DialogConfig->{FieldOrder}};
-    
-#            $Kernel::OM->Get('Kernel::System::Log')->Log(
-#            Priority => 'error',
-#            Message  => Dumper(\@SubElements),
-#        );
-#        
-#    DIALOGFIELD:
-#    for my $CurrentField ( @SubElements ) {
-#        if ( !IsHashRefWithData( $DialogConfig->{Fields}{$CurrentField} ) ) {
-#            my $Message = $LayoutObject->{LanguageObject}->Translate(
-#                'Can\'t get data for Field "%s" !',
-#                $CurrentField,
-#            );
-#
-#            # does not show header and footer again
-#            if ( $Self->{IsMainWindow} ) {
-#                return $LayoutObject->Error(
-#                    Message => $Message,
-#                );
-#            }
-#
-#            $LayoutObject->FatalError(
-#                Message => $Message,
-#            );
-#        }
-#
-#        my %FieldData = %{ $DialogConfig->{Fields}{$CurrentField} };
-#                # We render just visible ActivityDialogFields
-#        next DIALOGFIELD if !$FieldData{Display};
-#        next DIALOGFIELD if $RenderedFields->{$CurrentField};
-#    }
+    if ( $Param{SubOutput} && ref $Param{SubOutput} eq 'ARRAY') {
+    	for my $Out (@{$Param{SubOutput}})
+    	{
+    		my $Name = 'Horizontal';
+    		if ($Param{ActivityDialogField}->{LayoutStyle} == 1) { $Name = 'Vertical';}
+	        $LayoutObject->Block(
+	            Name => "Embedded$Name",
+	            Data => {
+	                Embedded => $Out,
+	            },
+	        );
+    	}
+    }
 
     return {
         Success => 1,
