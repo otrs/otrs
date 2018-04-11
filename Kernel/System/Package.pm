@@ -3471,8 +3471,8 @@ sub PackageUpgradeAllIsRunning {
     }
 
     return (
-        IsRunning => $IsRunning // 0,
-        UpgradeStatus  => $SystemData{Status}  || '',
+        IsRunning      => $IsRunning // 0,
+        UpgradeStatus  => $SystemData{Status} || '',
         UpgradeSuccess => $SystemData{Success} || '',
     );
 }
@@ -4995,7 +4995,7 @@ sub _PackageInstallOrderListGet {
         $Param{InstallOrder}->{$PackageName} = $InitialValue;
     }
 
-    return $Success
+    return $Success;
 }
 
 =head2 _PackageOnlineListGet()

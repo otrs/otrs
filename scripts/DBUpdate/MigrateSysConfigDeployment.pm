@@ -78,7 +78,7 @@ EXCEPTION
 END;
 EOF
         );
-        return 1
+        return 1;
     }
 
     # For the rest databases follow the normal procedure.
