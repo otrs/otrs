@@ -534,7 +534,7 @@
 [% RenderBlockStart("FeatureAddonData") %]
                             <tr>
                                 <td><a href="[% Data.Link | html %]" target="_feature_addon_details">[% Data.Title | html %]</a></td>
-                                <td>[% Data.Description | html %]</td>
+                                <td>[% Data.Description %]</td>
                             </tr>
 [% RenderBlockEnd("FeatureAddonData") %]
                         </tbody>
