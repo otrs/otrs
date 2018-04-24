@@ -19,7 +19,7 @@ use File::stat;
 use Unicode::Normalize;
 use List::Util qw();
 use Fcntl qw(:flock);
-use Encode
+use Encode;
 use String::ShellQuote qw(shell_quote);
 use UUID::Tiny ':std';
 
