@@ -6,6 +6,7 @@
  - 2017-12-12 Always require cookies for OTRS login - drop support for non-cookie sessions.
 
 #6.0.8 2018-??-??
+- 2018-04-24 Fixed bug#[13805](https://bugs.otrs.org/show_bug.cgi?id=13805) - Distribution OpenBSD is not recognized by support data collector.
 -  2018-04-18 Fixed bug#[11132](https://bugs.otrs.org/show_bug.cgi?id=11132) - Loss of attached files with long Cyrillic names.
 
 #6.0.7 2018-05-04
