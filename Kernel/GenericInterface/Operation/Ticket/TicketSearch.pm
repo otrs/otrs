@@ -118,6 +118,12 @@ perform TicketSearch Operation. This will return a Ticket ID list.
         CustomerUserLogin => 'uid123',
         CustomerUserLogin => ['uid123', 'uid777'],
 
+        # If API is used with customer user credentials, CustomerUserLogin is
+        # populated automatically, therefor that parameter is deleted and
+        # CustomerUserLoginSearch has to be used instead.
+        CustomerUserLoginSearch => 'uid123',
+        CustomerUserLoginSearch => ['uid123',, 'uid777'],
+
         # create ticket properties (optional)
         CreatedUserIDs     => [1, 12, 455, 32]
         CreatedTypes       => ['normal', 'change', 'incident'],
@@ -304,6 +310,13 @@ sub Run {
 
     # get parameter from data
     my %GetParam = $Self->_GetParams( %{ $Param{Data} } );
+    if ( $UserType eq 'Customer' ) {
+        delete $GetParam{CustomerUserLogin};
+
+        if ( $GetParam{CustomerUserLoginSearch} ) {
+            $GetParam{CustomerUserLogin} = $GetParam{CustomerUserLoginSearch};
+        }
+    }
 
     # create time settings
     %GetParam = $Self->_CreateTimeSettings(%GetParam);
@@ -401,7 +414,7 @@ sub _GetParams {
         CreatedTypes CreatedTypeIDs CreatedPriorities
         CreatedPriorityIDs CreatedStates CreatedStateIDs
         CreatedQueues CreatedQueueIDs StateType CustomerID
-        CustomerUserLogin )
+        CustomerUserLogin CustomerUserLoginSearch)
         )
     {
 
