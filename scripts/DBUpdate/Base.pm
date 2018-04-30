@@ -450,7 +450,7 @@ sub ColumnExists {
 
 Checks if the given index exists in the given table.
 
-    my $Result = $DBUpdateTo6Object->IndexExists(
+    my $Result = $DBUpdateObject->IndexExists(
         Table => 'ticket',
         Index =>  'id',
     );
