@@ -23,6 +23,19 @@ sub Configure {
     my ( $Self, %Param ) = @_;
 
     $Self->Description('Reprocess mails from spool directory that could not be imported in the first place.');
+    $Self->AddOption(
+        Name        => 'target-queue',
+        Description => "Preselect a target queue by name.",
+        Required    => 0,
+        HasValue    => 1,
+        ValueRegex  => qr/.*/smx,
+    );
+    $Self->AddOption(
+        Name        => 'untrusted',
+        Description => "This will cause X-OTRS email headers to be ignored.",
+        Required    => 0,
+        HasValue    => 0,
+    );
 
     return;
 }
@@ -51,6 +64,10 @@ sub Run {
         Filter    => '*',
     );
 
+    my $Untrusted   = $Self->GetOption('untrusted') ? "--untrusted" : "";
+    my $TargetQueue = $Self->GetOption('target-queue');
+    $TargetQueue    = $TargetQueue ? "--target-queue '$TargetQueue'" : "";
+
     my $Success = 1;
 
     for my $File (@Files) {
@@ -58,7 +75,7 @@ sub Run {
 
         # Here we use a system call because Maint::PostMaster::Read has special exception handling
         #   and will die if certain problems occur.
-        my $Result = system("$^X $Home/bin/otrs.Console.pl Maint::PostMaster::Read <  $File ");
+        my $Result = system("$^X $Home/bin/otrs.Console.pl Maint::PostMaster::Read $TargetQueue $Untrusted <  $File ");
 
         # Exit code 0 == success
         if ( !$Result ) {
