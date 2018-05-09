@@ -146,9 +146,9 @@ sub Run {
     # see bug#9672
     if (
         $Data{Content} =~ m{
-        ^ .* -----BEGIN [ ] PGP [ ] MESSAGE-----  .* $      # grep PGP begin tag
-        .+                                                  # PGP parts may be nested in html
-        ^ .* -----END [ ] PGP [ ] MESSAGE-----  .* $        # grep PGP end tag
+        ^ [^\n]* -----BEGIN [ ] PGP [ ] MESSAGE-----  [^\n]* $      # grep PGP begin tag
+        .+                                                          # PGP parts may be nested in html
+        ^ [^\n]* -----END   [ ] PGP [ ] MESSAGE-----  [^\n]* $      # grep PGP end tag
     }xms
         )
     {
