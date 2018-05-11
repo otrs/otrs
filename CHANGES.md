@@ -7,6 +7,7 @@
  - 2017-12-12 Always require cookies for OTRS login - drop support for non-cookie sessions.
 
 #6.0.8 2018-??-??
+ - 2018-05-11 Fixed bug#[13821](https://bugs.otrs.org/show_bug.cgi?id=13821) - CustomerUserListFields: search result create a wrong entry.
  - 2018-05-10 Fixed bug#[13846](https://bugs.otrs.org/show_bug.cgi?id=13846) - Ticket invoker base module does not use modernized fields.
  - 2018-05-10 Fixed bug#[13795](https://bugs.otrs.org/show_bug.cgi?id=13795) - Transition Action 'TicketTitleSet': Tag of a dyn. field type 'date' display the time, too.
  - 2018-05-10 Fixed bug#[13850](https://bugs.otrs.org/show_bug.cgi?id=13850) - Problems with overridden SysConfig settings.
