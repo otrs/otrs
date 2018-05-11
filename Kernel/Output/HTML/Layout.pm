@@ -2466,6 +2466,7 @@ sub Attachment {
 
     # get config object
     my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
+    my $EncodeObject = $Kernel::OM->Get('Kernel::System::Encode');
 
     # return attachment
     my $Output = 'Content-Disposition: ';
@@ -2481,8 +2482,14 @@ sub Attachment {
     if ( $Param{Filename} ) {
 
         # IE 10+ supports this
+        my $ASCIIFilename = $EncodeObject->Convert(
+            Text => $Param{Filename},
+            From => "utf-8",
+            To   => "ascii",
+        );
+        my $EncodedFilename = URI::Escape::uri_escape_utf8( $ASCIIFilename );
         my $URLEncodedFilename = URI::Escape::uri_escape_utf8( $Param{Filename} );
-        $Output .= " filename=\"$URLEncodedFilename\"; filename*=utf-8''$URLEncodedFilename";
+        $Output .= " filename=\"$EncodedFilename\"; filename*=utf-8''$URLEncodedFilename";
     }
     $Output .= "\n";
 
@@ -2531,7 +2538,6 @@ sub Attachment {
     }
 
     # disable utf8 flag, to write binary to output
-    my $EncodeObject = $Kernel::OM->Get('Kernel::System::Encode');
     $EncodeObject->EncodeOutput( \$Output );
     $EncodeObject->EncodeOutput( \$Param{Content} );
 
