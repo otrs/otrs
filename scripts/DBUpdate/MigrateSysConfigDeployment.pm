@@ -82,12 +82,16 @@ EOF
     }
 
     # For the rest databases follow the normal procedure.
-    my $XMLString = '
+    @XMLStrings = (
+        '
         <TableAlter Name="sysconfig_deployment">
             <ColumnChange NameOld="uuid" NameNew="uuid" Required="true" Size="36" Type="VARCHAR"/>
-        </TableAlter>';
+        </TableAlter>',
+    );
 
-    return if !$Self->ExecuteXMLDBString( XMLString => $XMLString );
+    return if !$Self->ExecuteXMLDBArray(
+        XMLArray => \@XMLStrings,
+    );
 
     return 1;
 }

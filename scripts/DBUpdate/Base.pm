@@ -306,67 +306,7 @@ sub ExecuteXMLDBArray {
         # TODO: Add more special handling for other operations as needed!
 
         # execute the XML string
-        return if !$Self->ExecuteXMLDBString( XMLString => $XMLString );
-    }
-
-    return 1;
-}
-
-=head2 ExecuteXMLDBString()
-
-Parse and execute an XML string.
-
-    $DBUpdateObject->ExecuteXMLDBString(
-        XMLString => '
-            <TableAlter Name="gi_webservice_config">
-                <ColumnDrop Name="config_md5"/>
-            </TableAlter>
-        ',
-    );
-
-=cut
-
-sub ExecuteXMLDBString {
-    my ( $Self, %Param ) = @_;
-
-    # Check needed stuff.
-    if ( !$Param{XMLString} ) {
-        $Kernel::OM->Get('Kernel::System::Log')->Log(
-            Priority => 'error',
-            Message  => "Need XMLString!",
-        );
-        return;
-    }
-
-    my $XMLString = $Param{XMLString};
-
-    # Create database specific SQL and PostSQL commands out of XML.
-    my @SQL;
-    my @SQLPost;
-    my $DBObject  = $Kernel::OM->Get('Kernel::System::DB');
-    my $XMLObject = $Kernel::OM->Get('Kernel::System::XML');
-
-    my @XMLARRAY = $XMLObject->XMLParse( String => $XMLString );
-
-    # Create database specific SQL.
-    push @SQL, $DBObject->SQLProcessor(
-        Database => \@XMLARRAY,
-    );
-
-    # Create database specific PostSQL.
-    push @SQLPost, $DBObject->SQLProcessorPost();
-
-    # Execute SQL.
-    for my $SQL ( @SQL, @SQLPost ) {
-        my $Success = $DBObject->Do( SQL => $SQL );
-        if ( !$Success ) {
-            print "\n";
-            $Kernel::OM->Get('Kernel::System::Log')->Log(
-                Priority => 'error',
-                Message  => "Error during execution of '$SQL'!",
-            );
-            return;
-        }
+        return if !$Self->_ExecuteXMLDBString( XMLString => $XMLString );
     }
 
     return 1;
@@ -569,7 +509,7 @@ sub GetTaskConfig {
 Update an existing SysConfig Setting in a migration context. It will skip updating both read-only and already modified
 settings by default.
 
-    $DBUpdateTo6Object->SettingUpdate(
+    $DBUpdateObject->SettingUpdate(
         Name                   => 'Setting::Name',           # (required) setting name
         IsValid                => 1,                         # (optional) 1 or 0, modified 0
         EffectiveValue         => $SettingEffectiveValue,    # (optional)
@@ -637,6 +577,68 @@ sub SettingUpdate {
     );
 
     return $Result{Success};
+}
+
+=head1 PRIVATE INTERFACE
+
+=head2 _ExecuteXMLDBString()
+
+Parse and execute an XML string.
+
+    $DBUpdateObject->_ExecuteXMLDBString(
+        XMLString => '
+            <TableAlter Name="gi_webservice_config">
+                <ColumnDrop Name="config_md5"/>
+            </TableAlter>
+        ',
+    );
+
+=cut
+
+sub _ExecuteXMLDBString {
+    my ( $Self, %Param ) = @_;
+
+    # Check needed stuff.
+    if ( !$Param{XMLString} ) {
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
+            Priority => 'error',
+            Message  => "Need XMLString!",
+        );
+        return;
+    }
+
+    my $XMLString = $Param{XMLString};
+
+    # Create database specific SQL and PostSQL commands out of XML.
+    my @SQL;
+    my @SQLPost;
+    my $DBObject  = $Kernel::OM->Get('Kernel::System::DB');
+    my $XMLObject = $Kernel::OM->Get('Kernel::System::XML');
+
+    my @XMLARRAY = $XMLObject->XMLParse( String => $XMLString );
+
+    # Create database specific SQL.
+    push @SQL, $DBObject->SQLProcessor(
+        Database => \@XMLARRAY,
+    );
+
+    # Create database specific PostSQL.
+    push @SQLPost, $DBObject->SQLProcessorPost();
+
+    # Execute SQL.
+    for my $SQL ( @SQL, @SQLPost ) {
+        my $Success = $DBObject->Do( SQL => $SQL );
+        if ( !$Success ) {
+            print "\n";
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
+                Priority => 'error',
+                Message  => "Error during execution of '$SQL'!",
+            );
+            return;
+        }
+    }
+
+    return 1;
 }
 
 1;
