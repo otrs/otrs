@@ -861,6 +861,24 @@ sub Run {
             return $Output;
         }
 
+        # set dynamic fields for ticket (ObjectType eq 'Ticket')
+        # so that such dynamic fields already have updated values in various
+        # ticket events
+        # cycle through the activated Dynamic Fields for this screen
+        DYNAMICFIELD:
+        for my $DynamicFieldConfig ( @{$DynamicField} ) {
+            next DYNAMICFIELD if !IsHashRefWithData($DynamicFieldConfig);
+            next DYNAMICFIELD if $DynamicFieldConfig->{ObjectType} ne 'Ticket';
+
+            # set the value
+            my $Success = $DynamicFieldBackendObject->ValueSet(
+                DynamicFieldConfig => $DynamicFieldConfig,
+                ObjectID           => $Self->{TicketID},
+                Value              => $DynamicFieldValues{ $DynamicFieldConfig->{Name} },
+                UserID             => $Self->{UserID},
+            );
+        }
+
         # set new title
         if ( $Config->{Title} ) {
             if ( defined $GetParam{Title} ) {
@@ -1186,24 +1204,22 @@ sub Run {
 
             # remove pre submitted attachments
             $UploadCacheObject->FormIDRemove( FormID => $Self->{FormID} );
-        }
 
-        # set dynamic fields
-        # cycle through the activated Dynamic Fields for this screen
-        DYNAMICFIELD:
-        for my $DynamicFieldConfig ( @{$DynamicField} ) {
-            next DYNAMICFIELD if !IsHashRefWithData($DynamicFieldConfig);
+            # set dynamic fields for Article
+            # cycle through the activated Dynamic Fields for this screen
+            DYNAMICFIELD:
+            for my $DynamicFieldConfig ( @{$DynamicField} ) {
+                next DYNAMICFIELD if !IsHashRefWithData($DynamicFieldConfig);
+                next DYNAMICFIELD if $DynamicFieldConfig->{ObjectType} ne 'Article';
 
-            # set the object ID (TicketID or ArticleID) depending on the field configration
-            my $ObjectID = $DynamicFieldConfig->{ObjectType} eq 'Article' ? $ArticleID : $Self->{TicketID};
-
-            # set the value
-            my $Success = $DynamicFieldBackendObject->ValueSet(
-                DynamicFieldConfig => $DynamicFieldConfig,
-                ObjectID           => $ObjectID,
-                Value              => $DynamicFieldValues{ $DynamicFieldConfig->{Name} },
-                UserID             => $Self->{UserID},
-            );
+                # set the value
+                my $Success = $DynamicFieldBackendObject->ValueSet(
+                    DynamicFieldConfig => $DynamicFieldConfig,
+                    ObjectID           => $ArticleID,
+                    Value              => $DynamicFieldValues{ $DynamicFieldConfig->{Name} },
+                    UserID             => $Self->{UserID},
+                );
+            }
         }
 
         # If form was called based on a draft,
