@@ -1633,7 +1633,7 @@ sub _ShowOverview {
         Name         => 'ExampleProcess',
         Data         => \%ExampleProcessData,
         PossibleNone => 1,
-        Translation  => 0,
+        Translation  => 1,
         Class        => 'Modernize Validate_Required',
     );
     $Frontend{OTRSBusinessIsInstalled} = $Kernel::OM->Get('Kernel::System::OTRSBusiness')->OTRSBusinessIsInstalled();

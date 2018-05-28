@@ -16,6 +16,8 @@ use parent qw(var::processes::examples::Base);
 
 our @ObjectDependencies = ();
 
+use Kernel::Language qw(Translatable);
+
 sub new {
     my ( $Type, %Param ) = @_;
 
@@ -61,7 +63,7 @@ sub Run {
     );
 
     $Response{Success} = $Self->SystemConfigurationUpdate(
-        ProcessName => 'Application For Leave',
+        ProcessName => Translatable('Application for leave'),
         Data        => \@Data,
     );
 

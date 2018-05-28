@@ -16,6 +16,8 @@ use parent qw(var::processes::examples::Base);
 
 our @ObjectDependencies = ();
 
+use Kernel::Language qw(Translatable);
+
 sub new {
     my ( $Type, %Param ) = @_;
 
@@ -37,7 +39,7 @@ sub Run {
     my @DynamicFields = (
         {
             Name       => 'PreProcApplicationRecorded',
-            Label      => 'Application Recorded',
+            Label      => Translatable('Application Recorded'),
             FieldType  => 'Dropdown',
             ObjectType => 'Ticket',
             FieldOrder => 10000,
@@ -45,15 +47,15 @@ sub Run {
                 DefaultValue   => '',
                 PossibleNone   => 1,
                 PossibleValues => {
-                    'no'  => 'no',
-                    'yes' => 'yes',
+                    'no'  => Translatable('no'),
+                    'yes' => Translatable('yes'),
                 },
-                TranslatableValues => 0,
+                TranslatableValues => 1,
             },
         },
         {
             Name       => 'PreProcDaysRemaining',
-            Label      => 'Days Remaining',
+            Label      => Translatable('Days Remaining'),
             FieldType  => 'Text',
             ObjectType => 'Ticket',
             FieldOrder => 10001,
@@ -62,7 +64,7 @@ sub Run {
         },
         {
             Name       => 'PreProcVacationStart',
-            Label      => 'Vacation Start',
+            Label      => Translatable('Vacation Start'),
             FieldType  => 'Date',
             ObjectType => 'Ticket',
             FieldOrder => 10002,
@@ -72,7 +74,7 @@ sub Run {
         },
         {
             Name       => 'PreProcVacationEnd',
-            Label      => 'Vacation End',
+            Label      => Translatable('Vacation End'),
             FieldType  => 'Date',
             ObjectType => 'Ticket',
             FieldOrder => 10003,
@@ -82,7 +84,7 @@ sub Run {
         },
         {
             Name       => 'PreProcDaysUsed',
-            Label      => 'Days Used',
+            Label      => Translatable('Days Used'),
             FieldType  => 'Text',
             ObjectType => 'Ticket',
             FieldOrder => 10004,
@@ -91,7 +93,7 @@ sub Run {
         },
         {
             Name       => 'PreProcEmergencyTelephone',
-            Label      => 'Emergency Telephone',
+            Label      => Translatable('Emergency Telephone'),
             FieldType  => 'Text',
             ObjectType => 'Ticket',
             FieldOrder => 10005,
@@ -100,7 +102,7 @@ sub Run {
         },
         {
             Name       => 'PreProcRepresentationBy',
-            Label      => 'Representation By',
+            Label      => Translatable('Representation By'),
             FieldType  => 'TextArea',
             ObjectType => 'Ticket',
             FieldOrder => 10006,
@@ -111,7 +113,7 @@ sub Run {
         },
         {
             Name       => 'PreProcProcessStatus',
-            Label      => 'Process Status',
+            Label      => Translatable('Process Status'),
             FieldType  => 'Text',
             ObjectType => 'Ticket',
             FieldOrder => 10007,
@@ -120,7 +122,7 @@ sub Run {
         },
         {
             Name       => 'PreProcApprovedSuperior',
-            Label      => 'Approved Superior',
+            Label      => Translatable('Approved Superior'),
             FieldType  => 'Dropdown',
             ObjectType => 'Ticket',
             FieldOrder => 10008,
@@ -128,15 +130,15 @@ sub Run {
                 DefaultValue   => '',
                 PossibleNone   => 1,
                 PossibleValues => {
-                    'no'  => 'no',
-                    'yes' => 'yes',
+                    'no'  => Translatable('no'),
+                    'yes' => Translatable('yes'),
                 },
-                TranslatableValues => 0,
+                TranslatableValues => 1,
             },
         },
         {
             Name       => 'PreProcVacationInfo',
-            Label      => 'Vacation Info',
+            Label      => Translatable('Vacation Info'),
             FieldType  => 'TextArea',
             ObjectType => 'Ticket',
             FieldOrder => 10009,

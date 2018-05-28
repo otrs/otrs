@@ -22,13 +22,13 @@
 [% RenderBlockStart("Header") %]
                 <div class="PopupHeader">
                     <h1>
-                        [% Data.Name | html %]
+                        [% Translate(Data.Name) | html %]
 [% RenderBlockStart("DescriptionShort") %]
-                        - [% Data.DescriptionShort | html %]
+                        - [% Translate(Data.DescriptionShort) | html %]
 [% RenderBlockEnd("DescriptionShort") %]
                     </h1>
 [% RenderBlockStart("DescriptionLong") %]
-                    <p>[% Data.DescriptionLong | html %]</p>
+                    <p>[% Translate(Data.DescriptionLong) | html %]</p>
 [% RenderBlockEnd("DescriptionLong") %]
 [% RenderBlockStart("CancelLink") %]
                     <p>
@@ -40,8 +40,8 @@
                 <div class="Content">
                     <fieldset class="TableLike">
 [% RenderBlockStart("DescriptionShortAlt") %]
-                        <h2>[% Data.DescriptionShort | html %]</h2>
+                        <h2>[% Translate(Data.DescriptionShort) | html %]</h2>
 [% RenderBlockEnd("DescriptionShortAlt") %]
 [% RenderBlockStart("DescriptionLongAlt") %]
-                        <p class="Description">[% Data.DescriptionLong | html %]</p>
+                        <p class="Description">[% Translate(Data.DescriptionLong) | html %]</p>
 [% RenderBlockEnd("DescriptionLongAlt") %]

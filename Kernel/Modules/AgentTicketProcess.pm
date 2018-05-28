@@ -5492,7 +5492,7 @@ sub _DisplayProcessList {
         SelectedID   => $Param{ProcessEntityID},
         PossibleNone => 1,
         Sort         => 'AlphanumericValue',
-        Translation  => 0,
+        Translation  => 1,
         AutoComplete => 'off',
         TreeView     => 1,
     );
