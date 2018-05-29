@@ -471,7 +471,7 @@ sub Data {
         'Add Note' => 'Dodaj notatkę',
         'Time units' => 'Zaraportowany czas obsługi',
         'Execute Ticket Commands' => 'Wykonaj polecenia zgłoszeń',
-        'Send agent/customer notifications on changes' => 'Wyślij powidomienia agentowi/klientowi przy zmianie ',
+        'Send new note notification' => 'Wyślij powiadomienie o nowej notatce',
         'CMD' => 'linia poleceń',
         'This command will be executed. ARG[0] will be the ticket number. ARG[1] the ticket id.' =>
             'Komenda zostanie wykonana. ARG[0] to numer zgłoszenia. ARG[1] to id zgłoszenia.',

@@ -794,6 +794,10 @@
                             <input type="text" name="NewNoteTimeUnits" id="NewNoteTimeUnits" value="[% Data.NewNoteTimeUnits | html %]" class="W20pc"/>
                         </div>
                         <div class="Clear"></div>
+                        <label for="NewSendNoNotification">[% Translate("Send new note notification") | html %]:</label>
+                        <div class="Field">
+                            [% Data.SendNoNotificationOption %]
+                        </div>
                     </fieldset>
                 </div>
             </div>
@@ -806,12 +810,6 @@
                 </div>
                 <div class="Content">
                     <fieldset class="TableLike">
-                        <label for="NewSendNoNotification">[% Translate("Send agent/customer notifications on changes") | html %]:</label>
-                        <div class="Field">
-                            [% Data.SendNoNotificationOption %]
-                        </div>
-                        <div class="Clear"></div>
-
                         <label for="NewCMD">[% Translate("CMD") | html %]:</label>
                         <div class="Field">
                             <input type="text" name="NewCMD" id="NewCMD" value="[% Data.NewCMD | html %]" size="40"/>

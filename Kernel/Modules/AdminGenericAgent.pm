@@ -761,7 +761,7 @@ sub _MaskUpdate {
     }
 
     # REMARK: we changed the wording "Send no notifications" to
-    # "Send agent/customer notifications on changes" in frontend.
+    # "Send notifications on changes" in frontend.
     # But the backend code is still the same (compatibility).
     # Because of this case we changed 1=>'Yes' to 1=>'No'
     $JobData{SendNoNotificationOption} = $LayoutObject->BuildSelection(
@@ -770,7 +770,7 @@ sub _MaskUpdate {
             '0' => Translatable('Yes'),
         },
         Name       => 'NewSendNoNotification',
-        SelectedID => $JobData{NewSendNoNotification} || 0,
+        SelectedID => $JobData{NewSendNoNotification} // 1,
         Class      => 'Modernize',
     );
     $LayoutObject->Block(
