@@ -1,7 +1,7 @@
 # --
 # Copyright (C) 2003-2010 Tomasz Melissa <janek at rumianek.com>
 # Copyright (C) 2009 Artur Skalski <skal.ar at wp.pl>
-# Copyright (C) 2011-2013 Informatyka Boguslawski sp. z o.o. sp.k., http://www.ib.pl/
+# Copyright (C) 2011-2018 Informatyka Boguslawski sp. z o.o. sp.k., http://www.ib.pl/
 # Copyright (C) 2014 Wojciech Myrda <wmyrda at auticon.pl>, http://www.auticon.pl
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
@@ -472,9 +472,9 @@ sub Data {
         'Time units' => 'Zaraportowany czas obsługi',
         'Execute Ticket Commands' => 'Wykonaj polecenia zgłoszeń',
         'Send agent/customer notifications on changes' => 'Wyślij powidomienia agentowi/klientowi przy zmianie ',
-        'CMD' => 'linia poleceń',
+        'CMD' => 'CMD',
         'This command will be executed. ARG[0] will be the ticket number. ARG[1] the ticket id.' =>
-            'Komenda zostanie wykonana. ARG[0] to numer zgłoszenia. ARG[1] to id zgłoszenia.',
+            'Polecenie do wykonania. ARG[0] to numer zgłoszenia. ARG[1] to id zgłoszenia.',
         'Delete tickets' => 'Usuń zgłoszenia',
         'Warning: All affected tickets will be removed from the database and cannot be restored!' =>
             'Uwaga: wszystkie wybrane zgłoszenia będą usunięte z bazy danych i nie będzie można ich przywrócić!',

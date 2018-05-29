@@ -1375,7 +1375,7 @@ sub _JobRunTicket {
     }
 
     # run module
-    if ( $Param{Config}->{New}->{Module} ) {
+    if ( $Param{Config}->{New}->{Module} && $Kernel::OM->Get('Kernel::Config')->Get('Ticket::GenericAgentCustomExecEnabled') ) {
         if ( $Self->{NoticeSTDOUT} ) {
             print "  - Use module ($Param{Config}->{New}->{Module}) for Ticket $Ticket.\n";
         }
@@ -1433,7 +1433,7 @@ sub _JobRunTicket {
     }
 
     # cmd
-    if ( $Param{Config}->{New}->{CMD} ) {
+    if ( $Param{Config}->{New}->{CMD} && $Kernel::OM->Get('Kernel::Config')->Get('Ticket::GenericAgentCustomExecEnabled') ) {
         if ( $Self->{NoticeSTDOUT} ) {
             print "  - Execute '$Param{Config}->{New}->{CMD}' for Ticket $Ticket.\n";
         }
@@ -1452,7 +1452,7 @@ sub _JobRunTicket {
     }
 
     # delete ticket
-    if ( $Param{Config}->{New}->{Delete} ) {
+    if ( $Param{Config}->{New}->{Delete} && $Kernel::OM->Get('Kernel::Config')->Get('Ticket::GenericAgentRemoveEnabled') ) {
         if ( $Self->{NoticeSTDOUT} ) {
             print "  - Delete Ticket $Ticket.\n";
         }
