@@ -7,6 +7,7 @@
  - 2017-12-12 Always require cookies for OTRS login - drop support for non-cookie sessions.
 
 #6.0.9 2018-??-??
+ - 2018-06-07 Added improvements to the support data collector plugins.
  - 2018-06-06 Fixed bug#[13873](https://bugs.otrs.org/show_bug.cgi?id=13873) - Wrong descripton for TicketNumberCounterCleanup setting in System Configuration.
  - 2018-06-05 Fixed bug#[13900](https://bugs.otrs.org/show_bug.cgi?id=13900) - Password authentication issue in Fedora 28 operating system.
 
