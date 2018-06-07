@@ -3596,6 +3596,8 @@ sub Data {
             'Não existem pacotes para a versão do software que possui, apenas existem pacotes para outra versões.',
         '<br>If you continue to install this package, the following issues may occur!<br><br>&nbsp;-Security problems<br>&nbsp;-Stability problems<br>&nbsp;-Performance problems<br><br>Please note that issues that are caused by working with this package are not covered by OTRS service contracts!<br><br>' =>
             '',
+        '<p>The installation of packages which are not verified by the OTRS Group is not possible by default.</p>' => '<p>A instalação de pacotes que não são verificados pelo OTRS Group não é possível por omissão.</p>',
+        '<p>You can activate the installation of not verified packages in the <a href=\'$Self->{CGIHandle}?Action=AdminSystemConfiguration;Subaction=View;Setting=Package%3A%3AAllowNotVerifiedPackages\' target=\'_blank\'>System Configuration</a>.</p>' => '<p>Pode activar a instalação de pacotes não verificados na <a href=\'$Self->{CGIHandle}?Action=AdminSystemConfiguration;Subaction=View;Setting=Package%3A%3AAllowNotVerifiedPackages\' target=\'_blank\'>Configuração de Sistema</a>.</p>',
 
         # Perl Module: Kernel/System/Registration.pm
         'Can\'t contact registration server. Please try again later.' => 'Não é possivel contatar o servidor de registo. Por favor tente novamente mais tarde.',
