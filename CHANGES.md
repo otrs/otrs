@@ -7,6 +7,7 @@
  - 2017-12-12 Always require cookies for OTRS login - drop support for non-cookie sessions.
 
 #6.0.9 2018-??-??
+ - 2018-06-14 Fixed bug#[12479](https://bugs.otrs.org/show_bug.cgi?id=12479) - Reply to a ticket locks the ticket and cancel unlocks it but does not reset owner.
  - 2018-06-12 Fixed bug#[13902](https://bugs.otrs.org/show_bug.cgi?id=13902) - Dialog submit is not possible for an appointment created by rule based on pending time.
  - 2018-06-12 Fixed bug#[13888](https://bugs.otrs.org/show_bug.cgi?id=13888) - Wrong charset in output while upgrading packages.
  - 2018-06-07 Enhanced package manager:
