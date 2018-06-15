@@ -43,7 +43,7 @@ sub Pre {
 
         (                                            # $2
             (?:                                      # http or only www
-                (?: (?: http s? | ftp ) :\/\/) |     # http://, https:// and ftp://
+                (?: (?: http s? | ftp | ssh ) :\/\/) |     # http://, https://, ftp:// and ssh://
                 (?: [a-z0-9\-]* \.?                  # allow for sub-domain or prefixes bug#12472
                     (?: www | ftp ) \. \w+           # www.something and ftp.something
                 )
@@ -101,7 +101,7 @@ sub Post {
             my $LinkSmall = $Self->{LinkHash}->{$Key};
             $LinkSmall =~ s/^(.{75}).*$/$1\[\.\.\]/gs;
             my $Link = $Self->{LinkHash}->{$Key};
-            if ( $Link !~ m{^ ( http | https | ftp ) : \/ \/ }xi ) {
+            if ( $Link !~ m{^ ( http | https | ftp | ssh ) : \/ \/ }xi ) {
                 if ( $Link =~ m{^ ftp }smx ) {
                     $Link = 'ftp://' . $Link;
                 }
