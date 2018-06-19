@@ -222,6 +222,10 @@ sub _TasksGet {
             Module  => 'MigrateZoomExpandConfig',
         },
         {
+            Message => 'Migrate ticket search profiles',
+            Module  => 'MigrateTicketSearchProfiles',
+        },
+        {
             Message => 'Update SysConfig deployments',
             Module  => 'MigrateSysConfigDeployment',
         },
