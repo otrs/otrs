@@ -57,7 +57,7 @@ for my $Key (@ArticleSearchKeys) {
 }
 
 # Run MigrateTicketSearchProfiles migration script.
-my $UpgradeSuccess = $Kernel::OM->Create('scripts::DBUpdateTo6::MigrateTicketSearchProfiles')->Run();
+my $UpgradeSuccess = $Kernel::OM->Create('scripts::DBUpdate::MigrateTicketSearchProfiles')->Run();
 $Self->Is(
     1,
     $UpgradeSuccess,
