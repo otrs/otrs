@@ -105,6 +105,10 @@ body.HasOverlay > #AppWrapper {
     position: relative;
 }
 
+#AgentSplitSelection {
+    min-width: 330px;
+}
+
 #TimeLineOverflow {
     overflow-y: hidden;
     max-height: 1173px;
