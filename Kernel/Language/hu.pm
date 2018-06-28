@@ -1,10 +1,5 @@
 # --
-# Copyright (C) 2006 Gabor Gancs /gg@magicnet.hu/
-# Copyright (C) 2006 Krisztian Gancs /krisz@gancs.hu/
-# Copyright (C) 2006 Flora Szabo /szaboflora@magicnet.hu/
-# Copyright (C) 2007 Aron Ujvari <ujvari@hungary.com>
-# Copyright (C) 2009 Arnold Matyasi <arn@webma.hu>
-# Copyright (C) 2013 Csaba Németh <csaba@sopron.hu>
+# Copyright (C) 2001-2018 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you

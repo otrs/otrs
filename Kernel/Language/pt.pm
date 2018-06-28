@@ -1,6 +1,5 @@
 # --
-# Copyright (C) 2004-2007 CAT - Filipe Henriques <filipehenriques at ip.pt>viz
-# Copyright (C) 2012 FCCN - Rui Francisco <rui.francisco@fccn.pt>
+# Copyright (C) 2001-2018 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you

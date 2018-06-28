@@ -1,7 +1,5 @@
 # --
-# Copyright (C) 2006-2009 Amir Shams Parsa <a.parsa at gmail.com>
-# Copyright (C) 2008 Hooman Mesgary <info at mesgary.com>
-# Copyright (C) 2009 Afshar Mohebbi <afshar.mohebbi at gmail.com>
+# Copyright (C) 2001-2018 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you

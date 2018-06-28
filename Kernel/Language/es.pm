@@ -1,10 +1,5 @@
 # --
-# Copyright (C) 2003-2006 Jorge Becerra <jorge at hab.desoft.cu>
-# Copyright (C) 2007 Carlos Oyarzabal <carlos.oyarzabal at grupocash.com.mx>
-# Copyright (C) 2008 Pelayo Romero Martí­n <pelayo.romero at gmail.com>
-# Copyright (C) 2009 Gustavo Azambuja <gazambuja at gmail.com>
-# Copyright (C) 2009 Emiliano Gonzalez <egonzalez@ergio.com.ar>
-# Copyright (C) 2013 Enrique Matías Sánchez <quique@unizar.es>
+# Copyright (C) 2001-2018 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you

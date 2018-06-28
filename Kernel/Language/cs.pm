@@ -1,12 +1,5 @@
 # --
-# Kernel/Language/cs.pm - provides Czech language translation
 # Copyright (C) 2001-2018 OTRS AG, http://otrs.com/
-# Copyright (C) 2003 Lukas Vicanek alias networ <lulka at centrum dot cz>
-# Copyright (C) 2004 BENETA.cz, s.r.o. (Marta Macalkova, Vadim Buzek, Petr Ocasek) <info at beneta dot cz>
-# Copyright (C) 2010 O2BS.com, s r.o. Jakub Hanus
-# Copyright (C) 2010 Pavel <pavel.vilim at kodys.cz>
-# Copyleft (cc-by) 2013 Katerina Bubenickova <katerina.bubenickova at plbbohnice dot cz>
-# Copyleft (cc-by) 2013 Peter Pruchnerovic <peter.pruchnerovic at mall dot cz>
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you

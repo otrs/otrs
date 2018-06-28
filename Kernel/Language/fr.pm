@@ -1,13 +1,5 @@
 # --
-# Copyright (C) 2002 Bernard Choppy <choppy at imaginet.fr>
-# Copyright (C) 2002 Nicolas Goralski <ngoralski at oceanet-technology.com>
-# Copyright (C) 2004 Igor Genibel <igor.genibel at eds-opensource.com>
-# Copyright (C) 2007 Remi Seguy <remi.seguy at laposte.net>
-# Copyright (C) 2007 Massimiliano Franco <max-lists at ycom.ch>
-# Copyright (C) 2004-2008 Yann Richard <ze at nbox.org>
-# Copyright (C) 2009-2010,2013 Olivier Sallou <olivier.sallou at irisa.fr>
-# Copyright (C) 2011-2013 Raphaël Doursenaud <rdoursenaud@gpcsolutions.fr>
-# Copyright (C) 2013 Dylan Oberson <dylan.oberson@epfl.ch>
+# Copyright (C) 2001-2018 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you

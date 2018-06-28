@@ -1,10 +1,4 @@
 # --
-# Copyright (C) 2002-2003 Fred van Dijk <fvandijk at marklin.nl>
-# Copyright (C) 2003 A-NeT Internet Services bv Hans Bakker <h.bakker at a-net.nl>
-# Copyright (C) 2004 Martijn Lohmeijer <martijn.lohmeijer 'at' sogeti.nl>
-# Copyright (C) 2005-2007 Jurgen Rutgers <jurgen 'at' besite.nl>
-# Copyright (C) 2005-2007 Richard Hinkamp <richard 'at' besite.nl>
-# Copyright (C) 2010 Ton van Boven <ton 'at' avebo.nl>
 # Copyright (C) 2001-2018 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
