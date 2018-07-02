@@ -1374,6 +1374,15 @@ sub Header {
             MODULE:
             for my $Key ( sort keys %Modules ) {
                 next MODULE if !%{ $Modules{$Key} };
+
+                # For ToolBarSearchFulltext module take into consideration SearchInArchive settings.
+                # See bug#13790 (https://bugs.otrs.org/show_bug.cgi?id=13790).
+                if ( $ConfigObject->Get('Ticket::ArchiveSystem') && $Modules{$Key}->{Block} eq 'ToolBarSearchFulltext' )
+                {
+                    $Modules{$Key}->{SearchInArchive}
+                        = $ConfigObject->Get('Ticket::Frontend::AgentTicketSearch')->{Defaults}->{SearchInArchive};
+                }
+
                 $Self->Block(
                     Name => $Modules{$Key}->{Block},
                     Data => {
@@ -1562,7 +1571,7 @@ sub Footer {
                 $ConfigObject->Get('Ticket::SearchIndexModule')
                 eq 'Kernel::System::Ticket::ArticleSearchIndex::DB'
                 )
-        ) ? 1 : 0,
+            ) ? 1 : 0,
         SearchFrontend => $JSCall,
         Autocomplete   => $AutocompleteConfig,
     );
@@ -5889,8 +5898,8 @@ sub SetRichTextParameters {
     my $ScreenRichTextWidth  = $Param{Data}->{RichTextWidth}  || $ConfigObject->Get("Frontend::RichTextWidth");
     my $RichTextType         = $Param{Data}->{RichTextType}   || '';
     my $PictureUploadAction = $Param{Data}->{RichTextPictureUploadAction} || '';
-    my $TextDir             = $Self->{TextDirection}                      || '';
-    my $EditingAreaCSS      = 'body.cke_editable { ' . $ConfigObject->Get("Frontend::RichText::DefaultCSS") . ' }';
+    my $TextDir = $Self->{TextDirection} || '';
+    my $EditingAreaCSS = 'body.cke_editable { ' . $ConfigObject->Get("Frontend::RichText::DefaultCSS") . ' }';
 
     # decide if we need to use the enhanced mode (with tables)
     my @Toolbar;
