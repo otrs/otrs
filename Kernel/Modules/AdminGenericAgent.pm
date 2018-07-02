@@ -1171,10 +1171,10 @@ sub _MaskUpdate {
 
         # paint each selector
         my $EventStrg = $LayoutObject->BuildSelection(
-            Data => $RegisteredEvents{$Type} || [],
-            Name => $Type . 'Event',
-            Sort => 'AlphanumericValue',
             PossibleNone => 0,
+            Data         => $RegisteredEvents{$Type} || [],
+            Name         => $Type . 'Event',
+            Sort         => 'AlphanumericValue',
             Class        => 'Modernize EventList GenericInterfaceSpacing',
             Title        => $LayoutObject->{LanguageObject}->Translate('Event'),
         );
