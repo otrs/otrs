@@ -40,6 +40,10 @@ sub Run {
             Message => 'Adds an index to the communication log table',
             Module  => 'CommunicationLogIndex',
         },
+        {
+            Message => 'Index article_data_mime table',
+            Module  => 'IndexArticleDataMimeTable',
+        },
     );
 
     print "\n" if $Verbose;
