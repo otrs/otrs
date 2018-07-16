@@ -7,6 +7,7 @@
  - 2017-12-12 Always require cookies for OTRS login - drop support for non-cookie sessions.
 
 #6.0.9 2018-??-??
+ - 2018-07-16 Fixed bug#[13961](https://bugs.otrs.org/show_bug.cgi?id=13961) - ExternalTicketNumberRecognition not working correctly with spaces.
  - 2018-07-16 Fixed bug#[13964](https://bugs.otrs.org/show_bug.cgi?id=13964) - System configuration value validation error displayed for disabled settings.
  - 2018-07-16 Fixed bug#[13965](https://bugs.otrs.org/show_bug.cgi?id=13965) - Overridden SysConfig settings can be shown as disabled in the frontend.
  - 2018-07-11 Fixed bug#[13952](https://bugs.otrs.org/show_bug.cgi?id=13952) - Internal server error in AdminSystemConfiguration if you remove frontend registration and navigation modules.
