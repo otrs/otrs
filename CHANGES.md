@@ -6,7 +6,9 @@
  - 2017-12-26 Fixed bug#[13402](https://bugs.otrs.org/show_bug.cgi?id=13402) - Target \_blank value is not working for generic notifications.
  - 2017-12-12 Always require cookies for OTRS login - drop support for non-cookie sessions.
 
-#6.0.10 2018-??-??
+#6.0.11 2018-??-??
+
+#6.0.10 2018-07-31
  - 2018-07-24 Updated translations, thanks to all translators.
  - 2018-07-24 Add explicit information for robots.
  - 2018-07-23 Fixed bug#[13978](https://bugs.otrs.org/show_bug.cgi?id=13978) - User and customer preferences may override user data.
