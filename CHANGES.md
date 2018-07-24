@@ -7,6 +7,7 @@
  - 2017-12-12 Always require cookies for OTRS login - drop support for non-cookie sessions.
 
 #6.0.10 2018-??-??
+ - 2018-07-24 Add explicit information for robots.
  - 2018-07-23 Fixed bug#[13978](https://bugs.otrs.org/show_bug.cgi?id=13978) - User and customer preferences may override user data.
  - 2018-07-23 Pay attention to accounted time when splitting an article into a ticket (PR#1938).
  - 2018-07-19 Fixed bug#[13662](https://bugs.otrs.org/show_bug.cgi?id=13662) - Missing white space between article details and transmission processing message.
