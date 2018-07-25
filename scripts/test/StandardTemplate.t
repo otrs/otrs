@@ -128,6 +128,15 @@ for my $Test (@Tests) {
         $LookupID,
         "StandardTemplateLookup()",
     );
+    
+    # second lookup of non-existing template name AFTER successful lookup by Name (previous test)
+    my $WrongLookupID = $StandardTemplateObject->StandardTemplateLookup(
+        StandardTemplate => $Test->{Add}->{Name} . $RandomID, # wrong name
+    );
+    $Self->False(
+        $WrongLookupID,
+        "StandardTemplateLookup() - try to find template by wrong name AFTER previous SUCCESSFUL lookup",
+    );
 
     # update
     my $Update = $StandardTemplateObject->StandardTemplateUpdate(
