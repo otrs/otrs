@@ -334,26 +334,29 @@ sub StandardTemplateLookup {
     }
 
     # check if we ask the same request?
-    if ( $Param{StandardTemplateID} && $Self->{"StandardTemplateLookup$Param{StandardTemplateID}"} )
+    if ( $Param{StandardTemplateID} && $Self->{"StandardTemplateStandardTemplateID$Param{StandardTemplateID}"} )
     {
-        return $Self->{"StandardTemplateLookup$Param{StandardTemplateID}"};
+        return $Self->{"StandardTemplateStandardTemplateID$Param{StandardTemplateID}"};
     }
-    if ( $Param{StandardTemplate} && $Self->{"StandardTemplateLookup$Param{StandardTemplate}"} ) {
-        return $Self->{"StandardTemplateLookup$Param{StandardTemplate}"};
+    if ( $Param{StandardTemplate} && $Self->{"StandardTemplateStandardTemplate$Param{StandardTemplate}"} ) {
+        return $Self->{"StandardTemplateStandardTemplate$Param{StandardTemplate}"};
     }
 
     # get data
     my $SQL;
     my $Suffix;
+    my $Key;
     my @Bind;
     if ( $Param{StandardTemplate} ) {
         $Suffix = 'StandardTemplateID';
-        $SQL    = 'SELECT id FROM standard_template WHERE name = ?';
+        $Key    = "StandardTemplateStandardTemplate$Param{StandardTemplate}";
+        $SQL    = 'SELECT id, name FROM standard_template WHERE name = ?';
         @Bind   = ( \$Param{StandardTemplate} );
     }
     else {
         $Suffix = 'StandardTemplate';
-        $SQL    = 'SELECT name FROM standard_template WHERE id = ?';
+        $Key    = "StandardTemplateStandardTemplateID$Param{StandardTemplateID}";
+        $SQL    = 'SELECT id, name FROM standard_template WHERE id = ?';
         @Bind   = ( \$Param{StandardTemplateID} );
     }
 
@@ -367,12 +370,13 @@ sub StandardTemplateLookup {
 
     while ( my @Row = $DBObject->FetchrowArray() ) {
 
-        # store result
-        $Self->{"StandardTemplate$Suffix"} = $Row[0];
+        # store result and reverse result too
+        $Self->{"StandardTemplateStandardTemplateID$Row[0]"} = $Row[1];
+        $Self->{"StandardTemplateStandardTemplate$Row[1]"}   = $Row[0];
     }
 
     # check if data exists
-    if ( !exists $Self->{"StandardTemplate$Suffix"} ) {
+    if ( !exists $Self->{$Key} ) {
         $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'error',
             Message  => "Found no \$$Suffix!"
@@ -380,7 +384,7 @@ sub StandardTemplateLookup {
         return;
     }
 
-    return $Self->{"StandardTemplate$Suffix"};
+    return $Self->{$Key};
 }
 
 =head2 StandardTemplateList()
