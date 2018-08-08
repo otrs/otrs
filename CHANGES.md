@@ -7,6 +7,7 @@
  - 2017-12-12 Always require cookies for OTRS login - drop support for non-cookie sessions.
 
 #6.0.11 2018-??-??
+ - 2018-08-08 Fixed bug#[14009](https://bugs.otrs.org/show_bug.cgi?id=14009) - Wrong description for RedirectAfterCloseDisabled configuration.
  - 2018-08-07 Fixed bug#[14008](https://bugs.otrs.org/show_bug.cgi?id=14008) - Kernel::System::VariableCheck::DataIsDifferent() does not work if one data element is undefined.
  - 2018-08-07 Fixed bug#[13968](https://bugs.otrs.org/show_bug.cgi?id=13968) - Attachments with spaces in file name does not work properly.
  - 2018-08-02 Fixed bug#[13997](https://bugs.otrs.org/show_bug.cgi?id=13997) - Error in pattern matching for DiskSpacePartitions.
