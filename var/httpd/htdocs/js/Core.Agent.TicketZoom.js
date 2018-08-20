@@ -689,6 +689,11 @@ Core.Agent.TicketZoom = (function (TargetNS) {
         // Table sorting
         Core.UI.Table.Sort.Init($('#ArticleTable'));
 
+        // Table sorting for Linked Objects
+        Core.UI.Table.Sort.Init($('#LinkObjectTable-Appointment'));
+        Core.UI.Table.Sort.Init($('#LinkObjectTable-FAQ'));
+        Core.UI.Table.Sort.Init($('#LinkObjectTable-Ticket'));
+
         // load another article, if in "show one article" mode and article id is provided by location hash
         if (!ZoomExpand) {
             URLHash = location.hash.replace(/#/, '');

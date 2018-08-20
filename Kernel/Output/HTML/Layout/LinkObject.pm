@@ -514,6 +514,7 @@ sub LinkObjectTableCreateComplex {
                     Data => {
                         %{$Column},
                         Content => $Content,
+                        ContentRaw => $Column->{Content},
                     },
                 );
             }

@@ -161,11 +161,15 @@
         </div>
 [% RenderBlockEnd("ContentLargePreferencesForm") %]
         <div id="[% Data.Name | html %]">
-            <table class="DataTable">
+            <table id="LinkObjectTable-[% Data.Name | html %]" class="DataTable">
                 <thead>
                     <tr>
 [% RenderBlockStart("TableComplexBlockColumn") %]
-                        <th> [% Translate(Data.Content) | html %] </th>
+                        [% IF Data.Content == 'Delete' %]
+                            <th>[% Translate(Data.Content) | html %] </th>
+                        [% ELSE %]
+                            <th class="Sortable"><a href="#"> [% Translate(Data.Content) | html %] </a> </th>
+                        [% END %]
 [% RenderBlockEnd("TableComplexBlockColumn") %]
                     </tr>
                 </thead>
@@ -175,6 +179,10 @@
 [% RenderBlockStart("TableComplexBlockRowColumn") %]
                         <td class="[% Data.CssClass | html %]">
                             [% Data.Content %]
+
+                            [% IF Data.Type != 'CheckboxDelete' %]
+                                <input type="hidden" class="SortData" value="[% Data.ContentRaw %]" /> 
+                            [% END %]
                         </td>
 [% RenderBlockEnd("TableComplexBlockRowColumn") %]
                     </tr>
