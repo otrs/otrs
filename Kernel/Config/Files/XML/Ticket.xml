@@ -11047,6 +11047,7 @@
         <Navigation>Core::Ticket::ACL</Navigation>
         <Value>
             <Array>
+                <Item>AgentAppointmentCalendarOverview</Item>
                 <Item>AgentTicketBounce</Item>
                 <Item>AgentTicketClose</Item>
                 <Item>AgentTicketCompose</Item>
