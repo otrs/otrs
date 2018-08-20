@@ -714,6 +714,23 @@ Message
         }
     }
 
+    # time accounting
+    if ( defined $GetParam{'X-OTRS-TimeUnit'} && $GetParam{'X-OTRS-TimeUnit'} =~ /^\s*\-?\d{1,10}((\.|,)\d{1,2})?/ ) {
+        $TicketObject->TicketAccountTime(
+            TicketID  => $TicketID,
+            ArticleID => $ArticleID,
+            TimeUnit  => $GetParam{'X-OTRS-TimeUnit'},
+            UserID    => $Param{InmailUserID},
+        );
+
+        $Self->{CommunicationLogObject}->ObjectLog(
+            ObjectLogType => 'Message',
+            Priority      => 'Debug',
+            Key           => 'Kernel::System::PostMaster::NewTicket',
+            Value         => "Added " . $GetParam{'X-OTRS-TimeUnit'} . " time units to ticket",
+        );
+    }
+
     # write plain email to the storage
     $ArticleBackendObject->ArticleWritePlain(
         ArticleID => $ArticleID,
