@@ -75,10 +75,16 @@ Core.UI.Accessibility = (function (TargetNS) {
                 .addClass('Expanded');
         });
 
-        $('#Navigation > ul > li > ul li:last-child').prev('li').find('a').on('focusout', function() {
-            $(this)
-                .closest('ul')
-                .removeClass('Expanded');
+        $('#Navigation > ul > li a').on('focusout', function() {
+            if($(this).next('ul').has(event.relatedTarget).length == 0)
+                $(this)
+                    .next('ul')
+                    .removeClass('Expanded');
+        });
+
+         $('#Navigation > ul > li > ul').on('focusout', function(event) {
+            if($(this).has(event.relatedTarget).length == 0)
+                $(this).removeClass('Expanded');
         });
     };
 
