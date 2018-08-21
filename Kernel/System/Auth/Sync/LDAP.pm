@@ -892,7 +892,7 @@ sub _NestedGroupSearch {
             # search in Dynamic Groups...
             my $UrlValues = $Entry->get_value("memberurl", asref => 1);
             foreach my $UrlValue (@{$UrlValues}) {
-                my $Uri = new URI ($UrlValue);
+                my $Uri = URI->new($UrlValue);
                 my $Filter = $Uri->filter();
                 my @Attributes = $Uri->attributes();
 
