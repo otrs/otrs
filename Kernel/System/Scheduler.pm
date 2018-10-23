@@ -132,7 +132,7 @@ sub Run {
         my $TaskDueTime = $Kernel::OM->Get('Kernel::System::Time')->TimeStamp2SystemTime(
             String => $TaskItem->{DueTime},
         );
-        next TASKITEM if ( $TaskDueTime gt $SystemTime );
+        next TASKITEM if ( $TaskDueTime > $SystemTime );
 
         # get task data
         my %TaskData = $Kernel::OM->Get('Kernel::System::Scheduler::TaskManager')->TaskGet( ID => $TaskItem->{ID} );
