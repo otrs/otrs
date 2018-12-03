@@ -271,8 +271,13 @@ sub FilenameCleanUp {
         my $FileName = $Param{Filename};
         my $FileExt  = '';
         if ( $Param{Filename} =~ /(.*)\.+(.*)$/ ) {
-            $FileName = $1;
-            $FileExt  = '.' . $2;
+
+            # allow extensions up to 10 chars to avoid infinite loop below
+            if (length encode('UTF-8', $2) <= 10) {
+                $FileName = $1;
+                $FileExt  = '.' . $2;
+            }
+
         }
 
         if ( length $FileName ) {
@@ -312,8 +317,14 @@ sub FilenameCleanUp {
         my $FileName = $Param{Filename};
         my $FileExt  = '';
         if ( $Param{Filename} =~ /(.*)\.+(.*)$/ ) {
-            $FileName = $1;
-            $FileExt  = '.' . $2;
+
+            # allow extensions up to 10 chars to avoid infinite loop below
+            if (length encode('UTF-8', $2) <= 10) {
+
+                $FileName = $1;
+                $FileExt  = '.' . $2;
+            }
+
         }
 
         if ( length $FileName ) {
