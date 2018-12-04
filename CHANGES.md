@@ -1,4 +1,5 @@
 #5.0.32 20??-??-??
+ - 2018-12-04 Fixed upload cache filename cleanup and filename cleanup optimization.
  - 2018-12-03 Fixed infinite loop on filename generation.
 
 #5.0.31 2018-11-09
