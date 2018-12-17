@@ -166,7 +166,7 @@ sub Delete {
     my ( $Filename, $CacheDirectory ) = $Self->_GetFilenameAndCacheDirectory(%Param);
 
     return $Kernel::OM->Get('Kernel::System::Main')->FileDelete(
-	Location        => $CacheDirectory . '/' . $Filename,
+        Location        => $CacheDirectory . '/' . $Filename,
         Type            => 'Local',
         DisableWarnings => 1,
     );
