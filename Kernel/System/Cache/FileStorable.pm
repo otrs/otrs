@@ -95,8 +95,7 @@ sub Set {
         }
     }
     my $FileLocation = $Kernel::OM->Get('Kernel::System::Main')->FileWrite(
-        Directory  => $CacheDirectory,
-        Filename   => $Filename,
+        Location   => $CacheDirectory . '/' . $Filename,
         Content    => \$Dump,
         Type       => 'Local',
         Mode       => 'binmode',
@@ -124,8 +123,7 @@ sub Get {
     my ( $Filename, $CacheDirectory ) = $Self->_GetFilenameAndCacheDirectory(%Param);
 
     my $Content = $Kernel::OM->Get('Kernel::System::Main')->FileRead(
-        Directory       => $CacheDirectory,
-        Filename        => $Filename,
+        Location        => $CacheDirectory . '/' . $Filename,
         Type            => 'Local',
         Mode            => 'binmode',
         DisableWarnings => 1,
@@ -168,8 +166,7 @@ sub Delete {
     my ( $Filename, $CacheDirectory ) = $Self->_GetFilenameAndCacheDirectory(%Param);
 
     return $Kernel::OM->Get('Kernel::System::Main')->FileDelete(
-        Directory       => $CacheDirectory,
-        Filename        => $Filename,
+	Location        => $CacheDirectory . '/' . $Filename,
         Type            => 'Local',
         DisableWarnings => 1,
     );
