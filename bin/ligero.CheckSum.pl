@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# Copyright (C) 2018-2018 LIGERO AG, https://complemento.net.br/
 # --
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -42,15 +42,15 @@ getopt( 'abd', \%Opts );
 if ( exists $Opts{h} || !keys %Opts ) {
     print <<EOF;
 
-Create or compare OTRS file checksum information.
+Create or compare LIGERO file checksum information.
 
 Usage:
- otrs.CheckSum.pl -a create|compare [-b /path/to/ARCHIVE] [-d /path/to/framework]
+ ligero.CheckSum.pl -a create|compare [-b /path/to/ARCHIVE] [-d /path/to/framework]
 
 Options:
  -a                     - Specify the action (create|compare).
  [-b]                   - Specify the path to archive.
- [-d]                   - Specify the path to OTRS framework.
+ [-d]                   - Specify the path to LIGERO framework.
  [-h]                   - Display help for this command.
 
 EOF
@@ -109,7 +109,7 @@ sub ProcessDirectory {
         # clean up directory name
         $File =~ s{//}{/}smxg;
 
-        # always stay in OTRS directory
+        # always stay in LIGERO directory
         next FILE if $File !~ m{^\Q$Start\E};
 
         # ignore source code directories, ARCHIVE file
@@ -156,7 +156,7 @@ sub ProcessDirectory {
                 print "Notice: Dif $File\n";
             }
             elsif ( -e "$File.save" )
-            {    ## report .save files as modified by the OTRS Package Manager
+            {    ## report .save files as modified by the LIGERO Package Manager
                 print "Notice: OPM Changed $File\n";
             }
             if ( defined $Compare{$File} ) {

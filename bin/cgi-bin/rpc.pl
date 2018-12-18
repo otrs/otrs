@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# Copyright (C) 2018-2018 LIGERO AG, https://complemento.net.br/
 # --
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -48,7 +48,7 @@ sub Dispatch {
     $Pw   ||= '';
     local $Kernel::OM = Kernel::System::ObjectManager->new(
         'Kernel::System::Log' => {
-            LogPrefix => 'OTRS-RPC',
+            LogPrefix => 'LIGERO-RPC',
         },
     );
 
@@ -68,7 +68,7 @@ sub Dispatch {
     $CommonObject{TicketObject}          = $Kernel::OM->Get('Kernel::System::Ticket');
 
     # We want to keep providing the TimeObject as legacy API for now.
-    ## nofilter(TidyAll::Plugin::OTRS::Migrations::OTRS6::TimeObject)
+    ## nofilter(TidyAll::Plugin::LIGERO::Migrations::LIGERO::TimeObject)
     $CommonObject{TimeObject} = $Kernel::OM->Get('Kernel::System::Time');
     $CommonObject{UserObject} = $Kernel::OM->Get('Kernel::System::User');
 
@@ -129,7 +129,7 @@ sub DispatchMultipleTicketMethods {
     # common objects
     local $Kernel::OM = Kernel::System::ObjectManager->new(
         'Kernel::System::Log' => {
-            LogPrefix => 'OTRS-RPC',
+            LogPrefix => 'LIGERO-RPC',
         },
     );
 

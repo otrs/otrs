@@ -48,39 +48,39 @@ before_install:
 # We have to install the Perl modules via CPAN because the VMs use a perlbrew based Perl, not Ubuntu's system Perl.
 install:
   # generate ARCHIVE file
-  - perl bin/otrs.CheckSum.pl -a create
-  # install OTRSCodePolicy, but skip the SOPM to avoid validation errors.
-  - mkdir -p /tmp/OTRSCodePolicy
-  - git clone --depth=1 https://github.com/OTRS/otrscodepolicy.git /tmp/OTRSCodePolicy
-  - rm /tmp/OTRSCodePolicy/OTRSCodePolicy.sopm
-  - cp -rf /tmp/OTRSCodePolicy/* .
-  # install OTRS cpan dependencies
+  - perl bin/ligero.CheckSum.pl -a create
+  # install LIGEROCodePolicy, but skip the SOPM to avoid validation errors.
+  - mkdir -p /tmp/LIGEROCodePolicy
+  - git clone --depth=1 https://github.com/LigeroSmart/ligerocodepolicy.git /tmp/LIGEROCodePolicy
+  - rm /tmp/LIGEROCodePolicy/LIGEROCodePolicy.sopm
+  - cp -rf /tmp/LIGEROCodePolicy/* .
+  # install LIGERO cpan dependencies
   - cpanm --quiet --notest Code::TidyAll Perl::Tidy Perl::Critic Plack Date::Format Net::DNS Net::LDAP IO::Socket::SSL SOAP::Lite Text::CSV_XS JSON::XS XML::LibXML XML::LibXSLT YAML YAML::XS Archive::Zip Crypt::Eksblowfish Encode::HanExtra Mail::IMAPClient Template DBI DateTime
   - cpanm --quiet --notest DBD::mysql || echo "Suppressing exit code $?"
   - cpanm --quiet --notest DBD::Pg    || echo "Suppressing exit code $?"
-  # configure OTRS
+  # configure LIGERO
   - scripts/tools/travis/setup.sh
   # start web server
   - plackup --port 5000 bin/cgi-bin/app.psgi > /tmp/plack.log 2>&1 &
 
 script:
-  - perl bin/otrs.CheckModules.pl
+  - perl bin/ligero.CheckModules.pl
   - perl -cw bin/cgi-bin/index.pl
   - perl -cw bin/cgi-bin/app.psgi
-  - perl bin/otrs.Console.pl Maint::Database::Check
-  - perl bin/otrs.Console.pl Maint::Config::Rebuild
+  - perl bin/ligero.Console.pl Maint::Database::Check
+  - perl bin/ligero.Console.pl Maint::Config::Rebuild
   - scripts/tools/travis/runtests.sh
 
 notifications:
   email:
     recipients:
-      - martin.gruner@otrs.com
+      - martin.gruner@ligero.com
     on_success: change
     on_failure: always
 
   irc:
     channels:
-      - "chat.freenode.net#otrs-dev"
+      - "chat.freenode.net#ligero-dev"
     on_success: change
     on_failure: always
 

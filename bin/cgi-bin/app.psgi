@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# Copyright (C) 2018-2018 LIGERO AG, https://complemento.net.br/
 # --
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -32,14 +32,14 @@ use lib "$Bin/../..";
 use lib "$Bin/../../Kernel/cpan-lib";
 use lib "$Bin/../../Custom";
 
-## nofilter(TidyAll::Plugin::OTRS::Perl::SyntaxCheck)
+## nofilter(TidyAll::Plugin::LIGERO::Perl::SyntaxCheck)
 
 use CGI;
 use CGI::Emulate::PSGI;
 use Module::Refresh;
 use Plack::Builder;
 
-# Workaround: some parts of OTRS use exit to interrupt the control flow.
+# Workaround: some parts of LIGERO use exit to interrupt the control flow.
 #   This would kill the Plack server, so just use die instead.
 BEGIN {
     *CORE::GLOBAL::exit = sub { die "exit called\n"; };
@@ -53,7 +53,7 @@ my $App = CGI::Emulate::PSGI->handler(
         # Cleanup values from previous requests.
         CGI::initialize_globals();
 
-        # Populate SCRIPT_NAME as OTRS needs it in some places.
+        # Populate SCRIPT_NAME as LIGERO needs it in some places.
         ( $ENV{SCRIPT_NAME} ) = $ENV{PATH_INFO} =~ m{/([A-Za-z\-_]+\.pl)};    ## no critic
 
         # Fallback to agent login if we could not determine handle...
@@ -91,7 +91,7 @@ my $App = CGI::Emulate::PSGI->handler(
 # Small helper function to determine the path to a static file
 my $StaticPath = sub {
 
-    # Everything in otrs-web/js or otrs-web/skins is a static file.
+    # Everything in ligero-web/js or ligero-web/skins is a static file.
     return 0 if $_ !~ m{-web/js/|-web/skins/};
 
     # Return only the relative path.
@@ -99,7 +99,7 @@ my $StaticPath = sub {
     return $_;
 };
 
-# Create a Static middleware to serve static files directly without invoking the OTRS
+# Create a Static middleware to serve static files directly without invoking the LIGERO
 #   application handler.
 builder {
     enable "Static",

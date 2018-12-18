@@ -1,6 +1,6 @@
 #!/bin/sh
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# Copyright (C) 2018-2018 LIGERO AG, https://complemento.net.br/
 # --
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -22,7 +22,7 @@ CRON_USER="$2"
 # check if a common user try to use -u
 if test -n "$CRON_USER"; then
     if test $CURRENTUSER != root; then
-        echo "Run this script just as OTRS user! Or use 'Cron.sh {start|stop|restart} OTRS_USER' as root!"
+        echo "Run this script just as LIGERO user! Or use 'Cron.sh {start|stop|restart} LIGERO_USER' as root!"
         exit 5
     fi
 fi
@@ -30,26 +30,26 @@ fi
 # check if the cron user is specified
 if test -z "$CRON_USER"; then
     if test $CURRENTUSER = root; then
-        echo "Run this script just as OTRS user! Or use 'Cron.sh {start|stop|restart} OTRS_USER' as root!"
+        echo "Run this script just as LIGERO user! Or use 'Cron.sh {start|stop|restart} LIGERO_USER' as root!"
         exit 5
     fi
 fi
 
-# find otrs root
+# find ligero root
 cd "`dirname $0`/../"
-OTRS_HOME="`pwd`"
+LIGERO_HOME="`pwd`"
 
-#OTRS_ROOT=/opt/otrs
-if test -e $OTRS_HOME/var/cron; then
-    OTRS_ROOT=$OTRS_HOME
+#LIGERO_ROOT=/opt/ligero
+if test -e $LIGERO_HOME/var/cron; then
+    LIGERO_ROOT=$LIGERO_HOME
 else
-    echo "No cronjobs in $OTRS_HOME/var/cron found!";
-    echo " * Check the \$HOME (/etc/passwd) of the OTRS user. It must be the root dir of your OTRS system (e. g. /opt/otrs). ";
+    echo "No cronjobs in $LIGERO_HOME/var/cron found!";
+    echo " * Check the \$HOME (/etc/passwd) of the LIGERO user. It must be the root dir of your LIGERO system (e. g. /opt/ligero). ";
     exit 5;
 fi
 
-CRON_DIR=$OTRS_ROOT/var/cron
-CRON_TMP_FILE=$OTRS_ROOT/var/tmp/otrs-cron-tmp.$$
+CRON_DIR=$LIGERO_ROOT/var/cron
+CRON_TMP_FILE=$LIGERO_ROOT/var/tmp/ligero-cron-tmp.$$
 
 #
 # main part
@@ -67,7 +67,7 @@ case "$1" in
         if mkdir -p $CRON_DIR; cd $CRON_DIR && ls -d * | grep -Ev "(\.(dist|rpm|bak|backup|custom_backup|save|swp)|\~)$" | xargs cat > $CRON_TMP_FILE && crontab $CRON_USER $CRON_TMP_FILE; then
 
             rm -rf $CRON_TMP_FILE
-            echo "(using $OTRS_ROOT) done";
+            echo "(using $LIGERO_ROOT) done";
             exit 0;
         else
             echo "failed";
@@ -104,13 +104,13 @@ case "$1" in
     *)
     cat - <<HELP
 
-Manage OTRS cron jobs.
+Manage LIGERO cron jobs.
 
 Usage:
  Cron.sh [action]
 
 Arguments:
- [action]                      - 'start', 'stop' or 'restart' - activate or deactivate OTRS cron jobs.
+ [action]                      - 'start', 'stop' or 'restart' - activate or deactivate LIGERO cron jobs.
 HELP
 
     exit 1

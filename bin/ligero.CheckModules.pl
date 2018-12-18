@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# Copyright (C) 2018-2018 LIGERO AG, https://complemento.net.br/
 # --
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -104,7 +104,7 @@ our %DistToInstType = (
 
 our $OSDist;
 eval {
-    require Linux::Distribution;    ## nofilter(TidyAll::Plugin::OTRS::Perl::Require)
+    require Linux::Distribution;    ## nofilter(TidyAll::Plugin::LIGERO::Perl::Require)
     import Linux::Distribution;
     $OSDist = Linux::Distribution::distribution_name() || '';
 };
@@ -123,12 +123,12 @@ GetOptions(
 
 # check needed params
 if ($Help) {
-    print "\nReturn all required and optional packages of OTRS.\n\n";
+    print "\nReturn all required and optional packages of LIGERO.\n\n";
     print "Usage:\n";
-    print " otrs.CheckModules.pl [-list|all]\n\n";
+    print " ligero.CheckModules.pl [-list|all]\n\n";
     print "Options:\n";
     printf " %-22s - %s", '[-list]', 'Return an install command with all required packages.' . "\n";
-    printf " %-22s - %s", '[-all]',  'Return all required, optional and bundled packages of OTRS.' . "\n\n";
+    printf " %-22s - %s", '[-all]',  'Return all required, optional and bundled packages of LIGERO.' . "\n\n";
     exit 1;
 }
 
@@ -176,7 +176,7 @@ my @NeededModules = (
         },
     },
     {
-        Module    => 'Archive::Zip',                               # required for OTRSBusiness
+        Module    => 'Archive::Zip',                               # required for LIGEROBusiness
         Required  => 1,
         Comment   => 'Required for compressed file generation.',
         InstTypes => {
@@ -444,7 +444,7 @@ my @NeededModules = (
     {
         Module    => 'Template',
         Required  => 1,
-        Comment   => 'Template::Toolkit, the rendering engine of OTRS.',
+        Comment   => 'Template::Toolkit, the rendering engine of LIGERO.',
         InstTypes => {
             aptget => 'libtemplate-perl',
             emerge => 'dev-perl/Template-Toolkit',

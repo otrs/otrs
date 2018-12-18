@@ -12,11 +12,10 @@
 .vstags
 .vscode
 
-# OTRS
+# LIGERO
 .procmailrc
 /ARCHIVE
 doc/manual/en
-doc/en/otrs_business_solution_book.pdf
 Kernel/Config/Backups/
 Kernel/Config/Files/ZZZ*.pm
 Kernel/Config/Files/User/*
@@ -63,15 +62,15 @@ var/httpd/htdocs/skins/Customer/default/css/*Fred*css
 # NYTProf
 nytprof*.out
 
-# OTRSCodePolicy
+# LIGEROCodePolicy
 .tidyall.d
 perltidy.LOG.old
-bin/otrs.CodePolicy.pl
+bin/ligero.CodePolicy.pl
 TidyAll
 Kernel/cpan-lib/Locale/PO.pm
 scripts/install-git-hooks.pl
 scripts/uninstall-git-hooks.pl
-OTRSCodePolicy*
+LIGEROCodePolicy*
 perltidy.LOG
 
 # ITSM
@@ -80,19 +79,19 @@ bin/CodeInstall.pl
 bin/ModuleCode.pl
 bin/DatabaseInstall.pl
 
-# OTRSCodeHub
+# LIGEROCodeHub
 var/git
 
-# OTRSBusiness
+# LIGEROBusiness
 
-CHANGES-OTRSBusiness.md
-doc/*/OTRSBusiness.*
-i18n/OTRSBusiness
-Kernel/Config/Files/OTRSBusiness.xml
-Kernel/Config/Files/XML/OTRSBusiness.xml
-Kernel/Config/Files/XML/ToBeMergedOTRSBusiness.xml
+CHANGES-LIGEROBusiness.md
+doc/*/LIGEROBusiness.*
+i18n/LIGEROBusiness
+Kernel/Config/Files/LIGEROBusiness.xml
+Kernel/Config/Files/XML/LIGEROBusiness.xml
+Kernel/Config/Files/XML/ToBeMergedLIGEROBusiness.xml
 Kernel/GenericInterface/Invoker/Generic/PassThrough.pm
-Kernel/Language/*OTRSBusiness.pm
+Kernel/Language/*LIGEROBusiness.pm
 Kernel/Modules/AdminCloudServiceSMS.pm
 Kernel/Modules/AdminSMSTemplate.pm
 Kernel/Modules/AdminQueueSMSTemplates.pm
@@ -135,7 +134,7 @@ Kernel/Output/HTML/Templates/Standard/*ContactWithData*
 Kernel/Output/HTML/Templates/Standard/*DynamicFieldDatabase*
 Kernel/Output/HTML/Templates/Standard/*SLASelectionDialog*
 Kernel/Output/HTML/Templates/Standard/*StatisticsReports*
-Kernel/Output/HTML/Templates/Standard/AAAOTRSBusiness.tt
+Kernel/Output/HTML/Templates/Standard/AAALIGEROBusiness.tt
 Kernel/Output/HTML/Templates/Standard/AdminChatChannel.tt
 Kernel/Output/HTML/Templates/Standard/AdminChatChannelRole.tt
 Kernel/Output/HTML/Templates/Standard/AdminCloudServiceSMS.tt
@@ -184,7 +183,7 @@ Kernel/Output/HTML/ToolBar/NotificationView.pm
 Kernel/Output/HTML/ToolBar/NotificationView.pm
 Kernel/Output/JavaScript/Templates/Standard/Agent/Admin/SMSBlackList.html.tmpl
 Kernel/Output/JavaScript/Templates/Standard/Agent/AppointmentCalendar/ResourceSettingsDialog.html.tmpl
-Kernel/Output/JavaScript/Templates/Standard/Agent/OTRSBusiness/*
+Kernel/Output/JavaScript/Templates/Standard/Agent/LIGEROBusiness/*
 Kernel/Output/JavaScript/Templates/Standard/Agent/ResourceSettingsDialog.html.tmpl
 Kernel/Output/PDF/StatisticsReports*
 Kernel/System/*Chat*
@@ -207,13 +206,13 @@ Kernel/System/SMSTemplate.pm
 Kernel/System/SMSTemplateGenerator.pm
 Kernel/System/StatsReport.pm
 Kernel/System/SupportDataCollector/Plugin/CloudService/SMS.pm
-Kernel/System/SupportDataCollector/Plugin/OTRS/ConfigLastDeployments.pm
-Kernel/System/SysConfig/Base/OTRSBusiness.pm
+Kernel/System/SupportDataCollector/Plugin/LIGERO/ConfigLastDeployments.pm
+Kernel/System/SysConfig/Base/LIGEROBusiness.pm
 Kernel/System/Ticket/Article/Backend/SMS.pm
 Kernel/System/Ticket/Event/NotificationEvent/Transport/NotificationView.pm
 Kernel/System/Ticket/Event/NotificationEvent/Transport/SMS.pm
 Kernel/System/Ticket/Event/StoreHistoricalData.pm
-OTRSBusiness.sopm
+LIGEROBusiness.sopm
 scripts/test/Calendar/Event/Transport/NotificationView.t
 scripts/test/Calendar/Team.t
 scripts/test/Chat
@@ -256,7 +255,7 @@ scripts/test/Selenium/Public/Chat.t
 scripts/test/Selenium/Public/ChatInclude.t
 scripts/test/SMSTemplate.t
 scripts/test/StatsReport.t
-scripts/test/SysConfig/OTRSBusiness/*
+scripts/test/SysConfig/LIGEROBusiness/*
 scripts/test/Ticket/Article/Backend/SMS.t
 scripts/test/Ticket/Event/NotificationEvent/Transport/NotificationView.t
 scripts/test/Ticket/Event/StoreHistoricalData.t
@@ -296,7 +295,7 @@ var/httpd/htdocs/skins/Agent/default/img/loader-black.gif
 var/httpd/htdocs/skins/Customer/default/css/*Chat*
 var/httpd/htdocs/skins/Customer/default/css/DynamicFieldDatabase.css
 var/httpd/htdocs/skins/Customer/default/img/loader-black.gif
-var/packagesetup/OTRSBusiness.pm
+var/packagesetup/LIGEROBusiness.pm
 var/processes/examples/Conference_Room_Reservation.yml
 var/processes/examples/Conference_Room_Reservation_post.pm
 var/processes/examples/Conference_Room_Reservation_pre.pm
@@ -324,12 +323,12 @@ var/webservices/examples/BugzillaConnector_pre.pm
 var/webservices/examples/JIRAConnector.yml
 var/webservices/examples/JIRAConnector_post.pm
 var/webservices/examples/JIRAConnector_pre.pm
-var/webservices/examples/OTRSConnector.yml
-var/webservices/examples/OTRSConnector_post.pm
-var/webservices/examples/OTRSConnector_pre.pm
+var/webservices/examples/LIGEROConnector.yml
+var/webservices/examples/LIGEROConnector_post.pm
+var/webservices/examples/LIGEROConnector_pre.pm
 
 # STORM
-Kernel/Config/Files/XML/OTRSStorm.xml
+Kernel/Config/Files/XML/LIGEROStorm.xml
 Kernel/Modules/AdminSTORM.pm
 Kernel/Output/HTML/Templates/Standard/AdminSTORM.tt
 Kernel/Output/HTML/Templates/Standard/NotificationEvent/Email/TLP-Amber.tt
@@ -337,10 +336,10 @@ Kernel/Output/HTML/Templates/Standard/NotificationEvent/Email/TLP-Green.tt
 Kernel/Output/HTML/Templates/Standard/NotificationEvent/Email/TLP-Red.tt
 Kernel/Output/HTML/Templates/Standard/NotificationEvent/Email/TLP-White.tt
 var/httpd/htdocs/skins/Agent/storm/*
-var/packagesetup/OTRSSTORM.pm
-OTRSSTORM.sopm
+var/packagesetup/LIGEROSTORM.pm
+LIGEROSTORM.sopm
 
-# OTRSContinuousIntegrationProvisioner (vagrant VMs)
+# LIGEROContinuousIntegrationProvisioner (vagrant VMs)
 .cache
 .ssh
 .viminfo
