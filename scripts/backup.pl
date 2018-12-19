@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# Copyright (C) 2018-2018 LIGERO AG, https://complemento.net.br/
 # --
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -40,7 +40,7 @@ getopt( 'hcrtd', \%Opts );
 if ( exists $Opts{h} ) {
     print <<EOF;
 
-Backup an OTRS system.
+Backup an LIGERO system.
 
 Usage:
  backup.pl -d /data_backup_dir [-c gzip|bzip2] [-r DAYS] [-t fullbackup|nofullbackup|dbonly]
@@ -53,7 +53,7 @@ Options:
  [-h]                   - Display help for this command.
 
 Help:
-Using -t fullbackup saves the database and the whole OTRS home directory (except /var/tmp and cache directories).
+Using -t fullbackup saves the database and the whole LIGERO home directory (except /var/tmp and cache directories).
 Using -t nofullbackup saves only the database, /Kernel/Config* and /var directories.
 With -t dbonly only the database will be saved.
 
@@ -107,7 +107,7 @@ else {
 # create common objects
 local $Kernel::OM = Kernel::System::ObjectManager->new(
     'Kernel::System::Log' => {
-        LogPrefix => 'OTRS-backup.pl',
+        LogPrefix => 'LIGERO-backup.pl',
     },
 );
 
@@ -366,7 +366,7 @@ if ( defined $Opts{r} ) {
 }
 
 # If error occurs this functions remove incomlete backup folder to avoid the impression
-#   that the backup was ok (see http://bugs.otrs.org/show_bug.cgi?id=10665).
+#   that the backup was ok (see http://bugs.ligero.org/show_bug.cgi?id=10665).
 sub RemoveIncompleteBackup {
 
     # get parameters

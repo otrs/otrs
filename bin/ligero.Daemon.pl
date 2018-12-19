@@ -1,6 +1,6 @@
 #!/usr/bin/perl -X
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# Copyright (C) 2018-2018 LIGERO AG, https://complemento.net.br/
 # --
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -32,19 +32,19 @@ use Fcntl qw(:flock);
 
 use Kernel::System::ObjectManager;
 
-print STDOUT "\nManage the OTRS daemon process.\n\n";
+print STDOUT "\nManage the LIGERO daemon process.\n\n";
 
 local $Kernel::OM = Kernel::System::ObjectManager->new(
     'Kernel::System::Log' => {
-        LogPrefix => 'OTRS-otrs.Daemon.pl',
+        LogPrefix => 'LIGERO-ligero.Daemon.pl',
     },
 );
 
 # Don't allow to run these scripts as root.
 if ( $> == 0 ) {    # $EFFECTIVE_USER_ID
     print STDERR
-        "Error: You cannot run otrs.Daemon.pl as root. Please run it as the 'otrs' user or with the help of su:\n";
-    print STDERR "  su -c \"bin/otrs.Daemon.pl ...\" -s /bin/bash otrs\n";
+        "Error: You cannot run ligero.Daemon.pl as root. Please run it as the 'ligero' user or with the help of su:\n";
+    print STDERR "  su -c \"bin/ligero.Daemon.pl ...\" -s /bin/bash ligero\n";
     exit 1;
 }
 
@@ -152,7 +152,7 @@ else {
 
 sub PrintUsage {
     my $UsageText = "Usage:\n";
-    $UsageText .= " otrs.Daemon.pl action [--debug] [--force]\n";
+    $UsageText .= " ligero.Daemon.pl action [--debug] [--force]\n";
     $UsageText .= "\nOptions:\n";
     $UsageText .= sprintf " %-22s - %s", '[--debug]', 'Run the daemon in debug mode.' . "\n";
     $UsageText .= sprintf " %-22s - %s", '[--force]',
@@ -166,10 +166,10 @@ sub PrintUsage {
     $UsageText
         .= "In debug mode if a daemon module is specified the debug mode will be activated only for that daemon.\n";
     $UsageText .= "Debug information is stored in the daemon log files localed under: $LogDir\n";
-    $UsageText .= "\n otrs.Daemon.pl start --debug SchedulerTaskWorker SchedulerCronTaskManager\n\n";
+    $UsageText .= "\n ligero.Daemon.pl start --debug SchedulerTaskWorker SchedulerCronTaskManager\n\n";
     $UsageText
         .= "Forced stop reduces the time the main daemon waits other daemons to stop from normal 30 seconds to 5.\n";
-    $UsageText .= "\n otrs.Daemon.pl stop --force\n";
+    $UsageText .= "\n ligero.Daemon.pl stop --force\n";
     print STDOUT "$UsageText\n";
 
     return 1;
@@ -266,7 +266,7 @@ sub Start {
 
                 local $Kernel::OM = Kernel::System::ObjectManager->new(
                     'Kernel::System::Log' => {
-                        LogPrefix => "OTRS-otrs.Daemon.pl - Daemon $Module",
+                        LogPrefix => "LIGERO-ligero.Daemon.pl - Daemon $Module",
                     },
                 );
 
@@ -498,9 +498,9 @@ sub _LogFilesSet {
 
     my $SystemTime = $Kernel::OM->Create('Kernel::System::DateTime')->ToEpoch();
 
-    # get log rotation type and backup old logs if logs should be rotated by OTRS
-    my $RotationType = lc $ConfigObject->Get('Daemon::Log::RotationType') || 'otrs';
-    if ( $RotationType eq 'otrs' ) {
+    # get log rotation type and backup old logs if logs should be rotated by LIGERO
+    my $RotationType = lc $ConfigObject->Get('Daemon::Log::RotationType') || 'ligero';
+    if ( $RotationType eq 'ligero' ) {
         use File::Copy qw(move);
         if ( -e "$FileStdOut.log" ) {
             move( "$FileStdOut.log", "$FileStdOut-$SystemTime.log" );
@@ -521,9 +521,9 @@ sub _LogFilesSet {
         open STDERR, '>>', "$FileStdErr.log";
     }
 
-    return 1 if $RotationType ne 'otrs';
+    return 1 if $RotationType ne 'ligero';
 
-    # remove not needed log files if OTRS rotation is enabled
+    # remove not needed log files if LIGERO rotation is enabled
     my $DaysToKeep     = $ConfigObject->Get('Daemon::Log::DaysToKeep') || 1;
     my $DaysToKeepTime = $SystemTime - $DaysToKeep * 24 * 60 * 60;
 
@@ -555,9 +555,9 @@ sub _LogFilesSet {
 sub _LogFilesCleanup {
     my %Param = @_;
 
-    # skip cleanup if OTRS log rotation is not enabled
-    my $RotationType = lc $Kernel::OM->Get('Kernel::Config')->Get('Daemon::Log::RotationType') || 'otrs';
-    return 1 if $RotationType ne 'otrs';
+    # skip cleanup if LIGERO log rotation is not enabled
+    my $RotationType = lc $Kernel::OM->Get('Kernel::Config')->Get('Daemon::Log::RotationType') || 'ligero';
+    return 1 if $RotationType ne 'ligero';
 
     my @LogFiles = glob "$LogDir/*.log";
 

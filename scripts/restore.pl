@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# Copyright (C) 2018-2018 LIGERO AG, https://complemento.net.br/
 # --
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -40,14 +40,14 @@ getopt( 'hbd', \%Opts );
 if ( exists $Opts{h} ) {
     print <<EOF;
 
-Restore an OTRS system from backup.
+Restore an LIGERO system from backup.
 
 Usage:
- restore.pl -b /data_backup/<TIME>/ -d /opt/otrs/
+ restore.pl -b /data_backup/<TIME>/ -d /opt/ligero/
 
 Options:
  -b                     - Directory of the backup files.
- -d                     - Target OTRS home directory.
+ -d                     - Target LIGEERO home directory.
  [-h]                   - Display help for this command.
 
 EOF
@@ -108,7 +108,7 @@ elsif ( -e $ConfigBackupBz2 ) {
 # create common objects
 local $Kernel::OM = Kernel::System::ObjectManager->new(
     'Kernel::System::Log' => {
-        LogPrefix => 'OTRS-restore.pl',
+        LogPrefix => 'LIGERO-restore.pl',
     },
 );
 
@@ -179,7 +179,7 @@ if ( $DB =~ m/mysql/i ) {
 else {
     $Kernel::OM->Get('Kernel::System::DB')->Prepare(
         SQL =>
-            "SELECT table_name FROM information_schema.tables WHERE table_catalog = 'otrs' AND table_schema = 'public'",
+            "SELECT table_name FROM information_schema.tables WHERE table_catalog = 'ligero' AND table_schema = 'public'",
     );
     my $Check = 0;
     while ( my @RowTmp = $Kernel::OM->Get('Kernel::System::DB')->FetchrowArray() ) {

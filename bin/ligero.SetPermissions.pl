@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# Copyright (C) 2018-2018 LIGERO AG, https://complemento.net.br/
 # --
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -29,10 +29,10 @@ use File::Find();
 use File::stat();
 use Getopt::Long();
 
-my $OTRSDirectory       = dirname($RealBin);
-my $OTRSDirectoryLength = length($OTRSDirectory);
+my $LIGERODirectory       = dirname($RealBin);
+my $LIGERODirectoryLength = length($LIGERODirectory);
 
-my $OtrsUser = 'otrs';    # default: otrs
+my $LigeroUser = 'ligero';    # default: ligero
 my $WebGroup = '';        # Try to find a default from predefined group list, take the first match.
 
 WEBGROUP:
@@ -45,29 +45,29 @@ for my $GroupCheck (qw(wwwrun apache www-data www _www)) {
 }
 
 my $AdminGroup = 'root';    # default: root
-my ( $Help, $DryRun, $SkipArticleDir, @SkipRegex, $OtrsUserID, $WebGroupID, $AdminGroupID );
+my ( $Help, $DryRun, $SkipArticleDir, @SkipRegex, $LigeroUserID, $WebGroupID, $AdminGroupID );
 
 sub PrintUsage {
     print <<EOF;
 
-Set OTRS file permissions.
+Set LIGERO file permissions.
 
 Usage:
- otrs.SetPermissions.pl [--otrs-user=<OTRS_USER>] [--web-group=<WEB_GROUP>] [--admin-group=<ADMIN_GROUP>] [--skip-article-dir] [--skip-regex="REGEX"] [--dry-run]
+ ligero.SetPermissions.pl [--ligero-user=<LIGERO_USER>] [--web-group=<WEB_GROUP>] [--admin-group=<ADMIN_GROUP>] [--skip-article-dir] [--skip-regex="REGEX"] [--dry-run]
 
 Options:
- [--otrs-user=<OTRS_USER>]     - OTRS user, defaults to 'otrs'.
+ [--ligero-user=<LIGERO_USER>]     - LIGERO user, defaults to 'ligero'.
  [--web-group=<WEB_GROUP>]     - Web server group ('_www', 'www-data' or similar), try to find a default.
  [--admin-group=<ADMIN_GROUP>] - Admin group, defaults to 'root'.
  [--skip-article-dir]          - Skip var/article as it might take too long on some systems.
- [--skip-regex="REGEX"]        - Add another skip regex like "^/var/my/directory". Paths start with / but are relative to the OTRS directory. --skip-regex can be specified multiple times.
+ [--skip-regex="REGEX"]        - Add another skip regex like "^/var/my/directory". Paths start with / but are relative to the LIGERO directory. --skip-regex can be specified multiple times.
  [--dry-run]                   - Only report, don't change.
  [--help]                      - Display help for this command.
 
 Help:
 Using this script without any options it will try to detect the correct user and group settings needed for your setup.
 
- otrs.SetPermissions.pl
+ ligero.SetPermissions.pl
 
 EOF
     return;
@@ -101,7 +101,7 @@ my $ExitStatus = 0;
 sub Run {
     Getopt::Long::GetOptions(
         'help'             => \$Help,
-        'otrs-user=s'      => \$OtrsUser,
+        'ligero-user=s'      => \$LigeroUser,
         'web-group=s'      => \$WebGroup,
         'admin-group=s'    => \$AdminGroup,
         'dry-run'          => \$DryRun,
@@ -120,9 +120,9 @@ sub Run {
     }
 
     # check params
-    $OtrsUserID = getpwnam $OtrsUser;
-    if ( !$OtrsUser || !defined $OtrsUserID ) {
-        print STDERR "ERROR: --otrs-user is missing or invalid.\n";
+    $LigeroUserID = getpwnam $LigeroUser;
+    if ( !$LigeroUser || !defined $LigeroUserID ) {
+        print STDERR "ERROR: --ligero-user is missing or invalid.\n";
         exit 1;
     }
     $WebGroupID = getgrnam $WebGroup;
@@ -142,14 +142,14 @@ sub Run {
         push @IgnoreFiles, qr{$Regex}smx;
     }
 
-    print "Setting permissions on $OTRSDirectory\n";
+    print "Setting permissions on $LIGERODirectory\n";
     File::Find::find(
         {
             wanted   => \&SetPermissions,
             no_chdir => 1,
             follow   => 1,
         },
-        $OTRSDirectory,
+        $LIGERODirectory,
     );
     exit $ExitStatus;
 }
@@ -162,14 +162,14 @@ sub SetPermissions {
     # If the link is a dangling symbolic link, then fullname will be set to undef.
     return if !defined $File;
 
-    # Make sure it is inside the OTRS directory to avoid following symlinks outside
-    if ( substr( $File, 0, $OTRSDirectoryLength ) ne $OTRSDirectory ) {
+    # Make sure it is inside the LIGERO directory to avoid following symlinks outside
+    if ( substr( $File, 0, $LIGERODirectoryLength ) ne $LIGERODirectory ) {
         $File::Find::prune = 1;    # don't descend into subdirectories
         return;
     }
 
-    # Now get a canonical relative filename under the OTRS directory
-    my $RelativeFile = substr( $File, $OTRSDirectoryLength ) || '/';
+    # Now get a canonical relative filename under the LIGERO directory
+    my $RelativeFile = substr( $File, $LIGERODirectoryLength ) || '/';
 
     for my $IgnoreRegex (@IgnoreFiles) {
         if ( $RelativeFile =~ $IgnoreRegex ) {
@@ -189,11 +189,11 @@ sub SetFilePermissions {
     my ( $File, $RelativeFile ) = @_;
 
     ## no critic (ProhibitLeadingZeros)
-    # Writable by default, owner OTRS and group webserver.
-    my ( $TargetPermission, $TargetUserID, $TargetGroupID ) = ( 0660, $OtrsUserID, $WebGroupID );
+    # Writable by default, owner LIGERO and group webserver.
+    my ( $TargetPermission, $TargetUserID, $TargetGroupID ) = ( 0660, $LigeroUserID, $WebGroupID );
     if ( -d $File ) {
 
-        # SETGID for all directories so that both OTRS and the web server can write to the files.
+        # SETGID for all directories so that both LIGERO and the web server can write to the files.
         # Other users should be able to read and cd to the directories.
         $TargetPermission = 02775;
     }

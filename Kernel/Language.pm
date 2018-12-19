@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# Copyright (C) 2018-2018 LIGERO AG, https://complemento.net.br/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -75,7 +75,7 @@ sub new {
     }
 
     # take time zone
-    $Self->{TimeZone} = $Param{UserTimeZone} || $Param{TimeZone} || Kernel::System::DateTime->OTRSTimeZoneGet();
+    $Self->{TimeZone} = $Param{UserTimeZone} || $Param{TimeZone} || Kernel::System::DateTime->LIGEROTimeZoneGet();
 
     # Debug
     if ( $Self->{Debug} > 0 ) {
@@ -344,11 +344,11 @@ sub FormatTimeString {
         $ReturnString
             =~ s{(\%B)}{$Self->Translate($MonthAbbr);}egx;
 
-        # output time zone only if it differs from OTRS' time zone
+        # output time zone only if it differs from LIGERO' time zone
         if (
             $Config ne 'DateFormatShort'
             && $Self->{TimeZone}
-            && $Self->{TimeZone} ne Kernel::System::DateTime->OTRSTimeZoneGet()
+            && $Self->{TimeZone} ne Kernel::System::DateTime->LIGEROTimeZoneGet()
             )
         {
             return $ReturnString . " ($Self->{TimeZone})";
@@ -557,7 +557,7 @@ sub LanguageChecksum {
 
 =head1 TERMS AND CONDITIONS
 
-This software is part of the OTRS project (L<https://otrs.org/>).
+This software is part of the LIGERO project (L<https://ligero.org/>).
 
 This software comes with ABSOLUTELY NO WARRANTY. For details, see
 the enclosed file COPYING for license information (GPL). If you

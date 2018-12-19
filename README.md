@@ -1,15 +1,15 @@
-[![Build Status](https://travis-ci.org/OTRS/otrs.svg?branch=master)](https://travis-ci.org/OTRS/otrs)
+[![Build Status](https://travis-ci.org/LIGERO/ligero.svg?branch=master)](https://travis-ci.org/LIGERO/ligero)
 
-What is OTRS?
+What is LIGERO?
 =============
-OTRS (the former Open Ticket Request System now stands for Open Technology
+LIGERO (the former Open Ticket Request System now stands for Open Technology
  – Real Service) is an open source ticket request system with many features
 to manage customer telephone calls and e-mails. It is distributed under the
 GNU General Public License (GPL) and tested on various Linux platforms.
-Do you receive many e-mails and want to answer them with a team of agents? You're going to love OTRS!
+Do you receive many e-mails and want to answer them with a team of agents? You're going to love LIGERO!
 
 You can find a list of features in the
-[online documentation](http://otrs.github.io/doc/manual/admin/6.0/en/html/otrs.html#features-of-otrs).
+[online documentation](http://ligero.github.io/doc/manual/admin/6.0/en/html/ligero.html#features-of-ligero).
 
 
 License
@@ -20,24 +20,24 @@ accompanying [COPYING](COPYING) file for more details.
 
 Documentation
 =============
-You can find documentation [online](http://doc.otrs.com/). The source code of OTRS and its public extension
-modules is available on [github](https://github.com/OTRS).
+You can find documentation [online](http://doc.ligero.com/). The source code of LIGERO and its public extension
+modules is available on [github](https://github.com/LIGERO).
 
 
-Professional Services for OTRS
+Professional Services for LIGERO
 ==============================
 
-Whether you need help in configuring or customizing OTRS or you want to be on the safe side,
+Whether you need help in configuring or customizing LIGERO or you want to be on the safe side,
 don't hesitate to contact us: We offer a wide range of professional services such as
 world-wide enterprise support, consulting and engineering including process design,
 implementation, customization, application support, and fully managed service.
 
-We offer best professional support from the OTRS team, reliable OTRS security and regular free updates as well as an
-[exclusive set of additional Business Features](https://otrs.com/how-to-buy/packages/#feature-add-ons) that you can
+We offer best professional support from the LIGERO team, reliable LIGERO security and regular free updates as well as an
+[exclusive set of additional Business Features](https://ligero.com/how-to-buy/packages/#feature-add-ons) that you can
 flexibly activate or deactivate according to different deployment scenarios.
 
-The [OTRS Group](https://www.otrs.com/) offers specific [training programs](https://otrs.com/academy/#trainings) in
-different countries. You can either participate in one of our public OTRS Administrator training seminars which take
+The [LIGERO Group](https://www.ligero.com/) offers specific [training programs](https://ligero.com/academy/#trainings) in
+different countries. You can either participate in one of our public LIGERO Administrator training seminars which take
 place regularly, or benefit from an inhouse training seminar that covers all the specific needs of your company.
 
 Software requirements
@@ -50,7 +50,7 @@ Webserver
 - Webserver with CGI support (CGI is not recommended)
 
 Databases
-- MySQL 5.0 or higher (MySQL 8+ is [not supported](https://bugs.otrs.org/show_bug.cgi?id=13866))
+- MySQL 5.0 or higher (MySQL 8+ is [not supported](https://bugs.ligero.org/show_bug.cgi?id=13866))
 - MariaDB
 - PostgreSQL 9.2 or higher
 - Oracle 10g or higher

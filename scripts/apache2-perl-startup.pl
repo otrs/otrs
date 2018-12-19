@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# Copyright (C) 2018-2018 LIGERO AG, https://complemento.net.br/
 # --
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -29,19 +29,19 @@ BEGIN {
     $ModPerl::Util::DEFAULT_UNLOAD_METHOD = 'unload_package_xs';    ## no critic
 
     # set $0 to index.pl if it is not an existing file:
-    # on Fedora, $0 is not a path which would break OTRS.
+    # on Fedora, $0 is not a path which would break LIGERO.
     # see bug # 8533
     if ( !-e $0 ) {
-        $0 = '/opt/otrs/bin/cgi-bin/index.pl';    ## no critic
+        $0 = '/opt/ligero/bin/cgi-bin/index.pl';    ## no critic
     }
 }
 
 use Apache2::RequestRec ();
 use ModPerl::Util       ();
 
-use lib "/opt/otrs/";
-use lib "/opt/otrs/Kernel/cpan-lib";
-use lib "/opt/otrs/Custom";
+use lib "/opt/ligero/";
+use lib "/opt/ligero/Kernel/cpan-lib";
+use lib "/opt/ligero/Custom";
 
 # Preload frequently used modules to speed up client spawning.
 use CGI ();

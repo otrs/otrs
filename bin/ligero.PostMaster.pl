@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://complemento.net.br/
 # --
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -16,7 +16,7 @@
 # along with this program. If not, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
-## nofilter(TidyAll::Plugin::OTRS::Perl::BinScripts)
+## nofilter(TidyAll::Plugin::LIGERO::Perl::BinScripts)
 use strict;
 use warnings;
 
@@ -26,7 +26,7 @@ use lib dirname($RealBin);
 use lib dirname($RealBin) . '/Kernel/cpan-lib';
 use lib dirname($RealBin) . '/Custom';
 
-# to get it readable for the web server user and writable for otrs
+# to get it readable for the web server user and writable for ligero
 # group (just in case)
 
 umask 007;
@@ -43,18 +43,18 @@ if ( $Opts{h} ) {
 Read incoming email from STDIN.
 
 Usage:
- otrs.PostMaster.pl -q <QUEUE> -t <TRUSTED>
+ ligero.PostMaster.pl -q <QUEUE> -t <TRUSTED>
 
 Options:
  [-d]                   - Set debug mode.
  [-q] <QUEUE>           - Preselect a target queue by name.
- [-t] <TRUSTED>         - Default is trusted, use '-t 0' to disable trusted mode. This will cause X-OTRS email headers to be ignored.
+ [-t] <TRUSTED>         - Default is trusted, use '-t 0' to disable trusted mode. This will cause X-LIGERO email headers to be ignored.
  [-h]                   - Display help for this command.
 
 Help:
 DEPRECATED. This console command is deprecated, please use 'Maint::PostMaster::Read' instead.
 
- otrs.Console.pl Maint::PostMaster::Read [--target-queue ...] [--untrusted]
+ ligero.Console.pl Maint::PostMaster::Read [--target-queue ...] [--untrusted]
 
 EOF
     exit 1;
@@ -72,14 +72,14 @@ if ( !$Opts{q} ) {
 # create object manager
 local $Kernel::OM = Kernel::System::ObjectManager->new(
     'Kernel::System::Log' => {
-        LogPrefix => 'OTRS-otrs.PostMaster.pl',
+        LogPrefix => 'LIGERO-ligero.PostMaster.pl',
     },
 );
 
 # log the use of a deprecated script
 $Kernel::OM->Get('Kernel::System::Log')->Log(
     Priority => 'error',
-    Message  => "otrs.PostMaster.pl is deprecated, please use console command 'Maint::PostMaster::Read' instead.",
+    Message  => "ligero.PostMaster.pl is deprecated, please use console command 'Maint::PostMaster::Read' instead.",
 );
 
 # convert arguments to console command format

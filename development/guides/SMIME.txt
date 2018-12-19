@@ -9,15 +9,15 @@ openssl x509 -in Certificate.crt -text
 # ---
 
 # How to create a multi CA environment (Root and 2 Intermediate CAs)
-# OTRSRootCA
-#    -> OTRSRDCA
-#       -> OTRSLabCA
+# LIGERORootCA
+#    -> LIGERORDCA
+#       -> LIGEROLabCA
 #---------------------------------------------------
 #          -> smimeuser1  (current user certificate)
 
 #Configure the Root CA
-mkdir OTRSCA
-cd OTRSCA
+mkdir LIGEROCA
+cd LIGEROCA
 mkdir certs crl newcerts private
 echo "01" > serial
 cp /dev/null index.txt
@@ -29,14 +29,14 @@ cp /usr/lib/ssl/openssl.cnf
 
 # Create the Root CA
 # generate a private key
-openssl genrsa -des3 -out private/SMIMECAPrivateKey-OTRSCARoot.pem 4096
+openssl genrsa -des3 -out private/SMIMECAPrivateKey-LIGEROCARoot.pem 4096
 # create a self-signed certificate valid for 10 years
-openssl req -new -x509 -nodes -sha1 -days 3650 -key private/SMIMECAPrivateKey-OTRSCARoot.pem -out SMIMECACertificate-OTRSRoot.crt
+openssl req -new -x509 -nodes -sha1 -days 3650 -key private/SMIMECAPrivateKey-LIGEROCARoot.pem -out SMIMECACertificate-LIGERORoot.crt
 # go for the default values if you adapted the settings in the openssl.cnf file or enter the values you desire
 #---
 
 # Configure Intermediate (RD) CA
-cd OTRSCA
+cd LIGEROCA
 mkdir RD
 cd RD
 cp ../openssl.cnf
@@ -47,20 +47,20 @@ cp /dev/null index.txt
 
 # Create the RD CA
 # generate a key
-openssl genrsa -des3 -out private/SMIMECAPrivateKey-OTRSRD.pem 4096
+openssl genrsa -des3 -out private/SMIMECAPrivateKey-LIGERORD.pem 4096
 # generate a signing request (valid for 10 years)
-openssl req -new -sha1 -key private/SMIMECAPrivateKey-OTRSRD.pem -out SMIMECACertificate-OTRSRD.csr
+openssl req -new -sha1 -key private/SMIMECAPrivateKey-LIGERORD.pem -out SMIMECACertificate-LIGERORD.csr
 # go for the default values if you adapted the settings in the openssl.cnf file or enter the values you desire
 # sing the request to generate the certificate
-mv SMIMECACertificate-OTRSRD.csr ..
+mv SMIMECACertificate-LIGERORD.csr ..
 cd ..
-openssl ca -extensions v3_ca -days 3650 -out SMIMECACertificate-OTRSRD.csr.crt -in SMIMECACertificate-OTRSRD.csr -config openssl.cnf
-# if at this point openssl complaints about different country, organization etc, please change the options in [policy_match] section from 'match' to 'supplied' mv SMIMECACertificate-OTRSRD.* RD
-mv SMIMECACertificate-OTRSRD.csr RD
+openssl ca -extensions v3_ca -days 3650 -out SMIMECACertificate-LIGERORD.csr.crt -in SMIMECACertificate-LIGERORD.csr -config openssl.cnf
+# if at this point openssl complaints about different country, organization etc, please change the options in [policy_match] section from 'match' to 'supplied' mv SMIMECACertificate-LIGERORD.* RD
+mv SMIMECACertificate-LIGERORD.csr RD
 # ----
 
 # Configure Intermediate (Lab) CA
-cd OTRSCA
+cd LIGEROCA
 cd RD
 mkdir Lab
 cd Lab
@@ -72,20 +72,20 @@ cp /dev/null index.txt
 
 # Create the Lab CA
 # generate a key
-openssl genrsa -des3 -out private/SMIMECAPrivateKey-OTRSLab.pem 4096
+openssl genrsa -des3 -out private/SMIMECAPrivateKey-LIGEROLab.pem 4096
 # generate a signing request (valid for 10 years)
-openssl req -new -sha1 -key private/SMIMECAPrivateKey-OTRSLab.pem -out SMIMECACertificate-OTRSLab.csr
+openssl req -new -sha1 -key private/SMIMECAPrivateKey-LIGEROLab.pem -out SMIMECACertificate-LIGEROLab.csr
 # go for the default values if you adapted the settings in the openssl.cnf file or enter the values you desire
 # sing the request to generate the certificate
-mv SMIMECACertificate-OTRSLab.csr ..
+mv SMIMECACertificate-LIGEROLab.csr ..
 cd ..
-openssl ca -extensions v3_ca -days 3650 -out SMIMECACertificate-OTRSLab.csr.crt -in SMIMECACertificate-OTRSLab.csr -config openssl.cnf
-# if at this point openssl complaints about different country, organization etc, please change the options in [policy_match] section from 'match' to 'supplied' mv SMIMECACertificate-OTRSLab.* Lab
-mv SMIMECACertificate-OTRSLab.csr Lab
+openssl ca -extensions v3_ca -days 3650 -out SMIMECACertificate-LIGEROLab.csr.crt -in SMIMECACertificate-LIGEROLab.csr -config openssl.cnf
+# if at this point openssl complaints about different country, organization etc, please change the options in [policy_match] section from 'match' to 'supplied' mv SMIMECACertificate-LIGEROLab.* Lab
+mv SMIMECACertificate-LIGEROLab.csr Lab
 # ---
 
 # Configure User Certificate
-cd OTRSCA
+cd LIGEROCA
 cd RD
 cd Lab
 mkdir User
@@ -101,7 +101,7 @@ openssl req -new -key SMIMEPrivateKey-smimeuser1.pem -out SMIMECertificate-smime
 # sing the request to generate the certificate
 mv SMIMECertificate-smimeuser1.csr ..
 cd ..
-openssl x509 -req -days 3650 -CA cacert.crt -CAkey private/SMIMECAPrivateKey-OTRSLab.pem -CAcreateserial -in SMIMECertificate-smimeuser1.csr  -out SMIMECertificate-smimeuser1.crt
+openssl x509 -req -days 3650 -CA cacert.crt -CAkey private/SMIMECAPrivateKey-LIGEROLab.pem -CAcreateserial -in SMIMECertificate-smimeuser1.csr  -out SMIMECertificate-smimeuser1.crt
 # if at this point openssl complaints about different country, organization etc, please change the options in [policy_match] section from 'match' to 'supplied' mv SMIMECertificate-smimeuser1.* UserCertificate
 mv SMIMECertificate-smimeuser1.* User
 # ---

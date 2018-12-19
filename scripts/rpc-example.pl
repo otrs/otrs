@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# Copyright (C) 2018-2018 LIGERO AG, https://complemento.net.br/
 # --
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -24,7 +24,7 @@ use SOAP::Lite;
 my $User = 'some_user';
 my $Pw   = 'some_pass';
 my $RPC  = SOAP::Lite->new(
-    proxy => 'http://127.0.0.1/otrs/rpc.pl',
+    proxy => 'http://127.0.0.1/ligero/rpc.pl',
     uri   => 'http://localhost/Core'
 );
 
@@ -51,7 +51,7 @@ my %TicketData = (
     Lock         => 'unlock',
     Priority     => '3 normal',
     State        => 'new',
-    CustomerID   => 'www.otrs.com',
+    CustomerID   => 'www.ligero.com',
     CustomerUser => 'customer@example.com',
     OwnerID      => 1,
     UserID       => 1,

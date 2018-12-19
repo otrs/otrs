@@ -1,1 +1,1 @@
-Please see [the online documentation](http://otrs.github.io/doc/).
+Please see [the online documentation](http://ligerosmart.github.io/doc/).

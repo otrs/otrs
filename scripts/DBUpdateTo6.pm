@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# Copyright (C) 2018-2018 LIGERO AG, https://complemento.net.br/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -22,7 +22,7 @@ our @ObjectDependencies = (
 
 =head1 NAME
 
-scripts::DBUpdateTo6 - Perform system upgrade from OTRS 5 to 6.
+scripts::DBUpdateTo6 - Perform system upgrade from LIGERO 5 to 6.
 
 =head1 PUBLIC INTERFACE
 
@@ -222,7 +222,7 @@ sub _TasksGet {
             Module  => 'MigrateConfigEffectiveValues',
         },
         {
-            Message => 'Refresh configuration cache after migration of OTRS 5 settings',
+            Message => 'Refresh configuration cache after migration of LIGERO 5 settings',
             Module  => 'RebuildConfig',
         },
         {
@@ -369,7 +369,7 @@ sub _TasksGet {
 
 =head1 TERMS AND CONDITIONS
 
-This software is part of the OTRS project (L<https://otrs.org/>).
+This software is part of the LIGERO project (L<https://ocomplemento.net.br/>).
 
 This software comes with ABSOLUTELY NO WARRANTY. For details, see
 the enclosed file COPYING for license information (GPL). If you

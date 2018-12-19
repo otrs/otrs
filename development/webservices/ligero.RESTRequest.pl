@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# Copyright (C) 2018-2018 LIGERO AG, https://complemento.net.br/
 # --
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -20,7 +20,7 @@ use strict;
 use warnings;
 use utf8;
 
-## nofilter(TidyAll::Plugin::OTRS::Perl::Dumper)
+## nofilter(TidyAll::Plugin::LIGERO::Perl::Dumper)
 
 # use ../ as lib location
 use File::Basename;
@@ -31,8 +31,8 @@ use JSON;
 use REST::Client;
 
 # This is the HOST for the web service the format is:
-# <HTTP_TYPE>:://<OTRS_FQDN>/nph-genericinterface.pl
-my $Host = 'http://localhost/otrs/nph-genericinterface.pl';
+# <HTTP_TYPE>:://<LIGERO_FQDN>/nph-genericinterface.pl
+my $Host = 'http://localhost/ligero/nph-genericinterface.pl';
 
 my $RestClient = REST::Client->new(
     {
@@ -63,7 +63,7 @@ my $SearchControllerAndRequest = '/Webservice/GenericTicketConnectorREST/Ticket'
 my $HistoryControllerAndRequest = '/Webservice/GenericTicketConnectorREST/TicketHistory/1';
 
 # TicketGet Example
-# See the documentation of OTRSGenericInterfaceREST on how to setup
+# See the documentation of LIGEROGenericInterfaceREST on how to setup
 #   - web service
 #   - transport
 #   - operations
@@ -98,7 +98,7 @@ else {
 }
 
 # TicketSearch Example
-# See the documentation of OTRSGenericInterfaceREST on how to setup
+# See the documentation of LIGEROGenericInterfaceREST on how to setup
 #   - web service
 #   - transport
 #   - operations
@@ -135,7 +135,7 @@ else {
 }
 
 # TicketCreate Example
-# See the documentation of OTRSGenericInterfaceREST on how to setup
+# See the documentation of LIGEROGenericInterfaceREST on how to setup
 # - web service
 # - transport
 # - operations
@@ -191,7 +191,7 @@ else {
 }
 
 # TicketUpdate Example
-# See the documentation of OTRSGenericInterfaceREST on how to setup
+# See the documentation of LIGEROGenericInterfaceREST on how to setup
 #   - web service
 #   - transport
 #   - operations
@@ -226,7 +226,7 @@ else {
 }
 
 # TicketHistoryGet Example
-# See the documentation of OTRSGenericInterfaceREST on how to setup
+# See the documentation of LIGEROGenericInterfaceREST on how to setup
 #   - web service
 #   - transport
 #   - operations

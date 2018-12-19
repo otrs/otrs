@@ -1,15 +1,15 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# Copyright (C) 2018-2018 LIGERO AG, https://complemento.net.br/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
 # did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
-# Default configuration for OTRS. All changes to this file will be lost after an
+# Default configuration for LIGERO. All changes to this file will be lost after an
 #   update, please use AdminSystemConfiguration to configure your system.
 
-## nofilter(TidyAll::Plugin::OTRS::Perl::LayoutObject)
+## nofilter(TidyAll::Plugin::LIGERO::Perl::LayoutObject)
 
 package Kernel::Config::Defaults;
 
@@ -17,7 +17,7 @@ use strict;
 use warnings;
 use utf8;
 
-# Perl 5.16.0 is the required minimum version to use OTRS.
+# Perl 5.16.0 is the required minimum version to use LIGERO.
 use 5.016_000;
 
 # prepend '../Custom', '../Kernel/cpan-lib' and '../' to the module search path @INC
@@ -49,7 +49,7 @@ of L<Kernel::Config>, even though they are actually implemented here.
 
 =head2 LoadDefaults()
 
-loads the default values of settings that are required to run OTRS even
+loads the default values of settings that are required to run LIGERO even
 when it was not fully configured yet.
 
 =cut
@@ -92,11 +92,11 @@ sub LoadDefaults {
     # ScriptAlias
     # Prefix to index.pl used as ScriptAlias in web config
     # (Used when emailing links to agents).
-    $Self->{ScriptAlias} = 'otrs/';
+    $Self->{ScriptAlias} = 'ligero/';
 
     # AdminEmail
     # (Email of the system admin.)
-    $Self->{AdminEmail} = 'support@<OTRS_CONFIG_FQDN>';
+    $Self->{AdminEmail} = 'support@<LIGERO_CONFIG_FQDN>';
 
     # Organization
     # (If this is anything other than '', then the email will have an
@@ -105,7 +105,7 @@ sub LoadDefaults {
 
     # ProductName
     # (Application name displayed in frontend.)
-    $Self->{ProductName} = 'OTRS 6';
+    $Self->{ProductName} = 'LIGERO 6';
 
     # --------------------------------------------------- #
     # database settings                                   #
@@ -116,11 +116,11 @@ sub LoadDefaults {
 
     # Database
     # (The database name.)
-    $Self->{Database} = 'otrs';
+    $Self->{Database} = 'ligero';
 
     # DatabaseUser
     # (The database user.)
-    $Self->{DatabaseUser} = 'otrs';
+    $Self->{DatabaseUser} = 'ligero';
 
     # DatabasePw
     # (The password of database user.)
@@ -128,10 +128,10 @@ sub LoadDefaults {
 
     # DatabaseDSN
     # The database DSN for MySQL ==> more: "perldoc DBD::mysql"
-    $Self->{DatabaseDSN} = "DBI:mysql:database=<OTRS_CONFIG_Database>;host=<OTRS_CONFIG_DatabaseHost>;";
+    $Self->{DatabaseDSN} = "DBI:mysql:database=<LIGERO_CONFIG_Database>;host=<LIGERO_CONFIG_DatabaseHost>;";
 
     # The database DSN for PostgreSQL ==> more: "perldoc DBD::Pg"
-#    $Self->{DatabaseDSN} = "DBI:Pg:dbname=<OTRS_CONFIG_Database>;host=<OTRS_CONFIG_DatabaseHost>;";
+#    $Self->{DatabaseDSN} = "DBI:Pg:dbname=<LIGERO_CONFIG_Database>;host=<LIGERO_CONFIG_DatabaseHost>;";
 
     # The database DSN for Oracle ==> more: "perldoc DBD::oracle"
 #    $Self->{DatabaseDSN} = "DBI:Oracle://$Self->{DatabaseHost}:1521/$Self->{Database}";
@@ -281,19 +281,19 @@ sub LoadDefaults {
 
     # Frontend::WebPath
     # (URL base path of icons, CSS and Java Script.)
-    $Self->{'Frontend::WebPath'} = '/otrs-web/';
+    $Self->{'Frontend::WebPath'} = '/ligero-web/';
 
     # Frontend::JavaScriptPath
     # (URL JavaScript path.)
-    $Self->{'Frontend::JavaScriptPath'} = '<OTRS_CONFIG_Frontend::WebPath>js/';
+    $Self->{'Frontend::JavaScriptPath'} = '<LIGERO_CONFIG_Frontend::WebPath>js/';
 
     # Frontend::CSSPath
     # (URL CSS path.)
-    $Self->{'Frontend::CSSPath'} = '<OTRS_CONFIG_Frontend::WebPath>css/';
+    $Self->{'Frontend::CSSPath'} = '<LIGERO_CONFIG_Frontend::WebPath>css/';
 
     # Frontend::ImagePath
     # (URL image path of icons for navigation.)
-    $Self->{'Frontend::ImagePath'} = '<OTRS_CONFIG_Frontend::WebPath>skins/Agent/default/img/';
+    $Self->{'Frontend::ImagePath'} = '<LIGERO_CONFIG_Frontend::WebPath>skins/Agent/default/img/';
 
     # DefaultViewNewLine
     # (insert new line in text messages after max x chars and
@@ -364,7 +364,7 @@ sub LoadDefaults {
 #    $Self->{'LogModule::SysLog::Charset'} = 'utf-8';
 
     # param for LogModule Kernel::System::Log::File (required!)
-    $Self->{'LogModule::LogFile'} = '/tmp/otrs.log';
+    $Self->{'LogModule::LogFile'} = '/tmp/ligero.log';
 
     # param if the date (yyyy-mm) should be added as suffix to
     # logfile [0|1]
@@ -399,11 +399,11 @@ sub LoadDefaults {
 
     # --------------------------------------------------- #
     # authentication settings                             #
-    # (enable what you need, auth against otrs db,        #
+    # (enable what you need, auth against ligero db,        #
     # against LDAP directory, against HTTP basic auth     #
     # or against Radius server)                           #
     # --------------------------------------------------- #
-    # This is the auth. module against the otrs db
+    # This is the auth. module against the ligero db
     $Self->{AuthModule} = 'Kernel::System::Auth::DB';
 
     # defines AuthSyncBackend (AuthSyncModule) for AuthModule
@@ -426,8 +426,8 @@ sub LoadDefaults {
 #    $Self->{'AuthModule::LDAP::UID'} = 'uid';
 
     # Check if the user is allowed to auth in a posixGroup
-    # (e. g. user needs to be in a group xyz to use otrs)
-#    $Self->{'AuthModule::LDAP::GroupDN'} = 'cn=otrsallow,ou=posixGroups,dc=example,dc=com';
+    # (e. g. user needs to be in a group xyz to use ligero)
+#    $Self->{'AuthModule::LDAP::GroupDN'} = 'cn=ligeroallow,ou=posixGroups,dc=example,dc=com';
 #    $Self->{'AuthModule::LDAP::AccessAttr'} = 'memberUid';
     # for ldap posixGroups objectclass (just uid)
 #    $Self->{'AuthModule::LDAP::UserAttr'} = 'UID';
@@ -456,7 +456,7 @@ sub LoadDefaults {
     # is not in use.
 #    $Self->{'AuthModule::LDAP::UserLowerCase'} = 0;
 
-    # In case you need to use OTRS in iso-charset, you can define this
+    # In case you need to use LIGERO in iso-charset, you can define this
     # by using this option (converts utf-8 data from LDAP to iso).
 #    $Self->{'AuthModule::LDAP::Charset'} = 'iso-8859-1';
 
@@ -484,8 +484,8 @@ sub LoadDefaults {
     # Note:
     # If you use this module, you should use as fallback the following
     # config settings if user isn't login through apache ($ENV{REMOTE_USER}).
-#    $Self->{LoginURL} = 'http://host.example.com/not-authorised-for-otrs.html';
-#    $Self->{LogoutURL} = 'http://host.example.com/thanks-for-using-otrs.html';
+#    $Self->{LoginURL} = 'http://host.example.com/not-authorised-for-ligero.html';
+#    $Self->{LogoutURL} = 'http://host.example.com/thanks-for-using-ligero.html';
 
     # This is example configuration to auth. agents against a radius server.
 #    $Self->{'AuthModule'} = 'Kernel::System::Auth::Radius';
@@ -549,7 +549,7 @@ sub LoadDefaults {
 #        UserEmail     => 'mail',
 #    };
 
-    # In case you need to use OTRS in iso-charset, you can define this
+    # In case you need to use LIGERO in iso-charset, you can define this
     # by using this option (converts utf-8 data from LDAP to iso).
 #    $Self->{'AuthSyncModule::LDAP::Charset'} = 'iso-8859-1';
 
@@ -580,11 +580,11 @@ sub LoadDefaults {
 
     # AuthSyncModule::LDAP::UserSyncGroupsDefinition
     # (If "LDAP" was selected for AuthModule and you want to sync LDAP
-    # groups to otrs groups, define the following.)
+    # groups to ligero groups, define the following.)
 #    $Self->{'AuthSyncModule::LDAP::UserSyncGroupsDefinition'} = {
 #        # ldap group
-#        'cn=agent,o=otrs' => {
-#            # otrs group
+#        'cn=agent,o=ligero' => {
+#            # ligero group
 #            'admin' => {
 #                # permission
 #                rw => 1,
@@ -595,7 +595,7 @@ sub LoadDefaults {
 #                ro => 1,
 #            },
 #        },
-#        'cn=agent2,o=otrs' => {
+#        'cn=agent2,o=ligero' => {
 #            'users' => {
 #                rw => 1,
 #                ro => 1,
@@ -605,28 +605,28 @@ sub LoadDefaults {
 
     # AuthSyncModule::LDAP::UserSyncRolesDefinition
     # (If "LDAP" was selected for AuthModule and you want to sync LDAP
-    # groups to otrs roles, define the following.)
+    # groups to ligero roles, define the following.)
 #    $Self->{'AuthSyncModule::LDAP::UserSyncRolesDefinition'} = {
 #        # ldap group
-#        'cn=agent,o=otrs' => {
-#            # otrs role
+#        'cn=agent,o=ligero' => {
+#            # ligero role
 #            'role1' => 1,
 #            'role2' => 0,
 #        },
-#        'cn=agent2,o=otrs' => {
+#        'cn=agent2,o=ligero' => {
 #            'role3' => 1,
 #        }
 #    };
 
     # AuthSyncModule::LDAP::UserSyncAttributeGroupsDefinition
     # (If "LDAP" was selected for AuthModule and you want to sync LDAP
-    # attributes to otrs groups, define the following.)
+    # attributes to ligero groups, define the following.)
 #    $Self->{'AuthSyncModule::LDAP::UserSyncAttributeGroupsDefinition'} = {
 #        # ldap attribute
 #        'LDAPAttribute' => {
 #            # ldap attribute value
 #            'LDAPAttributeValue1' => {
-#                # otrs group
+#                # ligero group
 #                'admin' => {
 #                    # permission
 #                    rw => 1,
@@ -650,13 +650,13 @@ sub LoadDefaults {
 
     # AuthSyncModule::LDAP::UserSyncAttributeRolesDefinition
     # (If "LDAP" was selected for AuthModule and you want to sync LDAP
-    # attributes to otrs roles, define the following.)
+    # attributes to ligero roles, define the following.)
 #    $Self->{'AuthSyncModule::LDAP::UserSyncAttributeRolesDefinition'} = {
 #        # ldap attribute
 #        'LDAPAttribute' => {
 #            # ldap attribute value
 #            'LDAPAttributeValue1' => {
-#                # otrs role
+#                # ligero role
 #                'role1' => 1,
 #                'role2' => 1,
 #            },
@@ -715,9 +715,9 @@ sub LoadDefaults {
             Group  => 'admin',
             Module => 'Kernel::Output::HTML::Notification::AgentCloudServicesDisabled',
         },
-        '1100-OTRSBusiness' => {
+        '1100-LIGEROBusiness' => {
             Group  => 'admin',
-            Module => 'Kernel::Output::HTML::Notification::AgentOTRSBusiness',
+            Module => 'Kernel::Output::HTML::Notification::AgentLIGEROBusiness',
         },
         '2000-UID-Check' => {
             Module => 'Kernel::Output::HTML::Notification::UIDCheck',
@@ -774,8 +774,8 @@ sub LoadDefaults {
 #    $Self->{SessionModule} = 'Kernel::System::AuthSession::FS';
 
     # SessionName
-    # (Name of the session key. E. g. Session, SessionID, OTRS)
-    $Self->{SessionName} = 'OTRSAgentInterface';
+    # (Name of the session key. E. g. Session, SessionID, LIGERO)
+    $Self->{SessionName} = 'LIGEROAgentInterface';
 
     # SessionCheckRemoteIP
     # (If the application is used via a proxy-farm then the
@@ -816,7 +816,7 @@ sub LoadDefaults {
     # SessionDir
     # directory for all sessen id information (just needed if
     # $Self->{SessionModule}='Kernel::System::AuthSession::FS)
-    $Self->{SessionDir} = '<OTRS_CONFIG_Home>/var/sessions';
+    $Self->{SessionDir} = '<LIGERO_CONFIG_Home>/var/sessions';
 
     # SessionTable*
     # (just needed if $Self->{SessionModule}='Kernel::System::AuthSession::DB)
@@ -827,8 +827,8 @@ sub LoadDefaults {
     # Time Settings
     # --------------------------------------------------- #
     # TimeZone
-    # (set the OTRS time zone, default is UTC)
-#    $Self->{'OTRSTimeZone'} = 'UTC';
+    # (set the LIGERO time zone, default is UTC)
+#    $Self->{'LIGEROTimeZone'} = 'UTC';
 
     # Time*
     # (Used for ticket age, escalation and system unlock calculation)
@@ -882,7 +882,7 @@ sub LoadDefaults {
 #    $Self->{WebUploadCacheModule} = 'Kernel::System::Web::UploadCache::FS';
 
     # CGILogPrefix
-    $Self->{CGILogPrefix} = 'OTRS-CGI';
+    $Self->{CGILogPrefix} = 'LIGERO-CGI';
 
     # --------------------------------------------------- #
     # Agent Web Interface
@@ -922,17 +922,17 @@ sub LoadDefaults {
     # directories                                         #
     # --------------------------------------------------- #
     # root directory
-    $Self->{Home} = '/opt/otrs';
+    $Self->{Home} = '/opt/ligero';
 
     # tmp dir
-    $Self->{TempDir} = '<OTRS_CONFIG_Home>/var/tmp';
+    $Self->{TempDir} = '<LIGERO_CONFIG_Home>/var/tmp';
 
     # article dir
-    $Self->{'Ticket::Article::Backend::MIMEBase::ArticleDataDir'} = '<OTRS_CONFIG_Home>/var/article';
+    $Self->{'Ticket::Article::Backend::MIMEBase::ArticleDataDir'} = '<LIGERO_CONFIG_Home>/var/article';
 
     # html template dirs
-    $Self->{TemplateDir}       = '<OTRS_CONFIG_Home>/Kernel/Output';
-    $Self->{CustomTemplateDir} = '<OTRS_CONFIG_Home>/Custom/Kernel/Output';
+    $Self->{TemplateDir}       = '<LIGERO_CONFIG_Home>/Kernel/Output';
+    $Self->{CustomTemplateDir} = '<LIGERO_CONFIG_Home>/Custom/Kernel/Output';
 
     # --------------------------------------------------- #
     # CommonCSS                                           #
@@ -1079,13 +1079,13 @@ sub LoadDefaults {
     # Package::RepositoryRoot
     # (get online repository list, use the fist availabe result)
     $Self->{'Package::RepositoryRoot'} = [
-        'https://ftp.otrs.org/pub/otrs/misc/packages/repository.xml',
+        'https://ftp.ligero.org/pub/ligero/misc/packages/repository.xml',
     ];
 
     # Package::RepositoryList
     # (repository list)
 #    $Self->{'Package::RepositoryList'} = {
-#        'ftp://ftp.example.com/pub/otrs/misc/packages/' => '[Example] ftp://ftp.example.com/',
+#        'ftp://ftp.example.com/pub/ligero/misc/packages/' => '[Example] ftp://ftp.example.com/',
 #    };
 
     # Package::Timeout
@@ -1101,7 +1101,7 @@ sub LoadDefaults {
     # --------------------------------------------------- #
     $Self->{PGP}            = 0;
     $Self->{'PGP::Bin'}     = '/usr/bin/gpg';
-    $Self->{'PGP::Options'} = '--homedir /opt/otrs/.gnupg/ --batch --no-tty --yes';
+    $Self->{'PGP::Options'} = '--homedir /opt/ligero/.gnupg/ --batch --no-tty --yes';
 
 #    $Self->{'PGP::Options'} = '--batch --no-tty --yes';
 #    $Self->{'PGP::Key::Password'}->{'D2DF79FA'} = 1234;
@@ -1195,7 +1195,7 @@ sub LoadDefaults {
         'PreferenceGroup'  => 'Miscellaneous',
         'Key'     => '',
         'Label'   => 'Theme',
-        'Desc'    => 'Select your preferred theme for OTRS.',
+        'Desc'    => 'Select your preferred theme for LIGERO.',
         'Module'  => 'Kernel::Output::HTML::Preferences::Theme',
         'PrefKey' => 'UserTheme',
         'Prio'    => '3000',
@@ -1210,21 +1210,21 @@ sub LoadDefaults {
     # --------------------------------------------------- #
 
     # notification sender
-    $Self->{NotificationSenderName}  = 'OTRS Notifications';
-    $Self->{NotificationSenderEmail} = 'otrs@<OTRS_CONFIG_FQDN>';
+    $Self->{NotificationSenderName}  = 'LIGERO Notifications';
+    $Self->{NotificationSenderEmail} = 'ligero@<LIGERO_CONFIG_FQDN>';
 
     # notification email for new password
-    $Self->{NotificationSubjectLostPassword} = 'New OTRS password';
-    $Self->{NotificationBodyLostPassword}    = 'Hi <OTRS_USERFIRSTNAME>,
+    $Self->{NotificationSubjectLostPassword} = 'New LIGERO password';
+    $Self->{NotificationBodyLostPassword}    = 'Hi <LIGERO_USERFIRSTNAME>,
 
 
-Here\'s your new OTRS password.
+Here\'s your new LIGERO password.
 
-New password: <OTRS_NEWPW>
+New password: <LIGERO_NEWPW>
 
 You can log in via the following URL:
 
-<OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl
+<LIGERO_CONFIG_HttpType>://<LIGERO_CONFIG_FQDN>/<LIGERO_CONFIG_ScriptAlias>index.pl
             ';
 
     # --------------------------------------------------- #
@@ -1235,16 +1235,16 @@ You can log in via the following URL:
     # --------------------------------------------------- #
 
     # SessionName
-    # (Name of the session key. E. g. Session, SessionID, OTRS)
-    $Self->{CustomerPanelSessionName} = 'OTRSCustomerInterface';
+    # (Name of the session key. E. g. Session, SessionID, LIGERO)
+    $Self->{CustomerPanelSessionName} = 'LIGEROCustomerInterface';
 
     # CustomerPanelUserID
     # (The customer panel db-uid.) [default: 1]
     $Self->{CustomerPanelUserID} = 1;
 
-    # CustomerGroupSupport (0 = compat. to OTRS 1.1 or lower)
+    # CustomerGroupSupport (0 = compat. to LIGERO 1.1 or lower)
     # (if this is 1, the you need to set the group <-> customer user
-    # relations! http://host/otrs/index.pl?Action=AdminCustomerUserGroup
+    # relations! http://host/ligero/index.pl?Action=AdminCustomerUserGroup
     # otherway, each user is ro/rw in each group!)
     $Self->{CustomerGroupSupport} = 0;
 
@@ -1301,41 +1301,41 @@ You can log in via the following URL:
     # --------------------------------------------------- #
     # notification email about new password               #
     # --------------------------------------------------- #
-    $Self->{CustomerPanelSubjectLostPassword} = 'New OTRS password';
-    $Self->{CustomerPanelBodyLostPassword}    = 'Hi <OTRS_USERFIRSTNAME>,
+    $Self->{CustomerPanelSubjectLostPassword} = 'New LIGERO password';
+    $Self->{CustomerPanelBodyLostPassword}    = 'Hi <LIGERO_USERFIRSTNAME>,
 
 
-New password: <OTRS_NEWPW>
+New password: <LIGERO_NEWPW>
 
-<OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>customer.pl
+<LIGERO_CONFIG_HttpType>://<LIGERO_CONFIG_FQDN>/<LIGERO_CONFIG_ScriptAlias>customer.pl
             ';
 
     # --------------------------------------------------- #
     # notification email about new account                #
     # --------------------------------------------------- #
-    $Self->{CustomerPanelSubjectNewAccount} = 'New OTRS Account!';
-    $Self->{CustomerPanelBodyNewAccount}    = 'Hi <OTRS_USERFIRSTNAME>,
+    $Self->{CustomerPanelSubjectNewAccount} = 'New LIGERO Account!';
+    $Self->{CustomerPanelBodyNewAccount}    = 'Hi <LIGERO_USERFIRSTNAME>,
 
-You or someone impersonating you has created a new OTRS account for
+You or someone impersonating you has created a new LIGERO account for
 you.
 
-Full name: <OTRS_USERFIRSTNAME> <OTRS_USERLASTNAME>
-User name: <OTRS_USERLOGIN>
-Password : <OTRS_USERPASSWORD>
+Full name: <LIGERO_USERFIRSTNAME> <LIGERO_USERLASTNAME>
+User name: <LIGERO_USERLOGIN>
+Password : <LIGERO_USERPASSWORD>
 
 You can log in via the following URL. We encourage you to change your password
 via the Preferences button after logging in.
 
-<OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>customer.pl
+<LIGERO_CONFIG_HttpType>://<LIGERO_CONFIG_FQDN>/<LIGERO_CONFIG_ScriptAlias>customer.pl
             ';
 
     # --------------------------------------------------- #
     # customer authentication settings                    #
-    # (enable what you need, auth against otrs db,        #
+    # (enable what you need, auth against ligero db,        #
     # against a LDAP directory, against HTTP basic        #
     # authentication and against Radius server)           #
     # --------------------------------------------------- #
-    # This is the auth. module for the otrs db
+    # This is the auth. module for the ligero db
     # you can also configure it using a remote database
     $Self->{'Customer::AuthModule'}                       = 'Kernel::System::CustomerAuth::DB';
     $Self->{'Customer::AuthModule::DB::Table'}            = 'customer_user';
@@ -1360,8 +1360,8 @@ via the Preferences button after logging in.
 #    $Self->{'Customer::AuthModule::LDAP::UID'} = 'uid';
 
     # Check if the user is allowed to auth in a posixGroup
-    # (e. g. user needs to be in a group xyz to use otrs)
-#    $Self->{'Customer::AuthModule::LDAP::GroupDN'} = 'cn=otrsallow,ou=posixGroups,dc=example,dc=com';
+    # (e. g. user needs to be in a group xyz to use ligero)
+#    $Self->{'Customer::AuthModule::LDAP::GroupDN'} = 'cn=ligeroallow,ou=posixGroups,dc=example,dc=com';
 #    $Self->{'Customer::AuthModule::LDAP::AccessAttr'} = 'memberUid';
     # for ldap posixGroups objectclass (just uid)
 #    $Self->{'Customer::AuthModule::LDAP::UserAttr'} = 'UID';
@@ -1407,8 +1407,8 @@ via the Preferences button after logging in.
 #    $Self->{'Customer::AuthModule::HTTPBasicAuth::ReplaceRegExp'} = '^(.+?)@.+?$';
     # If you use this module, you should use as fallback the following
     # config settings if user isn't login through apache ($ENV{REMOTE_USER})
-#    $Self->{CustomerPanelLoginURL} = 'http://host.example.com/not-authorised-for-otrs.html';
-#    $Self->{CustomerPanelLogoutURL} = 'http://host.example.com/thanks-for-using-otrs.html';
+#    $Self->{CustomerPanelLoginURL} = 'http://host.example.com/not-authorised-for-ligero.html';
+#    $Self->{CustomerPanelLogoutURL} = 'http://host.example.com/thanks-for-using-ligero.html';
 
     # This is example configuration to auth. agents against a radius server
 #    $Self->{'Customer::AuthModule'} = 'Kernel::System::Auth::Radius';
@@ -1527,7 +1527,7 @@ via the Preferences button after logging in.
             [ 'UserLogin',        Translatable('Username'),            'login',          1, 1, 'var', '', 0, undef, undef ],
             [ 'UserPassword',     Translatable('Password'),            'pw',             0, 0, 'var', '', 0, undef, undef ],
             [ 'UserEmail',        Translatable('Email'),               'email',          1, 1, 'var', '', 0, undef, undef ],
-#            [ 'UserEmail',        Translatable('Email'),               'email',          1, 1, 'var', '[% Env("CGIHandle") %]?Action=AgentTicketCompose;ResponseID=1;TicketID=[% Data.TicketID | uri %];ArticleID=[% Data.ArticleID | uri %]', 0, '', 'AsPopup OTRSPopup_TicketAction' ],
+#            [ 'UserEmail',        Translatable('Email'),               'email',          1, 1, 'var', '[% Env("CGIHandle") %]?Action=AgentTicketCompose;ResponseID=1;TicketID=[% Data.TicketID | uri %];ArticleID=[% Data.ArticleID | uri %]', 0, '', 'AsPopup LIGEROPopup_TicketAction' ],
             [ 'UserCustomerID',   Translatable('CustomerID'),          'customer_id',    0, 1, 'var', '', 0, undef, undef ],
 #            [ 'UserCustomerIDs',  Translatable('CustomerIDs'),         'customer_ids',   1, 0, 'var', '', 0, undef, undef ],
             [ 'UserPhone',        Translatable('Phone'),               'phone',          1, 0, 'var', '', 0, undef, undef ],
@@ -1989,7 +1989,7 @@ sub new {
     # load RELEASE file
     if ( -e !"$Self->{Home}/RELEASE" ) {
         print STDERR
-            "ERROR: $Self->{Home}/RELEASE does not exist! This file is needed by central system parts of OTRS, the system will not work without this file.\n";
+            "ERROR: $Self->{Home}/RELEASE does not exist! This file is needed by central system parts of LIGERO, the system will not work without this file.\n";
         die;
     }
 
@@ -2013,7 +2013,7 @@ sub new {
     }
     else {
         print STDERR
-            "ERROR: Can't read $Self->{Home}/RELEASE: $! This file is needed by central system parts of OTRS, the system will not work without this file.\n";
+            "ERROR: Can't read $Self->{Home}/RELEASE: $! This file is needed by central system parts of LIGERO, the system will not work without this file.\n";
         die;
     }
 
@@ -2030,7 +2030,7 @@ sub new {
             next KEY if !defined $Key;
 
             if ( defined $Self->{$Key} ) {
-                $Self->{$Key} =~ s/\<OTRS_CONFIG_(.+?)\>/$Self->{$1}/g;
+                $Self->{$Key} =~ s/\<LIGERO_CONFIG_(.+?)\>/$Self->{$1}/g;
             }
             else {
                 print STDERR "ERROR: $Key not defined!\n";
@@ -2095,7 +2095,7 @@ sub Set {
     return 1;
 }
 
-## nofilter(TidyAll::Plugin::OTRS::Perl::Translatable)
+## nofilter(TidyAll::Plugin::LIGERO::Perl::Translatable)
 
 # This is a no-op to mark a text as translatable in the Perl code.
 #   We use our own version here instead of importing Language::Translatable to not add a dependency.
@@ -2164,7 +2164,7 @@ sub AutoloadPerlPackages {
             # Don't use the MainObject here to load the file.
             eval {
                 my $FileName = $Package =~ s{::}{/}smxgr;
-                require $FileName . '.pm'; ## nofilter(TidyAll::Plugin::OTRS::Perl::Require)
+                require $FileName . '.pm'; ## nofilter(TidyAll::Plugin::LIGERO::Perl::Require)
             };
         }
     }
@@ -2176,7 +2176,7 @@ sub AutoloadPerlPackages {
 
 =head1 TERMS AND CONDITIONS
 
-This software is part of the OTRS project (L<https://otrs.org/>).
+This software is part of the LIGERO project (L<https://ligero.org/>).
 
 This software comes with ABSOLUTELY NO WARRANTY. For details, see
 the enclosed file COPYING for license information (GPL). If you

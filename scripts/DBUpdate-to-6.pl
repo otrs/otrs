@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# Copyright (C) 2018-2018 LIGERO AG, https://complemento.net.br/
 # --
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -32,7 +32,7 @@ use Getopt::Long;
 
 local $Kernel::OM = Kernel::System::ObjectManager->new(
     'Kernel::System::Log' => {
-        LogPrefix => 'OTRS-DBUpdate-to-6.pl',
+        LogPrefix => 'LIGERO-DBUpdate-to-6.pl',
     },
 );
 
@@ -55,8 +55,8 @@ Getopt::Long::GetOptions(
     if ( $Options{Help} ) {
         print <<"EOF";
 
-DBUpdate-to-6.pl - Upgrade script for OTRS 5 to 6 migration.
-Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+DBUpdate-to-6.pl - Upgrade script for LIGERO 5 to 6 migration.
+Copyright (C) 2018-2018 LIGERO AG, https://complemento.net.br/
 
 Usage: $0
     Options are as follows:
@@ -74,8 +74,8 @@ EOF
     if ( $> == 0 ) {    # $EFFECTIVE_USER_ID
         die "
 Cannot run this program as root.
-Please run it as the 'otrs' user or with the help of su:
-    su -c \"$0\" -s /bin/bash otrs
+Please run it as the 'ligero' user or with the help of su:
+    su -c \"$0\" -s /bin/bash ligero
 ";
     }
 
