@@ -1,11 +1,11 @@
 // --
-// Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+// Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 // --
 // This software comes with ABSOLUTELY NO WARRANTY. For details, see
 // the enclosed file COPYING for license information (GPL). If you
 // did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 // --
-// nofilter(TidyAll::Plugin::OTRS::JavaScript::UnloadEvent)
+// nofilter(TidyAll::Plugin::LIGERO::JavaScript::UnloadEvent)
 
 "use strict";
 
@@ -14,7 +14,7 @@ var Core = Core || {};
 /**
  * @namespace Core.Init
  * @memberof Core
- * @author OTRS AG
+ * @author LIGERO AG
  * @description
  *      This namespace contains initialization functionalities.
  */
@@ -37,7 +37,7 @@ Core.Init = (function (TargetNS) {
      * @param {Object} NewNamespace - The new namespace to register
      * @param {String} InitializationBlock - The name of the initialization block in which the namespace should be registered
      * @description
-     *      Register a new JavaScript namespace for the OTRS app.
+     *      Register a new JavaScript namespace for the LIGERO app.
      *      Parameters define, when the init function of the registered namespace
      *      should be executed.
      */
@@ -62,7 +62,7 @@ Core.Init = (function (TargetNS) {
      * @function
      * @param {String} InitializationBlock - The block of registered namespaces that should be initialized
      * @description
-     *      Initialize the OTRS app. Call all init function of all
+     *      Initialize the LIGERO app. Call all init function of all
      *      previously registered JS namespaces.
      *      Parameter defines, which initialization block should be executed.
      */

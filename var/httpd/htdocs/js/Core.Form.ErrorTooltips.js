@@ -1,5 +1,5 @@
 // --
-// Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+// Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 // --
 // This software comes with ABSOLUTELY NO WARRANTY. For details, see
 // the enclosed file COPYING for license information (GPL). If you
@@ -14,7 +14,7 @@ Core.Form = Core.Form || {};
 /**
  * @namespace Core.Form.ErrorTooltips
  * @memberof Core.Form
- * @author OTRS AG
+ * @author LIGERO AG
  * @description
  *      This namespace contains the Tooltip initialization functions.
  */
@@ -28,7 +28,7 @@ Core.Form.ErrorTooltips = (function (TargetNS) {
      * @description
      *      ID of the container DOM element.
      */
-    var TooltipContainerID = 'OTRS_UI_Tooltips_ErrorTooltip',
+    var TooltipContainerID = 'LIGERO_UI_Tooltips_ErrorTooltip',
     /**
      * @private
      * @name TooltipOffsetTop

@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -1430,7 +1430,7 @@ sub ProcessDump {
 
             # build comment (therefore we need to trick out the filter)
             my $FileStart = <<'EOF';
-# OTRS config file (automatically generated)
+# LIGERO config file (automatically generated)
 # VERSION:1.1
 package Kernel::Config::Files::ZZZProcessManagement;
 use strict;
@@ -2188,7 +2188,7 @@ sub _ProcessImportRollBack {
 
 =head1 TERMS AND CONDITIONS
 
-This software is part of the OTRS project (L<https://ligero.org/>).
+This software is part of the LIGERO project (L<https://ligero.org/>).
 
 This software comes with ABSOLUTELY NO WARRANTY. For details, see
 the enclosed file COPYING for license information (GPL). If you

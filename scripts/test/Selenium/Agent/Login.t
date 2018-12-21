@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -47,8 +47,8 @@ $Selenium->RunTest(
         # Check Secure::DisableBanner functionality.
         my $Product          = $Kernel::OM->Get('Kernel::Config')->Get('Product');
         my $Version          = $Kernel::OM->Get('Kernel::Config')->Get('Version');
-        my $STORMInstalled   = $Kernel::OM->Get('Kernel::System::OTRSBusiness')->OTRSSTORMIsInstalled();
-        my $CONTROLInstalled = $Kernel::OM->Get('Kernel::System::OTRSBusiness')->OTRSCONTROLIsInstalled();
+        my $STORMInstalled   = $Kernel::OM->Get('Kernel::System::LIGEROBusiness')->LIGEROSTORMIsInstalled();
+        my $CONTROLInstalled = $Kernel::OM->Get('Kernel::System::LIGEROBusiness')->LIGEROCONTROLIsInstalled();
 
         for my $Disabled ( reverse 0 .. 1 ) {
             $Helper->ConfigSettingChange(

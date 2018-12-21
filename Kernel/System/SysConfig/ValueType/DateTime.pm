@@ -1,11 +1,11 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
 # did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
-## nofilter(TidyAll::Plugin::OTRS::Perl::LayoutObject)
+## nofilter(TidyAll::Plugin::LIGERO::Perl::LayoutObject)
 package Kernel::System::SysConfig::ValueType::DateTime;
 
 use strict;
@@ -113,14 +113,14 @@ sub SettingEffectiveValueCheck {
         UserID => $Param{UserID},
     );
 
-    my $OTRSTimeZone = $Kernel::OM->Get('Kernel::Config')->Get("OTRSTimeZone");
+    my $LIGEROTimeZone = $Kernel::OM->Get('Kernel::Config')->Get("LIGEROTimeZone");
     my $DateTimeObject;
 
-    if ( !$Preferences{UserTimeZone} || $Preferences{UserTimeZone} eq $OTRSTimeZone ) {
+    if ( !$Preferences{UserTimeZone} || $Preferences{UserTimeZone} eq $LIGEROTimeZone ) {
         $DateTimeObject = $Kernel::OM->Create(
             'Kernel::System::DateTime',
             ObjectParams => {
-                TimeZone => $OTRSTimeZone,
+                TimeZone => $LIGEROTimeZone,
             },
         );
 
@@ -153,7 +153,7 @@ sub SettingEffectiveValueCheck {
         }
 
         my $Success = $DateTimeObject->ToTimeZone(
-            TimeZone => $OTRSTimeZone,
+            TimeZone => $LIGEROTimeZone,
         );
 
         if ($Success) {
@@ -161,12 +161,12 @@ sub SettingEffectiveValueCheck {
         }
         else {
             $Result{Error} = $Kernel::OM->Get('Kernel::Language')->Translate(
-                "System was not able to calculate user DateTime in OTRSTimeZone!"
+                "System was not able to calculate user DateTime in LIGEROTimeZone!"
             );
 
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
-                Message  => "System was not able to calculate user DateTime in OTRSTimeZone!"
+                Message  => "System was not able to calculate user DateTime in LIGEROTimeZone!"
             );
         }
     }
@@ -269,7 +269,7 @@ sub SettingRender {
         );
     }
 
-    my $TimeZone = $Kernel::OM->Get('Kernel::Config')->Get("OTRSTimeZone");
+    my $TimeZone = $Kernel::OM->Get('Kernel::Config')->Get("LIGEROTimeZone");
 
     my $DateTimeObject = $Kernel::OM->Create(
         'Kernel::System::DateTime',
@@ -415,7 +415,7 @@ sub AddItem {
     my $Name = $Param{Name} . $IDSuffix;
 
     my $LayoutObject = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
-    my $TimeZone     = $Kernel::OM->Get('Kernel::Config')->Get("OTRSTimeZone");
+    my $TimeZone     = $Kernel::OM->Get('Kernel::Config')->Get("LIGEROTimeZone");
 
     my %Preferences = $Kernel::OM->Get('Kernel::System::User')->GetPreferences(
         UserID => $Param{UserID},
@@ -497,7 +497,7 @@ sub AddItem {
 
 =head1 TERMS AND CONDITIONS
 
-This software is part of the OTRS project (L<https://ligero.org/>).
+This software is part of the LIGERO project (L<https://ligero.org/>).
 
 This software comes with ABSOLUTELY NO WARRANTY. For details, see
 the enclosed file COPYING for license information (GPL). If you

@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -94,7 +94,7 @@ $Selenium->RunTest(
 
         # Create real test Salutation.
         my $SalutationRandomID = "Salutation" . $Helper->GetRandomID();
-        my $SalutationRichText = "Dear <OTRS_OWNER_Userfirstname>>,\n\nThank you for your request.";
+        my $SalutationRichText = "Dear <LIGERO_OWNER_Userfirstname>>,\n\nThank you for your request.";
         my $SalutationComment  = "Selenium Salutation test";
 
         $Selenium->find_element( "#Name",     'css' )->send_keys($SalutationRandomID);
@@ -145,7 +145,7 @@ $Selenium->RunTest(
         }
 
         # Edit test Salutation, clear comment and set it to invalid.
-        my $EditSalutationRichText = "Dear <OTRS_CUSTOMER_Userlastname>,\n\nThank you for your request.";
+        my $EditSalutationRichText = "Dear <LIGERO_CUSTOMER_Userlastname>,\n\nThank you for your request.";
 
         $Selenium->find_element( "#RichText", 'css' )->clear();
         $Selenium->find_element( "#RichText", 'css' )->send_keys($EditSalutationRichText);

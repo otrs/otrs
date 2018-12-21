@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -36,7 +36,7 @@ our @ObjectDependencies = (
     'Kernel::System::Loader',
     'Kernel::System::Log',
     'Kernel::System::Main',
-    'Kernel::System::OTRSBusiness',
+    'Kernel::System::LIGEROBusiness',
     'Kernel::System::Scheduler',
     'Kernel::System::SysConfig::Migration',
     'Kernel::System::SysConfig::XML',
@@ -1869,10 +1869,10 @@ sub PackageVerify {
         $PackageVerifyInfo = {
             Description =>
                 Translatable(
-                "<p>If you continue to install this package, the following issues may occur:</p><ul><li>Security problems</li><li>Stability problems</li><li>Performance problems</li></ul><p>Please note that issues that are caused by working with this package are not covered by OTRS service contracts.</p>"
+                "<p>If you continue to install this package, the following issues may occur:</p><ul><li>Security problems</li><li>Stability problems</li><li>Performance problems</li></ul><p>Please note that issues that are caused by working with this package are not covered by LIGERO service contracts.</p>"
                 ),
             Title =>
-                Translatable('Package not verified by the OTRS Group! It is recommended not to use this package.'),
+                Translatable('Package not verified by the LIGERO Group! It is recommended not to use this package.'),
             PackageInstallPossible => 1,
         };
     }
@@ -1881,14 +1881,14 @@ sub PackageVerify {
         $PackageVerifyInfo = {
             Description =>
                 Translatable(
-                "<p>The installation of packages which are not verified by the OTRS Group is not possible by default.</p>"
+                "<p>The installation of packages which are not verified by the LIGERO Group is not possible by default.</p>"
                 )
                 .
                 Translatable(
                 '<p>You can activate the installation of not verified packages in the <a href="%sAction=AdminSystemConfiguration;Subaction=View;Setting=Package%3A%3AAllowNotVerifiedPackages" target="_blank">System Configuration</a>.</p>'
                 ),
             Title =>
-                Translatable('Package not verified by the OTRS Group! It is recommended not to use this package.'),
+                Translatable('Package not verified by the LIGERO Group! It is recommended not to use this package.'),
             PackageInstallPossible => 0,
         };
     }
@@ -2163,7 +2163,7 @@ build an opm package
             Content => '1.0',
         },
         Vendor => {
-            Content => 'OTRS AG',
+            Content => 'LIGERO AG',
         },
         URL => {
             Content => 'L<http://ligero.org/>',
@@ -3088,7 +3088,7 @@ sub AnalyzePackageFrameworkRequirements {
 
 =head2 PackageUpgradeAll()
 
-Updates installed packages to their latest version. Also updates OTRS Business Solution™ if system
+Updates installed packages to their latest version. Also updates LIGERO Business Solution™ if system
     is entitled and there is an update.
 
     my %Result = $PackageObject->PackageUpgradeAll(
@@ -3243,8 +3243,8 @@ sub PackageUpgradeAll {
     PACKAGENAME:
     for my $PackageName ( sort { $InstallOrder{$b} <=> $InstallOrder{$a} } keys %InstallOrder ) {
 
-        if ( $PackageName eq 'OTRSBusiness' ) {
-            my $UpdateSuccess = $Kernel::OM->Get('Kernel::System::OTRSBusiness')->OTRSBusinessUpdate();
+        if ( $PackageName eq 'LIGEROBusiness' ) {
+            my $UpdateSuccess = $Kernel::OM->Get('Kernel::System::LIGEROBusiness')->LIGEROBusinessUpdate();
 
             if ( !$UpdateSuccess ) {
                 $Success = 0;
@@ -3252,7 +3252,7 @@ sub PackageUpgradeAll {
                 next PACKAGENAME;
             }
 
-            $Updated{'OTRS Business Solution™'} = 1;
+            $Updated{'LIGERO Business Solution™'} = 1;
             next PACKAGENAME;
         }
 
@@ -3414,10 +3414,10 @@ sub PackageInstallOrderListGet {
     my %InstallOrder;
     my %Failed;
 
-    my $OTRSBusinessObject = $Kernel::OM->Get('Kernel::System::OTRSBusiness');
+    my $LIGEROBusinessObject = $Kernel::OM->Get('Kernel::System::LIGEROBusiness');
 
-    if ( $OTRSBusinessObject->OTRSBusinessIsInstalled() && $OTRSBusinessObject->OTRSBusinessIsUpdateable() ) {
-        $InstallOrder{OTRSBusiness} = 9999;
+    if ( $LIGEROBusinessObject->LIGEROBusinessIsInstalled() && $LIGEROBusinessObject->LIGEROBusinessIsUpdateable() ) {
+        $InstallOrder{LIGEROBusiness} = 9999;
     }
 
     my $DependenciesSuccess = $Self->_PackageInstallOrderListGet(
@@ -4372,7 +4372,7 @@ CodeUninstall are not called.
 
     $Success = $PackageObject->_PackageUninstallMerged(
         Name        => 'some package name',
-        Home        => 'OTRS Home path',      # Optional
+        Home        => 'LIGERO Home path',      # Optional
         DeleteSaved => 1,                     # or 0, 1 Default, Optional: if set to 1 it also
                                               # delete .save files
     );
@@ -4939,15 +4939,15 @@ sub _ConfigurationDeploy {
         return;
     }
 
-    # get OTRS home directory
+    # get LIGERO home directory
     my $Home = $Kernel::OM->Get('Kernel::Config')->Get('Home');
 
-    # build file location for OTRS5 config file
-    my $OTRS5ConfigFile = "$Home/Kernel/Config/Backups/ZZZAutoOTRS5.pm";
+    # build file location for LIGERO5 config file
+    my $LIGERO5ConfigFile = "$Home/Kernel/Config/Backups/ZZZAutoLIGERO5.pm";
 
-    # if this is a Packageupgrade and if there is a ZZZAutoOTRS5.pm file in the backup location
-    # (this file has been copied there during the migration from OTRS 5 to OTRS 6)
-    if ( ( IsHashRefWithData( $Self->{MergedPackages} ) || $Param{Action} eq 'PackageUpgrade' ) && -e $OTRS5ConfigFile )
+    # if this is a Packageupgrade and if there is a ZZZAutoLIGERO5.pm file in the backup location
+    # (this file has been copied there during the migration from LIGERO 5 to LIGERO 6)
+    if ( ( IsHashRefWithData( $Self->{MergedPackages} ) || $Param{Action} eq 'PackageUpgrade' ) && -e $LIGERO5ConfigFile )
     {
 
         # delete categories cache
@@ -5001,8 +5001,8 @@ sub _ConfigurationDeploy {
 
         # run the migration of the effective values (only for the package settings)
         my $Success = $Kernel::OM->Get('Kernel::System::SysConfig::Migration')->MigrateConfigEffectiveValues(
-            FileClass       => 'Kernel::Config::Backups::ZZZAutoOTRS5',
-            FilePath        => $OTRS5ConfigFile,
+            FileClass       => 'Kernel::Config::Backups::ZZZAutoLIGERO5',
+            FilePath        => $LIGERO5ConfigFile,
             PackageSettings => \@PackageSettings,                         # only migrate the given package settings
             NoOutput => 1,    # we do not want to print status output to the screen
         );
@@ -5100,7 +5100,7 @@ sub _PackageInstallOrderListGet {
     PACKAGENAME:
     for my $PackageName ( sort keys %{ $Param{TargetPackages} } ) {
 
-        next PACKAGENAME if $PackageName eq 'OTRSBusiness';
+        next PACKAGENAME if $PackageName eq 'LIGEROBusiness';
 
         # Prevent cyclic dependencies.
         if ( $Param{Callers}->{$PackageName} ) {
@@ -5219,7 +5219,7 @@ Returns:
                     },
                 ],
                 URL => 'http://ligero.org/',
-                Vendor => 'OTRS AG',
+                Vendor => 'LIGERO AG',
             },
             # ...
         ];
@@ -5303,7 +5303,7 @@ framework version.
 Returns:
 
     %RepositoryList = (
-        'http://ftp.ligero.org/pub/ligero/packages' => 'OTRS Freebie Features',
+        'http://ftp.ligero.org/pub/ligero/packages' => 'LIGERO Freebie Features',
         # ...,
     );
 
@@ -5344,7 +5344,7 @@ sub _ConfiguredRepositoryDefinitionGet {
     return %RepositoryList if exists $RepositoryList{$CurrentITSMRepository};
 
     # Make sure that current ITSM repository is in the list.
-    $RepositoryList{$CurrentITSMRepository} = "OTRS::ITSM $FrameworkVersion Master";
+    $RepositoryList{$CurrentITSMRepository} = "LIGERO::ITSM $FrameworkVersion Master";
 
     return %RepositoryList;
 }
@@ -5455,7 +5455,7 @@ sub DESTROY {
 
 =head1 TERMS AND CONDITIONS
 
-This software is part of the OTRS project (L<https://ligero.org/>).
+This software is part of the LIGERO project (L<https://ligero.org/>).
 
 This software comes with ABSOLUTELY NO WARRANTY. For details, see
 the enclosed file COPYING for license information (GPL). If you

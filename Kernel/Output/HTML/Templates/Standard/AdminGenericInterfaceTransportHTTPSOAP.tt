@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -303,7 +303,7 @@
                                 <div id="MaxLengthError" class="TooltipErrorMessage"><p>[% Translate("This field should be an integer number.") | html %]</p></div>
                                 <div id="MaxLengthServerError" class="TooltipErrorMessage"><p>[% Translate(Data.MaxLengthServerErrorMessage) | html %]</p></div>
                                 <p class="FieldExplanation">
-                                    [% Translate("Here you can specify the maximum size (in bytes) of SOAP messages that OTRS will process.") | html %]
+                                    [% Translate("Here you can specify the maximum size (in bytes) of SOAP messages that LIGERO will process.") | html %]
                                 </p>
                             </div>
                             <div class="Clear"></div>

@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -7,7 +7,7 @@
 # --
 
 package Kernel::System::EventHandler;
-## nofilter(TidyAll::Plugin::OTRS::Perl::Pod::FunctionPod)
+## nofilter(TidyAll::Plugin::LIGERO::Perl::Pod::FunctionPod)
 
 use strict;
 use warnings;
@@ -292,7 +292,7 @@ sub EventHandlerHasQueuedTransactions {
 
 =head1 TERMS AND CONDITIONS
 
-This software is part of the OTRS project (L<https://ligero.org/>).
+This software is part of the LIGERO project (L<https://ligero.org/>).
 
 This software comes with ABSOLUTELY NO WARRANTY. For details, see
 the enclosed file COPYING for license information (GPL). If you

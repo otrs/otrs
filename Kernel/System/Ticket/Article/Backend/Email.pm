@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -499,7 +499,7 @@ sub SendAutoResponse {
     }
 
     # log that no auto response was sent!
-    if ( $OrigHeader{'X-OTRS-Loop'} && $OrigHeader{'X-OTRS-Loop'} !~ /^(false|no)$/i ) {
+    if ( $OrigHeader{'X-LIGERO-Loop'} && $OrigHeader{'X-LIGERO-Loop'} !~ /^(false|no)$/i ) {
 
         # add history row
         $TicketObject->HistoryAdd(
@@ -936,7 +936,7 @@ sub ArticleUpdateTransmissionError {
 
 =head1 TERMS AND CONDITIONS
 
-This software is part of the OTRS project (L<https://ligero.org/>).
+This software is part of the LIGERO project (L<https://ligero.org/>).
 
 This software comes with ABSOLUTELY NO WARRANTY. For details, see
 the enclosed file COPYING for license information (GPL). If you

@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -109,10 +109,10 @@ sub Run {
     # Create a new scope to be sure to destroy local object of the test files.
     {
         # Make sure every UT uses its own clean environment.
-        ## nofilter(TidyAll::Plugin::OTRS::Perl::ObjectManagerCreation)
+        ## nofilter(TidyAll::Plugin::LIGERO::Perl::ObjectManagerCreation)
         local $Kernel::OM = Kernel::System::ObjectManager->new(
             'Kernel::System::Log' => {
-                LogPrefix => 'OTRS-ligero.UnitTest',
+                LogPrefix => 'LIGERO-ligero.UnitTest',
             },
         );
 
@@ -565,7 +565,7 @@ sub _Color {
 
 =head1 TERMS AND CONDITIONS
 
-This software is part of the OTRS project (L<https://ligero.org/>).
+This software is part of the LIGERO project (L<https://ligero.org/>).
 
 This software comes with ABSOLUTELY NO WARRANTY. For details, see
 the enclosed file COPYING for license information (GPL). If you

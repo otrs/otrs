@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -7,7 +7,7 @@
 # --
 
 package Kernel::Modules::AdminPackageManager;
-## nofilter(TidyAll::Plugin::OTRS::Perl::DBObject)
+## nofilter(TidyAll::Plugin::LIGERO::Perl::DBObject)
 
 use strict;
 use warnings;
@@ -522,7 +522,7 @@ sub Run {
                 Priority => 'Error',
                 Data     => "$Name $Version - "
                     . $LayoutObject->{LanguageObject}->Translate(
-                    "Package not verified by the OTRS Group! It is recommended not to use this package."
+                    "Package not verified by the LIGERO Group! It is recommended not to use this package."
                     ),
             );
         }
@@ -1841,7 +1841,7 @@ sub Run {
         );
     }
 
-    # Check if OTRS Daemon is running in the background.
+    # Check if LIGERO Daemon is running in the background.
     #   Get daemon state from the cache.
     my $DaemonRunning = $Kernel::OM->Get('Kernel::System::Cache')->Get(
         Type => 'DaemonRunning',
@@ -1905,7 +1905,7 @@ sub Run {
             Priority => 'Error',
             Data     => "$Package $NotVerifiedPackages{$Package} - "
                 . $LayoutObject->{LanguageObject}->Translate(
-                "Package not verified by the OTRS Group! It is recommended not to use this package."
+                "Package not verified by the LIGERO Group! It is recommended not to use this package."
                 ),
         );
     }
@@ -2205,7 +2205,7 @@ sub _InstallHandling {
 
         if ( $Verified eq 'verified' && !$Self->{CloudServicesDisabled} ) {
             $LayoutObject->Block(
-                Name => 'OTRSVerifyLogo',
+                Name => 'LIGEROVerifyLogo',
             );
         }
 
@@ -2278,7 +2278,7 @@ sub _InstallHandling {
 
             if ( $Verified eq 'verified' ) {
                 $LayoutObject->Block(
-                    Name => 'OTRSVerifyLogo',
+                    Name => 'LIGEROVerifyLogo',
                 );
             }
 
@@ -2500,7 +2500,7 @@ sub _GetFeatureAddonData {
     # as this is the only operation an unsuccessful request means that the operation was also
     # unsuccessful
     if ( !IsHashRefWithData($RequestResult) ) {
-        return Translatable('Can\'t connect to OTRS Feature Add-on list server!');
+        return Translatable('Can\'t connect to LIGERO Feature Add-on list server!');
     }
 
     my $OperationResult = $CloudServiceObject->OperationResultGet(
@@ -2510,10 +2510,10 @@ sub _GetFeatureAddonData {
     );
 
     if ( !IsHashRefWithData($OperationResult) ) {
-        return Translatable('Can\'t get OTRS Feature Add-on list from server!');
+        return Translatable('Can\'t get LIGERO Feature Add-on list from server!');
     }
     elsif ( !$OperationResult->{Success} ) {
-        return $OperationResult->{ErrorMessage} || Translatable('Can\'t get OTRS Feature Add-on from server!');
+        return $OperationResult->{ErrorMessage} || Translatable('Can\'t get LIGERO Feature Add-on from server!');
     }
 
     my $FAOFeed = $OperationResult->{Data}->{FAOs};

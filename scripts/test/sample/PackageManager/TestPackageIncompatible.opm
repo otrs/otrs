@@ -3,7 +3,7 @@
     <Name>TestIncompatible</Name>
     <Version>99.0.1</Version>
     <Framework>99.0.x</Framework>
-    <Vendor>OTRS AG</Vendor>
+    <Vendor>LIGERO AG</Vendor>
     <URL>http://ligero.org/</URL>
     <License>GNU GENERAL PUBLIC LICENSE Version 2, June 199</License>
     <ChangeLog>2005-11-10 New package (some test &lt; &gt; &amp;).</ChangeLog>

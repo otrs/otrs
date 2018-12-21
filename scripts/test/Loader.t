@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -29,13 +29,13 @@ my $Home = $ConfigObject->Get('Home');
 
 {
     my $CSS = $MainObject->FileRead(
-        Location => $Home . '/scripts/test/sample/Loader/OTRS.Reset.css',
+        Location => $Home . '/scripts/test/sample/Loader/LIGERO.Reset.css',
     );
 
     $CSS = ${$CSS};
 
     my $ExpectedCSS = $MainObject->FileRead(
-        Location => $Home . '/scripts/test/sample/Loader/OTRS.Reset.min.css',
+        Location => $Home . '/scripts/test/sample/Loader/LIGERO.Reset.min.css',
     );
 
     $ExpectedCSS = ${$ExpectedCSS};
@@ -55,12 +55,12 @@ my $Home = $ConfigObject->Get('Home');
     );
 
     my $MinifiedCSSFile = $LoaderObject->GetMinifiedFile(
-        Location => $Home . '/scripts/test/sample/Loader/OTRS.Reset.css',
+        Location => $Home . '/scripts/test/sample/Loader/LIGERO.Reset.css',
         Type     => 'CSS',
     );
 
     my $MinifiedCSSFileCached = $LoaderObject->GetMinifiedFile(
-        Location => $Home . '/scripts/test/sample/Loader/OTRS.Reset.css',
+        Location => $Home . '/scripts/test/sample/Loader/LIGERO.Reset.css',
         Type     => 'CSS',
     );
 
@@ -79,7 +79,7 @@ my $Home = $ConfigObject->Get('Home');
 
 {
     my $JavaScript = $MainObject->FileRead(
-        Location => $Home . '/scripts/test/sample/Loader/OTRS.Agent.App.Login.js',
+        Location => $Home . '/scripts/test/sample/Loader/LIGERO.Agent.App.Login.js',
     );
     $JavaScript = ${$JavaScript};
 
@@ -89,7 +89,7 @@ my $Home = $ConfigObject->Get('Home');
     my $MinifiedJS = $LoaderObject->MinifyJavaScript( Code => $JavaScript );
 
     my $ExpectedJS = $MainObject->FileRead(
-        Location => $Home . '/scripts/test/sample/Loader/OTRS.Agent.App.Login.min.js',
+        Location => $Home . '/scripts/test/sample/Loader/LIGERO.Agent.App.Login.min.js',
     );
     $ExpectedJS = ${$ExpectedJS};
     $ExpectedJS =~ s{\r\n}{\n}xmsg;
@@ -106,8 +106,8 @@ my $Home = $ConfigObject->Get('Home');
 {
     my $MinifiedJSFilename = $LoaderObject->MinifyFiles(
         List => [
-            $Home . '/scripts/test/sample/Loader/OTRS.Agent.App.Login.js',
-            $Home . '/scripts/test/sample/Loader/OTRS.Agent.App.Dashboard.js',
+            $Home . '/scripts/test/sample/Loader/LIGERO.Agent.App.Login.js',
+            $Home . '/scripts/test/sample/Loader/LIGERO.Agent.App.Dashboard.js',
         ],
         Type            => 'JavaScript',
         TargetDirectory => $ConfigObject->Get('TempDir'),
@@ -120,8 +120,8 @@ my $Home = $ConfigObject->Get('Home');
 
     my $MinifiedJSFilename2 = $LoaderObject->MinifyFiles(
         List => [
-            $Home . '/scripts/test/sample/Loader/OTRS.Agent.App.Login.js',
-            $Home . '/scripts/test/sample/Loader/OTRS.Agent.App.Dashboard.js',
+            $Home . '/scripts/test/sample/Loader/LIGERO.Agent.App.Login.js',
+            $Home . '/scripts/test/sample/Loader/LIGERO.Agent.App.Dashboard.js',
         ],
         Type            => 'JavaScript',
         TargetDirectory => $ConfigObject->Get('TempDir'),

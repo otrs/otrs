@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -7,7 +7,7 @@
 # --
 
 ## no critic (Modules::RequireExplicitPackage)
-## nofilter(TidyAll::Plugin::OTRS::Perl::TestSubs)
+## nofilter(TidyAll::Plugin::LIGERO::Perl::TestSubs)
 use strict;
 use warnings;
 use utf8;
@@ -28,7 +28,7 @@ my $String = '<?xml version="1.0" encoding="utf-8" ?>
 <ligero_package version="1.0">
   <Name>TestPackage1</Name>
   <Version>0.0.1</Version>
-  <Vendor>OTRS AG</Vendor>
+  <Vendor>LIGERO AG</Vendor>
   <URL>https://ligero.com/</URL>
   <License>GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007</License>
   <ChangeLog>2005-11-10 New package (some test &lt; &gt; &amp;).</ChangeLog>
@@ -45,7 +45,7 @@ my $String2 = '<?xml version="1.0" encoding="utf-8" ?>
 <ligero_package version="1.0">
   <Name>TestPackage2</Name>
   <Version>0.0.1</Version>
-  <Vendor>OTRS AG</Vendor>
+  <Vendor>LIGERO AG</Vendor>
   <URL>https://ligero.com/</URL>
   <License>GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007</License>
   <Description Lang="en">A test package (some test &lt; &gt; &amp;).</Description>
@@ -83,8 +83,8 @@ my @Tests = (
                 DisplayName => 'All Settings',
                 Files       => [],
             },
-            OTRS => {
-                DisplayName => 'OTRS',
+            LIGERO => {
+                DisplayName => 'LIGERO',
                 Files       => [
                     'Calendar.xml', 'CloudServices.xml', 'Daemon.xml', 'Framework.xml', 'GenericInterface.xml',
                     'ProcessManagement.xml', 'Ticket.xml'
@@ -104,8 +104,8 @@ my @Tests = (
                 DisplayName => 'All Settings',
                 Files       => [],
             },
-            OTRS => {
-                DisplayName => 'OTRS',
+            LIGERO => {
+                DisplayName => 'LIGERO',
                 Files       => [
                     'Calendar.xml', 'CloudServices.xml', 'Daemon.xml', 'Framework.xml', 'GenericInterface.xml',
                     'ProcessManagement.xml', 'Ticket.xml'
@@ -129,8 +129,8 @@ my @Tests = (
                 DisplayName => 'All Settings',
                 Files       => [],
             },
-            OTRS => {
-                DisplayName => 'OTRS',
+            LIGERO => {
+                DisplayName => 'LIGERO',
                 Files       => [
                     'Calendar.xml', 'CloudServices.xml', 'Daemon.xml', 'Framework.xml', 'GenericInterface.xml',
                     'ProcessManagement.xml', 'Ticket.xml'

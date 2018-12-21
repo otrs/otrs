@@ -296,25 +296,25 @@ sub Data {
         'Support data collector' => 'Támogatási adatgyűjtő',
         'Hint' => 'Tipp',
         'Currently support data is only shown in this system.' => 'Jelenleg a támogatási adatok csak ezen a rendszeren jelennek meg.',
-        'It is highly recommended to send this data to OTRS Group in order to get better support.' =>
-            'Erősen javasolt az adatok elküldése az OTRS csoportnak annak érdekében, hogy jobb támogatást kapjon.',
+        'It is highly recommended to send this data to LIGERO Group in order to get better support.' =>
+            'Erősen javasolt az adatok elküldése az LIGERO csoportnak annak érdekében, hogy jobb támogatást kapjon.',
         'Configuration' => 'Beállítás',
         'Send support data' => 'Támogatási adatok küldése',
-        'This will allow the system to send additional support data information to OTRS Group.' =>
-            'Ez lehetővé fogja tenni a rendszer számára további támogatási adatok információinak küldését az OTRS csoportnak.',
+        'This will allow the system to send additional support data information to LIGERO Group.' =>
+            'Ez lehetővé fogja tenni a rendszer számára további támogatási adatok információinak küldését az LIGERO csoportnak.',
         'Update' => 'Frissítés',
         'System Registration' => 'Rendszer regisztráció',
-        'To enable data sending, please register your system with OTRS Group or update your system registration information (make sure to activate the \'send support data\' option.)' =>
-            'Az adatküldés engedélyezéséhez regisztrálja a rendszerét az OTRS csoporttal, vagy frissítse a rendszer regisztrációjának információit (győződjön meg arról, hogy aktiválta a „Támogatási adatok küldése” lehetőséget).',
+        'To enable data sending, please register your system with LIGERO Group or update your system registration information (make sure to activate the \'send support data\' option.)' =>
+            'Az adatküldés engedélyezéséhez regisztrálja a rendszerét az LIGERO csoporttal, vagy frissítse a rendszer regisztrációjának információit (győződjön meg arról, hogy aktiválta a „Támogatási adatok küldése” lehetőséget).',
         'Register this System' => 'A rendszer regisztrálása',
         'System Registration is disabled for your system. Please check your configuration.' =>
             'A rendszer regisztráció le van tiltva a rendszerénél. Ellenőrizze a beállításokat.',
 
         # Template: AdminCloudServices
-        'System registration is a service of OTRS Group, which provides a lot of advantages!' =>
-            'A rendszer regisztráció az OTRS csoport szolgáltatása, amely számos előnyt biztosít!',
-        'Please note that the use of OTRS cloud services requires the system to be registered.' =>
-            'Ne feledje, hogy az OTRS felhőszolgáltatások használatához a rendszer regisztrációja szükséges.',
+        'System registration is a service of LIGERO Group, which provides a lot of advantages!' =>
+            'A rendszer regisztráció az LIGERO csoport szolgáltatása, amely számos előnyt biztosít!',
+        'Please note that the use of LIGERO cloud services requires the system to be registered.' =>
+            'Ne feledje, hogy az LIGERO felhőszolgáltatások használatához a rendszer regisztrációja szükséges.',
         'Register this system' => 'A rendszer regisztrálása',
         'Here you can configure available cloud services that communicate securely with %s.' =>
             'Itt tudja beállítani azokat az elérhető felhőszolgáltatásokat, amelyek biztonságosan kommunikálnak a következővel: %s.',
@@ -783,8 +783,8 @@ sub Data {
             'A név használható a különböző hibakezelési beállítások megkülönböztetéséhez.',
         'Please provide a unique name for this web service.' => 'Adjon meg egy egyedi nevet ehhez a webszolgáltatáshoz.',
         'Error handling module backend' => 'Hibakezelési modul háttérprogram',
-        'This OTRS error handling backend module will be called internally to process the error handling mechanism.' =>
-            'Ez az OTRS hibakezelési háttérprogram modul kerül meghívásra belsőleg a hibakezelési mechanizmus feldolgozásához.',
+        'This LIGERO error handling backend module will be called internally to process the error handling mechanism.' =>
+            'Ez az LIGERO hibakezelési háttérprogram modul kerül meghívásra belsőleg a hibakezelési mechanizmus feldolgozásához.',
         'Processing options' => 'Feldolgozási beállítások',
         'Configure filters to control error handling module execution.' =>
             'Szűrők beállítása a hibakezelési modul végrehajtásának vezérléséhez.',
@@ -875,23 +875,23 @@ sub Data {
         'The name is typically used to call up an operation of a remote web service.' =>
             'A név tipikusan egy távoli webszolgáltatás műveletének meghívásához használható.',
         'Invoker backend' => 'Meghívó háttérprogram',
-        'This OTRS invoker backend module will be called to prepare the data to be sent to the remote system, and to process its response data.' =>
-            'Ez az OTRS meghívó háttérprogram modul lesz meghívva a távoli rendszerre küldendő adatok előkészítéséhez, és a válasz adatainak feldolgozásához.',
+        'This LIGERO invoker backend module will be called to prepare the data to be sent to the remote system, and to process its response data.' =>
+            'Ez az LIGERO meghívó háttérprogram modul lesz meghívva a távoli rendszerre küldendő adatok előkészítéséhez, és a válasz adatainak feldolgozásához.',
         'Mapping for outgoing request data' => 'Leképezés a kimenő kérés adataihoz',
         'Configure' => 'Beállítás',
-        'The data from the invoker of OTRS will be processed by this mapping, to transform it to the kind of data the remote system expects.' =>
-            'Ez a leképezés fogja feldolgozni az OTRS meghívójából származó adatokat olyan formára alakítva át azokat, ahogy a távoli rendszer várja.',
+        'The data from the invoker of LIGERO will be processed by this mapping, to transform it to the kind of data the remote system expects.' =>
+            'Ez a leképezés fogja feldolgozni az LIGERO meghívójából származó adatokat olyan formára alakítva át azokat, ahogy a távoli rendszer várja.',
         'Mapping for incoming response data' => 'Leképezés a bejövő válasz adataihoz',
-        'The response data will be processed by this mapping, to transform it to the kind of data the invoker of OTRS expects.' =>
-            'Ez a leképezés fogja a válasz adatait feldolgozni olyan formára alakítva át azokat, ahogy az OTRS meghívója várja.',
+        'The response data will be processed by this mapping, to transform it to the kind of data the invoker of LIGERO expects.' =>
+            'Ez a leképezés fogja a válasz adatait feldolgozni olyan formára alakítva át azokat, ahogy az LIGERO meghívója várja.',
         'Asynchronous' => 'Aszinkron',
         'Condition' => 'Feltétel',
         'Edit this event' => 'Esemény szerkesztése',
         'This invoker will be triggered by the configured events.' => 'Ezt a meghívót a beállított események fogják aktiválni.',
         'To add a new event select the event object and event name and click on the "+" button' =>
             'Egy új esemény hozzáadásához válassza ki az eseményobjektumot és az eseménynevet, majd kattintson a „+” gombra.',
-        'Asynchronous event triggers are handled by the OTRS Scheduler Daemon in background (recommended).' =>
-            'Az aszinkron esemény-aktiválókat az OTRS ütemeződémon kezeli a háttérben (javasolt).',
+        'Asynchronous event triggers are handled by the LIGERO Scheduler Daemon in background (recommended).' =>
+            'Az aszinkron esemény-aktiválókat az LIGERO ütemeződémon kezeli a háttérben (javasolt).',
         'Synchronous event triggers would be processed directly during the web request.' =>
             'A szinkron esemény-aktiválók közvetlenül legyenek feldolgozva a webkérések alatt.',
 
@@ -995,11 +995,11 @@ sub Data {
         'The name is typically used to call up this web service operation from a remote system.' =>
             'A név tipikusan ennek a webszolgáltatás műveletnek a meghívásához használható egy távoli rendszerből.',
         'Operation backend' => 'Műveleti háttérprogram.',
-        'This OTRS operation backend module will be called internally to process the request, generating data for the response.' =>
-            'Ez az OTRS műveleti háttérprogram modul lesz belsőleg meghívva a kérés feldolgozásához, és az adat előállításához a válasz számára.',
+        'This LIGERO operation backend module will be called internally to process the request, generating data for the response.' =>
+            'Ez az LIGERO műveleti háttérprogram modul lesz belsőleg meghívva a kérés feldolgozásához, és az adat előállításához a válasz számára.',
         'Mapping for incoming request data' => 'Leképezés a bejövő kérés adataihoz',
-        'The request data will be processed by this mapping, to transform it to the kind of data OTRS expects.' =>
-            'Ez a leképezés fogja a kérés adatait feldolgozni olyan formára alakítva át azokat, ahogy az OTRS várja.',
+        'The request data will be processed by this mapping, to transform it to the kind of data LIGERO expects.' =>
+            'Ez a leképezés fogja a kérés adatait feldolgozni olyan formára alakítva át azokat, ahogy az LIGERO várja.',
         'Mapping for outgoing response data' => 'Leképezés a kimenő válasz adataihoz',
         'The response data will be processed by this mapping, to transform it to the kind of data the remote system expects.' =>
             'Ez a leképezés fogja a válasz adatait feldolgozni olyan formára alakítva át azokat, ahogy a távoli rendszer várja.',
@@ -1017,8 +1017,8 @@ sub Data {
             'Ezen művelet korlátozása a megadott kérési módszerekre. Ha nincs módszer kiválasztva, akkor minden kérés el lesz fogadva.',
         'Maximum message length' => 'Legnagyobb üzenethossz',
         'This field should be an integer number.' => 'Ez a mező csak egész szám lehet.',
-        'Here you can specify the maximum size (in bytes) of REST messages that OTRS will process.' =>
-            'Itt adhatja meg a REST üzenetek legnagyobb méretét (bájtban), amelyeket az OTRS fel fog dolgozni.',
+        'Here you can specify the maximum size (in bytes) of REST messages that LIGERO will process.' =>
+            'Itt adhatja meg a REST üzenetek legnagyobb méretét (bájtban), amelyeket az LIGERO fel fog dolgozni.',
         'Send Keep-Alive' => 'Életben tartás küldése',
         'This configuration defines if incoming connections should get closed or kept alive.' =>
             'Ez a beállítás azt határozza meg, hogy a bejövő kapcsolatok le legyenek-e zárva vagy maradjanak életben.',
@@ -1118,8 +1118,8 @@ sub Data {
         'Select how SOAP response function wrapper should be constructed.' =>
             'Válassza ki, hogy a SOAP-válasz függvénycsomagolót hogyan kell felépíteni.',
         'Response name free text' => 'Kérés nevének szabad szövege',
-        'Here you can specify the maximum size (in bytes) of SOAP messages that OTRS will process.' =>
-            'Itt adhatja meg a SOAP üzenetek legnagyobb méretét (bájtban), amelyeket az OTRS fel fog dolgozni.',
+        'Here you can specify the maximum size (in bytes) of SOAP messages that LIGERO will process.' =>
+            'Itt adhatja meg a SOAP üzenetek legnagyobb méretét (bájtban), amelyeket az LIGERO fel fog dolgozni.',
         'Encoding' => 'Kódolás',
         'The character encoding for the SOAP message contents.' => 'A SOAP üzenettartalmak karakterkódolása.',
         'e.g utf-8, latin1, iso-8859-1, cp1250, Etc.' => 'például utf-8, latin1, iso-8859-1, cp1250, stb.',
@@ -1162,10 +1162,10 @@ sub Data {
         'Provider transport' => 'Szolgáltató átvitel',
         'Requester transport' => 'Kérő átvitel',
         'Debug threshold' => 'Hibakeresési küszöbszint',
-        'In provider mode, OTRS offers web services which are used by remote systems.' =>
-            'Szolgáltató módban az OTRS olyan webszolgáltatásokat javasol, amelyeket a távoli rendszerek használnak.',
-        'In requester mode, OTRS uses web services of remote systems.' =>
-            'Kérő módban az OTRS a távoli rendszerek webszolgáltatásait használja.',
+        'In provider mode, LIGERO offers web services which are used by remote systems.' =>
+            'Szolgáltató módban az LIGERO olyan webszolgáltatásokat javasol, amelyeket a távoli rendszerek használnak.',
+        'In requester mode, LIGERO uses web services of remote systems.' =>
+            'Kérő módban az LIGERO a távoli rendszerek webszolgáltatásait használja.',
         'Network transport' => 'Hálózati átvitel',
         'Error Handling Modules' => 'Hibakezelési modulok',
         'Error handling modules are used to react in case of errors during the communication. Those modules are executed in a specific order, which can be changed by drag and drop.' =>
@@ -1225,8 +1225,8 @@ sub Data {
         'Filter for mail accounts' => 'Szűrő a levelezőfiókokhoz',
         'All incoming emails with one account will be dispatched in the selected queue.' =>
             'Az összes fiókkal rendelkező bejövő e-mail a kiválasztott várólistába lesz kézbesítve.',
-        'If your account is marked as trusted, the X-OTRS headers already existing at arrival time (for priority etc.) will be kept and used, for example in PostMaster filters.' =>
-            'Ha a fiókja megbízhatóként van megjelölve, akkor az érkezési időben már meglévő X-OTRS fejlécek (a prioritáshoz, stb.) meg lesznek tartva és használva lesznek, például a levelezési szűrőkben.',
+        'If your account is marked as trusted, the X-LIGERO headers already existing at arrival time (for priority etc.) will be kept and used, for example in PostMaster filters.' =>
+            'Ha a fiókja megbízhatóként van megjelölve, akkor az érkezési időben már meglévő X-LIGERO fejlécek (a prioritáshoz, stb.) meg lesznek tartva és használva lesznek, például a levelezési szűrőkben.',
         'Outgoing email can be configured via the Sendmail* settings in %s.' =>
             'A kimenő e-mail a Sendmail* beállításokon keresztül állítható be itt: %s.',
         'System Configuration' => 'Rendszerbeállítások',
@@ -1298,12 +1298,12 @@ sub Data {
             'A jegy dinamikus mezőinek megjelenített értékei, legördülő és többválasztós mezőknél hasznos',
 
         # Template: AdminNotificationEventTransportEmailSettings
-        'You can use OTRS-tags like <OTRS_TICKET_DynamicField_...> to insert values from the current ticket.' =>
-            'Használhatja az OTRS címkéket (mint például <OTRS_TICKET_DynamicField_...>) értékek beszúrásához a jelenlegi jegyből.',
+        'You can use LIGERO-tags like <LIGERO_TICKET_DynamicField_...> to insert values from the current ticket.' =>
+            'Használhatja az LIGERO címkéket (mint például <LIGERO_TICKET_DynamicField_...>) értékek beszúrásához a jelenlegi jegyből.',
 
-        # Template: AdminOTRSBusinessInstalled
+        # Template: AdminLIGEROBusinessInstalled
         'Manage %s' => '%s kezelése',
-        'Downgrade to ((OTRS)) Community Edition' => 'Visszaváltás az ((OTRS)) Community Edition verzióra',
+        'Downgrade to ((LIGERO)) Community Edition' => 'Visszaváltás az ((LIGERO)) Community Edition verzióra',
         'Read documentation' => 'Dokumentáció elolvasása',
         '%s makes contact regularly with cloud.ligero.com to check on available updates and the validity of the underlying contract.' =>
             'Az %s rendszeresen kapcsolatot létesít a cloud.ligero.com kiszolgálóval az elérhető frissítések és az alapjául szolgáló szerződés érvényességének ellenőrzéséhez.',
@@ -1328,44 +1328,44 @@ sub Data {
         'Congratulations, your %s is correctly installed and up to date!' =>
             'Gratulálunk, az %s helyesen van telepítve és naprakész!',
 
-        # Template: AdminOTRSBusinessNotInstalled
-        'Go to the OTRS customer portal' => 'Ugrás az OTRS ügyfélportáljára',
+        # Template: AdminLIGEROBusinessNotInstalled
+        'Go to the LIGERO customer portal' => 'Ugrás az LIGERO ügyfélportáljára',
         '%s will be available soon. Please check again in a few days.' =>
             'Az %s hamarosan elérhető lesz. Ellenőrizze ismét néhány nap múlva.',
         'Please have a look at %s for more information.' => 'Vessen egy pillantást az %s címre a további információkért.',
-        'Your ((OTRS)) Community Edition is the base for all future actions. Please register first before you continue with the upgrade process of %s!' =>
-            'Az ((OTRS)) Community Edition az alapja minden további műveletnek. Először regisztráljon, mielőtt folytatja az %s frissítési folyamatát!',
+        'Your ((LIGERO)) Community Edition is the base for all future actions. Please register first before you continue with the upgrade process of %s!' =>
+            'Az ((LIGERO)) Community Edition az alapja minden további műveletnek. Először regisztráljon, mielőtt folytatja az %s frissítési folyamatát!',
         'Before you can benefit from %s, please contact %s to get your %s contract.' =>
             'Mielőtt használatba venné az %s programot, kérjük lépjen kapcsolatba a szolgáltatóval (%s) az %s szerződés beszerzéséhez.',
-        'Connection to cloud.ligero.com via HTTPS couldn\'t be established. Please make sure that your OTRS can connect to cloud.ligero.com via port 443.' =>
-            'Nem sikerült kapcsolatot létesíteni HTTPS-en keresztül a cloud.ligero.com hellyel. Győződjön meg arról, hogy az OTRS rendszere tud-e kapcsolódni a cloud.ligero.com címre a 443-as porton.',
-        'Package installation requires patch level update of OTRS.' => 'A csomagtelepítés az OTRS hibajavító szintű frissítését igényli.',
+        'Connection to cloud.ligero.com via HTTPS couldn\'t be established. Please make sure that your LIGERO can connect to cloud.ligero.com via port 443.' =>
+            'Nem sikerült kapcsolatot létesíteni HTTPS-en keresztül a cloud.ligero.com hellyel. Győződjön meg arról, hogy az LIGERO rendszere tud-e kapcsolódni a cloud.ligero.com címre a 443-as porton.',
+        'Package installation requires patch level update of LIGERO.' => 'A csomagtelepítés az LIGERO hibajavító szintű frissítését igényli.',
         'Please visit our customer portal and file a request.' => 'Látogassa meg az ügyfélportálunkat, és küldjön egy kérést.',
         'Everything else will be done as part of your contract.' => 'Minden más a szerződése részeként fog történni.',
-        'Your installed OTRS version is %s.' => 'A telepített OTRS verziója %s.',
-        'To install this package, you need to update to OTRS %s or higher.' =>
-            'A csomag telepítéséhez frissítenie kell az OTRS %s vagy magasabb verziójára.',
-        'To install this package, the Maximum OTRS Version is %s.' => 'A csomag telepítéséhez a legmagasabb OTRS verzió %s.',
+        'Your installed LIGERO version is %s.' => 'A telepített LIGERO verziója %s.',
+        'To install this package, you need to update to LIGERO %s or higher.' =>
+            'A csomag telepítéséhez frissítenie kell az LIGERO %s vagy magasabb verziójára.',
+        'To install this package, the Maximum LIGERO Version is %s.' => 'A csomag telepítéséhez a legmagasabb LIGERO verzió %s.',
         'To install this package, the required Framework version is %s.' =>
             'A csomag telepítéséhez a szükséges keretrendszer-verzió %s.',
-        'Why should I keep OTRS up to date?' => 'Miért kell naprakészen tartanom az OTRS-t?',
+        'Why should I keep LIGERO up to date?' => 'Miért kell naprakészen tartanom az LIGERO-t?',
         'You will receive updates about relevant security issues.' => 'Frissítéseket fog kapni a fontos biztonsági problémákról.',
-        'You will receive updates for all other relevant OTRS issues' => 'Frissítéseket fog kapni minden egyéb fontos OTRS problémáról',
+        'You will receive updates for all other relevant LIGERO issues' => 'Frissítéseket fog kapni minden egyéb fontos LIGERO problémáról',
         'With your existing contract you can only use a small part of the %s.' =>
             'A meglévő szerződésével csak egy kis részét tudja használni az %s programnak.',
         'If you would like to take full advantage of the %s get your contract upgraded now! Contact %s.' =>
             'Ha az %s minden előnyét igénybe szeretné venni, akkor frissítse most a szerződését! Kapcsolatfelvétel: %s.',
 
-        # Template: AdminOTRSBusinessUninstall
+        # Template: AdminLIGEROBusinessUninstall
         'Cancel downgrade and go back' => 'Visszaváltás megszakítása és visszalépés',
-        'Go to OTRS Package Manager' => 'Ugrás az OTRS csomagkezelőhöz',
+        'Go to LIGERO Package Manager' => 'Ugrás az LIGERO csomagkezelőhöz',
         'Sorry, but currently you can\'t downgrade due to the following packages which depend on %s:' =>
             'Sajnáljuk, de jelenleg nem válthat vissza a következő csomagok miatt, amelyek ettől függnek: %s:',
         'Vendor' => 'Gyártó',
         'Please uninstall the packages first using the package manager and try again.' =>
             'Először távolítsa el a csomagokat a csomagkezelő használatával, majd próbálja újra.',
-        'You are about to downgrade to ((OTRS)) Community Edition and will lose the following features and all data related to these:' =>
-            'Arra készül, hogy visszavált az ((OTRS)) Community Edition verzióra, és el fogja veszíteni a következő szolgáltatásokat és minden ezekhez kapcsolódó adatot:',
+        'You are about to downgrade to ((LIGERO)) Community Edition and will lose the following features and all data related to these:' =>
+            'Arra készül, hogy visszavált az ((LIGERO)) Community Edition verzióra, és el fogja veszíteni a következő szolgáltatásokat és minden ezekhez kapcsolódó adatot:',
         'Chat' => 'Csevegés',
         'Report Generator' => 'Jelentés előállító',
         'Timeline view in ticket zoom' => 'Idővonal nézet a jegynagyításban',
@@ -1379,7 +1379,7 @@ sub Data {
         'PGP Management' => 'PGP kezelés',
         'Add PGP Key' => 'PGP kulcs hozzáadása',
         'PGP support is disabled' => 'A PGP támogatás le van tiltva',
-        'To be able to use PGP in OTRS, you have to enable it first.' => 'Hogy képes legyen PGP-t használni az OTRS-ben, ahhoz először engedélyeznie kell azt.',
+        'To be able to use PGP in LIGERO, you have to enable it first.' => 'Hogy képes legyen PGP-t használni az LIGERO-ben, ahhoz először engedélyeznie kell azt.',
         'Enable PGP support' => 'PGP támogatás engedélyezése',
         'Faulty PGP configuration' => 'Hibás PGP beállítás',
         'PGP support is enabled, but the relevant configuration contains errors. Please check the configuration using the button below.' =>
@@ -1406,19 +1406,19 @@ sub Data {
             'Valóban újra szeretné telepíteni ezt a csomagot? Minden kézi változtatás el fog veszni.',
         'Go to updating instructions' => 'Ugrás a frissítési utasításokhoz',
         'package information' => 'csomaginformációk',
-        'Package installation requires a patch level update of OTRS.' => 'A csomagtelepítés az OTRS hibajavító szintű frissítését igényli.',
-        'Package update requires a patch level update of OTRS.' => 'A csomagfrissítés az OTRS hibajavító szintű frissítését igényli.',
-        'If you are a OTRS Business Solution™ customer, please visit our customer portal and file a request.' =>
-            'Ha Ön OTRS Business Solution™ ügyfél, akkor látogassa meg az ügyfélportálunkat, és küldjön egy kérést.',
-        'Please note that your installed OTRS version is %s.' => 'Ne feledje, hogy a telepített OTRS verziója %s.',
-        'To install this package, you need to update OTRS to version %s or newer.' =>
-            'A csomag telepítéséhez frissítenie kell az OTRS-t %s vagy újabb verzióra.',
-        'This package can only be installed on OTRS version %s or older.' =>
-            'Ez a csomag csak az OTRS %s vagy régebbi verziójára telepíthető.',
-        'This package can only be installed on OTRS version %s or newer.' =>
-            'Ez a csomag csak az OTRS %s vagy újabb verziójára telepíthető.',
-        'You will receive updates for all other relevant OTRS issues.' =>
-            'Frissítéseket fog kapni minden egyéb fontos OTRS problémáról.',
+        'Package installation requires a patch level update of LIGERO.' => 'A csomagtelepítés az LIGERO hibajavító szintű frissítését igényli.',
+        'Package update requires a patch level update of LIGERO.' => 'A csomagfrissítés az LIGERO hibajavító szintű frissítését igényli.',
+        'If you are a LIGERO Business Solution™ customer, please visit our customer portal and file a request.' =>
+            'Ha Ön LIGERO Business Solution™ ügyfél, akkor látogassa meg az ügyfélportálunkat, és küldjön egy kérést.',
+        'Please note that your installed LIGERO version is %s.' => 'Ne feledje, hogy a telepített LIGERO verziója %s.',
+        'To install this package, you need to update LIGERO to version %s or newer.' =>
+            'A csomag telepítéséhez frissítenie kell az LIGERO-t %s vagy újabb verzióra.',
+        'This package can only be installed on LIGERO version %s or older.' =>
+            'Ez a csomag csak az LIGERO %s vagy régebbi verziójára telepíthető.',
+        'This package can only be installed on LIGERO version %s or newer.' =>
+            'Ez a csomag csak az LIGERO %s vagy újabb verziójára telepíthető.',
+        'You will receive updates for all other relevant LIGERO issues.' =>
+            'Frissítéseket fog kapni minden egyéb fontos LIGERO problémáról.',
         'How can I do a patch level update if I don’t have a contract?' =>
             'Hogyan végezhetek hibajavító szintű frissítést, ha nincs szerződésem?',
         'Please find all relevant information within the updating instructions at %s.' =>
@@ -1433,14 +1433,14 @@ sub Data {
         'Install' => 'Telepítés',
         'Update repository information' => 'Tároló-információk frissítése',
         'Cloud services are currently disabled.' => 'A felhőszolgáltatások jelenleg le vannak tiltva.',
-        'OTRS Verify™ can not continue!' => 'Az OTRS Verify™ nem folytatható!',
+        'LIGERO Verify™ can not continue!' => 'Az LIGERO Verify™ nem folytatható!',
         'Enable cloud services' => 'Felhőszolgáltatások engedélyezése',
         'Update all installed packages' => 'Az összes telepített csomag frissítése',
         'Online Repository' => 'Online tároló',
         'Action' => 'Művelet',
         'Module documentation' => 'Modul-dokumentáció',
         'Local Repository' => 'Helyi tároló',
-        'This package is verified by OTRSverify (tm)' => 'Ezt a csomagot az OTRSverify (tm) ellenőrizte.',
+        'This package is verified by LIGEROverify (tm)' => 'Ezt a csomagot az LIGEROverify (tm) ellenőrizte.',
         'Uninstall' => 'Eltávolítás',
         'Package not correctly deployed! Please reinstall the package.' =>
             'A csomag nincs megfelelően üzembe állítva! Telepítse újra a csomagot.',
@@ -1751,29 +1751,29 @@ sub Data {
         'Edit System Registration' => 'Rendszer regisztráció szerkesztése',
         'System Registration Overview' => 'Rendszer regisztráció áttekintője',
         'Register System' => 'Rendszer regisztrálása',
-        'Validate OTRS-ID' => 'OTRS-azonosító ellenőrzése',
+        'Validate LIGERO-ID' => 'LIGERO-azonosító ellenőrzése',
         'Deregister System' => 'Rendszer regisztrációjának törlése',
         'Edit details' => 'Részletek szerkesztése',
         'Show transmitted data' => 'Átvitt adatok megtekintése',
         'Deregister system' => 'Rendszer regisztrációjának törlése',
         'Overview of registered systems' => 'Regisztrált rendszerek áttekintője',
-        'This system is registered with OTRS Group.' => 'Ez a rendszer regisztrálva van az OTRS csoporttal.',
+        'This system is registered with LIGERO Group.' => 'Ez a rendszer regisztrálva van az LIGERO csoporttal.',
         'System type' => 'Rendszertípus',
         'Unique ID' => 'Egyedi azonosító',
         'Last communication with registration server' => 'Utolsó kommunikáció a regisztrációs kiszolgálóval',
         'System Registration not Possible' => 'A rendszer regisztrációja nem lehetséges',
-        'Please note that you can\'t register your system if OTRS Daemon is not running correctly!' =>
-            'Ne feledje, hogy nem tudja regisztrálni a rendszerét, ha az OTRS démon nem fut helyesen!',
+        'Please note that you can\'t register your system if LIGERO Daemon is not running correctly!' =>
+            'Ne feledje, hogy nem tudja regisztrálni a rendszerét, ha az LIGERO démon nem fut helyesen!',
         'Instructions' => 'Utasítások',
         'System Deregistration not Possible' => 'A rendszer regisztrációjának megszüntetése nem lehetséges',
         'Please note that you can\'t deregister your system if you\'re using the %s or having a valid service contract.' =>
             'Ne feledje, hogy hogy nem tudja a rendszer regisztrációját megszüntetni az %s használatakor, vagy ha érvényes szolgáltatói szerződése van.',
-        'OTRS-ID Login' => 'OTRS-azonosító bejelentkezés',
+        'LIGERO-ID Login' => 'LIGERO-azonosító bejelentkezés',
         'Read more' => 'Olvassa tovább',
-        'You need to log in with your OTRS-ID to register your system.' =>
-            'Be kell jelentkeznie az OTRS-azonosítójával a rendszer regisztrálásához.',
-        'Your OTRS-ID is the email address you used to sign up on the OTRS.com webpage.' =>
-            'Az OTRS-azonosítója az OTRS.com weboldalon a regisztrációhoz használt e-mail címe.',
+        'You need to log in with your LIGERO-ID to register your system.' =>
+            'Be kell jelentkeznie az LIGERO-azonosítójával a rendszer regisztrálásához.',
+        'Your LIGERO-ID is the email address you used to sign up on the LIGERO.com webpage.' =>
+            'Az LIGERO-azonosítója az LIGERO.com weboldalon a regisztrációhoz használt e-mail címe.',
         'Data Protection' => 'Adatvédelem',
         'What are the advantages of system registration?' => 'Mik a rendszer regisztrálásának előnyei?',
         'You will receive updates about relevant security releases.' => 'Frissítéseket fog kapni a fontos biztonsági kiadásokról.',
@@ -1782,44 +1782,44 @@ sub Data {
         'This is only the beginning!' => 'És ez még csak a kezdet!',
         'We will inform you about our new services and offerings soon.' =>
             'Hamarosan értesíteni fogjuk az új szolgáltatásainkról és ajánlatainkról.',
-        'Can I use OTRS without being registered?' => 'Használható az OTRS regisztráció nélkül?',
+        'Can I use LIGERO without being registered?' => 'Használható az LIGERO regisztráció nélkül?',
         'System registration is optional.' => 'A rendszer regisztrációja opcionális.',
-        'You can download and use OTRS without being registered.' => 'Letöltheti és használhatja az OTRS-t anélkül, hogy regisztrálva lenne.',
+        'You can download and use LIGERO without being registered.' => 'Letöltheti és használhatja az LIGERO-t anélkül, hogy regisztrálva lenne.',
         'Is it possible to deregister?' => 'Lehetséges a regisztráció törlése?',
         'You can deregister at any time.' => 'Bármikor törölheti a regisztrációt.',
         'Which data is transfered when registering?' => 'Milyen adatok kerülnek átvitelre a regisztrációkor?',
-        'A registered system sends the following data to OTRS Group:' => 'Egy regisztrált rendszer a következő adatokat küldi az OTRS csoportnak:',
-        'Fully Qualified Domain Name (FQDN), OTRS version, Database, Operating System and Perl version.' =>
-            'Teljes képzésű tartománynév (FQDN), OTRS verzió, adatbázis, operációs rendszer és Perl verzió.',
+        'A registered system sends the following data to LIGERO Group:' => 'Egy regisztrált rendszer a következő adatokat küldi az LIGERO csoportnak:',
+        'Fully Qualified Domain Name (FQDN), LIGERO version, Database, Operating System and Perl version.' =>
+            'Teljes képzésű tartománynév (FQDN), LIGERO verzió, adatbázis, operációs rendszer és Perl verzió.',
         'Why do I have to provide a description for my system?' => 'Miért kell leírást megadnom a rendszeremhez?',
         'The description of the system is optional.' => 'A rendszer leírása opcionális.',
         'The description and system type you specify help you to identify and manage the details of your registered systems.' =>
             'A megadott leírás és a rendszer típusa segít az azonosításban, és a regisztrált rendszer részleteinek kezelésében.',
-        'How often does my OTRS system send updates?' => 'Milyen gyakran küld az OTRS rendszerem frissítéseket?',
+        'How often does my LIGERO system send updates?' => 'Milyen gyakran küld az LIGERO rendszerem frissítéseket?',
         'Your system will send updates to the registration server at regular intervals.' =>
             'A rendszer szabályos időközönként fog frissítéseket küldeni a regisztrációs kiszolgálónak.',
         'Typically this would be around once every three days.' => 'Ez tipikusan nagyjából három naponta történik.',
         'If you deregister your system, you will lose these benefits:' =>
             'Ha megszünteti a rendszer regisztrációját, a következő előnyöket fogja elveszíteni:',
-        'You need to log in with your OTRS-ID to deregister your system.' =>
-            'Be kell jelentkeznie az OTRS-azonosítójával a rendszere regisztrációjának törléséhez.',
-        'OTRS-ID' => 'OTRS-azonosító',
-        'You don\'t have an OTRS-ID yet?' => 'Még nincs OTRS-azonosítója?',
+        'You need to log in with your LIGERO-ID to deregister your system.' =>
+            'Be kell jelentkeznie az LIGERO-azonosítójával a rendszere regisztrációjának törléséhez.',
+        'LIGERO-ID' => 'LIGERO-azonosító',
+        'You don\'t have an LIGERO-ID yet?' => 'Még nincs LIGERO-azonosítója?',
         'Sign up now' => 'Regisztráljon most',
         'Forgot your password?' => 'Elfelejtette a jelszavát?',
         'Retrieve a new one' => 'Kérjen egy újat',
         'Next' => 'Következő',
-        'This data will be frequently transferred to OTRS Group when you register this system.' =>
-            'Ezek az adatok rendszeresen el lesznek küldve az OTRS csoportnak, ha regisztrálja a rendszerét.',
+        'This data will be frequently transferred to LIGERO Group when you register this system.' =>
+            'Ezek az adatok rendszeresen el lesznek küldve az LIGERO csoportnak, ha regisztrálja a rendszerét.',
         'Attribute' => 'Jellemző',
         'FQDN' => 'FQDN',
-        'OTRS Version' => 'OTRS verzió',
+        'LIGERO Version' => 'LIGERO verzió',
         'Operating System' => 'Operációs rendszer',
         'Perl Version' => 'Perl verzió',
         'Optional description of this system.' => 'A rendszer opcionális leírása.',
         'Register' => 'Regisztráció',
-        'Continuing with this step will deregister the system from OTRS Group.' =>
-            'Ha folytatja, ezzel a lépéssel törölni fogja a rendszer regisztrációját az OTRS csoportnál.',
+        'Continuing with this step will deregister the system from LIGERO Group.' =>
+            'Ha folytatja, ezzel a lépéssel törölni fogja a rendszer regisztrációját az LIGERO csoportnál.',
         'Deregister' => 'Regisztráció törlése',
         'You can modify registration settings here.' => 'Itt módosíthatja a regisztrációs beállításokat.',
         'Overview of Transmitted Data' => 'Átvitt adatok áttekintője',
@@ -1882,8 +1882,8 @@ sub Data {
         'Add Certificate' => 'Tanúsítvány hozzáadása',
         'Add Private Key' => 'Személyes kulcs hozzáadása',
         'SMIME support is disabled' => 'Az S/MIME támogatás le van tiltva',
-        'To be able to use SMIME in OTRS, you have to enable it first.' =>
-            'Hogy képes legyen S/MIME-t használni az OTRS-ben, ahhoz először engedélyeznie kell azt.',
+        'To be able to use SMIME in LIGERO, you have to enable it first.' =>
+            'Hogy képes legyen S/MIME-t használni az LIGERO-ben, ahhoz először engedélyeznie kell azt.',
         'Enable SMIME support' => 'S/MIME támogatás engedélyezése',
         'Faulty SMIME configuration' => 'Hibás S/MIME beállítás',
         'SMIME support is enabled, but the relevant configuration contains errors. Please check the configuration using the button below.' =>
@@ -2001,10 +2001,10 @@ sub Data {
         'This state is used in the following config settings:' => 'Ez az állapot a következő konfigurációs beállításokban van használva:',
 
         # Template: AdminSupportDataCollector
-        'Sending support data to OTRS Group is not possible!' => 'Nem lehetséges támogatási adatokat küldeni az OTRS csoportnak!',
+        'Sending support data to LIGERO Group is not possible!' => 'Nem lehetséges támogatási adatokat küldeni az LIGERO csoportnak!',
         'Enable Cloud Services' => 'Felhőszolgáltatások engedélyezése',
-        'This data is sent to OTRS Group on a regular basis. To stop sending this data please update your system registration.' =>
-            'Ezeket az adatokat küldik el az OTRS csoportnak rendszeresen. Az adatok küldésének leállításához frissítse a rendszer regisztrációját.',
+        'This data is sent to LIGERO Group on a regular basis. To stop sending this data please update your system registration.' =>
+            'Ezeket az adatokat küldik el az LIGERO csoportnak rendszeresen. Az adatok küldésének leállításához frissítse a rendszer regisztrációját.',
         'You can manually trigger the Support Data sending by pressing this button:' =>
             'Kézzel is aktiválhatja a támogatási adatok küldését a gomb megnyomásával:',
         'Send Update' => 'Frissítés küldése',
@@ -2020,11 +2020,11 @@ sub Data {
         'The email address for this user is invalid, this option has been disabled.' =>
             'Ennek a felhasználónak az e-mail címe érvénytelen, ez a lehetőség le lett tiltva.',
         'Sending' => 'Küldés',
-        'The support bundle will be sent to OTRS Group via email automatically.' =>
-            'A támogatási csomag automatikusan el lesz küldve e-mailben az OTRS csoportnak.',
+        'The support bundle will be sent to LIGERO Group via email automatically.' =>
+            'A támogatási csomag automatikusan el lesz küldve e-mailben az LIGERO csoportnak.',
         'Download File' => 'Fájl letöltése',
-        'A file containing the support bundle will be downloaded to the local system. Please save the file and send it to the OTRS Group, using an alternate method.' =>
-            'A támogatási csomagot tartalmazó fájl le lesz töltve a helyi rendszerre. Mentse el a fájlt, és küldje el az OTRS csoportnak egy alternatív módszer használatával.',
+        'A file containing the support bundle will be downloaded to the local system. Please save the file and send it to the LIGERO Group, using an alternate method.' =>
+            'A támogatási csomagot tartalmazó fájl le lesz töltve a helyi rendszerre. Mentse el a fájlt, és küldje el az LIGERO csoportnak egy alternatív módszer használatával.',
         'Error: Support data could not be collected (%s).' => 'Hiba: A támogatási adatokat nem sikerült összegyűjteni (%s).',
         'Details' => 'Részletek',
 
@@ -2317,17 +2317,17 @@ sub Data {
         'Customer User Information Center' => 'Ügyfél-felhasználó információs központ',
 
         # Template: AgentDaemonInfo
-        'The OTRS Daemon is a daemon process that performs asynchronous tasks, e.g. ticket escalation triggering, email sending, etc.' =>
-            'Az OTRS démon egy démonfolyamat, amely olyan aszinkron feladatokat hajt végre, mint például jegyeszkaláció aktiválás, e-mail küldés, stb.',
-        'A running OTRS Daemon is mandatory for correct system operation.' =>
-            'Egy futó OTRS démon feltétlenül szükséges a helyes rendszerműködéshez.',
-        'Starting the OTRS Daemon' => 'Az OTRS démon indítása',
-        'Make sure that the file \'%s\' exists (without .dist extension). This cron job will check every 5 minutes if the OTRS Daemon is running and start it if needed.' =>
-            'Győződjön meg arról, hogy a(z) „%s” fájl létezik-e (.dist kiterjesztés nélkül). Ez a cron-feladat 5 percenként fogja ellenőrizni, hogy az OTRS démon fut-e, és szükség szerint elindítja azt.',
+        'The LIGERO Daemon is a daemon process that performs asynchronous tasks, e.g. ticket escalation triggering, email sending, etc.' =>
+            'Az LIGERO démon egy démonfolyamat, amely olyan aszinkron feladatokat hajt végre, mint például jegyeszkaláció aktiválás, e-mail küldés, stb.',
+        'A running LIGERO Daemon is mandatory for correct system operation.' =>
+            'Egy futó LIGERO démon feltétlenül szükséges a helyes rendszerműködéshez.',
+        'Starting the LIGERO Daemon' => 'Az LIGERO démon indítása',
+        'Make sure that the file \'%s\' exists (without .dist extension). This cron job will check every 5 minutes if the LIGERO Daemon is running and start it if needed.' =>
+            'Győződjön meg arról, hogy a(z) „%s” fájl létezik-e (.dist kiterjesztés nélkül). Ez a cron-feladat 5 percenként fogja ellenőrizni, hogy az LIGERO démon fut-e, és szükség szerint elindítja azt.',
         'Execute \'%s start\' to make sure the cron jobs of the \'ligero\' user are active.' =>
             'Hajtsa végre a(z) „%s start” parancsot, hogy megbizonyosodjon arról, hogy az „ligero” felhasználó cron-feladatai aktívak-e.',
-        'After 5 minutes, check that the OTRS Daemon is running in the system (\'bin/ligero.Daemon.pl status\').' =>
-            'Ellenőrizze 5 perc után, hogy az OTRS démon fut-e a rendszeren („bin/ligero.Daemon.pl status”).',
+        'After 5 minutes, check that the LIGERO Daemon is running in the system (\'bin/ligero.Daemon.pl status\').' =>
+            'Ellenőrizze 5 perc után, hogy az LIGERO démon fut-e a rendszeren („bin/ligero.Daemon.pl status”).',
 
         # Template: AgentDashboard
         'Dashboard' => 'Vezérlőpult',
@@ -2431,10 +2431,10 @@ sub Data {
         'There are currently no links. Please click \'Create new Links\' on the top to link this item to other objects.' =>
             'Jelenleg nincsenek kapcsolatok. Kattintson a fenti „Új kapcsolatok létrehozása” gombra ezen elem más objektumokkal történő összekapcsolásához.',
 
-        # Template: AgentOTRSBusinessBlockScreen
+        # Template: AgentLIGEROBusinessBlockScreen
         'Unauthorized usage of %s detected' => 'Az %s jogosulatlan használata észlelhető',
-        'If you decide to downgrade to ((OTRS)) Community Edition, you will lose all database tables and data related to %s.' =>
-            'Ha úgy dönt, hogy visszavált az ((OTRS)) Community Edition verzióra, akkor el fogja veszíteni az %s szolgáltatáshoz kapcsolódó összes adatbázis táblát és adatot.',
+        'If you decide to downgrade to ((LIGERO)) Community Edition, you will lose all database tables and data related to %s.' =>
+            'Ha úgy dönt, hogy visszavált az ((LIGERO)) Community Edition verzióra, akkor el fogja veszíteni az %s szolgáltatáshoz kapcsolódó összes adatbázis táblát és adatot.',
 
         # Template: AgentPreferences
         'Edit your preferences' => 'Beállítások szerkesztése',
@@ -2460,7 +2460,7 @@ sub Data {
         'This setting can currently not be saved.' => 'Ezt a beállítás jelenleg nem lehet elmenteni.',
         'This setting can currently not be saved' => 'Ezt a beállítás jelenleg nem lehet elmenteni',
         'Save this setting' => 'Beállítás mentése',
-        'Did you know? You can help translating OTRS at %s.' => 'Tudta? Segíthet az OTRS fordításában a következő címen: %s.',
+        'Did you know? You can help translating LIGERO at %s.' => 'Tudta? Segíthet az LIGERO fordításában a következő címen: %s.',
 
         # Template: SettingsList
         'Reset to default' => 'Visszaállítás az alapértelmezettre',
@@ -2479,7 +2479,7 @@ sub Data {
 
         # Template: AgentStatisticsAdd
         'Statistics Overview' => 'Statisztikák áttekintő',
-        'Read more about statistics in OTRS' => 'Tudjon meg többet az OTRS-ben lévő statisztikákról',
+        'Read more about statistics in LIGERO' => 'Tudjon meg többet az LIGERO-ben lévő statisztikákról',
         'Add Statistics' => 'Statisztikák hozzáadása',
         'Dynamic Matrix' => 'Dinamikus mátrix',
         'Each cell contains a singular data point.' => 'Minden egyes cella egyetlen adatpontot tartalmaz.',
@@ -2925,8 +2925,8 @@ sub Data {
         'Dynamic fields' => 'Dinamikus mezők',
 
         # Template: Error
-        'Really a bug? 5 out of 10 bug reports result from a wrong or incomplete installation of OTRS.' =>
-            'Valóban hiba? 10-ből 5 hibajelentés az OTRS hibás vagy befejezetlen telepítéséből származik.',
+        'Really a bug? 5 out of 10 bug reports result from a wrong or incomplete installation of LIGERO.' =>
+            'Valóban hiba? 10-ből 5 hibajelentés az LIGERO hibás vagy befejezetlen telepítéséből származik.',
         'With %s, our experts take care of correct installation and cover your back with support and periodic security updates.' =>
             'Az %s használatával a szakértőink gondoskodnak a jelenlegi telepítésről, és támogatást nyújtanak, valamint rendszeres biztonsági frissítéseket biztosítanak.',
         'Contact our service team now.' => 'Vegye fel a kapcsolatot a szolgáltatási csapatunkkal most.',
@@ -2951,7 +2951,7 @@ sub Data {
         # Template: Header
         'View notifications' => 'Értesítések megtekintése',
         'Notifications' => 'Értesítések',
-        'Notifications (OTRS Business Solution™)' => 'Értesítések (OTRS Business Solution™)',
+        'Notifications (LIGERO Business Solution™)' => 'Értesítések (LIGERO Business Solution™)',
         'Personal preferences' => 'Személyes beállítások',
         'Logout' => 'Kilépés',
         'You are logged in as' => 'Belépett a következő néven:',
@@ -3008,8 +3008,8 @@ sub Data {
 
         # Template: InstallerDBStart
         'Install Type' => 'Telepítés típusa',
-        'Create a new database for OTRS' => 'Új adatbázis létrehozása az OTRS-hez',
-        'Use an existing database for OTRS' => 'Meglévő adatbázis használata az OTRS-hez',
+        'Create a new database for LIGERO' => 'Új adatbázis létrehozása az LIGERO-hez',
+        'Use an existing database for LIGERO' => 'Meglévő adatbázis használata az LIGERO-hez',
 
         # Template: InstallerDBmssql
         'If you have set a root password for your database, it must be entered here. If not, leave this field empty.' =>
@@ -3020,8 +3020,8 @@ sub Data {
         'Database check successful.' => 'Az adatbázis-ellenőrzés sikeres.',
         'Database User' => 'Adatbázis felhasználó',
         'New' => 'Új',
-        'A new database user with limited permissions will be created for this OTRS system.' =>
-            'Egy új, korlátozott jogosultságokkal rendelkező adatbázis felhasználó lesz létrehozva ehhez az OTRS rendszerhez.',
+        'A new database user with limited permissions will be created for this LIGERO system.' =>
+            'Egy új, korlátozott jogosultságokkal rendelkező adatbázis felhasználó lesz létrehozva ehhez az LIGERO rendszerhez.',
         'Repeat Password' => 'Jelszó ismétlése',
         'Generated password' => 'Előállított jelszó',
 
@@ -3033,12 +3033,12 @@ sub Data {
         'Port' => 'Port',
 
         # Template: InstallerFinish
-        'To be able to use OTRS you have to enter the following line in your command line (Terminal/Shell) as root.' =>
-            'Ahhoz, hogy az OTRS-t használni tudja, a következő parancsot kell begépelnie a parancssorba (terminálban/parancsértelmezőben) rendszergazdaként.',
+        'To be able to use LIGERO you have to enter the following line in your command line (Terminal/Shell) as root.' =>
+            'Ahhoz, hogy az LIGERO-t használni tudja, a következő parancsot kell begépelnie a parancssorba (terminálban/parancsértelmezőben) rendszergazdaként.',
         'Restart your webserver' => 'Indítsa újra a webkiszolgálót',
-        'After doing so your OTRS is up and running.' => 'Miután ezt megtette, az OTRS készen áll és fut.',
+        'After doing so your LIGERO is up and running.' => 'Miután ezt megtette, az LIGERO készen áll és fut.',
         'Start page' => 'Kezdőoldal',
-        'Your OTRS Team' => 'Az OTRS csapata',
+        'Your LIGERO Team' => 'Az LIGERO csapata',
 
         # Template: InstallerLicense
         'Don\'t accept license' => 'Licenc elutasítása',
@@ -3084,8 +3084,8 @@ sub Data {
 
         # Template: MobileNotAvailableWidget
         'Feature not Available' => 'A szolgáltatás nem érhető el',
-        'Sorry, but this feature of OTRS is currently not available for mobile devices. If you\'d like to use it, you can either switch to desktop mode or use your regular desktop device.' =>
-            'Sajnáljuk, de az OTRS ezen szolgáltatása jelenleg nem érhető el mobil készülékekről. Ha használni szeretné, akkor vagy váltson asztali módra, vagy használja a megszokott asztali eszközét.',
+        'Sorry, but this feature of LIGERO is currently not available for mobile devices. If you\'d like to use it, you can either switch to desktop mode or use your regular desktop device.' =>
+            'Sajnáljuk, de az LIGERO ezen szolgáltatása jelenleg nem érhető el mobil készülékekről. Ha használni szeretné, akkor vagy váltson asztali módra, vagy használja a megszokott asztali eszközét.',
 
         # Template: Motd
         'Message of the Day' => 'A nap üzenete',
@@ -3125,8 +3125,8 @@ sub Data {
 
         # Template: PublicDefault
         'Welcome' => 'Üdvözöljük',
-        'This is the default public interface of OTRS! There was no action parameter given.' =>
-            'Ez az OTRS alapértelmezett nyilvános felülete! Nem került megadásra műveleti paraméter.',
+        'This is the default public interface of LIGERO! There was no action parameter given.' =>
+            'Ez az LIGERO alapértelmezett nyilvános felülete! Nem került megadásra műveleti paraméter.',
         'You could install a custom public module (via the package manager), for example the FAQ module, which has a public interface.' =>
             'Telepíthetne egy olyan egyéni nyilvános modult (a csomagkezelőn keresztül), amelynek van nyilvános felülete, mint például a GyIK modulnak.',
 
@@ -3267,12 +3267,12 @@ sub Data {
         # Template: Navigation
         'Navigation' => 'Navigáció',
 
-        # Template: OTRSBusinessTeaser
+        # Template: LIGEROBusinessTeaser
         'With %s, System Configuration supports versioning, rollback and user-specific configuration settings.' =>
             'Az %s használatával a rendszerbeállítások támogatják a verziókövetést, visszaállítást és a felhasználóra jellemző konfigurációs beállításokat.',
 
         # Template: Test
-        'OTRS Test Page' => 'OTRS tesztoldal',
+        'LIGERO Test Page' => 'LIGERO tesztoldal',
         'Unlock' => 'Feloldás',
         'Welcome %s %s' => 'Üdvözli a(z) %s %s',
         'Counter' => 'Számláló',
@@ -3355,8 +3355,8 @@ sub Data {
         # Perl Module: Kernel/Modules/AdminACL.pm
         'ACL information from database is not in sync with the system configuration, please deploy all ACLs.' =>
             'Az adatbázis ACL információi nincsenek szinkronizálva a rendszer beállításaival, állítson üzembe minden ACL-t.',
-        'ACLs could not be Imported due to a unknown error, please check OTRS logs for more information' =>
-            'Az ACL-eket nem sikerült importálni egy ismeretlen hiba miatt, további információkért nézze meg az OTRS naplókat',
+        'ACLs could not be Imported due to a unknown error, please check LIGERO logs for more information' =>
+            'Az ACL-eket nem sikerült importálni egy ismeretlen hiba miatt, további információkért nézze meg az LIGERO naplókat',
         'The following ACLs have been added successfully: %s' => 'A következő ACL-ek sikeresen hozzá lettek adva: %s',
         'The following ACLs have been updated successfully: %s' => 'A következő ACL-ek sikeresen frissítve lettek: %s',
         'There where errors adding/updating the following ACLs: %s. Please check the log file for more information.' =>
@@ -3409,8 +3409,8 @@ sub Data {
             'Hiba történt az adatok lekérésekor az ID:%s azonosítóval rendelkező értesítésnél!',
         'Unknown Notification %s!' => 'Ismeretlen értesítés: %s!',
         'There was an error creating the Notification' => 'Hiba történt az értesítés létrehozásakor',
-        'Notifications could not be Imported due to a unknown error, please check OTRS logs for more information' =>
-            'Az értesítéseket nem sikerült importálni egy ismeretlen hiba miatt, további információkért nézze meg az OTRS naplókat',
+        'Notifications could not be Imported due to a unknown error, please check LIGERO logs for more information' =>
+            'Az értesítéseket nem sikerült importálni egy ismeretlen hiba miatt, további információkért nézze meg az LIGERO naplókat',
         'The following Notifications have been added successfully: %s' =>
             'A következő értesítések sikeresen hozzá lettek adva: %s',
         'The following Notifications have been updated successfully: %s' =>
@@ -3636,12 +3636,12 @@ sub Data {
         'Need ExampleWebService!' => 'Példa webszolgáltatás szükséges!',
         'Could not read %s!' => 'Nem sikerült olvasni: %s!',
         'Need a file to import!' => 'Egy fájl szükséges az importáláshoz!',
-        'The imported file has not valid YAML content! Please check OTRS log for details' =>
-            'Az importált fájl nem rendelkezik érvényes YAML tartalommal! A részletekért nézze meg az OTRS naplóját.',
+        'The imported file has not valid YAML content! Please check LIGERO log for details' =>
+            'Az importált fájl nem rendelkezik érvényes YAML tartalommal! A részletekért nézze meg az LIGERO naplóját.',
         'Web service "%s" deleted!' => 'A(z) „%s” webszolgáltatás törölve!',
-        'OTRS as provider' => 'OTRS mint szolgáltató',
+        'LIGERO as provider' => 'LIGERO mint szolgáltató',
         'Operations' => 'Műveletek',
-        'OTRS as requester' => 'OTRS mint kérelmező',
+        'LIGERO as requester' => 'LIGERO mint kérelmező',
         'Invokers' => 'Meghívók',
 
         # Perl Module: Kernel/Modules/AdminGenericInterfaceWebserviceHistory.pm
@@ -3672,7 +3672,7 @@ sub Data {
         'All recipients of the first article' => 'Az első bejegyzés összes címzettje',
         'All recipients of the last article' => 'Az utolsó bejegyzés összes címzettje',
 
-        # Perl Module: Kernel/Modules/AdminOTRSBusiness.pm
+        # Perl Module: Kernel/Modules/AdminLIGEROBusiness.pm
         'Your system was successfully upgraded to %s.' => 'A rendszere sikeresen frissítve lett a következő verzióra: %s.',
         'There was a problem during the upgrade to %s.' => 'Hiba történt az %s verzióra való frissítés közben.',
         '%s was correctly reinstalled.' => 'Az %s megfelelően újra lett telepítve.',
@@ -3698,8 +3698,8 @@ sub Data {
         'Can\'t read %s!' => 'Nem olvasható: %s!',
         'File is OK' => 'A fájl rendben van',
         'Package has locally modified files.' => 'A csomag helyileg módosított fájlokkal rendelkezik.',
-        'Package not verified by the OTRS Group! It is recommended not to use this package.' =>
-            'A csomagot nem ellenőrizte az OTRS csoport! Nem javasolt a csomag használata.',
+        'Package not verified by the LIGERO Group! It is recommended not to use this package.' =>
+            'A csomagot nem ellenőrizte az LIGERO csoport! Nem javasolt a csomag használata.',
         'Not Started' => 'Nincs elindítva',
         'Updated' => 'Frissítve',
         'Already up-to-date' => 'Már naprakész',
@@ -3720,9 +3720,9 @@ sub Data {
             'Nincsenek csomagok vagy nem találhatók új csomagok a kijelölt tárolóban.',
         'Package not verified due a communication issue with verification server!' =>
             'A csomag nincs ellenőrizve az ellenőrző-kiszolgálóval történő kommunikációs hiba miatt!',
-        'Can\'t connect to OTRS Feature Add-on list server!' => 'Nem lehet kapcsolódni az OTRS szolgáltatáskiegészítő lista kiszolgálójához!',
-        'Can\'t get OTRS Feature Add-on list from server!' => 'Nem lehet lekérni az OTRS szolgáltatáskiegészítő listát a kiszolgálóról!',
-        'Can\'t get OTRS Feature Add-on from server!' => 'Nem lehet lekérni az OTRS szolgáltatáskiegészítőt a kiszolgálóról!',
+        'Can\'t connect to LIGERO Feature Add-on list server!' => 'Nem lehet kapcsolódni az LIGERO szolgáltatáskiegészítő lista kiszolgálójához!',
+        'Can\'t get LIGERO Feature Add-on list from server!' => 'Nem lehet lekérni az LIGERO szolgáltatáskiegészítő listát a kiszolgálóról!',
+        'Can\'t get LIGERO Feature Add-on from server!' => 'Nem lehet lekérni az LIGERO szolgáltatáskiegészítőt a kiszolgálóról!',
 
         # Perl Module: Kernel/Modules/AdminPostMasterFilter.pm
         'No such filter: %s' => 'Nincs ilyen szűrő: %s',
@@ -3895,13 +3895,13 @@ sub Data {
         'You currently don\'t have any favourite settings.' => 'Jelenleg nincs egyetlen kedvenc beállítása sem.',
         'The following settings could not be found: %s' => 'A következő beállítások nem találhatók: %s',
         'Import not allowed!' => 'Az importálás nem engedélyezett!',
-        'System Configuration could not be imported due to an unknown error, please check OTRS logs for more information.' =>
-            'A rendszerbeállításokat nem sikerült importálni egy ismeretlen hiba miatt, további információkért nézze meg az OTRS naplókat.',
+        'System Configuration could not be imported due to an unknown error, please check LIGERO logs for more information.' =>
+            'A rendszerbeállításokat nem sikerült importálni egy ismeretlen hiba miatt, további információkért nézze meg az LIGERO naplókat.',
         'Category Search' => 'Kategóriakeresés',
 
         # Perl Module: Kernel/Modules/AdminSystemConfigurationDeployment.pm
-        'Some imported settings are not present in the current state of the configuration or it was not possible to update them. Please check the OTRS log for more information.' =>
-            'Néhány importált beállítás nincs jelen a konfiguráció jelenlegi állapotában, vagy nem volt lehetséges frissíteni azokat. További információkért nézze meg az OTRS naplóját.',
+        'Some imported settings are not present in the current state of the configuration or it was not possible to update them. Please check the LIGERO log for more information.' =>
+            'Néhány importált beállítás nincs jelen a konfiguráció jelenlegi állapotában, vagy nem volt lehetséges frissíteni azokat. További információkért nézze meg az LIGERO naplóját.',
 
         # Perl Module: Kernel/Modules/AdminSystemConfigurationGroup.pm
         'You need to enable the setting before locking!' => 'Engedélyeznie kell a beállítást zárolás előtt!',
@@ -4345,7 +4345,7 @@ sub Data {
         'Configure "Home" in Kernel/Config.pm first!' => 'Először állítsa be a „Home” értékét a Kernel/Config.pm fájlban!',
         'File "%s/Kernel/Config.pm" not found!' => 'A(z) „%s/Kernel/Config.pm” fájl nem található!',
         'Directory "%s" not found!' => 'A(z) „%s” könyvtár nem található!',
-        'Install OTRS' => 'OTRS telepítése',
+        'Install LIGERO' => 'LIGERO telepítése',
         'Intro' => 'Bevezetés',
         'Kernel/Config.pm isn\'t writable!' => 'A Kernel/Config.pm nem írható!',
         'If you want to use the installer, set the Kernel/Config.pm writable for the webserver user!' =>
@@ -4362,7 +4362,7 @@ sub Data {
         'Unknown database type "%s".' => 'Ismeretlen adatbázistípus: „%s”.',
         'Please go back.' => 'Lépjen vissza.',
         'Create Database' => 'Adatbázis létrehozása',
-        'Install OTRS - Error' => 'Az OTRS telepítése – hiba',
+        'Install LIGERO - Error' => 'Az LIGERO telepítése – hiba',
         'File "%s/%s.xml" not found!' => 'A(z) „%s/%s.xml” fájl nem található!',
         'Contact your Admin!' => 'Vegye fel a kapcsolatot a rendszergazdával!',
         'System Settings' => 'Rendszerbeállítások',
@@ -4430,7 +4430,7 @@ sub Data {
         'Unmark' => 'Megjelölés megszüntetése',
 
         # Perl Module: Kernel/Output/HTML/ArticleAction/ReinstallPackageLink.pm
-        'Upgrade to OTRS Business Solution™' => 'Frissítés az OTRS Business Solution™ szoftverre',
+        'Upgrade to LIGERO Business Solution™' => 'Frissítés az LIGERO Business Solution™ szoftverre',
         'Re-install Package' => 'Csomag újratelepítése',
         'Upgrade' => 'Frissítés',
         'Re-install' => 'Újratelepítés',
@@ -4494,8 +4494,8 @@ sub Data {
         'The start time of a ticket has been set after the end time!' => 'Egy jegy kezdési ideje a befejezési ideje után lett beállítva!',
 
         # Perl Module: Kernel/Output/HTML/Dashboard/News.pm
-        'Can\'t connect to OTRS News server!' => 'Nem lehet kapcsolódni az OTRS hírek kiszolgálójához!',
-        'Can\'t get OTRS News from server!' => 'Nem lehet lekérni az OTRS híreket a kiszolgálóról!',
+        'Can\'t connect to LIGERO News server!' => 'Nem lehet kapcsolódni az LIGERO hírek kiszolgálójához!',
+        'Can\'t get LIGERO News from server!' => 'Nem lehet lekérni az LIGERO híreket a kiszolgálóról!',
 
         # Perl Module: Kernel/Output/HTML/Dashboard/ProductNotify.pm
         'Can\'t connect to Product News server!' => 'Nem lehet kapcsolódni a termékhírek kiszolgálójához!',
@@ -4561,9 +4561,9 @@ sub Data {
         'Archive search' => 'Archívum keresés',
 
         # Perl Module: Kernel/Output/HTML/Notification/AgentCloudServicesDisabled.pm
-        'Enable cloud services to unleash all OTRS features!' => 'Engedélyezze a felhőszolgáltatásokat az összes OTRS funkció feloldásához!',
+        'Enable cloud services to unleash all LIGERO features!' => 'Engedélyezze a felhőszolgáltatásokat az összes LIGERO funkció feloldásához!',
 
-        # Perl Module: Kernel/Output/HTML/Notification/AgentOTRSBusiness.pm
+        # Perl Module: Kernel/Output/HTML/Notification/AgentLIGEROBusiness.pm
         '%s Upgrade to %s now! %s' => '%s Frissítés erre most: %s! %s',
         'Please verify your license data!' => 'Ellenőrizze a licencadatait!',
         'The license for your %s is about to expire. Please make contact with %s to renew your contract!' =>
@@ -4590,15 +4590,15 @@ sub Data {
             'Egy rendszerkarbantartás időszak fog kezdődni ekkor: %s, és várható befejezése: %s',
 
         # Perl Module: Kernel/Output/HTML/Notification/DaemonCheck.pm
-        'OTRS Daemon is not running.' => 'Az OTRS démon nem fut.',
+        'LIGERO Daemon is not running.' => 'Az LIGERO démon nem fut.',
 
         # Perl Module: Kernel/Output/HTML/Notification/OutofOfficeCheck.pm
         'You have Out of Office enabled, would you like to disable it?' =>
             'Engedélyezte az Irodán kívül funkciót, szeretné letiltani azt?',
 
         # Perl Module: Kernel/Output/HTML/Notification/PackageManagerCheckNotVerifiedPackages.pm
-        'The installation of packages which are not verified by the OTRS Group is activated. These packages could threaten your whole system! It is recommended not to use unverified packages.' =>
-            'Aktiválva lett azoknak a csomagoknak a telepítése, amelyeket nem ellenőrzött az OTRS csoport. Ezek a csomagok veszélyt jelenthetnek a teljes rendszerre! Nem ajánlott az ellenőrizetlen csomagok használata.',
+        'The installation of packages which are not verified by the LIGERO Group is activated. These packages could threaten your whole system! It is recommended not to use unverified packages.' =>
+            'Aktiválva lett azoknak a csomagoknak a telepítése, amelyeket nem ellenőrzött az LIGERO csoport. Ezek a csomagok veszélyt jelenthetnek a teljes rendszerre! Nem ajánlott az ellenőrizetlen csomagok használata.',
 
         # Perl Module: Kernel/Output/HTML/Notification/SystemConfigurationInvalidCheck.pm
         'You have %s invalid setting(s) deployed. Click here to show invalid settings.' =>
@@ -4798,10 +4798,10 @@ sub Data {
         'File is not installed!' => 'A fájl nincs telepítve!',
         'File is different!' => 'A fájl eltérő!',
         'Can\'t read file!' => 'Nem olvasható a fájl!',
-        '<p>If you continue to install this package, the following issues may occur:</p><ul><li>Security problems</li><li>Stability problems</li><li>Performance problems</li></ul><p>Please note that issues that are caused by working with this package are not covered by OTRS service contracts.</p>' =>
-            '<p>Ha folytatja a csomag telepítését, a következő hibák fordulhatnak elő!</p><ul><li>Biztonsági problémák</li><li>Stabilitási problémák</li><li>Teljesítmény problémák</li></ul><p>Vegye figyelembe, hogy a csomag használata során felmerülő problémákra nem vonatkozik az OTRS szolgáltatási szerződése!</p>',
-        '<p>The installation of packages which are not verified by the OTRS Group is not possible by default.</p>' =>
-            '<p>Alapértelmezetten nem lehetséges azoknak a csomagoknak a telepítése, amelyeket nem ellenőrzött az OTRS csoport.</p>',
+        '<p>If you continue to install this package, the following issues may occur:</p><ul><li>Security problems</li><li>Stability problems</li><li>Performance problems</li></ul><p>Please note that issues that are caused by working with this package are not covered by LIGERO service contracts.</p>' =>
+            '<p>Ha folytatja a csomag telepítését, a következő hibák fordulhatnak elő!</p><ul><li>Biztonsági problémák</li><li>Stabilitási problémák</li><li>Teljesítmény problémák</li></ul><p>Vegye figyelembe, hogy a csomag használata során felmerülő problémákra nem vonatkozik az LIGERO szolgáltatási szerződése!</p>',
+        '<p>The installation of packages which are not verified by the LIGERO Group is not possible by default.</p>' =>
+            '<p>Alapértelmezetten nem lehetséges azoknak a csomagoknak a telepítése, amelyeket nem ellenőrzött az LIGERO csoport.</p>',
         '<p>You can activate the installation of not verified packages in the <a href="%sAction=AdminSystemConfiguration;Subaction=View;Setting=Package%3A%3AAllowNotVerifiedPackages" target="_blank">System Configuration</a>.</p>' =>
             '<p>Aktiválhatja a nem ellenőrzött csomagok telepítést a <a href="%sAction=AdminSystemConfiguration;Subaction=View;Setting=Package%3A%3AAllowNotVerifiedPackages" target="_blank">rendszerbeállításokban</a>.</p>',
 
@@ -4986,14 +4986,14 @@ sub Data {
         # Perl Module: Kernel/System/SupportDataCollector/Plugin/Database/postgresql/Version.pm
         'PostgreSQL 9.2 or higher is required.' => 'PostgreSQL 9.2 vagy újabb szükséges.',
 
-        # Perl Module: Kernel/System/SupportDataCollector/Plugin/OS/DiskPartitionOTRS.pm
-        'OTRS Disk Partition' => 'OTRS lemezpartíció',
+        # Perl Module: Kernel/System/SupportDataCollector/Plugin/OS/DiskPartitionLIGERO.pm
+        'LIGERO Disk Partition' => 'LIGERO lemezpartíció',
 
         # Perl Module: Kernel/System/SupportDataCollector/Plugin/OS/DiskSpace.pm
         'Disk Usage' => 'Lemezhasználat',
-        'The partition where OTRS is located is almost full.' => 'Az OTRS-t tartalmazó partíció majdnem betelt.',
-        'The partition where OTRS is located has no disk space problems.' =>
-            'Az OTRS-t tartalmazó partíciónak nincs tárhely problémája.',
+        'The partition where LIGERO is located is almost full.' => 'Az LIGERO-t tartalmazó partíció majdnem betelt.',
+        'The partition where LIGERO is located has no disk space problems.' =>
+            'Az LIGERO-t tartalmazó partíciónak nincs tárhely problémája.',
 
         # Perl Module: Kernel/System/SupportDataCollector/Plugin/OS/DiskSpacePartitions.pm
         'Disk Partitions Usage' => 'Lemezpartíciók használata',
@@ -5021,37 +5021,37 @@ sub Data {
         'There should be more than 60% free swap space.' => '60%-nál több szabad lapozófájlnak kellene lennie.',
         'There should be no more than 200 MB swap space used.' => '200 MB-nál nem kellene több lapozófájlt használni.',
 
-        # Perl Module: Kernel/System/SupportDataCollector/Plugin/OTRS/ArticleSearchIndexStatus.pm
-        'OTRS' => 'OTRS',
+        # Perl Module: Kernel/System/SupportDataCollector/Plugin/LIGERO/ArticleSearchIndexStatus.pm
+        'LIGERO' => 'LIGERO',
         'Article Search Index Status' => 'Bejegyzés keresési index állapot',
         'Indexed Articles' => 'Indexelt bejegyzések',
 
-        # Perl Module: Kernel/System/SupportDataCollector/Plugin/OTRS/ArticlesPerCommunicationChannel.pm
+        # Perl Module: Kernel/System/SupportDataCollector/Plugin/LIGERO/ArticlesPerCommunicationChannel.pm
         'Articles Per Communication Channel' => 'Bejegyzések kommunikációs csatornánként',
 
-        # Perl Module: Kernel/System/SupportDataCollector/Plugin/OTRS/CommunicationLog.pm
+        # Perl Module: Kernel/System/SupportDataCollector/Plugin/LIGERO/CommunicationLog.pm
         'Incoming communications' => 'Bejövő kommunikációk',
         'Outgoing communications' => 'Kimenő kommunikációk',
         'Failed communications' => 'Sikertelen kommunikációk',
         'Average processing time of communications (s)' => 'Kommunikációk átlagos feldolgozási ideje (mp)',
 
-        # Perl Module: Kernel/System/SupportDataCollector/Plugin/OTRS/CommunicationLogAccountStatus.pm
+        # Perl Module: Kernel/System/SupportDataCollector/Plugin/LIGERO/CommunicationLogAccountStatus.pm
         'Communication Log Account Status (last 24 hours)' => 'Kommunikációs napló fiókjának állapota (az elmúlt 24 óra)',
         'No connections found.' => 'Nem találhatók kapcsolatok.',
         'ok' => 'OK',
         'permanent connection errors' => 'állandó kommunikációs hibák',
         'intermittent connection errors' => 'időszakos kommunikációs hibák',
 
-        # Perl Module: Kernel/System/SupportDataCollector/Plugin/OTRS/ConfigSettings.pm
+        # Perl Module: Kernel/System/SupportDataCollector/Plugin/LIGERO/ConfigSettings.pm
         'Config Settings' => 'Beállítások konfigurálása',
         'Could not determine value.' => 'Nem sikerült meghatározni az értéket.',
 
-        # Perl Module: Kernel/System/SupportDataCollector/Plugin/OTRS/DaemonRunning.pm
+        # Perl Module: Kernel/System/SupportDataCollector/Plugin/LIGERO/DaemonRunning.pm
         'Daemon' => 'Démon',
         'Daemon is running.' => 'A démon fut.',
         'Daemon is not running.' => 'A démon nem fut.',
 
-        # Perl Module: Kernel/System/SupportDataCollector/Plugin/OTRS/DatabaseRecords.pm
+        # Perl Module: Kernel/System/SupportDataCollector/Plugin/LIGERO/DatabaseRecords.pm
         'Database Records' => 'Adatbázis rekordok',
         'Tickets' => 'Jegyek',
         'Ticket History Entries' => 'Jegy előzmény bejegyzések',
@@ -5067,31 +5067,31 @@ sub Data {
         'Tickets Per Month (avg)' => 'Jegyek havonta (átlag)',
         'Open Tickets' => 'Nyitott jegyek',
 
-        # Perl Module: Kernel/System/SupportDataCollector/Plugin/OTRS/DefaultSOAPUser.pm
+        # Perl Module: Kernel/System/SupportDataCollector/Plugin/LIGERO/DefaultSOAPUser.pm
         'Default SOAP Username And Password' => 'Alapértelmezett SOAP felhasználónév és jelszó',
         'Security risk: you use the default setting for SOAP::User and SOAP::Password. Please change it.' =>
             'Biztonsági kockázat: a SOAP::User és a SOAP::Password alapértelmezett beállításait használja. Változtassa meg.',
 
-        # Perl Module: Kernel/System/SupportDataCollector/Plugin/OTRS/DefaultUser.pm
+        # Perl Module: Kernel/System/SupportDataCollector/Plugin/LIGERO/DefaultUser.pm
         'Default Admin Password' => 'Alapértelmezett adminisztrátor jelszó',
         'Security risk: the agent account root@localhost still has the default password. Please change it or invalidate the account.' =>
             'Biztonsági kockázat: a root@localhost ügyintéző fióknak még mindig az alapértelmezett jelszava van. Változtassa meg, vagy érvénytelenítse a fiókot.',
 
-        # Perl Module: Kernel/System/SupportDataCollector/Plugin/OTRS/EmailQueue.pm
+        # Perl Module: Kernel/System/SupportDataCollector/Plugin/LIGERO/EmailQueue.pm
         'Email Sending Queue' => 'E-mail várakozási sor',
         'Emails queued for sending' => 'Küldéshez sorba állított e-mailek',
 
-        # Perl Module: Kernel/System/SupportDataCollector/Plugin/OTRS/FQDN.pm
+        # Perl Module: Kernel/System/SupportDataCollector/Plugin/LIGERO/FQDN.pm
         'FQDN (domain name)' => 'FQDN (tartománynév)',
         'Please configure your FQDN setting.' => 'Állítsa be az FQDN beállítását.',
         'Domain Name' => 'Tartománynév',
         'Your FQDN setting is invalid.' => 'Az FQDN beállítás érvénytelen.',
 
-        # Perl Module: Kernel/System/SupportDataCollector/Plugin/OTRS/FileSystemWritable.pm
+        # Perl Module: Kernel/System/SupportDataCollector/Plugin/LIGERO/FileSystemWritable.pm
         'File System Writable' => 'Fájlrendszer írhatóság',
-        'The file system on your OTRS partition is not writable.' => 'Az OTRS partíció fájlrendszere nem írható.',
+        'The file system on your LIGERO partition is not writable.' => 'Az LIGERO partíció fájlrendszere nem írható.',
 
-        # Perl Module: Kernel/System/SupportDataCollector/Plugin/OTRS/LegacyConfigBackups.pm
+        # Perl Module: Kernel/System/SupportDataCollector/Plugin/LIGERO/LegacyConfigBackups.pm
         'Legacy Configuration Backups' => 'Örökölt konfigurációs biztonsági mentések',
         'No legacy configuration backup files found.' => 'Nem találhatók örökölt biztonsági mentés fájlok.',
         'Legacy configuration backup files found in %s, but they might still be required by some packages.' =>
@@ -5099,55 +5099,55 @@ sub Data {
         'Legacy configuration backup files are no longer needed for the installed packages, please remove them from %s.' =>
             'Az örökölt konfigurációs biztonsági mentés fájlok többé nem szükségesek a telepített csomagokhoz, távolítsa el azokat innen: %s.',
 
-        # Perl Module: Kernel/System/SupportDataCollector/Plugin/OTRS/PackageDeployment.pm
+        # Perl Module: Kernel/System/SupportDataCollector/Plugin/LIGERO/PackageDeployment.pm
         'Package Installation Status' => 'Csomagtelepítési állapot',
         'Some packages have locally modified files.' => 'Néhány csomag helyileg módosított fájlokkal rendelkezik.',
         'Some packages are not correctly installed.' => 'Néhány csomag nincs megfelelően telepítve.',
         'Package Verification Status' => 'Csomagellenőrzési állapot',
-        'Some packages are not verified by the OTRS Group! It is recommended not to use this packages.' =>
-            'Néhány csomagot nem ellenőrzött az OTRS csoport! Nem javasolt a csomagok használata.',
+        'Some packages are not verified by the LIGERO Group! It is recommended not to use this packages.' =>
+            'Néhány csomagot nem ellenőrzött az LIGERO csoport! Nem javasolt a csomagok használata.',
         'Package Framework Version Status' => 'Csomag keretrendszer verziójának állapota',
         'Some packages are not allowed for the current framework version.' =>
             'Néhány csomag nem engedélyezett a jelenlegi keretrendszer verzióhoz.',
 
-        # Perl Module: Kernel/System/SupportDataCollector/Plugin/OTRS/PackageList.pm
+        # Perl Module: Kernel/System/SupportDataCollector/Plugin/LIGERO/PackageList.pm
         'Package List' => 'Csomaglista',
 
-        # Perl Module: Kernel/System/SupportDataCollector/Plugin/OTRS/SessionConfigSettings.pm
+        # Perl Module: Kernel/System/SupportDataCollector/Plugin/LIGERO/SessionConfigSettings.pm
         'Session Config Settings' => 'Munkamenet-konfigurációs beállítások',
 
-        # Perl Module: Kernel/System/SupportDataCollector/Plugin/OTRS/SpoolMails.pm
+        # Perl Module: Kernel/System/SupportDataCollector/Plugin/LIGERO/SpoolMails.pm
         'Spooled Emails' => 'Várakozási sorba helyezett levelek',
-        'There are emails in var/spool that OTRS could not process.' => 'Olyan levelek találhatók a var/spool mappában, amelyeket az OTRS nem tudott feldolgozni.',
+        'There are emails in var/spool that LIGERO could not process.' => 'Olyan levelek találhatók a var/spool mappában, amelyeket az LIGERO nem tudott feldolgozni.',
 
-        # Perl Module: Kernel/System/SupportDataCollector/Plugin/OTRS/SystemID.pm
+        # Perl Module: Kernel/System/SupportDataCollector/Plugin/LIGERO/SystemID.pm
         'Your SystemID setting is invalid, it should only contain digits.' =>
             'A rendszer-azonosító beállítás érvénytelen, csak számjegyeket tartalmazhat.',
 
-        # Perl Module: Kernel/System/SupportDataCollector/Plugin/OTRS/Ticket/DefaultType.pm
+        # Perl Module: Kernel/System/SupportDataCollector/Plugin/LIGERO/Ticket/DefaultType.pm
         'Default Ticket Type' => 'Alapértelmezett jegytípus',
         'The configured default ticket type is invalid or missing. Please change the setting Ticket::Type::Default and select a valid ticket type.' =>
             'A beállított alapértelmezett jegytípus érvénytelen vagy hiányzik. Változtassa meg a Ticket::Type::Default beállításait, és válasszon egy érvényes jegytípust.',
 
-        # Perl Module: Kernel/System/SupportDataCollector/Plugin/OTRS/Ticket/IndexModule.pm
+        # Perl Module: Kernel/System/SupportDataCollector/Plugin/LIGERO/Ticket/IndexModule.pm
         'Ticket Index Module' => 'Jegy indexelő modul',
         'You have more than 60,000 tickets and should use the StaticDB backend. See admin manual (Performance Tuning) for more information.' =>
             'Több mint 60.000 jegye van, ezért a StaticDB háttérprogramot kellene használnia. További információkért nézze meg az adminisztrátori kézikönyvet (Teljesítmény finomhangolás).',
 
-        # Perl Module: Kernel/System/SupportDataCollector/Plugin/OTRS/Ticket/InvalidUsersWithLockedTickets.pm
+        # Perl Module: Kernel/System/SupportDataCollector/Plugin/LIGERO/Ticket/InvalidUsersWithLockedTickets.pm
         'Invalid Users with Locked Tickets' => 'Érvénytelen felhasználók zárolt jegyekkel',
         'There are invalid users with locked tickets.' => 'Zárolt jegyekkel rendelkező érvénytelen felhasználók vannak.',
 
-        # Perl Module: Kernel/System/SupportDataCollector/Plugin/OTRS/Ticket/OpenTickets.pm
+        # Perl Module: Kernel/System/SupportDataCollector/Plugin/LIGERO/Ticket/OpenTickets.pm
         'You should not have more than 8,000 open tickets in your system.' =>
             'Nem kellene 8.000 nyitott jegynél többel rendelkeznie a rendszeren.',
 
-        # Perl Module: Kernel/System/SupportDataCollector/Plugin/OTRS/Ticket/SearchIndexModule.pm
+        # Perl Module: Kernel/System/SupportDataCollector/Plugin/LIGERO/Ticket/SearchIndexModule.pm
         'Ticket Search Index Module' => 'Jegykeresés indexelő modul',
         'The indexing process forces the storage of the original article text in the article search index, without executing filters or applying stop word lists. This will increase the size of the search index and thus may slow down fulltext searches.' =>
             'Az indexelési folyamat kényszeríti az eredeti bejegyzésszöveg tárolását a bejegyzés keresési indexében anélkül, hogy szűrőket hajtana végre vagy a kiszűrendő szavak listáit alkalmazná. Ez meg fogja növelni a keresési index méretét, és ezért lelassíthatja a szabad-szavas kereséseket.',
 
-        # Perl Module: Kernel/System/SupportDataCollector/Plugin/OTRS/Ticket/StaticDBOrphanedRecords.pm
+        # Perl Module: Kernel/System/SupportDataCollector/Plugin/LIGERO/Ticket/StaticDBOrphanedRecords.pm
         'Orphaned Records In ticket_lock_index Table' => 'Elárvult rekordok a ticket_lock_index táblában',
         'Table ticket_lock_index contains orphaned records. Please run bin/ligero.Console.pl "Maint::Ticket::QueueIndexCleanup" to clean the StaticDB index.' =>
             'A ticket_lock_index tábla elárvult rekordokat tartalmaz. Futtassa a bin/ligero.Console.pl "Maint::Ticket::QueueIndexCleanup" parancsot a StaticDB index tisztításához.',
@@ -5155,23 +5155,23 @@ sub Data {
         'Table ticket_index contains orphaned records. Please run bin/ligero.Console.pl "Maint::Ticket::QueueIndexCleanup" to clean the StaticDB index.' =>
             'A ticket_index tábla elárvult rekordokat tartalmaz. Futtassa a bin/ligero.Console.pl "Maint::Ticket::QueueIndexCleanup" parancsot a StaticDB index tisztításához.',
 
-        # Perl Module: Kernel/System/SupportDataCollector/Plugin/OTRS/TimeSettings.pm
+        # Perl Module: Kernel/System/SupportDataCollector/Plugin/LIGERO/TimeSettings.pm
         'Time Settings' => 'Időbeállítások',
         'Server time zone' => 'Kiszolgáló időzónája',
-        'OTRS time zone' => 'OTRS időzóna',
-        'OTRS time zone is not set.' => 'Az OTRS időzónája nincs beállítva.',
+        'LIGERO time zone' => 'LIGERO időzóna',
+        'LIGERO time zone is not set.' => 'Az LIGERO időzónája nincs beállítva.',
         'User default time zone' => 'Felhasználó alapértelmezett időzónája',
         'User default time zone is not set.' => 'A felhasználó alapértelmezett időzónája nincs beállítva.',
-        'OTRS time zone setting for calendar' => 'OTRS időzóna-beállítás a naptárhoz',
+        'LIGERO time zone setting for calendar' => 'LIGERO időzóna-beállítás a naptárhoz',
         'Calendar time zone is not set.' => 'A naptár időzónája nincs beállítva.',
 
-        # Perl Module: Kernel/System/SupportDataCollector/Plugin/OTRS/UI/AgentSkinUsage.pm
+        # Perl Module: Kernel/System/SupportDataCollector/Plugin/LIGERO/UI/AgentSkinUsage.pm
         'UI - Agent Skin Usage' => 'UI – ügyintézői felszín használat',
 
-        # Perl Module: Kernel/System/SupportDataCollector/Plugin/OTRS/UI/AgentThemeUsage.pm
+        # Perl Module: Kernel/System/SupportDataCollector/Plugin/LIGERO/UI/AgentThemeUsage.pm
         'UI - Agent Theme Usage' => 'UI – ügyintézői téma használat',
 
-        # Perl Module: Kernel/System/SupportDataCollector/Plugin/OTRS/UI/SpecialStats.pm
+        # Perl Module: Kernel/System/SupportDataCollector/Plugin/LIGERO/UI/SpecialStats.pm
         'UI - Special Statistics' => 'UI – különleges statisztikák',
         'Agents using custom main menu ordering' => 'Egyéni menürendezést használó ügyintézők',
         'Agents using favourites for the admin overview' => 'Kedvenceket használó ügyintézők az adminisztrációs áttekintőnél',
@@ -5182,8 +5182,8 @@ sub Data {
 
         # Perl Module: Kernel/System/SupportDataCollector/Plugin/Webserver/Apache/MPMModel.pm
         'MPM model' => 'MPM modell',
-        'OTRS requires apache to be run with the \'prefork\' MPM model.' =>
-            'Az OTRS az apache „prefork” MPM modellel való futtatását igényli.',
+        'LIGERO requires apache to be run with the \'prefork\' MPM model.' =>
+            'Az LIGERO az apache „prefork” MPM modellel való futtatását igényli.',
 
         # Perl Module: Kernel/System/SupportDataCollector/Plugin/Webserver/Apache/Performance.pm
         'CGI Accelerator Usage' => 'CGI gyorsító használat',
@@ -5213,7 +5213,7 @@ sub Data {
         'Webserver Version' => 'Webkiszolgáló verzió',
         'Could not determine webserver version.' => 'Nem sikerült meghatározni a webkiszolgáló verzióját.',
 
-        # Perl Module: Kernel/System/SupportDataCollector/PluginAsynchronous/OTRS/ConcurrentUsers.pm
+        # Perl Module: Kernel/System/SupportDataCollector/PluginAsynchronous/LIGERO/ConcurrentUsers.pm
         'Concurrent Users Details' => 'Egyidejű felhasználók részletei',
         'Concurrent Users' => 'Egyidejű felhasználók',
 
@@ -5244,11 +5244,11 @@ sub Data {
         'Disabled' => 'Letiltva',
 
         # Perl Module: Kernel/System/SysConfig/ValueType/Date.pm
-        'System was not able to calculate user Date in OTRSTimeZone!' => 'A rendszer nem volt képes kiszámítani a felhasználó dátumát az OTRS időzónájában!',
+        'System was not able to calculate user Date in LIGEROTimeZone!' => 'A rendszer nem volt képes kiszámítani a felhasználó dátumát az LIGERO időzónájában!',
 
         # Perl Module: Kernel/System/SysConfig/ValueType/DateTime.pm
-        'System was not able to calculate user DateTime in OTRSTimeZone!' =>
-            'A rendszer nem volt képes kiszámítani a felhasználó dátumát és idejét az OTRS időzónájában!',
+        'System was not able to calculate user DateTime in LIGEROTimeZone!' =>
+            'A rendszer nem volt képes kiszámítani a felhasználó dátumát és idejét az LIGERO időzónájában!',
 
         # Perl Module: Kernel/System/SysConfig/ValueType/FrontendNavigation.pm
         'Value is not correct! Please, consider updating this module.' =>
@@ -5505,8 +5505,8 @@ sub Data {
         'Currently not possible' => 'Jelenleg nem lehetséges',
         'This is currently disabled because of an ongoing package upgrade.' =>
             'Ez jelenleg le van tiltva egy folyamatban lévő csomagfrissítés miatt.',
-        'This option is currently disabled because the OTRS Daemon is not running.' =>
-            'Ez a beállítás jelenleg le van tiltva, mert az OTRS démon nem fut.',
+        'This option is currently disabled because the LIGERO Daemon is not running.' =>
+            'Ez a beállítás jelenleg le van tiltva, mert az LIGERO démon nem fut.',
         'Are you sure you want to update all installed packages?' => 'Biztosan frissíteni szeretné az összes telepített csomagot?',
 
         # JS File: Core.Agent.Admin.PostMasterFilter
@@ -5632,7 +5632,7 @@ sub Data {
             'Adjon meg legalább egy keresési értéket, vagy * karaktert, ha bármire rá szeretne keresni.',
 
         # JS File: Core.Agent.Daemon
-        'Information about the OTRS Daemon' => 'Információk az OTRS démonról',
+        'Information about the LIGERO Daemon' => 'Információk az LIGERO démonról',
 
         # JS File: Core.Agent.Dashboard
         'Please check the fields marked as red for valid inputs.' => 'Ellenőrizze a pirosan megjelölt mezőket a helyes bevitelekért.',
@@ -5789,14 +5789,14 @@ sub Data {
         'This is %s' => 'Ez egy %s',
         'Complex %s with %s arguments' => 'Összetett %s %s argumentummal',
 
-        # JS File: OTRSLineChart
+        # JS File: LIGEROLineChart
         'No Data Available.' => 'Nem érhető el adat.',
 
-        # JS File: OTRSMultiBarChart
+        # JS File: LIGEROMultiBarChart
         'Grouped' => 'Csoportosított',
         'Stacked' => 'Halmozott',
 
-        # JS File: OTRSStackedAreaChart
+        # JS File: LIGEROStackedAreaChart
         'Stream' => 'Folyam',
         'Expanded' => 'Kifeszített',
 
@@ -5887,8 +5887,8 @@ Az Ön segélyszolgálat csapata
         'Added subscription for user "%s".' => 'Feliratkozás hozzáadva a következő felhasználóhoz: „%s”.',
         'Added system request (%s).' => 'Rendszerkérés hozzáadva (%s).',
         'Added web request from customer.' => 'Ügyféltől érkezett webkérés hozzáadva.',
-        'Adds a suffix with the actual year and month to the OTRS log file. A logfile for every month will be created.' =>
-            'Az aktuális évet és hónapot tartalmazó előtagot ad az OTRS naplófájlhoz. Minden hónapban új naplófájl lesz létrehozva.',
+        'Adds a suffix with the actual year and month to the LIGERO log file. A logfile for every month will be created.' =>
+            'Az aktuális évet és hónapot tartalmazó előtagot ad az LIGERO naplófájlhoz. Minden hónapban új naplófájl lesz létrehozva.',
         'Adds customers email addresses to recipients in the ticket compose screen of the agent interface. The customers email address won\'t be added if the article type is email-internal.' =>
             'Hozzáadja az ügyfelek e-mail címeit a címzettekhez az ügyintézői felület jegyválasz képernyőjén. Az ügyfelek e-mail címei nem lesznek hozzáadva, ha a bejegyzés típusa belső e-mail.',
         'Adds the one time vacation days for the indicated calendar.' => 'Hozzáadja az egyszeri munkaszüneti napokat a jelzett naptárhoz.',
@@ -5939,7 +5939,7 @@ Az Ön segélyszolgálat csapata
         'Agents ↔ Groups' => 'Ügyintézők ↔ Csoportok',
         'Agents ↔ Roles' => 'Ügyintézők ↔ Szerepek',
         'All CustomerIDs of a customer user.' => 'Egy ügyfél-felhasználó összes ügyfél-azonosítója.',
-        'All attachments (OTRS Business Solution™)' => 'Összes melléklet (OTRS Business Solution™)',
+        'All attachments (LIGERO Business Solution™)' => 'Összes melléklet (LIGERO Business Solution™)',
         'All customer users of a CustomerID' => 'Egy ügyfél-azonosító minden ügyfél-felhasználója',
         'All escalated tickets' => 'Minden eszkalált jegy',
         'All new tickets, these tickets have not been worked on yet' => 'Minden új jegy, ezeken a jegyeken még nem dolgoztak',
@@ -6117,9 +6117,9 @@ Az Ön segélyszolgálat csapata
             'Azt ellenőrzi a tárgyban történő érvényes jegyszám keresésével, hogy egy e-mail egy meglévő jegy követője-e.',
         'Checks the SystemID in ticket number detection for follow-ups. If not enabled, SystemID will be changed after using the system.' =>
             'Ellenőrzi a rendszer-azonosítót a jegy számának felismeréskor a követéseknél (ha nincs engedélyezve, akkor a rendszer-azonosító meg lesz változtatva a rendszer használata után).',
-        'Checks the availability of OTRS Business Solution™ for this system.' =>
-            'Ellenőrzi az OTRS Business Solution™ elérhetőségét ennél a rendszernél.',
-        'Checks the entitlement status of OTRS Business Solution™.' => 'Ellenőrzi az OTRS Business Solution™ jogosultsági állapotát.',
+        'Checks the availability of LIGERO Business Solution™ for this system.' =>
+            'Ellenőrzi az LIGERO Business Solution™ elérhetőségét ennél a rendszernél.',
+        'Checks the entitlement status of LIGERO Business Solution™.' => 'Ellenőrzi az LIGERO Business Solution™ jogosultsági állapotát.',
         'Child' => 'Gyermek',
         'Chinese (Simplified)' => 'Kínai (egyszerűsített)',
         'Chinese (Traditional)' => 'Kínai (hagyományos)',
@@ -6172,8 +6172,8 @@ Az Ön segélyszolgálat csapata
         'Configure and manage ACLs.' => 'ACL-ek beállítása és kezelése.',
         'Configure any additional readonly mirror databases that you want to use.' =>
             'Bármely további csak olvasható tükör adatbázis beállítása, amelyet használni szeretne.',
-        'Configure sending of support data to OTRS Group for improved support.' =>
-            'Az OTRS csoportnak történő támogatási adatok küldésének beállítása a javított támogatásért.',
+        'Configure sending of support data to LIGERO Group for improved support.' =>
+            'Az LIGERO csoportnak történő támogatási adatok küldésének beállítása a javított támogatásért.',
         'Configure which screen should be shown after a new ticket has been created.' =>
             'Annak beállítása, hogy mely képernyő legyen megjelenítve, miután egy új jegyet létrehoztak.',
         'Configure your own log text for PGP.' => 'Saját naplószöveg beállítása a PGP-hez.',
@@ -6295,8 +6295,8 @@ Az Ön segélyszolgálat csapata
         'Default value for NameX' => 'A NameX alapértelmezett értéke',
         'Define Actions where a settings button is available in the linked objects widget (LinkObject::ViewMode = "complex"). Please note that these Actions must have registered the following JS and CSS files: Core.AllocationList.css, Core.UI.AllocationList.js, Core.UI.Table.Sort.js, Core.Agent.TableFilters.js.' =>
             'Műveletek meghatározása, ahol egy beállítások gomb érhető el a kapcsolt objektumok felületi elemen (LinkObject::ViewMode = „összetett”). Ne feledje, hogy ezeknek a műveleteknek rendelkezniük kell a következő JS és CSS fájlok regisztrálásával: Core.AllocationList.css, Core.UI.AllocationList.js, Core.UI.Table.Sort.js, Core.Agent.TableFilters.js.',
-        'Define a filter for html output to add links behind a defined string. The element Image allows two input kinds. At once the name of an image (e.g. faq.png). In this case the OTRS image path will be used. The second possiblity is to insert the link to the image.' =>
-            'Szűrő meghatározása a HTML kimenethez, hogy hivatkozást adjon egy meghatározott szöveg mögé. Ez a képelem kétfajta bevitelt tesz lehetővé. Elsőként egy kép nevét (például faq.png). Ez esetben az OTRS képútvonal lesz felhasználva. A másik lehetőség a hivatkozás beszúrása a képhez.',
+        'Define a filter for html output to add links behind a defined string. The element Image allows two input kinds. At once the name of an image (e.g. faq.png). In this case the LIGERO image path will be used. The second possiblity is to insert the link to the image.' =>
+            'Szűrő meghatározása a HTML kimenethez, hogy hivatkozást adjon egy meghatározott szöveg mögé. Ez a képelem kétfajta bevitelt tesz lehetővé. Elsőként egy kép nevét (például faq.png). Ez esetben az LIGERO képútvonal lesz felhasználva. A másik lehetőség a hivatkozás beszúrása a képhez.',
         'Define a mapping between variables of the customer user data (keys) and dynamic fields of a ticket (values). The purpose is to store customer user data in ticket dynamic fields. The dynamic fields must be present in the system and should be enabled for AgentTicketFreeText, so that they can be set/updated manually by the agent. They mustn\'t be enabled for AgentTicketPhone, AgentTicketEmail and AgentTicketCustomer. If they were, they would have precedence over the automatically set values. To use this mapping, you have to also activate the Ticket::EventModulePost###4100-DynamicFieldFromCustomerUser setting.' =>
             'Leképezés meghatározása az ügyfél-felhasználó adatainak változói (kulcsok) és a jegyek dinamikus mezői (értékek) között. A cél az ügyfél-felhasználó adatainak tárolása a jegy dinamikus mezőiben. A dinamikus mezőknek jelen kell lennie a rendszeren, és engedélyezve kell lenniük az AgentTicketFreeText számára azért, hogy az ügyintéző kézzel beállíthassa vagy frissíthesse azokat. Nem szabad engedélyezve lenniük az AgentTicketPhone, az AgentTicketEmail és az AgentTicketCustomer számára. Ha engedélyezve voltak, akkor elsőbbséget élveznek az automatikusan beállított értékekkel szemben. A leképezés használatához a Ticket::EventModulePost###4100-DynamicFieldFromCustomerUser beállítást is aktiválnia kell.',
         'Define dynamic field name for end time. This field has to be manually added to the system as Ticket: "Date / Time" and must be activated in ticket creation screens and/or in any other ticket action screens.' =>
@@ -6328,14 +6328,14 @@ Az Ön segélyszolgálat csapata
             'Egy ügyfélelemet határoz meg, amely egy Google ikont állít elő az ügyfél információs blokk végén.',
         'Defines a customer item, which generates a google maps icon at the end of a customer info block.' =>
             'Egy ügyfélelemet határoz meg, amely egy Google Térkép ikont állít elő az ügyfél-információs blokk végén.',
-        'Defines a filter for html output to add links behind CVE numbers. The element Image allows two input kinds. At once the name of an image (e.g. faq.png). In this case the OTRS image path will be used. The second possiblity is to insert the link to the image.' =>
-            'Szűrő meghatározása a HTML kimenethez, hogy hivatkozást adjon a CVE számok mögé. Ez a képelem kétfajta bevitelt tesz lehetővé. Elsőként egy kép nevét (például faq.png). Ez esetben az OTRS képútvonal lesz felhasználva. A másik lehetőség a hivatkozás beszúrása a képhez.',
-        'Defines a filter for html output to add links behind MSBulletin numbers. The element Image allows two input kinds. At once the name of an image (e.g. faq.png). In this case the OTRS image path will be used. The second possiblity is to insert the link to the image.' =>
-            'Szűrő meghatározása a HTML kimenethez, hogy hivatkozást adjon az MSBulletin számok mögé. Ez a képelem kétfajta bevitelt tesz lehetővé. Elsőként egy kép nevét (például faq.png). Ez esetben az OTRS képútvonal lesz felhasználva. A másik lehetőség a hivatkozás beszúrása a képhez.',
-        'Defines a filter for html output to add links behind a defined string. The element Image allows two input kinds. At once the name of an image (e.g. faq.png). In this case the OTRS image path will be used. The second possiblity is to insert the link to the image.' =>
-            'Szűrő meghatározása a HTML kimenethez, hogy hivatkozást adjon egy meghatározott szöveg mögé. Ez a képelem kétfajta bevitelt tesz lehetővé. Elsőként egy kép nevét (például faq.png). Ez esetben az OTRS képútvonal lesz felhasználva. A másik lehetőség a hivatkozás beszúrása a képhez.',
-        'Defines a filter for html output to add links behind bugtraq numbers. The element Image allows two input kinds. At once the name of an image (e.g. faq.png). In this case the OTRS image path will be used. The second possiblity is to insert the link to the image.' =>
-            'Szűrő meghatározása a HTML kimenethez, hogy hivatkozást adjon a bugtraq számok mögé. Ez a képelem kétfajta bevitelt tesz lehetővé. Elsőként egy kép nevét (például faq.png). Ez esetben az OTRS képútvonal lesz felhasználva. A másik lehetőség a hivatkozás beszúrása a képhez.',
+        'Defines a filter for html output to add links behind CVE numbers. The element Image allows two input kinds. At once the name of an image (e.g. faq.png). In this case the LIGERO image path will be used. The second possiblity is to insert the link to the image.' =>
+            'Szűrő meghatározása a HTML kimenethez, hogy hivatkozást adjon a CVE számok mögé. Ez a képelem kétfajta bevitelt tesz lehetővé. Elsőként egy kép nevét (például faq.png). Ez esetben az LIGERO képútvonal lesz felhasználva. A másik lehetőség a hivatkozás beszúrása a képhez.',
+        'Defines a filter for html output to add links behind MSBulletin numbers. The element Image allows two input kinds. At once the name of an image (e.g. faq.png). In this case the LIGERO image path will be used. The second possiblity is to insert the link to the image.' =>
+            'Szűrő meghatározása a HTML kimenethez, hogy hivatkozást adjon az MSBulletin számok mögé. Ez a képelem kétfajta bevitelt tesz lehetővé. Elsőként egy kép nevét (például faq.png). Ez esetben az LIGERO képútvonal lesz felhasználva. A másik lehetőség a hivatkozás beszúrása a képhez.',
+        'Defines a filter for html output to add links behind a defined string. The element Image allows two input kinds. At once the name of an image (e.g. faq.png). In this case the LIGERO image path will be used. The second possiblity is to insert the link to the image.' =>
+            'Szűrő meghatározása a HTML kimenethez, hogy hivatkozást adjon egy meghatározott szöveg mögé. Ez a képelem kétfajta bevitelt tesz lehetővé. Elsőként egy kép nevét (például faq.png). Ez esetben az LIGERO képútvonal lesz felhasználva. A másik lehetőség a hivatkozás beszúrása a képhez.',
+        'Defines a filter for html output to add links behind bugtraq numbers. The element Image allows two input kinds. At once the name of an image (e.g. faq.png). In this case the LIGERO image path will be used. The second possiblity is to insert the link to the image.' =>
+            'Szűrő meghatározása a HTML kimenethez, hogy hivatkozást adjon a bugtraq számok mögé. Ez a képelem kétfajta bevitelt tesz lehetővé. Elsőként egy kép nevét (például faq.png). Ez esetben az LIGERO képútvonal lesz felhasználva. A másik lehetőség a hivatkozás beszúrása a képhez.',
         'Defines a filter to collect CVE numbers from article texts in AgentTicketZoom. The results will be displayed in a meta box next to the article. Fill in URLPreview if you would like to see a preview when moving your mouse cursor above the link element. This could be the same URL as in URL, but also an alternate one. Please note that some websites deny being displayed within an iframe (e.g. Google) and thus won\'t work with the preview mode.' =>
             'Egy szűrőt határoz meg CVE számok begyűjtéséhez a bejegyzés szövegeiből az ügyintézői jegynagyításban. Az eredmények egy metadobozban lesznek megjelenítve a bejegyzés mellett. Töltse ki az URLPreview mezőt, ha egy előnézetet szeretne látni, amikor az egérkurzort a linkelem fölé viszi. Ez lehet ugyanaz az URL mint az URL mezőben van, de lehet egy másik is. Ne feledje, hogy néhány weboldal (például Google) nem hagyja, hogy egy belső kereten belül jelenítsék meg, és emiatt az nem fog működni előnézeti módban.',
         'Defines a filter to process the text in the articles, in order to highlight predefined keywords.' =>
@@ -6430,8 +6430,8 @@ Az Ön segélyszolgálat csapata
             'Meghatározza, hogy engedélyezni kell-e az ügyintézőknek a bejelentkezést, ha nincs megosztott titok eltárolva a beállításaikban, és következésképpen nem használnak kétlépcsős hitelesítést.',
         'Defines if customers should be allowed to login if they have no shared secret stored in their preferences and therefore are not using two-factor authentication.' =>
             'Meghatározza, hogy engedélyezni kell-e az ügyfeleknek a bejelentkezést, ha nincs megosztott titok eltárolva a beállításaikban, és következésképpen nem használnak kétlépcsős hitelesítést.',
-        'Defines if the communication between this system and OTRS Group servers that provide cloud services is possible. If set to \'Disable cloud services\', some functionality will be lost such as system registration, support data sending, upgrading to and use of OTRS Business Solution™, OTRS Verify™, OTRS News and product News dashboard widgets, among others.' =>
-            'Meghatározza, hogy lehetséges-e a kommunikáció a rendszer és az OTRS csoport azon kiszolgálói között, amelyek felhőszolgáltatásokat nyújtanak. Ha „Felhőszolgáltatások letiltása” értékre van állítva, akkor néhány funkcionalitás el fog veszi, mint például a rendszer regisztráció, a támogatási adatok küldése, az OTRS Business Solution™ használata és az arra történő frissítés, az OTRS Verify™, az OTRS hírek és termékhírek vezérlőpult felületi elemek, stb.',
+        'Defines if the communication between this system and LIGERO Group servers that provide cloud services is possible. If set to \'Disable cloud services\', some functionality will be lost such as system registration, support data sending, upgrading to and use of LIGERO Business Solution™, LIGERO Verify™, LIGERO News and product News dashboard widgets, among others.' =>
+            'Meghatározza, hogy lehetséges-e a kommunikáció a rendszer és az LIGERO csoport azon kiszolgálói között, amelyek felhőszolgáltatásokat nyújtanak. Ha „Felhőszolgáltatások letiltása” értékre van állítva, akkor néhány funkcionalitás el fog veszi, mint például a rendszer regisztráció, a támogatási adatok küldése, az LIGERO Business Solution™ használata és az arra történő frissítés, az LIGERO Verify™, az LIGERO hírek és termékhírek vezérlőpult felületi elemek, stb.',
         'Defines if the enhanced mode should be used (enables use of table, replace, subscript, superscript, paste from word, etc.) in customer interface.' =>
             'Meghatározza, hogy a bővített módot kell használni (táblázat, csere, alsó index, felső index, beillesztés Wordből, stb. használatát engedélyezi) az ügyfélfelületen.',
         'Defines if the enhanced mode should be used (enables use of table, replace, subscript, superscript, paste from word, etc.).' =>
@@ -6476,8 +6476,8 @@ Az Ön segélyszolgálat csapata
         'Defines phone communication channel.' => 'Telefonos kommunikációs csatornát határoz meg.',
         'Defines queues that\'s tickets are used for displaying as calendar events.' =>
             'Várólistákat határoz meg, amely jegyei naptárban lévő eseményekként való megjelenítéshez vannak felhasználva.',
-        'Defines the HTTP hostname for the support data collection with the public module \'PublicSupportDataCollector\' (e.g. used from the OTRS Daemon).' =>
-            'Meghatározza a HTTP gépnevet a támogatási adatok gyűjtéséhez a nyilvános „PublicSupportDataCollector” modullal (például az OTRS démonból használva).',
+        'Defines the HTTP hostname for the support data collection with the public module \'PublicSupportDataCollector\' (e.g. used from the LIGERO Daemon).' =>
+            'Meghatározza a HTTP gépnevet a támogatási adatok gyűjtéséhez a nyilvános „PublicSupportDataCollector” modullal (például az LIGERO démonból használva).',
         'Defines the IP regular expression for accessing the local repository. You need to enable this to have access to your local repository and the package::RepositoryList is required on the remote host.' =>
             'Az IP reguláris kifejezést határozza meg a helyi tárolóhoz való hozzáféréshez. Engedélyeznie kell ezt a helyi tárolóhoz való hozzáféréshez, továbbá a package::RepositoryList szükséges a távoli kiszolgálón.',
         'Defines the PostMaster header to be used on the filter for keeping the current state of the ticket.' =>
@@ -6688,8 +6688,8 @@ Az Ön segélyszolgálat csapata
             'Meghatározza azokat a szűrőket, amelyek feldolgozzák a bejegyzésekben lévő szöveget az URL-ek kiemelése érdekében.',
         'Defines the format of responses in the ticket compose screen of the agent interface ([% Data.OrigFrom | html %] is From 1:1, [% Data.OrigFromName | html %] is only realname of From).' =>
             'Meghatározza a válaszok formátumát az ügyintézői felület jegyválasz képernyőjén ([% Data.OrigFrom | html %] = feladó 1:1, [% Data.OrigFromName | html %] csak a feladó valódi neve).',
-        'Defines the fully qualified domain name of the system. This setting is used as a variable, OTRS_CONFIG_FQDN which is found in all forms of messaging used by the application, to build links to the tickets within your system.' =>
-            'Meghatározza a rendszer teljes képzésű tartománynevét. Ezt a beállítást az OTRS_CONFIG_FQDN változójaként használják, amely az alkalmazás által használt üzenetküldés összes űrlapján megtalálható a jegyekre mutató hivatkozások készítéséhez a rendszeren belül.',
+        'Defines the fully qualified domain name of the system. This setting is used as a variable, LIGERO_CONFIG_FQDN which is found in all forms of messaging used by the application, to build links to the tickets within your system.' =>
+            'Meghatározza a rendszer teljes képzésű tartománynevét. Ezt a beállítást az LIGERO_CONFIG_FQDN változójaként használják, amely az alkalmazás által használt üzenetküldés összes űrlapján megtalálható a jegyekre mutató hivatkozások készítéséhez a rendszeren belül.',
         'Defines the groups every customer user will be in (if CustomerGroupSupport is enabled and you don\'t want to manage every customer user for these groups).' =>
             'Meghatározza azokat a csoportokat, amelyekbe minden ügyfél-felhasználó be fog kerülni (ha a CustomerGroupSupport engedélyezve van, és nem szeretne minden ügyfél-felhasználót kezelni ezeknél a csoportoknál).',
         'Defines the groups every customer will be in (if CustomerGroupSupport is enabled and you don\'t want to manage every customer for these groups).' =>
@@ -6774,8 +6774,8 @@ Az Ön segélyszolgálat csapata
             'Meghatározza a helyet további csomagok online tárolólistájának lekéréséhez. Az első elérhető találat lesz felhasználva.',
         'Defines the log module for the system. "File" writes all messages in a given logfile, "SysLog" uses the syslog daemon of the system, e.g. syslogd.' =>
             'Meghatározza a napló modult a rendszerhez. A „File” minden üzenetet a megadott naplófájlba ír, a „SysLog” a rendszer syslog démonját használja, mint például a syslogd.',
-        'Defines the maximal size (in bytes) for file uploads via the browser. Warning: Setting this option to a value which is too low could cause many masks in your OTRS instance to stop working (probably any mask which takes input from the user).' =>
-            'Meghatározza a böngészőn keresztüli fájlfeltöltések legnagyobb méretét (bájtban). Figyelem: A beállítás túl alacsony értékre állítása azt okozhatja, hogy az OTRS példány számos maszkja nem fog működni (valószínűleg az összes maszk, amely bemenetet vár a felhasználótól).',
+        'Defines the maximal size (in bytes) for file uploads via the browser. Warning: Setting this option to a value which is too low could cause many masks in your LIGERO instance to stop working (probably any mask which takes input from the user).' =>
+            'Meghatározza a böngészőn keresztüli fájlfeltöltések legnagyobb méretét (bájtban). Figyelem: A beállítás túl alacsony értékre állítása azt okozhatja, hogy az LIGERO példány számos maszkja nem fog működni (valószínűleg az összes maszk, amely bemenetet vár a felhasználótól).',
         'Defines the maximal valid time (in seconds) for a session id.' =>
             'Meghatározza egy munkamenet azonosító legnagyobb érvényes értékét (másodpercben).',
         'Defines the maximum number of affected tickets per job.' => 'Meghatározza a feladatonként érintett jegyek legnagyobb számát.',
@@ -6800,10 +6800,10 @@ Az Ön segélyszolgálat csapata
         'Defines the module to authenticate customers.' => 'Meghatározza azt a modult, amely hitelesíti az ügyfeleket.',
         'Defines the module to display a notification if cloud services are disabled.' =>
             'Meghatározza azt a modult, amely egy értesítést jelenít meg, ha a felhőszolgáltatások le vannak tiltva.',
-        'Defines the module to display a notification in different interfaces on different occasions for OTRS Business Solution™.' =>
-            'Meghatározza azt a modult, amely egy értesítést jelenít meg a különböző felületeken különböző alkalmakkor OTRS Business Solution™ használatánál.',
-        'Defines the module to display a notification in the agent interface if the OTRS Daemon is not running.' =>
-            'Meghatározza azt a modult, amely egy értesítést jelenít meg az ügyintézői felületen, ha az OTRS démon nem fut.',
+        'Defines the module to display a notification in different interfaces on different occasions for LIGERO Business Solution™.' =>
+            'Meghatározza azt a modult, amely egy értesítést jelenít meg a különböző felületeken különböző alkalmakkor LIGERO Business Solution™ használatánál.',
+        'Defines the module to display a notification in the agent interface if the LIGERO Daemon is not running.' =>
+            'Meghatározza azt a modult, amely egy értesítést jelenít meg az ügyintézői felületen, ha az LIGERO démon nem fut.',
         'Defines the module to display a notification in the agent interface if the system configuration is out of sync.' =>
             'Meghatározza azt a modult, amely egy értesítést jelenít meg az ügyintézői felületen, ha a rendszerbeállítás nincs szinkronban.',
         'Defines the module to display a notification in the agent interface, if the agent has not yet selected a time zone.' =>
@@ -6840,8 +6840,8 @@ Az Ön segélyszolgálat csapata
             'Meghatározza annak az oszlopnak a nevét, amely a felhasználói azonosítót tárolja a beállítások táblában.',
         'Defines the name of the indicated calendar.' => 'Meghatározza a jelzett naptár nevét.',
         'Defines the name of the key for customer sessions.' => 'Meghatározza a kulcs nevét az ügyfél munkamenetekhez.',
-        'Defines the name of the session key. E.g. Session, SessionID or OTRS.' =>
-            'Meghatározza a munkamenetkulcs nevét. Például munkamenet, munkamenet-azonosító vagy OTRS.',
+        'Defines the name of the session key. E.g. Session, SessionID or LIGERO.' =>
+            'Meghatározza a munkamenetkulcs nevét. Például munkamenet, munkamenet-azonosító vagy LIGERO.',
         'Defines the name of the table where the user preferences are stored.' =>
             'Meghatározza annak a táblának a nevét, ahol a felhasználói beállítások vannak tárolva.',
         'Defines the next possible states after composing / answering a ticket in the ticket compose screen of the agent interface.' =>
@@ -6936,8 +6936,8 @@ Az Ön segélyszolgálat csapata
             'Egy elválasztót határoz meg az ügyintézők valódi neve és a megadott várólista e-mail címek között.',
         'Defines the shown columns and the position in the AgentCustomerUserAddressBook result screen.' =>
             'Meghatározza a megjelenített oszlopokat és a pozíciót az ügyintézői ügyfél-felhasználó címjegyzék eredményei képernyőn.',
-        'Defines the shown links in the footer area of the customer and public interface of this OTRS system. The value in "Key" is the external URL, the value in "Content" is the shown label.' =>
-            'Meghatározza ennek az OTRS rendszernek az ügyfél- és nyilvános felületének láblécterületén megjelenített hivatkozásokat. A „Kulcs” mezőben lévő érték a külső URL, a „Tartalom” mezőben lévő érték a megjelenített címke.',
+        'Defines the shown links in the footer area of the customer and public interface of this LIGERO system. The value in "Key" is the external URL, the value in "Content" is the shown label.' =>
+            'Meghatározza ennek az LIGERO rendszernek az ügyfél- és nyilvános felületének láblécterületén megjelenített hivatkozásokat. A „Kulcs” mezőben lévő érték a külső URL, a „Tartalom” mezőben lévő érték a megjelenített címke.',
         'Defines the standard permissions available for customers within the application. If more permissions are needed, you can enter them here. Permissions must be hard coded to be effective. Please ensure, when adding any of the afore mentioned permissions, that the "rw" permission remains the last entry.' =>
             'Meghatározza az ügyfeleknek elérhető szabványos jogosultságokat az alkalmazáson belül. Ha több jogosultság szükséges, akkor itt adhatja meg azokat. A jogosultságoknak szerepelniük kell a forráskódban, hogy hatályban lévők legyenek. Győződjön meg arról, hogy bármely fent említett jogosultság hozzáadásakor az „rw” jogosultság legyen az utolsó bejegyzés.',
         'Defines the standard size of PDF pages.' => 'Meghatározza a PDF oldalak szabványos méretét.',
@@ -6958,8 +6958,8 @@ Az Ön segélyszolgálat csapata
         'Defines the subject for rejected emails.' => 'Meghatározza az elutasított levelek tárgyát.',
         'Defines the system administrator\'s email address. It will be displayed in the error screens of the application.' =>
             'Meghatározza a rendszer adminisztrátorának e-mail címét. Ez az alkalmazás hibaképernyőin lesz megjelenítve.',
-        'Defines the system identifier. Every ticket number and http session string contains this ID. This ensures that only tickets which belong to your system will be processed as follow-ups (useful when communicating between two instances of OTRS).' =>
-            'Meghatározza a rendszer azonosítóját. Minden jegyszám és HTTP munkamenet szöveg tartalmazza ezt az azonosítót. Ez biztosítja, hogy csak azok a jegyek legyenek feldolgozva követőként, amelyek a rendszerhez tartoznak (hasznos az OTRS két példánya közötti kommunikációkor).',
+        'Defines the system identifier. Every ticket number and http session string contains this ID. This ensures that only tickets which belong to your system will be processed as follow-ups (useful when communicating between two instances of LIGERO).' =>
+            'Meghatározza a rendszer azonosítóját. Minden jegyszám és HTTP munkamenet szöveg tartalmazza ezt az azonosítót. Ez biztosítja, hogy csak azok a jegyek legyenek feldolgozva követőként, amelyek a rendszerhez tartoznak (hasznos az LIGERO két példánya közötti kommunikációkor).',
         'Defines the target attribute in the link to external customer database. E.g. \'AsPopup PopupType_TicketAction\'.' =>
             'Meghatározza a cél jellemzőt egy külső ügyfél-adatbázisra mutató hivatkozásban. Például „AsPopup PopupType_TicketAction”.',
         'Defines the target attribute in the link to external customer database. E.g. \'target="cdb"\'.' =>
@@ -6975,12 +6975,12 @@ Az Ön segélyszolgálat csapata
         'Defines the ticket plugin for calendar appointments.' => 'Meghatározza a jegybővítményt a naptáridőpontokhoz.',
         'Defines the time zone of the indicated calendar, which can be assigned later to a specific queue.' =>
             'Meghatározza a jelzett naptár időzónáját, amely később hozzárendelhető egy megadott várólistához.',
-        'Defines the timeout (in seconds, minimum is 20 seconds) for the support data collection with the public module \'PublicSupportDataCollector\' (e.g. used from the OTRS Daemon).' =>
-            'Meghatározza az időkorlátot (másodpercben, a minimum 20 másodperc) a támogatási adatok gyűjtéséhez a nyilvános „PublicSupportDataCollector” modullal (például az OTRS démonból használva).',
+        'Defines the timeout (in seconds, minimum is 20 seconds) for the support data collection with the public module \'PublicSupportDataCollector\' (e.g. used from the LIGERO Daemon).' =>
+            'Meghatározza az időkorlátot (másodpercben, a minimum 20 másodperc) a támogatási adatok gyűjtéséhez a nyilvános „PublicSupportDataCollector” modullal (például az LIGERO démonból használva).',
         'Defines the two-factor module to authenticate agents.' => 'Meghatározza azt a kétlépcsős modult, amely hitelesíti az ügyintézőket.',
         'Defines the two-factor module to authenticate customers.' => 'Meghatározza azt a kétlépcsős modult, amely hitelesíti az ügyfeleket.',
-        'Defines the type of protocol, used by the web server, to serve the application. If https protocol will be used instead of plain http, it must be specified here. Since this has no affect on the web server\'s settings or behavior, it will not change the method of access to the application and, if it is wrong, it will not prevent you from logging into the application. This setting is only used as a variable, OTRS_CONFIG_HttpType which is found in all forms of messaging used by the application, to build links to the tickets within your system.' =>
-            'Meghatározza a webkiszolgáló által használt protokoll típusát az alkalmazás kiszolgálásához. Ha https protokollt fognak használni az egyszerű http helyett, akkor azt itt kell megadni. Mivel ez nem befolyásolja a webkiszolgáló beállításait vagy viselkedését, ezért nem fogja megváltoztatni az alkalmazáshoz való hozzáférés módját, és ha rossz, nem fogja megakadályozni az alkalmazásba való belépést. Ezt a beállítást csak az OTRS_CONFIG_HttpType változójaként használják, amely az alkalmazás által használt üzenetküldés összes űrlapján megtalálható a jegyekre mutató hivatkozások készítéséhez a rendszeren belül.',
+        'Defines the type of protocol, used by the web server, to serve the application. If https protocol will be used instead of plain http, it must be specified here. Since this has no affect on the web server\'s settings or behavior, it will not change the method of access to the application and, if it is wrong, it will not prevent you from logging into the application. This setting is only used as a variable, LIGERO_CONFIG_HttpType which is found in all forms of messaging used by the application, to build links to the tickets within your system.' =>
+            'Meghatározza a webkiszolgáló által használt protokoll típusát az alkalmazás kiszolgálásához. Ha https protokollt fognak használni az egyszerű http helyett, akkor azt itt kell megadni. Mivel ez nem befolyásolja a webkiszolgáló beállításait vagy viselkedését, ezért nem fogja megváltoztatni az alkalmazáshoz való hozzáférés módját, és ha rossz, nem fogja megakadályozni az alkalmazásba való belépést. Ezt a beállítást csak az LIGERO_CONFIG_HttpType változójaként használják, amely az alkalmazás által használt üzenetküldés összes űrlapján megtalálható a jegyekre mutató hivatkozások készítéséhez a rendszeren belül.',
         'Defines the used character for plaintext email quotes in the ticket compose screen of the agent interface. If this is empty or inactive, original emails will not be quoted but appended to the response.' =>
             'Meghatározza az egyszerű szöveges e-mail idézetekhez használt karaktert az ügyintézői felület jegyválasz képernyőjén. Ha ez üres vagy inaktív, akkor az eredeti levelek nem lesznek idézve, viszont hozzáfűzésre kerülnek a válaszhoz.',
         'Defines the user identifier for the customer panel.' => 'Meghatározza a felhasználói azonosítót az ügyfélpanelhez.',
@@ -7025,7 +7025,7 @@ Az Ön segélyszolgálat csapata
         'Deletes requested sessions if they have timed out.' => 'Törli a kért munkameneteket, ha túllépték az időkorlátot.',
         'Delivers extended debugging information in the frontend in case any AJAX errors occur, if enabled.' =>
             'Kiterjesztett hibakeresési információkat szolgáltat az előtétprogramon abban az esetben, ha bármilyen AJAX-hiba történik, ha engedélyezve van.',
-        'Deploy and manage OTRS Business Solution™.' => 'Az OTRS Business Solution™ üzembe állítása és kezelése.',
+        'Deploy and manage LIGERO Business Solution™.' => 'Az LIGERO Business Solution™ üzembe állítása és kezelése.',
         'Detached' => 'Leválasztott',
         'Determines if a button to delete a link should be displayed next to each link in each zoom mask.' =>
             'Meghatározza, hogy egy kapcsolat törléséhez szükséges gombnak minden egyes kapcsolat mellett meg kell-e jelennie az egyes nagyítási maszkokban.',
@@ -7061,8 +7061,8 @@ Az Ön segélyszolgálat csapata
             'Meghatározza, hogy mely várólisták lesznek érvényesek a jegy címzettjeinél az ügyfélfelületen.',
         'Disable HTTP header "Content-Security-Policy" to allow loading of external script contents. Disabling this HTTP header can be a security issue! Only disable it, if you know what you are doing!' =>
             'A „Content-Security-Policy” HTTP-fejléc letiltása a külső parancsfájltartalmak betöltésének engedélyezéséhez. Ezen HTTP-fejléc letiltása biztonsági probléma lehet! Csak akkor tiltsa le, ha tudja, hogy mit csinál!',
-        'Disable HTTP header "X-Frame-Options: SAMEORIGIN" to allow OTRS to be included as an IFrame in other websites. Disabling this HTTP header can be a security issue! Only disable it, if you know what you are doing!' =>
-            'Az „X-Frame-Options: SAMEORIGIN” HTTP-fejléc letiltása, hogy lehetővé tegye az OTRS beágyazását IFrame-ként más weboldalakba. Ennek a HTTP-fejlécnek a letiltása biztonsági probléma lehet! Csak akkor tiltsa le, ha tudja, hogy mit csinál!',
+        'Disable HTTP header "X-Frame-Options: SAMEORIGIN" to allow LIGERO to be included as an IFrame in other websites. Disabling this HTTP header can be a security issue! Only disable it, if you know what you are doing!' =>
+            'Az „X-Frame-Options: SAMEORIGIN” HTTP-fejléc letiltása, hogy lehetővé tegye az LIGERO beágyazását IFrame-ként más weboldalakba. Ennek a HTTP-fejlécnek a letiltása biztonsági probléma lehet! Csak akkor tiltsa le, ha tudja, hogy mit csinál!',
         'Disable cloud services' => 'Felhőszolgáltatások letiltása',
         'Disables sending reminder notifications to the responsible agent of a ticket (Ticket::Responsible needs to be enabled).' =>
             'Letiltja az emlékeztető értesítések küldését egy jegy felelős ügyintézőjének (a Ticket::Responsible modulnak engedélyezve kell lennie).',
@@ -7171,8 +7171,8 @@ Az Ön segélyszolgálat csapata
         'Enable this if you trust in all your public and private pgp keys, even if they are not certified with a trusted signature.' =>
             'Akkor engedélyezze ezt, ha megbízik minden nyilvános és személyes PGP kulcsban még akkor is, ha azok nincsenek egy megbízható aláírással tanúsítva.',
         'Enabled filters.' => 'Engedélyezett szűrők.',
-        'Enables PGP support. When PGP support is enabled for signing and encrypting mail, it is HIGHLY recommended that the web server runs as the OTRS user. Otherwise, there will be problems with the privileges when accessing .gnupg folder.' =>
-            'Engedélyezi a PGP támogatást. Amikor a PGP támogatás engedélyezve van levelek aláírásához és titkosításához, akkor ERŐSEN javasolt, hogy a webkiszolgáló az OTRS felhasználóként fusson. Egyébként problémák lesznek a jogosultságokkal, amikor hozzáfér a .gnupg mappához.',
+        'Enables PGP support. When PGP support is enabled for signing and encrypting mail, it is HIGHLY recommended that the web server runs as the LIGERO user. Otherwise, there will be problems with the privileges when accessing .gnupg folder.' =>
+            'Engedélyezi a PGP támogatást. Amikor a PGP támogatás engedélyezve van levelek aláírásához és titkosításához, akkor ERŐSEN javasolt, hogy a webkiszolgáló az LIGERO felhasználóként fusson. Egyébként problémák lesznek a jogosultságokkal, amikor hozzáfér a .gnupg mappához.',
         'Enables S/MIME support.' => 'Engedélyezi az S/MIME támogatást.',
         'Enables customers to create their own accounts.' => 'Engedélyezi az ügyfeleknek, hogy létrehozzák a saját fiókjaikat.',
         'Enables fetch S/MIME from CustomerUser backend support.' => 'Engedélyezi az S/MIME lekérését az ügyfél-felhasználó háttérprogram támogatásából.',
@@ -7233,7 +7233,7 @@ Az Ön segélyszolgálat csapata
             'Egy egyéni parancsot vagy modult hajt végre. Megjegyzés: ha modult használ, akkor függvény szükséges.',
         'Executes follow-up checks on In-Reply-To or References headers for mails that don\'t have a ticket number in the subject.' =>
             'Követő ellenőrzéseket hajt végre az In-Reply-To vagy a References fejléceken azoknál a leveleknél, amelyek nem rendelkeznek jegyszámmal a tárgyában.',
-        'Executes follow-up checks on OTRS Header \'X-OTRS-Bounce\'.' => 'Követő ellenőrzéseket hajt végre az „X-OTRS-Bounce” OTRS fejlécen.',
+        'Executes follow-up checks on LIGERO Header \'X-LIGERO-Bounce\'.' => 'Követő ellenőrzéseket hajt végre az „X-LIGERO-Bounce” LIGERO fejlécen.',
         'Executes follow-up checks on attachment contents for mails that don\'t have a ticket number in the subject.' =>
             'Követő ellenőrzéseket hajt végre a melléklet tartalmakon azoknál a leveleknél, amelyek nem rendelkeznek jegyszámmal a tárgyában.',
         'Executes follow-up checks on email body for mails that don\'t have a ticket number in the subject.' =>
@@ -7251,10 +7251,10 @@ Az Ön segélyszolgálat csapata
             'Csomagokat kér le proxy-n keresztül. Felülírja a „WebUserAgent::Proxy” beállítást.',
         'File that is displayed in the Kernel::Modules::AgentInfo module, if located under Kernel/Output/HTML/Templates/Standard/AgentInfo.tt.' =>
             'Egy fájl, amely a Kernel::Modules::AgentInfo modulban van megjelenítve, ha a Kernel/Output/HTML/Templates/Standard/AgentInfo.tt alatt található.',
-        'Filter for debugging ACLs. Note: More ticket attributes can be added in the format <OTRS_TICKET_Attribute> e.g. <OTRS_TICKET_Priority>.' =>
-            'Szűrő az ACL-ek hibakereséséhez. Megjegyzés: több jegyattribútum is hozzáadható <OTRS_TICKET_Attribútum> formátumban, például <OTRS_TICKET_Priority>.',
-        'Filter for debugging Transitions. Note: More filters can be added in the format <OTRS_TICKET_Attribute> e.g. <OTRS_TICKET_Priority>.' =>
-            'Szűrő az átmenetek hibakereséséhez. Megjegyzés: több szűrő is hozzáadható <OTRS_TICKET_Attribútum> formátumban, például <OTRS_TICKET_Priority>.',
+        'Filter for debugging ACLs. Note: More ticket attributes can be added in the format <LIGERO_TICKET_Attribute> e.g. <LIGERO_TICKET_Priority>.' =>
+            'Szűrő az ACL-ek hibakereséséhez. Megjegyzés: több jegyattribútum is hozzáadható <LIGERO_TICKET_Attribútum> formátumban, például <LIGERO_TICKET_Priority>.',
+        'Filter for debugging Transitions. Note: More filters can be added in the format <LIGERO_TICKET_Attribute> e.g. <LIGERO_TICKET_Priority>.' =>
+            'Szűrő az átmenetek hibakereséséhez. Megjegyzés: több szűrő is hozzáadható <LIGERO_TICKET_Attribútum> formátumban, például <LIGERO_TICKET_Priority>.',
         'Filter incoming emails.' => 'Bejövő e-mailek szűrése.',
         'Finnish' => 'Finn',
         'First Christmas Day' => 'Karácsony első napja',
@@ -7388,8 +7388,8 @@ Az Ön segélyszolgálat csapata
             'Ha „LDAP” lett kiválasztva a Customer::AuthModule modulnál, akkor itt adhatja meg a hozzáférési jellemzőket.',
         'If "LDAP" was selected for Customer::AuthModule, you can specify if the applications will stop if e. g. a connection to a server can\'t be established due to network problems.' =>
             'Ha „LDAP” lett kiválasztva a Customer::AuthModule modulnál, akkor megadhatja, hogy az alkalmazás leálljon, ha például hálózati problémák miatt nem lehet kapcsolatot létesíteni a kiszolgálóval.',
-        'If "LDAP" was selected for Customer::Authmodule, you can check if the user is allowed to authenticate because he is in a posixGroup, e.g. user needs to be in a group xyz to use OTRS. Specify the group, who may access the system.' =>
-            'Ha „LDAP” lett kiválasztva a Customer::AuthModule modulnál, akkor ellenőrizheti, hogy a felhasználónak engedélyezett-e a hitelesítés, mert egy posixGroup része. Például a felhasználónak az xyz csoportban kell lennie az OTRS használatához. Adja meg azt a csoportot, amely hozzáférhet a rendszerhez.',
+        'If "LDAP" was selected for Customer::Authmodule, you can check if the user is allowed to authenticate because he is in a posixGroup, e.g. user needs to be in a group xyz to use LIGERO. Specify the group, who may access the system.' =>
+            'Ha „LDAP” lett kiválasztva a Customer::AuthModule modulnál, akkor ellenőrizheti, hogy a felhasználónak engedélyezett-e a hitelesítés, mert egy posixGroup része. Például a felhasználónak az xyz csoportban kell lennie az LIGERO használatához. Adja meg azt a csoportot, amely hozzáférhet a rendszerhez.',
         'If "LDAP" was selected, you can add a filter to each LDAP query, e.g. (mail=*), (objectclass=user) or (!objectclass=computer).' =>
             'Ha „LDAP” lett kiválasztva, akkor egy szűrőt adhat minden LDAP lekérdezéshez, például (mail=*), (objectclass=user) vagy (!objectclass=computer).',
         'If "Radius" was selected for Customer::AuthModule, the password to authenticate to the radius host must be specified.' =>
@@ -7426,16 +7426,16 @@ Az Ön segélyszolgálat csapata
             'Ha engedélyezve van, akkor a démon át fogja irányítani a szabványos hibafolyamot egy naplófájlba.',
         'If enabled the daemon will redirect the standard output stream to a log file.' =>
             'Ha engedélyezve van, akkor a démon át fogja irányítani a szabványos kimenetfolyamot egy naplófájlba.',
-        'If enabled the daemon will use this directory to create its PID files. Note: Please stop the daemon before any change and use this setting only if <$OTRSHome>/var/run/ can not be used.' =>
-            'Ha engedélyezve van, akkor a démon ezt a könyvtárat fogja használni a PID-fájljai létrehozásához. Megjegyzés: állítsa le a démont, mielőtt bármit megváltoztatna, és csak akkor használja ezt a beállítást, ha az <$OTRSHome>/var/run/ nem használható.',
-        'If enabled, OTRS will deliver all CSS files in minified form.' =>
-            'Ha engedélyezve van, akkor az OTRS minden CSS fájlt minimalizált formában fog szállítani.',
-        'If enabled, OTRS will deliver all JavaScript files in minified form.' =>
-            'Ha engedélyezve van, akkor az OTRS minden JavaScript fájlt minimalizált formában fog szállítani.',
+        'If enabled the daemon will use this directory to create its PID files. Note: Please stop the daemon before any change and use this setting only if <$LIGEROHome>/var/run/ can not be used.' =>
+            'Ha engedélyezve van, akkor a démon ezt a könyvtárat fogja használni a PID-fájljai létrehozásához. Megjegyzés: állítsa le a démont, mielőtt bármit megváltoztatna, és csak akkor használja ezt a beállítást, ha az <$LIGEROHome>/var/run/ nem használható.',
+        'If enabled, LIGERO will deliver all CSS files in minified form.' =>
+            'Ha engedélyezve van, akkor az LIGERO minden CSS fájlt minimalizált formában fog szállítani.',
+        'If enabled, LIGERO will deliver all JavaScript files in minified form.' =>
+            'Ha engedélyezve van, akkor az LIGERO minden JavaScript fájlt minimalizált formában fog szállítani.',
         'If enabled, TicketPhone and TicketEmail will be open in new windows.' =>
             'Ha engedélyezve van, akkor a telefonos jegy és az e-mail jegy új ablakokban fog megnyílni.',
-        'If enabled, the OTRS version tag will be removed from the Webinterface, the HTTP headers and the X-Headers of outgoing mails. NOTE: If you change this option, please make sure to delete the cache.' =>
-            'Ha engedélyezve van, akkor az OTRS verziócímke el lesz távolítva a webes felületről, a HTTP fejlécekből és a kimenő levelek X-Headers bejegyzéseiből. Megjegyzés: ha megváltoztatja ezt a beállítást, akkor gondoskodjon a gyorsítótár törléséről is.',
+        'If enabled, the LIGERO version tag will be removed from the Webinterface, the HTTP headers and the X-Headers of outgoing mails. NOTE: If you change this option, please make sure to delete the cache.' =>
+            'Ha engedélyezve van, akkor az LIGERO verziócímke el lesz távolítva a webes felületről, a HTTP fejlécekből és a kimenő levelek X-Headers bejegyzéseiből. Megjegyzés: ha megváltoztatja ezt a beállítást, akkor gondoskodjon a gyorsítótár törléséről is.',
         'If enabled, the cache data be held in memory.' => 'Ha engedélyezve van, akkor a gyorsítótár adatai a memóriában lesznek tartva.',
         'If enabled, the cache data will be stored in cache backend.' => 'Ha engedélyezve van, akkor a gyorsítótár adatai a gyorsítótár háttérprogramban lesznek tárolva.',
         'If enabled, the customer can search for tickets in all services (regardless what services are assigned to the customer).' =>
@@ -7444,8 +7444,8 @@ Az Ön segélyszolgálat csapata
             'Ha engedélyezve van, akkor a különböző áttekintők (vezérlőpult, zárolt nézet, várólista nézet) automatikusan frissítve lesznek a megadott idő után.',
         'If enabled, the first level of the main menu opens on mouse hover (instead of click only).' =>
             'Ha engedélyezve van, akkor a főmenü első szintje megnyílik az egérrel való rámutatáskor (a csak kattintás helyet).',
-        'If enabled, users that haven\'t selected a time zone yet will be notified to do so. Note: Notification will not be shown if (1) user has not yet selected a time zone and (2) OTRSTimeZone and UserDefaultTimeZone do match and (3) are not set to UTC.' =>
-            'Ha engedélyezve van, akkor azok a felhasználók, akik még nem választottak időzónát, értesítve lesznek, hogy válasszanak. Megjegyzés: az értesítés nem lesz megjelenítve, ha (1) a felhasználó még nem választott időzónát és (2) az OTRS időzónája, valamint a felhasználó alapértelmezett időzónája megegyezik és (3) nincsenek UTC-re állítva.',
+        'If enabled, users that haven\'t selected a time zone yet will be notified to do so. Note: Notification will not be shown if (1) user has not yet selected a time zone and (2) LIGEROTimeZone and UserDefaultTimeZone do match and (3) are not set to UTC.' =>
+            'Ha engedélyezve van, akkor azok a felhasználók, akik még nem választottak időzónát, értesítve lesznek, hogy válasszanak. Megjegyzés: az értesítés nem lesz megjelenítve, ha (1) a felhasználó még nem választott időzónát és (2) az LIGERO időzónája, valamint a felhasználó alapértelmezett időzónája megegyezik és (3) nincsenek UTC-re állítva.',
         'If no SendmailNotificationEnvelopeFrom is specified, this setting makes it possible to use the email\'s from address instead of an empty envelope sender (required in certain mail server configurations).' =>
             'Ha nincs SendmailNotificationEnvelopeFrom megadva, akkor ez a beállítás lehetővé teszi az e-mailek feladó címének használatát egy üres boríték küldő helyett (bizonyos levelezőkiszolgálók beállításainál szükséges).',
         'If set, this address is used as envelope sender header in outgoing notifications. If no address is specified, the envelope sender header is empty (unless SendmailNotificationEnvelopeFrom::FallbackToEmailFrom is set).' =>
@@ -7456,8 +7456,8 @@ Az Ön segélyszolgálat csapata
             'Ha ez a beállítás engedélyezve van, akkor a webes felületen keresztül, az ügyfelek vagy az ügyintézők által létrehozott jegyek egy automatikus választ fognak kapni, ha be van állítva. Ha ez a beállítás nincs engedélyezve, akkor nem lesznek automatikus válaszok elküldve.',
         'If this regex matches, no message will be send by the autoresponder.' =>
             'Ha ez a reguláris kifejezés illeszkedik, akkor az automatikus válaszadó nem fog üzenetet küldeni.',
-        'If this setting is enabled, it is possible to install packages which are not verified by OTRS Group. These packages could threaten your whole system!' =>
-            'Ha ez a beállítás engedélyezve van, akkor lehetséges olyan csomagok telepítése, amelyeket nem ellenőrzött az OTRS csoport. Ezek a csomagok veszélyt jelenthetnek a teljes rendszerre!',
+        'If this setting is enabled, it is possible to install packages which are not verified by LIGERO Group. These packages could threaten your whole system!' =>
+            'Ha ez a beállítás engedélyezve van, akkor lehetséges olyan csomagok telepítése, amelyeket nem ellenőrzött az LIGERO csoport. Ezek a csomagok veszélyt jelenthetnek a teljes rendszerre!',
         'If this setting is enabled, local modifications will not be highlighted as errors in the package manager and support data collector.' =>
             'Ha ez a beállítás engedélyezve van, akkor a helyi módosítások nem lesznek hibaként kiemelve a csomagkezelőben és támogatási adatgyűjtőben.',
         'If you\'re going to be out of office, you may wish to let other users know by setting the exact dates of your absence.' =>
@@ -7572,7 +7572,7 @@ Az Ön segélyszolgálat csapata
         'Makes the session management use html cookies. If html cookies are disabled or if the client browser disabled html cookies, then the system will work as usual and append the session id to the links.' =>
             'HTML sütik használatát írja elő a munkamenet-kezelőnek. Ha a HTML sütik le vannak tiltva, vagy a kliens böngésző letiltotta a HTML sütiket, akkor a rendszer a szokásos módon fog működni, és hozzáfűzi a munkamenet-azonosítót a hivatkozásokhoz.',
         'Malay' => 'Maláj',
-        'Manage OTRS Group cloud services.' => 'OTRS csoport felhőszolgáltatások kezelése.',
+        'Manage LIGERO Group cloud services.' => 'LIGERO csoport felhőszolgáltatások kezelése.',
         'Manage PGP keys for email encryption.' => 'PGP kulcsok kezelése e-mail titkosításhoz.',
         'Manage POP3 or IMAP accounts to fetch email from.' => 'POP3 vagy IMAP fiókok kezelése e-mailek letöltéséhez.',
         'Manage S/MIME certificates for email encryption.' => 'S/MIME tanúsítványok kezelése e-mailek titkosításához.',
@@ -7616,7 +7616,7 @@ Az Ön segélyszolgálat csapata
         'Medium' => 'Közepes',
         'Merge this ticket and all articles into another ticket' => 'A jegy és minden bejegyzés egyesítése egy másik jegybe',
         'Merged Ticket (%s/%s) to (%s/%s).' => 'Jegy (%s/%s) egyesítve ezzel: (%s/%s).',
-        'Merged Ticket <OTRS_TICKET> to <OTRS_MERGE_TO_TICKET>.' => 'A(z) <OTRS_TICKET> jegy egyesítve a következővel: <OTRS_MERGE_TO_TICKET>.',
+        'Merged Ticket <LIGERO_TICKET> to <LIGERO_MERGE_TO_TICKET>.' => 'A(z) <LIGERO_TICKET> jegy egyesítve a következővel: <LIGERO_MERGE_TO_TICKET>.',
         'Minute' => 'Perc',
         'Miscellaneous' => 'Egyebek',
         'Module for To-selection in new ticket screen in the customer interface.' =>
@@ -7679,8 +7679,8 @@ Az Ön segélyszolgálat csapata
         'New Year\'s Day' => 'Újév',
         'New Year\'s Eve' => 'Szilveszter',
         'New process ticket' => 'Új folyamatjegy',
-        'News about OTRS releases!' => 'Az OTRS kiadásaival kapcsolatos hírek!',
-        'News about OTRS.' => 'Az OTRS-sel kapcsolatos hírek.',
+        'News about LIGERO releases!' => 'Az LIGERO kiadásaival kapcsolatos hírek!',
+        'News about LIGERO.' => 'Az LIGERO-sel kapcsolatos hírek.',
         'Next possible ticket states after adding a phone note in the ticket phone inbound screen of the agent interface.' =>
             'A következő lehetséges jegyállapotok egy új telefonos jegyzet hozzáadása után az ügyintézői felület bejövő telefonhívás képernyőjén.',
         'Next possible ticket states after adding a phone note in the ticket phone outbound screen of the agent interface.' =>
@@ -7699,12 +7699,12 @@ Az Ön segélyszolgálat csapata
         'Number of tickets to be displayed in each page of a search result in the customer interface.' =>
             'Egy keresési eredmény minden egyes oldalán megjelenített jegyek száma az ügyfélfelületen.',
         'Number of tickets to be displayed in each page.' => 'Az egyes oldalakon megjelenített jegyek száma.',
-        'OTRS Group Services' => 'OTRS csoport szolgáltatások',
-        'OTRS News' => 'OTRS hírek',
-        'OTRS can use one or more readonly mirror databases for expensive operations like fulltext search or statistics generation. Here you can specify the DSN for the first mirror database.' =>
-            'Az OTRS képes egy vagy több csak olvasható tükör adatbázist használni az olyan költséges műveleteknél, mint például a szabad-szavas keresés vagy a statisztikák előállítása. Itt adhatja meg a DNS-t az első tükör adatbázishoz.',
-        'OTRS doesn\'t support recurring Appointments without end date or number of iterations. During import process, it might happen that ICS file contains such Appointments. Instead, system creates all Appointments in the past, plus Appointments for the next N months (120 months/10 years by default).' =>
-            'Az OTRS nem támogatja a befejezési dátum vagy az ismétlések száma nélküli ismétlődő időpontokat. Az importálási folyamat során előfordulhat, hogy az ICS-fájl ilyen időpontokat tartalmaz. Ehelyett a rendszer az összes időpontot a múltban hozza létre, valamint a következő N hónapban (120 hónap/10 év alapértelmezetten).',
+        'LIGERO Group Services' => 'LIGERO csoport szolgáltatások',
+        'LIGERO News' => 'LIGERO hírek',
+        'LIGERO can use one or more readonly mirror databases for expensive operations like fulltext search or statistics generation. Here you can specify the DSN for the first mirror database.' =>
+            'Az LIGERO képes egy vagy több csak olvasható tükör adatbázist használni az olyan költséges műveleteknél, mint például a szabad-szavas keresés vagy a statisztikák előállítása. Itt adhatja meg a DNS-t az első tükör adatbázishoz.',
+        'LIGERO doesn\'t support recurring Appointments without end date or number of iterations. During import process, it might happen that ICS file contains such Appointments. Instead, system creates all Appointments in the past, plus Appointments for the next N months (120 months/10 years by default).' =>
+            'Az LIGERO nem támogatja a befejezési dátum vagy az ismétlések száma nélküli ismétlődő időpontokat. Az importálási folyamat során előfordulhat, hogy az ICS-fájl ilyen időpontokat tartalmaz. Ehelyett a rendszer az összes időpontot a múltban hozza létre, valamint a következő N hónapban (120 hónap/10 év alapértelmezetten).',
         'Open Tickets / Need to be answered' => 'Nyitott jegyek / Válaszra várnak',
         'Open an external link!' => 'Nyisson meg egy külső hivatkozást!',
         'Open tickets (customer user)' => 'Nyitott jegyek (ügyfél-felhasználó)',
@@ -7871,7 +7871,7 @@ Az Ön segélyszolgálat csapata
         'Replaces the original sender with current customer\'s email address on compose answer in the ticket compose screen of the agent interface.' =>
             'Kicseréli az eredeti küldőt az aktuális ügyfél e-mail címére a válasz írásakor az ügyintézői felület jegyválasz képernyőjén.',
         'Reports' => 'Jelentések',
-        'Reports (OTRS Business Solution™)' => 'Jelentések (OTRS Business Solution™)',
+        'Reports (LIGERO Business Solution™)' => 'Jelentések (LIGERO Business Solution™)',
         'Reprocess mails from spool directory that could not be imported in the first place.' =>
             'Azon levelek újrafeldolgozása a tároló könyvtárból, amelyeket nem sikerült importálni az első helyen.',
         'Required permissions to change the customer of a ticket in the agent interface.' =>
@@ -7910,7 +7910,7 @@ Az Ön segélyszolgálat csapata
         'Resent email to "%s".' => 'E-mail újraküldve neki: „%s”.',
         'Resets and unlocks the owner of a ticket if it was moved to another queue.' =>
             'Visszaállítja és feloldja egy jegy tulajdonosát, ha az egy másik várólistába lett áthelyezve.',
-        'Resource Overview (OTRS Business Solution™)' => 'Erőforrás áttekintő (OTRS Business Solution™)',
+        'Resource Overview (LIGERO Business Solution™)' => 'Erőforrás áttekintő (LIGERO Business Solution™)',
         'Responsible Tickets' => 'Felelős jegyek',
         'Responsible Tickets.' => 'Felelős jegyek.',
         'Restores a ticket from the archive (only if the event is a state change to any open available state).' =>
@@ -7934,8 +7934,8 @@ Az Ön segélyszolgálat csapata
         'SMS (Short Message Service)' => 'SMS (rövid szöveges üzenet)',
         'Salutations' => 'Megszólítások',
         'Sample command output' => 'Minta parancskimenet',
-        'Saves the attachments of articles. "DB" stores all data in the database (not recommended for storing big attachments). "FS" stores the data on the filesystem; this is faster but the webserver should run under the OTRS user. You can switch between the modules even on a system that is already in production without any loss of data. Note: Searching for attachment names is not supported when "FS" is used.' =>
-            'Elmenti a bejegyzések mellékleteit. A „DB” minden adatot az adatbázisban tárol (nem ajánlott nagy mellékletek tárolásához). Az „FS” a fájlrendszeren tárolja az adatokat. Ez gyorsabb, de a webkiszolgálót az OTRS felhasználó alatt kell futtatni. Adatvesztés nélkül válthat át a modulok között még egy olyan rendszeren is, amely produktív használatban van. Megjegyzés: A mellékletnevek keresése nem támogatott „FS” használata esetén.',
+        'Saves the attachments of articles. "DB" stores all data in the database (not recommended for storing big attachments). "FS" stores the data on the filesystem; this is faster but the webserver should run under the LIGERO user. You can switch between the modules even on a system that is already in production without any loss of data. Note: Searching for attachment names is not supported when "FS" is used.' =>
+            'Elmenti a bejegyzések mellékleteit. A „DB” minden adatot az adatbázisban tárol (nem ajánlott nagy mellékletek tárolásához). Az „FS” a fájlrendszeren tárolja az adatokat. Ez gyorsabb, de a webkiszolgálót az LIGERO felhasználó alatt kell futtatni. Adatvesztés nélkül válthat át a modulok között még egy olyan rendszeren is, amely produktív használatban van. Megjegyzés: A mellékletnevek keresése nem támogatott „FS” használata esetén.',
         'Schedule a maintenance period.' => 'Egy karbantartási időszakot ütemez.',
         'Screen after new ticket' => 'Új jegy utáni képernyő',
         'Search Customer' => 'Ügyfél keresése',
@@ -7958,7 +7958,7 @@ Az Ön segélyszolgálat csapata
         'Select your personal time zone. All times will be displayed relative to this time zone.' =>
             'Személyes időzóna kiválasztása. Az összes idő ettől az időzónától relatívan lesz megjelenítve.',
         'Select your preferred layout for the software.' => 'Az előnyben részesített elrendezés kiválasztása a szoftverhez.',
-        'Select your preferred theme for OTRS.' => 'Az előnyben részesített téma kiválasztása az OTRS-hez.',
+        'Select your preferred theme for LIGERO.' => 'Az előnyben részesített téma kiválasztása az LIGERO-hez.',
         'Selects the cache backend to use.' => 'Kiválasztja a használandó gyorsítótár háttérprogramot.',
         'Selects the module to handle uploads via the web interface. "DB" stores all uploads in the database, "FS" uses the file system.' =>
             'Kiválasztja a modult a webes felületen keresztüli feltöltések kezeléséhez. A „DB” minden feltöltést adatbázisban tárol, az „FS” a fájlrendszert használja.',
@@ -7972,7 +7972,7 @@ Az Ön segélyszolgálat csapata
         'Sends all outgoing email via bcc to the specified address. Please use this only for backup reasons.' =>
             'Elküld minden kimenő e-mailt titkos másolatként egy megadott címre. Ez csak biztonsági mentés céljából használja.',
         'Sends customer notifications just to the mapped customer.' => 'Az ügyfél értesítéseket csak a leképezett ügyfélnek küldi el.',
-        'Sends registration information to OTRS group.' => 'Regisztrációs információkat küld az OTRS csoportnak.',
+        'Sends registration information to LIGERO group.' => 'Regisztrációs információkat küld az LIGERO csoportnak.',
         'Sends reminder notifications of unlocked ticket after reaching the reminder date (only sent to ticket owner).' =>
             'Elküldi a feloldott jegy emlékeztető értesítéseit az emlékeztető dátum elérése után (csak a jegy tulajdonosának küldi).',
         'Sends the notifications which are configured in the admin interface under "Ticket Notifications".' =>
@@ -8108,8 +8108,8 @@ Az Ön segélyszolgálat csapata
         'Sets the prefered time units (e.g. work units, hours, minutes).' =>
             'Beállítja az előnyben részesített időegységeket (például munkaegység, óra, perc).',
         'Sets the preferred digest to be used for PGP binary.' => 'Beállítja a PGP binárisnál használandó előnyben részesített kivonatot.',
-        'Sets the prefix to the scripts folder on the server, as configured on the web server. This setting is used as a variable, OTRS_CONFIG_ScriptAlias which is found in all forms of messaging used by the application, to build links to the tickets within the system.' =>
-            'Beállítja a kiszolgálón lévő parancsfájlok mappájának előtagját, ahogy a webkiszolgálón be van állítva. Ezt a beállítást az OTRS_CONFIG_ScriptAlias változójaként használják, amely az alkalmazás által használt üzenetküldés összes űrlapján megtalálható a jegyekre mutató hivatkozások készítéséhez a rendszeren belül.',
+        'Sets the prefix to the scripts folder on the server, as configured on the web server. This setting is used as a variable, LIGERO_CONFIG_ScriptAlias which is found in all forms of messaging used by the application, to build links to the tickets within the system.' =>
+            'Beállítja a kiszolgálón lévő parancsfájlok mappájának előtagját, ahogy a webkiszolgálón be van állítva. Ezt a beállítást az LIGERO_CONFIG_ScriptAlias változójaként használják, amely az alkalmazás által használt üzenetküldés összes űrlapján megtalálható a jegyekre mutató hivatkozások készítéséhez a rendszeren belül.',
         'Sets the queue in the ticket close screen of a zoomed ticket in the agent interface.' =>
             'Beállítja a várólistát egy nagyított jegynek a jegylezárás képernyőjén az ügyintézői felületen.',
         'Sets the queue in the ticket free text screen of a zoomed ticket in the agent interface.' =>
@@ -8203,10 +8203,10 @@ Az Ön segélyszolgálat csapata
             'Beállítja a jegy típusát egy nagyított jegynek a jegy prioritás képernyőjén az ügyintézői felületen (a Ticket::Type modulnak engedélyezve kell lennie).',
         'Sets the ticket type in the ticket responsible screen of the agent interface (Ticket::Type needs to be enabled).' =>
             'Beállítja a jegy típusát az ügyintézői felület jegyfelelős képernyőjén (a Ticket::Type modulnak engedélyezve kell lennie).',
-        'Sets the time zone being used internally by OTRS to e. g. store dates and times in the database. WARNING: This setting must not be changed once set and tickets or any other data containing date/time have been created.' =>
-            'Beállítja az OTRS által belsőleg használt időzónát, hogy például dátumokat és időket tároljon az adatbázisban. FIGYELEM: ezt a beállítást nem szabad megváltoztatni, miután beállították, és jegyek vagy bármilyen dátumot és időt tartalmazó egyéb adatok létrejöttek.',
-        'Sets the time zone that will be assigned to newly created users and will be used for users that haven\'t yet set a time zone. This is the time zone being used as default to convert date and time between the OTRS time zone and the user\'s time zone.' =>
-            'Beállítja az időzónát, amely hozzá lesz rendelve az újonnan létrehozott felhasználókhoz, valamint olyan felhasználóknál lesz használva, akiknek még nincs beállított időzónájuk. Ez az alapértelmezetten használt időzóna az OTRS időzónája és a felhasználó időzónája közötti dátum és idő átalakításához.',
+        'Sets the time zone being used internally by LIGERO to e. g. store dates and times in the database. WARNING: This setting must not be changed once set and tickets or any other data containing date/time have been created.' =>
+            'Beállítja az LIGERO által belsőleg használt időzónát, hogy például dátumokat és időket tároljon az adatbázisban. FIGYELEM: ezt a beállítást nem szabad megváltoztatni, miután beállították, és jegyek vagy bármilyen dátumot és időt tartalmazó egyéb adatok létrejöttek.',
+        'Sets the time zone that will be assigned to newly created users and will be used for users that haven\'t yet set a time zone. This is the time zone being used as default to convert date and time between the LIGERO time zone and the user\'s time zone.' =>
+            'Beállítja az időzónát, amely hozzá lesz rendelve az újonnan létrehozott felhasználókhoz, valamint olyan felhasználóknál lesz használva, akiknek még nincs beállított időzónájuk. Ez az alapértelmezetten használt időzóna az LIGERO időzónája és a felhasználó időzónája közötti dátum és idő átalakításához.',
         'Sets the timeout (in seconds) for http/ftp downloads.' => 'Beállítja az időkorlátot (másodpercben) a HTTP/FTP letöltésekhez.',
         'Sets the timeout (in seconds) for package downloads. Overwrites "WebUserAgent::Timeout".' =>
             'Beállítja az időkorlátot (másodpercben) a csomagletöltésekhez. Felülírja a „WebUserAgent::Timeout” beállítást.',
@@ -8320,8 +8320,8 @@ Az Ön segélyszolgálat csapata
             'Megjeleníti az összes lehetséges ügyintéző listáját (minden ügyintéző, aki jegyzet jogosultsággal rendelkezik a várólistán vagy jegyen) annak meghatározásához, hogy kit kell értesíteni erről a jegyzetről az ügyintézői felület jegyfelelős képernyőjén.',
         'Shows a preview of the ticket overview (CustomerInfo => 1 - shows also Customer-Info, CustomerInfoMaxSize max. size in characters of Customer-Info).' =>
             'Megjeleníti a jegyáttekintő előnézetét (CustomerInfo => 1 – az ügyfél-információt is megjeleníti, a CustomerInfoMaxSize az ügyfél-információ legnagyobb mérete karakterben).',
-        'Shows a teaser link in the menu for the ticket attachment view of OTRS Business Solution™.' =>
-            'Egy rávezető hivatkozást jelenít meg a menüben az OTRS Business Solution™ jegymelléklet nézetéhez.',
+        'Shows a teaser link in the menu for the ticket attachment view of LIGERO Business Solution™.' =>
+            'Egy rávezető hivatkozást jelenít meg a menüben az LIGERO Business Solution™ jegymelléklet nézetéhez.',
         'Shows all both ro and rw queues in the queue view.' => 'Megjeleníti a csak olvasható és az írható, olvasható várólistákat is a várólista nézetben.',
         'Shows all both ro and rw tickets in the service view.' => 'Megjeleníti a csak olvasható és az írható, olvasható jegyeket is a szolgáltatás nézetben.',
         'Shows all open tickets (even if they are locked) in the escalation view of the agent interface.' =>
@@ -8342,7 +8342,7 @@ Az Ön segélyszolgálat csapata
             'Vagy a legutolsó ügyfél bejegyzés tárgyát, vagy a jegy címét jeleníti meg a kis formátumú áttekintőben.',
         'Shows existing parent/child queue lists in the system in the form of a tree or a list.' =>
             'Megjeleníti a meglévő szülő vagy gyermek várólisták listáit a rendszeren fa vagy lista formában.',
-        'Shows information on how to start OTRS Daemon' => 'Információkat jelenít meg arról, hogy hogyan indítsa az OTRS démont',
+        'Shows information on how to start LIGERO Daemon' => 'Információkat jelenít meg arról, hogy hogyan indítsa az LIGERO démont',
         'Shows link to external page in the ticket zoom view of the agent interface. Additional access control to show or not show this link can be done by using Key "Group" and Content like "rw:group1;move_into:group2".' =>
             'Külső oldalra mutató hivatkozást jelenít meg az ügyintézői felület jegynagyítás nézetében. A hivatkozás megjelenítéséhez vagy elrejtéséhez további hozzáférés vezérlő készíthető a „Group” kulcs és az „rw:csoport1;move_into:csoport2” értékhez hasonló tartalom használatával.',
         'Shows the articles sorted normally or in reverse, under ticket zoom in the agent interface.' =>
@@ -8426,16 +8426,16 @@ Az Ön segélyszolgálat csapata
         'Specifies the directory where SSL certificates are stored.' => 'Azt a könyvtárat adja meg, ahol az SSL tanúsítványok vannak tárolva.',
         'Specifies the directory where private SSL certificates are stored.' =>
             'Azt a könyvtárat adja meg, ahol a személyes SSL tanúsítványok vannak tárolva.',
-        'Specifies the email address that should be used by the application when sending notifications. The email address is used to build the complete display name for the notification master (i.e. "OTRS Notifications" ligero@your.example.com). You can use the OTRS_CONFIG_FQDN variable as set in your configuation, or choose another email address.' =>
-            'Azt az e-mail címet adja meg, amelyet az alkalmazás az értesítések elküldésekor használjon. Az e-mail cím a teljes megjelenítési név összeállításához lesz használva az értesítési mesternél (azaz „OTRS értesítések” ligero@your.example.com). Használhatja az OTRS_CONFIG_FQDN változót, ahogy a konfigurációban be van állítva, vagy válasszon egy másik e-mail címet.',
+        'Specifies the email address that should be used by the application when sending notifications. The email address is used to build the complete display name for the notification master (i.e. "LIGERO Notifications" ligero@your.example.com). You can use the LIGERO_CONFIG_FQDN variable as set in your configuation, or choose another email address.' =>
+            'Azt az e-mail címet adja meg, amelyet az alkalmazás az értesítések elküldésekor használjon. Az e-mail cím a teljes megjelenítési név összeállításához lesz használva az értesítési mesternél (azaz „LIGERO értesítések” ligero@your.example.com). Használhatja az LIGERO_CONFIG_FQDN változót, ahogy a konfigurációban be van állítva, vagy válasszon egy másik e-mail címet.',
         'Specifies the email addresses to get notification messages from scheduler tasks.' =>
             'Megadja az e-mail címet az ütemező feladataiból érkező értesítési üzenetek fogadásához.',
         'Specifies the group where the user needs rw permissions so that he can access the "SwitchToCustomer" feature.' =>
             'Azt a csoportot adja meg, ahol a felhasználónak írási, olvasási jogosultságra van szüksége, így hozzáférhet a „SwitchToCustomer” funkcióhoz.',
         'Specifies the group where the user needs rw permissions so that they can edit other users preferences.' =>
             'Azt a csoportot adja meg, ahol a felhasználónak írási, olvasási jogosultságra van szüksége ahhoz, hogy szerkeszthesse más felhasználók beállításait.',
-        'Specifies the name that should be used by the application when sending notifications. The sender name is used to build the complete display name for the notification master (i.e. "OTRS Notifications" ligero@your.example.com).' =>
-            'Azt a nevet adja meg, amelyet az alkalmazás az értesítések elküldésekor használjon. A küldő neve a teljes megjelenítési név összeállításához lesz használva az értesítési mesternél (azaz „OTRS értesítésiek” ligero@your.example.com).',
+        'Specifies the name that should be used by the application when sending notifications. The sender name is used to build the complete display name for the notification master (i.e. "LIGERO Notifications" ligero@your.example.com).' =>
+            'Azt a nevet adja meg, amelyet az alkalmazás az értesítések elküldésekor használjon. A küldő neve a teljes megjelenítési név összeállításához lesz használva az értesítési mesternél (azaz „LIGERO értesítésiek” ligero@your.example.com).',
         'Specifies the order in which the firstname and the lastname of agents will be displayed.' =>
             'Azt a sorrendet adja meg, amelyben az ügyintéző keresztneve és vezetékneve megjelenítve legyen.',
         'Specifies the path of the file for the logo in the page header (gif|jpg|png, 700 x 100 pixel).' =>
@@ -8458,8 +8458,8 @@ Az Ön segélyszolgálat csapata
             'Megadja, hogy a (MIME-alapú) bejegyzés mellékletek indexelődjenek és kereshetők legyenek.',
         'Specify how many sub directory levels to use when creating cache files. This should prevent too many cache files being in one directory.' =>
             'Megadja, hogy hány alkönyvtár szintet használjon a gyorsítótár fájl létrehozásakor. Ez megakadályozza, hogy túl sok gyorsítótár fájl legyen egy könyvtárban.',
-        'Specify the channel to be used to fetch OTRS Business Solution™ updates. Warning: Development releases might not be complete, your system might experience unrecoverable errors and on extreme cases could become unresponsive!' =>
-            'Megadja az OTRS Business Solution™ frissítések letöltéshez használt csatornát. Figyelmeztetés: a fejlesztői kiadások nem biztos, hogy befejezettek, a rendszere helyrehozhatatlan hibákat szenvedhet, és extrém esetekben elérhetetlenné válhat!',
+        'Specify the channel to be used to fetch LIGERO Business Solution™ updates. Warning: Development releases might not be complete, your system might experience unrecoverable errors and on extreme cases could become unresponsive!' =>
+            'Megadja az LIGERO Business Solution™ frissítések letöltéshez használt csatornát. Figyelmeztetés: a fejlesztői kiadások nem biztos, hogy befejezettek, a rendszere helyrehozhatatlan hibákat szenvedhet, és extrém esetekben elérhetetlenné válhat!',
         'Specify the password to authenticate for the first mirror database.' =>
             'A jelszó megadása az első tükör adatbázisnál történő hitelesítéshez.',
         'Specify the username to authenticate for the first mirror database.' =>
@@ -8556,7 +8556,7 @@ Az Ön segélyszolgálat csapata
         'This is the default orange - black skin.' => 'Ez az alapértelmezett narancssárga-fekete felszín.',
         'This module and its PreRun() function will be executed, if defined, for every request. This module is useful to check some user options or to display news about new applications.' =>
             'Ez a modul és annak PreRun() függvénye lesz végrehajtva minden kérésnél, ha meg van határozva. Ez a modul néhány felhasználói beállítás ellenőrzéséhez vagy az új alkalmazásokkal kapcsolatos hírek megjelenítéséhez hasznos.',
-        'This module is part of the admin area of OTRS.' => 'Ez a modul az OTRS adminisztrációs területének a része.',
+        'This module is part of the admin area of LIGERO.' => 'Ez a modul az LIGERO adminisztrációs területének a része.',
         'This option defines the dynamic field in which a Process Management activity entity id is stored.' =>
             'Ez a beállítás határozza meg azt a dinamikus mezőt, amelyben a folyamatkezelő tevékenység-entitás azonosítója tárolva van.',
         'This option defines the dynamic field in which a Process Management process entity id is stored.' =>
@@ -8569,7 +8569,7 @@ Az Ön segélyszolgálat csapata
             'Ez a beállítás meg fogja tagadni azon ügyfél-vállalati jegyekhez való hozzáférést, amelyeket nem az ügyfél-felhasználó hozott létre.',
         'This setting allows you to override the built-in country list with your own list of countries. This is particularly handy if you just want to use a small select group of countries.' =>
             'Ez a beállítás lehetővé teszi a beépített országlista felülbírálását a saját országlistájával. Ez különösen hasznos, ha az országoknak csak egy kiválasztott kis csoportját szeretné használni.',
-        'This setting is deprecated. Set OTRSTimeZone instead.' => 'Ez a beállítás elavult. Állítsa be az OTRSTimeZone beállítást helyette.',
+        'This setting is deprecated. Set LIGEROTimeZone instead.' => 'Ez a beállítás elavult. Állítsa be az LIGEROTimeZone beállítást helyette.',
         'This setting shows the sorting attributes in all overview screen, not only in queue view.' =>
             'Ez a beállítás megjeleníti a rendezési attribútumokat az összes képernyőn, nem csak a várólista nézeten.',
         'This will allow the system to send text messages via SMS.' => 'Ez lehetővé fogja tenni a rendszernek a szöveges üzenetek küldését SMS-ben.',
@@ -8617,8 +8617,8 @@ Az Ön segélyszolgálat csapata
         'To accept login information, such as an EULA or license.' => 'Bejelentkezési információk elfogadásához, mint például EULA vagy licenc.',
         'To download attachments.' => 'Mellékletek letöltéséhez.',
         'To view HTML attachments.' => 'HTML mellékletek megtekintéséhez.',
-        'Toggles display of OTRS FeatureAddons list in PackageManager.' =>
-            'Ki- és bekapcsolja az OTRS szolgáltatás-bővítmény listájának megjelenítését a csomagkezelőben.',
+        'Toggles display of LIGERO FeatureAddons list in PackageManager.' =>
+            'Ki- és bekapcsolja az LIGERO szolgáltatás-bővítmény listájának megjelenítését a csomagkezelőben.',
         'Toolbar Item for a shortcut. Additional access control to show or not show this link can be done by using Key "Group" and Content like "rw:group1;move_into:group2".' =>
             'Eszköztárelem egy gyorshivatkozáshoz. A hivatkozás megjelenítéséhez vagy elrejtéséhez további hozzáférés vezérlő készíthető a „Group” kulcs és az „rw:csoport1;move_into:csoport2” értékhez hasonló tartalom használatával.',
         'Transport selection for appointment notifications. Please note: setting \'Active\' to 0 will only prevent agents from editing settings of this group in their personal preferences, but will still allow administrators to edit the settings of another user\'s behalf. Use \'PreferenceGroup\' to control in which area these settings should be shown in the user interface.' =>
@@ -8637,8 +8637,8 @@ Az Ön segélyszolgálat csapata
         'Turns on the remote ip address check. It should not be enabled if the application is used, for example, via a proxy farm or a dialup connection, because the remote ip address is mostly different for the requests.' =>
             'Bekapcsolja a távoli IP-cím ellenőrzését. Nem szabad engedélyezni, ha az alkalmazást például egy proxy-farmon vagy betárcsázós kapcsolaton keresztül használják, mert a távoli IP-cím többnyire eltérő az egyes kéréseknél.',
         'Tweak the system as you wish.' => 'A rendszer finomhangolása, ahogy szeretné.',
-        'Type of daemon log rotation to use: Choose \'OTRS\' to let OTRS system to handle the file rotation, or choose \'External\' to use a 3rd party rotation mechanism (i.e. logrotate). Note: External rotation mechanism requires its own and independent configuration.' =>
-            'A használandó démon naplóforgatásának típusa: válassza az „OTRS” lehetőséget, ha az OTRS rendszerre szeretné bízni a fájlforgatás kezelését, vagy válassza a „Külső” lehetőséget egy harmadik féltől származó forgatási mechanizmus (azaz logrotate) használatához. Megjegyzés: a külső forgatási mechanizmus a saját és független beállítását igényli.',
+        'Type of daemon log rotation to use: Choose \'LIGERO\' to let LIGERO system to handle the file rotation, or choose \'External\' to use a 3rd party rotation mechanism (i.e. logrotate). Note: External rotation mechanism requires its own and independent configuration.' =>
+            'A használandó démon naplóforgatásának típusa: válassza az „LIGERO” lehetőséget, ha az LIGERO rendszerre szeretné bízni a fájlforgatás kezelését, vagy válassza a „Külső” lehetőséget egy harmadik féltől származó forgatási mechanizmus (azaz logrotate) használatához. Megjegyzés: a külső forgatási mechanizmus a saját és független beállítását igényli.',
         'Ukrainian' => 'Ukrán',
         'Unlock tickets that are past their unlock timeout.' => 'Jegyek feloldása, amelyek átlépték a feloldási időkorlátjukat.',
         'Unlock tickets whenever a note is added and the owner is out of office.' =>
@@ -8691,10 +8691,10 @@ Az Ön segélyszolgálat csapata
         'Whether to force redirect all requests from http to https protocol. Please check that your web server is configured correctly for https protocol before enable this option.' =>
             'Kényszerítse-e az összes kérés átirányítását HTTP-ről HTTPS protokollra. Ellenőrizze, hogy a webkiszolgálója helyesen van-e beállítva a HTTPS protokollhoz, mielőtt ezt a lehetőséget engedélyezné.',
         'Yes, but hide archived tickets' => 'Igen, de az archivált jegyek elrejtése',
-        'Your email with ticket number "<OTRS_TICKET>" is bounced to "<OTRS_BOUNCE_TO>". Contact this address for further information.' =>
-            'Az Ön „<OTRS_TICKET>” számú jegyhez rendelt e-mailje átirányításra került a következő címre: „<OTRS_BOUNCE_TO>”. További információkért vegye fel ezzel a címmel a kapcsolatot.',
-        'Your email with ticket number "<OTRS_TICKET>" is merged to "<OTRS_MERGE_TO_TICKET>".' =>
-            'Az Ön „<OTRS_TICKET>” jegyszámú levele egyesítve lett a következővel: „<OTRS_MERGE_TO_TICKET>”.',
+        'Your email with ticket number "<LIGERO_TICKET>" is bounced to "<LIGERO_BOUNCE_TO>". Contact this address for further information.' =>
+            'Az Ön „<LIGERO_TICKET>” számú jegyhez rendelt e-mailje átirányításra került a következő címre: „<LIGERO_BOUNCE_TO>”. További információkért vegye fel ezzel a címmel a kapcsolatot.',
+        'Your email with ticket number "<LIGERO_TICKET>" is merged to "<LIGERO_MERGE_TO_TICKET>".' =>
+            'Az Ön „<LIGERO_TICKET>” jegyszámú levele egyesítve lett a következővel: „<LIGERO_MERGE_TO_TICKET>”.',
         'Your queue selection of your preferred queues. You also get notified about those queues via email if enabled.' =>
             'Az előnyben részesített várólistáknak a várólista kiválasztása. Értesítést is kaphat azokról a várólistákról e-mailben, ha engedélyezve van.',
         'Your service selection of your preferred services. You also get notified about those services via email if enabled.' =>
@@ -8866,7 +8866,7 @@ Az Ön segélyszolgálat csapata
         'Hide EntityIDs',
         'If you now leave this page, all open popup windows will be closed, too!',
         'Import web service',
-        'Information about the OTRS Daemon',
+        'Information about the LIGERO Daemon',
         'Invalid date (need a future date)!',
         'Invalid date (need a past date)!',
         'Invalid date!',
@@ -9039,7 +9039,7 @@ Az Ön segélyszolgálat csapata
         'This is a repeating appointment',
         'This is currently disabled because of an ongoing package upgrade.',
         'This item still contains sub items. Are you sure you want to remove this item including its sub items?',
-        'This option is currently disabled because the OTRS Daemon is not running.',
+        'This option is currently disabled because the LIGERO Daemon is not running.',
         'This software runs with a huge lists of browsers, please upgrade to one of these.',
         'This window must be called from compose window.',
         'Thu',

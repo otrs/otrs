@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -79,7 +79,7 @@ my %CustomerUserData = $Kernel::OM->Get('Kernel::System::CustomerUser')->Custome
 
 my %Notification = (
     Subject     => '',
-    Body        => '<OTRS_TICKET_TicketNumber>',
+    Body        => '<LIGERO_TICKET_TicketNumber>',
     ContentType => 'text/plain',
 );
 
@@ -93,7 +93,7 @@ my %GenericAgentArticle = $Kernel::OM->Get('Kernel::System::TemplateGenerator')-
 $Self->Is(
     $GenericAgentArticle{Body},
     $Ticket{TicketNumber},
-    "TicketNumber found. OTRS Tag used.",
+    "TicketNumber found. LIGERO Tag used.",
 );
 
 1;

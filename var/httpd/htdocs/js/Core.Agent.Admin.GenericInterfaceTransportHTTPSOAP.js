@@ -1,5 +1,5 @@
 // --
-// Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+// Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 // --
 // This software comes with ABSOLUTELY NO WARRANTY. For details, see
 // the enclosed file COPYING for license information (GPL). If you
@@ -15,7 +15,7 @@ Core.Agent.Admin = Core.Agent.Admin || {};
 /**
  * @namespace Core.Agent.Admin.GenericInterfaceTransportHTTPSOAP
  * @memberof Core.Agent.Admin
- * @author OTRS AG
+ * @author LIGERO AG
  * @description
  *      This namespace contains the special module functions for the GenericInterface Transport HTTP SOAP module.
  */

@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -7,7 +7,7 @@
 # --
 
 package Kernel::Modules::AgentCustomerUserInformationCenterSearch;
-## nofilter(TidyAll::Plugin::OTRS::Perl::DBObject)
+## nofilter(TidyAll::Plugin::LIGERO::Perl::DBObject)
 
 use strict;
 use warnings;

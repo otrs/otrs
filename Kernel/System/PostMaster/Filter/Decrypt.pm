@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -87,29 +87,29 @@ sub Run {
     if ( $EncryptionMethod eq 'PGP' ) {
 
         # Try to decrypt body with PGP.
-        $Param{GetParam}->{'X-OTRS-BodyDecrypted'} = $Self->_DecryptPGP(
+        $Param{GetParam}->{'X-LIGERO-BodyDecrypted'} = $Self->_DecryptPGP(
             Body        => $Message,
             ContentType => $ContentType,
             %Param
         ) || '';
 
         # Return PGP decrypted content if encryption is PGP.
-        return $Param{GetParam}->{'X-OTRS-BodyDecrypted'} if $Param{GetParam}->{'X-OTRS-BodyDecrypted'};
+        return $Param{GetParam}->{'X-LIGERO-BodyDecrypted'} if $Param{GetParam}->{'X-LIGERO-BodyDecrypted'};
     }
     elsif ( $EncryptionMethod eq 'SMIME' ) {
 
         # Try to decrypt body with SMIME.
-        $Param{GetParam}->{'X-OTRS-BodyDecrypted'} = $Self->_DecryptSMIME(
+        $Param{GetParam}->{'X-LIGERO-BodyDecrypted'} = $Self->_DecryptSMIME(
             Body        => $Self->{ParserObject}->{Email}->as_string(),
             ContentType => $ContentType,
             %Param
         ) || '';
 
         # Return SMIME decrypted content if encryption is SMIME
-        return $Param{GetParam}->{'X-OTRS-BodyDecrypted'} if $Param{GetParam}->{'X-OTRS-BodyDecrypted'};
+        return $Param{GetParam}->{'X-LIGERO-BodyDecrypted'} if $Param{GetParam}->{'X-LIGERO-BodyDecrypted'};
     }
     else {
-        $Param{GetParam}->{'X-OTRS-BodyDecrypted'} = '';
+        $Param{GetParam}->{'X-LIGERO-BodyDecrypted'} = '';
     }
 
     return 1;

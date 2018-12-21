@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -36,7 +36,7 @@ Creates a system error message and sends an email with the error messages form a
     my $Success = $TaskWorkerObject->_HandleError(
         TaskName     => 'some name',
         TaskType      => 'some type',
-        LogMessage   => 'some message',       # message to set in the OTRS error log
+        LogMessage   => 'some message',       # message to set in the LIGERO error log
         ErrorMessage => 'some message',       # message to be sent as a body of the email, usually contains
                                               #     all messages from STDERR including tracebacks
     );
@@ -63,7 +63,7 @@ sub _HandleError {
         my $Sent = $Kernel::OM->Get('Kernel::System::Email')->Send(
             From     => $From,
             To       => $To,
-            Subject  => "OTRS Scheduler Daemon $Param{TaskType}: $Param{TaskName}",
+            Subject  => "LIGERO Scheduler Daemon $Param{TaskType}: $Param{TaskName}",
             Charset  => 'utf-8',
             MimeType => 'text/plain',
             Body     => $Param{ErrorMessage},
@@ -150,7 +150,7 @@ sub _CheckTaskParams {
 
 =head1 TERMS AND CONDITIONS
 
-This software is part of the OTRS project (L<https://ligero.org/>).
+This software is part of the LIGERO project (L<https://ligero.org/>).
 
 This software comes with ABSOLUTELY NO WARRANTY. For details, see
 the enclosed file COPYING for license information (GPL). If you

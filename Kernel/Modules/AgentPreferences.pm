@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -312,10 +312,10 @@ sub Run {
         if ( $UpdateResult{Error} ) {
             $Result{Data}->{Error} = $UpdateResult{Error};
         }
-        elsif ( !$SysConfigObject->can('UserConfigurationDeploy') ) {    # OTRS Business Solution™
+        elsif ( !$SysConfigObject->can('UserConfigurationDeploy') ) {    # LIGERO Business Solution™
             $Result{Data}->{Error} = $Kernel::OM->Get('Kernel::Language')->Translate(
                 "This feature is part of the %s. Please contact us at %s for an upgrade."
-                , 'OTRS Business Solution™'
+                , 'LIGERO Business Solution™'
                 , 'sales@ligero.com'
             );
         }
@@ -891,10 +891,10 @@ sub _SettingReset {
     if ( !%Setting ) {
         $Result{Error} = $LayoutObject->{LanguageObject}->Translate("Setting not found!");
     }
-    elsif ( !$SysConfigObject->can('UserSettingValueDelete') ) {    # OTRS Business Solution™
+    elsif ( !$SysConfigObject->can('UserSettingValueDelete') ) {    # LIGERO Business Solution™
         $Result{Data}->{Error} = $LayoutObject->{LanguageObject}->Translate(
             "This feature is part of the %s. Please contact us at %s for an upgrade."
-            , 'OTRS Business Solution™'
+            , 'LIGERO Business Solution™'
             , 'sales@ligero.com'
         );
     }

@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -115,14 +115,14 @@ my $ExecuteXMLDBString = sub {
     return 1;
 };
 
-# get OTRS Version
-my $OTRSVersion = $Kernel::OM->Get('Kernel::Config')->Get('Version');
+# get LIGERO Version
+my $LIGEROVersion = $Kernel::OM->Get('Kernel::Config')->Get('Version');
 
 # leave only major and minor level versions
-$OTRSVersion =~ s{ (\d+ \. \d+) .+ }{$1}msx;
+$LIGEROVersion =~ s{ (\d+ \. \d+) .+ }{$1}msx;
 
 # add x as patch level version
-$OTRSVersion .= '.x';
+$LIGEROVersion .= '.x';
 
 my $RandomID = $Helper->GetRandomID();
 
@@ -132,11 +132,11 @@ my %Packages = (
 <ligero_package version="1.1">
     <Name>Package1$RandomID</Name>
     <Version>1.0.1</Version>
-    <Vendor>OTRS AG</Vendor>
+    <Vendor>LIGERO AG</Vendor>
     <URL>https://ligero.com/</URL>
     <License>GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007</License>
-    <Description Lang="en">OTRS Business Solution. For more information, please have a look at the official documentation at http://ligero.github.io/doc/manual/ligero-business-solution/stable/en/html/.</Description>
-    <Framework>$OTRSVersion</Framework>
+    <Description Lang="en">LIGERO Business Solution. For more information, please have a look at the official documentation at http://ligero.github.io/doc/manual/ligero-business-solution/stable/en/html/.</Description>
+    <Framework>$LIGEROVersion</Framework>
     <PackageIsVisible>1</PackageIsVisible>
     <PackageIsDownloadable>1</PackageIsDownloadable>
     <PackageIsRemovable>1</PackageIsRemovable>
@@ -156,11 +156,11 @@ EOF
 <ligero_package version="1.1">
     <Name>Package2$RandomID</Name>
     <Version>1.0.1</Version>
-    <Vendor>OTRS AG</Vendor>
+    <Vendor>LIGERO AG</Vendor>
     <URL>https://ligero.com/</URL>
     <License>GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007</License>
-    <Description Lang="en">OTRS Business Solution. For more information, please have a look at the official documentation at http://ligero.github.io/doc/manual/ligero-business-solution/stable/en/html/.</Description>
-    <Framework>$OTRSVersion</Framework>
+    <Description Lang="en">LIGERO Business Solution. For more information, please have a look at the official documentation at http://ligero.github.io/doc/manual/ligero-business-solution/stable/en/html/.</Description>
+    <Framework>$LIGEROVersion</Framework>
     <PackageIsVisible>1</PackageIsVisible>
     <PackageIsDownloadable>1</PackageIsDownloadable>
     <PackageIsRemovable>1</PackageIsRemovable>

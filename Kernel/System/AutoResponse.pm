@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -254,8 +254,8 @@ Return example:
 
     %QueueAddressData(
         #Auto Response Data
-        'Text'            => 'Your OTRS TeamOTRS! answered by a human asap.',
-        'Subject'         => 'New ticket has been created! (RE: <OTRS_CUSTOMER_SUBJECT[24]>)',
+        'Text'            => 'Your LIGERO TeamLIGERO! answered by a human asap.',
+        'Subject'         => 'New ticket has been created! (RE: <LIGERO_CUSTOMER_SUBJECT[24]>)',
         'ContentType'     => 'text/plain',
         'SystemAddressID' => '1',
         'AutoResponseID'  => '1'
@@ -263,8 +263,8 @@ Return example:
         #System Address Data
         'ID'              => '1',
         'Name'            => 'ligero@localhost',
-        'Address'         => 'ligero@localhost',  #Compatibility with OTRS 2.1
-        'Realname'        => 'OTRS System',
+        'Address'         => 'ligero@localhost',  #Compatibility with LIGERO 2.1
+        'Realname'        => 'LIGERO System',
         'Comment'         => 'Standard Address.',
         'ValidID'         => '1',
         'QueueID'         => '1',
@@ -590,7 +590,7 @@ sub _NameExistsCheck {
 
 =head1 TERMS AND CONDITIONS
 
-This software is part of the OTRS project (L<https://ligero.org/>).
+This software is part of the LIGERO project (L<https://ligero.org/>).
 
 This software comes with ABSOLUTELY NO WARRANTY. For details, see
 the enclosed file COPYING for license information (GPL). If you

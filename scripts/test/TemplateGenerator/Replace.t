@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -229,7 +229,7 @@ my @Tests = (
             From => 'test@home.com',
         },
         RichText => 0,
-        Template => 'Test <OTRS_CUSTOMER_From>',
+        Template => 'Test <LIGERO_CUSTOMER_From>',
         Result   => 'Test test@home.com',
     },
     {
@@ -238,7 +238,7 @@ my @Tests = (
             From => 'test@home.com',
         },
         RichText => 0,
-        Template => 'Test <OTRS_CUSTOMER_FROM>',
+        Template => 'Test <LIGERO_CUSTOMER_FROM>',
         Result   => 'Test test@home.com',
     },
     {
@@ -247,157 +247,157 @@ my @Tests = (
             From => 'test@home.com',
         },
         RichText => 0,
-        Template => 'Test <OTRS_CUSTOMER_INVALID_TAG>',
+        Template => 'Test <LIGERO_CUSTOMER_INVALID_TAG>',
         Result   => 'Test -',
     },
     {
-        Name => 'OTRS customer subject',    # <OTRS_CUSTOMER_SUBJECT>
+        Name => 'LIGERO customer subject',    # <LIGERO_CUSTOMER_SUBJECT>
         Data => {
             From    => 'test@home.com',
             Subject => 'ligero',
         },
         RichText => 0,
-        Template => 'Test <OTRS_CUSTOMER_SUBJECT>',
+        Template => 'Test <LIGERO_CUSTOMER_SUBJECT>',
         Result   => 'Test ligero',
     },
     {
-        Name => 'OTRS customer subject 3 letters',    # <OTRS_CUSTOMER_SUBJECT[20]>
+        Name => 'LIGERO customer subject 3 letters',    # <LIGERO_CUSTOMER_SUBJECT[20]>
         Data => {
             From    => 'test@home.com',
             Subject => 'ligero',
         },
         RichText => 0,
-        Template => 'Test <OTRS_CUSTOMER_SUBJECT[3]>',
+        Template => 'Test <LIGERO_CUSTOMER_SUBJECT[3]>',
         Result   => 'Test otr [...]',
     },
     {
-        Name => 'OTRS customer subject 20 letters + garbarge',    # <OTRS_CUSTOMER_SUBJECT[20]>
+        Name => 'LIGERO customer subject 20 letters + garbarge',    # <LIGERO_CUSTOMER_SUBJECT[20]>
         Data => {
             From    => 'test@home.com',
             Subject => 'RE: ligero',
         },
         RichText => 0,
-        Template => 'Test <OTRS_CUSTOMER_SUBJECT[20]>',
+        Template => 'Test <LIGERO_CUSTOMER_SUBJECT[20]>',
         Result   => 'Test ligero',
     },
     {
-        Name => 'OTRS responsible firstname',                     # <OTRS_RESPONSIBLE_UserFirstname>
+        Name => 'LIGERO responsible firstname',                     # <LIGERO_RESPONSIBLE_UserFirstname>
         Data => {
             From => 'test@home.com',
         },
         RichText => 0,
-        Template => 'Test <OTRS_RESPONSIBLE_UserFirstname> <OTRS_RESPONSIBLE_nonexisting>',
+        Template => 'Test <LIGERO_RESPONSIBLE_UserFirstname> <LIGERO_RESPONSIBLE_nonexisting>',
         Result   => "Test $TestUsers[1]->{UserFirstname} -",
     },
     {
-        Name => 'OTRS_TICKET_RESPONSIBLE firstname',              # <OTRS_RESPONSIBLE_UserFirstname>
+        Name => 'LIGERO_TICKET_RESPONSIBLE firstname',              # <LIGERO_RESPONSIBLE_UserFirstname>
         Data => {
             From => 'test@home.com',
         },
         RichText => 0,
-        Template => 'Test <OTRS_TICKET_RESPONSIBLE_UserFirstname> <OTRS_TICKET_RESPONSIBLE_nonexisting>',
+        Template => 'Test <LIGERO_TICKET_RESPONSIBLE_UserFirstname> <LIGERO_TICKET_RESPONSIBLE_nonexisting>',
         Result   => "Test $TestUsers[1]->{UserFirstname} -",
     },
     {
-        Name => 'OTRS owner firstname',                           # <OTRS_OWNER_*>
+        Name => 'LIGERO owner firstname',                           # <LIGERO_OWNER_*>
         Data => {
             From => 'test@home.com',
         },
         RichText => 0,
-        Template => 'Test <OTRS_OWNER_UserFirstname> <OTRS_OWNER_nonexisting>',
+        Template => 'Test <LIGERO_OWNER_UserFirstname> <LIGERO_OWNER_nonexisting>',
         Result   => "Test $TestUsers[0]->{UserFirstname} -",
     },
     {
-        Name => 'OTRS_TICKET_OWNER firstname',                    # <OTRS_OWNER_*>
+        Name => 'LIGERO_TICKET_OWNER firstname',                    # <LIGERO_OWNER_*>
         Data => {
             From => 'test@home.com',
         },
         RichText => 0,
-        Template => 'Test <OTRS_TICKET_OWNER_UserFirstname> <OTRS_TICKET_OWNER_nonexisting>',
+        Template => 'Test <LIGERO_TICKET_OWNER_UserFirstname> <LIGERO_TICKET_OWNER_nonexisting>',
         Result   => "Test $TestUsers[0]->{UserFirstname} -",
     },
     {
-        Name => 'OTRS current firstname',                         # <OTRS_CURRENT_*>
+        Name => 'LIGERO current firstname',                         # <LIGERO_CURRENT_*>
         Data => {
             From => 'test@home.com',
         },
         RichText => 0,
-        Template => 'Test <OTRS_CURRENT_UserFirstname> <OTRS_CURRENT_nonexisting>',
+        Template => 'Test <LIGERO_CURRENT_UserFirstname> <LIGERO_CURRENT_nonexisting>',
         Result   => "Test $TestUsers[2]->{UserFirstname} -",
     },
     {
-        Name => 'OTRS ticket ticketid',                           # <OTRS_TICKET_*>
+        Name => 'LIGERO ticket ticketid',                           # <LIGERO_TICKET_*>
         Data => {
             From => 'test@home.com',
         },
         RichText => 0,
-        Template => 'Test <OTRS_TICKET_TicketID>',
+        Template => 'Test <LIGERO_TICKET_TicketID>',
         Result   => 'Test ' . $TicketID,
     },
     {
-        Name => 'OTRS dynamic field (text)',                      # <OTRS_TICKET_DynamicField_*>
+        Name => 'LIGERO dynamic field (text)',                      # <LIGERO_TICKET_DynamicField_*>
         Data => {
             From => 'test@home.com',
         },
         RichText => 0,
-        Template => 'Test <OTRS_TICKET_DynamicField_Replace1' . $RandomID . '>',
+        Template => 'Test <LIGERO_TICKET_DynamicField_Replace1' . $RandomID . '>',
         Result   => 'Test ligero',
     },
     {
-        Name => 'OTRS dynamic field value (text)',                # <OTRS_TICKET_DynamicField_*_Value>
+        Name => 'LIGERO dynamic field value (text)',                # <LIGERO_TICKET_DynamicField_*_Value>
         Data => {
             From => 'test@home.com',
         },
         RichText => 0,
-        Template => 'Test <OTRS_TICKET_DynamicField_Replace1' . $RandomID . '_Value>',
+        Template => 'Test <LIGERO_TICKET_DynamicField_Replace1' . $RandomID . '_Value>',
         Result   => 'Test ligero',
     },
     {
-        Name => 'OTRS dynamic field (Dropdown)',                  # <OTRS_TICKET_DynamicField_*>
+        Name => 'LIGERO dynamic field (Dropdown)',                  # <LIGERO_TICKET_DynamicField_*>
         Data => {
             From => 'test@home.com',
         },
         RichText => 0,
-        Template => 'Test <OTRS_TICKET_DynamicField_Replace2' . $RandomID . '>',
+        Template => 'Test <LIGERO_TICKET_DynamicField_Replace2' . $RandomID . '>',
         Result   => 'Test 1',
     },
     {
-        Name => 'OTRS dynamic field value (Dropdown)',            # <OTRS_TICKET_DynamicField_*_Value>
+        Name => 'LIGERO dynamic field value (Dropdown)',            # <LIGERO_TICKET_DynamicField_*_Value>
         Data => {
             From => 'test@home.com',
         },
         RichText => 0,
-        Template => 'Test <OTRS_TICKET_DynamicField_Replace2' . $RandomID . '_Value>',
+        Template => 'Test <LIGERO_TICKET_DynamicField_Replace2' . $RandomID . '_Value>',
         Result   => 'Test A',
     },
     {
-        Name     => 'OTRS config value',                          # <OTRS_CONFIG_*>
+        Name     => 'LIGERO config value',                          # <LIGERO_CONFIG_*>
         Data     => {},
         RichText => 0,
-        Template => 'Test <OTRS_CONFIG_DefaultTheme>',
+        Template => 'Test <LIGERO_CONFIG_DefaultTheme>',
         Result   => 'Test Standard',
     },
     {
-        Name     => 'OTRS secret config values, must be masked (even unknown settings)',
+        Name     => 'LIGERO secret config values, must be masked (even unknown settings)',
         Data     => {},
         RichText => 0,
         Template =>
-            'Test <OTRS_CONFIG_DatabasePw> <OTRS_CONFIG_Core::MirrorDB::Password> <OTRS_CONFIG_SomeOtherValue::Password> <OTRS_CONFIG_SomeOtherValue::Pw>',
+            'Test <LIGERO_CONFIG_DatabasePw> <LIGERO_CONFIG_Core::MirrorDB::Password> <LIGERO_CONFIG_SomeOtherValue::Password> <LIGERO_CONFIG_SomeOtherValue::Pw>',
         Result => 'Test xxx xxx xxx xxx',
     },
     {
-        Name     => 'OTRS secret config value and normal config value',
+        Name     => 'LIGERO secret config value and normal config value',
         Data     => {},
         RichText => 0,
-        Template => 'Test <OTRS_CONFIG_DatabasePw> and <OTRS_CONFIG_DefaultTheme>',
+        Template => 'Test <LIGERO_CONFIG_DatabasePw> and <LIGERO_CONFIG_DefaultTheme>',
         Result   => 'Test xxx and Standard',
     },
     {
-        Name     => 'OTRS secret config values with numbers',
+        Name     => 'LIGERO secret config values with numbers',
         Data     => {},
         RichText => 0,
         Template =>
-            'Test <OTRS_CONFIG_AuthModule::LDAP::SearchUserPw1> and <OTRS_CONFIG_AuthModule::LDAP::SearchUserPassword1>',
+            'Test <LIGERO_CONFIG_AuthModule::LDAP::SearchUserPw1> and <LIGERO_CONFIG_AuthModule::LDAP::SearchUserPassword1>',
         Result => 'Test xxx and xxx',
     },
     {
@@ -407,11 +407,11 @@ my @Tests = (
         },
         RichText => 1,
         Template =>
-            'mailto-Link <a href="mailto:skywalker@ligero.org?subject=From%3A%20%3COTRS_CUSTOMER_From%3E&amp;body=From%3A%20%3COTRS_CUSTOMER_From%3E">E-Mail mit Subject und Body</a><br />
+            'mailto-Link <a href="mailto:skywalker@ligero.org?subject=From%3A%20%3CLIGERO_CUSTOMER_From%3E&amp;body=From%3A%20%3CLIGERO_CUSTOMER_From%3E">E-Mail mit Subject und Body</a><br />
 <br />
-mailto-Link <a href="mailto:skywalker@ligero.org?subject=From%3A%20%3COTRS_CUSTOMER_From%3E">E-Mail mit Subject</a><br />
+mailto-Link <a href="mailto:skywalker@ligero.org?subject=From%3A%20%3CLIGERO_CUSTOMER_From%3E">E-Mail mit Subject</a><br />
 <br />
-mailto-Link <a href="mailto:skywalker@ligero.org?body=From%3A%20%3COTRS_CUSTOMER_From%3E">E-Mail mit Body</a><br />',
+mailto-Link <a href="mailto:skywalker@ligero.org?body=From%3A%20%3CLIGERO_CUSTOMER_From%3E">E-Mail mit Body</a><br />',
         Result =>
             'mailto-Link <a href="mailto:skywalker@ligero.org?subject=From%3A%20test%40home.com&amp;body=From%3A%20test%40home.com">E-Mail mit Subject und Body</a><br /><br />mailto-Link <a href="mailto:skywalker@ligero.org?subject=From%3A%20test%40home.com">E-Mail mit Subject</a><br /><br />mailto-Link <a href="mailto:skywalker@ligero.org?body=From%3A%20test%40home.com">E-Mail mit Body</a><br />',
     },
@@ -422,11 +422,11 @@ mailto-Link <a href="mailto:skywalker@ligero.org?body=From%3A%20%3COTRS_CUSTOMER
         },
         RichText => 0,
         Template =>
-            'mailto-Link <a href="mailto:skywalker@ligero.org?subject=From%3A%20%3COTRS_CUSTOMER_From%3E&amp;body=From%3A%20%3COTRS_CUSTOMER_From%3E">E-Mail mit Subject und Body</a><br />
+            'mailto-Link <a href="mailto:skywalker@ligero.org?subject=From%3A%20%3CLIGERO_CUSTOMER_From%3E&amp;body=From%3A%20%3CLIGERO_CUSTOMER_From%3E">E-Mail mit Subject und Body</a><br />
 <br />
-mailto-Link <a href="mailto:skywalker@ligero.org?subject=From%3A%20%3COTRS_CUSTOMER_From%3E">E-Mail mit Subject</a><br />
+mailto-Link <a href="mailto:skywalker@ligero.org?subject=From%3A%20%3CLIGERO_CUSTOMER_From%3E">E-Mail mit Subject</a><br />
 <br />
-mailto-Link <a href="mailto:skywalker@ligero.org?body=From%3A%20%3COTRS_CUSTOMER_From%3E">E-Mail mit Body</a><br />',
+mailto-Link <a href="mailto:skywalker@ligero.org?body=From%3A%20%3CLIGERO_CUSTOMER_From%3E">E-Mail mit Body</a><br />',
         Result =>
             'mailto-Link <a href="mailto:skywalker@ligero.org?subject=From%3A%20test%40home.com&amp;body=From%3A%20test%40home.com">E-Mail mit Subject und Body</a><br />
 <br />
@@ -435,7 +435,7 @@ mailto-Link <a href="mailto:skywalker@ligero.org?subject=From%3A%20test%40home.c
 mailto-Link <a href="mailto:skywalker@ligero.org?body=From%3A%20test%40home.com">E-Mail mit Body</a><br />',
     },
     {
-        Name => 'OTRS AGENT + CUSTOMER FROM',    # <OTRS_TICKET_DynamicField_*_Value>
+        Name => 'LIGERO AGENT + CUSTOMER FROM',    # <LIGERO_TICKET_DynamicField_*_Value>
         Data => {
             From => 'testcustomer@home.com',
         },
@@ -443,12 +443,12 @@ mailto-Link <a href="mailto:skywalker@ligero.org?body=From%3A%20test%40home.com"
             From => 'testagent@home.com',
         },
         RichText => 0,
-        Template => 'Test <OTRS_AGENT_From> - <OTRS_CUSTOMER_From>',
+        Template => 'Test <LIGERO_AGENT_From> - <LIGERO_CUSTOMER_From>',
         Result   => 'Test testagent@home.com - testcustomer@home.com',
     },
     {
         Name =>
-            'OTRS AGENT + CUSTOMER BODY',   # this is an special case, it sets the Body as it is since is the Data param
+            'LIGERO AGENT + CUSTOMER BODY',   # this is an special case, it sets the Body as it is since is the Data param
         Data => {
             Body => "Line1\nLine2\nLine3",
         },
@@ -456,12 +456,12 @@ mailto-Link <a href="mailto:skywalker@ligero.org?body=From%3A%20test%40home.com"
             Body => "Line1\nLine2\nLine3",
         },
         RichText => 0,
-        Template => 'Test <OTRS_AGENT_BODY> - <OTRS_CUSTOMER_BODY>',
+        Template => 'Test <LIGERO_AGENT_BODY> - <LIGERO_CUSTOMER_BODY>',
         Result   => "Test Line1\nLine2\nLine3 - Line1\nLine2\nLine3",
     },
     {
         Name =>
-            'OTRS AGENT + CUSTOMER BODY With RichText enabled'
+            'LIGERO AGENT + CUSTOMER BODY With RichText enabled'
         ,    # this is an special case, it sets the Body as it is since is the Data param
         Data => {
             Body => "Line1\nLine2\nLine3",
@@ -470,7 +470,7 @@ mailto-Link <a href="mailto:skywalker@ligero.org?body=From%3A%20test%40home.com"
             Body => "Line1\nLine2\nLine3",
         },
         RichText => 1,
-        Template => 'Test &lt;OTRS_AGENT_BODY&gt; - &lt;OTRS_CUSTOMER_BODY&gt;',
+        Template => 'Test &lt;LIGERO_AGENT_BODY&gt; - &lt;LIGERO_CUSTOMER_BODY&gt;',
         Result   => "Test Line1<br/>
 Line2<br/>
 Line3 - Line1<br/>
@@ -478,7 +478,7 @@ Line2<br/>
 Line3",
     },
     {
-        Name => 'OTRS AGENT + CUSTOMER BODY[2]',
+        Name => 'LIGERO AGENT + CUSTOMER BODY[2]',
         Data => {
             Body => "Line1\nLine2\nLine3",
         },
@@ -486,11 +486,11 @@ Line3",
             Body => "Line1\nLine2\nLine3",
         },
         RichText => 0,
-        Template => 'Test <OTRS_AGENT_BODY[2]> - <OTRS_CUSTOMER_BODY[2]>',
+        Template => 'Test <LIGERO_AGENT_BODY[2]> - <LIGERO_CUSTOMER_BODY[2]>',
         Result   => "Test > Line1\n> Line2 - > Line1\n> Line2",
     },
     {
-        Name => 'OTRS AGENT + CUSTOMER BODY[7] with RichText enabled',
+        Name => 'LIGERO AGENT + CUSTOMER BODY[7] with RichText enabled',
         Data => {
             Body => "Line1\nLine2\nLine3\nLine4\nLine5\nLine6\nLine7\nLine8\nLine9",
         },
@@ -498,7 +498,7 @@ Line3",
             Body => "Line1\nLine2\nLine3\nLine4\nLine5\nLine6\nLine7\nLine8\nLine9",
         },
         RichText => 1,
-        Template => 'Test &lt;OTRS_AGENT_BODY[7]&gt; - &lt;OTRS_CUSTOMER_BODY[7]&gt;',
+        Template => 'Test &lt;LIGERO_AGENT_BODY[7]&gt; - &lt;LIGERO_CUSTOMER_BODY[7]&gt;',
         Result =>
             'Test <div  type="cite" style="border:none;border-left:solid blue 1.5pt;padding:0cm 0cm 0cm 4.0pt">Line1<br/>
 Line2<br/>
@@ -515,7 +515,7 @@ Line6<br/>
 Line7</div>',
     },
     {
-        Name => 'OTRS AGENT + CUSTOMER EMAIL',    # EMAIL without [ ] does not exists
+        Name => 'LIGERO AGENT + CUSTOMER EMAIL',    # EMAIL without [ ] does not exists
         Data => {
             Body => "Line1\nLine2\nLine3",
         },
@@ -523,11 +523,11 @@ Line7</div>',
             Body => "Line1\nLine2\nLine3",
         },
         RichText => 0,
-        Template => 'Test <OTRS_AGENT_EMAIL> - <OTRS_CUSTOMER_EMAIL>',
+        Template => 'Test <LIGERO_AGENT_EMAIL> - <LIGERO_CUSTOMER_EMAIL>',
         Result   => "Test Line1\nLine2\nLine3 - Line1\nLine2\nLine3",
     },
     {
-        Name => 'OTRS AGENT + CUSTOMER EMAIL[2]',
+        Name => 'LIGERO AGENT + CUSTOMER EMAIL[2]',
         Data => {
             Body => "Line1\nLine2\nLine3",
         },
@@ -535,30 +535,30 @@ Line7</div>',
             Body => "Line1\nLine2\nLine3",
         },
         RichText => 0,
-        Template => 'Test <OTRS_AGENT_EMAIL[2]> - <OTRS_CUSTOMER_EMAIL[2]>',
+        Template => 'Test <LIGERO_AGENT_EMAIL[2]> - <LIGERO_CUSTOMER_EMAIL[2]>',
         Result   => "Test > Line1\n> Line2 - > Line1\n> Line2",
     },
     {
-        Name => 'OTRS COMMENT',
+        Name => 'LIGERO COMMENT',
         Data => {
             Body => "Line1\nLine2\nLine3",
         },
         RichText => 0,
-        Template => 'Test <OTRS_COMMENT>',
+        Template => 'Test <LIGERO_COMMENT>',
         Result   => "Test > Line1\n> Line2\n> Line3",
     },
 
     {
-        Name => 'OTRS COMMENT[2]',
+        Name => 'LIGERO COMMENT[2]',
         Data => {
             Body => "Line1\nLine2\nLine3",
         },
         RichText => 0,
-        Template => 'Test <OTRS_COMMENT[2]>',
+        Template => 'Test <LIGERO_COMMENT[2]>',
         Result   => "Test > Line1\n> Line2",
     },
     {
-        Name => 'OTRS AGENT + CUSTOMER SUBJECT[2]',
+        Name => 'LIGERO AGENT + CUSTOMER SUBJECT[2]',
         Data => {
             Subject => '0123456789'
         },
@@ -566,105 +566,105 @@ Line7</div>',
             Subject => '987654321'
         },
         RichText => 0,
-        Template => 'Test <OTRS_AGENT_SUBJECT[2]> - <OTRS_CUSTOMER_SUBJECT[2]>',
+        Template => 'Test <LIGERO_AGENT_SUBJECT[2]> - <LIGERO_CUSTOMER_SUBJECT[2]>',
         Result   => "Test 98 [...] - 01 [...]",
     },
     {
-        Name     => 'OTRS CUSTOMER REALNAME',
+        Name     => 'LIGERO CUSTOMER REALNAME',
         Data     => {},
         RichText => 0,
-        Template => 'Test <OTRS_CUSTOMER_REALNAME>',
+        Template => 'Test <LIGERO_CUSTOMER_REALNAME>',
         Result   => "Test $TestCustomerLogin $TestCustomerLogin",
     },
     {
-        Name     => 'OTRS CUSTOMER DATA UserFirstname',
+        Name     => 'LIGERO CUSTOMER DATA UserFirstname',
         Data     => {},
         RichText => 0,
-        Template => 'Test <OTRS_CUSTOMER_DATA_UserFirstname>',
+        Template => 'Test <LIGERO_CUSTOMER_DATA_UserFirstname>',
         Result   => "Test $TestCustomerLogin",
     },
     {
-        Name     => 'OTRS <OTRS_NOTIFICATION_RECIPIENT_UserFullname>',
+        Name     => 'LIGERO <LIGERO_NOTIFICATION_RECIPIENT_UserFullname>',
         Data     => {},
         RichText => 0,
-        Template => 'Test <OTRS_NOTIFICATION_RECIPIENT_UserFullname> <OTRS_NOTIFICATION_RECIPIENT_nonexisting>',
+        Template => 'Test <LIGERO_NOTIFICATION_RECIPIENT_UserFullname> <LIGERO_NOTIFICATION_RECIPIENT_nonexisting>',
         Result   => "Test $TestUsers[3]->{UserFullname} -",
     },
     {
-        Name     => 'OTRS <OTRS_TICKET_EscalationResponseTime>',
+        Name     => 'LIGERO <LIGERO_TICKET_EscalationResponseTime>',
         Data     => {},
         RichText => 0,
-        Template => 'Test <OTRS_TICKET_EscalationResponseTime>',
+        Template => 'Test <LIGERO_TICKET_EscalationResponseTime>',
         Result   => "Test 07/05/2017 11:30",
     },
     {
-        Name     => 'OTRS <OTRS_TICKET_EscalationUpdateTime>',
+        Name     => 'LIGERO <LIGERO_TICKET_EscalationUpdateTime>',
         Data     => {},
         RichText => 0,
-        Template => 'Test <OTRS_TICKET_EscalationUpdateTime>',
+        Template => 'Test <LIGERO_TICKET_EscalationUpdateTime>',
         Result   => "Test 07/05/2017 11:45",
     },
     {
-        Name     => 'OTRS <OTRS_TICKET_EscalationSolutionTime>',
+        Name     => 'LIGERO <LIGERO_TICKET_EscalationSolutionTime>',
         Data     => {},
         RichText => 0,
-        Template => 'Test <OTRS_TICKET_EscalationSolutionTime>',
+        Template => 'Test <LIGERO_TICKET_EscalationSolutionTime>',
         Result   => "Test 07/05/2017 11:50",
     },
     {
-        Name     => 'OTRS <OTRS_TICKET_EscalationTimeWorkingTime>',
+        Name     => 'LIGERO <LIGERO_TICKET_EscalationTimeWorkingTime>',
         Data     => {},
         RichText => 0,
-        Template => 'Test <OTRS_TICKET_EscalationTimeWorkingTime>',
+        Template => 'Test <LIGERO_TICKET_EscalationTimeWorkingTime>',
         Result   => "Test 25 m",
     },
     {
-        Name     => 'OTRS <OTRS_TICKET_EscalationTime>',
+        Name     => 'LIGERO <LIGERO_TICKET_EscalationTime>',
         Data     => {},
         RichText => 0,
-        Template => 'Test <OTRS_TICKET_EscalationTime>',
+        Template => 'Test <LIGERO_TICKET_EscalationTime>',
         Result   => "Test 25 m",
     },
     {
-        Name     => 'OTRS <OTRS_TICKET_FirstResponseTimeWorkingTime>',
+        Name     => 'LIGERO <LIGERO_TICKET_FirstResponseTimeWorkingTime>',
         Data     => {},
         RichText => 0,
-        Template => 'Test <OTRS_TICKET_FirstResponseTimeWorkingTime>',
+        Template => 'Test <LIGERO_TICKET_FirstResponseTimeWorkingTime>',
         Result   => "Test 25 m",
     },
     {
-        Name     => 'OTRS <OTRS_TICKET_FirstResponseTime>',
+        Name     => 'LIGERO <LIGERO_TICKET_FirstResponseTime>',
         Data     => {},
         RichText => 0,
-        Template => 'Test <OTRS_TICKET_FirstResponseTime>',
+        Template => 'Test <LIGERO_TICKET_FirstResponseTime>',
         Result   => "Test 25 m",
     },
     {
-        Name     => 'OTRS <OTRS_TICKET_UpdateTimeWorkingTime>',
+        Name     => 'LIGERO <LIGERO_TICKET_UpdateTimeWorkingTime>',
         Data     => {},
         RichText => 0,
-        Template => 'Test <OTRS_TICKET_UpdateTimeWorkingTime>',
+        Template => 'Test <LIGERO_TICKET_UpdateTimeWorkingTime>',
         Result   => "Test 40 m",
     },
     {
-        Name     => 'OTRS <OTRS_TICKET_UpdateTime>',
+        Name     => 'LIGERO <LIGERO_TICKET_UpdateTime>',
         Data     => {},
         RichText => 0,
-        Template => 'Test <OTRS_TICKET_UpdateTime>',
+        Template => 'Test <LIGERO_TICKET_UpdateTime>',
         Result   => "Test 40 m",
     },
     {
-        Name     => 'OTRS <OTRS_TICKET_SolutionTimeWorkingTime>',
+        Name     => 'LIGERO <LIGERO_TICKET_SolutionTimeWorkingTime>',
         Data     => {},
         RichText => 0,
-        Template => 'Test <OTRS_TICKET_SolutionTimeWorkingTime>',
+        Template => 'Test <LIGERO_TICKET_SolutionTimeWorkingTime>',
         Result   => "Test 45 m",
     },
     {
-        Name     => 'OTRS <OTRS_TICKET_SolutionTime>',
+        Name     => 'LIGERO <LIGERO_TICKET_SolutionTime>',
         Data     => {},
         RichText => 0,
-        Template => 'Test <OTRS_TICKET_SolutionTime>',
+        Template => 'Test <LIGERO_TICKET_SolutionTime>',
         Result   => "Test 45 m",
     },
 );
@@ -716,17 +716,17 @@ $Self->True(
 # Check 'UntilTime' and 'RealTillTimeNotUsed' tags (see bug#8301).
 @Tests = (
     {
-        Name     => 'OTRS <OTRS_TICKET_UntilTime>',
+        Name     => 'LIGERO <LIGERO_TICKET_UntilTime>',
         Data     => {},
         RichText => 0,
-        Template => 'Test <OTRS_TICKET_UntilTime>',
+        Template => 'Test <LIGERO_TICKET_UntilTime>',
         Result   => "Test 22 h 55 m",
     },
     {
-        Name     => 'OTRS <OTRS_TICKET_RealTillTimeNotUsed>',
+        Name     => 'LIGERO <LIGERO_TICKET_RealTillTimeNotUsed>',
         Data     => {},
         RichText => 0,
-        Template => 'Test <OTRS_TICKET_RealTillTimeNotUsed>',
+        Template => 'Test <LIGERO_TICKET_RealTillTimeNotUsed>',
         Result   => "Test 07/06/2017 10:00",
     }
 );

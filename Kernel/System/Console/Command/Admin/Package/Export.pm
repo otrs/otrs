@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -21,7 +21,7 @@ our @ObjectDependencies = (
 sub Configure {
     my ( $Self, %Param ) = @_;
 
-    $Self->Description('Export the contents of an OTRS package to a directory.');
+    $Self->Description('Export the contents of an LIGERO package to a directory.');
     $Self->AddOption(
         Name        => 'target-directory',
         Description => "Export contents of the package to the specified directory.",
@@ -31,7 +31,7 @@ sub Configure {
     );
     $Self->AddArgument(
         Name        => 'source-path',
-        Description => "Specify the path to an OTRS package (opm) file that should be exported.",
+        Description => "Specify the path to an LIGERO package (opm) file that should be exported.",
         Required    => 1,
         ValueRegex  => qr/.*/smx,
     );

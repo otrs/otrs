@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -5989,8 +5989,8 @@ sub TicketMerge {
 
     my $Body = $ConfigObject->Get('Ticket::Frontend::AutomaticMergeText');
     $Body = $LanguageObject->Translate($Body);
-    $Body =~ s{<OTRS_TICKET>}{$MergeTicket{TicketNumber}}xms;
-    $Body =~ s{<OTRS_MERGE_TO_TICKET>}{$MainTicket{TicketNumber}}xms;
+    $Body =~ s{<LIGERO_TICKET>}{$MergeTicket{TicketNumber}}xms;
+    $Body =~ s{<LIGERO_MERGE_TO_TICKET>}{$MainTicket{TicketNumber}}xms;
 
     my $ArticleObject = $Kernel::OM->Get('Kernel::System::Ticket::Article');
 
@@ -7413,7 +7413,7 @@ sub DESTROY {
     return 1;
 }
 
-# COMPAT: to OTRS 1.x and 2.x (can be removed later)
+# COMPAT: to LIGERO 1.x and 2.x (can be removed later)
 
 sub CustomerPermission {
     my ( $Self, %Param ) = @_;
@@ -7853,7 +7853,7 @@ sub _TicketGetFirstLock {
 
 =head1 TERMS AND CONDITIONS
 
-This software is part of the OTRS project (L<https://ligero.org/>).
+This software is part of the LIGERO project (L<https://ligero.org/>).
 
 This software comes with ABSOLUTELY NO WARRANTY. For details, see
 the enclosed file COPYING for license information (GPL). If you

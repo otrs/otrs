@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -187,7 +187,7 @@ my @Tests = (
             UserID => $UserID,
             Ticket => \%Ticket,
             Config => {
-                Title => '<OTRS_TICKET_Queue>',
+                Title => '<LIGERO_TICKET_Queue>',
             },
         },
         Success => 1,
@@ -198,7 +198,7 @@ my @Tests = (
             UserID => $UserID,
             Ticket => \%Ticket,
             Config => {
-                Title => '<OTRS_TICKET_NotExisting>',
+                Title => '<LIGERO_TICKET_NotExisting>',
             },
         },
         Success => 1,
@@ -247,7 +247,7 @@ for my $Test (@Tests) {
             my $ExpectedValue = $Test->{Config}->{Config}->{$Attribute};
             if (
                 $OrigTest->{Config}->{Config}->{$Attribute}
-                =~ m{\A<OTRS_TICKET_([A-Za-z0-9_]+)>\z}msx
+                =~ m{\A<LIGERO_TICKET_([A-Za-z0-9_]+)>\z}msx
                 )
             {
                 $ExpectedValue = $Ticket{$1} // '';
@@ -286,7 +286,7 @@ for my $Test (@Tests) {
     }
 }
 
-# Check tags <OTRS_TICKET_DynamicField_Name1> and <OTRS_TICKET_DynamicField_Name1_Value>
+# Check tags <LIGERO_TICKET_DynamicField_Name1> and <LIGERO_TICKET_DynamicField_Name1_Value>
 # for date type DF (see bug#13795).
 # Create test ticket.
 $TicketID = $TicketObject->TicketCreate(
@@ -348,10 +348,10 @@ $Self->True(
 );
 
 my @Titles = (
-    '<OTRS_TICKET_DynamicField_' . $DynamicFieldName . '>',
-    '<OTRS_Ticket_DynamicField_' . $DynamicFieldName . '>',
-    '<OTRS_TICKET_DynamicField_' . $DynamicFieldName . '_Value>',
-    '<OTRS_Ticket_DynamicField_' . $DynamicFieldName . '_Value>',
+    '<LIGERO_TICKET_DynamicField_' . $DynamicFieldName . '>',
+    '<LIGERO_Ticket_DynamicField_' . $DynamicFieldName . '>',
+    '<LIGERO_TICKET_DynamicField_' . $DynamicFieldName . '_Value>',
+    '<LIGERO_Ticket_DynamicField_' . $DynamicFieldName . '_Value>',
 );
 
 for my $Title (@Titles) {

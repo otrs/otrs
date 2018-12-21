@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -22,7 +22,7 @@ $Kernel::OM->ObjectParamAdd(
 );
 my $Helper = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
 
-# This test checks if OTRS correctly detects that an email must not be auto-responded to.
+# This test checks if LIGERO correctly detects that an email must not be auto-responded to.
 my @Tests = (
     {
         Name => 'Regular mail',
@@ -35,7 +35,7 @@ Body
 ',
         EmailParams => {
             From          => 'test@home.com',
-            'X-OTRS-Loop' => '',
+            'X-LIGERO-Loop' => '',
         },
     },
     {
@@ -50,7 +50,7 @@ Body
 ',
         EmailParams => {
             From          => 'test@home.com',
-            'X-OTRS-Loop' => 'yes',
+            'X-LIGERO-Loop' => 'yes',
         },
     },
     {
@@ -65,7 +65,7 @@ Body
 ',
         EmailParams => {
             From          => 'test@home.com',
-            'X-OTRS-Loop' => 'yes',
+            'X-LIGERO-Loop' => 'yes',
         },
     },
     {
@@ -80,22 +80,22 @@ Body
 ',
         EmailParams => {
             From          => 'test@home.com',
-            'X-OTRS-Loop' => 'yes',
+            'X-LIGERO-Loop' => 'yes',
         },
     },
     {
-        Name => 'X-OTRS-Loop',
+        Name => 'X-LIGERO-Loop',
         Email =>
             'From: test@home.com
 To: test@home.com
-X-OTRS-Loop: yes
+X-LIGERO-Loop: yes
 Subject: Testmail
 
 Body
 ',
         EmailParams => {
             From          => 'test@home.com',
-            'X-OTRS-Loop' => 'yes',
+            'X-LIGERO-Loop' => 'yes',
         },
     },
     {
@@ -110,7 +110,7 @@ Body
 ',
         EmailParams => {
             From          => 'test@home.com',
-            'X-OTRS-Loop' => 'yes',
+            'X-LIGERO-Loop' => 'yes',
         },
     },
     {
@@ -125,7 +125,7 @@ Body
 ',
         EmailParams => {
             From          => 'test@home.com',
-            'X-OTRS-Loop' => 'yes',
+            'X-LIGERO-Loop' => 'yes',
         },
     },
     {
@@ -140,7 +140,7 @@ Body
 ',
         EmailParams => {
             From          => 'test@home.com',
-            'X-OTRS-Loop' => '',
+            'X-LIGERO-Loop' => '',
         },
     },
 );

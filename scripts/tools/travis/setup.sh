@@ -1,6 +1,6 @@
 #!/bin/bash
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -20,7 +20,7 @@ set -ev
 
 if [ $DB = 'mysql' ]; then
 
-    # Tweak some mysql settings for OTRS.
+    # Tweak some mysql settings for LIGERO.
     sudo su - <<MODIFY_MYSQL_CONFIG
 cat - <<MYSQL_CONFIG >> /etc/mysql/my.cnf
 [mysqld]
@@ -32,7 +32,7 @@ MODIFY_MYSQL_CONFIG
     mysql -e "SHOW VARIABLES LIKE 'max_allowed_packet';"
     mysql -e "SHOW VARIABLES LIKE 'innodb_log_file_size';"
 
-    # Now create OTRS specific users and databases.
+    # Now create LIGERO specific users and databases.
     cp -i $TRAVIS_BUILD_DIR/scripts/tools/travis/Config.mysql.pm $TRAVIS_BUILD_DIR/Kernel/Config.pm
 
     mysql -uroot -e "CREATE DATABASE ligero CHARACTER SET utf8";

@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -70,15 +70,15 @@ sub Run {
         ChannelName => 'Email',
     );
 
-    # Check if X-OTRS-SenderType exists, if not set default 'customer'.
-    if ( !$ArticleObject->ArticleSenderTypeLookup( SenderType => $GetParam{'X-OTRS-SenderType'} ) ) {
+    # Check if X-LIGERO-SenderType exists, if not set default 'customer'.
+    if ( !$ArticleObject->ArticleSenderTypeLookup( SenderType => $GetParam{'X-LIGERO-SenderType'} ) ) {
         $Self->{CommunicationLogObject}->ObjectLog(
             ObjectLogType => 'Message',
             Priority      => 'Error',
             Key           => 'Kernel::System::PostMaster::Reject',
-            Value         => "Can't find valid SenderType '$GetParam{'X-OTRS-SenderType'}' in DB, take 'customer'",
+            Value         => "Can't find valid SenderType '$GetParam{'X-LIGERO-SenderType'}' in DB, take 'customer'",
         );
-        $GetParam{'X-OTRS-SenderType'} = 'customer';
+        $GetParam{'X-LIGERO-SenderType'} = 'customer';
     }
 
     $Self->{CommunicationLogObject}->ObjectLog(
@@ -91,8 +91,8 @@ sub Run {
     # do db insert
     my $ArticleID = $ArticleBackendObject->ArticleCreate(
         TicketID             => $Param{TicketID},
-        IsVisibleForCustomer => $GetParam{'X-OTRS-IsVisibleForCustomer'} // 1,
-        SenderType           => $GetParam{'X-OTRS-SenderType'},
+        IsVisibleForCustomer => $GetParam{'X-LIGERO-IsVisibleForCustomer'} // 1,
+        SenderType           => $GetParam{'X-LIGERO-SenderType'},
         From                 => $GetParam{From},
         ReplyTo              => $GetParam{ReplyTo},
         To                   => $GetParam{To},
@@ -191,7 +191,7 @@ sub Run {
     for my $DynamicFieldID ( sort keys %{$DynamicFieldList} ) {
         next DYNAMICFIELDID if !$DynamicFieldID;
         next DYNAMICFIELDID if !$DynamicFieldList->{$DynamicFieldID};
-        my $Key = 'X-OTRS-FollowUp-DynamicField-' . $DynamicFieldList->{$DynamicFieldID};
+        my $Key = 'X-LIGERO-FollowUp-DynamicField-' . $DynamicFieldList->{$DynamicFieldID};
         if ( defined $GetParam{$Key} && length $GetParam{$Key} ) {
 
             # get dynamic field config
@@ -221,8 +221,8 @@ sub Run {
     # set free article text
     my %Values =
         (
-        'X-OTRS-FollowUp-ArticleKey'   => 'ArticleFreeKey',
-        'X-OTRS-FollowUp-ArticleValue' => 'ArticleFreeText',
+        'X-LIGERO-FollowUp-ArticleKey'   => 'ArticleFreeKey',
+        'X-LIGERO-FollowUp-ArticleValue' => 'ArticleFreeText',
         );
     for my $Item ( sort keys %Values ) {
         for my $Count ( 1 .. 16 ) {

@@ -1,5 +1,5 @@
 // --
-// Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+// Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 // --
 // This software comes with ABSOLUTELY NO WARRANTY. For details, see
 // the enclosed file COPYING for license information (GPL). If you
@@ -14,7 +14,7 @@ Core.Agent = Core.Agent || {};
 /**
  * @namespace Core.Agent.TicketProcess
  * @memberof Core.Agent
- * @author OTRS AG
+ * @author LIGERO AG
  * @description
  *      This namespace contains the special module functions for TicketProcess.
  */
@@ -96,7 +96,7 @@ Core.Agent.TicketProcess = (function (TargetNS) {
 
                     if (!Response) {
 
-                        // We are out of the OTRS App scope, that's why an exception would not be caught. Therefor we handle the error manually.
+                        // We are out of the LIGERO App scope, that's why an exception would not be caught. Therefor we handle the error manually.
                         Core.Exception.HandleFinalError(new Core.Exception.ApplicationError("No content received.", 'CommunicationError'));
                         $('#AJAXLoader').addClass('Hidden');
                     }
@@ -172,7 +172,7 @@ Core.Agent.TicketProcess = (function (TargetNS) {
                     }
                     else {
 
-                        // We are out of the OTRS App scope, that's why an exception would not be caught. Therefor we handle the error manually.
+                        // We are out of the LIGERO App scope, that's why an exception would not be caught. Therefor we handle the error manually.
                         Core.Exception.HandleFinalError(new Core.Exception.ApplicationError("No such element id: " + $ElementToUpdate.attr('id') + " in page!", 'CommunicationError'));
                         $('#AJAXLoader').addClass('Hidden');
                     }

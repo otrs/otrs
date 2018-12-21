@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -90,7 +90,7 @@ sub Compare {
     # Get HTML diff.
     $Result{HTML} = diff_strings( { vertical => 0 }, $Param{Source}, $Param{Target} );
 
-    # Find the table class(es) and add the OTRS DataTable class.
+    # Find the table class(es) and add the LIGERO DataTable class.
     $Result{HTML} =~ s{class='diff'}{class="DataTable diff"}xmsg;
 
     # Add <span>'s to <td>'s.
@@ -107,7 +107,7 @@ sub Compare {
 
 =head1 TERMS AND CONDITIONS
 
-This software is part of the OTRS project (L<https://ligero.org/>).
+This software is part of the LIGERO project (L<https://ligero.org/>).
 
 This software comes with ABSOLUTELY NO WARRANTY. For details, see
 the enclosed file COPYING for license information (GPL). If you

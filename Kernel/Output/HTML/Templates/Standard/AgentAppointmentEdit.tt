@@ -1,12 +1,12 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
 # did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
-[% SET OTRSBusinessLabel = '<strong>OTRS Business Solution</strong>™' %]
+[% SET LIGEROBusinessLabel = '<strong>LIGERO Business Solution</strong>™' %]
 
 [% RenderBlockStart("EditMask") %]
 <div class="InnerContent">
@@ -112,7 +112,7 @@
                 </p>
             </div>
             <div class="Field Info">
-                <a href="[% Env("Baselink") %]Action=AdminOTRSBusiness" class="Button"><i class="fa fa-angle-double-up"></i> [% Translate("Upgrade to %s") | html | ReplacePlaceholders(OTRSBusinessLabel) %]</a>
+                <a href="[% Env("Baselink") %]Action=AdminLIGEROBusiness" class="Button"><i class="fa fa-angle-double-up"></i> [% Translate("Upgrade to %s") | html | ReplacePlaceholders(LIGEROBusinessLabel) %]</a>
             </div>
 [% END %]
         </fieldset>

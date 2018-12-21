@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -30,8 +30,8 @@ my $Helper = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
 $Helper->FixedTimeSet();
 
 my %NeededXHeaders = (
-    'X-OTRS-PendingTime'          => 1,
-    'X-OTRS-FollowUp-PendingTime' => 1,
+    'X-LIGERO-PendingTime'          => 1,
+    'X-LIGERO-FollowUp-PendingTime' => 1,
 );
 
 my $XHeaders          = $ConfigObject->Get('PostmasterX-Header');
@@ -58,19 +58,19 @@ my @Tests = (
         ],
         Set => [
             {
-                Key   => 'X-OTRS-State',
+                Key   => 'X-LIGERO-State',
                 Value => 'pending reminder',
             },
             {
-                Key   => 'X-OTRS-State-PendingTime',
+                Key   => 'X-LIGERO-State-PendingTime',
                 Value => '2021-01-01 00:00:00',
             },
             {
-                Key   => 'X-OTRS-FollowUp-State',
+                Key   => 'X-LIGERO-FollowUp-State',
                 Value => 'pending reminder',
             },
             {
-                Key   => 'X-OTRS-FollowUp-State-PendingTime',
+                Key   => 'X-LIGERO-FollowUp-State-PendingTime',
                 Value => '2022-01-01 00:00:00',
             },
         ],
@@ -101,19 +101,19 @@ my @Tests = (
         ],
         Set => [
             {
-                Key   => 'X-OTRS-State',
+                Key   => 'X-LIGERO-State',
                 Value => 'pending reminder',
             },
             {
-                Key   => 'X-OTRS-State-PendingTime',
+                Key   => 'X-LIGERO-State-PendingTime',
                 Value => '2022-01- 00:00:00',
             },
             {
-                Key   => 'X-OTRS-FollowUp-State',
+                Key   => 'X-LIGERO-FollowUp-State',
                 Value => 'pending reminder',
             },
             {
-                Key   => 'X-OTRS-FollowUp-State-PendingTime',
+                Key   => 'X-LIGERO-FollowUp-State-PendingTime',
                 Value => '2022-01- 00:00:00',
             },
         ],
@@ -134,19 +134,19 @@ my @Tests = (
         ],
         Set => [
             {
-                Key   => 'X-OTRS-State',
+                Key   => 'X-LIGERO-State',
                 Value => 'pending reminder',
             },
             {
-                Key   => 'X-OTRS-State-PendingTime',
+                Key   => 'X-LIGERO-State-PendingTime',
                 Value => '+60s',
             },
             {
-                Key   => 'X-OTRS-FollowUp-State',
+                Key   => 'X-LIGERO-FollowUp-State',
                 Value => 'pending reminder',
             },
             {
-                Key   => 'X-OTRS-FollowUp-State-PendingTime',
+                Key   => 'X-LIGERO-FollowUp-State-PendingTime',
                 Value => '+30s',
             },
         ],
@@ -167,19 +167,19 @@ my @Tests = (
         ],
         Set => [
             {
-                Key   => 'X-OTRS-State',
+                Key   => 'X-LIGERO-State',
                 Value => 'pending reminder',
             },
             {
-                Key   => 'X-OTRS-State-PendingTime',
+                Key   => 'X-LIGERO-State-PendingTime',
                 Value => '+60s',
             },
             {
-                Key   => 'X-OTRS-FollowUp-State',
+                Key   => 'X-LIGERO-FollowUp-State',
                 Value => 'pending reminder',
             },
             {
-                Key   => 'X-OTRS-FollowUp-State-PendingTime',
+                Key   => 'X-LIGERO-FollowUp-State-PendingTime',
                 Value => '+30s',
             },
         ],
@@ -200,19 +200,19 @@ my @Tests = (
         ],
         Set => [
             {
-                Key   => 'X-OTRS-State',
+                Key   => 'X-LIGERO-State',
                 Value => 'pending reminder',
             },
             {
-                Key   => 'X-OTRS-State-PendingTime',
+                Key   => 'X-LIGERO-State-PendingTime',
                 Value => '60',
             },
             {
-                Key   => 'X-OTRS-FollowUp-State',
+                Key   => 'X-LIGERO-FollowUp-State',
                 Value => 'pending reminder',
             },
             {
-                Key   => 'X-OTRS-FollowUp-State-PendingTime',
+                Key   => 'X-LIGERO-FollowUp-State-PendingTime',
                 Value => '30',
             },
         ],
@@ -233,19 +233,19 @@ my @Tests = (
         ],
         Set => [
             {
-                Key   => 'X-OTRS-State',
+                Key   => 'X-LIGERO-State',
                 Value => 'pending reminder',
             },
             {
-                Key   => 'X-OTRS-State-PendingTime',
+                Key   => 'X-LIGERO-State-PendingTime',
                 Value => '+60m',
             },
             {
-                Key   => 'X-OTRS-FollowUp-State',
+                Key   => 'X-LIGERO-FollowUp-State',
                 Value => 'pending reminder',
             },
             {
-                Key   => 'X-OTRS-FollowUp-State-PendingTime',
+                Key   => 'X-LIGERO-FollowUp-State-PendingTime',
                 Value => '+30m',
             },
         ],
@@ -266,19 +266,19 @@ my @Tests = (
         ],
         Set => [
             {
-                Key   => 'X-OTRS-State',
+                Key   => 'X-LIGERO-State',
                 Value => 'pending reminder',
             },
             {
-                Key   => 'X-OTRS-State-PendingTime',
+                Key   => 'X-LIGERO-State-PendingTime',
                 Value => '+60h',
             },
             {
-                Key   => 'X-OTRS-FollowUp-State',
+                Key   => 'X-LIGERO-FollowUp-State',
                 Value => 'pending reminder',
             },
             {
-                Key   => 'X-OTRS-FollowUp-State-PendingTime',
+                Key   => 'X-LIGERO-FollowUp-State-PendingTime',
                 Value => '+30h',
             },
         ],
@@ -299,19 +299,19 @@ my @Tests = (
         ],
         Set => [
             {
-                Key   => 'X-OTRS-State',
+                Key   => 'X-LIGERO-State',
                 Value => 'pending reminder',
             },
             {
-                Key   => 'X-OTRS-State-PendingTime',
+                Key   => 'X-LIGERO-State-PendingTime',
                 Value => '+60d',
             },
             {
-                Key   => 'X-OTRS-FollowUp-State',
+                Key   => 'X-LIGERO-FollowUp-State',
                 Value => 'pending reminder',
             },
             {
-                Key   => 'X-OTRS-FollowUp-State-PendingTime',
+                Key   => 'X-LIGERO-FollowUp-State-PendingTime',
                 Value => '+30d',
             },
         ],
@@ -332,19 +332,19 @@ my @Tests = (
         ],
         Set => [
             {
-                Key   => 'X-OTRS-State',
+                Key   => 'X-LIGERO-State',
                 Value => 'pending reminder',
             },
             {
-                Key   => 'X-OTRS-State-PendingTime',
+                Key   => 'X-LIGERO-State-PendingTime',
                 Value => '+60y',
             },
             {
-                Key   => 'X-OTRS-FollowUp-State',
+                Key   => 'X-LIGERO-FollowUp-State',
                 Value => 'pending reminder',
             },
             {
-                Key   => 'X-OTRS-FollowUp-State-PendingTime',
+                Key   => 'X-LIGERO-FollowUp-State-PendingTime',
                 Value => '+30y',
             },
         ],
@@ -365,19 +365,19 @@ my @Tests = (
         ],
         Set => [
             {
-                Key   => 'X-OTRS-State',
+                Key   => 'X-LIGERO-State',
                 Value => 'pending reminder',
             },
             {
-                Key   => 'X-OTRS-State-PendingTime',
+                Key   => 'X-LIGERO-State-PendingTime',
                 Value => '+30y',
             },
             {
-                Key   => 'X-OTRS-FollowUp-State',
+                Key   => 'X-LIGERO-FollowUp-State',
                 Value => 'pending reminder',
             },
             {
-                Key   => 'X-OTRS-FollowUp-State-PendingTime',
+                Key   => 'X-LIGERO-FollowUp-State-PendingTime',
                 Value => '+30y',
             },
         ],
@@ -398,19 +398,19 @@ my @Tests = (
         ],
         Set => [
             {
-                Key   => 'X-OTRS-State',
+                Key   => 'X-LIGERO-State',
                 Value => 'pending reminder',
             },
             {
-                Key   => 'X-OTRS-State-PendingTime',
+                Key   => 'X-LIGERO-State-PendingTime',
                 Value => '+30s +30m',
             },
             {
-                Key   => 'X-OTRS-FollowUp-State',
+                Key   => 'X-LIGERO-FollowUp-State',
                 Value => 'pending reminder',
             },
             {
-                Key   => 'X-OTRS-FollowUp-State-PendingTime',
+                Key   => 'X-LIGERO-FollowUp-State-PendingTime',
                 Value => '+30s +30m',
             },
         ],

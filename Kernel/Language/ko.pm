@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -291,25 +291,25 @@ sub Data {
         'Support data collector' => '지원 데이터 수집기',
         'Hint' => '힌트',
         'Currently support data is only shown in this system.' => '현재 지원되는 데이터는이 시스템에만 표시됩니다.',
-        'It is highly recommended to send this data to OTRS Group in order to get better support.' =>
-            '보다 나은 지원을 받으려면이 데이터를 OTRS 그룹에 보내도록하십시오.',
+        'It is highly recommended to send this data to LIGERO Group in order to get better support.' =>
+            '보다 나은 지원을 받으려면이 데이터를 LIGERO 그룹에 보내도록하십시오.',
         'Configuration' => '구성',
         'Send support data' => '지원 데이터 보내기',
-        'This will allow the system to send additional support data information to OTRS Group.' =>
-            '이렇게하면 시스템이 OTRS 그룹에 추가 지원 데이터 정보를 보낼 수 있습니다.',
+        'This will allow the system to send additional support data information to LIGERO Group.' =>
+            '이렇게하면 시스템이 LIGERO 그룹에 추가 지원 데이터 정보를 보낼 수 있습니다.',
         'Update' => '최신 정보',
         'System Registration' => '시스템 등록',
-        'To enable data sending, please register your system with OTRS Group or update your system registration information (make sure to activate the \'send support data\' option.)' =>
-            '데이터 전송을 활성화하려면 시스템을 OTRS 그룹에 등록하거나 시스템 등록 정보를 업데이트하십시오 ( \'지원 데이터 보내기\'옵션을 활성화하십시오).',
+        'To enable data sending, please register your system with LIGERO Group or update your system registration information (make sure to activate the \'send support data\' option.)' =>
+            '데이터 전송을 활성화하려면 시스템을 LIGERO 그룹에 등록하거나 시스템 등록 정보를 업데이트하십시오 ( \'지원 데이터 보내기\'옵션을 활성화하십시오).',
         'Register this System' => '이 시스템 등록',
         'System Registration is disabled for your system. Please check your configuration.' =>
             '시스템 등록은 시스템에서 사용할 수 없습니다. 구성을 확인하십시오.',
 
         # Template: AdminCloudServices
-        'System registration is a service of OTRS Group, which provides a lot of advantages!' =>
-            '시스템 등록은 많은 장점을 제공하는 OTRS Group의 서비스입니다!',
-        'Please note that the use of OTRS cloud services requires the system to be registered.' =>
-            'OTRS 클라우드 서비스를 사용하려면 시스템을 등록해야합니다.',
+        'System registration is a service of LIGERO Group, which provides a lot of advantages!' =>
+            '시스템 등록은 많은 장점을 제공하는 LIGERO Group의 서비스입니다!',
+        'Please note that the use of LIGERO cloud services requires the system to be registered.' =>
+            'LIGERO 클라우드 서비스를 사용하려면 시스템을 등록해야합니다.',
         'Register this system' => '이 시스템 등록',
         'Here you can configure available cloud services that communicate securely with %s.' =>
             '%s와 안전하게 통신 할 수있는 클라우드 서비스를 구성 할 수 있습니다.',
@@ -778,8 +778,8 @@ sub Data {
             '이 이름은 다른 오류 처리 구성을 구분하는데 사용할 수 있습니다.',
         'Please provide a unique name for this web service.' => '이 웹 서비스에 고유한 이름을 입력하십시오.',
         'Error handling module backend' => '오류 처리 모듈 백엔드',
-        'This OTRS error handling backend module will be called internally to process the error handling mechanism.' =>
-            '이 OTRS 오류 처리 백엔드 모듈은 내부적으로 호출되어 오류 처리 메커니즘을 처리합니다.',
+        'This LIGERO error handling backend module will be called internally to process the error handling mechanism.' =>
+            '이 LIGERO 오류 처리 백엔드 모듈은 내부적으로 호출되어 오류 처리 메커니즘을 처리합니다.',
         'Processing options' => '처리 옵션',
         'Configure filters to control error handling module execution.' =>
             '오류 처리 모듈 실행을 제어하는 필터를 구성합니다.',
@@ -870,23 +870,23 @@ sub Data {
         'The name is typically used to call up an operation of a remote web service.' =>
             '이름은 일반적으로 원격 웹 서비스의 작업을 호출하는데 사용됩니다.',
         'Invoker backend' => '호출자 백엔드',
-        'This OTRS invoker backend module will be called to prepare the data to be sent to the remote system, and to process its response data.' =>
-            '이 OTRS 호출자 백엔드 모듈은 원격 시스템에 전송할 데이터를 준비하고 응답 데이터를 처리하기 위해 호출됩니다.',
+        'This LIGERO invoker backend module will be called to prepare the data to be sent to the remote system, and to process its response data.' =>
+            '이 LIGERO 호출자 백엔드 모듈은 원격 시스템에 전송할 데이터를 준비하고 응답 데이터를 처리하기 위해 호출됩니다.',
         'Mapping for outgoing request data' => '나가는 요청 데이터 매핑',
         'Configure' => '구성',
-        'The data from the invoker of OTRS will be processed by this mapping, to transform it to the kind of data the remote system expects.' =>
-            'OTRS 호출자의 데이터는이 매핑에 의해 처리되어 원격 시스템이 예상하는 종류의 데이터로 변환됩니다.',
+        'The data from the invoker of LIGERO will be processed by this mapping, to transform it to the kind of data the remote system expects.' =>
+            'LIGERO 호출자의 데이터는이 매핑에 의해 처리되어 원격 시스템이 예상하는 종류의 데이터로 변환됩니다.',
         'Mapping for incoming response data' => '들어오는 응답 데이터 매핑',
-        'The response data will be processed by this mapping, to transform it to the kind of data the invoker of OTRS expects.' =>
-            '응답 데이터는이 매핑에 의해 처리되어 OTRS의 호출자가 예상하는 종류의 데이터로 변환됩니다.',
+        'The response data will be processed by this mapping, to transform it to the kind of data the invoker of LIGERO expects.' =>
+            '응답 데이터는이 매핑에 의해 처리되어 LIGERO의 호출자가 예상하는 종류의 데이터로 변환됩니다.',
         'Asynchronous' => '비동기식',
         'Condition' => '조건',
         'Edit this event' => '이 일정 수정',
         'This invoker will be triggered by the configured events.' => '이 호출자는 구성된 이벤트에 의해 트리거됩니다.',
         'To add a new event select the event object and event name and click on the "+" button' =>
             '새 이벤트를 추가하려면 이벤트 객체와 이벤트 이름을 선택하고 "+"버튼을 클릭하십시오.',
-        'Asynchronous event triggers are handled by the OTRS Scheduler Daemon in background (recommended).' =>
-            '비동기 이벤트 트리거는 백그라운드에서 OTRS Scheduler Daemon에 의해 처리됩니다 (권장).',
+        'Asynchronous event triggers are handled by the LIGERO Scheduler Daemon in background (recommended).' =>
+            '비동기 이벤트 트리거는 백그라운드에서 LIGERO Scheduler Daemon에 의해 처리됩니다 (권장).',
         'Synchronous event triggers would be processed directly during the web request.' =>
             '동기 이벤트 트리거는 웹 요청 중에 직접 처리됩니다.',
 
@@ -990,11 +990,11 @@ sub Data {
         'The name is typically used to call up this web service operation from a remote system.' =>
             '이름은 일반적으로 원격 시스템에서이 웹 서비스 조작을 호출하는 데 사용됩니다.',
         'Operation backend' => '작업 백엔드',
-        'This OTRS operation backend module will be called internally to process the request, generating data for the response.' =>
-            '이 OTRS 연산 백엔드 모듈은 내부적으로 호출되어 요청을 처리하고 응답 데이터를 생성합니다.',
+        'This LIGERO operation backend module will be called internally to process the request, generating data for the response.' =>
+            '이 LIGERO 연산 백엔드 모듈은 내부적으로 호출되어 요청을 처리하고 응답 데이터를 생성합니다.',
         'Mapping for incoming request data' => '들어오는 요청 데이터 매핑',
-        'The request data will be processed by this mapping, to transform it to the kind of data OTRS expects.' =>
-            '요청 데이터는이 매핑에 의해 처리되어 OTRS가 예상하는 종류의 데이터로 변환됩니다.',
+        'The request data will be processed by this mapping, to transform it to the kind of data LIGERO expects.' =>
+            '요청 데이터는이 매핑에 의해 처리되어 LIGERO가 예상하는 종류의 데이터로 변환됩니다.',
         'Mapping for outgoing response data' => '발신 응답 데이터 매핑',
         'The response data will be processed by this mapping, to transform it to the kind of data the remote system expects.' =>
             '응답 데이터는이 매핑에 의해 처리되어 원격 시스템이 예상하는 종류의 데이터로 변환합니다.',
@@ -1012,8 +1012,8 @@ sub Data {
             '이 작동을 특정 요청 방법으로 제한하십시오. 메서드를 선택하지 않으면 모든 요청이 수락됩니다.',
         'Maximum message length' => '최대 메시지 길이',
         'This field should be an integer number.' => '이 필드는 정수여야 합니다.',
-        'Here you can specify the maximum size (in bytes) of REST messages that OTRS will process.' =>
-            '여기서 OTRS가 처리 할 REST 메시지의 최대 크기 (바이트)를 지정할 수 있습니다.',
+        'Here you can specify the maximum size (in bytes) of REST messages that LIGERO will process.' =>
+            '여기서 LIGERO가 처리 할 REST 메시지의 최대 크기 (바이트)를 지정할 수 있습니다.',
         'Send Keep-Alive' => 'Keep-Alive 보내기',
         'This configuration defines if incoming connections should get closed or kept alive.' =>
             '이 구성은 들어오는 연결이 닫히거나 살아 있어야 하는지를 정의합니다.',
@@ -1113,8 +1113,8 @@ sub Data {
         'Select how SOAP response function wrapper should be constructed.' =>
             'SOAP 응답 함수 랩퍼를 구성하는 방법을 선택하십시오.',
         'Response name free text' => '응답 이름 자유 텍스트',
-        'Here you can specify the maximum size (in bytes) of SOAP messages that OTRS will process.' =>
-            '여기서 OTRS가 처리 할 SOAP 메시지의 최대 크기 (바이트)를 지정할 수 있습니다.',
+        'Here you can specify the maximum size (in bytes) of SOAP messages that LIGERO will process.' =>
+            '여기서 LIGERO가 처리 할 SOAP 메시지의 최대 크기 (바이트)를 지정할 수 있습니다.',
         'Encoding' => '부호화',
         'The character encoding for the SOAP message contents.' => 'SOAP 메시지 내용의 문자 인코딩입니다.',
         'e.g utf-8, latin1, iso-8859-1, cp1250, Etc.' => '예를 들어 utf-8, latin1, iso-8859-1, cp1250 등',
@@ -1157,10 +1157,10 @@ sub Data {
         'Provider transport' => '공급자 전송',
         'Requester transport' => '요청자 전송',
         'Debug threshold' => '디버그 임계 값',
-        'In provider mode, OTRS offers web services which are used by remote systems.' =>
-            '공급자 모드에서 OTRS는 원격 시스템에서 사용되는 웹 서비스를 제공합니다.',
-        'In requester mode, OTRS uses web services of remote systems.' =>
-            '요청자 모드에서 OTRS는 원격 시스템의 웹 서비스를 사용합니다.',
+        'In provider mode, LIGERO offers web services which are used by remote systems.' =>
+            '공급자 모드에서 LIGERO는 원격 시스템에서 사용되는 웹 서비스를 제공합니다.',
+        'In requester mode, LIGERO uses web services of remote systems.' =>
+            '요청자 모드에서 LIGERO는 원격 시스템의 웹 서비스를 사용합니다.',
         'Network transport' => '네트워크 전송',
         'Error Handling Modules' => '오류 처리 모듈',
         'Error handling modules are used to react in case of errors during the communication. Those modules are executed in a specific order, which can be changed by drag and drop.' =>
@@ -1220,8 +1220,8 @@ sub Data {
         'Filter for mail accounts' => '메일 계정 필터링',
         'All incoming emails with one account will be dispatched in the selected queue.' =>
             '하나의 계정을 가진 모든 수신 이메일은 선택된 대기열에 발송됩니다.',
-        'If your account is marked as trusted, the X-OTRS headers already existing at arrival time (for priority etc.) will be kept and used, for example in PostMaster filters.' =>
-            '계정이 신뢰할 수있는 것으로 표시되면 도착 시간 (예 : 우선 순위 등)에 이미 존재하는 X-OTRS 헤더가 보존되어 사용됩니다 예 : PostMaster 필터',
+        'If your account is marked as trusted, the X-LIGERO headers already existing at arrival time (for priority etc.) will be kept and used, for example in PostMaster filters.' =>
+            '계정이 신뢰할 수있는 것으로 표시되면 도착 시간 (예 : 우선 순위 등)에 이미 존재하는 X-LIGERO 헤더가 보존되어 사용됩니다 예 : PostMaster 필터',
         'Outgoing email can be configured via the Sendmail* settings in %s.' =>
             '나가는 이메일은 %s의 Sendmail * 설정을 통해 구성 할 수 있습니다.',
         'System Configuration' => '시스템 설정',
@@ -1293,12 +1293,12 @@ sub Data {
             '티켓 동적 필드는 드롭 다운 및 Multiselect 필드에 유용한 값을 표시합니다. ',
 
         # Template: AdminNotificationEventTransportEmailSettings
-        'You can use OTRS-tags like <OTRS_TICKET_DynamicField_...> to insert values from the current ticket.' =>
-            '<OTRS_TICKET_DynamicField _...>와 같은 OTRS 태그를 사용하여 현재 티켓의 값을 삽입 할 수 있습니다.',
+        'You can use LIGERO-tags like <LIGERO_TICKET_DynamicField_...> to insert values from the current ticket.' =>
+            '<LIGERO_TICKET_DynamicField _...>와 같은 LIGERO 태그를 사용하여 현재 티켓의 값을 삽입 할 수 있습니다.',
 
-        # Template: AdminOTRSBusinessInstalled
+        # Template: AdminLIGEROBusinessInstalled
         'Manage %s' => '%s 관리',
-        'Downgrade to ((OTRS)) Community Edition' => '',
+        'Downgrade to ((LIGERO)) Community Edition' => '',
         'Read documentation' => '설명서 읽기',
         '%s makes contact regularly with cloud.ligero.com to check on available updates and the validity of the underlying contract.' =>
             '%s는 cloud.ligero.com과 정기적으로 접속하여 사용 가능한 업데이트 및 기본 계약의 유효성을 확인합니다.',
@@ -1323,43 +1323,43 @@ sub Data {
         'Congratulations, your %s is correctly installed and up to date!' =>
             '축하합니다. %s가 올바르게 설치되고 최신 상태입니다!',
 
-        # Template: AdminOTRSBusinessNotInstalled
-        'Go to the OTRS customer portal' => 'OTRS 고객 포털로 이동하십시오.',
+        # Template: AdminLIGEROBusinessNotInstalled
+        'Go to the LIGERO customer portal' => 'LIGERO 고객 포털로 이동하십시오.',
         '%s will be available soon. Please check again in a few days.' =>
             '%s는 곧 제공될 예정입니다. 며칠 후에 다시 확인하십시오.',
         'Please have a look at %s for more information.' => '자세한 내용은 %s를 보십시오.',
-        'Your ((OTRS)) Community Edition is the base for all future actions. Please register first before you continue with the upgrade process of %s!' =>
+        'Your ((LIGERO)) Community Edition is the base for all future actions. Please register first before you continue with the upgrade process of %s!' =>
             '',
         'Before you can benefit from %s, please contact %s to get your %s contract.' =>
             '%s의 혜택을 누리려면 %s로 연락해  %s계약을 획득하세요.',
-        'Connection to cloud.ligero.com via HTTPS couldn\'t be established. Please make sure that your OTRS can connect to cloud.ligero.com via port 443.' =>
-            'HTTPS를 통해 cloud.ligero.com에 연결할 수 없습니다. OTRS가 포트 443을 통해 cloud.ligero.com에 연결할 수 있는지 확인하십시오.',
-        'Package installation requires patch level update of OTRS.' => '패키지를 설치하려면 OTRS의 패치 레벨 업데이트가 필요합니다.',
+        'Connection to cloud.ligero.com via HTTPS couldn\'t be established. Please make sure that your LIGERO can connect to cloud.ligero.com via port 443.' =>
+            'HTTPS를 통해 cloud.ligero.com에 연결할 수 없습니다. LIGERO가 포트 443을 통해 cloud.ligero.com에 연결할 수 있는지 확인하십시오.',
+        'Package installation requires patch level update of LIGERO.' => '패키지를 설치하려면 LIGERO의 패치 레벨 업데이트가 필요합니다.',
         'Please visit our customer portal and file a request.' => '고객 포털을 방문하여 요청을 제출하십시오.',
         'Everything else will be done as part of your contract.' => '그 밖의 모든 것은 계약의 일부로 수행됩니다.',
-        'Your installed OTRS version is %s.' => '설치된 OTRS 버전은 %s입니다.',
-        'To install this package, you need to update to OTRS %s or higher.' =>
-            '이 패키지를 설치하려면 %s 이상의 OTRS로 업데이트해야합니다.',
-        'To install this package, the Maximum OTRS Version is %s.' => '이 패키지를 설치하려면 최대 OTRS 버전은 %s입니다.',
+        'Your installed LIGERO version is %s.' => '설치된 LIGERO 버전은 %s입니다.',
+        'To install this package, you need to update to LIGERO %s or higher.' =>
+            '이 패키지를 설치하려면 %s 이상의 LIGERO로 업데이트해야합니다.',
+        'To install this package, the Maximum LIGERO Version is %s.' => '이 패키지를 설치하려면 최대 LIGERO 버전은 %s입니다.',
         'To install this package, the required Framework version is %s.' =>
             '이 패키지를 설치하려면 필요한 Framework 버전이 %s입니다.',
-        'Why should I keep OTRS up to date?' => '왜 OTRS를 최신 상태로 유지해야합니까?',
+        'Why should I keep LIGERO up to date?' => '왜 LIGERO를 최신 상태로 유지해야합니까?',
         'You will receive updates about relevant security issues.' => '관련 보안 문제에 대한 업데이트가 제공됩니다.',
-        'You will receive updates for all other relevant OTRS issues' => '다른 모든 관련 OTRS 문제에 대한 업데이트를 받게됩니다.',
+        'You will receive updates for all other relevant LIGERO issues' => '다른 모든 관련 LIGERO 문제에 대한 업데이트를 받게됩니다.',
         'With your existing contract you can only use a small part of the %s.' =>
             '기존 계약을 사용하면 %s의 작은 부분 만 사용할 수 있습니다.',
         'If you would like to take full advantage of the %s get your contract upgraded now! Contact %s.' =>
             '%s를 최대한 활용하고 싶다면 계약을 지금 업그레이드하십시오! 연락처 %s',
 
-        # Template: AdminOTRSBusinessUninstall
+        # Template: AdminLIGEROBusinessUninstall
         'Cancel downgrade and go back' => '다운그레이드 취소하고 돌아가기',
-        'Go to OTRS Package Manager' => 'OTRS 패키지 관리자로 이동하십시오.',
+        'Go to LIGERO Package Manager' => 'LIGERO 패키지 관리자로 이동하십시오.',
         'Sorry, but currently you can\'t downgrade due to the following packages which depend on %s:' =>
             '죄송하지만 현재 %s에 의존하는 다음 패키지 때문에 다운 그레이드 할 수 없습니다 :',
         'Vendor' => '공급 업체',
         'Please uninstall the packages first using the package manager and try again.' =>
             '먼저 패키지 관리자를 사용하여 패키지를 제거한 후 다시 시도하십시오.',
-        'You are about to downgrade to ((OTRS)) Community Edition and will lose the following features and all data related to these:' =>
+        'You are about to downgrade to ((LIGERO)) Community Edition and will lose the following features and all data related to these:' =>
             '',
         'Chat' => '~에게 말을 걸다',
         'Report Generator' => '보고서 생성기',
@@ -1374,7 +1374,7 @@ sub Data {
         'PGP Management' => 'PGP 관리',
         'Add PGP Key' => 'PGP 키 추가',
         'PGP support is disabled' => 'PGP 지원이 비활성화되었습니다.',
-        'To be able to use PGP in OTRS, you have to enable it first.' => 'OTRS에서 PGP를 사용하려면 먼저 PGP를 활성화해야합니다.',
+        'To be able to use PGP in LIGERO, you have to enable it first.' => 'LIGERO에서 PGP를 사용하려면 먼저 PGP를 활성화해야합니다.',
         'Enable PGP support' => 'PGP 지원 사용',
         'Faulty PGP configuration' => 'PGP 구성 오류',
         'PGP support is enabled, but the relevant configuration contains errors. Please check the configuration using the button below.' =>
@@ -1401,19 +1401,19 @@ sub Data {
             '이 패키지를 정말로 다시 설치 하시겠습니까? 수동으로 변경하면 손실됩니다.',
         'Go to updating instructions' => '',
         'package information' => '패키지 정보',
-        'Package installation requires a patch level update of OTRS.' => '패키지를 설치하려면 OTRS의 패치 레벨 업데이트가 필요합니다. ',
-        'Package update requires a patch level update of OTRS.' => '패키지 업데이트에는 OTRS의 패치 수준 업데이트가 필요합니다. ',
-        'If you are a OTRS Business Solution™ customer, please visit our customer portal and file a request.' =>
-            'OTRS Business Solution ™ 고객 인 경우 고객 포털을 방문하여 요청을 제출하십시오.',
-        'Please note that your installed OTRS version is %s.' => '설치된 OTRS 버전은 %s입니다.',
-        'To install this package, you need to update OTRS to version %s or newer.' =>
-            '이 패키지를 설치하려면 OTRS를 버전 %s 이상으로 업데이트해야합니다.',
-        'This package can only be installed on OTRS version %s or older.' =>
-            '이 패키지는 OTRS 버전 %s 또는 그 이상에서만 설치할 수 있습니다.',
-        'This package can only be installed on OTRS version %s or newer.' =>
-            'This package can only be installed on OTRS version %s or newer.',
-        'You will receive updates for all other relevant OTRS issues.' =>
-            '다른 모든 관련 OTRS 문제에 대한 업데이트가 제공됩니다.',
+        'Package installation requires a patch level update of LIGERO.' => '패키지를 설치하려면 LIGERO의 패치 레벨 업데이트가 필요합니다. ',
+        'Package update requires a patch level update of LIGERO.' => '패키지 업데이트에는 LIGERO의 패치 수준 업데이트가 필요합니다. ',
+        'If you are a LIGERO Business Solution™ customer, please visit our customer portal and file a request.' =>
+            'LIGERO Business Solution ™ 고객 인 경우 고객 포털을 방문하여 요청을 제출하십시오.',
+        'Please note that your installed LIGERO version is %s.' => '설치된 LIGERO 버전은 %s입니다.',
+        'To install this package, you need to update LIGERO to version %s or newer.' =>
+            '이 패키지를 설치하려면 LIGERO를 버전 %s 이상으로 업데이트해야합니다.',
+        'This package can only be installed on LIGERO version %s or older.' =>
+            '이 패키지는 LIGERO 버전 %s 또는 그 이상에서만 설치할 수 있습니다.',
+        'This package can only be installed on LIGERO version %s or newer.' =>
+            'This package can only be installed on LIGERO version %s or newer.',
+        'You will receive updates for all other relevant LIGERO issues.' =>
+            '다른 모든 관련 LIGERO 문제에 대한 업데이트가 제공됩니다.',
         'How can I do a patch level update if I don’t have a contract?' =>
             '계약이 없다면 어떻게 패치 레벨 업데이트를 할 수 있습니까?',
         'Please find all relevant information within the updating instructions at %s.' =>
@@ -1428,14 +1428,14 @@ sub Data {
         'Install' => '설치',
         'Update repository information' => '저장소 정보 업데이트',
         'Cloud services are currently disabled.' => '클라우드 서비스는 현재 사용할 수 없습니다.',
-        'OTRS Verify™ can not continue!' => 'OTRS Verify ™를 계속할 수 없습니다!',
+        'LIGERO Verify™ can not continue!' => 'LIGERO Verify ™를 계속할 수 없습니다!',
         'Enable cloud services' => '클라우드 서비스 사용',
         'Update all installed packages' => '설치된 모든 패키지를 업데이트 하십시오.',
         'Online Repository' => '온라인 저장소',
         'Action' => '동작',
         'Module documentation' => '모듈 문서',
         'Local Repository' => '로컬 저장소',
-        'This package is verified by OTRSverify (tm)' => '이 패키지는 OTRSverify (tm)에 의해 검증됩니다.',
+        'This package is verified by LIGEROverify (tm)' => '이 패키지는 LIGEROverify (tm)에 의해 검증됩니다.',
         'Uninstall' => '제거',
         'Package not correctly deployed! Please reinstall the package.' =>
             '패키지가 올바르게 배치되지 않았습니다! 패키지를 다시 설치하십시오.',
@@ -1746,29 +1746,29 @@ sub Data {
         'Edit System Registration' => '시스템 등록 편집',
         'System Registration Overview' => '시스템 등록 개요',
         'Register System' => '시스템 등록',
-        'Validate OTRS-ID' => 'OTRS-ID 확인',
+        'Validate LIGERO-ID' => 'LIGERO-ID 확인',
         'Deregister System' => 'Deregister System',
         'Edit details' => '세부 정보 수정',
         'Show transmitted data' => '전송된 데이터 표시',
         'Deregister system' => 'Deregister system',
         'Overview of registered systems' => '등록된 시스템 개요',
-        'This system is registered with OTRS Group.' => '이 시스템은 OTRS 그룹에 등록되어 있습니다.',
+        'This system is registered with LIGERO Group.' => '이 시스템은 LIGERO 그룹에 등록되어 있습니다.',
         'System type' => '시스템 유형',
         'Unique ID' => '고유 ID',
         'Last communication with registration server' => '등록 서버와의 마지막 통신',
         'System Registration not Possible' => '시스템 등록이 불가능합니다.',
-        'Please note that you can\'t register your system if OTRS Daemon is not running correctly!' =>
-            'OTRS 데몬이 올바르게 실행되지 않으면 시스템을 등록 할 수 없습니다.',
+        'Please note that you can\'t register your system if LIGERO Daemon is not running correctly!' =>
+            'LIGERO 데몬이 올바르게 실행되지 않으면 시스템을 등록 할 수 없습니다.',
         'Instructions' => '명령',
         'System Deregistration not Possible' => '시스템 등록 취소가 불가능합니다.',
         'Please note that you can\'t deregister your system if you\'re using the %s or having a valid service contract.' =>
             '%s를 사용 중이거나 유효한 서비스 계약이있는 경우 시스템 등록을 취소 할 수 없습니다.',
-        'OTRS-ID Login' => 'OTRS-ID 로그인',
+        'LIGERO-ID Login' => 'LIGERO-ID 로그인',
         'Read more' => '더 많은 것을 읽으십시오',
-        'You need to log in with your OTRS-ID to register your system.' =>
-            '시스템을 등록하려면 OTRS-ID로 로그인해야합니다.',
-        'Your OTRS-ID is the email address you used to sign up on the OTRS.com webpage.' =>
-            'OTRS-ID는 OTRS.com 웹 페이지에 가입 할 때 사용한 이메일 주소입니다.',
+        'You need to log in with your LIGERO-ID to register your system.' =>
+            '시스템을 등록하려면 LIGERO-ID로 로그인해야합니다.',
+        'Your LIGERO-ID is the email address you used to sign up on the LIGERO.com webpage.' =>
+            'LIGERO-ID는 LIGERO.com 웹 페이지에 가입 할 때 사용한 이메일 주소입니다.',
         'Data Protection' => '데이터 보호',
         'What are the advantages of system registration?' => '시스템 등록의 이점은 무엇입니까?',
         'You will receive updates about relevant security releases.' => '관련 보안 릴리스에 대한 업데이트가 제공됩니다.',
@@ -1777,44 +1777,44 @@ sub Data {
         'This is only the beginning!' => '이것은 단지 시작일뿐입니다!',
         'We will inform you about our new services and offerings soon.' =>
             '조만간 새로운 서비스와 제품에 대해 알려 드리겠습니다.',
-        'Can I use OTRS without being registered?' => 'OTRS를 등록하지 않고도 사용할 수 있습니까?',
+        'Can I use LIGERO without being registered?' => 'LIGERO를 등록하지 않고도 사용할 수 있습니까?',
         'System registration is optional.' => '시스템 등록은 선택 사항입니다.',
-        'You can download and use OTRS without being registered.' => '등록없이 OTRS를 다운로드하여 사용할 수 있습니다.',
+        'You can download and use LIGERO without being registered.' => '등록없이 LIGERO를 다운로드하여 사용할 수 있습니다.',
         'Is it possible to deregister?' => '등록 취소가 가능합니까?',
         'You can deregister at any time.' => '언제든지 등록 취소 할 수 있습니다.',
         'Which data is transfered when registering?' => '등록할 때 어떤 데이터가 전송됩니까?',
-        'A registered system sends the following data to OTRS Group:' => '등록 된 시스템은 다음 데이터를 OTRS 그룹에 보냅니다.',
-        'Fully Qualified Domain Name (FQDN), OTRS version, Database, Operating System and Perl version.' =>
-            'FQDN (정규화 된 도메인 이름), OTRS 버전, 데이터베이스, 운영 체제 및 Perl 버전',
+        'A registered system sends the following data to LIGERO Group:' => '등록 된 시스템은 다음 데이터를 LIGERO 그룹에 보냅니다.',
+        'Fully Qualified Domain Name (FQDN), LIGERO version, Database, Operating System and Perl version.' =>
+            'FQDN (정규화 된 도메인 이름), LIGERO 버전, 데이터베이스, 운영 체제 및 Perl 버전',
         'Why do I have to provide a description for my system?' => '왜 내 시스템에 대한 설명을 제공해야 합니까?',
         'The description of the system is optional.' => '시스템 설명은 선택 사항 입니다.',
         'The description and system type you specify help you to identify and manage the details of your registered systems.' =>
             '지정하는 설명 W 시스템 유형은 등록 된 시스템의 세부 사항을 식별하고 관리하는 데 도움을줍니다.',
-        'How often does my OTRS system send updates?' => 'OTRS 시스템은 얼마나 자주 업데이트를 보내나요?',
+        'How often does my LIGERO system send updates?' => 'LIGERO 시스템은 얼마나 자주 업데이트를 보내나요?',
         'Your system will send updates to the registration server at regular intervals.' =>
             '시스템은 일정한 간격으로 등록 서버에 업데이트를 보냅니다.',
         'Typically this would be around once every three days.' => '일반적으로 3일에 1번 정도입니다.',
         'If you deregister your system, you will lose these benefits:' =>
             '시스템 등록을 취소하면 다음과 같은 이점을 잃게 됩니다.',
-        'You need to log in with your OTRS-ID to deregister your system.' =>
-            '시스템 등록을 취소하려면 OTRS-ID로 로그인해야합니다.',
-        'OTRS-ID' => 'OTRS-ID ',
-        'You don\'t have an OTRS-ID yet?' => '아직 OTRS-ID가 없습니까?',
+        'You need to log in with your LIGERO-ID to deregister your system.' =>
+            '시스템 등록을 취소하려면 LIGERO-ID로 로그인해야합니다.',
+        'LIGERO-ID' => 'LIGERO-ID ',
+        'You don\'t have an LIGERO-ID yet?' => '아직 LIGERO-ID가 없습니까?',
         'Sign up now' => '지금 등록하세요',
         'Forgot your password?' => '비밀번호를 잊어 버렸습니까?',
         'Retrieve a new one' => '새 항목 가져 오기',
         'Next' => '다음',
-        'This data will be frequently transferred to OTRS Group when you register this system.' =>
-            '이 시스템을 등록 할 때이 데이터는 OTRS 그룹으로 자주 전송됩니다.',
+        'This data will be frequently transferred to LIGERO Group when you register this system.' =>
+            '이 시스템을 등록 할 때이 데이터는 LIGERO 그룹으로 자주 전송됩니다.',
         'Attribute' => '속성',
         'FQDN' => 'FQDN',
-        'OTRS Version' => 'OTRS 버전',
+        'LIGERO Version' => 'LIGERO 버전',
         'Operating System' => '운영 체제',
         'Perl Version' => '펄 버전',
         'Optional description of this system.' => '이 시스템에 대한 선택적 설명.',
         'Register' => '기록',
-        'Continuing with this step will deregister the system from OTRS Group.' =>
-            '이 단계를 계속하면 OTRS 그룹의 시스템 등록이 취소됩니다.',
+        'Continuing with this step will deregister the system from LIGERO Group.' =>
+            '이 단계를 계속하면 LIGERO 그룹의 시스템 등록이 취소됩니다.',
         'Deregister' => '위임자',
         'You can modify registration settings here.' => '여기에서 등록 설정을 수정할 수 있습니다.',
         'Overview of Transmitted Data' => '전송된 데이터의 개요',
@@ -1877,8 +1877,8 @@ sub Data {
         'Add Certificate' => '인증서 추가',
         'Add Private Key' => '비공개 키 추가',
         'SMIME support is disabled' => 'SMIME 지원이 비활성화되었습니다.',
-        'To be able to use SMIME in OTRS, you have to enable it first.' =>
-            'OTRS에서 SMIME을 사용하려면 먼저 SMIME를 활성화해야합니다.',
+        'To be able to use SMIME in LIGERO, you have to enable it first.' =>
+            'LIGERO에서 SMIME을 사용하려면 먼저 SMIME를 활성화해야합니다.',
         'Enable SMIME support' => 'SMIME 지원 사용',
         'Faulty SMIME configuration' => 'SMIME 구성 오류',
         'SMIME support is enabled, but the relevant configuration contains errors. Please check the configuration using the button below.' =>
@@ -1996,10 +1996,10 @@ sub Data {
         'This state is used in the following config settings:' => '이 상태는 다음 구성 설정에서 사용됩니다.',
 
         # Template: AdminSupportDataCollector
-        'Sending support data to OTRS Group is not possible!' => 'OTRS 그룹에 지원 데이터를 보낼 수 없습니다!',
+        'Sending support data to LIGERO Group is not possible!' => 'LIGERO 그룹에 지원 데이터를 보낼 수 없습니다!',
         'Enable Cloud Services' => '클라우드 서비스 사용',
-        'This data is sent to OTRS Group on a regular basis. To stop sending this data please update your system registration.' =>
-            '이 데이터는 정기적으로 OTRS 그룹에 전송됩니다. 이 데이터의 전송을 중지하려면 시스템 등록을 업데이트하십시오.',
+        'This data is sent to LIGERO Group on a regular basis. To stop sending this data please update your system registration.' =>
+            '이 데이터는 정기적으로 LIGERO 그룹에 전송됩니다. 이 데이터의 전송을 중지하려면 시스템 등록을 업데이트하십시오.',
         'You can manually trigger the Support Data sending by pressing this button:' =>
             '이 버튼을 눌러 Support Data를 수동으로 트리거 할 수 있습니다 :',
         'Send Update' => '업데이트 보내기',
@@ -2015,11 +2015,11 @@ sub Data {
         'The email address for this user is invalid, this option has been disabled.' =>
             '이 사용자의 이메일 주소가 유효하지 않습니다.이 옵션은 사용 중지되었습니다.',
         'Sending' => '보내다',
-        'The support bundle will be sent to OTRS Group via email automatically.' =>
-            '지원 번들은 이메일을 통해 OTRS 그룹에 자동으로 전송됩니다.',
+        'The support bundle will be sent to LIGERO Group via email automatically.' =>
+            '지원 번들은 이메일을 통해 LIGERO 그룹에 자동으로 전송됩니다.',
         'Download File' => '다운로드 파일',
-        'A file containing the support bundle will be downloaded to the local system. Please save the file and send it to the OTRS Group, using an alternate method.' =>
-            '지원 번들이 들어있는 파일은 로컬 시스템에 다운로드됩니다. 파일을 저장하고 대체 방법을 사용하여 OTRS 그룹에 보내십시오.',
+        'A file containing the support bundle will be downloaded to the local system. Please save the file and send it to the LIGERO Group, using an alternate method.' =>
+            '지원 번들이 들어있는 파일은 로컬 시스템에 다운로드됩니다. 파일을 저장하고 대체 방법을 사용하여 LIGERO 그룹에 보내십시오.',
         'Error: Support data could not be collected (%s).' => '오류 : 지원 데이터를 수집 할 수 없습니다 (%s).',
         'Details' => '세부',
 
@@ -2312,17 +2312,17 @@ sub Data {
         'Customer User Information Center' => '고객 사용자 정보 센터',
 
         # Template: AgentDaemonInfo
-        'The OTRS Daemon is a daemon process that performs asynchronous tasks, e.g. ticket escalation triggering, email sending, etc.' =>
-            'OTRS Daemon은 비동기 작업을 수행하는 데몬 프로세스입니다. 티켓 에스컬레이션 트리거링, 이메일 전송 등',
-        'A running OTRS Daemon is mandatory for correct system operation.' =>
-            '올바른 시스템 작동을 위해서는 실행중인 OTRS 데몬이 필수입니다.',
-        'Starting the OTRS Daemon' => 'OTRS Daemon 시작',
-        'Make sure that the file \'%s\' exists (without .dist extension). This cron job will check every 5 minutes if the OTRS Daemon is running and start it if needed.' =>
-            '.dist (확장자없이) \'%s\'파일이 있는지 확인하십시오. 이 cron 작업은 OTRS 데몬이 실행중인 경우 5 분마다 점검하고 필요한 경우 시작합니다.',
+        'The LIGERO Daemon is a daemon process that performs asynchronous tasks, e.g. ticket escalation triggering, email sending, etc.' =>
+            'LIGERO Daemon은 비동기 작업을 수행하는 데몬 프로세스입니다. 티켓 에스컬레이션 트리거링, 이메일 전송 등',
+        'A running LIGERO Daemon is mandatory for correct system operation.' =>
+            '올바른 시스템 작동을 위해서는 실행중인 LIGERO 데몬이 필수입니다.',
+        'Starting the LIGERO Daemon' => 'LIGERO Daemon 시작',
+        'Make sure that the file \'%s\' exists (without .dist extension). This cron job will check every 5 minutes if the LIGERO Daemon is running and start it if needed.' =>
+            '.dist (확장자없이) \'%s\'파일이 있는지 확인하십시오. 이 cron 작업은 LIGERO 데몬이 실행중인 경우 5 분마다 점검하고 필요한 경우 시작합니다.',
         'Execute \'%s start\' to make sure the cron jobs of the \'ligero\' user are active.' =>
             '\'%s start\'를 실행하여 \'ligero\'사용자의 cron 작업이 활성 상태인지 확인하십시오.',
-        'After 5 minutes, check that the OTRS Daemon is running in the system (\'bin/ligero.Daemon.pl status\').' =>
-            '5 분 후, OTRS 데몬이 시스템에서 실행 중인지 확인하십시오 ( \'bin / ligero.Daemon.pl status\').',
+        'After 5 minutes, check that the LIGERO Daemon is running in the system (\'bin/ligero.Daemon.pl status\').' =>
+            '5 분 후, LIGERO 데몬이 시스템에서 실행 중인지 확인하십시오 ( \'bin / ligero.Daemon.pl status\').',
 
         # Template: AgentDashboard
         'Dashboard' => '현황판',
@@ -2426,9 +2426,9 @@ sub Data {
         'There are currently no links. Please click \'Create new Links\' on the top to link this item to other objects.' =>
             '현재 링크가 없습니다. 이 항목을 다른 개체에 링크하려면 상단의 \'새 링크 만들기\'를 클릭하십시오.',
 
-        # Template: AgentOTRSBusinessBlockScreen
+        # Template: AgentLIGEROBusinessBlockScreen
         'Unauthorized usage of %s detected' => '%s의 무단 사용이 감지되었습니다.',
-        'If you decide to downgrade to ((OTRS)) Community Edition, you will lose all database tables and data related to %s.' =>
+        'If you decide to downgrade to ((LIGERO)) Community Edition, you will lose all database tables and data related to %s.' =>
             '',
 
         # Template: AgentPreferences
@@ -2455,7 +2455,7 @@ sub Data {
         'This setting can currently not be saved.' => '이 설정은 현재 저장할 수 없습니다.',
         'This setting can currently not be saved' => '이 설정은 현재 저장할 수 없습니다.',
         'Save this setting' => '이 설정 저장',
-        'Did you know? You can help translating OTRS at %s.' => '아시나요? OTRS를 %s에서 번역 할 수 있습니다.',
+        'Did you know? You can help translating LIGERO at %s.' => '아시나요? LIGERO를 %s에서 번역 할 수 있습니다.',
 
         # Template: SettingsList
         'Reset to default' => '기본값으로 재설정',
@@ -2474,7 +2474,7 @@ sub Data {
 
         # Template: AgentStatisticsAdd
         'Statistics Overview' => '통계 개요',
-        'Read more about statistics in OTRS' => 'OTRS의 통계에 대해 자세히 알아보십시오.',
+        'Read more about statistics in LIGERO' => 'LIGERO의 통계에 대해 자세히 알아보십시오.',
         'Add Statistics' => '통계 추가',
         'Dynamic Matrix' => '가변 매트릭스',
         'Each cell contains a singular data point.' => '각 셀에는 단일 데이터 요소가 포함되어 있습니다.',
@@ -2920,8 +2920,8 @@ sub Data {
         'Dynamic fields' => '동적 필드',
 
         # Template: Error
-        'Really a bug? 5 out of 10 bug reports result from a wrong or incomplete installation of OTRS.' =>
-            '정말 버그입니까? 10가지 중 5 가지 버그 리포트는 OTRS의 잘못되었거나 불완전한 설치로 인해 발생합니다.',
+        'Really a bug? 5 out of 10 bug reports result from a wrong or incomplete installation of LIGERO.' =>
+            '정말 버그입니까? 10가지 중 5 가지 버그 리포트는 LIGERO의 잘못되었거나 불완전한 설치로 인해 발생합니다.',
         'With %s, our experts take care of correct installation and cover your back with support and periodic security updates.' =>
             '%s의 비용으로 전문가가 정확한 설치를 처리하고 지원 및 정기 보안 업데이트로 등을 제공합니다.',
         'Contact our service team now.' => '지금 서비스 팀에 문의하십시오.',
@@ -2946,7 +2946,7 @@ sub Data {
         # Template: Header
         'View notifications' => '알림보기',
         'Notifications' => '알림',
-        'Notifications (OTRS Business Solution™)' => '알림 (OTRS Business Solution ™)',
+        'Notifications (LIGERO Business Solution™)' => '알림 (LIGERO Business Solution ™)',
         'Personal preferences' => '개인 환경설정',
         'Logout' => '로그아웃',
         'You are logged in as' => '귀하는 다음 계정으로 로그인했습니다.',
@@ -3003,8 +3003,8 @@ sub Data {
 
         # Template: InstallerDBStart
         'Install Type' => '설치 유형',
-        'Create a new database for OTRS' => 'OTRS를위한 새로운 데이터베이스 생성',
-        'Use an existing database for OTRS' => 'OTRS에 기존 데이터베이스 사용',
+        'Create a new database for LIGERO' => 'LIGERO를위한 새로운 데이터베이스 생성',
+        'Use an existing database for LIGERO' => 'LIGERO에 기존 데이터베이스 사용',
 
         # Template: InstallerDBmssql
         'If you have set a root password for your database, it must be entered here. If not, leave this field empty.' =>
@@ -3015,8 +3015,8 @@ sub Data {
         'Database check successful.' => '데이터베이스 검사에 성공했습니다.',
         'Database User' => '데이터베이스 사용자',
         'New' => '새로운',
-        'A new database user with limited permissions will be created for this OTRS system.' =>
-            '제한된 권한을 가진 새로운 데이터베이스 사용자가이 OTRS 시스템에 대해 생성됩니다.',
+        'A new database user with limited permissions will be created for this LIGERO system.' =>
+            '제한된 권한을 가진 새로운 데이터베이스 사용자가이 LIGERO 시스템에 대해 생성됩니다.',
         'Repeat Password' => '비밀번호 반복',
         'Generated password' => '생성된 암호',
 
@@ -3028,12 +3028,12 @@ sub Data {
         'Port' => '포트',
 
         # Template: InstallerFinish
-        'To be able to use OTRS you have to enter the following line in your command line (Terminal/Shell) as root.' =>
-            'OTRS를 사용하려면 명령 줄 (터미널 / 쉘)에 다음 행을 루트로 입력해야합니다.',
+        'To be able to use LIGERO you have to enter the following line in your command line (Terminal/Shell) as root.' =>
+            'LIGERO를 사용하려면 명령 줄 (터미널 / 쉘)에 다음 행을 루트로 입력해야합니다.',
         'Restart your webserver' => '웹 서버 다시 시작',
-        'After doing so your OTRS is up and running.' => '그렇게하면 OTRS가 실행됩니다.',
+        'After doing so your LIGERO is up and running.' => '그렇게하면 LIGERO가 실행됩니다.',
         'Start page' => '시작 페이지',
-        'Your OTRS Team' => 'OTRS 팀',
+        'Your LIGERO Team' => 'LIGERO 팀',
 
         # Template: InstallerLicense
         'Don\'t accept license' => '면허를 받지마라.',
@@ -3079,8 +3079,8 @@ sub Data {
 
         # Template: MobileNotAvailableWidget
         'Feature not Available' => '사용할 수없는 기능',
-        'Sorry, but this feature of OTRS is currently not available for mobile devices. If you\'d like to use it, you can either switch to desktop mode or use your regular desktop device.' =>
-            '죄송합니다. 현재 OTRS의이 기능은 휴대 기기에서 사용할 수 없습니다. 이 기능을 사용하려면 데스크톱 모드로 전환하거나 일반 데스크톱 장치를 사용할 수 있습니다.',
+        'Sorry, but this feature of LIGERO is currently not available for mobile devices. If you\'d like to use it, you can either switch to desktop mode or use your regular desktop device.' =>
+            '죄송합니다. 현재 LIGERO의이 기능은 휴대 기기에서 사용할 수 없습니다. 이 기능을 사용하려면 데스크톱 모드로 전환하거나 일반 데스크톱 장치를 사용할 수 있습니다.',
 
         # Template: Motd
         'Message of the Day' => '오늘의 메시지',
@@ -3120,8 +3120,8 @@ sub Data {
 
         # Template: PublicDefault
         'Welcome' => '환영',
-        'This is the default public interface of OTRS! There was no action parameter given.' =>
-            '이것은 OTRS의 기본 공용 인터페이스입니다! 주어진 행동 매개 변수가 없습니다.',
+        'This is the default public interface of LIGERO! There was no action parameter given.' =>
+            '이것은 LIGERO의 기본 공용 인터페이스입니다! 주어진 행동 매개 변수가 없습니다.',
         'You could install a custom public module (via the package manager), for example the FAQ module, which has a public interface.' =>
             '공용 인터페이스가있는 FAQ 모듈과 같이 (패키지 관리자)를 통해 사용자 정의 공용 모듈을 설치할 수 있습니다.',
 
@@ -3262,12 +3262,12 @@ sub Data {
         # Template: Navigation
         'Navigation' => '항해',
 
-        # Template: OTRSBusinessTeaser
+        # Template: LIGEROBusinessTeaser
         'With %s, System Configuration supports versioning, rollback and user-specific configuration settings.' =>
             '%s에서 시스템 환경설정은 버전 관리, 롤백 및 사용자 별 구성 설정을 지원합니다.',
 
         # Template: Test
-        'OTRS Test Page' => 'OTRS 테스트 페이지',
+        'LIGERO Test Page' => 'LIGERO 테스트 페이지',
         'Unlock' => '잠금해제',
         'Welcome %s %s' => '환영합니다 %s %s',
         'Counter' => '계수기',
@@ -3350,8 +3350,8 @@ sub Data {
         # Perl Module: Kernel/Modules/AdminACL.pm
         'ACL information from database is not in sync with the system configuration, please deploy all ACLs.' =>
             '데이터베이스의 ACL 정보가 시스템 구성과 일치하지 않습니다. 모든 ACL을 배포하십시오.',
-        'ACLs could not be Imported due to a unknown error, please check OTRS logs for more information' =>
-            '알 수없는 오류로 인해 ACL을 가져올 수 없습니다. 자세한 내용은 OTRS 로그를 확인하십시오.',
+        'ACLs could not be Imported due to a unknown error, please check LIGERO logs for more information' =>
+            '알 수없는 오류로 인해 ACL을 가져올 수 없습니다. 자세한 내용은 LIGERO 로그를 확인하십시오.',
         'The following ACLs have been added successfully: %s' => '다음 ACL이 성공적으로 추가되었습니다 : %s',
         'The following ACLs have been updated successfully: %s' => '다음 ACL이 성공적으로 업데이트되었습니다 : %s',
         'There where errors adding/updating the following ACLs: %s. Please check the log file for more information.' =>
@@ -3404,8 +3404,8 @@ sub Data {
             'ID가 %s 인 알림 데이터를 가져 오는 중 오류가 발생했습니다.',
         'Unknown Notification %s!' => '알 수없는 알림 %s!',
         'There was an error creating the Notification' => '알림을 만드는 중 오류가 발생했습니다.',
-        'Notifications could not be Imported due to a unknown error, please check OTRS logs for more information' =>
-            '알 수없는 오류로 인해 알림을 가져올 수 없습니다. 자세한 내용은 OTRS 로그를 확인하십시오.',
+        'Notifications could not be Imported due to a unknown error, please check LIGERO logs for more information' =>
+            '알 수없는 오류로 인해 알림을 가져올 수 없습니다. 자세한 내용은 LIGERO 로그를 확인하십시오.',
         'The following Notifications have been added successfully: %s' =>
             '다음 알림이 성공적으로 추가되었습니다 : %s',
         'The following Notifications have been updated successfully: %s' =>
@@ -3631,12 +3631,12 @@ sub Data {
         'Need ExampleWebService!' => 'ExampleWebService가 필요합니다!',
         'Could not read %s!' => '%s를 읽을 수 없습니다!',
         'Need a file to import!' => '가져올 파일이 필요합니다!',
-        'The imported file has not valid YAML content! Please check OTRS log for details' =>
-            '가져온 파일에 유효한 YAML 콘텐츠가 없습니다! 자세한 내용은 OTRS 로그를 확인하십시오.',
+        'The imported file has not valid YAML content! Please check LIGERO log for details' =>
+            '가져온 파일에 유효한 YAML 콘텐츠가 없습니다! 자세한 내용은 LIGERO 로그를 확인하십시오.',
         'Web service "%s" deleted!' => 'Web service "%s"이 삭제되었습니다!',
-        'OTRS as provider' => '공급자 인 OTRS',
+        'LIGERO as provider' => '공급자 인 LIGERO',
         'Operations' => '운영',
-        'OTRS as requester' => '요청자 인 OTRS',
+        'LIGERO as requester' => '요청자 인 LIGERO',
         'Invokers' => '인보커',
 
         # Perl Module: Kernel/Modules/AdminGenericInterfaceWebserviceHistory.pm
@@ -3667,7 +3667,7 @@ sub Data {
         'All recipients of the first article' => '첫 번째 기사의 모든 수신자',
         'All recipients of the last article' => '마지막 기사의 모든 수신자',
 
-        # Perl Module: Kernel/Modules/AdminOTRSBusiness.pm
+        # Perl Module: Kernel/Modules/AdminLIGEROBusiness.pm
         'Your system was successfully upgraded to %s.' => '시스템이 %s로 성공적으로 업그레이드되었습니다.',
         'There was a problem during the upgrade to %s.' => '%s로 업그레이드하는 동안 문제가 발생했습니다.',
         '%s was correctly reinstalled.' => '%s을 올바르게 다시 설치했습니다.',
@@ -3693,8 +3693,8 @@ sub Data {
         'Can\'t read %s!' => '%s를 읽을 수 없습니다!',
         'File is OK' => '파일은 정상입니다.',
         'Package has locally modified files.' => '패키지에 로컬로 수정된 파일이 있습니다.',
-        'Package not verified by the OTRS Group! It is recommended not to use this package.' =>
-            '패키지가 OTRS 그룹에 의해 확인되지 않았습니다! 이 패키지를 사용하지 않는 것이 좋습니다.',
+        'Package not verified by the LIGERO Group! It is recommended not to use this package.' =>
+            '패키지가 LIGERO 그룹에 의해 확인되지 않았습니다! 이 패키지를 사용하지 않는 것이 좋습니다.',
         'Not Started' => '시작되지 않음',
         'Updated' => '업데이트 됨',
         'Already up-to-date' => '이미 최신',
@@ -3715,9 +3715,9 @@ sub Data {
             '선택한 저장소에 패키지가 없거나 새로운 패키지가 없습니다.',
         'Package not verified due a communication issue with verification server!' =>
             '확인 서버와의 통신 문제로 인해 패키지가 확인되지 않았습니다!',
-        'Can\'t connect to OTRS Feature Add-on list server!' => 'OTRS 기능 추가 기능 목록 서버에 연결할 수 없습니다!',
-        'Can\'t get OTRS Feature Add-on list from server!' => '서버에서 OTRS 기능 추가 기능 목록을 가져올 수 없습니다!',
-        'Can\'t get OTRS Feature Add-on from server!' => '서버에서 OTRS 기능 추가 기능을 가져올 수 없습니다!',
+        'Can\'t connect to LIGERO Feature Add-on list server!' => 'LIGERO 기능 추가 기능 목록 서버에 연결할 수 없습니다!',
+        'Can\'t get LIGERO Feature Add-on list from server!' => '서버에서 LIGERO 기능 추가 기능 목록을 가져올 수 없습니다!',
+        'Can\'t get LIGERO Feature Add-on from server!' => '서버에서 LIGERO 기능 추가 기능을 가져올 수 없습니다!',
 
         # Perl Module: Kernel/Modules/AdminPostMasterFilter.pm
         'No such filter: %s' => '해당 필터 없음 : %s',
@@ -3890,13 +3890,13 @@ sub Data {
         'You currently don\'t have any favourite settings.' => '현재 즐겨찾는 설정이 없습니다.',
         'The following settings could not be found: %s' => '다음 설정을 찾을 수 없습니다 : %s',
         'Import not allowed!' => '가져오기가 허용되지 않습니다!',
-        'System Configuration could not be imported due to an unknown error, please check OTRS logs for more information.' =>
-            '알 수없는 오류로 인해 시스템 구성을 가져올 수 없습니다. 자세한 내용은 OTRS 로그를 확인하십시오.',
+        'System Configuration could not be imported due to an unknown error, please check LIGERO logs for more information.' =>
+            '알 수없는 오류로 인해 시스템 구성을 가져올 수 없습니다. 자세한 내용은 LIGERO 로그를 확인하십시오.',
         'Category Search' => '카테고리 검색',
 
         # Perl Module: Kernel/Modules/AdminSystemConfigurationDeployment.pm
-        'Some imported settings are not present in the current state of the configuration or it was not possible to update them. Please check the OTRS log for more information.' =>
-            '일부 가져온 설정은 구성의 현재 상태에 나타나지 않거나 업데이트 할 수 없습니다. 자세한 내용은 OTRS 로그를 확인하십시오.',
+        'Some imported settings are not present in the current state of the configuration or it was not possible to update them. Please check the LIGERO log for more information.' =>
+            '일부 가져온 설정은 구성의 현재 상태에 나타나지 않거나 업데이트 할 수 없습니다. 자세한 내용은 LIGERO 로그를 확인하십시오.',
 
         # Perl Module: Kernel/Modules/AdminSystemConfigurationGroup.pm
         'You need to enable the setting before locking!' => '잠금 전에 설정을 활성화해야 합니다!',
@@ -4340,7 +4340,7 @@ sub Data {
         'Configure "Home" in Kernel/Config.pm first!' => '먼저 Kernel / Config.pm에서 "홈"을 구성하십시오!',
         'File "%s/Kernel/Config.pm" not found!' => '"%s/Kernel/Config.pm"파일을 찾을 수 없습니다!',
         'Directory "%s" not found!' => '"%s" 디렉토리를 찾을 수 없습니다!',
-        'Install OTRS' => 'OTRS 설치',
+        'Install LIGERO' => 'LIGERO 설치',
         'Intro' => '소개',
         'Kernel/Config.pm isn\'t writable!' => 'Kernel / Config.pm에 쓸 수 없습니다!',
         'If you want to use the installer, set the Kernel/Config.pm writable for the webserver user!' =>
@@ -4357,7 +4357,7 @@ sub Data {
         'Unknown database type "%s".' => '알 수없는 데이터베이스 유형 "%s".',
         'Please go back.' => '돌아가 주세요.',
         'Create Database' => '데이터베이스 생성',
-        'Install OTRS - Error' => 'OTRS 설치 - 오류',
+        'Install LIGERO - Error' => 'LIGERO 설치 - 오류',
         'File "%s/%s.xml" not found!' => '"%s / %s.xml"파일을 찾을 수 없습니다!',
         'Contact your Admin!' => '관리자에게 문의하십시오!',
         'System Settings' => '환경 설정',
@@ -4425,7 +4425,7 @@ sub Data {
         'Unmark' => '마크 해제',
 
         # Perl Module: Kernel/Output/HTML/ArticleAction/ReinstallPackageLink.pm
-        'Upgrade to OTRS Business Solution™' => 'OTRS Business Solution ™으로 업그레이드하십시오.',
+        'Upgrade to LIGERO Business Solution™' => 'LIGERO Business Solution ™으로 업그레이드하십시오.',
         'Re-install Package' => '패키지 다시 설치',
         'Upgrade' => '업그레이드',
         'Re-install' => '다시 설치',
@@ -4489,8 +4489,8 @@ sub Data {
         'The start time of a ticket has been set after the end time!' => '종료 시간 후에 티켓의 시작 시간이 설정되었습니다!',
 
         # Perl Module: Kernel/Output/HTML/Dashboard/News.pm
-        'Can\'t connect to OTRS News server!' => 'OTRS 뉴스 서버에 연결할 수 없습니다!',
-        'Can\'t get OTRS News from server!' => '서버에서 OTRS 뉴스를 가져올 수 없습니다!',
+        'Can\'t connect to LIGERO News server!' => 'LIGERO 뉴스 서버에 연결할 수 없습니다!',
+        'Can\'t get LIGERO News from server!' => '서버에서 LIGERO 뉴스를 가져올 수 없습니다!',
 
         # Perl Module: Kernel/Output/HTML/Dashboard/ProductNotify.pm
         'Can\'t connect to Product News server!' => '제품 뉴스 서버에 연결할 수 없습니다!',
@@ -4556,9 +4556,9 @@ sub Data {
         'Archive search' => '보관 검색',
 
         # Perl Module: Kernel/Output/HTML/Notification/AgentCloudServicesDisabled.pm
-        'Enable cloud services to unleash all OTRS features!' => '클라우드 서비스로 모든 OTRS 기능을 구현할 수 있습니다!',
+        'Enable cloud services to unleash all LIGERO features!' => '클라우드 서비스로 모든 LIGERO 기능을 구현할 수 있습니다!',
 
-        # Perl Module: Kernel/Output/HTML/Notification/AgentOTRSBusiness.pm
+        # Perl Module: Kernel/Output/HTML/Notification/AgentLIGEROBusiness.pm
         '%s Upgrade to %s now! %s' => '%s 지금 %s로 업그레이드하십시오! %s',
         'Please verify your license data!' => '라이센스 데이터를 확인 하십시오!',
         'The license for your %s is about to expire. Please make contact with %s to renew your contract!' =>
@@ -4585,14 +4585,14 @@ sub Data {
             '시스템 유지 보수 기간은 %s에서 시작되며 %s에서 중단 될 것으로 예상됩니다.',
 
         # Perl Module: Kernel/Output/HTML/Notification/DaemonCheck.pm
-        'OTRS Daemon is not running.' => 'OTRS 데몬이 실행되고 있지 않습니다.',
+        'LIGERO Daemon is not running.' => 'LIGERO 데몬이 실행되고 있지 않습니다.',
 
         # Perl Module: Kernel/Output/HTML/Notification/OutofOfficeCheck.pm
         'You have Out of Office enabled, would you like to disable it?' =>
             '부재 중 기능을 사용하도록 설정 했습니까? 사용하지 않도록 설정 하시겠습니까?',
 
         # Perl Module: Kernel/Output/HTML/Notification/PackageManagerCheckNotVerifiedPackages.pm
-        'The installation of packages which are not verified by the OTRS Group is activated. These packages could threaten your whole system! It is recommended not to use unverified packages.' =>
+        'The installation of packages which are not verified by the LIGERO Group is activated. These packages could threaten your whole system! It is recommended not to use unverified packages.' =>
             '',
 
         # Perl Module: Kernel/Output/HTML/Notification/SystemConfigurationInvalidCheck.pm
@@ -4793,9 +4793,9 @@ sub Data {
         'File is not installed!' => '파일이 설치되지 않았습니다!',
         'File is different!' => '파일이 다릅니다!',
         'Can\'t read file!' => '파일을 읽을 수 없습니다!',
-        '<p>If you continue to install this package, the following issues may occur:</p><ul><li>Security problems</li><li>Stability problems</li><li>Performance problems</li></ul><p>Please note that issues that are caused by working with this package are not covered by OTRS service contracts.</p>' =>
-            '1이 패키지를 계속 설치하면 다음과 같은 문제가 발생할 수 있습니다. 123 보안 문제 34 안정성 문제 45 성능 문제 566이 패키지로 작업하여 발생하는 문제는 OTRS 서비스 계약의 적용을받지 않습니다.',
-        '<p>The installation of packages which are not verified by the OTRS Group is not possible by default.</p>' =>
+        '<p>If you continue to install this package, the following issues may occur:</p><ul><li>Security problems</li><li>Stability problems</li><li>Performance problems</li></ul><p>Please note that issues that are caused by working with this package are not covered by LIGERO service contracts.</p>' =>
+            '1이 패키지를 계속 설치하면 다음과 같은 문제가 발생할 수 있습니다. 123 보안 문제 34 안정성 문제 45 성능 문제 566이 패키지로 작업하여 발생하는 문제는 LIGERO 서비스 계약의 적용을받지 않습니다.',
+        '<p>The installation of packages which are not verified by the LIGERO Group is not possible by default.</p>' =>
             '',
         '<p>You can activate the installation of not verified packages in the <a href="%sAction=AdminSystemConfiguration;Subaction=View;Setting=Package%3A%3AAllowNotVerifiedPackages" target="_blank">System Configuration</a>.</p>' =>
             '',
@@ -4981,14 +4981,14 @@ sub Data {
         # Perl Module: Kernel/System/SupportDataCollector/Plugin/Database/postgresql/Version.pm
         'PostgreSQL 9.2 or higher is required.' => 'PostgreSQL 9.2 이상이 필요합니다.',
 
-        # Perl Module: Kernel/System/SupportDataCollector/Plugin/OS/DiskPartitionOTRS.pm
-        'OTRS Disk Partition' => 'OTRS 디스크 파티션',
+        # Perl Module: Kernel/System/SupportDataCollector/Plugin/OS/DiskPartitionLIGERO.pm
+        'LIGERO Disk Partition' => 'LIGERO 디스크 파티션',
 
         # Perl Module: Kernel/System/SupportDataCollector/Plugin/OS/DiskSpace.pm
         'Disk Usage' => '디스크 사용량',
-        'The partition where OTRS is located is almost full.' => 'OTRS가 위치한 파티션이 거의 찼습니다.',
-        'The partition where OTRS is located has no disk space problems.' =>
-            'OTRS가 위치한 파티션에는 디스크 공간 문제가 없습니다.',
+        'The partition where LIGERO is located is almost full.' => 'LIGERO가 위치한 파티션이 거의 찼습니다.',
+        'The partition where LIGERO is located has no disk space problems.' =>
+            'LIGERO가 위치한 파티션에는 디스크 공간 문제가 없습니다.',
 
         # Perl Module: Kernel/System/SupportDataCollector/Plugin/OS/DiskSpacePartitions.pm
         'Disk Partitions Usage' => '디스크 파티션 사용법',
@@ -5016,37 +5016,37 @@ sub Data {
         'There should be more than 60% free swap space.' => '스왑 공간이 60 % 이상 있어야합니다.',
         'There should be no more than 200 MB swap space used.' => '사용 된 스왑 공간은 200MB 이상이어야합니다.',
 
-        # Perl Module: Kernel/System/SupportDataCollector/Plugin/OTRS/ArticleSearchIndexStatus.pm
-        'OTRS' => 'OTRS',
+        # Perl Module: Kernel/System/SupportDataCollector/Plugin/LIGERO/ArticleSearchIndexStatus.pm
+        'LIGERO' => 'LIGERO',
         'Article Search Index Status' => '기사 검색 색인 상태',
         'Indexed Articles' => '색인 생성된 기사',
 
-        # Perl Module: Kernel/System/SupportDataCollector/Plugin/OTRS/ArticlesPerCommunicationChannel.pm
+        # Perl Module: Kernel/System/SupportDataCollector/Plugin/LIGERO/ArticlesPerCommunicationChannel.pm
         'Articles Per Communication Channel' => '커뮤니케이션 채널 당 기사',
 
-        # Perl Module: Kernel/System/SupportDataCollector/Plugin/OTRS/CommunicationLog.pm
+        # Perl Module: Kernel/System/SupportDataCollector/Plugin/LIGERO/CommunicationLog.pm
         'Incoming communications' => '수신 통신',
         'Outgoing communications' => '나가는 통신',
         'Failed communications' => '실패한 통신',
         'Average processing time of communications (s)' => '통신 평균 처리 시간(s)',
 
-        # Perl Module: Kernel/System/SupportDataCollector/Plugin/OTRS/CommunicationLogAccountStatus.pm
+        # Perl Module: Kernel/System/SupportDataCollector/Plugin/LIGERO/CommunicationLogAccountStatus.pm
         'Communication Log Account Status (last 24 hours)' => '통신 로그 계정 상태 (지난 24시간)',
         'No connections found.' => '연결이 없습니다.',
         'ok' => '승인',
         'permanent connection errors' => '영구 연결 오류',
         'intermittent connection errors' => '간헐적인 연결 오류',
 
-        # Perl Module: Kernel/System/SupportDataCollector/Plugin/OTRS/ConfigSettings.pm
+        # Perl Module: Kernel/System/SupportDataCollector/Plugin/LIGERO/ConfigSettings.pm
         'Config Settings' => '구성 설정',
         'Could not determine value.' => '가치를 결정할 수 없습니다.',
 
-        # Perl Module: Kernel/System/SupportDataCollector/Plugin/OTRS/DaemonRunning.pm
+        # Perl Module: Kernel/System/SupportDataCollector/Plugin/LIGERO/DaemonRunning.pm
         'Daemon' => '데몬',
         'Daemon is running.' => '데몬이 실행 중입니다.',
         'Daemon is not running.' => '데몬이 실행되고 있지 않습니다.',
 
-        # Perl Module: Kernel/System/SupportDataCollector/Plugin/OTRS/DatabaseRecords.pm
+        # Perl Module: Kernel/System/SupportDataCollector/Plugin/LIGERO/DatabaseRecords.pm
         'Database Records' => '데이터베이스 레코드',
         'Tickets' => '티켓',
         'Ticket History Entries' => '티켓 기록 항목',
@@ -5062,31 +5062,31 @@ sub Data {
         'Tickets Per Month (avg)' => '월간 티켓 (평균)',
         'Open Tickets' => '진행중 티켓',
 
-        # Perl Module: Kernel/System/SupportDataCollector/Plugin/OTRS/DefaultSOAPUser.pm
+        # Perl Module: Kernel/System/SupportDataCollector/Plugin/LIGERO/DefaultSOAPUser.pm
         'Default SOAP Username And Password' => '기본 SOAP 사용자 이름 및 암호',
         'Security risk: you use the default setting for SOAP::User and SOAP::Password. Please change it.' =>
             '보안 위험 : SOAP :: User 및 SOAP :: Password의 기본 설정을 사용합니다. 변경하십시오.',
 
-        # Perl Module: Kernel/System/SupportDataCollector/Plugin/OTRS/DefaultUser.pm
+        # Perl Module: Kernel/System/SupportDataCollector/Plugin/LIGERO/DefaultUser.pm
         'Default Admin Password' => '기본 관리자 비밀번호',
         'Security risk: the agent account root@localhost still has the default password. Please change it or invalidate the account.' =>
             '보안 위험 : 에이전트 계정 root @ localhost에는 여전히 기본 암호가 있습니다. 계정을 변경하거나 계정을 무효화하십시오.',
 
-        # Perl Module: Kernel/System/SupportDataCollector/Plugin/OTRS/EmailQueue.pm
+        # Perl Module: Kernel/System/SupportDataCollector/Plugin/LIGERO/EmailQueue.pm
         'Email Sending Queue' => '이메일 전송 대기열',
         'Emails queued for sending' => '전송 대기중인 이메일',
 
-        # Perl Module: Kernel/System/SupportDataCollector/Plugin/OTRS/FQDN.pm
+        # Perl Module: Kernel/System/SupportDataCollector/Plugin/LIGERO/FQDN.pm
         'FQDN (domain name)' => 'FQDN (도메인 이름)',
         'Please configure your FQDN setting.' => 'FQDN 설정을 구성하십시오.',
         'Domain Name' => '도메인 이름',
         'Your FQDN setting is invalid.' => 'FQDN 설정이 잘못되었습니다.',
 
-        # Perl Module: Kernel/System/SupportDataCollector/Plugin/OTRS/FileSystemWritable.pm
+        # Perl Module: Kernel/System/SupportDataCollector/Plugin/LIGERO/FileSystemWritable.pm
         'File System Writable' => '파일 시스템 쓰기 가능',
-        'The file system on your OTRS partition is not writable.' => 'OTRS 파티션의 파일 시스템에 쓸 수 없습니다.',
+        'The file system on your LIGERO partition is not writable.' => 'LIGERO 파티션의 파일 시스템에 쓸 수 없습니다.',
 
-        # Perl Module: Kernel/System/SupportDataCollector/Plugin/OTRS/LegacyConfigBackups.pm
+        # Perl Module: Kernel/System/SupportDataCollector/Plugin/LIGERO/LegacyConfigBackups.pm
         'Legacy Configuration Backups' => '레거시 구성 백업',
         'No legacy configuration backup files found.' => '레거시 구성 백업 파일이 없습니다.',
         'Legacy configuration backup files found in %s, but they might still be required by some packages.' =>
@@ -5094,55 +5094,55 @@ sub Data {
         'Legacy configuration backup files are no longer needed for the installed packages, please remove them from %s.' =>
             '레거시 구성 백업 파일은 설치된 패키지에 더 이상 필요하지 않으므로 %s에서 제거하십시오.',
 
-        # Perl Module: Kernel/System/SupportDataCollector/Plugin/OTRS/PackageDeployment.pm
+        # Perl Module: Kernel/System/SupportDataCollector/Plugin/LIGERO/PackageDeployment.pm
         'Package Installation Status' => '패키지 설치 상태',
         'Some packages have locally modified files.' => '일부 패키지에는 로컬로 수정된 파일이 있습니다.',
         'Some packages are not correctly installed.' => '일부 패키지가 올바르게 설치되지 않았습니다.',
         'Package Verification Status' => '패키지 확인 상태',
-        'Some packages are not verified by the OTRS Group! It is recommended not to use this packages.' =>
-            '일부 패키지는 OTRS 그룹에 의해 검증되지 않습니다! 이 패키지를 사용하지 않는 것이 좋습니다.',
+        'Some packages are not verified by the LIGERO Group! It is recommended not to use this packages.' =>
+            '일부 패키지는 LIGERO 그룹에 의해 검증되지 않습니다! 이 패키지를 사용하지 않는 것이 좋습니다.',
         'Package Framework Version Status' => '패키지 프레임 워크 버전 상태',
         'Some packages are not allowed for the current framework version.' =>
             '일부 패키지는 현재 프레임 워크 버전에 허용되지 않습니다.',
 
-        # Perl Module: Kernel/System/SupportDataCollector/Plugin/OTRS/PackageList.pm
+        # Perl Module: Kernel/System/SupportDataCollector/Plugin/LIGERO/PackageList.pm
         'Package List' => '패키지 목록',
 
-        # Perl Module: Kernel/System/SupportDataCollector/Plugin/OTRS/SessionConfigSettings.pm
+        # Perl Module: Kernel/System/SupportDataCollector/Plugin/LIGERO/SessionConfigSettings.pm
         'Session Config Settings' => '세션 구성 설정',
 
-        # Perl Module: Kernel/System/SupportDataCollector/Plugin/OTRS/SpoolMails.pm
+        # Perl Module: Kernel/System/SupportDataCollector/Plugin/LIGERO/SpoolMails.pm
         'Spooled Emails' => '스풀된 전자 메일',
-        'There are emails in var/spool that OTRS could not process.' => 'OTRS가 처리 할 수없는 var / spool에 이메일이 있습니다.',
+        'There are emails in var/spool that LIGERO could not process.' => 'LIGERO가 처리 할 수없는 var / spool에 이메일이 있습니다.',
 
-        # Perl Module: Kernel/System/SupportDataCollector/Plugin/OTRS/SystemID.pm
+        # Perl Module: Kernel/System/SupportDataCollector/Plugin/LIGERO/SystemID.pm
         'Your SystemID setting is invalid, it should only contain digits.' =>
             '시스템 ID 설정이 잘못되었습니다. 숫자 만 포함해야합니다.',
 
-        # Perl Module: Kernel/System/SupportDataCollector/Plugin/OTRS/Ticket/DefaultType.pm
+        # Perl Module: Kernel/System/SupportDataCollector/Plugin/LIGERO/Ticket/DefaultType.pm
         'Default Ticket Type' => '기본 티켓 유형',
         'The configured default ticket type is invalid or missing. Please change the setting Ticket::Type::Default and select a valid ticket type.' =>
             '구성된 기본 티켓 유형이 잘못되었거나 누락되었습니다. Ticket :: Type :: Default 설정을 변경하고 유효한 티켓 유형을 선택하십시오.',
 
-        # Perl Module: Kernel/System/SupportDataCollector/Plugin/OTRS/Ticket/IndexModule.pm
+        # Perl Module: Kernel/System/SupportDataCollector/Plugin/LIGERO/Ticket/IndexModule.pm
         'Ticket Index Module' => '티켓 색인 모듈',
         'You have more than 60,000 tickets and should use the StaticDB backend. See admin manual (Performance Tuning) for more information.' =>
             '60,000 개 이상의 티켓이 있으며 StaticDB 백엔드를 사용해야합니다. 자세한 내용은 관리자 설명서 (성능 튜닝)를 참조하십시오.',
 
-        # Perl Module: Kernel/System/SupportDataCollector/Plugin/OTRS/Ticket/InvalidUsersWithLockedTickets.pm
+        # Perl Module: Kernel/System/SupportDataCollector/Plugin/LIGERO/Ticket/InvalidUsersWithLockedTickets.pm
         'Invalid Users with Locked Tickets' => '잠긴 티켓이 있는 사용자가 잘못되었습니다.',
         'There are invalid users with locked tickets.' => '잠긴 티켓이 있는 유효하지 않은 사용자가 있습니다.',
 
-        # Perl Module: Kernel/System/SupportDataCollector/Plugin/OTRS/Ticket/OpenTickets.pm
+        # Perl Module: Kernel/System/SupportDataCollector/Plugin/LIGERO/Ticket/OpenTickets.pm
         'You should not have more than 8,000 open tickets in your system.' =>
             '시스템에 8,000개 이상의 티켓이 없어야합니다.',
 
-        # Perl Module: Kernel/System/SupportDataCollector/Plugin/OTRS/Ticket/SearchIndexModule.pm
+        # Perl Module: Kernel/System/SupportDataCollector/Plugin/LIGERO/Ticket/SearchIndexModule.pm
         'Ticket Search Index Module' => '티켓 검색 Index Module',
         'The indexing process forces the storage of the original article text in the article search index, without executing filters or applying stop word lists. This will increase the size of the search index and thus may slow down fulltext searches.' =>
             '색인 생성 프로세스는 필터를 실행하거나 정지 단어 목록을 적용하지 않고 기사 검색 색인에 원본 기사 텍스트의 저장을 강제합니다. 이렇게하면 검색 색인의 크기가 커지고 전체 텍스트 검색 속도가 느려질 수 있습니다.',
 
-        # Perl Module: Kernel/System/SupportDataCollector/Plugin/OTRS/Ticket/StaticDBOrphanedRecords.pm
+        # Perl Module: Kernel/System/SupportDataCollector/Plugin/LIGERO/Ticket/StaticDBOrphanedRecords.pm
         'Orphaned Records In ticket_lock_index Table' => 'ticket_lock_index 테이블의 고아 레코드',
         'Table ticket_lock_index contains orphaned records. Please run bin/ligero.Console.pl "Maint::Ticket::QueueIndexCleanup" to clean the StaticDB index.' =>
             '표 ticket_lock_index에는 분리 된 레코드가 있습니다. bin / ligero.Console.pl "Maint :: Ticket :: QueueIndexCleanup"을 실행하여 StaticDB 색인을 정리하십시오.',
@@ -5150,23 +5150,23 @@ sub Data {
         'Table ticket_index contains orphaned records. Please run bin/ligero.Console.pl "Maint::Ticket::QueueIndexCleanup" to clean the StaticDB index.' =>
             '표 ticket_index에는 분리 된 레코드가 있습니다. bin / ligero.Console.pl "Maint :: Ticket :: QueueIndexCleanup"을 실행하여 StaticDB 색인을 정리하십시오.',
 
-        # Perl Module: Kernel/System/SupportDataCollector/Plugin/OTRS/TimeSettings.pm
+        # Perl Module: Kernel/System/SupportDataCollector/Plugin/LIGERO/TimeSettings.pm
         'Time Settings' => '시간 설정',
         'Server time zone' => '서버 시간대',
-        'OTRS time zone' => 'OTRS 시간대',
-        'OTRS time zone is not set.' => 'OTRS 시간대가 설정되지 않았습니다.',
+        'LIGERO time zone' => 'LIGERO 시간대',
+        'LIGERO time zone is not set.' => 'LIGERO 시간대가 설정되지 않았습니다.',
         'User default time zone' => '사용자 기본 시간대',
         'User default time zone is not set.' => '사용자 기본 시간대가 설정되지 않았습니다.',
-        'OTRS time zone setting for calendar' => '캘린더의 OTRS 시간대 설정',
+        'LIGERO time zone setting for calendar' => '캘린더의 LIGERO 시간대 설정',
         'Calendar time zone is not set.' => '달력 표준 시간대가 설정되지 않았습니다.',
 
-        # Perl Module: Kernel/System/SupportDataCollector/Plugin/OTRS/UI/AgentSkinUsage.pm
+        # Perl Module: Kernel/System/SupportDataCollector/Plugin/LIGERO/UI/AgentSkinUsage.pm
         'UI - Agent Skin Usage' => 'UI - 에이전트 스킨 사용',
 
-        # Perl Module: Kernel/System/SupportDataCollector/Plugin/OTRS/UI/AgentThemeUsage.pm
+        # Perl Module: Kernel/System/SupportDataCollector/Plugin/LIGERO/UI/AgentThemeUsage.pm
         'UI - Agent Theme Usage' => 'UI - 에이전트 테마 사용법',
 
-        # Perl Module: Kernel/System/SupportDataCollector/Plugin/OTRS/UI/SpecialStats.pm
+        # Perl Module: Kernel/System/SupportDataCollector/Plugin/LIGERO/UI/SpecialStats.pm
         'UI - Special Statistics' => 'UI - 특수 통계',
         'Agents using custom main menu ordering' => '사용자 정의 주 메뉴 순서를 사용하는 에이전트',
         'Agents using favourites for the admin overview' => '관리자 개요에 즐겨찾기를 사용하는 에이전트',
@@ -5177,8 +5177,8 @@ sub Data {
 
         # Perl Module: Kernel/System/SupportDataCollector/Plugin/Webserver/Apache/MPMModel.pm
         'MPM model' => 'MPM 모델',
-        'OTRS requires apache to be run with the \'prefork\' MPM model.' =>
-            'OTRS는 \'prefork\'MPM 모델로 아파치를 실행해야합니다.',
+        'LIGERO requires apache to be run with the \'prefork\' MPM model.' =>
+            'LIGERO는 \'prefork\'MPM 모델로 아파치를 실행해야합니다.',
 
         # Perl Module: Kernel/System/SupportDataCollector/Plugin/Webserver/Apache/Performance.pm
         'CGI Accelerator Usage' => 'CGI 가속기 사용법',
@@ -5208,7 +5208,7 @@ sub Data {
         'Webserver Version' => '웹 서버 버전',
         'Could not determine webserver version.' => '웹 서버 버전을 확인할 수 없습니다.',
 
-        # Perl Module: Kernel/System/SupportDataCollector/PluginAsynchronous/OTRS/ConcurrentUsers.pm
+        # Perl Module: Kernel/System/SupportDataCollector/PluginAsynchronous/LIGERO/ConcurrentUsers.pm
         'Concurrent Users Details' => '동시 사용자 세부 정보',
         'Concurrent Users' => '동시 사용자',
 
@@ -5239,11 +5239,11 @@ sub Data {
         'Disabled' => '불구가 된',
 
         # Perl Module: Kernel/System/SysConfig/ValueType/Date.pm
-        'System was not able to calculate user Date in OTRSTimeZone!' => '시스템이 OTRSTimeZone에서 사용자 날짜를 계산할 수 없습니다!',
+        'System was not able to calculate user Date in LIGEROTimeZone!' => '시스템이 LIGEROTimeZone에서 사용자 날짜를 계산할 수 없습니다!',
 
         # Perl Module: Kernel/System/SysConfig/ValueType/DateTime.pm
-        'System was not able to calculate user DateTime in OTRSTimeZone!' =>
-            '시스템은 OTRSTimeZone에서 사용자 DateTime을 계산할 수 없었습니다!',
+        'System was not able to calculate user DateTime in LIGEROTimeZone!' =>
+            '시스템은 LIGEROTimeZone에서 사용자 DateTime을 계산할 수 없었습니다!',
 
         # Perl Module: Kernel/System/SysConfig/ValueType/FrontendNavigation.pm
         'Value is not correct! Please, consider updating this module.' =>
@@ -5500,8 +5500,8 @@ sub Data {
         'Currently not possible' => '현재 불가능',
         'This is currently disabled because of an ongoing package upgrade.' =>
             '진행중인 패키지 업그레이드로 인해 현재 이 기능을 사용할 수 없습니다.',
-        'This option is currently disabled because the OTRS Daemon is not running.' =>
-            'OTRS 데몬이 실행 중이 아니기 때문에이 옵션은 현재 비활성화되어 있습니다.',
+        'This option is currently disabled because the LIGERO Daemon is not running.' =>
+            'LIGERO 데몬이 실행 중이 아니기 때문에이 옵션은 현재 비활성화되어 있습니다.',
         'Are you sure you want to update all installed packages?' => '설치된 패키지를 모두 업데이트 하시겠습니까?',
 
         # JS File: Core.Agent.Admin.PostMasterFilter
@@ -5627,7 +5627,7 @@ sub Data {
             '검색 값을 하나 이상 입력하거나 *를 입력하십시오.',
 
         # JS File: Core.Agent.Daemon
-        'Information about the OTRS Daemon' => 'OTRS 데몬에 대한 정보',
+        'Information about the LIGERO Daemon' => 'LIGERO 데몬에 대한 정보',
 
         # JS File: Core.Agent.Dashboard
         'Please check the fields marked as red for valid inputs.' => '유효한 입력을 위해 빨간색으로 표시된 필드를 확인하십시오.',
@@ -5784,14 +5784,14 @@ sub Data {
         'This is %s' => '이것은 %s입니다.',
         'Complex %s with %s arguments' => '%s 인수가있는 복합 %s',
 
-        # JS File: OTRSLineChart
+        # JS File: LIGEROLineChart
         'No Data Available.' => '자료 없음.',
 
-        # JS File: OTRSMultiBarChart
+        # JS File: LIGEROMultiBarChart
         'Grouped' => '그룹화 된',
         'Stacked' => '누적된',
 
-        # JS File: OTRSStackedAreaChart
+        # JS File: LIGEROStackedAreaChart
         'Stream' => '흐름',
         'Expanded' => '퍼지는',
 
@@ -5882,8 +5882,8 @@ Thanks for your help!
         'Added subscription for user "%s".' => 'Added subscription for user "%s".',
         'Added system request (%s).' => '시스템 요구 사항을 추가했습니다 (%s).',
         'Added web request from customer.' => '고객의 웹 요청을 추가했습니다.',
-        'Adds a suffix with the actual year and month to the OTRS log file. A logfile for every month will be created.' =>
-            'OTRS 로그 파일에 실제 연도와 월이있는 접미어를 추가합니다. 매월 로그 파일이 생성됩니다.',
+        'Adds a suffix with the actual year and month to the LIGERO log file. A logfile for every month will be created.' =>
+            'LIGERO 로그 파일에 실제 연도와 월이있는 접미어를 추가합니다. 매월 로그 파일이 생성됩니다.',
         'Adds customers email addresses to recipients in the ticket compose screen of the agent interface. The customers email address won\'t be added if the article type is email-internal.' =>
             '상담원 인터페이스의 티켓 작성 화면에서 고객 전자 메일 주소를 받는 사람에게 추가합니다. 기사 유형이 이메일 내부인 경우 고객 이메일 주소는 추가되지 않습니다.',
         'Adds the one time vacation days for the indicated calendar.' => '표시된 달력에 대해 휴가일을 한 번 추가합니다.',
@@ -5934,7 +5934,7 @@ Thanks for your help!
         'Agents ↔ Groups' => '에이전트 ↔ 그룹',
         'Agents ↔ Roles' => '에이전트 ↔ 역할',
         'All CustomerIDs of a customer user.' => '고객 사용자의 모든 고객 ID.',
-        'All attachments (OTRS Business Solution™)' => '모든 첨부 파일 (OTRS Business Solution ™)',
+        'All attachments (LIGERO Business Solution™)' => '모든 첨부 파일 (LIGERO Business Solution ™)',
         'All customer users of a CustomerID' => 'CustomerID의 모든 고객 사용자',
         'All escalated tickets' => '모든 에스컬레이션된 티켓',
         'All new tickets, these tickets have not been worked on yet' => '모든 새로운 티켓이 그 티켓은 아직 작동하지 않았습니다.',
@@ -6112,9 +6112,9 @@ Thanks for your help!
             '유효한 티켓 번호를 검색하여 전자 메일이 기존 티켓의 후속 조치인지 확인합니다.',
         'Checks the SystemID in ticket number detection for follow-ups. If not enabled, SystemID will be changed after using the system.' =>
             '후속 조치를 위해 티켓 번호 검색에서 SystemID를 확인합니다. 활성화되지 않은 경우 시스템을 사용한 후 SystemID가 변경됩니다.',
-        'Checks the availability of OTRS Business Solution™ for this system.' =>
-            '이 시스템에 대한 OTRS Business Solution ™의 가용성을 확인합니다.',
-        'Checks the entitlement status of OTRS Business Solution™.' => 'OTRS Business Solution ™의 자격 상태를 확인합니다.',
+        'Checks the availability of LIGERO Business Solution™ for this system.' =>
+            '이 시스템에 대한 LIGERO Business Solution ™의 가용성을 확인합니다.',
+        'Checks the entitlement status of LIGERO Business Solution™.' => 'LIGERO Business Solution ™의 자격 상태를 확인합니다.',
         'Child' => '어린이',
         'Chinese (Simplified)' => '중국어(간체)',
         'Chinese (Traditional)' => '중국(전통)',
@@ -6167,8 +6167,8 @@ Thanks for your help!
         'Configure and manage ACLs.' => 'ACL 구성 및 관리',
         'Configure any additional readonly mirror databases that you want to use.' =>
             '사용할 추가 읽기 전용 미러 데이터베이스를 구성하십시오.',
-        'Configure sending of support data to OTRS Group for improved support.' =>
-            '향상된 지원을 위해 OTRS 그룹에 지원 데이터를 보내도록 구성합니다.',
+        'Configure sending of support data to LIGERO Group for improved support.' =>
+            '향상된 지원을 위해 LIGERO 그룹에 지원 데이터를 보내도록 구성합니다.',
         'Configure which screen should be shown after a new ticket has been created.' =>
             '새 티켓이 작성된 후 표시할 화면을 구성하십시오.',
         'Configure your own log text for PGP.' => 'PGP에 대한 자체 로그 텍스트를 구성하십시오.',
@@ -6290,8 +6290,8 @@ Thanks for your help!
         'Default value for NameX' => 'NameX의 기본값',
         'Define Actions where a settings button is available in the linked objects widget (LinkObject::ViewMode = "complex"). Please note that these Actions must have registered the following JS and CSS files: Core.AllocationList.css, Core.UI.AllocationList.js, Core.UI.Table.Sort.js, Core.Agent.TableFilters.js.' =>
             '링크 객체 위젯에서 설정 버튼을 사용할 수있는 액션 정의 (LinkObject :: ViewMode = "complex"). 이러한 작업은 다음 JS 및 CSS 파일을 등록해야합니다. Core.AllocationList.css, Core.UI.AllocationList.js, Core.UI.Table.Sort.js, Core.Agent.TableFilters.js.',
-        'Define a filter for html output to add links behind a defined string. The element Image allows two input kinds. At once the name of an image (e.g. faq.png). In this case the OTRS image path will be used. The second possiblity is to insert the link to the image.' =>
-            '정의 된 문자열 뒤에 링크를 추가하기 위해 html 출력을위한 필터를 정의하십시오. Image 요소는 두 가지 입력 종류를 허용합니다. 한 번에 이미지의 이름 (예 : faq.png). 이 경우 OTRS 이미지 경로가 사용됩니다. 두 번째 가능성은 링크를 이미지에 삽입하는 것입니다.',
+        'Define a filter for html output to add links behind a defined string. The element Image allows two input kinds. At once the name of an image (e.g. faq.png). In this case the LIGERO image path will be used. The second possiblity is to insert the link to the image.' =>
+            '정의 된 문자열 뒤에 링크를 추가하기 위해 html 출력을위한 필터를 정의하십시오. Image 요소는 두 가지 입력 종류를 허용합니다. 한 번에 이미지의 이름 (예 : faq.png). 이 경우 LIGERO 이미지 경로가 사용됩니다. 두 번째 가능성은 링크를 이미지에 삽입하는 것입니다.',
         'Define a mapping between variables of the customer user data (keys) and dynamic fields of a ticket (values). The purpose is to store customer user data in ticket dynamic fields. The dynamic fields must be present in the system and should be enabled for AgentTicketFreeText, so that they can be set/updated manually by the agent. They mustn\'t be enabled for AgentTicketPhone, AgentTicketEmail and AgentTicketCustomer. If they were, they would have precedence over the automatically set values. To use this mapping, you have to also activate the Ticket::EventModulePost###4100-DynamicFieldFromCustomerUser setting.' =>
             '고객 사용자 데이터 (키)의 변수와 티켓의 동적 필드 (값) 간의 매핑을 정의하십시오. 그 목적은 티켓 동적 필드에 고객 사용자 데이터를 저장하는 것입니다. 동적 필드는 시스템에 있어야하며 에이전트에서 수동으로 설정하거나 업데이트 할 수 있도록 AgentTicketFreeText에 대해 활성화해야합니다. AgentTicketPhone, AgentTicketEmail 및 AgentTicketCustomer에는 사용할 수 없습니다. 그럴 경우 자동으로 설정된 값보다 우선합니다. 이 매핑을 사용하려면 Ticket :: EventModulePost ### 4100-DynamicFieldFromCustomerUser 설정을 활성화해야합니다.',
         'Define dynamic field name for end time. This field has to be manually added to the system as Ticket: "Date / Time" and must be activated in ticket creation screens and/or in any other ticket action screens.' =>
@@ -6323,14 +6323,14 @@ Thanks for your help!
             '고객 정보 블록의 끝에 Google 아이콘을 생성하는 고객 항목을 정의합니다.',
         'Defines a customer item, which generates a google maps icon at the end of a customer info block.' =>
             '고객 정보 블록의 끝에 Google지도 아이콘을 생성하는 고객 항목을 정의합니다.',
-        'Defines a filter for html output to add links behind CVE numbers. The element Image allows two input kinds. At once the name of an image (e.g. faq.png). In this case the OTRS image path will be used. The second possiblity is to insert the link to the image.' =>
-            'CVE 번호 뒤에 링크를 추가하는 html 출력을위한 필터를 정의합니다. Image 요소는 두 가지 입력 종류를 허용합니다. 한 번에 이미지의 이름 (예 : faq.png). 이 경우 OTRS 이미지 경로가 사용됩니다. 두 번째 가능성은 링크를 이미지에 삽입하는 것입니다.',
-        'Defines a filter for html output to add links behind MSBulletin numbers. The element Image allows two input kinds. At once the name of an image (e.g. faq.png). In this case the OTRS image path will be used. The second possiblity is to insert the link to the image.' =>
-            'MSBulletin 번호 뒤에 링크를 추가하기 위해 html 출력을위한 필터를 정의합니다. Image 요소는 두 가지 입력 종류를 허용합니다. 한 번에 이미지의 이름 (예 : faq.png). 이 경우 OTRS 이미지 경로가 사용됩니다. 두 번째 가능성은 링크를 이미지에 삽입하는 것입니다.',
-        'Defines a filter for html output to add links behind a defined string. The element Image allows two input kinds. At once the name of an image (e.g. faq.png). In this case the OTRS image path will be used. The second possiblity is to insert the link to the image.' =>
-            '정의 된 문자열 뒤에 링크를 추가하는 html 출력을위한 필터를 정의합니다. Image 요소는 두 가지 입력 종류를 허용합니다. 한 번에 이미지의 이름 (예 : faq.png). 이 경우 OTRS 이미지 경로가 사용됩니다. 두 번째 가능성은 링크를 이미지에 삽입하는 것입니다.',
-        'Defines a filter for html output to add links behind bugtraq numbers. The element Image allows two input kinds. At once the name of an image (e.g. faq.png). In this case the OTRS image path will be used. The second possiblity is to insert the link to the image.' =>
-            'bugtraq 번호 뒤에 링크를 추가하기위한 html 출력을위한 필터를 정의합니다. Image 요소는 두 가지 입력 종류를 허용합니다. 한 번에 이미지의 이름 (예 : faq.png). 이 경우 OTRS 이미지 경로가 사용됩니다. 두 번째 가능성은 링크를 이미지에 삽입하는 것입니다.',
+        'Defines a filter for html output to add links behind CVE numbers. The element Image allows two input kinds. At once the name of an image (e.g. faq.png). In this case the LIGERO image path will be used. The second possiblity is to insert the link to the image.' =>
+            'CVE 번호 뒤에 링크를 추가하는 html 출력을위한 필터를 정의합니다. Image 요소는 두 가지 입력 종류를 허용합니다. 한 번에 이미지의 이름 (예 : faq.png). 이 경우 LIGERO 이미지 경로가 사용됩니다. 두 번째 가능성은 링크를 이미지에 삽입하는 것입니다.',
+        'Defines a filter for html output to add links behind MSBulletin numbers. The element Image allows two input kinds. At once the name of an image (e.g. faq.png). In this case the LIGERO image path will be used. The second possiblity is to insert the link to the image.' =>
+            'MSBulletin 번호 뒤에 링크를 추가하기 위해 html 출력을위한 필터를 정의합니다. Image 요소는 두 가지 입력 종류를 허용합니다. 한 번에 이미지의 이름 (예 : faq.png). 이 경우 LIGERO 이미지 경로가 사용됩니다. 두 번째 가능성은 링크를 이미지에 삽입하는 것입니다.',
+        'Defines a filter for html output to add links behind a defined string. The element Image allows two input kinds. At once the name of an image (e.g. faq.png). In this case the LIGERO image path will be used. The second possiblity is to insert the link to the image.' =>
+            '정의 된 문자열 뒤에 링크를 추가하는 html 출력을위한 필터를 정의합니다. Image 요소는 두 가지 입력 종류를 허용합니다. 한 번에 이미지의 이름 (예 : faq.png). 이 경우 LIGERO 이미지 경로가 사용됩니다. 두 번째 가능성은 링크를 이미지에 삽입하는 것입니다.',
+        'Defines a filter for html output to add links behind bugtraq numbers. The element Image allows two input kinds. At once the name of an image (e.g. faq.png). In this case the LIGERO image path will be used. The second possiblity is to insert the link to the image.' =>
+            'bugtraq 번호 뒤에 링크를 추가하기위한 html 출력을위한 필터를 정의합니다. Image 요소는 두 가지 입력 종류를 허용합니다. 한 번에 이미지의 이름 (예 : faq.png). 이 경우 LIGERO 이미지 경로가 사용됩니다. 두 번째 가능성은 링크를 이미지에 삽입하는 것입니다.',
         'Defines a filter to collect CVE numbers from article texts in AgentTicketZoom. The results will be displayed in a meta box next to the article. Fill in URLPreview if you would like to see a preview when moving your mouse cursor above the link element. This could be the same URL as in URL, but also an alternate one. Please note that some websites deny being displayed within an iframe (e.g. Google) and thus won\'t work with the preview mode.' =>
             'AgentTicketZoom의 기사 텍스트에서 CVE 번호를 수집하는 필터를 정의합니다. 결과는 기사 옆의 메타 상자에 표시됩니다. 링크 요소 위로 마우스 커서를 이동할 때 미리보기를 보려면 URLPreview를 채 웁니다. URL과 동일한 URL 일 수도 있지만 대체 URL 일 수도 있습니다. 일부 웹 사이트는 iframe (예 : Google)에 표시되지 않으므로 미리보기 모드에서는 작동하지 않습니다.',
         'Defines a filter to process the text in the articles, in order to highlight predefined keywords.' =>
@@ -6425,8 +6425,8 @@ Thanks for your help!
             '상담원이 기본 설정에 공유 암호가 저장되어 있지 않아 이중 인증을 사용하지 않는 경우 로그인을 허용해야하는지 여부를 정의합니다.',
         'Defines if customers should be allowed to login if they have no shared secret stored in their preferences and therefore are not using two-factor authentication.' =>
             '공유 설정이 환경 설정에 저장되어 있지 않아 이중 인증을 사용하지 않는 경우 고객이 로그인 할 수 있도록 허용해야하는지 정의합니다.',
-        'Defines if the communication between this system and OTRS Group servers that provide cloud services is possible. If set to \'Disable cloud services\', some functionality will be lost such as system registration, support data sending, upgrading to and use of OTRS Business Solution™, OTRS Verify™, OTRS News and product News dashboard widgets, among others.' =>
-            '클라우드 서비스를 제공하는이 시스템과 OTRS 그룹 서버 간의 통신이 가능한지 여부를 정의합니다. \'클라우드 서비스 사용 안 함\'으로 설정하면 시스템 등록, 지원 데이터 전송, OTRS Business Solution ™, OTRS Verify ™, OTRS News 및 제품 뉴스 대시 보드 위젯 등의 업그레이드 및 사용과 같은 일부 기능이 손실됩니다.',
+        'Defines if the communication between this system and LIGERO Group servers that provide cloud services is possible. If set to \'Disable cloud services\', some functionality will be lost such as system registration, support data sending, upgrading to and use of LIGERO Business Solution™, LIGERO Verify™, LIGERO News and product News dashboard widgets, among others.' =>
+            '클라우드 서비스를 제공하는이 시스템과 LIGERO 그룹 서버 간의 통신이 가능한지 여부를 정의합니다. \'클라우드 서비스 사용 안 함\'으로 설정하면 시스템 등록, 지원 데이터 전송, LIGERO Business Solution ™, LIGERO Verify ™, LIGERO News 및 제품 뉴스 대시 보드 위젯 등의 업그레이드 및 사용과 같은 일부 기능이 손실됩니다.',
         'Defines if the enhanced mode should be used (enables use of table, replace, subscript, superscript, paste from word, etc.) in customer interface.' =>
             '고객 인터페이스에서 확장 모드를 사용해야하는지 (테이블, 바꾸기, 아래첨자, 위 첨자, 단어에서 붙여넣기 등 사용가능) 정의합니다.',
         'Defines if the enhanced mode should be used (enables use of table, replace, subscript, superscript, paste from word, etc.).' =>
@@ -6471,8 +6471,8 @@ Thanks for your help!
         'Defines phone communication channel.' => '전화 통신 채널을 정의합니다.',
         'Defines queues that\'s tickets are used for displaying as calendar events.' =>
             '달력 이벤트로 표시하기 위해 티켓을 사용하는 대기열을 정의합니다.',
-        'Defines the HTTP hostname for the support data collection with the public module \'PublicSupportDataCollector\' (e.g. used from the OTRS Daemon).' =>
-            '\'PublicSupportDataCollector\'공용 모듈 (예 : OTRS 데몬에서 사용)을 사용하여 지원 데이터 수집을위한 HTTP 호스트 이름을 정의합니다.',
+        'Defines the HTTP hostname for the support data collection with the public module \'PublicSupportDataCollector\' (e.g. used from the LIGERO Daemon).' =>
+            '\'PublicSupportDataCollector\'공용 모듈 (예 : LIGERO 데몬에서 사용)을 사용하여 지원 데이터 수집을위한 HTTP 호스트 이름을 정의합니다.',
         'Defines the IP regular expression for accessing the local repository. You need to enable this to have access to your local repository and the package::RepositoryList is required on the remote host.' =>
             '로컬 저장소에 액세스하기위한 IP 정규식을 정의합니다. 이것을 사용하여 로컬 저장소에 액세스 할 수 있어야하며 패키지 :: RepositoryList가 원격 호스트에 필요합니다.',
         'Defines the PostMaster header to be used on the filter for keeping the current state of the ticket.' =>
@@ -6683,8 +6683,8 @@ Thanks for your help!
             'URL을 강조 표시하기 위해 기사의 텍스트를 처리하는 필터를 정의합니다.',
         'Defines the format of responses in the ticket compose screen of the agent interface ([% Data.OrigFrom | html %] is From 1:1, [% Data.OrigFromName | html %] is only realname of From).' =>
             '에이전트 인터페이스 ([% Data.OrigFrom | html %]는 From 1 : 1, [% Data.OrigFromName | html %]는 From의 실제 이름 임)의 티켓 작성 화면에서 응답 형식을 정의합니다.',
-        'Defines the fully qualified domain name of the system. This setting is used as a variable, OTRS_CONFIG_FQDN which is found in all forms of messaging used by the application, to build links to the tickets within your system.' =>
-            '시스템의 정규화 된 도메인 이름을 정의합니다. 이 설정은 응용 프로그램에서 사용하는 모든 형식의 메시징에있는 변수 인 OTRS_CONFIG_FQDN으로 사용되어 시스템 내의 티켓에 대한 링크를 만듭니다.',
+        'Defines the fully qualified domain name of the system. This setting is used as a variable, LIGERO_CONFIG_FQDN which is found in all forms of messaging used by the application, to build links to the tickets within your system.' =>
+            '시스템의 정규화 된 도메인 이름을 정의합니다. 이 설정은 응용 프로그램에서 사용하는 모든 형식의 메시징에있는 변수 인 LIGERO_CONFIG_FQDN으로 사용되어 시스템 내의 티켓에 대한 링크를 만듭니다.',
         'Defines the groups every customer user will be in (if CustomerGroupSupport is enabled and you don\'t want to manage every customer user for these groups).' =>
             '모든 고객 사용자가있을 그룹을 정의합니다 (CustomerGroupSupport가 사용 가능하고이 그룹에 대한 모든 고객 사용자를 관리하지 않으려는 경우).',
         'Defines the groups every customer will be in (if CustomerGroupSupport is enabled and you don\'t want to manage every customer for these groups).' =>
@@ -6769,8 +6769,8 @@ Thanks for your help!
             '추가 패키지 온라인 저장소 목록을 가져올 위치를 정의합니다. 첫 번째 가능한 결과가 사용됩니다.',
         'Defines the log module for the system. "File" writes all messages in a given logfile, "SysLog" uses the syslog daemon of the system, e.g. syslogd.' =>
             '시스템의 로그 모듈을 정의합니다. "파일"은 주어진 로그 파일에 모든 메시지를 쓰고 "syslog"는 시스템의 syslog 데몬을 사용합니다. syslogd.',
-        'Defines the maximal size (in bytes) for file uploads via the browser. Warning: Setting this option to a value which is too low could cause many masks in your OTRS instance to stop working (probably any mask which takes input from the user).' =>
-            '브라우저를 통한 파일 업로드의 최대 크기 (바이트)를 정의합니다. 경고 :이 옵션을 너무 낮은 값으로 설정하면 OTRS 인스턴스의 많은 마스크가 작동을 멈출 수 있습니다 (사용자가 입력 한 마스크 일 가능성이 있음).',
+        'Defines the maximal size (in bytes) for file uploads via the browser. Warning: Setting this option to a value which is too low could cause many masks in your LIGERO instance to stop working (probably any mask which takes input from the user).' =>
+            '브라우저를 통한 파일 업로드의 최대 크기 (바이트)를 정의합니다. 경고 :이 옵션을 너무 낮은 값으로 설정하면 LIGERO 인스턴스의 많은 마스크가 작동을 멈출 수 있습니다 (사용자가 입력 한 마스크 일 가능성이 있음).',
         'Defines the maximal valid time (in seconds) for a session id.' =>
             '세션 ID의 최대 유효 시간 (초)을 정의합니다.',
         'Defines the maximum number of affected tickets per job.' => '작업 당 영향을 받는 티켓의 최대 수를 정의합니다.',
@@ -6795,10 +6795,10 @@ Thanks for your help!
         'Defines the module to authenticate customers.' => '고객을 인증할 모듈을 정의합니다.',
         'Defines the module to display a notification if cloud services are disabled.' =>
             '클라우드 서비스가 비활성화 된 경우 알림을 표시할 모듈을 정의합니다.',
-        'Defines the module to display a notification in different interfaces on different occasions for OTRS Business Solution™.' =>
-            'OTRS Business Solution ™의 여러 경우에 서로 다른 인터페이스에 알림을 표시 할 모듈을 정의합니다.',
-        'Defines the module to display a notification in the agent interface if the OTRS Daemon is not running.' =>
-            'OTRS 데몬이 실행되고 있지 않은 경우 에이전트 인터페이스에 알림을 표시 할 모듈을 정의합니다.',
+        'Defines the module to display a notification in different interfaces on different occasions for LIGERO Business Solution™.' =>
+            'LIGERO Business Solution ™의 여러 경우에 서로 다른 인터페이스에 알림을 표시 할 모듈을 정의합니다.',
+        'Defines the module to display a notification in the agent interface if the LIGERO Daemon is not running.' =>
+            'LIGERO 데몬이 실행되고 있지 않은 경우 에이전트 인터페이스에 알림을 표시 할 모듈을 정의합니다.',
         'Defines the module to display a notification in the agent interface if the system configuration is out of sync.' =>
             '시스템 구성이 동기화되지 않은 경우 에이전트 인터페이스에 알림을 표시 할 모듈을 정의합니다.',
         'Defines the module to display a notification in the agent interface, if the agent has not yet selected a time zone.' =>
@@ -6835,8 +6835,8 @@ Thanks for your help!
             '환경 설정 테이블에 사용자 식별자를 저장할 열의 이름을 정의합니다.',
         'Defines the name of the indicated calendar.' => '표시된 달력의 이름을 정의합니다.',
         'Defines the name of the key for customer sessions.' => '고객 세션의 키 이름을 정의합니다.',
-        'Defines the name of the session key. E.g. Session, SessionID or OTRS.' =>
-            '세션 키의 이름을 정의합니다. 예 : 세션, 세션 ID 또는 OTRS.',
+        'Defines the name of the session key. E.g. Session, SessionID or LIGERO.' =>
+            '세션 키의 이름을 정의합니다. 예 : 세션, 세션 ID 또는 LIGERO.',
         'Defines the name of the table where the user preferences are stored.' =>
             '사용자 기본 설정이 저장된 테이블의 이름을 정의합니다.',
         'Defines the next possible states after composing / answering a ticket in the ticket compose screen of the agent interface.' =>
@@ -6931,7 +6931,7 @@ Thanks for your help!
             '에이전트 실명과 주어진 대기열 전자메일 주소 사이의 구분 기호를 정의합니다.',
         'Defines the shown columns and the position in the AgentCustomerUserAddressBook result screen.' =>
             'AgentCustomerUserAddressBook 결과 화면에 표시된 열과 위치를 정의합니다.',
-        'Defines the shown links in the footer area of the customer and public interface of this OTRS system. The value in "Key" is the external URL, the value in "Content" is the shown label.' =>
+        'Defines the shown links in the footer area of the customer and public interface of this LIGERO system. The value in "Key" is the external URL, the value in "Content" is the shown label.' =>
             '',
         'Defines the standard permissions available for customers within the application. If more permissions are needed, you can enter them here. Permissions must be hard coded to be effective. Please ensure, when adding any of the afore mentioned permissions, that the "rw" permission remains the last entry.' =>
             '응용 프로그램 내에서 고객이 사용할 수있는 표준 사용 권한을 정의합니다. 더 많은 권한이 필요하면 여기에 입력 할 수 있습니다. 사용 권한은 효과적 이도록 하드 코딩해야합니다. 앞서 언급 한 권한 중 하나를 추가 할 때 "rw"권한이 마지막 항목으로 남아 있는지 확인하십시오.',
@@ -6953,8 +6953,8 @@ Thanks for your help!
         'Defines the subject for rejected emails.' => '거부된 전자메일의 제목을 정의합니다.',
         'Defines the system administrator\'s email address. It will be displayed in the error screens of the application.' =>
             '시스템 관리자의 전자 메일 주소를 정의합니다. 응용 프로그램의 오류 화면에 표시됩니다.',
-        'Defines the system identifier. Every ticket number and http session string contains this ID. This ensures that only tickets which belong to your system will be processed as follow-ups (useful when communicating between two instances of OTRS).' =>
-            '시스템 식별자를 정의합니다. 모든 티켓 번호와 http 세션 문자열에는이 ID가 들어 있습니다. 이렇게하면 시스템에 속한 티켓 만 후속 조치로 처리됩니다 (OTRS의 두 인스턴스간에 통신 할 때 유용함).',
+        'Defines the system identifier. Every ticket number and http session string contains this ID. This ensures that only tickets which belong to your system will be processed as follow-ups (useful when communicating between two instances of LIGERO).' =>
+            '시스템 식별자를 정의합니다. 모든 티켓 번호와 http 세션 문자열에는이 ID가 들어 있습니다. 이렇게하면 시스템에 속한 티켓 만 후속 조치로 처리됩니다 (LIGERO의 두 인스턴스간에 통신 할 때 유용함).',
         'Defines the target attribute in the link to external customer database. E.g. \'AsPopup PopupType_TicketAction\'.' =>
             '외부 고객 데이터베이스 링크의 대상 속성을 정의합니다. 예 : \'AsPopup PopupType_TicketAction\'.',
         'Defines the target attribute in the link to external customer database. E.g. \'target="cdb"\'.' =>
@@ -6970,12 +6970,12 @@ Thanks for your help!
         'Defines the ticket plugin for calendar appointments.' => '일정 약속을 위한 티켓 플러그인을 정의합니다.',
         'Defines the time zone of the indicated calendar, which can be assigned later to a specific queue.' =>
             '지정된 일정에 나중에 할당할 수 있는 지정된 달력의 표준 시간대를 정의합니다.',
-        'Defines the timeout (in seconds, minimum is 20 seconds) for the support data collection with the public module \'PublicSupportDataCollector\' (e.g. used from the OTRS Daemon).' =>
-            '공개 모듈 \'PublicSupportDataCollector\'(예 : OTRS 데몬에서 사용)를 사용하여 지원 데이터 수집에 대한 시간 초과 (최소, 20 초)를 정의합니다.',
+        'Defines the timeout (in seconds, minimum is 20 seconds) for the support data collection with the public module \'PublicSupportDataCollector\' (e.g. used from the LIGERO Daemon).' =>
+            '공개 모듈 \'PublicSupportDataCollector\'(예 : LIGERO 데몬에서 사용)를 사용하여 지원 데이터 수집에 대한 시간 초과 (최소, 20 초)를 정의합니다.',
         'Defines the two-factor module to authenticate agents.' => '에이전트를 인증할 2요소 모듈을 정의합니다.',
         'Defines the two-factor module to authenticate customers.' => '고객을 인증할 2요소 모듈을 정의합니다.',
-        'Defines the type of protocol, used by the web server, to serve the application. If https protocol will be used instead of plain http, it must be specified here. Since this has no affect on the web server\'s settings or behavior, it will not change the method of access to the application and, if it is wrong, it will not prevent you from logging into the application. This setting is only used as a variable, OTRS_CONFIG_HttpType which is found in all forms of messaging used by the application, to build links to the tickets within your system.' =>
-            '응용 프로그램을 제공하기 위해 웹 서버에서 사용하는 프로토콜 유형을 정의합니다. https 프로토콜이 일반 http 대신 사용되는 경우 여기에 지정해야합니다. 이것은 웹 서버의 설정이나 동작에 영향을 미치지 않으므로 응용 프로그램에 대한 액세스 방법을 변경하지 않으며, 틀린 경우 응용 프로그램에 로그인하지 못하게하지 않습니다. 이 설정은 응용 프로그램에서 사용하는 모든 형식의 메시징에서 찾을 수있는 OTRS_CONFIG_HttpType 변수로만 사용되어 시스템 내의 티켓에 대한 링크를 만듭니다.',
+        'Defines the type of protocol, used by the web server, to serve the application. If https protocol will be used instead of plain http, it must be specified here. Since this has no affect on the web server\'s settings or behavior, it will not change the method of access to the application and, if it is wrong, it will not prevent you from logging into the application. This setting is only used as a variable, LIGERO_CONFIG_HttpType which is found in all forms of messaging used by the application, to build links to the tickets within your system.' =>
+            '응용 프로그램을 제공하기 위해 웹 서버에서 사용하는 프로토콜 유형을 정의합니다. https 프로토콜이 일반 http 대신 사용되는 경우 여기에 지정해야합니다. 이것은 웹 서버의 설정이나 동작에 영향을 미치지 않으므로 응용 프로그램에 대한 액세스 방법을 변경하지 않으며, 틀린 경우 응용 프로그램에 로그인하지 못하게하지 않습니다. 이 설정은 응용 프로그램에서 사용하는 모든 형식의 메시징에서 찾을 수있는 LIGERO_CONFIG_HttpType 변수로만 사용되어 시스템 내의 티켓에 대한 링크를 만듭니다.',
         'Defines the used character for plaintext email quotes in the ticket compose screen of the agent interface. If this is empty or inactive, original emails will not be quoted but appended to the response.' =>
             '에이전트 인터페이스의 티켓 작성 화면에서 일반 텍스트 전자 메일 따옴표에 사용되는 문자를 정의합니다. 비어 있거나 비활성 인 경우 원래 이메일은 인용되지 않고 응답에 추가됩니다.',
         'Defines the user identifier for the customer panel.' => '고객 패널에 대한 사용자 ID를 정의합니다.',
@@ -7020,7 +7020,7 @@ Thanks for your help!
         'Deletes requested sessions if they have timed out.' => '요청한 세션이 시간 초과된 경우 삭제합니다.',
         'Delivers extended debugging information in the frontend in case any AJAX errors occur, if enabled.' =>
             '활성화 된 경우 AJAX 오류가 발생할 경우 프론트 엔드에 확장 디버깅 정보를 제공합니다.',
-        'Deploy and manage OTRS Business Solution™.' => 'OTRS Business Solution ™ 배포 및 관리',
+        'Deploy and manage LIGERO Business Solution™.' => 'LIGERO Business Solution ™ 배포 및 관리',
         'Detached' => '분리된',
         'Determines if a button to delete a link should be displayed next to each link in each zoom mask.' =>
             '링크를 삭제할 버튼이 각 줌 마스크의 각 링크 옆에 표시되어야 하는지 여부를 결정합니다.',
@@ -7056,8 +7056,8 @@ Thanks for your help!
             '고객 인터페이스에서 티켓의 수신인에 대해 유효한 대기열을 결정합니다.',
         'Disable HTTP header "Content-Security-Policy" to allow loading of external script contents. Disabling this HTTP header can be a security issue! Only disable it, if you know what you are doing!' =>
             '외부 스크립트 내용로드를 허용하려면 HTTP 헤더 "Content-Security-Policy"를 비활성화하십시오. 이 HTTP 헤더를 비활성화하면 보안 문제가 발생할 수 있습니다! 자신이하는 일을 아는 경우에만 사용을 중지하십시오!',
-        'Disable HTTP header "X-Frame-Options: SAMEORIGIN" to allow OTRS to be included as an IFrame in other websites. Disabling this HTTP header can be a security issue! Only disable it, if you know what you are doing!' =>
-            'HTTP 헤더 "X-Frame-Options : SAMEORIGIN"을 사용하지 않도록 설정하여 OTRS를 다른 웹 사이트의 IFrame으로 포함 할 수 있습니다. 이 HTTP 헤더를 비활성화하면 보안 문제가 발생할 수 있습니다! 자신이하는 일을 아는 경우에만 사용을 중지하십시오!',
+        'Disable HTTP header "X-Frame-Options: SAMEORIGIN" to allow LIGERO to be included as an IFrame in other websites. Disabling this HTTP header can be a security issue! Only disable it, if you know what you are doing!' =>
+            'HTTP 헤더 "X-Frame-Options : SAMEORIGIN"을 사용하지 않도록 설정하여 LIGERO를 다른 웹 사이트의 IFrame으로 포함 할 수 있습니다. 이 HTTP 헤더를 비활성화하면 보안 문제가 발생할 수 있습니다! 자신이하는 일을 아는 경우에만 사용을 중지하십시오!',
         'Disable cloud services' => '클라우드 서비스 사용 중지',
         'Disables sending reminder notifications to the responsible agent of a ticket (Ticket::Responsible needs to be enabled).' =>
             '책임있는 에이전트에게 티켓 알림을 보내는 것을 비활성화합니다 (Ticket :: Responsible을 활성화해야합니다).',
@@ -7166,8 +7166,8 @@ Thanks for your help!
         'Enable this if you trust in all your public and private pgp keys, even if they are not certified with a trusted signature.' =>
             '신뢰할 수있는 서명으로 인증되지 않았더라도 모든 공용 및 개인용 PGP 키를 신뢰하는 경우이 옵션을 활성화하십시오.',
         'Enabled filters.' => '필터를 사용합니다.',
-        'Enables PGP support. When PGP support is enabled for signing and encrypting mail, it is HIGHLY recommended that the web server runs as the OTRS user. Otherwise, there will be problems with the privileges when accessing .gnupg folder.' =>
-            'PGP 지원을 사용합니다. 메일 서명 및 암호화에 대해 PGP 지원을 사용하는 경우 웹 서버를 OTRS 사용자로 실행하는 것이 좋습니다. 그렇지 않으면 .gnupg 폴더에 액세스 할 때 권한에 문제가 있습니다.',
+        'Enables PGP support. When PGP support is enabled for signing and encrypting mail, it is HIGHLY recommended that the web server runs as the LIGERO user. Otherwise, there will be problems with the privileges when accessing .gnupg folder.' =>
+            'PGP 지원을 사용합니다. 메일 서명 및 암호화에 대해 PGP 지원을 사용하는 경우 웹 서버를 LIGERO 사용자로 실행하는 것이 좋습니다. 그렇지 않으면 .gnupg 폴더에 액세스 할 때 권한에 문제가 있습니다.',
         'Enables S/MIME support.' => 'S / MIME 지원을 사용합니다.',
         'Enables customers to create their own accounts.' => '고객이 자신의 계정을 만들 수 있습니다.',
         'Enables fetch S/MIME from CustomerUser backend support.' => '고객사용자 백 엔드 지원에서 S / MIME을 가져올 수 있습니다.',
@@ -7228,7 +7228,7 @@ Thanks for your help!
             '사용자 지정 명령 또는 모듈을 실행합니다. 참고 : 모듈을 사용하는 경우 기능이 필요합니다.',
         'Executes follow-up checks on In-Reply-To or References headers for mails that don\'t have a ticket number in the subject.' =>
             '제목에 티켓 번호가없는 메일에 대한 In-Reply-To 또는 References 헤더의 후속 검사를 실행합니다.',
-        'Executes follow-up checks on OTRS Header \'X-OTRS-Bounce\'.' => 'OTRS Header \'X-OTRS-Bounce\'에 대한 후속 검사를 실행합니다.',
+        'Executes follow-up checks on LIGERO Header \'X-LIGERO-Bounce\'.' => 'LIGERO Header \'X-LIGERO-Bounce\'에 대한 후속 검사를 실행합니다.',
         'Executes follow-up checks on attachment contents for mails that don\'t have a ticket number in the subject.' =>
             '제목에 티켓 번호가 없는 메일의 첨부파일 내용에 대한 후속 검사를 실행합니다.',
         'Executes follow-up checks on email body for mails that don\'t have a ticket number in the subject.' =>
@@ -7246,9 +7246,9 @@ Thanks for your help!
             '프록시를 통해 패키지를 가져옵니다. "WebUserAgent :: Proxy"를 덮어 씁니다.',
         'File that is displayed in the Kernel::Modules::AgentInfo module, if located under Kernel/Output/HTML/Templates/Standard/AgentInfo.tt.' =>
             'Kernel :: Outputs / HTML / Templates / Standard / AgentInfo.tt 아래에있는 경우 Kernel :: Modules :: AgentInfo 모듈에 표시되는 파일.',
-        'Filter for debugging ACLs. Note: More ticket attributes can be added in the format <OTRS_TICKET_Attribute> e.g. <OTRS_TICKET_Priority>.' =>
+        'Filter for debugging ACLs. Note: More ticket attributes can be added in the format <LIGERO_TICKET_Attribute> e.g. <LIGERO_TICKET_Priority>.' =>
             'ACL 디버깅 용 필터. 참고 : 더 많은 티켓 속성을 1과 같은 형식으로 추가 할 수 있습니다. 2.',
-        'Filter for debugging Transitions. Note: More filters can be added in the format <OTRS_TICKET_Attribute> e.g. <OTRS_TICKET_Priority>.' =>
+        'Filter for debugging Transitions. Note: More filters can be added in the format <LIGERO_TICKET_Attribute> e.g. <LIGERO_TICKET_Priority>.' =>
             '전환 디버깅을위한 필터. 참고 : 더 많은 필터를 1과 같은 형식으로 추가 할 수 있습니다. 2.',
         'Filter incoming emails.' => '수신 이메일 필터링.',
         'Finnish' => '핀란드어',
@@ -7383,8 +7383,8 @@ Thanks for your help!
             'Customer :: AuthModule에 대해 "LDAP"를 선택한 경우 여기에서 액세스 속성을 지정할 수 있습니다.',
         'If "LDAP" was selected for Customer::AuthModule, you can specify if the applications will stop if e. g. a connection to a server can\'t be established due to network problems.' =>
             'Customer :: AuthModule에 대해 "LDAP"가 선택된 경우, e. 지. 네트워크 문제로 인해 서버에 연결할 수 없습니다.',
-        'If "LDAP" was selected for Customer::Authmodule, you can check if the user is allowed to authenticate because he is in a posixGroup, e.g. user needs to be in a group xyz to use OTRS. Specify the group, who may access the system.' =>
-            'Customer :: Authmodule에 대해 "LDAP"가 선택된 경우 사용자가 posixGroup에 있기 때문에 인증 할 수 있는지 확인할 수 있습니다. 사용자는 OTRS를 사용하려면 그룹 xyz에 있어야합니다. 시스템에 액세스 할 수있는 그룹을 지정하십시오.',
+        'If "LDAP" was selected for Customer::Authmodule, you can check if the user is allowed to authenticate because he is in a posixGroup, e.g. user needs to be in a group xyz to use LIGERO. Specify the group, who may access the system.' =>
+            'Customer :: Authmodule에 대해 "LDAP"가 선택된 경우 사용자가 posixGroup에 있기 때문에 인증 할 수 있는지 확인할 수 있습니다. 사용자는 LIGERO를 사용하려면 그룹 xyz에 있어야합니다. 시스템에 액세스 할 수있는 그룹을 지정하십시오.',
         'If "LDAP" was selected, you can add a filter to each LDAP query, e.g. (mail=*), (objectclass=user) or (!objectclass=computer).' =>
             '"LDAP"를 선택한 경우 각 LDAP 쿼리에 필터를 추가 할 수 있습니다. (메일 = *), (objectclass = 사용자) 또는 (! objectclass = 컴퓨터).',
         'If "Radius" was selected for Customer::AuthModule, the password to authenticate to the radius host must be specified.' =>
@@ -7421,16 +7421,16 @@ Thanks for your help!
             '사용 가능하면 데몬은 표준 오류 스트림을 로그 파일로 재지정합니다.',
         'If enabled the daemon will redirect the standard output stream to a log file.' =>
             '사용 가능하면 데몬은 표준 출력 스트림을 로그 파일로 재지정합니다.',
-        'If enabled the daemon will use this directory to create its PID files. Note: Please stop the daemon before any change and use this setting only if <$OTRSHome>/var/run/ can not be used.' =>
-            '이 설정을 사용하면 데몬은이 디렉토리를 사용하여 PID 파일을 만듭니다. 참고 : 변경하기 전에 데몬을 중지하고 <$ OTRSHome> / var / run /을 사용할 수없는 경우에만이 설정을 사용하십시오.',
-        'If enabled, OTRS will deliver all CSS files in minified form.' =>
-            '사용하도록 설정하면 OTRS는 모든 CSS 파일을 축소 된 형식으로 제공합니다.',
-        'If enabled, OTRS will deliver all JavaScript files in minified form.' =>
-            '사용하도록 설정하면 OTRS는 모든 JavaScript 파일을 축소 된 형식으로 제공합니다.',
+        'If enabled the daemon will use this directory to create its PID files. Note: Please stop the daemon before any change and use this setting only if <$LIGEROHome>/var/run/ can not be used.' =>
+            '이 설정을 사용하면 데몬은이 디렉토리를 사용하여 PID 파일을 만듭니다. 참고 : 변경하기 전에 데몬을 중지하고 <$ LIGEROHome> / var / run /을 사용할 수없는 경우에만이 설정을 사용하십시오.',
+        'If enabled, LIGERO will deliver all CSS files in minified form.' =>
+            '사용하도록 설정하면 LIGERO는 모든 CSS 파일을 축소 된 형식으로 제공합니다.',
+        'If enabled, LIGERO will deliver all JavaScript files in minified form.' =>
+            '사용하도록 설정하면 LIGERO는 모든 JavaScript 파일을 축소 된 형식으로 제공합니다.',
         'If enabled, TicketPhone and TicketEmail will be open in new windows.' =>
             '사용하도록 설정하면 TicketPhone 및 TicketEmail이 새 창에서 열립니다.',
-        'If enabled, the OTRS version tag will be removed from the Webinterface, the HTTP headers and the X-Headers of outgoing mails. NOTE: If you change this option, please make sure to delete the cache.' =>
-            '사용 설정하면 OTRS 버전 태그가 웹 인터페이스, 나가는 메일의 HTTP 헤더 및 X 헤더에서 삭제됩니다. 참고 :이 옵션을 변경하면 캐시를 삭제하십시오.',
+        'If enabled, the LIGERO version tag will be removed from the Webinterface, the HTTP headers and the X-Headers of outgoing mails. NOTE: If you change this option, please make sure to delete the cache.' =>
+            '사용 설정하면 LIGERO 버전 태그가 웹 인터페이스, 나가는 메일의 HTTP 헤더 및 X 헤더에서 삭제됩니다. 참고 :이 옵션을 변경하면 캐시를 삭제하십시오.',
         'If enabled, the cache data be held in memory.' => '활성화된 경우 캐시 데이터가 메모리에 보관됩니다.',
         'If enabled, the cache data will be stored in cache backend.' => '활성화된 경우 캐시 데이터가 캐시 백엔드에 저장됩니다.',
         'If enabled, the customer can search for tickets in all services (regardless what services are assigned to the customer).' =>
@@ -7439,8 +7439,8 @@ Thanks for your help!
             '활성화 된 경우 다른 개요 (Dashboard, LockedView, QueueView)가 지정된 시간 후에 자동으로 새로 고침됩니다.',
         'If enabled, the first level of the main menu opens on mouse hover (instead of click only).' =>
             '이 옵션을 사용하면 메인 메뉴의 첫 번째 레벨이 마우스를 올리면 열리게 됩니다 (클릭만 하는 대신).',
-        'If enabled, users that haven\'t selected a time zone yet will be notified to do so. Note: Notification will not be shown if (1) user has not yet selected a time zone and (2) OTRSTimeZone and UserDefaultTimeZone do match and (3) are not set to UTC.' =>
-            '사용하도록 설정하면 아직 시간대를 선택하지 않은 사용자에게 알림이 전송됩니다. 참고 : (1) 사용자가 아직 시간대를 선택하지 않았으며 (2) OTRSTimeZone과 UserDefaultTimeZone이 일치하고 (3) UTC로 설정되지 않은 경우 알림이 표시되지 않습니다.',
+        'If enabled, users that haven\'t selected a time zone yet will be notified to do so. Note: Notification will not be shown if (1) user has not yet selected a time zone and (2) LIGEROTimeZone and UserDefaultTimeZone do match and (3) are not set to UTC.' =>
+            '사용하도록 설정하면 아직 시간대를 선택하지 않은 사용자에게 알림이 전송됩니다. 참고 : (1) 사용자가 아직 시간대를 선택하지 않았으며 (2) LIGEROTimeZone과 UserDefaultTimeZone이 일치하고 (3) UTC로 설정되지 않은 경우 알림이 표시되지 않습니다.',
         'If no SendmailNotificationEnvelopeFrom is specified, this setting makes it possible to use the email\'s from address instead of an empty envelope sender (required in certain mail server configurations).' =>
             'SendmailNotificationEnvelopeFrom이 지정되지 않은 경우이 설정을 사용하면 빈 봉투 발신자 대신 (특정 전자 메일 서버 구성에서 필요) 전자 메일의 보낸 사람 주소를 사용할 수 있습니다.',
         'If set, this address is used as envelope sender header in outgoing notifications. If no address is specified, the envelope sender header is empty (unless SendmailNotificationEnvelopeFrom::FallbackToEmailFrom is set).' =>
@@ -7451,7 +7451,7 @@ Thanks for your help!
             '이 옵션을 사용하면 Customers 나 Agents를 통해 웹 인터페이스를 통해 생성 된 티켓은 자동 응답을받습니다. 이 옵션을 사용하지 않으면 자동 응답이 전송되지 않습니다.',
         'If this regex matches, no message will be send by the autoresponder.' =>
             '이 정규식이 일치하면 자동 응답으로 보낼 메시지가 없습니다.',
-        'If this setting is enabled, it is possible to install packages which are not verified by OTRS Group. These packages could threaten your whole system!' =>
+        'If this setting is enabled, it is possible to install packages which are not verified by LIGERO Group. These packages could threaten your whole system!' =>
             '',
         'If this setting is enabled, local modifications will not be highlighted as errors in the package manager and support data collector.' =>
             '이 설정을 사용하면 로컬 수정 내용이 패키지 관리자 및 지원 데이터 수집기에서 오류로 강조 표시되지 않습니다.',
@@ -7567,7 +7567,7 @@ Thanks for your help!
         'Makes the session management use html cookies. If html cookies are disabled or if the client browser disabled html cookies, then the system will work as usual and append the session id to the links.' =>
             '세션 관리가 html 쿠키를 사용하게합니다. html 쿠키가 비활성화되거나 클라이언트 브라우저가 html 쿠키를 비활성화 한 경우 시스템은 평소와 같이 작동하고 링크에 세션 ID를 추가합니다.',
         'Malay' => '말레이 사람',
-        'Manage OTRS Group cloud services.' => 'OTRS 그룹 클라우드 서비스를 관리합니다.',
+        'Manage LIGERO Group cloud services.' => 'LIGERO 그룹 클라우드 서비스를 관리합니다.',
         'Manage PGP keys for email encryption.' => '전자 메일 암호화를위한 PGP 키 관리.',
         'Manage POP3 or IMAP accounts to fetch email from.' => 'POP3 또는 IMAP 계정을 관리하여 전자 메일을 가져옵니다.',
         'Manage S/MIME certificates for email encryption.' => '전자 메일 암호화를위한 S / MIME 인증서를 관리합니다.',
@@ -7611,7 +7611,7 @@ Thanks for your help!
         'Medium' => '중간의',
         'Merge this ticket and all articles into another ticket' => '이 티켓과 모든 기사를 다른 티켓으로 병합하십시오.',
         'Merged Ticket (%s/%s) to (%s/%s).' => '합쳐진 티켓 (%s/ %s) ~ (%s/ 1 % s).',
-        'Merged Ticket <OTRS_TICKET> to <OTRS_MERGE_TO_TICKET>.' => 'Merged Ticket 1 to 2.',
+        'Merged Ticket <LIGERO_TICKET> to <LIGERO_MERGE_TO_TICKET>.' => 'Merged Ticket 1 to 2.',
         'Minute' => '분',
         'Miscellaneous' => '기타',
         'Module for To-selection in new ticket screen in the customer interface.' =>
@@ -7674,8 +7674,8 @@ Thanks for your help!
         'New Year\'s Day' => '새해첫날',
         'New Year\'s Eve' => '새해 전날',
         'New process ticket' => '새 프로세스 티켓',
-        'News about OTRS releases!' => 'OTRS 출시에 대한 뉴스!',
-        'News about OTRS.' => 'OTRS에 관한 뉴스.',
+        'News about LIGERO releases!' => 'LIGERO 출시에 대한 뉴스!',
+        'News about LIGERO.' => 'LIGERO에 관한 뉴스.',
         'Next possible ticket states after adding a phone note in the ticket phone inbound screen of the agent interface.' =>
             '다음 가능한 티켓 상태는 에이전트 인터페이스의 티켓 인바운드 인바운드 화면에 전화 메모를 추가한 후의 상태입니다.',
         'Next possible ticket states after adding a phone note in the ticket phone outbound screen of the agent interface.' =>
@@ -7694,12 +7694,12 @@ Thanks for your help!
         'Number of tickets to be displayed in each page of a search result in the customer interface.' =>
             '고객 인터페이스에서 검색 결과의 각 페이지에 표시할 티켓 수입니다.',
         'Number of tickets to be displayed in each page.' => '각 페이지에 표시할 티켓 수입니다.',
-        'OTRS Group Services' => 'OTRS 그룹 서비스',
-        'OTRS News' => 'OTRS 뉴스',
-        'OTRS can use one or more readonly mirror databases for expensive operations like fulltext search or statistics generation. Here you can specify the DSN for the first mirror database.' =>
-            'OTRS는 전체 텍스트 검색이나 통계 생성과 같은 값 비싼 작업에 대해 하나 이상의 읽기 전용 미러 데이터베이스를 사용할 수 있습니다. 여기서 첫 번째 미러 데이터베이스에 대해 DSN을 지정할 수 있습니다.',
-        'OTRS doesn\'t support recurring Appointments without end date or number of iterations. During import process, it might happen that ICS file contains such Appointments. Instead, system creates all Appointments in the past, plus Appointments for the next N months (120 months/10 years by default).' =>
-            'OTRS는 끝 날짜 또는 반복 횟수가없는 되풀이 약속을 지원하지 않습니다. 가져 오기 프로세스 중에 ICS 파일에 이러한 약속이 포함될 수 있습니다. 대신, 시스템은 과거의 모든 약속과 다음 N 개월 (기본적으로 120 개월 / 10 년)의 약속을 작성합니다.',
+        'LIGERO Group Services' => 'LIGERO 그룹 서비스',
+        'LIGERO News' => 'LIGERO 뉴스',
+        'LIGERO can use one or more readonly mirror databases for expensive operations like fulltext search or statistics generation. Here you can specify the DSN for the first mirror database.' =>
+            'LIGERO는 전체 텍스트 검색이나 통계 생성과 같은 값 비싼 작업에 대해 하나 이상의 읽기 전용 미러 데이터베이스를 사용할 수 있습니다. 여기서 첫 번째 미러 데이터베이스에 대해 DSN을 지정할 수 있습니다.',
+        'LIGERO doesn\'t support recurring Appointments without end date or number of iterations. During import process, it might happen that ICS file contains such Appointments. Instead, system creates all Appointments in the past, plus Appointments for the next N months (120 months/10 years by default).' =>
+            'LIGERO는 끝 날짜 또는 반복 횟수가없는 되풀이 약속을 지원하지 않습니다. 가져 오기 프로세스 중에 ICS 파일에 이러한 약속이 포함될 수 있습니다. 대신, 시스템은 과거의 모든 약속과 다음 N 개월 (기본적으로 120 개월 / 10 년)의 약속을 작성합니다.',
         'Open Tickets / Need to be answered' => '진행중 티켓 / 답변이 필요함',
         'Open an external link!' => '외부 링크 열기',
         'Open tickets (customer user)' => '진행중 티켓 (고객 사용자)',
@@ -7866,7 +7866,7 @@ Thanks for your help!
         'Replaces the original sender with current customer\'s email address on compose answer in the ticket compose screen of the agent interface.' =>
             '상담원 인터페이스의 티켓 작성 화면에서 작성 응답에 원래 보낸 사람을 현재 고객의 전자 메일 주소로 바꿉니다.',
         'Reports' => '보고서',
-        'Reports (OTRS Business Solution™)' => '보고서 (OTRS Business Solution™)',
+        'Reports (LIGERO Business Solution™)' => '보고서 (LIGERO Business Solution™)',
         'Reprocess mails from spool directory that could not be imported in the first place.' =>
             '처음부터 가져올 수 없었던 스풀 디렉토리의 메일을 다시 처리하십시오.',
         'Required permissions to change the customer of a ticket in the agent interface.' =>
@@ -7905,7 +7905,7 @@ Thanks for your help!
         'Resent email to "%s".' => '이메일을 "%s"로 다시 보내십시오.',
         'Resets and unlocks the owner of a ticket if it was moved to another queue.' =>
             '다른 대기열로 이동된 티켓의 소유자를 재설정하고 잠금 해제합니다.',
-        'Resource Overview (OTRS Business Solution™)' => '리소스 개요 (OTRS Business Solution ™)',
+        'Resource Overview (LIGERO Business Solution™)' => '리소스 개요 (LIGERO Business Solution ™)',
         'Responsible Tickets' => '책임 티켓',
         'Responsible Tickets.' => '책임 티켓.',
         'Restores a ticket from the archive (only if the event is a state change to any open available state).' =>
@@ -7929,8 +7929,8 @@ Thanks for your help!
         'SMS (Short Message Service)' => 'SMS (단문 메시지 서비스)',
         'Salutations' => '인사말',
         'Sample command output' => '샘플 명령 출력',
-        'Saves the attachments of articles. "DB" stores all data in the database (not recommended for storing big attachments). "FS" stores the data on the filesystem; this is faster but the webserver should run under the OTRS user. You can switch between the modules even on a system that is already in production without any loss of data. Note: Searching for attachment names is not supported when "FS" is used.' =>
-            '기사의 첨부 파일을 저장합니다. "DB"는 모든 데이터를 데이터베이스에 저장합니다 (큰 첨부 파일 저장에는 권장되지 않음). "FS"는 데이터를 파일 시스템에 저장합니다. 이것은 더 빠르지 만 웹 서버는 OTRS 사용자 하에서 실행되어야합니다. 데이터 손실없이 이미 생산중인 시스템에서도 모듈 간을 전환 할 수 있습니다. 참고 : "FS"를 사용하면 첨부 파일 이름을 검색 할 수 없습니다.',
+        'Saves the attachments of articles. "DB" stores all data in the database (not recommended for storing big attachments). "FS" stores the data on the filesystem; this is faster but the webserver should run under the LIGERO user. You can switch between the modules even on a system that is already in production without any loss of data. Note: Searching for attachment names is not supported when "FS" is used.' =>
+            '기사의 첨부 파일을 저장합니다. "DB"는 모든 데이터를 데이터베이스에 저장합니다 (큰 첨부 파일 저장에는 권장되지 않음). "FS"는 데이터를 파일 시스템에 저장합니다. 이것은 더 빠르지 만 웹 서버는 LIGERO 사용자 하에서 실행되어야합니다. 데이터 손실없이 이미 생산중인 시스템에서도 모듈 간을 전환 할 수 있습니다. 참고 : "FS"를 사용하면 첨부 파일 이름을 검색 할 수 없습니다.',
         'Schedule a maintenance period.' => '유지 보수 기간을 예약하십시오.',
         'Screen after new ticket' => '새로운 티켓 후에 화면',
         'Search Customer' => '고객 검색',
@@ -7953,7 +7953,7 @@ Thanks for your help!
         'Select your personal time zone. All times will be displayed relative to this time zone.' =>
             '개인 시간대를 선택하십시오. 모든 시간은이 시간대를 기준으로 표시됩니다.',
         'Select your preferred layout for the software.' => '소프트웨어의 기본 레이아웃을 선택하십시오.',
-        'Select your preferred theme for OTRS.' => 'OTRS에 대한 선호 테마를 선택하십시오.',
+        'Select your preferred theme for LIGERO.' => 'LIGERO에 대한 선호 테마를 선택하십시오.',
         'Selects the cache backend to use.' => '사용할 캐시 백엔드를 선택합니다.',
         'Selects the module to handle uploads via the web interface. "DB" stores all uploads in the database, "FS" uses the file system.' =>
             '웹 인터페이스를 통해 업로드를 처리 할 모듈을 선택합니다. "DB"는 모든 업로드를 데이터베이스에 저장하고 "FS"는 파일 시스템을 사용합니다.',
@@ -7967,7 +7967,7 @@ Thanks for your help!
         'Sends all outgoing email via bcc to the specified address. Please use this only for backup reasons.' =>
             '모든 발신 이메일을 bcc를 통해 지정된 주소로 보냅니다. 백업 목적으로 만 사용하십시오.',
         'Sends customer notifications just to the mapped customer.' => '매핑된 고객에게 고객 알림만 보냅니다.',
-        'Sends registration information to OTRS group.' => 'OTRS 그룹에 등록 정보를 보냅니다.',
+        'Sends registration information to LIGERO group.' => 'LIGERO 그룹에 등록 정보를 보냅니다.',
         'Sends reminder notifications of unlocked ticket after reaching the reminder date (only sent to ticket owner).' =>
             '미리 알림 날짜에 도달 한 후 잠금 해제 된 티켓에 대한 미리 알림을 전송합니다 (티켓 소유자에게만 전송 됨).',
         'Sends the notifications which are configured in the admin interface under "Ticket Notifications".' =>
@@ -8103,8 +8103,8 @@ Thanks for your help!
         'Sets the prefered time units (e.g. work units, hours, minutes).' =>
             '선호 시간 단위 (예 : 작업 단위, 시간, 분)를 설정합니다.',
         'Sets the preferred digest to be used for PGP binary.' => 'PGP 바이너리에 사용할 선호 다이제스트를 설정합니다.',
-        'Sets the prefix to the scripts folder on the server, as configured on the web server. This setting is used as a variable, OTRS_CONFIG_ScriptAlias which is found in all forms of messaging used by the application, to build links to the tickets within the system.' =>
-            '접두어를 웹 서버에 구성된대로 서버의 scripts 폴더에 설정합니다. 이 설정은 응용 프로그램에서 사용하는 모든 형식의 메시징에서 발견되는 변수 인 OTRS_CONFIG_ScriptAlias로 사용되어 시스템 내의 티켓에 대한 링크를 작성합니다.',
+        'Sets the prefix to the scripts folder on the server, as configured on the web server. This setting is used as a variable, LIGERO_CONFIG_ScriptAlias which is found in all forms of messaging used by the application, to build links to the tickets within the system.' =>
+            '접두어를 웹 서버에 구성된대로 서버의 scripts 폴더에 설정합니다. 이 설정은 응용 프로그램에서 사용하는 모든 형식의 메시징에서 발견되는 변수 인 LIGERO_CONFIG_ScriptAlias로 사용되어 시스템 내의 티켓에 대한 링크를 작성합니다.',
         'Sets the queue in the ticket close screen of a zoomed ticket in the agent interface.' =>
             '에이전트 인터페이스에서 확대 / 축소된 티켓의 티켓 닫기 화면에서 대기열을 설정합니다.',
         'Sets the queue in the ticket free text screen of a zoomed ticket in the agent interface.' =>
@@ -8198,10 +8198,10 @@ Thanks for your help!
             '에이전트 인터페이스에서 확대 / 축소 된 티켓의 티켓 우선 순위 화면에 티켓 유형을 설정합니다 (Ticket :: Type을 활성화해야합니다).',
         'Sets the ticket type in the ticket responsible screen of the agent interface (Ticket::Type needs to be enabled).' =>
             '에이전트 인터페이스의 티켓 책임 화면에 티켓 유형을 설정합니다 (Ticket :: Type을 활성화해야합니다).',
-        'Sets the time zone being used internally by OTRS to e. g. store dates and times in the database. WARNING: This setting must not be changed once set and tickets or any other data containing date/time have been created.' =>
-            'OTRS에 의해 내부적으로 사용되는 시간대를 e로 설정합니다. 지. 날짜와 시간을 데이터베이스에 저장하십시오. 경고 :이 설정은 일단 설정하고 티켓 또는 날짜 / 시간이 포함 된 다른 데이터를 작성한 후에 변경하면 안됩니다.',
-        'Sets the time zone that will be assigned to newly created users and will be used for users that haven\'t yet set a time zone. This is the time zone being used as default to convert date and time between the OTRS time zone and the user\'s time zone.' =>
-            '새로 생성 된 사용자에게 할당되고 아직 시간대를 설정하지 않은 사용자에게 사용될 시간대를 설정합니다. 이 시간대는 OTRS 시간대와 사용자 시간대 사이의 날짜와 시간을 변환하기 위해 기본값으로 사용됩니다.',
+        'Sets the time zone being used internally by LIGERO to e. g. store dates and times in the database. WARNING: This setting must not be changed once set and tickets or any other data containing date/time have been created.' =>
+            'LIGERO에 의해 내부적으로 사용되는 시간대를 e로 설정합니다. 지. 날짜와 시간을 데이터베이스에 저장하십시오. 경고 :이 설정은 일단 설정하고 티켓 또는 날짜 / 시간이 포함 된 다른 데이터를 작성한 후에 변경하면 안됩니다.',
+        'Sets the time zone that will be assigned to newly created users and will be used for users that haven\'t yet set a time zone. This is the time zone being used as default to convert date and time between the LIGERO time zone and the user\'s time zone.' =>
+            '새로 생성 된 사용자에게 할당되고 아직 시간대를 설정하지 않은 사용자에게 사용될 시간대를 설정합니다. 이 시간대는 LIGERO 시간대와 사용자 시간대 사이의 날짜와 시간을 변환하기 위해 기본값으로 사용됩니다.',
         'Sets the timeout (in seconds) for http/ftp downloads.' => 'http / ftp 다운로드에 대한 시간 초과 (초)를 설정합니다.',
         'Sets the timeout (in seconds) for package downloads. Overwrites "WebUserAgent::Timeout".' =>
             '패키지 다운로드의 시간 초과 (초)를 설정합니다. "WebUserAgent :: Timeout"을 덮어 씁니다.',
@@ -8315,8 +8315,8 @@ Thanks for your help!
             '에이전트 인터페이스의 티켓 책임 화면에서 가능한 모든 에이전트 (대기열 / 티켓에 대한 메모 권한이있는 모든 에이전트)의 목록을 표시하여이 참고 사항에 대한 정보를 제공해야합니다.',
         'Shows a preview of the ticket overview (CustomerInfo => 1 - shows also Customer-Info, CustomerInfoMaxSize max. size in characters of Customer-Info).' =>
             '티켓 개요의 미리보기를 표시합니다 (CustomerInfo => 1 - Customer-Info, CustomerInfoMaxSize 최대 크기는 Customer-Info의 문자로 표시).',
-        'Shows a teaser link in the menu for the ticket attachment view of OTRS Business Solution™.' =>
-            '메뉴에 OTRS Business Solution ™의 티켓 첨부보기에 대한 티저 링크를 표시합니다.',
+        'Shows a teaser link in the menu for the ticket attachment view of LIGERO Business Solution™.' =>
+            '메뉴에 LIGERO Business Solution ™의 티켓 첨부보기에 대한 티저 링크를 표시합니다.',
         'Shows all both ro and rw queues in the queue view.' => '대기열보기에서 ro 및 rw 대기열을 모두 표시합니다.',
         'Shows all both ro and rw tickets in the service view.' => '서비스보기에서 ro와 rw 티켓을 모두 표시합니다.',
         'Shows all open tickets (even if they are locked) in the escalation view of the agent interface.' =>
@@ -8337,7 +8337,7 @@ Thanks for your help!
             '마지막 고객 기사의 제목이나 작은 제목 개요의 티켓 제목을 표시합니다.',
         'Shows existing parent/child queue lists in the system in the form of a tree or a list.' =>
             '시스템의 기존 상위/하위 대기열 목록을 트리 또는 목록 형태로 표시합니다.',
-        'Shows information on how to start OTRS Daemon' => 'OTRS 데몬을 시작하는 방법에 대한 정보를 보여줍니다.',
+        'Shows information on how to start LIGERO Daemon' => 'LIGERO 데몬을 시작하는 방법에 대한 정보를 보여줍니다.',
         'Shows link to external page in the ticket zoom view of the agent interface. Additional access control to show or not show this link can be done by using Key "Group" and Content like "rw:group1;move_into:group2".' =>
             '에이전트 인터페이스의 티켓 확대보기에서 외부 페이지에 대한 링크를 표시합니다. 이 링크를 표시하거나 표시하지 않으려는 추가 액세스 제어는 키 "그룹"과 "rw : group1; move_into : group2"와 같은 내용을 사용하여 수행 할 수 있습니다.',
         'Shows the articles sorted normally or in reverse, under ticket zoom in the agent interface.' =>
@@ -8421,16 +8421,16 @@ Thanks for your help!
         'Specifies the directory where SSL certificates are stored.' => 'SSL 인증서가 저장되는 디렉토리를 지정합니다.',
         'Specifies the directory where private SSL certificates are stored.' =>
             '개인 SSL 인증서가 저장되는 디렉토리를 지정합니다.',
-        'Specifies the email address that should be used by the application when sending notifications. The email address is used to build the complete display name for the notification master (i.e. "OTRS Notifications" ligero@your.example.com). You can use the OTRS_CONFIG_FQDN variable as set in your configuation, or choose another email address.' =>
-            '알림을 보낼 때 응용 프로그램에서 사용해야하는 전자 메일 주소를 지정합니다. 이메일 주소는 알림 마스터의 전체 표시 이름 (예 : "OTRS Notifications"ligero@your.example.com)을 작성하는 데 사용됩니다. OTRS_CONFIG_FQDN 변수를 설정에 사용하거나 다른 이메일 주소를 선택할 수 있습니다.',
+        'Specifies the email address that should be used by the application when sending notifications. The email address is used to build the complete display name for the notification master (i.e. "LIGERO Notifications" ligero@your.example.com). You can use the LIGERO_CONFIG_FQDN variable as set in your configuation, or choose another email address.' =>
+            '알림을 보낼 때 응용 프로그램에서 사용해야하는 전자 메일 주소를 지정합니다. 이메일 주소는 알림 마스터의 전체 표시 이름 (예 : "LIGERO Notifications"ligero@your.example.com)을 작성하는 데 사용됩니다. LIGERO_CONFIG_FQDN 변수를 설정에 사용하거나 다른 이메일 주소를 선택할 수 있습니다.',
         'Specifies the email addresses to get notification messages from scheduler tasks.' =>
             '스케줄러 테스크에서 알림 메시지를 가져올 이메일 주소를 지정합니다.',
         'Specifies the group where the user needs rw permissions so that he can access the "SwitchToCustomer" feature.' =>
             '"SwitchToCustomer"기능에 액세스 할 수 있도록 사용자에게 rw 권한이 필요한 그룹을 지정합니다.',
         'Specifies the group where the user needs rw permissions so that they can edit other users preferences.' =>
             '다른 사용자 기본 설정을 편집 할 수 있도록 사용자에게 rw 권한이 필요한 그룹을 지정합니다.',
-        'Specifies the name that should be used by the application when sending notifications. The sender name is used to build the complete display name for the notification master (i.e. "OTRS Notifications" ligero@your.example.com).' =>
-            '알림을 보낼 때 응용 프로그램에서 사용해야하는 이름을 지정합니다. 발신자 이름은 알림 마스터의 전체 표시 이름 (예 : "OTRS Notifications"ligero@your.example.com)을 작성하는 데 사용됩니다.',
+        'Specifies the name that should be used by the application when sending notifications. The sender name is used to build the complete display name for the notification master (i.e. "LIGERO Notifications" ligero@your.example.com).' =>
+            '알림을 보낼 때 응용 프로그램에서 사용해야하는 이름을 지정합니다. 발신자 이름은 알림 마스터의 전체 표시 이름 (예 : "LIGERO Notifications"ligero@your.example.com)을 작성하는 데 사용됩니다.',
         'Specifies the order in which the firstname and the lastname of agents will be displayed.' =>
             '에이전트의 성 및 성을 표시하는 순서를 지정합니다.',
         'Specifies the path of the file for the logo in the page header (gif|jpg|png, 700 x 100 pixel).' =>
@@ -8453,8 +8453,8 @@ Thanks for your help!
             '(MIMEBase) 아티클 첨부 파일을 인덱싱하여 검색 할 수 있는지 여부를 지정합니다.',
         'Specify how many sub directory levels to use when creating cache files. This should prevent too many cache files being in one directory.' =>
             '캐시 파일을 만들 때 사용할 하위 디렉토리 수준 수를 지정하십시오. 이렇게하면 너무 많은 캐시 파일이 하나의 디렉토리에 있는 것을 방지할 수 있습니다.',
-        'Specify the channel to be used to fetch OTRS Business Solution™ updates. Warning: Development releases might not be complete, your system might experience unrecoverable errors and on extreme cases could become unresponsive!' =>
-            'OTRS Business Solution ™ 업데이트를 가져 오는 데 사용할 채널을 지정하십시오. 경고 : 개발 릴리스가 완전하지 않을 수 있습니다. 시스템에 복구 할 수없는 오류가 발생할 수 있으며 극단적 인 경우에 응답하지 않을 수 있습니다!',
+        'Specify the channel to be used to fetch LIGERO Business Solution™ updates. Warning: Development releases might not be complete, your system might experience unrecoverable errors and on extreme cases could become unresponsive!' =>
+            'LIGERO Business Solution ™ 업데이트를 가져 오는 데 사용할 채널을 지정하십시오. 경고 : 개발 릴리스가 완전하지 않을 수 있습니다. 시스템에 복구 할 수없는 오류가 발생할 수 있으며 극단적 인 경우에 응답하지 않을 수 있습니다!',
         'Specify the password to authenticate for the first mirror database.' =>
             '첫 번째 미러 데이터베이스에 대해 인증할 암호를 지정하십시오.',
         'Specify the username to authenticate for the first mirror database.' =>
@@ -8551,7 +8551,7 @@ Thanks for your help!
         'This is the default orange - black skin.' => '이것은 기본 오랜지색 검은색 피부입니다.',
         'This module and its PreRun() function will be executed, if defined, for every request. This module is useful to check some user options or to display news about new applications.' =>
             '이 모듈과 PreRun () 함수는 모든 요청에 ​​대해 정의 된 경우 실행됩니다. 이 모듈은 일부 사용자 옵션을 확인하거나 새 응용 프로그램에 대한 뉴스를 표시하는 데 유용합니다.',
-        'This module is part of the admin area of OTRS.' => '이 모듈은 OTRS의 관리 영역의 일부입니다.',
+        'This module is part of the admin area of LIGERO.' => '이 모듈은 LIGERO의 관리 영역의 일부입니다.',
         'This option defines the dynamic field in which a Process Management activity entity id is stored.' =>
             '이 옵션은 프로세스 관리 활동 엔티티ID가 저장되는 동적 필드를 정의합니다.',
         'This option defines the dynamic field in which a Process Management process entity id is stored.' =>
@@ -8564,7 +8564,7 @@ Thanks for your help!
             '이 옵션은 고객 사용자가 생성하지 않은 고객 회사 티켓에 대한 액세스를 거부합니다.',
         'This setting allows you to override the built-in country list with your own list of countries. This is particularly handy if you just want to use a small select group of countries.' =>
             '이 설정을 사용하면 기본 제공 국가 목록을 자신의 국가 목록으로 대체할 수 있습니다. 소규모 그룹을 선택하고 싶을 때 특히 편리합니다.',
-        'This setting is deprecated. Set OTRSTimeZone instead.' => '이 설정은 사용되지 않습니다. 대신 OTRSTimeZone을 설정하십시오.',
+        'This setting is deprecated. Set LIGEROTimeZone instead.' => '이 설정은 사용되지 않습니다. 대신 LIGEROTimeZone을 설정하십시오.',
         'This setting shows the sorting attributes in all overview screen, not only in queue view.' =>
             '이 설정은 대기열보기 뿐만 아니라 모든 개요 화면에서 정렬 속성을 표시합니다.',
         'This will allow the system to send text messages via SMS.' => '이렇게하면 시스템이 SMS를 통해 문자 메시지를 보낼 수 있습니다.',
@@ -8612,8 +8612,8 @@ Thanks for your help!
         'To accept login information, such as an EULA or license.' => 'EULA 또는 라이센스와 같은 로그인 정보를 수락합니다.',
         'To download attachments.' => '첨부 파일을 다운로드 하려면.',
         'To view HTML attachments.' => 'HTML 첨부 파일을 봅니다.',
-        'Toggles display of OTRS FeatureAddons list in PackageManager.' =>
-            'PackageManager의 OTRS FeatureAddons 목록 표시를 토글합니다.',
+        'Toggles display of LIGERO FeatureAddons list in PackageManager.' =>
+            'PackageManager의 LIGERO FeatureAddons 목록 표시를 토글합니다.',
         'Toolbar Item for a shortcut. Additional access control to show or not show this link can be done by using Key "Group" and Content like "rw:group1;move_into:group2".' =>
             '도구 모음 단축키 항목입니다. 이 링크를 표시하거나 표시하지 않으려는 추가 액세스 제어는 키 "그룹"과 "rw : group1; move_into : group2"와 같은 내용을 사용하여 수행 할 수 있습니다.',
         'Transport selection for appointment notifications. Please note: setting \'Active\' to 0 will only prevent agents from editing settings of this group in their personal preferences, but will still allow administrators to edit the settings of another user\'s behalf. Use \'PreferenceGroup\' to control in which area these settings should be shown in the user interface.' =>
@@ -8632,8 +8632,8 @@ Thanks for your help!
         'Turns on the remote ip address check. It should not be enabled if the application is used, for example, via a proxy farm or a dialup connection, because the remote ip address is mostly different for the requests.' =>
             '원격 IP 주소 확인을 켭니다. 예를 들어 프록시 팜이나 전화 접속 연결을 통해 응용 프로그램을 사용하는 경우에는 원격 IP 주소가 대부분 요청마다 다릅니다.',
         'Tweak the system as you wish.' => '원하는대로 시스템을 조정하십시오.',
-        'Type of daemon log rotation to use: Choose \'OTRS\' to let OTRS system to handle the file rotation, or choose \'External\' to use a 3rd party rotation mechanism (i.e. logrotate). Note: External rotation mechanism requires its own and independent configuration.' =>
-            '사용할 데몬 로그 회전 유형 : OTRS 시스템이 파일 순환을 처리하도록하려면 \'OTRS\'를 선택하고 제3자 회전 메커니즘 (즉, logrotate)을 사용하려면 \'외부\'를 선택하십시오. 참고 : 외부 회전 메커니즘은 자체적으로 독립적인 구성이 필요합니다.',
+        'Type of daemon log rotation to use: Choose \'LIGERO\' to let LIGERO system to handle the file rotation, or choose \'External\' to use a 3rd party rotation mechanism (i.e. logrotate). Note: External rotation mechanism requires its own and independent configuration.' =>
+            '사용할 데몬 로그 회전 유형 : LIGERO 시스템이 파일 순환을 처리하도록하려면 \'LIGERO\'를 선택하고 제3자 회전 메커니즘 (즉, logrotate)을 사용하려면 \'외부\'를 선택하십시오. 참고 : 외부 회전 메커니즘은 자체적으로 독립적인 구성이 필요합니다.',
         'Ukrainian' => '우크라이나 말',
         'Unlock tickets that are past their unlock timeout.' => '잠금 해제 시간 초과가 된 티켓의 잠금을 해제하십시오.',
         'Unlock tickets whenever a note is added and the owner is out of office.' =>
@@ -8686,9 +8686,9 @@ Thanks for your help!
         'Whether to force redirect all requests from http to https protocol. Please check that your web server is configured correctly for https protocol before enable this option.' =>
             'http에서 https 프로토콜로 모든 요청을 강제로 리디렉션할지 여부입니다. 이 옵션을 활성화하기 전에 웹 서버가 https 프로토콜에 맞게 올바르게 구성되어 있는지 확인하십시오.',
         'Yes, but hide archived tickets' => '예, 보관된 티켓은 숨깁니다.',
-        'Your email with ticket number "<OTRS_TICKET>" is bounced to "<OTRS_BOUNCE_TO>". Contact this address for further information.' =>
+        'Your email with ticket number "<LIGERO_TICKET>" is bounced to "<LIGERO_BOUNCE_TO>". Contact this address for further information.' =>
             '티켓 번호가 "1"인 이메일은 "2"로 반송됩니다. 자세한 내용은이 주소로 문의하십시오.',
-        'Your email with ticket number "<OTRS_TICKET>" is merged to "<OTRS_MERGE_TO_TICKET>".' =>
+        'Your email with ticket number "<LIGERO_TICKET>" is merged to "<LIGERO_MERGE_TO_TICKET>".' =>
             '티켓 번호가 "1"인 이메일은 "2"로 병합됩니다.',
         'Your queue selection of your preferred queues. You also get notified about those queues via email if enabled.' =>
             '선호하는 대기열에 대한 대기열 선택. 또한 활성화된 경우 이메일을 통해 대기열에 대한 알림을 받습니다.',
@@ -8861,7 +8861,7 @@ Thanks for your help!
         'Hide EntityIDs',
         'If you now leave this page, all open popup windows will be closed, too!',
         'Import web service',
-        'Information about the OTRS Daemon',
+        'Information about the LIGERO Daemon',
         'Invalid date (need a future date)!',
         'Invalid date (need a past date)!',
         'Invalid date!',
@@ -9034,7 +9034,7 @@ Thanks for your help!
         'This is a repeating appointment',
         'This is currently disabled because of an ongoing package upgrade.',
         'This item still contains sub items. Are you sure you want to remove this item including its sub items?',
-        'This option is currently disabled because the OTRS Daemon is not running.',
+        'This option is currently disabled because the LIGERO Daemon is not running.',
         'This software runs with a huge lists of browsers, please upgrade to one of these.',
         'This window must be called from compose window.',
         'Thu',

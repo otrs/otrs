@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -11,7 +11,7 @@ package scripts::test::ObjectManager::Dummy;    ## no critic
 use strict;
 use warnings;
 
-## nofilter(TidyAll::Plugin::OTRS::Perl::ObjectDependencies)
+## nofilter(TidyAll::Plugin::LIGERO::Perl::ObjectDependencies)
 our @ObjectDependencies = ();                   # we want to use an undeclared dependency for testing
 
 sub new {

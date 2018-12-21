@@ -1,5 +1,5 @@
 // --
-// Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+// Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 // --
 // This software comes with ABSOLUTELY NO WARRANTY. For details, see
 // the enclosed file COPYING for license information (GPL). If you
@@ -16,7 +16,7 @@ Core.UI = Core.UI || {};
 /**
  * @namespace Core.UI.Popup
  * @memberof Core.UI
- * @author OTRS AG
+ * @author LIGERO AG
  * @description
  *      Popup windows.
  */
@@ -155,12 +155,12 @@ Core.UI.Popup = (function (TargetNS) {
      * @function
      * @returns {String} Returns the type of popup if one, undefined otherwise.
      * @description
-     *      Checks if current window is an OTRS popup.
+     *      Checks if current window is an LIGERO popup.
      */
     function CurrentIsPopupWindow() {
         var PopupType;
 
-        if (window.name.match(/OTRSPopup_([^_]+)_.+/)) {
+        if (window.name.match(/LIGEROPopup_([^_]+)_.+/)) {
             PopupType = RegExp.$1;
         }
 
@@ -173,7 +173,7 @@ Core.UI.Popup = (function (TargetNS) {
      * @function
      * @returns {String} Returns the type of popup if one, undefined otherwise.
      * @description
-     *      Checks if current window is an OTRS popup.
+     *      Checks if current window is an LIGERO popup.
      */
     TargetNS.CurrentIsPopupWindow = function () {
         return CurrentIsPopupWindow();
@@ -260,10 +260,10 @@ Core.UI.Popup = (function (TargetNS) {
         CheckOpenPopups();
         $.each(OpenPopups, function (Key, Value) {
             // IE(7) treats windows in new tabs (opened with right-click) also as popups
-            // Therefore we check if the popup is a real OTRS popup.
+            // Therefore we check if the popup is a real LIGERO popup.
             // IE9 can't read the WindowType property from the window object,
             // so we check for the correct popup window name now.
-            if (Value.name.match(/OTRSPopup_.+/)) {
+            if (Value.name.match(/LIGEROPopup_.+/)) {
                 Size++;
             }
         });
@@ -283,10 +283,10 @@ Core.UI.Popup = (function (TargetNS) {
         CheckOpenPopups();
         $.each(OpenPopups, function (Key, Value) {
             // IE(7) treats windows in new tabs (opened with right-click) also as popups
-            // Therefore we check if the popup is a real OTRS popup.
+            // Therefore we check if the popup is a real LIGERO popup.
             // IE9 can't read the WindowType property from the window object,
             // so we check for the correct popup window name now.
-            if (Value.name.match(/OTRSPopup_.+/)) {
+            if (Value.name.match(/LIGEROPopup_.+/)) {
                 TargetNS.ClosePopup(Value);
             }
         });
@@ -304,7 +304,7 @@ Core.UI.Popup = (function (TargetNS) {
     TargetNS.RegisterPopupAtParentWindow = function (WindowObject) {
         var Type;
 
-        /OTRSPopup_([^_]+)_.*/.exec(WindowObject.name);
+        /LIGEROPopup_([^_]+)_.*/.exec(WindowObject.name);
         Type = RegExp.$1;
 
         if (typeof OpenPopups[Type] === 'undefined') {
@@ -482,10 +482,10 @@ Core.UI.Popup = (function (TargetNS) {
                  * it will ensure that popup is nor linked with the parent window
                  */
                 if (Unlinked && Unlinked === 1) {
-                    WindowName = 'PopupOTRS_' + Type + '_' + Date.parse(new Date());
+                    WindowName = 'PopupLIGERO_' + Type + '_' + Date.parse(new Date());
                 }
                 else {
-                    WindowName = 'OTRSPopup_' + Type + '_' + Date.parse(new Date());
+                    WindowName = 'LIGEROPopup_' + Type + '_' + Date.parse(new Date());
                 }
 
                 if (WindowMode === 'Popup') {
@@ -611,7 +611,7 @@ Core.UI.Popup = (function (TargetNS) {
                 PopupObject = PopupType;
 
                 // we can now find out the type of the popup based on the popup object
-                if (PopupObject && typeof PopupObject.name !== 'undefined' && PopupObject.name.match(/OTRSPopup_([^_]+)_.+/)) {
+                if (PopupObject && typeof PopupObject.name !== 'undefined' && PopupObject.name.match(/LIGEROPopup_([^_]+)_.+/)) {
                     PopupType = RegExp.$1;
                 }
 

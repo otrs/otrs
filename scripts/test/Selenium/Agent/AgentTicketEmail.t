@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -64,7 +64,7 @@ $Selenium->RunTest(
         my @TestData = (
             {
                 SignatureName => 'Signature1' . $RandomID,
-                SignatureText => 'Customer First Name: <OTRS_CUSTOMER_DATA_UserFirstname>',
+                SignatureText => 'Customer First Name: <LIGERO_CUSTOMER_DATA_UserFirstname>',
                 QueueName     => 'Queue1' . $RandomID,
                 UserFirstName => 'FirstName1' . $RandomID,
                 UserLastName  => 'LastName1' . $RandomID,
@@ -72,7 +72,7 @@ $Selenium->RunTest(
             },
             {
                 SignatureName => 'Signature2' . $RandomID,
-                SignatureText => 'Customer Last Name: <OTRS_CUSTOMER_DATA_UserLastname>',
+                SignatureText => 'Customer Last Name: <LIGERO_CUSTOMER_DATA_UserLastname>',
                 QueueName     => 'Queue2' . $RandomID,
                 UserFirstName => 'FirstName2' . $RandomID,
                 UserLastName  => 'LastName2' . $RandomID,
@@ -170,7 +170,7 @@ $Selenium->RunTest(
         # Navigate to AgentTicketEmail screen again.
         $Selenium->VerifiedGet("${ScriptAlias}index.pl?Action=AgentTicketEmail");
 
-        # Verify signature tags like <OTRS_CUSTOMER_DATA_*>, please see bug#12853 for more information.
+        # Verify signature tags like <LIGERO_CUSTOMER_DATA_*>, please see bug#12853 for more information.
         #   Select first queue.
         my $Option = $Selenium->execute_script(
             "return \$('#Dest option').filter(function () { return \$(this).html() == '$QueueNames[0]'; }).val();"

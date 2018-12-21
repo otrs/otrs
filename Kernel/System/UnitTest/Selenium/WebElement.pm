@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -20,7 +20,7 @@ Kernel::System::UnitTest::Selenium::WebElement - Utility functions for Selenium 
 
 =head2 VerifiedSubmit()
 
-Submit a form element, and wait for the page to be fully loaded (works only in OTRS)
+Submit a form element, and wait for the page to be fully loaded (works only in LIGERO)
 
     $SeleniumObject->VerifiedSubmit();
 
@@ -34,7 +34,7 @@ sub VerifiedSubmit {
     $Self->driver()->WaitFor(
         JavaScript =>
             'return typeof(Core) == "object" && typeof(Core.App) == "object" && Core.App.PageLoadComplete'
-    ) || die "OTRS API verification failed after element submit.";
+    ) || die "LIGERO API verification failed after element submit.";
 
     return;
 }
@@ -42,7 +42,7 @@ sub VerifiedSubmit {
 =head2 VerifiedClick()
 
 click an element that causes a page get/reload/submit and wait for the page to be fully loaded
-(works only in OTRS).
+(works only in LIGERO).
 
     $SeleniumObject->VerifiedClick(
         $Button             # optional, see Selenium docs
@@ -60,7 +60,7 @@ sub VerifiedClick {    ## no critic
     $Self->driver()->WaitFor(
         JavaScript =>
             'return typeof(Core) == "object" && typeof(Core.App) == "object" && Core.App.PageLoadComplete'
-    ) || die "OTRS API verification failed after element click.";
+    ) || die "LIGERO API verification failed after element click.";
 
     return;
 }
@@ -69,7 +69,7 @@ sub VerifiedClick {    ## no critic
 
 =head1 TERMS AND CONDITIONS
 
-This software is part of the OTRS project (L<https://ligero.org/>).
+This software is part of the LIGERO project (L<https://ligero.org/>).
 
 This software comes with ABSOLUTELY NO WARRANTY. For details, see
 the enclosed file COPYING for license information (GPL). If you

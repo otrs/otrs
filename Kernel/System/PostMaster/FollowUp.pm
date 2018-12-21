@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -58,11 +58,11 @@ sub Run {
     # get ticket object
     my $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
 
-    my $OwnerID = $GetParam{'X-OTRS-FollowUp-OwnerID'};
-    if ( $GetParam{'X-OTRS-FollowUp-Owner'} ) {
+    my $OwnerID = $GetParam{'X-LIGERO-FollowUp-OwnerID'};
+    if ( $GetParam{'X-LIGERO-FollowUp-Owner'} ) {
 
         my $TmpOwnerID = $Kernel::OM->Get('Kernel::System::User')->UserLookup(
-            UserLogin => $GetParam{'X-OTRS-FollowUp-Owner'},
+            UserLogin => $GetParam{'X-LIGERO-FollowUp-Owner'},
         );
 
         $OwnerID = $TmpOwnerID || $OwnerID;
@@ -76,11 +76,11 @@ sub Run {
         );
     }
 
-    my $ResponsibleID = $GetParam{'X-OTRS-FollowUp-ResponsibleID'};
-    if ( $GetParam{'X-OTRS-FollowUp-Responsible'} ) {
+    my $ResponsibleID = $GetParam{'X-LIGERO-FollowUp-ResponsibleID'};
+    if ( $GetParam{'X-LIGERO-FollowUp-Responsible'} ) {
 
         my $TmpResponsibleID = $Kernel::OM->Get('Kernel::System::User')->UserLookup(
-            UserLogin => $GetParam{'X-OTRS-FollowUp-Responsible'},
+            UserLogin => $GetParam{'X-LIGERO-FollowUp-Responsible'},
         );
 
         $ResponsibleID = $TmpResponsibleID || $ResponsibleID;
@@ -176,18 +176,18 @@ sub Run {
     {
         $State = $ConfigObject->Get('PostmasterFollowUpStateClosed');
     }
-    if ( $GetParam{'X-OTRS-FollowUp-State'} ) {
-        $State = $GetParam{'X-OTRS-FollowUp-State'};
+    if ( $GetParam{'X-LIGERO-FollowUp-State'} ) {
+        $State = $GetParam{'X-LIGERO-FollowUp-State'};
     }
 
-    my $KeepStateHeader = $ConfigObject->Get('KeepStateHeader') || 'X-OTRS-FollowUp-State-Keep';
+    my $KeepStateHeader = $ConfigObject->Get('KeepStateHeader') || 'X-LIGERO-FollowUp-State-Keep';
     if (
-        ( $Ticket{StateType} !~ /^new/ || $GetParam{'X-OTRS-FollowUp-State'} )
+        ( $Ticket{StateType} !~ /^new/ || $GetParam{'X-LIGERO-FollowUp-State'} )
         && !$GetParam{$KeepStateHeader}
         )
     {
         $TicketObject->TicketStateSet(
-            State    => $GetParam{'X-OTRS-FollowUp-State'} || $State,
+            State    => $GetParam{'X-LIGERO-FollowUp-State'} || $State,
             TicketID => $Param{TicketID},
             UserID   => $Param{InmailUserID},
         );
@@ -201,14 +201,14 @@ sub Run {
     }
 
     # set pending time
-    if ( $GetParam{'X-OTRS-FollowUp-State-PendingTime'} ) {
+    if ( $GetParam{'X-LIGERO-FollowUp-State-PendingTime'} ) {
 
   # You can specify absolute dates like "2010-11-20 00:00:00" or relative dates, based on the arrival time of the email.
   # Use the form "+ $Number $Unit", where $Unit can be 's' (seconds), 'm' (minutes), 'h' (hours) or 'd' (days).
   # Only one unit can be specified. Examples of valid settings: "+50s" (pending in 50 seconds), "+30m" (30 minutes),
   # "+12d" (12 days). Note that settings like "+1d 12h" are not possible. You can specify "+36h" instead.
 
-        my $TargetTimeStamp = $GetParam{'X-OTRS-FollowUp-State-PendingTime'};
+        my $TargetTimeStamp = $GetParam{'X-LIGERO-FollowUp-State-PendingTime'};
 
         my ( $Sign, $Number, $Unit ) = $TargetTimeStamp =~ m{^\s*([+-]?)\s*(\d+)\s*([smhd]?)\s*$}smx;
 
@@ -246,17 +246,17 @@ sub Run {
                 Priority      => 'Debug',
                 Key           => 'Kernel::System::PostMaster::FollowUp',
                 Value =>
-                    "Pending time update via 'X-OTRS-FollowUp-State-PendingTime'! State-PendingTime: $GetParam{'X-OTRS-FollowUp-State-PendingTime'}.",
+                    "Pending time update via 'X-LIGERO-FollowUp-State-PendingTime'! State-PendingTime: $GetParam{'X-LIGERO-FollowUp-State-PendingTime'}.",
             );
         }
     }
 
     # set priority
-    if ( $GetParam{'X-OTRS-FollowUp-Priority'} ) {
+    if ( $GetParam{'X-LIGERO-FollowUp-Priority'} ) {
 
         $TicketObject->TicketPrioritySet(
             TicketID => $Param{TicketID},
-            Priority => $GetParam{'X-OTRS-FollowUp-Priority'},
+            Priority => $GetParam{'X-LIGERO-FollowUp-Priority'},
             UserID   => $Param{InmailUserID},
         );
 
@@ -265,15 +265,15 @@ sub Run {
             Priority      => 'Debug',
             Key           => 'Kernel::System::PostMaster::FollowUp',
             Value =>
-                "Priority update via 'X-OTRS-FollowUp-Priority'! Priority: $GetParam{'X-OTRS-FollowUp-Priority'}.",
+                "Priority update via 'X-LIGERO-FollowUp-Priority'! Priority: $GetParam{'X-LIGERO-FollowUp-Priority'}.",
         );
     }
 
     # set queue
-    if ( $GetParam{'X-OTRS-FollowUp-Queue'} ) {
+    if ( $GetParam{'X-LIGERO-FollowUp-Queue'} ) {
 
         $TicketObject->TicketQueueSet(
-            Queue    => $GetParam{'X-OTRS-FollowUp-Queue'},
+            Queue    => $GetParam{'X-LIGERO-FollowUp-Queue'},
             TicketID => $Param{TicketID},
             UserID   => $Param{InmailUserID},
         );
@@ -283,15 +283,15 @@ sub Run {
             Priority      => 'Debug',
             Key           => 'Kernel::System::PostMaster::FollowUp',
             Value =>
-                "Queue update via 'X-OTRS-FollowUp-Queue'! Queue: $GetParam{'X-OTRS-FollowUp-Queue'}.",
+                "Queue update via 'X-LIGERO-FollowUp-Queue'! Queue: $GetParam{'X-LIGERO-FollowUp-Queue'}.",
         );
     }
 
     # set lock
-    if ( $GetParam{'X-OTRS-FollowUp-Lock'} ) {
+    if ( $GetParam{'X-LIGERO-FollowUp-Lock'} ) {
 
         $TicketObject->TicketLockSet(
-            Lock     => $GetParam{'X-OTRS-FollowUp-Lock'},
+            Lock     => $GetParam{'X-LIGERO-FollowUp-Lock'},
             TicketID => $Param{TicketID},
             UserID   => $Param{InmailUserID},
         );
@@ -301,15 +301,15 @@ sub Run {
             Priority      => 'Debug',
             Key           => 'Kernel::System::PostMaster::FollowUp',
             Value =>
-                "Lock update via 'X-OTRS-FollowUp-Lock'! Lock: $GetParam{'X-OTRS-FollowUp-Lock'}.",
+                "Lock update via 'X-LIGERO-FollowUp-Lock'! Lock: $GetParam{'X-LIGERO-FollowUp-Lock'}.",
         );
     }
 
     # set ticket type
-    if ( $GetParam{'X-OTRS-FollowUp-Type'} ) {
+    if ( $GetParam{'X-LIGERO-FollowUp-Type'} ) {
 
         $TicketObject->TicketTypeSet(
-            Type     => $GetParam{'X-OTRS-FollowUp-Type'},
+            Type     => $GetParam{'X-LIGERO-FollowUp-Type'},
             TicketID => $Param{TicketID},
             UserID   => $Param{InmailUserID},
         );
@@ -319,15 +319,15 @@ sub Run {
             Priority      => 'Debug',
             Key           => 'Kernel::System::PostMaster::FollowUp',
             Value =>
-                "Type update via 'X-OTRS-FollowUp-Type'! Type: $GetParam{'X-OTRS-FollowUp-Type'}.",
+                "Type update via 'X-LIGERO-FollowUp-Type'! Type: $GetParam{'X-LIGERO-FollowUp-Type'}.",
         );
     }
 
     # set ticket service
-    if ( $GetParam{'X-OTRS-FollowUp-Service'} ) {
+    if ( $GetParam{'X-LIGERO-FollowUp-Service'} ) {
 
         $TicketObject->TicketServiceSet(
-            Service  => $GetParam{'X-OTRS-FollowUp-Service'},
+            Service  => $GetParam{'X-LIGERO-FollowUp-Service'},
             TicketID => $Param{TicketID},
             UserID   => $Param{InmailUserID},
         );
@@ -337,15 +337,15 @@ sub Run {
             Priority      => 'Debug',
             Key           => 'Kernel::System::PostMaster::FollowUp',
             Value =>
-                "Services update via 'X-OTRS-FollowUp-Service'! Service: $GetParam{'X-OTRS-FollowUp-Service'}.",
+                "Services update via 'X-LIGERO-FollowUp-Service'! Service: $GetParam{'X-LIGERO-FollowUp-Service'}.",
         );
     }
 
     # set ticket sla
-    if ( $GetParam{'X-OTRS-FollowUp-SLA'} ) {
+    if ( $GetParam{'X-LIGERO-FollowUp-SLA'} ) {
 
         $TicketObject->TicketSLASet(
-            SLA      => $GetParam{'X-OTRS-FollowUp-SLA'},
+            SLA      => $GetParam{'X-LIGERO-FollowUp-SLA'},
             TicketID => $Param{TicketID},
             UserID   => $Param{InmailUserID},
         );
@@ -355,7 +355,7 @@ sub Run {
             Priority      => 'Debug',
             Key           => 'Kernel::System::PostMaster::FollowUp',
             Value =>
-                "SLA update via 'X-OTRS-FollowUp-SLA'! SLA: $GetParam{'X-OTRS-FollowUp-SLA'}.",
+                "SLA update via 'X-LIGERO-FollowUp-SLA'! SLA: $GetParam{'X-LIGERO-FollowUp-SLA'}.",
         );
     }
 
@@ -376,7 +376,7 @@ sub Run {
     for my $DynamicFieldID ( sort keys %{$DynamicFieldList} ) {
         next DYNAMICFIELDID if !$DynamicFieldID;
         next DYNAMICFIELDID if !$DynamicFieldList->{$DynamicFieldID};
-        my $Key = 'X-OTRS-FollowUp-DynamicField-' . $DynamicFieldList->{$DynamicFieldID};
+        my $Key = 'X-LIGERO-FollowUp-DynamicField-' . $DynamicFieldList->{$DynamicFieldID};
         if ( defined $GetParam{$Key} && length $GetParam{$Key} ) {
 
             # get dynamic field config
@@ -407,8 +407,8 @@ sub Run {
     # set ticket free text
     my %Values =
         (
-        'X-OTRS-FollowUp-TicketKey'   => 'TicketFreeKey',
-        'X-OTRS-FollowUp-TicketValue' => 'TicketFreeText',
+        'X-LIGERO-FollowUp-TicketKey'   => 'TicketFreeKey',
+        'X-LIGERO-FollowUp-TicketValue' => 'TicketFreeText',
         );
     for my $Item ( sort keys %Values ) {
         for my $Count ( 1 .. 16 ) {
@@ -446,7 +446,7 @@ sub Run {
     # set ticket free time
     for my $Count ( 1 .. 6 ) {
 
-        my $Key = 'X-OTRS-FollowUp-TicketTime' . $Count;
+        my $Key = 'X-LIGERO-FollowUp-TicketTime' . $Count;
 
         if ( defined $GetParam{$Key} && length $GetParam{$Key} ) {
 
@@ -491,20 +491,20 @@ sub Run {
     );
 
     my $IsVisibleForCustomer = 1;
-    if ( length $GetParam{'X-OTRS-FollowUp-IsVisibleForCustomer'} ) {
-        $IsVisibleForCustomer = $GetParam{'X-OTRS-FollowUp-IsVisibleForCustomer'};
+    if ( length $GetParam{'X-LIGERO-FollowUp-IsVisibleForCustomer'} ) {
+        $IsVisibleForCustomer = $GetParam{'X-LIGERO-FollowUp-IsVisibleForCustomer'};
     }
 
-    # Check if X-OTRS-FollowUp-SenderType exists, if not set default 'customer'.
-    if ( !$ArticleObject->ArticleSenderTypeLookup( SenderType => $GetParam{'X-OTRS-FollowUp-SenderType'} ) )
+    # Check if X-LIGERO-FollowUp-SenderType exists, if not set default 'customer'.
+    if ( !$ArticleObject->ArticleSenderTypeLookup( SenderType => $GetParam{'X-LIGERO-FollowUp-SenderType'} ) )
     {
         $Self->{CommunicationLogObject}->ObjectLog(
             ObjectLogType => 'Message',
             Priority      => 'Error',
             Key           => 'Kernel::System::PostMaster::FollowUp',
-            Value => "Can't find valid SenderType '$GetParam{'X-OTRS-FollowUp-SenderType'}' in DB, take 'customer'",
+            Value => "Can't find valid SenderType '$GetParam{'X-LIGERO-FollowUp-SenderType'}' in DB, take 'customer'",
         );
-        $GetParam{'X-OTRS-SenderType'} = 'customer';
+        $GetParam{'X-LIGERO-SenderType'} = 'customer';
     }
 
     $Self->{CommunicationLogObject}->ObjectLog(
@@ -517,7 +517,7 @@ sub Run {
     # do db insert
     my $ArticleID = $ArticleBackendObject->ArticleCreate(
         TicketID             => $Param{TicketID},
-        SenderType           => $GetParam{'X-OTRS-FollowUp-SenderType'},
+        SenderType           => $GetParam{'X-LIGERO-FollowUp-SenderType'},
         IsVisibleForCustomer => $IsVisibleForCustomer,
         From                 => $GetParam{From},
         ReplyTo              => $GetParam{ReplyTo},
@@ -604,7 +604,7 @@ sub Run {
     for my $DynamicFieldID ( sort keys %{$DynamicFieldList} ) {
         next DYNAMICFIELDID if !$DynamicFieldID;
         next DYNAMICFIELDID if !$DynamicFieldList->{$DynamicFieldID};
-        my $Key = 'X-OTRS-FollowUp-DynamicField-' . $DynamicFieldList->{$DynamicFieldID};
+        my $Key = 'X-LIGERO-FollowUp-DynamicField-' . $DynamicFieldList->{$DynamicFieldID};
         if ( defined $GetParam{$Key} && length $GetParam{$Key} ) {
 
             # get dynamic field config
@@ -634,8 +634,8 @@ sub Run {
     # set free article text
     %Values =
         (
-        'X-OTRS-FollowUp-ArticleKey'   => 'ArticleFreeKey',
-        'X-OTRS-FollowUp-ArticleValue' => 'ArticleFreeText',
+        'X-LIGERO-FollowUp-ArticleKey'   => 'ArticleFreeKey',
+        'X-LIGERO-FollowUp-ArticleValue' => 'ArticleFreeText',
         );
     for my $Item ( sort keys %Values ) {
         for my $Count ( 1 .. 16 ) {
@@ -671,10 +671,10 @@ sub Run {
     }
 
     # set ticket title
-    if ( $GetParam{'X-OTRS-FollowUp-Title'} ) {
+    if ( $GetParam{'X-LIGERO-FollowUp-Title'} ) {
 
         $TicketObject->TicketTitleUpdate(
-            Title    => $GetParam{'X-OTRS-FollowUp-Title'},
+            Title    => $GetParam{'X-LIGERO-FollowUp-Title'},
             TicketID => $Param{TicketID},
             UserID   => $Param{InmailUserID},
         );
@@ -683,7 +683,7 @@ sub Run {
             ObjectLogType => 'Message',
             Priority      => 'Debug',
             Key           => 'Kernel::System::PostMaster::FollowUp',
-            Value         => "Title update via 'X-OTRS-FollowUp-Title'! Value: $GetParam{'X-OTRS-FollowUp-Title'}.",
+            Value         => "Title update via 'X-LIGERO-FollowUp-Title'! Value: $GetParam{'X-LIGERO-FollowUp-Title'}.",
         );
     }
 

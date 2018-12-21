@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -331,7 +331,7 @@ my @Tests = (
             UserID => $UserID,
             Ticket => $TicketData[0],
             Config => {
-                ServiceID => '<OTRS_TICKET_Title>',
+                ServiceID => '<LIGERO_TICKET_Title>',
             },
         },
         Success => 1,
@@ -342,7 +342,7 @@ my @Tests = (
             UserID => $UserID,
             Ticket => $TicketData[0],
             Config => {
-                ServiceID => '<OTRS_TICKET_NotExisting>',
+                ServiceID => '<LIGERO_TICKET_NotExisting>',
             },
         },
         Success => 0,
@@ -404,7 +404,7 @@ for my $Test (@Tests) {
             my $ExpectedValue = $Test->{Config}->{Config}->{$Attribute};
             if (
                 $OrigTest->{Config}->{Config}->{$Attribute}
-                =~ m{\A<OTRS_TICKET_([A-Za-z0-9_]+)>\z}msx
+                =~ m{\A<LIGERO_TICKET_([A-Za-z0-9_]+)>\z}msx
                 )
             {
                 $ExpectedValue = $Ticket{$1} // '';

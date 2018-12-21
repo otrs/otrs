@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -111,34 +111,34 @@ for my $FieldName ( sort keys %NeededDynamicfields ) {
 }
 
 my %NeededXHeaders = (
-    'X-OTRS-DynamicField-TicketFreeKey1'  => 1,
-    'X-OTRS-DynamicField-TicketFreeText1' => 1,
-    'X-OTRS-DynamicField-TicketFreeKey2'  => 1,
-    'X-OTRS-DynamicField-TicketFreeText2' => 1,
-    'X-OTRS-DynamicField-TicketFreeKey3'  => 1,
-    'X-OTRS-DynamicField-TicketFreeText3' => 1,
-    'X-OTRS-DynamicField-TicketFreeTime1' => 1,
-    'X-OTRS-DynamicField-TicketFreeTime2' => 1,
-    'X-OTRS-DynamicField-TicketFreeTime3' => 1,
-    'X-OTRS-DynamicField-TicketFreeTime4' => 1,
-    'X-OTRS-DynamicField-TicketFreeTime5' => 1,
-    'X-OTRS-DynamicField-TicketFreeTime6' => 1,
-    'X-OTRS-TicketKey1'                   => 1,
-    'X-OTRS-TicketValue1'                 => 1,
-    'X-OTRS-TicketKey2'                   => 1,
-    'X-OTRS-TicketValue2'                 => 1,
-    'X-OTRS-TicketKey3'                   => 1,
-    'X-OTRS-TicketValue3'                 => 1,
-    'X-OTRS-TicketTime1'                  => 1,
-    'X-OTRS-TicketTime2'                  => 1,
-    'X-OTRS-TicketTime3'                  => 1,
-    'X-OTRS-TicketTime4'                  => 1,
-    'X-OTRS-TicketTime5'                  => 1,
-    'X-OTRS-TicketTime6'                  => 1,
-    'X-OTRS-Owner'                        => 1,
-    'X-OTRS-OwnerID'                      => 1,
-    'X-OTRS-Responsible'                  => 1,
-    'X-OTRS-ResponsibleID'                => 1,
+    'X-LIGERO-DynamicField-TicketFreeKey1'  => 1,
+    'X-LIGERO-DynamicField-TicketFreeText1' => 1,
+    'X-LIGERO-DynamicField-TicketFreeKey2'  => 1,
+    'X-LIGERO-DynamicField-TicketFreeText2' => 1,
+    'X-LIGERO-DynamicField-TicketFreeKey3'  => 1,
+    'X-LIGERO-DynamicField-TicketFreeText3' => 1,
+    'X-LIGERO-DynamicField-TicketFreeTime1' => 1,
+    'X-LIGERO-DynamicField-TicketFreeTime2' => 1,
+    'X-LIGERO-DynamicField-TicketFreeTime3' => 1,
+    'X-LIGERO-DynamicField-TicketFreeTime4' => 1,
+    'X-LIGERO-DynamicField-TicketFreeTime5' => 1,
+    'X-LIGERO-DynamicField-TicketFreeTime6' => 1,
+    'X-LIGERO-TicketKey1'                   => 1,
+    'X-LIGERO-TicketValue1'                 => 1,
+    'X-LIGERO-TicketKey2'                   => 1,
+    'X-LIGERO-TicketValue2'                 => 1,
+    'X-LIGERO-TicketKey3'                   => 1,
+    'X-LIGERO-TicketValue3'                 => 1,
+    'X-LIGERO-TicketTime1'                  => 1,
+    'X-LIGERO-TicketTime2'                  => 1,
+    'X-LIGERO-TicketTime3'                  => 1,
+    'X-LIGERO-TicketTime4'                  => 1,
+    'X-LIGERO-TicketTime5'                  => 1,
+    'X-LIGERO-TicketTime6'                  => 1,
+    'X-LIGERO-Owner'                        => 1,
+    'X-LIGERO-OwnerID'                      => 1,
+    'X-LIGERO-Responsible'                  => 1,
+    'X-LIGERO-ResponsibleID'                => 1,
 );
 
 my $XHeaders          = $ConfigObject->Get('PostmasterX-Header');
@@ -222,15 +222,15 @@ for my $TicketSubjectConfig ( 'Right', 'Left' ) {
                     ],
                     Set => [
                         {
-                            Key   => 'X-OTRS-Queue',
+                            Key   => 'X-LIGERO-Queue',
                             Value => 'Misc',
                         },
                         {
-                            Key   => 'X-OTRS-TicketKey1',
+                            Key   => 'X-LIGERO-TicketKey1',
                             Value => 'Key1',
                         },
                         {
-                            Key   => 'X-OTRS-TicketValue1',
+                            Key   => 'X-LIGERO-TicketValue1',
                             Value => 'Text1',
                         },
                     ],
@@ -260,11 +260,11 @@ for my $TicketSubjectConfig ( 'Right', 'Left' ) {
                     ],
                     Set => [
                         {
-                            Key   => 'X-OTRS-TicketKey2',
+                            Key   => 'X-LIGERO-TicketKey2',
                             Value => 'Key2',
                         },
                         {
-                            Key   => 'X-OTRS-TicketValue2',
+                            Key   => 'X-LIGERO-TicketValue2',
                             Value => 'Text2',
                         },
                     ],
@@ -294,11 +294,11 @@ for my $TicketSubjectConfig ( 'Right', 'Left' ) {
                     ],
                     Set => [
                         {
-                            Key   => 'X-OTRS-TicketKey3',
+                            Key   => 'X-LIGERO-TicketKey3',
                             Value => 'Key3',
                         },
                         {
-                            Key   => 'X-OTRS-TicketValue3',
+                            Key   => 'X-LIGERO-TicketValue3',
                             Value => 'Text3',
                         },
                     ],
@@ -328,7 +328,7 @@ for my $TicketSubjectConfig ( 'Right', 'Left' ) {
                     ],
                     Set => [
                         {
-                            Key   => 'X-OTRS-Ignore',
+                            Key   => 'X-LIGERO-Ignore',
                             Value => 'yes',
                         },
                     ],
@@ -884,23 +884,23 @@ my @Tests = (
             ],
             Set => [
                 {
-                    Key   => 'X-OTRS-Queue',
+                    Key   => 'X-LIGERO-Queue',
                     Value => 'Misc',
                 },
                 {
-                    Key   => 'X-OTRS-TicketKey1',
+                    Key   => 'X-LIGERO-TicketKey1',
                     Value => 'Key1',
                 },
                 {
-                    Key   => 'X-OTRS-TicketValue1',
+                    Key   => 'X-LIGERO-TicketValue1',
                     Value => 'Text1',
                 },
                 {
-                    Key   => 'X-OTRS-TicketKey3',
+                    Key   => 'X-LIGERO-TicketKey3',
                     Value => 'Key3',
                 },
                 {
-                    Key   => 'X-OTRS-TicketValue3',
+                    Key   => 'X-LIGERO-TicketValue3',
                     Value => 'Text3',
                 },
             ],
@@ -914,23 +914,23 @@ my @Tests = (
             ],
             Set => [
                 {
-                    Key   => 'X-OTRS-Queue',
+                    Key   => 'X-LIGERO-Queue',
                     Value => 'Misc',
                 },
                 {
-                    Key   => 'X-OTRS-TicketKey1',
+                    Key   => 'X-LIGERO-TicketKey1',
                     Value => 'Key1',
                 },
                 {
-                    Key   => 'X-OTRS-TicketValue1',
+                    Key   => 'X-LIGERO-TicketValue1',
                     Value => 'Text1',
                 },
                 {
-                    Key   => 'X-OTRS-TicketKey3',
+                    Key   => 'X-LIGERO-TicketKey3',
                     Value => 'Key3',
                 },
                 {
-                    Key   => 'X-OTRS-TicketValue3',
+                    Key   => 'X-LIGERO-TicketValue3',
                     Value => 'Text3',
                 },
             ],
@@ -952,23 +952,23 @@ my @Tests = (
             ],
             Set => [
                 {
-                    Key   => 'X-OTRS-Queue',
+                    Key   => 'X-LIGERO-Queue',
                     Value => 'Misc',
                 },
                 {
-                    Key   => 'X-OTRS-TicketKey1',
+                    Key   => 'X-LIGERO-TicketKey1',
                     Value => 'Key1#2',
                 },
                 {
-                    Key   => 'X-OTRS-TicketValue1',
+                    Key   => 'X-LIGERO-TicketValue1',
                     Value => 'Text1#2',
                 },
                 {
-                    Key   => 'X-OTRS-TicketKey4',
+                    Key   => 'X-LIGERO-TicketKey4',
                     Value => 'Key4#2',
                 },
                 {
-                    Key   => 'X-OTRS-TicketValue4',
+                    Key   => 'X-LIGERO-TicketValue4',
                     Value => 'Text4#2',
                 },
             ],
@@ -982,23 +982,23 @@ my @Tests = (
             ],
             Set => [
                 {
-                    Key   => 'X-OTRS-Queue',
+                    Key   => 'X-LIGERO-Queue',
                     Value => 'Misc',
                 },
                 {
-                    Key   => 'X-OTRS-TicketKey1',
+                    Key   => 'X-LIGERO-TicketKey1',
                     Value => 'Key1#2',
                 },
                 {
-                    Key   => 'X-OTRS-TicketValue1',
+                    Key   => 'X-LIGERO-TicketValue1',
                     Value => 'Text1#2',
                 },
                 {
-                    Key   => 'X-OTRS-TicketKey4',
+                    Key   => 'X-LIGERO-TicketKey4',
                     Value => 'Key4#2',
                 },
                 {
-                    Key   => 'X-OTRS-TicketValue4',
+                    Key   => 'X-LIGERO-TicketValue4',
                     Value => 'Text4#2',
                 },
             ],
@@ -1015,23 +1015,23 @@ my @Tests = (
             ],
             Set => [
                 {
-                    Key   => 'X-OTRS-Queue',
+                    Key   => 'X-LIGERO-Queue',
                     Value => 'Misc',
                 },
                 {
-                    Key   => 'X-OTRS-TicketKey1',
+                    Key   => 'X-LIGERO-TicketKey1',
                     Value => 'Key1#3',
                 },
                 {
-                    Key   => 'X-OTRS-TicketValue1',
+                    Key   => 'X-LIGERO-TicketValue1',
                     Value => 'Text1#3',
                 },
                 {
-                    Key   => 'X-OTRS-TicketKey3',
+                    Key   => 'X-LIGERO-TicketKey3',
                     Value => 'Key3#3',
                 },
                 {
-                    Key   => 'X-OTRS-TicketValue3',
+                    Key   => 'X-LIGERO-TicketValue3',
                     Value => 'Text3#3',
                 },
             ],
@@ -1045,23 +1045,23 @@ my @Tests = (
             ],
             Set => [
                 {
-                    Key   => 'X-OTRS-Queue',
+                    Key   => 'X-LIGERO-Queue',
                     Value => 'Misc',
                 },
                 {
-                    Key   => 'X-OTRS-TicketKey1',
+                    Key   => 'X-LIGERO-TicketKey1',
                     Value => 'Key1#3',
                 },
                 {
-                    Key   => 'X-OTRS-TicketValue1',
+                    Key   => 'X-LIGERO-TicketValue1',
                     Value => 'Text1#3',
                 },
                 {
-                    Key   => 'X-OTRS-TicketKey3',
+                    Key   => 'X-LIGERO-TicketKey3',
                     Value => 'Key3#3',
                 },
                 {
-                    Key   => 'X-OTRS-TicketValue3',
+                    Key   => 'X-LIGERO-TicketValue3',
                     Value => 'Text3#3',
                 },
             ],
@@ -1081,7 +1081,7 @@ my @Tests = (
             ],
             Set => [
                 {
-                    Key   => 'X-OTRS-TicketKey4',
+                    Key   => 'X-LIGERO-TicketKey4',
                     Value => '[***]',
                 },
             ],
@@ -1095,7 +1095,7 @@ my @Tests = (
             ],
             Set => [
                 {
-                    Key   => 'X-OTRS-TicketKey4',
+                    Key   => 'X-LIGERO-TicketKey4',
                     Value => '[***]',
                 },
             ],
@@ -1115,7 +1115,7 @@ my @Tests = (
             ],
             Set => [
                 {
-                    Key   => 'X-OTRS-TicketKey5',
+                    Key   => 'X-LIGERO-TicketKey5',
                     Value => '[***]',
                 },
             ],
@@ -1129,7 +1129,7 @@ my @Tests = (
             ],
             Set => [
                 {
-                    Key   => 'X-OTRS-TicketKey5',
+                    Key   => 'X-LIGERO-TicketKey5',
                     Value => '[***]',
                 },
             ],
@@ -1251,15 +1251,15 @@ Some Content in Body
         ],
         Set => [
             {
-                Key   => 'X-OTRS-Queue',
+                Key   => 'X-LIGERO-Queue',
                 Value => 'Junk',
             },
             {
-                Key   => 'X-OTRS-TicketKey5',
+                Key   => 'X-LIGERO-TicketKey5',
                 Value => 'Key5#1',
             },
             {
-                Key   => 'X-OTRS-TicketValue5',
+                Key   => 'X-LIGERO-TicketValue5',
                 Value => 'Text5#1',
             },
         ],
@@ -1286,15 +1286,15 @@ Some Content in Body
         ],
         Set => [
             {
-                Key   => 'X-OTRS-Queue',
+                Key   => 'X-LIGERO-Queue',
                 Value => 'Misc',
             },
             {
-                Key   => 'X-OTRS-TicketKey6',
+                Key   => 'X-LIGERO-TicketKey6',
                 Value => 'Key6#1',
             },
             {
-                Key   => 'X-OTRS-TicketValue6',
+                Key   => 'X-LIGERO-TicketValue6',
                 Value => 'Text6#1',
             },
         ],
@@ -1317,9 +1317,9 @@ Some Content in Body
             'X-Envelope-To' => 'xenvelopeto@example.com'
         },
         Set => {
-            'X-OTRS-Queue'        => 'Misc',
-            'X-OTRS-TicketKey6'   => 'Key6#1',
-            'X-OTRS-TicketValue6' => 'Text6#1',
+            'X-LIGERO-Queue'        => 'Misc',
+            'X-LIGERO-TicketKey6'   => 'Key6#1',
+            'X-LIGERO-TicketValue6' => 'Text6#1',
         },
         Check => {
             Queue                        => 'Misc',
@@ -1346,7 +1346,7 @@ Some Content in Body
         ],
         Set => [
             {
-                Key   => 'X-OTRS-Ignore',
+                Key   => 'X-LIGERO-Ignore',
                 Value => 'yes',
             }
         ],
@@ -1369,7 +1369,7 @@ Some Content in Body
             'X-Envelope-To' => 'xenvelopeto@example.com'
         },
         Set => {
-            'X-OTRS-Ignore' => 'yes',
+            'X-LIGERO-Ignore' => 'yes',
         },
         Check => {
             ReturnCode => 5,
@@ -1391,7 +1391,7 @@ Some Content in Body
     #         CMD => 'echo "SPAM"',
     #         Set => [
     #             {
-    #                 Key   => 'X-OTRS-Ignore',
+    #                 Key   => 'X-LIGERO-Ignore',
     #                 Value => 'yes',
     #             }
     #         ],
@@ -1412,7 +1412,7 @@ Some Content in Body
     #         Module => 'Kernel::System::PostMaster::Filter::CMD',
     #         CMD => 'echo "SPAM"',
     #         Set => {
-    #             'X-OTRS-Ignore' => 'yes',
+    #             'X-LIGERO-Ignore' => 'yes',
     #         },
     #         Check => {
     #             ReturnCode => 5,
@@ -1464,7 +1464,7 @@ for my $Test (@Tests) {
 
         my %LookupRejectReturnCode = (
             4 => 1,    # follow up / close -> reject
-            5 => 1,    # ignored (because of X-OTRS-Ignore header)
+            5 => 1,    # ignored (because of X-LIGERO-Ignore header)
         );
 
         if ( !$Test->{Check}->{ReturnCode} || !$LookupRejectReturnCode{ $Test->{Check}->{ReturnCode} } ) {
@@ -1547,7 +1547,7 @@ for my $DynamicFieldID (@DynamicfieldIDs) {
     );
 }
 
-# test X-OTRS-(Owner|Responsible)
+# test X-LIGERO-(Owner|Responsible)
 my $Login  = $Helper->TestUserCreate();
 my $UserID = $Kernel::OM->Get('Kernel::System::User')->UserLookup( UserLogin => $Login );
 
@@ -1590,8 +1590,8 @@ for my $Test ( sort keys %OwnerResponsibleTests ) {
     );
 
     for my $Line ( @{$ContentRef} ) {
-        $Line =~ s{ ^ (X-OTRS-(?:Owner|Responsible):) .*? $ }{$1$Login}x;
-        $Line =~ s{ ^ (X-OTRS-(?:Owner|Responsible)ID:) .*? $ }{$1$UserID}x;
+        $Line =~ s{ ^ (X-LIGERO-(?:Owner|Responsible):) .*? $ }{$1$Login}x;
+        $Line =~ s{ ^ (X-LIGERO-(?:Owner|Responsible)ID:) .*? $ }{$1$UserID}x;
     }
 
     my $PostMasterObject = Kernel::System::PostMaster->new(

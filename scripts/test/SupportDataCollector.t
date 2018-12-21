@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -29,14 +29,14 @@ $Helper->ConfigSettingChange(
     Valid => 1,
     Key   => 'SupportDataCollector::DisablePlugins',
     Value => [
-        'Kernel::System::SupportDataCollector::Plugin::OTRS::PackageDeployment',
+        'Kernel::System::SupportDataCollector::Plugin::LIGERO::PackageDeployment',
     ],
 );
 $Helper->ConfigSettingChange(
     Valid => 1,
     Key   => 'SupportDataCollector::IdentifierFilterBlacklist',
     Value => [
-        'Kernel::System::SupportDataCollector::Plugin::OTRS::TimeSettings::UserDefaultTimeZone',
+        'Kernel::System::SupportDataCollector::Plugin::LIGERO::TimeSettings::UserDefaultTimeZone',
     ],
 );
 
@@ -148,7 +148,7 @@ for my $ResultEntry ( @{ $Result{Result} || [] } ) {
 
 # Check if the identifier from the disabled plugions are not present.
 for my $DisabledPluginsIdentifier (
-    qw(Kernel::System::SupportDataCollector::Plugin::OTRS::PackageDeployment Kernel::System::SupportDataCollector::Plugin::OTRS::PackageDeployment::Verification Kernel::System::SupportDataCollector::Plugin::OTRS::PackageDeployment::FrameworkVersion)
+    qw(Kernel::System::SupportDataCollector::Plugin::LIGERO::PackageDeployment Kernel::System::SupportDataCollector::Plugin::LIGERO::PackageDeployment::Verification Kernel::System::SupportDataCollector::Plugin::LIGERO::PackageDeployment::FrameworkVersion)
     )
 {
     $Self->False(
@@ -159,8 +159,8 @@ for my $DisabledPluginsIdentifier (
 
 # Check if the identifiers from the identifier filter blacklist are not present.
 $Self->False(
-    $SeenIdentifier{'Kernel::System::SupportDataCollector::Plugin::OTRS::TimeSettings::UserDefaultTimeZone'},
-    "Collect() - SupportDataCollector::IdentifierFilterBlacklist - Kernel::System::SupportDataCollector::Plugin::OTRS::TimeSettings::UserDefaultTimeZone should not be present"
+    $SeenIdentifier{'Kernel::System::SupportDataCollector::Plugin::LIGERO::TimeSettings::UserDefaultTimeZone'},
+    "Collect() - SupportDataCollector::IdentifierFilterBlacklist - Kernel::System::SupportDataCollector::Plugin::LIGERO::TimeSettings::UserDefaultTimeZone should not be present"
 );
 
 # cache tests

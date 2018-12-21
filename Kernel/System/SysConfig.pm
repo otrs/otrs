@@ -1,11 +1,11 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
 # did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
-## nofilter(TidyAll::Plugin::OTRS::Perl::LayoutObject)
+## nofilter(TidyAll::Plugin::LIGERO::Perl::LayoutObject)
 package Kernel::System::SysConfig;
 
 use strict;
@@ -82,7 +82,7 @@ sub new {
     my $MainObject = $Kernel::OM->Get('Kernel::System::Main');
 
     FILENAME:
-    for my $Filename (qw(Framework.pm OTRSBusiness.pm)) {
+    for my $Filename (qw(Framework.pm LIGEROBusiness.pm)) {
         my $BaseFile = $BaseDir . $Filename;
         next FILENAME if !-e $BaseFile;
 
@@ -692,7 +692,7 @@ sub SettingUpdate {
     if (
         !$Param{IsValid}
         && !$Param{TargetUserID}
-        && $Self->can('UserSettingValueDelete')    # OTRS Business Solution™
+        && $Self->can('UserSettingValueDelete')    # LIGERO Business Solution™
         )
     {
         $Self->UserSettingValueDelete(
@@ -2102,7 +2102,7 @@ Returns:
 
     %Result = (
        'ACL::CacheTTL' => {
-            'Category' => 'OTRS',
+            'Category' => 'LIGERO',
             'IsInvisible' => '0',
             'Metadata' => "ACL::CacheTTL--- '3600'
 Cache-Zeit in Sekunden f\x{fc}r Datenbank ACL-Backends.",
@@ -2753,7 +2753,7 @@ Returns navigation tree in the hash format.
         RootNavigation         => 'Parent',     # (optional) If provided only sub groups of the root navigation are returned.
         UserModificationActive => 1,            # (optional) Return settings that can be modified on user level only.
         IsValid                => 1,            # (optional) By default, display all settings.
-        Category               => 'OTRS'        # (optional)
+        Category               => 'LIGERO'        # (optional)
     );
 
 Returns:
@@ -3595,7 +3595,7 @@ sub ConfigurationDeploy {
 
         # If setting is updated on global level, check all user specific settings, maybe it's needed
         #   to remove duplicates.
-        if ( $Self->can('UserConfigurationResetToGlobal') ) {    # OTRS Business Solution™
+        if ( $Self->can('UserConfigurationResetToGlobal') ) {    # LIGERO Business Solution™
 
             my @DeployedSettings;
             if ( $Param{DirtySettings} ) {
@@ -3758,7 +3758,7 @@ sub ConfigurationDeploySync {
     }
 
     # Sync also user specific settings (if available).
-    return 1 if !$Self->can('UserConfigurationDeploySync');    # OTRS Business Solution™
+    return 1 if !$Self->can('UserConfigurationDeploySync');    # LIGERO Business Solution™
     $Self->UserConfigurationDeploySync();
 
     return 1;
@@ -4104,7 +4104,7 @@ sub ConfigurationDump {
             }
         }
 
-        if ( !$Param{SkipUserSettings} && $Self->can('UserConfigurationDump') ) {    # OTRS Business Solution™
+        if ( !$Param{SkipUserSettings} && $Self->can('UserConfigurationDump') ) {    # LIGERO Business Solution™
             my %UserSettings = $Self->UserConfigurationDump(
                 SettingList => \@SettingsList,
                 OnlyValues  => $Param{OnlyValues},
@@ -4252,7 +4252,7 @@ sub ConfigurationLoad {
 
         # Only deploy user specific settings;
         next SECTION if !$TargetUserID;
-        next SECTION if !$Self->can('UserConfigurationDeploy');    # OTRS Business Solution™
+        next SECTION if !$Self->can('UserConfigurationDeploy');    # LIGERO Business Solution™
 
         # Deploy user configuration requires another package to be installed.
         my $Success = $Self->UserConfigurationDeploy(
@@ -4344,7 +4344,7 @@ Returns a list of setting names.
 
     my @Result = $SysConfigObject->ConfigurationSearch(
         Search           => 'The search string', # (optional)
-        Category         => 'OTRS'               # (optional)
+        Category         => 'LIGERO'               # (optional)
         IncludeInvisible => 1,                   # (optional) Default 0.
     );
 
@@ -4436,8 +4436,8 @@ Returns:
             DisplayName => 'All Settings',
             Files => [],
         },
-        OTRS => {
-            DisplayName => 'OTRS',
+        LIGERO => {
+            DisplayName => 'LIGERO',
             Files       => ['Calendar.xml', CloudServices.xml', 'Daemon.xml', 'Framework.xml', 'GenericInterface.xml', 'ProcessManagement.xml', 'Ticket.xml' ],
         },
         # ...
@@ -4467,8 +4467,8 @@ sub ConfigurationCategoriesGet {
             DisplayName => Translatable('All Settings'),
             Files       => [],
         },
-        OTRS => {
-            DisplayName => 'OTRS',
+        LIGERO => {
+            DisplayName => 'LIGERO',
             Files       => [
                 'Calendar.xml', 'CloudServices.xml', 'Daemon.xml', 'Framework.xml',
                 'GenericInterface.xml', 'ProcessManagement.xml', 'Ticket.xml',
@@ -4507,9 +4507,9 @@ sub ConfigurationCategoriesGet {
         my $PackageName = $Package->{Name}->{Content};
         my $DisplayName = $ConfigObject->Get("SystemConfiguration::Category::Name::$PackageName") || $PackageName;
 
-        # special treatment for OTRS Business Solution™
-        if ( $DisplayName eq 'OTRSBusiness' ) {
-            $DisplayName = 'OTRS Business Solution™';
+        # special treatment for LIGERO Business Solution™
+        if ( $DisplayName eq 'LIGEROBusiness' ) {
+            $DisplayName = 'LIGERO Business Solution™';
         }
 
         $Result{$PackageName} = {
@@ -4781,7 +4781,7 @@ sub OverriddenFileNameGet {
     # Replace config variables in effective values.
     # NOTE: First level only, make sure to update this code once same mechanism has been improved in Defaults.pm.
     #   Please see bug#12916 and bug#13376 for more information.
-    $EffectiveValue =~ s/\<OTRS_CONFIG_(.+?)\>/$ConfigObject->{$1}/g;
+    $EffectiveValue =~ s/\<LIGERO_CONFIG_(.+?)\>/$ConfigObject->{$1}/g;
 
     my $IsOverridden = DataIsDifferent(
         Data1 => $EffectiveValue       // {},
@@ -5615,7 +5615,7 @@ sub _EffectiveValues2PerlFile {
 
     # Write default config file.
     my $FileStrg = <<"EOF";
-# OTRS config file (automatically generated)
+# LIGERO config file (automatically generated)
 # VERSION:2.0
 package $TargetPath;
 use strict;
@@ -6061,7 +6061,7 @@ Returns:
 
     %Result = (
        'ACL::CacheTTL' => {
-            'Category' => 'OTRS',
+            'Category' => 'LIGERO',
             'IsInvisible' => '0',
             'Metadata' => "ACL::CacheTTL--- '3600'
 Cache-Zeit in Sekunden f\x{fc}r Datenbank ACL-Backends.",
@@ -6320,7 +6320,7 @@ sub _DefaultSettingAddBulk {
 
 =head1 TERMS AND CONDITIONS
 
-This software is part of the OTRS project (L<https://ligero.org/>).
+This software is part of the LIGERO project (L<https://ligero.org/>).
 
 This software comes with ABSOLUTELY NO WARRANTY. For details, see
 the enclosed file COPYING for license information (GPL). If you

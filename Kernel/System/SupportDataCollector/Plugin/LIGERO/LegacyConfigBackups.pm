@@ -1,13 +1,13 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
 # did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
-## nofilter(TidyAll::Plugin::OTRS::Perl::LayoutObject)
-package Kernel::System::SupportDataCollector::Plugin::OTRS::LegacyConfigBackups;
+## nofilter(TidyAll::Plugin::LIGERO::Perl::LayoutObject)
+package Kernel::System::SupportDataCollector::Plugin::LIGERO::LegacyConfigBackups;
 
 use strict;
 use warnings;
@@ -24,7 +24,7 @@ our @ObjectDependencies = (
 );
 
 sub GetDisplayPath {
-    return Translatable('OTRS');
+    return Translatable('LIGERO');
 }
 
 sub Run {

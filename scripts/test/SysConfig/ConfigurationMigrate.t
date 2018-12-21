@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -29,10 +29,10 @@ my $MainObject   = $Kernel::OM->Get('Kernel::System::Main');
 
 my $Home = $Kernel::OM->Get('Kernel::Config')->{Home};
 
-my $TestFile      = 'ZZZAutoOTRS5.pm';
+my $TestFile      = 'ZZZAutoLIGERO5.pm';
 my $TestPath      = $Home . '/scripts/test/sample/SysConfig/Migration/';
 my $TestLocation  = $TestPath . $TestFile;
-my $TestFileClass = "scripts::test::sample::SysConfig::Migration::ZZZAutoOTRS5";
+my $TestFileClass = "scripts::test::sample::SysConfig::Migration::ZZZAutoLIGERO5";
 
 $Self->True(
     -e $TestLocation,
@@ -54,13 +54,13 @@ $Self->True(
 return if !-e $TestLocation;
 
 # Import
-my %OTRS5Config;
+my %LIGERO5Config;
 delete $INC{$TestPath};
 $Kernel::OM->Get('Kernel::System::Main')->Require($TestFileClass);
-$TestFileClass->Load( \%OTRS5Config );
+$TestFileClass->Load( \%LIGERO5Config );
 
 $Self->True(
-    \%OTRS5Config,
+    \%LIGERO5Config,
     "Config was loaded",
 );
 
@@ -367,9 +367,9 @@ my @Tests = (
             },
             Module => 'Kernel::System::PostMaster::Filter::Match',
             Set    => {
-                'X-OTRS-IsVisibleForCustomer'          => '0',
-                'X-OTRS-FollowUp-IsVisibleForCustomer' => '1',
-                'X-OTRS-Ignore'                        => 'yes',
+                'X-LIGERO-IsVisibleForCustomer'          => '0',
+                'X-LIGERO-FollowUp-IsVisibleForCustomer' => '1',
+                'X-LIGERO-Ignore'                        => 'yes',
             },
         },
     },
@@ -381,8 +381,8 @@ my @Tests = (
             'Module'                      => 'Kernel::System::PostMaster::Filter::FollowUpArticleVisibilityCheck',
             'IsVisibleForCustomer'        => '0',
             'SenderType'                  => 'customer',
-            'X-OTRS-IsVisibleForCustomer' => '0',
-            'X-OTRS-FollowUp-IsVisibleForCustomer' => '1',
+            'X-LIGERO-IsVisibleForCustomer' => '0',
+            'X-LIGERO-FollowUp-IsVisibleForCustomer' => '1',
         },
     },
     {
@@ -394,8 +394,8 @@ my @Tests = (
             ,
             'IsVisibleForCustomer'                 => '1',
             'SenderType'                           => 'customer',
-            'X-OTRS-IsVisibleForCustomer'          => '0',
-            'X-OTRS-FollowUp-IsVisibleForCustomer' => '1',
+            'X-LIGERO-IsVisibleForCustomer'          => '0',
+            'X-LIGERO-FollowUp-IsVisibleForCustomer' => '1',
         },
     },
 
@@ -414,7 +414,7 @@ my @Tests = (
         Name          => 'Was changed before 1',
         Key           => 'ProductName',
         ChangedValue  => 'UnitTestModified',
-        MigratedValue => 'OTRS 5s',
+        MigratedValue => 'LIGERO 5s',
     },
 );
 

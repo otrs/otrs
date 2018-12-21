@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -218,7 +218,7 @@ Some Content in Body",
         Name  => 'Provider notification',
         Email => "From: Provider <$InternalAddress>
 To: Agent <$AgentAddress>
-X-OTRS-FollowUp-SenderType: system
+X-LIGERO-FollowUp-SenderType: system
 Subject: $Subject
 
 Some Content in Body",

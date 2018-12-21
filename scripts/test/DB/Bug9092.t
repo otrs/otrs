@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -77,7 +77,7 @@ then re-add the foreign keyconstraints again.
 
 my @Tests = (
 
-    # article flag table as defined in OTRS 3.1
+    # article flag table as defined in LIGERO 3.1
     '<Table Name="bug9092">
         <Column Name="article_id" Required="true" Type="BIGINT"/>
         <Column Name="article_key" Required="true" Size="50" Type="VARCHAR"/>

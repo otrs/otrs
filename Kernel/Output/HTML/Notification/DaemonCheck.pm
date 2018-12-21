@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -44,7 +44,7 @@ sub Run {
 
     my %NotificationDetails = (
         Priority => 'Error',
-        Data     => $LayoutObject->{LanguageObject}->Translate("OTRS Daemon is not running."),
+        Data     => $LayoutObject->{LanguageObject}->Translate("LIGERO Daemon is not running."),
     );
 
     # check if user needs to be notified

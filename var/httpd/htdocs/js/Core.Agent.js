@@ -1,5 +1,5 @@
 // --
-// Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+// Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 // --
 // This software comes with ABSOLUTELY NO WARRANTY. For details, see
 // the enclosed file COPYING for license information (GPL). If you
@@ -12,13 +12,13 @@ var Core = Core || {};
 
 /**
  * @namespace Core
- * @author OTRS AG
+ * @author LIGERO AG
  */
 
 /**
  * @namespace Core.Agent
  * @memberof Core
- * @author OTRS AG
+ * @author LIGERO AG
  * @description
  *      This namespace contains the config options and functions.
  */
@@ -247,7 +247,7 @@ Core.Agent = (function (TargetNS) {
                     return true;
                 }
 
-                if (!parseInt(Core.Config.Get('OTRSBusinessIsInstalled'), 10) && $Target.hasClass('OTRSBusinessRequired')) {
+                if (!parseInt(Core.Config.Get('LIGEROBusinessIsInstalled'), 10) && $Target.hasClass('LIGEROBusinessRequired')) {
                     return true;
                 }
 
@@ -702,9 +702,9 @@ Core.Agent = (function (TargetNS) {
         // Initialize pagination
         TargetNS.InitPagination();
 
-        // Initialize OTRSBusinessRequired dialog
-        if (!parseInt(Core.Config.Get('OTRSBusinessIsInstalled'), 10)) {
-            InitOTRSBusinessRequiredDialog();
+        // Initialize LIGEROBusinessRequired dialog
+        if (!parseInt(Core.Config.Get('LIGEROBusinessIsInstalled'), 10)) {
+            InitLIGEROBusinessRequiredDialog();
         }
 
         // Initialize ticket in new window
@@ -810,31 +810,31 @@ Core.Agent = (function (TargetNS) {
 
     /**
      * @private
-     * @name InitOTRSBusinessRequiredDialog
+     * @name InitLIGEROBusinessRequiredDialog
      * @memberof Core.Agent
      * @function
      * @description
-     *      Initialize OTRSBusiness upgrade dialog on all clicks coming from anchor with OTRSBusinessRequired class.
+     *      Initialize LIGEROBusiness upgrade dialog on all clicks coming from anchor with LIGEROBusinessRequired class.
      */
-    function InitOTRSBusinessRequiredDialog () {
-        $('body').on('click', 'a.OTRSBusinessRequired', function() {
-            TargetNS.ShowOTRSBusinessRequiredDialog();
+    function InitLIGEROBusinessRequiredDialog () {
+        $('body').on('click', 'a.LIGEROBusinessRequired', function() {
+            TargetNS.ShowLIGEROBusinessRequiredDialog();
             return false;
         });
     }
 
     /**
-     * @name ShowOTRSBusinessRequiredDialog
+     * @name ShowLIGEROBusinessRequiredDialog
      * @memberof Core.Agent
      * @function
      * @description
-     *      This function shows OTRSBusiness upgrade dialog.
+     *      This function shows LIGEROBusiness upgrade dialog.
      */
-    TargetNS.ShowOTRSBusinessRequiredDialog = function() {
-        var OTRSBusinessLabel = '<strong>OTRS Business Solution</strong>™';
+    TargetNS.ShowLIGEROBusinessRequiredDialog = function() {
+        var LIGEROBusinessLabel = '<strong>LIGERO Business Solution</strong>™';
 
         Core.UI.Dialog.ShowContentDialog(
-            '<div class="OTRSBusinessRequiredDialog">' + Core.Language.Translate('This feature is part of the %s. Please contact us at %s for an upgrade.', OTRSBusinessLabel, 'sales@ligero.com') + '<a class="Hidden" href="http://www.ligero.com/solutions/" target="_blank"><span></span></a></div>',
+            '<div class="LIGEROBusinessRequiredDialog">' + Core.Language.Translate('This feature is part of the %s. Please contact us at %s for an upgrade.', LIGEROBusinessLabel, 'sales@ligero.com') + '<a class="Hidden" href="http://www.ligero.com/solutions/" target="_blank"><span></span></a></div>',
             '',
             '240px',
             'Center',
@@ -844,7 +844,7 @@ Core.Agent = (function (TargetNS) {
                     Label: Core.Language.Translate('Find out more'),
                     Class: 'Primary',
                     Function: function () {
-                        $('.OTRSBusinessRequiredDialog').find('a span').trigger('click');
+                        $('.LIGEROBusinessRequiredDialog').find('a span').trigger('click');
                     }
                 }
             ]

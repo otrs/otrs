@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -31,7 +31,7 @@ sub Configure {
     );
     $Self->AddOption(
         Name        => 'untrusted',
-        Description => "This will cause X-OTRS email headers to be ignored.",
+        Description => "This will cause X-LIGERO email headers to be ignored.",
         Required    => 0,
         HasValue    => 0,
     );
@@ -198,7 +198,7 @@ sub Run {
         2 => 'Successful',    # follow up / open/reopen
         3 => 'Successful',    # follow up / close -> new ticket
         4 => 'Failed',        # follow up / close -> reject
-        5 => 'Successful',    # ignored (because of X-OTRS-Ignore header)
+        5 => 'Successful',    # ignored (because of X-LIGERO-Ignore header)
     );
 
     $CommunicationLogObject->CommunicationStop(

@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -76,7 +76,7 @@ my $AutoResponseNameRand = 'AutoResponse' . $RandomID;
 my $AutoResponseID       = $AutoResponseObject->AutoResponseAdd(
     Name        => $AutoResponseNameRand,
     Subject     => 'Unit Test AutoResponse Bug#4640',
-    Response    => 'OTRS_CUSTOMER_REALNAME tag: <OTRS_CUSTOMER_REALNAME>',
+    Response    => 'LIGERO_CUSTOMER_REALNAME tag: <LIGERO_CUSTOMER_REALNAME>',
     Comment     => 'Unit test auto response',
     AddressID   => $SystemAddressID,
     TypeID      => 1,
@@ -122,7 +122,7 @@ $Self->True(
 my $NotificationName = 'Notification' . $RandomID;
 my $NotificationID   = $Kernel::OM->Get('Kernel::System::NotificationEvent')->NotificationAdd(
     Name    => $NotificationName,
-    Comment => 'Unit Test Notification <OTRS_CUSTOMER_REALNAME> tag',
+    Comment => 'Unit Test Notification <LIGERO_CUSTOMER_REALNAME> tag',
     Data    => {
         Transports => ['Email'],
         Events     => ['NotificationNewTicket'],
@@ -132,7 +132,7 @@ my $NotificationID   = $Kernel::OM->Get('Kernel::System::NotificationEvent')->No
     Message => {
         en => {
             Subject     => 'Notification subject',
-            Body        => 'OTRS_CUSTOMER_REALNAME tag: <OTRS_CUSTOMER_REALNAME>',
+            Body        => 'LIGERO_CUSTOMER_REALNAME tag: <LIGERO_CUSTOMER_REALNAME>',
             ContentType => 'text/plain',
         },
     },
@@ -152,11 +152,11 @@ my @Tests = (
             "From: TestFrom\@home.com\nTo: TestTo\@home.com\nSubject: Email without Reply-To tag\nTest Body Email.\n",
         ResultAutoResponse => {
             To   => 'TestFrom@home.com',
-            Body => 'OTRS_CUSTOMER_REALNAME tag: TestFrom@home.com',
+            Body => 'LIGERO_CUSTOMER_REALNAME tag: TestFrom@home.com',
         },
         ResultNotification => {
             To   => 'TestFrom@home.com',
-            Body => 'OTRS_CUSTOMER_REALNAME tag: TestFrom@home.com',
+            Body => 'LIGERO_CUSTOMER_REALNAME tag: TestFrom@home.com',
         },
     },
     {
@@ -165,11 +165,11 @@ my @Tests = (
             "From: TestFrom\@home.com\nTo: TestTo\@home.com\nReply-To: TestReplyTo\@home.com\nSubject: Email with Reply-To tag\nTest Body Email.\n",
         ResultAutoResponse => {
             To   => 'TestReplyTo@home.com',
-            Body => 'OTRS_CUSTOMER_REALNAME tag: TestReplyTo@home.com',
+            Body => 'LIGERO_CUSTOMER_REALNAME tag: TestReplyTo@home.com',
         },
         ResultNotification => {
             To   => 'TestReplyTo@home.com',
-            Body => 'OTRS_CUSTOMER_REALNAME tag: TestReplyTo@home.com',
+            Body => 'LIGERO_CUSTOMER_REALNAME tag: TestReplyTo@home.com',
         },
     },
     {
@@ -178,11 +178,11 @@ my @Tests = (
             "From: $CustomerUser\@home.com\nTo: TestTo\@home.com\nSubject: Email with valid CustomerID\nTest Body Email.\n",
         ResultAutoResponse => {
             To   => "$CustomerUser\@home.com",
-            Body => "OTRS_CUSTOMER_REALNAME tag: $CustomerUser $CustomerUser",
+            Body => "LIGERO_CUSTOMER_REALNAME tag: $CustomerUser $CustomerUser",
         },
         ResultNotification => {
             To   => "$CustomerUser\@home.com",
-            Body => "OTRS_CUSTOMER_REALNAME tag: $CustomerUser $CustomerUser",
+            Body => "LIGERO_CUSTOMER_REALNAME tag: $CustomerUser $CustomerUser",
         },
     },
     {
@@ -191,11 +191,11 @@ my @Tests = (
             "From: TestRecipient\@home.com\nTo: $CustomerUser\@home.com\nSubject: Email with Recipient\nTest Body Email.\n",
         ResultAutoResponse => {
             To   => 'TestRecipient@home.com',
-            Body => 'OTRS_CUSTOMER_REALNAME tag: TestRecipient@home.com',
+            Body => 'LIGERO_CUSTOMER_REALNAME tag: TestRecipient@home.com',
         },
         ResultNotification => {
             To   => 'TestRecipient@home.com',
-            Body => 'OTRS_CUSTOMER_REALNAME tag: TestRecipient@home.com',
+            Body => 'LIGERO_CUSTOMER_REALNAME tag: TestRecipient@home.com',
         },
     },
 );

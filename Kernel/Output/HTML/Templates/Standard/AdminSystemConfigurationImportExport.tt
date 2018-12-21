@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -87,7 +87,7 @@
                                 [% Translate("Download current configuration settings of your system in a .yml file.") | html %]
                             </p>
 
-                            [% IF Data.OTRSBusinessIsInstalled %]
+                            [% IF Data.LIGEROBusinessIsInstalled %]
                             <input type="checkbox" id="SkipUserSettings" name="SkipUserSettings" value="1" checked="checked" />
                             <label for="SkipUserSettings">[% Translate("Include user settings") | html %]</label>
                             <div class="Clear"> </div>

@@ -1,12 +1,12 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
 # did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
-package Kernel::System::SupportDataCollector::PluginAsynchronous::OTRS::ConcurrentUsers;
+package Kernel::System::SupportDataCollector::PluginAsynchronous::LIGERO::ConcurrentUsers;
 
 use strict;
 use warnings;
@@ -25,7 +25,7 @@ our @ObjectDependencies = (
 
 sub GetDisplayPath {
     return
-        'OTRS@Table:TimeStamp,UserSessionUnique|Unique agents,UserSession|Agent sessions,CustomerSessionUnique|Unique customers,CustomerSession|Customer sessions';
+        'LIGERO@Table:TimeStamp,UserSessionUnique|Unique agents,UserSession|Agent sessions,CustomerSessionUnique|Unique customers,CustomerSession|Customer sessions';
 }
 
 sub Run {
@@ -73,7 +73,7 @@ sub Run {
         }
 
         $Self->AddResultInformation(
-            DisplayPath => Translatable('OTRS') . '/' . Translatable('Concurrent Users'),
+            DisplayPath => Translatable('LIGERO') . '/' . Translatable('Concurrent Users'),
             Identifier  => $Identifier,
             Label       => "Max. $Label",
             Value       => $MaxValue,

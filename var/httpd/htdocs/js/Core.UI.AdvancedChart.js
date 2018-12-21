@@ -1,5 +1,5 @@
 // --
-// Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+// Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 // --
 // This software comes with ABSOLUTELY NO WARRANTY. For details, see
 // the enclosed file COPYING for license information (GPL). If you
@@ -15,7 +15,7 @@ Core.UI = Core.UI || {};
 /**
  * @namespace Core.UI.AdvancedChart
  * @memberof Core.UI
- * @author OTRS AG
+ * @author LIGERO AG
  * @description
  *      Chart drawing.
  */
@@ -154,10 +154,10 @@ Core.UI.AdvancedChart = (function (TargetNS) {
 
         nv.addGraph(function() {
 
-            var Chart = nv.models.OTRSlineChart(),
+            var Chart = nv.models.LIGEROlineChart(),
                 ShowLegend = Options.HideLegend ? false : true;
 
-            // don't let nv/d3 exceptions block the rest of OTRS JavaScript
+            // don't let nv/d3 exceptions block the rest of LIGERO JavaScript
             try {
 
                 Chart.staggerLabels(true);
@@ -288,10 +288,10 @@ Core.UI.AdvancedChart = (function (TargetNS) {
 
         nv.addGraph(function() {
 
-            var Chart = nv.models.OTRSlineChart(),
+            var Chart = nv.models.LIGEROlineChart(),
                 ShowLegend = Options.HideLegend ? false : true;
 
-            // don't let nv/d3 exceptions block the rest of OTRS JavaScript
+            // don't let nv/d3 exceptions block the rest of LIGERO JavaScript
             try {
 
                 Chart.margin({
@@ -415,7 +415,7 @@ Core.UI.AdvancedChart = (function (TargetNS) {
                     // because it could happen that x axis headings occur multiple
                     // times (such as Thu 18 for two different months), we
                     // add a custom label for uniquity of the headings which is being
-                    // removed later (see OTRSmultiBarChart.js)
+                    // removed later (see LIGEROmultiBarChart.js)
                     ResultLine.values.push({
                         x: '__LABEL_START__' + InnerCounter + '__LABEL_END__' + HeadingElement + ' ',
                         y: Value
@@ -431,10 +431,10 @@ Core.UI.AdvancedChart = (function (TargetNS) {
 
         nv.addGraph(function() {
 
-            var Chart = nv.models.OTRSmultiBarChart(),
+            var Chart = nv.models.LIGEROmultiBarChart(),
                 ShowLegend = Options.HideLegend ? false : true;
 
-            // don't let nv/d3 exceptions block the rest of OTRS JavaScript
+            // don't let nv/d3 exceptions block the rest of LIGERO JavaScript
             try {
 
                 Chart.staggerLabels(true);
@@ -585,10 +585,10 @@ Core.UI.AdvancedChart = (function (TargetNS) {
 
         nv.addGraph(function() {
 
-            var Chart = nv.models.OTRSstackedAreaChart(),
+            var Chart = nv.models.LIGEROstackedAreaChart(),
                 ShowLegend = Options.HideLegend ? false : true;
 
-            // don't let nv/d3 exceptions block the rest of OTRS JavaScript
+            // don't let nv/d3 exceptions block the rest of LIGERO JavaScript
             try {
 
                 Chart.staggerLabels(true);

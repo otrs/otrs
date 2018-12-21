@@ -1,12 +1,12 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
 # did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
-package Kernel::Modules::AdminOTRSBusiness;
+package Kernel::Modules::AdminLIGEROBusiness;
 
 use strict;
 use warnings;
@@ -50,49 +50,49 @@ sub Run {
     }
 
     # get needed objects
-    my $OTRSBusinessObject = $Kernel::OM->Get('Kernel::System::OTRSBusiness');
+    my $LIGEROBusinessObject = $Kernel::OM->Get('Kernel::System::LIGEROBusiness');
     my $ParamObject        = $Kernel::OM->Get('Kernel::System::Web::Request');
 
-    my $OTRSBusinessLabel     = '<strong>OTRS Business Solution</strong>™';
+    my $LIGEROBusinessLabel     = '<strong>LIGERO Business Solution</strong>™';
     my $NotificationCode      = $ParamObject->GetParam( Param => 'NotificationCode' );
     my %NotificationCode2Text = (
         InstallOk => {
             Priority => 'Success',
             Data     => $LayoutObject->{LanguageObject}
-                ->Translate( 'Your system was successfully upgraded to %s.', $OTRSBusinessLabel ),
+                ->Translate( 'Your system was successfully upgraded to %s.', $LIGEROBusinessLabel ),
         },
         InstallError => {
             Priority => 'Error',
             Data     => $LayoutObject->{LanguageObject}
-                ->Translate( 'There was a problem during the upgrade to %s.', $OTRSBusinessLabel ),
+                ->Translate( 'There was a problem during the upgrade to %s.', $LIGEROBusinessLabel ),
         },
         ReinstallOk => {
             Priority => 'Success',
-            Data => $LayoutObject->{LanguageObject}->Translate( '%s was correctly reinstalled.', $OTRSBusinessLabel ),
+            Data => $LayoutObject->{LanguageObject}->Translate( '%s was correctly reinstalled.', $LIGEROBusinessLabel ),
         },
         ReinstallError => {
             Priority => 'Error',
             Data     => $LayoutObject->{LanguageObject}
-                ->Translate( 'There was a problem reinstalling %s.', $OTRSBusinessLabel ),
+                ->Translate( 'There was a problem reinstalling %s.', $LIGEROBusinessLabel ),
         },
         UpdateOk => {
             Priority => 'Success',
             Data =>
-                $LayoutObject->{LanguageObject}->Translate( 'Your %s was successfully updated.', $OTRSBusinessLabel ),
+                $LayoutObject->{LanguageObject}->Translate( 'Your %s was successfully updated.', $LIGEROBusinessLabel ),
         },
         UpdateError => {
             Priority => 'Error',
             Data     => $LayoutObject->{LanguageObject}
-                ->Translate( 'There was a problem during the upgrade of %s.', $OTRSBusinessLabel ),
+                ->Translate( 'There was a problem during the upgrade of %s.', $LIGEROBusinessLabel ),
         },
         UninstallOk => {
             Priority => 'Success',
-            Data => $LayoutObject->{LanguageObject}->Translate( '%s was correctly uninstalled.', $OTRSBusinessLabel ),
+            Data => $LayoutObject->{LanguageObject}->Translate( '%s was correctly uninstalled.', $LIGEROBusinessLabel ),
         },
         UninstallError => {
             Priority => 'Error',
             Data     => $LayoutObject->{LanguageObject}
-                ->Translate( 'There was a problem uninstalling %s.', $OTRSBusinessLabel ),
+                ->Translate( 'There was a problem uninstalling %s.', $LIGEROBusinessLabel ),
         },
     );
     my $Notification;
@@ -106,34 +106,34 @@ sub Run {
         );
     }
     elsif ( $Self->{Subaction} eq 'UninstallAction' ) {
-        my $Result = $OTRSBusinessObject->OTRSBusinessUninstall();
+        my $Result = $LIGEROBusinessObject->LIGEROBusinessUninstall();
         my $Notification;
         if ($Result) {
             return $LayoutObject->Redirect(
-                OP => "Action=AdminOTRSBusiness;NotificationCode=UninstallOk"
+                OP => "Action=AdminLIGEROBusiness;NotificationCode=UninstallOk"
             );
         }
         return $LayoutObject->Redirect(
-            OP => "Action=AdminOTRSBusiness;NotificationCode=UninstallError"
+            OP => "Action=AdminLIGEROBusiness;NotificationCode=UninstallError"
         );
     }
     elsif ( $Self->{Subaction} eq 'ReinstallAction' ) {
-        my $Result = $OTRSBusinessObject->OTRSBusinessReinstall();
+        my $Result = $LIGEROBusinessObject->LIGEROBusinessReinstall();
         my $Notification;
         if ($Result) {
             return $LayoutObject->Redirect(
-                OP => "Action=AdminOTRSBusiness;NotificationCode=ReinstallOk"
+                OP => "Action=AdminLIGEROBusiness;NotificationCode=ReinstallOk"
             );
         }
         return $LayoutObject->Redirect(
-            OP => "Action=AdminOTRSBusiness;NotificationCode=ReinstallError"
+            OP => "Action=AdminLIGEROBusiness;NotificationCode=ReinstallError"
         );
     }
     elsif ( $Self->{Subaction} eq 'InstallAction' ) {
-        my %Response = $OTRSBusinessObject->OTRSBusinessInstall();
+        my %Response = $LIGEROBusinessObject->LIGEROBusinessInstall();
         if ( $Response{Success} ) {
             return $LayoutObject->Redirect(
-                OP => "Action=AdminOTRSBusiness;NotificationCode=InstallOk"
+                OP => "Action=AdminLIGEROBusiness;NotificationCode=InstallOk"
             );
         }
 
@@ -148,14 +148,14 @@ sub Run {
             $Parameters .= ";ShowBlock=$Response{ShowBlock}";
         }
         return $LayoutObject->Redirect(
-            OP => "Action=AdminOTRSBusiness;NotificationCode=InstallError" . $Parameters,
+            OP => "Action=AdminLIGEROBusiness;NotificationCode=InstallError" . $Parameters,
         );
     }
     elsif ( $Self->{Subaction} eq 'UpdateAction' ) {
-        my %Response = $OTRSBusinessObject->OTRSBusinessUpdate();
+        my %Response = $LIGEROBusinessObject->LIGEROBusinessUpdate();
         if ( $Response{Success} ) {
             return $LayoutObject->Redirect(
-                OP => "Action=AdminOTRSBusiness;NotificationCode=UpdateOk"
+                OP => "Action=AdminLIGEROBusiness;NotificationCode=UpdateOk"
             );
         }
 
@@ -170,12 +170,12 @@ sub Run {
             $Parameters .= ";ShowBlock=$Response{ShowBlock}";
         }
         return $LayoutObject->Redirect(
-            OP => "Action=AdminOTRSBusiness;NotificationCode=UpdateError" . $Parameters,
+            OP => "Action=AdminLIGEROBusiness;NotificationCode=UpdateError" . $Parameters,
         );
     }
 
-    # OTRSBusiness not yet installed?
-    if ( !$OTRSBusinessObject->OTRSBusinessIsInstalled() ) {
+    # LIGEROBusiness not yet installed?
+    if ( !$LIGEROBusinessObject->LIGEROBusinessIsInstalled() ) {
         return $Self->NotInstalledScreen(
             Notification => $Notification,
         );
@@ -192,7 +192,7 @@ sub NotInstalledScreen {
     my ( $Self, %Param ) = @_;
 
     my $LayoutObject       = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
-    my $OTRSBusinessObject = $Kernel::OM->Get('Kernel::System::OTRSBusiness');
+    my $LIGEROBusinessObject = $Kernel::OM->Get('Kernel::System::LIGEROBusiness');
 
     my $Output = $LayoutObject->Header();
     $Output .= $LayoutObject->NavigationBar();
@@ -204,7 +204,7 @@ sub NotInstalledScreen {
     my %RegistrationData   = $RegistrationObject->RegistrationDataGet();
     my $EntitlementStatus  = 'forbidden';
     if ( $RegistrationData{State} && $RegistrationData{State} eq 'registered' ) {
-        $EntitlementStatus = $OTRSBusinessObject->OTRSBusinessEntitlementStatus(
+        $EntitlementStatus = $LIGEROBusinessObject->LIGEROBusinessEntitlementStatus(
             CallCloudService => 1,
         );
     }
@@ -214,7 +214,7 @@ sub NotInstalledScreen {
             Name => 'NotRegistered',
         );
     }
-    elsif ( !$OTRSBusinessObject->OTRSBusinessIsAvailable() ) {
+    elsif ( !$LIGEROBusinessObject->LIGEROBusinessIsAvailable() ) {
         $LayoutObject->Block(
             Name => 'NotAvailable',
         );
@@ -255,7 +255,7 @@ sub NotInstalledScreen {
     }
 
     $Output .= $LayoutObject->Output(
-        TemplateFile => 'AdminOTRSBusinessNotInstalled',
+        TemplateFile => 'AdminLIGEROBusinessNotInstalled',
     );
     $Output .= $LayoutObject->Footer();
 
@@ -266,7 +266,7 @@ sub InstalledScreen {
     my ( $Self, %Param ) = @_;
 
     my $LayoutObject       = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
-    my $OTRSBusinessObject = $Kernel::OM->Get('Kernel::System::OTRSBusiness');
+    my $LIGEROBusinessObject = $Kernel::OM->Get('Kernel::System::LIGEROBusiness');
 
     my $Output = $LayoutObject->Header();
     $Output .= $LayoutObject->NavigationBar();
@@ -280,7 +280,7 @@ sub InstalledScreen {
     if (
         !%RegistrationData
         || $RegistrationData{State} ne 'registered'
-        || $OTRSBusinessObject->OTRSBusinessEntitlementStatus( CallCloudService => 1 ) eq 'forbidden'
+        || $LIGEROBusinessObject->LIGEROBusinessEntitlementStatus( CallCloudService => 1 ) eq 'forbidden'
         )
     {
         $LayoutObject->Block(
@@ -288,13 +288,13 @@ sub InstalledScreen {
         );
     }
     else {
-        if ( !$OTRSBusinessObject->OTRSBusinessIsCorrectlyDeployed() ) {
-            if ( $OTRSBusinessObject->OTRSBusinessIsUpdateable() ) {
+        if ( !$LIGEROBusinessObject->LIGEROBusinessIsCorrectlyDeployed() ) {
+            if ( $LIGEROBusinessObject->LIGEROBusinessIsUpdateable() ) {
                 $LayoutObject->Block(
                     Name => 'NeedsReinstallAndUpdate',
                 );
             }
-            elsif ( $OTRSBusinessObject->OTRSBusinessIsReinstallable() ) {
+            elsif ( $LIGEROBusinessObject->LIGEROBusinessIsReinstallable() ) {
                 $LayoutObject->Block(
                     Name => 'NeedsReinstall',
                 );
@@ -305,7 +305,7 @@ sub InstalledScreen {
                 );
             }
         }
-        elsif ( $OTRSBusinessObject->OTRSBusinessIsUpdateable() ) {
+        elsif ( $LIGEROBusinessObject->LIGEROBusinessIsUpdateable() ) {
             my $ParamObject = $Kernel::OM->Get('Kernel::System::Web::Request');
             my %GetParam;
             $GetParam{ShowBlock}              = $ParamObject->GetParam( Param => 'ShowBlock' )                || '';
@@ -337,7 +337,7 @@ sub InstalledScreen {
     }
 
     $Output .= $LayoutObject->Output(
-        TemplateFile => 'AdminOTRSBusinessInstalled',
+        TemplateFile => 'AdminLIGEROBusinessInstalled',
     );
     $Output .= $LayoutObject->Footer();
 
@@ -348,11 +348,11 @@ sub UninstallScreen {
     my ( $Self, %Param ) = @_;
 
     my $LayoutObject       = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
-    my $OTRSBusinessObject = $Kernel::OM->Get('Kernel::System::OTRSBusiness');
+    my $LIGEROBusinessObject = $Kernel::OM->Get('Kernel::System::LIGEROBusiness');
 
-    if ( !$OTRSBusinessObject->OTRSBusinessIsInstalled() ) {
+    if ( !$LIGEROBusinessObject->LIGEROBusinessIsInstalled() ) {
         return $LayoutObject->Redirect(
-            OP => "Action=AdminOTRSBusiness"
+            OP => "Action=AdminLIGEROBusiness"
         );
     }
 
@@ -363,7 +363,7 @@ sub UninstallScreen {
     }
 
     # check for dependencies. If there are any, downgrade is not allowed.
-    my $Dependencies = $OTRSBusinessObject->OTRSBusinessGetDependencies();
+    my $Dependencies = $LIGEROBusinessObject->LIGEROBusinessGetDependencies();
     if ( IsArrayRefWithData($Dependencies) ) {
         $LayoutObject->Block(
             Name => 'DowngradeNotPossible',
@@ -379,7 +379,7 @@ sub UninstallScreen {
     }
 
     $Output .= $LayoutObject->Output(
-        TemplateFile => 'AdminOTRSBusinessUninstall',
+        TemplateFile => 'AdminLIGEROBusinessUninstall',
     );
     $Output .= $LayoutObject->Footer();
 

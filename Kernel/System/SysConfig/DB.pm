@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -1215,7 +1215,7 @@ Get default setting list with complete data.
         UserPreferencesGroup     => 'Some Group',
         Navigation               => 'ASimple::Path::Structure',
         Locked                   => 1, # check for locked settings
-        Category                 => 'OTRS',                             # optional (requires CategoryFiles)
+        Category                 => 'LIGERO',                             # optional (requires CategoryFiles)
         CategoryFiles            => ['Framework.xml', 'Ticket.xml', ],  # optional (requires Category)
         NoCache                  => 0,                                  # (optional) Default 0. If set, system will not generate cache.
     );
@@ -4470,7 +4470,7 @@ sub DeploymentAdd {
         }
     }
 
-    my $UID = 'OTRSInvalid-' . $Self->_GetUID();
+    my $UID = 'LIGEROInvalid-' . $Self->_GetUID();
 
     # Create a deployment record without the real comments.
     return if !$DBObject->Do(
@@ -5344,7 +5344,7 @@ sub DeploymentListCleanup {
             SELECT id, create_time
             FROM sysconfig_deployment
             WHERE effective_value LIKE \'Invalid%\'
-                OR comments LIKE \'OTRSInvalid-%\'
+                OR comments LIKE \'LIGEROInvalid-%\'
             ORDER BY id DESC',
     );
 
@@ -5640,7 +5640,7 @@ sub _GetUID {
 
 =head1 TERMS AND CONDITIONS
 
-This software is part of the OTRS project (L<https://ligero.org/>).
+This software is part of the LIGERO project (L<https://ligero.org/>).
 
 This software comes with ABSOLUTELY NO WARRANTY. For details, see
 the enclosed file COPYING for license information (GPL). If you

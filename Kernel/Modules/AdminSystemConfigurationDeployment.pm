@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -195,7 +195,7 @@ sub Run {
         if ($DontKnowSettings) {
             $Output .= $LayoutObject->Notify(
                 Info => $LayoutObject->{LanguageObject}->Translate(
-                    "Some imported settings are not present in the current state of the configuration or it was not possible to update them. Please check the OTRS log for more information."
+                    "Some imported settings are not present in the current state of the configuration or it was not possible to update them. Please check the LIGERO log for more information."
                 ),
                 Link => $LayoutObject->{Baselink} . 'Action=AdminLog',
             );
@@ -208,7 +208,7 @@ sub Run {
                 AdvancedMode            => $AdvancedMode,
                 DeploymentRestore       => $DeploymentRestore,
                 Readonly                => 1,
-                OTRSBusinessIsInstalled => $Kernel::OM->Get('Kernel::System::OTRSBusiness')->OTRSBusinessIsInstalled(),
+                LIGEROBusinessIsInstalled => $Kernel::OM->Get('Kernel::System::LIGEROBusiness')->LIGEROBusinessIsInstalled(),
             },
         );
 

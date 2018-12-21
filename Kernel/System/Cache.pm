@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -18,7 +18,7 @@ our @ObjectDependencies = (
 
 =head1 NAME
 
-Kernel::System::Cache - Key/value based data cache for OTRS
+Kernel::System::Cache - Key/value based data cache for LIGERO
 
 =head1 DESCRIPTION
 
@@ -171,7 +171,7 @@ store a value in the cache.
     );
 
 The Type here refers to the group of entries that should be cached and cleaned up together,
-usually this will represent the OTRS object that is supposed to be cached, like 'Ticket'.
+usually this will represent the LIGERO object that is supposed to be cached, like 'Ticket'.
 
 The Key identifies the entry (together with the type) for retrieval and deletion of this value.
 
@@ -414,7 +414,7 @@ sub CleanUp {
 
 =head1 TERMS AND CONDITIONS
 
-This software is part of the OTRS project (L<https://ligero.org/>).
+This software is part of the LIGERO project (L<https://ligero.org/>).
 
 This software comes with ABSOLUTELY NO WARRANTY. For details, see
 the enclosed file COPYING for license information (GPL). If you

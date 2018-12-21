@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -579,7 +579,7 @@ sub _WebserviceConfigUpgrade {
 
     return if !IsHashRefWithData( $Param{Config} );
 
-    # Updates of SOAP and REST transport in OTRS 6:
+    # Updates of SOAP and REST transport in LIGERO 6:
     #   Authentication, SSL and Proxy option changes, introduction of timeout param.
     # Upgrade is considered necessary if the new (and now mandatory) parameter 'Timeout' isn't set.
     if (
@@ -695,7 +695,7 @@ sub _WebserviceConfigUpgrade {
 
 =head1 TERMS AND CONDITIONS
 
-This software is part of the OTRS project (L<https://ligero.org/>).
+This software is part of the LIGERO project (L<https://ligero.org/>).
 
 This software comes with ABSOLUTELY NO WARRANTY. For details, see
 the enclosed file COPYING for license information (GPL). If you

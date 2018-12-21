@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -25,7 +25,7 @@ sub Run {
     return '' if $Self->{UserID} != 1;
 
     # get the product name
-    my $ProductName = $Kernel::OM->Get('Kernel::Config')->Get('ProductName') || 'OTRS';
+    my $ProductName = $Kernel::OM->Get('Kernel::Config')->Get('ProductName') || 'LIGERO';
 
     # get layout object
     my $LayoutObject = $Kernel::OM->Get('Kernel::Output::HTML::Layout');

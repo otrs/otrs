@@ -209,7 +209,7 @@
         </Value>
     </Setting>
     <Setting Name="Ticket::Article::Backend::MIMEBase::ArticleStorage" Required="1" Valid="1" ConfigLevel="200">
-        <Description Translatable="1">Saves the attachments of articles. "DB" stores all data in the database (not recommended for storing big attachments). "FS" stores the data on the filesystem; this is faster but the webserver should run under the OTRS user. You can switch between the modules even on a system that is already in production without any loss of data. Note: Searching for attachment names is not supported when "FS" is used.</Description>
+        <Description Translatable="1">Saves the attachments of articles. "DB" stores all data in the database (not recommended for storing big attachments). "FS" stores the data on the filesystem; this is faster but the webserver should run under the LIGERO user. You can switch between the modules even on a system that is already in production without any loss of data. Note: Searching for attachment names is not supported when "FS" is used.</Description>
         <Navigation>Core::CommunicationChannel::MIMEBase</Navigation>
         <Value>
             <Item ValueType="PerlModule" ValueFilter="Kernel/System/Ticket/Article/Backend/MIMEBase/ArticleStorage*.pm">Kernel::System::Ticket::Article::Backend::MIMEBase::ArticleStorageDB</Item>
@@ -226,7 +226,7 @@
         <Description Translatable="1">Specifies the directory to store the data in, if "FS" was selected for ArticleStorage.</Description>
         <Navigation>Core::CommunicationChannel::MIMEBase</Navigation>
         <Value>
-            <Item ValueType="String" ValueRegex="">&lt;OTRS_CONFIG_Home&gt;/var/article</Item>
+            <Item ValueType="String" ValueRegex="">&lt;LIGERO_CONFIG_Home&gt;/var/article</Item>
         </Value>
     </Setting>
     <Setting Name="Ticket::Article::Backend::MIMEBase::IndexAttachmentNames" Required="1" Valid="1" ConfigLevel="200">
@@ -236,7 +236,7 @@
             <Item ValueType="Checkbox">1</Item>
         </Value>
     </Setting>
-    <Setting Name="OTRSEscalationEvents::DecayTime" Required="0" Valid="1">
+    <Setting Name="LIGEROEscalationEvents::DecayTime" Required="0" Valid="1">
         <Description Translatable="1">The duration in minutes after emitting an event, in which the new escalation notify and start events are suppressed.</Description>
         <Navigation>Core::Ticket</Navigation>
         <Value>
@@ -4466,7 +4466,7 @@
         <Description Translatable="1">Defines the default ticket bounced notification for customer/sender in the ticket bounce screen of the agent interface.</Description>
         <Navigation>Frontend::Agent::View::TicketBounce</Navigation>
         <Value>
-            <Item ValueType="Textarea" Translatable="1">Your email with ticket number "&lt;OTRS_TICKET&gt;" is bounced to "&lt;OTRS_BOUNCE_TO&gt;". Contact this address for further information.</Item>
+            <Item ValueType="Textarea" Translatable="1">Your email with ticket number "&lt;LIGERO_TICKET&gt;" is bounced to "&lt;LIGERO_BOUNCE_TO&gt;". Contact this address for further information.</Item>
         </Value>
     </Setting>
     <Setting Name="Ticket::Frontend::AgentTicketCompose###Permission" Required="1" Valid="1">
@@ -4725,7 +4725,7 @@
         <Description Translatable="1">When tickets are merged, the customer can be informed per email by setting the check box "Inform Sender". In this text area, you can define a pre-formatted text which can later be modified by the agents.</Description>
         <Navigation>Frontend::Agent::View::TicketMerge</Navigation>
         <Value>
-            <Item ValueType="Textarea" Translatable="1">Your email with ticket number "&lt;OTRS_TICKET&gt;" is merged to "&lt;OTRS_MERGE_TO_TICKET&gt;".</Item>
+            <Item ValueType="Textarea" Translatable="1">Your email with ticket number "&lt;LIGERO_TICKET&gt;" is merged to "&lt;LIGERO_MERGE_TO_TICKET&gt;".</Item>
         </Value>
     </Setting>
     <Setting Name="Ticket::Frontend::AutomaticMergeSubject" Required="1" Valid="1">
@@ -4739,7 +4739,7 @@
         <Description Translatable="1">When tickets are merged, a note will be added automatically to the ticket which is no longer active. Here you can define the body of this note (this text cannot be changed by the agent).</Description>
         <Navigation>Frontend::Agent::View::TicketMerge</Navigation>
         <Value>
-            <Item ValueType="Textarea" Translatable="1">Merged Ticket &lt;OTRS_TICKET&gt; to &lt;OTRS_MERGE_TO_TICKET&gt;.</Item>
+            <Item ValueType="Textarea" Translatable="1">Merged Ticket &lt;LIGERO_TICKET&gt; to &lt;LIGERO_MERGE_TO_TICKET&gt;.</Item>
         </Value>
     </Setting>
     <Setting Name="Ticket::ViewableSenderTypes" Required="1" Valid="1">
@@ -5310,17 +5310,17 @@
         </Value>
     </Setting>
     <Setting Name="Ticket::Frontend::MenuModule###999-TeaserAttachmentView" Required="0" Valid="1">
-        <Description Translatable="1">Shows a teaser link in the menu for the ticket attachment view of OTRS Business Solution™.</Description>
+        <Description Translatable="1">Shows a teaser link in the menu for the ticket attachment view of LIGERO Business Solution™.</Description>
         <Navigation>Frontend::Agent::View::TicketZoom::MenuModule</Navigation>
         <Value>
             <Hash>
                 <Item Key="Module">Kernel::Output::HTML::TicketMenu::TeaserAttachmentView</Item>
-                <Item Key="Name" Translatable="1">All attachments (OTRS Business Solution™)</Item>
+                <Item Key="Name" Translatable="1">All attachments (LIGERO Business Solution™)</Item>
                 <Item Key="Description" Translatable="1">View all attachments of the current ticket</Item>
                 <Item Key="Action">AgentTicketZoom</Item>
                 <Item Key="Link">Action=AgentTicketZoom;TicketID=[% Data.TicketID | html %]</Item>
                 <Item Key="Target"></Item>
-                <Item Key="Class">OTRSBusinessRequired</Item>
+                <Item Key="Class">LIGEROBusinessRequired</Item>
                 <Item Key="PopupType"></Item>
                 <Item Key="ClusterName" Translatable="1">Miscellaneous</Item>
                 <Item Key="ClusterPriority">999</Item>
@@ -9113,7 +9113,7 @@
                             <Item>admin</Item>
                         </Array>
                     </Item>
-                    <Item Key="Description" Translatable="1">This module is part of the admin area of OTRS.</Item>
+                    <Item Key="Description" Translatable="1">This module is part of the admin area of LIGERO.</Item>
                     <Item Key="Title" Translatable="1">Access Control Lists (ACL)</Item>
                     <Item Key="NavBarName">Admin</Item>
                 </Hash>
@@ -9188,7 +9188,7 @@
                             <Item>admin</Item>
                         </Array>
                     </Item>
-                    <Item Key="Description" Translatable="1">This module is part of the admin area of OTRS.</Item>
+                    <Item Key="Description" Translatable="1">This module is part of the admin area of LIGERO.</Item>
                     <Item Key="Title" Translatable="1">Queues</Item>
                     <Item Key="NavBarName">Admin</Item>
                 </Hash>
@@ -9259,7 +9259,7 @@
                             <Item>admin</Item>
                         </Array>
                     </Item>
-                    <Item Key="Description" Translatable="1">This module is part of the admin area of OTRS.</Item>
+                    <Item Key="Description" Translatable="1">This module is part of the admin area of LIGERO.</Item>
                     <Item Key="Title" Translatable="1">Templates</Item>
                     <Item Key="NavBarName">Admin</Item>
                 </Hash>
@@ -9329,7 +9329,7 @@
                             <Item>admin</Item>
                         </Array>
                     </Item>
-                    <Item Key="Description" Translatable="1">This module is part of the admin area of OTRS.</Item>
+                    <Item Key="Description" Translatable="1">This module is part of the admin area of LIGERO.</Item>
                     <Item Key="Title" Translatable="1">Templates ↔ Queues</Item>
                     <Item Key="NavBarName">Admin</Item>
                 </Hash>
@@ -9399,7 +9399,7 @@
                             <Item>admin</Item>
                         </Array>
                     </Item>
-                    <Item Key="Description" Translatable="1">This module is part of the admin area of OTRS.</Item>
+                    <Item Key="Description" Translatable="1">This module is part of the admin area of LIGERO.</Item>
                     <Item Key="Title" Translatable="1">Auto Responses</Item>
                     <Item Key="NavBarName">Admin</Item>
                 </Hash>
@@ -9469,7 +9469,7 @@
                             <Item>admin</Item>
                         </Array>
                     </Item>
-                    <Item Key="Description" Translatable="1">This module is part of the admin area of OTRS.</Item>
+                    <Item Key="Description" Translatable="1">This module is part of the admin area of LIGERO.</Item>
                     <Item Key="Title" Translatable="1">Queues ↔ Auto Responses</Item>
                     <Item Key="NavBarName">Admin</Item>
                 </Hash>
@@ -9539,7 +9539,7 @@
                             <Item>admin</Item>
                         </Array>
                     </Item>
-                    <Item Key="Description" Translatable="1">This module is part of the admin area of OTRS.</Item>
+                    <Item Key="Description" Translatable="1">This module is part of the admin area of LIGERO.</Item>
                     <Item Key="Title" Translatable="1">Attachments</Item>
                     <Item Key="NavBarName">Admin</Item>
                 </Hash>
@@ -9609,7 +9609,7 @@
                             <Item>admin</Item>
                         </Array>
                     </Item>
-                    <Item Key="Description" Translatable="1">This module is part of the admin area of OTRS.</Item>
+                    <Item Key="Description" Translatable="1">This module is part of the admin area of LIGERO.</Item>
                     <Item Key="Title" Translatable="1">Templates ↔ Attachments</Item>
                     <Item Key="NavBarName">Admin</Item>
                 </Hash>
@@ -9679,7 +9679,7 @@
                             <Item>admin</Item>
                         </Array>
                     </Item>
-                    <Item Key="Description" Translatable="1">This module is part of the admin area of OTRS.</Item>
+                    <Item Key="Description" Translatable="1">This module is part of the admin area of LIGERO.</Item>
                     <Item Key="Title" Translatable="1">Salutations</Item>
                     <Item Key="NavBarName">Admin</Item>
                 </Hash>
@@ -9749,7 +9749,7 @@
                             <Item>admin</Item>
                         </Array>
                     </Item>
-                    <Item Key="Description" Translatable="1">This module is part of the admin area of OTRS.</Item>
+                    <Item Key="Description" Translatable="1">This module is part of the admin area of LIGERO.</Item>
                     <Item Key="Title" Translatable="1">Signatures</Item>
                     <Item Key="NavBarName">Admin</Item>
                 </Hash>
@@ -9819,7 +9819,7 @@
                             <Item>admin</Item>
                         </Array>
                     </Item>
-                    <Item Key="Description" Translatable="1">This module is part of the admin area of OTRS.</Item>
+                    <Item Key="Description" Translatable="1">This module is part of the admin area of LIGERO.</Item>
                     <Item Key="Title" Translatable="1">Email Addresses</Item>
                     <Item Key="NavBarName">Admin</Item>
                 </Hash>
@@ -9889,7 +9889,7 @@
                             <Item>admin</Item>
                         </Array>
                     </Item>
-                    <Item Key="Description" Translatable="1">This module is part of the admin area of OTRS.</Item>
+                    <Item Key="Description" Translatable="1">This module is part of the admin area of LIGERO.</Item>
                     <Item Key="Title" Translatable="1">Ticket Notifications</Item>
                     <Item Key="NavBarName">Admin</Item>
                 </Hash>
@@ -9964,7 +9964,7 @@
                             <Item>admin</Item>
                         </Array>
                     </Item>
-                    <Item Key="Description" Translatable="1">This module is part of the admin area of OTRS.</Item>
+                    <Item Key="Description" Translatable="1">This module is part of the admin area of LIGERO.</Item>
                     <Item Key="Title" Translatable="1">Services</Item>
                     <Item Key="NavBarName">Admin</Item>
                 </Hash>
@@ -10034,7 +10034,7 @@
                             <Item>admin</Item>
                         </Array>
                     </Item>
-                    <Item Key="Description" Translatable="1">This module is part of the admin area of OTRS.</Item>
+                    <Item Key="Description" Translatable="1">This module is part of the admin area of LIGERO.</Item>
                     <Item Key="Title" Translatable="1">Service Level Agreements</Item>
                     <Item Key="NavBarName">Admin</Item>
                 </Hash>
@@ -10104,7 +10104,7 @@
                             <Item>admin</Item>
                         </Array>
                     </Item>
-                    <Item Key="Description" Translatable="1">This module is part of the admin area of OTRS.</Item>
+                    <Item Key="Description" Translatable="1">This module is part of the admin area of LIGERO.</Item>
                     <Item Key="Title" Translatable="1">Types</Item>
                     <Item Key="NavBarName">Admin</Item>
                 </Hash>
@@ -10175,7 +10175,7 @@
                             <Item>admin</Item>
                         </Array>
                     </Item>
-                    <Item Key="Description" Translatable="1">This module is part of the admin area of OTRS.</Item>
+                    <Item Key="Description" Translatable="1">This module is part of the admin area of LIGERO.</Item>
                     <Item Key="Title" Translatable="1">States</Item>
                     <Item Key="NavBarName">Admin</Item>
                 </Hash>
@@ -10246,7 +10246,7 @@
                             <Item>admin</Item>
                         </Array>
                     </Item>
-                    <Item Key="Description" Translatable="1">This module is part of the admin area of OTRS.</Item>
+                    <Item Key="Description" Translatable="1">This module is part of the admin area of LIGERO.</Item>
                     <Item Key="Title" Translatable="1">Priorities</Item>
                     <Item Key="NavBarName">Admin</Item>
                 </Hash>
@@ -10317,7 +10317,7 @@
                             <Item>admin</Item>
                         </Array>
                     </Item>
-                    <Item Key="Description" Translatable="1">This module is part of the admin area of OTRS.</Item>
+                    <Item Key="Description" Translatable="1">This module is part of the admin area of LIGERO.</Item>
                     <Item Key="Title" Translatable="1">GenericAgent</Item>
                     <Item Key="NavBarName">Admin</Item>
                 </Hash>
@@ -10536,7 +10536,7 @@
                 <Item Key="Name" Translatable="1">Email</Item>
                 <Item Key="Icon">fa fa-envelope</Item>
                 <Item Key="Prio">100</Item>
-                <Item Key="IsOTRSBusinessTransport">0</Item>
+                <Item Key="IsLIGEROBusinessTransport">0</Item>
                 <Item Key="AgentEnabledByDefault">1</Item>
             </Hash>
         </Value>
@@ -10550,7 +10550,7 @@
                 <Item Key="Name" Translatable="1">Web View</Item>
                 <Item Key="Icon">fa fa-th-list</Item>
                 <Item Key="Prio">110</Item>
-                <Item Key="IsOTRSBusinessTransport">1</Item>
+                <Item Key="IsLIGEROBusinessTransport">1</Item>
                 <Item Key="AgentEnabledByDefault">0</Item>
             </Hash>
         </Value>
@@ -10564,7 +10564,7 @@
                 <Item Key="Name" Translatable="1">SMS (Short Message Service)</Item>
                 <Item Key="Icon">fa fa-mobile</Item>
                 <Item Key="Prio">120</Item>
-                <Item Key="IsOTRSBusinessTransport">1</Item>
+                <Item Key="IsLIGEROBusinessTransport">1</Item>
                 <Item Key="AgentEnabledByDefault">0</Item>
             </Hash>
         </Value>
@@ -11110,12 +11110,12 @@
         </Value>
     </Setting>
     <Setting Name="TicketACL::Debug::Filter###00-Default" Required="0" Valid="0">
-        <Description Translatable="1">Filter for debugging ACLs. Note: More ticket attributes can be added in the format &lt;OTRS_TICKET_Attribute&gt; e.g. &lt;OTRS_TICKET_Priority&gt;.</Description>
+        <Description Translatable="1">Filter for debugging ACLs. Note: More ticket attributes can be added in the format &lt;LIGERO_TICKET_Attribute&gt; e.g. &lt;LIGERO_TICKET_Priority&gt;.</Description>
         <Navigation>Core::Ticket::ACL</Navigation>
         <Value>
             <Hash>
                 <Item Key="ACLName"></Item>
-                <Item Key="&lt;OTRS_TICKET_TicketNumber&gt;"></Item>
+                <Item Key="&lt;LIGERO_TICKET_TicketNumber&gt;"></Item>
             </Hash>
         </Value>
     </Setting>
@@ -11159,7 +11159,7 @@
         <Description Translatable="1">Path for the log file (it only applies if "FS" was selected for LoopProtectionModule and it is mandatory).</Description>
         <Navigation>Core::Email::PostMaster</Navigation>
         <Value>
-            <Item ValueType="String" ValueRegex="">&lt;OTRS_CONFIG_Home&gt;/var/log/LoopProtection</Item>
+            <Item ValueType="String" ValueRegex="">&lt;LIGERO_CONFIG_Home&gt;/var/log/LoopProtection</Item>
         </Value>
     </Setting>
     <Setting Name="PostmasterAutoHTML2Text" Required="1" Valid="1">
@@ -11215,7 +11215,7 @@
         <Description Translatable="1">Defines the PostMaster header to be used on the filter for keeping the current state of the ticket.</Description>
         <Navigation>Core::Email::PostMaster</Navigation>
         <Value>
-            <Item ValueType="String">X-OTRS-FollowUp-State-Keep</Item>
+            <Item ValueType="String">X-LIGERO-FollowUp-State-Keep</Item>
         </Value>
     </Setting>
     <Setting Name="PostmasterFollowUpOnUnlockAgentNotifyOnlyToOwner" Required="1" Valid="1">
@@ -11279,44 +11279,44 @@
                 <Item>Envelope-To</Item>
                 <Item>X-Envelope-To</Item>
                 <Item>Return-Path</Item>
-                <Item>X-OTRS-AttachmentExists</Item>
-                <Item>X-OTRS-AttachmentCount</Item>
-                <Item>X-OTRS-Owner</Item>
-                <Item>X-OTRS-OwnerID</Item>
-                <Item>X-OTRS-Responsible</Item>
-                <Item>X-OTRS-ResponsibleID</Item>
-                <Item>X-OTRS-Loop</Item>
-                <Item>X-OTRS-Priority</Item>
-                <Item>X-OTRS-Queue</Item>
-                <Item>X-OTRS-Lock</Item>
-                <Item>X-OTRS-Ignore</Item>
-                <Item>X-OTRS-State</Item>
-                <Item>X-OTRS-State-PendingTime</Item>
-                <Item>X-OTRS-Type</Item>
-                <Item>X-OTRS-Service</Item>
-                <Item>X-OTRS-SLA</Item>
-                <Item>X-OTRS-Title</Item>
-                <Item>X-OTRS-CustomerNo</Item>
-                <Item>X-OTRS-CustomerUser</Item>
-                <Item>X-OTRS-SenderType</Item>
-                <Item>X-OTRS-IsVisibleForCustomer</Item>
-                <Item>X-OTRS-FollowUp-Owner</Item>
-                <Item>X-OTRS-FollowUp-OwnerID</Item>
-                <Item>X-OTRS-FollowUp-Responsible</Item>
-                <Item>X-OTRS-FollowUp-ResponsibleID</Item>
-                <Item>X-OTRS-FollowUp-Priority</Item>
-                <Item>X-OTRS-FollowUp-Queue</Item>
-                <Item>X-OTRS-FollowUp-Lock</Item>
-                <Item>X-OTRS-FollowUp-State</Item>
-                <Item>X-OTRS-FollowUp-State-PendingTime</Item>
-                <Item>X-OTRS-FollowUp-Type</Item>
-                <Item>X-OTRS-FollowUp-Service</Item>
-                <Item>X-OTRS-FollowUp-SLA</Item>
-                <Item>X-OTRS-FollowUp-SenderType</Item>
-                <Item>X-OTRS-FollowUp-IsVisibleForCustomer</Item>
-                <Item>X-OTRS-FollowUp-Title</Item>
-                <Item>X-OTRS-FollowUp-State-Keep</Item>
-                <Item>X-OTRS-BodyDecrypted</Item>
+                <Item>X-LIGERO-AttachmentExists</Item>
+                <Item>X-LIGERO-AttachmentCount</Item>
+                <Item>X-LIGERO-Owner</Item>
+                <Item>X-LIGERO-OwnerID</Item>
+                <Item>X-LIGERO-Responsible</Item>
+                <Item>X-LIGERO-ResponsibleID</Item>
+                <Item>X-LIGERO-Loop</Item>
+                <Item>X-LIGERO-Priority</Item>
+                <Item>X-LIGERO-Queue</Item>
+                <Item>X-LIGERO-Lock</Item>
+                <Item>X-LIGERO-Ignore</Item>
+                <Item>X-LIGERO-State</Item>
+                <Item>X-LIGERO-State-PendingTime</Item>
+                <Item>X-LIGERO-Type</Item>
+                <Item>X-LIGERO-Service</Item>
+                <Item>X-LIGERO-SLA</Item>
+                <Item>X-LIGERO-Title</Item>
+                <Item>X-LIGERO-CustomerNo</Item>
+                <Item>X-LIGERO-CustomerUser</Item>
+                <Item>X-LIGERO-SenderType</Item>
+                <Item>X-LIGERO-IsVisibleForCustomer</Item>
+                <Item>X-LIGERO-FollowUp-Owner</Item>
+                <Item>X-LIGERO-FollowUp-OwnerID</Item>
+                <Item>X-LIGERO-FollowUp-Responsible</Item>
+                <Item>X-LIGERO-FollowUp-ResponsibleID</Item>
+                <Item>X-LIGERO-FollowUp-Priority</Item>
+                <Item>X-LIGERO-FollowUp-Queue</Item>
+                <Item>X-LIGERO-FollowUp-Lock</Item>
+                <Item>X-LIGERO-FollowUp-State</Item>
+                <Item>X-LIGERO-FollowUp-State-PendingTime</Item>
+                <Item>X-LIGERO-FollowUp-Type</Item>
+                <Item>X-LIGERO-FollowUp-Service</Item>
+                <Item>X-LIGERO-FollowUp-SLA</Item>
+                <Item>X-LIGERO-FollowUp-SenderType</Item>
+                <Item>X-LIGERO-FollowUp-IsVisibleForCustomer</Item>
+                <Item>X-LIGERO-FollowUp-Title</Item>
+                <Item>X-LIGERO-FollowUp-State-Keep</Item>
+                <Item>X-LIGERO-BodyDecrypted</Item>
             </Array>
         </Value>
     </Setting>
@@ -11333,7 +11333,7 @@
                 </Item>
                 <Item Key="Set">
                     <Hash>
-                        <Item Key="X-OTRS-Ignore">yes</Item>
+                        <Item Key="X-LIGERO-Ignore">yes</Item>
                     </Hash>
                 </Item>
             </Hash>
@@ -11352,8 +11352,8 @@
                 </Item>
                 <Item Key="Set">
                     <Hash>
-                        <Item Key="X-OTRS-DynamicField-TicketFreeKey1">SomeNumber</Item>
-                        <Item Key="X-OTRS-DynamicField-TicketFreeText1">[***]</Item>
+                        <Item Key="X-LIGERO-DynamicField-TicketFreeKey1">SomeNumber</Item>
+                        <Item Key="X-LIGERO-DynamicField-TicketFreeText1">[***]</Item>
                     </Hash>
                 </Item>
             </Hash>
@@ -11372,7 +11372,7 @@
                 </Item>
                 <Item Key="Set">
                     <Hash>
-                        <Item Key="X-OTRS-Ignore">yes</Item>
+                        <Item Key="X-LIGERO-Ignore">yes</Item>
                     </Hash>
                 </Item>
             </Hash>
@@ -11419,7 +11419,7 @@ Thanks for your help!
                 <Item Key="CMD">/usr/bin/some.bin</Item>
                 <Item Key="Set">
                     <Hash>
-                        <Item Key="X-OTRS-Ignore">yes</Item>
+                        <Item Key="X-LIGERO-Ignore">yes</Item>
                     </Hash>
                 </Item>
             </Hash>
@@ -11434,7 +11434,7 @@ Thanks for your help!
                 <Item Key="CMD">/usr/bin/spamassassin | grep -i "X-Spam-Status: yes"</Item>
                 <Item Key="Set">
                     <Hash>
-                        <Item Key="X-OTRS-Ignore">yes</Item>
+                        <Item Key="X-LIGERO-Ignore">yes</Item>
                     </Hash>
                 </Item>
             </Hash>
@@ -11449,7 +11449,7 @@ Thanks for your help!
                 <Item Key="CMD">/usr/bin/spamassassin | grep -i "X-Spam-Status: yes"</Item>
                 <Item Key="Set">
                     <Hash>
-                        <Item Key="X-OTRS-Queue">spam</Item>
+                        <Item Key="X-LIGERO-Queue">spam</Item>
                     </Hash>
                 </Item>
             </Hash>
@@ -11585,7 +11585,7 @@ Thanks for your help!
         </Value>
     </Setting>
     <Setting Name="PostMaster::CheckFollowUpModule###0000-BounceEmail" Required="0" Valid="1">
-        <Description Translatable="1">Executes follow-up checks on OTRS Header 'X-OTRS-Bounce'.</Description>
+        <Description Translatable="1">Executes follow-up checks on LIGERO Header 'X-LIGERO-Bounce'.</Description>
         <Navigation>Core::Email::PostMaster</Navigation>
         <Value>
             <Hash>
@@ -11789,7 +11789,7 @@ Thanks for your help!
                             <Item>admin</Item>
                         </Array>
                     </Item>
-                    <Item Key="Description" Translatable="1">This module is part of the admin area of OTRS.</Item>
+                    <Item Key="Description" Translatable="1">This module is part of the admin area of LIGERO.</Item>
                     <Item Key="Title" Translatable="1">Dynamic Fields GUI</Item>
                     <Item Key="NavBarName">Admin</Item>
                 </Hash>
@@ -11892,7 +11892,7 @@ Thanks for your help!
                             <Item>admin</Item>
                         </Array>
                     </Item>
-                    <Item Key="Description" Translatable="1">This module is part of the admin area of OTRS.</Item>
+                    <Item Key="Description" Translatable="1">This module is part of the admin area of LIGERO.</Item>
                     <Item Key="Title" Translatable="1">Dynamic Fields Text Backend GUI</Item>
                     <Item Key="NavBarName"></Item>
                 </Hash>
@@ -11929,7 +11929,7 @@ Thanks for your help!
                             <Item>admin</Item>
                         </Array>
                     </Item>
-                    <Item Key="Description" Translatable="1">This module is part of the admin area of OTRS.</Item>
+                    <Item Key="Description" Translatable="1">This module is part of the admin area of LIGERO.</Item>
                     <Item Key="Title" Translatable="1">Dynamic Fields Checkbox Backend GUI</Item>
                     <Item Key="NavBarName"></Item>
                 </Hash>
@@ -11966,7 +11966,7 @@ Thanks for your help!
                             <Item>admin</Item>
                         </Array>
                     </Item>
-                    <Item Key="Description" Translatable="1">This module is part of the admin area of OTRS.</Item>
+                    <Item Key="Description" Translatable="1">This module is part of the admin area of LIGERO.</Item>
                     <Item Key="Title" Translatable="1">Dynamic Fields Drop-down Backend GUI</Item>
                     <Item Key="NavBarName"></Item>
                 </Hash>
@@ -12008,7 +12008,7 @@ Thanks for your help!
                             <Item>admin</Item>
                         </Array>
                     </Item>
-                    <Item Key="Description" Translatable="1">This module is part of the admin area of OTRS.</Item>
+                    <Item Key="Description" Translatable="1">This module is part of the admin area of LIGERO.</Item>
                     <Item Key="Title" Translatable="1">Dynamic Fields Date Time Backend GUI</Item>
                     <Item Key="NavBarName"></Item>
                 </Hash>
@@ -12050,7 +12050,7 @@ Thanks for your help!
                             <Item>admin</Item>
                         </Array>
                     </Item>
-                    <Item Key="Description" Translatable="1">This module is part of the admin area of OTRS.</Item>
+                    <Item Key="Description" Translatable="1">This module is part of the admin area of LIGERO.</Item>
                     <Item Key="Title" Translatable="1">Dynamic Fields Multiselect Backend GUI</Item>
                     <Item Key="NavBarName"></Item>
                 </Hash>

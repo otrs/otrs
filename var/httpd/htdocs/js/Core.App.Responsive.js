@@ -1,5 +1,5 @@
 // --
-// Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+// Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 // --
 // This software comes with ABSOLUTELY NO WARRANTY. For details, see
 // the enclosed file COPYING for license information (GPL). If you
@@ -14,7 +14,7 @@ Core.App = Core.App || {};
 /**
  * @namespace Core.App.Responsive
  * @memberof Core.App
- * @author OTRS AG
+ * @author LIGERO AG
  * @description
  *      This namespace contains the responsive functionality.
  */
@@ -186,7 +186,7 @@ Core.App.Responsive = (function (TargetNS) {
         // Check DesktopMode
         /*eslint-disable no-window*/
         try {
-            if ((top.location.href !== location.href && window.name.search(/^OTRSPopup_/) === -1) || parseInt(localStorage.getItem("DesktopMode"), 10) > 0) {
+            if ((top.location.href !== location.href && window.name.search(/^LIGEROPopup_/) === -1) || parseInt(localStorage.getItem("DesktopMode"), 10) > 0) {
                 /*eslint-enable no-window*/
 
                 // if the DesktopMode has been triggered manually, we add a switch to the footer

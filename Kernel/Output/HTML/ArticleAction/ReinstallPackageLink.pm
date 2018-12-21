@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -83,17 +83,17 @@ sub GetConfig {
         ChannelID => $Article{CommunicationChannelID},
     );
 
-    my $OTRSBusiness = $CommunicationChannel{PackageName} eq 'OTRSBusiness';
+    my $LIGEROBusiness = $CommunicationChannel{PackageName} eq 'LIGEROBusiness';
 
-    # Output either a link for OTRSBusiness or Package Manager screen.
+    # Output either a link for LIGEROBusiness or Package Manager screen.
     my %MenuItem = (
         ItemType    => 'Link',
-        Description => $OTRSBusiness
-        ? Translatable('Upgrade to OTRS Business Solution™')
+        Description => $LIGEROBusiness
+        ? Translatable('Upgrade to LIGERO Business Solution™')
         : Translatable('Re-install Package'),
-        Name  => $OTRSBusiness ? Translatable('Upgrade')    : Translatable('Re-install'),
-        Link  => $OTRSBusiness ? 'Action=AdminOTRSBusiness' : 'Action=AdminPackageManager',
-        Class => $OTRSBusiness ? 'OTRSBusinessRequired'     : undef,
+        Name  => $LIGEROBusiness ? Translatable('Upgrade')    : Translatable('Re-install'),
+        Link  => $LIGEROBusiness ? 'Action=AdminLIGEROBusiness' : 'Action=AdminPackageManager',
+        Class => $LIGEROBusiness ? 'LIGEROBusinessRequired'     : undef,
     );
 
     return ( \%MenuItem );

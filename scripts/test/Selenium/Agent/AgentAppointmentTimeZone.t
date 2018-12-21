@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -26,7 +26,7 @@ $Selenium->RunTest(
         # Make sure system is based on UTC.
         $Helper->ConfigSettingChange(
             Valid => 1,
-            Key   => 'OTRSTimeZone',
+            Key   => 'LIGEROTimeZone',
             Value => 'UTC',
         );
         $Helper->ConfigSettingChange(

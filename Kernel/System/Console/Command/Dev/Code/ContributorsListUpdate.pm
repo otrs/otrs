@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -37,7 +37,7 @@ sub Run {
     map { $Seen{$_}++ } @Lines;
 
     my $FileHandle = IO::File->new( 'AUTHORS.md', 'w' );
-    $FileHandle->print("The following persons contributed to OTRS:\n\n");
+    $FileHandle->print("The following persons contributed to LIGERO:\n\n");
 
     AUTHOR:
     for my $Author ( sort keys %Seen ) {

@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -111,7 +111,7 @@ sub new {
         }
     }
 
-    # Please note: ZoomTimeline is an OTRSBusiness feature
+    # Please note: ZoomTimeline is an LIGEROBusiness feature
     if ( !$ConfigObject->Get('TimelineViewEnabled') ) {
         $Self->{ZoomTimeline} = 0;
     }
@@ -217,7 +217,7 @@ sub new {
         )
     {
         $ConfigObject->Set(
-            Key   => 'Loader::Module::AgentTicketZoom###003-OTRSBusiness',
+            Key   => 'Loader::Module::AgentTicketZoom###003-LIGEROBusiness',
             Value => {
                 JavaScript => [
                     'Core.Agent.TicketZoom.TimelineView.js',
@@ -2071,13 +2071,13 @@ sub _ArticleTree {
         $ArticleViewSelected = 'Timeline';
     }
 
-    # Add disabled teaser option for OTRSBusiness timeline view
-    my $OTRSBusinessIsInstalled = $Kernel::OM->Get('Kernel::System::OTRSBusiness')->OTRSBusinessIsInstalled();
-    if ( !$OTRSBusinessIsInstalled ) {
+    # Add disabled teaser option for LIGEROBusiness timeline view
+    my $LIGEROBusinessIsInstalled = $Kernel::OM->Get('Kernel::System::LIGEROBusiness')->LIGEROBusinessIsInstalled();
+    if ( !$LIGEROBusinessIsInstalled ) {
         push @ArticleViews, {
             Key   => 'Timeline',
             Value => $LayoutObject->{LanguageObject}
-                ->Translate( 'Show Ticket Timeline View (%s)', 'OTRS Business Solution™' ),
+                ->Translate( 'Show Ticket Timeline View (%s)', 'LIGERO Business Solution™' ),
             Disabled => 1,
         };
     }

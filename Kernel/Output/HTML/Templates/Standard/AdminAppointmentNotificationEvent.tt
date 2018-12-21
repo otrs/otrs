@@ -1,14 +1,14 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
 # did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
-## nofilter(TidyAll::Plugin::OTRS::TT::ScriptUsage)
+## nofilter(TidyAll::Plugin::LIGERO::TT::ScriptUsage)
 
-[% SET OTRSBusinessLabel = '<strong>OTRS Business Solution</strong>™' %]
+[% SET LIGEROBusinessLabel = '<strong>LIGERO Business Solution</strong>™' %]
 
 [% RenderBlockStart("Overview") %]
 <div class="MainBox ARIARoleMain LayoutFixedSidebar SidebarFirst">
@@ -412,7 +412,7 @@
 [% RenderBlockEnd("TransportRowDisabled") %]
 [% RenderBlockStart("TransportRowRecommendation") %]
                         <div class="Field Info">
-                            <a href="[% Env("Baselink") %]Action=AdminOTRSBusiness" class="Button"><i class="fa fa-angle-double-up"></i> [% Translate("Upgrade to %s") | html | ReplacePlaceholders(OTRSBusinessLabel) %]</a>
+                            <a href="[% Env("Baselink") %]Action=AdminLIGEROBusiness" class="Button"><i class="fa fa-angle-double-up"></i> [% Translate("Upgrade to %s") | html | ReplacePlaceholders(LIGEROBusinessLabel) %]</a>
                         </div>
 [% RenderBlockEnd("TransportRowRecommendation") %]
 [% RenderBlockStart("TransportRowNotActive") %]
@@ -607,33 +607,33 @@
                 <p>[% Translate("You can use the following tags") | html %]:</p>
 
                 <dl>
-                    <dt><code>&lt;OTRS_APPOINTMENT_TITLE[20]&gt;</code></dt>
+                    <dt><code>&lt;LIGERO_APPOINTMENT_TITLE[20]&gt;</code></dt>
                     <dd>
                         [% Translate("To get the first 20 character of the appointment title.") | html %]
                     </dd>
 
-                    <dt><code>&lt;OTRS_APPOINTMENT_*&gt;</code></dt>
+                    <dt><code>&lt;LIGERO_APPOINTMENT_*&gt;</code></dt>
                     <dd>
                         [% Translate("To get the appointment attribute") | html %]
-                        ([% Translate(" e. g.") | html %] <code>&lt;OTRS_APPOINTMENT_APPOINTMENTID&gt;, &lt;OTRS_APPOINTMENT_STARTTIME&gt;, &lt;OTRS_APPOINTMENT_DESCRIPTION&gt;</code>).
+                        ([% Translate(" e. g.") | html %] <code>&lt;LIGERO_APPOINTMENT_APPOINTMENTID&gt;, &lt;LIGERO_APPOINTMENT_STARTTIME&gt;, &lt;LIGERO_APPOINTMENT_DESCRIPTION&gt;</code>).
                     </dd>
 
-                    <dt><code>&lt;OTRS_CALENDAR_*&gt;</code></dt>
+                    <dt><code>&lt;LIGERO_CALENDAR_*&gt;</code></dt>
                     <dd>
                         [% Translate("To get the calendar attribute") | html %]
-                        ([% Translate(" e. g.") | html %] <code>&lt;OTRS_CALENDAR_CALENDARID&gt;, &lt;OTRS_CALENDAR_CALENDARNAME&gt;, &lt;OTRS_CALENDAR_COLOR&gt;</code>).
+                        ([% Translate(" e. g.") | html %] <code>&lt;LIGERO_CALENDAR_CALENDARID&gt;, &lt;LIGERO_CALENDAR_CALENDARNAME&gt;, &lt;LIGERO_CALENDAR_COLOR&gt;</code>).
                     </dd>
 
-                    <dt><code>&lt;OTRS_*&gt;</code> [% Translate("or") | html %] <code>&lt;OTRS_NOTIFICATION_RECIPIENT_*&gt;</code></dt>
+                    <dt><code>&lt;LIGERO_*&gt;</code> [% Translate("or") | html %] <code>&lt;LIGERO_NOTIFICATION_RECIPIENT_*&gt;</code></dt>
                     <dd>
                         [% Translate("Attributes of the recipient user for the notification") | html %]
-                        ([% Translate(" e. g.") | html %] <code>&lt;OTRS_UserFullname&gt;</code> [% Translate("or") | html %] <code>&lt;OTRS_NOTIFICATION_RECIPIENT_UserFullname&gt;</code>).
+                        ([% Translate(" e. g.") | html %] <code>&lt;LIGERO_UserFullname&gt;</code> [% Translate("or") | html %] <code>&lt;LIGERO_NOTIFICATION_RECIPIENT_UserFullname&gt;</code>).
                     </dd>
 
-                    <dt><code>&lt;OTRS_CONFIG_*&gt;</code></dt>
+                    <dt><code>&lt;LIGERO_CONFIG_*&gt;</code></dt>
                     <dd>
                         [% Translate("Config options") | html %]
-                        ([% Translate(" e. g.") | html %] <code>&lt;OTRS_CONFIG_HttpType&gt;</code>).
+                        ([% Translate(" e. g.") | html %] <code>&lt;LIGERO_CONFIG_HttpType&gt;</code>).
                     </dd>
                 </dl>
 
@@ -641,26 +641,26 @@
                     [% Translate("Example notification") | html %]:
                 </p>
                 <label for="SubjectExample">[% Translate("Subject") | html %]</label>:
-                <input type="text" name="SubjectExample" id="SubjectExample" value="Reminder: &lt;OTRS_APPOINTMENT_TITLE&gt;" size="80" maxlength="80" readonly />
+                <input type="text" name="SubjectExample" id="SubjectExample" value="Reminder: &lt;LIGERO_APPOINTMENT_TITLE&gt;" size="80" maxlength="80" readonly />
                 <br/>
                 <label for="ResponseExample">[% Translate("Text") | html %]</label>:
                 <br/>
                 <textarea rows="12" cols="70" name="ResponseExample" id="ResponseExample" readonly>
-Hi &lt;OTRS_NOTIFICATION_RECIPIENT_UserFirstname&gt;,
+Hi &lt;LIGERO_NOTIFICATION_RECIPIENT_UserFirstname&gt;,
 
-appointment &quot;&lt;OTRS_APPOINTMENT_TITLE&gt;&quot; has reached its notification time.
+appointment &quot;&lt;LIGERO_APPOINTMENT_TITLE&gt;&quot; has reached its notification time.
 
-Description: &lt;OTRS_APPOINTMENT_DESCRIPTION&gt;
-Location: &lt;OTRS_APPOINTMENT_LOCATION&gt;
-Calendar: &lt;OTRS_CALENDAR_CALENDARNAME&gt;
-Start date: &lt;OTRS_APPOINTMENT_STARTTIME&gt;
-End date: &lt;OTRS_APPOINTMENT_ENDTIME&gt;
-All-day: &lt;OTRS_APPOINTMENT_ALLDAY&gt;
-Repeat: &lt;OTRS_APPOINTMENT_RECURRING&gt;
+Description: &lt;LIGERO_APPOINTMENT_DESCRIPTION&gt;
+Location: &lt;LIGERO_APPOINTMENT_LOCATION&gt;
+Calendar: &lt;LIGERO_CALENDAR_CALENDARNAME&gt;
+Start date: &lt;LIGERO_APPOINTMENT_STARTTIME&gt;
+End date: &lt;LIGERO_APPOINTMENT_ENDTIME&gt;
+All-day: &lt;LIGERO_APPOINTMENT_ALLDAY&gt;
+Repeat: &lt;LIGERO_APPOINTMENT_RECURRING&gt;
 
-&lt;OTRS_CONFIG_HttpType&gt;://&lt;OTRS_CONFIG_FQDN&gt;/&lt;OTRS_CONFIG_ScriptAlias&gt;index.pl?Action=AgentAppointmentCalendarOverview;AppointmentID=&lt;OTRS_APPOINTMENT_APPOINTMENTID&gt;
+&lt;LIGERO_CONFIG_HttpType&gt;://&lt;LIGERO_CONFIG_FQDN&gt;/&lt;LIGERO_CONFIG_ScriptAlias&gt;index.pl?Action=AgentAppointmentCalendarOverview;AppointmentID=&lt;LIGERO_APPOINTMENT_APPOINTMENTID&gt;
 
--- &lt;OTRS_CONFIG_NotificationSenderName&gt;
+-- &lt;LIGERO_CONFIG_NotificationSenderName&gt;
                 </textarea>
             </div>
         </div>

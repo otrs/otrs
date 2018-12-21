@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -73,7 +73,7 @@ my $DefaultID = $SysConfigDBObject->DefaultSettingAdd(
     <Description Translatable="1">Test.</Description>
     <Navigation>Core</Navigation>
     <Value>
-        <Item ValueType="String" ValueRegex="">OTRS 6</Item>
+        <Item ValueType="String" ValueRegex="">LIGERO 6</Item>
     </Value>
 </Setting>
 EOF
@@ -98,7 +98,7 @@ EOF
                 Item => [
                     {
                         ValueType  => 'String',
-                        Content    => 'OTRS 6',
+                        Content    => 'LIGERO 6',
                         ValueRegex => '',
                     },
                 ],
@@ -106,7 +106,7 @@ EOF
         ],
     },
     XMLFilename    => 'UnitTest.xml',
-    EffectiveValue => 'OTRS 6',
+    EffectiveValue => 'LIGERO 6',
     UserID         => 1,
 );
 $Self->IsNot(
@@ -204,7 +204,7 @@ $Success = $SysConfigDBObject->DefaultSettingUpdate(
     <Description Translatable="1">Test.</Description>
     <Navigation>Core</Navigation>
     <Value>
-        <Item ValueType="String" ValueRegex="">OTRS 6 Update</Item>
+        <Item ValueType="String" ValueRegex="">LIGERO 6 Update</Item>
     </Value>
 </Setting>
 EOF
@@ -229,14 +229,14 @@ EOF
                 Item => [
                     {
                         ValueType  => 'String',
-                        Content    => 'OTRS 6 Update',
+                        Content    => 'LIGERO 6 Update',
                         ValueRegex => '',
                     },
                 ],
             },
         ],
     },
-    EffectiveValue => 'OTRS 6 Update',
+    EffectiveValue => 'LIGERO 6 Update',
     XMLFilename    => 'UnitTest.xml',
     UserID         => 1,
 );
@@ -291,7 +291,7 @@ $ExclusiveLockGUID = $SysConfigDBObject->DefaultSettingLock(
 my $ModifiedID = $SysConfigDBObject->ModifiedSettingAdd(
     DefaultID         => $DefaultID,
     Name              => "UnitTest",
-    EffectiveValue    => 'OTRS 6 Modified',
+    EffectiveValue    => 'LIGERO 6 Modified',
     ExclusiveLockGUID => $ExclusiveLockGUID,
     UserID            => 1,
 );
@@ -359,7 +359,7 @@ $Success = $SysConfigDBObject->ModifiedSettingUpdate(
     DefaultID              => $DefaultID,
     Name                   => "UnitTest",
     UserModificationActive => 0,
-    EffectiveValue         => 'OTRS 6 Modified Update',
+    EffectiveValue         => 'LIGERO 6 Modified Update',
     ExclusiveLockGUID      => $ExclusiveLockGUID,
     UserID                 => 1,
 );

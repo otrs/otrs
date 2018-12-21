@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -7,8 +7,8 @@
 # --
 
 package Kernel::System::DateTime;
-## nofilter(TidyAll::Plugin::OTRS::Perl::Time)
-## nofilter(TidyAll::Plugin::OTRS::Perl::Translatable)
+## nofilter(TidyAll::Plugin::LIGERO::Perl::Time)
+## nofilter(TidyAll::Plugin::LIGERO::Perl::Translatable)
 
 use strict;
 use warnings;
@@ -16,7 +16,7 @@ use warnings;
 use Exporter qw(import);
 our %EXPORT_TAGS = (    ## no critic
     all => [
-        'OTRSTimeZoneGet',
+        'LIGEROTimeZoneGet',
         'SystemTimeZoneGet',
         'TimeZoneList',
         'UserDefaultTimeZoneGet',
@@ -65,7 +65,7 @@ Handles date and time calculations.
 Creates a DateTime object. Do not use new() directly, instead use the object manager:
 
     # Create an object with current date and time
-    # within time zone set in SysConfig OTRSTimeZone:
+    # within time zone set in SysConfig LIGEROTimeZone:
     my $DateTimeObject = $Kernel::OM->Create(
         'Kernel::System::DateTime'
     );
@@ -89,7 +89,7 @@ Creates a DateTime object. Do not use new() directly, instead use the object man
             Hour     => 12,                     # optional, defaults to 0
             Minute   => 35,                     # optional, defaults to 0
             Second   => 59,                     # optional, defaults to 0
-            TimeZone => 'Europe/Berlin',        # optional, defaults to setting of SysConfig OTRSTimeZone
+            TimeZone => 'Europe/Berlin',        # optional, defaults to setting of SysConfig LIGEROTimeZone
         }
     );
 
@@ -111,7 +111,7 @@ Creates a DateTime object. Do not use new() directly, instead use the object man
         'Kernel::System::DateTime',
         ObjectParams => {
             String   => '2016-08-14 22:45:00',
-            TimeZone => 'Europe/Berlin',        # optional, defaults to setting of SysConfig OTRSTimeZone
+            TimeZone => 'Europe/Berlin',        # optional, defaults to setting of SysConfig LIGEROTimeZone
         }
     );
 
@@ -137,7 +137,7 @@ sub new {
     bless( $Self, $Type );
 
     # CPAN DateTime: only use English descriptions and abbreviations internally.
-    #   This has nothing to do with the user's locale settings in OTRS.
+    #   This has nothing to do with the user's locale settings in LIGERO.
     $Self->{Locale} = $Locale;
 
     # Use private parameter to pass in an already created CPANDateTimeObject (used)
@@ -418,7 +418,7 @@ sub Add {
 
             # Switch to time zone of calendar
             $TimeZone = $ConfigObject->Get( "TimeZone::Calendar" . $Param{Calendar} )
-                || $Self->OTRSTimeZoneGet();
+                || $Self->LIGEROTimeZoneGet();
 
             # Use Kernel::System::DateTime's ToTimeZone() here because of error handling
             # and because performance is irrelevant at this point.
@@ -780,7 +780,7 @@ sub Delta {
 
             # switch to time zone of calendar
             $TimeZone = $ConfigObject->Get( "TimeZone::Calendar" . $Param{Calendar} )
-                || $Self->OTRSTimeZoneGet();
+                || $Self->LIGEROTimeZoneGet();
 
             eval {
                 $StartDateTimeObject->set_time_zone($TimeZone);
@@ -1049,11 +1049,11 @@ sub ToTimeZone {
     return 1;
 }
 
-=head2 ToOTRSTimeZone()
+=head2 ToLIGEROTimeZone()
 
 Converts the date and time of this object to the data storage time zone.
 
-    my $Success = $DateTimeObject->ToOTRSTimeZone();
+    my $Success = $DateTimeObject->ToLIGEROTimeZone();
 
 Returns:
 
@@ -1061,10 +1061,10 @@ Returns:
 
 =cut
 
-sub ToOTRSTimeZone {
+sub ToLIGEROTimeZone {
     my ( $Self, %Param ) = @_;
 
-    return $Self->ToTimeZone( TimeZone => $Self->OTRSTimeZoneGet() );
+    return $Self->ToTimeZone( TimeZone => $Self->LIGEROTimeZoneGet() );
 }
 
 =head2 Validate()
@@ -1208,12 +1208,12 @@ Returns the date/time of this object as time stamp in RFC 2822 format to be used
     my $MailTimeStamp = $DateTimeObject->ToEmailTimeStamp();
 
     # Typical usage:
-    # You want to have the date/time of OTRS + its UTC offset, so:
+    # You want to have the date/time of LIGERO + its UTC offset, so:
     my $DateTimeObject = $Kernel::OM->Create('Kernel::System::DateTime');
     my $MailTimeStamp = $DateTimeObject->ToEmailTimeStamp();
 
     # If you already have a DateTime object, possibly in another time zone:
-    $DateTimeObject->ToOTRSTimeZone();
+    $DateTimeObject->ToLIGEROTimeZone();
     my $MailTimeStamp = $DateTimeObject->ToEmailTimeStamp();
 
 Returns:
@@ -1278,7 +1278,7 @@ sub ToCTimeString {
 Checks if date/time of this object is a vacation day.
 
     my $IsVacationDay = $DateTimeObject->IsVacationDay(
-        Calendar => 9, # optional, OTRS vacation days otherwise
+        Calendar => 9, # optional, LIGERO vacation days otherwise
     );
 
 Returns:
@@ -1305,7 +1305,7 @@ sub IsVacationDay {
 
             # Switch to time zone of calendar
             my $TimeZone = $ConfigObject->Get( "TimeZone::Calendar" . $Param{Calendar} )
-                || $Self->OTRSTimeZoneGet();
+                || $Self->LIGEROTimeZoneGet();
 
             if ( defined $TimeZone ) {
                 $Self->ToTimeZone( TimeZone => $TimeZone );
@@ -1502,23 +1502,23 @@ sub IsTimeZoneValid {
     return $ValidTimeZones{ $Param{TimeZone} } ? 1 : 0;
 }
 
-=head2 OTRSTimeZoneGet()
+=head2 LIGEROTimeZoneGet()
 
-Returns the time zone set for OTRS.
+Returns the time zone set for LIGERO.
 
-    my $OTRSTimeZone = $DateTimeObject->OTRSTimeZoneGet();
+    my $LIGEROTimeZone = $DateTimeObject->LIGEROTimeZoneGet();
 
     # You can also call this method without an object:
-    #my $OTRSTimeZone = Kernel::System::DateTime->OTRSTimeZoneGet();
+    #my $LIGEROTimeZone = Kernel::System::DateTime->LIGEROTimeZoneGet();
 
 Returns:
 
-    my $OTRSTimeZone = 'Europe/Berlin';
+    my $LIGEROTimeZone = 'Europe/Berlin';
 
 =cut
 
-sub OTRSTimeZoneGet {
-    return $Kernel::OM->Get('Kernel::Config')->Get('OTRSTimeZone') || 'UTC';
+sub LIGEROTimeZoneGet {
+    return $Kernel::OM->Get('Kernel::Config')->Get('LIGEROTimeZone') || 'UTC';
 }
 
 =head2 UserDefaultTimeZoneGet()
@@ -1723,7 +1723,7 @@ sub _StringToHash {
             time_zone => $OffsetOrTZ,
         );
         $DT->set_time_zone('UTC');
-        $DT->set_time_zone( $Self->OTRSTimeZoneGet() );
+        $DT->set_time_zone( $Self->LIGEROTimeZoneGet() );
 
         return {
             ( map { ucfirst $_ => $DT->$_() } qw(year month day hour minute second) )
@@ -1743,7 +1743,7 @@ sub _StringToHash {
 Creates a CPAN DateTime object which will be stored within this object and used for date/time calculations.
 
     # Create an object with current date and time
-    # within time zone set in SysConfig OTRSTimeZone:
+    # within time zone set in SysConfig LIGEROTimeZone:
     my $CPANDateTimeObject = $DateTimeObject->_CPANDateTimeObjectCreate();
 
     # Create an object with current date and time
@@ -1760,7 +1760,7 @@ Creates a CPAN DateTime object which will be stored within this object and used 
         Hour     => 12,                 # optional, defaults to 0
         Minute   => 35,                 # optional, defaults to 0
         Second   => 59,                 # optional, defaults to 0
-        TimeZone => 'Europe/Berlin',    # optional, defaults to setting of SysConfig OTRSTimeZone
+        TimeZone => 'Europe/Berlin',    # optional, defaults to setting of SysConfig LIGEROTimeZone
     );
 
     # Create an object from an epoch timestamp. These timestamps are always UTC/GMT,
@@ -1777,7 +1777,7 @@ Creates a CPAN DateTime object which will be stored within this object and used 
     # for the list of supported string formats.
     my $CPANDateTimeObject = $DateTimeObject->_CPANDateTimeObjectCreate(
         String   => '2016-08-14 22:45:00',
-        TimeZone => 'Europe/Berlin',        # optional, defaults to setting of SysConfig OTRSTimeZone
+        TimeZone => 'Europe/Berlin',        # optional, defaults to setting of SysConfig LIGEROTimeZone
     );
 
 =cut
@@ -1804,7 +1804,7 @@ sub _CPANDateTimeObjectCreate {
     }
 
     my $CPANDateTimeObject;
-    my $TimeZone = $Param{TimeZone} || $Self->OTRSTimeZoneGet();
+    my $TimeZone = $Param{TimeZone} || $Self->LIGEROTimeZoneGet();
 
     if ( !$Self->IsTimeZoneValid( TimeZone => $TimeZone ) ) {
         $Kernel::OM->Get('Kernel::System::Log')->Log(
@@ -1989,7 +1989,7 @@ sub _OpNotEquals {
 
 =head1 TERMS AND CONDITIONS
 
-This software is part of the OTRS project (L<https://ligero.org/>).
+This software is part of the LIGERO project (L<https://ligero.org/>).
 
 This software comes with ABSOLUTELY NO WARRANTY. For details, see
 the enclosed file COPYING for license information (GPL). If you

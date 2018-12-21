@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -62,7 +62,7 @@ sub new {
 
 =head2 NotificationEvent()
 
-replace all OTRS smart tags in the notification body and subject
+replace all LIGERO smart tags in the notification body and subject
 
     my %NotificationEvent = $CalendarTemplateGeneratorObject->NotificationEvent(
         AppointmentID => 123,
@@ -290,12 +290,12 @@ sub _Replace {
     # replace the secret config options before the normal config options
     for my $SecretConfigOption (@SecretConfigOptions) {
 
-        my $Tag = $Start . 'OTRS_CONFIG_' . $SecretConfigOption . $End;
+        my $Tag = $Start . 'LIGERO_CONFIG_' . $SecretConfigOption . $End;
         $Param{Text} =~ s{$Tag}{xxx}gx;
     }
 
     # replace config options
-    my $Tag = $Start . 'OTRS_CONFIG_';
+    my $Tag = $Start . 'LIGERO_CONFIG_';
     $Param{Text} =~ s{$Tag(.+?)$End}{$ConfigObject->Get($1) // ''}egx;
 
     # cleanup
@@ -345,7 +345,7 @@ sub _Replace {
     # ------------------------------------------------------------ #
 
     # replace config options
-    $Tag = $Start . 'OTRS_APPOINTMENT_';
+    $Tag = $Start . 'LIGERO_APPOINTMENT_';
 
     # replace appointment tags
     ATTRIBUTE:
@@ -528,7 +528,7 @@ sub _Replace {
     # ------------------------------------------------------------ #
 
     # replace config options
-    $Tag = $Start . 'OTRS_CALENDAR_';
+    $Tag = $Start . 'LIGERO_CALENDAR_';
 
     # replace appointment tags
     ATTRIBUTE:
@@ -610,7 +610,7 @@ sub _Replace {
         my $Keys = join '|', map {quotemeta} grep { defined $H{$_} } keys %H;
 
         # Add all keys also as lowercase to be able to match case insensitive,
-        #   e. g. <OTRS_CUSTOMER_From> and <OTRS_CUSTOMER_FROM>.
+        #   e. g. <LIGERO_CUSTOMER_From> and <LIGERO_CUSTOMER_FROM>.
         for my $Key ( sort keys %H ) {
             $H{ lc $Key } = $H{$Key};
         }
@@ -618,11 +618,11 @@ sub _Replace {
         $Param{Text} =~ s/(?:$Tag)($Keys)$End/$H{ lc $1 }/ieg;
     };
 
-    # get recipient data and replace it with <OTRS_...
-    $Tag = $Start . 'OTRS_';
+    # get recipient data and replace it with <LIGERO_...
+    $Tag = $Start . 'LIGERO_';
 
-    # include more readable tag <OTRS_NOTIFICATION_RECIPIENT
-    my $RecipientTag = $Start . 'OTRS_NOTIFICATION_RECIPIENT_';
+    # include more readable tag <LIGERO_NOTIFICATION_RECIPIENT
+    my $RecipientTag = $Start . 'LIGERO_NOTIFICATION_RECIPIENT_';
 
     if (%Recipient) {
 
@@ -652,7 +652,7 @@ sub _Replace {
 
 =head1 TERMS AND CONDITIONS
 
-This software is part of the OTRS project (L<https://ligero.org/>).
+This software is part of the LIGERO project (L<https://ligero.org/>).
 
 This software comes with ABSOLUTELY NO WARRANTY. For details, see
 the enclosed file COPYING for license information (GPL). If you

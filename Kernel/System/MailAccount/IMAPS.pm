@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -12,7 +12,7 @@ use strict;
 use warnings;
 
 # There are currently errors on Perl 5.20 on Travis, disable this check for now.
-## nofilter(TidyAll::Plugin::OTRS::Perl::SyntaxCheck)
+## nofilter(TidyAll::Plugin::LIGERO::Perl::SyntaxCheck)
 use IO::Socket::SSL;
 
 use parent qw(Kernel::System::MailAccount::IMAP);

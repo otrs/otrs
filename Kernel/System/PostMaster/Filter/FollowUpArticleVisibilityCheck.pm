@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -58,8 +58,8 @@ sub Run {
     #   automatic notifications. In these cases there is no need to hide them.
     #   See also bug#10182 for details.
     if (
-        !$Param{GetParam}->{'X-OTRS-FollowUp-SenderType'}
-        || $Param{GetParam}->{'X-OTRS-FollowUp-SenderType'} ne 'customer'
+        !$Param{GetParam}->{'X-LIGERO-FollowUp-SenderType'}
+        || $Param{GetParam}->{'X-LIGERO-FollowUp-SenderType'} ne 'customer'
         )
     {
         return 1;
@@ -154,8 +154,8 @@ sub Run {
 
     return 1 if !$IsInternalForward;
 
-    $Param{GetParam}->{'X-OTRS-FollowUp-IsVisibleForCustomer'} = $Param{JobConfig}->{IsVisibleForCustomer} // 0;
-    $Param{GetParam}->{'X-OTRS-FollowUp-SenderType'} = $Param{JobConfig}->{SenderType} || 'customer';
+    $Param{GetParam}->{'X-LIGERO-FollowUp-IsVisibleForCustomer'} = $Param{JobConfig}->{IsVisibleForCustomer} // 0;
+    $Param{GetParam}->{'X-LIGERO-FollowUp-SenderType'} = $Param{JobConfig}->{SenderType} || 'customer';
 
     return 1;
 }

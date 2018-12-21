@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -90,8 +90,8 @@ for my $FieldName ( sort keys %NeededDynamicfields ) {
 }
 
 my %NeededXHeaders = (
-    'X-OTRS-DynamicField-TicketFreeText1' => 1,
-    'X-OTRS-DynamicField-TicketFreeText2' => 1,
+    'X-LIGERO-DynamicField-TicketFreeText1' => 1,
+    'X-LIGERO-DynamicField-TicketFreeText2' => 1,
 );
 
 my $XHeaders          = $ConfigObject->Get('PostmasterX-Header');
@@ -123,11 +123,11 @@ my @Tests = (
         ],
         Set => [
             {
-                Key   => 'X-OTRS-DynamicField-TicketFreeText1',
+                Key   => 'X-LIGERO-DynamicField-TicketFreeText1',
                 Value => '[**\server**]',
             },
             {
-                Key   => 'X-OTRS-DynamicField-TicketFreeText2',
+                Key   => 'X-LIGERO-DynamicField-TicketFreeText2',
                 Value => '[**\ip**]',
             },
         ],
@@ -150,11 +150,11 @@ my @Tests = (
         ],
         Set => [
             {
-                Key   => 'X-OTRS-DynamicField-TicketFreeText1',
+                Key   => 'X-LIGERO-DynamicField-TicketFreeText1',
                 Value => '[**\server**]',
             },
             {
-                Key   => 'X-OTRS-DynamicField-TicketFreeText2',
+                Key   => 'X-LIGERO-DynamicField-TicketFreeText2',
                 Value => '[**\ip**]',
             },
         ],

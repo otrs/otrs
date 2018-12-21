@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -249,7 +249,7 @@ for my $Test (@Tests) {
         "Test $Count : Test backend Email - empty after cleanup",
     );
 
-    # check auto response suppression with X-OTRS-Loop
+    # check auto response suppression with X-LIGERO-Loop
     $ArticleIDOne = $ArticleBackendObject->ArticleCreate(
         TicketID             => $TicketIDOne,
         IsVisibleForCustomer => 1,
@@ -270,7 +270,7 @@ for my $Test (@Tests) {
             To            => $QueueName,
             Subject       => 'UnitTest article one',
             Body          => 'UnitTest body',
-            'X-OTRS-Loop' => 'yes'
+            'X-LIGERO-Loop' => 'yes'
 
         },
         Queue => $QueueName,
@@ -290,7 +290,7 @@ for my $Test (@Tests) {
         my $Emails = $TestEmailObject->EmailsGet();
         $Self->True(
             !$LastArticleMailSent && !scalar( @{$Emails} ),
-            "Test $Count : Emails fetched from backend - AutoResponse $Test->{AutoResponseType} suppressed by X-OTRS-Loop",
+            "Test $Count : Emails fetched from backend - AutoResponse $Test->{AutoResponseType} suppressed by X-LIGERO-Loop",
         );
     }
 
@@ -306,7 +306,7 @@ for my $Test (@Tests) {
         "Test $Count : Test backend Email - empty after cleanup",
     );
 
-    # check auto response re-enabling with X-OTRS-Loop
+    # check auto response re-enabling with X-LIGERO-Loop
     $ArticleIDOne = $ArticleBackendObject->ArticleCreate(
         TicketID             => $TicketIDOne,
         IsVisibleForCustomer => 1,
@@ -327,7 +327,7 @@ for my $Test (@Tests) {
             To            => $QueueName,
             Subject       => 'UnitTest article one',
             Body          => 'UnitTest body',
-            'X-OTRS-Loop' => 'no'
+            'X-LIGERO-Loop' => 'no'
 
         },
         Queue => $QueueName,
@@ -347,7 +347,7 @@ for my $Test (@Tests) {
         my $Emails = $TestEmailObject->EmailsGet();
         $Self->True(
             $LastArticleMailSent && ( scalar @{$Emails} ) == 1,
-            "Test $Count : Emails fetched from backend - AutoResponse $Test->{AutoResponseType} re-enabled by X-OTRS-Loop",
+            "Test $Count : Emails fetched from backend - AutoResponse $Test->{AutoResponseType} re-enabled by X-LIGERO-Loop",
         );
     }
 

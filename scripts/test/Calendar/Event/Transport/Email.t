@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -214,7 +214,7 @@ for my $Test (@Tests) {
         Message => {
             en => {
                 Subject     => 'JobName',
-                Body        => 'Calender: <OTRS_CALENDAR_CALENDARNAME>',
+                Body        => 'Calender: <LIGERO_CALENDAR_CALENDARNAME>',
                 ContentType => 'text/plain',
             },
         },

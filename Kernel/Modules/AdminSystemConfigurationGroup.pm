@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -251,7 +251,7 @@ sub Run {
 
         if (
             ( grep { $_ eq 'reset-locally' } @Options )
-            && $SysConfigObject->can('UserSettingValueDelete')    # OTRS Business Solution™
+            && $SysConfigObject->can('UserSettingValueDelete')    # LIGERO Business Solution™
             )
         {
 
@@ -490,7 +490,7 @@ sub Run {
             TemplateFile => 'SystemConfiguration/SettingsList',
             Data         => {
                 SettingList             => \@SettingList,
-                OTRSBusinessIsInstalled => $Kernel::OM->Get('Kernel::System::OTRSBusiness')->OTRSBusinessIsInstalled(),
+                LIGEROBusinessIsInstalled => $Kernel::OM->Get('Kernel::System::LIGEROBusiness')->LIGEROBusinessIsInstalled(),
             },
         );
 
@@ -736,7 +736,7 @@ sub Run {
             SettingList             => \@SettingList,
             CategoriesStrg          => $Self->_GetCategoriesStrg(),
             InvalidSettings         => $Self->_CheckInvalidSettings(),
-            OTRSBusinessIsInstalled => $Kernel::OM->Get('Kernel::System::OTRSBusiness')->OTRSBusinessIsInstalled(),
+            LIGEROBusinessIsInstalled => $Kernel::OM->Get('Kernel::System::LIGEROBusiness')->LIGEROBusinessIsInstalled(),
         },
     );
     $Output .= $LayoutObject->Footer();

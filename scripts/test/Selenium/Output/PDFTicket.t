@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -253,7 +253,7 @@ $Selenium->RunTest(
                 ChannelName          => 'Email',
                 SenderType           => 'system',
                 IsVisibleForCustomer => 1,
-                From                 => 'OTRS System <ligero@localhost>',
+                From                 => 'LIGERO System <ligero@localhost>',
                 Cc                   => 'Cc ' . $RandomID . ' C <email@example.com>',
                 Subject              => 'Third Article Subject ' . $RandomID,
                 Body                 => 'Third Article body ' . $RandomID,
@@ -826,7 +826,7 @@ $Selenium->RunTest(
                 Interface => 'All',
             },
             {
-                Value     => 'OTRS System',
+                Value     => 'LIGERO System',
                 Message   => 'From: value is correct for Article#3',
                 Interface => 'All',
             },

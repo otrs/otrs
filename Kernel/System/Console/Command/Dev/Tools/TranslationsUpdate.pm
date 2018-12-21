@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -32,7 +32,7 @@ our @ObjectDependencies = (
 sub Configure {
     my ( $Self, %Param ) = @_;
 
-    $Self->Description('Update the OTRS translation files.');
+    $Self->Description('Update the LIGERO translation files.');
     $Self->AddOption(
         Name        => 'language',
         Description => "Which language to use, omit to update all languages.",
@@ -42,7 +42,7 @@ sub Configure {
     );
     $Self->AddOption(
         Name        => 'module-directory',
-        Description => "Translate the OTRS module in the given directory.",
+        Description => "Translate the LIGERO module in the given directory.",
         Required    => 0,
         HasValue    => 1,
         ValueRegex  => qr/.*/smx,
@@ -59,7 +59,7 @@ sub Configure {
 
     $Self->AdditionalHelp(<<"EOF");
 
-<yellow>Translating OTRS</yellow>
+<yellow>Translating LIGERO</yellow>
 
 Make sure that you have a clean system with a current configuration. No modules may be installed or linked into the system!
 
@@ -518,7 +518,7 @@ sub HandleLanguage {
 
             # skip thirdparty files without custom markers
             if ( $File =~ m{\/js\/thirdparty\/}xmsg ) {
-                next FILE if ( $Content !~ m{\/\/\s*OTRS}xmsg );
+                next FILE if ( $Content !~ m{\/\/\s*LIGERO}xmsg );
             }
 
             $File =~ s{^.*/(.+?)\.js}{$1}smx;
@@ -584,7 +584,7 @@ sub HandleLanguage {
         );
     }
 
-    # Language file, which only contains the OTRS core translations
+    # Language file, which only contains the LIGERO core translations
     my $LanguageCoreObject = Kernel::Language->new(
         UserLanguage    => $Language,
         TranslationFile => 1,
@@ -780,7 +780,7 @@ sub WritePOTFile {
 
     $Kernel::OM->Get('Kernel::System::Main')->Require('Locale::PO') || die "Could not load Locale::PO";
 
-    my $Package = $Param{Module} // 'OTRS';
+    my $Package = $Param{Module} // 'LIGERO';
 
     # build creation date, only YEAR-MO-DA HO:MI is needed without seconds
     my $CreationDate = $Kernel::OM->Create('Kernel::System::DateTime')->Format(
@@ -903,7 +903,7 @@ sub WritePerlLanguageFile {
 
         $NewOut = <<"EOF";
 $Separator
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 $Separator
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you

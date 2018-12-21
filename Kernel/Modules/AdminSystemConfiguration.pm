@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -212,7 +212,7 @@ sub Run {
                 Results     => scalar @SettingList,
                 SettingList => \@SettingList,
                 %OutputData,
-                OTRSBusinessIsInstalled => $Kernel::OM->Get('Kernel::System::OTRSBusiness')->OTRSBusinessIsInstalled(),
+                LIGEROBusinessIsInstalled => $Kernel::OM->Get('Kernel::System::LIGEROBusiness')->LIGEROBusinessIsInstalled(),
             },
         );
         $Output .= $LayoutObject->Footer();
@@ -228,7 +228,7 @@ sub Run {
         my $SettingName = $ParamObject->GetParam( Param => 'Name' ) || '';
 
         my %UsersList;
-        if ( $SysConfigObject->can('UserSettingModifiedValueList') ) {    # OTRS Business Solution™
+        if ( $SysConfigObject->can('UserSettingModifiedValueList') ) {    # LIGERO Business Solution™
             %UsersList = $SysConfigObject->UserSettingModifiedValueList(
                 Name => $SettingName,
             );
@@ -293,7 +293,7 @@ sub Run {
                 Results     => scalar @SettingList,
                 SettingList => \@SettingList,
                 %OutputData,
-                OTRSBusinessIsInstalled => $Kernel::OM->Get('Kernel::System::OTRSBusiness')->OTRSBusinessIsInstalled(),
+                LIGEROBusinessIsInstalled => $Kernel::OM->Get('Kernel::System::LIGEROBusiness')->LIGEROBusinessIsInstalled(),
             },
         );
         $Output .= $LayoutObject->Footer();
@@ -373,7 +373,7 @@ sub Run {
                 Results     => scalar @SettingList,
                 SettingList => \@SettingList,
                 %OutputData,
-                OTRSBusinessIsInstalled => $Kernel::OM->Get('Kernel::System::OTRSBusiness')->OTRSBusinessIsInstalled(),
+                LIGEROBusinessIsInstalled => $Kernel::OM->Get('Kernel::System::LIGEROBusiness')->LIGEROBusinessIsInstalled(),
             },
         );
         $Output .= $LayoutObject->Footer();
@@ -422,7 +422,7 @@ sub Run {
                 View         => $SettingName,
                 SettingList  => \@SettingList,
                 %OutputData,
-                OTRSBusinessIsInstalled => $Kernel::OM->Get('Kernel::System::OTRSBusiness')->OTRSBusinessIsInstalled(),
+                LIGEROBusinessIsInstalled => $Kernel::OM->Get('Kernel::System::LIGEROBusiness')->LIGEROBusinessIsInstalled(),
             },
         );
         $Output .= $LayoutObject->Footer();
@@ -479,7 +479,7 @@ sub Run {
                 SettingList             => \@SettingList,
                 SettingListInvalid      => \@SettingListInvalid,
                 CategoriesStrg          => $Self->_GetCategoriesStrg(),
-                OTRSBusinessIsInstalled => $Kernel::OM->Get('Kernel::System::OTRSBusiness')->OTRSBusinessIsInstalled(),
+                LIGEROBusinessIsInstalled => $Kernel::OM->Get('Kernel::System::LIGEROBusiness')->LIGEROBusinessIsInstalled(),
             },
         );
         $Output .= $LayoutObject->Footer();
@@ -524,7 +524,7 @@ sub Run {
                 Results     => scalar @SettingList,
                 SettingList => \@SettingList,
                 %OutputData,
-                OTRSBusinessIsInstalled => $Kernel::OM->Get('Kernel::System::OTRSBusiness')->OTRSBusinessIsInstalled(),
+                LIGEROBusinessIsInstalled => $Kernel::OM->Get('Kernel::System::LIGEROBusiness')->LIGEROBusinessIsInstalled(),
             },
         );
         $Output .= $LayoutObject->Footer();
@@ -539,7 +539,7 @@ sub Run {
         $Output .= $LayoutObject->Output(
             TemplateFile => 'AdminSystemConfigurationImportExport',
             Data         => {
-                OTRSBusinessIsInstalled => $Kernel::OM->Get('Kernel::System::OTRSBusiness')->OTRSBusinessIsInstalled(),
+                LIGEROBusinessIsInstalled => $Kernel::OM->Get('Kernel::System::LIGEROBusiness')->LIGEROBusinessIsInstalled(),
             },
         );
         $Output .= $LayoutObject->Footer();
@@ -597,7 +597,7 @@ sub Run {
             return $LayoutObject->ErrorScreen(
                 Message =>
                     Translatable(
-                    'System Configuration could not be imported due to an unknown error, please check OTRS logs for more information.'
+                    'System Configuration could not be imported due to an unknown error, please check LIGERO logs for more information.'
                     ),
             );
         }
@@ -631,7 +631,7 @@ sub Run {
             Data         => {
                 ManualVersion           => $ManualVersion,
                 SettingCount            => scalar @SettingList,
-                OTRSBusinessIsInstalled => $Kernel::OM->Get('Kernel::System::OTRSBusiness')->OTRSBusinessIsInstalled(),
+                LIGEROBusinessIsInstalled => $Kernel::OM->Get('Kernel::System::LIGEROBusiness')->LIGEROBusinessIsInstalled(),
                 %OutputData,
             },
         );

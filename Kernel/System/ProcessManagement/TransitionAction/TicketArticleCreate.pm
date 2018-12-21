@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -115,7 +115,7 @@ sub Run {
 
     # Convert DynamicField value to HTML string, see bug#14229.
     my $HTMLUtilsObject = $Kernel::OM->Get('Kernel::System::HTMLUtils');
-    if ( $Param{Config}->{Body} =~ /OTRS_TICKET_DynamicField_/ ) {
+    if ( $Param{Config}->{Body} =~ /LIGERO_TICKET_DynamicField_/ ) {
         for my $Match ( sort keys %{ $Param{Ticket} } ) {
             if ( $Match =~ /DynamicField_/ && $Param{Ticket}->{$Match} ) {
                 $Param{Ticket}->{$Match} = $HTMLUtilsObject->ToHTML(
@@ -194,7 +194,7 @@ sub Run {
 
 =head1 TERMS AND CONDITIONS
 
-This software is part of the OTRS project (L<https://ligero.org/>).
+This software is part of the LIGERO project (L<https://ligero.org/>).
 
 This software comes with ABSOLUTELY NO WARRANTY. For details, see
 the enclosed file COPYING for license information (GPL). If you

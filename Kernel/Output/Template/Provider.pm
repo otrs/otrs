@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -7,8 +7,8 @@
 # --
 
 package Kernel::Output::Template::Provider;
-## no critic(Perl::Critic::Policy::OTRS::RequireCamelCase)
-## nofilter(TidyAll::Plugin::OTRS::Perl::SyntaxCheck)
+## no critic(Perl::Critic::Policy::LIGERO::RequireCamelCase)
+## nofilter(TidyAll::Plugin::LIGERO::Perl::SyntaxCheck)
 
 use strict;
 use warnings;
@@ -37,10 +37,10 @@ Kernel::Output::Template::Provider - Template Toolkit custom provider
 
 =head1 PUBLIC INTERFACE
 
-=head2 OTRSInit()
+=head2 LIGEROInit()
 
 performs some post-initialization and creates a bridge between Template::Toolkit
-and OTRS by adding the OTRS objects to the Provider object. This method must be
+and LIGERO by adding the LIGERO objects to the Provider object. This method must be
 called after instantiating the Provider object.
 
 Please note that we only store a weak reference to the LayoutObject to avoid ring
@@ -48,7 +48,7 @@ references.
 
 =cut
 
-sub OTRSInit {
+sub LIGEROInit {
     my ( $Self, %Param ) = @_;
 
     # Don't fetch LayoutObject via ObjectManager as there might be several instances involved
@@ -300,7 +300,7 @@ sub store {
 
 this is our template pre processor.
 
-It handles some OTRS specific tags like [% InsertTemplate("TemplateName.tt") %]
+It handles some LIGERO specific tags like [% InsertTemplate("TemplateName.tt") %]
 and also performs compile-time code injection (ChallengeToken element into forms).
 
 Besides that, it also makes sure the template is treated as UTF8.
@@ -697,7 +697,7 @@ sub MigrateDTLtoTT {
 
 =head1 TERMS AND CONDITIONS
 
-This software is part of the OTRS project (L<https://ligero.org/>).
+This software is part of the LIGERO project (L<https://ligero.org/>).
 
 This software comes with ABSOLUTELY NO WARRANTY. For details, see
 the enclosed file COPYING for license information (GPL). If you

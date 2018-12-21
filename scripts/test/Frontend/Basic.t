@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -147,8 +147,8 @@ for my $BaseURL ( sort keys %Frontends ) {
         );
 
         $Self->False(
-            scalar $Response->header('X-OTRS-Login'),
-            "Module $Frontend is no OTRS login screen ($URL)",
+            scalar $Response->header('X-LIGERO-Login'),
+            "Module $Frontend is no LIGERO login screen ($URL)",
         );
 
         # check response contents

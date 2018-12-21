@@ -1,5 +1,5 @@
 // --
-// Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+// Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 // --
 // This software comes with ABSOLUTELY NO WARRANTY. For details, see
 // the enclosed file COPYING for license information (GPL). If you
@@ -14,7 +14,7 @@ Core.Agent = Core.Agent || {};
 /**
  * @namespace Core.Agent.CustomerSearch
  * @memberof Core.Agent
- * @author OTRS AG
+ * @author LIGERO AG
  * @description
  *      This namespace contains the special module functions for the customer search.
  */
@@ -420,7 +420,7 @@ Core.Agent.CustomerSearch = (function (TargetNS) {
             $Element.off('keyup.Validate').on('keyup.Validate', function () {
                var Value = $Element.val();
                if ($Element.hasClass('ServerError') && Value.length) {
-                   $('#OTRS_UI_Tooltips_ErrorTooltip').hide();
+                   $('#LIGERO_UI_Tooltips_ErrorTooltip').hide();
                }
             });
 

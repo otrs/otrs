@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -241,7 +241,7 @@ sub get_alert_text {    ## no critic
 
 =head2 VerifiedGet()
 
-perform a get() call, but wait for the page to be fully loaded (works only within OTRS).
+perform a get() call, but wait for the page to be fully loaded (works only within LIGERO).
 Will die() if the verification fails.
 
     $SeleniumObject->VerifiedGet(
@@ -258,14 +258,14 @@ sub VerifiedGet {
     $Self->WaitFor(
         JavaScript =>
             'return typeof(Core) == "object" && typeof(Core.App) == "object" && Core.App.PageLoadComplete'
-    ) || die "OTRS API verification failed after page load.";
+    ) || die "LIGERO API verification failed after page load.";
 
     return;
 }
 
 =head2 VerifiedRefresh()
 
-perform a refresh() call, but wait for the page to be fully loaded (works only within OTRS).
+perform a refresh() call, but wait for the page to be fully loaded (works only within LIGERO).
 Will die() if the verification fails.
 
     $SeleniumObject->VerifiedRefresh();
@@ -280,7 +280,7 @@ sub VerifiedRefresh {
     $Self->WaitFor(
         JavaScript =>
             'return typeof(Core) == "object" && typeof(Core.App) == "object" && Core.App.PageLoadComplete'
-    ) || die "OTRS API verification failed after page load.";
+    ) || die "LIGERO API verification failed after page load.";
 
     return;
 }
@@ -780,7 +780,7 @@ sub InputFieldValueSet {
 
 =head1 TERMS AND CONDITIONS
 
-This software is part of the OTRS project (L<https://ligero.org/>).
+This software is part of the LIGERO project (L<https://ligero.org/>).
 
 This software comes with ABSOLUTELY NO WARRANTY. For details, see
 the enclosed file COPYING for license information (GPL). If you

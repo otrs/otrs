@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -78,9 +78,9 @@ my %NewJob = (
         TicketNumber                => $Ticket{TicketNumber},
         EventValues                 => 'TicketLockUpdate',
         NewNoteIsVisibleForCustomer => 1,
-        NewNoteBody                 => '<OTRS_TICKET_TicketNumber>',
+        NewNoteBody                 => '<LIGERO_TICKET_TicketNumber>',
         NewNoteFrom                 => 'UnitTest@Example.com',
-        NewNoteSubject              => '<OTRS_TICKET_TicketID>',
+        NewNoteSubject              => '<LIGERO_TICKET_TicketID>',
         NewSendNoNotification       => 1,
         StateIDs                    => [ 1, 4 ],
         LockIDs                     => 2,
@@ -121,7 +121,7 @@ for my $Article (@Articles) {
 $Self->Is(
     $ArticleBox[1]->{Body},
     $Ticket{TicketNumber},
-    'TicketNumber found. OTRS Tag used.'
+    'TicketNumber found. LIGERO Tag used.'
 );
 
 # Get articles visible to customer.
@@ -142,7 +142,7 @@ for my $Article (@Articles) {
 $Self->Is(
     $ArticleBoxCustomer[0]->{Body},
     $Ticket{TicketNumber},
-    'Article found in customer view. TicketNumber found. OTRS Tag used.'
+    'Article found in customer view. TicketNumber found. LIGERO Tag used.'
 );
 
 # Add a new job with note visible internally.
@@ -153,9 +153,9 @@ $Name   = 'UnitTestInternal_' . $RandomID;
         TicketNumber                => $Ticket{TicketNumber},
         EventValues                 => 'TicketLockUpdate',
         NewNoteIsVisibleForCustomer => 0,
-        NewNoteBody                 => '<OTRS_TICKET_TicketNumber>',
+        NewNoteBody                 => '<LIGERO_TICKET_TicketNumber>',
         NewNoteFrom                 => 'UnitTest@Example.com',
-        NewNoteSubject              => '<OTRS_TICKET_TicketID>',
+        NewNoteSubject              => '<LIGERO_TICKET_TicketID>',
         NewSendNoNotification       => 1,
         StateIDs                    => [ 1, 4 ],
         LockIDs                     => 2,
@@ -196,7 +196,7 @@ for my $Article (@Articles) {
 $Self->Is(
     $ArticleBox[1]->{Body},
     $Ticket{TicketNumber},
-    'TicketNumber found. OTRS Tag used.'
+    'TicketNumber found. LIGERO Tag used.'
 );
 
 # Get all articles visible to customer.

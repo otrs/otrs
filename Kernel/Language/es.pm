@@ -296,25 +296,25 @@ sub Data {
         'Support data collector' => 'Recolector datos soporte',
         'Hint' => 'Consejo',
         'Currently support data is only shown in this system.' => 'Actualmente los datos de soporte sólo son mostrados en este sistema.',
-        'It is highly recommended to send this data to OTRS Group in order to get better support.' =>
-            'Es altamente recomendable enviar estos datos a Grupo OTRS con el fin de obtener un mejor servicio de soporte.',
+        'It is highly recommended to send this data to LIGERO Group in order to get better support.' =>
+            'Es altamente recomendable enviar estos datos a Grupo LIGERO con el fin de obtener un mejor servicio de soporte.',
         'Configuration' => 'Configuración',
         'Send support data' => 'Enviar datos de soporte',
-        'This will allow the system to send additional support data information to OTRS Group.' =>
-            'Esto permitirá al sistema enviar información de datos de apoyo adicional al Grupo OTRS.',
+        'This will allow the system to send additional support data information to LIGERO Group.' =>
+            'Esto permitirá al sistema enviar información de datos de apoyo adicional al Grupo LIGERO.',
         'Update' => 'Actualizar',
         'System Registration' => 'Registro del sistema',
-        'To enable data sending, please register your system with OTRS Group or update your system registration information (make sure to activate the \'send support data\' option.)' =>
-            'Para habilitar el envío de datos, registre su sistema con Grupo OTRS o actualice su información de registro del sistema ( asegúrese de activar la opción \'Enviar datos de soporte enviar\'.)',
+        'To enable data sending, please register your system with LIGERO Group or update your system registration information (make sure to activate the \'send support data\' option.)' =>
+            'Para habilitar el envío de datos, registre su sistema con Grupo LIGERO o actualice su información de registro del sistema ( asegúrese de activar la opción \'Enviar datos de soporte enviar\'.)',
         'Register this System' => 'Registre este Sistema',
         'System Registration is disabled for your system. Please check your configuration.' =>
             'El Registro no está disponible para su sistema. Por favor revise su configuración.',
 
         # Template: AdminCloudServices
-        'System registration is a service of OTRS Group, which provides a lot of advantages!' =>
-            '!El registro del sistema es un servicio del grupo OTRS, el cual provee innumerables ventajas!',
-        'Please note that the use of OTRS cloud services requires the system to be registered.' =>
-            'Por favor tenga en cuenta que el uso de servicios en la nube de OTRS requiere que el sistema esté registrado.',
+        'System registration is a service of LIGERO Group, which provides a lot of advantages!' =>
+            '!El registro del sistema es un servicio del grupo LIGERO, el cual provee innumerables ventajas!',
+        'Please note that the use of LIGERO cloud services requires the system to be registered.' =>
+            'Por favor tenga en cuenta que el uso de servicios en la nube de LIGERO requiere que el sistema esté registrado.',
         'Register this system' => 'Registrar este sistema',
         'Here you can configure available cloud services that communicate securely with %s.' =>
             'Aquí puede configurar los servicios en la nube disponibles para comunicarse de forma segura con %s.',
@@ -783,7 +783,7 @@ sub Data {
             'El nombre puede usarse para distinguir diferentes configuraciones de la gestión de errores.',
         'Please provide a unique name for this web service.' => 'Por favor, proporcione un nombre único para este servicio web.',
         'Error handling module backend' => 'Processador adicional del módulo de gestión de errores',
-        'This OTRS error handling backend module will be called internally to process the error handling mechanism.' =>
+        'This LIGERO error handling backend module will be called internally to process the error handling mechanism.' =>
             'Este módulo de processador adicional será llamado internamente para procesar el mecanismo de gestión de errores',
         'Processing options' => 'Opciones de procesamiento',
         'Configure filters to control error handling module execution.' =>
@@ -875,23 +875,23 @@ sub Data {
         'The name is typically used to call up an operation of a remote web service.' =>
             'El nombre se usa normalmente para llamar una operación de un servicio web remoto.',
         'Invoker backend' => 'Backend del invocador',
-        'This OTRS invoker backend module will be called to prepare the data to be sent to the remote system, and to process its response data.' =>
-            'Se llamará a este módulo del backend del invocador OTRS para preparar los datos a enviar al sistema remoto, y para procesar los datos de la respuesta.',
+        'This LIGERO invoker backend module will be called to prepare the data to be sent to the remote system, and to process its response data.' =>
+            'Se llamará a este módulo del backend del invocador LIGERO para preparar los datos a enviar al sistema remoto, y para procesar los datos de la respuesta.',
         'Mapping for outgoing request data' => 'Mapeo para los datos de la solicitud saliente',
         'Configure' => 'Configurar',
-        'The data from the invoker of OTRS will be processed by this mapping, to transform it to the kind of data the remote system expects.' =>
-            'Los datos del invocador de OTRS serán procesador por este mapeo, para transformarlos al tipo de datos que el sistema remoto espera.',
+        'The data from the invoker of LIGERO will be processed by this mapping, to transform it to the kind of data the remote system expects.' =>
+            'Los datos del invocador de LIGERO serán procesador por este mapeo, para transformarlos al tipo de datos que el sistema remoto espera.',
         'Mapping for incoming response data' => 'Mapeo para los datos de la respuesta entrante',
-        'The response data will be processed by this mapping, to transform it to the kind of data the invoker of OTRS expects.' =>
-            'Los datos de la respuesta serán procesados por este mapeo, para transformarlos al tipo de datos que el invocador de OTRS espera.',
+        'The response data will be processed by this mapping, to transform it to the kind of data the invoker of LIGERO expects.' =>
+            'Los datos de la respuesta serán procesados por este mapeo, para transformarlos al tipo de datos que el invocador de LIGERO espera.',
         'Asynchronous' => 'Asíncrono',
         'Condition' => 'Condición',
         'Edit this event' => 'Editar este evento',
         'This invoker will be triggered by the configured events.' => 'Este invocador será disparado por los eventos configurados.',
         'To add a new event select the event object and event name and click on the "+" button' =>
             'Para añadir un nuevo evento seleccione el objeto evento y el nombre del evento y pulse el botón "+"',
-        'Asynchronous event triggers are handled by the OTRS Scheduler Daemon in background (recommended).' =>
-            'Disparadores de evento asíncronos son manejados por el Planificador Daemon de OTRS en segundo plano (recomendado).',
+        'Asynchronous event triggers are handled by the LIGERO Scheduler Daemon in background (recommended).' =>
+            'Disparadores de evento asíncronos son manejados por el Planificador Daemon de LIGERO en segundo plano (recomendado).',
         'Synchronous event triggers would be processed directly during the web request.' =>
             'Los disparadores de eventos asíncronos serían procesados directamente durante la solicitud web.',
 
@@ -995,11 +995,11 @@ sub Data {
         'The name is typically used to call up this web service operation from a remote system.' =>
             'El nombre se utiliza normalmente para acceder a esta operación de servicio web desde un sistema remoto.',
         'Operation backend' => 'Backend Operación',
-        'This OTRS operation backend module will be called internally to process the request, generating data for the response.' =>
-            'Este módulo OTRS backend operación será llamado internamente para procesar la solicitud, la generación de datos para la respuesta.',
+        'This LIGERO operation backend module will be called internally to process the request, generating data for the response.' =>
+            'Este módulo LIGERO backend operación será llamado internamente para procesar la solicitud, la generación de datos para la respuesta.',
         'Mapping for incoming request data' => 'Asignación para la solicitud de datos entrantes',
-        'The request data will be processed by this mapping, to transform it to the kind of data OTRS expects.' =>
-            'La solicitud de datos serán procesados por esta asignación, para transformar a la clase de datos que OTRS espera.',
+        'The request data will be processed by this mapping, to transform it to the kind of data LIGERO expects.' =>
+            'La solicitud de datos serán procesados por esta asignación, para transformar a la clase de datos que LIGERO espera.',
         'Mapping for outgoing response data' => 'Asignación de datos de respuesta de salida',
         'The response data will be processed by this mapping, to transform it to the kind of data the remote system expects.' =>
             'Los datos de respuesta serán procesados por esta asignación, para transformar a la clase de datos que el sistema remoto espera.',
@@ -1017,8 +1017,8 @@ sub Data {
             'Limitar esta operación a los métodos de petición específicos. Si no se selecciona ningún método se aceptarán todas las solicitudes.',
         'Maximum message length' => 'Longitud máxima del mensaje',
         'This field should be an integer number.' => 'Este campo debe ser un número entero.',
-        'Here you can specify the maximum size (in bytes) of REST messages that OTRS will process.' =>
-            'Aquí puede especificar el tamaño máximo (en bytes) de mensajes REST que procesará OTRS.',
+        'Here you can specify the maximum size (in bytes) of REST messages that LIGERO will process.' =>
+            'Aquí puede especificar el tamaño máximo (en bytes) de mensajes REST que procesará LIGERO.',
         'Send Keep-Alive' => 'Enviar Mantener-Activo',
         'This configuration defines if incoming connections should get closed or kept alive.' =>
             'Esta configuración define si las conexiones entrantes deben quedar cerrados o mantenerse activas.',
@@ -1118,8 +1118,8 @@ sub Data {
         'Select how SOAP response function wrapper should be constructed.' =>
             'Seleccione como el contenedor de la función de respuesta SOAP debe ser construido.',
         'Response name free text' => 'Texto libre nombre de respuesta',
-        'Here you can specify the maximum size (in bytes) of SOAP messages that OTRS will process.' =>
-            'Aquí puede especificar el tamaño máximo (en bytes) de mensajes SOAP que procesará OTRS.',
+        'Here you can specify the maximum size (in bytes) of SOAP messages that LIGERO will process.' =>
+            'Aquí puede especificar el tamaño máximo (en bytes) de mensajes SOAP que procesará LIGERO.',
         'Encoding' => 'Codificación',
         'The character encoding for the SOAP message contents.' => 'El caracter codificación para contenidos de mensaje SOAP. ',
         'e.g utf-8, latin1, iso-8859-1, cp1250, Etc.' => 'ej. utf-8, latin1, iso-8859-1, cp1250, Etc.',
@@ -1162,10 +1162,10 @@ sub Data {
         'Provider transport' => 'Proveedor transporte',
         'Requester transport' => 'Solicitante transporte',
         'Debug threshold' => 'Umbral de depuración',
-        'In provider mode, OTRS offers web services which are used by remote systems.' =>
-            'En modo proveedor, OTRS ofrece servicios web los cuales son usados por sistemas remotos.',
-        'In requester mode, OTRS uses web services of remote systems.' =>
-            'En modo solicitante, OTRS usa servicios web de sistemas remotos.',
+        'In provider mode, LIGERO offers web services which are used by remote systems.' =>
+            'En modo proveedor, LIGERO ofrece servicios web los cuales son usados por sistemas remotos.',
+        'In requester mode, LIGERO uses web services of remote systems.' =>
+            'En modo solicitante, LIGERO usa servicios web de sistemas remotos.',
         'Network transport' => 'Transporte de Red',
         'Error Handling Modules' => 'Módulo de Manejo de Errores',
         'Error handling modules are used to react in case of errors during the communication. Those modules are executed in a specific order, which can be changed by drag and drop.' =>
@@ -1225,7 +1225,7 @@ sub Data {
         'Filter for mail accounts' => '',
         'All incoming emails with one account will be dispatched in the selected queue.' =>
             '',
-        'If your account is marked as trusted, the X-OTRS headers already existing at arrival time (for priority etc.) will be kept and used, for example in PostMaster filters.' =>
+        'If your account is marked as trusted, the X-LIGERO headers already existing at arrival time (for priority etc.) will be kept and used, for example in PostMaster filters.' =>
             '',
         'Outgoing email can be configured via the Sendmail* settings in %s.' =>
             '',
@@ -1298,12 +1298,12 @@ sub Data {
             'Valores mostrados de los campos  dinámicos de los tickets, útil para los campos desplegables y de selección múltiple',
 
         # Template: AdminNotificationEventTransportEmailSettings
-        'You can use OTRS-tags like <OTRS_TICKET_DynamicField_...> to insert values from the current ticket.' =>
-            'Puede usar los OTRS-tags como <OTRS_TICKET_DynamicField_...> para insertar los valores desde su Ticket actual.',
+        'You can use LIGERO-tags like <LIGERO_TICKET_DynamicField_...> to insert values from the current ticket.' =>
+            'Puede usar los LIGERO-tags como <LIGERO_TICKET_DynamicField_...> para insertar los valores desde su Ticket actual.',
 
-        # Template: AdminOTRSBusinessInstalled
+        # Template: AdminLIGEROBusinessInstalled
         'Manage %s' => 'Administrar %s',
-        'Downgrade to ((OTRS)) Community Edition' => '',
+        'Downgrade to ((LIGERO)) Community Edition' => '',
         'Read documentation' => 'Leer documentación',
         '%s makes contact regularly with cloud.ligero.com to check on available updates and the validity of the underlying contract.' =>
             '%s hace contacto regular con cloud.ligero.com para comprobar actualizaciones disponibles y la validez del contrato subyacente.',
@@ -1328,43 +1328,43 @@ sub Data {
         'Congratulations, your %s is correctly installed and up to date!' =>
             'Felicitaciones, su %s está instalado y actualizado correctamente.',
 
-        # Template: AdminOTRSBusinessNotInstalled
-        'Go to the OTRS customer portal' => 'Ir al portal del cliente OTRS',
+        # Template: AdminLIGEROBusinessNotInstalled
+        'Go to the LIGERO customer portal' => 'Ir al portal del cliente LIGERO',
         '%s will be available soon. Please check again in a few days.' =>
             '%s estará disponible pronto. Por favor, puedes volver a intentarlo dentro de unos días .',
         'Please have a look at %s for more information.' => 'Por favor, eche un vistazo a %s para más información.',
-        'Your ((OTRS)) Community Edition is the base for all future actions. Please register first before you continue with the upgrade process of %s!' =>
+        'Your ((LIGERO)) Community Edition is the base for all future actions. Please register first before you continue with the upgrade process of %s!' =>
             '',
         'Before you can benefit from %s, please contact %s to get your %s contract.' =>
             'Antes de que pueda beneficiarse de %s , por favor póngase en contacto con %s para obtener su contrato de %s.',
-        'Connection to cloud.ligero.com via HTTPS couldn\'t be established. Please make sure that your OTRS can connect to cloud.ligero.com via port 443.' =>
-            'Conexión a cloud.ligero.com a través de HTTPS no se pudo establecer . Por favor, asegúrese de que su OTRS puede conectarse a través del puerto 443 cloud.ligero.com.',
-        'Package installation requires patch level update of OTRS.' => 'La instalación del paquete requiere la actualización del nivél de OTRS.',
+        'Connection to cloud.ligero.com via HTTPS couldn\'t be established. Please make sure that your LIGERO can connect to cloud.ligero.com via port 443.' =>
+            'Conexión a cloud.ligero.com a través de HTTPS no se pudo establecer . Por favor, asegúrese de que su LIGERO puede conectarse a través del puerto 443 cloud.ligero.com.',
+        'Package installation requires patch level update of LIGERO.' => 'La instalación del paquete requiere la actualización del nivél de LIGERO.',
         'Please visit our customer portal and file a request.' => 'Favor, visite nuestro portal del cliente y deje su solicitud.',
         'Everything else will be done as part of your contract.' => 'Todo el resto se cumplirá cómo el parte de su contrato.',
-        'Your installed OTRS version is %s.' => 'Su versión de OTRS instalada es %s.',
-        'To install this package, you need to update to OTRS %s or higher.' =>
-            'Para instalar éste paquete necesitas actualizar a %sde OTRS o más.',
-        'To install this package, the Maximum OTRS Version is %s.' => 'Para instalar este paquete, la Máxima versión de OTRS es %s.',
+        'Your installed LIGERO version is %s.' => 'Su versión de LIGERO instalada es %s.',
+        'To install this package, you need to update to LIGERO %s or higher.' =>
+            'Para instalar éste paquete necesitas actualizar a %sde LIGERO o más.',
+        'To install this package, the Maximum LIGERO Version is %s.' => 'Para instalar este paquete, la Máxima versión de LIGERO es %s.',
         'To install this package, the required Framework version is %s.' =>
             'Para instalar éste paquete, se requiere la versión %s del Framework.',
-        'Why should I keep OTRS up to date?' => '¿Porqué debo mantener OTRS actualizado?',
+        'Why should I keep LIGERO up to date?' => '¿Porqué debo mantener LIGERO actualizado?',
         'You will receive updates about relevant security issues.' => 'Recibirás las actualizaciones acerca de los casos relevantes de la seguridad.',
-        'You will receive updates for all other relevant OTRS issues' => 'Recibirás las actualizaciones sobre todos los casos OTRS relevantes.',
+        'You will receive updates for all other relevant LIGERO issues' => 'Recibirás las actualizaciones sobre todos los casos LIGERO relevantes.',
         'With your existing contract you can only use a small part of the %s.' =>
             'Con su contrato existente sólo se puede utilizar una pequeña parte de la %s.',
         'If you would like to take full advantage of the %s get your contract upgraded now! Contact %s.' =>
             'Si quieres sacar el máximo provecho de la  %s consiga su mejora de contrato ahora! Contacte %s.',
 
-        # Template: AdminOTRSBusinessUninstall
+        # Template: AdminLIGEROBusinessUninstall
         'Cancel downgrade and go back' => 'Cancelar el degrado y regresar',
-        'Go to OTRS Package Manager' => 'Ir al Manejador de Paquetes de OTRS',
+        'Go to LIGERO Package Manager' => 'Ir al Manejador de Paquetes de LIGERO',
         'Sorry, but currently you can\'t downgrade due to the following packages which depend on %s:' =>
             'Lo sentimos , pero actualmente no se puede degradar debido a los siguientes paquetes que dependen de %s:',
         'Vendor' => 'Vendedor',
         'Please uninstall the packages first using the package manager and try again.' =>
             'Por favor, desinstale los paquetes primero utilizando el gestor de paquetes y vuelva a intentarlo .',
-        'You are about to downgrade to ((OTRS)) Community Edition and will lose the following features and all data related to these:' =>
+        'You are about to downgrade to ((LIGERO)) Community Edition and will lose the following features and all data related to these:' =>
             '',
         'Chat' => 'Chat',
         'Report Generator' => 'Generador de Reportes',
@@ -1379,7 +1379,7 @@ sub Data {
         'PGP Management' => 'Administración PGP',
         'Add PGP Key' => 'Agregar Clave PGP',
         'PGP support is disabled' => 'El soporte de PGP se encuentra deshabilitado',
-        'To be able to use PGP in OTRS, you have to enable it first.' => 'Para poder usar PGP en OTRS, deberá habilitarlo primero.',
+        'To be able to use PGP in LIGERO, you have to enable it first.' => 'Para poder usar PGP en LIGERO, deberá habilitarlo primero.',
         'Enable PGP support' => 'Habilitar el soporte de PGP',
         'Faulty PGP configuration' => 'Configuración PGP errónea',
         'PGP support is enabled, but the relevant configuration contains errors. Please check the configuration using the button below.' =>
@@ -1406,18 +1406,18 @@ sub Data {
             '¿Realmente desea reinstalar este paquete? Se perderá cualquier cambio manual.',
         'Go to updating instructions' => 'Ir a instrucciones de actualización',
         'package information' => 'información del paquete',
-        'Package installation requires a patch level update of OTRS.' => 'Instalación del paquete requiere un parche de actualización de OTRS. ',
-        'Package update requires a patch level update of OTRS.' => 'La actualización del paquete requiere un parche de actualización de OTRS.',
-        'If you are a OTRS Business Solution™ customer, please visit our customer portal and file a request.' =>
-            'Sí eres el cliente de OTRS Business Solution™, favor visite nuestro portal de clientes y deje su solicitud.',
-        'Please note that your installed OTRS version is %s.' => '',
-        'To install this package, you need to update OTRS to version %s or newer.' =>
-            'Para instalar este paquete necesita actualizar OTRS a la versión %s o posterior',
-        'This package can only be installed on OTRS version %s or older.' =>
-            'Este paquete sólo puede ser instalado en la versión %s o más antigua del OTRS',
-        'This package can only be installed on OTRS version %s or newer.' =>
-            'Este paquete sólo puede ser instalado en la versión %s o más nueva del OTRS',
-        'You will receive updates for all other relevant OTRS issues.' =>
+        'Package installation requires a patch level update of LIGERO.' => 'Instalación del paquete requiere un parche de actualización de LIGERO. ',
+        'Package update requires a patch level update of LIGERO.' => 'La actualización del paquete requiere un parche de actualización de LIGERO.',
+        'If you are a LIGERO Business Solution™ customer, please visit our customer portal and file a request.' =>
+            'Sí eres el cliente de LIGERO Business Solution™, favor visite nuestro portal de clientes y deje su solicitud.',
+        'Please note that your installed LIGERO version is %s.' => '',
+        'To install this package, you need to update LIGERO to version %s or newer.' =>
+            'Para instalar este paquete necesita actualizar LIGERO a la versión %s o posterior',
+        'This package can only be installed on LIGERO version %s or older.' =>
+            'Este paquete sólo puede ser instalado en la versión %s o más antigua del LIGERO',
+        'This package can only be installed on LIGERO version %s or newer.' =>
+            'Este paquete sólo puede ser instalado en la versión %s o más nueva del LIGERO',
+        'You will receive updates for all other relevant LIGERO issues.' =>
             '',
         'How can I do a patch level update if I don’t have a contract?' =>
             '',
@@ -1433,14 +1433,14 @@ sub Data {
         'Install' => 'Instalar',
         'Update repository information' => 'Actualizar información de repositorio',
         'Cloud services are currently disabled.' => 'Los servicios en la nube se encuentran dehabilitados.',
-        'OTRS Verify™ can not continue!' => '¡OTRS Verify™ no puede continuar!',
+        'LIGERO Verify™ can not continue!' => '¡LIGERO Verify™ no puede continuar!',
         'Enable cloud services' => 'Habilitar servicios en la Nube',
         'Update all installed packages' => '',
         'Online Repository' => 'Repositorio en línea',
         'Action' => 'Acción',
         'Module documentation' => 'Módulo de documentación',
         'Local Repository' => 'Repositorio Local',
-        'This package is verified by OTRSverify (tm)' => 'Este paquete está verificado por OTRSverify (tm)',
+        'This package is verified by LIGEROverify (tm)' => 'Este paquete está verificado por LIGEROverify (tm)',
         'Uninstall' => 'Desinstalar',
         'Package not correctly deployed! Please reinstall the package.' =>
             'El paquete no fue desplegado correctamente. Por favor, reinstale el paquete.',
@@ -1751,29 +1751,29 @@ sub Data {
         'Edit System Registration' => 'Editar el Registro del Sistema',
         'System Registration Overview' => '',
         'Register System' => 'Registrar Sistema',
-        'Validate OTRS-ID' => '',
+        'Validate LIGERO-ID' => '',
         'Deregister System' => 'Sistema dado de baja',
         'Edit details' => 'Edite detalles',
         'Show transmitted data' => 'Mostrar datos transmitidos',
         'Deregister system' => 'Dar de baja sistema',
         'Overview of registered systems' => 'Vista general de sistemas registrados',
-        'This system is registered with OTRS Group.' => 'Este sistema se encuentra registrado por OTRS Group.',
+        'This system is registered with LIGERO Group.' => 'Este sistema se encuentra registrado por LIGERO Group.',
         'System type' => 'Tipo de sistema',
         'Unique ID' => 'Identificador unica',
         'Last communication with registration server' => 'Última comunicación con el servidor de registro',
         'System Registration not Possible' => '',
-        'Please note that you can\'t register your system if OTRS Daemon is not running correctly!' =>
-            'Tenga en cuenta que no se puede registrar su sistema si OTRS Daemon no está funcionando correctamente!',
+        'Please note that you can\'t register your system if LIGERO Daemon is not running correctly!' =>
+            'Tenga en cuenta que no se puede registrar su sistema si LIGERO Daemon no está funcionando correctamente!',
         'Instructions' => 'Instrucciones',
         'System Deregistration not Possible' => '',
         'Please note that you can\'t deregister your system if you\'re using the %s or having a valid service contract.' =>
             'Tenga en cuenta que no se puede dar de baja su sistema si usted está utilizando el %s o teniendo un contrato de servicio válido.',
-        'OTRS-ID Login' => 'Inicio de sesión con OTRS-ID',
+        'LIGERO-ID Login' => 'Inicio de sesión con LIGERO-ID',
         'Read more' => 'Leer más',
-        'You need to log in with your OTRS-ID to register your system.' =>
-            'Debe iniciar sesión con su OTRS-ID para registrar el sistema.',
-        'Your OTRS-ID is the email address you used to sign up on the OTRS.com webpage.' =>
-            'Su OTRS-ID es la dirección de correo electrónico que utilizó para registrarse en la página web OTRS.com',
+        'You need to log in with your LIGERO-ID to register your system.' =>
+            'Debe iniciar sesión con su LIGERO-ID para registrar el sistema.',
+        'Your LIGERO-ID is the email address you used to sign up on the LIGERO.com webpage.' =>
+            'Su LIGERO-ID es la dirección de correo electrónico que utilizó para registrarse en la página web LIGERO.com',
         'Data Protection' => 'Protección de Datos',
         'What are the advantages of system registration?' => '¿Cuáles son las ventajas de registrar su sistema?',
         'You will receive updates about relevant security releases.' => 'Usted recibirá actualizaciones sobre versiones de seguridad importantes.',
@@ -1782,44 +1782,44 @@ sub Data {
         'This is only the beginning!' => '¡Este es sólo el comienzo!',
         'We will inform you about our new services and offerings soon.' =>
             'Muy pronto le estaremos informando sobre nuevos servicios y ofertas',
-        'Can I use OTRS without being registered?' => '¿Es posible utilizar OTRS sin registrarlo?',
+        'Can I use LIGERO without being registered?' => '¿Es posible utilizar LIGERO sin registrarlo?',
         'System registration is optional.' => 'El registro del sistema es opcional.',
-        'You can download and use OTRS without being registered.' => 'Usted puede descargar y utilizar OTRS sin estar registrado.',
+        'You can download and use LIGERO without being registered.' => 'Usted puede descargar y utilizar LIGERO sin estar registrado.',
         'Is it possible to deregister?' => '¿Es posible dar de baja el registro?',
         'You can deregister at any time.' => 'Usted puede dar de baja el registro en cualquier momento.',
         'Which data is transfered when registering?' => '¿Qué datos se transfieren al registrarse?',
-        'A registered system sends the following data to OTRS Group:' => 'Un sistema registrado envía los siguientes datos al grupo OTRS:',
-        'Fully Qualified Domain Name (FQDN), OTRS version, Database, Operating System and Perl version.' =>
-            'Nombre de dominio totalmente calificado (FQDN), versión de OTRS, base de datos, sistema operativo y versión de Perl.',
+        'A registered system sends the following data to LIGERO Group:' => 'Un sistema registrado envía los siguientes datos al grupo LIGERO:',
+        'Fully Qualified Domain Name (FQDN), LIGERO version, Database, Operating System and Perl version.' =>
+            'Nombre de dominio totalmente calificado (FQDN), versión de LIGERO, base de datos, sistema operativo y versión de Perl.',
         'Why do I have to provide a description for my system?' => '¿Por qué debo proporcionar una descripción para mi sistema?',
         'The description of the system is optional.' => 'La descripción del sistema es opcional.',
         'The description and system type you specify help you to identify and manage the details of your registered systems.' =>
             'La descripción y el tipo de sistema que especifique ayudara para identificar y gestionar los datos de sus sistemas registrados',
-        'How often does my OTRS system send updates?' => '¿Con qué frecuencia mi sistema OTRS envía actualizaciones?',
+        'How often does my LIGERO system send updates?' => '¿Con qué frecuencia mi sistema LIGERO envía actualizaciones?',
         'Your system will send updates to the registration server at regular intervals.' =>
             'Su sistema enviará actualizaciones al servidor de registro a intervalos regulares.',
         'Typically this would be around once every three days.' => 'Normalmente, esto sería alrededor de una vez cada tres días.',
         'If you deregister your system, you will lose these benefits:' =>
             'Si da de baja su sistema, perderá estos beneficios :',
-        'You need to log in with your OTRS-ID to deregister your system.' =>
-            'Debe iniciar sesión con su OTRS-ID para dar de baja su sistema.',
-        'OTRS-ID' => 'OTRS-ID',
-        'You don\'t have an OTRS-ID yet?' => '¿Aún no tiene su OTRS-ID?',
+        'You need to log in with your LIGERO-ID to deregister your system.' =>
+            'Debe iniciar sesión con su LIGERO-ID para dar de baja su sistema.',
+        'LIGERO-ID' => 'LIGERO-ID',
+        'You don\'t have an LIGERO-ID yet?' => '¿Aún no tiene su LIGERO-ID?',
         'Sign up now' => 'Regístrese ahora',
         'Forgot your password?' => '¿Olvidó su contraseña?',
         'Retrieve a new one' => 'Solicitar una nueva',
         'Next' => 'Siguiente',
-        'This data will be frequently transferred to OTRS Group when you register this system.' =>
-            'Estos datos se transferiran con frecuencia al grupo OTRS cuando registre este sistema.',
+        'This data will be frequently transferred to LIGERO Group when you register this system.' =>
+            'Estos datos se transferiran con frecuencia al grupo LIGERO cuando registre este sistema.',
         'Attribute' => 'Atributo',
         'FQDN' => 'Nombre de dominio totalmente calificado',
-        'OTRS Version' => 'Versión De OTRS',
+        'LIGERO Version' => 'Versión De LIGERO',
         'Operating System' => 'Sistema Operativo',
         'Perl Version' => 'Versión de Perl',
         'Optional description of this system.' => 'Descripción opcional de este sistema.',
         'Register' => 'Registrar',
-        'Continuing with this step will deregister the system from OTRS Group.' =>
-            'Continuando con este paso se dará de baja el sistema para el grupo OTRS.',
+        'Continuing with this step will deregister the system from LIGERO Group.' =>
+            'Continuando con este paso se dará de baja el sistema para el grupo LIGERO.',
         'Deregister' => 'Dar de baja',
         'You can modify registration settings here.' => 'Usted puede modificar los ajustes de registro aquí.',
         'Overview of Transmitted Data' => '',
@@ -1882,8 +1882,8 @@ sub Data {
         'Add Certificate' => 'Añadir un certificado',
         'Add Private Key' => 'Añadir una Clave privada',
         'SMIME support is disabled' => 'el soporte para SMIME esta deshabilitado',
-        'To be able to use SMIME in OTRS, you have to enable it first.' =>
-            'Para poder usar SMIME en OTRS, necesitas habilitarlo antes.',
+        'To be able to use SMIME in LIGERO, you have to enable it first.' =>
+            'Para poder usar SMIME en LIGERO, necesitas habilitarlo antes.',
         'Enable SMIME support' => 'Habilitar soporte SMIME',
         'Faulty SMIME configuration' => 'Configuración SMIME errónea',
         'SMIME support is enabled, but the relevant configuration contains errors. Please check the configuration using the button below.' =>
@@ -2001,10 +2001,10 @@ sub Data {
         'This state is used in the following config settings:' => '',
 
         # Template: AdminSupportDataCollector
-        'Sending support data to OTRS Group is not possible!' => 'El envío de información de soporte al Grupo de OTRS no fue posible!',
+        'Sending support data to LIGERO Group is not possible!' => 'El envío de información de soporte al Grupo de LIGERO no fue posible!',
         'Enable Cloud Services' => 'Habilitar los servicios en la nube',
-        'This data is sent to OTRS Group on a regular basis. To stop sending this data please update your system registration.' =>
-            'Estos datos se envían a Grupo OTRS en una base regular. Para detener el envío de estos datos por favor actualice su registro del sistema.',
+        'This data is sent to LIGERO Group on a regular basis. To stop sending this data please update your system registration.' =>
+            'Estos datos se envían a Grupo LIGERO en una base regular. Para detener el envío de estos datos por favor actualice su registro del sistema.',
         'You can manually trigger the Support Data sending by pressing this button:' =>
             'Puedes disparar manualmente los envíos de Datos de Soporte presionando este botón:',
         'Send Update' => 'Enviar Actualización',
@@ -2020,11 +2020,11 @@ sub Data {
         'The email address for this user is invalid, this option has been disabled.' =>
             'La dirección de correo electrónico para este usuario no es válida, esta opción se ha desactivado.',
         'Sending' => 'Remitente',
-        'The support bundle will be sent to OTRS Group via email automatically.' =>
-            'El paquete de soporte será enviado a Grupo OTRS a través de correo electrónico de forma automática.',
+        'The support bundle will be sent to LIGERO Group via email automatically.' =>
+            'El paquete de soporte será enviado a Grupo LIGERO a través de correo electrónico de forma automática.',
         'Download File' => 'Descargar Archivo',
-        'A file containing the support bundle will be downloaded to the local system. Please save the file and send it to the OTRS Group, using an alternate method.' =>
-            'Un archivo que contiene el paquete de soporte se descargará en el sistema local. Por favor, guarde el archivo y envíelo al Grupo de OTRS, utilizando un método alternativo .',
+        'A file containing the support bundle will be downloaded to the local system. Please save the file and send it to the LIGERO Group, using an alternate method.' =>
+            'Un archivo que contiene el paquete de soporte se descargará en el sistema local. Por favor, guarde el archivo y envíelo al Grupo de LIGERO, utilizando un método alternativo .',
         'Error: Support data could not be collected (%s).' => 'Error: Los datos de soporte no han podido ser recolectados (%s).',
         'Details' => 'Detalles',
 
@@ -2317,17 +2317,17 @@ sub Data {
         'Customer User Information Center' => '',
 
         # Template: AgentDaemonInfo
-        'The OTRS Daemon is a daemon process that performs asynchronous tasks, e.g. ticket escalation triggering, email sending, etc.' =>
-            'El Servicio OTRS es un proceso en segundo plano que efectúa tareas asíncronas, por ejemplo el disparo de escalada de tickets, envío de correos, etc.',
-        'A running OTRS Daemon is mandatory for correct system operation.' =>
-            'Un Daemon funcionando de OTRS es obligatorio para su correcta operación.',
-        'Starting the OTRS Daemon' => 'Iniciando el Daemon de OTRS',
-        'Make sure that the file \'%s\' exists (without .dist extension). This cron job will check every 5 minutes if the OTRS Daemon is running and start it if needed.' =>
-            'Asegúrese de que el archivo \'%s\' existe (sin la extensión .dist). Este trabajo programado verificará cada 5 minutos si OTRS Daemon se esta ejecutando y se iniciará de ser necesario.',
+        'The LIGERO Daemon is a daemon process that performs asynchronous tasks, e.g. ticket escalation triggering, email sending, etc.' =>
+            'El Servicio LIGERO es un proceso en segundo plano que efectúa tareas asíncronas, por ejemplo el disparo de escalada de tickets, envío de correos, etc.',
+        'A running LIGERO Daemon is mandatory for correct system operation.' =>
+            'Un Daemon funcionando de LIGERO es obligatorio para su correcta operación.',
+        'Starting the LIGERO Daemon' => 'Iniciando el Daemon de LIGERO',
+        'Make sure that the file \'%s\' exists (without .dist extension). This cron job will check every 5 minutes if the LIGERO Daemon is running and start it if needed.' =>
+            'Asegúrese de que el archivo \'%s\' existe (sin la extensión .dist). Este trabajo programado verificará cada 5 minutos si LIGERO Daemon se esta ejecutando y se iniciará de ser necesario.',
         'Execute \'%s start\' to make sure the cron jobs of the \'ligero\' user are active.' =>
             'Ejecute \'%s start\' para asegurarse de que el trabajo programado del usuario \'ligero\' está activo.',
-        'After 5 minutes, check that the OTRS Daemon is running in the system (\'bin/ligero.Daemon.pl status\').' =>
-            'Después de 5 minutos verifique que el Daemon OTRS está ejecutándose en el sistema (\'bin/ligero.Daemon.pl status\').',
+        'After 5 minutes, check that the LIGERO Daemon is running in the system (\'bin/ligero.Daemon.pl status\').' =>
+            'Después de 5 minutos verifique que el Daemon LIGERO está ejecutándose en el sistema (\'bin/ligero.Daemon.pl status\').',
 
         # Template: AgentDashboard
         'Dashboard' => 'Panel principal',
@@ -2431,9 +2431,9 @@ sub Data {
         'There are currently no links. Please click \'Create new Links\' on the top to link this item to other objects.' =>
             '',
 
-        # Template: AgentOTRSBusinessBlockScreen
+        # Template: AgentLIGEROBusinessBlockScreen
         'Unauthorized usage of %s detected' => 'Uso no autorizado de %s detectado',
-        'If you decide to downgrade to ((OTRS)) Community Edition, you will lose all database tables and data related to %s.' =>
+        'If you decide to downgrade to ((LIGERO)) Community Edition, you will lose all database tables and data related to %s.' =>
             '',
 
         # Template: AgentPreferences
@@ -2460,7 +2460,7 @@ sub Data {
         'This setting can currently not be saved.' => '',
         'This setting can currently not be saved' => '',
         'Save this setting' => '',
-        'Did you know? You can help translating OTRS at %s.' => '¿Sabías que? Puedes ayudar a traducir OTRS en %s.',
+        'Did you know? You can help translating LIGERO at %s.' => '¿Sabías que? Puedes ayudar a traducir LIGERO en %s.',
 
         # Template: SettingsList
         'Reset to default' => '',
@@ -2479,7 +2479,7 @@ sub Data {
 
         # Template: AgentStatisticsAdd
         'Statistics Overview' => '',
-        'Read more about statistics in OTRS' => '',
+        'Read more about statistics in LIGERO' => '',
         'Add Statistics' => '',
         'Dynamic Matrix' => 'Matriz Dinámica',
         'Each cell contains a singular data point.' => '',
@@ -2925,8 +2925,8 @@ sub Data {
         'Dynamic fields' => 'Campos dinámicos',
 
         # Template: Error
-        'Really a bug? 5 out of 10 bug reports result from a wrong or incomplete installation of OTRS.' =>
-            '¿Realmente es un error? 5 de cada 10 informes de errores son el resultado de una instalación incorrecta o incompleta de OTRS.',
+        'Really a bug? 5 out of 10 bug reports result from a wrong or incomplete installation of LIGERO.' =>
+            '¿Realmente es un error? 5 de cada 10 informes de errores son el resultado de una instalación incorrecta o incompleta de LIGERO.',
         'With %s, our experts take care of correct installation and cover your back with support and periodic security updates.' =>
             'Con %s, nuestros expertos se encargarán de una  instalación correcta y cubrirán sus espaldas con soporte y parches de seguridad periódicos.',
         'Contact our service team now.' => 'Contacta con nuestro equipo de soporte ahora.',
@@ -2951,7 +2951,7 @@ sub Data {
         # Template: Header
         'View notifications' => 'Ver notificiaciones',
         'Notifications' => '',
-        'Notifications (OTRS Business Solution™)' => '',
+        'Notifications (LIGERO Business Solution™)' => '',
         'Personal preferences' => '',
         'Logout' => 'Cerrar la sesión',
         'You are logged in as' => 'Ha iniciado sesión como',
@@ -3008,8 +3008,8 @@ sub Data {
 
         # Template: InstallerDBStart
         'Install Type' => 'Tipo de instalación',
-        'Create a new database for OTRS' => 'Crear una nueva base de datos para OTRS',
-        'Use an existing database for OTRS' => 'Usar una base de datos existente para OTRS',
+        'Create a new database for LIGERO' => 'Crear una nueva base de datos para LIGERO',
+        'Use an existing database for LIGERO' => 'Usar una base de datos existente para LIGERO',
 
         # Template: InstallerDBmssql
         'If you have set a root password for your database, it must be entered here. If not, leave this field empty.' =>
@@ -3020,8 +3020,8 @@ sub Data {
         'Database check successful.' => 'Se ha verificado la base de datos con éxito.',
         'Database User' => 'Usuario de la base de datos',
         'New' => 'Nuevo',
-        'A new database user with limited permissions will be created for this OTRS system.' =>
-            'Se creará un nuevo usuario de la base de datos con permisos limitados para este sistema OTRS.',
+        'A new database user with limited permissions will be created for this LIGERO system.' =>
+            'Se creará un nuevo usuario de la base de datos con permisos limitados para este sistema LIGERO.',
         'Repeat Password' => 'Repita la contraseña',
         'Generated password' => 'Contraseña generada',
 
@@ -3033,12 +3033,12 @@ sub Data {
         'Port' => 'Puerto',
 
         # Template: InstallerFinish
-        'To be able to use OTRS you have to enter the following line in your command line (Terminal/Shell) as root.' =>
-            'Para poder utilizar OTRS debe escribir la siguiente línea en la consola de sistema (Terminal/Shell) como usuario root',
+        'To be able to use LIGERO you have to enter the following line in your command line (Terminal/Shell) as root.' =>
+            'Para poder utilizar LIGERO debe escribir la siguiente línea en la consola de sistema (Terminal/Shell) como usuario root',
         'Restart your webserver' => 'Reinicie su servidor web',
-        'After doing so your OTRS is up and running.' => 'Después de hacer esto, su OTRS estará activo y ejecutándose',
+        'After doing so your LIGERO is up and running.' => 'Después de hacer esto, su LIGERO estará activo y ejecutándose',
         'Start page' => 'Página de inicio',
-        'Your OTRS Team' => 'Su equipo OTRS',
+        'Your LIGERO Team' => 'Su equipo LIGERO',
 
         # Template: InstallerLicense
         'Don\'t accept license' => 'No aceptar la licencia',
@@ -3084,8 +3084,8 @@ sub Data {
 
         # Template: MobileNotAvailableWidget
         'Feature not Available' => '',
-        'Sorry, but this feature of OTRS is currently not available for mobile devices. If you\'d like to use it, you can either switch to desktop mode or use your regular desktop device.' =>
-            'Lo sentimos, pero esta característica de OTRS no está disponible para dispositivos móviles. Si desea utilizarla, puede cambiar al modo de escritorio o utilizar el dispositivo de escritorio normal.',
+        'Sorry, but this feature of LIGERO is currently not available for mobile devices. If you\'d like to use it, you can either switch to desktop mode or use your regular desktop device.' =>
+            'Lo sentimos, pero esta característica de LIGERO no está disponible para dispositivos móviles. Si desea utilizarla, puede cambiar al modo de escritorio o utilizar el dispositivo de escritorio normal.',
 
         # Template: Motd
         'Message of the Day' => 'Mensaje del día',
@@ -3125,8 +3125,8 @@ sub Data {
 
         # Template: PublicDefault
         'Welcome' => 'Bienvenido',
-        'This is the default public interface of OTRS! There was no action parameter given.' =>
-            'Esta es la interfaz pública por defecto de OTRS! No se ha dado ninguna acción como parámetro.',
+        'This is the default public interface of LIGERO! There was no action parameter given.' =>
+            'Esta es la interfaz pública por defecto de LIGERO! No se ha dado ninguna acción como parámetro.',
         'You could install a custom public module (via the package manager), for example the FAQ module, which has a public interface.' =>
             'Puedes instalar el módulo público del cliente (por medio del gestor de paquetes), por ejemplo el módulo de FAQ lo cuál tiene el interfaz público.',
 
@@ -3267,12 +3267,12 @@ sub Data {
         # Template: Navigation
         'Navigation' => '',
 
-        # Template: OTRSBusinessTeaser
+        # Template: LIGEROBusinessTeaser
         'With %s, System Configuration supports versioning, rollback and user-specific configuration settings.' =>
             '',
 
         # Template: Test
-        'OTRS Test Page' => 'Página de prueba de OTRS',
+        'LIGERO Test Page' => 'Página de prueba de LIGERO',
         'Unlock' => 'Desbloquear',
         'Welcome %s %s' => 'Bienvenido %s %s',
         'Counter' => 'Contador',
@@ -3355,8 +3355,8 @@ sub Data {
         # Perl Module: Kernel/Modules/AdminACL.pm
         'ACL information from database is not in sync with the system configuration, please deploy all ACLs.' =>
             'La información sobre ACL de la base de datos no está sincronizada con la configuración del sistema. Por favor, despliegue todas las ACL.',
-        'ACLs could not be Imported due to a unknown error, please check OTRS logs for more information' =>
-            'Las ACL no se pueden importar debido a un error desconocido, compruebe los registros de OTRS para obtener más información',
+        'ACLs could not be Imported due to a unknown error, please check LIGERO logs for more information' =>
+            'Las ACL no se pueden importar debido a un error desconocido, compruebe los registros de LIGERO para obtener más información',
         'The following ACLs have been added successfully: %s' => 'Las siguientes ACL se han agregado correctamente: %s',
         'The following ACLs have been updated successfully: %s' => 'Las siguientes ACL se ha sido actualizadas correctamente: %s',
         'There where errors adding/updating the following ACLs: %s. Please check the log file for more information.' =>
@@ -3409,8 +3409,8 @@ sub Data {
             'Se produjo un error al obtener los datos para Notificación con ID:%s!',
         'Unknown Notification %s!' => 'Notificación %s Desconocida! ',
         'There was an error creating the Notification' => 'Se produjo un error al crear la Notificación',
-        'Notifications could not be Imported due to a unknown error, please check OTRS logs for more information' =>
-            'Los notificaciones no se pudieron importarse debido a un error desconocido, favor, compruebe los registros de OTRS para más información.',
+        'Notifications could not be Imported due to a unknown error, please check LIGERO logs for more information' =>
+            'Los notificaciones no se pudieron importarse debido a un error desconocido, favor, compruebe los registros de LIGERO para más información.',
         'The following Notifications have been added successfully: %s' =>
             'Los siguientes Notificaciones se han agregado exitosamente: %s',
         'The following Notifications have been updated successfully: %s' =>
@@ -3636,12 +3636,12 @@ sub Data {
         'Need ExampleWebService!' => '¡Se requiere un Ejemplo de Servicio Web!',
         'Could not read %s!' => '¡No se pudo leer %s!',
         'Need a file to import!' => '¡Se requiere el archivo para importar!',
-        'The imported file has not valid YAML content! Please check OTRS log for details' =>
-            '¡El archivo importado no funciona con el contenido YAML!  Por favor, compruebe los registros de OTRS para más información',
+        'The imported file has not valid YAML content! Please check LIGERO log for details' =>
+            '¡El archivo importado no funciona con el contenido YAML!  Por favor, compruebe los registros de LIGERO para más información',
         'Web service "%s" deleted!' => 'Servicio web "%s" borrado!',
-        'OTRS as provider' => 'OTRS como proveedor',
+        'LIGERO as provider' => 'LIGERO como proveedor',
         'Operations' => '',
-        'OTRS as requester' => 'OTRS como solicitante',
+        'LIGERO as requester' => 'LIGERO como solicitante',
         'Invokers' => '',
 
         # Perl Module: Kernel/Modules/AdminGenericInterfaceWebserviceHistory.pm
@@ -3672,7 +3672,7 @@ sub Data {
         'All recipients of the first article' => '',
         'All recipients of the last article' => '',
 
-        # Perl Module: Kernel/Modules/AdminOTRSBusiness.pm
+        # Perl Module: Kernel/Modules/AdminLIGEROBusiness.pm
         'Your system was successfully upgraded to %s.' => 'Su sistema se actualizó correctamente a %s.',
         'There was a problem during the upgrade to %s.' => 'Hubo un problema durante la actualización a %s.',
         '%s was correctly reinstalled.' => '%s fue correctamente instalado.',
@@ -3698,8 +3698,8 @@ sub Data {
         'Can\'t read %s!' => '¡No se puede leer %s!',
         'File is OK' => 'El archivo está bien.',
         'Package has locally modified files.' => 'El paquete tiene archivos modificados localmente. ',
-        'Package not verified by the OTRS Group! It is recommended not to use this package.' =>
-            '¡Paquete no verificado por el grupo OTRS! Se recomienda que no use este paquete.',
+        'Package not verified by the LIGERO Group! It is recommended not to use this package.' =>
+            '¡Paquete no verificado por el grupo LIGERO! Se recomienda que no use este paquete.',
         'Not Started' => '',
         'Updated' => '',
         'Already up-to-date' => '',
@@ -3720,9 +3720,9 @@ sub Data {
             'No hay paquetes ó ningún paquete encontrado en el repositorio seleccionado.',
         'Package not verified due a communication issue with verification server!' =>
             'Paquete no verificado debido a problema en la comunicación con el servidor de verificación!',
-        'Can\'t connect to OTRS Feature Add-on list server!' => 'No se pudo conectarse con el servidor de la lista de Funciones de los Complementos  de OTRS!',
-        'Can\'t get OTRS Feature Add-on list from server!' => 'No se puede obtener la lista de los Complementos de las Funciones de OTRS desde el servidor!',
-        'Can\'t get OTRS Feature Add-on from server!' => '¡No se puede obtener el Complemento de los Funciones de OTRS desde el servidor!',
+        'Can\'t connect to LIGERO Feature Add-on list server!' => 'No se pudo conectarse con el servidor de la lista de Funciones de los Complementos  de LIGERO!',
+        'Can\'t get LIGERO Feature Add-on list from server!' => 'No se puede obtener la lista de los Complementos de las Funciones de LIGERO desde el servidor!',
+        'Can\'t get LIGERO Feature Add-on from server!' => '¡No se puede obtener el Complemento de los Funciones de LIGERO desde el servidor!',
 
         # Perl Module: Kernel/Modules/AdminPostMasterFilter.pm
         'No such filter: %s' => 'No existe el filtro: %s',
@@ -3895,12 +3895,12 @@ sub Data {
         'You currently don\'t have any favourite settings.' => '',
         'The following settings could not be found: %s' => 'La siguiente configuración no se pudo encontrar: %s',
         'Import not allowed!' => 'No se permite Importar!',
-        'System Configuration could not be imported due to an unknown error, please check OTRS logs for more information.' =>
+        'System Configuration could not be imported due to an unknown error, please check LIGERO logs for more information.' =>
             '',
         'Category Search' => '',
 
         # Perl Module: Kernel/Modules/AdminSystemConfigurationDeployment.pm
-        'Some imported settings are not present in the current state of the configuration or it was not possible to update them. Please check the OTRS log for more information.' =>
+        'Some imported settings are not present in the current state of the configuration or it was not possible to update them. Please check the LIGERO log for more information.' =>
             '',
 
         # Perl Module: Kernel/Modules/AdminSystemConfigurationGroup.pm
@@ -4345,7 +4345,7 @@ sub Data {
         'Configure "Home" in Kernel/Config.pm first!' => 'Configurar "Casa" en Kernel/Config.pm primero!',
         'File "%s/Kernel/Config.pm" not found!' => '¡Archivo "%s/Kernel/Config.pm" no encontrado!',
         'Directory "%s" not found!' => '¡Directorio "%s" no encontrado!',
-        'Install OTRS' => 'Instalar OTRS',
+        'Install LIGERO' => 'Instalar LIGERO',
         'Intro' => 'Introducción',
         'Kernel/Config.pm isn\'t writable!' => 'Kernel/Config.pm no es modificable!',
         'If you want to use the installer, set the Kernel/Config.pm writable for the webserver user!' =>
@@ -4362,7 +4362,7 @@ sub Data {
         'Unknown database type "%s".' => 'Tipo de base de datos desconocida "%s".',
         'Please go back.' => 'Por favor, vuelve atrás.',
         'Create Database' => 'Crear la base de datos',
-        'Install OTRS - Error' => 'Instalar OTRS - Error',
+        'Install LIGERO - Error' => 'Instalar LIGERO - Error',
         'File "%s/%s.xml" not found!' => '¡Archivo "%s/%s.xml" no encontrado!',
         'Contact your Admin!' => '¡Contacta con tu Administrador!',
         'System Settings' => 'Ajustes del sistema',
@@ -4430,7 +4430,7 @@ sub Data {
         'Unmark' => 'Desmarcar',
 
         # Perl Module: Kernel/Output/HTML/ArticleAction/ReinstallPackageLink.pm
-        'Upgrade to OTRS Business Solution™' => '',
+        'Upgrade to LIGERO Business Solution™' => '',
         'Re-install Package' => '',
         'Upgrade' => 'Actualizar',
         'Re-install' => '',
@@ -4494,8 +4494,8 @@ sub Data {
         'The start time of a ticket has been set after the end time!' => 'La hora de inicio de un ticket se ha configurado después de la hora de finalización!',
 
         # Perl Module: Kernel/Output/HTML/Dashboard/News.pm
-        'Can\'t connect to OTRS News server!' => 'No se puede conectar al servidor de Noticias de OTRS!',
-        'Can\'t get OTRS News from server!' => 'No se pueden obtener Noticias OTRS desde el servidor!',
+        'Can\'t connect to LIGERO News server!' => 'No se puede conectar al servidor de Noticias de LIGERO!',
+        'Can\'t get LIGERO News from server!' => 'No se pueden obtener Noticias LIGERO desde el servidor!',
 
         # Perl Module: Kernel/Output/HTML/Dashboard/ProductNotify.pm
         'Can\'t connect to Product News server!' => 'No se puede conectar con el Servidor de Noticias de Productos.',
@@ -4561,9 +4561,9 @@ sub Data {
         'Archive search' => 'Archivar la búsqueda',
 
         # Perl Module: Kernel/Output/HTML/Notification/AgentCloudServicesDisabled.pm
-        'Enable cloud services to unleash all OTRS features!' => '¡Habilitar los servicios en la nube para liberar todas las características de OTRS!',
+        'Enable cloud services to unleash all LIGERO features!' => '¡Habilitar los servicios en la nube para liberar todas las características de LIGERO!',
 
-        # Perl Module: Kernel/Output/HTML/Notification/AgentOTRSBusiness.pm
+        # Perl Module: Kernel/Output/HTML/Notification/AgentLIGEROBusiness.pm
         '%s Upgrade to %s now! %s' => '%s ¡Actualizar ahora a %s! %s',
         'Please verify your license data!' => '',
         'The license for your %s is about to expire. Please make contact with %s to renew your contract!' =>
@@ -4590,14 +4590,14 @@ sub Data {
             '',
 
         # Perl Module: Kernel/Output/HTML/Notification/DaemonCheck.pm
-        'OTRS Daemon is not running.' => 'Daemon OTRS no se está ejecutando.',
+        'LIGERO Daemon is not running.' => 'Daemon LIGERO no se está ejecutando.',
 
         # Perl Module: Kernel/Output/HTML/Notification/OutofOfficeCheck.pm
         'You have Out of Office enabled, would you like to disable it?' =>
             'Tiene habilitado «Fuera de la oficina», ¿desea inhabilitarlo?',
 
         # Perl Module: Kernel/Output/HTML/Notification/PackageManagerCheckNotVerifiedPackages.pm
-        'The installation of packages which are not verified by the OTRS Group is activated. These packages could threaten your whole system! It is recommended not to use unverified packages.' =>
+        'The installation of packages which are not verified by the LIGERO Group is activated. These packages could threaten your whole system! It is recommended not to use unverified packages.' =>
             '',
 
         # Perl Module: Kernel/Output/HTML/Notification/SystemConfigurationInvalidCheck.pm
@@ -4799,10 +4799,10 @@ sub Data {
         'File is not installed!' => '¡El archivo no esta instalado!',
         'File is different!' => '¡El archivo es diferente!',
         'Can\'t read file!' => '¡El archivo no se puede leer!',
-        '<p>If you continue to install this package, the following issues may occur:</p><ul><li>Security problems</li><li>Stability problems</li><li>Performance problems</li></ul><p>Please note that issues that are caused by working with this package are not covered by OTRS service contracts.</p>' =>
+        '<p>If you continue to install this package, the following issues may occur:</p><ul><li>Security problems</li><li>Stability problems</li><li>Performance problems</li></ul><p>Please note that issues that are caused by working with this package are not covered by LIGERO service contracts.</p>' =>
             '',
-        '<p>The installation of packages which are not verified by the OTRS Group is not possible by default.</p>' =>
-            '<p>La instalación de paquetes que no han sido verificados por el Grupo OTRS no es posible por defecto.</p>',
+        '<p>The installation of packages which are not verified by the LIGERO Group is not possible by default.</p>' =>
+            '<p>La instalación de paquetes que no han sido verificados por el Grupo LIGERO no es posible por defecto.</p>',
         '<p>You can activate the installation of not verified packages in the <a href="%sAction=AdminSystemConfiguration;Subaction=View;Setting=Package%3A%3AAllowNotVerifiedPackages" target="_blank">System Configuration</a>.</p>' =>
             '',
 
@@ -4987,14 +4987,14 @@ sub Data {
         # Perl Module: Kernel/System/SupportDataCollector/Plugin/Database/postgresql/Version.pm
         'PostgreSQL 9.2 or higher is required.' => '',
 
-        # Perl Module: Kernel/System/SupportDataCollector/Plugin/OS/DiskPartitionOTRS.pm
-        'OTRS Disk Partition' => 'Partición del Disco OTRS',
+        # Perl Module: Kernel/System/SupportDataCollector/Plugin/OS/DiskPartitionLIGERO.pm
+        'LIGERO Disk Partition' => 'Partición del Disco LIGERO',
 
         # Perl Module: Kernel/System/SupportDataCollector/Plugin/OS/DiskSpace.pm
         'Disk Usage' => 'Uso del Disco',
-        'The partition where OTRS is located is almost full.' => 'La partición donde se localiza OTRS está casi lleno.',
-        'The partition where OTRS is located has no disk space problems.' =>
-            'La partición donde se localiza OTRS no tiene problemas de espacio de disco.',
+        'The partition where LIGERO is located is almost full.' => 'La partición donde se localiza LIGERO está casi lleno.',
+        'The partition where LIGERO is located has no disk space problems.' =>
+            'La partición donde se localiza LIGERO no tiene problemas de espacio de disco.',
 
         # Perl Module: Kernel/System/SupportDataCollector/Plugin/OS/DiskSpacePartitions.pm
         'Disk Partitions Usage' => 'Uso de la Partición del Disco',
@@ -5022,37 +5022,37 @@ sub Data {
         'There should be more than 60% free swap space.' => 'Debe haber mas del 60% de espacio de intercambio libre.',
         'There should be no more than 200 MB swap space used.' => 'Debe haber no mas de 200 MB de espacio de intercambio usado.',
 
-        # Perl Module: Kernel/System/SupportDataCollector/Plugin/OTRS/ArticleSearchIndexStatus.pm
-        'OTRS' => 'OTRS',
+        # Perl Module: Kernel/System/SupportDataCollector/Plugin/LIGERO/ArticleSearchIndexStatus.pm
+        'LIGERO' => 'LIGERO',
         'Article Search Index Status' => '',
         'Indexed Articles' => '',
 
-        # Perl Module: Kernel/System/SupportDataCollector/Plugin/OTRS/ArticlesPerCommunicationChannel.pm
+        # Perl Module: Kernel/System/SupportDataCollector/Plugin/LIGERO/ArticlesPerCommunicationChannel.pm
         'Articles Per Communication Channel' => '',
 
-        # Perl Module: Kernel/System/SupportDataCollector/Plugin/OTRS/CommunicationLog.pm
+        # Perl Module: Kernel/System/SupportDataCollector/Plugin/LIGERO/CommunicationLog.pm
         'Incoming communications' => '',
         'Outgoing communications' => '',
         'Failed communications' => '',
         'Average processing time of communications (s)' => '',
 
-        # Perl Module: Kernel/System/SupportDataCollector/Plugin/OTRS/CommunicationLogAccountStatus.pm
+        # Perl Module: Kernel/System/SupportDataCollector/Plugin/LIGERO/CommunicationLogAccountStatus.pm
         'Communication Log Account Status (last 24 hours)' => '',
         'No connections found.' => '',
         'ok' => '',
         'permanent connection errors' => '',
         'intermittent connection errors' => '',
 
-        # Perl Module: Kernel/System/SupportDataCollector/Plugin/OTRS/ConfigSettings.pm
+        # Perl Module: Kernel/System/SupportDataCollector/Plugin/LIGERO/ConfigSettings.pm
         'Config Settings' => 'Configuraciones del sistema',
         'Could not determine value.' => 'No se pudo determinar el valor.',
 
-        # Perl Module: Kernel/System/SupportDataCollector/Plugin/OTRS/DaemonRunning.pm
+        # Perl Module: Kernel/System/SupportDataCollector/Plugin/LIGERO/DaemonRunning.pm
         'Daemon' => 'Daemon',
         'Daemon is running.' => 'Daemon se esta ejecutando.',
         'Daemon is not running.' => 'Daemon no se está ejecutando.',
 
-        # Perl Module: Kernel/System/SupportDataCollector/Plugin/OTRS/DatabaseRecords.pm
+        # Perl Module: Kernel/System/SupportDataCollector/Plugin/LIGERO/DatabaseRecords.pm
         'Database Records' => 'Registros de la Base de Datos',
         'Tickets' => 'Tickets',
         'Ticket History Entries' => 'Entradas Del Historial De Ticket',
@@ -5068,31 +5068,31 @@ sub Data {
         'Tickets Per Month (avg)' => 'Tickets al Mes (promedio)',
         'Open Tickets' => 'Tickets Abiertos',
 
-        # Perl Module: Kernel/System/SupportDataCollector/Plugin/OTRS/DefaultSOAPUser.pm
+        # Perl Module: Kernel/System/SupportDataCollector/Plugin/LIGERO/DefaultSOAPUser.pm
         'Default SOAP Username And Password' => 'SOAP Nombre de Usuario y Contraseña Por Defecto',
         'Security risk: you use the default setting for SOAP::User and SOAP::Password. Please change it.' =>
             'Riesgo de Seguridad: Esta usando la configuración por defecto para SOAP::User y SOAP::Password. Por favor cambiela.',
 
-        # Perl Module: Kernel/System/SupportDataCollector/Plugin/OTRS/DefaultUser.pm
+        # Perl Module: Kernel/System/SupportDataCollector/Plugin/LIGERO/DefaultUser.pm
         'Default Admin Password' => 'Contraseña Por Defecto Para Admin',
         'Security risk: the agent account root@localhost still has the default password. Please change it or invalidate the account.' =>
             'Riesgo de seguridad: la cuenta del agente root@localhost todavía tiene la contraseña predeterminada. Por favor cámbiala o invalida la cuenta.',
 
-        # Perl Module: Kernel/System/SupportDataCollector/Plugin/OTRS/EmailQueue.pm
+        # Perl Module: Kernel/System/SupportDataCollector/Plugin/LIGERO/EmailQueue.pm
         'Email Sending Queue' => '',
         'Emails queued for sending' => '',
 
-        # Perl Module: Kernel/System/SupportDataCollector/Plugin/OTRS/FQDN.pm
+        # Perl Module: Kernel/System/SupportDataCollector/Plugin/LIGERO/FQDN.pm
         'FQDN (domain name)' => 'FQDN (nombre de dominio)',
         'Please configure your FQDN setting.' => 'Por favor configure ajuste de su FQDN.',
         'Domain Name' => 'Nombre de Dominio',
         'Your FQDN setting is invalid.' => 'Su configuración FQDN no es válida.',
 
-        # Perl Module: Kernel/System/SupportDataCollector/Plugin/OTRS/FileSystemWritable.pm
+        # Perl Module: Kernel/System/SupportDataCollector/Plugin/LIGERO/FileSystemWritable.pm
         'File System Writable' => 'Sistema de Archivos Grabable',
-        'The file system on your OTRS partition is not writable.' => 'El sistema de archivos de la partición OTRS no es grabable.',
+        'The file system on your LIGERO partition is not writable.' => 'El sistema de archivos de la partición LIGERO no es grabable.',
 
-        # Perl Module: Kernel/System/SupportDataCollector/Plugin/OTRS/LegacyConfigBackups.pm
+        # Perl Module: Kernel/System/SupportDataCollector/Plugin/LIGERO/LegacyConfigBackups.pm
         'Legacy Configuration Backups' => '',
         'No legacy configuration backup files found.' => '',
         'Legacy configuration backup files found in %s, but they might still be required by some packages.' =>
@@ -5100,55 +5100,55 @@ sub Data {
         'Legacy configuration backup files are no longer needed for the installed packages, please remove them from %s.' =>
             '',
 
-        # Perl Module: Kernel/System/SupportDataCollector/Plugin/OTRS/PackageDeployment.pm
+        # Perl Module: Kernel/System/SupportDataCollector/Plugin/LIGERO/PackageDeployment.pm
         'Package Installation Status' => 'Estado de Instalación del Paquete',
         'Some packages have locally modified files.' => 'Algunos paquetes tienen archivos modificados localmente.',
         'Some packages are not correctly installed.' => 'Algunos paquetes no estan correctamente instalados.',
         'Package Verification Status' => 'Estado de verificación del paquete',
-        'Some packages are not verified by the OTRS Group! It is recommended not to use this packages.' =>
-            '¡Algunos paquetes no ha sido verificados por OTRS group! Se recomienda no utilizar estos paquetes.',
+        'Some packages are not verified by the LIGERO Group! It is recommended not to use this packages.' =>
+            '¡Algunos paquetes no ha sido verificados por LIGERO group! Se recomienda no utilizar estos paquetes.',
         'Package Framework Version Status' => 'Estado de la versión del paquete Framework ',
         'Some packages are not allowed for the current framework version.' =>
             'Algunos paquetes no están permitidos para la versión actual del framework.',
 
-        # Perl Module: Kernel/System/SupportDataCollector/Plugin/OTRS/PackageList.pm
+        # Perl Module: Kernel/System/SupportDataCollector/Plugin/LIGERO/PackageList.pm
         'Package List' => 'Listado de paquetes',
 
-        # Perl Module: Kernel/System/SupportDataCollector/Plugin/OTRS/SessionConfigSettings.pm
+        # Perl Module: Kernel/System/SupportDataCollector/Plugin/LIGERO/SessionConfigSettings.pm
         'Session Config Settings' => 'Ajustes de Configuración de Sesión.',
 
-        # Perl Module: Kernel/System/SupportDataCollector/Plugin/OTRS/SpoolMails.pm
+        # Perl Module: Kernel/System/SupportDataCollector/Plugin/LIGERO/SpoolMails.pm
         'Spooled Emails' => 'Emails están en portapapeles',
-        'There are emails in var/spool that OTRS could not process.' => 'Se encuentran emails en var/spool cuáles no pueden ser procesados por OTRS.',
+        'There are emails in var/spool that LIGERO could not process.' => 'Se encuentran emails en var/spool cuáles no pueden ser procesados por LIGERO.',
 
-        # Perl Module: Kernel/System/SupportDataCollector/Plugin/OTRS/SystemID.pm
+        # Perl Module: Kernel/System/SupportDataCollector/Plugin/LIGERO/SystemID.pm
         'Your SystemID setting is invalid, it should only contain digits.' =>
             'El ajuste del ID del Sistema es es valido, debe contener solamente dígitos.',
 
-        # Perl Module: Kernel/System/SupportDataCollector/Plugin/OTRS/Ticket/DefaultType.pm
+        # Perl Module: Kernel/System/SupportDataCollector/Plugin/LIGERO/Ticket/DefaultType.pm
         'Default Ticket Type' => 'Tipo de Ticket predeterminado',
         'The configured default ticket type is invalid or missing. Please change the setting Ticket::Type::Default and select a valid ticket type.' =>
             'El tipo predeterminado de ticket configurado está inválido ó se falta. Favor, cambie los ajustes Ticket::Type::Default y seleccione el tipo de ticket válido.',
 
-        # Perl Module: Kernel/System/SupportDataCollector/Plugin/OTRS/Ticket/IndexModule.pm
+        # Perl Module: Kernel/System/SupportDataCollector/Plugin/LIGERO/Ticket/IndexModule.pm
         'Ticket Index Module' => 'Módulo De Índice de Tickets',
         'You have more than 60,000 tickets and should use the StaticDB backend. See admin manual (Performance Tuning) for more information.' =>
             'Usted tiene más de 60,000 tickets y debería usar el backend StaticDB. Ver el manual admin (Optimización del Rendimiento) para más información.',
 
-        # Perl Module: Kernel/System/SupportDataCollector/Plugin/OTRS/Ticket/InvalidUsersWithLockedTickets.pm
+        # Perl Module: Kernel/System/SupportDataCollector/Plugin/LIGERO/Ticket/InvalidUsersWithLockedTickets.pm
         'Invalid Users with Locked Tickets' => 'Usuarios no válidos con Tickets bloqueados',
         'There are invalid users with locked tickets.' => 'Hay usuarios no válidos con Tickets bloqueados.',
 
-        # Perl Module: Kernel/System/SupportDataCollector/Plugin/OTRS/Ticket/OpenTickets.pm
+        # Perl Module: Kernel/System/SupportDataCollector/Plugin/LIGERO/Ticket/OpenTickets.pm
         'You should not have more than 8,000 open tickets in your system.' =>
             'No debe tener más de 8.000 tickets abiertos en su sistema.',
 
-        # Perl Module: Kernel/System/SupportDataCollector/Plugin/OTRS/Ticket/SearchIndexModule.pm
+        # Perl Module: Kernel/System/SupportDataCollector/Plugin/LIGERO/Ticket/SearchIndexModule.pm
         'Ticket Search Index Module' => 'Módulo Índice Búsqueda de Ticket',
         'The indexing process forces the storage of the original article text in the article search index, without executing filters or applying stop word lists. This will increase the size of the search index and thus may slow down fulltext searches.' =>
             '',
 
-        # Perl Module: Kernel/System/SupportDataCollector/Plugin/OTRS/Ticket/StaticDBOrphanedRecords.pm
+        # Perl Module: Kernel/System/SupportDataCollector/Plugin/LIGERO/Ticket/StaticDBOrphanedRecords.pm
         'Orphaned Records In ticket_lock_index Table' => 'Registros Huérfanos En La Tabla ticket_lock_index',
         'Table ticket_lock_index contains orphaned records. Please run bin/ligero.Console.pl "Maint::Ticket::QueueIndexCleanup" to clean the StaticDB index.' =>
             'La tabla ticket_lock_index contiene registros huérfanos. Por favor ejectute bin/ligero.Console.pl "Maint::Ticket::QueueIndexCleanup" para limpiar el índice StaticDB.',
@@ -5156,23 +5156,23 @@ sub Data {
         'Table ticket_index contains orphaned records. Please run bin/ligero.Console.pl "Maint::Ticket::QueueIndexCleanup" to clean the StaticDB index.' =>
             'La tabla ticket_index contiene registros perdidos. Favor inicie bin/ligero.Console.pl "Maint::Ticket::QueueIndexCleanup" para limpiar el StaticDB index.',
 
-        # Perl Module: Kernel/System/SupportDataCollector/Plugin/OTRS/TimeSettings.pm
+        # Perl Module: Kernel/System/SupportDataCollector/Plugin/LIGERO/TimeSettings.pm
         'Time Settings' => 'Ajustes de hora',
         'Server time zone' => 'Zona horaria del servidor',
-        'OTRS time zone' => '',
-        'OTRS time zone is not set.' => '',
+        'LIGERO time zone' => '',
+        'LIGERO time zone is not set.' => '',
         'User default time zone' => '',
         'User default time zone is not set.' => '',
-        'OTRS time zone setting for calendar' => '',
+        'LIGERO time zone setting for calendar' => '',
         'Calendar time zone is not set.' => '',
 
-        # Perl Module: Kernel/System/SupportDataCollector/Plugin/OTRS/UI/AgentSkinUsage.pm
+        # Perl Module: Kernel/System/SupportDataCollector/Plugin/LIGERO/UI/AgentSkinUsage.pm
         'UI - Agent Skin Usage' => '',
 
-        # Perl Module: Kernel/System/SupportDataCollector/Plugin/OTRS/UI/AgentThemeUsage.pm
+        # Perl Module: Kernel/System/SupportDataCollector/Plugin/LIGERO/UI/AgentThemeUsage.pm
         'UI - Agent Theme Usage' => '',
 
-        # Perl Module: Kernel/System/SupportDataCollector/Plugin/OTRS/UI/SpecialStats.pm
+        # Perl Module: Kernel/System/SupportDataCollector/Plugin/LIGERO/UI/SpecialStats.pm
         'UI - Special Statistics' => '',
         'Agents using custom main menu ordering' => '',
         'Agents using favourites for the admin overview' => '',
@@ -5183,8 +5183,8 @@ sub Data {
 
         # Perl Module: Kernel/System/SupportDataCollector/Plugin/Webserver/Apache/MPMModel.pm
         'MPM model' => 'modelo MPM',
-        'OTRS requires apache to be run with the \'prefork\' MPM model.' =>
-            'OTRS requiere apache para ejecutarse con el módulo \'prefork\' MPM.',
+        'LIGERO requires apache to be run with the \'prefork\' MPM model.' =>
+            'LIGERO requiere apache para ejecutarse con el módulo \'prefork\' MPM.',
 
         # Perl Module: Kernel/System/SupportDataCollector/Plugin/Webserver/Apache/Performance.pm
         'CGI Accelerator Usage' => 'Uso Del Acelerador de CGI',
@@ -5214,7 +5214,7 @@ sub Data {
         'Webserver Version' => 'Versión del Servidor Web',
         'Could not determine webserver version.' => 'No se pudo determinar la versión del servidor web.',
 
-        # Perl Module: Kernel/System/SupportDataCollector/PluginAsynchronous/OTRS/ConcurrentUsers.pm
+        # Perl Module: Kernel/System/SupportDataCollector/PluginAsynchronous/LIGERO/ConcurrentUsers.pm
         'Concurrent Users Details' => 'Detalles de Usuarios Concurrentes',
         'Concurrent Users' => 'Usuarios Concurrentes',
 
@@ -5245,10 +5245,10 @@ sub Data {
         'Disabled' => 'Deshabilitado',
 
         # Perl Module: Kernel/System/SysConfig/ValueType/Date.pm
-        'System was not able to calculate user Date in OTRSTimeZone!' => '',
+        'System was not able to calculate user Date in LIGEROTimeZone!' => '',
 
         # Perl Module: Kernel/System/SysConfig/ValueType/DateTime.pm
-        'System was not able to calculate user DateTime in OTRSTimeZone!' =>
+        'System was not able to calculate user DateTime in LIGEROTimeZone!' =>
             '',
 
         # Perl Module: Kernel/System/SysConfig/ValueType/FrontendNavigation.pm
@@ -5506,7 +5506,7 @@ sub Data {
         'Currently not possible' => '',
         'This is currently disabled because of an ongoing package upgrade.' =>
             '',
-        'This option is currently disabled because the OTRS Daemon is not running.' =>
+        'This option is currently disabled because the LIGERO Daemon is not running.' =>
             '',
         'Are you sure you want to update all installed packages?' => '',
 
@@ -5633,7 +5633,7 @@ sub Data {
             'Introduzca al menos un valor de búsqueda, o * para buscar todo.',
 
         # JS File: Core.Agent.Daemon
-        'Information about the OTRS Daemon' => 'Información acerca del Daemon de OTRS',
+        'Information about the LIGERO Daemon' => 'Información acerca del Daemon de LIGERO',
 
         # JS File: Core.Agent.Dashboard
         'Please check the fields marked as red for valid inputs.' => 'Compruebe que los campos marcados en rojo tienen datos válidos.',
@@ -5790,14 +5790,14 @@ sub Data {
         'This is %s' => '',
         'Complex %s with %s arguments' => '',
 
-        # JS File: OTRSLineChart
+        # JS File: LIGEROLineChart
         'No Data Available.' => 'Los Datos no están  disponibles.',
 
-        # JS File: OTRSMultiBarChart
+        # JS File: LIGEROMultiBarChart
         'Grouped' => 'Agrupado',
         'Stacked' => 'Apilado',
 
-        # JS File: OTRSStackedAreaChart
+        # JS File: LIGEROStackedAreaChart
         'Stream' => 'Stream',
         'Expanded' => 'Expandido',
 
@@ -5888,8 +5888,8 @@ Tu Equipo de Soporte
         'Added subscription for user "%s".' => 'Añadida suscripción para el usuario «%s».',
         'Added system request (%s).' => '',
         'Added web request from customer.' => '',
-        'Adds a suffix with the actual year and month to the OTRS log file. A logfile for every month will be created.' =>
-            'Añade un sufijo con el año y mes actual para el archivo de registro de OTRS. Se creará un archivo de registro para cada mes .',
+        'Adds a suffix with the actual year and month to the LIGERO log file. A logfile for every month will be created.' =>
+            'Añade un sufijo con el año y mes actual para el archivo de registro de LIGERO. Se creará un archivo de registro para cada mes .',
         'Adds customers email addresses to recipients in the ticket compose screen of the agent interface. The customers email address won\'t be added if the article type is email-internal.' =>
             'Añade direcciones de correo electrónico de clientes  a los destinatarios en la pantalla de composición de ticket de la interfaz del agente. No se añadirá la dirección de correo electrónico de los clientes si el tipo de artículo es email-interno.',
         'Adds the one time vacation days for the indicated calendar.' => '',
@@ -5946,7 +5946,7 @@ El control del acceso adicional para demostrar o no demostrar éste enlace puede
         'Agents ↔ Groups' => '',
         'Agents ↔ Roles' => '',
         'All CustomerIDs of a customer user.' => '',
-        'All attachments (OTRS Business Solution™)' => 'Todos los archivos adjuntos (OTRS Business Solution™)',
+        'All attachments (LIGERO Business Solution™)' => 'Todos los archivos adjuntos (LIGERO Business Solution™)',
         'All customer users of a CustomerID' => 'Todos los clientes de un IDCliente',
         'All escalated tickets' => 'Todos los Tickets escalados',
         'All new tickets, these tickets have not been worked on yet' => 'Todos los Tickets nuevos, todavía no se ha trabajado en estos tickets',
@@ -6124,9 +6124,9 @@ El control del acceso adicional para demostrar o no demostrar éste enlace puede
             'Comprueba si un E-Mail es un seguimiento a un ticket existente búscando en el tema por un número de ticket válido.',
         'Checks the SystemID in ticket number detection for follow-ups. If not enabled, SystemID will be changed after using the system.' =>
             '',
-        'Checks the availability of OTRS Business Solution™ for this system.' =>
-            'Comprueba la disponibilidad de OTRS Business Solution™ para este sistema.',
-        'Checks the entitlement status of OTRS Business Solution™.' => 'Comprueba el estado de la autorización de OTRS Business Solution™.',
+        'Checks the availability of LIGERO Business Solution™ for this system.' =>
+            'Comprueba la disponibilidad de LIGERO Business Solution™ para este sistema.',
+        'Checks the entitlement status of LIGERO Business Solution™.' => 'Comprueba el estado de la autorización de LIGERO Business Solution™.',
         'Child' => 'Hijo',
         'Chinese (Simplified)' => 'Chino (Simplificado)',
         'Chinese (Traditional)' => 'Chino (Tradicional)',
@@ -6179,8 +6179,8 @@ El control del acceso adicional para demostrar o no demostrar éste enlace puede
         'Configure and manage ACLs.' => 'Configurar y administrar ACLs.',
         'Configure any additional readonly mirror databases that you want to use.' =>
             'Configura base de datos espejo de sólo lectura adicional que quieras utilizar.',
-        'Configure sending of support data to OTRS Group for improved support.' =>
-            'Configura envío de datos de soporte a Grupo OTRS para soporte mejorado.',
+        'Configure sending of support data to LIGERO Group for improved support.' =>
+            'Configura envío de datos de soporte a Grupo LIGERO para soporte mejorado.',
         'Configure which screen should be shown after a new ticket has been created.' =>
             'Configura que pantalla debe ser mostrada después de que un nuevo ticket haya sido creado.',
         'Configure your own log text for PGP.' => 'Configure su propio texto de registro de PGP.',
@@ -6302,8 +6302,8 @@ El control del acceso adicional para demostrar o no demostrar éste enlace puede
         'Default value for NameX' => 'Valor por defecto para NombreX',
         'Define Actions where a settings button is available in the linked objects widget (LinkObject::ViewMode = "complex"). Please note that these Actions must have registered the following JS and CSS files: Core.AllocationList.css, Core.UI.AllocationList.js, Core.UI.Table.Sort.js, Core.Agent.TableFilters.js.' =>
             'Define los Acciones dónde el botón de ajustes está disponible en el widget del objeto vinculado (LinkObject::ViewMode = "complex"). Favor téngase en cuenta que éstos Acciones deben registrar los siguientes JS y CSS archivos: Core.AllocationList.css, Core.UI.AllocationList.js, Core.UI.Table.Sort.js, Core.Agent.TableFilters.js.',
-        'Define a filter for html output to add links behind a defined string. The element Image allows two input kinds. At once the name of an image (e.g. faq.png). In this case the OTRS image path will be used. The second possiblity is to insert the link to the image.' =>
-            'Definir un filtro para la salida html para agregar enlaces detrás de un string definido. El elemento Imagen permite dos tipos de entrada. Al mismo tiempo el nombre de una imagen (por ejemplo faq.png ). En este caso se utilizará la ruta de la imagen OTRS. La segunda posibilidad es insertar el enlace a la imagen.',
+        'Define a filter for html output to add links behind a defined string. The element Image allows two input kinds. At once the name of an image (e.g. faq.png). In this case the LIGERO image path will be used. The second possiblity is to insert the link to the image.' =>
+            'Definir un filtro para la salida html para agregar enlaces detrás de un string definido. El elemento Imagen permite dos tipos de entrada. Al mismo tiempo el nombre de una imagen (por ejemplo faq.png ). En este caso se utilizará la ruta de la imagen LIGERO. La segunda posibilidad es insertar el enlace a la imagen.',
         'Define a mapping between variables of the customer user data (keys) and dynamic fields of a ticket (values). The purpose is to store customer user data in ticket dynamic fields. The dynamic fields must be present in the system and should be enabled for AgentTicketFreeText, so that they can be set/updated manually by the agent. They mustn\'t be enabled for AgentTicketPhone, AgentTicketEmail and AgentTicketCustomer. If they were, they would have precedence over the automatically set values. To use this mapping, you have to also activate the Ticket::EventModulePost###4100-DynamicFieldFromCustomerUser setting.' =>
             '',
         'Define dynamic field name for end time. This field has to be manually added to the system as Ticket: "Date / Time" and must be activated in ticket creation screens and/or in any other ticket action screens.' =>
@@ -6335,14 +6335,14 @@ El control del acceso adicional para demostrar o no demostrar éste enlace puede
             'Define un ítem del cliente, el cual genera un icono de google en el extremo de un bloque de información del cliente.',
         'Defines a customer item, which generates a google maps icon at the end of a customer info block.' =>
             'Define un ítem del cliente, el cual genera un icono de google maps en el extremo de un bloque de información del cliente.',
-        'Defines a filter for html output to add links behind CVE numbers. The element Image allows two input kinds. At once the name of an image (e.g. faq.png). In this case the OTRS image path will be used. The second possiblity is to insert the link to the image.' =>
-            'Define los filtros para la salida html para agregar los vínculos  tras los números CVE. El elemento Imagen permite dos tipos de entrada. En el primer tipo el nombre del imagen (ej.faq.png). En este caso será usado el camino del imagen OTRS. La segunda posibilidad es insertar el vínculo al imagen.',
-        'Defines a filter for html output to add links behind MSBulletin numbers. The element Image allows two input kinds. At once the name of an image (e.g. faq.png). In this case the OTRS image path will be used. The second possiblity is to insert the link to the image.' =>
-            'Define el filtro de la salida html para agregar los vínculos tras los números de MSBulletin. El Imagen del elemento permite dos tipos de entrada. En el primer tipo el nombre de imagen (ej. faq.png). En éste caso será usado el camino de imagen OTRS. La segunda posibilidad es insertar el vínculo al imagen.',
-        'Defines a filter for html output to add links behind a defined string. The element Image allows two input kinds. At once the name of an image (e.g. faq.png). In this case the OTRS image path will be used. The second possiblity is to insert the link to the image.' =>
-            'Define el filtro de la salida html para agregar los vínculos tras una cadena definida. El Imagen del elemento permite dos tipos de entrada. En el primer tipo el nombre de imagen (ej. faq.png). En éste caso será usado el camino de imagen OTRS. La segunda posibilidad es insertar el vínculo al imagen.',
-        'Defines a filter for html output to add links behind bugtraq numbers. The element Image allows two input kinds. At once the name of an image (e.g. faq.png). In this case the OTRS image path will be used. The second possiblity is to insert the link to the image.' =>
-            'Define el filtro de la salida html para agregar los vínculos tras los números de bugtraq. El Imagen del elemento permite dos tipos de entrada. En el primer tipo el nombre de imagen (ej. faq.png). En éste caso será usado el camino de imagen OTRS. La segunda posibilidad es insertar el vínculo al imagen.',
+        'Defines a filter for html output to add links behind CVE numbers. The element Image allows two input kinds. At once the name of an image (e.g. faq.png). In this case the LIGERO image path will be used. The second possiblity is to insert the link to the image.' =>
+            'Define los filtros para la salida html para agregar los vínculos  tras los números CVE. El elemento Imagen permite dos tipos de entrada. En el primer tipo el nombre del imagen (ej.faq.png). En este caso será usado el camino del imagen LIGERO. La segunda posibilidad es insertar el vínculo al imagen.',
+        'Defines a filter for html output to add links behind MSBulletin numbers. The element Image allows two input kinds. At once the name of an image (e.g. faq.png). In this case the LIGERO image path will be used. The second possiblity is to insert the link to the image.' =>
+            'Define el filtro de la salida html para agregar los vínculos tras los números de MSBulletin. El Imagen del elemento permite dos tipos de entrada. En el primer tipo el nombre de imagen (ej. faq.png). En éste caso será usado el camino de imagen LIGERO. La segunda posibilidad es insertar el vínculo al imagen.',
+        'Defines a filter for html output to add links behind a defined string. The element Image allows two input kinds. At once the name of an image (e.g. faq.png). In this case the LIGERO image path will be used. The second possiblity is to insert the link to the image.' =>
+            'Define el filtro de la salida html para agregar los vínculos tras una cadena definida. El Imagen del elemento permite dos tipos de entrada. En el primer tipo el nombre de imagen (ej. faq.png). En éste caso será usado el camino de imagen LIGERO. La segunda posibilidad es insertar el vínculo al imagen.',
+        'Defines a filter for html output to add links behind bugtraq numbers. The element Image allows two input kinds. At once the name of an image (e.g. faq.png). In this case the LIGERO image path will be used. The second possiblity is to insert the link to the image.' =>
+            'Define el filtro de la salida html para agregar los vínculos tras los números de bugtraq. El Imagen del elemento permite dos tipos de entrada. En el primer tipo el nombre de imagen (ej. faq.png). En éste caso será usado el camino de imagen LIGERO. La segunda posibilidad es insertar el vínculo al imagen.',
         'Defines a filter to collect CVE numbers from article texts in AgentTicketZoom. The results will be displayed in a meta box next to the article. Fill in URLPreview if you would like to see a preview when moving your mouse cursor above the link element. This could be the same URL as in URL, but also an alternate one. Please note that some websites deny being displayed within an iframe (e.g. Google) and thus won\'t work with the preview mode.' =>
             'Define el filtro para colectar los números CVE desde los textos de artículos en AgentTicketZoom. Los resultados serán mostrados en meta box al lado del artículo. Llena el URLPrevisualización si quieres ver la previsualización cuando apuntes tu cursor del ratón en elemento vinculado. Ésto puede ser el mismo URL como en el URL, pero también un alternativo. Favor téngase en cuenta que algunos páginas web se niegan ser mostrados dentro el i-marco (ej. Google) y por ende no van a funcionar en el modo de previsualización.',
         'Defines a filter to process the text in the articles, in order to highlight predefined keywords.' =>
@@ -6437,8 +6437,8 @@ El control del acceso adicional para demostrar o no demostrar éste enlace puede
             '',
         'Defines if customers should be allowed to login if they have no shared secret stored in their preferences and therefore are not using two-factor authentication.' =>
             '',
-        'Defines if the communication between this system and OTRS Group servers that provide cloud services is possible. If set to \'Disable cloud services\', some functionality will be lost such as system registration, support data sending, upgrading to and use of OTRS Business Solution™, OTRS Verify™, OTRS News and product News dashboard widgets, among others.' =>
-            'Define si es posible la comunicación entre este sistema y los servidores del Grupo OTRS que brindan servicios en la nube. Si se establece en \'Deshabilitar servicios en la nube\', se perderá alguna funcionalidad como registro del sistema, envío de datos de soporte, actualización y uso de OTRS Business Solution ™, OTRS Verify ™, novedades de OTRS y widgets del panel principal de noticias de productos, entre otros.',
+        'Defines if the communication between this system and LIGERO Group servers that provide cloud services is possible. If set to \'Disable cloud services\', some functionality will be lost such as system registration, support data sending, upgrading to and use of LIGERO Business Solution™, LIGERO Verify™, LIGERO News and product News dashboard widgets, among others.' =>
+            'Define si es posible la comunicación entre este sistema y los servidores del Grupo LIGERO que brindan servicios en la nube. Si se establece en \'Deshabilitar servicios en la nube\', se perderá alguna funcionalidad como registro del sistema, envío de datos de soporte, actualización y uso de LIGERO Business Solution ™, LIGERO Verify ™, novedades de LIGERO y widgets del panel principal de noticias de productos, entre otros.',
         'Defines if the enhanced mode should be used (enables use of table, replace, subscript, superscript, paste from word, etc.) in customer interface.' =>
             '',
         'Defines if the enhanced mode should be used (enables use of table, replace, subscript, superscript, paste from word, etc.).' =>
@@ -6483,7 +6483,7 @@ El control del acceso adicional para demostrar o no demostrar éste enlace puede
         'Defines phone communication channel.' => '',
         'Defines queues that\'s tickets are used for displaying as calendar events.' =>
             '',
-        'Defines the HTTP hostname for the support data collection with the public module \'PublicSupportDataCollector\' (e.g. used from the OTRS Daemon).' =>
+        'Defines the HTTP hostname for the support data collection with the public module \'PublicSupportDataCollector\' (e.g. used from the LIGERO Daemon).' =>
             '',
         'Defines the IP regular expression for accessing the local repository. You need to enable this to have access to your local repository and the package::RepositoryList is required on the remote host.' =>
             '',
@@ -6695,7 +6695,7 @@ El control del acceso adicional para demostrar o no demostrar éste enlace puede
             '',
         'Defines the format of responses in the ticket compose screen of the agent interface ([% Data.OrigFrom | html %] is From 1:1, [% Data.OrigFromName | html %] is only realname of From).' =>
             '',
-        'Defines the fully qualified domain name of the system. This setting is used as a variable, OTRS_CONFIG_FQDN which is found in all forms of messaging used by the application, to build links to the tickets within your system.' =>
+        'Defines the fully qualified domain name of the system. This setting is used as a variable, LIGERO_CONFIG_FQDN which is found in all forms of messaging used by the application, to build links to the tickets within your system.' =>
             '',
         'Defines the groups every customer user will be in (if CustomerGroupSupport is enabled and you don\'t want to manage every customer user for these groups).' =>
             '',
@@ -6781,7 +6781,7 @@ El control del acceso adicional para demostrar o no demostrar éste enlace puede
             'Define la ubicación para obtener la lista de repositorios en línea para paquetes adicionales. Se utilizará el primer resultado disponible.',
         'Defines the log module for the system. "File" writes all messages in a given logfile, "SysLog" uses the syslog daemon of the system, e.g. syslogd.' =>
             '',
-        'Defines the maximal size (in bytes) for file uploads via the browser. Warning: Setting this option to a value which is too low could cause many masks in your OTRS instance to stop working (probably any mask which takes input from the user).' =>
+        'Defines the maximal size (in bytes) for file uploads via the browser. Warning: Setting this option to a value which is too low could cause many masks in your LIGERO instance to stop working (probably any mask which takes input from the user).' =>
             '',
         'Defines the maximal valid time (in seconds) for a session id.' =>
             '',
@@ -6807,10 +6807,10 @@ El control del acceso adicional para demostrar o no demostrar éste enlace puede
         'Defines the module to authenticate customers.' => 'Define el módulo para autenticar clientes.',
         'Defines the module to display a notification if cloud services are disabled.' =>
             'Define el módulo para mostrar una notificación si los servicios en la nube están deshabilitados.',
-        'Defines the module to display a notification in different interfaces on different occasions for OTRS Business Solution™.' =>
-            'Define el módulo para mostrar una notificación en diferentes interfaces en diferentes ocasiones para OTRS Business Solution ™.',
-        'Defines the module to display a notification in the agent interface if the OTRS Daemon is not running.' =>
-            'Define el módulo para mostrar una notificación en la interfaz del agente si el Daemon de OTRS no se está ejecutando.',
+        'Defines the module to display a notification in different interfaces on different occasions for LIGERO Business Solution™.' =>
+            'Define el módulo para mostrar una notificación en diferentes interfaces en diferentes ocasiones para LIGERO Business Solution ™.',
+        'Defines the module to display a notification in the agent interface if the LIGERO Daemon is not running.' =>
+            'Define el módulo para mostrar una notificación en la interfaz del agente si el Daemon de LIGERO no se está ejecutando.',
         'Defines the module to display a notification in the agent interface if the system configuration is out of sync.' =>
             '',
         'Defines the module to display a notification in the agent interface, if the agent has not yet selected a time zone.' =>
@@ -6847,7 +6847,7 @@ El control del acceso adicional para demostrar o no demostrar éste enlace puede
             'Define el nombre de la columna para almacenar el identificador de usuario en la tabla de preferencias.',
         'Defines the name of the indicated calendar.' => 'Define el nombre del calendario indicado',
         'Defines the name of the key for customer sessions.' => 'Define el nombre de la clave para las sesiones del cliente.',
-        'Defines the name of the session key. E.g. Session, SessionID or OTRS.' =>
+        'Defines the name of the session key. E.g. Session, SessionID or LIGERO.' =>
             '',
         'Defines the name of the table where the user preferences are stored.' =>
             'Define el nombre de la tabla donde se almacenan las preferencias del usuario.',
@@ -6943,7 +6943,7 @@ El control del acceso adicional para demostrar o no demostrar éste enlace puede
             '',
         'Defines the shown columns and the position in the AgentCustomerUserAddressBook result screen.' =>
             '',
-        'Defines the shown links in the footer area of the customer and public interface of this OTRS system. The value in "Key" is the external URL, the value in "Content" is the shown label.' =>
+        'Defines the shown links in the footer area of the customer and public interface of this LIGERO system. The value in "Key" is the external URL, the value in "Content" is the shown label.' =>
             '',
         'Defines the standard permissions available for customers within the application. If more permissions are needed, you can enter them here. Permissions must be hard coded to be effective. Please ensure, when adding any of the afore mentioned permissions, that the "rw" permission remains the last entry.' =>
             '',
@@ -6965,7 +6965,7 @@ El control del acceso adicional para demostrar o no demostrar éste enlace puede
         'Defines the subject for rejected emails.' => '',
         'Defines the system administrator\'s email address. It will be displayed in the error screens of the application.' =>
             '',
-        'Defines the system identifier. Every ticket number and http session string contains this ID. This ensures that only tickets which belong to your system will be processed as follow-ups (useful when communicating between two instances of OTRS).' =>
+        'Defines the system identifier. Every ticket number and http session string contains this ID. This ensures that only tickets which belong to your system will be processed as follow-ups (useful when communicating between two instances of LIGERO).' =>
             '',
         'Defines the target attribute in the link to external customer database. E.g. \'AsPopup PopupType_TicketAction\'.' =>
             '',
@@ -6982,11 +6982,11 @@ El control del acceso adicional para demostrar o no demostrar éste enlace puede
         'Defines the ticket plugin for calendar appointments.' => 'Define el plugin de ticket para las citas de calendario.',
         'Defines the time zone of the indicated calendar, which can be assigned later to a specific queue.' =>
             '',
-        'Defines the timeout (in seconds, minimum is 20 seconds) for the support data collection with the public module \'PublicSupportDataCollector\' (e.g. used from the OTRS Daemon).' =>
+        'Defines the timeout (in seconds, minimum is 20 seconds) for the support data collection with the public module \'PublicSupportDataCollector\' (e.g. used from the LIGERO Daemon).' =>
             '',
         'Defines the two-factor module to authenticate agents.' => '',
         'Defines the two-factor module to authenticate customers.' => '',
-        'Defines the type of protocol, used by the web server, to serve the application. If https protocol will be used instead of plain http, it must be specified here. Since this has no affect on the web server\'s settings or behavior, it will not change the method of access to the application and, if it is wrong, it will not prevent you from logging into the application. This setting is only used as a variable, OTRS_CONFIG_HttpType which is found in all forms of messaging used by the application, to build links to the tickets within your system.' =>
+        'Defines the type of protocol, used by the web server, to serve the application. If https protocol will be used instead of plain http, it must be specified here. Since this has no affect on the web server\'s settings or behavior, it will not change the method of access to the application and, if it is wrong, it will not prevent you from logging into the application. This setting is only used as a variable, LIGERO_CONFIG_HttpType which is found in all forms of messaging used by the application, to build links to the tickets within your system.' =>
             '',
         'Defines the used character for plaintext email quotes in the ticket compose screen of the agent interface. If this is empty or inactive, original emails will not be quoted but appended to the response.' =>
             '',
@@ -7032,7 +7032,7 @@ El control del acceso adicional para demostrar o no demostrar éste enlace puede
         'Deletes requested sessions if they have timed out.' => '',
         'Delivers extended debugging information in the frontend in case any AJAX errors occur, if enabled.' =>
             '',
-        'Deploy and manage OTRS Business Solution™.' => 'Implementar y administrar OTRS Business Solution ™.',
+        'Deploy and manage LIGERO Business Solution™.' => 'Implementar y administrar LIGERO Business Solution ™.',
         'Detached' => '',
         'Determines if a button to delete a link should be displayed next to each link in each zoom mask.' =>
             '',
@@ -7068,7 +7068,7 @@ El control del acceso adicional para demostrar o no demostrar éste enlace puede
             '',
         'Disable HTTP header "Content-Security-Policy" to allow loading of external script contents. Disabling this HTTP header can be a security issue! Only disable it, if you know what you are doing!' =>
             '',
-        'Disable HTTP header "X-Frame-Options: SAMEORIGIN" to allow OTRS to be included as an IFrame in other websites. Disabling this HTTP header can be a security issue! Only disable it, if you know what you are doing!' =>
+        'Disable HTTP header "X-Frame-Options: SAMEORIGIN" to allow LIGERO to be included as an IFrame in other websites. Disabling this HTTP header can be a security issue! Only disable it, if you know what you are doing!' =>
             '',
         'Disable cloud services' => 'Deshabilitar servicios en la nube',
         'Disables sending reminder notifications to the responsible agent of a ticket (Ticket::Responsible needs to be enabled).' =>
@@ -7178,7 +7178,7 @@ El control del acceso adicional para demostrar o no demostrar éste enlace puede
         'Enable this if you trust in all your public and private pgp keys, even if they are not certified with a trusted signature.' =>
             '',
         'Enabled filters.' => 'Habilitar Filtros',
-        'Enables PGP support. When PGP support is enabled for signing and encrypting mail, it is HIGHLY recommended that the web server runs as the OTRS user. Otherwise, there will be problems with the privileges when accessing .gnupg folder.' =>
+        'Enables PGP support. When PGP support is enabled for signing and encrypting mail, it is HIGHLY recommended that the web server runs as the LIGERO user. Otherwise, there will be problems with the privileges when accessing .gnupg folder.' =>
             '',
         'Enables S/MIME support.' => 'Habilitar soporte S/MIME.',
         'Enables customers to create their own accounts.' => 'Permite a los clientes crear sus propias cuentas.',
@@ -7240,7 +7240,7 @@ El control del acceso adicional para demostrar o no demostrar éste enlace puede
             '',
         'Executes follow-up checks on In-Reply-To or References headers for mails that don\'t have a ticket number in the subject.' =>
             '',
-        'Executes follow-up checks on OTRS Header \'X-OTRS-Bounce\'.' => '',
+        'Executes follow-up checks on LIGERO Header \'X-LIGERO-Bounce\'.' => '',
         'Executes follow-up checks on attachment contents for mails that don\'t have a ticket number in the subject.' =>
             '',
         'Executes follow-up checks on email body for mails that don\'t have a ticket number in the subject.' =>
@@ -7258,9 +7258,9 @@ El control del acceso adicional para demostrar o no demostrar éste enlace puede
             '',
         'File that is displayed in the Kernel::Modules::AgentInfo module, if located under Kernel/Output/HTML/Templates/Standard/AgentInfo.tt.' =>
             '',
-        'Filter for debugging ACLs. Note: More ticket attributes can be added in the format <OTRS_TICKET_Attribute> e.g. <OTRS_TICKET_Priority>.' =>
+        'Filter for debugging ACLs. Note: More ticket attributes can be added in the format <LIGERO_TICKET_Attribute> e.g. <LIGERO_TICKET_Priority>.' =>
             '',
-        'Filter for debugging Transitions. Note: More filters can be added in the format <OTRS_TICKET_Attribute> e.g. <OTRS_TICKET_Priority>.' =>
+        'Filter for debugging Transitions. Note: More filters can be added in the format <LIGERO_TICKET_Attribute> e.g. <LIGERO_TICKET_Priority>.' =>
             '',
         'Filter incoming emails.' => 'Filtrar emails entrantes.',
         'Finnish' => 'Finlandés',
@@ -7395,7 +7395,7 @@ El control del acceso adicional para demostrar o no demostrar éste enlace puede
             '',
         'If "LDAP" was selected for Customer::AuthModule, you can specify if the applications will stop if e. g. a connection to a server can\'t be established due to network problems.' =>
             '',
-        'If "LDAP" was selected for Customer::Authmodule, you can check if the user is allowed to authenticate because he is in a posixGroup, e.g. user needs to be in a group xyz to use OTRS. Specify the group, who may access the system.' =>
+        'If "LDAP" was selected for Customer::Authmodule, you can check if the user is allowed to authenticate because he is in a posixGroup, e.g. user needs to be in a group xyz to use LIGERO. Specify the group, who may access the system.' =>
             '',
         'If "LDAP" was selected, you can add a filter to each LDAP query, e.g. (mail=*), (objectclass=user) or (!objectclass=computer).' =>
             '',
@@ -7433,15 +7433,15 @@ El control del acceso adicional para demostrar o no demostrar éste enlace puede
             '',
         'If enabled the daemon will redirect the standard output stream to a log file.' =>
             '',
-        'If enabled the daemon will use this directory to create its PID files. Note: Please stop the daemon before any change and use this setting only if <$OTRSHome>/var/run/ can not be used.' =>
+        'If enabled the daemon will use this directory to create its PID files. Note: Please stop the daemon before any change and use this setting only if <$LIGEROHome>/var/run/ can not be used.' =>
             '',
-        'If enabled, OTRS will deliver all CSS files in minified form.' =>
+        'If enabled, LIGERO will deliver all CSS files in minified form.' =>
             '',
-        'If enabled, OTRS will deliver all JavaScript files in minified form.' =>
+        'If enabled, LIGERO will deliver all JavaScript files in minified form.' =>
             '',
         'If enabled, TicketPhone and TicketEmail will be open in new windows.' =>
             '',
-        'If enabled, the OTRS version tag will be removed from the Webinterface, the HTTP headers and the X-Headers of outgoing mails. NOTE: If you change this option, please make sure to delete the cache.' =>
+        'If enabled, the LIGERO version tag will be removed from the Webinterface, the HTTP headers and the X-Headers of outgoing mails. NOTE: If you change this option, please make sure to delete the cache.' =>
             '',
         'If enabled, the cache data be held in memory.' => '',
         'If enabled, the cache data will be stored in cache backend.' => '',
@@ -7451,7 +7451,7 @@ El control del acceso adicional para demostrar o no demostrar éste enlace puede
             'Si se habilita, las diferentes vistas generales (panel principal, vista de bloqueados, vista de colas) se actualizarán automáticamente tras el tiempo indicado.',
         'If enabled, the first level of the main menu opens on mouse hover (instead of click only).' =>
             '',
-        'If enabled, users that haven\'t selected a time zone yet will be notified to do so. Note: Notification will not be shown if (1) user has not yet selected a time zone and (2) OTRSTimeZone and UserDefaultTimeZone do match and (3) are not set to UTC.' =>
+        'If enabled, users that haven\'t selected a time zone yet will be notified to do so. Note: Notification will not be shown if (1) user has not yet selected a time zone and (2) LIGEROTimeZone and UserDefaultTimeZone do match and (3) are not set to UTC.' =>
             '',
         'If no SendmailNotificationEnvelopeFrom is specified, this setting makes it possible to use the email\'s from address instead of an empty envelope sender (required in certain mail server configurations).' =>
             '',
@@ -7463,7 +7463,7 @@ El control del acceso adicional para demostrar o no demostrar éste enlace puede
             '',
         'If this regex matches, no message will be send by the autoresponder.' =>
             '',
-        'If this setting is enabled, it is possible to install packages which are not verified by OTRS Group. These packages could threaten your whole system!' =>
+        'If this setting is enabled, it is possible to install packages which are not verified by LIGERO Group. These packages could threaten your whole system!' =>
             '',
         'If this setting is enabled, local modifications will not be highlighted as errors in the package manager and support data collector.' =>
             '',
@@ -7579,7 +7579,7 @@ El control del acceso adicional para demostrar o no demostrar éste enlace puede
         'Makes the session management use html cookies. If html cookies are disabled or if the client browser disabled html cookies, then the system will work as usual and append the session id to the links.' =>
             '',
         'Malay' => 'Malayo',
-        'Manage OTRS Group cloud services.' => 'Gestionar los servicios en la nube de OTRS Group.',
+        'Manage LIGERO Group cloud services.' => 'Gestionar los servicios en la nube de LIGERO Group.',
         'Manage PGP keys for email encryption.' => 'Gestión de claves PGP para encriptación de correo electrónico.',
         'Manage POP3 or IMAP accounts to fetch email from.' => 'Gestionar cuentas POP3 o IMAP desde las que traer correo electrónico.',
         'Manage S/MIME certificates for email encryption.' => 'Gestionar certificados S/MIME para encriptación de correo electrónico.',
@@ -7623,7 +7623,7 @@ El control del acceso adicional para demostrar o no demostrar éste enlace puede
         'Medium' => 'Mediano',
         'Merge this ticket and all articles into another ticket' => '',
         'Merged Ticket (%s/%s) to (%s/%s).' => '',
-        'Merged Ticket <OTRS_TICKET> to <OTRS_MERGE_TO_TICKET>.' => 'Fusionar Ticket  <OTRS_TICKET> con <OTRS_MERGE_TO_TICKET>.',
+        'Merged Ticket <LIGERO_TICKET> to <LIGERO_MERGE_TO_TICKET>.' => 'Fusionar Ticket  <LIGERO_TICKET> con <LIGERO_MERGE_TO_TICKET>.',
         'Minute' => 'Minuto',
         'Miscellaneous' => 'Misceláneo',
         'Module for To-selection in new ticket screen in the customer interface.' =>
@@ -7686,8 +7686,8 @@ El control del acceso adicional para demostrar o no demostrar éste enlace puede
         'New Year\'s Day' => 'Día de Año Nuevo',
         'New Year\'s Eve' => 'Nochevieja',
         'New process ticket' => 'Nuevo ticket de Proceso',
-        'News about OTRS releases!' => '¡Noticias acerca de lanzamientos de OTRS!',
-        'News about OTRS.' => 'Noticias sobre OTRS.',
+        'News about LIGERO releases!' => '¡Noticias acerca de lanzamientos de LIGERO!',
+        'News about LIGERO.' => 'Noticias sobre LIGERO.',
         'Next possible ticket states after adding a phone note in the ticket phone inbound screen of the agent interface.' =>
             'Siguiente estado posible del ticket después de agregar una nota en la pantalla de llamada telefónica entrante para la interfaz de agente.',
         'Next possible ticket states after adding a phone note in the ticket phone outbound screen of the agent interface.' =>
@@ -7706,11 +7706,11 @@ El control del acceso adicional para demostrar o no demostrar éste enlace puede
         'Number of tickets to be displayed in each page of a search result in the customer interface.' =>
             '',
         'Number of tickets to be displayed in each page.' => '',
-        'OTRS Group Services' => '',
-        'OTRS News' => 'Noticias de OTRS',
-        'OTRS can use one or more readonly mirror databases for expensive operations like fulltext search or statistics generation. Here you can specify the DSN for the first mirror database.' =>
+        'LIGERO Group Services' => '',
+        'LIGERO News' => 'Noticias de LIGERO',
+        'LIGERO can use one or more readonly mirror databases for expensive operations like fulltext search or statistics generation. Here you can specify the DSN for the first mirror database.' =>
             '',
-        'OTRS doesn\'t support recurring Appointments without end date or number of iterations. During import process, it might happen that ICS file contains such Appointments. Instead, system creates all Appointments in the past, plus Appointments for the next N months (120 months/10 years by default).' =>
+        'LIGERO doesn\'t support recurring Appointments without end date or number of iterations. During import process, it might happen that ICS file contains such Appointments. Instead, system creates all Appointments in the past, plus Appointments for the next N months (120 months/10 years by default).' =>
             '',
         'Open Tickets / Need to be answered' => 'Tickets Abiertos / Necesitan ser respondidos',
         'Open an external link!' => '¡Abrir un enlace externo!',
@@ -7878,7 +7878,7 @@ El control del acceso adicional para demostrar o no demostrar éste enlace puede
         'Replaces the original sender with current customer\'s email address on compose answer in the ticket compose screen of the agent interface.' =>
             '',
         'Reports' => 'Reportes',
-        'Reports (OTRS Business Solution™)' => 'Reportes (OTRS Business Solution™)',
+        'Reports (LIGERO Business Solution™)' => 'Reportes (LIGERO Business Solution™)',
         'Reprocess mails from spool directory that could not be imported in the first place.' =>
             '',
         'Required permissions to change the customer of a ticket in the agent interface.' =>
@@ -7917,7 +7917,7 @@ El control del acceso adicional para demostrar o no demostrar éste enlace puede
         'Resent email to "%s".' => 'Reenviar correo a "%s".',
         'Resets and unlocks the owner of a ticket if it was moved to another queue.' =>
             '',
-        'Resource Overview (OTRS Business Solution™)' => 'Resumen de Recursos (OTRS Business Solution™)',
+        'Resource Overview (LIGERO Business Solution™)' => 'Resumen de Recursos (LIGERO Business Solution™)',
         'Responsible Tickets' => '',
         'Responsible Tickets.' => '',
         'Restores a ticket from the archive (only if the event is a state change to any open available state).' =>
@@ -7941,7 +7941,7 @@ El control del acceso adicional para demostrar o no demostrar éste enlace puede
         'SMS (Short Message Service)' => 'SMS (Short Message Service)',
         'Salutations' => 'Saludos',
         'Sample command output' => 'Ejemplo de comando de salida.',
-        'Saves the attachments of articles. "DB" stores all data in the database (not recommended for storing big attachments). "FS" stores the data on the filesystem; this is faster but the webserver should run under the OTRS user. You can switch between the modules even on a system that is already in production without any loss of data. Note: Searching for attachment names is not supported when "FS" is used.' =>
+        'Saves the attachments of articles. "DB" stores all data in the database (not recommended for storing big attachments). "FS" stores the data on the filesystem; this is faster but the webserver should run under the LIGERO user. You can switch between the modules even on a system that is already in production without any loss of data. Note: Searching for attachment names is not supported when "FS" is used.' =>
             '',
         'Schedule a maintenance period.' => 'Programar un periodo de mantenimiento.',
         'Screen after new ticket' => 'Pantalla posterior a nuevo ticket',
@@ -7965,7 +7965,7 @@ El control del acceso adicional para demostrar o no demostrar éste enlace puede
         'Select your personal time zone. All times will be displayed relative to this time zone.' =>
             '',
         'Select your preferred layout for the software.' => 'Seleccione su diseño preferido para el software.',
-        'Select your preferred theme for OTRS.' => 'Seleccione su tema preferido para OTRS.',
+        'Select your preferred theme for LIGERO.' => 'Seleccione su tema preferido para LIGERO.',
         'Selects the cache backend to use.' => '',
         'Selects the module to handle uploads via the web interface. "DB" stores all uploads in the database, "FS" uses the file system.' =>
             '',
@@ -7979,7 +7979,7 @@ El control del acceso adicional para demostrar o no demostrar éste enlace puede
         'Sends all outgoing email via bcc to the specified address. Please use this only for backup reasons.' =>
             'Envíar todos los correos electrónicos saliente a través de "Copia oculta"a la dirección especificada. Por favor, utilice esto sólo por razones de copia de seguridad.',
         'Sends customer notifications just to the mapped customer.' => '',
-        'Sends registration information to OTRS group.' => 'Envía la información de registro a OTRS group.',
+        'Sends registration information to LIGERO group.' => 'Envía la información de registro a LIGERO group.',
         'Sends reminder notifications of unlocked ticket after reaching the reminder date (only sent to ticket owner).' =>
             '',
         'Sends the notifications which are configured in the admin interface under "Ticket Notifications".' =>
@@ -8115,7 +8115,7 @@ El control del acceso adicional para demostrar o no demostrar éste enlace puede
         'Sets the prefered time units (e.g. work units, hours, minutes).' =>
             '',
         'Sets the preferred digest to be used for PGP binary.' => '',
-        'Sets the prefix to the scripts folder on the server, as configured on the web server. This setting is used as a variable, OTRS_CONFIG_ScriptAlias which is found in all forms of messaging used by the application, to build links to the tickets within the system.' =>
+        'Sets the prefix to the scripts folder on the server, as configured on the web server. This setting is used as a variable, LIGERO_CONFIG_ScriptAlias which is found in all forms of messaging used by the application, to build links to the tickets within the system.' =>
             '',
         'Sets the queue in the ticket close screen of a zoomed ticket in the agent interface.' =>
             '',
@@ -8210,9 +8210,9 @@ El control del acceso adicional para demostrar o no demostrar éste enlace puede
             '',
         'Sets the ticket type in the ticket responsible screen of the agent interface (Ticket::Type needs to be enabled).' =>
             '',
-        'Sets the time zone being used internally by OTRS to e. g. store dates and times in the database. WARNING: This setting must not be changed once set and tickets or any other data containing date/time have been created.' =>
+        'Sets the time zone being used internally by LIGERO to e. g. store dates and times in the database. WARNING: This setting must not be changed once set and tickets or any other data containing date/time have been created.' =>
             '',
-        'Sets the time zone that will be assigned to newly created users and will be used for users that haven\'t yet set a time zone. This is the time zone being used as default to convert date and time between the OTRS time zone and the user\'s time zone.' =>
+        'Sets the time zone that will be assigned to newly created users and will be used for users that haven\'t yet set a time zone. This is the time zone being used as default to convert date and time between the LIGERO time zone and the user\'s time zone.' =>
             '',
         'Sets the timeout (in seconds) for http/ftp downloads.' => '',
         'Sets the timeout (in seconds) for package downloads. Overwrites "WebUserAgent::Timeout".' =>
@@ -8327,7 +8327,7 @@ El control del acceso adicional para demostrar o no demostrar éste enlace puede
             '',
         'Shows a preview of the ticket overview (CustomerInfo => 1 - shows also Customer-Info, CustomerInfoMaxSize max. size in characters of Customer-Info).' =>
             '',
-        'Shows a teaser link in the menu for the ticket attachment view of OTRS Business Solution™.' =>
+        'Shows a teaser link in the menu for the ticket attachment view of LIGERO Business Solution™.' =>
             '',
         'Shows all both ro and rw queues in the queue view.' => '',
         'Shows all both ro and rw tickets in the service view.' => '',
@@ -8349,7 +8349,7 @@ El control del acceso adicional para demostrar o no demostrar éste enlace puede
             '',
         'Shows existing parent/child queue lists in the system in the form of a tree or a list.' =>
             '',
-        'Shows information on how to start OTRS Daemon' => 'Muestra información sobre cómo iniciar OTRS Daemon',
+        'Shows information on how to start LIGERO Daemon' => 'Muestra información sobre cómo iniciar LIGERO Daemon',
         'Shows link to external page in the ticket zoom view of the agent interface. Additional access control to show or not show this link can be done by using Key "Group" and Content like "rw:group1;move_into:group2".' =>
             '',
         'Shows the articles sorted normally or in reverse, under ticket zoom in the agent interface.' =>
@@ -8433,7 +8433,7 @@ El control del acceso adicional para demostrar o no demostrar éste enlace puede
         'Specifies the directory where SSL certificates are stored.' => '',
         'Specifies the directory where private SSL certificates are stored.' =>
             '',
-        'Specifies the email address that should be used by the application when sending notifications. The email address is used to build the complete display name for the notification master (i.e. "OTRS Notifications" ligero@your.example.com). You can use the OTRS_CONFIG_FQDN variable as set in your configuation, or choose another email address.' =>
+        'Specifies the email address that should be used by the application when sending notifications. The email address is used to build the complete display name for the notification master (i.e. "LIGERO Notifications" ligero@your.example.com). You can use the LIGERO_CONFIG_FQDN variable as set in your configuation, or choose another email address.' =>
             '',
         'Specifies the email addresses to get notification messages from scheduler tasks.' =>
             '',
@@ -8441,7 +8441,7 @@ El control del acceso adicional para demostrar o no demostrar éste enlace puede
             '',
         'Specifies the group where the user needs rw permissions so that they can edit other users preferences.' =>
             '',
-        'Specifies the name that should be used by the application when sending notifications. The sender name is used to build the complete display name for the notification master (i.e. "OTRS Notifications" ligero@your.example.com).' =>
+        'Specifies the name that should be used by the application when sending notifications. The sender name is used to build the complete display name for the notification master (i.e. "LIGERO Notifications" ligero@your.example.com).' =>
             '',
         'Specifies the order in which the firstname and the lastname of agents will be displayed.' =>
             '',
@@ -8465,7 +8465,7 @@ El control del acceso adicional para demostrar o no demostrar éste enlace puede
             '',
         'Specify how many sub directory levels to use when creating cache files. This should prevent too many cache files being in one directory.' =>
             '',
-        'Specify the channel to be used to fetch OTRS Business Solution™ updates. Warning: Development releases might not be complete, your system might experience unrecoverable errors and on extreme cases could become unresponsive!' =>
+        'Specify the channel to be used to fetch LIGERO Business Solution™ updates. Warning: Development releases might not be complete, your system might experience unrecoverable errors and on extreme cases could become unresponsive!' =>
             '',
         'Specify the password to authenticate for the first mirror database.' =>
             '',
@@ -8563,7 +8563,7 @@ El control del acceso adicional para demostrar o no demostrar éste enlace puede
         'This is the default orange - black skin.' => 'Este es el aspecto predeterminado naranja - negro.',
         'This module and its PreRun() function will be executed, if defined, for every request. This module is useful to check some user options or to display news about new applications.' =>
             '',
-        'This module is part of the admin area of OTRS.' => 'Este módulo es parte del área de administración del OTRS.',
+        'This module is part of the admin area of LIGERO.' => 'Este módulo es parte del área de administración del LIGERO.',
         'This option defines the dynamic field in which a Process Management activity entity id is stored.' =>
             '',
         'This option defines the dynamic field in which a Process Management process entity id is stored.' =>
@@ -8576,7 +8576,7 @@ El control del acceso adicional para demostrar o no demostrar éste enlace puede
             '',
         'This setting allows you to override the built-in country list with your own list of countries. This is particularly handy if you just want to use a small select group of countries.' =>
             '',
-        'This setting is deprecated. Set OTRSTimeZone instead.' => '',
+        'This setting is deprecated. Set LIGEROTimeZone instead.' => '',
         'This setting shows the sorting attributes in all overview screen, not only in queue view.' =>
             '',
         'This will allow the system to send text messages via SMS.' => 'Esto permitirá al sistema enviar mensajes de texto a través de SMS.',
@@ -8624,7 +8624,7 @@ El control del acceso adicional para demostrar o no demostrar éste enlace puede
         'To accept login information, such as an EULA or license.' => '',
         'To download attachments.' => 'Para descargar archivos adjuntos.',
         'To view HTML attachments.' => '',
-        'Toggles display of OTRS FeatureAddons list in PackageManager.' =>
+        'Toggles display of LIGERO FeatureAddons list in PackageManager.' =>
             '',
         'Toolbar Item for a shortcut. Additional access control to show or not show this link can be done by using Key "Group" and Content like "rw:group1;move_into:group2".' =>
             '',
@@ -8644,7 +8644,7 @@ El control del acceso adicional para demostrar o no demostrar éste enlace puede
         'Turns on the remote ip address check. It should not be enabled if the application is used, for example, via a proxy farm or a dialup connection, because the remote ip address is mostly different for the requests.' =>
             '',
         'Tweak the system as you wish.' => '',
-        'Type of daemon log rotation to use: Choose \'OTRS\' to let OTRS system to handle the file rotation, or choose \'External\' to use a 3rd party rotation mechanism (i.e. logrotate). Note: External rotation mechanism requires its own and independent configuration.' =>
+        'Type of daemon log rotation to use: Choose \'LIGERO\' to let LIGERO system to handle the file rotation, or choose \'External\' to use a 3rd party rotation mechanism (i.e. logrotate). Note: External rotation mechanism requires its own and independent configuration.' =>
             '',
         'Ukrainian' => 'Ucraniano',
         'Unlock tickets that are past their unlock timeout.' => 'Desbloquea los tickets que han superado el tiempo de espera de desbloqueo.',
@@ -8698,10 +8698,10 @@ El control del acceso adicional para demostrar o no demostrar éste enlace puede
         'Whether to force redirect all requests from http to https protocol. Please check that your web server is configured correctly for https protocol before enable this option.' =>
             '',
         'Yes, but hide archived tickets' => 'Sí, pero ocultar tickets archivados',
-        'Your email with ticket number "<OTRS_TICKET>" is bounced to "<OTRS_BOUNCE_TO>". Contact this address for further information.' =>
-            'Su correo con el número de ticket "<OTRS_TICKET>" ha sido rebotado a "<OTRS_BOUNCE_TO>". Póngase en contacto con esa dirección para obtener más información.',
-        'Your email with ticket number "<OTRS_TICKET>" is merged to "<OTRS_MERGE_TO_TICKET>".' =>
-            'Su correo con el número de ticket "<OTRS_TICKET>" se fusionó con "<OTRS_MERGE_TO_TICKET>".',
+        'Your email with ticket number "<LIGERO_TICKET>" is bounced to "<LIGERO_BOUNCE_TO>". Contact this address for further information.' =>
+            'Su correo con el número de ticket "<LIGERO_TICKET>" ha sido rebotado a "<LIGERO_BOUNCE_TO>". Póngase en contacto con esa dirección para obtener más información.',
+        'Your email with ticket number "<LIGERO_TICKET>" is merged to "<LIGERO_MERGE_TO_TICKET>".' =>
+            'Su correo con el número de ticket "<LIGERO_TICKET>" se fusionó con "<LIGERO_MERGE_TO_TICKET>".',
         'Your queue selection of your preferred queues. You also get notified about those queues via email if enabled.' =>
             'Su selección de colas de sus colas preferidas. También se notifica sobre esas colas a través de correo electrónico si está habilitado.',
         'Your service selection of your preferred services. You also get notified about those services via email if enabled.' =>
@@ -8873,7 +8873,7 @@ El control del acceso adicional para demostrar o no demostrar éste enlace puede
         'Hide EntityIDs',
         'If you now leave this page, all open popup windows will be closed, too!',
         'Import web service',
-        'Information about the OTRS Daemon',
+        'Information about the LIGERO Daemon',
         'Invalid date (need a future date)!',
         'Invalid date (need a past date)!',
         'Invalid date!',
@@ -9046,7 +9046,7 @@ El control del acceso adicional para demostrar o no demostrar éste enlace puede
         'This is a repeating appointment',
         'This is currently disabled because of an ongoing package upgrade.',
         'This item still contains sub items. Are you sure you want to remove this item including its sub items?',
-        'This option is currently disabled because the OTRS Daemon is not running.',
+        'This option is currently disabled because the LIGERO Daemon is not running.',
         'This software runs with a huge lists of browsers, please upgrade to one of these.',
         'This window must be called from compose window.',
         'Thu',

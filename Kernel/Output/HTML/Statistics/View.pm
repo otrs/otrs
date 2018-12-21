@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -8,7 +8,7 @@
 
 package Kernel::Output::HTML::Statistics::View;
 
-## nofilter(TidyAll::Plugin::OTRS::Perl::PodChecker)
+## nofilter(TidyAll::Plugin::LIGERO::Perl::PodChecker)
 
 use strict;
 use warnings;
@@ -184,7 +184,7 @@ sub StatsParamsWidget {
     if ( $Stat->{StatType} eq 'dynamic' ) {
         my $SelectedTimeZone = $Self->_GetValidTimeZone( TimeZone => $LocalGetParam->( Param => 'TimeZone' ) )
             // $Stat->{TimeZone}
-            // Kernel::System::DateTime->OTRSTimeZoneGet();
+            // Kernel::System::DateTime->LIGEROTimeZoneGet();
 
         my %TimeZoneBuildSelection = $Self->_TimeZoneBuildSelection();
 
@@ -818,7 +818,7 @@ sub GeneralSpecificationsWidget {
                 UserID => $Param{UserID}
             );
             $SelectedTimeZone = $Self->_GetValidTimeZone( TimeZone => $UserPreferences{UserTimeZone} )
-                // Kernel::System::DateTime->OTRSTimeZoneGet();
+                // Kernel::System::DateTime->LIGEROTimeZoneGet();
         }
 
         my %TimeZoneBuildSelection = $Self->_TimeZoneBuildSelection();
@@ -2466,7 +2466,7 @@ sub _StopWordFieldsGet {
 
 =head1 TERMS AND CONDITIONS
 
-This software is part of the OTRS project (L<https://ligero.org/>).
+This software is part of the LIGERO project (L<https://ligero.org/>).
 
 This software comes with ABSOLUTELY NO WARRANTY. For details, see
 the enclosed file COPYING for license information (GPL). If you

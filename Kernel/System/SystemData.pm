@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -128,7 +128,7 @@ sub SystemDataAdd {
 get system data for key
 
     my $SystemData = $SystemDataObject->SystemDataGet(
-        Key => 'OTRS Version',
+        Key => 'LIGERO Version',
     );
 
 returns value as a simple scalar, or undef if the key does not exist.
@@ -271,7 +271,7 @@ Returns true if update was successful or false if otherwise - for instance
 if key did not exist.
 
     my $Result = $SystemDataObject->SystemDataUpdate(
-        Key    => 'OTRS Version',
+        Key    => 'LIGERO Version',
         Value  => 'Some New Value',
         UserID => 123,
     );
@@ -338,7 +338,7 @@ Returns true if delete was successful or false if otherwise - for instance
 if key did not exist.
 
     $SystemDataObject->SystemDataDelete(
-        Key    => 'OTRS Version',
+        Key    => 'LIGERO Version',
         UserID => 123,
     );
 
@@ -448,7 +448,7 @@ sub _SystemDataCacheKeyDelete {
 
 =head1 TERMS AND CONDITIONS
 
-This software is part of the OTRS project (L<https://ligero.org/>).
+This software is part of the LIGERO project (L<https://ligero.org/>).
 
 This software comes with ABSOLUTELY NO WARRANTY. For details, see
 the enclosed file COPYING for license information (GPL). If you

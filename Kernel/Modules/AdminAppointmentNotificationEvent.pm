@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -575,7 +575,7 @@ sub Run {
         if ( !$NotificationImport->{Success} ) {
             my $Message = $NotificationImport->{Message}
                 || Translatable(
-                'Notifications could not be Imported due to a unknown error, please check OTRS logs for more information'
+                'Notifications could not be Imported due to a unknown error, please check LIGERO logs for more information'
                 );
             return $LayoutObject->ErrorScreen(
                 Message => $Message,
@@ -1006,10 +1006,10 @@ sub _Edit {
     # set once per day checked value
     $Param{OncePerDayChecked} = ( $Param{Data}->{OncePerDay} ? 'checked="checked"' : '' );
 
-    my $OTRSBusinessObject      = $Kernel::OM->Get('Kernel::System::OTRSBusiness');
-    my $OTRSBusinessIsInstalled = $OTRSBusinessObject->OTRSBusinessIsInstalled();
+    my $LIGEROBusinessObject      = $Kernel::OM->Get('Kernel::System::LIGEROBusiness');
+    my $LIGEROBusinessIsInstalled = $LIGEROBusinessObject->LIGEROBusinessIsInstalled();
 
-    # Third option is enabled only when OTRSBusiness is installed in the system.
+    # Third option is enabled only when LIGEROBusiness is installed in the system.
     $Param{VisibleForAgentStrg} = $LayoutObject->BuildSelection(
         Data => [
             {
@@ -1023,7 +1023,7 @@ sub _Edit {
             {
                 Key      => '2',
                 Value    => Translatable('Yes, but require at least one active notification method.'),
-                Disabled => $OTRSBusinessIsInstalled ? 0 : 1,
+                Disabled => $LIGEROBusinessIsInstalled ? 0 : 1,
             }
         ],
         Name       => 'VisibleForAgent',
@@ -1077,9 +1077,9 @@ sub _Edit {
 
                 # if not standard transport
                 if (
-                    defined $RegisteredTransports{$Transport}->{IsOTRSBusinessTransport}
-                    && $RegisteredTransports{$Transport}->{IsOTRSBusinessTransport} eq '1'
-                    && !$OTRSBusinessIsInstalled
+                    defined $RegisteredTransports{$Transport}->{IsLIGEROBusinessTransport}
+                    && $RegisteredTransports{$Transport}->{IsLIGEROBusinessTransport} eq '1'
+                    && !$LIGEROBusinessIsInstalled
                     )
                 {
 

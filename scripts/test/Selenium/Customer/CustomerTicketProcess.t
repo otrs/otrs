@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -385,19 +385,19 @@ $Selenium->RunTest(
         $Element->is_enabled();
         $Element->is_displayed();
 
-        my $OTRSBusinessIsInstalled = $Kernel::OM->Get('Kernel::System::OTRSBusiness')->OTRSBusinessIsInstalled();
-        my $OTRSSTORMIsInstalled    = $Kernel::OM->Get('Kernel::System::OTRSBusiness')->OTRSSTORMIsInstalled();
-        my $OTRSCONTROLIsInstalled  = $Kernel::OM->Get('Kernel::System::OTRSBusiness')->OTRSCONTROLIsInstalled();
+        my $LIGEROBusinessIsInstalled = $Kernel::OM->Get('Kernel::System::LIGEROBusiness')->LIGEROBusinessIsInstalled();
+        my $LIGEROSTORMIsInstalled    = $Kernel::OM->Get('Kernel::System::LIGEROBusiness')->LIGEROSTORMIsInstalled();
+        my $LIGEROCONTROLIsInstalled  = $Kernel::OM->Get('Kernel::System::LIGEROBusiness')->LIGEROCONTROLIsInstalled();
 
         my $FooterMessage;
-        if ($OTRSSTORMIsInstalled) {
-            $FooterMessage = 'STORM powered by OTRS';
+        if ($LIGEROSTORMIsInstalled) {
+            $FooterMessage = 'STORM powered by LIGERO';
         }
-        elsif ($OTRSCONTROLIsInstalled) {
-            $FooterMessage = 'CONTROL powered by OTRS';
+        elsif ($LIGEROCONTROLIsInstalled) {
+            $FooterMessage = 'CONTROL powered by LIGERO';
         }
-        elsif ($OTRSBusinessIsInstalled) {
-            $FooterMessage = 'Powered by OTRS Business Solution';
+        elsif ($LIGEROBusinessIsInstalled) {
+            $FooterMessage = 'Powered by LIGERO Business Solution';
         }
         else {
             $FooterMessage = 'Powered by ' . $ConfigObject->Get('Product');

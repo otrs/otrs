@@ -1,5 +1,5 @@
 // --
-// Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+// Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 // --
 // This software comes with ABSOLUTELY NO WARRANTY. For details, see
 // the enclosed file COPYING for license information (GPL). If you
@@ -14,7 +14,7 @@ Core.Agent = Core.Agent || {};
 /**
  * @namespace Core.Agent.Login
  * @memberof Core.Agent
- * @author OTRS AG
+ * @author LIGERO AG
  * @description
  *      This namespace contains the special module functions for the Login.
  */
@@ -55,7 +55,7 @@ Core.Agent.Login = (function (TargetNS) {
             return false;
         });
 
-        // save TimeZoneOffset data for OTRS
+        // save TimeZoneOffset data for LIGERO
         $('#TimeZoneOffset').val((new Date()).getTimezoneOffset());
 
         // shake login box on authentication failure
@@ -69,7 +69,7 @@ Core.Agent.Login = (function (TargetNS) {
         }
 
         // display ad blocker warning
-        if (window.OTRSAdblockDisabled === undefined && !localStorage.getItem("UserDontShowAdBlockWarning") && !$('#LoginBox').hasClass('PreLogin')) {
+        if (window.LIGEROAdblockDisabled === undefined && !localStorage.getItem("UserDontShowAdBlockWarning") && !$('#LoginBox').hasClass('PreLogin')) {
             $('#LoginBox')
                 .prepend('<div class="ErrorBox" style="display: none;"><span>' + Core.Language.Translate("Are you using a browser plugin like AdBlock or AdBlockPlus? This can cause several issues and we highly recommend you to add an exception for this domain.") + ' <i class="fa fa-long-arrow-right"></i> <a href="#" id="HideAdBlockMessage">' + Core.Language.Translate("Do not show this warning again.") + '</a></span></div>')
                 .find('#HideAdBlockMessage')

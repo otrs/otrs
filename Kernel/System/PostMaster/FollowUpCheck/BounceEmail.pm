@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -40,11 +40,11 @@ sub new {
 sub Run {
     my ( $Self, %Param ) = @_;
 
-    $Self->_AddCommunicationLog( Message => 'Searching for header X-OTRS-Bounce.' );
+    $Self->_AddCommunicationLog( Message => 'Searching for header X-LIGERO-Bounce.' );
 
-    return if !$Param{GetParam}->{'X-OTRS-Bounce'};
+    return if !$Param{GetParam}->{'X-LIGERO-Bounce'};
 
-    my $BounceMessageID = $Param{GetParam}->{'X-OTRS-Bounce-OriginalMessageID'};
+    my $BounceMessageID = $Param{GetParam}->{'X-LIGERO-Bounce-OriginalMessageID'};
 
     $Self->_AddCommunicationLog(
         Message => sprintf(
@@ -84,8 +84,8 @@ sub _SetArticleTransmissionSendError {
         ChannelName => 'Email',
     );
 
-    my $BounceError     = $Param{GetParam}->{'X-OTRS-Bounce-ErrorMessage'};
-    my $BounceMessageID = $Param{GetParam}->{'X-OTRS-Bounce-OriginalMessageID'};
+    my $BounceError     = $Param{GetParam}->{'X-LIGERO-Bounce-ErrorMessage'};
+    my $BounceMessageID = $Param{GetParam}->{'X-LIGERO-Bounce-OriginalMessageID'};
 
     my $CurrentStatus = $ArticleBackendObject->ArticleGetTransmissionError(
         ArticleID => $ArticleID,

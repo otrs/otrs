@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -7,10 +7,10 @@
 # --
 
 package Kernel::System::ObjectManager;
-## nofilter(TidyAll::Plugin::OTRS::Perl::LayoutObject)
-## nofilter(TidyAll::Plugin::OTRS::Perl::PodSpelling)
-## nofilter(TidyAll::Plugin::OTRS::Perl::Require)
-## nofilter(TidyAll::Plugin::OTRS::Perl::SyntaxCheck)
+## nofilter(TidyAll::Plugin::LIGERO::Perl::LayoutObject)
+## nofilter(TidyAll::Plugin::LIGERO::Perl::PodSpelling)
+## nofilter(TidyAll::Plugin::LIGERO::Perl::Require)
+## nofilter(TidyAll::Plugin::LIGERO::Perl::SyntaxCheck)
 
 use strict;
 use warnings;
@@ -54,7 +54,7 @@ Kernel::System::ObjectManager - Central singleton manager and object instance ge
 
 =head1 DESCRIPTION
 
-The ObjectManager is the central place to create and access singleton OTRS objects (via C<L</Get()>>)
+The ObjectManager is the central place to create and access singleton LIGERO objects (via C<L</Get()>>)
 as well as create regular (unmanaged) object instances (via C<L</Create()>>).
 
 =head2 How does singleton management work?
@@ -64,13 +64,13 @@ are destroyed in the correct order, based on their dependencies (see below).
 
 =head2 How to use it?
 
-The ObjectManager must always be provided to OTRS by the top level script like this:
+The ObjectManager must always be provided to LIGERO by the top level script like this:
 
     use Kernel::System::ObjectManager;
     local $Kernel::OM = Kernel::System::ObjectManager->new(
         # possible options for module constructors here
         LogObject {
-            LogPrefix => 'OTRS-MyTestScript',
+            LogPrefix => 'LIGERO-MyTestScript',
         },
     );
 
@@ -133,7 +133,7 @@ flag (this will not work with C<L</Get()>>).
 
 Creates a new instance of Kernel::System::ObjectManager.
 
-This is typically B<only> needed in top level (C<bin/>) scripts! All parts of the OTRS API assume
+This is typically B<only> needed in top level (C<bin/>) scripts! All parts of the LIGERO API assume
 the ObjectManager to be present in C<$Kernel::OM> and use it.
 
 Sometimes objects need parameters to be sent to their constructors,
@@ -142,7 +142,7 @@ The hash reference will be flattened and passed to the constructor of the object
 
     local $Kernel::OM = Kernel::System::ObjectManager->new(
         Kernel::System::Log => {
-            LogPrefix => 'OTRS-MyTestScript',
+            LogPrefix => 'LIGERO-MyTestScript',
         },
     );
 
@@ -490,7 +490,7 @@ sub ObjectsDiscard {
         push @AllObjects, $Object;
     }
 
-    # During an OTRS package upgrade the packagesetup code module has just
+    # During an LIGERO package upgrade the packagesetup code module has just
     # recently been copied to it's location in the file system.
     # In a persistent Perl environment an old version of the module might still be loaded,
     # as watchdogs like Apache2::Reload haven't had a chance to reload it.
@@ -648,7 +648,7 @@ sub DESTROY {
 
 =head1 TERMS AND CONDITIONS
 
-This software is part of the OTRS project (L<https://ligero.org/>).
+This software is part of the LIGERO project (L<https://ligero.org/>).
 
 This software comes with ABSOLUTELY NO WARRANTY. For details, see
 the enclosed file COPYING for license information (GPL). If you

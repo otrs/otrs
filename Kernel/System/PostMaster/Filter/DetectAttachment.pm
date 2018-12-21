@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -60,8 +60,8 @@ sub Run {
         }
     }
 
-    $Param{GetParam}->{'X-OTRS-AttachmentExists'} = ( $AttachmentCount ? 'yes' : 'no' );
-    $Param{GetParam}->{'X-OTRS-AttachmentCount'}  = $AttachmentCount;
+    $Param{GetParam}->{'X-LIGERO-AttachmentExists'} = ( $AttachmentCount ? 'yes' : 'no' );
+    $Param{GetParam}->{'X-LIGERO-AttachmentCount'}  = $AttachmentCount;
 
     return 1;
 }

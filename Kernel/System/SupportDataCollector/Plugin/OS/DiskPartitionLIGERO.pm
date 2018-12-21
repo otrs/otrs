@@ -1,12 +1,12 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
 # did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
-package Kernel::System::SupportDataCollector::Plugin::OS::DiskPartitionOTRS;
+package Kernel::System::SupportDataCollector::Plugin::OS::DiskPartitionLIGERO;
 
 use strict;
 use warnings;
@@ -31,15 +31,15 @@ sub Run {
         return $Self->GetResults();
     }
 
-    # find OTRS partition
+    # find LIGERO partition
     my $Home = $Kernel::OM->Get('Kernel::Config')->Get('Home');
 
-    my $OTRSPartition = `df -P $Home | tail -1 | cut -d' ' -f 1`;
-    chomp $OTRSPartition;
+    my $LIGEROPartition = `df -P $Home | tail -1 | cut -d' ' -f 1`;
+    chomp $LIGEROPartition;
 
     $Self->AddResultInformation(
-        Label => Translatable('OTRS Disk Partition'),
-        Value => $OTRSPartition,
+        Label => Translatable('LIGERO Disk Partition'),
+        Value => $LIGEROPartition,
     );
 
     return $Self->GetResults();

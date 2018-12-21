@@ -1,5 +1,5 @@
 // --
-// Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+// Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 // --
 // This software comes with ABSOLUTELY NO WARRANTY. For details, see
 // the enclosed file COPYING for license information (GPL). If you
@@ -14,7 +14,7 @@ Core.UI = Core.UI || {};
 /**
  * @namespace Core.UI.RichTextEditor
  * @memberof Core.UI
- * @author OTRS AG
+ * @author LIGERO AG
  * @description
  *      Richtext Editor.
  */
@@ -134,7 +134,7 @@ Core.UI.RichTextEditor = (function (TargetNS) {
             Core.App.Publish('Event.UI.RichTextEditor.InstanceReady', [Editor]);
         });
 
-        // The format for the language is different between OTRS and CKEditor (see bug#8024)
+        // The format for the language is different between LIGERO and CKEditor (see bug#8024)
         // To correct this, we replace "_" with "-" in the language (e.g. zh_CN becomes zh-cn)
         UserLanguage = Core.Config.Get('UserLanguage').replace(/_/, "-");
 

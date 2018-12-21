@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -93,7 +93,7 @@ $Selenium->RunTest(
         my $SignatureRandomID = "Signature" . $Helper->GetRandomID();
 
         # Also check leading and trailing white space.
-        my $SignatureRichText = "\n\nYour Ticket-Team \n\n<OTRS_Owner_UserFirstname> <OTRS_Owner_UserLastname>\n";
+        my $SignatureRichText = "\n\nYour Ticket-Team \n\n<LIGERO_Owner_UserFirstname> <LIGERO_Owner_UserLastname>\n";
         my $SignatureComment  = "Selenium Signature test";
 
         $Selenium->find_element( "#Name",     'css' )->send_keys($SignatureRandomID);
@@ -152,7 +152,7 @@ $Selenium->RunTest(
 
         # Edit test Signature, clear comment and set it to invalid.
         my $EditSignatureRichText
-            = "Your Ticket-Team \n\n<OTRS_Responsible_UserFirstname> <OTRS_Responsible_UserLastname>";
+            = "Your Ticket-Team \n\n<LIGERO_Responsible_UserFirstname> <LIGERO_Responsible_UserLastname>";
 
         $Selenium->find_element( "#RichText", 'css' )->clear();
         $Selenium->find_element( "#RichText", 'css' )->send_keys($EditSignatureRichText);

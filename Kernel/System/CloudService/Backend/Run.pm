@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -19,7 +19,7 @@ our @ObjectDependencies = (
     'Kernel::System::Encode',
     'Kernel::System::JSON',
     'Kernel::System::Log',
-    'Kernel::System::OTRSBusiness',
+    'Kernel::System::LIGEROBusiness',
     'Kernel::System::SystemData',
     'Kernel::System::WebUserAgent',
 );
@@ -67,8 +67,8 @@ sub new {
 perform a cloud service communication and return result data
 
     my $RequestResult = $CloudServiceObject->Request(
-        OTRSIDAuth => { #  will be send encoded as JSON
-            OTRSID => '',
+        LIGEROIDAuth => { #  will be send encoded as JSON
+            LIGEROID => '',
             Password => '',
         },
         UniqueIDAuth => { #  will send encoded as JSON
@@ -186,8 +186,8 @@ sub Request {
     # create config object
     my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
 
-    # If OTRSSTORM package is installed, system is able to do a Cloud request even if CloudService is disabled.
-    if ( !$Kernel::OM->Get('Kernel::System::OTRSBusiness')->OTRSSTORMIsInstalled() ) {
+    # If LIGEROSTORM package is installed, system is able to do a Cloud request even if CloudService is disabled.
+    if ( !$Kernel::OM->Get('Kernel::System::LIGEROBusiness')->LIGEROSTORMIsInstalled() ) {
 
         # check if cloud services are disabled
         my $CloudServicesDisabled = $ConfigObject->Get('CloudServices::Disabled');
@@ -298,13 +298,13 @@ sub Request {
         }
     }
 
-    # get OTRSIDAuth structure if needed
-    my $OTRSIDAuth = '';
-    if ( $Param{OTRSID} && $Param{Password} ) {
+    # get LIGEROIDAuth structure if needed
+    my $LIGEROIDAuth = '';
+    if ( $Param{LIGEROID} && $Param{Password} ) {
 
-        $OTRSIDAuth = $JSONObject->Encode(
+        $LIGEROIDAuth = $JSONObject->Encode(
             Data => {
-                OTRSID   => $Param{OTRSID},
+                LIGEROID   => $Param{LIGEROID},
                 Password => $Param{Password},
             },
         );
@@ -343,7 +343,7 @@ sub Request {
                 Action       => 'PublicCloudService',
                 RequestData  => $RequestData,
                 UniqueIDAuth => $UniqueIDAuth,
-                OTRSIDAuth   => $OTRSIDAuth,
+                LIGEROIDAuth   => $LIGEROIDAuth,
             },
         );
 
@@ -557,7 +557,7 @@ sub OperationResultGet {
 
 =head1 TERMS AND CONDITIONS
 
-This software is part of the OTRS project (L<https://ligero.org/>).
+This software is part of the LIGERO project (L<https://ligero.org/>).
 
 This software comes with ABSOLUTELY NO WARRANTY. For details, see
 the enclosed file COPYING for license information (GPL). If you

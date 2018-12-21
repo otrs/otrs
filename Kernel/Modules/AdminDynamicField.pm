@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -127,14 +127,14 @@ sub _ShowOverview {
         );
     }
 
-    my $OTRSBusinessIsInstalled = $Kernel::OM->Get('Kernel::System::OTRSBusiness')->OTRSBusinessIsInstalled();
+    my $LIGEROBusinessIsInstalled = $Kernel::OM->Get('Kernel::System::LIGEROBusiness')->LIGEROBusinessIsInstalled();
 
     # call all needed template blocks
     $LayoutObject->Block(
         Name => 'Main',
         Data => {
             %Param,
-            OTRSBusinessIsInstalled => $OTRSBusinessIsInstalled,
+            LIGEROBusinessIsInstalled => $LIGEROBusinessIsInstalled,
         }
     );
 
@@ -196,22 +196,22 @@ sub _ShowOverview {
             }
         }
 
-        # Add disabled teaser options for OTRSBusiness dynamic fields.
-        if ( !$OTRSBusinessIsInstalled ) {
+        # Add disabled teaser options for LIGEROBusiness dynamic fields.
+        if ( !$LIGEROBusinessIsInstalled ) {
             push @FieldList, {
                 Key      => 'Database',
-                Value    => $LayoutObject->{LanguageObject}->Translate( 'Database (%s)', 'OTRS Business Solution™' ),
+                Value    => $LayoutObject->{LanguageObject}->Translate( 'Database (%s)', 'LIGERO Business Solution™' ),
                 Disabled => 1,
             };
             push @FieldList, {
                 Key   => 'Webservice',
-                Value => $LayoutObject->{LanguageObject}->Translate( 'Web service (%s)', 'OTRS Business Solution™' ),
+                Value => $LayoutObject->{LanguageObject}->Translate( 'Web service (%s)', 'LIGERO Business Solution™' ),
                 Disabled => 1,
             };
             push @FieldList, {
                 Key => 'ContactWithData',
                 Value =>
-                    $LayoutObject->{LanguageObject}->Translate( 'Contact with data (%s)', 'OTRS Business Solution™' ),
+                    $LayoutObject->{LanguageObject}->Translate( 'Contact with data (%s)', 'LIGERO Business Solution™' ),
                 Disabled => 1,
             };
         }

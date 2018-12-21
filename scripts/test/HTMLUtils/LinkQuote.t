@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -308,9 +308,9 @@ my @Tests = (
     },
     {
         Input =>
-            '<br />http://cuba/ligero/index.pl?Action=AgentTicketZoom&amp;TicketID=4348<br /><br />Your OTRS Notification Master',
+            '<br />http://cuba/ligero/index.pl?Action=AgentTicketZoom&amp;TicketID=4348<br /><br />Your LIGERO Notification Master',
         Result =>
-            '<br /><a href="http://cuba/ligero/index.pl?Action=AgentTicketZoom&amp;TicketID=4348" title="http://cuba/ligero/index.pl?Action=AgentTicketZoom&amp;TicketID=4348">http://cuba/ligero/index.pl?Action=AgentTicketZoom&amp;TicketID=4348</a><br /><br />Your OTRS Notification Master',
+            '<br /><a href="http://cuba/ligero/index.pl?Action=AgentTicketZoom&amp;TicketID=4348" title="http://cuba/ligero/index.pl?Action=AgentTicketZoom&amp;TicketID=4348">http://cuba/ligero/index.pl?Action=AgentTicketZoom&amp;TicketID=4348</a><br /><br />Your LIGERO Notification Master',
         Name   => 'LinkQuote - just TLD given;',
         Target => '',
     },

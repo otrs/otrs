@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -37,8 +37,8 @@ sub new {
 sub Run {
     my ( $Self, %Param ) = @_;
 
-    # Ensure that the flag X-OTRS-Bounce doesn't exist if we didn't analysed it yet.
-    delete $Param{GetParam}->{'X-OTRS-Bounce'};
+    # Ensure that the flag X-LIGERO-Bounce doesn't exist if we didn't analysed it yet.
+    delete $Param{GetParam}->{'X-LIGERO-Bounce'};
 
     $Self->{CommunicationLogObject}->ObjectLog(
         ObjectLogType => 'Message',
@@ -61,10 +61,10 @@ sub Run {
 
     $MessageID = sprintf '<%s>', $MessageID;
 
-    $Param{GetParam}->{'X-OTRS-Bounce'}                   = 1;
-    $Param{GetParam}->{'X-OTRS-Bounce-OriginalMessageID'} = $MessageID;
-    $Param{GetParam}->{'X-OTRS-Bounce-ErrorMessage'}      = $Param{GetParam}->{Body};
-    $Param{GetParam}->{'X-OTRS-Loop'}                     = 1;
+    $Param{GetParam}->{'X-LIGERO-Bounce'}                   = 1;
+    $Param{GetParam}->{'X-LIGERO-Bounce-OriginalMessageID'} = $MessageID;
+    $Param{GetParam}->{'X-LIGERO-Bounce-ErrorMessage'}      = $Param{GetParam}->{Body};
+    $Param{GetParam}->{'X-LIGERO-Loop'}                     = 1;
 
     $Self->{CommunicationLogObject}->ObjectLog(
         ObjectLogType => 'Message',

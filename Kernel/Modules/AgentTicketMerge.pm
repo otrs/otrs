@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -349,9 +349,9 @@ sub Run {
                     );
                 }
                 my %Ticket = $TicketObject->TicketGet( TicketID => $Self->{TicketID} );
-                $GetParam{Body} =~ s/(&lt;|<)OTRS_TICKET(&gt;|>)/$Ticket{TicketNumber}/g;
+                $GetParam{Body} =~ s/(&lt;|<)LIGERO_TICKET(&gt;|>)/$Ticket{TicketNumber}/g;
                 $GetParam{Body}
-                    =~ s/(&lt;|<)OTRS_MERGE_TO_TICKET(&gt;|>)/$GetParam{'MainTicketNumber'}/g;
+                    =~ s/(&lt;|<)LIGERO_MERGE_TO_TICKET(&gt;|>)/$GetParam{'MainTicketNumber'}/g;
 
                 my $EmailArticleBackendObject = $Kernel::OM->Get('Kernel::System::Ticket::Article')->BackendForChannel(
                     ChannelName => 'Email',

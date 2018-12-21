@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -1371,7 +1371,7 @@ sub GetStatTable {
                         # change raw value from ticket to a plain text value
                         $Ticket{$ParameterName} = $ValueStrg->{Value};
 
-                        ## nofilter(TidyAll::Plugin::OTRS::Perl::LayoutObject)
+                        ## nofilter(TidyAll::Plugin::LIGERO::Perl::LayoutObject)
                         if ( $DynamicFieldConfig->{Name} =~ /ProcessManagementProcessID|ProcessManagementActivityID/ ) {
                             my $DisplayValue = $DynamicFieldBackendObject->DisplayValueRender(
                                 DynamicFieldConfig => $DynamicFieldConfig,
@@ -1392,7 +1392,7 @@ sub GetStatTable {
         for my $Attribute ( @{$SortedAttributesRef} ) {
             next ATTRIBUTE if !$TicketAttributes{$Attribute};
 
-            # convert from OTRS time zone to given time zone
+            # convert from LIGERO time zone to given time zone
             if (
                 $Param{TimeZone}
                 && $Ticket{$Attribute}
@@ -1400,7 +1400,7 @@ sub GetStatTable {
                 )
             {
 
-                $Ticket{$Attribute} = $StatsObject->_FromOTRSTimeZone(
+                $Ticket{$Attribute} = $StatsObject->_FromLIGEROTimeZone(
                     String   => $Ticket{$Attribute},
                     TimeZone => $Param{TimeZone},
                 );

@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -365,10 +365,10 @@ $Selenium->RunTest(
         }
 
         # Check article filtering by event types in timeline view (see bug#13836).
-        # TimelineView is an OTRSBusiness feature.
-        my $OTRSBusinessIsInstalled = $Kernel::OM->Get('Kernel::System::OTRSBusiness')->OTRSBusinessIsInstalled();
+        # TimelineView is an LIGEROBusiness feature.
+        my $LIGEROBusinessIsInstalled = $Kernel::OM->Get('Kernel::System::LIGEROBusiness')->LIGEROBusinessIsInstalled();
 
-        if ($OTRSBusinessIsInstalled) {
+        if ($LIGEROBusinessIsInstalled) {
 
             # Enable TimelineViewEnabled.
             $Helper->ConfigSettingChange(

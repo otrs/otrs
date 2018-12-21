@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -21,7 +21,7 @@ our @ObjectDependencies = (
 sub Configure {
     my ( $Self, %Param ) = @_;
 
-    $Self->Description('Install an OTRS package.');
+    $Self->Description('Install an LIGERO package.');
     $Self->AddOption(
         Name        => 'force',
         Description => 'Force package installation even if validation fails.',
@@ -68,14 +68,14 @@ sub Run {
         if ( !$PackageAllowNotVerifiedPackages ) {
 
             $Self->PrintError(
-                "$Structure{Name}->{Content}-$Structure{Version}->{Content} is not verified by the OTRS Group!\n\nThe installation of packages which are not verified by the OTRS Group is not possible by default."
+                "$Structure{Name}->{Content}-$Structure{Version}->{Content} is not verified by the LIGERO Group!\n\nThe installation of packages which are not verified by the LIGERO Group is not possible by default."
             );
             return $Self->ExitCodeError();
         }
         else {
 
             $Self->Print(
-                "<yellow>Package $Structure{Name}->{Content}-$Structure{Version}->{Content} not verified by the OTRS Group! It is recommended not to use this package.</yellow>\n"
+                "<yellow>Package $Structure{Name}->{Content}-$Structure{Version}->{Content} not verified by the LIGERO Group! It is recommended not to use this package.</yellow>\n"
             );
         }
     }

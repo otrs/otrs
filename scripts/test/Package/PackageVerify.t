@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -14,26 +14,26 @@ use Kernel::System::CloudService::Backend::Run;
 use vars (qw($Self));
 
 my $PackageObject = $Kernel::OM->Get('Kernel::System::Package');
-my $OTRSVersion   = $Kernel::OM->Get('Kernel::Config')->Get('Version');
+my $LIGEROVersion   = $Kernel::OM->Get('Kernel::Config')->Get('Version');
 
 # Leave only major and minor level versions.
-$OTRSVersion =~ s{ (\d+ \. \d+) .+ }{$1}msx;
+$LIGEROVersion =~ s{ (\d+ \. \d+) .+ }{$1}msx;
 
 # Add x as patch level version.
-$OTRSVersion .= '.x';
+$LIGEROVersion .= '.x';
 
 my $String = '<?xml version="1.0" encoding="utf-8" ?>
 <ligero_package version="1.0">
   <Name>Test</Name>
   <Version>0.0.1</Version>
-  <Vendor>OTRS AG</Vendor>
+  <Vendor>LIGERO AG</Vendor>
   <URL>https://ligero.com/</URL>
   <License>GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007</License>
   <ChangeLog>2005-11-10 New package (some test &lt; &gt; &amp;).</ChangeLog>
   <Description Lang="en">A test package (some test &lt; &gt; &amp;).</Description>
   <Description Lang="de">Ein Test Paket (some test &lt; &gt; &amp;).</Description>
   <ModuleRequired Version="1.112">Encode</ModuleRequired>
-  <Framework>' . $OTRSVersion . '</Framework>
+  <Framework>' . $LIGEROVersion . '</Framework>
   <BuildDate>2005-11-10 21:17:16</BuildDate>
   <BuildHost>yourhost.example.com</BuildHost>
   <CodeInstall>
@@ -71,14 +71,14 @@ my $StringSecond = "<?xml version='1.0' encoding='utf-8' ?>
 <ligero_package version='1.0'>
   <Name>TestSecond</Name>
   <Version>0.0.1</Version>
-  <Vendor>OTRS AG</Vendor>
+  <Vendor>LIGERO AG</Vendor>
   <URL>https://ligero.com/</URL>
   <License>GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007</License>
   <ChangeLog>2005-11-10 New package (some test &lt; &gt; &amp;).</ChangeLog>
   <Description Lang='en'>A test package (some test &lt; &gt; &amp;).\nNew line for testing.</Description>
   <Description Lang='de'>Ein Test Paket (some test &lt; &gt; &amp;).\nNeue Linie zum Testen.</Description>
   <ModuleRequired Version='1.112'>Encode</ModuleRequired>
-  <Framework>$OTRSVersion</Framework>
+  <Framework>$LIGEROVersion</Framework>
   <BuildDate>2005-11-10 21:17:16</BuildDate>
   <BuildHost>yourhost.example.com</BuildHost>
   <Filelist>

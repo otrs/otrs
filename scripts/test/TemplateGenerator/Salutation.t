@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -86,11 +86,11 @@ $Self->True(
 
 my @Tests = (
     {
-        Name       => 'Test supported tags -<OTRS_CUSTOMER_REALNAME> and <OTRS_CUSTOMER_DATA_UserEmail>',
-        Salutation => "Dear <OTRS_CUSTOMER_REALNAME>,
+        Name       => 'Test supported tags -<LIGERO_CUSTOMER_REALNAME> and <LIGERO_CUSTOMER_DATA_UserEmail>',
+        Salutation => "Dear <LIGERO_CUSTOMER_REALNAME>,
 
     Thank you for your request. Your email address in our database
-    is \"<OTRS_CUSTOMER_DATA_UserEmail>\".
+    is \"<LIGERO_CUSTOMER_DATA_UserEmail>\".
     ",
         ExpectedResult => "Dear $TestUserFirstname $TestUserLastname,
 
@@ -100,13 +100,13 @@ my @Tests = (
     },
     {
         Name           => 'Test unsupported tags',
-        Salutation     => 'Test: <OTRS_AGENT_SUBJECT> <OTRS_AGENT_BODY> <OTRS_CUSTOMER_BODY> <OTRS_CUSTOMER_SUBJECT>',
+        Salutation     => 'Test: <LIGERO_AGENT_SUBJECT> <LIGERO_AGENT_BODY> <LIGERO_CUSTOMER_BODY> <LIGERO_CUSTOMER_SUBJECT>',
         ExpectedResult => 'Test: - - - -',
     },
     {
-        Name => 'Test supported tags - <OTRS_TICKET_*>  with TicketID',
+        Name => 'Test supported tags - <LIGERO_TICKET_*>  with TicketID',
         Salutation =>
-            'Options of the ticket data (e. g. <OTRS_TICKET_TicketNumber>, <OTRS_TICKET_TicketID>, <OTRS_TICKET_Queue>, <OTRS_TICKET_State>)',
+            'Options of the ticket data (e. g. <LIGERO_TICKET_TicketNumber>, <LIGERO_TICKET_TicketID>, <LIGERO_TICKET_Queue>, <LIGERO_TICKET_State>)',
     },
 );
 

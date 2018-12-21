@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -46,21 +46,21 @@ All stats functions.
 =head2 Explanation for the time zone parameter
 
 The time zone parameter is available, if the statistic is a dynamic statistic. The selected periods in the frontend are time zone neutral and for the
-search parameters, the selection will be converted to the OTRS time zone, because the times
+search parameters, the selection will be converted to the LIGERO time zone, because the times
 are stored within this time zone in the database.
 
 This means e.g. if an absolute period of time from 2015-08-01 00:00:00 to 2015-09-10 23:59:59 and a time zone with an offset of +6 hours has been selected,
-the period will be converted from the +6 time zone to the OTRS time zone for the search parameter,
-so that the right time will be used for searching the database. Given that the OTRS time zone is set to UTC, this
+the period will be converted from the +6 time zone to the LIGERO time zone for the search parameter,
+so that the right time will be used for searching the database. Given that the LIGERO time zone is set to UTC, this
 would result in a period of 2015-07-31 18:00:00 to 2015-09-10 17:59:59 UTC.
 
 For a relative time period, e. g. the last 10 full days, and a time zone with an offset of +10 hours, a DateTime object with the +10 time zone will be created
 for the current time. For the period end date, this date will be taken and extended to the end of the day. Then, 10 full days will be subtracted from this.
-This is the start of the period, which will be extended to 00:00:00. Start and end date will be converted to the time zone of OTRS to search the database.
+This is the start of the period, which will be extended to 00:00:00. Start and end date will be converted to the time zone of LIGERO to search the database.
 
-Example for relative time period 'last 10 full days' with selected time zone offset +10 hours, current date/time within this time zone 2015-09-10 16:00:00, OTRS time zone is UTC:
-End date: 2015-09-10 16:00:00 -> extended to 2015-09-10 23:59:59 -> 2015-09-10 13:59:59 OTRS time zone (UTC)
-Start date: 2015-09-10 16:00:00 - 10 days -> 2015-08-31 16:00:00 -> extended to 00:00:00: 2015-09-01 00:00:00 -> 2015-08-31 14:00:00 OTRS time zone (UTC)
+Example for relative time period 'last 10 full days' with selected time zone offset +10 hours, current date/time within this time zone 2015-09-10 16:00:00, LIGERO time zone is UTC:
+End date: 2015-09-10 16:00:00 -> extended to 2015-09-10 23:59:59 -> 2015-09-10 13:59:59 LIGERO time zone (UTC)
+Start date: 2015-09-10 16:00:00 - 10 days -> 2015-08-31 16:00:00 -> extended to 00:00:00: 2015-09-01 00:00:00 -> 2015-08-31 14:00:00 LIGERO time zone (UTC)
 
 =head1 PUBLIC INTERFACE
 
@@ -251,7 +251,7 @@ sub StatsGet {
             $Stat{TimeZone} = $StatsXML->{TimeZone}->[1]->{Content};
         }
         else {
-            $Stat{TimeZone} = Kernel::System::DateTime->OTRSTimeZoneGet();
+            $Stat{TimeZone} = Kernel::System::DateTime->LIGEROTimeZoneGet();
         }
     }
 
@@ -2476,13 +2476,13 @@ sub _GenerateDynamicStats {
         }
         elsif ( $RestrictionPart->{Block} eq 'Time' ) {
 
-            # convert start and stop time to OTRS time zone
-            $RestrictionAttribute{ $RestrictionPart->{Values}{TimeStart} } = $Self->_ToOTRSTimeZone(
+            # convert start and stop time to LIGERO time zone
+            $RestrictionAttribute{ $RestrictionPart->{Values}{TimeStart} } = $Self->_ToLIGEROTimeZone(
                 String   => $RestrictionPart->{TimeStart},
                 TimeZone => $Param{TimeZone},
             );
 
-            $RestrictionAttribute{ $RestrictionPart->{Values}{TimeStop} } = $Self->_ToOTRSTimeZone(
+            $RestrictionAttribute{ $RestrictionPart->{Values}{TimeStop} } = $Self->_ToLIGEROTimeZone(
                 String   => $RestrictionPart->{TimeStop},
                 TimeZone => $Param{TimeZone},
             );
@@ -2794,14 +2794,14 @@ sub _GenerateDynamicStats {
             push(
                 @{ $Xvalue->{SelectedValues} },
                 {
-                    # convert to OTRS time zone for correct database search parameter
+                    # convert to LIGERO time zone for correct database search parameter
 
-                    TimeStart => $Self->_ToOTRSTimeZone(
+                    TimeStart => $Self->_ToLIGEROTimeZone(
                         String   => $TimeStart,
                         TimeZone => $Param{TimeZone},
                     ),
 
-                    TimeStop => $Self->_ToOTRSTimeZone(
+                    TimeStop => $Self->_ToLIGEROTimeZone(
                         String   => $TimeStop,
                         TimeZone => $Param{TimeZone},
                     ),
@@ -3438,8 +3438,8 @@ sub _GenerateDynamicStats {
         return @StatArray;
     }
 
-    # convert to OTRS time zone to get the correct time for the check
-    my $CheckTimeStop = $Self->_ToOTRSTimeZone(
+    # convert to LIGERO time zone to get the correct time for the check
+    my $CheckTimeStop = $Self->_ToLIGEROTimeZone(
         String   => $TitleTimeStop,
         TimeZone => $Param{TimeZone},
     );
@@ -3906,22 +3906,22 @@ sub _AutomaticSampleImport {
     return 1;
 }
 
-=head2 _FromOTRSTimeZone()
+=head2 _FromLIGEROTimeZone()
 
-Converts the given date/time string from OTRS time zone to the given time zone.
+Converts the given date/time string from LIGERO time zone to the given time zone.
 
-    my $String = $StatsObject->_FromOTRSTimeZone(
+    my $String = $StatsObject->_FromLIGEROTimeZone(
         String   => '2016-02-20 20:00:00',
         TimeZone => 'Europe/Berlin',
     );
 
-Returns (example for OTRS time zone being set to UTC):
+Returns (example for LIGERO time zone being set to UTC):
 
     $TimeStamp = '2016-02-20 21:00:00',
 
 =cut
 
-sub _FromOTRSTimeZone {
+sub _FromLIGEROTimeZone {
     my ( $Self, %Param ) = @_;
 
     # check needed params
@@ -3946,22 +3946,22 @@ sub _FromOTRSTimeZone {
     return $DateTimeObject->ToString();
 }
 
-=head2 _ToOTRSTimeZone()
+=head2 _ToLIGEROTimeZone()
 
-Converts the given date/time string from the given time zone to OTRS time zone.
+Converts the given date/time string from the given time zone to LIGERO time zone.
 
-    my $String = $StatsObject->_ToOTRSTimeZone(
+    my $String = $StatsObject->_ToLIGEROTimeZone(
         String    => '2016-02-20 18:00:00',
         TimeZone  => 'Europe/Berlin',
     );
 
-Returns (example for OTRS time zone being set to UTC):
+Returns (example for LIGERO time zone being set to UTC):
 
     $TimeStamp = '2016-02-20 17:00:00',
 
 =cut
 
-sub _ToOTRSTimeZone {
+sub _ToLIGEROTimeZone {
     my ( $Self, %Param ) = @_;
 
     # check needed params
@@ -3979,7 +3979,7 @@ sub _ToOTRSTimeZone {
         'Kernel::System::DateTime',
         ObjectParams => \%Param,
     );
-    $DateTimeObject->ToOTRSTimeZone();
+    $DateTimeObject->ToLIGEROTimeZone();
 
     return $DateTimeObject->ToString();
 }
@@ -4441,7 +4441,7 @@ sub _TimeStamp2DateTime {
 
 =head1 TERMS AND CONDITIONS
 
-This software is part of the OTRS project (L<https://ligero.org/>).
+This software is part of the LIGERO project (L<https://ligero.org/>).
 
 This software comes with ABSOLUTELY NO WARRANTY. For details, see
 the enclosed file COPYING for license information (GPL). If you

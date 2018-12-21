@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -47,11 +47,11 @@ sub Run {
     # Do not show notification if user has already valid time zone in the preferences.
     return '' if $CustomerUserPreferences{UserTimeZone};
 
-    # If OTRSTimeZone and UserDefaultTimeZone match and are not set to UTC, don't show a notification,
+    # If LIGEROTimeZone and UserDefaultTimeZone match and are not set to UTC, don't show a notification,
     # because in this case it almost certainly means that only this time zone is relevant.
-    my $OTRSTimeZone        = Kernel::System::DateTime->OTRSTimeZoneGet();
+    my $LIGEROTimeZone        = Kernel::System::DateTime->LIGEROTimeZoneGet();
     my $UserDefaultTimeZone = Kernel::System::DateTime->UserDefaultTimeZoneGet();
-    return '' if $OTRSTimeZone eq $UserDefaultTimeZone && $OTRSTimeZone ne 'UTC';
+    return '' if $LIGEROTimeZone eq $UserDefaultTimeZone && $LIGEROTimeZone ne 'UTC';
 
     # show notification to set time zone
     my $LayoutObject = $Kernel::OM->Get('Kernel::Output::HTML::Layout');

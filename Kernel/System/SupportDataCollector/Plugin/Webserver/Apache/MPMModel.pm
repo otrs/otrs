@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -58,7 +58,7 @@ sub Run {
             Identifier => 'MPMModel',
             Label      => Translatable('MPM model'),
             Value      => $MPMModel,
-            Message    => Translatable("OTRS requires apache to be run with the 'prefork' MPM model."),
+            Message    => Translatable("LIGERO requires apache to be run with the 'prefork' MPM model."),
         );
     }
 

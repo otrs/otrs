@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -330,16 +330,16 @@ sub DBInfoGet {
     return %EnvDB;
 }
 
-=head2 OTRSInfoGet()
+=head2 LIGEROInfoGet()
 
-collect OTRS information
+collect LIGERO information
 
-    my %OTRSInfo = $EnvironmentObject->OTRSInfoGet();
+    my %LIGEROInfo = $EnvironmentObject->LIGEROInfoGet();
 
 returns:
 
-    %OTRSInfo = (
-        Product         => "OTRS",
+    %LIGEROInfo = (
+        Product         => "LIGERO",
         Version         => "3.3.1",
         DefaultLanguage => "en",
         Home            => "/opt/ligero",
@@ -349,14 +349,14 @@ returns:
 
 =cut
 
-sub OTRSInfoGet {
+sub LIGEROInfoGet {
     my ( $Self, %Param ) = @_;
 
     # get config object
     my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
 
-    # collect OTRS data
-    my %EnvOTRS = (
+    # collect LIGERO data
+    my %EnvLIGERO = (
         Version         => $ConfigObject->Get('Version'),
         Home            => $ConfigObject->Get('Home'),
         Host            => $ConfigObject->Get('FQDN'),
@@ -365,14 +365,14 @@ sub OTRSInfoGet {
         DefaultLanguage => $ConfigObject->Get('DefaultLanguage'),
     );
 
-    return %EnvOTRS;
+    return %EnvLIGERO;
 }
 
 1;
 
 =head1 TERMS AND CONDITIONS
 
-This software is part of the OTRS project (L<https://ligero.org/>).
+This software is part of the LIGERO project (L<https://ligero.org/>).
 
 This software comes with ABSOLUTELY NO WARRANTY. For details, see
 the enclosed file COPYING for license information (GPL). If you

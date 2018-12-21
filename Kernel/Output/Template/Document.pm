@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -7,7 +7,7 @@
 # --
 
 package Kernel::Output::Template::Document;
-## no critic(Perl::Critic::Policy::OTRS::RequireCamelCase)
+## no critic(Perl::Critic::Policy::LIGERO::RequireCamelCase)
 
 use strict;
 use warnings;
@@ -33,7 +33,7 @@ and processing.
 sub process {
     my ( $Self, $Context ) = @_;
 
-    $Self->_InstallOTRSExtensions($Context);
+    $Self->_InstallLIGEROExtensions($Context);
     $Self->_PrecalculateBlockStructure($Context);
     $Self->_PrecalculateBlockHookSubscriptions($Context);
 
@@ -42,26 +42,26 @@ sub process {
 
 =begin Internal:
 
-=head2 _InstallOTRSExtensions()
+=head2 _InstallLIGEROExtensions()
 
-adds some OTRS specific extensions to Template::Toolkit.
+adds some LIGERO specific extensions to Template::Toolkit.
 
 =cut
 
-sub _InstallOTRSExtensions {
+sub _InstallLIGEROExtensions {
     my ( $Self, $Context ) = @_;
 
     # Already installed, nothing to do.
-    return if $Context->stash()->get('OTRS');
+    return if $Context->stash()->get('LIGERO');
 
     #
-    # Load the OTRS plugin. This will register some filters and functions.
+    # Load the LIGERO plugin. This will register some filters and functions.
     #
-    $Context->stash()->set( 'OTRS', $Context->plugin('OTRS') );
+    $Context->stash()->set( 'LIGERO', $Context->plugin('LIGERO') );
 
     #
     # The RenderBlock macro makes it possible to use the old dtl:block-Style block calls
-    #   that are still used by OTRS with Template::Toolkit.
+    #   that are still used by LIGERO with Template::Toolkit.
     #
     # The block data is passed to the template, and this macro processes it and calls the relevant
     #   blocks.
@@ -363,7 +363,7 @@ sub _PrecalculateBlockHookSubscriptions {
 
 =head1 TERMS AND CONDITIONS
 
-This software is part of the OTRS project (L<https://ligero.org/>).
+This software is part of the LIGERO project (L<https://ligero.org/>).
 
 This software comes with ABSOLUTELY NO WARRANTY. For details, see
 the enclosed file COPYING for license information (GPL). If you

@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -307,8 +307,8 @@ sub _MaskUpdate {
         ResultType => 'HASH',
     );
     for my $DynamicField ( values %$DynamicFields ) {
-        push @Headers, 'X-OTRS-DynamicField-' . $DynamicField;
-        push @Headers, 'X-OTRS-FollowUp-DynamicField-' . $DynamicField;
+        push @Headers, 'X-LIGERO-DynamicField-' . $DynamicField;
+        push @Headers, 'X-LIGERO-FollowUp-DynamicField-' . $DynamicField;
     }
 
     my %Header = map { $_ => $_ } @Headers;

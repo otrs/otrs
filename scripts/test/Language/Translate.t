@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -28,43 +28,43 @@ my @Tests = (
         TranslationResult => '0',
     },
     {
-        OriginalString    => 'OTRSLanguageUnitTest::Test1',
+        OriginalString    => 'LIGEROLanguageUnitTest::Test1',
         TranslationString => 'Test1',
         TranslationResult => 'Test1',
         Parameters        => ['Hallo'],                       # test with not needed parameter
     },
     {
-        OriginalString    => 'OTRSLanguageUnitTest::Test2',
+        OriginalString    => 'LIGEROLanguageUnitTest::Test2',
         TranslationString => 'Test2 [%s]',
         TranslationResult => 'Test2 [Hallo]',
         Parameters        => ['Hallo'],
     },
     {
-        OriginalString    => 'OTRSLanguageUnitTest::Test3',
+        OriginalString    => 'LIGEROLanguageUnitTest::Test3',
         TranslationString => 'Test3 [%s] (A=%s)',
         TranslationResult => 'Test3 [Hallo] (A=A)',
         Parameters        => [ 'Hallo', 'A' ],
     },
     {
-        OriginalString    => 'OTRSLanguageUnitTest::Test4',
+        OriginalString    => 'LIGEROLanguageUnitTest::Test4',
         TranslationString => 'Test4 [%s] (A=%s;B=%s)',
         TranslationResult => 'Test4 [Hallo] (A=A;B=B)',
         Parameters        => [ 'Hallo', 'A', 'B' ],
     },
     {
-        OriginalString    => 'OTRSLanguageUnitTest::Test5',
+        OriginalString    => 'LIGEROLanguageUnitTest::Test5',
         TranslationString => 'Test5 [%s] (A=%s;B=%s;C=%s)',
         TranslationResult => 'Test5 [Hallo] (A=A;B=B;C=C)',
         Parameters        => [ 'Hallo', 'A', 'B', 'C' ],
     },
     {
-        OriginalString    => 'OTRSLanguageUnitTest::Test6',
+        OriginalString    => 'LIGEROLanguageUnitTest::Test6',
         TranslationString => 'Test6 [%s] (A=%s;B=%s;C=%s;D=%s)',
         TranslationResult => 'Test6 [Hallo] (A=A;B=B;C=C;D=D)',
         Parameters        => [ 'Hallo', 'A', 'B', 'C', 'D' ],
     },
     {
-        OriginalString    => 'OTRSLanguageUnitTest::Test7 [% test %] {" special characters %s"}',
+        OriginalString    => 'LIGEROLanguageUnitTest::Test7 [% test %] {" special characters %s"}',
         TranslationString => 'Test7 [% test %] {" special characters %s"}',
         TranslationResult => 'Test7 [% test %] {" special characters test"}',
         Parameters        => ['test'],

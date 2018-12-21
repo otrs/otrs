@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -1161,9 +1161,9 @@ sub SendEmail {
         return $Output;
     }
 
-    # replace <OTRS_TICKET_STATE> with next ticket state name
+    # replace <LIGERO_TICKET_STATE> with next ticket state name
     if ($NextState) {
-        $GetParam{Body} =~ s/(&lt;|<)OTRS_TICKET_STATE(&gt;|>)/$NextState/g;
+        $GetParam{Body} =~ s/(&lt;|<)LIGERO_TICKET_STATE(&gt;|>)/$NextState/g;
     }
 
     # get pre loaded attachments

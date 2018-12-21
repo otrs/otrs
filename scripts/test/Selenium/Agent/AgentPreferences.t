@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -491,7 +491,7 @@ JAVASCRIPT
 
         # Enable two factor authenticator.
 
-        if ( $Kernel::OM->Get('Kernel::System::OTRSBusiness')->OTRSBusinessIsInstalled() ) {
+        if ( $Kernel::OM->Get('Kernel::System::LIGEROBusiness')->LIGEROBusinessIsInstalled() ) {
 
             # Open advanced preferences screen.
             $Selenium->VerifiedGet(
@@ -564,7 +564,7 @@ JAVASCRIPT
             if ($CategoriesVisible) {
                 $Selenium->InputFieldValueSet(
                     Element => '#Category',
-                    Value   => 'OTRS',
+                    Value   => 'LIGERO',
                 );
             }
 

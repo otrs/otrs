@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -440,7 +440,7 @@ $ExportContent->{Content} =~ s/^<\?xml.*?>.*?<ligero_stats/<ligero_stats/ms;
 $Self->Is(
     $ImportContent,
     $ExportContent->{Content},
-    "Export-Importcheck - check if import file content equal export file content.\n Be careful, if it gives errors if you run OTRS with default charset utf-8,\n because the examplefile is iso-8859-1, but at my test there a no problems to compare a utf-8 string with an iso string?!\n",
+    "Export-Importcheck - check if import file content equal export file content.\n Be careful, if it gives errors if you run LIGERO with default charset utf-8,\n because the examplefile is iso-8859-1, but at my test there a no problems to compare a utf-8 string with an iso string?!\n",
 );
 
 # Import a static statistic with not exsting object module

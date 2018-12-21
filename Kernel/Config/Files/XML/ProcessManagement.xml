@@ -15,7 +15,7 @@
                             <Item>admin</Item>
                         </Array>
                     </Item>
-                    <Item Key="Description" Translatable="1">This module is part of the admin area of OTRS.</Item>
+                    <Item Key="Description" Translatable="1">This module is part of the admin area of LIGERO.</Item>
                     <Item Key="Title" Translatable="1">Process Management</Item>
                     <Item Key="NavBarName">Admin</Item>
                 </Hash>
@@ -96,7 +96,7 @@
                             <Item>admin</Item>
                         </Array>
                     </Item>
-                    <Item Key="Description" Translatable="1">This module is part of the admin area of OTRS.</Item>
+                    <Item Key="Description" Translatable="1">This module is part of the admin area of LIGERO.</Item>
                     <Item Key="Title" Translatable="1">Process Management Activity GUI</Item>
                     <Item Key="NavBarName"></Item>
                 </Hash>
@@ -138,7 +138,7 @@
                             <Item>admin</Item>
                         </Array>
                     </Item>
-                    <Item Key="Description" Translatable="1">This module is part of the admin area of OTRS.</Item>
+                    <Item Key="Description" Translatable="1">This module is part of the admin area of LIGERO.</Item>
                     <Item Key="Title" Translatable="1">Process Management Activity Dialog GUI</Item>
                     <Item Key="NavBarName"></Item>
                 </Hash>
@@ -180,7 +180,7 @@
                             <Item>admin</Item>
                         </Array>
                     </Item>
-                    <Item Key="Description" Translatable="1">This module is part of the admin area of OTRS.</Item>
+                    <Item Key="Description" Translatable="1">This module is part of the admin area of LIGERO.</Item>
                     <Item Key="Title" Translatable="1">Process Management Transition GUI</Item>
                     <Item Key="NavBarName"></Item>
                 </Hash>
@@ -220,7 +220,7 @@
                             <Item>admin</Item>
                         </Array>
                     </Item>
-                    <Item Key="Description" Translatable="1">This module is part of the admin area of OTRS.</Item>
+                    <Item Key="Description" Translatable="1">This module is part of the admin area of LIGERO.</Item>
                     <Item Key="Title" Translatable="1">Process Management Transition Action GUI</Item>
                     <Item Key="NavBarName"></Item>
                 </Hash>
@@ -260,7 +260,7 @@
                             <Item>admin</Item>
                         </Array>
                     </Item>
-                    <Item Key="Description" Translatable="1">This module is part of the admin area of OTRS.</Item>
+                    <Item Key="Description" Translatable="1">This module is part of the admin area of LIGERO.</Item>
                     <Item Key="Title" Translatable="1">Process Management Path GUI</Item>
                     <Item Key="NavBarName"></Item>
                 </Hash>
@@ -296,7 +296,7 @@
             </Hash>
         </Value>
     </Setting>
-    <!-- OTRSTicketProcesses Merged Settings Start -->
+    <!-- LIGEROTicketProcesses Merged Settings Start -->
     <Setting Name="Frontend::Module###AgentTicketProcess" Required="0" Valid="1">
         <Description Translatable="1">Frontend module registration for the agent interface.</Description>
         <Navigation>Frontend::Agent::ModuleRegistration</Navigation>
@@ -555,7 +555,7 @@
             </Hash>
         </Value>
     </Setting>
-    <!-- OTRSTicketProcesses Merged Settings End -->
+    <!-- LIGEROTicketProcesses Merged Settings End -->
     <Setting Name="Process::Entity::Prefix" Required="1" Valid="1">
         <Description Translatable="1">Default ProcessManagement entity prefixes for entity IDs that are automatically generated.</Description>
         <Navigation>Core::ProcessManagement</Navigation>
@@ -633,12 +633,12 @@
         </Value>
     </Setting>
     <Setting Name="ProcessManagement::Transition::Debug::Filter###00-Default" Required="0" Valid="0">
-        <Description Translatable="1">Filter for debugging Transitions. Note: More filters can be added in the format &lt;OTRS_TICKET_Attribute&gt; e.g. &lt;OTRS_TICKET_Priority&gt;.</Description>
+        <Description Translatable="1">Filter for debugging Transitions. Note: More filters can be added in the format &lt;LIGERO_TICKET_Attribute&gt; e.g. &lt;LIGERO_TICKET_Priority&gt;.</Description>
         <Navigation>Core::ProcessManagement</Navigation>
         <Value>
             <Hash>
                 <Item Key="TransitionEntityID"></Item>
-                <Item Key="&lt;OTRS_TICKET_TicketNumber&gt;"></Item>
+                <Item Key="&lt;LIGERO_TICKET_TicketNumber&gt;"></Item>
             </Hash>
         </Value>
     </Setting>

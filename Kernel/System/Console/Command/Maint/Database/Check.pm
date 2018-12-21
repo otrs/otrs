@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -22,7 +22,7 @@ our @ObjectDependencies = (
 sub Configure {
     my ( $Self, %Param ) = @_;
 
-    $Self->Description('Check OTRS database connectivity.');
+    $Self->Description('Check LIGERO database connectivity.');
     $Self->AddOption(
         Name        => 'repair',
         Description => 'Repairs invalid database schema (like deleting invalid default values for datetime fields).',
@@ -86,7 +86,7 @@ sub _CheckMySQLDefaultStorageEngine {
     return 1 if $DBObject->{'DB::Type'} ne 'mysql';
 
     # Check for common MySQL issue where default storage engine is different
-    #   from initial OTRS table; this can happen when MySQL is upgraded from
+    #   from initial LIGERO table; this can happen when MySQL is upgraded from
     #   5.1 > 5.5.
     # Default storage engine variable has changed its name in MySQL 5.5.3, we need to support both of them for now.
     #   <= 5.5.2 storage_engine

@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -51,7 +51,7 @@ sub new {
 
 =head2 MigrateXMLStructure()
 
-Migrate XML file content from OTRS 5 to OTRS 6.
+Migrate XML file content from LIGERO 5 to LIGERO 6.
 
     my $Result = $SysConfigMigrationObject->MigrateXMLStructure(
         Content => '
@@ -93,7 +93,7 @@ sub MigrateXMLStructure {
     # Stop if we don't have Init (configuration xml file is corrupt or invalid).
     return if !$Init;
 
-    # Stop if its a configuration file is not from OTRS 5 or prior (OTRS 6 uses version 2.0).
+    # Stop if its a configuration file is not from LIGERO 5 or prior (LIGERO 6 uses version 2.0).
     return if !$Param{Content} =~ m{^<ligero_config.*?version="1.0"}gsmx;
 
     # Split settings - prevent deleting some settings due to greedy RegEx. Each array item contains
@@ -510,7 +510,7 @@ sub MigrateXMLStructure {
                     'Frontend::Module###AgentDynamicFieldDatabaseSearch'                    => 1,
                     'Frontend::Module###AgentInfo'                                          => 1,
                     'Frontend::Module###AgentHTMLReference'                                 => 1,
-                    'Frontend::Module###AgentOTRSBusiness'                                  => 1,
+                    'Frontend::Module###AgentLIGEROBusiness'                                  => 1,
                     'Frontend::Module###AgentSplitSelection'                                => 1,
                     'Frontend::Module###AgentTicketArticleContent'                          => 1,
                     'Frontend::Module###AgentTicketAttachment'                              => 1,
@@ -649,10 +649,10 @@ sub MigrateXMLStructure {
                         $Value      = $2;
                     }
 
-                    # special treatment for OTRSBusiness tile CssClass
+                    # special treatment for LIGEROBusiness tile CssClass
                     if ( $NavBarTag eq 'CssClass' ) {
-                        next NAVBARTAG if $Name ne 'Frontend::NavigationModule###AdminOTRSBusiness';
-                        $Value = 'OTRSBusiness';
+                        next NAVBARTAG if $Name ne 'Frontend::NavigationModule###AdminLIGEROBusiness';
+                        $Value = 'LIGEROBusiness';
                     }
 
                     $NavigationModule .= sprintf(
@@ -880,7 +880,7 @@ sub MigrateXMLStructure {
                 $ReplacementString = "\n\t\t\t<Hash>\n" .
                     "\t\t\t\t<DefaultItem ValueType=\"Select\">\n";
                 for my $DFoption (@DFoptions) {
-                    ## nofilter(TidyAll::Plugin::OTRS::Perl::Translatable)
+                    ## nofilter(TidyAll::Plugin::LIGERO::Perl::Translatable)
                     $ReplacementString
                         .= "\t\t\t\t\t<Item ValueType=\"Option\" Value=\"$DFCount\" Translatable=\"1\">$DFoption</Item>\n";
                     $DFCount++;
@@ -998,9 +998,9 @@ sub MigrateXMLStructure {
             )
         {
             $Setting
-                =~ s{<Item Key="X-OTRS-ArticleType">(.*?)</Item>}{<Item Key="X-OTRS-IsVisibleForCustomer">$ArticleTypeMapping{$1}->{Visible}</Item>}g;
+                =~ s{<Item Key="X-LIGERO-ArticleType">(.*?)</Item>}{<Item Key="X-LIGERO-IsVisibleForCustomer">$ArticleTypeMapping{$1}->{Visible}</Item>}g;
             $Setting
-                =~ s{<Item Key="X-OTRS-FollowUp-ArticleType">(.*?)</Item>}{<Item Key="X-OTRS-FollowUp-IsVisibleForCustomer">$ArticleTypeMapping{$1}->{Visible}</Item>}g;
+                =~ s{<Item Key="X-LIGERO-FollowUp-ArticleType">(.*?)</Item>}{<Item Key="X-LIGERO-FollowUp-IsVisibleForCustomer">$ArticleTypeMapping{$1}->{Visible}</Item>}g;
             $Setting
                 =~ s{<Item Key="ArticleType"[^>]*>(.*?)</Item>}{<Item Key="IsVisibleForCustomer" Translatable="1">$ArticleTypeMapping{$1}->{Visible}</Item>}g;
             $Setting
@@ -1548,7 +1548,7 @@ sub MigrateXMLStructure {
 
 =head2 MigrateConfigEffectiveValues()
 
-Migrate the configs effective values to the new format for OTRS 6.
+Migrate the configs effective values to the new format for LIGERO 6.
 
     my $Result = $SysConfigMigrationObject->MigrateConfigEffectiveValues(
         FileClass       => $FileClass,
@@ -1596,37 +1596,37 @@ sub MigrateConfigEffectiveValues {
 
     my $SysConfigObject = $Kernel::OM->Get('Kernel::System::SysConfig');
 
-    my %OTRS5Config;
+    my %LIGERO5Config;
     delete $INC{ $Param{FilePath} };
     $Kernel::OM->Get('Kernel::System::Main')->Require( $Param{FileClass} );
-    $Param{FileClass}->Load( \%OTRS5Config );
+    $Param{FileClass}->Load( \%LIGERO5Config );
 
-    my $OTRS5ConfigFileContentList = $Kernel::OM->Get('Kernel::System::Main')->FileRead(
+    my $LIGERO5ConfigFileContentList = $Kernel::OM->Get('Kernel::System::Main')->FileRead(
         Location => $Param{FilePath},
         Result   => 'ARRAY',
     );
 
-    my @DisabledOTRS5Config;
-    for my $Line ( @{$OTRS5ConfigFileContentList} ) {
+    my @DisabledLIGERO5Config;
+    for my $Line ( @{$LIGERO5ConfigFileContentList} ) {
 
         # Check if the line starts with a delete.
         if ( $Line =~ m{ \A delete[ ]\$Self->\{(.+)\};}xms ) {
             my $DisabledSettingString = $1;
             $DisabledSettingString =~ s{['"]}{}xmsg;
             $DisabledSettingString =~ s{\}->\{}{###}xmsg;
-            push @DisabledOTRS5Config, $DisabledSettingString;
+            push @DisabledLIGERO5Config, $DisabledSettingString;
         }
     }
 
-    # get all OTRS 6 default settings
+    # get all LIGERO 6 default settings
     my @DefaultSettings = $SysConfigObject->ConfigurationList();
 
     # search for settings with ### in the name
     # my @SearchResult = grep /###/, sort values %DefaultSettings;
     my @SearchResult = grep { $_->{Name} =~ m{###} } @DefaultSettings;
 
-    # find all the setting which have sublevels and store them in a hash for OTRS 6
-    my %SettingsWithSubLevelsOTRS6;
+    # find all the setting which have sublevels and store them in a hash for LIGERO 6
+    my %SettingsWithSubLevelsLIGERO6;
     for my $Setting (@SearchResult) {
 
         my @SettingNameParts = split /###/, $Setting->{Name};
@@ -1637,14 +1637,14 @@ sub MigrateConfigEffectiveValues {
         if (
             @SettingNameParts
 
-            # Skip any setting with more than one sub-levels in hash key (unsupported in OTRS 5).
-            && !defined $SettingsWithSubLevelsOTRS6{$FirstLevelKey}->{ $SettingNameParts[0] }
+            # Skip any setting with more than one sub-levels in hash key (unsupported in LIGERO 5).
+            && !defined $SettingsWithSubLevelsLIGERO6{$FirstLevelKey}->{ $SettingNameParts[0] }
             )
         {
-            $SettingsWithSubLevelsOTRS6{$FirstLevelKey}->{ $SettingNameParts[0] }->{$LastLevelKey} = 1;
+            $SettingsWithSubLevelsLIGERO6{$FirstLevelKey}->{ $SettingNameParts[0] }->{$LastLevelKey} = 1;
         }
         else {
-            $SettingsWithSubLevelsOTRS6{$FirstLevelKey}->{$LastLevelKey} = 1;
+            $SettingsWithSubLevelsLIGERO6{$FirstLevelKey}->{$LastLevelKey} = 1;
         }
     }
 
@@ -1658,7 +1658,7 @@ sub MigrateConfigEffectiveValues {
         %PackageSettingLookup = map { $_ => 1 } @{ $Param{PackageSettings} };
     }
 
-    # to store settings which do not exist in OTRS 6
+    # to store settings which do not exist in LIGERO 6
     my @MissingSettings;
 
     # to store unsuccessfull settings which could not be migrated
@@ -1680,7 +1680,7 @@ sub MigrateConfigEffectiveValues {
     }
 
     SETTINGNAME:
-    for my $SettingName ( sort keys %OTRS5Config ) {
+    for my $SettingName ( sort keys %LIGERO5Config ) {
 
         # skip loader common settings
         next SETTINGNAME if $SettingName eq 'Loader::Agent::CommonCSS';
@@ -1702,48 +1702,48 @@ sub MigrateConfigEffectiveValues {
         next SETTINGNAME if $SettingName eq 'ArticleDir';
 
         my $CheckSubLevels;
-        if ( $SettingsWithSubLevelsOTRS6{$SettingName} ) {
+        if ( $SettingsWithSubLevelsLIGERO6{$SettingName} ) {
             $CheckSubLevels = 1;
         }
         elsif (
             $Param{PackageLookupNewConfigName}
             && $Param{PackageLookupNewConfigName}->{$SettingName}
-            && $SettingsWithSubLevelsOTRS6{ $Param{PackageLookupNewConfigName}->{$SettingName} }
+            && $SettingsWithSubLevelsLIGERO6{ $Param{PackageLookupNewConfigName}->{$SettingName} }
             )
         {
             $CheckSubLevels = 1;
         }
 
-        # check if this OTRS5 setting has subhashes in the name
+        # check if this LIGERO5 setting has subhashes in the name
         if ($CheckSubLevels) {
 
             SETTINGKEYFIRSTLEVEL:
-            for my $SettingKeyFirstLevel ( sort keys %{ $OTRS5Config{$SettingName} } ) {
+            for my $SettingKeyFirstLevel ( sort keys %{ $LIGERO5Config{$SettingName} } ) {
 
                 # there is a second level
                 # example: Ticket::Frontend::AgentTicketZoom###Widgets###0100-TicketInformation
                 if (
-                    $SettingsWithSubLevelsOTRS6{$SettingName}->{$SettingKeyFirstLevel}
-                    && IsHashRefWithData( $SettingsWithSubLevelsOTRS6{$SettingName}->{$SettingKeyFirstLevel} )
-                    && IsHashRefWithData( $OTRS5Config{$SettingName}->{$SettingKeyFirstLevel} )
+                    $SettingsWithSubLevelsLIGERO6{$SettingName}->{$SettingKeyFirstLevel}
+                    && IsHashRefWithData( $SettingsWithSubLevelsLIGERO6{$SettingName}->{$SettingKeyFirstLevel} )
+                    && IsHashRefWithData( $LIGERO5Config{$SettingName}->{$SettingKeyFirstLevel} )
                     )
                 {
 
                     SETTINGKEYSECONDLEVEL:
                     for my $SettingKeySecondLevel (
-                        sort keys %{ $OTRS5Config{$SettingName}->{$SettingKeyFirstLevel} }
+                        sort keys %{ $LIGERO5Config{$SettingName}->{$SettingKeyFirstLevel} }
                         )
                     {
 
-                        # get the effective value from the OTRS 5 config
-                        my $OTRS5EffectiveValue
-                            = $OTRS5Config{$SettingName}->{$SettingKeyFirstLevel}->{$SettingKeySecondLevel};
+                        # get the effective value from the LIGERO 5 config
+                        my $LIGERO5EffectiveValue
+                            = $LIGERO5Config{$SettingName}->{$SettingKeyFirstLevel}->{$SettingKeySecondLevel};
 
                         # build the new setting key
                         my $NewSettingKey
                             = $SettingName . '###' . $SettingKeyFirstLevel . '###' . $SettingKeySecondLevel;
 
-                        # check and convert config name if it has been renamed in OTRS 6
+                        # check and convert config name if it has been renamed in LIGERO 6
                         # otherwise it will use the given old name
                         $NewSettingKey = $Self->_LookupNewConfigName(
                             OldName                    => $NewSettingKey,
@@ -1755,28 +1755,28 @@ sub MigrateConfigEffectiveValues {
                             next SETTINGKEYSECONDLEVEL;
                         }
 
-                        # try to get the default setting from OTRS 6 for the new setting name
-                        my %OTRS6Setting = $SysConfigObject->SettingGet(
+                        # try to get the default setting from LIGERO 6 for the new setting name
+                        my %LIGERO6Setting = $SysConfigObject->SettingGet(
                             Name  => $NewSettingKey,
                             NoLog => 1,
                         );
 
                         # skip settings which already have been modified in the meantime
-                        next SETTINGKEYSECONDLEVEL if $OTRS6Setting{ModifiedID};
+                        next SETTINGKEYSECONDLEVEL if $LIGERO6Setting{ModifiedID};
 
                         # skip this setting if it is a readonly setting
-                        next SETTINGKEYSECONDLEVEL if $OTRS6Setting{IsReadonly};
+                        next SETTINGKEYSECONDLEVEL if $LIGERO6Setting{IsReadonly};
 
-                        # log if there is a setting that can not be found in OTRS 6 (might come from packages)
-                        if ( !%OTRS6Setting ) {
+                        # log if there is a setting that can not be found in LIGERO 6 (might come from packages)
+                        if ( !%LIGERO6Setting ) {
                             push @MissingSettings, $NewSettingKey;
                             next SETTINGKEYSECONDLEVEL;
                         }
 
-                        # check if the setting value structure from OTRS 5 is still valid on OTRS6
+                        # check if the setting value structure from LIGERO 5 is still valid on LIGERO6
                         my %Result = $SysConfigObject->SettingEffectiveValueCheck(
-                            EffectiveValue   => $OTRS5EffectiveValue,
-                            XMLContentParsed => $OTRS6Setting{XMLContentParsed},
+                            EffectiveValue   => $LIGERO5EffectiveValue,
+                            XMLContentParsed => $LIGERO6Setting{XMLContentParsed},
                             NoValidation     => 1,
                             UserID           => 1,
                         );
@@ -1790,7 +1790,7 @@ sub MigrateConfigEffectiveValues {
                         %Result = $Self->_SettingUpdate(
                             Name           => $NewSettingKey,
                             IsValid        => 1,
-                            EffectiveValue => $OTRS5EffectiveValue,
+                            EffectiveValue => $LIGERO5EffectiveValue,
                         );
 
                         if ( !$Result{Success} ) {
@@ -1804,8 +1804,8 @@ sub MigrateConfigEffectiveValues {
                 # example: Ticket::Frontend::AgentTicketService###StripEmptyLines
                 else {
 
-                    # get the effective value from the OTRS 5 config
-                    my $OTRS5EffectiveValue = $OTRS5Config{$SettingName}->{$SettingKeyFirstLevel};
+                    # get the effective value from the LIGERO 5 config
+                    my $LIGERO5EffectiveValue = $LIGERO5Config{$SettingName}->{$SettingKeyFirstLevel};
 
                     # build the new setting key
                     my $NewSettingKey = $SettingName . '###' . $SettingKeyFirstLevel;
@@ -1815,7 +1815,7 @@ sub MigrateConfigEffectiveValues {
                         next SETTINGKEYFIRSTLEVEL;
                     }
 
-                    # check and convert config name if it has been renamed in OTRS 6
+                    # check and convert config name if it has been renamed in LIGERO 6
                     # otherwise it will use the given old name
                     $NewSettingKey = $Self->_LookupNewConfigName(
                         OldName                    => $NewSettingKey,
@@ -1827,20 +1827,20 @@ sub MigrateConfigEffectiveValues {
                         next SETTINGKEYFIRSTLEVEL;
                     }
 
-                    # try to get the default setting from OTRS 6 for the modified setting name
-                    my %OTRS6Setting = $SysConfigObject->SettingGet(
+                    # try to get the default setting from LIGERO 6 for the modified setting name
+                    my %LIGERO6Setting = $SysConfigObject->SettingGet(
                         Name  => $NewSettingKey,
                         NoLog => 1,
                     );
 
                     # skip settings which already have been modified in the meantime
-                    next SETTINGKEYFIRSTLEVEL if $OTRS6Setting{ModifiedID};
+                    next SETTINGKEYFIRSTLEVEL if $LIGERO6Setting{ModifiedID};
 
                     # skip this setting if it is a readonly setting
-                    next SETTINGKEYFIRSTLEVEL if $OTRS6Setting{IsReadonly};
+                    next SETTINGKEYFIRSTLEVEL if $LIGERO6Setting{IsReadonly};
 
-                    # log if there is a setting that can not be found in OTRS 6 (might come from packages)
-                    if ( !%OTRS6Setting ) {
+                    # log if there is a setting that can not be found in LIGERO 6 (might come from packages)
+                    if ( !%LIGERO6Setting ) {
                         push @MissingSettings, $NewSettingKey;
                         next SETTINGKEYFIRSTLEVEL;
                     }
@@ -1857,8 +1857,8 @@ sub MigrateConfigEffectiveValues {
                         my $Result = $Self->_MigrateFrontendModuleSetting(
                             FrontendSettingName => $SettingName,
                             FrontendModuleName  => $SettingKeyFirstLevel,
-                            OTRS5EffectiveValue => $OTRS5EffectiveValue,
-                            OTRS6Setting        => \%OTRS6Setting,
+                            LIGERO5EffectiveValue => $LIGERO5EffectiveValue,
+                            LIGERO6Setting        => \%LIGERO6Setting,
                         );
 
                         # success
@@ -1873,10 +1873,10 @@ sub MigrateConfigEffectiveValues {
                     if ( $SettingName eq 'PreferencesGroups' ) {
 
                         # delete no longer needed column key
-                        delete $OTRS5EffectiveValue->{Column};
+                        delete $LIGERO5EffectiveValue->{Column};
 
-                        # add new PreferenceGroup key from OTRS 6
-                        $OTRS5EffectiveValue->{PreferenceGroup} = $OTRS6Setting{EffectiveValue}->{PreferenceGroup};
+                        # add new PreferenceGroup key from LIGERO 6
+                        $LIGERO5EffectiveValue->{PreferenceGroup} = $LIGERO6Setting{EffectiveValue}->{PreferenceGroup};
                     }
 
                     # Migrate Postmaster settings for
@@ -1892,18 +1892,18 @@ sub MigrateConfigEffectiveValues {
 
                         # update no longer existing module.
                         if (
-                            $OTRS5EffectiveValue->{Module} eq
+                            $LIGERO5EffectiveValue->{Module} eq
                             'Kernel::System::PostMaster::Filter::FollowUpArticleTypeCheck'
                             )
                         {
-                            $OTRS5EffectiveValue->{Module}
+                            $LIGERO5EffectiveValue->{Module}
                                 = 'Kernel::System::PostMaster::Filter::FollowUpArticleVisibilityCheck';
                         }
 
                         # Define mapping for old to new keys.
                         my %Old2NewKeyMapping = (
-                            'X-OTRS-ArticleType'          => 'X-OTRS-IsVisibleForCustomer',
-                            'X-OTRS-FollowUp-ArticleType' => 'X-OTRS-FollowUp-IsVisibleForCustomer',
+                            'X-LIGERO-ArticleType'          => 'X-LIGERO-IsVisibleForCustomer',
+                            'X-LIGERO-FollowUp-ArticleType' => 'X-LIGERO-FollowUp-IsVisibleForCustomer',
                             'ArticleType'                 => 'IsVisibleForCustomer',
                         );
 
@@ -1915,33 +1915,33 @@ sub MigrateConfigEffectiveValues {
                             # Convert subentries below Match and Set.
                             AREA:
                             for my $Area (qw(Match Set)) {
-                                next AREA if !IsHashRefWithData( $OTRS5EffectiveValue->{$Area} );
-                                next AREA if !$OTRS5EffectiveValue->{$Area}->{$OldKey};
+                                next AREA if !IsHashRefWithData( $LIGERO5EffectiveValue->{$Area} );
+                                next AREA if !$LIGERO5EffectiveValue->{$Area}->{$OldKey};
 
                                 # Add the new key with the converted value from the old key.
-                                $OTRS5EffectiveValue->{$Area}->{$NewKey}
-                                    = $ArticleTypeMapping{ $OTRS5EffectiveValue->{$Area}->{$OldKey} }->{Visible};
+                                $LIGERO5EffectiveValue->{$Area}->{$NewKey}
+                                    = $ArticleTypeMapping{ $LIGERO5EffectiveValue->{$Area}->{$OldKey} }->{Visible};
 
                                 # Delete the old key.
-                                delete $OTRS5EffectiveValue->{$Area}->{$OldKey};
+                                delete $LIGERO5EffectiveValue->{$Area}->{$OldKey};
                             }
 
                             # Convert direct entries.
-                            next OLDKEY if !$OTRS5EffectiveValue->{$OldKey};
+                            next OLDKEY if !$LIGERO5EffectiveValue->{$OldKey};
 
                             # Add the new key with the converted value from the old key.
-                            $OTRS5EffectiveValue->{$NewKey}
-                                = $ArticleTypeMapping{ $OTRS5EffectiveValue->{$OldKey} }->{Visible};
+                            $LIGERO5EffectiveValue->{$NewKey}
+                                = $ArticleTypeMapping{ $LIGERO5EffectiveValue->{$OldKey} }->{Visible};
 
                             # Delete the old key.
-                            delete $OTRS5EffectiveValue->{$OldKey};
+                            delete $LIGERO5EffectiveValue->{$OldKey};
                         }
                     }
 
-                    # check if the setting value structure from OTRS 5 is still valid on OTRS6
+                    # check if the setting value structure from LIGERO 5 is still valid on LIGERO6
                     my %Result = $SysConfigObject->SettingEffectiveValueCheck(
-                        EffectiveValue   => $OTRS5EffectiveValue,
-                        XMLContentParsed => $OTRS6Setting{XMLContentParsed},
+                        EffectiveValue   => $LIGERO5EffectiveValue,
+                        XMLContentParsed => $LIGERO6Setting{XMLContentParsed},
                         NoValidation     => 1,
                         UserID           => 1,
                     );
@@ -1955,7 +1955,7 @@ sub MigrateConfigEffectiveValues {
                     %Result = $Self->_SettingUpdate(
                         Name           => $NewSettingKey,
                         IsValid        => 1,
-                        EffectiveValue => $OTRS5EffectiveValue,
+                        EffectiveValue => $LIGERO5EffectiveValue,
                     );
 
                     if ( !$Result{Success} ) {
@@ -1973,7 +1973,7 @@ sub MigrateConfigEffectiveValues {
             # skip TimeZone::Calendar settings (they are handled else where)
             next SETTINGNAME if $SettingName =~ m{ \A TimeZone::Calendar[1-9] \z }xms;
 
-            # check and convert config name if it has been renamed in OTRS 6
+            # check and convert config name if it has been renamed in LIGERO 6
             # otherwise it will use the given old name
             my $NewSettingName = $Self->_LookupNewConfigName(
                 OldName                    => $SettingName,
@@ -1985,39 +1985,39 @@ sub MigrateConfigEffectiveValues {
                 next SETTINGNAME;
             }
 
-            # get the (default) setting from OTRS 6 for this setting name
-            my %OTRS6Setting = $SysConfigObject->SettingGet(
+            # get the (default) setting from LIGERO 6 for this setting name
+            my %LIGERO6Setting = $SysConfigObject->SettingGet(
                 Name  => $NewSettingName,
                 NoLog => 1,
             );
 
             # skip this setting if it has already been modified in the meantime
-            next SETTINGNAME if $OTRS6Setting{ModifiedID};
+            next SETTINGNAME if $LIGERO6Setting{ModifiedID};
 
             # skip this setting if it is a readonly setting
-            next SETTINGNAME if $OTRS6Setting{IsReadonly};
+            next SETTINGNAME if $LIGERO6Setting{IsReadonly};
 
-            # Log if there is a setting that can not be found in OTRS 6 (might come from packages)
-            if ( !%OTRS6Setting ) {
+            # Log if there is a setting that can not be found in LIGERO 6 (might come from packages)
+            if ( !%LIGERO6Setting ) {
                 push @MissingSettings, $NewSettingName;
                 next SETTINGNAME;
             }
 
-            my $OTRS5EffectiveValue = $OTRS5Config{$SettingName};
+            my $LIGERO5EffectiveValue = $LIGERO5Config{$SettingName};
 
-            # the ticket number generator random is dropped from OTRS 6, enforce that DateChecksum is set instead
+            # the ticket number generator random is dropped from LIGERO 6, enforce that DateChecksum is set instead
             if (
                 $NewSettingName eq 'Ticket::NumberGenerator'
-                && $OTRS5EffectiveValue eq 'Kernel::System::Ticket::Number::Random'
+                && $LIGERO5EffectiveValue eq 'Kernel::System::Ticket::Number::Random'
                 )
             {
-                $OTRS5EffectiveValue = 'Kernel::System::Ticket::Number::DateChecksum';
+                $LIGERO5EffectiveValue = 'Kernel::System::Ticket::Number::DateChecksum';
             }
 
-            # check if the setting value structure from OTRS 5 is still valid on OTRS6
+            # check if the setting value structure from LIGERO 5 is still valid on LIGERO6
             my %Result = $SysConfigObject->SettingEffectiveValueCheck(
-                EffectiveValue   => $OTRS5EffectiveValue,
-                XMLContentParsed => $OTRS6Setting{XMLContentParsed},
+                EffectiveValue   => $LIGERO5EffectiveValue,
+                XMLContentParsed => $LIGERO6Setting{XMLContentParsed},
                 NoValidation     => 1,
                 UserID           => 1,
             );
@@ -2032,7 +2032,7 @@ sub MigrateConfigEffectiveValues {
             %Result = $Self->_SettingUpdate(
                 Name           => $NewSettingName,
                 IsValid        => 1,
-                EffectiveValue => $OTRS5EffectiveValue,
+                EffectiveValue => $LIGERO5EffectiveValue,
             );
 
             if ( !$Result{Success} ) {
@@ -2044,11 +2044,11 @@ sub MigrateConfigEffectiveValues {
 
     my $DisabledSettingsCount = 0;
 
-    # Set all settings which are disabled in OTRS 5 to disabled.
+    # Set all settings which are disabled in LIGERO 5 to disabled.
     DISABLEDSETTINGNAME:
-    for my $DisabledSettingKey (@DisabledOTRS5Config) {
+    for my $DisabledSettingKey (@DisabledLIGERO5Config) {
 
-        # Check and convert config name if it has been renamed in OTRS 6
+        # Check and convert config name if it has been renamed in LIGERO 6
         #   otherwise it will use the given old name.
         my $NewSettingKey = $Self->_LookupNewConfigName(
             OldName                    => $DisabledSettingKey,
@@ -2060,23 +2060,23 @@ sub MigrateConfigEffectiveValues {
             next DISABLEDSETTINGNAME;
         }
 
-        # Try to get the default setting from OTRS 6 for the modified setting name.
-        my %OTRS6Setting = $SysConfigObject->SettingGet(
+        # Try to get the default setting from LIGERO 6 for the modified setting name.
+        my %LIGERO6Setting = $SysConfigObject->SettingGet(
             Name  => $NewSettingKey,
             NoLog => 1,
         );
 
         # Skip settings which already have been modified in the meantime.
-        next DISABLEDSETTINGNAME if $OTRS6Setting{ModifiedID};
+        next DISABLEDSETTINGNAME if $LIGERO6Setting{ModifiedID};
 
         # Skip this setting if it is a readonly setting.
-        next DISABLEDSETTINGNAME if $OTRS6Setting{IsReadonly};
+        next DISABLEDSETTINGNAME if $LIGERO6Setting{IsReadonly};
 
         # Skip this setting if it is a required setting.
-        next DISABLEDSETTINGNAME if $OTRS6Setting{IsRequired};
+        next DISABLEDSETTINGNAME if $LIGERO6Setting{IsRequired};
 
-        # Log if there is a setting that can not be found in OTRS 6 (might come from packages).
-        if ( !%OTRS6Setting ) {
+        # Log if there is a setting that can not be found in LIGERO 6 (might come from packages).
+        if ( !%LIGERO6Setting ) {
             push @MissingSettings, $NewSettingKey;
             next DISABLEDSETTINGNAME;
         }
@@ -2098,7 +2098,7 @@ sub MigrateConfigEffectiveValues {
     # do not print the following status output if not wanted
     return 1 if $Param{NoOutput};
 
-    my $AllSettingsCount = scalar keys %OTRS5Config;
+    my $AllSettingsCount = scalar keys %LIGERO5Config;
 
     print "\n";
     print "        - AllSettingsCount: " . $AllSettingsCount . "\n";
@@ -2167,7 +2167,7 @@ sub NavigationLookupGet {
         'Core::Log'                                    => 'Core::Log',
         'Core::MIME-Viewer'                            => 'Frontend::Agent::MIMEViewer',
         'Core::MirrorDB'                               => 'Core::DB::Mirror',
-        'Core::OTRSBusiness'                           => 'Core::OTRSBusiness',
+        'Core::LIGEROBusiness'                           => 'Core::LIGEROBusiness',
         'Core::Package'                                => 'Core::Package',
         'Core::PDF'                                    => 'Core::PDF',
         'Core::PerformanceLog'                         => 'Core::PerformanceLog',
@@ -2302,7 +2302,7 @@ sub NavigationLookupGet {
         'Frontend::Customer::ModuleMetaHead' => 'Frontend::Customer',
         'Frontend::Public::ModuleMetaHead'   => 'Frontend::Public',
 
-        # OTRSBusiness
+        # LIGEROBusiness
         'Core::NotificationEvent'               => 'Frontend::Agent::View::NotificationView',
         'Core::NotificationView'                => 'Frontend::Agent::View::NotificationView',
         'Core::NotificationView::BulkAction'    => 'Frontend::Agent::View::NotificationView',
@@ -2317,7 +2317,7 @@ sub NavigationLookupGet {
 =head2 _LookupNewConfigName()
 
 Helper function to lookup new config names for configuration settings
-where the name has been changed from OTRS 5 to OTRS 6.
+where the name has been changed from LIGERO 5 to LIGERO 6.
 
     my $NewName = $SysConfigMigrationObject->_LookupNewConfigName(
         OldName => 'CustomerCompany::EventModulePost###100-UpdateCustomerUsers',
@@ -2376,8 +2376,8 @@ sub _LookupNewConfigName {
         'Frontend::NotifyModule###100-CloudServicesDisabled' =>
             'Frontend::NotifyModule###1000-CloudServicesDisabled',
 
-        'Frontend::NotifyModule###100-OTRSBusiness' =>
-            'Frontend::NotifyModule###1100-OTRSBusiness',
+        'Frontend::NotifyModule###100-LIGEROBusiness' =>
+            'Frontend::NotifyModule###1100-LIGEROBusiness',
 
         'Frontend::NotifyModule###200-UID-Check' =>
             'Frontend::NotifyModule###2000-UID-Check',
@@ -2535,10 +2535,10 @@ sub _LookupNewConfigName {
         'Ticket::Frontend::AgentTicketSearch###Defaults###Body' =>
             'Ticket::Frontend::AgentTicketSearch###Defaults###MIMEBase_Body',
 
-        # Moved and renamed config setting from OTRSBusiness.xml to Framework.xml
+        # Moved and renamed config setting from LIGEROBusiness.xml to Framework.xml
         'ChatEngine::AgentOnlineThreshold' => 'SessionAgentOnlineThreshold',
 
-        # Moved and renamed config setting from OTRSBusiness.xml to Framework.xml
+        # Moved and renamed config setting from LIGEROBusiness.xml to Framework.xml
         'ChatEngine::CustomerOnlineThreshold' => 'SessionCustomerOnlineThreshold',
 
         %{ $Param{PackageLookupNewConfigName} // {} },
@@ -2552,12 +2552,12 @@ sub _LookupNewConfigName {
 
 =head2 _MigrateFrontendModuleSetting()
 
-Helper function to migrate a frontend module setting from OTRS 5 to OTRS 6.
+Helper function to migrate a frontend module setting from LIGERO 5 to LIGERO 6.
 
     my $NewName = $SysConfigMigrationObject->_MigrateFrontendModuleSetting(
         FrontendSettingName => 'Frontend::Module',
         FrontendModuleName  => 'AgentTicketQueue',
-        OTRS5EffectiveValue => {
+        LIGERO5EffectiveValue => {
             'Description' => 'Overview of all open Tickets.',
             'Group' => [ 'users', 'admin' ],
             'GroupRo' => [ 'stats' ],
@@ -2598,7 +2598,7 @@ Helper function to migrate a frontend module setting from OTRS 5 to OTRS 6.
             'NavBarName' => 'Ticket',
             'Title' => 'QueueView',
         },
-        OTRS6Setting => \%OTRS6Setting,
+        LIGERO6Setting => \%LIGERO6Setting,
     );
 
 Returns:
@@ -2611,7 +2611,7 @@ sub _MigrateFrontendModuleSetting {
     my ( $Self, %Param ) = @_;
 
     # check needed stuff
-    for my $Needed (qw(FrontendSettingName FrontendModuleName OTRS5EffectiveValue OTRS6Setting)) {
+    for my $Needed (qw(FrontendSettingName FrontendModuleName LIGERO5EffectiveValue LIGERO6Setting)) {
         if ( !$Param{$Needed} ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
@@ -2621,9 +2621,9 @@ sub _MigrateFrontendModuleSetting {
         }
     }
 
-    # get the group settings from OTRS 5 config
-    my @Group   = @{ $Param{OTRS5EffectiveValue}->{Group}   || [] };
-    my @GroupRo = @{ $Param{OTRS5EffectiveValue}->{GroupRo} || [] };
+    # get the group settings from LIGERO 5 config
+    my @Group   = @{ $Param{LIGERO5EffectiveValue}->{Group}   || [] };
+    my @GroupRo = @{ $Param{LIGERO5EffectiveValue}->{GroupRo} || [] };
 
     my $SysConfigObject = $Kernel::OM->Get('Kernel::System::SysConfig');
 
@@ -2633,21 +2633,21 @@ sub _MigrateFrontendModuleSetting {
     # loader and navigation settings will be separate settings now)
     # ###########################################################################
 
-    # set some attributes from OTRS 5
+    # set some attributes from LIGERO 5
     ATTRIBUTE:
     for my $Attribute (qw(Description Title NavBarName)) {
-        next ATTRIBUTE if !$Param{OTRS5EffectiveValue}->{$Attribute};
-        $Param{OTRS6Setting}->{EffectiveValue}->{$Attribute} = $Param{OTRS5EffectiveValue}->{$Attribute};
+        next ATTRIBUTE if !$Param{LIGERO5EffectiveValue}->{$Attribute};
+        $Param{LIGERO6Setting}->{EffectiveValue}->{$Attribute} = $Param{LIGERO5EffectiveValue}->{$Attribute};
     }
 
-    # set group settings from OTRS 5
-    $Param{OTRS6Setting}->{EffectiveValue}->{Group}   = \@Group;
-    $Param{OTRS6Setting}->{EffectiveValue}->{GroupRo} = \@GroupRo;
+    # set group settings from LIGERO 5
+    $Param{LIGERO6Setting}->{EffectiveValue}->{Group}   = \@Group;
+    $Param{LIGERO6Setting}->{EffectiveValue}->{GroupRo} = \@GroupRo;
 
-    # check if the setting value structure from OTRS 5 is still valid on OTRS 6
+    # check if the setting value structure from LIGERO 5 is still valid on LIGERO 6
     my %Result = $SysConfigObject->SettingEffectiveValueCheck(
-        EffectiveValue   => $Param{OTRS5EffectiveValue},
-        XMLContentParsed => $Param{OTRS6Setting}->{XMLContentParsed},
+        EffectiveValue   => $Param{LIGERO5EffectiveValue},
+        XMLContentParsed => $Param{LIGERO6Setting}->{XMLContentParsed},
         NoValidation     => 1,
         UserID           => 1,
     );
@@ -2656,16 +2656,16 @@ sub _MigrateFrontendModuleSetting {
 
     # lock the setting
     my $ExclusiveLockGUID = $SysConfigObject->SettingLock(
-        Name   => $Param{OTRS6Setting}->{Name},
+        Name   => $Param{LIGERO6Setting}->{Name},
         Force  => 1,
         UserID => 1,
     );
 
     # update the setting
     %Result = $SysConfigObject->SettingUpdate(
-        Name              => $Param{OTRS6Setting}->{Name},
+        Name              => $Param{LIGERO6Setting}->{Name},
         IsValid           => 1,
-        EffectiveValue    => $Param{OTRS6Setting}->{EffectiveValue},
+        EffectiveValue    => $Param{LIGERO6Setting}->{EffectiveValue},
         ExclusiveLockGUID => $ExclusiveLockGUID,
         NoValidation      => 1,
         UserID            => 1,
@@ -2673,7 +2673,7 @@ sub _MigrateFrontendModuleSetting {
 
     # unlock the setting again
     $SysConfigObject->SettingUnlock(
-        Name => $Param{OTRS6Setting}->{Name},
+        Name => $Param{LIGERO6Setting}->{Name},
     );
 
     return if !$Result{Success};
@@ -2681,31 +2681,31 @@ sub _MigrateFrontendModuleSetting {
     # ###########################################################################
     # migrate the NavBarModule settings
     # ###########################################################################
-    if ( $Param{OTRS5EffectiveValue}->{NavBarModule} ) {
+    if ( $Param{LIGERO5EffectiveValue}->{NavBarModule} ) {
 
         my $NavBarModuleSettingName = 'Frontend::NavigationModule###' . $Param{FrontendModuleName};
 
-        # try to get the (default) setting from OTRS 6 for the NavBarModule setting
-        my %OTRS6NavBarModuleSetting = $SysConfigObject->SettingGet(
+        # try to get the (default) setting from LIGERO 6 for the NavBarModule setting
+        my %LIGERO6NavBarModuleSetting = $SysConfigObject->SettingGet(
             Name  => $NavBarModuleSettingName,
             NoLog => 1,
         );
 
         if (
-            %OTRS6NavBarModuleSetting
-            && !$OTRS6NavBarModuleSetting{ModifiedID}
-            && !$OTRS6NavBarModuleSetting{IsReadonly}
+            %LIGERO6NavBarModuleSetting
+            && !$LIGERO6NavBarModuleSetting{ModifiedID}
+            && !$LIGERO6NavBarModuleSetting{IsReadonly}
             )
         {
 
-            # set group settings from OTRS 5
-            $OTRS6NavBarModuleSetting{EffectiveValue}->{Group}   = \@Group;
-            $OTRS6NavBarModuleSetting{EffectiveValue}->{GroupRo} = \@GroupRo;
+            # set group settings from LIGERO 5
+            $LIGERO6NavBarModuleSetting{EffectiveValue}->{Group}   = \@Group;
+            $LIGERO6NavBarModuleSetting{EffectiveValue}->{GroupRo} = \@GroupRo;
 
-            # take NavBarModule settings from OTRS 5
-            for my $Attribute ( sort keys %{ $Param{OTRS5EffectiveValue}->{NavBarModule} } ) {
-                $OTRS6NavBarModuleSetting{EffectiveValue}->{$Attribute}
-                    = $Param{OTRS5EffectiveValue}->{NavBarModule}->{$Attribute};
+            # take NavBarModule settings from LIGERO 5
+            for my $Attribute ( sort keys %{ $Param{LIGERO5EffectiveValue}->{NavBarModule} } ) {
+                $LIGERO6NavBarModuleSetting{EffectiveValue}->{$Attribute}
+                    = $Param{LIGERO5EffectiveValue}->{NavBarModule}->{$Attribute};
             }
 
             # lock the setting
@@ -2719,7 +2719,7 @@ sub _MigrateFrontendModuleSetting {
             my %Result = $SysConfigObject->SettingUpdate(
                 Name              => $NavBarModuleSettingName,
                 IsValid           => 1,
-                EffectiveValue    => $OTRS6NavBarModuleSetting{EffectiveValue},
+                EffectiveValue    => $LIGERO6NavBarModuleSetting{EffectiveValue},
                 ExclusiveLockGUID => $ExclusiveLockGUID,
                 NoValidation      => 1,
                 UserID            => 1,
@@ -2739,16 +2739,16 @@ sub _MigrateFrontendModuleSetting {
     # ###########################################################################
 
     # Skip navbar items if name is empty.
-    my @OTRS5NavBar = grep {
+    my @LIGERO5NavBar = grep {
         defined $_->{Name} && length $_->{Name}
-    } @{ $Param{OTRS5EffectiveValue}->{NavBar} || [] };
+    } @{ $Param{LIGERO5EffectiveValue}->{NavBar} || [] };
 
-    if (@OTRS5NavBar) {
+    if (@LIGERO5NavBar) {
 
-        # get all OTRS 6 default settings
+        # get all LIGERO 6 default settings
         my @DefaultSettings = $SysConfigObject->ConfigurationList();
 
-        # search for OTRS 6 NavBar settings
+        # search for LIGERO 6 NavBar settings
         #
         # this will find settings like:
         #            Frontend::Navigation###
@@ -2762,38 +2762,38 @@ sub _MigrateFrontendModuleSetting {
 
         if ( scalar @SearchResult == 1 ) {
 
-            # try to get the (default) setting from OTRS 6 for the NavBar setting
-            my %OTRS6NavBarSetting = $SysConfigObject->SettingGet(
+            # try to get the (default) setting from LIGERO 6 for the NavBar setting
+            my %LIGERO6NavBarSetting = $SysConfigObject->SettingGet(
                 Name  => $SearchResult[0]->{Name},
                 NoLog => 1,
             );
 
-            return if !%OTRS6NavBarSetting;
+            return if !%LIGERO6NavBarSetting;
 
             # skip this setting if it has already been modified in the meantime
-            return 1 if $OTRS6NavBarSetting{ModifiedID};
+            return 1 if $LIGERO6NavBarSetting{ModifiedID};
 
             # skip this setting if it is a readonly setting
-            return 1 if $OTRS6NavBarSetting{IsReadonly};
+            return 1 if $LIGERO6NavBarSetting{IsReadonly};
 
-            $OTRS6NavBarSetting{EffectiveValue} = [];
+            $LIGERO6NavBarSetting{EffectiveValue} = [];
 
-            for my $OTRS5NavBarItem (@OTRS5NavBar) {
+            for my $LIGERO5NavBarItem (@LIGERO5NavBar) {
 
-                if ( !$OTRS5NavBarItem->{Group} ) {
-                    $OTRS5NavBarItem->{Group} = \@Group;
+                if ( !$LIGERO5NavBarItem->{Group} ) {
+                    $LIGERO5NavBarItem->{Group} = \@Group;
                 }
-                if ( !$OTRS5NavBarItem->{GroupRo} ) {
-                    $OTRS5NavBarItem->{GroupRo} = \@GroupRo;
+                if ( !$LIGERO5NavBarItem->{GroupRo} ) {
+                    $LIGERO5NavBarItem->{GroupRo} = \@GroupRo;
                 }
 
-                push @{ $OTRS6NavBarSetting{EffectiveValue} }, $OTRS5NavBarItem;
+                push @{ $LIGERO6NavBarSetting{EffectiveValue} }, $LIGERO5NavBarItem;
             }
 
             # Save the updated effective value for the current setting.
             my %Result = $Self->_SettingUpdate(
                 Name           => $SearchResult[0]->{Name},
-                EffectiveValue => $OTRS6NavBarSetting{EffectiveValue},
+                EffectiveValue => $LIGERO6NavBarSetting{EffectiveValue},
                 IsValid        => 1,
                 UserID         => 1,
             );
@@ -2802,14 +2802,14 @@ sub _MigrateFrontendModuleSetting {
         }
     }
 
-    # No NavBar entries exists in OTRS 5 config for the frontend modulel, so we disable all nav bar settings
+    # No NavBar entries exists in LIGERO 5 config for the frontend modulel, so we disable all nav bar settings
     #   for this frontend navigation.
     else {
 
-        # get all OTRS 6 default settings
+        # get all LIGERO 6 default settings
         my @DefaultSettings = $SysConfigObject->ConfigurationList();
 
-        # search for OTRS 6 NavBar settings
+        # search for LIGERO 6 NavBar settings
         #
         # this will find settings like:
         #            Frontend::Navigation###
@@ -2825,25 +2825,25 @@ sub _MigrateFrontendModuleSetting {
         for my $NavBarSetting (@SearchResult) {
             my $NavBarSettingName = $NavBarSetting->{Name};
 
-            # try to get the (default) setting from OTRS 6 for the NavBar setting
-            my %OTRS6NavBarSetting = $SysConfigObject->SettingGet(
+            # try to get the (default) setting from LIGERO 6 for the NavBar setting
+            my %LIGERO6NavBarSetting = $SysConfigObject->SettingGet(
                 Name  => $NavBarSettingName,
                 NoLog => 1,
             );
 
-            next NAVBARSETTING if !%OTRS6NavBarSetting;
+            next NAVBARSETTING if !%LIGERO6NavBarSetting;
 
             # skip this setting if it is already invalid
-            next NAVBARSETTING if !$OTRS6NavBarSetting{IsValid};
+            next NAVBARSETTING if !$LIGERO6NavBarSetting{IsValid};
 
             # skip this setting if it has already been modified in the meantime
-            next NAVBARSETTING if $OTRS6NavBarSetting{ModifiedID};
+            next NAVBARSETTING if $LIGERO6NavBarSetting{ModifiedID};
 
             # skip this setting if it is a readonly setting
-            next NAVBARSETTING if $OTRS6NavBarSetting{IsReadonly};
+            next NAVBARSETTING if $LIGERO6NavBarSetting{IsReadonly};
 
             # skip this setting if it is a required setting
-            next NAVBARSETTING if $OTRS6NavBarSetting{IsRequired};
+            next NAVBARSETTING if $LIGERO6NavBarSetting{IsRequired};
 
             # Disable the setting.
             my %Result = $Self->_SettingUpdate(
@@ -2913,7 +2913,7 @@ sub _SettingUpdate {
 
 =head1 TERMS AND CONDITIONS
 
-This software is part of the OTRS project (L<https://ligero.org/>).
+This software is part of the LIGERO project (L<https://ligero.org/>).
 
 This software comes with ABSOLUTELY NO WARRANTY. For details, see
 the enclosed file COPYING for license information (GPL). If you

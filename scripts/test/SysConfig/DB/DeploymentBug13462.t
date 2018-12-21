@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -43,7 +43,7 @@ my $TestUserID3 = $UserObject->UserLookup(
 );
 
 my $FileBase = << 'EOF';
-# OTRS config file (automatically generated)
+# LIGERO config file (automatically generated)
 # VERSION:2.0
 package Kernel::Config::Files::User::0;
 use strict;

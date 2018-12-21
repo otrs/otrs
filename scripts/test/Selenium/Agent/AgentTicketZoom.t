@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -33,7 +33,7 @@ $Selenium->RunTest(
             '[% Env("CGIHandle") %]?Action=AgentTicketCompose;ResponseID=1;TicketID=[% Data.TicketID | uri %];ArticleID=[% Data.ArticleID | uri %]',
             0,
             '',
-            'AsPopup OTRSPopup_TicketAction',
+            'AsPopup LIGEROPopup_TicketAction',
         ];
         $Helper->ConfigSettingChange(
             Key   => 'CustomerUser',
@@ -163,19 +163,19 @@ $Selenium->RunTest(
             $Element->is_displayed();
         }
 
-        my $OTRSBusinessIsInstalled = $Kernel::OM->Get('Kernel::System::OTRSBusiness')->OTRSBusinessIsInstalled();
-        my $OBTeaser                = $LanguageObject->Translate('All attachments (OTRS Business Solution™)');
+        my $LIGEROBusinessIsInstalled = $Kernel::OM->Get('Kernel::System::LIGEROBusiness')->LIGEROBusinessIsInstalled();
+        my $OBTeaser                = $LanguageObject->Translate('All attachments (LIGERO Business Solution™)');
         my $OBTeaserFound           = index( $Selenium->get_page_source(), $OBTeaser ) > -1;
-        if ( !$OTRSBusinessIsInstalled ) {
+        if ( !$LIGEROBusinessIsInstalled ) {
             $Self->True(
                 $OBTeaserFound,
-                "OTRSBusiness teaser found on page",
+                "LIGEROBusiness teaser found on page",
             );
         }
         else {
             $Self->False(
                 $OBTeaserFound,
-                "OTRSBusiness teaser not found on page",
+                "LIGEROBusiness teaser not found on page",
             );
         }
 

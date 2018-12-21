@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -58,15 +58,15 @@ sub Run {
     # if system is not yet registered, sub-action should be 'register'
     if ( $RegistrationState ne 'registered' ) {
 
-        $Self->{Subaction} ||= 'OTRSIDValidate';
+        $Self->{Subaction} ||= 'LIGEROIDValidate';
 
         # sub-action can't be 'Deregister' or UpdateNow
         if ( $Self->{Subaction} eq 'Deregister' || $Self->{Subaction} eq 'UpdateNow' ) {
-            $Self->{Subaction} = 'OTRSIDValidate';
+            $Self->{Subaction} = 'LIGEROIDValidate';
         }
 
-        # during system registration, don't create breadcrumb item 'Validate OTRS-ID'
-        $WithoutBreadcrumb = 1 if $Self->{Subaction} eq 'OTRSIDValidate';
+        # during system registration, don't create breadcrumb item 'Validate LIGERO-ID'
+        $WithoutBreadcrumb = 1 if $Self->{Subaction} eq 'LIGEROIDValidate';
     }
 
     # get needed objects
@@ -77,7 +77,7 @@ sub Run {
     # Daemon not running screen
     # ------------------------------------------------------------ #
     if (
-        $Self->{Subaction} ne 'OTRSIDValidate'
+        $Self->{Subaction} ne 'LIGEROIDValidate'
         && $RegistrationState ne 'registered'
         && !$Self->_DaemonRunning()
         )
@@ -105,16 +105,16 @@ sub Run {
     }
 
     # ------------------------------------------------------------ #
-    # check OTRS ID
+    # check LIGERO ID
     # ------------------------------------------------------------ #
 
-    elsif ( $Self->{Subaction} eq 'CheckOTRSID' ) {
+    elsif ( $Self->{Subaction} eq 'CheckLIGEROID' ) {
 
-        my $OTRSID   = $ParamObject->GetParam( Param => 'OTRSID' )   || '';
+        my $LIGEROID   = $ParamObject->GetParam( Param => 'LIGEROID' )   || '';
         my $Password = $ParamObject->GetParam( Param => 'Password' ) || '';
 
         my %Response = $RegistrationObject->TokenGet(
-            OTRSID   => $OTRSID,
+            LIGEROID   => $LIGEROID,
             Password => $Password,
         );
 
@@ -124,8 +124,8 @@ sub Run {
             return $LayoutObject->Redirect(
                 OP => "Action=AdminRegistration;Subaction=$NextAction;Token="
                     . $LayoutObject->LinkEncode( $Response{Token} )
-                    . ';OTRSID='
-                    . $LayoutObject->LinkEncode($OTRSID),
+                    . ';LIGEROID='
+                    . $LayoutObject->LinkEncode($LIGEROID),
             );
         }
 
@@ -150,18 +150,18 @@ sub Run {
         );
 
         $LayoutObject->Block(
-            Name => 'OTRSIDValidation',
+            Name => 'LIGEROIDValidation',
             Data => \%Param,
         );
 
         $LayoutObject->Block(
-            Name => 'OTRSIDValidationForm',
+            Name => 'LIGEROIDValidationForm',
             Data => \%Param,
         );
 
         my $Block = $RegistrationState ne 'registered'
-            ? 'OTRSIDRegistration'
-            : 'OTRSIDDeregistration';
+            ? 'LIGEROIDRegistration'
+            : 'LIGEROIDDeregistration';
 
         $LayoutObject->Block(
             Name => $Block,
@@ -177,9 +177,9 @@ sub Run {
     }
 
     # ------------------------------------------------------------ #
-    # OTRS ID validation
+    # LIGERO ID validation
     # ------------------------------------------------------------ #
-    elsif ( $Self->{Subaction} eq 'OTRSIDValidate' ) {
+    elsif ( $Self->{Subaction} eq 'LIGEROIDValidate' ) {
 
         my $Output = $LayoutObject->Header();
         $Output .= $LayoutObject->NavigationBar();
@@ -192,21 +192,21 @@ sub Run {
         );
 
         my $EntitlementStatus  = 'forbidden';
-        my $OTRSBusinessObject = $Kernel::OM->Get('Kernel::System::OTRSBusiness');
+        my $LIGEROBusinessObject = $Kernel::OM->Get('Kernel::System::LIGEROBusiness');
 
         if ( $RegistrationState eq 'registered' ) {
 
             # Only call cloud service for a registered system
-            $EntitlementStatus = $OTRSBusinessObject->OTRSBusinessEntitlementStatus(
+            $EntitlementStatus = $LIGEROBusinessObject->LIGEROBusinessEntitlementStatus(
                 CallCloudService => 1,
             );
         }
 
         # users should not be able to deregister their system if they either have
-        # OTRS Business Solution installed or are entitled to use it (by having a valid contract).
+        # LIGERO Business Solution installed or are entitled to use it (by having a valid contract).
         if (
             $RegistrationState eq 'registered'
-            && ( $OTRSBusinessObject->OTRSBusinessIsInstalled() || $EntitlementStatus ne 'forbidden' )
+            && ( $LIGEROBusinessObject->LIGEROBusinessIsInstalled() || $EntitlementStatus ne 'forbidden' )
             )
         {
 
@@ -214,13 +214,13 @@ sub Run {
             $LayoutObject->Block( Name => 'ActionOverview' );
 
             $LayoutObject->Block(
-                Name => 'OTRSIDDeregistrationNotPossible',
+                Name => 'LIGEROIDDeregistrationNotPossible',
             );
         }
         else {
 
             $LayoutObject->Block(
-                Name => 'OTRSIDValidation',
+                Name => 'LIGEROIDValidation',
                 Data => \%Param,
             );
 
@@ -228,18 +228,18 @@ sub Run {
             if ( $RegistrationState ne 'registered' && !$Self->_DaemonRunning() ) {
 
                 $LayoutObject->Block(
-                    Name => 'OTRSIDValidationDaemonNotRunning',
+                    Name => 'LIGEROIDValidationDaemonNotRunning',
                 );
             }
             else {
 
                 $LayoutObject->Block(
-                    Name => 'OTRSIDValidationForm',
+                    Name => 'LIGEROIDValidationForm',
                     Data => \%Param,
                 );
             }
 
-            my $Block = $RegistrationState ne 'registered' ? 'OTRSIDRegistration' : 'OTRSIDDeregistration';
+            my $Block = $RegistrationState ne 'registered' ? 'LIGEROIDRegistration' : 'LIGEROIDDeregistration';
             $LayoutObject->Block(
                 Name => $Block,
             );
@@ -249,8 +249,8 @@ sub Run {
             TemplateFile => 'AdminRegistration',
             Data         => {
                 %Param,
-                OTRSSTORMIsInstalled   => $OTRSBusinessObject->OTRSSTORMIsInstalled(),
-                OTRSCONTROLIsInstalled => $OTRSBusinessObject->OTRSCONTROLIsInstalled(),
+                LIGEROSTORMIsInstalled   => $LIGEROBusinessObject->LIGEROSTORMIsInstalled(),
+                LIGEROCONTROLIsInstalled => $LIGEROBusinessObject->LIGEROCONTROLIsInstalled(),
             },
         );
         $Output .= $LayoutObject->Footer();
@@ -265,7 +265,7 @@ sub Run {
 
         my %GetParam;
         $GetParam{Token}  = $ParamObject->GetParam( Param => 'Token' );
-        $GetParam{OTRSID} = $ParamObject->GetParam( Param => 'OTRSID' );
+        $GetParam{LIGEROID} = $ParamObject->GetParam( Param => 'LIGEROID' );
 
         my $Output = $LayoutObject->Header();
         $Output .= $LayoutObject->NavigationBar();
@@ -298,7 +298,7 @@ sub Run {
             Name => 'Registration',
             Data => {
                 FQDN        => $ConfigObject->Get('FQDN'),
-                OTRSVersion => $ConfigObject->Get('Version'),
+                LIGEROVersion => $ConfigObject->Get('Version'),
                 PerlVersion => sprintf( "%vd", $^V ),
                 %Param,
                 %GetParam,
@@ -323,7 +323,7 @@ sub Run {
 
         my %GetParam;
         $GetParam{Token}  = $ParamObject->GetParam( Param => 'Token' );
-        $GetParam{OTRSID} = $ParamObject->GetParam( Param => 'OTRSID' );
+        $GetParam{LIGEROID} = $ParamObject->GetParam( Param => 'LIGEROID' );
 
         my $Output = $LayoutObject->Header();
         $Output .= $LayoutObject->NavigationBar();
@@ -357,7 +357,7 @@ sub Run {
         $LayoutObject->ChallengeTokenCheck();
 
         my ( %GetParam, %Errors );
-        for my $Parameter (qw(SupportDataSending Type Description OTRSID Token)) {
+        for my $Parameter (qw(SupportDataSending Type Description LIGEROID Token)) {
             $GetParam{$Parameter} = $ParamObject->GetParam( Param => $Parameter ) || '';
         }
 
@@ -373,7 +373,7 @@ sub Run {
 
             $RegistrationObject->Register(
                 Token              => $GetParam{Token},
-                OTRSID             => $GetParam{OTRSID},
+                LIGEROID             => $GetParam{LIGEROID},
                 SupportDataSending => $GetParam{SupportDataSending} || 'No',
                 Type               => $GetParam{Type},
                 Description        => $GetParam{Description},
@@ -451,7 +451,7 @@ sub Run {
             Name => 'Edit',
             Data => {
                 FQDN        => $ConfigObject->Get('FQDN'),
-                OTRSVersion => $ConfigObject->Get('Version'),
+                LIGEROVersion => $ConfigObject->Get('Version'),
                 PerlVersion => sprintf( "%vd", $^V ),
                 %Param,
             },
@@ -508,7 +508,7 @@ sub Run {
         $LayoutObject->ChallengeTokenCheck();
 
         $RegistrationObject->Deregister(
-            OTRSID => $ParamObject->GetParam( Param => 'OTRSID' ),
+            LIGEROID => $ParamObject->GetParam( Param => 'LIGEROID' ),
             Token  => $ParamObject->GetParam( Param => 'Token' ),
         );
 
@@ -632,7 +632,7 @@ sub _SentDataOverview {
             PerlVersion        => sprintf( "%vd", $^V ),
             OSType             => $OSInfo{OS},
             OSVersion          => $OSInfo{OSName},
-            OTRSVersion        => $ConfigObject->Get('Version'),
+            LIGEROVersion        => $ConfigObject->Get('Version'),
             FQDN               => $ConfigObject->Get('FQDN'),
             DatabaseVersion    => $Kernel::OM->Get('Kernel::System::DB')->Version(),
             SupportDataSending => $Param{SupportDataSending} || $RegistrationData{SupportDataSending} || 'No',

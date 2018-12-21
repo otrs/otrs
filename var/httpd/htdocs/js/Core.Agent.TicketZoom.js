@@ -1,5 +1,5 @@
 // --
-// Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+// Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 // --
 // This software comes with ABSOLUTELY NO WARRANTY. For details, see
 // the enclosed file COPYING for license information (GPL). If you
@@ -14,7 +14,7 @@ Core.Agent = Core.Agent || {};
 /**
  * @namespace Core.Agent.TicketZoom
  * @memberof Core.Agent
- * @author OTRS AG
+ * @author LIGERO AG
  * @description
  *      This namespace contains the special module functions for TicketZoom.
  */
@@ -289,7 +289,7 @@ Core.Agent.TicketZoom = (function (TargetNS) {
      * @param {String} ArticleID - The article number of the loaded article
      * @param {Object} WindowObject
      * @description
-     *      Used in OTRS Business Solution (TM). Loads an article in the Zoom from another window context (e.g. popup).
+     *      Used in LIGERO Business Solution (TM). Loads an article in the Zoom from another window context (e.g. popup).
      */
     TargetNS.LoadArticleFromExternal = function (ArticleID, WindowObject) {
         var $Element = $('#ArticleTable td.No input.ArticleID[value=' + ArticleID + ']'),
@@ -394,9 +394,9 @@ Core.Agent.TicketZoom = (function (TargetNS) {
 
             $('#ArticleView').off('change').on('change', function() {
 
-                if (!parseInt(Core.Config.Get('OTRSBusinessIsInstalled'), 10) && ($(this).val() === null || $(this).val() === '')) {
+                if (!parseInt(Core.Config.Get('LIGEROBusinessIsInstalled'), 10) && ($(this).val() === null || $(this).val() === '')) {
                     Core.UI.Dialog.CloseDialog($('.Dialog:visible'));
-                    Core.Agent.ShowOTRSBusinessRequiredDialog();
+                    Core.Agent.ShowLIGEROBusinessRequiredDialog();
                     return false;
                 }
                 else {

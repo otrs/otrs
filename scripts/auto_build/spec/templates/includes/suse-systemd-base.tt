@@ -1,6 +1,6 @@
 [% INCLUDE 'includes/copyright.tt' -%]
 
-Summary:      OTRS Help Desk.
+Summary:      LIGERO Help Desk.
 Name:         ligero
 Version:      0.0
 Copyright:    GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007
@@ -38,24 +38,24 @@ install -d -m 755 $RPM_BUILD_ROOT/etc/apache2/conf.d
 install -m 644 scripts/apache2-httpd.include.conf $RPM_BUILD_ROOT/etc/apache2/conf.d/zzz_ligero.conf
 
 [% '#' %] set permission
-export OTRSUSER=ligero
-useradd $OTRSUSER || :
+export LIGEROUSER=ligero
+useradd $LIGEROUSER || :
 useradd wwwrun || :
 groupadd www || :
 $RPM_BUILD_ROOT/opt/ligero/bin/ligero.SetPermissions.pl --web-group=www
 
 %pre
 [% '#' %] useradd
-export OTRSUSER=ligero
-echo -n "Check OTRS user ... "
-if id $OTRSUSER >/dev/null 2>&1; then
-    echo "$OTRSUSER exists."
+export LIGEROUSER=ligero
+echo -n "Check LIGERO user ... "
+if id $LIGEROUSER >/dev/null 2>&1; then
+    echo "$LIGEROUSER exists."
     [% '#' %] update groups
-    usermod -g www $OTRSUSER
+    usermod -g www $LIGEROUSER
     [% '#' %] update home dir
-    usermod -d /opt/ligero $OTRSUSER
+    usermod -d /opt/ligero $LIGEROUSER
 else
-    useradd $OTRSUSER -d /opt/ligero/ -s /bin/bash -g www -c 'OTRS System User' && echo "$OTRSUSER added."
+    useradd $LIGEROUSER -d /opt/ligero/ -s /bin/bash -g www -c 'LIGERO System User' && echo "$LIGEROUSER added."
 fi
 echo "Enable apache module mod_perl..."
 a2enmod perl

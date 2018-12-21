@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -142,14 +142,14 @@ sub GetTransportEventData {
 
 =head2 _ReplaceTicketAttributes()
 
-returns the specified field with replaced OTRS-tags
+returns the specified field with replaced LIGERO-tags
 
     $RecipientEmail = $Self->_ReplaceTicketAttributes(
         Ticket => $Param{Ticket},
         Field  => $RecipientEmail,
     );
 
-    for example: $RecipientEmail = '<OTRS_TICKET_DynamicField_Name1>';
+    for example: $RecipientEmail = '<LIGERO_TICKET_DynamicField_Name1>';
 
 returns:
 
@@ -166,14 +166,14 @@ sub _ReplaceTicketAttributes {
     my $DynamicFieldObject        = $Kernel::OM->Get('Kernel::System::DynamicField');
     my $DynamicFieldBackendObject = $Kernel::OM->Get('Kernel::System::DynamicField::Backend');
 
-    # replace ticket attributes such as <OTRS_Ticket_DynamicField_Name1> or
-    # <OTRS_TICKET_DynamicField_Name1>
-    # <OTRS_Ticket_*> is deprecated and should be removed in further versions of OTRS
+    # replace ticket attributes such as <LIGERO_Ticket_DynamicField_Name1> or
+    # <LIGERO_TICKET_DynamicField_Name1>
+    # <LIGERO_Ticket_*> is deprecated and should be removed in further versions of LIGERO
     my $Count = 0;
     REPLACEMENT:
     while (
         $Param{Field}
-        && $Param{Field} =~ m{<OTRS_TICKET_([A-Za-z0-9_]+)>}msxi
+        && $Param{Field} =~ m{<LIGERO_TICKET_([A-Za-z0-9_]+)>}msxi
         && $Count++ < 1000
         )
     {
@@ -198,15 +198,15 @@ sub _ReplaceTicketAttributes {
                 Value              => $DisplayValue,
             );
 
-            $Param{Field} =~ s{<OTRS_TICKET_$TicketAttribute>}{$DisplayValueStrg->{Value} // ''}ige;
+            $Param{Field} =~ s{<LIGERO_TICKET_$TicketAttribute>}{$DisplayValueStrg->{Value} // ''}ige;
 
             next REPLACEMENT;
         }
 
         # if ticket value is scalar substitute all instances (as strings)
-        # this will allow replacements for "<OTRS_TICKET_Title> <OTRS_TICKET_Queue"
+        # this will allow replacements for "<LIGERO_TICKET_Title> <LIGERO_TICKET_Queue"
         if ( !ref $Param{Ticket}->{$TicketAttribute} ) {
-            $Param{Field} =~ s{<OTRS_TICKET_$TicketAttribute>}{$Param{Ticket}->{$TicketAttribute} // ''}ige;
+            $Param{Field} =~ s{<LIGERO_TICKET_$TicketAttribute>}{$Param{Ticket}->{$TicketAttribute} // ''}ige;
         }
         else {
             # if the value is an array (e.g. a multiselect dynamic field) set the value directly
@@ -222,7 +222,7 @@ sub _ReplaceTicketAttributes {
 
 =head1 TERMS AND CONDITIONS
 
-This software is part of the OTRS project (L<https://ligero.org/>).
+This software is part of the LIGERO project (L<https://ligero.org/>).
 
 This software comes with ABSOLUTELY NO WARRANTY. For details, see
 the enclosed file COPYING for license information (GPL). If you

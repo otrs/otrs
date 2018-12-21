@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -1146,7 +1146,7 @@ my @Tests = (
         Name => 'RecipientEmail additional recipient by dynamic field',
         Data => {
             Events         => [ 'TicketDynamicFieldUpdate_DFT2' . $RandomID . 'Update' ],
-            RecipientEmail => ["<OTRS_TICKET_DynamicField_DFT2${RandomID}>"],
+            RecipientEmail => ["<LIGERO_TICKET_DynamicField_DFT2${RandomID}>"],
         },
         Config => {
             Event => 'TicketDynamicFieldUpdate_DFT2' . $RandomID . 'Update',
@@ -1168,7 +1168,7 @@ my @Tests = (
         Name => 'RecipientEmail additional recipient by dynamic field (first position)',
         Data => {
             Events         => [ 'TicketDynamicFieldUpdate_DFT2' . $RandomID . 'Update' ],
-            RecipientEmail => ["<OTRS_TICKET_DynamicField_DFT2${RandomID}>, test\@ligeroexample.com"],
+            RecipientEmail => ["<LIGERO_TICKET_DynamicField_DFT2${RandomID}>, test\@ligeroexample.com"],
         },
         Config => {
             Event => 'TicketDynamicFieldUpdate_DFT2' . $RandomID . 'Update',
@@ -1190,7 +1190,7 @@ my @Tests = (
         Name => 'RecipientEmail additional recipient by dynamic field (last position)',
         Data => {
             Events         => [ 'TicketDynamicFieldUpdate_DFT2' . $RandomID . 'Update' ],
-            RecipientEmail => ["test\@ligeroexample.com, <OTRS_TICKET_DynamicField_DFT2${RandomID}>"],
+            RecipientEmail => ["test\@ligeroexample.com, <LIGERO_TICKET_DynamicField_DFT2${RandomID}>"],
         },
         Config => {
             Event => 'TicketDynamicFieldUpdate_DFT2' . $RandomID . 'Update',
@@ -1213,7 +1213,7 @@ my @Tests = (
         Data => {
             Events         => [ 'TicketDynamicFieldUpdate_DFT3' . $RandomID . 'Update' ],
             RecipientEmail => [
-                "<OTRS_TICKET_DynamicField_DFT3${RandomID}>, <OTRS_TICKET_DynamicField_DFT2${RandomID}>"
+                "<LIGERO_TICKET_DynamicField_DFT3${RandomID}>, <LIGERO_TICKET_DynamicField_DFT2${RandomID}>"
             ],
         },
         Config => {
@@ -1526,12 +1526,12 @@ for my $Test (@Tests) {
         Message => {
             en => {
                 Subject     => 'JobName',
-                Body        => 'JobName <OTRS_TICKET_TicketID> <OTRS_CONFIG_SendmailModule> <OTRS_OWNER_UserFirstname>',
+                Body        => 'JobName <LIGERO_TICKET_TicketID> <LIGERO_CONFIG_SendmailModule> <LIGERO_OWNER_UserFirstname>',
                 ContentType => 'text/plain',
             },
             de => {
                 Subject     => 'JobName',
-                Body        => 'JobName <OTRS_TICKET_TicketID> <OTRS_CONFIG_SendmailModule> <OTRS_OWNER_UserFirstname>',
+                Body        => 'JobName <LIGERO_TICKET_TicketID> <LIGERO_CONFIG_SendmailModule> <LIGERO_OWNER_UserFirstname>',
                 ContentType => 'text/plain',
             },
         },

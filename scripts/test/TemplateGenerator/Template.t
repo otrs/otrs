@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -68,26 +68,26 @@ $Self->True(
 
 my @Tests = (
     {
-        Name           => 'Test supported tag - <OTRS_CONFIG_ScriptAlias>',
-        TemplateText   => 'Thank you for your email. <OTRS_CONFIG_ScriptAlias>',
+        Name           => 'Test supported tag - <LIGERO_CONFIG_ScriptAlias>',
+        TemplateText   => 'Thank you for your email. <LIGERO_CONFIG_ScriptAlias>',
         ExpectedResult => 'Thank you for your email. ' . $ConfigObject->Get('ScriptAlias'),
         ,
     },
     {
         Name           => 'Test unsupported tags',
-        TemplateText   => 'Test: <OTRS_AGENT_SUBJECT> <OTRS_AGENT_BODY> <OTRS_CUSTOMER_BODY> <OTRS_CUSTOMER_SUBJECT>',
+        TemplateText   => 'Test: <LIGERO_AGENT_SUBJECT> <LIGERO_AGENT_BODY> <LIGERO_CUSTOMER_BODY> <LIGERO_CUSTOMER_SUBJECT>',
         ExpectedResult => 'Test: - - - -',
     },
     {
-        Name => 'Test supported tags - <OTRS_TICKET_*> without TicketID',
+        Name => 'Test supported tags - <LIGERO_TICKET_*> without TicketID',
         TemplateText =>
-            'Options of the ticket data (e. g. <OTRS_TICKET_TicketNumber>, <OTRS_TICKET_TicketID>, <OTRS_TICKET_Queue>)',
+            'Options of the ticket data (e. g. <LIGERO_TICKET_TicketNumber>, <LIGERO_TICKET_TicketID>, <LIGERO_TICKET_Queue>)',
         ExpectedResult => 'Options of the ticket data (e. g. -, -, -)',
     },
     {
-        Name => 'Test supported tags - <OTRS_TICKET_*>  with TicketID',
+        Name => 'Test supported tags - <LIGERO_TICKET_*>  with TicketID',
         TemplateText =>
-            'Options of the ticket data (e. g. <OTRS_TICKET_TicketNumber>, <OTRS_TICKET_TicketID>, <OTRS_TICKET_Queue>, <OTRS_TICKET_State>)',
+            'Options of the ticket data (e. g. <LIGERO_TICKET_TicketNumber>, <LIGERO_TICKET_TicketID>, <LIGERO_TICKET_Queue>, <LIGERO_TICKET_State>)',
         ExpectedResult => "Options of the ticket data (e. g. $TicketNumber, $TicketID, Raw, open)",
         TicketID       => $TicketID,
     },

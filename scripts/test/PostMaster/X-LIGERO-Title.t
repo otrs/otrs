@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -27,8 +27,8 @@ my $MainObject   = $Kernel::OM->Get('Kernel::System::Main');
 
 # ensure that the appropriate X-Headers are available in the config
 my %NeededXHeaders = (
-    'X-OTRS-Title'          => 1,
-    'X-OTRS-FollowUp-Title' => 1,
+    'X-LIGERO-Title'          => 1,
+    'X-LIGERO-FollowUp-Title' => 1,
 );
 
 my $XHeaders          = $ConfigObject->Get('PostmasterX-Header');
@@ -52,7 +52,7 @@ my @Tests = (
         Email => 'From: Sender <sender@example.com>
 To: Some Name <recipient@example.com>
 Subject: A simple question
-X-OTRS-Title: UnitTest-1
+X-LIGERO-Title: UnitTest-1
 
 This is a multiline
 email for server: example.tld
@@ -69,7 +69,7 @@ The IP address: 192.168.0.1
         Email => 'From: Sender <sender@example.com>
 To: Some Name <recipient@example.com>
 Subject: [#1] Another question
-X-OTRS-FollowUp-Title: UnitTest-1 - Response 1
+X-LIGERO-FollowUp-Title: UnitTest-1 - Response 1
 
 This is a multiline
 email for server: example.tld

@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -36,7 +36,7 @@ my @Tests = (
     {
         Name          => 'Ticket::Frontend::AgentTicketQueue###SortBy::Default',
         ExpectedValue => {
-            'Category'    => 'OTRS',
+            'Category'    => 'LIGERO',
             'IsInvisible' => '0',
             'Metadata'    => "ticket::frontend::agentticketqueue###sortby::default--- alter
 definiert die standardmäßig eingestellten sortierkriterien für alle in der queue-ansicht angezeigten queues."
@@ -45,7 +45,7 @@ definiert die standardmäßig eingestellten sortierkriterien für alle in der qu
     {
         Name          => 'Ticket::Frontend::AgentTicketQueue###Order::Default',
         ExpectedValue => {
-            'Category'    => 'OTRS',
+            'Category'    => 'LIGERO',
             'IsInvisible' => 0,
             'Metadata'    => 'ticket::frontend::agentticketqueue###order::default--- auf
 definiert die standardmäßig eingestellten sortierkriterien für alle in der queue-ansicht angezeigten queues, nachdem nach priorität sortiert wurde.'
@@ -54,7 +54,7 @@ definiert die standardmäßig eingestellten sortierkriterien für alle in der qu
     {
         Name          => 'Ticket::Frontend::AgentTicketService###SortBy::Default',
         ExpectedValue => {
-            'Category'    => 'OTRS',
+            'Category'    => 'LIGERO',
             'IsInvisible' => 0,
             'Metadata'    => 'ticket::frontend::agentticketservice###sortby::default--- alter
 definiert die standardmäßig eingestellten sortierkriterien für alle in der service-ansicht angezeigten services.'
@@ -63,7 +63,7 @@ definiert die standardmäßig eingestellten sortierkriterien für alle in der se
     {
         Name          => 'Ticket::Frontend::AgentTicketSearch###SearchCSVData',
         ExpectedValue => {
-            'Category'    => 'OTRS',
+            'Category'    => 'LIGERO',
             'IsInvisible' => 0,
             'Metadata'    => 'ticket::frontend::agentticketsearch###searchcsvdata---
 - ticketnumber
@@ -95,7 +95,7 @@ daten die verwendet werden um das suchergebnis im csv-format zu exportieren.'
     {
         Name          => 'Ticket::Frontend::AgentTicketPhone###SplitLinkType',
         ExpectedValue => {
-            'Category'    => 'OTRS',
+            'Category'    => 'LIGERO',
             'IsInvisible' => 0,
             'Metadata'    => 'ticket::frontend::agentticketphone###splitlinktype---
 direction: target
@@ -106,7 +106,7 @@ bestimmt den standard-linktyp für geteilte tickets im agentenbereich.'
     {
         Name          => 'Ticket::Frontend::HistoryTypes###000-Framework',
         ExpectedValue => {
-            'Category'    => 'OTRS',
+            'Category'    => 'LIGERO',
             'IsInvisible' => 0,
             'Metadata'    => 'ticket::frontend::historytypes###000-framework---
 addnote: added note (%s).

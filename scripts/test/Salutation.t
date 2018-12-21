@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -25,10 +25,10 @@ my $Helper = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
 
 # add salutation
 my $SalutationName = 'salutation' . $Helper->GetRandomID();
-my $Salutation     = "Dear <OTRS_CUSTOMER_REALNAME>,
+my $Salutation     = "Dear <LIGERO_CUSTOMER_REALNAME>,
 
 Thank you for your request. Your email address in our database
-is \"<OTRS_CUSTOMER_DATA_UserEmail>\".
+is \"<LIGERO_CUSTOMER_DATA_UserEmail>\".
 ";
 
 my $SalutationID = $SalutationObject->SalutationAdd(

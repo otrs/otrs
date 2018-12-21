@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -44,7 +44,7 @@ my $UserObject = $Kernel::OM->Get('Kernel::System::User');
 
 # add SystemAddress
 my $SystemAddressEmail    = $Helper->GetRandomID() . '@example.com';
-my $SystemAddressRealname = "OTRS-Team";
+my $SystemAddressRealname = "LIGERO-Team";
 
 my $SystemAddressObject = $Kernel::OM->Get('Kernel::System::SystemAddress');
 

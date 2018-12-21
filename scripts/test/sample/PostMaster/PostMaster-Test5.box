@@ -16,16 +16,16 @@ Subject: 2nd try: Again some stuff =?iso-8859-1?B?aPxi?=
 Message-ID: <20070412132542.GB29977@tuxbrett.hq.ligero.org>
 MIME-Version: 1.0
 Content-Type: multipart/mixed; boundary="J/dobhs11T7y2rNN"
-X-OTRS-DynamicField-TicketFreeKey1: Test
-X-OTRS-DynamicField-TicketFreeText1: ABC
-X-OTRS-TicketKey2: Test2
-X-OTRS-TicketValue2: ABC2
-X-OTRS-TicketTime1: 2008-01-12 13:14:15
-X-OTRS-TicketTime2: 2008-01-12 13:15:16
-X-OTRS-DynamicField-TicketFreeTime3: 2008-01-12 13:16:17
-X-OTRS-DynamicField-TicketFreeTime4: 2008-01-12 13:17:18
-X-OTRS-DynamicField-TicketFreeTime5: 2008-01-12 13:18:19
-X-OTRS-TicketTime6: 2008-01-12 13:19:20
+X-LIGERO-DynamicField-TicketFreeKey1: Test
+X-LIGERO-DynamicField-TicketFreeText1: ABC
+X-LIGERO-TicketKey2: Test2
+X-LIGERO-TicketValue2: ABC2
+X-LIGERO-TicketTime1: 2008-01-12 13:14:15
+X-LIGERO-TicketTime2: 2008-01-12 13:15:16
+X-LIGERO-DynamicField-TicketFreeTime3: 2008-01-12 13:16:17
+X-LIGERO-DynamicField-TicketFreeTime4: 2008-01-12 13:17:18
+X-LIGERO-DynamicField-TicketFreeTime5: 2008-01-12 13:18:19
+X-LIGERO-TicketTime6: 2008-01-12 13:19:20
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
 User-Agent: mutt-ng/devel-r804 (Debian)
@@ -42,7 +42,7 @@ Sie m�chten �mlaute, sie kr�gen �mlaute.
 
 --
 Han Solo
-((ligero)) :: OTRS GmbH :: Europaring 4 :: D - 94315 Straubing
+((ligero)) :: LIGERO GmbH :: Europaring 4 :: D - 94315 Straubing
   Fon: +49 (0) 9421 56818-0  :: Fax: +49 (0) 9421 56818-18
     http://www.ligero.org/ :: Communication with success!
 

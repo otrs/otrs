@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -31,12 +31,12 @@ sub Run {
 
     my @OutdatedTables;
 
-    # This table was removed with OTRS 6 (if empty).
+    # This table was removed with LIGERO 6 (if empty).
     if ( $ExistingTables{gi_object_lock_state} ) {
         my $SolManConnectorInstalled;
 
         for my $Package ( $Kernel::OM->Get('Kernel::System::Package')->RepositoryList() ) {
-            if ( $Package->{Name}->{Content} eq 'OTRSGenericInterfaceConnectorSAPSolMan' ) {
+            if ( $Package->{Name}->{Content} eq 'LIGEROGenericInterfaceConnectorSAPSolMan' ) {
                 $SolManConnectorInstalled = 1;
             }
         }

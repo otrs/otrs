@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -39,7 +39,7 @@ my @Tests = (
     {
         Name   => 'Search XMLContent WrongSearch',
         Config => {
-            Search     => "OTRSNoneExsitingString$RandomNumber-UnitTest",
+            Search     => "LIGERONoneExsitingString$RandomNumber-UnitTest",
             SearchType => 'XMLContent',
         },
         ExpectedResultsInclude => [],
@@ -48,7 +48,7 @@ my @Tests = (
     {
         Name   => 'Search Metadata WrongSearch',
         Config => {
-            Search     => "OTRSNoneExsitingString$RandomNumber-UnitTest",
+            Search     => "LIGERONoneExsitingString$RandomNumber-UnitTest",
             SearchType => 'Metadata',
         },
         ExpectedResultsInclude => [],
@@ -57,7 +57,7 @@ my @Tests = (
     {
         Name   => 'Search Filename WrongSearch',
         Config => {
-            Search     => "OTRSNoneExsitingString$RandomNumber-UnitTest",
+            Search     => "LIGERONoneExsitingString$RandomNumber-UnitTest",
             SearchType => 'Filename',
         },
         ExpectedResultsInclude => [],

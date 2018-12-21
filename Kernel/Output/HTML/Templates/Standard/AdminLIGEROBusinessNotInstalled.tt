@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -7,16 +7,16 @@
 # --
 
 [%
-    SET OTRSBusinessLabel      = '<strong>OTRS Business Solution</strong>™';
-    SET OTRSBusinessLabelPlain = 'OTRS Business Solution™';
+    SET LIGEROBusinessLabel      = '<strong>LIGERO Business Solution</strong>™';
+    SET LIGEROBusinessLabelPlain = 'LIGERO Business Solution™';
 %]
 
 <div class="MainBox ARIARoleMain LayoutFixedSidebar SidebarFirst">
-    <h1 class="InvisibleText">[% Translate("Upgrade to %s") | html | ReplacePlaceholders(OTRSBusinessLabel) %]</h1>
+    <h1 class="InvisibleText">[% Translate("Upgrade to %s") | html | ReplacePlaceholders(LIGEROBusinessLabel) %]</h1>
 
     [% BreadcrumbPath = [
             {
-                Name => Translate("Upgrade to %s", OTRSBusinessLabelPlain),
+                Name => Translate("Upgrade to %s", LIGEROBusinessLabelPlain),
                 Link => Env("Action"),
             },
         ]
@@ -37,7 +37,7 @@
                         <a href="[% Env("Baselink") %]Action=[% Env("Action") %]" class="CallForAction Fullsize Center"><span><i class="fa fa-caret-left"></i>[% Translate("Go to overview") | html %]</span></a>
                     </li>
                     <li>
-                        <a href="https://portal.ligero.com/" target="_blank" class="CallForAction Fullsize Center"><span><i class="fa fa-external-link"></i>[% Translate("Go to the OTRS customer portal") | html %]</span></a>
+                        <a href="https://portal.ligero.com/" target="_blank" class="CallForAction Fullsize Center"><span><i class="fa fa-external-link"></i>[% Translate("Go to the LIGERO customer portal") | html %]</span></a>
                     </li>
                 </ul>
             </div>
@@ -49,7 +49,7 @@
             </div>
             <div class="Content">
                 <p>
-                    [% Translate("%s makes contact regularly with cloud.ligero.com to check on available updates and the validity of the underlying contract.") | html | ReplacePlaceholders(OTRSBusinessLabel) %]
+                    [% Translate("%s makes contact regularly with cloud.ligero.com to check on available updates and the validity of the underlying contract.") | html | ReplacePlaceholders(LIGEROBusinessLabel) %]
                 </p>
             </div>
             <div class="Clear"></div>
@@ -59,11 +59,11 @@
 [% RenderBlockStart("NotAvailable") %]
         <div class="WidgetSimple">
             <div class="Header Center">
-                <h2>[% Translate("Upgrade to %s") | html | ReplacePlaceholders(OTRSBusinessLabel) %]</h2>
+                <h2>[% Translate("Upgrade to %s") | html | ReplacePlaceholders(LIGEROBusinessLabel) %]</h2>
             </div>
             <div class="Content">
                 <p class="Center">
-                    [% Translate("%s will be available soon. Please check again in a few days.") | html | ReplacePlaceholders(OTRSBusinessLabel) %]
+                    [% Translate("%s will be available soon. Please check again in a few days.") | html | ReplacePlaceholders(LIGEROBusinessLabel) %]
                 </p>
                 <p class="Center">
                     [% Translate("Please have a look at %s for more information.") | html | ReplacePlaceholders('<a href="http://www.ligero-business-solution.com" target="_blank">ligero-business-solution.com</a>') %]
@@ -75,11 +75,11 @@
 [% RenderBlockStart("NotRegistered") %]
         <div class="WidgetSimple">
             <div class="Header Center">
-                <h2>[% Translate("Upgrade to %s") | html | ReplacePlaceholders(OTRSBusinessLabel) %]</h2>
+                <h2>[% Translate("Upgrade to %s") | html | ReplacePlaceholders(LIGEROBusinessLabel) %]</h2>
             </div>
             <div class="Content">
                 <p class="Center">
-                    [% Translate("Your ((OTRS)) Community Edition is the base for all future actions. Please register first before you continue with the upgrade process of %s!") | html | ReplacePlaceholders(OTRSBusinessLabel) %]
+                    [% Translate("Your ((LIGERO)) Community Edition is the base for all future actions. Please register first before you continue with the upgrade process of %s!") | html | ReplacePlaceholders(LIGEROBusinessLabel) %]
                 </p>
                 [%  IF Config("Frontend::Module").AdminRegistration %]
                 <div class="Center SpacingTop">
@@ -101,11 +101,11 @@
 [% RenderBlockStart("NotEntitled") %]
         <div class="WidgetSimple">
             <div class="Header Center">
-                <h2>[% Translate("Upgrade to %s") | html | ReplacePlaceholders(OTRSBusinessLabel) %]</h2>
+                <h2>[% Translate("Upgrade to %s") | html | ReplacePlaceholders(LIGEROBusinessLabel) %]</h2>
             </div>
             <div class="Content">
                 <p class="Center">
-                    [% Translate("Before you can benefit from %s, please contact %s to get your %s contract.") | html | ReplacePlaceholders(OTRSBusinessLabel, '<a href="mailto:sales@ligero.com">sales@ligero.com</a>', OTRSBusinessLabel) %]
+                    [% Translate("Before you can benefit from %s, please contact %s to get your %s contract.") | html | ReplacePlaceholders(LIGEROBusinessLabel, '<a href="mailto:sales@ligero.com">sales@ligero.com</a>', LIGEROBusinessLabel) %]
                 </p>
             </div>
             <div class="Clear"></div>
@@ -114,11 +114,11 @@
 [% RenderBlockStart("EntitlementStatusUnclear") %]
         <div class="WidgetSimple">
             <div class="Header Center">
-                <h2>[% Translate("Upgrade to %s") | html | ReplacePlaceholders(OTRSBusinessLabel) %]</h2>
+                <h2>[% Translate("Upgrade to %s") | html | ReplacePlaceholders(LIGEROBusinessLabel) %]</h2>
             </div>
             <div class="Content">
                 <p class="Center">
-                    [% Translate("Connection to cloud.ligero.com via HTTPS couldn't be established. Please make sure that your OTRS can connect to cloud.ligero.com via port 443.") | html %]
+                    [% Translate("Connection to cloud.ligero.com via HTTPS couldn't be established. Please make sure that your LIGERO can connect to cloud.ligero.com via port 443.") | html %]
                 </p>
             </div>
             <div class="Clear"></div>
@@ -127,40 +127,40 @@
 [% RenderBlockStart("Install") %]
         <div class="WidgetSimple">
             <div class="Header Center">
-                <h2[% IF Data.ShowBlock == "IncompatibleInfo" %] class="Left"[% END %]>[% Translate("Upgrade to %s") | html | ReplacePlaceholders(OTRSBusinessLabel) %]</h2>
+                <h2[% IF Data.ShowBlock == "IncompatibleInfo" %] class="Left"[% END %]>[% Translate("Upgrade to %s") | html | ReplacePlaceholders(LIGEROBusinessLabel) %]</h2>
             </div>
             <div class="Content">
                [% IF Data.ShowBlock == "IncompatibleInfo" %]
-                    <h2>[% Translate("Package installation requires patch level update of OTRS.") | html %]</h2>
+                    <h2>[% Translate("Package installation requires patch level update of LIGERO.") | html %]</h2>
                     <p>[% Translate("Please visit our customer portal and file a request.") | html %]</p>
                     <p><strong>[% Translate("Everything else will be done as part of your contract.") | html %]</strong></p>
-                    <p class="SpacingTop">[% Translate("Your installed OTRS version is %s.", Config("Version")) | html %]</p>
+                    <p class="SpacingTop">[% Translate("Your installed LIGERO version is %s.", Config("Version")) | html %]</p>
                     [% IF Data.RequiredMinimumVersion %]
-                    <p><span class="MinimumRequired">[% Translate("To install this package, you need to update to OTRS %s or higher.", Data.RequiredMinimumVersion) | html %]</span></p>
+                    <p><span class="MinimumRequired">[% Translate("To install this package, you need to update to LIGERO %s or higher.", Data.RequiredMinimumVersion) | html %]</span></p>
                     [% END %]
                     [% IF Data.RequiredMaximumVersion %]
-                    <p><span class="MaximumRequired">[% Translate("To install this package, the Maximum OTRS Version is %s.", Data.RequiredMaximumVersion) | html %] </span></p>
+                    <p><span class="MaximumRequired">[% Translate("To install this package, the Maximum LIGERO Version is %s.", Data.RequiredMaximumVersion) | html %] </span></p>
                     [% END %]
                     [% IF !Data.RequiredMinimumVersion && Data.RequiredFramework %]
                     <p><span class="MaximumRequired">[% Translate("To install this package, the required Framework version is %s.", Data.RequiredFramework) | html %] </span></p>
                     [% END %]
-                    <h2 class="SpacingTop">[% Translate("Why should I keep OTRS up to date?") | html %]</h2>
+                    <h2 class="SpacingTop">[% Translate("Why should I keep LIGERO up to date?") | html %]</h2>
                     <ul class="Default">
                         <li>
                             [% Translate("You will receive updates about relevant security issues.") | html %]
                         </li>
                         <li>
-                            [% Translate("You will receive updates for all other relevant OTRS issues") | html %]
+                            [% Translate("You will receive updates for all other relevant LIGERO issues") | html %]
                         </li>
                     </ul>
                 [% ELSE %]
                 <p class="Center">
-                    [% Translate("With your existing contract you can only use a small part of the %s.") | html | ReplacePlaceholders(OTRSBusinessLabel ) %]
+                    [% Translate("With your existing contract you can only use a small part of the %s.") | html | ReplacePlaceholders(LIGEROBusinessLabel ) %]
                     <br/>
-                    [% Translate("If you would like to take full advantage of the %s get your contract upgraded now! Contact %s.") | html | ReplacePlaceholders(OTRSBusinessLabel, '<a href="mailto:sales@ligero.com">sales@ligero.com</a>') %]
+                    [% Translate("If you would like to take full advantage of the %s get your contract upgraded now! Contact %s.") | html | ReplacePlaceholders(LIGEROBusinessLabel, '<a href="mailto:sales@ligero.com">sales@ligero.com</a>') %]
                 </p>
                 <div class="Center SpacingTop">
-                    <a href="[% Env("Baselink") %]Action=[% Env("Action") %];Subaction=InstallAction" class="CallForAction Primary"><span><i class="fa fa-angle-double-up"></i> [% Translate("Upgrade to %s") | html | ReplacePlaceholders(OTRSBusinessLabel) %]</span></a>
+                    <a href="[% Env("Baselink") %]Action=[% Env("Action") %];Subaction=InstallAction" class="CallForAction Primary"><span><i class="fa fa-angle-double-up"></i> [% Translate("Upgrade to %s") | html | ReplacePlaceholders(LIGEROBusinessLabel) %]</span></a>
                 </div>
                 [% END %]
             </div>

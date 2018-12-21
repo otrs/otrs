@@ -1,5 +1,5 @@
 // --
-// Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+// Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 // --
 // This software comes with ABSOLUTELY NO WARRANTY. For details, see
 // the enclosed file COPYING for license information (GPL). If you
@@ -14,7 +14,7 @@ Core.Form = Core.Form || {};
 /**
  * @namespace Core.Form.Validate
  * @memberof Core.Form
- * @author OTRS AG
+ * @author LIGERO AG
  * @description
  *      This namespace contains all validation functions.
  */
@@ -257,7 +257,7 @@ Core.Form.Validate = (function (TargetNS) {
         var Text,
             $Element = $(Element);
 
-        // special treatment of <select> elements in OTRS
+        // special treatment of <select> elements in LIGERO
         if (Element.nodeName.toLowerCase() === 'select') {
             Text = $(Element).find('option:selected').text();
             return (Text.length && Text !== '-');
@@ -302,13 +302,13 @@ Core.Form.Validate = (function (TargetNS) {
     }
 
     /*
-     * Definitions of all OTRS specific rules and rule methods
+     * Definitions of all LIGERO specific rules and rule methods
      */
     $.validator.addMethod("Validate_Required", ValidatorMethodRequired, "");
     $.validator.addMethod("Validate_Number", $.validator.methods.digits, "");
     $.validator.addMethod("Validate_DnDUpload", ValidatorMethodDnDUpload, "");
 
-    // There is a configuration option in OTRS that controls if email addresses
+    // There is a configuration option in LIGERO that controls if email addresses
     // should be validated or not.
     // If email address should be validated, this function is overwritten in Init method
     $.validator.addMethod("Validate_Email", ValidatorMethodRequired, "");
@@ -641,7 +641,7 @@ Core.Form.Validate = (function (TargetNS) {
     });
 
     // Backwards compatibility: these methods are deprecated, do not use them!
-    // They will be removed in OTRS 3.1.
+    // They will be removed in LIGERO 3.1.
     $.validator.addClassRules("Validate_RequiredDropdown", {
         Validate_Required: true
     });
@@ -806,7 +806,7 @@ Core.Form.Validate = (function (TargetNS) {
             FormSelector = 'form';
         }
 
-        // There is a configuration option in OTRS that controls if email addresses
+        // There is a configuration option in LIGERO that controls if email addresses
         //  should be validated or not.
         if (parseInt(Core.Config.Get('CheckEmailAddresses'), 10)) {
             $.validator.addMethod("Validate_Email", $.validator.methods.email, "");
@@ -948,7 +948,7 @@ Core.Form.Validate = (function (TargetNS) {
      * @memberof Core.Form.Validate
      * @function
      * @param {String} Name - The name of the rule.
-     * @param {Object} MethodHash - This JS object defines, which methods should be included in this rule, e.g. { OTRS_Validate_Required: true, OTRS-Validate_MinLength: 2 }.
+     * @param {Object} MethodHash - This JS object defines, which methods should be included in this rule, e.g. { LIGERO_Validate_Required: true, LIGERO-Validate_MinLength: 2 }.
      * @description
      *      This function is used to add special validation rules. The name is also the class name you can use in the HTML.
      */

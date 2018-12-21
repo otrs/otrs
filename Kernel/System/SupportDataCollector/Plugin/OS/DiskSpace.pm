@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -36,11 +36,11 @@ sub Run {
     #     return $Self->GetResults();
     # }
     #
-    # # find OTRS partition
+    # # find LIGERO partition
     # my $Home = $Kernel::OM->Get('Kernel::Config')->Get('Home');
     #
-    # my $OTRSPartition = `df -P $Home | tail -1 | cut -d' ' -f 1`;
-    # chomp $OTRSPartition;
+    # my $LIGEROPartition = `df -P $Home | tail -1 | cut -d' ' -f 1`;
+    # chomp $LIGEROPartition;
     #
     # my $Commandline = "df -lx tmpfs -x iso9660 -x udf -x squashfs";
     #
@@ -56,7 +56,7 @@ sub Run {
     #
     #     # TODO change from percent to megabytes used.
     #     while (<$In>) {
-    #         if ( $_ =~ /^$OTRSPartition\s.*/ && $_ =~ /^(.+?)\s.*\s(\d+)%.+?$/ ) {
+    #         if ( $_ =~ /^$LIGEROPartition\s.*/ && $_ =~ /^(.+?)\s.*\s(\d+)%.+?$/ ) {
     #             my ( $Partition, $UsedPercent ) = $_ =~ /^(.+?)\s.*?\s(\d+)%.+?$/;
     #             if ( $UsedPercent > 90 ) {
     #                 push @ProblemPartitions, "$Partition \[$UsedPercent%\]";
@@ -73,14 +73,14 @@ sub Run {
     #             $Self->AddResultProblem(
     #                 Label   => Translatable('Disk Usage'),
     #                 Value   => join( ', ', @ProblemPartitions ),
-    #                 Message => Translatable('The partition where OTRS is located is almost full.'),
+    #                 Message => Translatable('The partition where LIGERO is located is almost full.'),
     #             );
     #         }
     #         else {
     #             $Self->AddResultWarning(
     #                 Label   => Translatable('Disk Usage'),
     #                 Value   => join( ', ', @ProblemPartitions ),
-    #                 Message => Translatable('The partition where OTRS is located is almost full.'),
+    #                 Message => Translatable('The partition where LIGERO is located is almost full.'),
     #             );
     #         }
     #     }
@@ -88,7 +88,7 @@ sub Run {
     #         $Self->AddResultOk(
     #             Label   => Translatable('Disk Usage'),
     #             Value   => '',
-    #             Message => Translatable('The partition where OTRS is located has no disk space problems.'),
+    #             Message => Translatable('The partition where LIGERO is located has no disk space problems.'),
     #         );
     #     }
     # }

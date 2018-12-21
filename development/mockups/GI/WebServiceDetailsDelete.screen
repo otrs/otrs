@@ -34,8 +34,8 @@
   <widgets xsi:type="model:Text" x="286" y="157" width="595" height="28" measuredWidth="595" measuredHeight="28" foreground="#ffffff" dummyText="true">
     <font/>
   </widgets>
-  <widgets xsi:type="model:Accordion" x="271" y="320" width="621" height="257" text="        OTRS as provider" measuredWidth="621" measuredHeight="257" selection="0">
-    <items x="0" y="2" width="621" height="24" text="        OTRS as provider"/>
+  <widgets xsi:type="model:Accordion" x="271" y="320" width="621" height="257" text="        LIGERO as provider" measuredWidth="621" measuredHeight="257" selection="0">
+    <items x="0" y="2" width="621" height="24" text="        LIGERO as provider"/>
   </widgets>
   <widgets xsi:type="model:Label" x="752" y="323" text="Active and running" measuredWidth="113" measuredHeight="21">
     <font size="11" bold="true"/>
@@ -80,8 +80,8 @@
   <widgets xsi:type="model:Button" x="784" y="432" width="89" text="Add operation" measuredWidth="89" measuredHeight="23">
     <font/>
   </widgets>
-  <widgets xsi:type="model:Accordion" x="271" y="592" width="621" height="257" text="        OTRS as requester" measuredWidth="621" measuredHeight="257" selection="0">
-    <items x="0" y="2" width="621" height="24" text="        OTRS as requester"/>
+  <widgets xsi:type="model:Accordion" x="271" y="592" width="621" height="257" text="        LIGERO as requester" measuredWidth="621" measuredHeight="257" selection="0">
+    <items x="0" y="2" width="621" height="24" text="        LIGERO as requester"/>
   </widgets>
   <widgets xsi:type="model:Label" x="749" y="595" text="currently not in use" measuredWidth="117" measuredHeight="21">
     <font size="11" bold="true"/>

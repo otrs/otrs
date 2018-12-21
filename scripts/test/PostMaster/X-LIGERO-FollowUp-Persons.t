@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -29,10 +29,10 @@ my $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
 
 # ensure that the appropriate X-Headers are available in the config
 my %NeededXHeaders = (
-    'X-OTRS-FollowUp-OwnerID'       => 1,
-    'X-OTRS-FollowUp-Owner'         => 1,
-    'X-OTRS-FollowUp-ResponsibleID' => 1,
-    'X-OTRS-FollowUp-Responsible'   => 1,
+    'X-LIGERO-FollowUp-OwnerID'       => 1,
+    'X-LIGERO-FollowUp-Owner'         => 1,
+    'X-LIGERO-FollowUp-ResponsibleID' => 1,
+    'X-LIGERO-FollowUp-Responsible'   => 1,
 );
 
 my $XHeaders          = $ConfigObject->Get('PostmasterX-Header');
@@ -134,7 +134,7 @@ my @Tests = (
         Email => "From: Sender <sender\@example.com>
 To: Some Name <recipient\@example.com>
 Subject: [TNR] A simple question
-X-OTRS-FollowUp-Owner: $UserRand
+X-LIGERO-FollowUp-Owner: $UserRand
 
 This is a multiline
 email for server: example.tld
@@ -151,7 +151,7 @@ The IP address: 192.168.0.1
         Email => 'From: Sender <sender@example.com>
 To: Some Name <recipient@example.com>
 Subject: [TNR] Another question
-X-OTRS-FollowUp-OwnerID: 1
+X-LIGERO-FollowUp-OwnerID: 1
 
 This is a multiline
 email for server: example.tld
@@ -168,7 +168,7 @@ The IP address: 192.168.0.1
         Email => "From: Sender <sender\@example.com>
 To: Some Name <recipient\@example.com>
 Subject: [TNR] A simple question
-X-OTRS-FollowUp-Responsible: $UserRand
+X-LIGERO-FollowUp-Responsible: $UserRand
 
 This is a multiline
 email for server: example.tld
@@ -185,7 +185,7 @@ The IP address: 192.168.0.1
         Email => 'From: Sender <sender@example.com>
 To: Some Name <recipient@example.com>
 Subject: [TNR] Another question
-X-OTRS-FollowUp-ResponsibleID: 1
+X-LIGERO-FollowUp-ResponsibleID: 1
 
 This is a multiline
 email for server: example.tld

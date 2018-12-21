@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -7,7 +7,7 @@
 # --
 
 package Kernel::Modules::AgentTicketAttachment;
-## nofilter(TidyAll::Plugin::OTRS::Perl::Print)
+## nofilter(TidyAll::Plugin::LIGERO::Perl::Print)
 
 use strict;
 use warnings;
@@ -100,7 +100,7 @@ sub Run {
         for ( sort keys %{ $ConfigObject->Get('MIME-Viewer') } ) {
             if ( $Data{ContentType} =~ /^$_/i ) {
                 $Viewer = $ConfigObject->Get('MIME-Viewer')->{$_};
-                $Viewer =~ s/\<OTRS_CONFIG_(.+?)\>/$ConfigObject->{$1}/g;
+                $Viewer =~ s/\<LIGERO_CONFIG_(.+?)\>/$ConfigObject->{$1}/g;
             }
         }
     }

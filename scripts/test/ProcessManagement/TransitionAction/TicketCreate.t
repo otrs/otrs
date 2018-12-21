@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -620,7 +620,7 @@ my @Tests = (
                 Title         => 'ProcessManagement::TransitionAction::TicketCreate::5::' . $RandomID,
                 CustomerID    => '123465',
                 CustomerUser  => 'customer@example.com',
-                OwnerID       => '<OTRS_TICKET_OwnerID>',
+                OwnerID       => '<LIGERO_TICKET_OwnerID>',
                 TypeID        => 1,
                 ResponsibleID => 1,
                 PendingTime   => '2014-12-23 23:05:00',
@@ -662,7 +662,7 @@ my @Tests = (
                 Title         => 'ProcessManagement::TransitionAction::TicketCreate::5::' . $RandomID,
                 CustomerID    => '123465',
                 CustomerUser  => 'customer@example.com',
-                Owner         => '<OTRS_TICKET_Owner>',
+                Owner         => '<LIGERO_TICKET_Owner>',
                 TypeID        => 1,
                 ResponsibleID => 1,
                 PendingTime   => '2014-12-23 23:05:00',
@@ -704,7 +704,7 @@ my @Tests = (
                 Title         => 'ProcessManagement::TransitionAction::TicketCreate::5::' . $RandomID,
                 CustomerID    => '123465',
                 CustomerUser  => 'customer@example.com',
-                OwnerID       => '<OTRS_TICKET_OwnerID>',
+                OwnerID       => '<LIGERO_TICKET_OwnerID>',
                 TypeID        => 1,
                 ResponsibleID => 1,
                 PendingTime   => '2014-12-23 23:05:00',
@@ -726,7 +726,7 @@ my @Tests = (
                 Title         => 'ProcessManagement::TransitionAction::TicketCreate::5::' . $RandomID,
                 CustomerID    => '123465',
                 CustomerUser  => 'customer@example.com',
-                Owner         => '<OTRS_TICKET_Owner>',
+                Owner         => '<LIGERO_TICKET_Owner>',
                 TypeID        => 1,
                 ResponsibleID => 1,
                 PendingTime   => '2014-12-23 23:05:00',
@@ -756,7 +756,7 @@ my @Tests = (
 
                 "DynamicField_Field1$RandomID" => 'Ticket',
                 "DynamicField_Field2$RandomID" => 'Article',
-                "DynamicField_Field3$RandomID" => "<OTRS_TICKET_DynamicField_Field3$RandomID>",
+                "DynamicField_Field3$RandomID" => "<LIGERO_TICKET_DynamicField_Field3$RandomID>",
             },
         },
         Success => 1,
@@ -776,7 +776,7 @@ my @Tests = (
                 ResponsibleID => 1,
                 PendingTime   => '2014-12-23 23:05:00',
 
-                "DynamicField_Field1$RandomID" => "<OTRS_TICKET_DynamicField_Field3$RandomID" . '_Value>',
+                "DynamicField_Field1$RandomID" => "<LIGERO_TICKET_DynamicField_Field3$RandomID" . '_Value>',
             },
         },
         Success => 1,
@@ -801,7 +801,7 @@ my @Tests = (
                 IsVisibleForCustomer => 0,
                 ContentType          => 'text/plain; charset=ISO-8859-15',
                 Subject              => 'some short description',
-                Body                 => '<OTRS_Tiket_NotExisting>',
+                Body                 => '<LIGERO_Tiket_NotExisting>',
                 HistoryType          => 'OwnerUpdate',
                 HistoryComment       => 'Some free text!',
                 From                 => 'Some Agent <email@example.com>',
@@ -867,7 +867,7 @@ my @Tests = (
         Success => 1,
     },
     {
-        Name   => 'Correct Ticket->OTRS smart tags',
+        Name   => 'Correct Ticket->LIGERO smart tags',
         Config => {
             UserID => $UserID,
             Ticket => \%Ticket,
@@ -883,8 +883,8 @@ my @Tests = (
                 SenderType           => 'agent',
                 IsVisibleForCustomer => 0,
                 ContentType          => 'text/plain; charset=ISO-8859-15',
-                Subject              => '<OTRS_AGENT_SUBJECT>',
-                Body                 => '<OTRS_CUSTOMER_BODY>',
+                Subject              => '<LIGERO_AGENT_SUBJECT>',
+                Body                 => '<LIGERO_CUSTOMER_BODY>',
                 HistoryType          => 'OwnerUpdate',
                 HistoryComment       => 'Some free text!',
 
@@ -1117,7 +1117,7 @@ for my $Test (@Tests) {
             if (
                 $OrigTest->{Config}->{Config}->{$Attribute}
                 && $OrigTest->{Config}->{Config}->{$Attribute}
-                =~ m{\A<OTRS_TICKET_([A-Za-z0-9_]+)>\z}msx
+                =~ m{\A<LIGERO_TICKET_([A-Za-z0-9_]+)>\z}msx
                 )
             {
                 $ExpectedValue = $Ticket{$1} // '';
@@ -1134,7 +1134,7 @@ for my $Test (@Tests) {
                     );
 
                 }
-                elsif ( $OrigTest->{Config}->{Config}->{$Attribute} =~ m{OTRS_TICKET_DynamicField_(\S+?)_Value} ) {
+                elsif ( $OrigTest->{Config}->{Config}->{$Attribute} =~ m{LIGERO_TICKET_DynamicField_(\S+?)_Value} ) {
                     $Self->IsNot(
                         $Test->{Config}->{Config}->{$Attribute},
                         $OrigTest->{Config}->{Config}->{$Attribute},
@@ -1162,7 +1162,7 @@ for my $Test (@Tests) {
                         "$ModuleName - Test:'$Test->{Name}' | Attribute: $Attribute value:"
                     );
                 }
-                elsif ( $OrigTest->{Config}->{Config}->{$Attribute} =~ m{<OTRS_TICKET_DynamicField_(\S+)>} ) {
+                elsif ( $OrigTest->{Config}->{Config}->{$Attribute} =~ m{<LIGERO_TICKET_DynamicField_(\S+)>} ) {
                     $Self->IsNot(
                         $Test->{Config}->{Config}->{$Attribute},
                         $OrigTest->{Config}->{Config}->{$Attribute},
@@ -1213,7 +1213,7 @@ for my $Test (@Tests) {
             # TODO: currently disabled, re-enable it when AgentNotification is fully switch to NotificationEvent
             # # if article is created by another user it is automatically sent also to Owner
             # if ( $OrigTest->{Config}->{Config}->{UserID} && $Attribute eq 'To' ) {
-            #     $ExpectedValue .= ', Admin OTRS <root@localhost>'
+            #     $ExpectedValue .= ', Admin LIGERO <root@localhost>'
             # }
 
             if ( $Test->{Article} ) {
@@ -1225,7 +1225,7 @@ for my $Test (@Tests) {
                             . " $Article{ArticleID} match expected value"
                     );
                 }
-                elsif ( $OrigTest->{Config}->{Config}->{$Attribute} =~ m{OTRS_TICKET_DynamicField_(\S+?)_Value} ) {
+                elsif ( $OrigTest->{Config}->{Config}->{$Attribute} =~ m{LIGERO_TICKET_DynamicField_(\S+?)_Value} ) {
 
                     my $DynamicFieldName = $1;
 

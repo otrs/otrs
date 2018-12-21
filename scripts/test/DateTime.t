@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -33,7 +33,7 @@ my $Values = $DateTimeObject->Get();
 
 $Self->Is(
     $Values->{TimeZone},
-    $DateTimeObject->OTRSTimeZoneGet(),
+    $DateTimeObject->LIGEROTimeZoneGet(),
     'Time zone of DateTime object must match the one configured for data storage.'
 );
 
@@ -73,7 +73,7 @@ $Self->Is(
 );
 
 #
-# Test for ToOTRSDateTimeZone
+# Test for ToLIGERODateTimeZone
 #
 $DateTimeObject = $Kernel::OM->Create(
     'Kernel::System::DateTime',
@@ -88,17 +88,17 @@ $DateTimeObject = $Kernel::OM->Create(
     },
 );
 
-my $OriginalOTRSTimeZone = $DateTimeObject->OTRSTimeZoneGet();
+my $OriginalLIGEROTimeZone = $DateTimeObject->LIGEROTimeZoneGet();
 
 # set specific time zone for data storage
 $ConfigObject->Set(
-    Key   => 'OTRSTimeZone',
+    Key   => 'LIGEROTimeZone',
     Value => 'UTC',
 );
 
-my $OTRSTimeZone = $DateTimeObject->OTRSTimeZoneGet();
+my $LIGEROTimeZone = $DateTimeObject->LIGEROTimeZoneGet();
 
-$DateTimeObject->ToOTRSTimeZone();
+$DateTimeObject->ToLIGEROTimeZone();
 my $DateTimeValues         = $DateTimeObject->Get();
 my $ExpectedDateTimeValues = {
     Year      => 2016,
@@ -116,7 +116,7 @@ my $ExpectedDateTimeValues = {
 $Self->IsDeeply(
     $DateTimeValues,
     $ExpectedDateTimeValues,
-    'Date and time after call to ToOTRSTimeZone must match expected values.'
+    'Date and time after call to ToLIGEROTimeZone must match expected values.'
 );
 
 #
@@ -330,7 +330,7 @@ for my $TestConfig (@TestConfigs) {
 
         my $ExpectedValue = $TestConfig->{Params}->{$ValueName} || 0;
         if ( !$ExpectedValue && $ValueName eq 'TimeZone' ) {
-            $ExpectedValue = $DateTimeObject->OTRSTimeZoneGet();
+            $ExpectedValue = $DateTimeObject->LIGEROTimeZoneGet();
         }
 
         if ( !defined $Values->{$ValueName} || $Values->{$ValueName} ne $ExpectedValue ) {
@@ -363,7 +363,7 @@ for my $TestConfig (@TestConfigs) {
             Hour      => 14,
             Minute    => 59,
             Second    => 0,
-            TimeZone  => $OTRSTimeZone,
+            TimeZone  => $LIGEROTimeZone,
         },
     },
     {
@@ -380,7 +380,7 @@ for my $TestConfig (@TestConfigs) {
             Hour      => 0,
             Minute    => 7,
             Second    => 45,
-            TimeZone  => $OTRSTimeZone,
+            TimeZone  => $LIGEROTimeZone,
         },
     },
     {

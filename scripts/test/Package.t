@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -69,7 +69,7 @@ my $String = '<?xml version="1.0" encoding="utf-8" ?>
 <ligero_package version="1.0">
   <Name>Test</Name>
   <Version>0.0.1</Version>
-  <Vendor>OTRS AG</Vendor>
+  <Vendor>LIGERO AG</Vendor>
   <URL>https://ligero.com/</URL>
   <License>GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007</License>
   <ChangeLog>2005-11-10 New package (some test &lt; &gt; &amp;).</ChangeLog>
@@ -124,7 +124,7 @@ my $StringSecond = '<?xml version="1.0" encoding="utf-8" ?>
 <ligero_package version="1.0">
   <Name>TestSecond</Name>
   <Version>0.0.1</Version>
-  <Vendor>OTRS AG</Vendor>
+  <Vendor>LIGERO AG</Vendor>
   <URL>https://ligero.com/</URL>
   <License>GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007</License>
   <ChangeLog>2005-11-10 New package (some test &lt; &gt; &amp;).</ChangeLog>
@@ -332,7 +332,7 @@ $String = '<?xml version="1.0" encoding="utf-8" ?>
 <ligero_package version="1.0">
   <Name>Test</Name>
   <Version>0.0.1</Version>
-  <Vendor>OTRS AG</Vendor>
+  <Vendor>LIGERO AG</Vendor>
   <URL>https://ligero.com/</URL>
   <License>GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007</License>
   <ChangeLog>2005-11-10 New package (some test &lt; &gt; &amp;).</ChangeLog>
@@ -395,7 +395,7 @@ $String = '<?xml version="1.0" encoding="utf-8" ?>
 <ligero_package version="1.0">
   <Name>Test2</Name>
   <Version>0.0.1</Version>
-  <Vendor>OTRS AG</Vendor>
+  <Vendor>LIGERO AG</Vendor>
   <URL>https://ligero.com/</URL>
   <License>GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007</License>
   <Description Lang="en">A test package.</Description>
@@ -430,7 +430,7 @@ $String = '<?xml version="1.0" encoding="utf-8" ?>
 <ligero_package version="1.0">
   <Name>TestOSDetection1</Name>
   <Version>0.0.1</Version>
-  <Vendor>OTRS AG</Vendor>
+  <Vendor>LIGERO AG</Vendor>
   <URL>https://ligero.com/</URL>
   <License>GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007</License>
   <Description Lang="en">A test package.</Description>
@@ -465,7 +465,7 @@ $String = '<?xml version="1.0" encoding="utf-8" ?>
 <ligero_package version="1.0">
   <Name>TestOSDetection2</Name>
   <Version>0.0.1</Version>
-  <Vendor>OTRS AG</Vendor>
+  <Vendor>LIGERO AG</Vendor>
   <URL>https://ligero.com/</URL>
   <License>GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007</License>
   <Description Lang="en">A test package.</Description>
@@ -510,7 +510,7 @@ $String = '<?xml version="1.0" encoding="utf-8" ?>
 <ligero_package version="1.0">
   <Name>Test2</Name>
   <Version>0.0.1</Version>
-  <Vendor>OTRS AG</Vendor>
+  <Vendor>LIGERO AG</Vendor>
   <URL>https://ligero.com/</URL>
   <License>GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007</License>
   <Description Lang="en">A test package.</Description>
@@ -544,7 +544,7 @@ $String = '<?xml version="1.0" encoding="utf-8" ?>
 <ligero_package version="1.0">
   <Name>Test2</Name>
   <Version>0.0.1</Version>
-  <Vendor>OTRS AG</Vendor>
+  <Vendor>LIGERO AG</Vendor>
   <URL>https://ligero.com/</URL>
   <License>GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007</License>
   <Description Lang="en">A test package.</Description>
@@ -580,7 +580,7 @@ my $String1 = '<?xml version="1.0" encoding="utf-8" ?>
 <ligero_package version="1.0">
   <Name>Test2</Name>
   <Version>0.0.1</Version>
-  <Vendor>OTRS AG</Vendor>
+  <Vendor>LIGERO AG</Vendor>
   <URL>https://ligero.com/</URL>
   <License>GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007</License>
   <Description Lang="en">A test package.</Description>
@@ -612,7 +612,7 @@ my $String2 = '<?xml version="1.0" encoding="utf-8" ?>
 <ligero_package version="1.0">
   <Name>Test3</Name>
   <Version>0.0.1</Version>
-  <Vendor>OTRS AG</Vendor>
+  <Vendor>LIGERO AG</Vendor>
   <URL>https://ligero.com/</URL>
   <License>GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007</License>
   <Description Lang="en">A test package.</Description>
@@ -645,7 +645,7 @@ my $String3 = '<?xml version="1.0" encoding="utf-8" ?>
 <ligero_package version="1.0">
   <Name>Test3</Name>
   <Version>0.0.2</Version>
-  <Vendor>OTRS AG</Vendor>
+  <Vendor>LIGERO AG</Vendor>
   <URL>https://ligero.com/</URL>
   <License>GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007</License>
   <Description Lang="en">A test package.</Description>
@@ -673,7 +673,7 @@ my $String3a = '<?xml version="1.0" encoding="utf-8" ?>
 <ligero_package version="1.0">
   <Name>Test3</Name>
   <Version>0.0.3</Version>
-  <Vendor>OTRS AG</Vendor>
+  <Vendor>LIGERO AG</Vendor>
   <URL>https://ligero.com/</URL>
   <License>GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007</License>
   <Description Lang="en">A test package.</Description>
@@ -709,7 +709,7 @@ my $String3b = '<?xml version="1.0" encoding="utf-8" ?>
 <ligero_package version="1.0">
   <Name>Test3</Name>
   <Version>0.0.3</Version>
-  <Vendor>OTRS AG</Vendor>
+  <Vendor>LIGERO AG</Vendor>
   <URL>https://ligero.com/</URL>
   <License>GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007</License>
   <Description Lang="en">A test package.</Description>
@@ -820,7 +820,7 @@ $String = '<?xml version="1.0" encoding="utf-8" ?>
 <ligero_package version="1.0">
   <Name>Test2</Name>
   <Version>0.0.1</Version>
-  <Vendor>OTRS AG</Vendor>
+  <Vendor>LIGERO AG</Vendor>
   <URL>https://ligero.com/</URL>
   <License>GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007</License>
   <Description Lang="en">A test package.</Description>
@@ -842,7 +842,7 @@ $String = '<?xml version="1.0" encoding="utf-8" ?>
 <ligero_package version="1.0">
   <Name>Test2</Name>
   <Version>0.0.1</Version>
-  <Vendor>OTRS AG</Vendor>
+  <Vendor>LIGERO AG</Vendor>
   <URL>https://ligero.com/</URL>
   <License>GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007</License>
   <Description Lang="en">A test package.</Description>
@@ -864,7 +864,7 @@ $String = '<?xml version="1.0" encoding="utf-8" ?>
 <ligero_package version="1.0">
   <Name>Test2</Name>
   <Version>0.0.1</Version>
-  <Vendor>OTRS AG</Vendor>
+  <Vendor>LIGERO AG</Vendor>
   <URL>https://ligero.com/</URL>
   <License>GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007</License>
   <Description Lang="en">A test package.</Description>
@@ -938,7 +938,7 @@ $String = '<?xml version="1.0" encoding="utf-8" ?>
 <ligero_package version="1.0">
   <Name>Test2</Name>
   <Version>0.0.1</Version>
-  <Vendor>OTRS AG</Vendor>
+  <Vendor>LIGERO AG</Vendor>
   <URL>https://ligero.com/</URL>
   <License>GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007</License>
   <Description Lang="en">A test package.</Description>
@@ -1022,7 +1022,7 @@ my $FileNotAllowedString = "<?xml version=\"1.0\" encoding=\"utf-8\" ?>
 <ligero_package version=\"1.0\">
   <Name>FilesNotAllowed</Name>
   <Version>0.0.1</Version>
-  <Vendor>OTRS AG</Vendor>
+  <Vendor>LIGERO AG</Vendor>
   <URL>https://ligero.com/</URL>
   <License>GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007</License>
   <Description Lang=\"en\">A test package.</Description>
@@ -1100,7 +1100,7 @@ if ( !$DeveloperSystem ) {
     <ligero_package version="1.0">
       <Name>TestFrameworkFileCheck</Name>
       <Version>0.0.1</Version>
-      <Vendor>OTRS AG</Vendor>
+      <Vendor>LIGERO AG</Vendor>
       <URL>https://ligero.com/</URL>
       <License>GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007</License>
       <Description Lang="en">A test package.</Description>
@@ -1184,7 +1184,7 @@ if ( !$DeveloperSystem ) {
     <ligero_package version="1.0">
       <Name>TestFrameworkFileCheck</Name>
       <Version>0.0.1</Version>
-      <Vendor>OTRS AG</Vendor>
+      <Vendor>LIGERO AG</Vendor>
       <URL>https://ligero.com/</URL>
       <License>GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007</License>
       <Description Lang="en">A test package.</Description>

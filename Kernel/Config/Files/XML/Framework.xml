@@ -50,39 +50,39 @@
         <Description Translatable="1">Defines the name of the application, shown in the web interface, tabs and title bar of the web browser.</Description>
         <Navigation>Core</Navigation>
         <Value>
-            <Item ValueType="String" ValueRegex="">OTRS 6</Item>
+            <Item ValueType="String" ValueRegex="">LIGERO 6</Item>
         </Value>
     </Setting>
     <Setting Name="SystemID" Required="1" Valid="1" ConfigLevel="200">
-        <Description Translatable="1">Defines the system identifier. Every ticket number and http session string contains this ID. This ensures that only tickets which belong to your system will be processed as follow-ups (useful when communicating between two instances of OTRS).</Description>
+        <Description Translatable="1">Defines the system identifier. Every ticket number and http session string contains this ID. This ensures that only tickets which belong to your system will be processed as follow-ups (useful when communicating between two instances of LIGERO).</Description>
         <Navigation>Core</Navigation>
         <Value>
             <Item ValueType="String" ValueRegex="^\d+$">10</Item>
         </Value>
     </Setting>
     <Setting Name="FQDN" Required="1" Valid="1" ConfigLevel="200">
-        <Description Translatable="1">Defines the fully qualified domain name of the system. This setting is used as a variable, OTRS_CONFIG_FQDN which is found in all forms of messaging used by the application, to build links to the tickets within your system.</Description>
+        <Description Translatable="1">Defines the fully qualified domain name of the system. This setting is used as a variable, LIGERO_CONFIG_FQDN which is found in all forms of messaging used by the application, to build links to the tickets within your system.</Description>
         <Navigation>Core</Navigation>
         <Value>
             <Item ValueType="String" ValueRegex="">yourhost.example.com</Item>
         </Value>
     </Setting>
     <Setting Name="SupportDataCollector::HTTPHostname" Required="0" Valid="0" ConfigLevel="200">
-        <Description Translatable="1">Defines the HTTP hostname for the support data collection with the public module 'PublicSupportDataCollector' (e.g. used from the OTRS Daemon).</Description>
+        <Description Translatable="1">Defines the HTTP hostname for the support data collection with the public module 'PublicSupportDataCollector' (e.g. used from the LIGERO Daemon).</Description>
         <Navigation>Core::SupportDataCollector</Navigation>
         <Value>
             <Item ValueType="String" ValueRegex=""></Item>
         </Value>
     </Setting>
     <Setting Name="SupportDataCollector::WebUserAgent::Timeout" Required="0" Valid="0" ConfigLevel="200">
-        <Description Translatable="1">Defines the timeout (in seconds, minimum is 20 seconds) for the support data collection with the public module 'PublicSupportDataCollector' (e.g. used from the OTRS Daemon).</Description>
+        <Description Translatable="1">Defines the timeout (in seconds, minimum is 20 seconds) for the support data collection with the public module 'PublicSupportDataCollector' (e.g. used from the LIGERO Daemon).</Description>
         <Navigation>Core::SupportDataCollector</Navigation>
         <Value>
             <Item ValueType="String" ValueRegex="^[2-9][0-9]{1,}|[1-9][0-9]{2,}$">20</Item>
         </Value>
     </Setting>
     <Setting Name="HttpType" Required="1" Valid="1" ConfigLevel="200">
-        <Description Translatable="1">Defines the type of protocol, used by the web server, to serve the application. If https protocol will be used instead of plain http, it must be specified here. Since this has no affect on the web server's settings or behavior, it will not change the method of access to the application and, if it is wrong, it will not prevent you from logging into the application. This setting is only used as a variable, OTRS_CONFIG_HttpType which is found in all forms of messaging used by the application, to build links to the tickets within your system.</Description>
+        <Description Translatable="1">Defines the type of protocol, used by the web server, to serve the application. If https protocol will be used instead of plain http, it must be specified here. Since this has no affect on the web server's settings or behavior, it will not change the method of access to the application and, if it is wrong, it will not prevent you from logging into the application. This setting is only used as a variable, LIGERO_CONFIG_HttpType which is found in all forms of messaging used by the application, to build links to the tickets within your system.</Description>
         <Navigation>Frontend::Base</Navigation>
         <Value>
             <Item ValueType="Select" SelectedID="http">
@@ -99,7 +99,7 @@
         </Value>
     </Setting>
     <Setting Name="ScriptAlias" Required="1" Valid="1" ConfigLevel="200">
-        <Description Translatable="1">Sets the prefix to the scripts folder on the server, as configured on the web server. This setting is used as a variable, OTRS_CONFIG_ScriptAlias which is found in all forms of messaging used by the application, to build links to the tickets within the system.</Description>
+        <Description Translatable="1">Sets the prefix to the scripts folder on the server, as configured on the web server. This setting is used as a variable, LIGERO_CONFIG_ScriptAlias which is found in all forms of messaging used by the application, to build links to the tickets within the system.</Description>
         <Navigation>Frontend::Base</Navigation>
         <Value>
             <Item ValueType="String" ValueRegex="">ligero/</Item>
@@ -109,7 +109,7 @@
         <Description Translatable="1">Defines the system administrator's email address. It will be displayed in the error screens of the application.</Description>
         <Navigation>Core::Email</Navigation>
         <Value>
-            <Item ValueType="String" ValueRegex="">support@&lt;OTRS_CONFIG_FQDN&gt;</Item>
+            <Item ValueType="String" ValueRegex="">support@&lt;LIGERO_CONFIG_FQDN&gt;</Item>
         </Value>
     </Setting>
     <Setting Name="Organization" Required="1" Valid="1">
@@ -374,21 +374,21 @@
         <Description Translatable="1">Defines the URL image path of icons for navigation.</Description>
         <Navigation>Frontend::Base</Navigation>
         <Value>
-            <Item ValueType="String" ValueRegex="">&lt;OTRS_CONFIG_Frontend::WebPath&gt;skins/Agent/default/img/</Item>
+            <Item ValueType="String" ValueRegex="">&lt;LIGERO_CONFIG_Frontend::WebPath&gt;skins/Agent/default/img/</Item>
         </Value>
     </Setting>
     <Setting Name="Frontend::CSSPath" Required="1" Valid="1" ConfigLevel="200">
         <Description Translatable="1">Defines the URL CSS path.</Description>
         <Navigation>Frontend::Base</Navigation>
         <Value>
-            <Item ValueType="String" ValueRegex="">&lt;OTRS_CONFIG_Frontend::WebPath&gt;css/</Item>
+            <Item ValueType="String" ValueRegex="">&lt;LIGERO_CONFIG_Frontend::WebPath&gt;css/</Item>
         </Value>
     </Setting>
     <Setting Name="Frontend::JavaScriptPath" Required="1" Valid="1" ConfigLevel="200">
         <Description Translatable="1">Defines the URL java script path.</Description>
         <Navigation>Frontend::Base</Navigation>
         <Value>
-            <Item ValueType="String" ValueRegex="">&lt;OTRS_CONFIG_Frontend::WebPath&gt;js/</Item>
+            <Item ValueType="String" ValueRegex="">&lt;LIGERO_CONFIG_Frontend::WebPath&gt;js/</Item>
         </Value>
     </Setting>
     <Setting Name="Frontend::RichText" Required="1" Valid="1" ConfigLevel="200">
@@ -402,7 +402,7 @@
         <Description Translatable="1">Defines the URL rich text editor path.</Description>
         <Navigation>Frontend::Base</Navigation>
         <Value>
-            <Item ValueType="String" ValueRegex="">&lt;OTRS_CONFIG_Frontend::WebPath&gt;js/thirdparty/ckeditor-4.7.0/</Item>
+            <Item ValueType="String" ValueRegex="">&lt;LIGERO_CONFIG_Frontend::WebPath&gt;js/thirdparty/ckeditor-4.7.0/</Item>
         </Value>
     </Setting>
     <Setting Name="Frontend::RichTextWidth" Required="1" Valid="1">
@@ -441,7 +441,7 @@
         </Value>
     </Setting>
     <Setting Name="DisableIFrameOriginRestricted" Required="0" Valid="1">
-        <Description Translatable="1">Disable HTTP header "X-Frame-Options: SAMEORIGIN" to allow OTRS to be included as an IFrame in other websites. Disabling this HTTP header can be a security issue! Only disable it, if you know what you are doing!</Description>
+        <Description Translatable="1">Disable HTTP header "X-Frame-Options: SAMEORIGIN" to allow LIGERO to be included as an IFrame in other websites. Disabling this HTTP header can be a security issue! Only disable it, if you know what you are doing!</Description>
         <Navigation>Frontend::Base</Navigation>
         <Value>
             <Item ValueType="Checkbox">0</Item>
@@ -631,7 +631,7 @@
         </Value>
     </Setting>
     <Setting Name="LogModule::LogFile::Date" Required="1" Valid="1">
-        <Description Translatable="1">Adds a suffix with the actual year and month to the OTRS log file. A logfile for every month will be created.</Description>
+        <Description Translatable="1">Adds a suffix with the actual year and month to the LIGERO log file. A logfile for every month will be created.</Description>
         <Navigation>Core::Log</Navigation>
         <Value>
             <Item ValueType="Checkbox">0</Item>
@@ -838,22 +838,22 @@
             </Hash>
         </Value>
     </Setting>
-    <Setting Name="Frontend::NotifyModule###1100-OTRSBusiness" Required="1" Valid="1">
-        <Description Translatable="1">Defines the module to display a notification in different interfaces on different occasions for OTRS Business Solution™.</Description>
+    <Setting Name="Frontend::NotifyModule###1100-LIGEROBusiness" Required="1" Valid="1">
+        <Description Translatable="1">Defines the module to display a notification in different interfaces on different occasions for LIGERO Business Solution™.</Description>
         <Navigation>Frontend::Agent::FrontendNotification</Navigation>
         <Value>
             <Hash>
-                <Item Key="Module">Kernel::Output::HTML::Notification::AgentOTRSBusiness</Item>
+                <Item Key="Module">Kernel::Output::HTML::Notification::AgentLIGEROBusiness</Item>
                 <Item Key="Group">admin</Item>
             </Hash>
         </Value>
     </Setting>
-    <Setting Name="CustomerFrontend::NotifyModule###1-OTRSBusiness" Required="1" Valid="1">
-        <Description Translatable="1">Defines the module to display a notification in different interfaces on different occasions for OTRS Business Solution™.</Description>
+    <Setting Name="CustomerFrontend::NotifyModule###1-LIGEROBusiness" Required="1" Valid="1">
+        <Description Translatable="1">Defines the module to display a notification in different interfaces on different occasions for LIGERO Business Solution™.</Description>
         <Navigation>Frontend::Customer::FrontendNotification</Navigation>
         <Value>
             <Hash>
-                <Item Key="Module">Kernel::Output::HTML::Notification::CustomerOTRSBusiness</Item>
+                <Item Key="Module">Kernel::Output::HTML::Notification::CustomerLIGEROBusiness</Item>
             </Hash>
         </Value>
     </Setting>
@@ -968,8 +968,8 @@
             <Hash>
                 <Item Key="Module">Kernel::Output::HTML::Notification::Generic</Item>
                 <Item Key="Priority">Warning</Item>
-                <Item Key="Text">The OTRS Website</Item>
-                <Item Key="File">&lt;OTRS_CONFIG_Home&gt;/var/notify.txt</Item>
+                <Item Key="Text">The LIGERO Website</Item>
+                <Item Key="File">&lt;LIGERO_CONFIG_Home&gt;/var/notify.txt</Item>
                 <Item Key="Link">http://www.ligero.com</Item>
             </Hash>
         </Value>
@@ -982,17 +982,17 @@
         </Value>
     </Setting>
     <Setting Name="SessionName" Required="1" Valid="1">
-        <Description Translatable="1">Defines the name of the session key. E.g. Session, SessionID or OTRS.</Description>
+        <Description Translatable="1">Defines the name of the session key. E.g. Session, SessionID or LIGERO.</Description>
         <Navigation>Core::Session</Navigation>
         <Value>
-            <Item ValueType="String" ValueRegex="">OTRSAgentInterface</Item>
+            <Item ValueType="String" ValueRegex="">LIGEROAgentInterface</Item>
         </Value>
     </Setting>
     <Setting Name="CustomerPanelSessionName" Required="1" Valid="1">
         <Description Translatable="1">Defines the name of the key for customer sessions.</Description>
         <Navigation>Core::Session</Navigation>
         <Value>
-            <Item ValueType="String" ValueRegex="">OTRSCustomerInterface</Item>
+            <Item ValueType="String" ValueRegex="">LIGEROCustomerInterface</Item>
         </Value>
     </Setting>
     <Setting Name="SessionCheckRemoteIP" Required="1" Valid="1">
@@ -1090,7 +1090,7 @@
         <Description Translatable="1">If "FS" was selected for SessionModule, a directory where the session data will be stored must be specified.</Description>
         <Navigation>Core::Session</Navigation>
         <Value>
-            <Item ValueType="String" ValueRegex="">&lt;OTRS_CONFIG_Home&gt;/var/sessions</Item>
+            <Item ValueType="String" ValueRegex="">&lt;LIGERO_CONFIG_Home&gt;/var/sessions</Item>
         </Value>
     </Setting>
     <Setting Name="SessionTable" Required="1" Valid="1">
@@ -1115,7 +1115,7 @@
         </Value>
     </Setting>
     <Setting Name="TimeZone" Required="0" Valid="0">
-        <Description Translatable="1">This setting is deprecated. Set OTRSTimeZone instead.</Description>
+        <Description Translatable="1">This setting is deprecated. Set LIGEROTimeZone instead.</Description>
         <Navigation>Core::Time</Navigation>
         <Value>
             <Item ValueType="Select" SelectedID="+0">
@@ -1147,22 +1147,22 @@
             </Item>
         </Value>
     </Setting>
-    <Setting Name="OTRSTimeZone" Required="1" Valid="1">
-        <Description Translatable="1">Sets the time zone being used internally by OTRS to e. g. store dates and times in the database. WARNING: This setting must not be changed once set and tickets or any other data containing date/time have been created.</Description>
+    <Setting Name="LIGEROTimeZone" Required="1" Valid="1">
+        <Description Translatable="1">Sets the time zone being used internally by LIGERO to e. g. store dates and times in the database. WARNING: This setting must not be changed once set and tickets or any other data containing date/time have been created.</Description>
         <Navigation>Core::Time</Navigation>
         <Value>
             <Item ValueType="TimeZone">UTC</Item>
         </Value>
     </Setting>
     <Setting Name="UserDefaultTimeZone" Required="1" Valid="1">
-        <Description Translatable="1">Sets the time zone that will be assigned to newly created users and will be used for users that haven't yet set a time zone. This is the time zone being used as default to convert date and time between the OTRS time zone and the user's time zone.</Description>
+        <Description Translatable="1">Sets the time zone that will be assigned to newly created users and will be used for users that haven't yet set a time zone. This is the time zone being used as default to convert date and time between the LIGERO time zone and the user's time zone.</Description>
         <Navigation>Core::Time</Navigation>
         <Value>
             <Item ValueType="TimeZone">UTC</Item>
         </Value>
     </Setting>
     <Setting Name="ShowUserTimeZoneSelectionNotification" Required="1" Valid="1">
-        <Description Translatable="1">If enabled, users that haven't selected a time zone yet will be notified to do so. Note: Notification will not be shown if (1) user has not yet selected a time zone and (2) OTRSTimeZone and UserDefaultTimeZone do match and (3) are not set to UTC.</Description>
+        <Description Translatable="1">If enabled, users that haven't selected a time zone yet will be notified to do so. Note: Notification will not be shown if (1) user has not yet selected a time zone and (2) LIGEROTimeZone and UserDefaultTimeZone do match and (3) are not set to UTC.</Description>
         <Navigation>Core::Time</Navigation>
         <Value>
             <Item ValueType="Checkbox">1</Item>
@@ -2552,7 +2552,7 @@
         </Value>
     </Setting>
     <Setting Name="WebMaxFileUpload" Required="1" Valid="1" ConfigLevel="200">
-        <Description Translatable="1">Defines the maximal size (in bytes) for file uploads via the browser. Warning: Setting this option to a value which is too low could cause many masks in your OTRS instance to stop working (probably any mask which takes input from the user).</Description>
+        <Description Translatable="1">Defines the maximal size (in bytes) for file uploads via the browser. Warning: Setting this option to a value which is too low could cause many masks in your LIGERO instance to stop working (probably any mask which takes input from the user).</Description>
         <Navigation>Frontend::Base</Navigation>
         <Value>
             <Item ValueType="String" ValueRegex="^[0-9]{1,11}$">24000000</Item>
@@ -2569,7 +2569,7 @@
         <Description Translatable="1">Specifies the text that should appear in the log file to denote a CGI script entry.</Description>
         <Navigation>Core::Log</Navigation>
         <Value>
-            <Item ValueType="String" ValueRegex="">OTRS-CGI</Item>
+            <Item ValueType="String" ValueRegex="">LIGERO-CGI</Item>
         </Value>
     </Setting>
     <Setting Name="Frontend::Output::FilterText###AAAURL" Required="0" Valid="1">
@@ -2660,7 +2660,7 @@
         <Description Translatable="1">Specifies the path to the converter that allows the view of XML files, in the web interface.</Description>
         <Navigation>Frontend::Agent::MIMEViewer</Navigation>
         <Value>
-            <Item ValueType="String" ValueRegex="">&lt;OTRS_CONFIG_Home&gt;/scripts/tools/xml2html.pl</Item>
+            <Item ValueType="String" ValueRegex="">&lt;LIGERO_CONFIG_Home&gt;/scripts/tools/xml2html.pl</Item>
         </Value>
     </Setting>
     <Setting Name="WebUserAgent::Timeout" Required="1" Valid="1" ConfigLevel="200">
@@ -2738,14 +2738,14 @@
         </Value>
     </Setting>
     <Setting Name="Package::ShowFeatureAddons" Required="0" Valid="1" ConfigLevel="200">
-        <Description Translatable="1">Toggles display of OTRS FeatureAddons list in PackageManager.</Description>
+        <Description Translatable="1">Toggles display of LIGERO FeatureAddons list in PackageManager.</Description>
         <Navigation>Core::Package</Navigation>
         <Value>
             <Item ValueType="Checkbox">1</Item>
         </Value>
     </Setting>
     <Setting Name="Package::AllowNotVerifiedPackages" Required="0" Valid="1" ConfigLevel="100">
-        <Description Translatable="1">If this setting is enabled, it is possible to install packages which are not verified by OTRS Group. These packages could threaten your whole system!</Description>
+        <Description Translatable="1">If this setting is enabled, it is possible to install packages which are not verified by LIGERO Group. These packages could threaten your whole system!</Description>
         <Navigation>Core::Package</Navigation>
         <Value>
             <Item ValueType="Checkbox">0</Item>
@@ -2844,7 +2844,7 @@
         <Description Translatable="1">Specifies the path of the file for the logo in the page header (gif|jpg|png, 700 x 100 pixel).</Description>
         <Navigation>Core::PDF</Navigation>
         <Value>
-            <Item ValueType="String" ValueRegex="">&lt;OTRS_CONFIG_Home&gt;/var/logo-ligero.png</Item>
+            <Item ValueType="String" ValueRegex="">&lt;LIGERO_CONFIG_Home&gt;/var/logo-ligero.png</Item>
         </Value>
     </Setting>
     <Setting Name="PDF::PageSize" Required="1" Valid="1">
@@ -2942,7 +2942,7 @@
         </Value>
     </Setting>
     <Setting Name="PGP" Required="1" Valid="1">
-        <Description Translatable="1">Enables PGP support. When PGP support is enabled for signing and encrypting mail, it is HIGHLY recommended that the web server runs as the OTRS user. Otherwise, there will be problems with the privileges when accessing .gnupg folder.</Description>
+        <Description Translatable="1">Enables PGP support. When PGP support is enabled for signing and encrypting mail, it is HIGHLY recommended that the web server runs as the LIGERO user. Otherwise, there will be problems with the privileges when accessing .gnupg folder.</Description>
         <Navigation>Core::Crypt::PGP</Navigation>
         <Value>
             <Item ValueType="Checkbox">0</Item>
@@ -3066,38 +3066,38 @@
         </Value>
     </Setting>
     <Setting Name="NotificationSenderName" Required="1" Valid="1">
-        <Description Translatable="1">Specifies the name that should be used by the application when sending notifications. The sender name is used to build the complete display name for the notification master (i.e. "OTRS Notifications" ligero@your.example.com).</Description>
+        <Description Translatable="1">Specifies the name that should be used by the application when sending notifications. The sender name is used to build the complete display name for the notification master (i.e. "LIGERO Notifications" ligero@your.example.com).</Description>
         <Navigation>Core::Email</Navigation>
         <Value>
-            <Item ValueType="String" ValueRegex="">OTRS Notifications</Item>
+            <Item ValueType="String" ValueRegex="">LIGERO Notifications</Item>
         </Value>
     </Setting>
     <Setting Name="NotificationSenderEmail" Required="1" Valid="1">
-        <Description Translatable="1">Specifies the email address that should be used by the application when sending notifications. The email address is used to build the complete display name for the notification master (i.e. "OTRS Notifications" ligero@your.example.com). You can use the OTRS_CONFIG_FQDN variable as set in your configuation, or choose another email address.</Description>
+        <Description Translatable="1">Specifies the email address that should be used by the application when sending notifications. The email address is used to build the complete display name for the notification master (i.e. "LIGERO Notifications" ligero@your.example.com). You can use the LIGERO_CONFIG_FQDN variable as set in your configuation, or choose another email address.</Description>
         <Navigation>Core::Email</Navigation>
         <Value>
-            <Item ValueType="String" ValueRegex="">ligero@&lt;OTRS_CONFIG_FQDN&gt;</Item>
+            <Item ValueType="String" ValueRegex="">ligero@&lt;LIGERO_CONFIG_FQDN&gt;</Item>
         </Value>
     </Setting>
     <Setting Name="NotificationSubjectLostPasswordToken" Required="1" Valid="1">
         <Description Translatable="1">Defines the subject for notification mails sent to agents, with token about new requested password.</Description>
         <Navigation>Frontend::Agent</Navigation>
         <Value>
-            <Item ValueType="String" ValueRegex="">New OTRS password request</Item>
+            <Item ValueType="String" ValueRegex="">New LIGERO password request</Item>
         </Value>
     </Setting>
     <Setting Name="NotificationBodyLostPasswordToken" Required="1" Valid="1">
         <Description Translatable="1">Defines the body text for notification mails sent to agents, with token about new requested password.</Description>
         <Navigation>Frontend::Agent</Navigation>
         <Value>
-            <Item ValueType="Textarea">Hi &lt;OTRS_USERFIRSTNAME&gt;,
+            <Item ValueType="Textarea">Hi &lt;LIGERO_USERFIRSTNAME&gt;,
 
-You or someone impersonating you has requested to change your OTRS
+You or someone impersonating you has requested to change your LIGERO
 password.
 
 If you want to do this, click on the link below. You will receive another email containing the password.
 
-&lt;OTRS_CONFIG_HttpType&gt;://&lt;OTRS_CONFIG_FQDN&gt;/&lt;OTRS_CONFIG_ScriptAlias&gt;index.pl?Action=LostPassword;Token=&lt;OTRS_TOKEN&gt;
+&lt;LIGERO_CONFIG_HttpType&gt;://&lt;LIGERO_CONFIG_FQDN&gt;/&lt;LIGERO_CONFIG_ScriptAlias&gt;index.pl?Action=LostPassword;Token=&lt;LIGERO_TOKEN&gt;
 
 If you did not request a new password, please ignore this email.
             </Item>
@@ -3107,23 +3107,23 @@ If you did not request a new password, please ignore this email.
         <Description Translatable="1">Defines the subject for notification mails sent to agents, about new password.</Description>
         <Navigation>Frontend::Agent</Navigation>
         <Value>
-            <Item ValueType="String" ValueRegex="">New OTRS password</Item>
+            <Item ValueType="String" ValueRegex="">New LIGERO password</Item>
         </Value>
     </Setting>
     <Setting Name="NotificationBodyLostPassword" Required="1" Valid="1">
         <Description Translatable="1">Defines the body text for notification mails sent to agents, about new password.</Description>
         <Navigation>Frontend::Agent</Navigation>
         <Value>
-            <Item ValueType="Textarea">Hi &lt;OTRS_USERFIRSTNAME&gt;,
+            <Item ValueType="Textarea">Hi &lt;LIGERO_USERFIRSTNAME&gt;,
 
 
-Here's your new OTRS password.
+Here's your new LIGERO password.
 
-New password: &lt;OTRS_NEWPW&gt;
+New password: &lt;LIGERO_NEWPW&gt;
 
 You can log in via the following URL:
 
-&lt;OTRS_CONFIG_HttpType&gt;://&lt;OTRS_CONFIG_FQDN&gt;/&lt;OTRS_CONFIG_ScriptAlias&gt;index.pl
+&lt;LIGERO_CONFIG_HttpType&gt;://&lt;LIGERO_CONFIG_FQDN&gt;/&lt;LIGERO_CONFIG_ScriptAlias&gt;index.pl
             </Item>
         </Value>
     </Setting>
@@ -3174,7 +3174,7 @@ You can log in via the following URL:
         <Description Translatable="1">Specifies the path of the file for the performance log.</Description>
         <Navigation>Core::PerformanceLog</Navigation>
         <Value>
-            <Item ValueType="String" ValueRegex="">&lt;OTRS_CONFIG_Home&gt;/var/log/Performance.log</Item>
+            <Item ValueType="String" ValueRegex="">&lt;LIGERO_CONFIG_Home&gt;/var/log/Performance.log</Item>
         </Value>
     </Setting>
     <Setting Name="PerformanceLog::FileMax" Required="1" Valid="1" ConfigLevel="200">
@@ -3359,7 +3359,7 @@ You can log in via the following URL:
                 <Item Key="Module">Kernel::Output::HTML::Preferences::Theme</Item>
                 <Item Key="PreferenceGroup">Miscellaneous</Item>
                 <Item Key="Label" Translatable="1">Theme</Item>
-                <Item Key="Desc" Translatable="1">Select your preferred theme for OTRS.</Item>
+                <Item Key="Desc" Translatable="1">Select your preferred theme for LIGERO.</Item>
                 <Item Key="Key" Translatable="1"></Item>
                 <Item Key="PrefKey">UserTheme</Item>
                 <Item Key="NeedsReload">1</Item>
@@ -3683,21 +3683,21 @@ You can log in via the following URL:
         <Description Translatable="1">Defines the subject for notification mails sent to customers, with token about new requested password.</Description>
         <Navigation>Frontend::Customer</Navigation>
         <Value>
-            <Item ValueType="String" ValueRegex="">New OTRS password request</Item>
+            <Item ValueType="String" ValueRegex="">New LIGERO password request</Item>
         </Value>
     </Setting>
     <Setting Name="CustomerPanelBodyLostPasswordToken" Required="1" Valid="1">
         <Description Translatable="1">Defines the body text for notification mails sent to customers, with token about new requested password.</Description>
         <Navigation>Frontend::Customer</Navigation>
         <Value>
-            <Item ValueType="Textarea">Hi &lt;OTRS_USERFIRSTNAME&gt;,
+            <Item ValueType="Textarea">Hi &lt;LIGERO_USERFIRSTNAME&gt;,
 
-You or someone impersonating you has requested to change your OTRS
+You or someone impersonating you has requested to change your LIGERO
 password.
 
 If you want to do this, click on this link. You will receive another email containing the password.
 
-&lt;OTRS_CONFIG_HttpType&gt;://&lt;OTRS_CONFIG_FQDN&gt;/&lt;OTRS_CONFIG_ScriptAlias&gt;customer.pl?Action=CustomerLostPassword;Token=&lt;OTRS_TOKEN&gt;
+&lt;LIGERO_CONFIG_HttpType&gt;://&lt;LIGERO_CONFIG_FQDN&gt;/&lt;LIGERO_CONFIG_ScriptAlias&gt;customer.pl?Action=CustomerLostPassword;Token=&lt;LIGERO_TOKEN&gt;
 
 If you did not request a new password, please ignore this email.
             </Item>
@@ -3707,19 +3707,19 @@ If you did not request a new password, please ignore this email.
         <Description Translatable="1">Defines the subject for notification mails sent to customers, about new password.</Description>
         <Navigation>Frontend::Customer</Navigation>
         <Value>
-            <Item ValueType="String" ValueRegex="">New OTRS password</Item>
+            <Item ValueType="String" ValueRegex="">New LIGERO password</Item>
         </Value>
     </Setting>
     <Setting Name="CustomerPanelBodyLostPassword" Required="1" Valid="1">
         <Description Translatable="1">Defines the body text for notification mails sent to customers, about new password.</Description>
         <Navigation>Frontend::Customer</Navigation>
         <Value>
-            <Item ValueType="Textarea">Hi &lt;OTRS_USERFIRSTNAME&gt;,
+            <Item ValueType="Textarea">Hi &lt;LIGERO_USERFIRSTNAME&gt;,
 
 
-New password: &lt;OTRS_NEWPW&gt;
+New password: &lt;LIGERO_NEWPW&gt;
 
-&lt;OTRS_CONFIG_HttpType&gt;://&lt;OTRS_CONFIG_FQDN&gt;/&lt;OTRS_CONFIG_ScriptAlias&gt;customer.pl
+&lt;LIGERO_CONFIG_HttpType&gt;://&lt;LIGERO_CONFIG_FQDN&gt;/&lt;LIGERO_CONFIG_ScriptAlias&gt;customer.pl
             </Item>
         </Value>
     </Setting>
@@ -3727,26 +3727,26 @@ New password: &lt;OTRS_NEWPW&gt;
         <Description Translatable="1">Defines the subject for notification mails sent to customers, about new account.</Description>
         <Navigation>Frontend::Customer</Navigation>
         <Value>
-            <Item ValueType="String" ValueRegex="">New OTRS Account!</Item>
+            <Item ValueType="String" ValueRegex="">New LIGERO Account!</Item>
         </Value>
     </Setting>
     <Setting Name="CustomerPanelBodyNewAccount" Required="1" Valid="1">
         <Description Translatable="1">Defines the body text for notification mails sent to customers, about new account.</Description>
         <Navigation>Frontend::Customer</Navigation>
         <Value>
-            <Item ValueType="Textarea">Hi &lt;OTRS_USERFIRSTNAME&gt;,
+            <Item ValueType="Textarea">Hi &lt;LIGERO_USERFIRSTNAME&gt;,
 
-You or someone impersonating you has created a new OTRS account for
+You or someone impersonating you has created a new LIGERO account for
 you.
 
-Full name: &lt;OTRS_USERFIRSTNAME&gt; &lt;OTRS_USERLASTNAME&gt;
-User name: &lt;OTRS_USERLOGIN&gt;
-Password : &lt;OTRS_USERPASSWORD&gt;
+Full name: &lt;LIGERO_USERFIRSTNAME&gt; &lt;LIGERO_USERLASTNAME&gt;
+User name: &lt;LIGERO_USERLOGIN&gt;
+Password : &lt;LIGERO_USERPASSWORD&gt;
 
 You can log in via the following URL. We encourage you to change your password
 via the Preferences button after logging in.
 
-&lt;OTRS_CONFIG_HttpType&gt;://&lt;OTRS_CONFIG_FQDN&gt;/&lt;OTRS_CONFIG_ScriptAlias&gt;customer.pl
+&lt;LIGERO_CONFIG_HttpType&gt;://&lt;LIGERO_CONFIG_FQDN&gt;/&lt;LIGERO_CONFIG_ScriptAlias&gt;customer.pl
             </Item>
         </Value>
     </Setting>
@@ -3865,7 +3865,7 @@ via the Preferences button after logging in.
         </Value>
     </Setting>
     <Setting Name="Customer::AuthModule::LDAP::GroupDN" Required="0" Valid="0" ConfigLevel="200">
-        <Description Translatable="1">If "LDAP" was selected for Customer::Authmodule, you can check if the user is allowed to authenticate because he is in a posixGroup, e.g. user needs to be in a group xyz to use OTRS. Specify the group, who may access the system.</Description>
+        <Description Translatable="1">If "LDAP" was selected for Customer::Authmodule, you can check if the user is allowed to authenticate because he is in a posixGroup, e.g. user needs to be in a group xyz to use LIGERO. Specify the group, who may access the system.</Description>
         <Navigation>Core::Auth::Customer</Navigation>
         <Value>
             <Item ValueType="String" ValueRegex="">cn=ligeroallow,ou=posixGroups,dc=example,dc=com</Item>
@@ -4081,7 +4081,7 @@ via the Preferences button after logging in.
                 <Item Key="Module">Kernel::Output::HTML::Preferences::Theme</Item>
                 <Item Key="PreferenceGroup">UserProfile</Item>
                 <Item Key="Label" Translatable="1">Theme</Item>
-                <Item Key="Desc" Translatable="1">Select your preferred theme for OTRS.</Item>
+                <Item Key="Desc" Translatable="1">Select your preferred theme for LIGERO.</Item>
                 <Item Key="Key" Translatable="1">Select your frontend Theme.</Item>
                 <Item Key="PrefKey">UserTheme</Item>
                 <Item Key="Prio">1000</Item>
@@ -4231,9 +4231,9 @@ via the Preferences button after logging in.
                         <Item>thirdparty/fullcalendar-3.4.0/fullcalendar.min.js</Item>
                         <Item>thirdparty/d3-3.5.6/d3.min.js</Item>
                         <Item>thirdparty/nvd3-1.7.1/nvd3.min.js</Item>
-                        <Item>thirdparty/nvd3-1.7.1/models/OTRSLineChart.js</Item>
-                        <Item>thirdparty/nvd3-1.7.1/models/OTRSMultiBarChart.js</Item>
-                        <Item>thirdparty/nvd3-1.7.1/models/OTRSStackedAreaChart.js</Item>
+                        <Item>thirdparty/nvd3-1.7.1/models/LIGEROLineChart.js</Item>
+                        <Item>thirdparty/nvd3-1.7.1/models/LIGEROMultiBarChart.js</Item>
+                        <Item>thirdparty/nvd3-1.7.1/models/LIGEROStackedAreaChart.js</Item>
                         <Item>thirdparty/canvg-1.4/rgbcolor.js</Item>
                         <Item>thirdparty/canvg-1.4/StackBlur.js</Item>
                         <Item>thirdparty/canvg-1.4/canvg.js</Item>
@@ -4967,9 +4967,9 @@ via the Preferences button after logging in.
                         <Item Key="Order">4000</Item>
                     </Hash>
                 </Item>
-                <Item Key="OTRSGroup">
+                <Item Key="LIGEROGroup">
                     <Hash>
-                        <Item Key="Title" Translatable="1">OTRS Group Services</Item>
+                        <Item Key="Title" Translatable="1">LIGERO Group Services</Item>
                         <Item Key="Order">5000</Item>
                     </Hash>
                 </Item>
@@ -6456,14 +6456,14 @@ via the Preferences button after logging in.
                 </Item>
                 <Item Key="Module">Kernel::Output::HTML::NavBar::ModuleAdmin</Item>
                 <Item Key="Name" Translatable="1">System Registration</Item>
-                <Item Key="Block">OTRSGroup</Item>
+                <Item Key="Block">LIGEROGroup</Item>
                 <Item Key="Description" Translatable="1">Manage system registration.</Item>
                 <Item Key="IconBig">fa-edit</Item>
                 <Item Key="IconSmall"></Item>
             </Hash>
         </Value>
     </Setting>
-    <Setting Name="Frontend::Module###AdminOTRSBusiness" Required="0" Valid="1">
+    <Setting Name="Frontend::Module###AdminLIGEROBusiness" Required="0" Valid="1">
         <Description Translatable="1">Frontend module registration for the agent interface.</Description>
         <Navigation>Frontend::Admin::ModuleRegistration</Navigation>
         <Value>
@@ -6479,26 +6479,26 @@ via the Preferences button after logging in.
                         </Array>
                     </Item>
                     <Item Key="Description">Admin</Item>
-                    <Item Key="Title">OTRS Business Solution™</Item>
+                    <Item Key="Title">LIGERO Business Solution™</Item>
                     <Item Key="NavBarName">Admin</Item>
                 </Hash>
             </Item>
         </Value>
     </Setting>
-    <Setting Name="Loader::Module::AdminOTRSBusiness###001-Framework" Required="0" Valid="1">
+    <Setting Name="Loader::Module::AdminLIGEROBusiness###001-Framework" Required="0" Valid="1">
         <Description Translatable="1">Loader module registration for the agent interface.</Description>
         <Navigation>Frontend::Admin::ModuleRegistration::Loader</Navigation>
         <Value>
             <Hash>
                 <Item Key="CSS">
                     <Array>
-                        <Item>Core.Agent.Admin.OTRSBusiness.css</Item>
+                        <Item>Core.Agent.Admin.LIGEROBusiness.css</Item>
                     </Array>
                 </Item>
             </Hash>
         </Value>
     </Setting>
-    <Setting Name="Frontend::Navigation###AdminOTRSBusiness###001-Framework" Required="0" Valid="0">
+    <Setting Name="Frontend::Navigation###AdminLIGEROBusiness###001-Framework" Required="0" Valid="0">
         <Description Translatable="1">Main menu item registration.</Description>
         <Navigation>Frontend::Admin::ModuleRegistration::MainMenu</Navigation>
         <Value>
@@ -6510,7 +6510,7 @@ via the Preferences button after logging in.
             </Array>
         </Value>
     </Setting>
-    <Setting Name="Frontend::NavigationModule###AdminOTRSBusiness" Required="0" Valid="1">
+    <Setting Name="Frontend::NavigationModule###AdminLIGEROBusiness" Required="0" Valid="1">
         <Description Translatable="1">Admin area navigation for the agent interface.</Description>
         <Navigation>Frontend::Admin::ModuleRegistration::AdminOverview</Navigation>
         <Value>
@@ -6525,16 +6525,16 @@ via the Preferences button after logging in.
                     </Array>
                 </Item>
                 <Item Key="Module">Kernel::Output::HTML::NavBar::ModuleAdmin</Item>
-                <Item Key="Name">OTRS Business Solution™</Item>
-                <Item Key="Block">OTRSGroup</Item>
-                <Item Key="Description" Translatable="1">Deploy and manage OTRS Business Solution™.</Item>
+                <Item Key="Name">LIGERO Business Solution™</Item>
+                <Item Key="Block">LIGEROGroup</Item>
+                <Item Key="Description" Translatable="1">Deploy and manage LIGERO Business Solution™.</Item>
                 <Item Key="IconBig">fa-angle-double-up</Item>
                 <Item Key="IconSmall"></Item>
-                <Item Key="CssClass">OTRSBusiness</Item>
+                <Item Key="CssClass">LIGEROBusiness</Item>
             </Hash>
         </Value>
     </Setting>
-    <Setting Name="Frontend::Module###AgentOTRSBusiness" Required="0" Valid="1">
+    <Setting Name="Frontend::Module###AgentLIGEROBusiness" Required="0" Valid="1">
         <Description Translatable="1">Frontend module registration for the agent interface.</Description>
         <Navigation>Frontend::Agent::ModuleRegistration</Navigation>
         <Value>
@@ -6549,20 +6549,20 @@ via the Preferences button after logging in.
                         </Array>
                     </Item>
                     <Item Key="Description">Agent</Item>
-                    <Item Key="Title">OTRS Business Solution™</Item>
+                    <Item Key="Title">LIGERO Business Solution™</Item>
                     <Item Key="NavBarName"></Item>
                 </Hash>
             </Item>
         </Value>
     </Setting>
-    <Setting Name="Loader::Module::AgentOTRSBusiness###001-Framework" Required="0" Valid="1">
+    <Setting Name="Loader::Module::AgentLIGEROBusiness###001-Framework" Required="0" Valid="1">
         <Description Translatable="1">Loader module registration for the agent interface.</Description>
         <Navigation>Frontend::Agent::ModuleRegistration::Loader</Navigation>
         <Value>
             <Hash>
                 <Item Key="CSS">
                     <Array>
-                        <Item>Core.Agent.Admin.OTRSBusiness.css</Item>
+                        <Item>Core.Agent.Admin.LIGEROBusiness.css</Item>
                     </Array>
                 </Item>
             </Hash>
@@ -6636,7 +6636,7 @@ via the Preferences button after logging in.
                 </Item>
                 <Item Key="Module">Kernel::Output::HTML::NavBar::ModuleAdmin</Item>
                 <Item Key="Name" Translatable="1">Support Data Collector</Item>
-                <Item Key="Block">OTRSGroup</Item>
+                <Item Key="Block">LIGEROGroup</Item>
                 <Item Key="Description" Translatable="1">Manage support data.</Item>
                 <Item Key="IconBig">fa-search</Item>
                 <Item Key="IconSmall"></Item>
@@ -6706,8 +6706,8 @@ via the Preferences button after logging in.
                 </Item>
                 <Item Key="Module">Kernel::Output::HTML::NavBar::ModuleAdmin</Item>
                 <Item Key="Name" Translatable="1">Cloud Services</Item>
-                <Item Key="Block">OTRSGroup</Item>
-                <Item Key="Description" Translatable="1">Manage OTRS Group cloud services.</Item>
+                <Item Key="Block">LIGEROGroup</Item>
+                <Item Key="Description" Translatable="1">Manage LIGERO Group cloud services.</Item>
                 <Item Key="IconBig">fa-cloud</Item>
                 <Item Key="IconSmall"></Item>
             </Hash>
@@ -6728,7 +6728,7 @@ via the Preferences button after logging in.
                             <Item>admin</Item>
                         </Array>
                     </Item>
-                    <Item Key="Description" Translatable="1">This module is part of the admin area of OTRS.</Item>
+                    <Item Key="Description" Translatable="1">This module is part of the admin area of LIGERO.</Item>
                     <Item Key="Title" Translatable="1">Communication Log GUI</Item>
                     <Item Key="NavBarName">Admin</Item>
                 </Hash>
@@ -7210,11 +7210,11 @@ via the Preferences button after logging in.
         </Value>
     </Setting>
     <Setting Name="PublicFrontend::FooterLinks" Required="0" Valid="0">
-        <Description Translatable="1">Defines the shown links in the footer area of the customer and public interface of this OTRS system. The value in "Key" is the external URL, the value in "Content" is the shown label.</Description>
+        <Description Translatable="1">Defines the shown links in the footer area of the customer and public interface of this LIGERO system. The value in "Key" is the external URL, the value in "Content" is the shown label.</Description>
         <Navigation>Frontend::Public</Navigation>
         <Value>
             <Hash>
-                <Item Key="https://www.ligero.com">OTRS Homepage</Item>
+                <Item Key="https://www.ligero.com">LIGERO Homepage</Item>
             </Hash>
         </Value>
     </Setting>
@@ -7326,9 +7326,9 @@ via the Preferences button after logging in.
                     <Array>
                         <Item>thirdparty/d3-3.5.6/d3.min.js</Item>
                         <Item>thirdparty/nvd3-1.7.1/nvd3.min.js</Item>
-                        <Item>thirdparty/nvd3-1.7.1/models/OTRSLineChart.js</Item>
-                        <Item>thirdparty/nvd3-1.7.1/models/OTRSMultiBarChart.js</Item>
-                        <Item>thirdparty/nvd3-1.7.1/models/OTRSStackedAreaChart.js</Item>
+                        <Item>thirdparty/nvd3-1.7.1/models/LIGEROLineChart.js</Item>
+                        <Item>thirdparty/nvd3-1.7.1/models/LIGEROMultiBarChart.js</Item>
+                        <Item>thirdparty/nvd3-1.7.1/models/LIGEROStackedAreaChart.js</Item>
                         <Item>thirdparty/canvg-1.4/rgbcolor.js</Item>
                         <Item>thirdparty/canvg-1.4/StackBlur.js</Item>
                         <Item>thirdparty/canvg-1.4/canvg.js</Item>
@@ -7386,9 +7386,9 @@ via the Preferences button after logging in.
                             </Array>
                         </Item>
                         <Item Key="Description" Translatable="1">Statistic Reports overview.</Item>
-                        <Item Key="Name" Translatable="1">Reports (OTRS Business Solution™)</Item>
+                        <Item Key="Name" Translatable="1">Reports (LIGERO Business Solution™)</Item>
                         <Item Key="Link">Action=AgentStatisticsReports;Subaction=Overview</Item>
-                        <Item Key="LinkOption">class="OTRSBusinessRequired"</Item>
+                        <Item Key="LinkOption">class="LIGEROBusinessRequired"</Item>
                         <Item Key="NavBar">Reports</Item>
                         <Item Key="Type"></Item>
                         <Item Key="Block"></Item>
@@ -7537,7 +7537,7 @@ via the Preferences button after logging in.
         </Value>
     </Setting>
     <Setting Name="Core::MirrorDB::DSN" Required="0" Valid="0" ConfigLevel="200">
-        <Description Translatable="1">OTRS can use one or more readonly mirror databases for expensive operations like fulltext search or statistics generation. Here you can specify the DSN for the first mirror database.</Description>
+        <Description Translatable="1">LIGERO can use one or more readonly mirror databases for expensive operations like fulltext search or statistics generation. Here you can specify the DSN for the first mirror database.</Description>
         <Navigation>Core::DB::Mirror</Navigation>
         <Value>
             <Item ValueType="String" ValueRegex="">DBI:mysql:database=mirrordb;host=mirrordbhost</Item>
@@ -7619,7 +7619,7 @@ via the Preferences button after logging in.
             <Hash>
                 <Item Key="Module">Kernel::Output::HTML::Dashboard::ProductNotify</Item>
                 <Item Key="Title" Translatable="1">Product News</Item>
-                <Item Key="Description" Translatable="1">News about OTRS releases!</Item>
+                <Item Key="Description" Translatable="1">News about LIGERO releases!</Item>
                 <Item Key="Block">ContentLarge</Item>
                 <Item Key="Group">admin</Item>
                 <Item Key="Default">1</Item>
@@ -7672,8 +7672,8 @@ via the Preferences button after logging in.
         <Value>
             <Hash>
                 <Item Key="Module">Kernel::Output::HTML::Dashboard::News</Item>
-                <Item Key="Title" Translatable="1">OTRS News</Item>
-                <Item Key="Description" Translatable="1">News about OTRS.</Item>
+                <Item Key="Title" Translatable="1">LIGERO News</Item>
+                <Item Key="Description" Translatable="1">News about LIGERO.</Item>
                 <Item Key="Block">ContentSmall</Item>
                 <Item Key="Limit">6</Item>
                 <Item Key="Group"></Item>
@@ -7732,7 +7732,7 @@ via the Preferences button after logging in.
                 <Item Key="Title" Translatable="1">A picture</Item>
                 <Item Key="Description" Translatable="1">Some picture description!</Item>
                 <Item Key="Block">ContentLarge</Item>
-                <Item Key="URL">http://www.ligero.com/wp-uploads//2013/10/OTRS_Logo-300x170.png</Item>
+                <Item Key="URL">http://www.ligero.com/wp-uploads//2013/10/LIGERO_Logo-300x170.png</Item>
                 <Item Key="Group"></Item>
                 <Item Key="Default">1</Item>
                 <Item Key="Link">http://ligero.org/</Item>
@@ -7770,7 +7770,7 @@ via the Preferences button after logging in.
                 <Item Key="Group"></Item>
                 <Item Key="Default">1</Item>
                 <Item Key="Link">http://ligero.org/</Item>
-                <Item Key="LinkTitle">OTRS.org/</Item>
+                <Item Key="LinkTitle">LIGERO.org/</Item>
                 <Item Key="Width">1024</Item>
                 <Item Key="Height">800</Item>
                 <Item Key="Marginheight">5</Item>
@@ -7804,7 +7804,7 @@ via the Preferences button after logging in.
         </Value>
     </Setting>
     <Setting Name="Frontend::Output::OutputFilterTextAutoLink###CVE" Required="0" Valid="0">
-        <Description Translatable="1">Defines a filter for html output to add links behind CVE numbers. The element Image allows two input kinds. At once the name of an image (e.g. faq.png). In this case the OTRS image path will be used. The second possiblity is to insert the link to the image.</Description>
+        <Description Translatable="1">Defines a filter for html output to add links behind CVE numbers. The element Image allows two input kinds. At once the name of an image (e.g. faq.png). In this case the LIGERO image path will be used. The second possiblity is to insert the link to the image.</Description>
         <Navigation>Frontend::Base::OutputFilter</Navigation>
         <Value>
             <Hash>
@@ -7846,7 +7846,7 @@ via the Preferences button after logging in.
         </Value>
     </Setting>
     <Setting Name="Frontend::Output::OutputFilterTextAutoLink###Bugtraq" Required="0" Valid="0">
-        <Description Translatable="1">Defines a filter for html output to add links behind bugtraq numbers. The element Image allows two input kinds. At once the name of an image (e.g. faq.png). In this case the OTRS image path will be used. The second possiblity is to insert the link to the image.</Description>
+        <Description Translatable="1">Defines a filter for html output to add links behind bugtraq numbers. The element Image allows two input kinds. At once the name of an image (e.g. faq.png). In this case the LIGERO image path will be used. The second possiblity is to insert the link to the image.</Description>
         <Navigation>Frontend::Base::OutputFilter</Navigation>
         <!-- Example strings: BugTraq ID: 23862 | BugTraq ID: 8945 | Bugtraq ID 140 | BUGTRAQ:20070425 | BID 20799 -->
         <!-- Example URL: http://www.securityfocus.com/bid/23862/info  -->
@@ -7887,7 +7887,7 @@ via the Preferences button after logging in.
         </Value>
     </Setting>
     <Setting Name="Frontend::Output::OutputFilterTextAutoLink###MSBulletins" Required="0" Valid="0">
-        <Description Translatable="1">Defines a filter for html output to add links behind MSBulletin numbers. The element Image allows two input kinds. At once the name of an image (e.g. faq.png). In this case the OTRS image path will be used. The second possiblity is to insert the link to the image.</Description>
+        <Description Translatable="1">Defines a filter for html output to add links behind MSBulletin numbers. The element Image allows two input kinds. At once the name of an image (e.g. faq.png). In this case the LIGERO image path will be used. The second possiblity is to insert the link to the image.</Description>
         <Navigation>Frontend::Base::OutputFilter</Navigation>
         <!-- Example strings: MS07-021 | MS04-028 | MS-07-002 -->
         <!-- Example URL: http://www.microsoft.com/technet/security/bulletin/MS07-021.mspx  -->
@@ -7923,7 +7923,7 @@ via the Preferences button after logging in.
         </Value>
     </Setting>
     <Setting Name="Frontend::Output::OutputFilterTextAutoLink###Setting1" Required="0" Valid="0">
-        <Description Translatable="1">Define a filter for html output to add links behind a defined string. The element Image allows two input kinds. At once the name of an image (e.g. faq.png). In this case the OTRS image path will be used. The second possiblity is to insert the link to the image.</Description>
+        <Description Translatable="1">Define a filter for html output to add links behind a defined string. The element Image allows two input kinds. At once the name of an image (e.g. faq.png). In this case the LIGERO image path will be used. The second possiblity is to insert the link to the image.</Description>
         <Navigation>Frontend::Base::OutputFilter</Navigation>
         <Value>
             <Hash>
@@ -7957,7 +7957,7 @@ via the Preferences button after logging in.
         </Value>
     </Setting>
     <Setting Name="Frontend::Output::OutputFilterTextAutoLink###Setting2" Required="0" Valid="0">
-        <Description Translatable="1">Defines a filter for html output to add links behind a defined string. The element Image allows two input kinds. At once the name of an image (e.g. faq.png). In this case the OTRS image path will be used. The second possiblity is to insert the link to the image.</Description>
+        <Description Translatable="1">Defines a filter for html output to add links behind a defined string. The element Image allows two input kinds. At once the name of an image (e.g. faq.png). In this case the LIGERO image path will be used. The second possiblity is to insert the link to the image.</Description>
         <Navigation>Frontend::Base::OutputFilter</Navigation>
         <Value>
             <Hash>
@@ -7999,21 +7999,21 @@ via the Preferences button after logging in.
         </Value>
     </Setting>
     <Setting Name="Secure::DisableBanner" Required="1" Valid="1">
-        <Description Translatable="1">If enabled, the OTRS version tag will be removed from the Webinterface, the HTTP headers and the X-Headers of outgoing mails. NOTE: If you change this option, please make sure to delete the cache.</Description>
+        <Description Translatable="1">If enabled, the LIGERO version tag will be removed from the Webinterface, the HTTP headers and the X-Headers of outgoing mails. NOTE: If you change this option, please make sure to delete the cache.</Description>
         <Navigation>Core</Navigation>
         <Value>
             <Item ValueType="Checkbox">0</Item>
         </Value>
     </Setting>
     <Setting Name="Loader::Enabled::CSS" Required="1" Valid="1">
-        <Description Translatable="1">If enabled, OTRS will deliver all CSS files in minified form.</Description>
+        <Description Translatable="1">If enabled, LIGERO will deliver all CSS files in minified form.</Description>
         <Navigation>Frontend::Base::Loader</Navigation>
         <Value>
             <Item ValueType="Checkbox">1</Item>
         </Value>
     </Setting>
     <Setting Name="Loader::Enabled::JS" Required="1" Valid="1">
-        <Description Translatable="1">If enabled, OTRS will deliver all JavaScript files in minified form.</Description>
+        <Description Translatable="1">If enabled, LIGERO will deliver all JavaScript files in minified form.</Description>
         <Navigation>Frontend::Base::Loader</Navigation>
         <Value>
             <Item ValueType="Checkbox">1</Item>
@@ -8582,8 +8582,8 @@ via the Preferences button after logging in.
             <Item ValueType="String" ValueRegex="" Translatable="1">We are performing scheduled maintenance. Login is temporarily not available.</Item>
         </Value>
     </Setting>
-    <Setting Name="OTRSBusiness::ReleaseChannel" Required="1" Valid="1" ConfigLevel="100">
-        <Description Translatable="1">Specify the channel to be used to fetch OTRS Business Solution™ updates. Warning: Development releases might not be complete, your system might experience unrecoverable errors and on extreme cases could become unresponsive!</Description>
+    <Setting Name="LIGEROBusiness::ReleaseChannel" Required="1" Valid="1" ConfigLevel="100">
+        <Description Translatable="1">Specify the channel to be used to fetch LIGERO Business Solution™ updates. Warning: Development releases might not be complete, your system might experience unrecoverable errors and on extreme cases could become unresponsive!</Description>
         <Navigation>Core::Package</Navigation>
         <Value>
             <Item ValueType="Select" SelectedID="1">
@@ -8845,7 +8845,7 @@ via the Preferences button after logging in.
         <Navigation>Core::CommunicationChannel</Navigation>
         <Value>
             <Hash>
-                <Item Key="Name" Translatable="1">OTRS</Item>
+                <Item Key="Name" Translatable="1">LIGERO</Item>
                 <Item Key="Icon">fa-cloud</Item>
                 <Item Key="Description" Translatable="1">Internal communication channel.</Item>
                 <Item Key="Module">Kernel::System::CommunicationChannel::Internal</Item>

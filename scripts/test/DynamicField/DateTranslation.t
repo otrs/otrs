@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -121,20 +121,20 @@ my @Tests = (
     {
         Config => {
             Type         => 'Date',
-            OTRSTimeZone => 'UTC',
+            LIGEROTimeZone => 'UTC',
             UserTimeZone => 'Europe/Berlin',
             Common       => {
                 DynamicFieldConfig => $DynamicFieldConfigsByType{Date},
             },
             EditFieldRender => {
 
-                # in OTRS time zone
+                # in LIGERO time zone
                 Value => {
                     Value       => '2013-10-01 23:30:00',
                     ParamObject => $ParamObject,
                 },
 
-                # in OTRS time zone
+                # in LIGERO time zone
                 WebRequest => {
                     CGIParam => {
                         'DynamicField_DFDate' . $RandomID . 'Used'  => 1,
@@ -180,20 +180,20 @@ my @Tests = (
     {
         Config => {
             Type         => 'Date',
-            OTRSTimeZone => 'Europe/Berlin',
+            LIGEROTimeZone => 'Europe/Berlin',
             UserTimeZone => 'America/New_York',
             Common       => {
                 DynamicFieldConfig => $DynamicFieldConfigsByType{Date},
             },
             EditFieldRender => {
 
-                # in OTRS time zone
+                # in LIGERO time zone
                 Value => {
                     Value       => '2013-10-01 23:30:00',
                     ParamObject => $ParamObject,
                 },
 
-                # in OTRS time zone
+                # in LIGERO time zone
                 WebRequest => {
                     CGIParam => {
                         'DynamicField_DFDate' . $RandomID . 'Used'  => 1,
@@ -243,14 +243,14 @@ my @Tests = (
     {
         Config => {
             Type         => 'DateTime',
-            OTRSTimeZone => 'UTC',
+            LIGEROTimeZone => 'UTC',
             UserTimeZone => 'Europe/Berlin',
             Common       => {
                 DynamicFieldConfig => $DynamicFieldConfigsByType{DateTime},
             },
             EditFieldRender => {
 
-                # in OTRS time zone
+                # in LIGERO time zone
                 Value => {
                     Value       => '2013-09-30 23:01:00',
                     ParamObject => $ParamObject,
@@ -282,7 +282,7 @@ my @Tests = (
             },
             ValueSetGet => {
 
-                # in OTRS time zone
+                # in LIGERO time zone
                 Value    => '2013-09-30 23:01:00',
                 ObjectID => $TicketID,
                 UserID   => 1,
@@ -310,24 +310,24 @@ my @Tests = (
                 },
             },
 
-            # in OTRS time zone
+            # in LIGERO time zone
             EditFieldValueGet => '2013-09-30 21:01:00',
 
-            # in OTRS time zone
+            # in LIGERO time zone
             ValueSetGet => '2013-09-30 23:01:00',
         },
     },
     {
         Config => {
             Type         => 'DateTime',
-            OTRSTimeZone => 'Europe/Berlin',
+            LIGEROTimeZone => 'Europe/Berlin',
             UserTimeZone => 'America/New_York',
             Common       => {
                 DynamicFieldConfig => $DynamicFieldConfigsByType{DateTime},
             },
             EditFieldRender => {
 
-                # in OTRS time zone
+                # in LIGERO time zone
                 Value => {
                     Value       => '2013-10-01 03:01:00',
                     ParamObject => $ParamObject,
@@ -359,7 +359,7 @@ my @Tests = (
             },
             ValueSetGet => {
 
-                # in OTRS time zone
+                # in LIGERO time zone
                 Value    => '2013-10-01 03:01:00',
                 ObjectID => $TicketID,
                 UserID   => 1,
@@ -387,24 +387,24 @@ my @Tests = (
                 },
             },
 
-            # in OTRS time zone
+            # in LIGERO time zone
             EditFieldValueGet => '2013-10-01 09:01:00',
 
-            # in OTRS time zone
+            # in LIGERO time zone
             ValueSetGet => '2013-10-01 03:01:00',
         },
     },
     {
         Config => {
             Type         => 'DateTime',
-            OTRSTimeZone => 'Europe/Berlin',
+            LIGEROTimeZone => 'Europe/Berlin',
             UserTimeZone => 'Europe/Berlin',
             Common       => {
                 DynamicFieldConfig => $DynamicFieldConfigsByType{DateTime},
             },
             EditFieldRender => {
 
-                # in OTRS time zone
+                # in LIGERO time zone
                 Value => {
                     Value       => '2013-10-01 03:01:00',
                     ParamObject => $ParamObject,
@@ -436,7 +436,7 @@ my @Tests = (
             },
             ValueSetGet => {
 
-                # in OTRS time zone
+                # in LIGERO time zone
                 Value    => '2013-10-01 03:01:00',
                 ObjectID => $TicketID,
                 UserID   => 1,
@@ -464,10 +464,10 @@ my @Tests = (
                 },
             },
 
-            # in OTRS time zone
+            # in LIGERO time zone
             EditFieldValueGet => '2013-10-01 03:01:00',
 
-            # in OTRS time zone
+            # in LIGERO time zone
             ValueSetGet => '2013-10-01 03:01:00',
         },
     },
@@ -477,8 +477,8 @@ my @Tests = (
 for my $Test (@Tests) {
 
     $ConfigObject->Set(
-        Key   => 'OTRSTimeZone',
-        Value => $Test->{Config}->{OTRSTimeZone},
+        Key   => 'LIGEROTimeZone',
+        Value => $Test->{Config}->{LIGEROTimeZone},
     );
 
     # get Layout object with correct user time zone
@@ -533,21 +533,21 @@ for my $Test (@Tests) {
         $HTMLResult{Day} = $1;
 
         # reset capturing groups
-        "OTRS" =~ m{OTRS};
+        "LIGERO" =~ m{LIGERO};
 
         # get month from HTML
         $FieldHTML->{Field} =~ m{title="Month" [^s]+ selected="selected">([^<]+)</option>}msx;
         $HTMLResult{Month} = $1;
 
         # reset capturing groups
-        "OTRS" =~ m{OTRS};
+        "LIGERO" =~ m{LIGERO};
 
         # get year from HTML
         $FieldHTML->{Field} =~ m{title="Year" [^s]+ selected="selected">([^<]+)</option>}msx;
         $HTMLResult{Year} = $1;
 
         # reset capturing groups
-        "OTRS" =~ m{OTRS};
+        "LIGERO" =~ m{LIGERO};
 
         # also get Hour and Minute for DateTime fields
         if ( $Test->{Config}->{Type} eq 'DateTime' ) {
@@ -557,20 +557,20 @@ for my $Test (@Tests) {
             $HTMLResult{Hour} = $1;
 
             # reset capturing groups
-            "OTRS" =~ m{OTRS};
+            "LIGERO" =~ m{LIGERO};
 
             # get minute from HTML
             $FieldHTML->{Field} =~ m{title="Minutes" [^s]+ selected="selected">([^<]+)</option>}msx;
             $HTMLResult{Minute} = $1;
 
             # reset capturing groups
-            "OTRS" =~ m{OTRS};
+            "LIGERO" =~ m{LIGERO};
         }
 
         $Self->IsDeeply(
             \%HTMLResult,
             $Test->{ExpectedResults}->{EditFieldRender}->{$Type},
-            "EditFieldRender() for type $Type: Field type $Test->{Config}->{Type}, OTRS time zone $Test->{Config}->{OTRSTimeZone}, "
+            "EditFieldRender() for type $Type: Field type $Test->{Config}->{Type}, LIGERO time zone $Test->{Config}->{LIGEROTimeZone}, "
                 . (
                 $Test->{Config}->{UserTimeZone} ? "user time zone $Test->{Config}->{UserTimeZone}" : 'no user time zone'
                 ),
@@ -595,7 +595,7 @@ for my $Test (@Tests) {
     $Self->Is(
         $Value,
         $Test->{ExpectedResults}->{EditFieldValueGet},
-        "EditFieldValueGet(): Field type $Test->{Config}->{Type}, OTRS time zone $Test->{Config}->{OTRSTimeZone}, "
+        "EditFieldValueGet(): Field type $Test->{Config}->{Type}, LIGERO time zone $Test->{Config}->{LIGEROTimeZone}, "
             . (
             $Test->{Config}->{UserTimeZone} ? "user time zone $Test->{Config}->{UserTimeZone}" : 'no user time zone'
             ),
@@ -614,7 +614,7 @@ for my $Test (@Tests) {
     $Self->Is(
         $Value,
         $Test->{ExpectedResults}->{ValueSetGet},
-        "ValueGet(): Field type $Test->{Config}->{Type}, OTRS time zone $Test->{Config}->{OTRSTimeZone}, "
+        "ValueGet(): Field type $Test->{Config}->{Type}, LIGERO time zone $Test->{Config}->{LIGEROTimeZone}, "
             . (
             $Test->{Config}->{UserTimeZone} ? "user time zone $Test->{Config}->{UserTimeZone}" : 'no user time zone'
             ),

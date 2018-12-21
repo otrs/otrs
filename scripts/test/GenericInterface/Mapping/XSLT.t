@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -135,7 +135,7 @@ my @MappingTests = (
  xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
  xmlns:ligero="http://ligero.org"
  extension-element-prefixes="ligero">
-<xsl:import href="$Home/Kernel/GenericInterface/Mapping/OTRSFunctions.xsl" />
+<xsl:import href="$Home/Kernel/GenericInterface/Mapping/LIGEROFunctions.xsl" />
 <xsl:output method="xml" encoding="utf-8" indent="yes"/>
 <xsl:template match="/RootElement">
 <NewRootElement>
@@ -210,7 +210,7 @@ my @MappingTests = (
  xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
  xmlns:ligero="http://ligero.org"
  extension-element-prefixes="ligero">
-<xsl:import href="$Home/Kernel/GenericInterface/Mapping/OTRSFunctions.xsl" />
+<xsl:import href="$Home/Kernel/GenericInterface/Mapping/LIGEROFunctions.xsl" />
 <xsl:output method="xml" encoding="utf-8" indent="yes"/>
 <xsl:template match="/RootElement">
 <NewRootElement>
@@ -281,7 +281,7 @@ my @MappingTests = (
  xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
  xmlns:ligero="http://ligero.org"
  extension-element-prefixes="ligero">
-<xsl:import href="$Home/Kernel/GenericInterface/Mapping/OTRSFunctions.xsl" />
+<xsl:import href="$Home/Kernel/GenericInterface/Mapping/LIGEROFunctions.xsl" />
 <xsl:output method="xml" encoding="utf-8" indent="yes"/>
 <xsl:template match="/RootElement">
 <NewRootElement>

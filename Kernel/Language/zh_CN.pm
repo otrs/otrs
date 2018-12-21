@@ -297,25 +297,25 @@ sub Data {
         'Support data collector' => '支持数据收集工具',
         'Hint' => '提示',
         'Currently support data is only shown in this system.' => '当前的支持数据只是在系统中显示。',
-        'It is highly recommended to send this data to OTRS Group in order to get better support.' =>
-            '极力推荐将支持数据发送给OTRS集团以便获得更好的支持。',
+        'It is highly recommended to send this data to LIGERO Group in order to get better support.' =>
+            '极力推荐将支持数据发送给LIGERO集团以便获得更好的支持。',
         'Configuration' => '配置',
         'Send support data' => '发送支持数据',
-        'This will allow the system to send additional support data information to OTRS Group.' =>
-            '允许系统发送额外的支持数据信息给OTRS集团。',
+        'This will allow the system to send additional support data information to LIGERO Group.' =>
+            '允许系统发送额外的支持数据信息给LIGERO集团。',
         'Update' => '更新',
         'System Registration' => '系统注册',
-        'To enable data sending, please register your system with OTRS Group or update your system registration information (make sure to activate the \'send support data\' option.)' =>
-            '为了启用数据发送功能，请将您的系统注册到OTRS集团或更新您的注册信息（确保激活了“发送支持数据”选项。）',
+        'To enable data sending, please register your system with LIGERO Group or update your system registration information (make sure to activate the \'send support data\' option.)' =>
+            '为了启用数据发送功能，请将您的系统注册到LIGERO集团或更新您的注册信息（确保激活了“发送支持数据”选项。）',
         'Register this System' => '注册本系统',
         'System Registration is disabled for your system. Please check your configuration.' =>
             '本系统的系统注册功能已被禁用，请检查你的配置。',
 
         # Template: AdminCloudServices
-        'System registration is a service of OTRS Group, which provides a lot of advantages!' =>
-            '系统注册是OTRS集团的一项服务，它为您提供了很多好处!',
-        'Please note that the use of OTRS cloud services requires the system to be registered.' =>
-            '请注意：为了使用OTRS云服务，需要先注册系统。',
+        'System registration is a service of LIGERO Group, which provides a lot of advantages!' =>
+            '系统注册是LIGERO集团的一项服务，它为您提供了很多好处!',
+        'Please note that the use of LIGERO cloud services requires the system to be registered.' =>
+            '请注意：为了使用LIGERO云服务，需要先注册系统。',
         'Register this system' => '注册本系统',
         'Here you can configure available cloud services that communicate securely with %s.' =>
             '你可以在这里配置可用的云服务，其与%s的通信是安全的。',
@@ -784,8 +784,8 @@ sub Data {
             '该名称可用于区分不同的错误处理配置。',
         'Please provide a unique name for this web service.' => '请为这个Web服务提供一个唯一的名称。',
         'Error handling module backend' => '错误处理模块后端',
-        'This OTRS error handling backend module will be called internally to process the error handling mechanism.' =>
-            '这个OTRS错误处理后端模块将被内部调用以处理错误处理机制。',
+        'This LIGERO error handling backend module will be called internally to process the error handling mechanism.' =>
+            '这个LIGERO错误处理后端模块将被内部调用以处理错误处理机制。',
         'Processing options' => '处理选项',
         'Configure filters to control error handling module execution.' =>
             '配置过滤器来控制错误处理模块执行。',
@@ -876,23 +876,23 @@ sub Data {
         'The name is typically used to call up an operation of a remote web service.' =>
             '该名称通常用于调用远程Web服务的操作。',
         'Invoker backend' => '调用程序后端',
-        'This OTRS invoker backend module will be called to prepare the data to be sent to the remote system, and to process its response data.' =>
-            '这个OTRS调用程序后端模块被调用后，负责准备需要发送给远程系统的数据，并处理它的响应数据。',
+        'This LIGERO invoker backend module will be called to prepare the data to be sent to the remote system, and to process its response data.' =>
+            '这个LIGERO调用程序后端模块被调用后，负责准备需要发送给远程系统的数据，并处理它的响应数据。',
         'Mapping for outgoing request data' => '映射出站请求数据',
         'Configure' => '配置',
-        'The data from the invoker of OTRS will be processed by this mapping, to transform it to the kind of data the remote system expects.' =>
-            '这个映射将对OTRS调用程序输出的数据进行处理，将它转换为远程系统所期待的数据。',
+        'The data from the invoker of LIGERO will be processed by this mapping, to transform it to the kind of data the remote system expects.' =>
+            '这个映射将对LIGERO调用程序输出的数据进行处理，将它转换为远程系统所期待的数据。',
         'Mapping for incoming response data' => '映射入站请求数据',
-        'The response data will be processed by this mapping, to transform it to the kind of data the invoker of OTRS expects.' =>
-            '这个映射将对响应数据进行处理，将它转换为OTRS调用程序所期待的数据。',
+        'The response data will be processed by this mapping, to transform it to the kind of data the invoker of LIGERO expects.' =>
+            '这个映射将对响应数据进行处理，将它转换为LIGERO调用程序所期待的数据。',
         'Asynchronous' => '异步',
         'Condition' => '条件',
         'Edit this event' => '编辑这个事件',
         'This invoker will be triggered by the configured events.' => '配置事件将触发这个调用程序。',
         'To add a new event select the event object and event name and click on the "+" button' =>
             '要添加新事件，请选择事件对象和事件名称，然后单击“+”按钮',
-        'Asynchronous event triggers are handled by the OTRS Scheduler Daemon in background (recommended).' =>
-            '异步的事件触发器将由后端的OTRS调度程序守护进程处理（推荐）。',
+        'Asynchronous event triggers are handled by the LIGERO Scheduler Daemon in background (recommended).' =>
+            '异步的事件触发器将由后端的LIGERO调度程序守护进程处理（推荐）。',
         'Synchronous event triggers would be processed directly during the web request.' =>
             '同步的事件触发器则是在web请求期间直接处理的。',
 
@@ -996,11 +996,11 @@ sub Data {
         'The name is typically used to call up this web service operation from a remote system.' =>
             '这个名称通常用于从一个远程系统调用这个web服务操作。',
         'Operation backend' => '操作后端',
-        'This OTRS operation backend module will be called internally to process the request, generating data for the response.' =>
-            '这个OTRS操作后端模块将被调用，以便处理请求、生成响应数据。',
+        'This LIGERO operation backend module will be called internally to process the request, generating data for the response.' =>
+            '这个LIGERO操作后端模块将被调用，以便处理请求、生成响应数据。',
         'Mapping for incoming request data' => '映射传入请求数据',
-        'The request data will be processed by this mapping, to transform it to the kind of data OTRS expects.' =>
-            '这个映射将对请求数据进行处理，将它转换为OTRS所期待的数据。',
+        'The request data will be processed by this mapping, to transform it to the kind of data LIGERO expects.' =>
+            '这个映射将对请求数据进行处理，将它转换为LIGERO所期待的数据。',
         'Mapping for outgoing response data' => '映射出站响应数据',
         'The response data will be processed by this mapping, to transform it to the kind of data the remote system expects.' =>
             '这个映射将对响应数据进行处理，以便将它转换成远程系统所期待的数据。',
@@ -1018,8 +1018,8 @@ sub Data {
             '限制这个操作使用指定的请求方法。如果没有选择方法，则所有的请求都可以接受。',
         'Maximum message length' => '消息的最大长度',
         'This field should be an integer number.' => '这个字段值应该是一个整数。',
-        'Here you can specify the maximum size (in bytes) of REST messages that OTRS will process.' =>
-            '在这里你可以指定OTRS能够处理的REST消息的最大长度(以字节为单位)。',
+        'Here you can specify the maximum size (in bytes) of REST messages that LIGERO will process.' =>
+            '在这里你可以指定LIGERO能够处理的REST消息的最大长度(以字节为单位)。',
         'Send Keep-Alive' => '发送Keep-Alive（保持连接）',
         'This configuration defines if incoming connections should get closed or kept alive.' =>
             '此配置定义传入的连接应该关闭还是保持连接。',
@@ -1119,8 +1119,8 @@ sub Data {
         'Select how SOAP response function wrapper should be constructed.' =>
             '选择如何构建SOAP回复函数封装器。',
         'Response name free text' => '回复名称自由文本',
-        'Here you can specify the maximum size (in bytes) of SOAP messages that OTRS will process.' =>
-            '在这里你可以指定OTRS能够处理的SOAP消息的最大长度(以字节为单位)。',
+        'Here you can specify the maximum size (in bytes) of SOAP messages that LIGERO will process.' =>
+            '在这里你可以指定LIGERO能够处理的SOAP消息的最大长度(以字节为单位)。',
         'Encoding' => '编码',
         'The character encoding for the SOAP message contents.' => 'SOAP消息内容的字符编码。',
         'e.g utf-8, latin1, iso-8859-1, cp1250, Etc.' => '例如：utf-8, latin1, iso-8859-1, cp1250等等。',
@@ -1163,10 +1163,10 @@ sub Data {
         'Provider transport' => '服务提供方传输',
         'Requester transport' => '服务请求方传输',
         'Debug threshold' => '调试阀值',
-        'In provider mode, OTRS offers web services which are used by remote systems.' =>
-            '在提供方模式中，OTRS为远程系统提供Web服务。',
-        'In requester mode, OTRS uses web services of remote systems.' =>
-            '在请求方模式中，OTRS使用远程系统的Web服务。',
+        'In provider mode, LIGERO offers web services which are used by remote systems.' =>
+            '在提供方模式中，LIGERO为远程系统提供Web服务。',
+        'In requester mode, LIGERO uses web services of remote systems.' =>
+            '在请求方模式中，LIGERO使用远程系统的Web服务。',
         'Network transport' => '网络传输',
         'Error Handling Modules' => '错误处理模块',
         'Error handling modules are used to react in case of errors during the communication. Those modules are executed in a specific order, which can be changed by drag and drop.' =>
@@ -1226,8 +1226,8 @@ sub Data {
         'Filter for mail accounts' => '邮件帐户过滤器',
         'All incoming emails with one account will be dispatched in the selected queue.' =>
             '同一帐户的所有传入电子邮件将在所选的队列中分派。',
-        'If your account is marked as trusted, the X-OTRS headers already existing at arrival time (for priority etc.) will be kept and used, for example in PostMaster filters.' =>
-            '如果你的帐户被标记为受信任，则在到达时间已经存在的X-OTRS标头（优先级等）将被保留并被使用，例如用于邮箱管理员过滤器。',
+        'If your account is marked as trusted, the X-LIGERO headers already existing at arrival time (for priority etc.) will be kept and used, for example in PostMaster filters.' =>
+            '如果你的帐户被标记为受信任，则在到达时间已经存在的X-LIGERO标头（优先级等）将被保留并被使用，例如用于邮箱管理员过滤器。',
         'Outgoing email can be configured via the Sendmail* settings in %s.' =>
             '外发电子邮件可以通过%s中的Sendmail开头的设置进行配置。',
         'System Configuration' => '系统配置',
@@ -1299,12 +1299,12 @@ sub Data {
             '工单动态字段显示值，对下拉式和多项选择字段有用',
 
         # Template: AdminNotificationEventTransportEmailSettings
-        'You can use OTRS-tags like <OTRS_TICKET_DynamicField_...> to insert values from the current ticket.' =>
-            '你可以使用诸如<OTRS_TICKET_DynamicField_...>之类的OTRS标签来插入当前工单中的值。',
+        'You can use LIGERO-tags like <LIGERO_TICKET_DynamicField_...> to insert values from the current ticket.' =>
+            '你可以使用诸如<LIGERO_TICKET_DynamicField_...>之类的LIGERO标签来插入当前工单中的值。',
 
-        # Template: AdminOTRSBusinessInstalled
+        # Template: AdminLIGEROBusinessInstalled
         'Manage %s' => '管理 %s',
-        'Downgrade to ((OTRS)) Community Edition' => '降级为  ((OTRS)) 社区版',
+        'Downgrade to ((LIGERO)) Community Edition' => '降级为  ((LIGERO)) 社区版',
         'Read documentation' => '阅读文档',
         '%s makes contact regularly with cloud.ligero.com to check on available updates and the validity of the underlying contract.' =>
             '%s 定期连接到cloud.ligero.com检查可用更新，并验证合同的有效性。',
@@ -1329,44 +1329,44 @@ sub Data {
         'Congratulations, your %s is correctly installed and up to date!' =>
             '恭喜，你的%s 已经正确地安装到最新版本！',
 
-        # Template: AdminOTRSBusinessNotInstalled
-        'Go to the OTRS customer portal' => '访问OTRS客户门户',
+        # Template: AdminLIGEROBusinessNotInstalled
+        'Go to the LIGERO customer portal' => '访问LIGERO客户门户',
         '%s will be available soon. Please check again in a few days.' =>
             '%s 很快就可用了，请过几天再检查一次。',
         'Please have a look at %s for more information.' => '有关更多信息,请查看 %s。',
-        'Your ((OTRS)) Community Edition is the base for all future actions. Please register first before you continue with the upgrade process of %s!' =>
-            ' ((OTRS)) 社区版是所有特色功能的基础，继续升级到%s 前请先注册！',
+        'Your ((LIGERO)) Community Edition is the base for all future actions. Please register first before you continue with the upgrade process of %s!' =>
+            ' ((LIGERO)) 社区版是所有特色功能的基础，继续升级到%s 前请先注册！',
         'Before you can benefit from %s, please contact %s to get your %s contract.' =>
             '在从%s 受益之前，请先联系%s 以获得%s 合同。',
-        'Connection to cloud.ligero.com via HTTPS couldn\'t be established. Please make sure that your OTRS can connect to cloud.ligero.com via port 443.' =>
-            '不能通过HTTPS连接到cloud.ligero.com，请确保你的OTRS系统能够通过端口443连接到cloud.ligero.com。',
-        'Package installation requires patch level update of OTRS.' => '软件包安装需要更新OTRS的补丁级别。',
+        'Connection to cloud.ligero.com via HTTPS couldn\'t be established. Please make sure that your LIGERO can connect to cloud.ligero.com via port 443.' =>
+            '不能通过HTTPS连接到cloud.ligero.com，请确保你的LIGERO系统能够通过端口443连接到cloud.ligero.com。',
+        'Package installation requires patch level update of LIGERO.' => '软件包安装需要更新LIGERO的补丁级别。',
         'Please visit our customer portal and file a request.' => '请访问我们的客户门户并提出请求。',
         'Everything else will be done as part of your contract.' => '一切都将作为您的合同的一部分完成。',
-        'Your installed OTRS version is %s.' => '您安装的OTRS版本是%s。',
-        'To install this package, you need to update to OTRS %s or higher.' =>
-            '要安装此软件包，您需要更新到OTRS %s或更高版本。',
-        'To install this package, the Maximum OTRS Version is %s.' => '要安装此软件包，OTRS最高版本为%s。',
+        'Your installed LIGERO version is %s.' => '您安装的LIGERO版本是%s。',
+        'To install this package, you need to update to LIGERO %s or higher.' =>
+            '要安装此软件包，您需要更新到LIGERO %s或更高版本。',
+        'To install this package, the Maximum LIGERO Version is %s.' => '要安装此软件包，LIGERO最高版本为%s。',
         'To install this package, the required Framework version is %s.' =>
             '要安装此软件包，所需的框架版本为%s。',
-        'Why should I keep OTRS up to date?' => '为什么要保持OTRS是最新的？',
+        'Why should I keep LIGERO up to date?' => '为什么要保持LIGERO是最新的？',
         'You will receive updates about relevant security issues.' => '您将收到有关安全问题的更新。',
-        'You will receive updates for all other relevant OTRS issues' => '您将收到所有其他OTRS相关问题的更新',
+        'You will receive updates for all other relevant LIGERO issues' => '您将收到所有其他LIGERO相关问题的更新',
         'With your existing contract you can only use a small part of the %s.' =>
             '当前的合同表明你只能使用%s 的小部分功能。',
         'If you would like to take full advantage of the %s get your contract upgraded now! Contact %s.' =>
             '如欲发挥%s 的全部优势，请升级合同！联系%s。',
 
-        # Template: AdminOTRSBusinessUninstall
+        # Template: AdminLIGEROBusinessUninstall
         'Cancel downgrade and go back' => '取消降级并返回',
-        'Go to OTRS Package Manager' => '进入 OTRS 软件包管理',
+        'Go to LIGERO Package Manager' => '进入 LIGERO 软件包管理',
         'Sorry, but currently you can\'t downgrade due to the following packages which depend on %s:' =>
             '当前不能降级，因为以下软件包依赖%s：',
         'Vendor' => '提供者',
         'Please uninstall the packages first using the package manager and try again.' =>
             '请在软件包管理模块中先删除这些软件包，然后再试一次。',
-        'You are about to downgrade to ((OTRS)) Community Edition and will lose the following features and all data related to these:' =>
-            '你打算降级到 ((OTRS)) 社区版，以下功能特性和相关数据将全部丢失：',
+        'You are about to downgrade to ((LIGERO)) Community Edition and will lose the following features and all data related to these:' =>
+            '你打算降级到 ((LIGERO)) 社区版，以下功能特性和相关数据将全部丢失：',
         'Chat' => '聊天',
         'Report Generator' => '报表生成器',
         'Timeline view in ticket zoom' => '以时间轴视图展开工单',
@@ -1380,7 +1380,7 @@ sub Data {
         'PGP Management' => 'PGP管理',
         'Add PGP Key' => '添加PGP密钥',
         'PGP support is disabled' => 'PGP支持已禁用',
-        'To be able to use PGP in OTRS, you have to enable it first.' => '要在OTRS中使用PGP，你必须首先启用它。',
+        'To be able to use PGP in LIGERO, you have to enable it first.' => '要在LIGERO中使用PGP，你必须首先启用它。',
         'Enable PGP support' => '启用PGP支持',
         'Faulty PGP configuration' => '错误的PGP配置',
         'PGP support is enabled, but the relevant configuration contains errors. Please check the configuration using the button below.' =>
@@ -1407,19 +1407,19 @@ sub Data {
             '您真的想要重新安装该软包吗? 所有该模块的手工设置将丢失.',
         'Go to updating instructions' => '转到升级说明',
         'package information' => '软件包信息',
-        'Package installation requires a patch level update of OTRS.' => '安装软件包需要将OTRS补丁级别更新。',
-        'Package update requires a patch level update of OTRS.' => '升级软件包需要将OTRS补丁级别更新。',
-        'If you are a OTRS Business Solution™ customer, please visit our customer portal and file a request.' =>
-            '如果您是OTRS 商业版™客户，请访问我们的客户门户并提交请求。',
-        'Please note that your installed OTRS version is %s.' => '请注意，您安装的OTRS版本是%s。',
-        'To install this package, you need to update OTRS to version %s or newer.' =>
-            '安装这个软件包，你需要升级OTRS版本到%s或者更高。',
-        'This package can only be installed on OTRS version %s or older.' =>
-            '这个软件包只能安装在OTRS版本%s或者更低。',
-        'This package can only be installed on OTRS version %s or newer.' =>
-            '这个软件包只能安装在OTRS版本%s或者更高。',
-        'You will receive updates for all other relevant OTRS issues.' =>
-            '你将收到所有其他有关OTRS问题的更新。',
+        'Package installation requires a patch level update of LIGERO.' => '安装软件包需要将LIGERO补丁级别更新。',
+        'Package update requires a patch level update of LIGERO.' => '升级软件包需要将LIGERO补丁级别更新。',
+        'If you are a LIGERO Business Solution™ customer, please visit our customer portal and file a request.' =>
+            '如果您是LIGERO 商业版™客户，请访问我们的客户门户并提交请求。',
+        'Please note that your installed LIGERO version is %s.' => '请注意，您安装的LIGERO版本是%s。',
+        'To install this package, you need to update LIGERO to version %s or newer.' =>
+            '安装这个软件包，你需要升级LIGERO版本到%s或者更高。',
+        'This package can only be installed on LIGERO version %s or older.' =>
+            '这个软件包只能安装在LIGERO版本%s或者更低。',
+        'This package can only be installed on LIGERO version %s or newer.' =>
+            '这个软件包只能安装在LIGERO版本%s或者更高。',
+        'You will receive updates for all other relevant LIGERO issues.' =>
+            '你将收到所有其他有关LIGERO问题的更新。',
         'How can I do a patch level update if I don’t have a contract?' =>
             '如果没有合约，我怎么更新补丁级别？',
         'Please find all relevant information within the updating instructions at %s.' =>
@@ -1434,14 +1434,14 @@ sub Data {
         'Install' => '安装',
         'Update repository information' => '更新软件仓库信息',
         'Cloud services are currently disabled.' => '云服务当前被禁用了。',
-        'OTRS Verify™ can not continue!' => 'OTRS Verify™（OTRS验证）不能继续！',
+        'LIGERO Verify™ can not continue!' => 'LIGERO Verify™（LIGERO验证）不能继续！',
         'Enable cloud services' => '启用云服务',
         'Update all installed packages' => '更新所有已安装的软件包',
         'Online Repository' => '在线软件仓库',
         'Action' => '操作',
         'Module documentation' => '模块文档',
         'Local Repository' => '本地软件仓库',
-        'This package is verified by OTRSverify (tm)' => '此软件包已通过OTRSverify(tm)的验证',
+        'This package is verified by LIGEROverify (tm)' => '此软件包已通过LIGEROverify(tm)的验证',
         'Uninstall' => '卸载',
         'Package not correctly deployed! Please reinstall the package.' =>
             '软件包未正确安装！请重新安装软件包。',
@@ -1752,29 +1752,29 @@ sub Data {
         'Edit System Registration' => '编辑系统注册',
         'System Registration Overview' => '系统注册概览',
         'Register System' => '注册系统',
-        'Validate OTRS-ID' => '验证OTRS-ID',
+        'Validate LIGERO-ID' => '验证LIGERO-ID',
         'Deregister System' => '取消系统注册',
         'Edit details' => '编辑详细信息',
         'Show transmitted data' => '显示已传输的数据',
         'Deregister system' => '取消系统注册',
         'Overview of registered systems' => '注册系统概述',
-        'This system is registered with OTRS Group.' => '本系统已注册到OTRS集团。',
+        'This system is registered with LIGERO Group.' => '本系统已注册到LIGERO集团。',
         'System type' => '系统类型',
         'Unique ID' => '唯一ID',
         'Last communication with registration server' => '与注册服务器上一次的通信',
         'System Registration not Possible' => '系统注册不可能',
-        'Please note that you can\'t register your system if OTRS Daemon is not running correctly!' =>
-            '请注意：如果OTRS守护进程没有正确运行，你就不能注册你的系统！',
+        'Please note that you can\'t register your system if LIGERO Daemon is not running correctly!' =>
+            '请注意：如果LIGERO守护进程没有正确运行，你就不能注册你的系统！',
         'Instructions' => '说明',
         'System Deregistration not Possible' => '系统取消注册不可能',
         'Please note that you can\'t deregister your system if you\'re using the %s or having a valid service contract.' =>
             '请注意：如果你正在使用%s 或具有一个有效的服务合同，你就不能取消你的系统注册。',
-        'OTRS-ID Login' => 'OTRS-ID登陆',
+        'LIGERO-ID Login' => 'LIGERO-ID登陆',
         'Read more' => '阅读更多',
-        'You need to log in with your OTRS-ID to register your system.' =>
-            '为了注册系统，需要你先使用OTRS-ID进行登陆。',
-        'Your OTRS-ID is the email address you used to sign up on the OTRS.com webpage.' =>
-            'OTRS-ID是你在OTRS.com网站注册的电子邮箱地址。',
+        'You need to log in with your LIGERO-ID to register your system.' =>
+            '为了注册系统，需要你先使用LIGERO-ID进行登陆。',
+        'Your LIGERO-ID is the email address you used to sign up on the LIGERO.com webpage.' =>
+            'LIGERO-ID是你在LIGERO.com网站注册的电子邮箱地址。',
         'Data Protection' => '数据保护',
         'What are the advantages of system registration?' => '系统注册有什么好处?',
         'You will receive updates about relevant security releases.' => '你将及时收到有关安全版本的更新信息。',
@@ -1783,44 +1783,44 @@ sub Data {
         'This is only the beginning!' => '这仅仅是开始！',
         'We will inform you about our new services and offerings soon.' =>
             '有了新的服务和产品我们能很快通知你。',
-        'Can I use OTRS without being registered?' => '如果不进行系统注册，我还可以使用OTRS吗?',
+        'Can I use LIGERO without being registered?' => '如果不进行系统注册，我还可以使用LIGERO吗?',
         'System registration is optional.' => '系统注册是可选的。',
-        'You can download and use OTRS without being registered.' => '不进行注册，你仍然可以下载和使用OTRS。',
+        'You can download and use LIGERO without being registered.' => '不进行注册，你仍然可以下载和使用LIGERO。',
         'Is it possible to deregister?' => '可以取消注册吗？',
         'You can deregister at any time.' => '你可以随时取消系统注册。',
         'Which data is transfered when registering?' => '注册后，哪些数据会被上传?',
-        'A registered system sends the following data to OTRS Group:' => '注册过的系统会将以下数据上传给OTRS集团：',
-        'Fully Qualified Domain Name (FQDN), OTRS version, Database, Operating System and Perl version.' =>
-            '域名(FQDN)、OTRS版本、数据库、操作系统和Perl版本。',
+        'A registered system sends the following data to LIGERO Group:' => '注册过的系统会将以下数据上传给LIGERO集团：',
+        'Fully Qualified Domain Name (FQDN), LIGERO version, Database, Operating System and Perl version.' =>
+            '域名(FQDN)、LIGERO版本、数据库、操作系统和Perl版本。',
         'Why do I have to provide a description for my system?' => '为什么需要我提供有关注册系统的描述?',
         'The description of the system is optional.' => '注册系统的描述是可选的。',
         'The description and system type you specify help you to identify and manage the details of your registered systems.' =>
             '注册系统描述和类型有助于您识别和管理系统的细节。',
-        'How often does my OTRS system send updates?' => '我的OTRS系统上传数据的频度?',
+        'How often does my LIGERO system send updates?' => '我的LIGERO系统上传数据的频度?',
         'Your system will send updates to the registration server at regular intervals.' =>
             '你的系统将定期向注册服务器发送更新。',
         'Typically this would be around once every three days.' => '通常这将是大约每3天1次。',
         'If you deregister your system, you will lose these benefits:' =>
             '如果你取消注册你的系统，你将失去以下好处：',
-        'You need to log in with your OTRS-ID to deregister your system.' =>
-            '为了取消注册你的系统，你需要以OTRS-ID登录。',
-        'OTRS-ID' => 'OTRS-ID',
-        'You don\'t have an OTRS-ID yet?' => '还没有OTRS-ID吗？',
+        'You need to log in with your LIGERO-ID to deregister your system.' =>
+            '为了取消注册你的系统，你需要以LIGERO-ID登录。',
+        'LIGERO-ID' => 'LIGERO-ID',
+        'You don\'t have an LIGERO-ID yet?' => '还没有LIGERO-ID吗？',
         'Sign up now' => '现在注册',
         'Forgot your password?' => '忘记密码了吗？',
         'Retrieve a new one' => '获取新的密码',
         'Next' => '下一步',
-        'This data will be frequently transferred to OTRS Group when you register this system.' =>
-            '注册本系统后，这个数据会经常传送给OTRS集团。',
+        'This data will be frequently transferred to LIGERO Group when you register this system.' =>
+            '注册本系统后，这个数据会经常传送给LIGERO集团。',
         'Attribute' => '属性',
         'FQDN' => '正式域名',
-        'OTRS Version' => 'OTRS版本',
+        'LIGERO Version' => 'LIGERO版本',
         'Operating System' => '操作系统',
         'Perl Version' => 'Perl版本',
         'Optional description of this system.' => '本系统可选的描述。',
         'Register' => '注册',
-        'Continuing with this step will deregister the system from OTRS Group.' =>
-            '继续这一步将从OTRS集团取消注册本系统。',
+        'Continuing with this step will deregister the system from LIGERO Group.' =>
+            '继续这一步将从LIGERO集团取消注册本系统。',
         'Deregister' => '取消注册',
         'You can modify registration settings here.' => '你可以在这里修改注册设置。',
         'Overview of Transmitted Data' => '已传输的数据概览',
@@ -1883,8 +1883,8 @@ sub Data {
         'Add Certificate' => '添加证书',
         'Add Private Key' => '添加私钥',
         'SMIME support is disabled' => 'SMIME支持已禁用',
-        'To be able to use SMIME in OTRS, you have to enable it first.' =>
-            '要在OTRS中使用SMIME，你必须首先启用它。',
+        'To be able to use SMIME in LIGERO, you have to enable it first.' =>
+            '要在LIGERO中使用SMIME，你必须首先启用它。',
         'Enable SMIME support' => '启用SMIME支持',
         'Faulty SMIME configuration' => '错误的SMIME配置',
         'SMIME support is enabled, but the relevant configuration contains errors. Please check the configuration using the button below.' =>
@@ -2002,10 +2002,10 @@ sub Data {
         'This state is used in the following config settings:' => '这个状态已用于以下的系统配置设置：',
 
         # Template: AdminSupportDataCollector
-        'Sending support data to OTRS Group is not possible!' => '不能将支持数据发送给OTRS集团！',
+        'Sending support data to LIGERO Group is not possible!' => '不能将支持数据发送给LIGERO集团！',
         'Enable Cloud Services' => '启用云服务',
-        'This data is sent to OTRS Group on a regular basis. To stop sending this data please update your system registration.' =>
-            '这些数据被定期发送到OTRS集团，要停止发送这些数据，请更新你的系统注册配置。',
+        'This data is sent to LIGERO Group on a regular basis. To stop sending this data please update your system registration.' =>
+            '这些数据被定期发送到LIGERO集团，要停止发送这些数据，请更新你的系统注册配置。',
         'You can manually trigger the Support Data sending by pressing this button:' =>
             '你可以通过这个按钮手动发送支持数据：',
         'Send Update' => '发送更新',
@@ -2021,11 +2021,11 @@ sub Data {
         'The email address for this user is invalid, this option has been disabled.' =>
             '当前用户的邮件地址无效，本选项无法使用。',
         'Sending' => '发送中',
-        'The support bundle will be sent to OTRS Group via email automatically.' =>
-            '支持数据包会自动通过电子邮件方式发送给OTRS集团。',
+        'The support bundle will be sent to LIGERO Group via email automatically.' =>
+            '支持数据包会自动通过电子邮件方式发送给LIGERO集团。',
         'Download File' => '下载文件',
-        'A file containing the support bundle will be downloaded to the local system. Please save the file and send it to the OTRS Group, using an alternate method.' =>
-            '包含支持数据包的文件已经可以下载到本地。请保存文件，然后通过其他方法把这个文件发送给OTRS集团。',
+        'A file containing the support bundle will be downloaded to the local system. Please save the file and send it to the LIGERO Group, using an alternate method.' =>
+            '包含支持数据包的文件已经可以下载到本地。请保存文件，然后通过其他方法把这个文件发送给LIGERO集团。',
         'Error: Support data could not be collected (%s).' => '错误：%s 无法收集支持数据。',
         'Details' => '详情',
 
@@ -2318,17 +2318,17 @@ sub Data {
         'Customer User Information Center' => '客户用户信息中心。',
 
         # Template: AgentDaemonInfo
-        'The OTRS Daemon is a daemon process that performs asynchronous tasks, e.g. ticket escalation triggering, email sending, etc.' =>
-            'OTRS守护进程用来执行异步任务，例如：触发工单升级、发送电子邮件等等。',
-        'A running OTRS Daemon is mandatory for correct system operation.' =>
-            'OTRS守护进程正常运行是正确的系统操作所必需的。',
-        'Starting the OTRS Daemon' => '正在启动OTRS守护进程',
-        'Make sure that the file \'%s\' exists (without .dist extension). This cron job will check every 5 minutes if the OTRS Daemon is running and start it if needed.' =>
-            '确保存在文件“%s”（没有.dist扩展名）。这个CRON任务会每5分钟检查一次OTRS守护进程是否在运行，并在需要时启动它。',
+        'The LIGERO Daemon is a daemon process that performs asynchronous tasks, e.g. ticket escalation triggering, email sending, etc.' =>
+            'LIGERO守护进程用来执行异步任务，例如：触发工单升级、发送电子邮件等等。',
+        'A running LIGERO Daemon is mandatory for correct system operation.' =>
+            'LIGERO守护进程正常运行是正确的系统操作所必需的。',
+        'Starting the LIGERO Daemon' => '正在启动LIGERO守护进程',
+        'Make sure that the file \'%s\' exists (without .dist extension). This cron job will check every 5 minutes if the LIGERO Daemon is running and start it if needed.' =>
+            '确保存在文件“%s”（没有.dist扩展名）。这个CRON任务会每5分钟检查一次LIGERO守护进程是否在运行，并在需要时启动它。',
         'Execute \'%s start\' to make sure the cron jobs of the \'ligero\' user are active.' =>
             '执行\'%s start\'确保\'ligero\'用户的cron任务是活动的。',
-        'After 5 minutes, check that the OTRS Daemon is running in the system (\'bin/ligero.Daemon.pl status\').' =>
-            '5分钟后，在系统中执行\'bin/ligero.Daemon.pl status\'，检查OTRS守护进程是否正常运行。',
+        'After 5 minutes, check that the LIGERO Daemon is running in the system (\'bin/ligero.Daemon.pl status\').' =>
+            '5分钟后，在系统中执行\'bin/ligero.Daemon.pl status\'，检查LIGERO守护进程是否正常运行。',
 
         # Template: AgentDashboard
         'Dashboard' => '仪表板',
@@ -2432,10 +2432,10 @@ sub Data {
         'There are currently no links. Please click \'Create new Links\' on the top to link this item to other objects.' =>
             '目前没有链接。 请点击顶部的“创建新链接”将此项目链接到其他对象。',
 
-        # Template: AgentOTRSBusinessBlockScreen
+        # Template: AgentLIGEROBusinessBlockScreen
         'Unauthorized usage of %s detected' => '检测到未经授权的使用 %s',
-        'If you decide to downgrade to ((OTRS)) Community Edition, you will lose all database tables and data related to %s.' =>
-            '如果决定降级到 ((OTRS)) 社区版，会丢失%s相关的所有数据库表及其数据。',
+        'If you decide to downgrade to ((LIGERO)) Community Edition, you will lose all database tables and data related to %s.' =>
+            '如果决定降级到 ((LIGERO)) 社区版，会丢失%s相关的所有数据库表及其数据。',
 
         # Template: AgentPreferences
         'Edit your preferences' => '编辑个人设置',
@@ -2461,7 +2461,7 @@ sub Data {
         'This setting can currently not be saved.' => '此设置目前无法保存。',
         'This setting can currently not be saved' => '此设置目前无法保存',
         'Save this setting' => '保存该设置',
-        'Did you know? You can help translating OTRS at %s.' => '你知道吗? 你也可以通过%s帮助翻译 OTRS。',
+        'Did you know? You can help translating LIGERO at %s.' => '你知道吗? 你也可以通过%s帮助翻译 LIGERO。',
 
         # Template: SettingsList
         'Reset to default' => '重置为默认',
@@ -2480,7 +2480,7 @@ sub Data {
 
         # Template: AgentStatisticsAdd
         'Statistics Overview' => '统计概览',
-        'Read more about statistics in OTRS' => '详细了解OTR关于统计的信息',
+        'Read more about statistics in LIGERO' => '详细了解OTR关于统计的信息',
         'Add Statistics' => '添加统计',
         'Dynamic Matrix' => '动态矩阵',
         'Each cell contains a singular data point.' => '每个单元格包含一个单数据点。',
@@ -2926,8 +2926,8 @@ sub Data {
         'Dynamic fields' => '动态字段',
 
         # Template: Error
-        'Really a bug? 5 out of 10 bug reports result from a wrong or incomplete installation of OTRS.' =>
-            '真的是一个BUG吗？十个BUG报告有五个起因于错误或不完整的OTRS安装。',
+        'Really a bug? 5 out of 10 bug reports result from a wrong or incomplete installation of LIGERO.' =>
+            '真的是一个BUG吗？十个BUG报告有五个起因于错误或不完整的LIGERO安装。',
         'With %s, our experts take care of correct installation and cover your back with support and periodic security updates.' =>
             '通过%s，我们的专家通过技术支持和定期安全更新来确保正确安装且后台程序正常。',
         'Contact our service team now.' => '现在就联系我们的服务团队。',
@@ -2952,7 +2952,7 @@ sub Data {
         # Template: Header
         'View notifications' => '查看通知',
         'Notifications' => '通知',
-        'Notifications (OTRS Business Solution™)' => '通知 (OTRS商业版)',
+        'Notifications (LIGERO Business Solution™)' => '通知 (LIGERO商业版)',
         'Personal preferences' => '个人偏好设置',
         'Logout' => '注销',
         'You are logged in as' => '您已登录为',
@@ -3009,8 +3009,8 @@ sub Data {
 
         # Template: InstallerDBStart
         'Install Type' => '安装类型',
-        'Create a new database for OTRS' => '为OTRS创建新的数据库',
-        'Use an existing database for OTRS' => '使用现有的OTRS数据库',
+        'Create a new database for LIGERO' => '为LIGERO创建新的数据库',
+        'Use an existing database for LIGERO' => '使用现有的LIGERO数据库',
 
         # Template: InstallerDBmssql
         'If you have set a root password for your database, it must be entered here. If not, leave this field empty.' =>
@@ -3021,8 +3021,8 @@ sub Data {
         'Database check successful.' => '数据库检查完成。',
         'Database User' => '数据库用户',
         'New' => 'New（新建）',
-        'A new database user with limited permissions will be created for this OTRS system.' =>
-            '已经为OTRS系统创建了新的数据库普通用户。',
+        'A new database user with limited permissions will be created for this LIGERO system.' =>
+            '已经为LIGERO系统创建了新的数据库普通用户。',
         'Repeat Password' => '重复输入密码',
         'Generated password' => '自动生成的密码',
 
@@ -3034,12 +3034,12 @@ sub Data {
         'Port' => '端口',
 
         # Template: InstallerFinish
-        'To be able to use OTRS you have to enter the following line in your command line (Terminal/Shell) as root.' =>
-            '为了能够使用OTRS, 您必须以root身份在命令行中(Terminal/Shell)输入以下行。',
+        'To be able to use LIGERO you have to enter the following line in your command line (Terminal/Shell) as root.' =>
+            '为了能够使用LIGERO, 您必须以root身份在命令行中(Terminal/Shell)输入以下行。',
         'Restart your webserver' => '重启web服务器',
-        'After doing so your OTRS is up and running.' => '完成这些后，您的OTRS系统就启动并运行了。',
+        'After doing so your LIGERO is up and running.' => '完成这些后，您的LIGERO系统就启动并运行了。',
         'Start page' => '开始页面',
-        'Your OTRS Team' => 'OTRS团队',
+        'Your LIGERO Team' => 'LIGERO团队',
 
         # Template: InstallerLicense
         'Don\'t accept license' => '不同意许可',
@@ -3085,8 +3085,8 @@ sub Data {
 
         # Template: MobileNotAvailableWidget
         'Feature not Available' => '功能不可用',
-        'Sorry, but this feature of OTRS is currently not available for mobile devices. If you\'d like to use it, you can either switch to desktop mode or use your regular desktop device.' =>
-            '抱歉，当前的OTRS不能用于移动终端。如果你想在移动终端上使用，你可以切换到桌面模式或使用普通桌面终端。',
+        'Sorry, but this feature of LIGERO is currently not available for mobile devices. If you\'d like to use it, you can either switch to desktop mode or use your regular desktop device.' =>
+            '抱歉，当前的LIGERO不能用于移动终端。如果你想在移动终端上使用，你可以切换到桌面模式或使用普通桌面终端。',
 
         # Template: Motd
         'Message of the Day' => '今日消息',
@@ -3126,8 +3126,8 @@ sub Data {
 
         # Template: PublicDefault
         'Welcome' => '欢迎',
-        'This is the default public interface of OTRS! There was no action parameter given.' =>
-            '这是OTRS默认的公共界面！没有操作参数。',
+        'This is the default public interface of LIGERO! There was no action parameter given.' =>
+            '这是LIGERO默认的公共界面！没有操作参数。',
         'You could install a custom public module (via the package manager), for example the FAQ module, which has a public interface.' =>
             '你可以安装一个定制的有公共界面的公共模块（通过软件包管理器），例如FAQ知识库模块。',
 
@@ -3268,12 +3268,12 @@ sub Data {
         # Template: Navigation
         'Navigation' => '导航',
 
-        # Template: OTRSBusinessTeaser
+        # Template: LIGEROBusinessTeaser
         'With %s, System Configuration supports versioning, rollback and user-specific configuration settings.' =>
             '使用%s，系统配置支持版本控制、回滚和用户特定的配置设置。',
 
         # Template: Test
-        'OTRS Test Page' => 'OTRS测试页',
+        'LIGERO Test Page' => 'LIGERO测试页',
         'Unlock' => '解锁',
         'Welcome %s %s' => '欢迎使用%s %s',
         'Counter' => '计数器',
@@ -3356,12 +3356,12 @@ sub Data {
         # Perl Module: Kernel/Modules/AdminACL.pm
         'ACL information from database is not in sync with the system configuration, please deploy all ACLs.' =>
             '数据库中的ACL信息与系统配置不一致，请部署所有ACL。',
-        'ACLs could not be Imported due to a unknown error, please check OTRS logs for more information' =>
-            '由于未知错误不能导入ACL，请检查OTRS日志以获得更多信息。',
+        'ACLs could not be Imported due to a unknown error, please check LIGERO logs for more information' =>
+            '由于未知错误不能导入ACL，请检查LIGERO日志以获得更多信息。',
         'The following ACLs have been added successfully: %s' => '下列ACL已经成功添加：%s',
         'The following ACLs have been updated successfully: %s' => '下列ACL已经成功更新：%s',
         'There where errors adding/updating the following ACLs: %s. Please check the log file for more information.' =>
-            '在添加/更新下列ACL：%s 时出现一些错误，请检查OTRS日志以获得更多信息。',
+            '在添加/更新下列ACL：%s 时出现一些错误，请检查LIGERO日志以获得更多信息。',
         'This field is required' => '这个字段是必需的',
         'There was an error creating the ACL' => '创建ACL时出现了一个错误',
         'Need ACLID!' => '需要ACLID！',
@@ -3410,14 +3410,14 @@ sub Data {
             '获取ID为%s的通知数据时出现了一个错误！',
         'Unknown Notification %s!' => '未知通知 %s！',
         'There was an error creating the Notification' => '创建通知时出现了一个错误',
-        'Notifications could not be Imported due to a unknown error, please check OTRS logs for more information' =>
-            '由于一个未知错误不能导入通知，请检查OTRS日志以获取更多信息',
+        'Notifications could not be Imported due to a unknown error, please check LIGERO logs for more information' =>
+            '由于一个未知错误不能导入通知，请检查LIGERO日志以获取更多信息',
         'The following Notifications have been added successfully: %s' =>
             '下列通知已成功添加：%s',
         'The following Notifications have been updated successfully: %s' =>
             '下列通知已成功更新：%s',
         'There where errors adding/updating the following Notifications: %s. Please check the log file for more information.' =>
-            '添加/更新下列通知时出现错误：%s，请检查OTRS日志以获取更多信息。',
+            '添加/更新下列通知时出现错误：%s，请检查LIGERO日志以获取更多信息。',
         'Notification updated!' => '通知已更新！',
         'Agent (resources), who are selected within the appointment' => '这个预约选择的服务人员（资源）',
         'All agents with (at least) read permission for the appointment (calendar)' =>
@@ -3637,12 +3637,12 @@ sub Data {
         'Need ExampleWebService!' => '需要WEB服务示例！',
         'Could not read %s!' => '不能读取 %s！',
         'Need a file to import!' => '导入需要一个文件！',
-        'The imported file has not valid YAML content! Please check OTRS log for details' =>
-            '导入的文件没有有效的YAML内容！请检查OTRS日志以获取详细信息',
+        'The imported file has not valid YAML content! Please check LIGERO log for details' =>
+            '导入的文件没有有效的YAML内容！请检查LIGERO日志以获取详细信息',
         'Web service "%s" deleted!' => 'Web服务“%s”已经删除！',
-        'OTRS as provider' => 'OTRS作为服务提供方',
+        'LIGERO as provider' => 'LIGERO作为服务提供方',
         'Operations' => '操作',
-        'OTRS as requester' => 'OTRS作为服务请求方',
+        'LIGERO as requester' => 'LIGERO作为服务请求方',
         'Invokers' => '调用程序',
 
         # Perl Module: Kernel/Modules/AdminGenericInterfaceWebserviceHistory.pm
@@ -3673,7 +3673,7 @@ sub Data {
         'All recipients of the first article' => '第一封信件的所有收件人',
         'All recipients of the last article' => '最近一封信件的所有收件人',
 
-        # Perl Module: Kernel/Modules/AdminOTRSBusiness.pm
+        # Perl Module: Kernel/Modules/AdminLIGEROBusiness.pm
         'Your system was successfully upgraded to %s.' => '你的系统已成功更新到 %s。',
         'There was a problem during the upgrade to %s.' => '升级到%s的过程中出现问题。',
         '%s was correctly reinstalled.' => '%s 已经成功重装。',
@@ -3699,8 +3699,8 @@ sub Data {
         'Can\'t read %s!' => '不能读取%s！',
         'File is OK' => '文件正常',
         'Package has locally modified files.' => '软件包中有本地修改过的文件。',
-        'Package not verified by the OTRS Group! It is recommended not to use this package.' =>
-            '扩展包未经OTRS检验！不推荐使用该扩展包.',
+        'Package not verified by the LIGERO Group! It is recommended not to use this package.' =>
+            '扩展包未经LIGERO检验！不推荐使用该扩展包.',
         'Not Started' => '没有启动',
         'Updated' => '更新时间',
         'Already up-to-date' => '已经是最新的',
@@ -3721,9 +3721,9 @@ sub Data {
             '选择的软件仓库中没有软件包或没有新的软件包。',
         'Package not verified due a communication issue with verification server!' =>
             '不能验证软件包，因为与验证服务器无法正常通信！',
-        'Can\'t connect to OTRS Feature Add-on list server!' => '不能连接到OTRS附加功能列表服务器！',
-        'Can\'t get OTRS Feature Add-on list from server!' => '不能从服务器获取OTRS附加功能列表！',
-        'Can\'t get OTRS Feature Add-on from server!' => '不能从服务器获取OTRS附加功能！',
+        'Can\'t connect to LIGERO Feature Add-on list server!' => '不能连接到LIGERO附加功能列表服务器！',
+        'Can\'t get LIGERO Feature Add-on list from server!' => '不能从服务器获取LIGERO附加功能列表！',
+        'Can\'t get LIGERO Feature Add-on from server!' => '不能从服务器获取LIGERO附加功能！',
 
         # Perl Module: Kernel/Modules/AdminPostMasterFilter.pm
         'No such filter: %s' => '没有这个过滤器：%s',
@@ -3896,13 +3896,13 @@ sub Data {
         'You currently don\'t have any favourite settings.' => '你目前没有收藏任何设置。',
         'The following settings could not be found: %s' => '找不到以下设置：%s',
         'Import not allowed!' => '不允许导入！',
-        'System Configuration could not be imported due to an unknown error, please check OTRS logs for more information.' =>
-            '由于一个未知错误不能导入系统配置，请检查OTRS日志以获取更多信息',
+        'System Configuration could not be imported due to an unknown error, please check LIGERO logs for more information.' =>
+            '由于一个未知错误不能导入系统配置，请检查LIGERO日志以获取更多信息',
         'Category Search' => '搜索类别',
 
         # Perl Module: Kernel/Modules/AdminSystemConfigurationDeployment.pm
-        'Some imported settings are not present in the current state of the configuration or it was not possible to update them. Please check the OTRS log for more information.' =>
-            '某些导入的设置不在配置的当前状态中，或者无法进行更新。 请查看OTRS日志了解更多信息。',
+        'Some imported settings are not present in the current state of the configuration or it was not possible to update them. Please check the LIGERO log for more information.' =>
+            '某些导入的设置不在配置的当前状态中，或者无法进行更新。 请查看LIGERO日志了解更多信息。',
 
         # Perl Module: Kernel/Modules/AdminSystemConfigurationGroup.pm
         'You need to enable the setting before locking!' => '锁定之前需要启用该设置！',
@@ -4346,7 +4346,7 @@ sub Data {
         'Configure "Home" in Kernel/Config.pm first!' => '首先在文件Kernel/Config.pm中配置“Home”！',
         'File "%s/Kernel/Config.pm" not found!' => '没有找到文件“%s/Kernel/Config.pm”！',
         'Directory "%s" not found!' => '没有找到目录“%s”！',
-        'Install OTRS' => '安装OTRS',
+        'Install LIGERO' => '安装LIGERO',
         'Intro' => '介绍',
         'Kernel/Config.pm isn\'t writable!' => '文件Kernel/Config.pm不可写入！',
         'If you want to use the installer, set the Kernel/Config.pm writable for the webserver user!' =>
@@ -4363,7 +4363,7 @@ sub Data {
         'Unknown database type "%s".' => '未知的数据库类型“%s”。',
         'Please go back.' => '请返回。',
         'Create Database' => '创建数据库',
-        'Install OTRS - Error' => '安装OTRS - 错误',
+        'Install LIGERO - Error' => '安装LIGERO - 错误',
         'File "%s/%s.xml" not found!' => '没有找到文件“%s/%s.xml”！',
         'Contact your Admin!' => '联系你的系统管理员！',
         'System Settings' => '系统设置 ',
@@ -4431,7 +4431,7 @@ sub Data {
         'Unmark' => '取消标记',
 
         # Perl Module: Kernel/Output/HTML/ArticleAction/ReinstallPackageLink.pm
-        'Upgrade to OTRS Business Solution™' => '更新到OTRS商业版',
+        'Upgrade to LIGERO Business Solution™' => '更新到LIGERO商业版',
         'Re-install Package' => '重新安装软件包',
         'Upgrade' => '升级',
         'Re-install' => '重新安装',
@@ -4495,8 +4495,8 @@ sub Data {
         'The start time of a ticket has been set after the end time!' => '工单开始时间被设置在结束时间之后！',
 
         # Perl Module: Kernel/Output/HTML/Dashboard/News.pm
-        'Can\'t connect to OTRS News server!' => '无法连接OTRS新闻服务器！',
-        'Can\'t get OTRS News from server!' => '无法从服务器获取OTRS新闻！',
+        'Can\'t connect to LIGERO News server!' => '无法连接LIGERO新闻服务器！',
+        'Can\'t get LIGERO News from server!' => '无法从服务器获取LIGERO新闻！',
 
         # Perl Module: Kernel/Output/HTML/Dashboard/ProductNotify.pm
         'Can\'t connect to Product News server!' => '无法连接到产品新闻服务器！',
@@ -4562,9 +4562,9 @@ sub Data {
         'Archive search' => '归档搜索',
 
         # Perl Module: Kernel/Output/HTML/Notification/AgentCloudServicesDisabled.pm
-        'Enable cloud services to unleash all OTRS features!' => '启用云服务以激活OTRS的所有功能！',
+        'Enable cloud services to unleash all LIGERO features!' => '启用云服务以激活LIGERO的所有功能！',
 
-        # Perl Module: Kernel/Output/HTML/Notification/AgentOTRSBusiness.pm
+        # Perl Module: Kernel/Output/HTML/Notification/AgentLIGEROBusiness.pm
         '%s Upgrade to %s now! %s' => '现在升级%s到%s！%s',
         'Please verify your license data!' => '请验证您的许可证数据！',
         'The license for your %s is about to expire. Please make contact with %s to renew your contract!' =>
@@ -4591,15 +4591,15 @@ sub Data {
             '一次系统维护将开始于：%s，预计结束时间为：%s。',
 
         # Perl Module: Kernel/Output/HTML/Notification/DaemonCheck.pm
-        'OTRS Daemon is not running.' => 'OTRS守护进程没有运行。',
+        'LIGERO Daemon is not running.' => 'LIGERO守护进程没有运行。',
 
         # Perl Module: Kernel/Output/HTML/Notification/OutofOfficeCheck.pm
         'You have Out of Office enabled, would you like to disable it?' =>
             '你已设置为不在办公室，是否取消它?',
 
         # Perl Module: Kernel/Output/HTML/Notification/PackageManagerCheckNotVerifiedPackages.pm
-        'The installation of packages which are not verified by the OTRS Group is activated. These packages could threaten your whole system! It is recommended not to use unverified packages.' =>
-            '使用了没有通过OTRS集团验证的软件包，这些软件包可能会威胁到您的整个系统！ 建议不要使用未经验证的软件包。',
+        'The installation of packages which are not verified by the LIGERO Group is activated. These packages could threaten your whole system! It is recommended not to use unverified packages.' =>
+            '使用了没有通过LIGERO集团验证的软件包，这些软件包可能会威胁到您的整个系统！ 建议不要使用未经验证的软件包。',
 
         # Perl Module: Kernel/Output/HTML/Notification/SystemConfigurationInvalidCheck.pm
         'You have %s invalid setting(s) deployed. Click here to show invalid settings.' =>
@@ -4799,10 +4799,10 @@ sub Data {
         'File is not installed!' => '文件没有安装！',
         'File is different!' => '文件被修改！',
         'Can\'t read file!' => '不能读取文件！',
-        '<p>If you continue to install this package, the following issues may occur:</p><ul><li>Security problems</li><li>Stability problems</li><li>Performance problems</li></ul><p>Please note that issues that are caused by working with this package are not covered by OTRS service contracts.</p>' =>
-            '<p>如果安装这个扩展包，可能导致以下问题：</p><ul><li>安全问题</li><li>稳定问题</li><li>性能问题</li></ul><p>请注意，使用此软件包所引起的问题不在OTRS服务合同范围内。</p>',
-        '<p>The installation of packages which are not verified by the OTRS Group is not possible by default.</p>' =>
-            '<p>默认情况下，没有通过OTRS集团验证的软件包无法使用。</p>',
+        '<p>If you continue to install this package, the following issues may occur:</p><ul><li>Security problems</li><li>Stability problems</li><li>Performance problems</li></ul><p>Please note that issues that are caused by working with this package are not covered by LIGERO service contracts.</p>' =>
+            '<p>如果安装这个扩展包，可能导致以下问题：</p><ul><li>安全问题</li><li>稳定问题</li><li>性能问题</li></ul><p>请注意，使用此软件包所引起的问题不在LIGERO服务合同范围内。</p>',
+        '<p>The installation of packages which are not verified by the LIGERO Group is not possible by default.</p>' =>
+            '<p>默认情况下，没有通过LIGERO集团验证的软件包无法使用。</p>',
         '<p>You can activate the installation of not verified packages in the <a href="%sAction=AdminSystemConfiguration;Subaction=View;Setting=Package%3A%3AAllowNotVerifiedPackages" target="_blank">System Configuration</a>.</p>' =>
             '<p>可以在<a href="%sAction=AdminSystemConfiguration;Subaction=View;Setting=Package%3A%3AAllowNotVerifiedPackages" target="_blank">系统配置</a>中激活这些没有通过验证的软件包。</p>',
 
@@ -4987,14 +4987,14 @@ sub Data {
         # Perl Module: Kernel/System/SupportDataCollector/Plugin/Database/postgresql/Version.pm
         'PostgreSQL 9.2 or higher is required.' => '需要PostgreSQL 9.2或更高版本。',
 
-        # Perl Module: Kernel/System/SupportDataCollector/Plugin/OS/DiskPartitionOTRS.pm
-        'OTRS Disk Partition' => 'OTRS磁盘分区',
+        # Perl Module: Kernel/System/SupportDataCollector/Plugin/OS/DiskPartitionLIGERO.pm
+        'LIGERO Disk Partition' => 'LIGERO磁盘分区',
 
         # Perl Module: Kernel/System/SupportDataCollector/Plugin/OS/DiskSpace.pm
         'Disk Usage' => '硬盘使用情况',
-        'The partition where OTRS is located is almost full.' => 'OTRS分区已经快满了。',
-        'The partition where OTRS is located has no disk space problems.' =>
-            'OTRS分区没有磁盘空间问题了。',
+        'The partition where LIGERO is located is almost full.' => 'LIGERO分区已经快满了。',
+        'The partition where LIGERO is located has no disk space problems.' =>
+            'LIGERO分区没有磁盘空间问题了。',
 
         # Perl Module: Kernel/System/SupportDataCollector/Plugin/OS/DiskSpacePartitions.pm
         'Disk Partitions Usage' => '硬盘使用情况',
@@ -5022,37 +5022,37 @@ sub Data {
         'There should be more than 60% free swap space.' => '需要至少60%的可用交换空间。',
         'There should be no more than 200 MB swap space used.' => '交换空间不应该使用超过200MB。',
 
-        # Perl Module: Kernel/System/SupportDataCollector/Plugin/OTRS/ArticleSearchIndexStatus.pm
-        'OTRS' => 'OTRS',
+        # Perl Module: Kernel/System/SupportDataCollector/Plugin/LIGERO/ArticleSearchIndexStatus.pm
+        'LIGERO' => 'LIGERO',
         'Article Search Index Status' => '信件搜索索引状态',
         'Indexed Articles' => '索引过的信件',
 
-        # Perl Module: Kernel/System/SupportDataCollector/Plugin/OTRS/ArticlesPerCommunicationChannel.pm
+        # Perl Module: Kernel/System/SupportDataCollector/Plugin/LIGERO/ArticlesPerCommunicationChannel.pm
         'Articles Per Communication Channel' => '信件/通信渠道',
 
-        # Perl Module: Kernel/System/SupportDataCollector/Plugin/OTRS/CommunicationLog.pm
+        # Perl Module: Kernel/System/SupportDataCollector/Plugin/LIGERO/CommunicationLog.pm
         'Incoming communications' => '传入的通信',
         'Outgoing communications' => '外发的通信',
         'Failed communications' => '失败的通信',
         'Average processing time of communications (s)' => '通信平均处理时间',
 
-        # Perl Module: Kernel/System/SupportDataCollector/Plugin/OTRS/CommunicationLogAccountStatus.pm
+        # Perl Module: Kernel/System/SupportDataCollector/Plugin/LIGERO/CommunicationLogAccountStatus.pm
         'Communication Log Account Status (last 24 hours)' => '通讯日志帐号状态（最近24小时）',
         'No connections found.' => '找不到连接。',
         'ok' => 'OK',
         'permanent connection errors' => '永久性连接错误',
         'intermittent connection errors' => '间歇性连接错误',
 
-        # Perl Module: Kernel/System/SupportDataCollector/Plugin/OTRS/ConfigSettings.pm
+        # Perl Module: Kernel/System/SupportDataCollector/Plugin/LIGERO/ConfigSettings.pm
         'Config Settings' => '配置设置',
         'Could not determine value.' => '不能确定参数值。',
 
-        # Perl Module: Kernel/System/SupportDataCollector/Plugin/OTRS/DaemonRunning.pm
+        # Perl Module: Kernel/System/SupportDataCollector/Plugin/LIGERO/DaemonRunning.pm
         'Daemon' => '守护进程',
         'Daemon is running.' => '守护进程正在运行。',
         'Daemon is not running.' => '守护进程没有运行。',
 
-        # Perl Module: Kernel/System/SupportDataCollector/Plugin/OTRS/DatabaseRecords.pm
+        # Perl Module: Kernel/System/SupportDataCollector/Plugin/LIGERO/DatabaseRecords.pm
         'Database Records' => '数据库记录',
         'Tickets' => '工单',
         'Ticket History Entries' => '工单历史条目',
@@ -5068,31 +5068,31 @@ sub Data {
         'Tickets Per Month (avg)' => '平均每月工单数',
         'Open Tickets' => '处理中的工单',
 
-        # Perl Module: Kernel/System/SupportDataCollector/Plugin/OTRS/DefaultSOAPUser.pm
+        # Perl Module: Kernel/System/SupportDataCollector/Plugin/LIGERO/DefaultSOAPUser.pm
         'Default SOAP Username And Password' => '默认的SOAP用户名和密码',
         'Security risk: you use the default setting for SOAP::User and SOAP::Password. Please change it.' =>
             '安全风险：你使用了默认的SOAP::User和SOAP::Password设置，请修改。',
 
-        # Perl Module: Kernel/System/SupportDataCollector/Plugin/OTRS/DefaultUser.pm
+        # Perl Module: Kernel/System/SupportDataCollector/Plugin/LIGERO/DefaultUser.pm
         'Default Admin Password' => '默认的系统管理员密码',
         'Security risk: the agent account root@localhost still has the default password. Please change it or invalidate the account.' =>
             '安全风险：服务人员帐户root@localhost还在使用默认密码。请修改密码或禁用此帐户。',
 
-        # Perl Module: Kernel/System/SupportDataCollector/Plugin/OTRS/EmailQueue.pm
+        # Perl Module: Kernel/System/SupportDataCollector/Plugin/LIGERO/EmailQueue.pm
         'Email Sending Queue' => '电子邮件发送队列',
         'Emails queued for sending' => '已排队准备发送的电子邮件',
 
-        # Perl Module: Kernel/System/SupportDataCollector/Plugin/OTRS/FQDN.pm
+        # Perl Module: Kernel/System/SupportDataCollector/Plugin/LIGERO/FQDN.pm
         'FQDN (domain name)' => '正式域名',
         'Please configure your FQDN setting.' => '请配置您的正式域名。',
         'Domain Name' => '域名',
         'Your FQDN setting is invalid.' => '您的正式域名无效。',
 
-        # Perl Module: Kernel/System/SupportDataCollector/Plugin/OTRS/FileSystemWritable.pm
+        # Perl Module: Kernel/System/SupportDataCollector/Plugin/LIGERO/FileSystemWritable.pm
         'File System Writable' => '文件系统是可写的',
-        'The file system on your OTRS partition is not writable.' => 'OTRS分区所有文件系统是不可写的。',
+        'The file system on your LIGERO partition is not writable.' => 'LIGERO分区所有文件系统是不可写的。',
 
-        # Perl Module: Kernel/System/SupportDataCollector/Plugin/OTRS/LegacyConfigBackups.pm
+        # Perl Module: Kernel/System/SupportDataCollector/Plugin/LIGERO/LegacyConfigBackups.pm
         'Legacy Configuration Backups' => '遗留的配置备份',
         'No legacy configuration backup files found.' => '找不到遗留的配置备份文件。',
         'Legacy configuration backup files found in %s, but they might still be required by some packages.' =>
@@ -5100,55 +5100,55 @@ sub Data {
         'Legacy configuration backup files are no longer needed for the installed packages, please remove them from %s.' =>
             '已安装的软件包不再需要旧版配置的备份文件，请将其从%s中删除。',
 
-        # Perl Module: Kernel/System/SupportDataCollector/Plugin/OTRS/PackageDeployment.pm
+        # Perl Module: Kernel/System/SupportDataCollector/Plugin/LIGERO/PackageDeployment.pm
         'Package Installation Status' => '软件包安装状态',
         'Some packages have locally modified files.' => '一些软件包有在本地修改过的文件。',
         'Some packages are not correctly installed.' => '一些软件包没有正确安装。',
         'Package Verification Status' => '软件包验证状态',
-        'Some packages are not verified by the OTRS Group! It is recommended not to use this packages.' =>
-            '一些软件包未经OTRS团队验证！不推荐使用该扩展包。',
+        'Some packages are not verified by the LIGERO Group! It is recommended not to use this packages.' =>
+            '一些软件包未经LIGERO团队验证！不推荐使用该扩展包。',
         'Package Framework Version Status' => '软件包框架版本状态',
         'Some packages are not allowed for the current framework version.' =>
             '一些软件包无法在当前的框架版本中使用。',
 
-        # Perl Module: Kernel/System/SupportDataCollector/Plugin/OTRS/PackageList.pm
+        # Perl Module: Kernel/System/SupportDataCollector/Plugin/LIGERO/PackageList.pm
         'Package List' => '软件包列表',
 
-        # Perl Module: Kernel/System/SupportDataCollector/Plugin/OTRS/SessionConfigSettings.pm
+        # Perl Module: Kernel/System/SupportDataCollector/Plugin/LIGERO/SessionConfigSettings.pm
         'Session Config Settings' => '会话配置设置',
 
-        # Perl Module: Kernel/System/SupportDataCollector/Plugin/OTRS/SpoolMails.pm
+        # Perl Module: Kernel/System/SupportDataCollector/Plugin/LIGERO/SpoolMails.pm
         'Spooled Emails' => '假脱机邮件',
-        'There are emails in var/spool that OTRS could not process.' => 'var/spool 目录下有一些OTRS无法处理的邮件。',
+        'There are emails in var/spool that LIGERO could not process.' => 'var/spool 目录下有一些LIGERO无法处理的邮件。',
 
-        # Perl Module: Kernel/System/SupportDataCollector/Plugin/OTRS/SystemID.pm
+        # Perl Module: Kernel/System/SupportDataCollector/Plugin/LIGERO/SystemID.pm
         'Your SystemID setting is invalid, it should only contain digits.' =>
             '您的系统ID设置无效，它只能包含数字。',
 
-        # Perl Module: Kernel/System/SupportDataCollector/Plugin/OTRS/Ticket/DefaultType.pm
+        # Perl Module: Kernel/System/SupportDataCollector/Plugin/LIGERO/Ticket/DefaultType.pm
         'Default Ticket Type' => '默认工单类型',
         'The configured default ticket type is invalid or missing. Please change the setting Ticket::Type::Default and select a valid ticket type.' =>
             '配置的默认工单类型无效或缺失，请修改设置Ticket::Type::Default，选择一个有效的工单类型。',
 
-        # Perl Module: Kernel/System/SupportDataCollector/Plugin/OTRS/Ticket/IndexModule.pm
+        # Perl Module: Kernel/System/SupportDataCollector/Plugin/LIGERO/Ticket/IndexModule.pm
         'Ticket Index Module' => '工单索引模块',
         'You have more than 60,000 tickets and should use the StaticDB backend. See admin manual (Performance Tuning) for more information.' =>
             '您已经超过60000个工单，应该使用后端静态数据库。请参阅管理员手册（性能调优部分）查阅更多信息。',
 
-        # Perl Module: Kernel/System/SupportDataCollector/Plugin/OTRS/Ticket/InvalidUsersWithLockedTickets.pm
+        # Perl Module: Kernel/System/SupportDataCollector/Plugin/LIGERO/Ticket/InvalidUsersWithLockedTickets.pm
         'Invalid Users with Locked Tickets' => '有锁定的工单的无效用户',
         'There are invalid users with locked tickets.' => '出现了有锁定的工单的无效用户。',
 
-        # Perl Module: Kernel/System/SupportDataCollector/Plugin/OTRS/Ticket/OpenTickets.pm
+        # Perl Module: Kernel/System/SupportDataCollector/Plugin/LIGERO/Ticket/OpenTickets.pm
         'You should not have more than 8,000 open tickets in your system.' =>
             '您的系统不能有超过8000个处理中的工单。',
 
-        # Perl Module: Kernel/System/SupportDataCollector/Plugin/OTRS/Ticket/SearchIndexModule.pm
+        # Perl Module: Kernel/System/SupportDataCollector/Plugin/LIGERO/Ticket/SearchIndexModule.pm
         'Ticket Search Index Module' => '工单搜索索引模块',
         'The indexing process forces the storage of the original article text in the article search index, without executing filters or applying stop word lists. This will increase the size of the search index and thus may slow down fulltext searches.' =>
             '索引进程强制将原始信件文本存储在信件搜索索引中，而不执行过滤器或应用停用词列表。 这将增加搜索索引的大小，从而可能减慢全文搜索。',
 
-        # Perl Module: Kernel/System/SupportDataCollector/Plugin/OTRS/Ticket/StaticDBOrphanedRecords.pm
+        # Perl Module: Kernel/System/SupportDataCollector/Plugin/LIGERO/Ticket/StaticDBOrphanedRecords.pm
         'Orphaned Records In ticket_lock_index Table' => 'ticket_lock_index 表中的孤儿记录',
         'Table ticket_lock_index contains orphaned records. Please run bin/ligero.Console.pl "Maint::Ticket::QueueIndexCleanup" to clean the StaticDB index.' =>
             'ticket_lock_index 表中包含孤儿记录。请运行bin/ligero.Console.pl "Maint::Ticket::QueueIndexCleanup"清理静态数据库的索引。',
@@ -5156,23 +5156,23 @@ sub Data {
         'Table ticket_index contains orphaned records. Please run bin/ligero.Console.pl "Maint::Ticket::QueueIndexCleanup" to clean the StaticDB index.' =>
             'ticket_index表中包含孤儿记录，请运行bin/ligero.Console.pl "Maint::Ticket::QueueIndexCleanup"，清理静态数据库的索引。',
 
-        # Perl Module: Kernel/System/SupportDataCollector/Plugin/OTRS/TimeSettings.pm
+        # Perl Module: Kernel/System/SupportDataCollector/Plugin/LIGERO/TimeSettings.pm
         'Time Settings' => '时间设置',
         'Server time zone' => '服务器时区',
-        'OTRS time zone' => 'OTRS时区',
-        'OTRS time zone is not set.' => 'OTRS时区未设置。',
+        'LIGERO time zone' => 'LIGERO时区',
+        'LIGERO time zone is not set.' => 'LIGERO时区未设置。',
         'User default time zone' => '用户默认时区',
         'User default time zone is not set.' => '用户默认时区未设置。',
-        'OTRS time zone setting for calendar' => 'OTRS时区设置，用于日历',
+        'LIGERO time zone setting for calendar' => 'LIGERO时区设置，用于日历',
         'Calendar time zone is not set.' => '日历时区未设置。',
 
-        # Perl Module: Kernel/System/SupportDataCollector/Plugin/OTRS/UI/AgentSkinUsage.pm
+        # Perl Module: Kernel/System/SupportDataCollector/Plugin/LIGERO/UI/AgentSkinUsage.pm
         'UI - Agent Skin Usage' => '用户界面 - 服务人员皮肤用法',
 
-        # Perl Module: Kernel/System/SupportDataCollector/Plugin/OTRS/UI/AgentThemeUsage.pm
+        # Perl Module: Kernel/System/SupportDataCollector/Plugin/LIGERO/UI/AgentThemeUsage.pm
         'UI - Agent Theme Usage' => '用户界面 - 服务人员主题用法',
 
-        # Perl Module: Kernel/System/SupportDataCollector/Plugin/OTRS/UI/SpecialStats.pm
+        # Perl Module: Kernel/System/SupportDataCollector/Plugin/LIGERO/UI/SpecialStats.pm
         'UI - Special Statistics' => '用户界面 - 特殊的统计',
         'Agents using custom main menu ordering' => '服务人员使用定制的主菜单排序',
         'Agents using favourites for the admin overview' => '服务人员在系统管理概览使用收藏夹',
@@ -5183,8 +5183,8 @@ sub Data {
 
         # Perl Module: Kernel/System/SupportDataCollector/Plugin/Webserver/Apache/MPMModel.pm
         'MPM model' => 'MPM多路处理模块',
-        'OTRS requires apache to be run with the \'prefork\' MPM model.' =>
-            'OTRS需要apache运行“prefork”MPM多路处理模块。',
+        'LIGERO requires apache to be run with the \'prefork\' MPM model.' =>
+            'LIGERO需要apache运行“prefork”MPM多路处理模块。',
 
         # Perl Module: Kernel/System/SupportDataCollector/Plugin/Webserver/Apache/Performance.pm
         'CGI Accelerator Usage' => 'CGI加速器用法',
@@ -5214,7 +5214,7 @@ sub Data {
         'Webserver Version' => 'WEB服务器版本',
         'Could not determine webserver version.' => '不能确定WEB服务器版本。',
 
-        # Perl Module: Kernel/System/SupportDataCollector/PluginAsynchronous/OTRS/ConcurrentUsers.pm
+        # Perl Module: Kernel/System/SupportDataCollector/PluginAsynchronous/LIGERO/ConcurrentUsers.pm
         'Concurrent Users Details' => '并发用户详细信息',
         'Concurrent Users' => '并发用户数',
 
@@ -5245,11 +5245,11 @@ sub Data {
         'Disabled' => '已禁用',
 
         # Perl Module: Kernel/System/SysConfig/ValueType/Date.pm
-        'System was not able to calculate user Date in OTRSTimeZone!' => '系统无法在OTRSTimeZone中计算用户的日期！',
+        'System was not able to calculate user Date in LIGEROTimeZone!' => '系统无法在LIGEROTimeZone中计算用户的日期！',
 
         # Perl Module: Kernel/System/SysConfig/ValueType/DateTime.pm
-        'System was not able to calculate user DateTime in OTRSTimeZone!' =>
-            '系统无法在OTRSTimeZone中计算用户的日期时间！',
+        'System was not able to calculate user DateTime in LIGEROTimeZone!' =>
+            '系统无法在LIGEROTimeZone中计算用户的日期时间！',
 
         # Perl Module: Kernel/System/SysConfig/ValueType/FrontendNavigation.pm
         'Value is not correct! Please, consider updating this module.' =>
@@ -5506,8 +5506,8 @@ sub Data {
         'Currently not possible' => '目前不可能',
         'This is currently disabled because of an ongoing package upgrade.' =>
             '由于正在进行软件包升级，因此目前已被禁用。',
-        'This option is currently disabled because the OTRS Daemon is not running.' =>
-            '由于OTRS守护进程没有运行，这个选项当前被禁用。',
+        'This option is currently disabled because the LIGERO Daemon is not running.' =>
+            '由于LIGERO守护进程没有运行，这个选项当前被禁用。',
         'Are you sure you want to update all installed packages?' => '您确定要更新所有已安装的软件包吗？',
 
         # JS File: Core.Agent.Admin.PostMasterFilter
@@ -5633,7 +5633,7 @@ sub Data {
             '请至少输入一个搜索条件或输入*搜索所有。',
 
         # JS File: Core.Agent.Daemon
-        'Information about the OTRS Daemon' => '关于OTRS守护进程的信息',
+        'Information about the LIGERO Daemon' => '关于LIGERO守护进程的信息',
 
         # JS File: Core.Agent.Dashboard
         'Please check the fields marked as red for valid inputs.' => '请检查标记为红色的字段，需要输入有效的值。',
@@ -5790,14 +5790,14 @@ sub Data {
         'This is %s' => '这是%s',
         'Complex %s with %s arguments' => '复杂%s，带有%s参数',
 
-        # JS File: OTRSLineChart
+        # JS File: LIGEROLineChart
         'No Data Available.' => '没有可用数据。',
 
-        # JS File: OTRSMultiBarChart
+        # JS File: LIGEROMultiBarChart
         'Grouped' => '分组的',
         'Stacked' => '堆叠的',
 
-        # JS File: OTRSStackedAreaChart
+        # JS File: LIGEROStackedAreaChart
         'Stream' => '流',
         'Expanded' => '展开的',
 
@@ -5886,8 +5886,8 @@ Thanks for your help!
         'Added subscription for user "%s".' => '已为用户“%s”添加关注。',
         'Added system request (%s).' => '已添加系统请求 (%s)。',
         'Added web request from customer.' => '已添加来自客户的网页请求。',
-        'Adds a suffix with the actual year and month to the OTRS log file. A logfile for every month will be created.' =>
-            '为OTRS日志文件添加实际年月的后缀，每月创建一个日志文件。',
+        'Adds a suffix with the actual year and month to the LIGERO log file. A logfile for every month will be created.' =>
+            '为LIGERO日志文件添加实际年月的后缀，每月创建一个日志文件。',
         'Adds customers email addresses to recipients in the ticket compose screen of the agent interface. The customers email address won\'t be added if the article type is email-internal.' =>
             '在服务人员界面中，在编写工单时添加客户邮件地址到收件人，如果信件类型为内部邮件则不添加客户邮件地址。',
         'Adds the one time vacation days for the indicated calendar.' => '为指定日历添加一次假期。',
@@ -5938,7 +5938,7 @@ Thanks for your help!
         'Agents ↔ Groups' => '服务人员 ↔ 组',
         'Agents ↔ Roles' => '服务人员 ↔ 角色',
         'All CustomerIDs of a customer user.' => '一个客户用户的所有客户ID。',
-        'All attachments (OTRS Business Solution™)' => '所有附件（OTRS商业解决方案）',
+        'All attachments (LIGERO Business Solution™)' => '所有附件（LIGERO商业解决方案）',
         'All customer users of a CustomerID' => '一个客户ID的所有客户用户',
         'All escalated tickets' => '所有升级的工单',
         'All new tickets, these tickets have not been worked on yet' => '所有新建工单，这些工单目前还没有被处理',
@@ -6116,9 +6116,9 @@ Thanks for your help!
             '通过搜索主题中的有效工单号，检查一个邮件是否是跟进到已存在的工单。',
         'Checks the SystemID in ticket number detection for follow-ups. If not enabled, SystemID will be changed after using the system.' =>
             '在跟进工单的工单编号检测时检查系统ID。如果不启用，系统ID将在使用系统后更改。',
-        'Checks the availability of OTRS Business Solution™ for this system.' =>
-            '检查本系统的OTRS商业版可用性。',
-        'Checks the entitlement status of OTRS Business Solution™.' => '检查OTRS商业版的权利状态。',
+        'Checks the availability of LIGERO Business Solution™ for this system.' =>
+            '检查本系统的LIGERO商业版可用性。',
+        'Checks the entitlement status of LIGERO Business Solution™.' => '检查LIGERO商业版的权利状态。',
         'Child' => '子',
         'Chinese (Simplified)' => '简体中文',
         'Chinese (Traditional)' => '繁体中文',
@@ -6171,7 +6171,7 @@ Thanks for your help!
         'Configure and manage ACLs.' => '配置和管理ACL。',
         'Configure any additional readonly mirror databases that you want to use.' =>
             '配置任何您想要使用的额外只读镜像数据库。',
-        'Configure sending of support data to OTRS Group for improved support.' =>
+        'Configure sending of support data to LIGERO Group for improved support.' =>
             '配置为提升支持效果而发送给OTRDS集团的支持数据。',
         'Configure which screen should be shown after a new ticket has been created.' =>
             '配置创建新工单后显示的界面。',
@@ -6294,8 +6294,8 @@ Thanks for your help!
         'Default value for NameX' => 'NameX的默认值',
         'Define Actions where a settings button is available in the linked objects widget (LinkObject::ViewMode = "complex"). Please note that these Actions must have registered the following JS and CSS files: Core.AllocationList.css, Core.UI.AllocationList.js, Core.UI.Table.Sort.js, Core.Agent.TableFilters.js.' =>
             '定义链接对象小部件(LinkObject::ViewMode = \"complex\")设置按钮中的操作。请注意，这些操作必须已经在以下JS和CSS文件中注册：Core.AllocationList.css、Core.UI.AllocationList.js、 Core.UI.Table.Sort.js、Core.Agent.TableFilters.js。',
-        'Define a filter for html output to add links behind a defined string. The element Image allows two input kinds. At once the name of an image (e.g. faq.png). In this case the OTRS image path will be used. The second possiblity is to insert the link to the image.' =>
-            '在HTML输出结果中为预定义字符串添加链接的过滤器。图像元素允许两种输入方式：第一种是用图像的名称（例如：faq.png），在这种情况下会使用OTRS的图像路径；第二种是插入图像的链接。',
+        'Define a filter for html output to add links behind a defined string. The element Image allows two input kinds. At once the name of an image (e.g. faq.png). In this case the LIGERO image path will be used. The second possiblity is to insert the link to the image.' =>
+            '在HTML输出结果中为预定义字符串添加链接的过滤器。图像元素允许两种输入方式：第一种是用图像的名称（例如：faq.png），在这种情况下会使用LIGERO的图像路径；第二种是插入图像的链接。',
         'Define a mapping between variables of the customer user data (keys) and dynamic fields of a ticket (values). The purpose is to store customer user data in ticket dynamic fields. The dynamic fields must be present in the system and should be enabled for AgentTicketFreeText, so that they can be set/updated manually by the agent. They mustn\'t be enabled for AgentTicketPhone, AgentTicketEmail and AgentTicketCustomer. If they were, they would have precedence over the automatically set values. To use this mapping, you have to also activate the Ticket::EventModulePost###4100-DynamicFieldFromCustomerUser setting.' =>
             '定义客户用户数据（键）与工单动态字段（值）的映射。目的是在工单动态字段中存储客户用户数据。动态字段必须存在于系统中且启用了AgentTicketFreeText（服务人员工单自由文本），这样才能由服务人员手动设置/更新。动态字段不能在服务人员电话工单、邮件工单和客户工单中启用，否则他们将优先于自动设置值。要使用这些映射，还要激活Ticket::EventModulePost###4100-DynamicFieldFromCustomerUser的设置。',
         'Define dynamic field name for end time. This field has to be manually added to the system as Ticket: "Date / Time" and must be activated in ticket creation screens and/or in any other ticket action screens.' =>
@@ -6327,14 +6327,14 @@ Thanks for your help!
             '定义一个客户条目，以在客户信息块的尾部生成一个谷歌图标。',
         'Defines a customer item, which generates a google maps icon at the end of a customer info block.' =>
             '定义一个客户条目，以在客户信息块的尾部生成一个谷歌地图图标。',
-        'Defines a filter for html output to add links behind CVE numbers. The element Image allows two input kinds. At once the name of an image (e.g. faq.png). In this case the OTRS image path will be used. The second possiblity is to insert the link to the image.' =>
-            '定义HTML输出结果中在CVE号码后面添加链接的过滤器。图像元素允许两种输入方式：第一种是用图像的名称（如faq.png），在这种情况下会使用OTRS的图像路径；第二种是插入图像的链接。',
-        'Defines a filter for html output to add links behind MSBulletin numbers. The element Image allows two input kinds. At once the name of an image (e.g. faq.png). In this case the OTRS image path will be used. The second possiblity is to insert the link to the image.' =>
-            '定义HTML输出结果中在微软公告号码后面添加链接的过滤器。图像元素允许两种输入方式：第一种是用图像的名称（如faq.png），在这种情况下会使用OTRS的图像路径；第二种是插入图像的链接。',
-        'Defines a filter for html output to add links behind a defined string. The element Image allows two input kinds. At once the name of an image (e.g. faq.png). In this case the OTRS image path will be used. The second possiblity is to insert the link to the image.' =>
-            '在HTML输出结果中为预定义字符串添加链接的过滤器。图像元素允许两种输入方式：第一种是用图像的名称（如faq.png），在这种情况下会使用OTRS的图像路径；第二种是插入图像的链接。',
-        'Defines a filter for html output to add links behind bugtraq numbers. The element Image allows two input kinds. At once the name of an image (e.g. faq.png). In this case the OTRS image path will be used. The second possiblity is to insert the link to the image.' =>
-            '定义HTML输出结果中在BUG追踪号码后面添加链接的过滤器。图像元素允许两种输入方式：第一种是用图像的名称（如faq.png），在这种情况下会使用OTRS的图像路径；第二种是插入图像的链接。',
+        'Defines a filter for html output to add links behind CVE numbers. The element Image allows two input kinds. At once the name of an image (e.g. faq.png). In this case the LIGERO image path will be used. The second possiblity is to insert the link to the image.' =>
+            '定义HTML输出结果中在CVE号码后面添加链接的过滤器。图像元素允许两种输入方式：第一种是用图像的名称（如faq.png），在这种情况下会使用LIGERO的图像路径；第二种是插入图像的链接。',
+        'Defines a filter for html output to add links behind MSBulletin numbers. The element Image allows two input kinds. At once the name of an image (e.g. faq.png). In this case the LIGERO image path will be used. The second possiblity is to insert the link to the image.' =>
+            '定义HTML输出结果中在微软公告号码后面添加链接的过滤器。图像元素允许两种输入方式：第一种是用图像的名称（如faq.png），在这种情况下会使用LIGERO的图像路径；第二种是插入图像的链接。',
+        'Defines a filter for html output to add links behind a defined string. The element Image allows two input kinds. At once the name of an image (e.g. faq.png). In this case the LIGERO image path will be used. The second possiblity is to insert the link to the image.' =>
+            '在HTML输出结果中为预定义字符串添加链接的过滤器。图像元素允许两种输入方式：第一种是用图像的名称（如faq.png），在这种情况下会使用LIGERO的图像路径；第二种是插入图像的链接。',
+        'Defines a filter for html output to add links behind bugtraq numbers. The element Image allows two input kinds. At once the name of an image (e.g. faq.png). In this case the LIGERO image path will be used. The second possiblity is to insert the link to the image.' =>
+            '定义HTML输出结果中在BUG追踪号码后面添加链接的过滤器。图像元素允许两种输入方式：第一种是用图像的名称（如faq.png），在这种情况下会使用LIGERO的图像路径；第二种是插入图像的链接。',
         'Defines a filter to collect CVE numbers from article texts in AgentTicketZoom. The results will be displayed in a meta box next to the article. Fill in URLPreview if you would like to see a preview when moving your mouse cursor above the link element. This could be the same URL as in URL, but also an alternate one. Please note that some websites deny being displayed within an iframe (e.g. Google) and thus won\'t work with the preview mode.' =>
             '定义一个在服务人员工单详情屏幕从信件文本中搜集CVE编号的过滤器，并在靠近信件的一个自定义区块中显示结果。如果想要在鼠标移到到链接元素上时显示内容预览，就填写URLPreview字段。它可以与URL中的地址相同，也可以是另外一个URL。请注意：一些网站不能在iframe框架中显示（如Google），这样就无法在预览模式中正常显示内容。',
         'Defines a filter to process the text in the articles, in order to highlight predefined keywords.' =>
@@ -6429,8 +6429,8 @@ Thanks for your help!
             '定义是否允许因在个人偏好设置中没有存储共享密钥而不能使用双因素身份验证的服务人员登录。',
         'Defines if customers should be allowed to login if they have no shared secret stored in their preferences and therefore are not using two-factor authentication.' =>
             '定义是否允许因在个人偏好设置中没有存储共享密钥而不能使用双因素身份验证的客户用户登录。',
-        'Defines if the communication between this system and OTRS Group servers that provide cloud services is possible. If set to \'Disable cloud services\', some functionality will be lost such as system registration, support data sending, upgrading to and use of OTRS Business Solution™, OTRS Verify™, OTRS News and product News dashboard widgets, among others.' =>
-            '定义本系统能否与OTRS集团提供云服务的服务器通信。如果设置为“禁用云服务”，某些功能如系统注册、发送支持数据、升级到OTRS Business Solution™（OTRS商业解决方案）、OTRS Verify™（OTRS验证）、仪表板中的OTRS新闻和产品新闻小部件等将失效。',
+        'Defines if the communication between this system and LIGERO Group servers that provide cloud services is possible. If set to \'Disable cloud services\', some functionality will be lost such as system registration, support data sending, upgrading to and use of LIGERO Business Solution™, LIGERO Verify™, LIGERO News and product News dashboard widgets, among others.' =>
+            '定义本系统能否与LIGERO集团提供云服务的服务器通信。如果设置为“禁用云服务”，某些功能如系统注册、发送支持数据、升级到LIGERO Business Solution™（LIGERO商业解决方案）、LIGERO Verify™（LIGERO验证）、仪表板中的LIGERO新闻和产品新闻小部件等将失效。',
         'Defines if the enhanced mode should be used (enables use of table, replace, subscript, superscript, paste from word, etc.) in customer interface.' =>
             '定义客户界面是否使用增强模式（启用表格、替换、下标、上标、从WORD粘贴等功能）。',
         'Defines if the enhanced mode should be used (enables use of table, replace, subscript, superscript, paste from word, etc.).' =>
@@ -6475,8 +6475,8 @@ Thanks for your help!
         'Defines phone communication channel.' => '定义电话通信渠道。',
         'Defines queues that\'s tickets are used for displaying as calendar events.' =>
             '定义将工单作为日历事件显示的队列。',
-        'Defines the HTTP hostname for the support data collection with the public module \'PublicSupportDataCollector\' (e.g. used from the OTRS Daemon).' =>
-            '使用公共模块 \'PublicSupportDataCollector\' （如用于OTRS守护进程的模块）定义用于搜集支持数据的HTTP主机名。',
+        'Defines the HTTP hostname for the support data collection with the public module \'PublicSupportDataCollector\' (e.g. used from the LIGERO Daemon).' =>
+            '使用公共模块 \'PublicSupportDataCollector\' （如用于LIGERO守护进程的模块）定义用于搜集支持数据的HTTP主机名。',
         'Defines the IP regular expression for accessing the local repository. You need to enable this to have access to your local repository and the package::RepositoryList is required on the remote host.' =>
             '定义IP正则表达式以访问本地的软件仓库。您需要启用这个设置以访问本地的软件仓库，远程主机上还需要设置package::RepositoryList。',
         'Defines the PostMaster header to be used on the filter for keeping the current state of the ticket.' =>
@@ -6687,8 +6687,8 @@ Thanks for your help!
             '定义信件中处理文本的过滤器，以便高亮URL地址。',
         'Defines the format of responses in the ticket compose screen of the agent interface ([% Data.OrigFrom | html %] is From 1:1, [% Data.OrigFromName | html %] is only realname of From).' =>
             '定义服务人员界面工单编写屏幕响应的发件人格式（[% Data.OrigFrom | html %]是发件人，[% Data.OrigFromName |html %] 是仅有发件人真实姓名。',
-        'Defines the fully qualified domain name of the system. This setting is used as a variable, OTRS_CONFIG_FQDN which is found in all forms of messaging used by the application, to build links to the tickets within your system.' =>
-            '定义本系统的正式域名。这个设置用于变量OTRS_CONFIG_FQDN，在所有的消息表单中使用，以创建系统内部到工单的链接。',
+        'Defines the fully qualified domain name of the system. This setting is used as a variable, LIGERO_CONFIG_FQDN which is found in all forms of messaging used by the application, to build links to the tickets within your system.' =>
+            '定义本系统的正式域名。这个设置用于变量LIGERO_CONFIG_FQDN，在所有的消息表单中使用，以创建系统内部到工单的链接。',
         'Defines the groups every customer user will be in (if CustomerGroupSupport is enabled and you don\'t want to manage every customer user for these groups).' =>
             '定义每个客户用户都会在其中的组（如果启用了CustomerGroupSupport-客户组支持，并且你不想管理这些组的每个客户用户）。',
         'Defines the groups every customer will be in (if CustomerGroupSupport is enabled and you don\'t want to manage every customer for these groups).' =>
@@ -6773,8 +6773,8 @@ Thanks for your help!
             '定义为额外软件包获取在线软件仓库列表的地址，将使用第一个可用的结果。',
         'Defines the log module for the system. "File" writes all messages in a given logfile, "SysLog" uses the syslog daemon of the system, e.g. syslogd.' =>
             '定义系统的日志模块。“File（文件）”将所有消息写入一个指定的日志文件，“SysLog（系统日志）”使用操作系统的syslog守护进程如syslogd。',
-        'Defines the maximal size (in bytes) for file uploads via the browser. Warning: Setting this option to a value which is too low could cause many masks in your OTRS instance to stop working (probably any mask which takes input from the user).' =>
-            '定义通过浏览器上传文件的最大尺寸（单位：字节）。警告：这个选项设置过小将使您的OTRS实例出现许多遮罩屏幕导致停止工作（可能是需要用户输入的任何遮罩屏幕）。',
+        'Defines the maximal size (in bytes) for file uploads via the browser. Warning: Setting this option to a value which is too low could cause many masks in your LIGERO instance to stop working (probably any mask which takes input from the user).' =>
+            '定义通过浏览器上传文件的最大尺寸（单位：字节）。警告：这个选项设置过小将使您的LIGERO实例出现许多遮罩屏幕导致停止工作（可能是需要用户输入的任何遮罩屏幕）。',
         'Defines the maximal valid time (in seconds) for a session id.' =>
             '定义一个会话ID的最大有效时间（单位：秒）。',
         'Defines the maximum number of affected tickets per job.' => '定义每个任务影响的最大工单数。',
@@ -6799,10 +6799,10 @@ Thanks for your help!
         'Defines the module to authenticate customers.' => '定义客户身份验证的模块。',
         'Defines the module to display a notification if cloud services are disabled.' =>
             '定义云服务被禁用时显示一个通知消息的模块。',
-        'Defines the module to display a notification in different interfaces on different occasions for OTRS Business Solution™.' =>
-            '定义在不同界面不同场合显示OTRS商业版通知的模块。',
-        'Defines the module to display a notification in the agent interface if the OTRS Daemon is not running.' =>
-            '定义服务人员界面如果OTRS守护进程没有运行就显示一个通知的模块。',
+        'Defines the module to display a notification in different interfaces on different occasions for LIGERO Business Solution™.' =>
+            '定义在不同界面不同场合显示LIGERO商业版通知的模块。',
+        'Defines the module to display a notification in the agent interface if the LIGERO Daemon is not running.' =>
+            '定义服务人员界面如果LIGERO守护进程没有运行就显示一个通知的模块。',
         'Defines the module to display a notification in the agent interface if the system configuration is out of sync.' =>
             '如果系统配置不同步，定义在服务人员界面中显示一条通知的模块。',
         'Defines the module to display a notification in the agent interface, if the agent has not yet selected a time zone.' =>
@@ -6839,8 +6839,8 @@ Thanks for your help!
             '定义在偏好设置表中存储用户标识符的列名称。',
         'Defines the name of the indicated calendar.' => '定义指定的日历名称。',
         'Defines the name of the key for customer sessions.' => '定义客户会话中关键词的名称。',
-        'Defines the name of the session key. E.g. Session, SessionID or OTRS.' =>
-            '定义会话中关键词的名称，如Session、SessionID或OTRS。',
+        'Defines the name of the session key. E.g. Session, SessionID or LIGERO.' =>
+            '定义会话中关键词的名称，如Session、SessionID或LIGERO。',
         'Defines the name of the table where the user preferences are stored.' =>
             '定义存储用户偏好设置的表的名称。',
         'Defines the next possible states after composing / answering a ticket in the ticket compose screen of the agent interface.' =>
@@ -6935,7 +6935,7 @@ Thanks for your help!
             '定义服务人员真实姓名和给定队列邮件地址之间的分隔符。',
         'Defines the shown columns and the position in the AgentCustomerUserAddressBook result screen.' =>
             '定义在服务人员界面客户用户通讯录搜索结果屏幕中显示的列和位置。',
-        'Defines the shown links in the footer area of the customer and public interface of this OTRS system. The value in "Key" is the external URL, the value in "Content" is the shown label.' =>
+        'Defines the shown links in the footer area of the customer and public interface of this LIGERO system. The value in "Key" is the external URL, the value in "Content" is the shown label.' =>
             '',
         'Defines the standard permissions available for customers within the application. If more permissions are needed, you can enter them here. Permissions must be hard coded to be effective. Please ensure, when adding any of the afore mentioned permissions, that the "rw" permission remains the last entry.' =>
             '定义本系统客户可用的标准权限。如果需要更多的权限，您可以在这里输入。权限必须确实硬编码以保证生效。请确保在添加前面任何提到的权限时，“rw（读写）”权限保持为最后一个条目。',
@@ -6957,8 +6957,8 @@ Thanks for your help!
         'Defines the subject for rejected emails.' => '定义拒绝邮件的主题。',
         'Defines the system administrator\'s email address. It will be displayed in the error screens of the application.' =>
             '定义系统管理员的邮件地址，它将显示在本系统的错误屏幕中。',
-        'Defines the system identifier. Every ticket number and http session string contains this ID. This ensures that only tickets which belong to your system will be processed as follow-ups (useful when communicating between two instances of OTRS).' =>
-            '定义本系统的标识符。每个工单编号和HTTP会话字符串均包含这个ID。这确保只有属于本系统的工单才会被跟进处理（在两套OTRS实例间通信时有用）。',
+        'Defines the system identifier. Every ticket number and http session string contains this ID. This ensures that only tickets which belong to your system will be processed as follow-ups (useful when communicating between two instances of LIGERO).' =>
+            '定义本系统的标识符。每个工单编号和HTTP会话字符串均包含这个ID。这确保只有属于本系统的工单才会被跟进处理（在两套LIGERO实例间通信时有用）。',
         'Defines the target attribute in the link to external customer database. E.g. \'AsPopup PopupType_TicketAction\'.' =>
             '定义到外部客户数据库的目标属性，例如：\'AsPopup PopupType_TicketAction\'。',
         'Defines the target attribute in the link to external customer database. E.g. \'target="cdb"\'.' =>
@@ -6974,12 +6974,12 @@ Thanks for your help!
         'Defines the ticket plugin for calendar appointments.' => '定义日历预约的工单插件。',
         'Defines the time zone of the indicated calendar, which can be assigned later to a specific queue.' =>
             '定义一个指定日历（可能在以后分配给一个指定的队列）的时区。',
-        'Defines the timeout (in seconds, minimum is 20 seconds) for the support data collection with the public module \'PublicSupportDataCollector\' (e.g. used from the OTRS Daemon).' =>
-            '使用公共模块“PublicSupportDataCollector”（例如用于OTRS守护进程的模块）来定义支持数据收集的超时（以秒为单位，最小为20秒）。',
+        'Defines the timeout (in seconds, minimum is 20 seconds) for the support data collection with the public module \'PublicSupportDataCollector\' (e.g. used from the LIGERO Daemon).' =>
+            '使用公共模块“PublicSupportDataCollector”（例如用于LIGERO守护进程的模块）来定义支持数据收集的超时（以秒为单位，最小为20秒）。',
         'Defines the two-factor module to authenticate agents.' => '定义服务人员的双因素身份验证模块。',
         'Defines the two-factor module to authenticate customers.' => '定义客户的双因素身份验证模块。',
-        'Defines the type of protocol, used by the web server, to serve the application. If https protocol will be used instead of plain http, it must be specified here. Since this has no affect on the web server\'s settings or behavior, it will not change the method of access to the application and, if it is wrong, it will not prevent you from logging into the application. This setting is only used as a variable, OTRS_CONFIG_HttpType which is found in all forms of messaging used by the application, to build links to the tickets within your system.' =>
-            '定义本系统的WEB服务器使用的协议类型。如果要用HTTPS协议代替明文的HTTP协议，就在这里指定。 因为这个设置并不影响WEB服务器的设置或行为，所以不会改变访问本系统的方式。 如果设置错误，也不会阻止您登录系统。这个设置只是作为一个变量OTRS_CONFIG_HttpType使用，可以在系统使用的所有消息的表单中找到，用来创建在系统内到工单的链接。',
+        'Defines the type of protocol, used by the web server, to serve the application. If https protocol will be used instead of plain http, it must be specified here. Since this has no affect on the web server\'s settings or behavior, it will not change the method of access to the application and, if it is wrong, it will not prevent you from logging into the application. This setting is only used as a variable, LIGERO_CONFIG_HttpType which is found in all forms of messaging used by the application, to build links to the tickets within your system.' =>
+            '定义本系统的WEB服务器使用的协议类型。如果要用HTTPS协议代替明文的HTTP协议，就在这里指定。 因为这个设置并不影响WEB服务器的设置或行为，所以不会改变访问本系统的方式。 如果设置错误，也不会阻止您登录系统。这个设置只是作为一个变量LIGERO_CONFIG_HttpType使用，可以在系统使用的所有消息的表单中找到，用来创建在系统内到工单的链接。',
         'Defines the used character for plaintext email quotes in the ticket compose screen of the agent interface. If this is empty or inactive, original emails will not be quoted but appended to the response.' =>
             '定义服务人员界面工单编写屏幕使用的普通文本邮件引用字符。如果这个设置为空或不激活，原始邮件将不会被引用而是追加到回复内容中。',
         'Defines the user identifier for the customer panel.' => '定义客户门户的用户标识符。',
@@ -7024,7 +7024,7 @@ Thanks for your help!
         'Deletes requested sessions if they have timed out.' => '删除超时的会话请求。',
         'Delivers extended debugging information in the frontend in case any AJAX errors occur, if enabled.' =>
             '启用后，如果发生了任何的AJAX错误，就在前端传递扩展的调试信息。',
-        'Deploy and manage OTRS Business Solution™.' => '部署并管理OTRS商业版。',
+        'Deploy and manage LIGERO Business Solution™.' => '部署并管理LIGERO商业版。',
         'Detached' => '已卸下',
         'Determines if a button to delete a link should be displayed next to each link in each zoom mask.' =>
             '确定在每个详情遮罩窗口中是否应在每个链接旁边显示删除链接的按钮。',
@@ -7060,8 +7060,8 @@ Thanks for your help!
             '确定客户界面哪些队列可以作为工单的有效收件人。',
         'Disable HTTP header "Content-Security-Policy" to allow loading of external script contents. Disabling this HTTP header can be a security issue! Only disable it, if you know what you are doing!' =>
             '禁用HHTP头"Content-Security-Policy"以便允许载入扩展的脚本内容。禁用这个HTTP头可能引起安全问题！仅在您知道您在干什么时才禁用它！',
-        'Disable HTTP header "X-Frame-Options: SAMEORIGIN" to allow OTRS to be included as an IFrame in other websites. Disabling this HTTP header can be a security issue! Only disable it, if you know what you are doing!' =>
-            '禁用HHTP头"X-Frame-Options: SAMEORIGIN" 以便允许OTRS可以包含在其它网址的IFrame框架中。禁用这个HTTP头可能有安全问题！仅在您知道您在干什么时才禁用它！',
+        'Disable HTTP header "X-Frame-Options: SAMEORIGIN" to allow LIGERO to be included as an IFrame in other websites. Disabling this HTTP header can be a security issue! Only disable it, if you know what you are doing!' =>
+            '禁用HHTP头"X-Frame-Options: SAMEORIGIN" 以便允许LIGERO可以包含在其它网址的IFrame框架中。禁用这个HTTP头可能有安全问题！仅在您知道您在干什么时才禁用它！',
         'Disable cloud services' => '禁用云服务',
         'Disables sending reminder notifications to the responsible agent of a ticket (Ticket::Responsible needs to be enabled).' =>
             '禁止发送提醒通知给工单负责人（需要启用Ticket::Responsible设置）。',
@@ -7170,8 +7170,8 @@ Thanks for your help!
         'Enable this if you trust in all your public and private pgp keys, even if they are not certified with a trusted signature.' =>
             '如果你信任所有的公共和私有PGP密钥（即使它们不是可信任签名认证的），则启用这个参数。',
         'Enabled filters.' => '启用的过滤器。',
-        'Enables PGP support. When PGP support is enabled for signing and encrypting mail, it is HIGHLY recommended that the web server runs as the OTRS user. Otherwise, there will be problems with the privileges when accessing .gnupg folder.' =>
-            '启用PGP支持。当启用PGP签名和加密邮件时，强烈推荐以OTRS用户运行WEB服务器，否则，访问.pnugp目录会有权限问题。',
+        'Enables PGP support. When PGP support is enabled for signing and encrypting mail, it is HIGHLY recommended that the web server runs as the LIGERO user. Otherwise, there will be problems with the privileges when accessing .gnupg folder.' =>
+            '启用PGP支持。当启用PGP签名和加密邮件时，强烈推荐以LIGERO用户运行WEB服务器，否则，访问.pnugp目录会有权限问题。',
         'Enables S/MIME support.' => '启用S/MIME支持。',
         'Enables customers to create their own accounts.' => '允许客户自己建立帐户。',
         'Enables fetch S/MIME from CustomerUser backend support.' => '在客户用户后端支持模块启用收取S/MIME（邮件）。',
@@ -7232,7 +7232,7 @@ Thanks for your help!
             '执行定制的命令或模块。注意：如果使用模块，需要使用函数。',
         'Executes follow-up checks on In-Reply-To or References headers for mails that don\'t have a ticket number in the subject.' =>
             '为主题中没有工单编号的邮件执行回复或引用头的跟进检查。',
-        'Executes follow-up checks on OTRS Header \'X-OTRS-Bounce\'.' => '对OTRS头\'X-OTRS-Bounce\'执行后续检查。',
+        'Executes follow-up checks on LIGERO Header \'X-LIGERO-Bounce\'.' => '对LIGERO头\'X-LIGERO-Bounce\'执行后续检查。',
         'Executes follow-up checks on attachment contents for mails that don\'t have a ticket number in the subject.' =>
             '为主题中没有工单编号的邮件执行附件内容的跟进检查。',
         'Executes follow-up checks on email body for mails that don\'t have a ticket number in the subject.' =>
@@ -7250,10 +7250,10 @@ Thanks for your help!
             '通过代理获取软件包，覆盖“WebUserAgent::Proxy”设置。',
         'File that is displayed in the Kernel::Modules::AgentInfo module, if located under Kernel/Output/HTML/Templates/Standard/AgentInfo.tt.' =>
             '显示在模块Kernel::Modules::AgentInfo中的文件，位于Kernel/Output/HTML/Templates/Standard/AgentInfo.tt。',
-        'Filter for debugging ACLs. Note: More ticket attributes can be added in the format <OTRS_TICKET_Attribute> e.g. <OTRS_TICKET_Priority>.' =>
-            '调试ACL的过滤器。注意：可以按以下格式添加更多的工单属性 <OTRS_TICKET_属性>，例如：<OTRS_TICKET_Priority>。',
-        'Filter for debugging Transitions. Note: More filters can be added in the format <OTRS_TICKET_Attribute> e.g. <OTRS_TICKET_Priority>.' =>
-            '调试转换的过滤器。注意：可以按以下格式添加更多的过滤器 <OTRS_TICKET_属性>，例如：<OTRS_TICKET_Priority>。',
+        'Filter for debugging ACLs. Note: More ticket attributes can be added in the format <LIGERO_TICKET_Attribute> e.g. <LIGERO_TICKET_Priority>.' =>
+            '调试ACL的过滤器。注意：可以按以下格式添加更多的工单属性 <LIGERO_TICKET_属性>，例如：<LIGERO_TICKET_Priority>。',
+        'Filter for debugging Transitions. Note: More filters can be added in the format <LIGERO_TICKET_Attribute> e.g. <LIGERO_TICKET_Priority>.' =>
+            '调试转换的过滤器。注意：可以按以下格式添加更多的过滤器 <LIGERO_TICKET_属性>，例如：<LIGERO_TICKET_Priority>。',
         'Filter incoming emails.' => '进入的邮件的过滤器。',
         'Finnish' => '芬兰语',
         'First Christmas Day' => '圣诞节的第一天',
@@ -7387,8 +7387,8 @@ Thanks for your help!
             '如果Customer::AuthModule（客户认证模块）选择“LDAP”，可以在这里指定访问属性。',
         'If "LDAP" was selected for Customer::AuthModule, you can specify if the applications will stop if e. g. a connection to a server can\'t be established due to network problems.' =>
             '如果Customer::AuthModule（客户认证模块）选择“LDAP”，您可以指定系统是否要停止的条件（例如由于网络问题无法建立到服务器的连接）。',
-        'If "LDAP" was selected for Customer::Authmodule, you can check if the user is allowed to authenticate because he is in a posixGroup, e.g. user needs to be in a group xyz to use OTRS. Specify the group, who may access the system.' =>
-            '如果Customer::AuthModule（客户认证模块）选择“LDAP”，您可以检查在posixGroup组中的用户是否允许认证，例如：用户需要在组xyz才能使用OTRS。指定这个有权访问系统的组名。',
+        'If "LDAP" was selected for Customer::Authmodule, you can check if the user is allowed to authenticate because he is in a posixGroup, e.g. user needs to be in a group xyz to use LIGERO. Specify the group, who may access the system.' =>
+            '如果Customer::AuthModule（客户认证模块）选择“LDAP”，您可以检查在posixGroup组中的用户是否允许认证，例如：用户需要在组xyz才能使用LIGERO。指定这个有权访问系统的组名。',
         'If "LDAP" was selected, you can add a filter to each LDAP query, e.g. (mail=*), (objectclass=user) or (!objectclass=computer).' =>
             '如果选用了LDAP，您可以为每个LDAP查询添加一个过滤器，例如：(mail=*)、 (objectclass=user) 或 (!objectclass=computer)。',
         'If "Radius" was selected for Customer::AuthModule, the password to authenticate to the radius host must be specified.' =>
@@ -7425,16 +7425,16 @@ Thanks for your help!
             '如果启用了此选项，守护进程的标准错误流将重定向到一个日志文件。',
         'If enabled the daemon will redirect the standard output stream to a log file.' =>
             '如果启用了此选项，守护进程的标准输出流将重定向到一个日志文件。',
-        'If enabled the daemon will use this directory to create its PID files. Note: Please stop the daemon before any change and use this setting only if <$OTRSHome>/var/run/ can not be used.' =>
-            '如果启用，守护程序将使用此目录创建其PID文件。 注意：请在任何更改之前停止守护程序，并且只有在不使用<$OTRSHome>/var/run/时才使用此设置。',
-        'If enabled, OTRS will deliver all CSS files in minified form.' =>
-            '如果启用，OTRS将以最小化的形式提供所有CSS文件。',
-        'If enabled, OTRS will deliver all JavaScript files in minified form.' =>
-            '如果启用了此选项，OTRS将用压缩格式传送所有的JavaScript文件。',
+        'If enabled the daemon will use this directory to create its PID files. Note: Please stop the daemon before any change and use this setting only if <$LIGEROHome>/var/run/ can not be used.' =>
+            '如果启用，守护程序将使用此目录创建其PID文件。 注意：请在任何更改之前停止守护程序，并且只有在不使用<$LIGEROHome>/var/run/时才使用此设置。',
+        'If enabled, LIGERO will deliver all CSS files in minified form.' =>
+            '如果启用，LIGERO将以最小化的形式提供所有CSS文件。',
+        'If enabled, LIGERO will deliver all JavaScript files in minified form.' =>
+            '如果启用了此选项，LIGERO将用压缩格式传送所有的JavaScript文件。',
         'If enabled, TicketPhone and TicketEmail will be open in new windows.' =>
             '如果启用了此选项，电话工单和邮件工单将在新窗口中打开。',
-        'If enabled, the OTRS version tag will be removed from the Webinterface, the HTTP headers and the X-Headers of outgoing mails. NOTE: If you change this option, please make sure to delete the cache.' =>
-            '如果启用了此选项，将从WEB界面、HTTP头信息和外发邮件的X-Headers头信息中移除OTRS版本标签。注意：如果你要修改这个选项，请确保清空缓存。',
+        'If enabled, the LIGERO version tag will be removed from the Webinterface, the HTTP headers and the X-Headers of outgoing mails. NOTE: If you change this option, please make sure to delete the cache.' =>
+            '如果启用了此选项，将从WEB界面、HTTP头信息和外发邮件的X-Headers头信息中移除LIGERO版本标签。注意：如果你要修改这个选项，请确保清空缓存。',
         'If enabled, the cache data be held in memory.' => '如果启用了，缓存数据将会保留在内存中。',
         'If enabled, the cache data will be stored in cache backend.' => '如果启用了，缓存数据将会存储到缓存后端。',
         'If enabled, the customer can search for tickets in all services (regardless what services are assigned to the customer).' =>
@@ -7443,8 +7443,8 @@ Thanks for your help!
             '如果启用了此选项，所有概览视图(仪表板、锁定工单视图、队列视图)将在指定的间隔时间自动刷新。',
         'If enabled, the first level of the main menu opens on mouse hover (instead of click only).' =>
             '如果启用了此选项，在鼠标移动到主菜单位置时打开一级子菜单（而不是需要点击后再打开）。',
-        'If enabled, users that haven\'t selected a time zone yet will be notified to do so. Note: Notification will not be shown if (1) user has not yet selected a time zone and (2) OTRSTimeZone and UserDefaultTimeZone do match and (3) are not set to UTC.' =>
-            '如果启用，那么尚未选择时区的用户将被通知选择时区。 注意：如果（1）用户尚未选择时区，并且（2）OTRSTimeZone和UserDefaultTimeZone相同，（3）未设置为UTC，则不会显示通知。',
+        'If enabled, users that haven\'t selected a time zone yet will be notified to do so. Note: Notification will not be shown if (1) user has not yet selected a time zone and (2) LIGEROTimeZone and UserDefaultTimeZone do match and (3) are not set to UTC.' =>
+            '如果启用，那么尚未选择时区的用户将被通知选择时区。 注意：如果（1）用户尚未选择时区，并且（2）LIGEROTimeZone和UserDefaultTimeZone相同，（3）未设置为UTC，则不会显示通知。',
         'If no SendmailNotificationEnvelopeFrom is specified, this setting makes it possible to use the email\'s from address instead of an empty envelope sender (required in certain mail server configurations).' =>
             '如果没有指定SendmailNotificationEnvelopeFrom，这个选项可确保使用邮件的发件人地址而不是空白的发件人（在某些邮件服务器的配置中需要此选项）。',
         'If set, this address is used as envelope sender header in outgoing notifications. If no address is specified, the envelope sender header is empty (unless SendmailNotificationEnvelopeFrom::FallbackToEmailFrom is set).' =>
@@ -7455,8 +7455,8 @@ Thanks for your help!
             '如果这个选项启用了，服务人员或客户通过WEB界面创建的工单将收到自动响应（如果配置了自动响应）。如果这个选项不启用，则不会发送自动响应。',
         'If this regex matches, no message will be send by the autoresponder.' =>
             '如果这个正则表达式匹配了，自动响应不会发送任何消息。',
-        'If this setting is enabled, it is possible to install packages which are not verified by OTRS Group. These packages could threaten your whole system!' =>
-            '如果启用了本设置，就可以安装未经 OTRS集团验证的软件包。这些软件包可能会威胁到您的整个系统！',
+        'If this setting is enabled, it is possible to install packages which are not verified by LIGERO Group. These packages could threaten your whole system!' =>
+            '如果启用了本设置，就可以安装未经 LIGERO集团验证的软件包。这些软件包可能会威胁到您的整个系统！',
         'If this setting is enabled, local modifications will not be highlighted as errors in the package manager and support data collector.' =>
             '如果启用这个设置，本地修改内容不会在软件包管理器和支持数据收集工具中高亮显示为错误。',
         'If you\'re going to be out of office, you may wish to let other users know by setting the exact dates of your absence.' =>
@@ -7571,7 +7571,7 @@ Thanks for your help!
         'Makes the session management use html cookies. If html cookies are disabled or if the client browser disabled html cookies, then the system will work as usual and append the session id to the links.' =>
             '让会话管理使用HTML Cookies。如果禁用了html cookies或客户端浏览器禁用了html cookies，系统仍会正常工作，并将会话ID追加到链接地址中。',
         'Malay' => '马来语',
-        'Manage OTRS Group cloud services.' => '管理 OTRS 集团云服务。',
+        'Manage LIGERO Group cloud services.' => '管理 LIGERO 集团云服务。',
         'Manage PGP keys for email encryption.' => '管理邮件加密的PGP密钥。',
         'Manage POP3 or IMAP accounts to fetch email from.' => '管理收取邮件的POP3或IMAP帐号。',
         'Manage S/MIME certificates for email encryption.' => '管理邮件加密的S/MIME证书。',
@@ -7615,7 +7615,7 @@ Thanks for your help!
         'Medium' => '基本',
         'Merge this ticket and all articles into another ticket' => '将这个工单和所有的信件合并到另一工单',
         'Merged Ticket (%s/%s) to (%s/%s).' => '已将工单(%s/%s)合并到(%s/%s)。',
-        'Merged Ticket <OTRS_TICKET> to <OTRS_MERGE_TO_TICKET>.' => '合并工单<OTRS_TICKET>到 <OTRS_MERGE_TO_TICKET>。',
+        'Merged Ticket <LIGERO_TICKET> to <LIGERO_MERGE_TO_TICKET>.' => '合并工单<LIGERO_TICKET>到 <LIGERO_MERGE_TO_TICKET>。',
         'Minute' => '分钟',
         'Miscellaneous' => '杂项',
         'Module for To-selection in new ticket screen in the customer interface.' =>
@@ -7678,8 +7678,8 @@ Thanks for your help!
         'New Year\'s Day' => '新年',
         'New Year\'s Eve' => '除夕',
         'New process ticket' => '新的流程工单',
-        'News about OTRS releases!' => 'OTRS版本新闻！',
-        'News about OTRS.' => 'OTRS新闻。',
+        'News about LIGERO releases!' => 'LIGERO版本新闻！',
+        'News about LIGERO.' => 'LIGERO新闻。',
         'Next possible ticket states after adding a phone note in the ticket phone inbound screen of the agent interface.' =>
             '服务人员界面工单电话接入屏幕在添加一个电话备注后工单可能的下一状态。',
         'Next possible ticket states after adding a phone note in the ticket phone outbound screen of the agent interface.' =>
@@ -7698,12 +7698,12 @@ Thanks for your help!
         'Number of tickets to be displayed in each page of a search result in the customer interface.' =>
             '客户界面搜索结果每页显示的工单数。',
         'Number of tickets to be displayed in each page.' => '每页显示的工单数量。',
-        'OTRS Group Services' => 'OTRS集团服务',
-        'OTRS News' => 'OTRS新闻',
-        'OTRS can use one or more readonly mirror databases for expensive operations like fulltext search or statistics generation. Here you can specify the DSN for the first mirror database.' =>
-            'OTRS能够使用一个或多个只读镜像数据库以扩展操作（如全文搜索或生成统计报表）。您可以在这里指定第一个镜像数据库的DSN（数据源名称）。',
-        'OTRS doesn\'t support recurring Appointments without end date or number of iterations. During import process, it might happen that ICS file contains such Appointments. Instead, system creates all Appointments in the past, plus Appointments for the next N months (120 months/10 years by default).' =>
-            'OTRS不支持对没有结束日期或没有重复次数的预约做循环处理。在导入过程中，可能有ICS文件包含了此类预约。作为替代，系统将所有的此类预约创建为已过去的预约，然后加上接下来的N个月(默认120个月或10年)的重复预约。',
+        'LIGERO Group Services' => 'LIGERO集团服务',
+        'LIGERO News' => 'LIGERO新闻',
+        'LIGERO can use one or more readonly mirror databases for expensive operations like fulltext search or statistics generation. Here you can specify the DSN for the first mirror database.' =>
+            'LIGERO能够使用一个或多个只读镜像数据库以扩展操作（如全文搜索或生成统计报表）。您可以在这里指定第一个镜像数据库的DSN（数据源名称）。',
+        'LIGERO doesn\'t support recurring Appointments without end date or number of iterations. During import process, it might happen that ICS file contains such Appointments. Instead, system creates all Appointments in the past, plus Appointments for the next N months (120 months/10 years by default).' =>
+            'LIGERO不支持对没有结束日期或没有重复次数的预约做循环处理。在导入过程中，可能有ICS文件包含了此类预约。作为替代，系统将所有的此类预约创建为已过去的预约，然后加上接下来的N个月(默认120个月或10年)的重复预约。',
         'Open Tickets / Need to be answered' => '处理中/需要回复的工单',
         'Open an external link!' => '打开一个外部链接！',
         'Open tickets (customer user)' => '处理中的工单（客户用户）',
@@ -7870,7 +7870,7 @@ Thanks for your help!
         'Replaces the original sender with current customer\'s email address on compose answer in the ticket compose screen of the agent interface.' =>
             '服务人员界面工单编写屏幕，用客户当前的邮件地址替换编写回复时的原始发件人。',
         'Reports' => '报表',
-        'Reports (OTRS Business Solution™)' => '报表 (OTRS商业版)',
+        'Reports (LIGERO Business Solution™)' => '报表 (LIGERO商业版)',
         'Reprocess mails from spool directory that could not be imported in the first place.' =>
             '从spool目录中重新处理的邮件不能被导入到第一的位置。',
         'Required permissions to change the customer of a ticket in the agent interface.' =>
@@ -7909,7 +7909,7 @@ Thanks for your help!
         'Resent email to "%s".' => '已重发邮件到"%s"。',
         'Resets and unlocks the owner of a ticket if it was moved to another queue.' =>
             '如果工单转移到另一个队列，重置并解锁工单所有者。',
-        'Resource Overview (OTRS Business Solution™)' => '资源概览（OTRS商业版）',
+        'Resource Overview (LIGERO Business Solution™)' => '资源概览（LIGERO商业版）',
         'Responsible Tickets' => '负责的工单',
         'Responsible Tickets.' => '负责的工单.',
         'Restores a ticket from the archive (only if the event is a state change to any open available state).' =>
@@ -7933,8 +7933,8 @@ Thanks for your help!
         'SMS (Short Message Service)' => '短信(短消息)',
         'Salutations' => '问候语',
         'Sample command output' => '命令输出样例',
-        'Saves the attachments of articles. "DB" stores all data in the database (not recommended for storing big attachments). "FS" stores the data on the filesystem; this is faster but the webserver should run under the OTRS user. You can switch between the modules even on a system that is already in production without any loss of data. Note: Searching for attachment names is not supported when "FS" is used.' =>
-            '保存信件的附件。“数据库”在数据库中存储所有数据（不推荐在存储大容量附件时使用）。“文件系统”在文件系统中保存数据；这个选项更快但WEB服务器要以OTRS用户运行。即使是在生产环境您也可以在这两种模式间切换，而不会丢失数据。备注：使用“文件系统”时不能搜索附件名。',
+        'Saves the attachments of articles. "DB" stores all data in the database (not recommended for storing big attachments). "FS" stores the data on the filesystem; this is faster but the webserver should run under the LIGERO user. You can switch between the modules even on a system that is already in production without any loss of data. Note: Searching for attachment names is not supported when "FS" is used.' =>
+            '保存信件的附件。“数据库”在数据库中存储所有数据（不推荐在存储大容量附件时使用）。“文件系统”在文件系统中保存数据；这个选项更快但WEB服务器要以LIGERO用户运行。即使是在生产环境您也可以在这两种模式间切换，而不会丢失数据。备注：使用“文件系统”时不能搜索附件名。',
         'Schedule a maintenance period.' => '计划一个系统维护期。',
         'Screen after new ticket' => '创建新工单后的视图',
         'Search Customer' => '搜索客户',
@@ -7957,7 +7957,7 @@ Thanks for your help!
         'Select your personal time zone. All times will be displayed relative to this time zone.' =>
             '选择你的个人时区，所有时间将相对于这个时区显示。',
         'Select your preferred layout for the software.' => '选择你喜欢的软件布局。',
-        'Select your preferred theme for OTRS.' => '选择你喜欢的OTRS界面主题。',
+        'Select your preferred theme for LIGERO.' => '选择你喜欢的LIGERO界面主题。',
         'Selects the cache backend to use.' => '选择使用的缓存后端。',
         'Selects the module to handle uploads via the web interface. "DB" stores all uploads in the database, "FS" uses the file system.' =>
             '选择处理WEB界面上传文件的模块。“数据库”存储所有上传文件到数据库中，“文件系统”存储所有上传文件到文件系统中。',
@@ -7971,7 +7971,7 @@ Thanks for your help!
         'Sends all outgoing email via bcc to the specified address. Please use this only for backup reasons.' =>
             '通过BCC（密件抄送）发送所有外发邮件到指定地址。请只在备份情况下使用这个选项。',
         'Sends customer notifications just to the mapped customer.' => '仅给映射的客户用户发送客户通知。',
-        'Sends registration information to OTRS group.' => '发送注册信息到OTRS集团。',
+        'Sends registration information to LIGERO group.' => '发送注册信息到LIGERO集团。',
         'Sends reminder notifications of unlocked ticket after reaching the reminder date (only sent to ticket owner).' =>
             '在到达提醒时间后发送解锁工单的提醒通知（只发送给工单所有者）。',
         'Sends the notifications which are configured in the admin interface under "Ticket Notifications".' =>
@@ -8107,8 +8107,8 @@ Thanks for your help!
         'Sets the prefered time units (e.g. work units, hours, minutes).' =>
             '设置首选的时间单位（如 工作日、小时、分钟）。',
         'Sets the preferred digest to be used for PGP binary.' => '设置要用于PGP二进制文件的首选摘要。',
-        'Sets the prefix to the scripts folder on the server, as configured on the web server. This setting is used as a variable, OTRS_CONFIG_ScriptAlias which is found in all forms of messaging used by the application, to build links to the tickets within the system.' =>
-            '设置配置的web服务器上脚本目录的前缀，这个设置用于变量OTRS_CONFIG_ScriptAlias，此变量可在系统的所有消息表单中找到，用来在系统内创建到工单的链接。',
+        'Sets the prefix to the scripts folder on the server, as configured on the web server. This setting is used as a variable, LIGERO_CONFIG_ScriptAlias which is found in all forms of messaging used by the application, to build links to the tickets within the system.' =>
+            '设置配置的web服务器上脚本目录的前缀，这个设置用于变量LIGERO_CONFIG_ScriptAlias，此变量可在系统的所有消息表单中找到，用来在系统内创建到工单的链接。',
         'Sets the queue in the ticket close screen of a zoomed ticket in the agent interface.' =>
             '设置服务人员界面工单关闭屏幕的队列。',
         'Sets the queue in the ticket free text screen of a zoomed ticket in the agent interface.' =>
@@ -8202,10 +8202,10 @@ Thanks for your help!
             '设置服务人员界面工单优先级屏幕的工单类型（需要启用Ticket::Type）。',
         'Sets the ticket type in the ticket responsible screen of the agent interface (Ticket::Type needs to be enabled).' =>
             '设置服务人员界面工单负责人屏幕的工单类型（需要启用Ticket::Type）。',
-        'Sets the time zone being used internally by OTRS to e. g. store dates and times in the database. WARNING: This setting must not be changed once set and tickets or any other data containing date/time have been created.' =>
-            '将OTRS内部使用的时区设置如在数据库中存储日期和时间。 警告：此设置一旦设置就不能更改，包含日期/时间的工单或其他数据已据此创建。',
-        'Sets the time zone that will be assigned to newly created users and will be used for users that haven\'t yet set a time zone. This is the time zone being used as default to convert date and time between the OTRS time zone and the user\'s time zone.' =>
-            '设置将分配给新创建的用户的时区，并将用于尚未设置时区的用户。 这是默认使用的时区，用于转换OTRS时区与用户时区之间的日期和时间。',
+        'Sets the time zone being used internally by LIGERO to e. g. store dates and times in the database. WARNING: This setting must not be changed once set and tickets or any other data containing date/time have been created.' =>
+            '将LIGERO内部使用的时区设置如在数据库中存储日期和时间。 警告：此设置一旦设置就不能更改，包含日期/时间的工单或其他数据已据此创建。',
+        'Sets the time zone that will be assigned to newly created users and will be used for users that haven\'t yet set a time zone. This is the time zone being used as default to convert date and time between the LIGERO time zone and the user\'s time zone.' =>
+            '设置将分配给新创建的用户的时区，并将用于尚未设置时区的用户。 这是默认使用的时区，用于转换LIGERO时区与用户时区之间的日期和时间。',
         'Sets the timeout (in seconds) for http/ftp downloads.' => '设置http/ftp下载的超时时间（单位：秒）。',
         'Sets the timeout (in seconds) for package downloads. Overwrites "WebUserAgent::Timeout".' =>
             '设置软件下载的超时时间（单位：秒），覆盖参数“WebUserAgent::Timeout”。',
@@ -8319,8 +8319,8 @@ Thanks for your help!
             '在服务人员界面工单负责人屏幕，显示这个工单所有可能的服务人员（需要具有这个队列或工单的备注权限）列表，用于确定谁将收到关于这个备注的通知。',
         'Shows a preview of the ticket overview (CustomerInfo => 1 - shows also Customer-Info, CustomerInfoMaxSize max. size in characters of Customer-Info).' =>
             '显示工单概览的预览（如果参数CustomerInfo值为1，还将显示客户信息，参数CustomerInfoMaxSize定义了显示客户信息的最大字符数）。',
-        'Shows a teaser link in the menu for the ticket attachment view of OTRS Business Solution™.' =>
-            '在OTRS 商业版™的工单附件视图的菜单中显示一个头部预览链接。',
+        'Shows a teaser link in the menu for the ticket attachment view of LIGERO Business Solution™.' =>
+            '在LIGERO 商业版™的工单附件视图的菜单中显示一个头部预览链接。',
         'Shows all both ro and rw queues in the queue view.' => '在工单队列视图中显示所有RO（只读）和RW（读写）队列。',
         'Shows all both ro and rw tickets in the service view.' => '在工单服务视图中显示所有RO（只读）和RW（读写）服务。',
         'Shows all open tickets (even if they are locked) in the escalation view of the agent interface.' =>
@@ -8341,7 +8341,7 @@ Thanks for your help!
             '在工单概览简洁版式中显示最近的客户信件的主题或工单标题。',
         'Shows existing parent/child queue lists in the system in the form of a tree or a list.' =>
             '以树形或列表形式显示系统中存在的父/子队列的清单。',
-        'Shows information on how to start OTRS Daemon' => '显示如何启动OTRS守护进程的信息。',
+        'Shows information on how to start LIGERO Daemon' => '显示如何启动LIGERO守护进程的信息。',
         'Shows link to external page in the ticket zoom view of the agent interface. Additional access control to show or not show this link can be done by using Key "Group" and Content like "rw:group1;move_into:group2".' =>
             '在服务人员界面的工单详情视图中显示到外部页面的链接。 可以通过使用键“Group”和内容如“rw：group1; move_into：group2”来完成额外的访问控制，以显示或不显示此链接。',
         'Shows the articles sorted normally or in reverse, under ticket zoom in the agent interface.' =>
@@ -8425,16 +8425,16 @@ Thanks for your help!
         'Specifies the directory where SSL certificates are stored.' => '指定存储SSL证书的目录。',
         'Specifies the directory where private SSL certificates are stored.' =>
             '指定存储私有SSL证书的目录。',
-        'Specifies the email address that should be used by the application when sending notifications. The email address is used to build the complete display name for the notification master (i.e. "OTRS Notifications" ligero@your.example.com). You can use the OTRS_CONFIG_FQDN variable as set in your configuation, or choose another email address.' =>
-            '指定系统发送通知的邮件地址。这个邮件地址用来创建通知管理员的完整显示名称（如"OTRS通知"ligero@your.example.com），您可以使用配置的变量OTRS_CONFIG_FQDN，或者选择另外的邮件地址。',
+        'Specifies the email address that should be used by the application when sending notifications. The email address is used to build the complete display name for the notification master (i.e. "LIGERO Notifications" ligero@your.example.com). You can use the LIGERO_CONFIG_FQDN variable as set in your configuation, or choose another email address.' =>
+            '指定系统发送通知的邮件地址。这个邮件地址用来创建通知管理员的完整显示名称（如"LIGERO通知"ligero@your.example.com），您可以使用配置的变量LIGERO_CONFIG_FQDN，或者选择另外的邮件地址。',
         'Specifies the email addresses to get notification messages from scheduler tasks.' =>
             '指定从调度程序任务获取通知消息的邮件地址。',
         'Specifies the group where the user needs rw permissions so that he can access the "SwitchToCustomer" feature.' =>
             '指定组名，以便组中有rw（读写）权限的用户能够访问“切换到客户”功能。',
         'Specifies the group where the user needs rw permissions so that they can edit other users preferences.' =>
             '指定用户需要rw（读写）权限的组，以便他们可以编辑其他用户的首选项。',
-        'Specifies the name that should be used by the application when sending notifications. The sender name is used to build the complete display name for the notification master (i.e. "OTRS Notifications" ligero@your.example.com).' =>
-            '指定系统发送通知的姓名，这个发件人姓名用于创建通知管理员完整的显示名称（如"OTRS通知"ligero@your.example.com）。',
+        'Specifies the name that should be used by the application when sending notifications. The sender name is used to build the complete display name for the notification master (i.e. "LIGERO Notifications" ligero@your.example.com).' =>
+            '指定系统发送通知的姓名，这个发件人姓名用于创建通知管理员完整的显示名称（如"LIGERO通知"ligero@your.example.com）。',
         'Specifies the order in which the firstname and the lastname of agents will be displayed.' =>
             '指定服务人员显示姓和名的先后顺序。',
         'Specifies the path of the file for the logo in the page header (gif|jpg|png, 700 x 100 pixel).' =>
@@ -8457,8 +8457,8 @@ Thanks for your help!
             '指定（MIMEBase）文章附件是否将被索引和可搜索。',
         'Specify how many sub directory levels to use when creating cache files. This should prevent too many cache files being in one directory.' =>
             '指定在创建缓存文件时使用多少级子目录，这可以防止一个目录中有太多的缓存文件。',
-        'Specify the channel to be used to fetch OTRS Business Solution™ updates. Warning: Development releases might not be complete, your system might experience unrecoverable errors and on extreme cases could become unresponsive!' =>
-            '指定获取OTRS商业版更新的通道。警告：开发版可能无法完成更新，您的系统可能经历无法恢复的错误，并且系统在极端情况下可能变得无法响应！',
+        'Specify the channel to be used to fetch LIGERO Business Solution™ updates. Warning: Development releases might not be complete, your system might experience unrecoverable errors and on extreme cases could become unresponsive!' =>
+            '指定获取LIGERO商业版更新的通道。警告：开发版可能无法完成更新，您的系统可能经历无法恢复的错误，并且系统在极端情况下可能变得无法响应！',
         'Specify the password to authenticate for the first mirror database.' =>
             '指定第一个镜像数据库的认证密码。',
         'Specify the username to authenticate for the first mirror database.' =>
@@ -8555,7 +8555,7 @@ Thanks for your help!
         'This is the default orange - black skin.' => '这是默认的橙色-黑色皮肤。',
         'This module and its PreRun() function will be executed, if defined, for every request. This module is useful to check some user options or to display news about new applications.' =>
             '每次请求时这个模块和它的PreRun()函数（如果定义了）将被执行。',
-        'This module is part of the admin area of OTRS.' => '这个模块是OTRS系统管理的一部分。',
+        'This module is part of the admin area of LIGERO.' => '这个模块是LIGERO系统管理的一部分。',
         'This option defines the dynamic field in which a Process Management activity entity id is stored.' =>
             '这个选项定义存储流程管理活动条目ID的动态字段。',
         'This option defines the dynamic field in which a Process Management process entity id is stored.' =>
@@ -8568,7 +8568,7 @@ Thanks for your help!
             '这个选项将拒绝客户用户访问不是由他本人创建的客户单位工单。',
         'This setting allows you to override the built-in country list with your own list of countries. This is particularly handy if you just want to use a small select group of countries.' =>
             '这个设置允许您使用自己的国家列表覆盖内置的国家列表，如果您只想用到一小部分的国家时格外有用。',
-        'This setting is deprecated. Set OTRSTimeZone instead.' => '此设置已弃用。 替代方式是设置OTRSTimeZone。',
+        'This setting is deprecated. Set LIGEROTimeZone instead.' => '此设置已弃用。 替代方式是设置LIGEROTimeZone。',
         'This setting shows the sorting attributes in all overview screen, not only in queue view.' =>
             '这个设置显示所有概览屏幕（而不是仅队列视图）中的排序属性。',
         'This will allow the system to send text messages via SMS.' => '这个选项允许系统通过短信发送文本消息。',
@@ -8616,8 +8616,8 @@ Thanks for your help!
         'To accept login information, such as an EULA or license.' => '接受登录信息，如EULA（最终用户许可协议）或许可。',
         'To download attachments.' => '下载附件。',
         'To view HTML attachments.' => '查看HTML附件。',
-        'Toggles display of OTRS FeatureAddons list in PackageManager.' =>
-            '在软件包管理器中显示/不显示OTRS扩展功能。',
+        'Toggles display of LIGERO FeatureAddons list in PackageManager.' =>
+            '在软件包管理器中显示/不显示LIGERO扩展功能。',
         'Toolbar Item for a shortcut. Additional access control to show or not show this link can be done by using Key "Group" and Content like "rw:group1;move_into:group2".' =>
             '工具栏条目的快捷键。可以通过使用键“Group（组）”和值如“rw:group1;move_into:group2”来实现显示/不显示这个链接的额外访问控制。',
         'Transport selection for appointment notifications. Please note: setting \'Active\' to 0 will only prevent agents from editing settings of this group in their personal preferences, but will still allow administrators to edit the settings of another user\'s behalf. Use \'PreferenceGroup\' to control in which area these settings should be shown in the user interface.' =>
@@ -8636,8 +8636,8 @@ Thanks for your help!
         'Turns on the remote ip address check. It should not be enabled if the application is used, for example, via a proxy farm or a dialup connection, because the remote ip address is mostly different for the requests.' =>
             '开启远程IP地址检查。如果通过代理或拨号连接访问系统，应该关闭，因为远程IP在每次请求时可能都不一样。',
         'Tweak the system as you wish.' => '根据需要调整系统。',
-        'Type of daemon log rotation to use: Choose \'OTRS\' to let OTRS system to handle the file rotation, or choose \'External\' to use a 3rd party rotation mechanism (i.e. logrotate). Note: External rotation mechanism requires its own and independent configuration.' =>
-            '要使用的守护程序日志循环类型：选择“OTRS”以使OTRS系统处理文件循环，或选择“外部”以使用第三方循环机制（如logrotate）。 注意：外部循环机制需要使用其自身的配置。',
+        'Type of daemon log rotation to use: Choose \'LIGERO\' to let LIGERO system to handle the file rotation, or choose \'External\' to use a 3rd party rotation mechanism (i.e. logrotate). Note: External rotation mechanism requires its own and independent configuration.' =>
+            '要使用的守护程序日志循环类型：选择“LIGERO”以使LIGERO系统处理文件循环，或选择“外部”以使用第三方循环机制（如logrotate）。 注意：外部循环机制需要使用其自身的配置。',
         'Ukrainian' => '乌克兰语',
         'Unlock tickets that are past their unlock timeout.' => '过了解锁超时时间后解锁工单。',
         'Unlock tickets whenever a note is added and the owner is out of office.' =>
@@ -8690,10 +8690,10 @@ Thanks for your help!
         'Whether to force redirect all requests from http to https protocol. Please check that your web server is configured correctly for https protocol before enable this option.' =>
             '是否强制将所有请求从http重定向到https协议。启用此选项之前，请检查Web服务器是否正确配置了https协议。',
         'Yes, but hide archived tickets' => '是，但隐藏已归档的工单',
-        'Your email with ticket number "<OTRS_TICKET>" is bounced to "<OTRS_BOUNCE_TO>". Contact this address for further information.' =>
-            '您的工单号为“<OTRS_TICKET>”的邮件已经退回给“<OTRS_BOUNCE_TO>”，请联系这个地址以获得更多的信息。',
-        'Your email with ticket number "<OTRS_TICKET>" is merged to "<OTRS_MERGE_TO_TICKET>".' =>
-            '您的单号为"<OTRS_TICKET>"的邮件已被合并到工单"<OTRS_MERGE_TO_TICKET>" 。',
+        'Your email with ticket number "<LIGERO_TICKET>" is bounced to "<LIGERO_BOUNCE_TO>". Contact this address for further information.' =>
+            '您的工单号为“<LIGERO_TICKET>”的邮件已经退回给“<LIGERO_BOUNCE_TO>”，请联系这个地址以获得更多的信息。',
+        'Your email with ticket number "<LIGERO_TICKET>" is merged to "<LIGERO_MERGE_TO_TICKET>".' =>
+            '您的单号为"<LIGERO_TICKET>"的邮件已被合并到工单"<LIGERO_MERGE_TO_TICKET>" 。',
         'Your queue selection of your preferred queues. You also get notified about those queues via email if enabled.' =>
             '你的优先队列中选择的队列，如果启用了，你还会得到有关这些队列的电子邮件通知。',
         'Your service selection of your preferred services. You also get notified about those services via email if enabled.' =>
@@ -8865,7 +8865,7 @@ Thanks for your help!
         'Hide EntityIDs',
         'If you now leave this page, all open popup windows will be closed, too!',
         'Import web service',
-        'Information about the OTRS Daemon',
+        'Information about the LIGERO Daemon',
         'Invalid date (need a future date)!',
         'Invalid date (need a past date)!',
         'Invalid date!',
@@ -9038,7 +9038,7 @@ Thanks for your help!
         'This is a repeating appointment',
         'This is currently disabled because of an ongoing package upgrade.',
         'This item still contains sub items. Are you sure you want to remove this item including its sub items?',
-        'This option is currently disabled because the OTRS Daemon is not running.',
+        'This option is currently disabled because the LIGERO Daemon is not running.',
         'This software runs with a huge lists of browsers, please upgrade to one of these.',
         'This window must be called from compose window.',
         'Thu',

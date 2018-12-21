@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -21,10 +21,10 @@ our @ObjectDependencies = (
 sub Configure {
     my ( $Self, %Param ) = @_;
 
-    $Self->Description('Generate an index file (ligero.xml) for an OTRS package repository.');
+    $Self->Description('Generate an index file (ligero.xml) for an LIGERO package repository.');
     $Self->AddArgument(
         Name        => 'source-directory',
-        Description => "Specify the directory containing the OTRS packages.",
+        Description => "Specify the directory containing the LIGERO packages.",
         Required    => 1,
         ValueRegex  => qr/.*/smx,
     );

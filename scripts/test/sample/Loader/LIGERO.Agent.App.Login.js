@@ -1,5 +1,5 @@
 // --
-// Copyright (C) 2001-2018 OTRS AG, https://ligero.com/\n";
+// Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/\n";
 // --
 // This software comes with ABSOLUTELY NO WARRANTY. For details, see
 // the enclosed file COPYING for license information (GPL). If you
@@ -8,17 +8,17 @@
 
 "use strict";
 
-var OTRS = OTRS || {};
-OTRS.Agent = OTRS.Agent || {};
-OTRS.Agent.App = OTRS.Agent.App || {};
+var LIGERO = LIGERO || {};
+LIGERO.Agent = LIGERO.Agent || {};
+LIGERO.Agent.App = LIGERO.Agent.App || {};
 
 /**
  * @namespace
- * @exports TargetNS as OTRS.App.Agent.Login
+ * @exports TargetNS as LIGERO.App.Agent.Login
  * @description
  *      This namespace contains the special module functions for TicketZoom.
  */
-OTRS.Agent.App.Login = (function (TargetNS) {
+LIGERO.Agent.App.Login = (function (TargetNS) {
     /**
      * @function
      * @return nothing
@@ -26,14 +26,14 @@ OTRS.Agent.App.Login = (function (TargetNS) {
      */
     TargetNS.Init = function(){
         // Browser is too old
-        if (!OTRS.Debug.BrowserCheck()) {
+        if (!LIGERO.Debug.BrowserCheck()) {
             $('#LoginBox').hide();
             $('#OldBrowser').show();
             return;
         }
 
         // enable login form
-        OTRS.Form.EnableForm($('#LoginBox form, #PasswordBox form'));
+        LIGERO.Form.EnableForm($('#LoginBox form, #PasswordBox form'));
 
         // set focus
         if ($('#User').val() && $('#User').val().length) {
@@ -49,10 +49,10 @@ OTRS.Agent.App.Login = (function (TargetNS) {
             return false;
         });
 
-        // save TimeOffset data for OTRS
+        // save TimeOffset data for LIGERO
         Now = new Date();
         $('#TimeOffset').val(Now.getTimezoneOffset());
     }
 
     return TargetNS;
-}(OTRS.Agent.App.Login || {}));
+}(LIGERO.Agent.App.Login || {}));

@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -87,12 +87,12 @@ for my $Key (qw(Database Host Type User Version)) {
     );
 }
 
-my %OTRSInfo = $EnvironmentObject->OTRSInfoGet();
+my %LIGEROInfo = $EnvironmentObject->LIGEROInfoGet();
 
 for my $Key (qw(Version Home Host Product SystemID DefaultLanguage)) {
     $Self->True(
-        $OTRSInfo{$Key},
-        "OTRSInfoGet - returned value for $Key",
+        $LIGEROInfo{$Key},
+        "LIGEROInfoGet - returned value for $Key",
     );
 }
 

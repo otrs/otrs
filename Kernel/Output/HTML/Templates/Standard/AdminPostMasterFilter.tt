@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -275,7 +275,7 @@
 
                     <label for="SetHeaderExample">[% Translate("Header") | html %] 1:</label>
                     <div class="Field">
-                        <select name="SetHeaderExample" id="SetHeaderExample" class="Modernize W33pc"><option selected="selected" value="X-OTRS-Queue">X-OTRS-Queue</option></select>
+                        <select name="SetHeaderExample" id="SetHeaderExample" class="Modernize W33pc"><option selected="selected" value="X-LIGERO-Queue">X-LIGERO-Queue</option></select>
                         <label for="SetValueExample">[% Translate("Value") | html %] 1:</label>
                         <input type="text" name="SetValueExample" id="SetValueExample" value="SomeQueue" class="W33pc" maxlength="50"/>
                     </div>

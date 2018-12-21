@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -7,7 +7,7 @@
 # --
 
 [%
-SET OTRSBusinessLabel     = '<strong><a href="#" class="OTRSBusinessRequired">OTRS Business Solution</a></strong>™';
+SET LIGEROBusinessLabel     = '<strong><a href="#" class="LIGEROBusinessRequired">LIGERO Business Solution</a></strong>™';
 %]
 
 
@@ -54,7 +54,7 @@ SET OTRSBusinessLabel     = '<strong><a href="#" class="OTRSBusinessRequired">OT
             </div>
         </div>
 
-[% IF !Data.OTRSBusinessIsInstalled %]
+[% IF !Data.LIGEROBusinessIsInstalled %]
         <div class="WidgetSimple">
             <div class="Header">
                 <h2>[% Translate("More Business Fields") | html %]</h2>
@@ -62,7 +62,7 @@ SET OTRSBusinessLabel     = '<strong><a href="#" class="OTRSBusinessRequired">OT
             <div class="Content">
                 <div class="FieldExplanation">
                     <p>
-                        [% Translate("Would you like to benefit from additional dynamic field types for businesses? Upgrade to %s to get access to the following field types:") | html | ReplacePlaceholders(OTRSBusinessLabel) %]
+                        [% Translate("Would you like to benefit from additional dynamic field types for businesses? Upgrade to %s to get access to the following field types:") | html | ReplacePlaceholders(LIGEROBusinessLabel) %]
                     </p>
                     <dl>
                         <dt>[% Translate('Database') | html %]</dt>

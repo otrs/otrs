@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -168,8 +168,8 @@ if applicable the created ArticleID.
         Success         => 1,                       # 0 or 1
         ErrorMessage    => '',                      # in case of error
         Data            => {                        # result data payload after Operation
-            TicketID    => 123,                     # Ticket  ID number in OTRS (help desk system)
-            ArticleID   => 43,                      # Article ID number in OTRS (help desk system)
+            TicketID    => 123,                     # Ticket  ID number in LIGERO (help desk system)
+            ArticleID   => 43,                      # Article ID number in LIGERO (help desk system)
             Error => {                              # should not return errors
                     ErrorCode    => 'TicketUpdate.ErrorCode'
                     ErrorMessage => 'Error Description'
@@ -2326,7 +2326,7 @@ sub _TicketUpdate {
 
 =head1 TERMS AND CONDITIONS
 
-This software is part of the OTRS project (L<https://ligero.org/>).
+This software is part of the LIGERO project (L<https://ligero.org/>).
 
 This software comes with ABSOLUTELY NO WARRANTY. For details, see
 the enclosed file COPYING for license information (GPL). If you

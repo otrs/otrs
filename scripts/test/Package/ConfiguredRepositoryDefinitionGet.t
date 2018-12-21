@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -40,7 +40,7 @@ my @Tests = (
         ConfigSet      => {},
         Success        => 1,
         ExpectedResult => {
-            'http://ftp.ligero.org/pub/ligero/packages/' => 'OTRS Freebie Features'
+            'http://ftp.ligero.org/pub/ligero/packages/' => 'LIGERO Freebie Features'
         },
     },
     {
@@ -50,7 +50,7 @@ my @Tests = (
         },
         Success        => 1,
         ExpectedResult => {
-            'http://ftp.ligero.org/pub/ligero/packages/' => 'OTRS Freebie Features',
+            'http://ftp.ligero.org/pub/ligero/packages/' => 'LIGERO Freebie Features',
             'http://ligero.com'                        => 'Test Repository',
         },
     },
@@ -58,56 +58,56 @@ my @Tests = (
         Name      => 'ITSM 33 Repository',
         ConfigSet => {
             'http://ligero.com'                               => 'Test Repository',
-            'http://ftp.ligero.org/pub/ligero/itsm/packages33/' => 'OTRS::ITSM 3.3 Master',
+            'http://ftp.ligero.org/pub/ligero/itsm/packages33/' => 'LIGERO::ITSM 3.3 Master',
         },
         Success        => 1,
         ExpectedResult => {
-            'http://ftp.ligero.org/pub/ligero/packages/'                       => 'OTRS Freebie Features',
+            'http://ftp.ligero.org/pub/ligero/packages/'                       => 'LIGERO Freebie Features',
             'http://ligero.com'                                              => 'Test Repository',
-            "http://ftp.ligero.org/pub/ligero/itsm/packages$FrameworkVersion/" => "OTRS::ITSM $FrameworkVersion Master",
+            "http://ftp.ligero.org/pub/ligero/itsm/packages$FrameworkVersion/" => "LIGERO::ITSM $FrameworkVersion Master",
         },
     },
     {
         Name      => 'ITSM 33 and 4 Repository',
         ConfigSet => {
             'http://ligero.com'                               => 'Test Repository',
-            'http://ftp.ligero.org/pub/ligero/itsm/packages33/' => 'OTRS::ITSM 3.3 Master',
-            'http://ftp.ligero.org/pub/ligero/itsm/packages4/'  => 'OTRS::ITSM 4 Master',
+            'http://ftp.ligero.org/pub/ligero/itsm/packages33/' => 'LIGERO::ITSM 3.3 Master',
+            'http://ftp.ligero.org/pub/ligero/itsm/packages4/'  => 'LIGERO::ITSM 4 Master',
         },
         Success        => 1,
         ExpectedResult => {
-            'http://ftp.ligero.org/pub/ligero/packages/'                       => 'OTRS Freebie Features',
+            'http://ftp.ligero.org/pub/ligero/packages/'                       => 'LIGERO Freebie Features',
             'http://ligero.com'                                              => 'Test Repository',
-            "http://ftp.ligero.org/pub/ligero/itsm/packages$FrameworkVersion/" => "OTRS::ITSM $FrameworkVersion Master",
+            "http://ftp.ligero.org/pub/ligero/itsm/packages$FrameworkVersion/" => "LIGERO::ITSM $FrameworkVersion Master",
         },
     },
     {
         Name      => 'ITSM 33 4 and 5 Repository',
         ConfigSet => {
             'http://ligero.com'                               => 'Test Repository',
-            'http://ftp.ligero.org/pub/ligero/itsm/packages33/' => 'OTRS::ITSM 3.3 Master',
-            'http://ftp.ligero.org/pub/ligero/itsm/packages4/'  => 'OTRS::ITSM 4 Master',
-            'http://ftp.ligero.org/pub/ligero/itsm/packages5/'  => 'OTRS::ITSM 5 Master',
+            'http://ftp.ligero.org/pub/ligero/itsm/packages33/' => 'LIGERO::ITSM 3.3 Master',
+            'http://ftp.ligero.org/pub/ligero/itsm/packages4/'  => 'LIGERO::ITSM 4 Master',
+            'http://ftp.ligero.org/pub/ligero/itsm/packages5/'  => 'LIGERO::ITSM 5 Master',
         },
         Success        => 1,
         ExpectedResult => {
-            'http://ftp.ligero.org/pub/ligero/packages/'                       => 'OTRS Freebie Features',
+            'http://ftp.ligero.org/pub/ligero/packages/'                       => 'LIGERO Freebie Features',
             'http://ligero.com'                                              => 'Test Repository',
-            "http://ftp.ligero.org/pub/ligero/itsm/packages$FrameworkVersion/" => "OTRS::ITSM $FrameworkVersion Master",
+            "http://ftp.ligero.org/pub/ligero/itsm/packages$FrameworkVersion/" => "LIGERO::ITSM $FrameworkVersion Master",
         },
     },
     {
         Name      => 'ITSM 6 Repository',
         ConfigSet => {
-            'http://ftp.ligero.org/pub/ligero/packages/'                       => 'OTRS Freebie Features',
+            'http://ftp.ligero.org/pub/ligero/packages/'                       => 'LIGERO Freebie Features',
             'http://ligero.com'                                              => 'Test Repository',
-            "http://ftp.ligero.org/pub/ligero/itsm/packages$FrameworkVersion/" => "OTRS::ITSM $FrameworkVersion Master",
+            "http://ftp.ligero.org/pub/ligero/itsm/packages$FrameworkVersion/" => "LIGERO::ITSM $FrameworkVersion Master",
         },
         Success        => 1,
         ExpectedResult => {
-            'http://ftp.ligero.org/pub/ligero/packages/'                       => 'OTRS Freebie Features',
+            'http://ftp.ligero.org/pub/ligero/packages/'                       => 'LIGERO Freebie Features',
             'http://ligero.com'                                              => 'Test Repository',
-            "http://ftp.ligero.org/pub/ligero/itsm/packages$FrameworkVersion/" => "OTRS::ITSM $FrameworkVersion Master",
+            "http://ftp.ligero.org/pub/ligero/itsm/packages$FrameworkVersion/" => "LIGERO::ITSM $FrameworkVersion Master",
         },
     },
 );

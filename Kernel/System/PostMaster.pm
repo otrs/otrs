@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -51,7 +51,7 @@ Don't use the constructor directly, use the ObjectManager instead:
         'Kernel::System::PostMaster',
         ObjectParams => {
             Email        => \@ArrayOfEmailContent,
-            Trusted      => 1, # 1|0 ignore X-OTRS header if false
+            Trusted      => 1, # 1|0 ignore X-LIGERO header if false
         },
     );
 
@@ -107,8 +107,8 @@ sub new {
 
         for my $DynamicField ( values %$DynamicFields ) {
             for my $Header (
-                'X-OTRS-DynamicField-' . $DynamicField,
-                'X-OTRS-FollowUp-DynamicField-' . $DynamicField,
+                'X-LIGERO-DynamicField-' . $DynamicField,
+                'X-LIGERO-FollowUp-DynamicField-' . $DynamicField,
                 )
             {
 
@@ -139,7 +139,7 @@ return params
     2 = follow up / open/reopen
     3 = follow up / close -> new ticket
     4 = follow up / close -> reject
-    5 = ignored (because of X-OTRS-Ignore header)
+    5 = ignored (because of X-LIGERO-Ignore header)
 
 =cut
 
@@ -203,14 +203,14 @@ sub Run {
     }
 
     # should I ignore the incoming mail?
-    if ( $GetParam->{'X-OTRS-Ignore'} && $GetParam->{'X-OTRS-Ignore'} =~ /(yes|true)/i ) {
+    if ( $GetParam->{'X-LIGERO-Ignore'} && $GetParam->{'X-LIGERO-Ignore'} =~ /(yes|true)/i ) {
         $Self->{CommunicationLogObject}->ObjectLog(
             ObjectLogType => 'Message',
             Priority      => 'Info',
             Key           => 'Kernel::System::PostMaster',
             Value =>
                 "Ignored Email (From: $GetParam->{'From'}, Message-ID: $GetParam->{'Message-ID'}) "
-                . "because the X-OTRS-Ignore is set (X-OTRS-Ignore: $GetParam->{'X-OTRS-Ignore'}).",
+                . "because the X-LIGERO-Ignore is set (X-LIGERO-Ignore: $GetParam->{'X-LIGERO-Ignore'}).",
         );
         return (5);
     }
@@ -299,7 +299,7 @@ sub Run {
 
         # Check if we need to treat a bounce e-mail always as a normal follow-up (to reopen the ticket if needed).
         my $BounceEmailAsFollowUp = 0;
-        if ( $GetParam->{'X-OTRS-Bounce'} ) {
+        if ( $GetParam->{'X-LIGERO-Bounce'} ) {
             $BounceEmailAsFollowUp = $ConfigObject->Get('PostmasterBounceEmailAsFollowUp');
         }
 
@@ -603,14 +603,14 @@ sub GetEmailParams {
         || $GetParam{'Precedence'}
         || $GetParam{'X-Loop'}
         || $GetParam{'X-No-Loop'}
-        || $GetParam{'X-OTRS-Loop'}
+        || $GetParam{'X-LIGERO-Loop'}
         || (
             $GetParam{'Auto-Submitted'}
             && substr( $GetParam{'Auto-Submitted'}, 0, 5 ) eq 'auto-'
         )
         )
     {
-        $GetParam{'X-OTRS-Loop'} = 'yes';
+        $GetParam{'X-LIGERO-Loop'} = 'yes';
     }
     if ( !$GetParam{'X-Sender'} ) {
 
@@ -628,13 +628,13 @@ sub GetEmailParams {
     my $ArticleObject = $Kernel::OM->Get('Kernel::System::Ticket::Article');
 
     # set sender type if not given
-    for my $Key (qw(X-OTRS-SenderType X-OTRS-FollowUp-SenderType)) {
+    for my $Key (qw(X-LIGERO-SenderType X-LIGERO-FollowUp-SenderType)) {
 
         if ( !$GetParam{$Key} ) {
             $GetParam{$Key} = 'customer';
         }
 
-        # check if X-OTRS-SenderType exists, if not, set customer
+        # check if X-LIGERO-SenderType exists, if not, set customer
         if ( !$ArticleObject->ArticleSenderTypeLookup( SenderType => $GetParam{$Key} ) ) {
             $Self->{CommunicationLogObject}->ObjectLog(
                 ObjectLogType => 'Message',
@@ -647,7 +647,7 @@ sub GetEmailParams {
     }
 
     # Set article customer visibility if not given.
-    for my $Key (qw(X-OTRS-IsVisibleForCustomer X-OTRS-FollowUp-IsVisibleForCustomer)) {
+    for my $Key (qw(X-LIGERO-IsVisibleForCustomer X-LIGERO-FollowUp-IsVisibleForCustomer)) {
         if ( !defined $GetParam{$Key} ) {
             $GetParam{$Key} = 1;
         }
@@ -672,7 +672,7 @@ sub GetEmailParams {
 
 =head1 TERMS AND CONDITIONS
 
-This software is part of the OTRS project (L<https://ligero.org/>).
+This software is part of the LIGERO project (L<https://ligero.org/>).
 
 This software comes with ABSOLUTELY NO WARRANTY. For details, see
 the enclosed file COPYING for license information (GPL). If you

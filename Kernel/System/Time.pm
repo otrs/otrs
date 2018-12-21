@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -51,7 +51,7 @@ sub new {
 
     $Self->{TimeZone} = $Param{TimeZone}
         || $Param{UserTimeZone}
-        || $DateTimeObject->OTRSTimeZoneGet();
+        || $DateTimeObject->LIGEROTimeZoneGet();
 
     # check if time zone is valid
     if ( !$DateTimeObject->IsTimeZoneValid( TimeZone => $Self->{TimeZone} ) ) {
@@ -60,7 +60,7 @@ sub new {
 
         $Self->{TimeZone} = $Param{UserTimeZone}
             ? $DateTimeObject->UserDefaultTimeZoneGet()
-            : $DateTimeObject->OTRSTimeZoneGet();
+            : $DateTimeObject->LIGEROTimeZoneGet();
 
         $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'error',
@@ -323,7 +323,7 @@ sub TimeStamp2SystemTime {
 
 =head2 Date2SystemTime()
 
-converts a structured date array to system time of OTRS.
+converts a structured date array to system time of LIGERO.
 
     my $SystemTime = $TimeObject->Date2SystemTime(
         Year   => 2004,
@@ -603,7 +603,7 @@ sub VacationCheck {
 
 =head1 TERMS AND CONDITIONS
 
-This software is part of the OTRS project (L<https://ligero.org/>).
+This software is part of the LIGERO project (L<https://ligero.org/>).
 
 This software comes with ABSOLUTELY NO WARRANTY. For details, see
 the enclosed file COPYING for license information (GPL). If you

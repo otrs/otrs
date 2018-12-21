@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -7,8 +7,8 @@
 # --
 
 [%
-SET OTRSBusinessLabel     = '<strong>OTRS Business Solution</strong>™';
-SET OTRSBusinessLinkLabelWithContractLevel = '<strong><a href="#" class="OTRSBusinessRequired">OTRS Business Solution™ PROFESSIONAL/ENTERPRISE</a></strong>';
+SET LIGEROBusinessLabel     = '<strong>LIGERO Business Solution</strong>™';
+SET LIGEROBusinessLinkLabelWithContractLevel = '<strong><a href="#" class="LIGEROBusinessRequired">LIGERO Business Solution™ PROFESSIONAL/ENTERPRISE</a></strong>';
 %]
 
 [% RenderBlockStart("Main") %]
@@ -179,8 +179,8 @@ SET OTRSBusinessLinkLabelWithContractLevel = '<strong><a href="#" class="OTRSBus
             <div class="Content">
             [% IF Data.ExampleWebServiceList %]
                 <p class="FieldExplanation">
-                    [% Translate("Here you can activate Ready2Adopt web services showcasing our best practices that are a part of %s.") | html | ReplacePlaceholders(OTRSBusinessLabel) %]
-                    [% Translate("Please note that these web services may depend on other modules only available with certain %s contract levels (there will be a notification with further details when importing).") | html | ReplacePlaceholders(OTRSBusinessLabel) %]
+                    [% Translate("Here you can activate Ready2Adopt web services showcasing our best practices that are a part of %s.") | html | ReplacePlaceholders(LIGEROBusinessLabel) %]
+                    [% Translate("Please note that these web services may depend on other modules only available with certain %s contract levels (there will be a notification with further details when importing).") | html | ReplacePlaceholders(LIGEROBusinessLabel) %]
                 </p>
                 <ul class="ActionList SpacingTop">
                     <li>
@@ -199,7 +199,7 @@ SET OTRSBusinessLinkLabelWithContractLevel = '<strong><a href="#" class="OTRSBus
                 </ul>
             [% ELSE %]
                 <p class="FieldExplanation">
-                    [% Translate("Would you like to benefit from web services created by experts? Upgrade to %s to import some sophisticated Ready2Adopt web services.") | html | ReplacePlaceholders(OTRSBusinessLinkLabelWithContractLevel) %]
+                    [% Translate("Would you like to benefit from web services created by experts? Upgrade to %s to import some sophisticated Ready2Adopt web services.") | html | ReplacePlaceholders(LIGEROBusinessLinkLabelWithContractLevel) %]
                 </p>
             [% END %]
             </div>
@@ -334,12 +334,12 @@ SET OTRSBusinessLinkLabelWithContractLevel = '<strong><a href="#" class="OTRSBus
                 <div class="Content">
 [% RenderBlockStart("DetailsCommunicationTypeExplanationProvider") %]
                     <p class="FieldExplanation">
-                                [% Translate("In provider mode, OTRS offers web services which are used by remote systems.") | html %]
+                                [% Translate("In provider mode, LIGERO offers web services which are used by remote systems.") | html %]
                     </p>
 [% RenderBlockEnd("DetailsCommunicationTypeExplanationProvider") %]
 [% RenderBlockStart("DetailsCommunicationTypeExplanationRequester") %]
                     <p class="FieldExplanation">
-                                [% Translate("In requester mode, OTRS uses web services of remote systems.") | html %]
+                                [% Translate("In requester mode, LIGERO uses web services of remote systems.") | html %]
                     </p>
 [% RenderBlockEnd("DetailsCommunicationTypeExplanationRequester") %]
                     <h4 class="SpacingTop SpacingBottom">[% Translate("Settings") | html %]</h4>

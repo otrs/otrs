@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -16,7 +16,7 @@ my $Helper = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
 
 my $Home = $Kernel::OM->Get('Kernel::Config')->Get('Home');
 
-# set up a OTRS 5 database
+# set up a LIGERO 5 database
 my @DatabaseXMLFiles = (
     "$Home/scripts/test/sample/DBUpdate/ligero5-schema.xml",
     "$Home/scripts/test/sample/DBUpdate/ligero5-initial_insert.xml",
@@ -57,7 +57,7 @@ for my $Count ( 1 .. 2 ) {
     );
 }
 
-# set up a OTRS 6 database
+# set up a LIGERO 6 database
 @DatabaseXMLFiles = (
     "$Home/scripts/database/ligero-schema.xml",
     "$Home/scripts/database/ligero-initial_insert.xml",

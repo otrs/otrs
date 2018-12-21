@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -31,7 +31,7 @@ sub Run {
 
     my @XMLStrings = (
 
-        # Drop table no longer needed since OTRS 5.
+        # Drop table no longer needed since LIGERO 5.
         '<TableDrop Name="notifications"/>',
     );
 
@@ -157,16 +157,16 @@ sub Run {
                 <Data Key="content_type" Type="Quote">text/plain</Data>
                 <Data Key="language" Type="Quote">en</Data>
                 <Data Key="subject" Type="Quote"><![CDATA[Email Delivery Failure]]></Data>
-                <Data Key="text" Type="Quote"><![CDATA[Hi <OTRS_NOTIFICATION_RECIPIENT_UserFirstname>,
+                <Data Key="text" Type="Quote"><![CDATA[Hi <LIGERO_NOTIFICATION_RECIPIENT_UserFirstname>,
 
-Please note, that the delivery of an email article of [<OTRS_CONFIG_Ticket::Hook><OTRS_CONFIG_Ticket::HookDivider><OTRS_TICKET_TicketNumber>] has failed. Please check the email address of your recipient for mistakes and try again. You can manually resend the article from the ticket if required.
+Please note, that the delivery of an email article of [<LIGERO_CONFIG_Ticket::Hook><LIGERO_CONFIG_Ticket::HookDivider><LIGERO_TICKET_TicketNumber>] has failed. Please check the email address of your recipient for mistakes and try again. You can manually resend the article from the ticket if required.
 
 Error Message:
-<OTRS_AGENT_TransmissionStatusMessage>
+<LIGERO_AGENT_TransmissionStatusMessage>
 
-<OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<OTRS_TICKET_TicketID>;ArticleID=<OTRS_AGENT_ArticleID>
+<LIGERO_CONFIG_HttpType>://<LIGERO_CONFIG_FQDN>/<LIGERO_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<LIGERO_TICKET_TicketID>;ArticleID=<LIGERO_AGENT_ArticleID>
 
--- <OTRS_CONFIG_NotificationSenderName>]]></Data>
+-- <LIGERO_CONFIG_NotificationSenderName>]]></Data>
             </Insert>',
 
             '<Insert Table="notification_event_message">
@@ -175,16 +175,16 @@ Error Message:
                 <Data Key="content_type" Type="Quote">text/plain</Data>
                 <Data Key="language" Type="Quote">hu</Data>
                 <Data Key="subject" Type="Quote"><![CDATA[E-mail kézbesítési hiba]]></Data>
-                <Data Key="text" Type="Quote"><![CDATA[Kedves <OTRS_NOTIFICATION_RECIPIENT_UserFirstname>!
+                <Data Key="text" Type="Quote"><![CDATA[Kedves <LIGERO_NOTIFICATION_RECIPIENT_UserFirstname>!
 
-Felhívjuk a figyelmét, hogy a(z) [<OTRS_CONFIG_Ticket::Hook><OTRS_CONFIG_Ticket::HookDivider><OTRS_TICKET_TicketNumber>] jegy e-mail bejegyzésének kézbesítése nem sikerült. Ellenőrizze, hogy nincs-e a címzett e-mail címében hiba, és próbálja meg újra. Kézileg is újraküldheti a bejegyzést a jegyből, ha szükséges.
+Felhívjuk a figyelmét, hogy a(z) [<LIGERO_CONFIG_Ticket::Hook><LIGERO_CONFIG_Ticket::HookDivider><LIGERO_TICKET_TicketNumber>] jegy e-mail bejegyzésének kézbesítése nem sikerült. Ellenőrizze, hogy nincs-e a címzett e-mail címében hiba, és próbálja meg újra. Kézileg is újraküldheti a bejegyzést a jegyből, ha szükséges.
 
 Hibaüzenet:
-<OTRS_AGENT_TransmissionStatusMessage>
+<LIGERO_AGENT_TransmissionStatusMessage>
 
-<OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<OTRS_TICKET_TicketID>;ArticleID=<OTRS_AGENT_ArticleID>
+<LIGERO_CONFIG_HttpType>://<LIGERO_CONFIG_FQDN>/<LIGERO_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<LIGERO_TICKET_TicketID>;ArticleID=<LIGERO_AGENT_ArticleID>
 
--- <OTRS_CONFIG_NotificationSenderName>]]></Data>
+-- <LIGERO_CONFIG_NotificationSenderName>]]></Data>
             </Insert>',
         );
 
@@ -200,7 +200,7 @@ Hibaüzenet:
 
 =head1 TERMS AND CONDITIONS
 
-This software is part of the OTRS project (L<https://ligero.org/>).
+This software is part of the LIGERO project (L<https://ligero.org/>).
 
 This software comes with ABSOLUTELY NO WARRANTY. For details, see
 the enclosed file COPYING for license information (GPL). If you

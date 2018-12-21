@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -20,7 +20,7 @@ our @ObjectDependencies = (
 sub Configure {
     my ( $Self, %Param ) = @_;
 
-    $Self->Description('Find a file in an installed OTRS package.');
+    $Self->Description('Find a file in an installed LIGERO package.');
     $Self->AddArgument(
         Name        => 'search-path',
         Description => "Filename or path to search for.",
@@ -34,7 +34,7 @@ sub Configure {
 sub Run {
     my ( $Self, %Param ) = @_;
 
-    $Self->Print("<yellow>Searching in installed OTRS packages...</yellow>\n");
+    $Self->Print("<yellow>Searching in installed LIGERO packages...</yellow>\n");
 
     my $Hit      = 0;
     my $Filepath = $Self->GetArgument('search-path');
@@ -71,7 +71,7 @@ sub Run {
         return $Self->ExitCodeOk();
     }
 
-    $Self->PrintError("File $Filepath was not found in an installed OTRS package.\n");
+    $Self->PrintError("File $Filepath was not found in an installed LIGERO package.\n");
     return $Self->ExitCodeError();
 }
 

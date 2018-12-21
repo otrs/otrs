@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -139,7 +139,7 @@ my $String1 = qq|<?xml version="1.0" encoding="utf-8" ?>
 <ligero_package version="1.1">
     <Name>TestPackage1</Name>
     <Version>0.0.1</Version>
-    <Vendor>OTRS AG</Vendor>
+    <Vendor>LIGERO AG</Vendor>
     <URL>https://ligero.com/</URL>
     <License>GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007</License>
     <Description Lang="en">TestPackage1.</Description>
@@ -156,7 +156,7 @@ my $String2 = qq|<?xml version="1.0" encoding="utf-8" ?>
 <ligero_package version="1.1">
     <Name>TestPackage2</Name>
     <Version>0.0.1</Version>
-    <Vendor>OTRS AG</Vendor>
+    <Vendor>LIGERO AG</Vendor>
     <URL>https://ligero.com/</URL>
     <License>GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007</License>
     <Description Lang="en">TestPackage2.</Description>
@@ -173,7 +173,7 @@ my $String3 = qq|<?xml version="1.0" encoding="utf-8" ?>
 <ligero_package version="1.1">
     <Name>TestPackage2</Name>
     <Version>0.0.2</Version>
-    <Vendor>OTRS AG</Vendor>
+    <Vendor>LIGERO AG</Vendor>
     <URL>https://ligero.com/</URL>
     <License>GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007</License>
     <Description Lang="en">TestPackage2.</Description>

@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -22,7 +22,7 @@
 
 [% RenderBlockStart("Restart") %]
                     <p>
-                        [% Translate("To be able to use OTRS you have to enter the following line in your command line (Terminal/Shell) as root.") | html %]
+                        [% Translate("To be able to use LIGERO you have to enter the following line in your command line (Terminal/Shell) as root.") | html %]
                     </p>
                     <div class="Clear SpacingTop"></div>
 
@@ -33,14 +33,14 @@
                     <div class="Clear"></div>
 
                     <p class="SpacingTop">
-                        [% Translate("After doing so your OTRS is up and running.") | html %]
+                        [% Translate("After doing so your LIGERO is up and running.") | html %]
                     </p>
                     <div class="Clear SpacingTop"></div>
 [% RenderBlockEnd("Restart") %]
                     <label>[% Translate("Start page") | html %]:</label>
                     <div class="Field">
-                        <a href="http://[% Data.Host | html %]/[% Data.OTRSHandle %]/index.pl">
-                            http://[% Data.Host | html %]/[% Data.OTRSHandle %]/index.pl
+                        <a href="http://[% Data.Host | html %]/[% Data.LIGEROHandle %]/index.pl">
+                            http://[% Data.Host | html %]/[% Data.LIGEROHandle %]/index.pl
                         </a>
                     </div>
                     <div class="Clear"></div>
@@ -59,7 +59,7 @@
 
                     <div class="Field Center">
                         <p>((enjoy))</p>
-                        <p>[% Translate("Your OTRS Team") | html %]</p>
+                        <p>[% Translate("Your LIGERO Team") | html %]</p>
                     </div>
                     <div class="Clear"></div>
                 </fieldset>

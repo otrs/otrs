@@ -1,7 +1,7 @@
 <!--                                                                           -->
-<!--        OTRS: Copyright (C) 2001-2018 OTRS AG, https://ligero.com/.          -->
+<!--        LIGERO: Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/.          -->
 <!--         Web: https://ligero.com/ - Lists: https://lists.ligero.org/           -->
 <!--    GNU General Public License: https://www.gnu.org/licenses/gpl-3.0.txt   -->
 <!--                                                                           -->
-## nofilter(TidyAll::Plugin::OTRS::Common::HeaderlineFilename)
-## nofilter(TidyAll::Plugin::OTRS::Legal::LicenseValidator)
+## nofilter(TidyAll::Plugin::LIGERO::Common::HeaderlineFilename)
+## nofilter(TidyAll::Plugin::LIGERO::Legal::LicenseValidator)

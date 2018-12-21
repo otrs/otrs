@@ -1,5 +1,5 @@
 // --
-// Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+// Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 // --
 // This software comes with ABSOLUTELY NO WARRANTY. For details, see
 // the enclosed file COPYING for license information (GPL). If you
@@ -15,7 +15,7 @@ Core.Agent.Statistics = Core.Agent.Statistics || {};
 /**
  * @namespace Core.Agent.Statistics.ParamsWidget
  * @memberof Core.Agent.Statistics
- * @author OTRS AG
+ * @author LIGERO AG
  * @description
  *      This namespace contains the special module functions for the Statistics module.
  */

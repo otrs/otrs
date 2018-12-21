@@ -1,11 +1,11 @@
 // --
-// Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+// Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 // --
 // This software comes with ABSOLUTELY NO WARRANTY. For details, see
 // the enclosed file COPYING for license information (GPL). If you
 // did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 // --
-// nofilter(TidyAll::Plugin::OTRS::JavaScript::UnloadEvent)
+// nofilter(TidyAll::Plugin::LIGERO::JavaScript::UnloadEvent)
 
 "use strict";
 
@@ -14,7 +14,7 @@ var Core = Core || {};
 /**
  * @namespace Core.App
  * @memberof Core
- * @author OTRS AG
+ * @author LIGERO AG
  * @description
  *      This namespace contains main app functionalities.
  */
@@ -114,7 +114,7 @@ Core.App = (function (TargetNS) {
      * @returns {Boolean} True if the used browser is *not* on the black list.
      * @param {String} Interface - The interface we are in (Agent or Customer)
      * @description
-     *      Checks if the used browser is not on the OTRS browser blacklist
+     *      Checks if the used browser is not on the LIGERO browser blacklist
      *      of the agent interface.
      */
     TargetNS.BrowserCheck = function (Interface) {

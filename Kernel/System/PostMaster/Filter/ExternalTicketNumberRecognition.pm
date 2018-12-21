@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -211,13 +211,13 @@ sub Run {
         $Param{GetParam}->{Subject} .= " [$TicketHook$TicketHookDivider$TicketNumber]";
 
         # set sender type and article type.
-        $Param{GetParam}->{'X-OTRS-FollowUp-SenderType'}           = $Param{JobConfig}->{SenderType};
-        $Param{GetParam}->{'X-OTRS-FollowUp-IsVisibleForCustomer'} = $Param{JobConfig}->{IsVisibleForCustomer};
+        $Param{GetParam}->{'X-LIGERO-FollowUp-SenderType'}           = $Param{JobConfig}->{SenderType};
+        $Param{GetParam}->{'X-LIGERO-FollowUp-IsVisibleForCustomer'} = $Param{JobConfig}->{IsVisibleForCustomer};
 
         # also set these parameters. It could be that the follow up is rejected by Reject.pm
         #   (follow-ups not allowed), but the original article will still be attached to the ticket.
-        $Param{GetParam}->{'X-OTRS-SenderType'}           = $Param{JobConfig}->{SenderType};
-        $Param{GetParam}->{'X-OTRS-IsVisibleForCustomer'} = $Param{JobConfig}->{IsVisibleForCustomer};
+        $Param{GetParam}->{'X-LIGERO-SenderType'}           = $Param{JobConfig}->{SenderType};
+        $Param{GetParam}->{'X-LIGERO-IsVisibleForCustomer'} = $Param{JobConfig}->{IsVisibleForCustomer};
 
     }
     else {
@@ -230,11 +230,11 @@ sub Run {
 
         # get the dynamic field name and description from JobConfig, set as headers
         my $TicketDynamicFieldName = $Param{JobConfig}->{'DynamicFieldName'};
-        $Param{GetParam}->{ 'X-OTRS-DynamicField-' . $TicketDynamicFieldName } = $Self->{Number};
+        $Param{GetParam}->{ 'X-LIGERO-DynamicField-' . $TicketDynamicFieldName } = $Self->{Number};
 
         # set sender type and article type
-        $Param{GetParam}->{'X-OTRS-SenderType'}           = $Param{JobConfig}->{SenderType};
-        $Param{GetParam}->{'X-OTRS-IsVisibleForCustomer'} = $Param{JobConfig}->{IsVisibleForCustomer};
+        $Param{GetParam}->{'X-LIGERO-SenderType'}           = $Param{JobConfig}->{SenderType};
+        $Param{GetParam}->{'X-LIGERO-IsVisibleForCustomer'} = $Param{JobConfig}->{IsVisibleForCustomer};
     }
 
     return 1;

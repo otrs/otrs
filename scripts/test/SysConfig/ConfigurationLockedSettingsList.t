@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -45,7 +45,7 @@ my $XMLContentRaw = <<'EOF',
 <Description Translatable="1">Test.</Description>
 <Navigation>Core</Navigation>
 <Value>
-    <Item ValueType="String" ValueRegex="">OTRS 6</Item>
+    <Item ValueType="String" ValueRegex="">LIGERO 6</Item>
 </Value>
 </Setting>
 EOF
@@ -71,7 +71,7 @@ EOF
             Item => [
                 {
                     ValueType  => 'String',
-                    Content    => 'OTRS 6',
+                    Content    => 'LIGERO 6',
                     ValueRegex => '',
                 },
             ],
@@ -94,7 +94,7 @@ for my $Index ( 1 .. 3 ) {
         XMLContentRaw    => $XMLContentRaw,
         XMLContentParsed => $XMLContentParsed,
         XMLFilename      => 'UnitTest.xml',
-        EffectiveValue   => 'OTRS 6',
+        EffectiveValue   => 'LIGERO 6',
         UserID           => $UserID,
     );
 

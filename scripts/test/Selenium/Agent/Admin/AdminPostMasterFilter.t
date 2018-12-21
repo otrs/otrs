@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -146,7 +146,7 @@ $Selenium->RunTest(
         $Selenium->find_element( "#MatchValue1", 'css' )->send_keys($PostMasterBody);
         $Selenium->InputFieldValueSet(
             Element => '#SetHeader1',
-            Value   => 'X-OTRS-Priority',
+            Value   => 'X-LIGERO-Priority',
         );
 
         $Selenium->find_element( "#SetValue1", 'css' )->send_keys($PostMasterPriority);
@@ -187,7 +187,7 @@ $Selenium->RunTest(
         );
         $Self->Is(
             $Selenium->find_element( '#SetHeader1', 'css' )->get_value(),
-            "X-OTRS-Priority",
+            "X-LIGERO-Priority",
             "#SetHeader1 stored value",
         );
         $Self->Is(
@@ -262,7 +262,7 @@ $Selenium->RunTest(
         $Selenium->find_element( "#MatchValue1", 'css' )->send_keys($PostMasterBody);
         $Selenium->InputFieldValueSet(
             Element => '#SetHeader1',
-            Value   => 'X-OTRS-Priority',
+            Value   => 'X-LIGERO-Priority',
         );
         $Selenium->find_element( "#SetValue1", 'css' )->send_keys($PostMasterPriority);
         $Selenium->execute_script("\$('#Submit').click();");

@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -78,20 +78,20 @@ collect system data
         Success => 1,
         Result  => [
             {
-                Identifier  => 'Kernel::System::SupportDataCollector::OTRS::Version',
-                DisplayPath => 'OTRS',
+                Identifier  => 'Kernel::System::SupportDataCollector::LIGERO::Version',
+                DisplayPath => 'LIGERO',
                 Status      => $StatusOK,
-                Label       => 'OTRS Version'
+                Label       => 'LIGERO Version'
                 Value       => '3.3.2',
                 Message     => '',
             },
             {
                 Identifier  => 'Kernel::System::SupportDataCollector::Apache::mod_perl',
-                DisplayPath => 'OTRS',
+                DisplayPath => 'LIGERO',
                 Status      => $StatusProblem,
                 Label       => 'mod_perl usage'
                 Value       => '0',
-                Message     => 'Please enable mod_perl to speed up OTRS.',
+                Message     => 'Please enable mod_perl to speed up LIGERO.',
             },
             {
                 Identifier       => 'Some::Identifier',
@@ -464,7 +464,7 @@ sub CleanupAsynchronous {
 
 =head1 TERMS AND CONDITIONS
 
-This software is part of the OTRS project (L<https://ligero.org/>).
+This software is part of the LIGERO project (L<https://ligero.org/>).
 
 This software comes with ABSOLUTELY NO WARRANTY. For details, see
 the enclosed file COPYING for license information (GPL). If you

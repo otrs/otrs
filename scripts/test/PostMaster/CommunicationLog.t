@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -89,7 +89,7 @@ package FakeClient {    ## no critic
 
 no strict 'refs';    ## no critic
 
-# Overwrite the OTRS MailAccount::IMAP connect method to use our fake imap client,
+# Overwrite the LIGERO MailAccount::IMAP connect method to use our fake imap client,
 #   but make this change local to the unit test scope, as you can see, it also
 #   makes use of the %FakeClientEnv.
 local *{'Kernel::System::MailAccount::IMAP::Connect'} = sub {
@@ -122,7 +122,7 @@ local *{'Kernel::System::MailAccount::IMAP::Connect'} = sub {
     );
 };
 
-# Overwrite the OTRS MailAccount::POP3 connect method to use our fake pop3 client,
+# Overwrite the LIGERO MailAccount::POP3 connect method to use our fake pop3 client,
 #   but make this change local to the unit test scope, as you can see, it also
 #   makes use of the %FakeClientEnv.
 local *{'Kernel::System::MailAccount::POP3::Connect'} = sub {
@@ -230,8 +230,8 @@ my $GetMailAcountLastCommunicationLog = sub {
 };
 
 # Get postmaster sample emails.
-my $OTRSDIR  = $Kernel::OM->Get('Kernel::Config')->Get('Home');
-my @FileList = glob "${ OTRSDIR }/scripts/test/sample/PostMaster/*.box";
+my $LIGERODIR  = $Kernel::OM->Get('Kernel::Config')->Get('Home');
+my @FileList = glob "${ LIGERODIR }/scripts/test/sample/PostMaster/*.box";
 my %Emails   = ();
 
 my $EmailIdx = 0;
@@ -463,7 +463,7 @@ my $TestsStoppedAt = $Kernel::OM->Create('Kernel::System::DateTime');
 
 # Delete spool files generated during the tests run.
 my @SpoolFilesFailedUnlink = ();
-my @SpoolFiles             = glob "${ OTRSDIR }/var/spool/problem-email-*";
+my @SpoolFiles             = glob "${ LIGERODIR }/var/spool/problem-email-*";
 for my $SpoolFile (@SpoolFiles) {
     my $FileStat       = stat $SpoolFile;
     my $FileModifiedAt = $Kernel::OM->Create(

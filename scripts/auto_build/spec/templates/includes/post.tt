@@ -1,4 +1,4 @@
-export OTRSUSER=ligero
+export LIGEROUSER=ligero
 
 [% '#' %] note
 HOST=`hostname -f`
@@ -8,15 +8,15 @@ echo ""
 echo "[restart web server]"
 echo " systemctl restart [% WebServiceName || 'apache2.service' %]"
 echo ""
-echo "[install the OTRS database]"
+echo "[install the LIGERO database]"
 echo " Make sure your database server is running."
 echo " Use a web browser and open this link:"
 echo " http://$HOST/ligero/installer.pl"
 echo ""
-echo "[start OTRS daemon and corresponding watchdog cronjob]"
+echo "[start LIGERO daemon and corresponding watchdog cronjob]"
 echo " /opt/ligero/bin/ligero.Daemon.pl start"
 echo " /opt/ligero/bin/Cron.sh start"
 echo ""
 echo "((enjoy))"
-echo " Your OTRS Team"
+echo " Your LIGERO Team"
 echo ""

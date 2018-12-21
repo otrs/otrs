@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -7,7 +7,7 @@
 # --
 
 package Kernel::System::Email;
-## nofilter(TidyAll::Plugin::OTRS::Perl::Require)
+## nofilter(TidyAll::Plugin::LIGERO::Perl::Require)
 
 use strict;
 use warnings;
@@ -86,7 +86,7 @@ To send an email without already created header:
         References    => '<somemessageid-1@example.com> <somemessageid-2@example.com>',
         Loop          => 1, # not required, removes smtp from
         CustomHeaders => {
-            X-OTRS-MyHeader => 'Some Value',
+            X-LIGERO-MyHeader => 'Some Value',
         },
         Attachment => [
             {
@@ -1089,7 +1089,7 @@ sub _CreateMimeEntity {
     }
     else {
         $Header{'X-Mailer'}     = "$Product Mail Service ($Version)";
-        $Header{'X-Powered-By'} = 'OTRS (https://ligero.com/)';
+        $Header{'X-Powered-By'} = 'LIGERO (https://ligero.com/)';
     }
     $Header{Type} = $Param{MimeType} || 'text/plain';
 
@@ -1297,7 +1297,7 @@ sub _CreateMimeEntity {
 
 =head1 TERMS AND CONDITIONS
 
-This software is part of the OTRS project (L<https://ligero.org/>).
+This software is part of the LIGERO project (L<https://ligero.org/>).
 
 This software comes with ABSOLUTELY NO WARRANTY. For details, see
 the enclosed file COPYING for license information (GPL). If you

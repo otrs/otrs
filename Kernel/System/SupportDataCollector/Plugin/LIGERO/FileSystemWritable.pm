@@ -1,12 +1,12 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
 # did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
-package Kernel::System::SupportDataCollector::Plugin::OTRS::FileSystemWritable;
+package Kernel::System::SupportDataCollector::Plugin::LIGERO::FileSystemWritable;
 
 use strict;
 use warnings;
@@ -20,7 +20,7 @@ our @ObjectDependencies = (
 );
 
 sub GetDisplayPath {
-    return Translatable('OTRS');
+    return Translatable('LIGERO');
 }
 
 sub Run {
@@ -55,7 +55,7 @@ sub Run {
         $Self->AddResultProblem(
             Label   => Translatable('File System Writable'),
             Value   => join( ', ', @ReadonlyDirectories ),
-            Message => Translatable('The file system on your OTRS partition is not writable.'),
+            Message => Translatable('The file system on your LIGERO partition is not writable.'),
         );
     }
     else {

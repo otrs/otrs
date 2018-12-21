@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -46,7 +46,7 @@ $Selenium->RunTest(
               xmlns:sy=\"http://purl.org/rss/1.0/modules/syndication/\"
               xmlns:slash=\"http://purl.org/rss/1.0/modules/slash/\"  >
               <channel>
-                  <title>Press Releases &#8211; ligero.com| OTRS Simple Service Management</title>
+                  <title>Press Releases &#8211; ligero.com| LIGERO Simple Service Management</title>
                   <atom:link href=\"https://www.ligero.com/feed/?cat=112%2C254%2C111\" rel=\"self\" type=\"application/rss+xml\" />
                   <link>https://www.ligero.com</link>
                   <description>Simple service management</description>
@@ -59,11 +59,11 @@ $Selenium->RunTest(
                       <title>$RandomRSSTitle</title>
                       <link>https://www.ligero.com/$RandomRSSTitle</link>
                       <pubDate>Tue, 16 Jan 2018 09:00:07 +0000</pubDate>
-                      <dc:creator><![CDATA[Marketing OTRS]]></dc:creator>
+                      <dc:creator><![CDATA[Marketing LIGERO]]></dc:creator>
                       <category><![CDATA[Release and Security Notes]]></category>
-                      <category><![CDATA[Release Notes: OTRS Business Solution™]]></category>
+                      <category><![CDATA[Release Notes: LIGERO Business Solution™]]></category>
                       <guid isPermaLink=\"false\">https://www.ligero.com/?p=61580</guid>
-                      <description><![CDATA[&#160; January 16, 2018 — OTRS, test]]></description>
+                      <description><![CDATA[&#160; January 16, 2018 — LIGERO, test]]></description>
                       <content:encoded><![CDATA[<div class=\"row box-space-md\"> <div class=\"col-lg-12 col-md-12 col-sm-12 column1\"></div> </div>]]></content:encoded>
                   </item>
               </channel>

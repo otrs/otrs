@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -110,7 +110,7 @@ sub Run {
         =~ s/^((X-Mailer|User-Agent|X-OS):.*(Mozilla|Win?|Outlook|Microsoft|Internet Mail Service).*)/<span class="Error">$1<\/span>/gmi;
     $Plain =~ s/^((Resent-.*):.*)/<span class="Error">$1<\/span>/gmi;
     $Plain =~ s/^(From .*)/<span class="Error">$1<\/span>/gm;
-    $Plain =~ s/^(X-OTRS.*)/<span class="Error">$1<\/span>/gmi;
+    $Plain =~ s/^(X-LIGERO.*)/<span class="Error">$1<\/span>/gmi;
 
     my $Output = $LayoutObject->Header(
         Type => 'Small',

@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -212,7 +212,7 @@ sub TransitionCheck {
             next DEBUGFILTER if !$Self->{TransitionDebugFilters}->{$DebugFilter};
             next DEBUGFILTER if ref $Param{Data} ne 'HASH';
 
-            if ( $DebugFilter =~ m{<OTRS_TICKET_([^>]+)>}msx ) {
+            if ( $DebugFilter =~ m{<LIGERO_TICKET_([^>]+)>}msx ) {
                 my $TicketParam = $1;
 
                 if (
@@ -317,7 +317,7 @@ sub TransitionCheck {
 
         my $ConditionLinking = $Transitions->{$TransitionEntityID}->{ConditionLinking} || '';
 
-        # If we don't have a ConditionLinking set it to 'and' by default compatibility with OTRS 3.3.x
+        # If we don't have a ConditionLinking set it to 'and' by default compatibility with LIGERO 3.3.x
         if ( !$ConditionLinking ) {
             $ConditionLinking = $Transitions->{$TransitionEntityID}->{Condition}->{Type} || 'and';
         }
@@ -1091,7 +1091,7 @@ sub DebugLog {
 
 =head1 TERMS AND CONDITIONS
 
-This software is part of the OTRS project (L<https://ligero.org/>).
+This software is part of the LIGERO project (L<https://ligero.org/>).
 
 This software comes with ABSOLUTELY NO WARRANTY. For details, see
 the enclosed file COPYING for license information (GPL). If you

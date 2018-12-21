@@ -1,12 +1,12 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
 # did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
-package Kernel::System::SupportDataCollector::Plugin::OTRS::TimeSettings;
+package Kernel::System::SupportDataCollector::Plugin::LIGERO::TimeSettings;
 
 use strict;
 use warnings;
@@ -23,7 +23,7 @@ our @ObjectDependencies = (
 );
 
 sub GetDisplayPath {
-    return Translatable('OTRS') . '/' . Translatable('Time Settings');
+    return Translatable('LIGERO') . '/' . Translatable('Time Settings');
 }
 
 sub Run {
@@ -40,21 +40,21 @@ sub Run {
 
     my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
 
-    # OTRS time zone
-    my $OTRSTimeZone = $ConfigObject->Get('OTRSTimeZone');
-    if ( defined $OTRSTimeZone ) {
+    # LIGERO time zone
+    my $LIGEROTimeZone = $ConfigObject->Get('LIGEROTimeZone');
+    if ( defined $LIGEROTimeZone ) {
         $Self->AddResultOk(
-            Identifier => 'OTRSTimeZone',
-            Label      => Translatable('OTRS time zone'),
-            Value      => $OTRSTimeZone,
+            Identifier => 'LIGEROTimeZone',
+            Label      => Translatable('LIGERO time zone'),
+            Value      => $LIGEROTimeZone,
         );
     }
     else {
         $Self->AddResultProblem(
-            Identifier => 'OTRSTimeZone',
-            Label      => Translatable('OTRS time zone'),
+            Identifier => 'LIGEROTimeZone',
+            Label      => Translatable('LIGERO time zone'),
             Value      => '',
-            Message    => Translatable('OTRS time zone is not set.'),
+            Message    => Translatable('LIGERO time zone is not set.'),
         );
     }
 
@@ -82,15 +82,15 @@ sub Run {
 
         if ( defined $CalendarTimeZone ) {
             $Self->AddResultOk(
-                Identifier => "OTRSTimeZone::Calendar$Counter",
-                Label      => Translatable('OTRS time zone setting for calendar') . " $Counter",
+                Identifier => "LIGEROTimeZone::Calendar$Counter",
+                Label      => Translatable('LIGERO time zone setting for calendar') . " $Counter",
                 Value      => $CalendarTimeZone,
             );
         }
         else {
             $Self->AddResultInformation(
-                Identifier => "OTRSTimeZone::Calendar$Counter",
-                Label      => Translatable('OTRS time zone setting for calendar') . " $Counter",
+                Identifier => "LIGEROTimeZone::Calendar$Counter",
+                Label      => Translatable('LIGERO time zone setting for calendar') . " $Counter",
                 Value      => '',
                 Message    => Translatable('Calendar time zone is not set.'),
             );

@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -38,7 +38,7 @@ use Kernel::System::WebUserAgent;
 package Kernel::System::WebUserAgent;
 use strict;
 use warnings;
-## nofilter(TidyAll::Plugin::OTRS::Perl::TestSubs)
+## nofilter(TidyAll::Plugin::LIGERO::Perl::TestSubs)
 {
     no warnings 'redefine';
     sub Request {
@@ -93,7 +93,7 @@ $Selenium->RunTest(
                   <Name>Test</Name>
                   <Version>0.0.1</Version>
                   <Framework>x.x.x</Framework>
-                  <Vendor>OTRS AG</Vendor>
+                  <Vendor>LIGERO AG</Vendor>
                   <URL>https://ligero.com/</URL>
                   <License>GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007</License>
                   <ChangeLog>2005-11-10 New package (some test &lt; &gt; &amp;).</ChangeLog>
@@ -191,7 +191,7 @@ $Selenium->RunTest(
         $Self->True(
             index(
                 $Selenium->get_page_source(),
-                'The installation of packages which are not verified by the OTRS Group is not possible by default.'
+                'The installation of packages which are not verified by the LIGERO Group is not possible by default.'
             ) > 0,
             'Message for aborting installation of package is displayed'
         );
@@ -211,7 +211,7 @@ $Selenium->RunTest(
         # Check for notification.
         $Self->True(
             $Selenium->execute_script(
-                'return $("div.MessageBox.Error p:contains(\'The installation of packages which are not verified by the OTRS Group is activated. These packages could threaten your whole system! It is recommended not to use unverified packages.\')").length',
+                'return $("div.MessageBox.Error p:contains(\'The installation of packages which are not verified by the LIGERO Group is activated. These packages could threaten your whole system! It is recommended not to use unverified packages.\')").length',
             ),
             'Install warning for not verified packages is displayed',
         );
@@ -295,7 +295,7 @@ $Selenium->RunTest(
         # Check if info for incompatible package is shown.
         $Self->True(
             $Selenium->execute_script(
-                "return \$('.WidgetSimple .Content h2:contains(\"Package installation requires a patch level update of OTRS\")').length;"
+                "return \$('.WidgetSimple .Content h2:contains(\"Package installation requires a patch level update of LIGERO\")').length;"
             ),
             'Info for incompatible package is shown'
         );

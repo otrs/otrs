@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -47,7 +47,7 @@
             <div class="Content">
                 <p>
                     [% Translate("Currently support data is only shown in this system.") | html %]
-                    [% Translate("It is highly recommended to send this data to OTRS Group in order to get better support.") | html %]
+                    [% Translate("It is highly recommended to send this data to LIGERO Group in order to get better support.") | html %]
                 </p>
             </div>
             <div class="Clear"></div>
@@ -72,7 +72,7 @@
                         <div class="Field">
                             <input type="checkbox" name="SupportDataSending" id="SupportDataSending" value="Yes" [% Data.SupportDataSendingChecked %] />
                             <p class="FieldExplanation">
-                                [% Translate("This will allow the system to send additional support data information to OTRS Group.") | html %]
+                                [% Translate("This will allow the system to send additional support data information to LIGERO Group.") | html %]
                             </p>
                         </div>
                         <div class="Clear"></div>
@@ -98,9 +98,9 @@
             <div class="Content">
                 <p class="Center">
                     [% Translate("Currently support data is only shown in this system.") | html %]
-                    [% Translate("It is highly recommended to send this data to OTRS Group in order to get better support.") | html %]
+                    [% Translate("It is highly recommended to send this data to LIGERO Group in order to get better support.") | html %]
                     <br/>
-                    [% Translate("To enable data sending, please register your system with OTRS Group or update your system registration information (make sure to activate the 'send support data' option.)") | html %]
+                    [% Translate("To enable data sending, please register your system with LIGERO Group or update your system registration information (make sure to activate the 'send support data' option.)") | html %]
                 </p>
 
                 [%  IF Config("Frontend::Module").AdminRegistration %]

@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -25,7 +25,7 @@ our @ObjectDependencies = (
 sub Configure {
     my ( $Self, %Param ) = @_;
 
-    $Self->Description('Upgrade all OTRS packages to the latest versions from the on-line repositories.');
+    $Self->Description('Upgrade all LIGERO packages to the latest versions from the on-line repositories.');
     $Self->AddOption(
         Name        => 'force',
         Description => 'Force package upgrade/installation even if validation fails.',

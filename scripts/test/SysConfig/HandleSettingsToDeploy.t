@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -7,7 +7,7 @@
 # --
 
 ## no critic (Modules::RequireExplicitPackage)
-## nofilter(TidyAll::Plugin::OTRS::Perl::TestSubs)
+## nofilter(TidyAll::Plugin::LIGERO::Perl::TestSubs)
 use strict;
 use warnings;
 use utf8;

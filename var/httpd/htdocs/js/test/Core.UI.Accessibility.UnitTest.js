@@ -1,5 +1,5 @@
 // --
-// Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+// Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 // --
 // This software comes with ABSOLUTELY NO WARRANTY. For details, see
 // the enclosed file COPYING for license information (GPL). If you
@@ -19,7 +19,7 @@ Core.UI.Accessibility = (function (Namespace) {
             /*
              * Create a div containter for the tests
              */
-            var $TestDiv = $('<div id="OTRS_UI_Accessibility_UnitTest"></div>');
+            var $TestDiv = $('<div id="LIGERO_UI_Accessibility_UnitTest"></div>');
             $TestDiv.append('<div class="ARIARoleBanner"></div>');
             $TestDiv.append('<div class="ARIARoleNavigation"></div>');
             $TestDiv.append('<div class="ARIARoleSearch"></div>');
@@ -58,7 +58,7 @@ Core.UI.Accessibility = (function (Namespace) {
             /*
              * Cleanup div container and contents
              */
-            $('#OTRS_UI_Accessibility_UnitTest').remove();
+            $('#LIGERO_UI_Accessibility_UnitTest').remove();
         });
     };
 

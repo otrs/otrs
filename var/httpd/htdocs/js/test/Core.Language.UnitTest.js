@@ -1,5 +1,5 @@
 // --
-// Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+// Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 // --
 // This software comes with ABSOLUTELY NO WARRANTY. For details, see
 // the enclosed file COPYING for license information (GPL). If you
@@ -33,7 +33,7 @@ Core.Language = (function (Namespace) {
             Core.Language.Load(LanguageMetaData, TranslationData);
             Assert.equal(Core.Language.Translate('yes'), 'ja');
             Assert.equal(Core.Language.Translate('no'), 'nein');
-            Assert.equal(Core.Language.Translate('This is %s', 'OTRS'), 'Das ist OTRS');
+            Assert.equal(Core.Language.Translate('This is %s', 'LIGERO'), 'Das ist LIGERO');
             Assert.equal(Core.Language.Translate('This is %s', 'yes'), 'Das ist yes');
             Assert.equal(Core.Language.Translate('Complex %s with %s arguments', 'Text', 'vielen'), 'Komplexer Text mit vielen Argumenten');
         });

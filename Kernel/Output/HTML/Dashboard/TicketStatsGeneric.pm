@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -99,7 +99,7 @@ sub Run {
 
     my $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
 
-    my $TimeZone = $Self->{UserTimeZone} || OTRSTimeZoneGet();
+    my $TimeZone = $Self->{UserTimeZone} || LIGEROTimeZoneGet();
 
     for my $DaysBack ( 0 .. 6 ) {
 
@@ -118,7 +118,7 @@ sub Run {
             # for past 6 days cache results for 8 days (should not change)
             $CacheTTL = 60 * 60 * 24 * 8;
         }
-        $DateTimeObject->ToOTRSTimeZone();
+        $DateTimeObject->ToLIGEROTimeZone();
 
         my $DateTimeValues = $DateTimeObject->Get();
         my $WeekDay        = $DateTimeValues->{DayOfWeek} == 7 ? 0 : $DateTimeValues->{DayOfWeek};

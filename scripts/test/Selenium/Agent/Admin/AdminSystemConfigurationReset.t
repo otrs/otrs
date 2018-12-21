@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -19,7 +19,7 @@ $Selenium->RunTest(
     sub {
 
         my $Helper             = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
-        my $OTRSBusinessObject = $Kernel::OM->Get('Kernel::System::OTRSBusiness');
+        my $LIGEROBusinessObject = $Kernel::OM->Get('Kernel::System::LIGEROBusiness');
         my $SysConfigObject    = $Kernel::OM->Get('Kernel::System::SysConfig');
 
         # Create test user and login.
@@ -120,7 +120,7 @@ $Selenium->RunTest(
             'Make sure setting is reset.',
         );
 
-        if ( $OTRSBusinessObject->OTRSBusinessIsInstalled() ) {
+        if ( $LIGEROBusinessObject->LIGEROBusinessIsInstalled() ) {
 
             my $UserID = $Kernel::OM->Get('Kernel::System::User')->UserLookup(
                 UserLogin => $TestUserLogin,

@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -27,8 +27,8 @@ my $MainObject   = $Kernel::OM->Get('Kernel::System::Main');
 
 # ensure that the appropriate X-Headers are available in the config
 my %NeededXHeaders = (
-    'X-OTRS-AttachmentExists' => 1,
-    'X-OTRS-AttachmentCount'  => 1,
+    'X-LIGERO-AttachmentExists' => 1,
+    'X-LIGERO-AttachmentCount'  => 1,
 );
 
 my $XHeaders          = $ConfigObject->Get('PostmasterX-Header');
@@ -134,21 +134,21 @@ my @Tests = (
         Name  => '#1 - No attachments',
         Match => [
             {
-                Key   => 'X-OTRS-AttachmentExists',
+                Key   => 'X-LIGERO-AttachmentExists',
                 Value => 'no',
             },
             {
-                Key   => 'X-OTRS-AttachmentCount',
+                Key   => 'X-LIGERO-AttachmentCount',
                 Value => 0,
             }
         ],
         Set => [
             {
-                Key   => 'X-OTRS-DynamicField-TicketFreeText1',
+                Key   => 'X-LIGERO-DynamicField-TicketFreeText1',
                 Value => 'No Attachments in mail',
             },
             {
-                Key   => 'X-OTRS-DynamicField-TicketFreeText2',
+                Key   => 'X-LIGERO-DynamicField-TicketFreeText2',
                 Value => 'CeroAttachments',
             },
         ],
@@ -170,21 +170,21 @@ my @Tests = (
         Name  => '#2 - With Attachment',
         Match => [
             {
-                Key   => 'X-OTRS-AttachmentExists',
+                Key   => 'X-LIGERO-AttachmentExists',
                 Value => 'yes',
             },
             {
-                Key   => 'X-OTRS-AttachmentCount',
+                Key   => 'X-LIGERO-AttachmentCount',
                 Value => 1,
             }
         ],
         Set => [
             {
-                Key   => 'X-OTRS-DynamicField-TicketFreeText1',
+                Key   => 'X-LIGERO-DynamicField-TicketFreeText1',
                 Value => 'A normal SMIME email',
             },
             {
-                Key   => 'X-OTRS-DynamicField-TicketFreeText2',
+                Key   => 'X-LIGERO-DynamicField-TicketFreeText2',
                 Value => 'AtLeastOneAttachment',
             },
         ],

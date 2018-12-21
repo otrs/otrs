@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -2096,7 +2096,7 @@ sub SignerCertRelationDelete {
 =head2 CheckCertPath()
 
 Checks and fixes the private secret files that do not have an index. (Needed because this
-changed during the migration from OTRS 3.0 to 3.1.)
+changed during the migration from LIGERO 3.0 to 3.1.)
 
 Checks and fixed certificates, private keys and secrets files to have a correct name
 depending on the current OpenSSL hash algorithm.
@@ -2986,7 +2986,7 @@ sub _ReHashCertificates {
 
 =head1 TERMS AND CONDITIONS
 
-This software is part of the OTRS project (L<https://ligero.org/>).
+This software is part of the LIGERO project (L<https://ligero.org/>).
 
 This software comes with ABSOLUTELY NO WARRANTY. For details, see
 the enclosed file COPYING for license information (GPL). If you

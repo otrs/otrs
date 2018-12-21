@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -81,7 +81,7 @@ sub Run {
         if ( !$ACLImport->{Success} ) {
             my $Message = $ACLImport->{Message}
                 || Translatable(
-                'ACLs could not be Imported due to a unknown error, please check OTRS logs for more information'
+                'ACLs could not be Imported due to a unknown error, please check LIGERO logs for more information'
                 );
             return $LayoutObject->ErrorScreen(
                 Message => $Message,

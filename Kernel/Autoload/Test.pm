@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -13,7 +13,7 @@ use strict;
 use warnings;
 
 #
-# This file demonstrates how to use the autoload mechanism of OTRS to change existing functionality,
+# This file demonstrates how to use the autoload mechanism of LIGERO to change existing functionality,
 #   adding a method to Kernel::System::Valid in this case.
 #
 

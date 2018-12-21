@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -72,11 +72,11 @@ $Selenium->RunTest(
                 SystemRegistration => [
                     {
                         Success      => '0',
-                        ErrorMessage => 'Wrong OTRSID or Password',
+                        ErrorMessage => 'Wrong LIGEROID or Password',
                         Operation    => 'TokenGet',
                         Data         => {
                             Auth   => 'invalid',
-                            Reason => 'Wrong OTRSID or Password',
+                            Reason => 'Wrong LIGEROID or Password',
                         }
                     },
                 ],
@@ -96,7 +96,7 @@ use Kernel::System::WebUserAgent;
 package Kernel::System::WebUserAgent;
 use strict;
 use warnings;
-## nofilter(TidyAll::Plugin::OTRS::Perl::TestSubs)
+## nofilter(TidyAll::Plugin::LIGERO::Perl::TestSubs)
 {
     no warnings 'redefine';
     sub Request {
@@ -134,29 +134,29 @@ EOS
 
         for my $Test (@Tests) {
 
-            $Selenium->find_element( "#OTRSID",   'css' )->clear();
-            $Selenium->find_element( "#OTRSID",   'css' )->send_keys( $Test->{Value} );
+            $Selenium->find_element( "#LIGEROID",   'css' )->clear();
+            $Selenium->find_element( "#LIGEROID",   'css' )->send_keys( $Test->{Value} );
             $Selenium->find_element( "#Password", 'css' )->clear();
             $Selenium->find_element( "#Password", 'css' )->send_keys( $Test->{Value} );
             $Selenium->find_element( "#Submit",   'css' )->click();
 
             if ( $Test->{Name} ne 'Wrong email address' ) {
                 $Selenium->WaitFor(
-                    JavaScript => 'return typeof($) === "function" && $("#OTRSID.Error").length',
+                    JavaScript => 'return typeof($) === "function" && $("#LIGEROID.Error").length',
                 );
                 $Self->True(
-                    $Selenium->execute_script("return \$('#OTRSID.Error').length"),
+                    $Selenium->execute_script("return \$('#LIGEROID.Error').length"),
                     "$Test->{Name} - class Error found",
                 );
             }
             else {
                 $Selenium->WaitFor(
                     JavaScript =>
-                        'return typeof($) === "function" && $("div.MessageBox.Error p:contains(\'Wrong OTRSID or Password\')").length',
+                        'return typeof($) === "function" && $("div.MessageBox.Error p:contains(\'Wrong LIGEROID or Password\')").length',
                 );
                 $Self->True(
                     $Selenium->execute_script(
-                        'return $("div.MessageBox.Error p:contains(\'Wrong OTRSID or Password\')").length',
+                        'return $("div.MessageBox.Error p:contains(\'Wrong LIGEROID or Password\')").length',
                     ),
                     "$Test->{Name} - error message is correct",
                 );

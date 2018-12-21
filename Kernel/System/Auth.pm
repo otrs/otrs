@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -165,7 +165,7 @@ sub Auth {
             $AuthSyncBackend = $ConfigObject->Get("AuthModule{$Count}::UseSyncBackend");
         }
 
-        # for backwards compatibility, OTRS 3.1.1, 3.1.2 and 3.1.3 used this wrong format (see bug#8387)
+        # for backwards compatibility, LIGERO 3.1.1, 3.1.2 and 3.1.3 used this wrong format (see bug#8387)
 
         # sync with configured auth backend
         if ( defined $AuthSyncBackend ) {
@@ -373,7 +373,7 @@ sub GetLastErrorMessage {
 
 =head1 TERMS AND CONDITIONS
 
-This software is part of the OTRS project (L<https://ligero.org/>).
+This software is part of the LIGERO project (L<https://ligero.org/>).
 
 This software comes with ABSOLUTELY NO WARRANTY. For details, see
 the enclosed file COPYING for license information (GPL). If you

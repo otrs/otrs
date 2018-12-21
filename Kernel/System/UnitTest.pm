@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -28,7 +28,7 @@ our @ObjectDependencies = (
 
 =head1 NAME
 
-Kernel::System::UnitTest - functions to run all or some OTRS unit tests
+Kernel::System::UnitTest - functions to run all or some LIGERO unit tests
 
 =head1 PUBLIC INTERFACE
 
@@ -65,7 +65,7 @@ run all or some tests located in C<scripts/test/**/*.t> and print the result.
         SubmitAuth             => '0abc86125f0fd37baae' # optional authentication string for unit test result server
         SubmitResultAsExitCode => 1,                    # optional, specify if exit code should not indicate if tests were ok/not ok, but if submission was successful instead
         JobID                  => 12,                   # optional job ID for unit test submission to server
-        Scenario               => 'OTRS 6 git',         # optional scenario identifier for unit test submission to server
+        Scenario               => 'LIGERO 6 git',         # optional scenario identifier for unit test submission to server
         PostTestScripts        => ['...'],              # Script(s) to execute after a test has been run.
                                                         #  You can specify %File%, %TestOk% and %TestNotOk% as dynamic arguments.
         PreSubmitScripts       => ['...'],              # Script(s) to execute after all tests have been executed
@@ -516,7 +516,7 @@ sub _Color {
 
 =head1 TERMS AND CONDITIONS
 
-This software is part of the OTRS project (L<https://ligero.org/>).
+This software is part of the LIGERO project (L<https://ligero.org/>).
 
 This software comes with ABSOLUTELY NO WARRANTY. For details, see
 the enclosed file COPYING for license information (GPL). If you

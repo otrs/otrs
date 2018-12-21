@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -36,23 +36,23 @@ $HelperObject->ConfigSettingChange(
 
 my $Home = $Kernel::OM->Get('Kernel::Config')->{Home};
 
-my $TestFile             = 'ZZZAutoOTRS5.pm';
+my $TestFile             = 'ZZZAutoLIGERO5.pm';
 my $TestPath             = $Home . '/scripts/test/sample/SysConfig/Migration/Package/';
 my $TestLocation         = $TestPath . $TestFile;
-my $OTRS5ConfigFileClass = "Kernel::Config::Backups::ZZZAutoOTRS5";
-my $OTRS5ConfigFile      = "$Home/Kernel/Config/Backups/ZZZAutoOTRS5.pm";
+my $LIGERO5ConfigFileClass = "Kernel::Config::Backups::ZZZAutoLIGERO5";
+my $LIGERO5ConfigFile      = "$Home/Kernel/Config/Backups/ZZZAutoLIGERO5.pm";
 
 # create backups directory if not existing
 if ( !-d "$Home/Kernel/Config/Backups" ) {
     mkdir "$Home/Kernel/Config/Backups";
 }
 
-# copy ZZZAutoOTRS5.pm to backup folder from where it is processed during package upgrade
-copy( $TestLocation, $OTRS5ConfigFile );
+# copy ZZZAutoLIGERO5.pm to backup folder from where it is processed during package upgrade
+copy( $TestLocation, $LIGERO5ConfigFile );
 
 $Self->True(
-    -e $OTRS5ConfigFile,
-    "TestFile '$OTRS5ConfigFile' existing",
+    -e $LIGERO5ConfigFile,
+    "TestFile '$LIGERO5ConfigFile' existing",
 );
 
 # check if ARCHIVE file exists, if not we create it
@@ -97,8 +97,8 @@ if ( !-e $Home . '/ARCHIVE' ) {
 
 # First simulate a migration for the system and after that the package upgrade.
 my $Success = $Kernel::OM->Get('Kernel::System::SysConfig::Migration')->MigrateConfigEffectiveValues(
-    FileClass                    => $OTRS5ConfigFileClass,
-    FilePath                     => $OTRS5ConfigFile,
+    FileClass                    => $LIGERO5ConfigFileClass,
+    FilePath                     => $LIGERO5ConfigFile,
     ReturnMigratedSettingsCounts => 1,
 );
 
@@ -334,9 +334,9 @@ my @Tests = (
             },
             Module => 'Kernel::System::PostMaster::Filter::Match',
             Set    => {
-                'X-OTRS-IsVisibleForCustomer'          => '0',
-                'X-OTRS-FollowUp-IsVisibleForCustomer' => '1',
-                'X-OTRS-Ignore'                        => 'yes',
+                'X-LIGERO-IsVisibleForCustomer'          => '0',
+                'X-LIGERO-FollowUp-IsVisibleForCustomer' => '1',
+                'X-LIGERO-Ignore'                        => 'yes',
             },
         },
     },
@@ -346,8 +346,8 @@ my @Tests = (
             'Module'                      => 'Kernel::System::PostMaster::Filter::FollowUpArticleVisibilityCheck',
             'IsVisibleForCustomer'        => '0',
             'SenderType'                  => 'customer',
-            'X-OTRS-IsVisibleForCustomer' => '0',
-            'X-OTRS-FollowUp-IsVisibleForCustomer' => '1',
+            'X-LIGERO-IsVisibleForCustomer' => '0',
+            'X-LIGERO-FollowUp-IsVisibleForCustomer' => '1',
         },
     },
     {
@@ -356,8 +356,8 @@ my @Tests = (
             'Module'                               => 'Kernel::System::PostMaster::FollowUpCheck::Subject',
             'IsVisibleForCustomer'                 => '1',
             'SenderType'                           => 'customer',
-            'X-OTRS-IsVisibleForCustomer'          => '0',
-            'X-OTRS-FollowUp-IsVisibleForCustomer' => '1',
+            'X-LIGERO-IsVisibleForCustomer'          => '0',
+            'X-LIGERO-FollowUp-IsVisibleForCustomer' => '1',
         },
     },
 );
@@ -365,7 +365,7 @@ my @Tests = (
 for my $Test (@Tests) {
 
     # get sysconfig setting
-    my %OTRS6Setting = $SysConfigObject->SettingGet(
+    my %LIGERO6Setting = $SysConfigObject->SettingGet(
         Name => $Test->{Name},
     );
 
@@ -374,7 +374,7 @@ for my $Test (@Tests) {
 
         # check effective value
         $Self->Is(
-            $OTRS6Setting{EffectiveValue},
+            $LIGERO6Setting{EffectiveValue},
             $Test->{EffectiveValue},
             "Check migrated setting for config setting '$Test->{Name}'",
         );
@@ -385,7 +385,7 @@ for my $Test (@Tests) {
 
         # check effective value
         $Self->IsDeeply(
-            $OTRS6Setting{EffectiveValue},
+            $LIGERO6Setting{EffectiveValue},
             $Test->{EffectiveValue},
             "Check migrated setting for config setting '$Test->{Name}'",
         );
@@ -412,11 +412,11 @@ if ($ArchiveFileCreated) {
 }
 
 # cleanup ligero 5 config file
-unlink $OTRS5ConfigFile;
+unlink $LIGERO5ConfigFile;
 
 $Self->False(
-    -e $OTRS5ConfigFile,
-    "UnitTest OTRS5Config file is deleted",
+    -e $LIGERO5ConfigFile,
+    "UnitTest LIGERO5Config file is deleted",
 );
 
 1;

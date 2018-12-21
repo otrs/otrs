@@ -1,5 +1,5 @@
 // --
-// Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+// Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 // --
 // This software comes with ABSOLUTELY NO WARRANTY. For details, see
 // the enclosed file COPYING for license information (GPL). If you
@@ -17,7 +17,7 @@ Core.Form.ErrorTooltips = (function (Namespace) {
         QUnit.test('Core.Form.ErrorTooltip()', function(Assert){
             var $TestForm = $('<form id="TestForm" class="Validate"></form>'),
                 ErrorTooltipMessage = 'UT Error Tooltip message',
-                ErrorTooltipID = '#OTRS_UI_Tooltips_ErrorTooltip',
+                ErrorTooltipID = '#LIGERO_UI_Tooltips_ErrorTooltip',
                 TestFieldElement;
 
             Assert.expect(9);

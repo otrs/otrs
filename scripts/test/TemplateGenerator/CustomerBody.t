@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -120,7 +120,7 @@ my $SetPreferences = $UserObject->SetPreferences(
 my $NotificationName = 'Notification' . $RandomID;
 my $NotificationID   = $Kernel::OM->Get('Kernel::System::NotificationEvent')->NotificationAdd(
     Name    => $NotificationName,
-    Comment => 'Unit Test Notification <OTRS_CUSTOMER_BODY> tag',
+    Comment => 'Unit Test Notification <LIGERO_CUSTOMER_BODY> tag',
     Data    => {
         Transports => ['Email'],
         Events     => ['NotificationNewTicket'],
@@ -129,7 +129,7 @@ my $NotificationID   = $Kernel::OM->Get('Kernel::System::NotificationEvent')->No
     Message => {
         en => {
             Subject     => 'Notification subject',
-            Body        => 'OTRS_CUSTOMER_BODY tag: <OTRS_CUSTOMER_BODY>',
+            Body        => 'LIGERO_CUSTOMER_BODY tag: <LIGERO_CUSTOMER_BODY>',
             ContentType => 'text/plain',
         },
     },
@@ -190,7 +190,7 @@ my $Emails       = $EmailBackend->EmailsGet();
 
 # check if any notification email as the tag
 my $Found = 0;
-my $Match = 'OTRS_CUSTOMER_BODY tag: ' . $EmailData{Body};
+my $Match = 'LIGERO_CUSTOMER_BODY tag: ' . $EmailData{Body};
 EMAIL:
 for my $Email ( @{$Emails} ) {
     $Found = ( ${ $Email->{Body} } =~ m/$Match/ ? 1 : 0 );
@@ -199,7 +199,7 @@ for my $Email ( @{$Emails} ) {
 
 $Self->True(
     $Found,
-    'OTRS_CUSTOMER_BODY found and translated in the notification!'
+    'LIGERO_CUSTOMER_BODY found and translated in the notification!'
 );
 
 1;

@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -7,16 +7,16 @@
 # --
 
 [%
-    SET OTRSBusinessLabel      = '<strong>OTRS Business Solution</strong>™';
-    SET OTRSBusinessLabelPlain = 'OTRS Business Solution™';
+    SET LIGEROBusinessLabel      = '<strong>LIGERO Business Solution</strong>™';
+    SET LIGEROBusinessLabelPlain = 'LIGERO Business Solution™';
 %]
 
 <div class="MainBox ARIARoleMain LayoutFixedSidebar SidebarFirst">
-    <h1 class="InvisibleText">[% Translate("Manage %s") | html | ReplacePlaceholders(OTRSBusinessLabel) %]</h1>
+    <h1 class="InvisibleText">[% Translate("Manage %s") | html | ReplacePlaceholders(LIGEROBusinessLabel) %]</h1>
 
     [% BreadcrumbPath = [
             {
-                Name => Translate("Manage %s", OTRSBusinessLabelPlain),
+                Name => Translate("Manage %s", LIGEROBusinessLabelPlain),
                 Link => Env("Action"),
             },
         ]
@@ -34,7 +34,7 @@
                 <ul class="ActionList">
                     <li>
                         <a href="[% Env("Baselink") %]Action=[% Env("Action") %];Subaction=Uninstall" class="CallForAction Fullsize Center">
-                            <span><i class="fa fa-angle-double-down"></i> [% Translate("Downgrade to ((OTRS)) Community Edition") | html %]</span>
+                            <span><i class="fa fa-angle-double-down"></i> [% Translate("Downgrade to ((LIGERO)) Community Edition") | html %]</span>
                         </a>
                     </li>
                     <li>
@@ -52,7 +52,7 @@
             </div>
             <div class="Content">
                 <p>
-                    [% Translate('%s makes contact regularly with cloud.ligero.com to check on available updates and the validity of the underlying contract.') | html | ReplacePlaceholders(OTRSBusinessLabel) %]
+                    [% Translate('%s makes contact regularly with cloud.ligero.com to check on available updates and the validity of the underlying contract.') | html | ReplacePlaceholders(LIGEROBusinessLabel) %]
                 </p>
             </div>
             <div class="Clear"></div>
@@ -70,7 +70,7 @@
                     <i class="fa fa-times-circle"></i>
                 </div>
                 <p class="Center">
-                    [% Translate('This system uses the %s without a proper license! Please make contact with %s to renew or activate your contract!') | html | ReplacePlaceholders(OTRSBusinessLabel, '<a href="mailto:sales@ligero.com">sales@ligero.com</a>') %]
+                    [% Translate('This system uses the %s without a proper license! Please make contact with %s to renew or activate your contract!') | html | ReplacePlaceholders(LIGEROBusinessLabel, '<a href="mailto:sales@ligero.com">sales@ligero.com</a>') %]
                 </p>
             </div>
             <div class="Clear"></div>
@@ -79,7 +79,7 @@
 [% RenderBlockStart("NeedsReinstall") %]
         <div class="WidgetSimple">
             <div class="Header Center">
-                <h2>[% Translate("%s not Correctly Installed") | html | ReplacePlaceholders(OTRSBusinessLabel) %]</h2>
+                <h2>[% Translate("%s not Correctly Installed") | html | ReplacePlaceholders(LIGEROBusinessLabel) %]</h2>
             </div>
             <div class="Content">
                 <div class="BusinessLogo Error">
@@ -87,10 +87,10 @@
                     <i class="fa fa-times-circle"></i>
                 </div>
                 <p class="Center">
-                    [% Translate('Your %s is not correctly installed. Please reinstall it with the button below.') | html | ReplacePlaceholders(OTRSBusinessLabel) %]
+                    [% Translate('Your %s is not correctly installed. Please reinstall it with the button below.') | html | ReplacePlaceholders(LIGEROBusinessLabel) %]
                 </p>
                 <div class="Center SpacingTop">
-                    <a href="[% Env("Baselink") %]Action=[% Env("Action") %];Subaction=ReinstallAction" class="CallForAction Primary"><span><i class="fa fa-retweet"></i> [% Translate('Reinstall %s') | html | ReplacePlaceholders(OTRSBusinessLabel) %]</span></a>
+                    <a href="[% Env("Baselink") %]Action=[% Env("Action") %];Subaction=ReinstallAction" class="CallForAction Primary"><span><i class="fa fa-retweet"></i> [% Translate('Reinstall %s') | html | ReplacePlaceholders(LIGEROBusinessLabel) %]</span></a>
                 </div>
             </div>
             <div class="Clear"></div>
@@ -99,7 +99,7 @@
 [% RenderBlockStart("NeedsReinstallAndUpdate") %]
         <div class="WidgetSimple">
             <div class="Header Center">
-                <h2>[% Translate("%s not Correctly Installed") | html | ReplacePlaceholders(OTRSBusinessLabel) %]</h2>
+                <h2>[% Translate("%s not Correctly Installed") | html | ReplacePlaceholders(LIGEROBusinessLabel) %]</h2>
             </div>
             <div class="Content">
                 <div class="BusinessLogo Error">
@@ -107,14 +107,14 @@
                     <i class="fa fa-times-circle"></i>
                 </div>
                 <p class="Center">
-                    [% Translate('Your %s is not correctly installed, and there is also an update available.') | html | ReplacePlaceholders(OTRSBusinessLabel) %]
+                    [% Translate('Your %s is not correctly installed, and there is also an update available.') | html | ReplacePlaceholders(LIGEROBusinessLabel) %]
                     <br/>
                     [% Translate('You can either reinstall your current version or perform an update with the buttons below (update recommended).') | html %]
                 </p>
                 <p class="Center SpacingTop">
-                    <a href="[% Env("Baselink") %]Action=[% Env("Action") %];Subaction=UpdateAction" class="CallForAction Primary"><span><i class="fa fa-refresh"></i> [% Translate('Update %s') | html | ReplacePlaceholders(OTRSBusinessLabel) %]</span></a>
+                    <a href="[% Env("Baselink") %]Action=[% Env("Action") %];Subaction=UpdateAction" class="CallForAction Primary"><span><i class="fa fa-refresh"></i> [% Translate('Update %s') | html | ReplacePlaceholders(LIGEROBusinessLabel) %]</span></a>
                     [% Translate('or') | html %]
-                    <a href="[% Env("Baselink") %]Action=[% Env("Action") %];Subaction=ReinstallAction" class="CallForAction Primary"><span><i class="fa fa-retweet"></i> [% Translate('Reinstall %s') | html | ReplacePlaceholders(OTRSBusinessLabel) %]</span></a>
+                    <a href="[% Env("Baselink") %]Action=[% Env("Action") %];Subaction=ReinstallAction" class="CallForAction Primary"><span><i class="fa fa-retweet"></i> [% Translate('Reinstall %s') | html | ReplacePlaceholders(LIGEROBusinessLabel) %]</span></a>
                 </p>
             </div>
             <div class="Clear"></div>
@@ -123,7 +123,7 @@
 [% RenderBlockStart("ReinstallImpossible") %]
         <div class="WidgetSimple">
             <div class="Header Center">
-                <h2>[% Translate("%s Not Yet Available") | html | ReplacePlaceholders(OTRSBusinessLabel) %]</h2>
+                <h2>[% Translate("%s Not Yet Available") | html | ReplacePlaceholders(LIGEROBusinessLabel) %]</h2>
             </div>
             <div class="Content">
                 <div class="BusinessLogo">
@@ -131,7 +131,7 @@
                     <i class="fa fa-check"></i>
                 </div>
                 <p class="Center">
-                    [% Translate('%s will be available soon.') | html | ReplacePlaceholders(OTRSBusinessLabel) %]
+                    [% Translate('%s will be available soon.') | html | ReplacePlaceholders(LIGEROBusinessLabel) %]
                 </p>
             </div>
             <div class="Clear"></div>
@@ -140,7 +140,7 @@
 [% RenderBlockStart("NeedsUpdate") %]
         <div class="WidgetSimple">
             <div class="Header Center">
-                <h2>[% Translate("%s Update Available") | html | ReplacePlaceholders(OTRSBusinessLabel) %]</h2>
+                <h2>[% Translate("%s Update Available") | html | ReplacePlaceholders(LIGEROBusinessLabel) %]</h2>
             </div>
             <div class="Content">
                 <div class="BusinessLogo">
@@ -148,10 +148,10 @@
                     <i class="fa fa-refresh"></i>
                 </div>
                 <p class="Center">
-                    [% Translate('An update for your %s is available! Please update at your earliest!') | html | ReplacePlaceholders(OTRSBusinessLabel) %]
+                    [% Translate('An update for your %s is available! Please update at your earliest!') | html | ReplacePlaceholders(LIGEROBusinessLabel) %]
                 </p>
                 <div class="Center SpacingTop">
-                    <a href="[% Env("Baselink") %]Action=[% Env("Action") %];Subaction=UpdateAction" class="CallForAction Primary"><span><i class="fa fa-refresh"></i> [% Translate('Update %s') | html | ReplacePlaceholders(OTRSBusinessLabel) %]</span></a>
+                    <a href="[% Env("Baselink") %]Action=[% Env("Action") %];Subaction=UpdateAction" class="CallForAction Primary"><span><i class="fa fa-refresh"></i> [% Translate('Update %s') | html | ReplacePlaceholders(LIGEROBusinessLabel) %]</span></a>
                 </div>
             </div>
             <div class="Clear"></div>
@@ -160,7 +160,7 @@
 [% RenderBlockStart("EverythingOk") %]
         <div class="WidgetSimple">
             <div class="Header Center">
-                <h2>[% Translate("%s Correctly Deployed") | html | ReplacePlaceholders(OTRSBusinessLabel) %]</h2>
+                <h2>[% Translate("%s Correctly Deployed") | html | ReplacePlaceholders(LIGEROBusinessLabel) %]</h2>
             </div>
             <div class="Content">
                 <div class="BusinessLogo">
@@ -168,7 +168,7 @@
                     <i class="fa fa-check"></i>
                 </div>
                 <p class="Center">
-                    [% Translate('Congratulations, your %s is correctly installed and up to date!') | html | ReplacePlaceholders(OTRSBusinessLabel) %]
+                    [% Translate('Congratulations, your %s is correctly installed and up to date!') | html | ReplacePlaceholders(LIGEROBusinessLabel) %]
                 </p>
             </div>
             <div class="Clear"></div>

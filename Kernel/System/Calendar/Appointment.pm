@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -1773,7 +1773,7 @@ sub AppointmentFutureTasksDelete {
 
 =head2 AppointmentFutureTasksUpdate()
 
-Update OTRS daemon future task list for upcoming appointments.
+Update LIGERO daemon future task list for upcoming appointments.
 
     my $Success = $AppointmentObject->AppointmentFutureTasksUpdate();
 
@@ -2117,7 +2117,7 @@ sub _AppointmentNotificationPrepare {
 
 =head2 AppointmentNotification()
 
-Will be triggered by the OTRS daemon to fire events for appointments,
+Will be triggered by the LIGERO daemon to fire events for appointments,
 that reaches it's reminder (notification) time.
 
     my $Success = $AppointmentObject->AppointmentNotification();
@@ -2819,7 +2819,7 @@ sub _CWDiff {
 
 =head1 TERMS AND CONDITIONS
 
-This software is part of the OTRS project (L<https://ligero.org/>).
+This software is part of the LIGERO project (L<https://ligero.org/>).
 
 This software comes with ABSOLUTELY NO WARRANTY. For details, see
 the enclosed file COPYING for license information (GPL). If you

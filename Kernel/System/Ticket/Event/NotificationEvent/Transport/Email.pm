@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -7,8 +7,8 @@
 # --
 
 package Kernel::System::Ticket::Event::NotificationEvent::Transport::Email;
-## nofilter(TidyAll::Plugin::OTRS::Perl::LayoutObject)
-## nofilter(TidyAll::Plugin::OTRS::Perl::ParamObject)
+## nofilter(TidyAll::Plugin::LIGERO::Perl::LayoutObject)
+## nofilter(TidyAll::Plugin::LIGERO::Perl::ParamObject)
 
 use strict;
 use warnings;
@@ -360,7 +360,7 @@ sub GetTransportRecipients {
         if ( $Param{Notification}->{Data}->{RecipientEmail}->[0] ) {
             my $RecipientEmail = $Param{Notification}->{Data}->{RecipientEmail}->[0];
 
-            # replace OTRSish attributes in recipient email
+            # replace LIGEROish attributes in recipient email
             $RecipientEmail = $Self->_ReplaceTicketAttributes(
                 Ticket => $Param{Ticket},
                 Field  => $RecipientEmail,
@@ -775,7 +775,7 @@ sub SecurityOptionsGet {
 
 =head1 TERMS AND CONDITIONS
 
-This software is part of the OTRS project (L<https://ligero.org/>).
+This software is part of the LIGERO project (L<https://ligero.org/>).
 
 This software comes with ABSOLUTELY NO WARRANTY. For details, see
 the enclosed file COPYING for license information (GPL). If you

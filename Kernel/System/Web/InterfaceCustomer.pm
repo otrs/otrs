@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -261,8 +261,8 @@ sub Run {
             $Kernel::OM->ObjectParamAdd(
                 'Kernel::Output::HTML::Layout' => {
                     SetCookies => {
-                        OTRSBrowserHasCookie => $ParamObject->SetCookie(
-                            Key      => 'OTRSBrowserHasCookie',
+                        LIGEROBrowserHasCookie => $ParamObject->SetCookie(
+                            Key      => 'LIGEROBrowserHasCookie',
                             Value    => 1,
                             Expires  => $Expires,
                             Path     => $ConfigObject->Get('ScriptAlias'),
@@ -310,7 +310,7 @@ sub Run {
         );
 
         # check if the browser supports cookies
-        if ( $ParamObject->GetCookie( Key => 'OTRSBrowserHasCookie' ) ) {
+        if ( $ParamObject->GetCookie( Key => 'LIGEROBrowserHasCookie' ) ) {
             $Kernel::OM->ObjectParamAdd(
                 'Kernel::Output::HTML::Layout' => {
                     BrowserHasCookie => 1,
@@ -386,7 +386,7 @@ sub Run {
             Name                     => 'PluginAsynchronous::ConcurrentUser',
             MaximumParallelInstances => 1,
             Data                     => {
-                Object   => 'Kernel::System::SupportDataCollector::PluginAsynchronous::OTRS::ConcurrentUsers',
+                Object   => 'Kernel::System::SupportDataCollector::PluginAsynchronous::LIGERO::ConcurrentUsers',
                 Function => 'RunAsynchronous',
             },
         );
@@ -400,21 +400,21 @@ sub Run {
         );
 
         # check if the time zone offset reported by the user's browser differs from that
-        # of the OTRS user's time zone offset
+        # of the LIGERO user's time zone offset
         my $DateTimeObject = $Kernel::OM->Create(
             'Kernel::System::DateTime',
             ObjectParams => {
                 TimeZone => $UserTimeZone,
             },
         );
-        my $OTRSUserTimeZoneOffset = $DateTimeObject->Format( Format => '%{offset}' ) / 60;
+        my $LIGEROUserTimeZoneOffset = $DateTimeObject->Format( Format => '%{offset}' ) / 60;
         my $BrowserTimeZoneOffset = ( $ParamObject->GetParam( Param => 'TimeZoneOffset' ) || 0 ) * -1;
 
         # TimeZoneOffsetDifference contains the difference of the time zone offset between
-        # the user's OTRS time zone setting and the one reported by the user's browser.
+        # the user's LIGERO time zone setting and the one reported by the user's browser.
         # If there is a difference it can be evaluated later to e. g. show a message
-        # for the user to check his OTRS time zone setting.
-        my $UserTimeZoneOffsetDifference = abs( $OTRSUserTimeZoneOffset - $BrowserTimeZoneOffset );
+        # for the user to check his LIGERO time zone setting.
+        my $UserTimeZoneOffsetDifference = abs( $LIGEROUserTimeZoneOffset - $BrowserTimeZoneOffset );
         $SessionObject->UpdateSessionID(
             SessionID => $NewSessionID,
             Key       => 'UserTimeZoneOffsetDifference',
@@ -432,8 +432,8 @@ sub Run {
                         Secure   => scalar $CookieSecureAttribute,
                         HTTPOnly => 1,
                     ),
-                    OTRSBrowserHasCookie => $ParamObject->SetCookie(
-                        Key      => 'OTRSBrowserHasCookie',
+                    LIGEROBrowserHasCookie => $ParamObject->SetCookie(
+                        Key      => 'LIGEROBrowserHasCookie',
                         Value    => '',
                         Expires  => '-1y',
                         Path     => $ConfigObject->Get('ScriptAlias'),
@@ -625,7 +625,7 @@ sub Run {
             my $Subject = $ConfigObject->Get('CustomerPanelSubjectLostPasswordToken')
                 || 'ERROR: CustomerPanelSubjectLostPasswordToken is missing!';
             for ( sort keys %UserData ) {
-                $Body =~ s/<OTRS_$_>/$UserData{$_}/gi;
+                $Body =~ s/<LIGERO_$_>/$UserData{$_}/gi;
             }
             my $Sent = $EmailObject->Send(
                 To       => $UserData{UserEmail},
@@ -691,11 +691,11 @@ sub Run {
 
         # send notify email
         my $Body = $ConfigObject->Get('CustomerPanelBodyLostPassword')
-            || 'New Password is: <OTRS_NEWPW>';
+            || 'New Password is: <LIGERO_NEWPW>';
         my $Subject = $ConfigObject->Get('CustomerPanelSubjectLostPassword')
             || 'New Password!';
         for ( sort keys %UserData ) {
-            $Body =~ s/<OTRS_$_>/$UserData{$_}/gi;
+            $Body =~ s/<LIGERO_$_>/$UserData{$_}/gi;
         }
         my $Sent = $EmailObject->Send(
             To       => $UserData{UserEmail},
@@ -888,9 +888,9 @@ sub Run {
         my $Body        = $ConfigObject->Get('CustomerPanelBodyNewAccount')
             || 'No Config Option found!';
         my $Subject = $ConfigObject->Get('CustomerPanelSubjectNewAccount')
-            || 'New OTRS Account!';
+            || 'New LIGERO Account!';
         for ( sort keys %GetParams ) {
-            $Body =~ s/<OTRS_$_>/$GetParams{$_}/gi;
+            $Body =~ s/<LIGERO_$_>/$GetParams{$_}/gi;
         }
 
         # send account info
@@ -1460,7 +1460,7 @@ sub DESTROY {
 
 =head1 TERMS AND CONDITIONS
 
-This software is part of the OTRS project (L<https://ligero.org/>).
+This software is part of the LIGERO project (L<https://ligero.org/>).
 
 This software comes with ABSOLUTELY NO WARRANTY. For details, see
 the enclosed file COPYING for license information (GPL). If you

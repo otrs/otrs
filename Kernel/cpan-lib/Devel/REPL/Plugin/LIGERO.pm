@@ -1,12 +1,12 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
 # did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
-package Devel::REPL::Plugin::OTRS;
+package Devel::REPL::Plugin::LIGERO;
 
 use strict;
 use 5.008_005;
@@ -17,7 +17,7 @@ use Data::Printer use_prototypes => 0;
 
 =head1 NAME
 
-Devel::REPL::Plugin::OTRS - Devel::Repl plugin to improve formatting of hashes and lists
+Devel::REPL::Plugin::LIGERO - Devel::Repl plugin to improve formatting of hashes and lists
 
 =head1 SYNOPSIS
 

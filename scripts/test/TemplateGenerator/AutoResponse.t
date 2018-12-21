@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -96,7 +96,7 @@ my %AutoResponseTemplate = (
     Name        => $AutoResonseName,
     ValidID     => 1,
     Subject     => 'Some Subject..',
-    Response    => 'S:&nbsp;&lt;OTRS_TICKET_State&gt;',    # include non-breaking space (bug#12097)
+    Response    => 'S:&nbsp;&lt;LIGERO_TICKET_State&gt;',    # include non-breaking space (bug#12097)
     ContentType => 'text/html',
     AddressID   => 1,
     TypeID      => 4,                                      # auto reply/new ticket
@@ -250,16 +250,16 @@ $Self->True(
 my $TestAutoResponse = '<!DOCTYPE html><html>' .
     '<head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/></head>'
     . '<body style="font-family:Geneva,Helvetica,Arial,sans-serif; font-size: 12px;">'
-    . 'OTRS_TICKET_Created: &lt;OTRS_TICKET_Created&gt;<br />'
-    . 'OTRS_TICKET_Changed: &lt;OTRS_TICKET_Changed&gt;<br />'
-    . 'OTRS_TICKET_DynamicField_'
+    . 'LIGERO_TICKET_Created: &lt;LIGERO_TICKET_Created&gt;<br />'
+    . 'LIGERO_TICKET_Changed: &lt;LIGERO_TICKET_Changed&gt;<br />'
+    . 'LIGERO_TICKET_DynamicField_'
     . $DynamicFieldName
-    . ': &lt;OTRS_TICKET_DynamicField_'
+    . ': &lt;LIGERO_TICKET_DynamicField_'
     . $DynamicFieldName
     . '&gt;<br />'
-    . 'OTRS_TICKET_DynamicField_'
+    . 'LIGERO_TICKET_DynamicField_'
     . $DynamicFieldName
-    . '_Value: &lt;OTRS_TICKET_DynamicField_'
+    . '_Value: &lt;LIGERO_TICKET_DynamicField_'
     . $DynamicFieldName
     . '_Value&gt;<br />'
     . '</body>'
@@ -269,7 +269,7 @@ my $TestAutoResponse = '<!DOCTYPE html><html>' .
 my $TestAutoResponseID = $AutoResponseObject->AutoResponseAdd(
     Name        => "TestAutoResponse$RandomID",
     ValidID     => 1,
-    Subject     => "$RandomID - <OTRS_TICKET_Created>",
+    Subject     => "$RandomID - <LIGERO_TICKET_Created>",
     Response    => $TestAutoResponse,
     ContentType => 'text/html',
     AddressID   => 1,
@@ -345,9 +345,9 @@ $Self->True(
         Language        => 'de',
         ExpectedSubject => "[Ticket#$TicketNumber] $RandomID - 06.12.2018 13:00 (Europe/Berlin)",
         ExpectedText =>
-            '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/></head><body style="font-family:Geneva,Helvetica,Arial,sans-serif; font-size: 12px;">OTRS_TICKET_Created: 06.12.2018 13:00 (Europe/Berlin)<br />OTRS_TICKET_Changed: 06.12.2018 13:00 (Europe/Berlin)<br />OTRS_TICKET_DynamicField_'
+            '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/></head><body style="font-family:Geneva,Helvetica,Arial,sans-serif; font-size: 12px;">LIGERO_TICKET_Created: 06.12.2018 13:00 (Europe/Berlin)<br />LIGERO_TICKET_Changed: 06.12.2018 13:00 (Europe/Berlin)<br />LIGERO_TICKET_DynamicField_'
             . $DynamicFieldName
-            . ': 2018-12-03 16:00:00 (Europe/Berlin)<br />OTRS_TICKET_DynamicField_'
+            . ': 2018-12-03 16:00:00 (Europe/Berlin)<br />LIGERO_TICKET_DynamicField_'
             . $DynamicFieldName
             . '_Value: 03.12.2018 16:00 (Europe/Berlin)<br /></body></html>',
     },
@@ -356,9 +356,9 @@ $Self->True(
         Language        => 'es',
         ExpectedSubject => "[Ticket#$TicketNumber] $RandomID - 06/12/2018 - 07:00 (America/Bogota)",
         ExpectedText =>
-            '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/></head><body style="font-family:Geneva,Helvetica,Arial,sans-serif; font-size: 12px;">OTRS_TICKET_Created: 06/12/2018 - 07:00 (America/Bogota)<br />OTRS_TICKET_Changed: 06/12/2018 - 07:00 (America/Bogota)<br />OTRS_TICKET_DynamicField_'
+            '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/></head><body style="font-family:Geneva,Helvetica,Arial,sans-serif; font-size: 12px;">LIGERO_TICKET_Created: 06/12/2018 - 07:00 (America/Bogota)<br />LIGERO_TICKET_Changed: 06/12/2018 - 07:00 (America/Bogota)<br />LIGERO_TICKET_DynamicField_'
             . $DynamicFieldName
-            . ': 2018-12-03 10:00:00 (America/Bogota)<br />OTRS_TICKET_DynamicField_'
+            . ': 2018-12-03 10:00:00 (America/Bogota)<br />LIGERO_TICKET_DynamicField_'
             . $DynamicFieldName
             . '_Value: 03/12/2018 - 10:00 (America/Bogota)<br /></body></html>',
     },
@@ -367,9 +367,9 @@ $Self->True(
         Language        => 'en',
         ExpectedSubject => "[Ticket#$TicketNumber] $RandomID - 12/06/2018 19:00 (Asia/Bangkok)",
         ExpectedText =>
-            '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/></head><body style="font-family:Geneva,Helvetica,Arial,sans-serif; font-size: 12px;">OTRS_TICKET_Created: 12/06/2018 19:00 (Asia/Bangkok)<br />OTRS_TICKET_Changed: 12/06/2018 19:00 (Asia/Bangkok)<br />OTRS_TICKET_DynamicField_'
+            '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/></head><body style="font-family:Geneva,Helvetica,Arial,sans-serif; font-size: 12px;">LIGERO_TICKET_Created: 12/06/2018 19:00 (Asia/Bangkok)<br />LIGERO_TICKET_Changed: 12/06/2018 19:00 (Asia/Bangkok)<br />LIGERO_TICKET_DynamicField_'
             . $DynamicFieldName
-            . ': 2018-12-03 22:00:00 (Asia/Bangkok)<br />OTRS_TICKET_DynamicField_'
+            . ': 2018-12-03 22:00:00 (Asia/Bangkok)<br />LIGERO_TICKET_DynamicField_'
             . $DynamicFieldName
             . '_Value: 12/03/2018 22:00 (Asia/Bangkok)<br /></body></html>',
     }

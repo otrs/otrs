@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -269,12 +269,12 @@ for my $Test (@Tests) {
         Message => {
             en => {
                 Subject     => 'JobName',
-                Body        => 'JobName <OTRS_TICKET_TicketID> <OTRS_CONFIG_SendmailModule> <OTRS_OWNER_UserFirstname>',
+                Body        => 'JobName <LIGERO_TICKET_TicketID> <LIGERO_CONFIG_SendmailModule> <LIGERO_OWNER_UserFirstname>',
                 ContentType => 'text/plain',
             },
             de => {
                 Subject     => 'JobName',
-                Body        => 'JobName <OTRS_TICKET_TicketID> <OTRS_CONFIG_SendmailModule> <OTRS_OWNER_UserFirstname>',
+                Body        => 'JobName <LIGERO_TICKET_TicketID> <LIGERO_CONFIG_SendmailModule> <LIGERO_OWNER_UserFirstname>',
                 ContentType => 'text/plain',
             },
         },

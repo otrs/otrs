@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -54,7 +54,7 @@ $Self->True(
 
 @Tables = $DBObject->ListTables();
 
-# Count number of table elements in OTRS schema for comparison.
+# Count number of table elements in LIGERO schema for comparison.
 my $XMLString = $Kernel::OM->Get('Kernel::System::Main')->FileRead(
     Location => $DatabaseXMLFiles[0],
 );
@@ -63,7 +63,7 @@ my $TableCount = () = ( ${$XMLString} =~ /<Table/g );
 $Self->Is(
     scalar @Tables,
     $TableCount,
-    'OTRS tables found',
+    'LIGERO tables found',
 );
 
 # Cleanup is done by TmpDatabaseCleanup().

@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -111,7 +111,7 @@ my @Tests = (
     {
         Name => 'Invalid Deployment New style',
         Add  => {
-            Comments           => 'OTRSInvalid-123',
+            Comments           => 'LIGEROInvalid-123',
             EffectiveValueStrg => 'Some content',
             UserID             => 1,
         },

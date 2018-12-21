@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -63,7 +63,7 @@ my @Tests = (
                                     # 2 = follow up / open/reopen
                                     # 3 = follow up / close -> new ticket
                                     # 4 = follow up / close -> reject
-                                    # 5 = ignored (because of X-OTRS-Ignore header)
+                                    # 5 = ignored (because of X-LIGERO-Ignore header)
     },
     {
         TicketState     => 'open',

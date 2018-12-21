@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -41,12 +41,12 @@ $Selenium->RunTest(
             "No links in footer area displayed",
         );
 
-        # Display link for OTRS Homepage.
+        # Display link for LIGERO Homepage.
         $Helper->ConfigSettingChange(
             Valid => 1,
             Key   => 'PublicFrontend::FooterLinks',
             Value => {
-                'https://www.ligero.com' => 'OTRS Homepage',
+                'https://www.ligero.com' => 'LIGERO Homepage',
             },
         );
 
@@ -59,8 +59,8 @@ $Selenium->RunTest(
         );
 
         $Self->True(
-            index( $Selenium->get_page_source(), 'OTRS Homepage' ) > -1,
-            'OTRS Homepage link is shown',
+            index( $Selenium->get_page_source(), 'LIGERO Homepage' ) > -1,
+            'LIGERO Homepage link is shown',
         );
 
         # Check public interface as well.
@@ -79,8 +79,8 @@ $Selenium->RunTest(
         );
 
         $Self->True(
-            index( $Selenium->get_page_source(), 'OTRS Homepage' ) > -1,
-            'OTRS Homepage link is shown',
+            index( $Selenium->get_page_source(), 'LIGERO Homepage' ) > -1,
+            'LIGERO Homepage link is shown',
         );
     }
 );

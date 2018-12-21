@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -20,11 +20,11 @@ our @ObjectDependencies = (
 sub Configure {
     my ( $Self, %Param ) = @_;
 
-    $Self->Description('An interactive REPL shell for the OTRS API.');
+    $Self->Description('An interactive REPL shell for the LIGERO API.');
 
     $Self->AddOption(
         Name        => 'eval',
-        Description => 'Perl code that should be evaluated in the OTRS context.',
+        Description => 'Perl code that should be evaluated in the LIGERO context.',
         Required    => 0,
         HasValue    => 1,
         ValueRegex  => qr/.*/smx,
@@ -55,7 +55,7 @@ sub Run {
 
     my $Repl = Devel::REPL->new();
 
-    for my $Plugin (qw(History LexEnv MultiLine::PPI FancyPrompt OTRS)) {
+    for my $Plugin (qw(History LexEnv MultiLine::PPI FancyPrompt LIGERO)) {
         $Repl->load_plugin($Plugin);
     }
 
@@ -63,7 +63,7 @@ sub Run {
     $Repl->fancy_prompt(
         sub {
             my $Self = shift;
-            return sprintf 'OTRS: %03d%s> ',
+            return sprintf 'LIGERO: %03d%s> ',
                 $Self->lines_read(),
                 $Self->can('line_depth') ? ':' . $Self->line_depth() : '';
         }

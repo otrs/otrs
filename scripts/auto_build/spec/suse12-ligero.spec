@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -11,7 +11,7 @@
 # "bin/ligero.Console.pl Dev::Tools::RPMSpecGenerate". All changes will be lost.
 #
 
-Summary:      OTRS Help Desk.
+Summary:      LIGERO Help Desk.
 Name:         ligero
 Version:      0.0
 Copyright:    GNU GENERAL PUBLIC LICENSE Version 3, 19 November 2007
@@ -25,11 +25,11 @@ BuildArch:    noarch
 BuildRoot:    %{_tmppath}/%{name}-%{version}-build
 
 %description
-OTRS is an Open source Ticket Request System with many features to manage
+LIGERO is an Open source Ticket Request System with many features to manage
 customer telephone calls and e-mails. It is distributed under the GNU
 GNU GENERAL PUBLIC LICENSE (GPL) and tested on Linux, Solaris, AIX,
 FreeBSD, OpenBSD and Mac OS. Do you receive many e-mails and want to
-answer them with a team of agents? You're going to love OTRS!
+answer them with a team of agents? You're going to love LIGERO!
 
 SuSE series: ap
 
@@ -62,24 +62,24 @@ install -d -m 755 $RPM_BUILD_ROOT/etc/apache2/conf.d
 install -m 644 scripts/apache2-httpd.include.conf $RPM_BUILD_ROOT/etc/apache2/conf.d/zzz_ligero.conf
 
 # set permission
-export OTRSUSER=ligero
-useradd $OTRSUSER || :
+export LIGEROUSER=ligero
+useradd $LIGEROUSER || :
 useradd wwwrun || :
 groupadd www || :
 $RPM_BUILD_ROOT/opt/ligero/bin/ligero.SetPermissions.pl --web-group=www
 
 %pre
 # useradd
-export OTRSUSER=ligero
-echo -n "Check OTRS user ... "
-if id $OTRSUSER >/dev/null 2>&1; then
-    echo "$OTRSUSER exists."
+export LIGEROUSER=ligero
+echo -n "Check LIGERO user ... "
+if id $LIGEROUSER >/dev/null 2>&1; then
+    echo "$LIGEROUSER exists."
     # update groups
-    usermod -g www $OTRSUSER
+    usermod -g www $LIGEROUSER
     # update home dir
-    usermod -d /opt/ligero $OTRSUSER
+    usermod -d /opt/ligero $LIGEROUSER
 else
-    useradd $OTRSUSER -d /opt/ligero/ -s /bin/bash -g www -c 'OTRS System User' && echo "$OTRSUSER added."
+    useradd $LIGEROUSER -d /opt/ligero/ -s /bin/bash -g www -c 'LIGERO System User' && echo "$LIGEROUSER added."
 fi
 echo "Enable apache module mod_perl..."
 a2enmod perl
@@ -93,7 +93,7 @@ echo "Enable apache module mod_headers..."
 a2enmod headers
 
 %post
-export OTRSUSER=ligero
+export LIGEROUSER=ligero
 
 # note
 HOST=`hostname -f`
@@ -103,17 +103,17 @@ echo ""
 echo "[restart web server]"
 echo " systemctl restart apache2.service"
 echo ""
-echo "[install the OTRS database]"
+echo "[install the LIGERO database]"
 echo " Make sure your database server is running."
 echo " Use a web browser and open this link:"
 echo " http://$HOST/ligero/installer.pl"
 echo ""
-echo "[start OTRS daemon and corresponding watchdog cronjob]"
+echo "[start LIGERO daemon and corresponding watchdog cronjob]"
 echo " /opt/ligero/bin/ligero.Daemon.pl start"
 echo " /opt/ligero/bin/Cron.sh start"
 echo ""
 echo "((enjoy))"
-echo " Your OTRS Team"
+echo " Your LIGERO Team"
 echo ""
 
 %clean

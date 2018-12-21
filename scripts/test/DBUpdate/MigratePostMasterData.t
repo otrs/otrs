@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -47,15 +47,15 @@ my @Tests = (
             ],
             Set => [
                 {
-                    Key   => 'X-OTRS-Queue',
+                    Key   => 'X-LIGERO-Queue',
                     Value => 'Misc',
                 },
                 {
-                    Key   => 'X-OTRS-TicketKey1',
+                    Key   => 'X-LIGERO-TicketKey1',
                     Value => 'Key1',
                 },
                 {
-                    Key   => 'X-OTRS-TicketValue1',
+                    Key   => 'X-LIGERO-TicketValue1',
                     Value => 'Text1',
                 },
             ],
@@ -75,15 +75,15 @@ my @Tests = (
             ],
             Set => [
                 {
-                    Key   => 'X-OTRS-Queue',
+                    Key   => 'X-LIGERO-Queue',
                     Value => 'Misc',
                 },
                 {
-                    Key   => 'X-OTRS-TicketKey1',
+                    Key   => 'X-LIGERO-TicketKey1',
                     Value => 'Key1',
                 },
                 {
-                    Key   => 'X-OTRS-TicketValue1',
+                    Key   => 'X-LIGERO-TicketValue1',
                     Value => 'Text1',
                 },
             ],
@@ -117,15 +117,15 @@ my @Tests = (
             ],
             Set => [
                 {
-                    Key   => 'X-OTRS-ArticleType',
+                    Key   => 'X-LIGERO-ArticleType',
                     Value => 'email',
                 },
                 {
-                    Key   => 'X-OTRS-TicketKey1',
+                    Key   => 'X-LIGERO-TicketKey1',
                     Value => 'Key1',
                 },
                 {
-                    Key   => 'X-OTRS-TicketValue1',
+                    Key   => 'X-LIGERO-TicketValue1',
                     Value => 'Text1',
                 },
             ],
@@ -145,15 +145,15 @@ my @Tests = (
             ],
             Set => [
                 {
-                    Key   => 'X-OTRS-IsVisibleForCustomer',
+                    Key   => 'X-LIGERO-IsVisibleForCustomer',
                     Value => 0,
                 },
                 {
-                    Key   => 'X-OTRS-TicketKey1',
+                    Key   => 'X-LIGERO-TicketKey1',
                     Value => 'Key1',
                 },
                 {
-                    Key   => 'X-OTRS-TicketValue1',
+                    Key   => 'X-LIGERO-TicketValue1',
                     Value => 'Text1',
                 },
             ],
@@ -186,15 +186,15 @@ my @Tests = (
             ],
             Set => [
                 {
-                    Key   => 'X-OTRS-ArticleType',
+                    Key   => 'X-LIGERO-ArticleType',
                     Value => 'phone',
                 },
                 {
-                    Key   => 'X-OTRS-TicketKey1',
+                    Key   => 'X-LIGERO-TicketKey1',
                     Value => 'Key1',
                 },
                 {
-                    Key   => 'X-OTRS-TicketValue1',
+                    Key   => 'X-LIGERO-TicketValue1',
                     Value => 'Text1',
                 },
             ],
@@ -214,15 +214,15 @@ my @Tests = (
             ],
             Set => [
                 {
-                    Key   => 'X-OTRS-IsVisibleForCustomer',
+                    Key   => 'X-LIGERO-IsVisibleForCustomer',
                     Value => 1,
                 },
                 {
-                    Key   => 'X-OTRS-TicketKey1',
+                    Key   => 'X-LIGERO-TicketKey1',
                     Value => 'Key1',
                 },
                 {
-                    Key   => 'X-OTRS-TicketValue1',
+                    Key   => 'X-LIGERO-TicketValue1',
                     Value => 'Text1',
                 },
             ],
@@ -256,15 +256,15 @@ my @Tests = (
             ],
             Set => [
                 {
-                    Key   => 'X-OTRS-FollowUp-ArticleType',
+                    Key   => 'X-LIGERO-FollowUp-ArticleType',
                     Value => 'email',
                 },
                 {
-                    Key   => 'X-OTRS-TicketKey1',
+                    Key   => 'X-LIGERO-TicketKey1',
                     Value => 'Key1',
                 },
                 {
-                    Key   => 'X-OTRS-TicketValue1',
+                    Key   => 'X-LIGERO-TicketValue1',
                     Value => 'Text1',
                 },
             ],
@@ -284,15 +284,15 @@ my @Tests = (
             ],
             Set => [
                 {
-                    Key   => 'X-OTRS-FollowUp-IsVisibleForCustomer',
+                    Key   => 'X-LIGERO-FollowUp-IsVisibleForCustomer',
                     Value => 0,
                 },
                 {
-                    Key   => 'X-OTRS-TicketKey1',
+                    Key   => 'X-LIGERO-TicketKey1',
                     Value => 'Key1',
                 },
                 {
-                    Key   => 'X-OTRS-TicketValue1',
+                    Key   => 'X-LIGERO-TicketValue1',
                     Value => 'Text1',
                 },
             ],
@@ -325,15 +325,15 @@ my @Tests = (
             ],
             Set => [
                 {
-                    Key   => 'X-OTRS-FollowUp-ArticleType',
+                    Key   => 'X-LIGERO-FollowUp-ArticleType',
                     Value => 'phone',
                 },
                 {
-                    Key   => 'X-OTRS-TicketKey1',
+                    Key   => 'X-LIGERO-TicketKey1',
                     Value => 'Key1',
                 },
                 {
-                    Key   => 'X-OTRS-TicketValue1',
+                    Key   => 'X-LIGERO-TicketValue1',
                     Value => 'Text1',
                 },
             ],
@@ -353,15 +353,15 @@ my @Tests = (
             ],
             Set => [
                 {
-                    Key   => 'X-OTRS-FollowUp-IsVisibleForCustomer',
+                    Key   => 'X-LIGERO-FollowUp-IsVisibleForCustomer',
                     Value => 1,
                 },
                 {
-                    Key   => 'X-OTRS-TicketKey1',
+                    Key   => 'X-LIGERO-TicketKey1',
                     Value => 'Key1',
                 },
                 {
-                    Key   => 'X-OTRS-TicketValue1',
+                    Key   => 'X-LIGERO-TicketValue1',
                     Value => 'Text1',
                 },
             ],
@@ -395,19 +395,19 @@ my @Tests = (
             ],
             Set => [
                 {
-                    Key   => 'X-OTRS-ArticleType',
+                    Key   => 'X-LIGERO-ArticleType',
                     Value => 'email',
                 },
                 {
-                    Key   => 'X-OTRS-FollowUp-ArticleType',
+                    Key   => 'X-LIGERO-FollowUp-ArticleType',
                     Value => 'email',
                 },
                 {
-                    Key   => 'X-OTRS-TicketKey1',
+                    Key   => 'X-LIGERO-TicketKey1',
                     Value => 'Key1',
                 },
                 {
-                    Key   => 'X-OTRS-TicketValue1',
+                    Key   => 'X-LIGERO-TicketValue1',
                     Value => 'Text1',
                 },
             ],
@@ -427,19 +427,19 @@ my @Tests = (
             ],
             Set => [
                 {
-                    Key   => 'X-OTRS-FollowUp-IsVisibleForCustomer',
+                    Key   => 'X-LIGERO-FollowUp-IsVisibleForCustomer',
                     Value => 0,
                 },
                 {
-                    Key   => 'X-OTRS-IsVisibleForCustomer',
+                    Key   => 'X-LIGERO-IsVisibleForCustomer',
                     Value => 0,
                 },
                 {
-                    Key   => 'X-OTRS-TicketKey1',
+                    Key   => 'X-LIGERO-TicketKey1',
                     Value => 'Key1',
                 },
                 {
-                    Key   => 'X-OTRS-TicketValue1',
+                    Key   => 'X-LIGERO-TicketValue1',
                     Value => 'Text1',
                 },
             ],
@@ -472,19 +472,19 @@ my @Tests = (
             ],
             Set => [
                 {
-                    Key   => 'X-OTRS-ArticleType',
+                    Key   => 'X-LIGERO-ArticleType',
                     Value => 'phone',
                 },
                 {
-                    Key   => 'X-OTRS-FollowUp-ArticleType',
+                    Key   => 'X-LIGERO-FollowUp-ArticleType',
                     Value => 'phone',
                 },
                 {
-                    Key   => 'X-OTRS-TicketKey1',
+                    Key   => 'X-LIGERO-TicketKey1',
                     Value => 'Key1',
                 },
                 {
-                    Key   => 'X-OTRS-TicketValue1',
+                    Key   => 'X-LIGERO-TicketValue1',
                     Value => 'Text1',
                 },
             ],
@@ -504,19 +504,19 @@ my @Tests = (
             ],
             Set => [
                 {
-                    Key   => 'X-OTRS-FollowUp-IsVisibleForCustomer',
+                    Key   => 'X-LIGERO-FollowUp-IsVisibleForCustomer',
                     Value => 1,
                 },
                 {
-                    Key   => 'X-OTRS-IsVisibleForCustomer',
+                    Key   => 'X-LIGERO-IsVisibleForCustomer',
                     Value => 1,
                 },
                 {
-                    Key   => 'X-OTRS-TicketKey1',
+                    Key   => 'X-LIGERO-TicketKey1',
                     Value => 'Key1',
                 },
                 {
-                    Key   => 'X-OTRS-TicketValue1',
+                    Key   => 'X-LIGERO-TicketValue1',
                     Value => 'Text1',
                 },
             ],
@@ -549,19 +549,19 @@ my @Tests = (
             ],
             Set => [
                 {
-                    Key   => 'X-OTRS-ArticleType',
+                    Key   => 'X-LIGERO-ArticleType',
                     Value => 'email',
                 },
                 {
-                    Key   => 'X-OTRS-FollowUp-ArticleType',
+                    Key   => 'X-LIGERO-FollowUp-ArticleType',
                     Value => 'phone',
                 },
                 {
-                    Key   => 'X-OTRS-TicketKey1',
+                    Key   => 'X-LIGERO-TicketKey1',
                     Value => 'Key1',
                 },
                 {
-                    Key   => 'X-OTRS-TicketValue1',
+                    Key   => 'X-LIGERO-TicketValue1',
                     Value => 'Text1',
                 },
             ],
@@ -581,19 +581,19 @@ my @Tests = (
             ],
             Set => [
                 {
-                    Key   => 'X-OTRS-FollowUp-IsVisibleForCustomer',
+                    Key   => 'X-LIGERO-FollowUp-IsVisibleForCustomer',
                     Value => 1,
                 },
                 {
-                    Key   => 'X-OTRS-IsVisibleForCustomer',
+                    Key   => 'X-LIGERO-IsVisibleForCustomer',
                     Value => 0,
                 },
                 {
-                    Key   => 'X-OTRS-TicketKey1',
+                    Key   => 'X-LIGERO-TicketKey1',
                     Value => 'Key1',
                 },
                 {
-                    Key   => 'X-OTRS-TicketValue1',
+                    Key   => 'X-LIGERO-TicketValue1',
                     Value => 'Text1',
                 },
             ],

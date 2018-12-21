@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -118,7 +118,7 @@ for my $Operator ( '>', '<', '>=', '<=', '==', '!=' ) {
         'Comparison via ' . $Operator . ' with undef instead of DateTime object must fail',
     );
 
-    ## nofilter(TidyAll::Plugin::OTRS::Migrations::OTRS6::TimeObject)
+    ## nofilter(TidyAll::Plugin::LIGERO::Migrations::LIGERO6::TimeObject)
     $Self->False(
         eval( '$DateTimeObject ' . $Operator . ' $Kernel::OM->Create("Kernel::System::Time")' ),    ## no critic
         'Comparison via ' . $Operator . ' with Time object instead of DateTime object must fail',

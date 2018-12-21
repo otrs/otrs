@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -49,7 +49,7 @@ sub Run {
         $LayoutObject->ChallengeTokenCheck();
 
         # Lock process with PID to prevent race conditions with console command
-        # Maint::PostMaster::MailAccountFetch executed by the OTRS daemon or manually.
+        # Maint::PostMaster::MailAccountFetch executed by the LIGERO daemon or manually.
         # Please see bug#13235
         my $PIDObject = $Kernel::OM->Get('Kernel::System::PID');
 

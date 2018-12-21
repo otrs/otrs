@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -71,7 +71,7 @@
                     [% Translate("All incoming emails with one account will be dispatched in the selected queue.") | html %]
                 </p>
                 <p class="FieldExplanation">
-                    [% Translate("If your account is marked as trusted, the X-OTRS headers already existing at arrival time (for priority etc.) will be kept and used, for example in PostMaster filters.") | html %]
+                    [% Translate("If your account is marked as trusted, the X-LIGERO headers already existing at arrival time (for priority etc.) will be kept and used, for example in PostMaster filters.") | html %]
                 </p>
                 <p class="FieldExplanation">
                     [% Translate("Outgoing email can be configured via the Sendmail* settings in %s.",

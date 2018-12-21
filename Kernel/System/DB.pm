@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -7,7 +7,7 @@
 # --
 
 package Kernel::System::DB;
-## nofilter(TidyAll::Plugin::OTRS::Perl::Pod::FunctionPod)
+## nofilter(TidyAll::Plugin::LIGERO::Perl::Pod::FunctionPod)
 
 use strict;
 use warnings;
@@ -788,13 +788,13 @@ sub FetchrowArray {
 
 =head2 ListTables()
 
-list all tables in the OTRS database.
+list all tables in the LIGERO database.
 
     my @Tables = $DBObject->ListTables();
 
 On databases like Oracle it could happen that too many tables are listed (all belonging
 to the current user), if the user also has permissions for other databases. So this list
-should only be used for verification of the presence of expected OTRS tables.
+should only be used for verification of the presence of expected LIGERO tables.
 
 =cut
 
@@ -1891,7 +1891,7 @@ sub DESTROY {
 
 =head1 TERMS AND CONDITIONS
 
-This software is part of the OTRS project (L<https://ligero.org/>).
+This software is part of the LIGERO project (L<https://ligero.org/>).
 
 This software comes with ABSOLUTELY NO WARRANTY. For details, see
 the enclosed file COPYING for license information (GPL). If you

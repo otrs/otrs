@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -222,7 +222,7 @@ sub Import {
             );
 
             if ( !$Parameters{AllDay} ) {
-                $StartTimeObject->ToOTRSTimeZone();
+                $StartTimeObject->ToLIGEROTimeZone();
             }
 
             $Parameters{StartTime} = $StartTimeObject->ToString();
@@ -257,7 +257,7 @@ sub Import {
             );
 
             if ( !$Parameters{AllDay} ) {
-                $EndTimeObject->ToOTRSTimeZone();
+                $EndTimeObject->ToLIGEROTimeZone();
             }
 
             $Parameters{EndTime} = $EndTimeObject->ToString();
@@ -497,7 +497,7 @@ sub Import {
                         );
 
                         if ( !$Parameters{AllDay} ) {
-                            $ExcludeTimeObject->ToOTRSTimeZone();
+                            $ExcludeTimeObject->ToLIGEROTimeZone();
                         }
 
                         push @RecurrenceExclude, $ExcludeTimeObject->ToString();
@@ -626,7 +626,7 @@ sub Import {
             );
 
             if ( !$Parameters{AllDay} ) {
-                $RecurrenceIDObject->ToOTRSTimeZone();
+                $RecurrenceIDObject->ToLIGEROTimeZone();
             }
 
             $Param{RecurrenceID} = $RecurrenceIDObject->ToString();
@@ -790,7 +790,7 @@ sub _FormatTime {
 
 =head1 TERMS AND CONDITIONS
 
-This software is part of the OTRS project (L<https://ligero.org/>).
+This software is part of the LIGERO project (L<https://ligero.org/>).
 
 This software comes with ABSOLUTELY NO WARRANTY. For details, see
 the enclosed file COPYING for license information (GPL). If you

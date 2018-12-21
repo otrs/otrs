@@ -345,9 +345,9 @@ Description
                             </Array>
                         </Item>
                         <Item Key="Description" Translatable="1"></Item>
-                        <Item Key="Name" Translatable="1">Reports (OTRS Business Solution™)</Item>
+                        <Item Key="Name" Translatable="1">Reports (LIGERO Business Solution™)</Item>
                         <Item Key="Link">Action=AgentStatisticsReports;Subaction=Overview</Item>
-                        <Item Key="LinkOption">class="OTRSBusinessRequired"</Item>
+                        <Item Key="LinkOption">class="LIGEROBusinessRequired"</Item>
                         <Item Key="NavBar">Reports</Item>
                         <Item Key="Type"></Item>
                         <Item Key="Block"></Item>
@@ -622,7 +622,7 @@ Description
         </Value>
     </Setting>
     <Setting Name="Test29" Required="1" Valid="1" ConfigLevel="200">
-        <Description Translatable="1">OTRS Business Solution™, OTRS Verify™ (test utf8).</Description>
+        <Description Translatable="1">LIGERO Business Solution™, LIGERO Verify™ (test utf8).</Description>
         <Navigation>SubGroup</Navigation>
         <Value>
             <String1 Regex="">123</String1>
@@ -678,8 +678,8 @@ Description
                 </Item>
                 <Item Key="Set">
                     <Hash>
-                        <Item Key="X-OTRS-IsVisibleForCustomer">0</Item>
-                        <Item Key="X-OTRS-FollowUp-IsVisibleForCustomer">1</Item>
+                        <Item Key="X-LIGERO-IsVisibleForCustomer">0</Item>
+                        <Item Key="X-LIGERO-FollowUp-IsVisibleForCustomer">1</Item>
                     </Hash>
                 </Item>
             </Hash>
@@ -693,8 +693,8 @@ Description
                 <Item Key="Module">Kernel::System::PostMaster::Filter::FollowUpArticleVisibilityCheck</Item>
                 <Item Key="IsVisibleForCustomer" Translatable="1">0</Item>
                 <Item Key="SenderType" Translatable="1">customer</Item>
-                <Item Key="X-OTRS-IsVisibleForCustomer">0</Item>
-                <Item Key="X-OTRS-FollowUp-IsVisibleForCustomer">1</Item>
+                <Item Key="X-LIGERO-IsVisibleForCustomer">0</Item>
+                <Item Key="X-LIGERO-FollowUp-IsVisibleForCustomer">1</Item>
             </Hash>
         </Value>
     </Setting>
@@ -706,8 +706,8 @@ Description
                 <Item Key="Module">Kernel::System::PostMaster::Filter::FollowUpArticleVisibilityCheck</Item>
                 <Item Key="IsVisibleForCustomer" Translatable="1">0</Item>
                 <Item Key="SenderType" Translatable="1">customer</Item>
-                <Item Key="X-OTRS-IsVisibleForCustomer">0</Item>
-                <Item Key="X-OTRS-FollowUp-IsVisibleForCustomer">1</Item>
+                <Item Key="X-LIGERO-IsVisibleForCustomer">0</Item>
+                <Item Key="X-LIGERO-FollowUp-IsVisibleForCustomer">1</Item>
             </Hash>
         </Value>
     </Setting>
@@ -719,8 +719,8 @@ Description
                 <Item Key="Module">Kernel::System::PostMaster::FollowUpCheck::Subject</Item>
                 <Item Key="IsVisibleForCustomer" Translatable="1">1</Item>
                 <Item Key="SenderType" Translatable="1">customer</Item>
-                <Item Key="X-OTRS-IsVisibleForCustomer">0</Item>
-                <Item Key="X-OTRS-FollowUp-IsVisibleForCustomer">1</Item>
+                <Item Key="X-LIGERO-IsVisibleForCustomer">0</Item>
+                <Item Key="X-LIGERO-FollowUp-IsVisibleForCustomer">1</Item>
             </Hash>
         </Value>
     </Setting>

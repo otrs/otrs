@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -593,7 +593,7 @@ for my $Test (@Tests) {
     }
 
     $Kernel::OM->Get('Kernel::Config')->Set(
-        Key   => 'OTRSTimeZone',
+        Key   => 'LIGEROTimeZone',
         Value => $Test->{TimeZone},
     );
 
@@ -652,7 +652,7 @@ $Self->False(
     $Delta,
     'Delta working time calculation with invalid DateTime object must fail.',
 );
-## nofilter(TidyAll::Plugin::OTRS::Migrations::OTRS6::TimeObject)
+## nofilter(TidyAll::Plugin::LIGERO::Migrations::LIGERO6::TimeObject)
 $Delta = $DateTimeObject->Delta(
     DateTimeObject => $Kernel::OM->Get('Kernel::System::Time'),
     ForWorkingTime => 1,

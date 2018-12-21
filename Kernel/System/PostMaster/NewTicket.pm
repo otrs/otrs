@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -75,21 +75,21 @@ sub Run {
 
     # get state
     my $State = $ConfigObject->Get('PostmasterDefaultState') || 'new';
-    if ( $GetParam{'X-OTRS-State'} ) {
+    if ( $GetParam{'X-LIGERO-State'} ) {
 
         my $StateID = $Kernel::OM->Get('Kernel::System::State')->StateLookup(
-            State => $GetParam{'X-OTRS-State'},
+            State => $GetParam{'X-LIGERO-State'},
         );
 
         if ($StateID) {
-            $State = $GetParam{'X-OTRS-State'};
+            $State = $GetParam{'X-LIGERO-State'};
         }
         else {
             $Self->{CommunicationLogObject}->ObjectLog(
                 ObjectLogType => 'Message',
                 Priority      => 'Error',
                 Key           => 'Kernel::System::PostMaster::NewTicket',
-                Value         => "State $GetParam{'X-OTRS-State'} does not exist, falling back to $State!",
+                Value         => "State $GetParam{'X-LIGERO-State'} does not exist, falling back to $State!",
             );
         }
     }
@@ -97,38 +97,38 @@ sub Run {
     # get priority
     my $Priority = $ConfigObject->Get('PostmasterDefaultPriority') || '3 normal';
 
-    if ( $GetParam{'X-OTRS-Priority'} ) {
+    if ( $GetParam{'X-LIGERO-Priority'} ) {
 
         my $PriorityID = $Kernel::OM->Get('Kernel::System::Priority')->PriorityLookup(
-            Priority => $GetParam{'X-OTRS-Priority'},
+            Priority => $GetParam{'X-LIGERO-Priority'},
         );
 
         if ($PriorityID) {
-            $Priority = $GetParam{'X-OTRS-Priority'};
+            $Priority = $GetParam{'X-LIGERO-Priority'};
         }
         else {
             $Self->{CommunicationLogObject}->ObjectLog(
                 ObjectLogType => 'Message',
                 Priority      => 'Error',
                 Key           => 'Kernel::System::PostMaster::NewTicket',
-                Value         => "Priority $GetParam{'X-OTRS-Priority'} does not exist, falling back to $Priority!",
+                Value         => "Priority $GetParam{'X-LIGERO-Priority'} does not exist, falling back to $Priority!",
             );
         }
     }
 
     my $TypeID;
 
-    if ( $GetParam{'X-OTRS-Type'} ) {
+    if ( $GetParam{'X-LIGERO-Type'} ) {
 
         # Check if type exists
-        $TypeID = $Kernel::OM->Get('Kernel::System::Type')->TypeLookup( Type => $GetParam{'X-OTRS-Type'} );
+        $TypeID = $Kernel::OM->Get('Kernel::System::Type')->TypeLookup( Type => $GetParam{'X-LIGERO-Type'} );
 
         if ( !$TypeID ) {
             $Self->{CommunicationLogObject}->ObjectLog(
                 ObjectLogType => 'Message',
                 Priority      => 'Error',
                 Key           => 'Kernel::System::PostMaster::NewTicket',
-                Value         => "Type $GetParam{'X-OTRS-Type'} does not exist, falling back to default type.",
+                Value         => "Type $GetParam{'X-LIGERO-Type'} does not exist, falling back to default type.",
             );
         }
     }
@@ -146,23 +146,23 @@ sub Run {
     $GetParam{SenderEmailAddress} //= '';
 
     # get customer id (sender email) if there is no customer id given
-    if ( !$GetParam{'X-OTRS-CustomerNo'} && $GetParam{'X-OTRS-CustomerUser'} ) {
+    if ( !$GetParam{'X-LIGERO-CustomerNo'} && $GetParam{'X-LIGERO-CustomerUser'} ) {
 
         # get customer user object
         my $CustomerUserObject = $Kernel::OM->Get('Kernel::System::CustomerUser');
 
-        # get customer user data form X-OTRS-CustomerUser
+        # get customer user data form X-LIGERO-CustomerUser
         my %CustomerData = $CustomerUserObject->CustomerUserDataGet(
-            User => $GetParam{'X-OTRS-CustomerUser'},
+            User => $GetParam{'X-LIGERO-CustomerUser'},
         );
 
         if (%CustomerData) {
-            $GetParam{'X-OTRS-CustomerNo'} = $CustomerData{UserCustomerID};
+            $GetParam{'X-LIGERO-CustomerNo'} = $CustomerData{UserCustomerID};
         }
     }
 
     # get customer user data form From: (sender address)
-    if ( !$GetParam{'X-OTRS-CustomerUser'} ) {
+    if ( !$GetParam{'X-LIGERO-CustomerUser'} ) {
 
         my %CustomerData;
         if ( $GetParam{From} ) {
@@ -195,8 +195,8 @@ sub Run {
         }
 
         # take CustomerID from customer backend lookup or from from field
-        if ( $CustomerData{UserLogin} && !$GetParam{'X-OTRS-CustomerUser'} ) {
-            $GetParam{'X-OTRS-CustomerUser'} = $CustomerData{UserLogin};
+        if ( $CustomerData{UserLogin} && !$GetParam{'X-LIGERO-CustomerUser'} ) {
+            $GetParam{'X-LIGERO-CustomerUser'} = $CustomerData{UserLogin};
 
             # notice that UserLogin is from customer source backend
             $Self->{CommunicationLogObject}->ObjectLog(
@@ -207,8 +207,8 @@ sub Run {
                     . "customer source backend based on ($GetParam{'EmailFrom'}).",
             );
         }
-        if ( $CustomerData{UserCustomerID} && !$GetParam{'X-OTRS-CustomerNo'} ) {
-            $GetParam{'X-OTRS-CustomerNo'} = $CustomerData{UserCustomerID};
+        if ( $CustomerData{UserCustomerID} && !$GetParam{'X-LIGERO-CustomerNo'} ) {
+            $GetParam{'X-LIGERO-CustomerNo'} = $CustomerData{UserCustomerID};
 
             # notice that UserCustomerID is from customer source backend
             $Self->{CommunicationLogObject}->ObjectLog(
@@ -223,38 +223,38 @@ sub Run {
 
     # if there is no customer id found!
     if (
-        !$GetParam{'X-OTRS-CustomerNo'}
+        !$GetParam{'X-LIGERO-CustomerNo'}
         && $ConfigObject->Get('PostMaster::NewTicket::AutoAssignCustomerIDForUnknownCustomers')
         )
     {
-        $GetParam{'X-OTRS-CustomerNo'} = $GetParam{SenderEmailAddress};
+        $GetParam{'X-LIGERO-CustomerNo'} = $GetParam{SenderEmailAddress};
     }
 
     # if there is no customer user found!
-    if ( !$GetParam{'X-OTRS-CustomerUser'} ) {
-        $GetParam{'X-OTRS-CustomerUser'} = $GetParam{SenderEmailAddress};
+    if ( !$GetParam{'X-LIGERO-CustomerUser'} ) {
+        $GetParam{'X-LIGERO-CustomerUser'} = $GetParam{SenderEmailAddress};
     }
 
     # get ticket owner
-    my $OwnerID = $GetParam{'X-OTRS-OwnerID'} || $Param{InmailUserID};
-    if ( $GetParam{'X-OTRS-Owner'} ) {
+    my $OwnerID = $GetParam{'X-LIGERO-OwnerID'} || $Param{InmailUserID};
+    if ( $GetParam{'X-LIGERO-Owner'} ) {
 
         my $TmpOwnerID = $Kernel::OM->Get('Kernel::System::User')->UserLookup(
-            UserLogin => $GetParam{'X-OTRS-Owner'},
+            UserLogin => $GetParam{'X-LIGERO-Owner'},
         );
 
         $OwnerID = $TmpOwnerID || $OwnerID;
     }
 
     my %Opts;
-    if ( $GetParam{'X-OTRS-ResponsibleID'} ) {
-        $Opts{ResponsibleID} = $GetParam{'X-OTRS-ResponsibleID'};
+    if ( $GetParam{'X-LIGERO-ResponsibleID'} ) {
+        $Opts{ResponsibleID} = $GetParam{'X-LIGERO-ResponsibleID'};
     }
 
-    if ( $GetParam{'X-OTRS-Responsible'} ) {
+    if ( $GetParam{'X-LIGERO-Responsible'} ) {
 
         my $TmpResponsibleID = $Kernel::OM->Get('Kernel::System::User')->UserLookup(
-            UserLogin => $GetParam{'X-OTRS-Responsible'},
+            UserLogin => $GetParam{'X-LIGERO-Responsible'},
         );
 
         $Opts{ResponsibleID} = $TmpResponsibleID || $Opts{ResponsibleID};
@@ -270,12 +270,12 @@ sub Run {
         Value         => "Going to create new ticket.",
     );
 
-    if ( $GetParam{'X-OTRS-Service'} ) {
+    if ( $GetParam{'X-LIGERO-Service'} ) {
         my $ServiceObject = $Kernel::OM->Get('Kernel::System::Service');
 
         # Check if service exists.
         my %ServiceData = $ServiceObject->ServiceGet(
-            Name   => $GetParam{'X-OTRS-Service'},
+            Name   => $GetParam{'X-LIGERO-Service'},
             UserID => $Param{InmailUserID},
         );
 
@@ -292,9 +292,9 @@ sub Run {
                 Priority      => 'Debug',
                 Key           => 'Kernel::System::PostMaster::NewTicket',
                 Value =>
-                    "Service $GetParam{'X-OTRS-Service'} does not exists or is invalid or is a child of invalid service.",
+                    "Service $GetParam{'X-LIGERO-Service'} does not exists or is invalid or is a child of invalid service.",
             );
-            $GetParam{'X-OTRS-Service'} = '';
+            $GetParam{'X-LIGERO-Service'} = '';
         }
     }
 
@@ -302,16 +302,16 @@ sub Run {
     my $NewTn    = $TicketObject->TicketCreateNumber();
     my $TicketID = $TicketObject->TicketCreate(
         TN           => $NewTn,
-        Title        => $GetParam{'X-OTRS-Title'} || $GetParam{Subject},
+        Title        => $GetParam{'X-LIGERO-Title'} || $GetParam{Subject},
         QueueID      => $QueueID,
-        Lock         => $GetParam{'X-OTRS-Lock'} || 'unlock',
+        Lock         => $GetParam{'X-LIGERO-Lock'} || 'unlock',
         Priority     => $Priority,
         State        => $State,
         TypeID       => $TypeID,
-        Service      => $GetParam{'X-OTRS-Service'} || '',
-        SLA          => $GetParam{'X-OTRS-SLA'} || '',
-        CustomerID   => $GetParam{'X-OTRS-CustomerNo'},
-        CustomerUser => $GetParam{'X-OTRS-CustomerUser'},
+        Service      => $GetParam{'X-LIGERO-Service'} || '',
+        SLA          => $GetParam{'X-LIGERO-SLA'} || '',
+        CustomerID   => $GetParam{'X-LIGERO-CustomerNo'},
+        CustomerUser => $GetParam{'X-LIGERO-CustomerUser'},
         OwnerID      => $OwnerID,
         UserID       => $Param{InmailUserID},
         %Opts,
@@ -334,15 +334,15 @@ TicketNumber: $NewTn
 TicketID: $TicketID
 Priority: $Priority
 State: $State
-CustomerID: $GetParam{'X-OTRS-CustomerNo'}
-CustomerUser: $GetParam{'X-OTRS-CustomerUser'}
+CustomerID: $GetParam{'X-LIGERO-CustomerNo'}
+CustomerUser: $GetParam{'X-LIGERO-CustomerUser'}
 
 Message
 
     for my $Value (qw(Type Service SLA Lock)) {
 
-        if ( $GetParam{ 'X-OTRS-' . $Value } ) {
-            $TicketCreateMessage .= "$Value: " . $GetParam{ 'X-OTRS-' . $Value } . "\n";
+        if ( $GetParam{ 'X-LIGERO-' . $Value } ) {
+            $TicketCreateMessage .= "$Value: " . $GetParam{ 'X-LIGERO-' . $Value } . "\n";
         }
     }
 
@@ -354,14 +354,14 @@ Message
     );
 
     # set pending time
-    if ( $GetParam{'X-OTRS-State-PendingTime'} ) {
+    if ( $GetParam{'X-LIGERO-State-PendingTime'} ) {
 
   # You can specify absolute dates like "2010-11-20 00:00:00" or relative dates, based on the arrival time of the email.
   # Use the form "+ $Number $Unit", where $Unit can be 's' (seconds), 'm' (minutes), 'h' (hours) or 'd' (days).
   # Only one unit can be specified. Examples of valid settings: "+50s" (pending in 50 seconds), "+30m" (30 minutes),
   # "+12d" (12 days). Note that settings like "+1d 12h" are not possible. You can specify "+36h" instead.
 
-        my $TargetTimeStamp = $GetParam{'X-OTRS-State-PendingTime'};
+        my $TargetTimeStamp = $GetParam{'X-LIGERO-State-PendingTime'};
 
         my ( $Sign, $Number, $Unit ) = $TargetTimeStamp =~ m{^\s*([+-]?)\s*(\d+)\s*([smhd]?)\s*$}smx;
 
@@ -397,7 +397,7 @@ Message
             Priority      => 'Debug',
             Key           => 'Kernel::System::PostMaster::NewTicket',
             Value =>
-                "Pending time update via 'X-OTRS-State-PendingTime'! State-PendingTime: $GetParam{'X-OTRS-State-PendingTime'}.",
+                "Pending time update via 'X-LIGERO-State-PendingTime'! State-PendingTime: $GetParam{'X-LIGERO-State-PendingTime'}.",
         );
     }
 
@@ -418,7 +418,7 @@ Message
     for my $DynamicFieldID ( sort keys %{$DynamicFieldList} ) {
         next DYNAMICFIELDID if !$DynamicFieldID;
         next DYNAMICFIELDID if !$DynamicFieldList->{$DynamicFieldID};
-        my $Key = 'X-OTRS-DynamicField-' . $DynamicFieldList->{$DynamicFieldID};
+        my $Key = 'X-LIGERO-DynamicField-' . $DynamicFieldList->{$DynamicFieldID};
 
         if ( defined $GetParam{$Key} && length $GetParam{$Key} ) {
 
@@ -450,8 +450,8 @@ Message
     # for backward compatibility (should be removed in a future version)
     my %Values =
         (
-        'X-OTRS-TicketKey'   => 'TicketFreeKey',
-        'X-OTRS-TicketValue' => 'TicketFreeText',
+        'X-LIGERO-TicketKey'   => 'TicketFreeKey',
+        'X-LIGERO-TicketValue' => 'TicketFreeText',
         );
     for my $Item ( sort keys %Values ) {
         for my $Count ( 1 .. 16 ) {
@@ -489,7 +489,7 @@ Message
     # for backward compatibility (should be removed in a future version)
     for my $Count ( 1 .. 6 ) {
 
-        my $Key = 'X-OTRS-TicketTime' . $Count;
+        my $Key = 'X-LIGERO-TicketTime' . $Count;
 
         if ( defined $GetParam{$Key} && length $GetParam{$Key} ) {
 
@@ -533,8 +533,8 @@ Message
     );
 
     my $IsVisibleForCustomer = 1;
-    if ( length $GetParam{'X-OTRS-IsVisibleForCustomer'} ) {
-        $IsVisibleForCustomer = $GetParam{'X-OTRS-IsVisibleForCustomer'};
+    if ( length $GetParam{'X-LIGERO-IsVisibleForCustomer'} ) {
+        $IsVisibleForCustomer = $GetParam{'X-LIGERO-IsVisibleForCustomer'};
     }
 
     $Self->{CommunicationLogObject}->ObjectLog(
@@ -544,22 +544,22 @@ Message
         Value         => "Going to create new article for TicketID '$TicketID'.",
     );
 
-    # Check if X-OTRS-SenderType exists, if not set default 'customer'.
-    if ( !$ArticleObject->ArticleSenderTypeLookup( SenderType => $GetParam{'X-OTRS-SenderType'} ) )
+    # Check if X-LIGERO-SenderType exists, if not set default 'customer'.
+    if ( !$ArticleObject->ArticleSenderTypeLookup( SenderType => $GetParam{'X-LIGERO-SenderType'} ) )
     {
         $Self->{CommunicationLogObject}->ObjectLog(
             ObjectLogType => 'Message',
             Priority      => 'Error',
             Key           => 'Kernel::System::PostMaster::NewTicket',
-            Value         => "Can't find valid SenderType '$GetParam{'X-OTRS-SenderType'}' in DB, take 'customer'",
+            Value         => "Can't find valid SenderType '$GetParam{'X-LIGERO-SenderType'}' in DB, take 'customer'",
         );
-        $GetParam{'X-OTRS-SenderType'} = 'customer';
+        $GetParam{'X-LIGERO-SenderType'} = 'customer';
     }
 
     # Create email article.
     my $ArticleID = $ArticleBackendObject->ArticleCreate(
         TicketID             => $TicketID,
-        SenderType           => $GetParam{'X-OTRS-SenderType'},
+        SenderType           => $GetParam{'X-LIGERO-SenderType'},
         IsVisibleForCustomer => $IsVisibleForCustomer,
         From                 => $GetParam{From},
         ReplyTo              => $GetParam{ReplyTo},
@@ -661,7 +661,7 @@ Message
     for my $DynamicFieldID ( sort keys %{$DynamicFieldList} ) {
         next DYNAMICFIELDID if !$DynamicFieldID;
         next DYNAMICFIELDID if !$DynamicFieldList->{$DynamicFieldID};
-        my $Key = 'X-OTRS-DynamicField-' . $DynamicFieldList->{$DynamicFieldID};
+        my $Key = 'X-LIGERO-DynamicField-' . $DynamicFieldList->{$DynamicFieldID};
         if ( defined $GetParam{$Key} && length $GetParam{$Key} ) {
 
             # get dynamic field config
@@ -692,8 +692,8 @@ Message
     # for backward compatibility (should be removed in a future version)
     %Values =
         (
-        'X-OTRS-ArticleKey'   => 'ArticleFreeKey',
-        'X-OTRS-ArticleValue' => 'ArticleFreeText',
+        'X-LIGERO-ArticleKey'   => 'ArticleFreeKey',
+        'X-LIGERO-ArticleValue' => 'ArticleFreeText',
         );
     for my $Item ( sort keys %Values ) {
         for my $Count ( 1 .. 16 ) {

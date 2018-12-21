@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -17,7 +17,7 @@ my $Helper = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
 
 my $Home = $Kernel::OM->Get('Kernel::Config')->Get('Home');
 
-# Initialize test database based on fresh OTRS 6 schema.
+# Initialize test database based on fresh LIGERO 6 schema.
 my $Success = $Helper->ProvideTestDatabase(
     DatabaseXMLFiles => [
         "$Home/scripts/database/ligero-schema.xml",
@@ -33,7 +33,7 @@ if ( !$Success ) {
 }
 $Self->True(
     $Success,
-    'ProvideTestDatabase - Load and execute OTRS 6 XML files',
+    'ProvideTestDatabase - Load and execute LIGERO 6 XML files',
 );
 
 # Retrieve table structure and store it in a lookup structure for easier comparison.
@@ -260,7 +260,7 @@ $Self->True(
     'Get structure for all tables in database',
 );
 
-# Re-initialize test database based on fresh OTRS 5 schema.
+# Re-initialize test database based on fresh LIGERO 5 schema.
 $Success = $Helper->ProvideTestDatabase(
     DatabaseXMLFiles => [
         "$Home/scripts/test/sample/DBUpdate/ligero5-schema.xml",
@@ -269,7 +269,7 @@ $Success = $Helper->ProvideTestDatabase(
 );
 $Self->True(
     $Success,
-    'ProvideTestDatabase - Load and execute OTRS 5 XML files',
+    'ProvideTestDatabase - Load and execute LIGERO 5 XML files',
 );
 
 my $DBUpdateTo6Object = $Kernel::OM->Get('scripts::DBUpdateTo6');

@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -531,7 +531,7 @@ for my $Test (@Tests) {
             );
 
             my $EffectiveValueStrg = << 'EOF';
-# OTRS config file (Unit Tests)
+# LIGERO config file (Unit Tests)
 # VERSION:1.1
 package Kernel::Config::Files::ZZZAAuto;
 use strict;

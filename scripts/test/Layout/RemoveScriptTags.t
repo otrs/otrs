@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -45,14 +45,14 @@ my @Tests = (
     {
         Input => '
 <script type="text/javascript">//<![CDATA[
-    OTRS.UI.Tables.InitTableFilter($(\'#FilterCustomers\'), $(\'#Customers\'));
-    OTRS.UI.Tables.InitTableFilter($(\'#FilterGroups\'), $(\'#Groups\'));
+    LIGERO.UI.Tables.InitTableFilter($(\'#FilterCustomers\'), $(\'#Customers\'));
+    LIGERO.UI.Tables.InitTableFilter($(\'#FilterGroups\'), $(\'#Groups\'));
 //]]></script>
         ',
         Result => '
 
-    OTRS.UI.Tables.InitTableFilter($(\'#FilterCustomers\'), $(\'#Customers\'));
-    OTRS.UI.Tables.InitTableFilter($(\'#FilterGroups\'), $(\'#Groups\'));
+    LIGERO.UI.Tables.InitTableFilter($(\'#FilterCustomers\'), $(\'#Customers\'));
+    LIGERO.UI.Tables.InitTableFilter($(\'#FilterGroups\'), $(\'#Groups\'));
 
         ',
         Name => '_RemoveScriptTags - complete content test',

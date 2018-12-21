@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -37,9 +37,9 @@ my @Tests = (
 
     {
         Name           => 'No options',
-        OTRSTimeZone   => 'UTC',
+        LIGEROTimeZone   => 'UTC',
         UserTimeZone   => undef,
-        DateTimeString => '2016-02-10 09:04:23',                            # in OTRS time zone
+        DateTimeString => '2016-02-10 09:04:23',                            # in LIGERO time zone
         Config         => {},
         ExpectedValue  => '<select id="Month" name="Month" title="Month">
   <option value="2" selected="selected">02</option>
@@ -53,9 +53,9 @@ my @Tests = (
     },
     {
         Name           => 'No options',
-        OTRSTimeZone   => 'UTC',
+        LIGEROTimeZone   => 'UTC',
         UserTimeZone   => 'Europe/Berlin',
-        DateTimeString => '2016-02-10 23:04:23',                            # in OTRS time zone
+        DateTimeString => '2016-02-10 23:04:23',                            # in LIGERO time zone
         Config         => {},
         ExpectedValue  => '<select id="Month" name="Month" title="Month">
   <option value="2" selected="selected">02</option>
@@ -69,9 +69,9 @@ my @Tests = (
     },
     {
         Name           => 'Long Format',
-        OTRSTimeZone   => 'UTC',
+        LIGEROTimeZone   => 'UTC',
         UserTimeZone   => undef,
-        DateTimeString => '2016-02-10 09:04:23',    # in OTRS time zone
+        DateTimeString => '2016-02-10 09:04:23',    # in LIGERO time zone
         Config         => {
             Format => 'DateInputFormatLong',
         },
@@ -93,9 +93,9 @@ my @Tests = (
     },
     {
         Name           => 'Long Format',
-        OTRSTimeZone   => 'Europe/Berlin',
+        LIGEROTimeZone   => 'Europe/Berlin',
         UserTimeZone   => 'America/New_York',
-        DateTimeString => '2016-05-01 04:24:06',    # in OTRS time zone
+        DateTimeString => '2016-05-01 04:24:06',    # in LIGERO time zone
         Config         => {
             Format => 'DateInputFormatLong',
         },
@@ -117,9 +117,9 @@ my @Tests = (
     },
     {
         Name           => 'Optional',
-        OTRSTimeZone   => 'UTC',
+        LIGEROTimeZone   => 'UTC',
         UserTimeZone   => undef,
-        DateTimeString => '2016-10-02 09:04:23',    # in OTRS time zone
+        DateTimeString => '2016-10-02 09:04:23',    # in LIGERO time zone
         Config         => {
             Prefix       => 'Test',
             TestOptional => 1,
@@ -138,9 +138,9 @@ my @Tests = (
     },
     {
         Name           => 'Optional',
-        OTRSTimeZone   => 'Europe/Berlin',
+        LIGEROTimeZone   => 'Europe/Berlin',
         UserTimeZone   => 'Europe/Berlin',
-        DateTimeString => '2016-10-02 00:04:23',    # in OTRS time zone
+        DateTimeString => '2016-10-02 00:04:23',    # in LIGERO time zone
         Config         => {
             Prefix       => 'Test',
             TestOptional => 1,
@@ -159,9 +159,9 @@ my @Tests = (
     },
     {
         Name           => 'No Options (Input)',
-        OTRSTimeZone   => 'Europe/Berlin',
+        LIGEROTimeZone   => 'Europe/Berlin',
         UserTimeZone   => 'Europe/Berlin',
-        DateTimeString => '2016-10-02 00:04:23',    # in OTRS time zone
+        DateTimeString => '2016-10-02 00:04:23',    # in LIGERO time zone
         Config         => {},
         SetConfig      => {
             Key     => 'TimeInputFormat',
@@ -175,9 +175,9 @@ my @Tests = (
     },
     {
         Name           => 'Long Format (Input)',
-        OTRSTimeZone   => 'Europe/Berlin',
+        LIGEROTimeZone   => 'Europe/Berlin',
         UserTimeZone   => 'UTC',
-        DateTimeString => '2016-10-02 00:04:23',    # in OTRS time zone
+        DateTimeString => '2016-10-02 00:04:23',    # in LIGERO time zone
         Config         => {
             Format => 'DateInputFormatLong',
         },
@@ -190,9 +190,9 @@ my @Tests = (
     },
     {
         Name           => 'Optional (Input)',
-        OTRSTimeZone   => 'UTC',
+        LIGEROTimeZone   => 'UTC',
         UserTimeZone   => 'Europe/Berlin',
-        DateTimeString => '2016-06-08 23:04:23',    # in OTRS time zone
+        DateTimeString => '2016-06-08 23:04:23',    # in LIGERO time zone
         Config         => {
             Prefix       => 'Test',
             TestOptional => 1,
@@ -207,9 +207,9 @@ my @Tests = (
     # TODO: add more tests for the different parameters here!
     {
         Name           => 'Disabled',
-        OTRSTimeZone   => 'UTC',
+        LIGEROTimeZone   => 'UTC',
         UserTimeZone   => undef,
-        DateTimeString => '2016-06-08 23:04:23',    # in OTRS time zone
+        DateTimeString => '2016-06-08 23:04:23',    # in LIGERO time zone
         Config         => {
             Disabled => 1,
         },
@@ -230,9 +230,9 @@ my @Tests = (
     },
     {
         Name           => 'Disabled Long Format',
-        OTRSTimeZone   => 'UTC',
+        LIGEROTimeZone   => 'UTC',
         UserTimeZone   => 'Europe/Berlin',
-        DateTimeString => '2014-06-08 23:24:23',    # in OTRS time zone
+        DateTimeString => '2014-06-08 23:24:23',    # in LIGERO time zone
         Config         => {
             Format   => 'DateInputFormatLong',
             Disabled => 1,
@@ -255,9 +255,9 @@ my @Tests = (
     },
     {
         Name           => 'Disabled Optional',
-        OTRSTimeZone   => 'UTC',
+        LIGEROTimeZone   => 'UTC',
         UserTimeZone   => undef,
-        DateTimeString => '2014-06-08 23:24:23',    # in OTRS time zone
+        DateTimeString => '2014-06-08 23:24:23',    # in LIGERO time zone
         Config         => {
             Prefix       => 'Test',
             TestOptional => 1,
@@ -277,9 +277,9 @@ my @Tests = (
     },
     {
         Name           => 'Disabled (Input)',
-        OTRSTimeZone   => 'UTC',
+        LIGEROTimeZone   => 'UTC',
         UserTimeZone   => undef,
-        DateTimeString => '2014-06-08 23:24:23',    # in OTRS time zone
+        DateTimeString => '2014-06-08 23:24:23',    # in LIGERO time zone
         Config         => {
             Disabled => 1,
         },
@@ -295,9 +295,9 @@ my @Tests = (
     },
     {
         Name           => 'Disabled (Input)',
-        OTRSTimeZone   => 'UTC',
+        LIGEROTimeZone   => 'UTC',
         UserTimeZone   => 'Europe/Berlin',
-        DateTimeString => '2014-06-09 01:24:23',    # in OTRS time zone
+        DateTimeString => '2014-06-09 01:24:23',    # in LIGERO time zone
         Config         => {
             Disabled => 1,
         },
@@ -313,9 +313,9 @@ my @Tests = (
     },
     {
         Name           => 'Disabled Long Format (Input)',
-        OTRSTimeZone   => 'UTC',
+        LIGEROTimeZone   => 'UTC',
         UserTimeZone   => undef,
-        DateTimeString => '2014-06-08 23:24:23',            # in OTRS time zone
+        DateTimeString => '2014-06-08 23:24:23',            # in LIGERO time zone
         Config         => {
             Format   => 'DateInputFormatLong',
             Disabled => 1,
@@ -329,9 +329,9 @@ my @Tests = (
     },
     {
         Name           => 'Disabled Long Format (Input)',
-        OTRSTimeZone   => 'UTC',
+        LIGEROTimeZone   => 'UTC',
         UserTimeZone   => 'Europe/Berlin',
-        DateTimeString => '2014-06-08 23:24:23',            # in OTRS time zone
+        DateTimeString => '2014-06-08 23:24:23',            # in LIGERO time zone
         Config         => {
             Format   => 'DateInputFormatLong',
             Disabled => 1,
@@ -345,9 +345,9 @@ my @Tests = (
     },
     {
         Name           => 'Disabled Optional (Input)',
-        OTRSTimeZone   => 'UTC',
+        LIGEROTimeZone   => 'UTC',
         UserTimeZone   => undef,
-        DateTimeString => '2014-06-08 23:24:23',         # in OTRS time zone
+        DateTimeString => '2014-06-08 23:24:23',         # in LIGERO time zone
         Config         => {
             Prefix       => 'Test',
             TestOptional => 1,
@@ -361,9 +361,9 @@ my @Tests = (
     },
     {
         Name           => 'Disabled Optional (Input)',
-        OTRSTimeZone   => 'UTC',
+        LIGEROTimeZone   => 'UTC',
         UserTimeZone   => 'Europe/Berlin',
-        DateTimeString => '2014-06-08 23:24:23',         # in OTRS time zone
+        DateTimeString => '2014-06-08 23:24:23',         # in LIGERO time zone
         Config         => {
             Prefix       => 'Test',
             TestOptional => 1,
@@ -381,8 +381,8 @@ TESTCASE:
 for my $Test (@Tests) {
 
     $ConfigObject->Set(
-        Key   => 'OTRSTimeZone',
-        Value => $Test->{OTRSTimeZone},
+        Key   => 'LIGEROTimeZone',
+        Value => $Test->{LIGEROTimeZone},
     );
 
     my $DateTimeObject = $Kernel::OM->Create(
@@ -441,7 +441,7 @@ for my $Test (@Tests) {
         $Self->Is(
             $HTML,
             $Test->{ExpectedValue},
-            "BuildDateSelection(): $Test->{Name}, OTRS time zone $Test->{OTRSTimeZone}, "
+            "BuildDateSelection(): $Test->{Name}, LIGERO time zone $Test->{LIGEROTimeZone}, "
                 . ( $Test->{UserTimeZone} ? "user time zone $Test->{UserTimeZone}" : 'no user time zone' )
                 . ", date/time " . ( $DateTimeAsParams ? 'as explicit parameters' : 'via fixed date/time' ),
         );

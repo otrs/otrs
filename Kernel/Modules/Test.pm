@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -29,7 +29,7 @@ sub Run {
     my $LayoutObject = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
 
     # get test page header
-    my $Output = $LayoutObject->Header( Title => 'OTRS Test Page' );
+    my $Output = $LayoutObject->Header( Title => 'LIGERO Test Page' );
 
     # example blocks
     $LayoutObject->Block(

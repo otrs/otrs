@@ -1,5 +1,5 @@
 // --
-// Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+// Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 // --
 // This software comes with ABSOLUTELY NO WARRANTY. For details, see
 // the enclosed file COPYING for license information (GPL). If you
@@ -14,7 +14,7 @@ Core.UI = Core.UI || {};
 /**
  * @namespace Core.UI.Dialog
  * @memberof Core.UI
- * @author OTRS AG
+ * @author LIGERO AG
  * @description
  *      Contains the code for the different dialogs.
  */
@@ -93,7 +93,7 @@ Core.UI.Dialog = (function (TargetNS) {
                 .filter(':first'),
             $FocusField;
 
-        if (!$FirstElement || !$FirstElement.length || $('div.Dialog:visible').find('.OTRSBusinessRequiredDialog').length) {
+        if (!$FirstElement || !$FirstElement.length || $('div.Dialog:visible').find('.LIGEROBusinessRequiredDialog').length) {
             return;
         }
 

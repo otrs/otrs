@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -27,7 +27,7 @@ $Kernel::OM->ObjectParamAdd(
 my $Helper = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
 
 $Kernel::OM->Get('Kernel::System::Type')->TypeAdd(
-    Name    => "X-OTRS-Type-Test",
+    Name    => "X-LIGERO-Type-Test",
     ValidID => 1,
     UserID  => 1,
 );
@@ -38,7 +38,7 @@ my @Tests = (
         Name  => 'Valid ticket type (Unclassified)',
         Email => 'From: Sender <sender@example.com>
 To: Some Name <recipient@example.com>
-X-OTRS-Type: Unclassified
+X-LIGERO-Type: Unclassified
 Subject: Test
 
 Some Content in Body',
@@ -51,20 +51,20 @@ Some Content in Body',
         Name  => 'Valid ticket type (Unclassified)',
         Email => 'From: Sender <sender@example.com>
 To: Some Name <recipient@example.com>
-X-OTRS-Type: X-OTRS-Type-Test
+X-LIGERO-Type: X-LIGERO-Type-Test
 Subject: Test
 
 Some Content in Body',
         NewTicket => 1,
         Check     => {
-            Type => 'X-OTRS-Type-Test',
+            Type => 'X-LIGERO-Type-Test',
         }
     },
     {
         Name  => 'Invalid ticket type, ticket still needs to be created',
         Email => 'From: Sender <sender@example.com>
 To: Some Name <recipient@example.com>
-X-OTRS-Type: Nonexisting
+X-LIGERO-Type: Nonexisting
 Subject: Test
 
 Some Content in Body',

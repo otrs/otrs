@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -39,7 +39,7 @@ sub _ShowOverview {
     my ( $Self, %Param ) = @_;
 
     my $LayoutObject       = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
-    my $OTRSBusinessObject = $Kernel::OM->Get('Kernel::System::OTRSBusiness');
+    my $LIGEROBusinessObject = $Kernel::OM->Get('Kernel::System::LIGEROBusiness');
     my $ConfigObject       = $Kernel::OM->Get('Kernel::Config');
 
     # check if cloud services are disabled
@@ -78,7 +78,7 @@ sub _ShowOverview {
 
         if ( !$CloudServiceList{$CloudService}->{Name} || !$CloudServiceList{$CloudService}->{ConfigDialog} ) {
 
-            # write an error message to the OTRS log
+            # write an error message to the LIGERO log
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
                 Message  => "Configuration of CloudService $CloudService is invalid!",
@@ -98,7 +98,7 @@ sub _ShowOverview {
             Name => 'OverviewResultRow',
             Data => {
                 CloudService            => $CloudServiceList{$CloudService},
-                OTRSBusinessIsInstalled => $OTRSBusinessObject->OTRSBusinessIsInstalled(),
+                LIGEROBusinessIsInstalled => $LIGEROBusinessObject->LIGEROBusinessIsInstalled(),
                 SystemIsRegistered      => $SystemIsRegistered,
             },
         );

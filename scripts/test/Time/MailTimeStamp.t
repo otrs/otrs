@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -18,68 +18,68 @@ my @Tests = (
     {
         Name         => 'UTC',
         TimeStampUTC => '2014-01-10 11:12:13',
-        OTRSTimeZone => 'UTC',
+        LIGEROTimeZone => 'UTC',
         Result       => 'Fri, 10 Jan 2014 11:12:13 +0000',
     },
     {
         Name         => 'Europe/Berlin',
         TimeStampUTC => '2014-01-10 11:12:13',
-        OTRSTimeZone => 'Europe/Berlin',
+        LIGEROTimeZone => 'Europe/Berlin',
         Result       => 'Fri, 10 Jan 2014 12:12:13 +0100',
     },
     {
         Name         => 'America/Los_Angeles',
         TimeStampUTC => '2014-01-10 11:12:13',
-        OTRSTimeZone => 'America/Los_Angeles',
+        LIGEROTimeZone => 'America/Los_Angeles',
         Result       => 'Fri, 10 Jan 2014 03:12:13 -0800',
     },
     {
         Name         => 'Australia/Sydney',
         TimeStampUTC => '2014-01-10 11:12:13',
-        OTRSTimeZone => 'Australia/Sydney',
+        LIGEROTimeZone => 'Australia/Sydney',
         Result       => 'Fri, 10 Jan 2014 22:12:13 +1100',
     },
     {
         Name         => 'Europe/London',
         TimeStampUTC => '2014-01-10 11:12:13',
-        OTRSTimeZone => 'Europe/London',
+        LIGEROTimeZone => 'Europe/London',
         Result       => 'Fri, 10 Jan 2014 11:12:13 +0000',
     },
     {
         Name         => 'Europe/Berlin',
         TimeStampUTC => '2014-08-03 02:03:04',
-        OTRSTimeZone => 'Europe/Berlin',
+        LIGEROTimeZone => 'Europe/Berlin',
         Result       => 'Sun, 3 Aug 2014 04:03:04 +0200',
     },
     {
 
         Name         => 'America/Los_Angeles',
         TimeStampUTC => '2014-08-03 02:03:04',
-        OTRSTimeZone => 'America/Los_Angeles',
+        LIGEROTimeZone => 'America/Los_Angeles',
         Result       => 'Sat, 2 Aug 2014 19:03:04 -0700',
     },
     {
         Name         => 'Australia/Sydney',
         TimeStampUTC => '2014-08-03 02:03:04',
-        OTRSTimeZone => 'Australia/Sydney',
+        LIGEROTimeZone => 'Australia/Sydney',
         Result       => 'Sun, 3 Aug 2014 12:03:04 +1000',
     },
     {
         Name         => 'Europe/London DST',
         TimeStampUTC => '2014-08-03 02:03:04',
-        OTRSTimeZone => 'Europe/London',
+        LIGEROTimeZone => 'Europe/London',
         Result       => 'Sun, 3 Aug 2014 03:03:04 +0100',
     },
     {
         Name         => 'Europe/Berlin DST',
         TimeStampUTC => '2014-08-03 02:03:04',
-        OTRSTimeZone => 'Europe/Berlin',
+        LIGEROTimeZone => 'Europe/Berlin',
         Result       => 'Sun, 3 Aug 2014 04:03:04 +0200',
     },
     {
         Name         => 'Asia/Kathmandu, offset with minutes',
         TimeStampUTC => '2014-08-03 02:03:04',
-        OTRSTimeZone => 'Asia/Kathmandu',
+        LIGEROTimeZone => 'Asia/Kathmandu',
         Result       => 'Sun, 3 Aug 2014 07:48:04 +0545',
     },
 );
@@ -98,10 +98,10 @@ for my $Test (@Tests) {
         },
     );
 
-    # Set OTRS time zone to matching one.
+    # Set LIGERO time zone to matching one.
     $ConfigObject->Set(
-        Key   => 'OTRSTimeZone',
-        Value => $Test->{OTRSTimeZone},
+        Key   => 'LIGEROTimeZone',
+        Value => $Test->{LIGEROTimeZone},
     );
 
     $HelperObject->FixedTimeSet($DateTimeObject);
@@ -112,14 +112,14 @@ for my $Test (@Tests) {
     );
     my $TimeObject = $Kernel::OM->Get('Kernel::System::Time');
 
-    $DateTimeObject->ToTimeZone( TimeZone => $Test->{OTRSTimeZone} );
+    $DateTimeObject->ToTimeZone( TimeZone => $Test->{LIGEROTimeZone} );
 
     my $MailTimeStamp = $TimeObject->MailTimeStamp();
 
     $Self->Is(
         $MailTimeStamp,
         $Test->{Result},
-        "$Test->{Name} ($Test->{OTRSTimeZone}) Timestamp $Test->{TimeStampUTC}:",
+        "$Test->{Name} ($Test->{LIGEROTimeZone}) Timestamp $Test->{TimeStampUTC}:",
     );
 
     $HelperObject->FixedTimeUnset();

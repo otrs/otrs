@@ -1,11 +1,11 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
 # did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
-## nofilter(TidyAll::Plugin::OTRS::Perl::TestSubs)
+## nofilter(TidyAll::Plugin::LIGERO::Perl::TestSubs)
 
 use strict;
 use warnings;
@@ -51,7 +51,7 @@ $Helper->ConfigSettingChange(
     Valid => 1,
     Key   => 'SupportDataCollector::DisablePlugins',
     Value => [
-        'Kernel::System::SupportDataCollector::Plugin::OTRS::PackageDeployment',
+        'Kernel::System::SupportDataCollector::Plugin::LIGERO::PackageDeployment',
     ],
 );
 
@@ -132,25 +132,25 @@ else {
     );
 }
 
-# get OTRS Version
-my $OTRSVersion = $ConfigObject->Get('Version');
+# get LIGERO Version
+my $LIGEROVersion = $ConfigObject->Get('Version');
 
 # leave only mayor and minor level versions
-$OTRSVersion =~ s{ (\d+ \. \d+) .+ }{$1}msx;
+$LIGEROVersion =~ s{ (\d+ \. \d+) .+ }{$1}msx;
 
 # add x as patch level version
-$OTRSVersion .= '.x';
+$LIGEROVersion .= '.x';
 
 my $TestPackage = '<?xml version="1.0" encoding="utf-8" ?>
 <ligero_package version="1.0">
   <Name>Test - ' . $RandomNumber . '</Name>
   <Version>0.0.1</Version>
-  <Vendor>OTRS AG</Vendor>
+  <Vendor>LIGERO AG</Vendor>
   <URL>https://ligero.com/</URL>
   <License>GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007</License>
   <ChangeLog>2005-11-10 New package (some test &lt; &gt; &amp;).</ChangeLog>
   <Description Lang="en">A test package (some test &lt; &gt; &amp;).</Description>
-  <Framework>' . $OTRSVersion . '</Framework>
+  <Framework>' . $LIGEROVersion . '</Framework>
   <BuildDate>2005-11-10 21:17:16</BuildDate>
   <BuildHost>yourhost.example.com</BuildHost>
   <Filelist>
@@ -452,7 +452,7 @@ my $PerlStructureScalar = $JSONObject->Decode(
 if (%RegistrationInfo) {
     for my $Attribute (
         qw(
-        FQDN OTRSVersion OSType OSVersion DatabaseVersion PerlVersion
+        FQDN LIGEROVersion OSType OSVersion DatabaseVersion PerlVersion
         Description SupportDataSending RegistrationKey APIKey State Type
         )
         )
@@ -560,7 +560,7 @@ $Self->IsDeeply(
 # Generate ZZZZUnitTestMaskPasswords.pm to check later for mask passwords.
 my $MaskPasswordFile    = 'ZZZZUnitTest' . $Helper->GetRandomNumber() . 'MaskPasswords';
 my $MaskPasswordContent = <<"EOF";
-# OTRS config file (automatically generated)
+# LIGERO config file (automatically generated)
 # VERSION:1.1
 package Kernel::Config::Files::$MaskPasswordFile;
 use strict;
@@ -581,7 +581,7 @@ sub Load {
         Name   => 'Database Backend',
         Module => 'Kernel::System::CustomerUser::DB',
         Params => {
-           User => 'OTRS',
+           User => 'LIGERO',
            Password => 'secure-password',
            Table => 'customer_user',
         },

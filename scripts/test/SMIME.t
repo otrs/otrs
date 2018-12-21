@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -166,8 +166,8 @@ my %Check = (
         Modulus =>
             'B686AD697981A5A387792F3F301062EF520F6966AE21421995C1AB63BF4AB974D250E8764F9B341364B0842FA59C9FFECCB0243ABF802FAF28DFDCE3C2315FC74D6BA81F09AB5F333A0EDAFFDDCB941792F4C0E57AC0413E205E89D4E61D39B0F144FAF3E7064FD97131DC1E723044E4B0DEAA17E83C0B0697C1BB65B11D997C6A3EAB148FFAB3ECF60CB9E17BE0DABAE087F488BCA29C14D597DE024F1A0EBA6F435EFA03B1EBCBBB5D1107CBBD72CC8B0202AE76BEA0672B24A75C82031BC2DE9B82CDC25316F7DDEC9D32BF9C4FF2858424AA371D2E96F71170AAB3167ED9FA5A2C525C53B8ECE725034339DC3DAC32D3840D1D3ACFB42DB67C9817142019',
         Subject => [
-            'C= DE ST= Bayern L= Straubing O= OTRS AG CN= unittest emailAddress= unittest@example.org',
-            'C =  DE, ST =  Bayern, L =  Straubing, O =  OTRS AG, CN =  unittest, emailAddress =  unittest@example.org',
+            'C= DE ST= Bayern L= Straubing O= LIGERO AG CN= unittest emailAddress= unittest@example.org',
+            'C =  DE, ST =  Bayern, L =  Straubing, O =  LIGERO AG, CN =  unittest, emailAddress =  unittest@example.org',
         ],
         Hash        => $CheckHash1,
         Private     => 'No',
@@ -175,8 +175,8 @@ my %Check = (
         Type        => 'cert',
         Fingerprint => 'E9:F9:8D:54:74:35:E6:AC:9F:81:E5:D5:82:0E:6C:27:B2:B0:D4:18',
         Issuer      => [
-            '/C= DE/ST= Bayern/L= Straubing/O= OTRS AG/CN= unittest/emailAddress= unittest@example.org',
-            'C =  DE, ST =  Bayern, L =  Straubing, O =  OTRS AG, CN =  unittest, emailAddress =  unittest@example.org',
+            '/C= DE/ST= Bayern/L= Straubing/O= LIGERO AG/CN= unittest/emailAddress= unittest@example.org',
+            'C =  DE, ST =  Bayern, L =  Straubing, O =  LIGERO AG, CN =  unittest, emailAddress =  unittest@example.org',
         ],
         Email          => 'unittest@example.org',
         ShortEndDate   => '2026-01-15',
@@ -188,8 +188,8 @@ my %Check = (
         Modulus =>
             'CFAF52AC9AD837F66289E6BAB9BBF96BD3173FE26EA06E72939E921528AFA6197C1FF941BEBEE1FD424353E725531A5521BA8BE7A796C0668E3FBFBEC9926D6B972E0513EDF12A81299328B62C132BB63D0B3942A2A194DE46814E84E2E959437DC5FC36F2F51E3B6913A0AF9DC1275495DE10EB2DA57913D725CAFBBCB8A2A476EF71B70A66AD7BFD9A2E37EB9C26BE41D5C5F9207C4CBA24AC0CE97367622CC14D717ACF54FF6111EA0BD62EB2D73D684FF8119AFDFA196233EF8DD2F31001F86621146A187236F30677E4639377AE53B7FAFE7B2C497832F736E566D86260DBC0E4720FE267E61646462CECF8A8353034CD6F8C9D617B86E3EB2EC3477237',
         Subject => [
-            'C= DE ST= Bayern L= Straubing O= OTRS AG CN= unittest2 emailAddress= unittest2@example.org',
-            'C =  DE, ST =  Bayern, L =  Straubing, O =  OTRS AG, CN =  unittest2, emailAddress =  unittest2@example.org',
+            'C= DE ST= Bayern L= Straubing O= LIGERO AG CN= unittest2 emailAddress= unittest2@example.org',
+            'C =  DE, ST =  Bayern, L =  Straubing, O =  LIGERO AG, CN =  unittest2, emailAddress =  unittest2@example.org',
         ],
         Hash        => $CheckHash2,
         Private     => 'No',
@@ -197,8 +197,8 @@ my %Check = (
         Fingerprint => 'AD:E4:99:93:45:CB:82:E3:1E:4B:0F:92:12:8D:21:26:3D:16:77:87',
         Type        => 'cert',
         Issuer      => [
-            '/C= DE/ST= Bayern/L= Straubing/O= OTRS AG/CN= unittest2/emailAddress= unittest2@example.org',
-            'C =  DE, ST =  Bayern, L =  Straubing, O =  OTRS AG, CN =  unittest2, emailAddress =  unittest2@example.org',
+            '/C= DE/ST= Bayern/L= Straubing/O= LIGERO AG/CN= unittest2/emailAddress= unittest2@example.org',
+            'C =  DE, ST =  Bayern, L =  Straubing, O =  LIGERO AG, CN =  unittest2, emailAddress =  unittest2@example.org',
         ],
         Email          => 'unittest2@example.org',
         EndDate        => 'Jan 15 13:29:18 2026 GMT',
@@ -210,8 +210,8 @@ my %Check = (
         Modulus =>
             'EA59D299CD8751ED3DDC34EE92AAC16FF6D1763D4DA58AA925F3691174299ACB7529651B277220A07AF7A6E72D3D151E2885ABCD8AAB4D9F6C9B7ABC2806D21C037C323112EC3644A3C67AF228C20B5B5B62790F9FC3B69FCD2BE7927ADF34CFFEB43EA0F4FD33003F8154CDC299C7268049ABDBB206720D9EA92D69721776F67C4970C778163CAE4D3CC2E5C7DF2654BCAFB8AC33FEEFA2D88531A65A2AD4AD6B83F3D7AF8C2334B0F598C7E112E6BA36A6D3FB828F052930CF492FDBA0C97C6B0685A6A1B4B11DC63A2EA1AFAA541A68364B1EC1A209AC7139283EFA8ECC4F8E2BA7096956BAE21278C4DEB61D2EE8FD774EC911DCEEE82CFC3171D24A9F89',
         Subject => [
-            'C= DE ST= Bayern L= Straubing OU= OTRS AG CN= unittest emailAddress= unittest3@example.org',
-            'C =  DE, ST =  Bayern, L =  Straubing, OU =  OTRS AG, CN =  unittest, emailAddress =  unittest3@example.org',
+            'C= DE ST= Bayern L= Straubing OU= LIGERO AG CN= unittest emailAddress= unittest3@example.org',
+            'C =  DE, ST =  Bayern, L =  Straubing, OU =  LIGERO AG, CN =  unittest, emailAddress =  unittest3@example.org',
         ],
         Hash        => $CheckHash3,
         Private     => 'No',
@@ -219,8 +219,8 @@ my %Check = (
         Fingerprint => '91:49:EA:53:42:B3:2F:02:7E:C1:D6:6F:C9:20:FA:26:8B:9C:4F:CF',
         Type        => 'cert',
         Issuer      => [
-            '/C= DE/ST= Bayern/L= Straubing/OU= OTRS AG/CN= unittest/emailAddress= unittest3@example.org',
-            'C =  DE, ST =  Bayern, L =  Straubing, OU =  OTRS AG, CN =  unittest, emailAddress =  unittest3@example.org',
+            '/C= DE/ST= Bayern/L= Straubing/OU= LIGERO AG/CN= unittest/emailAddress= unittest3@example.org',
+            'C =  DE, ST =  Bayern, L =  Straubing, OU =  LIGERO AG, CN =  unittest, emailAddress =  unittest3@example.org',
         ],
 
         # this is the display for alternate names (SubjectAltName)
@@ -660,17 +660,17 @@ my $GetCertificateDataFromFiles = sub {
 };
 
 # OpenSSL 0.9.x correct hashes
-my $OTRSRootCAHash   = '1a01713f';
-my $OTRSRDCAHash     = '7807c24e';
-my $OTRSLabCAHash    = '2fc24258';
-my $OTRSUserCertHash = 'eab039b6';
+my $LIGERORootCAHash   = '1a01713f';
+my $LIGERORDCAHash     = '7807c24e';
+my $LIGEROLabCAHash    = '2fc24258';
+my $LIGEROUserCertHash = 'eab039b6';
 
 # OpenSSL 1.0.0 correct hashes
 if ($UseNewHashes) {
-    $OTRSRootCAHash   = '7835cf94';
-    $OTRSRDCAHash     = 'b5d19fb9';
-    $OTRSLabCAHash    = '19545811';
-    $OTRSUserCertHash = '4d400195';
+    $LIGERORootCAHash   = '7835cf94';
+    $LIGERORDCAHash     = 'b5d19fb9';
+    $LIGEROLabCAHash    = '19545811';
+    $LIGEROUserCertHash = '4d400195';
 }
 
 # create certificates table
@@ -678,52 +678,52 @@ my %Certificates;
 
 # get data from files
 my ( $CertificateString, $PrivateString, $PrivateSecret ) = $GetCertificateDataFromFiles->(
-    "SMIMECACertificate-OTRSLab.crt",
-    "SMIMECAPrivateKey-OTRSLab.pem",
-    "SMIMECAPrivateKeyPass-OTRSLab.crt",
+    "SMIMECACertificate-LIGEROLab.crt",
+    "SMIMECAPrivateKey-LIGEROLab.pem",
+    "SMIMECAPrivateKeyPass-LIGEROLab.crt",
 );
 
 # fill certificates table
-$Certificates{OTRSLabCA} = {
-    Hash          => $OTRSLabCAHash,
+$Certificates{LIGEROLabCA} = {
+    Hash          => $LIGEROLabCAHash,
     Fingerprint   => '28:10:65:6D:C7:FD:1B:37:BE:B5:73:44:9F:D9:C8:95:57:34:B0:A1',
     String        => $CertificateString,
     PrivateSecret => $PrivateSecret,
-    PrivateHash   => $OTRSLabCAHash,
+    PrivateHash   => $LIGEROLabCAHash,
     PrivateString => $PrivateString,
 };
 
 # get data from files
 ( $CertificateString, $PrivateString, $PrivateSecret ) = $GetCertificateDataFromFiles->(
-    "SMIMECACertificate-OTRSRD.crt",
-    "SMIMECAPrivateKey-OTRSRD.pem",
-    "SMIMECAPrivateKeyPass-OTRSRD.crt",
+    "SMIMECACertificate-LIGERORD.crt",
+    "SMIMECAPrivateKey-LIGERORD.pem",
+    "SMIMECAPrivateKeyPass-LIGERORD.crt",
 );
 
 # fill certificates table
-$Certificates{OTRSRDCA} = {
-    Hash          => $OTRSRDCAHash,
+$Certificates{LIGERORDCA} = {
+    Hash          => $LIGERORDCAHash,
     Fingerprint   => '3F:F1:41:8A:CF:39:30:53:DB:27:B0:08:3A:58:54:ED:31:D2:8A:FC',
     String        => $CertificateString,
     PrivateSecret => $PrivateSecret,
-    PrivateHash   => $OTRSRDCAHash,
+    PrivateHash   => $LIGERORDCAHash,
     PrivateString => $PrivateString,
 };
 
 # get data from files
 ( $CertificateString, $PrivateString, $PrivateSecret ) = $GetCertificateDataFromFiles->(
-    "SMIMECACertificate-OTRSRoot.crt",
-    "SMIMECAPrivateKey-OTRSRoot.pem",
-    "SMIMECAPrivateKeyPass-OTRSRoot.crt",
+    "SMIMECACertificate-LIGERORoot.crt",
+    "SMIMECAPrivateKey-LIGERORoot.pem",
+    "SMIMECAPrivateKeyPass-LIGERORoot.crt",
 );
 
 # fill certificates table
-$Certificates{OTRSRootCA} = {
-    Hash          => $OTRSRootCAHash,
+$Certificates{LIGERORootCA} = {
+    Hash          => $LIGERORootCAHash,
     Fingerprint   => 'BB:F7:B5:5B:52:AE:2D:4F:5A:B5:BD:E5:56:C5:D0:D9:38:3F:76:18',
     String        => $CertificateString,
     PrivateSecret => $PrivateSecret,
-    PrivateHash   => $OTRSRootCAHash,
+    PrivateHash   => $LIGERORootCAHash,
     PrivateString => $PrivateString,
 };
 
@@ -740,11 +740,11 @@ $Certificates{OTRSRootCA} = {
     # add certificate smimeuser1
     my %SMIMEUser1Certificate;
     %SMIMEUser1Certificate = (
-        Hash          => $OTRSUserCertHash,
+        Hash          => $LIGEROUserCertHash,
         Fingerprint   => 'F1:1F:83:42:14:DB:0F:FD:2E:F7:C5:84:36:8B:07:72:48:2C:C9:C0',
         String        => $CertificateString,
         PrivateSecret => $PrivateSecret,
-        PrivateHash   => $OTRSUserCertHash,
+        PrivateHash   => $LIGEROUserCertHash,
         PrivateString => $PrivateString,
     );
 
@@ -782,8 +782,8 @@ $Certificates{OTRSRootCA} = {
         'Sign(), failed certificate chain verification, needed CA certificates not embedded',
     );
 
-    # add CA certificates to the local cert storage (OTRSLabCA and OTRSRDCA)
-    for my $Cert (qw( OTRSLabCA OTRSRDCA )) {
+    # add CA certificates to the local cert storage (LIGEROLabCA and LIGERORDCA)
+    for my $Cert (qw( LIGEROLabCA LIGERORDCA )) {
         $SMIMEObject->CertificateAdd(
             Certificate => $Certificates{$Cert}->{String},
         );
@@ -809,13 +809,13 @@ $Certificates{OTRSRootCA} = {
 
     # add the root CA cert to the trusted certificates path
     $SMIMEObject->CertificateAdd(
-        Certificate => $Certificates{OTRSRootCA}->{String},
+        Certificate => $Certificates{LIGERORootCA}->{String},
     );
 
     # verify now must works
     %Data = $SMIMEObject->Verify(
         Message => $Sign,
-        CACert  => "$CertPath/$OTRSRootCAHash.0",
+        CACert  => "$CertPath/$LIGERORootCAHash.0",
     );
 
     # it must work
@@ -860,7 +860,7 @@ $Certificates{OTRSRootCA} = {
     # add relation
     $Success = $SMIMEObject->SignerCertRelationAdd(
         CertFingerprint => $SMIMEUser1Certificate{Fingerprint},
-        CAFingerprint   => $Certificates{OTRSRDCA}->{Fingerprint},
+        CAFingerprint   => $Certificates{LIGERORDCA}->{Fingerprint},
         UserID          => 1,
     );
     $Self->True(
@@ -870,7 +870,7 @@ $Certificates{OTRSRootCA} = {
 
     $Success = $SMIMEObject->SignerCertRelationAdd(
         CertFingerprint => $SMIMEUser1Certificate{Fingerprint},
-        CAFingerprint   => $Certificates{OTRSLabCA}->{Fingerprint},
+        CAFingerprint   => $Certificates{LIGEROLabCA}->{Fingerprint},
         UserID          => 1,
     );
     $Self->True(
@@ -887,7 +887,7 @@ $Certificates{OTRSRootCA} = {
     # verify now must works
     %Data = $SMIMEObject->Verify(
         Message => $Sign,
-        CACert  => "$CertPath/$OTRSRootCAHash.0",
+        CACert  => "$CertPath/$LIGERORootCAHash.0",
     );
 
     # it must works
@@ -1109,12 +1109,12 @@ xqdO7PfndBF8qwrJ7S91
 
         # insert the common content
         $CertInfo{ 'SmimeTest_' . $Number }->{Subject} =
-            'C= MX ST= Jalisco L= Guadalajara O= OTRS OU= Research and Development CN= ligero.org emailAddress= smime@test.com';
+            'C= MX ST= Jalisco L= Guadalajara O= LIGERO OU= Research and Development CN= ligero.org emailAddress= smime@test.com';
         $CertInfo{ 'SmimeTest_' . $Number }->{Hash}    = $CommonHash;
         $CertInfo{ 'SmimeTest_' . $Number }->{Private} = 'No';
         $CertInfo{ 'SmimeTest_' . $Number }->{Type}    = 'cert';
         $CertInfo{ 'SmimeTest_' . $Number }->{Issuer} =
-            'C= MX/ST= Jalisco/L= Guadalajara/O= OTRS/OU= Research and Development/CN= ligero.org/emailAddress= smime@test.com';
+            'C= MX/ST= Jalisco/L= Guadalajara/O= LIGERO/OU= Research and Development/CN= ligero.org/emailAddress= smime@test.com';
         $CertInfo{ 'SmimeTest_' . $Number }->{Email} = 'smime@test.com';
 
         # add every SmimeTest_N certificate
@@ -1974,135 +1974,135 @@ VvHrdzP1tlEqZhMhfEgiNYVhYaxg6SaKSVY9GlGmMVrL2rUNIJ5I+Ef0lZh842bF
 
         # set wrong hashes
         my %WrongHashes = (
-            OTRSRootCA => 'aaaaaaaa',
-            OTRSRDCA   => 'bbbbbbbb',
-            OTRSLabCA  => 'cccccccc',
+            LIGERORootCA => 'aaaaaaaa',
+            LIGERORDCA   => 'bbbbbbbb',
+            LIGEROLabCA  => 'cccccccc',
         );
 
         my @Tests = (
             {
                 Name     => '3 Certs, PKs and PSs',
                 WrongCAs => {
-                    OTRSRootCA => {
-                        WrongCAFile                  => "$WrongHashes{OTRSRootCA}.0",
-                        WrongCAFileContent           => $Certificates{OTRSRootCA}->{String},
-                        WrongCAPrivateKeyFileContent => $Certificates{OTRSRootCA}->{PrivateString},
+                    LIGERORootCA => {
+                        WrongCAFile                  => "$WrongHashes{LIGERORootCA}.0",
+                        WrongCAFileContent           => $Certificates{LIGERORootCA}->{String},
+                        WrongCAPrivateKeyFileContent => $Certificates{LIGERORootCA}->{PrivateString},
                         WrongCAPrivateSecretFileContent =>
-                            $Certificates{OTRSRootCA}->{PrivateSecret},
+                            $Certificates{LIGERORootCA}->{PrivateSecret},
                         WrongRelations => [
                             {
-                                CertHash        => $WrongHashes{OTRSRootCA},
-                                CertFingerprint => $Certificates{OTRSRootCA}->{Fingerprint},
-                                CAHash          => $WrongHashes{OTRSRDCA},
-                                CAFingerprint   => $Certificates{OTRSRDCA}->{Fingerprint},
+                                CertHash        => $WrongHashes{LIGERORootCA},
+                                CertFingerprint => $Certificates{LIGERORootCA}->{Fingerprint},
+                                CAHash          => $WrongHashes{LIGERORDCA},
+                                CAFingerprint   => $Certificates{LIGERORDCA}->{Fingerprint},
 
                             },
                             {
-                                CertHash        => $WrongHashes{OTRSRootCA},
-                                CertFingerprint => $Certificates{OTRSRootCA}->{Fingerprint},
-                                CAHash          => $WrongHashes{OTRSLabCA},
-                                CAFingerprint   => $Certificates{OTRSLabCA}->{Fingerprint},
+                                CertHash        => $WrongHashes{LIGERORootCA},
+                                CertFingerprint => $Certificates{LIGERORootCA}->{Fingerprint},
+                                CAHash          => $WrongHashes{LIGEROLabCA},
+                                CAFingerprint   => $Certificates{LIGEROLabCA}->{Fingerprint},
 
                             },
                         ],
                     },
-                    OTRSRDCA => {
-                        WrongCAFile                     => "$WrongHashes{OTRSRDCA}.0",
-                        WrongCAFileContent              => $Certificates{OTRSRDCA}->{String},
-                        WrongCAPrivateKeyFileContent    => $Certificates{OTRSRDCA}->{PrivateString},
-                        WrongCAPrivateSecretFileContent => $Certificates{OTRSRDCA}->{PrivateSecret},
+                    LIGERORDCA => {
+                        WrongCAFile                     => "$WrongHashes{LIGERORDCA}.0",
+                        WrongCAFileContent              => $Certificates{LIGERORDCA}->{String},
+                        WrongCAPrivateKeyFileContent    => $Certificates{LIGERORDCA}->{PrivateString},
+                        WrongCAPrivateSecretFileContent => $Certificates{LIGERORDCA}->{PrivateSecret},
                         WrongRelations                  => [
                             {
-                                CertHash        => $WrongHashes{OTRSRDCA},
-                                CertFingerprint => $Certificates{OTRSRDCA}->{Fingerprint},
-                                CAHash          => $WrongHashes{OTRSRootCA},
-                                CAFingerprint   => $Certificates{OTRSRootCA}->{Fingerprint},
+                                CertHash        => $WrongHashes{LIGERORDCA},
+                                CertFingerprint => $Certificates{LIGERORDCA}->{Fingerprint},
+                                CAHash          => $WrongHashes{LIGERORootCA},
+                                CAFingerprint   => $Certificates{LIGERORootCA}->{Fingerprint},
 
                             },
                             {
-                                CertHash        => $WrongHashes{OTRSRDCA},
-                                CertFingerprint => $Certificates{OTRSRDCA}->{Fingerprint},
-                                CAHash          => $WrongHashes{OTRSLabCA},
-                                CAFingerprint   => $Certificates{OTRSLabCA}->{Fingerprint},
+                                CertHash        => $WrongHashes{LIGERORDCA},
+                                CertFingerprint => $Certificates{LIGERORDCA}->{Fingerprint},
+                                CAHash          => $WrongHashes{LIGEROLabCA},
+                                CAFingerprint   => $Certificates{LIGEROLabCA}->{Fingerprint},
 
                             },
                         ],
                     },
-                    OTRSLabCA => {
-                        WrongCAFile                  => "$WrongHashes{OTRSLabCA}.0",
-                        WrongCAFileContent           => $Certificates{OTRSLabCA}->{String},
-                        WrongCAPrivateKeyFileContent => $Certificates{OTRSLabCA}->{PrivateString},
+                    LIGEROLabCA => {
+                        WrongCAFile                  => "$WrongHashes{LIGEROLabCA}.0",
+                        WrongCAFileContent           => $Certificates{LIGEROLabCA}->{String},
+                        WrongCAPrivateKeyFileContent => $Certificates{LIGEROLabCA}->{PrivateString},
                         WrongCAPrivateSecretFileContent =>
-                            $Certificates{OTRSRootCA}->{PrivateSecret},
+                            $Certificates{LIGERORootCA}->{PrivateSecret},
                         WrongRelations => [
                             {
-                                CertHash        => $WrongHashes{OTRSLabCA},
-                                CertFingerprint => $Certificates{OTRSLabCA}->{Fingerprint},
-                                CAHash          => $WrongHashes{OTRSRootCA},
-                                CAFingerprint   => $Certificates{OTRSRootCA}->{Fingerprint},
+                                CertHash        => $WrongHashes{LIGEROLabCA},
+                                CertFingerprint => $Certificates{LIGEROLabCA}->{Fingerprint},
+                                CAHash          => $WrongHashes{LIGERORootCA},
+                                CAFingerprint   => $Certificates{LIGERORootCA}->{Fingerprint},
 
                             },
                             {
-                                CertHash        => $WrongHashes{OTRSLabCA},
-                                CertFingerprint => $Certificates{OTRSLabCA}->{Fingerprint},
-                                CAHash          => $WrongHashes{OTRSRDCA},
-                                CAFingerprint   => $Certificates{OTRSRDCA}->{Fingerprint},
+                                CertHash        => $WrongHashes{LIGEROLabCA},
+                                CertFingerprint => $Certificates{LIGEROLabCA}->{Fingerprint},
+                                CAHash          => $WrongHashes{LIGERORDCA},
+                                CAFingerprint   => $Certificates{LIGERORDCA}->{Fingerprint},
 
                             },
                         ],
                     },
                 },
                 CorrectCAs => {
-                    OTRSRootCA => {
+                    LIGERORootCA => {
                         CorrectRelations => [
                             {
-                                CertHash        => $Certificates{OTRSRootCA}->{Hash},
-                                CertFingerprint => $Certificates{OTRSRootCA}->{Fingerprint},
-                                CAHash          => $Certificates{OTRSRDCA}->{Hash},
-                                CAFingerprint   => $Certificates{OTRSRDCA}->{Fingerprint},
+                                CertHash        => $Certificates{LIGERORootCA}->{Hash},
+                                CertFingerprint => $Certificates{LIGERORootCA}->{Fingerprint},
+                                CAHash          => $Certificates{LIGERORDCA}->{Hash},
+                                CAFingerprint   => $Certificates{LIGERORDCA}->{Fingerprint},
 
                             },
                             {
-                                CertHash        => $Certificates{OTRSRootCA}->{Hash},
-                                CertFingerprint => $Certificates{OTRSRootCA}->{Fingerprint},
-                                CAHash          => $Certificates{OTRSLabCA}->{Hash},
-                                CAFingerprint   => $Certificates{OTRSLabCA}->{Fingerprint},
+                                CertHash        => $Certificates{LIGERORootCA}->{Hash},
+                                CertFingerprint => $Certificates{LIGERORootCA}->{Fingerprint},
+                                CAHash          => $Certificates{LIGEROLabCA}->{Hash},
+                                CAFingerprint   => $Certificates{LIGEROLabCA}->{Fingerprint},
 
                             },
                         ],
                     },
-                    OTRSRDCA => {
+                    LIGERORDCA => {
                         CorrectRelations => [
                             {
-                                CertHash        => $Certificates{OTRSRDCA}->{Hash},
-                                CertFingerprint => $Certificates{OTRSRDCA}->{Fingerprint},
-                                CAHash          => $Certificates{OTRSRootCA}->{Hash},
-                                CAFingerprint   => $Certificates{OTRSRootCA}->{Fingerprint},
+                                CertHash        => $Certificates{LIGERORDCA}->{Hash},
+                                CertFingerprint => $Certificates{LIGERORDCA}->{Fingerprint},
+                                CAHash          => $Certificates{LIGERORootCA}->{Hash},
+                                CAFingerprint   => $Certificates{LIGERORootCA}->{Fingerprint},
 
                             },
                             {
-                                CertHash        => $Certificates{OTRSRDCA}->{Hash},
-                                CertFingerprint => $Certificates{OTRSRDCA}->{Fingerprint},
-                                CAHash          => $Certificates{OTRSLabCA}->{Hash},
-                                CAFingerprint   => $Certificates{OTRSLabCA}->{Fingerprint},
+                                CertHash        => $Certificates{LIGERORDCA}->{Hash},
+                                CertFingerprint => $Certificates{LIGERORDCA}->{Fingerprint},
+                                CAHash          => $Certificates{LIGEROLabCA}->{Hash},
+                                CAFingerprint   => $Certificates{LIGEROLabCA}->{Fingerprint},
 
                             },
                         ],
                     },
-                    OTRSLabCA => {
+                    LIGEROLabCA => {
                         CorrectRelations => [
                             {
-                                CertHash        => $Certificates{OTRSLabCA}->{Hash},
-                                CertFingerprint => $Certificates{OTRSLabCA}->{Fingerprint},
-                                CAHash          => $Certificates{OTRSRootCA}->{Hash},
-                                CAFingerprint   => $Certificates{OTRSRootCA}->{Fingerprint},
+                                CertHash        => $Certificates{LIGEROLabCA}->{Hash},
+                                CertFingerprint => $Certificates{LIGEROLabCA}->{Fingerprint},
+                                CAHash          => $Certificates{LIGERORootCA}->{Hash},
+                                CAFingerprint   => $Certificates{LIGERORootCA}->{Fingerprint},
 
                             },
                             {
-                                CertHash        => $Certificates{OTRSLabCA}->{Hash},
-                                CertFingerprint => $Certificates{OTRSLabCA}->{Fingerprint},
-                                CAHash          => $Certificates{OTRSRDCA}->{Hash},
-                                CAFingerprint   => $Certificates{OTRSRDCA}->{Fingerprint},
+                                CertHash        => $Certificates{LIGEROLabCA}->{Hash},
+                                CertFingerprint => $Certificates{LIGEROLabCA}->{Fingerprint},
+                                CAHash          => $Certificates{LIGERORDCA}->{Hash},
+                                CAFingerprint   => $Certificates{LIGERORDCA}->{Fingerprint},
                             },
                         ],
                     },
@@ -2115,12 +2115,12 @@ VvHrdzP1tlEqZhMhfEgiNYVhYaxg6SaKSVY9GlGmMVrL2rUNIJ5I+Ef0lZh842bF
             {
                 Name     => '1 Cert, No PKs No PSs',
                 WrongCAs => {
-                    OTRSRootCA => {
-                        WrongCAFile                  => "$WrongHashes{OTRSRootCA}.0",
-                        WrongCAFileContent           => $Certificates{OTRSRootCA}->{String},
-                        WrongCAPrivateKeyFileContent => $Certificates{OTRSRootCA}->{PrivateString},
+                    LIGERORootCA => {
+                        WrongCAFile                  => "$WrongHashes{LIGERORootCA}.0",
+                        WrongCAFileContent           => $Certificates{LIGERORootCA}->{String},
+                        WrongCAPrivateKeyFileContent => $Certificates{LIGERORootCA}->{PrivateString},
                         WrongCAPrivateSecretFileContent =>
-                            $Certificates{OTRSRootCA}->{PrivateSecret},
+                            $Certificates{LIGERORootCA}->{PrivateSecret},
                     },
                 },
                 UsePrivateKeys    => 0,
@@ -2131,12 +2131,12 @@ VvHrdzP1tlEqZhMhfEgiNYVhYaxg6SaKSVY9GlGmMVrL2rUNIJ5I+Ef0lZh842bF
             {
                 Name     => '1 Cert, 1 PKs No PSs',
                 WrongCAs => {
-                    OTRSRootCA => {
-                        WrongCAFile                  => "$WrongHashes{OTRSRootCA}.0",
-                        WrongCAFileContent           => $Certificates{OTRSRootCA}->{String},
-                        WrongCAPrivateKeyFileContent => $Certificates{OTRSRootCA}->{PrivateString},
+                    LIGERORootCA => {
+                        WrongCAFile                  => "$WrongHashes{LIGERORootCA}.0",
+                        WrongCAFileContent           => $Certificates{LIGERORootCA}->{String},
+                        WrongCAPrivateKeyFileContent => $Certificates{LIGERORootCA}->{PrivateString},
                         WrongCAPrivateSecretFileContent =>
-                            $Certificates{OTRSRootCA}->{PrivateSecret},
+                            $Certificates{LIGERORootCA}->{PrivateSecret},
                     },
                 },
                 UsePrivateKeys    => 1,
@@ -2147,12 +2147,12 @@ VvHrdzP1tlEqZhMhfEgiNYVhYaxg6SaKSVY9GlGmMVrL2rUNIJ5I+Ef0lZh842bF
             {
                 Name     => '1 Cert, No PKs 1 PSs',
                 WrongCAs => {
-                    OTRSRootCA => {
-                        WrongCAFile                  => "$WrongHashes{OTRSRootCA}.0",
-                        WrongCAFileContent           => $Certificates{OTRSRootCA}->{String},
-                        WrongCAPrivateKeyFileContent => $Certificates{OTRSRootCA}->{PrivateString},
+                    LIGERORootCA => {
+                        WrongCAFile                  => "$WrongHashes{LIGERORootCA}.0",
+                        WrongCAFileContent           => $Certificates{LIGERORootCA}->{String},
+                        WrongCAPrivateKeyFileContent => $Certificates{LIGERORootCA}->{PrivateString},
                         WrongCAPrivateSecretFileContent =>
-                            $Certificates{OTRSRootCA}->{PrivateSecret},
+                            $Certificates{LIGERORootCA}->{PrivateSecret},
                     },
                 },
                 UsePrivateKeys    => 0,
@@ -2429,7 +2429,7 @@ VvHrdzP1tlEqZhMhfEgiNYVhYaxg6SaKSVY9GlGmMVrL2rUNIJ5I+Ef0lZh842bF
 {
 
     # add certificates
-    for my $CA (qw( OTRSRootCA OTRSLabCA )) {
+    for my $CA (qw( LIGERORootCA LIGEROLabCA )) {
         my %Result = $SMIMEObject->CertificateAdd(
             Certificate => $Certificates{$CA}->{String},
         );
@@ -2451,7 +2451,7 @@ VvHrdzP1tlEqZhMhfEgiNYVhYaxg6SaKSVY9GlGmMVrL2rUNIJ5I+Ef0lZh842bF
         {
             Name   => 'Wrong Filename',
             Params => {
-                Filename => "$Certificates{OTRSRDCA}->{Hash}.0",
+                Filename => "$Certificates{LIGERORDCA}->{Hash}.0",
             },
             Success => 0,
         },
@@ -2459,14 +2459,14 @@ VvHrdzP1tlEqZhMhfEgiNYVhYaxg6SaKSVY9GlGmMVrL2rUNIJ5I+Ef0lZh842bF
             Name   => 'Missing Hash',
             Params => {
                 Hash        => '',
-                Fingerprint => $Certificates{OTRSRootCA}->{Fingerprint},
+                Fingerprint => $Certificates{LIGERORootCA}->{Fingerprint},
             },
             Success => 0,
         },
         {
             Name   => 'Missing Fingerprint',
             Params => {
-                Hash        => $Certificates{OTRSRootCA}->{Hash},
+                Hash        => $Certificates{LIGERORootCA}->{Hash},
                 Fingerprint => '',
             },
             Success => 0,
@@ -2474,31 +2474,31 @@ VvHrdzP1tlEqZhMhfEgiNYVhYaxg6SaKSVY9GlGmMVrL2rUNIJ5I+Ef0lZh842bF
         {
             Name   => 'Wrong Hash',
             Params => {
-                Hash        => $Certificates{OTRSLabCA}->{Hash},
-                Fingerprint => $Certificates{OTRSRootCA}->{Fingerprint},
+                Hash        => $Certificates{LIGEROLabCA}->{Hash},
+                Fingerprint => $Certificates{LIGERORootCA}->{Fingerprint},
             },
             Success => 0,
         },
         {
             Name   => 'Wrong Fingerprint',
             Params => {
-                Hash        => $Certificates{OTRSRootCA}->{Hash},
-                Fingerprint => $Certificates{OTRSLabCA}->{Fingerprint},
+                Hash        => $Certificates{LIGERORootCA}->{Hash},
+                Fingerprint => $Certificates{LIGEROLabCA}->{Fingerprint},
             },
             Success => 0,
         },
         {
             Name   => 'Correct Filename',
             Params => {
-                Filename => "$Certificates{OTRSRootCA}->{Hash}.0",
+                Filename => "$Certificates{LIGERORootCA}->{Hash}.0",
             },
             Success => 1,
         },
         {
             Name   => 'Correct Hash, Fingerprint',
             Params => {
-                Hash        => $Certificates{OTRSRootCA}->{Hash},
-                Fingerprint => $Certificates{OTRSRootCA}->{Fingerprint},
+                Hash        => $Certificates{LIGERORootCA}->{Hash},
+                Fingerprint => $Certificates{LIGERORootCA}->{Fingerprint},
             },
             Success => 1,
         },
@@ -2544,11 +2544,11 @@ VvHrdzP1tlEqZhMhfEgiNYVhYaxg6SaKSVY9GlGmMVrL2rUNIJ5I+Ef0lZh842bF
 
     # compare both methods
     my $CertificateText1 = $SMIMEObject->CertificateRead(
-        Filename => "$Certificates{OTRSRootCA}->{Hash}.0",
+        Filename => "$Certificates{LIGERORootCA}->{Hash}.0",
     );
     my $CertificateText2 = $SMIMEObject->CertificateRead(
-        Hash        => $Certificates{OTRSRootCA}->{Hash},
-        Fingerprint => $Certificates{OTRSRootCA}->{Fingerprint},
+        Hash        => $Certificates{LIGERORootCA}->{Hash},
+        Fingerprint => $Certificates{LIGERORootCA}->{Fingerprint},
     );
 
     $Self->Is(
@@ -2558,7 +2558,7 @@ VvHrdzP1tlEqZhMhfEgiNYVhYaxg6SaKSVY9GlGmMVrL2rUNIJ5I+Ef0lZh842bF
     );
 
     # clean system, remove certificates
-    for my $CA (qw( OTRSRootCA OTRSLabCA )) {
+    for my $CA (qw( LIGERORootCA LIGEROLabCA )) {
         my %Result = $SMIMEObject->CertificateRemove(
             Hash        => $Certificates{$CA}->{Hash},
             Fingerprint => $Certificates{$CA}->{Fingerprint},

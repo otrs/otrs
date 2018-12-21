@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -242,7 +242,7 @@ my @Tests = (
             UserID => $UserID,
             Ticket => \%Ticket,
             Config => {
-                $DFName1 => '<OTRS_TICKET_Queue>',
+                $DFName1 => '<LIGERO_TICKET_Queue>',
             },
         },
         Success => 1,
@@ -253,7 +253,7 @@ my @Tests = (
             UserID => $UserID,
             Ticket => \%Ticket,
             Config => {
-                $DFName1 => '<OTRS_TICKET_Queue> <OTRS_TICKET_QueueID>',
+                $DFName1 => '<LIGERO_TICKET_Queue> <LIGERO_TICKET_QueueID>',
             },
         },
         Success => 1,
@@ -264,7 +264,7 @@ my @Tests = (
             UserID => $UserID,
             Ticket => \%Ticket,
             Config => {
-                $DFName1 => '<OTRS_TICKET_NotExisting>',
+                $DFName1 => '<LIGERO_TICKET_NotExisting>',
             },
         },
         NoValue => 1,
@@ -339,7 +339,7 @@ for my $Test (@Tests) {
         my $ExpectedValue = $Test->{Config}->{Config}->{$Attribute};
         if (
             $OrigTest->{Config}->{Config}->{$Attribute}
-            =~ m{\A<OTRS_TICKET_([A-Za-z0-9_]+)>\z}msx
+            =~ m{\A<LIGERO_TICKET_([A-Za-z0-9_]+)>\z}msx
             )
         {
             $ExpectedValue = $Ticket{$1} // '';
@@ -351,7 +351,7 @@ for my $Test (@Tests) {
         }
         elsif (
             $OrigTest->{Config}->{Config}->{$Attribute}
-            =~ m{\A<OTRS_TICKET_([A-Za-z0-9_]+)> [ ] <OTRS_TICKET_([A-Za-z0-9_]+)>\z}msx
+            =~ m{\A<LIGERO_TICKET_([A-Za-z0-9_]+)> [ ] <LIGERO_TICKET_([A-Za-z0-9_]+)>\z}msx
             )
         {
             $ExpectedValue = ( $Ticket{$1} // '' ) . ' ' . ( $Ticket{$2} // '' );

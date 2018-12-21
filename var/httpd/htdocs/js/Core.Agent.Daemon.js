@@ -1,5 +1,5 @@
 // --
-// Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+// Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 // --
 // This software comes with ABSOLUTELY NO WARRANTY. For details, see
 // the enclosed file COPYING for license information (GPL). If you
@@ -14,7 +14,7 @@ Core.Agent = Core.Agent || {};
 /**
  * @namespace Core.Agent.Daemon
  * @memberof Core.Agent
- * @author OTRS AG
+ * @author LIGERO AG
  * @description
  *      This namespace contains the special module functions for the Daemon module.
  */
@@ -76,7 +76,7 @@ Core.Agent.Daemon = (function (TargetNS) {
                 }
 
                 // show main dialog
-                Core.UI.Dialog.ShowContentDialog(HTML, Core.Language.Translate('Information about the OTRS Daemon'), '240px', 'Center', true);
+                Core.UI.Dialog.ShowContentDialog(HTML, Core.Language.Translate('Information about the LIGERO Daemon'), '240px', 'Center', true);
 
                 // set cancel button action
                 $('#DaemonFormCancel').on('click', function() {

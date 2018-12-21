@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -4789,8 +4789,8 @@ sub _StoreActivityDialog {
                 # get the current server Time-stamp
                 my $DateTimeObject   = $Kernel::OM->Create('Kernel::System::DateTime');
                 my $CurrentTimeStamp = $DateTimeObject->ToString();
-                my $OTRSTimeZone     = $DateTimeObject->OTRSTimeZoneGet();
-                $TicketParam{Title} = "$Param{ProcessName} - $CurrentTimeStamp ($OTRSTimeZone)";
+                my $LIGEROTimeZone     = $DateTimeObject->LIGEROTimeZoneGet();
+                $TicketParam{Title} = "$Param{ProcessName} - $CurrentTimeStamp ($LIGEROTimeZone)";
 
                 # use article subject from the web request if any
                 if ( IsStringWithData( $Param{GetParam}->{Subject} ) ) {

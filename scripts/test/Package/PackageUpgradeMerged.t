@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -17,14 +17,14 @@ my $ConfigObject  = $Kernel::OM->Get('Kernel::Config');
 my $DBObject      = $Kernel::OM->Get('Kernel::System::DB');
 my $PackageObject = $Kernel::OM->Get('Kernel::System::Package');
 
-# get OTRS Version
-my $OTRSVersion = $ConfigObject->Get('Version');
+# get LIGERO Version
+my $LIGEROVersion = $ConfigObject->Get('Version');
 
 # leave only major and minor level versions
-$OTRSVersion =~ s{ (\d+ \. \d+) .+ }{$1}msx;
+$LIGEROVersion =~ s{ (\d+ \. \d+) .+ }{$1}msx;
 
 # add x as patch level version
-$OTRSVersion .= '.x';
+$LIGEROVersion .= '.x';
 
 my $Home = $ConfigObject->Get('Home');
 
@@ -36,14 +36,14 @@ my $MergeOne = '<?xml version="1.0" encoding="utf-8" ?>
 <ligero_package version="1.0">
   <Name>MergeOne</Name>
   <Version>2.0.1</Version>
-  <Vendor>OTRS AG</Vendor>
+  <Vendor>LIGERO AG</Vendor>
   <URL>https://ligero.com/</URL>
   <License>GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007</License>
   <ChangeLog>2012-04-28 New package (some test &lt; &gt; &amp;).</ChangeLog>
   <Description Lang="en">A test package (some test &lt; &gt; &amp;).</Description>
   <Description Lang="de">Ein Test Paket (some test &lt; &gt; &amp;).</Description>
   <ModuleRequired Version="1.112">Encode</ModuleRequired>
-  <Framework>' . $OTRSVersion . '</Framework>
+  <Framework>' . $LIGEROVersion . '</Framework>
   <BuildDate>2012-05-02 21:17:16</BuildDate>
   <BuildHost>yourhost.example.com</BuildHost>
   <Filelist>
@@ -87,14 +87,14 @@ my $MainPackageOne = '<?xml version="1.0" encoding="utf-8" ?>
 <ligero_package version="1.0">
     <Name>TestMainPackage</Name>
     <Version>1.0.1</Version>
-    <Vendor>OTRS AG</Vendor>
+    <Vendor>LIGERO AG</Vendor>
     <URL>https://ligero.com/</URL>
     <License>GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007</License>
     <ChangeLog>2005-11-10 New package (some test &lt; &gt; &amp;).</ChangeLog>
     <Description Lang="en">A test package (some test &lt; &gt; &amp;).</Description>
     <Description Lang="de">Ein Test Paket (some test &lt; &gt; &amp;).</Description>
     <ModuleRequired Version="1.112">Encode</ModuleRequired>
-    <Framework>' . $OTRSVersion . '</Framework>
+    <Framework>' . $LIGEROVersion . '</Framework>
     <BuildDate>2005-11-10 21:17:16</BuildDate>
     <BuildHost>yourhost.example.com</BuildHost>
     <Filelist>
@@ -140,14 +140,14 @@ my $MainPackageTwo = '<?xml version="1.0" encoding="utf-8" ?>
 <ligero_package version="1.0">
     <Name>TestMainPackage</Name>
     <Version>1.0.1</Version>
-    <Vendor>OTRS AG</Vendor>
+    <Vendor>LIGERO AG</Vendor>
     <URL>https://ligero.com/</URL>
     <License>GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007</License>
     <ChangeLog>2005-11-10 New package (some test &lt; &gt; &amp;).</ChangeLog>
     <Description Lang="en">A test package (some test &lt; &gt; &amp;).</Description>
     <Description Lang="de">Ein Test Paket (some test &lt; &gt; &amp;).</Description>
     <ModuleRequired Version="1.112">Encode</ModuleRequired>
-    <Framework>' . $OTRSVersion . '</Framework>
+    <Framework>' . $LIGEROVersion . '</Framework>
     <BuildDate>2005-11-10 21:17:16</BuildDate>
     <BuildHost>yourhost.example.com</BuildHost>
     <Filelist>
@@ -358,11 +358,11 @@ my $MergeThree = '<?xml version="1.0" encoding="utf-8" ?>
 <ligero_package version="1.0">
   <Name>MergeThree</Name>
   <Version>3.0.1</Version>
-  <Vendor>OTRS AG</Vendor>
+  <Vendor>LIGERO AG</Vendor>
   <URL>https://ligero.com/</URL>
   <License>GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007</License>
   <Description Lang="en">The third test package.</Description>
-  <Framework>' . $OTRSVersion . '</Framework>
+  <Framework>' . $LIGEROVersion . '</Framework>
   <BuildDate>2014-05-02 17:59:59</BuildDate>
   <BuildHost>myhost.example.com</BuildHost>
   <Filelist>
@@ -375,12 +375,12 @@ my $MainPackageFour = '<?xml version="1.0" encoding="utf-8" ?>
 <ligero_package version="1.0">
     <Name>TestMainPackageFour</Name>
     <Version>1.0.1</Version>
-    <Vendor>OTRS AG</Vendor>
+    <Vendor>LIGERO AG</Vendor>
     <URL>https://ligero.com/</URL>
     <License>GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007</License>
     <ChangeLog>2014-04-28 New package (some test &lt; &gt; &amp;).</ChangeLog>
     <Description Lang="en">A test package (some test &lt; &gt; &amp;).</Description>
-    <Framework>' . $OTRSVersion . '</Framework>
+    <Framework>' . $LIGEROVersion . '</Framework>
     <BuildDate>2014-04-28 16:16:16</BuildDate>
     <BuildHost>yourhost.example.com</BuildHost>
     <Filelist>
@@ -641,11 +641,11 @@ my $PackageFour = '<?xml version="1.0" encoding="utf-8" ?>
 <ligero_package version="1.0">
   <Name>PackageFour</Name>
   <Version>4.0.1</Version>
-  <Vendor>OTRS AG</Vendor>
+  <Vendor>LIGERO AG</Vendor>
   <URL>https://ligero.com/</URL>
   <License>GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007</License>
   <Description Lang="en">The third test package.</Description>
-  <Framework>' . $OTRSVersion . '</Framework>
+  <Framework>' . $LIGEROVersion . '</Framework>
   <BuildDate>2014-05-02 17:59:59</BuildDate>
   <BuildHost>myhost.example.com</BuildHost>
   <Filelist>
@@ -685,11 +685,11 @@ $PackageFour = '<?xml version="1.0" encoding="utf-8" ?>
 <ligero_package version="1.0">
   <Name>PackageFour</Name>
   <Version>4.0.2</Version>
-  <Vendor>OTRS AG</Vendor>
+  <Vendor>LIGERO AG</Vendor>
   <URL>https://ligero.com/</URL>
   <License>GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007</License>
   <Description Lang="en">The third test package.</Description>
-  <Framework>' . $OTRSVersion . '</Framework>
+  <Framework>' . $LIGEROVersion . '</Framework>
   <BuildDate>2014-09-02 17:59:59</BuildDate>
   <BuildHost>myhost.example.com</BuildHost>
   <Filelist>

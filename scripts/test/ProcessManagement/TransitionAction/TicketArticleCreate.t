@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -239,11 +239,11 @@ my @Tests = (
                 CommunicationChannel => 'Internal',
                 IsVisibleForCustomer => 1,
                 SenderType           => 'agent',
-                From                 => 'Admin OTRS',
+                From                 => 'Admin LIGERO',
                 HistoryComment       => 'Info',
                 HistoryType          => 'AddNote',
-                Body                 => '<OTRS_AGENT_BODY[2]>',
-                Subject              => '<OTRS_AGENT_SUBJECT[10]>'
+                Body                 => '<LIGERO_AGENT_BODY[2]>',
+                Subject              => '<LIGERO_AGENT_SUBJECT[10]>'
             },
         },
         Success => 1,
@@ -423,7 +423,7 @@ my @Tests = (
                 SenderType           => 'agent',
                 ContentType          => 'text/plain; charset=ISO-8859-15',
                 Subject =>
-                    '<OTRS_TICKET_Title>',
+                    '<LIGERO_TICKET_Title>',
                 Body =>
                     'äöüßÄÖÜ€исáéíúóúÁÉÍÓÚñÑ-カスタ-用迎使用-Язык',
                 HistoryType    => 'OwnerUpdate',
@@ -454,7 +454,7 @@ my @Tests = (
                 SenderType           => 'agent',
                 ContentType          => 'text/plain; charset=ISO-8859-15',
                 Subject =>
-                    '<OTRS_TICKET_NotExisting> - tag not found',
+                    '<LIGERO_TICKET_NotExisting> - tag not found',
                 Body =>
                     'äöüßÄÖÜ€исáéíúóúÁÉÍÓÚñÑ-カスタ-用迎使用-Язык',
                 HistoryType    => 'OwnerUpdate',
@@ -485,7 +485,7 @@ my @Tests = (
                 SenderType           => 'agent',
                 ContentType          => 'text/plain; charset=ISO-8859-15',
                 Subject =>
-                    '<OTRS_TICKET_NotExisting> - tag not found',
+                    '<LIGERO_TICKET_NotExisting> - tag not found',
                 Body =>
                     'äöüßÄÖÜ€исáéíúóúÁÉÍÓÚñÑ-カスタ-用迎使用-Язык',
                 HistoryType    => 'OwnerUpdate',
@@ -516,7 +516,7 @@ my @Tests = (
                 SenderType           => 'agent',
                 ContentType          => 'text/plain; charset=ISO-8859-15',
                 Subject =>
-                    '<OTRS_TICKET_DynamicField_' . $TextFieldName . '_Value>',
+                    '<LIGERO_TICKET_DynamicField_' . $TextFieldName . '_Value>',
                 Body =>
                     'äöüßÄÖÜ€исáéíúóúÁÉÍÓÚñÑ-カスタ-用迎使用-Язык',
                 HistoryType    => 'OwnerUpdate',
@@ -547,7 +547,7 @@ my @Tests = (
                 SenderType           => 'agent',
                 ContentType          => 'text/plain; charset=ISO-8859-15',
                 Subject =>
-                    '<OTRS_TICKET_DynamicField_' . $DropDownFieldName . '>',
+                    '<LIGERO_TICKET_DynamicField_' . $DropDownFieldName . '>',
                 Body =>
                     'äöüßÄÖÜ€исáéíúóúÁÉÍÓÚñÑ-カスタ-用迎使用-Язык',
                 HistoryType    => 'OwnerUpdate',
@@ -578,7 +578,7 @@ my @Tests = (
                 SenderType           => 'agent',
                 ContentType          => 'text/plain; charset=ISO-8859-15',
                 Subject =>
-                    '<OTRS_TICKET_DynamicField_' . $MultiSelectFieldName . '_Value>',
+                    '<LIGERO_TICKET_DynamicField_' . $MultiSelectFieldName . '_Value>',
                 Body =>
                     'äöüßÄÖÜ€исáéíúóúÁÉÍÓÚñÑ-カスタ-用迎使用-Язык',
                 HistoryType    => 'OwnerUpdate',
@@ -745,29 +745,29 @@ for my $Test (@Tests) {
             next ATTRIBUTE if $ExcludedArtributes{$Attribute};
 
             if (
-                $OrigTest->{Config}->{Config}->{$Attribute} eq '<OTRS_TICKET_NotExisting>'
+                $OrigTest->{Config}->{Config}->{$Attribute} eq '<LIGERO_TICKET_NotExisting>'
                 && $Kernel::OM->Get('Kernel::System::DB')->GetDatabaseFunction('Type') eq 'oracle'
                 )
             {
                 $Article{$Attribute} //= '';
             }
 
-            if ( $OrigTest->{Config}->{Config}->{$Attribute} eq '<OTRS_AGENT_BODY[2]>' )
+            if ( $OrigTest->{Config}->{Config}->{$Attribute} eq '<LIGERO_AGENT_BODY[2]>' )
             {
                 my @Count = ( $Article{$Attribute} =~ /the message text/g );
                 $Self->Is(
                     scalar @Count,
                     2,
-                    'Smart tag <OTRS_AGENT_BODY[2]> is replaced right'
+                    'Smart tag <LIGERO_AGENT_BODY[2]> is replaced right'
                 );
             }
 
-            if ( $OrigTest->{Config}->{Config}->{$Attribute} eq '<OTRS_AGENT_SUBJECT[10]>' )
+            if ( $OrigTest->{Config}->{Config}->{$Attribute} eq '<LIGERO_AGENT_SUBJECT[10]>' )
             {
                 $Self->Is(
                     $Article{$Attribute},
                     'Email for  [...]',
-                    'Smart tag <OTRS_AGENT_SUBJECT[10]> is replaced right'
+                    'Smart tag <LIGERO_AGENT_SUBJECT[10]> is replaced right'
                 );
             }
 
@@ -803,14 +803,14 @@ for my $Test (@Tests) {
 
             if (
                 $OrigTest->{Config}->{Config}->{$Attribute}
-                =~ m{\A<OTRS_TICKET_([A-Za-z0-9_]+)>\z}msx
+                =~ m{\A<LIGERO_TICKET_([A-Za-z0-9_]+)>\z}msx
                 )
             {
                 $ExpectedValue = $Ticket{$1} // '';
 
                 if (
                     $OrigTest->{Config}->{Config}->{$Attribute}
-                    =~ m{\A<OTRS_TICKET_DynamicField_([A-Za-z0-9_]+)_Value>\z}msx
+                    =~ m{\A<LIGERO_TICKET_DynamicField_([A-Za-z0-9_]+)_Value>\z}msx
                     )
                 {
                     my $DynamicFieldConfig = $DynamicFieldObject->DynamicFieldGet(

@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -239,13 +239,13 @@ for my $Test (@Tests) {
     }
 
     $Kernel::OM->ObjectsDiscard(
-        Objects => [ 'Kernel::System::OTRSBusiness', 'Kernel::System::Package' ],
+        Objects => [ 'Kernel::System::LIGEROBusiness', 'Kernel::System::Package' ],
     );
 
     # Redefine key features to prevent real network communications and use local results for this test.
     no warnings qw( once redefine );    ## no critic
-    local *Kernel::System::OTRSBusiness::OTRSBusinessIsInstalled  = sub { return 0; };
-    local *Kernel::System::OTRSBusiness::OTRSBusinessIsUpdateable = sub { return 0; };
+    local *Kernel::System::LIGEROBusiness::LIGEROBusinessIsInstalled  = sub { return 0; };
+    local *Kernel::System::LIGEROBusiness::LIGEROBusinessIsUpdateable = sub { return 0; };
     local *Kernel::System::Package::PackageOnlineList             = sub {
         return do "$TestPath/$Test->{PackageOnlineList}";
     };
@@ -262,7 +262,7 @@ for my $Test (@Tests) {
     use warnings;
 
     # Recreate objects with the redefined functions.
-    my $OTRSBusinessObject = $Kernel::OM->Get('Kernel::System::OTRSBusiness');
+    my $LIGEROBusinessObject = $Kernel::OM->Get('Kernel::System::LIGEROBusiness');
     $PackageObject = $Kernel::OM->Get('Kernel::System::Package');
 
     # Check current installed packages
@@ -312,7 +312,7 @@ for my $Test (@Tests) {
 }
 continue {
     $Kernel::OM->ObjectsDiscard(
-        Objects => [ 'Kernel::System::OTRSBusiness', 'Kernel::System::Package' ],
+        Objects => [ 'Kernel::System::LIGEROBusiness', 'Kernel::System::Package' ],
     );
 }
 

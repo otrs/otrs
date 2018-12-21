@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -59,8 +59,8 @@ my $CreateTestUser = sub {
 };
 
 my $ImportSampleEmail = sub {
-    my $OTRSDIR = $Kernel::OM->Get('Kernel::Config')->Get('Home');
-    my $FH      = IO::File->new( "${ OTRSDIR }/scripts/test/sample/PostMaster/InlineImage.box", 'r', );
+    my $LIGERODIR = $Kernel::OM->Get('Kernel::Config')->Get('Home');
+    my $FH      = IO::File->new( "${ LIGERODIR }/scripts/test/sample/PostMaster/InlineImage.box", 'r', );
     my @Lines   = <$FH>;
 
     my $CommunicationLogObject = $Kernel::OM->Create(

@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -27,7 +27,7 @@ $Selenium->RunTest(
         $Helper->ConfigSettingChange(
             Valid => 1,
             Key   => 'MIME-Viewer###application/pdf',
-            Value => "echo 'OTRS.org TEST'",
+            Value => "echo 'LIGERO.org TEST'",
         );
 
         # Create test user.
@@ -121,7 +121,7 @@ $Selenium->RunTest(
         $Selenium->WaitFor( JavaScript => 'return document.readyState === "complete";' );
 
         # Check expected values in PDF test attachment.
-        for my $ExpectedValue (qw(OTRS.org TEST)) {
+        for my $ExpectedValue (qw(LIGERO.org TEST)) {
             $Self->True(
                 index( $Selenium->get_page_source(), $ExpectedValue ) > -1,
                 "Value is found on screen - $ExpectedValue"

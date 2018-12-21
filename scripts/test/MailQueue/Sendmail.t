@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -24,7 +24,7 @@ my %SendmailAction = (
 );
 my $Action = 'Success';
 
-# Overwrite the OTRS Email::Sendmail check method to use our fake sendmail client,
+# Overwrite the LIGERO Email::Sendmail check method to use our fake sendmail client,
 #   but make this change local to the unit test scope, as you can see, it also
 #   makes use of the %FakeSendmailEnv.
 local *{'Kernel::System::Email::Sendmail::Check'} = sub {

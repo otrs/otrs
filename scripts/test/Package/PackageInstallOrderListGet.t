@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -122,19 +122,19 @@ my @InstalledPublic501 = (
         Version => '5.0.1',
     },
     {
-        Name    => 'OTRSAppointmentCalendar',
+        Name    => 'LIGEROAppointmentCalendar',
         Version => '5.0.1',
     },
     {
-        Name    => 'OTRSCloneDB',
+        Name    => 'LIGEROCloneDB',
         Version => '5.0.1',
     },
     {
-        Name    => 'OTRSCodePolicy',
+        Name    => 'LIGEROCodePolicy',
         Version => '5.0.1',
     },
     {
-        Name    => 'OTRSMasterSlave',
+        Name    => 'LIGEROMasterSlave',
         Version => '5.0.1',
     },
     {
@@ -161,19 +161,19 @@ my @OnlinePublic502 = (
         Version => '5.0.2'
     },
     {
-        Name    => 'OTRSAppointmentCalendar',
+        Name    => 'LIGEROAppointmentCalendar',
         Version => '5.0.2',
     },
     {
-        Name    => 'OTRSCloneDB',
+        Name    => 'LIGEROCloneDB',
         Version => '5.0.2',
     },
     {
-        Name    => 'OTRSCodePolicy',
+        Name    => 'LIGEROCodePolicy',
         Version => '5.0.2',
     },
     {
-        Name    => 'OTRSMasterSlave',
+        Name    => 'LIGEROMasterSlave',
         Version => '5.0.2',
     },
     {
@@ -247,19 +247,19 @@ my @Tests = (
         Success => 0,
     },
     {
-        Name   => 'OTRSBusiness only',
+        Name   => 'LIGEROBusiness only',
         Config => {
             InstalledPackages => [],
             OnlinePackages    => [],
         },
-        OTRSBusinessOptions => {
-            OTRSBusinessIsInstalled  => 1,
-            OTRSBusinessIsUpdateable => 1,
+        LIGEROBusinessOptions => {
+            LIGEROBusinessIsInstalled  => 1,
+            LIGEROBusinessIsUpdateable => 1,
         },
         Success        => 1,
         ExpectedResult => {
             InstallOrder => {
-                OTRSBusiness => 9999,
+                LIGEROBusiness => 9999,
             },
             Failed => {},
         },
@@ -285,14 +285,14 @@ my @Tests = (
         },
     },
     {
-        Name   => 'ITSM 5.0.17 to 5.0.21 W/OTRSBusiness',
+        Name   => 'ITSM 5.0.17 to 5.0.21 W/LIGEROBusiness',
         Config => {
             InstalledPackages => \@InstalledITSM5017,
             OnlinePackages    => \@OnlineITSM5021,
         },
-        OTRSBusinessOptions => {
-            OTRSBusinessIsInstalled  => 1,
-            OTRSBusinessIsUpdateable => 1,
+        LIGEROBusinessOptions => {
+            LIGEROBusinessIsInstalled  => 1,
+            LIGEROBusinessIsUpdateable => 1,
         },
         Success        => 1,
         ExpectedResult => {
@@ -304,7 +304,7 @@ my @Tests = (
                 ITSMCore                      => 5,
                 ITSMIncidentProblemManagement => 1,
                 ITSMServiceLevelManagement    => 1,
-                OTRSBusiness                  => 9999,
+                LIGEROBusiness                  => 9999,
             },
             Failed => {},
         },
@@ -320,10 +320,10 @@ my @Tests = (
             InstallOrder => {
                 FAQ                     => 1,
                 Fred                    => 1,
-                OTRSAppointmentCalendar => 1,
-                OTRSCloneDB             => 1,
-                OTRSCodePolicy          => 1,
-                OTRSMasterSlave         => 1,
+                LIGEROAppointmentCalendar => 1,
+                LIGEROCloneDB             => 1,
+                LIGEROCodePolicy          => 1,
+                LIGEROMasterSlave         => 1,
                 Survey                  => 1,
                 SystemMonitoring        => 1,
                 TimeAccounting          => 1,
@@ -332,13 +332,13 @@ my @Tests = (
         },
     },
     {
-        Name   => 'OTRSGenericInterfaceITSMConfigurationManagement',
+        Name   => 'LIGEROGenericInterfaceITSMConfigurationManagement',
         Config => {
             InstalledPackages => [
                 @InstalledITSM5017,
                 (
                     {
-                        Name    => 'OTRSGenericInterfaceITSMConfigurationManagement',
+                        Name    => 'LIGEROGenericInterfaceITSMConfigurationManagement',
                         Version => '5.0.1',
                     },
                 ),
@@ -347,7 +347,7 @@ my @Tests = (
                 @OnlineITSM5021,
                 (
                     {
-                        Name            => 'OTRSGenericInterfaceITSMConfigurationManagement',
+                        Name            => 'LIGEROGenericInterfaceITSMConfigurationManagement',
                         Version         => '5.0.21',
                         PackageRequired => [
                             {
@@ -370,20 +370,20 @@ my @Tests = (
                 ITSMCore                                        => 6,
                 ITSMIncidentProblemManagement                   => 1,
                 ITSMServiceLevelManagement                      => 1,
-                OTRSGenericInterfaceITSMConfigurationManagement => 1,
+                LIGEROGenericInterfaceITSMConfigurationManagement => 1,
             },
             Failed => {},
         },
     },
 
     {
-        Name   => 'OTRSITSMConfigItemReference',
+        Name   => 'LIGEROITSMConfigItemReference',
         Config => {
             InstalledPackages => [
                 @InstalledITSM5017,
                 (
                     {
-                        Name    => 'OTRSITSMConfigItemReference',
+                        Name    => 'LIGEROITSMConfigItemReference',
                         Version => '5.0.1',
                     },
                 ),
@@ -392,7 +392,7 @@ my @Tests = (
                 @OnlineITSM5021,
                 (
                     {
-                        Name            => 'OTRSITSMConfigItemReference',
+                        Name            => 'LIGEROITSMConfigItemReference',
                         Version         => '5.0.21',
                         PackageRequired => [
                             {
@@ -420,7 +420,7 @@ my @Tests = (
                 ITSMCore                      => 6,
                 ITSMIncidentProblemManagement => 1,
                 ITSMServiceLevelManagement    => 1,
-                OTRSITSMConfigItemReference   => 1,
+                LIGEROITSMConfigItemReference   => 1,
             },
             Failed => {},
         },
@@ -433,7 +433,7 @@ my @Tests = (
                 @InstalledITSM5017,
                 (
                     {
-                        Name    => 'OTRSGenericInterfaceITSMConfigurationManagement',
+                        Name    => 'LIGEROGenericInterfaceITSMConfigurationManagement',
                         Version => '5.0.1',
                     },
                 ),
@@ -453,7 +453,7 @@ my @Tests = (
             },
             Failed => {
                 NotFound => {
-                    OTRSGenericInterfaceITSMConfigurationManagement => 1
+                    LIGEROGenericInterfaceITSMConfigurationManagement => 1
                 },
             },
         },
@@ -669,28 +669,28 @@ TEST:
 for my $Test (@Tests) {
 
     $Kernel::OM->ObjectsDiscard(
-        Objects => [ 'Kernel::System::OTRSBusiness', 'Kernel::System::Package' ],
+        Objects => [ 'Kernel::System::LIGEROBusiness', 'Kernel::System::Package' ],
     );
 
-    $Test->{OTRSBusinessOptions}->{OTRSBusinessIsInstalled}  // 0;
-    $Test->{OTRSBusinessOptions}->{OTRSBusinessIsUpdateable} // 0;
+    $Test->{LIGEROBusinessOptions}->{LIGEROBusinessIsInstalled}  // 0;
+    $Test->{LIGEROBusinessOptions}->{LIGEROBusinessIsUpdateable} // 0;
 
     no warnings 'once';    ## no critic
-    local *Kernel::System::OTRSBusiness::OTRSBusinessIsInstalled = sub {
-        if ( $Test->{OTRSBusinessOptions}->{OTRSBusinessIsInstalled} ) {
+    local *Kernel::System::LIGEROBusiness::LIGEROBusinessIsInstalled = sub {
+        if ( $Test->{LIGEROBusinessOptions}->{LIGEROBusinessIsInstalled} ) {
             return 1;
         }
         return 0;
     };
-    local *Kernel::System::OTRSBusiness::OTRSBusinessIsUpdateable = sub {
-        if ( $Test->{OTRSBusinessOptions}->{OTRSBusinessIsUpdateable} ) {
+    local *Kernel::System::LIGEROBusiness::LIGEROBusinessIsUpdateable = sub {
+        if ( $Test->{LIGEROBusinessOptions}->{LIGEROBusinessIsUpdateable} ) {
             return 1;
         }
         return 0;
     };
     use warnings;
 
-    my $OTRSBusinessObject = $Kernel::OM->Get('Kernel::System::OTRSBusiness');
+    my $LIGEROBusinessObject = $Kernel::OM->Get('Kernel::System::LIGEROBusiness');
     my $PackageObject      = $Kernel::OM->Get('Kernel::System::Package');
 
     my %Result = $PackageObject->PackageInstallOrderListGet( %{ $Test->{Config} } );
@@ -713,7 +713,7 @@ for my $Test (@Tests) {
 }
 continue {
     $Kernel::OM->ObjectsDiscard(
-        Objects => [ 'Kernel::System::OTRSBusiness', 'Kernel::System::Package' ],
+        Objects => [ 'Kernel::System::LIGEROBusiness', 'Kernel::System::Package' ],
     );
 }
 

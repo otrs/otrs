@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -1079,13 +1079,13 @@ Get plain article/email from storage. This is a delegate method from active back
 Returns:
 
     $PlainMessage = '
-        From: OTRS Feedback <marketing@ligero.com>
-        To: Your OTRS System <ligero@localhost>
-        Subject: Welcome to OTRS!
+        From: LIGERO Feedback <marketing@ligero.com>
+        To: Your LIGERO System <ligero@localhost>
+        Subject: Welcome to LIGERO!
         Content-Type: text/plain; charset=utf-8
         Content-Transfer-Encoding: 8bit
 
-        Welcome to OTRS!
+        Welcome to LIGERO!
         ...
     ';
 
@@ -1503,7 +1503,7 @@ sub ArticleHasHTMLContent {
 
 =head1 TERMS AND CONDITIONS
 
-This software is part of the OTRS project (L<https://ligero.org/>).
+This software is part of the LIGERO project (L<https://ligero.org/>).
 
 This software comes with ABSOLUTELY NO WARRANTY. For details, see
 the enclosed file COPYING for license information (GPL). If you

@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -51,7 +51,7 @@ my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
 
 # get current XHeaders
 my @XHeaders        = @{ $ConfigObject->Get('PostmasterX-Header') };
-my $KeepStateHeader = $ConfigObject->Get('KeepStateHeader') || 'X-OTRS-FollowUp-State-Keep';
+my $KeepStateHeader = $ConfigObject->Get('KeepStateHeader') || 'X-LIGERO-FollowUp-State-Keep';
 
 # make sure Keep state header is not in this list
 @XHeaders = grep { $_ ne $KeepStateHeader } @XHeaders;

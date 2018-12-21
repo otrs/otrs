@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -7,8 +7,8 @@
 # --
 
 [%
-SET OTRSBusinessLabel     = '<strong>OTRS Business Solution</strong>™';
-SET OTRSBusinessLinkLabel = '<strong><a href="#" class="OTRSBusinessRequired">OTRS Business Solution</a></strong>™';
+SET LIGEROBusinessLabel     = '<strong>LIGERO Business Solution</strong>™';
+SET LIGEROBusinessLinkLabel = '<strong><a href="#" class="LIGEROBusinessRequired">LIGERO Business Solution</a></strong>™';
 %]
 
 <div class="MainBox ARIARoleMain LayoutFixedSidebar SidebarFirst">
@@ -86,9 +86,9 @@ SET OTRSBusinessLinkLabel = '<strong><a href="#" class="OTRSBusinessRequired">OT
                 <p class="FieldExplanation">
                     [% Translate("Here you can activate Ready2Adopt processes showcasing our best practices. Please note that some additional configuration may be required.") | html %]
                 </p>
-            [% IF !Data.OTRSBusinessIsInstalled %]
+            [% IF !Data.LIGEROBusinessIsInstalled %]
                 <p class="FieldExplanation">
-                    [% Translate("Would you like to benefit from processes created by experts? Upgrade to %s to import some sophisticated Ready2Adopt processes.") | html | ReplacePlaceholders(OTRSBusinessLinkLabel) %]
+                    [% Translate("Would you like to benefit from processes created by experts? Upgrade to %s to import some sophisticated Ready2Adopt processes.") | html | ReplacePlaceholders(LIGEROBusinessLinkLabel) %]
                 </p>
             [% END %]
                 <ul class="ActionList SpacingTop">

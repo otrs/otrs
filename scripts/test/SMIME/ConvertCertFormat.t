@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -194,7 +194,7 @@ my @Certificates = (
         Success              => 1
     },
     {
-        CertificateName      => 'OTRSUserCert',
+        CertificateName      => 'LIGEROUserCert',
         CertificateFileName1 => 'SMIMECertificate-smimeuser1.crt',
         CertificateFileName2 => 'SMIMECertificate-smimeuser1.p7b',
         CertificateFileName3 => 'SMIMECertificate-smimeuser1.der',

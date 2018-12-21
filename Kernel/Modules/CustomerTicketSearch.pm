@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -353,7 +353,7 @@ sub Run {
                     );
 
                     # Convert start time to local system time zone.
-                    $DateTimeObject->ToOTRSTimeZone();
+                    $DateTimeObject->ToLIGEROTimeZone();
                     $GetParam{ $TimeType . 'TimeNewerDate' } = $DateTimeObject->ToString();
                 }
                 if (
@@ -376,7 +376,7 @@ sub Run {
                     );
 
                     # Convert stop time to local system time zone.
-                    $DateTimeObject->ToOTRSTimeZone();
+                    $DateTimeObject->ToLIGEROTimeZone();
                     $GetParam{ $TimeType . 'TimeOlderDate' } = $DateTimeObject->ToString();
                 }
             }

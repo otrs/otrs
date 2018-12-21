@@ -1,17 +1,17 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
 # did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
-[% IF Data.OTRSSTORMIsInstalled %]
-    [% SET OTRSBusinessLabel = '<strong>STORM powered by OTRS</strong>™' %]
-[% ELSIF Data.OTRSCONTROLIsInstalled %]
-    [% SET OTRSBusinessLabel = '<strong>CONTROL powered by OTRS</strong>™' %]
+[% IF Data.LIGEROSTORMIsInstalled %]
+    [% SET LIGEROBusinessLabel = '<strong>STORM powered by LIGERO</strong>™' %]
+[% ELSIF Data.LIGEROCONTROLIsInstalled %]
+    [% SET LIGEROBusinessLabel = '<strong>CONTROL powered by LIGERO</strong>™' %]
 [% ELSE %]
-    [% SET OTRSBusinessLabel = '<strong>OTRS Business Solution</strong>™' %]
+    [% SET LIGEROBusinessLabel = '<strong>LIGERO Business Solution</strong>™' %]
 [% END %]
 
 [% RenderBlockStart("Overview") %]
@@ -33,8 +33,8 @@
             [% BreadcrumbPath.push({ Name => Translate("System Registration Overview"),}) %]
         [% CASE 'Register' %]
             [% BreadcrumbPath.push({ Name => Translate("Register System"),}) %]
-        [% CASE 'OTRSIDValidate' %]
-            [% BreadcrumbPath.push({ Name => Translate("Validate OTRS-ID"),}) %]
+        [% CASE 'LIGEROIDValidate' %]
+            [% BreadcrumbPath.push({ Name => Translate("Validate LIGERO-ID"),}) %]
         [% CASE 'Deregister' %]
             [% BreadcrumbPath.push({ Name => Translate("Deregister System"),}) %]
     [% END %]
@@ -74,13 +74,13 @@
 [% RenderBlockEnd("ActionSentDataOverview") %]
 [% RenderBlockStart("ActionDeregister") %]
                     <li>
-                        <a href="[% Env("Baselink") %]Action=[% Env("Action") %];Subaction=OTRSIDValidate" class="CallForAction Fullsize Center">
+                        <a href="[% Env("Baselink") %]Action=[% Env("Action") %];Subaction=LIGEROIDValidate" class="CallForAction Fullsize Center">
                             <span><i class="fa fa-sign-out"></i> [% Translate("Deregister system") | html %]</span>
                         </a>
                     </li>
 [% RenderBlockEnd("ActionDeregister") %]
                     <li>
-                        <a href="https://portal.ligero.com/ligero/customer.pl?Action=CustomerOTRSSystems" target="_blank" class="CallForAction Fullsize Center">
+                        <a href="https://portal.ligero.com/ligero/customer.pl?Action=CustomerLIGEROSystems" target="_blank" class="CallForAction Fullsize Center">
                             <span><i class="fa fa-external-link"></i> [% Translate("Overview of registered systems") | html %]</span>
                         </a>
                     </li>
@@ -100,7 +100,7 @@
             <div class="Content">
 
                 <div class="ServiceDescription">
-                    [% Translate("This system is registered with OTRS Group.") | html %]
+                    [% Translate("This system is registered with LIGERO Group.") | html %]
                 </div>
 
                 <fieldset class="TableLike">
@@ -135,42 +135,42 @@
             </div>
             <div class="Content">
                 <p>
-                    [% Translate("Please note that you can't register your system if OTRS Daemon is not running correctly!") | html %]
+                    [% Translate("Please note that you can't register your system if LIGERO Daemon is not running correctly!") | html %]
                     <a href="#" class="DaemonInfo">[% Translate("Instructions") | html %]</a>.
                 </p>
             </div>
             <div class="Clear"></div>
 [% RenderBlockEnd("DaemonNotRunning") %]
-[% RenderBlockStart("OTRSIDDeregistrationNotPossible") %]
+[% RenderBlockStart("LIGEROIDDeregistrationNotPossible") %]
             <div class="Header">
                 <h2>[% Translate("System Deregistration not Possible") | html %]</h2>
             </div>
             <div class="Content">
                 <p>
-                    [% Translate("Please note that you can't deregister your system if you're using the %s or having a valid service contract.") | html | ReplacePlaceholders(OTRSBusinessLabel) %]
+                    [% Translate("Please note that you can't deregister your system if you're using the %s or having a valid service contract.") | html | ReplacePlaceholders(LIGEROBusinessLabel) %]
                 </p>
             </div>
             <div class="Clear"></div>
-[% RenderBlockEnd("OTRSIDDeregistrationNotPossible") %]
-[% RenderBlockStart("OTRSIDValidation") %]
+[% RenderBlockEnd("LIGEROIDDeregistrationNotPossible") %]
+[% RenderBlockStart("LIGEROIDValidation") %]
             <div class="Header">
-                <h2>[% Translate("OTRS-ID Login") | html %]</h2>
+                <h2>[% Translate("LIGERO-ID Login") | html %]</h2>
             </div>
             <div class="Content">
                 <form id="FormRegistration" method="post" class="Validate PreventMultipleSubmits">
                     <input type="hidden" name="BaseLink" value="[% Env("CGIHandle") %]" />
                     <input type="hidden" name="Action" value="[% Env("Action") %]" />
-                    <input type="hidden" name="Subaction" value="CheckOTRSID" />
+                    <input type="hidden" name="Subaction" value="CheckLIGEROID" />
 
-[% RenderBlockStart("OTRSIDRegistration") %]
+[% RenderBlockStart("LIGEROIDRegistration") %]
                     <div class="ServiceDescription">
                         <p>
-                            [% Translate("System registration is a service of OTRS Group, which provides a lot of advantages!") | html %]
+                            [% Translate("System registration is a service of LIGERO Group, which provides a lot of advantages!") | html %]
                             <a href="#" id="RegistrationMoreInfo">[% Translate("Read more") | html %]</a>.
                         </p>
                         <p>
-                            [% Translate("You need to log in with your OTRS-ID to register your system.") | html %]
-                            [% Translate("Your OTRS-ID is the email address you used to sign up on the OTRS.com webpage.") | html %]
+                            [% Translate("You need to log in with your LIGERO-ID to register your system.") | html %]
+                            [% Translate("Your LIGERO-ID is the email address you used to sign up on the LIGERO.com webpage.") | html %]
                             <a href="#" id="RegistrationDataProtection">[% Translate("Data Protection") | html %]</a>
                         </p>
                     </div>
@@ -190,10 +190,10 @@
                                 [% Translate("We will inform you about our new services and offerings soon.") | html %]
                             </p>
 
-                            <h1>[% Translate("Can I use OTRS without being registered?") | html %]</h1>
+                            <h1>[% Translate("Can I use LIGERO without being registered?") | html %]</h1>
                             <p>
                                 [% Translate("System registration is optional.") | html %]
-                                [% Translate("You can download and use OTRS without being registered.") | html %]
+                                [% Translate("You can download and use LIGERO without being registered.") | html %]
                             </p>
 
                             <h1>[% Translate("Is it possible to deregister?") | html %]</h1>
@@ -203,8 +203,8 @@
 
                             <h1>[% Translate("Which data is transfered when registering?") | html %]</h1>
                             <p>
-                                [% Translate("A registered system sends the following data to OTRS Group:") | html %]
-                                [% Translate("Fully Qualified Domain Name (FQDN), OTRS version, Database, Operating System and Perl version.") | html %]
+                                [% Translate("A registered system sends the following data to LIGERO Group:") | html %]
+                                [% Translate("Fully Qualified Domain Name (FQDN), LIGERO version, Database, Operating System and Perl version.") | html %]
                             </p>
 
                             <h1>[% Translate("Why do I have to provide a description for my system?") | html %]</h1>
@@ -212,7 +212,7 @@
                                 [% Translate("The description of the system is optional.") | html %] [% Translate("The description and system type you specify help you to identify and manage the details of your registered systems.") | html %]
                             </p>
 
-                            <h1>[% Translate("How often does my OTRS system send updates?") | html %]</h1>
+                            <h1>[% Translate("How often does my LIGERO system send updates?") | html %]</h1>
                             <p>
                                 [% Translate("Your system will send updates to the registration server at regular intervals.") | html %] [% Translate("Typically this would be around once every three days.") | html %]
                             </p>
@@ -226,7 +226,7 @@
                         <div class="TextDialog">
                         [% IF Env("UserLanguage") == 'de' %]
                             <p>
-                                Die OTRS-Gruppe nimmt den Schutz Ihrer persönlichen Daten sehr ernst und hält sich strikt an Datenschutzgesetze. Alle Passwörter werden automatisch unkenntlich gemacht, bevor Informationen gesendet werden. Unter keinen Umständen werden jegliche Daten verkauft oder an unauthorisierte Dritte weitergegeben.
+                                Die LIGERO-Gruppe nimmt den Schutz Ihrer persönlichen Daten sehr ernst und hält sich strikt an Datenschutzgesetze. Alle Passwörter werden automatisch unkenntlich gemacht, bevor Informationen gesendet werden. Unter keinen Umständen werden jegliche Daten verkauft oder an unauthorisierte Dritte weitergegeben.
                             </p>
                             <p>
                                 Die nachfolgende Erklärung gibt Ihnen einen Überblick darüber, wie wir diesen Schutz gewährleisten und welche Art von Daten zu welchem ​​Zweck erhoben werden.
@@ -234,22 +234,22 @@
 
                             <h1>Datenverarbeitung bei 'Systemregistrierung'</h1>
                             <p>
-                                Informationen welche über das 'Service Center' gesendet werden, werden von der OTRS Group gespeichert. Das trifft nur auf Daten zu, die die OTRS Group zur Performance- und Funktions-Analyse des OTRS-Servers oder zur Kontaktaufnahme benötigt.
+                                Informationen welche über das 'Service Center' gesendet werden, werden von der LIGERO Group gespeichert. Das trifft nur auf Daten zu, die die LIGERO Group zur Performance- und Funktions-Analyse des LIGERO-Servers oder zur Kontaktaufnahme benötigt.
                             </p>
 
                             <h1>Sicherheit von persönlichen Details</h1>
                             <p>
-                                Die OTRS Group schützt Ihre persönlichen Daten von unauthorisiertem Zugriff. Die OTRS Group versichert, dass Ihre auf dem Server gespeicherten persönlichen Daten vor unauthorisiertem Zugriff geschützt sind.
+                                Die LIGERO Group schützt Ihre persönlichen Daten von unauthorisiertem Zugriff. Die LIGERO Group versichert, dass Ihre auf dem Server gespeicherten persönlichen Daten vor unauthorisiertem Zugriff geschützt sind.
                             </p>
 
                             <h1>Offenlegung von Details</h1>
                             <p>
-                                Die OTRS Gruppe wird Ihre Daten nicht an Dritte weitergeben, es sei denn diese werden zur weiteren Geschäftsabwicklung benötigt. Die OTRS Gruppe wird Ihre Daten nur an öffentliche Einrichtungen und Behörden weiterleiten, wenn dies per Gesetz oder per Gerichtsbeschluss erforderlich ist.
+                                Die LIGERO Gruppe wird Ihre Daten nicht an Dritte weitergeben, es sei denn diese werden zur weiteren Geschäftsabwicklung benötigt. Die LIGERO Gruppe wird Ihre Daten nur an öffentliche Einrichtungen und Behörden weiterleiten, wenn dies per Gesetz oder per Gerichtsbeschluss erforderlich ist.
                             </p>
 
                             <h1>Änderung der Datenschutzbestimmungen</h1>
                             <p>
-                                Die OTRS Group behält sich vor Sicherheits- und Datenschutzbestimmungen, wenn diese durch technische Entwicklungen notwendig sind, zu ändern In diesem Fall werden wir ebenfalls unsere Datenschutzbestimmungen anpassen. Bitte überprüfen Sie regelmäßig ob eine neuere Version unserer Datenschutzerklärung verfügbar ist.
+                                Die LIGERO Group behält sich vor Sicherheits- und Datenschutzbestimmungen, wenn diese durch technische Entwicklungen notwendig sind, zu ändern In diesem Fall werden wir ebenfalls unsere Datenschutzbestimmungen anpassen. Bitte überprüfen Sie regelmäßig ob eine neuere Version unserer Datenschutzerklärung verfügbar ist.
                             </p>
 
                             <h1>Anspruch auf Information</h1>
@@ -263,7 +263,7 @@
                             </p>
                         [% ELSE %]
                             <p>
-                                Here at OTRS Group we take the protection of your personal details very seriously and strictly adhere to data protection laws.
+                                Here at LIGERO Group we take the protection of your personal details very seriously and strictly adhere to data protection laws.
                                 All passwords are automatically made unrecognizable before the information is sent.
                                 Under no circumstances will any data we obtain be sold or passed on to unauthorized third parties.
                             </p>
@@ -273,25 +273,25 @@
 
                             <h1>Data Handling with 'System Registration'</h1>
                             <p>
-                                Information received through the 'Service Center' is saved by OTRS Group.
-                                This only applies to data that OTRS Group requires to analyze the performance and function of the OTRS server or to establish contact.
+                                Information received through the 'Service Center' is saved by LIGERO Group.
+                                This only applies to data that LIGERO Group requires to analyze the performance and function of the LIGERO server or to establish contact.
                             </p>
 
                             <h1>Safety of Personal Details</h1>
                             <p>
-                                OTRS Group protects your personal data from unauthorized access, use or publication.
-                                OTRS Group ensures that the personal information you store on the server is protected from unauthorized access and publication.
+                                LIGERO Group protects your personal data from unauthorized access, use or publication.
+                                LIGERO Group ensures that the personal information you store on the server is protected from unauthorized access and publication.
                             </p>
 
                             <h1>Disclosure of Details</h1>
                             <p>
-                                OTRS Group will not pass on your details to third parties unless required for business transactions.
-                                OTRS Group will only pass on your details to entitled public institutions and authorities if required by law or court order.
+                                LIGERO Group will not pass on your details to third parties unless required for business transactions.
+                                LIGERO Group will only pass on your details to entitled public institutions and authorities if required by law or court order.
                             </p>
 
                             <h1>Amendment of Data Protection Policy</h1>
                             <p>
-                                OTRS Group reserves the right to amend this security and data protection policy if required by technical developments.
+                                LIGERO Group reserves the right to amend this security and data protection policy if required by technical developments.
                                 In this case we will also adapt our information regarding data protection accordingly.
                                 Please regularly refer to the latest version of our Data Protection Policy.
                             </p>
@@ -310,8 +310,8 @@
                         [% END %]
                         </div>
                     </div>
-[% RenderBlockEnd("OTRSIDRegistration") %]
-[% RenderBlockStart("OTRSIDDeregistration") %]
+[% RenderBlockEnd("LIGEROIDRegistration") %]
+[% RenderBlockStart("LIGEROIDDeregistration") %]
                     <div class="ServiceDescription">
                         <p>
                             [% Translate("If you deregister your system, you will lose these benefits:") | html %]
@@ -324,27 +324,27 @@
                                 [% Translate("With your system registration we can improve our services for you, because we have all relevant information available.") | html %]
                             </li>
                         </ul>
-                        <p>[% Translate("You need to log in with your OTRS-ID to deregister your system.") | html %]</p>
-                        <p>[% Translate("Your OTRS-ID is the email address you used to sign up on the OTRS.com webpage.") | html %]</p>
+                        <p>[% Translate("You need to log in with your LIGERO-ID to deregister your system.") | html %]</p>
+                        <p>[% Translate("Your LIGERO-ID is the email address you used to sign up on the LIGERO.com webpage.") | html %]</p>
                     </div>
-[% RenderBlockEnd("OTRSIDDeregistration") %]
-[% RenderBlockStart("OTRSIDValidationDaemonNotRunning") %]
+[% RenderBlockEnd("LIGEROIDDeregistration") %]
+[% RenderBlockStart("LIGEROIDValidationDaemonNotRunning") %]
                     <div class="ServiceDescription">
                         <p>
-                            [% Translate("Please note that you can't register your system if OTRS Daemon is not running correctly!") | html %]
+                            [% Translate("Please note that you can't register your system if LIGERO Daemon is not running correctly!") | html %]
                             <a href="#" class="DaemonInfo">[% Translate("Instructions") | html %]</a>.
                         </p>
                     </div>
-[% RenderBlockEnd("OTRSIDValidationDaemonNotRunning") %]
-[% RenderBlockStart("OTRSIDValidationForm") %]
+[% RenderBlockEnd("LIGEROIDValidationDaemonNotRunning") %]
+[% RenderBlockStart("LIGEROIDValidationForm") %]
                     <fieldset class="TableLike">
-                        <label class="Mandatory" for="OTRSID"><span class="Marker">*</span> [% Translate("OTRS-ID") | html %]:</label>
+                        <label class="Mandatory" for="LIGEROID"><span class="Marker">*</span> [% Translate("LIGERO-ID") | html %]:</label>
                         <div class="Field">
-                            <input type="email" name="OTRSID" id="OTRSID" value="[% Data.OTRSID | html %]" class="W50pc Validate_Required [% Data.EmailInvalid | html %]" maxlength="200"/>
-                            <div id="OTRSIDError" class="TooltipErrorMessage">
+                            <input type="email" name="LIGEROID" id="LIGEROID" value="[% Data.LIGEROID | html %]" class="W50pc Validate_Required [% Data.EmailInvalid | html %]" maxlength="200"/>
+                            <div id="LIGEROIDError" class="TooltipErrorMessage">
                                 <p>[% Translate("This field is required.") | html %]</p>
                             </div>
-                            <div id="OTRSIDServerError" class="TooltipErrorMessage">
+                            <div id="LIGEROIDServerError" class="TooltipErrorMessage">
                                 <p>[% Translate("This field is required.") | html %]</p>
                             </div>
                         </div>
@@ -359,7 +359,7 @@
                                 <p>[% Translate("This field is required.") | html %]</p>
                             </div>
                             <p class="FieldExplanation">
-                                        [% Translate("You don't have an OTRS-ID yet?") | html %]
+                                        [% Translate("You don't have an LIGERO-ID yet?") | html %]
                                 <a href="https://portal.ligero.com/ligero/customer.pl#Signup" target="_blank">
                                             [% Translate("Sign up now") | html %]
                                 </a>
@@ -387,17 +387,17 @@
                         </div>
                         <div class="Clear"></div>
                     </fieldset>
-[% RenderBlockEnd("OTRSIDValidationForm") %]
+[% RenderBlockEnd("LIGEROIDValidationForm") %]
                 </form>
             </div>
-[% RenderBlockEnd("OTRSIDValidation") %]
+[% RenderBlockEnd("LIGEROIDValidation") %]
 [% RenderBlockStart("Registration") %]
             <div class="Header">
                 <h2>[% Translate("System Registration") | html %]</h2>
             </div>
             <div class="Content">
                 <div class="ServiceDescription">
-                            [% Translate("This data will be frequently transferred to OTRS Group when you register this system.") | html %]
+                            [% Translate("This data will be frequently transferred to LIGERO Group when you register this system.") | html %]
                 </div>
                 <div id="SystemDataListContainer" class="ListContainer">
                     <table class="DataTable SystemDataListContainer" id="SystemDataList">
@@ -413,8 +413,8 @@
                                 <td>[% Data.FQDN | html %]</td>
                             </tr>
                             <tr>
-                                <td>[% Translate("OTRS Version") | html %]</td>
-                                <td>[% Data.OTRSVersion | html %]</td>
+                                <td>[% Translate("LIGERO Version") | html %]</td>
+                                <td>[% Data.LIGEROVersion | html %]</td>
                             </tr>
                             <tr>
                                 <td>[% Translate("Database") | html %]</td>
@@ -436,7 +436,7 @@
                     <input type="hidden" name="Action" value="[% Env("Action") %]"/>
                     <input type="hidden" name="Subaction" value="AddAction"/>
                     <input type="hidden" name="Token" value="[% Data.Token | html %]"/>
-                    <input type="hidden" name="OTRSID" value="[% Data.OTRSID | html %]"/>
+                    <input type="hidden" name="LIGEROID" value="[% Data.LIGEROID | html %]"/>
 
                     <fieldset class="TableLike Registration">
 
@@ -463,7 +463,7 @@
                         <div class="Field">
                             <input type="checkbox" name="SupportDataSending" id="SupportDataSending" value="Yes" />
                             <p class="FieldExplanation">
-                                        [% Translate("This will allow the system to send additional support data information to OTRS Group.") | html %] <br/>
+                                        [% Translate("This will allow the system to send additional support data information to LIGERO Group.") | html %] <br/>
                                 <a href="[% Env("Baselink") %]Action=AdminSupportDataCollector" target="_blank">
                                             [% Translate("Support Data Collector") | html %]
                                 </a>
@@ -496,11 +496,11 @@
                     <input type="hidden" name="Action" value="[% Env("Action") %]"/>
                     <input type="hidden" name="Subaction" value="DeregisterAction"/>
                     <input type="hidden" name="Token" value="[% Data.Token | html %]"/>
-                    <input type="hidden" name="OTRSID" value="[% Data.OTRSID | html %]"/>
+                    <input type="hidden" name="LIGEROID" value="[% Data.LIGEROID | html %]"/>
 
                     <fieldset class="TableLike">
                         <div class="ServiceDescription">
-                                    [% Translate("Continuing with this step will deregister the system from OTRS Group.") | html %]
+                                    [% Translate("Continuing with this step will deregister the system from LIGERO Group.") | html %]
                         </div>
 
                         <div class="Field SpacingTop">
@@ -553,7 +553,7 @@
                         <div class="Field">
                             <input type="checkbox" name="SupportDataSending" id="SupportDataSending" value="Yes" [% Data.SupportDataSendingChecked %] />
                             <p class="FieldExplanation">
-                                        [% Translate("This will allow the system to send additional support data information to OTRS Group.") | html %] <br/>
+                                        [% Translate("This will allow the system to send additional support data information to LIGERO Group.") | html %] <br/>
                                 <a href="[% Env("Baselink") %]Action=AdminSupportDataCollector" target="_blank">
                                             [% Translate("Support Data Collector") | html %]
                                 </a>

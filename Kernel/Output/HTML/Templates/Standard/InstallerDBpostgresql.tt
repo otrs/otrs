@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -79,24 +79,24 @@
                         [% Translate("Database User") | html %] ([% Translate("New") | html %])
                     </h4>
 
-                    <label for="OTRSDBUser">[% Translate("User") | html %]:</label>
+                    <label for="LIGERODBUser">[% Translate("User") | html %]:</label>
                     <div class="Field">
-                        <input type="text" id="OTRSDBUser" name="OTRSDBUser" value="[% Config("DatabaseUser") %]" class="W50pc" autocomplete="off" />
+                        <input type="text" id="LIGERODBUser" name="LIGERODBUser" value="[% Config("DatabaseUser") %]" class="W50pc" autocomplete="off" />
                         <p class="FieldExplanation">
-                            [% Translate("A new database user with limited permissions will be created for this OTRS system.") | html %]
+                            [% Translate("A new database user with limited permissions will be created for this LIGERO system.") | html %]
                         </p>
                     </div>
                     <div class="Clear"></div>
 
-                    <label for="OTRSDBPassword">[% Translate("Password") | html %]:</label>
+                    <label for="LIGERODBPassword">[% Translate("Password") | html %]:</label>
                     <div class="Field">
-                        <input type="password" id="OTRSDBPassword" name="OTRSDBPassword" value="[% Data.Password | html %]" class="W50pc" autocomplete="off" />
+                        <input type="password" id="LIGERODBPassword" name="LIGERODBPassword" value="[% Data.Password | html %]" class="W50pc" autocomplete="off" />
                     </div>
                     <div class="Clear"></div>
 
-                    <label for="RepeatOTRSDBPassword">[% Translate("Repeat Password") | html %]:</label>
+                    <label for="RepeatLIGERODBPassword">[% Translate("Repeat Password") | html %]:</label>
                     <div class="Field">
-                        <input type="password" id="RepeatOTRSDBPassword" name="RepeatOTRSDBPassword" value="[% Data.Password | html %]" class="W50pc" autocomplete="off" />
+                        <input type="password" id="RepeatLIGERODBPassword" name="RepeatLIGERODBPassword" value="[% Data.Password | html %]" class="W50pc" autocomplete="off" />
                         <p class="FieldExplanation">
                             [% Translate("Generated password") | html %]: <span="Emphasis">[% Data.Password | html %]</span>
                         </p>

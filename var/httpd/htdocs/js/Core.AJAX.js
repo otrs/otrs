@@ -1,5 +1,5 @@
 // --
-// Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+// Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 // --
 // This software comes with ABSOLUTELY NO WARRANTY. For details, see
 // the enclosed file COPYING for license information (GPL). If you
@@ -13,7 +13,7 @@ var Core = Core || {};
 /**
  * @namespace Core.AJAX
  * @memberof Core
- * @author OTRS AG
+ * @author LIGERO AG
  * @description
  *      This namespace contains the functionality for AJAX calls.
  */
@@ -83,7 +83,7 @@ Core.AJAX = (function (TargetNS) {
             return;
         }
 
-        // We are out of the OTRS App scope, that's why an exception would not be caught. Therefore we handle the error manually.
+        // We are out of the LIGERO App scope, that's why an exception would not be caught. Therefore we handle the error manually.
         Core.Exception.HandleFinalError(new Core.Exception.ApplicationError(ErrorMessage, 'CommunicationError'));
     }
 
@@ -402,7 +402,7 @@ Core.AJAX = (function (TargetNS) {
             OldUrl = location.href,
             NewUrl = Core.Config.Get('Baselink') + "RequestedURL=" + encodeURIComponent(OldUrl);
 
-        if (Headers.match(/X-OTRS-Login: /i)) {
+        if (Headers.match(/X-LIGERO-Login: /i)) {
             location.href = NewUrl;
             return true;
         }
@@ -463,7 +463,7 @@ Core.AJAX = (function (TargetNS) {
      * @param {String} ChangedElement - The name of the element which was changed by the user.
      * @param {Object} FieldsToUpdate - DEPRECATED.
      *                      This used to be the names of the fields that should be updated with the server answer,
-     *                      but is not needed any more and will be removed in a future version of OTRS.
+     *                      but is not needed any more and will be removed in a future version of LIGERO.
      * @param {Function} [SuccessCallback] - Callback function to be executed on AJAX success (optional).
      * @description
      *      Submits a special form via ajax and updates the form with the data returned from the server
@@ -497,7 +497,7 @@ Core.AJAX = (function (TargetNS) {
                 }
 
                 if (!Response) {
-                    // We are out of the OTRS App scope, that's why an exception would not be caught. Therefore we handle the error manually.
+                    // We are out of the LIGERO App scope, that's why an exception would not be caught. Therefore we handle the error manually.
                     Core.Exception.HandleFinalError(new Core.Exception.ApplicationError("Invalid JSON from: " + URL, 'CommunicationError'));
                 }
                 else {
@@ -555,7 +555,7 @@ Core.AJAX = (function (TargetNS) {
                 }
 
                 if (!Response) {
-                    // We are out of the OTRS App scope, that's why an exception would not be caught. Therefore we handle the error manually.
+                    // We are out of the LIGERO App scope, that's why an exception would not be caught. Therefore we handle the error manually.
                     Core.Exception.HandleFinalError(new Core.Exception.ApplicationError("No content from: " + URL, 'CommunicationError'));
                 }
                 else if ($ElementToUpdate && isJQueryObject($ElementToUpdate) && $ElementToUpdate.length) {
@@ -563,7 +563,7 @@ Core.AJAX = (function (TargetNS) {
                     $ElementToUpdate.html(Response);
                 }
                 else {
-                    // We are out of the OTRS App scope, that's why an exception would not be caught. Therefore we handle the error manually.
+                    // We are out of the LIGERO App scope, that's why an exception would not be caught. Therefore we handle the error manually.
                     Core.Exception.HandleFinalError(new Core.Exception.ApplicationError("No such element id: " + $ElementToUpdate.attr('id') + " in page!", 'CommunicationError'));
                 }
             },
@@ -618,7 +618,7 @@ Core.AJAX = (function (TargetNS) {
                     Core.App.Publish('Event.AJAX.FunctionCall.Callback', [Response]);
                 }
                 else {
-                    // We are out of the OTRS App scope, that's why an exception would not be caught. Therefore we handle the error manually.
+                    // We are out of the LIGERO App scope, that's why an exception would not be caught. Therefore we handle the error manually.
                     Core.Exception.HandleFinalError(new Core.Exception.ApplicationError("Invalid callback method: " + ((typeof Callback === 'undefined') ? 'undefined' : Callback.toString())));
                 }
             },

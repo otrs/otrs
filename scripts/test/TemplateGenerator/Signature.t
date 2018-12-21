@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -56,17 +56,17 @@ my %User = $Kernel::OM->Get('Kernel::System::User')->GetUserData(
 
 my @Tests = (
     {
-        Name      => 'Test supported tags -  <OTRS_CURRENT_UserFirstname> and <OTRS_CURRENT_UserLastname>',
-        Signature => "Your OTRS-Team
+        Name      => 'Test supported tags -  <LIGERO_CURRENT_UserFirstname> and <LIGERO_CURRENT_UserLastname>',
+        Signature => "Your LIGERO-Team
 
-    <OTRS_CURRENT_UserFirstname> <OTRS_CURRENT_UserLastname>
+    <LIGERO_CURRENT_UserFirstname> <LIGERO_CURRENT_UserLastname>
 
     --
     Super Support Company Inc. - Waterford Business Park
     5201 Blue Lagoon Drive - 8th Floor & 9th Floor - Miami, 33126 USA
     Email: hot\@florida.com - Web: http://hot.florida.com/
     --",
-        ExpectedResult => "Your OTRS-Team
+        ExpectedResult => "Your LIGERO-Team
 
     $User{UserFirstname} $User{UserLastname}
 
@@ -78,19 +78,19 @@ my @Tests = (
     },
     {
         Name           => 'Test unsupported tags',
-        Signature      => 'Test: <OTRS_AGENT_SUBJECT> <OTRS_AGENT_BODY> <OTRS_CUSTOMER_BODY> <OTRS_CUSTOMER_SUBJECT>',
+        Signature      => 'Test: <LIGERO_AGENT_SUBJECT> <LIGERO_AGENT_BODY> <LIGERO_CUSTOMER_BODY> <LIGERO_CUSTOMER_SUBJECT>',
         ExpectedResult => 'Test: - - - -',
     },
     {
-        Name => 'Test supported tags - <OTRS_TICKET_*> without TicketID',
+        Name => 'Test supported tags - <LIGERO_TICKET_*> without TicketID',
         Signature =>
-            'Options of the ticket data (e. g. <OTRS_TICKET_TicketNumber>, <OTRS_TICKET_TicketID>, <OTRS_TICKET_State>)',
+            'Options of the ticket data (e. g. <LIGERO_TICKET_TicketNumber>, <LIGERO_TICKET_TicketID>, <LIGERO_TICKET_State>)',
         ExpectedResult => 'Options of the ticket data (e. g. -, -, -)',
     },
     {
-        Name => 'Test supported tags - <OTRS_TICKET_*>  with TicketID',
+        Name => 'Test supported tags - <LIGERO_TICKET_*>  with TicketID',
         Signature =>
-            'Options of the ticket data (e. g. <OTRS_TICKET_TicketNumber>, <OTRS_TICKET_TicketID>, <OTRS_TICKET_State>)',
+            'Options of the ticket data (e. g. <LIGERO_TICKET_TicketNumber>, <LIGERO_TICKET_TicketID>, <LIGERO_TICKET_State>)',
     },
 );
 

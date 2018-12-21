@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -242,7 +242,7 @@ my %PostMasterReturnLookup = (
     2 => 'follow up / open/reopen',
     3 => 'follow up / close -> new ticket',
     4 => 'follow up / close -> reject',
-    5 => 'ignored (because of X-OTRS-Ignore header)',
+    5 => 'ignored (because of X-LIGERO-Ignore header)',
 );
 
 TEST:
@@ -263,7 +263,7 @@ for my $Test (@Tests) {
     );
     $CommunicationLogObject->ObjectLogStart( ObjectLogType => 'Message' );
 
-    # use post master to import mail into OTRS
+    # use post master to import mail into LIGERO
     my $PostMasterObject = Kernel::System::PostMaster->new(
         CommunicationLogObject => $CommunicationLogObject,
         Email                  => $Email,
@@ -577,7 +577,7 @@ for my $Test (@Tests) {
         VerifyDecryption => 1,
     };
 
-    # TODO: currently inline signatures tests does not work as OTRS does not save the signature
+    # TODO: currently inline signatures tests does not work as LIGERO does not save the signature
     #    in the Article{Body}, the body remains intact after sending the email, only the email has
     #    the signature
 

@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -34,7 +34,7 @@ Kernel::System::Ticket::Article - functions to manage ticket articles
 
 =head1 DESCRIPTION
 
-Since OTRS 6, article data is split in a neutral part for all articles (in the C<article> database table),
+Since LIGERO 6, article data is split in a neutral part for all articles (in the C<article> database table),
 and back end specific data in custom tables (such as C<article_data_mime> for the C<MIME> based back ends).
 
 This class only manages back end neutral article data, like listing articles with L</ArticleList()> or manipulating
@@ -1268,7 +1268,7 @@ sub _ArticleCacheClear {
 
 =head1 TERMS AND CONDITIONS
 
-This software is part of the OTRS project (L<https://ligero.org/>).
+This software is part of the LIGERO project (L<https://ligero.org/>).
 
 This software comes with ABSOLUTELY NO WARRANTY. For details, see
 the enclosed file COPYING for license information (GPL). If you

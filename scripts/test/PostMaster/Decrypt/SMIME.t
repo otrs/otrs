@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -166,19 +166,19 @@ if ( !$SMIMEObject ) {
 # OpenSSL 0.9.x hashes
 my $Check1Hash       = '980a83c7';
 my $Check2Hash       = '999bcb2f';
-my $OTRSRootCAHash   = '1a01713f';
-my $OTRSRDCAHash     = '7807c24e';
-my $OTRSLabCAHash    = '2fc24258';
-my $OTRSUserCertHash = 'eab039b6';
+my $LIGERORootCAHash   = '1a01713f';
+my $LIGERORDCAHash     = '7807c24e';
+my $LIGEROLabCAHash    = '2fc24258';
+my $LIGEROUserCertHash = 'eab039b6';
 
 # OpenSSL 1.0.0 hashes
 if ($UseNewHashes) {
     $Check1Hash       = 'f62a2257';
     $Check2Hash       = '35c7d865';
-    $OTRSRootCAHash   = '7835cf94';
-    $OTRSRDCAHash     = 'b5d19fb9';
-    $OTRSLabCAHash    = '19545811';
-    $OTRSUserCertHash = '4d400195';
+    $LIGERORootCAHash   = '7835cf94';
+    $LIGERORDCAHash     = 'b5d19fb9';
+    $LIGEROLabCAHash    = '19545811';
+    $LIGEROUserCertHash = '4d400195';
 }
 
 # certificates
@@ -238,13 +238,13 @@ $PostMasterFilter->FilterAdd(
     StopAfterMatch => 0,
     Match          => [
         {
-            Key   => 'X-OTRS-BodyDecrypted',
+            Key   => 'X-LIGERO-BodyDecrypted',
             Value => 'Hi',
         },
     ],
     Set => [
         {
-            Key   => 'X-OTRS-Queue',
+            Key   => 'X-LIGERO-Queue',
             Value => 'Junk',
         },
     ],

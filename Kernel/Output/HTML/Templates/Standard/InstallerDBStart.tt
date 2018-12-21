@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -29,11 +29,11 @@
                     <div class="Field">
                         <div>
                             <input type="radio" id="DBInstallTypeCreateDB" name="DBInstallType" checked value="CreateDB" />
-                            <label for="DBInstallTypeCreateDB">[% Translate("Create a new database for OTRS") | html %]</label>
+                            <label for="DBInstallTypeCreateDB">[% Translate("Create a new database for LIGERO") | html %]</label>
                         </div>
                         <div>
                             <input type="radio" id="DBInstallTypeUseDB" name="DBInstallType" value="UseDB" />
-                            <label for="DBInstallTypeUseDB">[% Translate("Use an existing database for OTRS") | html %]</label>
+                            <label for="DBInstallTypeUseDB">[% Translate("Use an existing database for LIGERO") | html %]</label>
                         </div>
                     </div>
                     <div class="Clear"></div>

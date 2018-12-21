@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -19,11 +19,11 @@
                     [% Translate(Data.Comment) | html %]
                 </p>
 
-                [% IF Data.ShowOTRSBusinessHint %]
+                [% IF Data.ShowLIGEROBusinessHint %]
                 <div class="MessageBox Info">
                     <p class="SpacingTop">
-                        [% Translate("Really a bug? 5 out of 10 bug reports result from a wrong or incomplete installation of OTRS.") | html %]
-                        [% Translate("With %s, our experts take care of correct installation and cover your back with support and periodic security updates.") | html | ReplacePlaceholders('<b>OTRS Business Solution™</b>') %]
+                        [% Translate("Really a bug? 5 out of 10 bug reports result from a wrong or incomplete installation of LIGERO.") | html %]
+                        [% Translate("With %s, our experts take care of correct installation and cover your back with support and periodic security updates.") | html | ReplacePlaceholders('<b>LIGERO Business Solution™</b>') %]
                         <br /><br />
                         <a class="Button" href="https://www.ligero.com/contact/" target="_blank">
                             [% Translate("Contact our service team now.") | html %]
@@ -33,7 +33,7 @@
                 [% END %]
 
                 <form action="https://bugs.ligero.org/enter_bug.cgi" target="_blank">
-                    <input type="hidden" name="product" value="OTRS Helpdesk" />
+                    <input type="hidden" name="product" value="LIGERO Helpdesk" />
 
                     <textarea class="Hidden" name="comment" rows="1" cols="1">
 Message:

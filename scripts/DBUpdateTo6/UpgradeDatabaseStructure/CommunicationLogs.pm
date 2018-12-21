@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -129,7 +129,7 @@ sub Run {
             </ForeignKey>
         </Table>',
 
- # Table that keeps track of relation between an OTRS object (article, mail-queue, etc.) and a communication log object.
+ # Table that keeps track of relation between an LIGERO object (article, mail-queue, etc.) and a communication log object.
         '<Table Name="communication_log_obj_lookup">
             <Column Name="id" Required="true" PrimaryKey="true" Type="BIGINT" AutoIncrement="true"/>
             <Column Name="communication_log_object_id" Required="true" Type="BIGINT"/>
@@ -164,7 +164,7 @@ sub Run {
 
 =head1 TERMS AND CONDITIONS
 
-This software is part of the OTRS project (L<https://ligero.org/>).
+This software is part of the LIGERO project (L<https://ligero.org/>).
 
 This software comes with ABSOLUTELY NO WARRANTY. For details, see
 the enclosed file COPYING for license information (GPL). If you

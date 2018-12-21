@@ -1,12 +1,12 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
 # did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
-package Kernel::System::OTRSBusiness;
+package Kernel::System::LIGEROBusiness;
 
 use strict;
 use warnings;
@@ -28,7 +28,7 @@ our @ObjectDependencies = (
 
 =head1 NAME
 
-Kernel::System::OTRSBusiness - OTRSBusiness deployment backend
+Kernel::System::LIGEROBusiness - LIGEROBusiness deployment backend
 
 =head1 PUBLIC INTERFACE
 
@@ -38,7 +38,7 @@ create an object. Do not use it directly, instead use:
 
     use Kernel::System::ObjectManager;
     local $Kernel::OM = Kernel::System::ObjectManager->new();
-    my $RegistrationObject = $Kernel::OM->Get('Kernel::System::OTRSBusiness');
+    my $RegistrationObject = $Kernel::OM->Get('Kernel::System::LIGEROBusiness');
 
 
 =cut
@@ -55,11 +55,11 @@ sub new {
     # Get config object
     my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
 
-    # Get OTRSBusiness::ReleaseChannel from SysConfig (Stable = 1, Development = 0)
-    $Self->{OnlyStable} = $ConfigObject->Get('OTRSBusiness::ReleaseChannel') // 1;
+    # Get LIGEROBusiness::ReleaseChannel from SysConfig (Stable = 1, Development = 0)
+    $Self->{OnlyStable} = $ConfigObject->Get('LIGEROBusiness::ReleaseChannel') // 1;
 
     # Set cache params
-    $Self->{CacheType} = 'OTRSBusiness';
+    $Self->{CacheType} = 'LIGEROBusiness';
     $Self->{CacheTTL}  = 60 * 60 * 24 * 30;    # 30 days
 
     # Check if cloud services are disabled
@@ -77,16 +77,16 @@ sub new {
     return $Self;
 }
 
-=head2 OTRSBusinessIsInstalled()
+=head2 LIGEROBusinessIsInstalled()
 
-checks if OTRSBusiness is installed in the current system.
+checks if LIGEROBusiness is installed in the current system.
 That does not necessarily mean that it is also active, for
 example if the package is only on the database but not on
 the file system.
 
 =cut
 
-sub OTRSBusinessIsInstalled {
+sub LIGEROBusinessIsInstalled {
     my ( $Self, %Param ) = @_;
 
     my $CacheObject = $Kernel::OM->Get('Kernel::System::Cache');
@@ -96,34 +96,34 @@ sub OTRSBusinessIsInstalled {
     my $Cache = $CacheObject->Get(
         Type => $Self->{CacheType},
         TTL  => $Self->{CacheTTL},
-        Key  => 'OTRSBusinessIsInstalled',
+        Key  => 'LIGEROBusinessIsInstalled',
     );
 
     return $Cache if defined $Cache;
 
-    my $IsInstalled = $Self->_GetOTRSBusinessPackageFromRepository() ? 1 : 0;
+    my $IsInstalled = $Self->_GetLIGEROBusinessPackageFromRepository() ? 1 : 0;
 
     # set cache
     $CacheObject->Set(
         Type  => $Self->{CacheType},
         TTL   => $Self->{CacheTTL},
-        Key   => 'OTRSBusinessIsInstalled',
+        Key   => 'LIGEROBusinessIsInstalled',
         Value => $IsInstalled,
     );
 
     return $IsInstalled;
 }
 
-=head2 OTRSSTORMIsInstalled()
+=head2 LIGEROSTORMIsInstalled()
 
-checks if OTRSStorm is installed in the current system.
+checks if LIGEROStorm is installed in the current system.
 That does not necessarily mean that it is also active, for
 example if the package is only on the database but not on
 the file system.
 
 =cut
 
-sub OTRSSTORMIsInstalled {
+sub LIGEROSTORMIsInstalled {
     my ( $Self, %Param ) = @_;
 
     my $CacheObject = $Kernel::OM->Get('Kernel::System::Cache');
@@ -133,7 +133,7 @@ sub OTRSSTORMIsInstalled {
     my $Cache = $CacheObject->Get(
         Type => $Self->{CacheType},
         TTL  => $Self->{CacheTTL},
-        Key  => 'OTRSSTORMIsInstalled',
+        Key  => 'LIGEROSTORMIsInstalled',
     );
 
     return $Cache if defined $Cache;
@@ -144,23 +144,23 @@ sub OTRSSTORMIsInstalled {
     $CacheObject->Set(
         Type  => $Self->{CacheType},
         TTL   => $Self->{CacheTTL},
-        Key   => 'OTRSSTORMIsInstalled',
+        Key   => 'LIGEROSTORMIsInstalled',
         Value => $IsInstalled,
     );
 
     return $IsInstalled;
 }
 
-=head2 OTRSCONTROLIsInstalled()
+=head2 LIGEROCONTROLIsInstalled()
 
-checks if OTRSControl is installed in the current system.
+checks if LIGEROControl is installed in the current system.
 That does not necessarily mean that it is also active, for
 example if the package is only on the database but not on
 the file system.
 
 =cut
 
-sub OTRSCONTROLIsInstalled {
+sub LIGEROCONTROLIsInstalled {
     my ( $Self, %Param ) = @_;
 
     my $CacheObject = $Kernel::OM->Get('Kernel::System::Cache');
@@ -170,7 +170,7 @@ sub OTRSCONTROLIsInstalled {
     my $Cache = $CacheObject->Get(
         Type => $Self->{CacheType},
         TTL  => $Self->{CacheTTL},
-        Key  => 'OTRSCONTROLIsInstalled',
+        Key  => 'LIGEROCONTROLIsInstalled',
     );
 
     return $Cache if defined $Cache;
@@ -181,20 +181,20 @@ sub OTRSCONTROLIsInstalled {
     $CacheObject->Set(
         Type  => $Self->{CacheType},
         TTL   => $Self->{CacheTTL},
-        Key   => 'OTRSCONTROLIsInstalled',
+        Key   => 'LIGEROCONTROLIsInstalled',
         Value => $IsInstalled,
     );
 
     return $IsInstalled;
 }
 
-=head2 OTRSBusinessIsAvailable()
+=head2 LIGEROBusinessIsAvailable()
 
-checks with C<cloud.ligero.com> if OTRSBusiness is available for the current framework.
+checks with C<cloud.ligero.com> if LIGEROBusiness is available for the current framework.
 
 =cut
 
-sub OTRSBusinessIsAvailable {
+sub LIGEROBusinessIsAvailable {
     my ( $Self, %Param ) = @_;
 
     return if $Self->{CloudServicesDisabled};
@@ -202,7 +202,7 @@ sub OTRSBusinessIsAvailable {
     my $CloudServiceObject = $Kernel::OM->Get('Kernel::System::CloudService::Backend::Run');
     my $RequestResult      = $CloudServiceObject->Request(
         RequestData => {
-            OTRSBusiness => [
+            LIGEROBusiness => [
                 {
                     Operation => 'BusinessVersionCheck',
                     Data      => {
@@ -217,7 +217,7 @@ sub OTRSBusinessIsAvailable {
     if ( IsHashRefWithData($RequestResult) ) {
         $OperationResult = $CloudServiceObject->OperationResultGet(
             RequestResult => $RequestResult,
-            CloudService  => 'OTRSBusiness',
+            CloudService  => 'LIGEROBusiness',
             Operation     => 'BusinessVersionCheck',
         );
 
@@ -234,7 +234,7 @@ sub OTRSBusinessIsAvailable {
     return;
 }
 
-=head2 OTRSBusinessIsAvailableOffline()
+=head2 LIGEROBusinessIsAvailableOffline()
 
 retrieves the latest result of the BusinessVersionCheck cloud service
 that was stored in the system_data table.
@@ -243,27 +243,27 @@ returns 1 if available.
 
 =cut
 
-sub OTRSBusinessIsAvailableOffline {
+sub LIGEROBusinessIsAvailableOffline {
     my ( $Self, %Param ) = @_;
 
     my %BusinessVersionCheck = $Kernel::OM->Get('Kernel::System::SystemData')->SystemDataGroupGet(
-        Group => 'OTRSBusiness',
+        Group => 'LIGEROBusiness',
     );
 
     return $BusinessVersionCheck{LatestVersionForCurrentFramework} ? 1 : 0;
 }
 
-=head2 OTRSBusinessIsCorrectlyDeployed()
+=head2 LIGEROBusinessIsCorrectlyDeployed()
 
-checks if the OTRSBusiness package is correctly
+checks if the LIGEROBusiness package is correctly
 deployed or if it needs to be reinstalled.
 
 =cut
 
-sub OTRSBusinessIsCorrectlyDeployed {
+sub LIGEROBusinessIsCorrectlyDeployed {
     my ( $Self, %Param ) = @_;
 
-    my $Package = $Self->_GetOTRSBusinessPackageFromRepository();
+    my $Package = $Self->_GetLIGEROBusinessPackageFromRepository();
 
     # Package not found -> return failure
     return if !$Package;
@@ -295,18 +295,18 @@ sub OTRSBusinessIsCorrectlyDeployed {
     return 1;
 }
 
-=head2 OTRSBusinessIsReinstallable()
+=head2 LIGEROBusinessIsReinstallable()
 
-checks if the OTRSBusiness package can be reinstalled
+checks if the LIGEROBusiness package can be reinstalled
 (if it supports the current framework version). If not,
 an update might be needed.
 
 =cut
 
-sub OTRSBusinessIsReinstallable {
+sub LIGEROBusinessIsReinstallable {
     my ( $Self, %Param ) = @_;
 
-    my $Package = $Self->_GetOTRSBusinessPackageFromRepository();
+    my $Package = $Self->_GetLIGEROBusinessPackageFromRepository();
 
     # Package not found -> return failure
     return if !$Package;
@@ -317,26 +317,26 @@ sub OTRSBusinessIsReinstallable {
     return $Check{Success};
 }
 
-=head2 OTRSBusinessIsUpdateable()
+=head2 LIGEROBusinessIsUpdateable()
 
-checks with C<cloud.ligero.com> if the OTRSBusiness package is available in a newer version
+checks with C<cloud.ligero.com> if the LIGEROBusiness package is available in a newer version
 than the one currently installed. The result of this check will be stored in the
 system_data table for offline usage.
 
 =cut
 
-sub OTRSBusinessIsUpdateable {
+sub LIGEROBusinessIsUpdateable {
     my ( $Self, %Param ) = @_;
 
     return 0 if $Self->{CloudServicesDisabled};
 
-    my $Package = $Self->_GetOTRSBusinessPackageFromRepository();
+    my $Package = $Self->_GetLIGEROBusinessPackageFromRepository();
     return if !$Package;
 
     my $CloudServiceObject = $Kernel::OM->Get('Kernel::System::CloudService::Backend::Run');
     my $RequestResult      = $CloudServiceObject->Request(
         RequestData => {
-            OTRSBusiness => [
+            LIGEROBusiness => [
                 {
                     Operation => 'BusinessVersionCheck',
                     Data      => {
@@ -351,7 +351,7 @@ sub OTRSBusinessIsUpdateable {
     if ( IsHashRefWithData($RequestResult) ) {
         $OperationResult = $CloudServiceObject->OperationResultGet(
             RequestResult => $RequestResult,
-            CloudService  => 'OTRSBusiness',
+            CloudService  => 'LIGEROBusiness',
             Operation     => 'BusinessVersionCheck',
         );
 
@@ -372,31 +372,31 @@ sub OTRSBusinessIsUpdateable {
     return 0;
 }
 
-=head2 OTRSBusinessVersionCheckOffline()
+=head2 LIGEROBusinessVersionCheckOffline()
 
 retrieves the latest result of the BusinessVersionCheck cloud service
 that was stored in the system_data table.
 
-    my %Result = $OTRSBusinessObject->OTRSBusinessVersionCheckOffline();
+    my %Result = $LIGEROBusinessObject->LIGEROBusinessVersionCheckOffline();
 
 returns
 
     $Result = (
-        OTRSBusinessUpdateAvailable      => 1,  # if applicable
+        LIGEROBusinessUpdateAvailable      => 1,  # if applicable
         FrameworkUpdateAvailable         => 1,  # if applicable
     );
 
 =cut
 
-sub OTRSBusinessVersionCheckOffline {
+sub LIGEROBusinessVersionCheckOffline {
     my ( $Self, %Param ) = @_;
 
-    my $Package = $Self->_GetOTRSBusinessPackageFromRepository();
+    my $Package = $Self->_GetLIGEROBusinessPackageFromRepository();
 
     return if !$Package;
 
     my %EntitlementData = $Kernel::OM->Get('Kernel::System::SystemData')->SystemDataGroupGet(
-        Group => 'OTRSBusiness',
+        Group => 'LIGEROBusiness',
     );
 
     my %Result = (
@@ -404,7 +404,7 @@ sub OTRSBusinessVersionCheckOffline {
     );
 
     if ( $EntitlementData{LatestVersionForCurrentFramework} ) {
-        $Result{OTRSBusinessUpdateAvailable} = $Kernel::OM->Get('Kernel::System::Package')->_CheckVersion(
+        $Result{LIGEROBusinessUpdateAvailable} = $Kernel::OM->Get('Kernel::System::Package')->_CheckVersion(
             VersionNew       => $EntitlementData{LatestVersionForCurrentFramework},
             VersionInstalled => $Package->{Version}->{Content},
             Type             => 'Max',
@@ -414,13 +414,13 @@ sub OTRSBusinessVersionCheckOffline {
     return %Result;
 }
 
-=head2 OTRSBusinessGetDependencies()
+=head2 LIGEROBusinessGetDependencies()
 
-checks if there are any active dependencies on OTRSBusiness.
+checks if there are any active dependencies on LIGEROBusiness.
 
 =cut
 
-sub OTRSBusinessGetDependencies {
+sub LIGEROBusinessGetDependencies {
     my ( $Self, %Param ) = @_;
 
     my @Packages = $Kernel::OM->Get('Kernel::System::Package')->RepositoryList();
@@ -437,7 +437,7 @@ sub OTRSBusinessGetDependencies {
 
             next DEPENDENCY if !IsHashRefWithData($Dependency);
             next DEPENDENCY if !$Dependency->{Content};
-            next DEPENDENCY if $Dependency->{Content} ne 'OTRSBusiness';
+            next DEPENDENCY if $Dependency->{Content} ne 'LIGEROBusiness';
 
             push @DependentPackages, {
                 Name        => $Package->{Name}->{Content},
@@ -453,21 +453,21 @@ sub OTRSBusinessGetDependencies {
     return \@DependentPackages;
 }
 
-=head2 OTRSBusinessEntitlementCheck()
+=head2 LIGEROBusinessEntitlementCheck()
 
-determines the OTRSBusiness entitlement status of this system as reported by C<cloud.ligero.com>
+determines the LIGEROBusiness entitlement status of this system as reported by C<cloud.ligero.com>
 and stores it in the system_data cache.
 
 Returns 1 if the cloud call was successful.
 
 =cut
 
-sub OTRSBusinessEntitlementCheck {
+sub LIGEROBusinessEntitlementCheck {
     my ( $Self, %Param ) = @_;
 
-    # If OTRSSTORM package is installed, system is able to do a Cloud request even if CloudService is disabled.
+    # If LIGEROSTORM package is installed, system is able to do a Cloud request even if CloudService is disabled.
     if (
-        !$Self->OTRSSTORMIsInstalled()
+        !$Self->LIGEROSTORMIsInstalled()
         && $Self->{CloudServicesDisabled}
         )
     {
@@ -477,7 +477,7 @@ sub OTRSBusinessEntitlementCheck {
     my $CloudServiceObject = $Kernel::OM->Get('Kernel::System::CloudService::Backend::Run');
     my $RequestResult      = $CloudServiceObject->Request(
         RequestData => {
-            OTRSBusiness => [
+            LIGEROBusiness => [
                 {
                     Operation => 'BusinessPermission',
                     Data      => {},
@@ -490,7 +490,7 @@ sub OTRSBusinessEntitlementCheck {
     if ( IsHashRefWithData($RequestResult) ) {
         $OperationResult = $CloudServiceObject->OperationResultGet(
             RequestResult => $RequestResult,
-            CloudService  => 'OTRSBusiness',
+            CloudService  => 'LIGEROBusiness',
             Operation     => 'BusinessPermission',
         );
     }
@@ -528,11 +528,11 @@ sub OTRSBusinessEntitlementCheck {
     return 0;
 }
 
-=head2 OTRSBusinessEntitlementStatus()
+=head2 LIGEROBusinessEntitlementStatus()
 
 Returns the current entitlement status.
 
-    my $Status = $OTRSBusinessObject->OTRSBusinessEntitlementStatus(
+    my $Status = $LIGEROBusinessObject->LIGEROBusinessEntitlementStatus(
         CallCloudService => 1,              # 0 or 1, call the cloud service before looking at the cache
     );
 
@@ -543,7 +543,7 @@ Returns the current entitlement status.
 
 =cut
 
-sub OTRSBusinessEntitlementStatus {
+sub LIGEROBusinessEntitlementStatus {
     my ( $Self, %Param ) = @_;
 
     # If the system is not registered, it cannot have an OB permission.
@@ -558,12 +558,12 @@ sub OTRSBusinessEntitlementStatus {
     }
 
     if ( $Param{CallCloudService} ) {
-        $Self->OTRSBusinessEntitlementCheck();
+        $Self->LIGEROBusinessEntitlementCheck();
     }
 
     # OK. Let's look at the system_data cache now and use it if appropriate
     my %EntitlementData = $Kernel::OM->Get('Kernel::System::SystemData')->SystemDataGroupGet(
-        Group => 'OTRSBusiness',
+        Group => 'LIGEROBusiness',
     );
 
     if ( !%EntitlementData || !$EntitlementData{BusinessPermission} ) {
@@ -591,7 +591,7 @@ sub OTRSBusinessEntitlementStatus {
 
     # If we cannot connect to cloud.ligero.com for more than the first period, show a warning.
     my $NoConnectWarningPeriod = 60 * 60 * 24 * 5;    # 5 days
-    if ( $Self->OTRSSTORMIsInstalled() ) {
+    if ( $Self->LIGEROSTORMIsInstalled() ) {
         $NoConnectWarningPeriod = 60 * 60 * 24 * 10;    # 10 days
     }
 
@@ -602,11 +602,11 @@ sub OTRSBusinessEntitlementStatus {
     return 'entitled';
 }
 
-=head2 OTRSBusinessContractExpiryDateCheck()
+=head2 LIGEROBusinessContractExpiryDateCheck()
 
 checks for the warning period before the contract expires
 
-    my $ExpiryDate = $OTRSBusinessObject->OTRSBusinessContractExpiryDateCheck();
+    my $ExpiryDate = $LIGEROBusinessObject->LIGEROBusinessContractExpiryDateCheck();
 
 returns the ExpiryDate if a warning should be displayed
 
@@ -615,16 +615,16 @@ returns the ExpiryDate if a warning should be displayed
 
 =cut
 
-sub OTRSBusinessContractExpiryDateCheck {
+sub LIGEROBusinessContractExpiryDateCheck {
     my ( $Self, %Param ) = @_;
 
     if ( $Param{CallCloudService} ) {
-        $Self->OTRSBusinessEntitlementCheck();
+        $Self->LIGEROBusinessEntitlementCheck();
     }
 
     # OK. Let's look at the system_data cache now and use it if appropriate
     my %EntitlementData = $Kernel::OM->Get('Kernel::System::SystemData')->SystemDataGroupGet(
-        Group => 'OTRSBusiness',
+        Group => 'LIGEROBusiness',
     );
 
     if ( !%EntitlementData || !$EntitlementData{ExpiryDate} ) {
@@ -676,7 +676,7 @@ sub HandleBusinessPermissionCloudServiceResult {
     for my $Key ( sort keys %StoreData ) {
         next KEY if !defined $StoreData{$Key};
 
-        my $FullKey = 'OTRSBusiness::' . $Key;
+        my $FullKey = 'LIGEROBusiness::' . $Key;
 
         if ( defined $SystemDataObject->SystemDataGet( Key => $FullKey ) ) {
             $SystemDataObject->SystemDataUpdate(
@@ -712,7 +712,7 @@ sub HandleBusinessVersionCheckCloudServiceResult {
     my $SystemDataObject = $Kernel::OM->Get('Kernel::System::SystemData');
 
     for my $Key ( sort keys %StoreData ) {
-        my $FullKey = 'OTRSBusiness::' . $Key;
+        my $FullKey = 'LIGEROBusiness::' . $Key;
 
         if ( defined $SystemDataObject->SystemDataGet( Key => $FullKey ) ) {
             $SystemDataObject->SystemDataUpdate(
@@ -733,7 +733,7 @@ sub HandleBusinessVersionCheckCloudServiceResult {
     return 1;
 }
 
-sub _OTRSBusinessFileGet {
+sub _LIGEROBusinessFileGet {
     my ( $Self, %Param ) = @_;
 
     return if $Self->{CloudServicesDisabled};
@@ -741,7 +741,7 @@ sub _OTRSBusinessFileGet {
     my $CloudServiceObject = $Kernel::OM->Get('Kernel::System::CloudService::Backend::Run');
     my $RequestResult      = $CloudServiceObject->Request(
         RequestData => {
-            OTRSBusiness => [
+            LIGEROBusiness => [
                 {
                     Operation => 'BusinessFileGet',
                     Data      => {
@@ -756,7 +756,7 @@ sub _OTRSBusinessFileGet {
     if ( IsHashRefWithData($RequestResult) ) {
         $OperationResult = $CloudServiceObject->OperationResultGet(
             RequestResult => $RequestResult,
-            CloudService  => 'OTRSBusiness',
+            CloudService  => 'LIGEROBusiness',
             Operation     => 'BusinessFileGet',
         );
 
@@ -768,20 +768,20 @@ sub _OTRSBusinessFileGet {
     return;
 }
 
-=head2 OTRSBusinessInstall()
+=head2 LIGEROBusinessInstall()
 
-downloads and installs OTRSBusiness.
+downloads and installs LIGEROBusiness.
 
 =cut
 
-sub OTRSBusinessInstall {
+sub LIGEROBusinessInstall {
     my ( $Self, %Param ) = @_;
 
     my %Response = (
         Success => 0,
     );
 
-    my $PackageString = $Self->_OTRSBusinessFileGet();
+    my $PackageString = $Self->_LIGEROBusinessFileGet();
     return %Response if !$PackageString;
 
     my $PackageObject = $Kernel::OM->Get('Kernel::System::Package');
@@ -809,12 +809,12 @@ sub OTRSBusinessInstall {
 
     return %Response if !$Install;
 
-    # now that we know that OTRSBusiness has been installed,
+    # now that we know that LIGEROBusiness has been installed,
     # we can just preset the cache instead of just swiping it.
     $Kernel::OM->Get('Kernel::System::Cache')->Set(
         Type  => $Self->{CacheType},
         TTL   => $Self->{CacheTTL},
-        Key   => 'OTRSBusinessIsInstalled',
+        Key   => 'LIGEROBusinessIsInstalled',
         Value => 1,
     );
 
@@ -823,16 +823,16 @@ sub OTRSBusinessInstall {
     return %Response;
 }
 
-=head2 OTRSBusinessReinstall()
+=head2 LIGEROBusinessReinstall()
 
-re-installs OTRSBusiness from local repository.
+re-installs LIGEROBusiness from local repository.
 
 =cut
 
-sub OTRSBusinessReinstall {
+sub LIGEROBusinessReinstall {
     my ( $Self, %Param ) = @_;
 
-    my $Package = $Self->_GetOTRSBusinessPackageFromRepository();
+    my $Package = $Self->_GetLIGEROBusinessPackageFromRepository();
 
     # Package not found -> return failure
     return if !$Package;
@@ -847,19 +847,19 @@ sub OTRSBusinessReinstall {
     );
 }
 
-=head2 OTRSBusinessUpdate()
+=head2 LIGEROBusinessUpdate()
 
-downloads and updates OTRSBusiness.
+downloads and updates LIGEROBusiness.
 
 =cut
 
-sub OTRSBusinessUpdate {
+sub LIGEROBusinessUpdate {
     my ( $Self, %Param ) = @_;
 
     my %Response = (
         Success => 0,
     );
-    my $PackageString = $Self->_OTRSBusinessFileGet();
+    my $PackageString = $Self->_LIGEROBusinessFileGet();
     return if !$PackageString;
 
     my $PackageObject = $Kernel::OM->Get('Kernel::System::Package');
@@ -891,21 +891,21 @@ sub OTRSBusinessUpdate {
     return %Response;
 }
 
-=head2 OTRSBusinessUninstall()
+=head2 LIGEROBusinessUninstall()
 
-removes OTRSBusiness from the system.
+removes LIGEROBusiness from the system.
 
 =cut
 
-sub OTRSBusinessUninstall {
+sub LIGEROBusinessUninstall {
     my ( $Self, %Param ) = @_;
 
-    my $Package = $Self->_GetOTRSBusinessPackageFromRepository();
+    my $Package = $Self->_GetLIGEROBusinessPackageFromRepository();
 
     # Package not found -> return failure
     return if !$Package;
 
-    # TODO: the following code is now Deprecated and should be removed in further versions of OTRS
+    # TODO: the following code is now Deprecated and should be removed in further versions of LIGERO
     # get a list of all dynamic fields for ticket and article
     my $DynamicFieldObject = $Kernel::OM->Get('Kernel::System::DynamicField');
     my $DynamicFieldList   = $DynamicFieldObject->DynamicFieldListGet(
@@ -913,8 +913,8 @@ sub OTRSBusinessUninstall {
         ObjectType => [ 'Ticket', 'Article' ],
     );
 
-    # filter only dynamic fields added by OTRSBusiness
-    my %OTRSBusinessDynamicFieldTypes = (
+    # filter only dynamic fields added by LIGEROBusiness
+    my %LIGEROBusinessDynamicFieldTypes = (
         ContactWithData => 1,
         Database        => 1,
     );
@@ -924,7 +924,7 @@ sub OTRSBusinessUninstall {
     DYNAMICFIELD:
     for my $DynamicFieldConfig ( @{$DynamicFieldList} ) {
         next DYNAMICFIELD if !IsHashRefWithData($DynamicFieldConfig);
-        next DYNAMICFIELD if !$OTRSBusinessDynamicFieldTypes{ $DynamicFieldConfig->{FieldType} };
+        next DYNAMICFIELD if !$LIGEROBusinessDynamicFieldTypes{ $DynamicFieldConfig->{FieldType} };
 
         # remove data from the field
         my $ValuesDeleteSuccess = $DynamicFieldBackendObject->AllValuesDelete(
@@ -966,23 +966,23 @@ sub OTRSBusinessUninstall {
 
     return $Uninstall if !$Uninstall;
 
-    # now that we know that OTRSBusiness has been uninstalled,
+    # now that we know that LIGEROBusiness has been uninstalled,
     # we can just preset the cache instead of just swiping it.
     $Kernel::OM->Get('Kernel::System::Cache')->Set(
         Type  => $Self->{CacheType},
         TTL   => $Self->{CacheTTL},
-        Key   => 'OTRSBusinessIsInstalled',
+        Key   => 'LIGEROBusinessIsInstalled',
         Value => 0,
     );
 
     return $Uninstall;
 }
 
-=head2 OTRSBusinessCommandNextUpdateTimeSet()
+=head2 LIGEROBusinessCommandNextUpdateTimeSet()
 
 Set the next update time for the given command in the system data table storage.
 
-    my $Success = $OTRSBusinessObject->OTRSBusinessCommandNextUpdateTimeSet(
+    my $Success = $LIGEROBusinessObject->LIGEROBusinessCommandNextUpdateTimeSet(
         Command => 'AvailabilityCheck',
     );
 
@@ -990,12 +990,12 @@ Returns 1 if the next update time was set successfully.
 
 =cut
 
-sub OTRSBusinessCommandNextUpdateTimeSet {
+sub LIGEROBusinessCommandNextUpdateTimeSet {
     my ( $Self, %Param ) = @_;
 
     return if !$Param{Command};
 
-    my $Key = "OTRSBusiness::$Param{Command}::NextUpdateTime";
+    my $Key = "LIGEROBusiness::$Param{Command}::NextUpdateTime";
 
     my $SystemDataObject = $Kernel::OM->Get('Kernel::System::SystemData');
 
@@ -1039,7 +1039,7 @@ sub OTRSBusinessCommandNextUpdateTimeSet {
     return 1;
 }
 
-sub _GetOTRSBusinessPackageFromRepository {
+sub _GetLIGEROBusinessPackageFromRepository {
     my ( $Self, %Param ) = @_;
 
     my $PackageObject = $Kernel::OM->Get('Kernel::System::Package');
@@ -1047,7 +1047,7 @@ sub _GetOTRSBusinessPackageFromRepository {
     my @RepositoryList = $PackageObject->RepositoryList();
 
     for my $Package (@RepositoryList) {
-        return $Package if $Package->{Name}->{Content} eq 'OTRSBusiness';
+        return $Package if $Package->{Name}->{Content} eq 'LIGEROBusiness';
     }
 
     return;
@@ -1064,7 +1064,7 @@ sub _GetSTORMPackageFromRepository {
 
     for my $Package (@RepositoryList) {
 
-        return $Package if $Package->{Name} eq 'OTRSSTORM';
+        return $Package if $Package->{Name} eq 'LIGEROSTORM';
     }
 
     return;
@@ -1081,7 +1081,7 @@ sub _GetCONTROLPackageFromRepository {
 
     for my $Package (@RepositoryList) {
 
-        return $Package if $Package->{Name} eq 'OTRSCONTROL';
+        return $Package if $Package->{Name} eq 'LIGEROCONTROL';
     }
 
     return;
@@ -1091,7 +1091,7 @@ sub _GetCONTROLPackageFromRepository {
 
 =head1 TERMS AND CONDITIONS
 
-This software is part of the OTRS project (L<https://ligero.org/>).
+This software is part of the LIGERO project (L<https://ligero.org/>).
 
 This software comes with ABSOLUTELY NO WARRANTY. For details, see
 the enclosed file COPYING for license information (GPL). If you

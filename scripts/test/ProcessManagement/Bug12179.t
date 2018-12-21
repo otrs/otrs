@@ -1,6 +1,6 @@
 
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -93,18 +93,18 @@ my %Process = (
                 ContentType          => 'text/plain; charset=UTF8',
                 CustomerID           => '',
                 CustomerUser         => '',
-                $DynamicFieldName    => "<OTRS_TICKET_$DynamicFieldName>",
+                $DynamicFieldName    => "<LIGERO_TICKET_$DynamicFieldName>",
                 HistoryComment       => 'Created new ticket copy',
                 HistoryType          => 'AddNote',
                 LinkAs               => 'Child',
                 Lock                 => 'unlock',
                 OwnerID              => 1,
                 Priority             => '3 normal',
-                Queue                => '<OTRS_TICKET_Queue>',
+                Queue                => '<LIGERO_TICKET_Queue>',
                 State                => 'closed successful',
-                Subject              => '<OTRS_TICKET_Title>',
-                Title                => '<OTRS_TICKET_Title>',
-                Type                 => '<OTRS_TICKET_Type>',
+                Subject              => '<LIGERO_TICKET_Title>',
+                Title                => '<LIGERO_TICKET_Title>',
+                Type                 => '<LIGERO_TICKET_Type>',
             },
             ChangeTime => '2016-07-05 16:00:22',
             CreateTime => '2016-07-05 15:18:21',

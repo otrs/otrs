@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -14,13 +14,13 @@ use strict;
 use warnings;
 
 our @ObjectDependencies = (
-    'Kernel::System::OTRSBusiness',
+    'Kernel::System::LIGEROBusiness',
 );
 
 sub Run {
     my ( $Self, %Param ) = @_;
 
-    if ( $Kernel::OM->Get('Kernel::System::OTRSBusiness')->OTRSBusinessIsInstalled() ) {
+    if ( $Kernel::OM->Get('Kernel::System::LIGEROBusiness')->LIGEROBusinessIsInstalled() ) {
         return;
     }
 

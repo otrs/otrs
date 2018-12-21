@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -46,9 +46,9 @@ return if !$DBObject->Prepare(
         ",
 );
 
-my $OTRSSettings;
+my $LIGEROSettings;
 while ( my @Data = $DBObject->FetchrowArray() ) {
-    $OTRSSettings = $Data[0];
+    $LIGEROSettings = $Data[0];
 }
 
 my $SysConfigObject = $Kernel::OM->Get('Kernel::System::SysConfig');
@@ -96,9 +96,9 @@ my @Tests = (
     {
         Name   => 'Size Result',
         Params => {
-            Category => 'OTRS',
+            Category => 'LIGERO',
         },
-        ExpectedResult => $OTRSSettings,
+        ExpectedResult => $LIGEROSettings,
         Success        => 1,
     },
     {

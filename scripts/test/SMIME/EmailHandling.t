@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -159,19 +159,19 @@ if ( !$SMIMEObject ) {
 # OpenSSL 0.9.x hashes
 my $Check1Hash       = '980a83c7';
 my $Check2Hash       = '999bcb2f';
-my $OTRSRootCAHash   = '1a01713f';
-my $OTRSRDCAHash     = '7807c24e';
-my $OTRSLabCAHash    = '2fc24258';
-my $OTRSUserCertHash = 'eab039b6';
+my $LIGERORootCAHash   = '1a01713f';
+my $LIGERORDCAHash     = '7807c24e';
+my $LIGEROLabCAHash    = '2fc24258';
+my $LIGEROUserCertHash = 'eab039b6';
 
 # OpenSSL 1.0.0 hashes
 if ($UseNewHashes) {
     $Check1Hash       = 'f62a2257';
     $Check2Hash       = '35c7d865';
-    $OTRSRootCAHash   = '7835cf94';
-    $OTRSRDCAHash     = 'b5d19fb9';
-    $OTRSLabCAHash    = '19545811';
-    $OTRSUserCertHash = '4d400195';
+    $LIGERORootCAHash   = '7835cf94';
+    $LIGERORDCAHash     = 'b5d19fb9';
+    $LIGEROLabCAHash    = '19545811';
+    $LIGEROUserCertHash = '4d400195';
 }
 
 # certificates
@@ -191,32 +191,32 @@ my @Certificates = (
         PrivateSecretFileName => 'SMIMEPrivateKeyPass-2.asc',
     },
     {
-        CertificateName       => 'OTRSUserCert',
-        CertificateHash       => $OTRSUserCertHash,
+        CertificateName       => 'LIGEROUserCert',
+        CertificateHash       => $LIGEROUserCertHash,
         CertificateFileName   => 'SMIMECertificate-smimeuser1.crt',
         PrivateKeyFileName    => 'SMIMEPrivateKey-smimeuser1.pem',
         PrivateSecretFileName => 'SMIMEPrivateKeyPass-smimeuser1.crt',
     },
     {
-        CertificateName       => 'OTRSLabCA',
-        CertificateHash       => $OTRSLabCAHash,
-        CertificateFileName   => 'SMIMECACertificate-OTRSLab.crt',
-        PrivateKeyFileName    => 'SMIMECAPrivateKey-OTRSLab.pem',
-        PrivateSecretFileName => 'SMIMECAPrivateKeyPass-OTRSLab.crt',
+        CertificateName       => 'LIGEROLabCA',
+        CertificateHash       => $LIGEROLabCAHash,
+        CertificateFileName   => 'SMIMECACertificate-LIGEROLab.crt',
+        PrivateKeyFileName    => 'SMIMECAPrivateKey-LIGEROLab.pem',
+        PrivateSecretFileName => 'SMIMECAPrivateKeyPass-LIGEROLab.crt',
     },
     {
-        CertificateName       => 'OTRSRDCA',
-        CertificateHash       => $OTRSRDCAHash,
-        CertificateFileName   => 'SMIMECACertificate-OTRSRD.crt',
-        PrivateKeyFileName    => 'SMIMECAPrivateKey-OTRSRD.pem',
-        PrivateSecretFileName => 'SMIMECAPrivateKeyPass-OTRSRD.crt',
+        CertificateName       => 'LIGERORDCA',
+        CertificateHash       => $LIGERORDCAHash,
+        CertificateFileName   => 'SMIMECACertificate-LIGERORD.crt',
+        PrivateKeyFileName    => 'SMIMECAPrivateKey-LIGERORD.pem',
+        PrivateSecretFileName => 'SMIMECAPrivateKeyPass-LIGERORD.crt',
     },
     {
-        CertificateName       => 'OTRSRootCA',
-        CertificateHash       => $OTRSRootCAHash,
-        CertificateFileName   => 'SMIMECACertificate-OTRSRoot.crt',
-        PrivateKeyFileName    => 'SMIMECAPrivateKey-OTRSRoot.pem',
-        PrivateSecretFileName => 'SMIMECAPrivateKeyPass-OTRSRoot.crt',
+        CertificateName       => 'LIGERORootCA',
+        CertificateHash       => $LIGERORootCAHash,
+        CertificateFileName   => 'SMIMECACertificate-LIGERORoot.crt',
+        PrivateKeyFileName    => 'SMIMECAPrivateKey-LIGERORoot.pem',
+        PrivateSecretFileName => 'SMIMECAPrivateKeyPass-LIGERORoot.crt',
     },
 );
 
@@ -433,7 +433,7 @@ for my $Test (@Tests) {
             Sign => {
                 Type    => 'SMIME',
                 SubType => 'Detached',
-                Key     => $OTRSUserCertHash . '.0',
+                Key     => $LIGEROUserCertHash . '.0',
             },
         },
         VerifySignature  => 1,
@@ -449,7 +449,7 @@ for my $Test (@Tests) {
             To    => 'smimeuser1@test.com',
             Crypt => {
                 Type => 'SMIME',
-                Key  => $OTRSUserCertHash . '.0',
+                Key  => $LIGEROUserCertHash . '.0',
             },
         },
         VerifySignature  => 0,
@@ -466,11 +466,11 @@ for my $Test (@Tests) {
             Sign => {
                 Type    => 'SMIME',
                 SubType => 'Detached',
-                Key     => $OTRSUserCertHash . '.0',
+                Key     => $LIGEROUserCertHash . '.0',
             },
             Crypt => {
                 Type => 'SMIME',
-                Key  => $OTRSUserCertHash . '.0',
+                Key  => $LIGEROUserCertHash . '.0',
             },
         },
         VerifySignature  => 1,
@@ -506,7 +506,7 @@ for my $Test (@Tests) {
             EmailSecurity => {
                 Backend     => 'SMIME',
                 Method      => 'Detached',
-                EncryptKeys => [ $Check1Hash . '.0', $OTRSUserCertHash . '.0' ],
+                EncryptKeys => [ $Check1Hash . '.0', $LIGEROUserCertHash . '.0' ],
             },
         },
         VerifySignature  => 0,
@@ -558,7 +558,7 @@ for my $Test (@Tests) {
             EmailSecurity => {
                 Backend => 'SMIME',
                 SubType => 'Detached',
-                SignKey => $OTRSUserCertHash . '.0',
+                SignKey => $LIGEROUserCertHash . '.0',
             },
         },
         VerifySignature  => 1,
@@ -574,7 +574,7 @@ for my $Test (@Tests) {
             To            => 'smimeuser1@test.com',
             EmailSecurity => {
                 Backend     => 'SMIME',
-                EncryptKeys => [ $OTRSUserCertHash . '.0' ],
+                EncryptKeys => [ $LIGEROUserCertHash . '.0' ],
             },
         },
         VerifySignature  => 0,
@@ -591,8 +591,8 @@ for my $Test (@Tests) {
             EmailSecurity => {
                 Backend     => 'SMIME',
                 SubType     => 'Detached',
-                SignKey     => $OTRSUserCertHash . '.0',
-                EncryptKeys => [ $OTRSUserCertHash . '.0' ],
+                SignKey     => $LIGEROUserCertHash . '.0',
+                EncryptKeys => [ $LIGEROUserCertHash . '.0' ],
             },
         },
         VerifySignature  => 1,

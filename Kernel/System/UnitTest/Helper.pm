@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -7,9 +7,9 @@
 # --
 
 package Kernel::System::UnitTest::Helper;
-## nofilter(TidyAll::Plugin::OTRS::Perl::Time)
-## nofilter(TidyAll::Plugin::OTRS::Migrations::OTRS6::TimeObject)
-## nofilter(TidyAll::Plugin::OTRS::Migrations::OTRS6::DateTime)
+## nofilter(TidyAll::Plugin::LIGERO::Perl::Time)
+## nofilter(TidyAll::Plugin::LIGERO::Migrations::LIGERO6::TimeObject)
+## nofilter(TidyAll::Plugin::LIGERO::Migrations::LIGERO6::DateTime)
 
 use strict;
 use warnings;
@@ -650,7 +650,7 @@ sub ConfigSettingChange {
     my $PackageName = "ZZZZUnitTest$RandomNumber";
 
     my $Content = <<"EOF";
-# OTRS config file (automatically generated)
+# LIGERO config file (automatically generated)
 # VERSION:1.1
 package Kernel::Config::Files::$PackageName;
 use strict;
@@ -783,7 +783,7 @@ sub UseTmpArticleDir {
 
 =head2 DisableAsyncCalls()
 
-Disable scheduling of asynchronous tasks using C<AsynchronousExecutor> component of OTRS daemon.
+Disable scheduling of asynchronous tasks using C<AsynchronousExecutor> component of LIGERO daemon.
 
 =cut
 
@@ -815,7 +815,7 @@ receive all calls sent over system C<DBObject>.
 All database contents will be automatically dropped when the Helper object is destroyed.
 
     $Helper->ProvideTestDatabase(
-        DatabaseXMLString => $XML,      # (optional) OTRS database XML schema to execute
+        DatabaseXMLString => $XML,      # (optional) LIGERO database XML schema to execute
                                         # or
         DatabaseXMLFiles => [           # (optional) List of XML files to load and execute
             '/opt/ligero/scripts/database/ligero-schema.xml',
@@ -864,7 +864,7 @@ sub ProvideTestDatabase {
     my $PackageName = "ZZZZUnitTest$Identifier";
     $Self->CustomCodeActivate(
         Code => qq^
-# OTRS config file (automatically generated)
+# LIGERO config file (automatically generated)
 # VERSION:1.1
 package Kernel::Config::Files::$PackageName;
 use strict;
@@ -1044,17 +1044,17 @@ sub TestDatabaseCleanup {
 
 =head2 DatabaseXMLExecute()
 
-Execute supplied XML against current database. Content of supplied XML or XMLFilename parameter must be valid OTRS
+Execute supplied XML against current database. Content of supplied XML or XMLFilename parameter must be valid LIGERO
 database XML schema.
 
     $Helper->DatabaseXMLExecute(
-        XML => $XML,     # OTRS database XML schema to execute
+        XML => $XML,     # LIGERO database XML schema to execute
     );
 
 Alternatively, it can also load an XML file to execute:
 
     $Helper->DatabaseXMLExecute(
-        XMLFile => '/path/to/file',  # OTRS database XML file to execute
+        XMLFile => '/path/to/file',  # LIGERO database XML file to execute
     );
 
 =cut
@@ -1129,7 +1129,7 @@ sub DatabaseXMLExecute {
 
 =head1 TERMS AND CONDITIONS
 
-This software is part of the OTRS project (L<https://ligero.org/>).
+This software is part of the LIGERO project (L<https://ligero.org/>).
 
 This software comes with ABSOLUTELY NO WARRANTY. For details, see
 the enclosed file COPYING for license information (GPL). If you

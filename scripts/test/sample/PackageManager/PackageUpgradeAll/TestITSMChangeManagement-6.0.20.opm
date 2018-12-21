@@ -2,7 +2,7 @@
 <ligero_package version="1.1">
     <Name>TestITSMChangeManagement</Name>
     <Version>6.0.20</Version>
-    <Vendor>OTRS AG</Vendor>
+    <Vendor>LIGERO AG</Vendor>
     <URL>http://ligero.org/</URL>
     <License>GNU AFFERO GENERAL PUBLIC LICENSE Version 3, November 2007</License>
     <Framework>6.0.x</Framework>

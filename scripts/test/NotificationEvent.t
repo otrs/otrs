@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -981,119 +981,119 @@ my $NotificationYAML = <<'YAML';
   ID: '1'
   Message:
     de:
-      Body: 'Hallo <OTRS_NOTIFICATION_RECIPIENT_UserFirstname> <OTRS_NOTIFICATION_RECIPIENT_UserLastname>,
+      Body: 'Hallo <LIGERO_NOTIFICATION_RECIPIENT_UserFirstname> <LIGERO_NOTIFICATION_RECIPIENT_UserLastname>,
 
 
-        das Ticket [<OTRS_CONFIG_Ticket::Hook><OTRS_CONFIG_Ticket::HookDivider><OTRS_TICKET_TicketNumber>]
-        wurde in der Queue <OTRS_TICKET_Queue> erstellt.
+        das Ticket [<LIGERO_CONFIG_Ticket::Hook><LIGERO_CONFIG_Ticket::HookDivider><LIGERO_TICKET_TicketNumber>]
+        wurde in der Queue <LIGERO_TICKET_Queue> erstellt.
 
 
-        <OTRS_CUSTOMER_REALNAME> schrieb:
+        <LIGERO_CUSTOMER_REALNAME> schrieb:
 
-        <OTRS_CUSTOMER_BODY[30]>
-
-
-        <OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<OTRS_TICKET_TicketID>
+        <LIGERO_CUSTOMER_BODY[30]>
 
 
-        -- <OTRS_CONFIG_NotificationSenderName>'
+        <LIGERO_CONFIG_HttpType>://<LIGERO_CONFIG_FQDN>/<LIGERO_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<LIGERO_TICKET_TicketID>
+
+
+        -- <LIGERO_CONFIG_NotificationSenderName>'
       ContentType: text/plain
-      Subject: 'Ticket erstellt: <OTRS_TICKET_Title>'
+      Subject: 'Ticket erstellt: <LIGERO_TICKET_Title>'
     en:
-      Body: 'Hi <OTRS_NOTIFICATION_RECIPIENT_UserFirstname>,
+      Body: 'Hi <LIGERO_NOTIFICATION_RECIPIENT_UserFirstname>,
 
 
-        ticket [<OTRS_CONFIG_Ticket::Hook><OTRS_CONFIG_Ticket::HookDivider><OTRS_TICKET_TicketNumber>]
-        has been created in queue <OTRS_TICKET_Queue>.
+        ticket [<LIGERO_CONFIG_Ticket::Hook><LIGERO_CONFIG_Ticket::HookDivider><LIGERO_TICKET_TicketNumber>]
+        has been created in queue <LIGERO_TICKET_Queue>.
 
 
-        <OTRS_CUSTOMER_REALNAME> wrote:
+        <LIGERO_CUSTOMER_REALNAME> wrote:
 
-        <OTRS_CUSTOMER_BODY[30]>
-
-
-        <OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<OTRS_TICKET_TicketID>
+        <LIGERO_CUSTOMER_BODY[30]>
 
 
-        -- <OTRS_CONFIG_NotificationSenderName>'
+        <LIGERO_CONFIG_HttpType>://<LIGERO_CONFIG_FQDN>/<LIGERO_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<LIGERO_TICKET_TicketID>
+
+
+        -- <LIGERO_CONFIG_NotificationSenderName>'
       ContentType: text/plain
-      Subject: 'Ticket Created: <OTRS_TICKET_Title>'
+      Subject: 'Ticket Created: <LIGERO_TICKET_Title>'
     es_MX:
-      Body: 'Hola <OTRS_NOTIFICATION_RECIPIENT_UserFirstname>,
+      Body: 'Hola <LIGERO_NOTIFICATION_RECIPIENT_UserFirstname>,
 
 
-        el ticket [<OTRS_CONFIG_Ticket::Hook><OTRS_CONFIG_Ticket::HookDivider><OTRS_TICKET_TicketNumber>]
-        se ha creado en la fila <OTRS_TICKET_Queue>.
+        el ticket [<LIGERO_CONFIG_Ticket::Hook><LIGERO_CONFIG_Ticket::HookDivider><LIGERO_TICKET_TicketNumber>]
+        se ha creado en la fila <LIGERO_TICKET_Queue>.
 
 
-        <OTRS_CUSTOMER_REALNAME> escribió:
+        <LIGERO_CUSTOMER_REALNAME> escribió:
 
-        <OTRS_CUSTOMER_BODY[30]>
-
-
-        <OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<OTRS_TICKET_TicketID>
+        <LIGERO_CUSTOMER_BODY[30]>
 
 
-        -- <OTRS_CONFIG_NotificationSenderName>'
+        <LIGERO_CONFIG_HttpType>://<LIGERO_CONFIG_FQDN>/<LIGERO_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<LIGERO_TICKET_TicketID>
+
+
+        -- <LIGERO_CONFIG_NotificationSenderName>'
       ContentType: text/plain
-      Subject: 'Se ha creado un ticket: <OTRS_TICKET_Title>'
+      Subject: 'Se ha creado un ticket: <LIGERO_TICKET_Title>'
     hu:
-      Body: 'Kedves <OTRS_NOTIFICATION_RECIPIENT_UserFirstname>!
+      Body: 'Kedves <LIGERO_NOTIFICATION_RECIPIENT_UserFirstname>!
 
 
-        A(z) [<OTRS_CONFIG_Ticket::Hook><OTRS_CONFIG_Ticket::HookDivider><OTRS_TICKET_TicketNumber>]
-        jegy létrejött a következő várólistában: <OTRS_TICKET_Queue>.
+        A(z) [<LIGERO_CONFIG_Ticket::Hook><LIGERO_CONFIG_Ticket::HookDivider><LIGERO_TICKET_TicketNumber>]
+        jegy létrejött a következő várólistában: <LIGERO_TICKET_Queue>.
 
 
-        <OTRS_CUSTOMER_REALNAME> ezt írta:
+        <LIGERO_CUSTOMER_REALNAME> ezt írta:
 
-        <OTRS_CUSTOMER_BODY[30]>
-
-
-        <OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<OTRS_TICKET_TicketID>
+        <LIGERO_CUSTOMER_BODY[30]>
 
 
-        -- <OTRS_CONFIG_NotificationSenderName>'
+        <LIGERO_CONFIG_HttpType>://<LIGERO_CONFIG_FQDN>/<LIGERO_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<LIGERO_TICKET_TicketID>
+
+
+        -- <LIGERO_CONFIG_NotificationSenderName>'
       ContentType: text/plain
-      Subject: 'Jegy létrehozva: <OTRS_TICKET_Title>'
+      Subject: 'Jegy létrehozva: <LIGERO_TICKET_Title>'
     pt_BR:
-      Body: 'Oi <OTRS_NOTIFICATION_RECIPIENT_UserFirstname>,
+      Body: 'Oi <LIGERO_NOTIFICATION_RECIPIENT_UserFirstname>,
 
 
-        o ticket [<OTRS_CONFIG_Ticket::Hook><OTRS_CONFIG_Ticket::HookDivider><OTRS_TICKET_TicketNumber>]
-        foi criado na fila <OTRS_TICKET_Queue>.
+        o ticket [<LIGERO_CONFIG_Ticket::Hook><LIGERO_CONFIG_Ticket::HookDivider><LIGERO_TICKET_TicketNumber>]
+        foi criado na fila <LIGERO_TICKET_Queue>.
 
 
-        <OTRS_CUSTOMER_REALNAME> escreveu:
+        <LIGERO_CUSTOMER_REALNAME> escreveu:
 
-        <OTRS_CUSTOMER_BODY[30]>
-
-
-        <OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<OTRS_TICKET_TicketID>
+        <LIGERO_CUSTOMER_BODY[30]>
 
 
-        -- <OTRS_CONFIG_NotificationSenderName>'
+        <LIGERO_CONFIG_HttpType>://<LIGERO_CONFIG_FQDN>/<LIGERO_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<LIGERO_TICKET_TicketID>
+
+
+        -- <LIGERO_CONFIG_NotificationSenderName>'
       ContentType: text/plain
-      Subject: 'Ticket criado: <OTRS_TICKET_Title>'
+      Subject: 'Ticket criado: <LIGERO_TICKET_Title>'
     zh_CN:
-      Body: '您好 <OTRS_NOTIFICATION_RECIPIENT_UserFirstname>,
+      Body: '您好 <LIGERO_NOTIFICATION_RECIPIENT_UserFirstname>,
 
 
-        票据工单 [<OTRS_CONFIG_Ticket::Hook><OTRS_CONFIG_Ticket::HookDivider><OTRS_TICKET_TicketNumber>]
-        已在等待队列 已在队列<OTRS_TICKET_Queue> 中被编制完成。中被创建完成
+        票据工单 [<LIGERO_CONFIG_Ticket::Hook><LIGERO_CONFIG_Ticket::HookDivider><LIGERO_TICKET_TicketNumber>]
+        已在等待队列 已在队列<LIGERO_TICKET_Queue> 中被编制完成。中被创建完成
 
 
-        <OTRS_CUSTOMER_REALNAME> 写道：
+        <LIGERO_CUSTOMER_REALNAME> 写道：
 
-        <OTRS_CUSTOMER_BODY[30]>
-
-
-        <OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<OTRS_TICKET_TicketID>
+        <LIGERO_CUSTOMER_BODY[30]>
 
 
-        -- <OTRS_CONFIG_NotificationSenderName>'
+        <LIGERO_CONFIG_HttpType>://<LIGERO_CONFIG_FQDN>/<LIGERO_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<LIGERO_TICKET_TicketID>
+
+
+        -- <LIGERO_CONFIG_NotificationSenderName>'
       ContentType: text/plain
-      Subject: 票据编制 工单已创建：<OTRS_TICKET_Title>
+      Subject: 票据编制 工单已创建：<LIGERO_TICKET_Title>
   Name: Ticket create notification
   ValidID: '1'
 YAML

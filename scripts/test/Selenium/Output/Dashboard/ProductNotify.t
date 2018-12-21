@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -74,19 +74,19 @@ $Selenium->RunTest(
                             CacheTTL => 4320,
                             Release  => [
                                 {
-                                    Name     => 'OTRS',
+                                    Name     => 'LIGERO',
                                     Severity => 'Security',
                                     Version  => $ProductFeeds[2]->{Version},
                                     Link     => $ProductFeeds[2]->{Link},
                                 },
                                 {
-                                    Name     => 'OTRS',
+                                    Name     => 'LIGERO',
                                     Severity => 'Minor',
                                     Version  => $ProductFeeds[1]->{Version},
                                     Link     => $ProductFeeds[1]->{Link},
                                 },
                                 {
-                                    Name     => 'OTRS',
+                                    Name     => 'LIGERO',
                                     Severity => 'Major',
                                     Version  => $ProductFeeds[0]->{Version},
                                     Link     => $ProductFeeds[0]->{Link},
@@ -115,7 +115,7 @@ use Kernel::System::WebUserAgent;
 package Kernel::System::WebUserAgent;
 use strict;
 use warnings;
-## nofilter(TidyAll::Plugin::OTRS::Perl::TestSubs)
+## nofilter(TidyAll::Plugin::LIGERO::Perl::TestSubs)
 {
     no warnings 'redefine';
     sub Request {

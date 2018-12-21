@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -67,7 +67,7 @@ sub new {
         $Self->{Plugins}->{$PluginKey}->{PluginModule} = $GenericModule->new( %{$Self} );
 
         my $PluginURL = $PluginConfig->{$PluginKey}->{URL};
-        $PluginURL =~ s{<OTRS_CONFIG_(.+?)>}{$Kernel::OM->Get('Kernel::Config')->Get($1)}egx;
+        $PluginURL =~ s{<LIGERO_CONFIG_(.+?)>}{$Kernel::OM->Get('Kernel::Config')->Get($1)}egx;
         $Self->{Plugins}->{$PluginKey}->{PluginURL} = $PluginURL;
     }
 
@@ -268,7 +268,7 @@ sub PluginSearch {
 
 =head1 TERMS AND CONDITIONS
 
-This software is part of the OTRS project (L<https://ligero.org/>).
+This software is part of the LIGERO project (L<https://ligero.org/>).
 
 This software comes with ABSOLUTELY NO WARRANTY. For details, see
 the enclosed file COPYING for license information (GPL). If you

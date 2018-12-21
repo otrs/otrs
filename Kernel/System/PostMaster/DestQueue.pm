@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -139,18 +139,18 @@ sub GetTrustedQueueID {
     # get email headers
     my %GetParam = %{ $Param{Params} };
 
-    return if !$GetParam{'X-OTRS-Queue'};
+    return if !$GetParam{'X-LIGERO-Queue'};
 
     $Self->{CommunicationLogObject}->ObjectLog(
         ObjectLogType => 'Message',
         Priority      => 'Debug',
         Key           => 'Kernel::System::PostMaster::DestQueue',
-        Value         => "Existing X-OTRS-Queue header: $GetParam{'X-OTRS-Queue'} (MessageID:$GetParam{'Message-ID'})!",
+        Value         => "Existing X-LIGERO-Queue header: $GetParam{'X-LIGERO-Queue'} (MessageID:$GetParam{'Message-ID'})!",
     );
 
     # get dest queue
     return $Kernel::OM->Get('Kernel::System::Queue')->QueueLookup(
-        Queue => $GetParam{'X-OTRS-Queue'},
+        Queue => $GetParam{'X-LIGERO-Queue'},
     );
 }
 

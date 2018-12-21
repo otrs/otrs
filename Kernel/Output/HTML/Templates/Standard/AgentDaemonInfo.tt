@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -8,16 +8,16 @@
 
 <div id="DaemonRunDialog" class="InnerContent DaemonInfoContent">
 
-    <p>[% Translate("The OTRS Daemon is a daemon process that performs asynchronous tasks, e.g. ticket escalation triggering, email sending, etc.") | html %]</p>
+    <p>[% Translate("The LIGERO Daemon is a daemon process that performs asynchronous tasks, e.g. ticket escalation triggering, email sending, etc.") | html %]</p>
 
-    <p class="Strong SpacingTop">[% Translate("A running OTRS Daemon is mandatory for correct system operation.") | html %]</p>
+    <p class="Strong SpacingTop">[% Translate("A running LIGERO Daemon is mandatory for correct system operation.") | html %]</p>
 
-    <legend class="SpacingTop">[% Translate("Starting the OTRS Daemon") | html %]</legend>
+    <legend class="SpacingTop">[% Translate("Starting the LIGERO Daemon") | html %]</legend>
     <div class="InfoParagraph">
         <ul>
-            <li>[% Translate("Make sure that the file '%s' exists (without .dist extension). This cron job will check every 5 minutes if the OTRS Daemon is running and start it if needed.", Data.DaemonCron) | html %]</li>
+            <li>[% Translate("Make sure that the file '%s' exists (without .dist extension). This cron job will check every 5 minutes if the LIGERO Daemon is running and start it if needed.", Data.DaemonCron) | html %]</li>
             <li>[% Translate("Execute '%s start' to make sure the cron jobs of the 'ligero' user are active.", Data.CronExecutable) | html %]</li>
-            <li>[% Translate("After 5 minutes, check that the OTRS Daemon is running in the system ('bin/ligero.Daemon.pl status').") | html %]</li>
+            <li>[% Translate("After 5 minutes, check that the LIGERO Daemon is running in the system ('bin/ligero.Daemon.pl status').") | html %]</li>
         </ul>
     </div>
     <div class="Clear Spacing"></div>

@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -133,7 +133,7 @@ my $NotificationID = $NotificationEventObject->NotificationAdd(
             Subject => 'Test external note',
 
             # include non-breaking space (bug#10970)
-            Body => 'Ticket:&nbsp;<OTRS_TICKET_TicketID>&nbsp;<OTRS_OWNER_UserFirstname>',
+            Body => 'Ticket:&nbsp;<LIGERO_TICKET_TicketID>&nbsp;<LIGERO_OWNER_UserFirstname>',
 
             ContentType => 'text/html',
         },

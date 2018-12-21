@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -89,15 +89,15 @@ sub _ReplaceTicketAttributes {
     for my $Attribute ( sort keys %{ $Param{Config} } ) {
 
         # Replace ticket attributes such as
-        # <OTRS_Ticket_DynamicField_Name1> or <OTRS_TICKET_DynamicField_Name1>
+        # <LIGERO_Ticket_DynamicField_Name1> or <LIGERO_TICKET_DynamicField_Name1>
         # or
-        # <OTRS_TICKET_DynamicField_Name1_Value> or <OTRS_Ticket_DynamicField_Name1_Value>.
-        # <OTRS_Ticket_*> is deprecated and should be removed in further versions of OTRS.
+        # <LIGERO_TICKET_DynamicField_Name1_Value> or <LIGERO_Ticket_DynamicField_Name1_Value>.
+        # <LIGERO_Ticket_*> is deprecated and should be removed in further versions of LIGERO.
         my $Count = 0;
         REPLACEMENT:
         while (
             $Param{Config}->{$Attribute}
-            && $Param{Config}->{$Attribute} =~ m{<OTRS_TICKET_([A-Za-z0-9_]+)>}msxi
+            && $Param{Config}->{$Attribute} =~ m{<LIGERO_TICKET_([A-Za-z0-9_]+)>}msxi
             && $Count++ < 1000
             )
         {
@@ -123,7 +123,7 @@ sub _ReplaceTicketAttributes {
                 );
 
                 $Param{Config}->{$Attribute}
-                    =~ s{<OTRS_TICKET_$TicketAttribute>}{$DisplayValueStrg->{Value} // ''}ige;
+                    =~ s{<LIGERO_TICKET_$TicketAttribute>}{$DisplayValueStrg->{Value} // ''}ige;
 
                 next REPLACEMENT;
             }
@@ -142,16 +142,16 @@ sub _ReplaceTicketAttributes {
                 );
 
                 $Param{Config}->{$Attribute}
-                    =~ s{<OTRS_TICKET_$TicketAttribute>}{$ValueStrg->{Value} // ''}ige;
+                    =~ s{<LIGERO_TICKET_$TicketAttribute>}{$ValueStrg->{Value} // ''}ige;
 
                 next REPLACEMENT;
             }
 
             # if ticket value is scalar substitute all instances (as strings)
-            # this will allow replacements for "<OTRS_TICKET_Title> <OTRS_TICKET_Queue"
+            # this will allow replacements for "<LIGERO_TICKET_Title> <LIGERO_TICKET_Queue"
             if ( !ref $Param{Ticket}->{$TicketAttribute} ) {
                 $Param{Config}->{$Attribute}
-                    =~ s{<OTRS_TICKET_$TicketAttribute>}{$Param{Ticket}->{$TicketAttribute} // ''}ige;
+                    =~ s{<LIGERO_TICKET_$TicketAttribute>}{$Param{Ticket}->{$TicketAttribute} // ''}ige;
             }
             else {
 
@@ -307,12 +307,12 @@ sub _ReplaceAdditionalAttributes {
 
     my $TemplateGeneratorObject = $Kernel::OM->Get('Kernel::System::TemplateGenerator');
 
-    # start replacing of OTRS smart tags
+    # start replacing of LIGERO smart tags
     for my $Attribute ( sort keys %{ $Param{Config} } ) {
 
         my $ConfigValue = $Param{Config}->{$Attribute};
 
-        if ( $ConfigValue && $ConfigValue =~ m{<OTRS_[A-Za-z0-9_]+(?:\[(?:.+?)\])?>}smxi ) {
+        if ( $ConfigValue && $ConfigValue =~ m{<LIGERO_[A-Za-z0-9_]+(?:\[(?:.+?)\])?>}smxi ) {
 
             if ($RichText) {
                 $ConfigValue = $HTMLUtilsObject->ToHTML(

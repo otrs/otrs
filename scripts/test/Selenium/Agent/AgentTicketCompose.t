@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -184,21 +184,21 @@ $Selenium->RunTest(
         my $TemplateID = $StandardTemplateObject->StandardTemplateAdd(
             Name     => 'New Standard Template' . $RandomID,
             Template => "Thank you for your email.
-                             Ticket state: <OTRS_TICKET_State>.\n
-                             Ticket lock: <OTRS_TICKET_Lock>.\n
-                             Ticket priority: <OTRS_TICKET_Priority>.\n
-                             Ticket created: <OTRS_TICKET_Created>.\n
-                             Ticket pending until time: <OTRS_TICKET_UntilTime>.\n
-                             Ticket will not be used till: <OTRS_TICKET_RealTillTimeNotUsed>.\n
-                             DynamicField Text: <OTRS_TICKET_DynamicField_" . $DynamicFields{Text}->{Name} . "_Value>
-                             DynamicField Dropdown: <OTRS_TICKET_DynamicField_"
+                             Ticket state: <LIGERO_TICKET_State>.\n
+                             Ticket lock: <LIGERO_TICKET_Lock>.\n
+                             Ticket priority: <LIGERO_TICKET_Priority>.\n
+                             Ticket created: <LIGERO_TICKET_Created>.\n
+                             Ticket pending until time: <LIGERO_TICKET_UntilTime>.\n
+                             Ticket will not be used till: <LIGERO_TICKET_RealTillTimeNotUsed>.\n
+                             DynamicField Text: <LIGERO_TICKET_DynamicField_" . $DynamicFields{Text}->{Name} . "_Value>
+                             DynamicField Dropdown: <LIGERO_TICKET_DynamicField_"
                 . $DynamicFields{Dropdown}->{Name}
                 . "_Value>
-                             DynamicField Multiselect: <OTRS_TICKET_DynamicField_"
+                             DynamicField Multiselect: <LIGERO_TICKET_DynamicField_"
                 . $DynamicFields{Multiselect}->{Name}
                 . "_Value>
-                             DynamicField Date: <OTRS_TICKET_DynamicField_" . $DynamicFields{Date}->{Name} . "_Value>
-                             DynamicField DateTime: <OTRS_TICKET_DynamicField_"
+                             DynamicField Date: <LIGERO_TICKET_DynamicField_" . $DynamicFields{Date}->{Name} . "_Value>
+                             DynamicField DateTime: <LIGERO_TICKET_DynamicField_"
                 . $DynamicFields{DateTime}->{Name}
                 . "_Value>
                             ",
@@ -482,7 +482,7 @@ $Selenium->RunTest(
         );
 
         # Test bug #11810 - http://bugs.ligero.org/show_bug.cgi?id=11810.
-        # Translate ticket data tags (e.g. <OTRS_TICKET_State> ) in standard template.
+        # Translate ticket data tags (e.g. <LIGERO_TICKET_State> ) in standard template.
         $Kernel::OM->ObjectParamAdd(
             'Kernel::Language' => {
                 UserLanguage => $Language,

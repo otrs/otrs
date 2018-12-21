@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -24,7 +24,7 @@ our @ObjectDependencies = (
 sub Configure {
     my ( $Self, %Param ) = @_;
 
-    $Self->Description('List all installed OTRS packages.');
+    $Self->Description('List all installed LIGERO packages.');
 
     $Self->AddOption(
         Name        => 'package-name',
@@ -43,14 +43,14 @@ sub Configure {
 
     $Self->AddOption(
         Name        => 'show-verification-info',
-        Description => 'Show package OTRS Verify™ status.',
+        Description => 'Show package LIGERO Verify™ status.',
         Required    => 0,
         HasValue    => 0,
     );
 
     $Self->AddOption(
         Name        => 'delete-verification-cache',
-        Description => 'Delete OTRS Verify™ cache, so verification info is fetch again from OTRS group servers.',
+        Description => 'Delete LIGERO Verify™ cache, so verification info is fetch again from LIGERO group servers.',
         Required    => 0,
         HasValue    => 0,
     );
@@ -93,7 +93,7 @@ sub Run {
     # Do not show verification status is cloud services are disabled.
     if ( $CloudServicesDisabled && $ShowVerificationInfoOption ) {
         $ShowVerificationInfoOption = 0;
-        $Self->Print("<red>Cloud Services are disabled OTRS Verify information can not be retrieved</red>\n");
+        $Self->Print("<red>Cloud Services are disabled LIGERO Verify information can not be retrieved</red>\n");
     }
 
     # Get package object
@@ -174,10 +174,10 @@ sub Run {
                 || $VerificationInfo{ $Package->{Name}->{Content} } ne 'verified'
                 )
             {
-                $Self->Print("| <red>OTRS Verify:</red> Not Verified\n");
+                $Self->Print("| <red>LIGERO Verify:</red> Not Verified\n");
             }
             else {
-                $Self->Print("| <yellow>OTRS Verify:</yellow> Verified\n");
+                $Self->Print("| <yellow>LIGERO Verify:</yellow> Verified\n");
             }
         }
     }

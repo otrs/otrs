@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -7,8 +7,8 @@
 # --
 
 package Kernel::Modules::Installer;
-## nofilter(TidyAll::Plugin::OTRS::Perl::DBObject)
-## nofilter(TidyAll::Plugin::OTRS::Perl::Print)
+## nofilter(TidyAll::Plugin::LIGERO::Perl::DBObject)
+## nofilter(TidyAll::Plugin::LIGERO::Perl::Print)
 
 use strict;
 use warnings;
@@ -160,7 +160,7 @@ sub Run {
     my $ParamObject = $Kernel::OM->Get('Kernel::System::Web::Request');
 
     # Print intro form.
-    my $Title = $LayoutObject->{LanguageObject}->Translate('Install OTRS');
+    my $Title = $LayoutObject->{LanguageObject}->Translate('Install LIGERO');
     if ( $Self->{Subaction} eq 'Intro' ) {
         my $Output =
             $LayoutObject->Header(
@@ -268,7 +268,7 @@ sub Run {
         if ( $CheckMode eq 'DB' ) {
             my %DBCredentials;
             for my $Param (
-                qw(DBUser DBPassword DBHost DBType DBPort DBSID DBName InstallType OTRSDBUser OTRSDBPassword)
+                qw(DBUser DBPassword DBHost DBType DBPort DBSID DBName InstallType LIGERODBUser LIGERODBPassword)
                 )
             {
                 $DBCredentials{$Param} = $ParamObject->GetParam( Param => $Param ) || '';
@@ -437,7 +437,7 @@ sub Run {
 
         my %DBCredentials;
         for my $Param (
-            qw(DBUser DBPassword DBHost DBType DBName DBSID DBPort InstallType OTRSDBUser OTRSDBPassword)
+            qw(DBUser DBPassword DBHost DBType DBName DBSID DBPort InstallType LIGERODBUser LIGERODBPassword)
             )
         {
             $DBCredentials{$Param} = $ParamObject->GetParam( Param => $Param ) || '';
@@ -505,7 +505,7 @@ sub Run {
 
                 @Statements = (
                     "CREATE DATABASE `$DB{DBName}` charset utf8",
-                    "GRANT ALL PRIVILEGES ON `$DB{DBName}`.* TO `$DB{OTRSDBUser}`\@`$DB{Host}` IDENTIFIED BY '$DB{OTRSDBPassword}' WITH GRANT OPTION",
+                    "GRANT ALL PRIVILEGES ON `$DB{DBName}`.* TO `$DB{LIGERODBUser}`\@`$DB{Host}` IDENTIFIED BY '$DB{LIGERODBPassword}' WITH GRANT OPTION",
                     "FLUSH PRIVILEGES",
                 );
             }
@@ -518,8 +518,8 @@ sub Run {
 
             if ( $DB{InstallType} eq 'CreateDB' ) {
                 @Statements = (
-                    "CREATE ROLE \"$DB{OTRSDBUser}\" WITH LOGIN PASSWORD '$DB{OTRSDBPassword}'",
-                    "CREATE DATABASE \"$DB{DBName}\" OWNER=\"$DB{OTRSDBUser}\" ENCODING 'utf-8'",
+                    "CREATE ROLE \"$DB{LIGERODBUser}\" WITH LOGIN PASSWORD '$DB{LIGERODBPassword}'",
+                    "CREATE DATABASE \"$DB{DBName}\" OWNER=\"$DB{LIGERODBUser}\" ENCODING 'utf-8'",
                 );
             }
 
@@ -588,8 +588,8 @@ sub Run {
                 DatabaseDSN  => $DB{ConfigDSN},
                 DatabaseHost => $DB{DBHost},
                 Database     => $DB{DBSID},
-                DatabaseUser => $DB{OTRSDBUser},
-                DatabasePw   => $DB{OTRSDBPassword},
+                DatabaseUser => $DB{LIGERODBUser},
+                DatabasePw   => $DB{LIGERODBPassword},
             );
         }
         else {
@@ -597,15 +597,15 @@ sub Run {
                 DatabaseDSN  => $DB{ConfigDSN},
                 DatabaseHost => $DB{DBHost},
                 Database     => $DB{DBName},
-                DatabaseUser => $DB{OTRSDBUser},
-                DatabasePw   => $DB{OTRSDBPassword},
+                DatabaseUser => $DB{LIGERODBUser},
+                DatabasePw   => $DB{LIGERODBPassword},
             );
         }
 
         if ($ReConfigure) {
             my $Output =
                 $LayoutObject->Header(
-                Title => Translatable('Install OTRS - Error')
+                Title => Translatable('Install LIGERO - Error')
                 );
             $Output .= $LayoutObject->Warning(
                 Message => Translatable('Kernel/Config.pm isn\'t writable!'),
@@ -624,8 +624,8 @@ sub Run {
         $Kernel::OM->ObjectParamAdd(
             'Kernel::System::DB' => {
                 DatabaseDSN  => $DB{DSN},
-                DatabaseUser => $DB{OTRSDBUser},
-                DatabasePw   => $DB{OTRSDBPassword},
+                DatabaseUser => $DB{LIGERODBUser},
+                DatabasePw   => $DB{LIGERODBPassword},
                 Type         => $DB{DBType},
             },
         );
@@ -985,8 +985,8 @@ sub Run {
             }
         }
 
-        my $OTRSHandle = $ENV{SCRIPT_NAME};
-        $OTRSHandle =~ s/\/(.*)\/installer\.pl/$1/;
+        my $LIGEROHandle = $ENV{SCRIPT_NAME};
+        $LIGEROHandle =~ s/\/(.*)\/installer\.pl/$1/;
         my $Output =
             $LayoutObject->Header(
             Title => "$Title - "
@@ -998,7 +998,7 @@ sub Run {
                 Item       => Translatable('Finished'),
                 Step       => $StepCounter,
                 Host       => $ENV{HTTP_HOST} || $ConfigObject->Get('FQDN'),
-                OTRSHandle => $OTRSHandle,
+                LIGEROHandle => $LIGEROHandle,
                 Webserver  => $Webserver,
                 Password   => $Password,
             },
@@ -1093,7 +1093,7 @@ sub ConnectToDB {
     my @NeededKeys = qw(DBType DBHost DBUser DBPassword);
 
     if ( $Param{InstallType} eq 'CreateDB' ) {
-        push @NeededKeys, qw(OTRSDBUser OTRSDBPassword);
+        push @NeededKeys, qw(LIGERODBUser LIGERODBPassword);
     }
 
     # For Oracle we require DBSID and DBPort.
@@ -1117,10 +1117,10 @@ sub ConnectToDB {
         }
     }
 
-    # If we do not need to create a database for OTRS OTRSDBuser equals DBUser.
+    # If we do not need to create a database for LIGERO LIGERODBuser equals DBUser.
     if ( $Param{InstallType} ne 'CreateDB' ) {
-        $Param{OTRSDBUser}     = $Param{DBUser};
-        $Param{OTRSDBPassword} = $Param{DBPassword};
+        $Param{LIGERODBUser}     = $Param{DBUser};
+        $Param{LIGERODBPassword} = $Param{DBPassword};
     }
 
     # Create DSN string for backend.

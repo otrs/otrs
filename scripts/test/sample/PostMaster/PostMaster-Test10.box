@@ -68,8 +68,8 @@ Content-Disposition: inline
 Content-Transfer-Encoding: base64
 MIME-Version: 1.0
 Subject: [Ticket#2007070610001801] test mail
-X-Powered-BY: OTRS - Open Ticket Request System (http://ligero.org/)
-X-Mailer: OTRS Mail Service (2.1.7)
+X-Powered-BY: LIGERO - Open Ticket Request System (http://ligero.org/)
+X-Mailer: LIGERO Mail Service (2.1.7)
 Date: Fri, 6 Jul 2007 12:17:31 +0200
 Message-ID: <1183717051.586927.929001308.97809.36@ligero.ligero.org>
 To: asdfasdfasdfasd@example.com

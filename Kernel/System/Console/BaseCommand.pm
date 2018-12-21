@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -380,7 +380,7 @@ sub Execute {
     #   In future we might need to check if it was created and update it on the fly.
     $Kernel::OM->ObjectParamAdd(
         'Kernel::System::Log' => {
-            LogPrefix => 'OTRS-ligero.Console.pl-' . $Self->Name(),
+            LogPrefix => 'LIGERO-ligero.Console.pl-' . $Self->Name(),
         },
     );
 
@@ -1042,7 +1042,7 @@ sub _ReplaceColorTags {
 
 =head1 TERMS AND CONDITIONS
 
-This software is part of the OTRS project (L<https://ligero.org/>).
+This software is part of the LIGERO project (L<https://ligero.org/>).
 
 This software comes with ABSOLUTELY NO WARRANTY. For details, see
 the enclosed file COPYING for license information (GPL). If you

@@ -1,12 +1,12 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
 # did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
-package Kernel::System::SupportDataCollector::Plugin::OTRS::PackageDeployment;
+package Kernel::System::SupportDataCollector::Plugin::LIGERO::PackageDeployment;
 
 use strict;
 use warnings;
@@ -21,7 +21,7 @@ our @ObjectDependencies = (
 );
 
 sub GetDisplayPath {
-    return Translatable('OTRS');
+    return Translatable('LIGERO');
 }
 
 sub Run {
@@ -103,7 +103,7 @@ sub Run {
                 Label      => Translatable('Package Verification Status'),
                 Value      => join( ', ', @NotVerifiedPackages ),
                 Message    => Translatable(
-                    'Some packages are not verified by the OTRS Group! It is recommended not to use this packages.'
+                    'Some packages are not verified by the LIGERO Group! It is recommended not to use this packages.'
                 ),
             );
         }
@@ -113,7 +113,7 @@ sub Run {
                 Label      => Translatable('Package Verification Status'),
                 Value      => join( ', ', @NotVerifiedPackages ),
                 Message    => Translatable(
-                    'Some packages are not verified by the OTRS Group! It is recommended not to use this packages.'
+                    'Some packages are not verified by the LIGERO Group! It is recommended not to use this packages.'
                 ),
             );
         }

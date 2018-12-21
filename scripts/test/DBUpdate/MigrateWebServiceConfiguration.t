@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -50,7 +50,7 @@ my @Tests = (
     {
         Name   => 'MigrateWebServiceConfiguration-' . $Helper->GetRandomID(),
         Config => {
-            Description => 'Test for auto-update OTRS 5 -> 6.',
+            Description => 'Test for auto-update LIGERO 5 -> 6.',
             Debugger    => {
                 DebugThreshold => 'debug',
                 TestMode       => 1,
@@ -124,7 +124,7 @@ my @Tests = (
     {
         Name   => 'MigrateWebServiceConfiguration-' . $Helper->GetRandomID(),
         Config => {
-            Description => 'Test for auto-update OTRS 5 -> 6.',
+            Description => 'Test for auto-update LIGERO 5 -> 6.',
             Debugger    => {
                 DebugThreshold => 'debug',
                 TestMode       => 1,

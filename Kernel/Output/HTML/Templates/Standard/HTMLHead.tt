@@ -1,11 +1,11 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
 # did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
-## nofilter(TidyAll::Plugin::OTRS::TT::ScriptUsage)
+## nofilter(TidyAll::Plugin::LIGERO::TT::ScriptUsage)
 <head>
     <meta http-equiv="Content-type" content="text/html;charset=utf-8" />
     <meta id="viewport" name="viewport" content="">
@@ -15,7 +15,7 @@
         (function(doc, win) {
             var viewport = doc.getElementById('viewport'),
                 isIFrame = (win.top.location.href !== win.location.href),
-                isPopup = (win.name.search(/^OTRSPopup_/) != -1);
+                isPopup = (win.name.search(/^LIGEROPopup_/) != -1);
             try {
               if (((!isIFrame && !isPopup) || (isIFrame && isPopup)) && (!localStorage.getItem("DesktopMode") || parseInt(localStorage.getItem("DesktopMode"), 10) <= 0)) {
                   viewport.setAttribute("content", "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no");
@@ -68,7 +68,7 @@
     <script>
       (function(doc, win) {
           var isIFrame = (win.top.location.href !== win.location.href),
-              isPopup = (win.name.search(/^OTRSPopup_/) != -1);
+              isPopup = (win.name.search(/^LIGEROPopup_/) != -1);
           try {
             if (((!isIFrame && !isPopup) || (isIFrame && isPopup)) && (!localStorage.getItem("DesktopMode") || parseInt(localStorage.getItem("DesktopMode"), 10) <= 0)) {
               var ResponsiveCSS;

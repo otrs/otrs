@@ -1,5 +1,5 @@
 // --
-// Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+// Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 // --
 // This software comes with ABSOLUTELY NO WARRANTY. For details, see
 // the enclosed file COPYING for license information (GPL). If you
@@ -17,7 +17,7 @@ Core.Agent.Admin = Core.Agent.Admin || {};
 /**
  * @namespace Core.Agent.Admin.SystemConfiguration
  * @memberof Core.Agent.Admin
- * @author OTRS AG
+ * @author LIGERO AG
  * @description
  *      This namespace contains the special function for AdminSystemConfiguration module.
  */
@@ -232,13 +232,13 @@ Core.Agent.Admin = Core.Agent.Admin || {};
             Data,
             Name,
             ModificationAllowed = $Object.attr("data-user-modification"),
-            OTRSBusinessIsInstalled = parseInt(Core.Config.Get('OTRSBusinessIsInstalled'), 10);
+            LIGEROBusinessIsInstalled = parseInt(Core.Config.Get('LIGEROBusinessIsInstalled'), 10);
 
         Name = $Object.closest(".WidgetSimple").find(".Header h2").text();
         DialogTemplate = Core.Template.Render('SysConfig/DialogReset',{
             Name: Name,
             ModificationAllowed: ModificationAllowed,
-            OTRSBusinessIsInstalled: OTRSBusinessIsInstalled
+            LIGEROBusinessIsInstalled: LIGEROBusinessIsInstalled
         });
         $DialogObj = $(DialogTemplate);
 
@@ -246,7 +246,7 @@ Core.Agent.Admin = Core.Agent.Admin || {};
 
 
         // Check how many users have changed it's value
-        if ($Object.attr("data-user-modification") == "1" && OTRSBusinessIsInstalled == "1") {
+        if ($Object.attr("data-user-modification") == "1" && LIGEROBusinessIsInstalled == "1") {
             URL = Core.Config.Get('Baselink') + 'Action=AdminSystemConfiguration;Subaction=UserModificationsCount';
             Data = {
                 Name: Name,
@@ -544,7 +544,7 @@ Core.Agent.Admin = Core.Agent.Admin || {};
             return false;
         });
 
-        if (parseInt(Core.Config.Get('OTRSBusinessIsInstalled'), 10) == "1") {
+        if (parseInt(Core.Config.Get('LIGEROBusinessIsInstalled'), 10) == "1") {
             $(".UserModificationActive, .UserModificationNotActive").on('click', function () {
                 EnableModification($(this));
                 Core.SystemConfiguration.Update($(this), 0, 1);

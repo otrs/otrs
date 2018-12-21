@@ -1,5 +1,5 @@
 // --
-// Copyright (C) 2001-2018 OTRS AG, https://ligero.com/\n";
+// Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/\n";
 // --
 // This software comes with ABSOLUTELY NO WARRANTY. For details, see
 // the enclosed file COPYING for license information (GPL). If you
@@ -8,24 +8,24 @@
 
 "use strict";
 
-var OTRS = OTRS || {};
-OTRS.Agent = OTRS.Agent || {};
-OTRS.Agent.App = OTRS.Agent.App || {};
+var LIGERO = LIGERO || {};
+LIGERO.Agent = LIGERO.Agent || {};
+LIGERO.Agent.App = LIGERO.Agent.App || {};
 
 /**
  * @namespace
- * @exports TargetNS as OTRS.Agent.App.Dashboard
+ * @exports TargetNS as LIGERO.Agent.App.Dashboard
  * @description
  *      This namespace contains the special module functions for the Dashboard.
  */
-OTRS.Agent.App.Dashboard = (function (TargetNS) {
+LIGERO.Agent.App.Dashboard = (function (TargetNS) {
     /**
      * @function
      * @return nothing
      *      This function initializes the special module functions
      */
     TargetNS.Init = function () {
-        OTRS.UI.DnD.Sortable(
+        LIGERO.UI.DnD.Sortable(
             $(".SidebarColumn"),
             {
                 Handle: '.Header h2',
@@ -37,7 +37,7 @@ OTRS.Agent.App.Dashboard = (function (TargetNS) {
             }
         );
 
-        OTRS.UI.DnD.Sortable(
+        LIGERO.UI.DnD.Sortable(
             $(".ContentColumn"),
             {
                 Handle: '.Header h2',
@@ -61,10 +61,10 @@ OTRS.Agent.App.Dashboard = (function (TargetNS) {
     TargetNS.RegisterUpdatePreferences = function ($ClickedElement, ElementID, $Form) {
         if (isJQueryObject($ClickedElement) && $ClickedElement.length) {
             $ClickedElement.click(function () {
-                var URL = OTRS.Config.Get('Baselink') + OTRS.AJAX.SerializeForm($Form);
-                OTRS.AJAX.ContentUpdate($('#' + ElementID), URL, function () {
-                    OTRS.UI.ToggleTwoContainer($('#' + ElementID + '-setting'), $('#' + ElementID));
-                    OTRS.UI.Table.InitCSSPseudoClasses();
+                var URL = LIGERO.Config.Get('Baselink') + LIGERO.AJAX.SerializeForm($Form);
+                LIGERO.AJAX.ContentUpdate($('#' + ElementID), URL, function () {
+                    LIGERO.UI.ToggleTwoContainer($('#' + ElementID + '-setting'), $('#' + ElementID));
+                    LIGERO.UI.Table.InitCSSPseudoClasses();
                 });
                 return false;
             });
@@ -72,4 +72,4 @@ OTRS.Agent.App.Dashboard = (function (TargetNS) {
     };
 
     return TargetNS;
-}(OTRS.Agent.App.Dashboard || {}));
+}(LIGERO.Agent.App.Dashboard || {}));

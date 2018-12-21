@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -64,7 +64,7 @@ my $ObjectID = $Kernel::OM->Get('Kernel::System::DynamicField')->ObjectMappingCr
     ObjectType => 'CustomerUser',
 );
 my $WrongObjectID = $Kernel::OM->Get('Kernel::System::DynamicField')->ObjectMappingCreate(
-    ObjectName => 'OTRSwrongid',
+    ObjectName => 'LIGEROwrongid',
     ObjectType => 'CustomerUser',
 );
 
@@ -113,7 +113,7 @@ my @Tests = (
             DynamicFieldConfig => $DynamicFieldConfig,
             UserID             => 1,
         },
-        Request       => "Action=someaction;Subaction=somesubaction;ID=OTRSwrongid",
+        Request       => "Action=someaction;Subaction=somesubaction;ID=LIGEROwrongid",
         Success       => 1,
         ExectedResult => {
             ObjectID => $WrongObjectID,

@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -89,13 +89,13 @@ $Selenium->RunTest(
             "Breadcrumb is found on Overview screen.",
         );
 
-        my $OTRSBusinessIsInstalled = $Kernel::OM->Get('Kernel::System::OTRSBusiness')->OTRSBusinessIsInstalled();
+        my $LIGEROBusinessIsInstalled = $Kernel::OM->Get('Kernel::System::LIGEROBusiness')->LIGEROBusinessIsInstalled();
         my $OBTeaser                = $LanguageObject->Translate('More Business Fields');
         my $OBTeaserFound           = index( $Selenium->get_page_source(), $OBTeaser ) > -1;
-        if ( !$OTRSBusinessIsInstalled ) {
+        if ( !$LIGEROBusinessIsInstalled ) {
             $Self->True(
                 $OBTeaserFound,
-                "OTRSBusiness teaser found on page",
+                "LIGEROBusiness teaser found on page",
             );
             for my $TeaserOption (qw(Database Webservice ContactWithData)) {
                 $Selenium->find_element( "select#TicketDynamicField option[value=$TeaserOption]", 'css' );
@@ -105,7 +105,7 @@ $Selenium->RunTest(
         else {
             $Self->False(
                 $OBTeaserFound,
-                "OTRSBusiness teaser not found on page",
+                "LIGEROBusiness teaser not found on page",
             );
         }
 

@@ -329,9 +329,9 @@ Description
                     <GroupRo>stats</GroupRo>
                     <GroupRo>another</GroupRo>
                     <Description Translatable="1"></Description>
-                    <Name Translatable="1">Reports (OTRS Business Solution™)</Name>
+                    <Name Translatable="1">Reports (LIGERO Business Solution™)</Name>
                     <Link>Action=AgentStatisticsReports;Subaction=Overview</Link>
-                    <LinkOption>class="OTRSBusinessRequired"</LinkOption>
+                    <LinkOption>class="LIGEROBusinessRequired"</LinkOption>
                     <NavBar>Reports</NavBar>
                     <Prio>100</Prio>
                     <Type></Type>
@@ -460,7 +460,7 @@ Description
         </Setting>
     </ConfigItem>
     <ConfigItem Name="Test29" Required="1" Valid="1" ConfigLevel="200">
-        <Description Translatable="1">OTRS Business Solution™, OTRS Verify™ (test utf8).</Description>
+        <Description Translatable="1">LIGERO Business Solution™, LIGERO Verify™ (test utf8).</Description>
         <Group>TestGroup</Group>
         <SubGroup>SubGroup</SubGroup>
         <Setting>
@@ -523,8 +523,8 @@ Description
                 </Item>
                 <Item Key="Set">
                     <Hash>
-                        <Item Key="X-OTRS-ArticleType">email-internal</Item>
-                        <Item Key="X-OTRS-FollowUp-ArticleType">email-external</Item>
+                        <Item Key="X-LIGERO-ArticleType">email-internal</Item>
+                        <Item Key="X-LIGERO-FollowUp-ArticleType">email-external</Item>
                     </Hash>
                 </Item>
             </Hash>
@@ -539,8 +539,8 @@ Description
                 <Item Key="Module">Kernel::System::PostMaster::Filter::FollowUpArticleTypeCheck</Item>
                 <Item Key="ArticleType" Translatable="1">email-internal</Item>
                 <Item Key="SenderType" Translatable="1">customer</Item>
-                <Item Key="X-OTRS-ArticleType">email-internal</Item>
-                <Item Key="X-OTRS-FollowUp-ArticleType">email-external</Item>
+                <Item Key="X-LIGERO-ArticleType">email-internal</Item>
+                <Item Key="X-LIGERO-FollowUp-ArticleType">email-external</Item>
             </Hash>
         </Setting>
     </ConfigItem>
@@ -553,8 +553,8 @@ Description
                 <Item Key="Module">Kernel::System::PostMaster::Filter::FollowUpArticleTypeCheck</Item>
                 <Item Key="ArticleType" Translatable="1">email-internal</Item>
                 <Item Key="SenderType" Translatable="1">customer</Item>
-                <Item Key="X-OTRS-ArticleType">email-internal</Item>
-                <Item Key="X-OTRS-FollowUp-ArticleType">email-external</Item>
+                <Item Key="X-LIGERO-ArticleType">email-internal</Item>
+                <Item Key="X-LIGERO-FollowUp-ArticleType">email-external</Item>
             </Hash>
         </Setting>
     </ConfigItem>
@@ -567,8 +567,8 @@ Description
                 <Item Key="Module">Kernel::System::PostMaster::FollowUpCheck::Subject</Item>
                 <Item Key="ArticleType" Translatable="1">email-external</Item>
                 <Item Key="SenderType" Translatable="1">customer</Item>
-                <Item Key="X-OTRS-ArticleType">email-internal</Item>
-                <Item Key="X-OTRS-FollowUp-ArticleType">email-external</Item>
+                <Item Key="X-LIGERO-ArticleType">email-internal</Item>
+                <Item Key="X-LIGERO-FollowUp-ArticleType">email-external</Item>
             </Hash>
         </Setting>
     </ConfigItem>

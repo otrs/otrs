@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -697,7 +697,7 @@ sub ChannelObjectGet {
 
 Drop an invalid communication channel (that only exists in the database, but not in the configuration).
 By default, this will only drop channels that have no associated article data; use C<DropArticleData> to
-force article data removal as well. Channels provided by the OTRS framework can never be dropped.
+force article data removal as well. Channels provided by the LIGERO framework can never be dropped.
 
     my $Success = $CommunicationChannelObject->ChannelDrop(
         ChannelID   => 1,               # (required) Delete by channel ID
@@ -926,7 +926,7 @@ sub _ChannelListCacheCleanup {
 
 =head1 TERMS AND CONDITIONS
 
-This software is part of the OTRS project (L<https://ligero.org/>).
+This software is part of the LIGERO project (L<https://ligero.org/>).
 
 This software comes with ABSOLUTELY NO WARRANTY. For details, see
 the enclosed file COPYING for license information (GPL). If you

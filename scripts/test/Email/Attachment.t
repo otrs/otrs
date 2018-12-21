@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -14,17 +14,17 @@
 #
 # Correct:
 # ----------------------------------------------------------------------------------------
-# Content-Type: application/octet-stream; name="TESTBUILD-OTRSAdminTypeServices-1.1.1.opm"
-# Content-Disposition: inline; filename="TESTBUILD-OTRSAdminTypeServices-1.1.1.opm"
+# Content-Type: application/octet-stream; name="TESTBUILD-LIGEROAdminTypeServices-1.1.1.opm"
+# Content-Disposition: inline; filename="TESTBUILD-LIGEROAdminTypeServices-1.1.1.opm"
 # Content-Transfer-Encoding: base64
 # ----------------------------------------------------------------------------------------
 #
 # Incorrect:
 # ----------------------------------------------------------------------------------------
 # Content-Type: application/octet-stream;
-# name="TESTBUILD-OTRSAdminTypeServices-1.1.1.opm"
-# name="TESTBUILD-OTRSAdminTypeServices-1.1.1.opm";
-# Content-Disposition: inline; filename="TESTBUILD-OTRSAdminTypeServices-1.1.1.opm"
+# name="TESTBUILD-LIGEROAdminTypeServices-1.1.1.opm"
+# name="TESTBUILD-LIGEROAdminTypeServices-1.1.1.opm";
+# Content-Disposition: inline; filename="TESTBUILD-LIGEROAdminTypeServices-1.1.1.opm"
 # Content-Transfer-Encoding: base64
 # ----------------------------------------------------------------------------------------
 

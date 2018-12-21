@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -7,7 +7,7 @@
 # --
 
 package Kernel::System::TemplateGenerator;
-## nofilter(TidyAll::Plugin::OTRS::Perl::LayoutObject)
+## nofilter(TidyAll::Plugin::LIGERO::Perl::LayoutObject)
 
 use strict;
 use warnings;
@@ -131,7 +131,7 @@ sub Salutation {
     }
 
     # get list unsupported tags for standard template
-    my @ListOfUnSupportedTag = qw(OTRS_AGENT_SUBJECT OTRS_AGENT_BODY OTRS_CUSTOMER_BODY OTRS_CUSTOMER_SUBJECT);
+    my @ListOfUnSupportedTag = qw(LIGERO_AGENT_SUBJECT LIGERO_AGENT_BODY LIGERO_CUSTOMER_BODY LIGERO_CUSTOMER_SUBJECT);
 
     my $SalutationText = $Self->_RemoveUnSupportedTag(
         Text                 => $Salutation{Text} || '',
@@ -240,7 +240,7 @@ sub Signature {
     }
 
     # get list unsupported tags for standard template
-    my @ListOfUnSupportedTag = qw(OTRS_AGENT_SUBJECT OTRS_AGENT_BODY OTRS_CUSTOMER_BODY OTRS_CUSTOMER_SUBJECT);
+    my @ListOfUnSupportedTag = qw(LIGERO_AGENT_SUBJECT LIGERO_AGENT_BODY LIGERO_CUSTOMER_BODY LIGERO_CUSTOMER_SUBJECT);
 
     my $SignatureText = $Self->_RemoveUnSupportedTag(
         Text                 => $Signature{Text} || '',
@@ -436,7 +436,7 @@ sub Template {
     $Language //= $Kernel::OM->Get('Kernel::Config')->Get('DefaultLanguage') || 'en';
 
     # get list unsupported tags for standard template
-    my @ListOfUnSupportedTag = qw(OTRS_AGENT_SUBJECT OTRS_AGENT_BODY OTRS_CUSTOMER_BODY OTRS_CUSTOMER_SUBJECT);
+    my @ListOfUnSupportedTag = qw(LIGERO_AGENT_SUBJECT LIGERO_AGENT_BODY LIGERO_CUSTOMER_BODY LIGERO_CUSTOMER_SUBJECT);
 
     my $TemplateText = $Self->_RemoveUnSupportedTag(
         Text                 => $Template{Template} || '',
@@ -827,7 +827,7 @@ sub AutoResponse {
 
 =head2 NotificationEvent()
 
-replace all OTRS smart tags in the notification body and subject
+replace all LIGERO smart tags in the notification body and subject
 
     my %NotificationEvent = $TemplateGeneratorObject->NotificationEvent(
         TicketData            => $TicketDataHashRef,
@@ -1035,15 +1035,15 @@ sub NotificationEvent {
         $End   = '&gt;';
     }
 
-    # replace <OTRS_CUSTOMER_DATA_*> tags early from CustomerMessageParams, the rests will be replaced
+    # replace <LIGERO_CUSTOMER_DATA_*> tags early from CustomerMessageParams, the rests will be replaced
     # by ticket customer user
     KEY:
     for my $Key ( sort keys %{ $Param{CustomerMessageParams} || {} } ) {
 
         next KEY if !$Param{CustomerMessageParams}->{$Key};
 
-        $Notification{Body}    =~ s/${Start}OTRS_CUSTOMER_DATA_$Key${End}/$Param{CustomerMessageParams}->{$Key}/gi;
-        $Notification{Subject} =~ s/<OTRS_CUSTOMER_DATA_$Key>/$Param{CustomerMessageParams}->{$Key}{$Key}/gi;
+        $Notification{Body}    =~ s/${Start}LIGERO_CUSTOMER_DATA_$Key${End}/$Param{CustomerMessageParams}->{$Key}/gi;
+        $Notification{Subject} =~ s/<LIGERO_CUSTOMER_DATA_$Key>/$Param{CustomerMessageParams}->{$Key}{$Key}/gi;
     }
 
     # do text/plain to text/html convert
@@ -1182,7 +1182,7 @@ sub _Replace {
     # Determine customer user's timezone if needed (if comes from AutoResponse function).
     my $CustomerUserTimeZone;
     if ( $Param{AddTimezoneInfo} ) {
-        $CustomerUserTimeZone = $Kernel::OM->Create('Kernel::System::DateTime')->OTRSTimeZoneGet();
+        $CustomerUserTimeZone = $Kernel::OM->Create('Kernel::System::DateTime')->LIGEROTimeZoneGet();
 
         if ( $Ticket{CustomerUserID} ) {
             my %UserPreferences = $Kernel::OM->Get('Kernel::System::CustomerUser')->GetPreferences(
@@ -1287,7 +1287,7 @@ sub _Replace {
     my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
 
     # Replace config options.
-    my $Tag = $Start . 'OTRS_CONFIG_';
+    my $Tag = $Start . 'LIGERO_CONFIG_';
     $Param{Text} =~ s{$Tag(.+?)$End}{
         my $Replace = '';
         # Mask secret config options.
@@ -1323,11 +1323,11 @@ sub _Replace {
         my $Keys = join '|', map {quotemeta} grep { defined $H{$_} } keys %H;
 
         # Set all keys as lowercase to be able to match case insensitive,
-        #   e. g. <OTRS_CUSTOMER_From> and <OTRS_CUSTOMER_FROM>.
+        #   e. g. <LIGERO_CUSTOMER_From> and <LIGERO_CUSTOMER_FROM>.
         %H = map { lc $_ => $H{$_} } sort keys %H;
 
-        # If tag is 'OTRS_CUSTOMER_' add the body alias 'email/note' to be replaced.
-        if ( $Tag =~ m/OTRS_(CUSTOMER|AGENT)_/ ) {
+        # If tag is 'LIGERO_CUSTOMER_' add the body alias 'email/note' to be replaced.
+        if ( $Tag =~ m/LIGERO_(CUSTOMER|AGENT)_/ ) {
             KEY:
             for my $Key (qw( email note )) {
                 my $Value = $H{$Key};
@@ -1341,11 +1341,11 @@ sub _Replace {
         $Param{Text} =~ s/(?:$Tag)($Keys)$End/$H{ lc $1 }/ieg;
     };
 
-    # get recipient data and replace it with <OTRS_...
-    $Tag = $Start . 'OTRS_';
+    # get recipient data and replace it with <LIGERO_...
+    $Tag = $Start . 'LIGERO_';
 
-    # include more readable tag <OTRS_NOTIFICATION_RECIPIENT
-    my $RecipientTag = $Start . 'OTRS_NOTIFICATION_RECIPIENT_';
+    # include more readable tag <LIGERO_NOTIFICATION_RECIPIENT
+    my $RecipientTag = $Start . 'LIGERO_NOTIFICATION_RECIPIENT_';
 
     if (%Recipient) {
 
@@ -1366,11 +1366,11 @@ sub _Replace {
     # cleanup
     $Param{Text} =~ s/$RecipientTag.+?$End/-/gi;
 
-    # get owner data and replace it with <OTRS_OWNER_...
-    $Tag = $Start . 'OTRS_OWNER_';
+    # get owner data and replace it with <LIGERO_OWNER_...
+    $Tag = $Start . 'LIGERO_OWNER_';
 
-    # include more readable version <OTRS_TICKET_OWNER
-    my $OwnerTag = $Start . 'OTRS_TICKET_OWNER_';
+    # include more readable version <LIGERO_TICKET_OWNER
+    my $OwnerTag = $Start . 'LIGERO_TICKET_OWNER_';
 
     if ( $Ticket{OwnerID} ) {
 
@@ -1398,11 +1398,11 @@ sub _Replace {
     $Param{Text} =~ s/$Tag.+?$End/-/gi;
     $Param{Text} =~ s/$OwnerTag.+?$End/-/gi;
 
-    # get owner data and replace it with <OTRS_RESPONSIBLE_...
-    $Tag = $Start . 'OTRS_RESPONSIBLE_';
+    # get owner data and replace it with <LIGERO_RESPONSIBLE_...
+    $Tag = $Start . 'LIGERO_RESPONSIBLE_';
 
-    # include more readable version <OTRS_TICKET_RESPONSIBLE
-    my $ResponsibleTag = $Start . 'OTRS_TICKET_RESPONSIBLE_';
+    # include more readable version <LIGERO_TICKET_RESPONSIBLE
+    my $ResponsibleTag = $Start . 'LIGERO_TICKET_RESPONSIBLE_';
 
     if ( $Ticket{ResponsibleID} ) {
         my %Responsible = $UserObject->GetUserData(
@@ -1429,8 +1429,8 @@ sub _Replace {
     $Param{Text} =~ s/$Tag.+?$End/-/gi;
     $Param{Text} =~ s/$ResponsibleTag.+?$End/-/gi;
 
-    $Tag = $Start . 'OTRS_Agent_';
-    my $Tag2        = $Start . 'OTRS_CURRENT_';
+    $Tag = $Start . 'LIGERO_Agent_';
+    my $Tag2        = $Start . 'LIGERO_CURRENT_';
     my %CurrentUser = $UserObject->GetUserData(
         UserID        => $Param{UserID},
         NoOutOfOffice => 1,
@@ -1451,14 +1451,14 @@ sub _Replace {
     $HashGlobalReplace->( "$Tag|$Tag2", %CurrentUser );
 
     # replace other needed stuff
-    $Param{Text} =~ s/$Start OTRS_FIRST_NAME $End/$CurrentUser{UserFirstname}/gxms;
-    $Param{Text} =~ s/$Start OTRS_LAST_NAME $End/$CurrentUser{UserLastname}/gxms;
+    $Param{Text} =~ s/$Start LIGERO_FIRST_NAME $End/$CurrentUser{UserFirstname}/gxms;
+    $Param{Text} =~ s/$Start LIGERO_LAST_NAME $End/$CurrentUser{UserLastname}/gxms;
 
     # cleanup
     $Param{Text} =~ s/$Tag2.+?$End/-/gi;
 
     # ticket data
-    $Tag = $Start . 'OTRS_TICKET_';
+    $Tag = $Start . 'LIGERO_TICKET_';
 
     # html quoting of content
     if ( $Param{RichText} ) {
@@ -1474,8 +1474,8 @@ sub _Replace {
 
     # Dropdown, Checkbox and MultipleSelect DynamicFields, can store values (keys) that are
     # different from the the values to display
-    # <OTRS_TICKET_DynamicField_NameX> returns the stored key
-    # <OTRS_TICKET_DynamicField_NameX_Value> returns the display value
+    # <LIGERO_TICKET_DynamicField_NameX> returns the stored key
+    # <LIGERO_TICKET_DynamicField_NameX_Value> returns the display value
 
     my %DynamicFields;
 
@@ -1593,26 +1593,26 @@ sub _Replace {
     $HashGlobalReplace->( $Tag, %Ticket, %DynamicFieldDisplayValues );
 
     # COMPAT
-    $Param{Text} =~ s/$Start OTRS_TICKET_ID $End/$Ticket{TicketID}/gixms;
-    $Param{Text} =~ s/$Start OTRS_TICKET_NUMBER $End/$Ticket{TicketNumber}/gixms;
+    $Param{Text} =~ s/$Start LIGERO_TICKET_ID $End/$Ticket{TicketID}/gixms;
+    $Param{Text} =~ s/$Start LIGERO_TICKET_NUMBER $End/$Ticket{TicketNumber}/gixms;
     if ( $Ticket{TicketID} ) {
-        $Param{Text} =~ s/$Start OTRS_QUEUE $End/$Ticket{Queue}/gixms;
+        $Param{Text} =~ s/$Start LIGERO_QUEUE $End/$Ticket{Queue}/gixms;
     }
     if ( $Param{QueueID} ) {
-        $Param{Text} =~ s/$Start OTRS_TICKET_QUEUE $End/$Queue{Name}/gixms;
+        $Param{Text} =~ s/$Start LIGERO_TICKET_QUEUE $End/$Queue{Name}/gixms;
     }
 
     # cleanup
     $Param{Text} =~ s/$Tag.+?$End/-/gi;
 
-    # get customer and agent params and replace it with <OTRS_CUSTOMER_... or <OTRS_AGENT_...
+    # get customer and agent params and replace it with <LIGERO_CUSTOMER_... or <LIGERO_AGENT_...
     my %ArticleData = (
-        'OTRS_CUSTOMER_' => $Param{Data}      || {},
-        'OTRS_AGENT_'    => $Param{DataAgent} || {},
+        'LIGERO_CUSTOMER_' => $Param{Data}      || {},
+        'LIGERO_AGENT_'    => $Param{DataAgent} || {},
     );
 
     # use a list to get customer first
-    for my $DataType (qw(OTRS_CUSTOMER_ OTRS_AGENT_)) {
+    for my $DataType (qw(LIGERO_CUSTOMER_ LIGERO_AGENT_)) {
         my %Data = %{ $ArticleData{$DataType} };
 
         # HTML quoting of content
@@ -1630,18 +1630,18 @@ sub _Replace {
 
         if (%Data) {
 
-            # replace <OTRS_CUSTOMER_*> and <OTRS_AGENT_*> tags
+            # replace <LIGERO_CUSTOMER_*> and <LIGERO_AGENT_*> tags
             $Tag = $Start . $DataType;
             $HashGlobalReplace->( $Tag, %Data );
 
-            # prepare body (insert old email) <OTRS_CUSTOMER_EMAIL[n]>, <OTRS_CUSTOMER_NOTE[n]>
-            #   <OTRS_CUSTOMER_BODY[n]>, <OTRS_AGENT_EMAIL[n]>..., <OTRS_COMMENT>
+            # prepare body (insert old email) <LIGERO_CUSTOMER_EMAIL[n]>, <LIGERO_CUSTOMER_NOTE[n]>
+            #   <LIGERO_CUSTOMER_BODY[n]>, <LIGERO_AGENT_EMAIL[n]>..., <LIGERO_COMMENT>
 
             # Changed this to a 'while' to allow the same key/tag multiple times and different number of lines.
             while (
                 $Param{Text} =~ /$Start(?:$DataType(EMAIL|NOTE|BODY)\[(.+?)\])$End/
                 ||
-                $Param{Text} =~ /$Start(?:OTRS_COMMENT(\[(.+?)\])?)$End/
+                $Param{Text} =~ /$Start(?:LIGERO_COMMENT(\[(.+?)\])?)$End/
                 )
             {
 
@@ -1692,10 +1692,10 @@ sub _Replace {
 
                 # replace tag
                 $Param{Text}
-                    =~ s/$Start(?:(?:$DataType(EMAIL|NOTE|BODY)\[(.+?)\]|(?:OTRS_COMMENT(\[(.+?)\])?)))$End/$NewOldBody/;
+                    =~ s/$Start(?:(?:$DataType(EMAIL|NOTE|BODY)\[(.+?)\]|(?:LIGERO_COMMENT(\[(.+?)\])?)))$End/$NewOldBody/;
             }
 
-            # replace <OTRS_CUSTOMER_SUBJECT[]>  and  <OTRS_AGENT_SUBJECT[]> tags
+            # replace <LIGERO_CUSTOMER_SUBJECT[]>  and  <LIGERO_AGENT_SUBJECT[]> tags
             $Tag = "$Start$DataType" . 'SUBJECT';
             if ( $Param{Text} =~ /$Tag\[(.+?)\]$End/g ) {
 
@@ -1709,12 +1709,12 @@ sub _Replace {
                 $Param{Text} =~ s/$Tag\[.+?\]$End/$Subject/g;
             }
 
-            if ( $DataType eq 'OTRS_CUSTOMER_' ) {
+            if ( $DataType eq 'LIGERO_CUSTOMER_' ) {
 
                 # Arnold Ligtvoet - ligero@ligtvoet.org
-                # get <OTRS_EMAIL_DATE[]> from body and replace with received date
+                # get <LIGERO_EMAIL_DATE[]> from body and replace with received date
                 use POSIX qw(strftime);
-                $Tag = $Start . 'OTRS_EMAIL_DATE';
+                $Tag = $Start . 'LIGERO_EMAIL_DATE';
 
                 if ( $Param{Text} =~ /$Tag\[(.+?)\]$End/g ) {
 
@@ -1727,10 +1727,10 @@ sub _Replace {
             }
         }
 
-        if ( $DataType eq 'OTRS_CUSTOMER_' ) {
+        if ( $DataType eq 'LIGERO_CUSTOMER_' ) {
 
             # get and prepare realname
-            $Tag = $Start . 'OTRS_CUSTOMER_REALNAME';
+            $Tag = $Start . 'LIGERO_CUSTOMER_REALNAME';
             if ( $Param{Text} =~ /$Tag$End/i ) {
 
                 my $From;
@@ -1769,15 +1769,15 @@ sub _Replace {
                     $From =~ s/\s+$//g;
                 }
 
-                # replace <OTRS_CUSTOMER_REALNAME> with from
+                # replace <LIGERO_CUSTOMER_REALNAME> with from
                 $Param{Text} =~ s/$Tag$End/$From/g;
             }
         }
     }
 
-    # get customer data and replace it with <OTRS_CUSTOMER_DATA_...
-    $Tag  = $Start . 'OTRS_CUSTOMER_';
-    $Tag2 = $Start . 'OTRS_CUSTOMER_DATA_';
+    # get customer data and replace it with <LIGERO_CUSTOMER_DATA_...
+    $Tag  = $Start . 'LIGERO_CUSTOMER_';
+    $Tag2 = $Start . 'LIGERO_CUSTOMER_DATA_';
 
     if ( $Ticket{CustomerUserID} || $Param{Data}->{CustomerUserID} ) {
 
@@ -1803,11 +1803,11 @@ sub _Replace {
         $HashGlobalReplace->( "$Tag|$Tag2", %CustomerUser );
     }
 
-    # cleanup all not needed <OTRS_CUSTOMER_DATA_ tags
+    # cleanup all not needed <LIGERO_CUSTOMER_DATA_ tags
     $Param{Text} =~ s/(?:$Tag|$Tag2).+?$End/-/gi;
 
-    # cleanup all not needed <OTRS_AGENT_ tags
-    $Tag = $Start . 'OTRS_AGENT_';
+    # cleanup all not needed <LIGERO_AGENT_ tags
+    $Tag = $Start . 'LIGERO_AGENT_';
     $Param{Text} =~ s/$Tag.+?$End/-/gi;
 
     return $Param{Text};
@@ -1861,7 +1861,7 @@ sub _RemoveUnSupportedTag {
 
 =head1 TERMS AND CONDITIONS
 
-This software is part of the OTRS project (L<https://ligero.org/>).
+This software is part of the LIGERO project (L<https://ligero.org/>).
 
 This software comes with ABSOLUTELY NO WARRANTY. For details, see
 the enclosed file COPYING for license information (GPL). If you

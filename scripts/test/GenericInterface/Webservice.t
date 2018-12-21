@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -844,13 +844,13 @@ my @Tests = (
     },
 
     {
-        Name          => 'test 27 - Upgrade configuration scheme for Migration from OTRS 5 to OTRS 6',
+        Name          => 'test 27 - Upgrade configuration scheme for Migration from LIGERO 5 to LIGERO 6',
         SuccessAdd    => 1,
         SuccessUpdate => 1,
         HistoryCount  => 2,
         Add           => {
             Config => {
-                Description => 'Test for auto-update OTRS 5 -> 6.',
+                Description => 'Test for auto-update LIGERO 5 -> 6.',
                 Debugger    => {
                     DebugThreshold => 'debug',
                 },
@@ -894,7 +894,7 @@ my @Tests = (
             ValidID        => 1,
             UserID         => 1,
             ExpectedConfig => {
-                Description => 'Test for auto-update OTRS 5 -> 6.',
+                Description => 'Test for auto-update LIGERO 5 -> 6.',
                 Debugger    => {
                     DebugThreshold => 'debug',
                 },
@@ -944,7 +944,7 @@ my @Tests = (
         },
         Update => {
             Config => {
-                Description => 'Test for auto-update OTRS 5 -> 6.',
+                Description => 'Test for auto-update LIGERO 5 -> 6.',
                 Debugger    => {
                     DebugThreshold => 'debug',
                 },
@@ -977,7 +977,7 @@ my @Tests = (
             ValidID        => 1,
             UserID         => 1,
             ExpectedConfig => {
-                Description => 'Test for auto-update OTRS 5 -> 6.',
+                Description => 'Test for auto-update LIGERO 5 -> 6.',
                 Debugger    => {
                     DebugThreshold => 'debug',
                 },

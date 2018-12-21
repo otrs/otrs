@@ -58,10 +58,10 @@
   <widgets xsi:type="model:Combo" x="473" y="285" width="158" text="Custom" measuredWidth="158" measuredHeight="21">
     <font/>
   </widgets>
-  <widgets xsi:type="model:Label" x="289" y="255" text="SAP > OTRS" measuredWidth="73" measuredHeight="21">
+  <widgets xsi:type="model:Label" x="289" y="255" text="SAP > LIGERO" measuredWidth="73" measuredHeight="21">
     <font size="11" bold="true"/>
   </widgets>
-  <widgets xsi:type="model:Label" x="289" y="285" text="OTRS > SAP" measuredWidth="73" measuredHeight="21">
+  <widgets xsi:type="model:Label" x="289" y="285" text="LIGERO > SAP" measuredWidth="73" measuredHeight="21">
     <font size="11" bold="true"/>
   </widgets>
   <widgets xsi:type="model:TextField" x="448" y="466" width="65" text="5:21" measuredWidth="65" measuredHeight="21">

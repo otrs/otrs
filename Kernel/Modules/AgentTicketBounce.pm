@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -242,8 +242,8 @@ sub Run {
         if ( $LayoutObject->{BrowserRichText} ) {
 
             # prepare bounce tags
-            $Param{BounceText} =~ s/<OTRS_TICKET>/&lt;OTRS_TICKET&gt;/g;
-            $Param{BounceText} =~ s/<OTRS_BOUNCE_TO>/&lt;OTRS_BOUNCE_TO&gt;/g;
+            $Param{BounceText} =~ s/<LIGERO_TICKET>/&lt;LIGERO_TICKET&gt;/g;
+            $Param{BounceText} =~ s/<LIGERO_BOUNCE_TO>/&lt;LIGERO_BOUNCE_TO&gt;/g;
 
             $Param{BounceText} = $LayoutObject->Ascii2RichText(
                 String => $Param{BounceText},
@@ -435,8 +435,8 @@ $Param{Signature}";
             if ( $LayoutObject->{BrowserRichText} ) {
 
                 # prepare bounce tags
-                $Param{Body} =~ s/&lt;OTRS_TICKET&gt;/&amp;lt;OTRS_TICKET&amp;gt;/gi;
-                $Param{Body} =~ s/&lt;OTRS_BOUNCE_TO&gt;/&amp;lt;OTRS_BOUNCE_TO&amp;gt;/gi;
+                $Param{Body} =~ s/&lt;LIGERO_TICKET&gt;/&amp;lt;LIGERO_TICKET&amp;gt;/gi;
+                $Param{Body} =~ s/&lt;LIGERO_BOUNCE_TO&gt;/&amp;lt;LIGERO_BOUNCE_TO&amp;gt;/gi;
             }
 
             $Param{InformationFormat}   = $Param{Body};
@@ -501,8 +501,8 @@ $Param{Signature}";
             }
 
             # replace placeholders
-            $Param{Body} =~ s/(&lt;|<)OTRS_TICKET(&gt;|>)/$Ticket{TicketNumber}/g;
-            $Param{Body} =~ s/(&lt;|<)OTRS_BOUNCE_TO(&gt;|>)/$Param{BounceTo}/g;
+            $Param{Body} =~ s/(&lt;|<)LIGERO_TICKET(&gt;|>)/$Ticket{TicketNumber}/g;
+            $Param{Body} =~ s/(&lt;|<)LIGERO_BOUNCE_TO(&gt;|>)/$Param{BounceTo}/g;
 
             # send
             my $ArticleID = $ArticleBackendObject->ArticleSend(

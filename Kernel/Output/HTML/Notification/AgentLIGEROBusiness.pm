@@ -1,12 +1,12 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
 # did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
-package Kernel::Output::HTML::Notification::AgentOTRSBusiness;
+package Kernel::Output::HTML::Notification::AgentLIGEROBusiness;
 
 use parent 'Kernel::Output::HTML::Base';
 
@@ -20,7 +20,7 @@ our @ObjectDependencies = (
     'Kernel::Config',
     'Kernel::Output::HTML::Layout',
     'Kernel::System::Group',
-    'Kernel::System::OTRSBusiness',
+    'Kernel::System::LIGEROBusiness',
 );
 
 sub Run {
@@ -28,37 +28,37 @@ sub Run {
 
     my $Output = '';
 
-    # get OTRS business object
-    my $OTRSBusinessObject = $Kernel::OM->Get('Kernel::System::OTRSBusiness');
+    # get LIGERO business object
+    my $LIGEROBusinessObject = $Kernel::OM->Get('Kernel::System::LIGEROBusiness');
 
     # get config options
     my $Group       = $Param{Config}->{Group} || 'admin';
-    my $IsInstalled = $OTRSBusinessObject->OTRSBusinessIsInstalled();
-    my $OTRSBusinessLabel;
-    if ( $OTRSBusinessObject->OTRSSTORMIsInstalled() ) {
-        $OTRSBusinessLabel = '<b>STORM powered by OTRS</b>™';
+    my $IsInstalled = $LIGEROBusinessObject->LIGEROBusinessIsInstalled();
+    my $LIGEROBusinessLabel;
+    if ( $LIGEROBusinessObject->LIGEROSTORMIsInstalled() ) {
+        $LIGEROBusinessLabel = '<b>STORM powered by LIGERO</b>™';
     }
-    elsif ( $OTRSBusinessObject->OTRSCONTROLIsInstalled() ) {
-        $OTRSBusinessLabel = '<b>CONTROL powered by OTRS</b>™';
+    elsif ( $LIGEROBusinessObject->LIGEROCONTROLIsInstalled() ) {
+        $LIGEROBusinessLabel = '<b>CONTROL powered by LIGERO</b>™';
     }
     else {
-        $OTRSBusinessLabel = '<b>OTRS Business Solution</b>™';
+        $LIGEROBusinessLabel = '<b>LIGERO Business Solution</b>™';
     }
 
     # get layout object
     my $LayoutObject = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
 
     #
-    # check if OTRS Business Solution™ is not installed
+    # check if LIGERO Business Solution™ is not installed
     #
     if ( $Param{Type} eq 'Admin' && !$IsInstalled ) {
         my $Text = $LayoutObject->{LanguageObject}->Translate(
             '%s Upgrade to %s now! %s',
             '<a href="'
                 . $LayoutObject->{Baselink}
-                . 'Action=AdminOTRSBusiness'
+                . 'Action=AdminLIGEROBusiness'
                 . '">',
-            $OTRSBusinessLabel,
+            $LIGEROBusinessLabel,
             '</a>',
         );
 
@@ -68,13 +68,13 @@ sub Run {
         );
     }
 
-    # all following checks require OTRS Business Solution™ to be installed
+    # all following checks require LIGERO Business Solution™ to be installed
     return '' if !$IsInstalled;
 
     #
     # check entitlement status
     #
-    my $EntitlementStatus = $OTRSBusinessObject->OTRSBusinessEntitlementStatus(
+    my $EntitlementStatus = $LIGEROBusinessObject->LIGEROBusinessEntitlementStatus(
         CallCloudService => 0,
     );
 
@@ -82,7 +82,7 @@ sub Run {
 
         my $Text = $LayoutObject->{LanguageObject}->Translate(
             'This system uses the %s without a proper license! Please make contact with %s to renew or activate your contract!',
-            $OTRSBusinessLabel,
+            $LIGEROBusinessLabel,
             'sales@ligero.com',
         );
 
@@ -90,8 +90,8 @@ sub Run {
         if ( $EntitlementStatus eq 'forbidden' ) {
             $Text .= '
 <script>
-if (!window.location.search.match(/^[?]Action=(AgentOTRSBusiness|Admin.*)/)) {
-    window.location.search = "Action=AgentOTRSBusiness;Subaction=BlockScreen";
+if (!window.location.search.match(/^[?]Action=(AgentLIGEROBusiness|Admin.*)/)) {
+    window.location.search = "Action=AgentLIGEROBusiness;Subaction=BlockScreen";
 }
 </script>'
         }
@@ -104,12 +104,12 @@ if (!window.location.search.match(/^[?]Action=(AgentOTRSBusiness|Admin.*)/)) {
     elsif ( $EntitlementStatus eq 'warning' ) {
 
         $Output .= $LayoutObject->Notify(
-            Info => $OTRSBusinessObject->OTRSSTORMIsInstalled()
+            Info => $LIGEROBusinessObject->LIGEROSTORMIsInstalled()
             ?
                 Translatable('Please verify your license data!')
             :
                 Translatable(
-                'Connection to cloud.ligero.com via HTTPS couldn\'t be established. Please make sure that your OTRS can connect to cloud.ligero.com via port 443.'
+                'Connection to cloud.ligero.com via HTTPS couldn\'t be established. Please make sure that your LIGERO can connect to cloud.ligero.com via port 443.'
                 ),
             Priority => 'Error',
         );
@@ -129,13 +129,13 @@ if (!window.location.search.match(/^[?]Action=(AgentOTRSBusiness|Admin.*)/)) {
     #
     # check contract expiry
     #
-    my $ExpiryDate = $OTRSBusinessObject->OTRSBusinessContractExpiryDateCheck();
+    my $ExpiryDate = $LIGEROBusinessObject->LIGEROBusinessContractExpiryDateCheck();
 
     if ($ExpiryDate) {
 
         my $Text = $LayoutObject->{LanguageObject}->Translate(
             'The license for your %s is about to expire. Please make contact with %s to renew your contract!',
-            $OTRSBusinessLabel,
+            $LIGEROBusinessLabel,
             'sales@ligero.com',
         );
         $Output .= $LayoutObject->Notify(
@@ -147,13 +147,13 @@ if (!window.location.search.match(/^[?]Action=(AgentOTRSBusiness|Admin.*)/)) {
     #
     # check for available updates
     #
-    my %UpdatesAvailable = $OTRSBusinessObject->OTRSBusinessVersionCheckOffline();
+    my %UpdatesAvailable = $LIGEROBusinessObject->LIGEROBusinessVersionCheckOffline();
 
-    if ( $UpdatesAvailable{OTRSBusinessUpdateAvailable} ) {
+    if ( $UpdatesAvailable{LIGEROBusinessUpdateAvailable} ) {
 
         my $Text = $LayoutObject->{LanguageObject}->Translate(
             'An update for your %s is available! Please update at your earliest!',
-            $OTRSBusinessLabel
+            $LIGEROBusinessLabel
         );
         $Output .= $LayoutObject->Notify(
             Data     => $Text,
@@ -165,7 +165,7 @@ if (!window.location.search.match(/^[?]Action=(AgentOTRSBusiness|Admin.*)/)) {
 
         my $Text = $LayoutObject->{LanguageObject}->Translate(
             'An update for your %s is available, but there is a conflict with your framework version! Please update your framework first!',
-            $OTRSBusinessLabel
+            $LIGEROBusinessLabel
         );
         $Output .= $LayoutObject->Notify(
             Data     => $Text,

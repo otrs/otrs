@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -22,8 +22,8 @@ our @ObjectDependencies = (
 # Use Net::SSLGlue::POP3 on systems with older Net::POP3 modules that cannot handle POP3S.
 BEGIN {
     if ( !defined &Net::POP3::starttls ) {
-        ## nofilter(TidyAll::Plugin::OTRS::Perl::Require)
-        ## nofilter(TidyAll::Plugin::OTRS::Perl::SyntaxCheck)
+        ## nofilter(TidyAll::Plugin::LIGERO::Perl::Require)
+        ## nofilter(TidyAll::Plugin::LIGERO::Perl::SyntaxCheck)
         require Net::SSLGlue::POP3;
     }
 }
