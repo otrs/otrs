@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -31,7 +31,7 @@ sub Configure {
     my ( $Self, %Param ) = @_;
 
     $Self->Description(
-        'Generate (and send, optional) statistics which have been configured previously in the OTRS statistics module.'
+        'Generate (and send, optional) statistics which have been configured previously in the LIGERO statistics module.'
     );
     $Self->AddOption(
         Name        => 'number',
@@ -96,7 +96,7 @@ sub Configure {
     $Self->AddOption(
         Name => 'language',
         Description =>
-            "Target language (e.g. de) for which the file should be generated (will be OTRS default language or english as fallback if left empty).",
+            "Target language (e.g. de) for which the file should be generated (will be LIGERO default language or english as fallback if left empty).",
         Required   => 0,
         HasValue   => 1,
         ValueRegex => qr/.*/smx,

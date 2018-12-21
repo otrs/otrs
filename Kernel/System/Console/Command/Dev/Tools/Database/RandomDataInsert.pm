@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -33,7 +33,7 @@ our @ObjectDependencies = (
 sub Configure {
     my ( $Self, %Param ) = @_;
 
-    $Self->Description('Insert random data into the OTRS database for testing purposes.');
+    $Self->Description('Insert random data into the LIGERO database for testing purposes.');
     $Self->AddOption(
         Name        => 'generate-tickets',
         Description => "Specify how many tickets should be generated.",

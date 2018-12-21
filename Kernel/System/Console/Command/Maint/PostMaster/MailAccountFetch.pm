@@ -1,12 +1,12 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
 # did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
-## nofilter(TidyAll::Plugin::OTRS::Perl::NoExitInConsoleCommands)
+## nofilter(TidyAll::Plugin::LIGERO::Perl::NoExitInConsoleCommands)
 
 package Kernel::System::Console::Command::Maint::PostMaster::MailAccountFetch;
 
@@ -43,7 +43,7 @@ sub Configure {
     );
     $Self->AddOption(
         Name        => 'debug',
-        Description => "Print debug info to the OTRS log.",
+        Description => "Print debug info to the LIGERO log.",
         Required    => 0,
         HasValue    => 0,
     );
@@ -81,7 +81,7 @@ sub PreRun {
     if ($Debug) {
         $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'debug',
-            Message  => "OTRS email handle ($Name) started.",
+            Message  => "LIGERO email handle ($Name) started.",
         );
     }
 
@@ -259,7 +259,7 @@ sub PostRun {
     if ($Debug) {
         $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'debug',
-            Message  => "OTRS email handle ($Name) stopped.",
+            Message  => "LIGERO email handle ($Name) stopped.",
         );
     }
 

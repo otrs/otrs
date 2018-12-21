@@ -2,7 +2,7 @@
 <ligero_package version="1.0">
     <Name>TestPackage</Name>
     <Version>0.0.0</Version>
-    <Vendor>OTRS AG</Vendor>
+    <Vendor>LIGERO AG</Vendor>
     <URL>https://ligero.com/</URL>
     <License>GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007</License>
     <Description Lang="en">Test package.</Description>

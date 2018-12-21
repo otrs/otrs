@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -49,13 +49,13 @@ sub Configure {
     );
     $Self->AddOption(
         Name        => 'debug',
-        Description => "Print debug info to the OTRS log.",
+        Description => "Print debug info to the LIGERO log.",
         Required    => 0,
         HasValue    => 0,
     );
 
     $Self->AdditionalHelp(
-        "This script only runs file based generic agent jobs, database based jobs are handled by the OTRS Daemon."
+        "This script only runs file based generic agent jobs, database based jobs are handled by the LIGERO Daemon."
     );
     return;
 }

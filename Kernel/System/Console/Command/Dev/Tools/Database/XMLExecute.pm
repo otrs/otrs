@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -23,7 +23,7 @@ our @ObjectDependencies = (
 sub Configure {
     my ( $Self, %Param ) = @_;
 
-    $Self->Description('Convert an OTRS database XML file to SQL and execute it in the current database.');
+    $Self->Description('Convert an LIGERO database XML file to SQL and execute it in the current database.');
     $Self->AddArgument(
         Name        => 'source-path',
         Description => "Specify the location of the database XML file to be executed.",

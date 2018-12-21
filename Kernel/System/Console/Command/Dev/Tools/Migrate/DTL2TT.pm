@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -24,7 +24,7 @@ sub Configure {
     $Self->Description('Migrate DTL files to Template::Toolkit.');
     $Self->AddArgument(
         Name        => 'directory',
-        Description => "Toplevel OTRS or module directory where DTL files need to be converted.",
+        Description => "Toplevel LIGERO or module directory where DTL files need to be converted.",
         Required    => 1,
         ValueRegex  => qr/.*/smx,
     );

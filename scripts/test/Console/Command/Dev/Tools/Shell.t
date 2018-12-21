@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -33,14 +33,14 @@ my @Tests = (
         ExitCode => 0,
     },
     {
-        Name     => 'OTRS Version string',
+        Name     => 'LIGERO Version string',
         Code     => '$Kernel::OM->Get("Kernel::Config")->Get("Version");',
         Result   => '"' . $ConfigObject->Get('Version') . '"',
         ExitCode => 0,
     },
     {
-        Name     => 'OTRS Version variable',
-        Code     => 'my $OTRSVersion = $Kernel::OM->Get("Kernel::Config")->Get("Version");',
+        Name     => 'LIGERO Version variable',
+        Code     => 'my $LIGEROVersion = $Kernel::OM->Get("Kernel::Config")->Get("Version");',
         Result   => '"' . $ConfigObject->Get('Version') . '"',
         ExitCode => 0,
     },

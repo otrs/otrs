@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -7,7 +7,7 @@
 # --
 
 package Kernel::System::Console::Command::Dev::Code::Generate::UnitTest::Backend;
-## nofilter(TidyAll::Plugin::OTRS::Perl::LayoutObject)
+## nofilter(TidyAll::Plugin::LIGERO::Perl::LayoutObject)
 
 use strict;
 use warnings;
@@ -30,7 +30,7 @@ sub Configure {
     $Self->AddOption(
         Name => 'module-directory',
         Description =>
-            "Specify the directory containing the module where the new test should be created (otherwise the OTRS home directory will be used).",
+            "Specify the directory containing the module where the new test should be created (otherwise the LIGERO home directory will be used).",
         Required   => 0,
         HasValue   => 1,
         ValueRegex => qr/.*/smx,

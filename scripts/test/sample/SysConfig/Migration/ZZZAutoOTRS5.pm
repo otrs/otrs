@@ -1,12 +1,12 @@
-# OTRS config file (automatically generated)
+# LIGERO config file (automatically generated)
 # VERSION:1.1
-package scripts::test::sample::SysConfig::Migration::ZZZAutoOTRS5;
+package scripts::test::sample::SysConfig::Migration::ZZZAutoLIGERO5;
 use strict;
 use warnings;
 no warnings 'redefine';
 use utf8;
 
-## nofilter(TidyAll::Plugin::OTRS::Perl::PerlTidy)
+## nofilter(TidyAll::Plugin::LIGERO::Perl::PerlTidy)
 
 sub Load {
     my ($File, $Self) = @_;
@@ -131,7 +131,7 @@ $Self->{'DynamicFields::Driver'}->{'Multiselect'} =  {
 };
 # frontend module
 $Self->{'Frontend::Module'}->{'AdminDynamicFieldMultiselect'} =  {
-  'Description' => 'This module is part of the admin area of OTRS.',
+  'Description' => 'This module is part of the admin area of LIGERO.',
   'Group' => [
     'admin'
   ],
@@ -167,7 +167,7 @@ $Self->{'PreferencesGroups'}->{'DynamicFieldsOverviewPageShown'} =  {
 };
 # frontend module
 $Self->{'Frontend::Module'}->{'AdminDynamicField'} =  {
-  'Description' => 'This module is part of the admin area of OTRS.',
+  'Description' => 'This module is part of the admin area of LIGERO.',
   'Group' => [
     'admin',
     'users'
@@ -365,7 +365,7 @@ $Self->{'PreferencesGroups'}->{'NotificationEvent'} =  {
 };
 # frontend module + js
 $Self->{'Frontend::Module'}->{'AdminGenericAgent'} =  {
-  'Description' => 'This module is part of the admin area of OTRS.',
+  'Description' => 'This module is part of the admin area of LIGERO.',
   'Group' => [
     'admin'
   ],
@@ -439,7 +439,7 @@ $Self->{'Ticket::Frontend::AgentTicketService'}->{'StripEmptyLines'} =  '0';
 # module
 $Self->{'Cache::Module'} =  'Kernel::System::Cache::FileStorable';
 # name
-$Self->{'ProductName'} =  'OTRS 5s';
+$Self->{'ProductName'} =  'LIGERO 5s';
 # numeric
 $Self->{'CalendarWeekDayStart'} =  '1';
 # queue
@@ -690,9 +690,9 @@ $Self->{'Frontend::NotifyModule'}->{'100-CloudServicesDisabled'} =  {
   'Group' => 'admin',
   'Module' => 'Kernel::Output::HTML::Notification::AgentCloudServicesDisabled'
 };
-$Self->{'Frontend::NotifyModule'}->{'100-OTRSBusiness'} =  {
+$Self->{'Frontend::NotifyModule'}->{'100-LIGEROBusiness'} =  {
   'Group' => 'admin',
-  'Module' => 'Kernel::Output::HTML::Notification::AgentOTRSBusiness'
+  'Module' => 'Kernel::Output::HTML::Notification::AgentLIGEROBusiness'
 };
 $Self->{'Frontend::NotifyModule'}->{'200-UID-Check'} =  {
   'Module' => 'Kernel::Output::HTML::Notification::UIDCheck'
@@ -849,24 +849,24 @@ $Self->{'PostMaster::PreFilterModule'}->{'1-Match'} =  {
   },
   'Module' => 'Kernel::System::PostMaster::Filter::Match',
   'Set' => {
-    'X-OTRS-ArticleType' => 'email-internal',
-    'X-OTRS-FollowUp-ArticleType' => 'email-external',
-    'X-OTRS-Ignore' => 'yes'
+    'X-LIGERO-ArticleType' => 'email-internal',
+    'X-LIGERO-FollowUp-ArticleType' => 'email-external',
+    'X-LIGERO-Ignore' => 'yes'
   },
 };
 $Self->{'PostMaster::PreCreateFilterModule'}->{'000-FollowUpArticleTypeCheck'} =  {
   'ArticleType' => 'email-internal',
   'Module' => 'Kernel::System::PostMaster::Filter::FollowUpArticleTypeCheck',
   'SenderType' => 'customer',
-  'X-OTRS-ArticleType' => 'email-internal',
-  'X-OTRS-FollowUp-ArticleType' => 'email-external'
+  'X-LIGERO-ArticleType' => 'email-internal',
+  'X-LIGERO-FollowUp-ArticleType' => 'email-external'
 };
 $Self->{'PostMaster::CheckFollowUpModule'}->{'0100-Subject'} =  {
   'ArticleType' => 'email-external',
   'Module' => 'Kernel::System::PostMaster::FollowUpCheck::Subject',
   'SenderType' => 'customer',
-  'X-OTRS-ArticleType' => 'email-internal',
-  'X-OTRS-FollowUp-ArticleType' => 'email-external'
+  'X-LIGERO-ArticleType' => 'email-internal',
+  'X-LIGERO-FollowUp-ArticleType' => 'email-external'
 };
 
 $Self->{'Ticket::Frontend::AgentTicketQueue'}->{'HighlightAge1'} = '1234';

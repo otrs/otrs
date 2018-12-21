@@ -1,4 +1,4 @@
-nv.models.OTRSmultiBarChart = function() {
+nv.models.LIGEROmultiBarChart = function() {
     "use strict";
 
     //============================================================
@@ -29,7 +29,7 @@ nv.models.OTRSmultiBarChart = function() {
         , tooltip = function(key, x, y, e, graph) {
             return '<h3>' + key + '</h3>' +
 // ---
-// OTRS
+// LIGERO
 // ---
 //                '<p>' +  y + ' on ' + x + '</p>'
                 '<p>' +  y + ' - ' + x + '</p>'
@@ -40,14 +40,14 @@ nv.models.OTRSmultiBarChart = function() {
         , state = nv.utils.state()
         , defaultState = null
 // ---
-// OTRS
+// LIGERO
 // ---
 //        , noData = 'No Data Available.'
         , noData = Core.Language.Translate('No Data Available.')
 // ---
         , dispatch = d3.dispatch('tooltipShow', 'tooltipHide', 'stateChange', 'changeState', 'renderEnd')
 // ---
-// OTRS
+// LIGERO
 // ---
 //        , controlWidth = function() { return showControls ? 180 : 0 }
         , controlWidth = function() { return showControls ? 220 : 0 }
@@ -88,7 +88,7 @@ nv.models.OTRSmultiBarChart = function() {
             content = tooltip(e.series.key, x, y, e, chart);
 
 // ---
-// OTRS
+// LIGERO
 // ---
       // because it could happen that x headings occurr multiple
       // times (such as Thu 18 for two different months), we
@@ -227,7 +227,7 @@ nv.models.OTRSmultiBarChart = function() {
             if (showControls) {
                 var controlsData = [
 // ---
-// OTRS
+// LIGERO
 // ---
 //                    { key: controlLabels.grouped || 'Grouped', disabled: multibar.stacked() },
 //                    { key: controlLabels.stacked || 'Stacked', disabled: !multibar.stacked() }
@@ -351,7 +351,7 @@ nv.models.OTRSmultiBarChart = function() {
 
                 switch (d.key) {
 // ---
-// OTRS
+// LIGERO
 // ---
 //                    case 'Grouped':
                     case Core.Language.Translate('Grouped'):
@@ -359,7 +359,7 @@ nv.models.OTRSmultiBarChart = function() {
                         multibar.stacked(false);
                         break;
 // ---
-// OTRS
+// LIGERO
 // ---
 //                    case 'Stacked':
                     case Core.Language.Translate('Stacked'):
@@ -398,7 +398,7 @@ nv.models.OTRSmultiBarChart = function() {
                 chart.update();
             });
 // ---
-// OTRS
+// LIGERO
 // ---
             // because it could happen that x axis headings occur multiple
             // times (such as Thu 18 for two different months), we

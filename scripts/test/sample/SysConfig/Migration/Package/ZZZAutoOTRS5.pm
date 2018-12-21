@@ -1,6 +1,6 @@
-# OTRS config file (automatically generated)
+# LIGERO config file (automatically generated)
 # VERSION:1.1
-package Kernel::Config::Backups::ZZZAutoOTRS5;
+package Kernel::Config::Backups::ZZZAutoLIGERO5;
 use strict;
 use warnings;
 no warnings 'redefine';
@@ -130,24 +130,24 @@ sub Load {
         },
         'Module' => 'Kernel::System::PostMaster::Filter::Match',
         'Set'    => {
-            'X-OTRS-ArticleType'          => 'email-internal',
-            'X-OTRS-FollowUp-ArticleType' => 'email-external',
-            'X-OTRS-Ignore'               => 'yes'
+            'X-LIGERO-ArticleType'          => 'email-internal',
+            'X-LIGERO-FollowUp-ArticleType' => 'email-external',
+            'X-LIGERO-Ignore'               => 'yes'
         },
     };
     $Self->{'PostMaster::PreCreateFilterModule'}->{'000-TestPackage-FollowUpArticleVisibilityCheck'} = {
         'ArticleType'                 => 'email-internal',
         'Module'                      => 'Kernel::System::PostMaster::Filter::FollowUpArticleTypeCheck',
         'SenderType'                  => 'customer',
-        'X-OTRS-ArticleType'          => 'email-internal',
-        'X-OTRS-FollowUp-ArticleType' => 'email-external'
+        'X-LIGERO-ArticleType'          => 'email-internal',
+        'X-LIGERO-FollowUp-ArticleType' => 'email-external'
     };
     $Self->{'PostMaster::CheckFollowUpModule'}->{'0100-TestPackage-Subject'} = {
         'ArticleType'                 => 'email-external',
         'Module'                      => 'Kernel::System::PostMaster::FollowUpCheck::Subject',
         'SenderType'                  => 'customer',
-        'X-OTRS-ArticleType'          => 'email-internal',
-        'X-OTRS-FollowUp-ArticleType' => 'email-external'
+        'X-LIGERO-ArticleType'          => 'email-internal',
+        'X-LIGERO-FollowUp-ArticleType' => 'email-external'
     };
 
 }

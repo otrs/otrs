@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -157,7 +157,7 @@
                                                 <tr>
                                                     <td valign="top" class="bodyContent" style="border-bottom: 1px solid #eee; background-color: #fff; padding: 15px; font-size: 13px;">
 # We need to perform some postprocessing on the notification content as it is neccessary to use inline CSS styles
-#   for best mail client compatibility. In particular, OTRS uses <div> elements with inline CSS instead of <blockquote>.
+#   for best mail client compatibility. In particular, LIGERO uses <div> elements with inline CSS instead of <blockquote>.
 #   Here we also change the inline style of this <div> to match with the current design.
                                                         [% Data.Body
                                                         .replace('<p>', '<div>')

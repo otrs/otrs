@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -13,10 +13,10 @@ use utf8;
 
 use vars (qw($Self));
 
-use Kernel::System::OTRSBusiness;
+use Kernel::System::LIGEROBusiness;
 
-# override some OTRSBusiness functions, to prevent a real cloud service call
-local *Kernel::System::OTRSBusiness::OTRSBusinessIsInstalled = sub {
+# override some LIGEROBusiness functions, to prevent a real cloud service call
+local *Kernel::System::LIGEROBusiness::LIGEROBusinessIsInstalled = sub {
     my ( $Self, %Param ) = @_;
 
     return 1;
@@ -25,7 +25,7 @@ local *Kernel::System::OTRSBusiness::OTRSBusinessIsInstalled = sub {
 # to check, if the cloud service function was called (the value will be set in the overwritten local function)
 my $TestCloudServiceCall = 0;
 
-local *Kernel::System::OTRSBusiness::OTRSBusinessEntitlementStatus = sub {
+local *Kernel::System::LIGEROBusiness::LIGEROBusinessEntitlementStatus = sub {
     my ( $Self, %Param ) = @_;
 
     $TestCloudServiceCall = 1;
@@ -34,7 +34,7 @@ local *Kernel::System::OTRSBusiness::OTRSBusinessEntitlementStatus = sub {
 };
 
 # get needed objects
-my $CommandObject    = $Kernel::OM->Get('Kernel::System::Console::Command::Maint::OTRSBusiness::EntitlementCheck');
+my $CommandObject    = $Kernel::OM->Get('Kernel::System::Console::Command::Maint::LIGEROBusiness::EntitlementCheck');
 my $SystemDataObject = $Kernel::OM->Get('Kernel::System::SystemData');
 
 # get helper object
@@ -45,9 +45,9 @@ $Kernel::OM->ObjectParamAdd(
 );
 my $Helper = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
 
-my $NextUpdateTimeKey = 'OTRSBusiness::EntitlementCheck::NextUpdateTime';
+my $NextUpdateTimeKey = 'LIGEROBusiness::EntitlementCheck::NextUpdateTime';
 
-# delete the 'OTRSBusiness::EntitlementCheck::NextUpdateTime' from the system data, if it already exists in the system
+# delete the 'LIGEROBusiness::EntitlementCheck::NextUpdateTime' from the system data, if it already exists in the system
 if ( defined $SystemDataObject->SystemDataGet( Key => $NextUpdateTimeKey ) ) {
     $SystemDataObject->SystemDataDelete(
         Key    => $NextUpdateTimeKey,
@@ -62,12 +62,12 @@ my $ExitCode = $CommandObject->Execute();
 $Self->Is(
     $ExitCode,
     0,
-    "Maint::OTRSBusiness::EntitlementCheck exit code",
+    "Maint::LIGEROBusiness::EntitlementCheck exit code",
 );
 
 $Self->True(
     $TestCloudServiceCall,
-    "The function 'OTRSBusinessEntitlementStatus' was called from the console command.",
+    "The function 'LIGEROBusinessEntitlementStatus' was called from the console command.",
 );
 
 # reset the test value
@@ -84,12 +84,12 @@ $ExitCode = $CommandObject->Execute();
 $Self->Is(
     $ExitCode,
     0,
-    "Maint::OTRSBusiness::EntitlementCheck exit code",
+    "Maint::LIGEROBusiness::EntitlementCheck exit code",
 );
 
 $Self->False(
     $TestCloudServiceCall,
-    "The function 'OTRSBusinessEntitlementStatus' was not called from the console command.",
+    "The function 'LIGEROBusinessEntitlementStatus' was not called from the console command.",
 );
 
 # reset the test value
@@ -100,12 +100,12 @@ $ExitCode = $CommandObject->Execute('--force');
 $Self->Is(
     $ExitCode,
     0,
-    "Maint::OTRSBusiness::EntitlementCheck exit code",
+    "Maint::LIGEROBusiness::EntitlementCheck exit code",
 );
 
 $Self->True(
     $TestCloudServiceCall,
-    "The function 'OTRSBusinessEntitlementStatus' was called from the console command (with --force).",
+    "The function 'LIGEROBusinessEntitlementStatus' was called from the console command (with --force).",
 );
 
 # reset the test value
@@ -122,12 +122,12 @@ $ExitCode = $CommandObject->Execute();
 $Self->Is(
     $ExitCode,
     0,
-    "Maint::OTRSBusiness::EntitlementCheck exit code",
+    "Maint::LIGEROBusiness::EntitlementCheck exit code",
 );
 
 $Self->True(
     $TestCloudServiceCall,
-    "The function 'OTRSBusinessEntitlementStatus' was called from the console command (because next update time reached).",
+    "The function 'LIGEROBusinessEntitlementStatus' was called from the console command (because next update time reached).",
 );
 
 # reset the test value
@@ -144,12 +144,12 @@ $ExitCode = $CommandObject->Execute();
 $Self->Is(
     $ExitCode,
     0,
-    "Maint::OTRSBusiness::EntitlementCheck exit code",
+    "Maint::LIGEROBusiness::EntitlementCheck exit code",
 );
 
 $Self->False(
     $TestCloudServiceCall,
-    "The function 'OTRSBusinessEntitlementStatus' was not called from the console command.",
+    "The function 'LIGEROBusinessEntitlementStatus' was not called from the console command.",
 );
 
 $Helper->FixedTimeUnset();

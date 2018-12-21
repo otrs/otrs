@@ -1,4 +1,4 @@
-nv.models.OTRSlineChart = function() {
+nv.models.LIGEROlineChart = function() {
     "use strict";
 
     //============================================================
@@ -21,7 +21,7 @@ nv.models.OTRSlineChart = function() {
         , showYAxis = true
         , rightAlignYAxis = false
 // ---
-// OTRS
+// LIGERO
 // ---
         , reduceXTicks = true
         , staggerLabels = false
@@ -31,7 +31,7 @@ nv.models.OTRSlineChart = function() {
         , tooltip = function(key, x, y, e, graph) {
             return '<h3>' + key + '</h3>' +
 // ---
-// OTRS
+// LIGERO
 // ---
 //                '<p>' +  y + ' at ' + x + '</p>'
                 '<p>' +  y + ' - ' + x + '</p>'
@@ -42,7 +42,7 @@ nv.models.OTRSlineChart = function() {
         , state = nv.utils.state()
         , defaultState = null
 // ---
-// OTRS
+// LIGERO
 // ---
 //        , noData = 'No Data Available.'
         , noData = Core.Language.Translate('No Data Available.')
@@ -52,7 +52,7 @@ nv.models.OTRSlineChart = function() {
         ;
 
 // ---
-// OTRS
+// LIGERO
 // ---
 //    xAxis.orient('bottom').tickPadding(7);
     xAxis.orient('bottom').tickPadding(7).showMaxMin(false);
@@ -240,7 +240,7 @@ nv.models.OTRSlineChart = function() {
                     .call(xAxis);
 
 // ---
-// OTRS
+// LIGERO
 // ---
                 var xTicks = g.select('.nv-x.nv-axis > g').selectAll('g');
 
@@ -446,7 +446,7 @@ nv.models.OTRSlineChart = function() {
         noData:    {get: function(){return noData;}, set: function(_){noData=_;}},
 
 // ---
-// OTRS
+// LIGERO
 // ---
         reduceXTicks:    {get: function(){return reduceXTicks;}, set: function(_){reduceXTicks=_;}},
         staggerLabels:    {get: function(){return staggerLabels;}, set: function(_){staggerLabels=_;}},

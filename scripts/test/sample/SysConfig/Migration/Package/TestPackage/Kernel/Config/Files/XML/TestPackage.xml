@@ -172,7 +172,7 @@
                 </Item>
                 <Item Key="Set">
                     <Hash>
-                        <Item Key="X-OTRS-Ignore">yes</Item>
+                        <Item Key="X-LIGERO-Ignore">yes</Item>
                     </Hash>
                 </Item>
             </Hash>

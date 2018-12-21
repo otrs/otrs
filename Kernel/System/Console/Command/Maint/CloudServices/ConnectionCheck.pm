@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -24,7 +24,7 @@ our @ObjectDependencies = (
 sub Configure {
     my ( $Self, %Param ) = @_;
 
-    $Self->Description('Check OTRS cloud services connectivity.');
+    $Self->Description('Check LIGERO cloud services connectivity.');
 
     return;
 }
@@ -32,7 +32,7 @@ sub Configure {
 sub Run {
     my ( $Self, %Param ) = @_;
 
-    $Self->Print("<yellow>Checking OTRS cloud service connectivity...</yellow>\n");
+    $Self->Print("<yellow>Checking LIGERO cloud service connectivity...</yellow>\n");
 
     # set trace level
     $Net::SSLeay::trace = 3;

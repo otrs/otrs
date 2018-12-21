@@ -1,4 +1,4 @@
-nv.models.OTRSstackedAreaChart = function() {
+nv.models.LIGEROstackedAreaChart = function() {
     "use strict";
 
     //============================================================
@@ -23,7 +23,7 @@ nv.models.OTRSstackedAreaChart = function() {
         , showYAxis = true
         , rightAlignYAxis = false
 // ---
-// OTRS
+// LIGERO
 // ---
         , reduceXTicks = true
         , staggerLabels = false
@@ -33,7 +33,7 @@ nv.models.OTRSstackedAreaChart = function() {
         , tooltip = function(key, x, y, e, graph) {
             return '<h3>' + key + '</h3>' +
 // ---
-// OTRS
+// LIGERO
 // ---
 //                '<p>' +  y + ' on ' + x + '</p>'
                 '<p>' +  y + ' - ' + x + '</p>'
@@ -45,7 +45,7 @@ nv.models.OTRSstackedAreaChart = function() {
         , state = nv.utils.state()
         , defaultState = null
 // ---
-// OTRS
+// LIGERO
 // ---
 //        , noData = 'No Data Available.'
         , noData = Core.Language.Translate('No Data Available.')
@@ -53,7 +53,7 @@ nv.models.OTRSstackedAreaChart = function() {
         , dispatch = d3.dispatch('tooltipShow', 'tooltipHide', 'stateChange', 'changeState','renderEnd')
         , controlWidth = 250
 // ---
-// OTRS
+// LIGERO
 // ---
 //        , cData = ['Stacked','Stream','Expanded']
         , cData = [ Core.Language.Translate('Stacked'), Core.Language.Translate('Stream'), Core.Language.Translate('Expanded') ]
@@ -64,7 +64,7 @@ nv.models.OTRSstackedAreaChart = function() {
 
     state.style = stacked.style();
 // ---
-// OTRS
+// LIGERO
 // ---
 //    xAxis.orient('bottom').tickPadding(7);
     xAxis.orient('bottom').tickPadding(7).showMaxMin(false);
@@ -208,7 +208,7 @@ nv.models.OTRSstackedAreaChart = function() {
                 var controlsData = [
                     {
 // ---
-// OTRS
+// LIGERO
 // ---
 //                        key: controlLabels.stacked || 'Stacked',
 //                        metaKey: 'Stacked',
@@ -220,7 +220,7 @@ nv.models.OTRSstackedAreaChart = function() {
                     },
                     {
 // ---
-// OTRS
+// LIGERO
 // ---
 //                        key: controlLabels.stream || 'Stream',
 //                        metaKey: 'Stream',
@@ -232,7 +232,7 @@ nv.models.OTRSstackedAreaChart = function() {
                     },
                     {
 // ---
-// OTRS
+// LIGERO
 // ---
 //                        key: controlLabels.expanded || 'Expanded',
 //                        metaKey: 'Expanded',
@@ -313,7 +313,7 @@ nv.models.OTRSstackedAreaChart = function() {
                     .transition().duration(0)
                     .call(xAxis);
 // ---
-// OTRS
+// LIGERO
 // ---
                 var xTicks = g.select('.nv-x.nv-axis > g').selectAll('g');
 
@@ -562,7 +562,7 @@ nv.models.OTRSstackedAreaChart = function() {
         showControls:    {get: function(){return showControls;}, set: function(_){showControls=_;}},
         controlLabels:    {get: function(){return controlLabels;}, set: function(_){controlLabels=_;}},
 // ---
-// OTRS
+// LIGERO
 // ---
         reduceXTicks:    {get: function(){return reduceXTicks;}, set: function(_){reduceXTicks=_;}},
         staggerLabels:    {get: function(){return staggerLabels;}, set: function(_){staggerLabels=_;}},

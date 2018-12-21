@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -22,7 +22,7 @@ our @ObjectDependencies = (
 sub Configure {
     my ( $Self, %Param ) = @_;
 
-    $Self->Description('Migrate XML configuration files from OTRS 5 to OTRS 6.');
+    $Self->Description('Migrate XML configuration files from LIGERO 5 to LIGERO 6.');
     $Self->AddOption(
         Name        => 'source-directory',
         Description => "Directory which contains configuration XML files that needs to be migrated.",
@@ -117,7 +117,7 @@ sub Run {
 
 =head1 TERMS AND CONDITIONS
 
-This software is part of the OTRS project (L<https://ligero.org/>).
+This software is part of the LIGERO project (L<https://ligero.org/>).
 
 This software comes with ABSOLUTELY NO WARRANTY. For details, see
 the enclosed file COPYING for license information (GPL). If you

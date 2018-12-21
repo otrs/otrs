@@ -1,12 +1,12 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
 # did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
-package Kernel::System::Console::Command::Maint::OTRSBusiness::AvailabilityCheck;
+package Kernel::System::Console::Command::Maint::LIGEROBusiness::AvailabilityCheck;
 
 use strict;
 use warnings;
@@ -16,14 +16,14 @@ use parent qw(Kernel::System::Console::BaseCommand);
 
 our @ObjectDependencies = (
     'Kernel::System::DateTime',
-    'Kernel::System::OTRSBusiness',
+    'Kernel::System::LIGEROBusiness',
     'Kernel::System::SystemData',
 );
 
 sub Configure {
     my ( $Self, %Param ) = @_;
 
-    $Self->Description('Check if OTRS Business Solution™ is available for the current system.');
+    $Self->Description('Check if LIGERO Business Solution™ is available for the current system.');
 
     $Self->AddOption(
         Name        => 'force',
@@ -39,19 +39,19 @@ sub Configure {
 sub Run {
     my ( $Self, %Param ) = @_;
 
-    my $OTRSBusinessStr = "OTRS Business Solution™";
+    my $LIGEROBusinessStr = "LIGERO Business Solution™";
 
-    $Self->Print("<yellow>Checking availability of $OTRSBusinessStr...</yellow>\n");
+    $Self->Print("<yellow>Checking availability of $LIGEROBusinessStr...</yellow>\n");
 
     my $Force = $Self->GetOption('force') || 0;
 
-    # get OTRS business object
-    my $OTRSBusinessObject = $Kernel::OM->Get('Kernel::System::OTRSBusiness');
+    # get LIGERO business object
+    my $LIGEROBusinessObject = $Kernel::OM->Get('Kernel::System::LIGEROBusiness');
 
     if ( !$Force ) {
 
-        # first check if OTRS Business Solution™ package is installed
-        my $IsInstalled = $OTRSBusinessObject->OTRSBusinessIsInstalled();
+        # first check if LIGERO Business Solution™ package is installed
+        my $IsInstalled = $LIGEROBusinessObject->LIGEROBusinessIsInstalled();
 
         # skip if it is not installed
         return $Self->SkippCheck() if !$IsInstalled;
@@ -61,7 +61,7 @@ sub Run {
 
         # get next update time
         my $AvailabilityCheckNextUpdateTime = $SystemDataObject->SystemDataGet(
-            Key => 'OTRSBusiness::AvailabilityCheck::NextUpdateTime',
+            Key => 'LIGEROBusiness::AvailabilityCheck::NextUpdateTime',
         );
 
         my $NextUpdateSystemTime;
@@ -84,18 +84,18 @@ sub Run {
             && $SystemTime < $NextUpdateSystemTime;
     }
 
-    # call the OTRS Business Solution™ availability cloud service
-    $OTRSBusinessObject->OTRSBusinessIsAvailable();
+    # call the LIGERO Business Solution™ availability cloud service
+    $LIGEROBusinessObject->LIGEROBusinessIsAvailable();
 
     # return the off-line status to be tolerant to network failures
-    my $Success = $OTRSBusinessObject->OTRSBusinessIsAvailableOffline();
+    my $Success = $LIGEROBusinessObject->LIGEROBusinessIsAvailableOffline();
 
     if ( !$Success ) {
-        $Self->Print("  $OTRSBusinessStr is not available for this system.\n");
+        $Self->Print("  $LIGEROBusinessStr is not available for this system.\n");
     }
 
     # set the next update time
-    $OTRSBusinessObject->OTRSBusinessCommandNextUpdateTimeSet(
+    $LIGEROBusinessObject->LIGEROBusinessCommandNextUpdateTimeSet(
         Command => 'AvailabilityCheck',
     );
 

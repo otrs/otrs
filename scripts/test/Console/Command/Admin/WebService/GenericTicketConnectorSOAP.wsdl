@@ -37,25 +37,25 @@ WARNING: This WSDL file is for Development and Test purposes ONLY!
                 </xsd:element>
                 <xsd:element
                     name="Ticket"
-                    type="tns:OTRS_TicketCreate_Ticket"
+                    type="tns:LIGERO_TicketCreate_Ticket"
                     minOccurs="1"
                     maxOccurs="1">
                 </xsd:element>
                 <xsd:element
                     name="Article"
-                    type="tns:OTRS_Article"
+                    type="tns:LIGERO_Article"
                     minOccurs="1"
                     maxOccurs="1">
                 </xsd:element>
                 <xsd:element
                     name="DynamicField"
-                    type="tns:OTRS_DynamicField"
+                    type="tns:LIGERO_DynamicField"
                     minOccurs="0"
                     maxOccurs="unbounded">
                 </xsd:element>
                 <xsd:element
                     name="Attachment"
-                    type="tns:OTRS_Attachment" minOccurs="0" maxOccurs="unbounded">
+                    type="tns:LIGERO_Attachment" minOccurs="0" maxOccurs="unbounded">
                 </xsd:element>
             </xsd:sequence>
         </xsd:complexType>
@@ -82,12 +82,12 @@ WARNING: This WSDL file is for Development and Test purposes ONLY!
                 </xsd:element>
                 <xsd:element
                     name="Error"
-                    type="tns:OTRS_Error" minOccurs="0" maxOccurs="1">
+                    type="tns:LIGERO_Error" minOccurs="0" maxOccurs="1">
                 </xsd:element>
             </xsd:sequence>
         </xsd:complexType>
     </xsd:element>
-    <xsd:complexType name="OTRS_TicketCreate_Ticket">
+    <xsd:complexType name="LIGERO_TicketCreate_Ticket">
         <xsd:sequence>
             <xsd:element
                 name="Title"
@@ -252,12 +252,12 @@ WARNING: This WSDL file is for Development and Test purposes ONLY!
             </xsd:element>
             <xsd:element
                 name="PendingTime"
-                type="tns:OTRS_PendingTime" minOccurs="0">
+                type="tns:LIGERO_PendingTime" minOccurs="0">
             </xsd:element>
         </xsd:sequence>
     </xsd:complexType>
 
-    <xsd:complexType name="OTRS_PendingTime">
+    <xsd:complexType name="LIGERO_PendingTime">
         <xsd:choice>
             <xsd:sequence>
                 <xsd:element
@@ -288,7 +288,7 @@ WARNING: This WSDL file is for Development and Test purposes ONLY!
         </xsd:choice>
     </xsd:complexType>
 
-    <xsd:complexType name="OTRS_Article">
+    <xsd:complexType name="LIGERO_Article">
         <xsd:sequence>
             <xsd:choice
                 maxOccurs="1"
@@ -408,7 +408,7 @@ WARNING: This WSDL file is for Development and Test purposes ONLY!
         </xsd:sequence>
     </xsd:complexType>
 
-    <xsd:complexType name="OTRS_DynamicField">
+    <xsd:complexType name="LIGERO_DynamicField">
         <xsd:sequence>
             <xsd:element
                 name="Name"
@@ -423,7 +423,7 @@ WARNING: This WSDL file is for Development and Test purposes ONLY!
         </xsd:sequence>
     </xsd:complexType>
 
-    <xsd:complexType name="OTRS_Attachment">
+    <xsd:complexType name="LIGERO_Attachment">
         <xsd:sequence>
             <xsd:element
                 name="Content"
@@ -446,7 +446,7 @@ WARNING: This WSDL file is for Development and Test purposes ONLY!
         </xsd:sequence>
     </xsd:complexType>
 
-    <xsd:complexType name="OTRS_Error">
+    <xsd:complexType name="LIGERO_Error">
         <xsd:sequence>
             <xsd:element
                 name="ErrorCode"
@@ -508,23 +508,23 @@ WARNING: This WSDL file is for Development and Test purposes ONLY!
                 </xsd:choice>
                 <xsd:element
                     name="Ticket"
-                    type="tns:OTRS_TicketUpdate_Ticket" minOccurs="0" maxOccurs="1">
+                    type="tns:LIGERO_TicketUpdate_Ticket" minOccurs="0" maxOccurs="1">
                 </xsd:element>
                 <xsd:element
                     name="Article"
-                    type="tns:OTRS_Article"
+                    type="tns:LIGERO_Article"
                     maxOccurs="1"
                     minOccurs="0">
                 </xsd:element>
                 <xsd:element
                     name="DynamicField"
-                    type="tns:OTRS_DynamicField"
+                    type="tns:LIGERO_DynamicField"
                     maxOccurs="unbounded"
                     minOccurs="0">
                 </xsd:element>
                 <xsd:element
                     name="Attachment"
-                    type="tns:OTRS_Attachment"
+                    type="tns:LIGERO_Attachment"
                     maxOccurs="unbounded"
                     minOccurs="0">
                 </xsd:element>
@@ -552,13 +552,13 @@ WARNING: This WSDL file is for Development and Test purposes ONLY!
                 </xsd:element>
                 <xsd:element
                     name="Error"
-                    type="tns:OTRS_Error" minOccurs="0">
+                    type="tns:LIGERO_Error" minOccurs="0">
                 </xsd:element>
             </xsd:sequence>
         </xsd:complexType>
     </xsd:element>
 
-    <xsd:complexType name="OTRS_TicketUpdate_Ticket">
+    <xsd:complexType name="LIGERO_TicketUpdate_Ticket">
         <xsd:sequence>
             <xsd:element
                 name="Title"
@@ -706,7 +706,7 @@ WARNING: This WSDL file is for Development and Test purposes ONLY!
             </xsd:element>
             <xsd:element
                 name="PendingTime"
-                type="tns:OTRS_PendingTime"
+                type="tns:LIGERO_PendingTime"
                 minOccurs="0">
             </xsd:element>
         </xsd:sequence>
@@ -789,13 +789,13 @@ WARNING: This WSDL file is for Development and Test purposes ONLY!
             <xsd:sequence>
                 <xsd:element
                     name="Ticket"
-                    type="tns:OTRS_TicketGetResponse_Ticket" maxOccurs="unbounded">
+                    type="tns:LIGERO_TicketGetResponse_Ticket" maxOccurs="unbounded">
                 </xsd:element>
             </xsd:sequence>
         </xsd:complexType>
     </xsd:element>
 
-    <xsd:complexType name="OTRS_TicketGetResponse_Ticket">
+    <xsd:complexType name="LIGERO_TicketGetResponse_Ticket">
         <xsd:sequence>
             <xsd:element
                 name="Age"
@@ -809,7 +809,7 @@ WARNING: This WSDL file is for Development and Test purposes ONLY!
             </xsd:element>
             <xsd:element
                 name="Article"
-                type="tns:OTRS_TicketGetResponse_Article" minOccurs="0" maxOccurs="unbounded">
+                type="tns:LIGERO_TicketGetResponse_Article" minOccurs="0" maxOccurs="unbounded">
             </xsd:element>
             <xsd:element
                 name="ChangeBy"
@@ -849,7 +849,7 @@ WARNING: This WSDL file is for Development and Test purposes ONLY!
             </xsd:element>
             <xsd:element
                 name="DynamicField"
-                type="tns:OTRS_DynamicField"
+                type="tns:LIGERO_DynamicField"
                 minOccurs="0" maxOccurs="unbounded">
             </xsd:element>
             <xsd:element
@@ -1176,7 +1176,7 @@ WARNING: This WSDL file is for Development and Test purposes ONLY!
         </xsd:sequence>
     </xsd:complexType>
 
-    <xsd:complexType name="OTRS_TicketGetResponse_Article">
+    <xsd:complexType name="LIGERO_TicketGetResponse_Article">
         <xsd:sequence>
             <xsd:element
                 name="Age"
@@ -1205,7 +1205,7 @@ WARNING: This WSDL file is for Development and Test purposes ONLY!
             </xsd:element>
             <xsd:element
                 name="Attachment"
-                type="tns:OTRS_TicketGetResponse_Attachment" maxOccurs="unbounded" minOccurs="0">
+                type="tns:LIGERO_TicketGetResponse_Attachment" maxOccurs="unbounded" minOccurs="0">
             </xsd:element>
             <xsd:element
                 name="Body"
@@ -1559,7 +1559,7 @@ WARNING: This WSDL file is for Development and Test purposes ONLY!
         </xsd:sequence>
     </xsd:complexType>
 
-    <xsd:complexType name="OTRS_TicketGetResponse_Attachment">
+    <xsd:complexType name="LIGERO_TicketGetResponse_Attachment">
         <xsd:sequence>
             <xsd:element
                 name="Content"
@@ -1833,13 +1833,13 @@ WARNING: This WSDL file is for Development and Test purposes ONLY!
                 </xsd:element>
                 <xsd:element
                     name="DynamicFields"
-                    type="tns:OTRS_TicketSearch_DynamicField"
+                    type="tns:LIGERO_TicketSearch_DynamicField"
                     minOccurs="0"
                     maxOccurs="unbounded">
                 </xsd:element>
                 <xsd:element
                     name="Ticketflag"
-                    type="tns:OTRS_TicketSearch_TicketFlag" minOccurs="0">
+                    type="tns:LIGERO_TicketSearch_TicketFlag" minOccurs="0">
                 </xsd:element>
                 <xsd:element
                     name="MIMEBase_From"
@@ -2095,7 +2095,7 @@ WARNING: This WSDL file is for Development and Test purposes ONLY!
         </xsd:complexType>
     </xsd:element>
 
-    <xsd:complexType name="OTRS_TicketSearch_DynamicField">
+    <xsd:complexType name="LIGERO_TicketSearch_DynamicField">
         <xsd:sequence>
             <xsd:choice minOccurs="1" maxOccurs="1">
                 <xsd:annotation>
@@ -2135,7 +2135,7 @@ WARNING: This WSDL file is for Development and Test purposes ONLY!
         </xsd:sequence>
     </xsd:complexType>
 
-    <xsd:complexType name="OTRS_TicketSearch_TicketFlag">
+    <xsd:complexType name="LIGERO_TicketSearch_TicketFlag">
         <xsd:sequence>
                     <xsd:annotation>
                         <xsd:documentation>It should be possible to use other flags in future, rather than just 'Seen' </xsd:documentation>
@@ -2184,7 +2184,7 @@ WARNING: This WSDL file is for Development and Test purposes ONLY!
                 </xsd:element>
                 <xsd:element
                     name="Error"
-                    type="tns:OTRS_Error"
+                    type="tns:LIGERO_Error"
                     maxOccurs="1"
                     minOccurs="0">
                 </xsd:element>
